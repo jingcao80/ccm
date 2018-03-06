@@ -1,0 +1,9 @@
+
+[
+    uuid(8b2a143c-e778-49aa-a2df-9177ae099e84),
+    version(0.1.0),
+    descripton("interface IFoo definition")
+]
+interface IFoo {
+	Foo();
+}
