@@ -1,0 +1,143 @@
+//=========================================================================
+// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//=========================================================================
+
+/**
+ * Test parsing a simple interface.
+ */
+
+[
+    uuid(8b2a143c-e778-49aa-a2df-9177ae099e84),
+    version(0.1.0),
+    descripton("This is the definition of IFoo.")
+]
+interface IFoo
+{
+	Foo();
+}
+
+/**
+ * Test parsing a interface with constant data members.
+ */
+
+enum Size
+{
+    small,
+    middle,
+    large
+}
+
+[
+    uuid(fd81a35c-0463-482c-89a4-e5416223c836),
+    version(0.1.0),
+    description("This is the definition of IFoo2")
+]
+interface IFoo2
+{
+    //
+    const Boolean BOOL_VAL = true;
+    const Byte B8_VAL = 255;
+    const Short S16_VAL = 65535;
+    const Integer I32_VAL = 0xffffffff;
+    const Long I64_VAL = 0xfffffffffffffff0;
+    const String STR_VAL = "The interface name is IFoo2.";
+    const Size SZ_VAL = middle;
+
+    Foo(
+        [in] Integer value);
+
+    Foo(
+        [out] Integer* value);
+
+    Foo(
+        [in, out] Integer* value);
+
+    Foo(
+        [in] String value);
+
+    Foo(
+        [out] String* value);
+
+    Foo(
+        [in, out] String* value);
+
+    Foo(
+        [in] Array<Byte>* value);
+
+    Foo(
+        [out] Array<Byte>* value);
+
+    Foo(
+        [out, callee] Array<Byte>** value);
+
+    Foo(
+        [in, out] Array<Byte>* value);
+
+    Foo(
+        [in] Array< Array<Integer>* >* value);
+
+    Foo(
+        [out] Array< Array<Integer>* >* value);
+
+    Foo(
+        [out, callee] Array< Array<Integer>* >** value);
+
+    Foo(
+        [in, out] Array< Array<Integer>* >* value);
+
+    Foo(
+        [in] IFoo* value);
+
+    Foo(
+        [out] IFoo** value);
+}
+
+/**
+ * Test parsing namespace and interface inheritance.
+ */
+
+namespace TopNS {
+
+interface IFoo3 : IFoo
+{
+    Foo(
+        [in] Boolean value);
+}
+
+namespace SecondNS {
+
+interface IBar : IFoo
+{
+    Bar(
+        [in] Integer value);
+}
+
+} // namespace SecondNS
+
+} // namespace TopNS
+
+namespace TopNS {
+namespace SecondNS {
+namespace ThirdNS {
+
+interface IFooBar : IBar
+{
+    FooBar(
+        [in] String value);
+}
+
+} // namespace ThirdNS
+} // namespace SecondNS
+} // namespace TopNS

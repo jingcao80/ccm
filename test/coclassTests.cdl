@@ -1,0 +1,57 @@
+//=========================================================================
+// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//=========================================================================
+
+/**
+ * Test parsing coclass.
+ */
+
+include "interfaceTests.cdl"
+
+[
+    uuid(930e32e1-99ff-41b2-9cc8-d8cf7927904e),
+    version(0.1.0),
+    description("This is the definition of CFoo.")
+]
+coclass CFoo
+{
+    interface IFoo;
+}
+
+interface TopNS.IFoo3;
+interface TopNS.SecondeNS.ThirdNS.IFooBar;
+
+namespace TopNS {
+namespace SecondNS {
+namespace ThirdNS {
+
+[
+    uuid(c34d8d16-4683-484f-90a3-8fe390285033),
+    version(0.1.0)
+]
+coclass CFooBar
+{
+    constructor();
+
+    constructor(
+        [in] String name);
+
+    interface IFoo3;
+    interface IFooBar
+}
+
+} // namespace ThirdNS
+} // namespace SecondNS
+} // namespace TopNS

@@ -1,0 +1,78 @@
+
+//=========================================================================
+// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//=========================================================================
+
+/**
+ * SolarSystem contains CEarth.
+ */
+
+[
+    uuid(fd624f7e-3fa6-4373-818f-2e40eecfb7f8),
+    url("http://ccm.org/components/sample/solar_system.so")
+]
+module SolarSystem
+{
+
+include "IEarth.cdl"
+include "IMoon.cdl"
+include "ISun.cdl"
+
+namespace Universe {
+namespace MilkyWay {
+namespace SolarSystem {
+
+[
+    uuid(8021d087-1902-4fc1-9703-70c5a33261e3),
+    version(0.1.0)
+]
+coclass CSun
+{
+    constructor(
+        [in] Integer age);
+
+    interface ISun;
+}
+
+[
+    uuid(af4067e6-1ee6-4592-b651-d422c5111a73),
+    version(0.1.0),
+    description("CEarth is a livable planet.")
+]
+coclass CEarth
+{
+    constructor(
+        [in] Integer age);
+
+    interface IEarth;
+}
+
+[
+    uuid(cb4230ae-e396-464a-bff4-361ba2cf339d),
+    version(0.1.0)
+]
+coclass CMoon
+{
+    constructor(
+        [in] Integer age);
+
+    interface IMoon;
+}
+
+} // namespace SolarSystem
+} // namespace MilkyWay
+} // namespace Universe
+
+}
