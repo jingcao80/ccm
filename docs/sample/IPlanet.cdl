@@ -33,7 +33,7 @@ namespace Universe {
 ]
 interface IPlanet : ICelestialBody
 {
-    const CelestialBodyKind = planet;
+    const CelestialBodyKind KIND = planet;
 
     GetAroundStar(
         [out] IStar** star);
