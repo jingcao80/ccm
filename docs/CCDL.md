@@ -4,11 +4,11 @@
 ### Descriptions
 <*top*> ::= <*top_definition*>?
 
-<*top_definition*> ::=  <*definition*> | <*import_statement*>
+<*top_definition*> ::=  <*definition*> | <*import_statement*> | <*include_statement*> | <*using_statement*> | <*comment*>
 
 ### Definitions
 
-<*definition*> ::= <*interface_definition*> | <*class_definition*> | <*namespace_definition*>
+<*definition*> ::= <*interface_definition*> | <*class_definition*> | <*namespace_definition*> | <*enum_definition*> | <*module_definition*>
 
 <*interface_definition*> ::= <*interface_attributes*> <*interface_header*> <*interface_body*>
 
@@ -28,7 +28,7 @@
 
 <*interface_member*> ::= <*constant_data_member*> | <*method_member*>
 
-<*constant_data_member*> ::= <*constant_boolean_data_member*> | <*constant_integer_data_member*> | <*constant_string_data_member*>
+<*constant_data_member*> ::= <*constant_boolean_data_member*> | <*constant_integer_data_member*> | <*constant_string_data_member*> | <*constant_enum_data_member*>
 
 <*constant_boolean_data_member*> ::= const Boolean <*member_name*> = <*Boolean*> ;
 
@@ -90,7 +90,7 @@
 
 <*type*> ::= <*basic_type*> | <*string_type*> | <*array_type*> | <*interface_type*> | <*pointer_type*>
 
-<*basic_type*> ::= Boolean | Byte | Short | Integer | Long
+<*basic_type*> ::= Boolean | Byte | Short | Integer | Long | Float | Double | HANDLE
 
 <*string_type*> ::= String
 
@@ -132,7 +132,7 @@
 
 <*module_attribute_list*> ::= <*module_attribute*> | <*module_attribute_list*> , <*module_attribute*>
 
-<*module_attribute*> ::= <*uuid_attribute*> | <*version_attribute*> | <*description_attribute*>
+<*module_attribute*> ::= <*uuid_attribute*> | <*version_attribute*> | <*description_attribute*> | <*url_attribute*>
 
 <*module_header*> ::= module <*module_name*>
 
@@ -150,7 +150,7 @@
 
 <*version_attribute*> ::= version ( <*version_number*> )
 
-<*description_attribute*> ::= descripton ( <*string*> )
+<*description_attribute*> ::= description ( <*string*> )
 
 <*uuid_number*> ::= <*time_low*> - <*time_mid*> - <*time_high_and_version*> - <*clock_seq_and_reserved*> <*clock_seq_low*> - <*node*>
 
@@ -176,7 +176,7 @@
 
 <*minor_number*> ::= <*decimal_number*>
 
-<*Boolean*> ::= TRUE | FALSE
+<*Boolean*> ::= true | false
 
 <*decimal_integer*> ::= <*decimal_number*> <*integer_type_suffix*>?
 
@@ -217,6 +217,15 @@
 <*string_character*> ::= <*input_character*> except " and \ | <*escape_character*>
 
 <*escape_character*> ::= \" | \\ | \n | \t
+
+<*all_characters*> :== <*input_character*> | <*all_characters*> <*input_character*>
+
+<*comment*> ::= <*block_comment*> | <*line_comment*>
+
+<*block_comment*> ::= / * <*all_characters*> * /
+
+<*line_comment*> ::= / / <*all_characters*>
+
 
 ### Expressions
 
