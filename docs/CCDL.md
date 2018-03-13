@@ -1,40 +1,117 @@
 
 # BNF rules of CCDL(C++ Component Description Language) Syntax
 
-### Descriptions
-<*top*> ::= <*top_definition*>?
+### Programs
 
-<*top_definition*> ::=  <*definition*> | <*import_statement*> | <*include_statement*> | <*using_statement*> | <*comment*>
+<*compilation_unit*> ::= <*include_or_type_declarations*>? <*module_declaration*>
 
-### Definitions
+### Declarations
 
-<*definition*> ::= <*interface_definition*> | <*class_definition*> | <*namespace_definition*> | <*enum_definition*> | <*module_definition*>
+<*include_or_type_declarations*> ::= <*include_or_type_declaration*> | <*include_or_type_declarations*> <*include_or_type_declaration*>
 
-<*interface_definition*> ::= <*interface_attributes*> <*interface_header*> <*interface_body*>
+<*include_or_type_declaration*> ::= <*include_declaration*> | <*type_declaration*> 
 
-<*interface_attributes*> ::= \[ <*interface_attribute_list*>? \]
+<*include_declaration*> ::= include <*string_literal*>
 
-<*interface_attribute_list*> ::= <*interface_attribute*> | <*interface_attribute_list*> , <*interface_attribute*>
+<*type_declaration*> ::= <*namespace_declaration*> | <*interface_declaration*> | <*class_declaration*> | <*enum_declaration*>
+
+<*namespace_declaration*> ::= namespace <*identifier*> { <*include_or_type_declarations*> }
+
+<*interface_declaration*> ::= \[ <*interface_attributes*>? \] interface <*identifier*> <*extands_interface*>? <*interface_body*> | interface <*interface_type*> ;
+
+<*interface_attributes*> ::= <*interface_attribute*> | <*interface_attributes*> , <*interface_attribute*>
 
 <*interface_attribute*> ::= <*uuid_attribute*> | <*version_attribute*> | <*description_attribute*>
 
-<*interface_header*> ::= interface <*interface_name*> <*parent_interface*>?
+<*uuid_attribute*> ::= uuid ( <*uuid_literal*> )
 
-<*interface_name*> ::= <*identifier*>
+<*version_attribute*> ::= version ( <*version_literal*> )
 
-<*parent_interface*> ::= : <*interface_name*>
+<*description_attribute*> ::= description ( <*string_literal*> )
 
-<*interface_body*> ::= { <*interface_member*>? }
+<*extends_interface*> ::= : <*interface_type*>
 
-<*interface_member*> ::= <*constant_data_member*> | <*method_member*>
+<*interface_body*> ::= { <*interface_member_declarations*>? }
 
-<*constant_data_member*> ::= <*constant_boolean_data_member*> | <*constant_integer_data_member*> | <*constant_string_data_member*> | <*constant_enum_data_member*>
+<*interface_member_declarations*> ::= <*interface_member_declaration*> | <*interface_member_declarations*> <*interface_member_declaration*>
 
-<*constant_boolean_data_member*> ::= const Boolean <*member_name*> = <*Boolean*> ;
+<*interface_member_declaration*> ::= <*constant_declaration*> | <*abstract_method_declaration*>
 
-<*constant_integer_data_member*> ::= <*constant_byte_data_member*> | <>
+<*constant_declaration*> ::= const <*type*> <*identifier*> = <*expression*> ;
 
-<*constant_byte_data_member*> ::= const Byte <*member_name*> = <*inclusive_or_expression*> ;
+<*abstract_method_declaration*>::= <*method_declarator*> ;
+
+<*method_declarator*> ::= <*identifier*> ( <*formal_parameters*>? )
+
+<*formal_parameters*> ::= <*formal_parameter*> | <*formal_parameters*> , <*formal_parameter*>
+
+<*formal_parameter*> ::= <*formal_parameter_attribute*> <*type*> <*identifier*>
+
+<*formal_parameter_attribute*> ::= \[ in | out | in , out | out , callee \]
+
+<*class_declaration*> ::= \[ <*class_attributes*>? \] class <*identifier*> <*class_body*>
+
+<*class_attributes*> ::= <*class_attribute*> | <*class_attributes*> , <*class_attribute*>
+
+<*class_attribute*> ::= <*uuid_attribute*> | <*version_attribute*> | <*description_attribute*>
+
+<*class_body*> ::= { <*class_body_declarations*>? }
+
+<*class_body_eclarations*> ::= <*class_body_declaration*> | <*class_body_declarations*> <*class_body_declaration*>
+
+<*class_body_declaration*> ::= <*constructor_declaration*> | <*interface_declaration*>
+
+<*constructor_declaration*> ::= constructor ( <*formal_parameters*>? )
+
+<*interface_declaration*> ::= interface <*interface_name*> ;
+
+<*enum_declaration*> ::= enum <*identifier*> <*enum_body*>
+
+<*enum_body*> ::= { <*enum_body_declarations*>? }
+
+<*enum_body_declarations*> ::= <*enum_body_declaration*> | <*enum_body_declarations*> , <*enum_body_declaration*>
+
+<*enum_body_declaration*> ::= <*enumerators*>
+
+<*enumerators*> ::= <*enumerator*> | <*enumerators*> , <*enumerator*>
+
+<*enumerator*> ::= <*identifier*> | <*identifier*> = <*expression*>
+
+<*module_declaration*> ::= \[ <*module_attributes*>? \] module <*identifier*> <*module_body*>
+
+<*module_attributes*> ::= <*module_attribute*> | <*module_attributes*> , <*module_attribute*>
+
+<*module_attribute*> ::= <*uuid_attribute*> | <*version_attribute*> | <*description_attribute*> | <*url_attribute*>
+
+<*module_body*> ::= { <*module_body_declarations*>? }
+
+<*module_body_declarations*> ::= <*module_body_declaration*> | <*module_body_declarations*> <*module_body_declaration*>
+
+<*module_body_declaration*> ::= <*include_or_type_declaration*>
+
+### Types
+
+<*type*> ::= <*primitive_type*> | <*reference_type*> | <*pointer_type*>
+
+<*primitive_type*> ::= <*numeric_type*> | Boolean | String | HANDLE
+
+<*numeric_type*> ::= <*integral_type*> | <*floating-point_type*>
+
+<*integral_type*> ::= Byte | Short | Integer | Long | Char
+
+<*floating-point_type*> ::= Float | Double
+
+<*reference_type*> ::= <*interface_type*> | <*array_type*>
+
+<*interface_type*> ::= <*type_name*>
+
+<*array_type*> ::= Array < <*type*> >
+
+<*pointer_type*> ::= <*type*> *
+
+### Expressions
+
+<*expression*> ::= <*inclusive_or_expression*>
 
 <*inclusive_or_expression*> ::= <*exclusive_or_expression*> | <*inclusive_or_expression*> **|** <*exclusive_or_expression*>
 
@@ -42,7 +119,7 @@
 
 <*and_expression*> ::= <*shift_expression*> | <*and_expression*> & <*shift_expression*>
 
-<*shift_expression*> ::= <*additive_expression*> | <*shift_expression*> << <*additive_expression*> | <*shift_expression*> >> <*additive_expression*>
+<*shift_expression*> ::= <*additive_expression*> | <*shift_expression*> << <*additive_expression*> | <*shift_expression*> >> <*additive_expression*> | <*shift_expression*> >>> <*additive_expression*>
 
 <*additive_expression*> ::= <*multiplicative_expression*> | <*additive_expression*> + <*multiplicative_expression*> | <*additive_expression*> - <*multiplicative_expression*>
 
@@ -50,188 +127,107 @@
 
 <*unary_expression*> ::= <*preincrement_expression*> | <*predecrement_expression*> | + <*unary_expression*> | - <*unary_expression*> | <*unary_expression_not_plus_minus*>
 
-<*preincrement_expression*> ::= ++ <*unary_expression*>
-
 <*predecrement_expression*> ::= -- <*unary_expression*>
+
+<*preincrement_expression*> ::= ++ <*unary_expression*>
 
 <*unary_expression_not_plus_minus*> ::= <*postfix_expression*> | ~ <*unary_expression*> | ! <*unary_expression*> | <*cast_expression*>
 
-<*postfix_expression*> ::= <*primary*> | <*identifier*> | <*postincrement_expression*> | <*postdecrement_expression*>
+<*postfix_expression*> ::= <*primary*> | <*expression_name*> | <*postincrement_expression*> | <*postdecrement_expression*>
 
 <*postdecrement_expression*> ::= <*postfix_expression*> --
 
 <*postincrement_expression*> ::= <*postfix_expression*> ++
 
-<*primary*> ::= <*integer*> | <*floating_point*> | ( <*inclusive_or_expression*> )
+<*primary*> ::= <*literal*> | ( <*expression*> )
 
-<*integer*> ::= <*decimal_integer*> | <*hex_integer*> | <*octal_integer*>
+### Tokens
 
-<*floating_point*> ::= <*decimal_digits*> . <*decimal_digits*>? <*exponent_part*>? <*float_type_suffix*>? | <*decimal_digits*> <*exponent_part*>? <*float_type_suffix*>?
+<*namespace_name*> ::= <*identifier*> | <*namespace_name*> :: <*identifier*>
 
-<*constant_string_data_member*> ::= const String <*member_name*> = <*string*> ;
+<*type_name*> ::= <*identifier*> | <*namespace_name*> :: <*identifier*>
 
-<*method_member*> ::= <*method_name*> ( <*parameter_list*>? ) ;
+<*expression_name*> ::= <*identifier*> | <*ambiguous_name*> . <*identifier*>
 
-<*method_name*> ::= <*identifier*>
+<*ambiguous_name*>::= <*identifier*> | <*ambiguous_name*>. <*identifier*>
 
-<*parameter_list*> ::= <*parameter*> | <*parameter_list*> , <*parameter*>
+<*literal*> ::= <*integer_literal*> | <*floating-point_literal*> | <*boolean_literal*> | <*character_literal*> | <*string_literal*>
 
-<*parameter*> ::= <*parameter_attribute*> <*type*> <*parameter_name*>
+<*integer_literal*> ::= <*decimal_integer_literal*> | <*hex_integer_literal*> | <*octal_integer_literal*>
 
-<*parameter_attribute*> ::= \[ <*in_attribute*> | <*out_attribute*> | <*in_out_attribute*> | <*out_callee_attribute*> \]
+<*decimal_integer_literal*> ::= <*decimal_numeral*> <*integer_type_suffix*>?
 
-<*in_attribute*> ::= in
+<*hex_integer_literal*> ::= <*hex_numeral*> <*integer_type_suffix*>?
 
-<*out_attribute*> ::= out
+<*octal_integer_literal*> ::= <*octal_numeral*> <*integer_type_suffix*>?
 
-<*in_out_attribute*> ::= in, out
+<*uuid_literal*> ::= <*time_low_literal*> - <*time_mid_literal*> - <*time_high_and_version_literal*> - <*clock_seq_and_reserved_literal*> <*clock_seq_low_literal*> - <*node_literal*>
 
-<*out_callee_attribute*> ::= out, callee
+<*time_low_literal*> ::= 4<*hex_octet*>
 
-<*type*> ::= <*basic_type*> | <*string_type*> | <*array_type*> | <*interface_type*> | <*pointer_type*>
+<*time_mid_literal*> ::= 2<*hex_octet*>
 
-<*basic_type*> ::= Boolean | Byte | Short | Integer | Long | Float | Double | HANDLE
+<*time_high_and_version_literal*> ::= 2<*hex_octet*>
 
-<*string_type*> ::= String
+<*clock_seq_and_reserved_literal*> ::= 2<*hex_octet*>
 
-<*array_type*> ::= Array < <*type*> >
+<*clock_seq_low_literal*> ::= <*hex_octet*>
 
-<*interface_type*> ::= <*identifier*>
-
-<*pointer_type*> ::= <*type*> *
-
-<*parameter_name*> ::= <*identifier*>
-
-<*class_definition*> ::= <*class_attributes*> <*class_header*> <*class_body*>
-
-<*class_attributes*> ::= \[ <*class_attribute_list*>? \]
-
-<*class_attribute_list*> ::= <*class_attribute*> | <*class_attribute_list*> , <*class_attribute*>
-
-<*class_attribute*> ::= <*uuid_attribute*> | <*version_attribute*> | <*description_attribute*>
-
-<*class_header*> ::= class <*class_name*>
-
-<*class_name*> ::= <*identifier*>
-
-<*class_body*> ::= { <*class_body_statement*>? }
-
-<*class_body_statement*> ::= <*constructor_declaration*> | <*interface_declaration*>
-
-<*constructor_declaration*> ::= constructor ( <*formal_parameter_list*>? )
-
-<*interface_declaration*> ::= interface <*interface_name*> ;
-
-<*namespace_definition*> ::= namespace <*identifier*> { <*namespace_body*> }
-
-<*namespace_body*> ::= <*definition*>?
-
-<*module_definition*> ::= <*module_attributes*> <*module_header*> <*module_body*>
-
-<*module_attributes*> ::= \[ <*module_attribute_list*>? \]
-
-<*module_attribute_list*> ::= <*module_attribute*> | <*module_attribute_list*> , <*module_attribute*>
-
-<*module_attribute*> ::= <*uuid_attribute*> | <*version_attribute*> | <*description_attribute*> | <*url_attribute*>
-
-<*module_header*> ::= module <*module_name*>
-
-<*module_name*> ::= <*identifier*>
-
-<*module_body*> ::= { <*module_body_statement*>? }
-
-<*module_body_statement*> ::= <*import_statement*>
-
-<*import_statement*> ::= import ( " <*midl_file_path*> " ) ;
-
-<*midl_file_path*> ::= <*midl_file_absolute_path*> | <*midl_file_relative_path*>
-
-<*uuid_attribute*> ::= uuid ( <*uuid_number*> )
-
-<*version_attribute*> ::= version ( <*version_number*> )
-
-<*description_attribute*> ::= description ( <*string*> )
-
-<*uuid_number*> ::= <*time_low*> - <*time_mid*> - <*time_high_and_version*> - <*clock_seq_and_reserved*> <*clock_seq_low*> - <*node*>
-
-<*time_low*> ::= 4\*<*hex_octet*>
-
-<*time_mid*> ::= 2\*<*hex_octet*>
-
-<*time_high_and_version*> ::= 2\*<*hex_octet*>
-
-<*clock_seq_and_reserved*> ::= 2\*<*hex_octet*>
-
-<*clock_seq_low*> ::= <*hex_octet*>
-
-<*node*> ::= 6\*<*hex_octet*>
+<*node_literal*> ::= 6<*hex_octet*>
 
 <*hex_octet*> ::= <*hex_digit*> <*hex_digit*>
 
+<*version_literal*> ::= <*decimal_numeral*> . <*decimal_numeral*> . <*decimal_numeral*>
+
+<*integer_type_suffix*> ::= ll | LL
+
+<*decimal_numeral*> ::= 0 | <*non_zero_digit*> <*digits*>?
+
+<*digits*> ::= <*digit*> | <*digits*> <*digit*>
+
+<*digit*> ::= 0 | <*non_zero_digit*>
+
+<*non_zero_digit*> ::= 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+
+<*hex_numeral*> ::= 0 x <*hex_digit*> | 0 X <*hex_digit*> | <*hex_numeral*> <*hex_digit*>
+
 <*hex_digit*> ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | a | b | c | d | e | f | A | B | C | D | E | F
 
-<*version_number*> ::= <*major_number*> . <*minor_number*>
+<*octal_numeral*> ::= 0 <*octal_digit*> | <*octal_numeral*> <*octal_digit*>
 
-<*major_number*> ::= <*decimal_number*>
+<*octal_digit*> ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
 
-<*minor_number*> ::= <*decimal_number*>
-
-<*Boolean*> ::= true | false
-
-<*decimal_integer*> ::= <*decimal_number*> <*integer_type_suffix*>?
-
-<*hex_integer*> ::= <*hex_number*> <*integer_type_suffix*>?
-
-<*octal_integer*> ::= <*octal_number*> <*integer_type_suffix*>?
-
-<*integer_type_suffix*> ::= l | L
-
-<*float_type_suffix*> ::= f | F | d | D
+<*floating-point_literal*> ::= <*digits*> . <*digits*>? <*exponent_part*>? <*float_type_suffix*>? | <*digits*> <*exponent_part*>? <*float_type_suffix*>?
 
 <*exponent_part*> ::= <*exponent_indicator*> <*signed_integer*>
 
 <*exponent_indicator*> ::= e | E
 
-<*signed_integer*> ::= <*sign*>? <*decimal_digits*>
+<*signed_integer*> ::= <*sign*>? <*digits*>
 
 <*sign*> ::= + | -
 
-<*decimal_number*> ::= 0 | <*non_zero_decimal_digit*> <*decimal_digits*>?
+<*float_type_suffix*> ::= f | F | d | D
 
-<*decimal_digits*> ::= <*decimal_digit*> | <*decimal_digits*> <*decimal_digit*>
+<*boolean_literal*> ::= true | false
 
-<*decimal_digit*> ::= 0 | <*non_zero_decimal_digit*>
+<*character_literal*> ::= ' <*single_character*> ' | ' <*escape_sequence*> '
 
-<*non_zero_decimal_digit*> ::= 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+<*single_character*> ::= <*input_character*> except ' and \
 
-<*hex_number*> ::= 0 x <*hex_digit*> | 0 X <*hex_digit*> | <*hex_number*> <*hex_digit*>
-
-<*octal_number*> ::= 0 <*octal_digit*> | <*octal_number*> <*octal_digit*>
-
-<*octal_digit*> ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
-
-<*string*> ::= " <*string_characters*>? "
+<*string_literal*> ::= " <*string_characters*>?"
 
 <*string_characters*> ::= <*string_character*> | <*string_characters*> <*string_character*>
 
 <*string_character*> ::= <*input_character*> except " and \ | <*escape_character*>
 
-<*escape_character*> ::= \" | \\ | \n | \t
-
-<*all_characters*> :== <*input_character*> | <*all_characters*> <*input_character*>
-
-<*comment*> ::= <*block_comment*> | <*line_comment*>
-
-<*block_comment*> ::= / * <*all_characters*> * /
-
-<*line_comment*> ::= / / <*all_characters*>
-
-
-### Expressions
-
+<*keyword*> ::= Array | Boolean | Byte | coclass | const | description | enum | HANDLE | include | Integer | interface | Long | module | namespace | Short | String | uuid | version
 
 The character set for MIDL is 7-bit ASCII character set. This is the set denoted by <*input_character*>.
 
-<*midl_file_absolute_path*>
+The syntax category <*identifier*> consists of strings that must start with a letter - including underscore (_) - followed by any number of letters and digits. Also, <*identifier*> includes none of the keywords given above.
 
-<*midl_file_relative_path*>
+There are two ways to add comments. One is using syntax "/* <*comment_literal*> */" as a block comment. Another is using syntax "// <*comment-literal*>" as a line comment.
+
+#### Reference
+[Java Syntax Specification](https://users-cs.au.dk/amoeller/RegAut/JavaBNF.html)
