@@ -18,7 +18,9 @@
 #include "Logger.h"
 
 #include <new>
+#include <stdarg.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 namespace ccm {
 
@@ -127,6 +129,12 @@ String::String(
     other.mString = nullptr;
 }
 
+String::String(
+    /* [in] */ int size)
+{
+    mString = reinterpret_cast<char*>(SharedBuffer::Alloc(size));
+}
+
 String::~String()
 {
     SharedBuffer::Release(mString);
@@ -204,6 +212,55 @@ String& String::operator=(
     mString = other.mString;
     other.mString = nullptr;
     return *this;
+}
+
+String& String::operator+=(
+    /* [in] */ const char* string)
+{
+    if (string == nullptr || string[0] == '\0') return *this;
+
+    int oldSize = GetLength();
+    int newSize = oldSize + strlen(string);
+    char* str = reinterpret_cast<char*>(SharedBuffer::Alloc(newSize));
+    if (str == nullptr) return *this;
+
+    memcpy(str, mString, oldSize);
+    strcpy(str + oldSize, string);
+
+    SharedBuffer::Release(mString);
+    mString = str;
+    return *this;
+}
+
+String& String::operator+=(
+    /* [in] */ const String& other)
+{
+    if (other.IsNullOrEmpty()) return *this;
+
+    int oldSize = GetLength();
+    int newSize = oldSize + other.GetLength();
+    char* str = reinterpret_cast<char*>(SharedBuffer::Alloc(newSize));
+    if (str == nullptr) return *this;
+
+    memcpy(str, mString, oldSize);
+    strcpy(str + oldSize, other.mString);
+
+    SharedBuffer::Release(mString);
+    mString = str;
+    return *this;
+}
+
+String String::Format(
+    /* [in] */ const char* format ...)
+{
+    va_list argList;
+
+    va_start(argList, format);
+    int len = vsnprintf(nullptr, 0, format, argList);
+    String string(len);
+    vsnprintf(string.mString, len + 1, format, argList);
+    va_end(argList);
+    return string;
 }
 
 } // namespace ccm

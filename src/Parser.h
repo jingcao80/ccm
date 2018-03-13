@@ -17,35 +17,82 @@
 #ifndef __CCM_PARSER_H__
 #define __CCM_PARSER_H__
 
-#include "File.h"
 #include "Tokenizer.h"
+#include "ccdl/Component.h"
+#include "ccdl/Enumeration.h"
+#include "ccdl/Namespace.h"
+#include "util/File.h"
 
 #include <memory>
+
+using ccm::ccdl::Component;
+using ccm::ccdl::Enumeration;
+using ccm::ccdl::Namespace;
 
 namespace ccm {
 
 class Parser
 {
+private:
+    struct Error
+    {
+        Error()
+            : mErrorToken(Tokenizer::Token::ILLEGAL_TOKEN)
+            , mLineNo(0)
+            , mColumnNo(0)
+            , mNext(nullptr)
+        {}
+
+        Tokenizer::Token mErrorToken;
+        int mLineNo;
+        int mColumnNo;
+        String mMessage;
+        Error* mNext;
+    };
+
 public:
     Parser()
         : mFile(nullptr)
+        , mComponent(nullptr)
         , mStatus(NOERROR)
+        , mErrorHeader(nullptr)
+        , mCurrError(nullptr)
     {}
 
     int Parse(
         /* [in] */ const std::shared_ptr<File>& file);
 
+    ~Parser();
+
 private:
     int ParseFile();
 
-    int ParseAttribute();
+    bool ParseAttribute(
+        /* [in] */ String* uuid,
+        /* [in] */ String* version,
+        /* [in] */ String* description);
 
-    int ParseComment(
-        /* [in] */ Tokenizer::Token token);
+    int ParseCoclass();
 
-    int ParseEnum();
+    bool ParseDeclarationWithAttribute();
+
+    bool ParseEnumeration();
+
+    bool ParseEnumerationBody(
+        /* [in] */ Enumeration* enumeration);
+
+    bool ParseExpression(
+        /* [out] */ int* value);
+
+    int ParseInclude();
 
     int ParseInterface();
+
+    int ParseNamespace();
+
+    void LogError(
+        /* [in] */ Tokenizer::Token token,
+        /* [in] */ const String& message);
 
 public:
     static constexpr int NOERROR = 0x0;
@@ -55,7 +102,11 @@ private:
     static const String TAG;
     std::shared_ptr<File> mFile;
     Tokenizer mTokenizer;
+    Component* mComponent;
+    Namespace* mCurrNamespace;
     int mStatus;
+    Error* mErrorHeader;
+    Error* mCurrError;
 };
 
 }

@@ -55,6 +55,18 @@ public:
     String& operator=(
         /* [in] */ String&& other);
 
+    String& operator+=(
+        /* [in] */ const char* string);
+    String& operator+=(
+        /* [in] */ const String& other);
+
+    static String Format(
+        /* [in] */ const char* format ...);
+
+private:
+    String(
+        /* [in] */ int size);
+
 private:
     char* mString;
 };

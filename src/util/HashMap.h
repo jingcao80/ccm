@@ -17,7 +17,7 @@
 #ifndef __CCM_HASHMAP_H__
 #define __CCM_HASHMAP_H__
 
-#include "../String.h"
+#include "String.h"
 
 namespace ccm {
 

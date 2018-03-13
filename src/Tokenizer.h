@@ -17,9 +17,9 @@
 #ifndef __CCM_TOKENIZER_H__
 #define __CCM_TOKENIZER_H__
 
-#include "File.h"
-#include "StringBuilder.h"
+#include "util/File.h"
 #include "util/HashMap.h"
+#include "util/StringBuilder.h"
 #include <memory>
 
 namespace ccm {
@@ -68,9 +68,11 @@ public:
         SEMICOLON,              // 36)  ';'
         SHORT,                  // 37)
         STRING,                 // 38)
-        UUID,                   // 39)
-        UUID_NUMBER,            // 40)
-        VERSION,                // 41)
+        STRING_LITERAL,         // 39)
+        UUID,                   // 40)
+        UUID_NUMBER,            // 41)
+        VERSION,                // 42)
+        VERSION_NUMBER,         // 43)
     };
 
 public:
@@ -80,8 +82,15 @@ public:
         /* [in] */ const std::shared_ptr<File>& file) { mFile = file; }
 
     Token GetToken();
-    Token GetUuidToken();
+    Token GetStringLiteralToken();
+    Token GetUuidNumberToken();
+    Token GetVersionNumberToken();
+    inline void UngetToken(
+        /* [in] */ Token token) { mPrevToken = token; mHasPrevToken = true; }
 
+    inline String GetIdentifier() { return mIdentifier; }
+    inline String GetNumberString() { return mNumberString; }
+    inline String GetString() { return mString; }
     inline int GetTokenColumnNo() { return mTokenColumnNo; }
     inline int GetTokenLineNo() { return mTokenLineNo; }
 
@@ -90,6 +99,11 @@ public:
 
 private:
     void InitializeKeyword();
+
+    Token ReadToken();
+    Token ReadStringLiteralToken();
+    Token ReadUuidNumberToken();
+    Token ReadVersionNumberToken();
 
     Token ReadIdentifier(
         /* [in] */ int c);
@@ -119,11 +133,14 @@ private:
     std::shared_ptr<File> mFile;
     HashMap<Token> mKeywords;
     Token mCurrToken;
+    Token mPrevToken;
+    bool mHasPrevToken;
     int mTokenLineNo;
     int mTokenColumnNo;
     String mIdentifier;
     String mComment;
     String mNumberString;
+    String mString;
     long long mNumber;
     int mBit;
 };

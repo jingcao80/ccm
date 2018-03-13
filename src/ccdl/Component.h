@@ -14,42 +14,45 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_OPTIONS_H__
-#define __CCM_OPTIONS_H__
+#ifndef __CCM_CCDL_COMPONENT_H__
+#define __CCM_CCDL_COMPONENT_H__
 
-#include "util/String.h"
+#include "Enumeration.h"
+#include "Namespace.h"
 
 namespace ccm {
+namespace ccdl {
 
-class Options
+class Component
 {
 public:
-    Options(
-        /* [in] */ int argc,
-        /* [in] */ char** argv);
+    Component(
+        /* [in] */ const String& cdlFile);
 
-    inline bool IsFormatError() { return mFormatError; }
-    inline bool ShouldShowUsage() { return mShowUsage; }
-    inline int GetOptionNumber() { return mOptionNumber; }
-    inline String GetInputFile() { return mInputFile; }
+    ~Component();
 
-    void ShowUsage();
+    bool AddEnumeration(
+        /* [in] */ Enumeration* enumeration);
 
-private:
-    void Parse(
-        /* [in] */ int argc,
-        /* [in] */ char** argv);
+    bool AddNamespace(
+        /* [in] */ Namespace* ns);
 
 private:
-    int mOptionNumber;
-    String mProgram;
-    String mInputFile;
-    String mOutputFile;
+    bool EnlargeEnumerationArray();
 
-    bool mShowUsage;
-    bool mFormatError;
+    bool EnlargeNamespaceArray();
+
+private:
+    String mCdlFile;
+    int mEnumCapacity;
+    int mEnumIndex;
+    Enumeration** mEnumerations;
+    int mNSCapacity;
+    int mNSIndex;
+    Namespace** mNamespaces;
 };
 
 }
+}
 
-#endif //__CCM_OPTIONS_H__
+#endif // __CCM_CCDL_COMPONENT_H__

@@ -30,8 +30,8 @@ coclass CFoo
     interface IFoo;
 }
 
-interface TopNS.IFoo3;
-interface TopNS.SecondeNS.ThirdNS.IFooBar;
+interface TopNS::IFoo3;
+interface TopNS::SecondeNS::ThirdNS::IFooBar;
 
 namespace TopNS {
 namespace SecondNS {

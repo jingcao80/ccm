@@ -14,42 +14,36 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_OPTIONS_H__
-#define __CCM_OPTIONS_H__
+#ifndef __CCM_CCDL_NAMESPACE_H__
+#define __CCM_CCDL_NAMESPACE_H__
 
-#include "util/String.h"
+#include "ASTElement.h"
+#include "../util/String.h"
 
 namespace ccm {
+namespace ccdl {
 
-class Options
+class Namespace : public ASTElement
 {
 public:
-    Options(
-        /* [in] */ int argc,
-        /* [in] */ char** argv);
+    Namespace(
+        /* [in] */ const String& nsStr)
+        : mNSString(nsStr)
+        , mOuterNamespace(nullptr)
+        , mInnerNamespace(nullptr)
+    {}
 
-    inline bool IsFormatError() { return mFormatError; }
-    inline bool ShouldShowUsage() { return mShowUsage; }
-    inline int GetOptionNumber() { return mOptionNumber; }
-    inline String GetInputFile() { return mInputFile; }
+    String GetFullNamespace();
 
-    void ShowUsage();
-
-private:
-    void Parse(
-        /* [in] */ int argc,
-        /* [in] */ char** argv);
+    inline String ToString() { return mNSString; }
 
 private:
-    int mOptionNumber;
-    String mProgram;
-    String mInputFile;
-    String mOutputFile;
-
-    bool mShowUsage;
-    bool mFormatError;
+    String mNSString;
+    Namespace* mOuterNamespace;
+    Namespace* mInnerNamespace;
 };
 
 }
+}
 
-#endif //__CCM_OPTIONS_H__
+#endif // __CCM_CCDL_NAMESPACE_H__

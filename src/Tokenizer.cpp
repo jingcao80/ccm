@@ -14,8 +14,8 @@
 // limitations under the License.
 //=========================================================================
 
-#include "Logger.h"
 #include "Tokenizer.h"
+#include "util/Logger.h"
 
 namespace ccm {
 
@@ -50,6 +50,8 @@ const String Tokenizer::TAG("Tokenizer");
 
 Tokenizer::Tokenizer()
     : mCurrToken(Token::ILLEGAL_TOKEN)
+    , mPrevToken(Token::ILLEGAL_TOKEN)
+    , mHasPrevToken(false)
     , mTokenLineNo(0)
     , mTokenColumnNo(0)
     , mNumber(0)
@@ -66,6 +68,42 @@ void Tokenizer::InitializeKeyword()
 }
 
 Tokenizer::Token Tokenizer::GetToken()
+{
+    if (mHasPrevToken) {
+        mHasPrevToken = false;
+        return mPrevToken;
+    }
+    return ReadToken();
+}
+
+Tokenizer::Token Tokenizer::GetStringLiteralToken()
+{
+    if (mHasPrevToken) {
+        mHasPrevToken = false;
+        return mPrevToken;
+    }
+    return ReadStringLiteralToken();
+}
+
+Tokenizer::Token Tokenizer::GetUuidNumberToken()
+{
+    if (mHasPrevToken) {
+        mHasPrevToken = false;
+        return mPrevToken;
+    }
+    return ReadUuidNumberToken();
+}
+
+Tokenizer::Token Tokenizer::GetVersionNumberToken()
+{
+    if (mHasPrevToken) {
+        mHasPrevToken = false;
+        return mPrevToken;
+    }
+    return ReadVersionNumberToken();
+}
+
+Tokenizer::Token Tokenizer::ReadToken()
 {
     int c;
     while ((c = mFile->Read()) != -1) {
@@ -103,10 +141,12 @@ Tokenizer::Token Tokenizer::GetToken()
                 return Token::COMMA;
             case '/':
                 if (mFile->Peek() == '/') {
-                    return ReadLineComment(c);
+                    ReadLineComment(c);
+                    continue;
                 }
                 else if (mFile->Peek() == '*') {
-                    return ReadBlockComment(c);
+                    ReadBlockComment(c);
+                    continue;
                 }
                 return Token::DIVIDE;
             case '"':
@@ -129,7 +169,26 @@ Tokenizer::Token Tokenizer::GetToken()
     return Token::END_OF_FILE;
 }
 
-Tokenizer::Token Tokenizer::GetUuidToken()
+Tokenizer::Token Tokenizer::ReadStringLiteralToken()
+{
+    int c = mFile->Read();
+    if (c != '"') return Token::ILLEGAL_TOKEN;
+
+    StringBuilder builder;
+
+    while ((c = mFile->Read()) != -1) {
+        if (c != '"') {
+            builder.Append((char)c);
+        }
+        else {
+            mString = builder.ToString();
+            return Token::STRING_LITERAL;
+        }
+    }
+    return Token::END_OF_FILE;
+}
+
+Tokenizer::Token Tokenizer::ReadUuidNumberToken()
 {
     static const int START = 0;
     static const int SEGMENT_1 = 1;
@@ -228,11 +287,62 @@ Tokenizer::Token Tokenizer::GetUuidToken()
             }
             else {
                 mFile->Unread(c);
-                return index >= 13? Token::UUID_NUMBER : Token::ILLEGAL_TOKEN;
+                if (index >= 13) {
+                    mNumberString = builder.ToString();
+                    return Token::UUID_NUMBER;
+                }
+                else return Token::ILLEGAL_TOKEN;
             }
         }
 
     }
+}
+
+Tokenizer::Token Tokenizer::ReadVersionNumberToken()
+{
+    StringBuilder builder;
+
+    int c = mFile->Read();
+    if (!IsDecimalDigital(c)) {
+        mFile->Unread(c);
+        return Token::ILLEGAL_TOKEN;
+    }
+
+    Tokenizer::Token token = ReadNumber(c);
+    if (token != Token::NUMBER) {
+        UngetToken(token);
+        return Token::ILLEGAL_TOKEN;
+    }
+    builder.Append(mNumberString);
+
+    c = mFile->Read();
+    if (c != '.') {
+        mFile->Unread(c);
+        return Token::ILLEGAL_TOKEN;
+    }
+
+    token = ReadNumber(c);
+    if (token != Token::NUMBER) {
+        UngetToken(token);
+        return Token::ILLEGAL_TOKEN;
+    }
+    builder.Append(mNumberString);
+
+    c = mFile->Read();
+    if (c != '.') {
+        mFile->Unread(c);
+        return Token::ILLEGAL_TOKEN;
+    }
+
+    token = ReadNumber(c);
+    if (token != Token::NUMBER) {
+        UngetToken(token);
+        return Token::ILLEGAL_TOKEN;
+    }
+    builder.Append(mNumberString);
+
+    mString = builder.ToString();
+    return Token::VERSION_NUMBER;
 }
 
 Tokenizer::Token Tokenizer::ReadIdentifier(
@@ -250,15 +360,16 @@ Tokenizer::Token Tokenizer::ReadIdentifier(
             if (!IsEscape(c)) {
                 mFile->Unread(c);
             }
-            String key = builder.ToString();
-            Token token = mKeywords.Get(key);
-            if (token == Token::ILLEGAL_TOKEN) {
-                mIdentifier = key;
-                token = Token::IDENTIFIER;
-            }
-            return token;
+            break;
         }
     }
+    String key = builder.ToString();
+    Token token = mKeywords.Get(key);
+    if (token == Token::ILLEGAL_TOKEN) {
+        mIdentifier = key;
+        token = Token::IDENTIFIER;
+    }
+    return token;
 }
 
 Tokenizer::Token Tokenizer::ReadNumber(
@@ -346,6 +457,7 @@ Tokenizer::Token Tokenizer::ReadBlockComment(
     while ((c = mFile->Read()) != -1) {
         builder.Append((char)c);
         if (c == '*' && mFile->Peek() == '/') {
+            mFile->Read();
             builder.Append('/');
             break;
         }

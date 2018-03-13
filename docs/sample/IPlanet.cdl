@@ -22,7 +22,7 @@
 include "ICelestialBody.cdl"
 include "ISatellite.cdl"
 
-interface Universe.IStar;
+interface Universe::IStar;
 
 namespace Universe {
 

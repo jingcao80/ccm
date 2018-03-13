@@ -16,7 +16,7 @@
 
 include "ICelestialBody.cdl"
 
-interface Universe.IPlanet;
+interface Universe::IPlanet;
 
 namespace Universe {
 

@@ -14,42 +14,18 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_OPTIONS_H__
-#define __CCM_OPTIONS_H__
-
-#include "util/String.h"
+#ifndef __CCM_CCDL_ASTELEMENT_H__
+#define __CCM_CCDL_ASTELEMENT_H__
 
 namespace ccm {
+namespace ccdl {
 
-class Options
+class ASTElement
 {
-public:
-    Options(
-        /* [in] */ int argc,
-        /* [in] */ char** argv);
 
-    inline bool IsFormatError() { return mFormatError; }
-    inline bool ShouldShowUsage() { return mShowUsage; }
-    inline int GetOptionNumber() { return mOptionNumber; }
-    inline String GetInputFile() { return mInputFile; }
-
-    void ShowUsage();
-
-private:
-    void Parse(
-        /* [in] */ int argc,
-        /* [in] */ char** argv);
-
-private:
-    int mOptionNumber;
-    String mProgram;
-    String mInputFile;
-    String mOutputFile;
-
-    bool mShowUsage;
-    bool mFormatError;
 };
 
 }
+}
 
-#endif //__CCM_OPTIONS_H__
+#endif //__CCM_CCDL_ASTELEMENT_H__

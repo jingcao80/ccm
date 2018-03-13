@@ -14,42 +14,27 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_OPTIONS_H__
-#define __CCM_OPTIONS_H__
-
-#include "util/String.h"
+#include "Namespace.h"
 
 namespace ccm {
+namespace ccdl {
 
-class Options
+String Namespace::GetFullNamespace()
 {
-public:
-    Options(
-        /* [in] */ int argc,
-        /* [in] */ char** argv);
+    Namespace* ns = this;
+    while (ns->mOuterNamespace != nullptr) {
+        ns = ns->mOuterNamespace;
+    }
 
-    inline bool IsFormatError() { return mFormatError; }
-    inline bool ShouldShowUsage() { return mShowUsage; }
-    inline int GetOptionNumber() { return mOptionNumber; }
-    inline String GetInputFile() { return mInputFile; }
-
-    void ShowUsage();
-
-private:
-    void Parse(
-        /* [in] */ int argc,
-        /* [in] */ char** argv);
-
-private:
-    int mOptionNumber;
-    String mProgram;
-    String mInputFile;
-    String mOutputFile;
-
-    bool mShowUsage;
-    bool mFormatError;
-};
-
+    String fullNsStr;
+    ns = ns->mInnerNamespace; // jump around global namespace
+    while (ns != nullptr) {
+        fullNsStr += "::";
+        fullNsStr += ns->mNSString;
+        ns = ns->mInnerNamespace;
+    }
+    return fullNsStr;
 }
 
-#endif //__CCM_OPTIONS_H__
+}
+}
