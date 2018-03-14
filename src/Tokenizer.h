@@ -41,38 +41,41 @@ public:
         BRACKETS_OPEN,          // 9)   '['
         BRACKETS_CLOSE,         // 10)  ']'
         BYTE,                   // 11)
-        COCLASS,                // 12)
-        COLON,                  // 13)  ':'
-        COMMA,                  // 14)  ','
-        COMMENT_BLOCK,          // 15)
-        COMMENT_LINE,           // 16)
-        CONST,                  // 17)
-        DESCRIPTION,            // 18)
-        DIVIDE,                 // 19)  '/'
-        DOUBLE_QUOTES,          // 20)  '"'
-        END_OF_FILE,            // 21)
-        ENUM,                   // 22)
-        HANDLE,                 // 23)
-        HYPHEN,                 // 24)  '-'
-        IDENTIFIER,             // 25)
-        INCLUDE,                // 26)
-        INTEGER,                // 27)
-        INTERFACE,              // 28)
-        LONG,                   // 29)
-        MODULE,                 // 30)
-        NAMESPACE,              // 31)
-        NUMBER,                 // 32)
-        PARENTHESES_OPEN,       // 33)  '('
-        PARENTHESES_CLOSE,      // 34)  ')'
-        PERIOD,                 // 35)  '.'
-        SEMICOLON,              // 36)  ';'
-        SHORT,                  // 37)
-        STRING,                 // 38)
-        STRING_LITERAL,         // 39)
-        UUID,                   // 40)
-        UUID_NUMBER,            // 41)
-        VERSION,                // 42)
-        VERSION_NUMBER,         // 43)
+        CALLEE,                 // 12)
+        COCLASS,                // 13)
+        COLON,                  // 14)  ':'
+        COMMA,                  // 15)  ','
+        COMMENT_BLOCK,          // 16)
+        COMMENT_LINE,           // 17)
+        CONST,                  // 18)
+        DESCRIPTION,            // 19)
+        DIVIDE,                 // 20)  '/'
+        DOUBLE_QUOTES,          // 21)  '"'
+        END_OF_FILE,            // 22)
+        ENUM,                   // 23)
+        HANDLE,                 // 24)
+        HYPHEN,                 // 25)  '-'
+        IDENTIFIER,             // 26)
+        IN,                     // 27)
+        INCLUDE,                // 28)
+        INTEGER,                // 29)
+        INTERFACE,              // 30)
+        LONG,                   // 31)
+        MODULE,                 // 32)
+        NAMESPACE,              // 33)
+        NUMBER,                 // 34)
+        OUT,                    // 35)
+        PARENTHESES_OPEN,       // 36)  '('
+        PARENTHESES_CLOSE,      // 37)  ')'
+        PERIOD,                 // 38)  '.'
+        SEMICOLON,              // 39)  ';'
+        SHORT,                  // 40)
+        STRING,                 // 41)
+        STRING_LITERAL,         // 42)
+        UUID,                   // 43)
+        UUID_NUMBER,            // 44)
+        VERSION,                // 45)
+        VERSION_NUMBER,         // 46)
     };
 
 public:

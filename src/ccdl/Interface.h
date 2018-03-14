@@ -14,63 +14,55 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CCDL_ENUMERATION_H__
-#define __CCM_CCDL_ENUMERATION_H__
+#ifndef __CCM_CCDL_INTERFACE_H__
+#define __CCM_CCDL_INTERFACE_H__
 
 #include "Type.h"
+#include "Attribute.h"
+#include "Method.h"
 #include "Namespace.h"
-#include "../util/String.h"
+#include "../util/Uuid.h"
 
 namespace ccm {
 namespace ccdl {
 
-class Enumeration : public Type
+class Interface : public Type
 {
-private:
-    struct Enumerator
-    {
-        Enumerator(
-            /* [in] */ const String& name,
-            /* [in] */ int value)
-            : mName(name)
-            , mValue(value)
-        {}
-
-        String mName;
-        int mValue;
-    };
-
 public:
-    Enumeration()
-        : mEnumCapacity(0)
-        , mEnumIndex(0)
-        , mEnumerators(nullptr)
+    Interface()
+        : mNamespace(nullptr)
+        , mMethodCapacity(0)
+        , mMethodIndex(0)
+        , mMethods(nullptr)
     {}
 
-    ~Enumeration();
+    ~Interface();
 
-    inline String GetName() { return mName; }
-    inline Enumeration& SetName(
+    inline Interface& SetName(
         /* [in] */ const String& name) { mName = name; return *this; }
-    inline Enumeration& SetNamespace(
+    inline Interface& SetNamespace(
         /* [in] */ Namespace* ns) { mNamespace = ns; return *this; }
+    Interface& SetAttribute(
+        /* [in] */ const Attribute& attr);
 
-    Enumeration& AddEnumerator(
-        /* [in] */ const String& name,
-        /* [in] */ int value);
+    Interface& AddMethod(
+        /* [in] */ Method* method);
 
 private:
-    bool EnlargeEnumeratorArray();
+    bool EnlargeMethodArray();
 
 private:
     String mName;
     Namespace* mNamespace;
-    int mEnumCapacity;
-    int mEnumIndex;
-    Enumerator** mEnumerators;
+    Uuid mUuid;
+    String mVersion;
+    String mDescription;
+    int mMethodCapacity;
+    int mMethodIndex;
+    Method** mMethods;
 };
 
 }
 }
 
-#endif // __CCM_CCDL_ENUMERATION_H__
+#endif // __CCM_CCDL_INTERFACE_H__

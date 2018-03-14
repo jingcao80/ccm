@@ -17,8 +17,20 @@
 #ifndef __CCM_CCDL_COMPONENT_H__
 #define __CCM_CCDL_COMPONENT_H__
 
+#include "BooleanType.h"
+#include "ByteType.h"
+#include "CharType.h"
+#include "DoubleType.h"
 #include "Enumeration.h"
+#include "FloatType.h"
+#include "HANDLEType.h"
+#include "IntegerType.h"
+#include "LongType.h"
 #include "Namespace.h"
+#include "ShortType.h"
+#include "StringType.h"
+#include "Type.h"
+#include "../util/HashMap.h"
 
 namespace ccm {
 namespace ccdl {
@@ -37,6 +49,9 @@ public:
     bool AddNamespace(
         /* [in] */ Namespace* ns);
 
+    Type* FindType(
+        /* [in] */ const String& typeName);
+
 private:
     bool EnlargeEnumerationArray();
 
@@ -50,6 +65,17 @@ private:
     int mNSCapacity;
     int mNSIndex;
     Namespace** mNamespaces;
+    HashMap<Type*> mTypes;
+    ByteType* mByteType;
+    ShortType* mShortType;
+    IntegerType* mIntegerType;
+    LongType* mLongType;
+    CharType* mCharType;
+    FloatType* mFloatType;
+    DoubleType* mDoubleType;
+    BooleanType* mBooleanType;
+    StringType* mStringType;
+    HANDLEType* mHANDLEType;
 };
 
 }

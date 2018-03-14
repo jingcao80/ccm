@@ -19,20 +19,48 @@
 
 #include "String.h"
 
+#include <stdlib.h>
+
 namespace ccm {
+
+static const int prime_list[11] =
+{
+    5ul,    11ul,   23ul,   53ul,   97ul,   193ul,
+    389ul,  769ul,  1543ul, 3079ul, 6151ul
+};
+
+static int get_lower_bound(const int* first, const int* last, int n)
+{
+    if (n < *first) return *first;
+    if (n > *last) return *last;
+    for (int i = 0; first + i != last; i++) {
+        int l = *(first + i);
+        int r = *(first + i + 1);
+        if (l < n && n < r) {
+            return (n - l) < (r - n)? l : r;
+        }
+    }
+}
+
+static int get_next_prime(int n)
+{
+    return get_lower_bound(&prime_list[0], &prime_list[10], n);
+}
 
 template<class T>
 class HashMap
 {
 public:
-    HashMap()
+    HashMap(
+        /* [in] */ int size = 50)
     {
-        memset(mBuckets, 0, sizeof(Bucket*) * BUCKET_SIZE);
+        mBucketSize = get_next_prime(size);
+        mBuckets = (Bucket**)calloc(sizeof(Bucket*), mBucketSize);
     }
 
     ~HashMap()
     {
-        for (int i = 0; i < BUCKET_SIZE; i++) {
+        for (int i = 0; i < mBucketSize; i++) {
             if (mBuckets[i] != nullptr) {
                 Bucket* curr = mBuckets[i];
                 while (curr != nullptr) {
@@ -49,8 +77,7 @@ public:
         /* [in] */ T value)
     {
         if (key.IsNull()) return;
-
-        int index = HashString(key) % BUCKET_SIZE;
+        int index = HashString(key) % mBucketSize;
         if (mBuckets[index] == nullptr) {
             Bucket* b = new Bucket();
             b->mKey = key;
@@ -83,7 +110,7 @@ public:
     {
         if (key.IsNull()) return false;
 
-        int index = HashString(key) % BUCKET_SIZE;
+        int index = HashString(key) % mBucketSize;
         Bucket* curr = mBuckets[index];
         while (curr != nullptr) {
             if (curr->mKey.Equals(key)) return true;
@@ -100,7 +127,7 @@ public:
             return T(0);
         }
 
-        int index = HashString(key) % BUCKET_SIZE;
+        int index = HashString(key) % mBucketSize;
         Bucket* curr = mBuckets[index];
         while (curr != nullptr) {
             if (curr->mKey.Equals(key)) return curr->mValue;
@@ -144,8 +171,8 @@ private:
     };
 
 private:
-    static constexpr int BUCKET_SIZE = 23;
-    Bucket* mBuckets[BUCKET_SIZE];
+    int mBucketSize;
+    Bucket** mBuckets;
 };
 
 }

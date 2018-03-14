@@ -24,22 +24,25 @@ struct KV
     String mKey;
     Tokenizer::Token mValue;
 }
-sKeywords[18] =
+sKeywords[21] =
 {
     { String("Array"), Tokenizer::Token::ARRAY },
     { String("Boolean"), Tokenizer::Token::BOOLEAN },
     { String("Byte"), Tokenizer::Token::BYTE },
+    { String("callee"), Tokenizer::Token::CALLEE },
     { String("coclass"), Tokenizer::Token::COCLASS },
     { String("const"), Tokenizer::Token::CONST },
     { String("description"), Tokenizer::Token::DESCRIPTION },
     { String("enum"), Tokenizer::Token::ENUM },
     { String("HANDLE"), Tokenizer::Token::HANDLE },
+    { String("in"), Tokenizer::Token::IN },
     { String("include"), Tokenizer::Token::INCLUDE },
     { String("Integer"), Tokenizer::Token::INTEGER },
     { String("interface"), Tokenizer::Token::INTERFACE },
     { String("Long"), Tokenizer::Token::LONG },
     { String("module"), Tokenizer::Token::MODULE },
     { String("namespace"), Tokenizer::Token::NAMESPACE },
+    { String("out"), Tokenizer::Token::OUT },
     { String("Short"), Tokenizer::Token::SHORT },
     { String("String"), Tokenizer::Token::STRING },
     { String("uuid"), Tokenizer::Token::UUID },
@@ -195,7 +198,6 @@ Tokenizer::Token Tokenizer::ReadUuidNumberToken()
     static const int SEGMENT_2 = 2;
     static const int SEGMENT_3 = 3;
     static const int SEGMENT_4 = 4;
-    static const int SEGMENT_5 = 5;
 
     StringBuilder builder;
 
@@ -211,7 +213,7 @@ Tokenizer::Token Tokenizer::ReadUuidNumberToken()
             }
             if (c == '-') {
                 if (index == 9) {
-                    state == SEGMENT_1;
+                    state = SEGMENT_1;
                     index = 0;
                     continue;
                 }
@@ -229,7 +231,7 @@ Tokenizer::Token Tokenizer::ReadUuidNumberToken()
         else if (state == SEGMENT_1) {
             if (c == '-') {
                 if (index == 5) {
-                    state == SEGMENT_2;
+                    state = SEGMENT_2;
                     index = 0;
                     continue;
                 }
@@ -247,7 +249,7 @@ Tokenizer::Token Tokenizer::ReadUuidNumberToken()
         else if (state == SEGMENT_2) {
             if (c == '-') {
                 if (index == 5) {
-                    state == SEGMENT_3;
+                    state = SEGMENT_3;
                     index = 0;
                     continue;
                 }
@@ -265,7 +267,7 @@ Tokenizer::Token Tokenizer::ReadUuidNumberToken()
         else if (state == SEGMENT_3) {
             if (c == '-') {
                 if (index == 5) {
-                    state == SEGMENT_4;
+                    state = SEGMENT_4;
                     index = 0;
                     continue;
                 }
@@ -280,7 +282,7 @@ Tokenizer::Token Tokenizer::ReadUuidNumberToken()
                 return Token::ILLEGAL_TOKEN;
             }
         }
-        else if (state == SEGMENT_5) {
+        else if (state == SEGMENT_4) {
             if (IsHexDigital(c)) {
                 if (index > 12) return Token::ILLEGAL_TOKEN;
                 continue;
@@ -288,7 +290,7 @@ Tokenizer::Token Tokenizer::ReadUuidNumberToken()
             else {
                 mFile->Unread(c);
                 if (index >= 13) {
-                    mNumberString = builder.ToString();
+                    mString = builder.ToString();
                     return Token::UUID_NUMBER;
                 }
                 else return Token::ILLEGAL_TOKEN;
@@ -301,7 +303,6 @@ Tokenizer::Token Tokenizer::ReadUuidNumberToken()
 Tokenizer::Token Tokenizer::ReadVersionNumberToken()
 {
     StringBuilder builder;
-
     int c = mFile->Read();
     if (!IsDecimalDigital(c)) {
         mFile->Unread(c);
@@ -398,6 +399,9 @@ Tokenizer::Token Tokenizer::ReadNumber(
                 builder.Append((char)c);
                 state = NUMBER;
                 continue;
+            }
+            if (!IsEscape(c)) {
+                mFile->Unread(c);
             }
             break;
         }

@@ -32,7 +32,19 @@ Component::Component(
     , mNSCapacity(0)
     , mNSIndex(0)
     , mNamespaces(nullptr)
-{}
+    , mTypes(6000)
+{
+    mByteType = new ByteType();
+    mShortType = new ShortType();
+    mIntegerType = new IntegerType();
+    mLongType = new LongType();
+    mCharType = new CharType();
+    mFloatType = new FloatType();
+    mDoubleType = new DoubleType();
+    mBooleanType = new BooleanType();
+    mStringType = new StringType();
+    mHANDLEType = new HANDLEType();
+}
 
 Component::~Component()
 {
@@ -41,12 +53,25 @@ Component::~Component()
         delete enumeration;
     }
     if (mEnumerations != nullptr) free(mEnumerations);
+    mEnumerations = nullptr;
 
     for (int i = 0; i < mNSIndex; i++) {
         Namespace* ns = mNamespaces[i];
         delete ns;
     }
     if (mNamespaces != nullptr) free(mNamespaces);
+    mNamespaces = nullptr;
+
+    delete mByteType;
+    delete mShortType;
+    delete mIntegerType;
+    delete mLongType;
+    delete mCharType;
+    delete mFloatType;
+    delete mDoubleType;
+    delete mBooleanType;
+    delete mStringType;
+    delete mHANDLEType;
 }
 
 bool Component::AddEnumeration(
@@ -59,6 +84,7 @@ bool Component::AddEnumeration(
     }
 
     mEnumerations[mEnumIndex++] = enumeration;
+    mTypes.Put(enumeration->GetName(), enumeration);
     return true;
 }
 
@@ -73,6 +99,13 @@ bool Component::AddNamespace(
 
     mNamespaces[mNSIndex++] = ns;
     return true;
+}
+
+Type* Component::FindType(
+    /* [in] */ const String& typeName)
+{
+    if (typeName.IsNullOrEmpty()) return nullptr;
+    return mTypes.Get(typeName);
 }
 
 bool Component::EnlargeEnumerationArray()

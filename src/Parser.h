@@ -18,16 +18,24 @@
 #define __CCM_PARSER_H__
 
 #include "Tokenizer.h"
+#include "ccdl/Attribute.h"
 #include "ccdl/Component.h"
 #include "ccdl/Enumeration.h"
+#include "ccdl/Interface.h"
+#include "ccdl/Method.h"
 #include "ccdl/Namespace.h"
+#include "ccdl/Parameter.h"
 #include "util/File.h"
 
 #include <memory>
 
+using ccm::ccdl::Attribute;
 using ccm::ccdl::Component;
 using ccm::ccdl::Enumeration;
+using ccm::ccdl::Interface;
+using ccm::ccdl::Method;
 using ccm::ccdl::Namespace;
+using ccm::ccdl::Parameter;
 
 namespace ccm {
 
@@ -59,20 +67,19 @@ public:
         , mCurrError(nullptr)
     {}
 
-    int Parse(
+    bool Parse(
         /* [in] */ const std::shared_ptr<File>& file);
 
     ~Parser();
 
 private:
-    int ParseFile();
+    bool ParseFile();
 
     bool ParseAttribute(
-        /* [in] */ String* uuid,
-        /* [in] */ String* version,
-        /* [in] */ String* description);
+        /* [out] */ Attribute& attr);
 
-    int ParseCoclass();
+    bool ParseCoclass(
+        /* [in] */ Attribute& attr);
 
     bool ParseDeclarationWithAttribute();
 
@@ -86,13 +93,34 @@ private:
 
     int ParseInclude();
 
-    int ParseInterface();
+    bool ParseInterface(
+        /* [in] */ Attribute& attr);
+
+    bool ParseInterfaceBody(
+        /* [in] */ Interface* interface);
+
+    bool ParseConstDataMember(
+        /* [in] */ Interface* interface);
+
+    bool ParseMethod(
+        /* [in] */ Interface* interface);
+
+    bool ParseModule(
+        /* [in] */ Attribute& attr);
 
     int ParseNamespace();
+
+    bool ParseParameter(
+        /* [in] */ Method* method);
+
+    bool ParseType(
+        /* [in] */ Parameter* param);
 
     void LogError(
         /* [in] */ Tokenizer::Token token,
         /* [in] */ const String& message);
+
+    void DumpError();
 
 public:
     static constexpr int NOERROR = 0x0;

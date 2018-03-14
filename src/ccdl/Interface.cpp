@@ -14,51 +14,59 @@
 // limitations under the License.
 //=========================================================================
 
-#include "Enumeration.h"
+#include "Interface.h"
 
 #include <stdlib.h>
 
 namespace ccm {
 namespace ccdl {
 
-Enumeration::~Enumeration()
+Interface::~Interface()
 {
     mNamespace = nullptr;
-    for (int i = 0; i < mEnumIndex; i++) {
-        Enumerator* e = mEnumerators[i];
-        delete e;
+
+    for (int i = 0; i < mMethodIndex; i++) {
+        Method* m = mMethods[i];
+        delete m;
     }
-    if (mEnumerators != nullptr) free(mEnumerators);
-    mEnumerators = nullptr;
+    if (mMethods != nullptr) free(mMethods);
+    mMethods = nullptr;
 }
 
-Enumeration& Enumeration::AddEnumerator(
-    /* [in] */ const String& name,
-    /* [in] */ int value)
+Interface& Interface::SetAttribute(
+    /* [in] */ const Attribute& attr)
 {
-    if (name.IsNullOrEmpty()) return *this;
-
-    if (mEnumIndex >= mEnumCapacity) {
-        if (!EnlargeEnumeratorArray()) return *this;
-    }
-
-    Enumerator* e = new Enumerator(name, value);
-    mEnumerators[mEnumIndex++] = e;
+    mUuid.Parse(attr.mUuid);
+    mVersion = attr.mVersion;
+    mDescription = attr.mDescription;
     return *this;
 }
 
-bool Enumeration::EnlargeEnumeratorArray()
+Interface& Interface::AddMethod(
+    /* [in] */ Method* method)
 {
-    int newSize = mEnumCapacity == 0? 10 : mEnumCapacity + 10;
-    Enumerator** newArray = (Enumerator**)calloc(sizeof(Enumerator*), newSize);
+    if (method == nullptr) return *this;
+
+    if (mMethodIndex > mMethodCapacity) {
+        if (!EnlargeMethodArray()) return *this;
+    }
+
+    mMethods[mMethodIndex++] = method;
+    return *this;
+}
+
+bool Interface::EnlargeMethodArray()
+{
+    int newSize = mMethodCapacity == 0? 20 : mMethodCapacity + 30;
+    Method** newArray = (Method**)calloc(sizeof(Method*), newSize);
     if (newArray == nullptr) {
         return false;
     }
 
-    memcpy(newArray, mEnumerators, sizeof(Enumerator*) * mEnumCapacity);
-    mEnumCapacity = newSize;
-    free(mEnumerators);
-    mEnumerators = newArray;
+    memcpy(newArray, mMethods, mMethodCapacity);
+    mMethodCapacity = newSize;
+    free(mMethods);
+    mMethods = newArray;
     return true;
 }
 

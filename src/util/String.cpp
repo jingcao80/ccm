@@ -161,6 +161,18 @@ bool String::Equals(
     return strcmp(mString, other.mString) == 0;
 }
 
+bool String::Equals(
+    /* [in] */ const char* string) const
+{
+    if (string == nullptr) {
+        return mString == nullptr? true : false;
+    }
+
+    if (GetLength() != strlen(string)) return false;
+
+    return strcmp(mString, string) == 0;
+}
+
 bool String::EqualsIgnoreCase(
     /* [in] */ const String& other) const
 {
@@ -170,6 +182,48 @@ bool String::EqualsIgnoreCase(
     if (GetLength() != other.GetLength()) return false;
 
     return strcasecmp(mString, other.mString) == 0;
+}
+
+bool String::EqualsIgnoreCase(
+    /* [in] */ const char* string) const
+{
+    if (string == nullptr) {
+        return mString == nullptr? true : false;
+    }
+
+    if (GetLength() != strlen(string)) return false;
+
+    return strcasecmp(mString, string) == 0;
+}
+
+char String::GetChar(
+    /* [in] */ int index) const
+{
+    if (index < 0 || index >= GetLength()) return '\0';
+
+    return mString[index];
+}
+
+String String::Substring(
+    /* [in] */ int begin) const
+{
+    if (begin < 0 || begin >= GetLength()) return String();
+
+    return String(mString[begin]);
+}
+
+String String::Substring(
+    /* [in] */ int begin,
+    /* [in] */ int end) const
+{
+    if (begin < 0 || begin > end || end >= GetLength()) return String();
+
+    int len = end - begin + 1;
+    String string(len);
+    memcpy(string.mString, mString + begin, len);
+    string.mString[len] = '\0';
+
+    return string;
 }
 
 String& String::operator=(

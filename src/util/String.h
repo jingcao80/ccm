@@ -40,13 +40,26 @@ public:
 
     int GetLength() const;
 
-    bool Equals (
+    bool Equals(
         /* [in] */ const String& other) const;
+    bool Equals(
+        /* [in] */ const char* string) const;
     bool EqualsIgnoreCase(
         /* [in] */ const String& other) const;
+    bool EqualsIgnoreCase(
+        /* [in] */ const char* string) const;
 
     inline char* string() const { return mString; }
     inline operator char*() const { return mString; }
+
+    char GetChar(
+        /* [in] */ int index) const;
+
+    String Substring(
+        /* [in] */ int begin) const;
+    String Substring(
+        /* [in] */ int begin,
+        /* [in] */ int end) const;
 
     String& operator=(
         /* [in] */ const char* string);
