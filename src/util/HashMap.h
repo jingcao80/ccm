@@ -42,7 +42,7 @@ static int get_lower_bound(const int* first, const int* last, int n)
     }
 }
 
-static int get_next_prime(int n)
+inline int get_next_prime(int n)
 {
     return get_lower_bound(&prime_list[0], &prime_list[10], n);
 }

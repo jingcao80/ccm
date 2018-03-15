@@ -17,6 +17,7 @@
 #ifndef __CCM_STRING_H__
 #define __CCM_STRING_H__
 
+#include <stdarg.h>
 #include <string.h>
 
 namespace ccm {
@@ -83,6 +84,14 @@ private:
 private:
     char* mString;
 };
+
+inline String operator+(
+    /* [in] */ const String& string1,
+    /* [in] */ const char* string2)
+{
+    String ret = string1;
+    return ret += string2;
+}
 
 } // namespace ccm
 

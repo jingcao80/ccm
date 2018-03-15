@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "Interface.h"
+#include "../util/StringBuilder.h"
 
 #include <stdlib.h>
 
@@ -47,7 +48,7 @@ Interface& Interface::AddMethod(
 {
     if (method == nullptr) return *this;
 
-    if (mMethodIndex > mMethodCapacity) {
+    if (mMethodIndex >= mMethodCapacity) {
         if (!EnlargeMethodArray()) return *this;
     }
 
@@ -63,11 +64,30 @@ bool Interface::EnlargeMethodArray()
         return false;
     }
 
-    memcpy(newArray, mMethods, mMethodCapacity);
+    if (mMethods != nullptr) {
+        memcpy(newArray, mMethods, mMethodCapacity);
+        free(mMethods);
+    }
     mMethodCapacity = newSize;
-    free(mMethods);
     mMethods = newArray;
     return true;
+}
+
+String Interface::Dump(
+    /* [in] */ const String& prefix)
+{
+    StringBuilder builder;
+
+    builder.Append(prefix).Append("interface ").Append(mName).Append("[");
+    builder.Append("uuid:").Append(mUuid.Dump()).Append(", ");
+    builder.Append("version:").Append(mVersion).Append(", ");
+    builder.Append("description:").Append(mDescription).Append("]\n");
+    for (int i = 0; i < mMethodIndex; i++) {
+        String methodStr = mMethods[i]->Dump(String("    "));
+        builder.Append(prefix).Append(methodStr);
+    }
+
+    return builder.ToString();
 }
 
 }

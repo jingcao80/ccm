@@ -19,6 +19,7 @@
 
 #include "ASTElement.h"
 #include "Type.h"
+#include "../util/String.h"
 
 namespace ccm {
 namespace ccdl {
@@ -29,11 +30,14 @@ public:
     Parameter()
         : mAttribute(0)
         , mType(nullptr)
-        , mPointer(0)
     {}
 
     inline Parameter& SetAttribute(
         /* [in] */ int attr) { mAttribute = mAttribute | attr; return *this; }
+    inline Parameter& SetName(
+        /* [in] */ const String& name) { mName = name; return *this; }
+    inline Parameter& SetType(
+        /* [in] */ Type* type) { mType = type; return *this; }
 
 public:
     static constexpr int IN = 0x1;
@@ -41,8 +45,8 @@ public:
     static constexpr int CALLEE = 0x4;
 
     int mAttribute;
+    String mName;
     Type* mType;
-    int mPointer;
 };
 
 }

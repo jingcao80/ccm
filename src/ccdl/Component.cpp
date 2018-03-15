@@ -16,6 +16,7 @@
 
 #include "Component.h"
 #include "../util/Logger.h"
+#include "../util/StringBuilder.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -29,9 +30,15 @@ Component::Component(
     , mEnumCapacity(0)
     , mEnumIndex(0)
     , mEnumerations(nullptr)
+    , mItfCapacity(0)
+    , mItfIndex(0)
+    , mInterfaces(nullptr)
     , mNSCapacity(0)
     , mNSIndex(0)
     , mNamespaces(nullptr)
+    , mTempTypeCapacity(0)
+    , mTempTypeIndex(0)
+    , mTempTypes(nullptr)
     , mTypes(6000)
 {
     mByteType = new ByteType();
@@ -44,6 +51,17 @@ Component::Component(
     mBooleanType = new BooleanType();
     mStringType = new StringType();
     mHANDLEType = new HANDLEType();
+
+    mTypes.Put(String("Byte"), mByteType);
+    mTypes.Put(String("Short"), mShortType);
+    mTypes.Put(String("Integer"), mIntegerType);
+    mTypes.Put(String("Long"), mLongType);
+    mTypes.Put(String("Char"), mCharType);
+    mTypes.Put(String("Float"), mFloatType);
+    mTypes.Put(String("Double"), mDoubleType);
+    mTypes.Put(String("Boolean"), mBooleanType);
+    mTypes.Put(String("String"), mStringType);
+    mTypes.Put(String("HANDLE"), mHANDLEType);
 }
 
 Component::~Component()
@@ -55,12 +73,26 @@ Component::~Component()
     if (mEnumerations != nullptr) free(mEnumerations);
     mEnumerations = nullptr;
 
+    for (int i = 0; i < mItfIndex; i++) {
+        Interface* itf = mInterfaces[i];
+        delete itf;
+    }
+    if (mInterfaces != nullptr) free(mInterfaces);
+    mInterfaces = nullptr;
+
     for (int i = 0; i < mNSIndex; i++) {
         Namespace* ns = mNamespaces[i];
         delete ns;
     }
     if (mNamespaces != nullptr) free(mNamespaces);
     mNamespaces = nullptr;
+
+    for (int i = 0; i < mTempTypeIndex; i++) {
+        Type* ty = mTempTypes[i];
+        delete ty;
+    }
+    if (mTempTypes != nullptr) free(mTempTypes);
+    mTempTypes = nullptr;
 
     delete mByteType;
     delete mShortType;
@@ -84,7 +116,21 @@ bool Component::AddEnumeration(
     }
 
     mEnumerations[mEnumIndex++] = enumeration;
-    mTypes.Put(enumeration->GetName(), enumeration);
+    mTypes.Put(enumeration->ToString(), enumeration);
+    return true;
+}
+
+bool Component::AddInterface(
+    /* [in] */ Interface* interface)
+{
+    if (interface == nullptr) return true;
+
+    if (mItfIndex >= mItfCapacity) {
+        if (!EnlargeInterfaceArray()) return false;
+    }
+
+    mInterfaces[mItfIndex++] = interface;
+    mTypes.Put(interface->ToString(), interface);
     return true;
 }
 
@@ -98,6 +144,20 @@ bool Component::AddNamespace(
     }
 
     mNamespaces[mNSIndex++] = ns;
+    return true;
+}
+
+bool Component::AddTemporaryType(
+    /* [in] */ Type* type)
+{
+    if (type == nullptr) return true;
+
+    if (mTempTypeIndex >= mTempTypeCapacity) {
+        if (!EnlargeTempTypeArray()) return false;
+    }
+
+    mTempTypes[mTempTypeIndex++] = type;
+    mTypes.Put(type->ToString(), type);
     return true;
 }
 
@@ -116,10 +176,29 @@ bool Component::EnlargeEnumerationArray()
         return false;
     }
 
-    memcpy(newArray, mEnumerations, sizeof(Enumeration*) * mEnumCapacity);
+    if (mEnumerations != nullptr) {
+        memcpy(newArray, mEnumerations, sizeof(Enumeration*) * mEnumCapacity);
+        free(mEnumerations);
+    }
     mEnumCapacity = newSize;
-    free(mEnumerations);
     mEnumerations = newArray;
+    return true;
+}
+
+bool Component::EnlargeInterfaceArray()
+{
+    int newSize = mItfCapacity == 0? 10 : mItfCapacity * 2;
+    Interface** newArray = (Interface**)calloc(sizeof(Interface*), newSize);
+    if (newArray == nullptr) {
+        return false;
+    }
+
+    if (mInterfaces != nullptr) {
+        memcpy(newArray, mInterfaces, sizeof(Interface*) * mItfCapacity);
+        free(mInterfaces);
+    }
+    mItfCapacity = newSize;
+    mInterfaces = newArray;
     return true;
 }
 
@@ -131,11 +210,47 @@ bool Component::EnlargeNamespaceArray()
         return false;
     }
 
-    memcpy(newArray, mNamespaces, sizeof(Namespace*) * mNSCapacity);
+    if (mNamespaces != nullptr) {
+        memcpy(newArray, mNamespaces, sizeof(Namespace*) * mNSCapacity);
+        free(mNamespaces);
+    }
     mNSCapacity = newSize;
-    free(mNamespaces);
     mNamespaces = newArray;
     return true;
+}
+
+bool Component::EnlargeTempTypeArray()
+{
+    int newSize = mTempTypeCapacity == 0? 10 : mTempTypeCapacity + 10;
+    Type** newArray = (Type**)calloc(sizeof(Type*), newSize);
+    if (newArray == nullptr) {
+        return false;
+    }
+
+    if (mTempTypes != nullptr) {
+        memcpy(newArray, mTempTypes, sizeof(Type*) * mTempTypeCapacity);
+        free(mTempTypes);
+    }
+    mTempTypeCapacity = newSize;
+    mTempTypes = newArray;
+    return true;
+}
+
+String Component::Dump()
+{
+    StringBuilder buider;
+
+    buider.Append("Component[").Append(mCdlFile).Append("]\n");
+    for (int i = 0; i < mEnumIndex; i++) {
+        String enumStr = mEnumerations[i]->Dump(String("    "));
+        buider.Append(enumStr).Append("\n");
+    }
+    for (int i = 0; i < mItfIndex; i++) {
+        String itfStr = mInterfaces[i]->Dump(String("    "));
+        buider.Append(itfStr).Append("\n");
+    }
+
+    return buider.ToString();
 }
 
 }

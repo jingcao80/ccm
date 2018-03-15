@@ -133,6 +133,7 @@ String::String(
     /* [in] */ int size)
 {
     mString = reinterpret_cast<char*>(SharedBuffer::Alloc(size));
+    memset(mString, 0, size + 1);
 }
 
 String::~String()
@@ -307,13 +308,18 @@ String& String::operator+=(
 String String::Format(
     /* [in] */ const char* format ...)
 {
-    va_list argList;
+    va_list args, args1;
 
-    va_start(argList, format);
-    int len = vsnprintf(nullptr, 0, format, argList);
+    va_start(args, format);
+    va_copy(args1, args);
+
+    int len = vsnprintf(nullptr, 0, format, args);
+    va_end(args);
+
     String string(len);
-    vsnprintf(string.mString, len + 1, format, argList);
-    va_end(argList);
+    vsnprintf(string.mString, len + 1, format, args1);
+    va_end(args1);
+
     return string;
 }
 

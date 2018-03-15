@@ -31,15 +31,15 @@ bool Uuid::Parse(
 {
     if (!IsValid(uuidStr)) return false;
 
-    mData1 = (int)strtol(uuidStr.Substring(0, 7).string(), nullptr, 16);
-    mData2 = (short)strtol(uuidStr.Substring(9, 12).string(), nullptr, 16);
-    mData3 = (short)strtol(uuidStr.Substring(14, 17).string(), nullptr, 16);
-    mData4 = (short)strtol(uuidStr.Substring(19, 22).string(), nullptr, 16);
+    mData1 = strtol(uuidStr.Substring(0, 7).string(), nullptr, 16);
+    mData2 = strtol(uuidStr.Substring(9, 12).string(), nullptr, 16);
+    mData3 = strtol(uuidStr.Substring(14, 17).string(), nullptr, 16);
+    mData4 = strtol(uuidStr.Substring(19, 22).string(), nullptr, 16);
     for (int i = 0; i < 12; i++) {
         char c = uuidStr.GetChar(i + 24);
         if ('0' <= c && c <= '9') mData5[i] = c - '0';
-        else if ('a' <= c && c <= 'z') mData5[i] = c - 'a';
-        else if ('A' <= c && c <= 'Z') mData5[i] = c - 'A';
+        else if ('a' <= c && c <= 'z') mData5[i] = c - 'a' + 10;
+        else if ('A' <= c && c <= 'Z') mData5[i] = c - 'A' + 10;
     }
     return true;
 }

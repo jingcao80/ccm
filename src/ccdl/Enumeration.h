@@ -49,7 +49,6 @@ public:
 
     ~Enumeration();
 
-    inline String GetName() { return mName; }
     inline Enumeration& SetName(
         /* [in] */ const String& name) { mName = name; return *this; }
     inline Enumeration& SetNamespace(
@@ -59,11 +58,13 @@ public:
         /* [in] */ const String& name,
         /* [in] */ int value);
 
+    String Dump(
+        /* [in] */ const String& prefix);
+
 private:
     bool EnlargeEnumeratorArray();
 
 private:
-    String mName;
     Namespace* mNamespace;
     int mEnumCapacity;
     int mEnumIndex;

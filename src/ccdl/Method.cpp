@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "Method.h"
+#include "../util/StringBuilder.h"
 
 #include <stdlib.h>
 
@@ -36,7 +37,7 @@ Method& Method::AddParameter(
 {
     if (param == nullptr) return *this;
 
-    if (mParamIndex > mParamCapacity) {
+    if (mParamIndex >= mParamCapacity) {
         if (!EnlargeParameterArray()) return *this;
     }
 
@@ -50,11 +51,23 @@ bool Method::EnlargeParameterArray()
     Parameter** newArray = (Parameter**)calloc(sizeof(Parameter*), newSize);
     if (newArray == nullptr) return false;
 
-    memcpy(newArray, mParameters, mParamCapacity);
+    if (mParameters != nullptr) {
+        memcpy(newArray, mParameters, mParamCapacity);
+        free(mParameters);
+    }
     mParamCapacity = newSize;
-    free(mParameters);
     mParameters = newArray;
     return true;
+}
+
+String Method::Dump(
+    /* [in] */ const String& prefix)
+{
+    StringBuilder builder;
+
+    builder.Append(prefix).Append(mName).Append("\n");
+
+    return builder.ToString();
 }
 
 }

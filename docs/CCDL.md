@@ -101,11 +101,13 @@
 
 <*floating-point_type*> ::= Float | Double
 
-<*reference_type*> ::= <*interface_type*> | <*array_type*>
+<*reference_type*> ::= <*interface_type*> | <*array_type*> | <*enum_type*>
 
 <*interface_type*> ::= <*type_name*>
 
 <*array_type*> ::= Array < <*type*> >
+
+<*enum_type*> ::= <*type_name*>
 
 <*pointer_type*> ::= <*type*> *
 

@@ -14,30 +14,31 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CCDL_TYPE_H__
-#define __CCM_CCDL_TYPE_H__
+#ifndef __CCM_CCDL_ARRAYTYPE_H__
+#define __CCM_CCDL_ARRAYTYPE_H__
 
-#include "ASTElement.h"
-#include "../util/String.h"
+#include "Type.h"
 
 namespace ccm {
 namespace ccdl {
 
-class Type : public ASTElement
+class ArrayType : public Type
 {
 public:
-    virtual ~Type() {}
+    ArrayType()
+        : mElementType(nullptr)
+    {}
 
-    inline Type& SetName(
-        /* [in] */ const String& name) { mName = name; return *this; }
+    inline ArrayType& SetElementType(
+        /* [in] */ Type* elemType) { mElementType = elemType; return *this; }
 
-    virtual String ToString() { return mName; }
+    String ToString() override;
 
-protected:
-    String mName;
+private:
+    Type* mElementType;
 };
 
 }
 }
 
-#endif // __CCM_CCDL_TYPE_H__
+#endif // __CCM_CCDL_ARRAYTYPE_H__

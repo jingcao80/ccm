@@ -15,7 +15,12 @@
 //=========================================================================
 
 #include "Parser.h"
+#include "ccdl/ArrayType.h"
+#include "ccdl/PointerType.h"
 #include "util/Logger.h"
+
+using ccm::ccdl::ArrayType;
+using ccm::ccdl::PointerType;
 
 namespace ccm {
 
@@ -39,7 +44,11 @@ bool Parser::Parse(
 
     bool ret = ParseFile();
 
-    if (!ret) DumpError();
+    if (ret) {
+        String out = mComponent->Dump();
+        printf("%s", out.string());
+    }
+    else DumpError();
 
     return ret;
 }
@@ -69,16 +78,16 @@ bool Parser::ParseFile()
     while ((token = mTokenizer.GetToken()) != Tokenizer::Token::END_OF_FILE) {
         switch (token) {
             case Tokenizer::Token::BRACKETS_OPEN:
-                ParseDeclarationWithAttribute();
+                parseResult = ParseDeclarationWithAttribute() && parseResult;
                 continue;
             case Tokenizer::Token::COCLASS: {
                 LogError(token, String("coclass should have attributes"));
                 Attribute attr;
-                parseResult = parseResult && ParseCoclass(attr);
+                parseResult = ParseCoclass(attr) && parseResult;
                 continue;
             }
             case Tokenizer::Token::ENUM:
-                ParseEnumeration();
+                parseResult = ParseEnumeration() && parseResult;
                 continue;
             case Tokenizer::Token::INCLUDE:
                 ParseInclude();
@@ -99,6 +108,37 @@ bool Parser::ParseFile()
             }
         }
     }
+    return parseResult;
+}
+
+bool Parser::ParseDeclarationWithAttribute()
+{
+    Attribute attr;
+    bool parseResult = ParseAttribute(attr);
+
+    Tokenizer::Token token = mTokenizer.GetToken();
+    switch (token) {
+        case Tokenizer::Token::COCLASS: {
+            parseResult = ParseCoclass(attr) && parseResult;
+            break;
+        }
+        case Tokenizer::Token::INTERFACE: {
+            parseResult = ParseInterface(attr) && parseResult;
+            break;
+        }
+        case Tokenizer::Token::MODULE: {
+            parseResult = ParseModule(attr) && parseResult;
+            break;
+        }
+        default: {
+            String message = String::Format("%s is not expected.", mTokenizer.DumpToken(token));
+            LogError(token, message);
+            mTokenizer.UngetToken(token);
+            parseResult = false;
+            break;
+        }
+    }
+
     return parseResult;
 }
 
@@ -208,35 +248,298 @@ bool Parser::ParseAttribute(
     return parseResult;
 }
 
-bool Parser::ParseDeclarationWithAttribute()
+bool Parser::ParseInterface(
+    /* [in] */ Attribute& attr)
 {
-    Attribute attr;
-    bool parseResult = ParseAttribute(attr);
+    bool parseResult = true;
+
+    Interface* interface = new Interface();
 
     Tokenizer::Token token = mTokenizer.GetToken();
-    switch (token) {
-        case Tokenizer::Token::COCLASS: {
-            parseResult = parseResult && ParseCoclass(attr);
-            break;
+    if (token == Tokenizer::Token::IDENTIFIER) {
+        interface->SetName(mTokenizer.GetIdentifier());
+    }
+    else {
+        LogError(token, String("Interface name is expected."));
+        while (token != Tokenizer::Token::BRACES_OPEN &&
+                token != Tokenizer::Token::END_OF_FILE) {
+            token = mTokenizer.GetToken();
         }
-        case Tokenizer::Token::INTERFACE: {
-            parseResult = parseResult && ParseInterface(attr);
-            break;
-        }
-        case Tokenizer::Token::MODULE: {
-            parseResult = parseResult && ParseModule(attr);
-            break;
-        }
-        default: {
-            String message = String::Format("%s is not expected.", mTokenizer.DumpToken(token));
-            LogError(token, message);
-            mTokenizer.UngetToken(token);
-            parseResult = false;
-            break;
-        }
+        mTokenizer.UngetToken(token);
+        parseResult = false;
+    }
+
+    parseResult = ParseInterfaceBody(interface) && parseResult;
+
+    if (parseResult) {
+        interface->SetNamespace(mCurrNamespace);
+        interface->SetAttribute(attr);
+        mComponent->AddInterface(interface);
+    }
+    else {
+        delete interface;
     }
 
     return parseResult;
+}
+
+bool Parser::ParseInterfaceBody(
+    /* [in] */ Interface* interface)
+{
+    bool parseResult = true;
+
+    Tokenizer::Token token = mTokenizer.GetToken();
+    if (token != Tokenizer::Token::BRACES_OPEN) {
+        LogError(token, String("\"{\" is expected."));
+        while (token != Tokenizer::Token::BRACES_CLOSE &&
+                token != Tokenizer::Token::END_OF_FILE) {
+            token = mTokenizer.GetToken();
+        }
+        mTokenizer.UngetToken(token);
+        parseResult = false;
+    }
+
+    token = mTokenizer.GetToken();
+    while (token != Tokenizer::Token::BRACES_CLOSE &&
+                token != Tokenizer::Token::END_OF_FILE) {
+        if (token == Tokenizer::Token::CONST) {
+            parseResult = ParseConstDataMember(interface) && parseResult;
+        }
+        else if (token == Tokenizer::Token::IDENTIFIER) {
+            mTokenizer.UngetToken(token);
+            parseResult = ParseMethod(interface) && parseResult;
+        }
+        token = mTokenizer.GetToken();
+    }
+
+    return parseResult;
+}
+
+bool Parser::ParseMethod(
+    /* [in] */ Interface* interface)
+{
+    bool parseResult = true;
+
+    Tokenizer::Token token = mTokenizer.GetToken();
+    if (token != Tokenizer::Token::IDENTIFIER) {
+        LogError(token, String("Method name is expected."));
+        while (token != Tokenizer::Token::SEMICOLON &&
+                token != Tokenizer::Token::END_OF_FILE) {
+            token = mTokenizer.GetToken();
+        }
+        return false;
+    }
+
+    Method* method = new Method();
+    method->SetName(mTokenizer.GetIdentifier());
+
+    token = mTokenizer.GetToken();
+    if (token != Tokenizer::Token::PARENTHESES_OPEN) {
+        LogError(token, String("\"(\" is expected."));
+        while (token != Tokenizer::Token::SEMICOLON &&
+                token != Tokenizer::Token::END_OF_FILE) {
+            token = mTokenizer.GetToken();
+        }
+        delete method;
+        return false;
+    }
+
+    while (token != Tokenizer::Token::PARENTHESES_CLOSE &&
+            token != Tokenizer::Token::END_OF_FILE) {
+        parseResult = ParseParameter(method) && parseResult;
+        if (!parseResult) break;
+        token = mTokenizer.GetToken();
+    }
+
+    if (token != Tokenizer::Token::PARENTHESES_CLOSE) {
+        LogError(token, String("\")\" is expected."));
+        while (token != Tokenizer::Token::SEMICOLON &&
+                token != Tokenizer::Token::END_OF_FILE) {
+            token = mTokenizer.GetToken();
+        }
+        delete method;
+        return false;
+    }
+
+    token = mTokenizer.GetToken();
+    if (token != Tokenizer::Token::SEMICOLON) {
+        LogError(token, String("\";\" is expected."));
+        while (token != Tokenizer::Token::SEMICOLON &&
+                token != Tokenizer::Token::END_OF_FILE) {
+            token = mTokenizer.GetToken();
+        }
+        delete method;
+        return false;
+    }
+
+    if (parseResult) {
+        interface->AddMethod(method);
+    }
+    else {
+        delete method;
+    }
+
+    return parseResult;
+}
+
+bool Parser::ParseParameter(
+    /* [in] */ Method* method)
+{
+    Parameter* parameter = new Parameter();
+
+    Tokenizer::Token token = mTokenizer.GetToken();
+    if (token != Tokenizer::Token::BRACKETS_OPEN) {
+        LogError(token, String("\"[\" is expected."));
+        delete parameter;
+        return false;
+    }
+
+    token = mTokenizer.GetToken();
+    while (token != Tokenizer::Token::BRACKETS_CLOSE &&
+            token != Tokenizer::Token::END_OF_FILE) {
+        switch (token) {
+            case Tokenizer::Token::IN:
+                parameter->SetAttribute(Parameter::IN);
+                break;
+            case Tokenizer::Token::OUT:
+                parameter->SetAttribute(Parameter::OUT);
+                break;
+            case Tokenizer::Token::CALLEE:
+                parameter->SetAttribute(Parameter::CALLEE);
+                break;
+        }
+        token = mTokenizer.GetToken();
+        if (token == Tokenizer::Token::COMMA) {
+            token = mTokenizer.GetToken();
+        }
+        else if (token != Tokenizer::Token::BRACKETS_CLOSE) {
+            LogError(token, String("\"]\" is expected."));
+            while (token != Tokenizer::Token::BRACES_CLOSE &&
+                    token != Tokenizer::Token::END_OF_FILE) {
+                token = mTokenizer.GetToken();
+            }
+            delete parameter;
+            return false;
+        }
+    }
+
+    Type* type = ParseType();
+    if (type != nullptr) {
+        parameter->SetType(type);
+    }
+    else {
+        while (token != Tokenizer::Token::BRACES_CLOSE &&
+                token != Tokenizer::Token::END_OF_FILE) {
+            token = mTokenizer.GetToken();
+        }
+        delete parameter;
+        return false;
+    }
+
+    token = mTokenizer.GetToken();
+    if (token != Tokenizer::Token::IDENTIFIER) {
+        LogError(token, String("Parameter name is expected."));
+        while (token != Tokenizer::Token::BRACES_CLOSE &&
+                token != Tokenizer::Token::END_OF_FILE) {
+            token = mTokenizer.GetToken();
+        }
+        delete parameter;
+        return false;
+    }
+
+    parameter->SetName(mTokenizer.GetIdentifier());
+    method->AddParameter(parameter);
+    return true;
+}
+
+Type* Parser::ParseType()
+{
+    Type* type = nullptr;
+    Tokenizer::Token token = mTokenizer.GetToken();
+    if (Tokenizer::IsPrimitiveType(token)) {
+        type = mComponent->FindType(String(mTokenizer.DumpToken(token)));
+    }
+    else if (token == Tokenizer::Token::IDENTIFIER) {
+        type = mComponent->FindType(mTokenizer.GetIdentifier());
+    }
+    else if (token == Tokenizer::Token::ARRAY) {
+        type = ParseArrayType();
+    }
+
+    if (type == nullptr) {
+        String message = String::Format("Type \"%s\" was not declared in this scope.",
+                mTokenizer.DumpToken(token));
+        LogError(token, message);
+        return nullptr;
+    }
+
+    int ptrNumber = 0;
+    token = mTokenizer.GetToken();
+    while (token == Tokenizer::Token::ASTERISK) {
+        ptrNumber++;
+        token = mTokenizer.GetToken();
+    }
+    mTokenizer.UngetToken(token);
+
+    if (ptrNumber != 0) {
+        String ptrTypeStr = type->ToString();
+        for (int i = 0; i < ptrNumber; i++) {
+            ptrTypeStr = ptrTypeStr + "*";
+        }
+        Type* ptrType = mComponent->FindType(ptrTypeStr);
+        if (ptrType == nullptr) {
+            PointerType* ptrType = new PointerType();
+            ptrType->SetBaseType(type);
+            ptrType->SetPointerNumber(ptrNumber);
+            mComponent->AddTemporaryType(ptrType);
+        }
+    }
+
+    return type;
+}
+
+Type* Parser::ParseArrayType()
+{
+    Tokenizer::Token token = mTokenizer.GetToken();
+    if (token != Tokenizer::Token::ANGLE_BRACKETS_OPEN) {
+        LogError(token, String("\"<\" is expected."));
+        return nullptr;
+    }
+
+    Type* elemType = ParseType();
+    if (elemType == nullptr) return nullptr;
+
+    token = mTokenizer.GetToken();
+    if (token != Tokenizer::Token::ANGLE_BRACKETS_CLOSE) {
+        LogError(token, String("\">\" is expected."));
+        return nullptr;
+    }
+
+    String arrayTypeStr =
+            String("Array<") + elemType->ToString() + String(">");
+    Type* arrayType = mComponent->FindType(arrayTypeStr);
+    if (arrayType == nullptr) {
+        ArrayType* arrayType = new ArrayType();
+        arrayType->SetElementType(elemType);
+        mComponent->AddTemporaryType(arrayType);
+    }
+
+    return arrayType;
+}
+
+bool Parser::ParseConstDataMember(
+    /* [in] */ Interface* interface)
+{
+    bool parseResult = true;
+
+    return parseResult;
+}
+
+bool Parser::ParseExpression(
+    /* [out] */ int* value)
+{
+    // todo:
+    return false;
 }
 
 bool Parser::ParseCoclass(
@@ -268,7 +571,7 @@ bool Parser::ParseEnumeration()
         parseResult = false;
     }
 
-    parseResult = parseResult && ParseEnumerationBody(enumeration);
+    parseResult = ParseEnumerationBody(enumeration) && parseResult;
 
     if (parseResult) {
         mComponent->AddEnumeration(enumeration);
@@ -318,7 +621,7 @@ bool Parser::ParseEnumerationBody(
         }
         token = mTokenizer.GetToken();
         if (token == Tokenizer::Token::ASSIGNMENT) {
-            parseResult = parseResult && ParseExpression(&value);
+            parseResult = ParseExpression(&value) && parseResult;
             token = mTokenizer.GetToken();
         }
         if (token == Tokenizer::Token::COMMA) {
@@ -338,158 +641,10 @@ bool Parser::ParseEnumerationBody(
     return parseResult;
 }
 
-bool Parser::ParseExpression(
-    /* [out] */ int* value)
-{
-    // todo:
-    return false;
-}
-
 int Parser::ParseInclude()
 {
     // todo:
     return 0;
-}
-
-bool Parser::ParseInterface(
-    /* [in] */ Attribute& attr)
-{
-    bool parseResult = true;
-
-    Interface* interface = new Interface();
-
-    Tokenizer::Token token = mTokenizer.GetToken();
-    if (token == Tokenizer::Token::IDENTIFIER) {
-        interface->SetName(mTokenizer.GetIdentifier());
-    }
-    else {
-        LogError(token, String("Interface name is expected."));
-        while (token != Tokenizer::Token::BRACES_OPEN &&
-                token != Tokenizer::Token::END_OF_FILE) {
-            token = mTokenizer.GetToken();
-        }
-        mTokenizer.UngetToken(token);
-        parseResult = false;
-    }
-
-    parseResult = parseResult && ParseInterfaceBody(interface);
-
-    if (parseResult) {
-        interface->SetNamespace(mCurrNamespace);
-        interface->SetAttribute(attr);
-    }
-    else {
-        delete interface;
-    }
-
-    return parseResult;
-}
-
-bool Parser::ParseInterfaceBody(
-    /* [in] */ Interface* interface)
-{
-    bool parseResult = true;
-
-    Tokenizer::Token token = mTokenizer.GetToken();
-    if (token != Tokenizer::Token::BRACES_OPEN) {
-        LogError(token, String("\"{\" is expected."));
-        while (token != Tokenizer::Token::BRACES_CLOSE &&
-                token != Tokenizer::Token::END_OF_FILE) {
-            token = mTokenizer.GetToken();
-        }
-        mTokenizer.UngetToken(token);
-        parseResult = false;
-    }
-
-    token = mTokenizer.GetToken();
-    while (token != Tokenizer::Token::BRACES_CLOSE &&
-                token != Tokenizer::Token::END_OF_FILE) {
-        if (token == Tokenizer::Token::CONST) {
-            parseResult = parseResult && ParseConstDataMember(interface);
-        }
-        else {
-            mTokenizer.UngetToken(token);
-            parseResult = parseResult && ParseMethod(interface);
-        }
-        token = mTokenizer.GetToken();
-    }
-
-    return parseResult;
-}
-
-bool Parser::ParseConstDataMember(
-    /* [in] */ Interface* interface)
-{
-    bool parseResult = true;
-
-    return parseResult;
-}
-
-bool Parser::ParseMethod(
-    /* [in] */ Interface* interface)
-{
-    bool parseResult = true;
-
-    Tokenizer::Token token = mTokenizer.GetToken();
-    if (token != Tokenizer::Token::IDENTIFIER) {
-        LogError(token, String("Method name is expected."));
-        while (token != Tokenizer::Token::SEMICOLON &&
-                token != Tokenizer::Token::END_OF_FILE) {
-            token = mTokenizer.GetToken();
-        }
-        return false;
-    }
-
-    Method* method = new Method();
-    method->SetName(mTokenizer.GetIdentifier());
-
-    token = mTokenizer.GetToken();
-    if (token != Tokenizer::Token::PARENTHESES_OPEN) {
-        LogError(token, String("\"(\" is expected."));
-        while (token != Tokenizer::Token::SEMICOLON &&
-                token != Tokenizer::Token::END_OF_FILE) {
-            token = mTokenizer.GetToken();
-        }
-        delete method;
-        return false;
-    }
-
-    while (token != Tokenizer::Token::PARENTHESES_CLOSE &&
-            token != Tokenizer::Token::END_OF_FILE) {
-        parseResult = parseResult && ParseParameter(method);
-        if (!parseResult) break;
-        token = mTokenizer.GetToken();
-    }
-
-    if (token != Tokenizer::Token::PARENTHESES_CLOSE) {
-        LogError(token, String("\")\" is expected."));
-        while (token != Tokenizer::Token::SEMICOLON &&
-                token != Tokenizer::Token::END_OF_FILE) {
-            token = mTokenizer.GetToken();
-        }
-        delete method;
-        return false;
-    }
-
-    token = mTokenizer.GetToken();
-    if (token != Tokenizer::Token::SEMICOLON) {
-        LogError(token, String("\";\" is expected."));
-        while (token != Tokenizer::Token::SEMICOLON &&
-                token != Tokenizer::Token::END_OF_FILE) {
-            token = mTokenizer.GetToken();
-        }
-        delete method;
-        return false;
-    }
-
-    if (parseResult) {
-        interface->AddMethod(method);
-    }
-    else {
-        delete method;
-    }
-
-    return parseResult;
 }
 
 bool Parser::ParseModule(
@@ -504,73 +659,6 @@ int Parser::ParseNamespace()
 {
     // todo:
     return 0;
-}
-
-bool Parser::ParseParameter(
-    /* [in] */ Method* method)
-{
-    bool parseResult = true;
-
-    Parameter* parameter = new Parameter();
-
-    Tokenizer::Token token = mTokenizer.GetToken();
-    if (token != Tokenizer::Token::BRACKETS_OPEN) {
-        LogError(token, String("\"[\" is expected."));
-        delete parameter;
-        return false;
-    }
-
-    token = mTokenizer.GetToken();
-    while (token != Tokenizer::Token::BRACKETS_CLOSE &&
-            token != Tokenizer::Token::END_OF_FILE) {
-        switch (token) {
-            case Tokenizer::Token::IN:
-                parameter->SetAttribute(Parameter::IN);
-                break;
-            case Tokenizer::Token::OUT:
-                parameter->SetAttribute(Parameter::OUT);
-                break;
-            case Tokenizer::Token::CALLEE:
-                parameter->SetAttribute(Parameter::CALLEE);
-                break;
-        }
-        token = mTokenizer.GetToken();
-        if (token == Tokenizer::Token::COMMA) {
-            token = mTokenizer.GetToken();
-        }
-        else if (token != Tokenizer::Token::BRACKETS_CLOSE) {
-            LogError(token, String("\"]\" is expected."));
-            while (token != Tokenizer::Token::BRACES_CLOSE &&
-                    token != Tokenizer::Token::COMMA) {
-                token = mTokenizer.GetToken();
-            }
-            parseResult = false;
-            break;
-        }
-    }
-
-    parseResult = parseResult && ParseType(parameter);
-
-    if (parseResult) {
-        method->AddParameter(parameter);
-    }
-    else {
-        delete parameter;
-    }
-    return parseResult;
-}
-
-bool Parser::ParseType(
-    /* [in] */ Parameter* param)
-{
-    bool parseResult = true;
-
-    Tokenizer::Token token = mTokenizer.GetToken();
-
-printf("==== 1, type: %s ====\n", mTokenizer.DumpToken(token));
-printf("==== 2, ptr: %p ====\n", mComponent->FindType(String("CelestialBodyKind")));
-
-    return parseResult;
 }
 
 void Parser::LogError(
@@ -605,6 +693,7 @@ void Parser::DumpError()
     while (error != nullptr) {
         Logger::E(TAG, "[Line %d, Column %d] %s",
                 error->mLineNo, error->mColumnNo, error->mMessage.string());
+        error = error->mNext;
     }
 }
 

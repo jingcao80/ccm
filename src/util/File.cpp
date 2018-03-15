@@ -28,6 +28,7 @@ File::File(
     }
 
     mFd = fopen(path, "r");
+    mPath = path;
 }
 
 File::File(
@@ -40,6 +41,7 @@ File::File(
     }
 
     mFd = fopen(path, "r");
+    mPath = path;
 }
 
 File::~File()

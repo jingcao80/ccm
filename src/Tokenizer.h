@@ -30,52 +30,58 @@ public:
     enum class Token
     {
         ILLEGAL_TOKEN = 0,      // 0)
-        ANGLE_BRACKETS_OPEN,    // 1)   '<'
-        ANGLE_BRACKETS_CLOSE,   // 2)   '>'
-        ARRAY,                  // 3)
-        ASSIGNMENT,             // 4)   '='
-        ASTERISK,               // 5)   '*'
-        BOOLEAN,                // 6)
-        BRACES_OPEN,            // 7)   '{'
-        BRACES_CLOSE,           // 8)   '}'
-        BRACKETS_OPEN,          // 9)   '['
-        BRACKETS_CLOSE,         // 10)  ']'
-        BYTE,                   // 11)
+        // primitive type
+        BOOLEAN,                // 1)
+        BYTE,                   // 2)
+        CHAR,                   // 3)
+        DOUBLE,                 // 4)
+        FLOAT,                  // 5)
+        HANDLE,                 // 6)
+        INTEGER,                // 7)
+        LONG,                   // 8)
+        SHORT,                  // 9)
+        STRING,                 // 10)
+        // other keyword
+        ARRAY,                  // 11)
         CALLEE,                 // 12)
         COCLASS,                // 13)
-        COLON,                  // 14)  ':'
-        COMMA,                  // 15)  ','
-        COMMENT_BLOCK,          // 16)
-        COMMENT_LINE,           // 17)
-        CONST,                  // 18)
-        DESCRIPTION,            // 19)
-        DIVIDE,                 // 20)  '/'
-        DOUBLE_QUOTES,          // 21)  '"'
-        END_OF_FILE,            // 22)
-        ENUM,                   // 23)
-        HANDLE,                 // 24)
-        HYPHEN,                 // 25)  '-'
-        IDENTIFIER,             // 26)
-        IN,                     // 27)
-        INCLUDE,                // 28)
-        INTEGER,                // 29)
-        INTERFACE,              // 30)
-        LONG,                   // 31)
-        MODULE,                 // 32)
-        NAMESPACE,              // 33)
-        NUMBER,                 // 34)
-        OUT,                    // 35)
-        PARENTHESES_OPEN,       // 36)  '('
-        PARENTHESES_CLOSE,      // 37)  ')'
-        PERIOD,                 // 38)  '.'
-        SEMICOLON,              // 39)  ';'
-        SHORT,                  // 40)
-        STRING,                 // 41)
-        STRING_LITERAL,         // 42)
-        UUID,                   // 43)
-        UUID_NUMBER,            // 44)
-        VERSION,                // 45)
-        VERSION_NUMBER,         // 46)
+        CONST,                  // 14)
+        DESCRIPTION,            // 15)
+        ENUM,                   // 16)
+        IN,                     // 17)
+        INCLUDE,                // 18)
+        INTERFACE,              // 19)
+        MODULE,                 // 20)
+        NAMESPACE,              // 21)
+        OUT,                    // 22)
+        UUID,                   // 23)
+        VERSION,                // 24)
+        // symbol
+        ANGLE_BRACKETS_OPEN,    // 25)  '<'
+        ANGLE_BRACKETS_CLOSE,   // 26)  '>'
+        ASSIGNMENT,             // 27)  '='
+        ASTERISK,               // 28)  '*'
+        BRACES_OPEN,            // 29)  '{'
+        BRACES_CLOSE,           // 30)  '}'
+        BRACKETS_OPEN,          // 31)  '['
+        BRACKETS_CLOSE,         // 32)  ']'
+        COLON,                  // 33)  ':'
+        COMMA,                  // 34)  ','
+        COMMENT_BLOCK,          // 35)
+        COMMENT_LINE,           // 36)
+        DIVIDE,                 // 37)  '/'
+        DOUBLE_QUOTES,          // 38)  '"'
+        END_OF_FILE,            // 39)
+        HYPHEN,                 // 40)  '-'
+        IDENTIFIER,             // 41)
+        NUMBER,                 // 42)
+        PARENTHESES_OPEN,       // 43)  '('
+        PARENTHESES_CLOSE,      // 44)  ')'
+        PERIOD,                 // 45)  '.'
+        SEMICOLON,              // 46)  ';'
+        STRING_LITERAL,         // 47)
+        UUID_NUMBER,            // 48)
+        VERSION_NUMBER,         // 49)
     };
 
 public:
@@ -96,6 +102,11 @@ public:
     inline String GetString() { return mString; }
     inline int GetTokenColumnNo() { return mTokenColumnNo; }
     inline int GetTokenLineNo() { return mTokenLineNo; }
+
+    static inline bool IsPrimitiveType(
+        /* [in] */ Token token) { return Token::BOOLEAN <= token && token <= Token::STRING; }
+    static inline bool IsKeyword(
+        /* [in] */ Token token) { return Token::BOOLEAN <= token && token <= Token::VERSION; }
 
     const char* DumpToken(
         /* [in] */ Token token);

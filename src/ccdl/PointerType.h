@@ -14,30 +14,35 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CCDL_TYPE_H__
-#define __CCM_CCDL_TYPE_H__
+#ifndef __CCM_CCDL_POINTERTYPE_H__
+#define __CCM_CCDL_POINTERTYPE_H__
 
-#include "ASTElement.h"
-#include "../util/String.h"
+#include "Type.h"
 
 namespace ccm {
 namespace ccdl {
 
-class Type : public ASTElement
+class PointerType : public Type
 {
 public:
-    virtual ~Type() {}
+    PointerType()
+        : mBaseType(nullptr)
+        , mPointerNumber(0)
+    {}
 
-    inline Type& SetName(
-        /* [in] */ const String& name) { mName = name; return *this; }
+    inline PointerType& SetBaseType(
+        /* [in] */ Type* baseType) { mBaseType = baseType; return *this; }
+    inline PointerType& SetPointerNumber(
+        /* [in] */ int ptrNumber) { mPointerNumber = ptrNumber; return *this; }
 
-    virtual String ToString() { return mName; }
+    String ToString() override;
 
-protected:
-    String mName;
+private:
+    Type* mBaseType;
+    int mPointerNumber;
 };
 
 }
 }
 
-#endif // __CCM_CCDL_TYPE_H__
+#endif // __CCM_CCDL_POINTERTYPE_H__

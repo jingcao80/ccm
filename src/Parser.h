@@ -25,6 +25,7 @@
 #include "ccdl/Method.h"
 #include "ccdl/Namespace.h"
 #include "ccdl/Parameter.h"
+#include "ccdl/Type.h"
 #include "util/File.h"
 
 #include <memory>
@@ -36,6 +37,7 @@ using ccm::ccdl::Interface;
 using ccm::ccdl::Method;
 using ccm::ccdl::Namespace;
 using ccm::ccdl::Parameter;
+using ccm::ccdl::Type;
 
 namespace ccm {
 
@@ -75,23 +77,10 @@ public:
 private:
     bool ParseFile();
 
-    bool ParseAttribute(
-        /* [out] */ Attribute& attr);
-
-    bool ParseCoclass(
-        /* [in] */ Attribute& attr);
-
     bool ParseDeclarationWithAttribute();
 
-    bool ParseEnumeration();
-
-    bool ParseEnumerationBody(
-        /* [in] */ Enumeration* enumeration);
-
-    bool ParseExpression(
-        /* [out] */ int* value);
-
-    int ParseInclude();
+    bool ParseAttribute(
+        /* [out] */ Attribute& attr);
 
     bool ParseInterface(
         /* [in] */ Attribute& attr);
@@ -99,22 +88,36 @@ private:
     bool ParseInterfaceBody(
         /* [in] */ Interface* interface);
 
+    bool ParseMethod(
+        /* [in] */ Interface* interface);
+
+    bool ParseParameter(
+        /* [in] */ Method* method);
+
+    Type* ParseType();
+
+    Type* ParseArrayType();
+
     bool ParseConstDataMember(
         /* [in] */ Interface* interface);
 
-    bool ParseMethod(
-        /* [in] */ Interface* interface);
+    bool ParseExpression(
+        /* [out] */ int* value);
+
+    bool ParseCoclass(
+        /* [in] */ Attribute& attr);
+
+    bool ParseEnumeration();
+
+    bool ParseEnumerationBody(
+        /* [in] */ Enumeration* enumeration);
+
+    int ParseInclude();
 
     bool ParseModule(
         /* [in] */ Attribute& attr);
 
     int ParseNamespace();
-
-    bool ParseParameter(
-        /* [in] */ Method* method);
-
-    bool ParseType(
-        /* [in] */ Parameter* param);
 
     void LogError(
         /* [in] */ Tokenizer::Token token,

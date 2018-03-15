@@ -25,6 +25,7 @@
 #include "FloatType.h"
 #include "HANDLEType.h"
 #include "IntegerType.h"
+#include "Interface.h"
 #include "LongType.h"
 #include "Namespace.h"
 #include "ShortType.h"
@@ -46,25 +47,40 @@ public:
     bool AddEnumeration(
         /* [in] */ Enumeration* enumeration);
 
+    bool AddInterface(
+        /* [in] */ Interface* interface);
+
     bool AddNamespace(
         /* [in] */ Namespace* ns);
+
+    bool AddTemporaryType(
+        /* [in] */ Type* type);
 
     Type* FindType(
         /* [in] */ const String& typeName);
 
+    String Dump();
+
 private:
     bool EnlargeEnumerationArray();
-
+    bool EnlargeInterfaceArray();
     bool EnlargeNamespaceArray();
+    bool EnlargeTempTypeArray();
 
 private:
     String mCdlFile;
     int mEnumCapacity;
     int mEnumIndex;
     Enumeration** mEnumerations;
+    int mItfCapacity;
+    int mItfIndex;
+    Interface** mInterfaces;
     int mNSCapacity;
     int mNSIndex;
     Namespace** mNamespaces;
+    int mTempTypeCapacity;
+    int mTempTypeIndex;
+    Type** mTempTypes;
     HashMap<Type*> mTypes;
     ByteType* mByteType;
     ShortType* mShortType;

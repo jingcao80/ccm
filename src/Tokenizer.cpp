@@ -24,16 +24,19 @@ struct KV
     String mKey;
     Tokenizer::Token mValue;
 }
-sKeywords[21] =
+sKeywords[24] =
 {
     { String("Array"), Tokenizer::Token::ARRAY },
     { String("Boolean"), Tokenizer::Token::BOOLEAN },
     { String("Byte"), Tokenizer::Token::BYTE },
     { String("callee"), Tokenizer::Token::CALLEE },
+    { String("Char"), Tokenizer::Token::CHAR },
     { String("coclass"), Tokenizer::Token::COCLASS },
     { String("const"), Tokenizer::Token::CONST },
     { String("description"), Tokenizer::Token::DESCRIPTION },
+    { String("Double"), Tokenizer::Token::DOUBLE },
     { String("enum"), Tokenizer::Token::ENUM },
+    { String("Float"), Tokenizer::Token::FLOAT },
     { String("HANDLE"), Tokenizer::Token::HANDLE },
     { String("in"), Tokenizer::Token::IN },
     { String("include"), Tokenizer::Token::INCLUDE },
@@ -205,7 +208,6 @@ Tokenizer::Token Tokenizer::ReadUuidNumberToken()
     int c, index = 0;
     while ((c = mFile->Read()) != -1) {
         index++;
-        builder.Append((char)c);
         if (state == START) {
             if (index == 1) {
                 mTokenLineNo = mFile->GetLineNo();
@@ -213,6 +215,7 @@ Tokenizer::Token Tokenizer::ReadUuidNumberToken()
             }
             if (c == '-') {
                 if (index == 9) {
+                    builder.Append((char)c);
                     state = SEGMENT_1;
                     index = 0;
                     continue;
@@ -221,6 +224,7 @@ Tokenizer::Token Tokenizer::ReadUuidNumberToken()
             }
             else if (IsHexDigital(c)) {
                 if (index > 8) return Token::ILLEGAL_TOKEN;
+                builder.Append((char)c);
                 continue;
             }
             else {
@@ -231,6 +235,7 @@ Tokenizer::Token Tokenizer::ReadUuidNumberToken()
         else if (state == SEGMENT_1) {
             if (c == '-') {
                 if (index == 5) {
+                    builder.Append((char)c);
                     state = SEGMENT_2;
                     index = 0;
                     continue;
@@ -239,6 +244,7 @@ Tokenizer::Token Tokenizer::ReadUuidNumberToken()
             }
             else if (IsHexDigital(c)) {
                 if (index > 4) return Token::ILLEGAL_TOKEN;
+                builder.Append((char)c);
                 continue;
             }
             else {
@@ -249,6 +255,7 @@ Tokenizer::Token Tokenizer::ReadUuidNumberToken()
         else if (state == SEGMENT_2) {
             if (c == '-') {
                 if (index == 5) {
+                    builder.Append((char)c);
                     state = SEGMENT_3;
                     index = 0;
                     continue;
@@ -257,6 +264,7 @@ Tokenizer::Token Tokenizer::ReadUuidNumberToken()
             }
             else if (IsHexDigital(c)) {
                 if (index > 4) return Token::ILLEGAL_TOKEN;
+                builder.Append((char)c);
                 continue;
             }
             else {
@@ -267,6 +275,7 @@ Tokenizer::Token Tokenizer::ReadUuidNumberToken()
         else if (state == SEGMENT_3) {
             if (c == '-') {
                 if (index == 5) {
+                    builder.Append((char)c);
                     state = SEGMENT_4;
                     index = 0;
                     continue;
@@ -275,6 +284,7 @@ Tokenizer::Token Tokenizer::ReadUuidNumberToken()
             }
             else if (IsHexDigital(c)) {
                 if (index > 4) return Token::ILLEGAL_TOKEN;
+                builder.Append((char)c);
                 continue;
             }
             else {
@@ -285,6 +295,7 @@ Tokenizer::Token Tokenizer::ReadUuidNumberToken()
         else if (state == SEGMENT_4) {
             if (IsHexDigital(c)) {
                 if (index > 12) return Token::ILLEGAL_TOKEN;
+                builder.Append((char)c);
                 continue;
             }
             else {
@@ -530,6 +541,10 @@ const char* Tokenizer::DumpToken(
             return "]";
         case Token::BYTE:
             return "Byte";
+        case Token::CALLEE:
+            return "callee";
+        case Token::CHAR:
+            return "Char";
         case Token::COCLASS:
             return "coclass";
         case Token::COLON:
@@ -546,20 +561,26 @@ const char* Tokenizer::DumpToken(
             return "description";
         case Token::DIVIDE:
             return "/";
+        case Token::DOUBLE:
+            return "Double";
         case Token::DOUBLE_QUOTES:
             return "\"";
         case Token::ENUM:
             return "enum";
+        case Token::FLOAT:
+            return "Float";
         case Token::HANDLE:
             return "HANDLE";
         case Token::HYPHEN:
             return "-";
         case Token::IDENTIFIER:
             return mIdentifier.string();
+        case Token::IN:
+            return "in";
         case Token::INCLUDE:
             return "include";
         case Token::INTEGER:
-            return "integer";
+            return "Integer";
         case Token::INTERFACE:
             return "interface";
         case Token::LONG:
@@ -570,6 +591,8 @@ const char* Tokenizer::DumpToken(
             return "namespace";
         case Token::NUMBER:
             return mNumberString.string();
+        case Token::OUT:
+            return "out";
         case Token::PARENTHESES_OPEN:
             return "(";
         case Token::PARENTHESES_CLOSE:
@@ -582,10 +605,16 @@ const char* Tokenizer::DumpToken(
             return "Short";
         case Token::STRING:
             return "String";
+        case Token::STRING_LITERAL:
+            return mString.string();
         case Token::UUID:
             return "uuid";
+        case Token::UUID_NUMBER:
+            return mString.string();
         case Token::VERSION:
             return "version";
+        case Token::VERSION_NUMBER:
+            return mString.string();
         default:
             return "";
     }

@@ -36,11 +36,11 @@ private:
         /* [in] */ const String& uuidStr);
 
 public:
-    int mData1;
-    short mData2;
-    short mData3;
-    short mData4;
-    char mData5[12];
+    unsigned int mData1;
+    unsigned short mData2;
+    unsigned short mData3;
+    unsigned short mData4;
+    unsigned char mData5[12];
 };
 
 }

@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "Enumeration.h"
+#include "../util/StringBuilder.h"
 
 #include <stdlib.h>
 
@@ -55,11 +56,27 @@ bool Enumeration::EnlargeEnumeratorArray()
         return false;
     }
 
-    memcpy(newArray, mEnumerators, sizeof(Enumerator*) * mEnumCapacity);
+    if (mEnumerators != nullptr) {
+        memcpy(newArray, mEnumerators, sizeof(Enumerator*) * mEnumCapacity);
+        free(mEnumerators);
+    }
     mEnumCapacity = newSize;
-    free(mEnumerators);
     mEnumerators = newArray;
     return true;
+}
+
+String Enumeration::Dump(
+    /* [in] */ const String& prefix)
+{
+    StringBuilder builder;
+
+    builder.Append(prefix).Append("enum ").Append(mName).Append("\n");
+    for (int i = 0; i < mEnumIndex; i++) {
+        Enumerator* e = mEnumerators[i];
+        builder.Append(prefix).Append("    "). Append(e->mName).Append("\n");
+    }
+
+    return builder.ToString();
 }
 
 }

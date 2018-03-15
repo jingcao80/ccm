@@ -27,6 +27,12 @@ namespace ccdl {
 class Method : public ASTElement
 {
 public:
+    Method()
+        : mParamCapacity(0)
+        , mParamIndex(0)
+        , mParameters(nullptr)
+    {}
+
     ~Method();
 
     inline Method& SetName(
@@ -34,6 +40,9 @@ public:
 
     Method& AddParameter(
         /* [in] */ Parameter* param);
+
+    String Dump(
+        /* [in] */ const String& prefix);
 
 private:
     bool EnlargeParameterArray();

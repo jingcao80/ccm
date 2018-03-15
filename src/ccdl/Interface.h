@@ -48,11 +48,13 @@ public:
     Interface& AddMethod(
         /* [in] */ Method* method);
 
+    String Dump(
+        /* [in] */ const String& prefix);
+
 private:
     bool EnlargeMethodArray();
 
 private:
-    String mName;
     Namespace* mNamespace;
     Uuid mUuid;
     String mVersion;
