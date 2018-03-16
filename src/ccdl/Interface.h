@@ -30,7 +30,8 @@ class Interface : public Type
 {
 public:
     Interface()
-        : mNamespace(nullptr)
+        : mDefined(false)
+        , mNamespace(nullptr)
         , mMethodCapacity(0)
         , mMethodIndex(0)
         , mMethods(nullptr)
@@ -38,15 +39,23 @@ public:
 
     ~Interface();
 
+    bool IsInterface() override { return true; }
+
     inline Interface& SetName(
         /* [in] */ const String& name) { mName = name; return *this; }
     inline Interface& SetNamespace(
         /* [in] */ Namespace* ns) { mNamespace = ns; return *this; }
+    inline Interface& SetDefined(
+        /* [in] */ bool defined) { mDefined = defined; return *this; }
+    inline bool IsDefined() { return mDefined; }
     Interface& SetAttribute(
         /* [in] */ const Attribute& attr);
 
     Interface& AddMethod(
         /* [in] */ Method* method);
+
+    String ToString();
+    inline String ToShortString() { return mName; }
 
     String Dump(
         /* [in] */ const String& prefix);
@@ -55,6 +64,7 @@ private:
     bool EnlargeMethodArray();
 
 private:
+    bool mDefined;
     Namespace* mNamespace;
     Uuid mUuid;
     String mVersion;

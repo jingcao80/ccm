@@ -20,7 +20,6 @@
 #include "util/File.h"
 #include "util/HashMap.h"
 #include "util/StringBuilder.h"
-#include <memory>
 
 namespace ccm {
 
@@ -72,25 +71,53 @@ public:
         DIVIDE,                 // 37)  '/'
         DOUBLE_QUOTES,          // 38)  '"'
         END_OF_FILE,            // 39)
-        HYPHEN,                 // 40)  '-'
-        IDENTIFIER,             // 41)
-        NUMBER,                 // 42)
-        PARENTHESES_OPEN,       // 43)  '('
-        PARENTHESES_CLOSE,      // 44)  ')'
-        PERIOD,                 // 45)  '.'
-        SEMICOLON,              // 46)  ';'
-        STRING_LITERAL,         // 47)
-        UUID_NUMBER,            // 48)
-        VERSION_NUMBER,         // 49)
+        END_OF_LINE,            // 40)  '\n'
+        HYPHEN,                 // 41)  '-'
+        IDENTIFIER,             // 42)
+        NUMBER,                 // 43)
+        PARENTHESES_OPEN,       // 44)  '('
+        PARENTHESES_CLOSE,      // 45)  ')'
+        PERIOD,                 // 46)  '.'
+        SEMICOLON,              // 47)  ';'
+        STRING_LITERAL,         // 48)
+        UUID_NUMBER,            // 49)
+        VERSION_NUMBER,         // 50)
+    };
+
+private:
+    class FileNode
+    {
+    public:
+        FileNode()
+            : mFile(nullptr)
+            , mNext(nullptr)
+        {}
+
+        ~FileNode()
+        {
+            if (mFile != nullptr) {
+                delete mFile;
+                mFile = nullptr;
+            }
+            mNext = nullptr;
+        }
+
+    public:
+        File* mFile;
+        FileNode* mNext;
     };
 
 public:
     Tokenizer();
 
-    inline void SetInputFile(
-        /* [in] */ const std::shared_ptr<File>& file) { mFile = file; }
+    ~Tokenizer();
+
+    bool PushInputFile(
+        /* [in] */ const String& file);
+    void PopInputFileAndRemove();
 
     Token GetToken();
+    Token GetEndOfLineToken();
     Token GetStringLiteralToken();
     Token GetUuidNumberToken();
     Token GetVersionNumberToken();
@@ -108,6 +135,8 @@ public:
     static inline bool IsKeyword(
         /* [in] */ Token token) { return Token::BOOLEAN <= token && token <= Token::VERSION; }
 
+    inline File* GetCurrentFile() { return mFile; }
+
     const char* DumpToken(
         /* [in] */ Token token);
 
@@ -115,6 +144,7 @@ private:
     void InitializeKeyword();
 
     Token ReadToken();
+    Token ReadEndOfLineToken();
     Token ReadStringLiteralToken();
     Token ReadUuidNumberToken();
     Token ReadVersionNumberToken();
@@ -144,7 +174,8 @@ private:
 
 private:
     static const String TAG;
-    std::shared_ptr<File> mFile;
+    File* mFile;
+    FileNode* mFileStack;
     HashMap<Token> mKeywords;
     Token mCurrToken;
     Token mPrevToken;

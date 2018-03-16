@@ -27,22 +27,21 @@ namespace ccm {
 const String Parser::TAG("Parser");
 
 bool Parser::Parse(
-    /* [in] */ const std::shared_ptr<File>& file)
+    /* [in] */ const String& filePath)
 {
-    mFile = file;
-
-    if (!mFile->IsValid()) {
-        Logger::E(TAG, "File %s is invalid.", mFile->GetPath().string());
-        return E_FILE_NOT_FOUND_EXCEPTION;
+    bool ret = mTokenizer.PushInputFile(filePath);
+    if (!ret) {
+        Logger::E(TAG, "File \"%s\" is invalid.", filePath.string());
+        return false;
     }
 
-    mTokenizer.SetInputFile(file);
+    mPathPrefix = filePath.Substring(0, filePath.LastIndexOf('/'));
 
-    mComponent = new Component(mFile->GetPath());
+    mComponent = new Component(filePath);
     mCurrNamespace = new Namespace(String("__global__"));
     mComponent->AddNamespace(mCurrNamespace);
 
-    bool ret = ParseFile();
+    ret = ParseFile();
 
     if (ret) {
         String out = mComponent->Dump();
@@ -90,12 +89,10 @@ bool Parser::ParseFile()
                 parseResult = ParseEnumeration() && parseResult;
                 continue;
             case Tokenizer::Token::INCLUDE:
-                ParseInclude();
+                parseResult = ParseInclude() && parseResult;
                 continue;
             case Tokenizer::Token::INTERFACE: {
-                LogError(token, String("interface should have attributes"));
-                Attribute attr;
-                ParseInterface(attr);
+                parseResult = ParseInterface(nullptr) && parseResult;
                 continue;
             }
             case Tokenizer::Token::NAMESPACE:
@@ -123,7 +120,7 @@ bool Parser::ParseDeclarationWithAttribute()
             break;
         }
         case Tokenizer::Token::INTERFACE: {
-            parseResult = ParseInterface(attr) && parseResult;
+            parseResult = ParseInterface(&attr) && parseResult;
             break;
         }
         case Tokenizer::Token::MODULE: {
@@ -249,15 +246,15 @@ bool Parser::ParseAttribute(
 }
 
 bool Parser::ParseInterface(
-    /* [in] */ Attribute& attr)
+    /* [in] */ Attribute* attr)
 {
     bool parseResult = true;
 
-    Interface* interface = new Interface();
+    String itfName;
 
     Tokenizer::Token token = mTokenizer.GetToken();
     if (token == Tokenizer::Token::IDENTIFIER) {
-        interface->SetName(mTokenizer.GetIdentifier());
+        itfName = mTokenizer.GetIdentifier();
     }
     else {
         LogError(token, String("Interface name is expected."));
@@ -269,15 +266,84 @@ bool Parser::ParseInterface(
         parseResult = false;
     }
 
+    token = mTokenizer.GetToken();
+    if (token == Tokenizer::Token::SEMICOLON) {
+        String fullName = mTokenizer.GetIdentifier();
+        Type* type = mComponent->FindType(fullName);
+        if (type != nullptr) {
+            if (!type->IsInterface()) {
+                String message = String::Format("Interface %s is name conflict.", itfName.string());
+                LogError(token, message);
+                parseResult = false;
+            }
+            return parseResult;
+        }
+
+        int index = fullName.LastIndexOf("::");
+        String nsString = index == -1? String("__global__") : fullName.Substring(0, index - 1);
+        Namespace* ns = mComponent->ParseNamespace(nsString);
+        String itfName = index == -1? fullName : fullName.Substring(index + 2);
+        Interface* interface = new Interface();
+        interface->SetName(itfName);
+        interface->SetNamespace(ns);
+        mComponent->AddInterface(interface);
+
+        return parseResult;
+    }
+    else {
+        mTokenizer.UngetToken(token);
+    }
+
+    if (attr == nullptr) {
+        String message = String::Format("Interface %s should have attributes.", itfName.string());
+        LogError(token, message);
+    }
+
+    Interface* interface = nullptr;
+
+    String currNsString = mCurrNamespace->ToString();
+    Type* type = mComponent->FindType(currNsString.IsNullOrEmpty()?
+            itfName : currNsString + "::" + itfName);
+    if (type != nullptr) {
+        if (type->IsInterface() && !((Interface*)type)->IsDefined()) {
+            interface = (Interface*)type;
+        }
+        else {
+            String message;
+            if (type->IsInterface()) {
+                message = String::Format("Interface %s has already been declared.", itfName.string());
+            }
+            else {
+                message = String::Format("Interface %s is name conflict.", itfName.string());
+            }
+            LogError(token, message);
+            while (token != Tokenizer::Token::BRACES_CLOSE &&
+                    token != Tokenizer::Token::END_OF_FILE) {
+                token = mTokenizer.GetToken();
+            }
+            mTokenizer.UngetToken(token);
+            return false;
+        }
+    }
+
+    bool newAdded = false;
+    if (interface == nullptr) {
+        interface = new Interface();
+        interface->SetName(itfName);
+        interface->SetNamespace(mCurrNamespace);
+        newAdded = true;
+    }
     parseResult = ParseInterfaceBody(interface) && parseResult;
 
     if (parseResult) {
-        interface->SetNamespace(mCurrNamespace);
-        interface->SetAttribute(attr);
-        mComponent->AddInterface(interface);
+        interface->SetDefined(true);
+        interface->SetAttribute(*attr);
+        if (newAdded) {
+            mComponent->AddInterface(interface);
+        }
     }
     else {
-        delete interface;
+        if (newAdded) delete interface;
     }
 
     return parseResult;
@@ -553,13 +619,11 @@ bool Parser::ParseEnumeration()
 {
     Tokenizer::Token token;
     bool parseResult = true;
-
-    Enumeration* enumeration = new Enumeration();
+    String enumName;
 
     token = mTokenizer.GetToken();
     if (token == Tokenizer::Token::IDENTIFIER) {
-        enumeration->SetName(mTokenizer.GetIdentifier());
-        enumeration->SetNamespace(mCurrNamespace);
+        enumName = mTokenizer.GetIdentifier();
     }
     else {
         LogError(token, String("Identifier as enumeration name is expected."));
@@ -570,6 +634,30 @@ bool Parser::ParseEnumeration()
         mTokenizer.UngetToken(token);
         parseResult = false;
     }
+
+    String currNsString = mCurrNamespace->ToString();
+    Type* type = mComponent->FindType(currNsString.IsNullOrEmpty()?
+            enumName : currNsString + "::" + enumName);
+    if (type != nullptr) {
+        String message;
+        if (type->IsEnumeration()) {
+            message = String::Format("Enumeration %s has already been declared.", enumName.string());
+        }
+        else {
+            message = String::Format("Enumeration %s is name conflict.", enumName.string());
+        }
+        LogError(token, message);
+        while (token != Tokenizer::Token::BRACES_CLOSE &&
+                token != Tokenizer::Token::END_OF_FILE) {
+            token = mTokenizer.GetToken();
+        }
+        mTokenizer.UngetToken(token);
+        return false;
+    }
+
+    Enumeration* enumeration = new Enumeration();
+    enumeration->SetName(enumName);
+    enumeration->SetNamespace(mCurrNamespace);
 
     parseResult = ParseEnumerationBody(enumeration) && parseResult;
 
@@ -641,10 +729,41 @@ bool Parser::ParseEnumerationBody(
     return parseResult;
 }
 
-int Parser::ParseInclude()
+bool Parser::ParseInclude()
 {
-    // todo:
-    return 0;
+    Tokenizer::Token token = mTokenizer.GetStringLiteralToken();
+    if (token != Tokenizer::Token::STRING_LITERAL) {
+        LogError(token, String("The path of a file is expected."));
+        while (token != Tokenizer::Token::END_OF_LINE &&
+                token != Tokenizer::Token::END_OF_FILE) {
+            token = mTokenizer.GetToken();
+        }
+        return false;
+    }
+
+    String filePath = mPathPrefix + mTokenizer.GetString();
+    if (mParsedFiles.ContainsKey(filePath)) return true;
+
+    if (!mTokenizer.PushInputFile(filePath)) {
+        String message = String::Format("File \"%s\" is invalid.",
+                mTokenizer.GetString().string());
+        LogError(token, message);
+        while (token != Tokenizer::Token::END_OF_LINE &&
+                token != Tokenizer::Token::END_OF_FILE) {
+            token = mTokenizer.GetToken();
+        }
+        return false;
+    }
+    else {
+        mParsedFiles.Put(filePath, false);
+    }
+
+    bool ret = ParseFile();
+
+    mParsedFiles.Put(filePath, true);
+    mTokenizer.PopInputFileAndRemove();
+
+    return ret;
 }
 
 bool Parser::ParseModule(
@@ -665,12 +784,15 @@ void Parser::LogError(
     /* [in] */ Tokenizer::Token token,
     /* [in] */ const String& message)
 {
+    String file = mTokenizer.GetCurrentFile()->GetPath();
+    file = file.Substring(file.LastIndexOf('/') + 1);
     int lineNo = mTokenizer.GetTokenLineNo();
     int columeNo = mTokenizer.GetTokenColumnNo();
 
     if (mErrorHeader == nullptr) {
         mErrorHeader = new Error();
         mErrorHeader->mErrorToken = token;
+        mErrorHeader->mFileName = file;
         mErrorHeader->mLineNo = lineNo;
         mErrorHeader->mColumnNo = columeNo;
         mErrorHeader->mMessage = message;
@@ -679,6 +801,7 @@ void Parser::LogError(
     }
 
     Error* error = new Error();
+    error->mFileName = file;
     error->mErrorToken = token;
     error->mLineNo = lineNo;
     error->mColumnNo = columeNo;
@@ -691,7 +814,7 @@ void Parser::DumpError()
 {
     Error* error = mErrorHeader;
     while (error != nullptr) {
-        Logger::E(TAG, "[Line %d, Column %d] %s",
+        Logger::E(TAG, "%s[Line %d, Column %d] %s", error->mFileName.string(),
                 error->mLineNo, error->mColumnNo, error->mMessage.string());
         error = error->mNext;
     }

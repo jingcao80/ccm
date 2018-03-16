@@ -49,6 +49,8 @@ public:
 
     ~Enumeration();
 
+    bool IsEnumeration() override { return true; }
+
     inline Enumeration& SetName(
         /* [in] */ const String& name) { mName = name; return *this; }
     inline Enumeration& SetNamespace(
@@ -57,6 +59,9 @@ public:
     Enumeration& AddEnumerator(
         /* [in] */ const String& name,
         /* [in] */ int value);
+
+    String ToString();
+    inline String ToShortString() { return mName; }
 
     String Dump(
         /* [in] */ const String& prefix);

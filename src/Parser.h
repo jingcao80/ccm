@@ -26,9 +26,7 @@
 #include "ccdl/Namespace.h"
 #include "ccdl/Parameter.h"
 #include "ccdl/Type.h"
-#include "util/File.h"
-
-#include <memory>
+#include "util/HashMap.h"
 
 using ccm::ccdl::Attribute;
 using ccm::ccdl::Component;
@@ -54,6 +52,7 @@ private:
         {}
 
         Tokenizer::Token mErrorToken;
+        String mFileName;
         int mLineNo;
         int mColumnNo;
         String mMessage;
@@ -62,15 +61,16 @@ private:
 
 public:
     Parser()
-        : mFile(nullptr)
+        : mParsedFiles(100)
         , mComponent(nullptr)
+        , mCurrNamespace(nullptr)
         , mStatus(NOERROR)
         , mErrorHeader(nullptr)
         , mCurrError(nullptr)
     {}
 
     bool Parse(
-        /* [in] */ const std::shared_ptr<File>& file);
+        /* [in] */ const String& filePath);
 
     ~Parser();
 
@@ -83,7 +83,7 @@ private:
         /* [out] */ Attribute& attr);
 
     bool ParseInterface(
-        /* [in] */ Attribute& attr);
+        /* [in] */ Attribute* attr);
 
     bool ParseInterfaceBody(
         /* [in] */ Interface* interface);
@@ -112,7 +112,7 @@ private:
     bool ParseEnumerationBody(
         /* [in] */ Enumeration* enumeration);
 
-    int ParseInclude();
+    bool ParseInclude();
 
     bool ParseModule(
         /* [in] */ Attribute& attr);
@@ -131,8 +131,9 @@ public:
 
 private:
     static const String TAG;
-    std::shared_ptr<File> mFile;
     Tokenizer mTokenizer;
+    String mPathPrefix;
+    HashMap<bool> mParsedFiles;
     Component* mComponent;
     Namespace* mCurrNamespace;
     int mStatus;

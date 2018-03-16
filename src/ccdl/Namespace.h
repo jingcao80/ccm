@@ -30,17 +30,35 @@ public:
         /* [in] */ const String& nsStr)
         : mNSString(nsStr)
         , mOuterNamespace(nullptr)
-        , mInnerNamespace(nullptr)
+        , mInnerNSCapacity(0)
+        , mInnerNSIndex(0)
+        , mInnerNamespaces(nullptr)
     {}
 
-    String GetFullNamespace();
+    ~Namespace();
 
-    inline String ToString() { return mNSString; }
+    inline Namespace& SetOuterNamespace(
+        /* [in] */ Namespace* outerNS) { mOuterNamespace = outerNS; return *this; }
+    bool AddInnerNamespace(
+        /* [in] */ Namespace* innerNS);
+    Namespace* FindInnerNamespace(
+        /* [in] */ const String& nsString);
+
+    inline int GetInnerNamespaceNumber() { return mInnerNSIndex; }
+    inline Namespace** GetInnerNamespaces() { return mInnerNamespaces; }
+
+    String ToString();
+    inline String ToShortString() { return mNSString; }
+
+private:
+    bool EnlargeInnerNamespaces();
 
 private:
     String mNSString;
     Namespace* mOuterNamespace;
-    Namespace* mInnerNamespace;
+    int mInnerNSCapacity;
+    int mInnerNSIndex;
+    Namespace** mInnerNamespaces;
 };
 
 }

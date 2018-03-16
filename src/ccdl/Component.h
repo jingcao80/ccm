@@ -46,12 +46,20 @@ public:
 
     bool AddEnumeration(
         /* [in] */ Enumeration* enumeration);
+    Enumeration* FindEnumeration(
+        /* [in] */ const String& enumFullName);
 
     bool AddInterface(
         /* [in] */ Interface* interface);
+    Interface* FindInterface(
+        /* [in] */ const String& itfFullName);
 
     bool AddNamespace(
         /* [in] */ Namespace* ns);
+    Namespace* ParseNamespace(
+        /* [in] */ const String& nsString);
+    Namespace* FindNamespace(
+        /* [in] */ const String& nsString);
 
     bool AddTemporaryType(
         /* [in] */ Type* type);

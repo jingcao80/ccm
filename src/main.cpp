@@ -19,10 +19,8 @@ int main(int argc, char** argv)
         return 0;
     }
 
-    std::shared_ptr<File> file(new File(options.GetInputFile()));
-
     Parser parser;
-    parser.Parse(file);
+    parser.Parse(options.GetInputFile());
 
     return 0;
 }

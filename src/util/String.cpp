@@ -210,7 +210,7 @@ String String::Substring(
 {
     if (begin < 0 || begin >= GetLength()) return String();
 
-    return String(mString[begin]);
+    return String(mString + begin);
 }
 
 String String::Substring(
@@ -225,6 +225,93 @@ String String::Substring(
     string.mString[len] = '\0';
 
     return string;
+}
+
+int String::IndexOf(
+    /* [in] */ int c) const
+{
+    if (c == '\0' || IsNullOrEmpty()) return -1;
+
+    char* ci = strchr(mString, c);
+    return ci != nullptr? ci - mString : -1;
+}
+
+int String::IndexOf(
+    /* [in] */ const String& other) const
+{
+    if (IsNullOrEmpty() || other.IsNullOrEmpty()) return -1;
+
+    char* ci = strstr(mString, other.mString);
+    return ci != nullptr? ci - mString : -1;
+}
+
+int String::IndexOf(
+    /* [in] */ const char* string) const
+{
+    if (IsNullOrEmpty() || string == nullptr || string[0] == '\0') {
+        return -1;
+    }
+
+    char* ci = strstr(mString, string);
+    return ci != nullptr? ci - mString : -1;
+}
+
+int String::LastIndexOf(
+    /* [in] */ int c) const
+{
+    if (c == '\0' || IsNullOrEmpty()) return -1;
+
+    char* ci = strrchr(mString, c);
+    return ci != nullptr? ci - mString : -1;
+}
+
+int String::LastIndexOf(
+    /* [in] */ const String& other) const
+{
+    if (IsNullOrEmpty() || other.IsNullOrEmpty()) return -1;
+
+    int sourceLength = GetLength();
+    int targetLength = other.GetLength();
+    int fromIndex = sourceLength;
+    int rightIndex = sourceLength - targetLength;
+    if (fromIndex < 0) {
+        return -1;
+    }
+    if (fromIndex > rightIndex) {
+        fromIndex = rightIndex;
+    }
+
+    int strLastIndex = targetLength - 1;
+    char strLastChar = other.GetChar(strLastIndex);
+    int min = targetLength - 1;
+    int i = min + fromIndex;
+
+startSearchForLastChar:
+    while (true) {
+        while (i >= min && GetChar(i) != strLastChar) {
+            i--;
+        }
+        if (i < min) {
+            return -1;
+        }
+        int j = i - 1;
+        int start = j - (targetLength - 1);
+        int k = strLastIndex - 1;
+
+        while (j > start) {
+            if (GetChar(j--) != other.GetChar(k--)) {
+                i--;
+                goto startSearchForLastChar;
+            }
+        }
+        return start + 1;
+    }
+}
+
+int String::LastIndexOf(
+    /* [in] */ const char* string) const
+{
+    return LastIndexOf(String(string));
 }
 
 String& String::operator=(

@@ -31,6 +31,9 @@ public:
     inline Type& SetName(
         /* [in] */ const String& name) { mName = name; return *this; }
 
+    virtual bool IsEnumeration() { return false; }
+    virtual bool IsInterface() { return false; }
+
     virtual String ToString() { return mName; }
 
 protected:

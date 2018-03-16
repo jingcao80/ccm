@@ -55,7 +55,9 @@ sKeywords[24] =
 const String Tokenizer::TAG("Tokenizer");
 
 Tokenizer::Tokenizer()
-    : mCurrToken(Token::ILLEGAL_TOKEN)
+    : mFile(nullptr)
+    , mFileStack(nullptr)
+    , mCurrToken(Token::ILLEGAL_TOKEN)
     , mPrevToken(Token::ILLEGAL_TOKEN)
     , mHasPrevToken(false)
     , mTokenLineNo(0)
@@ -64,6 +66,48 @@ Tokenizer::Tokenizer()
     , mBit(0)
 {
     InitializeKeyword();
+}
+
+Tokenizer::~Tokenizer()
+{
+    mFile = nullptr;
+    FileNode* fn = mFileStack;
+    while (fn != nullptr) {
+        mFileStack = fn->mNext;
+        delete fn;
+        fn = mFileStack;
+    }
+    mFileStack = nullptr;
+}
+
+bool Tokenizer::PushInputFile(
+    /* [in] */ const String& filePath)
+{
+    File* file = new File(filePath);
+    if (!file->IsValid()) return false;
+
+    if (mFileStack == nullptr) {
+        mFileStack = new FileNode();
+        mFileStack->mFile = file;
+        mFile = file;
+        return true;
+    }
+
+    FileNode* fn = new FileNode();
+    fn->mFile = file;
+    fn->mNext = mFileStack;
+    mFileStack = fn;
+    mFile = file;
+    return true;
+}
+
+void Tokenizer::PopInputFileAndRemove()
+{
+    if (mFileStack == nullptr) return;
+    FileNode* fn = mFileStack;
+    mFileStack = mFileStack->mNext;
+    delete fn;
+    mFile = mFileStack != nullptr? mFileStack->mFile : nullptr;
 }
 
 void Tokenizer::InitializeKeyword()
@@ -80,6 +124,15 @@ Tokenizer::Token Tokenizer::GetToken()
         return mPrevToken;
     }
     return ReadToken();
+}
+
+Tokenizer::Token Tokenizer::GetEndOfLineToken()
+{
+    if (mHasPrevToken) {
+        mHasPrevToken = false;
+        return mPrevToken;
+    }
+    return ReadEndOfLineToken();
 }
 
 Tokenizer::Token Tokenizer::GetStringLiteralToken()
@@ -173,6 +226,12 @@ Tokenizer::Token Tokenizer::ReadToken()
         }
     }
     return Token::END_OF_FILE;
+}
+
+Tokenizer::Token Tokenizer::ReadEndOfLineToken()
+{
+    if (mFile->Read() == '\n') return Token::END_OF_LINE;
+    return Token::ILLEGAL_TOKEN;
 }
 
 Tokenizer::Token Tokenizer::ReadStringLiteralToken()
@@ -369,6 +428,11 @@ Tokenizer::Token Tokenizer::ReadIdentifier(
             continue;
         }
         else {
+            if (c == ':' && mFile->Peek() == ':') {
+                mFile->Read();
+                builder.Append("::");
+                continue;
+            }
             if (!IsEscape(c)) {
                 mFile->Unread(c);
             }
@@ -565,6 +629,8 @@ const char* Tokenizer::DumpToken(
             return "Double";
         case Token::DOUBLE_QUOTES:
             return "\"";
+        case Token::END_OF_LINE:
+            return "\n";
         case Token::ENUM:
             return "enum";
         case Token::FLOAT:

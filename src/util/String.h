@@ -62,6 +62,19 @@ public:
         /* [in] */ int begin,
         /* [in] */ int end) const;
 
+    int IndexOf(
+        /* [in] */ int c) const;
+    int IndexOf(
+        /* [in] */ const String& other) const;
+    int IndexOf(
+        /* [in] */ const char* string) const;
+    int LastIndexOf(
+        /* [in] */ int c) const;
+    int LastIndexOf(
+        /* [in] */ const String& other) const;
+    int LastIndexOf(
+        /* [in] */ const char* string) const;
+
     String& operator=(
         /* [in] */ const char* string);
     String& operator=(

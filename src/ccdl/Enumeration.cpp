@@ -65,6 +65,13 @@ bool Enumeration::EnlargeEnumeratorArray()
     return true;
 }
 
+String Enumeration::ToString()
+{
+    if (mNamespace == nullptr) return mName;
+
+    return mNamespace->ToString() + mName;
+}
+
 String Enumeration::Dump(
     /* [in] */ const String& prefix)
 {

@@ -73,6 +73,13 @@ bool Interface::EnlargeMethodArray()
     return true;
 }
 
+String Interface::ToString()
+{
+    if (mNamespace == nullptr) return mName;
+
+    return mNamespace->ToString() + mName;
+}
+
 String Interface::Dump(
     /* [in] */ const String& prefix)
 {

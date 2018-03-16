@@ -147,6 +147,62 @@ bool Component::AddNamespace(
     return true;
 }
 
+Namespace* Component::ParseNamespace(
+    /* [in] */ const String& nsString)
+{
+    String nss = nsString;
+    Namespace* nsp = nullptr, *headNsp = nullptr, *currNsp = nullptr;
+    int cIndex;
+    while ((cIndex = nss.IndexOf("::")) != -1) {
+        String ns = nss.Substring(0, cIndex - 1);
+        if (currNsp == nullptr) {
+            nsp = FindNamespace(ns);
+            if (nsp == nullptr) {
+                nsp = new Namespace(ns);
+                AddNamespace(nsp);
+            }
+            currNsp = headNsp = nsp;
+        }
+        else {
+            nsp = currNsp->FindInnerNamespace(ns);
+            if (nsp == nullptr) {
+                nsp = new Namespace(ns);
+                currNsp->AddInnerNamespace(nsp);
+            }
+            currNsp = nsp;
+        }
+        nss = nss.Substring(cIndex + 2);
+    }
+    if (currNsp == nullptr) {
+        nsp = FindNamespace(nss);
+        if (nsp == nullptr) {
+            nsp = new Namespace(nss);
+            AddNamespace(nsp);
+        }
+        headNsp = nsp;
+    }
+    else {
+        nsp = currNsp->FindInnerNamespace(nss);
+        if (nsp == nullptr) {
+            nsp = new Namespace(nss);
+            currNsp->AddInnerNamespace(nsp);
+        }
+    }
+    return headNsp;
+}
+
+Namespace* Component::FindNamespace(
+    /* [in] */ const String& nsString)
+{
+    for (int i = 0; i < mNSIndex; i++) {
+        Namespace* ns = mNamespaces[i];
+        if (ns->ToShortString().Equals(nsString)) {
+            return ns;
+        }
+    }
+    return nullptr;
+}
+
 bool Component::AddTemporaryType(
     /* [in] */ Type* type)
 {
@@ -246,6 +302,7 @@ String Component::Dump()
         buider.Append(enumStr).Append("\n");
     }
     for (int i = 0; i < mItfIndex; i++) {
+        if (!mInterfaces[i]->IsDefined()) continue;
         String itfStr = mInterfaces[i]->Dump(String("    "));
         buider.Append(itfStr).Append("\n");
     }
