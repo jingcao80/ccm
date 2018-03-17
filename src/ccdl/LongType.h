@@ -24,6 +24,8 @@ namespace ccdl {
 
 class LongType : public Type
 {
+public:
+    bool IsPrimitiveType() override { return true; }
 };
 
 }

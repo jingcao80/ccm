@@ -24,7 +24,8 @@ namespace ccdl {
 
 class ByteType : public Type
 {
-
+public:
+    bool IsPrimitiveType() override { return true; }
 };
 
 }

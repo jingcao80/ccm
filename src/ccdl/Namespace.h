@@ -46,6 +46,7 @@ public:
 
     inline int GetInnerNamespaceNumber() { return mInnerNSIndex; }
     inline Namespace** GetInnerNamespaces() { return mInnerNamespaces; }
+    inline Namespace* GetOuterNamespace() { return mOuterNamespace; }
 
     String ToString();
     inline String ToShortString() { return mNSString; }

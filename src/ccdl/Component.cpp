@@ -134,6 +134,16 @@ bool Component::AddInterface(
     return true;
 }
 
+Interface* Component::FindInterface(
+    /* [in] */ const String& itfFullName)
+{
+    Type* type = FindType(itfFullName);
+    if (type == nullptr || !type->IsInterface()) {
+        return nullptr;
+    }
+    return (Interface*)type;
+}
+
 bool Component::AddNamespace(
     /* [in] */ Namespace* ns)
 {

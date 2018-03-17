@@ -116,13 +116,12 @@ public:
         /* [in] */ const String& file);
     void PopInputFileAndRemove();
 
+    Token PeekToken();
     Token GetToken();
     Token GetEndOfLineToken();
     Token GetStringLiteralToken();
     Token GetUuidNumberToken();
     Token GetVersionNumberToken();
-    inline void UngetToken(
-        /* [in] */ Token token) { mPrevToken = token; mHasPrevToken = true; }
 
     inline String GetIdentifier() { return mIdentifier; }
     inline String GetNumberString() { return mNumberString; }
@@ -178,8 +177,7 @@ private:
     FileNode* mFileStack;
     HashMap<Token> mKeywords;
     Token mCurrToken;
-    Token mPrevToken;
-    bool mHasPrevToken;
+    bool mHasAPeek;
     int mTokenLineNo;
     int mTokenColumnNo;
     String mIdentifier;

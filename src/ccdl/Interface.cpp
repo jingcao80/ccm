@@ -56,6 +56,19 @@ Interface& Interface::AddMethod(
     return *this;
 }
 
+Interface& Interface::AddConstantDataMember(
+    /* [in] */ ConstantDataMember* dataMember)
+{
+    if (dataMember == nullptr) return *this;
+
+    if (mConstDataMemberIndex >= mConstDataMemberCapacity) {
+        if (!EnlargeConstantDataMemberArray()) return *this;
+    }
+
+    mConstDataMembers[mConstDataMemberIndex++] = dataMember;
+    return *this;
+}
+
 bool Interface::EnlargeMethodArray()
 {
     int newSize = mMethodCapacity == 0? 20 : mMethodCapacity + 30;
@@ -70,6 +83,24 @@ bool Interface::EnlargeMethodArray()
     }
     mMethodCapacity = newSize;
     mMethods = newArray;
+    return true;
+}
+
+bool Interface::EnlargeConstantDataMemberArray()
+{
+    int newSize = mConstDataMemberCapacity == 0? 10 : mConstDataMemberCapacity + 10;
+    ConstantDataMember** newArray =
+            (ConstantDataMember**)calloc(sizeof(ConstantDataMember*), newSize);
+    if (newArray == nullptr) {
+        return false;
+    }
+
+    if (mConstDataMembers != nullptr) {
+        memcpy(newArray, mConstDataMembers, mConstDataMemberCapacity);
+        free(mConstDataMembers);
+    }
+    mConstDataMemberCapacity = newSize;
+    mConstDataMembers = newArray;
     return true;
 }
 

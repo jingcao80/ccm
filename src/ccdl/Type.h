@@ -31,6 +31,7 @@ public:
     inline Type& SetName(
         /* [in] */ const String& name) { mName = name; return *this; }
 
+    virtual bool IsPrimitiveType() { return false; }
     virtual bool IsEnumeration() { return false; }
     virtual bool IsInterface() { return false; }
 

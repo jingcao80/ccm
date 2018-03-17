@@ -14,21 +14,34 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CCDL_FLOATTYPE_H__
-#define __CCM_CCDL_FLOATTYPE_H__
+#ifndef __CCM_CCDL_CONSTANTDATAMEMBER_H__
+#define __CCM_CCDL_CONSTANTDATAMEMBER_H__
 
+#include "ASTElement.h"
 #include "Type.h"
+#include "../util/String.h"
 
 namespace ccm {
 namespace ccdl {
 
-class FloatType : public Type
+class ConstantDataMember : public ASTElement
 {
 public:
-    bool IsPrimitiveType() override { return true; }
+    ConstantDataMember()
+        : mType(nullptr)
+    {}
+
+    inline ConstantDataMember& SetName(
+        /* [in] */ const String& name) { mName = name; return *this; }
+    inline ConstantDataMember& SetType(
+        /* [in] */ Type* type) { mType = type; return *this; }
+
+private:
+    Type* mType;
+    String mName;
 };
 
 }
 }
 
-#endif // __CCM_CCDL_FLOATTYPE_H__
+#endif // __CCM_CCDL_CONSTANTDATAMEMBER_H__

@@ -58,8 +58,7 @@ Tokenizer::Tokenizer()
     : mFile(nullptr)
     , mFileStack(nullptr)
     , mCurrToken(Token::ILLEGAL_TOKEN)
-    , mPrevToken(Token::ILLEGAL_TOKEN)
-    , mHasPrevToken(false)
+    , mHasAPeek(false)
     , mTokenLineNo(0)
     , mTokenColumnNo(0)
     , mNumber(0)
@@ -117,47 +116,56 @@ void Tokenizer::InitializeKeyword()
     }
 }
 
+Tokenizer::Token Tokenizer::PeekToken()
+{
+    if (mHasAPeek) return mCurrToken;
+
+    mCurrToken = ReadToken();
+    mHasAPeek = true;
+    return mCurrToken;
+}
+
 Tokenizer::Token Tokenizer::GetToken()
 {
-    if (mHasPrevToken) {
-        mHasPrevToken = false;
-        return mPrevToken;
+    if (mHasAPeek) {
+        mHasAPeek = false;
+        return mCurrToken;
     }
     return ReadToken();
 }
 
 Tokenizer::Token Tokenizer::GetEndOfLineToken()
 {
-    if (mHasPrevToken) {
-        mHasPrevToken = false;
-        return mPrevToken;
+    if (mHasAPeek) {
+        mHasAPeek = false;
+        return mCurrToken;
     }
     return ReadEndOfLineToken();
 }
 
 Tokenizer::Token Tokenizer::GetStringLiteralToken()
 {
-    if (mHasPrevToken) {
-        mHasPrevToken = false;
-        return mPrevToken;
+    if (mHasAPeek) {
+        mHasAPeek = false;
+        return mCurrToken;
     }
     return ReadStringLiteralToken();
 }
 
 Tokenizer::Token Tokenizer::GetUuidNumberToken()
 {
-    if (mHasPrevToken) {
-        mHasPrevToken = false;
-        return mPrevToken;
+    if (mHasAPeek) {
+        mHasAPeek = false;
+        return mCurrToken;
     }
     return ReadUuidNumberToken();
 }
 
 Tokenizer::Token Tokenizer::GetVersionNumberToken()
 {
-    if (mHasPrevToken) {
-        mHasPrevToken = false;
-        return mPrevToken;
+    if (mHasAPeek) {
+        mHasAPeek = false;
+        return mCurrToken;
     }
     return ReadVersionNumberToken();
 }
@@ -373,17 +381,24 @@ Tokenizer::Token Tokenizer::ReadUuidNumberToken()
 Tokenizer::Token Tokenizer::ReadVersionNumberToken()
 {
     StringBuilder builder;
+
+    if (PeekToken() != Token::NUMBER) {
+        return Token::ILLEGAL_TOKEN;
+    }
+    Tokenizer::Token token = GetToken();
+    builder.Append(mNumberString);
+
     int c = mFile->Read();
-    if (!IsDecimalDigital(c)) {
+    if (c != '.') {
         mFile->Unread(c);
         return Token::ILLEGAL_TOKEN;
     }
+    builder.Append('.');
 
-    Tokenizer::Token token = ReadNumber(c);
-    if (token != Token::NUMBER) {
-        UngetToken(token);
+    if (PeekToken() != Token::NUMBER) {
         return Token::ILLEGAL_TOKEN;
     }
+    token = GetToken();
     builder.Append(mNumberString);
 
     c = mFile->Read();
@@ -391,25 +406,12 @@ Tokenizer::Token Tokenizer::ReadVersionNumberToken()
         mFile->Unread(c);
         return Token::ILLEGAL_TOKEN;
     }
+    builder.Append('.');
 
-    token = ReadNumber(c);
-    if (token != Token::NUMBER) {
-        UngetToken(token);
+    if (PeekToken() != Token::NUMBER) {
         return Token::ILLEGAL_TOKEN;
     }
-    builder.Append(mNumberString);
-
-    c = mFile->Read();
-    if (c != '.') {
-        mFile->Unread(c);
-        return Token::ILLEGAL_TOKEN;
-    }
-
-    token = ReadNumber(c);
-    if (token != Token::NUMBER) {
-        UngetToken(token);
-        return Token::ILLEGAL_TOKEN;
-    }
+    token = GetToken();
     builder.Append(mNumberString);
 
     mString = builder.ToString();

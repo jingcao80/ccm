@@ -62,6 +62,11 @@ public:
         /* [in] */ int begin,
         /* [in] */ int end) const;
 
+    bool Contains(
+        /* [in] */ const String& other) const;
+    bool Contains(
+        /* [in] */ const char* string) const;
+
     int IndexOf(
         /* [in] */ int c) const;
     int IndexOf(

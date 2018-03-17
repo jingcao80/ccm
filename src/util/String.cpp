@@ -227,6 +227,18 @@ String String::Substring(
     return string;
 }
 
+bool String::Contains(
+    /* [in] */ const String& other) const
+{
+    return IndexOf(other) != -1;
+}
+
+bool String::Contains(
+    /* [in] */ const char* string) const
+{
+    return IndexOf(string) != -1;
+}
+
 int String::IndexOf(
     /* [in] */ int c) const
 {

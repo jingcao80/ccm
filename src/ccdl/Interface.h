@@ -19,6 +19,7 @@
 
 #include "Type.h"
 #include "Attribute.h"
+#include "ConstantDataMember.h"
 #include "Method.h"
 #include "Namespace.h"
 #include "../util/Uuid.h"
@@ -32,9 +33,13 @@ public:
     Interface()
         : mDefined(false)
         , mNamespace(nullptr)
+        , mBaseInterface(nullptr)
         , mMethodCapacity(0)
         , mMethodIndex(0)
         , mMethods(nullptr)
+        , mConstDataMemberCapacity(0)
+        , mConstDataMemberIndex(0)
+        , mConstDataMembers(nullptr)
     {}
 
     ~Interface();
@@ -45,6 +50,13 @@ public:
         /* [in] */ const String& name) { mName = name; return *this; }
     inline Interface& SetNamespace(
         /* [in] */ Namespace* ns) { mNamespace = ns; return *this; }
+    inline Interface& SetBaseInterface(
+        /* [in] */ Interface* baseItf)
+    {
+        if (baseItf == nullptr) return *this;
+        mBaseInterface = baseItf;
+        return *this;
+    }
     inline Interface& SetDefined(
         /* [in] */ bool defined) { mDefined = defined; return *this; }
     inline bool IsDefined() { return mDefined; }
@@ -53,6 +65,8 @@ public:
 
     Interface& AddMethod(
         /* [in] */ Method* method);
+    Interface& AddConstantDataMember(
+        /* [in] */ ConstantDataMember* dataMember);
 
     String ToString();
     inline String ToShortString() { return mName; }
@@ -62,16 +76,21 @@ public:
 
 private:
     bool EnlargeMethodArray();
+    bool EnlargeConstantDataMemberArray();
 
 private:
     bool mDefined;
     Namespace* mNamespace;
+    Interface* mBaseInterface;
     Uuid mUuid;
     String mVersion;
     String mDescription;
     int mMethodCapacity;
     int mMethodIndex;
     Method** mMethods;
+    int mConstDataMemberCapacity;
+    int mConstDataMemberIndex;
+    ConstantDataMember** mConstDataMembers;
 };
 
 }
