@@ -27,8 +27,10 @@ Namespace::~Namespace()
         Namespace* ns = mInnerNamespaces[i];
         delete ns;
     }
-    if (mInnerNamespaces != nullptr) delete mInnerNamespaces;
-    mInnerNamespaces = nullptr;
+    if (mInnerNamespaces != nullptr) {
+        delete mInnerNamespaces;
+        mInnerNamespaces = nullptr;
+    }
     mOuterNamespace = nullptr;
 }
 

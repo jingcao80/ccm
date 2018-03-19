@@ -28,8 +28,10 @@ Method::~Method()
         Parameter* p = mParameters[i];
         delete p;
     }
-    if (mParameters != nullptr) free(mParameters);
-    mParameters = nullptr;
+    if (mParameters != nullptr) {
+        free(mParameters);
+        mParameters = nullptr;
+    }
 }
 
 Method& Method::AddParameter(

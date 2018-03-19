@@ -47,15 +47,18 @@ public:
         CONST,                  // 14)
         DESCRIPTION,            // 15)
         ENUM,                   // 16)
+        FALSE,
         IN,                     // 17)
         INCLUDE,                // 18)
         INTERFACE,              // 19)
         MODULE,                 // 20)
         NAMESPACE,              // 21)
         OUT,                    // 22)
+        TRUE,
         UUID,                   // 23)
         VERSION,                // 24)
         // symbol
+        AND,                    //      '&'
         ANGLE_BRACKETS_OPEN,    // 25)  '<'
         ANGLE_BRACKETS_CLOSE,   // 26)  '>'
         ASSIGNMENT,             // 27)  '='
@@ -68,20 +71,32 @@ public:
         COMMA,                  // 34)  ','
         COMMENT_BLOCK,          // 35)
         COMMENT_LINE,           // 36)
+        COMPLIMENT,             //      '~'
         DIVIDE,                 // 37)  '/'
         DOUBLE_QUOTES,          // 38)  '"'
         END_OF_FILE,            // 39)
         END_OF_LINE,            // 40)  '\n'
-        HYPHEN,                 // 41)  '-'
-        IDENTIFIER,             // 42)
-        NUMBER,                 // 43)
+        EXCLUSIVE_OR,           //      '^'
+        INCLUSIVE_OR,           // 43)  '|'
+        MINUS,                  //      '-'
+        MODULO,                 //      '%'
+        NOT,                    //      '!'
         PARENTHESES_OPEN,       // 44)  '('
         PARENTHESES_CLOSE,      // 45)  ')'
         PERIOD,                 // 46)  '.'
+        PLUS,                   //        '+'
         SEMICOLON,              // 47)  ';'
+        SHIFT_LEFT,
+        SHIFT_RIGHT,
+        SHIFT_RIGHT_UNSIGNED,
         STRING_LITERAL,         // 48)
         UUID_NUMBER,            // 49)
         VERSION_NUMBER,         // 50)
+        // other
+        CHARACTER,
+        IDENTIFIER,             // 42)
+        NUMBER_INTEGER,         // 43)
+        NUMBER_FLOAT,
     };
 
 private:
@@ -118,7 +133,6 @@ public:
 
     Token PeekToken();
     Token GetToken();
-    Token GetEndOfLineToken();
     Token GetStringLiteralToken();
     Token GetUuidNumberToken();
     Token GetVersionNumberToken();
@@ -128,6 +142,8 @@ public:
     inline String GetString() { return mString; }
     inline int GetTokenColumnNo() { return mTokenColumnNo; }
     inline int GetTokenLineNo() { return mTokenLineNo; }
+
+    void SkipCurrentLine();
 
     static inline bool IsPrimitiveType(
         /* [in] */ Token token) { return Token::BOOLEAN <= token && token <= Token::STRING; }
@@ -143,7 +159,6 @@ private:
     void InitializeKeyword();
 
     Token ReadToken();
-    Token ReadEndOfLineToken();
     Token ReadStringLiteralToken();
     Token ReadUuidNumberToken();
     Token ReadVersionNumberToken();

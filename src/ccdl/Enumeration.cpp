@@ -29,8 +29,10 @@ Enumeration::~Enumeration()
         Enumerator* e = mEnumerators[i];
         delete e;
     }
-    if (mEnumerators != nullptr) free(mEnumerators);
-    mEnumerators = nullptr;
+    if (mEnumerators != nullptr) {
+        free(mEnumerators);
+        mEnumerators = nullptr;
+    }
 }
 
 Enumeration& Enumeration::AddEnumerator(

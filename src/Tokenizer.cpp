@@ -134,15 +134,6 @@ Tokenizer::Token Tokenizer::GetToken()
     return ReadToken();
 }
 
-Tokenizer::Token Tokenizer::GetEndOfLineToken()
-{
-    if (mHasAPeek) {
-        mHasAPeek = false;
-        return mCurrToken;
-    }
-    return ReadEndOfLineToken();
-}
-
 Tokenizer::Token Tokenizer::GetStringLiteralToken()
 {
     if (mHasAPeek) {
@@ -170,6 +161,14 @@ Tokenizer::Token Tokenizer::GetVersionNumberToken()
     return ReadVersionNumberToken();
 }
 
+void Tokenizer::SkipCurrentLine()
+{
+    int c = mFile->Read();
+    while (c != -1 && c != '\n') {
+        c = mFile->Read();
+    }
+}
+
 Tokenizer::Token Tokenizer::ReadToken()
 {
     int c;
@@ -179,17 +178,31 @@ Tokenizer::Token Tokenizer::ReadToken()
         if (IsEscape(c)) {
             continue;
         }
-        else if (IsAlphabet(c) || c == '_') {
+        else if (IsAlphabet(c) || c == '_' || c == '-') {
             return ReadIdentifier(c);
         }
         else if (IsDecimalDigital(c)) {
             return ReadNumber(c);
         }
         switch (c) {
-            case '<':
+            case '<': {
+                if (mFile->Peek() == '<') {
+                    mFile->Read();
+                    return Token::SHIFT_LEFT;
+                }
                 return Token::ANGLE_BRACKETS_OPEN;
-            case '>':
+            }
+            case '>': {
+                if (mFile->Peek() == '>') {
+                    mFile->Read();
+                    if (mFile->Peek() == '>') {
+                        mFile->Read();
+                        return Token::SHIFT_RIGHT_UNSIGNED;
+                    }
+                    else return Token::SHIFT_RIGHT;
+                }
                 return Token::ANGLE_BRACKETS_CLOSE;
+            }
             case '=':
                 return Token::ASSIGNMENT;
             case '*':
@@ -219,7 +232,7 @@ Tokenizer::Token Tokenizer::ReadToken()
             case '"':
                 return Token::DOUBLE_QUOTES;
             case '-':
-                return Token::HYPHEN;
+                return Token::MINUS;
             case '(':
                 return Token::PARENTHESES_OPEN;
             case ')':
@@ -234,12 +247,6 @@ Tokenizer::Token Tokenizer::ReadToken()
         }
     }
     return Token::END_OF_FILE;
-}
-
-Tokenizer::Token Tokenizer::ReadEndOfLineToken()
-{
-    if (mFile->Read() == '\n') return Token::END_OF_LINE;
-    return Token::ILLEGAL_TOKEN;
 }
 
 Tokenizer::Token Tokenizer::ReadStringLiteralToken()
@@ -382,7 +389,7 @@ Tokenizer::Token Tokenizer::ReadVersionNumberToken()
 {
     StringBuilder builder;
 
-    if (PeekToken() != Token::NUMBER) {
+    if (PeekToken() != Token::NUMBER_INTEGER) {
         return Token::ILLEGAL_TOKEN;
     }
     Tokenizer::Token token = GetToken();
@@ -395,7 +402,7 @@ Tokenizer::Token Tokenizer::ReadVersionNumberToken()
     }
     builder.Append('.');
 
-    if (PeekToken() != Token::NUMBER) {
+    if (PeekToken() != Token::NUMBER_INTEGER) {
         return Token::ILLEGAL_TOKEN;
     }
     token = GetToken();
@@ -408,7 +415,7 @@ Tokenizer::Token Tokenizer::ReadVersionNumberToken()
     }
     builder.Append('.');
 
-    if (PeekToken() != Token::NUMBER) {
+    if (PeekToken() != Token::NUMBER_INTEGER) {
         return Token::ILLEGAL_TOKEN;
     }
     token = GetToken();
@@ -425,7 +432,7 @@ Tokenizer::Token Tokenizer::ReadIdentifier(
 
     builder.Append((char)c);
     while ((c = mFile->Read()) != -1) {
-        if (IsAlphabet(c) || c == '_' || IsDecimalDigital(c)) {
+        if (IsAlphabet(c) || c == '_' || c== '-' || IsDecimalDigital(c)) {
             builder.Append((char)c);
             continue;
         }
@@ -511,7 +518,7 @@ Tokenizer::Token Tokenizer::ReadNumber(
     }
     mNumberString = builder.ToString();
     mNumber = strtoll(mNumberString.string(), NULL, radix);
-    return Token::NUMBER;
+    return Token::NUMBER_INTEGER;
 }
 
 Tokenizer::Token Tokenizer::ReadLineComment(
@@ -585,6 +592,8 @@ const char* Tokenizer::DumpToken(
     /* [in] */ Token token)
 {
     switch (token) {
+        case Token::AND:
+            return "&";
         case Token::ANGLE_BRACKETS_OPEN:
             return "<";
         case Token::ANGLE_BRACKETS_CLOSE:
@@ -621,6 +630,8 @@ const char* Tokenizer::DumpToken(
             return mComment.string();
         case Token::COMMENT_LINE:
             return mComment.string();
+        case Token::COMPLIMENT:
+            return "~";
         case Token::CONST:
             return "const";
         case Token::DESCRIPTION:
@@ -635,29 +646,35 @@ const char* Tokenizer::DumpToken(
             return "\n";
         case Token::ENUM:
             return "enum";
+        case Token::EXCLUSIVE_OR:
+            return "^";
         case Token::FLOAT:
             return "Float";
         case Token::HANDLE:
             return "HANDLE";
-        case Token::HYPHEN:
-            return "-";
         case Token::IDENTIFIER:
             return mIdentifier.string();
         case Token::IN:
             return "in";
         case Token::INCLUDE:
             return "include";
+        case Token::INCLUSIVE_OR:
+            return "|";
         case Token::INTEGER:
             return "Integer";
         case Token::INTERFACE:
             return "interface";
         case Token::LONG:
             return "Long";
+        case Token::MINUS:
+            return "-";
         case Token::MODULE:
             return "Module";
         case Token::NAMESPACE:
             return "namespace";
-        case Token::NUMBER:
+        case Token::NOT:
+            return "!";
+        case Token::NUMBER_INTEGER:
             return mNumberString.string();
         case Token::OUT:
             return "out";
@@ -667,8 +684,16 @@ const char* Tokenizer::DumpToken(
             return ")";
         case Token::PERIOD:
             return ".";
+        case Token::PLUS:
+            return "+";
         case Token::SEMICOLON:
             return ";";
+        case Token::SHIFT_LEFT:
+            return "<<";
+        case Token::SHIFT_RIGHT:
+            return ">>";
+        case Token::SHIFT_RIGHT_UNSIGNED:
+            return ">>>";
         case Token::SHORT:
             return "Short";
         case Token::STRING:

@@ -127,19 +127,9 @@
 
 <*multiplicative_expression*> ::= <*unary_expression*> | <*multiplicative_expression*> * <*unary_expression*> | <*multiplicative_expression*> / <*unary_expression*> | <*multiplicative_expression*> % <*unary_expression*>
 
-<*unary_expression*> ::= <*preincrement_expression*> | <*predecrement_expression*> | + <*unary_expression*> | - <*unary_expression*> | <*unary_expression_not_plus_minus*>
+<*unary_expression*> ::= <*postfix_expression*> | + <*unary_expression*> | - <*unary_expression*> | ~ <*unary_expression*> | ! <*unary_expression*>
 
-<*predecrement_expression*> ::= -- <*unary_expression*>
-
-<*preincrement_expression*> ::= ++ <*unary_expression*>
-
-<*unary_expression_not_plus_minus*> ::= <*postfix_expression*> | ~ <*unary_expression*> | ! <*unary_expression*> | <*cast_expression*>
-
-<*postfix_expression*> ::= <*primary*> | <*expression_name*> | <*postincrement_expression*> | <*postdecrement_expression*>
-
-<*postdecrement_expression*> ::= <*postfix_expression*> --
-
-<*postincrement_expression*> ::= <*postfix_expression*> ++
+<*postfix_expression*> ::= <*primary*> | <*expression_name*>
 
 <*primary*> ::= <*literal*> | ( <*expression*> )
 

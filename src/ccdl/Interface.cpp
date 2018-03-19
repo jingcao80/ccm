@@ -30,8 +30,10 @@ Interface::~Interface()
         Method* m = mMethods[i];
         delete m;
     }
-    if (mMethods != nullptr) free(mMethods);
-    mMethods = nullptr;
+    if (mMethods != nullptr) {
+        free(mMethods);
+        mMethods = nullptr;
+    }
 }
 
 Interface& Interface::SetAttribute(

@@ -18,24 +18,42 @@
 #define __CCM_PARSER_H__
 
 #include "Tokenizer.h"
+#include "ccdl/AdditiveExpression.h"
+#include "ccdl/AndExpression.h"
 #include "ccdl/Attribute.h"
 #include "ccdl/Component.h"
 #include "ccdl/Enumeration.h"
+#include "ccdl/ExclusiveOrExpression.h"
+#include "ccdl/Expression.h"
+#include "ccdl/InclusiveOrExpression.h"
 #include "ccdl/Interface.h"
 #include "ccdl/Method.h"
+#include "ccdl/MultiplicativeExpression.h"
 #include "ccdl/Namespace.h"
 #include "ccdl/Parameter.h"
+#include "ccdl/PostfixExpression.h"
+#include "ccdl/ShiftExpression.h"
 #include "ccdl/Type.h"
+#include "ccdl/UnaryExpression.h"
 #include "util/HashMap.h"
 
+using ccm::ccdl::AdditiveExpression;
+using ccm::ccdl::AndExpression;
 using ccm::ccdl::Attribute;
 using ccm::ccdl::Component;
 using ccm::ccdl::Enumeration;
+using ccm::ccdl::ExclusiveOrExpression;
+using ccm::ccdl::Expression;
+using ccm::ccdl::InclusiveOrExpression;
 using ccm::ccdl::Interface;
 using ccm::ccdl::Method;
+using ccm::ccdl::MultiplicativeExpression;
 using ccm::ccdl::Namespace;
 using ccm::ccdl::Parameter;
+using ccm::ccdl::PostfixExpression;
+using ccm::ccdl::ShiftExpression;
 using ccm::ccdl::Type;
+using ccm::ccdl::UnaryExpression;
 
 namespace ccm {
 
@@ -113,8 +131,25 @@ private:
     Type* ParseArrayType();
     bool ParseConstDataMember(
         /* [in] */ Interface* interface);
-    bool ParseExpression(
-        /* [out] */ int* value);
+    Expression* ParseExpression(
+        /* [in] */ Type* expressionType);
+    InclusiveOrExpression* ParseInclusiveOrExpression(
+        /* [in] */ Type* expressionType);
+    ExclusiveOrExpression* ParseExclusiveOrExpression(
+        /* [in] */ Type* expressionType);
+    AndExpression* ParseAndExpression(
+        /* [in] */ Type* expressionType);
+    ShiftExpression* ParseShiftExpression(
+        /* [in] */ Type* expressionType);
+    AdditiveExpression* ParseAdditiveExpression(
+        /* [in] */ Type* expressionType);
+    MultiplicativeExpression* ParseMultiplicativeExpression(
+        /* [in] */ Type* expressionType);
+    UnaryExpression* ParseUnaryExpression(
+        /* [in] */ Type* expressionType);
+    PostfixExpression* ParsePostfixExpression(
+        /* [in] */ Type* expressionType);
+
     bool ParseCoclass(
         /* [in] */ Attribute& attr);
     bool ParseEnumeration();

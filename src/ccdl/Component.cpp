@@ -70,29 +70,37 @@ Component::~Component()
         Enumeration* enumeration = mEnumerations[i];
         delete enumeration;
     }
-    if (mEnumerations != nullptr) free(mEnumerations);
-    mEnumerations = nullptr;
+    if (mEnumerations != nullptr) {
+        free(mEnumerations);
+        mEnumerations = nullptr;
+    }
 
     for (int i = 0; i < mItfIndex; i++) {
         Interface* itf = mInterfaces[i];
         delete itf;
     }
-    if (mInterfaces != nullptr) free(mInterfaces);
-    mInterfaces = nullptr;
+    if (mInterfaces != nullptr) {
+        free(mInterfaces);
+        mInterfaces = nullptr;
+    }
 
     for (int i = 0; i < mNSIndex; i++) {
         Namespace* ns = mNamespaces[i];
         delete ns;
     }
-    if (mNamespaces != nullptr) free(mNamespaces);
-    mNamespaces = nullptr;
+    if (mNamespaces != nullptr) {
+        free(mNamespaces);
+        mNamespaces = nullptr;
+    }
 
     for (int i = 0; i < mTempTypeIndex; i++) {
         Type* ty = mTempTypes[i];
         delete ty;
     }
-    if (mTempTypes != nullptr) free(mTempTypes);
-    mTempTypes = nullptr;
+    if (mTempTypes != nullptr) {
+        free(mTempTypes);
+        mTempTypes = nullptr;
+    }
 
     delete mByteType;
     delete mShortType;
@@ -118,6 +126,16 @@ bool Component::AddEnumeration(
     mEnumerations[mEnumIndex++] = enumeration;
     mTypes.Put(enumeration->ToString(), enumeration);
     return true;
+}
+
+Enumeration* Component::FindEnumeration(
+    /* [in] */ const String& enumFullName)
+{
+    Type* type = FindType(enumFullName);
+    if (type == nullptr || !type->IsEnumeration()) {
+        return nullptr;
+    }
+    return (Enumeration*)type;
 }
 
 bool Component::AddInterface(

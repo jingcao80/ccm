@@ -27,10 +27,10 @@ StringBuilder::~StringBuilder()
 {
     if (mBuffer != nullptr) {
         free(mBuffer);
+        mBuffer = nullptr;
     }
     mCapacity = 0;
     mPosition = 0;
-    mBuffer = nullptr;
 }
 
 StringBuilder& StringBuilder::Append(

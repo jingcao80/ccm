@@ -48,6 +48,7 @@ File::~File()
 {
     if (mFd != nullptr) {
         fclose(mFd);
+        mFd = nullptr;
     }
 }
 
