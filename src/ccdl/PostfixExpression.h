@@ -18,13 +18,48 @@
 #define __CCM_CCDL_POSTFIXEXPRESSION_H__
 
 #include "Expression.h"
+#include "Type.h"
 
 namespace ccm {
 namespace ccdl {
 
 class PostfixExpression : public Expression
 {
+public:
+    PostfixExpression()
+        : mType(nullptr)
+        , mCharValue(0)
+        , mBooleanValue(false)
+        , mIntegerValue(0)
+        , mLongValue(0)
+        , mFloatValue(0)
+        , mDoubleValue(0)
+        , mExpression(nullptr)
+    {}
 
+    inline PostfixExpression& SetType(
+        /* [in] */ Type* type)
+    { mType = type; return *this; }
+
+    inline PostfixExpression& SetEnumerator(
+        /* [in] */ const String& enumName)
+    { mEnumeratorName = enumName; return *this; }
+
+    inline PostfixExpression& SetExpression(
+        /* [in] */ Expression* expression)
+    { mExpression = expression; return *this; }
+
+private:
+    Type* mType;
+    char mCharValue;
+    bool mBooleanValue;
+    int mIntegerValue;
+    long long int mLongValue;
+    float mFloatValue;
+    double mDoubleValue;
+    String mStringValue;
+    String mEnumeratorName;
+    Expression* mExpression;
 };
 
 }

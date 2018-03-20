@@ -25,7 +25,8 @@ namespace ccdl {
 class BooleanType : public Type
 {
 public:
-    bool IsPrimitiveType() override { return true; }
+    bool IsPrimitiveType() override
+    { return true; }
 };
 
 }

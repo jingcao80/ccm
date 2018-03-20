@@ -26,34 +26,15 @@ namespace ccdl {
 class UnaryExpression : public Expression
 {
 public:
-    UnaryExpression()
-        : mOperand(nullptr)
-        , mNestOperand(nullptr)
-        , mOperator(-1)
-    {}
-
-    ~UnaryExpression();
-
-    inline UnaryExpression& SetOperand(
-        /* [in] */ PostfixExpression* operand)
-    { mOperand = operand; return *this; }
-    inline UnaryExpression& SetNestOperand(
-        /* [in] */ UnaryExpression* operand)
-    { mNestOperand = operand; return *this; }
-    inline UnaryExpression& SetOperator(
-        /* [in] */ int unaryOperator)
-    { mOperator = unaryOperator; return *this; }
-
-public:
     static constexpr int POSITIVE = 0;
     static constexpr int NEGATIVE = 1;
     static constexpr int COMPLIMENT = 2;
     static constexpr int NOT = 3;
 
-private:
-    PostfixExpression* mOperand;
-    UnaryExpression* mNestOperand;
-    int mOperator;
+// private:
+//     PostfixExpression* mOperand;
+//     UnaryExpression* mNestOperand;
+//     int mOperator;
 };
 
 }

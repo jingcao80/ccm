@@ -106,7 +106,7 @@ void Tokenizer::PopInputFileAndRemove()
     FileNode* fn = mFileStack;
     mFileStack = mFileStack->mNext;
     delete fn;
-    mFile = mFileStack != nullptr? mFileStack->mFile : nullptr;
+    mFile = mFileStack != nullptr ? mFileStack->mFile : nullptr;
 }
 
 void Tokenizer::InitializeKeyword()
@@ -469,8 +469,8 @@ Tokenizer::Token Tokenizer::ReadNumber(
 
     builder.Append((char)c);
     mBit = 32;
-    int radix = c == '0'? 8 : 10;
-    int state = c == '0'? NUMBER_PREFIX_0 : NUMBER;
+    int radix = c == '0' ? 8 : 10;
+    int state = c == '0' ? NUMBER_PREFIX_0 : NUMBER;
     while ((c = mFile->Read()) != -1) {
         if (state == NUMBER_PREFIX_0) {
             if (c == 'x' || c == 'X') {

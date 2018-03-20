@@ -99,8 +99,8 @@ String StringBuilder::ToString()
 bool StringBuilder::Enlarge(
     /* [in] */ int size)
 {
-    int newSize = mCapacity == 0? 256 : mCapacity;
-    newSize = newSize > size? newSize : size;
+    int newSize = mCapacity == 0 ? 256 : mCapacity;
+    newSize = newSize > size ? newSize : size;
     char* newBuffer = (char*)calloc(mCapacity + newSize, 1);
     if (newBuffer == nullptr) {
         Logger::E(TAG, "Fail to malloc % byte memory.", mCapacity + newSize);

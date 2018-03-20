@@ -18,6 +18,7 @@
 #define __CCM_CCDL_CONSTANTDATAMEMBER_H__
 
 #include "ASTElement.h"
+#include "Expression.h"
 #include "Type.h"
 #include "../util/String.h"
 
@@ -32,13 +33,21 @@ public:
     {}
 
     inline ConstantDataMember& SetName(
-        /* [in] */ const String& name) { mName = name; return *this; }
+        /* [in] */ const String& name)
+    { mName = name; return *this; }
+
     inline ConstantDataMember& SetType(
-        /* [in] */ Type* type) { mType = type; return *this; }
+        /* [in] */ Type* type)
+    { mType = type; return *this; }
+
+    inline ConstantDataMember& SetValue(
+        /* [in] */ Expression* value)
+    { mValue = value; return *this; }
 
 private:
     Type* mType;
     String mName;
+    Expression* mValue;
 };
 
 }

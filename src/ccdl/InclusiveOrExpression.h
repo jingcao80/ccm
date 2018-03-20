@@ -25,25 +25,9 @@ namespace ccdl {
 
 class InclusiveOrExpression : public Expression
 {
-public:
-    InclusiveOrExpression()
-        : mLeftOperand(nullptr)
-        , mRightOperand(nullptr)
-    {}
-
-    ~InclusiveOrExpression();
-
-    inline InclusiveOrExpression& SetLeftOperand(
-        /* [in] */ InclusiveOrExpression* leftOperand)
-    { mLeftOperand = leftOperand; return *this; }
-
-    inline InclusiveOrExpression& SetRightOperand(
-        /* [in] */ ExclusiveOrExpression* rightOperand)
-    { mRightOperand = rightOperand; return *this; }
-
-private:
-    InclusiveOrExpression* mLeftOperand;
-    ExclusiveOrExpression* mRightOperand;
+// private:
+//     InclusiveOrExpression* mLeftOperand;
+//     ExclusiveOrExpression* mRightOperand;
 };
 
 }

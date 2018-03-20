@@ -49,7 +49,7 @@ Method& Method::AddParameter(
 
 bool Method::EnlargeParameterArray()
 {
-    int newSize = mParamCapacity == 0? 5 : mParamCapacity + 5;
+    int newSize = mParamCapacity == 0 ? 5 : mParamCapacity + 5;
     Parameter** newArray = (Parameter**)calloc(sizeof(Parameter*), newSize);
     if (newArray == nullptr) return false;
 

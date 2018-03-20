@@ -26,33 +26,14 @@ namespace ccdl {
 class ShiftExpression : public Expression
 {
 public:
-    ShiftExpression()
-        : mLeftOperand(nullptr)
-        , mRightOperand(nullptr)
-        , mShiftOperator(-1)
-    {}
-
-    ~ShiftExpression();
-
-    inline ShiftExpression& SetLeftOperand(
-        /* [in] */ ShiftExpression* leftOperand)
-    { mLeftOperand = leftOperand; return *this; }
-    inline ShiftExpression& SetRightOperand(
-        /* [in] */ AdditiveExpression* rightOperand)
-    { mRightOperand = rightOperand; return *this; }
-    inline ShiftExpression& SetOperator(
-        /* [in] */ int shiftOperator)
-    { mShiftOperator = shiftOperator; return *this; }
-
-public:
     static constexpr int LEFT = 0;
     static constexpr int RIGHT = 1;
     static constexpr int RIGHT_UNSIGNED = 2;
 
-private:
-    ShiftExpression* mLeftOperand;
-    AdditiveExpression* mRightOperand;
-    int mShiftOperator;
+// private:
+//     ShiftExpression* mLeftOperand;
+//     AdditiveExpression* mRightOperand;
+//     int mShiftOperator;
 };
 
 }

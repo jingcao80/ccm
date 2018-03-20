@@ -19,17 +19,6 @@
 namespace ccm {
 namespace ccdl {
 
-AdditiveExpression::~AdditiveExpression()
-{
-    if (mLeftOperand != nullptr) {
-        delete mLeftOperand;
-        mLeftOperand = nullptr;
-    }
-    if (mRightOperand != nullptr) {
-        delete mRightOperand;
-        mRightOperand = nullptr;
-    }
-}
 
 }
 }

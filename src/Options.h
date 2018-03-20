@@ -28,10 +28,17 @@ public:
         /* [in] */ int argc,
         /* [in] */ char** argv);
 
-    inline bool IsFormatError() { return mFormatError; }
-    inline bool ShouldShowUsage() { return mShowUsage; }
-    inline int GetOptionNumber() { return mOptionNumber; }
-    inline String GetInputFile() { return mInputFile; }
+    inline bool IsFormatError()
+    { return mFormatError; }
+
+    inline bool ShouldShowUsage()
+    { return mShowUsage; }
+
+    inline int GetOptionNumber()
+    { return mOptionNumber; }
+
+    inline String GetInputFile()
+    { return mInputFile; }
 
     void ShowUsage();
 

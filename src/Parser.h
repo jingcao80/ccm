@@ -116,51 +116,75 @@ public:
 
 private:
     bool ParseFile();
+
     bool ParseDeclarationWithAttribute();
+
     bool ParseAttribute(
         /* [out] */ Attribute& attr);
+
     bool ParseInterface(
         /* [in] */ Attribute* attr);
+
     bool ParseInterfaceBody(
         /* [in] */ Interface* interface);
+
     bool ParseMethod(
         /* [in] */ Interface* interface);
+
     bool ParseParameter(
         /* [in] */ Method* method);
+
     Type* ParseType();
+
     Type* ParseArrayType();
+
     bool ParseConstDataMember(
         /* [in] */ Interface* interface);
+
     Expression* ParseExpression(
-        /* [in] */ Type* expressionType);
+        /* [in] */ Type* exprType);
+
     InclusiveOrExpression* ParseInclusiveOrExpression(
-        /* [in] */ Type* expressionType);
+        /* [in] */ Type* exprType);
+
     ExclusiveOrExpression* ParseExclusiveOrExpression(
-        /* [in] */ Type* expressionType);
+        /* [in] */ Type* exprType);
+
     AndExpression* ParseAndExpression(
-        /* [in] */ Type* expressionType);
+        /* [in] */ Type* exprType);
+
     ShiftExpression* ParseShiftExpression(
-        /* [in] */ Type* expressionType);
+        /* [in] */ Type* exprType);
+
     AdditiveExpression* ParseAdditiveExpression(
-        /* [in] */ Type* expressionType);
+        /* [in] */ Type* exprType);
+
     MultiplicativeExpression* ParseMultiplicativeExpression(
-        /* [in] */ Type* expressionType);
+        /* [in] */ Type* exprType);
+
     UnaryExpression* ParseUnaryExpression(
-        /* [in] */ Type* expressionType);
+        /* [in] */ Type* exprType);
+
     PostfixExpression* ParsePostfixExpression(
-        /* [in] */ Type* expressionType);
+        /* [in] */ Type* exprType);
 
     bool ParseCoclass(
         /* [in] */ Attribute& attr);
+
     bool ParseEnumeration();
+
     bool ParseEnumerationBody(
         /* [in] */ Enumeration* enumeration);
+
     bool ParseInclude();
+
     bool ParseModule(
         /* [in] */ Attribute& attr);
+
     bool ParseNamespace();
 
     void EnterContext();
+
     void LeaveContext();
 
     Interface* FindBaseInterface(

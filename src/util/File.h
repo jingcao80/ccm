@@ -25,22 +25,6 @@ namespace ccm {
 
 class File
 {
-public:
-    File(
-        /* [in] */ const char* path);
-    File(
-        /* [in] */ const String& path);
-    ~File();
-
-    inline bool IsValid() { return mFd != nullptr; }
-    inline String GetPath() { return mPath; }
-    inline int Peek() { return mReader.Peek(); }
-    inline int Read() { return mReader.Read(); }
-    inline void Unread(
-        /* [in] */ int c) { mReader.Unread(c); }
-    inline int GetColumnNo() { return mReader.GetColumnNo(); }
-    inline int GetLineNo() { return mReader.GetLineNo(); }
-
 private:
     class BufferedReader
     {
@@ -64,14 +48,18 @@ private:
         void Unread(
             /* [in] */ int c);
 
-        inline int GetColumnNo() { return mColumnNo; }
-        inline int GetLineNo() { return mLineNo; }
+        inline int GetColumnNo()
+        { return mColumnNo; }
+
+        inline int GetLineNo()
+        { return mLineNo; }
 
     private:
         int FRead();
 
     private:
         static constexpr int BUFFER_SIZE = 512;
+
         File* mOwner;
         int mColumnNo;
         int mPrevColumnNo;
@@ -83,6 +71,38 @@ private:
         bool mError;
     };
 
+public:
+    File(
+        /* [in] */ const char* path);
+
+    File(
+        /* [in] */ const String& path);
+
+    ~File();
+
+    inline bool IsValid()
+    { return mFd != nullptr; }
+
+    inline String GetPath()
+    { return mPath; }
+
+    inline int Peek()
+    { return mReader.Peek(); }
+
+    inline int Read()
+    { return mReader.Read(); }
+
+    inline void Unread(
+        /* [in] */ int c)
+    { mReader.Unread(c); }
+
+    inline int GetColumnNo()
+    { return mReader.GetColumnNo(); }
+
+    inline int GetLineNo()
+    { return mReader.GetLineNo(); }
+
+private:
     String mPath;
     FILE* mFd;
     BufferedReader mReader;

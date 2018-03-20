@@ -25,24 +25,9 @@ namespace ccdl {
 
 class AndExpression : public Expression
 {
-public:
-    AndExpression()
-        : mLeftOperand(nullptr)
-        , mRightOperand(nullptr)
-    {}
-
-    ~AndExpression();
-
-    inline AndExpression& SetLeftOperand(
-        /* [in] */ AndExpression* leftOperand)
-    { mLeftOperand = leftOperand; return *this; }
-    inline AndExpression& SetRightOperand(
-        /* [in] */ ShiftExpression* rightOperand)
-    { mRightOperand = rightOperand; return *this; }
-
-private:
-    AndExpression* mLeftOperand;
-    ShiftExpression* mRightOperand;
+// private:
+//     AndExpression* mLeftOperand;
+//     ShiftExpression* mRightOperand;
 };
 
 }

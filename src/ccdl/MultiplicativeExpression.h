@@ -26,33 +26,14 @@ namespace ccdl {
 class MultiplicativeExpression : public Expression
 {
 public:
-    MultiplicativeExpression()
-        : mLeftOperand(nullptr)
-        , mRightOperand(nullptr)
-        , mOperator(-1)
-    {}
-
-    ~MultiplicativeExpression();
-
-    inline MultiplicativeExpression& SetLeftOperand(
-        /* [in] */ MultiplicativeExpression* leftOperand)
-    { mLeftOperand = leftOperand; return *this; }
-    inline MultiplicativeExpression& SetRightOperand(
-        /* [in] */ UnaryExpression* rightOperand)
-    { mRightOperand = rightOperand; return *this; }
-    inline MultiplicativeExpression& SetOperator(
-        /* [in] */ int multiOperator)
-    { mOperator = multiOperator; return *this; }
-
-public:
     static constexpr int MULTIPLE = 0;
     static constexpr int DIVIDE = 1;
     static constexpr int MODULO = 2;
 
-private:
-    MultiplicativeExpression* mLeftOperand;
-    UnaryExpression* mRightOperand;
-    int mOperator;
+// private:
+//     MultiplicativeExpression* mLeftOperand;
+//     UnaryExpression* mRightOperand;
+//     int mOperator;
 };
 
 }

@@ -62,7 +62,7 @@ Namespace* Namespace::FindInnerNamespace(
 
 bool Namespace::EnlargeInnerNamespaces()
 {
-    int newSize = mInnerNSCapacity == 0? 3 : mInnerNSCapacity + 3;
+    int newSize = mInnerNSCapacity == 0 ? 3 : mInnerNSCapacity + 3;
     Namespace** newArray = (Namespace**)calloc(sizeof(Namespace*), newSize);
     if (newArray == nullptr) return false;
 

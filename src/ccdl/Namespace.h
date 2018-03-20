@@ -38,18 +38,28 @@ public:
     ~Namespace();
 
     inline Namespace& SetOuterNamespace(
-        /* [in] */ Namespace* outerNS) { mOuterNamespace = outerNS; return *this; }
+        /* [in] */ Namespace* outerNS)
+    { mOuterNamespace = outerNS; return *this; }
+
     bool AddInnerNamespace(
         /* [in] */ Namespace* innerNS);
+
     Namespace* FindInnerNamespace(
         /* [in] */ const String& nsString);
 
-    inline int GetInnerNamespaceNumber() { return mInnerNSIndex; }
-    inline Namespace** GetInnerNamespaces() { return mInnerNamespaces; }
-    inline Namespace* GetOuterNamespace() { return mOuterNamespace; }
+    inline int GetInnerNamespaceNumber()
+    { return mInnerNSIndex; }
 
-    String ToString();
-    inline String ToShortString() { return mNSString; }
+    inline Namespace** GetInnerNamespaces()
+    { return mInnerNamespaces; }
+
+    inline Namespace* GetOuterNamespace()
+    { return mOuterNamespace; }
+
+    String ToString() override;
+
+    inline String ToShortString()
+    { return mNSString; }
 
 private:
     bool EnlargeInnerNamespaces();
@@ -57,6 +67,7 @@ private:
 private:
     String mNSString;
     Namespace* mOuterNamespace;
+
     int mInnerNSCapacity;
     int mInnerNSIndex;
     Namespace** mInnerNamespaces;

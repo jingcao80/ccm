@@ -50,9 +50,20 @@ Enumeration& Enumeration::AddEnumerator(
     return *this;
 }
 
+bool Enumeration::Contains(
+    /* [in] */ const String& name)
+{
+    for (int i = 0; i < mEnumIndex; i++) {
+        if (mEnumerators[i]->mName.Equals(name)) {
+            return true;
+        }
+    }
+    return false;
+}
+
 bool Enumeration::EnlargeEnumeratorArray()
 {
-    int newSize = mEnumCapacity == 0? 10 : mEnumCapacity + 10;
+    int newSize = mEnumCapacity == 0 ? 10 : mEnumCapacity + 10;
     Enumerator** newArray = (Enumerator**)calloc(sizeof(Enumerator*), newSize);
     if (newArray == nullptr) {
         return false;
@@ -65,13 +76,6 @@ bool Enumeration::EnlargeEnumeratorArray()
     mEnumCapacity = newSize;
     mEnumerators = newArray;
     return true;
-}
-
-String Enumeration::ToString()
-{
-    if (mNamespace == nullptr) return mName;
-
-    return mNamespace->ToString() + mName;
 }
 
 String Enumeration::Dump(

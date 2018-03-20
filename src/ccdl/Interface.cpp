@@ -36,6 +36,15 @@ Interface::~Interface()
     }
 }
 
+Interface& Interface::SetBaseInterface(
+    /* [in] */ Interface* baseItf)
+{
+    if (baseItf == nullptr) return *this;
+
+    mBaseInterface = baseItf;
+    return *this;
+}
+
 Interface& Interface::SetAttribute(
     /* [in] */ const Attribute& attr)
 {
@@ -73,7 +82,7 @@ Interface& Interface::AddConstantDataMember(
 
 bool Interface::EnlargeMethodArray()
 {
-    int newSize = mMethodCapacity == 0? 20 : mMethodCapacity + 30;
+    int newSize = mMethodCapacity == 0 ? 20 : mMethodCapacity + 30;
     Method** newArray = (Method**)calloc(sizeof(Method*), newSize);
     if (newArray == nullptr) {
         return false;
@@ -90,7 +99,7 @@ bool Interface::EnlargeMethodArray()
 
 bool Interface::EnlargeConstantDataMemberArray()
 {
-    int newSize = mConstDataMemberCapacity == 0? 10 : mConstDataMemberCapacity + 10;
+    int newSize = mConstDataMemberCapacity == 0 ? 10 : mConstDataMemberCapacity + 10;
     ConstantDataMember** newArray =
             (ConstantDataMember**)calloc(sizeof(ConstantDataMember*), newSize);
     if (newArray == nullptr) {
@@ -104,13 +113,6 @@ bool Interface::EnlargeConstantDataMemberArray()
     mConstDataMemberCapacity = newSize;
     mConstDataMembers = newArray;
     return true;
-}
-
-String Interface::ToString()
-{
-    if (mNamespace == nullptr) return mName;
-
-    return mNamespace->ToString() + mName;
 }
 
 String Interface::Dump(

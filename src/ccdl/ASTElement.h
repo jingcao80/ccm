@@ -17,12 +17,20 @@
 #ifndef __CCM_CCDL_ASTELEMENT_H__
 #define __CCM_CCDL_ASTELEMENT_H__
 
+#include "../util/String.h"
+
 namespace ccm {
 namespace ccdl {
 
 class ASTElement
 {
+public:
+    virtual String ToString()
+    { return String(); }
 
+    virtual String Dump(
+        /* [in] */ const String& prefix)
+    { return String(); }
 };
 
 }

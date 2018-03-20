@@ -129,28 +129,46 @@ public:
 
     bool PushInputFile(
         /* [in] */ const String& file);
+
     void PopInputFileAndRemove();
 
     Token PeekToken();
+
     Token GetToken();
+
     Token GetStringLiteralToken();
+
     Token GetUuidNumberToken();
+
     Token GetVersionNumberToken();
 
-    inline String GetIdentifier() { return mIdentifier; }
-    inline String GetNumberString() { return mNumberString; }
-    inline String GetString() { return mString; }
-    inline int GetTokenColumnNo() { return mTokenColumnNo; }
-    inline int GetTokenLineNo() { return mTokenLineNo; }
+    inline String GetIdentifier()
+    { return mIdentifier; }
+
+    inline String GetNumberString()
+    { return mNumberString; }
+
+    inline String GetString()
+    { return mString; }
+
+    inline int GetTokenColumnNo()
+    { return mTokenColumnNo; }
+
+    inline int GetTokenLineNo()
+    { return mTokenLineNo; }
 
     void SkipCurrentLine();
 
     static inline bool IsPrimitiveType(
-        /* [in] */ Token token) { return Token::BOOLEAN <= token && token <= Token::STRING; }
-    static inline bool IsKeyword(
-        /* [in] */ Token token) { return Token::BOOLEAN <= token && token <= Token::VERSION; }
+        /* [in] */ Token token)
+    { return Token::BOOLEAN <= token && token <= Token::STRING; }
 
-    inline File* GetCurrentFile() { return mFile; }
+    static inline bool IsKeyword(
+        /* [in] */ Token token)
+    { return Token::BOOLEAN <= token && token <= Token::VERSION; }
+
+    inline File* GetCurrentFile()
+    { return mFile; }
 
     const char* DumpToken(
         /* [in] */ Token token);
@@ -159,8 +177,11 @@ private:
     void InitializeKeyword();
 
     Token ReadToken();
+
     Token ReadStringLiteralToken();
+
     Token ReadUuidNumberToken();
+
     Token ReadVersionNumberToken();
 
     Token ReadIdentifier(
@@ -171,15 +192,19 @@ private:
 
     Token ReadLineComment(
         /* [in] */ int c);
+
     Token ReadBlockComment(
         /* [in] */ int c);
 
     bool IsAlphabet(
         /* [in] */ int c);
+
     bool IsOctalDigital(
         /* [in] */ int c);
+
     bool IsDecimalDigital(
         /* [in] */ int c);
+
     bool IsHexDigital(
         /* [in] */ int c);
 

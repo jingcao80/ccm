@@ -155,7 +155,7 @@ bool String::Equals(
     /* [in] */ const String& other) const
 {
     if (mString == nullptr &&
-        other.mString == nullptr) return true;
+            other.mString == nullptr) return true;
 
     if (GetLength() != other.GetLength()) return false;
 
@@ -178,7 +178,7 @@ bool String::EqualsIgnoreCase(
     /* [in] */ const String& other) const
 {
     if (mString == nullptr &&
-        other.mString == nullptr) return true;
+            other.mString == nullptr) return true;
 
     if (GetLength() != other.GetLength()) return false;
 
@@ -245,7 +245,7 @@ int String::IndexOf(
     if (c == '\0' || IsNullOrEmpty()) return -1;
 
     char* ci = strchr(mString, c);
-    return ci != nullptr? ci - mString : -1;
+    return ci != nullptr ? ci - mString : -1;
 }
 
 int String::IndexOf(
@@ -254,7 +254,7 @@ int String::IndexOf(
     if (IsNullOrEmpty() || other.IsNullOrEmpty()) return -1;
 
     char* ci = strstr(mString, other.mString);
-    return ci != nullptr? ci - mString : -1;
+    return ci != nullptr ? ci - mString : -1;
 }
 
 int String::IndexOf(
@@ -265,7 +265,7 @@ int String::IndexOf(
     }
 
     char* ci = strstr(mString, string);
-    return ci != nullptr? ci - mString : -1;
+    return ci != nullptr ? ci - mString : -1;
 }
 
 int String::LastIndexOf(
@@ -274,7 +274,7 @@ int String::LastIndexOf(
     if (c == '\0' || IsNullOrEmpty()) return -1;
 
     char* ci = strrchr(mString, c);
-    return ci != nullptr? ci - mString : -1;
+    return ci != nullptr ? ci - mString : -1;
 }
 
 int String::LastIndexOf(

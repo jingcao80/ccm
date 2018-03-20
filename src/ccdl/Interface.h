@@ -32,7 +32,6 @@ class Interface : public Type
 public:
     Interface()
         : mDefined(false)
-        , mNamespace(nullptr)
         , mBaseInterface(nullptr)
         , mMethodCapacity(0)
         , mMethodIndex(0)
@@ -44,50 +43,47 @@ public:
 
     ~Interface();
 
-    bool IsInterface() override { return true; }
+    bool IsInterface() override
+    { return true; }
 
-    inline Interface& SetName(
-        /* [in] */ const String& name) { mName = name; return *this; }
-    inline Interface& SetNamespace(
-        /* [in] */ Namespace* ns) { mNamespace = ns; return *this; }
-    inline Interface& SetBaseInterface(
-        /* [in] */ Interface* baseItf)
-    {
-        if (baseItf == nullptr) return *this;
-        mBaseInterface = baseItf;
-        return *this;
-    }
+    Interface& SetBaseInterface(
+        /* [in] */ Interface* baseItf);
+
     inline Interface& SetDefined(
-        /* [in] */ bool defined) { mDefined = defined; return *this; }
-    inline bool IsDefined() { return mDefined; }
+        /* [in] */ bool defined)
+    { mDefined = defined; return *this; }
+
+    inline bool IsDefined()
+    { return mDefined; }
+
     Interface& SetAttribute(
         /* [in] */ const Attribute& attr);
 
     Interface& AddMethod(
         /* [in] */ Method* method);
+
     Interface& AddConstantDataMember(
         /* [in] */ ConstantDataMember* dataMember);
 
-    String ToString();
-    inline String ToShortString() { return mName; }
-
     String Dump(
-        /* [in] */ const String& prefix);
+        /* [in] */ const String& prefix) override;
 
 private:
     bool EnlargeMethodArray();
+
     bool EnlargeConstantDataMemberArray();
 
 private:
     bool mDefined;
-    Namespace* mNamespace;
     Interface* mBaseInterface;
     Uuid mUuid;
     String mVersion;
     String mDescription;
+
     int mMethodCapacity;
     int mMethodIndex;
     Method** mMethods;
+
     int mConstDataMemberCapacity;
     int mConstDataMemberIndex;
     ConstantDataMember** mConstDataMembers;

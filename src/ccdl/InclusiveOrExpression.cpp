@@ -19,17 +19,6 @@
 namespace ccm {
 namespace ccdl {
 
-InclusiveOrExpression::~InclusiveOrExpression()
-{
-    if (mLeftOperand != nullptr) {
-        delete mLeftOperand;
-        mLeftOperand = nullptr;
-    }
-    if (mRightOperand != nullptr) {
-        delete mRightOperand;
-        mRightOperand = nullptr;
-    }
-}
 
 }
 }

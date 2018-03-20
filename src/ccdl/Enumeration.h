@@ -49,28 +49,23 @@ public:
 
     ~Enumeration();
 
-    bool IsEnumeration() override { return true; }
-
-    inline Enumeration& SetName(
-        /* [in] */ const String& name) { mName = name; return *this; }
-    inline Enumeration& SetNamespace(
-        /* [in] */ Namespace* ns) { mNamespace = ns; return *this; }
+    bool IsEnumeration() override
+    { return true; }
 
     Enumeration& AddEnumerator(
         /* [in] */ const String& name,
         /* [in] */ int value);
 
-    String ToString();
-    inline String ToShortString() { return mName; }
+    bool Contains(
+        /* [in] */ const String& name);
 
     String Dump(
-        /* [in] */ const String& prefix);
+        /* [in] */ const String& prefix) override;
 
 private:
     bool EnlargeEnumeratorArray();
 
 private:
-    Namespace* mNamespace;
     int mEnumCapacity;
     int mEnumIndex;
     Enumerator** mEnumerators;

@@ -30,7 +30,8 @@ public:
     {}
 
     inline ArrayType& SetElementType(
-        /* [in] */ Type* elemType) { mElementType = elemType; return *this; }
+        /* [in] */ Type* elemType)
+    { mElementType = elemType; return *this; }
 
     String ToString() override;
 

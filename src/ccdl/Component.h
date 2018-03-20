@@ -46,18 +46,22 @@ public:
 
     bool AddEnumeration(
         /* [in] */ Enumeration* enumeration);
+
     Enumeration* FindEnumeration(
         /* [in] */ const String& enumFullName);
 
     bool AddInterface(
         /* [in] */ Interface* interface);
+
     Interface* FindInterface(
         /* [in] */ const String& itfFullName);
 
     bool AddNamespace(
         /* [in] */ Namespace* ns);
+
     Namespace* ParseNamespace(
         /* [in] */ const String& nsString);
+
     Namespace* FindNamespace(
         /* [in] */ const String& nsString);
 
@@ -67,29 +71,37 @@ public:
     Type* FindType(
         /* [in] */ const String& typeName);
 
-    String Dump();
+    String Dump(
+        /* [in] */ const String& prefix);
 
 private:
     bool EnlargeEnumerationArray();
+
     bool EnlargeInterfaceArray();
+
     bool EnlargeNamespaceArray();
+
     bool EnlargeTempTypeArray();
 
 private:
     String mCdlFile;
+
     int mEnumCapacity;
     int mEnumIndex;
     Enumeration** mEnumerations;
+
     int mItfCapacity;
     int mItfIndex;
     Interface** mInterfaces;
+
     int mNSCapacity;
     int mNSIndex;
     Namespace** mNamespaces;
+
     int mTempTypeCapacity;
     int mTempTypeIndex;
     Type** mTempTypes;
-    HashMap<Type*> mTypes;
+
     ByteType* mByteType;
     ShortType* mShortType;
     IntegerType* mIntegerType;
@@ -100,6 +112,7 @@ private:
     BooleanType* mBooleanType;
     StringType* mStringType;
     HANDLEType* mHANDLEType;
+    HashMap<Type*> mTypes;
 };
 
 }

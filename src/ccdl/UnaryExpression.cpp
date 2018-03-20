@@ -19,17 +19,5 @@
 namespace ccm {
 namespace ccdl {
 
-UnaryExpression::~UnaryExpression()
-{
-    if (mOperand != nullptr) {
-        delete mOperand;
-        mOperand = nullptr;
-    }
-    if (mNestOperand != nullptr) {
-        delete mNestOperand;
-        mNestOperand = nullptr;
-    }
-}
-
 }
 }

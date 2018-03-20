@@ -14,22 +14,46 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CCDL_DOUBLETYPE_H__
-#define __CCM_CCDL_DOUBLETYPE_H__
-
 #include "Type.h"
 
 namespace ccm {
 namespace ccdl {
 
-class DoubleType : public Type
+Type::~Type()
 {
-public:
-    bool IsPrimitiveType() override
-    { return true; }
-};
+    mNamespace = nullptr;
+}
+
+bool Type::IsPrimitiveType()
+{
+    return false;
+}
+
+bool Type::IsEnumeration()
+{
+    return false;
+}
+
+bool Type::IsInterface()
+{
+    return false;
+}
+
+String Type::ToString()
+{
+    return mNamespace == nullptr ? mName : mNamespace->ToString() + mName;
+}
+
+String Type::ToShortString()
+{
+    return mName;
+}
+
+String Type::Dump(
+    /* [in] */ const String& prefix)
+{
+    return ToString();
+}
 
 }
 }
-
-#endif // __CCM_CCDL_DOUBLETYPE_H__

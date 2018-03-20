@@ -31,9 +31,12 @@ public:
     {}
 
     inline PointerType& SetBaseType(
-        /* [in] */ Type* baseType) { mBaseType = baseType; return *this; }
+        /* [in] */ Type* baseType)
+    { mBaseType = baseType; return *this; }
+
     inline PointerType& SetPointerNumber(
-        /* [in] */ int ptrNumber) { mPointerNumber = ptrNumber; return *this; }
+        /* [in] */ int ptrNumber)
+    { mPointerNumber = ptrNumber; return *this; }
 
     String ToString() override;
 

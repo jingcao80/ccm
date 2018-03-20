@@ -254,7 +254,7 @@ Type* Component::FindType(
 
 bool Component::EnlargeEnumerationArray()
 {
-    int newSize = mEnumCapacity == 0? 10 : mEnumCapacity + 10;
+    int newSize = mEnumCapacity == 0 ? 10 : mEnumCapacity + 10;
     Enumeration** newArray = (Enumeration**)calloc(sizeof(Enumeration*), newSize);
     if (newArray == nullptr) {
         return false;
@@ -271,7 +271,7 @@ bool Component::EnlargeEnumerationArray()
 
 bool Component::EnlargeInterfaceArray()
 {
-    int newSize = mItfCapacity == 0? 10 : mItfCapacity * 2;
+    int newSize = mItfCapacity == 0 ? 10 : mItfCapacity * 2;
     Interface** newArray = (Interface**)calloc(sizeof(Interface*), newSize);
     if (newArray == nullptr) {
         return false;
@@ -288,7 +288,7 @@ bool Component::EnlargeInterfaceArray()
 
 bool Component::EnlargeNamespaceArray()
 {
-    int newSize = mNSCapacity == 0? 5 : mNSCapacity + 5;
+    int newSize = mNSCapacity == 0 ? 5 : mNSCapacity + 5;
     Namespace** newArray = (Namespace**)calloc(sizeof(Namespace*), newSize);
     if (newArray == nullptr) {
         return false;
@@ -305,7 +305,7 @@ bool Component::EnlargeNamespaceArray()
 
 bool Component::EnlargeTempTypeArray()
 {
-    int newSize = mTempTypeCapacity == 0? 10 : mTempTypeCapacity + 10;
+    int newSize = mTempTypeCapacity == 0 ? 10 : mTempTypeCapacity + 10;
     Type** newArray = (Type**)calloc(sizeof(Type*), newSize);
     if (newArray == nullptr) {
         return false;
@@ -320,7 +320,8 @@ bool Component::EnlargeTempTypeArray()
     return true;
 }
 
-String Component::Dump()
+String Component::Dump(
+    /* [in] */ const String& prefix)
 {
     StringBuilder buider;
 

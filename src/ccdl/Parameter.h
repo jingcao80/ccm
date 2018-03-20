@@ -33,17 +33,23 @@ public:
     {}
 
     inline Parameter& SetAttribute(
-        /* [in] */ int attr) { mAttribute = mAttribute | attr; return *this; }
+        /* [in] */ int attr)
+    { mAttribute = mAttribute | attr; return *this; }
+
     inline Parameter& SetName(
-        /* [in] */ const String& name) { mName = name; return *this; }
+        /* [in] */ const String& name)
+    { mName = name; return *this; }
+
     inline Parameter& SetType(
-        /* [in] */ Type* type) { mType = type; return *this; }
+        /* [in] */ Type* type)
+    { mType = type; return *this; }
 
 public:
     static constexpr int IN = 0x1;
     static constexpr int OUT = 0x2;
     static constexpr int CALLEE = 0x4;
 
+private:
     int mAttribute;
     String mName;
     Type* mType;

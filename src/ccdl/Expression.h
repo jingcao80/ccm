@@ -24,7 +24,31 @@ namespace ccdl {
 
 class Expression : public ASTElement
 {
+public:
+    Expression()
+        : mLeftOperand(nullptr)
+        , mRightOperand(nullptr)
+        , mOperator(-1)
+    {}
 
+    virtual ~Expression();
+
+    inline Expression& SetLeftOperand(
+        /* [in] */ Expression* leftOperand)
+    { mLeftOperand = leftOperand; return *this; }
+
+    inline Expression& SetRightOperand(
+        /* [in] */ Expression* rightOperand)
+    { mRightOperand = rightOperand; return *this; }
+
+    inline Expression& SetOperator(
+        /* [in] */ int addOperator)
+    { mOperator = addOperator; return *this; }
+
+protected:
+    Expression* mLeftOperand;
+    Expression* mRightOperand;
+    int mOperator;
 };
 
 }

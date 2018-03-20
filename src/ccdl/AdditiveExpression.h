@@ -26,32 +26,13 @@ namespace ccdl {
 class AdditiveExpression : public Expression
 {
 public:
-    AdditiveExpression()
-        : mLeftOperand(nullptr)
-        , mRightOperand(nullptr)
-        , mOperator(-1)
-    {}
-
-    ~AdditiveExpression();
-
-    inline AdditiveExpression& SetLeftOperand(
-        /* [in] */ AdditiveExpression* leftOperand)
-    { mLeftOperand = leftOperand; return *this; }
-    inline AdditiveExpression& SetRightOperand(
-        /* [in] */ MultiplicativeExpression* rightOperand)
-    { mRightOperand = rightOperand; return *this; }
-    inline AdditiveExpression& SetOperator(
-        /* [in] */ int addOperator)
-    { mOperator = addOperator; return *this; }
-
-public:
     static constexpr int PLUS = 0;
     static constexpr int MINUS = 1;
 
-private:
-    AdditiveExpression* mLeftOperand;
-    MultiplicativeExpression* mRightOperand;
-    int mOperator;
+// private:
+//     AdditiveExpression* mLeftOperand;
+//     MultiplicativeExpression* mRightOperand;
+//     int mOperator;
 };
 
 }

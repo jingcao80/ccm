@@ -18,6 +18,7 @@
 #define __CCM_CCDL_TYPE_H__
 
 #include "ASTElement.h"
+#include "Namespace.h"
 #include "../util/String.h"
 
 namespace ccm {
@@ -26,19 +27,32 @@ namespace ccdl {
 class Type : public ASTElement
 {
 public:
-    virtual ~Type() {}
+    virtual ~Type();
 
     inline Type& SetName(
-        /* [in] */ const String& name) { mName = name; return *this; }
+        /* [in] */ const String& name)
+    { mName = name; return *this; }
 
-    virtual bool IsPrimitiveType() { return false; }
-    virtual bool IsEnumeration() { return false; }
-    virtual bool IsInterface() { return false; }
+    inline Type& SetNamespace(
+        /* [in] */ Namespace* ns)
+    { mNamespace = ns; return *this; }
 
-    virtual String ToString() { return mName; }
+    virtual bool IsPrimitiveType();
+
+    virtual bool IsEnumeration();
+
+    virtual bool IsInterface();
+
+    String ToString() override;
+
+    virtual String ToShortString();
+
+    String Dump(
+        /* [in] */ const String& prefix) override;
 
 protected:
     String mName;
+    Namespace* mNamespace;
 };
 
 }

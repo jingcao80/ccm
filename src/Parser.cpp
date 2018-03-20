@@ -71,7 +71,7 @@ bool Parser::Parse(
     ret = ParseFile();
 
     if (ret) {
-        String out = mComponent->Dump();
+        String out = mComponent->Dump(String(""));
         printf("%s", out.string());
     }
     else DumpError();
@@ -347,9 +347,9 @@ bool Parser::ParseInterface(
         }
 
         int index = fullName.LastIndexOf("::");
-        String nsString = index == -1? String("__global__") : fullName.Substring(0, index - 1);
+        String nsString = index == -1 ? String("__global__") : fullName.Substring(0, index - 1);
         Namespace* ns = mComponent->ParseNamespace(nsString);
-        String itfName = index == -1? fullName : fullName.Substring(index + 2);
+        String itfName = index == -1 ? fullName : fullName.Substring(index + 2);
         Interface* interface = new Interface();
         interface->SetName(itfName);
         interface->SetNamespace(ns);
@@ -367,7 +367,7 @@ bool Parser::ParseInterface(
     Interface* interface = nullptr;
 
     String currNsString = mCurrNamespace->ToString();
-    Type* type = mComponent->FindType(currNsString.IsNullOrEmpty()?
+    Type* type = mComponent->FindType(currNsString.IsNullOrEmpty() ?
             itfName : currNsString + "::" + itfName);
     if (type != nullptr) {
         if (type->IsInterface() && !((Interface*)type)->IsDefined()) {
@@ -769,15 +769,15 @@ bool Parser::ParseConstDataMember(
 }
 
 Expression* Parser::ParseExpression(
-    /* [in] */ Type* expressionType)
+    /* [in] */ Type* exprType)
 {
-    return ParseInclusiveOrExpression(expressionType);
+    return ParseInclusiveOrExpression(exprType);
 }
 
 InclusiveOrExpression* Parser::ParseInclusiveOrExpression(
-    /* [in] */ Type* expressionType)
+    /* [in] */ Type* exprType)
 {
-    ExclusiveOrExpression* rightExpr = ParseExclusiveOrExpression(expressionType);
+    ExclusiveOrExpression* rightExpr = ParseExclusiveOrExpression(exprType);
     if (rightExpr == nullptr) return nullptr;
 
     InclusiveOrExpression* incOrExpr = new InclusiveOrExpression();
@@ -786,7 +786,7 @@ InclusiveOrExpression* Parser::ParseInclusiveOrExpression(
     while (mTokenizer.PeekToken() == Tokenizer::Token::INCLUSIVE_OR) {
         mTokenizer.GetToken();
 
-        rightExpr = ParseExclusiveOrExpression(expressionType);
+        rightExpr = ParseExclusiveOrExpression(exprType);
         if (rightExpr == nullptr) return nullptr;
 
         InclusiveOrExpression* leftExpr = incOrExpr;
@@ -799,9 +799,9 @@ InclusiveOrExpression* Parser::ParseInclusiveOrExpression(
 }
 
 ExclusiveOrExpression* Parser::ParseExclusiveOrExpression(
-    /* [in] */ Type* expressionType)
+    /* [in] */ Type* exprType)
 {
-    AndExpression* rightExpr = ParseAndExpression(expressionType);
+    AndExpression* rightExpr = ParseAndExpression(exprType);
     if (rightExpr == nullptr) return nullptr;
 
     ExclusiveOrExpression* excOrExpr = new ExclusiveOrExpression();
@@ -810,7 +810,7 @@ ExclusiveOrExpression* Parser::ParseExclusiveOrExpression(
     while (mTokenizer.PeekToken() == Tokenizer::Token::EXCLUSIVE_OR) {
         mTokenizer.GetToken();
 
-        rightExpr = ParseAndExpression(expressionType);
+        rightExpr = ParseAndExpression(exprType);
         if (rightExpr == nullptr) return nullptr;
 
         ExclusiveOrExpression* leftExpr = excOrExpr;
@@ -823,9 +823,9 @@ ExclusiveOrExpression* Parser::ParseExclusiveOrExpression(
 }
 
 AndExpression* Parser::ParseAndExpression(
-    /* [in] */ Type* expressionType)
+    /* [in] */ Type* exprType)
 {
-    ShiftExpression* rightExpr = ParseShiftExpression(expressionType);
+    ShiftExpression* rightExpr = ParseShiftExpression(exprType);
     if (rightExpr == nullptr) return nullptr;
 
     AndExpression* andExpr = new AndExpression();
@@ -834,7 +834,7 @@ AndExpression* Parser::ParseAndExpression(
     while (mTokenizer.PeekToken() == Tokenizer::Token::AND) {
         mTokenizer.GetToken();
 
-        rightExpr = ParseShiftExpression(expressionType);
+        rightExpr = ParseShiftExpression(exprType);
         if (rightExpr == nullptr) return nullptr;
 
         AndExpression* leftExpr = andExpr;
@@ -847,9 +847,9 @@ AndExpression* Parser::ParseAndExpression(
 }
 
 ShiftExpression* Parser::ParseShiftExpression(
-    /* [in] */ Type* expressionType)
+    /* [in] */ Type* exprType)
 {
-    AdditiveExpression* rightExpr = ParseAdditiveExpression(expressionType);
+    AdditiveExpression* rightExpr = ParseAdditiveExpression(exprType);
     if (rightExpr == nullptr) return nullptr;
 
     ShiftExpression* shiExpr = new ShiftExpression();
@@ -860,7 +860,7 @@ ShiftExpression* Parser::ParseShiftExpression(
             mTokenizer.PeekToken() == Tokenizer::Token::SHIFT_RIGHT_UNSIGNED) {
         Tokenizer::Token token = mTokenizer.GetToken();
 
-        rightExpr = ParseAdditiveExpression(expressionType);
+        rightExpr = ParseAdditiveExpression(exprType);
         if (rightExpr == nullptr) return nullptr;
 
         ShiftExpression* leftExpr = shiExpr;
@@ -868,8 +868,8 @@ ShiftExpression* Parser::ParseShiftExpression(
         shiExpr->SetLeftOperand(leftExpr);
         shiExpr->SetRightOperand(rightExpr);
         shiExpr->SetOperator(
-                token == Tokenizer::Token::SHIFT_LEFT? ShiftExpression::LEFT :
-                token == Tokenizer::Token::SHIFT_RIGHT? ShiftExpression::RIGHT :
+                token == Tokenizer::Token::SHIFT_LEFT ? ShiftExpression::LEFT :
+                token == Tokenizer::Token::SHIFT_RIGHT ? ShiftExpression::RIGHT :
                         ShiftExpression::RIGHT_UNSIGNED);
     }
 
@@ -877,9 +877,9 @@ ShiftExpression* Parser::ParseShiftExpression(
 }
 
 AdditiveExpression* Parser::ParseAdditiveExpression(
-    /* [in] */ Type* expressionType)
+    /* [in] */ Type* exprType)
 {
-    MultiplicativeExpression* rightExpr = ParseMultiplicativeExpression(expressionType);
+    MultiplicativeExpression* rightExpr = ParseMultiplicativeExpression(exprType);
     if (rightExpr == nullptr) return nullptr;
 
     AdditiveExpression* addExpr = new AdditiveExpression();
@@ -889,14 +889,14 @@ AdditiveExpression* Parser::ParseAdditiveExpression(
             mTokenizer.PeekToken() == Tokenizer::Token::MINUS) {
         Tokenizer::Token token = mTokenizer.GetToken();
 
-        rightExpr = ParseMultiplicativeExpression(expressionType);
+        rightExpr = ParseMultiplicativeExpression(exprType);
         if (rightExpr == nullptr) return nullptr;
 
         AdditiveExpression* leftExpr = addExpr;
         addExpr = new AdditiveExpression();
         addExpr->SetLeftOperand(leftExpr);
         addExpr->SetRightOperand(rightExpr);
-        addExpr->SetOperator(token == Tokenizer::Token::PLUS? AdditiveExpression::PLUS :
+        addExpr->SetOperator(token == Tokenizer::Token::PLUS ? AdditiveExpression::PLUS :
                 AdditiveExpression::MINUS);
     }
 
@@ -904,9 +904,9 @@ AdditiveExpression* Parser::ParseAdditiveExpression(
 }
 
 MultiplicativeExpression* Parser::ParseMultiplicativeExpression(
-    /* [in] */ Type* expressionType)
+    /* [in] */ Type* exprType)
 {
-    UnaryExpression* rightExpr = ParseUnaryExpression(expressionType);
+    UnaryExpression* rightExpr = ParseUnaryExpression(exprType);
     if (rightExpr == nullptr) return nullptr;
 
     MultiplicativeExpression* multiExpr = new MultiplicativeExpression();
@@ -917,7 +917,7 @@ MultiplicativeExpression* Parser::ParseMultiplicativeExpression(
             mTokenizer.PeekToken() == Tokenizer::Token::MODULO) {
         Tokenizer::Token token = mTokenizer.GetToken();
 
-        rightExpr = ParseUnaryExpression(expressionType);
+        rightExpr = ParseUnaryExpression(exprType);
         if (rightExpr == nullptr) return nullptr;
 
         MultiplicativeExpression* leftExpr = multiExpr;
@@ -925,8 +925,8 @@ MultiplicativeExpression* Parser::ParseMultiplicativeExpression(
         multiExpr->SetLeftOperand(leftExpr);
         multiExpr->SetRightOperand(rightExpr);
         multiExpr->SetOperator(
-                token == Tokenizer::Token::ASTERISK? MultiplicativeExpression::MULTIPLE :
-                token == Tokenizer::Token::DIVIDE? MultiplicativeExpression::DIVIDE :
+                token == Tokenizer::Token::ASTERISK ? MultiplicativeExpression::MULTIPLE :
+                token == Tokenizer::Token::DIVIDE ? MultiplicativeExpression::DIVIDE :
                         MultiplicativeExpression::MODULO);
     }
 
@@ -934,7 +934,7 @@ MultiplicativeExpression* Parser::ParseMultiplicativeExpression(
 }
 
 UnaryExpression* Parser::ParseUnaryExpression(
-    /* [in] */ Type* expressionType)
+    /* [in] */ Type* exprType)
 {
     Tokenizer::Token token = mTokenizer.PeekToken();
 
@@ -942,30 +942,30 @@ UnaryExpression* Parser::ParseUnaryExpression(
             token == Tokenizer::Token::COMPLIMENT || token == Tokenizer::Token::NOT) {
         token = mTokenizer.PeekToken();
 
-        UnaryExpression* operand = ParseUnaryExpression(expressionType);
+        UnaryExpression* operand = ParseUnaryExpression(exprType);
         if (operand == nullptr) return nullptr;
 
         UnaryExpression* unaryExpr = new UnaryExpression();
-        unaryExpr->SetNestOperand(operand);
+        unaryExpr->SetRightOperand(operand);
         unaryExpr->SetOperator(
-                token == Tokenizer::Token::PLUS? UnaryExpression::POSITIVE :
-                token == Tokenizer::Token::MINUS? UnaryExpression::NEGATIVE :
-                token == Tokenizer::Token::COMPLIMENT? UnaryExpression::COMPLIMENT :
+                token == Tokenizer::Token::PLUS ? UnaryExpression::POSITIVE :
+                token == Tokenizer::Token::MINUS ? UnaryExpression::NEGATIVE :
+                token == Tokenizer::Token::COMPLIMENT ? UnaryExpression::COMPLIMENT :
                         UnaryExpression::NOT);
         return unaryExpr;
     }
     else {
-        PostfixExpression* operand = ParsePostfixExpression(expressionType);
+        PostfixExpression* operand = ParsePostfixExpression(exprType);
         if (operand == nullptr) return nullptr;
 
         UnaryExpression* unaryExpr = new UnaryExpression();
-        unaryExpr->SetOperand(operand);
+        unaryExpr->SetLeftOperand(operand);
         return unaryExpr;
     }
 }
 
 PostfixExpression* Parser::ParsePostfixExpression(
-    /* [in] */ Type* expressionType)
+    /* [in] */ Type* exprType)
 {
     PostfixExpression* postExpr = nullptr;
 
@@ -985,7 +985,38 @@ PostfixExpression* Parser::ParsePostfixExpression(
 
     }
     else if (token == Tokenizer::Token::IDENTIFIER) {
+        mTokenizer.GetToken();
+        if (exprType->IsEnumeration()) {
+            String enumName = mTokenizer.GetIdentifier();
+            if (((Enumeration*)exprType)->Contains(enumName)) {
+                postExpr = new PostfixExpression();
+                postExpr->SetType(exprType);
+                postExpr->SetEnumerator(enumName);
+            }
+            else {
 
+            }
+        }
+    }
+    else if (token == Tokenizer::Token::PARENTHESES_OPEN) {
+        Expression* expr = ParseExpression(exprType);
+
+        if (mTokenizer.PeekToken() == Tokenizer::Token::PARENTHESES_CLOSE) {
+            mTokenizer.GetToken();
+        }
+        else {
+            // jump over ';'
+            while (token != Tokenizer::Token::SEMICOLON &&
+                    token != Tokenizer::Token::END_OF_FILE) {
+                token = mTokenizer.GetToken();
+            }
+
+            return nullptr;
+        }
+
+        postExpr = new PostfixExpression();
+        postExpr->SetType(exprType);
+        postExpr->SetExpression(expr);
     }
 
     return postExpr;
@@ -1021,7 +1052,7 @@ bool Parser::ParseEnumeration()
     }
 
     String currNsString = mCurrNamespace->ToString();
-    Type* type = mComponent->FindType(currNsString.IsNullOrEmpty()?
+    Type* type = mComponent->FindType(currNsString.IsNullOrEmpty() ?
             enumName : currNsString + "::" + enumName);
     if (type != nullptr) {
         String message;

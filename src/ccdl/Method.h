@@ -36,19 +36,21 @@ public:
     ~Method();
 
     inline Method& SetName(
-        /* [in] */ const String& name) { mName = name; return *this; }
+        /* [in] */ const String& name)
+    { mName = name; return *this; }
 
     Method& AddParameter(
         /* [in] */ Parameter* param);
 
     String Dump(
-        /* [in] */ const String& prefix);
+        /* [in] */ const String& prefix) override;
 
 private:
     bool EnlargeParameterArray();
 
 private:
     String mName;
+
     int mParamCapacity;
     int mParamIndex;
     Parameter** mParameters;

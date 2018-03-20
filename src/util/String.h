@@ -28,67 +28,90 @@ public:
     String()
         : mString(nullptr)
     {}
+
     explicit String(
         /* [in] */ const char* string);
+
     String(
         /* [in] */ const String& other);
+
     String(
         /* [in] */ String&& other);
+
     ~String();
 
-    inline bool IsNull() const { return mString == nullptr; }
-    inline bool IsNullOrEmpty() const { return mString == nullptr || mString[0] == '\0'; }
+    inline bool IsNull() const
+    { return mString == nullptr; }
+
+    inline bool IsNullOrEmpty() const
+    { return mString == nullptr || mString[0] == '\0'; }
 
     int GetLength() const;
 
     bool Equals(
         /* [in] */ const String& other) const;
+
     bool Equals(
         /* [in] */ const char* string) const;
+
     bool EqualsIgnoreCase(
         /* [in] */ const String& other) const;
+
     bool EqualsIgnoreCase(
         /* [in] */ const char* string) const;
 
-    inline char* string() const { return mString; }
-    inline operator char*() const { return mString; }
+    inline char* string() const
+    { return mString; }
+
+    inline operator char*() const
+    { return mString; }
 
     char GetChar(
         /* [in] */ int index) const;
 
     String Substring(
         /* [in] */ int begin) const;
+
     String Substring(
         /* [in] */ int begin,
         /* [in] */ int end) const;
 
     bool Contains(
         /* [in] */ const String& other) const;
+
     bool Contains(
         /* [in] */ const char* string) const;
 
     int IndexOf(
         /* [in] */ int c) const;
+
     int IndexOf(
         /* [in] */ const String& other) const;
+
     int IndexOf(
         /* [in] */ const char* string) const;
+
     int LastIndexOf(
         /* [in] */ int c) const;
+
     int LastIndexOf(
         /* [in] */ const String& other) const;
+
     int LastIndexOf(
         /* [in] */ const char* string) const;
 
     String& operator=(
         /* [in] */ const char* string);
+
     String& operator=(
         /* [in] */ const String& other);
+
     String& operator=(
         /* [in] */ String&& other);
 
     String& operator+=(
         /* [in] */ const char* string);
+
     String& operator+=(
         /* [in] */ const String& other);
 

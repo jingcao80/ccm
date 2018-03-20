@@ -14,22 +14,22 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CCDL_DOUBLETYPE_H__
-#define __CCM_CCDL_DOUBLETYPE_H__
-
-#include "Type.h"
+#include "Expression.h"
 
 namespace ccm {
 namespace ccdl {
 
-class DoubleType : public Type
+Expression::~Expression()
 {
-public:
-    bool IsPrimitiveType() override
-    { return true; }
-};
+    if (mLeftOperand != nullptr) {
+        delete mLeftOperand;
+        mLeftOperand = nullptr;
+    }
+    if (mRightOperand != nullptr) {
+        delete mRightOperand;
+        mRightOperand = nullptr;
+    }
+}
 
 }
 }
-
-#endif // __CCM_CCDL_DOUBLETYPE_H__

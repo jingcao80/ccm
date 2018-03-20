@@ -26,23 +26,10 @@ namespace ccdl {
 class ExclusiveOrExpression : public Expression
 {
 public:
-    ExclusiveOrExpression()
-        : mLeftOperand(nullptr)
-        , mRightOperand(nullptr)
-    {}
 
-    ~ExclusiveOrExpression();
-
-    inline ExclusiveOrExpression& SetLeftOperand(
-        /* [in] */ ExclusiveOrExpression* leftOperand)
-    { mLeftOperand = leftOperand; return *this; }
-    inline ExclusiveOrExpression& SetRightOperand(
-        /* [in] */ AndExpression* rightOperand)
-    { mRightOperand = rightOperand; return *this; }
-
-private:
-    ExclusiveOrExpression* mLeftOperand;
-    AndExpression* mRightOperand;
+// private:
+//     ExclusiveOrExpression* mLeftOperand;
+//     AndExpression* mRightOperand;
 };
 
 }
