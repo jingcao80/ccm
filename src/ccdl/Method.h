@@ -17,14 +17,14 @@
 #ifndef __CCM_CCDL_METHOD_H__
 #define __CCM_CCDL_METHOD_H__
 
-#include "ASTElement.h"
+#include "ASTNode.h"
 #include "Parameter.h"
 #include "../util/String.h"
 
 namespace ccm {
 namespace ccdl {
 
-class Method : public ASTElement
+class Method : public ASTNode
 {
 public:
     Method()

@@ -3,7 +3,7 @@
 
 ### Programs
 
-<*compilation_unit*> ::= <*include_or_type_declarations*>? <*module_declaration*>
+<*compilation_unit*> ::= <*include_or_type_declarations*>? <*module_declaration*>?
 
 ### Declarations
 
@@ -87,7 +87,7 @@
 
 <*module_body_declarations*> ::= <*module_body_declaration*> | <*module_body_declarations*> <*module_body_declaration*>
 
-<*module_body_declaration*> ::= <*include_or_type_declaration*>
+<*module_body_declaration*> ::= <*include_or_type_declarations*>
 
 ### Types
 

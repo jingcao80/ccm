@@ -25,7 +25,16 @@ namespace ccdl {
 class CharType : public Type
 {
 public:
+    CharType()
+    { SetName(String("Char")); }
+
     bool IsPrimitiveType() override
+    { return true; }
+
+    bool IsNumericType() override
+    { return true; }
+
+    bool IsIntegralType() override
     { return true; }
 };
 

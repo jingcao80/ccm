@@ -29,6 +29,21 @@ bool Type::IsPrimitiveType()
     return false;
 }
 
+bool Type::IsNumericType()
+{
+    return false;
+}
+
+bool Type::IsIntegralType()
+{
+    return false;
+}
+
+bool Type::IsFloatingPointType()
+{
+    return false;
+}
+
 bool Type::IsEnumeration()
 {
     return false;

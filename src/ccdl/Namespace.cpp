@@ -23,10 +23,6 @@ namespace ccdl {
 
 Namespace::~Namespace()
 {
-    for (int i = 0; i < mInnerNSIndex; i++) {
-        Namespace* ns = mInnerNamespaces[i];
-        delete ns;
-    }
     if (mInnerNamespaces != nullptr) {
         delete mInnerNamespaces;
         mInnerNamespaces = nullptr;

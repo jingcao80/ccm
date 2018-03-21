@@ -14,17 +14,20 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CCDL_ASTELEMENT_H__
-#define __CCM_CCDL_ASTELEMENT_H__
+#ifndef __CCM_CCDL_ASTNODE_H__
+#define __CCM_CCDL_ASTNODE_H__
 
 #include "../util/String.h"
 
 namespace ccm {
 namespace ccdl {
 
-class ASTElement
+class ASTNode
 {
 public:
+    virtual ~ASTNode()
+    {}
+
     virtual String ToString()
     { return String(); }
 
@@ -36,4 +39,4 @@ public:
 }
 }
 
-#endif //__CCM_CCDL_ASTELEMENT_H__
+#endif //__CCM_CCDL_ASTNODE_H__

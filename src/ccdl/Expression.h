@@ -17,12 +17,12 @@
 #ifndef __CCM_CCDL_EXPRESSION_H__
 #define __CCM_CCDL_EXPRESSION_H__
 
-#include "ASTElement.h"
+#include "ASTNode.h"
 
 namespace ccm {
 namespace ccdl {
 
-class Expression : public ASTElement
+class Expression : public ASTNode
 {
 public:
     Expression()

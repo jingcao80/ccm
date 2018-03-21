@@ -14,35 +14,52 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CCDL_COMPONENT_H__
-#define __CCM_CCDL_COMPONENT_H__
+#ifndef __CCM_COMMONPOOL_H__
+#define __CCM_COMMONPOOL_H__
 
-#include "BooleanType.h"
-#include "ByteType.h"
-#include "CharType.h"
-#include "DoubleType.h"
-#include "Enumeration.h"
-#include "FloatType.h"
-#include "HANDLEType.h"
-#include "IntegerType.h"
-#include "Interface.h"
-#include "LongType.h"
-#include "Namespace.h"
-#include "ShortType.h"
-#include "StringType.h"
-#include "Type.h"
+#include "../ccdl/BooleanType.h"
+#include "../ccdl/ByteType.h"
+#include "../ccdl/CharType.h"
+#include "../ccdl/DoubleType.h"
+#include "../ccdl/Enumeration.h"
+#include "../ccdl/FloatType.h"
+#include "../ccdl/HANDLEType.h"
+#include "../ccdl/IntegerType.h"
+#include "../ccdl/Interface.h"
+#include "../ccdl/LongType.h"
+#include "../ccdl/Namespace.h"
+#include "../ccdl/ShortType.h"
+#include "../ccdl/StringType.h"
+#include "../ccdl/Type.h"
 #include "../util/HashMap.h"
 
-namespace ccm {
-namespace ccdl {
+using ccm::ccdl::BooleanType;
+using ccm::ccdl::ByteType;
+using ccm::ccdl::CharType;
+using ccm::ccdl::DoubleType;
+using ccm::ccdl::Enumeration;
+using ccm::ccdl::FloatType;
+using ccm::ccdl::HANDLEType;
+using ccm::ccdl::IntegerType;
+using ccm::ccdl::Interface;
+using ccm::ccdl::LongType;
+using ccm::ccdl::Namespace;
+using ccm::ccdl::ShortType;
+using ccm::ccdl::StringType;
+using ccm::ccdl::Type;
 
-class Component
+namespace ccm {
+
+class CommonPool
 {
 public:
-    Component(
-        /* [in] */ const String& cdlFile);
+    CommonPool();
 
-    ~Component();
+    ~CommonPool();
+
+    inline void SetRootFile(
+        /* [in] */ const String& rootFile)
+    { mRootFile = rootFile; }
 
     bool AddEnumeration(
         /* [in] */ Enumeration* enumeration);
@@ -84,7 +101,7 @@ private:
     bool EnlargeTempTypeArray();
 
 private:
-    String mCdlFile;
+    String mRootFile;
 
     int mEnumCapacity;
     int mEnumIndex;
@@ -116,6 +133,5 @@ private:
 };
 
 }
-}
 
-#endif // __CCM_CCDL_COMPONENT_H__
+#endif // __CCM_COMMONPOOL_H__

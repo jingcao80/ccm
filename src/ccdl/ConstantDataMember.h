@@ -17,7 +17,7 @@
 #ifndef __CCM_CCDL_CONSTANTDATAMEMBER_H__
 #define __CCM_CCDL_CONSTANTDATAMEMBER_H__
 
-#include "ASTElement.h"
+#include "ASTNode.h"
 #include "Expression.h"
 #include "Type.h"
 #include "../util/String.h"
@@ -25,7 +25,7 @@
 namespace ccm {
 namespace ccdl {
 
-class ConstantDataMember : public ASTElement
+class ConstantDataMember : public ASTNode
 {
 public:
     ConstantDataMember()
@@ -43,6 +43,9 @@ public:
     inline ConstantDataMember& SetValue(
         /* [in] */ Expression* value)
     { mValue = value; return *this; }
+
+    String Dump(
+        /* [in] */ const String& prefix) override;
 
 private:
     Type* mType;

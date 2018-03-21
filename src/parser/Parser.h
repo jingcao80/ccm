@@ -17,30 +17,29 @@
 #ifndef __CCM_PARSER_H__
 #define __CCM_PARSER_H__
 
+#include "CommonPool.h"
 #include "Tokenizer.h"
-#include "ccdl/AdditiveExpression.h"
-#include "ccdl/AndExpression.h"
-#include "ccdl/Attribute.h"
-#include "ccdl/Component.h"
-#include "ccdl/Enumeration.h"
-#include "ccdl/ExclusiveOrExpression.h"
-#include "ccdl/Expression.h"
-#include "ccdl/InclusiveOrExpression.h"
-#include "ccdl/Interface.h"
-#include "ccdl/Method.h"
-#include "ccdl/MultiplicativeExpression.h"
-#include "ccdl/Namespace.h"
-#include "ccdl/Parameter.h"
-#include "ccdl/PostfixExpression.h"
-#include "ccdl/ShiftExpression.h"
-#include "ccdl/Type.h"
-#include "ccdl/UnaryExpression.h"
-#include "util/HashMap.h"
+#include "../ccdl/AdditiveExpression.h"
+#include "../ccdl/AndExpression.h"
+#include "../ccdl/Attribute.h"
+#include "../ccdl/Enumeration.h"
+#include "../ccdl/ExclusiveOrExpression.h"
+#include "../ccdl/Expression.h"
+#include "../ccdl/InclusiveOrExpression.h"
+#include "../ccdl/Interface.h"
+#include "../ccdl/Method.h"
+#include "../ccdl/MultiplicativeExpression.h"
+#include "../ccdl/Namespace.h"
+#include "../ccdl/Parameter.h"
+#include "../ccdl/PostfixExpression.h"
+#include "../ccdl/ShiftExpression.h"
+#include "../ccdl/Type.h"
+#include "../ccdl/UnaryExpression.h"
+#include "../util/HashMap.h"
 
 using ccm::ccdl::AdditiveExpression;
 using ccm::ccdl::AndExpression;
 using ccm::ccdl::Attribute;
-using ccm::ccdl::Component;
 using ccm::ccdl::Enumeration;
 using ccm::ccdl::ExclusiveOrExpression;
 using ccm::ccdl::Expression;
@@ -101,7 +100,6 @@ private:
 public:
     Parser()
         : mParsedFiles(100)
-        , mComponent(nullptr)
         , mCurrNamespace(nullptr)
         , mCurrContext(nullptr)
         , mStatus(NOERROR)
@@ -118,6 +116,8 @@ private:
     bool ParseFile();
 
     bool ParseDeclarationWithAttribute();
+
+    bool ParseDeclarationWithAttributeExceptModule();
 
     bool ParseAttribute(
         /* [out] */ Attribute& attr);
@@ -190,6 +190,9 @@ private:
     Interface* FindBaseInterface(
         /* [in] */ const String& itfName);
 
+    Type* FindType(
+        /* [in] */ const String& typeName);
+
     void LogError(
         /* [in] */ Tokenizer::Token token,
         /* [in] */ const String& message);
@@ -204,7 +207,7 @@ private:
     Tokenizer mTokenizer;
     String mPathPrefix;
     HashMap<bool> mParsedFiles;
-    Component* mComponent;
+    CommonPool mPool;
     Namespace* mCurrNamespace;
     Context* mCurrContext;
     int mStatus;

@@ -17,9 +17,9 @@
 #ifndef __CCM_TOKENIZER_H__
 #define __CCM_TOKENIZER_H__
 
-#include "util/File.h"
-#include "util/HashMap.h"
-#include "util/StringBuilder.h"
+#include "../util/File.h"
+#include "../util/HashMap.h"
+#include "../util/StringBuilder.h"
 
 namespace ccm {
 
@@ -47,56 +47,56 @@ public:
         CONST,                  // 14)
         DESCRIPTION,            // 15)
         ENUM,                   // 16)
-        FALSE,
-        IN,                     // 17)
-        INCLUDE,                // 18)
-        INTERFACE,              // 19)
-        MODULE,                 // 20)
-        NAMESPACE,              // 21)
-        OUT,                    // 22)
-        TRUE,
-        UUID,                   // 23)
-        VERSION,                // 24)
+        FALSE,                  // 17)
+        IN,                     // 18)
+        INCLUDE,                // 19)
+        INTERFACE,              // 20)
+        MODULE,                 // 21)
+        NAMESPACE,              // 22)
+        OUT,                    // 23)
+        TRUE,                   // 24)
+        URL,                    // 25)
+        UUID,                   // 26)
+        VERSION,                // 27)
         // symbol
-        AND,                    //      '&'
-        ANGLE_BRACKETS_OPEN,    // 25)  '<'
-        ANGLE_BRACKETS_CLOSE,   // 26)  '>'
-        ASSIGNMENT,             // 27)  '='
-        ASTERISK,               // 28)  '*'
-        BRACES_OPEN,            // 29)  '{'
-        BRACES_CLOSE,           // 30)  '}'
-        BRACKETS_OPEN,          // 31)  '['
-        BRACKETS_CLOSE,         // 32)  ']'
-        COLON,                  // 33)  ':'
-        COMMA,                  // 34)  ','
-        COMMENT_BLOCK,          // 35)
-        COMMENT_LINE,           // 36)
-        COMPLIMENT,             //      '~'
-        DIVIDE,                 // 37)  '/'
-        DOUBLE_QUOTES,          // 38)  '"'
-        END_OF_FILE,            // 39)
-        END_OF_LINE,            // 40)  '\n'
-        EXCLUSIVE_OR,           //      '^'
+        AND,                    // 28)  '&'
+        ANGLE_BRACKETS_OPEN,    // 29)  '<'
+        ANGLE_BRACKETS_CLOSE,   // 30)  '>'
+        ASSIGNMENT,             // 31)  '='
+        ASTERISK,               // 32)  '*'
+        BRACES_OPEN,            // 33)  '{'
+        BRACES_CLOSE,           // 34)  '}'
+        BRACKETS_OPEN,          // 35)  '['
+        BRACKETS_CLOSE,         // 36)  ']'
+        COLON,                  // 37)  ':'
+        COMMA,                  // 38)  ','
+        COMPLIMENT,             // 39)  '~'
+        DIVIDE,                 // 40)  '/'
+        END_OF_LINE,            // 41)  '\n'
+        EXCLUSIVE_OR,           // 42)  '^'
         INCLUSIVE_OR,           // 43)  '|'
-        MINUS,                  //      '-'
-        MODULO,                 //      '%'
-        NOT,                    //      '!'
-        PARENTHESES_OPEN,       // 44)  '('
-        PARENTHESES_CLOSE,      // 45)  ')'
-        PERIOD,                 // 46)  '.'
-        PLUS,                   //        '+'
-        SEMICOLON,              // 47)  ';'
-        SHIFT_LEFT,
-        SHIFT_RIGHT,
-        SHIFT_RIGHT_UNSIGNED,
-        STRING_LITERAL,         // 48)
-        UUID_NUMBER,            // 49)
-        VERSION_NUMBER,         // 50)
+        MINUS,                  // 44)  '-'
+        MODULO,                 // 45)  '%'
+        NOT,                    // 46)  '!'
+        PARENTHESES_OPEN,       // 47)  '('
+        PARENTHESES_CLOSE,      // 48)  ')'
+        PERIOD,                 // 49)  '.'
+        PLUS,                   // 50)  '+'
+        SEMICOLON,              // 51)  ';'
         // other
         CHARACTER,
-        IDENTIFIER,             // 42)
-        NUMBER_INTEGER,         // 43)
-        NUMBER_FLOAT,
+        COMMENT_BLOCK,          // 52)
+        COMMENT_LINE,           // 53)
+        END_OF_FILE,            // 54)
+        IDENTIFIER,             // 55)
+        NUMBER_INTEGRAL,        // 56)
+        NUMBER_FLOATINGPOINT,   // 57)
+        SHIFT_LEFT,             // 58)  "<<"
+        SHIFT_RIGHT,            // 59)  ">>"
+        SHIFT_RIGHT_UNSIGNED,   // 60)  ">>>"
+        STRING_LITERAL,         // 61)
+        UUID_NUMBER,            // 62)
+        VERSION_NUMBER,         // 63)
     };
 
 private:
@@ -136,17 +136,24 @@ public:
 
     Token GetToken();
 
-    Token GetStringLiteralToken();
-
     Token GetUuidNumberToken();
 
     Token GetVersionNumberToken();
+
+    inline int GetCharacter()
+    { return mCharacter; }
 
     inline String GetIdentifier()
     { return mIdentifier; }
 
     inline String GetNumberString()
     { return mNumberString; }
+
+    inline long long int GetIntegralValue()
+    { return mIntegralValue; }
+
+    inline double GetFloatingPointValue()
+    { return mFloatingPointValue; }
 
     inline String GetString()
     { return mString; }
@@ -178,16 +185,20 @@ private:
 
     Token ReadToken();
 
-    Token ReadStringLiteralToken();
-
     Token ReadUuidNumberToken();
 
     Token ReadVersionNumberToken();
+
+    Token ReadCharacter(
+        /* [in] */ int c);
 
     Token ReadIdentifier(
         /* [in] */ int c);
 
     Token ReadNumber(
+        /* [in] */ int c);
+
+    Token ReadStringLiteral(
         /* [in] */ int c);
 
     Token ReadLineComment(
@@ -220,11 +231,13 @@ private:
     bool mHasAPeek;
     int mTokenLineNo;
     int mTokenColumnNo;
+    int mCharacter;
     String mIdentifier;
     String mComment;
     String mNumberString;
     String mString;
-    long long mNumber;
+    long long int mIntegralValue;
+    double mFloatingPointValue;
     int mBit;
 };
 

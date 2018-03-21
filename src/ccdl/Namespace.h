@@ -17,13 +17,13 @@
 #ifndef __CCM_CCDL_NAMESPACE_H__
 #define __CCM_CCDL_NAMESPACE_H__
 
-#include "ASTElement.h"
+#include "ASTNode.h"
 #include "../util/String.h"
 
 namespace ccm {
 namespace ccdl {
 
-class Namespace : public ASTElement
+class Namespace : public ASTNode
 {
 public:
     Namespace(

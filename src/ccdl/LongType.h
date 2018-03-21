@@ -25,7 +25,16 @@ namespace ccdl {
 class LongType : public Type
 {
 public:
+    LongType()
+    { SetName(String("Long")); }
+
     bool IsPrimitiveType() override
+    { return true; }
+
+    bool IsNumericType() override
+    { return true; }
+
+    bool IsIntegralType() override
     { return true; }
 };
 

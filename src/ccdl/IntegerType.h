@@ -25,7 +25,16 @@ namespace ccdl {
 class IntegerType : public Type
 {
 public:
+    IntegerType()
+    { SetName(String("Integer")); }
+
     bool IsPrimitiveType() override
+    { return true; }
+
+    bool IsNumericType() override
+    { return true; }
+
+    bool IsIntegralType() override
     { return true; }
 };
 

@@ -25,6 +25,9 @@ namespace ccdl {
 class BooleanType : public Type
 {
 public:
+    BooleanType()
+    { SetName(String("Boolean")); }
+
     bool IsPrimitiveType() override
     { return true; }
 };

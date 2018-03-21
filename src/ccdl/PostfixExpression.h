@@ -28,12 +28,9 @@ class PostfixExpression : public Expression
 public:
     PostfixExpression()
         : mType(nullptr)
-        , mCharValue(0)
         , mBooleanValue(false)
-        , mIntegerValue(0)
-        , mLongValue(0)
-        , mFloatValue(0)
-        , mDoubleValue(0)
+        , mIntegralValue(0)
+        , mFloatingPointValue(0)
         , mExpression(nullptr)
     {}
 
@@ -49,14 +46,27 @@ public:
         /* [in] */ Expression* expression)
     { mExpression = expression; return *this; }
 
+    inline PostfixExpression& SetBooleanValue(
+        /* [in] */ bool value)
+    { mBooleanValue = value; return *this; }
+
+    inline PostfixExpression& SetIntegralValue(
+        /* [in] */ long long int value)
+    { mIntegralValue = value; return *this; }
+
+    inline PostfixExpression& SetFloatingPointValue(
+        /* [in] */ double value)
+    { mFloatingPointValue = value; return *this; }
+
+    inline PostfixExpression& SetStringValue(
+        /* [in] */ const String& value)
+    { mStringValue = value; return *this; }
+
 private:
     Type* mType;
-    char mCharValue;
     bool mBooleanValue;
-    int mIntegerValue;
-    long long int mLongValue;
-    float mFloatValue;
-    double mDoubleValue;
+    long long int mIntegralValue;
+    double mFloatingPointValue;
     String mStringValue;
     String mEnumeratorName;
     Expression* mExpression;

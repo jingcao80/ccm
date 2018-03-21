@@ -17,14 +17,14 @@
 #ifndef __CCM_CCDL_PARAMETER_H__
 #define __CCM_CCDL_PARAMETER_H__
 
-#include "ASTElement.h"
+#include "ASTNode.h"
 #include "Type.h"
 #include "../util/String.h"
 
 namespace ccm {
 namespace ccdl {
 
-class Parameter : public ASTElement
+class Parameter : public ASTNode
 {
 public:
     Parameter()

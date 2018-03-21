@@ -15,10 +15,10 @@
 //=========================================================================
 
 #include "Parser.h"
-#include "ccdl/ArrayType.h"
-#include "ccdl/ConstantDataMember.h"
-#include "ccdl/PointerType.h"
-#include "util/Logger.h"
+#include "../ccdl/ArrayType.h"
+#include "../ccdl/ConstantDataMember.h"
+#include "../ccdl/PointerType.h"
+#include "../util/Logger.h"
 
 using ccm::ccdl::ArrayType;
 using ccm::ccdl::ConstantDataMember;
@@ -64,14 +64,14 @@ bool Parser::Parse(
 
     mPathPrefix = filePath.Substring(0, filePath.LastIndexOf('/'));
 
-    mComponent = new Component(filePath);
+    mPool.SetRootFile(filePath);
     mCurrNamespace = new Namespace(String("__global__"));
-    mComponent->AddNamespace(mCurrNamespace);
+    mPool.AddNamespace(mCurrNamespace);
 
     ret = ParseFile();
 
     if (ret) {
-        String out = mComponent->Dump(String(""));
+        String out = mPool.Dump(String(""));
         printf("%s", out.string());
     }
     else DumpError();
@@ -81,10 +81,6 @@ bool Parser::Parse(
 
 Parser::~Parser()
 {
-    if (mComponent != nullptr) {
-        delete mComponent;
-        mComponent = nullptr;
-    }
     mCurrNamespace = nullptr;
 
     mCurrError = mErrorHeader;
@@ -155,6 +151,32 @@ bool Parser::ParseDeclarationWithAttribute()
         }
         case Tokenizer::Token::MODULE: {
             parseResult = ParseModule(attr) && parseResult;
+            break;
+        }
+        default: {
+            String message = String::Format("%s is not expected.", mTokenizer.DumpToken(token));
+            LogError(token, message);
+            parseResult = false;
+            break;
+        }
+    }
+
+    return parseResult;
+}
+
+bool Parser::ParseDeclarationWithAttributeExceptModule()
+{
+    Attribute attr;
+    bool parseResult = ParseAttribute(attr);
+
+    Tokenizer::Token token = mTokenizer.PeekToken();
+    switch (token) {
+        case Tokenizer::Token::COCLASS: {
+            parseResult = ParseCoclass(attr) && parseResult;
+            break;
+        }
+        case Tokenizer::Token::INTERFACE: {
+            parseResult = ParseInterface(&attr) && parseResult;
             break;
         }
         default: {
@@ -263,9 +285,9 @@ bool Parser::ParseAttribute(
                     }
                     return false;
                 }
-                token = mTokenizer.GetStringLiteralToken();
+                token = mTokenizer.GetToken();
                 if (token != Tokenizer::Token::STRING_LITERAL) {
-                    LogError(token, String("version number is expected."));
+                    LogError(token, String("string literal is expected."));
                     // jump over ']'
                     while (token != Tokenizer::Token::BRACKETS_CLOSE &&
                             token != Tokenizer::Token::END_OF_FILE) {
@@ -275,6 +297,42 @@ bool Parser::ParseAttribute(
                 }
                 else {
                     attr.mDescription = mTokenizer.GetString();
+                }
+                token = mTokenizer.GetToken();
+                if (token != Tokenizer::Token::PARENTHESES_CLOSE) {
+                    LogError(token, String("\")\" is expected."));
+                    // jump over ']'
+                    while (token != Tokenizer::Token::BRACKETS_CLOSE &&
+                            token != Tokenizer::Token::END_OF_FILE) {
+                        token = mTokenizer.GetToken();
+                    }
+                    return false;
+                }
+                break;
+            }
+            case Tokenizer::Token::URL: {
+                token = mTokenizer.GetToken();
+                if (token != Tokenizer::Token::PARENTHESES_OPEN) {
+                    LogError(token, String("\"(\" is expected."));
+                    // jump over ']'
+                    while (token != Tokenizer::Token::BRACKETS_CLOSE &&
+                            token != Tokenizer::Token::END_OF_FILE) {
+                        token = mTokenizer.GetToken();
+                    }
+                    return false;
+                }
+                token = mTokenizer.GetToken();
+                if (token != Tokenizer::Token::STRING_LITERAL) {
+                    LogError(token, String("string literal is expected."));
+                    // jump over ']'
+                    while (token != Tokenizer::Token::BRACKETS_CLOSE &&
+                            token != Tokenizer::Token::END_OF_FILE) {
+                        token = mTokenizer.GetToken();
+                    }
+                    return false;
+                }
+                else {
+                    attr.mUrl = mTokenizer.GetString();
                 }
                 token = mTokenizer.GetToken();
                 if (token != Tokenizer::Token::PARENTHESES_CLOSE) {
@@ -336,7 +394,7 @@ bool Parser::ParseInterface(
     if (token == Tokenizer::Token::SEMICOLON) {
         token = mTokenizer.GetToken();
         String fullName = mTokenizer.GetIdentifier();
-        Type* type = mComponent->FindType(fullName);
+        Type* type = mPool.FindType(fullName);
         if (type != nullptr) {
             if (!type->IsInterface()) {
                 String message = String::Format("Interface %s is name conflict.", itfName.string());
@@ -348,12 +406,12 @@ bool Parser::ParseInterface(
 
         int index = fullName.LastIndexOf("::");
         String nsString = index == -1 ? String("__global__") : fullName.Substring(0, index - 1);
-        Namespace* ns = mComponent->ParseNamespace(nsString);
+        Namespace* ns = mPool.ParseNamespace(nsString);
         String itfName = index == -1 ? fullName : fullName.Substring(index + 2);
         Interface* interface = new Interface();
         interface->SetName(itfName);
         interface->SetNamespace(ns);
-        mComponent->AddInterface(interface);
+        mPool.AddInterface(interface);
 
         mCurrContext->AddPreDeclaration(itfName, fullName);
         return parseResult;
@@ -367,8 +425,8 @@ bool Parser::ParseInterface(
     Interface* interface = nullptr;
 
     String currNsString = mCurrNamespace->ToString();
-    Type* type = mComponent->FindType(currNsString.IsNullOrEmpty() ?
-            itfName : currNsString + "::" + itfName);
+    Type* type = mPool.FindType(currNsString.IsNullOrEmpty() ?
+            itfName : currNsString + itfName);
     if (type != nullptr) {
         if (type->IsInterface() && !((Interface*)type)->IsDefined()) {
             interface = (Interface*)type;
@@ -430,7 +488,7 @@ bool Parser::ParseInterface(
         interface->SetDefined(true);
         interface->SetAttribute(*attr);
         if (newAdded) {
-            mComponent->AddInterface(interface);
+            mPool.AddInterface(interface);
         }
     }
     else {
@@ -622,10 +680,10 @@ Type* Parser::ParseType()
     Type* type = nullptr;
     Tokenizer::Token token = mTokenizer.GetToken();
     if (Tokenizer::IsPrimitiveType(token)) {
-        type = mComponent->FindType(String(mTokenizer.DumpToken(token)));
+        type = mPool.FindType(String(mTokenizer.DumpToken(token)));
     }
     else if (token == Tokenizer::Token::IDENTIFIER) {
-        type = mComponent->FindType(mTokenizer.GetIdentifier());
+        type = FindType(mTokenizer.GetIdentifier());
     }
     else if (token == Tokenizer::Token::ARRAY) {
         type = ParseArrayType();
@@ -649,12 +707,12 @@ Type* Parser::ParseType()
         for (int i = 0; i < ptrNumber; i++) {
             ptrTypeStr = ptrTypeStr + "*";
         }
-        Type* ptrType = mComponent->FindType(ptrTypeStr);
+        Type* ptrType = mPool.FindType(ptrTypeStr);
         if (ptrType == nullptr) {
             PointerType* ptrType = new PointerType();
             ptrType->SetBaseType(type);
             ptrType->SetPointerNumber(ptrNumber);
-            mComponent->AddTemporaryType(ptrType);
+            mPool.AddTemporaryType(ptrType);
         }
     }
 
@@ -680,11 +738,11 @@ Type* Parser::ParseArrayType()
 
     String arrayTypeStr =
             String("Array<") + elemType->ToString() + String(">");
-    Type* arrayType = mComponent->FindType(arrayTypeStr);
+    Type* arrayType = mPool.FindType(arrayTypeStr);
     if (arrayType == nullptr) {
-        ArrayType* arrayType = new ArrayType();
-        arrayType->SetElementType(elemType);
-        mComponent->AddTemporaryType(arrayType);
+        arrayType = new ArrayType();
+        ((ArrayType*)arrayType)->SetElementType(elemType);
+        mPool.AddTemporaryType(arrayType);
     }
 
     return arrayType;
@@ -703,7 +761,7 @@ bool Parser::ParseConstDataMember(
     token = mTokenizer.GetToken();
     token = mTokenizer.GetToken();
     if (Tokenizer::IsPrimitiveType(token)) {
-        type = mComponent->FindType(String(mTokenizer.DumpToken(token)));
+        type = mPool.FindType(String(mTokenizer.DumpToken(token)));
     }
     else {
         Enumeration* enumeration = nullptr;
@@ -711,7 +769,7 @@ bool Parser::ParseConstDataMember(
         Namespace* ns = mCurrNamespace;
         while (ns != nullptr) {
             String typeFullName = ns->ToString() + typeName;
-            enumeration = mComponent->FindEnumeration(typeFullName);
+            enumeration = mPool.FindEnumeration(typeFullName);
             if (enumeration != nullptr) {
                 type = enumeration;
                 break;
@@ -757,6 +815,17 @@ bool Parser::ParseConstDataMember(
     }
 
     parseResult = ParseExpression(type) && parseResult;
+
+    token = mTokenizer.GetToken();
+    if (token != Tokenizer::Token::SEMICOLON) {
+        LogError(token, String("\";\" is expected."));
+        while (token != Tokenizer::Token::SEMICOLON &&
+                token != Tokenizer::Token::END_OF_FILE) {
+            token = mTokenizer.GetToken();
+        }
+        delete dataMember;
+        return false;
+    }
 
     if (parseResult) {
         interface->AddConstantDataMember(dataMember);
@@ -971,18 +1040,90 @@ PostfixExpression* Parser::ParsePostfixExpression(
 
     Tokenizer::Token token = mTokenizer.PeekToken();
 
-    if (token == Tokenizer::Token::NUMBER_INTEGER) {
-
+    if (token == Tokenizer::Token::NUMBER_INTEGRAL) {
+        mTokenizer.GetToken();
+        if (exprType->IsNumericType()) {
+            postExpr = new PostfixExpression();
+            postExpr->SetType(exprType);
+            if (exprType->IsIntegralType()) {
+                postExpr->SetIntegralValue(mTokenizer.GetIntegralValue());
+            }
+            else if (exprType->IsFloatingPointType()) {
+                postExpr->SetFloatingPointValue(mTokenizer.GetIntegralValue());
+            }
+        }
+        else {
+            String message = String::Format("Integral values can not be assigned to \"%s\" type.",
+                    exprType->GetName().string());
+            LogError(token, message);
+            return nullptr;
+        }
     }
-    else if (token == Tokenizer::Token::NUMBER_FLOAT) {
-
+    else if (token == Tokenizer::Token::NUMBER_FLOATINGPOINT) {
+        mTokenizer.GetToken();
+        if (exprType->IsNumericType()) {
+            postExpr = new PostfixExpression();
+            postExpr->SetType(exprType);
+            if (exprType->IsIntegralType()) {
+                postExpr->SetIntegralValue(mTokenizer.GetFloatingPointValue());
+            }
+            else if (exprType->IsFloatingPointType()) {
+                postExpr->SetFloatingPointValue(mTokenizer.GetFloatingPointValue());
+            }
+        }
+        else {
+            String message = String::Format("FloatingPoint values can not be assigned to \"%s\" type.",
+                    exprType->GetName().string());
+            LogError(token, message);
+            return nullptr;
+        }
     }
     else if (token == Tokenizer::Token::TRUE ||
              token == Tokenizer::Token::FALSE) {
-
+        mTokenizer.GetToken();
+        if (exprType->GetName().Equals("Boolean")) {
+            postExpr = new PostfixExpression();
+            postExpr->SetType(exprType);
+            postExpr->SetBooleanValue(token == Tokenizer::Token::TRUE ?
+                    true : false);
+        }
+        else {
+            String message = String::Format("\"%s\" can not be assigned to \"%s\" type.",
+                    mTokenizer.DumpToken(token), exprType->GetName().string());
+            LogError(token, message);
+            return nullptr;
+        }
     }
     else if (token == Tokenizer::Token::CHARACTER) {
-
+        mTokenizer.GetToken();
+        if (exprType->IsNumericType()) {
+            postExpr = new PostfixExpression();
+            postExpr->SetType(exprType);
+            if (exprType->IsIntegralType()) {
+                postExpr->SetIntegralValue(mTokenizer.GetCharacter());
+            }
+            else if (exprType->IsFloatingPointType()) {
+                postExpr->SetFloatingPointValue(mTokenizer.GetCharacter());
+            }
+        }
+        else {
+            LogError(token, String("Character can not be assigned to non-numeric type."));
+            return nullptr;
+        }
+    }
+    else if (token == Tokenizer::Token::STRING_LITERAL) {
+        mTokenizer.GetToken();
+        if (exprType->GetName().Equals("String")) {
+            postExpr = new PostfixExpression();
+            postExpr->SetType(exprType);
+            postExpr->SetStringValue(mTokenizer.GetString());
+        }
+        else {
+            String message = String::Format("\"%s\" can not be assigned to \"%s\" type.",
+                    mTokenizer.GetString().string(), exprType->GetName().string());
+            LogError(token, message);
+            return nullptr;
+        }
     }
     else if (token == Tokenizer::Token::IDENTIFIER) {
         mTokenizer.GetToken();
@@ -994,7 +1135,10 @@ PostfixExpression* Parser::ParsePostfixExpression(
                 postExpr->SetEnumerator(enumName);
             }
             else {
-
+                String message = String::Format("\"%s\" is not a valid enumerator of %s",
+                        enumName.string(), exprType->GetName().string());
+                LogError(token, message);
+                return nullptr;
             }
         }
     }
@@ -1005,12 +1149,7 @@ PostfixExpression* Parser::ParsePostfixExpression(
             mTokenizer.GetToken();
         }
         else {
-            // jump over ';'
-            while (token != Tokenizer::Token::SEMICOLON &&
-                    token != Tokenizer::Token::END_OF_FILE) {
-                token = mTokenizer.GetToken();
-            }
-
+            LogError(token, String("\")\" is expected."));
             return nullptr;
         }
 
@@ -1052,7 +1191,7 @@ bool Parser::ParseEnumeration()
     }
 
     String currNsString = mCurrNamespace->ToString();
-    Type* type = mComponent->FindType(currNsString.IsNullOrEmpty() ?
+    Type* type = mPool.FindType(currNsString.IsNullOrEmpty() ?
             enumName : currNsString + "::" + enumName);
     if (type != nullptr) {
         String message;
@@ -1078,7 +1217,7 @@ bool Parser::ParseEnumeration()
     parseResult = ParseEnumerationBody(enumeration) && parseResult;
 
     if (parseResult) {
-        mComponent->AddEnumeration(enumeration);
+        mPool.AddEnumeration(enumeration);
     }
     else {
         delete enumeration;
@@ -1149,7 +1288,7 @@ bool Parser::ParseInclude()
 
     // read "include"
     token = mTokenizer.GetToken();
-    token = mTokenizer.GetStringLiteralToken();
+    token = mTokenizer.GetToken();
     if (token != Tokenizer::Token::STRING_LITERAL) {
         LogError(token, String("The path of a file is expected."));
         // jump to next line
@@ -1184,24 +1323,79 @@ bool Parser::ParseModule(
     /* [in] */ Attribute& attr)
 {
     bool parseResult = true;
+    String moduleName;
+    Tokenizer::Token token;
+
+    // read "module"
+    token = mTokenizer.GetToken();
+    if (mTokenizer.PeekToken() == Tokenizer::Token::IDENTIFIER) {
+        mTokenizer.GetToken();
+        moduleName = mTokenizer.GetIdentifier();
+    }
+    else {
+        LogError(token, String("Identifier as module name is expected."));
+        parseResult = false;
+    }
+
+    token = mTokenizer.GetToken();
+    if (token != Tokenizer::Token::BRACES_OPEN) {
+        LogError(token, String("\"{\" is expected."));
+        return false;
+    }
+
     // todo:
+
+
+
+    token = mTokenizer.PeekToken();
+    while (token != Tokenizer::Token::BRACES_CLOSE &&
+            token != Tokenizer::Token::END_OF_FILE) {
+        switch (token) {
+            case Tokenizer::Token::BRACKETS_OPEN:
+                parseResult = ParseDeclarationWithAttributeExceptModule() && parseResult;
+                break;
+            case Tokenizer::Token::COCLASS: {
+                LogError(token, String("coclass should have attributes"));
+                Attribute attr;
+                parseResult = ParseCoclass(attr) && parseResult;
+                break;
+            }
+            case Tokenizer::Token::ENUM:
+                parseResult = ParseEnumeration() && parseResult;
+                break;
+            case Tokenizer::Token::INCLUDE:
+                parseResult = ParseInclude() && parseResult;
+                break;
+            case Tokenizer::Token::INTERFACE:
+                parseResult = ParseInterface(nullptr) && parseResult;
+                break;
+            case Tokenizer::Token::NAMESPACE:
+                parseResult = ParseNamespace() && parseResult;
+                break;
+            default: {
+                String message = String::Format("%s is not expected.", mTokenizer.DumpToken(token));
+                LogError(token, message);
+                break;
+            }
+        }
+        token = mTokenizer.PeekToken();
+    }
+    mTokenizer.GetToken();
+
     return parseResult;
 }
 
 bool Parser::ParseNamespace()
 {
     bool parseResult = true;
+    String namespaceName;
     Tokenizer::Token token;
 
     // read "namespace"
     token = mTokenizer.GetToken();
-    token = mTokenizer.PeekToken();
-    if (token == Tokenizer::Token::IDENTIFIER) {
+    if (mTokenizer.PeekToken() == Tokenizer::Token::IDENTIFIER) {
         mTokenizer.GetToken();
-        String nsString = mTokenizer.GetIdentifier();
-        Namespace* ns = new Namespace(nsString);
-        mCurrNamespace->AddInnerNamespace(ns);
-        mCurrNamespace = ns;
+        namespaceName = mTokenizer.GetIdentifier();
     }
     else {
         LogError(token, String("Identifier as namespace name is expected."));
@@ -1213,6 +1407,10 @@ bool Parser::ParseNamespace()
         LogError(token, String("\"{\" is expected."));
         return false;
     }
+
+    Namespace* ns = new Namespace(namespaceName);
+    mCurrNamespace->AddInnerNamespace(ns);
+    mCurrNamespace = ns;
 
     token = mTokenizer.PeekToken();
     while (token != Tokenizer::Token::BRACES_CLOSE &&
@@ -1276,27 +1474,33 @@ void Parser::LeaveContext()
 Interface* Parser::FindBaseInterface(
     /* [in] */ const String& itfName)
 {
-    Interface* baseItf = nullptr;
-    String baseItfName = mTokenizer.GetIdentifier();
-    if (baseItfName.Contains("::")) {
-        baseItf = mComponent->FindInterface(baseItfName);
+    Type* type = FindType(itfName);
+    return type != nullptr && type->IsInterface() ? (Interface*)type : nullptr;
+}
+
+Type* Parser::FindType(
+    /* [in] */ const String& typeName)
+{
+    Type* type = nullptr;
+    if (typeName.Contains("::")) {
+        type = mPool.FindType(typeName);
     }
     else {
-        String baseItfFullName = mCurrContext->FindPreDeclaration(baseItfName);
-        if (!baseItfFullName.IsNullOrEmpty()) {
-            baseItf = mComponent->FindInterface(baseItfFullName);
+        String typeFullName = mCurrContext->FindPreDeclaration(typeName);
+        if (!typeFullName.IsNullOrEmpty()) {
+            type = mPool.FindType(typeFullName);
         }
         else {
             Namespace* ns = mCurrNamespace;
             while (ns != nullptr) {
-                baseItfFullName = ns->ToString() + baseItfName;
-                baseItf = mComponent->FindInterface(baseItfFullName);
-                if (baseItf != nullptr) return baseItf;
+                typeFullName = ns->ToString() + typeName;
+                type = mPool.FindType(typeFullName);
+                if (type != nullptr) break;
                 ns = ns->GetOuterNamespace();
             }
         }
     }
-    return baseItf;
+    return type;
 }
 
 void Parser::LogError(

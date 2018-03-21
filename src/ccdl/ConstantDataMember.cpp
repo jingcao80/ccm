@@ -14,31 +14,21 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CCDL_SHORTTYPE_H__
-#define __CCM_CCDL_SHORTTYPE_H__
-
-#include "Type.h"
+#include "ConstantDataMember.h"
+#include "../util/StringBuilder.h"
 
 namespace ccm {
 namespace ccdl {
 
-class ShortType : public Type
+String ConstantDataMember::Dump(
+    /* [in] */ const String& prefix)
 {
-public:
-    ShortType()
-    { SetName(String("Short")); }
+    StringBuilder builder;
 
-    bool IsPrimitiveType() override
-    { return true; }
+    builder.Append(prefix).Append(mName).Append("\n");
 
-    bool IsNumericType() override
-    { return true; }
-
-    bool IsIntegralType() override
-    { return true; }
-};
+    return builder.ToString();
+}
 
 }
 }
-
-#endif // __CCM_CCDL_SHORTTYPE_H__

@@ -28,6 +28,7 @@ public:
     String mUuid;
     String mVersion;
     String mDescription;
+    String mUrl;
 };
 
 }

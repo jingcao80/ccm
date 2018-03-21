@@ -25,6 +25,9 @@ namespace ccdl {
 class HANDLEType : public Type
 {
 public:
+    HANDLEType()
+    { SetName(String("HANDLE")); }
+
     bool IsPrimitiveType() override
     { return true; }
 };

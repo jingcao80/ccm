@@ -121,9 +121,18 @@ String Interface::Dump(
     StringBuilder builder;
 
     builder.Append(prefix).Append("interface ").Append(mName).Append("[");
-    builder.Append("uuid:").Append(mUuid.Dump()).Append(", ");
-    builder.Append("version:").Append(mVersion).Append(", ");
-    builder.Append("description:").Append(mDescription).Append("]\n");
+    builder.Append("uuid:").Append(mUuid.Dump());
+    if (!mVersion.IsNullOrEmpty()) {
+        builder.Append(", version:").Append(mVersion);
+    }
+    if (!mDescription.IsNullOrEmpty()) {
+        builder.Append(", description:").Append(mDescription);
+    }
+    builder.Append("]\n");
+    for (int i = 0; i < mConstDataMemberIndex; i++) {
+        String dataMemberStr = mConstDataMembers[i]->Dump(String("    "));
+        builder.Append(prefix).Append(dataMemberStr);
+    }
     for (int i = 0; i < mMethodIndex; i++) {
         String methodStr = mMethods[i]->Dump(String("    "));
         builder.Append(prefix).Append(methodStr);

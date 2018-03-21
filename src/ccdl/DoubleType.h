@@ -25,7 +25,16 @@ namespace ccdl {
 class DoubleType : public Type
 {
 public:
+    DoubleType()
+    { SetName(String("Double")); }
+
     bool IsPrimitiveType() override
+    { return true; }
+
+    bool IsNumericType() override
+    { return true; }
+
+    bool IsFloatingPointType() override
     { return true; }
 };
 

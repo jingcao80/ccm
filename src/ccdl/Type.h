@@ -17,17 +17,24 @@
 #ifndef __CCM_CCDL_TYPE_H__
 #define __CCM_CCDL_TYPE_H__
 
-#include "ASTElement.h"
+#include "ASTNode.h"
 #include "Namespace.h"
 #include "../util/String.h"
 
 namespace ccm {
 namespace ccdl {
 
-class Type : public ASTElement
+class Type : public ASTNode
 {
 public:
+    Type()
+        : mNamespace(nullptr)
+    {}
+
     virtual ~Type();
+
+    inline String GetName()
+    { return mName; }
 
     inline Type& SetName(
         /* [in] */ const String& name)
@@ -38,6 +45,12 @@ public:
     { mNamespace = ns; return *this; }
 
     virtual bool IsPrimitiveType();
+
+    virtual bool IsNumericType();
+
+    virtual bool IsIntegralType();
+
+    virtual bool IsFloatingPointType();
 
     virtual bool IsEnumeration();
 

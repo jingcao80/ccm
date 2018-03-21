@@ -25,7 +25,16 @@ namespace ccdl {
 class ByteType : public Type
 {
 public:
+    ByteType()
+    { SetName(String("Byte")); }
+
     bool IsPrimitiveType() override
+    { return true; }
+
+    bool IsNumericType() override
+    { return true; }
+
+    bool IsIntegralType() override
     { return true; }
 };
 

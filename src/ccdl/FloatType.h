@@ -25,7 +25,16 @@ namespace ccdl {
 class FloatType : public Type
 {
 public:
+    FloatType()
+    { SetName(String("Float")); }
+
     bool IsPrimitiveType() override
+    { return true; }
+
+    bool IsNumericType() override
+    { return true; }
+
+    bool IsFloatingPointType() override
     { return true; }
 };
 

@@ -25,6 +25,9 @@ namespace ccdl {
 class StringType : public Type
 {
 public:
+    StringType()
+    { SetName(String("String")); }
+
     bool IsPrimitiveType() override
     { return true; }
 };
