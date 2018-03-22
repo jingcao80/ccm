@@ -19,10 +19,11 @@ set(SOURCES
     src/ccdl/MultiplicativeExpression.cpp
     src/ccdl/Namespace.cpp
     src/ccdl/PointerType.cpp
+    src/ccdl/Pool.cpp
     src/ccdl/ShiftExpression.cpp
     src/ccdl/Type.cpp
     src/ccdl/UnaryExpression.cpp
-    src/parser/CommonPool.cpp
+    src/parser/Environment.cpp
     src/parser/Parser.cpp
     src/parser/Tokenizer.cpp
     src/util/File.cpp

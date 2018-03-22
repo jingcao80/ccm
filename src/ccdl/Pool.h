@@ -14,52 +14,35 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_COMMONPOOL_H__
-#define __CCM_COMMONPOOL_H__
+#ifndef __CCM_CCDL_POOL_H__
+#define __CCM_CCDL_POOL_H__
 
-#include "../ccdl/BooleanType.h"
-#include "../ccdl/ByteType.h"
-#include "../ccdl/CharType.h"
-#include "../ccdl/DoubleType.h"
-#include "../ccdl/Enumeration.h"
-#include "../ccdl/FloatType.h"
-#include "../ccdl/HANDLEType.h"
-#include "../ccdl/IntegerType.h"
-#include "../ccdl/Interface.h"
-#include "../ccdl/LongType.h"
-#include "../ccdl/Namespace.h"
-#include "../ccdl/ShortType.h"
-#include "../ccdl/StringType.h"
-#include "../ccdl/Type.h"
+#include "BooleanType.h"
+#include "ByteType.h"
+#include "CharType.h"
+#include "DoubleType.h"
+#include "Enumeration.h"
+#include "FloatType.h"
+#include "HANDLEType.h"
+#include "IntegerType.h"
+#include "Interface.h"
+#include "LongType.h"
+#include "Namespace.h"
+#include "ShortType.h"
+#include "StringType.h"
+#include "../util/ArrayList.h"
 #include "../util/HashMap.h"
-
-using ccm::ccdl::BooleanType;
-using ccm::ccdl::ByteType;
-using ccm::ccdl::CharType;
-using ccm::ccdl::DoubleType;
-using ccm::ccdl::Enumeration;
-using ccm::ccdl::FloatType;
-using ccm::ccdl::HANDLEType;
-using ccm::ccdl::IntegerType;
-using ccm::ccdl::Interface;
-using ccm::ccdl::LongType;
-using ccm::ccdl::Namespace;
-using ccm::ccdl::ShortType;
-using ccm::ccdl::StringType;
-using ccm::ccdl::Type;
+#include "../util/String.h"
 
 namespace ccm {
+namespace ccdl {
 
-class CommonPool
+class Pool
 {
 public:
-    CommonPool();
+    Pool();
 
-    ~CommonPool();
-
-    inline void SetRootFile(
-        /* [in] */ const String& rootFile)
-    { mRootFile = rootFile; }
+    ~Pool();
 
     bool AddEnumeration(
         /* [in] */ Enumeration* enumeration);
@@ -76,10 +59,10 @@ public:
     bool AddNamespace(
         /* [in] */ Namespace* ns);
 
-    Namespace* ParseNamespace(
+    Namespace* FindNamespace(
         /* [in] */ const String& nsString);
 
-    Namespace* FindNamespace(
+    Namespace* ParseNamespace(
         /* [in] */ const String& nsString);
 
     bool AddTemporaryType(
@@ -88,37 +71,10 @@ public:
     Type* FindType(
         /* [in] */ const String& typeName);
 
-    String Dump(
+    virtual String Dump(
         /* [in] */ const String& prefix);
 
-private:
-    bool EnlargeEnumerationArray();
-
-    bool EnlargeInterfaceArray();
-
-    bool EnlargeNamespaceArray();
-
-    bool EnlargeTempTypeArray();
-
-private:
-    String mRootFile;
-
-    int mEnumCapacity;
-    int mEnumIndex;
-    Enumeration** mEnumerations;
-
-    int mItfCapacity;
-    int mItfIndex;
-    Interface** mInterfaces;
-
-    int mNSCapacity;
-    int mNSIndex;
-    Namespace** mNamespaces;
-
-    int mTempTypeCapacity;
-    int mTempTypeIndex;
-    Type** mTempTypes;
-
+protected:
     ByteType* mByteType;
     ShortType* mShortType;
     IntegerType* mIntegerType;
@@ -129,9 +85,15 @@ private:
     BooleanType* mBooleanType;
     StringType* mStringType;
     HANDLEType* mHANDLEType;
+
+    ArrayList<Enumeration*> mEnumerations;
+    ArrayList<Interface*> mInterfaces;
+    ArrayList<Namespace*> mNamespaces;
+    ArrayList<Type*> mTempTypes;
     HashMap<Type*> mTypes;
 };
 
 }
+}
 
-#endif // __CCM_COMMONPOOL_H__
+#endif // __CCM_CCDL_POOL_H__

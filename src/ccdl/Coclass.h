@@ -14,52 +14,19 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CCDL_MODULE_H__
-#define __CCM_CCDL_MODULE_H__
+#ifndef __CCM_CCDL_COCLASS_H__
+#define __CCM_CCDL_COCLASS_H__
 
-#include "ASTNode.h"
-#include "BooleanType.h"
-#include "ByteType.h"
-#include "CharType.h"
-#include "DoubleType.h"
-#include "Enumeration.h"
-#include "FloatType.h"
-#include "HANDLEType.h"
-#include "IntegerType.h"
-#include "Interface.h"
-#include "LongType.h"
-#include "Namespace.h"
-#include "Pool.h"
-#include "ShortType.h"
-#include "StringType.h"
 #include "Type.h"
-#include "../util/HashMap.h"
 
 namespace ccm {
 namespace ccdl {
 
-class Module : public ASTNode, public Pool
+class Coclass : public Type
 {
-public:
-    inline void SetName(
-        /* [in] */ const String& name)
-    { mName = name; }
-
-    Module& SetAttribute(
-        /* [in] */ const Attribute& attr);
-
-    String Dump(
-        /* [in] */ const String& prefix) override;
-
-private:
-    String mName;
-    Uuid mUuid;
-    String mVersion;
-    String mDescription;
-    String mUrl;
 };
 
 }
 }
 
-#endif // __CCM_CCDL_MODULE_H__
+#endif // __CCM_CCDL_COCLASS_H__

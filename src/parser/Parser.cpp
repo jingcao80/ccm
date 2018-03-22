@@ -64,14 +64,16 @@ bool Parser::Parse(
 
     mPathPrefix = filePath.Substring(0, filePath.LastIndexOf('/'));
 
-    mPool.SetRootFile(filePath);
     mCurrNamespace = new Namespace(String("__global__"));
-    mPool.AddNamespace(mCurrNamespace);
+    mEnvironment = new Environment();
+    mEnvironment->SetRootFile(filePath);
+    mEnvironment->AddNamespace(mCurrNamespace);
+    mPool = mEnvironment;
 
     ret = ParseFile();
 
     if (ret) {
-        String out = mPool.Dump(String(""));
+        String out = mPool->Dump(String(""));
         printf("%s", out.string());
     }
     else DumpError();
@@ -81,7 +83,13 @@ bool Parser::Parse(
 
 Parser::~Parser()
 {
+    delete mEnvironment;
+    mEnvironment = nullptr;
+    delete mModule;
+    mModule = nullptr;
+
     mCurrNamespace = nullptr;
+    mPool = nullptr;
 
     mCurrError = mErrorHeader;
     while (mCurrError != nullptr) {
@@ -394,7 +402,7 @@ bool Parser::ParseInterface(
     if (token == Tokenizer::Token::SEMICOLON) {
         token = mTokenizer.GetToken();
         String fullName = mTokenizer.GetIdentifier();
-        Type* type = mPool.FindType(fullName);
+        Type* type = mPool->FindType(fullName);
         if (type != nullptr) {
             if (!type->IsInterface()) {
                 String message = String::Format("Interface %s is name conflict.", itfName.string());
@@ -406,12 +414,12 @@ bool Parser::ParseInterface(
 
         int index = fullName.LastIndexOf("::");
         String nsString = index == -1 ? String("__global__") : fullName.Substring(0, index - 1);
-        Namespace* ns = mPool.ParseNamespace(nsString);
+        Namespace* ns = mPool->ParseNamespace(nsString);
         String itfName = index == -1 ? fullName : fullName.Substring(index + 2);
         Interface* interface = new Interface();
         interface->SetName(itfName);
         interface->SetNamespace(ns);
-        mPool.AddInterface(interface);
+        mPool->AddInterface(interface);
 
         mCurrContext->AddPreDeclaration(itfName, fullName);
         return parseResult;
@@ -425,7 +433,7 @@ bool Parser::ParseInterface(
     Interface* interface = nullptr;
 
     String currNsString = mCurrNamespace->ToString();
-    Type* type = mPool.FindType(currNsString.IsNullOrEmpty() ?
+    Type* type = mPool->FindType(currNsString.IsNullOrEmpty() ?
             itfName : currNsString + itfName);
     if (type != nullptr) {
         if (type->IsInterface() && !((Interface*)type)->IsDefined()) {
@@ -488,7 +496,7 @@ bool Parser::ParseInterface(
         interface->SetDefined(true);
         interface->SetAttribute(*attr);
         if (newAdded) {
-            mPool.AddInterface(interface);
+            mPool->AddInterface(interface);
         }
     }
     else {
@@ -680,7 +688,7 @@ Type* Parser::ParseType()
     Type* type = nullptr;
     Tokenizer::Token token = mTokenizer.GetToken();
     if (Tokenizer::IsPrimitiveType(token)) {
-        type = mPool.FindType(String(mTokenizer.DumpToken(token)));
+        type = mPool->FindType(String(mTokenizer.DumpToken(token)));
     }
     else if (token == Tokenizer::Token::IDENTIFIER) {
         type = FindType(mTokenizer.GetIdentifier());
@@ -707,13 +715,14 @@ Type* Parser::ParseType()
         for (int i = 0; i < ptrNumber; i++) {
             ptrTypeStr = ptrTypeStr + "*";
         }
-        Type* ptrType = mPool.FindType(ptrTypeStr);
+        PointerType* ptrType = (PointerType*)mPool->FindType(ptrTypeStr);
         if (ptrType == nullptr) {
-            PointerType* ptrType = new PointerType();
+            ptrType = new PointerType();
             ptrType->SetBaseType(type);
             ptrType->SetPointerNumber(ptrNumber);
-            mPool.AddTemporaryType(ptrType);
+            mPool->AddTemporaryType(ptrType);
         }
+        type = ptrType;
     }
 
     return type;
@@ -738,11 +747,11 @@ Type* Parser::ParseArrayType()
 
     String arrayTypeStr =
             String("Array<") + elemType->ToString() + String(">");
-    Type* arrayType = mPool.FindType(arrayTypeStr);
+    ArrayType* arrayType = (ArrayType*)mPool->FindType(arrayTypeStr);
     if (arrayType == nullptr) {
         arrayType = new ArrayType();
-        ((ArrayType*)arrayType)->SetElementType(elemType);
-        mPool.AddTemporaryType(arrayType);
+        arrayType->SetElementType(elemType);
+        mPool->AddTemporaryType(arrayType);
     }
 
     return arrayType;
@@ -761,7 +770,7 @@ bool Parser::ParseConstDataMember(
     token = mTokenizer.GetToken();
     token = mTokenizer.GetToken();
     if (Tokenizer::IsPrimitiveType(token)) {
-        type = mPool.FindType(String(mTokenizer.DumpToken(token)));
+        type = mPool->FindType(String(mTokenizer.DumpToken(token)));
     }
     else {
         Enumeration* enumeration = nullptr;
@@ -769,7 +778,7 @@ bool Parser::ParseConstDataMember(
         Namespace* ns = mCurrNamespace;
         while (ns != nullptr) {
             String typeFullName = ns->ToString() + typeName;
-            enumeration = mPool.FindEnumeration(typeFullName);
+            enumeration = mPool->FindEnumeration(typeFullName);
             if (enumeration != nullptr) {
                 type = enumeration;
                 break;
@@ -1164,8 +1173,28 @@ PostfixExpression* Parser::ParsePostfixExpression(
 bool Parser::ParseCoclass(
     /* [in] */ Attribute& attr)
 {
-    // todo:
-    return 0;
+    bool parseResult = true;
+    Tokenizer::Token token;
+    String className;
+
+    // read "coclass"
+    token = mTokenizer.GetToken();
+    if (mTokenizer.PeekToken() == Tokenizer::Token::IDENTIFIER) {
+        className = mTokenizer.GetIdentifier();
+    }
+    else {
+        LogError(token, String("Identifier as coclass name is expected."));
+        // jump over '}'
+        while (token != Tokenizer::Token::BRACES_CLOSE &&
+                token != Tokenizer::Token::END_OF_FILE) {
+            token = mTokenizer.GetToken();
+        }
+        return false;
+    }
+
+    // parseResult = ParseCoclassBody() && parseResult;
+
+    return parseResult;
 }
 
 bool Parser::ParseEnumeration()
@@ -1191,7 +1220,7 @@ bool Parser::ParseEnumeration()
     }
 
     String currNsString = mCurrNamespace->ToString();
-    Type* type = mPool.FindType(currNsString.IsNullOrEmpty() ?
+    Type* type = mPool->FindType(currNsString.IsNullOrEmpty() ?
             enumName : currNsString + "::" + enumName);
     if (type != nullptr) {
         String message;
@@ -1217,7 +1246,7 @@ bool Parser::ParseEnumeration()
     parseResult = ParseEnumerationBody(enumeration) && parseResult;
 
     if (parseResult) {
-        mPool.AddEnumeration(enumeration);
+        mPool->AddEnumeration(enumeration);
     }
     else {
         delete enumeration;
@@ -1343,9 +1372,10 @@ bool Parser::ParseModule(
         return false;
     }
 
-    // todo:
-
-
+    mModule = new Module();
+    mModule->SetName(moduleName);
+    mModule->SetAttribute(attr);
+    mPool = mModule;
 
     token = mTokenizer.PeekToken();
     while (token != Tokenizer::Token::BRACES_CLOSE &&
@@ -1483,18 +1513,18 @@ Type* Parser::FindType(
 {
     Type* type = nullptr;
     if (typeName.Contains("::")) {
-        type = mPool.FindType(typeName);
+        type = mPool->FindType(typeName);
     }
     else {
         String typeFullName = mCurrContext->FindPreDeclaration(typeName);
         if (!typeFullName.IsNullOrEmpty()) {
-            type = mPool.FindType(typeFullName);
+            type = mPool->FindType(typeFullName);
         }
         else {
             Namespace* ns = mCurrNamespace;
             while (ns != nullptr) {
                 typeFullName = ns->ToString() + typeName;
-                type = mPool.FindType(typeFullName);
+                type = mPool->FindType(typeFullName);
                 if (type != nullptr) break;
                 ns = ns->GetOuterNamespace();
             }

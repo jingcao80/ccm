@@ -17,7 +17,7 @@
 #ifndef __CCM_PARSER_H__
 #define __CCM_PARSER_H__
 
-#include "CommonPool.h"
+#include "Environment.h"
 #include "Tokenizer.h"
 #include "../ccdl/AdditiveExpression.h"
 #include "../ccdl/AndExpression.h"
@@ -28,9 +28,11 @@
 #include "../ccdl/InclusiveOrExpression.h"
 #include "../ccdl/Interface.h"
 #include "../ccdl/Method.h"
+#include "../ccdl/Module.h"
 #include "../ccdl/MultiplicativeExpression.h"
 #include "../ccdl/Namespace.h"
 #include "../ccdl/Parameter.h"
+#include "../ccdl/Pool.h"
 #include "../ccdl/PostfixExpression.h"
 #include "../ccdl/ShiftExpression.h"
 #include "../ccdl/Type.h"
@@ -46,9 +48,11 @@ using ccm::ccdl::Expression;
 using ccm::ccdl::InclusiveOrExpression;
 using ccm::ccdl::Interface;
 using ccm::ccdl::Method;
+using ccm::ccdl::Module;
 using ccm::ccdl::MultiplicativeExpression;
 using ccm::ccdl::Namespace;
 using ccm::ccdl::Parameter;
+using ccm::ccdl::Pool;
 using ccm::ccdl::PostfixExpression;
 using ccm::ccdl::ShiftExpression;
 using ccm::ccdl::Type;
@@ -100,7 +104,10 @@ private:
 public:
     Parser()
         : mParsedFiles(100)
+        , mEnvironment(nullptr)
+        , mModule(nullptr)
         , mCurrNamespace(nullptr)
+        , mPool(nullptr)
         , mCurrContext(nullptr)
         , mStatus(NOERROR)
         , mErrorHeader(nullptr)
@@ -196,6 +203,7 @@ private:
     void LogError(
         /* [in] */ Tokenizer::Token token,
         /* [in] */ const String& message);
+
     void DumpError();
 
 public:
@@ -207,8 +215,10 @@ private:
     Tokenizer mTokenizer;
     String mPathPrefix;
     HashMap<bool> mParsedFiles;
-    CommonPool mPool;
+    Environment* mEnvironment;
+    Module* mModule;
     Namespace* mCurrNamespace;
+    Pool* mPool;
     Context* mCurrContext;
     int mStatus;
     Error* mErrorHeader;
