@@ -21,7 +21,7 @@
 [
     uuid(8b2a143c-e778-49aa-a2df-9177ae099e84),
     version(0.1.0),
-    descripton("This is the definition of IFoo.")
+    description("This is the definition of IFoo.")
 ]
 interface IFoo
 {

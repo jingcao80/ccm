@@ -25,15 +25,6 @@ namespace ccdl {
 Interface::~Interface()
 {
     mNamespace = nullptr;
-
-    for (int i = 0; i < mMethodIndex; i++) {
-        Method* m = mMethods[i];
-        delete m;
-    }
-    if (mMethods != nullptr) {
-        free(mMethods);
-        mMethods = nullptr;
-    }
 }
 
 Interface& Interface::SetBaseInterface(
@@ -59,11 +50,7 @@ Interface& Interface::AddMethod(
 {
     if (method == nullptr) return *this;
 
-    if (mMethodIndex >= mMethodCapacity) {
-        if (!EnlargeMethodArray()) return *this;
-    }
-
-    mMethods[mMethodIndex++] = method;
+    mMethods.Add(method);
     return *this;
 }
 
@@ -72,47 +59,8 @@ Interface& Interface::AddConstantDataMember(
 {
     if (dataMember == nullptr) return *this;
 
-    if (mConstDataMemberIndex >= mConstDataMemberCapacity) {
-        if (!EnlargeConstantDataMemberArray()) return *this;
-    }
-
-    mConstDataMembers[mConstDataMemberIndex++] = dataMember;
+    mConstDataMembers.Add(dataMember);
     return *this;
-}
-
-bool Interface::EnlargeMethodArray()
-{
-    int newSize = mMethodCapacity == 0 ? 20 : mMethodCapacity + 30;
-    Method** newArray = (Method**)calloc(sizeof(Method*), newSize);
-    if (newArray == nullptr) {
-        return false;
-    }
-
-    if (mMethods != nullptr) {
-        memcpy(newArray, mMethods, mMethodCapacity);
-        free(mMethods);
-    }
-    mMethodCapacity = newSize;
-    mMethods = newArray;
-    return true;
-}
-
-bool Interface::EnlargeConstantDataMemberArray()
-{
-    int newSize = mConstDataMemberCapacity == 0 ? 10 : mConstDataMemberCapacity + 10;
-    ConstantDataMember** newArray =
-            (ConstantDataMember**)calloc(sizeof(ConstantDataMember*), newSize);
-    if (newArray == nullptr) {
-        return false;
-    }
-
-    if (mConstDataMembers != nullptr) {
-        memcpy(newArray, mConstDataMembers, mConstDataMemberCapacity);
-        free(mConstDataMembers);
-    }
-    mConstDataMemberCapacity = newSize;
-    mConstDataMembers = newArray;
-    return true;
 }
 
 String Interface::Dump(
@@ -129,12 +77,12 @@ String Interface::Dump(
         builder.Append(", description:").Append(mDescription);
     }
     builder.Append("]\n");
-    for (int i = 0; i < mConstDataMemberIndex; i++) {
-        String dataMemberStr = mConstDataMembers[i]->Dump(String("    "));
+    for (int i = 0; i < mConstDataMembers.GetSize(); i++) {
+        String dataMemberStr = mConstDataMembers.Get(i)->Dump(String("  "));
         builder.Append(prefix).Append(dataMemberStr);
     }
-    for (int i = 0; i < mMethodIndex; i++) {
-        String methodStr = mMethods[i]->Dump(String("    "));
+    for (int i = 0; i < mMethods.GetSize(); i++) {
+        String methodStr = mMethods.Get(i)->Dump(String("  "));
         builder.Append(prefix).Append(methodStr);
     }
 

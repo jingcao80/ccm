@@ -19,6 +19,7 @@
 
 #include "ASTNode.h"
 #include "Parameter.h"
+#include "../util/ArrayList.h"
 #include "../util/String.h"
 
 namespace ccm {
@@ -27,14 +28,6 @@ namespace ccdl {
 class Method : public ASTNode
 {
 public:
-    Method()
-        : mParamCapacity(0)
-        , mParamIndex(0)
-        , mParameters(nullptr)
-    {}
-
-    ~Method();
-
     inline Method& SetName(
         /* [in] */ const String& name)
     { mName = name; return *this; }
@@ -46,14 +39,8 @@ public:
         /* [in] */ const String& prefix) override;
 
 private:
-    bool EnlargeParameterArray();
-
-private:
     String mName;
-
-    int mParamCapacity;
-    int mParamIndex;
-    Parameter** mParameters;
+    ArrayList<Parameter*> mParameters;
 };
 
 }

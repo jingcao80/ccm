@@ -21,7 +21,8 @@ namespace ccm {
 namespace ccdl {
 
 Pool::Pool()
-    : mEnumerations(10)
+    : mCoclasses(20)
+    , mEnumerations(10)
     , mInterfaces(20)
     , mNamespaces(5)
     , mTempTypes(20)
@@ -102,6 +103,26 @@ Interface* Pool::FindInterface(
         return nullptr;
     }
     return (Interface*)type;
+}
+
+bool Pool::AddCoclass(
+    /* [in] */ Coclass* klass)
+{
+    if (klass == nullptr) return true;
+
+    if (!mCoclasses.Add(klass)) return false;
+    mTypes.Put(klass->ToString(), klass);
+    return true;
+}
+
+Coclass* Pool::FindClass(
+    /* [in] */ const String& klassName)
+{
+    Type* type = FindType(klassName);
+    if (type == nullptr || !type->IsCoclass()) {
+        return nullptr;
+    }
+    return (Coclass*)type;
 }
 
 bool Pool::AddNamespace(
@@ -190,19 +211,23 @@ Type* Pool::FindType(
 String Pool::Dump(
     /* [in] */ const String& prefix)
 {
-    StringBuilder buider;
+    StringBuilder builder;
 
     for (int i = 0; i < mEnumerations.GetSize(); i++) {
-        String enumStr = mEnumerations.Get(i)->Dump(String("    "));
-        buider.Append(enumStr).Append("\n");
+        String enumStr = mEnumerations.Get(i)->Dump(String("  "));
+        builder.Append(enumStr).Append("\n");
     }
     for (int i = 0; i < mInterfaces.GetSize(); i++) {
         if (!mInterfaces.Get(i)->IsDefined()) continue;
-        String itfStr = mInterfaces.Get(i)->Dump(String("    "));
-        buider.Append(itfStr).Append("\n");
+        String itfStr = mInterfaces.Get(i)->Dump(String("  "));
+        builder.Append(itfStr).Append("\n");
+    }
+    for (int i = 0; i < mCoclasses.GetSize(); i++) {
+        String coclassStr = mCoclasses.Get(i)->Dump(String("  "));
+        builder.Append(coclassStr).Append("\n");
     }
 
-    return buider.ToString();
+    return builder.ToString();
 }
 
 }

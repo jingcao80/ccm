@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Module Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,39 +14,60 @@
 // limitations under the License.
 //=========================================================================
 
-#include "Module.h"
-#include "../util/Logger.h"
+#include "Coclass.h"
 #include "../util/StringBuilder.h"
-
-#include <stdlib.h>
 
 namespace ccm {
 namespace ccdl {
 
-Module& Module::SetAttribute(
+Coclass& Coclass::SetAttribute(
     /* [in] */ const Attribute& attr)
 {
     mUuid.Parse(attr.mUuid);
     mVersion = attr.mVersion;
     mDescription = attr.mDescription;
-    mUrl = attr.mUrl;
     return *this;
 }
 
-String Module::Dump(
+bool Coclass::AddConstructor(
+    /* [in] */ Method* constructor)
+{
+    if (constructor == nullptr) return true;
+
+    return mConstructors.Add(constructor);
+}
+
+bool Coclass::AddInterface(
+    /* [in] */ Interface* interface)
+{
+    if (interface == nullptr) return true;
+
+    return mInterfaces.Add(interface);
+}
+
+String Coclass::Dump(
     /* [in] */ const String& prefix)
 {
     StringBuilder builder;
 
-    builder.Append("Module[");
-    builder.Append("name:").Append(mName);
-    builder.Append(", uuid:").Append(mUuid.Dump());
-    builder.Append(", url:").Append(mUrl);
+    builder.Append(prefix).Append("coclass ").Append(mName).Append("[");
+    builder.Append("uuid:").Append(mUuid.Dump());
+    if (!mVersion.IsNullOrEmpty()) {
+        builder.Append(", version:").Append(mVersion);
+    }
     if (!mDescription.IsNullOrEmpty()) {
         builder.Append(", description:").Append(mDescription);
     }
     builder.Append("]\n");
-    builder.Append(Pool::Dump(prefix));
+    for (int i = 0; i < mConstructors.GetSize(); i++) {
+        String constructorStr = mConstructors.Get(i)->Dump(String("  "));
+        builder.Append(prefix).Append(constructorStr);
+    }
+    for (int i = 0; i < mInterfaces.GetSize(); i++) {
+        String itfStr = String::Format("interface %s\n", mInterfaces.Get(i)->GetName().string());
+        builder.Append(prefix).Append("  ").Append(itfStr);
+    }
+
     return builder.ToString();
 }
 

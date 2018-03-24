@@ -25,11 +25,13 @@ namespace ccm {
 String Environment::Dump(
     /* [in] */ const String& prefix)
 {
-    StringBuilder buider;
+    StringBuilder builder;
 
-    buider.Append("Environment[").Append(mRootFile).Append("]\n");
-    buider.Append(Pool::Dump(prefix));
-    return buider.ToString();
+    builder.Append("Environment[");
+    builder.Append("root:").Append(mRootFile);
+    builder.Append("]\n");
+    builder.Append(Pool::Dump(prefix));
+    return builder.ToString();
 }
 
 }

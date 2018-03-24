@@ -44,6 +44,9 @@ public:
         /* [in] */ Type* type)
     { mType = type; return *this; }
 
+    String Dump(
+        /* [in] */ const String& prefix) override;
+
 public:
     static constexpr int IN = 0x1;
     static constexpr int OUT = 0x2;

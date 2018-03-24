@@ -86,7 +86,7 @@ String Enumeration::Dump(
     builder.Append(prefix).Append("enum ").Append(mName).Append("\n");
     for (int i = 0; i < mEnumIndex; i++) {
         Enumerator* e = mEnumerators[i];
-        builder.Append(prefix).Append("    "). Append(e->mName).Append("\n");
+        builder.Append(prefix).Append("  "). Append(e->mName).Append("\n");
     }
 
     return builder.ToString();

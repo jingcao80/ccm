@@ -20,6 +20,7 @@
 #include "BooleanType.h"
 #include "ByteType.h"
 #include "CharType.h"
+#include "Coclass.h"
 #include "DoubleType.h"
 #include "Enumeration.h"
 #include "FloatType.h"
@@ -56,6 +57,12 @@ public:
     Interface* FindInterface(
         /* [in] */ const String& itfFullName);
 
+    bool AddCoclass(
+        /* [in] */ Coclass* klass);
+
+    Coclass* FindClass(
+        /* [in] */ const String& klassName);
+
     bool AddNamespace(
         /* [in] */ Namespace* ns);
 
@@ -86,6 +93,7 @@ protected:
     StringType* mStringType;
     HANDLEType* mHANDLEType;
 
+    ArrayList<Coclass*> mCoclasses;
     ArrayList<Enumeration*> mEnumerations;
     ArrayList<Interface*> mInterfaces;
     ArrayList<Namespace*> mNamespaces;

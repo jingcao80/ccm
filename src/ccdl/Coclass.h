@@ -17,13 +17,43 @@
 #ifndef __CCM_CCDL_COCLASS_H__
 #define __CCM_CCDL_COCLASS_H__
 
+#include "Attribute.h"
+#include "Interface.h"
+#include "Method.h"
 #include "Type.h"
+#include "../util/ArrayList.h"
 
 namespace ccm {
 namespace ccdl {
 
 class Coclass : public Type
 {
+public:
+    Coclass()
+        : mInterfaces(10, false)
+    {}
+
+    Coclass& SetAttribute(
+        /* [in] */ const Attribute& attr);
+
+    bool IsCoclass() override
+    { return true; }
+
+    bool AddConstructor(
+        /* [in] */ Method* constructor);
+
+    bool AddInterface(
+        /* [in] */ Interface* interface);
+
+    String Dump(
+        /* [in] */ const String& prefix) override;
+
+private:
+    Uuid mUuid;
+    String mVersion;
+    String mDescription;
+    ArrayList<Method*> mConstructors;
+    ArrayList<Interface*> mInterfaces;
 };
 
 }

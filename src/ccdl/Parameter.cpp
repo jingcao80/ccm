@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Module Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,39 +14,19 @@
 // limitations under the License.
 //=========================================================================
 
-#include "Module.h"
-#include "../util/Logger.h"
+#include "Parameter.h"
 #include "../util/StringBuilder.h"
-
-#include <stdlib.h>
 
 namespace ccm {
 namespace ccdl {
 
-Module& Module::SetAttribute(
-    /* [in] */ const Attribute& attr)
-{
-    mUuid.Parse(attr.mUuid);
-    mVersion = attr.mVersion;
-    mDescription = attr.mDescription;
-    mUrl = attr.mUrl;
-    return *this;
-}
-
-String Module::Dump(
+String Parameter::Dump(
     /* [in] */ const String& prefix)
 {
     StringBuilder builder;
 
-    builder.Append("Module[");
-    builder.Append("name:").Append(mName);
-    builder.Append(", uuid:").Append(mUuid.Dump());
-    builder.Append(", url:").Append(mUrl);
-    if (!mDescription.IsNullOrEmpty()) {
-        builder.Append(", description:").Append(mDescription);
-    }
-    builder.Append("]\n");
-    builder.Append(Pool::Dump(prefix));
+    builder.Append(prefix).Append(mName);
+    builder.Append(":").Append(mType->ToString());
     return builder.ToString();
 }
 

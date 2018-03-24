@@ -73,8 +73,14 @@ bool Parser::Parse(
     ret = ParseFile();
 
     if (ret) {
-        String out = mPool->Dump(String(""));
-        printf("%s", out.string());
+        String dumpStr = mEnvironment->Dump(String(""));
+        if (!dumpStr.IsNullOrEmpty()) {
+            printf("%s\n", dumpStr.string());
+        }
+        if (mModule != nullptr) {
+            dumpStr = mModule->Dump(String(""));
+            printf("%s\n", dumpStr.string());
+        }
     }
     else DumpError();
 
@@ -112,9 +118,7 @@ bool Parser::ParseFile()
                 parseResult = ParseDeclarationWithAttribute() && parseResult;
                 continue;
             case Tokenizer::Token::COCLASS: {
-                LogError(token, String("coclass should have attributes"));
-                Attribute attr;
-                parseResult = ParseCoclass(attr) && parseResult;
+                parseResult = ParseCoclass(nullptr) && parseResult;
                 continue;
             }
             case Tokenizer::Token::ENUM:
@@ -150,7 +154,7 @@ bool Parser::ParseDeclarationWithAttribute()
     Tokenizer::Token token = mTokenizer.PeekToken();
     switch (token) {
         case Tokenizer::Token::COCLASS: {
-            parseResult = ParseCoclass(attr) && parseResult;
+            parseResult = ParseCoclass(&attr) && parseResult;
             break;
         }
         case Tokenizer::Token::INTERFACE: {
@@ -158,7 +162,11 @@ bool Parser::ParseDeclarationWithAttribute()
             break;
         }
         case Tokenizer::Token::MODULE: {
-            parseResult = ParseModule(attr) && parseResult;
+            if (mModule != nullptr) {
+                LogError(token, String("Can not declare more than one module."));
+                parseResult = false;
+            }
+            parseResult = ParseModule(&attr) && parseResult;
             break;
         }
         default: {
@@ -180,7 +188,7 @@ bool Parser::ParseDeclarationWithAttributeExceptModule()
     Tokenizer::Token token = mTokenizer.PeekToken();
     switch (token) {
         case Tokenizer::Token::COCLASS: {
-            parseResult = ParseCoclass(attr) && parseResult;
+            parseResult = ParseCoclass(&attr) && parseResult;
             break;
         }
         case Tokenizer::Token::INTERFACE: {
@@ -206,163 +214,48 @@ bool Parser::ParseAttribute(
 
     // read '['
     token = mTokenizer.GetToken();
-    token = mTokenizer.GetToken();
+    token = mTokenizer.PeekToken();
     while (token != Tokenizer::Token::BRACKETS_CLOSE &&
             token != Tokenizer::Token::END_OF_FILE) {
         switch (token) {
             case Tokenizer::Token::UUID: {
-                token = mTokenizer.GetToken();
-                if (token != Tokenizer::Token::PARENTHESES_OPEN) {
-                    LogError(token, String("\"(\" is expected."));
-                    // jump over ']'
-                    while (token != Tokenizer::Token::BRACKETS_CLOSE &&
-                            token != Tokenizer::Token::END_OF_FILE) {
-                        token = mTokenizer.GetToken();
-                    }
-                    return false;
-                }
-                token = mTokenizer.GetUuidNumberToken();
-                if (token != Tokenizer::Token::UUID_NUMBER) {
-                    LogError(token, String("uuid number is expected."));
-                    // jump over ']'
-                    while (token != Tokenizer::Token::BRACKETS_CLOSE &&
-                            token != Tokenizer::Token::END_OF_FILE) {
-                        token = mTokenizer.GetToken();
-                    }
-                    return false;
-                }
-                else {
-                    attr.mUuid = mTokenizer.GetString();
-                }
-                token = mTokenizer.GetToken();
-                if (token != Tokenizer::Token::PARENTHESES_CLOSE) {
-                    LogError(token, String("\")\" is expected."));
-                    // jump over ']'
-                    while (token != Tokenizer::Token::BRACKETS_CLOSE &&
-                            token != Tokenizer::Token::END_OF_FILE) {
-                        token = mTokenizer.GetToken();
-                    }
-                    return false;
-                }
+                parseResult = ParseUuid(attr) && parseResult;
                 break;
             }
             case Tokenizer::Token::VERSION: {
-                token = mTokenizer.GetToken();
-                if (token != Tokenizer::Token::PARENTHESES_OPEN) {
-                    LogError(token, String("\"(\" is expected."));
-                    // jump over ']'
-                    while (token != Tokenizer::Token::BRACKETS_CLOSE &&
-                            token != Tokenizer::Token::END_OF_FILE) {
-                        token = mTokenizer.GetToken();
-                    }
-                    return false;
-                }
-                token = mTokenizer.GetVersionNumberToken();
-                if (token != Tokenizer::Token::VERSION_NUMBER) {
-                    LogError(token, String("version number is expected."));
-                    // jump over ']'
-                    while (token != Tokenizer::Token::BRACKETS_CLOSE &&
-                            token != Tokenizer::Token::END_OF_FILE) {
-                        token = mTokenizer.GetToken();
-                    }
-                    return false;
-                }
-                else {
-                    attr.mVersion = mTokenizer.GetString();
-                }
-                token = mTokenizer.GetToken();
-                if (token != Tokenizer::Token::PARENTHESES_CLOSE) {
-                    LogError(token, String("\")\" is expected."));
-                    // jump over ']'
-                    while (token != Tokenizer::Token::BRACKETS_CLOSE &&
-                            token != Tokenizer::Token::END_OF_FILE) {
-                        token = mTokenizer.GetToken();
-                    }
-                    return false;
-                }
+                parseResult = ParseVersion(attr) && parseResult;
                 break;
             }
             case Tokenizer::Token::DESCRIPTION: {
-                token = mTokenizer.GetToken();
-                if (token != Tokenizer::Token::PARENTHESES_OPEN) {
-                    LogError(token, String("\"(\" is expected."));
-                    // jump over ']'
-                    while (token != Tokenizer::Token::BRACKETS_CLOSE &&
-                            token != Tokenizer::Token::END_OF_FILE) {
-                        token = mTokenizer.GetToken();
-                    }
-                    return false;
-                }
-                token = mTokenizer.GetToken();
-                if (token != Tokenizer::Token::STRING_LITERAL) {
-                    LogError(token, String("string literal is expected."));
-                    // jump over ']'
-                    while (token != Tokenizer::Token::BRACKETS_CLOSE &&
-                            token != Tokenizer::Token::END_OF_FILE) {
-                        token = mTokenizer.GetToken();
-                    }
-                    return false;
-                }
-                else {
-                    attr.mDescription = mTokenizer.GetString();
-                }
-                token = mTokenizer.GetToken();
-                if (token != Tokenizer::Token::PARENTHESES_CLOSE) {
-                    LogError(token, String("\")\" is expected."));
-                    // jump over ']'
-                    while (token != Tokenizer::Token::BRACKETS_CLOSE &&
-                            token != Tokenizer::Token::END_OF_FILE) {
-                        token = mTokenizer.GetToken();
-                    }
-                    return false;
-                }
+                parseResult = ParseDescription(attr) && parseResult;
                 break;
             }
             case Tokenizer::Token::URL: {
-                token = mTokenizer.GetToken();
-                if (token != Tokenizer::Token::PARENTHESES_OPEN) {
-                    LogError(token, String("\"(\" is expected."));
-                    // jump over ']'
-                    while (token != Tokenizer::Token::BRACKETS_CLOSE &&
-                            token != Tokenizer::Token::END_OF_FILE) {
-                        token = mTokenizer.GetToken();
-                    }
-                    return false;
-                }
-                token = mTokenizer.GetToken();
-                if (token != Tokenizer::Token::STRING_LITERAL) {
-                    LogError(token, String("string literal is expected."));
-                    // jump over ']'
-                    while (token != Tokenizer::Token::BRACKETS_CLOSE &&
-                            token != Tokenizer::Token::END_OF_FILE) {
-                        token = mTokenizer.GetToken();
-                    }
-                    return false;
-                }
-                else {
-                    attr.mUrl = mTokenizer.GetString();
-                }
-                token = mTokenizer.GetToken();
-                if (token != Tokenizer::Token::PARENTHESES_CLOSE) {
-                    LogError(token, String("\")\" is expected."));
-                    // jump over ']'
-                    while (token != Tokenizer::Token::BRACKETS_CLOSE &&
-                            token != Tokenizer::Token::END_OF_FILE) {
-                        token = mTokenizer.GetToken();
-                    }
-                    return false;
-                }
+                parseResult = ParseUrl(attr) && parseResult;
                 break;
             }
-            default:
+            default: {
+                String message = String::Format("\"%s\" is not expected.",
+                        mTokenizer.DumpToken(token));
+                LogError(token, message);
                 break;
+            }
         }
-        token = mTokenizer.GetToken();
+        if (!parseResult) {
+            // jump over ']'
+            while (token != Tokenizer::Token::BRACKETS_CLOSE &&
+                    token != Tokenizer::Token::END_OF_FILE) {
+                token = mTokenizer.GetToken();
+            }
+            return false;
+        }
+        token = mTokenizer.PeekToken();
         if (token == Tokenizer::Token::COMMA) {
-            token = mTokenizer.GetToken();
+            mTokenizer.GetToken();
+            token = mTokenizer.PeekToken();
         }
         else if (token != Tokenizer::Token::BRACKETS_CLOSE) {
-            LogError(token, String("\"]\" is expected."));
+            LogError(token, String("\",\" or \"]\" is expected."));
             // jump over ']'
             while (token != Tokenizer::Token::BRACKETS_CLOSE &&
                     token != Tokenizer::Token::END_OF_FILE) {
@@ -371,7 +264,122 @@ bool Parser::ParseAttribute(
             return false;
         }
     }
+    // read ']'
+    mTokenizer.GetToken();
+
     return parseResult;
+}
+
+bool Parser::ParseUuid(
+    /* [out] */ Attribute& attr)
+{
+    Tokenizer::Token token;
+
+    // read "uuid"
+    token = mTokenizer.GetToken();
+    token = mTokenizer.GetToken();
+    if (token != Tokenizer::Token::PARENTHESES_OPEN) {
+        LogError(token, String("\"(\" is expected."));
+        return false;
+    }
+    token = mTokenizer.GetUuidNumberToken();
+    if (token != Tokenizer::Token::UUID_NUMBER) {
+        LogError(token, String("uuid number is expected."));
+        return false;
+    }
+    else {
+        attr.mUuid = mTokenizer.GetString();
+    }
+    token = mTokenizer.GetToken();
+    if (token != Tokenizer::Token::PARENTHESES_CLOSE) {
+        LogError(token, String("\")\" is expected."));
+        return false;
+    }
+    return true;
+}
+
+bool Parser::ParseVersion(
+    /* [out] */ Attribute& attr)
+{
+    Tokenizer::Token token;
+
+    // read "version"
+    token = mTokenizer.GetToken();
+    token = mTokenizer.GetToken();
+    if (token != Tokenizer::Token::PARENTHESES_OPEN) {
+        LogError(token, String("\"(\" is expected."));
+        return false;
+    }
+    token = mTokenizer.GetVersionNumberToken();
+    if (token != Tokenizer::Token::VERSION_NUMBER) {
+        LogError(token, String("version number is expected."));
+        return false;
+    }
+    else {
+        attr.mVersion = mTokenizer.GetString();
+    }
+    token = mTokenizer.GetToken();
+    if (token != Tokenizer::Token::PARENTHESES_CLOSE) {
+        LogError(token, String("\")\" is expected."));
+        return false;
+    }
+    return true;
+}
+
+bool Parser::ParseDescription(
+    /* [out] */ Attribute& attr)
+{
+    Tokenizer::Token token;
+
+    // read "description"
+    token = mTokenizer.GetToken();
+    token = mTokenizer.GetToken();
+    if (token != Tokenizer::Token::PARENTHESES_OPEN) {
+        LogError(token, String("\"(\" is expected."));
+        return false;
+    }
+    token = mTokenizer.GetToken();
+    if (token != Tokenizer::Token::STRING_LITERAL) {
+        LogError(token, String("string literal is expected."));
+        return false;
+    }
+    else {
+        attr.mDescription = mTokenizer.GetString();
+    }
+    token = mTokenizer.GetToken();
+    if (token != Tokenizer::Token::PARENTHESES_CLOSE) {
+        LogError(token, String("\")\" is expected."));
+        return false;
+    }
+    return true;
+}
+
+bool Parser::ParseUrl(
+    /* [out] */ Attribute& attr)
+{
+    Tokenizer::Token token;
+
+    // read "url"
+    token = mTokenizer.GetToken();
+    token = mTokenizer.GetToken();
+    if (token != Tokenizer::Token::PARENTHESES_OPEN) {
+        LogError(token, String("\"(\" is expected."));
+        return false;
+    }
+    token = mTokenizer.GetToken();
+    if (token != Tokenizer::Token::STRING_LITERAL) {
+        LogError(token, String("string literal is expected."));
+        return false;
+    }
+    else {
+        attr.mUrl = mTokenizer.GetString();
+    }
+    token = mTokenizer.GetToken();
+    if (token != Tokenizer::Token::PARENTHESES_CLOSE) {
+        LogError(token, String("\")\" is expected."));
+        return false;
+    }
+    return true;
 }
 
 bool Parser::ParseInterface(
@@ -428,6 +436,7 @@ bool Parser::ParseInterface(
     if (attr == nullptr) {
         String message = String::Format("Interface %s should have attributes.", itfName.string());
         LogError(token, message);
+        parseResult = false;
     }
 
     Interface* interface = nullptr;
@@ -467,9 +476,10 @@ bool Parser::ParseInterface(
 
     if (mTokenizer.PeekToken() == Tokenizer::Token::COLON) {
         mTokenizer.GetToken();
-        if (mTokenizer.PeekToken() == Tokenizer::Token::IDENTIFIER) {
+        token = mTokenizer.PeekToken();
+        if (token == Tokenizer::Token::IDENTIFIER) {
             mTokenizer.GetToken();
-            Interface* baseItf = FindBaseInterface(mTokenizer.GetIdentifier());
+            Interface* baseItf = FindInterface(mTokenizer.GetIdentifier());
             if (baseItf != nullptr && baseItf->IsDefined()) {
                 interface->SetBaseInterface(baseItf);
             }
@@ -482,8 +492,8 @@ bool Parser::ParseInterface(
         }
         else {
             LogError(token, String("Base interface name is expected."));
-            while (mTokenizer.PeekToken() != Tokenizer::Token::BRACES_OPEN &&
-                    mTokenizer.PeekToken() != Tokenizer::Token::END_OF_FILE) {
+            while (token != Tokenizer::Token::BRACES_OPEN &&
+                    token != Tokenizer::Token::END_OF_FILE) {
                 mTokenizer.GetToken();
             }
             parseResult = false;
@@ -570,23 +580,18 @@ bool Parser::ParseMethod(
         return false;
     }
 
+    token = mTokenizer.PeekToken();
     while (token != Tokenizer::Token::PARENTHESES_CLOSE &&
             token != Tokenizer::Token::END_OF_FILE) {
         parseResult = ParseParameter(method) && parseResult;
         if (!parseResult) break;
-        token = mTokenizer.GetToken();
-        if (token != Tokenizer::Token::PARENTHESES_CLOSE &&
-                token != Tokenizer::Token::COMMA) {
-            LogError(token, String("\",\" is expected."));
-            // jump over ';'
-            while (token != Tokenizer::Token::SEMICOLON &&
-                    token != Tokenizer::Token::END_OF_FILE) {
-                token = mTokenizer.GetToken();
-            }
-            delete method;
-            return false;
+        token = mTokenizer.PeekToken();
+        if (token == Tokenizer::Token::COMMA) {
+            mTokenizer.GetToken();
+            token = mTokenizer.PeekToken();
         }
     }
+    mTokenizer.GetToken();
 
     token = mTokenizer.GetToken();
     if (token != Tokenizer::Token::SEMICOLON) {
@@ -622,26 +627,30 @@ bool Parser::ParseParameter(
         return false;
     }
 
-    token = mTokenizer.GetToken();
+    token = mTokenizer.PeekToken();
     while (token != Tokenizer::Token::BRACKETS_CLOSE &&
             token != Tokenizer::Token::END_OF_FILE) {
         switch (token) {
             case Tokenizer::Token::IN:
+                mTokenizer.GetToken();
                 parameter->SetAttribute(Parameter::IN);
                 break;
             case Tokenizer::Token::OUT:
+                mTokenizer.GetToken();
                 parameter->SetAttribute(Parameter::OUT);
                 break;
             case Tokenizer::Token::CALLEE:
+                mTokenizer.GetToken();
                 parameter->SetAttribute(Parameter::CALLEE);
                 break;
         }
-        token = mTokenizer.GetToken();
+        token = mTokenizer.PeekToken();
         if (token == Tokenizer::Token::COMMA) {
-            token = mTokenizer.GetToken();
+            mTokenizer.GetToken();
+            token = mTokenizer.PeekToken();
         }
         else if (token != Tokenizer::Token::BRACKETS_CLOSE) {
-            LogError(token, String("\"]\" is expected."));
+            LogError(token, String("\",\" or \"]\" is expected."));
             // jump over ')'
             while (token != Tokenizer::Token::PARENTHESES_CLOSE &&
                     token != Tokenizer::Token::END_OF_FILE) {
@@ -651,6 +660,8 @@ bool Parser::ParseParameter(
             return false;
         }
     }
+    // read ']'
+    mTokenizer.GetToken();
 
     Type* type = ParseType();
     if (type != nullptr) {
@@ -788,10 +799,8 @@ bool Parser::ParseConstDataMember(
         if (enumeration == nullptr) {
             String message = String::Format("Type \"%s\" is not declared.", typeName.string());
             LogError(token, message);
-            while (token != Tokenizer::Token::SEMICOLON &&
-                    token != Tokenizer::Token::END_OF_FILE) {
-                token = mTokenizer.GetToken();
-            }
+            // jump to next line
+            mTokenizer.SkipCurrentLine();
             delete dataMember;
             return false;
         }
@@ -804,10 +813,8 @@ bool Parser::ParseConstDataMember(
     }
     else {
         LogError(token, String("Constant name is expected."));
-        while (token != Tokenizer::Token::SEMICOLON &&
-                token != Tokenizer::Token::END_OF_FILE) {
-            token = mTokenizer.GetToken();
-        }
+        // jump to next line
+        mTokenizer.SkipCurrentLine();
         delete dataMember;
         return false;
     }
@@ -815,23 +822,19 @@ bool Parser::ParseConstDataMember(
     token = mTokenizer.GetToken();
     if (token != Tokenizer::Token::ASSIGNMENT) {
         LogError(token, String("\"=\" is expected."));
-        while (token != Tokenizer::Token::SEMICOLON &&
-                token != Tokenizer::Token::END_OF_FILE) {
-            token = mTokenizer.GetToken();
-        }
+        // jump to next line
+        mTokenizer.SkipCurrentLine();
         delete dataMember;
         return false;
     }
 
-    parseResult = ParseExpression(type) && parseResult;
+    parseResult = (ParseExpression(type) != nullptr) && parseResult;
 
     token = mTokenizer.GetToken();
     if (token != Tokenizer::Token::SEMICOLON) {
         LogError(token, String("\";\" is expected."));
-        while (token != Tokenizer::Token::SEMICOLON &&
-                token != Tokenizer::Token::END_OF_FILE) {
-            token = mTokenizer.GetToken();
-        }
+        // jump to next line
+        mTokenizer.SkipCurrentLine();
         delete dataMember;
         return false;
     }
@@ -1045,133 +1048,179 @@ UnaryExpression* Parser::ParseUnaryExpression(
 PostfixExpression* Parser::ParsePostfixExpression(
     /* [in] */ Type* exprType)
 {
-    PostfixExpression* postExpr = nullptr;
-
     Tokenizer::Token token = mTokenizer.PeekToken();
+    switch (token) {
+        case Tokenizer::Token::NUMBER_INTEGRAL:
+            return ParseIntegralNumber(exprType);
+        case Tokenizer::Token::NUMBER_FLOATINGPOINT:
+            return ParseFloatingPointNumber(exprType);
+        case Tokenizer::Token::TRUE:
+        case Tokenizer::Token::FALSE:
+            return ParseBooleanLiteral(exprType);
+        case Tokenizer::Token::CHARACTER:
+            return ParseCharacter(exprType);
+        case Tokenizer::Token::STRING_LITERAL:
+            return ParseStringLiteral(exprType);
+        case Tokenizer::Token::IDENTIFIER:
+            return ParseIdentifier(exprType);
+        case Tokenizer::Token::PARENTHESES_OPEN: {
+            Expression* expr = ParseExpression(exprType);
 
-    if (token == Tokenizer::Token::NUMBER_INTEGRAL) {
-        mTokenizer.GetToken();
-        if (exprType->IsNumericType()) {
-            postExpr = new PostfixExpression();
-            postExpr->SetType(exprType);
-            if (exprType->IsIntegralType()) {
-                postExpr->SetIntegralValue(mTokenizer.GetIntegralValue());
-            }
-            else if (exprType->IsFloatingPointType()) {
-                postExpr->SetFloatingPointValue(mTokenizer.GetIntegralValue());
-            }
-        }
-        else {
-            String message = String::Format("Integral values can not be assigned to \"%s\" type.",
-                    exprType->GetName().string());
-            LogError(token, message);
-            return nullptr;
-        }
-    }
-    else if (token == Tokenizer::Token::NUMBER_FLOATINGPOINT) {
-        mTokenizer.GetToken();
-        if (exprType->IsNumericType()) {
-            postExpr = new PostfixExpression();
-            postExpr->SetType(exprType);
-            if (exprType->IsIntegralType()) {
-                postExpr->SetIntegralValue(mTokenizer.GetFloatingPointValue());
-            }
-            else if (exprType->IsFloatingPointType()) {
-                postExpr->SetFloatingPointValue(mTokenizer.GetFloatingPointValue());
-            }
-        }
-        else {
-            String message = String::Format("FloatingPoint values can not be assigned to \"%s\" type.",
-                    exprType->GetName().string());
-            LogError(token, message);
-            return nullptr;
-        }
-    }
-    else if (token == Tokenizer::Token::TRUE ||
-             token == Tokenizer::Token::FALSE) {
-        mTokenizer.GetToken();
-        if (exprType->GetName().Equals("Boolean")) {
-            postExpr = new PostfixExpression();
-            postExpr->SetType(exprType);
-            postExpr->SetBooleanValue(token == Tokenizer::Token::TRUE ?
-                    true : false);
-        }
-        else {
-            String message = String::Format("\"%s\" can not be assigned to \"%s\" type.",
-                    mTokenizer.DumpToken(token), exprType->GetName().string());
-            LogError(token, message);
-            return nullptr;
-        }
-    }
-    else if (token == Tokenizer::Token::CHARACTER) {
-        mTokenizer.GetToken();
-        if (exprType->IsNumericType()) {
-            postExpr = new PostfixExpression();
-            postExpr->SetType(exprType);
-            if (exprType->IsIntegralType()) {
-                postExpr->SetIntegralValue(mTokenizer.GetCharacter());
-            }
-            else if (exprType->IsFloatingPointType()) {
-                postExpr->SetFloatingPointValue(mTokenizer.GetCharacter());
-            }
-        }
-        else {
-            LogError(token, String("Character can not be assigned to non-numeric type."));
-            return nullptr;
-        }
-    }
-    else if (token == Tokenizer::Token::STRING_LITERAL) {
-        mTokenizer.GetToken();
-        if (exprType->GetName().Equals("String")) {
-            postExpr = new PostfixExpression();
-            postExpr->SetType(exprType);
-            postExpr->SetStringValue(mTokenizer.GetString());
-        }
-        else {
-            String message = String::Format("\"%s\" can not be assigned to \"%s\" type.",
-                    mTokenizer.GetString().string(), exprType->GetName().string());
-            LogError(token, message);
-            return nullptr;
-        }
-    }
-    else if (token == Tokenizer::Token::IDENTIFIER) {
-        mTokenizer.GetToken();
-        if (exprType->IsEnumeration()) {
-            String enumName = mTokenizer.GetIdentifier();
-            if (((Enumeration*)exprType)->Contains(enumName)) {
-                postExpr = new PostfixExpression();
-                postExpr->SetType(exprType);
-                postExpr->SetEnumerator(enumName);
+            if (mTokenizer.PeekToken() == Tokenizer::Token::PARENTHESES_CLOSE) {
+                mTokenizer.GetToken();
             }
             else {
-                String message = String::Format("\"%s\" is not a valid enumerator of %s",
-                        enumName.string(), exprType->GetName().string());
-                LogError(token, message);
+                LogError(token, String("\")\" is expected."));
                 return nullptr;
             }
-        }
-    }
-    else if (token == Tokenizer::Token::PARENTHESES_OPEN) {
-        Expression* expr = ParseExpression(exprType);
 
-        if (mTokenizer.PeekToken() == Tokenizer::Token::PARENTHESES_CLOSE) {
-            mTokenizer.GetToken();
+            PostfixExpression* postExpr = new PostfixExpression();
+            postExpr->SetType(exprType);
+            postExpr->SetExpression(expr);
+            return postExpr;
         }
-        else {
-            LogError(token, String("\")\" is expected."));
+        default: {
+            String message = String::Format("\"%s\" is not expected.",
+                    mTokenizer.DumpToken(token));
+            LogError(token, message);
             return nullptr;
         }
-
-        postExpr = new PostfixExpression();
-        postExpr->SetType(exprType);
-        postExpr->SetExpression(expr);
     }
+}
 
-    return postExpr;
+PostfixExpression* Parser::ParseIntegralNumber(
+    /* [in] */ Type* exprType)
+{
+    Tokenizer::Token token = mTokenizer.GetToken();
+    if (exprType->IsNumericType()) {
+        PostfixExpression* postExpr = new PostfixExpression();
+        postExpr->SetType(exprType);
+        if (exprType->IsIntegralType()) {
+            postExpr->SetIntegralValue(mTokenizer.GetIntegralValue());
+        }
+        else if (exprType->IsFloatingPointType()) {
+            postExpr->SetFloatingPointValue(mTokenizer.GetIntegralValue());
+        }
+        return postExpr;
+    }
+    else {
+        String message = String::Format("Integral values can not be assigned to \"%s\" type.",
+                exprType->GetName().string());
+        LogError(token, message);
+        return nullptr;
+    }
+}
+
+PostfixExpression* Parser::ParseFloatingPointNumber(
+    /* [in] */ Type* exprType)
+{
+    Tokenizer::Token token = mTokenizer.GetToken();
+    if (exprType->IsNumericType()) {
+        PostfixExpression* postExpr = new PostfixExpression();
+        postExpr->SetType(exprType);
+        if (exprType->IsIntegralType()) {
+            postExpr->SetIntegralValue(mTokenizer.GetFloatingPointValue());
+        }
+        else if (exprType->IsFloatingPointType()) {
+            postExpr->SetFloatingPointValue(mTokenizer.GetFloatingPointValue());
+        }
+        return postExpr;
+    }
+    else {
+        String message = String::Format("FloatingPoint values can not be assigned to \"%s\" type.",
+                exprType->GetName().string());
+        LogError(token, message);
+        return nullptr;
+    }
+}
+
+PostfixExpression* Parser::ParseBooleanLiteral(
+    /* [in] */ Type* exprType)
+{
+    Tokenizer::Token token = mTokenizer.GetToken();
+    if (exprType->GetName().Equals("Boolean")) {
+        PostfixExpression* postExpr = new PostfixExpression();
+        postExpr->SetType(exprType);
+        postExpr->SetBooleanValue(token == Tokenizer::Token::TRUE ?
+                true : false);
+        return postExpr;
+    }
+    else {
+        String message = String::Format("\"%s\" can not be assigned to \"%s\" type.",
+                mTokenizer.DumpToken(token), exprType->GetName().string());
+        LogError(token, message);
+        return nullptr;
+    }
+}
+
+PostfixExpression* Parser::ParseCharacter(
+    /* [in] */ Type* exprType)
+{
+    Tokenizer::Token token = mTokenizer.GetToken();
+    if (exprType->IsNumericType()) {
+        PostfixExpression* postExpr = new PostfixExpression();
+        postExpr->SetType(exprType);
+        if (exprType->IsIntegralType()) {
+            postExpr->SetIntegralValue(mTokenizer.GetCharacter());
+        }
+        else if (exprType->IsFloatingPointType()) {
+            postExpr->SetFloatingPointValue(mTokenizer.GetCharacter());
+        }
+        return postExpr;
+    }
+    else {
+        LogError(token, String("Character can not be assigned to non-numeric type."));
+        return nullptr;
+    }
+}
+
+PostfixExpression* Parser::ParseStringLiteral(
+    /* [in] */ Type* exprType)
+{
+    Tokenizer::Token token = mTokenizer.GetToken();
+    if (exprType->GetName().Equals("String")) {
+        PostfixExpression* postExpr = new PostfixExpression();
+        postExpr->SetType(exprType);
+        postExpr->SetStringValue(mTokenizer.GetString());
+        return postExpr;
+    }
+    else {
+        String message = String::Format("\"%s\" can not be assigned to \"%s\" type.",
+                mTokenizer.GetString().string(), exprType->GetName().string());
+        LogError(token, message);
+        return nullptr;
+    }
+}
+
+PostfixExpression* Parser::ParseIdentifier(
+    /* [in] */ Type* exprType)
+{
+    Tokenizer::Token token = mTokenizer.GetToken();
+    if (exprType->IsEnumeration()) {
+        String enumName = mTokenizer.GetIdentifier();
+        if (((Enumeration*)exprType)->Contains(enumName)) {
+            PostfixExpression* postExpr = new PostfixExpression();
+            postExpr->SetType(exprType);
+            postExpr->SetEnumerator(enumName);
+            return postExpr;
+        }
+        else {
+            String message = String::Format("\"%s\" is not a valid enumerator of %s",
+                    enumName.string(), exprType->GetName().string());
+            LogError(token, message);
+            return nullptr;
+        }
+    }
+    else {
+        String message = String::Format("\"%s\" can not be assigned to \"%s\" type.",
+                mTokenizer.GetIdentifier().string(), exprType->GetName().string());
+        LogError(token, message);
+        return nullptr;
+    }
 }
 
 bool Parser::ParseCoclass(
-    /* [in] */ Attribute& attr)
+    /* [in] */ Attribute* attr)
 {
     bool parseResult = true;
     Tokenizer::Token token;
@@ -1179,7 +1228,8 @@ bool Parser::ParseCoclass(
 
     // read "coclass"
     token = mTokenizer.GetToken();
-    if (mTokenizer.PeekToken() == Tokenizer::Token::IDENTIFIER) {
+    token = mTokenizer.GetToken();
+    if (token == Tokenizer::Token::IDENTIFIER) {
         className = mTokenizer.GetIdentifier();
     }
     else {
@@ -1192,9 +1242,169 @@ bool Parser::ParseCoclass(
         return false;
     }
 
-    // parseResult = ParseCoclassBody() && parseResult;
+    if (attr == nullptr) {
+        String message = String::Format("Coclass %s should have attributes.", className.string());
+        LogError(token, message);
+        parseResult = false;
+    }
+
+    Coclass* klass = new Coclass();
+    klass->SetName(className);
+    klass->SetNamespace(mCurrNamespace);
+
+    parseResult = ParseCoclassBody(klass) && parseResult;
+
+    if (parseResult) {
+        klass->SetAttribute(*attr);
+        mPool->AddCoclass(klass);
+    }
+    else {
+        delete klass;
+    }
 
     return parseResult;
+}
+
+bool Parser::ParseCoclassBody(
+    /* [in] */ Coclass* klass)
+{
+    bool parseResult = true;
+    Tokenizer::Token token;
+
+    token = mTokenizer.GetToken();
+    if (token != Tokenizer::Token::BRACES_OPEN) {
+        LogError(token, String("\"{\" is expected."));
+        // jump over '}'
+        while (token != Tokenizer::Token::BRACES_CLOSE &&
+                token != Tokenizer::Token::END_OF_FILE) {
+            token = mTokenizer.GetToken();
+        }
+        return false;
+    }
+
+    token = mTokenizer.PeekToken();
+    while (token != Tokenizer::Token::BRACES_CLOSE &&
+            token != Tokenizer::Token::END_OF_FILE) {
+        switch (token) {
+            case Tokenizer::Token::CONSTRUCTOR:
+                parseResult = ParseCoclassConstructor(klass) && parseResult;
+                token = mTokenizer.PeekToken();
+                break;
+            case Tokenizer::Token::INTERFACE:
+                parseResult = ParseCoclassInterface(klass) && parseResult;
+                token = mTokenizer.PeekToken();
+                break;
+            default:
+                String message = String::Format("\"%s\" is not expected.",
+                        mTokenizer.DumpToken(token));
+                LogError(token, message);
+                // jump over '}'
+                while (token != Tokenizer::Token::BRACES_CLOSE &&
+                        token != Tokenizer::Token::END_OF_FILE) {
+                    token = mTokenizer.GetToken();
+                }
+                return false;
+        }
+        token = mTokenizer.PeekToken();
+    }
+    // read "}"
+    mTokenizer.GetToken();
+
+    return parseResult;
+}
+
+bool Parser::ParseCoclassConstructor(
+    /* [in] */ Coclass* klass)
+{
+    bool parseResult = true;
+    Tokenizer::Token token;
+
+    // read "constructor"
+    token = mTokenizer.GetToken();
+    token = mTokenizer.GetToken();
+    if (token != Tokenizer::Token::PARENTHESES_OPEN) {
+        LogError(token, String("\"(\" is expected."));
+        // jump over '}'
+        while (token != Tokenizer::Token::SEMICOLON &&
+                token != Tokenizer::Token::END_OF_FILE) {
+            token = mTokenizer.GetToken();
+        }
+        return false;
+    }
+
+    Method* method = new Method();
+    method->SetName(String("constructor"));
+
+    token = mTokenizer.PeekToken();
+    while (token != Tokenizer::Token::PARENTHESES_CLOSE &&
+            token != Tokenizer::Token::END_OF_FILE) {
+        parseResult = ParseParameter(method) && parseResult;
+        if (!parseResult) break;
+        token = mTokenizer.PeekToken();
+        if (token == Tokenizer::Token::COMMA) {
+            mTokenizer.GetToken();
+            token = mTokenizer.PeekToken();
+        }
+    }
+    mTokenizer.GetToken();
+
+    token = mTokenizer.GetToken();
+    if (token != Tokenizer::Token::SEMICOLON) {
+        LogError(token, String("\";\" is expected."));
+        // jump to next line
+        mTokenizer.SkipCurrentLine();
+        delete method;
+        return false;
+    }
+
+    if (parseResult) {
+        klass->AddConstructor(method);
+    }
+    else {
+        delete method;
+    }
+
+    return parseResult;
+}
+
+bool Parser::ParseCoclassInterface(
+    /* [in] */ Coclass* klass)
+{
+    Tokenizer::Token token;
+
+    // read "interface"
+    token = mTokenizer.GetToken();
+    token = mTokenizer.GetToken();
+    if (token != Tokenizer::Token::IDENTIFIER) {
+        LogError(token, String("Identifier as coclass name is expected."));
+        // jump over ';'
+        while (token != Tokenizer::Token::SEMICOLON &&
+                token != Tokenizer::Token::END_OF_FILE) {
+            token = mTokenizer.GetToken();
+        }
+        return false;
+    }
+
+    String itfName = mTokenizer.GetIdentifier();
+    Interface* interface = FindInterface(itfName);
+    if (interface == nullptr) {
+        String message = String::Format("Interace \"%s\" is not declared.", itfName.string());
+        LogError(token, message);
+        // jump to next line
+        mTokenizer.SkipCurrentLine();
+        return false;
+    }
+
+    token = mTokenizer.GetToken();
+    if (token != Tokenizer::Token::SEMICOLON) {
+        LogError(token, String("\";\" is expected."));
+        // jump to next line
+        mTokenizer.SkipCurrentLine();
+        return false;
+    }
+
+    klass->AddInterface(interface);
+    return true;
 }
 
 bool Parser::ParseEnumeration()
@@ -1272,10 +1482,10 @@ bool Parser::ParseEnumerationBody(
         return false;
     }
 
+    int value = 0; // todo:
     token = mTokenizer.GetToken();
-    int value = 0;
     while (token != Tokenizer::Token::BRACES_CLOSE &&
-            token != Tokenizer::Token::END_OF_FILE ) {
+            token != Tokenizer::Token::END_OF_FILE) {
         String name;
         if (token == Tokenizer::Token::IDENTIFIER) {
             name = mTokenizer.GetIdentifier();
@@ -1291,14 +1501,14 @@ bool Parser::ParseEnumerationBody(
         }
         token = mTokenizer.GetToken();
         if (token == Tokenizer::Token::ASSIGNMENT) {
-            parseResult = ParseExpression(enumeration) && parseResult;
+            parseResult = (ParseExpression(enumeration) != nullptr) && parseResult;
             token = mTokenizer.GetToken();
         }
         if (token == Tokenizer::Token::COMMA) {
             token = mTokenizer.GetToken();
         }
         else if (token != Tokenizer::Token::BRACES_CLOSE) {
-            LogError(token, String("\")\" is expected."));
+            LogError(token, String("\"}\" is expected."));
             // jump over '}'
             while (token != Tokenizer::Token::BRACES_CLOSE &&
                     token != Tokenizer::Token::END_OF_FILE) {
@@ -1349,7 +1559,7 @@ bool Parser::ParseInclude()
 }
 
 bool Parser::ParseModule(
-    /* [in] */ Attribute& attr)
+    /* [in] */ Attribute* attr)
 {
     bool parseResult = true;
     String moduleName;
@@ -1372,9 +1582,14 @@ bool Parser::ParseModule(
         return false;
     }
 
+    if (attr == nullptr) {
+        String message = String::Format("Module %s should have attributes.", moduleName.string());
+        LogError(token, message);
+        parseResult = false;
+    }
+
     mModule = new Module();
     mModule->SetName(moduleName);
-    mModule->SetAttribute(attr);
     mPool = mModule;
 
     token = mTokenizer.PeekToken();
@@ -1385,9 +1600,7 @@ bool Parser::ParseModule(
                 parseResult = ParseDeclarationWithAttributeExceptModule() && parseResult;
                 break;
             case Tokenizer::Token::COCLASS: {
-                LogError(token, String("coclass should have attributes"));
-                Attribute attr;
-                parseResult = ParseCoclass(attr) && parseResult;
+                parseResult = ParseCoclass(nullptr) && parseResult;
                 break;
             }
             case Tokenizer::Token::ENUM:
@@ -1411,6 +1624,10 @@ bool Parser::ParseModule(
         token = mTokenizer.PeekToken();
     }
     mTokenizer.GetToken();
+
+    if (parseResult) {
+        mModule->SetAttribute(*attr);
+    }
 
     return parseResult;
 }
@@ -1450,9 +1667,7 @@ bool Parser::ParseNamespace()
                 parseResult = ParseDeclarationWithAttribute() && parseResult;
                 break;
             case Tokenizer::Token::COCLASS: {
-                LogError(token, String("coclass should have attributes"));
-                Attribute attr;
-                parseResult = ParseCoclass(attr) && parseResult;
+                parseResult = ParseCoclass(nullptr) && parseResult;
                 break;
             }
             case Tokenizer::Token::ENUM:
@@ -1501,7 +1716,7 @@ void Parser::LeaveContext()
     delete ctx;
 }
 
-Interface* Parser::FindBaseInterface(
+Interface* Parser::FindInterface(
     /* [in] */ const String& itfName)
 {
     Type* type = FindType(itfName);

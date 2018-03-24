@@ -54,6 +54,11 @@ bool Type::IsInterface()
     return false;
 }
 
+bool Type::IsCoclass()
+{
+    return false;
+}
+
 String Type::ToString()
 {
     return mNamespace == nullptr ? mName : mNamespace->ToString() + mName;

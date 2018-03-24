@@ -52,6 +52,8 @@ public:
 
     virtual bool IsFloatingPointType();
 
+    virtual bool IsCoclass();
+
     virtual bool IsEnumeration();
 
     virtual bool IsInterface();

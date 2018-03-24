@@ -25,7 +25,7 @@ String ConstantDataMember::Dump(
 {
     StringBuilder builder;
 
-    builder.Append(prefix).Append(mName).Append("\n");
+    builder.Append(prefix).Append(mName).Append("[").Append(mType->ToString()).Append("]\n");
 
     return builder.ToString();
 }

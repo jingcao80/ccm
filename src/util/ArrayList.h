@@ -26,10 +26,12 @@ class ArrayList
 {
 public:
     ArrayList(
-        /* [in] */ int initCapacity = 10)
+        /* [in] */ int initCapacity = 10,
+        /* [in] */ bool release = true)
         : mCapacity(initCapacity)
         , mIndex(0)
         , mElements(nullptr)
+        , mRelease(release)
     {
         if (mCapacity > 0) {
             mElements = (T*)calloc(sizeof(T), mCapacity);
@@ -38,9 +40,11 @@ public:
 
     ~ArrayList()
     {
-        for (int i = 0; i < mIndex; i++) {
-            T data = mElements[i];
-            delete data;
+        if (mRelease) {
+            for (int i = 0; i < mIndex; i++) {
+                T data = mElements[i];
+                delete data;
+            }
         }
         if (mElements != nullptr) free(mElements);
         mElements = nullptr;
@@ -88,6 +92,7 @@ private:
     int mCapacity;
     int mIndex;
     T* mElements;
+    bool mRelease;
 };
 
 }

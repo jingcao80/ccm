@@ -49,7 +49,7 @@ coclass CFooBar
         [in] String name);
 
     interface IFoo3;
-    interface IFooBar
+    interface IFooBar;
 }
 
 } // namespace ThirdNS

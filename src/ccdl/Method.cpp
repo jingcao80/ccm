@@ -17,49 +17,16 @@
 #include "Method.h"
 #include "../util/StringBuilder.h"
 
-#include <stdlib.h>
-
 namespace ccm {
 namespace ccdl {
-
-Method::~Method()
-{
-    for (int i = 0; i < mParamIndex; i++) {
-        Parameter* p = mParameters[i];
-        delete p;
-    }
-    if (mParameters != nullptr) {
-        free(mParameters);
-        mParameters = nullptr;
-    }
-}
 
 Method& Method::AddParameter(
     /* [in] */ Parameter* param)
 {
     if (param == nullptr) return *this;
 
-    if (mParamIndex >= mParamCapacity) {
-        if (!EnlargeParameterArray()) return *this;
-    }
-
-    mParameters[mParamIndex++] = param;
+    mParameters.Add(param);
     return *this;
-}
-
-bool Method::EnlargeParameterArray()
-{
-    int newSize = mParamCapacity == 0 ? 5 : mParamCapacity + 5;
-    Parameter** newArray = (Parameter**)calloc(sizeof(Parameter*), newSize);
-    if (newArray == nullptr) return false;
-
-    if (mParameters != nullptr) {
-        memcpy(newArray, mParameters, mParamCapacity);
-        free(mParameters);
-    }
-    mParamCapacity = newSize;
-    mParameters = newArray;
-    return true;
 }
 
 String Method::Dump(
@@ -67,7 +34,14 @@ String Method::Dump(
 {
     StringBuilder builder;
 
-    builder.Append(prefix).Append(mName).Append("\n");
+    builder.Append(prefix).Append(mName);
+    builder.Append("[");
+    for (int i = 0; i < mParameters.GetSize(); i++) {
+        if (i > 0) builder.Append(", ");
+        Parameter* p = mParameters.Get(i);
+        builder.Append(p->Dump(String("")));
+    }
+    builder.Append("]\n");
 
     return builder.ToString();
 }

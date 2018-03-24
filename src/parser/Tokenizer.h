@@ -45,46 +45,47 @@ public:
         CALLEE,                 // 12)
         COCLASS,                // 13)
         CONST,                  // 14)
-        DESCRIPTION,            // 15)
-        ENUM,                   // 16)
-        FALSE,                  // 17)
-        IN,                     // 18)
-        INCLUDE,                // 19)
-        INTERFACE,              // 20)
-        MODULE,                 // 21)
-        NAMESPACE,              // 22)
-        OUT,                    // 23)
-        TRUE,                   // 24)
-        URL,                    // 25)
-        UUID,                   // 26)
-        VERSION,                // 27)
+        CONSTRUCTOR,            // 15)
+        DESCRIPTION,            // 16)
+        ENUM,                   // 17)
+        FALSE,                  // 18)
+        IN,                     // 19)
+        INCLUDE,                // 20)
+        INTERFACE,              // 21)
+        MODULE,                 // 22)
+        NAMESPACE,              // 23)
+        OUT,                    // 24)
+        TRUE,                   // 25)
+        URL,                    // 26)
+        UUID,                   // 27)
+        VERSION,                // 28)
         // symbol
-        AND,                    // 28)  '&'
-        ANGLE_BRACKETS_OPEN,    // 29)  '<'
-        ANGLE_BRACKETS_CLOSE,   // 30)  '>'
-        ASSIGNMENT,             // 31)  '='
-        ASTERISK,               // 32)  '*'
-        BRACES_OPEN,            // 33)  '{'
-        BRACES_CLOSE,           // 34)  '}'
-        BRACKETS_OPEN,          // 35)  '['
-        BRACKETS_CLOSE,         // 36)  ']'
-        COLON,                  // 37)  ':'
-        COMMA,                  // 38)  ','
-        COMPLIMENT,             // 39)  '~'
-        DIVIDE,                 // 40)  '/'
-        END_OF_LINE,            // 41)  '\n'
-        EXCLUSIVE_OR,           // 42)  '^'
-        INCLUSIVE_OR,           // 43)  '|'
-        MINUS,                  // 44)  '-'
-        MODULO,                 // 45)  '%'
-        NOT,                    // 46)  '!'
-        PARENTHESES_OPEN,       // 47)  '('
-        PARENTHESES_CLOSE,      // 48)  ')'
-        PERIOD,                 // 49)  '.'
-        PLUS,                   // 50)  '+'
-        SEMICOLON,              // 51)  ';'
+        AND,                    // 29)  '&'
+        ANGLE_BRACKETS_OPEN,    // 30)  '<'
+        ANGLE_BRACKETS_CLOSE,   // 31)  '>'
+        ASSIGNMENT,             // 32)  '='
+        ASTERISK,               // 33)  '*'
+        BRACES_OPEN,            // 34)  '{'
+        BRACES_CLOSE,           // 35)  '}'
+        BRACKETS_OPEN,          // 36)  '['
+        BRACKETS_CLOSE,         // 37)  ']'
+        COLON,                  // 38)  ':'
+        COMMA,                  // 39)  ','
+        COMPLIMENT,             // 40)  '~'
+        DIVIDE,                 // 41)  '/'
+        END_OF_LINE,            // 42)  '\n'
+        EXCLUSIVE_OR,           // 43)  '^'
+        INCLUSIVE_OR,           // 44)  '|'
+        MINUS,                  // 45)  '-'
+        MODULO,                 // 46)  '%'
+        NOT,                    // 47)  '!'
+        PARENTHESES_OPEN,       // 48)  '('
+        PARENTHESES_CLOSE,      // 49)  ')'
+        PERIOD,                 // 50)  '.'
+        PLUS,                   // 51)  '+'
+        SEMICOLON,              // 52)  ';'
         // other
-        CHARACTER,
+        CHARACTER,              //
         COMMENT_BLOCK,          // 52)
         COMMENT_LINE,           // 53)
         END_OF_FILE,            // 54)

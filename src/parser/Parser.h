@@ -22,6 +22,7 @@
 #include "../ccdl/AdditiveExpression.h"
 #include "../ccdl/AndExpression.h"
 #include "../ccdl/Attribute.h"
+#include "../ccdl/Coclass.h"
 #include "../ccdl/Enumeration.h"
 #include "../ccdl/ExclusiveOrExpression.h"
 #include "../ccdl/Expression.h"
@@ -42,6 +43,7 @@
 using ccm::ccdl::AdditiveExpression;
 using ccm::ccdl::AndExpression;
 using ccm::ccdl::Attribute;
+using ccm::ccdl::Coclass;
 using ccm::ccdl::Enumeration;
 using ccm::ccdl::ExclusiveOrExpression;
 using ccm::ccdl::Expression;
@@ -129,6 +131,18 @@ private:
     bool ParseAttribute(
         /* [out] */ Attribute& attr);
 
+    bool ParseUuid(
+        /* [out] */ Attribute& attr);
+
+    bool ParseVersion(
+        /* [out] */ Attribute& attr);
+
+    bool ParseDescription(
+        /* [out] */ Attribute& attr);
+
+    bool ParseUrl(
+        /* [out] */ Attribute& attr);
+
     bool ParseInterface(
         /* [in] */ Attribute* attr);
 
@@ -175,8 +189,35 @@ private:
     PostfixExpression* ParsePostfixExpression(
         /* [in] */ Type* exprType);
 
+    PostfixExpression* ParseIntegralNumber(
+        /* [in] */ Type* exprType);
+
+    PostfixExpression* ParseFloatingPointNumber(
+        /* [in] */ Type* exprType);
+
+    PostfixExpression* ParseBooleanLiteral(
+        /* [in] */ Type* exprType);
+
+    PostfixExpression* ParseCharacter(
+        /* [in] */ Type* exprType);
+
+    PostfixExpression* ParseStringLiteral(
+        /* [in] */ Type* exprType);
+
+    PostfixExpression* ParseIdentifier(
+        /* [in] */ Type* exprType);
+
     bool ParseCoclass(
-        /* [in] */ Attribute& attr);
+        /* [in] */ Attribute* attr);
+
+    bool ParseCoclassBody(
+        /* [in] */ Coclass* klass);
+
+    bool ParseCoclassConstructor(
+        /* [in] */ Coclass* klass);
+
+    bool ParseCoclassInterface(
+        /* [in] */ Coclass* klass);
 
     bool ParseEnumeration();
 
@@ -186,7 +227,7 @@ private:
     bool ParseInclude();
 
     bool ParseModule(
-        /* [in] */ Attribute& attr);
+        /* [in] */ Attribute* attr);
 
     bool ParseNamespace();
 
@@ -194,7 +235,7 @@ private:
 
     void LeaveContext();
 
-    Interface* FindBaseInterface(
+    Interface* FindInterface(
         /* [in] */ const String& itfName);
 
     Type* FindType(

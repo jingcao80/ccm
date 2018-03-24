@@ -22,6 +22,7 @@
 #include "ConstantDataMember.h"
 #include "Method.h"
 #include "Namespace.h"
+#include "../util/ArrayList.h"
 #include "../util/Uuid.h"
 
 namespace ccm {
@@ -33,12 +34,8 @@ public:
     Interface()
         : mDefined(false)
         , mBaseInterface(nullptr)
-        , mMethodCapacity(0)
-        , mMethodIndex(0)
-        , mMethods(nullptr)
-        , mConstDataMemberCapacity(0)
-        , mConstDataMemberIndex(0)
-        , mConstDataMembers(nullptr)
+        , mConstDataMembers(10)
+        , mMethods(20)
     {}
 
     ~Interface();
@@ -69,24 +66,13 @@ public:
         /* [in] */ const String& prefix) override;
 
 private:
-    bool EnlargeMethodArray();
-
-    bool EnlargeConstantDataMemberArray();
-
-private:
     bool mDefined;
     Interface* mBaseInterface;
     Uuid mUuid;
     String mVersion;
     String mDescription;
-
-    int mMethodCapacity;
-    int mMethodIndex;
-    Method** mMethods;
-
-    int mConstDataMemberCapacity;
-    int mConstDataMemberIndex;
-    ConstantDataMember** mConstDataMembers;
+    ArrayList<ConstantDataMember*> mConstDataMembers;
+    ArrayList<Method*> mMethods;
 };
 
 }

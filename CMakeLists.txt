@@ -8,6 +8,7 @@ set(SOURCES
     src/ccdl/AdditiveExpression.cpp
     src/ccdl/AndExpression.cpp
     src/ccdl/ArrayType.cpp
+    src/ccdl/Coclass.cpp
     src/ccdl/ConstantDataMember.cpp
     src/ccdl/Enumeration.cpp
     src/ccdl/ExclusiveOrExpression.cpp
@@ -18,6 +19,7 @@ set(SOURCES
     src/ccdl/Module.cpp
     src/ccdl/MultiplicativeExpression.cpp
     src/ccdl/Namespace.cpp
+    src/ccdl/Parameter.cpp
     src/ccdl/PointerType.cpp
     src/ccdl/Pool.cpp
     src/ccdl/ShiftExpression.cpp

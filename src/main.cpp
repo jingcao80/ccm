@@ -1,5 +1,6 @@
 
 #include "Options.h"
+#include "metadata/Component.h"
 #include "parser/Parser.h"
 #include "util/File.h"
 
