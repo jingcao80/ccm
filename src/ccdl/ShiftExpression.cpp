@@ -19,5 +19,80 @@
 namespace ccm {
 namespace ccdl {
 
+int ShiftExpression::EvaluateIntegerValue()
+{
+    if (mLeftOperand != nullptr) {
+        switch (mOperator) {
+            case LEFT:
+                return mLeftOperand->EvaluateIntegerValue() <<
+                        mRightOperand->EvaluateIntegerValue();
+            case RIGHT:
+                return mLeftOperand->EvaluateIntegerValue() >>
+                        mRightOperand->EvaluateIntegerValue();
+            case RIGHT_UNSIGNED:
+                return ((unsigned int)mLeftOperand->EvaluateIntegerValue()) >>
+                        mRightOperand->EvaluateIntegerValue();
+            default:
+                return 0;
+        }
+    }
+    else {
+        return mRightOperand->EvaluateIntegerValue();
+    }
+}
+
+long long int ShiftExpression::EvaluateLongValue()
+{
+    if (mLeftOperand != nullptr) {
+        long long int leftValue = mLeftOperand->GetType()->GetName().Equals("Integer") ?
+                mLeftOperand->EvaluateIntegerValue() : mLeftOperand->EvaluateLongValue();
+        long long int rightValue = mRightOperand->GetType()->GetName().Equals("Integer") ?
+                mRightOperand->EvaluateIntegerValue() : mRightOperand->EvaluateLongValue();
+        switch (mOperator) {
+            case LEFT:
+                return leftValue << rightValue;
+            case RIGHT:
+                return leftValue >> rightValue;
+            case RIGHT_UNSIGNED:
+                return ((unsigned long long int)leftValue) >> rightValue;
+            default:
+                return 0;
+        }
+    }
+    else {
+        return mRightOperand->EvaluateLongValue();
+    }
+}
+
+float ShiftExpression::EvaluateFloatValue()
+{
+    return mRightOperand->EvaluateFloatValue();
+}
+
+double ShiftExpression::EvaluateDoubleValue()
+{
+    return mRightOperand->EvaluateDoubleValue();
+}
+
+char ShiftExpression::EvaluateCharacterValue()
+{
+    return mRightOperand->EvaluateCharacterValue();
+}
+
+bool ShiftExpression::EvaluateBooleanValue()
+{
+    return mRightOperand->EvaluateBooleanValue();
+}
+
+String ShiftExpression::EvaluateStringValue()
+{
+    return mRightOperand->EvaluateStringValue();
+}
+
+String ShiftExpression::EvaluateEnumeratorName()
+{
+    return mRightOperand->EvaluateEnumeratorName();
+}
+
 }
 }

@@ -25,9 +25,22 @@ namespace ccdl {
 
 class InclusiveOrExpression : public Expression
 {
-// private:
-//     InclusiveOrExpression* mLeftOperand;
-//     ExclusiveOrExpression* mRightOperand;
+public:
+    int EvaluateIntegerValue() override;
+
+    long long int EvaluateLongValue() override;
+
+    float EvaluateFloatValue() override;
+
+    double EvaluateDoubleValue() override;
+
+    char EvaluateCharacterValue() override;
+
+    bool EvaluateBooleanValue() override;
+
+    String EvaluateStringValue() override;
+
+    String EvaluateEnumeratorName() override;
 };
 
 }

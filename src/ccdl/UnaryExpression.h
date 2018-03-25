@@ -26,15 +26,27 @@ namespace ccdl {
 class UnaryExpression : public Expression
 {
 public:
+    int EvaluateIntegerValue() override;
+
+    long long int EvaluateLongValue() override;
+
+    float EvaluateFloatValue() override;
+
+    double EvaluateDoubleValue() override;
+
+    char EvaluateCharacterValue() override;
+
+    bool EvaluateBooleanValue() override;
+
+    String EvaluateStringValue() override;
+
+    String EvaluateEnumeratorName() override;
+
+public:
     static constexpr int POSITIVE = 0;
     static constexpr int NEGATIVE = 1;
     static constexpr int COMPLIMENT = 2;
     static constexpr int NOT = 3;
-
-// private:
-//     PostfixExpression* mOperand;
-//     UnaryExpression* mNestOperand;
-//     int mOperator;
 };
 
 }

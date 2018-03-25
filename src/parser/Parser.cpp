@@ -828,7 +828,11 @@ bool Parser::ParseConstDataMember(
         return false;
     }
 
-    parseResult = (ParseExpression(type) != nullptr) && parseResult;
+    Expression* expr = ParseExpression(type);
+    if (expr != nullptr) {
+        dataMember->SetValue(expr);
+    }
+    else parseResult = false;
 
     token = mTokenizer.GetToken();
     if (token != Tokenizer::Token::SEMICOLON) {
@@ -863,6 +867,7 @@ InclusiveOrExpression* Parser::ParseInclusiveOrExpression(
 
     InclusiveOrExpression* incOrExpr = new InclusiveOrExpression();
     incOrExpr->SetRightOperand(rightExpr);
+    incOrExpr->SetType(rightExpr->GetType());
 
     while (mTokenizer.PeekToken() == Tokenizer::Token::INCLUSIVE_OR) {
         mTokenizer.GetToken();
@@ -871,9 +876,18 @@ InclusiveOrExpression* Parser::ParseInclusiveOrExpression(
         if (rightExpr == nullptr) return nullptr;
 
         InclusiveOrExpression* leftExpr = incOrExpr;
+
+        if (!leftExpr->GetType()->IsIntegralType() ||
+                !rightExpr->GetType()->IsIntegralType()) {
+            LogError(mTokenizer.PeekToken(), String("Inclusive or operation can not be applied to"
+                    "non-integral type."));
+            return nullptr;
+        }
+
         incOrExpr = new InclusiveOrExpression();
         incOrExpr->SetLeftOperand(leftExpr);
         incOrExpr->SetRightOperand(rightExpr);
+        incOrExpr->SetType(CastType(leftExpr->GetType(), rightExpr->GetType()));
     }
 
     return incOrExpr;
@@ -887,6 +901,7 @@ ExclusiveOrExpression* Parser::ParseExclusiveOrExpression(
 
     ExclusiveOrExpression* excOrExpr = new ExclusiveOrExpression();
     excOrExpr->SetRightOperand(rightExpr);
+    excOrExpr->SetType(rightExpr->GetType());
 
     while (mTokenizer.PeekToken() == Tokenizer::Token::EXCLUSIVE_OR) {
         mTokenizer.GetToken();
@@ -895,9 +910,18 @@ ExclusiveOrExpression* Parser::ParseExclusiveOrExpression(
         if (rightExpr == nullptr) return nullptr;
 
         ExclusiveOrExpression* leftExpr = excOrExpr;
+
+        if (!leftExpr->GetType()->IsIntegralType() ||
+                !rightExpr->GetType()->IsIntegralType()) {
+            LogError(mTokenizer.PeekToken(), String("Exclusive or operation can not be applied to"
+                    "non-integral type."));
+            return nullptr;
+        }
+
         excOrExpr = new ExclusiveOrExpression();
         excOrExpr->SetLeftOperand(leftExpr);
         excOrExpr->SetRightOperand(rightExpr);
+        excOrExpr->SetType(CastType(leftExpr->GetType(), rightExpr->GetType()));
     }
 
     return excOrExpr;
@@ -911,6 +935,7 @@ AndExpression* Parser::ParseAndExpression(
 
     AndExpression* andExpr = new AndExpression();
     andExpr->SetRightOperand(rightExpr);
+    andExpr->SetType(rightExpr->GetType());
 
     while (mTokenizer.PeekToken() == Tokenizer::Token::AND) {
         mTokenizer.GetToken();
@@ -919,9 +944,18 @@ AndExpression* Parser::ParseAndExpression(
         if (rightExpr == nullptr) return nullptr;
 
         AndExpression* leftExpr = andExpr;
+
+        if (!leftExpr->GetType()->IsIntegralType() ||
+                !rightExpr->GetType()->IsIntegralType()) {
+            LogError(mTokenizer.PeekToken(), String("And operation can not be applied to"
+                    "non-integral type."));
+            return nullptr;
+        }
+
         andExpr = new AndExpression();
         andExpr->SetLeftOperand(leftExpr);
         andExpr->SetRightOperand(rightExpr);
+        andExpr->SetType(CastType(leftExpr->GetType(), rightExpr->GetType()));
     }
 
     return andExpr;
@@ -935,6 +969,7 @@ ShiftExpression* Parser::ParseShiftExpression(
 
     ShiftExpression* shiExpr = new ShiftExpression();
     shiExpr->SetRightOperand(rightExpr);
+    shiExpr->SetType(rightExpr->GetType());
 
     while (mTokenizer.PeekToken() == Tokenizer::Token::SHIFT_LEFT ||
             mTokenizer.PeekToken() == Tokenizer::Token::SHIFT_RIGHT ||
@@ -945,6 +980,14 @@ ShiftExpression* Parser::ParseShiftExpression(
         if (rightExpr == nullptr) return nullptr;
 
         ShiftExpression* leftExpr = shiExpr;
+
+        if (!leftExpr->GetType()->IsIntegralType() ||
+                !rightExpr->GetType()->IsIntegralType()) {
+            LogError(mTokenizer.PeekToken(), String("Shift operation can not be applied to"
+                    "non-integral type."));
+            return nullptr;
+        }
+
         shiExpr = new ShiftExpression();
         shiExpr->SetLeftOperand(leftExpr);
         shiExpr->SetRightOperand(rightExpr);
@@ -952,6 +995,7 @@ ShiftExpression* Parser::ParseShiftExpression(
                 token == Tokenizer::Token::SHIFT_LEFT ? ShiftExpression::LEFT :
                 token == Tokenizer::Token::SHIFT_RIGHT ? ShiftExpression::RIGHT :
                         ShiftExpression::RIGHT_UNSIGNED);
+        shiExpr->SetType(CastType(leftExpr->GetType(), rightExpr->GetType()));
     }
 
     return shiExpr;
@@ -965,6 +1009,7 @@ AdditiveExpression* Parser::ParseAdditiveExpression(
 
     AdditiveExpression* addExpr = new AdditiveExpression();
     addExpr->SetRightOperand(rightExpr);
+    addExpr->SetType(rightExpr->GetType());
 
     while (mTokenizer.PeekToken() == Tokenizer::Token::PLUS ||
             mTokenizer.PeekToken() == Tokenizer::Token::MINUS) {
@@ -974,11 +1019,20 @@ AdditiveExpression* Parser::ParseAdditiveExpression(
         if (rightExpr == nullptr) return nullptr;
 
         AdditiveExpression* leftExpr = addExpr;
+
+        if (!leftExpr->GetType()->IsNumericType() ||
+                !rightExpr->GetType()->IsNumericType()) {
+            LogError(mTokenizer.PeekToken(), String("Additive operation can not be applied to"
+                    "non-numeric type."));
+            return nullptr;
+        }
+
         addExpr = new AdditiveExpression();
         addExpr->SetLeftOperand(leftExpr);
         addExpr->SetRightOperand(rightExpr);
         addExpr->SetOperator(token == Tokenizer::Token::PLUS ? AdditiveExpression::PLUS :
                 AdditiveExpression::MINUS);
+        addExpr->SetType(CastType(leftExpr->GetType(), rightExpr->GetType()));
     }
 
     return addExpr;
@@ -992,6 +1046,7 @@ MultiplicativeExpression* Parser::ParseMultiplicativeExpression(
 
     MultiplicativeExpression* multiExpr = new MultiplicativeExpression();
     multiExpr->SetRightOperand(rightExpr);
+    multiExpr->SetType(rightExpr->GetType());
 
     while (mTokenizer.PeekToken() == Tokenizer::Token::ASTERISK ||
             mTokenizer.PeekToken() == Tokenizer::Token::DIVIDE ||
@@ -1002,6 +1057,14 @@ MultiplicativeExpression* Parser::ParseMultiplicativeExpression(
         if (rightExpr == nullptr) return nullptr;
 
         MultiplicativeExpression* leftExpr = multiExpr;
+
+        if (!leftExpr->GetType()->IsNumericType() ||
+                !rightExpr->GetType()->IsNumericType()) {
+            LogError(mTokenizer.PeekToken(), String("Multiplicative operation can not be applied to"
+                    "non-numeric type."));
+            return nullptr;
+        }
+
         multiExpr = new MultiplicativeExpression();
         multiExpr->SetLeftOperand(leftExpr);
         multiExpr->SetRightOperand(rightExpr);
@@ -1009,6 +1072,7 @@ MultiplicativeExpression* Parser::ParseMultiplicativeExpression(
                 token == Tokenizer::Token::ASTERISK ? MultiplicativeExpression::MULTIPLE :
                 token == Tokenizer::Token::DIVIDE ? MultiplicativeExpression::DIVIDE :
                         MultiplicativeExpression::MODULO);
+        multiExpr->SetType(CastType(leftExpr->GetType(), rightExpr->GetType()));
     }
 
     return multiExpr;
@@ -1026,6 +1090,18 @@ UnaryExpression* Parser::ParseUnaryExpression(
         UnaryExpression* operand = ParseUnaryExpression(exprType);
         if (operand == nullptr) return nullptr;
 
+        if ((token == Tokenizer::Token::PLUS || token == Tokenizer::Token::MINUS ||
+                token == Tokenizer::Token::NOT) && (!operand->GetType()->IsNumericType())) {
+            LogError(mTokenizer.PeekToken(), String("Plus, minus and not operation can not be applied to"
+                    "non-numeric type."));
+            return nullptr;
+        }
+        else if (token == Tokenizer::Token::COMPLIMENT && !operand->GetType()->IsIntegralType()) {
+            LogError(mTokenizer.PeekToken(), String("Compliment operation can not be applied to"
+                    "non-integral type."));
+            return nullptr;
+        }
+
         UnaryExpression* unaryExpr = new UnaryExpression();
         unaryExpr->SetRightOperand(operand);
         unaryExpr->SetOperator(
@@ -1033,6 +1109,7 @@ UnaryExpression* Parser::ParseUnaryExpression(
                 token == Tokenizer::Token::MINUS ? UnaryExpression::NEGATIVE :
                 token == Tokenizer::Token::COMPLIMENT ? UnaryExpression::COMPLIMENT :
                         UnaryExpression::NOT);
+        unaryExpr->SetType(operand->GetType());
         return unaryExpr;
     }
     else {
@@ -1041,6 +1118,7 @@ UnaryExpression* Parser::ParseUnaryExpression(
 
         UnaryExpression* unaryExpr = new UnaryExpression();
         unaryExpr->SetLeftOperand(operand);
+        unaryExpr->SetType(operand->GetType());
         return unaryExpr;
     }
 }
@@ -1092,15 +1170,12 @@ PostfixExpression* Parser::ParseIntegralNumber(
     /* [in] */ Type* exprType)
 {
     Tokenizer::Token token = mTokenizer.GetToken();
-    if (exprType->IsNumericType()) {
+    if (exprType->IsNumericType() || exprType->IsEnumeration()) {
         PostfixExpression* postExpr = new PostfixExpression();
-        postExpr->SetType(exprType);
-        if (exprType->IsIntegralType()) {
-            postExpr->SetIntegralValue(mTokenizer.GetIntegralValue());
-        }
-        else if (exprType->IsFloatingPointType()) {
-            postExpr->SetFloatingPointValue(mTokenizer.GetIntegralValue());
-        }
+        Type* integralType = mTokenizer.Is64Bit() ?
+                mPool->FindType(String("Long")) : mPool->FindType(String("Integer"));
+        postExpr->SetType(integralType);
+        postExpr->SetIntegralValue(mTokenizer.GetIntegralValue());
         return postExpr;
     }
     else {
@@ -1117,13 +1192,10 @@ PostfixExpression* Parser::ParseFloatingPointNumber(
     Tokenizer::Token token = mTokenizer.GetToken();
     if (exprType->IsNumericType()) {
         PostfixExpression* postExpr = new PostfixExpression();
-        postExpr->SetType(exprType);
-        if (exprType->IsIntegralType()) {
-            postExpr->SetIntegralValue(mTokenizer.GetFloatingPointValue());
-        }
-        else if (exprType->IsFloatingPointType()) {
-            postExpr->SetFloatingPointValue(mTokenizer.GetFloatingPointValue());
-        }
+        Type* fpType = mTokenizer.Is64Bit() ?
+                mPool->FindType(String("Double")) : mPool->FindType(String("Float"));
+        postExpr->SetType(fpType);
+        postExpr->SetFloatingPointValue(mTokenizer.GetFloatingPointValue());
         return postExpr;
     }
     else {
@@ -1140,7 +1212,8 @@ PostfixExpression* Parser::ParseBooleanLiteral(
     Tokenizer::Token token = mTokenizer.GetToken();
     if (exprType->GetName().Equals("Boolean")) {
         PostfixExpression* postExpr = new PostfixExpression();
-        postExpr->SetType(exprType);
+        Type* booleanType = mPool->FindType(String("Boolean"));
+        postExpr->SetType(booleanType);
         postExpr->SetBooleanValue(token == Tokenizer::Token::TRUE ?
                 true : false);
         return postExpr;
@@ -1159,13 +1232,9 @@ PostfixExpression* Parser::ParseCharacter(
     Tokenizer::Token token = mTokenizer.GetToken();
     if (exprType->IsNumericType()) {
         PostfixExpression* postExpr = new PostfixExpression();
-        postExpr->SetType(exprType);
-        if (exprType->IsIntegralType()) {
-            postExpr->SetIntegralValue(mTokenizer.GetCharacter());
-        }
-        else if (exprType->IsFloatingPointType()) {
-            postExpr->SetFloatingPointValue(mTokenizer.GetCharacter());
-        }
+        Type* charType = mPool->FindType(String("Char"));
+        postExpr->SetType(charType);
+        postExpr->SetIntegralValue(mTokenizer.GetCharacter());
         return postExpr;
     }
     else {
@@ -1180,7 +1249,8 @@ PostfixExpression* Parser::ParseStringLiteral(
     Tokenizer::Token token = mTokenizer.GetToken();
     if (exprType->GetName().Equals("String")) {
         PostfixExpression* postExpr = new PostfixExpression();
-        postExpr->SetType(exprType);
+        Type* stringType = mPool->FindType(String("String"));
+        postExpr->SetType(stringType);
         postExpr->SetStringValue(mTokenizer.GetString());
         return postExpr;
     }
@@ -1482,7 +1552,7 @@ bool Parser::ParseEnumerationBody(
         return false;
     }
 
-    int value = 0; // todo:
+    int value = 0;
     token = mTokenizer.GetToken();
     while (token != Tokenizer::Token::BRACES_CLOSE &&
             token != Tokenizer::Token::END_OF_FILE) {
@@ -1501,7 +1571,11 @@ bool Parser::ParseEnumerationBody(
         }
         token = mTokenizer.GetToken();
         if (token == Tokenizer::Token::ASSIGNMENT) {
-            parseResult = (ParseExpression(enumeration) != nullptr) && parseResult;
+            Expression* expr = ParseExpression(enumeration);
+            if (expr != nullptr) {
+                value = expr->EvaluateIntegerValue();
+            }
+            else parseResult = false;
             token = mTokenizer.GetToken();
         }
         if (token == Tokenizer::Token::COMMA) {
@@ -1746,6 +1820,27 @@ Type* Parser::FindType(
         }
     }
     return type;
+}
+
+Type* Parser::CastType(
+    /* [in] */ Type* type1,
+    /* [in] */ Type* type2)
+{
+    String type1Name = type1->GetName();
+    String type2Name = type2->GetName();
+
+    if (type1Name.Equals("Double")) {
+        return type1;
+    }
+    else if (type1Name.Equals("Float")) {
+        return type2Name.Equals("Double") ? type2 : type1;
+    }
+    else if (type1Name.Equals("Long")) {
+        return type2Name.Equals("Integer") ? type1 : type2;
+    }
+    else {
+        return type2;
+    }
 }
 
 void Parser::LogError(

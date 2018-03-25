@@ -26,14 +26,26 @@ namespace ccdl {
 class MultiplicativeExpression : public Expression
 {
 public:
+    int EvaluateIntegerValue() override;
+
+    long long int EvaluateLongValue() override;
+
+    float EvaluateFloatValue() override;
+
+    double EvaluateDoubleValue() override;
+
+    char EvaluateCharacterValue() override;
+
+    bool EvaluateBooleanValue() override;
+
+    String EvaluateStringValue() override;
+
+    String EvaluateEnumeratorName() override;
+
+public:
     static constexpr int MULTIPLE = 0;
     static constexpr int DIVIDE = 1;
     static constexpr int MODULO = 2;
-
-// private:
-//     MultiplicativeExpression* mLeftOperand;
-//     UnaryExpression* mRightOperand;
-//     int mOperator;
 };
 
 }

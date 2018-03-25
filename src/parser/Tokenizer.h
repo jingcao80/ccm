@@ -153,6 +153,11 @@ public:
     inline long long int GetIntegralValue()
     { return mIntegralValue; }
 
+    inline bool Is64Bit()
+    {
+        return mBit == 64;
+    }
+
     inline double GetFloatingPointValue()
     { return mFloatingPointValue; }
 

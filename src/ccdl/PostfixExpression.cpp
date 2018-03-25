@@ -14,36 +14,50 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CCDL_ANDEXPRESSION_H__
-#define __CCM_CCDL_ANDEXPRESSION_H__
-
-#include "Expression.h"
-#include "ShiftExpression.h"
+#include "PostfixExpression.h"
 
 namespace ccm {
 namespace ccdl {
 
-class AndExpression : public Expression
+int PostfixExpression::EvaluateIntegerValue()
 {
-public:
-    int EvaluateIntegerValue() override;
+    return (int)mIntegralValue;
+}
 
-    long long int EvaluateLongValue() override;
+long long int PostfixExpression::EvaluateLongValue()
+{
+    return mIntegralValue;
+}
 
-    float EvaluateFloatValue() override;
+float PostfixExpression::EvaluateFloatValue()
+{
+    return (float)mFloatingPointValue;
+}
 
-    double EvaluateDoubleValue() override;
+double PostfixExpression::EvaluateDoubleValue()
+{
+    return mFloatingPointValue;
+}
 
-    char EvaluateCharacterValue() override;
+char PostfixExpression::EvaluateCharacterValue()
+{
+    return (char)mIntegralValue;
+}
 
-    bool EvaluateBooleanValue() override;
+bool PostfixExpression::EvaluateBooleanValue()
+{
+    return mBooleanValue;
+}
 
-    String EvaluateStringValue() override;
+String PostfixExpression::EvaluateStringValue()
+{
+    return mStringValue;
+}
 
-    String EvaluateEnumeratorName() override;
-};
+String PostfixExpression::EvaluateEnumeratorName()
+{
+    return mEnumeratorName;
+}
 
 }
 }
-
-#endif // __CCM_CCDL_ANDEXPRESSION_H__

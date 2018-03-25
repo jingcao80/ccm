@@ -241,6 +241,10 @@ private:
     Type* FindType(
         /* [in] */ const String& typeName);
 
+    Type* CastType(
+        /* [in] */ Type* type1,
+        /* [in] */ Type* type2);
+
     void LogError(
         /* [in] */ Tokenizer::Token token,
         /* [in] */ const String& message);

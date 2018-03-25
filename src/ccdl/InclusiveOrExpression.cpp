@@ -19,6 +19,60 @@
 namespace ccm {
 namespace ccdl {
 
+int InclusiveOrExpression::EvaluateIntegerValue()
+{
+    if (mLeftOperand != nullptr) {
+        return mLeftOperand->EvaluateIntegerValue() |
+                mRightOperand->EvaluateIntegerValue();
+    }
+    else {
+        return mRightOperand->EvaluateIntegerValue();
+    }
+}
+
+long long int InclusiveOrExpression::EvaluateLongValue()
+{
+    if (mLeftOperand != nullptr) {
+        long long int leftValue = mLeftOperand->GetType()->GetName().Equals("Integer") ?
+                mLeftOperand->EvaluateIntegerValue() : mLeftOperand->EvaluateLongValue();
+        long long int rightValue = mRightOperand->GetType()->GetName().Equals("Integer") ?
+                mRightOperand->EvaluateIntegerValue() : mRightOperand->EvaluateLongValue();
+        return leftValue | rightValue;
+    }
+    else {
+        return mRightOperand->EvaluateLongValue();
+    }
+}
+
+float InclusiveOrExpression::EvaluateFloatValue()
+{
+    return mRightOperand->EvaluateFloatValue();
+}
+
+double InclusiveOrExpression::EvaluateDoubleValue()
+{
+    return mRightOperand->EvaluateDoubleValue();
+}
+
+char InclusiveOrExpression::EvaluateCharacterValue()
+{
+    return mRightOperand->EvaluateCharacterValue();
+}
+
+bool InclusiveOrExpression::EvaluateBooleanValue()
+{
+    return mRightOperand->EvaluateBooleanValue();
+}
+
+String InclusiveOrExpression::EvaluateStringValue()
+{
+    return mRightOperand->EvaluateStringValue();
+}
+
+String InclusiveOrExpression::EvaluateEnumeratorName()
+{
+    return mRightOperand->EvaluateEnumeratorName();
+}
 
 }
 }

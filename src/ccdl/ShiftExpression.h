@@ -26,14 +26,26 @@ namespace ccdl {
 class ShiftExpression : public Expression
 {
 public:
+    int EvaluateIntegerValue() override;
+
+    long long int EvaluateLongValue() override;
+
+    float EvaluateFloatValue() override;
+
+    double EvaluateDoubleValue() override;
+
+    char EvaluateCharacterValue() override;
+
+    bool EvaluateBooleanValue() override;
+
+    String EvaluateStringValue() override;
+
+    String EvaluateEnumeratorName() override;
+
+public:
     static constexpr int LEFT = 0;
     static constexpr int RIGHT = 1;
     static constexpr int RIGHT_UNSIGNED = 2;
-
-// private:
-//     ShiftExpression* mLeftOperand;
-//     AdditiveExpression* mRightOperand;
-//     int mShiftOperator;
 };
 
 }

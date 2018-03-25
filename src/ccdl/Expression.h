@@ -18,6 +18,7 @@
 #define __CCM_CCDL_EXPRESSION_H__
 
 #include "ASTNode.h"
+#include "Type.h"
 
 namespace ccm {
 namespace ccdl {
@@ -29,6 +30,7 @@ public:
         : mLeftOperand(nullptr)
         , mRightOperand(nullptr)
         , mOperator(-1)
+        , mType(nullptr)
     {}
 
     virtual ~Expression();
@@ -45,10 +47,34 @@ public:
         /* [in] */ int addOperator)
     { mOperator = addOperator; return *this; }
 
+    inline Expression& SetType(
+        /* [in] */ Type* type)
+    { mType = type; return *this; }
+
+    inline Type* GetType()
+    { return mType; }
+
+    virtual int EvaluateIntegerValue() = 0;
+
+    virtual long long int EvaluateLongValue() = 0;
+
+    virtual float EvaluateFloatValue() = 0;
+
+    virtual double EvaluateDoubleValue() = 0;
+
+    virtual char EvaluateCharacterValue() = 0;
+
+    virtual bool EvaluateBooleanValue() = 0;
+
+    virtual String EvaluateStringValue() = 0;
+
+    virtual String EvaluateEnumeratorName() = 0;
+
 protected:
     Expression* mLeftOperand;
     Expression* mRightOperand;
     int mOperator;
+    Type* mType;
 };
 
 }

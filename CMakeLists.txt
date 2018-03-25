@@ -21,6 +21,7 @@ set(SOURCES
     src/ccdl/Namespace.cpp
     src/ccdl/Parameter.cpp
     src/ccdl/PointerType.cpp
+    src/ccdl/PostfixExpression.cpp
     src/ccdl/Pool.cpp
     src/ccdl/ShiftExpression.cpp
     src/ccdl/Type.cpp

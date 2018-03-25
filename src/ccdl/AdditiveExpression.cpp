@@ -19,6 +19,143 @@
 namespace ccm {
 namespace ccdl {
 
+int AdditiveExpression::EvaluateIntegerValue()
+{
+    if (mLeftOperand != nullptr) {
+        switch (mOperator) {
+            case PLUS:
+                return mLeftOperand->EvaluateIntegerValue() +
+                        mRightOperand->EvaluateIntegerValue();
+            case MINUS:
+                return mLeftOperand->EvaluateIntegerValue() -
+                        mRightOperand->EvaluateIntegerValue();
+            default:
+                return 0;
+        }
+    }
+    else {
+        return mRightOperand->EvaluateIntegerValue();
+    }
+}
+
+long long int AdditiveExpression::EvaluateLongValue()
+{
+    if (mLeftOperand != nullptr) {
+        long long int leftValue = mLeftOperand->GetType()->GetName().Equals("Integer") ?
+                mLeftOperand->EvaluateIntegerValue() : mLeftOperand->EvaluateLongValue();
+        long long int rightValue = mRightOperand->GetType()->GetName().Equals("Integer") ?
+                mRightOperand->EvaluateIntegerValue() : mRightOperand->EvaluateLongValue();
+        switch (mOperator) {
+            case PLUS:
+                return leftValue + rightValue;
+            case MINUS:
+                return leftValue - rightValue;
+            default:
+                return 0;
+        }
+    }
+    else {
+        return mRightOperand->EvaluateLongValue();
+    }
+}
+
+float AdditiveExpression::EvaluateFloatValue()
+{
+    if (mLeftOperand != nullptr) {
+        float leftValue, rightValue;
+        String typeName = mLeftOperand->GetType()->GetName();
+        if (typeName.Equals("Integer")) {
+            leftValue = mLeftOperand->EvaluateIntegerValue();
+        }
+        else if (typeName.Equals("Long")) {
+            leftValue = mLeftOperand->EvaluateLongValue();
+        }
+        else {
+            leftValue = mLeftOperand->EvaluateFloatValue();
+        }
+        typeName = mRightOperand->GetType()->GetName();
+        if (typeName.Equals("Integer")) {
+            rightValue = mRightOperand->EvaluateIntegerValue();
+        }
+        else if (typeName.Equals("Long")) {
+            rightValue = mRightOperand->EvaluateLongValue();
+        }
+        else {
+            rightValue = mRightOperand->EvaluateFloatValue();
+        }
+        switch (mOperator) {
+            case PLUS:
+                return leftValue + rightValue;
+            case MINUS:
+                return leftValue - rightValue;
+            default:
+                return 0;
+        }
+    }
+    else {
+        return mRightOperand->EvaluateFloatValue();
+    }
+}
+
+double AdditiveExpression::EvaluateDoubleValue()
+{
+    if (mLeftOperand != nullptr) {
+        double leftValue, rightValue;
+        String typeName = mLeftOperand->GetType()->GetName();
+        if (typeName.Equals("Integer")) {
+            leftValue = mLeftOperand->EvaluateIntegerValue();
+        }
+        else if (typeName.Equals("Long")) {
+            leftValue = mLeftOperand->EvaluateLongValue();
+        }
+        else if (typeName.Equals("Float")) {
+            leftValue = mLeftOperand->EvaluateFloatValue();
+        }
+        else leftValue = mLeftOperand->EvaluateDoubleValue();
+        typeName = mRightOperand->GetType()->GetName();
+        if (typeName.Equals("Integer")) {
+            rightValue = mRightOperand->EvaluateIntegerValue();
+        }
+        else if (typeName.Equals("Long")) {
+            rightValue = mRightOperand->EvaluateLongValue();
+        }
+        else if (typeName.Equals("Float")) {
+            rightValue = mRightOperand->EvaluateFloatValue();
+        }
+        else rightValue = mRightOperand->EvaluateDoubleValue();
+        switch (mOperator) {
+            case PLUS:
+                return leftValue + rightValue;
+            case MINUS:
+                return leftValue - rightValue;
+            default:
+                return 0;
+        }
+    }
+    else {
+        return mRightOperand->EvaluateDoubleValue();
+    }
+}
+
+char AdditiveExpression::EvaluateCharacterValue()
+{
+    return mRightOperand->EvaluateCharacterValue();
+}
+
+bool AdditiveExpression::EvaluateBooleanValue()
+{
+    return mRightOperand->EvaluateBooleanValue();
+}
+
+String AdditiveExpression::EvaluateStringValue()
+{
+    return mRightOperand->EvaluateStringValue();
+}
+
+String AdditiveExpression::EvaluateEnumeratorName()
+{
+    return mRightOperand->EvaluateEnumeratorName();
+}
 
 }
 }

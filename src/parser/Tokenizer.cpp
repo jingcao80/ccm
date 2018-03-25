@@ -67,7 +67,7 @@ Tokenizer::Tokenizer()
     , mTokenColumnNo(0)
     , mIntegralValue(0)
     , mFloatingPointValue(0)
-    , mBit(0)
+    , mBit(32)
 {
     InitializeKeyword();
 }

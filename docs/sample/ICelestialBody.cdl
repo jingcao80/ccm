@@ -21,7 +21,7 @@
 
 enum CelestialBodyKind
 {
-    meteor,
+    meteor = 1,
     planet,
     satellite,
     star

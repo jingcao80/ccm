@@ -26,10 +26,21 @@ namespace ccdl {
 class ExclusiveOrExpression : public Expression
 {
 public:
+    int EvaluateIntegerValue() override;
 
-// private:
-//     ExclusiveOrExpression* mLeftOperand;
-//     AndExpression* mRightOperand;
+    long long int EvaluateLongValue() override;
+
+    float EvaluateFloatValue() override;
+
+    double EvaluateDoubleValue() override;
+
+    char EvaluateCharacterValue() override;
+
+    bool EvaluateBooleanValue() override;
+
+    String EvaluateStringValue() override;
+
+    String EvaluateEnumeratorName() override;
 };
 
 }

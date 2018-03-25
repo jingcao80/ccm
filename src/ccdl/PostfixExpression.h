@@ -27,16 +27,11 @@ class PostfixExpression : public Expression
 {
 public:
     PostfixExpression()
-        : mType(nullptr)
-        , mBooleanValue(false)
+        : mBooleanValue(false)
         , mIntegralValue(0)
         , mFloatingPointValue(0)
         , mExpression(nullptr)
     {}
-
-    inline PostfixExpression& SetType(
-        /* [in] */ Type* type)
-    { mType = type; return *this; }
 
     inline PostfixExpression& SetEnumerator(
         /* [in] */ const String& enumName)
@@ -62,8 +57,23 @@ public:
         /* [in] */ const String& value)
     { mStringValue = value; return *this; }
 
+    int EvaluateIntegerValue() override;
+
+    long long int EvaluateLongValue() override;
+
+    float EvaluateFloatValue() override;
+
+    double EvaluateDoubleValue() override;
+
+    char EvaluateCharacterValue() override;
+
+    bool EvaluateBooleanValue() override;
+
+    String EvaluateStringValue() override;
+
+    String EvaluateEnumeratorName() override;
+
 private:
-    Type* mType;
     bool mBooleanValue;
     long long int mIntegralValue;
     double mFloatingPointValue;

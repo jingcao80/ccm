@@ -26,13 +26,25 @@ namespace ccdl {
 class AdditiveExpression : public Expression
 {
 public:
+    int EvaluateIntegerValue() override;
+
+    long long int EvaluateLongValue() override;
+
+    float EvaluateFloatValue() override;
+
+    double EvaluateDoubleValue() override;
+
+    char EvaluateCharacterValue() override;
+
+    bool EvaluateBooleanValue() override;
+
+    String EvaluateStringValue() override;
+
+    String EvaluateEnumeratorName() override;
+
+public:
     static constexpr int PLUS = 0;
     static constexpr int MINUS = 1;
-
-// private:
-//     AdditiveExpression* mLeftOperand;
-//     MultiplicativeExpression* mRightOperand;
-//     int mOperator;
 };
 
 }
