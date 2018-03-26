@@ -45,6 +45,9 @@ public:
     bool AddInterface(
         /* [in] */ Interface* interface);
 
+    inline int GetInterfaceNumber()
+    { return mInterfaces.GetSize(); }
+
     String Dump(
         /* [in] */ const String& prefix) override;
 

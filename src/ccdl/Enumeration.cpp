@@ -17,23 +17,8 @@
 #include "Enumeration.h"
 #include "../util/StringBuilder.h"
 
-#include <stdlib.h>
-
 namespace ccm {
 namespace ccdl {
-
-Enumeration::~Enumeration()
-{
-    mNamespace = nullptr;
-    for (int i = 0; i < mEnumIndex; i++) {
-        Enumerator* e = mEnumerators[i];
-        delete e;
-    }
-    if (mEnumerators != nullptr) {
-        free(mEnumerators);
-        mEnumerators = nullptr;
-    }
-}
 
 Enumeration& Enumeration::AddEnumerator(
     /* [in] */ const String& name,
@@ -41,41 +26,20 @@ Enumeration& Enumeration::AddEnumerator(
 {
     if (name.IsNullOrEmpty()) return *this;
 
-    if (mEnumIndex >= mEnumCapacity) {
-        if (!EnlargeEnumeratorArray()) return *this;
-    }
-
     Enumerator* e = new Enumerator(name, value);
-    mEnumerators[mEnumIndex++] = e;
+    if (!mEnumerators.Add(e)) delete e;
     return *this;
 }
 
 bool Enumeration::Contains(
     /* [in] */ const String& name)
 {
-    for (int i = 0; i < mEnumIndex; i++) {
-        if (mEnumerators[i]->mName.Equals(name)) {
+    for (int i = 0; i < mEnumerators.GetSize(); i++) {
+        if (mEnumerators.Get(i)->mName.Equals(name)) {
             return true;
         }
     }
     return false;
-}
-
-bool Enumeration::EnlargeEnumeratorArray()
-{
-    int newSize = mEnumCapacity == 0 ? 10 : mEnumCapacity + 10;
-    Enumerator** newArray = (Enumerator**)calloc(sizeof(Enumerator*), newSize);
-    if (newArray == nullptr) {
-        return false;
-    }
-
-    if (mEnumerators != nullptr) {
-        memcpy(newArray, mEnumerators, sizeof(Enumerator*) * mEnumCapacity);
-        free(mEnumerators);
-    }
-    mEnumCapacity = newSize;
-    mEnumerators = newArray;
-    return true;
 }
 
 String Enumeration::Dump(
@@ -84,8 +48,8 @@ String Enumeration::Dump(
     StringBuilder builder;
 
     builder.Append(prefix).Append("enum ").Append(mName).Append("\n");
-    for (int i = 0; i < mEnumIndex; i++) {
-        Enumerator* e = mEnumerators[i];
+    for (int i = 0; i < mEnumerators.GetSize(); i++) {
+        Enumerator* e = mEnumerators.Get(i);
         builder.Append(prefix).Append("  "). Append(e->mName).Append("\n");
     }
 

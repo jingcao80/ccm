@@ -19,21 +19,21 @@
 namespace ccm {
 namespace ccdl {
 
-int UnaryExpression::EvaluateIntegerValue()
+int UnaryExpression::IntegerValue()
 {
     if (mLeftOperand != nullptr) {
-        return mLeftOperand->EvaluateIntegerValue();
+        return mLeftOperand->IntegerValue();
     }
     else if (mRightOperand != nullptr) {
         switch (mOperator) {
             case POSITIVE:
-                return mRightOperand->EvaluateIntegerValue();
+                return mRightOperand->IntegerValue();
             case NEGATIVE:
-                return - mRightOperand->EvaluateIntegerValue();
+                return - mRightOperand->IntegerValue();
             case COMPLIMENT:
-                return ~ mRightOperand->EvaluateIntegerValue();
+                return ~ mRightOperand->IntegerValue();
             case NOT:
-                return ! mRightOperand->EvaluateIntegerValue();
+                return ! mRightOperand->IntegerValue();
             default:
                 return 0;
         }
@@ -41,21 +41,21 @@ int UnaryExpression::EvaluateIntegerValue()
     return 0;
 }
 
-long long int UnaryExpression::EvaluateLongValue()
+long long int UnaryExpression::LongValue()
 {
     if (mLeftOperand != nullptr) {
-        return mLeftOperand->EvaluateLongValue();
+        return mLeftOperand->LongValue();
     }
     else if (mRightOperand != nullptr) {
         switch (mOperator) {
             case POSITIVE:
-                return mRightOperand->EvaluateLongValue();
+                return mRightOperand->LongValue();
             case NEGATIVE:
-                return - mRightOperand->EvaluateIntegerValue();
+                return - mRightOperand->IntegerValue();
             case COMPLIMENT:
-                return ~ mRightOperand->EvaluateIntegerValue();
+                return ~ mRightOperand->IntegerValue();
             case NOT:
-                return ! mRightOperand->EvaluateIntegerValue();
+                return ! mRightOperand->IntegerValue();
             default:
                 return 0;
         }
@@ -63,40 +63,19 @@ long long int UnaryExpression::EvaluateLongValue()
     return 0;
 }
 
-float UnaryExpression::EvaluateFloatValue()
+float UnaryExpression::FloatValue()
 {
     if (mLeftOperand != nullptr) {
-        return mLeftOperand->EvaluateFloatValue();
+        return mLeftOperand->FloatValue();
     }
     else if (mRightOperand != nullptr) {
         switch (mOperator) {
             case POSITIVE:
-                return + mRightOperand->EvaluateFloatValue();
+                return + mRightOperand->FloatValue();
             case NEGATIVE:
-                return - mRightOperand->EvaluateFloatValue();
+                return - mRightOperand->FloatValue();
             case NOT:
-                return ! mRightOperand->EvaluateFloatValue();
-            case COMPLIMENT:
-            default:
-                return 0;
-        }
-    }
-    return 0;
-}
-
-double UnaryExpression::EvaluateDoubleValue()
-{
-    if (mLeftOperand != nullptr) {
-        return mLeftOperand->EvaluateDoubleValue();
-    }
-    else if (mRightOperand != nullptr) {
-        switch (mOperator) {
-            case POSITIVE:
-                return + mRightOperand->EvaluateDoubleValue();
-            case NEGATIVE:
-                return - mRightOperand->EvaluateDoubleValue();
-            case NOT:
-                return ! mRightOperand->EvaluateDoubleValue();
+                return ! mRightOperand->FloatValue();
             case COMPLIMENT:
             default:
                 return 0;
@@ -105,21 +84,20 @@ double UnaryExpression::EvaluateDoubleValue()
     return 0;
 }
 
-char UnaryExpression::EvaluateCharacterValue()
+double UnaryExpression::DoubleValue()
 {
     if (mLeftOperand != nullptr) {
-        return mLeftOperand->EvaluateCharacterValue();
+        return mLeftOperand->DoubleValue();
     }
     else if (mRightOperand != nullptr) {
         switch (mOperator) {
             case POSITIVE:
-                return + mRightOperand->EvaluateCharacterValue();
+                return + mRightOperand->DoubleValue();
             case NEGATIVE:
-                return - mRightOperand->EvaluateCharacterValue();
-            case COMPLIMENT:
-                return ~ mRightOperand->EvaluateCharacterValue();
+                return - mRightOperand->DoubleValue();
             case NOT:
-                return ! mRightOperand->EvaluateCharacterValue();
+                return ! mRightOperand->DoubleValue();
+            case COMPLIMENT:
             default:
                 return 0;
         }
@@ -127,15 +105,37 @@ char UnaryExpression::EvaluateCharacterValue()
     return 0;
 }
 
-bool UnaryExpression::EvaluateBooleanValue()
+char UnaryExpression::CharacterValue()
 {
     if (mLeftOperand != nullptr) {
-        return mLeftOperand->EvaluateBooleanValue();
+        return mLeftOperand->CharacterValue();
+    }
+    else if (mRightOperand != nullptr) {
+        switch (mOperator) {
+            case POSITIVE:
+                return + mRightOperand->CharacterValue();
+            case NEGATIVE:
+                return - mRightOperand->CharacterValue();
+            case COMPLIMENT:
+                return ~ mRightOperand->CharacterValue();
+            case NOT:
+                return ! mRightOperand->CharacterValue();
+            default:
+                return 0;
+        }
+    }
+    return 0;
+}
+
+bool UnaryExpression::BooleanValue()
+{
+    if (mLeftOperand != nullptr) {
+        return mLeftOperand->BooleanValue();
     }
     else if (mRightOperand != nullptr) {
         switch (mOperator) {
             case NOT:
-                return ! mRightOperand->EvaluateBooleanValue();
+                return ! mRightOperand->BooleanValue();
             case POSITIVE:
             case NEGATIVE:
             case COMPLIMENT:
@@ -146,18 +146,18 @@ bool UnaryExpression::EvaluateBooleanValue()
     return false;
 }
 
-String UnaryExpression::EvaluateStringValue()
+String UnaryExpression::StringValue()
 {
     if (mLeftOperand != nullptr) {
-        return mLeftOperand->EvaluateStringValue();
+        return mLeftOperand->StringValue();
     }
     return String(nullptr);
 }
 
-String UnaryExpression::EvaluateEnumeratorName()
+String UnaryExpression::EnumeratorValue()
 {
     if (mLeftOperand != nullptr) {
-        return mLeftOperand->EvaluateEnumeratorName();
+        return mLeftOperand->EnumeratorValue();
     }
     return String(nullptr);
 }

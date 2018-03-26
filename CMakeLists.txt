@@ -9,7 +9,7 @@ set(SOURCES
     src/ccdl/AndExpression.cpp
     src/ccdl/ArrayType.cpp
     src/ccdl/Coclass.cpp
-    src/ccdl/ConstantDataMember.cpp
+    src/ccdl/Constant.cpp
     src/ccdl/Enumeration.cpp
     src/ccdl/ExclusiveOrExpression.cpp
     src/ccdl/Expression.cpp
@@ -26,6 +26,7 @@ set(SOURCES
     src/ccdl/ShiftExpression.cpp
     src/ccdl/Type.cpp
     src/ccdl/UnaryExpression.cpp
+    src/metadata/MetaBuilder.cpp
     src/parser/Environment.cpp
     src/parser/Parser.cpp
     src/parser/Tokenizer.cpp
@@ -33,6 +34,7 @@ set(SOURCES
     src/util/Logger.cpp
     src/util/String.cpp
     src/util/StringBuilder.cpp
+    src/util/StringPool.cpp
     src/util/Uuid.cpp
     src/Options.cpp
     src/main.cpp)

@@ -1,12 +1,19 @@
 
 #include "Options.h"
 #include "metadata/Component.h"
+#include "metadata/MetaBuilder.h"
 #include "parser/Parser.h"
 #include "util/File.h"
+#include "util/Logger.h"
+
+#include <memory>
 
 using ccm::File;
+using ccm::Logger;
 using ccm::Options;
 using ccm::Parser;
+using ccm::metadata::MetaComponent;
+using ccm::metadata::MetaBuilder;
 
 int main(int argc, char** argv)
 {
@@ -19,7 +26,17 @@ int main(int argc, char** argv)
     }
 
     Parser parser;
-    parser.Parse(options.GetInputFile());
+    if (!parser.Parse(options.GetInputFile())) {
+        Logger::E("ccdl", "Parsing failed.");
+        return -1;
+    }
+
+    MetaBuilder mbuilder(parser.GetModule());
+    if (!mbuilder.IsValidate()) {
+        Logger::E("ccdl", "Parsing result is not validate.");
+        return -1;
+    }
+    std::shared_ptr<MetaComponent> comMetadata = mbuilder.Build();
 
     return 0;
 }

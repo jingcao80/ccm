@@ -218,7 +218,7 @@ String Pool::Dump(
         builder.Append(enumStr).Append("\n");
     }
     for (int i = 0; i < mInterfaces.GetSize(); i++) {
-        if (!mInterfaces.Get(i)->IsDefined()) continue;
+        if (!mInterfaces.Get(i)->IsDeclared()) continue;
         String itfStr = mInterfaces.Get(i)->Dump(String("  "));
         builder.Append(itfStr).Append("\n");
     }

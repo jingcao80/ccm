@@ -20,86 +20,112 @@
 namespace ccm {
 namespace metadata {
 
-typedef struct Uuid
+struct Uuid
 {
     unsigned int    mData1;
     unsigned short  mData2;
     unsigned short  mData3;
     unsigned short  mData4;
     unsigned char   mData5[12];
-} Uuid;
+};
 
-typedef struct Coclass      Coclass;
-typedef struct Constant     Constant;
-typedef struct Enumeration  Enumeration;
-typedef struct Enumerator   Enumerator;
-typedef struct Interface    Interface;
-typedef struct Method       Method;
-typedef struct Namespace    Namespace;
+struct MetaCoclass;
+struct MetaConstant;
+struct MetaEnumeration;
+struct MetaEnumerator;
+struct MetaInterface;
+struct MetaMethod;
+struct MetaNamespace;
+struct MetaType;
 
-typedef struct Component
+struct MetaComponent
 {
-    int             mMagic;
-    const char*     mName;
-    Uuid            mUuid;
-    const char*     mUrl;
-    int             mNamespaceNumber;
-    Namespace**     mNamespaces;
-    int             mCoclassNumber;
-    Coclass**       mCoclasses;
-    int             mEnumerationNumber;
-    Enumeration**   mEnumerations;
-    int             mInterfaceNumber;
-    Interface**     mInterfaces;
-} Component;
+    int                 mMagic;
+    Uuid                mUuid;
+    char*               mName;
+    char*               mUrl;
+    int                 mNamespaceNumber;
+    int                 mCoclassNumber;
+    int                 mEnumerationNumber;
+    int                 mInterfaceNumber;
+    int                 mTypeNumber;
+    MetaNamespace**     mNamespaces;
+    MetaCoclass**       mCoclasses;
+    MetaEnumeration**   mEnumerations;
+    MetaInterface**     mInterfaces;
+    MetaType**          mTypes;
+    char*               mStringPool;
+};
 
-typedef struct Namespace
+struct MetaNamespace
 {
-    const char*     mName;
-    int             mCoclassNumber;
-    int*            mCoclassIndexes;
-    int             mEnumerationNumber;
-    int*            mEnumerationIndexes;
-    int             mInterfaceNumber;
-    int*            mInterfaceIndexes;
-} Namespace;
+    char*               mName;
+    int                 mCoclassNumber;
+    int                 mEnumerationNumber;
+    int                 mInterfaceNumber;
+    int*                mCoclassIndexes;
+    int*                mEnumerationIndexes;
+    int*                mInterfaceIndexes;
+};
 
-typedef struct Coclass
+struct MetaCoclass
 {
-    const char*     mName;
-    int             mNamespaceIndex;
-    int             mInterfaceNumber;
-    int*            mInterfaceIndexes;
-} Coclass;
+    char*               mName;
+    int                 mNamespaceIndex;
+    int                 mInterfaceNumber;
+    int*                mInterfaceIndexes;
+};
 
-typedef struct Enumeration
+struct MetaEnumeration
 {
-    const char*     mName;
-    int             mNamespaceIndex;
-    int             mEnumeratorNumber;
-    Enumerator**    mEnumerators;
-} Enumeration;
+    char*               mName;
+    int                 mNamespaceIndex;
+    int                 mEnumeratorNumber;
+    MetaEnumerator**    mEnumerators;
+};
 
-typedef struct Enumerator
+struct MetaEnumerator
 {
-    const char*     mName;
-    int             mValue;
-} Enumerator;
+    char*               mName;
+    int                 mValue;
+};
 
-typedef struct Interface
+struct MetaInterface
 {
-    const char*     mName;
-    int             mNamespaceIndex;
-    int             mConstantNumber;
-    Constant**      mConstants;
-    int             mMethodNumber;
-    Method**        mMethods;
-} Interface;
+    char*               mName;
+    int                 mNamespaceIndex;
+    int                 mConstantNumber;
+    int                 mMethodNumber;
+    MetaConstant**      mConstants;
+    MetaMethod**        mMethods;
+};
 
-typedef struct Method
+struct MetaConstant
+{
+    char*               mName;
+    int                 mTypeIndex;
+    union {
+        bool            mBoolean;
+        int             mCharacter;
+        int             mInteger;
+        long long int   mLong;
+        float           mFloat;
+        double          mDouble;
+        int             mEnumerator;
+        char*           mString;
+    }                   mValue;
+    unsigned char       mRadix;
+};
+
+struct MetaMethod
 {
 
-} Method;
+};
+
+struct MetaType
+{
+
+};
 
 }
 }

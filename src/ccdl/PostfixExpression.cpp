@@ -19,42 +19,42 @@
 namespace ccm {
 namespace ccdl {
 
-int PostfixExpression::EvaluateIntegerValue()
+int PostfixExpression::IntegerValue()
 {
     return (int)mIntegralValue;
 }
 
-long long int PostfixExpression::EvaluateLongValue()
+long long int PostfixExpression::LongValue()
 {
     return mIntegralValue;
 }
 
-float PostfixExpression::EvaluateFloatValue()
+float PostfixExpression::FloatValue()
 {
     return (float)mFloatingPointValue;
 }
 
-double PostfixExpression::EvaluateDoubleValue()
+double PostfixExpression::DoubleValue()
 {
     return mFloatingPointValue;
 }
 
-char PostfixExpression::EvaluateCharacterValue()
+char PostfixExpression::CharacterValue()
 {
     return (char)mIntegralValue;
 }
 
-bool PostfixExpression::EvaluateBooleanValue()
+bool PostfixExpression::BooleanValue()
 {
     return mBooleanValue;
 }
 
-String PostfixExpression::EvaluateStringValue()
+String PostfixExpression::StringValue()
 {
     return mStringValue;
 }
 
-String PostfixExpression::EvaluateEnumeratorName()
+String PostfixExpression::EnumeratorValue()
 {
     return mEnumeratorName;
 }

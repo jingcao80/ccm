@@ -16,12 +16,12 @@
 
 #include "Parser.h"
 #include "../ccdl/ArrayType.h"
-#include "../ccdl/ConstantDataMember.h"
+#include "../ccdl/Constant.h"
 #include "../ccdl/PointerType.h"
 #include "../util/Logger.h"
 
 using ccm::ccdl::ArrayType;
-using ccm::ccdl::ConstantDataMember;
+using ccm::ccdl::Constant;
 using ccm::ccdl::PointerType;
 
 namespace ccm {
@@ -52,6 +52,23 @@ String Parser::Context::FindPreDeclaration(
 
 
 const String Parser::TAG("Parser");
+
+Parser::~Parser()
+{
+    delete mEnvironment;
+    mEnvironment = nullptr;
+
+    mCurrNamespace = nullptr;
+    mPool = nullptr;
+
+    mCurrError = mErrorHeader;
+    while (mCurrError != nullptr) {
+        mErrorHeader = mCurrError->mNext;
+        delete mCurrError;
+        mCurrError = mErrorHeader;
+    }
+    mErrorHeader = mCurrError = nullptr;
+}
 
 bool Parser::Parse(
     /* [in] */ const String& filePath)
@@ -85,25 +102,6 @@ bool Parser::Parse(
     else DumpError();
 
     return ret;
-}
-
-Parser::~Parser()
-{
-    delete mEnvironment;
-    mEnvironment = nullptr;
-    delete mModule;
-    mModule = nullptr;
-
-    mCurrNamespace = nullptr;
-    mPool = nullptr;
-
-    mCurrError = mErrorHeader;
-    while (mCurrError != nullptr) {
-        mErrorHeader = mCurrError->mNext;
-        delete mCurrError;
-        mCurrError = mErrorHeader;
-    }
-    mErrorHeader = mCurrError = nullptr;
 }
 
 bool Parser::ParseFile()
@@ -445,7 +443,7 @@ bool Parser::ParseInterface(
     Type* type = mPool->FindType(currNsString.IsNullOrEmpty() ?
             itfName : currNsString + itfName);
     if (type != nullptr) {
-        if (type->IsInterface() && !((Interface*)type)->IsDefined()) {
+        if (type->IsInterface() && !((Interface*)type)->IsDeclared()) {
             interface = (Interface*)type;
         }
         else {
@@ -480,7 +478,7 @@ bool Parser::ParseInterface(
         if (token == Tokenizer::Token::IDENTIFIER) {
             mTokenizer.GetToken();
             Interface* baseItf = FindInterface(mTokenizer.GetIdentifier());
-            if (baseItf != nullptr && baseItf->IsDefined()) {
+            if (baseItf != nullptr && baseItf->IsDeclared()) {
                 interface->SetBaseInterface(baseItf);
             }
             else {
@@ -503,7 +501,7 @@ bool Parser::ParseInterface(
     parseResult = ParseInterfaceBody(interface) && parseResult;
 
     if (parseResult) {
-        interface->SetDefined(true);
+        interface->SetDeclared(true);
         interface->SetAttribute(*attr);
         if (newAdded) {
             mPool->AddInterface(interface);
@@ -775,7 +773,7 @@ bool Parser::ParseConstDataMember(
     Tokenizer::Token token;
     Type* type = nullptr;
 
-    ConstantDataMember* dataMember = new ConstantDataMember();
+    Constant* constant = new Constant();
 
     // read "const"
     token = mTokenizer.GetToken();
@@ -801,21 +799,21 @@ bool Parser::ParseConstDataMember(
             LogError(token, message);
             // jump to next line
             mTokenizer.SkipCurrentLine();
-            delete dataMember;
+            delete constant;
             return false;
         }
     }
-    dataMember->SetType(type);
+    constant->SetType(type);
 
     token = mTokenizer.GetToken();
     if (token == Tokenizer::Token::IDENTIFIER) {
-        dataMember->SetName(mTokenizer.GetIdentifier());
+        constant->SetName(mTokenizer.GetIdentifier());
     }
     else {
         LogError(token, String("Constant name is expected."));
         // jump to next line
         mTokenizer.SkipCurrentLine();
-        delete dataMember;
+        delete constant;
         return false;
     }
 
@@ -824,13 +822,13 @@ bool Parser::ParseConstDataMember(
         LogError(token, String("\"=\" is expected."));
         // jump to next line
         mTokenizer.SkipCurrentLine();
-        delete dataMember;
+        delete constant;
         return false;
     }
 
     Expression* expr = ParseExpression(type);
     if (expr != nullptr) {
-        dataMember->SetValue(expr);
+        constant->SetValue(expr);
     }
     else parseResult = false;
 
@@ -839,15 +837,15 @@ bool Parser::ParseConstDataMember(
         LogError(token, String("\";\" is expected."));
         // jump to next line
         mTokenizer.SkipCurrentLine();
-        delete dataMember;
+        delete constant;
         return false;
     }
 
     if (parseResult) {
-        interface->AddConstantDataMember(dataMember);
+        interface->AddConstant(constant);
     }
     else {
-        delete dataMember;
+        delete constant;
     }
 
     return parseResult;
@@ -1573,7 +1571,7 @@ bool Parser::ParseEnumerationBody(
         if (token == Tokenizer::Token::ASSIGNMENT) {
             Expression* expr = ParseExpression(enumeration);
             if (expr != nullptr) {
-                value = expr->EvaluateIntegerValue();
+                value = expr->IntegerValue();
             }
             else parseResult = false;
             token = mTokenizer.GetToken();
@@ -1662,9 +1660,9 @@ bool Parser::ParseModule(
         parseResult = false;
     }
 
-    mModule = new Module();
+    mModule = std::make_shared<Module>();
     mModule->SetName(moduleName);
-    mPool = mModule;
+    mPool = mModule.get();
 
     token = mTokenizer.PeekToken();
     while (token != Tokenizer::Token::BRACES_CLOSE &&

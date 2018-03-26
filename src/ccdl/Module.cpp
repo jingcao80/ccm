@@ -18,8 +18,6 @@
 #include "../util/Logger.h"
 #include "../util/StringBuilder.h"
 
-#include <stdlib.h>
-
 namespace ccm {
 namespace ccdl {
 

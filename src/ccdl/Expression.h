@@ -54,21 +54,21 @@ public:
     inline Type* GetType()
     { return mType; }
 
-    virtual int EvaluateIntegerValue() = 0;
+    virtual int IntegerValue() = 0;
 
-    virtual long long int EvaluateLongValue() = 0;
+    virtual long long int LongValue() = 0;
 
-    virtual float EvaluateFloatValue() = 0;
+    virtual float FloatValue() = 0;
 
-    virtual double EvaluateDoubleValue() = 0;
+    virtual double DoubleValue() = 0;
 
-    virtual char EvaluateCharacterValue() = 0;
+    virtual char CharacterValue() = 0;
 
-    virtual bool EvaluateBooleanValue() = 0;
+    virtual bool BooleanValue() = 0;
 
-    virtual String EvaluateStringValue() = 0;
+    virtual String StringValue() = 0;
 
-    virtual String EvaluateEnumeratorName() = 0;
+    virtual String EnumeratorValue() = 0;
 
 protected:
     Expression* mLeftOperand;

@@ -17,8 +17,6 @@
 #include "Interface.h"
 #include "../util/StringBuilder.h"
 
-#include <stdlib.h>
-
 namespace ccm {
 namespace ccdl {
 
@@ -54,12 +52,12 @@ Interface& Interface::AddMethod(
     return *this;
 }
 
-Interface& Interface::AddConstantDataMember(
-    /* [in] */ ConstantDataMember* dataMember)
+Interface& Interface::AddConstant(
+    /* [in] */ Constant* constant)
 {
-    if (dataMember == nullptr) return *this;
+    if (constant == nullptr) return *this;
 
-    mConstDataMembers.Add(dataMember);
+    mConstants.Add(constant);
     return *this;
 }
 
@@ -77,9 +75,9 @@ String Interface::Dump(
         builder.Append(", description:").Append(mDescription);
     }
     builder.Append("]\n");
-    for (int i = 0; i < mConstDataMembers.GetSize(); i++) {
-        String dataMemberStr = mConstDataMembers.Get(i)->Dump(String("  "));
-        builder.Append(prefix).Append(dataMemberStr);
+    for (int i = 0; i < mConstants.GetSize(); i++) {
+        String constantStr = mConstants.Get(i)->Dump(String("  "));
+        builder.Append(prefix).Append(constantStr);
     }
     for (int i = 0; i < mMethods.GetSize(); i++) {
         String methodStr = mMethods.Get(i)->Dump(String("  "));

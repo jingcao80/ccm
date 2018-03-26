@@ -41,12 +41,18 @@ namespace ccdl {
 class Module : public ASTNode, public Pool
 {
 public:
+    inline String GetName()
+    { return mName; }
+
     inline void SetName(
         /* [in] */ const String& name)
     { mName = name; }
 
     Module& SetAttribute(
         /* [in] */ const Attribute& attr);
+
+    inline String GetUrl()
+    { return mUrl; }
 
     String Dump(
         /* [in] */ const String& prefix) override;

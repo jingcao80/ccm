@@ -19,59 +19,59 @@
 namespace ccm {
 namespace ccdl {
 
-int AndExpression::EvaluateIntegerValue()
+int AndExpression::IntegerValue()
 {
     if (mLeftOperand != nullptr) {
-        return mLeftOperand->EvaluateIntegerValue() &
-                mRightOperand->EvaluateIntegerValue();
+        return mLeftOperand->IntegerValue() &
+                mRightOperand->IntegerValue();
     }
     else {
-        return mRightOperand->EvaluateIntegerValue();
+        return mRightOperand->IntegerValue();
     }
 }
 
-long long int AndExpression::EvaluateLongValue()
+long long int AndExpression::LongValue()
 {
     if (mLeftOperand != nullptr) {
         long long int leftValue = mLeftOperand->GetType()->GetName().Equals("Integer") ?
-                mLeftOperand->EvaluateIntegerValue() : mLeftOperand->EvaluateLongValue();
+                mLeftOperand->IntegerValue() : mLeftOperand->LongValue();
         long long int rightValue = mRightOperand->GetType()->GetName().Equals("Integer") ?
-                mRightOperand->EvaluateIntegerValue() : mRightOperand->EvaluateLongValue();
+                mRightOperand->IntegerValue() : mRightOperand->LongValue();
         return leftValue & rightValue;
     }
     else {
-        return mRightOperand->EvaluateLongValue();
+        return mRightOperand->LongValue();
     }
 }
 
-float AndExpression::EvaluateFloatValue()
+float AndExpression::FloatValue()
 {
-    return mRightOperand->EvaluateFloatValue();
+    return mRightOperand->FloatValue();
 }
 
-double AndExpression::EvaluateDoubleValue()
+double AndExpression::DoubleValue()
 {
-    return mRightOperand->EvaluateDoubleValue();
+    return mRightOperand->DoubleValue();
 }
 
-char AndExpression::EvaluateCharacterValue()
+char AndExpression::CharacterValue()
 {
-    return mRightOperand->EvaluateCharacterValue();
+    return mRightOperand->CharacterValue();
 }
 
-bool AndExpression::EvaluateBooleanValue()
+bool AndExpression::BooleanValue()
 {
-    return mRightOperand->EvaluateBooleanValue();
+    return mRightOperand->BooleanValue();
 }
 
-String AndExpression::EvaluateStringValue()
+String AndExpression::StringValue()
 {
-    return mRightOperand->EvaluateStringValue();
+    return mRightOperand->StringValue();
 }
 
-String AndExpression::EvaluateEnumeratorName()
+String AndExpression::EnumeratorValue()
 {
-    return mRightOperand->EvaluateEnumeratorName();
+    return mRightOperand->EnumeratorValue();
 }
 
 }

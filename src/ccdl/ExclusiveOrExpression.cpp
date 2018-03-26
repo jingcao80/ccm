@@ -19,59 +19,59 @@
 namespace ccm {
 namespace ccdl {
 
-int ExclusiveOrExpression::EvaluateIntegerValue()
+int ExclusiveOrExpression::IntegerValue()
 {
     if (mLeftOperand != nullptr) {
-        return mLeftOperand->EvaluateIntegerValue() ^
-                mRightOperand->EvaluateIntegerValue();
+        return mLeftOperand->IntegerValue() ^
+                mRightOperand->IntegerValue();
     }
     else {
-        return mRightOperand->EvaluateIntegerValue();
+        return mRightOperand->IntegerValue();
     }
 }
 
-long long int ExclusiveOrExpression::EvaluateLongValue()
+long long int ExclusiveOrExpression::LongValue()
 {
     if (mLeftOperand != nullptr) {
         long long int leftValue = mLeftOperand->GetType()->GetName().Equals("Integer") ?
-                mLeftOperand->EvaluateIntegerValue() : mLeftOperand->EvaluateLongValue();
+                mLeftOperand->IntegerValue() : mLeftOperand->LongValue();
         long long int rightValue = mRightOperand->GetType()->GetName().Equals("Integer") ?
-                mRightOperand->EvaluateIntegerValue() : mRightOperand->EvaluateLongValue();
+                mRightOperand->IntegerValue() : mRightOperand->LongValue();
         return leftValue ^ rightValue;
     }
     else {
-        return mRightOperand->EvaluateLongValue();
+        return mRightOperand->LongValue();
     }
 }
 
-float ExclusiveOrExpression::EvaluateFloatValue()
+float ExclusiveOrExpression::FloatValue()
 {
-    return mRightOperand->EvaluateFloatValue();
+    return mRightOperand->FloatValue();
 }
 
-double ExclusiveOrExpression::EvaluateDoubleValue()
+double ExclusiveOrExpression::DoubleValue()
 {
-    return mRightOperand->EvaluateDoubleValue();
+    return mRightOperand->DoubleValue();
 }
 
-char ExclusiveOrExpression::EvaluateCharacterValue()
+char ExclusiveOrExpression::CharacterValue()
 {
-    return mRightOperand->EvaluateCharacterValue();
+    return mRightOperand->CharacterValue();
 }
 
-bool ExclusiveOrExpression::EvaluateBooleanValue()
+bool ExclusiveOrExpression::BooleanValue()
 {
-    return mRightOperand->EvaluateBooleanValue();
+    return mRightOperand->BooleanValue();
 }
 
-String ExclusiveOrExpression::EvaluateStringValue()
+String ExclusiveOrExpression::StringValue()
 {
-    return mRightOperand->EvaluateStringValue();
+    return mRightOperand->StringValue();
 }
 
-String ExclusiveOrExpression::EvaluateEnumeratorName()
+String ExclusiveOrExpression::EnumeratorValue()
 {
-    return mRightOperand->EvaluateEnumeratorName();
+    return mRightOperand->EnumeratorValue();
 }
 
 }

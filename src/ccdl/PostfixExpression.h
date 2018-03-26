@@ -57,21 +57,21 @@ public:
         /* [in] */ const String& value)
     { mStringValue = value; return *this; }
 
-    int EvaluateIntegerValue() override;
+    int IntegerValue() override;
 
-    long long int EvaluateLongValue() override;
+    long long int LongValue() override;
 
-    float EvaluateFloatValue() override;
+    float FloatValue() override;
 
-    double EvaluateDoubleValue() override;
+    double DoubleValue() override;
 
-    char EvaluateCharacterValue() override;
+    char CharacterValue() override;
 
-    bool EvaluateBooleanValue() override;
+    bool BooleanValue() override;
 
-    String EvaluateStringValue() override;
+    String StringValue() override;
 
-    String EvaluateEnumeratorName() override;
+    String EnumeratorValue() override;
 
 private:
     bool mBooleanValue;

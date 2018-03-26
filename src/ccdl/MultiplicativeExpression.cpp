@@ -19,37 +19,37 @@
 namespace ccm {
 namespace ccdl {
 
-int MultiplicativeExpression::EvaluateIntegerValue()
+int MultiplicativeExpression::IntegerValue()
 {
     if (mLeftOperand != nullptr) {
         switch (mOperator) {
             case MULTIPLE:
-                return mLeftOperand->EvaluateIntegerValue() *
-                        mRightOperand->EvaluateIntegerValue();
+                return mLeftOperand->IntegerValue() *
+                        mRightOperand->IntegerValue();
             case DIVIDE: {
-                long long int divisor = mRightOperand->EvaluateIntegerValue();
-                return divisor != 0 ? mLeftOperand->EvaluateIntegerValue() / divisor : 0;
+                long long int divisor = mRightOperand->IntegerValue();
+                return divisor != 0 ? mLeftOperand->IntegerValue() / divisor : 0;
             }
             case MODULO: {
-                long long int divisor = mRightOperand->EvaluateIntegerValue();
-                return divisor != 0 ? mLeftOperand->EvaluateIntegerValue() % divisor : 0;
+                long long int divisor = mRightOperand->IntegerValue();
+                return divisor != 0 ? mLeftOperand->IntegerValue() % divisor : 0;
             }
             default:
                 return 0;
         }
     }
     else {
-        return mRightOperand->EvaluateIntegerValue();
+        return mRightOperand->IntegerValue();
     }
 }
 
-long long int MultiplicativeExpression::EvaluateLongValue()
+long long int MultiplicativeExpression::LongValue()
 {
     if (mLeftOperand != nullptr) {
         long long int leftValue = mLeftOperand->GetType()->GetName().Equals("Integer") ?
-                mLeftOperand->EvaluateIntegerValue() : mLeftOperand->EvaluateLongValue();
+                mLeftOperand->IntegerValue() : mLeftOperand->LongValue();
         long long int rightValue = mRightOperand->GetType()->GetName().Equals("Integer") ?
-                mRightOperand->EvaluateIntegerValue() : mRightOperand->EvaluateLongValue();
+                mRightOperand->IntegerValue() : mRightOperand->LongValue();
         switch (mOperator) {
             case MULTIPLE:
                 return leftValue * rightValue;
@@ -62,33 +62,33 @@ long long int MultiplicativeExpression::EvaluateLongValue()
         }
     }
     else {
-        return mRightOperand->EvaluateLongValue();
+        return mRightOperand->LongValue();
     }
 }
 
-float MultiplicativeExpression::EvaluateFloatValue()
+float MultiplicativeExpression::FloatValue()
 {
     if (mLeftOperand != nullptr) {
         float leftValue, rightValue;
         String typeName = mLeftOperand->GetType()->GetName();
         if (typeName.Equals("Integer")) {
-            leftValue = mLeftOperand->EvaluateIntegerValue();
+            leftValue = mLeftOperand->IntegerValue();
         }
         else if (typeName.Equals("Long")) {
-            leftValue = mLeftOperand->EvaluateLongValue();
+            leftValue = mLeftOperand->LongValue();
         }
         else {
-            leftValue = mLeftOperand->EvaluateFloatValue();
+            leftValue = mLeftOperand->FloatValue();
         }
         typeName = mRightOperand->GetType()->GetName();
         if (typeName.Equals("Integer")) {
-            rightValue = mRightOperand->EvaluateIntegerValue();
+            rightValue = mRightOperand->IntegerValue();
         }
         else if (typeName.Equals("Long")) {
-            rightValue = mRightOperand->EvaluateLongValue();
+            rightValue = mRightOperand->LongValue();
         }
         else {
-            rightValue = mRightOperand->EvaluateFloatValue();
+            rightValue = mRightOperand->FloatValue();
         }
         switch (mOperator) {
             case MULTIPLE:
@@ -101,36 +101,36 @@ float MultiplicativeExpression::EvaluateFloatValue()
         }
     }
     else {
-        return mRightOperand->EvaluateFloatValue();
+        return mRightOperand->FloatValue();
     }
 }
 
-double MultiplicativeExpression::EvaluateDoubleValue()
+double MultiplicativeExpression::DoubleValue()
 {
     if (mLeftOperand != nullptr) {
         double leftValue, rightValue;
         String typeName = mLeftOperand->GetType()->GetName();
         if (typeName.Equals("Integer")) {
-            leftValue = mLeftOperand->EvaluateIntegerValue();
+            leftValue = mLeftOperand->IntegerValue();
         }
         else if (typeName.Equals("Long")) {
-            leftValue = mLeftOperand->EvaluateLongValue();
+            leftValue = mLeftOperand->LongValue();
         }
         else if (typeName.Equals("Float")) {
-            leftValue = mLeftOperand->EvaluateFloatValue();
+            leftValue = mLeftOperand->FloatValue();
         }
-        else leftValue = mLeftOperand->EvaluateDoubleValue();
+        else leftValue = mLeftOperand->DoubleValue();
         typeName = mRightOperand->GetType()->GetName();
         if (typeName.Equals("Integer")) {
-            rightValue = mRightOperand->EvaluateIntegerValue();
+            rightValue = mRightOperand->IntegerValue();
         }
         else if (typeName.Equals("Long")) {
-            rightValue = mRightOperand->EvaluateLongValue();
+            rightValue = mRightOperand->LongValue();
         }
         else if (typeName.Equals("Float")) {
-            rightValue = mRightOperand->EvaluateFloatValue();
+            rightValue = mRightOperand->FloatValue();
         }
-        else rightValue = mRightOperand->EvaluateDoubleValue();
+        else rightValue = mRightOperand->DoubleValue();
         switch (mOperator) {
             case MULTIPLE:
                 return leftValue * rightValue;
@@ -142,28 +142,28 @@ double MultiplicativeExpression::EvaluateDoubleValue()
         }
     }
     else {
-        return mRightOperand->EvaluateDoubleValue();
+        return mRightOperand->DoubleValue();
     }
 }
 
-char MultiplicativeExpression::EvaluateCharacterValue()
+char MultiplicativeExpression::CharacterValue()
 {
-    return mRightOperand->EvaluateCharacterValue();
+    return mRightOperand->CharacterValue();
 }
 
-bool MultiplicativeExpression::EvaluateBooleanValue()
+bool MultiplicativeExpression::BooleanValue()
 {
-    return mRightOperand->EvaluateBooleanValue();
+    return mRightOperand->BooleanValue();
 }
 
-String MultiplicativeExpression::EvaluateStringValue()
+String MultiplicativeExpression::StringValue()
 {
-    return mRightOperand->EvaluateStringValue();
+    return mRightOperand->StringValue();
 }
 
-String MultiplicativeExpression::EvaluateEnumeratorName()
+String MultiplicativeExpression::EnumeratorValue()
 {
-    return mRightOperand->EvaluateEnumeratorName();
+    return mRightOperand->EnumeratorValue();
 }
 
 }

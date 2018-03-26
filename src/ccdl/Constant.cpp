@@ -14,13 +14,13 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ConstantDataMember.h"
+#include "Constant.h"
 #include "../util/StringBuilder.h"
 
 namespace ccm {
 namespace ccdl {
 
-String ConstantDataMember::Dump(
+String Constant::Dump(
     /* [in] */ const String& prefix)
 {
     StringBuilder builder;

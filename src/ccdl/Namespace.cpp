@@ -16,59 +16,29 @@
 
 #include "Namespace.h"
 
-#include <stdlib.h>
-
 namespace ccm {
 namespace ccdl {
-
-Namespace::~Namespace()
-{
-    if (mInnerNamespaces != nullptr) {
-        delete mInnerNamespaces;
-        mInnerNamespaces = nullptr;
-    }
-    mOuterNamespace = nullptr;
-}
 
 bool Namespace::AddInnerNamespace(
     /* [in] */ Namespace* innerNS)
 {
     if (innerNS == nullptr) return true;
 
-    if (mInnerNSIndex >= mInnerNSCapacity) {
-        if (!EnlargeInnerNamespaces()) return false;
-    }
-
-    mInnerNamespaces[mInnerNSIndex++] = innerNS;
-    innerNS->mOuterNamespace = this;
-    return true;
+    bool ret = mInnerNamespaces.Add(innerNS);
+    if (ret) innerNS->mOuterNamespace = this;
+    return ret;
 }
 
 Namespace* Namespace::FindInnerNamespace(
     /* [in] */ const String& nsString)
 {
-    for (int i = 0; i < mInnerNSIndex; i++) {
-        Namespace* ns = mInnerNamespaces[i];
-        if (ns->ToShortString().Equals(nsString)) {
+    for (int i = 0; i < mInnerNamespaces.GetSize(); i++) {
+        Namespace* ns = mInnerNamespaces.Get(i);
+        if (ns->mName.Equals(nsString)) {
             return ns;
         }
     }
     return nullptr;
-}
-
-bool Namespace::EnlargeInnerNamespaces()
-{
-    int newSize = mInnerNSCapacity == 0 ? 3 : mInnerNSCapacity + 3;
-    Namespace** newArray = (Namespace**)calloc(sizeof(Namespace*), newSize);
-    if (newArray == nullptr) return false;
-
-    if (mInnerNamespaces != nullptr) {
-        memcpy(newArray, mInnerNamespaces, mInnerNSCapacity);
-        free(mInnerNamespaces);
-    }
-    mInnerNamespaces = newArray;
-    mInnerNSCapacity = newSize;
-    return true;
 }
 
 String Namespace::ToString()
@@ -76,8 +46,8 @@ String Namespace::ToString()
     String nsString;
     Namespace* ns = this;
     while (ns != nullptr) {
-        if (ns->mNSString.Equals("__global__")) return nsString;
-        nsString = ns->mNSString + "::" + nsString;
+        if (ns->mName.Equals("__global__")) return nsString;
+        nsString = ns->mName + "::" + nsString;
         ns = ns->mOuterNamespace;
     }
     return nsString;

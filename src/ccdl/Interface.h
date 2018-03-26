@@ -19,11 +19,15 @@
 
 #include "Type.h"
 #include "Attribute.h"
-#include "ConstantDataMember.h"
+#include "Constant.h"
 #include "Method.h"
 #include "Namespace.h"
 #include "../util/ArrayList.h"
 #include "../util/Uuid.h"
+
+namespace ccm {
+class Parser;
+}
 
 namespace ccm {
 namespace ccdl {
@@ -32,9 +36,9 @@ class Interface : public Type
 {
 public:
     Interface()
-        : mDefined(false)
+        : mDeclared(false)
         , mBaseInterface(nullptr)
-        , mConstDataMembers(10)
+        , mConstants(10)
         , mMethods(20)
     {}
 
@@ -46,32 +50,49 @@ public:
     Interface& SetBaseInterface(
         /* [in] */ Interface* baseItf);
 
-    inline Interface& SetDefined(
-        /* [in] */ bool defined)
-    { mDefined = defined; return *this; }
-
-    inline bool IsDefined()
-    { return mDefined; }
+    inline bool IsDeclared()
+    { return mDeclared; }
 
     Interface& SetAttribute(
         /* [in] */ const Attribute& attr);
 
+    Interface& AddConstant(
+        /* [in] */ Constant* constant);
+
+    inline int GetConstantNumber()
+    { return mConstants.GetSize(); }
+
+    inline Constant* GetConstant(
+        /* [in] */ int index)
+    { return mConstants.Get(index); }
+
     Interface& AddMethod(
         /* [in] */ Method* method);
 
-    Interface& AddConstantDataMember(
-        /* [in] */ ConstantDataMember* dataMember);
+    inline int GetMethodNumber()
+    { return mMethods.GetSize(); }
+
+    inline Method* GetMethod(
+        /* [in] */ int index)
+    { return mMethods.Get(index); }
 
     String Dump(
         /* [in] */ const String& prefix) override;
 
 private:
-    bool mDefined;
+    friend class ccm::Parser;
+
+    inline Interface& SetDeclared(
+        /* [in] */ bool declared)
+    { mDeclared = declared; return *this; }
+
+private:
+    bool mDeclared;
     Interface* mBaseInterface;
     Uuid mUuid;
     String mVersion;
     String mDescription;
-    ArrayList<ConstantDataMember*> mConstDataMembers;
+    ArrayList<Constant*> mConstants;
     ArrayList<Method*> mMethods;
 };
 

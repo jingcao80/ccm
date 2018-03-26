@@ -17,9 +17,11 @@
 #ifndef __CCM_HASHMAP_H__
 #define __CCM_HASHMAP_H__
 
+#include "ArrayList.h"
 #include "String.h"
 
 #include <stdlib.h>
+#include <memory>
 
 namespace ccm {
 
@@ -51,8 +53,16 @@ template<class T>
 class HashMap
 {
 public:
+    struct Pair
+    {
+        String mKey;
+        T mValue;
+    };
+
+public:
     HashMap(
         /* [in] */ int size = 50)
+        : mDataSize(0)
     {
         mBucketSize = get_next_prime(size);
         mBuckets = (Bucket**)calloc(sizeof(Bucket*), mBucketSize);
@@ -83,6 +93,7 @@ public:
             b->mKey = key;
             b->mValue = value;
             mBuckets[index] = b;
+            mDataSize++;
             return;
         }
         else {
@@ -101,6 +112,7 @@ public:
             b->mKey = key;
             b->mValue = value;
             prev->mNext = b;
+            mDataSize++;
             return;
         }
     }
@@ -137,6 +149,31 @@ public:
         return T(0);
     }
 
+    int GetSize()
+    {
+        return mDataSize;
+    }
+
+    std::shared_ptr< ArrayList<Pair*> > GetKeyList()
+    {
+        std::shared_ptr< ArrayList<Pair*> > keys =
+                std::make_shared< ArrayList<Pair*> >(mDataSize);
+
+        for (int i = 0; i < mBucketSize; i++) {
+            Bucket* curr = mBuckets[i];
+            while (curr != nullptr) {
+                Pair* p = new Pair();
+                p->mKey = curr->mKey;
+                p->mValue = curr->mValue;
+                keys->Add(p);
+
+                curr = curr->mNext;
+            }
+        }
+
+        return keys;
+    }
+
 private:
     int HashString(
         /* [in] */ const String& key)
@@ -171,6 +208,7 @@ private:
     };
 
 private:
+    int mDataSize;
     int mBucketSize;
     Bucket** mBuckets;
 };

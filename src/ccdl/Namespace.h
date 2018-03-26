@@ -18,6 +18,7 @@
 #define __CCM_CCDL_NAMESPACE_H__
 
 #include "ASTNode.h"
+#include "../util/ArrayList.h"
 #include "../util/String.h"
 
 namespace ccm {
@@ -28,14 +29,16 @@ class Namespace : public ASTNode
 public:
     Namespace(
         /* [in] */ const String& nsStr)
-        : mNSString(nsStr)
+        : mName(nsStr)
         , mOuterNamespace(nullptr)
-        , mInnerNSCapacity(0)
-        , mInnerNSIndex(0)
-        , mInnerNamespaces(nullptr)
+        , mInnerNamespaces(5, false)
     {}
 
-    ~Namespace();
+    ~Namespace()
+    { mOuterNamespace = nullptr; }
+
+    inline String GetName()
+    { return mName; }
 
     inline Namespace& SetOuterNamespace(
         /* [in] */ Namespace* outerNS)
@@ -44,33 +47,37 @@ public:
     bool AddInnerNamespace(
         /* [in] */ Namespace* innerNS);
 
+    inline int GetInnerNamespaceNumber()
+    { return mInnerNamespaces.GetSize(); }
+
+    inline Namespace* GetInnerNamespace(
+        /* [in] */ int index)
+    { return mInnerNamespaces.Get(index); }
+
     Namespace* FindInnerNamespace(
         /* [in] */ const String& nsString);
-
-    inline int GetInnerNamespaceNumber()
-    { return mInnerNSIndex; }
-
-    inline Namespace** GetInnerNamespaces()
-    { return mInnerNamespaces; }
 
     inline Namespace* GetOuterNamespace()
     { return mOuterNamespace; }
 
+    inline int GetCoclassNumber()
+    { return 0; }
+
+    inline int GetEnumerationNumber()
+    { return 0; }
+
+    inline int GetInterfaceNumber()
+    { return 0; }
+
     String ToString() override;
 
     inline String ToShortString()
-    { return mNSString; }
+    { return mName; }
 
 private:
-    bool EnlargeInnerNamespaces();
-
-private:
-    String mNSString;
+    String mName;
     Namespace* mOuterNamespace;
-
-    int mInnerNSCapacity;
-    int mInnerNSIndex;
-    Namespace** mInnerNamespaces;
+    ArrayList<Namespace*> mInnerNamespaces;
 };
 
 }

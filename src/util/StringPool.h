@@ -14,41 +14,49 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CCDL_ADDITIVEEXPRESSION_H__
-#define __CCM_CCDL_ADDITIVEEXPRESSION_H__
+#ifndef __CCM_STRINGPOOL_H__
+#define __CCM_STRINGPOOL_H__
 
-#include "Expression.h"
-#include "MultiplicativeExpression.h"
+#include "HashMap.h"
+#include "String.h"
+
+#include <stddef.h>
 
 namespace ccm {
-namespace ccdl {
 
-class AdditiveExpression : public Expression
+class StringPool
 {
 public:
-    int IntegerValue() override;
+    StringPool();
 
-    long long int LongValue() override;
+    ~StringPool();
 
-    float FloatValue() override;
+    void Add(
+        /* [in] */ const String& string);
 
-    double DoubleValue() override;
+    const char* FindAddress(
+        /* [in] */ const String& string);
 
-    char CharacterValue() override;
+    ptrdiff_t FindOffset(
+        /* [in] */ const String& string);
 
-    bool BooleanValue() override;
+    inline size_t GetSize()
+    { return mDataOffset; }
 
-    String StringValue() override;
+private:
+    ptrdiff_t AddInternal(
+        /* [in] */ const String& string);
 
-    String EnumeratorValue() override;
+    bool EnsureCapacity(
+        /* [in] */ size_t expand);
 
-public:
-    static constexpr int PLUS = 0;
-    static constexpr int MINUS = 1;
+private:
+    char* mData;
+    size_t mDataCapacity;
+    ptrdiff_t mDataOffset;
+    HashMap<ptrdiff_t> mPool;
 };
 
 }
-}
 
-
-#endif // __CCM_CCDL_ADDITIVEEXPRESSION_H__
+#endif // __CCM_STRINGPOOL_H__

@@ -48,11 +48,25 @@ public:
     bool AddEnumeration(
         /* [in] */ Enumeration* enumeration);
 
+    inline int GetEnumerationNumber()
+    { return mEnumerations.GetSize(); }
+
+    Enumeration* GetEnumeration(
+        /* [in] */ int index)
+    { return mEnumerations.Get(index); }
+
     Enumeration* FindEnumeration(
         /* [in] */ const String& enumFullName);
 
     bool AddInterface(
         /* [in] */ Interface* interface);
+
+    inline int GetInterfaceNumber()
+    { return mInterfaces.GetSize(); }
+
+    inline Interface* GetInterface(
+        /* [in] */ int index)
+    { return mInterfaces.Get(index); }
 
     Interface* FindInterface(
         /* [in] */ const String& itfFullName);
@@ -60,11 +74,25 @@ public:
     bool AddCoclass(
         /* [in] */ Coclass* klass);
 
+    inline int GetCoclassNumber()
+    { return mCoclasses.GetSize(); }
+
+    Coclass* GetCoclass(
+        /* [in] */ int index)
+    { return mCoclasses.Get(index); }
+
     Coclass* FindClass(
         /* [in] */ const String& klassName);
 
     bool AddNamespace(
         /* [in] */ Namespace* ns);
+
+    inline int GetNamespaceNumber()
+    { return mNamespaces.GetSize(); }
+
+    Namespace* GetNamespace(
+        /* [in] */ int index)
+    { return mNamespaces.Get(index); }
 
     Namespace* FindNamespace(
         /* [in] */ const String& nsString);
@@ -75,8 +103,15 @@ public:
     bool AddTemporaryType(
         /* [in] */ Type* type);
 
+    inline int GetTypeSize()
+    { return mTypes.GetSize(); }
+
     Type* FindType(
         /* [in] */ const String& typeName);
+
+    inline std::shared_ptr< ArrayList<HashMap<Type*>::Pair*> >
+    GetTypeKeys()
+    { return mTypes.GetKeyList(); }
 
     virtual String Dump(
         /* [in] */ const String& prefix);

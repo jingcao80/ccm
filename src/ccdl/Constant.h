@@ -14,8 +14,8 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CCDL_CONSTANTDATAMEMBER_H__
-#define __CCM_CCDL_CONSTANTDATAMEMBER_H__
+#ifndef __CCM_CCDL_CONSTANT_H__
+#define __CCM_CCDL_CONSTANT_H__
 
 #include "ASTNode.h"
 #include "Expression.h"
@@ -25,22 +25,32 @@
 namespace ccm {
 namespace ccdl {
 
-class ConstantDataMember : public ASTNode
+class Constant : public ASTNode
 {
 public:
-    ConstantDataMember()
+    Constant()
         : mType(nullptr)
+        , mValue(nullptr)
     {}
 
-    inline ConstantDataMember& SetName(
+    inline String GetName()
+    { return mName; }
+
+    inline Constant& SetName(
         /* [in] */ const String& name)
     { mName = name; return *this; }
 
-    inline ConstantDataMember& SetType(
+    inline Type* GetType()
+    { return mType; }
+
+    inline Constant& SetType(
         /* [in] */ Type* type)
     { mType = type; return *this; }
 
-    inline ConstantDataMember& SetValue(
+    inline Expression* GetValue()
+    { return mValue; }
+
+    inline Constant& SetValue(
         /* [in] */ Expression* value)
     { mValue = value; return *this; }
 
@@ -48,12 +58,12 @@ public:
         /* [in] */ const String& prefix) override;
 
 private:
-    Type* mType;
     String mName;
+    Type* mType;
     Expression* mValue;
 };
 
 }
 }
 
-#endif // __CCM_CCDL_CONSTANTDATAMEMBER_H__
+#endif // __CCM_CCDL_CONSTANT_H__

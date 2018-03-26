@@ -40,6 +40,8 @@
 #include "../ccdl/UnaryExpression.h"
 #include "../util/HashMap.h"
 
+#include <memory>
+
 using ccm::ccdl::AdditiveExpression;
 using ccm::ccdl::AndExpression;
 using ccm::ccdl::Attribute;
@@ -116,10 +118,13 @@ public:
         , mCurrError(nullptr)
     {}
 
+    ~Parser();
+
     bool Parse(
         /* [in] */ const String& filePath);
 
-    ~Parser();
+    inline std::shared_ptr<Module> GetModule()
+    { return mModule; }
 
 private:
     bool ParseFile();
@@ -261,7 +266,7 @@ private:
     String mPathPrefix;
     HashMap<bool> mParsedFiles;
     Environment* mEnvironment;
-    Module* mModule;
+    std::shared_ptr<Module> mModule;
     Namespace* mCurrNamespace;
     Pool* mPool;
     Context* mCurrContext;

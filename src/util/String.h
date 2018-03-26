@@ -60,10 +60,10 @@ public:
     bool EqualsIgnoreCase(
         /* [in] */ const char* string) const;
 
-    inline char* string() const
+    inline const char* string() const
     { return mString; }
 
-    inline operator char*() const
+    inline operator const char*() const
     { return mString; }
 
     char GetChar(

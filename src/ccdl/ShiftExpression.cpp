@@ -19,35 +19,35 @@
 namespace ccm {
 namespace ccdl {
 
-int ShiftExpression::EvaluateIntegerValue()
+int ShiftExpression::IntegerValue()
 {
     if (mLeftOperand != nullptr) {
         switch (mOperator) {
             case LEFT:
-                return mLeftOperand->EvaluateIntegerValue() <<
-                        mRightOperand->EvaluateIntegerValue();
+                return mLeftOperand->IntegerValue() <<
+                        mRightOperand->IntegerValue();
             case RIGHT:
-                return mLeftOperand->EvaluateIntegerValue() >>
-                        mRightOperand->EvaluateIntegerValue();
+                return mLeftOperand->IntegerValue() >>
+                        mRightOperand->IntegerValue();
             case RIGHT_UNSIGNED:
-                return ((unsigned int)mLeftOperand->EvaluateIntegerValue()) >>
-                        mRightOperand->EvaluateIntegerValue();
+                return ((unsigned int)mLeftOperand->IntegerValue()) >>
+                        mRightOperand->IntegerValue();
             default:
                 return 0;
         }
     }
     else {
-        return mRightOperand->EvaluateIntegerValue();
+        return mRightOperand->IntegerValue();
     }
 }
 
-long long int ShiftExpression::EvaluateLongValue()
+long long int ShiftExpression::LongValue()
 {
     if (mLeftOperand != nullptr) {
         long long int leftValue = mLeftOperand->GetType()->GetName().Equals("Integer") ?
-                mLeftOperand->EvaluateIntegerValue() : mLeftOperand->EvaluateLongValue();
+                mLeftOperand->IntegerValue() : mLeftOperand->LongValue();
         long long int rightValue = mRightOperand->GetType()->GetName().Equals("Integer") ?
-                mRightOperand->EvaluateIntegerValue() : mRightOperand->EvaluateLongValue();
+                mRightOperand->IntegerValue() : mRightOperand->LongValue();
         switch (mOperator) {
             case LEFT:
                 return leftValue << rightValue;
@@ -60,38 +60,38 @@ long long int ShiftExpression::EvaluateLongValue()
         }
     }
     else {
-        return mRightOperand->EvaluateLongValue();
+        return mRightOperand->LongValue();
     }
 }
 
-float ShiftExpression::EvaluateFloatValue()
+float ShiftExpression::FloatValue()
 {
-    return mRightOperand->EvaluateFloatValue();
+    return mRightOperand->FloatValue();
 }
 
-double ShiftExpression::EvaluateDoubleValue()
+double ShiftExpression::DoubleValue()
 {
-    return mRightOperand->EvaluateDoubleValue();
+    return mRightOperand->DoubleValue();
 }
 
-char ShiftExpression::EvaluateCharacterValue()
+char ShiftExpression::CharacterValue()
 {
-    return mRightOperand->EvaluateCharacterValue();
+    return mRightOperand->CharacterValue();
 }
 
-bool ShiftExpression::EvaluateBooleanValue()
+bool ShiftExpression::BooleanValue()
 {
-    return mRightOperand->EvaluateBooleanValue();
+    return mRightOperand->BooleanValue();
 }
 
-String ShiftExpression::EvaluateStringValue()
+String ShiftExpression::StringValue()
 {
-    return mRightOperand->EvaluateStringValue();
+    return mRightOperand->StringValue();
 }
 
-String ShiftExpression::EvaluateEnumeratorName()
+String ShiftExpression::EnumeratorValue()
 {
-    return mRightOperand->EvaluateEnumeratorName();
+    return mRightOperand->EnumeratorValue();
 }
 
 }

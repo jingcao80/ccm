@@ -19,6 +19,7 @@
 
 #include "Type.h"
 #include "Namespace.h"
+#include "../util/ArrayList.h"
 #include "../util/String.h"
 
 namespace ccm {
@@ -26,7 +27,7 @@ namespace ccdl {
 
 class Enumeration : public Type
 {
-private:
+public:
     struct Enumerator
     {
         Enumerator(
@@ -41,20 +42,19 @@ private:
     };
 
 public:
-    Enumeration()
-        : mEnumCapacity(0)
-        , mEnumIndex(0)
-        , mEnumerators(nullptr)
-    {}
-
-    ~Enumeration();
-
     bool IsEnumeration() override
     { return true; }
 
     Enumeration& AddEnumerator(
         /* [in] */ const String& name,
         /* [in] */ int value);
+
+    inline int GetEnumeratorNumber()
+    { return mEnumerators.GetSize(); }
+
+    inline Enumerator* GetEnumerator(
+        /* [in] */ int index)
+    { return mEnumerators.Get(index); }
 
     bool Contains(
         /* [in] */ const String& name);
@@ -63,12 +63,7 @@ public:
         /* [in] */ const String& prefix) override;
 
 private:
-    bool EnlargeEnumeratorArray();
-
-private:
-    int mEnumCapacity;
-    int mEnumIndex;
-    Enumerator** mEnumerators;
+    ArrayList<Enumerator*> mEnumerators;
 };
 
 }
