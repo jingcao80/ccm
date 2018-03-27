@@ -150,13 +150,14 @@ public:
     inline String GetNumberString()
     { return mNumberString; }
 
+    inline bool Is64Bit()
+    { return mBit == 64; }
+
+    inline int GetRadix()
+    { return mRadix; }
+
     inline long long int GetIntegralValue()
     { return mIntegralValue; }
-
-    inline bool Is64Bit()
-    {
-        return mBit == 64;
-    }
 
     inline double GetFloatingPointValue()
     { return mFloatingPointValue; }
@@ -245,6 +246,7 @@ private:
     long long int mIntegralValue;
     double mFloatingPointValue;
     int mBit;
+    int mRadix;
 };
 
 }

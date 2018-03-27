@@ -17,16 +17,28 @@
 #ifndef __CCM_METADATA_COMPONENT_H__
 #define __CCM_METADATA_COMPONENT_H__
 
+#include "../util/Uuid.h"
+
 namespace ccm {
 namespace metadata {
 
-struct Uuid
+#define CCM_MAGIC 0x12E20FD
+
+enum class CcdlType
 {
-    unsigned int    mData1;
-    unsigned short  mData2;
-    unsigned short  mData3;
-    unsigned short  mData4;
-    unsigned char   mData5[12];
+    Char = 1,
+    Byte,
+    Short,
+    Integer,
+    Long,
+    Float,
+    Double,
+    Boolean,
+    String,
+    HANDLE,
+    Enum,
+    Array,
+    Interface,
 };
 
 struct MetaCoclass;
@@ -36,6 +48,7 @@ struct MetaEnumerator;
 struct MetaInterface;
 struct MetaMethod;
 struct MetaNamespace;
+struct MetaParameter;
 struct MetaType;
 
 struct MetaComponent
@@ -63,15 +76,17 @@ struct MetaNamespace
     int                 mCoclassNumber;
     int                 mEnumerationNumber;
     int                 mInterfaceNumber;
+    int                 mNamespaceNumber;
     int*                mCoclassIndexes;
     int*                mEnumerationIndexes;
     int*                mInterfaceIndexes;
+    MetaNamespace**     mNamespaces;
 };
 
 struct MetaCoclass
 {
     char*               mName;
-    int                 mNamespaceIndex;
+    char*               mNamespace;
     int                 mInterfaceNumber;
     int*                mInterfaceIndexes;
 };
@@ -79,7 +94,7 @@ struct MetaCoclass
 struct MetaEnumeration
 {
     char*               mName;
-    int                 mNamespaceIndex;
+    char*               mNamespace;
     int                 mEnumeratorNumber;
     MetaEnumerator**    mEnumerators;
 };
@@ -93,7 +108,7 @@ struct MetaEnumerator
 struct MetaInterface
 {
     char*               mName;
-    int                 mNamespaceIndex;
+    char*               mNamespace;
     int                 mConstantNumber;
     int                 mMethodNumber;
     MetaConstant**      mConstants;
@@ -106,12 +121,10 @@ struct MetaConstant
     int                 mTypeIndex;
     union {
         bool            mBoolean;
-        int             mCharacter;
         int             mInteger;
         long long int   mLong;
         float           mFloat;
         double          mDouble;
-        int             mEnumerator;
         char*           mString;
     }                   mValue;
     unsigned char       mRadix;
@@ -119,12 +132,25 @@ struct MetaConstant
 
 struct MetaMethod
 {
+    char*               mName;
+    char*               mSignature;
+    int                 mParameterNumber;
+    MetaParameter**     mParameters;
+};
 
+struct MetaParameter
+{
+    char*               mName;
+    int                 mAttribute;
+    int                 mTypeIndex;
 };
 
 struct MetaType
 {
-
+    CcdlType            mKind;
+    int                 mIndex;
+    int                 mNestedTypeIndex;
+    unsigned char       mPointerNumber;
 };
 
 }

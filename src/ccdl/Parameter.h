@@ -28,21 +28,24 @@ class Parameter : public ASTNode
 {
 public:
     Parameter()
-        : mAttribute(0)
-        , mType(nullptr)
+        : mType(nullptr)
+        , mAttribute(0)
     {}
 
-    inline Parameter& SetAttribute(
+    inline void SetAttribute(
         /* [in] */ int attr)
-    { mAttribute = mAttribute | attr; return *this; }
+    { mAttribute = mAttribute | attr; }
 
-    inline Parameter& SetName(
+    inline String GetName()
+    { return mName; }
+
+    inline void SetName(
         /* [in] */ const String& name)
-    { mName = name; return *this; }
+    { mName = name; }
 
-    inline Parameter& SetType(
+    inline void SetType(
         /* [in] */ Type* type)
-    { mType = type; return *this; }
+    { mType = type; }
 
     String Dump(
         /* [in] */ const String& prefix) override;
@@ -53,9 +56,9 @@ public:
     static constexpr int CALLEE = 0x4;
 
 private:
-    int mAttribute;
     String mName;
     Type* mType;
+    int mAttribute;
 };
 
 }

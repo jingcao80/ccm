@@ -18,11 +18,12 @@
 #define __CCM_CCDL_TYPE_H__
 
 #include "ASTNode.h"
-#include "Namespace.h"
 #include "../util/String.h"
 
 namespace ccm {
 namespace ccdl {
+
+class Namespace;
 
 class Type : public ASTNode
 {
@@ -36,13 +37,15 @@ public:
     inline String GetName()
     { return mName; }
 
-    inline Type& SetName(
+    inline void SetName(
         /* [in] */ const String& name)
-    { mName = name; return *this; }
+    { mName = name; }
 
-    inline Type& SetNamespace(
-        /* [in] */ Namespace* ns)
-    { mNamespace = ns; return *this; }
+    inline Namespace* GetNamespace()
+    { return mNamespace; }
+
+    virtual void SetNamespace(
+        /* [in] */ Namespace* ns);
 
     virtual bool IsPrimitiveType();
 

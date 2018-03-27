@@ -21,7 +21,6 @@
 #include "Attribute.h"
 #include "Constant.h"
 #include "Method.h"
-#include "Namespace.h"
 #include "../util/ArrayList.h"
 #include "../util/Uuid.h"
 
@@ -42,21 +41,22 @@ public:
         , mMethods(20)
     {}
 
-    ~Interface();
+    void SetNamespace(
+        /* [in] */ Namespace* ns) override;
 
     bool IsInterface() override
     { return true; }
 
-    Interface& SetBaseInterface(
+    void SetBaseInterface(
         /* [in] */ Interface* baseItf);
 
     inline bool IsDeclared()
     { return mDeclared; }
 
-    Interface& SetAttribute(
+    void SetAttribute(
         /* [in] */ const Attribute& attr);
 
-    Interface& AddConstant(
+    bool AddConstant(
         /* [in] */ Constant* constant);
 
     inline int GetConstantNumber()
@@ -66,7 +66,7 @@ public:
         /* [in] */ int index)
     { return mConstants.Get(index); }
 
-    Interface& AddMethod(
+    bool AddMethod(
         /* [in] */ Method* method);
 
     inline int GetMethodNumber()

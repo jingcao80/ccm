@@ -29,6 +29,9 @@ public:
     bool Parse(
         /* [in] */ const String& uuidStr);
 
+    Uuid& operator=(
+        /* [in] */ const Uuid& other);
+
     String Dump();
 
 private:

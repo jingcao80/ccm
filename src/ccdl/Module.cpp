@@ -15,20 +15,57 @@
 //=========================================================================
 
 #include "Module.h"
-#include "../util/Logger.h"
 #include "../util/StringBuilder.h"
 
 namespace ccm {
 namespace ccdl {
 
-Module& Module::SetAttribute(
+Module::Module()
+{
+    mByteType = new ByteType();
+    mShortType = new ShortType();
+    mIntegerType = new IntegerType();
+    mLongType = new LongType();
+    mCharType = new CharType();
+    mFloatType = new FloatType();
+    mDoubleType = new DoubleType();
+    mBooleanType = new BooleanType();
+    mStringType = new StringType();
+    mHANDLEType = new HANDLEType();
+
+    mTypes.Put(String("Byte"), mByteType);
+    mTypes.Put(String("Short"), mShortType);
+    mTypes.Put(String("Integer"), mIntegerType);
+    mTypes.Put(String("Long"), mLongType);
+    mTypes.Put(String("Char"), mCharType);
+    mTypes.Put(String("Float"), mFloatType);
+    mTypes.Put(String("Double"), mDoubleType);
+    mTypes.Put(String("Boolean"), mBooleanType);
+    mTypes.Put(String("String"), mStringType);
+    mTypes.Put(String("HANDLE"), mHANDLEType);
+}
+
+Module::~Module()
+{
+    delete mByteType;
+    delete mShortType;
+    delete mIntegerType;
+    delete mLongType;
+    delete mCharType;
+    delete mFloatType;
+    delete mDoubleType;
+    delete mBooleanType;
+    delete mStringType;
+    delete mHANDLEType;
+}
+
+void Module::SetAttribute(
     /* [in] */ const Attribute& attr)
 {
     mUuid.Parse(attr.mUuid);
     mVersion = attr.mVersion;
     mDescription = attr.mDescription;
     mUrl = attr.mUrl;
-    return *this;
 }
 
 String Module::Dump(

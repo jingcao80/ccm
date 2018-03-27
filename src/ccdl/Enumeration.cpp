@@ -15,20 +15,31 @@
 //=========================================================================
 
 #include "Enumeration.h"
+#include "Namespace.h"
 #include "../util/StringBuilder.h"
 
 namespace ccm {
 namespace ccdl {
 
-Enumeration& Enumeration::AddEnumerator(
+void Enumeration::SetNamespace(
+    /* [in] */ Namespace* ns)
+{
+    Type::SetNamespace(ns);
+    mNamespace->AddEnumeration(this);
+}
+
+bool Enumeration::AddEnumerator(
     /* [in] */ const String& name,
     /* [in] */ int value)
 {
-    if (name.IsNullOrEmpty()) return *this;
+    if (name.IsNullOrEmpty()) return true;
 
     Enumerator* e = new Enumerator(name, value);
-    if (!mEnumerators.Add(e)) delete e;
-    return *this;
+    if (!mEnumerators.Add(e)) {
+        delete e;
+        return false;
+    }
+    return true;
 }
 
 bool Enumeration::Contains(

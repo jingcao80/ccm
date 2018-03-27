@@ -31,28 +31,36 @@ public:
         , mRightOperand(nullptr)
         , mOperator(-1)
         , mType(nullptr)
+        , mRadix(10)
     {}
 
     virtual ~Expression();
 
-    inline Expression& SetLeftOperand(
+    inline void SetLeftOperand(
         /* [in] */ Expression* leftOperand)
-    { mLeftOperand = leftOperand; return *this; }
+    { mLeftOperand = leftOperand; }
 
-    inline Expression& SetRightOperand(
+    inline void SetRightOperand(
         /* [in] */ Expression* rightOperand)
-    { mRightOperand = rightOperand; return *this; }
+    { mRightOperand = rightOperand; }
 
-    inline Expression& SetOperator(
+    inline void SetOperator(
         /* [in] */ int addOperator)
-    { mOperator = addOperator; return *this; }
-
-    inline Expression& SetType(
-        /* [in] */ Type* type)
-    { mType = type; return *this; }
+    { mOperator = addOperator; }
 
     inline Type* GetType()
     { return mType; }
+
+    inline void SetType(
+        /* [in] */ Type* type)
+    { mType = type; }
+
+    inline int GetRadix()
+    { return mRadix; }
+
+    inline void SetRadix(
+        /* [in] */ int radix)
+    { mRadix = radix; }
 
     virtual int IntegerValue() = 0;
 
@@ -75,6 +83,7 @@ protected:
     Expression* mRightOperand;
     int mOperator;
     Type* mType;
+    int mRadix;
 };
 
 }

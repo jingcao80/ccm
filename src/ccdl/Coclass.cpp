@@ -15,18 +15,25 @@
 //=========================================================================
 
 #include "Coclass.h"
+#include "Namespace.h"
 #include "../util/StringBuilder.h"
 
 namespace ccm {
 namespace ccdl {
 
-Coclass& Coclass::SetAttribute(
+void Coclass::SetNamespace(
+    /* [in] */ Namespace* ns)
+{
+    Type::SetNamespace(ns);
+    mNamespace->AddCoclass(this);
+}
+
+void Coclass::SetAttribute(
     /* [in] */ const Attribute& attr)
 {
     mUuid.Parse(attr.mUuid);
     mVersion = attr.mVersion;
     mDescription = attr.mDescription;
-    return *this;
 }
 
 bool Coclass::AddConstructor(

@@ -34,7 +34,7 @@ public:
     void Add(
         /* [in] */ const String& string);
 
-    const char* FindAddress(
+    char* FindAddress(
         /* [in] */ const String& string);
 
     ptrdiff_t FindOffset(
@@ -42,6 +42,8 @@ public:
 
     inline size_t GetSize()
     { return mDataOffset; }
+
+    void Dump();
 
 private:
     ptrdiff_t AddInternal(
@@ -54,7 +56,7 @@ private:
     char* mData;
     size_t mDataCapacity;
     ptrdiff_t mDataOffset;
-    HashMap<ptrdiff_t> mPool;
+    HashMap<ptrdiff_t> mOffsets;
 };
 
 }

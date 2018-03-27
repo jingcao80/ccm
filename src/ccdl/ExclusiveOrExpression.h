@@ -18,7 +18,6 @@
 #define __CCM_CCDL_EXCLUSIVEOREXPRESSION_H__
 
 #include "Expression.h"
-#include "AndExpression.h"
 
 namespace ccm {
 namespace ccdl {

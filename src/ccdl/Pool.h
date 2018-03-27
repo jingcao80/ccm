@@ -17,20 +17,10 @@
 #ifndef __CCM_CCDL_POOL_H__
 #define __CCM_CCDL_POOL_H__
 
-#include "BooleanType.h"
-#include "ByteType.h"
-#include "CharType.h"
 #include "Coclass.h"
-#include "DoubleType.h"
 #include "Enumeration.h"
-#include "FloatType.h"
-#include "HANDLEType.h"
-#include "IntegerType.h"
 #include "Interface.h"
-#include "LongType.h"
 #include "Namespace.h"
-#include "ShortType.h"
-#include "StringType.h"
 #include "../util/ArrayList.h"
 #include "../util/HashMap.h"
 #include "../util/String.h"
@@ -42,8 +32,6 @@ class Pool
 {
 public:
     Pool();
-
-    ~Pool();
 
     bool AddEnumeration(
         /* [in] */ Enumeration* enumeration);
@@ -58,6 +46,10 @@ public:
     Enumeration* FindEnumeration(
         /* [in] */ const String& enumFullName);
 
+    inline int IndexOf(
+        /* [in] */ Enumeration* enumn)
+    { return mEnumerations.IndexOf(enumn); }
+
     bool AddInterface(
         /* [in] */ Interface* interface);
 
@@ -71,6 +63,10 @@ public:
     Interface* FindInterface(
         /* [in] */ const String& itfFullName);
 
+    inline int IndexOf(
+        /* [in] */ Interface* interface)
+    { return mInterfaces.IndexOf(interface); }
+
     bool AddCoclass(
         /* [in] */ Coclass* klass);
 
@@ -83,6 +79,10 @@ public:
 
     Coclass* FindClass(
         /* [in] */ const String& klassName);
+
+    inline int IndexOf(
+        /* [in] */ Coclass* klass)
+    { return mCoclasses.IndexOf(klass); }
 
     bool AddNamespace(
         /* [in] */ Namespace* ns);
@@ -103,31 +103,23 @@ public:
     bool AddTemporaryType(
         /* [in] */ Type* type);
 
-    inline int GetTypeSize()
+    inline int GetTypeNumber()
     { return mTypes.GetSize(); }
 
     Type* FindType(
         /* [in] */ const String& typeName);
 
     inline std::shared_ptr< ArrayList<HashMap<Type*>::Pair*> >
-    GetTypeKeys()
-    { return mTypes.GetKeyList(); }
+    GetTypes()
+    { return mTypes.GetKeyValues(); }
+
+    int IndexOf(
+        /* [in] */ Type* type);
 
     virtual String Dump(
         /* [in] */ const String& prefix);
 
 protected:
-    ByteType* mByteType;
-    ShortType* mShortType;
-    IntegerType* mIntegerType;
-    LongType* mLongType;
-    CharType* mCharType;
-    FloatType* mFloatType;
-    DoubleType* mDoubleType;
-    BooleanType* mBooleanType;
-    StringType* mStringType;
-    HANDLEType* mHANDLEType;
-
     ArrayList<Coclass*> mCoclasses;
     ArrayList<Enumeration*> mEnumerations;
     ArrayList<Interface*> mInterfaces;

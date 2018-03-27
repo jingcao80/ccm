@@ -71,6 +71,15 @@ public:
         return mIndex;
     }
 
+    int IndexOf(
+        /* [in] */ T data)
+    {
+        for (int i = 0; i < mIndex; i++) {
+            if (mElements[i] == data) return i;
+        }
+        return -1;
+    }
+
 private:
     bool EnsureCapacity()
     {

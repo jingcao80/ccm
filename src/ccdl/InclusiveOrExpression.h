@@ -18,7 +18,6 @@
 #define __CCM_CCDL_INCLUSIVEOREXPRESSION_H__
 
 #include "Expression.h"
-#include "ExclusiveOrExpression.h"
 
 namespace ccm {
 namespace ccdl {

@@ -27,43 +27,7 @@ Pool::Pool()
     , mNamespaces(5)
     , mTempTypes(20)
     , mTypes(6000)
-{
-    mByteType = new ByteType();
-    mShortType = new ShortType();
-    mIntegerType = new IntegerType();
-    mLongType = new LongType();
-    mCharType = new CharType();
-    mFloatType = new FloatType();
-    mDoubleType = new DoubleType();
-    mBooleanType = new BooleanType();
-    mStringType = new StringType();
-    mHANDLEType = new HANDLEType();
-
-    mTypes.Put(String("Byte"), mByteType);
-    mTypes.Put(String("Short"), mShortType);
-    mTypes.Put(String("Integer"), mIntegerType);
-    mTypes.Put(String("Long"), mLongType);
-    mTypes.Put(String("Char"), mCharType);
-    mTypes.Put(String("Float"), mFloatType);
-    mTypes.Put(String("Double"), mDoubleType);
-    mTypes.Put(String("Boolean"), mBooleanType);
-    mTypes.Put(String("String"), mStringType);
-    mTypes.Put(String("HANDLE"), mHANDLEType);
-}
-
-Pool::~Pool()
-{
-    delete mByteType;
-    delete mShortType;
-    delete mIntegerType;
-    delete mLongType;
-    delete mCharType;
-    delete mFloatType;
-    delete mDoubleType;
-    delete mBooleanType;
-    delete mStringType;
-    delete mHANDLEType;
-}
+{}
 
 bool Pool::AddEnumeration(
     /* [in] */ Enumeration* enumeration)
@@ -162,11 +126,11 @@ Namespace* Pool::ParseNamespace(
             currNsp = headNsp = nsp;
         }
         else {
-            nsp = currNsp->FindInnerNamespace(ns);
+            nsp = currNsp->FindNamespace(ns);
             if (nsp == nullptr) {
                 nsp = new Namespace(ns);
                 AddNamespace(nsp);
-                currNsp->AddInnerNamespace(nsp);
+                currNsp->AddNamespace(nsp);
             }
             currNsp = nsp;
         }
@@ -181,11 +145,11 @@ Namespace* Pool::ParseNamespace(
         headNsp = nsp;
     }
     else {
-        nsp = currNsp->FindInnerNamespace(nss);
+        nsp = currNsp->FindNamespace(nss);
         if (nsp == nullptr) {
             nsp = new Namespace(nss);
             AddNamespace(nsp);
-            currNsp->AddInnerNamespace(nsp);
+            currNsp->AddNamespace(nsp);
         }
     }
     return headNsp;
@@ -206,6 +170,18 @@ Type* Pool::FindType(
 {
     if (typeName.IsNullOrEmpty()) return nullptr;
     return mTypes.Get(typeName);
+}
+
+int Pool::IndexOf(
+    /* [in] */ Type* type)
+{
+    std::shared_ptr< ArrayList<HashMap<Type*>::Pair*> > types =
+            GetTypes();
+    for (int i = 0; i < types->GetSize(); i++) {
+        HashMap<Type*>::Pair* p = types->Get(i);
+        if (p->mValue == type) return i;
+    }
+    return -1;
 }
 
 String Pool::Dump(

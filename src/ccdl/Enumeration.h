@@ -18,7 +18,6 @@
 #define __CCM_CCDL_ENUMERATION_H__
 
 #include "Type.h"
-#include "Namespace.h"
 #include "../util/ArrayList.h"
 #include "../util/String.h"
 
@@ -42,10 +41,13 @@ public:
     };
 
 public:
+    void SetNamespace(
+        /* [in] */ Namespace* ns) override;
+
     bool IsEnumeration() override
     { return true; }
 
-    Enumeration& AddEnumerator(
+    bool AddEnumerator(
         /* [in] */ const String& name,
         /* [in] */ int value);
 

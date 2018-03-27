@@ -68,6 +68,7 @@ Tokenizer::Tokenizer()
     , mIntegralValue(0)
     , mFloatingPointValue(0)
     , mBit(32)
+    , mRadix(10)
 {
     InitializeKeyword();
 }
@@ -525,13 +526,13 @@ Tokenizer::Token Tokenizer::ReadNumber(
 
     builder.Append((char)c);
     mBit = 32;
-    int radix = c == '0' ? 8 : 10;
+    int mRadix = c == '0' ? 8 : 10;
     int state = c == '0' ? NUMBER_INT_0 : NUMBER_INT;
     while ((c = mFile->Read()) != -1) {
         if (state == NUMBER_INT_0) {
             if (c == 'x' || c == 'X') {
                 builder.Append((char)c);
-                radix = 16;
+                mRadix = 16;
                 state = NUMBER_INT;
                 continue;
             }
@@ -551,8 +552,8 @@ Tokenizer::Token Tokenizer::ReadNumber(
             break;
         }
         else if (state == NUMBER_INT) {
-            if ((radix == 10 && IsDecimalDigital(c)) ||
-                (radix == 16 && IsHexDigital(c))) {
+            if ((mRadix == 10 && IsDecimalDigital(c)) ||
+                (mRadix == 16 && IsHexDigital(c))) {
                 builder.Append((char)c);
                 continue;
             }
@@ -621,7 +622,7 @@ Tokenizer::Token Tokenizer::ReadNumber(
     }
     mNumberString = builder.ToString();
     if (state == NUMBER_INT_0 || state == NUMBER_INT) {
-        mIntegralValue = strtoll(mNumberString.string(), NULL, radix);
+        mIntegralValue = strtoll(mNumberString.string(), NULL, mRadix);
         return Token::NUMBER_INTEGRAL;
     }
     else {

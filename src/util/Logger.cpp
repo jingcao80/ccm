@@ -21,7 +21,7 @@
 
 namespace ccm {
 
-int Logger::sLevel = ERROR;
+int Logger::sLevel = DEBUG;
 
 void Logger::D(
     /* [in] */ const char* tag,

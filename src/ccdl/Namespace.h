@@ -18,6 +18,9 @@
 #define __CCM_CCDL_NAMESPACE_H__
 
 #include "ASTNode.h"
+#include "Coclass.h"
+#include "Enumeration.h"
+#include "Interface.h"
 #include "../util/ArrayList.h"
 #include "../util/String.h"
 
@@ -31,7 +34,10 @@ public:
         /* [in] */ const String& nsStr)
         : mName(nsStr)
         , mOuterNamespace(nullptr)
-        , mInnerNamespaces(5, false)
+        , mNamespaces(5)
+        , mCoclasses(20, false)
+        , mEnumerations(10, false)
+        , mInterfaces(20, false)
     {}
 
     ~Namespace()
@@ -40,34 +46,55 @@ public:
     inline String GetName()
     { return mName; }
 
-    inline Namespace& SetOuterNamespace(
-        /* [in] */ Namespace* outerNS)
-    { mOuterNamespace = outerNS; return *this; }
-
-    bool AddInnerNamespace(
-        /* [in] */ Namespace* innerNS);
-
-    inline int GetInnerNamespaceNumber()
-    { return mInnerNamespaces.GetSize(); }
-
-    inline Namespace* GetInnerNamespace(
-        /* [in] */ int index)
-    { return mInnerNamespaces.Get(index); }
-
-    Namespace* FindInnerNamespace(
-        /* [in] */ const String& nsString);
-
     inline Namespace* GetOuterNamespace()
     { return mOuterNamespace; }
 
+    inline void SetOuterNamespace(
+        /* [in] */ Namespace* outerNS)
+    { mOuterNamespace = outerNS; }
+
+    bool AddNamespace(
+        /* [in] */ Namespace* innerNS);
+
+    inline int GetNamespaceNumber()
+    { return mNamespaces.GetSize(); }
+
+    inline Namespace* GetNamespace(
+        /* [in] */ int index)
+    { return mNamespaces.Get(index); }
+
+    Namespace* FindNamespace(
+        /* [in] */ const String& nsString);
+
+    bool AddCoclass(
+        /* [in] */ Coclass* klass);
+
     inline int GetCoclassNumber()
-    { return 0; }
+    { return mCoclasses.GetSize(); }
+
+    inline Coclass* GetCoclass(
+        /* [in] */ int index)
+    { return mCoclasses.Get(index); }
+
+    bool AddEnumeration(
+        /* [in] */ Enumeration* enumn);
 
     inline int GetEnumerationNumber()
-    { return 0; }
+    { return mEnumerations.GetSize(); }
+
+    inline Enumeration* GetEnumeration(
+        /* [in] */ int index)
+    { return mEnumerations.Get(index); }
+
+    bool AddInterface(
+        /* [in] */ Interface* itf);
 
     inline int GetInterfaceNumber()
-    { return 0; }
+    { return mInterfaces.GetSize(); }
+
+    inline Interface* GetInterface(
+        /* [in] */ int index)
+    { return mInterfaces.Get(index); }
 
     String ToString() override;
 
@@ -77,7 +104,10 @@ public:
 private:
     String mName;
     Namespace* mOuterNamespace;
-    ArrayList<Namespace*> mInnerNamespaces;
+    ArrayList<Namespace*> mNamespaces;
+    ArrayList<Coclass*> mCoclasses;
+    ArrayList<Enumeration*> mEnumerations;
+    ArrayList<Interface*> mInterfaces;
 };
 
 }

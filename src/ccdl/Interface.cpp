@@ -15,50 +15,49 @@
 //=========================================================================
 
 #include "Interface.h"
+#include "Namespace.h"
 #include "../util/StringBuilder.h"
 
 namespace ccm {
 namespace ccdl {
 
-Interface::~Interface()
+void Interface::SetNamespace(
+    /* [in] */ Namespace* ns)
 {
-    mNamespace = nullptr;
+    Type::SetNamespace(ns);
+    mNamespace->AddInterface(this);
 }
 
-Interface& Interface::SetBaseInterface(
+void Interface::SetBaseInterface(
     /* [in] */ Interface* baseItf)
 {
-    if (baseItf == nullptr) return *this;
+    if (baseItf == nullptr) return;
 
     mBaseInterface = baseItf;
-    return *this;
 }
 
-Interface& Interface::SetAttribute(
+void Interface::SetAttribute(
     /* [in] */ const Attribute& attr)
 {
     mUuid.Parse(attr.mUuid);
     mVersion = attr.mVersion;
     mDescription = attr.mDescription;
-    return *this;
 }
 
-Interface& Interface::AddMethod(
-    /* [in] */ Method* method)
-{
-    if (method == nullptr) return *this;
-
-    mMethods.Add(method);
-    return *this;
-}
-
-Interface& Interface::AddConstant(
+bool Interface::AddConstant(
     /* [in] */ Constant* constant)
 {
-    if (constant == nullptr) return *this;
+    if (constant == nullptr) return true;
 
-    mConstants.Add(constant);
-    return *this;
+    return mConstants.Add(constant);
+}
+
+bool Interface::AddMethod(
+    /* [in] */ Method* method)
+{
+    if (method == nullptr) return true;
+
+    return mMethods.Add(method);
 }
 
 String Interface::Dump(

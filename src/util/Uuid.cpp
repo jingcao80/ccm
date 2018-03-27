@@ -44,6 +44,17 @@ bool Uuid::Parse(
     return true;
 }
 
+Uuid& Uuid::operator=(
+    /* [in] */ const Uuid& other)
+{
+    mData1 = other.mData1;
+    mData2 = other.mData2;
+    mData3 = other.mData3;
+    mData4 = other.mData4;
+    memcpy(mData5, other.mData5, 12);
+    return *this;
+}
+
 String Uuid::Dump()
 {
     String uuidStr = String::Format("%08x-%04x-%04x-%04x-%x%x%x%x%x%x%x%x%x%x%x%x",

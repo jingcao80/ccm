@@ -25,6 +25,7 @@
 #include "../ccdl/Method.h"
 #include "../ccdl/Module.h"
 #include "../ccdl/Namespace.h"
+#include "../ccdl/Parameter.h"
 #include "../ccdl/Type.h"
 #include "../util/String.h"
 #include "../util/StringPool.h"
@@ -38,6 +39,7 @@ using ccm::ccdl::Interface;
 using ccm::ccdl::Method;
 using ccm::ccdl::Module;
 using ccm::ccdl::Namespace;
+using ccm::ccdl::Parameter;
 using ccm::ccdl::Type;
 
 namespace ccm {
@@ -83,14 +85,40 @@ private:
     void CalculateMetaNamespace(
         /* [in] */ Namespace* ns);
 
+    void CalculateMetaParameter(
+        /* [in] */ Parameter* param);
+
     void CalculateMetaType(
         /* [in] */ Type* type);
 
     void CalculateStringPool();
 
+    void WriteMetadata(
+        /* [in] */ uintptr_t base);
+
     void WriteMetaComponent(
-        /* [in] */ uintptr_t base,
-        /* [in] */ bool onlyCalc = false);
+        /* [in] */ Module* module);
+
+    MetaCoclass* WriteMetaCoclass(
+        /* [in] */ Coclass* klass);
+
+    MetaConstant* WriteMetaConstant(
+        /* [in] */ Constant* constant);
+
+    MetaEnumeration* WriteMetaEnumeration(
+        /* [in] */ Enumeration* enumn);
+
+    MetaEnumerator* WriteMetaEnumerator(
+        /* [in] */ Enumeration::Enumerator* enumr);
+
+    MetaInterface* WriteMetaInterface(
+        /* [in] */ Interface* itf);
+
+    MetaMethod* WriteMetaMethod(
+        /* [in] */ Method* method);
+
+    MetaNamespace* WriteMetaNamespace(
+        /* [in] */ Namespace* ns);
 
 private:
     static const String TAG;

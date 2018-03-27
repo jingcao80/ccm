@@ -1174,6 +1174,7 @@ PostfixExpression* Parser::ParseIntegralNumber(
                 mPool->FindType(String("Long")) : mPool->FindType(String("Integer"));
         postExpr->SetType(integralType);
         postExpr->SetIntegralValue(mTokenizer.GetIntegralValue());
+        postExpr->SetRadix(mTokenizer.GetRadix());
         return postExpr;
     }
     else {
@@ -1660,8 +1661,10 @@ bool Parser::ParseModule(
         parseResult = false;
     }
 
+    mCurrNamespace = new Namespace(String("__global__"));
     mModule = std::make_shared<Module>();
     mModule->SetName(moduleName);
+    mModule->AddNamespace(mCurrNamespace);
     mPool = mModule.get();
 
     token = mTokenizer.PeekToken();
@@ -1727,8 +1730,11 @@ bool Parser::ParseNamespace()
         return false;
     }
 
-    Namespace* ns = new Namespace(namespaceName);
-    mCurrNamespace->AddInnerNamespace(ns);
+    Namespace* ns = mCurrNamespace->FindNamespace(namespaceName);
+    if (ns == nullptr) {
+        ns = new Namespace(namespaceName);
+        mCurrNamespace->AddNamespace(ns);
+    }
     mCurrNamespace = ns;
 
     token = mTokenizer.PeekToken();
@@ -1736,7 +1742,7 @@ bool Parser::ParseNamespace()
             token != Tokenizer::Token::END_OF_FILE) {
         switch (token) {
             case Tokenizer::Token::BRACKETS_OPEN:
-                parseResult = ParseDeclarationWithAttribute() && parseResult;
+                parseResult = ParseDeclarationWithAttributeExceptModule() && parseResult;
                 break;
             case Tokenizer::Token::COCLASS: {
                 parseResult = ParseCoclass(nullptr) && parseResult;

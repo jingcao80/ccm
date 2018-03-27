@@ -36,23 +36,23 @@ public:
     inline String GetName()
     { return mName; }
 
-    inline Constant& SetName(
+    inline void SetName(
         /* [in] */ const String& name)
-    { mName = name; return *this; }
+    { mName = name; }
 
     inline Type* GetType()
     { return mType; }
 
-    inline Constant& SetType(
+    inline void SetType(
         /* [in] */ Type* type)
-    { mType = type; return *this; }
+    { mType = type; }
 
     inline Expression* GetValue()
     { return mValue; }
 
-    inline Constant& SetValue(
+    inline void SetValue(
         /* [in] */ Expression* value)
-    { mValue = value; return *this; }
+    { mValue = value; }
 
     String Dump(
         /* [in] */ const String& prefix) override;

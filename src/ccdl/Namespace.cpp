@@ -19,26 +19,50 @@
 namespace ccm {
 namespace ccdl {
 
-bool Namespace::AddInnerNamespace(
+bool Namespace::AddNamespace(
     /* [in] */ Namespace* innerNS)
 {
     if (innerNS == nullptr) return true;
 
-    bool ret = mInnerNamespaces.Add(innerNS);
+    bool ret = mNamespaces.Add(innerNS);
     if (ret) innerNS->mOuterNamespace = this;
     return ret;
 }
 
-Namespace* Namespace::FindInnerNamespace(
+Namespace* Namespace::FindNamespace(
     /* [in] */ const String& nsString)
 {
-    for (int i = 0; i < mInnerNamespaces.GetSize(); i++) {
-        Namespace* ns = mInnerNamespaces.Get(i);
+    for (int i = 0; i < mNamespaces.GetSize(); i++) {
+        Namespace* ns = mNamespaces.Get(i);
         if (ns->mName.Equals(nsString)) {
             return ns;
         }
     }
     return nullptr;
+}
+
+bool Namespace::AddCoclass(
+    /* [in] */ Coclass* klass)
+{
+    if (klass == nullptr) return true;
+
+    return mCoclasses.Add(klass);
+}
+
+bool Namespace::AddEnumeration(
+    /* [in] */ Enumeration* enumn)
+{
+    if (enumn == nullptr) return true;
+
+    return mEnumerations.Add(enumn);
+}
+
+bool Namespace::AddInterface(
+    /* [in] */ Interface* itf)
+{
+    if (itf == nullptr) return true;
+
+    return mInterfaces.Add(itf);
 }
 
 String Namespace::ToString()

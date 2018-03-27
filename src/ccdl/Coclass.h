@@ -33,7 +33,10 @@ public:
         : mInterfaces(10, false)
     {}
 
-    Coclass& SetAttribute(
+    void SetNamespace(
+        /* [in] */ Namespace* ns) override;
+
+    void SetAttribute(
         /* [in] */ const Attribute& attr);
 
     bool IsCoclass() override
@@ -47,6 +50,10 @@ public:
 
     inline int GetInterfaceNumber()
     { return mInterfaces.GetSize(); }
+
+    inline Interface* GetInterface(
+        /* [in] */ int index)
+    { return mInterfaces.Get(index); }
 
     String Dump(
         /* [in] */ const String& prefix) override;

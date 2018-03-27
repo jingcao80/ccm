@@ -39,7 +39,7 @@ StringPool::StringPool()
     : mData(nullptr)
     , mDataCapacity(256)
     , mDataOffset(0)
-    , mPool(3000)
+    , mOffsets(3000)
 {
     mData = (char*)calloc(1, mDataCapacity);
     Add(String(""));
@@ -55,33 +55,33 @@ StringPool::~StringPool()
 void StringPool::Add(
     /* [in] */ const String& string)
 {
-    if (string.IsNull() || mPool.ContainsKey(string)) {
+    if (string.IsNull() || mOffsets.ContainsKey(string)) {
         return;
     }
 
     ptrdiff_t offset = AddInternal(string);
-    if (offset == 0) return;
-    mPool.Put(string, offset);
+    if (offset == -1) return;
+    mOffsets.Put(string, offset);
 }
 
-const char* StringPool::FindAddress(
+char* StringPool::FindAddress(
     /* [in] */ const String& string)
 {
-    ptrdiff_t offset = mPool.Get(string);
+    ptrdiff_t offset = mOffsets.Get(string);
     return offset != 0 ? mData + offset : nullptr;
 }
 
 ptrdiff_t StringPool::FindOffset(
     /* [in] */ const String& string)
 {
-    return mPool.Get(string);
+    return mOffsets.Get(string);
 }
 
 ptrdiff_t StringPool::AddInternal(
     /* [in] */ const String& string)
 {
     if (!EnsureCapacity(string.GetLength() + 1)) {
-        return 0;
+        return -1;
     }
 
     char* target = mData + mDataOffset;
@@ -111,6 +111,16 @@ bool StringPool::EnsureCapacity(
     mData = newData;
     mDataCapacity = newSize;
     return true;
+}
+
+void StringPool::Dump()
+{
+    int i = 1;
+    char* begin = mData;
+    while ((begin - mData) <= mDataOffset - 1) {
+        Logger::D("StringPool", "[%d] %s", i++, begin);
+        begin = strchr(begin, '\0') + 1;
+    }
 }
 
 }

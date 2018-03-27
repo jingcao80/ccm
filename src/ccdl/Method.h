@@ -28,18 +28,36 @@ namespace ccdl {
 class Method : public ASTNode
 {
 public:
-    inline Method& SetName(
+    inline String GetName()
+    { return mName; }
+
+    inline void SetName(
         /* [in] */ const String& name)
-    { mName = name; return *this; }
+    { mName = name; }
+
+    inline String GetSignature()
+    { return mSignature; }
+
+    inline void SetSignature(
+        /* [in] */ const String& signature)
+    { mSignature = signature; }
 
     Method& AddParameter(
         /* [in] */ Parameter* param);
+
+    inline int GetParameterNumber()
+    { return mParameters.GetSize(); }
+
+    inline Parameter* GetParameter(
+        /* [in] */ int index)
+    { return mParameters.Get(index); }
 
     String Dump(
         /* [in] */ const String& prefix) override;
 
 private:
     String mName;
+    String mSignature;
     ArrayList<Parameter*> mParameters;
 };
 

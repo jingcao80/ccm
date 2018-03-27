@@ -18,7 +18,6 @@
 #define __CCM_CCDL_MULTIPLICATIVEEXPRESSION_H__
 
 #include "Expression.h"
-#include "UnaryExpression.h"
 
 namespace ccm {
 namespace ccdl {

@@ -18,7 +18,6 @@
 #define __CCM_CCDL_UNARYEXPRESSION_H__
 
 #include "Expression.h"
-#include "PostfixExpression.h"
 
 namespace ccm {
 namespace ccdl {

@@ -18,7 +18,6 @@
 #define __CCM_CCDL_ADDITIVEEXPRESSION_H__
 
 #include "Expression.h"
-#include "MultiplicativeExpression.h"
 
 namespace ccm {
 namespace ccdl {

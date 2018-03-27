@@ -29,9 +29,9 @@ public:
         : mElementType(nullptr)
     {}
 
-    inline ArrayType& SetElementType(
+    inline void SetElementType(
         /* [in] */ Type* elemType)
-    { mElementType = elemType; return *this; }
+    { mElementType = elemType; }
 
     String ToString() override;
 

@@ -41,6 +41,10 @@ namespace ccdl {
 class Module : public ASTNode, public Pool
 {
 public:
+    Module();
+
+    ~Module();
+
     inline String GetName()
     { return mName; }
 
@@ -48,8 +52,11 @@ public:
         /* [in] */ const String& name)
     { mName = name; }
 
-    Module& SetAttribute(
+    void SetAttribute(
         /* [in] */ const Attribute& attr);
+
+    inline Uuid& GetUuid()
+    { return mUuid; }
 
     inline String GetUrl()
     { return mUrl; }
@@ -63,6 +70,17 @@ private:
     String mVersion;
     String mDescription;
     String mUrl;
+
+    ByteType* mByteType;
+    ShortType* mShortType;
+    IntegerType* mIntegerType;
+    LongType* mLongType;
+    CharType* mCharType;
+    FloatType* mFloatType;
+    DoubleType* mDoubleType;
+    BooleanType* mBooleanType;
+    StringType* mStringType;
+    HANDLEType* mHANDLEType;
 };
 
 }

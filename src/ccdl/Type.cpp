@@ -14,6 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
+#include "Namespace.h"
 #include "Type.h"
 
 namespace ccm {
@@ -22,6 +23,12 @@ namespace ccdl {
 Type::~Type()
 {
     mNamespace = nullptr;
+}
+
+void Type::SetNamespace(
+    /* [in] */ Namespace* ns)
+{
+    mNamespace = ns;
 }
 
 bool Type::IsPrimitiveType()

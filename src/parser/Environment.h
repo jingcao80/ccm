@@ -56,6 +56,10 @@ namespace ccm {
 class Environment : public Pool
 {
 public:
+    Environment();
+
+    ~Environment();
+
     inline void SetRootFile(
         /* [in] */ const String& rootFile)
     { mRootFile = rootFile; }
@@ -65,6 +69,17 @@ public:
 
 private:
     String mRootFile;
+
+    ByteType* mByteType;
+    ShortType* mShortType;
+    IntegerType* mIntegerType;
+    LongType* mLongType;
+    CharType* mCharType;
+    FloatType* mFloatType;
+    DoubleType* mDoubleType;
+    BooleanType* mBooleanType;
+    StringType* mStringType;
+    HANDLEType* mHANDLEType;
 };
 
 }

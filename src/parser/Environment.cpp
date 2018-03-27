@@ -19,6 +19,45 @@
 
 namespace ccm {
 
+Environment::Environment()
+{
+    mByteType = new ByteType();
+    mShortType = new ShortType();
+    mIntegerType = new IntegerType();
+    mLongType = new LongType();
+    mCharType = new CharType();
+    mFloatType = new FloatType();
+    mDoubleType = new DoubleType();
+    mBooleanType = new BooleanType();
+    mStringType = new StringType();
+    mHANDLEType = new HANDLEType();
+
+    mTypes.Put(String("Byte"), mByteType);
+    mTypes.Put(String("Short"), mShortType);
+    mTypes.Put(String("Integer"), mIntegerType);
+    mTypes.Put(String("Long"), mLongType);
+    mTypes.Put(String("Char"), mCharType);
+    mTypes.Put(String("Float"), mFloatType);
+    mTypes.Put(String("Double"), mDoubleType);
+    mTypes.Put(String("Boolean"), mBooleanType);
+    mTypes.Put(String("String"), mStringType);
+    mTypes.Put(String("HANDLE"), mHANDLEType);
+}
+
+Environment::~Environment()
+{
+    delete mByteType;
+    delete mShortType;
+    delete mIntegerType;
+    delete mLongType;
+    delete mCharType;
+    delete mFloatType;
+    delete mDoubleType;
+    delete mBooleanType;
+    delete mStringType;
+    delete mHANDLEType;
+}
+
 String Environment::Dump(
     /* [in] */ const String& prefix)
 {

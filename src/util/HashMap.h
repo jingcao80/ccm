@@ -63,6 +63,8 @@ public:
     HashMap(
         /* [in] */ int size = 50)
         : mDataSize(0)
+        , mKeyValues(nullptr)
+        , mInvalidate(true)
     {
         mBucketSize = get_next_prime(size);
         mBuckets = (Bucket**)calloc(sizeof(Bucket*), mBucketSize);
@@ -94,6 +96,7 @@ public:
             b->mValue = value;
             mBuckets[index] = b;
             mDataSize++;
+            mInvalidate = true;
             return;
         }
         else {
@@ -101,6 +104,7 @@ public:
             while (prev != nullptr) {
                 if (prev->mKey.Equals(key)) {
                     prev->mValue = value;
+                    mInvalidate = true;
                     return;
                 }
                 else if (prev->mNext == nullptr) {
@@ -113,6 +117,7 @@ public:
             b->mValue = value;
             prev->mNext = b;
             mDataSize++;
+            mInvalidate = true;
             return;
         }
     }
@@ -154,10 +159,11 @@ public:
         return mDataSize;
     }
 
-    std::shared_ptr< ArrayList<Pair*> > GetKeyList()
+    std::shared_ptr< ArrayList<Pair*> > GetKeyValues()
     {
-        std::shared_ptr< ArrayList<Pair*> > keys =
-                std::make_shared< ArrayList<Pair*> >(mDataSize);
+        if (!mInvalidate) return mKeyValues;
+
+        mKeyValues = std::make_shared< ArrayList<Pair*> >(mDataSize);
 
         for (int i = 0; i < mBucketSize; i++) {
             Bucket* curr = mBuckets[i];
@@ -165,13 +171,14 @@ public:
                 Pair* p = new Pair();
                 p->mKey = curr->mKey;
                 p->mValue = curr->mValue;
-                keys->Add(p);
+                mKeyValues->Add(p);
 
                 curr = curr->mNext;
             }
         }
 
-        return keys;
+        mInvalidate = false;
+        return mKeyValues;
     }
 
 private:
@@ -211,6 +218,8 @@ private:
     int mDataSize;
     int mBucketSize;
     Bucket** mBuckets;
+    std::shared_ptr< ArrayList<Pair*> > mKeyValues;
+    bool mInvalidate;
 };
 
 }

@@ -18,7 +18,6 @@
 #define __CCM_CCDL_POSTFIXEXPRESSION_H__
 
 #include "Expression.h"
-#include "Type.h"
 
 namespace ccm {
 namespace ccdl {
@@ -33,29 +32,29 @@ public:
         , mExpression(nullptr)
     {}
 
-    inline PostfixExpression& SetEnumerator(
+    inline void SetEnumerator(
         /* [in] */ const String& enumName)
-    { mEnumeratorName = enumName; return *this; }
+    { mEnumeratorName = enumName; }
 
-    inline PostfixExpression& SetExpression(
+    inline void SetExpression(
         /* [in] */ Expression* expression)
-    { mExpression = expression; return *this; }
+    { mExpression = expression; }
 
-    inline PostfixExpression& SetBooleanValue(
+    inline void SetBooleanValue(
         /* [in] */ bool value)
-    { mBooleanValue = value; return *this; }
+    { mBooleanValue = value; }
 
-    inline PostfixExpression& SetIntegralValue(
+    inline void SetIntegralValue(
         /* [in] */ long long int value)
-    { mIntegralValue = value; return *this; }
+    { mIntegralValue = value; }
 
-    inline PostfixExpression& SetFloatingPointValue(
+    inline void SetFloatingPointValue(
         /* [in] */ double value)
-    { mFloatingPointValue = value; return *this; }
+    { mFloatingPointValue = value; }
 
-    inline PostfixExpression& SetStringValue(
+    inline void SetStringValue(
         /* [in] */ const String& value)
-    { mStringValue = value; return *this; }
+    { mStringValue = value; }
 
     int IntegerValue() override;
 

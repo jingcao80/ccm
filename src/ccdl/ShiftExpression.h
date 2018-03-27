@@ -18,7 +18,6 @@
 #define __CCM_CCDL_SHIFTEXPRESSION_H__
 
 #include "Expression.h"
-#include "AdditiveExpression.h"
 
 namespace ccm {
 namespace ccdl {
