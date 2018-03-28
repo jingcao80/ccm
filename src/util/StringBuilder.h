@@ -41,6 +41,9 @@ public:
     StringBuilder& Append(
         /* [in] */ const String& string);
 
+    StringBuilder& AppendFormat(
+        /* [in] */ const char* format ...);
+
     String ToString();
 
 private:

@@ -52,6 +52,17 @@ bool Coclass::AddInterface(
     return mInterfaces.Add(interface);
 }
 
+String Coclass::Signature()
+{
+    StringBuilder builder;
+
+    builder.Append("L");
+    builder.Append(mNamespace->ToString().Replace("::", "/"));
+    builder.Append(mName);
+    builder.Append(";");
+    return builder.ToString();
+}
+
 String Coclass::Dump(
     /* [in] */ const String& prefix)
 {

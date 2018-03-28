@@ -61,6 +61,8 @@ public:
     bool Contains(
         /* [in] */ const String& name);
 
+    String Signature() override;
+
     String Dump(
         /* [in] */ const String& prefix) override;
 

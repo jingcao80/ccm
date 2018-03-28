@@ -604,6 +604,7 @@ bool Parser::ParseMethod(
     }
 
     if (parseResult) {
+        method->BuildSignature();
         interface->AddMethod(method);
     }
     else {
@@ -1246,7 +1247,7 @@ PostfixExpression* Parser::ParseStringLiteral(
     /* [in] */ Type* exprType)
 {
     Tokenizer::Token token = mTokenizer.GetToken();
-    if (exprType->GetName().Equals("String")) {
+    if (exprType->IsStringType()) {
         PostfixExpression* postExpr = new PostfixExpression();
         Type* stringType = mPool->FindType(String("String"));
         postExpr->SetType(stringType);
@@ -1427,6 +1428,7 @@ bool Parser::ParseCoclassConstructor(
     }
 
     if (parseResult) {
+        method->BuildSignature();
         klass->AddConstructor(method);
     }
     else {
@@ -1734,6 +1736,7 @@ bool Parser::ParseNamespace()
     if (ns == nullptr) {
         ns = new Namespace(namespaceName);
         mCurrNamespace->AddNamespace(ns);
+        mPool->AddNamespace(ns);
     }
     mCurrNamespace = ns;
 
@@ -1830,17 +1833,14 @@ Type* Parser::CastType(
     /* [in] */ Type* type1,
     /* [in] */ Type* type2)
 {
-    String type1Name = type1->GetName();
-    String type2Name = type2->GetName();
-
-    if (type1Name.Equals("Double")) {
+    if (type1->IsDoubleType()) {
         return type1;
     }
-    else if (type1Name.Equals("Float")) {
-        return type2Name.Equals("Double") ? type2 : type1;
+    else if (type1->IsFloatType()) {
+        return type2->IsDoubleType() ? type2 : type1;
     }
-    else if (type1Name.Equals("Long")) {
-        return type2Name.Equals("Integer") ? type1 : type2;
+    else if (type1->IsLongType()) {
+        return type2->IsIntegerType() ? type1 : type2;
     }
     else {
         return type2;

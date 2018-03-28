@@ -46,9 +46,9 @@ int MultiplicativeExpression::IntegerValue()
 long long int MultiplicativeExpression::LongValue()
 {
     if (mLeftOperand != nullptr) {
-        long long int leftValue = mLeftOperand->GetType()->GetName().Equals("Integer") ?
+        long long int leftValue = mLeftOperand->GetType()->IsIntegerType() ?
                 mLeftOperand->IntegerValue() : mLeftOperand->LongValue();
-        long long int rightValue = mRightOperand->GetType()->GetName().Equals("Integer") ?
+        long long int rightValue = mRightOperand->GetType()->IsIntegerType() ?
                 mRightOperand->IntegerValue() : mRightOperand->LongValue();
         switch (mOperator) {
             case MULTIPLE:
@@ -70,21 +70,21 @@ float MultiplicativeExpression::FloatValue()
 {
     if (mLeftOperand != nullptr) {
         float leftValue, rightValue;
-        String typeName = mLeftOperand->GetType()->GetName();
-        if (typeName.Equals("Integer")) {
+        Type* type = mLeftOperand->GetType();
+        if (type->IsIntegerType()) {
             leftValue = mLeftOperand->IntegerValue();
         }
-        else if (typeName.Equals("Long")) {
+        else if (type->IsLongType()) {
             leftValue = mLeftOperand->LongValue();
         }
         else {
             leftValue = mLeftOperand->FloatValue();
         }
-        typeName = mRightOperand->GetType()->GetName();
-        if (typeName.Equals("Integer")) {
+        type = mRightOperand->GetType();
+        if (type->IsIntegerType()) {
             rightValue = mRightOperand->IntegerValue();
         }
-        else if (typeName.Equals("Long")) {
+        else if (type->IsLongType()) {
             rightValue = mRightOperand->LongValue();
         }
         else {
@@ -109,25 +109,25 @@ double MultiplicativeExpression::DoubleValue()
 {
     if (mLeftOperand != nullptr) {
         double leftValue, rightValue;
-        String typeName = mLeftOperand->GetType()->GetName();
-        if (typeName.Equals("Integer")) {
+        Type* type = mLeftOperand->GetType();
+        if (type->IsIntegerType()) {
             leftValue = mLeftOperand->IntegerValue();
         }
-        else if (typeName.Equals("Long")) {
+        else if (type->IsLongType()) {
             leftValue = mLeftOperand->LongValue();
         }
-        else if (typeName.Equals("Float")) {
+        else if (type->IsFloatType()) {
             leftValue = mLeftOperand->FloatValue();
         }
         else leftValue = mLeftOperand->DoubleValue();
-        typeName = mRightOperand->GetType()->GetName();
-        if (typeName.Equals("Integer")) {
+        type = mRightOperand->GetType();
+        if (type->IsIntegerType()) {
             rightValue = mRightOperand->IntegerValue();
         }
-        else if (typeName.Equals("Long")) {
+        else if (type->IsLongType()) {
             rightValue = mRightOperand->LongValue();
         }
-        else if (typeName.Equals("Float")) {
+        else if (type->IsFloatType()) {
             rightValue = mRightOperand->FloatValue();
         }
         else rightValue = mRightOperand->DoubleValue();

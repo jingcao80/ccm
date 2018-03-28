@@ -20,13 +20,25 @@
 namespace ccm {
 namespace ccdl {
 
-Method& Method::AddParameter(
+bool Method::AddParameter(
     /* [in] */ Parameter* param)
 {
-    if (param == nullptr) return *this;
+    if (param == nullptr) return true;
 
-    mParameters.Add(param);
-    return *this;
+    return mParameters.Add(param);
+}
+
+void Method::BuildSignature()
+{
+    StringBuilder builder;
+
+    builder.Append("(");
+    for (int i = 0; i < mParameters.GetSize(); i++) {
+        builder.Append(mParameters.Get(i)->GetType()->Signature());
+    }
+    builder.Append(")");
+    builder.Append("E");
+    mSignature = builder.ToString();
 }
 
 String Method::Dump(
@@ -35,11 +47,10 @@ String Method::Dump(
     StringBuilder builder;
 
     builder.Append(prefix).Append(mName);
-    builder.Append("[");
+    builder.Append("[SIG:").Append(mSignature);
     for (int i = 0; i < mParameters.GetSize(); i++) {
-        if (i > 0) builder.Append(", ");
         Parameter* p = mParameters.Get(i);
-        builder.Append(p->Dump(String("")));
+        builder.Append(", ").Append(p->Dump(String("")));
     }
     builder.Append("]\n");
 

@@ -36,6 +36,12 @@ public:
 
     bool IsFloatingPointType() override
     { return true; }
+
+    bool IsFloatType() override
+    { return true; }
+
+    String Signature() override
+    { return String("F"); }
 };
 
 }

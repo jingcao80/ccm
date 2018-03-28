@@ -22,7 +22,7 @@
 namespace ccm {
 namespace metadata {
 
-#define CCM_MAGIC 0x12E20FD
+#define CCM_MAGIC   0x12E20FD
 
 enum class CcdlType
 {
@@ -76,11 +76,9 @@ struct MetaNamespace
     int                 mCoclassNumber;
     int                 mEnumerationNumber;
     int                 mInterfaceNumber;
-    int                 mNamespaceNumber;
     int*                mCoclassIndexes;
     int*                mEnumerationIndexes;
     int*                mInterfaceIndexes;
-    MetaNamespace**     mNamespaces;
 };
 
 struct MetaCoclass

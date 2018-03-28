@@ -43,6 +43,9 @@ public:
     inline size_t GetSize()
     { return mDataOffset; }
 
+    inline char* GetData()
+    { return mData; }
+
     void Dump();
 
 private:

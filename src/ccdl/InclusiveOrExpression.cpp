@@ -33,9 +33,9 @@ int InclusiveOrExpression::IntegerValue()
 long long int InclusiveOrExpression::LongValue()
 {
     if (mLeftOperand != nullptr) {
-        long long int leftValue = mLeftOperand->GetType()->GetName().Equals("Integer") ?
+        long long int leftValue = mLeftOperand->GetType()->IsIntegerType() ?
                 mLeftOperand->IntegerValue() : mLeftOperand->LongValue();
-        long long int rightValue = mRightOperand->GetType()->GetName().Equals("Integer") ?
+        long long int rightValue = mRightOperand->GetType()->IsIntegerType() ?
                 mRightOperand->IntegerValue() : mRightOperand->LongValue();
         return leftValue | rightValue;
     }

@@ -53,6 +53,17 @@ bool Enumeration::Contains(
     return false;
 }
 
+String Enumeration::Signature()
+{
+    StringBuilder builder;
+
+    builder.Append("L");
+    builder.Append(mNamespace->ToString().Replace("::", "/"));
+    builder.Append(mName);
+    builder.Append(";");
+    return builder.ToString();
+}
+
 String Enumeration::Dump(
     /* [in] */ const String& prefix)
 {

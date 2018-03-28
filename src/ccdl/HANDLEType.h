@@ -30,6 +30,12 @@ public:
 
     bool IsPrimitiveType() override
     { return true; }
+
+    bool IsHANDLEType() override
+    { return true; }
+
+    String Signature() override
+    { return String("H"); }
 };
 
 }

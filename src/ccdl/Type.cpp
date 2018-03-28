@@ -36,6 +36,21 @@ bool Type::IsPrimitiveType()
     return false;
 }
 
+bool Type::IsBooleanType()
+{
+    return false;
+}
+
+bool Type::IsStringType()
+{
+    return false;
+}
+
+bool Type::IsHANDLEType()
+{
+    return false;
+}
+
 bool Type::IsNumericType()
 {
     return false;
@@ -46,7 +61,52 @@ bool Type::IsIntegralType()
     return false;
 }
 
+bool Type::IsByteType()
+{
+    return false;
+}
+
+bool Type::IsShortType()
+{
+    return false;
+}
+
+bool Type::IsIntegerType()
+{
+    return false;
+}
+
+bool Type::IsLongType()
+{
+    return false;
+}
+
+bool Type::IsCharType()
+{
+    return false;
+}
+
 bool Type::IsFloatingPointType()
+{
+    return false;
+}
+
+bool Type::IsFloatType()
+{
+    return false;
+}
+
+bool Type::IsDoubleType()
+{
+    return false;
+}
+
+bool Type::IsArray()
+{
+    return false;
+}
+
+bool Type::IsCoclass()
 {
     return false;
 }
@@ -61,7 +121,7 @@ bool Type::IsInterface()
     return false;
 }
 
-bool Type::IsCoclass()
+bool Type::IsPointerType()
 {
     return false;
 }

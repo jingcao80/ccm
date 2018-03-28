@@ -38,11 +38,7 @@ public:
     inline String GetSignature()
     { return mSignature; }
 
-    inline void SetSignature(
-        /* [in] */ const String& signature)
-    { mSignature = signature; }
-
-    Method& AddParameter(
+    bool AddParameter(
         /* [in] */ Parameter* param);
 
     inline int GetParameterNumber()
@@ -51,6 +47,8 @@ public:
     inline Parameter* GetParameter(
         /* [in] */ int index)
     { return mParameters.Get(index); }
+
+    void BuildSignature();
 
     String Dump(
         /* [in] */ const String& prefix) override;

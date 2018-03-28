@@ -30,13 +30,24 @@ public:
         , mPointerNumber(0)
     {}
 
+    bool IsPointerType() override
+    { return true; }
+
+    inline Type* GetBaseType()
+    { return mBaseType; }
+
     inline void SetBaseType(
         /* [in] */ Type* baseType)
     { mBaseType = baseType; }
 
+    inline int GetPointerNumber()
+    { return mPointerNumber; }
+
     inline void SetPointerNumber(
         /* [in] */ int ptrNumber)
     { mPointerNumber = ptrNumber; }
+
+    String Signature() override;
 
     String ToString() override;
 

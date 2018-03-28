@@ -76,6 +76,8 @@ public:
         /* [in] */ int index)
     { return mMethods.Get(index); }
 
+    String Signature() override;
+
     String Dump(
         /* [in] */ const String& prefix) override;
 

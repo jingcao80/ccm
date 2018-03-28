@@ -49,17 +49,43 @@ public:
 
     virtual bool IsPrimitiveType();
 
+    virtual bool IsBooleanType();
+
+    virtual bool IsStringType();
+
+    virtual bool IsHANDLEType();
+
     virtual bool IsNumericType();
 
     virtual bool IsIntegralType();
 
+    virtual bool IsByteType();
+
+    virtual bool IsShortType();
+
+    virtual bool IsIntegerType();
+
+    virtual bool IsLongType();
+
+    virtual bool IsCharType();
+
     virtual bool IsFloatingPointType();
+
+    virtual bool IsFloatType();
+
+    virtual bool IsDoubleType();
+
+    virtual bool IsArray();
 
     virtual bool IsCoclass();
 
     virtual bool IsEnumeration();
 
     virtual bool IsInterface();
+
+    virtual bool IsPointerType();
+
+    virtual String Signature() = 0;
 
     String ToString() override;
 

@@ -221,5 +221,26 @@ The syntax category <*identifier*> consists of strings that must start with a le
 
 There are two ways to add comments. One is using syntax "/* <*comment_literal*> */" as a block comment. Another is using syntax "// <*comment-literal*>" as a line comment.
 
+#### Type Signature
+
+| Type      | Signature |
+|:---------:|:---------:|
+| Byte      |     B     |
+| Short     |     S     |
+| Integer   |     I     |
+| Long      |     J     |
+| Float     |     F     |
+| Double    |     D     |
+| Char      |     C     |
+| Boolean   |     Z     |
+| String    |     T     |
+| HANDLE    |     H     |
+| Uuid      |     U     |
+| ECode     |     E     |
+| Array     |     [     |
+| Pointer   |     *     |
+| Enum      | Lxx/xx;   |
+| Interface | Lxx/xx;   |
+
 #### Reference
 [Java Syntax Specification](https://users-cs.au.dk/amoeller/RegAut/JavaBNF.html)

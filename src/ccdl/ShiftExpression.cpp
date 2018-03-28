@@ -44,9 +44,9 @@ int ShiftExpression::IntegerValue()
 long long int ShiftExpression::LongValue()
 {
     if (mLeftOperand != nullptr) {
-        long long int leftValue = mLeftOperand->GetType()->GetName().Equals("Integer") ?
+        long long int leftValue = mLeftOperand->GetType()->IsIntegerType() ?
                 mLeftOperand->IntegerValue() : mLeftOperand->LongValue();
-        long long int rightValue = mRightOperand->GetType()->GetName().Equals("Integer") ?
+        long long int rightValue = mRightOperand->GetType()->IsIntegerType() ?
                 mRightOperand->IntegerValue() : mRightOperand->LongValue();
         switch (mOperator) {
             case LEFT:

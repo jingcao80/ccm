@@ -17,7 +17,9 @@
 #include "StringBuilder.h"
 #include "Logger.h"
 
+#include <stdarg.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 namespace ccm {
 
@@ -42,7 +44,7 @@ StringBuilder& StringBuilder::Append(
     }
 
     if (mPosition >= mCapacity) {
-        if (!Enlarge(1)) return *this;
+        if (!Enlarge(2)) return *this;
     }
 
     mBuffer[mPosition++] = c;
@@ -62,8 +64,8 @@ StringBuilder& StringBuilder::Append(
     }
 
     int len = strlen(string);
-    if (mPosition + len >= mCapacity) {
-        if (!Enlarge(len)) return *this;
+    if (mPosition + len + 1 >= mCapacity) {
+        if (!Enlarge(len + 1)) return *this;
     }
 
     memcpy(mBuffer + mPosition, string, len);
@@ -82,12 +84,34 @@ StringBuilder& StringBuilder::Append(
     }
 
     int len = string.GetLength();
-    if (mPosition + len >= mCapacity) {
-        if (!Enlarge(len)) return *this;
+    if (mPosition + len + 1 >= mCapacity) {
+        if (!Enlarge(len + 1)) return *this;
     }
 
     memcpy(mBuffer + mPosition, string.string(), len);
     mPosition += len;
+    return *this;
+}
+
+StringBuilder& StringBuilder::AppendFormat(
+        /* [in] */ const char* format ...)
+{
+    va_list args, args1;
+
+    va_start(args, format);
+    va_copy(args1, args);
+
+    int len = vsnprintf(nullptr, 0, format, args);
+    va_end(args);
+
+    if (mPosition + len + 1 >= mCapacity) {
+        if (!Enlarge(len + 1)) return *this;
+    }
+
+    vsnprintf(mBuffer + mPosition, len + 1, format, args1);
+    mPosition += len;
+    va_end(args1);
+
     return *this;
 }
 

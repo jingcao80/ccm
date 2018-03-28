@@ -118,10 +118,12 @@ Namespace* Pool::ParseNamespace(
     while ((cIndex = nss.IndexOf("::")) != -1) {
         String ns = nss.Substring(0, cIndex - 1);
         if (currNsp == nullptr) {
-            nsp = FindNamespace(ns);
+            currNsp = FindNamespace(String("__global__"));
+            nsp = currNsp->FindNamespace(nss);
             if (nsp == nullptr) {
                 nsp = new Namespace(ns);
                 AddNamespace(nsp);
+                currNsp->AddNamespace(nsp);
             }
             currNsp = headNsp = nsp;
         }
@@ -137,10 +139,12 @@ Namespace* Pool::ParseNamespace(
         nss = nss.Substring(cIndex + 2);
     }
     if (currNsp == nullptr) {
-        nsp = FindNamespace(nss);
+        currNsp = FindNamespace(String("__global__"));
+        nsp = currNsp->FindNamespace(nss);
         if (nsp == nullptr) {
             nsp = new Namespace(nss);
             AddNamespace(nsp);
+            currNsp->AddNamespace(nsp);
         }
         headNsp = nsp;
     }
@@ -163,6 +167,14 @@ bool Pool::AddTemporaryType(
     if (!mTempTypes.Add(type)) return false;
     mTypes.Put(type->ToString(), type);
     return true;
+}
+
+Type* Pool::GetType(
+    /* [in] */ int index)
+{
+    std::shared_ptr< ArrayList<HashMap<Type*>::Pair*> > types =
+            GetTypes();
+    return types->Get(index)->mValue;
 }
 
 Type* Pool::FindType(

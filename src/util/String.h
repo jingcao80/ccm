@@ -86,19 +86,55 @@ public:
         /* [in] */ int c) const;
 
     int IndexOf(
+        /* [in] */ int c,
+        /* [in] */ int fromIndex) const;
+
+    int IndexOf(
         /* [in] */ const String& other) const;
 
     int IndexOf(
+        /* [in] */ const String& other,
+        /* [in] */ int fromIndex) const;
+
+    int IndexOf(
         /* [in] */ const char* string) const;
+
+    int IndexOf(
+        /* [in] */ const char* string,
+        /* [in] */ int fromIndex) const;
 
     int LastIndexOf(
         /* [in] */ int c) const;
 
     int LastIndexOf(
+        /* [in] */ int c,
+        /* [in] */ int fromIndex) const;
+
+    int LastIndexOf(
         /* [in] */ const String& other) const;
 
     int LastIndexOf(
+        /* [in] */ const String& other,
+        /* [in] */ int fromIndex) const;
+
+    int LastIndexOf(
         /* [in] */ const char* string) const;
+
+    int LastIndexOf(
+        /* [in] */ const char* string,
+        /* [in] */ int fromIndex) const;
+
+    String Replace(
+        /* [in] */ int oldChar,
+        /* [in] */ int newChar);
+
+    String Replace(
+        /* [in] */ const char* target,
+        /* [in] */ const char* replacement);
+
+    String Replace(
+        /* [in] */ const String& target,
+        /* [in] */ const String& replacement);
 
     String& operator=(
         /* [in] */ const char* string);
@@ -122,9 +158,21 @@ private:
     String(
         /* [in] */ int size);
 
+    int LastIndexOfInternal(
+        /* [in] */ const char* string,
+        /* [in] */ int fromIndex) const;
+
 private:
     char* mString;
 };
+
+inline String operator+(
+    /* [in] */ const String& string1,
+    /* [in] */ const String& string2)
+{
+    String ret = string1;
+    return ret += string2;
+}
 
 inline String operator+(
     /* [in] */ const String& string1,

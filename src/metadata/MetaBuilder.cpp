@@ -15,11 +15,16 @@
 //=========================================================================
 
 #include "MetaBuilder.h"
+#include "../ccdl/ArrayType.h"
 #include "../ccdl/Interface.h"
+#include "../ccdl/PointerType.h"
 #include "../util/Logger.h"
+#include "../util/StringBuilder.h"
 
 using ccm::Logger;
+using ccm::ccdl::ArrayType;
 using ccm::ccdl::Interface;
+using ccm::ccdl::PointerType;
 
 #define ALIGN4(v) (((v) + 3) & ~3)
 #define ALIGN8(v) (((v) + 7) & ~7)
@@ -212,7 +217,7 @@ void MetaBuilder::CalculateMetaConstant(
     // add mName to StringPool
     mStringPool.Add(constant->GetName());
     // add mString to StringPool when constant is String
-    if (constant->GetType()->GetName().Equals("String")) {
+    if (constant->GetType()->IsStringType()) {
         mStringPool.Add(constant->GetValue()->StringValue());
     }
     else if (constant->GetType()->IsEnumeration()) {
@@ -233,7 +238,7 @@ void MetaBuilder::CalculateMetaMethod(
     mStringPool.Add(method->GetName());
     // add mSignature to StringPool
     mStringPool.Add(method->GetSignature());
-    // mParmeters's address
+    // mParameters's address
     mBasePtr = ALIGN(mBasePtr + sizeof(MetaMethod));
     // end address
     mBasePtr = mBasePtr + sizeof(MetaParameter*) * PARAM_NUM;
@@ -249,26 +254,19 @@ void MetaBuilder::CalculateMetaNamespace(
     int CLS_NUM = ns->GetCoclassNumber();
     int ENUMN_NUM = ns->GetEnumerationNumber();
     int ITF_NUM = ns->GetInterfaceNumber();
-    int NS_NUM = ns->GetNamespaceNumber();
 
     // begin address
     mBasePtr = ALIGN(mBasePtr);
     // add mName to StringPool
-    mStringPool.Add(ns->GetName());
+    mStringPool.Add(ns->ToString());
     // mCoclassIndexes's address
     mBasePtr = ALIGN4(mBasePtr + sizeof(MetaNamespace));
     // mEnumerationIndexes's address
     mBasePtr = ALIGN4(mBasePtr + sizeof(int) * CLS_NUM);
     // mInterfaceIndexes's address
     mBasePtr = ALIGN4(mBasePtr + sizeof(int) * ENUMN_NUM);
-    // mNamespaces's address
-    mBasePtr = ALIGN(mBasePtr + sizeof(int) * ITF_NUM);
     // end address
-    mBasePtr = mBasePtr + sizeof(MetaNamespace*) * NS_NUM;
-
-    for (int i = 0; i < NS_NUM; i++) {
-        CalculateMetaNamespace(ns->GetNamespace(i));
-    }
+    mBasePtr = mBasePtr + sizeof(int) * ITF_NUM;
 }
 
 void MetaBuilder::CalculateMetaParameter(
@@ -342,8 +340,11 @@ void MetaBuilder::WriteMetaComponent(
     // mTypes's address
     mBasePtr = ALIGN(mBasePtr + sizeof(MetaInterface*) * ITF_NUM);
     mc->mTypes = reinterpret_cast<MetaType**>(mBasePtr);
-    // end address
+    // mStringPool's address
     mBasePtr = mBasePtr + sizeof(MetaType*) * TP_NUM;
+    mc->mStringPool = reinterpret_cast<char*>(mBasePtr);
+    // end address
+    mBasePtr = mBasePtr + mStringPool.GetSize();
 
     for (int i = 0; i < NS_NUM; i++) {
         mc->mNamespaces[i] = WriteMetaNamespace(module->GetNamespace(i));
@@ -360,6 +361,12 @@ void MetaBuilder::WriteMetaComponent(
     for (int i = 0; i < ITF_NUM; i++) {
         mc->mInterfaces[i] = WriteMetaInterface(module->GetInterface(i));
     }
+
+    for (int i = 0; i < TP_NUM; i++) {
+        mc->mTypes[i] = WriteMetaType(module->GetType(i));
+    }
+
+    memcpy(mc->mStringPool, mStringPool.GetData(), mStringPool.GetSize());
 }
 
 MetaCoclass* MetaBuilder::WriteMetaCoclass(
@@ -396,45 +403,36 @@ MetaConstant* MetaBuilder::WriteMetaConstant(
     mc->mName = mStringPool.FindAddress(constant->GetName());
     Type* type = constant->GetType();
     mc->mTypeIndex = mModule->IndexOf(type);
-    if (type->IsIntegralType()) {
-        if (type->GetName().Equals("Byte")) {
-            mc->mValue.mInteger = constant->GetValue()->IntegerValue();
-        }
-        else if (type->GetName().Equals("Short")) {
-            mc->mValue.mInteger = constant->GetValue()->IntegerValue();
-        }
-        else if (type->GetName().Equals("Integer")) {
-            mc->mValue.mInteger = constant->GetValue()->IntegerValue();
-        }
-        else if (type->GetName().Equals("Long")) {
-            mc->mValue.mLong = constant->GetValue()->LongValue();
-        }
-        else {
-            mc->mValue.mInteger = constant->GetValue()->CharacterValue();
-        }
+    if (type->IsByteType() || type->IsShortType() || type->IsIntegerType()) {
+        mc->mValue.mInteger = constant->GetValue()->IntegerValue();
     }
-    else if (type->IsFloatingPointType()) {
-        if (type->GetName().Equals("Float")) {
-            mc->mValue.mFloat = constant->GetValue()->FloatValue();
-        }
-        else {
-            mc->mValue.mDouble = constant->GetValue()->DoubleValue();
-        }
+    else if (type->IsLongType()) {
+        mc->mValue.mLong = constant->GetValue()->LongValue();
     }
-    else if (type->IsPrimitiveType()) {
-        if (type->GetName().Equals("Boolean")) {
-            mc->mValue.mBoolean = constant->GetValue()->BooleanValue();
-        }
-        else if (type->GetName().Equals("String")) {
-            mc->mValue.mString = mStringPool.FindAddress(
-                    constant->GetValue()->StringValue());
-        }
+    else if (type->IsCharType()) {
+        mc->mValue.mInteger = constant->GetValue()->CharacterValue();
+    }
+    else if (type->IsFloatType()) {
+        mc->mValue.mFloat = constant->GetValue()->FloatValue();
+    }
+    else if (type->IsDoubleType()) {
+        mc->mValue.mDouble = constant->GetValue()->DoubleValue();
+    }
+    else if (type->IsBooleanType()) {
+        mc->mValue.mBoolean = constant->GetValue()->BooleanValue();
+    }
+    else if (type->IsStringType()) {
+        mc->mValue.mString = mStringPool.FindAddress(
+                constant->GetValue()->StringValue());
     }
     else if (type->IsEnumeration()) {
         mc->mValue.mString = mStringPool.FindAddress(
                     constant->GetValue()->EnumeratorValue());
     }
-    mc->mRadix = constant->GetValue()->GetRadix();
+    if (type->IsIntegralType()) {
+        mc->mRadix = constant->GetValue()->GetRadix();
+    }
+    else mc->mRadix = 0;
     // end address
     mBasePtr = mBasePtr + sizeof(MetaConstant);
 
@@ -515,7 +513,25 @@ MetaInterface* MetaBuilder::WriteMetaInterface(
 MetaMethod* MetaBuilder::WriteMetaMethod(
     /* [in] */ Method* method)
 {
-    return nullptr;
+    int PARAM_NUM = method->GetParameterNumber();
+
+    // begin address
+    mBasePtr = ALIGN(mBasePtr);
+    MetaMethod* mm = reinterpret_cast<MetaMethod*>(mBasePtr);
+    mm->mName = mStringPool.FindAddress(method->GetName());
+    mm->mSignature = mStringPool.FindAddress(method->GetSignature());
+    mm->mParameterNumber = PARAM_NUM;
+    // mParameters's address
+    mBasePtr = ALIGN(mBasePtr + sizeof(MetaMethod));
+    mm->mParameters = reinterpret_cast<MetaParameter**>(mBasePtr);
+    // end address
+    mBasePtr = mBasePtr + sizeof(MetaParameter*) * PARAM_NUM;
+
+    for (int i = 0; i < PARAM_NUM; i++) {
+        mm->mParameters[i] = WriteMetaParameter(method->GetParameter(i));
+    }
+
+    return mm;
 }
 
 MetaNamespace* MetaBuilder::WriteMetaNamespace(
@@ -524,12 +540,14 @@ MetaNamespace* MetaBuilder::WriteMetaNamespace(
     int CLS_NUM = ns->GetCoclassNumber();
     int ENUMN_NUM = ns->GetEnumerationNumber();
     int ITF_NUM = ns->GetInterfaceNumber();
-    int NS_NUM = ns->GetNamespaceNumber();
 
     // begin address
     mBasePtr = ALIGN(mBasePtr);
     MetaNamespace* mn = reinterpret_cast<MetaNamespace*>(mBasePtr);
-    mn->mName = mStringPool.FindAddress(ns->GetName());
+    mn->mName = mStringPool.FindAddress(ns->ToString());
+    mn->mCoclassNumber = CLS_NUM;
+    mn->mEnumerationNumber = ENUMN_NUM;
+    mn->mInterfaceNumber = ITF_NUM;
     // mCoclassIndexes's address
     mBasePtr = ALIGN4(mBasePtr + sizeof(MetaNamespace));
     mn->mCoclassIndexes = reinterpret_cast<int*>(mBasePtr);
@@ -539,11 +557,8 @@ MetaNamespace* MetaBuilder::WriteMetaNamespace(
     // mInterfaceIndexes's address
     mBasePtr = ALIGN4(mBasePtr + sizeof(int) * ENUMN_NUM);
     mn->mInterfaceIndexes = reinterpret_cast<int*>(mBasePtr);
-    // mNamespaces's address
-    mBasePtr = ALIGN(mBasePtr + sizeof(int) * ITF_NUM);
-    mn->mNamespaces = reinterpret_cast<MetaNamespace**>(mBasePtr);
     // end address
-    mBasePtr = mBasePtr + sizeof(MetaNamespace*) * NS_NUM;
+    mBasePtr = mBasePtr + sizeof(int) * ITF_NUM;
 
     for (int i = 0; i < CLS_NUM; i++) {
         Coclass* klass = ns->GetCoclass(i);
@@ -560,11 +575,414 @@ MetaNamespace* MetaBuilder::WriteMetaNamespace(
         mn->mInterfaceIndexes[i] = mModule->IndexOf(itf);
     }
 
-    for (int i = 0; i < NS_NUM; i++) {
-        mn->mNamespaces[i] = WriteMetaNamespace(ns->GetNamespace(i));
+    return mn;
+}
+
+MetaParameter* MetaBuilder::WriteMetaParameter(
+    /* [in] */ Parameter* param)
+{
+    // begin address
+    mBasePtr = ALIGN(mBasePtr);
+    MetaParameter* mp = reinterpret_cast<MetaParameter*>(mBasePtr);
+    mp->mName = mStringPool.FindAddress(param->GetName());
+    mp->mAttribute = param->GetAttribute();
+    Type* type = param->GetType();
+    mp->mTypeIndex = mModule->IndexOf(type);
+    // end address
+    mBasePtr = mBasePtr + sizeof(MetaParameter);
+
+    return mp;
+}
+
+MetaType* MetaBuilder::WriteMetaType(
+    /* [in] */ Type* type)
+{
+    // begin address
+    mBasePtr = ALIGN(mBasePtr);
+    MetaType* mt = reinterpret_cast<MetaType*>(mBasePtr);
+    mt->mPointerNumber = 0;
+    if (type->IsPointerType()) {
+        mt->mPointerNumber = ((PointerType*)type)->GetPointerNumber();
+        type = ((PointerType*)type)->GetBaseType();
+    }
+    mt->mKind = Type2CcdlType(type);
+    if (type->IsEnumeration()) {
+        mt->mIndex = mModule->IndexOf((Enumeration*)type);
+    }
+    else if (type->IsInterface()) {
+        mt->mIndex = mModule->IndexOf((Interface*)type);
+    }
+    else if (type->IsCoclass()) {
+        mt->mIndex = mModule->IndexOf((Coclass*)type);
+    }
+    else {
+        mt->mIndex = mModule->IndexOf(type);
+    }
+    mt->mNestedTypeIndex = -1;
+    if (type->IsArray()) {
+        mt->mNestedTypeIndex =  mModule->IndexOf(
+                ((ArrayType*)type)->GetElementType());
+    }
+    // end address
+    mBasePtr = mBasePtr + sizeof(MetaType);
+
+    return mt;
+}
+
+CcdlType MetaBuilder::Type2CcdlType(
+    /* [in] */ Type* type)
+{
+    if (type->IsBooleanType()) {
+        return CcdlType::Boolean;
+    }
+    else if (type->IsCharType()) {
+        return CcdlType::Char;
+    }
+    else if (type->IsByteType()) {
+        return CcdlType::Byte;
+    }
+    else if (type->IsShortType()) {
+        return CcdlType::Short;
+    }
+    else if (type->IsIntegerType()) {
+        return CcdlType::Integer;
+    }
+    else if (type->IsLongType()) {
+        return CcdlType::Long;
+    }
+    else if (type->IsFloatType()) {
+        return CcdlType::Float;
+    }
+    else if (type->IsDoubleType()) {
+        return CcdlType::Double;
+    }
+    else if (type->IsStringType()) {
+        return CcdlType::String;
+    }
+    else if (type->IsHANDLEType()) {
+        return CcdlType::HANDLE;
+    }
+    else if (type->IsEnumeration()) {
+        return CcdlType::Enum;
+    }
+    else if (type->IsArray()) {
+        return CcdlType::Array;
+    }
+    else if (type->IsInterface()) {
+        return CcdlType::Interface;
+    }
+}
+
+String MetaBuilder::Dump()
+{
+    return DumpMetaComponent(mMetaComponet.get(), String(""));
+}
+
+String MetaBuilder::DumpMetaComponent(
+    /* [in] */ MetaComponent* mc,
+    /* [in] */ const String& prefix)
+{
+    StringBuilder builder;
+
+    builder.Append(prefix).Append("MetaComponent\n");
+    builder.Append(prefix).Append("{\n");
+    builder.Append(prefix).AppendFormat("    mMagic:0x%x\n", mc->mMagic);
+    builder.Append(prefix).Append("    mUuid:").Append(mc->mUuid.Dump()).Append("\n");
+    builder.Append(prefix).Append("    mName:").Append(mc->mName).Append("\n");
+    builder.Append(prefix).Append("    mUrl:").Append(mc->mUrl).Append("\n");
+    builder.Append(prefix).AppendFormat("    mNamespaceNumber:%d\n", mc->mNamespaceNumber);
+    builder.Append(prefix).AppendFormat("    mCoclassNumber:%d\n", mc->mCoclassNumber);
+    builder.Append(prefix).AppendFormat("    mEnumerationNumber:%d\n", mc->mEnumerationNumber);
+    builder.Append(prefix).AppendFormat("    mInterfaceNumber:%d\n", mc->mInterfaceNumber);
+    builder.Append(prefix).AppendFormat("    mTypeNumber:%d\n", mc->mTypeNumber);
+    builder.Append(prefix).Append("}\n");
+
+    for (int i = 0; i < mc->mNamespaceNumber; i++) {
+        String dumpNS = DumpMetaNamespace(mc->mNamespaces[i], prefix + "  ");
+        builder.Append(dumpNS);
     }
 
-    return mn;
+    for (int i = 0; i < mc->mEnumerationNumber; i++) {
+        String dumpEnum = DumpMetaEnumeration(mc->mEnumerations[i], prefix + "  ");
+        builder.Append(dumpEnum);
+    }
+
+    for (int i = 0; i < mc->mInterfaceNumber; i++) {
+        String dumpItf = DumpMetaInterface(mc->mInterfaces[i], prefix + "  ");
+        builder.Append(dumpItf);
+    }
+
+    for (int i = 0; i < mc->mCoclassNumber; i++) {
+        String dumpCls = DumpMetaCoclass(mc->mCoclasses[i], prefix + "  ");
+        builder.Append(dumpCls);
+    }
+
+    return builder.ToString();
+}
+
+String MetaBuilder::DumpMetaCoclass(
+    /* [in] */ MetaCoclass* mc,
+    /* [in] */ const String& prefix)
+{
+    StringBuilder builder;
+
+    builder.Append(prefix).Append("MetaCoclass\n");
+    builder.Append(prefix).Append("{\n");
+    builder.Append(prefix).Append("    mName:").Append(mc->mName).Append("\n");
+    builder.Append(prefix).Append("    mNamespace:").Append(mc->mNamespace).Append("\n");
+    builder.Append(prefix).AppendFormat("    mInterfaceNumber:%d\n", mc->mInterfaceNumber);
+    for (int i = 0; i < mc->mInterfaceNumber; i++) {
+        builder.Append(prefix).AppendFormat("        %s\n",
+                mMetaComponet->mInterfaces[mc->mInterfaceIndexes[i]]->mName);
+    }
+    builder.Append(prefix).Append("}\n");
+
+    return builder.ToString();
+}
+
+String MetaBuilder::DumpMetaConstant(
+    /* [in] */ MetaConstant* mc,
+    /* [in] */ const String& prefix)
+{
+    StringBuilder builder;
+
+    builder.Append(prefix).Append("MetaConstant\n");
+    builder.Append(prefix).Append("{\n");
+    builder.Append(prefix).Append("    mName:").Append(mc->mName).Append("\n");
+    builder.Append(prefix).Append("    mType:").Append(
+            DumpMetaType(mMetaComponet->mTypes[mc->mTypeIndex])).Append("\n");
+    builder.Append(prefix).Append("    mValue:").Append(
+            DumpConstantValue(mc)).Append("\n");
+    if (mc->mRadix != 0 ) {
+        builder.Append(prefix).AppendFormat("    mRadix:%d\n", mc->mRadix);
+    }
+    builder.Append(prefix).Append("}\n");
+
+    return builder.ToString();
+}
+
+String MetaBuilder::DumpConstantValue(
+    /* [in] */ MetaConstant* mc)
+{
+    StringBuilder builder;
+
+    MetaType* mt = mMetaComponet->mTypes[mc->mTypeIndex];
+    switch(mt->mKind) {
+        case CcdlType::Char:
+            builder.AppendFormat("%c", mc->mValue.mInteger);
+            break;
+        case CcdlType::Byte:
+            builder.AppendFormat("%d", (unsigned char)mc->mValue.mInteger);
+            break;
+        case CcdlType::Short:
+            builder.AppendFormat("%d", (short)mc->mValue.mInteger);
+            break;
+        case CcdlType::Integer:
+            builder.AppendFormat("%d", mc->mValue.mInteger);
+            break;
+        case CcdlType::Long:
+            builder.AppendFormat("%lld", mc->mValue.mLong);
+            break;
+        case CcdlType::Float:
+            builder.AppendFormat("%f", mc->mValue.mFloat);
+            break;
+        case CcdlType::Double:
+            builder.AppendFormat("%e", mc->mValue.mDouble);
+            break;
+        case CcdlType::Boolean:
+            builder.Append(mc->mValue.mBoolean ? "true" : "false");
+            break;
+        case CcdlType::String:
+            builder.Append(mc->mValue.mString);
+            break;
+        case CcdlType::Enum: {
+            builder.Append(mc->mValue.mString);
+            break;
+        }
+        default:
+            break;
+    }
+
+    return builder.ToString();
+}
+
+String MetaBuilder::DumpMetaEnumeration(
+    /* [in] */ MetaEnumeration* me,
+    /* [in] */ const String& prefix)
+{
+    StringBuilder builder;
+
+    builder.Append(prefix).Append("MetaEnumeration\n");
+    builder.Append(prefix).Append("{\n");
+    builder.Append(prefix).Append("    mName:").Append(me->mName).Append("\n");
+    builder.Append(prefix).Append("    mNamespace:").Append(me->mNamespace).Append("\n");
+    builder.Append(prefix).AppendFormat("    mEnumeratorNumber:%d\n", me->mEnumeratorNumber);
+    for (int i = 0; i < me->mEnumeratorNumber; i++) {
+        builder.Append(prefix).AppendFormat("        %s = %d\n",
+                me->mEnumerators[i]->mName, me->mEnumerators[i]->mValue);
+    }
+    builder.Append(prefix).Append("}\n");
+
+    return builder.ToString();
+}
+
+String MetaBuilder::DumpMetaInterface(
+    /* [in] */ MetaInterface* mi,
+    /* [in] */ const String& prefix)
+{
+    StringBuilder builder;
+
+    builder.Append(prefix).Append("MetaInterface\n");
+    builder.Append(prefix).Append("{\n");
+    builder.Append(prefix).Append("    mName:").Append(mi->mName).Append("\n");
+    builder.Append(prefix).Append("    mNamespace:").Append(mi->mNamespace).Append("\n");
+    builder.Append(prefix).AppendFormat("    mConstantNumber:%d\n", mi->mConstantNumber);
+    builder.Append(prefix).AppendFormat("    mMethodNumber:%d\n", mi->mMethodNumber);
+    builder.Append(prefix).Append("}\n");
+
+    for (int i = 0; i < mi->mConstantNumber; i++) {
+        String dumpConst = DumpMetaConstant(mi->mConstants[i], prefix + "  ");
+        builder.Append(dumpConst);
+    }
+
+    for (int i = 0; i < mi->mMethodNumber; i++) {
+        String dumpMeth = DumpMetaMethod(mi->mMethods[i], prefix + "  ");
+        builder.Append(dumpMeth);
+    }
+
+    return builder.ToString();
+}
+
+String MetaBuilder::DumpMetaMethod(
+    /* [in] */ MetaMethod* mm,
+    /* [in] */ const String& prefix)
+{
+    StringBuilder builder;
+
+    builder.Append(prefix).Append("MetaMethod\n");
+    builder.Append(prefix).Append("{\n");
+    builder.Append(prefix).Append("    mName:").Append(mm->mName).Append("\n");
+    builder.Append(prefix).Append("    mSignature:").Append(mm->mSignature).Append("\n");
+    builder.Append(prefix).AppendFormat("    mParameterNumber:%d\n", mm->mParameterNumber);
+    for (int i = 0; i < mm->mParameterNumber; i++) {
+        builder.Append(prefix).AppendFormat("        %s\n",
+                DumpMetaParameter(mm->mParameters[i]).string());
+    }
+    builder.Append(prefix).Append("}\n");
+
+    return builder.ToString();
+}
+
+String MetaBuilder::DumpMetaNamespace(
+    /* [in] */ MetaNamespace* mn,
+    /* [in] */ const String& prefix)
+{
+    StringBuilder builder;
+
+    builder.Append(prefix).Append("MetaNamespace\n");
+    builder.Append(prefix).Append("{\n");
+    builder.Append(prefix).Append("    mName:").Append(mn->mName).Append("\n");
+    builder.Append(prefix).AppendFormat("    mCoclassNumber:%d\n", mn->mCoclassNumber);
+    for (int i = 0; i < mn->mCoclassNumber; i++) {
+        builder.Append(prefix).AppendFormat("        %s\n",
+                mMetaComponet->mCoclasses[mn->mCoclassIndexes[i]]->mName);
+    }
+    builder.Append(prefix).AppendFormat("    mEnumerationNumber:%d\n", mn->mEnumerationNumber);
+    for (int i = 0; i < mn->mEnumerationNumber; i++) {
+        builder.Append(prefix).AppendFormat("        %s\n",
+                mMetaComponet->mEnumerations[mn->mEnumerationIndexes[i]]->mName);
+    }
+    builder.Append(prefix).AppendFormat("    mInterfaceNumber:%d\n", mn->mInterfaceNumber);
+    for (int i = 0; i < mn->mInterfaceNumber; i++) {
+        builder.Append(prefix).AppendFormat("        %s\n",
+                mMetaComponet->mInterfaces[mn->mInterfaceIndexes[i]]->mName);
+    }
+    builder.Append(prefix).Append("}\n");
+
+    return builder.ToString();
+}
+
+String MetaBuilder::DumpMetaParameter(
+    /* [in] */ MetaParameter* mp)
+{
+    StringBuilder builder;
+
+    builder.Append("mName:").Append(DumpMetaType(mMetaComponet->mTypes[mp->mTypeIndex]));
+    builder.Append("[");
+    bool needComma = false;
+    if ((mp->mAttribute & Parameter::IN) != 0) {
+        builder.Append("in");
+        needComma = true;
+    }
+    if ((mp->mAttribute & Parameter::OUT) != 0) {
+        if (needComma) builder.Append(",");
+        builder.Append("out");
+        needComma = true;
+    }
+    if ((mp->mAttribute & Parameter::CALLEE) != 0) {
+        if (needComma) builder.Append(",");
+        builder.Append("callee");
+    }
+    builder.Append("]");
+
+    return builder.ToString();
+}
+
+String MetaBuilder::DumpMetaType(
+    /* [in] */ MetaType* mt)
+{
+    StringBuilder builder;
+
+    switch(mt->mKind) {
+        case CcdlType::Char:
+            builder.Append("Char");
+            break;
+        case CcdlType::Byte:
+            builder.Append("Byte");
+            break;
+        case CcdlType::Short:
+            builder.Append("Short");
+            break;
+        case CcdlType::Integer:
+            builder.Append("Integer");
+            break;
+        case CcdlType::Long:
+            builder.Append("Long");
+            break;
+        case CcdlType::Float:
+            builder.Append("Float");
+            break;
+        case CcdlType::Double:
+            builder.Append("Double");
+            break;
+        case CcdlType::Boolean:
+            builder.Append("Boolean");
+            break;
+        case CcdlType::String:
+            builder.Append("String");
+            break;
+        case CcdlType::HANDLE:
+            builder.Append("HANDLE");
+            break;
+        case CcdlType::Enum:
+            builder.Append(mMetaComponet->mEnumerations[mt->mIndex]->mName);
+            break;
+        case CcdlType::Array:
+            builder.Append("Array<").Append(
+                    DumpMetaType(mMetaComponet->mTypes[mt->mNestedTypeIndex])).Append(">");
+            break;
+        case CcdlType::Interface:
+            builder.Append(mMetaComponet->mInterfaces[mt->mIndex]->mName);
+            break;
+        default:
+            break;
+    }
+
+    for (int i = 0; i < mt->mPointerNumber; i++) {
+        builder.Append("*");
+    }
+
+    return builder.ToString();
 }
 
 }

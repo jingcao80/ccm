@@ -60,6 +60,17 @@ bool Interface::AddMethod(
     return mMethods.Add(method);
 }
 
+String Interface::Signature()
+{
+    StringBuilder builder;
+
+    builder.Append("L");
+    builder.Append(mNamespace->ToString().Replace("::", "/"));
+    builder.Append(mName);
+    builder.Append(";");
+    return builder.ToString();
+}
+
 String Interface::Dump(
     /* [in] */ const String& prefix)
 {

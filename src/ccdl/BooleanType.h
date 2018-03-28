@@ -30,6 +30,12 @@ public:
 
     bool IsPrimitiveType() override
     { return true; }
+
+    bool IsBooleanType() override
+    { return true; }
+
+    String Signature() override
+    { return String("Z"); }
 };
 
 }

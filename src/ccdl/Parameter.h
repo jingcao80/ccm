@@ -32,6 +32,9 @@ public:
         , mAttribute(0)
     {}
 
+    inline int GetAttribute()
+    { return mAttribute; }
+
     inline void SetAttribute(
         /* [in] */ int attr)
     { mAttribute = mAttribute | attr; }
@@ -42,6 +45,9 @@ public:
     inline void SetName(
         /* [in] */ const String& name)
     { mName = name; }
+
+    inline Type* GetType()
+    { return mType; }
 
     inline void SetType(
         /* [in] */ Type* type)

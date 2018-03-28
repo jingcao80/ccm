@@ -36,6 +36,12 @@ public:
 
     bool IsIntegralType() override
     { return true; }
+
+    bool IsCharType() override
+    { return true; }
+
+    String Signature() override
+    { return String("C"); }
 };
 
 }

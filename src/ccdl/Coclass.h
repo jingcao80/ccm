@@ -55,6 +55,8 @@ public:
         /* [in] */ int index)
     { return mInterfaces.Get(index); }
 
+    String Signature() override;
+
     String Dump(
         /* [in] */ const String& prefix) override;
 

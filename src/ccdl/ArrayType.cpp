@@ -19,6 +19,11 @@
 namespace ccm {
 namespace ccdl {
 
+String ArrayType::Signature()
+{
+    return String("[") + mElementType->Signature();
+}
+
 String ArrayType::ToString()
 {
     return String("Array<") + mElementType->ToString() + String(">");

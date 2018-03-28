@@ -29,9 +29,17 @@ public:
         : mElementType(nullptr)
     {}
 
+    bool IsArray() override
+    { return true; }
+
+    inline Type* GetElementType()
+    { return mElementType; }
+
     inline void SetElementType(
         /* [in] */ Type* elemType)
     { mElementType = elemType; }
+
+    String Signature() override;
 
     String ToString() override;
 

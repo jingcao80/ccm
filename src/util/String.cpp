@@ -14,8 +14,9 @@
 // limitations under the License.
 //=========================================================================
 
-#include "String.h"
 #include "Logger.h"
+#include "String.h"
+#include "StringBuilder.h"
 
 #include <new>
 #include <stdarg.h>
@@ -249,11 +250,35 @@ int String::IndexOf(
 }
 
 int String::IndexOf(
+    /* [in] */ int c,
+    /* [in] */ int fromIndex) const
+{
+    if (c == '\0' || IsNullOrEmpty() || fromIndex >= GetLength()) {
+        return -1;
+    }
+
+    char* ci = strchr(mString + fromIndex, c);
+    return ci != nullptr ? ci - mString : -1;
+}
+
+int String::IndexOf(
     /* [in] */ const String& other) const
 {
     if (IsNullOrEmpty() || other.IsNullOrEmpty()) return -1;
 
     char* ci = strstr(mString, other.mString);
+    return ci != nullptr ? ci - mString : -1;
+}
+
+int String::IndexOf(
+    /* [in] */ const String& other,
+    /* [in] */ int fromIndex) const
+{
+    if (IsNullOrEmpty() || other.IsNullOrEmpty() || fromIndex >= GetLength()) {
+        return -1;
+    }
+
+    char* ci = strstr(mString + fromIndex, other.mString);
     return ci != nullptr ? ci - mString : -1;
 }
 
@@ -268,6 +293,19 @@ int String::IndexOf(
     return ci != nullptr ? ci - mString : -1;
 }
 
+int String::IndexOf(
+    /* [in] */ const char* string,
+    /* [in] */ int fromIndex) const
+{
+    if (IsNullOrEmpty() || string == nullptr || string[0] == '\0' ||
+            fromIndex >= GetLength() ) {
+        return -1;
+    }
+
+    char* ci = strstr(mString + fromIndex, string);
+    return ci != nullptr ? ci - mString : -1;
+}
+
 int String::LastIndexOf(
     /* [in] */ int c) const
 {
@@ -278,29 +316,80 @@ int String::LastIndexOf(
 }
 
 int String::LastIndexOf(
+    /* [in] */ int c,
+    /* [in] */ int fromIndex) const
+{
+    if (c == '0' || IsNullOrEmpty() || fromIndex < 0) return -1;
+
+    int pos = fromIndex < GetLength() ? fromIndex : GetLength() - 1;
+    char* p = mString + pos;
+    while (p != mString) {
+        if (*p == c) return p - mString;
+        p--;
+    }
+    return -1;
+}
+
+int String::LastIndexOf(
     /* [in] */ const String& other) const
 {
     if (IsNullOrEmpty() || other.IsNullOrEmpty()) return -1;
 
-    int sourceLength = GetLength();
-    int targetLength = other.GetLength();
-    int fromIndex = sourceLength;
-    int rightIndex = sourceLength - targetLength;
-    if (fromIndex < 0) {
+    return LastIndexOfInternal(other.string(), GetLength() - 1);
+}
+
+int String::LastIndexOf(
+    /* [in] */ const String& other,
+    /* [in] */ int fromIndex) const
+{
+    if (IsNullOrEmpty() || other.IsNullOrEmpty() || fromIndex < 0) {
         return -1;
     }
+
+    return LastIndexOfInternal(other.string(), fromIndex);
+}
+
+int String::LastIndexOf(
+    /* [in] */ const char* string) const
+{
+    if (IsNullOrEmpty() || string == nullptr || string[0] == '\0') {
+        return -1;
+    }
+
+    return LastIndexOfInternal(string, GetLength() - 1);
+}
+
+int String::LastIndexOf(
+    /* [in] */ const char* string,
+    /* [in] */ int fromIndex) const
+{
+    if (IsNullOrEmpty() || string == nullptr || string[0] == '\0' ||
+            fromIndex < 0) {
+        return -1;
+    }
+
+    return LastIndexOf(string, fromIndex);
+}
+
+int String::LastIndexOfInternal(
+    /* [in] */ const char* string,
+    /* [in] */ int fromIndex) const
+{
+    int sourceLength = GetLength();
+    int targetLength = strlen(string);
+    int rightIndex = sourceLength - targetLength;
     if (fromIndex > rightIndex) {
         fromIndex = rightIndex;
     }
 
     int strLastIndex = targetLength - 1;
-    char strLastChar = other.GetChar(strLastIndex);
+    char strLastChar = string[strLastIndex];
     int min = targetLength - 1;
     int i = min + fromIndex;
 
 startSearchForLastChar:
     while (true) {
-        while (i >= min && GetChar(i) != strLastChar) {
+        while (i >= min && mString[i] != strLastChar) {
             i--;
         }
         if (i < min) {
@@ -311,7 +400,7 @@ startSearchForLastChar:
         int k = strLastIndex - 1;
 
         while (j > start) {
-            if (GetChar(j--) != other.GetChar(k--)) {
+            if (mString[j--] != string[k--]) {
                 i--;
                 goto startSearchForLastChar;
             }
@@ -320,10 +409,75 @@ startSearchForLastChar:
     }
 }
 
-int String::LastIndexOf(
-    /* [in] */ const char* string) const
+String String::Replace(
+    /* [in] */ int oldChar,
+    /* [in] */ int newChar)
 {
-    return LastIndexOf(String(string));
+    if (oldChar == newChar) return *this;
+
+    int N = GetLength();
+    for (int i = 0; i < N; i++) {
+        if (mString[i] == oldChar) {
+            String str(mString);
+            for (int j = i; j < N; j++) {
+                if (str.mString[j] == oldChar) {
+                    str.mString[j] = newChar;
+                }
+            }
+            return str;
+        }
+    }
+    return *this;
+}
+
+String String::Replace(
+    /* [in] */ const String& target,
+    /* [in] */ const String& replacement)
+{
+    if (target.IsNullOrEmpty() || replacement.IsNull()) {
+        return *this;
+    }
+
+    int index = IndexOf(target);
+    if (index== -1) {
+        return *this;
+    }
+
+    StringBuilder builder;
+    int begin = 0, step = target.GetLength();
+    while (index != -1) {
+        builder.Append(Substring(begin, index - 1));
+        builder.Append(replacement);
+        begin = index + step;
+        index = IndexOf(target, begin);
+    }
+    builder.Append(Substring(begin));
+    return builder.ToString();
+}
+
+String String::Replace(
+    /* [in] */ const char* target,
+    /* [in] */ const char* replacement)
+{
+    if (target == nullptr || target[0] == '\0' || replacement == nullptr) {
+        return *this;
+    }
+
+    int index = IndexOf(target);
+    if (index == -1) {
+        return *this;
+    }
+
+    StringBuilder builder;
+    int begin = 0, step = strlen(target);
+    while (index != -1) {
+        builder.Append(Substring(begin, index - 1));
+        builder.Append(replacement);
+        begin = index + step;
+        index = IndexOf(target, begin);
+    }
+    builder.Append(Substring(begin));
+    return builder.ToString();
 }
 
 String& String::operator=(

@@ -106,6 +106,9 @@ public:
     inline int GetTypeNumber()
     { return mTypes.GetSize(); }
 
+    Type* GetType(
+        /* [in] */ int index);
+
     Type* FindType(
         /* [in] */ const String& typeName);
 

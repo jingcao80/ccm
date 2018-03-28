@@ -5,6 +5,7 @@
 #include "parser/Parser.h"
 #include "util/File.h"
 #include "util/Logger.h"
+#include "util/String.h"
 
 #include <memory>
 
@@ -12,6 +13,7 @@ using ccm::File;
 using ccm::Logger;
 using ccm::Options;
 using ccm::Parser;
+using ccm::String;
 using ccm::metadata::MetaComponent;
 using ccm::metadata::MetaBuilder;
 
@@ -37,6 +39,9 @@ int main(int argc, char** argv)
         return -1;
     }
     std::shared_ptr<MetaComponent> comMetadata = mbuilder.Build();
+
+    String dumpStr = mbuilder.Dump();
+    printf("%s", dumpStr.string());
 
     return 0;
 }

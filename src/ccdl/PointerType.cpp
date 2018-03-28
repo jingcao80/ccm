@@ -19,6 +19,11 @@
 namespace ccm {
 namespace ccdl {
 
+String PointerType::Signature()
+{
+    return mBaseType->Signature() + "*";
+}
+
 String PointerType::ToString()
 {
     String typeStr = mBaseType->ToString();
