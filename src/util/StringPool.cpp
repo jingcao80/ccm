@@ -67,8 +67,10 @@ void StringPool::Add(
 char* StringPool::FindAddress(
     /* [in] */ const String& string)
 {
+    if (!mOffsets.ContainsKey(string)) return nullptr;
+
     ptrdiff_t offset = mOffsets.Get(string);
-    return offset != 0 ? mData + offset : nullptr;
+    return mData + offset;
 }
 
 ptrdiff_t StringPool::FindOffset(

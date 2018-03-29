@@ -54,6 +54,7 @@ struct MetaType;
 struct MetaComponent
 {
     int                 mMagic;
+    int                 mSize;
     Uuid                mUuid;
     char*               mName;
     char*               mUrl;

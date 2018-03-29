@@ -34,11 +34,17 @@ public:
     inline bool ShouldShowUsage()
     { return mShowUsage; }
 
+    inline bool OnlyCompile()
+    { return mOnlyCompile; }
+
     inline int GetOptionNumber()
     { return mOptionNumber; }
 
     inline String GetInputFile()
     { return mInputFile; }
+
+    inline String GetOutputFile()
+    { return mOutputFile; }
 
     void ShowUsage();
 
@@ -55,6 +61,7 @@ private:
 
     bool mShowUsage;
     bool mFormatError;
+    bool mOnlyCompile;
 };
 
 }

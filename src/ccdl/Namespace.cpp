@@ -67,7 +67,7 @@ bool Namespace::AddInterface(
 
 String Namespace::ToString()
 {
-    String nsString;
+    String nsString("");
     Namespace* ns = this;
     while (ns != nullptr) {
         if (ns->mName.Equals("__global__")) return nsString;

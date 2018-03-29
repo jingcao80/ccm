@@ -73,10 +73,12 @@ private:
 
 public:
     File(
-        /* [in] */ const char* path);
+        /* [in] */ const char* path,
+        /* [in] */ int mode);
 
     File(
-        /* [in] */ const String& path);
+        /* [in] */ const String& path,
+        /* [in] */ int mode);
 
     ~File();
 
@@ -96,15 +98,29 @@ public:
         /* [in] */ int c)
     { mReader.Unread(c); }
 
+    void Write(
+        /* [in] */ const void* data,
+        /* [in] */ size_t size);
+
+    void Flush();
+
+    void Close();
+
     inline int GetColumnNo()
     { return mReader.GetColumnNo(); }
 
     inline int GetLineNo()
     { return mReader.GetLineNo(); }
 
+public:
+    static constexpr int READ = 0x1;
+    static constexpr int WRITE = 0x2;
+    static constexpr int APPEND = 0x4;
+
 private:
     String mPath;
     FILE* mFd;
+    int mMode;
     BufferedReader mReader;
 };
 

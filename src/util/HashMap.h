@@ -80,8 +80,10 @@ public:
                     delete curr;
                     curr = next;
                 }
+                mBuckets[i] = nullptr;
             }
         }
+        free(mBuckets);
     }
 
     void Put(
@@ -179,6 +181,21 @@ public:
 
         mInvalidate = false;
         return mKeyValues;
+    }
+
+    void Clear()
+    {
+        for (int i = 0; i < mBucketSize; i++) {
+            if (mBuckets[i] != nullptr) {
+                Bucket* curr = mBuckets[i];
+                while (curr != nullptr) {
+                    Bucket* next = curr->mNext;
+                    delete curr;
+                    curr = next;
+                }
+                mBuckets[i] = nullptr;
+            }
+        }
     }
 
 private:

@@ -58,8 +58,6 @@ public:
 
     std::shared_ptr<MetaComponent> Build();
 
-    String Dump();
-
 private:
     size_t CalculateMetadataSize();
 
@@ -128,51 +126,18 @@ private:
     MetaType* WriteMetaType(
         /* [in] */ Type* type);
 
+    char* WriteString(
+        /* [in] */ const String& string);
+
     CcdlType Type2CcdlType(
         /* [in] */ Type* type);
-
-    String DumpMetaComponent(
-        /* [in] */ MetaComponent* mc,
-        /* [in] */ const String& prefix);
-
-    String DumpMetaCoclass(
-        /* [in] */ MetaCoclass* mc,
-        /* [in] */ const String& prefix);
-
-    String DumpMetaConstant(
-        /* [in] */ MetaConstant* mc,
-        /* [in] */ const String& prefix);
-
-    String DumpConstantValue(
-        /* [in] */ MetaConstant* mc);
-
-    String DumpMetaEnumeration(
-        /* [in] */ MetaEnumeration* me,
-        /* [in] */ const String& prefix);
-
-    String DumpMetaInterface(
-        /* [in] */ MetaInterface* mi,
-        /* [in] */ const String& prefix);
-
-    String DumpMetaMethod(
-        /* [in] */ MetaMethod* mm,
-        /* [in] */ const String& prefix);
-
-    String DumpMetaNamespace(
-        /* [in] */ MetaNamespace* mn,
-        /* [in] */ const String& prefix);
-
-    String DumpMetaParameter(
-        /* [in] */ MetaParameter* mp);
-
-    String DumpMetaType(
-        /* [in] */ MetaType* mt);
 
 private:
     static const String TAG;
     std::shared_ptr<Module> mModule;
     std::shared_ptr<MetaComponent> mMetaComponet;
     uintptr_t mBasePtr;
+    int mSize;
     StringPool mStringPool;
 };
 

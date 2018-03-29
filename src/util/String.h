@@ -43,6 +43,9 @@ public:
     inline bool IsNull() const
     { return mString == nullptr; }
 
+    inline bool IsEmpty() const
+    { return mString[0] == '\0'; }
+
     inline bool IsNullOrEmpty() const
     { return mString == nullptr || mString[0] == '\0'; }
 

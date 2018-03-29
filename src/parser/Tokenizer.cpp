@@ -88,7 +88,7 @@ Tokenizer::~Tokenizer()
 bool Tokenizer::PushInputFile(
     /* [in] */ const String& filePath)
 {
-    File* file = new File(filePath);
+    File* file = new File(filePath, File::READ);
     if (!file->IsValid()) return false;
 
     if (mFileStack == nullptr) {

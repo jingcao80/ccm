@@ -27,6 +27,8 @@ set(SOURCES
     src/ccdl/Type.cpp
     src/ccdl/UnaryExpression.cpp
     src/metadata/MetaBuilder.cpp
+    src/metadata/MetaDumper.cpp
+    src/metadata/MetaSerializer.cpp
     src/parser/Environment.cpp
     src/parser/Parser.cpp
     src/parser/Tokenizer.cpp

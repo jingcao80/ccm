@@ -19,32 +19,80 @@
 namespace ccm {
 
 File::File(
-    /* [in] */ const char* path)
-    : mReader(this)
+    /* [in] */ const char* path,
+    /* [in] */ int mode)
+    : mMode(mode)
+    , mReader(this)
 {
     if (path == nullptr || path[0] == '\0') {
         mFd = NULL;
         return;
     }
 
-    mFd = fopen(path, "r");
+    if (mode & APPEND) {
+        mFd = fopen(path, "a+");
+    }
+    else if (mode & WRITE) {
+        mFd = fopen(path, "w+");
+    }
+    else {
+        mFd = fopen(path, "r");
+    }
+
     mPath = path;
 }
 
 File::File(
-    /* [in] */ const String& path)
-    : mReader(this)
+    /* [in] */ const String& path,
+    /* [in] */ int mode)
+    : mMode(mode)
+    , mReader(this)
 {
     if (path.IsNullOrEmpty()) {
         mFd = NULL;
         return;
     }
 
-    mFd = fopen(path, "r");
+    if (mode & APPEND) {
+        mFd = fopen(path, "a+");
+    }
+    else if (mode & WRITE) {
+        mFd = fopen(path, "w+");
+    }
+    else {
+        mFd = fopen(path, "r");
+    }
+
     mPath = path;
 }
 
 File::~File()
+{
+    if (mFd != nullptr) {
+        fclose(mFd);
+        mFd = nullptr;
+    }
+}
+
+void File::Write(
+    /* [in] */ const void* data,
+    /* [in] */ size_t size)
+{
+    if (data == nullptr || size == 0) return;
+
+    if (mMode & (WRITE | APPEND) && mFd != nullptr) {
+        fwrite(data, size, 1, mFd);
+    }
+}
+
+void File::Flush()
+{
+    if (mMode & (WRITE | APPEND) && mFd != nullptr) {
+        fflush(mFd);
+    }
+}
+
+void File::Close()
 {
     if (mFd != nullptr) {
         fclose(mFd);

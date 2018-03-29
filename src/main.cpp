@@ -2,6 +2,8 @@
 #include "Options.h"
 #include "metadata/Component.h"
 #include "metadata/MetaBuilder.h"
+#include "metadata/MetaDumper.h"
+#include "metadata/MetaSerializer.h"
 #include "parser/Parser.h"
 #include "util/File.h"
 #include "util/Logger.h"
@@ -16,6 +18,8 @@ using ccm::Parser;
 using ccm::String;
 using ccm::metadata::MetaComponent;
 using ccm::metadata::MetaBuilder;
+using ccm::metadata::MetaDumper;
+using ccm::metadata::MetaSerializer;
 
 int main(int argc, char** argv)
 {
@@ -40,8 +44,35 @@ int main(int argc, char** argv)
     }
     std::shared_ptr<MetaComponent> comMetadata = mbuilder.Build();
 
-    String dumpStr = mbuilder.Dump();
+    MetaDumper dumper(comMetadata.get());
+    String dumpStr = dumper.Dump();
     printf("%s", dumpStr.string());
+
+    MetaSerializer serializer(comMetadata.get());
+    serializer.Serialize();
+
+    printf("==========================\n\n\n");
+
+    int dataSize = serializer.GetDataSize();
+    void* newData = malloc(dataSize);
+    if (newData == nullptr) {
+        Logger::E("ccdl", "Out of memory.");
+        return -1;
+    }
+
+    uintptr_t data = serializer.GetData();
+    memcpy(newData, reinterpret_cast<void*>(data), dataSize);
+    serializer.Deserialize(reinterpret_cast<uintptr_t>(newData));
+
+    dumper.Reset(reinterpret_cast<MetaComponent*>(newData));
+    dumpStr = dumper.Dump();
+    printf("%s", dumpStr.string());
+
+    File output(options.GetOutputFile(), File::WRITE);
+
+    output.Write(newData, dataSize);
+    output.Flush();
+    output.Close();
 
     return 0;
 }

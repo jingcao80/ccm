@@ -26,6 +26,7 @@ Options::Options(
     : mOptionNumber(argc)
     , mShowUsage(false)
     , mFormatError(false)
+    , mOnlyCompile(false)
 {
     Parse(argc, argv);
 }
@@ -42,6 +43,9 @@ void Options::Parse(
         if (!strcmp("--help", string)) {
             mShowUsage = true;
         }
+        else if (!strcmp("-c", string)) {
+            mOnlyCompile = true;
+        }
         else if (!strcmp("-o", string)) {
             mOutputFile = argv[i++];
         }
@@ -56,7 +60,8 @@ void Options::ShowUsage()
     printf("Usage: ccdl [options] file\n"
            "Options:\n"
            "  --help            Display command line options\n"
-           "  -o <file>         Place the output into <file>\n");
+           "  -c                Compile only, not generate C++ codes\n"
+           "  -o <file>         Place the metadata into <file>\n");
 }
 
 }
