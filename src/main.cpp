@@ -1,5 +1,6 @@
 
 #include "Options.h"
+#include "codegen/CodeGenerator.h"
 #include "metadata/Component.h"
 #include "metadata/MetaBuilder.h"
 #include "metadata/MetaDumper.h"
@@ -16,6 +17,7 @@ using ccm::Logger;
 using ccm::Options;
 using ccm::Parser;
 using ccm::String;
+using ccm::codegen::CodeGenerator;
 using ccm::metadata::MetaComponent;
 using ccm::metadata::MetaBuilder;
 using ccm::metadata::MetaDumper;
@@ -73,6 +75,11 @@ int main(int argc, char** argv)
     output.Write(newData, dataSize);
     output.Flush();
     output.Close();
+
+    CodeGenerator cg;
+    cg.SetDirectory(options.GetOutputDir());
+    cg.SetMetadata(reinterpret_cast<MetaComponent*>(newData));
+    cg.Generate();
 
     return 0;
 }

@@ -487,6 +487,9 @@ MetaInterface* MetaBuilder::WriteMetaInterface(
     MetaInterface* mi = reinterpret_cast<MetaInterface*>(mBasePtr);
     mi->mName = WriteString(itf->GetName());
     mi->mNamespace = WriteString(itf->GetNamespace()->ToString());
+    Interface* baseItf = itf->GetBaseInterface();
+    mi->mBaseInterfaceIndex = baseItf != nullptr ?
+            mModule->IndexOf(baseItf) : -1;
     mi->mConstantNumber = CONST_NUM;
     mi->mMethodNumber = MTH_NUM;
     // mConstants's address

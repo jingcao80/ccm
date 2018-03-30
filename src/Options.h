@@ -46,6 +46,9 @@ public:
     inline String GetOutputFile()
     { return mOutputFile; }
 
+    inline String GetOutputDir()
+    { return mOutputDir; }
+
     void ShowUsage();
 
 private:
@@ -58,6 +61,7 @@ private:
     String mProgram;
     String mInputFile;
     String mOutputFile;
+    String mOutputDir;
 
     bool mShowUsage;
     bool mFormatError;

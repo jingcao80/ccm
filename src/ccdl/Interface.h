@@ -47,6 +47,9 @@ public:
     bool IsInterface() override
     { return true; }
 
+    inline Interface* GetBaseInterface()
+    { return mBaseInterface; }
+
     void SetBaseInterface(
         /* [in] */ Interface* baseItf);
 

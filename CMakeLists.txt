@@ -26,6 +26,7 @@ set(SOURCES
     src/ccdl/ShiftExpression.cpp
     src/ccdl/Type.cpp
     src/ccdl/UnaryExpression.cpp
+    src/codegen/CodeGenerator.cpp
     src/metadata/MetaBuilder.cpp
     src/metadata/MetaDumper.cpp
     src/metadata/MetaSerializer.cpp

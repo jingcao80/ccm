@@ -127,17 +127,27 @@ public:
         /* [in] */ const char* string,
         /* [in] */ int fromIndex) const;
 
+    bool StartsWith(
+        /* [in] */ const String& prefix) const;
+
+    bool StartsWith(
+        /* [in] */ const char* prefix) const;
+
+    String ToLowerCase() const;
+
+    String ToUpperCase() const;
+
     String Replace(
         /* [in] */ int oldChar,
-        /* [in] */ int newChar);
+        /* [in] */ int newChar) const;
 
     String Replace(
         /* [in] */ const char* target,
-        /* [in] */ const char* replacement);
+        /* [in] */ const char* replacement) const;
 
     String Replace(
         /* [in] */ const String& target,
-        /* [in] */ const String& replacement);
+        /* [in] */ const String& replacement) const;
 
     String& operator=(
         /* [in] */ const char* string);

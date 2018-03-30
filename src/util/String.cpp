@@ -18,6 +18,7 @@
 #include "String.h"
 #include "StringBuilder.h"
 
+#include <ctype.h>
 #include <new>
 #include <stdarg.h>
 #include <stdlib.h>
@@ -368,7 +369,7 @@ int String::LastIndexOf(
         return -1;
     }
 
-    return LastIndexOf(string, fromIndex);
+    return LastIndexOfInternal(string, fromIndex);
 }
 
 int String::LastIndexOfInternal(
@@ -409,9 +410,43 @@ startSearchForLastChar:
     }
 }
 
+bool String::StartsWith(
+    /* [in] */ const String& prefix) const
+{
+    return IndexOf(prefix) == 0;
+}
+
+bool String::StartsWith(
+    /* [in] */ const char* prefix) const
+{
+    return IndexOf(prefix) == 0;
+}
+
+String String::ToLowerCase() const
+{
+    if (IsNullOrEmpty()) return *this;
+
+    String str(mString);
+    for (int i = 0; i < str.GetLength(); i++) {
+        str.mString[i] = tolower(str.mString[i]);
+    }
+    return str;
+}
+
+String String::ToUpperCase() const
+{
+    if (IsNullOrEmpty()) return *this;
+
+    String str(mString);
+    for (int i = 0; i < str.GetLength(); i++) {
+        str.mString[i] = toupper(str.mString[i]);
+    }
+    return str;
+}
+
 String String::Replace(
     /* [in] */ int oldChar,
-    /* [in] */ int newChar)
+    /* [in] */ int newChar) const
 {
     if (oldChar == newChar) return *this;
 
@@ -432,7 +467,7 @@ String String::Replace(
 
 String String::Replace(
     /* [in] */ const String& target,
-    /* [in] */ const String& replacement)
+    /* [in] */ const String& replacement) const
 {
     if (target.IsNullOrEmpty() || replacement.IsNull()) {
         return *this;
@@ -457,7 +492,7 @@ String String::Replace(
 
 String String::Replace(
     /* [in] */ const char* target,
-    /* [in] */ const char* replacement)
+    /* [in] */ const char* replacement) const
 {
     if (target == nullptr || target[0] == '\0' || replacement == nullptr) {
         return *this;

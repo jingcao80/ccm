@@ -17,9 +17,85 @@
 #ifndef __CCM_CODEGEN_CODEGENERATOR_H__
 #define __CCM_CODEGEN_CODEGENERATOR_H__
 
+#include "../metadata/Component.h"
+#include "../util/String.h"
+
+using ccm::metadata::MetaComponent;
+using ccm::metadata::MetaConstant;
+using ccm::metadata::MetaInterface;
+using ccm::metadata::MetaMethod;
+using ccm::metadata::MetaNamespace;
+using ccm::metadata::MetaParameter;
+using ccm::metadata::MetaType;
+
 namespace ccm {
+namespace codegen {
 
+class CodeGenerator
+{
+public:
+    CodeGenerator();
 
+    void Generate();
+
+    inline void SetDirectory(
+        /* [in] */ const String& dir)
+    { mDirectory = dir; }
+
+    inline void SetMetadata(
+        /* [in] */ MetaComponent* component)
+    { mMetaComponent = component; }
+
+    inline void SetLicense(
+        /* [in] */ const String& license);
+
+private:
+    bool ResolveDirectory();
+
+    void GenerateTypeDeclarations();
+
+    String GenerateInterfaces(
+        /* [in] */ MetaNamespace* mn);
+
+    void GenerateCoclasses();
+
+    void GenerateModule();
+
+    String GenerateInterfaceDeclaration(
+        /* [in] */ MetaInterface* mi);
+
+    String GenerateConstantDeclaration(
+        /* [in] */ MetaConstant* mc);
+
+    String GenerateMethodDeclaration(
+        /* [in] */ MetaMethod* mm);
+
+    String GenerateDefineMacro(
+        /* [in] */ const String& fullName);
+
+    String GenerateNamespaceBegin(
+        /* [in] */ const String& ns);
+
+    String GenerateNamespaceEnd(
+        /* [in] */ const String& ns);
+
+    String GenerateParameter(
+        /* [in] */ MetaParameter* mp);
+
+    String GenerateType(
+        /* [in] */ MetaType* mt);
+
+    String GenerateValue(
+        /* [in] */ MetaConstant* mc);
+
+private:
+    static const String TAG;
+    String mDirectory;
+    MetaComponent* mMetaComponent;
+    String mLicense;
+};
+
+}
 }
 
 #endif // __CCM_CODEGEN_CODEGENERATOR_H__

@@ -108,6 +108,7 @@ struct MetaInterface
 {
     char*               mName;
     char*               mNamespace;
+    int                 mBaseInterfaceIndex;
     int                 mConstantNumber;
     int                 mMethodNumber;
     MetaConstant**      mConstants;

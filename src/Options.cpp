@@ -46,6 +46,9 @@ void Options::Parse(
         else if (!strcmp("-c", string)) {
             mOnlyCompile = true;
         }
+        else if (!strcmp("-d", string)) {
+            mOutputDir = argv[i++];
+        }
         else if (!strcmp("-o", string)) {
             mOutputFile = argv[i++];
         }
@@ -61,6 +64,7 @@ void Options::ShowUsage()
            "Options:\n"
            "  --help            Display command line options\n"
            "  -c                Compile only, not generate C++ codes\n"
+           "  -d <directory>    Place generated files into <directory>\n"
            "  -o <file>         Place the metadata into <file>\n");
 }
 
