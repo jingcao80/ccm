@@ -22,6 +22,7 @@
 
 using ccm::metadata::MetaComponent;
 using ccm::metadata::MetaConstant;
+using ccm::metadata::MetaEnumeration;
 using ccm::metadata::MetaInterface;
 using ccm::metadata::MetaMethod;
 using ccm::metadata::MetaNamespace;
@@ -54,12 +55,18 @@ private:
 
     void GenerateTypeDeclarations();
 
+    String GenerateEnumerations(
+        /* [in] */ MetaNamespace* mn);
+
     String GenerateInterfaces(
         /* [in] */ MetaNamespace* mn);
 
     void GenerateCoclasses();
 
     void GenerateModule();
+
+    String GenerateEnumerationDeclaration(
+        /* [in] */ MetaEnumeration* me);
 
     String GenerateInterfaceDeclaration(
         /* [in] */ MetaInterface* mi);
@@ -87,6 +94,18 @@ private:
 
     String GenerateValue(
         /* [in] */ MetaConstant* mc);
+
+    String GenerateInterfaceIDs(
+        /* [in] */ MetaNamespace* mn);
+
+    String GenerateCoclassIDs(
+        /* [in] */ MetaNamespace* mn);
+
+    String GenerateClassObjectGetterArray();
+
+    String GenerateSoGetClassObject();
+
+    String GenerateSoGetAllClassObjects();
 
 private:
     static const String TAG;

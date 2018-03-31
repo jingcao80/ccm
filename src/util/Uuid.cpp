@@ -55,6 +55,15 @@ Uuid& Uuid::operator=(
     return *this;
 }
 
+String Uuid::ToString()
+{
+    String uuidStr = String::Format("{0x%08x,0x%04x,0x%04x,0x%04x,"
+            "{0x%x,0x%x,0x%x,0x%x,0x%x,0x%x,0x%x,0x%x,0x%x,0x%x,0x%x,0x%x}}",
+            mData1, mData2, mData3, mData4, mData5[0], mData5[1], mData5[2], mData5[3],
+            mData5[4], mData5[5], mData5[6], mData5[7], mData5[8], mData5[9], mData5[10], mData5[11]);
+    return uuidStr;
+}
+
 String Uuid::Dump()
 {
     String uuidStr = String::Format("%08x-%04x-%04x-%04x-%x%x%x%x%x%x%x%x%x%x%x%x",

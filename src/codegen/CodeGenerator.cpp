@@ -26,6 +26,8 @@
 
 using ccm::ccdl::Parameter;
 using ccm::metadata::CcdlType;
+using ccm::metadata::MetaCoclass;
+using ccm::metadata::MetaEnumerator;
 using ccm::metadata::MetaNamespace;
 
 namespace ccm {
@@ -59,7 +61,7 @@ void CodeGenerator::Generate()
     GenerateTypeDeclarations();
 
     // GenerateCoclasses();
-    // GenerateModule();
+    GenerateModule();
 }
 
 bool CodeGenerator::ResolveDirectory()
@@ -100,6 +102,7 @@ void CodeGenerator::GenerateTypeDeclarations()
         }
         builder.Append(GenerateNamespaceBegin(String(mn->mName)));
 
+        builder.Append(GenerateEnumerations(mn));
         builder.Append(GenerateInterfaces(mn));
 
         builder.Append(GenerateNamespaceEnd(String(mn->mName)));
@@ -112,18 +115,65 @@ void CodeGenerator::GenerateTypeDeclarations()
     file.Close();
 }
 
+String CodeGenerator::GenerateEnumerations(
+    /* [in] */ MetaNamespace* mn)
+{
+    StringBuilder builder;
+
+    if (mn->mEnumerationNumber > 0) {
+        for (int i = 0; i < mn->mEnumerationNumber; i++) {
+            builder.Append(GenerateEnumerationDeclaration(
+                    mMetaComponent->mEnumerations[mn->mEnumerationIndexes[i]]));
+            if (i != mn->mEnumerationNumber - 1) builder.Append("\n");
+        }
+    }
+
+    return builder.ToString();
+}
+
 String CodeGenerator::GenerateInterfaces(
     /* [in] */ MetaNamespace* mn)
 {
     StringBuilder builder;
 
     if (mn->mInterfaceNumber > 0) {
-        for (int j = 0; j < mn->mInterfaceNumber; j++) {
+        for (int i = 0; i < mn->mInterfaceNumber; i++) {
             builder.Append(GenerateInterfaceDeclaration(
-                    mMetaComponent->mInterfaces[mn->mInterfaceIndexes[j]]));
-            if (j != mn->mInterfaceNumber - 1) builder.Append("\n");
+                    mMetaComponent->mInterfaces[mn->mInterfaceIndexes[i]]));
+            if (i != mn->mInterfaceNumber - 1) builder.Append("\n");
         }
     }
+
+    return builder.ToString();
+}
+
+String CodeGenerator::GenerateEnumerationDeclaration(
+    /* [in] */ MetaEnumeration* me)
+{
+    StringBuilder builder;
+
+    String defMacro = GenerateDefineMacro(
+            String::Format("%s%s", me->mNamespace, me->mName));
+    builder.Append("#ifndef ").Append(defMacro).Append("\n");
+    builder.Append("#define ").Append(defMacro).Append("\n\n");
+
+    builder.Append("enum class ").Append(me->mName).Append("\n{\n");
+
+    int j = 0;
+    for (int i = 0; i < me->mEnumeratorNumber; i++, j++) {
+        MetaEnumerator* mr = me->mEnumerators[i];
+        builder.Append("    ").Append(mr->mName);
+        if (mr->mValue != j) {
+            builder.AppendFormat(" = %d", mr->mValue);
+            j = mr->mValue;
+        }
+        if (i == me->mEnumeratorNumber - 1) builder.Append("\n");
+        else builder.Append(",\n");
+    }
+
+    builder.Append("}\n");
+
+    builder.Append("\n#endif //").Append(defMacro).Append("\n");
 
     return builder.ToString();
 }
@@ -378,6 +428,159 @@ String CodeGenerator::GenerateValue(
         default:
             break;
     }
+
+    return builder.ToString();
+}
+
+void CodeGenerator::GenerateModule()
+{
+    String filePath = String::Format("%s/%sPub.cpp", mDirectory.string(), mMetaComponent->mName);
+    File file(filePath, File::WRITE);
+
+    StringBuilder builder;
+
+    builder.Append(mLicense);
+    builder.Append("\n");
+
+    MetaComponent* mc = mMetaComponent;
+    for (int i = 0; i < mc->mNamespaceNumber; i++) {
+        MetaNamespace* mn = mc->mNamespaces[i];
+        if (mn->mCoclassNumber + mn->mEnumerationNumber +
+                mn->mInterfaceNumber == 0) {
+            continue;
+        }
+        builder.Append(GenerateNamespaceBegin(String(mn->mName)));
+
+        builder.Append(GenerateInterfaceIDs(mn));
+        builder.Append("\n");
+        builder.Append(GenerateCoclassIDs(mn));
+
+        builder.Append(GenerateNamespaceEnd(String(mn->mName)));
+        if (i != mc->mNamespaceNumber - 1) builder.Append("\n");
+    }
+
+    builder.Append("\n").Append(GenerateClassObjectGetterArray());
+    builder.Append("\n").Append(GenerateSoGetClassObject());
+
+    String data = builder.ToString();
+    file.Write(data.string(), data.GetLength());
+    file.Flush();
+    file.Close();
+}
+
+String CodeGenerator::GenerateInterfaceIDs(
+    /* [in] */ MetaNamespace* mn)
+{
+    StringBuilder builder;
+
+    for (int i = 0; i < mn->mInterfaceNumber; i++) {
+        MetaInterface* mi = mMetaComponent->mInterfaces[mn->mInterfaceIndexes[i]];
+        builder.AppendFormat("extern const InterfaceID IID_%s =\n        %s\n",
+                mi->mName, mi->mUuid.ToString().string());
+        if (i != mn->mInterfaceNumber - 1) builder.Append("\n");
+    }
+
+    return builder.ToString();
+}
+
+String CodeGenerator::GenerateCoclassIDs(
+    /* [in] */ MetaNamespace* mn)
+{
+    StringBuilder builder;
+
+    for (int i = 0; i < mn->mCoclassNumber; i++) {
+        MetaCoclass* mc = mMetaComponent->mCoclasses[mn->mCoclassIndexes[i]];
+        builder.AppendFormat("extern const CoclassID CID_%s =\n        %s\n",
+                mc->mName, mc->mUuid.ToString().string());
+        if (i != mn->mCoclassNumber - 1) builder.Append("\n");
+    }
+
+    return builder.ToString();
+}
+
+String CodeGenerator::GenerateClassObjectGetterArray()
+{
+    StringBuilder builder;
+
+    MetaComponent* mc = mMetaComponent;
+
+    if (mc->mCoclassNumber == 0) return String();
+
+    for (int i = 0; i < mc->mCoclassNumber; i++) {
+        MetaCoclass* mk = mc->mCoclasses[i];
+        builder.AppendFormat("static IInterface* _%sClassObject = nullptr\n",
+                String(mk->mNamespace).Replace("::", "").string(), mk->mName);
+        if (i == mc->mCoclassNumber - 1) builder.Append("\n");
+    }
+    builder.Append("\n");
+
+    for (int i = 0; i < mc->mCoclassNumber; i++) {
+        MetaCoclass* mk = mc->mCoclasses[i];
+        String fullName = String(mk->mNamespace).Replace("::", "") + mk->mName;
+        builder.AppendFormat("void Get%sClassObject(IInterface** co) { *co = _%sClassObject; }\n",
+                fullName.string(), fullName.string());
+        if (i == mc->mCoclassNumber - 1) builder.Append("\n");
+    }
+
+    builder.Append("typedef void (*GetterPtr)(IInterface**);\n"
+                   "\n"
+                   "struct ClassObjectGetter\n"
+                   "{\n"
+                   "    CoclassID   mCid;\n"
+                   "    GetterPtr   mGetter;\n"
+                   "};\n"
+                   "\n");
+    builder.AppendFormat("static ClassObjectGetter coGetters[%d] = {\n", mc->mCoclassNumber);
+
+    for (int i = 0; i < mc->mCoclassNumber; i++) {
+        MetaCoclass* mk = mc->mCoclasses[i];
+        builder.AppendFormat("        {%s, Get%s%sClassObject}",
+                mk->mUuid.ToString().string(), String(mk->mNamespace).Replace("::", "").string(), mk->mName);
+        if (i != mc->mCoclassNumber - 1) builder.Append(",\n");
+    }
+
+    builder.Append("}\n\n");
+
+    builder.Append(GenerateSoGetAllClassObjects());
+
+    return builder.ToString();
+}
+
+String CodeGenerator::GenerateSoGetClassObject()
+{
+    StringBuilder builder;
+
+    MetaComponent* mc = mMetaComponent;
+
+    builder.Append("void soGetClassObject(const CoclassID& cid, IInterface** co)\n");
+    builder.Append("{\n");
+    for (int i = 0; i < mc->mCoclassNumber; i++) {
+        MetaCoclass* mk = mc->mCoclasses[i];
+        if (i == 0) {
+            builder.AppendFormat("    if (%sCID_%s == cid) {\n", mk->mNamespace, mk->mName);
+            builder.AppendFormat("        return xxx;\n");
+            builder.Append("    }\n");
+        }
+        else {
+            builder.AppendFormat("    else if (%sCID_%s == cid) {\n", mk->mNamespace, mk->mName);
+            builder.AppendFormat("        return xxx;\n");
+            builder.Append("    }\n");
+        }
+    }
+    builder.Append("    return xxx;\n}");
+
+    return builder.ToString();
+}
+
+String CodeGenerator::GenerateSoGetAllClassObjects()
+{
+    StringBuilder builder;
+
+    builder.Append("ClassObjectGetter* soGetAllClassObjects(int* size)\n"
+                   "{\n"
+                   "    *size = sizeof(coGetters) / sizeof(ClassObjectGetter);\n"
+                   "    return coGetters;\n"
+                   "}\n");
 
     return builder.ToString();
 }

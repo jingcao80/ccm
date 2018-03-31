@@ -56,6 +56,9 @@ public:
     inline bool IsDeclared()
     { return mDeclared; }
 
+    inline Uuid& GetUuid()
+    { return mUuid; }
+
     void SetAttribute(
         /* [in] */ const Attribute& attr);
 

@@ -376,6 +376,7 @@ MetaCoclass* MetaBuilder::WriteMetaCoclass(
     // begin address
     mBasePtr = ALIGN(mBasePtr);
     MetaCoclass* mc = reinterpret_cast<MetaCoclass*>(mBasePtr);
+    mc->mUuid = klass->GetUuid();
     mc->mName = WriteString(klass->GetName());
     mc->mNamespace = WriteString(klass->GetNamespace()->ToString());
     mc->mInterfaceNumber = ITF_NUM;
@@ -485,6 +486,7 @@ MetaInterface* MetaBuilder::WriteMetaInterface(
     // begin address
     mBasePtr = ALIGN(mBasePtr);
     MetaInterface* mi = reinterpret_cast<MetaInterface*>(mBasePtr);
+    mi->mUuid = itf->GetUuid();
     mi->mName = WriteString(itf->GetName());
     mi->mNamespace = WriteString(itf->GetNamespace()->ToString());
     Interface* baseItf = itf->GetBaseInterface();

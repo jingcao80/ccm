@@ -84,6 +84,7 @@ struct MetaNamespace
 
 struct MetaCoclass
 {
+    Uuid                mUuid;
     char*               mName;
     char*               mNamespace;
     int                 mInterfaceNumber;
@@ -106,6 +107,7 @@ struct MetaEnumerator
 
 struct MetaInterface
 {
+    Uuid                mUuid;
     char*               mName;
     char*               mNamespace;
     int                 mBaseInterfaceIndex;

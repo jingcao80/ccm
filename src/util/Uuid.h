@@ -32,6 +32,8 @@ public:
     Uuid& operator=(
         /* [in] */ const Uuid& other);
 
+    String ToString();
+
     String Dump();
 
 private:

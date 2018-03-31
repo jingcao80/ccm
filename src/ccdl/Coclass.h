@@ -36,6 +36,9 @@ public:
     void SetNamespace(
         /* [in] */ Namespace* ns) override;
 
+    inline Uuid& GetUuid()
+    { return mUuid; }
+
     void SetAttribute(
         /* [in] */ const Attribute& attr);
 
