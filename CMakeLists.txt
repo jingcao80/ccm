@@ -4,42 +4,53 @@ project(CCDL)
 
 add_compile_options(-std=c++11)
 
-set(SOURCES
-    src/ccdl/AdditiveExpression.cpp
-    src/ccdl/AndExpression.cpp
-    src/ccdl/ArrayType.cpp
-    src/ccdl/Coclass.cpp
-    src/ccdl/Constant.cpp
-    src/ccdl/Enumeration.cpp
-    src/ccdl/ExclusiveOrExpression.cpp
-    src/ccdl/Expression.cpp
-    src/ccdl/InclusiveOrExpression.cpp
-    src/ccdl/Interface.cpp
-    src/ccdl/Method.cpp
-    src/ccdl/Module.cpp
-    src/ccdl/MultiplicativeExpression.cpp
-    src/ccdl/Namespace.cpp
-    src/ccdl/Parameter.cpp
-    src/ccdl/PointerType.cpp
-    src/ccdl/PostfixExpression.cpp
-    src/ccdl/Pool.cpp
-    src/ccdl/ShiftExpression.cpp
-    src/ccdl/Type.cpp
-    src/ccdl/UnaryExpression.cpp
-    src/codegen/CodeGenerator.cpp
-    src/metadata/MetaBuilder.cpp
-    src/metadata/MetaDumper.cpp
-    src/metadata/MetaSerializer.cpp
-    src/parser/Environment.cpp
-    src/parser/Parser.cpp
-    src/parser/Tokenizer.cpp
-    src/util/File.cpp
-    src/util/Logger.cpp
-    src/util/String.cpp
-    src/util/StringBuilder.cpp
-    src/util/StringPool.cpp
-    src/util/Uuid.cpp
-    src/Options.cpp
-    src/main.cpp)
+set(TOOL_SOURCES
+    src/runtime/metadata/MetaSerializer.cpp
+    src/tool/ast/AdditiveExpression.cpp
+    src/tool/ast/AndExpression.cpp
+    src/tool/ast/ArrayType.cpp
+    src/tool/ast/Coclass.cpp
+    src/tool/ast/Constant.cpp
+    src/tool/ast/Enumeration.cpp
+    src/tool/ast/ExclusiveOrExpression.cpp
+    src/tool/ast/Expression.cpp
+    src/tool/ast/InclusiveOrExpression.cpp
+    src/tool/ast/Interface.cpp
+    src/tool/ast/Method.cpp
+    src/tool/ast/Module.cpp
+    src/tool/ast/MultiplicativeExpression.cpp
+    src/tool/ast/Namespace.cpp
+    src/tool/ast/Parameter.cpp
+    src/tool/ast/PointerType.cpp
+    src/tool/ast/PostfixExpression.cpp
+    src/tool/ast/Pool.cpp
+    src/tool/ast/ShiftExpression.cpp
+    src/tool/ast/Type.cpp
+    src/tool/ast/UnaryExpression.cpp
+    src/tool/codegen/CodeGenerator.cpp
+    src/tool/metadata/MetaBuilder.cpp
+    src/tool/metadata/MetaDumper.cpp
+    src/tool/parser/Environment.cpp
+    src/tool/parser/Parser.cpp
+    src/tool/parser/Tokenizer.cpp
+    src/tool/util/File.cpp
+    src/tool/util/Logger.cpp
+    src/tool/util/String.cpp
+    src/tool/util/StringBuilder.cpp
+    src/tool/util/StringPool.cpp
+    src/tool/util/Uuid.cpp
+    src/tool/Options.cpp
+    src/tool/main.cpp)
 
-add_executable(ccdl ${SOURCES})
+add_executable(ccdl ${TOOL_SOURCES})
+
+set(RT_SOURCES
+    src/runtime/metadata/MetaSerializer.cpp
+    src/runtime/util/logger.cpp
+    src/runtime/ccmcomponent.cpp
+    src/runtime/ccmobjectapi.cpp
+    src/runtime/ccmids.cpp
+    src/runtime/runtime.cpp)
+
+add_library(ccmrt SHARED
+    ${RT_SOURCES})
