@@ -19,6 +19,10 @@
 namespace ccdl {
 namespace ast {
 
+ArrayType::ArrayType()
+    : mElementType(nullptr)
+{}
+
 String ArrayType::Signature()
 {
     return String("[") + mElementType->Signature();

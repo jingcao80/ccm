@@ -28,11 +28,9 @@ class Namespace;
 class Type : public Node
 {
 public:
-    Type()
-        : mNamespace(nullptr)
-    {}
+    Type();
 
-    virtual ~Type();
+    ~Type();
 
     inline String GetName()
     { return mName; }
@@ -75,13 +73,17 @@ public:
 
     virtual bool IsDoubleType();
 
-    virtual bool IsArray();
+    virtual bool IsCoclassIDType();
 
-    virtual bool IsCoclass();
+    virtual bool IsInterfaceIDType();
 
-    virtual bool IsEnumeration();
+    virtual bool IsArrayType();
 
-    virtual bool IsInterface();
+    virtual bool IsCoclassType();
+
+    virtual bool IsEnumerationType();
+
+    virtual bool IsInterfaceType();
 
     virtual bool IsPointerType();
 

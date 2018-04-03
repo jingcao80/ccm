@@ -21,6 +21,14 @@
 namespace ccdl {
 namespace ast {
 
+Interface::Interface()
+    : mSystemPreDeclared(false)
+    , mDeclared(false)
+    , mBaseInterface(nullptr)
+    , mConstants(10)
+    , mMethods(20)
+{}
+
 void Interface::SetNamespace(
     /* [in] */ Namespace* ns)
 {
@@ -58,6 +66,20 @@ bool Interface::AddMethod(
     if (method == nullptr) return true;
 
     return mMethods.Add(method);
+}
+
+Method* Interface::FindMethod(
+    /* [in] */ const String& name,
+    /* [in] */ const String& signature)
+{
+    for (int i = 0; i < GetMethodNumber(); i++) {
+        Method* method = mMethods.Get(i);
+        if (method->GetName().Equals(name) &&
+                method->GetSignature().Equals(signature)) {
+            return method;
+        }
+    }
+    return nullptr;
 }
 
 String Interface::Signature()

@@ -14,43 +14,19 @@
 // limitations under the License.
 //=========================================================================
 
-#include "Parameter.h"
-#include "../util/StringBuilder.h"
+#include "ByteType.h"
 
 namespace ccdl {
 namespace ast {
 
-Parameter::Parameter()
-    : mType(nullptr)
-    , mDefaultValue(nullptr)
-    , mAttribute(0)
-{}
-
-Parameter::~Parameter()
+ByteType::ByteType()
 {
-    if (mDefaultValue != nullptr) {
-        delete mDefaultValue;
-        mDefaultValue = nullptr;
-    }
+    SetName(String("Byte"));
 }
 
-void Parameter::SetDefaultValue(
-    /* [in] */ Expression* expr)
+String ByteType::Signature()
 {
-    if (mDefaultValue != nullptr) {
-        delete mDefaultValue;
-    }
-    mDefaultValue = expr;
-}
-
-String Parameter::Dump(
-    /* [in] */ const String& prefix)
-{
-    StringBuilder builder;
-
-    builder.Append(prefix).Append(mName);
-    builder.Append(":").Append(mType->ToString());
-    return builder.ToString();
+    return String("B");
 }
 
 }

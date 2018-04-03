@@ -25,23 +25,21 @@ namespace ast {
 class CharType : public Type
 {
 public:
-    CharType()
-    { SetName(String("Char")); }
+    CharType();
 
-    bool IsPrimitiveType() override
+    inline bool IsPrimitiveType() override
     { return true; }
 
-    bool IsNumericType() override
+    inline bool IsNumericType() override
     { return true; }
 
-    bool IsIntegralType() override
+    inline bool IsIntegralType() override
     { return true; }
 
-    bool IsCharType() override
+    inline bool IsCharType() override
     { return true; }
 
-    String Signature() override
-    { return String("C"); }
+    String Signature() override;
 };
 
 }

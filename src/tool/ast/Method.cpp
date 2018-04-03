@@ -20,6 +20,10 @@
 namespace ccdl {
 namespace ast {
 
+Method::Method()
+    : mReturnType(nullptr)
+{}
+
 bool Method::AddParameter(
     /* [in] */ Parameter* param)
 {
@@ -37,8 +41,18 @@ void Method::BuildSignature()
         builder.Append(mParameters.Get(i)->GetType()->Signature());
     }
     builder.Append(")");
-    builder.Append("E");
+    if (mReturnType == nullptr) {
+        builder.Append("E");
+    }
+    else {
+        builder.Append(mReturnType->Signature());
+    }
     mSignature = builder.ToString();
+}
+
+String Method::ToString()
+{
+    return Dump(String(""));
 }
 
 String Method::Dump(

@@ -26,15 +26,9 @@ namespace ast {
 class Expression : public Node
 {
 public:
-    Expression()
-        : mLeftOperand(nullptr)
-        , mRightOperand(nullptr)
-        , mOperator(-1)
-        , mType(nullptr)
-        , mRadix(10)
-    {}
+    Expression();
 
-    virtual ~Expression();
+    ~Expression();
 
     inline void SetLeftOperand(
         /* [in] */ Expression* leftOperand)

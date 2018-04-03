@@ -25,23 +25,21 @@ namespace ast {
 class FloatType : public Type
 {
 public:
-    FloatType()
-    { SetName(String("Float")); }
+    FloatType();
 
-    bool IsPrimitiveType() override
+    inline bool IsPrimitiveType() override
     { return true; }
 
-    bool IsNumericType() override
+    inline bool IsNumericType() override
     { return true; }
 
-    bool IsFloatingPointType() override
+    inline bool IsFloatingPointType() override
     { return true; }
 
-    bool IsFloatType() override
+    inline bool IsFloatType() override
     { return true; }
 
-    String Signature() override
-    { return String("F"); }
+    String Signature() override;
 };
 
 }

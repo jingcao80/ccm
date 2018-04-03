@@ -40,12 +40,22 @@ namespace metadata {
 
 const String MetaBuilder::TAG("MetaBuilder");
 
+MetaBuilder::MetaBuilder(
+    /* [in] */ std::shared_ptr<Module> module)
+    : mModule(module)
+    , mBasePtr(0)
+{}
+
 bool MetaBuilder::IsValidate()
 {
     // check if all the interfaces in mModule are declared.
     for (int i = 0; i < mModule->GetInterfaceNumber(); i++) {
         Interface* itf = mModule->GetInterface(i);
-        if (!itf->IsDeclared()) return false;
+        if (!itf->IsDeclared()) {
+            Logger::E(TAG, "Interface \"%s\" is not declared",
+                    itf->GetName().string());
+            return false;
+        }
     }
 
     return true;
@@ -220,7 +230,7 @@ void MetaBuilder::CalculateMetaConstant(
     if (constant->GetType()->IsStringType()) {
         mStringPool.Add(constant->GetValue()->StringValue());
     }
-    else if (constant->GetType()->IsEnumeration()) {
+    else if (constant->GetType()->IsEnumerationType()) {
         mStringPool.Add(constant->GetValue()->EnumeratorValue());
     }
     // end address
@@ -425,7 +435,7 @@ MetaConstant* MetaBuilder::WriteMetaConstant(
         mc->mValue.mString = WriteString(
                 constant->GetValue()->StringValue());
     }
-    else if (type->IsEnumeration()) {
+    else if (type->IsEnumerationType()) {
         mc->mValue.mString = WriteString(
                     constant->GetValue()->EnumeratorValue());
     }
@@ -494,6 +504,7 @@ MetaInterface* MetaBuilder::WriteMetaInterface(
             mModule->IndexOf(baseItf) : -1;
     mi->mConstantNumber = CONST_NUM;
     mi->mMethodNumber = MTH_NUM;
+    mi->mSystemPreDeclared = itf->IsSystemPreDeclared();
     // mConstants's address
     mBasePtr = ALIGN(mBasePtr + sizeof(MetaInterface));
     mi->mConstants = reinterpret_cast<MetaConstant**>(mBasePtr);
@@ -610,20 +621,20 @@ MetaType* MetaBuilder::WriteMetaType(
         type = ((PointerType*)type)->GetBaseType();
     }
     mt->mKind = Type2CcdlType(type);
-    if (type->IsEnumeration()) {
+    if (type->IsEnumerationType()) {
         mt->mIndex = mModule->IndexOf((Enumeration*)type);
     }
-    else if (type->IsInterface()) {
+    else if (type->IsInterfaceType()) {
         mt->mIndex = mModule->IndexOf((Interface*)type);
     }
-    else if (type->IsCoclass()) {
+    else if (type->IsCoclassType()) {
         mt->mIndex = mModule->IndexOf((Coclass*)type);
     }
     else {
         mt->mIndex = mModule->IndexOf(type);
     }
     mt->mNestedTypeIndex = -1;
-    if (type->IsArray()) {
+    if (type->IsArrayType()) {
         mt->mNestedTypeIndex =  mModule->IndexOf(
                 ((ArrayType*)type)->GetElementType());
     }
@@ -672,14 +683,20 @@ CcdlType MetaBuilder::Type2CcdlType(
     else if (type->IsHANDLEType()) {
         return CcdlType::HANDLE;
     }
-    else if (type->IsEnumeration()) {
+    else if (type->IsEnumerationType()) {
         return CcdlType::Enum;
     }
-    else if (type->IsArray()) {
+    else if (type->IsArrayType()) {
         return CcdlType::Array;
     }
-    else if (type->IsInterface()) {
+    else if (type->IsInterfaceType()) {
         return CcdlType::Interface;
+    }
+    else if (type->IsCoclassIDType()) {
+        return CcdlType::CoclassID;
+    }
+    else if (type->IsInterfaceIDType()) {
+        return CcdlType::InterfaceID;
     }
 }
 

@@ -28,10 +28,10 @@ public:
     virtual ~Node()
     {}
 
-    virtual String ToString()
+    inline virtual String ToString()
     { return String(); }
 
-    virtual String Dump(
+    inline virtual String Dump(
         /* [in] */ const String& prefix)
     { return String(); }
 };

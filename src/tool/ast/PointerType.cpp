@@ -19,9 +19,18 @@
 namespace ccdl {
 namespace ast {
 
+PointerType::PointerType()
+    : mBaseType(nullptr)
+    , mPointerNumber(0)
+{}
+
 String PointerType::Signature()
 {
-    return mBaseType->Signature() + "*";
+    String typeSig = mBaseType->Signature();
+    for (int i = 0; i < mPointerNumber; i++) {
+        typeSig += "*";
+    }
+    return typeSig;
 }
 
 String PointerType::ToString()

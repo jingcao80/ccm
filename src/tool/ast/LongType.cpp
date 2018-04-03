@@ -14,43 +14,19 @@
 // limitations under the License.
 //=========================================================================
 
-#include "Parameter.h"
-#include "../util/StringBuilder.h"
+#include "LongType.h"
 
 namespace ccdl {
 namespace ast {
 
-Parameter::Parameter()
-    : mType(nullptr)
-    , mDefaultValue(nullptr)
-    , mAttribute(0)
-{}
-
-Parameter::~Parameter()
+LongType::LongType()
 {
-    if (mDefaultValue != nullptr) {
-        delete mDefaultValue;
-        mDefaultValue = nullptr;
-    }
+    SetName(String("Long"));
 }
 
-void Parameter::SetDefaultValue(
-    /* [in] */ Expression* expr)
+String LongType::Signature()
 {
-    if (mDefaultValue != nullptr) {
-        delete mDefaultValue;
-    }
-    mDefaultValue = expr;
-}
-
-String Parameter::Dump(
-    /* [in] */ const String& prefix)
-{
-    StringBuilder builder;
-
-    builder.Append(prefix).Append(mName);
-    builder.Append(":").Append(mType->ToString());
-    return builder.ToString();
+    return String("L");
 }
 
 }

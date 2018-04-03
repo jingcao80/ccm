@@ -17,6 +17,7 @@
 #ifndef __CCDL_AST_PARAMETER_H__
 #define __CCDL_AST_PARAMETER_H__
 
+#include "Expression.h"
 #include "Node.h"
 #include "Type.h"
 #include "../util/String.h"
@@ -27,10 +28,9 @@ namespace ast {
 class Parameter : public Node
 {
 public:
-    Parameter()
-        : mType(nullptr)
-        , mAttribute(0)
-    {}
+    Parameter();
+
+    ~Parameter();
 
     inline int GetAttribute()
     { return mAttribute; }
@@ -53,6 +53,9 @@ public:
         /* [in] */ Type* type)
     { mType = type; }
 
+    void SetDefaultValue(
+        /* [in] */ Expression* expr);
+
     String Dump(
         /* [in] */ const String& prefix) override;
 
@@ -64,6 +67,7 @@ public:
 private:
     String mName;
     Type* mType;
+    Expression* mDefaultValue;
     int mAttribute;
 };
 

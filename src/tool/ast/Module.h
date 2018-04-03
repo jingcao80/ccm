@@ -21,12 +21,14 @@
 #include "BooleanType.h"
 #include "ByteType.h"
 #include "CharType.h"
+#include "CoclassIDType.h"
 #include "DoubleType.h"
 #include "Enumeration.h"
 #include "FloatType.h"
 #include "HANDLEType.h"
 #include "IntegerType.h"
 #include "Interface.h"
+#include "InterfaceIDType.h"
 #include "LongType.h"
 #include "Namespace.h"
 #include "Pool.h"
@@ -81,6 +83,8 @@ private:
     BooleanType* mBooleanType;
     StringType* mStringType;
     HANDLEType* mHANDLEType;
+    CoclassIDType* mCoclassIDType;
+    InterfaceIDType* mInterfaceIDType;
 };
 
 }

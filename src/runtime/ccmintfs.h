@@ -32,14 +32,14 @@ interface IInterface
         /* [in] */ const InterfaceID& iid) = 0;
 
     virtual Integer AddRef(
-        /* [in] */ const void* id = nullptr) = 0;
+        /* [in] */ HANDLE id = 0) = 0;
 
     virtual Integer Release(
-        /* [in] */ const void* id = nullptr) = 0;
+        /* [in] */ HANDLE id = 0) = 0;
 
     virtual ECode GetInterfaceID(
         /* [in] */ IInterface* object,
-        /* [in] */ InterfaceID* iid) = 0;
+        /* [out] */ InterfaceID* iid) = 0;
 };
 
 INTERFACE_ID(00000000-0000-0000-0000-000000000001)

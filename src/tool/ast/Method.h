@@ -19,6 +19,7 @@
 
 #include "Node.h"
 #include "Parameter.h"
+#include "Type.h"
 #include "../util/ArrayList.h"
 #include "../util/String.h"
 
@@ -28,6 +29,8 @@ namespace ast {
 class Method : public Node
 {
 public:
+    Method();
+
     inline String GetName()
     { return mName; }
 
@@ -37,6 +40,13 @@ public:
 
     inline String GetSignature()
     { return mSignature; }
+
+    inline Type* GetReturnType()
+    { return mReturnType; }
+
+    inline void SetReturnType(
+        /* [in] */ Type* type)
+    { mReturnType = type; }
 
     bool AddParameter(
         /* [in] */ Parameter* param);
@@ -50,12 +60,15 @@ public:
 
     void BuildSignature();
 
+    String ToString() override;
+
     String Dump(
         /* [in] */ const String& prefix) override;
 
 private:
     String mName;
     String mSignature;
+    Type* mReturnType;
     ArrayList<Parameter*> mParameters;
 };
 

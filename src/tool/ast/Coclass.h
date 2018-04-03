@@ -29,9 +29,7 @@ namespace ast {
 class Coclass : public Type
 {
 public:
-    Coclass()
-        : mInterfaces(10, false)
-    {}
+    Coclass();
 
     void SetNamespace(
         /* [in] */ Namespace* ns) override;
@@ -42,11 +40,22 @@ public:
     void SetAttribute(
         /* [in] */ const Attribute& attr);
 
-    bool IsCoclass() override
+    inline bool IsCoclassType() override
     { return true; }
 
     bool AddConstructor(
         /* [in] */ Method* constructor);
+
+    inline int GetConstructorNumber()
+    { return mConstructors.GetSize(); }
+
+    inline Method* GetConstructor(
+        /* [in] */ int index)
+    { return mConstructors.Get(index); }
+
+    Method* FindConstructor(
+        /* [in] */ const String& name,
+        /* [in] */ const String& signature);
 
     bool AddInterface(
         /* [in] */ Interface* interface);

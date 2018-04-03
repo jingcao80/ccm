@@ -19,6 +19,13 @@
 namespace ccdl {
 namespace ast {
 
+PostfixExpression::PostfixExpression()
+    : mBooleanValue(false)
+    , mIntegralValue(0)
+    , mFloatingPointValue(0)
+    , mExpression(nullptr)
+{}
+
 int PostfixExpression::IntegerValue()
 {
     return (int)mIntegralValue;

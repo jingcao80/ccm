@@ -25,17 +25,15 @@ namespace ast {
 class BooleanType : public Type
 {
 public:
-    BooleanType()
-    { SetName(String("Boolean")); }
+    BooleanType();
 
-    bool IsPrimitiveType() override
+    inline bool IsPrimitiveType() override
     { return true; }
 
-    bool IsBooleanType() override
+    inline bool IsBooleanType() override
     { return true; }
 
-    String Signature() override
-    { return String("Z"); }
+    String Signature() override;
 };
 
 }

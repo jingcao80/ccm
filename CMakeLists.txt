@@ -9,13 +9,23 @@ set(TOOL_SOURCES
     src/tool/ast/AdditiveExpression.cpp
     src/tool/ast/AndExpression.cpp
     src/tool/ast/ArrayType.cpp
+    src/tool/ast/BooleanType.cpp
+    src/tool/ast/ByteType.cpp
+    src/tool/ast/CharType.cpp
     src/tool/ast/Coclass.cpp
+    src/tool/ast/CoclassIDType.cpp
     src/tool/ast/Constant.cpp
+    src/tool/ast/DoubleType.cpp
     src/tool/ast/Enumeration.cpp
     src/tool/ast/ExclusiveOrExpression.cpp
     src/tool/ast/Expression.cpp
+    src/tool/ast/FloatType.cpp
+    src/tool/ast/HANDLEType.cpp
     src/tool/ast/InclusiveOrExpression.cpp
+    src/tool/ast/IntegerType.cpp
     src/tool/ast/Interface.cpp
+    src/tool/ast/InterfaceIDType.cpp
+    src/tool/ast/LongType.cpp
     src/tool/ast/Method.cpp
     src/tool/ast/Module.cpp
     src/tool/ast/MultiplicativeExpression.cpp
@@ -25,6 +35,8 @@ set(TOOL_SOURCES
     src/tool/ast/PostfixExpression.cpp
     src/tool/ast/Pool.cpp
     src/tool/ast/ShiftExpression.cpp
+    src/tool/ast/ShortType.cpp
+    src/tool/ast/StringType.cpp
     src/tool/ast/Type.cpp
     src/tool/ast/UnaryExpression.cpp
     src/tool/codegen/CodeGenerator.cpp

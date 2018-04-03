@@ -25,6 +25,11 @@ using ccm::metadata::CcdlType;
 namespace ccdl {
 namespace metadata {
 
+MetaDumper::MetaDumper(
+    /* [in] */ MetaComponent* mc)
+    : mMetaComponet(mc)
+{}
+
 String MetaDumper::Dump()
 {
     return DumpMetaComponent(mMetaComponet, String(""));
@@ -61,6 +66,7 @@ String MetaDumper::DumpMetaComponent(
     }
 
     for (int i = 0; i < mc->mInterfaceNumber; i++) {
+        if (mc->mInterfaces[i]->mSystemPreDeclared) continue;
         String dumpItf = DumpMetaInterface(mc->mInterfaces[i], prefix + "  ");
         builder.Append(dumpItf);
     }
@@ -326,6 +332,12 @@ String MetaDumper::DumpMetaType(
             break;
         case CcdlType::Interface:
             builder.Append(mMetaComponet->mInterfaces[mt->mIndex]->mName);
+            break;
+        case CcdlType::CoclassID:
+            builder.Append(mt->mPointerNumber > 0 ? "CoclassID" : "const CoclassID&");
+            break;
+        case CcdlType::InterfaceID:
+            builder.Append(mt->mPointerNumber > 0 ? "InterfaceID" : "const InterfaceID&");
             break;
         default:
             break;

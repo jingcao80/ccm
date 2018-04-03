@@ -25,23 +25,21 @@ namespace ast {
 class DoubleType : public Type
 {
 public:
-    DoubleType()
-    { SetName(String("Double")); }
+    DoubleType();
 
-    bool IsPrimitiveType() override
+    inline bool IsPrimitiveType() override
     { return true; }
 
-    bool IsNumericType() override
+    inline bool IsNumericType() override
     { return true; }
 
-    bool IsFloatingPointType() override
+    inline bool IsFloatingPointType() override
     { return true; }
 
-    bool IsDoubleType() override
+    inline bool IsDoubleType() override
     { return true; }
 
-    String Signature() override
-    { return String("D"); }
+    String Signature() override;
 };
 
 }

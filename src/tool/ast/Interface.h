@@ -34,17 +34,12 @@ namespace ast {
 class Interface : public Type
 {
 public:
-    Interface()
-        : mDeclared(false)
-        , mBaseInterface(nullptr)
-        , mConstants(10)
-        , mMethods(20)
-    {}
+    Interface();
 
     void SetNamespace(
         /* [in] */ Namespace* ns) override;
 
-    bool IsInterface() override
+    inline bool IsInterfaceType() override
     { return true; }
 
     inline Interface* GetBaseInterface()
@@ -52,6 +47,9 @@ public:
 
     void SetBaseInterface(
         /* [in] */ Interface* baseItf);
+
+    inline bool IsSystemPreDeclared()
+    { return mSystemPreDeclared; }
 
     inline bool IsDeclared()
     { return mDeclared; }
@@ -82,6 +80,10 @@ public:
         /* [in] */ int index)
     { return mMethods.Get(index); }
 
+    Method* FindMethod(
+        /* [in] */ const String& name,
+        /* [in] */ const String& signature);
+
     String Signature() override;
 
     String Dump(
@@ -90,11 +92,16 @@ public:
 private:
     friend class ccdl::Parser;
 
-    inline Interface& SetDeclared(
+    inline void SetSystemPreDeclared(
+        /* [in] */ bool preDeclared)
+    { mSystemPreDeclared = preDeclared; }
+
+    inline void SetDeclared(
         /* [in] */ bool declared)
-    { mDeclared = declared; return *this; }
+    { mDeclared = declared; }
 
 private:
+    bool mSystemPreDeclared;
     bool mDeclared;
     Interface* mBaseInterface;
     Uuid mUuid;

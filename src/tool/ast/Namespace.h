@@ -31,17 +31,9 @@ class Namespace : public Node
 {
 public:
     Namespace(
-        /* [in] */ const String& nsStr)
-        : mName(nsStr)
-        , mOuterNamespace(nullptr)
-        , mNamespaces(5, false)
-        , mCoclasses(20, false)
-        , mEnumerations(10, false)
-        , mInterfaces(20, false)
-    {}
+        /* [in] */ const String& nsStr);
 
-    ~Namespace()
-    { mOuterNamespace = nullptr; }
+    ~Namespace();
 
     inline String GetName()
     { return mName; }

@@ -20,6 +20,11 @@
 namespace ccdl {
 namespace ast {
 
+Constant::Constant()
+    : mType(nullptr)
+    , mValue(nullptr)
+{}
+
 String Constant::Dump(
     /* [in] */ const String& prefix)
 {

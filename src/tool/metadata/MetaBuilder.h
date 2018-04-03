@@ -60,10 +60,7 @@ class MetaBuilder
 {
 public:
     MetaBuilder(
-        /* [in] */ std::shared_ptr<Module> module)
-        : mModule(module)
-        , mBasePtr(0)
-    {}
+        /* [in] */ std::shared_ptr<Module> module);
 
     bool IsValidate();
 

@@ -25,11 +25,9 @@ namespace ast {
 class ArrayType : public Type
 {
 public:
-    ArrayType()
-        : mElementType(nullptr)
-    {}
+    ArrayType();
 
-    bool IsArray() override
+    inline bool IsArrayType() override
     { return true; }
 
     inline Type* GetElementType()

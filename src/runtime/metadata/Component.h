@@ -36,6 +36,8 @@ enum class CcdlType
     Boolean,
     String,
     HANDLE,
+    CoclassID,
+    InterfaceID,
     Enum,
     Array,
     Interface,
@@ -115,6 +117,7 @@ struct MetaInterface
     int                 mMethodNumber;
     MetaConstant**      mConstants;
     MetaMethod**        mMethods;
+    bool                mSystemPreDeclared;
 };
 
 struct MetaConstant

@@ -19,6 +19,14 @@
 namespace ccdl {
 namespace ast {
 
+Expression::Expression()
+    : mLeftOperand(nullptr)
+    , mRightOperand(nullptr)
+    , mOperator(-1)
+    , mType(nullptr)
+    , mRadix(10)
+{}
+
 Expression::~Expression()
 {
     if (mLeftOperand != nullptr) {

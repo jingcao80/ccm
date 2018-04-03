@@ -21,6 +21,7 @@
 #include "../util/String.h"
 
 using ccm::metadata::MetaComponent;
+using ccm::metadata::MetaCoclass;
 using ccm::metadata::MetaConstant;
 using ccm::metadata::MetaEnumeration;
 using ccm::metadata::MetaInterface;
@@ -61,10 +62,6 @@ private:
     String GenerateInterfaces(
         /* [in] */ MetaNamespace* mn);
 
-    void GenerateCoclasses();
-
-    void GenerateModule();
-
     String GenerateEnumerationDeclaration(
         /* [in] */ MetaEnumeration* me);
 
@@ -94,6 +91,22 @@ private:
 
     String GenerateValue(
         /* [in] */ MetaConstant* mc);
+
+    void GenerateCoclasses();
+
+    void GenerateCoclass(
+        /* [in] */ MetaCoclass* mk);
+
+    void GenerateCoclassHeader(
+        /* [in] */ MetaCoclass* mk);
+
+    void GenerateCoclassCpp(
+        /* [in] */ MetaCoclass* mk);
+
+    String GenerateCoclassObject(
+        /* [in] */ MetaCoclass* mk);
+
+    void GenerateModule();
 
     String GenerateInterfaceIDs(
         /* [in] */ MetaNamespace* mn);

@@ -25,17 +25,15 @@ namespace ast {
 class HANDLEType : public Type
 {
 public:
-    HANDLEType()
-    { SetName(String("HANDLE")); }
+    HANDLEType();
 
-    bool IsPrimitiveType() override
+    inline bool IsPrimitiveType() override
     { return true; }
 
-    bool IsHANDLEType() override
+    inline bool IsHANDLEType() override
     { return true; }
 
-    String Signature() override
-    { return String("H"); }
+    String Signature() override;
 };
 
 }

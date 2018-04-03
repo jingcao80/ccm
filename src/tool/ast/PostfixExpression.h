@@ -25,12 +25,7 @@ namespace ast {
 class PostfixExpression : public Expression
 {
 public:
-    PostfixExpression()
-        : mBooleanValue(false)
-        , mIntegralValue(0)
-        , mFloatingPointValue(0)
-        , mExpression(nullptr)
-    {}
+    PostfixExpression();
 
     inline void SetEnumerator(
         /* [in] */ const String& enumName)

@@ -25,23 +25,21 @@ namespace ast {
 class ByteType : public Type
 {
 public:
-    ByteType()
-    { SetName(String("Byte")); }
+    ByteType();
 
-    bool IsPrimitiveType() override
+    inline bool IsPrimitiveType() override
     { return true; }
 
-    bool IsNumericType() override
+    inline bool IsNumericType() override
     { return true; }
 
-    bool IsIntegralType() override
+    inline bool IsIntegralType() override
     { return true; }
 
-    bool IsByteType() override
+    inline bool IsByteType() override
     { return true; }
 
-    String Signature() override
-    { return String("B"); }
+    String Signature() override;
 };
 
 }

@@ -14,44 +14,26 @@
 // limitations under the License.
 //=========================================================================
 
-#include "Parameter.h"
-#include "../util/StringBuilder.h"
+#ifndef __CCDL_AST_INTERFACEIDTYPE_H__
+#define __CCDL_AST_INTERFACEIDTYPE_H__
+
+#include "Type.h"
 
 namespace ccdl {
 namespace ast {
 
-Parameter::Parameter()
-    : mType(nullptr)
-    , mDefaultValue(nullptr)
-    , mAttribute(0)
-{}
-
-Parameter::~Parameter()
+class InterfaceIDType : public Type
 {
-    if (mDefaultValue != nullptr) {
-        delete mDefaultValue;
-        mDefaultValue = nullptr;
-    }
-}
+public:
+    InterfaceIDType();
 
-void Parameter::SetDefaultValue(
-    /* [in] */ Expression* expr)
-{
-    if (mDefaultValue != nullptr) {
-        delete mDefaultValue;
-    }
-    mDefaultValue = expr;
-}
+    inline bool IsInterfaceIDType()
+    { return true; }
 
-String Parameter::Dump(
-    /* [in] */ const String& prefix)
-{
-    StringBuilder builder;
-
-    builder.Append(prefix).Append(mName);
-    builder.Append(":").Append(mType->ToString());
-    return builder.ToString();
-}
+    String Signature() override;
+};
 
 }
 }
+
+#endif // __CCDL_AST_INTERFACEIDTYPE_H__

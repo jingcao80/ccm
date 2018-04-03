@@ -101,7 +101,7 @@
 
 <*floating-point_type*> ::= Float | Double
 
-<*reference_type*> ::= <*interface_type*> | <*array_type*> | <*enum_type*>
+<*reference_type*> ::= <*interface_type*> | <*array_type*> | <*enum_type*> | CoclassID | InterfaceID
 
 <*interface_type*> ::= <*type_name*>
 
@@ -223,24 +223,25 @@ There are two ways to add comments. One is using syntax "/* <*comment_literal*> 
 
 #### Type Signature
 
-| Type      | Signature |
-|:---------:|:---------:|
-| Byte      |     B     |
-| Short     |     S     |
-| Integer   |     I     |
-| Long      |     J     |
-| Float     |     F     |
-| Double    |     D     |
-| Char      |     C     |
-| Boolean   |     Z     |
-| String    |     T     |
-| HANDLE    |     H     |
-| Uuid      |     U     |
-| ECode     |     E     |
-| Array     |     [     |
-| Pointer   |     *     |
-| Enum      | Lxx/xx;   |
-| Interface | Lxx/xx;   |
+| Type        | Signature |
+|:-----------:|:---------:|
+| Byte        |     B     |
+| Short       |     S     |
+| Integer     |     I     |
+| Long        |     J     |
+| Float       |     F     |
+| Double      |     D     |
+| Char        |     C     |
+| Boolean     |     Z     |
+| String      |     T     |
+| HANDLE      |     H     |
+| ECode       |     E     |
+| CoclassID   |     K     |
+| InterfaceID |     U     |
+| Array       |     [     |
+| Pointer     |     *     |
+| Enum        | Lxx/xx;   |
+| Interface   | Lxx/xx;   |
 
 #### Reference
 [Java Syntax Specification](https://users-cs.au.dk/amoeller/RegAut/JavaBNF.html)

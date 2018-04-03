@@ -25,23 +25,21 @@ namespace ast {
 class ShortType : public Type
 {
 public:
-    ShortType()
-    { SetName(String("Short")); }
+    ShortType();
 
-    bool IsPrimitiveType() override
+    inline bool IsPrimitiveType() override
     { return true; }
 
-    bool IsNumericType() override
+    inline bool IsNumericType() override
     { return true; }
 
-    bool IsIntegralType() override
+    inline bool IsIntegralType() override
     { return true; }
 
-    bool IsShortType() override
+    inline bool IsShortType() override
     { return true; }
 
-    String Signature() override
-    { return String("S"); }
+    String Signature() override;
 };
 
 }

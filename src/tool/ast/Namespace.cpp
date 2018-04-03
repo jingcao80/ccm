@@ -19,6 +19,21 @@
 namespace ccdl {
 namespace ast {
 
+Namespace::Namespace(
+    /* [in] */ const String& nsStr)
+    : mName(nsStr)
+    , mOuterNamespace(nullptr)
+    , mNamespaces(5, false)
+    , mCoclasses(20, false)
+    , mEnumerations(10, false)
+    , mInterfaces(20, false)
+{}
+
+Namespace::~Namespace()
+{
+    mOuterNamespace = nullptr;
+}
+
 bool Namespace::AddNamespace(
     /* [in] */ Namespace* innerNS)
 {

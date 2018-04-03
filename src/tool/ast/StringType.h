@@ -25,17 +25,15 @@ namespace ast {
 class StringType : public Type
 {
 public:
-    StringType()
-    { SetName(String("String")); }
+    StringType();
 
-    bool IsPrimitiveType() override
+    inline bool IsPrimitiveType() override
     { return true; }
 
-    bool IsStringType() override
+    inline bool IsStringType() override
     { return true; }
 
-    String Signature() override
-    { return String("T"); }
+    String Signature() override;
 };
 
 }

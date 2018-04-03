@@ -25,12 +25,9 @@ namespace ast {
 class PointerType : public Type
 {
 public:
-    PointerType()
-        : mBaseType(nullptr)
-        , mPointerNumber(0)
-    {}
+    PointerType();
 
-    bool IsPointerType() override
+    inline bool IsPointerType() override
     { return true; }
 
     inline Type* GetBaseType()

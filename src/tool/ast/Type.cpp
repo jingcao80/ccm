@@ -20,6 +20,10 @@
 namespace ccdl {
 namespace ast {
 
+Type::Type()
+    : mNamespace(nullptr)
+{}
+
 Type::~Type()
 {
     mNamespace = nullptr;
@@ -101,22 +105,32 @@ bool Type::IsDoubleType()
     return false;
 }
 
-bool Type::IsArray()
+bool Type::IsCoclassIDType()
 {
     return false;
 }
 
-bool Type::IsCoclass()
+bool Type::IsInterfaceIDType()
 {
     return false;
 }
 
-bool Type::IsEnumeration()
+bool Type::IsArrayType()
 {
     return false;
 }
 
-bool Type::IsInterface()
+bool Type::IsCoclassType()
+{
+    return false;
+}
+
+bool Type::IsEnumerationType()
+{
+    return false;
+}
+
+bool Type::IsInterfaceType()
 {
     return false;
 }

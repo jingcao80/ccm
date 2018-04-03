@@ -29,11 +29,11 @@ public:
 
     AutoPtr(
         /* [in] */ T* other,
-        /* [in] */ const char* id = nullptr);
+        /* [in] */ const void* id = nullptr);
 
     AutoPtr(
         /* [in] */ const AutoPtr<T>& other,
-        /* [in] */ const char* id = nullptr);
+        /* [in] */ const void* id = nullptr);
 
     AutoPtr(
         /* [in] */ AutoPtr<T>&& other);
@@ -48,7 +48,7 @@ private:
 template<class T>
 AutoPtr<T>::AutoPtr(
     /* [in] */ T* other,
-    /* [in] */ const char* id)
+    /* [in] */ const void* id)
     : mPtr(other)
 {
     if (mPtr != nullptr) {
@@ -59,7 +59,7 @@ AutoPtr<T>::AutoPtr(
 template<class T>
 AutoPtr<T>::AutoPtr(
     /* [in] */ const AutoPtr<T>& other,
-    /* [in] */ const char* id)
+    /* [in] */ const void* id)
     : mPtr(other.mPtr)
 {
     if (mPtr != nullptr) {

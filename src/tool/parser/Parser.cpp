@@ -87,21 +87,34 @@ bool Parser::Parse(
     mEnvironment->AddNamespace(mCurrNamespace);
     mPool = mEnvironment;
 
+    PreParse();
+
     ret = ParseFile();
 
-    if (ret) {
-        String dumpStr = mEnvironment->Dump(String(""));
-        if (!dumpStr.IsNullOrEmpty()) {
-            printf("%s\n", dumpStr.string());
-        }
-        if (mModule != nullptr) {
-            dumpStr = mModule->Dump(String(""));
-            printf("%s\n", dumpStr.string());
+    if (!ret) {
+        DumpError();
+        return false;
+    }
+
+    PostParse();
+
+    if (mNeedDump) Dump();
+    return true;
+}
+
+void Parser::PreParse()
+{
+    GenerateIInterface();
+    GenerateIClassObject();
+}
+
+void Parser::PostParse()
+{
+    if (mModule != nullptr) {
+        for (int i = 0; i < mModule->GetCoclassNumber(); i++) {
+            GenerateCoclassObject(mModule->GetCoclass(i));
         }
     }
-    else DumpError();
-
-    return ret;
 }
 
 bool Parser::ParseFile()
@@ -410,7 +423,7 @@ bool Parser::ParseInterface(
         String fullName = mTokenizer.GetIdentifier();
         Type* type = mPool->FindType(fullName);
         if (type != nullptr) {
-            if (!type->IsInterface()) {
+            if (!type->IsInterfaceType()) {
                 String message = String::Format("Interface %s is name conflict.", itfName.string());
                 LogError(token, message);
                 parseResult = false;
@@ -443,12 +456,12 @@ bool Parser::ParseInterface(
     Type* type = mPool->FindType(currNsString.IsNullOrEmpty() ?
             itfName : currNsString + itfName);
     if (type != nullptr) {
-        if (type->IsInterface() && !((Interface*)type)->IsDeclared()) {
+        if (type->IsInterfaceType() && !((Interface*)type)->IsDeclared()) {
             interface = (Interface*)type;
         }
         else {
             String message;
-            if (type->IsInterface()) {
+            if (type->IsInterfaceType()) {
                 message = String::Format("Interface %s has already been declared.", itfName.string());
             }
             else {
@@ -605,6 +618,12 @@ bool Parser::ParseMethod(
 
     if (parseResult) {
         method->BuildSignature();
+        if (interface->FindMethod(method->GetName(), method->GetSignature()) != nullptr) {
+            LogError(token, String::Format("The method \"%s\" is redeclared.",
+                    method->ToString().string()));
+            delete method;
+            return false;
+        }
         interface->AddMethod(method);
     }
     else {
@@ -1169,7 +1188,7 @@ PostfixExpression* Parser::ParseIntegralNumber(
     /* [in] */ Type* exprType)
 {
     Tokenizer::Token token = mTokenizer.GetToken();
-    if (exprType->IsNumericType() || exprType->IsEnumeration()) {
+    if (exprType->IsNumericType() || exprType->IsEnumerationType()) {
         PostfixExpression* postExpr = new PostfixExpression();
         Type* integralType = mTokenizer.Is64Bit() ?
                 mPool->FindType(String("Long")) : mPool->FindType(String("Integer"));
@@ -1266,7 +1285,7 @@ PostfixExpression* Parser::ParseIdentifier(
     /* [in] */ Type* exprType)
 {
     Tokenizer::Token token = mTokenizer.GetToken();
-    if (exprType->IsEnumeration()) {
+    if (exprType->IsEnumerationType()) {
         String enumName = mTokenizer.GetIdentifier();
         if (((Enumeration*)exprType)->Contains(enumName)) {
             PostfixExpression* postExpr = new PostfixExpression();
@@ -1429,6 +1448,12 @@ bool Parser::ParseCoclassConstructor(
 
     if (parseResult) {
         method->BuildSignature();
+        if (klass->FindConstructor(method->GetName(), method->GetSignature()) != nullptr) {
+            LogError(token, String::Format("The constructor \"%s\" is redeclared.",
+                    method->ToString().string()));
+            delete method;
+            return false;
+        }
         klass->AddConstructor(method);
     }
     else {
@@ -1505,7 +1530,7 @@ bool Parser::ParseEnumeration()
             enumName : currNsString + "::" + enumName);
     if (type != nullptr) {
         String message;
-        if (type->IsEnumeration()) {
+        if (type->IsEnumerationType()) {
             message = String::Format("Enumeration %s has already been declared.", enumName.string());
         }
         else {
@@ -1669,6 +1694,8 @@ bool Parser::ParseModule(
     mModule->AddNamespace(mCurrNamespace);
     mPool = mModule.get();
 
+    PreParse();
+
     token = mTokenizer.PeekToken();
     while (token != Tokenizer::Token::BRACES_CLOSE &&
             token != Tokenizer::Token::END_OF_FILE) {
@@ -1801,7 +1828,7 @@ Interface* Parser::FindInterface(
     /* [in] */ const String& itfName)
 {
     Type* type = FindType(itfName);
-    return type != nullptr && type->IsInterface() ? (Interface*)type : nullptr;
+    return type != nullptr && type->IsInterfaceType() ? (Interface*)type : nullptr;
 }
 
 Type* Parser::FindType(
@@ -1847,6 +1874,149 @@ Type* Parser::CastType(
     }
 }
 
+void Parser::GenerateIInterface()
+{
+    // add IInterface
+    Interface* interface = new Interface();
+    interface->SetName(String("IInterface"));
+    interface->SetNamespace(mPool->FindNamespace(String("ccm")));
+    interface->SetDeclared(true);
+    interface->SetSystemPreDeclared(true);
+    Attribute attr;
+    attr.mUuid = "00000000-0000-0000-0000-000000000000";
+    interface->SetAttribute(attr);
+    mPool->AddInterface(interface);
+    // add Probe method
+    Method* method = new Method();
+    method->SetName(String("Probe"));
+    PointerType* ptrType = new PointerType();
+    ptrType->SetBaseType(mPool->FindType(String("ccm::IInterface")));
+    ptrType->SetPointerNumber(1);
+    mPool->AddTemporaryType(ptrType);
+    method->SetReturnType(ptrType);
+    Parameter* param = new Parameter();
+    method->AddParameter(param);
+    param->SetName(String("iid"));
+    param->SetType(mPool->FindType(String("ccm::IInterface")));
+    param->SetAttribute(Parameter::IN);
+    interface->AddMethod(method);
+    // add AddRef method
+    method = new Method();
+    method->SetName(String("AddRef"));
+    method->SetReturnType(mPool->FindType(String("Integer")));
+    param = new Parameter();
+    method->AddParameter(param);
+    param->SetName(String("id"));
+    param->SetType(mPool->FindType(String("HANDLE")));
+    PostfixExpression* expr = new PostfixExpression();
+    expr->SetIntegralValue(0);
+    param->SetDefaultValue(expr);
+    param->SetAttribute(Parameter::IN);
+    interface->AddMethod(method);
+    // add Release method
+    method = new Method();
+    method->SetName(String("Release"));
+    method->SetReturnType(mPool->FindType(String("Integer")));
+    param = new Parameter();
+    method->AddParameter(param);
+    param->SetName(String("id"));
+    param->SetType(mPool->FindType(String("HANDLE")));
+    expr = new PostfixExpression();
+    expr->SetIntegralValue(0);
+    param->SetDefaultValue(expr);
+    param->SetAttribute(Parameter::IN);
+    interface->AddMethod(method);
+    // add GetInterfaceID method
+    method = new Method();
+    method->SetName(String("GetInterfaceID"));
+    param = new Parameter();
+    param->SetName(String("object"));
+    param->SetType(mPool->FindType(String("ccm::IInterface*")));
+    param->SetAttribute(Parameter::IN);
+    method->AddParameter(param);
+    param = new Parameter();
+    param->SetName(String("iid"));
+    ptrType = new PointerType();
+    ptrType->SetBaseType(mPool->FindType(String("InterfaceID")));
+    ptrType->SetPointerNumber(1);
+    mPool->AddTemporaryType(ptrType);
+    param->SetType(ptrType);
+    param->SetAttribute(Parameter::OUT);
+    method->AddParameter(param);
+    interface->AddMethod(method);
+}
+
+void Parser::GenerateIClassObject()
+{
+    // add IClassObject
+    Interface* interface = new Interface();
+    interface->SetName(String("IClassObject"));
+    interface->SetNamespace(mPool->FindNamespace(String("ccm")));
+    interface->SetDeclared(true);
+    interface->SetSystemPreDeclared(true);
+    Attribute attr;
+    attr.mUuid = "00000000-0000-0000-0000-000000000001";
+    interface->SetAttribute(attr);
+    mPool->AddInterface(interface);
+    // add CreateObject method
+    Method* method = new Method();
+    method->SetName(String("CreateObject"));
+    // add iid Parameter
+    Parameter* param = new Parameter();
+    param->SetName(String("iid"));
+    param->SetType(mPool->FindType(String("InterfaceID")));
+    param->SetAttribute(Parameter::IN);
+    method->AddParameter(param);
+    // add object Parameter
+    param = new Parameter();
+    param->SetName(String("object"));
+    PointerType* ptrType = new PointerType();
+    ptrType->SetBaseType(mPool->FindType(String("ccm::IInterface")));
+    ptrType->SetPointerNumber(2);
+    mPool->AddTemporaryType(ptrType);
+    param->SetType(ptrType);
+    param->SetAttribute(Parameter::OUT);
+    method->AddParameter(param);
+    interface->AddMethod(method);
+}
+
+void Parser::GenerateCoclassObject(
+    /* [in] */ Coclass* klass)
+{
+    if (klass->GetConstructorNumber() == 0) {
+        Method* constructor = new Method();
+        constructor->SetName(String("constructor"));
+        constructor->BuildSignature();
+        klass->AddConstructor(constructor);
+    }
+
+    bool hasConstructorWithArgu = false;
+    for (int i = 0; i < klass->GetConstructorNumber(); i++) {
+        Method* constructor = klass->GetConstructor(i);
+        if (constructor->GetParameterNumber() > 0) {
+            hasConstructorWithArgu = true;
+            break;
+        }
+    }
+
+    if (hasConstructorWithArgu) {
+        Interface* itfco = new Interface();
+        itfco->SetName(String::Format("I%sClassObject", klass->GetName().string()));
+        itfco->SetNamespace(klass->GetNamespace());
+        itfco->SetDeclared(true);
+        for (int i = 0; i < klass->GetConstructorNumber(); i++) {
+            itfco->AddMethod(klass->GetConstructor(i));
+        }
+        mModule->AddInterface(itfco);
+        klass->AddInterface(itfco);
+    }
+    else {
+        Interface* itfco = mModule->FindInterface(String("IClassObject"));
+        itfco->AddMethod(klass->GetConstructor(0));
+        klass->AddInterface(itfco);
+    }
+}
+
 void Parser::LogError(
     /* [in] */ Tokenizer::Token token,
     /* [in] */ const String& message)
@@ -1884,6 +2054,18 @@ void Parser::DumpError()
         Logger::E(TAG, "%s[Line %d, Column %d] %s", error->mFileName.string(),
                 error->mLineNo, error->mColumnNo, error->mMessage.string());
         error = error->mNext;
+    }
+}
+
+void Parser::Dump()
+{
+    String dumpStr = mEnvironment->Dump(String(""));
+    if (!dumpStr.IsNullOrEmpty()) {
+        printf("%s\n", dumpStr.string());
+    }
+    if (mModule != nullptr) {
+        dumpStr = mModule->Dump(String(""));
+        printf("%s\n", dumpStr.string());
     }
 }
 

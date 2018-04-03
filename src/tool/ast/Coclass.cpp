@@ -21,6 +21,11 @@
 namespace ccdl {
 namespace ast {
 
+Coclass::Coclass()
+    : mConstructors(5, false)
+    , mInterfaces(10, false)
+{}
+
 void Coclass::SetNamespace(
     /* [in] */ Namespace* ns)
 {
@@ -42,6 +47,20 @@ bool Coclass::AddConstructor(
     if (constructor == nullptr) return true;
 
     return mConstructors.Add(constructor);
+}
+
+Method* Coclass::FindConstructor(
+    /* [in] */ const String& name,
+    /* [in] */ const String& signature)
+{
+    for (int i = 0; i < GetConstructorNumber(); i++) {
+        Method* constructor = mConstructors.Get(i);
+        if (constructor->GetName().Equals(name) &&
+                constructor->GetSignature().Equals(signature)) {
+            return constructor;
+        }
+    }
+    return nullptr;
 }
 
 bool Coclass::AddInterface(

@@ -20,12 +20,14 @@
 #include "../ast/BooleanType.h"
 #include "../ast/ByteType.h"
 #include "../ast/CharType.h"
+#include "../ast/CoclassIDType.h"
 #include "../ast/DoubleType.h"
 #include "../ast/Enumeration.h"
 #include "../ast/FloatType.h"
 #include "../ast/HANDLEType.h"
 #include "../ast/IntegerType.h"
 #include "../ast/Interface.h"
+#include "../ast/InterfaceIDType.h"
 #include "../ast/LongType.h"
 #include "../ast/Namespace.h"
 #include "../ast/Pool.h"
@@ -38,12 +40,14 @@
 using ccdl::ast::BooleanType;
 using ccdl::ast::ByteType;
 using ccdl::ast::CharType;
+using ccdl::ast::CoclassIDType;
 using ccdl::ast::DoubleType;
 using ccdl::ast::Enumeration;
 using ccdl::ast::FloatType;
 using ccdl::ast::HANDLEType;
 using ccdl::ast::IntegerType;
 using ccdl::ast::Interface;
+using ccdl::ast::InterfaceIDType;
 using ccdl::ast::LongType;
 using ccdl::ast::Namespace;
 using ccdl::ast::Pool;
@@ -80,6 +84,8 @@ private:
     BooleanType* mBooleanType;
     StringType* mStringType;
     HANDLEType* mHANDLEType;
+    CoclassIDType* mCoclassIDType;
+    InterfaceIDType* mInterfaceIDType;
 };
 
 }

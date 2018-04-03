@@ -44,7 +44,7 @@ public:
     void SetNamespace(
         /* [in] */ Namespace* ns) override;
 
-    bool IsEnumeration() override
+    inline bool IsEnumerationType() override
     { return true; }
 
     bool AddEnumerator(

@@ -29,11 +29,7 @@ class MetaSerializer
 {
 public:
     MetaSerializer(
-        /* [in] */ MetaComponent* mc)
-        : mMetaComponent(mc)
-        , mBasePtr(reinterpret_cast<uintptr_t>(mc))
-        , mDataSize(mc->mSize)
-    {}
+        /* [in] */ MetaComponent* mc);
 
     void Serialize();
 

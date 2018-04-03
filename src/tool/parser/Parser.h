@@ -116,6 +116,7 @@ public:
         , mStatus(NOERROR)
         , mErrorHeader(nullptr)
         , mCurrError(nullptr)
+        , mNeedDump(true)
     {}
 
     ~Parser();
@@ -127,6 +128,10 @@ public:
     { return mModule; }
 
 private:
+    void PreParse();
+
+    void PostParse();
+
     bool ParseFile();
 
     bool ParseDeclarationWithAttribute();
@@ -250,11 +255,20 @@ private:
         /* [in] */ Type* type1,
         /* [in] */ Type* type2);
 
+    void GenerateIInterface();
+
+    void GenerateIClassObject();
+
+    void GenerateCoclassObject(
+        /* [in] */ Coclass* klass);
+
     void LogError(
         /* [in] */ Tokenizer::Token token,
         /* [in] */ const String& message);
 
     void DumpError();
+
+    void Dump();
 
 public:
     static constexpr int NOERROR = 0x0;
@@ -273,6 +287,7 @@ private:
     int mStatus;
     Error* mErrorHeader;
     Error* mCurrError;
+    bool mNeedDump;
 };
 
 }

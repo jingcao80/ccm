@@ -43,7 +43,7 @@ Enumeration* Pool::FindEnumeration(
     /* [in] */ const String& enumFullName)
 {
     Type* type = FindType(enumFullName);
-    if (type == nullptr || !type->IsEnumeration()) {
+    if (type == nullptr || !type->IsEnumerationType()) {
         return nullptr;
     }
     return (Enumeration*)type;
@@ -63,7 +63,7 @@ Interface* Pool::FindInterface(
     /* [in] */ const String& itfFullName)
 {
     Type* type = FindType(itfFullName);
-    if (type == nullptr || !type->IsInterface()) {
+    if (type == nullptr || !type->IsInterfaceType()) {
         return nullptr;
     }
     return (Interface*)type;
@@ -83,7 +83,7 @@ Coclass* Pool::FindClass(
     /* [in] */ const String& klassName)
 {
     Type* type = FindType(klassName);
-    if (type == nullptr || !type->IsCoclass()) {
+    if (type == nullptr || !type->IsCoclassType()) {
         return nullptr;
     }
     return (Coclass*)type;

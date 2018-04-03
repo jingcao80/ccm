@@ -37,9 +37,7 @@ class MetaDumper
 {
 public:
     MetaDumper(
-        /* [in] */ MetaComponent* mc)
-        : mMetaComponet(mc)
-    {}
+        /* [in] */ MetaComponent* mc);
 
     String Dump();
 

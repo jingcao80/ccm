@@ -28,10 +28,7 @@ namespace ast {
 class Constant : public Node
 {
 public:
-    Constant()
-        : mType(nullptr)
-        , mValue(nullptr)
-    {}
+    Constant();
 
     inline String GetName()
     { return mName; }
