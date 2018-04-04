@@ -56,6 +56,12 @@ private:
 
     void GenerateTypeDeclarations();
 
+    String GenerateEnumerationPreDeclarations(
+        /* [in] */ MetaNamespace* mn);
+
+    String GenerateInterfacePreDeclarations(
+        /* [in] */ MetaNamespace* mn);
+
     String GenerateEnumerations(
         /* [in] */ MetaNamespace* mn);
 

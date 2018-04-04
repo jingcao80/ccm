@@ -21,12 +21,12 @@
 
 namespace ccm {
 
-CCM_PUBLIC ECode CoCreateObjectInstance(
+COM_PUBLIC ECode CoCreateObjectInstance(
     /* [in] */ const CoclassID& cid,
     /* [in] */ const InterfaceID& iid,
     /* [out] */ IInterface** object);
 
-CCM_PUBLIC ECode CoAcquireClassFactory(
+COM_PUBLIC ECode CoAcquireClassFactory(
     /* [in] */ const CoclassID& cid,
     /* [out] */ IInterface** object);
 

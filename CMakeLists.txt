@@ -60,9 +60,17 @@ set(RT_SOURCES
     src/runtime/metadata/MetaSerializer.cpp
     src/runtime/util/logger.cpp
     src/runtime/ccmcomponent.cpp
-    src/runtime/ccmobjectapi.cpp
     src/runtime/ccmids.cpp
+    src/runtime/ccmobjectapi.cpp
+    src/runtime/ccmsharedbuffer.cpp
+    src/runtime/ccmstring.cpp
     src/runtime/runtime.cpp)
 
 add_library(ccmrt SHARED
     ${RT_SOURCES})
+
+set(TEST_SOURCES
+    build/tmp/SolarSystemPub.cpp)
+
+#add_library(ss SHARED
+#    ${TEST_SOURCES})

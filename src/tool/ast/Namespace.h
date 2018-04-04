@@ -84,6 +84,8 @@ public:
     inline int GetInterfaceNumber()
     { return mInterfaces.GetSize(); }
 
+    int GetSystemPreDeclaredInterfaceNumber();
+
     inline Interface* GetInterface(
         /* [in] */ int index)
     { return mInterfaces.Get(index); }

@@ -80,6 +80,16 @@ bool Namespace::AddInterface(
     return mInterfaces.Add(itf);
 }
 
+int Namespace::GetSystemPreDeclaredInterfaceNumber()
+{
+    int count = 0;
+    for (int i = 0; i < mInterfaces.GetSize(); i++) {
+        Interface* itf = mInterfaces.Get(i);
+        if (itf->IsSystemPreDeclared()) count++;
+    }
+    return count;
+}
+
 String Namespace::ToString()
 {
     String nsString("");

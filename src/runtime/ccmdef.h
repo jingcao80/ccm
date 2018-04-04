@@ -25,8 +25,8 @@ namespace ccm {
 
 #define interface       struct
 
-#define CCM_PUBLIC      __attribute__ ((visibility ("default")))
-#define CCM_LOCAL       __attribute__ ((visibility ("hidden")))
+#define COM_PUBLIC      __attribute__ ((visibility ("default")))
+#define COM_LOCAL       __attribute__ ((visibility ("hidden")))
 
 #define REFCOUNT_ADD(i)     if (i) { (i)->AddRef(); }
 #define REFCOUNT_RELEASE(i) if (i) { (i)->Release(); }

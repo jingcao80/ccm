@@ -79,6 +79,7 @@ struct MetaNamespace
     int                 mCoclassNumber;
     int                 mEnumerationNumber;
     int                 mInterfaceNumber;
+    int                 mSystemPreDeclaredInterfaceNumber;
     int*                mCoclassIndexes;
     int*                mEnumerationIndexes;
     int*                mInterfaceIndexes;

@@ -563,6 +563,7 @@ MetaNamespace* MetaBuilder::WriteMetaNamespace(
     mn->mCoclassNumber = CLS_NUM;
     mn->mEnumerationNumber = ENUMN_NUM;
     mn->mInterfaceNumber = ITF_NUM;
+    mn->mSystemPreDeclaredInterfaceNumber = ns->GetSystemPreDeclaredInterfaceNumber();
     // mCoclassIndexes's address
     mBasePtr = ALIGN4(mBasePtr + sizeof(MetaNamespace));
     mn->mCoclassIndexes = reinterpret_cast<int*>(mBasePtr);

@@ -21,6 +21,14 @@
 
 namespace ccm {
 
+typedef ECode (*GetterPtr)(IInterface**);
+
+struct ClassObjectGetter
+{
+    CoclassID   mCid;
+    GetterPtr   mGetter;
+};
+
 typedef ECode (*GetClassObjectPtr)(const CoclassID&, IInterface**);
 
 struct CcmComponent

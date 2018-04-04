@@ -46,6 +46,20 @@ struct ComponentID
     const char*         mUrl;
 };
 
+inline bool operator==(
+    /* [in] */ const CoclassID& cid1,
+    /* [in] */ const CoclassID& cid2)
+{
+    return !memcmp(&cid1.mUuid, &cid2.mUuid, sizeof(Uuid));
+}
+
+inline bool operator==(
+    /* [in] */ const ComponentID& cid1,
+    /* [in] */ const ComponentID& cid2)
+{
+    return !memcmp(&cid1.mUuid, &cid2.mUuid, sizeof(Uuid));
+}
+
 }
 
 #include "ccmintfs.h"
