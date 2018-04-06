@@ -31,9 +31,10 @@
 //=========================================================================
 
 #include "ccmsharedbuffer.h"
-#include "ccmstring.h"
+#include "ccmtypes.h"
 #include "util/logger.h"
 
+#include <limits.h>
 #include <string.h>
 
 namespace ccm {
@@ -63,6 +64,10 @@ static char* AllocFromUTF8(
     /* [in] */ const char* string, size_t byteSize)
 {
     if (byteSize == 0) return GetEmptyString();
+    if (byteSize > INT_MAX) {
+        Logger::E("String", "Invalid buffer size %zu", byteSize);
+        return nullptr;
+    }
 
     SharedBuffer* buf = SharedBuffer::Alloc(byteSize + 1);
     if (buf == nullptr) {
@@ -140,7 +145,7 @@ Integer String::GetByteLength() const
 }
 
 Char String::GetChar(
-    /* [in] */ int index) const
+    /* [in] */ Integer index) const
 {
     if (IsNullOrEmpty() || index < 0) return INVALID_CHAR;
 
@@ -158,6 +163,32 @@ Char String::GetChar(
     }
 
     return INVALID_CHAR;
+}
+
+Array<Char> String::GetChars(
+    /* [in] */ Integer start) const
+{
+    Integer charCount = GetLength();
+    if (start >= charCount) {
+        return Array<Char>();
+    }
+
+    Array<Char> charArray(charCount - start);
+
+    Integer byteSize, i = 0;
+    const char* p = mString;
+    const char* end = mString + GetByteLength() + 1;
+    while (*p && p < end) {
+        byteSize = UTF8SequenceLength(*p);
+        if (byteSize == 0 || p + byteSize >= end) break;
+        if (i >= start) {
+            charArray[i - start] = GetCharInternal(p, &byteSize);
+        }
+        p += byteSize;
+        i++;
+    }
+
+    return charArray;
 }
 
 Integer String::Compare(
@@ -186,6 +217,32 @@ Integer String::CompareIgnoreCase(
     }
 
     return strcasecmp(mString, string);
+}
+
+String& String::operator=(
+    /* [in] */ const String& other)
+{
+    if (other.mString != nullptr) {
+        SharedBuffer::GetBufferFromData(other.mString)->AddRef();
+    }
+    if (mString != nullptr) {
+        SharedBuffer::GetBufferFromData(mString)->Release();
+    }
+    mString = other.mString;
+    mCharCount = other.mCharCount;
+    return *this;
+}
+
+String& String::operator=(
+    /* [in] */ const char* string)
+{
+    if (mString != nullptr) {
+        SharedBuffer::GetBufferFromData(mString)->Release();
+    }
+    mString = string != nullptr ?
+        AllocFromUTF8(string, strlen(string)) : nullptr;
+    mCharCount = 0;
+    return *this;
 }
 
 Integer String::UTF8SequenceLengthNonASCII(

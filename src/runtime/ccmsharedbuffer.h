@@ -78,7 +78,7 @@ public:
     SharedBuffer* Reset(
         /* [in] */ size_t size) const;
 
-    void AddRef() const;
+    int32_t AddRef() const;
 
     int32_t Release(
         /* [in] */ uint32_t flags = 0) const;
@@ -91,6 +91,7 @@ private:
     SharedBuffer(const SharedBuffer&);
     SharedBuffer& operator = (const SharedBuffer&);
 
+private:
     mutable std::atomic<int32_t> mRefs;
     size_t mSize;
     uint32_t mReserved[2];

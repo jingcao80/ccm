@@ -14,33 +14,31 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CCMDEF_H__
-#define __CCM_CCMDEF_H__
-
-#include <stdint.h>
+#ifndef __CCM_CCMTYPEKIND_H__
+#define __CCM_CCMTYPEKIND_H__
 
 namespace ccm {
 
-#define INTERFACE_ID(x)
+enum class CcmTypeKind
+{
+    Unknown,
+    Char = 1,
+    Byte,
+    Short,
+    Integer,
+    Long,
+    Float,
+    Double,
+    Boolean,
+    String,
+    HANDLE,
+    CoclassID,
+    InterfaceID,
+    Enum,
+    Array,
+    Interface,
+};
 
-#define interface       struct
+}
 
-#define COM_PUBLIC      __attribute__ ((visibility ("default")))
-#define COM_LOCAL       __attribute__ ((visibility ("hidden")))
-
-#define REFCOUNT_ADD(i)     if (i) { (i)->AddRef(); }
-#define REFCOUNT_RELEASE(i) if (i) { (i)->Release(); }
-
-#define VALIDATE_NOT_NULL(i) \
-        if (i == nullptr) { return E_ILLEGAL_ARGUMENT_EXCEPTION; }
-
-#ifndef MAX
-#define MAX(a, b)       (((a) > (b)) ? (a) : (b))
-#endif
-#ifndef MIN
-#define MIN(a, b)       (((a) < (b)) ? (a) : (b))
-#endif
-
-} // namespace ccm
-
-#endif // __CCM_CCMDEF_H__
+#endif // __CCM_CCMTYPEKIND_H__

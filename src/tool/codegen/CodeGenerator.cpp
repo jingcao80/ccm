@@ -26,7 +26,7 @@
 #include <sys/stat.h>
 
 using ccdl::ast::Parameter;
-using ccm::metadata::CcdlType;
+using ccm::CcmTypeKind;
 using ccm::metadata::MetaCoclass;
 using ccm::metadata::MetaEnumerator;
 using ccm::metadata::MetaNamespace;
@@ -269,7 +269,7 @@ String CodeGenerator::GenerateConstantDeclaration(
     StringBuilder builder;
 
     MetaType* mt = mMetaComponent->mTypes[mc->mTypeIndex];
-    if (mt->mKind == CcdlType::String) {
+    if (mt->mKind == CcmTypeKind::String) {
         builder.Append("    static const ");
     }
     else {
@@ -378,50 +378,50 @@ String CodeGenerator::GenerateType(
 
     MetaComponent* mc = mMetaComponent;
     switch(mt->mKind) {
-        case CcdlType::Char:
+        case CcmTypeKind::Char:
             builder.Append("Char");
             break;
-        case CcdlType::Byte:
+        case CcmTypeKind::Byte:
             builder.Append("Byte");
             break;
-        case CcdlType::Short:
+        case CcmTypeKind::Short:
             builder.Append("Short");
             break;
-        case CcdlType::Integer:
+        case CcmTypeKind::Integer:
             builder.Append("Integer");
             break;
-        case CcdlType::Long:
+        case CcmTypeKind::Long:
             builder.Append("Long");
             break;
-        case CcdlType::Float:
+        case CcmTypeKind::Float:
             builder.Append("Float");
             break;
-        case CcdlType::Double:
+        case CcmTypeKind::Double:
             builder.Append("Double");
             break;
-        case CcdlType::Boolean:
+        case CcmTypeKind::Boolean:
             builder.Append("Boolean");
             break;
-        case CcdlType::String:
+        case CcmTypeKind::String:
             builder.Append("String");
             break;
-        case CcdlType::HANDLE:
+        case CcmTypeKind::HANDLE:
             builder.Append("HANDLE");
             break;
-        case CcdlType::Enum:
+        case CcmTypeKind::Enum:
             builder.Append(mc->mEnumerations[mt->mIndex]->mName);
             break;
-        case CcdlType::Array:
+        case CcmTypeKind::Array:
             builder.AppendFormat("Array<%s>",
                     GenerateType(mc->mTypes[mt->mNestedTypeIndex]).string());
             break;
-        case CcdlType::Interface:
+        case CcmTypeKind::Interface:
             builder.Append(mc->mInterfaces[mt->mIndex]->mName);
             break;
-        case CcdlType::CoclassID:
+        case CcmTypeKind::CoclassID:
             builder.Append(mt->mPointerNumber > 0 ? "CoclassID" : "const CoclassID&");
             break;
-        case CcdlType::InterfaceID:
+        case CcmTypeKind::InterfaceID:
             builder.Append(mt->mPointerNumber > 0 ? "InterfaceID" : "const InterfaceID&");
             break;
         default:
@@ -442,43 +442,43 @@ String CodeGenerator::GenerateValue(
 
     MetaType* mt = mMetaComponent->mTypes[mc->mTypeIndex];
     switch(mt->mKind) {
-        case CcdlType::Char:
+        case CcmTypeKind::Char:
             return String::Format("\'%c\'", mc->mValue.mInteger);
-        case CcdlType::Byte: {
+        case CcmTypeKind::Byte: {
             const char* format = mc->mRadix == 8 ? "%o" :
                     mc->mRadix == 10 ? "%d" : "%x";
             return String::Format(format, (unsigned char)mc->mValue.mInteger);
         }
-        case CcdlType::Short: {
+        case CcmTypeKind::Short: {
             const char* format = mc->mRadix == 8 ? "%o" :
                     mc->mRadix == 10 ? "%d" : "%x";
             return String::Format(format, (short)mc->mValue.mInteger);
         }
-        case CcdlType::Integer: {
+        case CcmTypeKind::Integer: {
             const char* format = mc->mRadix == 8 ? "%o" :
                     mc->mRadix == 10 ? "%d" : "%x";
             return String::Format(format, mc->mValue.mInteger);
         }
-        case CcdlType::Long: {
+        case CcmTypeKind::Long: {
             const char* format = mc->mRadix == 8 ? "%llo" :
                     mc->mRadix == 10 ? "%lld" : "%llx";
             return String::Format(format, mc->mValue.mLong);
         }
-        case CcdlType::Float:
+        case CcmTypeKind::Float:
             return String::Format("%f", mc->mValue.mFloat);
-        case CcdlType::Double:
+        case CcmTypeKind::Double:
             return String::Format("%e", mc->mValue.mDouble);
-        case CcdlType::Boolean:
+        case CcmTypeKind::Boolean:
             return mc->mValue.mBoolean ? String("true") : String("false");
-        case CcdlType::String:
+        case CcmTypeKind::String:
             return String::Format("\"%s\"", mc->mValue.mString);
-        case CcdlType::Enum:
+        case CcmTypeKind::Enum:
             return String::Format("%s::%s", GenerateType(mt).string(), mc->mValue.mString);
-        case CcdlType::Array:
-        case CcdlType::HANDLE:
-        case CcdlType::Interface:
-        case CcdlType::CoclassID:
-        case CcdlType::InterfaceID:
+        case CcmTypeKind::Array:
+        case CcmTypeKind::HANDLE:
+        case CcmTypeKind::Interface:
+        case CcmTypeKind::CoclassID:
+        case CcmTypeKind::InterfaceID:
         default:
             break;
     }

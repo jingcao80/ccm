@@ -41,6 +41,7 @@ using ccdl::ast::Module;
 using ccdl::ast::Namespace;
 using ccdl::ast::Parameter;
 using ccdl::ast::Type;
+using ccm::CcmTypeKind;
 using ccm::metadata::MetaCoclass;
 using ccm::metadata::MetaComponent;
 using ccm::metadata::MetaConstant;
@@ -51,7 +52,6 @@ using ccm::metadata::MetaMethod;
 using ccm::metadata::MetaNamespace;
 using ccm::metadata::MetaParameter;
 using ccm::metadata::MetaType;
-using ccm::metadata::CcdlType;
 
 namespace ccdl {
 namespace metadata {
@@ -137,7 +137,7 @@ private:
     char* WriteString(
         /* [in] */ const String& string);
 
-    CcdlType Type2CcdlType(
+    CcmTypeKind Type2CcdlType(
         /* [in] */ Type* type);
 
 private:

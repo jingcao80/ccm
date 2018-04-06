@@ -29,17 +29,18 @@ public:
 
     AutoPtr(
         /* [in] */ T* other,
-        /* [in] */ const void* id = nullptr);
+        /* [in] */ void* id = nullptr);
 
     AutoPtr(
         /* [in] */ const AutoPtr<T>& other,
-        /* [in] */ const void* id = nullptr);
+        /* [in] */ void* id = nullptr);
 
     AutoPtr(
         /* [in] */ AutoPtr<T>&& other);
 
-    inline T* operator->() const
-    { return mPtr; }
+    inline T* operator->() const;
+
+    inline T& operator*() const;
 
 private:
     T* mPtr;
@@ -48,22 +49,22 @@ private:
 template<class T>
 AutoPtr<T>::AutoPtr(
     /* [in] */ T* other,
-    /* [in] */ const void* id)
+    /* [in] */ void* id)
     : mPtr(other)
 {
     if (mPtr != nullptr) {
-        mPtr->AddRef(id);
+        mPtr->AddRef(reinterpret_cast<HANDLE>(id));
     }
 }
 
 template<class T>
 AutoPtr<T>::AutoPtr(
     /* [in] */ const AutoPtr<T>& other,
-    /* [in] */ const void* id)
+    /* [in] */ void* id)
     : mPtr(other.mPtr)
 {
     if (mPtr != nullptr) {
-        mPtr->AddRef(id);
+        mPtr->AddRef(reinterpret_cast<HANDLE>(id));
     }
 }
 
@@ -73,6 +74,18 @@ AutoPtr<T>::AutoPtr(
     : mPtr(other.mPtr)
 {
     other.mPtr = nullptr;
+}
+
+template<class T>
+T* AutoPtr<T>::operator->() const
+{
+    return mPtr;
+}
+
+template<class T>
+T& AutoPtr<T>::operator*() const
+{
+    return *mPtr;
 }
 
 }

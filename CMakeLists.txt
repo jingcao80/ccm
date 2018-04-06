@@ -59,6 +59,7 @@ add_executable(ccdl ${TOOL_SOURCES})
 set(RT_SOURCES
     src/runtime/metadata/MetaSerializer.cpp
     src/runtime/util/logger.cpp
+    src/runtime/ccmarray.cpp
     src/runtime/ccmcomponent.cpp
     src/runtime/ccmids.cpp
     src/runtime/ccmobjectapi.cpp

@@ -33,9 +33,11 @@
 #ifndef __CCM_STRING_H__
 #define __CCM_STRING_H__
 
-#include "ccmtypes.h"
+#include "util/ccmautoptr.h"
 
 namespace ccm {
+
+template<class T> class Array;
 
 class String
 {
@@ -68,7 +70,13 @@ public:
     inline operator const char*() const;
 
     Char GetChar(
-        /* [in] */ int index) const;
+        /* [in] */ Integer index) const;
+
+    Array<Char> GetChars(
+        /* [in] */ Integer start = 0) const;
+
+    Array<Short> GetUTF16Chars(
+        /* [in] */ Integer start = 0) const;
 
     inline Integer Compare(
         /* [in] */ const String& other) const;
@@ -93,6 +101,12 @@ public:
 
     inline Boolean EqualsIgnoreCase(
         /* [in] */ const char* string) const;
+
+    String& operator=(
+        /* [in] */ const String& other);
+
+    String& operator=(
+        /* [in] */ const char* string);
 
     inline static Boolean IsASCII(
         /* [in] */ char c);

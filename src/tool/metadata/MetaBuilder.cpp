@@ -651,53 +651,53 @@ char* MetaBuilder::WriteString(
     return mMetaComponet->mStringPool + mStringPool.FindOffset(string);
 }
 
-CcdlType MetaBuilder::Type2CcdlType(
+CcmTypeKind MetaBuilder::Type2CcdlType(
     /* [in] */ Type* type)
 {
     if (type->IsBooleanType()) {
-        return CcdlType::Boolean;
+        return CcmTypeKind::Boolean;
     }
     else if (type->IsCharType()) {
-        return CcdlType::Char;
+        return CcmTypeKind::Char;
     }
     else if (type->IsByteType()) {
-        return CcdlType::Byte;
+        return CcmTypeKind::Byte;
     }
     else if (type->IsShortType()) {
-        return CcdlType::Short;
+        return CcmTypeKind::Short;
     }
     else if (type->IsIntegerType()) {
-        return CcdlType::Integer;
+        return CcmTypeKind::Integer;
     }
     else if (type->IsLongType()) {
-        return CcdlType::Long;
+        return CcmTypeKind::Long;
     }
     else if (type->IsFloatType()) {
-        return CcdlType::Float;
+        return CcmTypeKind::Float;
     }
     else if (type->IsDoubleType()) {
-        return CcdlType::Double;
+        return CcmTypeKind::Double;
     }
     else if (type->IsStringType()) {
-        return CcdlType::String;
+        return CcmTypeKind::String;
     }
     else if (type->IsHANDLEType()) {
-        return CcdlType::HANDLE;
+        return CcmTypeKind::HANDLE;
     }
     else if (type->IsEnumerationType()) {
-        return CcdlType::Enum;
+        return CcmTypeKind::Enum;
     }
     else if (type->IsArrayType()) {
-        return CcdlType::Array;
+        return CcmTypeKind::Array;
     }
     else if (type->IsInterfaceType()) {
-        return CcdlType::Interface;
+        return CcmTypeKind::Interface;
     }
     else if (type->IsCoclassIDType()) {
-        return CcdlType::CoclassID;
+        return CcmTypeKind::CoclassID;
     }
     else if (type->IsInterfaceIDType()) {
-        return CcdlType::InterfaceID;
+        return CcmTypeKind::InterfaceID;
     }
 }
 

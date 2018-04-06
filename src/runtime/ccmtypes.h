@@ -62,7 +62,46 @@ inline bool operator==(
 
 }
 
+#include "ccmstring.h"
 #include "ccmintfs.h"
 #include "ccmerror.h"
+#include "ccmtypekind.h"
+
+namespace ccm {
+
+template<class T>
+struct Type2Kind
+{
+    inline static CcmTypeKind Kind();
+};
+template<class T>
+CcmTypeKind Type2Kind<T>::Kind()
+{
+    return CcmTypeKind::Unknown;
+}
+
+#define TYPE2KIND_SPEC(type, kind) \
+        template<> \
+        struct Type2Kind<type> \
+        { inline static CcmTypeKind Kind(); }; \
+        CcmTypeKind Type2Kind<type>::Kind() \
+        { return kind; }
+
+TYPE2KIND_SPEC(Byte, CcmTypeKind::Byte);
+TYPE2KIND_SPEC(Short, CcmTypeKind::Short);
+TYPE2KIND_SPEC(Integer, CcmTypeKind::Integer);
+TYPE2KIND_SPEC(Long, CcmTypeKind::Long);
+TYPE2KIND_SPEC(Float, CcmTypeKind::Float);
+TYPE2KIND_SPEC(Double, CcmTypeKind::Double);
+TYPE2KIND_SPEC(Boolean, CcmTypeKind::Boolean);
+TYPE2KIND_SPEC(String, CcmTypeKind::String);
+TYPE2KIND_SPEC(HANDLE, CcmTypeKind::HANDLE);
+TYPE2KIND_SPEC(CoclassID, CcmTypeKind::CoclassID);
+TYPE2KIND_SPEC(InterfaceID, CcmTypeKind::InterfaceID);
+TYPE2KIND_SPEC(IInterface*, CcmTypeKind::Interface);
+
+}
+
+#include "ccmarray.h"
 
 #endif // __CCM_CCMTYPE_H__

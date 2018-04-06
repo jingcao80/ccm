@@ -20,7 +20,7 @@
 #include "../util/Uuid.h"
 
 using ccdl::ast::Parameter;
-using ccm::metadata::CcdlType;
+using ccm::CcmTypeKind;
 
 namespace ccdl {
 namespace metadata {
@@ -127,34 +127,34 @@ String MetaDumper::DumpConstantValue(
 
     MetaType* mt = mMetaComponet->mTypes[mc->mTypeIndex];
     switch(mt->mKind) {
-        case CcdlType::Char:
+        case CcmTypeKind::Char:
             builder.AppendFormat("%c", mc->mValue.mInteger);
             break;
-        case CcdlType::Byte:
+        case CcmTypeKind::Byte:
             builder.AppendFormat("%d", (unsigned char)mc->mValue.mInteger);
             break;
-        case CcdlType::Short:
+        case CcmTypeKind::Short:
             builder.AppendFormat("%d", (short)mc->mValue.mInteger);
             break;
-        case CcdlType::Integer:
+        case CcmTypeKind::Integer:
             builder.AppendFormat("%d", mc->mValue.mInteger);
             break;
-        case CcdlType::Long:
+        case CcmTypeKind::Long:
             builder.AppendFormat("%lld", mc->mValue.mLong);
             break;
-        case CcdlType::Float:
+        case CcmTypeKind::Float:
             builder.AppendFormat("%f", mc->mValue.mFloat);
             break;
-        case CcdlType::Double:
+        case CcmTypeKind::Double:
             builder.AppendFormat("%e", mc->mValue.mDouble);
             break;
-        case CcdlType::Boolean:
+        case CcmTypeKind::Boolean:
             builder.Append(mc->mValue.mBoolean ? "true" : "false");
             break;
-        case CcdlType::String:
+        case CcmTypeKind::String:
             builder.Append(mc->mValue.mString);
             break;
-        case CcdlType::Enum: {
+        case CcmTypeKind::Enum: {
             builder.Append(mc->mValue.mString);
             break;
         }
@@ -293,50 +293,50 @@ String MetaDumper::DumpMetaType(
     StringBuilder builder;
 
     switch(mt->mKind) {
-        case CcdlType::Char:
+        case CcmTypeKind::Char:
             builder.Append("Char");
             break;
-        case CcdlType::Byte:
+        case CcmTypeKind::Byte:
             builder.Append("Byte");
             break;
-        case CcdlType::Short:
+        case CcmTypeKind::Short:
             builder.Append("Short");
             break;
-        case CcdlType::Integer:
+        case CcmTypeKind::Integer:
             builder.Append("Integer");
             break;
-        case CcdlType::Long:
+        case CcmTypeKind::Long:
             builder.Append("Long");
             break;
-        case CcdlType::Float:
+        case CcmTypeKind::Float:
             builder.Append("Float");
             break;
-        case CcdlType::Double:
+        case CcmTypeKind::Double:
             builder.Append("Double");
             break;
-        case CcdlType::Boolean:
+        case CcmTypeKind::Boolean:
             builder.Append("Boolean");
             break;
-        case CcdlType::String:
+        case CcmTypeKind::String:
             builder.Append("String");
             break;
-        case CcdlType::HANDLE:
+        case CcmTypeKind::HANDLE:
             builder.Append("HANDLE");
             break;
-        case CcdlType::Enum:
+        case CcmTypeKind::Enum:
             builder.Append(mMetaComponet->mEnumerations[mt->mIndex]->mName);
             break;
-        case CcdlType::Array:
+        case CcmTypeKind::Array:
             builder.Append("Array<").Append(
                     DumpMetaType(mMetaComponet->mTypes[mt->mNestedTypeIndex])).Append(">");
             break;
-        case CcdlType::Interface:
+        case CcmTypeKind::Interface:
             builder.Append(mMetaComponet->mInterfaces[mt->mIndex]->mName);
             break;
-        case CcdlType::CoclassID:
+        case CcmTypeKind::CoclassID:
             builder.Append(mt->mPointerNumber > 0 ? "CoclassID" : "const CoclassID&");
             break;
-        case CcdlType::InterfaceID:
+        case CcmTypeKind::InterfaceID:
             builder.Append(mt->mPointerNumber > 0 ? "InterfaceID" : "const InterfaceID&");
             break;
         default:

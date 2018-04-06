@@ -33,7 +33,6 @@
 #include "ccmsharedbuffer.h"
 #include "util/logger.h"
 
-#include <limits.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -44,7 +43,7 @@ SharedBuffer* SharedBuffer::Alloc(
 {
     // Don't overflow if the combined size of the buffer / header is larger than
     // size_max.
-    if (size >= (INT_MAX - sizeof(SharedBuffer))) {
+    if (size >= (SIZE_MAX - sizeof(SharedBuffer))) {
         Logger::E("SharedBuffer", "Invalid buffer size %zu", size);
         return nullptr;
     }
@@ -87,7 +86,7 @@ SharedBuffer* SharedBuffer::EditResize(
         if (buf->mSize == newSize) return buf;
         // Don't overflow if the combined size of the new buffer / header is larger than
         // size_max.
-        if (newSize >= (INT_MAX - sizeof(SharedBuffer))) {
+        if (newSize >= (SIZE_MAX - sizeof(SharedBuffer))) {
             Logger::E("SharedBuffer", "Invalid buffer size %zu", newSize);
             return nullptr;
         }
@@ -125,9 +124,10 @@ SharedBuffer* SharedBuffer::Reset(
     return sb;
 }
 
-void SharedBuffer::AddRef() const
+int32_t SharedBuffer::AddRef() const
 {
-    mRefs.fetch_add(1, std::memory_order_relaxed);
+    int32_t prevRefCount = mRefs.fetch_add(1, std::memory_order_relaxed);
+    return prevRefCount + 1;
 }
 
 int32_t SharedBuffer::Release(
@@ -141,7 +141,7 @@ int32_t SharedBuffer::Release(
             Dealloc(this);
         }
         // As the only owner, our previous reference count was 1.
-        return 1;
+        return 0;
     }
     // There's multiple owners, we need to use an atomic decrement.
     int32_t prevRefCount = mRefs.fetch_sub(1, std::memory_order_release);
@@ -152,7 +152,7 @@ int32_t SharedBuffer::Release(
             Dealloc(this);
         }
     }
-    return prevRefCount;
+    return prevRefCount - 1;
 }
 
 }

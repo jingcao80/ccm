@@ -83,7 +83,7 @@ void MetaSerializer::SerializeMetaConstant(
     /* [in] */ MetaConstant* mc)
 {
     mc->mName = (char*)SerializeAdjust(mc->mName);
-    if (mMetaComponent->mTypes[mc->mTypeIndex]->mKind == CcdlType::String) {
+    if (mMetaComponent->mTypes[mc->mTypeIndex]->mKind == CcmTypeKind::String) {
         mc->mValue.mString = (char*)SerializeAdjust(mc->mValue.mString);
     }
 }
@@ -225,7 +225,7 @@ void MetaSerializer::DeserializeMetaConstant(
     /* [in] */ MetaConstant* mc)
 {
     mc->mName = (char*)DeserializeAdjust(mc->mName);
-    if (mMetaComponent->mTypes[mc->mTypeIndex]->mKind == CcdlType::String) {
+    if (mMetaComponent->mTypes[mc->mTypeIndex]->mKind == CcmTypeKind::String) {
         mc->mValue.mString = (char*)DeserializeAdjust(mc->mValue.mString);
     }
 }

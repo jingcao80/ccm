@@ -17,31 +17,13 @@
 #ifndef __CCM_METADATA_COMPONENT_H__
 #define __CCM_METADATA_COMPONENT_H__
 
+#include "../ccmtypekind.h"
 #include "../ccmuuid.h"
 
 namespace ccm {
 namespace metadata {
 
 #define CCM_MAGIC   0x12E20FD
-
-enum class CcdlType
-{
-    Char = 1,
-    Byte,
-    Short,
-    Integer,
-    Long,
-    Float,
-    Double,
-    Boolean,
-    String,
-    HANDLE,
-    CoclassID,
-    InterfaceID,
-    Enum,
-    Array,
-    Interface,
-};
 
 struct MetaCoclass;
 struct MetaConstant;
@@ -153,7 +135,7 @@ struct MetaParameter
 
 struct MetaType
 {
-    CcdlType            mKind;
+    CcmTypeKind         mKind;
     int                 mIndex;
     int                 mNestedTypeIndex;
     unsigned char       mPointerNumber;

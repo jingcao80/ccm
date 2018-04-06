@@ -20,6 +20,8 @@
 #include "ccmdef.h"
 #include "ccmerror.h"
 #include "ccmtypes.h"
+#include "ccmstring.h"
+#include "ccmarray.h"
 #include "ccmobjectapi.h"
 #include "ccmreflectionapi.h"
 
