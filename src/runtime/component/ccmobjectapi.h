@@ -14,39 +14,22 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccmcomponent.h"
-#include "ccmobjectapi.h"
-#include "util/ccmautoptr.h"
+#ifndef __CCM_CCMOBJECTAPI_H__
+#define __CCM_CCMOBJECTAPI_H__
+
+#include "../ccmtypes.h"
 
 namespace ccm {
 
-ECode CoCreateObjectInstance(
+COM_PUBLIC ECode CoCreateObjectInstance(
     /* [in] */ const CoclassID& cid,
     /* [in] */ const InterfaceID& iid,
-    /* [out] */ IInterface** object)
-{
-    AutoPtr<IClassObject> factory;
-    ECode ec = CoAcquireClassFactory(cid, (IInterface**)&factory);
-    if (FAILED(ec)) {
-        *object = nullptr;
-        return ec;
-    }
+    /* [out] */ IInterface** object);
 
-    return factory->CreateObject(iid, object);
-}
-
-ECode CoAcquireClassFactory(
+COM_PUBLIC ECode CoAcquireClassFactory(
     /* [in] */ const CoclassID& cid,
-    /* [out] */ IInterface** object)
-{
-    CcmComponent* ccmComp;
-    ECode ec = CoGetComponent(*cid.mCid, &ccmComp);
-    if (FAILED(ec)) {
-        *object = nullptr;
-        return ec;
-    }
+    /* [out] */ IInterface** object);
 
-    return ccmComp->mSoGetClassObject(cid, object);
-}
+} // namespace ccm
 
-}
+#endif // __CCM_CCMOBJECTAPI_H__

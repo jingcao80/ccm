@@ -266,7 +266,7 @@ String MetaDumper::DumpMetaParameter(
 {
     StringBuilder builder;
 
-    builder.Append("mName:").Append(DumpMetaType(mMetaComponet->mTypes[mp->mTypeIndex]));
+    builder.Append("mName:").Append(DumpMetaType(mMetaComponet->mTypes[mp->mTypeIndex], mp->mAttribute));
     builder.Append("[");
     bool needComma = false;
     if ((mp->mAttribute & Parameter::IN) != 0) {
@@ -288,7 +288,8 @@ String MetaDumper::DumpMetaParameter(
 }
 
 String MetaDumper::DumpMetaType(
-    /* [in] */ MetaType* mt)
+    /* [in] */ MetaType* mt,
+    /* [in] */ int attr)
 {
     StringBuilder builder;
 
@@ -320,6 +321,22 @@ String MetaDumper::DumpMetaType(
         case CcmTypeKind::String:
             builder.Append("String");
             break;
+        case CcmTypeKind::CoclassID:
+            if ((attr & Parameter::ATTR_MASK) == Parameter::IN) {
+                builder.Append("const CoclassID&");
+            }
+            else if ((attr & Parameter::ATTR_MASK) == Parameter::OUT) {
+                builder.Append("CoclassID");
+            }
+            break;
+        case CcmTypeKind::InterfaceID:
+            if ((attr & Parameter::ATTR_MASK) == Parameter::IN) {
+                builder.Append("const InterfaceID&");
+            }
+            else if ((attr & Parameter::ATTR_MASK) == Parameter::OUT) {
+                builder.Append("InterfaceID");
+            }
+            break;
         case CcmTypeKind::HANDLE:
             builder.Append("HANDLE");
             break;
@@ -327,17 +344,21 @@ String MetaDumper::DumpMetaType(
             builder.Append(mMetaComponet->mEnumerations[mt->mIndex]->mName);
             break;
         case CcmTypeKind::Array:
-            builder.Append("Array<").Append(
-                    DumpMetaType(mMetaComponet->mTypes[mt->mNestedTypeIndex])).Append(">");
+            if ((attr & Parameter::ATTR_MASK) == Parameter::IN) {
+                builder.AppendFormat("const Array<%s>&",
+                    DumpMetaType(mMetaComponet->mTypes[mt->mNestedTypeIndex], attr).string());
+            }
+            else if ((attr & Parameter::ATTR_MASK) == Parameter::OUT) {
+                builder.AppendFormat("Array<%s>&",
+                    DumpMetaType(mMetaComponet->mTypes[mt->mNestedTypeIndex], attr).string());
+            }
+            else if ((attr & Parameter::ATTR_MASK) == (Parameter::OUT | Parameter::CALLEE)) {
+                builder.AppendFormat("Array<%s>",
+                    DumpMetaType(mMetaComponet->mTypes[mt->mNestedTypeIndex], attr).string());
+            }
             break;
         case CcmTypeKind::Interface:
             builder.Append(mMetaComponet->mInterfaces[mt->mIndex]->mName);
-            break;
-        case CcmTypeKind::CoclassID:
-            builder.Append(mt->mPointerNumber > 0 ? "CoclassID" : "const CoclassID&");
-            break;
-        case CcmTypeKind::InterfaceID:
-            builder.Append(mt->mPointerNumber > 0 ? "InterfaceID" : "const InterfaceID&");
             break;
         default:
             break;

@@ -93,7 +93,8 @@ private:
         /* [in] */ MetaParameter* mp);
 
     String GenerateType(
-        /* [in] */ MetaType* mt);
+        /* [in] */ MetaType* mt,
+        /* [in] */ int attr = 0);
 
     String GenerateValue(
         /* [in] */ MetaConstant* mc);
@@ -113,6 +114,9 @@ private:
         /* [in] */ MetaCoclass* mk);
 
     void GenerateModule();
+
+    String GenerateInterfaceConstants(
+        /* [in] */ MetaNamespace* mn);
 
     String GenerateInterfaceIDs(
         /* [in] */ MetaNamespace* mn);

@@ -60,6 +60,7 @@ public:
         /* [in] */ const String& prefix) override;
 
 public:
+    static constexpr int ATTR_MASK = 0x7;
     static constexpr int IN = 0x1;
     static constexpr int OUT = 0x2;
     static constexpr int CALLEE = 0x4;

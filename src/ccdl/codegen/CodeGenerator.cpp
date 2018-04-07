@@ -270,13 +270,13 @@ String CodeGenerator::GenerateConstantDeclaration(
 
     MetaType* mt = mMetaComponent->mTypes[mc->mTypeIndex];
     if (mt->mKind == CcmTypeKind::String) {
-        builder.Append("    static const ");
+        builder.AppendFormat("    static const %s %s;\n", GenerateType(mt).string(),
+                mc->mName);
     }
     else {
-        builder.Append("    static constexpr ");
+        builder.AppendFormat("    static constexpr %s %s = %s;\n", GenerateType(mt).string(),
+                mc->mName, GenerateValue(mc).string());
     }
-    builder.AppendFormat("%s %s = %s;\n", GenerateType(mt).string(),
-            mc->mName, GenerateValue(mc).string());
 
     return builder.ToString();
 }
@@ -365,14 +365,15 @@ String CodeGenerator::GenerateParameter(
         }
     }
     builder.AppendFormat("%s %s",
-            GenerateType(mMetaComponent->mTypes[mp->mTypeIndex]).string(),
+            GenerateType(mMetaComponent->mTypes[mp->mTypeIndex], mp->mAttribute).string(),
             mp->mName);
 
     return builder.ToString();
 }
 
 String CodeGenerator::GenerateType(
-    /* [in] */ MetaType* mt)
+    /* [in] */ MetaType* mt,
+    /* [in] */ int attr)
 {
     StringBuilder builder;
 
@@ -403,7 +404,28 @@ String CodeGenerator::GenerateType(
             builder.Append("Boolean");
             break;
         case CcmTypeKind::String:
-            builder.Append("String");
+            if ((attr & Parameter::ATTR_MASK) == Parameter::IN) {
+                builder.Append("const String&");
+            }
+            else {
+                builder.Append("String");
+            }
+            break;
+        case CcmTypeKind::CoclassID:
+            if ((attr & Parameter::ATTR_MASK) == Parameter::IN) {
+                builder.Append("const CoclassID&");
+            }
+            else if ((attr & Parameter::ATTR_MASK) == Parameter::OUT) {
+                builder.Append("CoclassID");
+            }
+            break;
+        case CcmTypeKind::InterfaceID:
+            if ((attr & Parameter::ATTR_MASK) == Parameter::IN) {
+                builder.Append("const InterfaceID&");
+            }
+            else if ((attr & Parameter::ATTR_MASK) == Parameter::OUT) {
+                builder.Append("InterfaceID");
+            }
             break;
         case CcmTypeKind::HANDLE:
             builder.Append("HANDLE");
@@ -412,17 +434,21 @@ String CodeGenerator::GenerateType(
             builder.Append(mc->mEnumerations[mt->mIndex]->mName);
             break;
         case CcmTypeKind::Array:
-            builder.AppendFormat("Array<%s>",
-                    GenerateType(mc->mTypes[mt->mNestedTypeIndex]).string());
+            if ((attr & Parameter::ATTR_MASK) == Parameter::IN) {
+                builder.AppendFormat("const Array<%s>&",
+                    GenerateType(mc->mTypes[mt->mNestedTypeIndex], attr).string());
+            }
+            else if ((attr & Parameter::ATTR_MASK) == Parameter::OUT) {
+                builder.AppendFormat("Array<%s>&",
+                    GenerateType(mc->mTypes[mt->mNestedTypeIndex], attr).string());
+            }
+            else if ((attr & Parameter::ATTR_MASK) == (Parameter::OUT | Parameter::CALLEE)) {
+                builder.AppendFormat("Array<%s>",
+                    GenerateType(mc->mTypes[mt->mNestedTypeIndex], attr).string());
+            }
             break;
         case CcmTypeKind::Interface:
             builder.Append(mc->mInterfaces[mt->mIndex]->mName);
-            break;
-        case CcmTypeKind::CoclassID:
-            builder.Append(mt->mPointerNumber > 0 ? "CoclassID" : "const CoclassID&");
-            break;
-        case CcmTypeKind::InterfaceID:
-            builder.Append(mt->mPointerNumber > 0 ? "InterfaceID" : "const InterfaceID&");
             break;
         default:
             break;
@@ -475,10 +501,10 @@ String CodeGenerator::GenerateValue(
         case CcmTypeKind::Enum:
             return String::Format("%s::%s", GenerateType(mt).string(), mc->mValue.mString);
         case CcmTypeKind::Array:
-        case CcmTypeKind::HANDLE:
-        case CcmTypeKind::Interface:
         case CcmTypeKind::CoclassID:
         case CcmTypeKind::InterfaceID:
+        case CcmTypeKind::HANDLE:
+        case CcmTypeKind::Interface:
         default:
             break;
     }
@@ -627,8 +653,9 @@ void CodeGenerator::GenerateModule()
 
     builder.Append(mLicense);
     builder.Append("\n");
-    builder.Append("#include \"../../src/runtime/ccmcomponent.h\"\n\n"
-                   "using namespace ccm;\n\n");
+    builder.AppendFormat("#include \"../../src/runtime/component/ccmcomponent.h\"\n"
+                         "#include \"%s.h\"\n\n"
+                         "using namespace ccm;\n\n", mMetaComponent->mName);
 
     MetaComponent* mc = mMetaComponent;
     for (int i = 0; i < mc->mNamespaceNumber; i++) {
@@ -638,6 +665,7 @@ void CodeGenerator::GenerateModule()
             continue;
         }
         builder.Append(GenerateNamespaceBegin(String(mn->mName)));
+        builder.Append(GenerateInterfaceConstants(mn));
         builder.Append(GenerateInterfaceIDs(mn));
         builder.Append(GenerateCoclassIDs(mn));
         builder.Append(GenerateNamespaceEnd(String(mn->mName)));
@@ -653,6 +681,30 @@ void CodeGenerator::GenerateModule()
     file.Write(data.string(), data.GetLength());
     file.Flush();
     file.Close();
+}
+
+String CodeGenerator::GenerateInterfaceConstants(
+    /* [in] */ MetaNamespace* mn)
+{
+    StringBuilder builder;
+
+    if (mn->mInterfaceNumber == 0) return String();
+
+    for (int i = 0; i < mn->mInterfaceNumber; i++) {
+        MetaInterface* mi = mMetaComponent->mInterfaces[mn->mInterfaceIndexes[i]];
+        if (mi->mSystemPreDeclared) continue;
+        for (int j = 0; j < mi->mConstantNumber; j++) {
+            MetaConstant* mc = mi->mConstants[j];
+            MetaType* mt = mMetaComponent->mTypes[mc->mTypeIndex];
+            if (mt->mKind == CcmTypeKind::String) {
+                builder.AppendFormat("const %s %s::%s(%s);\n", GenerateType(mt).string(),
+                        mi->mName, mc->mName, GenerateValue(mc).string());
+            }
+        }
+    }
+    builder.Append("\n");
+
+    return builder.ToString();
 }
 
 String CodeGenerator::GenerateInterfaceIDs(

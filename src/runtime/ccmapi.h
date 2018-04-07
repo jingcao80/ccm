@@ -18,11 +18,8 @@
 #define __CCM_CCMAPI_H__
 
 #include "ccmdef.h"
-#include "ccmerror.h"
 #include "ccmtypes.h"
-#include "ccmstring.h"
-#include "ccmarray.h"
-#include "ccmobjectapi.h"
-#include "ccmreflectionapi.h"
+#include "component/ccmobjectapi.h"
+#include "reflection/ccmreflectionapi.h"
 
 #endif // __CCM_CCMAPI_H__

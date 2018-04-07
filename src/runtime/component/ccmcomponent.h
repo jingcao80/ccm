@@ -14,26 +14,33 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCDL_AST_COCLASSIDTYPE_H__
-#define __CCDL_AST_COCLASSIDTYPE_H__
+#ifndef __CCM_COMPONENT_H__
+#define __CCM_COMPONENT_H__
 
-#include "Type.h"
+#include "../ccmtypes.h"
 
-namespace ccdl {
-namespace ast {
+namespace ccm {
 
-class CoclassIDType : public Type
+typedef ECode (*GetterPtr)(IInterface**);
+
+struct ClassObjectGetter
 {
-public:
-    CoclassIDType();
-
-    inline bool IsCoclassIDType() override
-    { return true; }
-
-    String Signature() override;
+    CoclassID   mCid;
+    GetterPtr   mGetter;
 };
 
-}
-}
+typedef ECode (*GetClassObjectPtr)(const CoclassID&, IInterface**);
 
-#endif // __CCDL_AST_COCLASSID_H__
+struct CcmComponent
+{
+    void*               mSoHandle;
+    GetClassObjectPtr   mSoGetClassObject;
+};
+
+ECode CoGetComponent(
+    /* [in] */ const ComponentID& compId,
+    /* [out] */ CcmComponent** component);
+
+} // namespace ccm
+
+#endif // __CCM_COMPONENT_H__

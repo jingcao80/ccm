@@ -58,13 +58,13 @@ add_executable(ccdl ${TOOL_SOURCES})
 
 set(RT_SOURCES
     src/runtime/metadata/MetaSerializer.cpp
+    src/runtime/component/ccmcomponent.cpp
+    src/runtime/component/ccmobjectapi.cpp
+    src/runtime/type/ccmarray.cpp
+    src/runtime/type/ccmsharedbuffer.cpp
+    src/runtime/type/ccmstring.cpp
     src/runtime/util/logger.cpp
-    src/runtime/ccmarray.cpp
-    src/runtime/ccmcomponent.cpp
     src/runtime/ccmids.cpp
-    src/runtime/ccmobjectapi.cpp
-    src/runtime/ccmsharedbuffer.cpp
-    src/runtime/ccmstring.cpp
     src/runtime/runtime.cpp)
 
 add_library(ccmrt SHARED

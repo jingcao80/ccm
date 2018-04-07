@@ -14,31 +14,29 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CCMTYPEKIND_H__
-#define __CCM_CCMTYPEKIND_H__
+#ifndef __CCDL_AST_INTERFACEIDTYPE_H__
+#define __CCDL_AST_INTERFACEIDTYPE_H__
 
-namespace ccm {
+#include "Type.h"
 
-enum class CcmTypeKind
+namespace ccdl {
+namespace ast {
+
+class InterfaceIDType : public Type
 {
-    Unknown,
-    Char = 1,
-    Byte,
-    Short,
-    Integer,
-    Long,
-    Float,
-    Double,
-    Boolean,
-    String,
-    HANDLE,
-    CoclassID,
-    InterfaceID,
-    Enum,
-    Array,
-    Interface,
+public:
+    InterfaceIDType();
+
+    inline bool IsPrimitiveType() override
+    { return true; }
+
+    inline bool IsInterfaceIDType()
+    { return true; }
+
+    String Signature() override;
 };
 
 }
+}
 
-#endif // __CCM_CCMTYPEKIND_H__
+#endif // __CCDL_AST_INTERFACEIDTYPE_H__

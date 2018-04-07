@@ -18,7 +18,7 @@
 #define __CCM_CCMTYPE_H__
 
 #include "ccmdef.h"
-#include "ccmuuid.h"
+#include "type/ccmuuid.h"
 
 namespace ccm {
 
@@ -62,10 +62,10 @@ inline bool operator==(
 
 }
 
-#include "ccmstring.h"
-#include "ccmintfs.h"
 #include "ccmerror.h"
-#include "ccmtypekind.h"
+#include "type/ccmstring.h"
+#include "type/ccmintfs.h"
+#include "type/ccmtypekind.h"
 
 namespace ccm {
 
@@ -102,6 +102,6 @@ TYPE2KIND_SPEC(IInterface*, CcmTypeKind::Interface);
 
 }
 
-#include "ccmarray.h"
+#include "type/ccmarray.h"
 
 #endif // __CCM_CCMTYPE_H__

@@ -33,71 +33,73 @@ public:
         BOOLEAN,                // 1)
         BYTE,                   // 2)
         CHAR,                   // 3)
-        DOUBLE,                 // 4)
-        FLOAT,                  // 5)
-        HANDLE,                 // 6)
-        INTEGER,                // 7)
-        LONG,                   // 8)
-        SHORT,                  // 9)
-        STRING,                 // 10)
+        COCLASSID,              // 4)
+        DOUBLE,                 // 5)
+        FLOAT,                  // 6)
+        HANDLE,                 // 7)
+        INTEGER,                // 8)
+        INTERFACEID,            // 9)
+        LONG,                   // 10)
+        SHORT,                  // 11)
+        STRING,                 // 12)
         // other keyword
-        ARRAY,                  // 11)
-        CALLEE,                 // 12)
-        COCLASS,                // 13)
-        CONST,                  // 14)
-        CONSTRUCTOR,            // 15)
-        DESCRIPTION,            // 16)
-        ENUM,                   // 17)
-        FALSE,                  // 18)
-        IN,                     // 19)
-        INCLUDE,                // 20)
-        INTERFACE,              // 21)
-        MODULE,                 // 22)
-        NAMESPACE,              // 23)
-        OUT,                    // 24)
-        TRUE,                   // 25)
-        URL,                    // 26)
-        UUID,                   // 27)
-        VERSION,                // 28)
+        ARRAY,                  // 13)
+        CALLEE,                 // 14)
+        COCLASS,                // 15)
+        CONST,                  // 16)
+        CONSTRUCTOR,            // 17)
+        DESCRIPTION,            // 18)
+        ENUM,                   // 19)
+        FALSE,                  // 20)
+        IN,                     // 21)
+        INCLUDE,                // 22)
+        INTERFACE,              // 23)
+        MODULE,                 // 24)
+        NAMESPACE,              // 25)
+        OUT,                    // 26)
+        TRUE,                   // 27)
+        URL,                    // 28)
+        UUID,                   // 29)
+        VERSION,                // 30)
         // symbol
-        AND,                    // 29)  '&'
-        ANGLE_BRACKETS_OPEN,    // 30)  '<'
-        ANGLE_BRACKETS_CLOSE,   // 31)  '>'
-        ASSIGNMENT,             // 32)  '='
-        ASTERISK,               // 33)  '*'
-        BRACES_OPEN,            // 34)  '{'
-        BRACES_CLOSE,           // 35)  '}'
-        BRACKETS_OPEN,          // 36)  '['
-        BRACKETS_CLOSE,         // 37)  ']'
-        COLON,                  // 38)  ':'
-        COMMA,                  // 39)  ','
-        COMPLIMENT,             // 40)  '~'
-        DIVIDE,                 // 41)  '/'
-        END_OF_LINE,            // 42)  '\n'
-        EXCLUSIVE_OR,           // 43)  '^'
-        INCLUSIVE_OR,           // 44)  '|'
-        MINUS,                  // 45)  '-'
-        MODULO,                 // 46)  '%'
-        NOT,                    // 47)  '!'
-        PARENTHESES_OPEN,       // 48)  '('
-        PARENTHESES_CLOSE,      // 49)  ')'
-        PERIOD,                 // 50)  '.'
-        PLUS,                   // 51)  '+'
-        SEMICOLON,              // 52)  ';'
+        AND,                    // 31)  '&'
+        ANGLE_BRACKETS_OPEN,    // 32)  '<'
+        ANGLE_BRACKETS_CLOSE,   // 33)  '>'
+        ASSIGNMENT,             // 34)  '='
+        ASTERISK,               // 35)  '*'
+        BRACES_OPEN,            // 36)  '{'
+        BRACES_CLOSE,           // 37)  '}'
+        BRACKETS_OPEN,          // 38)  '['
+        BRACKETS_CLOSE,         // 39)  ']'
+        COLON,                  // 40)  ':'
+        COMMA,                  // 41)  ','
+        COMPLIMENT,             // 42)  '~'
+        DIVIDE,                 // 43)  '/'
+        END_OF_LINE,            // 44)  '\n'
+        EXCLUSIVE_OR,           // 45)  '^'
+        INCLUSIVE_OR,           // 46)  '|'
+        MINUS,                  // 47)  '-'
+        MODULO,                 // 48)  '%'
+        NOT,                    // 49)  '!'
+        PARENTHESES_OPEN,       // 50)  '('
+        PARENTHESES_CLOSE,      // 51)  ')'
+        PERIOD,                 // 52)  '.'
+        PLUS,                   // 53)  '+'
+        SEMICOLON,              // 54)  ';'
         // other
-        CHARACTER,              //
-        COMMENT_BLOCK,          // 52)
-        COMMENT_LINE,           // 53)
-        END_OF_FILE,            // 54)
-        IDENTIFIER,             // 55)
-        NUMBER_INTEGRAL,        // 56)
-        NUMBER_FLOATINGPOINT,   // 57)
-        SHIFT_LEFT,             // 58)  "<<"
-        SHIFT_RIGHT,            // 59)  ">>"
-        SHIFT_RIGHT_UNSIGNED,   // 60)  ">>>"
-        STRING_LITERAL,         // 61)
-        UUID_NUMBER,            // 62)
-        VERSION_NUMBER,         // 63)
+        CHARACTER,              // 55)
+        COMMENT_BLOCK,          // 56)
+        COMMENT_LINE,           // 57)
+        END_OF_FILE,            // 58)
+        IDENTIFIER,             // 59)
+        NUMBER_INTEGRAL,        // 60)
+        NUMBER_FLOATINGPOINT,   // 61)
+        SHIFT_LEFT,             // 62)  "<<"
+        SHIFT_RIGHT,            // 63)  ">>"
+        SHIFT_RIGHT_UNSIGNED,   // 64)  ">>>"
+        STRING_LITERAL,         // 65)
+        UUID_NUMBER,            // 66)
+        VERSION_NUMBER,         // 67)
     };
 
 private:

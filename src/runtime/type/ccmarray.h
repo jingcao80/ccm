@@ -18,7 +18,7 @@
 #define __CCM_ARRAY_H__
 
 #include "ccmsharedbuffer.h"
-#include "util/logger.h"
+#include "../util/logger.h"
 
 namespace ccm {
 
@@ -104,6 +104,8 @@ public:
     Long GetLength() const;
 
     T* GetPayload() const;
+
+    Boolean IsNull() const;
 
     Long Copy(
         /* [in] */ T const* srcData,
@@ -260,6 +262,12 @@ template<class T>
 T* Array<T>::GetPayload() const
 {
     return static_cast<T*>(mData);
+}
+
+template<class T>
+Boolean Array<T>::IsNull() const
+{
+    return mData == nullptr;
 }
 
 template<class T>

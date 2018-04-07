@@ -81,7 +81,8 @@ private:
         /* [in] */ MetaParameter* mp);
 
     String DumpMetaType(
-        /* [in] */ MetaType* mt);
+        /* [in] */ MetaType* mt,
+        /* [in] */ int attr = 0);
 
 private:
     MetaComponent* mMetaComponet;

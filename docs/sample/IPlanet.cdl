@@ -51,10 +51,10 @@ interface IPlanet : ICelestialBody
         [out] Integer* number);
 
     GetAllSatellites(
-        [out] Array<ISatellite*>* satellites);
+        [out] Array<ISatellite*> satellites);
 
     GetAllSatellites(
-        [out, callee] Array<ISatellite*>** satellites);
+        [out, callee] Array<ISatellite*>* satellites);
 }
 
 }  // namespace Universe

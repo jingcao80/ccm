@@ -17,8 +17,6 @@
 #ifndef __CCM_ERROR_H__
 #define __CCM_ERROR_H__
 
-#include "ccmtypes.h"
-
 namespace ccm {
 
 /**

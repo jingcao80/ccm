@@ -14,22 +14,29 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CCMOBJECTAPI_H__
-#define __CCM_CCMOBJECTAPI_H__
+#ifndef __CCDL_AST_COCLASSIDTYPE_H__
+#define __CCDL_AST_COCLASSIDTYPE_H__
 
-#include "ccmtypes.h"
+#include "Type.h"
 
-namespace ccm {
+namespace ccdl {
+namespace ast {
 
-COM_PUBLIC ECode CoCreateObjectInstance(
-    /* [in] */ const CoclassID& cid,
-    /* [in] */ const InterfaceID& iid,
-    /* [out] */ IInterface** object);
+class CoclassIDType : public Type
+{
+public:
+    CoclassIDType();
 
-COM_PUBLIC ECode CoAcquireClassFactory(
-    /* [in] */ const CoclassID& cid,
-    /* [out] */ IInterface** object);
+    inline bool IsPrimitiveType() override
+    { return true; }
 
-} // namespace ccm
+    inline bool IsCoclassIDType() override
+    { return true; }
 
-#endif // __CCM_CCMOBJECTAPI_H__
+    String Signature() override;
+};
+
+}
+}
+
+#endif // __CCDL_AST_COCLASSID_H__

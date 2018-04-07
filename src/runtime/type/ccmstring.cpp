@@ -31,8 +31,8 @@
 //=========================================================================
 
 #include "ccmsharedbuffer.h"
-#include "ccmtypes.h"
-#include "util/logger.h"
+#include "../ccmtypes.h"
+#include "../util/logger.h"
 
 #include <limits.h>
 #include <string.h>
@@ -130,11 +130,33 @@ Integer String::GetLength() const
         byteSize = UTF8SequenceLength(*p);
         if (byteSize == 0 || p + byteSize >= end) break;
         p += byteSize;
-        ++charCount;
+        charCount++;
     }
 
     SetCharCount(charCount);
     return charCount;
+}
+
+Integer String::GetUTF16Length(
+    /* [in] */ Integer start) const
+{
+    if (IsNullOrEmpty()) return 0;
+
+    Integer utf16Count = 0, charCount = 0;
+    Integer byteSize;
+    const char* p = mString;
+    const char* end = mString + GetByteLength() + 1;
+    while (*p != '\0' && p < end) {
+        Char unicode = GetCharInternal(p, &byteSize);
+        if (byteSize == 0 || p + byteSize >= end) break;
+        p += byteSize;
+        if (charCount >= start) {
+            utf16Count++;
+            if (unicode > 0xFFFF) utf16Count++; // this will be a surrogate pair in utf16
+        }
+        charCount++;
+    }
+    return utf16Count;
 }
 
 Integer String::GetByteLength() const
@@ -153,10 +175,10 @@ Char String::GetChar(
     const char* p = mString;
     const char* end = mString + GetByteLength() + 1;
     while (*p && p < end) {
-        byteSize = UTF8SequenceLength(*p);
+        Char unicode = GetCharInternal(p, &byteSize);
         if (byteSize == 0 || p + byteSize >= end) break;
         if (index == 0) {
-            return GetCharInternal(p, &byteSize);
+            return unicode;
         }
         p += byteSize;
         index -= 1;
@@ -179,16 +201,50 @@ Array<Char> String::GetChars(
     const char* p = mString;
     const char* end = mString + GetByteLength() + 1;
     while (*p && p < end) {
-        byteSize = UTF8SequenceLength(*p);
+        Char unicode = GetCharInternal(p, &byteSize);
         if (byteSize == 0 || p + byteSize >= end) break;
         if (i >= start) {
-            charArray[i - start] = GetCharInternal(p, &byteSize);
+            charArray[i - start] = unicode;
         }
         p += byteSize;
         i++;
     }
 
     return charArray;
+}
+
+ Array<Short> String::GetUTF16Chars(
+    /* [in] */ Integer start) const
+{
+    Integer utf16Count = GetUTF16Length(start);
+    if (start > utf16Count) {
+        return Array<Short>();
+    }
+
+    Array<Short> utf16Array(utf16Count);
+
+    Integer byteSize, count = 0, i = 0;
+    const char* p = mString;
+    const char* end = mString + GetByteLength() + 1;
+    while (*p && p < end) {
+        Char unicode = GetCharInternal(p, &byteSize);
+        if (byteSize == 0 || p + byteSize >= end) break;
+        if (count >= start) {
+            if (unicode <= 0xFFFF) {
+                utf16Array[i++] = unicode;
+            }
+            else {
+                // Multiple UTF16 characters with surrogates
+                unicode =  unicode - 0x10000;
+                utf16Array[i++] = (Short)((unicode >> 10) + 0xD800);
+                utf16Array[i++] = (Short)((unicode & 0x3FF) + 0xDC00);
+            }
+        }
+        p += byteSize;
+        count++;
+    }
+
+    return utf16Array;
 }
 
 Integer String::Compare(

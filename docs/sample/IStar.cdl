@@ -34,10 +34,10 @@ interface IStar : ICelestialBody
         [out] Integer* number);
 
     GetAllPlanets(
-        [out] Array<IPlanet*>* planets);
+        [out] Array<IPlanet*> planets);
 
     GetAllPlanets(
-        [out, callee] Array<IPlanet*>** planets);
+        [out, callee] Array<IPlanet*>* planets);
 }
 
 } // namespace Universe

@@ -17,8 +17,8 @@
 #ifndef __CCM_METADATA_COMPONENT_H__
 #define __CCM_METADATA_COMPONENT_H__
 
-#include "../ccmtypekind.h"
-#include "../ccmuuid.h"
+#include "../type/ccmtypekind.h"
+#include "../type/ccmuuid.h"
 
 namespace ccm {
 namespace metadata {

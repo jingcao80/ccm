@@ -14,33 +14,31 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_COMPONENT_H__
-#define __CCM_COMPONENT_H__
-
-#include "ccmtypes.h"
+#ifndef __CCM_CCMTYPEKIND_H__
+#define __CCM_CCMTYPEKIND_H__
 
 namespace ccm {
 
-typedef ECode (*GetterPtr)(IInterface**);
-
-struct ClassObjectGetter
+enum class CcmTypeKind
 {
-    CoclassID   mCid;
-    GetterPtr   mGetter;
+    Unknown,
+    Char = 1,
+    Byte,
+    Short,
+    Integer,
+    Long,
+    Float,
+    Double,
+    Boolean,
+    String,
+    CoclassID,
+    InterfaceID,
+    HANDLE,
+    Enum,
+    Array,
+    Interface,
 };
 
-typedef ECode (*GetClassObjectPtr)(const CoclassID&, IInterface**);
+}
 
-struct CcmComponent
-{
-    void*               mSoHandle;
-    GetClassObjectPtr   mSoGetClassObject;
-};
-
-ECode CoGetComponent(
-    /* [in] */ const ComponentID& compId,
-    /* [out] */ CcmComponent** component);
-
-} // namespace ccm
-
-#endif // __CCM_COMPONENT_H__
+#endif // __CCM_CCMTYPEKIND_H__

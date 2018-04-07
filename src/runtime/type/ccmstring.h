@@ -33,8 +33,6 @@
 #ifndef __CCM_STRING_H__
 #define __CCM_STRING_H__
 
-#include "util/ccmautoptr.h"
-
 namespace ccm {
 
 template<class T> class Array;
@@ -62,6 +60,9 @@ public:
     inline Boolean IsNullOrEmpty() const;
 
     Integer GetLength() const;
+
+    Integer GetUTF16Length(
+        /* [in] */ Integer start = 0) const;
 
     Integer GetByteLength() const;
 

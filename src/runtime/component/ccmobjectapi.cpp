@@ -14,26 +14,39 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCDL_AST_INTERFACEIDTYPE_H__
-#define __CCDL_AST_INTERFACEIDTYPE_H__
+#include "ccmcomponent.h"
+#include "ccmobjectapi.h"
+#include "../util/ccmautoptr.h"
 
-#include "Type.h"
+namespace ccm {
 
-namespace ccdl {
-namespace ast {
-
-class InterfaceIDType : public Type
+ECode CoCreateObjectInstance(
+    /* [in] */ const CoclassID& cid,
+    /* [in] */ const InterfaceID& iid,
+    /* [out] */ IInterface** object)
 {
-public:
-    InterfaceIDType();
+    AutoPtr<IClassObject> factory;
+    ECode ec = CoAcquireClassFactory(cid, (IInterface**)&factory);
+    if (FAILED(ec)) {
+        *object = nullptr;
+        return ec;
+    }
 
-    inline bool IsInterfaceIDType()
-    { return true; }
-
-    String Signature() override;
-};
-
-}
+    return factory->CreateObject(iid, object);
 }
 
-#endif // __CCDL_AST_INTERFACEIDTYPE_H__
+ECode CoAcquireClassFactory(
+    /* [in] */ const CoclassID& cid,
+    /* [out] */ IInterface** object)
+{
+    CcmComponent* ccmComp;
+    ECode ec = CoGetComponent(*cid.mCid, &ccmComp);
+    if (FAILED(ec)) {
+        *object = nullptr;
+        return ec;
+    }
+
+    return ccmComp->mSoGetClassObject(cid, object);
+}
+
+}

@@ -147,6 +147,7 @@ bool Parser::ParseFile()
             default: {
                 String message = String::Format("%s is not expected.", mTokenizer.DumpToken(token));
                 LogError(token, message);
+                mTokenizer.GetToken();
                 continue;
             }
         }
@@ -1722,6 +1723,7 @@ bool Parser::ParseModule(
             default: {
                 String message = String::Format("%s is not expected.", mTokenizer.DumpToken(token));
                 LogError(token, message);
+                mTokenizer.GetToken();
                 break;
             }
         }
@@ -1793,6 +1795,7 @@ bool Parser::ParseNamespace()
             default: {
                 String message = String::Format("%s is not expected.", mTokenizer.DumpToken(token));
                 LogError(token, message);
+                mTokenizer.GetToken();
                 break;
             }
         }

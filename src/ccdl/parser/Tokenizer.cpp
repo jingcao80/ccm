@@ -24,7 +24,7 @@ struct KV
     String mKey;
     Tokenizer::Token mValue;
 }
-sKeywords[28] =
+sKeywords[30] =
 {
     { String("Array"), Tokenizer::Token::ARRAY },
     { String("Boolean"), Tokenizer::Token::BOOLEAN },
@@ -32,6 +32,7 @@ sKeywords[28] =
     { String("callee"), Tokenizer::Token::CALLEE },
     { String("Char"), Tokenizer::Token::CHAR },
     { String("coclass"), Tokenizer::Token::COCLASS },
+    { String("CoclassID"), Tokenizer::Token::COCLASSID },
     { String("const"), Tokenizer::Token::CONST },
     { String("constructor"), Tokenizer::Token::CONSTRUCTOR },
     { String("description"), Tokenizer::Token::DESCRIPTION },
@@ -44,6 +45,7 @@ sKeywords[28] =
     { String("include"), Tokenizer::Token::INCLUDE },
     { String("Integer"), Tokenizer::Token::INTEGER },
     { String("interface"), Tokenizer::Token::INTERFACE },
+    { String("InterfaceID"), Tokenizer::Token::INTERFACEID },
     { String("Long"), Tokenizer::Token::LONG },
     { String("module"), Tokenizer::Token::MODULE },
     { String("namespace"), Tokenizer::Token::NAMESPACE },
@@ -751,6 +753,8 @@ const char* Tokenizer::DumpToken(
             return mString.string();
         case Token::COCLASS:
             return "coclass";
+        case Token::COCLASSID:
+            return "CoclassID";
         case Token::COLON:
             return ":";
         case Token::COMMA:
@@ -795,6 +799,8 @@ const char* Tokenizer::DumpToken(
             return "Integer";
         case Token::INTERFACE:
             return "interface";
+        case Token::INTERFACEID:
+            return "InterfaceID";
         case Token::LONG:
             return "Long";
         case Token::MINUS:

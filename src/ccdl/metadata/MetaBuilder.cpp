@@ -681,6 +681,12 @@ CcmTypeKind MetaBuilder::Type2CcdlType(
     else if (type->IsStringType()) {
         return CcmTypeKind::String;
     }
+    else if (type->IsCoclassIDType()) {
+        return CcmTypeKind::CoclassID;
+    }
+    else if (type->IsInterfaceIDType()) {
+        return CcmTypeKind::InterfaceID;
+    }
     else if (type->IsHANDLEType()) {
         return CcmTypeKind::HANDLE;
     }
@@ -692,12 +698,6 @@ CcmTypeKind MetaBuilder::Type2CcdlType(
     }
     else if (type->IsInterfaceType()) {
         return CcmTypeKind::Interface;
-    }
-    else if (type->IsCoclassIDType()) {
-        return CcmTypeKind::CoclassID;
-    }
-    else if (type->IsInterfaceIDType()) {
-        return CcmTypeKind::InterfaceID;
     }
 }
 
