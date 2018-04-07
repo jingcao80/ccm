@@ -18,7 +18,7 @@
 #define __CCM_ARRAY_H__
 
 #include "ccmsharedbuffer.h"
-#include "../util/logger.h"
+#include "ccmlogger.h"
 
 namespace ccm {
 

@@ -14,16 +14,29 @@
 # limitations under the License.
 #=========================================================================
 
-cmake_minimum_required(VERSION 2.8)
+add_compile_options(-std=c++11)
 
-project(libmetadata CXX)
-add_subdirectory(src/runtime/metadata)
+add_subdirectory(component)
+add_subdirectory(type)
 
-project(ccdl CXX)
-add_subdirectory(src/ccdl)
+include_directories(./ util)
 
-project(runtime CXX)
-add_subdirectory(src/runtime)
+set(SOURCES
+    ccmids.cpp
+    runtime.cpp)
 
-project(demo CXX)
-add_subdirectory(src/sample)
+add_library(ccmrt SHARED
+    ${SOURCES})
+target_link_libraries(ccmrt component)
+target_link_libraries(ccmrt metadata)
+target_link_libraries(ccmrt type)
+target_link_libraries(ccmrt util)
+
+install(DIRECTORY DESTINATION ${CMAKE_BINARY_DIR}/sdk)
+
+install(FILES
+    ccmapi.h
+    ccmdef.h
+    ccmerror.h
+    ccmtypes.h
+    DESTINATION ${CMAKE_BINARY_DIR}/sdk)

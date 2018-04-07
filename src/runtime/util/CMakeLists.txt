@@ -14,16 +14,15 @@
 # limitations under the License.
 #=========================================================================
 
-cmake_minimum_required(VERSION 2.8)
+include_directories()
 
-project(libmetadata CXX)
-add_subdirectory(src/runtime/metadata)
+set(SOURCES
+    ccmlogger.cpp)
 
-project(ccdl CXX)
-add_subdirectory(src/ccdl)
+add_library(util STATIC
+    ${SOURCES})
 
-project(runtime CXX)
-add_subdirectory(src/runtime)
-
-project(demo CXX)
-add_subdirectory(src/sample)
+install(FILES
+    ccmautoptr.h
+    ccmlogger.h
+    DESTINATION ${CMAKE_BINARY_DIR}/sdk)

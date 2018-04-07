@@ -17,7 +17,7 @@
 #ifndef __CCM_CCMOBJECTAPI_H__
 #define __CCM_CCMOBJECTAPI_H__
 
-#include "../ccmtypes.h"
+#include "ccmtypes.h"
 
 namespace ccm {
 

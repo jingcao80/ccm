@@ -31,8 +31,8 @@
 //=========================================================================
 
 #include "ccmsharedbuffer.h"
-#include "../ccmtypes.h"
-#include "../util/logger.h"
+#include "ccmtypes.h"
+#include "util/ccmlogger.h"
 
 #include <limits.h>
 #include <string.h>

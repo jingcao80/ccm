@@ -14,7 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
-#include "logger.h"
+#include "ccmlogger.h"
 
 #include <stdarg.h>
 #include <stdio.h>

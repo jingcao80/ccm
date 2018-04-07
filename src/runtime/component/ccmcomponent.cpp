@@ -15,11 +15,11 @@
 //=========================================================================
 
 #include "ccmcomponent.h"
-#include "../metadata/Component.h"
-#include "../util/elf.h"
-#include "../util/logger.h"
-#include "../util/hashmap.h"
-#include "../ccmerror.h"
+#include "ccmerror.h"
+#include "metadata/Component.h"
+#include "util/elf.h"
+#include "util/ccmlogger.h"
+#include "util/hashmap.h"
 
 #include <dlfcn.h>
 #include <errno.h>

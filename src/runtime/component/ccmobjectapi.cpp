@@ -16,7 +16,7 @@
 
 #include "ccmcomponent.h"
 #include "ccmobjectapi.h"
-#include "../util/ccmautoptr.h"
+#include "util/ccmautoptr.h"
 
 namespace ccm {
 

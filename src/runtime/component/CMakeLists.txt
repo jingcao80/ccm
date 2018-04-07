@@ -14,16 +14,13 @@
 # limitations under the License.
 #=========================================================================
 
-cmake_minimum_required(VERSION 2.8)
+include_directories(../ ../util)
 
-project(libmetadata CXX)
-add_subdirectory(src/runtime/metadata)
+set(SOURCES
+    ccmcomponent.cpp
+    ccmobjectapi.cpp)
 
-project(ccdl CXX)
-add_subdirectory(src/ccdl)
+add_library(component STATIC
+    ${SOURCES})
 
-project(runtime CXX)
-add_subdirectory(src/runtime)
-
-project(demo CXX)
-add_subdirectory(src/sample)
+install(FILES ccmcomponent.h ccmobjectapi.h DESTINATION ${CMAKE_BINARY_DIR}/sdk)

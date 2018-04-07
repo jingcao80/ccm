@@ -14,16 +14,10 @@
 # limitations under the License.
 #=========================================================================
 
-cmake_minimum_required(VERSION 2.8)
+add_compile_options(-std=c++11)
 
-project(libmetadata CXX)
-add_subdirectory(src/runtime/metadata)
+set(LIBMETADATA_SOURCES
+    MetaSerializer.cpp)
 
-project(ccdl CXX)
-add_subdirectory(src/ccdl)
-
-project(runtime CXX)
-add_subdirectory(src/runtime)
-
-project(demo CXX)
-add_subdirectory(src/sample)
+add_library(metadata STATIC
+    ${LIBMETADATA_SOURCES})
