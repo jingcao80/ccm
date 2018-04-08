@@ -14,12 +14,34 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CCMAPI_H__
-#define __CCM_CCMAPI_H__
+#ifndef __CCM_OBJECT_H__
+#define __CCM_OBJECT_H__
 
-#include "ccmdef.h"
 #include "ccmtypes.h"
-#include "ccmobjectapi.h"
-#include "ccmreflectionapi.h"
 
-#endif // __CCM_CCMAPI_H__
+namespace ccm {
+
+class Object
+    : public IObject
+{
+public:
+    IInterface* Probe(
+        /* [in] */ const InterfaceID& iid) override;
+
+    Integer AddRef(
+        /* [in] */ HANDLE id = 0) override;
+
+    Integer Release(
+        /* [in] */ HANDLE id = 0) override;
+
+    ECode GetInterfaceID(
+        /* [in] */ IInterface* object,
+        /* [out] */ InterfaceID* iid) override;
+
+    ECode GetCoclassID(
+        /* [out] */ CoclassID* cid) override;
+};
+
+}
+
+#endif // __CCM_OBJECT_H__

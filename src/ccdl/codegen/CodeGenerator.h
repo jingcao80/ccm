@@ -110,6 +110,9 @@ private:
     void GenerateCoclassCpp(
         /* [in] */ MetaCoclass* mk);
 
+    String GenerateCoclassNewMethods(
+        /* [in] */ MetaCoclass* mk);
+
     String GenerateCoclassObject(
         /* [in] */ MetaCoclass* mk);
 
@@ -129,6 +132,8 @@ private:
     String GenerateSoGetClassObject();
 
     String GenerateSoGetAllClassObjects();
+
+    void GenerateMetadataWrapper();
 
 private:
     static const String TAG;

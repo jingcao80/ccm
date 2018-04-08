@@ -14,12 +14,9 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CCMAPI_H__
-#define __CCM_CCMAPI_H__
+#include <stdlib.h>
 
-#include "ccmdef.h"
-#include "ccmtypes.h"
-#include "ccmobjectapi.h"
-#include "ccmreflectionapi.h"
-
-#endif // __CCM_CCMAPI_H__
+int main(int argc, char** argv)
+{
+    return 0;
+}

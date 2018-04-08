@@ -14,7 +14,10 @@
 # limitations under the License.
 #=========================================================================
 
-include_directories(../ ../util)
+include_directories(
+    ./
+    ../
+    ../util)
 
 set(SOURCES
     ccmarray.cpp
@@ -29,5 +32,6 @@ install(FILES
     ccmintfs.h
     ccmsharedbuffer.h
     ccmstring.h
+    ccmtypekind.h
     ccmuuid.h
-    DESTINATION ${CMAKE_BINARY_DIR}/sdk)
+    DESTINATION ${INC_DIR})

@@ -2008,14 +2008,28 @@ void Parser::GenerateCoclassObject(
         itfco->SetNamespace(klass->GetNamespace());
         itfco->SetDeclared(true);
         for (int i = 0; i < klass->GetConstructorNumber(); i++) {
-            itfco->AddMethod(klass->GetConstructor(i));
+            Method* m = klass->GetConstructor(i);
+            m->SetName(String("CreateObject"));
+            Parameter* param = new Parameter();
+            param->SetName(String("object"));
+            param->SetType(mPool->FindType(String("ccm::IInterface**")));
+            param->SetAttribute(Parameter::OUT);
+            m->AddParameter(param);
+            itfco->AddMethod(m);
         }
         mModule->AddInterface(itfco);
         klass->AddInterface(itfco);
     }
     else {
         Interface* itfco = mModule->FindInterface(String("IClassObject"));
-        itfco->AddMethod(klass->GetConstructor(0));
+        Method* m = klass->GetConstructor(0);
+        m->SetName(String("CreateObject"));
+        Parameter* param = new Parameter();
+        param->SetName(String("object"));
+        param->SetType(mPool->FindType(String("ccm::IInterface**")));
+        param->SetAttribute(Parameter::OUT);
+        m->AddParameter(param);
+        itfco->AddMethod(m);
         klass->AddInterface(itfco);
     }
 }

@@ -20,6 +20,7 @@
 #include "../util/Logger.h"
 #include "../util/StringBuilder.h"
 #include "../util/Uuid.h"
+#include "../../runtime/metadata/MetaSerializer.h"
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -30,6 +31,7 @@ using ccm::CcmTypeKind;
 using ccm::metadata::MetaCoclass;
 using ccm::metadata::MetaEnumerator;
 using ccm::metadata::MetaNamespace;
+using ccm::metadata::MetaSerializer;
 
 namespace ccdl {
 namespace codegen {
@@ -62,6 +64,7 @@ void CodeGenerator::Generate()
     GenerateTypeDeclarations();
     GenerateCoclasses();
     GenerateModule();
+    GenerateMetadataWrapper();
 }
 
 bool CodeGenerator::ResolveDirectory()
@@ -531,7 +534,8 @@ void CodeGenerator::GenerateCoclassHeader(
     /* [in] */ MetaCoclass* mk)
 {
     String filePath =
-            String::Format("%s/%s.h", mDirectory.string(), mk->mName);
+            String::Format("%s/_%s%s.h", mDirectory.string(),
+            String(mk->mNamespace).Replace("::", "_").string(), mk->mName);
     File file(filePath, File::WRITE);
 
     StringBuilder builder;
@@ -540,11 +544,31 @@ void CodeGenerator::GenerateCoclassHeader(
     builder.Append("\n");
 
     String defMacro = GenerateDefineMacro(
-            String::Format("%s%s::H", mk->mNamespace, mk->mName));
+            String::Format("%s%s_H_GEN", mk->mNamespace, mk->mName));
     builder.AppendFormat("#ifndef %s\n", defMacro.string());
     builder.AppendFormat("#define %s\n\n", defMacro.string());
+    builder.AppendFormat("#include \"%s.h\"\n\n", mMetaComponent->mName);
+    builder.Append("using namespace ccm;\n\n");
 
-    builder.AppendFormat("#endif // %s\n", defMacro.string());
+    builder.Append(GenerateNamespaceBegin(String(mk->mNamespace)));
+    builder.AppendFormat("class _%s\n", mk->mName);
+    builder.Append("{\n"
+                   "public:\n");
+    MetaInterface* mi = mMetaComponent->mInterfaces[mk->mInterfaceIndexes[mk->mInterfaceNumber - 1]];
+    for (int i = 0; i < mi->mMethodNumber; i++) {
+        MetaMethod* mm = mi->mMethods[i];
+        builder.Append("    static ECode New(\n");
+        for (int j = 0; j < mm->mParameterNumber; j++) {
+            builder.AppendFormat("        %s", GenerateParameter(mm->mParameters[j]).string());
+            if (j != mm->mParameterNumber - 1) builder.Append(",\n");
+        }
+        builder.Append(");\n");
+        if (i != mi->mMethodNumber - 1) builder.Append("\n");
+    }
+    builder.Append("};\n\n");
+    builder.Append(GenerateNamespaceEnd(String(mk->mNamespace)));
+
+    builder.AppendFormat("\n#endif // %s\n", defMacro.string());
 
     String data = builder.ToString();
     file.Write(data.string(), data.GetLength());
@@ -556,15 +580,25 @@ void CodeGenerator::GenerateCoclassCpp(
     /* [in] */ MetaCoclass* mk)
 {
     String filePath =
-            String::Format("%s/%s.cpp", mDirectory.string(), mk->mName);
+            String::Format("%s/_%s%s.cpp", mDirectory.string(),
+            String(mk->mNamespace).Replace("::", "_").string(), mk->mName);
     File file(filePath, File::WRITE);
 
     StringBuilder builder;
 
     builder.Append(mLicense);
     builder.Append("\n");
+    builder.AppendFormat("#include \"%s.h\"\n", mk->mName);
+    builder.Append("#include <ccmautoptr.h>\n"
+                   "#include <ccmobject.h>\n\n"
+                   "#include <stdlib.h>\n"
+                   "#include <new>\n\n");
+    builder.Append("using namespace ccm;\n\n");
 
+    builder.Append(GenerateNamespaceBegin(String(mk->mNamespace)));
     builder.Append(GenerateCoclassObject(mk));
+    builder.Append(GenerateCoclassNewMethods(mk));
+    builder.Append(GenerateNamespaceEnd(String(mk->mNamespace)));
 
     String data = builder.ToString();
     file.Write(data.string(), data.GetLength());
@@ -572,60 +606,90 @@ void CodeGenerator::GenerateCoclassCpp(
     file.Close();
 }
 
-String CodeGenerator::GenerateCoclassObject(
+String CodeGenerator::GenerateCoclassNewMethods(
     /* [in] */ MetaCoclass* mk)
 {
     StringBuilder builder;
 
-    builder.Append(GenerateNamespaceBegin(String(mk->mNamespace)));
+    MetaInterface* mi = mMetaComponent->mInterfaces[mk->mInterfaceIndexes[mk->mInterfaceNumber - 1]];
+    for (int i = 0; i < mi->mMethodNumber; i++) {
+        MetaMethod* mm = mi->mMethods[i];
+        builder.AppendFormat("ECode _%s::New(\n", mk->mName);
+        for (int j = 0; j < mm->mParameterNumber; j++) {
+            builder.AppendFormat("    %s", GenerateParameter(mm->mParameters[j]).string());
+            if (j != mm->mParameterNumber -1) builder.Append(",\n");
+        }
+        builder.Append(")\n"
+                       "{\n"
+                       "    VALIDATE_NOT_NULL(object);\n\n");
+        builder.AppendFormat("    AutoPtr<I%sClassObject> clsObject;\n", mk->mName);
+        builder.AppendFormat("    ECode ec = Get%sClassObject((IInterface**)&clsObject);\n", mk->mName);
+        builder.Append("    if (FAILED(ec)) return ec;\n");
+        builder.Append("    return clsObject->CreateObject(");
+        for (int j = 0; j < mm->mParameterNumber; j++) {
+            builder.AppendFormat("%s", mm->mParameters[j]->mName);
+            if (j != mm->mParameterNumber - 1) builder.Append(", ");
+        }
+        builder.Append(");\n"
+                       "}\n\n");
+    }
+
+    return builder.ToString();
+}
+
+String CodeGenerator::GenerateCoclassObject(
+    /* [in] */ MetaCoclass* mk)
+{
+    StringBuilder builder;
 
     builder.AppendFormat("class %sClassObject\n", mk->mName);
     builder.Append("    : public Object\n");
     MetaInterface* mi = mMetaComponent->mInterfaces[mk->mInterfaceIndexes[mk->mInterfaceNumber - 1]];
     builder.AppendFormat("    , public %s\n", mi->mName);
     builder.Append("{\n");
-    builder.Append("public:\n");
+    builder.Append("public:\n"
+                   "    CCM_INTERFACE_DECL();\n\n");
     for (int i = 0; i < mi->mMethodNumber; i++) {
         MetaMethod* mm = mi->mMethods[i];
-        builder.AppendFormat("    ECode %s(", mm->mName);
-        for (int i = 0; i < mm->mParameterNumber; i++) {
-            builder.AppendFormat("\n        %s", GenerateParameter(mm->mParameters[i]).string());
-            if (i != mm->mParameterNumber - 1) builder.Append(",");
+        builder.AppendFormat("    ECode %s(\n", mm->mName);
+        for (int j = 0; j < mm->mParameterNumber; j++) {
+            builder.AppendFormat("        %s", GenerateParameter(mm->mParameters[j]).string());
+            if (j != mm->mParameterNumber - 1) builder.Append(",\n");
         }
         builder.Append(");\n");
+        if (i != mi->mMethodNumber - 1) builder.Append("\n");
     }
     builder.Append("};\n\n");
 
     for (int i = 0; i < mi->mMethodNumber; i++) {
         MetaMethod* mm = mi->mMethods[i];
-        builder.AppendFormat("ECode %s::%s(", mk->mName, mm->mName);
-        for (int i = 0; i < mm->mParameterNumber; i++) {
-            builder.AppendFormat("\n    %s", GenerateParameter(mm->mParameters[i]).string());
-            if (i != mm->mParameterNumber - 1) builder.Append(",");
+        builder.AppendFormat("ECode %sClassObject::%s(\n", mk->mName, mm->mName);
+        for (int j = 0; j < mm->mParameterNumber; j++) {
+            builder.AppendFormat("    %s", GenerateParameter(mm->mParameters[j]).string());
+            if (j != mm->mParameterNumber - 1) builder.Append(",\n");
         }
-        builder.Append(")\n");
-        builder.Append("{\n");
+        builder.Append(")\n"
+                       "{\n");
         builder.Append("    VALIDATE_NOT_NULL(object);\n\n");
         builder.AppendFormat("    void* addr = calloc(sizeof(%s), 1);\n", mk->mName);
         builder.Append("    if (addr == nullptr) return E_OUT_OF_MEMORY_ERROR;\n\n");
         builder.AppendFormat("    %s* _obj = new(addr) %s();\n", mk->mName, mk->mName);
         builder.Append("    ECode ec = _obj->constructor(");
-        for (int i = 0; i < mm->mParameterNumber; i++) {
+        for (int i = 0; i < mm->mParameterNumber - 1; i++) {
             builder.Append(mm->mParameters[i]->mName);
-            if (i != mm->mParameterNumber - 1) builder.Append(", ");
+            if (i != mm->mParameterNumber - 2) builder.Append(", ");
         }
         builder.Append(");\n");
         builder.Append("    if (FAILED(ec)) {\n"
                        "        free(addr);\n"
                        "        return ec;\n"
                        "    }\n"
-                       "    *object = _obj;\n"
+                       "    *object = (IObject*)_obj;\n"
                        "    REFCOUNT_ADD(*object);\n");
         builder.Append("    return NOERROR;\n");
-        builder.Append("}\n");
+        builder.Append("}\n\n");
     }
 
-    builder.Append("\n");
     builder.AppendFormat("ECode Get%sClassObject(IInterface** classObject)\n", mk->mName);
     builder.Append("{\n");
     builder.Append("    VALIDATE_NOT_NULL(classObject);\n\n");
@@ -637,8 +701,6 @@ String CodeGenerator::GenerateCoclassObject(
     builder.Append("    REFCOUNT_ADD(*classObject);\n"
                    "    return NOERROR;\n");
     builder.Append("}\n\n");
-
-    builder.Append(GenerateNamespaceEnd(String(mk->mNamespace)));
 
     return builder.ToString();
 }
@@ -758,7 +820,6 @@ String CodeGenerator::GenerateClassObjectGetterArray()
             MetaCoclass* mk = mc->mCoclasses[mn->mCoclassIndexes[i]];
             builder.AppendFormat("extern ECode Get%sClassObject(IInterface** classObject);\n", mk->mName);
         }
-        builder.Append("\n");
         builder.Append(GenerateNamespaceEnd(String(mn->mName)));
     }
     builder.Append("\n");
@@ -814,6 +875,52 @@ String CodeGenerator::GenerateSoGetAllClassObjects()
                          "}\n", mMetaComponent->mName, mMetaComponent->mName);
 
     return builder.ToString();
+}
+
+void CodeGenerator::GenerateMetadataWrapper()
+{
+    String filePath =
+            String::Format("%s/MetadataWrapper.cpp", mDirectory.string());
+    File file(filePath, File::WRITE);
+
+    StringBuilder builder;
+
+    builder.Append(mLicense);
+    builder.Append("\n");
+
+    MetaSerializer serializer(mMetaComponent);
+    serializer.Serialize();
+    int dataSize = serializer.GetDataSize();
+    uintptr_t data = serializer.GetData();
+
+    builder.Append("#include <stdint.h>\n\n");
+    builder.AppendFormat("struct MetadataWrapper\n"
+                   "{\n"
+                   "    int             mSize;\n"
+                   "    unsigned char   metadata[%d];\n"
+                   "};\n\n", dataSize);
+    builder.Append("static const MetadataWrapper comMetadata __attribute__ ((used,__section__ (\".metadata\"))) = {\n");
+    builder.AppendFormat("    %d,{\n", dataSize);
+    int lineSize = 0;
+    for (int i = 0; i < dataSize; i++, lineSize++) {
+        if (lineSize == 0) builder.Append("    ");
+        builder.AppendFormat("0x%02x", ((unsigned char*)data)[i]);
+        if (i == dataSize - 1) break;
+        if (lineSize < 15) {
+            builder.Append(",");
+        }
+        else {
+            builder.Append(",\n");
+            lineSize = -1;
+        }
+    }
+    builder.Append("}};\n\n");
+    builder.Append("uintptr_t soMetadataHandle = reinterpret_cast<uintptr_t>(&comMetadata);\n");
+
+    String strData = builder.ToString();
+    file.Write(strData.string(), strData.GetLength());
+    file.Flush();
+    file.Close();
 }
 
 }

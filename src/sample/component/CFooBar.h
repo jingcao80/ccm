@@ -14,12 +14,35 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CCMAPI_H__
-#define __CCM_CCMAPI_H__
+#ifndef __CCM_DEMO_CFOOBAR_H__
+#define __CCM_DEMO_CFOOBAR_H__
 
-#include "ccmdef.h"
-#include "ccmtypes.h"
-#include "ccmobjectapi.h"
-#include "ccmreflectionapi.h"
+#include <ccmapi.h>
+#include "_ccm_demo_CFooBar.h"
 
-#endif // __CCM_CCMAPI_H__
+namespace ccm {
+namespace demo {
+
+Coclass(CFooBar)
+    , public IFoo
+    , public IBar
+{
+public:
+    CCM_INTERFACE_DECL();
+
+    ECode constructor();
+
+    ECode constructor(
+        /* [in] */ Long data);
+
+    ECode Foo(
+        /* [in] */ Integer data) override;
+
+    ECode Bar(
+        /* [in] */ const String& data) override;
+};
+
+}
+}
+
+#endif //__CCM_DEMO_CFOOBAR_H__

@@ -14,14 +14,6 @@
 # limitations under the License.
 #=========================================================================
 
-set(SOURCES
-    ccmlogger.cpp)
-
-add_library(util STATIC
-    ${SOURCES})
-
 install(FILES
-    ccmautoptr.h
-    ccmlogger.h
-    ccmobject.h
+    ccmreflectionapi.h
     DESTINATION ${INC_DIR})

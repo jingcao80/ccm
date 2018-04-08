@@ -14,12 +14,35 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CCMAPI_H__
-#define __CCM_CCMAPI_H__
+[
+    uuid(6a07eff9-9090-41a9-bfc3-67eb3ed80f49),
+    url("http://ccm.org/component/sample/FooBarDemo.so")
+]
+module FooBarDemo
+{
 
-#include "ccmdef.h"
-#include "ccmtypes.h"
-#include "ccmobjectapi.h"
-#include "ccmreflectionapi.h"
+include "IFoo.cdl"
+include "IBar.cdl"
 
-#endif // __CCM_CCMAPI_H__
+namespace ccm {
+namespace demo {
+
+[
+    uuid(855db520-7f7a-4ad1-a60a-7d8d3461be7b),
+    version(0.1.0)
+]
+coclass CFooBar
+{
+    constructor();
+
+    constructor(
+        [in] Long data);
+
+    interface IFoo;
+    interface IBar;
+}
+
+}
+}
+
+}

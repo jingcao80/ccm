@@ -14,14 +14,14 @@
 # limitations under the License.
 #=========================================================================
 
+cmake_minimum_required(VERSION 2.8)
+
+project(demo-client CXX)
+
+add_compile_options(-std=c++11)
+
 set(SOURCES
-    ccmlogger.cpp)
+    main.cpp)
 
-add_library(util STATIC
+add_executable(demo
     ${SOURCES})
-
-install(FILES
-    ccmautoptr.h
-    ccmlogger.h
-    ccmobject.h
-    DESTINATION ${INC_DIR})

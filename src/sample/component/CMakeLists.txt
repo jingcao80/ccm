@@ -14,14 +14,45 @@
 # limitations under the License.
 #=========================================================================
 
+cmake_minimum_required(VERSION 2.8)
+
+project(demo-component CXX)
+
+add_compile_options(-std=c++11)
+
+set(PROJECT_DIR ${CMAKE_SOURCE_DIR}/../../../)
+set(BIN_DIR ${PROJECT_DIR}/bin)
+set(INC_DIR ${BIN_DIR}/inc)
+set(OBJ_DIR ${CMAKE_SOURCE_DIR}/build/obj)
+
+include_directories(
+    ./
+    ${INC_DIR}
+    ${OBJ_DIR})
+
 set(SOURCES
-    ccmlogger.cpp)
+    CFooBar.cpp
+    ${OBJ_DIR}/_ccm_demo_CFooBar.cpp
+    ${OBJ_DIR}/FooBarDemoPub.cpp
+    ${OBJ_DIR}/MetadataWrapper.cpp)
 
-add_library(util STATIC
+LINK_DIRECTORIES(${BIN_DIR})
+
+add_library(FooBarDemo
+    SHARED
     ${SOURCES})
+target_link_libraries(FooBarDemo ccmrt)
 
-install(FILES
-    ccmautoptr.h
-    ccmlogger.h
-    ccmobject.h
-    DESTINATION ${INC_DIR})
+add_custom_command(
+    OUTPUT comp_cdl_cpp
+    PRE_BUILD
+    COMMAND
+        "${BIN_DIR}/ccdl"
+        -d "obj"
+        "${CMAKE_SOURCE_DIR}/FooBarDemo.cdl")
+
+add_custom_target(
+    gen_cpp ALL
+    DEPENDS comp_cdl_cpp)
+
+

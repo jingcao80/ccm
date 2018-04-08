@@ -25,5 +25,3 @@ add_subdirectory(src/ccdl)
 project(runtime CXX)
 add_subdirectory(src/runtime)
 
-project(demo CXX)
-add_subdirectory(src/sample)

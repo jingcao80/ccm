@@ -14,12 +14,10 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CCMAPI_H__
-#define __CCM_CCMAPI_H__
+#include "CFooBar.h"
 
-#include "ccmdef.h"
-#include "ccmtypes.h"
-#include "ccmobjectapi.h"
-#include "ccmreflectionapi.h"
+namespace ccm {
+namespace demo {
 
-#endif // __CCM_CCMAPI_H__
+}
+}

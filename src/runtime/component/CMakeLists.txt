@@ -14,7 +14,10 @@
 # limitations under the License.
 #=========================================================================
 
-include_directories(../ ../util)
+include_directories(
+    ../
+    ../type
+    ../util)
 
 set(SOURCES
     ccmcomponent.cpp
@@ -23,4 +26,7 @@ set(SOURCES
 add_library(component STATIC
     ${SOURCES})
 
-install(FILES ccmcomponent.h ccmobjectapi.h DESTINATION ${CMAKE_BINARY_DIR}/sdk)
+install(FILES
+    ccmcomponent.h
+    ccmobjectapi.h
+    DESTINATION ${INC_DIR})

@@ -14,6 +14,9 @@
 # limitations under the License.
 #=========================================================================
 
+set(PROJECT_DIR ${CMAKE_BINARY_DIR}/../)
+set(BIN_DIR ${PROJECT_DIR}/bin)
+
 add_compile_options(-std=c++11)
 
 set(SOURCES
@@ -67,3 +70,26 @@ set(SOURCES
 
 add_executable(ccdl ${SOURCES})
 target_link_libraries(ccdl metadata)
+
+install(DIRECTORY
+    DESTINATION ${BIN_DIR}
+    DIRECTORY_PERMISSIONS
+        OWNER_READ
+        OWNER_WRITE
+        OWNER_EXECUTE
+        GROUP_READ
+        GROUP_EXECUTE
+        WORLD_READ
+        WORLD_EXECUTE)
+install(FILES
+    ${CMAKE_BINARY_DIR}/src/ccdl/ccdl
+    DESTINATION ${BIN_DIR}
+    PERMISSIONS
+        OWNER_READ
+        OWNER_WRITE
+        OWNER_EXECUTE
+        GROUP_READ
+        GROUP_WRITE
+        GROUP_EXECUTE
+        WORLD_READ
+        WORLD_EXECUTE)

@@ -14,12 +14,23 @@
 # limitations under the License.
 #=========================================================================
 
+set(PROJECT_DIR ${CMAKE_BINARY_DIR}/../)
+set(BIN_DIR ${PROJECT_DIR}/bin)
+set(INC_DIR ${BIN_DIR}/inc)
+
 add_compile_options(-std=c++11)
 
 add_subdirectory(component)
+add_subdirectory(reflection)
 add_subdirectory(type)
+add_subdirectory(util)
 
-include_directories(./ util)
+include_directories(
+    ./
+    component
+    reflection
+    type
+    util)
 
 set(SOURCES
     ccmids.cpp
@@ -32,11 +43,42 @@ target_link_libraries(ccmrt metadata)
 target_link_libraries(ccmrt type)
 target_link_libraries(ccmrt util)
 
-install(DIRECTORY DESTINATION ${CMAKE_BINARY_DIR}/sdk)
+install(DIRECTORY
+    DESTINATION ${BIN_DIR}
+    DIRECTORY_PERMISSIONS
+        OWNER_READ
+        OWNER_WRITE
+        OWNER_EXECUTE
+        GROUP_READ
+        GROUP_EXECUTE
+        WORLD_READ
+        WORLD_EXECUTE)
+install(DIRECTORY
+    DESTINATION ${INC_DIR}
+    DIRECTORY_PERMISSIONS
+        OWNER_READ
+        OWNER_WRITE
+        OWNER_EXECUTE
+        GROUP_READ
+        GROUP_EXECUTE
+        WORLD_READ
+        WORLD_EXECUTE)
 
 install(FILES
     ccmapi.h
     ccmdef.h
     ccmerror.h
     ccmtypes.h
-    DESTINATION ${CMAKE_BINARY_DIR}/sdk)
+    DESTINATION ${INC_DIR})
+install(FILES
+    ${CMAKE_BINARY_DIR}/src/runtime/libccmrt.so
+    DESTINATION ${BIN_DIR}
+    PERMISSIONS
+        OWNER_READ
+        OWNER_WRITE
+        OWNER_EXECUTE
+        GROUP_READ
+        GROUP_WRITE
+        GROUP_EXECUTE
+        WORLD_READ
+        WORLD_EXECUTE)

@@ -14,12 +14,18 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CCMAPI_H__
-#define __CCM_CCMAPI_H__
+namespace ccm {
+namespace demo {
 
-#include "ccmdef.h"
-#include "ccmtypes.h"
-#include "ccmobjectapi.h"
-#include "ccmreflectionapi.h"
+[
+    uuid(6e7582c4-e0ec-4474-9046-702732e1e96d),
+    version(0.1.0)
+]
+interface IFoo
+{
+    Foo(
+        [in] Integer data);
+}
 
-#endif // __CCM_CCMAPI_H__
+}
+}

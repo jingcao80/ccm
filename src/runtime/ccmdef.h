@@ -25,6 +25,8 @@ namespace ccm {
 
 #define interface       struct
 
+#define Coclass(name)      class name : public _##name
+
 #define COM_PUBLIC      __attribute__ ((visibility ("default")))
 #define COM_LOCAL       __attribute__ ((visibility ("hidden")))
 
@@ -39,6 +41,22 @@ namespace ccm {
 #endif
 #ifndef MIN
 #define MIN(a, b)       (((a) < (b)) ? (a) : (b))
+#endif
+
+#ifndef CCM_INTERFACE_DECL
+#define CCM_INTERFACE_DECL()                            \
+    IInterface* Probe(                                  \
+        /* [in] */ const InterfaceID& iid) override;    \
+                                                        \
+    Integer AddRef(                                     \
+        /* [in] */ HANDLE id = 0) override;             \
+                                                        \
+    Integer Release(                                    \
+        /* [in] */ HANDLE id = 0) override;             \
+                                                        \
+    ECode GetInterfaceID(                               \
+        /* [in] */ IInterface* object,                  \
+        /* [out] */ InterfaceID* iid) override;
 #endif
 
 } // namespace ccm

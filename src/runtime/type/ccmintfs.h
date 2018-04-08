@@ -34,6 +34,7 @@ namespace ccm {
 
 extern const InterfaceID IID_IInterface;
 extern const InterfaceID IID_IClassObject;
+extern const InterfaceID IID_IObject;
 
 INTERFACE_ID(00000000-0000-0000-0000-000000000000)
 interface IInterface
@@ -70,6 +71,19 @@ interface IClassObject : public IInterface
     virtual ECode CreateObject(
         /* [in] */ const InterfaceID& iid,
         /* [out] */ IInterface** object) = 0;
+};
+
+INTERFACE_ID(00000000-0000-0000-0000-000000000002)
+interface IObject : public IInterface
+{
+    inline static IInterface* Probe(
+        /* [in] */ IInterface* object)
+    {
+        return object->Probe(IID_IObject);
+    }
+
+    virtual ECode GetCoclassID(
+        /* [out] */ CoclassID* cid) = 0;
 };
 
 }

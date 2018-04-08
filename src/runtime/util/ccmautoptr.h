@@ -28,19 +28,31 @@ public:
     {}
 
     AutoPtr(
-        /* [in] */ T* other,
-        /* [in] */ void* id = nullptr);
+        /* [in] */ T* other);
 
     AutoPtr(
-        /* [in] */ const AutoPtr<T>& other,
-        /* [in] */ void* id = nullptr);
+        /* [in] */ const AutoPtr<T>& other);
 
     AutoPtr(
         /* [in] */ AutoPtr<T>&& other);
 
+    AutoPtr& operator=(
+        /* [in] */ T* other);
+
+    AutoPtr& operator=(
+        /* [in] */ const AutoPtr<T>& other);
+
+    inline operator T*() const;
+
     inline T* operator->() const;
 
     inline T& operator*() const;
+
+    inline Boolean operator==(
+        /* [in] */ T* other) const;
+
+    inline Boolean operator==(
+        /* [in] */ const AutoPtr<T>& other) const;
 
 private:
     T* mPtr;
@@ -48,23 +60,21 @@ private:
 
 template<class T>
 AutoPtr<T>::AutoPtr(
-    /* [in] */ T* other,
-    /* [in] */ void* id)
+    /* [in] */ T* other)
     : mPtr(other)
 {
     if (mPtr != nullptr) {
-        mPtr->AddRef(reinterpret_cast<HANDLE>(id));
+        mPtr->AddRef(reinterpret_cast<HANDLE>(this));
     }
 }
 
 template<class T>
 AutoPtr<T>::AutoPtr(
-    /* [in] */ const AutoPtr<T>& other,
-    /* [in] */ void* id)
+    /* [in] */ const AutoPtr<T>& other)
     : mPtr(other.mPtr)
 {
     if (mPtr != nullptr) {
-        mPtr->AddRef(reinterpret_cast<HANDLE>(id));
+        mPtr->AddRef(reinterpret_cast<HANDLE>(this));
     }
 }
 
@@ -77,6 +87,44 @@ AutoPtr<T>::AutoPtr(
 }
 
 template<class T>
+AutoPtr<T>& AutoPtr<T>::operator=(
+    /* [in] */ T* other)
+{
+    if (mPtr == other) return *this;
+
+    if (other != nullptr) {
+        other->AddRef(reinterpret_cast<HANDLE>(this));
+    }
+    if (mPtr != nullptr) {
+        mPtr->Release(reinterpret_cast<HANDLE>(this));
+    }
+    mPtr = other;
+    return *this;
+}
+
+template<class T>
+AutoPtr<T>& AutoPtr<T>::operator=(
+    /* [in] */ const AutoPtr<T>& other)
+{
+    if (mPtr == other.mPtr) return *this;
+
+    if (other.mPtr != nullptr) {
+        other.mPtr->AddRef(reinterpret_cast<HANDLE>(this));
+    }
+    if (mPtr != nullptr) {
+        mPtr->Release(reinterpret_cast<HANDLE>(this));
+    }
+    mPtr = other.mPtr;
+    return *this;
+}
+
+template<class T>
+AutoPtr<T>::operator T*() const
+{
+    return mPtr;
+}
+
+template<class T>
 T* AutoPtr<T>::operator->() const
 {
     return mPtr;
@@ -86,6 +134,20 @@ template<class T>
 T& AutoPtr<T>::operator*() const
 {
     return *mPtr;
+}
+
+template<class T>
+Boolean AutoPtr<T>::operator==(
+    /* [in] */ T* other) const
+{
+    return mPtr == other;
+}
+
+template<class T>
+Boolean AutoPtr<T>::operator==(
+    /* [in] */ const AutoPtr<T>& other) const
+{
+    return mPtr == other.mPtr;
 }
 
 }
