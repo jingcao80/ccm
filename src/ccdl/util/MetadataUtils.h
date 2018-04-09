@@ -14,19 +14,23 @@
 // limitations under the License.
 //=========================================================================
 
-#include "FooBarDemo.h"
-#include <ccmautoptr.h>
-#include <stdlib.h>
+#ifndef __CCDL_METADATA_UTILS_H__
+#define __CCDL_METADATA_UTILS_H__
 
-using ccm::AutoPtr;
-using ccm::demo::CFoo;
-using ccm::demo::IFoo;
-using ccm::demo::IID_IFoo;
+#include "String.h"
 
-int main(int argc, char** argv)
+namespace ccdl {
+
+class MetadataUtils
 {
-    AutoPtr<IFoo> foo;
-    CFoo::New(IID_IFoo, (IInterface**)&foo);
+public:
+    static void* ReadMetadataFromElf64(
+        /* [in] */ const String& file);
 
-    return 0;
+    static void* ReadMetadataFromFile(
+        /* [in] */ const String& file);
+};
+
 }
+
+#endif // __CCDL_METADATA_UTILS_H__

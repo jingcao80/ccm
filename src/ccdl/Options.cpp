@@ -26,7 +26,10 @@ Options::Options(
     : mOptionNumber(argc)
     , mShowUsage(false)
     , mFormatError(false)
-    , mOnlyCompile(false)
+    , mShouldCompile(false)
+    , mShouldSaveMetadata(false)
+    , mShouldGenerate(false)
+    , mMetadataFileType(0)
 {
     Parse(argc, argv);
 }
@@ -44,13 +47,21 @@ void Options::Parse(
             mShowUsage = true;
         }
         else if (!strcmp("-c", string)) {
-            mOnlyCompile = true;
+            mShouldCompile = true;
         }
         else if (!strcmp("-d", string)) {
             mOutputDir = argv[i++];
         }
+        else if (!strcmp("-g", string)) {
+            mShouldGenerate = true;
+            mMetadataFileType = SO_FILE;
+        }
+        else if (!strcmp("-m", string)) {
+            mMetadataFileType = METADATA_FILE;
+        }
         else if (!strcmp("-o", string)) {
-            mOutputFile = argv[i++];
+            mShouldSaveMetadata = true;
+            mMetadataOuputFile = argv[i++];
         }
         else {
             mInputFile = string;
@@ -60,11 +71,14 @@ void Options::Parse(
 
 void Options::ShowUsage()
 {
-    printf("Usage: ccdl [options] file\n"
+    printf("Compile a .cdl file to metadata, or generate C++ codes from metadata."
+           "Usage: ccdl [options] file\n"
            "Options:\n"
            "  --help            Display command line options\n"
-           "  -c                Compile only, not generate C++ codes\n"
-           "  -d <directory>    Place generated files into <directory>\n"
+           "  -c                Compile the .cdl file to metadata\n"
+           "  -d <directory>    Place generated C++ codes into <directory>\n"
+           "  -g                Generate C++ codes\n"
+           "  -m                Make the input file as a metadata file, .so is default\n"
            "  -o <file>         Place the metadata into <file>\n");
 }
 

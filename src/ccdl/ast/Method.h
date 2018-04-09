@@ -58,6 +58,13 @@ public:
         /* [in] */ int index)
     { return mParameters.Get(index); }
 
+    inline void SetDefault(
+        /* [in] */ bool isDefault)
+    { mDefault = isDefault; }
+
+    inline bool IsDefault()
+    { return mDefault; }
+
     void BuildSignature();
 
     String ToString() override;
@@ -70,6 +77,7 @@ private:
     String mSignature;
     Type* mReturnType;
     ArrayList<Parameter*> mParameters;
+    bool mDefault;
 };
 
 }

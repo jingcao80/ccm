@@ -31,7 +31,9 @@ include_directories(
     ${OBJ_DIR})
 
 set(SOURCES
-    CFooBar.cpp
+    CFooBar.cpp)
+
+set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_demo_CFooBar.cpp
     ${OBJ_DIR}/FooBarDemoPub.cpp
     ${OBJ_DIR}/MetadataWrapper.cpp)
@@ -40,19 +42,25 @@ LINK_DIRECTORIES(${BIN_DIR})
 
 add_library(FooBarDemo
     SHARED
-    ${SOURCES})
+    ${SOURCES}
+    ${GENERATED_SOURCES})
 target_link_libraries(FooBarDemo ccmrt)
+set_target_properties(FooBarDemo PROPERTIES PREFIX "")
 
 add_custom_command(
-    OUTPUT comp_cdl_cpp
-    PRE_BUILD
+    OUTPUT
+        ${GENERATED_SOURCES}
     COMMAND
         "${BIN_DIR}/ccdl"
+        -c
+        -g
         -d "obj"
         "${CMAKE_SOURCE_DIR}/FooBarDemo.cdl")
 
 add_custom_target(
-    gen_cpp ALL
-    DEPENDS comp_cdl_cpp)
+    generate_cpp ALL
+    DEPENDS ${GENERATED_SOURCES})
+
+
 
 

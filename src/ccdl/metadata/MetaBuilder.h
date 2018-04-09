@@ -62,7 +62,7 @@ public:
     MetaBuilder(
         /* [in] */ std::shared_ptr<Module> module);
 
-    bool IsValidate();
+    bool IsValid();
 
     std::shared_ptr<MetaComponent> Build();
 

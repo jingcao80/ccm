@@ -22,6 +22,7 @@ namespace ast {
 
 Method::Method()
     : mReturnType(nullptr)
+    , mDefault(false)
 {}
 
 bool Method::AddParameter(

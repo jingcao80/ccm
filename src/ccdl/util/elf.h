@@ -33,13 +33,13 @@
 //
 //===----------------------------------------------------------------------===//
 
-#ifndef __CCM_ELF_H__
-#define __CCM_ELF_H__
+#ifndef __CCDL_ELF_H__
+#define __CCDL_ELF_H__
 
 #include <stdint.h>
 #include <string.h>
 
-namespace ccm {
+namespace ccdl {
 
 typedef uint64_t Elf64_Addr;
 typedef uint64_t Elf64_Off;
@@ -103,6 +103,6 @@ struct Elf64_Shdr
     Elf64_Xword     sh_entsize;
 };
 
-} // namespace ccm;
+} // namespace ccdl;
 
-#endif // __CCM_ELF_H__
+#endif // __CCDL_ELF_H__

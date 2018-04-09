@@ -14,7 +14,9 @@
 # limitations under the License.
 #=========================================================================
 
-add_compile_options(-std=c++11)
+add_compile_options(
+    -std=c++11
+    -fPIC)
 
 set(LIBMETADATA_SOURCES
     MetaSerializer.cpp)

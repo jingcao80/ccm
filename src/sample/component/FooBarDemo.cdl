@@ -28,6 +28,15 @@ namespace ccm {
 namespace demo {
 
 [
+    uuid(b150ddc0-530b-411f-8462-b04252fd012b),
+    version(0.1.0)
+]
+coclass CFoo
+{
+    interface IFoo;
+}
+
+[
     uuid(855db520-7f7a-4ad1-a60a-7d8d3461be7b),
     version(0.1.0)
 ]

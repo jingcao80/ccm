@@ -33,9 +33,8 @@ public:
         , mElements(nullptr)
         , mRelease(release)
     {
-        if (mCapacity > 0) {
-            mElements = (T*)calloc(sizeof(T), mCapacity);
-        }
+        if (mCapacity == 0) mCapacity = 10;
+        mElements = (T*)calloc(sizeof(T), mCapacity);
     }
 
     ~ArrayList()
@@ -56,6 +55,25 @@ public:
         if (!EnsureCapacity()) return false;
 
         mElements[mIndex++] = data;
+        return true;
+    }
+
+    bool Remove(
+        /* [in] */ T data)
+    {
+        int i = 0;
+        while (mElements[i] != data) {
+            i++;
+        }
+        if (i >= mIndex) return false;
+        for (; i < mIndex - 1; i++) {
+            mElements[i] = mElements[i + 1];
+        }
+        mElements[mIndex - 1] = nullptr;
+        mIndex--;
+        if (mRelease) {
+            delete data;
+        }
         return true;
     }
 

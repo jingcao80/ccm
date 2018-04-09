@@ -46,7 +46,7 @@ MetaBuilder::MetaBuilder(
     , mBasePtr(0)
 {}
 
-bool MetaBuilder::IsValidate()
+bool MetaBuilder::IsValid()
 {
     // check if all the interfaces in mModule are declared.
     for (int i = 0; i < mModule->GetInterfaceNumber(); i++) {
@@ -63,7 +63,7 @@ bool MetaBuilder::IsValidate()
 
 std::shared_ptr<MetaComponent> MetaBuilder::Build()
 {
-    if (!IsValidate()) {
+    if (!IsValid()) {
         Logger::E(TAG, "The module which used to generate"
                 " metadata is not validate.");
     }
@@ -536,6 +536,7 @@ MetaMethod* MetaBuilder::WriteMetaMethod(
     mm->mName = WriteString(method->GetName());
     mm->mSignature = WriteString(method->GetSignature());
     mm->mParameterNumber = PARAM_NUM;
+    mm->mDefault = method->IsDefault();
     // mParameters's address
     mBasePtr = ALIGN(mBasePtr + sizeof(MetaMethod));
     mm->mParameters = reinterpret_cast<MetaParameter**>(mBasePtr);

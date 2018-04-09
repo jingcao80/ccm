@@ -1988,7 +1988,7 @@ void Parser::GenerateCoclassObject(
 {
     if (klass->GetConstructorNumber() == 0) {
         Method* constructor = new Method();
-        constructor->SetName(String("constructor"));
+        constructor->SetName(String("_constructor"));
         constructor->BuildSignature();
         klass->AddConstructor(constructor);
     }
@@ -2011,6 +2011,11 @@ void Parser::GenerateCoclassObject(
             Method* m = klass->GetConstructor(i);
             m->SetName(String("CreateObject"));
             Parameter* param = new Parameter();
+            param->SetName(String("iid"));
+            param->SetType(mPool->FindType(String("InterfaceID")));
+            param->SetAttribute(Parameter::IN);
+            m->AddParameter(param);
+            param = new Parameter();
             param->SetName(String("object"));
             param->SetType(mPool->FindType(String("ccm::IInterface**")));
             param->SetAttribute(Parameter::OUT);
@@ -2021,15 +2026,12 @@ void Parser::GenerateCoclassObject(
         klass->AddInterface(itfco);
     }
     else {
-        Interface* itfco = mModule->FindInterface(String("IClassObject"));
+        Interface* itfco = mModule->FindInterface(String("ccm::IClassObject"));
         Method* m = klass->GetConstructor(0);
-        m->SetName(String("CreateObject"));
-        Parameter* param = new Parameter();
-        param->SetName(String("object"));
-        param->SetType(mPool->FindType(String("ccm::IInterface**")));
-        param->SetAttribute(Parameter::OUT);
-        m->AddParameter(param);
-        itfco->AddMethod(m);
+        if (m->GetName().Equals("_constructor")) {
+            itfco->GetMethod(0)->SetDefault(true);
+        }
+        bool res = klass->RemoveConstructor(m);
         klass->AddInterface(itfco);
     }
 }

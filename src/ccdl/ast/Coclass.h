@@ -46,6 +46,9 @@ public:
     bool AddConstructor(
         /* [in] */ Method* constructor);
 
+    bool RemoveConstructor(
+        /* [in] */ Method* constructor);
+
     inline int GetConstructorNumber()
     { return mConstructors.GetSize(); }
 

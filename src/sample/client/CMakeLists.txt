@@ -20,8 +20,39 @@ project(demo-client CXX)
 
 add_compile_options(-std=c++11)
 
+set(PROJECT_DIR ${CMAKE_SOURCE_DIR}/../../../)
+set(BIN_DIR ${PROJECT_DIR}/bin)
+set(INC_DIR ${BIN_DIR}/inc)
+set(OBJ_DIR ${CMAKE_SOURCE_DIR}/build/obj)
+
+include_directories(
+    ./
+    ${INC_DIR}
+    ${OBJ_DIR})
+
 set(SOURCES
     main.cpp)
 
+set(GENERATED_SOURCES
+    ${OBJ_DIR}/FooBarDemo.cpp)
+
+LINK_DIRECTORIES(${BIN_DIR})
+
 add_executable(demo
-    ${SOURCES})
+    ${SOURCES}
+    ${GENERATED_SOURCES})
+target_link_libraries(demo ccmrt)
+
+add_custom_command(
+    OUTPUT
+        ${GENERATED_SOURCES}
+    COMMAND
+        "${BIN_DIR}/ccdl"
+        -g
+        -d "obj"
+        "${CMAKE_SOURCE_DIR}/../component/build/FooBarDemo.so")
+
+add_custom_target(
+    generate_cpp ALL
+    DEPENDS ${GENERATED_SOURCES})
+

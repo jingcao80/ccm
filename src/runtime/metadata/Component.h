@@ -124,6 +124,7 @@ struct MetaMethod
     char*               mSignature;
     int                 mParameterNumber;
     MetaParameter**     mParameters;
+    bool                mDefault;
 };
 
 struct MetaParameter

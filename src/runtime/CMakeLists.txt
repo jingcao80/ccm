@@ -14,11 +14,15 @@
 # limitations under the License.
 #=========================================================================
 
+#set(CMAKE_VERBOSE_MAKEFILE on)
+
 set(PROJECT_DIR ${CMAKE_BINARY_DIR}/../)
 set(BIN_DIR ${PROJECT_DIR}/bin)
 set(INC_DIR ${BIN_DIR}/inc)
 
-add_compile_options(-std=c++11)
+add_compile_options(
+    -std=c++11
+    -fPIC)
 
 add_subdirectory(component)
 add_subdirectory(reflection)
@@ -36,12 +40,20 @@ set(SOURCES
     ccmids.cpp
     runtime.cpp)
 
+set(CCMRT_LINK_LIBS
+    -Wl,--no-undefined
+    -Wl,--whole-archive
+    component
+    metadata
+    type
+    util
+    -Wl,--no-whole-archive)
+
 add_library(ccmrt SHARED
     ${SOURCES})
-target_link_libraries(ccmrt component)
-target_link_libraries(ccmrt metadata)
-target_link_libraries(ccmrt type)
-target_link_libraries(ccmrt util)
+target_link_libraries(ccmrt
+    ${CCMRT_LINK_LIBS}
+    dl)
 
 install(DIRECTORY
     DESTINATION ${BIN_DIR}

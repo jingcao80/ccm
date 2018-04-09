@@ -57,7 +57,7 @@ CodeGenerator::CodeGenerator()
            "//=========================================================================\n");
 }
 
-void CodeGenerator::Generate()
+void CodeGenerator::GenerateForComponent()
 {
     if (!ResolveDirectory()) return;
 
@@ -65,6 +65,14 @@ void CodeGenerator::Generate()
     GenerateCoclasses();
     GenerateModule();
     GenerateMetadataWrapper();
+}
+
+void CodeGenerator::GenerateForComponentUser()
+{
+    if (!ResolveDirectory()) return;
+
+    GenerateTypeDeclarationsForUser();
+    GenerateModuleForUser();
 }
 
 bool CodeGenerator::ResolveDirectory()
@@ -551,6 +559,8 @@ void CodeGenerator::GenerateCoclassHeader(
     builder.Append("using namespace ccm;\n\n");
 
     builder.Append(GenerateNamespaceBegin(String(mk->mNamespace)));
+    builder.AppendFormat("extern const CoclassID CID_%s;\n\n", mk->mName);
+    builder.AppendFormat("COCLASS_ID(%s)\n", Uuid(mk->mUuid).Dump().string());
     builder.AppendFormat("class _%s\n", mk->mName);
     builder.Append("{\n"
                    "public:\n");
@@ -674,18 +684,21 @@ String CodeGenerator::GenerateCoclassObject(
         builder.AppendFormat("    void* addr = calloc(sizeof(%s), 1);\n", mk->mName);
         builder.Append("    if (addr == nullptr) return E_OUT_OF_MEMORY_ERROR;\n\n");
         builder.AppendFormat("    %s* _obj = new(addr) %s();\n", mk->mName, mk->mName);
-        builder.Append("    ECode ec = _obj->constructor(");
-        for (int i = 0; i < mm->mParameterNumber - 1; i++) {
-            builder.Append(mm->mParameters[i]->mName);
-            if (i != mm->mParameterNumber - 2) builder.Append(", ");
+        if (!mm->mDefault) {
+            builder.Append("    ECode ec = _obj->constructor(");
+            for (int i = 0; i < mm->mParameterNumber - 2; i++) {
+                builder.Append(mm->mParameters[i]->mName);
+                if (i != mm->mParameterNumber - 3) builder.Append(", ");
+            }
+            builder.Append(");\n");
         }
-        builder.Append(");\n");
-        builder.Append("    if (FAILED(ec)) {\n"
-                       "        free(addr);\n"
-                       "        return ec;\n"
-                       "    }\n"
-                       "    *object = (IObject*)_obj;\n"
-                       "    REFCOUNT_ADD(*object);\n");
+        builder.AppendFormat("    if (FAILED(ec)) {\n"
+                             "        free(addr);\n"
+                             "        return ec;\n"
+                             "    }\n"
+                             "    *object = _obj->Probe(%s);\n"
+                             "    REFCOUNT_ADD(*object);\n",
+                             mm->mParameters[mm->mParameterNumber - 2]->mName);
         builder.Append("    return NOERROR;\n");
         builder.Append("}\n\n");
     }
@@ -900,7 +913,7 @@ void CodeGenerator::GenerateMetadataWrapper()
                    "    unsigned char   metadata[%d];\n"
                    "};\n\n", dataSize);
     builder.Append("static const MetadataWrapper comMetadata __attribute__ ((used,__section__ (\".metadata\"))) = {\n");
-    builder.AppendFormat("    %d,{\n", dataSize);
+    builder.AppendFormat("    %d, {\n", dataSize);
     int lineSize = 0;
     for (int i = 0; i < dataSize; i++, lineSize++) {
         if (lineSize == 0) builder.Append("    ");
@@ -921,6 +934,197 @@ void CodeGenerator::GenerateMetadataWrapper()
     file.Write(strData.string(), strData.GetLength());
     file.Flush();
     file.Close();
+}
+
+void CodeGenerator::GenerateTypeDeclarationsForUser()
+{
+    String filePath = String::Format("%s/%s.h",
+            mDirectory.string(), mMetaComponent->mName);
+    File file(filePath, File::WRITE);
+
+    StringBuilder builder;
+
+    builder.Append(mLicense);
+    builder.Append("\n");
+    builder.Append("#include \"../../src/runtime/ccmtypes.h\"\n\n");
+    builder.Append("using namespace ccm;\n\n");
+
+    MetaComponent* mc = mMetaComponent;
+    for (int i = 0; i < mc->mNamespaceNumber; i++) {
+        MetaNamespace* mn = mc->mNamespaces[i];
+        if (mn->mEnumerationNumber + (mn->mInterfaceNumber -
+                mn->mSystemPreDeclaredInterfaceNumber) == 0) {
+            continue;
+        }
+        builder.Append(GenerateNamespaceBegin(String(mn->mName)));
+        builder.Append(GenerateEnumerationPreDeclarations(mn));
+        builder.Append(GenerateInterfacePreDeclarations(mn));
+        builder.Append(GenerateNamespaceEnd(String(mn->mName)));
+        if (i != mc->mNamespaceNumber - 1) builder.Append("\n");
+    }
+    builder.Append("\n");
+    for (int i = 0; i < mc->mNamespaceNumber; i++) {
+        MetaNamespace* mn = mc->mNamespaces[i];
+        if (mn->mEnumerationNumber + (mn->mInterfaceNumber -
+                mn->mSystemPreDeclaredInterfaceNumber) +
+                mn->mCoclassNumber == 0) {
+            continue;
+        }
+        builder.Append(GenerateNamespaceBegin(String(mn->mName)));
+        builder.Append(GenerateEnumerations(mn));
+        builder.Append(GenerateInterfaces(mn));
+        builder.Append(GenerateCoclassDeclarationsForUser(mn));
+        builder.Append(GenerateNamespaceEnd(String(mn->mName)));
+        if (i != mc->mNamespaceNumber - 1) builder.Append("\n");
+    }
+
+    String data = builder.ToString();
+    file.Write(data.string(), data.GetLength());
+    file.Flush();
+    file.Close();
+}
+
+String CodeGenerator::GenerateCoclassDeclarationsForUser(
+    /* [in] */ MetaNamespace* mn)
+{
+    StringBuilder builder;
+
+    if (mn->mCoclassNumber == 0) return String();
+
+    for (int i = 0; i < mn->mCoclassNumber; i++) {
+        MetaCoclass* mc = mMetaComponent->mCoclasses[i];
+        builder.Append(GenerateCoclassDeclarationForUser(mc));
+        if (i != mn->mCoclassNumber - 1) builder.Append("\n");
+    }
+    builder.Append("\n");
+
+    return builder.ToString();
+}
+
+String CodeGenerator::GenerateCoclassDeclarationForUser(
+    /* [in] */ MetaCoclass* mc)
+{
+    StringBuilder builder;
+
+    String defMacro = GenerateDefineMacro(
+            String::Format("%s%s", mc->mNamespace, mc->mName));
+    builder.AppendFormat("#ifndef %s\n", defMacro.string());
+    builder.AppendFormat("#define %s\n\n", defMacro.string());
+    builder.AppendFormat("extern const CoclassID CID_%s;\n\n", mc->mName);
+    builder.AppendFormat("COCLASS_ID(%s)\n", Uuid(mc->mUuid).Dump().string());
+    builder.AppendFormat("class %s\n", mc->mName);
+    builder.Append("{\n"
+                   "public:\n");
+    MetaInterface* mi = mMetaComponent->mInterfaces[mc->mInterfaceIndexes[mc->mInterfaceNumber - 1]];
+    for (int i = 0; i < mi->mMethodNumber; i++) {
+        MetaMethod* mm = mi->mMethods[i];
+        builder.Append("    static ECode New(\n");
+        for (int j = 0; j < mm->mParameterNumber; j++) {
+            builder.AppendFormat("        %s", GenerateParameter(mm->mParameters[j]).string());
+            if (j != mm->mParameterNumber - 1) builder.Append(",\n");
+        }
+        builder.Append(");\n");
+        if (i != mi->mMethodNumber - 1) builder.Append("\n");
+    }
+    builder.Append("};\n\n");
+    builder.AppendFormat("#endif // %s\n", defMacro.string());
+
+    return builder.ToString();
+}
+
+void CodeGenerator::GenerateModuleForUser()
+{
+    String filePath =
+            String::Format("%s/%s.cpp", mDirectory.string(), mMetaComponent->mName);
+    File file(filePath, File::WRITE);
+
+    StringBuilder builder;
+
+    builder.Append(mLicense);
+    builder.Append("\n");
+    builder.AppendFormat("#include \"%s.h\"\n\n"
+                         "#include <ccmapi.h>\n"
+                         "#include <ccmautoptr.h>\n\n"
+                         "using namespace ccm;\n\n", mMetaComponent->mName);
+
+    MetaComponent* mc = mMetaComponent;
+    for (int i = 0; i < mc->mNamespaceNumber; i++) {
+        MetaNamespace* mn = mc->mNamespaces[i];
+        if (mn->mCoclassNumber + mn->mEnumerationNumber +
+                (mn->mInterfaceNumber - mn->mSystemPreDeclaredInterfaceNumber) +
+                mn->mCoclassNumber == 0) {
+            continue;
+        }
+        builder.Append(GenerateNamespaceBegin(String(mn->mName)));
+        builder.Append(GenerateInterfaceConstants(mn));
+        builder.Append(GenerateInterfaceIDs(mn));
+        builder.Append(GenerateCoclassIDs(mn));
+        builder.Append(GenerateCoclassesForUser(mn));
+        builder.Append(GenerateNamespaceEnd(String(mn->mName)));
+        if (i != mc->mNamespaceNumber - 1) builder.Append("\n");
+    }
+
+    String data = builder.ToString();
+    file.Write(data.string(), data.GetLength());
+    file.Flush();
+    file.Close();
+}
+
+String CodeGenerator::GenerateCoclassesForUser(
+    /* [in] */ MetaNamespace* mn)
+{
+    StringBuilder builder;
+
+    if (mn->mCoclassNumber == 0) return String();
+
+    for (int i = 0; i < mn->mCoclassNumber; i++) {
+        MetaCoclass* mc = mMetaComponent->mCoclasses[i];
+        builder.Append(GenerateCoclassForUser(mc));
+        if (i != mn->mCoclassNumber - 1) builder.Append("\n");
+    }
+    builder.Append("\n");
+
+    return builder.ToString();
+}
+
+String CodeGenerator::GenerateCoclassForUser(
+    /* [in] */ MetaCoclass* mc)
+{
+    StringBuilder builder;
+
+    builder.AppendFormat("// %s\n", mc->mName);
+    MetaInterface* mi = mMetaComponent->mInterfaces[mc->mInterfaceIndexes[mc->mInterfaceNumber - 1]];
+    for (int i = 0; i < mi->mMethodNumber; i++) {
+        MetaMethod* mm = mi->mMethods[i];
+        builder.AppendFormat("ECode %s::New(\n", mc->mName);
+        for (int j = 0; j < mm->mParameterNumber; j++) {
+            builder.AppendFormat("    %s", GenerateParameter(mm->mParameters[j]).string());
+            if (j != mm->mParameterNumber - 1) builder.Append(",\n");
+        }
+        builder.Append(")\n"
+                       "{\n");
+        if (mm->mParameterNumber > 2) {
+            builder.AppendFormat("    AutoPtr<%s> clsObject;\n", mi->mName);
+            builder.AppendFormat("    ECode ec = CoAcquireClassFactory(CID_%s, (IInterface**)&clsObject);\n",
+                    mc->mName);
+            builder.Append("    if (FAILED(ec)) return ec;\n");
+            builder.Append("    return clsObject->CreateObject(");
+            for (int j = 0; j < mm->mParameterNumber; j++) {
+                builder.AppendFormat("%s", mm->mParameters[j]->mName);
+                if (j != mm->mParameterNumber - 1) builder.Append(", ");
+            }
+            builder.Append(");\n");
+        }
+        else {
+            builder.AppendFormat("    return CoCreateObjectInstance(CID_%s, %s, %s);\n",
+                    mc->mName, mm->mParameters[0]->mName, mm->mParameters[1]->mName);
+        }
+        builder.Append("};\n");
+        if (i != mi->mMethodNumber - 1) builder.Append("\n");
+    }
+    builder.Append("\n");
+
+    return builder.ToString();
 }
 
 }

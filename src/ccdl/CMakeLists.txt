@@ -61,6 +61,7 @@ set(SOURCES
     parser/Tokenizer.cpp
     util/File.cpp
     util/Logger.cpp
+    util/MetadataUtils.cpp
     util/String.cpp
     util/StringBuilder.cpp
     util/StringPool.cpp

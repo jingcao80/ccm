@@ -31,11 +31,17 @@ public:
     inline bool IsFormatError()
     { return mFormatError; }
 
+    inline bool ShouldCompile()
+    { return mShouldCompile; }
+
+    inline bool ShouldSaveMetadata()
+    { return mShouldSaveMetadata; }
+
+    inline bool ShouldGenerate()
+    { return mShouldGenerate; }
+
     inline bool ShouldShowUsage()
     { return mShowUsage; }
-
-    inline bool OnlyCompile()
-    { return mOnlyCompile; }
 
     inline int GetOptionNumber()
     { return mOptionNumber; }
@@ -43,11 +49,17 @@ public:
     inline String GetInputFile()
     { return mInputFile; }
 
-    inline String GetOutputFile()
-    { return mOutputFile; }
+    inline String GetMetadataOutputFile()
+    { return mMetadataOuputFile; }
 
     inline String GetOutputDir()
     { return mOutputDir; }
+
+    inline bool IsFromSoFile()
+    { return mMetadataFileType == SO_FILE; }
+
+    inline bool IsFromMetadataFile()
+    { return mMetadataFileType == METADATA_FILE; }
 
     void ShowUsage();
 
@@ -57,15 +69,21 @@ private:
         /* [in] */ char** argv);
 
 private:
+    static constexpr int METADATA_FILE = 1;
+    static constexpr int SO_FILE = 2;
+
     int mOptionNumber;
     String mProgram;
     String mInputFile;
-    String mOutputFile;
+    String mMetadataOuputFile;
     String mOutputDir;
 
     bool mShowUsage;
     bool mFormatError;
-    bool mOnlyCompile;
+    bool mShouldCompile;
+    bool mShouldSaveMetadata;
+    bool mShouldGenerate;
+    int mMetadataFileType;
 };
 
 }

@@ -21,6 +21,7 @@
 
 namespace ccm {
 
+#define COCLASS_ID(x)
 #define INTERFACE_ID(x)
 
 #define interface       struct

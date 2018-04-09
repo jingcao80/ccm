@@ -25,6 +25,8 @@ ECode CoCreateObjectInstance(
     /* [in] */ const InterfaceID& iid,
     /* [out] */ IInterface** object)
 {
+    VALIDATE_NOT_NULL(object);
+
     AutoPtr<IClassObject> factory;
     ECode ec = CoAcquireClassFactory(cid, (IInterface**)&factory);
     if (FAILED(ec)) {
@@ -39,6 +41,8 @@ ECode CoAcquireClassFactory(
     /* [in] */ const CoclassID& cid,
     /* [out] */ IInterface** object)
 {
+    VALIDATE_NOT_NULL(object);
+
     CcmComponent* ccmComp;
     ECode ec = CoGetComponent(*cid.mCid, &ccmComp);
     if (FAILED(ec)) {

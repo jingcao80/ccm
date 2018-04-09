@@ -49,6 +49,14 @@ bool Coclass::AddConstructor(
     return mConstructors.Add(constructor);
 }
 
+bool Coclass::RemoveConstructor(
+    /* [in] */ Method* constructor)
+{
+    if (constructor == nullptr) return true;
+
+    return mConstructors.Remove(constructor);
+}
+
 Method* Coclass::FindConstructor(
     /* [in] */ const String& name,
     /* [in] */ const String& signature)

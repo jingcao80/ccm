@@ -192,7 +192,7 @@ static bool CheckComponentID(
         return false;
     }
 
-    if (fseek(fd, mdSec->sh_offset, SEEK_SET) < 0) {
+    if (fseek(fd, mdSec->sh_offset + sizeof(int), SEEK_SET) < 0) {
         Logger::E("CCMRT", "Seek \"%s\" file failed.", comPath);
         free(shdrs);
         free(strTable);

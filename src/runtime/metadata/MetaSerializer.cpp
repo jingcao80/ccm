@@ -19,6 +19,12 @@
 namespace ccm {
 namespace metadata {
 
+MetaSerializer::MetaSerializer()
+    : mMetaComponent(nullptr)
+    , mBasePtr(0)
+    , mDataSize(0)
+{}
+
 MetaSerializer::MetaSerializer(
     /* [in] */ MetaComponent* mc)
     : mMetaComponent(mc)

@@ -28,6 +28,8 @@ namespace metadata {
 class MetaSerializer
 {
 public:
+    MetaSerializer();
+
     MetaSerializer(
         /* [in] */ MetaComponent* mc);
 

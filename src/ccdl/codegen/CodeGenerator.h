@@ -38,7 +38,9 @@ class CodeGenerator
 public:
     CodeGenerator();
 
-    void Generate();
+    void GenerateForComponent();
+
+    void GenerateForComponentUser();
 
     inline void SetDirectory(
         /* [in] */ const String& dir)
@@ -134,6 +136,22 @@ private:
     String GenerateSoGetAllClassObjects();
 
     void GenerateMetadataWrapper();
+
+    void GenerateTypeDeclarationsForUser();
+
+    String GenerateCoclassDeclarationsForUser(
+        /* [in] */ MetaNamespace* mn);
+
+    String GenerateCoclassDeclarationForUser(
+        /* [in] */ MetaCoclass* mc);
+
+    void GenerateModuleForUser();
+
+    String GenerateCoclassesForUser(
+        /* [in] */ MetaNamespace* mn);
+
+    String GenerateCoclassForUser(
+        /* [in] */ MetaCoclass* mc);
 
 private:
     static const String TAG;
