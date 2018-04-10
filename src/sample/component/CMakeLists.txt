@@ -18,12 +18,12 @@ cmake_minimum_required(VERSION 2.8)
 
 project(demo-component CXX)
 
-add_compile_options(-std=c++11)
-
 set(PROJECT_DIR ${CMAKE_SOURCE_DIR}/../../../)
 set(BIN_DIR ${PROJECT_DIR}/bin)
 set(INC_DIR ${BIN_DIR}/inc)
-set(OBJ_DIR ${CMAKE_SOURCE_DIR}/build/obj)
+set(OBJ_DIR ${CMAKE_BINARY_DIR}/obj)
+
+include(${PROJECT_DIR}/build/common.cmake)
 
 include_directories(
     ./
@@ -31,9 +31,11 @@ include_directories(
     ${OBJ_DIR})
 
 set(SOURCES
+    CFoo.cpp
     CFooBar.cpp)
 
 set(GENERATED_SOURCES
+    ${OBJ_DIR}/_ccm_demo_CFoo.cpp
     ${OBJ_DIR}/_ccm_demo_CFooBar.cpp
     ${OBJ_DIR}/FooBarDemoPub.cpp
     ${OBJ_DIR}/MetadataWrapper.cpp)
@@ -44,7 +46,7 @@ add_library(FooBarDemo
     SHARED
     ${SOURCES}
     ${GENERATED_SOURCES})
-target_link_libraries(FooBarDemo ccmrt)
+target_link_libraries(FooBarDemo -Wl,--no-undefined ccmrt)
 set_target_properties(FooBarDemo PROPERTIES PREFIX "")
 
 add_custom_command(
@@ -57,9 +59,18 @@ add_custom_command(
         -d "obj"
         "${CMAKE_SOURCE_DIR}/FooBarDemo.cdl")
 
-add_custom_target(
-    generate_cpp ALL
-    DEPENDS ${GENERATED_SOURCES})
+install(FILES
+    ${CMAKE_BINARY_DIR}/FooBarDemo.so
+    DESTINATION ${BIN_DIR}
+    PERMISSIONS
+        OWNER_READ
+        OWNER_WRITE
+        OWNER_EXECUTE
+        GROUP_READ
+        GROUP_WRITE
+        GROUP_EXECUTE
+        WORLD_READ
+        WORLD_EXECUTE)
 
 
 

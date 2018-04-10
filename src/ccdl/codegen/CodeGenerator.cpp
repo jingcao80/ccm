@@ -632,7 +632,7 @@ String CodeGenerator::GenerateCoclassNewMethods(
         builder.Append(")\n"
                        "{\n"
                        "    VALIDATE_NOT_NULL(object);\n\n");
-        builder.AppendFormat("    AutoPtr<I%sClassObject> clsObject;\n", mk->mName);
+        builder.AppendFormat("    AutoPtr<%s> clsObject;\n", mi->mName);
         builder.AppendFormat("    ECode ec = Get%sClassObject((IInterface**)&clsObject);\n", mk->mName);
         builder.Append("    if (FAILED(ec)) return ec;\n");
         builder.Append("    return clsObject->CreateObject(");
@@ -670,6 +670,8 @@ String CodeGenerator::GenerateCoclassObject(
         if (i != mi->mMethodNumber - 1) builder.Append("\n");
     }
     builder.Append("};\n\n");
+    builder.AppendFormat("CCM_INTERFACE_IMPL_1(%sClassObject, Object, %s);\n\n",
+            mk->mName, mi->mName);
 
     for (int i = 0; i < mi->mMethodNumber; i++) {
         MetaMethod* mm = mi->mMethods[i];
@@ -691,12 +693,12 @@ String CodeGenerator::GenerateCoclassObject(
                 if (i != mm->mParameterNumber - 3) builder.Append(", ");
             }
             builder.Append(");\n");
+            builder.Append("    if (FAILED(ec)) {\n"
+                           "        free(addr);\n"
+                           "        return ec;\n"
+                           "    }\n");
         }
-        builder.AppendFormat("    if (FAILED(ec)) {\n"
-                             "        free(addr);\n"
-                             "        return ec;\n"
-                             "    }\n"
-                             "    *object = _obj->Probe(%s);\n"
+        builder.AppendFormat("    *object = _obj->Probe(%s);\n"
                              "    REFCOUNT_ADD(*object);\n",
                              mm->mParameters[mm->mParameterNumber - 2]->mName);
         builder.Append("    return NOERROR;\n");
@@ -733,6 +735,8 @@ void CodeGenerator::GenerateModule()
                          "using namespace ccm;\n\n", mMetaComponent->mName);
 
     MetaComponent* mc = mMetaComponent;
+    builder.Append(GenerateModuleID());
+    builder.Append("\n");
     for (int i = 0; i < mc->mNamespaceNumber; i++) {
         MetaNamespace* mn = mc->mNamespaces[i];
         if (mn->mCoclassNumber + mn->mEnumerationNumber +
@@ -756,6 +760,20 @@ void CodeGenerator::GenerateModule()
     file.Write(data.string(), data.GetLength());
     file.Flush();
     file.Close();
+}
+
+String CodeGenerator::GenerateModuleID()
+{
+    StringBuilder builder;
+
+    MetaComponent* mc = mMetaComponent;
+    builder.AppendFormat("const ComponentID IID_%s =\n"
+                         "        {%s,\n"
+                         "        \"%s\"};\n",
+            mc->mName, Uuid(mc->mUuid).ToString().string(),
+            mc->mUrl);
+
+    return builder.ToString();
 }
 
 String CodeGenerator::GenerateInterfaceConstants(
@@ -809,8 +827,11 @@ String CodeGenerator::GenerateCoclassIDs(
 
     for (int i = 0; i < mn->mCoclassNumber; i++) {
         MetaCoclass* mc = mMetaComponent->mCoclasses[mn->mCoclassIndexes[i]];
-        builder.AppendFormat("const CoclassID CID_%s =\n        %s;\n",
-                mc->mName, Uuid(mc->mUuid).ToString().string());
+        builder.AppendFormat("const CoclassID CID_%s =\n"
+                             "        {%s,\n"
+                             "        &IID_%s};\n",
+                mc->mName, Uuid(mc->mUuid).ToString().string(),
+                mMetaComponent->mName);
     }
     builder.Append("\n");
 
@@ -855,7 +876,7 @@ String CodeGenerator::GenerateSoGetClassObject()
 
     MetaComponent* mc = mMetaComponent;
 
-    builder.Append("ECode soGetClassObject(const CoclassID& cid, IInterface** object)\n");
+    builder.Append("EXTERN_C COM_PUBLIC ECode soGetClassObject(const CoclassID& cid, IInterface** object)\n");
     builder.Append("{\n"
                    "    VALIDATE_NOT_NULL(object);\n\n");
     for (int i = 0; i < mc->mCoclassNumber; i++) {
@@ -881,7 +902,7 @@ String CodeGenerator::GenerateSoGetAllClassObjects()
 {
     StringBuilder builder;
 
-    builder.AppendFormat("ClassObjectGetter* soGetAllClassObjects(int* size)\n"
+    builder.AppendFormat("EXTERN_C COM_PUBLIC ClassObjectGetter* soGetAllClassObjects(int* size)\n"
                          "{\n"
                          "    *size = sizeof(co%sGetters) / sizeof(ClassObjectGetter);\n"
                          "    return co%sGetters;\n"
@@ -906,6 +927,7 @@ void CodeGenerator::GenerateMetadataWrapper()
     int dataSize = serializer.GetDataSize();
     uintptr_t data = serializer.GetData();
 
+    builder.Append("#include <ccmdef.h>\n\n");
     builder.Append("#include <stdint.h>\n\n");
     builder.AppendFormat("struct MetadataWrapper\n"
                    "{\n"
@@ -928,7 +950,7 @@ void CodeGenerator::GenerateMetadataWrapper()
         }
     }
     builder.Append("}};\n\n");
-    builder.Append("uintptr_t soMetadataHandle = reinterpret_cast<uintptr_t>(&comMetadata);\n");
+    builder.Append("COM_PUBLIC extern const uintptr_t soMetadataHandle = reinterpret_cast<uintptr_t>(&comMetadata);\n");
 
     String strData = builder.ToString();
     file.Write(strData.string(), strData.GetLength());
@@ -1048,6 +1070,8 @@ void CodeGenerator::GenerateModuleForUser()
                          "using namespace ccm;\n\n", mMetaComponent->mName);
 
     MetaComponent* mc = mMetaComponent;
+    builder.Append(GenerateModuleID());
+    builder.Append("\n");
     for (int i = 0; i < mc->mNamespaceNumber; i++) {
         MetaNamespace* mn = mc->mNamespaces[i];
         if (mn->mCoclassNumber + mn->mEnumerationNumber +

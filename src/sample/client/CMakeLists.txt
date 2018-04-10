@@ -18,12 +18,12 @@ cmake_minimum_required(VERSION 2.8)
 
 project(demo-client CXX)
 
-add_compile_options(-std=c++11)
-
 set(PROJECT_DIR ${CMAKE_SOURCE_DIR}/../../../)
 set(BIN_DIR ${PROJECT_DIR}/bin)
 set(INC_DIR ${BIN_DIR}/inc)
-set(OBJ_DIR ${CMAKE_SOURCE_DIR}/build/obj)
+set(OBJ_DIR ${CMAKE_BINARY_DIR}/obj)
+
+include(${PROJECT_DIR}/build/common.cmake)
 
 include_directories(
     ./
@@ -49,10 +49,24 @@ add_custom_command(
     COMMAND
         "${BIN_DIR}/ccdl"
         -g
+        -u
         -d "obj"
-        "${CMAKE_SOURCE_DIR}/../component/build/FooBarDemo.so")
+        "${BIN_DIR}/FooBarDemo.so")
 
 add_custom_target(
     generate_cpp ALL
     DEPENDS ${GENERATED_SOURCES})
+
+install(FILES
+    ${CMAKE_BINARY_DIR}/demo
+    DESTINATION ${BIN_DIR}
+    PERMISSIONS
+        OWNER_READ
+        OWNER_WRITE
+        OWNER_EXECUTE
+        GROUP_READ
+        GROUP_WRITE
+        GROUP_EXECUTE
+        WORLD_READ
+        WORLD_EXECUTE)
 

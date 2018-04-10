@@ -14,37 +14,20 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_DEMO_CFOOBAR_H__
-#define __CCM_DEMO_CFOOBAR_H__
-
-#include <ccmapi.h>
-#include <ccmobject.h>
-#include "_ccm_demo_CFooBar.h"
+#include "ccmuuid.h"
+#include "ccmtypes.h"
 
 namespace ccm {
-namespace demo {
 
-Coclass(CFooBar)
-    , public Object
-    , public IFoo
-    , public IBar
+String DumpUuid(
+    /* [in] */ const Uuid& id)
 {
-public:
-    CCM_INTERFACE_DECL();
-
-    ECode constructor();
-
-    ECode constructor(
-        /* [in] */ Long data);
-
-    ECode Foo(
-        /* [in] */ Integer data) override;
-
-    ECode Bar(
-        /* [in] */ const String& data) override;
-};
-
-}
+    String uuidStr = String::Format("%08x-%04x-%04x-%04x-%x%x%x%x%x%x%x%x%x%x%x%x",
+            id.mData1, id.mData2, id.mData3, id.mData4,
+            id.mData5[0], id.mData5[1], id.mData5[2], id.mData5[3],
+            id.mData5[4], id.mData5[5], id.mData5[6], id.mData5[7],
+            id.mData5[8], id.mData5[9], id.mData5[10], id.mData5[11]);
+    return uuidStr;
 }
 
-#endif //__CCM_DEMO_CFOOBAR_H__
+}

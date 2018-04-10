@@ -38,7 +38,7 @@ struct ComponentID;
 struct CoclassID
 {
     Uuid                mUuid;
-    ComponentID*        mCid;
+    const ComponentID*  mCid;
 };
 struct ComponentID
 {
@@ -68,6 +68,9 @@ inline bool operator==(
 #include "ccmtypekind.h"
 
 namespace ccm {
+
+extern String DumpUuid(
+    /* [in] */ const Uuid& id);
 
 template<class T>
 struct Type2Kind

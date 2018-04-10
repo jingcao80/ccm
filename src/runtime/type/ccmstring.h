@@ -45,6 +45,10 @@ public:
     explicit String(
         /* [in] */ const char* string);
 
+    explicit String(
+        /* [in] */ const char* string,
+        /* [in] */ Integer byteSize);
+
     String(
         /* [in] */ const String& other);
 
@@ -103,11 +107,39 @@ public:
     inline Boolean EqualsIgnoreCase(
         /* [in] */ const char* string) const;
 
+    inline String Substring(
+        /* [in] */ Integer charStart) const;
+
+    String Substring(
+        /* [in] */ Integer charStart,
+        /* [in] */ Integer charEnd) const;
+
+    Integer LastIndexOf(
+        /* [in] */ const char* string) const;
+
+    Integer ToByteIndex(
+        /* [in] */ Integer charIndex) const;
+
+    Integer ToCharIndex(
+        /* [in] */ Integer byteIndex) const;
+
     String& operator=(
         /* [in] */ const String& other);
 
     String& operator=(
+        /* [in] */ String&& other);
+
+    String& operator=(
         /* [in] */ const char* string);
+
+    String& operator+=(
+        /* [in] */ const String& other);
+
+    String& operator+=(
+        /* [in] */ const char* string);
+
+    static String Format(
+        /* [in] */ const char* format ...);
 
     inline static Boolean IsASCII(
         /* [in] */ char c);
@@ -119,6 +151,16 @@ public:
         /* [in] */ char b0);
 
 private:
+    Integer LastByteIndexOfInternal(
+        /* [in] */ const char* string,
+        /* [in] */ Integer fromByteIndex) const;
+
+    char* LockBuffer(
+        /* [in] */ Integer byteSize);
+
+    ECode UnlockBuffer(
+        /* [in] */ Integer byteSize);
+
     void SetCharCount(
         /* [in] */ Integer charCount) const;
 
@@ -206,6 +248,12 @@ Boolean String::EqualsIgnoreCase(
     return CompareIgnoreCase(string) == 0;
 }
 
+String String::Substring(
+    /* [in] */ Integer charStart) const
+{
+    return Substring(charStart, GetLength());
+}
+
 Boolean String::IsASCII(
     /* [in] */ char c)
 {
@@ -216,6 +264,22 @@ Integer String::UTF8SequenceLength(
     /* [in] */ char b0)
 {
     return IsASCII(b0) ? 1 : UTF8SequenceLengthNonASCII(b0);
+}
+
+inline String operator+(
+    /* [in] */ const String& string1,
+    /* [in] */ const String& string2)
+{
+    String ret = string1;
+    return ret += string2;
+}
+
+inline String operator+(
+    /* [in] */ const String& string1,
+    /* [in] */ const char* string2)
+{
+    String ret = string1;
+    return ret += string2;
 }
 
 }

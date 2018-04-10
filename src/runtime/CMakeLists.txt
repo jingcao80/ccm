@@ -14,15 +14,14 @@
 # limitations under the License.
 #=========================================================================
 
-#set(CMAKE_VERBOSE_MAKEFILE on)
+project(runtime CXX)
 
+#set(CMAKE_VERBOSE_MAKEFILE on)
 set(PROJECT_DIR ${CMAKE_BINARY_DIR}/../)
 set(BIN_DIR ${PROJECT_DIR}/bin)
 set(INC_DIR ${BIN_DIR}/inc)
 
-add_compile_options(
-    -std=c++11
-    -fPIC)
+include(${PROJECT_DIR}/build/common.cmake)
 
 add_subdirectory(component)
 add_subdirectory(reflection)
@@ -41,7 +40,6 @@ set(SOURCES
     runtime.cpp)
 
 set(CCMRT_LINK_LIBS
-    -Wl,--no-undefined
     -Wl,--whole-archive
     component
     metadata

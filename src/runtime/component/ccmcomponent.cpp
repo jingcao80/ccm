@@ -17,14 +17,17 @@
 #include "ccmcomponent.h"
 #include "ccmerror.h"
 #include "metadata/Component.h"
-#include "util/elf.h"
+#include "util/arraylist.h"
 #include "util/ccmlogger.h"
+#include "util/elf.h"
 #include "util/hashmap.h"
 
 #include <dlfcn.h>
 #include <errno.h>
 #include <pthread.h>
 #include <stdio.h>
+
+#include <unistd.h>
 
 using ccm::metadata::MetaComponent;
 
@@ -40,8 +43,17 @@ void DeleteValueImpl<CcmComponent*>(
     }
 }
 
-static HashMap<Uuid, CcmComponent*> sCcmComponents;
-pthread_mutex_t sCcmComponentsLock = PTHREAD_MUTEX_INITIALIZER;
+static INIT_PROI_1 HashMap<Uuid, CcmComponent*> sCcmComponents;
+static INIT_PROI_1 pthread_mutex_t sCcmComponentsLock = PTHREAD_MUTEX_INITIALIZER;
+
+static INIT_PROI_1 ArrayList<String> sCcmComponentSearchPaths;
+static Boolean DebugComponentAPI = false;
+
+void InitCompSearchPaths()
+{
+    char* cwd = getcwd(nullptr, 0);
+    sCcmComponentSearchPaths.Add(String(cwd));
+}
 
 static CcmComponent* CoFindComponent(
     /* [in] */ const Uuid& compId)
@@ -53,27 +65,28 @@ static CcmComponent* CoFindComponent(
 }
 
 static bool CheckComponentID(
-    /* [in] */ const ComponentID& compId);
+    /* [in] */ const ComponentID& compId,
+    /* [out] */ String* compPath);
 
 static CcmComponent* CoLoadComponent(
     /* [in] */ const ComponentID& compId)
 {
-    if (!CheckComponentID(compId)) {
+    String compPath;
+    if (!CheckComponentID(compId, &compPath)) {
         return nullptr;
     }
 
-    const char* comPath = compId.mUrl;
-    void* handle = dlopen(comPath, RTLD_NOW);
+    void* handle = dlopen(compPath.string(), RTLD_NOW);
     if (handle == nullptr) {
         Logger::E("CCMRT", "Dlopen \"%s\" failed. The reason is %s.",
-                comPath, strerror(errno));
+                compPath.string(), strerror(errno));
         return nullptr;
     }
 
     GetClassObjectPtr func = (GetClassObjectPtr)dlsym(handle, "soGetClassObject");
     if (func == nullptr) {
         Logger::E("CCMRT", "Dlsym \"soGetClassObject\" function from \"%s\" \
-                component failed. The reason is %s.", comPath, strerror(errno));
+                component failed. The reason is %s.", compPath.string(), strerror(errno));
         return nullptr;
     }
 
@@ -108,37 +121,55 @@ ECode CoGetComponent(
 }
 
 static bool CheckComponentID(
-    /* [in] */ const ComponentID& compId)
+    /* [in] */ const ComponentID& compId,
+    /* [out] */ String* compPath)
 {
-    const char* comPath = compId.mUrl;
-    Logger::D("CCMRT", "The url of the component which will be loaded is \"%s\".",
-            comPath);
+    String url(compId.mUrl);
+    *compPath = nullptr;
+    if (DebugComponentAPI) {
+        Logger::D("CCMRT", "The url of the component which will be loaded is \"%s\".",
+                url.string());
+    }
 
-    if (comPath == nullptr || comPath[0] == '\0') {
-        Logger::E("CCMRT", "The path of component is null or empty.");
+    Integer index = url.LastIndexOf("/");
+    String compFile = index != -1 ? url.Substring(index + 1) : url;
+    if (compFile.IsNullOrEmpty()) {
+        Logger::E("CCMRT", "The name of component is null or empty.");
         return false;
     }
 
-    FILE* fd = fopen(comPath, "rb");
+    FILE* fd = nullptr;
+    for (Long i = 0; i < sCcmComponentSearchPaths.GetSize(); i++) {
+        String filePath = sCcmComponentSearchPaths.Get(i) + "/" + compFile;
+        fd = fopen(filePath.string(), "rb");
+        if (fd != nullptr) {
+            if (DebugComponentAPI) {
+                Logger::D("CCMRT", "Find \"%\" component in directory \"%s\".",
+                        compFile.string(), sCcmComponentSearchPaths.Get(i).string());
+            }
+            *compPath = filePath;
+            break;
+        }
+    }
     if (fd == nullptr) {
-        Logger::E("CCMRT", "Open \"%s\" file failed.", comPath);
+        Logger::E("CCMRT", "Cannot find \"%s\" component.", compFile.string());
         return false;
     }
 
     if (fseek(fd, 0, SEEK_SET) == -1) {
-        Logger::E("CCMRT", "Seek \"%s\" file failed.", comPath);
+        Logger::E("CCMRT", "Seek \"%s\" file failed.", compFile.string());
         return false;
     }
 
     Elf64_Ehdr ehdr;
 
     if (fread((void *)&ehdr, sizeof(Elf64_Ehdr), 1, fd) < 1) {
-        Logger::E("CCMRT", "Read \"%s\" file failed.", comPath);
+        Logger::E("CCMRT", "Read \"%s\" file failed.", compFile.string());
         return false;
     }
 
     if (fseek(fd, ehdr.e_shoff, SEEK_SET) == -1) {
-        Logger::E("CCMRT", "Seek \"%s\" file failed.", comPath);
+        Logger::E("CCMRT", "Seek \"%s\" file failed.", compFile.string());
         return false;
     }
 
@@ -149,7 +180,7 @@ static bool CheckComponentID(
     }
 
     if (fread((void*)shdrs, sizeof(Elf64_Shdr), ehdr.e_shnum, fd) < ehdr.e_shnum) {
-        Logger::E("CCMRT", "Read \"%s\" file failed.", comPath);
+        Logger::E("CCMRT", "Read \"%s\" file failed.", compFile.string());
         free(shdrs);
         return false;
     }
@@ -163,14 +194,14 @@ static bool CheckComponentID(
     }
 
     if (fseek(fd, strShdr->sh_offset, SEEK_SET) == -1) {
-        Logger::E("CCMRT", "Seek \"%s\" file failed.", comPath);
+        Logger::E("CCMRT", "Seek \"%s\" file failed.", compFile.string());
         free(shdrs);
         free(strTable);
         return false;
     }
 
     if (fread((void*)strTable, 1, strShdr->sh_size, fd) < strShdr->sh_size) {
-        Logger::E("CCMRT", "Read \"%s\" file failed.", comPath);
+        Logger::E("CCMRT", "Read \"%s\" file failed.", compFile.string());
         free(shdrs);
         free(strTable);
         return false;
@@ -186,14 +217,14 @@ static bool CheckComponentID(
     }
 
     if (mdSec == nullptr) {
-        Logger::E("CCMRT", "Find .metadata section of \"%s\" file failed.", comPath);
+        Logger::E("CCMRT", "Find .metadata section of \"%s\" file failed.", compFile.string());
         free(shdrs);
         free(strTable);
         return false;
     }
 
     if (fseek(fd, mdSec->sh_offset + sizeof(int), SEEK_SET) < 0) {
-        Logger::E("CCMRT", "Seek \"%s\" file failed.", comPath);
+        Logger::E("CCMRT", "Seek \"%s\" file failed.", compFile.string());
         free(shdrs);
         free(strTable);
         return false;
@@ -205,7 +236,7 @@ static bool CheckComponentID(
     MetaComponent metadata;
 
     if (fread((void*)&metadata, sizeof(MetaComponent), 1, fd) < 1) {
-        Logger::E("CCMRT", "Read \"%s\" file failed.", comPath);
+        Logger::E("CCMRT", "Read \"%s\" file failed.", compFile.string());
         return false;
     }
 

@@ -116,7 +116,7 @@ public:
         , mStatus(NOERROR)
         , mErrorHeader(nullptr)
         , mCurrError(nullptr)
-        , mNeedDump(true)
+        , mNeedDump(false)
     {}
 
     ~Parser();

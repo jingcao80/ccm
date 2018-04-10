@@ -45,14 +45,14 @@ interface IInterface
         return object->Probe(IID_IInterface);
     }
 
-    virtual IInterface* Probe(
-        /* [in] */ const InterfaceID& iid) = 0;
-
     virtual Integer AddRef(
         /* [in] */ HANDLE id = 0) = 0;
 
     virtual Integer Release(
         /* [in] */ HANDLE id = 0) = 0;
+
+    virtual IInterface* Probe(
+        /* [in] */ const InterfaceID& iid) = 0;
 
     virtual ECode GetInterfaceID(
         /* [in] */ IInterface* object,

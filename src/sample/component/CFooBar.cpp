@@ -19,5 +19,30 @@
 namespace ccm {
 namespace demo {
 
+CCM_INTERFACE_IMPL_2(CFooBar, Object, IFoo, IBar);
+
+ECode CFooBar::constructor()
+{
+    return NOERROR;
+}
+
+ECode CFooBar::constructor(
+    /* [in] */ Long data)
+{
+    return NOERROR;
+}
+
+ECode CFooBar::Foo(
+    /* [in] */ Integer data)
+{
+    return NOERROR;
+}
+
+ECode CFooBar::Bar(
+    /* [in] */ const String& data)
+{
+    return NOERROR;
+}
+
 }
 }

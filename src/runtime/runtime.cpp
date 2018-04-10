@@ -16,3 +16,24 @@
 
 #include "ccmapi.h"
 #include "util/ccmautoptr.h"
+
+namespace ccm {
+
+extern void Init_EMPTY_STRING();
+extern void Uninit_EMPTY_STRING();
+extern void InitCompSearchPaths();
+
+static __attribute((constructor))
+void RTInitialize()
+{
+    Init_EMPTY_STRING();
+    InitCompSearchPaths();
+}
+
+static __attribute((destructor))
+void RTUninitialize()
+{
+    Uninit_EMPTY_STRING();
+}
+
+}

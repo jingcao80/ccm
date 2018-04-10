@@ -546,11 +546,6 @@ String& String::operator=(
 String& String::operator=(
     /* [in] */ String&& other)
 {
-    if (mString == other.mString) {
-        other.mString = nullptr;
-        return *this;
-    }
-
     SharedBuffer::Release(mString);
     mString = other.mString;
     other.mString = nullptr;

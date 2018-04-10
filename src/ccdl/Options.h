@@ -55,6 +55,9 @@ public:
     inline String GetOutputDir()
     { return mOutputDir; }
 
+    inline bool IsGenForComponent()
+    { return mGenForComponent; }
+
     inline bool IsFromSoFile()
     { return mMetadataFileType == SO_FILE; }
 
@@ -83,6 +86,7 @@ private:
     bool mShouldCompile;
     bool mShouldSaveMetadata;
     bool mShouldGenerate;
+    bool mGenForComponent;
     int mMetadataFileType;
 };
 

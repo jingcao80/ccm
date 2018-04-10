@@ -16,12 +16,7 @@
 
 cmake_minimum_required(VERSION 2.8)
 
-project(libmetadata CXX)
 add_subdirectory(src/runtime/metadata)
-
-project(ccdl CXX)
 add_subdirectory(src/ccdl)
-
-project(runtime CXX)
 add_subdirectory(src/runtime)
 

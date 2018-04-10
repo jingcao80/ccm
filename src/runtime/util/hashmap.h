@@ -49,23 +49,23 @@ inline int get_next_prime(int n)
 
 template<class Key>
 int CompareKeyImpl(
-    /* [in] */ Key key1,
-    /* [in] */ Key key2)
+    /* [in] */ const Key& key1,
+    /* [in] */ const Key& key2)
 {
     assert(0 && "CompareKeyImpl not implemented.");
     return -1;
 }
 
 template<>
-int CompareKeyImpl<const char*>(
-    /* [in] */ const char* key1,
-    /* [in] */ const char* key2)
+int CompareKeyImpl<String>(
+    /* [in] */ const String& key1,
+    /* [in] */ const String& key2)
 {
-    return strcmp(key1, key2);
+    return key1.Compare(key2);
 }
 
 template<>
-int CompareKeyImpl<const Uuid&>(
+int CompareKeyImpl<Uuid>(
     /* [in] */ const Uuid& key1,
     /* [in] */ const Uuid& key2)
 {
@@ -74,23 +74,23 @@ int CompareKeyImpl<const Uuid&>(
 
 template<class Key>
 int HashKeyImpl(
-    /* [in] */ Key key)
+    /* [in] */ const Key& key)
 {
     assert(0 && "HashKeyImpl not implemented.");
     return -1;
 }
 
 template<>
-int HashKeyImpl<const char*>(
-    /* [in] */ const char* key)
+int HashKeyImpl<String>(
+    /* [in] */ const String& key)
 {
-    if (key == nullptr) return -1;
+    if (key.IsNull()) return -1;
 
     // BKDR Hash Function
     int seed = 31; // 31 131 1313 13131 131313 etc..
     unsigned int hash = 0;
 
-    const char* string = key;
+    const char* string = key.string();
     if (string) {
         for ( ; *string; ++string) {
             hash = hash * seed + (*string);
@@ -100,7 +100,7 @@ int HashKeyImpl<const char*>(
 }
 
 template<>
-int HashKeyImpl<const Uuid&>(
+int HashKeyImpl<Uuid>(
     /* [in] */ const Uuid& key)
 {
     // BKDR Hash Function
@@ -171,7 +171,7 @@ public:
     }
 
     void Put(
-        /* [in] */ Key key,
+        /* [in] */ const Key& key,
         /* [in] */ Val value)
     {
         int hash = HashKey(key);
@@ -206,7 +206,7 @@ public:
     }
 
     bool ContainsKey(
-        /* [in] */ Key key)
+        /* [in] */ const Key& key)
     {
         int hash = HashKey(key);
         if (hash == -1) return false;
@@ -222,7 +222,7 @@ public:
     }
 
     Val Get(
-        /* [in] */ Key key)
+        /* [in] */ const Key& key)
     {
         int hash = HashKey(key);
         if (hash == -1) return Val(0);
@@ -254,7 +254,7 @@ public:
 
 private:
     int HashKey(
-        /* [in] */ Key key)
+        /* [in] */ const Key& key)
     {
         return HashKeyImpl<Key>(key);
     }

@@ -33,7 +33,7 @@ public:
         , mElements(nullptr)
         , mRelease(release)
     {
-        if (mCapacity == 0) mCapacity = 10;
+        if (mCapacity <= 0) mCapacity = 10;
         mElements = (T*)calloc(sizeof(T), mCapacity);
     }
 
@@ -102,7 +102,6 @@ private:
     bool EnsureCapacity()
     {
         if (mIndex < mCapacity) return true;
-        if (mCapacity < 0) return false;
 
         int newSize = mCapacity * 2;
         T* newArray = (T*)calloc(sizeof(T), newSize);

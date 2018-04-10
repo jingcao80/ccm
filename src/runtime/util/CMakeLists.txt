@@ -14,8 +14,14 @@
 # limitations under the License.
 #=========================================================================
 
+include_directories(
+    ./
+    ../
+    ../type)
+
 set(SOURCES
-    ccmlogger.cpp)
+    ccmlogger.cpp
+    ccmobject.cpp)
 
 add_library(util STATIC
     ${SOURCES})

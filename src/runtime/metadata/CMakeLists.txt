@@ -14,9 +14,11 @@
 # limitations under the License.
 #=========================================================================
 
-add_compile_options(
-    -std=c++11
-    -fPIC)
+project(libmetadata CXX)
+
+set(PROJECT_DIR ${CMAKE_BINARY_DIR}/../)
+
+include(${PROJECT_DIR}/build/common.cmake)
 
 set(LIBMETADATA_SOURCES
     MetaSerializer.cpp)

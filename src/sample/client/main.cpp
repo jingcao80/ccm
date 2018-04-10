@@ -27,6 +27,6 @@ int main(int argc, char** argv)
 {
     AutoPtr<IFoo> foo;
     CFoo::New(IID_IFoo, (IInterface**)&foo);
-
+    foo->Foo(9);
     return 0;
 }

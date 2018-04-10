@@ -36,7 +36,6 @@ int main(int argc, char** argv)
     }
 
     std::shared_ptr<MetaComponent> comMetadata;
-    bool forComponent = false;
 
     if (options.ShouldCompile()) {
         Parser parser;
@@ -73,8 +72,6 @@ int main(int argc, char** argv)
             file.Flush();
             file.Close();
         }
-
-        forComponent = true;
     }
 
     if (options.ShouldGenerate()) {
@@ -105,7 +102,7 @@ int main(int argc, char** argv)
         CodeGenerator cg;
         cg.SetDirectory(options.GetOutputDir());
         cg.SetMetadata(comMetadata.get());
-        if (forComponent) {
+        if (options.IsGenForComponent()) {
             cg.GenerateForComponent();
         }
         else {

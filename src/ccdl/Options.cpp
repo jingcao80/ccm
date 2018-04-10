@@ -29,6 +29,7 @@ Options::Options(
     , mShouldCompile(false)
     , mShouldSaveMetadata(false)
     , mShouldGenerate(false)
+    , mGenForComponent(false)
     , mMetadataFileType(0)
 {
     Parse(argc, argv);
@@ -54,6 +55,7 @@ void Options::Parse(
         }
         else if (!strcmp("-g", string)) {
             mShouldGenerate = true;
+            mGenForComponent = true;
             mMetadataFileType = SO_FILE;
         }
         else if (!strcmp("-m", string)) {
@@ -62,6 +64,9 @@ void Options::Parse(
         else if (!strcmp("-o", string)) {
             mShouldSaveMetadata = true;
             mMetadataOuputFile = argv[i++];
+        }
+        else if (!strcmp("-u", string)) {
+            mGenForComponent = false;
         }
         else {
             mInputFile = string;
@@ -77,9 +82,10 @@ void Options::ShowUsage()
            "  --help            Display command line options\n"
            "  -c                Compile the .cdl file to metadata\n"
            "  -d <directory>    Place generated C++ codes into <directory>\n"
-           "  -g                Generate C++ codes\n"
+           "  -g                Generate C++ codes for component\n"
            "  -m                Make the input file as a metadata file, .so is default\n"
-           "  -o <file>         Place the metadata into <file>\n");
+           "  -o <file>         Place the metadata into <file>\n"
+           "  -u                Together with -g to generate C++ codes for component user");
 }
 
 }

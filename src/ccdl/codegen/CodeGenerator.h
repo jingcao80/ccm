@@ -120,6 +120,8 @@ private:
 
     void GenerateModule();
 
+    String GenerateModuleID();
+
     String GenerateInterfaceConstants(
         /* [in] */ MetaNamespace* mn);
 

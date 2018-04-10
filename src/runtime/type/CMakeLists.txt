@@ -22,7 +22,8 @@ include_directories(
 set(SOURCES
     ccmarray.cpp
     ccmsharedbuffer.cpp
-    ccmstring.cpp)
+    ccmstring.cpp
+    ccmuuid.cpp)
 
 add_library(type STATIC
     ${SOURCES})

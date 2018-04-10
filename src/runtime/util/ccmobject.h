@@ -21,7 +21,7 @@
 
 namespace ccm {
 
-class Object
+class COM_PUBLIC Object
     : public IObject
 {
 public:

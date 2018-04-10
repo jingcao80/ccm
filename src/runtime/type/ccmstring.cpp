@@ -35,20 +35,22 @@
 #include "util/ccmlogger.h"
 
 #include <limits.h>
+#include <stdarg.h>
 #include <string.h>
+#include <stdio.h>
 
 namespace ccm {
 
 char* EMPTY_STRING = nullptr;
 
-static void Init_EMPTY_STRING()
+extern void Init_EMPTY_STRING()
 {
     SharedBuffer* buf = SharedBuffer::Alloc(1);
     EMPTY_STRING = (char*)buf->GetData();
     EMPTY_STRING[0] = '\0';
 }
 
-static void Uninit_EMPTY_STRING()
+extern void Uninit_EMPTY_STRING()
 {
     SharedBuffer::GetBufferFromData(EMPTY_STRING)->Release();
     EMPTY_STRING = NULL;
@@ -88,6 +90,17 @@ String::String(
 {
     if (string != nullptr) {
         mString = AllocFromUTF8(string, strlen(string));
+    }
+}
+
+String::String(
+    /* [in] */ const char* string,
+    /* [in] */ Integer byteSize)
+    : mString(nullptr)
+    , mCharCount(0)
+{
+    if (string != nullptr && byteSize >= 0 && byteSize <= strlen(string)) {
+        mString = AllocFromUTF8(string, byteSize);
     }
 }
 
@@ -275,9 +288,102 @@ Integer String::CompareIgnoreCase(
     return strcasecmp(mString, string);
 }
 
+String String::Substring(
+    /* [in] */ Integer charStart,
+    /* [in] */ Integer charEnd) const
+{
+    if (mString == nullptr) return String();
+    if (charStart < 0 || charEnd < 0 ||
+        charStart > charEnd || charStart >= GetLength()) {
+        return String("");
+    }
+
+    Integer charCount = 0;
+    Integer byteSize;
+    const char* p = mString;
+    const char* end = mString + GetByteLength() + 1;
+    const char* p1 = p;
+    const char* p2 = end;
+    while (*p != '\0' && p < end) {
+        byteSize = UTF8SequenceLength(*p);
+        if (byteSize == 0 || p + byteSize >= end) break;
+        if (charCount == charStart) {
+            p1 = p;
+        }
+        p += byteSize;
+        if (charCount == charEnd) {
+            p2 = p;
+            break;
+        }
+        charCount++;
+    }
+
+    return String(p1, (p2 - 1) - p1);
+}
+
+Integer String::LastIndexOf(
+    /* [in] */ const char* string) const
+{
+    Integer byteIndex = LastByteIndexOfInternal(
+            string, GetByteLength() - 1);
+    return ToCharIndex(byteIndex);
+}
+
+Integer String::ToByteIndex(
+    /* [in] */ Integer charIndex) const
+{
+    if (charIndex < 0 || charIndex >= GetLength()) {
+        return -1;
+    }
+
+    Integer charCount = 0;
+    Integer byteSize;
+    const char* p = mString;
+    const char* end = mString + GetByteLength() + 1;
+    while (*p != '\0' && p < end) {
+        byteSize = UTF8SequenceLength(*p);
+        if (byteSize == 0 || p + byteSize >= end) break;
+        if (charCount == charIndex) {
+            break;
+        }
+        p += byteSize;
+        charCount++;
+    }
+
+    return p - mString;
+}
+
+Integer String::ToCharIndex(
+    /* [in] */ Integer byteIndex) const
+{
+    if (byteIndex < 0 || byteIndex > GetByteLength()) {
+        return -1;
+    }
+
+    Integer charIndex = 0;
+    Integer byteSize;
+    const char* p = mString;
+    const char* end = mString + GetByteLength() + 1;
+    while (*p != '\0' && p < end) {
+        byteSize = UTF8SequenceLength(*p);
+        if (byteSize == 0 || p + byteSize >= end) break;
+        if (byteIndex >= p - mString && byteIndex < p - mString + byteSize) {
+            break;
+        }
+        p += byteSize;
+        charIndex++;
+    }
+
+    return charIndex;
+}
+
 String& String::operator=(
     /* [in] */ const String& other)
 {
+    if (mString == other.mString) {
+        return *this;
+    }
+
     if (other.mString != nullptr) {
         SharedBuffer::GetBufferFromData(other.mString)->AddRef();
     }
@@ -286,6 +392,16 @@ String& String::operator=(
     }
     mString = other.mString;
     mCharCount = other.mCharCount;
+    return *this;
+}
+
+String& String::operator=(
+    /* [in] */ String&& other)
+{
+    SharedBuffer::GetBufferFromData(mString)->Release();
+    mString = other.mString;
+    mCharCount = other.mCharCount;
+    other.mString = nullptr;
     return *this;
 }
 
@@ -299,6 +415,71 @@ String& String::operator=(
         AllocFromUTF8(string, strlen(string)) : nullptr;
     mCharCount = 0;
     return *this;
+}
+
+String& String::operator+=(
+    /* [in] */ const String& other)
+{
+    if (other.IsNullOrEmpty()) {
+        return *this;
+    }
+
+    Integer origByteSize = GetByteLength();
+    Integer newByteSize = origByteSize + other.GetByteLength();
+    char* buf = LockBuffer(newByteSize);
+    if (buf == nullptr) {
+        return *this;
+    }
+
+    memcpy(buf + origByteSize, other.string(), other.GetByteLength());
+    buf[newByteSize] = '\0';
+    UnlockBuffer(newByteSize);
+    return *this;
+}
+
+String& String::operator+=(
+    /* [in] */ const char* string)
+{
+    if (string == nullptr || string[0] == '\0') {
+        return *this;
+    }
+
+    Integer origByteSize = GetByteLength();
+    Integer stringByteSize = strlen(string);
+    Integer newByteSize = origByteSize + stringByteSize;
+    char* buf = LockBuffer(newByteSize);
+    if (buf == nullptr) {
+        return *this;
+    }
+
+    memcpy(buf + origByteSize, string, stringByteSize);
+    buf[newByteSize] = '\0';
+    UnlockBuffer(newByteSize);
+    return *this;
+}
+
+String String::Format(
+    /* [in] */ const char* format ...)
+{
+    va_list args, args1;
+
+    va_start(args, format);
+    va_copy(args1, args);
+
+    int len = vsnprintf(nullptr, 0, format, args);
+    va_end(args);
+
+    String str("");
+    char* buf = str.LockBuffer(len);
+    if (buf == nullptr) {
+        Logger::E("String", "Lock %d bytes buffer failed", len);
+        return str;
+    }
+    vsnprintf(buf, len + 1, format, args1);
+    str.UnlockBuffer(len);
+    va_end(args1);
+
+    return str;
 }
 
 Integer String::UTF8SequenceLengthNonASCII(
@@ -317,6 +498,91 @@ Integer String::UTF8SequenceLengthNonASCII(
         return 4;
     }
     return 0;
+}
+
+Integer String::LastByteIndexOfInternal(
+    /* [in] */ const char* string,
+    /* [in] */ Integer fromByteIndex) const
+{
+    Integer fromIndex = fromByteIndex;
+    Integer sourceLength = GetByteLength();
+    Integer targetLength = strlen(string);
+    Integer rightIndex = sourceLength - targetLength;
+    if (fromIndex > rightIndex) {
+        fromIndex = rightIndex;
+    }
+
+    Integer strLastIndex = targetLength - 1;
+    char strLastChar = string[strLastIndex];
+    Integer min = targetLength - 1;
+    Integer i = min + fromIndex;
+
+startSearchForLastChar:
+    while (true) {
+        while (i >= min && mString[i] != strLastChar) {
+            i--;
+        }
+        if (i < min) {
+            return -1;
+        }
+        Integer j = i - 1;
+        Integer start = j - (targetLength - 1);
+        Integer k = strLastIndex - 1;
+
+        while (j > start) {
+            if (mString[j--] != string[k--]) {
+                i--;
+                goto startSearchForLastChar;
+            }
+        }
+        return start + 1;
+    }
+}
+
+char* String::LockBuffer(
+    /* [in] */ Integer byteSize)
+{
+    if (byteSize < 0) return nullptr;
+
+    SharedBuffer* buf;
+    if (mString != nullptr) {
+        buf = SharedBuffer::GetBufferFromData(mString)->EditResize(
+                byteSize + 1);
+    }
+    else {
+        buf = SharedBuffer::Alloc(byteSize + 1);
+    }
+    if (buf == nullptr) return nullptr;
+
+    mString = (char*)buf->GetData();
+    return mString;
+}
+
+ECode String::UnlockBuffer(
+    /* [in] */ Integer byteSize)
+{
+    if (byteSize < 0) return E_ILLEGAL_ARGUMENT_EXCEPTION;
+
+    if (byteSize != GetByteLength()) {
+        SharedBuffer* buf;
+        if (mString != nullptr) {
+            buf = SharedBuffer::GetBufferFromData(mString)->EditResize(
+                    byteSize + 1);
+        }
+        else {
+            buf = SharedBuffer::Alloc(byteSize + 1);
+        }
+        if (buf == nullptr) {
+            Logger::E("String", "Unlock %d bytes buffer failed",
+                    byteSize);
+            return E_OUT_OF_MEMORY_ERROR;
+        }
+
+        mString = (char*)buf->GetData();
+        mString[byteSize] = 0;
+    }
+
+    return NOERROR;
 }
 
 void String::SetCharCount(

@@ -14,37 +14,39 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_DEMO_CFOOBAR_H__
-#define __CCM_DEMO_CFOOBAR_H__
-
-#include <ccmapi.h>
-#include <ccmobject.h>
-#include "_ccm_demo_CFooBar.h"
+#include "ccmobject.h"
 
 namespace ccm {
-namespace demo {
 
-Coclass(CFooBar)
-    , public Object
-    , public IFoo
-    , public IBar
+IInterface* Object::Probe(
+    /* [in] */ const InterfaceID& iid)
 {
-public:
-    CCM_INTERFACE_DECL();
-
-    ECode constructor();
-
-    ECode constructor(
-        /* [in] */ Long data);
-
-    ECode Foo(
-        /* [in] */ Integer data) override;
-
-    ECode Bar(
-        /* [in] */ const String& data) override;
-};
-
-}
+    return this;
 }
 
-#endif //__CCM_DEMO_CFOOBAR_H__
+Integer Object::AddRef(
+    /* [in] */ HANDLE id)
+{
+    return 1;
+}
+
+Integer Object::Release(
+    /* [in] */ HANDLE id)
+{
+    return 1;
+}
+
+ECode Object::GetInterfaceID(
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
+{
+    return NOERROR;
+}
+
+ECode Object::GetCoclassID(
+    /* [out] */ CoclassID* cid)
+{
+    return NOERROR;
+}
+
+}

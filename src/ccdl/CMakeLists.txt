@@ -14,10 +14,13 @@
 # limitations under the License.
 #=========================================================================
 
+project(ccdl CXX)
+
+#set(CMAKE_VERBOSE_MAKEFILE on)
 set(PROJECT_DIR ${CMAKE_BINARY_DIR}/../)
 set(BIN_DIR ${PROJECT_DIR}/bin)
 
-add_compile_options(-std=c++11)
+include(${PROJECT_DIR}/build/common.cmake)
 
 set(SOURCES
     ast/AdditiveExpression.cpp

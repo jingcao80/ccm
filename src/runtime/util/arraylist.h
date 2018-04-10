@@ -1,0 +1,127 @@
+//=========================================================================
+// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//=========================================================================
+
+#ifndef __CCM_ARRAYLIST_H__
+#define __CCM_ARRAYLIST_H__
+
+#include "ccmtypes.h"
+#include "ccmlogger.h"
+
+#include <stdlib.h>
+
+namespace ccm {
+
+template<class T>
+class ArrayList
+{
+public:
+    ArrayList(
+        /* [in] */ Long initCap = 10);
+
+    ~ArrayList();
+
+    Boolean Add(
+        /* [in] */ const T& data);
+
+    T Get(
+        /* [in] */ Long index);
+
+    inline Long GetSize();
+
+private:
+    Boolean EnsureCapacity();
+
+private:
+    Long mCapacity;
+    Long mIndex;
+    T* mData;
+};
+
+template<class T>
+ArrayList<T>::ArrayList(
+    /* [in] */ Long initCap)
+    : mCapacity(initCap)
+    , mIndex(0)
+    , mData(nullptr)
+{
+    if (mCapacity <= 0) {
+        mCapacity = 10;
+    }
+    mData = (T*)calloc(sizeof(T), mCapacity);
+}
+
+template<class T>
+ArrayList<T>::~ArrayList()
+{
+    for (Long i = 0; i < mIndex; i++) {
+        mData[i] = (T)nullptr;
+    }
+    free(mData);
+    mData = nullptr;
+}
+
+template<class T>
+Boolean ArrayList<T>::Add(
+    /* [in] */ const T& data)
+{
+    if (!EnsureCapacity()) {
+        return false;
+    }
+
+    mData[mIndex++] = data;
+    return true;
+}
+
+template<class T>
+T ArrayList<T>::Get(
+    /* [in] */ Long index)
+{
+    if (index < 0 || index >= mIndex) {
+        return T(nullptr);
+    }
+    return mData[index];
+}
+
+template<class T>
+Long ArrayList<T>::GetSize()
+{
+    return mIndex;
+}
+
+template<class T>
+Boolean ArrayList<T>::EnsureCapacity()
+{
+    if (mIndex < mCapacity) {
+        return true;
+    }
+
+    Long newCap = mCapacity * 2;
+    T* newData = (T*)calloc(sizeof(T), newCap);
+    if (newData == nullptr) {
+        Logger::E("ArrayList", "Enlarge to size %lld failed.", newCap);
+        return false;
+    }
+
+    memcpy(newData, mData, sizeof(T) * mCapacity);
+    free(mData);
+    mData = newData;
+    mCapacity = newCap;
+    return true;
+}
+
+}
+
+#endif // __CCM_ARRAYLIST_H__
