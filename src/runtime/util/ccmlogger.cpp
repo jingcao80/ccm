@@ -53,6 +53,21 @@ void Logger::E(
     printf("\n");
 }
 
+void Logger::W(
+    /* [in] */ const char* tag,
+    /* [in] */ const char* format, ...)
+{
+    if (WARNING < sLevel) return;
+
+    va_list argList;
+
+    printf("[%s]: ", tag);
+    va_start(argList, format);
+    vprintf(format, argList);
+    va_end(argList);
+    printf("\n");
+}
+
 void Logger::SetLevel(
     /* [in] */ int level)
 {

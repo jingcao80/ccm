@@ -30,13 +30,18 @@ public:
         /* [in] */ const char* tag,
         /* [in] */ const char* format, ...);
 
+    static void W(
+        /* [in] */ const char* tag,
+        /* [in] */ const char* format, ...);
+
     static void SetLevel(
         /* [in] */ int level);
 
 public:
     static constexpr int VERBOSE = 0;
     static constexpr int DEBUG = 1;
-    static constexpr int ERROR = 2;
+    static constexpr int WARNING = 2;
+    static constexpr int ERROR = 3;
 
 private:
     static int sLevel;

@@ -18,28 +18,42 @@
 
 namespace ccm {
 
-IInterface* Object::Probe(
-    /* [in] */ const InterfaceID& iid)
-{
-    return this;
-}
-
 Integer Object::AddRef(
     /* [in] */ HANDLE id)
 {
-    return 1;
+    return RefBase::AddRef(id);
 }
 
 Integer Object::Release(
     /* [in] */ HANDLE id)
 {
-    return 1;
+    return RefBase::Release(id);
+}
+
+IInterface* Object::Probe(
+    /* [in] */ const InterfaceID& iid)
+{
+    if (iid == IID_IInterface) {
+        return (IInterface*)(IObject*)this;
+    }
+    else if (iid == IID_IObject) {
+        return (IObject*)this;
+    }
+    return nullptr;
 }
 
 ECode Object::GetInterfaceID(
     /* [in] */ IInterface* object,
     /* [out] */ InterfaceID* iid)
 {
+    VALIDATE_NOT_NULL(iid);
+
+    if (object == (IInterface*)(IObject*)this) {
+        *iid = IID_IObject;
+    }
+    else {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     return NOERROR;
 }
 

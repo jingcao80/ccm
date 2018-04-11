@@ -21,7 +21,8 @@ include_directories(
 
 set(SOURCES
     ccmlogger.cpp
-    ccmobject.cpp)
+    ccmobject.cpp
+    ccmrefbase.cpp)
 
 add_library(util STATIC
     ${SOURCES})
@@ -30,4 +31,5 @@ install(FILES
     ccmautoptr.h
     ccmlogger.h
     ccmobject.h
+    ccmrefbase.h
     DESTINATION ${INC_DIR})

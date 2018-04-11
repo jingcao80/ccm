@@ -33,11 +33,13 @@
 #ifndef __CCM_STRING_H__
 #define __CCM_STRING_H__
 
+#include "ccmdef.h"
+
 namespace ccm {
 
 template<class T> class Array;
 
-class String
+class COM_PUBLIC String
 {
 public:
     inline String();
@@ -114,14 +116,52 @@ public:
         /* [in] */ Integer charStart,
         /* [in] */ Integer charEnd) const;
 
+    inline Boolean Contains(
+        /* [in] */ const String& other) const;
+
+    inline Boolean Contains(
+        /* [in] */ const char* string) const;
+
+    Integer IndexOf(
+        /* [in] */ Char c,
+        /* [in] */ Integer fromCharIndex = 0) const;
+
+    inline Integer IndexOf(
+        /* [in] */ const String& other,
+        /* [in] */ Integer fromCharIndex = 0) const;
+
+    Integer IndexOf(
+        /* [in] */ const char* string,
+        /* [in] */ Integer fromCharIndex = 0) const;
+
+    Integer LastIndexOf(
+        /* [in] */ Char c) const;
+
+    Integer LastIndexOf(
+        /* [in] */ Char c,
+        /* [in] */ Integer fromCharIndex) const;
+
+    inline Integer LastIndexOf(
+        /* [in] */ const String& other) const;
+
+    inline Integer LastIndexOf(
+        /* [in] */ const String& other,
+        /* [in] */ Integer fromCharIndex) const;
+
     Integer LastIndexOf(
         /* [in] */ const char* string) const;
 
+    Integer LastIndexOf(
+        /* [in] */ const char* string,
+        /* [in] */ Integer fromCharIndex) const;
+
     Integer ToByteIndex(
-        /* [in] */ Integer charIndex) const;
+        /* [in] */ Integer charIndex,
+        /* [in] */ Integer* charByteSize = nullptr) const;
 
     Integer ToCharIndex(
-        /* [in] */ Integer byteIndex) const;
+        /* [in] */ Integer byteIndex,
+        /* [in] */ Integer* charByteSize = nullptr) const;
 
     String& operator=(
         /* [in] */ const String& other);
@@ -150,6 +190,9 @@ public:
     inline static Integer UTF8SequenceLength(
         /* [in] */ char b0);
 
+    static Integer GetByteSize(
+        /* [in] */ Char c);
+
 private:
     Integer LastByteIndexOfInternal(
         /* [in] */ const char* string,
@@ -174,10 +217,22 @@ private:
         /* [in] */ const char* cur,
         /* [in] */ Integer* byteSize);
 
+    static void WriteUTF8Bytes(
+        /* [in] */ char* dst,
+        /* [in] */ Char c,
+        /* [in] */ Integer bytes);
+
 public:
     static constexpr Char INVALID_CHAR = 0x110000;
 
 private:
+    static constexpr Integer MIN_CODE_POINT = 0x000000;
+    static constexpr Integer MAX_CODE_POINT = 0x10FFFF;
+    static constexpr Integer MIN_HIGH_SURROGATE = 0xD800;
+    static constexpr Integer MAX_HIGH_SURROGATE = 0xDBFF;
+    static constexpr Integer MIN_LOW_SURROGATE = 0xDC00;
+    static constexpr Integer MAX_LOW_SURROGATE = 0xDFFF;
+
     char* mString;
     mutable Integer mCharCount;
 };
@@ -252,6 +307,38 @@ String String::Substring(
     /* [in] */ Integer charStart) const
 {
     return Substring(charStart, GetLength());
+}
+
+Boolean String::Contains(
+    /* [in] */ const String& other) const
+{
+    return IndexOf(other) != -1;
+}
+
+Boolean String::Contains(
+    /* [in] */ const char* string) const
+{
+    return IndexOf(string) != -1;
+}
+
+Integer String::IndexOf(
+    /* [in] */ const String& other,
+    /* [in] */ Integer fromCharIndex) const
+{
+    return IndexOf(other.string(), fromCharIndex);
+}
+
+Integer String::LastIndexOf(
+    /* [in] */ const String& other) const
+{
+    return LastIndexOf(other.string());
+}
+
+Integer String::LastIndexOf(
+    /* [in] */ const String& other,
+    /* [in] */ Integer fromCharIndex) const
+{
+    return LastIndexOf(other.string(), fromCharIndex);
 }
 
 Boolean String::IsASCII(

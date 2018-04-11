@@ -35,6 +35,7 @@ namespace ccm {
 extern const InterfaceID IID_IInterface;
 extern const InterfaceID IID_IClassObject;
 extern const InterfaceID IID_IObject;
+extern const InterfaceID IID_IWeakReference;
 
 INTERFACE_ID(00000000-0000-0000-0000-000000000000)
 interface IInterface
@@ -42,6 +43,7 @@ interface IInterface
     inline static IInterface* Probe(
         /* [in] */ IInterface* object)
     {
+        if (object == NULL) return NULL;
         return object->Probe(IID_IInterface);
     }
 
@@ -65,6 +67,7 @@ interface IClassObject : public IInterface
     inline static IClassObject* Probe(
         /* [in] */ IInterface* object)
     {
+        if (object == NULL) return NULL;
         return (IClassObject*)object->Probe(IID_IClassObject);
     }
 
@@ -79,11 +82,27 @@ interface IObject : public IInterface
     inline static IInterface* Probe(
         /* [in] */ IInterface* object)
     {
+        if (object == NULL) return NULL;
         return object->Probe(IID_IObject);
     }
 
     virtual ECode GetCoclassID(
         /* [out] */ CoclassID* cid) = 0;
+};
+
+INTERFACE_ID(00000000-0000-0000-0000-000000000003)
+interface IWeakReference : public IInterface
+{
+    inline static IWeakReference* Probe(
+        /* [in] */ IInterface* object)
+    {
+        if (object == NULL) return NULL;
+        return (IWeakReference*)object->Probe(IID_IWeakReference);
+    }
+
+    virtual ECode Resolve(
+        /* [in] */ const InterfaceID& iid,
+        /* [out] */ IInterface** objectReference) = 0;
 };
 
 }

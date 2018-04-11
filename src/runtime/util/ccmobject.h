@@ -18,25 +18,16 @@
 #define __CCM_OBJECT_H__
 
 #include "ccmtypes.h"
+#include "ccmrefbase.h"
 
 namespace ccm {
 
 class COM_PUBLIC Object
-    : public IObject
+    : public RefBase
+    , public IObject
 {
 public:
-    IInterface* Probe(
-        /* [in] */ const InterfaceID& iid) override;
-
-    Integer AddRef(
-        /* [in] */ HANDLE id = 0) override;
-
-    Integer Release(
-        /* [in] */ HANDLE id = 0) override;
-
-    ECode GetInterfaceID(
-        /* [in] */ IInterface* object,
-        /* [out] */ InterfaceID* iid) override;
+    CCM_INTERFACE_DECL();
 
     ECode GetCoclassID(
         /* [out] */ CoclassID* cid) override;

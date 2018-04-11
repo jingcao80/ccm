@@ -21,6 +21,7 @@
 #include "util/ccmlogger.h"
 #include "util/elf.h"
 #include "util/hashmap.h"
+#include "util/mutex.h"
 
 #include <dlfcn.h>
 #include <errno.h>
@@ -44,7 +45,7 @@ void DeleteValueImpl<CcmComponent*>(
 }
 
 static INIT_PROI_1 HashMap<Uuid, CcmComponent*> sCcmComponents;
-static INIT_PROI_1 pthread_mutex_t sCcmComponentsLock = PTHREAD_MUTEX_INITIALIZER;
+static INIT_PROI_1 Mutex sCcmComponentsLock;
 
 static INIT_PROI_1 ArrayList<String> sCcmComponentSearchPaths;
 static Boolean DebugComponentAPI = false;
@@ -58,9 +59,8 @@ void InitCompSearchPaths()
 static CcmComponent* CoFindComponent(
     /* [in] */ const Uuid& compId)
 {
-    pthread_mutex_lock(&sCcmComponentsLock);
+    Mutex::AutoLock lock(sCcmComponentsLock);
     CcmComponent* ccmComp = sCcmComponents.Get(compId);
-    pthread_mutex_unlock(&sCcmComponentsLock);
     return ccmComp;
 }
 
@@ -98,9 +98,10 @@ static CcmComponent* CoLoadComponent(
 
     ccmComp->mSoHandle = handle;
     ccmComp->mSoGetClassObject = func;
-    pthread_mutex_lock(&sCcmComponentsLock);
-    sCcmComponents.Put(compId.mUuid, ccmComp);
-    pthread_mutex_unlock(&sCcmComponentsLock);
+    {
+        Mutex::AutoLock lock(sCcmComponentsLock);
+        sCcmComponents.Put(compId.mUuid, ccmComp);
+    }
 
     return ccmComp;
 }

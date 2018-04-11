@@ -9,23 +9,28 @@ CCM stands for C++ Component Model. It can:
 
 ### How to build
 #### Build ccdl and runtime
-step 1. <code>cd ccm</code>
-step 2. <code>mkdir out</code>
-step 3. <code>cd out</code>
-step 4. <code>cmake ..</code>
-step 5. <code>make</code>
-step 6. <code>sudo make install</code>
+1. <code>cd ccm</code>
+2. <code>mkdir out</code>
+3. <code>cd out</code>
+4. <code>cmake ..</code>
+5. <code>make</code>
+6. <code>sudo make install</code>
 
 #### Build sample
-step 1. build ccdl and runtime
-step 2. <code>cd ccm/src/sample/component</code>
-step 3. <code>mkdir out</code>
-step 4. <code>cd out</code>
-step 5. <code>cmake ..</code>
-step 6. <code>make</code>
-step 7. <code>sudo make install</code>
-step 7. <code>cd ccm/src/sample/client</code>
-step 8. <code>mkdir out</code>
-step 9. <code>cd out</code>
-step 10. <code>cmake ..</code>
-step 11. <code>make</code>
+1. build ccdl and runtime
+2. <code>cd ccm/src/sample/component</code>
+3. <code>mkdir out</code>
+4. <code>cd out</code>
+5. <code>cmake ..</code>
+6. <code>make</code>
+7. <code>sudo make install</code>
+7. <code>cd ccm/src/sample/client</code>
+8. <code>mkdir out</code>
+9. <code>cd out</code>
+10. <code>cmake ..</code>
+11. <code>make</code>
+12. <code>sudo make install</code>
+
+#### Run sample
+1. <code>cd ccm/bin</code>
+2. <code>./demo</code>

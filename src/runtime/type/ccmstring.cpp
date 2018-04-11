@@ -321,16 +321,103 @@ String String::Substring(
     return String(p1, (p2 - 1) - p1);
 }
 
+Integer String::IndexOf(
+    /* [in] */ Char c,
+    /* [in] */ Integer fromCharIndex) const
+{
+    if (fromCharIndex < 0) return -1;
+
+    Integer byteSize, i = 0;
+    const char* p = mString;
+    const char* end = mString + GetByteLength() + 1;
+    while (*p && p < end) {
+        Char unicode = GetCharInternal(p, &byteSize);
+        if (byteSize == 0 || p + byteSize >= end) break;
+        if (i >= fromCharIndex) {
+            if (c == unicode) return i;
+        }
+        p += byteSize;
+        i++;
+    }
+    return -1;
+}
+
+Integer String::IndexOf(
+    /* [in] */ const char* string,
+    /* [in] */ Integer fromCharIndex) const
+{
+    if (string == nullptr || string[0] == '\0') {
+        return -1;
+    }
+
+    Integer i = 0;
+    Integer byteSize;
+    const char* p = mString;
+    const char* end = mString + GetByteLength() + 1;
+    while (*p != '\0' && p < end) {
+        byteSize = UTF8SequenceLength(*p);
+        if (byteSize == 0 || p + byteSize >= end) break;
+        if (i >= fromCharIndex) {
+            const char* ci = strstr(p, string);
+            return ci == nullptr ? -1 :
+                    ToCharIndex(ci - mString);
+        }
+        p += byteSize;
+        i++;
+    }
+    return -1;
+}
+
+Integer String::LastIndexOf(
+    /* [in] */ Char c) const
+{
+    Integer byteSize = GetByteSize(c);
+    char buf[5];
+    WriteUTF8Bytes(buf, c, byteSize);
+    buf[byteSize] = '\0';
+    return LastIndexOf(buf);
+}
+
+Integer String::LastIndexOf(
+    /* [in] */ Char c,
+    /* [in] */ Integer fromCharIndex) const
+{
+    Integer byteSize = GetByteSize(c);
+    char buf[5];
+    WriteUTF8Bytes(buf, c, byteSize);
+    buf[byteSize] = '\0';
+    return LastIndexOf(buf, fromCharIndex);
+}
+
 Integer String::LastIndexOf(
     /* [in] */ const char* string) const
 {
+    if (string == nullptr || string[0] == '\0') {
+        return -1;
+    }
     Integer byteIndex = LastByteIndexOfInternal(
             string, GetByteLength() - 1);
     return ToCharIndex(byteIndex);
 }
 
+Integer String::LastIndexOf(
+    /* [in] */ const char* string,
+    /* [in] */ Integer fromCharIndex) const
+{
+    if (string == nullptr || string[0] == '\0') {
+        return -1;
+    }
+    Integer charByteSize;
+    Integer fromByteIndex = ToByteIndex(
+            fromCharIndex, &charByteSize);
+    Integer byteIndex = LastByteIndexOfInternal(
+            string, fromByteIndex + charByteSize);
+    return ToCharIndex(byteIndex);
+}
+
 Integer String::ToByteIndex(
-    /* [in] */ Integer charIndex) const
+    /* [in] */ Integer charIndex,
+    /* [in] */ Integer* charByteSize) const
 {
     if (charIndex < 0 || charIndex >= GetLength()) {
         return -1;
@@ -344,17 +431,21 @@ Integer String::ToByteIndex(
         byteSize = UTF8SequenceLength(*p);
         if (byteSize == 0 || p + byteSize >= end) break;
         if (charCount == charIndex) {
-            break;
+            if (charByteSize != nullptr) {
+                *charByteSize = byteSize;
+            }
+            return p - mString;
         }
         p += byteSize;
         charCount++;
     }
 
-    return p - mString;
+    return -1;
 }
 
 Integer String::ToCharIndex(
-    /* [in] */ Integer byteIndex) const
+    /* [in] */ Integer byteIndex,
+    /* [in] */ Integer* charByteSize) const
 {
     if (byteIndex < 0 || byteIndex > GetByteLength()) {
         return -1;
@@ -368,13 +459,16 @@ Integer String::ToCharIndex(
         byteSize = UTF8SequenceLength(*p);
         if (byteSize == 0 || p + byteSize >= end) break;
         if (byteIndex >= p - mString && byteIndex < p - mString + byteSize) {
-            break;
+            if (charByteSize != nullptr) {
+                *charByteSize = byteSize;
+            }
+            return charIndex;
         }
         p += byteSize;
         charIndex++;
     }
 
-    return charIndex;
+    return -1;
 }
 
 String& String::operator=(
@@ -499,6 +593,31 @@ Integer String::UTF8SequenceLengthNonASCII(
     }
     return 0;
 }
+
+Integer String::GetByteSize(
+    /* [in] */ Char c)
+{
+    if ((c > MAX_CODE_POINT) ||
+            (MIN_HIGH_SURROGATE <= c && c <= MAX_LOW_SURROGATE)) {
+        return 0;
+    }
+
+    Integer byteSize = 4;
+
+    // Figure out how many bytes the result will require.
+    if (c < 0x00000080) {
+        byteSize = 1;
+    }
+    else if (c < 0x00000800) {
+        byteSize = 2;
+    }
+    else if (c < 0x00010000) {
+        byteSize = 3;
+    }
+
+    return byteSize;
+}
+
 
 Integer String::LastByteIndexOfInternal(
     /* [in] */ const char* string,
@@ -630,6 +749,38 @@ Char String::GetCharInternal(
     result &= ~(to_ignore_mask << (6 * (num_to_read - 1)));
     *byteSize = num_to_read;
     return result;
+}
+
+static const Char kByteMask               = 0x000000BF;
+static const Char kByteMark               = 0x00000080;
+
+// Mask used to set appropriate bits in first byte of UTF-8 sequence,
+// indexed by number of bytes in the sequence.
+// 0xxxxxxx
+// -> (00-7f) 7bit. Bit mask for the first byte is 0x00000000
+// 110yyyyx 10xxxxxx
+// -> (c0-df)(80-bf) 11bit. Bit mask is 0x000000C0
+// 1110yyyy 10yxxxxx 10xxxxxx
+// -> (e0-ef)(80-bf)(80-bf) 16bit. Bit mask is 0x000000E0
+// 11110yyy 10yyxxxx 10xxxxxx 10xxxxxx
+// -> (f0-f7)(80-bf)(80-bf)(80-bf) 21bit. Bit mask is 0x000000F0
+static const Char kFirstByteMark[] = {
+    0x00000000, 0x00000000, 0x000000C0, 0x000000E0, 0x000000F0
+};
+
+void String::WriteUTF8Bytes(
+    /* [in] */ char* dst,
+    /* [in] */ Char c,
+    /* [in] */ Integer bytes)
+{
+    dst += bytes;
+    switch (bytes) {
+        /* note: everything falls through. */
+        case 4: *--dst = (Byte)((c | kByteMark) & kByteMask); c >>= 6;
+        case 3: *--dst = (Byte)((c | kByteMark) & kByteMask); c >>= 6;
+        case 2: *--dst = (Byte)((c | kByteMark) & kByteMask); c >>= 6;
+        case 1: *--dst = (Byte)(c | kFirstByteMark[bytes]);
+    }
 }
 
 }
