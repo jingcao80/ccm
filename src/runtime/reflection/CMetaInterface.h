@@ -14,22 +14,3 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CCMOBJECTAPI_H__
-#define __CCM_CCMOBJECTAPI_H__
-
-#include "ccmtypes.h"
-
-namespace ccm {
-
-EXTERN_C COM_PUBLIC ECode CoCreateObjectInstance(
-    /* [in] */ const CoclassID& cid,
-    /* [in] */ const InterfaceID& iid,
-    /* [out] */ IInterface** object);
-
-EXTERN_C COM_PUBLIC ECode CoAcquireClassFactory(
-    /* [in] */ const CoclassID& cid,
-    /* [out] */ IInterface** object);
-
-} // namespace ccm
-
-#endif // __CCM_CCMOBJECTAPI_H__

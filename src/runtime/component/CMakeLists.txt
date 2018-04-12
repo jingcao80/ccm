@@ -16,6 +16,7 @@
 
 include_directories(
     ../
+    ../reflection
     ../type
     ../util)
 

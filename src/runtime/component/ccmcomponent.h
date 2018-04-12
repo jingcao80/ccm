@@ -18,6 +18,7 @@
 #define __CCM_COMPONENT_H__
 
 #include "ccmtypes.h"
+#include "ccmreflectionintfs.h"
 
 namespace ccm {
 
@@ -31,10 +32,21 @@ struct ClassObjectGetter
 
 typedef ECode (*GetClassObjectPtr)(const CoclassID&, IInterface**);
 
+struct MetadataWrapper
+{
+    int             mSize;
+    unsigned char   mMetadata[0];
+};
+
 struct CcmComponent
 {
     void*               mSoHandle;
     GetClassObjectPtr   mSoGetClassObject;
+    MetadataWrapper*    mMetadataWrapper;
+    IMetaComponent*     mMetaComponent;
+
+    CcmComponent();
+    ~CcmComponent();
 };
 
 ECode CoGetComponent(

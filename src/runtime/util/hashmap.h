@@ -31,8 +31,8 @@ static const int prime_list[11] =
 
 static int get_lower_bound(const int* first, const int* last, int n)
 {
-    if (n < *first) return *first;
-    if (n > *last) return *last;
+    if (n <= *first) return *first;
+    if (n >= *last) return *last;
     for (int i = 0; first + i != last; i++) {
         int l = *(first + i);
         int r = *(first + i + 1);
@@ -47,6 +47,24 @@ inline int get_next_prime(int n)
     return get_lower_bound(&prime_list[0], &prime_list[10], n);
 }
 
+template<class T>
+void AssignImpl(
+    /* [in] */ T* target,
+    /* [in] */ const T& value)
+{
+    assert(0 && "AssignKeyImpl not implemented.");
+}
+
+template<>
+void AssignImpl<String>(
+    /* [in] */ String* target,
+    /* [in] */ const String& value);
+
+template<>
+void AssignImpl<Uuid>(
+    /* [in] */ Uuid* target,
+    /* [in] */ const Uuid& value);
+
 template<class Key>
 int CompareKeyImpl(
     /* [in] */ const Key& key1,
@@ -59,18 +77,12 @@ int CompareKeyImpl(
 template<>
 int CompareKeyImpl<String>(
     /* [in] */ const String& key1,
-    /* [in] */ const String& key2)
-{
-    return key1.Compare(key2);
-}
+    /* [in] */ const String& key2);
 
 template<>
 int CompareKeyImpl<Uuid>(
     /* [in] */ const Uuid& key1,
-    /* [in] */ const Uuid& key2)
-{
-    return key1 == key2 ? 0 : -1;
-}
+    /* [in] */ const Uuid& key2);
 
 template<class Key>
 int HashKeyImpl(
@@ -82,46 +94,15 @@ int HashKeyImpl(
 
 template<>
 int HashKeyImpl<String>(
-    /* [in] */ const String& key)
-{
-    if (key.IsNull()) return -1;
-
-    // BKDR Hash Function
-    int seed = 31; // 31 131 1313 13131 131313 etc..
-    unsigned int hash = 0;
-
-    const char* string = key.string();
-    if (string) {
-        for ( ; *string; ++string) {
-            hash = hash * seed + (*string);
-        }
-    }
-    return (hash & 0x7FFFFFFF);
-}
+    /* [in] */ const String& key);
 
 template<>
 int HashKeyImpl<Uuid>(
-    /* [in] */ const Uuid& key)
-{
-    // BKDR Hash Function
-    int seed = 31; // 31 131 1313 13131 131313 etc..
-    unsigned int hash = 0;
+    /* [in] */ const Uuid& key);
 
-    const char* string = reinterpret_cast<const char*>(&key);
-    for (int i = 0; i < sizeof(Uuid); i++) {
-        hash = hash * seed + string[i];
-    }
-    return (hash & 0x7FFFFFFF);
-}
-
-template<class Key>
-void DeleteKeyImpl(
-    /* [in, out] */ Key* key)
-{}
-
-template<class Val>
-void DeleteValueImpl(
-    /* [in, out] */ Val* value)
+template<class T>
+void DeleteImpl(
+    /* [in, out] */ T* key)
 {}
 
 template<class Key, class Val>
@@ -136,8 +117,8 @@ private:
 
         ~Bucket()
         {
-            DeleteKeyImpl(&mKey);
-            DeleteValueImpl(&mValue);
+            DeleteImpl(&mKey);
+            DeleteImpl(&mValue);
             mNext = nullptr;
         }
 
@@ -180,8 +161,8 @@ public:
         int index = hash % mBucketSize;
         if (mBuckets[index] == nullptr) {
             Bucket* b = new Bucket();
-            b->mKey = key;
-            b->mValue = value;
+            AssignImpl(&b->mKey, key);
+            AssignImpl(&b->mValue, value);
             mBuckets[index] = b;
             return;
         }
@@ -189,7 +170,7 @@ public:
             Bucket* prev = mBuckets[index];
             while (prev != nullptr) {
                 if (!CompareKeyImpl(prev->mKey, key)) {
-                    prev->mValue = value;
+                    AssignImpl(&prev->mValue, value);
                     return;
                 }
                 else if (prev->mNext == nullptr) {
@@ -198,8 +179,8 @@ public:
                 prev = prev->mNext;
             }
             Bucket* b = new Bucket();
-            b->mKey = key;
-            b->mValue = value;
+            AssignImpl(&b->mKey, key);
+            AssignImpl(&b->mValue, value);
             prev->mNext = b;
             return;
         }

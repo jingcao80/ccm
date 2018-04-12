@@ -14,22 +14,41 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CCMOBJECTAPI_H__
-#define __CCM_CCMOBJECTAPI_H__
+#ifndef __CCM_CMETACOCLASS_H__
+#define __CCM_CMETACOCLASS_H__
 
-#include "ccmtypes.h"
+#include "ccmreflectionintfs.h"
+#include "ccmrefbase.h"
+#include "Component.h"
 
 namespace ccm {
 
-EXTERN_C COM_PUBLIC ECode CoCreateObjectInstance(
-    /* [in] */ const CoclassID& cid,
-    /* [in] */ const InterfaceID& iid,
-    /* [out] */ IInterface** object);
+class CMetaCoclass
+    : public LightRefBase
+    , public IMetaCoclass
+{
+public:
+    CCM_INTERFACE_DECL();
 
-EXTERN_C COM_PUBLIC ECode CoAcquireClassFactory(
-    /* [in] */ const CoclassID& cid,
-    /* [out] */ IInterface** object);
+    ECode GetName(
+        /* [out] */ String* name) override;
 
-} // namespace ccm
+    ECode GetNamespace(
+        /* [out] */ String* ns) override;
 
-#endif // __CCM_CCMOBJECTAPI_H__
+    ECode GetCoclassID(
+        /* [out] */ CoclassID* cid) override;
+
+    ECode GetInterfaceNumber(
+        /* [out] */ Integer* number) override;
+
+    ECode GetAllInterfaces(
+        /* [out] */ Array<IMetaInterface*>& intfs) override;
+
+    ECode CreateObject(
+        /* [out] */ IInterface** object) override;
+};
+
+}
+
+#endif // __CCM_CMETACOCLASS_H__

@@ -34,6 +34,7 @@
 #include "ccmtypes.h"
 #include "util/ccmlogger.h"
 
+#include <ctype.h>
 #include <limits.h>
 #include <stdarg.h>
 #include <string.h>
@@ -121,6 +122,25 @@ String::String(
     other.mCharCount = 0;
 }
 
+String::String(
+    /* [in] */ const Array<Char>& charArray,
+    /* [in] */ Integer start)
+    : mString(nullptr)
+    , mCharCount(0)
+{
+    WriteCharArray(charArray, start, charArray.GetLength());
+}
+
+String::String(
+    /* [in] */ const Array<Char>& charArray,
+    /* [in] */ Integer start,
+    /* [in] */ Integer length)
+    : mString(nullptr)
+    , mCharCount(0)
+{
+    WriteCharArray(charArray, start, length);
+}
+
 String::~String()
 {
     if (mString != nullptr) {
@@ -177,6 +197,21 @@ Integer String::GetByteLength() const
     if (mString == nullptr || mString[0] == '\0') return 0;
 
     return (Integer)SharedBuffer::GetBufferFromData(mString)->GetSize() - 1;
+}
+
+Integer String::GetHashCode() const
+{
+    // BKDR Hash Function
+    unsigned int seed = 31; // 31 131 1313 13131 131313 etc..
+    unsigned int hash = 0;
+
+    const char* string = mString;
+    if (string) {
+        for ( ; *string; ++string) {
+            hash = hash * seed + (*string);
+        }
+    }
+    return (hash & 0x7FFFFFFF);
 }
 
 Char String::GetChar(
@@ -415,62 +450,6 @@ Integer String::LastIndexOf(
     return ToCharIndex(byteIndex);
 }
 
-Integer String::ToByteIndex(
-    /* [in] */ Integer charIndex,
-    /* [in] */ Integer* charByteSize) const
-{
-    if (charIndex < 0 || charIndex >= GetLength()) {
-        return -1;
-    }
-
-    Integer charCount = 0;
-    Integer byteSize;
-    const char* p = mString;
-    const char* end = mString + GetByteLength() + 1;
-    while (*p != '\0' && p < end) {
-        byteSize = UTF8SequenceLength(*p);
-        if (byteSize == 0 || p + byteSize >= end) break;
-        if (charCount == charIndex) {
-            if (charByteSize != nullptr) {
-                *charByteSize = byteSize;
-            }
-            return p - mString;
-        }
-        p += byteSize;
-        charCount++;
-    }
-
-    return -1;
-}
-
-Integer String::ToCharIndex(
-    /* [in] */ Integer byteIndex,
-    /* [in] */ Integer* charByteSize) const
-{
-    if (byteIndex < 0 || byteIndex > GetByteLength()) {
-        return -1;
-    }
-
-    Integer charIndex = 0;
-    Integer byteSize;
-    const char* p = mString;
-    const char* end = mString + GetByteLength() + 1;
-    while (*p != '\0' && p < end) {
-        byteSize = UTF8SequenceLength(*p);
-        if (byteSize == 0 || p + byteSize >= end) break;
-        if (byteIndex >= p - mString && byteIndex < p - mString + byteSize) {
-            if (charByteSize != nullptr) {
-                *charByteSize = byteSize;
-            }
-            return charIndex;
-        }
-        p += byteSize;
-        charIndex++;
-    }
-
-    return -1;
-}
-
 String& String::operator=(
     /* [in] */ const String& other)
 {
@@ -552,6 +531,196 @@ String& String::operator+=(
     return *this;
 }
 
+String String::ToLowerCase() const
+{
+    String lowerStr(nullptr);
+    for (Integer i = 0; i < GetByteLength(); i++) {
+        char l = tolower(mString[i]);
+        if (l != mString[i]) {
+            if (lowerStr.IsNull()) {
+                lowerStr = String(mString, GetByteLength());
+            }
+            lowerStr.mString[i] = l;
+        }
+    }
+    return lowerStr.IsNull() ? *this : lowerStr;
+}
+
+String String::ToUpperCase() const
+{
+    String upperStr(nullptr);
+    for (Integer i = 0; i < GetByteLength(); i++) {
+        char l = toupper(mString[i]);
+        if (l != mString[i]) {
+            if (upperStr.IsNull()) {
+                upperStr = String(mString, GetByteLength());
+            }
+            upperStr.mString[i] = l;
+        }
+    }
+    return upperStr.IsNull() ? *this : upperStr;
+}
+
+String String::Replace(
+    /* [in] */ Char oldChar,
+    /* [in] */ Char newChar) const
+{
+    if (oldChar == newChar) return *this;
+
+    String newStr(nullptr);
+
+    Boolean found = false;
+    Array<Char> charArray = GetChars();
+    for (Integer i = 0; i < charArray.GetLength(); i++) {
+        if (charArray[i] == oldChar) {
+            charArray[i] = newChar;
+            found = true;
+        }
+    }
+    if (found) {
+        newStr = String(charArray);
+    }
+    return newStr.IsNull() ? *this : newStr;
+}
+
+String String::Replace(
+    /* [in] */ const char* target,
+    /* [in] */ const char* replacement) const
+{
+    if (target == nullptr || target[0] == '\0' ||
+            replacement == nullptr) {
+        return *this;
+    }
+
+    char* index = strstr(mString, target);
+    if (index == nullptr) {
+        return *this;
+    }
+
+    String newStr(nullptr);
+    char* p = mString;
+    Integer step = strlen(target);
+    while (index != nullptr) {
+        newStr.AppendBytes(p, index - p - 1);
+        newStr.AppendBytes(replacement, step);
+        p = index + step;
+        index = strstr(p, target);
+    }
+    return newStr;
+}
+
+String String::Trim() const
+{
+    if (mString == nullptr) {
+        return String(nullptr);
+    }
+
+    Integer byteSize = GetByteLength();
+
+    const char* start = mString;
+    while (*start && isspace(*start)) {
+        ++start;
+    }
+    if (start - mString >= byteSize) {
+        return String(nullptr);
+    }
+
+    const char* end = mString + byteSize - 1;
+    while (isspace(*end) && end >= mString) {
+        --end;
+    }
+    if (end < mString) {
+        return String(nullptr);
+    }
+    return String(start, end - start + 1);
+}
+
+String String::TrimStart() const
+{
+    if (mString == nullptr) {
+        return String(nullptr);
+    }
+
+    Integer byteSize = GetByteLength();
+
+    const char* start = mString;
+    while (*start && isspace(*start)) {
+        ++start;
+    }
+    return start - mString >= byteSize ? String(nullptr) :
+            String(start, mString + byteSize - start);
+}
+
+String String::TrimEnd() const
+{
+    if (mString == nullptr) {
+        return String(nullptr);
+    }
+
+    const char* end = mString + GetByteLength() - 1;
+    while (isspace(*end) && end >= mString) {
+        --end;
+    }
+    return end < mString ? String(nullptr) :
+            String(mString, end - mString + 1);
+}
+
+Integer String::ToByteIndex(
+    /* [in] */ Integer charIndex,
+    /* [in] */ Integer* charByteSize) const
+{
+    if (charIndex < 0 || charIndex >= GetLength()) {
+        return -1;
+    }
+
+    Integer charCount = 0;
+    Integer byteSize;
+    const char* p = mString;
+    const char* end = mString + GetByteLength() + 1;
+    while (*p != '\0' && p < end) {
+        byteSize = UTF8SequenceLength(*p);
+        if (byteSize == 0 || p + byteSize >= end) break;
+        if (charCount == charIndex) {
+            if (charByteSize != nullptr) {
+                *charByteSize = byteSize;
+            }
+            return p - mString;
+        }
+        p += byteSize;
+        charCount++;
+    }
+
+    return -1;
+}
+
+Integer String::ToCharIndex(
+    /* [in] */ Integer byteIndex,
+    /* [in] */ Integer* charByteSize) const
+{
+    if (byteIndex < 0 || byteIndex > GetByteLength()) {
+        return -1;
+    }
+
+    Integer charIndex = 0;
+    Integer byteSize;
+    const char* p = mString;
+    const char* end = mString + GetByteLength() + 1;
+    while (*p != '\0' && p < end) {
+        byteSize = UTF8SequenceLength(*p);
+        if (byteSize == 0 || p + byteSize >= end) break;
+        if (byteIndex >= p - mString && byteIndex < p - mString + byteSize) {
+            if (charByteSize != nullptr) {
+                *charByteSize = byteSize;
+            }
+            return charIndex;
+        }
+        p += byteSize;
+        charIndex++;
+    }
+
+    return -1;
+}
+
 String String::Format(
     /* [in] */ const char* format ...)
 {
@@ -618,6 +787,49 @@ Integer String::GetByteSize(
     return byteSize;
 }
 
+void String::WriteCharArray(
+    /* [in] */ const Array<Char>& charArray,
+    /* [in] */ Integer start,
+    /* [in] */ Integer length)
+{
+    if (start < 0 || start > charArray.GetLength() || length < 0) {
+        return;
+    }
+
+    length = start + length <= charArray.GetLength() ?
+            length : charArray.GetLength() - start;
+
+    Integer byteSize = 0;
+    for (Integer i = start; i < length; i++) {
+        byteSize += GetByteSize(charArray[i]);
+    }
+
+    char* buf = LockBuffer(byteSize);
+    if (buf == nullptr) {
+        return;
+    }
+
+    for (Integer i = start; i < length; i++) {
+        byteSize = GetByteSize(charArray[i]);
+        WriteUTF8Bytes(buf, charArray[i], byteSize);
+        buf += byteSize;
+    }
+    UnlockBuffer(byteSize);
+    buf[byteSize] = '\0';
+}
+
+void String::AppendBytes(
+    /* [in] */ const char* string,
+    /* [in] */ Integer byteSize)
+{
+    Integer oldSize = GetByteLength();
+    Integer newByteSize = oldSize + byteSize;
+    char* buf = LockBuffer(newByteSize);
+    if (buf == nullptr) return;
+    memcpy(buf + oldSize, string, byteSize);
+    UnlockBuffer(newByteSize);
+    buf[newByteSize] = '\0';
+}
 
 Integer String::LastByteIndexOfInternal(
     /* [in] */ const char* string,

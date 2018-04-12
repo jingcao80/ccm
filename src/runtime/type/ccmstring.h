@@ -57,6 +57,15 @@ public:
     String(
         /* [in] */ String&& other);
 
+    explicit String(
+        /* [in] */ const Array<Char>& charArray,
+        /* [in] */ Integer start = 0);
+
+    explicit String(
+        /* [in] */ const Array<Char>& charArray,
+        /* [in] */ Integer start,
+        /* [in] */ Integer length);
+
     ~String();
 
     inline Boolean IsNull() const;
@@ -71,6 +80,8 @@ public:
         /* [in] */ Integer start = 0) const;
 
     Integer GetByteLength() const;
+
+    Integer GetHashCode() const;
 
     inline const char* string() const;
 
@@ -155,13 +166,11 @@ public:
         /* [in] */ const char* string,
         /* [in] */ Integer fromCharIndex) const;
 
-    Integer ToByteIndex(
-        /* [in] */ Integer charIndex,
-        /* [in] */ Integer* charByteSize = nullptr) const;
+    inline Boolean StartsWith(
+        /* [in] */ const String& prefix) const;
 
-    Integer ToCharIndex(
-        /* [in] */ Integer byteIndex,
-        /* [in] */ Integer* charByteSize = nullptr) const;
+    inline Boolean StartsWith(
+        /* [in] */ const char* prefix) const;
 
     String& operator=(
         /* [in] */ const String& other);
@@ -177,6 +186,36 @@ public:
 
     String& operator+=(
         /* [in] */ const char* string);
+
+    String ToLowerCase() const;
+
+    String ToUpperCase() const;
+
+    String Replace(
+        /* [in] */ Char oldChar,
+        /* [in] */ Char newChar) const;
+
+    inline String Replace(
+        /* [in] */ const String& target,
+        /* [in] */ const String& replacement) const;
+
+    String Replace(
+        /* [in] */ const char* target,
+        /* [in] */ const char* replacement) const;
+
+    String Trim() const;
+
+    String TrimStart() const;
+
+    String TrimEnd() const;
+
+    Integer ToByteIndex(
+        /* [in] */ Integer charIndex,
+        /* [in] */ Integer* charByteSize = nullptr) const;
+
+    Integer ToCharIndex(
+        /* [in] */ Integer byteIndex,
+        /* [in] */ Integer* charByteSize = nullptr) const;
 
     static String Format(
         /* [in] */ const char* format ...);
@@ -194,6 +233,15 @@ public:
         /* [in] */ Char c);
 
 private:
+    void WriteCharArray(
+        /* [in] */ const Array<Char>& charArray,
+        /* [in] */ Integer start,
+        /* [in] */ Integer length);
+
+    void AppendBytes(
+        /* [in] */ const char* string,
+        /* [in] */ Integer byteSize);
+
     Integer LastByteIndexOfInternal(
         /* [in] */ const char* string,
         /* [in] */ Integer fromByteIndex) const;
@@ -339,6 +387,25 @@ Integer String::LastIndexOf(
     /* [in] */ Integer fromCharIndex) const
 {
     return LastIndexOf(other.string(), fromCharIndex);
+}
+
+Boolean String::StartsWith(
+    /* [in] */ const String& prefix) const
+{
+    return IndexOf(prefix) == 0;
+}
+
+Boolean String::StartsWith(
+    /* [in] */ const char* prefix) const
+{
+    return IndexOf(prefix) == 0;
+}
+
+String String::Replace(
+    /* [in] */ const String& target,
+    /* [in] */ const String& replacement) const
+{
+    return Replace(target.string(), replacement.string());
 }
 
 Boolean String::IsASCII(

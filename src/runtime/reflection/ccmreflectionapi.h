@@ -17,6 +17,15 @@
 #ifndef __CCM_CCMREFLECTIONAPI_H__
 #define __CCM_CCMREFLECTIONAPI_H__
 
+#include "ccmdef.h"
+#include "ccmreflectionintfs.h"
 
+namespace ccm {
+
+EXTERN_C COM_PUBLIC ECode CoGetComponentMetadata(
+    /* [in] */ const ComponentID& cid,
+    /* [out] */ IMetaComponent** mc);
+
+}
 
 #endif // __CCM_CCMREFLECTIONAPI_H__

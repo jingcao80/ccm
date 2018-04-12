@@ -932,7 +932,7 @@ void CodeGenerator::GenerateMetadataWrapper()
     builder.AppendFormat("struct MetadataWrapper\n"
                    "{\n"
                    "    int             mSize;\n"
-                   "    unsigned char   metadata[%d];\n"
+                   "    unsigned char   mMetadata[%d];\n"
                    "};\n\n", dataSize);
     builder.Append("static const MetadataWrapper comMetadata __attribute__ ((used,__section__ (\".metadata\"))) = {\n");
     builder.AppendFormat("    %d, {\n", dataSize);
@@ -972,6 +972,7 @@ void CodeGenerator::GenerateTypeDeclarationsForUser()
     builder.Append("using namespace ccm;\n\n");
 
     MetaComponent* mc = mMetaComponent;
+    builder.AppendFormat("extern const ComponentID IID_%s;\n\n", mc->mName);
     for (int i = 0; i < mc->mNamespaceNumber; i++) {
         MetaNamespace* mn = mc->mNamespaces[i];
         if (mn->mEnumerationNumber + (mn->mInterfaceNumber -

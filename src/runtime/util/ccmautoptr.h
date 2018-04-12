@@ -17,6 +17,8 @@
 #ifndef __CCM_AUTOPTR_H__
 #define __CCM_AUTOPTR_H__
 
+#include "ccmtypes.h"
+
 namespace ccm {
 
 template<class T>
@@ -36,11 +38,16 @@ public:
     AutoPtr(
         /* [in] */ AutoPtr<T>&& other);
 
+    ~AutoPtr();
+
     AutoPtr& operator=(
         /* [in] */ T* other);
 
     AutoPtr& operator=(
         /* [in] */ const AutoPtr<T>& other);
+
+    AutoPtr& operator=(
+        /* [in] */ AutoPtr<T>&& other);
 
     inline operator T*() const;
 
@@ -48,10 +55,42 @@ public:
 
     inline T& operator*() const;
 
+    inline T* Get() const;
+
     inline Boolean operator==(
         /* [in] */ T* other) const;
 
     inline Boolean operator==(
+        /* [in] */ const AutoPtr<T>& other) const;
+
+    inline Boolean operator!=(
+        /* [in] */ T* other) const;
+
+    inline Boolean operator!=(
+        /* [in] */ const AutoPtr<T>& other) const;
+
+    inline Boolean operator>(
+        /* [in] */ T* other) const;
+
+    inline Boolean operator>(
+        /* [in] */ const AutoPtr<T>& other) const;
+
+    inline Boolean operator<(
+        /* [in] */ T* other) const;
+
+    inline Boolean operator<(
+        /* [in] */ const AutoPtr<T>& other) const;
+
+    inline Boolean operator<=(
+        /* [in] */ T* other) const;
+
+    inline Boolean operator<=(
+        /* [in] */ const AutoPtr<T>& other) const;
+
+    inline Boolean operator>=(
+        /* [in] */ T* other) const;
+
+    inline Boolean operator>=(
         /* [in] */ const AutoPtr<T>& other) const;
 
 private:
@@ -87,6 +126,14 @@ AutoPtr<T>::AutoPtr(
 }
 
 template<class T>
+AutoPtr<T>::~AutoPtr()
+{
+    if (mPtr != nullptr) {
+        mPtr->Release(reinterpret_cast<HANDLE>(this));
+    }
+}
+
+template<class T>
 AutoPtr<T>& AutoPtr<T>::operator=(
     /* [in] */ T* other)
 {
@@ -119,6 +166,18 @@ AutoPtr<T>& AutoPtr<T>::operator=(
 }
 
 template<class T>
+AutoPtr<T>& AutoPtr<T>::operator=(
+    /* [in] */ AutoPtr<T>&& other)
+{
+    if (mPtr != nullptr) {
+        mPtr->Release(reinterpret_cast<HANDLE>(this));
+    }
+    mPtr = other.mPtr;
+    other.mPtr = nullptr;
+    return *this;
+}
+
+template<class T>
 AutoPtr<T>::operator T*() const
 {
     return mPtr;
@@ -137,6 +196,12 @@ T& AutoPtr<T>::operator*() const
 }
 
 template<class T>
+T* AutoPtr<T>::Get() const
+{
+    return mPtr;
+}
+
+template<class T>
 Boolean AutoPtr<T>::operator==(
     /* [in] */ T* other) const
 {
@@ -148,6 +213,76 @@ Boolean AutoPtr<T>::operator==(
     /* [in] */ const AutoPtr<T>& other) const
 {
     return mPtr == other.mPtr;
+}
+
+template<class T>
+Boolean AutoPtr<T>::operator!=(
+    /* [in] */ T* other) const
+{
+    return mPtr != other;
+}
+
+template<class T>
+Boolean AutoPtr<T>::operator!=(
+    /* [in] */ const AutoPtr<T>& other) const
+{
+    return mPtr != other.mPtr;
+}
+
+template<class T>
+Boolean AutoPtr<T>::operator>(
+    /* [in] */ T* other) const
+{
+    return mPtr > other;
+}
+
+template<class T>
+Boolean AutoPtr<T>::operator>(
+    /* [in] */ const AutoPtr<T>& other) const
+{
+    return mPtr > other.mPtr;
+}
+
+template<class T>
+Boolean AutoPtr<T>::operator<(
+    /* [in] */ T* other) const
+{
+    return mPtr < other;
+}
+
+template<class T>
+Boolean AutoPtr<T>::operator<(
+    /* [in] */ const AutoPtr<T>& other) const
+{
+    return mPtr < other.mPtr;
+}
+
+template<class T>
+Boolean AutoPtr<T>::operator<=(
+    /* [in] */ T* other) const
+{
+    return mPtr <= other;
+}
+
+template<class T>
+Boolean AutoPtr<T>::operator<=(
+    /* [in] */ const AutoPtr<T>& other) const
+{
+    return mPtr <= other.mPtr;
+}
+
+template<class T>
+Boolean AutoPtr<T>::operator>=(
+    /* [in] */ T* other) const
+{
+    return mPtr >= other;
+}
+
+template<class T>
+Boolean AutoPtr<T>::operator>=(
+    /* [in] */ const AutoPtr<T>& other) const
+{
+    return mPtr >= other.mPtr;
 }
 
 }

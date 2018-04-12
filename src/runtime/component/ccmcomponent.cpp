@@ -34,12 +34,22 @@ using ccm::metadata::MetaComponent;
 
 namespace ccm {
 
+typedef CcmComponent* CcmComponentPtr;
+
 template<>
-void DeleteValueImpl<CcmComponent*>(
-    /* [in, out] */ CcmComponent** value)
+void AssignImpl<CcmComponentPtr>(
+    /* [in] */ CcmComponentPtr* target,
+    /* [in] */ const CcmComponentPtr& value)
+{
+    *target = value;
+}
+
+template<>
+void DeleteImpl<CcmComponentPtr>(
+    /* [in, out] */ CcmComponentPtr* value)
 {
     if (*value != nullptr) {
-        free(*value);
+        delete *value;
         *value = nullptr;
     }
 }
@@ -54,6 +64,22 @@ void InitCompSearchPaths()
 {
     char* cwd = getcwd(nullptr, 0);
     sCcmComponentSearchPaths.Add(String(cwd));
+}
+
+CcmComponent::CcmComponent()
+    : mSoHandle(nullptr)
+    , mSoGetClassObject(nullptr)
+    , mMetadataWrapper(nullptr)
+    , mMetaComponent(nullptr)
+{}
+
+CcmComponent::~CcmComponent()
+{
+    REFCOUNT_RELEASE(mMetaComponent);
+    mSoHandle = nullptr;
+    mSoGetClassObject = nullptr;
+    mMetadataWrapper = nullptr;
+    mMetaComponent = nullptr;
 }
 
 static CcmComponent* CoFindComponent(
@@ -90,14 +116,19 @@ static CcmComponent* CoLoadComponent(
         return nullptr;
     }
 
-    CcmComponent* ccmComp = (CcmComponent*)malloc(sizeof(CcmComponent));
-    if (ccmComp == nullptr) {
-        Logger::E("CCMRT", "Malloc CcmComponent structure failed.");
+
+    MetadataWrapper* metadata = *(MetadataWrapper**)(dlsym(handle, "soMetadataHandle"));
+    if (metadata == nullptr) {
+        Logger::E("CCMRT", "Dlsym \"soMetadataHandle\" variable from \"%s\" \
+                component failed. The reason is %s.", compPath.string(), strerror(errno));
         return nullptr;
     }
 
+    CcmComponent* ccmComp = new CcmComponent();
     ccmComp->mSoHandle = handle;
     ccmComp->mSoGetClassObject = func;
+    ccmComp->mMetadataWrapper = metadata;
+    ccmComp->mMetaComponent = nullptr;
     {
         Mutex::AutoLock lock(sCcmComponentsLock);
         sCcmComponents.Put(compId.mUuid, ccmComp);

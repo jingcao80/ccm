@@ -14,6 +14,24 @@
 # limitations under the License.
 #=========================================================================
 
+include_directories(
+    ./
+    ../
+    ../component
+    ../metadata
+    ../type
+    ../util)
+
+set(SOURCES
+    CMetaCoclass.cpp
+    CMetaComponent.cpp
+    CMetaInterface.cpp
+    reflection.cpp)
+
+add_library(reflection STATIC
+    ${SOURCES})
+
 install(FILES
     ccmreflectionapi.h
+    ccmreflectionintfs.h
     DESTINATION ${INC_DIR})

@@ -103,6 +103,34 @@ TYPE2KIND_SPEC(CoclassID, CcmTypeKind::CoclassID);
 TYPE2KIND_SPEC(InterfaceID, CcmTypeKind::InterfaceID);
 TYPE2KIND_SPEC(IInterface*, CcmTypeKind::Interface);
 
+template<class T, class U>
+class Conversion
+{
+    typedef char Small;
+    class Big { char dummy[2]; };
+    static Small Test(U);
+    static Big Test(...);
+    static T MakeT();
+public:
+    enum { exists = sizeof(Test(MakeT())) == sizeof(Small) };
+    enum { exists2Way = exists && Conversion<U, T>::exists };
+    enum { sameType = false };
+};
+
+template<class T>
+class Conversion<T, T>
+{
+    enum { exists = 1, exists2Way = 1, sameType = 1 };
+};
+
+#define SUPERSUBCLASS(T, U)                         \
+    (Conversion<const U*, const T*>::exists &&      \
+     !Conversion<const T*, const void*>::sameType)
+
+#define SUPERSUBCLASS_STRICT(T, U)                  \
+    (SUPERSUBCLASS(T,U) &&                          \
+     !Conversion<const T, const U>::sameType)
+
 }
 
 #include "ccmarray.h"

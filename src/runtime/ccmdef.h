@@ -163,6 +163,46 @@ namespace ccm {
     }
 #endif
 
+#ifndef CCM_INTERFACE_IMPL_LIGHT_1
+#define CCM_INTERFACE_IMPL_LIGHT_1(ClassName, InterfaceName) \
+    Integer ClassName::AddRef(                             \
+        /* [in] */ HANDLE id)                              \
+    {                                                      \
+        return LightRefBase::AddRef(id);                   \
+    }                                                      \
+                                                           \
+    Integer ClassName::Release(                            \
+        /* [in] */ HANDLE id)                              \
+    {                                                      \
+        return LightRefBase::Release(id);                  \
+    }                                                      \
+                                                           \
+    IInterface* ClassName::Probe(                          \
+        /* [in] */ const InterfaceID& iid)                 \
+    {                                                      \
+        if (iid == IID_IInterface) {                       \
+            return (IInterface*)(InterfaceName*)this;      \
+        }                                                  \
+        else if (iid == IID_##InterfaceName) {             \
+            return (InterfaceName*)this;                   \
+        }                                                  \
+        return nullptr;                                    \
+    }                                                      \
+                                                           \
+    ECode ClassName::GetInterfaceID(                       \
+        /* [in] */ IInterface* object,                     \
+        /* [out] */ InterfaceID* iid)                      \
+    {                                                      \
+        VALIDATE_NOT_NULL(iid);                            \
+                                                           \
+        if (object == (IInterface*)(InterfaceName*)this) { \
+            *iid = IID_##InterfaceName;                    \
+            return NOERROR;                                \
+        }                                                  \
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;               \
+    }
+#endif
+
 } // namespace ccm
 
 #endif // __CCM_CCMDEF_H__

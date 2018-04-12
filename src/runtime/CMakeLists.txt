@@ -43,6 +43,7 @@ set(CCMRT_LINK_LIBS
     -Wl,--whole-archive
     component
     metadata
+    reflection
     type
     util
     -Wl,--no-whole-archive)
