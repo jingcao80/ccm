@@ -30,6 +30,10 @@ Coclass(CFooBar)
     , public IBar
 {
 public:
+    CFooBar();
+
+    ~CFooBar();
+
     CCM_INTERFACE_DECL();
 
     ECode constructor();

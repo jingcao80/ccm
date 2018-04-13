@@ -30,4 +30,18 @@ String DumpUuid(
     return uuidStr;
 }
 
+Integer HashUuid(
+    /* [in] */ const Uuid& key)
+{
+    // BKDR Hash Function
+    int seed = 31; // 31 131 1313 13131 131313 etc..
+    unsigned int hash = 0;
+
+    const char* string = reinterpret_cast<const char*>(&key);
+    for (int i = 0; i < sizeof(Uuid); i++) {
+        hash = hash * seed + string[i];
+    }
+    return (hash & 0x7FFFFFFF);
+}
+
 }

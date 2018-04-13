@@ -17,9 +17,11 @@
 #ifndef __CCM_LOGGER_H__
 #define __CCM_LOGGER_H__
 
+#include "ccmdef.h"
+
 namespace ccm {
 
-class Logger
+class COM_PUBLIC Logger
 {
 public:
     static void D(
@@ -44,7 +46,7 @@ public:
     static constexpr int ERROR = 3;
 
 private:
-    static int sLevel;
+    COM_LOCAL static int sLevel;
 };
 
 }

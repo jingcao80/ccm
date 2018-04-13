@@ -37,22 +37,30 @@ namespace ccm {
 typedef CcmComponent* CcmComponentPtr;
 
 template<>
-void AssignImpl<CcmComponentPtr>(
-    /* [in] */ CcmComponentPtr* target,
-    /* [in] */ const CcmComponentPtr& value)
+struct AssignFunc<CcmComponentPtr>
 {
-    *target = value;
-}
+    inline void operator()(
+        /* [in] */ CcmComponentPtr* lvalue,
+        /* [in] */ const CcmComponentPtr& rvalue,
+        /* [in] */ void* id)
+    {
+        *lvalue = rvalue;
+    }
+};
 
 template<>
-void DeleteImpl<CcmComponentPtr>(
-    /* [in, out] */ CcmComponentPtr* value)
+struct DeleteFunc<CcmComponentPtr>
 {
-    if (*value != nullptr) {
-        delete *value;
-        *value = nullptr;
+    void operator()(
+        /* [in] */ CcmComponentPtr* value,
+        /* [in] */ void* id)
+    {
+        if (*value != nullptr) {
+            delete *value;
+            *value = nullptr;
+        }
     }
-}
+};
 
 static INIT_PROI_1 HashMap<Uuid, CcmComponent*> sCcmComponents;
 static INIT_PROI_1 Mutex sCcmComponentsLock;

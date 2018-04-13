@@ -22,8 +22,7 @@ include_directories(
 set(SOURCES
     ccmlogger.cpp
     ccmobject.cpp
-    ccmrefbase.cpp
-    hashmap.cpp)
+    ccmrefbase.cpp)
 
 add_library(util STATIC
     ${SOURCES})

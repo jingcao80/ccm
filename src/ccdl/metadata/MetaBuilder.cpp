@@ -331,6 +331,7 @@ void MetaBuilder::WriteMetaComponent(
     mc->mCoclassNumber = CLS_NUM;
     mc->mEnumerationNumber = ENUMN_NUM;
     mc->mInterfaceNumber = ITF_NUM;
+    mc->mSystemPreDeclaredInterfaceNumber = 0;
     mc->mTypeNumber = TP_NUM;
     // mNamespaces's address
     mBasePtr = ALIGN(mBasePtr + sizeof(MetaComponent));
@@ -359,6 +360,7 @@ void MetaBuilder::WriteMetaComponent(
 
     for (int i = 0; i < NS_NUM; i++) {
         mc->mNamespaces[i] = WriteMetaNamespace(module->GetNamespace(i));
+        mc->mSystemPreDeclaredInterfaceNumber += module->GetNamespace(i)->GetSystemPreDeclaredInterfaceNumber();
     }
 
     for (int i = 0; i < CLS_NUM; i++) {

@@ -46,6 +46,7 @@ struct MetaComponent
     int                 mCoclassNumber;
     int                 mEnumerationNumber;
     int                 mInterfaceNumber;
+    int                 mSystemPreDeclaredInterfaceNumber;
     int                 mTypeNumber;
     MetaNamespace**     mNamespaces;
     MetaCoclass**       mCoclasses;

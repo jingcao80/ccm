@@ -29,6 +29,10 @@ Coclass(CFoo)
     , public IFoo
 {
 public:
+    CFoo();
+
+    ~CFoo();
+
     CCM_INTERFACE_DECL();
 
     ECode Foo(

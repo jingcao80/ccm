@@ -16,10 +16,22 @@
 
 #include "CFooBar.h"
 
+#include <stdio.h>
+
 namespace ccm {
 namespace demo {
 
 CCM_INTERFACE_IMPL_2(CFooBar, Object, IFoo, IBar);
+
+CFooBar::CFooBar()
+{
+    printf("==== Call CFooBar() ====\n");
+}
+
+CFooBar::~CFooBar()
+{
+    printf("==== Call ~CFooBar() ====\n");
+}
 
 ECode CFooBar::constructor()
 {

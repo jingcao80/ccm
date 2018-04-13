@@ -72,36 +72,43 @@ namespace ccm {
 extern String DumpUuid(
     /* [in] */ const Uuid& id);
 
+extern Integer HashUuid(
+    /* [in] */ const Uuid& key);
+
 template<class T>
 struct Type2Kind
 {
-    inline static CcmTypeKind Kind();
+    static CcmTypeKind Kind()
+    {
+        return CcmTypeKind::Unknown;
+    }
+
+    enum { isPrimitiveType = false };
 };
-template<class T>
-CcmTypeKind Type2Kind<T>::Kind()
-{
-    return CcmTypeKind::Unknown;
-}
 
-#define TYPE2KIND_SPEC(type, kind) \
-        template<> \
-        struct Type2Kind<type> \
-        { inline static CcmTypeKind Kind(); }; \
-        CcmTypeKind Type2Kind<type>::Kind() \
-        { return kind; }
+#define TYPE2KIND_SPEC(type, kind, value)       \
+        template<>                              \
+        struct Type2Kind<type>                  \
+        {                                       \
+            inline static CcmTypeKind Kind()    \
+            {                                   \
+                return kind;                    \
+            }                                   \
+            enum { isPrimitiveType = value };   \
+        };
 
-TYPE2KIND_SPEC(Byte, CcmTypeKind::Byte);
-TYPE2KIND_SPEC(Short, CcmTypeKind::Short);
-TYPE2KIND_SPEC(Integer, CcmTypeKind::Integer);
-TYPE2KIND_SPEC(Long, CcmTypeKind::Long);
-TYPE2KIND_SPEC(Float, CcmTypeKind::Float);
-TYPE2KIND_SPEC(Double, CcmTypeKind::Double);
-TYPE2KIND_SPEC(Boolean, CcmTypeKind::Boolean);
-TYPE2KIND_SPEC(String, CcmTypeKind::String);
-TYPE2KIND_SPEC(HANDLE, CcmTypeKind::HANDLE);
-TYPE2KIND_SPEC(CoclassID, CcmTypeKind::CoclassID);
-TYPE2KIND_SPEC(InterfaceID, CcmTypeKind::InterfaceID);
-TYPE2KIND_SPEC(IInterface*, CcmTypeKind::Interface);
+TYPE2KIND_SPEC(Byte, CcmTypeKind::Byte, true);
+TYPE2KIND_SPEC(Short, CcmTypeKind::Short, true);
+TYPE2KIND_SPEC(Integer, CcmTypeKind::Integer, true);
+TYPE2KIND_SPEC(Long, CcmTypeKind::Long, true);
+TYPE2KIND_SPEC(Float, CcmTypeKind::Float, true);
+TYPE2KIND_SPEC(Double, CcmTypeKind::Double, true);
+TYPE2KIND_SPEC(Boolean, CcmTypeKind::Boolean, true);
+TYPE2KIND_SPEC(String, CcmTypeKind::String, true);
+TYPE2KIND_SPEC(HANDLE, CcmTypeKind::HANDLE, true);
+TYPE2KIND_SPEC(CoclassID, CcmTypeKind::CoclassID, true);
+TYPE2KIND_SPEC(InterfaceID, CcmTypeKind::InterfaceID, true);
+TYPE2KIND_SPEC(IInterface*, CcmTypeKind::Interface, false);
 
 template<class T, class U>
 class Conversion
@@ -120,6 +127,7 @@ public:
 template<class T>
 class Conversion<T, T>
 {
+public:
     enum { exists = 1, exists2Way = 1, sameType = 1 };
 };
 
@@ -130,6 +138,240 @@ class Conversion<T, T>
 #define SUPERSUBCLASS_STRICT(T, U)                  \
     (SUPERSUBCLASS(T,U) &&                          \
      !Conversion<const T, const U>::sameType)
+
+template<class T>
+class TypeTraits
+{
+public:
+    typedef T   BareType;
+    enum { isPointer = 0 };
+};
+
+template<class T>
+class TypeTraits<T*>
+{
+public:
+    typedef T   BareType;
+    enum { isPointer = 1 };
+};
+
+template<class T>
+class TypeTraits<const T*>
+{
+public:
+    typedef T   BareType;
+    enum { isPointer = 1 };
+};
+
+#define CREATE_MEMBER_DETECTOR(X)                                                   \
+template<class T>                                                                \
+class Detect_##X                                                                    \
+{                                                                                   \
+    struct Fallback { int X; };                                                     \
+    struct Derived : T, Fallback { };                                               \
+                                                                                    \
+    template<class U, U> struct Check;                                           \
+                                                                                    \
+    typedef char ArrayOfOne[1];                                                     \
+    typedef char ArrayOfTwo[2];                                                     \
+                                                                                    \
+    template<class U> static ArrayOfOne & func(Check<int Fallback::*, &U::X> *); \
+    template<class U> static ArrayOfTwo & func(...);                             \
+public:                                                                             \
+    typedef Detect_##X type;                                                        \
+    enum { exists = sizeof(func<Derived>(0)) == 2 };                                \
+};
+
+CREATE_MEMBER_DETECTOR(AddRef);
+CREATE_MEMBER_DETECTOR(Release);
+
+#define HAS_ADDREF_AND_RELEASE(type) \
+    (Detect_AddRef<type>::exists && Detect_Release<type>::exists)
+
+//-----------------------------------------------------------------
+
+template<class T, Boolean hasAddRefAndRelease>
+struct AssignImpl
+{
+    void operator()(
+        /* [in] */ T* lvalue,
+        /* [in] */ const T& rvalue,
+        /* [in] */ void* id)
+    {
+        *lvalue = rvalue;
+    }
+};
+
+template<class T>
+struct AssignImpl<T, true>
+{
+    void operator()(
+        /* [in] */ T* lvalue,
+        /* [in] */ const T& rvalue,
+        /* [in] */ void* id)
+    {
+        if (rvalue != nullptr) {
+            rvalue->AddRef(reinterpret_cast<HANDLE>(id));
+        }
+        if (*lvalue != nullptr) {
+            (*lvalue)->Release(reinterpret_cast<HANDLE>(id));
+        }
+        *lvalue = rvalue;
+    }
+};
+
+template<class T, Boolean = Type2Kind<T>::isPrimitiveType>
+struct AssignFunc
+{
+    void operator()(
+        /* [in] */ T* lvalue,
+        /* [in] */ const T& rvalue,
+        /* [in] */ void* id)
+    {
+        typedef typename TypeTraits<T>::BareType BareType;
+        AssignImpl<T, HAS_ADDREF_AND_RELEASE(BareType)> impl;
+        impl(lvalue, rvalue, id);
+    }
+};
+
+template<class T>
+struct AssignFunc<T, true>
+{
+    void operator()(
+        /* [in] */ T* lvalue,
+        /* [in] */ const T& rvalue,
+        /* [in] */ void* id)
+    {
+        *lvalue = rvalue;
+    }
+};
+
+//-----------------------------------------------------------------
+
+template<class T, Boolean hasAddRefAndRelease>
+struct DeleteImpl
+{
+    void operator()(
+        /* [in] */ T* data,
+        /* [in] */ void* id)
+    {}
+};
+
+template<class T>
+struct DeleteImpl<T, true>
+{
+    void operator()(
+        /* [in] */ T* data,
+        /* [in] */ void* id)
+    {
+        if (*data != nullptr) {
+            (*data)->Release(reinterpret_cast<HANDLE>(id));
+            *data = nullptr;
+        }
+    }
+};
+
+template<class T, Boolean = Type2Kind<T>::isPrimitiveType>
+struct DeleteFunc
+{
+    void operator()(
+        /* [in] */ T* data,
+        /* [in] */ void* id)
+    {
+        typedef typename TypeTraits<T>::BareType BareType;
+        DeleteImpl<T, HAS_ADDREF_AND_RELEASE(BareType)> impl;
+        impl(data, id);
+    }
+};
+
+template<class T>
+struct DeleteFunc<T, true>
+{
+    void operator()(
+        /* [in] */ T* data,
+        /* [in] */ void* id)
+    {}
+};
+
+template<>
+struct DeleteFunc<String, true>
+{
+    inline void operator()(
+        /* [in] */ String* data,
+        /* [in] */ void* id)
+    {
+        *data = nullptr;
+    }
+};
+
+//-----------------------------------------------------------------
+
+template<class T>
+struct CompareFunc
+{
+    Integer operator()(
+        /* [in] */ const T& lvalue,
+        /* [in] */ const T& rvalue)
+    {
+        if (lvalue > rvalue) return 1;
+        if (lvalue == rvalue) return 0;
+        return -1;
+    }
+};
+
+template<>
+struct CompareFunc<String>
+{
+    inline Integer operator()(
+        /* [in] */ const String& lvalue,
+        /* [in] */ const String& rvalue)
+    {
+        return lvalue.Compare(rvalue);
+    }
+};
+
+template<>
+struct CompareFunc<Uuid>
+{
+    inline Integer operator()(
+        /* [in] */ const Uuid& lvalue,
+        /* [in] */ const Uuid& rvalue)
+    {
+        return lvalue == rvalue ? 0 : -1;
+    }
+};
+
+//-----------------------------------------------------------------
+
+template<class T>
+struct HashFunc
+{
+    Integer operator()(
+        /* [in] */ const T& data)
+    {
+        return data;
+    }
+};
+
+template<>
+struct HashFunc<String>
+{
+    inline Integer operator()(
+        /* [in] */ const String& data)
+    {
+        return data.GetHashCode();
+    }
+};
+
+template<>
+struct HashFunc<Uuid>
+{
+    inline Integer operator()(
+        /* [in] */ const Uuid& data)
+    {
+        return HashUuid(data);
+    }
+};
 
 }
 

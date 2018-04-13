@@ -14,3 +14,54 @@
 // limitations under the License.
 //=========================================================================
 
+#ifndef __CCM_CMETAINTERFACE_H__
+#define __CCM_CMETAINTERFACE_H__
+
+#include "ccmreflectionintfs.h"
+#include "ccmrefbase.h"
+#include "Component.h"
+
+using ccm::metadata::MetaComponent;
+using ccm::metadata::MetaInterface;
+
+namespace ccm {
+
+class CMetaComponent;
+
+class CMetaInterface
+    : public LightRefBase
+    , public IMetaInterface
+{
+public:
+    CMetaInterface(
+        /* [in] */ CMetaComponent* mcObj,
+        /* [in] */ MetaComponent* mc,
+        /* [in] */ MetaInterface* mi);
+
+    ~CMetaInterface();
+
+    CCM_INTERFACE_DECL();
+
+    ECode GetMetaComponent(
+        /* [out] */ IMetaComponent** metaComp) override;
+
+    ECode GetName(
+        /* [out] */ String* name) override;
+
+    ECode GetNamespace(
+        /* [out] */ String* ns) override;
+
+    ECode GetInterfaceID(
+        /* [out] */ InterfaceID* iid) override;
+
+public:
+    MetaInterface* mMetadata;
+    CMetaComponent* mMetaComponent;
+    InterfaceID mIid;
+    String mName;
+    String mNamespace;
+};
+
+}
+
+#endif // __CCM_CMETAINTERFACE_H__

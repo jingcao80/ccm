@@ -21,14 +21,29 @@
 #include "ccmrefbase.h"
 #include "Component.h"
 
+using ccm::metadata::MetaCoclass;
+using ccm::metadata::MetaComponent;
+
 namespace ccm {
+
+class CMetaComponent;
 
 class CMetaCoclass
     : public LightRefBase
     , public IMetaCoclass
 {
 public:
+    CMetaCoclass(
+        /* [in] */ CMetaComponent* mcObj,
+        /* [in] */ MetaComponent* mc,
+        /* [in] */ MetaCoclass* mk);
+
+    ~CMetaCoclass();
+
     CCM_INTERFACE_DECL();
+
+    ECode GetMetaComponent(
+        /* [out] */ IMetaComponent** metaComp) override;
 
     ECode GetName(
         /* [out] */ String* name) override;
@@ -39,6 +54,16 @@ public:
     ECode GetCoclassID(
         /* [out] */ CoclassID* cid) override;
 
+    ECode GetConstructorNumber(
+        /* [out] */ Integer* number) override;
+
+    ECode GetAllConstructors(
+        /* [out] */ Array<IMetaConstructor*>& constrs) override;
+
+    ECode GetConstructors(
+        /* [in] */ Integer paramNumber,
+        /* [out] */ IMetaConstructor** constr) override;
+
     ECode GetInterfaceNumber(
         /* [out] */ Integer* number) override;
 
@@ -47,6 +72,18 @@ public:
 
     ECode CreateObject(
         /* [out] */ IInterface** object) override;
+
+    ECode CreateObject(
+        /* [in] */ const InterfaceID& iid,
+        /* [out] */ IInterface** object) override;
+
+public:
+    MetaCoclass* mMetadata;
+    CMetaComponent* mMetaComponent;
+    CoclassID mCid;
+    String mName;
+    String mNamespace;
+    Array<IMetaInterface*> mMetaInterfaces;
 };
 
 }

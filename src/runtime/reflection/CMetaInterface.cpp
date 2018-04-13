@@ -13,3 +13,66 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //=========================================================================
+
+#include "CMetaInterface.h"
+
+namespace ccm {
+
+CCM_INTERFACE_IMPL_LIGHT_1(CMetaInterface, IMetaInterface);
+
+CMetaInterface::CMetaInterface(
+    /* [in] */ CMetaComponent* mcObj,
+    /* [in] */ MetaComponent* mc,
+    /* [in] */ MetaInterface* mi)
+    : mMetadata(mi)
+    , mMetaComponent(mcObj)
+    , mName(mi->mName)
+    , mNamespace(mi->mNamespace)
+{
+    mIid = mi->mUuid;
+}
+
+CMetaInterface::~CMetaInterface()
+{
+    mMetadata = nullptr;
+    mMetaComponent = nullptr;
+}
+
+ECode CMetaInterface::GetMetaComponent(
+    /* [out] */ IMetaComponent** metaComp)
+{
+    VALIDATE_NOT_NULL(metaComp);
+
+    *metaComp = (IMetaComponent*)mMetaComponent;
+    REFCOUNT_ADD(*metaComp);
+    return NOERROR;
+}
+
+ECode CMetaInterface::GetName(
+    /* [out] */ String* name)
+{
+    VALIDATE_NOT_NULL(name);
+
+    *name = mName;
+    return NOERROR;
+}
+
+ECode CMetaInterface::GetNamespace(
+    /* [out] */ String* ns)
+{
+    VALIDATE_NOT_NULL(ns);
+
+    *ns = mNamespace;
+    return NOERROR;
+}
+
+ECode CMetaInterface::GetInterfaceID(
+    /* [out] */ InterfaceID* iid)
+{
+    VALIDATE_NOT_NULL(iid);
+
+    *iid = mIid;
+    return NOERROR;
+}
+
+}

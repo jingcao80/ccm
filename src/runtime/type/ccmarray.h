@@ -29,55 +29,6 @@ struct Triple
     CcmTypeKind mType;
 };
 
-struct AssignFunc
-{
-    template<class T>
-    void operator()(
-        /* [in] */ T& lvalue,
-        /* [in] */ T rvalue,
-        /* [in] */ void* id);
-
-    void operator()(
-        /* [in] */ IInterface*& lvalue,
-        /* [in] */ IInterface* rvalue,
-        /* [in] */ void* id);
-};
-template<class T>
-void AssignFunc::operator()(
-    /* [in] */ T& lvalue,
-    /* [in] */ T rvalue,
-    /* [in] */ void* id)
-{
-    lvalue = rvalue;
-}
-
-struct DeleteFunc
-{
-    template<class T>
-    void operator()(
-        /* [in] */ T* data,
-        /* [in] */ Long size,
-        /* [in] */ void* id);
-
-    void operator()(
-        /* [in] */ String* data,
-        /* [in] */ Long size,
-        /* [in] */ void* id);
-
-    void operator()(
-        /* [in] */ IInterface** data,
-        /* [in] */ Long size,
-        /* [in] */ void* id);
-};
-template<class T>
-void DeleteFunc::operator()(
-    /* [in] */ T* data,
-    /* [in] */ Long size,
-    /* [in] */ void* id)
-{
-    SharedBuffer::GetBufferFromData(data)->Release();
-}
-
 template<class T>
 class Array
 {
@@ -95,17 +46,11 @@ public:
 
     ~Array();
 
-    Integer AddRef(
-        /* [in] */ HANDLE id = 0);
-
-    Integer Release(
-        /* [in] */ HANDLE id = 0);
-
     Long GetLength() const;
 
     T* GetPayload() const;
 
-    Boolean IsNull() const;
+    Boolean IsEmpty() const;
 
     Long Copy(
         /* [in] */ T const* srcData,
@@ -231,25 +176,14 @@ template<class T>
 Array<T>::~Array()
 {
     if (mData != nullptr) {
-        DeleteFunc deleteF;
-        deleteF(static_cast<T*>(mData), mSize, mData);
+        DeleteFunc<T> deleteF;
+        for (Long i = 0; i < mSize; i++) {
+            deleteF(&static_cast<T*>(mData)[i], this);
+        }
+        SharedBuffer::GetBufferFromData(mData)->Release();
         mData = nullptr;
     }
     mSize = 0;
-}
-
-template<class T>
-Integer Array<T>::AddRef(
-    /* [in] */ HANDLE id)
-{
-    return (Integer)SharedBuffer::GetBufferFromData(this)->AddRef();
-}
-
-template<class T>
-Integer Array<T>::Release(
-    /* [in] */ HANDLE id)
-{
-    return (Integer)SharedBuffer::GetBufferFromData(this)->Release();
 }
 
 template<class T>
@@ -265,9 +199,9 @@ T* Array<T>::GetPayload() const
 }
 
 template<class T>
-Boolean Array<T>::IsNull() const
+Boolean Array<T>::IsEmpty() const
 {
-    return mData == nullptr;
+    return mSize == 0;
 }
 
 template<class T>
@@ -280,8 +214,8 @@ Long Array<T>::Copy(
     Long N = MIN(mSize, length);
     T* array = static_cast<T*>(mData);
     for (Long i = 0; i < N; i++) {
-        AssignFunc assignF;
-        assignF(array[i], srcData[i], mData);
+        AssignFunc<T> assignF;
+        assignF(&array[i], srcData[i], mData);
     }
     return N;
 }
@@ -297,8 +231,8 @@ Long Array<T>::Copy(
     Long N = MIN(mSize - thisPos, length);
     T* array = static_cast<T*>(mData) + thisPos;
     for (Long i = 0; i < N; i++) {
-        AssignFunc assignF;
-        assignF(array[i], srcData[i], mData);
+        AssignFunc<T> assignF;
+        assignF(&array[i], srcData[i], mData);
     }
     return N;
 }
@@ -316,8 +250,8 @@ Long Array<T>::Copy(
     T* array = static_cast<T*>(mData) + thisPos;
     srcData += srcPos;
     for (Long i = 0; i < N; i++) {
-        AssignFunc assignF;
-        assignF(array[i], srcData[i], mData);
+        AssignFunc<T> assignF;
+        assignF(&array[i], srcData[i], mData);
     }
     return N;
 }
@@ -334,8 +268,8 @@ Long Array<T>::Copy(
     Long N = MIN(mSize, srcArray.mSize);
     T* array = static_cast<T*>(mData);
     for (Long i = 0; i < N; i++) {
-        AssignFunc assignF;
-        assignF(array[i], srcArray[i], mData);
+        AssignFunc<T> assignF;
+        assignF(&array[i], srcArray[i], mData);
     }
     return N;
 }
@@ -353,8 +287,8 @@ Long Array<T>::Copy(
     Long N = MIN(mSize, MIN(srcArray.mSize, length));
     T* array = static_cast<T*>(mData);
     for (Long i = 0; i < N; i++) {
-        AssignFunc assignF;
-        assignF(array[i], srcArray[i], mData);
+        AssignFunc<T> assignF;
+        assignF(&array[i], srcArray[i], mData);
     }
     return N;
 }
@@ -373,8 +307,8 @@ Long Array<T>::Copy(
     Long N = MIN(mSize, MIN(srcArray.mSize - srcPos, length));
     T* array = static_cast<T*>(mData);
     for (Long i = 0; i < N; i++) {
-        AssignFunc assignF;
-        assignF(array[i], srcArray[srcPos + i], mData);
+        AssignFunc<T> assignF;
+        assignF(&array[i], srcArray[srcPos + i], mData);
     }
     return N;
 }
@@ -392,8 +326,8 @@ Long Array<T>::Copy(
     Long N = MIN(mSize - thisPos, srcArray.mSize);
     T* array = static_cast<T*>(mData) + thisPos;
     for (Long i = 0; i < N; i++) {
-        AssignFunc assignF;
-        assignF(array[i], srcArray[i], mData);
+        AssignFunc<T> assignF;
+        assignF(&array[i], srcArray[i], mData);
     }
     return N;
 }
@@ -412,8 +346,8 @@ Long Array<T>::Copy(
     Long N = MIN(mSize - thisPos, MIN(srcArray.mSize, length));
     T* array = static_cast<T*>(mData) + thisPos;
     for (Long i = 0; i < N; i++) {
-        AssignFunc assignF;
-        assignF(array[i], srcArray[i], mData);
+        AssignFunc<T> assignF;
+        assignF(&array[i], srcArray[i], mData);
     }
     return N;
 }
@@ -433,8 +367,8 @@ Long Array<T>::Copy(
     Long N = MIN(mSize - thisPos, MIN(srcArray.mSize - srcPos, length));
     T* array = static_cast<T*>(mData) + thisPos;
     for (Long i = 0; i < N; i++) {
-        AssignFunc assignF;
-        assignF(array[i], srcArray[srcPos + i], mData);
+        AssignFunc<T> assignF;
+        assignF(&array[i], srcArray[srcPos + i], mData);
     }
     return N;
 }
@@ -445,8 +379,8 @@ void Array<T>::Set(
     /* [in] */ T value)
 {
     T* array = static_cast<T*>(mData);
-    AssignFunc assignF;
-    assignF(array[index], value, mData);
+    AssignFunc<T> assignF;
+    assignF(&array[index], value, mData);
 }
 
 template<class T>
@@ -501,8 +435,8 @@ Array<T> Array<T>::Clone() const
     T* src = static_cast<T*>(mData);
     T* des = static_cast<T*>(data);
     for (Long i = 0; i < mSize; i++) {
-        AssignFunc assignF;
-        assignF(des[i], src[i], data);
+        AssignFunc<T> assignF;
+        assignF(&des[i], src[i], data);
     }
 
     newArray.mData = data;

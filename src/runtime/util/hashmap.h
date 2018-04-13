@@ -17,7 +17,6 @@
 #ifndef __CCM_HASHMAP_H__
 #define __CCM_HASHMAP_H__
 
-#include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -47,64 +46,6 @@ inline int get_next_prime(int n)
     return get_lower_bound(&prime_list[0], &prime_list[10], n);
 }
 
-template<class T>
-void AssignImpl(
-    /* [in] */ T* target,
-    /* [in] */ const T& value)
-{
-    assert(0 && "AssignKeyImpl not implemented.");
-}
-
-template<>
-void AssignImpl<String>(
-    /* [in] */ String* target,
-    /* [in] */ const String& value);
-
-template<>
-void AssignImpl<Uuid>(
-    /* [in] */ Uuid* target,
-    /* [in] */ const Uuid& value);
-
-template<class Key>
-int CompareKeyImpl(
-    /* [in] */ const Key& key1,
-    /* [in] */ const Key& key2)
-{
-    assert(0 && "CompareKeyImpl not implemented.");
-    return -1;
-}
-
-template<>
-int CompareKeyImpl<String>(
-    /* [in] */ const String& key1,
-    /* [in] */ const String& key2);
-
-template<>
-int CompareKeyImpl<Uuid>(
-    /* [in] */ const Uuid& key1,
-    /* [in] */ const Uuid& key2);
-
-template<class Key>
-int HashKeyImpl(
-    /* [in] */ const Key& key)
-{
-    assert(0 && "HashKeyImpl not implemented.");
-    return -1;
-}
-
-template<>
-int HashKeyImpl<String>(
-    /* [in] */ const String& key);
-
-template<>
-int HashKeyImpl<Uuid>(
-    /* [in] */ const Uuid& key);
-
-template<class T>
-void DeleteImpl(
-    /* [in, out] */ T* key)
-{}
-
 template<class Key, class Val>
 class HashMap
 {
@@ -117,8 +58,10 @@ private:
 
         ~Bucket()
         {
-            DeleteImpl(&mKey);
-            DeleteImpl(&mValue);
+            DeleteFunc<Key> deleteKeyF;
+            DeleteFunc<Val> deleteValF;
+            deleteKeyF(&mKey, this);
+            deleteValF(&mValue, this);
             mNext = nullptr;
         }
 
@@ -155,22 +98,26 @@ public:
         /* [in] */ const Key& key,
         /* [in] */ Val value)
     {
+        CompareFunc<Key> compareF;
+        AssignFunc<Key> assignKeyF;
+        AssignFunc<Val> assignValF;
+
         int hash = HashKey(key);
         if (hash == -1) return;
 
         int index = hash % mBucketSize;
         if (mBuckets[index] == nullptr) {
             Bucket* b = new Bucket();
-            AssignImpl(&b->mKey, key);
-            AssignImpl(&b->mValue, value);
+            assignKeyF(&b->mKey, key, this);
+            assignValF(&b->mValue, value, this);
             mBuckets[index] = b;
             return;
         }
         else {
             Bucket* prev = mBuckets[index];
             while (prev != nullptr) {
-                if (!CompareKeyImpl(prev->mKey, key)) {
-                    AssignImpl(&prev->mValue, value);
+                if (!compareF(prev->mKey, key)) {
+                    assignValF(&prev->mValue, value, this);
                     return;
                 }
                 else if (prev->mNext == nullptr) {
@@ -179,8 +126,8 @@ public:
                 prev = prev->mNext;
             }
             Bucket* b = new Bucket();
-            AssignImpl(&b->mKey, key);
-            AssignImpl(&b->mValue, value);
+            assignKeyF(&b->mKey, key, this);
+            assignValF(&b->mValue, value, this);
             prev->mNext = b;
             return;
         }
@@ -189,13 +136,15 @@ public:
     bool ContainsKey(
         /* [in] */ const Key& key)
     {
+        CompareFunc<Key> compareF;
+
         int hash = HashKey(key);
         if (hash == -1) return false;
 
         int index = hash % mBucketSize;
         Bucket* curr = mBuckets[index];
         while (curr != nullptr) {
-            if (!CompareKeyImpl(curr->mKey, key)) return true;
+            if (!compareF(curr->mKey, key)) return true;
             curr = curr->mNext;
         }
 
@@ -205,13 +154,15 @@ public:
     Val Get(
         /* [in] */ const Key& key)
     {
+        CompareFunc<Key> compareF;
+
         int hash = HashKey(key);
         if (hash == -1) return Val(0);
 
         int index = hash % mBucketSize;
         Bucket* curr = mBuckets[index];
         while (curr != nullptr) {
-            if (!CompareKeyImpl(curr->mKey, key)) return curr->mValue;
+            if (!compareF(curr->mKey, key)) return curr->mValue;
             curr = curr->mNext;
         }
 
@@ -237,7 +188,8 @@ private:
     int HashKey(
         /* [in] */ const Key& key)
     {
-        return HashKeyImpl<Key>(key);
+        HashFunc<Key> hashF;
+        return hashF(key);
     }
 
 private:

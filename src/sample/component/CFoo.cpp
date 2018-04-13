@@ -23,6 +23,16 @@ namespace demo {
 
 CCM_INTERFACE_IMPL_1(CFoo, Object, IFoo);
 
+CFoo::CFoo()
+{
+    printf("==== Call CFoo() ====\n");
+}
+
+CFoo::~CFoo()
+{
+    printf("==== Call ~CFoo() ====\n");
+}
+
 ECode CFoo::Foo(
     /* [in] */ Integer data)
 {

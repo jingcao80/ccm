@@ -50,14 +50,29 @@ public:
     ECode GetAllCoclasses(
         /* [out] */ Array<IMetaCoclass*>& klasses) override;
 
+    ECode GetCoclass(
+        /* [in] */ const String& fullName,
+        /* [out] */ IMetaCoclass** metaKls) override;
+
     ECode GetInterfaceNumber(
         /* [out] */ Integer* number) override;
 
     ECode GetAllInterfaces(
         /* [out] */ Array<IMetaInterface*>& intfs) override;
 
-private:
+    ECode GetInterface(
+        /* [in] */ const String& fullName,
+        /* [out] */ IMetaInterface** metaIntf) override;
+
+    void BuildAllCoclasses();
+
+    void BuildAllInterfaces();
+
+public:
     MetaComponent* mMetadata;
+    ComponentID mCid;
+    String mName;
+    String mUrl;
     Array<IMetaCoclass*> mMetaCoclasses;
     HashMap<String, IMetaCoclass*> mMetaCoclassMap;
     Array<IMetaInterface*> mMetaInterfaces;

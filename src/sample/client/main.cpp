@@ -37,8 +37,38 @@ int main(int argc, char** argv)
     CoGetComponentMetadata(IID_FooBarDemo, (IMetaComponent**)&mc);
     String name;
     mc->GetName(&name);
+    printf("==== component name: %s ====\n\n", name.string());
+
     Integer clsNumber;
     mc->GetCoclassNumber(&clsNumber);
-    printf("==== name: %s, class number: %d ====\n", name.string(), clsNumber);
+    printf("==== component class number: %d ====\n", clsNumber);
+    Array<IMetaCoclass*> klasses(clsNumber);
+    mc->GetAllCoclasses(klasses);
+    for (Integer i = 0; i < klasses.GetLength(); i++) {
+        String clsName, clsNs;
+        klasses[i]->GetName(&clsName);
+        klasses[i]->GetNamespace(&clsNs);
+        printf("==== [%d] class name: %s, namespace: %s ====\n",
+                i, clsName.string(), clsNs.string());
+    }
+    printf("\n");
+
+    Integer intfNumber;
+    mc->GetInterfaceNumber(&intfNumber);
+    printf("==== component interface number: %d ====\n", intfNumber);
+    Array<IMetaInterface*> intfs(intfNumber);
+    mc->GetAllInterfaces(intfs);
+    for (Integer i = 0; i < intfs.GetLength(); i++) {
+        String intfName, intfNs;
+        intfs[i]->GetName(&intfName);
+        intfs[i]->GetNamespace(&intfNs);
+        printf("==== [%d] interface name: %s, namespace: %s ====\n",
+                i, intfName.string(), intfNs.string());
+    }
+    printf("\n");
+
+    AutoPtr<IInterface> obj;
+    klasses[0]->CreateObject((IInterface**)&obj);
+
     return 0;
 }

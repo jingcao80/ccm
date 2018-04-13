@@ -20,7 +20,6 @@ include_directories(
     ../util)
 
 set(SOURCES
-    ccmarray.cpp
     ccmsharedbuffer.cpp
     ccmstring.cpp
     ccmuuid.cpp)
