@@ -687,6 +687,9 @@ CcmTypeKind MetaBuilder::Type2CcdlType(
     else if (type->IsCoclassIDType()) {
         return CcmTypeKind::CoclassID;
     }
+    else if (type->IsComponentIDType()){
+        return CcmTypeKind::ComponentID;
+    }
     else if (type->IsInterfaceIDType()) {
         return CcmTypeKind::InterfaceID;
     }

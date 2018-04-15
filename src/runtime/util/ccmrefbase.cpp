@@ -401,7 +401,7 @@ void RefBase::WeakRefImpl::RemoveRef(
 
         RefEntry* const head = *refs;
         RefEntry* ref = head;
-        while (ref != NULL) {
+        while (ref != nullptr) {
             if (ref->mId == id) {
                 *refs = ref->mNext;
                 delete ref;
@@ -437,7 +437,7 @@ void RefBase::WeakRefImpl::RenameRefsId(
     if (mTrackEnabled) {
         Mutex::AutoLock lock(mMutex);
         RefEntry* ref = r;
-        while (ref != NULL) {
+        while (ref != nullptr) {
             if (ref->mId == oldId) {
                 ref->mId = newId;
             }
@@ -809,7 +809,7 @@ RefBase::~RefBase()
         // We never acquired a strong reference on this object.
         delete mRefs;
     }
-    const_cast<WeakRefImpl*&>(mRefs) = NULL;
+    const_cast<WeakRefImpl*&>(mRefs) = nullptr;
 }
 
 void RefBase::ExtendObjectLifetime(

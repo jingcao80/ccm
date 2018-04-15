@@ -32,6 +32,7 @@ enum class CcmTypeKind
     Boolean,
     String,
     CoclassID,
+    ComponentID,
     InterfaceID,
     HANDLE,
     Enum,

@@ -47,6 +47,8 @@ Module::Module()
     mHANDLEType->SetNamespace(ccm);
     mCoclassIDType = new CoclassIDType();
     mCoclassIDType->SetNamespace(ccm);
+    mComponentIDType = new ComponentIDType();
+    mComponentIDType->SetNamespace(ccm);
     mInterfaceIDType = new InterfaceIDType();
     mInterfaceIDType->SetNamespace(ccm);
 
@@ -61,6 +63,7 @@ Module::Module()
     mTypes.Put(String("String"), mStringType);
     mTypes.Put(String("HANDLE"), mHANDLEType);
     mTypes.Put(String("CoclassID"), mCoclassIDType);
+    mTypes.Put(String("ComponentID"), mComponentIDType);
     mTypes.Put(String("InterfaceID"), mInterfaceIDType);
 }
 
@@ -77,6 +80,7 @@ Module::~Module()
     delete mStringType;
     delete mHANDLEType;
     delete mCoclassIDType;
+    delete mComponentIDType;
     delete mInterfaceIDType;
 }
 

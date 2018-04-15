@@ -1,0 +1,181 @@
+//=========================================================================
+// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//=========================================================================
+
+interface ccm::IMetaComponent;
+interface ccm::IMetaCoclass;
+interface ccm::IMetaConstructor;
+interface ccm::IMetaEnumeration;
+interface ccm::IMetaEnumerator;
+interface ccm::IMetaInterface;
+
+namespace ccm {
+
+[
+    uuid(35b4d7ca-b66c-44d3-b4a6-007852953085),
+    version(0.1.0)
+]
+interface IMetaComponent
+{
+    GetName(
+        [out] String* name);
+
+    GetComponentID(
+        [out] ComponentID* cid);
+
+    GetCoclassNumber(
+        [out] Integer* number);
+
+    GetAllCoclasses(
+        [out] Array<IMetaCoclass*> klasses);
+
+    GetCoclass(
+        [in] String fullName,
+        [out] IMetaCoclass** metaKls);
+
+    GetInterfaceNumber(
+        [out] Integer* number);
+
+    GetAllInterfaces(
+        [out] Array<IMetaInterface*> intfs);
+
+    GetInterface(
+        [in] String fullName,
+        [out] IMetaInterface** metaIntf);
+
+    GetEnumerationNumber(
+        [out] Integer* number);
+
+    GetAllEnumerations(
+        [out] Array<IMetaEnumeration*> enumns);
+
+    GetEnumeration(
+        [in] String fullName,
+        [out] IMetaEnumeration** enumn);
+}
+
+[
+    uuid(8fdbd639-39be-4e9f-801d-8a3b137d7c1f),
+    version(0.1.0)
+]
+interface IMetaCoclass
+{
+    GetMetaComponent(
+        [out] IMetaComponent** metaComp);
+
+    GetName(
+        [out] String* name);
+
+    GetNamespace(
+        [out] String* ns);
+
+    GetCoclassID(
+        [out] CoclassID* cid);
+
+    GetConstructorNumber(
+        [out] Integer* number);
+
+    GetAllConstructors(
+        [out] Array<IMetaConstructor*> constrs);
+
+    GetConstructors(
+        [in] Integer paramNumber,
+        [out] IMetaConstructor** constr);
+
+    GetInterfaceNumber(
+        [out] Integer* number);
+
+    GetAllInterfaces(
+        [out] Array<IMetaInterface*> intfs);
+
+    CreateObject(
+        [out] IInterface** object);
+
+    CreateObject(
+        [in] InterfaceID iid,
+        [out] IInterface** object);
+}
+
+[
+    uuid(ba7707a3-e2f8-4318-8559-f12940f02b2e),
+    version(0.1.0)
+]
+interface IMetaConstructor
+{
+
+}
+
+[
+    uuid(f23514ea-5b7f-4a16-85da-102decb85d38),
+    version(0.1.0)
+]
+interface IMetaEnumeration
+{
+    GetMetaComponent(
+        [out] IMetaComponent** metaComp);
+
+    GetName(
+        [out] String* name);
+
+    GetNamespace(
+        [out] String* ns);
+
+    GetEnumeratorNumber(
+        [out] Integer* number);
+
+    GetAllEnumerators(
+        [out] Array<IMetaEnumerator*> enumrs);
+
+    GetEnumerator(
+        [in] String name,
+        [out] IMetaEnumerator** metaEnumr);
+}
+
+[
+    uuid(f508e549-ba3f-4a6e-ad4b-b8bdd3c3fe73),
+    version(0.1.0)
+]
+interface IMetaEnumerator
+{
+    GetMetaEnumeration(
+        [out] IMetaEnumeration** metaEnumn);
+
+    GetName(
+        [out] String* name);
+
+    GetValue(
+        [out] Integer* value);
+}
+
+[
+    uuid(a9f54826-5903-4910-af5f-9703364663b2),
+    version(0.1.0)
+]
+interface IMetaInterface
+{
+    GetMetaComponent(
+        [out] IMetaComponent** metaComp);
+
+    GetName(
+        [out] String* name);
+
+    GetNamespace(
+        [out] String* ns);
+
+    GetInterfaceID(
+        [out] InterfaceID* iid);
+}
+
+}

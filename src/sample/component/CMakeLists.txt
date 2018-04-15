@@ -14,14 +14,10 @@
 # limitations under the License.
 #=========================================================================
 
-cmake_minimum_required(VERSION 2.8)
-
 project(demo-component CXX)
 
-set(PROJECT_DIR ${CMAKE_SOURCE_DIR}/../../../)
-set(BIN_DIR ${PROJECT_DIR}/bin)
-set(INC_DIR ${BIN_DIR}/inc)
-set(OBJ_DIR ${CMAKE_BINARY_DIR}/obj)
+set(COMPONENT_DIR ${SAMPLE_DIR}/component)
+set(OBJ_DIR ${CMAKE_BINARY_DIR}/src/sample/component)
 
 include(${PROJECT_DIR}/build/common.cmake)
 
@@ -40,13 +36,14 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/FooBarDemoPub.cpp
     ${OBJ_DIR}/MetadataWrapper.cpp)
 
-LINK_DIRECTORIES(${BIN_DIR})
+set(LINK_EXTERNAL_LIBS
+    ${BIN_DIR}/ccmrt.so)
 
 add_library(FooBarDemo
     SHARED
     ${SOURCES}
     ${GENERATED_SOURCES})
-target_link_libraries(FooBarDemo -Wl,--no-undefined ccmrt)
+target_link_libraries(FooBarDemo -Wl,--no-undefined ${LINK_EXTERNAL_LIBS})
 set_target_properties(FooBarDemo PROPERTIES PREFIX "")
 
 add_custom_command(
@@ -56,11 +53,19 @@ add_custom_command(
         "${BIN_DIR}/ccdl"
         -c
         -g
-        -d "obj"
-        "${CMAKE_SOURCE_DIR}/FooBarDemo.cdl")
+        -k
+        -d ${OBJ_DIR}
+        "${COMPONENT_DIR}/FooBarDemo.cdl")
+
+add_custom_command(
+    TARGET FooBarDemo
+    POST_BUILD
+    COMMAND
+        "${CMAKE_COMMAND}"
+        -E copy ${OBJ_DIR}/FooBarDemo.so ${BIN_DIR})
 
 install(FILES
-    ${CMAKE_BINARY_DIR}/FooBarDemo.so
+    ${OBJ_DIR}/FooBarDemo.so
     DESTINATION ${BIN_DIR}
     PERMISSIONS
         OWNER_READ
@@ -71,7 +76,3 @@ install(FILES
         GROUP_EXECUTE
         WORLD_READ
         WORLD_EXECUTE)
-
-
-
-

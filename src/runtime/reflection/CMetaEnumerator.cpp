@@ -13,19 +13,3 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //=========================================================================
-
-#ifndef __CCM_CCMREFLECTIONAPI_H__
-#define __CCM_CCMREFLECTIONAPI_H__
-
-#include "ccmdef.h"
-#include "ccmtypes.h"
-
-namespace ccm {
-
-EXTERN_C COM_PUBLIC ECode CoGetComponentMetadata(
-    /* [in] */ const ComponentID& cid,
-    /* [out] */ IMetaComponent** mc);
-
-}
-
-#endif // __CCM_CCMREFLECTIONAPI_H__

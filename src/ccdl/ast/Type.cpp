@@ -110,6 +110,11 @@ bool Type::IsCoclassIDType()
     return false;
 }
 
+bool Type::IsComponentIDType()
+{
+    return false;
+}
+
 bool Type::IsInterfaceIDType()
 {
     return false;

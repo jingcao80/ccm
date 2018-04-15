@@ -14,12 +14,7 @@
 # limitations under the License.
 #=========================================================================
 
-project(libmetadata CXX)
+set(SAMPLE_DIR ${PROJECT_DIR}/src/sample)
 
-include(${PROJECT_DIR}/build/common.cmake)
-
-set(LIBMETADATA_SOURCES
-    MetaSerializer.cpp)
-
-add_library(metadata STATIC
-    ${LIBMETADATA_SOURCES})
+add_subdirectory(component)
+add_subdirectory(client)

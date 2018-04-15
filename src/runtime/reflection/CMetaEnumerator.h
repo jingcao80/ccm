@@ -14,18 +14,44 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CCMREFLECTIONAPI_H__
-#define __CCM_CCMREFLECTIONAPI_H__
+#ifndef __CCM_CMETAENUMERATOR_H__
+#define __CCM_CMETAENUMERATOR_H__
 
-#include "ccmdef.h"
 #include "ccmtypes.h"
+#include "ccmrefbase.h"
+#include "Component.h"
+
+using ccm::metadata::MetaEnumerator;
 
 namespace ccm {
 
-EXTERN_C COM_PUBLIC ECode CoGetComponentMetadata(
-    /* [in] */ const ComponentID& cid,
-    /* [out] */ IMetaComponent** mc);
+class CMetaEnumerator
+    : public LightRefBase
+    , public IMetaEnumerator
+{
+public:
+    CMetaEnumerator();
+
+    ~CMetaEnumerator();
+
+    CCM_INTERFACE_DECL();
+
+    ECode GetMetaEnumeration(
+        /* [out] */ IMetaEnumeration** metaEnumn) override;
+
+    ECode GetName(
+        /* [out] */ String* name) override;
+
+    ECode GetValue(
+        /* [out] */ Integer* value) override;
+
+public:
+    MetaEnumerator* mMetadata;
+    CMetaEnumeration* mMetaEnumeration;
+    String mName;
+    Integer mValue;
+};
 
 }
 
-#endif // __CCM_CCMREFLECTIONAPI_H__
+#endif // __CCM_CMETAENUMERATOR_H__

@@ -14,31 +14,31 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CMETACOCLASS_H__
-#define __CCM_CMETACOCLASS_H__
+#ifndef __CCM_CMETAENUMERATION_H__
+#define __CCM_CMETAENUMERATION_H__
 
 #include "ccmtypes.h"
 #include "ccmrefbase.h"
 #include "Component.h"
 
-using ccm::metadata::MetaCoclass;
 using ccm::metadata::MetaComponent;
+using ccm::metadata::MetaEnumeration;
 
 namespace ccm {
 
 class CMetaComponent;
 
-class CMetaCoclass
+class CMetaEnumeration
     : public LightRefBase
-    , public IMetaCoclass
+    , public IMetaEnumeration
 {
 public:
-    CMetaCoclass(
+    CMetaEnumeration(
         /* [in] */ CMetaComponent* mcObj,
         /* [in] */ MetaComponent* mc,
-        /* [in] */ MetaCoclass* mk);
+        /* [in] */ MetaEnumeration* me);
 
-    ~CMetaCoclass();
+    ~CMetaEnumeration();
 
     CCM_INTERFACE_DECL();
 
@@ -51,41 +51,26 @@ public:
     ECode GetNamespace(
         /* [out] */ String* ns) override;
 
-    ECode GetCoclassID(
-        /* [out] */ CoclassID* cid) override;
-
-    ECode GetConstructorNumber(
+    ECode GetEnumeratorNumber(
         /* [out] */ Integer* number) override;
 
-    ECode GetAllConstructors(
-        /* [out] */ Array<IMetaConstructor*>& constrs) override;
+    ECode GetAllEnumerators(
+        /* [out] */ Array<IMetaEnumerator*>& enumrs) override;
 
-    ECode GetConstructors(
-        /* [in] */ Integer paramNumber,
-        /* [out] */ IMetaConstructor** constr) override;
+    ECode GetEnumerator(
+        /* [in] */ const String& name,
+        /* [out] */ IMetaEnumerator** metaEnumr) override;
 
-    ECode GetInterfaceNumber(
-        /* [out] */ Integer* number) override;
-
-    ECode GetAllInterfaces(
-        /* [out] */ Array<IMetaInterface*>& intfs) override;
-
-    ECode CreateObject(
-        /* [out] */ IInterface** object) override;
-
-    ECode CreateObject(
-        /* [in] */ const InterfaceID& iid,
-        /* [out] */ IInterface** object) override;
+    void BuildAllEnumerators();
 
 public:
-    MetaCoclass* mMetadata;
+    MetaEnumeration* mMetadata;
     CMetaComponent* mMetaComponent;
-    CoclassID mCid;
     String mName;
     String mNamespace;
-    Array<IMetaInterface*> mMetaInterfaces;
+    Array<IMetaEnumerator*> mMetaEnumerators;
 };
 
 }
 
-#endif // __CCM_CMETACOCLASS_H__
+#endif // __CCM_CMETAENUMERATION_H__

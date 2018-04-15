@@ -28,41 +28,25 @@ public:
         /* [in] */ int argc,
         /* [in] */ char** argv);
 
-    inline bool IsFormatError()
-    { return mFormatError; }
+    inline bool DoCompile();
 
-    inline bool ShouldCompile()
-    { return mShouldCompile; }
+    inline bool DoSaveMetadata();
 
-    inline bool ShouldSaveMetadata()
-    { return mShouldSaveMetadata; }
+    inline bool DoGenerateCode();
 
-    inline bool ShouldGenerate()
-    { return mShouldGenerate; }
+    inline bool DoShowUsage();
 
-    inline bool ShouldShowUsage()
-    { return mShowUsage; }
+    inline int GetOptionNumber();
 
-    inline int GetOptionNumber()
-    { return mOptionNumber; }
+    inline String GetInputFile();
 
-    inline String GetInputFile()
-    { return mInputFile; }
+    inline String GetMetadataOutputFile();
 
-    inline String GetMetadataOutputFile()
-    { return mMetadataOuputFile; }
+    inline String GetCodeGenDirectory();
 
-    inline String GetOutputDir()
-    { return mOutputDir; }
+    inline int GetMode();
 
-    inline bool IsGenForComponent()
-    { return mGenForComponent; }
-
-    inline bool IsFromSoFile()
-    { return mMetadataFileType == SO_FILE; }
-
-    inline bool IsFromMetadataFile()
-    { return mMetadataFileType == METADATA_FILE; }
+    inline int GetMetadataInputType();
 
     void ShowUsage();
 
@@ -71,24 +55,79 @@ private:
         /* [in] */ int argc,
         /* [in] */ char** argv);
 
+public:
+    static constexpr int MODE_CCMRT = 1;
+    static constexpr int MODE_COMPONENT = 2;
+    static constexpr int MODE_USER = 3;
+
+    static constexpr int TYPE_METADATA_FILE = 1;
+    static constexpr int TYPE_SO_FILE = 2;
+
 private:
-    static constexpr int METADATA_FILE = 1;
-    static constexpr int SO_FILE = 2;
+    bool mShowUsage;
+    bool mDoCompile;
+    bool mDoGenerate;
+    bool mDoSaveMetadata;
 
     int mOptionNumber;
-    String mProgram;
-    String mInputFile;
-    String mMetadataOuputFile;
-    String mOutputDir;
+    int mMode;
+    int mMetadataInputType;
 
-    bool mShowUsage;
-    bool mFormatError;
-    bool mShouldCompile;
-    bool mShouldSaveMetadata;
-    bool mShouldGenerate;
-    bool mGenForComponent;
-    int mMetadataFileType;
+    String mProgram;
+    String mCodeGenDir;
+    String mMetadataOutputFile;
+    String mInputFile;
 };
+
+bool Options::DoCompile()
+{
+    return mDoCompile;
+}
+
+bool Options::DoSaveMetadata()
+{
+    return mDoSaveMetadata;
+}
+
+bool Options::DoGenerateCode()
+{
+    return mDoGenerate;
+}
+
+bool Options::DoShowUsage()
+{
+    return mShowUsage;
+}
+
+int Options::GetOptionNumber()
+{
+    return mOptionNumber;
+}
+
+String Options::GetInputFile()
+{
+    return mInputFile;
+}
+
+String Options::GetMetadataOutputFile()
+{
+    return mMetadataOutputFile;
+}
+
+String Options::GetCodeGenDirectory()
+{
+    return mCodeGenDir;
+}
+
+int Options::GetMode()
+{
+    return mMode;
+}
+
+int Options::GetMetadataInputType()
+{
+    return mMetadataInputType;
+}
 
 }
 

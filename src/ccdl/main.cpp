@@ -29,17 +29,16 @@ int main(int argc, char** argv)
 {
     Options options(argc, argv);
 
-    if (options.IsFormatError() || options.GetOptionNumber() <= 1
-        || options.ShouldShowUsage()) {
+    if (options.GetOptionNumber() <= 1 || options.DoShowUsage()) {
         options.ShowUsage();
         return 0;
     }
 
     std::shared_ptr<MetaComponent> comMetadata;
 
-    if (options.ShouldCompile()) {
+    if (options.DoCompile()) {
         Parser parser;
-        if (!parser.Parse(options.GetInputFile())) {
+        if (!parser.Parse(options.GetInputFile(), options.GetMode())) {
             Logger::E("ccdl", "Parsing failed.");
             return -1;
         }
@@ -56,7 +55,7 @@ int main(int argc, char** argv)
             return -1;
         }
 
-        if (options.ShouldSaveMetadata()) {
+        if (options.DoSaveMetadata()) {
             File file(options.GetMetadataOutputFile(), File::WRITE);
             if (!file.IsValid()) {
                 Logger::E("ccdl", "Create metadata file failed.");
@@ -74,20 +73,21 @@ int main(int argc, char** argv)
         }
     }
 
-    if (options.ShouldGenerate()) {
+    if (options.DoGenerateCode()) {
         if (comMetadata == nullptr) {
             String mdFile = options.GetInputFile();
             void* newData = nullptr;
-            if (options.IsFromSoFile()) {
-                newData = MetadataUtils::ReadMetadataFromElf64(mdFile);
-            }
-            else if (options.IsFromMetadataFile()) {
-                newData = MetadataUtils::ReadMetadataFromFile(mdFile);
-            }
-            else {
-                Logger::E("ccdl", "Do not support get metadata from file \"%s\".",
+            switch (options.GetMetadataInputType()) {
+                case Options::TYPE_SO_FILE:
+                    newData = MetadataUtils::ReadMetadataFromElf64(mdFile);
+                    break;
+                case Options::TYPE_METADATA_FILE:
+                    newData = MetadataUtils::ReadMetadataFromFile(mdFile);
+                    break;
+                default:
+                    Logger::E("ccdl", "Do not support get metadata from file \"%s\".",
                         options.GetInputFile().string());
-                return -1;
+                    return -1;
             }
             if (newData == nullptr) {
                 Logger::E("ccdl", "Get metadata from \"%s\" failed.", mdFile.string());
@@ -100,13 +100,21 @@ int main(int argc, char** argv)
         }
 
         CodeGenerator cg;
-        cg.SetDirectory(options.GetOutputDir());
+        cg.SetDirectory(options.GetCodeGenDirectory());
         cg.SetMetadata(comMetadata.get());
-        if (options.IsGenForComponent()) {
-            cg.GenerateForComponent();
-        }
-        else {
-            cg.GenerateForComponentUser();
+        switch (options.GetMode()) {
+            case Options::MODE_CCMRT:
+                cg.GenerateOnCcmrtMode();
+                break;
+            case Options::MODE_COMPONENT:
+                cg.GenerateOnComponentMode();
+                break;
+            case Options::MODE_USER:
+                cg.GenerateOnUserMode();
+                break;
+            default:
+                Logger::E("ccdl", "Category is wrong.");
+                return -1;
         }
     }
 

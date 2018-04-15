@@ -93,7 +93,7 @@
 
 <*type*> ::= <*primitive_type*> | <*reference_type*> | <*pointer_type*>
 
-<*primitive_type*> ::= <*numeric_type*> | Boolean | String | CoclassID | InterfaceID | HANDLE
+<*primitive_type*> ::= <*numeric_type*> | Boolean | String | CoclassID | ComponentID | InterfaceID | HANDLE
 
 <*numeric_type*> ::= <*integral_type*> | <*floating-point_type*>
 
@@ -237,6 +237,7 @@ There are two ways to add comments. One is using syntax "/* <*comment_literal*> 
 | HANDLE      |     H     |
 | ECode       |     E     |
 | CoclassID   |     K     |
+| ComponentID |     M     |
 | InterfaceID |     U     |
 | Array       |     [     |
 | Pointer     |     *     |

@@ -14,6 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
+#include "CMetaComponent.h"
 #include "CMetaInterface.h"
 
 namespace ccm {
@@ -29,7 +30,8 @@ CMetaInterface::CMetaInterface(
     , mName(mi->mName)
     , mNamespace(mi->mNamespace)
 {
-    mIid = mi->mUuid;
+    mIid.mUuid = mi->mUuid;
+    mIid.mCid = &mcObj->mCid;
 }
 
 CMetaInterface::~CMetaInterface()

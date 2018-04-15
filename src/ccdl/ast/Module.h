@@ -22,6 +22,7 @@
 #include "ByteType.h"
 #include "CharType.h"
 #include "CoclassIDType.h"
+#include "ComponentIDType.h"
 #include "DoubleType.h"
 #include "Enumeration.h"
 #include "FloatType.h"
@@ -84,6 +85,7 @@ private:
     StringType* mStringType;
     HANDLEType* mHANDLEType;
     CoclassIDType* mCoclassIDType;
+    ComponentIDType* mComponentIDType;
     InterfaceIDType* mInterfaceIDType;
 };
 

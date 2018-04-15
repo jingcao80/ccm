@@ -17,7 +17,7 @@
 #ifndef __CCM_CMETAINTERFACE_H__
 #define __CCM_CMETAINTERFACE_H__
 
-#include "ccmreflectionintfs.h"
+#include "ccmtypes.h"
 #include "ccmrefbase.h"
 #include "Component.h"
 

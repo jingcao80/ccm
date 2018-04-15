@@ -17,6 +17,7 @@
 #include "ccmautoptr.h"
 #include "CMetaComponent.h"
 #include "CMetaCoclass.h"
+#include "CMetaEnumeration.h"
 #include "CMetaInterface.h"
 
 #include <stdlib.h>
@@ -35,6 +36,8 @@ CMetaComponent::CMetaComponent(
     , mUrl(metadata->mUrl)
     , mMetaCoclasses(mMetadata->mCoclassNumber)
     , mMetaCoclassMap(mMetadata->mCoclassNumber)
+    , mMetaEnumerations(mMetadata->mEnumerationNumber)
+    , mMetaEnumerationMap(mMetadata->mEnumerationNumber)
     , mMetaInterfaces(mMetadata->mInterfaceNumber -
             mMetadata->mSystemPreDeclaredInterfaceNumber)
     , mMetaInterfaceMap(mMetadata->mInterfaceNumber -
@@ -114,6 +117,49 @@ ECode CMetaComponent::GetCoclass(
     return NOERROR;
 }
 
+ECode CMetaComponent::GetEnumerationNumber(
+    /* [out] */ Integer* number)
+{
+    VALIDATE_NOT_NULL(number);
+
+    *number = mMetadata->mEnumerationNumber;
+    return NOERROR;
+}
+
+ECode CMetaComponent::GetAllEnumerations(
+    /* [out] */ Array<IMetaEnumeration*>& enumns)
+{
+    if (mMetaEnumerations.IsEmpty()) {
+        return NOERROR;
+    }
+
+    BuildAllEnumerations();
+
+    for (Integer i = 0; i < mMetaEnumerations.GetLength(); i++) {
+        enumns.Set(i, mMetaEnumerations[i]);
+    }
+
+    return NOERROR;
+}
+
+ECode CMetaComponent::GetEnumeration(
+    /* [in] */ const String& fullName,
+    /* [out] */ IMetaEnumeration** enumn)
+{
+    VALIDATE_NOT_NULL(enumn);
+
+    if (fullName.IsNullOrEmpty() || mMetaEnumerations.IsEmpty()) {
+        *enumn = nullptr;
+        return NOERROR;
+    }
+
+    BuildAllEnumerations();
+
+    *enumn = mMetaEnumerationMap.Get(fullName);
+    REFCOUNT_ADD(*enumn);
+    return NOERROR;
+}
+
 ECode CMetaComponent::GetInterfaceNumber(
     /* [out] */ Integer* number)
 {
@@ -172,6 +218,24 @@ void CMetaComponent::BuildAllCoclasses()
             mMetaCoclasses.Set(i, mcObj);
             mMetaCoclassMap.Put(String::Format("%s%s",
                     mc->mNamespace, mc->mName), mcObj);
+        }
+    }
+}
+
+void CMetaComponent::BuildAllEnumerations()
+{
+    if (mMetadata->mEnumerationNumber == 0) {
+        return;
+    }
+
+    if (mMetaEnumerations[0] == nullptr) {
+        for (Integer i = 0; i < mMetadata->mEnumerationNumber; i++) {
+            MetaEnumeration* me = mMetadata->mEnumerations[i];
+            IMetaEnumeration* meObj = new CMetaEnumeration(
+                    this, mMetadata, me);
+            mMetaEnumerations.Set(i, meObj);
+            mMetaEnumerationMap.Put(String::Format("%s%s",
+                    me->mNamespace, me->mName), meObj);
         }
     }
 }

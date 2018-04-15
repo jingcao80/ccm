@@ -75,6 +75,8 @@ public:
 
     virtual bool IsCoclassIDType();
 
+    virtual bool IsComponentIDType();
+
     virtual bool IsInterfaceIDType();
 
     virtual bool IsArrayType();

@@ -14,18 +14,20 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CCMREFLECTIONAPI_H__
-#define __CCM_CCMREFLECTIONAPI_H__
+#include "ComponentIDType.h"
 
-#include "ccmdef.h"
-#include "ccmtypes.h"
+namespace ccdl {
+namespace ast {
 
-namespace ccm {
-
-EXTERN_C COM_PUBLIC ECode CoGetComponentMetadata(
-    /* [in] */ const ComponentID& cid,
-    /* [out] */ IMetaComponent** mc);
-
+ComponentIDType::ComponentIDType()
+{
+    SetName(String("ComponentIDType"));
 }
 
-#endif // __CCM_CCMREFLECTIONAPI_H__
+String ComponentIDType::Signature()
+{
+    return String("M");
+}
+
+}
+}

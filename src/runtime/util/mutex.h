@@ -108,7 +108,7 @@ Mutex::AutoLock::~AutoLock()
 
 Mutex::Mutex()
 {
-    pthread_mutex_init(&mMutex, NULL);
+    pthread_mutex_init(&mMutex, nullptr);
 }
 
 Mutex::Mutex(
@@ -122,7 +122,7 @@ Mutex::Mutex(
         pthread_mutexattr_destroy(&attr);
     }
     else {
-        pthread_mutex_init(&mMutex, NULL);
+        pthread_mutex_init(&mMutex, nullptr);
     }
 }
 

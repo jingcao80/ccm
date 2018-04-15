@@ -23,14 +23,13 @@ namespace ccdl {
 Options::Options(
     /* [in] */ int argc,
     /* [in] */ char** argv)
-    : mOptionNumber(argc)
-    , mShowUsage(false)
-    , mFormatError(false)
-    , mShouldCompile(false)
-    , mShouldSaveMetadata(false)
-    , mShouldGenerate(false)
-    , mGenForComponent(false)
-    , mMetadataFileType(0)
+    : mShowUsage(false)
+    , mDoCompile(false)
+    , mDoGenerate(false)
+    , mDoSaveMetadata(false)
+    , mOptionNumber(argc)
+    , mMode(0)
+    , mMetadataInputType(0)
 {
     Parse(argc, argv);
 }
@@ -48,25 +47,34 @@ void Options::Parse(
             mShowUsage = true;
         }
         else if (!strcmp("-c", string)) {
-            mShouldCompile = true;
+            mDoCompile = true;
         }
         else if (!strcmp("-d", string)) {
-            mOutputDir = argv[i++];
+            mCodeGenDir = argv[i++];
         }
         else if (!strcmp("-g", string)) {
-            mShouldGenerate = true;
-            mGenForComponent = true;
-            mMetadataFileType = SO_FILE;
+            mDoGenerate = true;
+            mMode = MODE_COMPONENT;
+            mMetadataInputType = TYPE_SO_FILE;
+        }
+        else if (!strcmp("-k", string)) {
+            mMode = MODE_COMPONENT;
         }
         else if (!strcmp("-m", string)) {
-            mMetadataFileType = METADATA_FILE;
+            mMetadataInputType = TYPE_METADATA_FILE;
         }
         else if (!strcmp("-o", string)) {
-            mShouldSaveMetadata = true;
-            mMetadataOuputFile = argv[i++];
+            mDoSaveMetadata = true;
+            mMetadataOutputFile = argv[i++];
+        }
+        else if (!strcmp("-r", string)) {
+            mMode = MODE_CCMRT;
+        }
+        else if (!strcmp("-s", string)) {
+            mMetadataInputType = TYPE_SO_FILE;
         }
         else if (!strcmp("-u", string)) {
-            mGenForComponent = false;
+            mMode = MODE_USER;
         }
         else {
             mInputFile = string;
@@ -82,10 +90,13 @@ void Options::ShowUsage()
            "  --help            Display command line options\n"
            "  -c                Compile the .cdl file to metadata\n"
            "  -d <directory>    Place generated C++ codes into <directory>\n"
-           "  -g                Generate C++ codes for component\n"
-           "  -m                Make the input file as a metadata file, .so is default\n"
+           "  -g                Generate C++ codes\n"
+           "  -k                Set \"componet\" mode\n"
+           "  -m                Set \"metadata\" as metadata input file type\n"
            "  -o <file>         Place the metadata into <file>\n"
-           "  -u                Together with -g to generate C++ codes for component user");
+           "  -r                Set \"ccmrt\" mode\n"
+           "  -s                Set \"so\" as metadata input file type\n"
+           "  -u                Set \"user\" mode\n");
 }
 
 }

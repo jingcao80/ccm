@@ -18,7 +18,6 @@
 #define __CCM_COMPONENT_H__
 
 #include "ccmtypes.h"
-#include "ccmreflectionintfs.h"
 
 namespace ccm {
 

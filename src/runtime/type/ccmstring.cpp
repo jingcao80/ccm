@@ -54,7 +54,7 @@ extern void Init_EMPTY_STRING()
 extern void Uninit_EMPTY_STRING()
 {
     SharedBuffer::GetBufferFromData(EMPTY_STRING)->Release();
-    EMPTY_STRING = NULL;
+    EMPTY_STRING = nullptr;
 }
 
 static char* GetEmptyString()

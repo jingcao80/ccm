@@ -14,11 +14,14 @@
 # limitations under the License.
 #=========================================================================
 
+set(COMPONENT_DIR ${RUNTIME_DIR}/component)
+
 include_directories(
     ../
     ../reflection
     ../type
-    ../util)
+    ../util
+    ${INC_DIR})
 
 set(SOURCES
     ccmcomponent.cpp
@@ -27,7 +30,17 @@ set(SOURCES
 add_library(component STATIC
     ${SOURCES})
 
+set(DEPLOY_HEADERS
+    ${COMPONENT_DIR}/ccmcomponent.h
+    ${COMPONENT_DIR}/ccmobjectapi.h)
+
+add_custom_command(
+    TARGET component
+    POST_BUILD
+    COMMAND
+        "${CMAKE_COMMAND}"
+        -E copy ${DEPLOY_HEADERS} ${INC_DIR})
+
 install(FILES
-    ccmcomponent.h
-    ccmobjectapi.h
+    ${DEPLOY_HEADERS}
     DESTINATION ${INC_DIR})

@@ -51,8 +51,16 @@ public:
     inline bool IsSystemPreDeclared()
     { return mSystemPreDeclared; }
 
+    inline void SetSystemPreDeclared(
+        /* [in] */ bool preDeclared)
+    { mSystemPreDeclared = preDeclared; }
+
     inline bool IsDeclared()
     { return mDeclared; }
+
+    inline void SetDeclared(
+        /* [in] */ bool declared)
+    { mDeclared = declared; }
 
     inline Uuid& GetUuid()
     { return mUuid; }
@@ -88,17 +96,6 @@ public:
 
     String Dump(
         /* [in] */ const String& prefix) override;
-
-private:
-    friend class ccdl::Parser;
-
-    inline void SetSystemPreDeclared(
-        /* [in] */ bool preDeclared)
-    { mSystemPreDeclared = preDeclared; }
-
-    inline void SetDeclared(
-        /* [in] */ bool declared)
-    { mDeclared = declared; }
 
 private:
     bool mSystemPreDeclared;

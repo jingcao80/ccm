@@ -38,9 +38,11 @@ class CodeGenerator
 public:
     CodeGenerator();
 
-    void GenerateForComponent();
+    void GenerateOnCcmrtMode();
 
-    void GenerateForComponentUser();
+    void GenerateOnComponentMode();
+
+    void GenerateOnUserMode();
 
     inline void SetDirectory(
         /* [in] */ const String& dir)
@@ -56,104 +58,114 @@ public:
 private:
     bool ResolveDirectory();
 
-    void GenerateTypeDeclarations();
+    void GenTypeDeclarationsOnCcmrtMode();
 
-    String GenerateEnumerationPreDeclarations(
+    String GenEnumerationPredeclarations(
         /* [in] */ MetaNamespace* mn);
 
-    String GenerateInterfacePreDeclarations(
+    String GenEnumerationDeclarations(
         /* [in] */ MetaNamespace* mn);
 
-    String GenerateEnumerations(
-        /* [in] */ MetaNamespace* mn);
-
-    String GenerateInterfaces(
-        /* [in] */ MetaNamespace* mn);
-
-    String GenerateEnumerationDeclaration(
+    String GenEnumerationDeclaration(
         /* [in] */ MetaEnumeration* me);
 
-    String GenerateInterfaceDeclaration(
+    String GenInterfaceIDPredeclarations(
+        /* [in] */ MetaNamespace* mn);
+
+    String GenInterfacePredeclarations(
+        /* [in] */ MetaNamespace* mn);
+
+    String GenInterfaceDeclarations(
+        /* [in] */ MetaNamespace* mn);
+
+    String GenInterfaceDeclaration(
         /* [in] */ MetaInterface* mi);
 
-    String GenerateConstantDeclaration(
+    String GenInterfaceConstant(
         /* [in] */ MetaConstant* mc);
 
-    String GenerateMethodDeclaration(
+    String GenInterfaceMethod(
         /* [in] */ MetaMethod* mm);
 
-    String GenerateDefineMacro(
-        /* [in] */ const String& fullName);
-
-    String GenerateNamespaceBegin(
-        /* [in] */ const String& ns);
-
-    String GenerateNamespaceEnd(
-        /* [in] */ const String& ns);
-
-    String GenerateParameter(
+    String GenParameter(
         /* [in] */ MetaParameter* mp);
 
-    String GenerateType(
+    String GenType(
         /* [in] */ MetaType* mt,
         /* [in] */ int attr = 0);
 
-    String GenerateValue(
+    String GenValue(
         /* [in] */ MetaConstant* mc);
 
-    void GenerateCoclasses();
+    void GenIds();
 
-    void GenerateCoclass(
-        /* [in] */ MetaCoclass* mk);
+    String GenComponentID();
 
-    void GenerateCoclassHeader(
-        /* [in] */ MetaCoclass* mk);
-
-    void GenerateCoclassCpp(
-        /* [in] */ MetaCoclass* mk);
-
-    String GenerateCoclassNewMethods(
-        /* [in] */ MetaCoclass* mk);
-
-    String GenerateCoclassObject(
-        /* [in] */ MetaCoclass* mk);
-
-    void GenerateModule();
-
-    String GenerateModuleID();
-
-    String GenerateInterfaceConstants(
+    String GenInterfaceIDsInNamespaceOnCcmrtMode(
         /* [in] */ MetaNamespace* mn);
 
-    String GenerateInterfaceIDs(
+    void GenTypeDeclarationsOnComponentMode();
+
+    String GenNamespaceBegin(
+        /* [in] */ const String& ns);
+
+    String GenNamespaceEnd(
+        /* [in] */ const String& ns);
+
+    void GenCoclasses();
+
+    void GenCoclass(
+        /* [in] */ MetaCoclass* mk);
+
+    void GenCoclassHeader(
+        /* [in] */ MetaCoclass* mk);
+
+    void GenCoclassCpp(
+        /* [in] */ MetaCoclass* mk);
+
+    String GenCoclassObject(
+        /* [in] */ MetaCoclass* mk);
+
+    String GenCoclassNewMethods(
+        /* [in] */ MetaCoclass* mk);
+
+    void GenComponentCpp();
+
+    String GenInterfaceConstantsInCpp(
         /* [in] */ MetaNamespace* mn);
 
-    String GenerateCoclassIDs(
+    String GenInterfaceIDsInCpp(
         /* [in] */ MetaNamespace* mn);
 
-    String GenerateClassObjectGetterArray();
-
-    String GenerateSoGetClassObject();
-
-    String GenerateSoGetAllClassObjects();
-
-    void GenerateMetadataWrapper();
-
-    void GenerateTypeDeclarationsForUser();
-
-    String GenerateCoclassDeclarationsForUser(
+    String GenCoclassIDsInCpp(
         /* [in] */ MetaNamespace* mn);
 
-    String GenerateCoclassDeclarationForUser(
+    String GenClassObjectGetterArray();
+
+    String GenSoGetAllClassObjects();
+
+    String GenSoGetClassObject();
+
+    void GenTypeDeclarationsOnUserMode();
+
+    String GenCoclassDeclarations(
+        /* [in] */ MetaNamespace* mn);
+
+    String GenCoclassDeclaration(
         /* [in] */ MetaCoclass* mc);
 
-    void GenerateModuleForUser();
+    void GenComponentCppOnUserMode();
 
-    String GenerateCoclassesForUser(
+    String GenCoclassesOnUserMode(
         /* [in] */ MetaNamespace* mn);
 
-    String GenerateCoclassForUser(
+    String GenCoclassOnUserMode(
         /* [in] */ MetaCoclass* mc);
+
+    String GenDefineMacro(
+        /* [in] */ const String& fullName);
+
+    void GenMetadataWrapper();
 
 private:
     static const String TAG;

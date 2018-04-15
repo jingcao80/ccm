@@ -14,18 +14,29 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CCMREFLECTIONAPI_H__
-#define __CCM_CCMREFLECTIONAPI_H__
+#ifndef __CCDL_AST_COMPONENTIDTYPE_H__
+#define __CCDL_AST_COMPONENTIDTYPE_H__
 
-#include "ccmdef.h"
-#include "ccmtypes.h"
+#include "Type.h"
 
-namespace ccm {
+namespace ccdl {
+namespace ast {
 
-EXTERN_C COM_PUBLIC ECode CoGetComponentMetadata(
-    /* [in] */ const ComponentID& cid,
-    /* [out] */ IMetaComponent** mc);
+class ComponentIDType : public Type
+{
+public:
+    ComponentIDType();
+
+    inline bool IsPrimitiveType() override
+    { return true; }
+
+    inline bool IsComponentIDType() override
+    { return true; }
+
+    String Signature() override;
+};
 
 }
+}
 
-#endif // __CCM_CCMREFLECTIONAPI_H__
+#endif // __CCDL_AST_COMPONENTIDTYPE_H__

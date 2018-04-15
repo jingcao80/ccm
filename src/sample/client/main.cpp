@@ -34,7 +34,7 @@ int main(int argc, char** argv)
     foo->Foo(9);
 
     AutoPtr<IMetaComponent> mc;
-    CoGetComponentMetadata(IID_FooBarDemo, (IMetaComponent**)&mc);
+    CoGetComponentMetadata(CID_FooBarDemo, (IMetaComponent**)&mc);
     String name;
     mc->GetName(&name);
     printf("==== component name: %s ====\n\n", name.string());

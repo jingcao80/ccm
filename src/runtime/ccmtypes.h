@@ -33,13 +33,20 @@ typedef bool            Boolean;
 typedef uintptr_t       HANDLE;
 typedef int             ECode;
 
-typedef Uuid            InterfaceID;
 struct ComponentID;
+
 struct CoclassID
 {
     Uuid                mUuid;
     const ComponentID*  mCid;
 };
+
+struct InterfaceID
+{
+    Uuid                mUuid;
+    const ComponentID*  mCid;
+};
+
 struct ComponentID
 {
     Uuid                mUuid;
@@ -54,6 +61,13 @@ inline bool operator==(
 }
 
 inline bool operator==(
+    /* [in] */ const InterfaceID& iid1,
+    /* [in] */ const InterfaceID& iid2)
+{
+    return !memcmp(&iid1.mUuid, &iid2.mUuid, sizeof(Uuid));
+}
+
+inline bool operator==(
     /* [in] */ const ComponentID& cid1,
     /* [in] */ const ComponentID& cid2)
 {
@@ -64,6 +78,37 @@ inline bool operator==(
 
 #include "ccmerror.h"
 #include "ccmstring.h"
+
+namespace ccm {
+
+extern const InterfaceID IID_IInterface;
+
+INTERFACE_ID(00000000-0000-0000-0000-000000000000)
+interface IInterface
+{
+    inline static IInterface* Probe(
+        /* [in] */ IInterface* object)
+    {
+        if (object == nullptr) return nullptr;
+        return object->Probe(IID_IInterface);
+    }
+
+    virtual Integer AddRef(
+        /* [in] */ HANDLE id = 0) = 0;
+
+    virtual Integer Release(
+        /* [in] */ HANDLE id = 0) = 0;
+
+    virtual IInterface* Probe(
+        /* [in] */ const InterfaceID& iid) = 0;
+
+    virtual ECode GetInterfaceID(
+        /* [in] */ IInterface* object,
+        /* [out] */ InterfaceID* iid) = 0;
+};
+
+}
+
 #include "ccmintfs.h"
 #include "ccmtypekind.h"
 
@@ -107,8 +152,10 @@ TYPE2KIND_SPEC(Boolean, CcmTypeKind::Boolean, true);
 TYPE2KIND_SPEC(String, CcmTypeKind::String, true);
 TYPE2KIND_SPEC(HANDLE, CcmTypeKind::HANDLE, true);
 TYPE2KIND_SPEC(CoclassID, CcmTypeKind::CoclassID, true);
+TYPE2KIND_SPEC(ComponentID, CcmTypeKind::ComponentID, true);
 TYPE2KIND_SPEC(InterfaceID, CcmTypeKind::InterfaceID, true);
 TYPE2KIND_SPEC(IInterface*, CcmTypeKind::Interface, false);
+TYPE2KIND_SPEC(Uuid, CcmTypeKind::Unknown, true);
 
 template<class T, class U>
 class Conversion

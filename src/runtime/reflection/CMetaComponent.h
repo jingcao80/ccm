@@ -17,7 +17,7 @@
 #ifndef __CCM_CMETACOMPONENT_H__
 #define __CCM_CMETACOMPONENT_H__
 
-#include "ccmreflectionintfs.h"
+#include "ccmtypes.h"
 #include "ccmrefbase.h"
 #include "Component.h"
 #include "hashmap.h"
@@ -54,6 +54,16 @@ public:
         /* [in] */ const String& fullName,
         /* [out] */ IMetaCoclass** metaKls) override;
 
+    ECode GetEnumerationNumber(
+        /* [out] */ Integer* number) override;
+
+    ECode GetAllEnumerations(
+        /* [out] */ Array<IMetaEnumeration*>& enumns) override;
+
+    ECode GetEnumeration(
+        /* [in] */ const String& fullName,
+        /* [out] */ IMetaEnumeration** enumn) override;
+
     ECode GetInterfaceNumber(
         /* [out] */ Integer* number) override;
 
@@ -66,6 +76,8 @@ public:
 
     void BuildAllCoclasses();
 
+    void BuildAllEnumerations();
+
     void BuildAllInterfaces();
 
 public:
@@ -75,6 +87,8 @@ public:
     String mUrl;
     Array<IMetaCoclass*> mMetaCoclasses;
     HashMap<String, IMetaCoclass*> mMetaCoclassMap;
+    Array<IMetaEnumeration*> mMetaEnumerations;
+    HashMap<String, IMetaEnumeration*> mMetaEnumerationMap;
     Array<IMetaInterface*> mMetaInterfaces;
     HashMap<String, IMetaInterface*> mMetaInterfaceMap;
 };

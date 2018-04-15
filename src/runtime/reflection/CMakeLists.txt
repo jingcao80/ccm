@@ -14,24 +14,38 @@
 # limitations under the License.
 #=========================================================================
 
+set(REFLECTION_DIR ${RUNTIME_DIR}/reflection)
+
 include_directories(
     ./
     ../
     ../component
     ../metadata
     ../type
-    ../util)
+    ../util
+    ${INC_DIR})
 
 set(SOURCES
     CMetaCoclass.cpp
     CMetaComponent.cpp
+    CMetaEnumeration.cpp
+    CMetaEnumerator.cpp
     CMetaInterface.cpp
     reflection.cpp)
 
 add_library(reflection STATIC
     ${SOURCES})
 
+set(DEPLOY_HEADERS
+    ${REFLECTION_DIR}/ccmreflectionapi.h)
+
+add_custom_command(
+    TARGET reflection
+    POST_BUILD
+    COMMAND
+        "${CMAKE_COMMAND}"
+        -E copy ${DEPLOY_HEADERS} ${INC_DIR})
+
 install(FILES
-    ccmreflectionapi.h
-    ccmreflectionintfs.h
+    ${DEPLOY_HEADERS}
     DESTINATION ${INC_DIR})

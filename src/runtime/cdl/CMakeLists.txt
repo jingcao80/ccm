@@ -14,59 +14,31 @@
 # limitations under the License.
 #=========================================================================
 
-project(demo-client CXX)
-
-set(CLIENT_DIR ${SAMPLE_DIR}/client)
-set(OBJ_DIR ${CMAKE_BINARY_DIR}/src/sample/client)
-
-include(${PROJECT_DIR}/build/common.cmake)
+set(OBJ_DIR ${CMAKE_BINARY_DIR}/obj)
 
 include_directories(
-    ./
-    ${INC_DIR}
-    ${OBJ_DIR})
-
-set(SOURCES
-    main.cpp)
+    ../
+    ../type
+    ../util
+    ${INC_DIR})
 
 set(GENERATED_SOURCES
-    ${OBJ_DIR}/FooBarDemo.cpp)
+    ${OBJ_DIR}/ccmids.cpp
+    ${OBJ_DIR}/MetadataWrapper.cpp)
 
-set(LINK_EXTERNAL_LIBS
-    ${BIN_DIR}/ccmrt.so)
-
-add_executable(demo
-    ${SOURCES}
+add_library(cdl STATIC
     ${GENERATED_SOURCES})
-target_link_libraries(demo ${LINK_EXTERNAL_LIBS})
 
 add_custom_command(
     OUTPUT
         ${GENERATED_SOURCES}
     COMMAND
         "${BIN_DIR}/ccdl"
+        -c
         -g
-        -u
-        -s
-        -d ${OBJ_DIR}
-        "${BIN_DIR}/FooBarDemo.so")
-
-add_custom_command(
-    TARGET demo
-    POST_BUILD
+        -r
+        -d "${OBJ_DIR}"
+        "${PROJECT_DIR}/src/runtime/cdl/ccmrt.cdl"
     COMMAND
         "${CMAKE_COMMAND}"
-        -E copy ${OBJ_DIR}/demo ${BIN_DIR})
-
-install(FILES
-    ${CMAKE_BINARY_DIR}/demo
-    DESTINATION ${BIN_DIR}
-    PERMISSIONS
-        OWNER_READ
-        OWNER_WRITE
-        OWNER_EXECUTE
-        GROUP_READ
-        GROUP_WRITE
-        GROUP_EXECUTE
-        WORLD_READ
-        WORLD_EXECUTE)
+        -E copy ${OBJ_DIR}/ccmintfs.h ${INC_DIR})

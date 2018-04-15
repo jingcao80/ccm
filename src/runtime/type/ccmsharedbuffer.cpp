@@ -92,7 +92,7 @@ SharedBuffer* SharedBuffer::EditResize(
         }
 
         buf = (SharedBuffer*)realloc(buf, sizeof(SharedBuffer) + newSize);
-        if (buf != NULL) {
+        if (buf != nullptr) {
             buf->mSize = newSize;
             return buf;
         }

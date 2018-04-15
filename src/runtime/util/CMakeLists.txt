@@ -14,10 +14,13 @@
 # limitations under the License.
 #=========================================================================
 
+set(UTIL_DIR ${RUNTIME_DIR}/util)
+
 include_directories(
     ./
     ../
-    ../type)
+    ../type
+    ${INC_DIR})
 
 set(SOURCES
     ccmlogger.cpp
@@ -27,9 +30,19 @@ set(SOURCES
 add_library(util STATIC
     ${SOURCES})
 
+set(DEPLOY_HEADERS
+    ${UTIL_DIR}/ccmautoptr.h
+    ${UTIL_DIR}/ccmlogger.h
+    ${UTIL_DIR}/ccmobject.h
+    ${UTIL_DIR}/ccmrefbase.h)
+
+add_custom_command(
+    TARGET util
+    POST_BUILD
+    COMMAND
+        "${CMAKE_COMMAND}"
+        -E copy ${DEPLOY_HEADERS} ${INC_DIR})
+
 install(FILES
-    ccmautoptr.h
-    ccmlogger.h
-    ccmobject.h
-    ccmrefbase.h
+    ${DEPLOY_HEADERS}
     DESTINATION ${INC_DIR})

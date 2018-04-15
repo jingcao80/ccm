@@ -18,11 +18,20 @@
 #include "../ast/ArrayType.h"
 #include "../ast/Constant.h"
 #include "../ast/PointerType.h"
+#include "../metadata/MetaRegister.h"
 #include "../util/Logger.h"
+#include "../util/MetadataUtils.h"
+#include "../../runtime/metadata/Component.h"
+#include "../../runtime/metadata/MetaSerializer.h"
+
+#include <stdlib.h>
 
 using ccdl::ast::ArrayType;
 using ccdl::ast::Constant;
 using ccdl::ast::PointerType;
+using ccdl::metadata::MetaRegister;
+
+using ccm::metadata::MetaSerializer;
 
 namespace ccdl {
 
@@ -71,7 +80,8 @@ Parser::~Parser()
 }
 
 bool Parser::Parse(
-    /* [in] */ const String& filePath)
+    /* [in] */ const String& filePath,
+    /* [in] */ int mode)
 {
     bool ret = mTokenizer.PushInputFile(filePath);
     if (!ret) {
@@ -87,6 +97,7 @@ bool Parser::Parse(
     mEnvironment->AddNamespace(mCurrNamespace);
     mPool = mEnvironment;
 
+    mMode = mode;
     PreParse();
 
     ret = ParseFile();
@@ -105,7 +116,20 @@ bool Parser::Parse(
 void Parser::PreParse()
 {
     GenerateIInterface();
-    GenerateIClassObject();
+    if (mMode == MODE_COMPONENT) {
+        LoadCcmrtMetadata();
+    }
+}
+
+void Parser::LoadCcmrtMetadata()
+{
+    String rtpath(getenv("RT_PATH"));
+    void* newData = MetadataUtils::ReadMetadataFromElf64(
+            rtpath + "/ccmrt.so");
+    MetaSerializer serializer;
+    serializer.Deserialize(reinterpret_cast<uintptr_t>(newData));
+    MetaRegister metaRegister(mPool, newData);
+    metaRegister.Register();
 }
 
 void Parser::PostParse()
@@ -1942,40 +1966,6 @@ void Parser::GenerateIInterface()
     ptrType = new PointerType();
     ptrType->SetBaseType(mPool->FindType(String("InterfaceID")));
     ptrType->SetPointerNumber(1);
-    mPool->AddTemporaryType(ptrType);
-    param->SetType(ptrType);
-    param->SetAttribute(Parameter::OUT);
-    method->AddParameter(param);
-    interface->AddMethod(method);
-}
-
-void Parser::GenerateIClassObject()
-{
-    // add IClassObject
-    Interface* interface = new Interface();
-    interface->SetName(String("IClassObject"));
-    interface->SetNamespace(mPool->FindNamespace(String("ccm")));
-    interface->SetDeclared(true);
-    interface->SetSystemPreDeclared(true);
-    Attribute attr;
-    attr.mUuid = "00000000-0000-0000-0000-000000000001";
-    interface->SetAttribute(attr);
-    mPool->AddInterface(interface);
-    // add CreateObject method
-    Method* method = new Method();
-    method->SetName(String("CreateObject"));
-    // add iid Parameter
-    Parameter* param = new Parameter();
-    param->SetName(String("iid"));
-    param->SetType(mPool->FindType(String("InterfaceID")));
-    param->SetAttribute(Parameter::IN);
-    method->AddParameter(param);
-    // add object Parameter
-    param = new Parameter();
-    param->SetName(String("object"));
-    PointerType* ptrType = new PointerType();
-    ptrType->SetBaseType(mPool->FindType(String("ccm::IInterface")));
-    ptrType->SetPointerNumber(2);
     mPool->AddTemporaryType(ptrType);
     param->SetType(ptrType);
     param->SetAttribute(Parameter::OUT);

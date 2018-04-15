@@ -329,6 +329,14 @@ String MetaDumper::DumpMetaType(
                 builder.Append("CoclassID");
             }
             break;
+        case CcmTypeKind::ComponentID:
+            if ((attr & Parameter::ATTR_MASK) == Parameter::IN) {
+                builder.Append("const ComponentID&");
+            }
+            else if ((attr & Parameter::ATTR_MASK) == Parameter::OUT) {
+                builder.Append("ComponentID");
+            }
+            break;
         case CcmTypeKind::InterfaceID:
             if ((attr & Parameter::ATTR_MASK) == Parameter::IN) {
                 builder.Append("const InterfaceID&");

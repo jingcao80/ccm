@@ -14,10 +14,13 @@
 # limitations under the License.
 #=========================================================================
 
+set(TYPE_DIR ${RUNTIME_DIR}/type)
+
 include_directories(
     ./
     ../
-    ../util)
+    ../util
+    ${INC_DIR})
 
 set(SOURCES
     ccmsharedbuffer.cpp
@@ -27,11 +30,20 @@ set(SOURCES
 add_library(type STATIC
     ${SOURCES})
 
+set(DEPLOY_HEADERS
+    ${TYPE_DIR}/ccmarray.h
+    ${TYPE_DIR}/ccmsharedbuffer.h
+    ${TYPE_DIR}/ccmstring.h
+    ${TYPE_DIR}/ccmtypekind.h
+    ${TYPE_DIR}/ccmuuid.h)
+
+add_custom_command(
+    TARGET type
+    POST_BUILD
+    COMMAND
+        "${CMAKE_COMMAND}"
+        -E copy ${DEPLOY_HEADERS} ${INC_DIR})
+
 install(FILES
-    ccmarray.h
-    ccmintfs.h
-    ccmsharedbuffer.h
-    ccmstring.h
-    ccmtypekind.h
-    ccmuuid.h
+    ${DEPLOY_HEADERS}
     DESTINATION ${INC_DIR})

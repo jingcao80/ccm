@@ -107,7 +107,8 @@ private:
 
 public:
     Parser()
-        : mParsedFiles(100)
+        : mMode(0)
+        , mParsedFiles(100)
         , mEnvironment(nullptr)
         , mModule(nullptr)
         , mCurrNamespace(nullptr)
@@ -122,13 +123,16 @@ public:
     ~Parser();
 
     bool Parse(
-        /* [in] */ const String& filePath);
+        /* [in] */ const String& filePath,
+        /* [in] */ int mode);
 
     inline std::shared_ptr<Module> GetModule()
     { return mModule; }
 
 private:
     void PreParse();
+
+    void LoadCcmrtMetadata();
 
     void PostParse();
 
@@ -257,8 +261,6 @@ private:
 
     void GenerateIInterface();
 
-    void GenerateIClassObject();
-
     void GenerateCoclassObject(
         /* [in] */ Coclass* klass);
 
@@ -271,11 +273,15 @@ private:
     void Dump();
 
 public:
+    static constexpr int MODE_CCMRT = 1;
+    static constexpr int MODE_COMPONENT = 2;
+
     static constexpr int NOERROR = 0x0;
     static constexpr int E_FILE_NOT_FOUND_EXCEPTION = 0x1;
 
 private:
     static const String TAG;
+    int mMode;
     Tokenizer mTokenizer;
     String mPathPrefix;
     StringMap<bool> mParsedFiles;

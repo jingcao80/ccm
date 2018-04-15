@@ -16,10 +16,6 @@
 
 project(ccdl CXX)
 
-#set(CMAKE_VERBOSE_MAKEFILE on)
-set(PROJECT_DIR ${CMAKE_BINARY_DIR}/../)
-set(BIN_DIR ${PROJECT_DIR}/bin)
-
 include(${PROJECT_DIR}/build/common.cmake)
 
 set(SOURCES
@@ -31,6 +27,7 @@ set(SOURCES
     ast/CharType.cpp
     ast/Coclass.cpp
     ast/CoclassIDType.cpp
+    ast/ComponentIDType.cpp
     ast/Constant.cpp
     ast/DoubleType.cpp
     ast/Enumeration.cpp
@@ -59,6 +56,7 @@ set(SOURCES
     codegen/CodeGenerator.cpp
     metadata/MetaBuilder.cpp
     metadata/MetaDumper.cpp
+    metadata/MetaRegister.cpp
     parser/Environment.cpp
     parser/Parser.cpp
     parser/Tokenizer.cpp
@@ -75,16 +73,13 @@ set(SOURCES
 add_executable(ccdl ${SOURCES})
 target_link_libraries(ccdl metadata)
 
-install(DIRECTORY
-    DESTINATION ${BIN_DIR}
-    DIRECTORY_PERMISSIONS
-        OWNER_READ
-        OWNER_WRITE
-        OWNER_EXECUTE
-        GROUP_READ
-        GROUP_EXECUTE
-        WORLD_READ
-        WORLD_EXECUTE)
+add_custom_command(
+    TARGET ccdl
+    POST_BUILD
+    COMMAND
+        "${CMAKE_COMMAND}"
+        -E copy ${CMAKE_BINARY_DIR}/src/ccdl/ccdl ${BIN_DIR})
+
 install(FILES
     ${CMAKE_BINARY_DIR}/src/ccdl/ccdl
     DESTINATION ${BIN_DIR}

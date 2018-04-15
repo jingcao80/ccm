@@ -16,31 +16,30 @@
 
 project(runtime CXX)
 
-#set(CMAKE_VERBOSE_MAKEFILE on)
-set(PROJECT_DIR ${CMAKE_BINARY_DIR}/../)
-set(BIN_DIR ${PROJECT_DIR}/bin)
-set(INC_DIR ${BIN_DIR}/inc)
+set(RUNTIME_DIR ${PROJECT_DIR}/src/runtime)
 
 include(${PROJECT_DIR}/build/common.cmake)
 
-add_subdirectory(component)
-add_subdirectory(reflection)
-add_subdirectory(type)
 add_subdirectory(util)
+add_subdirectory(type)
+add_subdirectory(reflection)
+add_subdirectory(component)
+add_subdirectory(cdl)
 
 include_directories(
     ./
     component
     reflection
     type
-    util)
+    util
+    ${INC_DIR})
 
 set(SOURCES
-    ccmids.cpp
     runtime.cpp)
 
 set(CCMRT_LINK_LIBS
     -Wl,--whole-archive
+    cdl
     component
     metadata
     reflection
@@ -48,41 +47,38 @@ set(CCMRT_LINK_LIBS
     util
     -Wl,--no-whole-archive)
 
-add_library(ccmrt SHARED
+add_library(ccmrt
+    SHARED
     ${SOURCES})
 target_link_libraries(ccmrt
     ${CCMRT_LINK_LIBS}
     dl)
+set_target_properties(ccmrt PROPERTIES PREFIX "")
 
-install(DIRECTORY
-    DESTINATION ${BIN_DIR}
-    DIRECTORY_PERMISSIONS
-        OWNER_READ
-        OWNER_WRITE
-        OWNER_EXECUTE
-        GROUP_READ
-        GROUP_EXECUTE
-        WORLD_READ
-        WORLD_EXECUTE)
-install(DIRECTORY
-    DESTINATION ${INC_DIR}
-    DIRECTORY_PERMISSIONS
-        OWNER_READ
-        OWNER_WRITE
-        OWNER_EXECUTE
-        GROUP_READ
-        GROUP_EXECUTE
-        WORLD_READ
-        WORLD_EXECUTE)
+set(DEPLOY_HEADERS
+    ${RUNTIME_DIR}/ccmapi.h
+    ${RUNTIME_DIR}/ccmdef.h
+    ${RUNTIME_DIR}/ccmerror.h
+    ${RUNTIME_DIR}/ccmtypes.h)
+
+set(DEPLOY_LIBS
+    ${CMAKE_BINARY_DIR}/src/runtime/ccmrt.so)
+
+add_custom_command(
+    TARGET ccmrt
+    POST_BUILD
+    COMMAND
+        "${CMAKE_COMMAND}"
+        -E copy ${DEPLOY_HEADERS} ${INC_DIR}
+    COMMAND
+        "${CMAKE_COMMAND}"
+        -E copy ${DEPLOY_LIBS} ${BIN_DIR})
 
 install(FILES
-    ccmapi.h
-    ccmdef.h
-    ccmerror.h
-    ccmtypes.h
+    ${DEPLOY_HEADERS}
     DESTINATION ${INC_DIR})
 install(FILES
-    ${CMAKE_BINARY_DIR}/src/runtime/libccmrt.so
+    ${DEPLOY_LIBS}
     DESTINATION ${BIN_DIR}
     PERMISSIONS
         OWNER_READ

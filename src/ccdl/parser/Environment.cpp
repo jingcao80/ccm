@@ -46,6 +46,8 @@ Environment::Environment()
     mHANDLEType->SetNamespace(ccm);
     mCoclassIDType = new CoclassIDType();
     mCoclassIDType->SetNamespace(ccm);
+    mComponentIDType = new ComponentIDType();
+    mComponentIDType->SetNamespace(ccm);
     mInterfaceIDType = new InterfaceIDType();
     mInterfaceIDType->SetNamespace(ccm);
 
@@ -60,6 +62,7 @@ Environment::Environment()
     mTypes.Put(String("String"), mStringType);
     mTypes.Put(String("HANDLE"), mHANDLEType);
     mTypes.Put(String("CoclassID"), mCoclassIDType);
+    mTypes.Put(String("ComponentID"), mComponentIDType);
     mTypes.Put(String("InterfaceID"), mInterfaceIDType);
 }
 
@@ -76,6 +79,7 @@ Environment::~Environment()
     delete mStringType;
     delete mHANDLEType;
     delete mCoclassIDType;
+    delete mComponentIDType;
     delete mInterfaceIDType;
 }
 
