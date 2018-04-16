@@ -27,11 +27,9 @@ class InterfaceIDType : public Type
 public:
     InterfaceIDType();
 
-    inline bool IsPrimitiveType() override
-    { return true; }
+    bool IsPrimitiveType() override;
 
-    inline bool IsInterfaceIDType()
-    { return true; }
+    bool IsInterfaceIDType() override;
 
     String Signature() override;
 };

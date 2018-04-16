@@ -44,6 +44,7 @@ set(SOURCES
     ast/Module.cpp
     ast/MultiplicativeExpression.cpp
     ast/Namespace.cpp
+    ast/Node.cpp
     ast/Parameter.cpp
     ast/PointerType.cpp
     ast/PostfixExpression.cpp
@@ -57,9 +58,9 @@ set(SOURCES
     metadata/MetaBuilder.cpp
     metadata/MetaDumper.cpp
     metadata/MetaRegister.cpp
-    parser/Environment.cpp
     parser/Parser.cpp
     parser/Tokenizer.cpp
+    parser/World.cpp
     util/File.cpp
     util/Logger.cpp
     util/MetadataUtils.cpp

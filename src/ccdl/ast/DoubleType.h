@@ -27,17 +27,13 @@ class DoubleType : public Type
 public:
     DoubleType();
 
-    inline bool IsPrimitiveType() override
-    { return true; }
+    bool IsPrimitiveType() override;
 
-    inline bool IsNumericType() override
-    { return true; }
+    bool IsNumericType() override;
 
-    inline bool IsFloatingPointType() override
-    { return true; }
+    bool IsFloatingPointType() override;
 
-    inline bool IsDoubleType() override
-    { return true; }
+    bool IsDoubleType() override;
 
     String Signature() override;
 };

@@ -23,6 +23,11 @@ ArrayType::ArrayType()
     : mElementType(nullptr)
 {}
 
+bool ArrayType::IsArrayType()
+{
+    return true;
+}
+
 String ArrayType::Signature()
 {
     return String("[") + mElementType->Signature();
@@ -30,7 +35,7 @@ String ArrayType::Signature()
 
 String ArrayType::ToString()
 {
-    return String("Array<") + mElementType->ToString() + String(">");
+    return String::Format("Array<%s>", mElementType->ToString().string());
 }
 
 }

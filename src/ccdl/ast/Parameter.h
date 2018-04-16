@@ -32,26 +32,20 @@ public:
 
     ~Parameter();
 
-    inline int GetAttribute()
-    { return mAttribute; }
+    inline int GetAttribute();
 
     inline void SetAttribute(
-        /* [in] */ int attr)
-    { mAttribute = mAttribute | attr; }
+        /* [in] */ int attr);
 
-    inline String GetName()
-    { return mName; }
+    inline String GetName();
 
     inline void SetName(
-        /* [in] */ const String& name)
-    { mName = name; }
+        /* [in] */ const String& name);
 
-    inline Type* GetType()
-    { return mType; }
+    inline Type* GetType();
 
     inline void SetType(
-        /* [in] */ Type* type)
-    { mType = type; }
+        /* [in] */ Type* type);
 
     void SetDefaultValue(
         /* [in] */ Expression* expr);
@@ -71,6 +65,39 @@ private:
     Expression* mDefaultValue;
     int mAttribute;
 };
+
+int Parameter::GetAttribute()
+{
+    return mAttribute;
+}
+
+void Parameter::SetAttribute(
+    /* [in] */ int attr)
+{
+    mAttribute = mAttribute | attr;
+}
+
+String Parameter::GetName()
+{
+    return mName;
+}
+
+void Parameter::SetName(
+    /* [in] */ const String& name)
+{
+    mName = name;
+}
+
+Type* Parameter::GetType()
+{
+    return mType;
+}
+
+void Parameter::SetType(
+    /* [in] */ Type* type)
+{
+    mType = type;
+}
 
 }
 }

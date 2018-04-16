@@ -27,11 +27,9 @@ class CoclassIDType : public Type
 public:
     CoclassIDType();
 
-    inline bool IsPrimitiveType() override
-    { return true; }
+    bool IsPrimitiveType() override;
 
-    inline bool IsCoclassIDType() override
-    { return true; }
+    bool IsCoclassIDType() override;
 
     String Signature() override;
 };

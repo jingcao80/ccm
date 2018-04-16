@@ -14,15 +14,20 @@
 // limitations under the License.
 //=========================================================================
 
-#include "Environment.h"
+#include "World.h"
 #include "../util/StringBuilder.h"
 
 namespace ccdl {
 
-Environment::Environment()
+World::World()
+    : mWorkingModule(nullptr)
+    , mExternalModules(10)
 {
+    Namespace* global = new Namespace(String("__global__"));
+    AddNamespace(global);
     Namespace* ccm = new Namespace(String("ccm"));
     AddNamespace(ccm);
+    global->AddNamespace(ccm);
 
     mByteType = new ByteType();
     mByteType->SetNamespace(ccm);
@@ -66,7 +71,7 @@ Environment::Environment()
     mTypes.Put(String("InterfaceID"), mInterfaceIDType);
 }
 
-Environment::~Environment()
+World::~World()
 {
     delete mByteType;
     delete mShortType;
@@ -83,15 +88,33 @@ Environment::~Environment()
     delete mInterfaceIDType;
 }
 
-String Environment::Dump(
+Namespace* World::GetGlobalNamespace()
+{
+    return mNamespaces.Get(0);
+}
+
+std::shared_ptr<Module> World::CreateWorkingModule()
+{
+    if (mWorkingModule == nullptr) {
+        mWorkingModule = std::make_shared<Module>();
+    }
+    return mWorkingModule;
+}
+
+String World::Dump(
     /* [in] */ const String& prefix)
 {
     StringBuilder builder;
 
-    builder.Append("Environment[");
+    builder.Append("World[");
     builder.Append("root:").Append(mRootFile);
     builder.Append("]\n");
     builder.Append(Pool::Dump(prefix));
+
+    if (mWorkingModule != nullptr) {
+        builder.Append("\n");
+        builder.Append(mWorkingModule->Dump(String("")));
+    }
     return builder.ToString();
 }
 

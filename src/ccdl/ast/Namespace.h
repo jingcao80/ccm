@@ -35,25 +35,20 @@ public:
 
     ~Namespace();
 
-    inline String GetName()
-    { return mName; }
+    inline String GetName();
 
-    inline Namespace* GetOuterNamespace()
-    { return mOuterNamespace; }
+    inline Namespace* GetOuterNamespace();
 
     inline void SetOuterNamespace(
-        /* [in] */ Namespace* outerNS)
-    { mOuterNamespace = outerNS; }
+        /* [in] */ Namespace* outerNS);
 
     bool AddNamespace(
         /* [in] */ Namespace* innerNS);
 
-    inline int GetNamespaceNumber()
-    { return mNamespaces.GetSize(); }
+    inline int GetNamespaceNumber();
 
     inline Namespace* GetNamespace(
-        /* [in] */ int index)
-    { return mNamespaces.Get(index); }
+        /* [in] */ int index);
 
     Namespace* FindNamespace(
         /* [in] */ const String& nsString);
@@ -61,39 +56,32 @@ public:
     bool AddCoclass(
         /* [in] */ Coclass* klass);
 
-    inline int GetCoclassNumber()
-    { return mCoclasses.GetSize(); }
+    inline int GetCoclassNumber();
 
     inline Coclass* GetCoclass(
-        /* [in] */ int index)
-    { return mCoclasses.Get(index); }
+        /* [in] */ int index);
 
     bool AddEnumeration(
         /* [in] */ Enumeration* enumn);
 
-    inline int GetEnumerationNumber()
-    { return mEnumerations.GetSize(); }
+    inline int GetEnumerationNumber();
 
     inline Enumeration* GetEnumeration(
-        /* [in] */ int index)
-    { return mEnumerations.Get(index); }
+        /* [in] */ int index);
 
     bool AddInterface(
         /* [in] */ Interface* itf);
 
-    inline int GetInterfaceNumber()
-    { return mInterfaces.GetSize(); }
+    inline int GetInterfaceNumber();
 
     int GetSystemPreDeclaredInterfaceNumber();
 
     inline Interface* GetInterface(
-        /* [in] */ int index)
-    { return mInterfaces.Get(index); }
+        /* [in] */ int index);
 
     String ToString() override;
 
-    inline String ToShortString()
-    { return mName; }
+    inline String ToShortString();
 
 private:
     String mName;
@@ -103,6 +91,71 @@ private:
     ArrayList<Enumeration*> mEnumerations;
     ArrayList<Interface*> mInterfaces;
 };
+
+String Namespace::GetName()
+{
+    return mName;
+}
+
+Namespace* Namespace::GetOuterNamespace()
+{
+    return mOuterNamespace;
+}
+
+void Namespace::SetOuterNamespace(
+    /* [in] */ Namespace* outerNS)
+{
+    mOuterNamespace = outerNS;
+}
+
+int Namespace::GetNamespaceNumber()
+{
+    return mNamespaces.GetSize();
+}
+
+Namespace* Namespace::GetNamespace(
+    /* [in] */ int index)
+{
+    return mNamespaces.Get(index);
+}
+
+int Namespace::GetCoclassNumber()
+{
+    return mCoclasses.GetSize();
+}
+
+Coclass* Namespace::GetCoclass(
+    /* [in] */ int index)
+{
+    return mCoclasses.Get(index);
+}
+
+int Namespace::GetEnumerationNumber()
+{
+    return mEnumerations.GetSize();
+}
+
+Enumeration* Namespace::GetEnumeration(
+    /* [in] */ int index)
+{
+    return mEnumerations.Get(index);
+}
+
+int Namespace::GetInterfaceNumber()
+{
+    return mInterfaces.GetSize();
+}
+
+Interface* Namespace::GetInterface(
+    /* [in] */ int index)
+{
+    return mInterfaces.Get(index);
+}
+
+String Namespace::ToShortString()
+{
+    return mName;
+}
 
 }
 }

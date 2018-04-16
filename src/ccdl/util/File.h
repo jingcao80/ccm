@@ -30,16 +30,7 @@ private:
     {
     public:
         BufferedReader(
-            /* [in] */ File* owner)
-            : mOwner(owner)
-            , mColumnNo(0)
-            , mPrevColumnNo(0)
-            , mLineNo(1)
-            , mPosition(-1)
-            , mCapacity(-1)
-            , mEof(false)
-            , mError(false)
-        {}
+            /* [in] */ File* owner);
 
         int Peek();
 
@@ -48,11 +39,9 @@ private:
         void Unread(
             /* [in] */ int c);
 
-        inline int GetColumnNo()
-        { return mColumnNo; }
+        int GetColumnNo();
 
-        inline int GetLineNo()
-        { return mLineNo; }
+        int GetLineNo();
 
     private:
         int FRead();
@@ -82,21 +71,16 @@ public:
 
     ~File();
 
-    inline bool IsValid()
-    { return mFd != nullptr; }
+    inline bool IsValid();
 
-    inline String GetPath()
-    { return mPath; }
+    inline String GetPath();
 
-    inline int Peek()
-    { return mReader.Peek(); }
+    inline int Peek();
 
-    inline int Read()
-    { return mReader.Read(); }
+    inline int Read();
 
     inline void Unread(
-        /* [in] */ int c)
-    { mReader.Unread(c); }
+        /* [in] */ int c);
 
     void Write(
         /* [in] */ const void* data,
@@ -106,11 +90,9 @@ public:
 
     void Close();
 
-    inline int GetColumnNo()
-    { return mReader.GetColumnNo(); }
+    inline int GetColumnNo();
 
-    inline int GetLineNo()
-    { return mReader.GetLineNo(); }
+    inline int GetLineNo();
 
 public:
     static constexpr int READ = 0x1;
@@ -123,6 +105,42 @@ private:
     int mMode;
     BufferedReader mReader;
 };
+
+bool File::IsValid()
+{
+    return mFd != nullptr;
+}
+
+String File::GetPath()
+{
+    return mPath;
+}
+
+int File::Peek()
+{
+    return mReader.Peek();
+}
+
+int File::Read()
+{
+    return mReader.Read();
+}
+
+void File::Unread(
+    /* [in] */ int c)
+{
+    mReader.Unread(c);
+}
+
+int File::GetColumnNo()
+{
+    return mReader.GetColumnNo();
+}
+
+int File::GetLineNo()
+{
+    return mReader.GetLineNo();
+}
 
 }
 

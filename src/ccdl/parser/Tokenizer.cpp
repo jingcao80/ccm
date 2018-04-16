@@ -59,6 +59,24 @@ sKeywords[31] =
     { String("version"), Tokenizer::Token::VERSION },
 };
 
+//-----------------------------------------------------------------------------
+
+Tokenizer::FileNode::FileNode()
+    : mFile(nullptr)
+    , mNext(nullptr)
+{}
+
+Tokenizer::FileNode::~FileNode()
+{
+    if (mFile != nullptr) {
+        delete mFile;
+        mFile = nullptr;
+    }
+    mNext = nullptr;
+}
+
+//-----------------------------------------------------------------------------
+
 const String Tokenizer::TAG("Tokenizer");
 
 Tokenizer::Tokenizer()
@@ -716,6 +734,18 @@ bool Tokenizer::IsEscape(
     /* [in] */ int c)
 {
     return (c == ' ' || c == '\n' || c == '\t');
+}
+
+bool Tokenizer::IsPrimitiveType(
+    /* [in] */ Token token)
+{
+    return Token::BOOLEAN <= token && token <= Token::STRING;
+}
+
+bool Tokenizer::IsKeyword(
+    /* [in] */ Token token)
+{
+    return Token::BOOLEAN <= token && token <= Token::VERSION;
 }
 
 const char* Tokenizer::DumpToken(

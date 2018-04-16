@@ -31,39 +31,30 @@ class Method : public Node
 public:
     Method();
 
-    inline String GetName()
-    { return mName; }
+    inline String GetName();
 
     inline void SetName(
-        /* [in] */ const String& name)
-    { mName = name; }
+        /* [in] */ const String& name);
 
-    inline String GetSignature()
-    { return mSignature; }
+    inline String GetSignature();
 
-    inline Type* GetReturnType()
-    { return mReturnType; }
+    inline Type* GetReturnType();
 
     inline void SetReturnType(
-        /* [in] */ Type* type)
-    { mReturnType = type; }
+        /* [in] */ Type* type);
 
     bool AddParameter(
         /* [in] */ Parameter* param);
 
-    inline int GetParameterNumber()
-    { return mParameters.GetSize(); }
+    inline int GetParameterNumber();
 
     inline Parameter* GetParameter(
-        /* [in] */ int index)
-    { return mParameters.Get(index); }
+        /* [in] */ int index);
 
     inline void SetDefault(
-        /* [in] */ bool isDefault)
-    { mDefault = isDefault; }
+        /* [in] */ bool isDefault);
 
-    inline bool IsDefault()
-    { return mDefault; }
+    inline bool IsDefault();
 
     void BuildSignature();
 
@@ -79,6 +70,55 @@ private:
     ArrayList<Parameter*> mParameters;
     bool mDefault;
 };
+
+String Method::GetName()
+{
+    return mName;
+}
+
+void Method::SetName(
+    /* [in] */ const String& name)
+{
+    mName = name;
+}
+
+String Method::GetSignature()
+{
+    return mSignature;
+}
+
+Type* Method::GetReturnType()
+{
+    return mReturnType;
+}
+
+void Method::SetReturnType(
+    /* [in] */ Type* type)
+{
+    mReturnType = type;
+}
+
+int Method::GetParameterNumber()
+{
+    return mParameters.GetSize();
+}
+
+Parameter* Method::GetParameter(
+    /* [in] */ int index)
+{
+    return mParameters.Get(index);
+}
+
+void Method::SetDefault(
+    /* [in] */ bool isDefault)
+{
+    mDefault = isDefault;
+}
+
+bool Method::IsDefault()
+{
+    return mDefault;
+}
 
 }
 }

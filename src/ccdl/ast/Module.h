@@ -48,21 +48,19 @@ public:
 
     ~Module();
 
-    inline String GetName()
-    { return mName; }
+    inline String GetName();
 
     inline void SetName(
-        /* [in] */ const String& name)
-    { mName = name; }
+        /* [in] */ const String& name);
+
+    Namespace* GetGlobalNamespace();
 
     void SetAttribute(
         /* [in] */ const Attribute& attr);
 
-    inline Uuid& GetUuid()
-    { return mUuid; }
+    inline Uuid& GetUuid();
 
-    inline String GetUrl()
-    { return mUrl; }
+    inline String GetUrl();
 
     String Dump(
         /* [in] */ const String& prefix) override;
@@ -88,6 +86,27 @@ private:
     ComponentIDType* mComponentIDType;
     InterfaceIDType* mInterfaceIDType;
 };
+
+String Module::GetName()
+{
+    return mName;
+}
+
+void Module::SetName(
+    /* [in] */ const String& name)
+{
+    mName = name;
+}
+
+Uuid& Module::GetUuid()
+{
+    return mUuid;
+}
+
+String Module::GetUrl()
+{
+    return mUrl;
+}
 
 }
 }

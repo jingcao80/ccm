@@ -25,15 +25,12 @@ namespace ast {
 class Node
 {
 public:
-    virtual ~Node()
-    {}
+    virtual ~Node();
 
-    inline virtual String ToString()
-    { return String(); }
+    virtual String ToString();
 
-    inline virtual String Dump(
-        /* [in] */ const String& prefix)
-    { return String(); }
+    virtual String Dump(
+        /* [in] */ const String& prefix);
 };
 
 }

@@ -24,6 +24,11 @@ PointerType::PointerType()
     , mPointerNumber(0)
 {}
 
+bool PointerType::IsPointerType()
+{
+    return true;
+}
+
 String PointerType::Signature()
 {
     String typeSig = mBaseType->Signature();

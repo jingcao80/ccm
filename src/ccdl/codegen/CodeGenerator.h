@@ -45,14 +45,12 @@ public:
     void GenerateOnUserMode();
 
     inline void SetDirectory(
-        /* [in] */ const String& dir)
-    { mDirectory = dir; }
+        /* [in] */ const String& dir);
 
     inline void SetMetadata(
-        /* [in] */ MetaComponent* component)
-    { mMetaComponent = component; }
+        /* [in] */ MetaComponent* component);
 
-    inline void SetLicense(
+    void SetLicense(
         /* [in] */ const String& license);
 
 private:
@@ -173,6 +171,18 @@ private:
     MetaComponent* mMetaComponent;
     String mLicense;
 };
+
+void CodeGenerator::SetDirectory(
+    /* [in] */ const String& dir)
+{
+    mDirectory = dir;
+}
+
+void CodeGenerator::SetMetadata(
+    /* [in] */ MetaComponent* component)
+{
+    mMetaComponent = component;
+}
 
 }
 }

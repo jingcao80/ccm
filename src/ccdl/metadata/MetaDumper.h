@@ -36,14 +36,10 @@ namespace metadata {
 class MetaDumper
 {
 public:
-    MetaDumper(
+    MetaDumper();
+
+    String Dump(
         /* [in] */ MetaComponent* mc);
-
-    String Dump();
-
-    inline void Reset(
-        /* [in] */ MetaComponent* mc)
-    { mMetaComponet = mc; }
 
 private:
     String DumpMetaComponent(

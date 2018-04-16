@@ -27,22 +27,17 @@ class PointerType : public Type
 public:
     PointerType();
 
-    inline bool IsPointerType() override
-    { return true; }
+    bool IsPointerType() override;
 
-    inline Type* GetBaseType()
-    { return mBaseType; }
+    inline Type* GetBaseType();
 
     inline void SetBaseType(
-        /* [in] */ Type* baseType)
-    { mBaseType = baseType; }
+        /* [in] */ Type* baseType);
 
-    inline int GetPointerNumber()
-    { return mPointerNumber; }
+    inline int GetPointerNumber();
 
     inline void SetPointerNumber(
-        /* [in] */ int ptrNumber)
-    { mPointerNumber = ptrNumber; }
+        /* [in] */ int ptrNumber);
 
     String Signature() override;
 
@@ -52,6 +47,28 @@ private:
     Type* mBaseType;
     int mPointerNumber;
 };
+
+Type* PointerType::GetBaseType()
+{
+    return mBaseType;
+}
+
+void PointerType::SetBaseType(
+    /* [in] */ Type* baseType)
+{
+    mBaseType = baseType;
+}
+
+int PointerType::GetPointerNumber()
+{
+    return mPointerNumber;
+}
+
+void PointerType::SetPointerNumber(
+    /* [in] */ int ptrNumber)
+{
+    mPointerNumber = ptrNumber;
+}
 
 }
 }

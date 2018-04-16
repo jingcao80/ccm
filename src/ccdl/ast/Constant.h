@@ -30,26 +30,20 @@ class Constant : public Node
 public:
     Constant();
 
-    inline String GetName()
-    { return mName; }
+    inline String GetName();
 
     inline void SetName(
-        /* [in] */ const String& name)
-    { mName = name; }
+        /* [in] */ const String& name);
 
-    inline Type* GetType()
-    { return mType; }
+    inline Type* GetType();
 
     inline void SetType(
-        /* [in] */ Type* type)
-    { mType = type; }
+        /* [in] */ Type* type);
 
-    inline Expression* GetValue()
-    { return mValue; }
+    inline Expression* GetValue();
 
     inline void SetValue(
-        /* [in] */ Expression* value)
-    { mValue = value; }
+        /* [in] */ Expression* value);
 
     String Dump(
         /* [in] */ const String& prefix) override;
@@ -59,6 +53,39 @@ private:
     Type* mType;
     Expression* mValue;
 };
+
+String Constant::GetName()
+{
+    return mName;
+}
+
+void Constant::SetName(
+    /* [in] */ const String& name)
+{
+    mName = name;
+}
+
+Type* Constant::GetType()
+{
+    return mType;
+}
+
+void Constant::SetType(
+    /* [in] */ Type* type)
+{
+    mType = type;
+}
+
+Expression* Constant::GetValue()
+{
+    return mValue;
+}
+
+void Constant::SetValue(
+    /* [in] */ Expression* value)
+{
+    mValue = value;
+}
 
 }
 }

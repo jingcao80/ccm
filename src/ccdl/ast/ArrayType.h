@@ -27,15 +27,12 @@ class ArrayType : public Type
 public:
     ArrayType();
 
-    inline bool IsArrayType() override
-    { return true; }
+    bool IsArrayType() override;
 
-    inline Type* GetElementType()
-    { return mElementType; }
+    inline Type* GetElementType();
 
     inline void SetElementType(
-        /* [in] */ Type* elemType)
-    { mElementType = elemType; }
+        /* [in] */ Type* elemType);
 
     String Signature() override;
 
@@ -44,6 +41,17 @@ public:
 private:
     Type* mElementType;
 };
+
+Type* ArrayType::GetElementType()
+{
+    return mElementType;
+}
+
+void ArrayType::SetElementType(
+    /* [in] */ Type* elemType)
+{
+    mElementType = elemType;
+}
 
 }
 }

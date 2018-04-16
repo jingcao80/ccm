@@ -24,6 +24,26 @@ ShortType::ShortType()
     SetName(String("Short"));
 }
 
+bool ShortType::IsPrimitiveType()
+{
+    return true;
+}
+
+bool ShortType::IsNumericType()
+{
+    return true;
+}
+
+bool ShortType::IsIntegralType()
+{
+    return true;
+}
+
+bool ShortType::IsShortType()
+{
+    return true;
+}
+
 String ShortType::Signature()
 {
     return String("S");

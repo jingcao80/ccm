@@ -24,6 +24,16 @@ HANDLEType::HANDLEType()
     SetName(String("HANDLE"));
 }
 
+bool HANDLEType::IsPrimitiveType()
+{
+    return true;
+}
+
+bool HANDLEType::IsHANDLEType()
+{
+    return true;
+}
+
 String HANDLEType::Signature()
 {
     return String("H");

@@ -27,11 +27,9 @@ class HANDLEType : public Type
 public:
     HANDLEType();
 
-    inline bool IsPrimitiveType() override
-    { return true; }
+    bool IsPrimitiveType() override;
 
-    inline bool IsHANDLEType() override
-    { return true; }
+    bool IsHANDLEType() override;
 
     String Signature() override;
 };

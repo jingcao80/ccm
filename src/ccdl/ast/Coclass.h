@@ -34,14 +34,12 @@ public:
     void SetNamespace(
         /* [in] */ Namespace* ns) override;
 
-    inline Uuid& GetUuid()
-    { return mUuid; }
+    inline Uuid& GetUuid();
 
     void SetAttribute(
         /* [in] */ const Attribute& attr);
 
-    inline bool IsCoclassType() override
-    { return true; }
+    bool IsCoclassType() override;
 
     bool AddConstructor(
         /* [in] */ Method* constructor);
@@ -49,12 +47,10 @@ public:
     bool RemoveConstructor(
         /* [in] */ Method* constructor);
 
-    inline int GetConstructorNumber()
-    { return mConstructors.GetSize(); }
+    inline int GetConstructorNumber();
 
     inline Method* GetConstructor(
-        /* [in] */ int index)
-    { return mConstructors.Get(index); }
+        /* [in] */ int index);
 
     Method* FindConstructor(
         /* [in] */ const String& name,
@@ -63,12 +59,10 @@ public:
     bool AddInterface(
         /* [in] */ Interface* interface);
 
-    inline int GetInterfaceNumber()
-    { return mInterfaces.GetSize(); }
+    inline int GetInterfaceNumber();
 
     inline Interface* GetInterface(
-        /* [in] */ int index)
-    { return mInterfaces.Get(index); }
+        /* [in] */ int index);
 
     String Signature() override;
 
@@ -82,6 +76,33 @@ private:
     ArrayList<Method*> mConstructors;
     ArrayList<Interface*> mInterfaces;
 };
+
+Uuid& Coclass::GetUuid()
+{
+    return mUuid;
+}
+
+int Coclass::GetConstructorNumber()
+{
+    return mConstructors.GetSize();
+}
+
+Method* Coclass::GetConstructor(
+    /* [in] */ int index)
+{
+    return mConstructors.Get(index);
+}
+
+int Coclass::GetInterfaceNumber()
+{
+    return mInterfaces.GetSize();
+}
+
+Interface* Coclass::GetInterface(
+    /* [in] */ int index)
+{
+    return mInterfaces.Get(index);
+}
 
 }
 }

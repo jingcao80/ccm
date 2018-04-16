@@ -24,6 +24,26 @@ IntegerType::IntegerType()
     SetName(String("Integer"));
 }
 
+bool IntegerType::IsPrimitiveType()
+{
+    return true;
+}
+
+bool IntegerType::IsNumericType()
+{
+    return true;
+}
+
+bool IntegerType::IsIntegralType()
+{
+    return true;
+}
+
+bool IntegerType::IsIntegerType()
+{
+    return true;
+}
+
 String IntegerType::Signature()
 {
     return String("I");

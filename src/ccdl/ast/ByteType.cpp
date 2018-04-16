@@ -24,6 +24,26 @@ ByteType::ByteType()
     SetName(String("Byte"));
 }
 
+bool ByteType::IsPrimitiveType()
+{
+    return true;
+}
+
+bool ByteType::IsNumericType()
+{
+    return true;
+}
+
+bool ByteType::IsIntegralType()
+{
+    return true;
+}
+
+bool ByteType::IsByteType()
+{
+    return true;
+}
+
 String ByteType::Signature()
 {
     return String("B");

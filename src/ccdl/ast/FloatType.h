@@ -27,17 +27,13 @@ class FloatType : public Type
 public:
     FloatType();
 
-    inline bool IsPrimitiveType() override
-    { return true; }
+    bool IsPrimitiveType() override;
 
-    inline bool IsNumericType() override
-    { return true; }
+    bool IsNumericType() override;
 
-    inline bool IsFloatingPointType() override
-    { return true; }
+    bool IsFloatingPointType() override;
 
-    inline bool IsFloatType() override
-    { return true; }
+    bool IsFloatType() override;
 
     String Signature() override;
 };

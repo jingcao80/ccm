@@ -24,6 +24,7 @@
 #include "../../runtime/metadata/Component.h"
 #include "../../runtime/metadata/MetaSerializer.h"
 
+#include <memory.h>
 #include <stdlib.h>
 
 using ccdl::ast::ArrayType;
@@ -53,22 +54,53 @@ String StringMap<String>::Get(
     return String();
 }
 
-String Parser::Context::FindPreDeclaration(
+Parser::FileContext::FileContext()
+    : mPreDeclarations(50)
+    , mNext(0)
+{}
+
+void Parser::FileContext::AddPreDeclaration(
+    /* [in] */ const String& typeName,
+    /* [in] */ const String& typeFullName)
+{
+    mPreDeclarations.Put(typeName, typeFullName);
+}
+
+String Parser::FileContext::FindPreDeclaration(
     /* [in] */ const String& typeName)
 {
     return mPreDeclarations.Get(typeName);
 }
 
+//------------------------------------------------------------------------
+
+Parser::Error::Error()
+    : mErrorToken(Tokenizer::Token::ILLEGAL_TOKEN)
+    , mLineNo(0)
+    , mColumnNo(0)
+    , mNext(nullptr)
+{}
+
+//------------------------------------------------------------------------
 
 const String Parser::TAG("Parser");
 
+Parser::Parser()
+    : mParsedFiles(100)
+    , mMode(0)
+    , mPool(nullptr)
+    , mCurrNamespace(nullptr)
+    , mCurrContext(nullptr)
+    , mStatus(NOERROR)
+    , mErrorHeader(nullptr)
+    , mCurrError(nullptr)
+    , mNeedDump(false)
+{}
+
 Parser::~Parser()
 {
-    delete mEnvironment;
-    mEnvironment = nullptr;
-
-    mCurrNamespace = nullptr;
     mPool = nullptr;
+    mCurrNamespace = nullptr;
 
     mCurrError = mErrorHeader;
     while (mCurrError != nullptr) {
@@ -91,11 +123,9 @@ bool Parser::Parse(
 
     mPathPrefix = filePath.Substring(0, filePath.LastIndexOf('/'));
 
-    mCurrNamespace = new Namespace(String("__global__"));
-    mEnvironment = new Environment();
-    mEnvironment->SetRootFile(filePath);
-    mEnvironment->AddNamespace(mCurrNamespace);
-    mPool = mEnvironment;
+    mWorld.SetRootFile(filePath);
+    mCurrNamespace = mWorld.GetGlobalNamespace();
+    mPool = &mWorld;
 
     mMode = mode;
     PreParse();
@@ -134,9 +164,10 @@ void Parser::LoadCcmrtMetadata()
 
 void Parser::PostParse()
 {
-    if (mModule != nullptr) {
-        for (int i = 0; i < mModule->GetCoclassNumber(); i++) {
-            GenerateCoclassObject(mModule->GetCoclass(i));
+    std::shared_ptr<Module> module = mWorld.GetWorkingModule();
+    if (module != nullptr) {
+        for (int i = 0; i < module->GetCoclassNumber(); i++) {
+            GenerateCoclassObject(module.get(), module->GetCoclass(i));
         }
     }
 }
@@ -144,7 +175,7 @@ void Parser::PostParse()
 bool Parser::ParseFile()
 {
     bool parseResult = true;
-    EnterContext();
+    EnterFileContext();
 
     Tokenizer::Token token;
     while ((token = mTokenizer.PeekToken()) != Tokenizer::Token::END_OF_FILE) {
@@ -178,7 +209,7 @@ bool Parser::ParseFile()
     }
     token = mTokenizer.GetToken();
 
-    LeaveContext();
+    LeaveFileContext();
     return parseResult;
 }
 
@@ -198,7 +229,7 @@ bool Parser::ParseDeclarationWithAttribute()
             break;
         }
         case Tokenizer::Token::MODULE: {
-            if (mModule != nullptr) {
+            if (mWorld.GetWorkingModule() != nullptr) {
                 LogError(token, String("Can not declare more than one module."));
                 parseResult = false;
             }
@@ -1713,11 +1744,10 @@ bool Parser::ParseModule(
         parseResult = false;
     }
 
-    mCurrNamespace = new Namespace(String("__global__"));
-    mModule = std::make_shared<Module>();
-    mModule->SetName(moduleName);
-    mModule->AddNamespace(mCurrNamespace);
-    mPool = mModule.get();
+    std::shared_ptr<Module> module = mWorld.CreateWorkingModule();
+    module->SetName(moduleName);
+    mCurrNamespace = module->GetGlobalNamespace();
+    mPool = module.get();
 
     PreParse();
 
@@ -1756,7 +1786,7 @@ bool Parser::ParseModule(
     mTokenizer.GetToken();
 
     if (parseResult) {
-        mModule->SetAttribute(*attr);
+        module->SetAttribute(*attr);
     }
 
     return parseResult;
@@ -1831,21 +1861,21 @@ bool Parser::ParseNamespace()
     return parseResult;
 }
 
-void Parser::EnterContext()
+void Parser::EnterFileContext()
 {
     if (mCurrContext == nullptr) {
-        mCurrContext = new Context();
+        mCurrContext = new FileContext();
         return;
     }
 
-    Context* ctx = new Context();
+    FileContext* ctx = new FileContext();
     ctx->mNext = mCurrContext;
     mCurrContext = ctx;
 }
 
-void Parser::LeaveContext()
+void Parser::LeaveFileContext()
 {
-    Context* ctx = mCurrContext;
+    FileContext* ctx = mCurrContext;
     mCurrContext = ctx->mNext;
     ctx->mNext = nullptr;
     delete ctx;
@@ -1974,6 +2004,7 @@ void Parser::GenerateIInterface()
 }
 
 void Parser::GenerateCoclassObject(
+    /* [in] */ Pool* pool,
     /* [in] */ Coclass* klass)
 {
     if (klass->GetConstructorNumber() == 0) {
@@ -2012,11 +2043,11 @@ void Parser::GenerateCoclassObject(
             m->AddParameter(param);
             itfco->AddMethod(m);
         }
-        mModule->AddInterface(itfco);
+        pool->AddInterface(itfco);
         klass->AddInterface(itfco);
     }
     else {
-        Interface* itfco = mModule->FindInterface(String("ccm::IClassObject"));
+        Interface* itfco = pool->FindInterface(String("ccm::IClassObject"));
         Method* m = klass->GetConstructor(0);
         if (m->GetName().Equals("_constructor")) {
             itfco->GetMethod(0)->SetDefault(true);
@@ -2068,14 +2099,8 @@ void Parser::DumpError()
 
 void Parser::Dump()
 {
-    String dumpStr = mEnvironment->Dump(String(""));
-    if (!dumpStr.IsNullOrEmpty()) {
-        printf("%s\n", dumpStr.string());
-    }
-    if (mModule != nullptr) {
-        dumpStr = mModule->Dump(String(""));
-        printf("%s\n", dumpStr.string());
-    }
+    String dumpStr = mWorld.Dump(String(""));
+    printf("%s\n", dumpStr.string());
 }
 
 }

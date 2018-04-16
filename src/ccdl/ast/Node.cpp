@@ -14,39 +14,23 @@
 // limitations under the License.
 //=========================================================================
 
-#include "LongType.h"
+#include "Node.h"
 
 namespace ccdl {
 namespace ast {
 
-LongType::LongType()
+Node::~Node()
+{}
+
+String Node::ToString()
 {
-    SetName(String("Long"));
+    return String();
 }
 
-bool LongType::IsPrimitiveType()
+String Node::Dump(
+    /* [in] */ const String& prefix)
 {
-    return true;
-}
-
-bool LongType::IsNumericType()
-{
-    return true;
-}
-
-bool LongType::IsIntegralType()
-{
-    return true;
-}
-
-bool LongType::IsLongType()
-{
-    return true;
-}
-
-String LongType::Signature()
-{
-    return String("L");
+    return String();
 }
 
 }

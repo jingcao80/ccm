@@ -36,6 +36,11 @@ void Interface::SetNamespace(
     mNamespace->AddInterface(this);
 }
 
+bool Interface::IsInterfaceType()
+{
+    return true;
+}
+
 void Interface::SetBaseInterface(
     /* [in] */ Interface* baseItf)
 {

@@ -40,11 +40,9 @@ public:
     ptrdiff_t FindOffset(
         /* [in] */ const String& string);
 
-    inline size_t GetSize()
-    { return mDataOffset; }
+    inline size_t GetSize();
 
-    inline char* GetData()
-    { return mData; }
+    inline char* GetData();
 
     void Dump();
 
@@ -61,6 +59,16 @@ private:
     ptrdiff_t mDataOffset;
     StringMap<ptrdiff_t> mOffsets;
 };
+
+size_t StringPool::GetSize()
+{
+    return mDataOffset;
+}
+
+char* StringPool::GetData()
+{
+    return mData;
+}
 
 }
 

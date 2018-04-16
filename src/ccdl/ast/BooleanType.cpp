@@ -24,6 +24,16 @@ BooleanType::BooleanType()
     SetName(String("Boolean"));
 }
 
+bool BooleanType::IsPrimitiveType()
+{
+    return true;
+}
+
+bool BooleanType::IsBooleanType()
+{
+    return true;
+}
+
 String BooleanType::Signature()
 {
     return String("Z");

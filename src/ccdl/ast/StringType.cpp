@@ -24,6 +24,16 @@ StringType::StringType()
     SetName(String("String"));
 }
 
+bool StringType::IsPrimitiveType()
+{
+    return true;
+}
+
+bool StringType::IsStringType()
+{
+    return true;
+}
+
 String StringType::Signature()
 {
     return String("T");

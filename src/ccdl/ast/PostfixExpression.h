@@ -28,28 +28,22 @@ public:
     PostfixExpression();
 
     inline void SetEnumerator(
-        /* [in] */ const String& enumName)
-    { mEnumeratorName = enumName; }
+        /* [in] */ const String& enumName);
 
     inline void SetExpression(
-        /* [in] */ Expression* expression)
-    { mExpression = expression; }
+        /* [in] */ Expression* expression);
 
     inline void SetBooleanValue(
-        /* [in] */ bool value)
-    { mBooleanValue = value; }
+        /* [in] */ bool value);
 
     inline void SetIntegralValue(
-        /* [in] */ long long int value)
-    { mIntegralValue = value; }
+        /* [in] */ long long int value);
 
     inline void SetFloatingPointValue(
-        /* [in] */ double value)
-    { mFloatingPointValue = value; }
+        /* [in] */ double value);
 
     inline void SetStringValue(
-        /* [in] */ const String& value)
-    { mStringValue = value; }
+        /* [in] */ const String& value);
 
     int IntegerValue() override;
 
@@ -75,6 +69,42 @@ private:
     String mEnumeratorName;
     Expression* mExpression;
 };
+
+void PostfixExpression::SetEnumerator(
+    /* [in] */ const String& enumName)
+{
+    mEnumeratorName = enumName;
+}
+
+void PostfixExpression::SetExpression(
+    /* [in] */ Expression* expression)
+{
+    mExpression = expression;
+}
+
+void PostfixExpression::SetBooleanValue(
+    /* [in] */ bool value)
+{
+    mBooleanValue = value;
+}
+
+void PostfixExpression::SetIntegralValue(
+    /* [in] */ long long int value)
+{
+    mIntegralValue = value;
+}
+
+void PostfixExpression::SetFloatingPointValue(
+    /* [in] */ double value)
+{
+    mFloatingPointValue = value;
+}
+
+void PostfixExpression::SetStringValue(
+    /* [in] */ const String& value)
+{
+    mStringValue = value;
+}
 
 }
 }

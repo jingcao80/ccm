@@ -107,19 +107,9 @@ private:
     class FileNode
     {
     public:
-        FileNode()
-            : mFile(nullptr)
-            , mNext(nullptr)
-        {}
+        FileNode();
 
-        ~FileNode()
-        {
-            if (mFile != nullptr) {
-                delete mFile;
-                mFile = nullptr;
-            }
-            mNext = nullptr;
-        }
+        ~FileNode();
 
     public:
         File* mFile;
@@ -144,48 +134,35 @@ public:
 
     Token GetVersionNumberToken();
 
-    inline int GetCharacter()
-    { return mCharacter; }
+    inline int GetCharacter();
 
-    inline String GetIdentifier()
-    { return mIdentifier; }
+    inline String GetIdentifier();
 
-    inline String GetNumberString()
-    { return mNumberString; }
+    inline String GetNumberString();
 
-    inline bool Is64Bit()
-    { return mBit == 64; }
+    inline bool Is64Bit();
 
-    inline int GetRadix()
-    { return mRadix; }
+    inline int GetRadix();
 
-    inline long long int GetIntegralValue()
-    { return mIntegralValue; }
+    inline long long int GetIntegralValue();
 
-    inline double GetFloatingPointValue()
-    { return mFloatingPointValue; }
+    inline double GetFloatingPointValue();
 
-    inline String GetString()
-    { return mString; }
+    inline String GetString();
 
-    inline int GetTokenColumnNo()
-    { return mTokenColumnNo; }
+    inline int GetTokenColumnNo();
 
-    inline int GetTokenLineNo()
-    { return mTokenLineNo; }
+    inline int GetTokenLineNo();
 
     void SkipCurrentLine();
 
-    static inline bool IsPrimitiveType(
-        /* [in] */ Token token)
-    { return Token::BOOLEAN <= token && token <= Token::STRING; }
+    static bool IsPrimitiveType(
+        /* [in] */ Token token);
 
-    static inline bool IsKeyword(
-        /* [in] */ Token token)
-    { return Token::BOOLEAN <= token && token <= Token::VERSION; }
+    static bool IsKeyword(
+        /* [in] */ Token token);
 
-    inline File* GetCurrentFile()
-    { return mFile; }
+    inline File* GetCurrentFile();
 
     const char* DumpToken(
         /* [in] */ Token token);
@@ -251,6 +228,61 @@ private:
     int mBit;
     int mRadix;
 };
+
+int Tokenizer::GetCharacter()
+{
+    return mCharacter;
+}
+
+String Tokenizer::GetIdentifier()
+{
+    return mIdentifier;
+}
+
+String Tokenizer::GetNumberString()
+{
+    return mNumberString;
+}
+
+bool Tokenizer::Is64Bit()
+{
+    return mBit == 64;
+}
+
+int Tokenizer::GetRadix()
+{
+    return mRadix;
+}
+
+long long int Tokenizer::GetIntegralValue()
+{
+    return mIntegralValue;
+}
+
+double Tokenizer::GetFloatingPointValue()
+{
+    return mFloatingPointValue;
+}
+
+String Tokenizer::GetString()
+{
+    return mString;
+}
+
+int Tokenizer::GetTokenColumnNo()
+{
+    return mTokenColumnNo;
+}
+
+int Tokenizer::GetTokenLineNo()
+{
+    return mTokenLineNo;
+}
+
+File* Tokenizer::GetCurrentFile()
+{
+    return mFile;
+}
 
 }
 

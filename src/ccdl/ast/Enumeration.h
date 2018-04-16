@@ -31,10 +31,7 @@ public:
     {
         Enumerator(
             /* [in] */ const String& name,
-            /* [in] */ int value)
-            : mName(name)
-            , mValue(value)
-        {}
+            /* [in] */ int value);
 
         String mName;
         int mValue;
@@ -44,19 +41,16 @@ public:
     void SetNamespace(
         /* [in] */ Namespace* ns) override;
 
-    inline bool IsEnumerationType() override
-    { return true; }
+    bool IsEnumerationType() override;
 
     bool AddEnumerator(
         /* [in] */ const String& name,
         /* [in] */ int value);
 
-    inline int GetEnumeratorNumber()
-    { return mEnumerators.GetSize(); }
+    inline int GetEnumeratorNumber();
 
     inline Enumerator* GetEnumerator(
-        /* [in] */ int index)
-    { return mEnumerators.Get(index); }
+        /* [in] */ int index);
 
     bool Contains(
         /* [in] */ const String& name);
@@ -69,6 +63,17 @@ public:
 private:
     ArrayList<Enumerator*> mEnumerators;
 };
+
+int Enumeration::GetEnumeratorNumber()
+{
+    return mEnumerators.GetSize();
+}
+
+Enumeration::Enumerator* Enumeration::GetEnumerator(
+    /* [in] */ int index)
+{
+    return mEnumerators.Get(index);
+}
 
 }
 }

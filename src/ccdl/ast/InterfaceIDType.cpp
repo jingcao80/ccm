@@ -24,6 +24,16 @@ InterfaceIDType::InterfaceIDType()
     SetName(String("InterfaceID"));
 }
 
+bool InterfaceIDType::IsPrimitiveType()
+{
+    return true;
+}
+
+bool InterfaceIDType::IsInterfaceIDType()
+{
+    return true;
+}
+
 String InterfaceIDType::Signature()
 {
     return String("U");

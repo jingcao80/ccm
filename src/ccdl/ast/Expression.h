@@ -31,30 +31,23 @@ public:
     ~Expression();
 
     inline void SetLeftOperand(
-        /* [in] */ Expression* leftOperand)
-    { mLeftOperand = leftOperand; }
+        /* [in] */ Expression* leftOperand);
 
     inline void SetRightOperand(
-        /* [in] */ Expression* rightOperand)
-    { mRightOperand = rightOperand; }
+        /* [in] */ Expression* rightOperand);
 
     inline void SetOperator(
-        /* [in] */ int addOperator)
-    { mOperator = addOperator; }
+        /* [in] */ int addOperator);
 
-    inline Type* GetType()
-    { return mType; }
+    inline Type* GetType();
 
     inline void SetType(
-        /* [in] */ Type* type)
-    { mType = type; }
+        /* [in] */ Type* type);
 
-    inline int GetRadix()
-    { return mRadix; }
+    inline int GetRadix();
 
     inline void SetRadix(
-        /* [in] */ int radix)
-    { mRadix = radix; }
+        /* [in] */ int radix);
 
     virtual int IntegerValue() = 0;
 
@@ -79,6 +72,46 @@ protected:
     Type* mType;
     int mRadix;
 };
+
+void Expression::SetLeftOperand(
+    /* [in] */ Expression* leftOperand)
+{
+    mLeftOperand = leftOperand;
+}
+
+void Expression::SetRightOperand(
+    /* [in] */ Expression* rightOperand)
+{
+    mRightOperand = rightOperand;
+}
+
+void Expression::SetOperator(
+    /* [in] */ int addOperator)
+{
+    mOperator = addOperator;
+}
+
+Type* Expression::GetType()
+{
+    return mType;
+}
+
+void Expression::SetType(
+    /* [in] */ Type* type)
+{
+    mType = type;
+}
+
+int Expression::GetRadix()
+{
+    return mRadix;
+}
+
+void Expression::SetRadix(
+    /* [in] */ int radix)
+{
+    mRadix = radix;
+}
 
 }
 }

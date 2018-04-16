@@ -27,11 +27,9 @@ class StringType : public Type
 public:
     StringType();
 
-    inline bool IsPrimitiveType() override
-    { return true; }
+    bool IsPrimitiveType() override;
 
-    inline bool IsStringType() override
-    { return true; }
+    bool IsStringType() override;
 
     String Signature() override;
 };

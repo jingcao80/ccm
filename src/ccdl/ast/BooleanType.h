@@ -27,11 +27,9 @@ class BooleanType : public Type
 public:
     BooleanType();
 
-    inline bool IsPrimitiveType() override
-    { return true; }
+    bool IsPrimitiveType() override;
 
-    inline bool IsBooleanType() override
-    { return true; }
+    bool IsBooleanType() override;
 
     String Signature() override;
 };

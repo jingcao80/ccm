@@ -27,17 +27,13 @@ class IntegerType : public Type
 public:
     IntegerType();
 
-    inline bool IsPrimitiveType() override
-    { return true; }
+    bool IsPrimitiveType() override;
 
-    inline bool IsNumericType() override
-    { return true; }
+    bool IsNumericType() override;
 
-    inline bool IsIntegralType() override
-    { return true; }
+    bool IsIntegralType() override;
 
-    inline bool IsIntegerType() override
-    { return true; }
+    bool IsIntegerType() override;
 
     String Signature() override;
 };

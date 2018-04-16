@@ -27,17 +27,13 @@ class ByteType : public Type
 public:
     ByteType();
 
-    inline bool IsPrimitiveType() override
-    { return true; }
+    bool IsPrimitiveType() override;
 
-    inline bool IsNumericType() override
-    { return true; }
+    bool IsNumericType() override;
 
-    inline bool IsIntegralType() override
-    { return true; }
+    bool IsIntegralType() override;
 
-    inline bool IsByteType() override
-    { return true; }
+    bool IsByteType() override;
 
     String Signature() override;
 };

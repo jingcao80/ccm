@@ -40,14 +40,11 @@ public:
 
     ~String();
 
-    inline bool IsNull() const
-    { return mString == nullptr; }
+    inline bool IsNull() const;
 
-    inline bool IsEmpty() const
-    { return mString[0] == '\0'; }
+    inline bool IsEmpty() const;
 
-    inline bool IsNullOrEmpty() const
-    { return mString == nullptr || mString[0] == '\0'; }
+    inline bool IsNullOrEmpty() const;
 
     int GetLength() const;
 
@@ -63,11 +60,9 @@ public:
     bool EqualsIgnoreCase(
         /* [in] */ const char* string) const;
 
-    inline const char* string() const
-    { return mString; }
+    inline const char* string() const;
 
-    inline operator const char*() const
-    { return mString; }
+    inline operator const char*() const;
 
     char GetChar(
         /* [in] */ int index) const;
@@ -178,6 +173,31 @@ private:
 private:
     char* mString;
 };
+
+bool String::IsNull() const
+{
+    return mString == nullptr;
+}
+
+bool String::IsEmpty() const
+{
+    return mString[0] == '\0';
+}
+
+bool String::IsNullOrEmpty() const
+{
+    return mString == nullptr || mString[0] == '\0';
+}
+
+const char* String::string() const
+{
+    return mString;
+}
+
+String::operator const char*() const
+{
+    return mString;
+}
 
 inline String operator+(
     /* [in] */ const String& string1,

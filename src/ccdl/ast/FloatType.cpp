@@ -24,6 +24,26 @@ FloatType::FloatType()
     SetName(String("Float"));
 }
 
+bool FloatType::IsPrimitiveType()
+{
+    return true;
+}
+
+bool FloatType::IsNumericType()
+{
+    return true;
+}
+
+bool FloatType::IsFloatingPointType()
+{
+    return true;
+}
+
+bool FloatType::IsFloatType()
+{
+    return true;
+}
+
 String FloatType::Signature()
 {
     return String("F");

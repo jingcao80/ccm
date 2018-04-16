@@ -25,13 +25,16 @@ using ccm::CcmTypeKind;
 namespace ccdl {
 namespace metadata {
 
-MetaDumper::MetaDumper(
-    /* [in] */ MetaComponent* mc)
-    : mMetaComponet(mc)
+MetaDumper::MetaDumper()
+    : mMetaComponet(nullptr)
 {}
 
-String MetaDumper::Dump()
+String MetaDumper::Dump(
+    /* [in] */ MetaComponent* mc)
 {
+    if (mc == nullptr) return String();
+
+    mMetaComponet = mc;
     return DumpMetaComponent(mMetaComponet, String(""));
 }
 

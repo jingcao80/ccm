@@ -17,8 +17,8 @@
 #ifndef __CCDL_PARSER_H__
 #define __CCDL_PARSER_H__
 
-#include "Environment.h"
 #include "Tokenizer.h"
+#include "World.h"
 #include "../ast/AdditiveExpression.h"
 #include "../ast/AndExpression.h"
 #include "../ast/Attribute.h"
@@ -39,8 +39,6 @@
 #include "../ast/Type.h"
 #include "../ast/UnaryExpression.h"
 #include "../util/StringMap.h"
-
-#include <memory>
 
 using ccdl::ast::AdditiveExpression;
 using ccdl::ast::AndExpression;
@@ -67,35 +65,24 @@ namespace ccdl {
 class Parser
 {
 private:
-    struct Context
+    struct FileContext
     {
-        Context()
-            : mPreDeclarations(50)
-            , mNext(0)
-        {}
+        FileContext();
 
         void AddPreDeclaration(
             /* [in] */ const String& typeName,
-            /* [in] */ const String& typeFullName)
-        {
-            mPreDeclarations.Put(typeName, typeFullName);
-        }
+            /* [in] */ const String& typeFullName);
 
         String FindPreDeclaration(
             /* [in] */ const String& typeName);
 
         StringMap<String> mPreDeclarations;
-        Context* mNext;
+        FileContext* mNext;
     };
 
     struct Error
     {
-        Error()
-            : mErrorToken(Tokenizer::Token::ILLEGAL_TOKEN)
-            , mLineNo(0)
-            , mColumnNo(0)
-            , mNext(nullptr)
-        {}
+        Error();
 
         Tokenizer::Token mErrorToken;
         String mFileName;
@@ -106,19 +93,7 @@ private:
     };
 
 public:
-    Parser()
-        : mMode(0)
-        , mParsedFiles(100)
-        , mEnvironment(nullptr)
-        , mModule(nullptr)
-        , mCurrNamespace(nullptr)
-        , mPool(nullptr)
-        , mCurrContext(nullptr)
-        , mStatus(NOERROR)
-        , mErrorHeader(nullptr)
-        , mCurrError(nullptr)
-        , mNeedDump(false)
-    {}
+    Parser();
 
     ~Parser();
 
@@ -126,8 +101,7 @@ public:
         /* [in] */ const String& filePath,
         /* [in] */ int mode);
 
-    inline std::shared_ptr<Module> GetModule()
-    { return mModule; }
+    inline std::shared_ptr<Module> GetModule();
 
 private:
     void PreParse();
@@ -245,9 +219,9 @@ private:
 
     bool ParseNamespace();
 
-    void EnterContext();
+    void EnterFileContext();
 
-    void LeaveContext();
+    void LeaveFileContext();
 
     Interface* FindInterface(
         /* [in] */ const String& itfName);
@@ -262,6 +236,7 @@ private:
     void GenerateIInterface();
 
     void GenerateCoclassObject(
+        /* [in] */ Pool* pool,
         /* [in] */ Coclass* klass);
 
     void LogError(
@@ -281,20 +256,24 @@ public:
 
 private:
     static const String TAG;
+    StringMap<bool> mParsedFiles;
     int mMode;
     Tokenizer mTokenizer;
     String mPathPrefix;
-    StringMap<bool> mParsedFiles;
-    Environment* mEnvironment;
-    std::shared_ptr<Module> mModule;
-    Namespace* mCurrNamespace;
+    World mWorld;
     Pool* mPool;
-    Context* mCurrContext;
+    Namespace* mCurrNamespace;
+    FileContext* mCurrContext;
     int mStatus;
     Error* mErrorHeader;
     Error* mCurrError;
     bool mNeedDump;
 };
+
+std::shared_ptr<Module> Parser::GetModule()
+{
+    return mWorld.GetWorkingModule();
+}
 
 }
 

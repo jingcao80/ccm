@@ -27,11 +27,9 @@ class ComponentIDType : public Type
 public:
     ComponentIDType();
 
-    inline bool IsPrimitiveType() override
-    { return true; }
+    bool IsPrimitiveType() override;
 
-    inline bool IsComponentIDType() override
-    { return true; }
+    bool IsComponentIDType() override;
 
     String Signature() override;
 };

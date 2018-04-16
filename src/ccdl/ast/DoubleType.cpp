@@ -24,6 +24,26 @@ DoubleType::DoubleType()
     SetName(String("Double"));
 }
 
+bool DoubleType::IsPrimitiveType()
+{
+    return true;
+}
+
+bool DoubleType::IsNumericType()
+{
+    return true;
+}
+
+bool DoubleType::IsFloatingPointType()
+{
+    return true;
+}
+
+bool DoubleType::IsDoubleType()
+{
+    return true;
+}
+
 String DoubleType::Signature()
 {
     return String("D");

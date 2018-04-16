@@ -24,6 +24,16 @@ CoclassIDType::CoclassIDType()
     SetName(String("CoclassID"));
 }
 
+bool CoclassIDType::IsPrimitiveType()
+{
+    return true;
+}
+
+bool CoclassIDType::IsCoclassIDType()
+{
+    return true;
+}
+
 String CoclassIDType::Signature()
 {
     return String("K");

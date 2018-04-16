@@ -14,8 +14,8 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCDL_ENVIRONMENT_H__
-#define __CCDL_ENVIRONMENT_H__
+#ifndef __CCDL_WORLD_H__
+#define __CCDL_WORLD_H__
 
 #include "../ast/BooleanType.h"
 #include "../ast/ByteType.h"
@@ -30,6 +30,7 @@
 #include "../ast/Interface.h"
 #include "../ast/InterfaceIDType.h"
 #include "../ast/LongType.h"
+#include "../ast/Module.h"
 #include "../ast/Namespace.h"
 #include "../ast/Pool.h"
 #include "../ast/ShortType.h"
@@ -37,6 +38,8 @@
 #include "../ast/Type.h"
 #include "../util/ArrayList.h"
 #include "../util/StringMap.h"
+
+#include <memory.h>
 
 using ccdl::ast::BooleanType;
 using ccdl::ast::ByteType;
@@ -51,6 +54,7 @@ using ccdl::ast::IntegerType;
 using ccdl::ast::Interface;
 using ccdl::ast::InterfaceIDType;
 using ccdl::ast::LongType;
+using ccdl::ast::Module;
 using ccdl::ast::Namespace;
 using ccdl::ast::Pool;
 using ccdl::ast::ShortType;
@@ -59,22 +63,29 @@ using ccdl::ast::Type;
 
 namespace ccdl {
 
-class Environment : public Pool
+class World : public Pool
 {
 public:
-    Environment();
+    World();
 
-    ~Environment();
+    ~World();
 
     inline void SetRootFile(
-        /* [in] */ const String& rootFile)
-    { mRootFile = rootFile; }
+        /* [in] */ const String& rootFile);
+
+    Namespace* GetGlobalNamespace();
+
+    std::shared_ptr<Module> CreateWorkingModule();
+
+    inline std::shared_ptr<Module> GetWorkingModule();
 
     String Dump(
         /* [in] */ const String& prefix) override;
 
 private:
     String mRootFile;
+    std::shared_ptr<Module> mWorkingModule;
+    ArrayList<Module*> mExternalModules;
 
     ByteType* mByteType;
     ShortType* mShortType;
@@ -91,6 +102,17 @@ private:
     InterfaceIDType* mInterfaceIDType;
 };
 
+void World::SetRootFile(
+    /* [in] */ const String& rootFile)
+{
+    mRootFile = rootFile;
 }
 
-#endif // __CCDL_ENVIRONMENT_H__
+std::shared_ptr<Module> World::GetWorkingModule()
+{
+    return mWorkingModule;
+}
+
+}
+
+#endif // __CCDL_WORLD_H__

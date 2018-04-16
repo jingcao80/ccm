@@ -39,31 +39,24 @@ public:
     void SetNamespace(
         /* [in] */ Namespace* ns) override;
 
-    inline bool IsInterfaceType() override
-    { return true; }
+    bool IsInterfaceType() override;
 
-    inline Interface* GetBaseInterface()
-    { return mBaseInterface; }
+    inline Interface* GetBaseInterface();
 
     void SetBaseInterface(
         /* [in] */ Interface* baseItf);
 
-    inline bool IsSystemPreDeclared()
-    { return mSystemPreDeclared; }
+    inline bool IsSystemPreDeclared();
 
     inline void SetSystemPreDeclared(
-        /* [in] */ bool preDeclared)
-    { mSystemPreDeclared = preDeclared; }
+        /* [in] */ bool preDeclared);
 
-    inline bool IsDeclared()
-    { return mDeclared; }
+    inline bool IsDeclared();
 
     inline void SetDeclared(
-        /* [in] */ bool declared)
-    { mDeclared = declared; }
+        /* [in] */ bool declared);
 
-    inline Uuid& GetUuid()
-    { return mUuid; }
+    inline Uuid& GetUuid();
 
     void SetAttribute(
         /* [in] */ const Attribute& attr);
@@ -71,22 +64,18 @@ public:
     bool AddConstant(
         /* [in] */ Constant* constant);
 
-    inline int GetConstantNumber()
-    { return mConstants.GetSize(); }
+    inline int GetConstantNumber();
 
     inline Constant* GetConstant(
-        /* [in] */ int index)
-    { return mConstants.Get(index); }
+        /* [in] */ int index);
 
     bool AddMethod(
         /* [in] */ Method* method);
 
-    inline int GetMethodNumber()
-    { return mMethods.GetSize(); }
+    inline int GetMethodNumber();
 
     inline Method* GetMethod(
-        /* [in] */ int index)
-    { return mMethods.Get(index); }
+        /* [in] */ int index);
 
     Method* FindMethod(
         /* [in] */ const String& name,
@@ -107,6 +96,60 @@ private:
     ArrayList<Constant*> mConstants;
     ArrayList<Method*> mMethods;
 };
+
+Interface* Interface::GetBaseInterface()
+{
+    return mBaseInterface;
+}
+
+bool Interface::IsSystemPreDeclared()
+{
+    return mSystemPreDeclared;
+}
+
+void Interface::SetSystemPreDeclared(
+    /* [in] */ bool preDeclared)
+{
+    mSystemPreDeclared = preDeclared;
+}
+
+bool Interface::IsDeclared()
+{
+    return mDeclared;
+}
+
+void Interface::SetDeclared(
+    /* [in] */ bool declared)
+{
+    mDeclared = declared;
+}
+
+Uuid& Interface::GetUuid()
+{
+    return mUuid;
+}
+
+int Interface::GetConstantNumber()
+{
+    return mConstants.GetSize();
+}
+
+Constant* Interface::GetConstant(
+    /* [in] */ int index)
+{
+    return mConstants.Get(index);
+}
+
+int Interface::GetMethodNumber()
+{
+    return mMethods.GetSize();
+}
+
+Method* Interface::GetMethod(
+    /* [in] */ int index)
+{
+    return mMethods.Get(index);
+}
 
 }
 }

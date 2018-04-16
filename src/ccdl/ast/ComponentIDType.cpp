@@ -24,6 +24,16 @@ ComponentIDType::ComponentIDType()
     SetName(String("ComponentIDType"));
 }
 
+bool ComponentIDType::IsPrimitiveType()
+{
+    return true;
+}
+
+bool ComponentIDType::IsComponentIDType()
+{
+    return true;
+}
+
 String ComponentIDType::Signature()
 {
     return String("M");

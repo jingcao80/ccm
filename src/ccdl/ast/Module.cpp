@@ -22,8 +22,11 @@ namespace ast {
 
 Module::Module()
 {
+    Namespace* global = new Namespace(String("__global__"));
+    AddNamespace(global);
     Namespace* ccm = new Namespace(String("ccm"));
     AddNamespace(ccm);
+    global->AddNamespace(ccm);
 
     mByteType = new ByteType();
     mByteType->SetNamespace(ccm);
@@ -82,6 +85,11 @@ Module::~Module()
     delete mCoclassIDType;
     delete mComponentIDType;
     delete mInterfaceIDType;
+}
+
+Namespace* Module::GetGlobalNamespace()
+{
+    return mNamespaces.Get(0);
 }
 
 void Module::SetAttribute(

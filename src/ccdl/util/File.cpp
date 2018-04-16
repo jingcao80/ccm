@@ -18,6 +18,30 @@
 
 namespace ccdl {
 
+File::BufferedReader::BufferedReader(
+    /* [in] */ File* owner)
+    : mOwner(owner)
+    , mColumnNo(0)
+    , mPrevColumnNo(0)
+    , mLineNo(1)
+    , mPosition(-1)
+    , mCapacity(-1)
+    , mEof(false)
+    , mError(false)
+{}
+
+int File::BufferedReader::GetColumnNo()
+{
+    return mColumnNo;
+}
+
+int File::BufferedReader::GetLineNo()
+{
+    return mLineNo;
+}
+
+//-----------------------------------------------------------------
+
 File::File(
     /* [in] */ const char* path,
     /* [in] */ int mode)

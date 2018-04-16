@@ -21,11 +21,23 @@
 namespace ccdl {
 namespace ast {
 
+Enumeration::Enumerator::Enumerator(
+    /* [in] */ const String& name,
+    /* [in] */ int value)
+    : mName(name)
+    , mValue(value)
+{}
+
 void Enumeration::SetNamespace(
     /* [in] */ Namespace* ns)
 {
     Type::SetNamespace(ns);
     mNamespace->AddEnumeration(this);
+}
+
+bool Enumeration::IsEnumerationType()
+{
+    return true;
 }
 
 bool Enumeration::AddEnumerator(

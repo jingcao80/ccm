@@ -24,6 +24,26 @@ CharType::CharType()
     SetName(String("Char"));
 }
 
+bool CharType::IsPrimitiveType()
+{
+    return true;
+}
+
+bool CharType::IsNumericType()
+{
+    return true;
+}
+
+bool CharType::IsIntegralType()
+{
+    return true;
+}
+
+bool CharType::IsCharType()
+{
+    return true;
+}
+
 String CharType::Signature()
 {
     return String("C");

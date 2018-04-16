@@ -41,6 +41,11 @@ void Coclass::SetAttribute(
     mDescription = attr.mDescription;
 }
 
+bool Coclass::IsCoclassType()
+{
+    return true;
+}
+
 bool Coclass::AddConstructor(
     /* [in] */ Method* constructor)
 {

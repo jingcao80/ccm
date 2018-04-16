@@ -32,15 +32,12 @@ public:
 
     ~Type();
 
-    inline String GetName()
-    { return mName; }
+    inline String GetName();
 
     inline void SetName(
-        /* [in] */ const String& name)
-    { mName = name; }
+        /* [in] */ const String& name);
 
-    inline Namespace* GetNamespace()
-    { return mNamespace; }
+    inline Namespace* GetNamespace();
 
     virtual void SetNamespace(
         /* [in] */ Namespace* ns);
@@ -102,6 +99,22 @@ protected:
     String mName;
     Namespace* mNamespace;
 };
+
+String Type::GetName()
+{
+    return mName;
+}
+
+void Type::SetName(
+    /* [in] */ const String& name)
+{
+    mName = name;
+}
+
+Namespace* Type::GetNamespace()
+{
+    return mNamespace;
+}
 
 }
 }
