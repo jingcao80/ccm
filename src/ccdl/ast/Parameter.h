@@ -25,6 +25,8 @@
 namespace ccdl {
 namespace ast {
 
+class Pool;
+
 class Parameter : public Node
 {
 public:
@@ -49,6 +51,10 @@ public:
 
     void SetDefaultValue(
         /* [in] */ Expression* expr);
+
+    void DeepCopy(
+        /* [in] */ Parameter* source,
+        /* [in] */ Pool* pool);
 
     String Dump(
         /* [in] */ const String& prefix) override;

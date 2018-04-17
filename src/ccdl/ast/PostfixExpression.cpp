@@ -66,5 +66,19 @@ String PostfixExpression::EnumeratorValue()
     return mEnumeratorName;
 }
 
+Expression* PostfixExpression::Clone()
+{
+    PostfixExpression* newExpr = new PostfixExpression();
+    newExpr->mBooleanValue = mBooleanValue;
+    newExpr->mIntegralValue = mIntegralValue;
+    newExpr->mFloatingPointValue = mFloatingPointValue;
+    newExpr->mStringValue = mStringValue;
+    newExpr->mEnumeratorName = mEnumeratorName;
+    if (mExpression != nullptr) {
+        newExpr->mExpression = mExpression->Clone();
+    }
+    return newExpr;
+}
+
 }
 }

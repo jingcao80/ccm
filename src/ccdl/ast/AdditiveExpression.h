@@ -41,6 +41,8 @@ public:
 
     String EnumeratorValue() override;
 
+    Expression* Clone() override;
+
 public:
     static constexpr int PLUS = 0;
     static constexpr int MINUS = 1;

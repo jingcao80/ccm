@@ -106,6 +106,15 @@ public:
     int IndexOf(
         /* [in] */ Type* type);
 
+    Type* DeepCopyType(
+        /* [in] */ Type* type);
+
+    Type* ShallowCopyType(
+        /* [in] */ Type* type);
+
+    virtual Type* ResolveType(
+        /* [in] */ const String& fullName) = 0;
+
     virtual String Dump(
         /* [in] */ const String& prefix);
 

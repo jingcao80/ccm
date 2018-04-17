@@ -16,14 +16,14 @@
 
 #include "Interface.h"
 #include "Namespace.h"
+#include "Pool.h"
 #include "../util/StringBuilder.h"
 
 namespace ccdl {
 namespace ast {
 
 Interface::Interface()
-    : mSystemPreDeclared(false)
-    , mDeclared(false)
+    : mDeclared(false)
     , mBaseInterface(nullptr)
     , mConstants(10)
     , mMethods(20)
@@ -96,6 +96,67 @@ String Interface::Signature()
     builder.Append(mName);
     builder.Append(";");
     return builder.ToString();
+}
+
+void Interface::DeepCopy(
+    /* [in] */ Interface* source,
+    /* [in] */ Pool* pool)
+{
+    mName = source->mName;
+    Namespace* ns = pool->ParseNamespace(source->mNamespace->ToString());
+    SetNamespace(ns);
+    pool->AddInterface(this);
+    mExternal = source->mExternal;
+    mDeclared = true;
+    SpecializeInternal(source, pool);
+}
+
+void Interface::ShallowCopy(
+    /* [in] */ Interface* source,
+    /* [in] */ Pool* pool)
+{
+    mName = source->mName;
+    Namespace* ns = pool->ParseNamespace(source->mNamespace->ToString());
+    SetNamespace(ns);
+    pool->AddInterface(this);
+    mExternal = source->mExternal;
+    mDeclared = true;
+    SetSourceType(source);
+    mSpecialized = false;
+}
+
+void Interface::Specialize()
+{
+    if (mSpecialized) return;
+
+    SpecializeInternal((Interface*)mSourceType, mPool);
+    mSpecialized = true;
+}
+
+void Interface::SpecializeInternal(
+    /* [in] */ Interface* source,
+    /* [in] */ Pool* pool)
+{
+    Interface* srcBaseIntf = source->mBaseInterface;
+    if (srcBaseIntf != nullptr) {
+        mBaseInterface = pool->FindInterface(srcBaseIntf->ToString());
+        if (mBaseInterface == nullptr) {
+            mBaseInterface = (Interface*)pool->DeepCopyType(srcBaseIntf);
+        }
+    }
+    mUuid = source->mUuid;
+    mVersion = source->mVersion;
+    mDescription = source->mDescription;
+    for (int i = 0; i < source->GetConstantNumber(); i++) {
+        Constant* desConstant = new Constant();
+        desConstant->DeepCopy(source->GetConstant(i), pool);
+        AddConstant(desConstant);
+    }
+    for (int i = 0; i < source->GetMethodNumber(); i++) {
+        Method* desMethod = new Method();
+        desMethod->DeepCopy(source->GetMethod(i), pool);
+        AddMethod(desMethod);
+    }
 }
 
 String Interface::Dump(

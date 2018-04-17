@@ -31,6 +31,8 @@ class Parser;
 namespace ccdl {
 namespace ast {
 
+class Pool;
+
 class Interface : public Type
 {
 public:
@@ -45,11 +47,6 @@ public:
 
     void SetBaseInterface(
         /* [in] */ Interface* baseItf);
-
-    inline bool IsSystemPreDeclared();
-
-    inline void SetSystemPreDeclared(
-        /* [in] */ bool preDeclared);
 
     inline bool IsDeclared();
 
@@ -83,11 +80,25 @@ public:
 
     String Signature() override;
 
+    void DeepCopy(
+        /* [in] */ Interface* source,
+        /* [in] */ Pool* pool);
+
+    void ShallowCopy(
+        /* [in] */ Interface* source,
+        /* [in] */ Pool* pool);
+
+    void Specialize();
+
     String Dump(
         /* [in] */ const String& prefix) override;
 
 private:
-    bool mSystemPreDeclared;
+    void SpecializeInternal(
+        /* [in] */ Interface* source,
+        /* [in] */ Pool* pool);
+
+private:
     bool mDeclared;
     Interface* mBaseInterface;
     Uuid mUuid;
@@ -100,17 +111,6 @@ private:
 Interface* Interface::GetBaseInterface()
 {
     return mBaseInterface;
-}
-
-bool Interface::IsSystemPreDeclared()
-{
-    return mSystemPreDeclared;
-}
-
-void Interface::SetSystemPreDeclared(
-    /* [in] */ bool preDeclared)
-{
-    mSystemPreDeclared = preDeclared;
 }
 
 bool Interface::IsDeclared()

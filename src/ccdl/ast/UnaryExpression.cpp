@@ -162,5 +162,20 @@ String UnaryExpression::EnumeratorValue()
     return String(nullptr);
 }
 
+Expression* UnaryExpression::Clone()
+{
+    UnaryExpression* newExpr = new UnaryExpression();
+    if (mLeftOperand != nullptr) {
+        newExpr->mLeftOperand = mLeftOperand->Clone();
+    }
+    if (mRightOperand != nullptr) {
+        newExpr->mRightOperand = mRightOperand->Clone();
+    }
+    newExpr->mOperator = mOperator;
+    newExpr->mType = mType;
+    newExpr->mRadix = mRadix;
+    return newExpr;
+}
+
 }
 }

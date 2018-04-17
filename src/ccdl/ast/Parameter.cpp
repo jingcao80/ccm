@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "Parameter.h"
+#include "Pool.h"
 #include "../util/StringBuilder.h"
 
 namespace ccdl {
@@ -41,6 +42,21 @@ void Parameter::SetDefaultValue(
         delete mDefaultValue;
     }
     mDefaultValue = expr;
+}
+
+void Parameter::DeepCopy(
+    /* [in] */ Parameter* source,
+    /* [in] */ Pool* pool)
+{
+    mName = source->mName;
+    mType = pool->FindType(source->mType->ToString());
+    if (mType == nullptr) {
+        mType = pool->DeepCopyType(source->mType);
+    }
+    if (source->mDefaultValue != nullptr) {
+        mDefaultValue = source->mDefaultValue->Clone();
+    }
+    mAttribute = source->mAttribute;
 }
 
 String Parameter::Dump(

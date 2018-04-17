@@ -27,6 +27,7 @@ Namespace::Namespace(
     , mCoclasses(20, false)
     , mEnumerations(10, false)
     , mInterfaces(20, false)
+    , mResolved(true)
 {}
 
 Namespace::~Namespace()
@@ -80,12 +81,12 @@ bool Namespace::AddInterface(
     return mInterfaces.Add(itf);
 }
 
-int Namespace::GetSystemPreDeclaredInterfaceNumber()
+int Namespace::GetExternalInterfaceNumber()
 {
     int count = 0;
     for (int i = 0; i < mInterfaces.GetSize(); i++) {
         Interface* itf = mInterfaces.Get(i);
-        if (itf->IsSystemPreDeclared()) count++;
+        if (itf->IsExternal()) count++;
     }
     return count;
 }

@@ -16,6 +16,7 @@
 
 #include "Enumeration.h"
 #include "Namespace.h"
+#include "Pool.h"
 #include "../util/StringBuilder.h"
 
 namespace ccdl {
@@ -74,6 +75,46 @@ String Enumeration::Signature()
     builder.Append(mName);
     builder.Append(";");
     return builder.ToString();
+}
+
+void Enumeration::DeepCopy(
+    /* [in] */ Enumeration* source,
+    /* [in] */ Pool* pool)
+{
+    mName = source->mName;
+    Namespace* ns = pool->ParseNamespace(source->mNamespace->ToString());
+    SetNamespace(ns);
+    pool->AddEnumeration(this);
+    mExternal = source->mExternal;
+    for (int i = 0; i < source->GetEnumeratorNumber(); i++) {
+        Enumeration::Enumerator* srcEnumr = source->GetEnumerator(i);
+        AddEnumerator(srcEnumr->mName, srcEnumr->mValue);
+    }
+}
+
+void Enumeration::ShallowCopy(
+    /* [in] */ Enumeration* source,
+    /* [in] */ Pool* pool)
+{
+    mName = source->mName;
+    Namespace* ns = pool->ParseNamespace(source->mNamespace->ToString());
+    SetNamespace(ns);
+    pool->AddEnumeration(this);
+    mExternal = source->mExternal;
+    SetSourceType(source);
+    mSpecialized = false;
+}
+
+void Enumeration::Specialize()
+{
+    if (mSpecialized) return;
+
+    Enumeration* source = (Enumeration*)mSourceType;
+    for (int i = 0; i < source->GetEnumeratorNumber(); i++) {
+        Enumeration::Enumerator* srcEnumr = source->GetEnumerator(i);
+        AddEnumerator(srcEnumr->mName, srcEnumr->mValue);
+    }
+    mSpecialized = true;
 }
 
 String Enumeration::Dump(

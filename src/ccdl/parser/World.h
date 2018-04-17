@@ -79,6 +79,15 @@ public:
 
     inline std::shared_ptr<Module> GetWorkingModule();
 
+    Type* ResolveType(
+        /* [in] */ const String& fullName) override;
+
+    bool AddExternalModule(
+        /* [in] */ Module* module);
+
+    Type* FindTypeInExternalModules(
+        /* [in] */ const String& fullName);
+
     String Dump(
         /* [in] */ const String& prefix) override;
 

@@ -24,6 +24,8 @@
 namespace ccdl {
 namespace ast {
 
+class Pool;
+
 class Enumeration : public Type
 {
 public:
@@ -56,6 +58,16 @@ public:
         /* [in] */ const String& name);
 
     String Signature() override;
+
+    void DeepCopy(
+        /* [in] */ Enumeration* source,
+        /* [in] */ Pool* pool);
+
+    void ShallowCopy(
+        /* [in] */ Enumeration* source,
+        /* [in] */ Pool* pool);
+
+    void Specialize();
 
     String Dump(
         /* [in] */ const String& prefix) override;

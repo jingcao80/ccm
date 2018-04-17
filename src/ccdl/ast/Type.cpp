@@ -22,11 +22,17 @@ namespace ast {
 
 Type::Type()
     : mNamespace(nullptr)
+    , mPool(nullptr)
+    , mExternal(false)
+    , mSpecialized(true)
+    , mSourceType(nullptr)
 {}
 
 Type::~Type()
 {
     mNamespace = nullptr;
+    mPool = nullptr;
+    mSourceType = nullptr;
 }
 
 void Type::SetNamespace(
@@ -144,6 +150,9 @@ bool Type::IsPointerType()
 {
     return false;
 }
+
+void Type::Specialize()
+{}
 
 String Type::ToString()
 {

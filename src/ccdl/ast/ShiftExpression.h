@@ -41,6 +41,8 @@ public:
 
     String EnumeratorValue() override;
 
+    Expression* Clone() override;
+
 public:
     static constexpr int LEFT = 0;
     static constexpr int RIGHT = 1;

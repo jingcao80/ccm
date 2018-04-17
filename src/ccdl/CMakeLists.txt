@@ -57,7 +57,7 @@ set(SOURCES
     codegen/CodeGenerator.cpp
     metadata/MetaBuilder.cpp
     metadata/MetaDumper.cpp
-    metadata/MetaRegister.cpp
+    metadata/MetaResolver.cpp
     parser/Parser.cpp
     parser/Tokenizer.cpp
     parser/World.cpp

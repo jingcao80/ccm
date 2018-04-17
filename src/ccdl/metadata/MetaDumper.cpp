@@ -69,7 +69,7 @@ String MetaDumper::DumpMetaComponent(
     }
 
     for (int i = 0; i < mc->mInterfaceNumber; i++) {
-        if (mc->mInterfaces[i]->mSystemPreDeclared) continue;
+        if (mc->mInterfaces[i]->mExternal) continue;
         String dumpItf = DumpMetaInterface(mc->mInterfaces[i], prefix + "  ");
         builder.Append(dumpItf);
     }

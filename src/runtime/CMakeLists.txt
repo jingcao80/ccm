@@ -35,6 +35,7 @@ include_directories(
     ${INC_DIR})
 
 set(SOURCES
+    ccmids.cpp
     runtime.cpp)
 
 set(CCMRT_LINK_LIBS

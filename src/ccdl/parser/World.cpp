@@ -101,6 +101,38 @@ std::shared_ptr<Module> World::CreateWorkingModule()
     return mWorkingModule;
 }
 
+Type* World::ResolveType(
+    /* [in] */ const String& fullName)
+{
+    return nullptr;
+}
+
+bool World::AddExternalModule(
+    /* [in] */ Module* module)
+{
+    if (module == nullptr) {
+        return true;
+    }
+
+    return mExternalModules.Add(module);
+}
+
+Type* World::FindTypeInExternalModules(
+    /* [in] */ const String& fullName)
+{
+    if (fullName.IsNullOrEmpty()) {
+        return nullptr;
+    }
+
+    for (int i = 0; i < mExternalModules.GetSize(); i++) {
+        Type* type = mExternalModules.Get(i)->FindType(fullName);
+        if (type != nullptr) {
+            return type;
+        }
+    }
+    return nullptr;
+}
+
 String World::Dump(
     /* [in] */ const String& prefix)
 {

@@ -166,5 +166,20 @@ String MultiplicativeExpression::EnumeratorValue()
     return mRightOperand->EnumeratorValue();
 }
 
+Expression* MultiplicativeExpression::Clone()
+{
+    MultiplicativeExpression* newExpr = new MultiplicativeExpression();
+    if (mLeftOperand != nullptr) {
+        newExpr->mLeftOperand = mLeftOperand->Clone();
+    }
+    if (mRightOperand != nullptr) {
+        newExpr->mRightOperand = mRightOperand->Clone();
+    }
+    newExpr->mOperator = mOperator;
+    newExpr->mType = mType;
+    newExpr->mRadix = mRadix;
+    return newExpr;
+}
+
 }
 }

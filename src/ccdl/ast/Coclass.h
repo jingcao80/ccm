@@ -56,6 +56,11 @@ public:
         /* [in] */ const String& name,
         /* [in] */ const String& signature);
 
+    inline bool HasDefaultConstructor();
+
+    inline void SetConstructorDefault(
+        /* [in] */ bool isDefault);
+
     bool AddInterface(
         /* [in] */ Interface* interface);
 
@@ -73,6 +78,7 @@ private:
     Uuid mUuid;
     String mVersion;
     String mDescription;
+    bool mConstructorDefault;
     ArrayList<Method*> mConstructors;
     ArrayList<Interface*> mInterfaces;
 };
@@ -91,6 +97,17 @@ Method* Coclass::GetConstructor(
     /* [in] */ int index)
 {
     return mConstructors.Get(index);
+}
+
+bool Coclass::HasDefaultConstructor()
+{
+    return mConstructorDefault;
+}
+
+void Coclass::SetConstructorDefault(
+    /* [in] */ bool isDefault)
+{
+    mConstructorDefault = isDefault;
 }
 
 int Coclass::GetInterfaceNumber()

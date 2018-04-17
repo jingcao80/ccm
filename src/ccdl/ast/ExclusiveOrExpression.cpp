@@ -74,5 +74,20 @@ String ExclusiveOrExpression::EnumeratorValue()
     return mRightOperand->EnumeratorValue();
 }
 
+Expression* ExclusiveOrExpression::Clone()
+{
+    ExclusiveOrExpression* newExpr = new ExclusiveOrExpression();
+    if (mLeftOperand != nullptr) {
+        newExpr->mLeftOperand = mLeftOperand->Clone();
+    }
+    if (mRightOperand != nullptr) {
+        newExpr->mRightOperand = mRightOperand->Clone();
+    }
+    newExpr->mOperator = mOperator;
+    newExpr->mType = mType;
+    newExpr->mRadix = mRadix;
+    return newExpr;
+}
+
 }
 }

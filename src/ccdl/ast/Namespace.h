@@ -74,10 +74,15 @@ public:
 
     inline int GetInterfaceNumber();
 
-    int GetSystemPreDeclaredInterfaceNumber();
+    int GetExternalInterfaceNumber();
 
     inline Interface* GetInterface(
         /* [in] */ int index);
+
+    inline void SetResolved(
+        /* [in] */ bool resolved);
+
+    inline bool IsResolved();
 
     String ToString() override;
 
@@ -90,6 +95,7 @@ private:
     ArrayList<Coclass*> mCoclasses;
     ArrayList<Enumeration*> mEnumerations;
     ArrayList<Interface*> mInterfaces;
+    bool mResolved;
 };
 
 String Namespace::GetName()
@@ -150,6 +156,17 @@ Interface* Namespace::GetInterface(
     /* [in] */ int index)
 {
     return mInterfaces.Get(index);
+}
+
+void Namespace::SetResolved(
+    /* [in] */ bool resolved)
+{
+    mResolved = resolved;
+}
+
+bool Namespace::IsResolved()
+{
+    return mResolved;
 }
 
 String Namespace::ToShortString()

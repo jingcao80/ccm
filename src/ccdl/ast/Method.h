@@ -26,6 +26,8 @@
 namespace ccdl {
 namespace ast {
 
+class Pool;
+
 class Method : public Node
 {
 public:
@@ -51,12 +53,11 @@ public:
     inline Parameter* GetParameter(
         /* [in] */ int index);
 
-    inline void SetDefault(
-        /* [in] */ bool isDefault);
-
-    inline bool IsDefault();
-
     void BuildSignature();
+
+    void DeepCopy(
+        /* [in] */ Method* source,
+        /* [in] */ Pool* pool);
 
     String ToString() override;
 
@@ -68,7 +69,6 @@ private:
     String mSignature;
     Type* mReturnType;
     ArrayList<Parameter*> mParameters;
-    bool mDefault;
 };
 
 String Method::GetName()
@@ -107,17 +107,6 @@ Parameter* Method::GetParameter(
     /* [in] */ int index)
 {
     return mParameters.Get(index);
-}
-
-void Method::SetDefault(
-    /* [in] */ bool isDefault)
-{
-    mDefault = isDefault;
-}
-
-bool Method::IsDefault()
-{
-    return mDefault;
 }
 
 }

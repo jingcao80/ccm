@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "Constant.h"
+#include "Pool.h"
 #include "../util/StringBuilder.h"
 
 namespace ccdl {
@@ -24,6 +25,19 @@ Constant::Constant()
     : mType(nullptr)
     , mValue(nullptr)
 {}
+
+void Constant::DeepCopy(
+    /* [in] */ Constant* source,
+    /* [in] */ Pool* pool)
+{
+    mName = source->mName;
+    mType = pool->FindType(source->mType->ToString());
+    if (mType == nullptr) {
+        mType = pool->DeepCopyType(source->mType);
+    }
+    mValue = source->mValue->Clone();
+    mValue->SetType(mType);
+}
 
 String Constant::Dump(
     /* [in] */ const String& prefix)

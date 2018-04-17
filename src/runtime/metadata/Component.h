@@ -46,7 +46,7 @@ struct MetaComponent
     int                 mCoclassNumber;
     int                 mEnumerationNumber;
     int                 mInterfaceNumber;
-    int                 mSystemPreDeclaredInterfaceNumber;
+    int                 mExternalInterfaceNumber;
     int                 mTypeNumber;
     MetaNamespace**     mNamespaces;
     MetaCoclass**       mCoclasses;
@@ -62,7 +62,7 @@ struct MetaNamespace
     int                 mCoclassNumber;
     int                 mEnumerationNumber;
     int                 mInterfaceNumber;
-    int                 mSystemPreDeclaredInterfaceNumber;
+    int                 mExternalInterfaceNumber;
     int*                mCoclassIndexes;
     int*                mEnumerationIndexes;
     int*                mInterfaceIndexes;
@@ -75,6 +75,7 @@ struct MetaCoclass
     char*               mNamespace;
     int                 mInterfaceNumber;
     int*                mInterfaceIndexes;
+    bool                mConstructorDefault;
 };
 
 struct MetaEnumeration
@@ -101,7 +102,7 @@ struct MetaInterface
     int                 mMethodNumber;
     MetaConstant**      mConstants;
     MetaMethod**        mMethods;
-    bool                mSystemPreDeclared;
+    bool                mExternal;
 };
 
 struct MetaConstant
@@ -125,7 +126,6 @@ struct MetaMethod
     char*               mSignature;
     int                 mParameterNumber;
     MetaParameter**     mParameters;
-    bool                mDefault;
 };
 
 struct MetaParameter

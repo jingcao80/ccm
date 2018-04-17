@@ -331,7 +331,7 @@ void MetaBuilder::WriteMetaComponent(
     mc->mCoclassNumber = CLS_NUM;
     mc->mEnumerationNumber = ENUMN_NUM;
     mc->mInterfaceNumber = ITF_NUM;
-    mc->mSystemPreDeclaredInterfaceNumber = 0;
+    mc->mExternalInterfaceNumber = 0;
     mc->mTypeNumber = TP_NUM;
     // mNamespaces's address
     mBasePtr = ALIGN(mBasePtr + sizeof(MetaComponent));
@@ -360,7 +360,7 @@ void MetaBuilder::WriteMetaComponent(
 
     for (int i = 0; i < NS_NUM; i++) {
         mc->mNamespaces[i] = WriteMetaNamespace(module->GetNamespace(i));
-        mc->mSystemPreDeclaredInterfaceNumber += module->GetNamespace(i)->GetSystemPreDeclaredInterfaceNumber();
+        mc->mExternalInterfaceNumber += module->GetNamespace(i)->GetExternalInterfaceNumber();
     }
 
     for (int i = 0; i < CLS_NUM; i++) {
@@ -395,6 +395,7 @@ MetaCoclass* MetaBuilder::WriteMetaCoclass(
     // mInterfaceIndexes's address
     mBasePtr = ALIGN4(mBasePtr + sizeof(MetaCoclass));
     mc->mInterfaceIndexes = reinterpret_cast<int*>(mBasePtr);
+    mc->mConstructorDefault = klass->HasDefaultConstructor();
     // end address
     mBasePtr = mBasePtr + sizeof(int) * ITF_NUM;
 
@@ -506,7 +507,7 @@ MetaInterface* MetaBuilder::WriteMetaInterface(
             mModule->IndexOf(baseItf) : -1;
     mi->mConstantNumber = CONST_NUM;
     mi->mMethodNumber = MTH_NUM;
-    mi->mSystemPreDeclared = itf->IsSystemPreDeclared();
+    mi->mExternal = itf->IsExternal();
     // mConstants's address
     mBasePtr = ALIGN(mBasePtr + sizeof(MetaInterface));
     mi->mConstants = reinterpret_cast<MetaConstant**>(mBasePtr);
@@ -538,7 +539,6 @@ MetaMethod* MetaBuilder::WriteMetaMethod(
     mm->mName = WriteString(method->GetName());
     mm->mSignature = WriteString(method->GetSignature());
     mm->mParameterNumber = PARAM_NUM;
-    mm->mDefault = method->IsDefault();
     // mParameters's address
     mBasePtr = ALIGN(mBasePtr + sizeof(MetaMethod));
     mm->mParameters = reinterpret_cast<MetaParameter**>(mBasePtr);
@@ -566,7 +566,7 @@ MetaNamespace* MetaBuilder::WriteMetaNamespace(
     mn->mCoclassNumber = CLS_NUM;
     mn->mEnumerationNumber = ENUMN_NUM;
     mn->mInterfaceNumber = ITF_NUM;
-    mn->mSystemPreDeclaredInterfaceNumber = ns->GetSystemPreDeclaredInterfaceNumber();
+    mn->mExternalInterfaceNumber = ns->GetExternalInterfaceNumber();
     // mCoclassIndexes's address
     mBasePtr = ALIGN4(mBasePtr + sizeof(MetaNamespace));
     mn->mCoclassIndexes = reinterpret_cast<int*>(mBasePtr);

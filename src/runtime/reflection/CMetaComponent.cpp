@@ -39,9 +39,9 @@ CMetaComponent::CMetaComponent(
     , mMetaEnumerations(mMetadata->mEnumerationNumber)
     , mMetaEnumerationMap(mMetadata->mEnumerationNumber)
     , mMetaInterfaces(mMetadata->mInterfaceNumber -
-            mMetadata->mSystemPreDeclaredInterfaceNumber)
+            mMetadata->mExternalInterfaceNumber)
     , mMetaInterfaceMap(mMetadata->mInterfaceNumber -
-            mMetadata->mSystemPreDeclaredInterfaceNumber)
+            mMetadata->mExternalInterfaceNumber)
 {
     mCid.mUuid = metadata->mUuid;
     mCid.mUrl = mUrl.string();
@@ -166,7 +166,7 @@ ECode CMetaComponent::GetInterfaceNumber(
     VALIDATE_NOT_NULL(number);
 
     *number = mMetadata->mInterfaceNumber -
-            mMetadata->mSystemPreDeclaredInterfaceNumber;
+            mMetadata->mExternalInterfaceNumber;
     return NOERROR;
 }
 
@@ -250,7 +250,7 @@ void CMetaComponent::BuildAllInterfaces()
         Integer idx = 0;
         for (Integer i = 0; i < mMetadata->mInterfaceNumber; i++) {
             MetaInterface* mi = mMetadata->mInterfaces[i];
-            if (mi->mSystemPreDeclared) continue;
+            if (mi->mExternal) continue;
             IMetaInterface* miObj = new CMetaInterface(
                     this, mMetadata, mi);
             mMetaInterfaces.Set(idx, miObj);

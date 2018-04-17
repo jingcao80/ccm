@@ -14,7 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
-#include "MetaRegister.h"
+#include "MetaResolver.h"
 #include "../ast/Attribute.h"
 #include "../ast/Interface.h"
 #include "../ast/Method.h"
@@ -37,35 +37,87 @@ using ccm::metadata::MetaEnumeration;
 namespace ccdl {
 namespace metadata {
 
-MetaRegister::MetaRegister(
+MetaResolver::MetaResolver(
     /* [in] */ Pool* pool,
     /* [in] */ void* metadata)
     : mPool(pool)
     , mMetaComponent(reinterpret_cast<MetaComponent*>(metadata))
+    , mResolvingType(nullptr)
 {}
 
-bool MetaRegister::Register()
+void MetaResolver::InitializeModule()
 {
     MetaComponent* mc = mMetaComponent;
-    for (int i = 0; i < mc->mInterfaceNumber; i++) {
-        MetaInterface* mi = mc->mInterfaces[i];
-        if (String::Format("%s%s", mi->mNamespace, mi->mName).Equals(
-                "ccm::IClassObject")) {
-            RegisterInterface(mi);
-        }
+    for (int i = 0; i < mc->mNamespaceNumber; i++) {
+        MetaNamespace* mn = mc->mNamespaces[i];
+        ResolveNamespace(mn);
     }
 }
 
-void MetaRegister::RegisterInterface(
+Type* MetaResolver::Resolve(
+    /* [in] */ const String& fullName)
+{
+    mResolvingTypename = fullName;
+    int index = fullName.LastIndexOf("::");
+    String ns = index == -1 ? String("") : fullName.Substring(0, index + 1);
+    String typeName = index == -1 ? fullName : fullName.Substring(index + 2);
+    MetaComponent* mc = mMetaComponent;
+    for (int i = 0; i < mc->mNamespaceNumber; i++) {
+        MetaNamespace* mn = mc->mNamespaces[i];
+        if (ns.Equals(mn->mName)) {
+            return ResolveType(mn, typeName);
+        }
+    }
+    return nullptr;
+}
+
+void MetaResolver::ResolveNamespace(
+    /* [in] */ MetaNamespace* mn)
+{
+    Namespace* ns = mPool->ParseNamespace(String(mn->mName));
+    ns->SetResolved(false);
+}
+
+Type* MetaResolver::ResolveType(
+    /* [in] */ MetaNamespace* mn,
+    /* [in] */ const String& typeName)
+{
+    for (int i = 0; i < mn->mEnumerationNumber; i++) {
+        MetaEnumeration* me = mMetaComponent->mEnumerations[
+                mn->mEnumerationIndexes[i]];
+        if (typeName.Equals(me->mName)) {
+            return BuildEnumeration(me);
+        }
+    }
+
+    for (int i = 0; i < mn->mInterfaceNumber; i++) {
+        MetaInterface* mi = mMetaComponent->mInterfaces[
+                mn->mInterfaceIndexes[i]];
+        if (typeName.Equals(mi->mName)) {
+            return BuildInterface(mi);
+        }
+    }
+
+    return nullptr;
+}
+
+Type* MetaResolver::BuildEnumeration(
+    /* [in] */ MetaEnumeration* me)
+{
+    return nullptr;
+}
+
+Type* MetaResolver::BuildInterface(
     /* [in] */ MetaInterface* mi)
 {
-    Namespace* ns = RegisterNamespace(String(mi->mNamespace));
+    Namespace* ns = BuildNamespace(String(mi->mNamespace));
 
     Interface* interface = new Interface();
     interface->SetName(String(mi->mName));
     interface->SetNamespace(ns);
     interface->SetDeclared(true);
-    interface->SetSystemPreDeclared(true);
+    interface->SetExternal(mi->mExternal);
+    mResolvingType = (Type*)interface;
 
     Attribute attr;
     attr.mUuid = Uuid(mi->mUuid).Dump();
@@ -76,9 +128,10 @@ void MetaRegister::RegisterInterface(
         Method* method = BuildMethod(mi->mMethods[i]);
         interface->AddMethod(method);
     }
+    return (Type*)interface;
 }
 
-Namespace* MetaRegister::RegisterNamespace(
+Namespace* MetaResolver::BuildNamespace(
     /* [in] */ const String& ns)
 {
     if (ns.IsNullOrEmpty()) {
@@ -88,7 +141,7 @@ Namespace* MetaRegister::RegisterNamespace(
     return mPool->ParseNamespace(ns);
 }
 
-Method* MetaRegister::BuildMethod(
+Method* MetaResolver::BuildMethod(
     /* [in] */ MetaMethod* mm)
 {
     Method* method = new Method();
@@ -101,7 +154,7 @@ Method* MetaRegister::BuildMethod(
     return method;
 }
 
-Parameter* MetaRegister::BuildParameter(
+Parameter* MetaResolver::BuildParameter(
     /* [in] */ MetaParameter* mp)
 {
     Parameter* param = new Parameter();
@@ -112,7 +165,7 @@ Parameter* MetaRegister::BuildParameter(
     return param;
 }
 
-Type* MetaRegister::BuildType(
+Type* MetaResolver::BuildType(
     /* [in] */ MetaType* mt)
 {
     String typeStr;
@@ -175,7 +228,7 @@ Type* MetaRegister::BuildType(
         }
     }
 
-    Type* type =  mPool->FindType(typeStr);
+    Type* type = mResolvingTypename.Equals(typeStr) ? mResolvingType : mPool->FindType(typeStr);
 
     if (mt->mPointerNumber != 0) {
         Type* baseType = type;

@@ -61,6 +61,8 @@ public:
 
     String EnumeratorValue() override;
 
+    Expression* Clone() override;
+
 private:
     bool mBooleanValue;
     long long int mIntegralValue;

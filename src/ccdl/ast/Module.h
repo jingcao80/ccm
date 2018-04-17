@@ -37,6 +37,9 @@
 #include "StringType.h"
 #include "Type.h"
 #include "../util/StringMap.h"
+#include "../../runtime/metadata/Component.h"
+
+using ccm::metadata::MetaComponent;
 
 namespace ccdl {
 namespace ast {
@@ -44,7 +47,8 @@ namespace ast {
 class Module : public Node, public Pool
 {
 public:
-    Module();
+    Module(
+        /* [in] */ void* metadata = 0);
 
     ~Module();
 
@@ -61,6 +65,9 @@ public:
     inline Uuid& GetUuid();
 
     inline String GetUrl();
+
+    Type* ResolveType(
+        /* [in] */ const String& fullName) override;
 
     String Dump(
         /* [in] */ const String& prefix) override;
@@ -85,6 +92,8 @@ private:
     CoclassIDType* mCoclassIDType;
     ComponentIDType* mComponentIDType;
     InterfaceIDType* mInterfaceIDType;
+
+    MetaComponent* mMetaComponent;
 };
 
 String Module::GetName()

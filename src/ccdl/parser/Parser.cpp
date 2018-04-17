@@ -18,7 +18,7 @@
 #include "../ast/ArrayType.h"
 #include "../ast/Constant.h"
 #include "../ast/PointerType.h"
-#include "../metadata/MetaRegister.h"
+#include "../metadata/MetaResolver.h"
 #include "../util/Logger.h"
 #include "../util/MetadataUtils.h"
 #include "../../runtime/metadata/Component.h"
@@ -30,7 +30,7 @@
 using ccdl::ast::ArrayType;
 using ccdl::ast::Constant;
 using ccdl::ast::PointerType;
-using ccdl::metadata::MetaRegister;
+using ccdl::metadata::MetaResolver;
 
 using ccm::metadata::MetaSerializer;
 
@@ -59,14 +59,14 @@ Parser::FileContext::FileContext()
     , mNext(0)
 {}
 
-void Parser::FileContext::AddPreDeclaration(
+void Parser::FileContext::AddPredeclaration(
     /* [in] */ const String& typeName,
     /* [in] */ const String& typeFullName)
 {
     mPreDeclarations.Put(typeName, typeFullName);
 }
 
-String Parser::FileContext::FindPreDeclaration(
+String Parser::FileContext::FindPredeclaration(
     /* [in] */ const String& typeName)
 {
     return mPreDeclarations.Get(typeName);
@@ -121,13 +121,13 @@ bool Parser::Parse(
         return false;
     }
 
+    mMode = mode;
     mPathPrefix = filePath.Substring(0, filePath.LastIndexOf('/'));
 
     mWorld.SetRootFile(filePath);
     mCurrNamespace = mWorld.GetGlobalNamespace();
     mPool = &mWorld;
 
-    mMode = mode;
     PreParse();
 
     ret = ParseFile();
@@ -158,8 +158,10 @@ void Parser::LoadCcmrtMetadata()
             rtpath + "/ccmrt.so");
     MetaSerializer serializer;
     serializer.Deserialize(reinterpret_cast<uintptr_t>(newData));
-    MetaRegister metaRegister(mPool, newData);
-    metaRegister.Register();
+    Module* externalModule = new Module(newData);
+    MetaResolver resolver(externalModule, newData);
+    resolver.InitializeModule();
+    mWorld.AddExternalModule(externalModule);
 }
 
 void Parser::PostParse()
@@ -496,7 +498,7 @@ bool Parser::ParseInterface(
         interface->SetNamespace(ns);
         mPool->AddInterface(interface);
 
-        mCurrContext->AddPreDeclaration(itfName, fullName);
+        mCurrContext->AddPredeclaration(itfName, fullName);
         return parseResult;
     }
 
@@ -603,7 +605,7 @@ bool Parser::ParseInterfaceBody(
     while (token != Tokenizer::Token::BRACES_CLOSE &&
             token != Tokenizer::Token::END_OF_FILE) {
         if (token == Tokenizer::Token::CONST) {
-            parseResult = ParseConstDataMember(interface) && parseResult;
+            parseResult = ParseInterfaceConstant(interface) && parseResult;
         }
         else if (token == Tokenizer::Token::IDENTIFIER) {
             parseResult = ParseMethod(interface) && parseResult;
@@ -842,7 +844,7 @@ Type* Parser::ParseArrayType()
     return arrayType;
 }
 
-bool Parser::ParseConstDataMember(
+bool Parser::ParseInterfaceConstant(
     /* [in] */ Interface* interface)
 {
     bool parseResult = true;
@@ -1749,8 +1751,6 @@ bool Parser::ParseModule(
     mCurrNamespace = module->GetGlobalNamespace();
     mPool = module.get();
 
-    PreParse();
-
     token = mTokenizer.PeekToken();
     while (token != Tokenizer::Token::BRACES_CLOSE &&
             token != Tokenizer::Token::END_OF_FILE) {
@@ -1891,24 +1891,54 @@ Interface* Parser::FindInterface(
 Type* Parser::FindType(
     /* [in] */ const String& typeName)
 {
-    Type* type = nullptr;
-    if (typeName.Contains("::")) {
-        type = mPool->FindType(typeName);
-    }
-    else {
-        String typeFullName = mCurrContext->FindPreDeclaration(typeName);
-        if (!typeFullName.IsNullOrEmpty()) {
-            type = mPool->FindType(typeFullName);
-        }
-        else {
+    String fullName = typeName;
+    if (!fullName.Contains("::")) {
+        fullName = mCurrContext->FindPredeclaration(typeName);
+        if (fullName.IsNullOrEmpty()) {
             Namespace* ns = mCurrNamespace;
             while (ns != nullptr) {
-                typeFullName = ns->ToString() + typeName;
-                type = mPool->FindType(typeFullName);
-                if (type != nullptr) break;
+                fullName = ns->ToString() + typeName;
+
+                Type* type = mPool->FindType(fullName);
+                if (type != nullptr) {
+                    return type;
+                }
+
+                if (mPool != &mWorld) {
+                    type = mWorld.FindType(fullName);
+                    if (type != nullptr) {
+                        type = mPool->DeepCopyType(type);
+                        return type;
+                    }
+                }
+
+                type = mWorld.FindTypeInExternalModules(fullName);
+                if (type != nullptr) {
+                    type = mPool->ShallowCopyType(type);
+                    return type;
+                }
                 ns = ns->GetOuterNamespace();
             }
+            return nullptr;
         }
+    }
+
+    Type* type = mPool->FindType(fullName);
+    if (type != nullptr) {
+        return type;
+    }
+
+    if (mPool != &mWorld) {
+        type = mWorld.FindType(fullName);
+        if (type != nullptr) {
+            type = mPool->DeepCopyType(type);
+            return type;
+        }
+    }
+
+    type = mWorld.FindTypeInExternalModules(fullName);
+    if (type != nullptr) {
+        type = mPool->ShallowCopyType(type);
     }
     return type;
 }
@@ -1938,7 +1968,7 @@ void Parser::GenerateIInterface()
     interface->SetName(String("IInterface"));
     interface->SetNamespace(mPool->FindNamespace(String("ccm")));
     interface->SetDeclared(true);
-    interface->SetSystemPreDeclared(true);
+    interface->SetExternal(true);
     Attribute attr;
     attr.mUuid = "00000000-0000-0000-0000-000000000000";
     interface->SetAttribute(attr);
@@ -2007,13 +2037,6 @@ void Parser::GenerateCoclassObject(
     /* [in] */ Pool* pool,
     /* [in] */ Coclass* klass)
 {
-    if (klass->GetConstructorNumber() == 0) {
-        Method* constructor = new Method();
-        constructor->SetName(String("_constructor"));
-        constructor->BuildSignature();
-        klass->AddConstructor(constructor);
-    }
-
     bool hasConstructorWithArgu = false;
     for (int i = 0; i < klass->GetConstructorNumber(); i++) {
         Method* constructor = klass->GetConstructor(i);
@@ -2047,12 +2070,9 @@ void Parser::GenerateCoclassObject(
         klass->AddInterface(itfco);
     }
     else {
-        Interface* itfco = pool->FindInterface(String("ccm::IClassObject"));
-        Method* m = klass->GetConstructor(0);
-        if (m->GetName().Equals("_constructor")) {
-            itfco->GetMethod(0)->SetDefault(true);
-        }
-        bool res = klass->RemoveConstructor(m);
+        Interface* itfco = FindInterface(String("ccm::IClassObject"));
+        itfco->Specialize();
+        klass->SetConstructorDefault(true);
         klass->AddInterface(itfco);
     }
 }

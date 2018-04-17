@@ -24,13 +24,14 @@ namespace ccdl {
 namespace ast {
 
 class Namespace;
+class Pool;
 
 class Type : public Node
 {
 public:
     Type();
 
-    ~Type();
+    virtual ~Type();
 
     inline String GetName();
 
@@ -41,6 +42,26 @@ public:
 
     virtual void SetNamespace(
         /* [in] */ Namespace* ns);
+
+    inline Pool* GetPool();
+
+    inline void SetPool(
+        /* [in] */ Pool* pool);
+
+    inline bool IsExternal();
+
+    inline void SetExternal(
+        /* [in] */ bool external);
+
+    inline bool IsSpecialized();
+
+    inline void SetSpecialized(
+        /* [in] */ bool specialized);
+
+    inline Type* GetSourceType();
+
+    inline void SetSourceType(
+        /* [in] */ Type* source);
 
     virtual bool IsPrimitiveType();
 
@@ -88,6 +109,8 @@ public:
 
     virtual String Signature() = 0;
 
+    virtual void Specialize();
+
     String ToString() override;
 
     virtual String ToShortString();
@@ -98,6 +121,10 @@ public:
 protected:
     String mName;
     Namespace* mNamespace;
+    Pool* mPool;
+    bool mExternal;
+    bool mSpecialized;
+    Type* mSourceType;
 };
 
 String Type::GetName()
@@ -114,6 +141,50 @@ void Type::SetName(
 Namespace* Type::GetNamespace()
 {
     return mNamespace;
+}
+
+Pool* Type::GetPool()
+{
+    return mPool;
+}
+
+void Type::SetPool(
+    /* [in] */ Pool* pool)
+{
+    mPool = pool;
+}
+
+bool Type::IsExternal()
+{
+    return mExternal;
+}
+
+void Type::SetExternal(
+    /* [in] */ bool external)
+{
+    mExternal = external;
+}
+
+bool Type::IsSpecialized()
+{
+    return mSpecialized;
+}
+
+void Type::SetSpecialized(
+    /* [in] */ bool specialized)
+{
+    mSpecialized = specialized;
+}
+
+Type* Type::GetSourceType()
+{
+    return mSourceType;
+}
+
+void Type::SetSourceType(
+    /* [in] */ Type* source)
+{
+    mSourceType = source;
 }
 
 }

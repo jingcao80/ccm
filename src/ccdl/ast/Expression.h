@@ -65,6 +65,8 @@ public:
 
     virtual String EnumeratorValue() = 0;
 
+    virtual Expression* Clone() = 0;
+
 protected:
     Expression* mLeftOperand;
     Expression* mRightOperand;

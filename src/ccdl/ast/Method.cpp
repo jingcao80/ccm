@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "Method.h"
+#include "Pool.h"
 #include "../util/StringBuilder.h"
 
 namespace ccdl {
@@ -22,7 +23,6 @@ namespace ast {
 
 Method::Method()
     : mReturnType(nullptr)
-    , mDefault(false)
 {}
 
 bool Method::AddParameter(
@@ -49,6 +49,25 @@ void Method::BuildSignature()
         builder.Append(mReturnType->Signature());
     }
     mSignature = builder.ToString();
+}
+
+void Method::DeepCopy(
+    /* [in] */ Method* source,
+    /* [in] */ Pool* pool)
+{
+    mName = source->mName;
+    mSignature = source->mSignature;
+    if (source->mReturnType != nullptr) {
+        mReturnType = pool->FindType(source->mReturnType->ToString());
+        if (mReturnType == nullptr) {
+            mReturnType = pool->DeepCopyType(source->mReturnType);
+        }
+    }
+    for (int i = 0; i < source->GetParameterNumber(); i++) {
+        Parameter* desParam = new Parameter();
+        desParam->DeepCopy(source->GetParameter(i), pool);
+        AddParameter(desParam);
+    }
 }
 
 String Method::ToString()

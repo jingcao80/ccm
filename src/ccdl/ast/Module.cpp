@@ -15,12 +15,17 @@
 //=========================================================================
 
 #include "Module.h"
+#include "../metadata/MetaResolver.h"
 #include "../util/StringBuilder.h"
+
+using ccdl::metadata::MetaResolver;
 
 namespace ccdl {
 namespace ast {
 
-Module::Module()
+Module::Module(
+    /* [in] */ void* metadata)
+    : mMetaComponent((MetaComponent*)metadata)
 {
     Namespace* global = new Namespace(String("__global__"));
     AddNamespace(global);
@@ -85,6 +90,10 @@ Module::~Module()
     delete mCoclassIDType;
     delete mComponentIDType;
     delete mInterfaceIDType;
+
+    if (mMetaComponent != nullptr) {
+        free(mMetaComponent);
+    }
 }
 
 Namespace* Module::GetGlobalNamespace()
@@ -99,6 +108,13 @@ void Module::SetAttribute(
     mVersion = attr.mVersion;
     mDescription = attr.mDescription;
     mUrl = attr.mUrl;
+}
+
+Type* Module::ResolveType(
+    /* [in] */ const String& fullName)
+{
+    MetaResolver resolver(this, mMetaComponent);
+    return resolver.Resolve(fullName);
 }
 
 String Module::Dump(

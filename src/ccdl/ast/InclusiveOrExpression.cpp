@@ -74,5 +74,20 @@ String InclusiveOrExpression::EnumeratorValue()
     return mRightOperand->EnumeratorValue();
 }
 
+Expression* InclusiveOrExpression::Clone()
+{
+    InclusiveOrExpression* newExpr = new InclusiveOrExpression();
+    if (mLeftOperand != nullptr) {
+        newExpr->mLeftOperand = mLeftOperand->Clone();
+    }
+    if (mRightOperand != nullptr) {
+        newExpr->mRightOperand = mRightOperand->Clone();
+    }
+    newExpr->mOperator = mOperator;
+    newExpr->mType = mType;
+    newExpr->mRadix = mRadix;
+    return newExpr;
+}
+
 }
 }

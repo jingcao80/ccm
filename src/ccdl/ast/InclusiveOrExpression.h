@@ -40,6 +40,8 @@ public:
     String StringValue() override;
 
     String EnumeratorValue() override;
+
+    Expression* Clone() override;
 };
 
 }

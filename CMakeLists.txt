@@ -18,6 +18,8 @@ cmake_minimum_required(VERSION 2.8)
 
 #set(CMAKE_VERBOSE_MAKEFILE on)
 
+file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/inc)
+
 add_custom_target(
     clobber
     COMMAND

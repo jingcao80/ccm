@@ -14,8 +14,8 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCDL_METADATA_METAREGISTER_H__
-#define __CCDL_METADATA_METAREGISTER_H__
+#ifndef __CCDL_METADATA_METARESOLVER_H__
+#define __CCDL_METADATA_METARESOLVER_H__
 
 #include "../ast/Namespace.h"
 #include "../ast/Pool.h"
@@ -28,28 +28,43 @@ using ccdl::ast::Pool;
 using ccdl::ast::Type;
 
 using ccm::metadata::MetaComponent;
+using ccm::metadata::MetaEnumeration;
 using ccm::metadata::MetaInterface;
 using ccm::metadata::MetaMethod;
+using ccm::metadata::MetaNamespace;
 using ccm::metadata::MetaParameter;
 using ccm::metadata::MetaType;
 
 namespace ccdl {
 namespace metadata {
 
-class MetaRegister
+class MetaResolver
 {
 public:
-    MetaRegister(
+    MetaResolver(
         /* [in] */ Pool* pool,
         /* [in] */ void* metadata);
 
-    bool Register();
+    void InitializeModule();
+
+    Type* Resolve(
+        /* [in] */ const String& fullName);
 
 private:
-    void RegisterInterface(
+    void ResolveNamespace(
+        /* [in] */ MetaNamespace* mn);
+
+    Type* ResolveType(
+        /* [in] */ MetaNamespace* mn,
+        /* [in] */ const String& typeName);
+
+    Type* BuildEnumeration(
+        /* [in] */ MetaEnumeration* me);
+
+    Type* BuildInterface(
         /* [in] */ MetaInterface* mi);
 
-    Namespace* RegisterNamespace(
+    Namespace* BuildNamespace(
         /* [in] */ const String& ns);
 
     Method* BuildMethod(
@@ -64,9 +79,11 @@ private:
 private:
     Pool* mPool;
     MetaComponent* mMetaComponent;
+    String mResolvingTypename;
+    Type* mResolvingType;
 };
 
 }
 }
 
-#endif // __CCDL_METADATA_METAREGISTER_H__
+#endif // __CCDL_METADATA_METARESOLVER_H__

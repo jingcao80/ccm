@@ -14,6 +14,8 @@
 // limitations under the License.
 //=========================================================================
 
+#include "ArrayType.h"
+#include "PointerType.h"
 #include "Pool.h"
 #include "../util/StringBuilder.h"
 
@@ -36,6 +38,7 @@ bool Pool::AddEnumeration(
 
     if (!mEnumerations.Add(enumeration)) return false;
     mTypes.Put(enumeration->ToString(), enumeration);
+    enumeration->SetPool(this);
     return true;
 }
 
@@ -56,6 +59,7 @@ bool Pool::AddInterface(
 
     if (!mInterfaces.Add(interface)) return false;
     mTypes.Put(interface->ToString(), interface);
+    interface->SetPool(this);
     return true;
 }
 
@@ -76,6 +80,7 @@ bool Pool::AddCoclass(
 
     if (!mCoclasses.Add(klass)) return false;
     mTypes.Put(klass->ToString(), klass);
+    klass->SetPool(this);
     return true;
 }
 
@@ -119,7 +124,7 @@ Namespace* Pool::ParseNamespace(
         String ns = nss.Substring(0, cIndex - 1);
         if (currNsp == nullptr) {
             currNsp = FindNamespace(String("__global__"));
-            nsp = currNsp->FindNamespace(nss);
+            nsp = currNsp->FindNamespace(ns);
             if (nsp == nullptr) {
                 nsp = new Namespace(ns);
                 AddNamespace(nsp);
@@ -135,6 +140,9 @@ Namespace* Pool::ParseNamespace(
                 currNsp->AddNamespace(nsp);
             }
             currNsp = nsp;
+        }
+        if (cIndex + 2 >= nss.GetLength()) {
+            return currNsp;
         }
         nss = nss.Substring(cIndex + 2);
     }
@@ -166,6 +174,7 @@ bool Pool::AddTemporaryType(
 
     if (!mTempTypes.Add(type)) return false;
     mTypes.Put(type->ToString(), type);
+    type->SetPool(this);
     return true;
 }
 
@@ -181,7 +190,17 @@ Type* Pool::FindType(
     /* [in] */ const String& typeName)
 {
     if (typeName.IsNullOrEmpty()) return nullptr;
-    return mTypes.Get(typeName);
+    Type* type = mTypes.Get(typeName);
+    if (type != nullptr) return type;
+
+    int index = typeName.LastIndexOf("::");
+    String nsStr = index == -1 ? String("__global__") : typeName.Substring(0, index - 1);
+    Namespace* ns = FindNamespace(nsStr);
+    if (ns != nullptr && !ns->IsResolved()) {
+        type = ResolveType(typeName);
+        if (type != nullptr) type->SetNamespace(ns);
+    }
+    return type;
 }
 
 int Pool::IndexOf(
@@ -194,6 +213,76 @@ int Pool::IndexOf(
         if (p->mValue == type) return i;
     }
     return -1;
+}
+
+Type* Pool::DeepCopyType(
+    /* [in] */ Type* type)
+{
+    if (type->IsEnumerationType()) {
+        Enumeration* desEnumn = new Enumeration();
+        desEnumn->SetExternal(true);
+        desEnumn->SetSpecialized(true);
+        desEnumn->DeepCopy((Enumeration*)type, this);
+        return (Type*)desEnumn;
+    }
+    else if (type->IsInterfaceType()) {
+        Interface* desIntf = new Interface();
+        desIntf->SetExternal(true);
+        desIntf->SetSpecialized(true);
+        desIntf->DeepCopy((Interface*)type, this);
+        return (Type*)desIntf;
+    }
+    else if (type->IsPrimitiveType()) {
+        String typeStr = type->ToString();
+        int index = typeStr.LastIndexOf("::");
+        return FindType(index == -1 ? typeStr : typeStr.Substring(index + 2));
+    }
+    else if (type->IsArrayType()) {
+        ArrayType* sourceArrType = (ArrayType*)type;
+        Type* sourceElemType = sourceArrType->GetElementType();
+        Type* newElemType = FindType(sourceElemType->ToString());
+        if (newElemType == nullptr) {
+            newElemType = DeepCopyType(sourceElemType);
+        }
+        ArrayType* arrType = new ArrayType();
+        arrType->SetElementType(newElemType);
+        AddTemporaryType(arrType);
+        return arrType;
+    }
+    else if (type->IsPointerType()) {
+        PointerType* sourcePtrType = (PointerType*)type;
+        Type* sourceBaseType = sourcePtrType->GetBaseType();
+        Type* newBaseType = FindType(sourceBaseType->ToString());
+        if (newBaseType == nullptr) {
+            newBaseType = DeepCopyType(sourceBaseType);
+        }
+        PointerType* ptrType = new PointerType();
+        ptrType->SetBaseType(newBaseType);
+        ptrType->SetPointerNumber(sourcePtrType->GetPointerNumber());
+        AddTemporaryType(ptrType);
+        return ptrType;
+    }
+
+    return nullptr;
+}
+
+Type* Pool::ShallowCopyType(
+    /* [in] */ Type* type)
+{
+    if (type->IsEnumerationType()) {
+        Enumeration* desEnumn = new Enumeration();
+        desEnumn->ShallowCopy((Enumeration*)type, this);
+        desEnumn->SetExternal(true);
+        return desEnumn;
+    }
+    else if (type->IsInterfaceType()) {
+        Interface* desIntf = new Interface();
+        desIntf->ShallowCopy((Interface*)type, this);
+        desIntf->SetExternal(true);
+        return desIntf;
+    }
+
+    return nullptr;
 }
 
 String Pool::Dump(

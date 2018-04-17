@@ -99,7 +99,7 @@ private:
 
     String GenComponentID();
 
-    String GenInterfaceIDsInNamespaceOnCcmrtMode(
+    String GenInterfaceIDsOnCcmrtMode(
         /* [in] */ MetaNamespace* mn);
 
     void GenTypeDeclarationsOnComponentMode();

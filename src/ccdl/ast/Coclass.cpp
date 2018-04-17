@@ -22,7 +22,8 @@ namespace ccdl {
 namespace ast {
 
 Coclass::Coclass()
-    : mConstructors(5, false)
+    : mConstructorDefault(false)
+    , mConstructors(5, false)
     , mInterfaces(10, false)
 {}
 

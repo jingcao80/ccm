@@ -69,11 +69,11 @@ private:
     {
         FileContext();
 
-        void AddPreDeclaration(
+        void AddPredeclaration(
             /* [in] */ const String& typeName,
             /* [in] */ const String& typeFullName);
 
-        String FindPreDeclaration(
+        String FindPredeclaration(
             /* [in] */ const String& typeName);
 
         StringMap<String> mPreDeclarations;
@@ -147,7 +147,7 @@ private:
 
     Type* ParseArrayType();
 
-    bool ParseConstDataMember(
+    bool ParseInterfaceConstant(
         /* [in] */ Interface* interface);
 
     Expression* ParseExpression(

@@ -81,6 +81,7 @@ inline bool operator==(
 
 namespace ccm {
 
+extern const ComponentID CID_CCMRuntime;
 extern const InterfaceID IID_IInterface;
 
 INTERFACE_ID(00000000-0000-0000-0000-000000000000)
