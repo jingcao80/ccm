@@ -24,7 +24,7 @@ struct KV
     String mKey;
     Tokenizer::Token mValue;
 }
-sKeywords[31] =
+sKeywords[32] =
 {
     { String("Array"), Tokenizer::Token::ARRAY },
     { String("Boolean"), Tokenizer::Token::BOOLEAN },
@@ -38,6 +38,7 @@ sKeywords[31] =
     { String("constructor"), Tokenizer::Token::CONSTRUCTOR },
     { String("description"), Tokenizer::Token::DESCRIPTION },
     { String("Double"), Tokenizer::Token::DOUBLE },
+    { String("ECode"), Tokenizer::Token::ECODE },
     { String("enum"), Tokenizer::Token::ENUM },
     { String("false"), Tokenizer::Token::FALSE },
     { String("Float"), Tokenizer::Token::FLOAT },
@@ -808,6 +809,8 @@ const char* Tokenizer::DumpToken(
             return "/";
         case Token::DOUBLE:
             return "Double";
+        case Token::ECODE:
+            return "ECode";
         case Token::END_OF_LINE:
             return "\n";
         case Token::ENUM:

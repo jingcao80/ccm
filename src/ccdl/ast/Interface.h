@@ -38,6 +38,12 @@ class Interface : public Type
 public:
     Interface();
 
+    inline bool IsPredecl();
+
+    inline void SetPredecl();
+
+    void SetDeclared();
+
     void SetNamespace(
         /* [in] */ Namespace* ns) override;
 
@@ -47,11 +53,6 @@ public:
 
     void SetBaseInterface(
         /* [in] */ Interface* baseItf);
-
-    inline bool IsDeclared();
-
-    inline void SetDeclared(
-        /* [in] */ bool declared);
 
     inline Uuid& GetUuid();
 
@@ -99,7 +100,7 @@ private:
         /* [in] */ Pool* pool);
 
 private:
-    bool mDeclared;
+    bool mIsPredecl;
     Interface* mBaseInterface;
     Uuid mUuid;
     String mVersion;
@@ -113,15 +114,14 @@ Interface* Interface::GetBaseInterface()
     return mBaseInterface;
 }
 
-bool Interface::IsDeclared()
+bool Interface::IsPredecl()
 {
-    return mDeclared;
+    return mIsPredecl;
 }
 
-void Interface::SetDeclared(
-    /* [in] */ bool declared)
+void Interface::SetPredecl()
 {
-    mDeclared = declared;
+    mIsPredecl = true;
 }
 
 Uuid& Interface::GetUuid()

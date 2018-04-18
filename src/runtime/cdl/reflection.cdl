@@ -14,14 +14,24 @@
 // limitations under the License.
 //=========================================================================
 
-interface ccm::IMetaComponent;
+interface ccm::IArgumentList;
 interface ccm::IMetaCoclass;
 interface ccm::IMetaConstructor;
 interface ccm::IMetaEnumeration;
 interface ccm::IMetaEnumerator;
 interface ccm::IMetaInterface;
+interface ccm::IMetaMethod;
+interface ccm::IMetaParameter;
+interface ccm::IMetaType;
 
 namespace ccm {
+
+enum IOAttribute
+{
+    IN,
+    OUT,
+    CALLEE
+}
 
 [
     uuid(35b4d7ca-b66c-44d3-b4a6-007852953085),
@@ -72,7 +82,7 @@ interface IMetaComponent
 ]
 interface IMetaCoclass
 {
-    GetMetaComponent(
+    GetComponent(
         [out] IMetaComponent** metaComp);
 
     GetName(
@@ -90,8 +100,8 @@ interface IMetaCoclass
     GetAllConstructors(
         [out] Array<IMetaConstructor*> constrs);
 
-    GetConstructors(
-        [in] Integer paramNumber,
+    GetConstructor(
+        [in] String signature,
         [out] IMetaConstructor** constr);
 
     GetInterfaceNumber(
@@ -100,21 +110,24 @@ interface IMetaCoclass
     GetAllInterfaces(
         [out] Array<IMetaInterface*> intfs);
 
-    CreateObject(
-        [out] IInterface** object);
+    GetInterface(
+        [in] String fullName,
+        [out] IMetaInterface** intf);
+
+    GetMethodNumber(
+        [out] Integer* number);
+
+    GetMethods(
+        [out] Array<IMetaMethod*> methods);
+
+    GetMethod(
+        [in] String name,
+        [in] String signature,
+        [out] IMetaMethod** method);
 
     CreateObject(
         [in] InterfaceID iid,
         [out] IInterface** object);
-}
-
-[
-    uuid(ba7707a3-e2f8-4318-8559-f12940f02b2e),
-    version(0.1.0)
-]
-interface IMetaConstructor
-{
-
 }
 
 [
@@ -123,7 +136,7 @@ interface IMetaConstructor
 ]
 interface IMetaEnumeration
 {
-    GetMetaComponent(
+    GetComponent(
         [out] IMetaComponent** metaComp);
 
     GetName(
@@ -149,7 +162,7 @@ interface IMetaEnumeration
 ]
 interface IMetaEnumerator
 {
-    GetMetaEnumeration(
+    GetEnumeration(
         [out] IMetaEnumeration** metaEnumn);
 
     GetName(
@@ -165,7 +178,7 @@ interface IMetaEnumerator
 ]
 interface IMetaInterface
 {
-    GetMetaComponent(
+    GetComponent(
         [out] IMetaComponent** metaComp);
 
     GetName(
@@ -176,6 +189,392 @@ interface IMetaInterface
 
     GetInterfaceID(
         [out] InterfaceID* iid);
+
+    GetBaseInterface(
+        [out] IMetaInterface** baseIntf);
+
+    GetMethodNumber(
+        [out] Integer* number);
+
+    GetAllMethods(
+        [out] Array<IMetaMethod*> methods);
+
+    GetMethod(
+        [in] String name,
+        [in] String signature,
+        [out] IMetaMethod** method);
+
+    GetMethod(
+        [in] Integer index,
+        [out] IMetaMethod** method);
+}
+
+[
+    uuid(684f21a0-6d9f-4784-b641-c74fb71c530a),
+    version(0.1.0)
+]
+interface IMetaMethod
+{
+    GetInterface(
+        [out] IMetaInterface** intf);
+
+    GetName(
+        [out] String* name);
+
+    GetSignature(
+        [out] String* signature);
+
+    GetParameterNumber(
+        [out] Integer* number);
+
+    GetAllParameters(
+        [out] Array<IMetaParameter*> params);
+
+    GetParameter(
+        [in] Integer index,
+        [out] IMetaParameter* param);
+
+    GetParameter(
+        [in] String name,
+        [out] IMetaParameter* param);
+
+    CreateArgumentList(
+        [out] IArgumentList** argList);
+
+    Invoke(
+        [in] IInterface* thisObject,
+        [in] IArgumentList* argList);
+}
+
+[
+    uuid(ba7707a3-e2f8-4318-8559-f12940f02b2e),
+    version(0.1.0)
+]
+interface IMetaConstructor : IMetaMethod
+{
+    CreateObject(
+        [in] IArgumentList* argList,
+        [out] IInterface** object);
+}
+
+[
+    uuid(0f1060f0-93ea-4980-96b3-bea869dcf253),
+    version(0.1.0)
+]
+interface IMetaParameter
+{
+    GetMethod(
+        [out] IMetaMethod** method);
+
+    GetName(
+        [out] String* name);
+
+    GetIndex(
+        [out] Integer* index);
+
+    GetIOAttribute(
+        [out] IOAttribute* attr);
+
+    GetType(
+        [out] IMetaType** type);
+}
+
+[
+    uuid(c9e137d6-2344-4acb-9a76-4d0a9dea1773),
+    version(0.1.0)
+]
+interface IMetaType
+{
+    GetName(
+        [out] String* name);
+
+    GetTypeKind(
+        [out] Integer* kind);
+
+    GetElementType(
+        [out] IMetaType** elemType);
+
+    GetPointerNumber(
+        [out] Integer* number);
+}
+
+[
+    uuid(38c359ba-97b3-4b7b-bcf7-cd5f6bbed6e9),
+    version(0.1.0)
+]
+interface IArgumentList
+{
+    GetInputArgumentOfByte(
+        [in] Integer index,
+        [out] Byte* value);
+
+    SetInputArgumentOfByte(
+        [in] Integer index,
+        [in] Byte value);
+
+    GetInputArgumentOfShort(
+        [in] Integer index,
+        [out] Short* value);
+
+    SetInputArgumentOfShort(
+        [in] Integer index,
+        [in] Short value);
+
+    GetInputArgumentOfInteger(
+        [in] Integer index,
+        [out] Integer* value);
+
+    SetInputArgumentOfInteger(
+        [in] Integer index,
+        [in] Integer value);
+
+    GetInputArgumentOfLong(
+        [in] Integer index,
+        [out] Long* value);
+
+    SetInputArgumentOfLong(
+        [in] Integer index,
+        [in] Long value);
+
+    GetInputArgumentOfFloat(
+        [in] Integer index,
+        [out] Float* value);
+
+    SetInputArgumentOfFloat(
+        [in] Integer index,
+        [out] Float value);
+
+    GetInputArgumentOfDouble(
+        [in] Integer index,
+        [out] Double* value);
+
+    SetInputArgumentOfDouble(
+        [in] Integer index,
+        [in] Double value);
+
+    GetInputArgumentOfChar(
+        [in] Integer index,
+        [out] Char* value);
+
+    SetInputArgumentOfChar(
+        [in] Integer index,
+        [in] Char value);
+
+    GetInputArgumentOfBoolean(
+        [in] Integer index,
+        [out] Boolean* value);
+
+    SetInputArgumentOfBoolean(
+        [in] Integer index,
+        [in] Boolean value);
+
+    GetInputArgumentOfString(
+        [in] Integer index,
+        [out] String* value);
+
+    SetInputArgumentOfString(
+        [in] Integer index,
+        [in] String value);
+
+    GetInputArgumentOfHANDLE(
+        [in] Integer index,
+        [out] HANDLE* value);
+
+    SetInputArgumentOfHANDLE(
+        [in] Integer index,
+        [in] HANDLE value);
+
+    GetInputArgumentOfECode(
+        [in] Integer index,
+        [out] ECode* value);
+
+    SetInputArgumentOfECode(
+        [in] Integer index,
+        [in] ECode value);
+
+    GetInputArgumentOfCoclassID(
+        [in] Integer index,
+        [out] CoclassID* value);
+
+    SetInputArgumentOfCoclassID(
+        [in] Integer index,
+        [in] CoclassID value);
+
+    GetInputArgumentOfComponentID(
+        [in] Integer index,
+        [out] ComponentID* value);
+
+    SetInputArgumentOfComponentID(
+        [in] Integer index,
+        [in] ComponentID value);
+
+    GetInputArgumentOfInterfaceID(
+        [in] Integer index,
+        [out] InterfaceID* value);
+
+    SetInputArgumentOfInterfaceID(
+        [in] Integer index,
+        [in] InterfaceID value);
+
+    GetInputArgumentOfArray(
+        [in] Integer index,
+        [out] HANDLE* value);
+
+    SetInputArgumentOfArray(
+        [in] Integer index,
+        [in] HANDLE value);
+
+    GetInputArgumentOfEnumeration(
+        [in] Integer index,
+        [out] Integer* value);
+
+    SetInputArgumentOfEnumeration(
+        [in] Integer index,
+        [in] Integer value);
+
+    GetInputArgumentOfInterface(
+        [in] Integer index,
+        [out] IInterface** value);
+
+    SetInputArgumentOfInterface(
+        [in] Integer index,
+        [in] IInterface* value);
+
+    AssignOutputArgumentOfByte(
+        [in] Integer index,
+        [in] Byte value);
+
+    SetOutputArgumentOfByte(
+        [in] Integer index,
+        [in] HANDLE addr);
+
+    AssignOutputArgumentOfShort(
+        [in] Integer index,
+        [in] Short value);
+
+    SetOutputArgumentOfShort(
+        [in] Integer index,
+        [in] HANDLE addr);
+
+    AssignOutputArgumentOfInteger(
+        [in] Integer index,
+        [in] Integer value);
+
+    SetOutputArgumentOfInteger(
+        [in] Integer index,
+        [in] HANDLE addr);
+
+    AssignOutputArgumentOfLong(
+        [in] Integer index,
+        [in] Long value);
+
+    SetOutputArgumentOfLong(
+        [in] Integer index,
+        [in] HANDLE addr);
+
+    AssignOutputArgumentOfFloat(
+        [in] Integer index,
+        [in] Float value);
+
+    SetOutputArgumentOfFloat(
+        [in] Integer index,
+        [in] HANDLE addr);
+
+    AssignOutputArgumentOfDouble(
+        [in] Integer index,
+        [in] Double value);
+
+    SetOutputArgumentOfDouble(
+        [in] Integer index,
+        [in] HANDLE addr);
+
+    AssignOutputArgumentOfChar(
+        [in] Integer index,
+        [in] Char value);
+
+    SetOutputArgumentOfChar(
+        [in] Integer index,
+        [in] HANDLE addr);
+
+    AssignOutputArgumentOfBoolean(
+        [in] Integer index,
+        [in] Boolean value);
+
+    SetOutputArgumentOfBoolean(
+        [in] Integer index,
+        [in] HANDLE addr);
+
+    AssignOutputArgumentOfString(
+        [in] Integer index,
+        [in] String value);
+
+    SetOutputArgumentOfString(
+        [in] Integer index,
+        [in] HANDLE addr);
+
+    AssignOutputArgumentOfHANDLE(
+        [in] Integer index,
+        [in] HANDLE value);
+
+    SetOutputArgumentOfHANDLE(
+        [in] Integer index,
+        [in] HANDLE addr);
+
+    AssignOutputArgumentOfECode(
+        [in] Integer index,
+        [in] ECode value);
+
+    SetOutputArgumentOfECode(
+        [in] Integer index,
+        [in] HANDLE addr);
+
+    AssignOutputArgumentOfCoclassID(
+        [in] Integer index,
+        [in] CoclassID value);
+
+    SetOutputArgumentOfCoclassID(
+        [in] Integer index,
+        [in] HANDLE addr);
+
+    AssignOutputArgumentOfComponentID(
+        [in] Integer index,
+        [in] ComponentID value);
+
+    SetOutputArgumentOfComponentID(
+        [in] Integer index,
+        [in] HANDLE addr);
+
+    AssignOutputArgumentOfInterfaceID(
+        [in] Integer index,
+        [in] InterfaceID value);
+
+    SetOutputArgumentOfInterfaceID(
+        [in] Integer index,
+        [in] HANDLE addr);
+
+    AssignOutputArgumentOfArray(
+        [in] Integer index,
+        [in] HANDLE value);
+
+    SetOutputArgumentOfArray(
+        [in] Integer index,
+        [in] HANDLE addr);
+
+    AssignOutputArgumentOfEnumeration(
+        [in] Integer index,
+        [in] Integer value);
+
+    SetOutputArgumentOfEnumeration(
+        [in] Integer index,
+        [in] HANDLE addr);
+
+    AssignOutputArgumentOfInterface(
+        [in] Integer index,
+        [in] IInterface* value);
+
+    SetOutputArgumentOfInterface(
+        [in] Integer index,
+        [in] HANDLE addr);
 }
 
 }

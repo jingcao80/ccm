@@ -125,7 +125,7 @@ void CodeGenerator::GenTypeDeclarationsOnCcmrtMode()
     builder.AppendFormat("COM_PUBLIC extern const ComponentID CID_%s;\n\n", mc->mName);
     for (int i = 0; i < mc->mNamespaceNumber; i++) {
         MetaNamespace* mn = mc->mNamespaces[i];
-        if (mn->mEnumerationNumber == 0) {
+        if (mn->mEnumerationNumber - mn->mExternalEnumerationNumber == 0) {
             continue;
         }
         builder.Append(GenEnumerationPredeclarations(mn));
@@ -134,7 +134,7 @@ void CodeGenerator::GenTypeDeclarationsOnCcmrtMode()
     }
     for (int i = 0; i < mc->mNamespaceNumber; i++) {
         MetaNamespace* mn = mc->mNamespaces[i];
-        if (mn->mEnumerationNumber == 0) {
+        if (mn->mEnumerationNumber - mn->mExternalEnumerationNumber == 0) {
             continue;
         }
         builder.Append(GenEnumerationDeclarations(mn));
@@ -183,10 +183,11 @@ String CodeGenerator::GenEnumerationPredeclarations(
 {
     StringBuilder builder;
 
-    if (mn->mEnumerationNumber == 0) return String();
+    if (mn->mEnumerationNumber - mn->mExternalEnumerationNumber == 0) return String();
 
     for (int i = 0; i < mn->mEnumerationNumber; i++) {
         MetaEnumeration* me = mMetaComponent->mEnumerations[mn->mEnumerationIndexes[i]];
+        if (me->mExternal) continue;
         builder.AppendFormat("enum class %s;\n", me->mName);
     }
     builder.Append("\n");
@@ -199,11 +200,12 @@ String CodeGenerator::GenEnumerationDeclarations(
 {
     StringBuilder builder;
 
-    if (mn->mEnumerationNumber == 0) return String();
+    if (mn->mEnumerationNumber - mn->mExternalEnumerationNumber == 0) return String();
 
     for (int i = 0; i < mn->mEnumerationNumber; i++) {
-        builder.Append(GenEnumerationDeclaration(
-                mMetaComponent->mEnumerations[mn->mEnumerationIndexes[i]]));
+        MetaEnumeration* me = mMetaComponent->mEnumerations[mn->mEnumerationIndexes[i]];
+        if (me->mExternal) continue;
+        builder.Append(GenEnumerationDeclaration(me));
         if (i != mn->mEnumerationNumber - 1) builder.Append("\n");
     }
     builder.Append("\n");
@@ -463,6 +465,9 @@ String CodeGenerator::GenType(
         case CcmTypeKind::HANDLE:
             builder.Append("HANDLE");
             break;
+        case CcmTypeKind::ECode:
+            builder.Append("ECode");
+            break;
         case CcmTypeKind::Enum:
             builder.Append(mc->mEnumerations[mt->mIndex]->mName);
             break;
@@ -533,6 +538,8 @@ String CodeGenerator::GenValue(
             return String::Format("\"%s\"", mc->mValue.mString);
         case CcmTypeKind::Enum:
             return String::Format("%s::%s", GenType(mt).string(), mc->mValue.mString);
+        case CcmTypeKind::ECode:
+            return String::Format("0x%08x", mc->mValue.mInteger);
         case CcmTypeKind::Array:
         case CcmTypeKind::CoclassID:
         case CcmTypeKind::ComponentID:
@@ -630,8 +637,8 @@ void CodeGenerator::GenTypeDeclarationsOnComponentMode()
     builder.AppendFormat("extern const ComponentID CID_%s;\n\n", mc->mName);
     for (int i = 0; i < mc->mNamespaceNumber; i++) {
         MetaNamespace* mn = mc->mNamespaces[i];
-        if (mn->mEnumerationNumber + (mn->mInterfaceNumber -
-                mn->mExternalInterfaceNumber) == 0) {
+        if ((mn->mEnumerationNumber - mn->mExternalEnumerationNumber) +
+                (mn->mInterfaceNumber - mn->mExternalInterfaceNumber) == 0) {
             continue;
         }
         builder.Append(GenNamespaceBegin(String(mn->mName)));
@@ -644,8 +651,8 @@ void CodeGenerator::GenTypeDeclarationsOnComponentMode()
     }
     for (int i = 0; i < mc->mNamespaceNumber; i++) {
         MetaNamespace* mn = mc->mNamespaces[i];
-        if (mn->mEnumerationNumber + (mn->mInterfaceNumber -
-                mn->mExternalInterfaceNumber) == 0) {
+        if ((mn->mEnumerationNumber - mn->mExternalEnumerationNumber) +
+                (mn->mInterfaceNumber - mn->mExternalInterfaceNumber) == 0) {
             continue;
         }
         builder.Append(GenNamespaceBegin(String(mn->mName)));
@@ -915,8 +922,9 @@ void CodeGenerator::GenComponentCpp()
     builder.Append("\n");
     for (int i = 0; i < mc->mNamespaceNumber; i++) {
         MetaNamespace* mn = mc->mNamespaces[i];
-        if (mn->mCoclassNumber + mn->mEnumerationNumber +
-                (mn->mInterfaceNumber - mn->mExternalInterfaceNumber) == 0) {
+        if ((mn->mEnumerationNumber - mn->mExternalEnumerationNumber) +
+                (mn->mInterfaceNumber - mn->mExternalInterfaceNumber) +
+                mn->mCoclassNumber == 0) {
             continue;
         }
         builder.Append(GenNamespaceBegin(String(mn->mName)));
@@ -1091,8 +1099,8 @@ void CodeGenerator::GenTypeDeclarationsOnUserMode()
     builder.AppendFormat("extern const ComponentID CID_%s;\n\n", mc->mName);
     for (int i = 0; i < mc->mNamespaceNumber; i++) {
         MetaNamespace* mn = mc->mNamespaces[i];
-        if (mn->mEnumerationNumber + (mn->mInterfaceNumber -
-                mn->mExternalInterfaceNumber) == 0) {
+        if ((mn->mEnumerationNumber - mn->mExternalEnumerationNumber) +
+                (mn->mInterfaceNumber - mn->mExternalInterfaceNumber) == 0) {
             continue;
         }
         builder.Append(GenNamespaceBegin(String(mn->mName)));
@@ -1105,8 +1113,8 @@ void CodeGenerator::GenTypeDeclarationsOnUserMode()
     }
     for (int i = 0; i < mc->mNamespaceNumber; i++) {
         MetaNamespace* mn = mc->mNamespaces[i];
-        if (mn->mEnumerationNumber + (mn->mInterfaceNumber -
-                mn->mExternalInterfaceNumber) +
+        if ((mn->mEnumerationNumber - mn->mExternalEnumerationNumber)  +
+                (mn->mInterfaceNumber - mn->mExternalInterfaceNumber) +
                 mn->mCoclassNumber == 0) {
             continue;
         }
@@ -1192,7 +1200,7 @@ void CodeGenerator::GenComponentCppOnUserMode()
     builder.Append("\n");
     for (int i = 0; i < mc->mNamespaceNumber; i++) {
         MetaNamespace* mn = mc->mNamespaces[i];
-        if (mn->mCoclassNumber + mn->mEnumerationNumber +
+        if ((mn->mEnumerationNumber - mn->mExternalEnumerationNumber) +
                 (mn->mInterfaceNumber - mn->mExternalInterfaceNumber) +
                 mn->mCoclassNumber == 0) {
             continue;

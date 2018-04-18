@@ -14,33 +14,25 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CCMTYPEKIND_H__
-#define __CCM_CCMTYPEKIND_H__
+#include "ECodeType.h"
 
-namespace ccm {
+namespace ccdl {
+namespace ast {
 
-enum class CcmTypeKind
+ECodeType::ECodeType()
 {
-    Unknown,
-    Char = 1,
-    Byte,
-    Short,
-    Integer,
-    Long,
-    Float,
-    Double,
-    Boolean,
-    String,
-    CoclassID,
-    ComponentID,
-    InterfaceID,
-    HANDLE,
-    ECode,
-    Enum,
-    Array,
-    Interface,
-};
-
+    SetName(String("ECode"));
 }
 
-#endif // __CCM_CCMTYPEKIND_H__
+bool ECodeType::IsECodeType()
+{
+    return true;
+}
+
+String ECodeType::Signature()
+{
+    return String("E");
+}
+
+}
+}

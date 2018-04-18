@@ -76,9 +76,18 @@ public:
 
     void BuildAllCoclasses();
 
+    void BuildCoclass(
+        /* [in] */ Integer index);
+
     void BuildAllEnumerations();
 
+    void BuildEnumeration(
+        /* [in] */ Integer index);
+
     void BuildAllInterfaces();
+
+    void BuildInterface(
+        /* [in] */ Integer index);
 
 public:
     MetaComponent* mMetadata;

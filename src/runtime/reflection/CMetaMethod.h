@@ -14,48 +14,61 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CMETAENUMERATOR_H__
-#define __CCM_CMETAENUMERATOR_H__
+#ifndef __CCM_CMETAMETHOD_H__
+#define __CCM_CMETAMETHOD_H__
 
 #include "ccmtypes.h"
 #include "ccmrefbase.h"
 #include "Component.h"
 
-using ccm::metadata::MetaEnumerator;
-
 namespace ccm {
 
-class CMetaEnumeration;
+#include "ccmtypes.h"
+#include "ccmrefbase.h"
+#include "Component.h"
 
-class CMetaEnumerator
+class CMetaMethod
     : public LightRefBase
-    , public IMetaEnumerator
+    , public IMetaMethod
 {
 public:
-    CMetaEnumerator(
-        /* [in] */ CMetaEnumeration* menObj,
-        /* [in] */ MetaEnumerator* me);
+    CMetaMethod();
 
-    ~CMetaEnumerator();
+    ~CMetaMethod();
 
     CCM_INTERFACE_DECL();
 
-    ECode GetEnumeration(
-        /* [out] */ IMetaEnumeration** metaEnumn) override;
+    ECode GetInterface(
+        /* [out] */ IMetaInterface** intf);
 
     ECode GetName(
-        /* [out] */ String* name) override;
+        /* [out] */ String* name);
 
-    ECode GetValue(
-        /* [out] */ Integer* value) override;
+    ECode GetSignature(
+        /* [out] */ String* signature);
 
-public:
-    MetaEnumerator* mMetadata;
-    CMetaEnumeration* mMetaEnumeration;
-    String mName;
-    Integer mValue;
+    ECode GetParameterNumber(
+        /* [out] */ Integer* number);
+
+    ECode GetAllParameters(
+        /* [out] */ Array<IMetaParameter*>& params);
+
+    ECode GetParameter(
+        /* [in] */ Integer index,
+        /* [out] */ IMetaParameter* param);
+
+    ECode GetParameter(
+        /* [in] */ const String& name,
+        /* [out] */ IMetaParameter* param);
+
+    ECode CreateArgumentList(
+        /* [out] */ IArgumentList** argList);
+
+    ECode Invoke(
+        /* [in] */ IInterface* thisObject,
+        /* [in] */ IArgumentList* argList);
 };
 
 }
 
-#endif // __CCM_CMETAENUMERATOR_H__
+#endif // __CCM_CMETAMETHOD_H__

@@ -14,48 +14,42 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CMETAENUMERATOR_H__
-#define __CCM_CMETAENUMERATOR_H__
+#ifndef __CCM_CMETAPARAMETER_H__
+#define __CCM_CMETAPARAMETER_H__
 
 #include "ccmtypes.h"
 #include "ccmrefbase.h"
 #include "Component.h"
 
-using ccm::metadata::MetaEnumerator;
-
 namespace ccm {
 
-class CMetaEnumeration;
-
-class CMetaEnumerator
+class CMetaParameter
     : public LightRefBase
-    , public IMetaEnumerator
+    , public IMetaParameter
 {
 public:
-    CMetaEnumerator(
-        /* [in] */ CMetaEnumeration* menObj,
-        /* [in] */ MetaEnumerator* me);
+    CMetaParameter();
 
-    ~CMetaEnumerator();
+    ~CMetaParameter();
 
     CCM_INTERFACE_DECL();
 
-    ECode GetEnumeration(
-        /* [out] */ IMetaEnumeration** metaEnumn) override;
+    ECode GetMethod(
+        /* [out] */ IMetaMethod** method);
 
     ECode GetName(
-        /* [out] */ String* name) override;
+        /* [out] */ String* name);
 
-    ECode GetValue(
-        /* [out] */ Integer* value) override;
+    ECode GetIndex(
+        /* [out] */ Integer* index);
 
-public:
-    MetaEnumerator* mMetadata;
-    CMetaEnumeration* mMetaEnumeration;
-    String mName;
-    Integer mValue;
+    ECode GetIOAttribute(
+        /* [out] */ IOAttribute* attr);
+
+    ECode GetType(
+        /* [out] */ IMetaType** type);
 };
 
 }
 
-#endif // __CCM_CMETAENUMERATOR_H__
+#endif // __CCM_CMETAPARAMETER_H__

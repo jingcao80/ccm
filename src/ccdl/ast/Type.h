@@ -71,6 +71,8 @@ public:
 
     virtual bool IsHANDLEType();
 
+    virtual bool IsECodeType();
+
     virtual bool IsNumericType();
 
     virtual bool IsIntegralType();

@@ -49,6 +49,8 @@ World::World()
     mStringType->SetNamespace(ccm);
     mHANDLEType = new HANDLEType();
     mHANDLEType->SetNamespace(ccm);
+    mECodeType = new ECodeType();
+    mECodeType->SetNamespace(ccm);
     mCoclassIDType = new CoclassIDType();
     mCoclassIDType->SetNamespace(ccm);
     mComponentIDType = new ComponentIDType();
@@ -66,6 +68,7 @@ World::World()
     mTypes.Put(String("Boolean"), mBooleanType);
     mTypes.Put(String("String"), mStringType);
     mTypes.Put(String("HANDLE"), mHANDLEType);
+    mTypes.Put(String("ECode"), mECodeType);
     mTypes.Put(String("CoclassID"), mCoclassIDType);
     mTypes.Put(String("ComponentID"), mComponentIDType);
     mTypes.Put(String("InterfaceID"), mInterfaceIDType);
@@ -83,6 +86,7 @@ World::~World()
     delete mBooleanType;
     delete mStringType;
     delete mHANDLEType;
+    delete mECodeType;
     delete mCoclassIDType;
     delete mComponentIDType;
     delete mInterfaceIDType;

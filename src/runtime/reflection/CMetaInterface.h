@@ -42,7 +42,7 @@ public:
 
     CCM_INTERFACE_DECL();
 
-    ECode GetMetaComponent(
+    ECode GetComponent(
         /* [out] */ IMetaComponent** metaComp) override;
 
     ECode GetName(
@@ -53,6 +53,24 @@ public:
 
     ECode GetInterfaceID(
         /* [out] */ InterfaceID* iid) override;
+
+    ECode GetBaseInterface(
+        /* [out] */ IMetaInterface** baseIntf) override;
+
+    ECode GetMethodNumber(
+        /* [out] */ Integer* number) override;
+
+    ECode GetAllMethods(
+        /* [out] */ Array<IMetaMethod*>& methods) override;
+
+    ECode GetMethod(
+        /* [in] */ const String& name,
+        /* [in] */ const String& signature,
+        /* [out] */ IMetaMethod** method) override;
+
+    ECode GetMethod(
+        /* [in] */ Integer index,
+        /* [out] */ IMetaMethod** method) override;
 
 public:
     MetaInterface* mMetadata;

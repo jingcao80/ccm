@@ -68,7 +68,7 @@ int main(int argc, char** argv)
     printf("\n");
 
     AutoPtr<IInterface> obj;
-    klasses[0]->CreateObject((IInterface**)&obj);
+    klasses[0]->CreateObject(IID_IInterface, (IInterface**)&obj);
 
     return 0;
 }

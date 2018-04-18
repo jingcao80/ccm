@@ -33,6 +33,8 @@ class Pool
 public:
     Pool();
 
+    ~Pool();
+
     bool AddEnumeration(
         /* [in] */ Enumeration* enumeration);
 
@@ -46,6 +48,9 @@ public:
 
     inline int IndexOf(
         /* [in] */ Enumeration* enumn);
+
+    bool AddInterfacePredeclaration(
+        /* [in] */ Interface* interface);
 
     bool AddInterface(
         /* [in] */ Interface* interface);
@@ -121,6 +126,7 @@ public:
 protected:
     ArrayList<Coclass*> mCoclasses;
     ArrayList<Enumeration*> mEnumerations;
+    ArrayList<Interface*> mInterfacePredecls;
     ArrayList<Interface*> mInterfaces;
     ArrayList<Namespace*> mNamespaces;
     ArrayList<Type*> mTempTypes;

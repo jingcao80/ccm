@@ -51,7 +51,7 @@ bool MetaBuilder::IsValid()
     // check if all the interfaces in mModule are declared.
     for (int i = 0; i < mModule->GetInterfaceNumber(); i++) {
         Interface* itf = mModule->GetInterface(i);
-        if (!itf->IsDeclared()) {
+        if (itf->IsPredecl()) {
             Logger::E(TAG, "Interface \"%s\" is not declared",
                     itf->GetName().string());
             return false;
@@ -330,6 +330,7 @@ void MetaBuilder::WriteMetaComponent(
     mc->mNamespaceNumber = NS_NUM;
     mc->mCoclassNumber = CLS_NUM;
     mc->mEnumerationNumber = ENUMN_NUM;
+    mc->mExternalEnumerationNumber = 0;
     mc->mInterfaceNumber = ITF_NUM;
     mc->mExternalInterfaceNumber = 0;
     mc->mTypeNumber = TP_NUM;
@@ -361,6 +362,7 @@ void MetaBuilder::WriteMetaComponent(
     for (int i = 0; i < NS_NUM; i++) {
         mc->mNamespaces[i] = WriteMetaNamespace(module->GetNamespace(i));
         mc->mExternalInterfaceNumber += module->GetNamespace(i)->GetExternalInterfaceNumber();
+        mc->mExternalEnumerationNumber += module->GetNamespace(i)->GetExternalEnumerationNumber();
     }
 
     for (int i = 0; i < CLS_NUM; i++) {
@@ -466,6 +468,7 @@ MetaEnumeration* MetaBuilder::WriteMetaEnumeration(
     // mEnumerators's address
     mBasePtr = ALIGN(mBasePtr + sizeof(MetaEnumeration));
     me->mEnumerators = reinterpret_cast<MetaEnumerator**>(mBasePtr);
+    me->mExternal = enumn->IsExternal();
     // end address
     mBasePtr = mBasePtr + sizeof(MetaEnumerator*) * ENUMR_NUM;
 
@@ -565,6 +568,7 @@ MetaNamespace* MetaBuilder::WriteMetaNamespace(
     mn->mName = WriteString(ns->ToString());
     mn->mCoclassNumber = CLS_NUM;
     mn->mEnumerationNumber = ENUMN_NUM;
+    mn->mExternalEnumerationNumber = ns->GetExternalEnumerationNumber();
     mn->mInterfaceNumber = ITF_NUM;
     mn->mExternalInterfaceNumber = ns->GetExternalInterfaceNumber();
     // mCoclassIndexes's address
@@ -695,6 +699,9 @@ CcmTypeKind MetaBuilder::Type2CcdlType(
     }
     else if (type->IsHANDLEType()) {
         return CcmTypeKind::HANDLE;
+    }
+    else if (type->IsECodeType()) {
+        return CcmTypeKind::ECode;
     }
     else if (type->IsEnumerationType()) {
         return CcmTypeKind::Enum;

@@ -13,3 +13,55 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //=========================================================================
+
+#include "CMetaEnumeration.h"
+#include "CMetaEnumerator.h"
+
+namespace ccm {
+
+CCM_INTERFACE_IMPL_LIGHT_1(CMetaEnumerator, IMetaEnumerator)
+
+CMetaEnumerator::CMetaEnumerator(
+    /* [in] */ CMetaEnumeration* menObj,
+    /* [in] */ MetaEnumerator* me)
+    : mMetadata(me)
+    , mMetaEnumeration(menObj)
+    , mName(me->mName)
+    , mValue(me->mValue)
+{}
+
+CMetaEnumerator::~CMetaEnumerator()
+{
+    mMetadata = nullptr;
+    mMetaEnumeration = nullptr;
+}
+
+ECode CMetaEnumerator::GetEnumeration(
+    /* [out] */ IMetaEnumeration** metaEnumn)
+{
+    VALIDATE_NOT_NULL(metaEnumn);
+
+    *metaEnumn = (IMetaEnumeration*)mMetaEnumeration;
+    REFCOUNT_ADD(*metaEnumn);
+    return NOERROR;
+}
+
+ECode CMetaEnumerator::GetName(
+    /* [out] */ String* name)
+{
+    VALIDATE_NOT_NULL(name);
+
+    *name = mName;
+    return NOERROR;
+}
+
+ECode CMetaEnumerator::GetValue(
+    /* [out] */ Integer* value)
+{
+    VALIDATE_NOT_NULL(value);
+
+    *value = mValue;
+    return NOERROR;
+}
+
+}

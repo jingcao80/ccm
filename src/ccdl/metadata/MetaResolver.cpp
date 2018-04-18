@@ -16,6 +16,7 @@
 
 #include "MetaResolver.h"
 #include "../ast/Attribute.h"
+#include "../ast/Enumeration.h"
 #include "../ast/Interface.h"
 #include "../ast/Method.h"
 #include "../ast/Parameter.h"
@@ -26,6 +27,7 @@
 #include "../../runtime/type/ccmtypekind.h"
 
 using ccdl::ast::Attribute;
+using ccdl::ast::Enumeration;
 using ccdl::ast::Interface;
 using ccdl::ast::Method;
 using ccdl::ast::Parameter;
@@ -33,6 +35,7 @@ using ccdl::ast::PointerType;
 
 using ccm::CcmTypeKind;
 using ccm::metadata::MetaEnumeration;
+using ccm::metadata::MetaEnumerator;
 
 namespace ccdl {
 namespace metadata {
@@ -104,7 +107,19 @@ Type* MetaResolver::ResolveType(
 Type* MetaResolver::BuildEnumeration(
     /* [in] */ MetaEnumeration* me)
 {
-    return nullptr;
+    Namespace* ns = BuildNamespace(String(me->mNamespace));
+
+    Enumeration* enumn = new Enumeration();
+    enumn->SetName(String(me->mName));
+    enumn->SetNamespace(ns);
+    enumn->SetExternal(me->mExternal);
+
+    for (int i = 0; i < me->mEnumeratorNumber; i++) {
+        MetaEnumerator* enumr = me->mEnumerators[i];
+        enumn->AddEnumerator(String(enumr->mName), enumr->mValue);
+    }
+
+    return (Type*)enumn;
 }
 
 Type* MetaResolver::BuildInterface(
@@ -115,7 +130,6 @@ Type* MetaResolver::BuildInterface(
     Interface* interface = new Interface();
     interface->SetName(String(mi->mName));
     interface->SetNamespace(ns);
-    interface->SetDeclared(true);
     interface->SetExternal(mi->mExternal);
     mResolvingType = (Type*)interface;
 
@@ -209,6 +223,9 @@ Type* MetaResolver::BuildType(
             break;
         case CcmTypeKind::HANDLE:
             typeStr = "HANDLE";
+            break;
+        case CcmTypeKind::ECode:
+            typeStr = "ECode";
             break;
         case CcmTypeKind::Enum: {
             MetaEnumeration* me = mMetaComponent->mEnumerations[mt->mIndex];

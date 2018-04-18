@@ -66,6 +66,8 @@ public:
 
     inline int GetEnumerationNumber();
 
+    int GetExternalEnumerationNumber();
+
     inline Enumeration* GetEnumeration(
         /* [in] */ int index);
 
@@ -78,6 +80,9 @@ public:
 
     inline Interface* GetInterface(
         /* [in] */ int index);
+
+    bool UpdateInterface(
+        /* [in] */ Interface* itf);
 
     inline void SetResolved(
         /* [in] */ bool resolved);

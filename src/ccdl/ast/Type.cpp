@@ -61,6 +61,11 @@ bool Type::IsHANDLEType()
     return false;
 }
 
+bool Type::IsECodeType()
+{
+    return false;
+}
+
 bool Type::IsNumericType()
 {
     return false;

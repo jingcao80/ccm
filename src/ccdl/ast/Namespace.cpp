@@ -73,6 +73,16 @@ bool Namespace::AddEnumeration(
     return mEnumerations.Add(enumn);
 }
 
+int Namespace::GetExternalEnumerationNumber()
+{
+    int number = 0;
+    for (int i = 0; i < mEnumerations.GetSize(); i++) {
+        Enumeration* enumn = mEnumerations.Get(i);
+        if (enumn->IsExternal()) number++;
+    }
+    return number;
+}
+
 bool Namespace::AddInterface(
     /* [in] */ Interface* itf)
 {
@@ -83,12 +93,21 @@ bool Namespace::AddInterface(
 
 int Namespace::GetExternalInterfaceNumber()
 {
-    int count = 0;
+    int number = 0;
     for (int i = 0; i < mInterfaces.GetSize(); i++) {
         Interface* itf = mInterfaces.Get(i);
-        if (itf->IsExternal()) count++;
+        if (itf->IsExternal()) number++;
     }
-    return count;
+    return number;
+}
+
+bool Namespace::UpdateInterface(
+    /* [in] */ Interface* itf)
+{
+    if (itf == nullptr) return true;
+
+    mInterfaces.Remove(itf);
+    return mInterfaces.Add(itf);
 }
 
 String Namespace::ToString()

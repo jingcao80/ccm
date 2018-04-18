@@ -19,8 +19,6 @@ project(demo-client CXX)
 set(CLIENT_DIR ${SAMPLE_DIR}/client)
 set(OBJ_DIR ${CMAKE_BINARY_DIR}/src/sample/client)
 
-include(${PROJECT_DIR}/build/common.cmake)
-
 include_directories(
     ./
     ${INC_DIR}

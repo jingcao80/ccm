@@ -16,9 +16,14 @@
 
 cmake_minimum_required(VERSION 2.8)
 
-#set(CMAKE_VERBOSE_MAKEFILE on)
-
 file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/inc)
+
+#set(CMAKE_VERBOSE_MAKEFILE on)
+set(PROJECT_DIR ${CMAKE_BINARY_DIR}/../)
+set(BIN_DIR ${PROJECT_DIR}/bin)
+set(INC_DIR ${BIN_DIR}/inc)
+
+include(${PROJECT_DIR}/build/common.cmake)
 
 add_custom_target(
     clobber
@@ -33,10 +38,6 @@ add_custom_target(
         -E make_directory ${CMAKE_SOURCE_DIR}/bin/inc
     COMMAND
         "make" clean)
-
-set(PROJECT_DIR ${CMAKE_BINARY_DIR}/../)
-set(BIN_DIR ${PROJECT_DIR}/bin)
-set(INC_DIR ${BIN_DIR}/inc)
 
 add_subdirectory(src/runtime/metadata)
 add_subdirectory(src/ccdl)

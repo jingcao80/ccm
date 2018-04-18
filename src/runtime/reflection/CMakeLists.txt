@@ -26,11 +26,16 @@ include_directories(
     ${INC_DIR})
 
 set(SOURCES
+    CArgumentList.cpp
     CMetaCoclass.cpp
     CMetaComponent.cpp
+    CMetaConstructor.cpp
     CMetaEnumeration.cpp
     CMetaEnumerator.cpp
     CMetaInterface.cpp
+    CMetaMethod.cpp
+    CMetaParameter.cpp
+    CMetaType.cpp
     reflection.cpp)
 
 add_library(reflection STATIC

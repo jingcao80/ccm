@@ -16,8 +16,6 @@
 
 project(ccdl CXX)
 
-include(${PROJECT_DIR}/build/common.cmake)
-
 set(SOURCES
     ast/AdditiveExpression.cpp
     ast/AndExpression.cpp
@@ -30,6 +28,7 @@ set(SOURCES
     ast/ComponentIDType.cpp
     ast/Constant.cpp
     ast/DoubleType.cpp
+    ast/ECodeType.cpp
     ast/Enumeration.cpp
     ast/ExclusiveOrExpression.cpp
     ast/Expression.cpp

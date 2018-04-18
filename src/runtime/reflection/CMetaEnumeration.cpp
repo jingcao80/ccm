@@ -39,7 +39,7 @@ CMetaEnumeration::~CMetaEnumeration()
     mMetaComponent = nullptr;
 }
 
-ECode CMetaEnumeration::GetMetaComponent(
+ECode CMetaEnumeration::GetComponent(
     /* [out] */ IMetaComponent** metaComp)
 {
     VALIDATE_NOT_NULL(metaComp);
@@ -125,7 +125,9 @@ void CMetaEnumeration::BuildAllEnumerators()
 
     if (mMetaEnumerators[0] == nullptr) {
         for (Integer i = 0; i < mMetadata->mEnumeratorNumber; i++) {
-
+            MetaEnumerator* me = mMetadata->mEnumerators[i];
+            IMetaEnumerator* meObj = new CMetaEnumerator(this, me);
+            mMetaEnumerators.Set(i, meObj);
         }
     }
 }

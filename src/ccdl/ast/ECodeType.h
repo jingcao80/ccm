@@ -14,33 +14,25 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CCMTYPEKIND_H__
-#define __CCM_CCMTYPEKIND_H__
+#ifndef __CCDL_AST_ECODETYPE_H__
+#define __CCDL_AST_ECODETYPE_H__
 
-namespace ccm {
+#include "Type.h"
 
-enum class CcmTypeKind
+namespace ccdl {
+namespace ast {
+
+class ECodeType : public Type
 {
-    Unknown,
-    Char = 1,
-    Byte,
-    Short,
-    Integer,
-    Long,
-    Float,
-    Double,
-    Boolean,
-    String,
-    CoclassID,
-    ComponentID,
-    InterfaceID,
-    HANDLE,
-    ECode,
-    Enum,
-    Array,
-    Interface,
+public:
+    ECodeType();
+
+    bool IsECodeType() override;
+
+    String Signature() override;
 };
 
 }
+}
 
-#endif // __CCM_CCMTYPEKIND_H__
+#endif // __CCDL_AST_ECODETYPE_H__

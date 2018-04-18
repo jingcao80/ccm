@@ -24,6 +24,7 @@
 #include "CoclassIDType.h"
 #include "ComponentIDType.h"
 #include "DoubleType.h"
+#include "ECodeType.h"
 #include "Enumeration.h"
 #include "FloatType.h"
 #include "HANDLEType.h"
@@ -89,6 +90,7 @@ private:
     BooleanType* mBooleanType;
     StringType* mStringType;
     HANDLEType* mHANDLEType;
+    ECodeType* mECodeType;
     CoclassIDType* mCoclassIDType;
     ComponentIDType* mComponentIDType;
     InterfaceIDType* mInterfaceIDType;

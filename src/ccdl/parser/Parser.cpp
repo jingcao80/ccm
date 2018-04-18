@@ -496,7 +496,8 @@ bool Parser::ParseInterface(
         Interface* interface = new Interface();
         interface->SetName(itfName);
         interface->SetNamespace(ns);
-        mPool->AddInterface(interface);
+        interface->SetPredecl();
+        mPool->AddInterfacePredeclaration(interface);
 
         mCurrContext->AddPredeclaration(itfName, fullName);
         return parseResult;
@@ -514,7 +515,7 @@ bool Parser::ParseInterface(
     Type* type = mPool->FindType(currNsString.IsNullOrEmpty() ?
             itfName : currNsString + itfName);
     if (type != nullptr) {
-        if (type->IsInterfaceType() && !((Interface*)type)->IsDeclared()) {
+        if (type->IsInterfaceType() && ((Interface*)type)->IsPredecl()) {
             interface = (Interface*)type;
         }
         else {
@@ -549,7 +550,7 @@ bool Parser::ParseInterface(
         if (token == Tokenizer::Token::IDENTIFIER) {
             mTokenizer.GetToken();
             Interface* baseItf = FindInterface(mTokenizer.GetIdentifier());
-            if (baseItf != nullptr && baseItf->IsDeclared()) {
+            if (baseItf != nullptr && !baseItf->IsPredecl()) {
                 interface->SetBaseInterface(baseItf);
             }
             else {
@@ -572,11 +573,9 @@ bool Parser::ParseInterface(
     parseResult = ParseInterfaceBody(interface) && parseResult;
 
     if (parseResult) {
-        interface->SetDeclared(true);
+        interface->SetDeclared();
         interface->SetAttribute(*attr);
-        if (newAdded) {
-            mPool->AddInterface(interface);
-        }
+        mPool->AddInterface(interface);
     }
     else {
         if (newAdded) delete interface;
@@ -1967,7 +1966,6 @@ void Parser::GenerateIInterface()
     Interface* interface = new Interface();
     interface->SetName(String("IInterface"));
     interface->SetNamespace(mPool->FindNamespace(String("ccm")));
-    interface->SetDeclared(true);
     interface->SetExternal(true);
     Attribute attr;
     attr.mUuid = "00000000-0000-0000-0000-000000000000";
@@ -2050,7 +2048,6 @@ void Parser::GenerateCoclassObject(
         Interface* itfco = new Interface();
         itfco->SetName(String::Format("I%sClassObject", klass->GetName().string()));
         itfco->SetNamespace(klass->GetNamespace());
-        itfco->SetDeclared(true);
         for (int i = 0; i < klass->GetConstructorNumber(); i++) {
             Method* m = klass->GetConstructor(i);
             m->SetName(String("CreateObject"));

@@ -42,7 +42,7 @@ public:
 
     CCM_INTERFACE_DECL();
 
-    ECode GetMetaComponent(
+    ECode GetComponent(
         /* [out] */ IMetaComponent** metaComp) override;
 
     ECode GetName(

@@ -351,6 +351,9 @@ String MetaDumper::DumpMetaType(
         case CcmTypeKind::HANDLE:
             builder.Append("HANDLE");
             break;
+        case CcmTypeKind::ECode:
+            builder.Append("ECode");
+            break;
         case CcmTypeKind::Enum:
             builder.Append(mMetaComponet->mEnumerations[mt->mIndex]->mName);
             break;

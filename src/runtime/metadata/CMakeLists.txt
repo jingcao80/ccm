@@ -16,8 +16,6 @@
 
 project(libmetadata CXX)
 
-include(${PROJECT_DIR}/build/common.cmake)
-
 set(LIBMETADATA_SOURCES
     MetaSerializer.cpp)
 

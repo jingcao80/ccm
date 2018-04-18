@@ -23,11 +23,21 @@ namespace ccdl {
 namespace ast {
 
 Interface::Interface()
-    : mDeclared(false)
+    : mIsPredecl(false)
     , mBaseInterface(nullptr)
     , mConstants(10)
     , mMethods(20)
 {}
+
+void Interface::SetDeclared()
+{
+    if (mIsPredecl) {
+        if (mNamespace != nullptr) {
+            mNamespace->UpdateInterface(this);
+        }
+        mIsPredecl = false;
+    }
+}
 
 void Interface::SetNamespace(
     /* [in] */ Namespace* ns)
@@ -107,7 +117,6 @@ void Interface::DeepCopy(
     SetNamespace(ns);
     pool->AddInterface(this);
     mExternal = source->mExternal;
-    mDeclared = true;
     SpecializeInternal(source, pool);
 }
 
@@ -120,7 +129,6 @@ void Interface::ShallowCopy(
     SetNamespace(ns);
     pool->AddInterface(this);
     mExternal = source->mExternal;
-    mDeclared = true;
     SetSourceType(source);
     mSpecialized = false;
 }

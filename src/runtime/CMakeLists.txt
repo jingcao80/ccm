@@ -18,8 +18,6 @@ project(runtime CXX)
 
 set(RUNTIME_DIR ${PROJECT_DIR}/src/runtime)
 
-include(${PROJECT_DIR}/build/common.cmake)
-
 add_subdirectory(util)
 add_subdirectory(type)
 add_subdirectory(reflection)
@@ -54,7 +52,6 @@ add_library(ccmrt
 target_link_libraries(ccmrt
     ${CCMRT_LINK_LIBS}
     dl)
-set_target_properties(ccmrt PROPERTIES PREFIX "")
 
 set(DEPLOY_HEADERS
     ${RUNTIME_DIR}/ccmapi.h

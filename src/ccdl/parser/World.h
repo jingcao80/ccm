@@ -23,6 +23,7 @@
 #include "../ast/CoclassIDType.h"
 #include "../ast/ComponentIDType.h"
 #include "../ast/DoubleType.h"
+#include "../ast/ECodeType.h"
 #include "../ast/Enumeration.h"
 #include "../ast/FloatType.h"
 #include "../ast/HANDLEType.h"
@@ -47,6 +48,7 @@ using ccdl::ast::CharType;
 using ccdl::ast::CoclassIDType;
 using ccdl::ast::ComponentIDType;
 using ccdl::ast::DoubleType;
+using ccdl::ast::ECodeType;
 using ccdl::ast::Enumeration;
 using ccdl::ast::FloatType;
 using ccdl::ast::HANDLEType;
@@ -106,6 +108,7 @@ private:
     BooleanType* mBooleanType;
     StringType* mStringType;
     HANDLEType* mHANDLEType;
+    ECodeType* mECodeType;
     CoclassIDType* mCoclassIDType;
     ComponentIDType* mComponentIDType;
     InterfaceIDType* mInterfaceIDType;

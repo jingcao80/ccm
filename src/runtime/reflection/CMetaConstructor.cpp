@@ -13,34 +13,3 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //=========================================================================
-
-#ifndef __CCM_CCMTYPEKIND_H__
-#define __CCM_CCMTYPEKIND_H__
-
-namespace ccm {
-
-enum class CcmTypeKind
-{
-    Unknown,
-    Char = 1,
-    Byte,
-    Short,
-    Integer,
-    Long,
-    Float,
-    Double,
-    Boolean,
-    String,
-    CoclassID,
-    ComponentID,
-    InterfaceID,
-    HANDLE,
-    ECode,
-    Enum,
-    Array,
-    Interface,
-};
-
-}
-
-#endif // __CCM_CCMTYPEKIND_H__

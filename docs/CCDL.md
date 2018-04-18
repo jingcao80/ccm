@@ -93,7 +93,7 @@
 
 <*type*> ::= <*primitive_type*> | <*reference_type*> | <*pointer_type*>
 
-<*primitive_type*> ::= <*numeric_type*> | Boolean | String | CoclassID | ComponentID | InterfaceID | HANDLE
+<*primitive_type*> ::= <*numeric_type*> | Boolean | String | CoclassID | ComponentID | InterfaceID | HANDLE | ECode
 
 <*numeric_type*> ::= <*integral_type*> | <*floating-point_type*>
 

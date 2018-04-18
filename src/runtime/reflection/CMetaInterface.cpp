@@ -40,7 +40,7 @@ CMetaInterface::~CMetaInterface()
     mMetaComponent = nullptr;
 }
 
-ECode CMetaInterface::GetMetaComponent(
+ECode CMetaInterface::GetComponent(
     /* [out] */ IMetaComponent** metaComp)
 {
     VALIDATE_NOT_NULL(metaComp);
@@ -74,6 +74,39 @@ ECode CMetaInterface::GetInterfaceID(
     VALIDATE_NOT_NULL(iid);
 
     *iid = mIid;
+    return NOERROR;
+}
+
+ECode CMetaInterface::GetBaseInterface(
+    /* [out] */ IMetaInterface** baseIntf)
+{
+    return NOERROR;
+}
+
+ECode CMetaInterface::GetMethodNumber(
+    /* [out] */ Integer* number)
+{
+    return NOERROR;
+}
+
+ECode CMetaInterface::GetAllMethods(
+    /* [out] */ Array<IMetaMethod*>& methods)
+{
+    return NOERROR;
+}
+
+ECode CMetaInterface::GetMethod(
+    /* [in] */ const String& name,
+    /* [in] */ const String& signature,
+    /* [out] */ IMetaMethod** method)
+{
+    return NOERROR;
+}
+
+ECode CMetaInterface::GetMethod(
+    /* [in] */ Integer index,
+    /* [out] */ IMetaMethod** method)
+{
     return NOERROR;
 }
 

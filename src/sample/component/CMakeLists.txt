@@ -19,8 +19,6 @@ project(demo-component CXX)
 set(COMPONENT_DIR ${SAMPLE_DIR}/component)
 set(OBJ_DIR ${CMAKE_BINARY_DIR}/src/sample/component)
 
-include(${PROJECT_DIR}/build/common.cmake)
-
 include_directories(
     ./
     ${INC_DIR}
@@ -44,7 +42,6 @@ add_library(FooBarDemo
     ${SOURCES}
     ${GENERATED_SOURCES})
 target_link_libraries(FooBarDemo -Wl,--no-undefined ${LINK_EXTERNAL_LIBS})
-set_target_properties(FooBarDemo PROPERTIES PREFIX "")
 
 add_custom_command(
     OUTPUT

@@ -36,8 +36,10 @@ CMetaComponent::CMetaComponent(
     , mUrl(metadata->mUrl)
     , mMetaCoclasses(mMetadata->mCoclassNumber)
     , mMetaCoclassMap(mMetadata->mCoclassNumber)
-    , mMetaEnumerations(mMetadata->mEnumerationNumber)
-    , mMetaEnumerationMap(mMetadata->mEnumerationNumber)
+    , mMetaEnumerations(mMetadata->mEnumerationNumber -
+            mMetadata->mExternalEnumerationNumber)
+    , mMetaEnumerationMap(mMetadata->mEnumerationNumber -
+            mMetadata->mExternalEnumerationNumber)
     , mMetaInterfaces(mMetadata->mInterfaceNumber -
             mMetadata->mExternalInterfaceNumber)
     , mMetaInterfaceMap(mMetadata->mInterfaceNumber -
@@ -122,7 +124,8 @@ ECode CMetaComponent::GetEnumerationNumber(
 {
     VALIDATE_NOT_NULL(number);
 
-    *number = mMetadata->mEnumerationNumber;
+    *number = mMetadata->mEnumerationNumber -
+            mMetadata->mExternalEnumerationNumber;
     return NOERROR;
 }
 
@@ -210,15 +213,34 @@ void CMetaComponent::BuildAllCoclasses()
         return;
     }
 
-    if (mMetaCoclasses[0] == nullptr) {
-        for (Integer i = 0; i < mMetadata->mCoclassNumber; i++) {
-            MetaCoclass* mc = mMetadata->mCoclasses[i];
+    for (Integer i = 0; i < mMetadata->mCoclassNumber; i++) {
+        MetaCoclass* mc = mMetadata->mCoclasses[i];
+        String fullName = String::Format("%s%s",
+                mc->mNamespace, mc->mName);
+        if (!mMetaCoclassMap.ContainsKey(fullName)) {
             IMetaCoclass* mcObj = new CMetaCoclass(
                     this, mMetadata, mc);
             mMetaCoclasses.Set(i, mcObj);
-            mMetaCoclassMap.Put(String::Format("%s%s",
-                    mc->mNamespace, mc->mName), mcObj);
+            mMetaCoclassMap.Put(fullName, mcObj);
         }
+    }
+}
+
+void CMetaComponent::BuildCoclass(
+    /* [in] */ Integer index)
+{
+    if (index < 0 || index >= mMetadata->mCoclassNumber) {
+        return;
+    }
+
+    MetaCoclass* mc = mMetadata->mCoclasses[index];
+    String fullName = String::Format("%s%s",
+                mc->mNamespace, mc->mName);
+    if (!mMetaCoclassMap.ContainsKey(fullName)) {
+        IMetaCoclass* mcObj = new CMetaCoclass(
+                this, mMetadata, mc);
+        mMetaCoclasses.Set(index, mcObj);
+        mMetaCoclassMap.Put(fullName, mcObj);
     }
 }
 
@@ -228,15 +250,44 @@ void CMetaComponent::BuildAllEnumerations()
         return;
     }
 
-    if (mMetaEnumerations[0] == nullptr) {
-        for (Integer i = 0; i < mMetadata->mEnumerationNumber; i++) {
-            MetaEnumeration* me = mMetadata->mEnumerations[i];
+    Integer index = 0;
+    for (Integer i = 0; i < mMetadata->mEnumerationNumber; i++) {
+        MetaEnumeration* me = mMetadata->mEnumerations[i];
+        if (me->mExternal) continue;
+        String fullName = String::Format("%s%s",
+                me->mNamespace, me->mName);
+        if (!mMetaEnumerationMap.ContainsKey(fullName)) {
             IMetaEnumeration* meObj = new CMetaEnumeration(
                     this, mMetadata, me);
-            mMetaEnumerations.Set(i, meObj);
-            mMetaEnumerationMap.Put(String::Format("%s%s",
-                    me->mNamespace, me->mName), meObj);
+            mMetaEnumerations.Set(index, meObj);
+            mMetaEnumerationMap.Put(fullName, meObj);
         }
+        index++;
+    }
+}
+
+void CMetaComponent::BuildEnumeration(
+    /* [in] */ Integer index)
+{
+    if (index < 0 || index >= mMetadata->mEnumerationNumber) {
+        return;
+    }
+
+    MetaEnumeration* me = mMetadata->mEnumerations[index];
+    if (me->mExternal) return;
+    String fullName = String::Format("%s%s",
+            me->mNamespace, me->mName);
+    if (!mMetaEnumerationMap.ContainsKey(fullName)) {
+        IMetaEnumeration* meObj = new CMetaEnumeration(
+                this, mMetadata, me);
+        Integer realIndex = index;
+        for (Integer i = 0; i <= index; i++) {
+            if (mMetadata->mEnumerations[i]->mExternal) {
+                realIndex--;
+            }
+        }
+        mMetaEnumerations.Set(realIndex, meObj);
+        mMetaEnumerationMap.Put(fullName, meObj);
     }
 }
 
@@ -246,18 +297,44 @@ void CMetaComponent::BuildAllInterfaces()
         return;
     }
 
-    if (mMetaInterfaces[0] == nullptr) {
-        Integer idx = 0;
-        for (Integer i = 0; i < mMetadata->mInterfaceNumber; i++) {
-            MetaInterface* mi = mMetadata->mInterfaces[i];
-            if (mi->mExternal) continue;
+    Integer index = 0;
+    for (Integer i = 0; i < mMetadata->mInterfaceNumber; i++) {
+        MetaInterface* mi = mMetadata->mInterfaces[i];
+        if (mi->mExternal) continue;
+        String fullName = String::Format("%s%s",
+                mi->mNamespace, mi->mName);
+        if (!mMetaInterfaceMap.ContainsKey(fullName)) {
             IMetaInterface* miObj = new CMetaInterface(
                     this, mMetadata, mi);
-            mMetaInterfaces.Set(idx, miObj);
-            mMetaInterfaceMap.Put(String::Format("%s%s",
-                    mi->mNamespace, mi->mName), miObj);
-            idx++;
+            mMetaInterfaces.Set(index, miObj);
+            mMetaInterfaceMap.Put(fullName, miObj);
         }
+        index++;
+    }
+}
+
+void CMetaComponent::BuildInterface(
+    /* [in] */ Integer index)
+{
+    if (index < 0 || index >= mMetadata->mInterfaceNumber) {
+        return;
+    }
+
+    MetaInterface* mi = mMetadata->mInterfaces[index];
+    if (mi->mExternal) return;
+    String fullName = String::Format("%s%s",
+            mi->mNamespace, mi->mName);
+    if (!mMetaInterfaceMap.ContainsKey(fullName)) {
+        IMetaInterface* miObj = new CMetaInterface(
+                this, mMetadata, mi);
+        Integer realIndex = index;
+        for (Integer i = 0; i <= index; i++) {
+            if (mMetadata->mInterfaces[i]->mExternal) {
+                realIndex--;
+            }
+        }
+        mMetaInterfaces.Set(realIndex, miObj);
+        mMetaInterfaceMap.Put(fullName, miObj);
     }
 }
 

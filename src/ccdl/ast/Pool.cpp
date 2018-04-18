@@ -25,11 +25,22 @@ namespace ast {
 Pool::Pool()
     : mCoclasses(20)
     , mEnumerations(10)
+    , mInterfacePredecls(20, false)
     , mInterfaces(20)
     , mNamespaces(5)
     , mTempTypes(20)
     , mTypes(6000)
 {}
+
+Pool::~Pool()
+{
+    for (int i = 0; i < mInterfacePredecls.GetSize(); i++) {
+        Interface* intf = mInterfacePredecls.Get(i);
+        if (intf->IsPredecl()) {
+            delete intf;
+        }
+    }
+}
 
 bool Pool::AddEnumeration(
     /* [in] */ Enumeration* enumeration)
@@ -50,6 +61,16 @@ Enumeration* Pool::FindEnumeration(
         return nullptr;
     }
     return (Enumeration*)type;
+}
+
+bool Pool::AddInterfacePredeclaration(
+    /* [in] */ Interface* interface)
+{
+    if (interface == nullptr) return true;
+
+    if (!mInterfacePredecls.Add(interface)) return false;
+    mTypes.Put(interface->ToString(), interface);
+    return true;
 }
 
 bool Pool::AddInterface(
@@ -295,7 +316,7 @@ String Pool::Dump(
         builder.Append(enumStr).Append("\n");
     }
     for (int i = 0; i < mInterfaces.GetSize(); i++) {
-        if (!mInterfaces.Get(i)->IsDeclared()) continue;
+        if (mInterfaces.Get(i)->IsPredecl()) continue;
         String itfStr = mInterfaces.Get(i)->Dump(String("  "));
         builder.Append(itfStr).Append("\n");
     }
