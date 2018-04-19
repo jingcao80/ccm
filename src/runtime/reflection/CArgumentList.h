@@ -17,7 +17,6 @@
 #ifndef __CCM_CARGUMENTLIST_H__
 #define __CCM_CARGUMENTLIST_H__
 
-#include "ccmtypes.h"
 #include "ccmrefbase.h"
 #include "Component.h"
 

@@ -16,6 +16,7 @@
 
 interface ccm::IArgumentList;
 interface ccm::IMetaCoclass;
+interface ccm::IMetaConstant;
 interface ccm::IMetaConstructor;
 interface ccm::IMetaEnumeration;
 interface ccm::IMetaEnumerator;
@@ -23,6 +24,7 @@ interface ccm::IMetaInterface;
 interface ccm::IMetaMethod;
 interface ccm::IMetaParameter;
 interface ccm::IMetaType;
+interface ccm::IMetaValue;
 
 namespace ccm {
 
@@ -53,7 +55,7 @@ interface IMetaComponent
 
     GetCoclass(
         [in] String fullName,
-        [out] IMetaCoclass** metaKls);
+        [out] IMetaCoclass** klass);
 
     GetInterfaceNumber(
         [out] Integer* number);
@@ -63,7 +65,7 @@ interface IMetaComponent
 
     GetInterface(
         [in] String fullName,
-        [out] IMetaInterface** metaIntf);
+        [out] IMetaInterface** intf);
 
     GetEnumerationNumber(
         [out] Integer* number);
@@ -83,7 +85,7 @@ interface IMetaComponent
 interface IMetaCoclass
 {
     GetComponent(
-        [out] IMetaComponent** metaComp);
+        [out] IMetaComponent** comp);
 
     GetName(
         [out] String* name);
@@ -137,7 +139,7 @@ interface IMetaCoclass
 interface IMetaEnumeration
 {
     GetComponent(
-        [out] IMetaComponent** metaComp);
+        [out] IMetaComponent** comp);
 
     GetName(
         [out] String* name);
@@ -153,7 +155,7 @@ interface IMetaEnumeration
 
     GetEnumerator(
         [in] String name,
-        [out] IMetaEnumerator** metaEnumr);
+        [out] IMetaEnumerator** enumr);
 }
 
 [
@@ -163,7 +165,7 @@ interface IMetaEnumeration
 interface IMetaEnumerator
 {
     GetEnumeration(
-        [out] IMetaEnumeration** metaEnumn);
+        [out] IMetaEnumeration** enumn);
 
     GetName(
         [out] String* name);
@@ -179,7 +181,7 @@ interface IMetaEnumerator
 interface IMetaInterface
 {
     GetComponent(
-        [out] IMetaComponent** metaComp);
+        [out] IMetaComponent** comp);
 
     GetName(
         [out] String* name);
@@ -192,6 +194,20 @@ interface IMetaInterface
 
     GetBaseInterface(
         [out] IMetaInterface** baseIntf);
+
+    GetConstantNumber(
+        [out] Integer* number);
+
+    GetAllConstants(
+        [out] Array<IMetaConstant*> consts);
+
+    GetConstant(
+        [in] String name,
+        [out] IMetaConstant** constt);
+
+    GetConstant(
+        [in] Integer index,
+        [out] IMetaConstant** constt);
 
     GetMethodNumber(
         [out] Integer* number);
@@ -207,6 +223,22 @@ interface IMetaInterface
     GetMethod(
         [in] Integer index,
         [out] IMetaMethod** method);
+}
+
+[
+    uuid(c27054e4-f998-4eac-9a2c-17d05aa6dccd),
+    version(0.1.0)
+]
+interface IMetaConstant
+{
+    GetName(
+        [out] String* name);
+
+    GetType(
+        [out] IMetaType** type);
+
+    GetValue(
+        [out] IMetaValue** value);
 }
 
 [
@@ -232,11 +264,11 @@ interface IMetaMethod
 
     GetParameter(
         [in] Integer index,
-        [out] IMetaParameter* param);
+        [out] IMetaParameter** param);
 
     GetParameter(
         [in] String name,
-        [out] IMetaParameter* param);
+        [out] IMetaParameter** param);
 
     CreateArgumentList(
         [out] IArgumentList** argList);
@@ -252,6 +284,12 @@ interface IMetaMethod
 ]
 interface IMetaConstructor : IMetaMethod
 {
+    GetCoclass(
+        [out] IMetaCoclass** klass);
+
+    IsDefault(
+        [out] Boolean* isDefault);
+
     CreateObject(
         [in] IArgumentList* argList,
         [out] IInterface** object);
@@ -296,6 +334,15 @@ interface IMetaType
 
     GetPointerNumber(
         [out] Integer* number);
+}
+
+[
+    uuid(c0dfe841-80a0-421c-ad0a-be51c9d2a0c9),
+    version(0.1.0)
+]
+interface IMetaValue
+{
+
 }
 
 [

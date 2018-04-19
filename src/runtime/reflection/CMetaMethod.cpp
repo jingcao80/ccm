@@ -18,4 +18,69 @@
 
 namespace ccm {
 
+CCM_INTERFACE_IMPL_LIGHT_1(CMetaMethod, IMetaMethod);
+
+CMetaMethod::CMetaMethod()
+{}
+
+CMetaMethod::~CMetaMethod()
+{}
+
+ECode CMetaMethod::GetInterface(
+    /* [out] */ IMetaInterface** intf)
+{
+    return NOERROR;
+}
+
+ECode CMetaMethod::GetName(
+    /* [out] */ String* name)
+{
+    return NOERROR;
+}
+
+ECode CMetaMethod::GetSignature(
+    /* [out] */ String* signature)
+{
+    return NOERROR;
+}
+
+ECode CMetaMethod::GetParameterNumber(
+    /* [out] */ Integer* number)
+{
+    return NOERROR;
+}
+
+ECode CMetaMethod::GetAllParameters(
+    /* [out] */ Array<IMetaParameter*>& params)
+{
+    return NOERROR;
+}
+
+ECode CMetaMethod::GetParameter(
+    /* [in] */ Integer index,
+    /* [out] */ IMetaParameter** param)
+{
+    return NOERROR;
+}
+
+ECode CMetaMethod::GetParameter(
+    /* [in] */ const String& name,
+    /* [out] */ IMetaParameter** param)
+{
+    return NOERROR;
+}
+
+ECode CMetaMethod::CreateArgumentList(
+    /* [out] */ IArgumentList** argList)
+{
+    return NOERROR;
+}
+
+ECode CMetaMethod::Invoke(
+    /* [in] */ IInterface* thisObject,
+    /* [in] */ IArgumentList* argList)
+{
+    return NOERROR;
+}
+
 }

@@ -17,9 +17,11 @@
 #ifndef __CCM_CMETAPARAMETER_H__
 #define __CCM_CMETAPARAMETER_H__
 
-#include "ccmtypes.h"
+#include "ccmautoptr.h"
 #include "ccmrefbase.h"
 #include "Component.h"
+
+using ccm::metadata::MetaParameter;
 
 namespace ccm {
 
@@ -29,6 +31,10 @@ class CMetaParameter
 {
 public:
     CMetaParameter();
+
+    CMetaParameter(
+        /* [in] */ IMetaMethod* mmObj,
+        /* [in] */ MetaParameter* mp);
 
     ~CMetaParameter();
 
@@ -48,6 +54,13 @@ public:
 
     ECode GetType(
         /* [out] */ IMetaType** type);
+
+public:
+    MetaParameter* mMetadata;
+    IMetaMethod* mOwner;
+    String mName;
+    IOAttribute mIOAttr;
+    AutoPtr<IMetaType> mType;
 };
 
 }

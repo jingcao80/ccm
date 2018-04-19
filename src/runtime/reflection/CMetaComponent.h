@@ -17,7 +17,7 @@
 #ifndef __CCM_CMETACOMPONENT_H__
 #define __CCM_CMETACOMPONENT_H__
 
-#include "ccmtypes.h"
+#include "ccmautoptr.h"
 #include "ccmrefbase.h"
 #include "Component.h"
 #include "hashmap.h"
@@ -76,18 +76,21 @@ public:
 
     void BuildAllCoclasses();
 
-    void BuildCoclass(
+    AutoPtr<IMetaCoclass> BuildCoclass(
         /* [in] */ Integer index);
 
     void BuildAllEnumerations();
 
-    void BuildEnumeration(
+    AutoPtr<IMetaEnumeration> BuildEnumeration(
         /* [in] */ Integer index);
 
     void BuildAllInterfaces();
 
-    void BuildInterface(
+    AutoPtr<IMetaInterface> BuildInterface(
         /* [in] */ Integer index);
+
+private:
+    void BuildIInterface();
 
 public:
     MetaComponent* mMetadata;
@@ -100,6 +103,7 @@ public:
     HashMap<String, IMetaEnumeration*> mMetaEnumerationMap;
     Array<IMetaInterface*> mMetaInterfaces;
     HashMap<String, IMetaInterface*> mMetaInterfaceMap;
+    AutoPtr<IMetaInterface> mIInterface;
 };
 
 }

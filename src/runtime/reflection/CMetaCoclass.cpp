@@ -17,8 +17,10 @@
 #include "ccmobjectapi.h"
 #include "CMetaCoclass.h"
 #include "CMetaComponent.h"
+#include "CMetaConstructor.h"
 
 using ccm::metadata::MetaInterface;
+using ccm::metadata::MetaMethod;
 
 namespace ccm {
 
@@ -29,7 +31,7 @@ CMetaCoclass::CMetaCoclass(
     /* [in] */ MetaComponent* mc,
     /* [in] */ MetaCoclass* mk)
     : mMetadata(mk)
-    , mMetaComponent(mcObj)
+    , mOwner(mcObj)
     , mName(mk->mName)
     , mNamespace(mk->mNamespace)
     , mMetaInterfaces(mk->mInterfaceNumber)
@@ -41,7 +43,7 @@ CMetaCoclass::CMetaCoclass(
 CMetaCoclass::~CMetaCoclass()
 {
     mMetadata = nullptr;
-    mMetaComponent = nullptr;
+    mOwner = nullptr;
 }
 
 ECode CMetaCoclass::GetComponent(
@@ -49,7 +51,7 @@ ECode CMetaCoclass::GetComponent(
 {
     VALIDATE_NOT_NULL(metaComp);
 
-    *metaComp = (IMetaComponent*)mMetaComponent;
+    *metaComp = (IMetaComponent*)mOwner;
     REFCOUNT_ADD(*metaComp);
     return NOERROR;
 }
@@ -85,12 +87,33 @@ ECode CMetaCoclass::GetCoclassID(
 ECode CMetaCoclass::GetConstructorNumber(
     /* [out] */ Integer* number)
 {
+    VALIDATE_NOT_NULL(number);
+
+    MetaInterface* mi = mOwner->mMetadata->mInterfaces[
+            mMetadata->mInterfaceIndexes[mMetadata->mInterfaceNumber - 1]];
+    *number = mi->mMethodNumber;
     return NOERROR;
 }
 
 ECode CMetaCoclass::GetAllConstructors(
     /* [out] */ Array<IMetaConstructor*>& constrs)
 {
+    if (mMetaConstructors.IsEmpty()) {
+        MetaInterface* mi = mOwner->mMetadata->mInterfaces[
+                mMetadata->mInterfaceIndexes[mMetadata->mInterfaceNumber - 1]];
+        mMetaConstructors = Array<IMetaConstructor*>(mi->mMethodNumber);
+        for (Integer i = 0; i < mi->mMethodNumber; i++) {
+            MetaMethod* mm = mi->mMethods[i];
+            IMetaConstructor* mcObj = new CMetaConstructor(
+                    this, mm);
+            mMetaConstructors.Set(i, mcObj);
+        }
+    }
+
+    Integer N = MIN(mMetaConstructors.GetLength(), constrs.GetLength());
+    for (Integer i = 0; i < N; i++) {
+        constrs.Set(i, mMetaConstructors[i]);
+    }
     return NOERROR;
 }
 
@@ -106,7 +129,7 @@ ECode CMetaCoclass::GetInterfaceNumber(
 {
     VALIDATE_NOT_NULL(number);
 
-    *number = mMetadata->mInterfaceNumber;
+    *number = mMetadata->mInterfaceNumber - 1;
     return NOERROR;
 }
 
@@ -119,7 +142,8 @@ ECode CMetaCoclass::GetAllInterfaces(
 
     BuildAllInterfaces();
 
-    for (Integer i = 0; i < mMetaInterfaces.GetLength(); i++) {
+    Integer N = MIN(mMetaInterfaces.GetLength(), intfs.GetLength());
+    for (Integer i = 0; i < N; i++) {
         IMetaInterface* miObj = mMetaInterfaces[i];
         intfs.Set(i, miObj);
     }
@@ -158,12 +182,34 @@ ECode CMetaCoclass::GetInterface(
 ECode CMetaCoclass::GetMethodNumber(
     /* [out] */ Integer* number)
 {
+    VALIDATE_NOT_NULL(number);
+
+    if (mMetaMethods.IsEmpty()) {
+        Integer num = 4;
+        for (Integer i = 0; i < mMetadata->mInterfaceNumber - 1; i++) {
+            MetaInterface* mi = mOwner->mMetadata->mInterfaces[
+                    mMetadata->mInterfaceIndexes[i]];
+            if (String::Format("%s%s", mi->mNamespace,
+                    mi->mName).Equals("ccm::IInterface")) continue;
+            num += mi->mMethodNumber;
+        }
+        mMetaMethods = Array<IMetaMethod*>(num);
+    }
+
+    *number = mMetaMethods.GetLength();
     return NOERROR;
 }
 
 ECode CMetaCoclass::GetMethods(
     /* [out] */ Array<IMetaMethod*>& methods)
 {
+    BuildAllMethod();
+
+    Integer N = MIN(mMetaMethods.GetLength(), methods.GetLength());
+    for (Integer i = 0; i < N; i++) {
+        methods.Set(i, mMetaMethods[i]);
+    }
+
     return NOERROR;
 }
 
@@ -172,6 +218,22 @@ ECode CMetaCoclass::GetMethod(
     /* [in] */ const String& signature,
     /* [out] */ IMetaMethod** method)
 {
+    VALIDATE_NOT_NULL(method);
+
+    BuildAllMethod();
+
+    for (Integer i = 0; i < mMetaMethods.GetLength(); i++) {
+        IMetaMethod* mmObj = mMetaMethods[i];
+        String mmName, mmSignature;
+        mmObj->GetName(&mmName);
+        mmObj->GetSignature(&mmSignature);
+        if (mmName.Equals(name) && mmSignature.Equals(signature)) {
+            *method = mmObj;
+            REFCOUNT_ADD(*method);
+            return NOERROR;
+        }
+    }
+    *method = nullptr;
     return NOERROR;
 }
 
@@ -187,14 +249,44 @@ ECode CMetaCoclass::CreateObject(
 void CMetaCoclass::BuildAllInterfaces()
 {
     if (mMetaInterfaces[0] == nullptr) {
-        mMetaComponent->BuildAllInterfaces();
         for (Integer i = 0; i < mMetadata->mInterfaceNumber; i++) {
-            MetaInterface* mi = mMetaComponent->mMetadata->mInterfaces[
-                    mMetadata->mInterfaceIndexes[i]];
-            IMetaInterface* miObj = mMetaComponent->mMetaInterfaceMap.Get(String::Format("%s%s",
-                    mi->mNamespace, mi->mName));
+            Integer intfIndex = mMetadata->mInterfaceIndexes[i];
+            AutoPtr<IMetaInterface> miObj = mOwner->BuildInterface(intfIndex);
             mMetaInterfaces.Set(i, miObj);
         }
+    }
+}
+
+void CMetaCoclass::BuildAllMethod()
+{
+    Integer number;
+    GetMethodNumber(&number);
+
+    if (mMetaMethods[0] == nullptr) {
+        Integer index = 0;
+        BuildInterfaceMethod(mOwner->mIInterface, &index);
+        for (Integer i = 0; i < mMetadata->mInterfaceNumber; i++) {
+            AutoPtr<IMetaInterface> miObj = mOwner->BuildInterface(i);
+            String name, ns;
+            miObj->GetName(&name);
+            miObj->GetNamespace(&ns);
+            if (String("ccm::IInterface").Equals(ns + name)) continue;
+            BuildInterfaceMethod(miObj, &index);
+        }
+    }
+}
+
+void CMetaCoclass::BuildInterfaceMethod(
+    /* [in] */ IMetaInterface* miObj,
+    /* [in, out] */ Integer* index)
+{
+    Integer N;
+    miObj->GetMethodNumber(&N);
+    for (Integer i = 4; i < N; i++) {
+        AutoPtr<IMetaMethod> mmObj;
+        miObj->GetMethod(i, (IMetaMethod**)&mmObj);
+        mMetaMethods.Set(*index, mmObj);
+        (*index)++;
     }
 }
 

@@ -17,15 +17,13 @@
 #ifndef __CCM_CMETAMETHOD_H__
 #define __CCM_CMETAMETHOD_H__
 
-#include "ccmtypes.h"
+#include "ccmautoptr.h"
 #include "ccmrefbase.h"
 #include "Component.h"
 
 namespace ccm {
 
-#include "ccmtypes.h"
-#include "ccmrefbase.h"
-#include "Component.h"
+class CMetaInterface;
 
 class CMetaMethod
     : public LightRefBase
@@ -55,11 +53,11 @@ public:
 
     ECode GetParameter(
         /* [in] */ Integer index,
-        /* [out] */ IMetaParameter* param);
+        /* [out] */ IMetaParameter** param);
 
     ECode GetParameter(
         /* [in] */ const String& name,
-        /* [out] */ IMetaParameter* param);
+        /* [out] */ IMetaParameter** param);
 
     ECode CreateArgumentList(
         /* [out] */ IArgumentList** argList);
@@ -67,6 +65,13 @@ public:
     ECode Invoke(
         /* [in] */ IInterface* thisObject,
         /* [in] */ IArgumentList* argList);
+
+public:
+    CMetaInterface* mOwner;
+    String mName;
+    String mSignature;
+    Array<IMetaParameter*> mParameters;
+    AutoPtr<IMetaType> mReturnType;
 };
 
 }

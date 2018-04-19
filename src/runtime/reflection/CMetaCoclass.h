@@ -17,7 +17,6 @@
 #ifndef __CCM_CMETACOCLASS_H__
 #define __CCM_CMETACOCLASS_H__
 
-#include "ccmtypes.h"
 #include "ccmrefbase.h"
 #include "Component.h"
 
@@ -92,12 +91,20 @@ public:
 private:
     void BuildAllInterfaces();
 
+    void BuildAllMethod();
+
+    void BuildInterfaceMethod(
+        /* [in] */ IMetaInterface* miObj,
+        /* [in, out] */ Integer* index);
+
 public:
     MetaCoclass* mMetadata;
-    CMetaComponent* mMetaComponent;
+    CMetaComponent* mOwner;
     CoclassID mCid;
     String mName;
     String mNamespace;
+    Array<IMetaConstructor*> mMetaConstructors;
+    Array<IMetaMethod*> mMetaMethods;
     Array<IMetaInterface*> mMetaInterfaces;
 };
 

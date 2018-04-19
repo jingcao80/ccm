@@ -17,7 +17,6 @@
 #ifndef __CCM_CMETAINTERFACE_H__
 #define __CCM_CMETAINTERFACE_H__
 
-#include "ccmtypes.h"
 #include "ccmrefbase.h"
 #include "Component.h"
 
@@ -33,6 +32,8 @@ class CMetaInterface
     , public IMetaInterface
 {
 public:
+    CMetaInterface();
+
     CMetaInterface(
         /* [in] */ CMetaComponent* mcObj,
         /* [in] */ MetaComponent* mc,
@@ -57,6 +58,20 @@ public:
     ECode GetBaseInterface(
         /* [out] */ IMetaInterface** baseIntf) override;
 
+    ECode GetConstantNumber(
+        /* [out] */ Integer* number) override;
+
+    ECode GetAllConstants(
+        /* [out] */ Array<IMetaConstant*>& consts) override;
+
+    ECode GetConstant(
+        /* [in] */ const String& name,
+        /* [out] */ IMetaConstant** constt) override;
+
+    ECode GetConstant(
+        /* [in] */ Integer index,
+        /* [out] */ IMetaConstant** constt) override;
+
     ECode GetMethodNumber(
         /* [out] */ Integer* number) override;
 
@@ -74,10 +89,12 @@ public:
 
 public:
     MetaInterface* mMetadata;
-    CMetaComponent* mMetaComponent;
+    CMetaComponent* mOwner;
     InterfaceID mIid;
     String mName;
     String mNamespace;
+    Array<IMetaConstant*> mMetaConstants;
+    Array<IMetaMethod*> mMetaMethods;
 };
 
 }

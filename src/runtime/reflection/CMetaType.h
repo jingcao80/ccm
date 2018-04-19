@@ -17,9 +17,12 @@
 #ifndef __CCM_CMETATYPE_H__
 #define __CCM_CMETATYPE_H__
 
-#include "ccmtypes.h"
+#include "ccmautoptr.h"
 #include "ccmrefbase.h"
 #include "Component.h"
+
+using ccm::metadata::MetaComponent;
+using ccm::metadata::MetaType;
 
 namespace ccm {
 
@@ -29,6 +32,10 @@ class CMetaType
 {
 public:
     CMetaType();
+
+    CMetaType(
+        /* [in] */ MetaComponent* mc,
+        /* [in] */ MetaType* mt);
 
     ~CMetaType();
 
@@ -45,6 +52,18 @@ public:
 
     ECode GetPointerNumber(
         /* [out] */ Integer* number);
+
+private:
+    static String BuildName(
+        /* [in] */ MetaComponent* mc,
+        /* [in] */ MetaType* mt);
+
+public:
+    MetaType* mMetadata;
+    CcmTypeKind mKind;
+    String mName;
+    AutoPtr<IMetaType> mElementType;
+    Integer mPointerNumber;
 };
 
 }

@@ -13,3 +13,52 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //=========================================================================
+
+#include "CMetaParameter.h"
+
+namespace ccm {
+
+CCM_INTERFACE_IMPL_LIGHT_1(CMetaParameter, IMetaParameter)
+
+CMetaParameter::CMetaParameter()
+{}
+
+CMetaParameter::CMetaParameter(
+    /* [in] */ IMetaMethod* mmObj,
+    /* [in] */ MetaParameter* mp)
+{}
+
+CMetaParameter::~CMetaParameter()
+{}
+
+ECode CMetaParameter::GetMethod(
+    /* [out] */ IMetaMethod** method)
+{
+    return NOERROR;
+}
+
+ECode CMetaParameter::GetName(
+    /* [out] */ String* name)
+{
+    return NOERROR;
+}
+
+ECode CMetaParameter::GetIndex(
+    /* [out] */ Integer* index)
+{
+    return NOERROR;
+}
+
+ECode CMetaParameter::GetIOAttribute(
+    /* [out] */ IOAttribute* attr)
+{
+    return NOERROR;
+}
+
+ECode CMetaParameter::GetType(
+    /* [out] */ IMetaType** type)
+{
+    return NOERROR;
+}
+
+}

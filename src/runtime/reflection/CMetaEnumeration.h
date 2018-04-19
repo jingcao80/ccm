@@ -17,7 +17,6 @@
 #ifndef __CCM_CMETAENUMERATION_H__
 #define __CCM_CMETAENUMERATION_H__
 
-#include "ccmtypes.h"
 #include "ccmrefbase.h"
 #include "Component.h"
 
@@ -65,7 +64,7 @@ public:
 
 public:
     MetaEnumeration* mMetadata;
-    CMetaComponent* mMetaComponent;
+    CMetaComponent* mOwner;
     String mName;
     String mNamespace;
     Array<IMetaEnumerator*> mMetaEnumerators;

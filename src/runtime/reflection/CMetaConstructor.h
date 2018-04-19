@@ -17,18 +17,23 @@
 #ifndef __CCM_CMETACONSTRUCTOR_H__
 #define __CCM_CMETACONSTRUCTOR_H__
 
-#include "ccmtypes.h"
 #include "ccmrefbase.h"
 #include "Component.h"
 
+using ccm::metadata::MetaMethod;
+
 namespace ccm {
+
+class CMetaCoclass;
 
 class CMetaConstructor
     : public LightRefBase
     , public IMetaConstructor
 {
 public:
-    CMetaConstructor();
+    CMetaConstructor(
+        /* [in] */ CMetaCoclass* mcObj,
+        /* [in] */ MetaMethod* mm);
 
     ~CMetaConstructor();
 
@@ -51,11 +56,11 @@ public:
 
     ECode GetParameter(
         /* [in] */ Integer index,
-        /* [out] */ IMetaParameter* param);
+        /* [out] */ IMetaParameter** param);
 
     ECode GetParameter(
         /* [in] */ const String& name,
-        /* [out] */ IMetaParameter* param);
+        /* [out] */ IMetaParameter** param);
 
     ECode CreateArgumentList(
         /* [out] */ IArgumentList** argList);
@@ -64,9 +69,26 @@ public:
         /* [in] */ IInterface* thisObject,
         /* [in] */ IArgumentList* argList);
 
+    ECode GetCoclass(
+        /* [out] */ IMetaCoclass** klass);
+
+    ECode IsDefault(
+        /* [out] */ Boolean* isDefault);
+
     ECode CreateObject(
         /* [in] */ IArgumentList* argList,
         /* [out] */ IInterface** object);
+
+private:
+    void BuildAllParameters();
+
+public:
+    MetaMethod* mMetadata;
+    CMetaCoclass* mOwner;
+    String mName;
+    String mSignature;
+    Boolean mIsDefault;
+    Array<IMetaParameter*> mParameters;
 };
 
 }

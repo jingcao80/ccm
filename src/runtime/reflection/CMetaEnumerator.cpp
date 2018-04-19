@@ -25,7 +25,7 @@ CMetaEnumerator::CMetaEnumerator(
     /* [in] */ CMetaEnumeration* menObj,
     /* [in] */ MetaEnumerator* me)
     : mMetadata(me)
-    , mMetaEnumeration(menObj)
+    , mOwner(menObj)
     , mName(me->mName)
     , mValue(me->mValue)
 {}
@@ -33,7 +33,7 @@ CMetaEnumerator::CMetaEnumerator(
 CMetaEnumerator::~CMetaEnumerator()
 {
     mMetadata = nullptr;
-    mMetaEnumeration = nullptr;
+    mOwner = nullptr;
 }
 
 ECode CMetaEnumerator::GetEnumeration(
@@ -41,7 +41,7 @@ ECode CMetaEnumerator::GetEnumeration(
 {
     VALIDATE_NOT_NULL(metaEnumn);
 
-    *metaEnumn = (IMetaEnumeration*)mMetaEnumeration;
+    *metaEnumn = (IMetaEnumeration*)mOwner;
     REFCOUNT_ADD(*metaEnumn);
     return NOERROR;
 }

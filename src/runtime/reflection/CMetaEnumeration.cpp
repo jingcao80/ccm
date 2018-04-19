@@ -27,7 +27,7 @@ CMetaEnumeration::CMetaEnumeration(
     /* [in] */ MetaComponent* mc,
     /* [in] */ MetaEnumeration* me)
     : mMetadata(me)
-    , mMetaComponent(mcObj)
+    , mOwner(mcObj)
     , mName(me->mName)
     , mNamespace(me->mNamespace)
     , mMetaEnumerators(me->mEnumeratorNumber)
@@ -36,7 +36,7 @@ CMetaEnumeration::CMetaEnumeration(
 CMetaEnumeration::~CMetaEnumeration()
 {
     mMetadata = nullptr;
-    mMetaComponent = nullptr;
+    mOwner = nullptr;
 }
 
 ECode CMetaEnumeration::GetComponent(
@@ -44,7 +44,7 @@ ECode CMetaEnumeration::GetComponent(
 {
     VALIDATE_NOT_NULL(metaComp);
 
-    *metaComp = mMetaComponent;
+    *metaComp = mOwner;
     REFCOUNT_ADD(*metaComp);
     return NOERROR;
 }

@@ -21,14 +21,21 @@ namespace ccm {
 
 CCM_INTERFACE_IMPL_LIGHT_1(CMetaInterface, IMetaInterface);
 
+CMetaInterface::CMetaInterface()
+    : mMetadata(nullptr)
+    , mOwner(nullptr)
+{}
+
 CMetaInterface::CMetaInterface(
     /* [in] */ CMetaComponent* mcObj,
     /* [in] */ MetaComponent* mc,
     /* [in] */ MetaInterface* mi)
     : mMetadata(mi)
-    , mMetaComponent(mcObj)
+    , mOwner(mcObj)
     , mName(mi->mName)
     , mNamespace(mi->mNamespace)
+    , mMetaConstants(mi->mConstantNumber)
+    , mMetaMethods(mi->mMethodNumber)
 {
     mIid.mUuid = mi->mUuid;
     mIid.mCid = &mcObj->mCid;
@@ -37,7 +44,7 @@ CMetaInterface::CMetaInterface(
 CMetaInterface::~CMetaInterface()
 {
     mMetadata = nullptr;
-    mMetaComponent = nullptr;
+    mOwner = nullptr;
 }
 
 ECode CMetaInterface::GetComponent(
@@ -45,7 +52,7 @@ ECode CMetaInterface::GetComponent(
 {
     VALIDATE_NOT_NULL(metaComp);
 
-    *metaComp = (IMetaComponent*)mMetaComponent;
+    *metaComp = (IMetaComponent*)mOwner;
     REFCOUNT_ADD(*metaComp);
     return NOERROR;
 }
@@ -79,6 +86,32 @@ ECode CMetaInterface::GetInterfaceID(
 
 ECode CMetaInterface::GetBaseInterface(
     /* [out] */ IMetaInterface** baseIntf)
+{
+    return NOERROR;
+}
+
+ECode CMetaInterface::GetConstantNumber(
+    /* [out] */ Integer* number)
+{
+    return NOERROR;
+}
+
+ECode CMetaInterface::GetAllConstants(
+    /* [out] */ Array<IMetaConstant*>& consts)
+{
+    return NOERROR;
+}
+
+ECode CMetaInterface::GetConstant(
+    /* [in] */ const String& name,
+    /* [out] */ IMetaConstant** constt)
+{
+    return NOERROR;
+}
+
+ECode CMetaInterface::GetConstant(
+    /* [in] */ Integer index,
+    /* [out] */ IMetaConstant** constt)
 {
     return NOERROR;
 }
