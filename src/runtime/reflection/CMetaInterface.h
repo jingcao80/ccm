@@ -87,12 +87,18 @@ public:
         /* [in] */ Integer index,
         /* [out] */ IMetaMethod** method) override;
 
+private:
+    void BuildAllConstants();
+
+    void BuildAllMethods();
+
 public:
     MetaInterface* mMetadata;
     CMetaComponent* mOwner;
     InterfaceID mIid;
     String mName;
     String mNamespace;
+    CMetaInterface* mBaseInterface;
     Array<IMetaConstant*> mMetaConstants;
     Array<IMetaMethod*> mMetaMethods;
 };

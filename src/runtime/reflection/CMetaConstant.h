@@ -14,69 +14,52 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CMETAPARAMETER_H__
-#define __CCM_CMETAPARAMETER_H__
+#ifndef __CCM_CMETACONSTANT_H__
+#define __CCM_CMETACONSTANT_H__
 
 #include "ccmautoptr.h"
 #include "ccmrefbase.h"
 #include "Component.h"
 
 using ccm::metadata::MetaComponent;
-using ccm::metadata::MetaParameter;
+using ccm::metadata::MetaConstant;
 using ccm::metadata::MetaType;
 
 namespace ccm {
 
-class CMetaParameter
+class CMetaConstant
     : public LightRefBase
-    , public IMetaParameter
+    , public IMetaConstant
 {
 public:
-    CMetaParameter();
-
-    CMetaParameter(
+    CMetaConstant(
         /* [in] */ MetaComponent* mc,
-        /* [in] */ IMetaMethod* mmObj,
-        /* [in] */ MetaParameter* mp,
-        /* [in] */ Integer index);
+        /* [in] */ MetaConstant* mk);
 
-    ~CMetaParameter();
+    ~CMetaConstant();
 
     CCM_INTERFACE_DECL();
-
-    ECode GetMethod(
-        /* [out] */ IMetaMethod** method);
 
     ECode GetName(
         /* [out] */ String* name);
 
-    ECode GetIndex(
-        /* [out] */ Integer* index);
-
-    ECode GetIOAttribute(
-        /* [out] */ IOAttribute* attr);
-
     ECode GetType(
         /* [out] */ IMetaType** type);
 
-private:
-    IOAttribute BuildIOAttribute(
-        /* [in] */ Integer attr);
+    ECode GetValue(
+        /* [out] */ IMetaValue** value);
 
 private:
-    static constexpr int IN = 0x1;
-    static constexpr int OUT = 0x2;
-    static constexpr int CALLEE = 0x4;
+    AutoPtr<IMetaValue> BuildValue(
+        /* [in] */ IMetaType* type);
 
 public:
-    MetaParameter* mMetadata;
-    IMetaMethod* mOwner;
+    MetaConstant* mMetadata;
     String mName;
-    Integer mIndex;
-    IOAttribute mIOAttr;
     AutoPtr<IMetaType> mType;
+    AutoPtr<IMetaValue> mValue;
 };
 
 }
 
-#endif // __CCM_CMETAPARAMETER_H__
+#endif // __CCM_CMETACONSTANT_H__

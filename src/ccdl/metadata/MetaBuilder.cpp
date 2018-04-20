@@ -541,6 +541,7 @@ MetaMethod* MetaBuilder::WriteMetaMethod(
     MetaMethod* mm = reinterpret_cast<MetaMethod*>(mBasePtr);
     mm->mName = WriteString(method->GetName());
     mm->mSignature = WriteString(method->GetSignature());
+    mm->mReturnTypeIndex = mModule->IndexOf(method->GetReturnType());
     mm->mParameterNumber = PARAM_NUM;
     // mParameters's address
     mBasePtr = ALIGN(mBasePtr + sizeof(MetaMethod));

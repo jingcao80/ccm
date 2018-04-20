@@ -29,6 +29,7 @@ set(SOURCES
     CArgumentList.cpp
     CMetaCoclass.cpp
     CMetaComponent.cpp
+    CMetaConstant.cpp
     CMetaConstructor.cpp
     CMetaEnumeration.cpp
     CMetaEnumerator.cpp
@@ -36,6 +37,8 @@ set(SOURCES
     CMetaMethod.cpp
     CMetaParameter.cpp
     CMetaType.cpp
+    CMetaValue.cpp
+    invoke.s
     reflection.cpp)
 
 add_library(reflection STATIC

@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "CMetaCoclass.h"
+#include "CMetaComponent.h"
 #include "CMetaConstructor.h"
 #include "CMetaInterface.h"
 #include "CMetaParameter.h"
@@ -174,7 +175,8 @@ void CMetaConstructor::BuildAllParameters()
     if (mParameters[0] == nullptr) {
         for (Integer i = 0; i < mMetadata->mParameterNumber; i++) {
             MetaParameter* mp = mMetadata->mParameters[i];
-            CMetaParameter* mpObj = new CMetaParameter(this, mp);
+            CMetaParameter* mpObj = new CMetaParameter(
+                    mOwner->mOwner->mMetadata, this, mp, i);
             mParameters.Set(i, mpObj);
         }
     }

@@ -20,6 +20,9 @@
 #include "ccmrefbase.h"
 #include "Component.h"
 
+using ccm::metadata::MetaComponent;
+using ccm::metadata::MetaMethod;
+
 namespace ccm {
 
 class CArgumentList
@@ -27,7 +30,9 @@ class CArgumentList
     , public IArgumentList
 {
 public:
-    CArgumentList();
+    CArgumentList(
+        /* [in] */ MetaComponent* mc,
+        /* [in] */ MetaMethod* mm);
 
     ~CArgumentList();
 
@@ -304,7 +309,15 @@ public:
     ECode SetOutputArgumentOfInterface(
         /* [in] */ Integer index,
         /* [in] */ HANDLE addr);
-}
+
+    void* GetData();
+
+private:
+    Integer CalculateBufferSize();
+
+public:
+    void* mData;
+};
 
 }
 

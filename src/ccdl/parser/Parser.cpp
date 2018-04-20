@@ -635,6 +635,7 @@ bool Parser::ParseMethod(
 
     Method* method = new Method();
     method->SetName(mTokenizer.GetIdentifier());
+    method->SetReturnType(mPool->FindType(String("ECode")));
 
     token = mTokenizer.GetToken();
     if (token != Tokenizer::Token::PARENTHESES_OPEN) {

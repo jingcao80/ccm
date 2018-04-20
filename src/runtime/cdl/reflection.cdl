@@ -30,9 +30,11 @@ namespace ccm {
 
 enum IOAttribute
 {
+    UNKNOWN,
     IN,
     OUT,
-    CALLEE
+    IN_OUT,
+    OUT_CALLEE
 }
 
 [
@@ -342,7 +344,38 @@ interface IMetaType
 ]
 interface IMetaValue
 {
+    GetType(
+        [out] IMetaType** type);
 
+    GetBooleanValue(
+        [out] Boolean* value);
+
+    GetCharValue(
+        [out] Char* value);
+
+    GetByteValue(
+        [out] Byte* value);
+
+    GetShortValue(
+        [out] Short* value);
+
+    GetIntegerValue(
+        [out] Integer* value);
+
+    GetLongValue(
+        [out] Long* value);
+
+    GetFloatValue(
+        [out] Float* value);
+
+    GetDoubleValue(
+        [out] Double* value);
+
+    GetStringValue(
+        [out] String* value);
+
+    GetRadix(
+        [out] Integer* radix);
 }
 
 [

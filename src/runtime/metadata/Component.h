@@ -127,6 +127,7 @@ struct MetaMethod
 {
     char*               mName;
     char*               mSignature;
+    int                 mReturnTypeIndex;
     int                 mParameterNumber;
     MetaParameter**     mParameters;
 };

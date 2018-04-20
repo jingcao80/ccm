@@ -373,6 +373,7 @@ void CMetaComponent::BuildIInterface()
     CMetaParameter* mpObj = new CMetaParameter();
     mpObj->mOwner = mmObj;
     mpObj->mName = "id";
+    mpObj->mIndex = 0;
     mpObj->mIOAttr = IOAttribute::IN;
     CMetaType* mtObj = new CMetaType();
     mtObj->mKind = CcmTypeKind::HANDLE;
@@ -394,6 +395,7 @@ void CMetaComponent::BuildIInterface()
     mpObj = new CMetaParameter();
     mpObj->mOwner = mmObj;
     mpObj->mName = "id";
+    mpObj->mIndex = 0;
     mpObj->mIOAttr = IOAttribute::IN;
     mtObj = new CMetaType();
     mtObj->mKind = CcmTypeKind::HANDLE;
@@ -415,6 +417,8 @@ void CMetaComponent::BuildIInterface()
     mpObj = new CMetaParameter();
     mpObj->mOwner = mmObj;
     mpObj->mName = "iid";
+    mpObj->mIndex = 0;
+    mpObj->mIOAttr = IOAttribute::IN;
     mtObj = new CMetaType();
     mtObj->mKind = CcmTypeKind::InterfaceID;
     mtObj->mName = "InterfaceID";
@@ -436,6 +440,8 @@ void CMetaComponent::BuildIInterface()
     mpObj = new CMetaParameter();
     mpObj->mOwner = mmObj;
     mpObj->mName = "object";
+    mpObj->mIndex = 0;
+    mpObj->mIOAttr = IOAttribute::IN;
     mtObj = new CMetaType();
     mtObj->mKind = CcmTypeKind::Interface;
     mtObj->mName = "IInterface";
@@ -445,6 +451,8 @@ void CMetaComponent::BuildIInterface()
     mpObj = new CMetaParameter();
     mpObj->mOwner = mmObj;
     mpObj->mName = "iid";
+    mpObj->mIndex = 1;
+    mpObj->mIOAttr = IOAttribute::OUT;
     mtObj = new CMetaType();
     mtObj->mKind = CcmTypeKind::InterfaceID;
     mtObj->mName = "InterfaceID";

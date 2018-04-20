@@ -21,6 +21,9 @@
 #include "ccmrefbase.h"
 #include "Component.h"
 
+using ccm::metadata::MetaComponent;
+using ccm::metadata::MetaMethod;
+
 namespace ccm {
 
 class CMetaInterface;
@@ -31,6 +34,11 @@ class CMetaMethod
 {
 public:
     CMetaMethod();
+
+    CMetaMethod(
+        /* [in] */ MetaComponent* mc,
+        /* [in] */ CMetaInterface* miObj,
+        /* [in] */ MetaMethod* mm);
 
     ~CMetaMethod();
 
@@ -66,7 +74,11 @@ public:
         /* [in] */ IInterface* thisObject,
         /* [in] */ IArgumentList* argList);
 
+private:
+    void BuildAllParameters();
+
 public:
+    MetaMethod* mMetadata;
     CMetaInterface* mOwner;
     String mName;
     String mSignature;

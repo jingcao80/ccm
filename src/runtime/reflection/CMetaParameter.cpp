@@ -15,50 +15,102 @@
 //=========================================================================
 
 #include "CMetaParameter.h"
+#include "CMetaType.h"
 
 namespace ccm {
 
 CCM_INTERFACE_IMPL_LIGHT_1(CMetaParameter, IMetaParameter)
 
 CMetaParameter::CMetaParameter()
+    : mMetadata(nullptr)
+    , mOwner(nullptr)
+    , mIndex(-1)
+    , mIOAttr(IOAttribute::UNKNOWN)
 {}
 
 CMetaParameter::CMetaParameter(
+    /* [in] */ MetaComponent* mc,
     /* [in] */ IMetaMethod* mmObj,
-    /* [in] */ MetaParameter* mp)
-{}
+    /* [in] */ MetaParameter* mp,
+    /* [in] */ Integer index)
+    : mMetadata(mp)
+    , mOwner(mmObj)
+    , mName(mp->mName)
+    , mIndex(index)
+{
+    mIOAttr = BuildIOAttribute(mp->mAttribute);
+    mType = new CMetaType(mc, mc->mTypes[mp->mTypeIndex]);
+}
 
 CMetaParameter::~CMetaParameter()
-{}
+{
+    mMetadata = nullptr;
+    mOwner = nullptr;
+}
 
 ECode CMetaParameter::GetMethod(
     /* [out] */ IMetaMethod** method)
 {
+    VALIDATE_NOT_NULL(method);
+
+    *method = mOwner;
+    REFCOUNT_ADD(*method);
     return NOERROR;
 }
 
 ECode CMetaParameter::GetName(
     /* [out] */ String* name)
 {
+    VALIDATE_NOT_NULL(name);
+
+    *name = mName;
     return NOERROR;
 }
 
 ECode CMetaParameter::GetIndex(
     /* [out] */ Integer* index)
 {
+    VALIDATE_NOT_NULL(index);
+
+    *index = mIndex;
     return NOERROR;
 }
 
 ECode CMetaParameter::GetIOAttribute(
     /* [out] */ IOAttribute* attr)
 {
+    VALIDATE_NOT_NULL(attr);
+
+    *attr = mIOAttr;
     return NOERROR;
 }
 
 ECode CMetaParameter::GetType(
     /* [out] */ IMetaType** type)
 {
+    VALIDATE_NOT_NULL(type);
+
+    *type = mType;
+    REFCOUNT_ADD(*type);
     return NOERROR;
+}
+
+IOAttribute CMetaParameter::BuildIOAttribute(
+    /* [in] */ Integer attr)
+{
+    if (attr == IN) {
+        return IOAttribute::IN;
+    }
+    else if (attr == OUT) {
+        return IOAttribute::OUT;
+    }
+    else if (attr == IN | OUT) {
+        return IOAttribute::IN_OUT;
+    }
+    else if (attr == OUT | CALLEE) {
+        return IOAttribute::OUT_CALLEE;
+    }
+    return IOAttribute::UNKNOWN;
 }
 
 }
