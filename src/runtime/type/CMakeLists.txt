@@ -23,6 +23,7 @@ include_directories(
     ${INC_DIR})
 
 set(SOURCES
+    ccmarray.cpp
     ccmsharedbuffer.cpp
     ccmstring.cpp
     ccmuuid.cpp)

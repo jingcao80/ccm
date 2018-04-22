@@ -156,6 +156,7 @@ void Parser::LoadCcmrtMetadata()
     String rtpath(getenv("RT_PATH"));
     void* newData = MetadataUtils::ReadMetadataFromElf64(
             rtpath + "/ccmrt.so");
+    if (newData == nullptr) return;
     MetaSerializer serializer;
     serializer.Deserialize(reinterpret_cast<uintptr_t>(newData));
     Module* externalModule = new Module(newData);

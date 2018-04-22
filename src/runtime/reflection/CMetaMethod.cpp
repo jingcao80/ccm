@@ -14,6 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
+#include "CArgumentList.h"
 #include "CMetaComponent.h"
 #include "CMetaInterface.h"
 #include "CMetaMethod.h"
@@ -22,19 +23,31 @@
 
 namespace ccm {
 
+EXTERN_C ECode invoke(
+    /* [in] */ HANDLE func,
+    /* [in] */ Long* intData,
+    /* [in] */ Integer intDataSize,
+    /* [in] */ Double* fpData,
+    /* [in] */ Integer fpDataSize,
+    /* [in] */ Long* stkData,
+    /* [in] */ Integer stkDataSize);
+
 CCM_INTERFACE_IMPL_LIGHT_1(CMetaMethod, IMetaMethod);
 
 CMetaMethod::CMetaMethod()
     : mMetadata(nullptr)
     , mOwner(nullptr)
+    , mIndex(0)
 {}
 
 CMetaMethod::CMetaMethod(
     /* [in] */ MetaComponent* mc,
     /* [in] */ CMetaInterface* miObj,
+    /* [in] */ Integer index,
     /* [in] */ MetaMethod* mm)
     : mMetadata(mm)
     , mOwner(miObj)
+    , mIndex(index)
     , mName(mm->mName)
     , mSignature(mm->mSignature)
     , mParameters(mMetadata->mParameterNumber)
@@ -144,6 +157,12 @@ ECode CMetaMethod::GetParameter(
 ECode CMetaMethod::CreateArgumentList(
     /* [out] */ IArgumentList** argList)
 {
+    VALIDATE_NOT_NULL(argList);
+
+    AutoPtr<IArgumentList> args = new CArgumentList(
+            mOwner->mOwner->mMetadata, mMetadata);
+    *argList = args;
+    REFCOUNT_ADD(*argList);
     return NOERROR;
 }
 
@@ -151,7 +170,25 @@ ECode CMetaMethod::Invoke(
     /* [in] */ IInterface* thisObject,
     /* [in] */ IArgumentList* argList)
 {
-    return NOERROR;
+    struct VTable
+    {
+        HANDLE mMethods[0];
+    };
+
+    struct VObject
+    {
+        VTable* mVtab;
+    };
+
+    CArgumentList* args = (CArgumentList*)argList;
+    Integer intDataNum, fpDataNum, stkDataNum;
+    Long* intData = args->GetIntegerData(&intDataNum);
+    Double* fpData = args->GetFPData(&fpDataNum);
+    Long* stkData =  args->GetStackData(&stkDataNum);
+    VObject* vobj = reinterpret_cast<VObject*>(thisObject->Probe(mOwner->mIid));
+    intData[0] = reinterpret_cast<Long>(vobj);
+    HANDLE methodAddr = vobj->mVtab->mMethods[mIndex + 4];
+    return invoke(methodAddr, intData, intDataNum, fpData, fpDataNum, stkData, stkDataNum);
 }
 
 void CMetaMethod::BuildAllParameters()

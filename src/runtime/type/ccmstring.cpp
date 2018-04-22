@@ -471,7 +471,9 @@ String& String::operator=(
 String& String::operator=(
     /* [in] */ String&& other)
 {
-    SharedBuffer::GetBufferFromData(mString)->Release();
+    if (mString != nullptr) {
+        SharedBuffer::GetBufferFromData(mString)->Release();
+    }
     mString = other.mString;
     mCharCount = other.mCharCount;
     other.mString = nullptr;

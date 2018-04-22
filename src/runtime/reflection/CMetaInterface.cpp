@@ -194,6 +194,8 @@ ECode CMetaInterface::GetMethod(
         return NOERROR;
     }
 
+    BuildAllMethods();
+
     for (Integer i = 0; i < mMetaMethods.GetLength(); i++) {
         IMetaMethod* mmObj = mMetaMethods[i];
         String mmName, mmSignature;
@@ -220,6 +222,8 @@ ECode CMetaInterface::GetMethod(
         return NOERROR;
     }
 
+    BuildAllMethods();
+
     *method = mMetaMethods[index];
     REFCOUNT_ADD(*method);
     return NOERROR;
@@ -241,7 +245,7 @@ void CMetaInterface::BuildAllMethods()
     if (mMetaMethods[0] == nullptr) {
         for (Integer i = 0; i < mMetadata->mMethodNumber; i++) {
             CMetaMethod* mmObj = new CMetaMethod(mOwner->mMetadata,
-                    this, mMetadata->mMethods[i]);
+                    this, i, mMetadata->mMethods[i]);
             mMetaMethods.Set(i, mmObj);
         }
     }

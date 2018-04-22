@@ -310,13 +310,50 @@ public:
         /* [in] */ Integer index,
         /* [in] */ HANDLE addr);
 
-    void* GetData();
-
 private:
-    Integer CalculateBufferSize();
+    friend class CMetaMethod;
+
+    void CalculateDataSize(
+        /* [in] */ MetaComponent* mc,
+        /* [in] */ MetaMethod* mm,
+        /* [out] */ Integer* intDataNum,
+        /* [out] */ Integer* fpDataNum,
+        /* [out] */ Integer* stDataNum);
+
+    void* GetDataBuffer(
+        /* [in] */ Integer index);
+
+    Integer GetPos(
+        /* [in] */ Integer index);
+
+    ECode SetOutputArgumentAddr(
+        /* [in] */ Integer index,
+        /* [in] */ HANDLE addr);
+
+    Long* GetIntegerData(
+        /* [out] */ Integer* number);
+
+    Double* GetFPData(
+        /* [out] */ Integer* number);
+
+    Long* GetStackData(
+        /* [out] */ Integer* number);
 
 public:
-    void* mData;
+    Integer mArgumentNumber;
+    Short* mArgumentIndicators;
+    Long* mIntegerData;
+    Integer mIntegerDataNumber;
+    Double* mFPData;
+    Integer mFPDataNumber;
+    Long* mStackData;
+    Integer mStackDataNumber;
+
+private:
+    static constexpr Short DATA_MASK = 0xc000;
+    static constexpr Byte INT_DATA = 0x00;
+    static constexpr Byte FP_DATA = 0x01;
+    static constexpr Byte STK_DATA = 0x10;
 };
 
 }

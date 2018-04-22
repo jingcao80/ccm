@@ -24,6 +24,9 @@ namespace ccm {
 
 struct Triple
 {
+    Triple& operator=(
+        /* [in] */ const Triple& other);
+
     void* mData;
     Long mSize;
     CcmTypeKind mType;

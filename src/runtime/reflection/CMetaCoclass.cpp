@@ -200,7 +200,7 @@ ECode CMetaCoclass::GetMethodNumber(
     return NOERROR;
 }
 
-ECode CMetaCoclass::GetMethods(
+ECode CMetaCoclass::GetAllMethods(
     /* [out] */ Array<IMetaMethod*>& methods)
 {
     BuildAllMethod();
@@ -266,7 +266,8 @@ void CMetaCoclass::BuildAllMethod()
         Integer index = 0;
         BuildInterfaceMethod(mOwner->mIInterface, &index);
         for (Integer i = 0; i < mMetadata->mInterfaceNumber; i++) {
-            AutoPtr<IMetaInterface> miObj = mOwner->BuildInterface(i);
+            AutoPtr<IMetaInterface> miObj = mOwner->BuildInterface(
+                    mMetadata->mInterfaceIndexes[i]);
             String name, ns;
             miObj->GetName(&name);
             miObj->GetNamespace(&ns);
@@ -282,7 +283,7 @@ void CMetaCoclass::BuildInterfaceMethod(
 {
     Integer N;
     miObj->GetMethodNumber(&N);
-    for (Integer i = 4; i < N; i++) {
+    for (Integer i = 0; i < N; i++) {
         AutoPtr<IMetaMethod> mmObj;
         miObj->GetMethod(i, (IMetaMethod**)&mmObj);
         mMetaMethods.Set(*index, mmObj);

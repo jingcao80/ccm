@@ -38,7 +38,7 @@ set(SOURCES
     CMetaParameter.cpp
     CMetaType.cpp
     CMetaValue.cpp
-    invoke.s
+    invoke.cpp
     reflection.cpp)
 
 add_library(reflection STATIC

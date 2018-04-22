@@ -121,7 +121,7 @@ interface IMetaCoclass
     GetMethodNumber(
         [out] Integer* number);
 
-    GetMethods(
+    GetAllMethods(
         [out] Array<IMetaMethod*> methods);
 
     GetMethod(

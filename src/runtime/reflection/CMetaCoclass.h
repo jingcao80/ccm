@@ -76,7 +76,7 @@ public:
     ECode GetMethodNumber(
         /* [out] */ Integer* number) override;
 
-    ECode GetMethods(
+    ECode GetAllMethods(
         /* [out] */ Array<IMetaMethod*>& methods) override;
 
     ECode GetMethod(

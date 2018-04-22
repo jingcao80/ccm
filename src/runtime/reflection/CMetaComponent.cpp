@@ -336,7 +336,6 @@ AutoPtr<IMetaInterface> CMetaComponent::BuildInterface(
     }
 
     MetaInterface* mi = mMetadata->mInterfaces[index];
-    if (mi->mExternal) return ret;
     String fullName = String::Format("%s%s",
             mi->mNamespace, mi->mName);
     if (!mMetaInterfaceMap.ContainsKey(fullName)) {
@@ -348,9 +347,14 @@ AutoPtr<IMetaInterface> CMetaComponent::BuildInterface(
                 realIndex--;
             }
         }
-        mMetaInterfaces.Set(realIndex, miObj);
+        if (!mi->mExternal) {
+            mMetaInterfaces.Set(realIndex, miObj);
+        }
         mMetaInterfaceMap.Put(fullName, miObj);
         ret = miObj;
+    }
+    else {
+        ret = mMetaInterfaceMap.Get(fullName);
     }
     return ret;
 }
@@ -367,6 +371,7 @@ void CMetaComponent::BuildIInterface()
     // AddRef
     CMetaMethod* mmObj = new CMetaMethod();
     mmObj->mOwner = miObj;
+    mmObj->mIndex = 0;
     mmObj->mName = "AddRef";
     mmObj->mSignature = "(H)I";
     mmObj->mParameters = Array<IMetaParameter*>(1);
@@ -389,6 +394,7 @@ void CMetaComponent::BuildIInterface()
     // Release
     mmObj = new CMetaMethod();
     mmObj->mOwner = miObj;
+    mmObj->mIndex = 1;
     mmObj->mName = "Release";
     mmObj->mSignature = "(H)i";
     mmObj->mParameters = Array<IMetaParameter*>(1);
@@ -411,6 +417,7 @@ void CMetaComponent::BuildIInterface()
     // Probe
     mmObj = new CMetaMethod();
     mmObj->mOwner = miObj;
+    mmObj->mIndex = 2;
     mmObj->mName = "Probe";
     mmObj->mSignature = "(U)Lccm/IInterface*";
     mmObj->mParameters = Array<IMetaParameter*>(1);
@@ -434,6 +441,7 @@ void CMetaComponent::BuildIInterface()
     // GetInterfaceID
     mmObj = new CMetaMethod();
     mmObj->mOwner = miObj;
+    mmObj->mIndex = 3;
     mmObj->mName = "GetInterfaceID";
     mmObj->mSignature = "(Lccm/IInterface*U*)E";
     mmObj->mParameters = Array<IMetaParameter*>(2);

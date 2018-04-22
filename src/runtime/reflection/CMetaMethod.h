@@ -38,6 +38,7 @@ public:
     CMetaMethod(
         /* [in] */ MetaComponent* mc,
         /* [in] */ CMetaInterface* miObj,
+        /* [in] */ Integer index,
         /* [in] */ MetaMethod* mm);
 
     ~CMetaMethod();
@@ -80,6 +81,7 @@ private:
 public:
     MetaMethod* mMetadata;
     CMetaInterface* mOwner;
+    Integer mIndex;
     String mName;
     String mSignature;
     Array<IMetaParameter*> mParameters;
