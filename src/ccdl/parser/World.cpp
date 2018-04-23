@@ -58,20 +58,20 @@ World::World()
     mInterfaceIDType = new InterfaceIDType();
     mInterfaceIDType->SetNamespace(ccm);
 
-    mTypes.Put(String("Byte"), mByteType);
-    mTypes.Put(String("Short"), mShortType);
-    mTypes.Put(String("Integer"), mIntegerType);
-    mTypes.Put(String("Long"), mLongType);
-    mTypes.Put(String("Char"), mCharType);
-    mTypes.Put(String("Float"), mFloatType);
-    mTypes.Put(String("Double"), mDoubleType);
-    mTypes.Put(String("Boolean"), mBooleanType);
-    mTypes.Put(String("String"), mStringType);
-    mTypes.Put(String("HANDLE"), mHANDLEType);
-    mTypes.Put(String("ECode"), mECodeType);
-    mTypes.Put(String("CoclassID"), mCoclassIDType);
-    mTypes.Put(String("ComponentID"), mComponentIDType);
-    mTypes.Put(String("InterfaceID"), mInterfaceIDType);
+    mTypes.Put(String("ccm::Byte"), mByteType);
+    mTypes.Put(String("ccm::Short"), mShortType);
+    mTypes.Put(String("ccm::Integer"), mIntegerType);
+    mTypes.Put(String("ccm::Long"), mLongType);
+    mTypes.Put(String("ccm::Char"), mCharType);
+    mTypes.Put(String("ccm::Float"), mFloatType);
+    mTypes.Put(String("ccm::Double"), mDoubleType);
+    mTypes.Put(String("ccm::Boolean"), mBooleanType);
+    mTypes.Put(String("ccm::String"), mStringType);
+    mTypes.Put(String("ccm::HANDLE"), mHANDLEType);
+    mTypes.Put(String("ccm::ECode"), mECodeType);
+    mTypes.Put(String("ccm::CoclassID"), mCoclassIDType);
+    mTypes.Put(String("ccm::ComponentID"), mComponentIDType);
+    mTypes.Put(String("ccm::InterfaceID"), mInterfaceIDType);
 }
 
 World::~World()

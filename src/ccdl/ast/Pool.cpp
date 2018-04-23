@@ -255,8 +255,7 @@ Type* Pool::DeepCopyType(
     }
     else if (type->IsPrimitiveType()) {
         String typeStr = type->ToString();
-        int index = typeStr.LastIndexOf("::");
-        return FindType(index == -1 ? typeStr : typeStr.Substring(index + 2));
+        return FindType(typeStr);
     }
     else if (type->IsArrayType()) {
         ArrayType* sourceArrType = (ArrayType*)type;

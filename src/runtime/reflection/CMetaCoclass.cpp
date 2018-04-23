@@ -129,7 +129,7 @@ ECode CMetaCoclass::GetInterfaceNumber(
 {
     VALIDATE_NOT_NULL(number);
 
-    *number = mMetadata->mInterfaceNumber - 1;
+    *number = mMetaInterfaces.GetLength();
     return NOERROR;
 }
 
@@ -189,9 +189,14 @@ ECode CMetaCoclass::GetMethodNumber(
         for (Integer i = 0; i < mMetadata->mInterfaceNumber - 1; i++) {
             MetaInterface* mi = mOwner->mMetadata->mInterfaces[
                     mMetadata->mInterfaceIndexes[i]];
-            if (String::Format("%s%s", mi->mNamespace,
-                    mi->mName).Equals("ccm::IInterface")) continue;
-            num += mi->mMethodNumber;
+            String fullName = String::Format("%s%s", mi->mNamespace,
+                    mi->mName);
+            if (fullName.Equals("ccm::IInterface")) continue;
+            AutoPtr<IMetaInterface> miObj;
+            GetInterface(fullName, (IMetaInterface**)&miObj);
+            Integer intfMethodNum;
+            miObj->GetMethodNumber(&intfMethodNum);
+            num += intfMethodNum - 4;
         }
         mMetaMethods = Array<IMetaMethod*>(num);
     }
@@ -249,7 +254,7 @@ ECode CMetaCoclass::CreateObject(
 void CMetaCoclass::BuildAllInterfaces()
 {
     if (mMetaInterfaces[0] == nullptr) {
-        for (Integer i = 0; i < mMetadata->mInterfaceNumber; i++) {
+        for (Integer i = 0; i < mMetadata->mInterfaceNumber - 1; i++) {
             Integer intfIndex = mMetadata->mInterfaceIndexes[i];
             AutoPtr<IMetaInterface> miObj = mOwner->BuildInterface(intfIndex);
             mMetaInterfaces.Set(i, miObj);
@@ -265,7 +270,7 @@ void CMetaCoclass::BuildAllMethod()
     if (mMetaMethods[0] == nullptr) {
         Integer index = 0;
         BuildInterfaceMethod(mOwner->mIInterface, &index);
-        for (Integer i = 0; i < mMetadata->mInterfaceNumber; i++) {
+        for (Integer i = 0; i < mMetadata->mInterfaceNumber - 1; i++) {
             AutoPtr<IMetaInterface> miObj = mOwner->BuildInterface(
                     mMetadata->mInterfaceIndexes[i]);
             String name, ns;
@@ -283,7 +288,7 @@ void CMetaCoclass::BuildInterfaceMethod(
 {
     Integer N;
     miObj->GetMethodNumber(&N);
-    for (Integer i = 0; i < N; i++) {
+    for (Integer i = miObj == mOwner->mIInterface ? 0 : 4; i < N; i++) {
         AutoPtr<IMetaMethod> mmObj;
         miObj->GetMethod(i, (IMetaMethod**)&mmObj);
         mMetaMethods.Set(*index, mmObj);

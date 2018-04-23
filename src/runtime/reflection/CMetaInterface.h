@@ -88,9 +88,16 @@ public:
         /* [out] */ IMetaMethod** method) override;
 
 private:
+    Integer CalculateMethodNumber();
+
+    void BuildBaseInterface();
+
     void BuildAllConstants();
 
     void BuildAllMethods();
+
+    Integer BuildInterfaceMethod(
+        /* [in] */ MetaInterface* mi);
 
 public:
     MetaInterface* mMetadata;

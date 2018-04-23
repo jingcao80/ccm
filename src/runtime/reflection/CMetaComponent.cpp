@@ -396,7 +396,7 @@ void CMetaComponent::BuildIInterface()
     mmObj->mOwner = miObj;
     mmObj->mIndex = 1;
     mmObj->mName = "Release";
-    mmObj->mSignature = "(H)i";
+    mmObj->mSignature = "(H)I";
     mmObj->mParameters = Array<IMetaParameter*>(1);
     mpObj = new CMetaParameter();
     mpObj->mOwner = mmObj;

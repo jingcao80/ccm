@@ -23,5 +23,6 @@ module CCMRuntime
 
 include "base.cdl"
 include "reflection.cdl"
+include "rpc.cdl"
 
 }

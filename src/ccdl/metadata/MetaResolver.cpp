@@ -131,6 +131,18 @@ Type* MetaResolver::BuildInterface(
     interface->SetName(String(mi->mName));
     interface->SetNamespace(ns);
     interface->SetExternal(mi->mExternal);
+    if (mi->mBaseInterfaceIndex != -1) {
+        MetaInterface* baseMi = mMetaComponent->mInterfaces[mi->mBaseInterfaceIndex];
+        String baseIntfFullName = String::Format("%s%s", baseMi->mNamespace, baseMi->mName);
+        Interface* baseIntf = mPool->FindInterface(baseIntfFullName);
+        if (baseIntf == nullptr) {
+            Type* type = Resolve(baseIntfFullName);
+            if (type->IsInterfaceType()) {
+                baseIntf = (Interface*)type;
+            }
+        }
+        interface->SetBaseInterface(baseIntf);
+    }
     mResolvingType = (Type*)interface;
 
     Attribute attr;
@@ -160,6 +172,8 @@ Method* MetaResolver::BuildMethod(
 {
     Method* method = new Method();
     method->SetName(String(mm->mName));
+    Type* type = BuildType(mMetaComponent->mTypes[mm->mReturnTypeIndex]);
+    method->SetReturnType(type);
 
     for (int i = 0; i < mm->mParameterNumber; i++) {
         Parameter* param = BuildParameter(mm->mParameters[i]);
@@ -186,46 +200,46 @@ Type* MetaResolver::BuildType(
 
     switch (mt->mKind) {
         case CcmTypeKind::Char:
-            typeStr = "Char";
+            typeStr = "ccm::Char";
             break;
         case CcmTypeKind::Byte:
-            typeStr = "Byte";
+            typeStr = "ccm::Byte";
             break;
         case CcmTypeKind::Short:
-            typeStr = "Short";
+            typeStr = "ccm::Short";
             break;
         case CcmTypeKind::Integer:
-            typeStr = "Integer";
+            typeStr = "ccm::Integer";
             break;
         case CcmTypeKind::Long:
-            typeStr = "Long";
+            typeStr = "ccm::Long";
             break;
         case CcmTypeKind::Float:
-            typeStr = "Float";
+            typeStr = "ccm::Float";
             break;
         case CcmTypeKind::Double:
-            typeStr = "Double";
+            typeStr = "ccm::Double";
             break;
         case CcmTypeKind::Boolean:
-            typeStr = "Boolean";
+            typeStr = "ccm::Boolean";
             break;
         case CcmTypeKind::String:
-            typeStr = "String";
+            typeStr = "ccm::String";
             break;
         case CcmTypeKind::CoclassID:
-            typeStr = "CoclassID";
+            typeStr = "ccm::CoclassID";
             break;
         case CcmTypeKind::ComponentID:
-            typeStr = "ComponentID";
+            typeStr = "ccm::ComponentID";
             break;
         case CcmTypeKind::InterfaceID:
-            typeStr = "InterfaceID";
+            typeStr = "ccm::InterfaceID";
             break;
         case CcmTypeKind::HANDLE:
-            typeStr = "HANDLE";
+            typeStr = "ccm::HANDLE";
             break;
         case CcmTypeKind::ECode:
-            typeStr = "ECode";
+            typeStr = "ccm::ECode";
             break;
         case CcmTypeKind::Enum: {
             MetaEnumeration* me = mMetaComponent->mEnumerations[mt->mIndex];

@@ -38,7 +38,7 @@ public:
     inline void SetName(
         /* [in] */ const String& name);
 
-    inline String GetSignature();
+    String GetSignature();
 
     inline Type* GetReturnType();
 
@@ -53,8 +53,6 @@ public:
     inline Parameter* GetParameter(
         /* [in] */ int index);
 
-    void BuildSignature();
-
     void DeepCopy(
         /* [in] */ Method* source,
         /* [in] */ Pool* pool);
@@ -63,6 +61,9 @@ public:
 
     String Dump(
         /* [in] */ const String& prefix) override;
+
+private:
+    void BuildSignature();
 
 private:
     String mName;
@@ -80,11 +81,6 @@ void Method::SetName(
     /* [in] */ const String& name)
 {
     mName = name;
-}
-
-String Method::GetSignature()
-{
-    return mSignature;
 }
 
 Type* Method::GetReturnType()

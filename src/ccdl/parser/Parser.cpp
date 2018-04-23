@@ -490,10 +490,18 @@ bool Parser::ParseInterface(
             return parseResult;
         }
 
+        Namespace* ns = nullptr;
+        String itfName;
         int index = fullName.LastIndexOf("::");
-        String nsString = index == -1 ? String("__global__") : fullName.Substring(0, index - 1);
-        Namespace* ns = mPool->ParseNamespace(nsString);
-        String itfName = index == -1 ? fullName : fullName.Substring(index + 2);
+        if (index != -1) {
+            ns = mPool->ParseNamespace(fullName.Substring(0, index - 1));
+            itfName = fullName.Substring(index + 2);
+        }
+        else {
+            ns = mCurrNamespace;
+            itfName = fullName;
+            fullName = mCurrNamespace->ToString() + itfName;
+        }
         Interface* interface = new Interface();
         interface->SetName(itfName);
         interface->SetNamespace(ns);
@@ -570,6 +578,9 @@ bool Parser::ParseInterface(
             parseResult = false;
         }
     }
+    else {
+        interface->SetBaseInterface(FindInterface(String("ccm::IInterface")));
+    }
 
     parseResult = ParseInterfaceBody(interface) && parseResult;
 
@@ -636,7 +647,7 @@ bool Parser::ParseMethod(
 
     Method* method = new Method();
     method->SetName(mTokenizer.GetIdentifier());
-    method->SetReturnType(mPool->FindType(String("ECode")));
+    method->SetReturnType(mPool->FindType(String("ccm::ECode")));
 
     token = mTokenizer.GetToken();
     if (token != Tokenizer::Token::PARENTHESES_OPEN) {
@@ -676,7 +687,6 @@ bool Parser::ParseMethod(
     }
 
     if (parseResult) {
-        method->BuildSignature();
         if (interface->FindMethod(method->GetName(), method->GetSignature()) != nullptr) {
             LogError(token, String::Format("The method \"%s\" is redeclared.",
                     method->ToString().string()));
@@ -776,7 +786,7 @@ Type* Parser::ParseType()
     Type* type = nullptr;
     Tokenizer::Token token = mTokenizer.GetToken();
     if (Tokenizer::IsPrimitiveType(token)) {
-        type = mPool->FindType(String(mTokenizer.DumpToken(token)));
+        type = mPool->FindType(String::Format("ccm::%s", mTokenizer.DumpToken(token)));
     }
     else if (token == Tokenizer::Token::IDENTIFIER) {
         type = FindType(mTokenizer.GetIdentifier());
@@ -1250,7 +1260,7 @@ PostfixExpression* Parser::ParseIntegralNumber(
     if (exprType->IsNumericType() || exprType->IsEnumerationType()) {
         PostfixExpression* postExpr = new PostfixExpression();
         Type* integralType = mTokenizer.Is64Bit() ?
-                mPool->FindType(String("Long")) : mPool->FindType(String("Integer"));
+                mPool->FindType(String("ccm::Long")) : mPool->FindType(String("ccm::Integer"));
         postExpr->SetType(integralType);
         postExpr->SetIntegralValue(mTokenizer.GetIntegralValue());
         postExpr->SetRadix(mTokenizer.GetRadix());
@@ -1271,7 +1281,7 @@ PostfixExpression* Parser::ParseFloatingPointNumber(
     if (exprType->IsNumericType()) {
         PostfixExpression* postExpr = new PostfixExpression();
         Type* fpType = mTokenizer.Is64Bit() ?
-                mPool->FindType(String("Double")) : mPool->FindType(String("Float"));
+                mPool->FindType(String("ccm::Double")) : mPool->FindType(String("ccm::Float"));
         postExpr->SetType(fpType);
         postExpr->SetFloatingPointValue(mTokenizer.GetFloatingPointValue());
         return postExpr;
@@ -1288,9 +1298,9 @@ PostfixExpression* Parser::ParseBooleanLiteral(
     /* [in] */ Type* exprType)
 {
     Tokenizer::Token token = mTokenizer.GetToken();
-    if (exprType->GetName().Equals("Boolean")) {
+    if (exprType->IsBooleanType()) {
         PostfixExpression* postExpr = new PostfixExpression();
-        Type* booleanType = mPool->FindType(String("Boolean"));
+        Type* booleanType = mPool->FindType(String("ccm::Boolean"));
         postExpr->SetType(booleanType);
         postExpr->SetBooleanValue(token == Tokenizer::Token::TRUE ?
                 true : false);
@@ -1310,7 +1320,7 @@ PostfixExpression* Parser::ParseCharacter(
     Tokenizer::Token token = mTokenizer.GetToken();
     if (exprType->IsNumericType()) {
         PostfixExpression* postExpr = new PostfixExpression();
-        Type* charType = mPool->FindType(String("Char"));
+        Type* charType = mPool->FindType(String("ccm::Char"));
         postExpr->SetType(charType);
         postExpr->SetIntegralValue(mTokenizer.GetCharacter());
         return postExpr;
@@ -1327,7 +1337,7 @@ PostfixExpression* Parser::ParseStringLiteral(
     Tokenizer::Token token = mTokenizer.GetToken();
     if (exprType->IsStringType()) {
         PostfixExpression* postExpr = new PostfixExpression();
-        Type* stringType = mPool->FindType(String("String"));
+        Type* stringType = mPool->FindType(String("ccm::String"));
         postExpr->SetType(stringType);
         postExpr->SetStringValue(mTokenizer.GetString());
         return postExpr;
@@ -1506,7 +1516,6 @@ bool Parser::ParseCoclassConstructor(
     }
 
     if (parseResult) {
-        method->BuildSignature();
         if (klass->FindConstructor(method->GetName(), method->GetSignature()) != nullptr) {
             LogError(token, String::Format("The constructor \"%s\" is redeclared.",
                     method->ToString().string()));
@@ -1990,11 +1999,11 @@ void Parser::GenerateIInterface()
     // add AddRef method
     method = new Method();
     method->SetName(String("AddRef"));
-    method->SetReturnType(mPool->FindType(String("Integer")));
+    method->SetReturnType(mPool->FindType(String("ccm::Integer")));
     param = new Parameter();
     method->AddParameter(param);
     param->SetName(String("id"));
-    param->SetType(mPool->FindType(String("HANDLE")));
+    param->SetType(mPool->FindType(String("ccm::HANDLE")));
     PostfixExpression* expr = new PostfixExpression();
     expr->SetIntegralValue(0);
     param->SetDefaultValue(expr);
@@ -2003,11 +2012,11 @@ void Parser::GenerateIInterface()
     // add Release method
     method = new Method();
     method->SetName(String("Release"));
-    method->SetReturnType(mPool->FindType(String("Integer")));
+    method->SetReturnType(mPool->FindType(String("ccm::Integer")));
     param = new Parameter();
     method->AddParameter(param);
     param->SetName(String("id"));
-    param->SetType(mPool->FindType(String("HANDLE")));
+    param->SetType(mPool->FindType(String("ccm::HANDLE")));
     expr = new PostfixExpression();
     expr->SetIntegralValue(0);
     param->SetDefaultValue(expr);
@@ -2016,6 +2025,7 @@ void Parser::GenerateIInterface()
     // add GetInterfaceID method
     method = new Method();
     method->SetName(String("GetInterfaceID"));
+    method->SetReturnType(mPool->FindType(String("ccm::ECode")));
     param = new Parameter();
     param->SetName(String("object"));
     param->SetType(mPool->FindType(String("ccm::IInterface*")));
@@ -2024,7 +2034,7 @@ void Parser::GenerateIInterface()
     param = new Parameter();
     param->SetName(String("iid"));
     ptrType = new PointerType();
-    ptrType->SetBaseType(mPool->FindType(String("InterfaceID")));
+    ptrType->SetBaseType(mPool->FindType(String("ccm::InterfaceID")));
     ptrType->SetPointerNumber(1);
     mPool->AddTemporaryType(ptrType);
     param->SetType(ptrType);
@@ -2050,12 +2060,13 @@ void Parser::GenerateCoclassObject(
         Interface* itfco = new Interface();
         itfco->SetName(String::Format("I%sClassObject", klass->GetName().string()));
         itfco->SetNamespace(klass->GetNamespace());
+        itfco->SetBaseInterface(FindInterface(String("ccm::IInterface")));
         for (int i = 0; i < klass->GetConstructorNumber(); i++) {
             Method* m = klass->GetConstructor(i);
             m->SetName(String("CreateObject"));
             Parameter* param = new Parameter();
             param->SetName(String("iid"));
-            param->SetType(mPool->FindType(String("InterfaceID")));
+            param->SetType(mPool->FindType(String("ccm::InterfaceID")));
             param->SetAttribute(Parameter::IN);
             m->AddParameter(param);
             param = new Parameter();

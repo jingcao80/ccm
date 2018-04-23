@@ -41,6 +41,8 @@ CMetaInterface::CMetaInterface(
 {
     mIid.mUuid = mi->mUuid;
     mIid.mCid = &mcObj->mCid;
+    BuildBaseInterface();
+    mMetaMethods = Array<IMetaMethod*>(CalculateMethodNumber());
 }
 
 CMetaInterface::~CMetaInterface()
@@ -229,6 +231,32 @@ ECode CMetaInterface::GetMethod(
     return NOERROR;
 }
 
+Integer CMetaInterface::CalculateMethodNumber()
+{
+    Integer number = 0;
+    MetaInterface* mi = mMetadata;
+    do {
+        number += mi->mMethodNumber;
+        if (mi->mBaseInterfaceIndex != -1) {
+            mi = mOwner->mMetadata->mInterfaces[
+                    mMetadata->mBaseInterfaceIndex];
+        }
+        else {
+            mi = nullptr;
+        }
+    } while (mi != nullptr);
+    return number;
+}
+
+void CMetaInterface::BuildBaseInterface()
+{
+    if (mMetadata->mBaseInterfaceIndex != -1) {
+        AutoPtr<IMetaInterface> base =
+                mOwner->BuildInterface(mMetadata->mBaseInterfaceIndex);
+        mBaseInterface = (CMetaInterface*)base.Get();
+    }
+}
+
 void CMetaInterface::BuildAllConstants()
 {
     if (mMetaConstants[0] == nullptr) {
@@ -243,12 +271,25 @@ void CMetaInterface::BuildAllConstants()
 void CMetaInterface::BuildAllMethods()
 {
     if (mMetaMethods[0] == nullptr) {
-        for (Integer i = 0; i < mMetadata->mMethodNumber; i++) {
-            CMetaMethod* mmObj = new CMetaMethod(mOwner->mMetadata,
-                    this, i, mMetadata->mMethods[i]);
-            mMetaMethods.Set(i, mmObj);
-        }
+        BuildInterfaceMethod(mMetadata);
     }
+}
+
+Integer CMetaInterface::BuildInterfaceMethod(
+    /* [in] */ MetaInterface* mi)
+{
+    Integer startIndex = 0;
+    if (mi->mBaseInterfaceIndex != -1) {
+        startIndex = BuildInterfaceMethod(mOwner->mMetadata->mInterfaces[
+                mi->mBaseInterfaceIndex]);
+    }
+
+    for (Integer i = 0; i < mi->mMethodNumber; i++) {
+        CMetaMethod* mmObj = new CMetaMethod(mOwner->mMetadata,
+                this, startIndex + i, mi->mMethods[i]);
+        mMetaMethods.Set(startIndex + i, mmObj);
+    }
+    return startIndex + mi->mMethodNumber;
 }
 
 }

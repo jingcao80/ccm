@@ -51,8 +51,10 @@ int main(int argv, char** argc)
         String intfName, intfNs;
         intfs[i]->GetName(&intfName);
         intfs[i]->GetNamespace(&intfNs);
-        printf("==== [%d] interface name: %s, namespace: %s ====\n",
-                i, intfName.string(), intfNs.string());
+        Integer methodNumber;
+        intfs[i]->GetMethodNumber(&methodNumber);
+        printf("==== [%d] interface name: %s, namespace: %s, %d methods ====\n",
+                i, intfName.string(), intfNs.string(), methodNumber);
     }
     printf("\n");
 
@@ -75,6 +77,8 @@ int main(int argv, char** argc)
         method->GetSignature(&mthSig);
         printf("==== [%d] method name: %s, signature: %s ====\n", i, mthName.string(), mthSig.string());
     }
+    printf("\n");
+
     AutoPtr<IMetaMethod> method;
     klass->GetMethod(String("TestMethod1"), String("(I)E"), (IMetaMethod**)&method);
     Integer paramNumber;
@@ -97,6 +101,8 @@ int main(int argv, char** argc)
         printf("==== [%d] parameter name: %s, index: %d, attr: %d, type: %s ====\n",
                 i, pname.string(), pidx, attr, tname.string());
     }
+    printf("\n");
+
     AutoPtr<IArgumentList> args;
     method->CreateArgumentList((IArgumentList**)&args);
     args->SetInputArgumentOfInteger(0, 9);

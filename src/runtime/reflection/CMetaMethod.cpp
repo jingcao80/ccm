@@ -187,7 +187,7 @@ ECode CMetaMethod::Invoke(
     Long* stkData =  args->GetStackData(&stkDataNum);
     VObject* vobj = reinterpret_cast<VObject*>(thisObject->Probe(mOwner->mIid));
     intData[0] = reinterpret_cast<Long>(vobj);
-    HANDLE methodAddr = vobj->mVtab->mMethods[mIndex + 4];
+    HANDLE methodAddr = vobj->mVtab->mMethods[mIndex];
     return invoke(methodAddr, intData, intDataNum, fpData, fpDataNum, stkData, stkDataNum);
 }
 

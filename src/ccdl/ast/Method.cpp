@@ -25,6 +25,14 @@ Method::Method()
     : mReturnType(nullptr)
 {}
 
+String Method::GetSignature()
+{
+    if (mSignature.IsNullOrEmpty()) {
+        BuildSignature();
+    }
+    return mSignature;
+}
+
 bool Method::AddParameter(
     /* [in] */ Parameter* param)
 {
