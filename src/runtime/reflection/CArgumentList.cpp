@@ -15,7 +15,6 @@
 //=========================================================================
 
 #include "CArgumentList.h"
-
 #include <stdlib.h>
 
 using ccm::metadata::MetaType;

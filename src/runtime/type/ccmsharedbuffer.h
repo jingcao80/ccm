@@ -34,7 +34,6 @@
 #define __CCM_SHAREDBUFFER_H__
 
 #include "ccmdef.h"
-
 #include <atomic>
 #include <stddef.h>
 

@@ -16,7 +16,6 @@
 
 #include "Parser.h"
 #include "../ast/ArrayType.h"
-#include "../ast/Constant.h"
 #include "../ast/PointerType.h"
 #include "../metadata/MetaResolver.h"
 #include "../util/Logger.h"
@@ -28,7 +27,6 @@
 #include <stdlib.h>
 
 using ccdl::ast::ArrayType;
-using ccdl::ast::Constant;
 using ccdl::ast::PointerType;
 using ccdl::metadata::MetaResolver;
 
@@ -132,7 +130,7 @@ bool Parser::Parse(
 
     ret = ParseFile();
 
-    if (!ret) {
+    if (!ret || mErrorHeader != nullptr) {
         DumpError();
         return false;
     }
@@ -202,6 +200,17 @@ bool Parser::ParseFile()
             case Tokenizer::Token::NAMESPACE:
                 parseResult = ParseNamespace() && parseResult;
                 continue;
+            case Tokenizer::Token::CONST: {
+                Constant* constant = ParseConstant();
+                if (constant != nullptr) {
+                    mPool->AddConstant(constant);
+                    constant->SetNamespace(mCurrNamespace);
+                }
+                else {
+                    parseResult = false;
+                }
+                continue;
+            }
             default: {
                 String message = String::Format("%s is not expected.", mTokenizer.DumpToken(token));
                 LogError(token, message);
@@ -616,7 +625,13 @@ bool Parser::ParseInterfaceBody(
     while (token != Tokenizer::Token::BRACES_CLOSE &&
             token != Tokenizer::Token::END_OF_FILE) {
         if (token == Tokenizer::Token::CONST) {
-            parseResult = ParseInterfaceConstant(interface) && parseResult;
+            Constant* constant = ParseConstant();
+            if (constant != nullptr) {
+                interface->AddConstant(constant);
+            }
+            else {
+                parseResult = false;
+            }
         }
         else if (token == Tokenizer::Token::IDENTIFIER) {
             parseResult = ParseMethod(interface) && parseResult;
@@ -776,6 +791,12 @@ bool Parser::ParseParameter(
         return false;
     }
 
+    if (mTokenizer.PeekToken() == Tokenizer::Token::ASSIGNMENT) {
+        mTokenizer.GetToken();
+        Expression* expr = ParseExpression(type);
+        parameter->SetDefaultValue(expr);
+    }
+
     parameter->SetName(mTokenizer.GetIdentifier());
     method->AddParameter(parameter);
     return true;
@@ -855,8 +876,7 @@ Type* Parser::ParseArrayType()
     return arrayType;
 }
 
-bool Parser::ParseInterfaceConstant(
-    /* [in] */ Interface* interface)
+Constant* Parser::ParseConstant()
 {
     bool parseResult = true;
     Tokenizer::Token token;
@@ -868,7 +888,7 @@ bool Parser::ParseInterfaceConstant(
     token = mTokenizer.GetToken();
     token = mTokenizer.GetToken();
     if (Tokenizer::IsPrimitiveType(token)) {
-        type = mPool->FindType(String(mTokenizer.DumpToken(token)));
+        type = mPool->FindType(String::Format("ccm::%s", mTokenizer.DumpToken(token)));
     }
     else {
         Enumeration* enumeration = nullptr;
@@ -889,11 +909,10 @@ bool Parser::ParseInterfaceConstant(
             // jump to next line
             mTokenizer.SkipCurrentLine();
             delete constant;
-            return false;
+            return nullptr;
         }
     }
     constant->SetType(type);
-
     token = mTokenizer.GetToken();
     if (token == Tokenizer::Token::IDENTIFIER) {
         constant->SetName(mTokenizer.GetIdentifier());
@@ -903,7 +922,7 @@ bool Parser::ParseInterfaceConstant(
         // jump to next line
         mTokenizer.SkipCurrentLine();
         delete constant;
-        return false;
+        return nullptr;
     }
 
     token = mTokenizer.GetToken();
@@ -912,7 +931,7 @@ bool Parser::ParseInterfaceConstant(
         // jump to next line
         mTokenizer.SkipCurrentLine();
         delete constant;
-        return false;
+        return nullptr;
     }
 
     Expression* expr = ParseExpression(type);
@@ -927,17 +946,15 @@ bool Parser::ParseInterfaceConstant(
         // jump to next line
         mTokenizer.SkipCurrentLine();
         delete constant;
-        return false;
+        return nullptr;
     }
 
-    if (parseResult) {
-        interface->AddConstant(constant);
-    }
-    else {
+    if (!parseResult) {
         delete constant;
+        constant = nullptr;
     }
 
-    return parseResult;
+    return constant;
 }
 
 Expression* Parser::ParseExpression(
@@ -955,6 +972,7 @@ InclusiveOrExpression* Parser::ParseInclusiveOrExpression(
     InclusiveOrExpression* incOrExpr = new InclusiveOrExpression();
     incOrExpr->SetRightOperand(rightExpr);
     incOrExpr->SetType(rightExpr->GetType());
+    incOrExpr->SetRadix(rightExpr->GetRadix());
 
     while (mTokenizer.PeekToken() == Tokenizer::Token::INCLUSIVE_OR) {
         mTokenizer.GetToken();
@@ -989,6 +1007,7 @@ ExclusiveOrExpression* Parser::ParseExclusiveOrExpression(
     ExclusiveOrExpression* excOrExpr = new ExclusiveOrExpression();
     excOrExpr->SetRightOperand(rightExpr);
     excOrExpr->SetType(rightExpr->GetType());
+    excOrExpr->SetRadix(rightExpr->GetRadix());
 
     while (mTokenizer.PeekToken() == Tokenizer::Token::EXCLUSIVE_OR) {
         mTokenizer.GetToken();
@@ -1023,6 +1042,7 @@ AndExpression* Parser::ParseAndExpression(
     AndExpression* andExpr = new AndExpression();
     andExpr->SetRightOperand(rightExpr);
     andExpr->SetType(rightExpr->GetType());
+    andExpr->SetRadix(rightExpr->GetRadix());
 
     while (mTokenizer.PeekToken() == Tokenizer::Token::AND) {
         mTokenizer.GetToken();
@@ -1057,6 +1077,7 @@ ShiftExpression* Parser::ParseShiftExpression(
     ShiftExpression* shiExpr = new ShiftExpression();
     shiExpr->SetRightOperand(rightExpr);
     shiExpr->SetType(rightExpr->GetType());
+    shiExpr->SetRadix(rightExpr->GetRadix());
 
     while (mTokenizer.PeekToken() == Tokenizer::Token::SHIFT_LEFT ||
             mTokenizer.PeekToken() == Tokenizer::Token::SHIFT_RIGHT ||
@@ -1097,6 +1118,7 @@ AdditiveExpression* Parser::ParseAdditiveExpression(
     AdditiveExpression* addExpr = new AdditiveExpression();
     addExpr->SetRightOperand(rightExpr);
     addExpr->SetType(rightExpr->GetType());
+    addExpr->SetRadix(rightExpr->GetRadix());
 
     while (mTokenizer.PeekToken() == Tokenizer::Token::PLUS ||
             mTokenizer.PeekToken() == Tokenizer::Token::MINUS) {
@@ -1134,6 +1156,7 @@ MultiplicativeExpression* Parser::ParseMultiplicativeExpression(
     MultiplicativeExpression* multiExpr = new MultiplicativeExpression();
     multiExpr->SetRightOperand(rightExpr);
     multiExpr->SetType(rightExpr->GetType());
+    multiExpr->SetRadix(rightExpr->GetRadix());
 
     while (mTokenizer.PeekToken() == Tokenizer::Token::ASTERISK ||
             mTokenizer.PeekToken() == Tokenizer::Token::DIVIDE ||
@@ -1206,6 +1229,7 @@ UnaryExpression* Parser::ParseUnaryExpression(
         UnaryExpression* unaryExpr = new UnaryExpression();
         unaryExpr->SetLeftOperand(operand);
         unaryExpr->SetType(operand->GetType());
+        unaryExpr->SetRadix(operand->GetRadix());
         return unaryExpr;
     }
 }
@@ -1244,6 +1268,22 @@ PostfixExpression* Parser::ParsePostfixExpression(
             postExpr->SetExpression(expr);
             return postExpr;
         }
+        case Tokenizer::Token::NULLPTR:
+            mTokenizer.GetToken();
+            if (exprType->IsPointerType()) {
+                PostfixExpression* postExpr = new PostfixExpression();
+                Type* integralType = mPool->FindType(String("ccm::Long"));
+                postExpr->SetType(integralType);
+                postExpr->SetIntegralValue(0);
+                postExpr->SetRadix(16);
+                return postExpr;
+            }
+            else {
+                String message = String::Format("\"nullptr\" can not be assigned to \"%s\" type.",
+                        exprType->GetName().string());
+                LogError(token, message);
+                return nullptr;
+            }
         default: {
             String message = String::Format("\"%s\" is not expected.",
                     mTokenizer.DumpToken(token));
@@ -1261,6 +1301,14 @@ PostfixExpression* Parser::ParseIntegralNumber(
         PostfixExpression* postExpr = new PostfixExpression();
         Type* integralType = mTokenizer.Is64Bit() ?
                 mPool->FindType(String("ccm::Long")) : mPool->FindType(String("ccm::Integer"));
+        postExpr->SetType(integralType);
+        postExpr->SetIntegralValue(mTokenizer.GetIntegralValue());
+        postExpr->SetRadix(mTokenizer.GetRadix());
+        return postExpr;
+    }
+    else if (exprType->IsHANDLEType()) {
+        PostfixExpression* postExpr = new PostfixExpression();
+        Type* integralType = mPool->FindType(String("ccm::Long"));
         postExpr->SetType(integralType);
         postExpr->SetIntegralValue(mTokenizer.GetIntegralValue());
         postExpr->SetRadix(mTokenizer.GetRadix());
@@ -1784,6 +1832,17 @@ bool Parser::ParseModule(
             case Tokenizer::Token::NAMESPACE:
                 parseResult = ParseNamespace() && parseResult;
                 break;
+            case Tokenizer::Token::CONST: {
+                Constant* constant = ParseConstant();
+                if (constant != nullptr) {
+                    mPool->AddConstant(constant);
+                    constant->SetNamespace(mCurrNamespace);
+                }
+                else {
+                    parseResult = false;
+                }
+                break;
+            }
             default: {
                 String message = String::Format("%s is not expected.", mTokenizer.DumpToken(token));
                 LogError(token, message);
@@ -1856,6 +1915,17 @@ bool Parser::ParseNamespace()
             case Tokenizer::Token::NAMESPACE:
                 parseResult = ParseNamespace() && parseResult;
                 break;
+            case Tokenizer::Token::CONST: {
+                Constant* constant = ParseConstant();
+                if (constant != nullptr) {
+                    mPool->AddConstant(constant);
+                    constant->SetNamespace(mCurrNamespace);
+                }
+                else {
+                    parseResult = false;
+                }
+                break;
+            }
             default: {
                 String message = String::Format("%s is not expected.", mTokenizer.DumpToken(token));
                 LogError(token, message);

@@ -49,6 +49,10 @@ public:
     inline void SetType(
         /* [in] */ Type* type);
 
+    inline bool HasDefaultValue();
+
+    inline Expression* GetDefaultValue();
+
     void SetDefaultValue(
         /* [in] */ Expression* expr);
 
@@ -103,6 +107,16 @@ void Parameter::SetType(
     /* [in] */ Type* type)
 {
     mType = type;
+}
+
+bool Parameter::HasDefaultValue()
+{
+    return mDefaultValue != nullptr;
+}
+
+Expression* Parameter::GetDefaultValue()
+{
+    return mDefaultValue;
 }
 
 }

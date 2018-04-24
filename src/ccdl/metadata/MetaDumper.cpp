@@ -79,6 +79,11 @@ String MetaDumper::DumpMetaComponent(
         builder.Append(dumpCls);
     }
 
+    for (int i = 0; i < mc->mConstantNumber; i++) {
+        String dumpConst = DumpMetaConstant(mc->mConstants[i], prefix + "  ");
+        builder.Append(dumpConst);
+    }
+
     return builder.ToString();
 }
 
@@ -115,8 +120,8 @@ String MetaDumper::DumpMetaConstant(
             DumpMetaType(mMetaComponet->mTypes[mc->mTypeIndex])).Append("\n");
     builder.Append(prefix).Append("    mValue:").Append(
             DumpConstantValue(mc)).Append("\n");
-    if (mc->mRadix != 0 ) {
-        builder.Append(prefix).AppendFormat("    mRadix:%d\n", mc->mRadix);
+    if (mc->mValue.mRadix != 0 ) {
+        builder.Append(prefix).AppendFormat("    mRadix:%d\n", mc->mValue.mRadix);
     }
     builder.Append(prefix).Append("}\n");
 

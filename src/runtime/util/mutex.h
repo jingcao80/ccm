@@ -34,7 +34,6 @@
 #define __CCM_MUTEX_H__
 
 #include "ccmtypes.h"
-
 #include <pthread.h>
 
 namespace ccm {

@@ -19,6 +19,7 @@
 
 #include "Node.h"
 #include "Coclass.h"
+#include "Constant.h"
 #include "Enumeration.h"
 #include "Interface.h"
 #include "../util/ArrayList.h"
@@ -61,6 +62,14 @@ public:
     inline Coclass* GetCoclass(
         /* [in] */ int index);
 
+    bool AddConstant(
+        /* [in] */ Constant* constant);
+
+    inline int GetConstantNumber();
+
+    inline Constant* GetConstant(
+        /* [in] */ int index);
+
     bool AddEnumeration(
         /* [in] */ Enumeration* enumn);
 
@@ -98,6 +107,7 @@ private:
     Namespace* mOuterNamespace;
     ArrayList<Namespace*> mNamespaces;
     ArrayList<Coclass*> mCoclasses;
+    ArrayList<Constant*> mConstants;
     ArrayList<Enumeration*> mEnumerations;
     ArrayList<Interface*> mInterfaces;
     bool mResolved;
@@ -139,6 +149,17 @@ Coclass* Namespace::GetCoclass(
     /* [in] */ int index)
 {
     return mCoclasses.Get(index);
+}
+
+int Namespace::GetConstantNumber()
+{
+    return mConstants.GetSize();
+}
+
+Constant* Namespace::GetConstant(
+    /* [in] */ int index)
+{
+    return mConstants.Get(index);
 }
 
 int Namespace::GetEnumerationNumber()

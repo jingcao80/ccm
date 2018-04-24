@@ -19,7 +19,6 @@
 
 #include "ccmtypes.h"
 #include "ccmlogger.h"
-
 #include <stdlib.h>
 
 namespace ccm {

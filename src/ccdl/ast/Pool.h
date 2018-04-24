@@ -18,6 +18,7 @@
 #define __CCDL_AST_POOL_H__
 
 #include "Coclass.h"
+#include "Constant.h"
 #include "Enumeration.h"
 #include "Interface.h"
 #include "Namespace.h"
@@ -80,6 +81,20 @@ public:
     inline int IndexOf(
         /* [in] */ Coclass* klass);
 
+    bool AddConstant(
+        /* [in] */ Constant* constant);
+
+    inline int GetConstantNumber();
+
+    inline Constant* GetConstant(
+        /* [in] */ int index);
+
+    Constant* FindConstant(
+        /* [in] */ const String& constantName);
+
+    inline int IndexOf(
+        /* [in] */ Constant* constant);
+
     bool AddNamespace(
         /* [in] */ Namespace* ns);
 
@@ -125,6 +140,7 @@ public:
 
 protected:
     ArrayList<Coclass*> mCoclasses;
+    ArrayList<Constant*> mConstants;
     ArrayList<Enumeration*> mEnumerations;
     ArrayList<Interface*> mInterfacePredecls;
     ArrayList<Interface*> mInterfaces;
@@ -182,6 +198,23 @@ int Pool::IndexOf(
     /* [in] */ Coclass* klass)
 {
     return mCoclasses.IndexOf(klass);
+}
+
+int Pool::GetConstantNumber()
+{
+    return mConstants.GetSize();
+}
+
+Constant* Pool::GetConstant(
+    /* [in] */ int index)
+{
+    return mConstants.Get(index);
+}
+
+int Pool::IndexOf(
+    /* [in] */ Constant* constant)
+{
+    return mConstants.IndexOf(constant);
 }
 
 int Pool::GetNamespaceNumber()

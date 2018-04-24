@@ -32,7 +32,6 @@
 
 #include "ccmsharedbuffer.h"
 #include "util/ccmlogger.h"
-
 #include <stdlib.h>
 #include <string.h>
 

@@ -61,7 +61,7 @@ void CodeGenerator::GenerateOnCcmrtMode()
 {
     if (!ResolveDirectory()) return;
 
-    GenTypeDeclarationsOnCcmrtMode();
+    GenConstantsAndTypesOnCcmrtMode();
     GenIds();
     GenMetadataWrapper();
 }
@@ -70,7 +70,7 @@ void CodeGenerator::GenerateOnComponentMode()
 {
     if (!ResolveDirectory()) return;
 
-    GenTypeDeclarationsOnComponentMode();
+    GenConstantsAndTypesOnComponentMode();
     GenCoclasses();
     GenComponentCpp();
     GenMetadataWrapper();
@@ -80,7 +80,7 @@ void CodeGenerator::GenerateOnUserMode()
 {
     if (!ResolveDirectory()) return;
 
-    GenTypeDeclarationsOnUserMode();
+    GenConstantsAndTypesOnUserMode();
     GenComponentCppOnUserMode();
 }
 
@@ -104,7 +104,7 @@ bool CodeGenerator::ResolveDirectory()
     return true;
 }
 
-void CodeGenerator::GenTypeDeclarationsOnCcmrtMode()
+void CodeGenerator::GenConstantsAndTypesOnCcmrtMode()
 {
     String filePath = String::Format("%s/ccmintfs.h", mDirectory.string());
     File file(filePath, File::WRITE);
@@ -123,6 +123,12 @@ void CodeGenerator::GenTypeDeclarationsOnCcmrtMode()
 
     MetaComponent* mc = mMetaComponent;
     builder.AppendFormat("COM_PUBLIC extern const ComponentID CID_%s;\n\n", mc->mName);
+    for (int i = 0; i < mc->mNamespaceNumber; i++) {
+        MetaNamespace* mn = mc->mNamespaces[i];
+        builder.Append(GenConstantsInHeader(mn));
+        if (i != mc->mNamespaceNumber - 1) builder.Append("\n");
+        else builder.Append("\n\n");
+    }
     for (int i = 0; i < mc->mNamespaceNumber; i++) {
         MetaNamespace* mn = mc->mNamespaces[i];
         if (mn->mEnumerationNumber - mn->mExternalEnumerationNumber == 0) {
@@ -176,6 +182,40 @@ void CodeGenerator::GenTypeDeclarationsOnCcmrtMode()
     file.Write(data.string(), data.GetLength());
     file.Flush();
     file.Close();
+}
+
+String CodeGenerator::GenConstantsInHeader(
+    /* [in] */ MetaNamespace* mn)
+{
+    StringBuilder builder;
+
+    if (mn->mConstantNumber == 0) return String();
+
+    for (int i = 0; i < mn->mConstantNumber; i++) {
+        MetaConstant* mc = mMetaComponent->mConstants[mn->mConstantIndexes[i]];
+        builder.Append(GenConstant(mc));
+    }
+    builder.Append("\n");
+
+    return builder.ToString();
+}
+
+String CodeGenerator::GenConstant(
+    /* [in] */ MetaConstant* mc)
+{
+    StringBuilder builder;
+
+    MetaType* mt = mMetaComponent->mTypes[mc->mTypeIndex];
+    if (mt->mKind == CcmTypeKind::String) {
+        builder.AppendFormat("extern const %s %s;\n", GenType(mt).string(),
+                mc->mName);
+    }
+    else {
+        builder.AppendFormat("constexpr %s %s = %s;\n", GenType(mt).string(),
+                mc->mName, GenValue(mt, mc->mValue).string());
+    }
+
+    return builder.ToString();
 }
 
 String CodeGenerator::GenEnumerationPredeclarations(
@@ -349,7 +389,7 @@ String CodeGenerator::GenInterfaceConstant(
     }
     else {
         builder.AppendFormat("    static constexpr %s %s = %s;\n", GenType(mt).string(),
-                mc->mName, GenValue(mc).string());
+                mc->mName, GenValue(mt, mc->mValue).string());
     }
 
     return builder.ToString();
@@ -391,9 +431,11 @@ String CodeGenerator::GenParameter(
             builder.Append("/* [out] */ ");
         }
     }
-    builder.AppendFormat("%s %s",
-            GenType(mMetaComponent->mTypes[mp->mTypeIndex], mp->mAttribute).string(),
-            mp->mName);
+    MetaType* mt = mMetaComponent->mTypes[mp->mTypeIndex];
+    builder.AppendFormat("%s %s", GenType(mt, mp->mAttribute).string(), mp->mName);
+    if (mp->mHasDefaultValue) {
+        builder.AppendFormat(" = %s", GenValue(mt, mp->mDefaultValue).string());
+    }
 
     return builder.ToString();
 }
@@ -500,51 +542,57 @@ String CodeGenerator::GenType(
 }
 
 String CodeGenerator::GenValue(
-    /* [in] */ MetaConstant* mc)
+    /* [in] */ MetaType* mt,
+    /* [in] */ MetaValue& mv)
 {
     StringBuilder builder;
 
-    MetaType* mt = mMetaComponent->mTypes[mc->mTypeIndex];
+    if (mt->mPointerNumber > 0) {
+        return mv.mLong == 0 ? String("nullptr") :
+                String::Format("0x%llx", mv.mLong);
+    }
+
     switch(mt->mKind) {
         case CcmTypeKind::Char:
-            return String::Format("\'%c\'", mc->mValue.mInteger);
+            return String::Format("\'%c\'", mv.mInteger);
         case CcmTypeKind::Byte: {
-            const char* format = mc->mRadix == 8 ? "%o" :
-                    mc->mRadix == 10 ? "%d" : "%x";
-            return String::Format(format, (unsigned char)mc->mValue.mInteger);
+            const char* format = mv.mRadix == 8 ? "%o" :
+                    mv.mRadix == 10 ? "%d" : "0x%x";
+            return String::Format(format, (unsigned char)mv.mInteger);
         }
         case CcmTypeKind::Short: {
-            const char* format = mc->mRadix == 8 ? "%o" :
-                    mc->mRadix == 10 ? "%d" : "%x";
-            return String::Format(format, (short)mc->mValue.mInteger);
+            const char* format = mv.mRadix == 8 ? "%o" :
+                    mv.mRadix == 10 ? "%d" : "0x%x";
+            return String::Format(format, (short)mv.mInteger);
         }
         case CcmTypeKind::Integer: {
-            const char* format = mc->mRadix == 8 ? "%o" :
-                    mc->mRadix == 10 ? "%d" : "%x";
-            return String::Format(format, mc->mValue.mInteger);
+            const char* format = mv.mRadix == 8 ? "%o" :
+                    mv.mRadix == 10 ? "%d" : "0x%x";
+            return String::Format(format, mv.mInteger);
         }
         case CcmTypeKind::Long: {
-            const char* format = mc->mRadix == 8 ? "%llo" :
-                    mc->mRadix == 10 ? "%lld" : "%llx";
-            return String::Format(format, mc->mValue.mLong);
+            const char* format = mv.mRadix == 8 ? "%lloll" :
+                    mv.mRadix == 10 ? "%lldll" : "0x%llxll";
+            return String::Format(format, mv.mLong);
         }
         case CcmTypeKind::Float:
-            return String::Format("%f", mc->mValue.mFloat);
+            return String::Format("%f", mv.mFloat);
         case CcmTypeKind::Double:
-            return String::Format("%e", mc->mValue.mDouble);
+            return String::Format("%e", mv.mDouble);
         case CcmTypeKind::Boolean:
-            return mc->mValue.mBoolean ? String("true") : String("false");
+            return mv.mBoolean ? String("true") : String("false");
         case CcmTypeKind::String:
-            return String::Format("\"%s\"", mc->mValue.mString);
+            return String::Format("\"%s\"", mv.mString);
         case CcmTypeKind::Enum:
-            return String::Format("%s::%s", GenType(mt).string(), mc->mValue.mString);
+            return String::Format("%s::%s", GenType(mt).string(), mv.mString);
         case CcmTypeKind::ECode:
-            return String::Format("0x%08x", mc->mValue.mInteger);
+            return String::Format("0x%08x", mv.mInteger);
+        case CcmTypeKind::HANDLE:
+            return String::Format("%lld", mv.mLong);
         case CcmTypeKind::Array:
         case CcmTypeKind::CoclassID:
         case CcmTypeKind::ComponentID:
         case CcmTypeKind::InterfaceID:
-        case CcmTypeKind::HANDLE:
         case CcmTypeKind::Interface:
         default:
             break;
@@ -571,9 +619,10 @@ void CodeGenerator::GenIds()
     MetaComponent* mc = mMetaComponent;
     for (int i = 0; i < mc->mNamespaceNumber; i++) {
         MetaNamespace* mn = mc->mNamespaces[i];
-        if (mn->mInterfaceNumber == 0) {
+        if (mn->mConstantNumber + mn->mInterfaceNumber == 0) {
             continue;
         }
+        builder.Append(GenConstantsInCpp(mn));
         builder.Append(GenInterfaceIDsOnCcmrtMode(mn));
     }
     builder.Append("\n"
@@ -620,7 +669,7 @@ String CodeGenerator::GenInterfaceIDsOnCcmrtMode(
     return builder.ToString();
 }
 
-void CodeGenerator::GenTypeDeclarationsOnComponentMode()
+void CodeGenerator::GenConstantsAndTypesOnComponentMode()
 {
     String filePath = String::Format("%s/%s.h",
             mDirectory.string(), mMetaComponent->mName);
@@ -630,18 +679,20 @@ void CodeGenerator::GenTypeDeclarationsOnComponentMode()
 
     builder.Append(mLicense);
     builder.Append("\n");
-    builder.Append("#include \"../../src/runtime/ccmtypes.h\"\n\n");
+    builder.Append("#include <ccmtypes.h>\n\n");
     builder.Append("using namespace ccm;\n\n");
 
     MetaComponent* mc = mMetaComponent;
     builder.AppendFormat("extern const ComponentID CID_%s;\n\n", mc->mName);
     for (int i = 0; i < mc->mNamespaceNumber; i++) {
         MetaNamespace* mn = mc->mNamespaces[i];
-        if ((mn->mEnumerationNumber - mn->mExternalEnumerationNumber) +
+        if (mn->mConstantNumber +
+                (mn->mEnumerationNumber - mn->mExternalEnumerationNumber) +
                 (mn->mInterfaceNumber - mn->mExternalInterfaceNumber) == 0) {
             continue;
         }
         builder.Append(GenNamespaceBegin(String(mn->mName)));
+        builder.Append(GenConstantsInHeader(mn));
         builder.Append(GenEnumerationPredeclarations(mn));
         builder.Append(GenInterfaceIDPredeclarations(mn));
         builder.Append(GenInterfacePredeclarations(mn));
@@ -660,7 +711,10 @@ void CodeGenerator::GenTypeDeclarationsOnComponentMode()
         builder.Append(GenInterfaceDeclarations(mn));
         builder.Append(GenNamespaceEnd(String(mn->mName)));
         if (i != mc->mNamespaceNumber - 1) builder.Append("\n");
+        else builder.Append("\n");
     }
+    builder.Append("extern void AddComponentCount();\n"
+                   "extern void ReleaseComponentCount();\n");
 
     String data = builder.ToString();
     file.Write(data.string(), data.GetLength());
@@ -745,8 +799,10 @@ void CodeGenerator::GenCoclassHeader(
     builder.AppendFormat("extern const CoclassID CID_%s;\n\n", mk->mName);
     builder.AppendFormat("COCLASS_ID(%s)\n", Uuid(mk->mUuid).Dump().string());
     builder.AppendFormat("class _%s\n", mk->mName);
-    builder.Append("{\n"
-                   "public:\n");
+    builder.AppendFormat("{\n"
+                         "public:\n"
+                         "    _%s();\n\n"
+                         "    virtual ~_%s();\n\n", mk->mName, mk->mName);
     MetaInterface* mi = mMetaComponent->mInterfaces[mk->mInterfaceIndexes[mk->mInterfaceNumber - 1]];
     for (int i = 0; i < mi->mMethodNumber; i++) {
         MetaMethod* mm = mi->mMethods[i];
@@ -783,14 +839,15 @@ void CodeGenerator::GenCoclassCpp(
     builder.Append("\n");
     builder.AppendFormat("#include \"%s.h\"\n", mk->mName);
     builder.Append("#include <ccmautoptr.h>\n"
-                   "#include <ccmobject.h>\n\n"
+                   "#include <ccmobject.h>\n"
+                   "#include <ccmspinlock.h>\n\n"
                    "#include <stdlib.h>\n"
                    "#include <new>\n\n");
     builder.Append("using namespace ccm;\n\n");
 
     builder.Append(GenNamespaceBegin(String(mk->mNamespace)));
     builder.Append(GenCoclassObject(mk));
-    builder.Append(GenCoclassNewMethods(mk));
+    builder.Append(GenCoclassMethods(mk));
     builder.Append(GenNamespaceEnd(String(mk->mNamespace)));
 
     String data = builder.ToString();
@@ -809,8 +866,10 @@ String CodeGenerator::GenCoclassObject(
     MetaInterface* mi = mMetaComponent->mInterfaces[mk->mInterfaceIndexes[mk->mInterfaceNumber - 1]];
     builder.AppendFormat("    , public %s\n", mi->mName);
     builder.Append("{\n");
-    builder.Append("public:\n"
-                   "    CCM_INTERFACE_DECL();\n\n");
+    builder.AppendFormat("public:\n"
+                         "    %sClassObject();\n\n"
+                         "    ~%sClassObject();\n\n"
+                         "    CCM_INTERFACE_DECL();\n\n", mk->mName, mk->mName);
     for (int i = 0; i < mi->mMethodNumber; i++) {
         MetaMethod* mm = mi->mMethods[i];
         builder.AppendFormat("    ECode %s(\n", mm->mName);
@@ -822,8 +881,21 @@ String CodeGenerator::GenCoclassObject(
         if (i != mi->mMethodNumber - 1) builder.Append("\n");
     }
     builder.Append("};\n\n");
+    builder.AppendFormat("static %s* s%sClassObject = nullptr;\n", mi->mName, mk->mName);
+    builder.AppendFormat("static Spinlock s%sClassObjectLock;\n\n", mk->mName);
     builder.AppendFormat("CCM_INTERFACE_IMPL_1(%sClassObject, Object, %s);\n\n",
             mk->mName, mi->mName);
+    builder.AppendFormat("%sClassObject::%sClassObject()\n"
+                         "{\n"
+                         "    AddComponentCount();\n"
+                         "}\n\n", mk->mName, mk->mName);
+    builder.AppendFormat("%sClassObject::~%sClassObject()\n"
+                         "{\n"
+                         "    s%sClassObjectLock.Lock();\n"
+                         "    s%sClassObject = nullptr;\n"
+                         "    s%sClassObjectLock.Unlock();\n"
+                         "    ReleaseComponentCount();\n"
+                         "}\n\n", mk->mName, mk->mName, mk->mName, mk->mName, mk->mName);
 
     for (int i = 0; i < mi->mMethodNumber; i++) {
         MetaMethod* mm = mi->mMethods[i];
@@ -860,10 +932,11 @@ String CodeGenerator::GenCoclassObject(
     builder.AppendFormat("ECode Get%sClassObject(IInterface** classObject)\n", mk->mName);
     builder.Append("{\n");
     builder.Append("    VALIDATE_NOT_NULL(classObject);\n\n");
-    builder.AppendFormat("    static AutoPtr<%s> s%sClassObject;\n", mi->mName, mk->mName);
+    builder.AppendFormat("    s%sClassObjectLock.Lock();\n", mk->mName);
     builder.AppendFormat("    if (s%sClassObject == nullptr) {\n", mk->mName);
     builder.AppendFormat("        s%sClassObject = new %sClassObject();\n", mk->mName, mk->mName);
     builder.Append("    }\n");
+    builder.AppendFormat("    s%sClassObjectLock.Unlock();\n", mk->mName);
     builder.AppendFormat("    *classObject = s%sClassObject;\n", mk->mName);
     builder.Append("    REFCOUNT_ADD(*classObject);\n"
                    "    return NOERROR;\n");
@@ -872,11 +945,20 @@ String CodeGenerator::GenCoclassObject(
     return builder.ToString();
 }
 
-String CodeGenerator::GenCoclassNewMethods(
+String CodeGenerator::GenCoclassMethods(
     /* [in] */ MetaCoclass* mk)
 {
     StringBuilder builder;
 
+    builder.AppendFormat("_%s::_%s()\n"
+                         "{\n"
+                         "    s%sClassObject->AddRef();\n"
+                         "}\n"
+                         "\n"
+                         "_%s::~_%s()\n"
+                         "{\n"
+                         "    s%sClassObject->Release();\n"
+                         "}\n\n", mk->mName, mk->mName, mk->mName, mk->mName, mk->mName, mk->mName);
     MetaInterface* mi = mMetaComponent->mInterfaces[mk->mInterfaceIndexes[mk->mInterfaceNumber - 1]];
     for (int i = 0; i < mi->mMethodNumber; i++) {
         MetaMethod* mm = mi->mMethods[i];
@@ -913,8 +995,9 @@ void CodeGenerator::GenComponentCpp()
 
     builder.Append(mLicense);
     builder.Append("\n");
-    builder.AppendFormat("#include \"../../src/runtime/component/ccmcomponent.h\"\n"
-                         "#include \"%s.h\"\n\n"
+    builder.AppendFormat("#include \"%s.h\"\n"
+                         "#include <ccmcomponent.h>\n"
+                         "#include <ccmrefbase.h>\n\n"
                          "using namespace ccm;\n\n", mMetaComponent->mName);
 
     MetaComponent* mc = mMetaComponent;
@@ -922,12 +1005,13 @@ void CodeGenerator::GenComponentCpp()
     builder.Append("\n");
     for (int i = 0; i < mc->mNamespaceNumber; i++) {
         MetaNamespace* mn = mc->mNamespaces[i];
-        if ((mn->mEnumerationNumber - mn->mExternalEnumerationNumber) +
+        if (mn->mConstantNumber +
                 (mn->mInterfaceNumber - mn->mExternalInterfaceNumber) +
                 mn->mCoclassNumber == 0) {
             continue;
         }
         builder.Append(GenNamespaceBegin(String(mn->mName)));
+        builder.Append(GenConstantsInCpp(mn));
         builder.Append(GenInterfaceConstantsInCpp(mn));
         builder.Append(GenInterfaceIDsInCpp(mn));
         builder.Append(GenCoclassIDsInCpp(mn));
@@ -939,11 +1023,33 @@ void CodeGenerator::GenComponentCpp()
     builder.Append(GenClassObjectGetterArray());
     builder.Append("\n");
     builder.Append(GenSoGetClassObject());
+    builder.Append("\n");
+    builder.Append(GenComponentObject());
 
     String data = builder.ToString();
     file.Write(data.string(), data.GetLength());
     file.Flush();
     file.Close();
+}
+
+String CodeGenerator::GenConstantsInCpp(
+    /* [in] */ MetaNamespace* mn)
+{
+    StringBuilder builder;
+
+    if (mn->mConstantNumber == 0) return String();
+
+    for (int i = 0; i < mn->mConstantNumber; i++) {
+        MetaConstant* mc = mMetaComponent->mConstants[mn->mConstantIndexes[i]];
+        MetaType* mt = mMetaComponent->mTypes[mc->mTypeIndex];
+        if (mt->mKind == CcmTypeKind::String) {
+            builder.AppendFormat("const %s %s(%s);\n", GenType(mt).string(),
+                    mc->mName, GenValue(mt, mc->mValue).string());
+        }
+    }
+    builder.Append("\n");
+
+    return builder.ToString();
 }
 
 String CodeGenerator::GenInterfaceConstantsInCpp(
@@ -961,7 +1067,7 @@ String CodeGenerator::GenInterfaceConstantsInCpp(
             MetaType* mt = mMetaComponent->mTypes[mc->mTypeIndex];
             if (mt->mKind == CcmTypeKind::String) {
                 builder.AppendFormat("const %s %s::%s(%s);\n", GenType(mt).string(),
-                        mi->mName, mc->mName, GenValue(mc).string());
+                        mi->mName, mc->mName, GenValue(mt, mc->mValue).string());
             }
         }
     }
@@ -1082,7 +1188,41 @@ String CodeGenerator::GenSoGetClassObject()
     return builder.ToString();
 }
 
-void CodeGenerator::GenTypeDeclarationsOnUserMode()
+String CodeGenerator::GenComponentObject()
+{
+    StringBuilder builder;
+
+    builder.AppendFormat("class C%s\n"
+                         "    : public LightRefBase\n"
+                         "{\n"
+                         "public:\n"
+                         "    C%s();\n"
+                         "};\n"
+                         "C%s::C%s()\n"
+                         "{\n"
+                         "    AddRef();\n"
+                         "}\n\n",
+                         mMetaComponent->mName, mMetaComponent->mName,
+                         mMetaComponent->mName, mMetaComponent->mName);
+    builder.AppendFormat("C%s sComponentObject;\n\n", mMetaComponent->mName);
+    builder.Append("EXTERN_C COM_PUBLIC Boolean soCanUnload()\n"
+                   "{\n"
+                   "    return sComponentObject.GetStrongCount() == 1;\n"
+                   "}\n"
+                   "\n"
+                   "void AddComponentCount()\n"
+                   "{\n"
+                   "    sComponentObject.AddRef();\n"
+                   "}\n"
+                   "\n"
+                   "void ReleaseComponentCount()\n"
+                   "{\n"
+                   "    sComponentObject.Release();\n"
+                   "}\n");
+    return builder.ToString();
+}
+
+void CodeGenerator::GenConstantsAndTypesOnUserMode()
 {
     String filePath = String::Format("%s/%s.h",
             mDirectory.string(), mMetaComponent->mName);
@@ -1092,18 +1232,20 @@ void CodeGenerator::GenTypeDeclarationsOnUserMode()
 
     builder.Append(mLicense);
     builder.Append("\n");
-    builder.Append("#include \"../../src/runtime/ccmtypes.h\"\n\n");
+    builder.Append("#include <ccmtypes.h>\n\n");
     builder.Append("using namespace ccm;\n\n");
 
     MetaComponent* mc = mMetaComponent;
     builder.AppendFormat("extern const ComponentID CID_%s;\n\n", mc->mName);
     for (int i = 0; i < mc->mNamespaceNumber; i++) {
         MetaNamespace* mn = mc->mNamespaces[i];
-        if ((mn->mEnumerationNumber - mn->mExternalEnumerationNumber) +
+        if (mn->mConstantNumber +
+                (mn->mEnumerationNumber - mn->mExternalEnumerationNumber) +
                 (mn->mInterfaceNumber - mn->mExternalInterfaceNumber) == 0) {
             continue;
         }
         builder.Append(GenNamespaceBegin(String(mn->mName)));
+        builder.Append(GenConstantsInHeader(mn));
         builder.Append(GenEnumerationPredeclarations(mn));
         builder.Append(GenInterfaceIDPredeclarations(mn));
         builder.Append(GenInterfacePredeclarations(mn));
@@ -1200,12 +1342,13 @@ void CodeGenerator::GenComponentCppOnUserMode()
     builder.Append("\n");
     for (int i = 0; i < mc->mNamespaceNumber; i++) {
         MetaNamespace* mn = mc->mNamespaces[i];
-        if ((mn->mEnumerationNumber - mn->mExternalEnumerationNumber) +
+        if (mn->mConstantNumber +
                 (mn->mInterfaceNumber - mn->mExternalInterfaceNumber) +
                 mn->mCoclassNumber == 0) {
             continue;
         }
         builder.Append(GenNamespaceBegin(String(mn->mName)));
+        builder.Append(GenConstantsInCpp(mn));
         builder.Append(GenInterfaceConstantsInCpp(mn));
         builder.Append(GenInterfaceIDsInCpp(mn));
         builder.Append(GenCoclassIDsInCpp(mn));
@@ -1302,7 +1445,7 @@ void CodeGenerator::GenMetadataWrapper()
     int dataSize = serializer.GetDataSize();
     uintptr_t data = serializer.GetData();
 
-    builder.Append("#include <ccmdef.h>\n\n");
+    builder.Append("#include <ccmdef.h>\n");
     builder.Append("#include <stdint.h>\n\n");
     builder.AppendFormat("struct MetadataWrapper\n"
                    "{\n"

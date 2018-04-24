@@ -25,7 +25,8 @@ include_directories(
 set(SOURCES
     ccmlogger.cpp
     ccmobject.cpp
-    ccmrefbase.cpp)
+    ccmrefbase.cpp
+    ccmspinlock.cpp)
 
 add_library(util STATIC
     ${SOURCES})
@@ -34,7 +35,8 @@ set(DEPLOY_HEADERS
     ${UTIL_DIR}/ccmautoptr.h
     ${UTIL_DIR}/ccmlogger.h
     ${UTIL_DIR}/ccmobject.h
-    ${UTIL_DIR}/ccmrefbase.h)
+    ${UTIL_DIR}/ccmrefbase.h
+    ${UTIL_DIR}/ccmspinlock.h)
 
 add_custom_command(
     TARGET util

@@ -14,47 +14,29 @@
 // limitations under the License.
 //=========================================================================
 
-/**
- * This file contains the definition of interface ICelestialBody.
- * ICelestialBody stands for all the celestial body in the Universe.
- */
+#ifndef __CCM_SPINLOCK_H__
+#define __CCM_SPINLOCK_H__
 
-const Long C = 299792458;
+#include "ccmtypes.h"
+#include <atomic>
 
-enum CelestialBodyKind
+namespace ccm {
+
+class COM_PUBLIC Spinlock
 {
-    meteor = 1,
-    planet,
-    satellite,
-    star
+public:
+    constexpr Spinlock() = default;
+
+    void Lock();
+
+    Boolean TryLock();
+
+    void Unlock();
+
+private:
+    std::atomic<Boolean> mLocked{false};
+};
+
 }
 
-[
-    uuid(38fe0857-a480-4d3b-9f6b-1701a760266d),
-    version(0.1.0),
-    description("This is the definition of ICelestialBody.")
-]
-interface ICelestialBody
-{
-    GetName(
-        [out] String* name);
-
-    GetKind(
-        [out] CelestialBodyKind* kind);
-
-    GetSpace(
-        [out] String* universe);
-
-    GetPosition(
-        [out] Float* latitude,
-        [out] Float* longitude);
-
-    GetSize(
-        [out] Double* size);
-
-    GetWeight(
-        [out] Double* weight);
-
-    GetAge(
-        [out] Integer* age);
-}
+#endif // __CCM_SPINLOCK_H__

@@ -26,6 +26,13 @@ Constant::Constant()
     , mValue(nullptr)
 {}
 
+void Constant::SetNamespace(
+    /* [in] */ Namespace* ns)
+{
+    mNamespace = ns;
+    mNamespace->AddConstant(this);
+}
+
 void Constant::DeepCopy(
     /* [in] */ Constant* source,
     /* [in] */ Pool* pool)

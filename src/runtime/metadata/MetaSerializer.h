@@ -18,7 +18,6 @@
 #define __CCM_METADATA_METASERIALIZER_H__
 
 #include "Component.h"
-
 #include <stddef.h>
 #include <stdint.h>
 

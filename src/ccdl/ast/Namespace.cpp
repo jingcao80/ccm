@@ -25,6 +25,7 @@ Namespace::Namespace(
     , mOuterNamespace(nullptr)
     , mNamespaces(5, false)
     , mCoclasses(20, false)
+    , mConstants(10, false)
     , mEnumerations(10, false)
     , mInterfaces(20, false)
     , mResolved(true)
@@ -63,6 +64,14 @@ bool Namespace::AddCoclass(
     if (klass == nullptr) return true;
 
     return mCoclasses.Add(klass);
+}
+
+bool Namespace::AddConstant(
+    /* [in] */ Constant* constant)
+{
+    if (constant == nullptr) return true;
+
+    return mConstants.Add(constant);
 }
 
 bool Namespace::AddEnumeration(

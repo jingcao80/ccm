@@ -22,7 +22,6 @@
 #include "CMetaMethod.h"
 #include "CMetaParameter.h"
 #include "CMetaType.h"
-
 #include <stdlib.h>
 
 using ccm::metadata::MetaCoclass;

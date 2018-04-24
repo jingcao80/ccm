@@ -24,7 +24,7 @@ struct KV
     String mKey;
     Tokenizer::Token mValue;
 }
-sKeywords[32] =
+sKeywords[33] =
 {
     { String("Array"), Tokenizer::Token::ARRAY },
     { String("Boolean"), Tokenizer::Token::BOOLEAN },
@@ -51,6 +51,7 @@ sKeywords[32] =
     { String("Long"), Tokenizer::Token::LONG },
     { String("module"), Tokenizer::Token::MODULE },
     { String("namespace"), Tokenizer::Token::NAMESPACE },
+    { String("nullptr"), Tokenizer::Token::NULLPTR },
     { String("out"), Tokenizer::Token::OUT },
     { String("Short"), Tokenizer::Token::SHORT },
     { String("String"), Tokenizer::Token::STRING },
@@ -548,7 +549,7 @@ Tokenizer::Token Tokenizer::ReadNumber(
 
     builder.Append((char)c);
     mBit = 32;
-    int mRadix = c == '0' ? 8 : 10;
+    mRadix = c == '0' ? 8 : 10;
     int state = c == '0' ? NUMBER_INT_0 : NUMBER_INT;
     while ((c = mFile->Read()) != -1) {
         if (state == NUMBER_INT_0) {
@@ -849,6 +850,8 @@ const char* Tokenizer::DumpToken(
             return "namespace";
         case Token::NOT:
             return "!";
+        case Token::NULLPTR:
+            return "nullptr";
         case Token::NUMBER_INTEGRAL:
             return mNumberString.string();
         case Token::NUMBER_FLOATINGPOINT:

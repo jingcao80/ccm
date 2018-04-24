@@ -21,6 +21,15 @@
 module FooBarDemo
 {
 
+namespace ccm {
+namespace demo {
+
+const Long SERIALIZE_NUMBER = 0x123456789ABCDEFll;
+const String MODULE_NAME = "FooBarDemo";
+
+}
+}
+
 include "IFoo.cdl"
 include "IBar.cdl"
 

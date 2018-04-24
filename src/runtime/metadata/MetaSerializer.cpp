@@ -46,6 +46,13 @@ void MetaSerializer::Serialize()
     }
     mc->mNamespaces = (MetaNamespace**)SerializeAdjust(mc->mNamespaces);
 
+    for (int i = 0; i < mc->mConstantNumber; i++) {
+        MetaConstant* mk = mc->mConstants[i];
+        SerializeMetaConstant(mk);
+        mc->mConstants[i] = (MetaConstant*)SerializeAdjust(mk);
+    }
+    mc->mConstants = (MetaConstant**)SerializeAdjust(mc->mConstants);
+
     for (int i = 0; i < mc->mCoclassNumber; i++) {
         MetaCoclass* mk = mc->mCoclasses[i];
         SerializeMetaCoclass(mk);
@@ -152,6 +159,7 @@ void MetaSerializer::SerializeMetaNamespace(
     /* [in] */ MetaNamespace* mn)
 {
     mn->mName = (char*)SerializeAdjust(mn->mName);
+    mn->mConstantIndexes = (int*)SerializeAdjust(mn->mConstantIndexes);
     mn->mCoclassIndexes = (int*)SerializeAdjust(mn->mCoclassIndexes);
     mn->mEnumerationIndexes = (int*)SerializeAdjust(mn->mEnumerationIndexes);
     mn->mInterfaceIndexes = (int*)SerializeAdjust(mn->mInterfaceIndexes);
@@ -195,6 +203,13 @@ void MetaSerializer::Deserialize(
         mc->mNamespaces[i] = (MetaNamespace*)DeserializeAdjust(mc->mNamespaces[i]);
         MetaNamespace* mn = mc->mNamespaces[i];
         DeserializeMetaNamespace(mn);
+    }
+
+    mc->mConstants = (MetaConstant**)DeserializeAdjust(mc->mConstants);
+    for (int i = 0; i < mc->mConstantNumber; i++) {
+        mc->mConstants[i] = (MetaConstant*)DeserializeAdjust(mc->mConstants[i]);
+        MetaConstant* mk = mc->mConstants[i];
+        DeserializeMetaConstant(mk);
     }
 
     mc->mCoclasses = (MetaCoclass**)DeserializeAdjust(mc->mCoclasses);
@@ -295,6 +310,7 @@ void MetaSerializer::DeserializeMetaNamespace(
     /* [in] */ MetaNamespace* mn)
 {
     mn->mName = (char*)DeserializeAdjust(mn->mName);
+    mn->mConstantIndexes = (int*)DeserializeAdjust(mn->mConstantIndexes);
     mn->mCoclassIndexes = (int*)DeserializeAdjust(mn->mCoclassIndexes);
     mn->mEnumerationIndexes = (int*)DeserializeAdjust(mn->mEnumerationIndexes);
     mn->mInterfaceIndexes = (int*)DeserializeAdjust(mn->mInterfaceIndexes);

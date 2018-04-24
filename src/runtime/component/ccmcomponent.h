@@ -30,6 +30,7 @@ struct ClassObjectGetter
 };
 
 typedef ECode (*GetClassObjectPtr)(const CoclassID&, IInterface**);
+typedef Boolean (*CanUnloadPtr)();
 
 struct MetadataWrapper
 {
@@ -41,6 +42,7 @@ struct CcmComponent
 {
     void*               mSoHandle;
     GetClassObjectPtr   mSoGetClassObject;
+    CanUnloadPtr        mSoCanUnload;
     MetadataWrapper*    mMetadataWrapper;
     IMetaComponent*     mMetaComponent;
 

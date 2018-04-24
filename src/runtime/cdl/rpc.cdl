@@ -47,14 +47,14 @@ interface IProxy
 
     LinkToDeath(
         [in] IDeathRecipient* recipient,
-        [in] HANDLE cookie,
-        [in] Integer flags);
+        [in] HANDLE cookie = 0,
+        [in] Integer flags = 0);
 
     UnlinkToDeath(
         [in] IDeathRecipient* recipient,
-        [in] HANDLE cookie,
-        [in] Integer flags,
-        [out] IDeathRecipient** outRecipient);
+        [in] HANDLE cookie = 0,
+        [in] Integer flags = 0,
+        [out] IDeathRecipient** outRecipient = nullptr);
 }
 
 [

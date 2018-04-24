@@ -29,6 +29,7 @@ using ccm::metadata::MetaMethod;
 using ccm::metadata::MetaNamespace;
 using ccm::metadata::MetaParameter;
 using ccm::metadata::MetaType;
+using ccm::metadata::MetaValue;
 
 namespace ccdl {
 namespace codegen {
@@ -56,7 +57,13 @@ public:
 private:
     bool ResolveDirectory();
 
-    void GenTypeDeclarationsOnCcmrtMode();
+    void GenConstantsAndTypesOnCcmrtMode();
+
+    String GenConstantsInHeader(
+        /* [in] */ MetaNamespace* mn);
+
+    String GenConstant(
+        /* [in] */ MetaConstant* mc);
 
     String GenEnumerationPredeclarations(
         /* [in] */ MetaNamespace* mn);
@@ -93,7 +100,8 @@ private:
         /* [in] */ int attr = 0);
 
     String GenValue(
-        /* [in] */ MetaConstant* mc);
+        /* [in] */ MetaType* mt,
+        /* [in] */ MetaValue& mv);
 
     void GenIds();
 
@@ -102,7 +110,7 @@ private:
     String GenInterfaceIDsOnCcmrtMode(
         /* [in] */ MetaNamespace* mn);
 
-    void GenTypeDeclarationsOnComponentMode();
+    void GenConstantsAndTypesOnComponentMode();
 
     String GenNamespaceBegin(
         /* [in] */ const String& ns);
@@ -124,10 +132,13 @@ private:
     String GenCoclassObject(
         /* [in] */ MetaCoclass* mk);
 
-    String GenCoclassNewMethods(
+    String GenCoclassMethods(
         /* [in] */ MetaCoclass* mk);
 
     void GenComponentCpp();
+
+    String GenConstantsInCpp(
+        /* [in] */ MetaNamespace* mn);
 
     String GenInterfaceConstantsInCpp(
         /* [in] */ MetaNamespace* mn);
@@ -144,7 +155,9 @@ private:
 
     String GenSoGetClassObject();
 
-    void GenTypeDeclarationsOnUserMode();
+    String GenComponentObject();
+
+    void GenConstantsAndTypesOnUserMode();
 
     String GenCoclassDeclarations(
         /* [in] */ MetaNamespace* mn);

@@ -24,6 +24,7 @@ namespace ast {
 
 Pool::Pool()
     : mCoclasses(20)
+    , mConstants(10)
     , mEnumerations(10)
     , mInterfacePredecls(20, false)
     , mInterfaces(20)
@@ -113,6 +114,26 @@ Coclass* Pool::FindClass(
         return nullptr;
     }
     return (Coclass*)type;
+}
+
+bool Pool::AddConstant(
+    /* [in] */ Constant* constant)
+{
+    if (constant == nullptr) return true;
+
+    return mConstants.Add(constant);
+}
+
+Constant* Pool::FindConstant(
+    /* [in] */ const String& constantName)
+{
+    for (int i = 0; i < mConstants.GetSize(); i++) {
+        Constant* constant = mConstants.Get(i);
+        if (constant->GetName().Equals(constantName)) {
+            return constant;
+        }
+    }
+    return nullptr;
 }
 
 bool Pool::AddNamespace(

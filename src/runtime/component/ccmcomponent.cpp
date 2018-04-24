@@ -27,7 +27,6 @@
 #include <errno.h>
 #include <pthread.h>
 #include <stdio.h>
-
 #include <unistd.h>
 
 using ccm::metadata::MetaComponent;
@@ -77,6 +76,7 @@ void InitCompSearchPaths()
 CcmComponent::CcmComponent()
     : mSoHandle(nullptr)
     , mSoGetClassObject(nullptr)
+    , mSoCanUnload(nullptr)
     , mMetadataWrapper(nullptr)
     , mMetaComponent(nullptr)
 {}
@@ -86,6 +86,7 @@ CcmComponent::~CcmComponent()
     REFCOUNT_RELEASE(mMetaComponent);
     mSoHandle = nullptr;
     mSoGetClassObject = nullptr;
+    mSoCanUnload = nullptr;
     mMetadataWrapper = nullptr;
     mMetaComponent = nullptr;
 }
@@ -117,13 +118,19 @@ static CcmComponent* CoLoadComponent(
         return nullptr;
     }
 
-    GetClassObjectPtr func = (GetClassObjectPtr)dlsym(handle, "soGetClassObject");
-    if (func == nullptr) {
+    GetClassObjectPtr getFunc = (GetClassObjectPtr)dlsym(handle, "soGetClassObject");
+    if (getFunc == nullptr) {
         Logger::E("CCMRT", "Dlsym \"soGetClassObject\" function from \"%s\" \
                 component failed. The reason is %s.", compPath.string(), strerror(errno));
         return nullptr;
     }
 
+    CanUnloadPtr canFunc = (CanUnloadPtr)dlsym(handle, "soCanUnload");
+    if (canFunc == nullptr) {
+        Logger::E("CCMRT", "Dlsym \"soCanUnload\" function from \"%s\" \
+                component failed. The reason is %s.", compPath.string(), strerror(errno));
+        return nullptr;
+    }
 
     MetadataWrapper* metadata = *(MetadataWrapper**)(dlsym(handle, "soMetadataHandle"));
     if (metadata == nullptr) {
@@ -134,7 +141,8 @@ static CcmComponent* CoLoadComponent(
 
     CcmComponent* ccmComp = new CcmComponent();
     ccmComp->mSoHandle = handle;
-    ccmComp->mSoGetClassObject = func;
+    ccmComp->mSoGetClassObject = getFunc;
+    ccmComp->mSoCanUnload = canFunc;
     ccmComp->mMetadataWrapper = metadata;
     ccmComp->mMetaComponent = nullptr;
     {

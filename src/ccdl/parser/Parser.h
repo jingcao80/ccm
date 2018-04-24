@@ -23,6 +23,7 @@
 #include "../ast/AndExpression.h"
 #include "../ast/Attribute.h"
 #include "../ast/Coclass.h"
+#include "../ast/Constant.h"
 #include "../ast/Enumeration.h"
 #include "../ast/ExclusiveOrExpression.h"
 #include "../ast/Expression.h"
@@ -44,6 +45,7 @@ using ccdl::ast::AdditiveExpression;
 using ccdl::ast::AndExpression;
 using ccdl::ast::Attribute;
 using ccdl::ast::Coclass;
+using ccdl::ast::Constant;
 using ccdl::ast::Enumeration;
 using ccdl::ast::ExclusiveOrExpression;
 using ccdl::ast::Expression;
@@ -147,8 +149,7 @@ private:
 
     Type* ParseArrayType();
 
-    bool ParseInterfaceConstant(
-        /* [in] */ Interface* interface);
+    Constant* ParseConstant();
 
     Expression* ParseExpression(
         /* [in] */ Type* exprType);

@@ -25,6 +25,7 @@
 namespace ccdl {
 namespace ast {
 
+class Namespace;
 class Pool;
 
 class Constant : public Node
@@ -47,6 +48,11 @@ public:
     inline void SetValue(
         /* [in] */ Expression* value);
 
+    inline Namespace* GetNamespace();
+
+    void SetNamespace(
+        /* [in] */ Namespace* ns);
+
     void DeepCopy(
         /* [in] */ Constant* source,
         /* [in] */ Pool* pool);
@@ -58,6 +64,7 @@ private:
     String mName;
     Type* mType;
     Expression* mValue;
+    Namespace* mNamespace;
 };
 
 String Constant::GetName()
@@ -91,6 +98,11 @@ void Constant::SetValue(
     /* [in] */ Expression* value)
 {
     mValue = value;
+}
+
+Namespace* Constant::GetNamespace()
+{
+    return mNamespace;
 }
 
 }

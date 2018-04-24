@@ -93,6 +93,7 @@ size_t MetaBuilder::CalculateMetadataSize()
 void MetaBuilder::CalculateMetaComponent(
     /* [in] */ Module* module)
 {
+    int CONST_NUM = module->GetConstantNumber();
     int CLS_NUM = module->GetCoclassNumber();
     int ENUMN_NUM = module->GetEnumerationNumber();
     int ITF_NUM = module->GetInterfaceNumber();
@@ -107,8 +108,10 @@ void MetaBuilder::CalculateMetaComponent(
     mStringPool.Add(module->GetUrl());
     // mNamespaces's address
     mBasePtr = ALIGN(mBasePtr + sizeof(MetaComponent));
-    // mCoclasses's address
+    // mConstatns's address
     mBasePtr = ALIGN(mBasePtr + sizeof(MetaNamespace*) * NS_NUM);
+    // mCoclasses's address
+    mBasePtr = ALIGN(mBasePtr + sizeof(MetaConstant*) * CONST_NUM);
     // mEnumerations's address
     mBasePtr = ALIGN(mBasePtr + sizeof(MetaCoclass*) * CLS_NUM);
     // mInterfaces's address
@@ -120,6 +123,10 @@ void MetaBuilder::CalculateMetaComponent(
 
     for (int i = 0; i < NS_NUM; i++) {
         CalculateMetaNamespace(module->GetNamespace(i));
+    }
+
+    for (int i = 0; i < CONST_NUM; i++) {
+        CalculateMetaConstant(module->GetConstant(i));
     }
 
     for (int i = 0; i < CLS_NUM; i++) {
@@ -261,6 +268,7 @@ void MetaBuilder::CalculateMetaMethod(
 void MetaBuilder::CalculateMetaNamespace(
     /* [in] */ Namespace* ns)
 {
+    int CONST_NUM = ns->GetConstantNumber();
     int CLS_NUM = ns->GetCoclassNumber();
     int ENUMN_NUM = ns->GetEnumerationNumber();
     int ITF_NUM = ns->GetInterfaceNumber();
@@ -269,8 +277,10 @@ void MetaBuilder::CalculateMetaNamespace(
     mBasePtr = ALIGN(mBasePtr);
     // add mName to StringPool
     mStringPool.Add(ns->ToString());
-    // mCoclassIndexes's address
+    // mConstantIndexes's address
     mBasePtr = ALIGN4(mBasePtr + sizeof(MetaNamespace));
+    // mCoclassIndexes's address
+    mBasePtr = ALIGN4(mBasePtr + sizeof(int) * CONST_NUM);
     // mEnumerationIndexes's address
     mBasePtr = ALIGN4(mBasePtr + sizeof(int) * CLS_NUM);
     // mInterfaceIndexes's address
@@ -315,6 +325,7 @@ void MetaBuilder::WriteMetadata(
 void MetaBuilder::WriteMetaComponent(
     /* [in] */ Module* module)
 {
+    int CONST_NUM = module->GetConstantNumber();
     int CLS_NUM = module->GetCoclassNumber();
     int ENUMN_NUM = module->GetEnumerationNumber();
     int ITF_NUM = module->GetInterfaceNumber();
@@ -328,6 +339,7 @@ void MetaBuilder::WriteMetaComponent(
     mc->mSize = mSize;
     module->GetUuid().Assign(mc->mUuid);
     mc->mNamespaceNumber = NS_NUM;
+    mc->mConstantNumber = CONST_NUM;
     mc->mCoclassNumber = CLS_NUM;
     mc->mEnumerationNumber = ENUMN_NUM;
     mc->mExternalEnumerationNumber = 0;
@@ -337,8 +349,11 @@ void MetaBuilder::WriteMetaComponent(
     // mNamespaces's address
     mBasePtr = ALIGN(mBasePtr + sizeof(MetaComponent));
     mc->mNamespaces = reinterpret_cast<MetaNamespace**>(mBasePtr);
-    // mCoclasses's address
+    // mConstants's address
     mBasePtr = ALIGN(mBasePtr + sizeof(MetaNamespace*) * NS_NUM);
+    mc->mConstants = reinterpret_cast<MetaConstant**>(mBasePtr);
+    // mCoclasses's address
+    mBasePtr = ALIGN(mBasePtr + sizeof(MetaConstant*) * CONST_NUM);
     mc->mCoclasses = reinterpret_cast<MetaCoclass**>(mBasePtr);
     // mEnumerations's address
     mBasePtr = ALIGN(mBasePtr + sizeof(MetaCoclass*) * CLS_NUM);
@@ -363,6 +378,10 @@ void MetaBuilder::WriteMetaComponent(
         mc->mNamespaces[i] = WriteMetaNamespace(module->GetNamespace(i));
         mc->mExternalInterfaceNumber += module->GetNamespace(i)->GetExternalInterfaceNumber();
         mc->mExternalEnumerationNumber += module->GetNamespace(i)->GetExternalEnumerationNumber();
+    }
+
+    for (int i = 0; i < CONST_NUM; i++) {
+        mc->mConstants[i] = WriteMetaConstant(module->GetConstant(i));
     }
 
     for (int i = 0; i < CLS_NUM; i++) {
@@ -445,9 +464,9 @@ MetaConstant* MetaBuilder::WriteMetaConstant(
                     constant->GetValue()->EnumeratorValue());
     }
     if (type->IsIntegralType()) {
-        mc->mRadix = constant->GetValue()->GetRadix();
+        mc->mValue.mRadix = constant->GetValue()->GetRadix();
     }
-    else mc->mRadix = 0;
+    else mc->mValue.mRadix = 0;
     // end address
     mBasePtr = mBasePtr + sizeof(MetaConstant);
 
@@ -559,6 +578,7 @@ MetaMethod* MetaBuilder::WriteMetaMethod(
 MetaNamespace* MetaBuilder::WriteMetaNamespace(
     /* [in] */ Namespace* ns)
 {
+    int CONST_NUM = ns->GetConstantNumber();
     int CLS_NUM = ns->GetCoclassNumber();
     int ENUMN_NUM = ns->GetEnumerationNumber();
     int ITF_NUM = ns->GetInterfaceNumber();
@@ -567,13 +587,17 @@ MetaNamespace* MetaBuilder::WriteMetaNamespace(
     mBasePtr = ALIGN(mBasePtr);
     MetaNamespace* mn = reinterpret_cast<MetaNamespace*>(mBasePtr);
     mn->mName = WriteString(ns->ToString());
+    mn->mConstantNumber = CONST_NUM;
     mn->mCoclassNumber = CLS_NUM;
     mn->mEnumerationNumber = ENUMN_NUM;
     mn->mExternalEnumerationNumber = ns->GetExternalEnumerationNumber();
     mn->mInterfaceNumber = ITF_NUM;
     mn->mExternalInterfaceNumber = ns->GetExternalInterfaceNumber();
-    // mCoclassIndexes's address
+    // mConstantIndexes's address
     mBasePtr = ALIGN4(mBasePtr + sizeof(MetaNamespace));
+    mn->mConstantIndexes = reinterpret_cast<int*>(mBasePtr);
+    // mCoclassIndexes's address
+    mBasePtr = ALIGN4(mBasePtr + sizeof(int) * CONST_NUM);
     mn->mCoclassIndexes = reinterpret_cast<int*>(mBasePtr);
     // mEnumerationIndexes's address
     mBasePtr = ALIGN4(mBasePtr + sizeof(int) * CLS_NUM);
@@ -583,6 +607,11 @@ MetaNamespace* MetaBuilder::WriteMetaNamespace(
     mn->mInterfaceIndexes = reinterpret_cast<int*>(mBasePtr);
     // end address
     mBasePtr = mBasePtr + sizeof(int) * ITF_NUM;
+
+    for (int i = 0; i < CONST_NUM; i++) {
+        Constant* constant = ns->GetConstant(i);
+        mn->mConstantIndexes[i] = mModule->IndexOf(constant);
+    }
 
     for (int i = 0; i < CLS_NUM; i++) {
         Coclass* klass = ns->GetCoclass(i);
@@ -612,6 +641,33 @@ MetaParameter* MetaBuilder::WriteMetaParameter(
     mp->mAttribute = param->GetAttribute();
     Type* type = param->GetType();
     mp->mTypeIndex = mModule->IndexOf(type);
+    if (param->HasDefaultValue()){
+        mp->mHasDefaultValue = true;
+        if (type->IsByteType() || type->IsShortType() || type->IsIntegerType()) {
+            mp->mDefaultValue.mInteger = param->GetDefaultValue()->IntegerValue();
+        }
+        else if (type->IsLongType()) {
+            mp->mDefaultValue.mLong = param->GetDefaultValue()->LongValue();
+        }
+        else if (type->IsCharType()) {
+            mp->mDefaultValue.mInteger = param->GetDefaultValue()->CharacterValue();
+        }
+        else if (type->IsFloatType()) {
+            mp->mDefaultValue.mFloat = param->GetDefaultValue()->FloatValue();
+        }
+        else if (type->IsDoubleType()) {
+            mp->mDefaultValue.mDouble = param->GetDefaultValue()->DoubleValue();
+        }
+        else if (type->IsBooleanType()) {
+            mp->mDefaultValue.mBoolean = param->GetDefaultValue()->BooleanValue();
+        }
+        else if (type->IsPointerType()) {
+            mp->mDefaultValue.mLong = param->GetDefaultValue()->LongValue();
+        }
+    }
+    else {
+        mp->mHasDefaultValue = false;
+    }
     // end address
     mBasePtr = mBasePtr + sizeof(MetaParameter);
 

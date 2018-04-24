@@ -20,7 +20,6 @@
 #include "CMetaComponent.h"
 #include "Component.h"
 #include "MetaSerializer.h"
-
 #include <stdlib.h>
 
 using ccm::metadata::MetaSerializer;

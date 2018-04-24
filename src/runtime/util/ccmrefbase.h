@@ -34,7 +34,6 @@
 #define __CCM_REFBASE_H__
 
 #include "ccmtypes.h"
-
 #include <atomic>
 
 namespace ccm {

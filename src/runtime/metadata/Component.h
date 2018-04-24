@@ -34,6 +34,7 @@ struct MetaMethod;
 struct MetaNamespace;
 struct MetaParameter;
 struct MetaType;
+struct MetaValue;
 
 struct MetaComponent
 {
@@ -43,6 +44,7 @@ struct MetaComponent
     char*               mName;
     char*               mUrl;
     int                 mNamespaceNumber;
+    int                 mConstantNumber;
     int                 mCoclassNumber;
     int                 mEnumerationNumber;
     int                 mExternalEnumerationNumber;
@@ -50,6 +52,7 @@ struct MetaComponent
     int                 mExternalInterfaceNumber;
     int                 mTypeNumber;
     MetaNamespace**     mNamespaces;
+    MetaConstant**      mConstants;
     MetaCoclass**       mCoclasses;
     MetaEnumeration**   mEnumerations;
     MetaInterface**     mInterfaces;
@@ -60,11 +63,13 @@ struct MetaComponent
 struct MetaNamespace
 {
     char*               mName;
+    int                 mConstantNumber;
     int                 mCoclassNumber;
     int                 mEnumerationNumber;
     int                 mExternalEnumerationNumber;
     int                 mInterfaceNumber;
     int                 mExternalInterfaceNumber;
+    int*                mConstantIndexes;
     int*                mCoclassIndexes;
     int*                mEnumerationIndexes;
     int*                mInterfaceIndexes;
@@ -108,10 +113,8 @@ struct MetaInterface
     bool                mExternal;
 };
 
-struct MetaConstant
+struct MetaValue
 {
-    char*               mName;
-    int                 mTypeIndex;
     union {
         bool            mBoolean;
         int             mInteger;
@@ -119,8 +122,15 @@ struct MetaConstant
         float           mFloat;
         double          mDouble;
         char*           mString;
-    }                   mValue;
+    };
     unsigned char       mRadix;
+};
+
+struct MetaConstant
+{
+    char*               mName;
+    int                 mTypeIndex;
+    MetaValue           mValue;
 };
 
 struct MetaMethod
@@ -137,6 +147,8 @@ struct MetaParameter
     char*               mName;
     int                 mAttribute;
     int                 mTypeIndex;
+    bool                mHasDefaultValue;
+    MetaValue           mDefaultValue;
 };
 
 struct MetaType
