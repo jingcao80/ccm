@@ -203,6 +203,24 @@ namespace ccm {
     }
 #endif
 
+#ifndef CCM_OBJECT_DECL
+#define CCM_OBJECT_DECL()                                  \
+    ECode GetCoclassID(                                    \
+        /* [out] */ CoclassID* cid) override;
+#endif
+
+#ifndef CCM_OBJECT_IMPL
+#define CCM_OBJECT_IMPL(ClassName)                         \
+    ECode ClassName::GetCoclassID(                         \
+        /* [out] */ CoclassID* cid)                        \
+    {                                                      \
+        VALIDATE_NOT_NULL(cid);                            \
+                                                           \
+        *cid = CID_##ClassName;                            \
+        return NOERROR;                                    \
+    }
+#endif
+
 } // namespace ccm
 
 #endif // __CCM_CCMDEF_H__

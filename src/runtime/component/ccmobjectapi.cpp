@@ -16,6 +16,8 @@
 
 #include "ccmcomponent.h"
 #include "ccmobjectapi.h"
+#include "CSystemClassLoader.h"
+#include "reflection/CMetaComponent.h"
 #include "util/ccmautoptr.h"
 
 namespace ccm {
@@ -23,12 +25,17 @@ namespace ccm {
 ECode CoCreateObjectInstance(
     /* [in] */ const CoclassID& cid,
     /* [in] */ const InterfaceID& iid,
+    /* [in] */ IClassLoader* loader,
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object);
 
+    if (loader == nullptr) {
+        loader = CSystemClassLoader::GetInstance();
+    }
+
     AutoPtr<IClassObject> factory;
-    ECode ec = CoAcquireClassFactory(cid, (IInterface**)&factory);
+    ECode ec = CoAcquireClassFactory(cid, loader, (IInterface**)&factory);
     if (FAILED(ec)) {
         *object = nullptr;
         return ec;
@@ -39,18 +46,24 @@ ECode CoCreateObjectInstance(
 
 ECode CoAcquireClassFactory(
     /* [in] */ const CoclassID& cid,
+    /* [in] */ IClassLoader* loader,
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object);
 
-    CcmComponent* ccmComp;
-    ECode ec = CoGetComponent(*cid.mCid, &ccmComp);
+    if (loader == nullptr) {
+        loader = CSystemClassLoader::GetInstance();
+    }
+
+    AutoPtr<IMetaComponent> component;
+    ECode ec = loader->LoadComponent(*cid.mCid, (IMetaComponent**)&component);
     if (FAILED(ec)) {
         *object = nullptr;
         return ec;
     }
 
-    return ccmComp->mSoGetClassObject(cid, object);
+    CMetaComponent* mcObj = (CMetaComponent*)component.Get();
+    return mcObj->GetClassObject(cid, object);
 }
 
 }

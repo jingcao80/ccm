@@ -24,8 +24,8 @@ include_directories(
     ${INC_DIR})
 
 set(SOURCES
-    ccmcomponent.cpp
-    ccmobjectapi.cpp)
+    ccmobjectapi.cpp
+    CSystemClassLoader.cpp)
 
 add_library(component STATIC
     ${SOURCES})

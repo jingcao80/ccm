@@ -44,15 +44,7 @@ struct CcmComponent
     GetClassObjectPtr   mSoGetClassObject;
     CanUnloadPtr        mSoCanUnload;
     MetadataWrapper*    mMetadataWrapper;
-    IMetaComponent*     mMetaComponent;
-
-    CcmComponent();
-    ~CcmComponent();
 };
-
-ECode CoGetComponent(
-    /* [in] */ const ComponentID& compId,
-    /* [out] */ CcmComponent** component);
 
 } // namespace ccm
 

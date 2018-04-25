@@ -63,4 +63,14 @@ ECode Object::GetCoclassID(
     return NOERROR;
 }
 
+ECode Object::GetCoclass(
+    /* [out] */ IMetaCoclass** klass)
+{
+    VALIDATE_NOT_NULL(klass);
+
+    *klass = mCoclass;
+    REFCOUNT_ADD(*klass);
+    return NOERROR;
+}
+
 }

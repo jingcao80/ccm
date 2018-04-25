@@ -24,10 +24,12 @@ namespace ccm {
 EXTERN_C COM_PUBLIC ECode CoCreateObjectInstance(
     /* [in] */ const CoclassID& cid,
     /* [in] */ const InterfaceID& iid,
+    /* [in] */ IClassLoader* loader,
     /* [out] */ IInterface** object);
 
 EXTERN_C COM_PUBLIC ECode CoAcquireClassFactory(
     /* [in] */ const CoclassID& cid,
+    /* [in] */ IClassLoader* loader,
     /* [out] */ IInterface** object);
 
 } // namespace ccm

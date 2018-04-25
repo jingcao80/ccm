@@ -110,6 +110,8 @@ public:
     inline const T& operator[](
         /* [in] */ Long index) const;
 
+    void Clear();
+
     Array Clone() const;
 
 private:
@@ -419,6 +421,17 @@ const T& Array<T>::operator[](
 {
     T* array = static_cast<T*>(mData);
     return array[index];
+}
+
+template<class T>
+void Array<T>::Clear()
+{
+    if (mData != nullptr) {
+        SharedBuffer::GetBufferFromData(mData)->Release();
+    }
+    mData = nullptr;
+    mSize = 0;
+    mType = CcmTypeKind::Unknown;
 }
 
 template<class T>

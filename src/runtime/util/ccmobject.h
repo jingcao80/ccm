@@ -17,8 +17,8 @@
 #ifndef __CCM_OBJECT_H__
 #define __CCM_OBJECT_H__
 
-#include "ccmtypes.h"
 #include "ccmrefbase.h"
+#include "ccmtypes.h"
 
 namespace ccm {
 
@@ -31,6 +31,12 @@ public:
 
     ECode GetCoclassID(
         /* [out] */ CoclassID* cid) override;
+
+    ECode GetCoclass(
+        /* [out] */ IMetaCoclass** klass) override;
+
+private:
+    IMetaCoclass* mCoclass;
 };
 
 }

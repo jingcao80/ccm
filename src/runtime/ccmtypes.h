@@ -84,7 +84,7 @@ namespace ccm {
 extern const ComponentID CID_CCMRuntime;
 extern const InterfaceID IID_IInterface;
 
-INTERFACE_ID(00000000-0000-0000-0000-000000000000)
+INTERFACE_ID(00000000-0000-0000-0000-000000000001)
 interface IInterface
 {
     inline static IInterface* Probe(

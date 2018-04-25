@@ -24,6 +24,12 @@ namespace ccm {
 
 EXTERN_C COM_PUBLIC ECode CoGetComponentMetadata(
     /* [in] */ const ComponentID& cid,
+    /* [in] */ IClassLoader* loader,
+    /* [out] */ IMetaComponent** mc);
+
+EXTERN_C COM_PUBLIC ECode CoGetComponentMetadataFromFile(
+    /* [in] */ HANDLE fd,
+    /* [in] */ IClassLoader* loader,
     /* [out] */ IMetaComponent** mc);
 
 }

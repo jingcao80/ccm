@@ -27,7 +27,6 @@ static __attribute((constructor))
 void RTInitialize()
 {
     Init_EMPTY_STRING();
-    InitCompSearchPaths();
 }
 
 static __attribute((destructor))

@@ -15,6 +15,7 @@
 //=========================================================================
 
 interface ccm::IArgumentList;
+interface ccm::IClassLoader;
 interface ccm::IMetaCoclass;
 interface ccm::IMetaConstant;
 interface ccm::IMetaConstructor;
@@ -78,6 +79,11 @@ interface IMetaComponent
     GetEnumeration(
         [in] String fullName,
         [out] IMetaEnumeration** enumn);
+
+    CanUnload(
+        [out] Boolean* unload);
+
+    Unload();
 }
 
 [
@@ -97,6 +103,9 @@ interface IMetaCoclass
 
     GetCoclassID(
         [out] CoclassID* cid);
+
+    GetClassLoader(
+        [out] IClassLoader** loader);
 
     GetConstructorNumber(
         [out] Integer* number);

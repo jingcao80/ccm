@@ -84,6 +84,16 @@ ECode CMetaCoclass::GetCoclassID(
     return NOERROR;
 }
 
+ECode CMetaCoclass::GetClassLoader(
+    /* [out] */ IClassLoader** loader)
+{
+    VALIDATE_NOT_NULL(loader);
+
+    *loader = mOwner->mLoader;
+    REFCOUNT_ADD(*loader);
+    return NOERROR;
+}
+
 ECode CMetaCoclass::GetConstructorNumber(
     /* [out] */ Integer* number)
 {
@@ -248,7 +258,7 @@ ECode CMetaCoclass::CreateObject(
 {
     VALIDATE_NOT_NULL(object);
 
-    return CoCreateObjectInstance(mCid, iid, object);
+    return CoCreateObjectInstance(mCid, iid, mOwner->mLoader, object);
 }
 
 void CMetaCoclass::BuildAllInterfaces()

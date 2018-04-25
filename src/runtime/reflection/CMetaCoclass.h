@@ -53,6 +53,9 @@ public:
     ECode GetCoclassID(
         /* [out] */ CoclassID* cid) override;
 
+    ECode GetClassLoader(
+        /* [out] */ IClassLoader** loader) override;
+
     ECode GetConstructorNumber(
         /* [out] */ Integer* number) override;
 

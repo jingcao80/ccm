@@ -169,6 +169,35 @@ public:
         return Val(0);
     }
 
+    void Remove(
+        /* [in] */ const Key& key)
+    {
+        CompareFunc<Key> compareF;
+
+        int hash = HashKey(key);
+        if (hash == -1) return;
+
+        int index = hash % mBucketSize;
+        Bucket* curr = mBuckets[index];
+        Bucket* prev = curr;
+        while (curr != nullptr) {
+            if (!compareF(curr->mKey, key)) {
+                if (curr == mBuckets[index]) {
+                    mBuckets[index] = curr->mNext;
+                }
+                else {
+                    prev->mNext = curr->mNext;
+                }
+                delete curr;
+                return;
+            }
+            prev = curr;
+            curr = prev->mNext;
+        }
+
+        return;
+    }
+
     void Clear()
     {
         for (int i = 0; i < mBucketSize; i++) {

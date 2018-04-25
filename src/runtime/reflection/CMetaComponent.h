@@ -19,8 +19,9 @@
 
 #include "ccmautoptr.h"
 #include "ccmrefbase.h"
-#include "Component.h"
 #include "hashmap.h"
+#include "component/ccmcomponent.h"
+#include "metadata/Component.h"
 
 using ccm::metadata::MetaComponent;
 
@@ -32,6 +33,8 @@ class CMetaComponent
 {
 public:
     CMetaComponent(
+        /* [in] */ IClassLoader* loader,
+        /* [in] */ CcmComponent* component,
         /* [in] */ MetaComponent* metadata);
 
     ~CMetaComponent();
@@ -74,6 +77,15 @@ public:
         /* [in] */ const String& fullName,
         /* [out] */ IMetaInterface** metaIntf) override;
 
+    ECode CanUnload(
+        /* [out] */ Boolean* unload);
+
+    ECode Unload();
+
+    ECode GetClassObject(
+        /* [in] */ const CoclassID& cid,
+        /* [out] */ IInterface** object);
+
     void BuildAllCoclasses();
 
     AutoPtr<IMetaCoclass> BuildCoclass(
@@ -92,7 +104,11 @@ public:
 private:
     void BuildIInterface();
 
+    void ReleaseResources();
+
 public:
+    IClassLoader* mLoader;
+    CcmComponent* mComponent;
     MetaComponent* mMetadata;
     ComponentID mCid;
     String mName;

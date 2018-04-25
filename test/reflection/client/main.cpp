@@ -23,7 +23,7 @@
 int main(int argv, char** argc)
 {
     AutoPtr<IMetaComponent> mc;
-    CoGetComponentMetadata(CID_ReflectionTestUnit, (IMetaComponent**)&mc);
+    CoGetComponentMetadata(CID_ReflectionTestUnit, nullptr, (IMetaComponent**)&mc);
     String name;
     mc->GetName(&name);
     printf("==== component name: %s ====\n\n", name.string());
@@ -107,5 +107,16 @@ int main(int argv, char** argc)
     method->CreateArgumentList((IArgumentList**)&args);
     args->SetInputArgumentOfInteger(0, 9);
     method->Invoke(obj, args);
+
+    obj = nullptr;
+    Boolean canUnload;
+    mc->CanUnload(&canUnload);
+    if (canUnload) {
+        ECode ec = mc->Unload();
+        printf("==== Unload component %s ====\n", SUCCEEDED(ec) ? "succeeded." : "fail.");
+    }
+    else {
+        printf("==== Cannot unload component ====\n");
+    }
     return 0;
 }

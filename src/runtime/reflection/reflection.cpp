@@ -19,53 +19,88 @@
 #include "ccmreflectionapi.h"
 #include "CMetaComponent.h"
 #include "Component.h"
+#include "CSystemClassLoader.h"
 #include "MetaSerializer.h"
-#include <stdlib.h>
-
-using ccm::metadata::MetaSerializer;
+#include <dlfcn.h>
+#include <errno.h>
 
 using ccm::metadata::MetaComponent;
+using ccm::metadata::MetaSerializer;
 
 namespace ccm {
 
 ECode CoGetComponentMetadata(
     /* [in] */ const ComponentID& cid,
+    /* [in] */ IClassLoader* loader,
     /* [out] */ IMetaComponent** mc)
 {
     VALIDATE_NOT_NULL(mc);
 
-    CcmComponent* ccmComp;
-    ECode ec = CoGetComponent(cid, &ccmComp);
-    if (FAILED(ec)) {
-        *mc = nullptr;
-        return ec;
+    if (loader == nullptr) {
+        loader = CSystemClassLoader::GetInstance();
     }
 
-    if (ccmComp->mMetaComponent != nullptr) {
-        *mc = ccmComp->mMetaComponent;
-        REFCOUNT_ADD(*mc);
-        return NOERROR;
+    return loader->LoadComponent(cid, mc);
+}
+
+EXTERN_C COM_PUBLIC ECode CoGetComponentMetadataFromFile(
+    /* [in] */ HANDLE fd,
+    /* [in] */ IClassLoader* loader,
+    /* [out] */ IMetaComponent** mc)
+{
+    VALIDATE_NOT_NULL(mc);
+    *mc = nullptr;
+
+    void* handle = reinterpret_cast<void*>(fd);
+    if (handle == nullptr) return E_ILLEGAL_ARGUMENT_EXCEPTION;
+
+    GetClassObjectPtr getFunc = (GetClassObjectPtr)dlsym(handle, "soGetClassObject");
+    if (getFunc == nullptr) {
+        Logger::E("CCMRT", "Dlsym \"soGetClassObject\" function from "
+                "component failed. The reason is %s.", strerror(errno));
+        return E_COMPONENT_IO_EXCEPTION;
     }
+
+    CanUnloadPtr canFunc = (CanUnloadPtr)dlsym(handle, "soCanUnload");
+    if (canFunc == nullptr) {
+        Logger::E("CCMRT", "Dlsym \"soCanUnload\" function from "
+                "component failed. The reason is %s.", strerror(errno));
+        return E_COMPONENT_IO_EXCEPTION;
+    }
+
+    MetadataWrapper* metadata = *(MetadataWrapper**)(dlsym(handle, "soMetadataHandle"));
+    if (metadata == nullptr) {
+        Logger::E("CCMRT", "Dlsym \"soMetadataHandle\" variable from "
+                "component failed. The reason is %s.", strerror(errno));
+        return E_COMPONENT_IO_EXCEPTION;
+    }
+
+    CcmComponent* ccmComp = (CcmComponent*)malloc(sizeof(CcmComponent));
+    if (ccmComp == nullptr) {
+        Logger::E("CCMRT", "Malloc CcmComponent failed.");
+        return E_OUT_OF_MEMORY_ERROR;
+    }
+    ccmComp->mSoHandle = handle;
+    ccmComp->mSoGetClassObject = getFunc;
+    ccmComp->mSoCanUnload = canFunc;
+    ccmComp->mMetadataWrapper = metadata;
 
     MetaComponent* mmc = reinterpret_cast<MetaComponent*>(
             ccmComp->mMetadataWrapper->mMetadata);
 
-    void* metadata = malloc(mmc->mSize);
-    if (metadata == nullptr) {
+    void* data = malloc(mmc->mSize);
+    if (data == nullptr) {
         Logger::E("CCMRT", "Malloc %d size metadata failed.", mmc->mSize);
+        free(ccmComp);
         *mc = nullptr;
         return E_OUT_OF_MEMORY_ERROR;
     }
-    memcpy(metadata, mmc, mmc->mSize);
+    memcpy(data, mmc, mmc->mSize);
 
     MetaSerializer serializer;
-    serializer.Deserialize(reinterpret_cast<uintptr_t>(metadata));
-    ccmComp->mMetaComponent = new CMetaComponent((MetaComponent*)metadata);
-    REFCOUNT_ADD(ccmComp->mMetaComponent);
-
-    *mc = ccmComp->mMetaComponent;
+    serializer.Deserialize(reinterpret_cast<uintptr_t>(data));
+    *mc = new CMetaComponent(loader, ccmComp, (MetaComponent*)data);
     REFCOUNT_ADD(*mc);
-
     return NOERROR;
 }
 

@@ -1398,7 +1398,7 @@ String CodeGenerator::GenCoclassOnUserMode(
                        "{\n");
         if (mm->mParameterNumber > 2) {
             builder.AppendFormat("    AutoPtr<%s> clsObject;\n", mi->mName);
-            builder.AppendFormat("    ECode ec = CoAcquireClassFactory(CID_%s, (IInterface**)&clsObject);\n",
+            builder.AppendFormat("    ECode ec = CoAcquireClassFactory(CID_%s, nullptr, (IInterface**)&clsObject);\n",
                     mc->mName);
             builder.Append("    if (FAILED(ec)) return ec;\n");
             builder.Append("    return clsObject->CreateObject(");
@@ -1409,7 +1409,7 @@ String CodeGenerator::GenCoclassOnUserMode(
             builder.Append(");\n");
         }
         else {
-            builder.AppendFormat("    return CoCreateObjectInstance(CID_%s, %s, %s);\n",
+            builder.AppendFormat("    return CoCreateObjectInstance(CID_%s, %s, nullptr, %s);\n",
                     mc->mName, mm->mParameters[0]->mName, mm->mParameters[1]->mName);
         }
         builder.Append("};\n");

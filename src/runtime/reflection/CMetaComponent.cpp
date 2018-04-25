@@ -32,8 +32,12 @@ namespace ccm {
 CCM_INTERFACE_IMPL_LIGHT_1(CMetaComponent, IMetaComponent);
 
 CMetaComponent::CMetaComponent(
+    /* [in] */ IClassLoader* loader,
+    /* [in] */ CcmComponent* component,
     /* [in] */ MetaComponent* metadata)
-    : mMetadata(metadata)
+    : mLoader(loader)
+    , mComponent(component)
+    , mMetadata(metadata)
     , mName(metadata->mName)
     , mUrl(metadata->mUrl)
     , mMetaCoclasses(mMetadata->mCoclassNumber)
@@ -55,10 +59,7 @@ CMetaComponent::CMetaComponent(
 
 CMetaComponent::~CMetaComponent()
 {
-    if (mMetadata != nullptr) {
-        free(mMetadata);
-        mMetadata = nullptr;
-    }
+    ReleaseResources();
 }
 
 ECode CMetaComponent::GetName(
@@ -85,7 +86,7 @@ ECode CMetaComponent::GetCoclassNumber(
 {
     VALIDATE_NOT_NULL(number);
 
-    *number = mMetadata->mCoclassNumber;
+    *number = mMetaCoclasses.GetLength();
     return NOERROR;
 }
 
@@ -129,8 +130,7 @@ ECode CMetaComponent::GetEnumerationNumber(
 {
     VALIDATE_NOT_NULL(number);
 
-    *number = mMetadata->mEnumerationNumber -
-            mMetadata->mExternalEnumerationNumber;
+    *number = mMetaEnumerations.GetLength();
     return NOERROR;
 }
 
@@ -174,8 +174,7 @@ ECode CMetaComponent::GetInterfaceNumber(
 {
     VALIDATE_NOT_NULL(number);
 
-    *number = mMetadata->mInterfaceNumber -
-            mMetadata->mExternalInterfaceNumber;
+    *number = mMetaInterfaces.GetLength();
     return NOERROR;
 }
 
@@ -212,6 +211,33 @@ ECode CMetaComponent::GetInterface(
     *metaIntf = mMetaInterfaceMap.Get(fullName);
     REFCOUNT_ADD(*metaIntf);
     return NOERROR;
+}
+
+ECode CMetaComponent::CanUnload(
+    /* [out] */ Boolean* unload)
+{
+    VALIDATE_NOT_NULL(unload);
+
+    *unload = mComponent->mSoCanUnload();
+    return NOERROR;
+}
+
+ECode CMetaComponent::Unload()
+{
+    ECode ec = mLoader->UnloadComponent(mCid);
+    if (SUCCEEDED(ec)) {
+        ReleaseResources();
+    }
+    return ec;
+}
+
+ECode CMetaComponent::GetClassObject(
+    /* [in] */ const CoclassID& cid,
+    /* [out] */ IInterface** object)
+{
+    VALIDATE_NOT_NULL(object);
+
+    return mComponent->mSoGetClassObject(cid, object);
 }
 
 void CMetaComponent::BuildAllCoclasses()
@@ -473,6 +499,29 @@ void CMetaComponent::BuildIInterface()
     miObj->mMetaMethods.Set(3, mmObj);
 
     mIInterface = miObj;
+}
+
+void CMetaComponent::ReleaseResources()
+{
+    mLoader = nullptr;
+    if (mComponent != nullptr) {
+        free(mComponent);
+        mComponent = nullptr;
+    }
+    if (mMetadata != nullptr) {
+        free(mMetadata);
+        mMetadata = nullptr;
+    }
+    mCid.mUuid = UUID_ZERO;
+    mCid.mUrl = nullptr;
+    mName = nullptr;
+    mUrl = nullptr;
+    mMetaCoclasses.Clear();
+    mMetaCoclassMap.Clear();
+    mMetaEnumerations.Clear();
+    mMetaEnumerationMap.Clear();
+    mMetaInterfaces.Clear();
+    mMetaInterfaceMap.Clear();
 }
 
 }

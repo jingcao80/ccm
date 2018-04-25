@@ -14,10 +14,13 @@
 // limitations under the License.
 //=========================================================================
 
+interface ccm::IMetaCoclass;
+interface ccm::IMetaComponent;
+
 namespace ccm {
 
 [
-    uuid(00000000-0000-0000-0000-000000000001),
+    uuid(00000000-0000-0000-0000-000000000002),
     version(0.1.0)
 ]
 interface IClassObject
@@ -28,17 +31,38 @@ interface IClassObject
 }
 
 [
-    uuid(00000000-0000-0000-0000-000000000002),
+    uuid(00000000-0000-0000-0000-000000000003),
     version(0.1.0)
 ]
 interface IObject
 {
     GetCoclassID(
         [out] CoclassID* cid);
+
+    GetCoclass(
+        [out] IMetaCoclass** klass);
 }
 
 [
-    uuid(00000000-0000-0000-0000-000000000003),
+    uuid(00000000-0000-0000-0000-000000000004),
+    version(0.1.0)
+]
+interface IClassLoader
+{
+    LoadComponent(
+        [in] ComponentID compId,
+        [out] IMetaComponent** component);
+
+    UnloadComponent(
+        [in] ComponentID compId);
+
+    LoadCoclass(
+        [in] String fullName,
+        [out] IMetaCoclass** klass);
+}
+
+[
+    uuid(00000000-0000-0000-0000-000000000005),
     version(0.1.0)
 ]
 interface IWeakReference

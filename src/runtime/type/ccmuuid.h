@@ -37,6 +37,8 @@ inline bool operator==(
     return !memcmp(&id1, &id2, sizeof(Uuid));
 }
 
+extern const Uuid UUID_ZERO;
+
 }
 
 #endif // __CCM_UUID_H__
