@@ -35,7 +35,7 @@ ECode CoCreateObjectInstance(
     }
 
     AutoPtr<IClassObject> factory;
-    ECode ec = CoAcquireClassFactory(cid, loader, (IInterface**)&factory);
+    ECode ec = CoAcquireClassFactory(cid, loader, (IClassObject**)&factory);
     if (FAILED(ec)) {
         *object = nullptr;
         return ec;
@@ -47,7 +47,7 @@ ECode CoCreateObjectInstance(
 ECode CoAcquireClassFactory(
     /* [in] */ const CoclassID& cid,
     /* [in] */ IClassLoader* loader,
-    /* [out] */ IInterface** object)
+    /* [out] */ IClassObject** object)
 {
     VALIDATE_NOT_NULL(object);
 
@@ -63,7 +63,11 @@ ECode CoAcquireClassFactory(
     }
 
     CMetaComponent* mcObj = (CMetaComponent*)component.Get();
-    return mcObj->GetClassObject(cid, object);
+    ec = mcObj->GetClassObject(cid, object);
+    if (SUCCEEDED(ec)) {
+        (*object)->AttachMetadata(component);
+    }
+    return ec;
 }
 
 }

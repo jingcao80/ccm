@@ -56,7 +56,7 @@ public:
     void SetDefaultValue(
         /* [in] */ Expression* expr);
 
-    void DeepCopy(
+    void ShallowCopy(
         /* [in] */ Parameter* source,
         /* [in] */ Pool* pool);
 

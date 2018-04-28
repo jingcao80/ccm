@@ -21,7 +21,7 @@
 
 namespace ccm {
 
-typedef ECode (*GetterPtr)(IInterface**);
+typedef ECode (*GetterPtr)(IClassObject**);
 
 struct ClassObjectGetter
 {
@@ -29,7 +29,7 @@ struct ClassObjectGetter
     GetterPtr   mGetter;
 };
 
-typedef ECode (*GetClassObjectPtr)(const CoclassID&, IInterface**);
+typedef ECode (*GetClassObjectPtr)(const CoclassID&, IClassObject**);
 typedef Boolean (*CanUnloadPtr)();
 
 struct MetadataWrapper

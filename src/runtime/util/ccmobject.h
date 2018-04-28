@@ -29,6 +29,10 @@ class COM_PUBLIC Object
 public:
     CCM_INTERFACE_DECL();
 
+    ECode AttachMetadata(
+        /* [in] */ IMetaComponent* component,
+        /* [in] */ const String& coclassName);
+
     ECode GetCoclassID(
         /* [out] */ CoclassID* cid) override;
 
@@ -36,7 +40,8 @@ public:
         /* [out] */ IMetaCoclass** klass) override;
 
 private:
-    IMetaCoclass* mCoclass;
+    IMetaComponent* mComponent;
+    String mCoclassName;
 };
 
 }

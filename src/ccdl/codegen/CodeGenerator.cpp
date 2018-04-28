@@ -356,7 +356,8 @@ String CodeGenerator::GenInterfaceDeclaration(
         builder.Append("IInterface\n");
     }
     builder.Append("{\n");
-    builder.AppendFormat("    inline static %s* Probe(\n"
+    builder.AppendFormat("    using IInterface::Probe;\n\n"
+                         "    inline static %s* Probe(\n"
                          "        /* [in] */ IInterface* object)\n"
                          "    {\n"
                          "        if (object == nullptr) return nullptr;\n"
@@ -839,6 +840,7 @@ void CodeGenerator::GenCoclassCpp(
     builder.Append("\n");
     builder.AppendFormat("#include \"%s.h\"\n", mk->mName);
     builder.Append("#include <ccmautoptr.h>\n"
+                   "#include <ccmclassobject.h>\n"
                    "#include <ccmobject.h>\n"
                    "#include <ccmspinlock.h>\n\n"
                    "#include <stdlib.h>\n"
@@ -862,16 +864,24 @@ String CodeGenerator::GenCoclassObject(
     StringBuilder builder;
 
     builder.AppendFormat("class %sClassObject\n", mk->mName);
-    builder.Append("    : public Object\n");
+    builder.Append("    : public ClassObject\n");
     MetaInterface* mi = mMetaComponent->mInterfaces[mk->mInterfaceIndexes[mk->mInterfaceNumber - 1]];
-    builder.AppendFormat("    , public %s\n", mi->mName);
+    bool isIClassObject = String("IClassObject").Equals(mi->mName);
+    if (!isIClassObject) {
+        builder.AppendFormat("    , public %s\n", mi->mName);
+    }
     builder.Append("{\n");
     builder.AppendFormat("public:\n"
                          "    %sClassObject();\n\n"
-                         "    ~%sClassObject();\n\n"
-                         "    CCM_INTERFACE_DECL();\n\n", mk->mName, mk->mName);
-    for (int i = 0; i < mi->mMethodNumber; i++) {
+                         "    ~%sClassObject();\n\n", mk->mName, mk->mName);
+    if (!isIClassObject) {
+        builder.Append("    CCM_INTERFACE_DECL();\n\n");
+    }
+    bool hasConstructorWithoutArgu = false;
+    int start = isIClassObject ? 1 : 0;
+    for (int i = start; i < mi->mMethodNumber; i++) {
         MetaMethod* mm = mi->mMethods[i];
+        if (mm->mParameterNumber == 2) hasConstructorWithoutArgu = true;
         builder.AppendFormat("    ECode %s(\n", mm->mName);
         for (int j = 0; j < mm->mParameterNumber; j++) {
             builder.AppendFormat("        %s", GenParameter(mm->mParameters[j]).string());
@@ -880,11 +890,18 @@ String CodeGenerator::GenCoclassObject(
         builder.Append(");\n");
         if (i != mi->mMethodNumber - 1) builder.Append("\n");
     }
+    if (!isIClassObject && !hasConstructorWithoutArgu) {
+        builder.Append("\n    ECode CreateObject(\n"
+                       "        /* [in] */ const InterfaceID& iid,\n"
+                       "        /* [out] */ IInterface** object);\n\n");
+    }
     builder.Append("};\n\n");
     builder.AppendFormat("static %s* s%sClassObject = nullptr;\n", mi->mName, mk->mName);
     builder.AppendFormat("static Spinlock s%sClassObjectLock;\n\n", mk->mName);
-    builder.AppendFormat("CCM_INTERFACE_IMPL_1(%sClassObject, Object, %s);\n\n",
-            mk->mName, mi->mName);
+    if (!isIClassObject) {
+        builder.AppendFormat("CCM_INTERFACE_IMPL_1(%sClassObject, ClassObject, %s);\n\n",
+                mk->mName, mi->mName);
+    }
     builder.AppendFormat("%sClassObject::%sClassObject()\n"
                          "{\n"
                          "    AddComponentCount();\n"
@@ -896,8 +913,16 @@ String CodeGenerator::GenCoclassObject(
                          "    s%sClassObjectLock.Unlock();\n"
                          "    ReleaseComponentCount();\n"
                          "}\n\n", mk->mName, mk->mName, mk->mName, mk->mName, mk->mName);
-
-    for (int i = 0; i < mi->mMethodNumber; i++) {
+    if (!isIClassObject && !hasConstructorWithoutArgu) {
+        builder.AppendFormat("ECode %sClassObject::CreateObject(\n"
+                             "    /* [in] */ const InterfaceID& iid,\n"
+                             "    /* [out] */ IInterface** object)\n", mk->mName);
+        builder.Append("{\n"
+                       "    *object = nullptr;\n"
+                       "    return E_UNSUPPORTED_OPERATION_EXCEPTION;\n"
+                       "}\n\n");
+    }
+    for (int i = start; i < mi->mMethodNumber; i++) {
         MetaMethod* mm = mi->mMethods[i];
         builder.AppendFormat("ECode %sClassObject::%s(\n", mk->mName, mm->mName);
         for (int j = 0; j < mm->mParameterNumber; j++) {
@@ -922,6 +947,8 @@ String CodeGenerator::GenCoclassObject(
                            "        return ec;\n"
                            "    }\n");
         }
+        builder.AppendFormat("    _obj->AttachMetadata(mComponent, String(\"%s%s\"));\n",
+                mk->mNamespace, mk->mName);
         builder.AppendFormat("    *object = _obj->Probe(%s);\n"
                              "    REFCOUNT_ADD(*object);\n",
                              mm->mParameters[mm->mParameterNumber - 2]->mName);
@@ -929,7 +956,7 @@ String CodeGenerator::GenCoclassObject(
         builder.Append("}\n\n");
     }
 
-    builder.AppendFormat("ECode Get%sClassObject(IInterface** classObject)\n", mk->mName);
+    builder.AppendFormat("ECode Get%sClassObject(IClassObject** classObject)\n", mk->mName);
     builder.Append("{\n");
     builder.Append("    VALIDATE_NOT_NULL(classObject);\n\n");
     builder.AppendFormat("    s%sClassObjectLock.Lock();\n", mk->mName);
@@ -937,7 +964,7 @@ String CodeGenerator::GenCoclassObject(
     builder.AppendFormat("        s%sClassObject = new %sClassObject();\n", mk->mName, mk->mName);
     builder.Append("    }\n");
     builder.AppendFormat("    s%sClassObjectLock.Unlock();\n", mk->mName);
-    builder.AppendFormat("    *classObject = s%sClassObject;\n", mk->mName);
+    builder.AppendFormat("    *classObject = IClassObject::Probe(s%sClassObject);\n", mk->mName);
     builder.Append("    REFCOUNT_ADD(*classObject);\n"
                    "    return NOERROR;\n");
     builder.Append("}\n\n");
@@ -960,7 +987,9 @@ String CodeGenerator::GenCoclassMethods(
                          "    s%sClassObject->Release();\n"
                          "}\n\n", mk->mName, mk->mName, mk->mName, mk->mName, mk->mName, mk->mName);
     MetaInterface* mi = mMetaComponent->mInterfaces[mk->mInterfaceIndexes[mk->mInterfaceNumber - 1]];
-    for (int i = 0; i < mi->mMethodNumber; i++) {
+    bool isIClassObject = String("IClassObject").Equals(mi->mName);
+    int start = isIClassObject ? 1 : 0;
+    for (int i = start; i < mi->mMethodNumber; i++) {
         MetaMethod* mm = mi->mMethods[i];
         builder.AppendFormat("ECode _%s::New(\n", mk->mName);
         for (int j = 0; j < mm->mParameterNumber; j++) {
@@ -971,7 +1000,7 @@ String CodeGenerator::GenCoclassMethods(
                        "{\n"
                        "    VALIDATE_NOT_NULL(object);\n\n");
         builder.AppendFormat("    AutoPtr<%s> clsObject;\n", mi->mName);
-        builder.AppendFormat("    ECode ec = Get%sClassObject((IInterface**)&clsObject);\n", mk->mName);
+        builder.AppendFormat("    ECode ec = Get%sClassObject((IClassObject**)&clsObject);\n", mk->mName);
         builder.Append("    if (FAILED(ec)) return ec;\n");
         builder.Append("    return clsObject->CreateObject(");
         for (int j = 0; j < mm->mParameterNumber; j++) {
@@ -1129,7 +1158,7 @@ String CodeGenerator::GenClassObjectGetterArray()
         builder.Append(GenNamespaceBegin(String(mn->mName)));
         for (int i = 0; i < mn->mCoclassNumber; i++) {
             MetaCoclass* mk = mc->mCoclasses[mn->mCoclassIndexes[i]];
-            builder.AppendFormat("extern ECode Get%sClassObject(IInterface** classObject);\n", mk->mName);
+            builder.AppendFormat("extern ECode Get%sClassObject(IClassObject** classObject);\n", mk->mName);
         }
         builder.Append(GenNamespaceEnd(String(mn->mName)));
     }
@@ -1166,7 +1195,7 @@ String CodeGenerator::GenSoGetClassObject()
 
     MetaComponent* mc = mMetaComponent;
 
-    builder.Append("EXTERN_C COM_PUBLIC ECode soGetClassObject(const CoclassID& cid, IInterface** object)\n");
+    builder.Append("EXTERN_C COM_PUBLIC ECode soGetClassObject(const CoclassID& cid, IClassObject** object)\n");
     builder.Append("{\n"
                    "    VALIDATE_NOT_NULL(object);\n\n");
     for (int i = 0; i < mc->mCoclassNumber; i++) {
@@ -1306,7 +1335,9 @@ String CodeGenerator::GenCoclassDeclaration(
     builder.Append("{\n"
                    "public:\n");
     MetaInterface* mi = mMetaComponent->mInterfaces[mc->mInterfaceIndexes[mc->mInterfaceNumber - 1]];
-    for (int i = 0; i < mi->mMethodNumber; i++) {
+    bool isIClassObject = String("IClassObject").Equals(mi->mName);
+    int start = isIClassObject ? 1 : 0;
+    for (int i = start; i < mi->mMethodNumber; i++) {
         MetaMethod* mm = mi->mMethods[i];
         builder.Append("    static ECode New(\n");
         for (int j = 0; j < mm->mParameterNumber; j++) {
@@ -1387,7 +1418,9 @@ String CodeGenerator::GenCoclassOnUserMode(
 
     builder.AppendFormat("// %s\n", mc->mName);
     MetaInterface* mi = mMetaComponent->mInterfaces[mc->mInterfaceIndexes[mc->mInterfaceNumber - 1]];
-    for (int i = 0; i < mi->mMethodNumber; i++) {
+    bool isIClassObject = String("IClassObject").Equals(mi->mName);
+    int start = isIClassObject ? 1 : 0;
+    for (int i = start; i < mi->mMethodNumber; i++) {
         MetaMethod* mm = mi->mMethods[i];
         builder.AppendFormat("ECode %s::New(\n", mc->mName);
         for (int j = 0; j < mm->mParameterNumber; j++) {
@@ -1398,7 +1431,7 @@ String CodeGenerator::GenCoclassOnUserMode(
                        "{\n");
         if (mm->mParameterNumber > 2) {
             builder.AppendFormat("    AutoPtr<%s> clsObject;\n", mi->mName);
-            builder.AppendFormat("    ECode ec = CoAcquireClassFactory(CID_%s, nullptr, (IInterface**)&clsObject);\n",
+            builder.AppendFormat("    ECode ec = CoAcquireClassFactory(CID_%s, nullptr, (IClassObject**)&clsObject);\n",
                     mc->mName);
             builder.Append("    if (FAILED(ec)) return ec;\n");
             builder.Append("    return clsObject->CreateObject(");

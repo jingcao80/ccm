@@ -57,6 +57,15 @@ ECode Object::GetInterfaceID(
     return NOERROR;
 }
 
+ECode Object::AttachMetadata(
+    /* [in] */ IMetaComponent* component,
+    /* [in] */ const String& coclassName)
+{
+    mComponent = component;
+    mCoclassName = coclassName;
+    return NOERROR;
+}
+
 ECode Object::GetCoclassID(
     /* [out] */ CoclassID* cid)
 {
@@ -66,11 +75,7 @@ ECode Object::GetCoclassID(
 ECode Object::GetCoclass(
     /* [out] */ IMetaCoclass** klass)
 {
-    VALIDATE_NOT_NULL(klass);
-
-    *klass = mCoclass;
-    REFCOUNT_ADD(*klass);
-    return NOERROR;
+    return mComponent->GetCoclass(mCoclassName, klass);
 }
 
 }

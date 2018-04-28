@@ -233,7 +233,7 @@ ECode CMetaComponent::Unload()
 
 ECode CMetaComponent::GetClassObject(
     /* [in] */ const CoclassID& cid,
-    /* [out] */ IInterface** object)
+    /* [out] */ IClassObject** object)
 {
     VALIDATE_NOT_NULL(object);
 

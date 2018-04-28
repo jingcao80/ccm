@@ -30,7 +30,7 @@ EXTERN_C COM_PUBLIC ECode CoCreateObjectInstance(
 EXTERN_C COM_PUBLIC ECode CoAcquireClassFactory(
     /* [in] */ const CoclassID& cid,
     /* [in] */ IClassLoader* loader,
-    /* [out] */ IInterface** object);
+    /* [out] */ IClassObject** object);
 
 } // namespace ccm
 

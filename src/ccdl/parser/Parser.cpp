@@ -2141,7 +2141,15 @@ void Parser::GenerateCoclassObject(
             m->AddParameter(param);
             param = new Parameter();
             param->SetName(String("object"));
-            param->SetType(mPool->FindType(String("ccm::IInterface**")));
+            Type* t = mPool->FindType(String("ccm::IInterface**"));
+            if (t == nullptr) {
+                PointerType* ptrType = new PointerType();
+                ptrType->SetBaseType(mPool->FindType(String("ccm::IInterface")));
+                ptrType->SetPointerNumber(2);
+                mPool->AddTemporaryType(ptrType);
+                t = ptrType;
+            }
+            param->SetType(t);
             param->SetAttribute(Parameter::OUT);
             m->AddParameter(param);
             itfco->AddMethod(m);

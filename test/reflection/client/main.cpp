@@ -108,6 +108,13 @@ int main(int argv, char** argc)
     args->SetInputArgumentOfInteger(0, 9);
     method->Invoke(obj, args);
 
+    klass = nullptr;
+    IObject::Probe(obj)->GetCoclass((IMetaCoclass**)&klass);
+    klass->GetName(&clsName);
+    klass->GetNamespace(&clsNs);
+    printf("==== object class name: %s, namespace: %s ====\n",
+            clsName.string(), clsNs.string());
+
     obj = nullptr;
     Boolean canUnload;
     mc->CanUnload(&canUnload);

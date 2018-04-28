@@ -23,6 +23,7 @@ include_directories(
     ${INC_DIR})
 
 set(SOURCES
+    ccmclassobject.cpp
     ccmlogger.cpp
     ccmobject.cpp
     ccmrefbase.cpp
@@ -33,6 +34,7 @@ add_library(util STATIC
 
 set(DEPLOY_HEADERS
     ${UTIL_DIR}/ccmautoptr.h
+    ${UTIL_DIR}/ccmclassobject.h
     ${UTIL_DIR}/ccmlogger.h
     ${UTIL_DIR}/ccmobject.h
     ${UTIL_DIR}/ccmrefbase.h

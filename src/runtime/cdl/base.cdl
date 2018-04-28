@@ -25,6 +25,9 @@ namespace ccm {
 ]
 interface IClassObject
 {
+    AttachMetadata(
+        [in] IMetaComponent* component);
+
     CreateObject(
         [in] InterfaceID iid,
         [out] IInterface** object);
@@ -36,6 +39,10 @@ interface IClassObject
 ]
 interface IObject
 {
+    AttachMetadata(
+        [in] IMetaComponent* component,
+        [in] String coclassName);
+
     GetCoclassID(
         [out] CoclassID* cid);
 

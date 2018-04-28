@@ -44,14 +44,14 @@ void Parameter::SetDefaultValue(
     mDefaultValue = expr;
 }
 
-void Parameter::DeepCopy(
+void Parameter::ShallowCopy(
     /* [in] */ Parameter* source,
     /* [in] */ Pool* pool)
 {
     mName = source->mName;
     mType = pool->FindType(source->mType->ToString());
     if (mType == nullptr) {
-        mType = pool->DeepCopyType(source->mType);
+        mType = pool->ShallowCopyType(source->mType);
     }
     if (source->mDefaultValue != nullptr) {
         mDefaultValue = source->mDefaultValue->Clone();

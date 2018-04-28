@@ -14,30 +14,27 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ComponentIDType.h"
+#ifndef __CCM_CLASSOBJECT_H__
+#define __CCM_CLASSOBJECT_H__
 
-namespace ccdl {
-namespace ast {
+#include "ccmobject.h"
 
-ComponentIDType::ComponentIDType()
+namespace ccm {
+
+class COM_PUBLIC ClassObject
+    : public Object
+    , public IClassObject
 {
-    SetName(String("ComponentID"));
-}
+public:
+    CCM_INTERFACE_DECL();
 
-bool ComponentIDType::IsPrimitiveType()
-{
-    return true;
-}
+    ECode AttachMetadata(
+        /* [in] */ IMetaComponent* component);
 
-bool ComponentIDType::IsComponentIDType()
-{
-    return true;
-}
-
-String ComponentIDType::Signature()
-{
-    return String("M");
-}
+protected:
+    IMetaComponent* mComponent;
+};
 
 }
-}
+
+#endif //__CCM_CLASSOBJECT_H__

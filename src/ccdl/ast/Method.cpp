@@ -68,12 +68,12 @@ void Method::DeepCopy(
     if (source->mReturnType != nullptr) {
         mReturnType = pool->FindType(source->mReturnType->ToString());
         if (mReturnType == nullptr) {
-            mReturnType = pool->DeepCopyType(source->mReturnType);
+            mReturnType = pool->ShallowCopyType(source->mReturnType);
         }
     }
     for (int i = 0; i < source->GetParameterNumber(); i++) {
         Parameter* desParam = new Parameter();
-        desParam->DeepCopy(source->GetParameter(i), pool);
+        desParam->ShallowCopy(source->GetParameter(i), pool);
         AddParameter(desParam);
     }
 }

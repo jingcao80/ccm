@@ -84,7 +84,7 @@ public:
 
     ECode GetClassObject(
         /* [in] */ const CoclassID& cid,
-        /* [out] */ IInterface** object);
+        /* [out] */ IClassObject** object);
 
     void BuildAllCoclasses();
 

@@ -322,6 +322,35 @@ Type* Pool::ShallowCopyType(
         desIntf->SetExternal(true);
         return desIntf;
     }
+    else if (type->IsPrimitiveType()) {
+        String typeStr = type->ToString();
+        return FindType(typeStr);
+    }
+    else if (type->IsArrayType()) {
+        ArrayType* sourceArrType = (ArrayType*)type;
+        Type* sourceElemType = sourceArrType->GetElementType();
+        Type* newElemType = FindType(sourceElemType->ToString());
+        if (newElemType == nullptr) {
+            newElemType = ShallowCopyType(sourceElemType);
+        }
+        ArrayType* arrType = new ArrayType();
+        arrType->SetElementType(newElemType);
+        AddTemporaryType(arrType);
+        return arrType;
+    }
+    else if (type->IsPointerType()) {
+        PointerType* sourcePtrType = (PointerType*)type;
+        Type* sourceBaseType = sourcePtrType->GetBaseType();
+        Type* newBaseType = FindType(sourceBaseType->ToString());
+        if (newBaseType == nullptr) {
+            newBaseType = ShallowCopyType(sourceBaseType);
+        }
+        PointerType* ptrType = new PointerType();
+        ptrType->SetBaseType(newBaseType);
+        ptrType->SetPointerNumber(sourcePtrType->GetPointerNumber());
+        AddTemporaryType(ptrType);
+        return ptrType;
+    }
 
     return nullptr;
 }
