@@ -23,6 +23,7 @@ namespace test {
 namespace reflection {
 
 CCM_INTERFACE_IMPL_1(CMethodTester, Object, IMethodTest);
+CCM_OBJECT_IMPL(CMethodTester);
 
 CMethodTester::CMethodTester()
 {

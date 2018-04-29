@@ -14,72 +14,53 @@
 # limitations under the License.
 #=========================================================================
 
-project(runtime CXX)
+project(RPCTestUnit CXX)
 
-set(RUNTIME_DIR ${PROJECT_DIR}/src/runtime)
-
-add_subdirectory(util)
-add_subdirectory(type)
-add_subdirectory(rpc)
-add_subdirectory(reflection)
-add_subdirectory(component)
-add_subdirectory(cdl)
+set(COMPONENT_DIR ${RPC_DIR}/component)
+set(OBJ_DIR ${CMAKE_BINARY_DIR}/test/rpc/component)
 
 include_directories(
     ./
-    component
-    reflection
-    rpc
-    type
-    util
-    ${INC_DIR})
+    ${INC_DIR}
+    ${OBJ_DIR})
 
 set(SOURCES
-    ccmids.cpp
-    runtime.cpp)
+    CService.cpp)
 
-set(CCMRT_LINK_LIBS
-    -Wl,--whole-archive
-    cdl
-    component
-    metadata
-    reflection
-    rpc
-    type
-    util
-    -Wl,--no-whole-archive)
+set(GENERATED_SOURCES
+    ${OBJ_DIR}/_ccm_test_rpc_CService.cpp
+    ${OBJ_DIR}/RPCTestUnitPub.cpp
+    ${OBJ_DIR}/MetadataWrapper.cpp)
 
-add_library(ccmrt
+set(LINK_EXTERNAL_LIBS
+    ${BIN_DIR}/ccmrt.so)
+
+add_library(RPCTestUnit
     SHARED
-    ${SOURCES})
-target_link_libraries(ccmrt
-    ${CCMRT_LINK_LIBS}
-    dl)
-
-set(DEPLOY_HEADERS
-    ${RUNTIME_DIR}/ccmapi.h
-    ${RUNTIME_DIR}/ccmdef.h
-    ${RUNTIME_DIR}/ccmerror.h
-    ${RUNTIME_DIR}/ccmtypes.h)
-
-set(DEPLOY_LIBS
-    ${CMAKE_BINARY_DIR}/src/runtime/ccmrt.so)
+    ${SOURCES}
+    ${GENERATED_SOURCES})
+target_link_libraries(RPCTestUnit -Wl,--no-undefined ${LINK_EXTERNAL_LIBS})
 
 add_custom_command(
-    TARGET ccmrt
+    OUTPUT
+        ${GENERATED_SOURCES}
+    COMMAND
+        "${BIN_DIR}/ccdl"
+        -c
+        -g
+        -k
+        -d ${OBJ_DIR}
+        "${COMPONENT_DIR}/RPCTestUnit.cdl")
+
+add_custom_command(
+    TARGET RPCTestUnit
     POST_BUILD
     COMMAND
         "${CMAKE_COMMAND}"
-        -E copy ${DEPLOY_HEADERS} ${INC_DIR}
-    COMMAND
-        "${CMAKE_COMMAND}"
-        -E copy ${DEPLOY_LIBS} ${BIN_DIR})
+        -E copy ${OBJ_DIR}/RPCTestUnit.so ${BIN_DIR})
 
 install(FILES
-    ${DEPLOY_HEADERS}
-    DESTINATION ${INC_DIR})
-install(FILES
-    ${DEPLOY_LIBS}
+    ${OBJ_DIR}/RPCTestUnit.so
     DESTINATION ${BIN_DIR}
     PERMISSIONS
         OWNER_READ

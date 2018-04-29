@@ -14,7 +14,9 @@
 # limitations under the License.
 #=========================================================================
 
-set(TEST_DIR ${PROJECT_DIR}/test)
+project(test-rpc CXX)
 
-add_subdirectory(reflection)
-add_subdirectory(rpc)
+set(RPC_DIR ${TEST_DIR}/rpc)
+
+add_subdirectory(component)
+add_subdirectory(client)

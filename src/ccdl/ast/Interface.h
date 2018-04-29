@@ -99,6 +99,9 @@ private:
         /* [in] */ Interface* source,
         /* [in] */ Pool* pool);
 
+public:
+    static constexpr int METHOD_MAX_NUMBER = 240 + 4;
+
 private:
     bool mIsPredecl;
     Interface* mBaseInterface;

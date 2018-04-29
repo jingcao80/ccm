@@ -67,4 +67,15 @@ interface IDeathRecipient
         [out] IProxy** who);
 }
 
+[
+    uuid(7752e566-880a-4abd-99b9-417176e0644f),
+    version(0.1.0)
+]
+interface IStub
+{
+    Invoke(
+        [in] IMetaMethod* method,
+        [in] IArgumentList* args);
+}
+
 }

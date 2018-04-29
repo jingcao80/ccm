@@ -14,72 +14,50 @@
 # limitations under the License.
 #=========================================================================
 
-project(runtime CXX)
+project(RPCTest CXX)
 
-set(RUNTIME_DIR ${PROJECT_DIR}/src/runtime)
-
-add_subdirectory(util)
-add_subdirectory(type)
-add_subdirectory(rpc)
-add_subdirectory(reflection)
-add_subdirectory(component)
-add_subdirectory(cdl)
+set(CLIENT_DIR ${RPC_DIR}/client)
+set(OBJ_DIR ${CMAKE_BINARY_DIR}/test/rpc/client)
 
 include_directories(
     ./
-    component
-    reflection
-    rpc
-    type
-    util
-    ${INC_DIR})
+    ${INC_DIR}
+    ${OBJ_DIR})
 
 set(SOURCES
-    ccmids.cpp
-    runtime.cpp)
+    main.cpp)
 
-set(CCMRT_LINK_LIBS
-    -Wl,--whole-archive
-    cdl
-    component
-    metadata
-    reflection
-    rpc
-    type
-    util
-    -Wl,--no-whole-archive)
+set(GENERATED_SOURCES
+    ${OBJ_DIR}/RPCTestUnit.cpp)
 
-add_library(ccmrt
-    SHARED
-    ${SOURCES})
-target_link_libraries(ccmrt
-    ${CCMRT_LINK_LIBS}
-    dl)
+set(LINK_EXTERNAL_LIBS
+    ${BIN_DIR}/ccmrt.so)
 
-set(DEPLOY_HEADERS
-    ${RUNTIME_DIR}/ccmapi.h
-    ${RUNTIME_DIR}/ccmdef.h
-    ${RUNTIME_DIR}/ccmerror.h
-    ${RUNTIME_DIR}/ccmtypes.h)
-
-set(DEPLOY_LIBS
-    ${CMAKE_BINARY_DIR}/src/runtime/ccmrt.so)
+add_executable(testRPC
+    ${SOURCES}
+    ${GENERATED_SOURCES})
+target_link_libraries(testRPC ${LINK_EXTERNAL_LIBS})
 
 add_custom_command(
-    TARGET ccmrt
+    OUTPUT
+        ${GENERATED_SOURCES}
+    COMMAND
+        "${BIN_DIR}/ccdl"
+        -g
+        -u
+        -s
+        -d ${OBJ_DIR}
+        "${BIN_DIR}/RPCTestUnit.so")
+
+add_custom_command(
+    TARGET testRPC
     POST_BUILD
     COMMAND
         "${CMAKE_COMMAND}"
-        -E copy ${DEPLOY_HEADERS} ${INC_DIR}
-    COMMAND
-        "${CMAKE_COMMAND}"
-        -E copy ${DEPLOY_LIBS} ${BIN_DIR})
+        -E copy ${OBJ_DIR}/testRPC ${BIN_DIR})
 
 install(FILES
-    ${DEPLOY_HEADERS}
-    DESTINATION ${INC_DIR})
-install(FILES
-    ${DEPLOY_LIBS}
+    ${CMAKE_BINARY_DIR}/testRPC
     DESTINATION ${BIN_DIR}
     PERMISSIONS
         OWNER_READ

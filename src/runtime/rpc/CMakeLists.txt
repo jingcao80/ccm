@@ -14,7 +14,30 @@
 # limitations under the License.
 #=========================================================================
 
-set(TEST_DIR ${PROJECT_DIR}/test)
+set(RPC_DIR ${RUNTIME_DIR}/rpc)
 
-add_subdirectory(reflection)
-add_subdirectory(rpc)
+include_directories(
+    ./
+    ../
+    ${INC_DIR})
+
+set(SOURCES
+    CProxy.cpp
+    ccmrpc.cpp)
+
+add_library(rpc STATIC
+    ${SOURCES})
+
+set(DEPLOY_HEADERS
+    ${RPC_DIR}/ccmrpc.h)
+
+add_custom_command(
+    TARGET rpc
+    POST_BUILD
+    COMMAND
+        "${CMAKE_COMMAND}"
+        -E copy ${DEPLOY_HEADERS} ${INC_DIR})
+
+install(FILES
+    ${DEPLOY_HEADERS}
+    DESTINATION ${INC_DIR})

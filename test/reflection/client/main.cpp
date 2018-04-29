@@ -15,8 +15,8 @@
 //=========================================================================
 
 #include "ReflectionTestUnit.h"
-#include <ccmautoptr.h>
 #include <ccmapi.h>
+#include <ccmautoptr.h>
 
 #include <stdio.h>
 

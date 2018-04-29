@@ -31,7 +31,7 @@ public:
 
     ECode AttachMetadata(
         /* [in] */ IMetaComponent* component,
-        /* [in] */ const String& coclassName);
+        /* [in] */ const String& coclassName) override;
 
     ECode GetCoclassID(
         /* [out] */ CoclassID* cid) override;

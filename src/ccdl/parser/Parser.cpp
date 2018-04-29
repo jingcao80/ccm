@@ -709,6 +709,11 @@ bool Parser::ParseMethod(
             return false;
         }
         interface->AddMethod(method);
+        if (interface->GetMethodNumber() >= Interface::METHOD_MAX_NUMBER) {
+            LogError(token, String::Format("The Interface \"%s\" has too many methods.",
+                    interface->ToString().string()));
+            return false;
+        }
     }
     else {
         delete method;

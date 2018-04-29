@@ -21,18 +21,21 @@ namespace ccm {
 
 extern void Init_EMPTY_STRING();
 extern void Uninit_EMPTY_STRING();
-extern void InitCompSearchPaths();
+extern void Init_Proxy_Entry();
+extern void Uninit_Proxy_Entry();
 
 static __attribute((constructor))
 void RTInitialize()
 {
     Init_EMPTY_STRING();
+    Init_Proxy_Entry();
 }
 
 static __attribute((destructor))
 void RTUninitialize()
 {
     Uninit_EMPTY_STRING();
+    Uninit_Proxy_Entry();
 }
 
 }

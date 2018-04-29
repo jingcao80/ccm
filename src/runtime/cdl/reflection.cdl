@@ -60,6 +60,10 @@ interface IMetaComponent
         [in] String fullName,
         [out] IMetaCoclass** klass);
 
+    GetCoclass(
+        [in] CoclassID cid,
+        [out] IMetaCoclass** klass);
+
     GetInterfaceNumber(
         [out] Integer* number);
 

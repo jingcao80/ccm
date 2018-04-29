@@ -641,7 +641,7 @@ String CodeGenerator::GenComponentID()
     StringBuilder builder;
 
     MetaComponent* mc = mMetaComponent;
-    builder.AppendFormat("const ComponentID CID_%s =\n"
+    builder.AppendFormat("extern const ComponentID CID_%s =\n"
                          "        {%s,\n"
                          "        \"%s\"};\n",
             mc->mName, Uuid(mc->mUuid).ToString().string(),
@@ -1115,7 +1115,7 @@ String CodeGenerator::GenInterfaceIDsInCpp(
     for (int i = 0; i < mn->mInterfaceNumber; i++) {
         MetaInterface* mi = mMetaComponent->mInterfaces[mn->mInterfaceIndexes[i]];
         if (mi->mExternal) continue;
-        builder.AppendFormat("const InterfaceID IID_%s =\n"
+        builder.AppendFormat("extern const InterfaceID IID_%s =\n"
                              "        {%s, &CID_%s};\n",
                 mi->mName, Uuid(mi->mUuid).ToString().string(),
                 mMetaComponent->mName);
@@ -1134,7 +1134,7 @@ String CodeGenerator::GenCoclassIDsInCpp(
 
     for (int i = 0; i < mn->mCoclassNumber; i++) {
         MetaCoclass* mc = mMetaComponent->mCoclasses[mn->mCoclassIndexes[i]];
-        builder.AppendFormat("const CoclassID CID_%s =\n"
+        builder.AppendFormat("extern const CoclassID CID_%s =\n"
                              "        {%s, &CID_%s};\n",
                 mc->mName, Uuid(mc->mUuid).ToString().string(),
                 mMetaComponent->mName);

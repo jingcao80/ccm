@@ -43,7 +43,7 @@ ECode CoGetComponentMetadata(
     return loader->LoadComponent(cid, mc);
 }
 
-EXTERN_C COM_PUBLIC ECode CoGetComponentMetadataFromFile(
+ECode CoGetComponentMetadataFromFile(
     /* [in] */ HANDLE fd,
     /* [in] */ IClassLoader* loader,
     /* [out] */ IMetaComponent** mc)
@@ -102,6 +102,26 @@ EXTERN_C COM_PUBLIC ECode CoGetComponentMetadataFromFile(
     *mc = new CMetaComponent(loader, ccmComp, (MetaComponent*)data);
     REFCOUNT_ADD(*mc);
     return NOERROR;
+}
+
+ECode CoGetCoclassMetadata(
+    /* [in] */ const CoclassID& cid,
+    /* [in] */ IClassLoader* loader,
+    /* [in] */ IMetaCoclass** mc)
+{
+    VALIDATE_NOT_NULL(mc);
+
+    if (loader == nullptr) {
+        loader = CSystemClassLoader::GetInstance();
+    }
+
+    AutoPtr<IMetaComponent> component;
+    ECode ec = loader->LoadComponent(*cid.mCid, (IMetaComponent**)&component);
+    if (FAILED(ec)) {
+        *mc = nullptr;
+        return ec;
+    }
+    return component->GetCoclass(cid, mc);
 }
 
 }

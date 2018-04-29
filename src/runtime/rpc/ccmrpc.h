@@ -14,13 +14,21 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CCMAPI_H__
-#define __CCM_CCMAPI_H__
+#ifndef __CCM_CCMTYPES_H__
+#define __CCM_CCMTYPES_H__
 
-#include "ccmdef.h"
 #include "ccmtypes.h"
-#include "ccmobjectapi.h"
-#include "ccmreflectionapi.h"
-#include "ccmrpc.h"
 
-#endif // __CCM_CCMAPI_H__
+namespace ccm {
+
+EXTERN_C COM_PUBLIC ECode CoCreateProxy(
+    /* [in] */ const CoclassID& cid,
+    /* [out] */ IProxy** proxy);
+
+EXTERN_C COM_PUBLIC ECode CoCreateStub(
+    /* [in] */ IInterface* object,
+    /* [out] */ IStub** stub);
+
+}
+
+#endif // __CCM_CCMTYPES_H__

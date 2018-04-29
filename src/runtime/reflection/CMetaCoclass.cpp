@@ -34,7 +34,7 @@ CMetaCoclass::CMetaCoclass(
     , mOwner(mcObj)
     , mName(mk->mName)
     , mNamespace(mk->mNamespace)
-    , mMetaInterfaces(mk->mInterfaceNumber)
+    , mMetaInterfaces(mk->mInterfaceNumber - 1)
 {
     mCid.mUuid = mk->mUuid;
     mCid.mCid = &mcObj->mCid;

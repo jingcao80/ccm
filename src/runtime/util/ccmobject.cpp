@@ -69,13 +69,21 @@ ECode Object::AttachMetadata(
 ECode Object::GetCoclassID(
     /* [out] */ CoclassID* cid)
 {
-    return NOERROR;
+    return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
 ECode Object::GetCoclass(
     /* [out] */ IMetaCoclass** klass)
 {
-    return mComponent->GetCoclass(mCoclassName, klass);
+    VALIDATE_NOT_NULL(klass);
+
+    if (mComponent != nullptr) {
+        return mComponent->GetCoclass(mCoclassName, klass);
+    }
+    else {
+        *klass = nullptr;
+        return E_UNSUPPORTED_OPERATION_EXCEPTION;
+    }
 }
 
 }

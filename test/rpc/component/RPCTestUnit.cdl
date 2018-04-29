@@ -14,13 +14,13 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CCMAPI_H__
-#define __CCM_CCMAPI_H__
+[
+    uuid(9dbdbaba-6282-4043-8ca6-0237de451c55),
+    url("http://ccm.org/component/test/reflection/RPCTestUnit.so")
+]
+module RPCTestUnit
+{
 
-#include "ccmdef.h"
-#include "ccmtypes.h"
-#include "ccmobjectapi.h"
-#include "ccmreflectionapi.h"
-#include "ccmrpc.h"
+include "Service.cdl"
 
-#endif // __CCM_CCMAPI_H__
+}

@@ -41,7 +41,8 @@ CMetaComponent::CMetaComponent(
     , mName(metadata->mName)
     , mUrl(metadata->mUrl)
     , mMetaCoclasses(mMetadata->mCoclassNumber)
-    , mMetaCoclassMap(mMetadata->mCoclassNumber)
+    , mMetaCoclassNameMap(mMetadata->mCoclassNumber)
+    , mMetaCoclassCIDMap(mMetadata->mCoclassNumber)
     , mMetaEnumerations(mMetadata->mEnumerationNumber -
             mMetadata->mExternalEnumerationNumber)
     , mMetaEnumerationMap(mMetadata->mEnumerationNumber -
@@ -120,7 +121,20 @@ ECode CMetaComponent::GetCoclass(
 
     BuildAllCoclasses();
 
-    *metaKls = mMetaCoclassMap.Get(fullName);
+    *metaKls = mMetaCoclassNameMap.Get(fullName);
+    REFCOUNT_ADD(*metaKls);
+    return NOERROR;
+}
+
+ECode CMetaComponent::GetCoclass(
+    /* [in] */ const CoclassID& cid,
+    /* [out] */ IMetaCoclass** metaKls)
+{
+    VALIDATE_NOT_NULL(metaKls);
+
+    BuildAllCoclasses();
+
+    *metaKls = mMetaCoclassCIDMap.Get(cid.mUuid);
     REFCOUNT_ADD(*metaKls);
     return NOERROR;
 }
@@ -250,11 +264,12 @@ void CMetaComponent::BuildAllCoclasses()
         MetaCoclass* mc = mMetadata->mCoclasses[i];
         String fullName = String::Format("%s%s",
                 mc->mNamespace, mc->mName);
-        if (!mMetaCoclassMap.ContainsKey(fullName)) {
-            IMetaCoclass* mcObj = new CMetaCoclass(
+        if (!mMetaCoclassNameMap.ContainsKey(fullName)) {
+            CMetaCoclass* mcObj = new CMetaCoclass(
                     this, mMetadata, mc);
             mMetaCoclasses.Set(i, mcObj);
-            mMetaCoclassMap.Put(fullName, mcObj);
+            mMetaCoclassNameMap.Put(fullName, mcObj);
+            mMetaCoclassCIDMap.Put(mcObj->mCid.mUuid, mcObj);
         }
     }
 }
@@ -270,11 +285,12 @@ AutoPtr<IMetaCoclass> CMetaComponent::BuildCoclass(
     MetaCoclass* mc = mMetadata->mCoclasses[index];
     String fullName = String::Format("%s%s",
                 mc->mNamespace, mc->mName);
-    if (!mMetaCoclassMap.ContainsKey(fullName)) {
-        IMetaCoclass* mcObj = new CMetaCoclass(
+    if (!mMetaCoclassNameMap.ContainsKey(fullName)) {
+        CMetaCoclass* mcObj = new CMetaCoclass(
                 this, mMetadata, mc);
         mMetaCoclasses.Set(index, mcObj);
-        mMetaCoclassMap.Put(fullName, mcObj);
+        mMetaCoclassNameMap.Put(fullName, mcObj);
+        mMetaCoclassCIDMap.Put(mcObj->mCid.mUuid, mcObj);
         ret = mcObj;
     }
     return ret;
@@ -517,7 +533,8 @@ void CMetaComponent::ReleaseResources()
     mName = nullptr;
     mUrl = nullptr;
     mMetaCoclasses.Clear();
-    mMetaCoclassMap.Clear();
+    mMetaCoclassNameMap.Clear();
+    mMetaCoclassCIDMap.Clear();
     mMetaEnumerations.Clear();
     mMetaEnumerationMap.Clear();
     mMetaInterfaces.Clear();

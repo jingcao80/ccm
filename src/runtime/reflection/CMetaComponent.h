@@ -57,6 +57,10 @@ public:
         /* [in] */ const String& fullName,
         /* [out] */ IMetaCoclass** metaKls) override;
 
+    ECode GetCoclass(
+        /* [in] */ const CoclassID& cid,
+        /* [out] */ IMetaCoclass** metaKls) override;
+
     ECode GetEnumerationNumber(
         /* [out] */ Integer* number) override;
 
@@ -114,7 +118,8 @@ public:
     String mName;
     String mUrl;
     Array<IMetaCoclass*> mMetaCoclasses;
-    HashMap<String, IMetaCoclass*> mMetaCoclassMap;
+    HashMap<String, IMetaCoclass*> mMetaCoclassNameMap;
+    HashMap<Uuid, IMetaCoclass*> mMetaCoclassCIDMap;
     Array<IMetaEnumeration*> mMetaEnumerations;
     HashMap<String, IMetaEnumeration*> mMetaEnumerationMap;
     Array<IMetaInterface*> mMetaInterfaces;

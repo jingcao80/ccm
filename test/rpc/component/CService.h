@@ -14,13 +14,36 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CCMAPI_H__
-#define __CCM_CCMAPI_H__
+#ifndef __CCM_TEST_RPC_CSERVICE_H__
+#define __CCM_TEST_RPC_CSERVICE_H__
 
-#include "ccmdef.h"
-#include "ccmtypes.h"
-#include "ccmobjectapi.h"
-#include "ccmreflectionapi.h"
-#include "ccmrpc.h"
+#include <ccmapi.h>
+#include <ccmobject.h>
+#include "_ccm_test_rpc_CService.h"
 
-#endif // __CCM_CCMAPI_H__
+namespace ccm {
+namespace test {
+namespace rpc {
+
+Coclass(CService)
+    , public Object
+    , public IService
+{
+public:
+    CService();
+
+    ~CService();
+
+    CCM_INTERFACE_DECL();
+
+    CCM_OBJECT_DECL();
+
+    ECode TestMethod1(
+        /* [in] */ Integer arg1);
+};
+
+}
+}
+}
+
+#endif // __CCM_TEST_RPC_CSERVICE_H__

@@ -14,13 +14,25 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CCMAPI_H__
-#define __CCM_CCMAPI_H__
+#include "RPCTestUnit.h"
+#include <ccmapi.h>
+#include <ccmautoptr.h>
 
-#include "ccmdef.h"
-#include "ccmtypes.h"
-#include "ccmobjectapi.h"
-#include "ccmreflectionapi.h"
-#include "ccmrpc.h"
+#include <stdio.h>
 
-#endif // __CCM_CCMAPI_H__
+using ccm::test::rpc::CID_CService;
+using ccm::test::rpc::IService;
+
+int main(int argv, char** argc)
+{
+    AutoPtr<IProxy> proxy;
+    CoCreateProxy(CID_CService, (IProxy**)&proxy);
+    printf("==== proxy: %p ====\n", proxy.Get());
+
+    IService* svc = IService::Probe(proxy);
+    svc->AddRef(0);
+    printf("==== call IService::TestMethod1 ====\n");
+    svc->TestMethod1(9);
+    printf("==== return ====\n");
+    return 0;
+}

@@ -36,6 +36,8 @@ public:
 
     CCM_INTERFACE_DECL();
 
+    CCM_OBJECT_DECL();
+
     ECode TestMethod1(
         /* [in] */ Integer arg1);
 };

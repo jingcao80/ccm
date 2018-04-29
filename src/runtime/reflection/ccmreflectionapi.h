@@ -32,6 +32,11 @@ EXTERN_C COM_PUBLIC ECode CoGetComponentMetadataFromFile(
     /* [in] */ IClassLoader* loader,
     /* [out] */ IMetaComponent** mc);
 
+EXTERN_C COM_PUBLIC ECode CoGetCoclassMetadata(
+    /* [in] */ const CoclassID& cid,
+    /* [in] */ IClassLoader* loader,
+    /* [in] */ IMetaCoclass** mc);
+
 }
 
 #endif // __CCM_CCMREFLECTIONAPI_H__
