@@ -108,17 +108,7 @@ ECode CMetaCoclass::GetConstructorNumber(
 ECode CMetaCoclass::GetAllConstructors(
     /* [out] */ Array<IMetaConstructor*>& constrs)
 {
-    if (mMetaConstructors.IsEmpty()) {
-        MetaInterface* mi = mOwner->mMetadata->mInterfaces[
-                mMetadata->mInterfaceIndexes[mMetadata->mInterfaceNumber - 1]];
-        mMetaConstructors = Array<IMetaConstructor*>(mi->mMethodNumber);
-        for (Integer i = 0; i < mi->mMethodNumber; i++) {
-            MetaMethod* mm = mi->mMethods[i];
-            IMetaConstructor* mcObj = new CMetaConstructor(
-                    this, mm);
-            mMetaConstructors.Set(i, mcObj);
-        }
-    }
+    BuildAllConstructors();
 
     Integer N = MIN(mMetaConstructors.GetLength(), constrs.GetLength());
     for (Integer i = 0; i < N; i++) {
@@ -131,6 +121,21 @@ ECode CMetaCoclass::GetConstructor(
     /* [in] */ const String& signature,
     /* [out] */ IMetaConstructor** constr)
 {
+    VALIDATE_NOT_NULL(constr);
+
+    BuildAllConstructors();
+
+    for (Integer i = 0; i < mMetaConstructors.GetLength(); i++) {
+        IMetaConstructor* mc = mMetaConstructors[i];
+        String mcSig;
+        mc->GetSignature(&mcSig);
+        if (signature.Equals(mcSig)) {
+            *constr = mc;
+            REFCOUNT_ADD(*constr);
+            return NOERROR;
+        }
+    }
+    *constr = nullptr;
     return NOERROR;
 }
 
@@ -259,6 +264,21 @@ ECode CMetaCoclass::CreateObject(
     VALIDATE_NOT_NULL(object);
 
     return CoCreateObjectInstance(mCid, iid, mOwner->mLoader, object);
+}
+
+void CMetaCoclass::BuildAllConstructors()
+{
+    if (mMetaConstructors.IsEmpty()) {
+        MetaInterface* mi = mOwner->mMetadata->mInterfaces[
+                mMetadata->mInterfaceIndexes[mMetadata->mInterfaceNumber - 1]];
+        mMetaConstructors = Array<IMetaConstructor*>(mi->mMethodNumber);
+        for (Integer i = 0; i < mi->mMethodNumber; i++) {
+            MetaMethod* mm = mi->mMethods[i];
+            IMetaConstructor* mcObj = new CMetaConstructor(
+                    this, mi, i, mm);
+            mMetaConstructors.Set(i, mcObj);
+        }
+    }
 }
 
 void CMetaCoclass::BuildAllInterfaces()

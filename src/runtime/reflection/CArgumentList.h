@@ -311,6 +311,7 @@ public:
         /* [in] */ HANDLE addr);
 
 private:
+    friend class CMetaConstructor;
     friend class CMetaMethod;
 
     void CalculateDataSize(
@@ -350,10 +351,11 @@ public:
     Integer mStackDataNumber;
 
 private:
+    static constexpr Byte DATA_SHIFT = 14;
     static constexpr Short DATA_MASK = 0xc000;
     static constexpr Byte INT_DATA = 0x00;
     static constexpr Byte FP_DATA = 0x01;
-    static constexpr Byte STK_DATA = 0x10;
+    static constexpr Byte STK_DATA = 0x02;
 };
 
 }

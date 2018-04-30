@@ -47,6 +47,10 @@ CArgumentList::CArgumentList(
 
 CArgumentList::~CArgumentList()
 {
+    if (mArgumentIndicators != nullptr) {
+        free(mArgumentIndicators);
+        mArgumentIndicators = nullptr;
+    }
     if (mIntegerData != nullptr) {
         free(mIntegerData);
         mIntegerData = nullptr;
@@ -950,11 +954,11 @@ void CArgumentList::CalculateDataSize(
             case CcmTypeKind::Array:
             case CcmTypeKind::Interface: {
                 if (*intDataNum < 6) {
-                    mArgumentIndicators[i] = INT_DATA | *intDataNum;
+                    mArgumentIndicators[i] = (INT_DATA << DATA_SHIFT) | *intDataNum;
                     (*intDataNum)++;
                 }
                 else {
-                    mArgumentIndicators[i] = STK_DATA | *stDataNum;
+                    mArgumentIndicators[i] = (STK_DATA << DATA_SHIFT) | *stDataNum;
                     (*stDataNum)++;
                 }
                 break;
@@ -962,11 +966,11 @@ void CArgumentList::CalculateDataSize(
             case CcmTypeKind::Float:
             case CcmTypeKind::Double: {
                 if (*fpDataNum < 8) {
-                    mArgumentIndicators[i] = FP_DATA | *fpDataNum;
+                    mArgumentIndicators[i] = (FP_DATA << DATA_SHIFT) | *fpDataNum;
                     (*fpDataNum)++;
                 }
                 else {
-                    mArgumentIndicators[i] = STK_DATA | *stDataNum;
+                    mArgumentIndicators[i] = (STK_DATA << DATA_SHIFT) | *stDataNum;
                     (*stDataNum)++;
                 }
                 break;
@@ -978,7 +982,7 @@ void CArgumentList::CalculateDataSize(
 void* CArgumentList::GetDataBuffer(
     /* [in] */ Integer index)
 {
-    Byte tag = ((unsigned short)(mArgumentIndicators[index] & DATA_MASK)) >> 14;
+    Byte tag = ((unsigned short)(mArgumentIndicators[index] & DATA_MASK)) >> DATA_SHIFT;
     if (tag == INT_DATA) return mIntegerData;
     else if (tag == FP_DATA) return mFPData;
     else return mStackData;

@@ -92,6 +92,8 @@ public:
         /* [out] */ IInterface** object) override;
 
 private:
+    void BuildAllConstructors();
+
     void BuildAllInterfaces();
 
     void BuildAllMethod();

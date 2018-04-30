@@ -14,23 +14,38 @@
 // limitations under the License.
 //=========================================================================
 
+#include "CArgumentList.h"
 #include "CMetaCoclass.h"
 #include "CMetaComponent.h"
 #include "CMetaConstructor.h"
 #include "CMetaInterface.h"
 #include "CMetaParameter.h"
+#include "ccmobjectapi.h"
 
 using ccm::metadata::MetaParameter;
 
 namespace ccm {
 
+EXTERN_C ECode invoke(
+    /* [in] */ HANDLE func,
+    /* [in] */ Long* intData,
+    /* [in] */ Integer intDataSize,
+    /* [in] */ Double* fpData,
+    /* [in] */ Integer fpDataSize,
+    /* [in] */ Long* stkData,
+    /* [in] */ Integer stkDataSize);
+
 CCM_INTERFACE_IMPL_LIGHT_1(CMetaConstructor, IMetaConstructor);
 
 CMetaConstructor::CMetaConstructor(
     /* [in] */ CMetaCoclass* mcObj,
+    /* [in] */ MetaInterface* mi,
+    /* [in] */ Integer index,
     /* [in] */ MetaMethod* mm)
     : mMetadata(mm)
     , mOwner(mcObj)
+    , mClassObjectInterface(mi)
+    , mIndex(index)
     , mName("constructor")
     , mSignature(mm->mSignature)
     , mIsDefault(mcObj->mMetadata->mConstructorDefault)
@@ -134,6 +149,12 @@ ECode CMetaConstructor::GetParameter(
 ECode CMetaConstructor::CreateArgumentList(
     /* [out] */ IArgumentList** argList)
 {
+    VALIDATE_NOT_NULL(argList);
+
+    AutoPtr<IArgumentList> args = new CArgumentList(
+            mOwner->mOwner->mMetadata, mMetadata);
+    *argList = args;
+    REFCOUNT_ADD(*argList);
     return NOERROR;
 }
 
@@ -141,7 +162,26 @@ ECode CMetaConstructor::Invoke(
     /* [in] */ IInterface* thisObject,
     /* [in] */ IArgumentList* argList)
 {
-    return NOERROR;
+    struct VTable
+    {
+        HANDLE mMethods[0];
+    };
+
+    struct VObject
+    {
+        VTable* mVtab;
+    };
+
+    CArgumentList* args = (CArgumentList*)argList;
+    Integer intDataNum, fpDataNum, stkDataNum;
+    Long* intData = args->GetIntegerData(&intDataNum);
+    Double* fpData = args->GetFPData(&fpDataNum);
+    Long* stkData =  args->GetStackData(&stkDataNum);
+    VObject* vobj = reinterpret_cast<VObject*>(thisObject->Probe(
+            *reinterpret_cast<InterfaceID*>(&mClassObjectInterface->mUuid)));
+    intData[0] = reinterpret_cast<Long>(vobj);
+    HANDLE methodAddr = vobj->mVtab->mMethods[mIndex];
+    return invoke(methodAddr, intData, intDataNum, fpData, fpDataNum, stkData, stkDataNum);
 }
 
 ECode CMetaConstructor::GetCoclass(
@@ -167,7 +207,18 @@ ECode CMetaConstructor::CreateObject(
     /* [in] */ IArgumentList* argList,
     /* [out] */ IInterface** object)
 {
-    return NOERROR;
+    VALIDATE_NOT_NULL(object);
+    *object = nullptr;
+
+    AutoPtr<IClassObject> clsObj;
+    ECode ec = CoAcquireClassFactory(mOwner->mCid,
+            mOwner->mOwner->mLoader, (IClassObject**)&clsObj);
+    if (FAILED(ec)) return ec;
+    argList->SetInputArgumentOfInterfaceID(
+            mParameters.GetLength(), IID_IInterface);
+    argList->SetOutputArgumentOfInterface(
+            mParameters.GetLength() + 1, reinterpret_cast<HANDLE>(object));
+    return Invoke(clsObj, argList);
 }
 
 void CMetaConstructor::BuildAllParameters()

@@ -43,6 +43,26 @@ class CProxy;
 
 class InterfaceProxy
 {
+private:
+    struct Registers
+    {
+        Long rbp;
+        Long rdi;
+        Long rsi;
+        Long rdx;
+        Long rcx;
+        Long r8;
+        Long r9;
+        Double xmm0;
+        Double xmm1;
+        Double xmm2;
+        Double xmm3;
+        Double xmm4;
+        Double xmm5;
+        Double xmm6;
+        Double xmm7;
+    };
+
 public:
     Integer AddRef(
         /* [in] */ HANDLE id = 0);
@@ -67,19 +87,31 @@ public:
         /* [in] */ IInterface* object,
         /* [out] */ InterfaceID* iid);
 
+    static ECode ProxyEntry(
+        /* [in] */ HANDLE args);
+
+private:
     ECode PackingArguments(
+        /* [in] */ Registers& regs,
         /* [in] */ IMetaMethod* method,
         /* [in] */ IArgumentList* argList);
 
-    static ECode ProxyEntry(
-        /* [in] */ HANDLE args);
+    Long GetLongValue(
+        /* [in] */ Registers& regs,
+        /* [in] */ Integer intIndex,
+        /* [in] */ Integer fpIndex);
+
+    Double GetDoubleValue(
+        /* [in] */ Registers& regs,
+        /* [in] */ Integer intIndex,
+        /* [in] */ Integer fpIndex);
 
 private:
     friend class CProxy;
 
     static constexpr Boolean DEBUG = false;
     HANDLE* mVtable;    // must be the first member
-    HANDLE mProxyFunc;  // must be the second member
+    HANDLE mProxyEntry;  // must be the second member
     InterfaceID mIid;
     IMetaInterface* mMetadata;
     CProxy* mObject;

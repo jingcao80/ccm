@@ -20,6 +20,7 @@
 #include "ccmrefbase.h"
 #include "Component.h"
 
+using ccm::metadata::MetaInterface;
 using ccm::metadata::MetaMethod;
 
 namespace ccm {
@@ -33,6 +34,8 @@ class CMetaConstructor
 public:
     CMetaConstructor(
         /* [in] */ CMetaCoclass* mcObj,
+        /* [in] */ MetaInterface* mi,
+        /* [in] */ Integer index,
         /* [in] */ MetaMethod* mm);
 
     ~CMetaConstructor();
@@ -85,6 +88,8 @@ private:
 public:
     MetaMethod* mMetadata;
     CMetaCoclass* mOwner;
+    MetaInterface* mClassObjectInterface;
+    Integer mIndex;
     String mName;
     String mSignature;
     Boolean mIsDefault;

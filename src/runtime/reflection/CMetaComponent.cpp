@@ -42,15 +42,20 @@ CMetaComponent::CMetaComponent(
     , mUrl(metadata->mUrl)
     , mMetaCoclasses(mMetadata->mCoclassNumber)
     , mMetaCoclassNameMap(mMetadata->mCoclassNumber)
-    , mMetaCoclassCIDMap(mMetadata->mCoclassNumber)
+    , mMetaCoclassIdMap(mMetadata->mCoclassNumber)
+    , mMetaCoclassesAllBuilt(false)
     , mMetaEnumerations(mMetadata->mEnumerationNumber -
             mMetadata->mExternalEnumerationNumber)
     , mMetaEnumerationMap(mMetadata->mEnumerationNumber -
             mMetadata->mExternalEnumerationNumber)
+    , mMetaEnumerationsAllBuilt(false)
     , mMetaInterfaces(mMetadata->mInterfaceNumber -
             mMetadata->mExternalInterfaceNumber)
-    , mMetaInterfaceMap(mMetadata->mInterfaceNumber -
+    , mMetaInterfaceNameMap(mMetadata->mInterfaceNumber -
             mMetadata->mExternalInterfaceNumber)
+    , mMetaInterfaceIdMap(mMetadata->mInterfaceNumber -
+            mMetadata->mExternalInterfaceNumber)
+    , mMetaInterfacesAllBuilt(false)
 {
     mCid.mUuid = metadata->mUuid;
     mCid.mUrl = mUrl.string();
@@ -134,7 +139,7 @@ ECode CMetaComponent::GetCoclass(
 
     BuildAllCoclasses();
 
-    *metaKls = mMetaCoclassCIDMap.Get(cid.mUuid);
+    *metaKls = mMetaCoclassIdMap.Get(cid.mUuid);
     REFCOUNT_ADD(*metaKls);
     return NOERROR;
 }
@@ -222,7 +227,19 @@ ECode CMetaComponent::GetInterface(
 
     BuildAllInterfaces();
 
-    *metaIntf = mMetaInterfaceMap.Get(fullName);
+    *metaIntf = mMetaInterfaceNameMap.Get(fullName);
+    REFCOUNT_ADD(*metaIntf);
+    return NOERROR;
+}
+
+ECode CMetaComponent::GetInterface(
+    /* [in] */ const InterfaceID& iid,
+    /* [out] */ IMetaInterface** metaIntf)
+{
+    VALIDATE_NOT_NULL(metaIntf);
+
+    BuildAllInterfaces();
+    *metaIntf = mMetaInterfaceIdMap.Get(iid.mUuid);
     REFCOUNT_ADD(*metaIntf);
     return NOERROR;
 }
@@ -256,7 +273,8 @@ ECode CMetaComponent::GetClassObject(
 
 void CMetaComponent::BuildAllCoclasses()
 {
-    if (mMetadata->mCoclassNumber == 0) {
+    if (mMetadata->mCoclassNumber == 0 ||
+            mMetaCoclassesAllBuilt) {
         return;
     }
 
@@ -269,9 +287,10 @@ void CMetaComponent::BuildAllCoclasses()
                     this, mMetadata, mc);
             mMetaCoclasses.Set(i, mcObj);
             mMetaCoclassNameMap.Put(fullName, mcObj);
-            mMetaCoclassCIDMap.Put(mcObj->mCid.mUuid, mcObj);
+            mMetaCoclassIdMap.Put(mcObj->mCid.mUuid, mcObj);
         }
     }
+    mMetaCoclassesAllBuilt = true;
 }
 
 AutoPtr<IMetaCoclass> CMetaComponent::BuildCoclass(
@@ -290,15 +309,19 @@ AutoPtr<IMetaCoclass> CMetaComponent::BuildCoclass(
                 this, mMetadata, mc);
         mMetaCoclasses.Set(index, mcObj);
         mMetaCoclassNameMap.Put(fullName, mcObj);
-        mMetaCoclassCIDMap.Put(mcObj->mCid.mUuid, mcObj);
+        mMetaCoclassIdMap.Put(mcObj->mCid.mUuid, mcObj);
         ret = mcObj;
+    }
+    else {
+        ret = mMetaCoclassNameMap.Get(fullName);
     }
     return ret;
 }
 
 void CMetaComponent::BuildAllEnumerations()
 {
-    if (mMetadata->mEnumerationNumber == 0) {
+    if (mMetadata->mEnumerationNumber == 0 ||
+            mMetaEnumerationsAllBuilt) {
         return;
     }
 
@@ -316,6 +339,7 @@ void CMetaComponent::BuildAllEnumerations()
         }
         index++;
     }
+    mMetaEnumerationsAllBuilt = true;
 }
 
 AutoPtr<IMetaEnumeration> CMetaComponent::BuildEnumeration(
@@ -343,12 +367,16 @@ AutoPtr<IMetaEnumeration> CMetaComponent::BuildEnumeration(
         mMetaEnumerationMap.Put(fullName, meObj);
         ret = meObj;
     }
+    else {
+        ret = mMetaEnumerationMap.Get(fullName);
+    }
     return ret;
 }
 
 void CMetaComponent::BuildAllInterfaces()
 {
-    if (mMetadata->mInterfaceNumber == 0) {
+    if (mMetadata->mInterfaceNumber == 0 ||
+            mMetaInterfacesAllBuilt) {
         return;
     }
 
@@ -358,14 +386,16 @@ void CMetaComponent::BuildAllInterfaces()
         if (mi->mExternal) continue;
         String fullName = String::Format("%s%s",
                 mi->mNamespace, mi->mName);
-        if (!mMetaInterfaceMap.ContainsKey(fullName)) {
-            IMetaInterface* miObj = new CMetaInterface(
+        if (!mMetaInterfaceNameMap.ContainsKey(fullName)) {
+            CMetaInterface* miObj = new CMetaInterface(
                     this, mMetadata, mi);
             mMetaInterfaces.Set(index, miObj);
-            mMetaInterfaceMap.Put(fullName, miObj);
+            mMetaInterfaceNameMap.Put(fullName, miObj);
+            mMetaInterfaceIdMap.Put(miObj->mIid.mUuid, miObj);
         }
         index++;
     }
+    mMetaInterfacesAllBuilt = true;
 }
 
 AutoPtr<IMetaInterface> CMetaComponent::BuildInterface(
@@ -379,8 +409,8 @@ AutoPtr<IMetaInterface> CMetaComponent::BuildInterface(
     MetaInterface* mi = mMetadata->mInterfaces[index];
     String fullName = String::Format("%s%s",
             mi->mNamespace, mi->mName);
-    if (!mMetaInterfaceMap.ContainsKey(fullName)) {
-        IMetaInterface* miObj = new CMetaInterface(
+    if (!mMetaInterfaceNameMap.ContainsKey(fullName)) {
+        CMetaInterface* miObj = new CMetaInterface(
                 this, mMetadata, mi);
         Integer realIndex = index;
         for (Integer i = 0; i <= index; i++) {
@@ -391,11 +421,12 @@ AutoPtr<IMetaInterface> CMetaComponent::BuildInterface(
         if (!mi->mExternal) {
             mMetaInterfaces.Set(realIndex, miObj);
         }
-        mMetaInterfaceMap.Put(fullName, miObj);
+        mMetaInterfaceNameMap.Put(fullName, miObj);
+        mMetaInterfaceIdMap.Put(miObj->mIid.mUuid, miObj);
         ret = miObj;
     }
     else {
-        ret = mMetaInterfaceMap.Get(fullName);
+        ret = mMetaInterfaceNameMap.Get(fullName);
     }
     return ret;
 }
@@ -534,11 +565,15 @@ void CMetaComponent::ReleaseResources()
     mUrl = nullptr;
     mMetaCoclasses.Clear();
     mMetaCoclassNameMap.Clear();
-    mMetaCoclassCIDMap.Clear();
+    mMetaCoclassIdMap.Clear();
+    mMetaCoclassesAllBuilt = false;
     mMetaEnumerations.Clear();
     mMetaEnumerationMap.Clear();
+    mMetaEnumerationsAllBuilt = false;
     mMetaInterfaces.Clear();
-    mMetaInterfaceMap.Clear();
+    mMetaInterfaceNameMap.Clear();
+    mMetaInterfaceIdMap.Clear();
+    mMetaInterfacesAllBuilt = false;
 }
 
 }

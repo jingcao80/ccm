@@ -81,6 +81,10 @@ public:
         /* [in] */ const String& fullName,
         /* [out] */ IMetaInterface** metaIntf) override;
 
+    ECode GetInterface(
+        /* [in] */ const InterfaceID& iid,
+        /* [out] */ IMetaInterface** metaIntf) override;
+
     ECode CanUnload(
         /* [out] */ Boolean* unload);
 
@@ -119,11 +123,15 @@ public:
     String mUrl;
     Array<IMetaCoclass*> mMetaCoclasses;
     HashMap<String, IMetaCoclass*> mMetaCoclassNameMap;
-    HashMap<Uuid, IMetaCoclass*> mMetaCoclassCIDMap;
+    HashMap<Uuid, IMetaCoclass*> mMetaCoclassIdMap;
+    Boolean mMetaCoclassesAllBuilt;
     Array<IMetaEnumeration*> mMetaEnumerations;
     HashMap<String, IMetaEnumeration*> mMetaEnumerationMap;
+    Boolean mMetaEnumerationsAllBuilt;
     Array<IMetaInterface*> mMetaInterfaces;
-    HashMap<String, IMetaInterface*> mMetaInterfaceMap;
+    HashMap<String, IMetaInterface*> mMetaInterfaceNameMap;
+    HashMap<Uuid, IMetaInterface*> mMetaInterfaceIdMap;
+    Boolean mMetaInterfacesAllBuilt;
     AutoPtr<IMetaInterface> mIInterface;
 };
 

@@ -53,28 +53,44 @@ namespace ccm {
         : "=m"(var)             \
     )
 
+#define GET_XREG(reg, var)      \
+    __asm__ __volatile__(       \
+        "movsd  %%"#reg", %0;"  \
+        : "=m"(var)             \
+    )
+
+#define GET_RBP(var)                \
+    __asm__ __volatile__(           \
+        "mov    (%%rbp), %%rax;"    \
+        "mov    %%rax, %0;"         \
+        : "=m"(var)                 \
+    );
+
+#define GET_STACK(rsp, off, var)        \
+    __asm__ __volatile__(               \
+        "mov    %1, %%rax;"             \
+        "mov    %2, %%ebx;"             \
+        "add    %%rbx, %%rax;"          \
+        "mov    (%%rax), %%rax;"        \
+        "mov    %%rax, %0;"             \
+        : "=m"(var)                     \
+        : "m"(rsp)                      \
+        , "m"(off)                      \
+    )
+
 EXTERN_C void __entry();
-EXTERN_C ECode ProxyFunc(
-    /* [in] */ HANDLE args)
-{
-    return InterfaceProxy::ProxyEntry(args);
-}
 
 __asm__ __volatile__(
     ".text;"
     ".align 8;"
     ".global __entry;"
     "__entry:"
-    "push   %rbx;"
+    "push   %rbp;"
+    "mov    %rsp, %rbp;"
     "mov    $0xff, %ebx;"
     "call   *8(%rdi);"
-    "pop    %rbx;"
+    "leaveq;"
     "ret;"
-    "nop;"
-    "nop;"
-    "nop;"
-    "nop;"
-    "nop;"
 );
 
 HANDLE PROXY_ENTRY = 0;
@@ -82,7 +98,7 @@ HANDLE PROXY_ENTRY = 0;
 static constexpr Integer PROXY_ENTRY_SIZE = 16;
 static constexpr Integer PROXY_ENTRY_SHIFT = 4;
 static constexpr Integer PROXY_ENTRY_NUMBER = 240;
-static constexpr Integer PROXY_INDEX_OFFSET = 2;
+static constexpr Integer PROXY_INDEX_OFFSET = 5;
 
 static constexpr Integer METHOD_MAX_NUMBER = PROXY_ENTRY_NUMBER + 4;
 
@@ -168,16 +184,211 @@ ECode InterfaceProxy::S_GetInterfaceID(
 }
 
 ECode InterfaceProxy::PackingArguments(
+    /* [in] */ Registers& regs,
     /* [in] */ IMetaMethod* method,
     /* [in] */ IArgumentList* argList)
 {
+    Integer N;
+    method->GetParameterNumber(&N);
+    Integer intNum = 1, fpNum = 0;
+    for (Integer i = 0; i < N; i++) {
+        AutoPtr<IMetaParameter> param;
+        method->GetParameter(i, (IMetaParameter**)&param);
+        AutoPtr<IMetaType> type;
+        param->GetType((IMetaType**)&type);
+        CcmTypeKind kind;
+        type->GetTypeKind((Integer*)&kind);
+        IOAttribute ioAttr;
+        param->GetIOAttribute(&ioAttr);
+        if (ioAttr == IOAttribute::IN) {
+            switch (kind) {
+                case CcmTypeKind::Char: {
+                    Char value = (Char)GetLongValue(regs, intNum++, fpNum);
+                    argList->SetInputArgumentOfChar(i, value);
+                    break;
+                }
+                case CcmTypeKind::Byte: {
+                    Byte value = (Byte)GetLongValue(regs, intNum++, fpNum);
+                    argList->SetInputArgumentOfByte(i, value);
+                    break;
+                }
+                case CcmTypeKind::Short: {
+                    Short value = (Short)GetLongValue(regs, intNum++, fpNum);
+                    argList->SetInputArgumentOfShort(i, value);
+                    break;
+                }
+                case CcmTypeKind::Integer: {
+                    Integer value = (Integer)GetLongValue(regs, intNum++, fpNum);
+                    argList->SetInputArgumentOfInteger(i, value);
+                    break;
+                }
+                case CcmTypeKind::Long: {
+                    Long value = GetLongValue(regs, intNum++, fpNum);
+                    argList->SetInputArgumentOfLong(i, value);
+                    break;
+                }
+                case CcmTypeKind::Float: {
+                    Float value = (Float)GetDoubleValue(regs, intNum, fpNum++);
+                    argList->SetInputArgumentOfFloat(i, value);
+                    break;
+                }
+                case CcmTypeKind::Double: {
+                    Double value = GetDoubleValue(regs, intNum, fpNum++);
+                    argList->SetInputArgumentOfDouble(i, value);
+                    break;
+                }
+                case CcmTypeKind::Boolean: {
+                    Boolean value = (Boolean)GetLongValue(regs, intNum++, fpNum);
+                    argList->SetInputArgumentOfBoolean(i, value);
+                    break;
+                }
+                case CcmTypeKind::String: {
+                    String value = *reinterpret_cast<String*>(GetLongValue(regs, intNum++, fpNum));
+                    argList->SetInputArgumentOfString(i, value);
+                    break;
+                }
+                case CcmTypeKind::CoclassID: {
+                    CoclassID cid = *reinterpret_cast<CoclassID*>(GetLongValue(regs, intNum++, fpNum));
+                    argList->SetInputArgumentOfCoclassID(i, cid);
+                    break;
+                }
+                case CcmTypeKind::ComponentID: {
+                    ComponentID cid = *reinterpret_cast<ComponentID*>(GetLongValue(regs, intNum++, fpNum));
+                    argList->SetInputArgumentOfComponentID(i, cid);
+                    break;
+                }
+                case CcmTypeKind::InterfaceID: {
+                    InterfaceID iid = *reinterpret_cast<InterfaceID*>(GetLongValue(regs, intNum++, fpNum));
+                    argList->SetInputArgumentOfInterfaceID(i, iid);
+                    break;
+                }
+                case CcmTypeKind::HANDLE: {
+                    HANDLE value = (HANDLE)GetLongValue(regs, intNum++, fpNum);
+                    argList->SetInputArgumentOfHANDLE(i, value);
+                    break;
+                }
+                case CcmTypeKind::ECode: {
+                    ECode value = (ECode)GetLongValue(regs, intNum++, fpNum);
+                    argList->SetInputArgumentOfECode(i, value);
+                    break;
+                }
+                case CcmTypeKind::Enum: {
+                    Integer value = (Integer)GetLongValue(regs, intNum++, fpNum);
+                    argList->SetInputArgumentOfEnumeration(i, value);
+                    break;
+                }
+                case CcmTypeKind::Array: {
+                    HANDLE value = (HANDLE)GetLongValue(regs, intNum++, fpNum);
+                    argList->SetInputArgumentOfArray(i, value);
+                    break;
+                }
+                case CcmTypeKind::Interface: {
+                    IInterface* value = reinterpret_cast<IInterface*>(GetLongValue(regs, intNum++, fpNum));
+                    argList->SetInputArgumentOfInterface(i, value);
+                    break;
+                }
+                default:
+                    Logger::E("CProxy", "Invalid [in] type(%d), param index: %d.\n", kind, i);
+                    return E_ILLEGAL_ARGUMENT_EXCEPTION;
+            }
+        }
+        else if (ioAttr == IOAttribute::OUT ||
+                 ioAttr == IOAttribute::IN_OUT) {
+            switch (kind) {
+
+            }
+        }
+    }
+
     return NOERROR;
+}
+
+Long InterfaceProxy::GetLongValue(
+    /* [in] */ Registers& regs,
+    /* [in] */ Integer intIndex,
+    /* [in] */ Integer fpIndex)
+{
+    switch (intIndex) {
+        case 0:
+            return regs.rdi;
+        case 1:
+            return regs.rsi;
+        case 2:
+            return regs.rdx;
+        case 3:
+            return regs.rcx;
+        case 4:
+            return regs.r8;
+        case 5:
+            return regs.r9;
+        default: {
+            Long val;
+            Integer off = fpIndex <= 7 ? (intIndex - 5 + 1) * 8 :
+                    (intIndex - 5 + fpIndex - 8 + 1) * 8;
+            GET_STACK(regs.rbp, off, val);
+            return val;
+        }
+    }
+}
+
+Double InterfaceProxy::GetDoubleValue(
+    /* [in] */ Registers& regs,
+    /* [in] */ Integer intIndex,
+    /* [in] */ Integer fpIndex)
+{
+    switch (fpIndex) {
+        case 0:
+            return regs.xmm0;
+        case 1:
+            return regs.xmm1;
+        case 2:
+            return regs.xmm2;
+        case 3:
+            return regs.xmm3;
+        case 4:
+            return regs.xmm4;
+        case 5:
+            return regs.xmm5;
+        case 6:
+            return regs.xmm6;
+        case 7:
+            return regs.xmm7;
+        default: {
+            Double val;
+            Integer off = intIndex <= 5 ? (fpIndex - 7 + 1) * 8 :
+                    (fpIndex - 7 + intIndex - 6 + 1) * 8;
+            GET_STACK(regs.rbp, off, val);
+            return val;
+        }
+    }
 }
 
 ECode InterfaceProxy::ProxyEntry(
     /* [in] */ HANDLE args)
 {
     InterfaceProxy* thisObj = reinterpret_cast<InterfaceProxy*>(args);
+
+    Integer methodIndex;
+    GET_REG(ebx, methodIndex);
+
+    Registers regs;
+    GET_RBP(regs.rbp);
+
+    GET_REG(rdi, regs.rdi);
+    GET_REG(rsi, regs.rsi);
+    GET_REG(rdx, regs.rdx);
+    GET_REG(rcx, regs.rcx);
+    GET_REG(r8, regs.r8);
+    GET_REG(r9, regs.r9);
+
+    GET_XREG(xmm0, regs.xmm0);
+    GET_XREG(xmm1, regs.xmm1);
+    GET_XREG(xmm2, regs.xmm2);
+    GET_XREG(xmm3, regs.xmm3);
+    GET_XREG(xmm4, regs.xmm4);
+    GET_XREG(xmm5, regs.xmm5);
+    GET_XREG(xmm6, regs.xmm6);
+    GET_XREG(xmm7, regs.xmm7);
 
     if (DEBUG) {
         String name, ns;
@@ -187,11 +398,8 @@ ECode InterfaceProxy::ProxyEntry(
                 ns.string(), name.string());
     }
 
-    Integer methodIndex;
-    GET_REG(ebx, methodIndex);
-
     AutoPtr<IMetaMethod> method;
-    thisObj->mMetadata->GetMethod(methodIndex, (IMetaMethod**)&method);
+    thisObj->mMetadata->GetMethod(methodIndex + 4, (IMetaMethod**)&method);
 
     if (DEBUG) {
         String name, signature;
@@ -203,7 +411,7 @@ ECode InterfaceProxy::ProxyEntry(
 
     AutoPtr<IArgumentList> argList;
     method->CreateArgumentList((IArgumentList**)&argList);
-    ECode ec = thisObj->PackingArguments(method, argList);
+    ECode ec = thisObj->PackingArguments(regs, method, argList);
     if (FAILED(ec)) goto ProxyExit;
 
 ProxyExit:
@@ -334,7 +542,7 @@ ECode CProxy::CreateObject(
         iproxy->mMetadata = interfaces[i];
         iproxy->mMetadata->GetInterfaceID(&iproxy->mIid);
         iproxy->mVtable = sProxyVtable;
-        iproxy->mProxyFunc = reinterpret_cast<HANDLE>(&ProxyFunc);
+        iproxy->mProxyEntry = reinterpret_cast<HANDLE>(&InterfaceProxy::ProxyEntry);
         proxyObj->mInterfaces[i] = iproxy;
     }
 

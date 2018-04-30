@@ -74,6 +74,10 @@ interface IMetaComponent
         [in] String fullName,
         [out] IMetaInterface** intf);
 
+    GetInterface(
+        [in] InterfaceID iid,
+        [out] IMetaInterface** intf);
+
     GetEnumerationNumber(
         [out] Integer* number);
 
