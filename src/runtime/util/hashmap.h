@@ -54,7 +54,12 @@ private:
     {
         Bucket()
             : mNext(nullptr)
-        {}
+        {
+            InitFunc<Key> initKeyF;
+            InitFunc<Val> initValF;
+            initKeyF(&mKey, this);
+            initValF(&mValue, this);
+        }
 
         ~Bucket()
         {

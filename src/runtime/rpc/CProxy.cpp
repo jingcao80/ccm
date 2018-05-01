@@ -295,7 +295,94 @@ ECode InterfaceProxy::PackingArguments(
         else if (ioAttr == IOAttribute::OUT ||
                  ioAttr == IOAttribute::IN_OUT) {
             switch (kind) {
-
+                case CcmTypeKind::Char: {
+                    HANDLE value = (HANDLE)GetLongValue(regs, intNum++, fpNum);
+                    argList->SetOutputArgumentOfChar(i, value);
+                    break;
+                }
+                case CcmTypeKind::Byte: {
+                    HANDLE value = (HANDLE)GetLongValue(regs, intNum++, fpNum);
+                    argList->SetOutputArgumentOfByte(i, value);
+                    break;
+                }
+                case CcmTypeKind::Short: {
+                    HANDLE value = (HANDLE)GetLongValue(regs, intNum++, fpNum);
+                    argList->SetOutputArgumentOfShort(i, value);
+                    break;
+                }
+                case CcmTypeKind::Integer: {
+                    HANDLE value = (HANDLE)GetLongValue(regs, intNum++, fpNum);
+                    argList->SetOutputArgumentOfInteger(i, value);
+                    break;
+                }
+                case CcmTypeKind::Long: {
+                    HANDLE value = (HANDLE)GetLongValue(regs, intNum++, fpNum);
+                    argList->SetOutputArgumentOfLong(i, value);
+                    break;
+                }
+                case CcmTypeKind::Float: {
+                    HANDLE value = (HANDLE)GetLongValue(regs, intNum++, fpNum);
+                    argList->SetOutputArgumentOfFloat(i, value);
+                    break;
+                }
+                case CcmTypeKind::Double: {
+                    HANDLE value = (HANDLE)GetLongValue(regs, intNum++, fpNum);
+                    argList->SetOutputArgumentOfDouble(i, value);
+                    break;
+                }
+                case CcmTypeKind::Boolean: {
+                    HANDLE value = (HANDLE)GetLongValue(regs, intNum++, fpNum);
+                    argList->SetOutputArgumentOfBoolean(i, value);
+                    break;
+                }
+                case CcmTypeKind::String: {
+                    HANDLE value = (HANDLE)GetLongValue(regs, intNum++, fpNum);
+                    argList->SetOutputArgumentOfString(i, value);
+                    break;
+                }
+                case CcmTypeKind::CoclassID: {
+                    HANDLE value = (HANDLE)GetLongValue(regs, intNum++, fpNum);
+                    argList->SetOutputArgumentOfCoclassID(i, value);
+                    break;
+                }
+                case CcmTypeKind::ComponentID: {
+                    HANDLE value = (HANDLE)GetLongValue(regs, intNum++, fpNum);
+                    argList->SetOutputArgumentOfComponentID(i, value);
+                    break;
+                }
+                case CcmTypeKind::InterfaceID: {
+                    HANDLE value = (HANDLE)GetLongValue(regs, intNum++, fpNum);
+                    argList->SetOutputArgumentOfInterfaceID(i, value);
+                    break;
+                }
+                case CcmTypeKind::HANDLE: {
+                    HANDLE value = (HANDLE)GetLongValue(regs, intNum++, fpNum);
+                    argList->SetOutputArgumentOfHANDLE(i, value);
+                    break;
+                }
+                case CcmTypeKind::ECode: {
+                    HANDLE value = (HANDLE)GetLongValue(regs, intNum++, fpNum);
+                    argList->SetOutputArgumentOfECode(i, value);
+                    break;
+                }
+                case CcmTypeKind::Enum: {
+                    HANDLE value = (HANDLE)GetLongValue(regs, intNum++, fpNum);
+                    argList->SetOutputArgumentOfEnumeration(i, value);
+                    break;
+                }
+                case CcmTypeKind::Array: {
+                    HANDLE value = (HANDLE)GetLongValue(regs, intNum++, fpNum);
+                    argList->SetOutputArgumentOfArray(i, value);
+                    break;
+                }
+                case CcmTypeKind::Interface: {
+                    HANDLE value = (HANDLE)GetLongValue(regs, intNum++, fpNum);
+                    argList->SetOutputArgumentOfInterface(i, value);
+                    break;
+                }
+                default:
+                    Logger::E("CProxy", "Invalid [out] or [in, out] type(%d), param index: %d.\n", kind, i);
+                    return E_ILLEGAL_ARGUMENT_EXCEPTION;
             }
         }
     }
@@ -414,6 +501,8 @@ ECode InterfaceProxy::ProxyEntry(
     ECode ec = thisObj->PackingArguments(regs, method, argList);
     if (FAILED(ec)) goto ProxyExit;
 
+    ec = thisObj->mObject->mHandler->Invoke((IProxy*)thisObj->mObject, method, argList);
+
 ProxyExit:
     if (DEBUG) {
         Logger::D("CProxy", "Exit ProxyEntry with ec(0x%x)", ec);
@@ -491,13 +580,14 @@ ECode CProxy::GetInterfaceID(
 ECode CProxy::SetInvocationHandler(
     /* [in] */ IInvocationHandler* handler)
 {
+    mHandler = handler;
     return NOERROR;
 }
 
 ECode CProxy::IsStubAlive(
     /* [out] */ Boolean* alive)
 {
-    return NOERROR;
+    return mHandler->IsStubAlive(alive);
 }
 
 ECode CProxy::LinkToDeath(
@@ -505,7 +595,7 @@ ECode CProxy::LinkToDeath(
     /* [in] */ HANDLE cookie,
     /* [in] */ Integer flags)
 {
-    return NOERROR;
+    return mHandler->LinkToDeath(recipient, cookie, flags);
 }
 
 ECode CProxy::UnlinkToDeath(
@@ -514,7 +604,7 @@ ECode CProxy::UnlinkToDeath(
     /* [in] */ Integer flags,
     /* [out] */ IDeathRecipient** outRecipient)
 {
-    return NOERROR;
+    return mHandler->UnlinkToDeath(recipient, cookie, flags, outRecipient);
 }
 
 ECode CProxy::CreateObject(

@@ -16,8 +16,118 @@
 
 namespace ccm {
 
-interface IMetaMethod;
+[
+    uuid(3d29cb55-f7d1-4b79-9e63-ad14a57fd9f1),
+    version(0.1.0)
+]
+interface IParcel
+{
+    ReadChar(
+        [out] Char* value);
+
+    WriteChar(
+        [in] Char value);
+
+    ReadByte(
+        [out] Byte* value);
+
+    WriteByte(
+        [in] Byte value);
+
+    ReadShort(
+        [out] Short* value);
+
+    WriteShort(
+        [in] Short value);
+
+    ReadInteger(
+        [out] Integer* value);
+
+    WriteInteger(
+        [in] Integer value);
+
+    ReadLong(
+        [out] Long* value);
+
+    WriteLong(
+        [in] Long value);
+
+    ReadFloat(
+        [out] Float* value);
+
+    WriteFloat(
+        [in] Float value);
+
+    ReadDouble(
+        [out] Double* value);
+
+    WriteDouble(
+        [in] Double value);
+
+    ReadBoolean(
+        [out] Boolean* value);
+
+    WriteBoolean(
+        [in] Boolean value);
+
+    ReadString(
+        [out] String* value);
+
+    WriteString(
+        [in] String value);
+
+    ReadCoclassID(
+        [out] CoclassID* value);
+
+    WriteCoclassID(
+        [in] CoclassID value);
+
+    ReadComponentID(
+        [out] ComponentID* value);
+
+    WriteComponentID(
+        [in] ComponentID value);
+
+    ReadInterfaceID(
+        [out] InterfaceID* value);
+
+    WriteInterfaceID(
+        [in] InterfaceID value);
+
+    ReadHANDLE(
+        [out] HANDLE* value);
+
+    WriteHANDLE(
+        [in] HANDLE value);
+
+    ReadECode(
+        [out] ECode* value);
+
+    WriteECode(
+        [in] ECode value);
+
+    ReadEnumeration(
+        [out] Integer* value);
+
+    WriteEnumeration(
+        [in] Integer value);
+
+    ReadArray(
+        [out] HANDLE* array);
+
+    WriteArray(
+        [in] HANDLE array);
+
+    ReadInterface(
+        [out] IInterface** value);
+
+    WriteInterface(
+        [in] IInterface* value);
+}
+
 interface IArgumentList;
+interface IDeathRecipient;
+interface IMetaMethod;
 
 [
     uuid(bf89f2ce-ba5f-4f5d-a866-9e34048ee009),
@@ -29,9 +139,21 @@ interface IInvocationHandler
         [in] IInterface* proxy,
         [in] IMetaMethod* method,
         [in] IArgumentList* args);
-}
 
-interface IDeathRecipient;
+    IsStubAlive(
+        [out] Boolean* alive);
+
+    LinkToDeath(
+        [in] IDeathRecipient* recipient,
+        [in] HANDLE cookie = 0,
+        [in] Integer flags = 0);
+
+    UnlinkToDeath(
+        [in] IDeathRecipient* recipient,
+        [in] HANDLE cookie = 0,
+        [in] Integer flags = 0,
+        [out] IDeathRecipient** outRecipient = nullptr);
+}
 
 [
     uuid(2598f97d-0e6b-45a2-8c21-ffeca8347233),

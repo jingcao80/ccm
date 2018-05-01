@@ -25,6 +25,7 @@ namespace ccm {
 class COM_PUBLIC Object
     : public RefBase
     , public IObject
+    , public IWeakReferenceSource
 {
 public:
     CCM_INTERFACE_DECL();
@@ -38,6 +39,9 @@ public:
 
     ECode GetCoclass(
         /* [out] */ IMetaCoclass** klass) override;
+
+    ECode GetWeakReference(
+        /* [out] */ IWeakReference** wr) override;
 
 private:
     IMetaComponent* mComponent;

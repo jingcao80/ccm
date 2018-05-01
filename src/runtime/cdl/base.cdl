@@ -79,4 +79,14 @@ interface IWeakReference
         [out] IInterface** object);
 }
 
+[
+    uuid(00000000-0000-0000-0000-000000000006),
+    version(0.1.0)
+]
+interface IWeakReferenceSource
+{
+    GetWeakReference(
+        [out] IWeakReference** wr);
+}
+
 }

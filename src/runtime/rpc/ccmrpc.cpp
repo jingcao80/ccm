@@ -16,6 +16,7 @@
 
 #include "ccmrpc.h"
 #include "CProxy.h"
+#include "CStub.h"
 
 namespace ccm {
 
@@ -30,9 +31,7 @@ ECode CoCreateStub(
     /* [in] */ IInterface* object,
     /* [out] */ IStub** stub)
 {
-    VALIDATE_NOT_NULL(stub);
-
-    return NOERROR;
+    return CStub::CreateObject(object, stub);
 }
 
 }

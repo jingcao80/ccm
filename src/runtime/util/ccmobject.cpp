@@ -39,6 +39,9 @@ IInterface* Object::Probe(
     else if (iid == IID_IObject) {
         return (IObject*)this;
     }
+    else if (iid == IID_IWeakReferenceSource) {
+        return (IWeakReferenceSource*)this;
+    }
     return nullptr;
 }
 
@@ -50,6 +53,9 @@ ECode Object::GetInterfaceID(
 
     if (object == (IInterface*)(IObject*)this) {
         *iid = IID_IObject;
+    }
+    else if (object == (IWeakReferenceSource*)this) {
+        *iid = IID_IWeakReferenceSource;
     }
     else {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -84,6 +90,16 @@ ECode Object::GetCoclass(
         *klass = nullptr;
         return E_UNSUPPORTED_OPERATION_EXCEPTION;
     }
+}
+
+ECode Object::GetWeakReference(
+    /* [out] */ IWeakReference** wr)
+{
+    VALIDATE_NOT_NULL(wr);
+
+    *wr = new WeakReferenceImpl((IObject*)this, CreateWeak(this));
+    REFCOUNT_ADD(*wr)
+    return NOERROR;
 }
 
 }

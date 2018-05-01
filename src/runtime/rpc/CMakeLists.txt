@@ -22,7 +22,9 @@ include_directories(
     ${INC_DIR})
 
 set(SOURCES
+    CParcel.cpp
     CProxy.cpp
+    CStub.cpp
     ccmrpc.cpp)
 
 add_library(rpc STATIC

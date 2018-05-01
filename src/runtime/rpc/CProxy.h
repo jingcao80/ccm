@@ -30,11 +30,12 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CProxy_H__
-#define __CCM_CProxy_H__
+#ifndef __CCM_CPROXY_H__
+#define __CCM_CPROXY_H__
 
 #include "reflection/ccmreflectionapi.h"
 #include "type/ccmarray.h"
+#include "util/ccmautoptr.h"
 #include "util/ccmobject.h"
 
 namespace ccm {
@@ -153,11 +154,14 @@ public:
         /* [in] */ IProxy** proxy);
 
 private:
+    friend class InterfaceProxy;
+
     CoclassID mCid;
     IMetaCoclass* mMetadata;
     Array<InterfaceProxy*> mInterfaces;
+    AutoPtr<IInvocationHandler> mHandler;
 };
 
 }
 
-#endif // __CCM_CProxy_H__
+#endif // __CCM_CPROXY_H__

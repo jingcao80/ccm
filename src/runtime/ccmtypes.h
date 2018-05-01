@@ -238,6 +238,41 @@ CREATE_MEMBER_DETECTOR(Release);
 
 //-----------------------------------------------------------------
 
+template<class T, Boolean = Type2Kind<T>::isPrimitiveType>
+struct InitFunc
+{
+    void operator()(
+        /* [in] */ T* data,
+        /* [in] */ void* id)
+    {
+        *data = nullptr;
+    }
+};
+
+template<class T>
+struct InitFunc<T, true>
+{
+    void operator()(
+        /* [in] */ T* data,
+        /* [in] */ void* id)
+    {
+        *data = 0;
+    }
+};
+
+template<>
+struct InitFunc<Uuid, true>
+{
+    inline void operator()(
+        /* [in] */ Uuid* data,
+        /* [in] */ void* id)
+    {
+        memset(data, 0, sizeof(Uuid));
+    }
+};
+
+//-----------------------------------------------------------------
+
 template<class T, Boolean hasAddRefAndRelease>
 struct AssignImpl
 {
