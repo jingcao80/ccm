@@ -45,6 +45,10 @@ class CParcel
     , public IParcel
 {
 public:
+    CParcel();
+
+    ~CParcel();
+
     CCM_INTERFACE_DECL();
 
     CCM_OBJECT_DECL();
@@ -101,31 +105,25 @@ public:
         /* [out] */ String* value);
 
     ECode WriteString(
-        /* [in] */ String value);
+        /* [in] */ const String& value);
 
     ECode ReadCoclassID(
         /* [out] */ CoclassID* value);
 
     ECode WriteCoclassID(
-        /* [in] */ CoclassID value);
+        /* [in] */ const CoclassID& value);
 
     ECode ReadComponentID(
         /* [out] */ ComponentID* value);
 
     ECode WriteComponentID(
-        /* [in] */ ComponentID value);
+        /* [in] */ const ComponentID& value);
 
     ECode ReadInterfaceID(
         /* [out] */ InterfaceID* value);
 
     ECode WriteInterfaceID(
-        /* [in] */ InterfaceID value);
-
-    ECode ReadHANDLE(
-        /* [out] */ HANDLE* value);
-
-    ECode WriteHANDLE(
-        /* [in] */ HANDLE value);
+        /* [in] */ const InterfaceID& value);
 
     ECode ReadECode(
         /* [out] */ ECode* value);
@@ -150,6 +148,54 @@ public:
 
     ECode WriteInterface(
         /* [in] */ IInterface* value);
+
+    ECode SetDataPosition(
+        /* [in] */ Long pos);
+
+    static ECode CreateObject(
+        /* [out] */ IParcel** parcel);
+
+private:
+    ECode Read(
+        /* [in] */ void* outData,
+        /* [in] */ Long len) const;
+
+    const void* ReadInplace(
+        /* [in] */ Long len) const;
+
+    ECode Write(
+        /* [in] */ const void* data,
+        /* [in] */ Long len);
+
+    void* WriteInplace(
+        /* [in] */ Long len);
+
+    ECode FinishWrite(
+        /* [in] */ Long len);
+
+    ECode GrowData(
+        /* [in] */ Long len);
+
+    ECode ContinueWrite(
+        /* [in] */ Long desired);
+
+    template<class T>
+    ECode ReadAligned(
+        /* [out] */ T* value) const;
+
+    template<class T>
+    ECode WriteAligned(
+        /* [in] */ T value);
+
+private:
+    static constexpr Integer TAG_NULL = 0;
+    static constexpr Integer TAG_NOT_NULL = 1;
+
+    ECode mError;
+    Byte* mData;
+    Long mDataSize;
+    Long mDataCapacity;
+    mutable Long mDataPos;
 };
 
 }

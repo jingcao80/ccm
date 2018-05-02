@@ -15,10 +15,17 @@
 //=========================================================================
 
 #include "ccmrpc.h"
+#include "CParcel.h"
 #include "CProxy.h"
 #include "CStub.h"
 
 namespace ccm {
+
+ECode CoCreateParcel(
+    /* [out] */ IParcel** parcel)
+{
+    return CParcel::CreateObject(parcel);
+}
 
 ECode CoCreateProxy(
     /* [in] */ const CoclassID& cid,

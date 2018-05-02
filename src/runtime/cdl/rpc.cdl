@@ -94,12 +94,6 @@ interface IParcel
     WriteInterfaceID(
         [in] InterfaceID value);
 
-    ReadHANDLE(
-        [out] HANDLE* value);
-
-    WriteHANDLE(
-        [in] HANDLE value);
-
     ReadECode(
         [out] ECode* value);
 
@@ -123,6 +117,9 @@ interface IParcel
 
     WriteInterface(
         [in] IInterface* value);
+
+    SetDataPosition(
+        [in] Long pos);
 }
 
 interface IArgumentList;

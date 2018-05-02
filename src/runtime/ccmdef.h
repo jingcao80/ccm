@@ -59,6 +59,15 @@ namespace ccm {
 #define MIN(a, b)       (((a) < (b)) ? (a) : (b))
 #endif
 
+#define ALIGN4(v) (((v) + 3) & ~3)
+#define ALIGN8(v) (((v) + 7) & ~7)
+
+#if defined(__i386__)
+#define ALIGN(v) ALIGN4(v)
+#elif defined(__x86_64__)
+#define ALIGN(v) ALIGN8(v)
+#endif
+
 #ifndef CCM_INTERFACE_DECL
 #define CCM_INTERFACE_DECL()                            \
     Integer AddRef(                                     \

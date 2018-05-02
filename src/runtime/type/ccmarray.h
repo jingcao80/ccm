@@ -27,13 +27,14 @@ struct Triple
     Triple& operator=(
         /* [in] */ const Triple& other);
 
+protected:
     void* mData;
     Long mSize;
     CcmTypeKind mType;
 };
 
 template<class T>
-class Array
+class Array : public Triple
 {
 public:
     Array();
@@ -113,26 +114,19 @@ public:
     void Clear();
 
     Array Clone() const;
-
-private:
-    void* mData;
-    Long mSize;
-    CcmTypeKind mType;
 };
 
 template<class T>
 Array<T>::Array()
-    : mData(nullptr)
-    , mSize(0)
-    , mType(CcmTypeKind::Unknown)
-{}
+{
+    mData = nullptr;
+    mSize = 0;
+    mType = CcmTypeKind::Unknown;
+}
 
 template<class T>
 Array<T>::Array(
     /* [in] */ Long size)
-    : mData(nullptr)
-    , mSize(0)
-    , mType(CcmTypeKind::Unknown)
 {
     if (size < 0 || size > SIZE_MAX) {
         Logger::E("Array", "Invalid array size %lld", size);

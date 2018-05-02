@@ -21,6 +21,9 @@
 
 namespace ccm {
 
+EXTERN_C COM_PUBLIC ECode CoCreateParcel(
+    /* [out] */ IParcel** parcel);
+
 EXTERN_C COM_PUBLIC ECode CoCreateProxy(
     /* [in] */ const CoclassID& cid,
     /* [out] */ IProxy** proxy);
