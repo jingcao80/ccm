@@ -289,6 +289,9 @@ interface IMetaMethod
         [in] String name,
         [out] IMetaParameter** param);
 
+    HasOutArguments(
+        [out] Boolean* outArgs);
+
     CreateArgumentList(
         [out] IArgumentList** argList);
 

@@ -16,6 +16,18 @@
 
 namespace ccm {
 
+enum RPCType
+{
+    Local,
+    Remote
+}
+
+enum RPCPeer
+{
+    Proxy,
+    Stub
+}
+
 [
     uuid(3d29cb55-f7d1-4b79-9e63-ad14a57fd9f1),
     version(0.1.0)
@@ -107,7 +119,7 @@ interface IParcel
         [in] Integer value);
 
     ReadArray(
-        [out] HANDLE* array);
+        [out] HANDLE array);
 
     WriteArray(
         [in] HANDLE array);
@@ -118,6 +130,12 @@ interface IParcel
     WriteInterface(
         [in] IInterface* value);
 
+    GetDataPayload(
+        [out] HANDLE* data);
+
+    GetDataSize(
+        [out] Long* size);
+
     SetDataPosition(
         [in] Long pos);
 }
@@ -125,19 +143,21 @@ interface IParcel
 interface IArgumentList;
 interface IDeathRecipient;
 interface IMetaMethod;
+interface IProxy;
 
 [
     uuid(bf89f2ce-ba5f-4f5d-a866-9e34048ee009),
     version(0.1.0)
 ]
-interface IInvocationHandler
+interface IRPCChannel
 {
-    Invoke(
-        [in] IInterface* proxy,
-        [in] IMetaMethod* method,
-        [in] IArgumentList* args);
+    GetRPCType(
+        [out] RPCType* type);
 
-    IsStubAlive(
+    CreateArgumentParcel(
+        [out] IParcel** parcel);
+
+    IsPeerAlive(
         [out] Boolean* alive);
 
     LinkToDeath(
@@ -150,6 +170,25 @@ interface IInvocationHandler
         [in] HANDLE cookie = 0,
         [in] Integer flags = 0,
         [out] IDeathRecipient** outRecipient = nullptr);
+
+    Invoke(
+        [in] IProxy* proxy,
+        [in] IMetaMethod* method,
+        [in] IParcel* argParcel,
+        [out] IParcel** resParcel);
+
+    StartListening();
+}
+
+[
+    uuid(d1adf1f9-2062-45fd-aa33-edd481a04417),
+    version(0.1.0)
+]
+interface IRPCChannelFactory
+{
+    CreateChannel(
+        [in] RPCPeer peer,
+        [out] IRPCChannel** channel);
 }
 
 [
@@ -158,8 +197,8 @@ interface IInvocationHandler
 ]
 interface IProxy
 {
-    SetInvocationHandler(
-        [in] IInvocationHandler* handler);
+    GetTargetCoclass(
+        [out] IMetaCoclass** target);
 
     IsStubAlive(
         [out] Boolean* alive);

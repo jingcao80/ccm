@@ -22,17 +22,6 @@
 
 namespace ccm {
 
-struct Triple
-{
-    Triple& operator=(
-        /* [in] */ const Triple& other);
-
-protected:
-    void* mData;
-    Long mSize;
-    CcmTypeKind mType;
-};
-
 template<class T>
 class Array : public Triple
 {

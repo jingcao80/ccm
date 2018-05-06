@@ -68,6 +68,9 @@ public:
         /* [in] */ const String& name,
         /* [out] */ IMetaParameter** param);
 
+    ECode HasOutArguments(
+        /* [out] */ Boolean* outArgs);
+
     ECode CreateArgumentList(
         /* [out] */ IArgumentList** argList);
 
@@ -85,6 +88,7 @@ public:
     String mName;
     String mSignature;
     Array<IMetaParameter*> mParameters;
+    Boolean mHasOutArguments;
     AutoPtr<IMetaType> mReturnType;
 };
 

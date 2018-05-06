@@ -20,3 +20,4 @@ set(RPC_DIR ${TEST_DIR}/rpc)
 
 add_subdirectory(component)
 add_subdirectory(client)
+add_subdirectory(service)

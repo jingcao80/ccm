@@ -14,39 +14,24 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccmtypes.h"
+#include "RPCTestUnit.h"
+#include <ccmapi.h>
+#include <ccmautoptr.h>
 
-namespace ccm {
+#include <stdio.h>
 
-void* Triple::AllocData(
-    /* [in] */ Long dataSize)
+using ccm::test::rpc::CService;
+using ccm::test::rpc::IService;
+using ccm::test::rpc::IID_IService;
+
+int main(int argv, char** argc)
 {
-    SharedBuffer* buf = SharedBuffer::Alloc(dataSize);
-    if (buf == nullptr) {
-        Logger::E("Triple", "Malloc data which size is %lld failed.", dataSize);
-        return nullptr;
-    }
-    void* data = buf->GetData();
-    memset(data, 0, dataSize);
-    return data;
-}
+    AutoPtr<IService> srv;
+    CService::New(IID_IService, (IInterface**)&srv);
 
-Triple& Triple::operator=(
-    /* [in] */ const Triple& other)
-{
-    if (mData == other.mData) {
-        return *this;
-    }
+    AutoPtr<IStub> stub;
+    CoCreateStub(srv, RPCType::Local, (IStub**)&stub);
+    printf("==== stub: %p ====\n", stub.Get());
 
-    if (other.mData != nullptr) {
-        SharedBuffer::GetBufferFromData(other.mData)->AddRef();
-    }
-    if (mData != nullptr) {
-        SharedBuffer::GetBufferFromData(mData)->Release();
-    }
-    mData = other.mData;
-    mSize = other.mSize;
-    return *this;
-}
-
+    return 0;
 }

@@ -30,19 +30,21 @@
  * limitations under the License.
  */
 
-#include "CParcel.h"
+#include "CDBusParcel.h"
+#include "util/ccmautoptr.h"
+#include "util/ccmlogger.h"
 #include <stdlib.h>
 
 namespace ccm {
 
-const CoclassID CID_CParcel =
+const CoclassID CID_CDBusParcel =
         {{0x28208469,0x8814,0x49af,0x80f7,{0x8,0xb,0x1,0x4,0x7,0x3,0x9,0x1,0xf,0xb,0x9,0x4}}, &CID_CCMRuntime};
 
-CCM_INTERFACE_IMPL_1(CParcel, Object, IParcel);
+CCM_INTERFACE_IMPL_1(CDBusParcel, Object, IParcel);
 
-CCM_OBJECT_IMPL(CParcel);
+CCM_OBJECT_IMPL(CDBusParcel);
 
-CParcel::CParcel()
+CDBusParcel::CDBusParcel()
     : mError(NOERROR)
     , mData(nullptr)
     , mDataSize(0)
@@ -50,14 +52,14 @@ CParcel::CParcel()
     , mDataPos(0)
 {}
 
-CParcel::~CParcel()
+CDBusParcel::~CDBusParcel()
 {
     if (mData != nullptr) {
         free(mData);
     }
 }
 
-ECode CParcel::ReadChar(
+ECode CDBusParcel::ReadChar(
     /* [out] */ Char* value)
 {
     VALIDATE_NOT_NULL(value);
@@ -68,13 +70,13 @@ ECode CParcel::ReadChar(
     return ec;
 }
 
-ECode CParcel::WriteChar(
+ECode CDBusParcel::WriteChar(
     /* [in] */ Char value)
 {
     return WriteInteger((Integer)value);
 }
 
-ECode CParcel::ReadByte(
+ECode CDBusParcel::ReadByte(
     /* [out] */ Byte* value)
 {
     VALIDATE_NOT_NULL(value);
@@ -85,13 +87,13 @@ ECode CParcel::ReadByte(
     return ec;
 }
 
-ECode CParcel::WriteByte(
+ECode CDBusParcel::WriteByte(
     /* [in] */ Byte value)
 {
     return WriteInteger((Integer)value);
 }
 
-ECode CParcel::ReadShort(
+ECode CDBusParcel::ReadShort(
     /* [out] */ Short* value)
 {
     VALIDATE_NOT_NULL(value);
@@ -102,13 +104,13 @@ ECode CParcel::ReadShort(
     return ec;
 }
 
-ECode CParcel::WriteShort(
+ECode CDBusParcel::WriteShort(
     /* [in] */ Short value)
 {
     return WriteInteger((Integer)value);
 }
 
-ECode CParcel::ReadInteger(
+ECode CDBusParcel::ReadInteger(
     /* [out] */ Integer* value)
 {
     VALIDATE_NOT_NULL(value);
@@ -116,13 +118,13 @@ ECode CParcel::ReadInteger(
     return ReadAligned<Integer>(value);
 }
 
-ECode CParcel::WriteInteger(
+ECode CDBusParcel::WriteInteger(
     /* [in] */ Integer value)
 {
     return WriteAligned<Integer>(value);
 }
 
-ECode CParcel::ReadLong(
+ECode CDBusParcel::ReadLong(
     /* [out] */ Long* value)
 {
     VALIDATE_NOT_NULL(value);
@@ -130,13 +132,13 @@ ECode CParcel::ReadLong(
     return ReadAligned<Long>(value);
 }
 
-ECode CParcel::WriteLong(
+ECode CDBusParcel::WriteLong(
     /* [in] */ Long value)
 {
     return WriteAligned<Long>(value);
 }
 
-ECode CParcel::ReadFloat(
+ECode CDBusParcel::ReadFloat(
     /* [out] */ Float* value)
 {
     VALIDATE_NOT_NULL(value);
@@ -144,13 +146,13 @@ ECode CParcel::ReadFloat(
     return ReadAligned<Float>(value);
 }
 
-ECode CParcel::WriteFloat(
+ECode CDBusParcel::WriteFloat(
     /* [in] */ Float value)
 {
     return WriteAligned<Float>(value);
 }
 
-ECode CParcel::ReadDouble(
+ECode CDBusParcel::ReadDouble(
     /* [out] */ Double* value)
 {
     VALIDATE_NOT_NULL(value);
@@ -158,13 +160,13 @@ ECode CParcel::ReadDouble(
     return ReadAligned<Double>(value);
 }
 
-ECode CParcel::WriteDouble(
+ECode CDBusParcel::WriteDouble(
     /* [in] */ Double value)
 {
     return WriteAligned<Double>(value);
 }
 
-ECode CParcel::ReadBoolean(
+ECode CDBusParcel::ReadBoolean(
     /* [out] */ Boolean* value)
 {
     VALIDATE_NOT_NULL(value);
@@ -175,13 +177,13 @@ ECode CParcel::ReadBoolean(
     return ec;
 }
 
-ECode CParcel::WriteBoolean(
+ECode CDBusParcel::WriteBoolean(
     /* [in] */ Boolean value)
 {
     return WriteInteger((Integer)value);
 }
 
-ECode CParcel::ReadString(
+ECode CDBusParcel::ReadString(
     /* [out] */ String* value)
 {
     VALIDATE_NOT_NULL(value);
@@ -209,7 +211,7 @@ ECode CParcel::ReadString(
     return NOERROR;
 }
 
-ECode CParcel::WriteString(
+ECode CDBusParcel::WriteString(
     /* [in] */ const String& value)
 {
     ECode ec = WriteInteger(value.GetByteLength());
@@ -219,7 +221,7 @@ ECode CParcel::WriteString(
     return ec;
 }
 
-ECode CParcel::ReadCoclassID(
+ECode CDBusParcel::ReadCoclassID(
     /* [out] */ CoclassID* value)
 {
     VALIDATE_NOT_NULL(value);
@@ -282,7 +284,7 @@ ECode CParcel::ReadCoclassID(
     return NOERROR;
 }
 
-ECode CParcel::WriteCoclassID(
+ECode CDBusParcel::WriteCoclassID(
     /* [in] */ const CoclassID& value)
 {
     ECode ec = Write((void*)&value, sizeof(CoclassID));
@@ -301,7 +303,7 @@ ECode CParcel::WriteCoclassID(
     return ec;
 }
 
-ECode CParcel::ReadComponentID(
+ECode CDBusParcel::ReadComponentID(
     /* [out] */ ComponentID* value)
 {
     VALIDATE_NOT_NULL(value);
@@ -337,7 +339,7 @@ ECode CParcel::ReadComponentID(
     return NOERROR;
 }
 
-ECode CParcel::WriteComponentID(
+ECode CDBusParcel::WriteComponentID(
     /* [in] */ const ComponentID& value)
 {
     ECode ec = Write((void*)&value, sizeof(ComponentID));
@@ -353,7 +355,7 @@ ECode CParcel::WriteComponentID(
     return ec;
 }
 
-ECode CParcel::ReadInterfaceID(
+ECode CDBusParcel::ReadInterfaceID(
     /* [out] */ InterfaceID* value)
 {
     VALIDATE_NOT_NULL(value);
@@ -416,7 +418,7 @@ ECode CParcel::ReadInterfaceID(
     return NOERROR;
 }
 
-ECode CParcel::WriteInterfaceID(
+ECode CDBusParcel::WriteInterfaceID(
     /* [in] */ const InterfaceID& value)
 {
     ECode ec = Write((void*)&value, sizeof(InterfaceID));
@@ -435,55 +437,404 @@ ECode CParcel::WriteInterfaceID(
     return ec;
 }
 
-ECode CParcel::ReadECode(
+ECode CDBusParcel::ReadECode(
     /* [out] */ ECode* value)
 {
     return ReadInteger(value);
 }
 
-ECode CParcel::WriteECode(
+ECode CDBusParcel::WriteECode(
     /* [in] */ ECode value)
 {
     return WriteInteger(value);
 }
 
-ECode CParcel::ReadEnumeration(
+ECode CDBusParcel::ReadEnumeration(
     /* [out] */ Integer* value)
 {
     return ReadInteger(value);
 }
 
-ECode CParcel::WriteEnumeration(
+ECode CDBusParcel::WriteEnumeration(
     /* [in] */ Integer value)
 {
     return WriteInteger(value);
 }
 
-ECode CParcel::ReadArray(
-    /* [out] */ HANDLE* array)
+ECode CDBusParcel::ReadArray(
+    /* [out] */ HANDLE array)
 {
-    return NOERROR;
+    Triple* t = reinterpret_cast<Triple*>(array);
+    VALIDATE_NOT_NULL(t);
+
+    Integer value;
+    ECode ec = ReadInteger(&value);
+    if (FAILED(ec)) return ec;
+
+    CcmTypeKind kind = (CcmTypeKind)value;
+    Long size;
+    ec = ReadLong(&size);
+    if (size <= 0 || FAILED(ec)) {
+        t->mData = nullptr;
+        t->mSize = 0;
+        t->mType = kind;
+        return FAILED(ec) ? ec : size < 0 ?
+                E_RUNTIME_EXCEPTION : NOERROR;
+    }
+
+    switch (kind) {
+        case CcmTypeKind::Char: {
+            Triple tt;
+            tt.mSize = size;
+            tt.mType = CcmTypeKind::Char;
+            tt.mData = Triple::AllocData(sizeof(Char) * size);
+            if (tt.mData != nullptr) {
+                ec = Read(tt.mData, sizeof(Char) * size);
+            }
+            else ec = E_OUT_OF_MEMORY_ERROR;
+            *t = tt;
+            break;
+        }
+        case CcmTypeKind::Byte: {
+            Triple tt;
+            tt.mSize = size;
+            tt.mType = CcmTypeKind::Byte;
+            tt.mData = Triple::AllocData(sizeof(Byte) * size);
+            if (tt.mData != nullptr) {
+                ec = Read(tt.mData, sizeof(Byte) * size);
+            }
+            else ec = E_OUT_OF_MEMORY_ERROR;
+            *t = tt;
+            break;
+        }
+        case CcmTypeKind::Short: {
+            Triple tt;
+            tt.mSize = size;
+            tt.mType = CcmTypeKind::Short;
+            tt.mData = Triple::AllocData(sizeof(Short) * size);
+            if (tt.mData != nullptr) {
+                ec = Read(tt.mData, sizeof(Short) * size);
+            }
+            else ec = E_OUT_OF_MEMORY_ERROR;
+            *t = tt;
+            break;
+        }
+        case CcmTypeKind::Integer: {
+            Triple tt;
+            tt.mSize = size;
+            tt.mType = CcmTypeKind::Integer;
+            tt.mData = Triple::AllocData(sizeof(Integer) * size);
+            if (tt.mData != nullptr) {
+                ec = Read(tt.mData, sizeof(Integer) * size);
+            }
+            else ec = E_OUT_OF_MEMORY_ERROR;
+            *t = tt;
+            break;
+        }
+        case CcmTypeKind::Long: {
+            Triple tt;
+            tt.mSize = size;
+            tt.mType = CcmTypeKind::Long;
+            tt.mData = Triple::AllocData(sizeof(Long) * size);
+            if (tt.mData != nullptr) {
+                ec = Read(tt.mData, sizeof(Long) * size);
+            }
+            else ec = E_OUT_OF_MEMORY_ERROR;
+            *t = tt;
+            break;
+        }
+        case CcmTypeKind::Float: {
+            Triple tt;
+            tt.mSize = size;
+            tt.mType = CcmTypeKind::Float;
+            tt.mData = Triple::AllocData(sizeof(Float) * size);
+            if (tt.mData != nullptr) {
+                ec = Read(tt.mData, sizeof(Float) * size);
+            }
+            else ec = E_OUT_OF_MEMORY_ERROR;
+            *t = tt;
+            break;
+        }
+        case CcmTypeKind::Double: {
+            Triple tt;
+            tt.mSize = size;
+            tt.mType = CcmTypeKind::Double;
+            tt.mData = Triple::AllocData(sizeof(Double) * size);
+            if (tt.mData != nullptr) {
+                ec = Read(tt.mData, sizeof(Double) * size);
+            }
+            else ec = E_OUT_OF_MEMORY_ERROR;
+            *t = tt;
+            break;
+        }
+        case CcmTypeKind::Boolean: {
+            Triple tt;
+            tt.mSize = size;
+            tt.mType = CcmTypeKind::Boolean;
+            tt.mData = Triple::AllocData(sizeof(Boolean) * size);
+            if (tt.mData != nullptr) {
+                ec = Read(tt.mData, sizeof(Boolean) * size);
+            }
+            else ec = E_OUT_OF_MEMORY_ERROR;
+            *t = tt;
+            break;
+        }
+        case CcmTypeKind::String: {
+            Array<String> strArray(size);
+            for (Long i = 0; i < size; i++) {
+                String str;
+                ec = ReadString(&str);
+                if (FAILED(ec)) {
+                    t->mData = nullptr;
+                    t->mSize = 0;
+                    t->mType = kind;
+                    return ec;
+                }
+                strArray[i] = str;
+            }
+            *t = strArray;
+            break;
+        }
+        case CcmTypeKind::CoclassID: {
+            Array<AutoCoclassID> cidArray(size);
+            for (Long i = 0; i < size; i++) {
+                AutoCoclassID& acid = cidArray[i];
+                ec = ReadCoclassID(&acid.mCid);
+                if (FAILED(ec)) {
+                    t->mData = nullptr;
+                    t->mSize = 0;
+                    t->mType = kind;
+                    return ec;
+                }
+            }
+            *t = cidArray;
+            break;
+        }
+        case CcmTypeKind::ComponentID: {
+            Array<AutoComponentID> cidArray(size);
+            for (Long i = 0; i < size; i++) {
+                AutoComponentID& acid = cidArray[i];
+                ec = ReadComponentID(&acid.mCid);
+                if (FAILED(ec)) {
+                    t->mData = nullptr;
+                    t->mSize = 0;
+                    t->mType = kind;
+                    return ec;
+                }
+            }
+            *t = cidArray;
+            break;
+        }
+        case CcmTypeKind::InterfaceID: {
+            Array<AutoInterfaceID> iidArray(size);
+            for (Long i = 0; i < size; i++) {
+                AutoInterfaceID& aiid = iidArray[i];
+                ec = ReadInterfaceID(&aiid.mIid);
+                if (FAILED(ec)) {
+                    t->mData = nullptr;
+                    t->mSize = 0;
+                    t->mType = kind;
+                    return ec;
+                }
+            }
+            *t = iidArray;
+            break;
+        }
+        case CcmTypeKind::ECode: {
+            Triple tt;
+            tt.mSize = size;
+            tt.mType = CcmTypeKind::ECode;
+            tt.mData = Triple::AllocData(sizeof(ECode) * size);
+            if (tt.mData != nullptr) {
+                ec = Read(tt.mData, sizeof(ECode) * size);
+            }
+            else ec = E_OUT_OF_MEMORY_ERROR;
+            *t = tt;
+            break;
+        }
+        case CcmTypeKind::Enum: {
+            Triple tt;
+            tt.mSize = size;
+            tt.mType = CcmTypeKind::Enum;
+            tt.mData = Triple::AllocData(sizeof(Integer) * size);
+            if (tt.mData != nullptr) {
+                ec = Read(tt.mData, sizeof(Integer) * size);
+            }
+            else ec = E_OUT_OF_MEMORY_ERROR;
+            *t = tt;
+            break;
+        }
+        case CcmTypeKind::Array: {
+            Array<Triple> triArray(size);
+            for (Long i = 0; i < size; i++) {
+                Triple tt;
+                ec = ReadArray(reinterpret_cast<HANDLE>(&tt));
+                if (FAILED(ec)) {
+                    t->mData = nullptr;
+                    t->mSize = 0;
+                    t->mType = kind;
+                    return ec;
+                }
+                triArray[i] = tt;
+            }
+            *t = triArray;
+            break;
+        }
+        case CcmTypeKind::Interface: {
+            Array<IInterface*> intfArray(size);
+            for (Long i = 0; i < size; i++) {
+                AutoPtr<IInterface> obj;
+                ec = ReadInterface((IInterface**)&obj);
+                if (FAILED(ec)) {
+                    t->mData = nullptr;
+                    t->mSize = 0;
+                    t->mType = kind;
+                    return ec;
+                }
+                intfArray.Set(i, obj);
+            }
+            *t = intfArray;
+            break;
+        }
+        default:
+            Logger::E("CDBusParcel", "Cannot read array with %d type from parcel", t->mType);
+            break;
+    }
+
+    return ec;
 }
 
-ECode CParcel::WriteArray(
+ECode CDBusParcel::WriteArray(
     /* [in] */ HANDLE array)
 {
-    return NOERROR;
+    Triple* t = reinterpret_cast<Triple*>(array);
+    VALIDATE_NOT_NULL(t);
+
+    ECode ec = WriteInteger((Integer)t->mType);
+    if (FAILED(ec)) return ec;
+
+    ec = WriteLong(t->mSize);
+    if (t->mSize == 0 || FAILED(ec)) return ec;
+
+    switch (t->mType) {
+        case CcmTypeKind::Char:
+            ec = Write(t->mData, sizeof(Char) * t->mSize);
+            break;
+        case CcmTypeKind::Byte:
+            ec = Write(t->mData, sizeof(Byte) * t->mSize);
+            break;
+        case CcmTypeKind::Short:
+            ec = Write(t->mData, sizeof(Short) * t->mSize);
+            break;
+        case CcmTypeKind::Integer:
+            ec = Write(t->mData, sizeof(Integer) * t->mSize);
+            break;
+        case CcmTypeKind::Long:
+            ec = Write(t->mData, sizeof(Long) * t->mSize);
+            break;
+        case CcmTypeKind::Float:
+            ec = Write(t->mData, sizeof(Float) * t->mSize);
+            break;
+        case CcmTypeKind::Double:
+            ec = Write(t->mData, sizeof(Double) * t->mSize);
+            break;
+        case CcmTypeKind::Boolean:
+            ec = Write(t->mData, sizeof(Boolean) * t->mSize);
+            break;
+        case CcmTypeKind::String: {
+            for (Long i = 0; i < t->mSize; i++) {
+                const String& str = reinterpret_cast<String*>(t->mData)[i];
+                ec = WriteString(str);
+                if (FAILED(ec)) break;
+            }
+            break;
+        }
+        case CcmTypeKind::CoclassID: {
+            for (Long i = 0; i < t->mSize; i++) {
+                const CoclassID& cid = reinterpret_cast<CoclassID*>(t->mData)[i];
+                ec = WriteCoclassID(cid);
+                if (FAILED(ec)) break;
+            }
+            break;
+        }
+        case CcmTypeKind::ComponentID: {
+            for (Long i = 0; i < t->mSize; i++) {
+                const ComponentID& cid = reinterpret_cast<ComponentID*>(t->mData)[i];
+                ec = WriteComponentID(cid);
+                if (FAILED(ec)) break;
+            }
+            break;
+        }
+        case CcmTypeKind::InterfaceID: {
+            for (Long i = 0; i < t->mSize; i++) {
+                const InterfaceID& iid = reinterpret_cast<InterfaceID*>(t->mData)[i];
+                ec = WriteInterfaceID(iid);
+                if (FAILED(ec)) break;
+            }
+            break;
+        }
+        case CcmTypeKind::ECode:
+            ec = Write(t->mData, sizeof(ECode) * t->mSize);
+            break;
+        case CcmTypeKind::Enum:
+            ec = Write(t->mData, sizeof(Integer) * t->mSize);
+            break;
+        case CcmTypeKind::Array: {
+            for (Long i = 0; i < t->mSize; i++) {
+                const Triple& tt = reinterpret_cast<Triple*>(t->mData)[i];
+                ec = WriteArray(reinterpret_cast<HANDLE>(&tt));
+                if (FAILED(ec)) break;
+            }
+            break;
+        }
+        case CcmTypeKind::Interface: {
+            for (Long i = 0; i < t->mSize; i++) {
+                IInterface* intf = reinterpret_cast<IInterface**>(t->mData)[i];
+                ec = WriteInterface(intf);
+                if (FAILED(ec)) break;
+            }
+            break;
+        }
+        default:
+            Logger::E("CDBusParcel", "Cannot write array with %d type into parcel", t->mType);
+            break;
+    }
+
+    return ec;
 }
 
-ECode CParcel::ReadInterface(
+ECode CDBusParcel::ReadInterface(
     /* [out] */ IInterface** value)
 {
+    VALIDATE_NOT_NULL(value);
     return NOERROR;
 }
 
-ECode CParcel::WriteInterface(
+ECode CDBusParcel::WriteInterface(
     /* [in] */ IInterface* value)
 {
     return NOERROR;
 }
 
-ECode CParcel::SetDataPosition(
+ECode CDBusParcel::GetDataPayload(
+    /* [out] */ HANDLE* data)
+{
+    VALIDATE_NOT_NULL(data);
+
+    *data = reinterpret_cast<HANDLE>(mData);
+    return NOERROR;
+}
+
+ECode CDBusParcel::GetDataSize(
+    /* [out] */ Long* size)
+{
+    VALIDATE_NOT_NULL(size);
+
+    *size = mDataSize;
+    return NOERROR;
+}
+
+ECode CDBusParcel::SetDataPosition(
     /* [in] */ Long pos)
 {
     if (pos < 0) {
@@ -494,7 +845,7 @@ ECode CParcel::SetDataPosition(
     return NOERROR;
 }
 
-ECode CParcel::Read(
+ECode CDBusParcel::Read(
     /* [in] */ void* outData,
     /* [in] */ Long len) const
 {
@@ -511,7 +862,7 @@ ECode CParcel::Read(
     return E_NOT_FOUND_EXCEPTION;
 }
 
-const void* CParcel::ReadInplace(
+const void* CDBusParcel::ReadInplace(
     /* [in] */ Long len) const
 {
     if (len < 0) {
@@ -527,7 +878,7 @@ const void* CParcel::ReadInplace(
     return nullptr;
 }
 
-ECode CParcel::Write(
+ECode CDBusParcel::Write(
     /* [in] */ const void* data,
     /* [in] */ Long len)
 {
@@ -543,7 +894,7 @@ ECode CParcel::Write(
     return mError;
 }
 
-void* CParcel::WriteInplace(
+void* CDBusParcel::WriteInplace(
     /* [in] */ Long len)
 {
     if (len < 0) {
@@ -583,7 +934,7 @@ restart_write:
     return nullptr;
 }
 
-ECode CParcel::FinishWrite(
+ECode CDBusParcel::FinishWrite(
     /* [in] */ Long len)
 {
     if (len < 0) {
@@ -597,7 +948,7 @@ ECode CParcel::FinishWrite(
     return NOERROR;
 }
 
-ECode CParcel::GrowData(
+ECode CDBusParcel::GrowData(
     /* [in] */ Long len)
 {
     if (len < 0) {
@@ -609,7 +960,7 @@ ECode CParcel::GrowData(
             E_OUT_OF_MEMORY_ERROR : ContinueWrite(newSize);
 }
 
-ECode CParcel::ContinueWrite(
+ECode CDBusParcel::ContinueWrite(
     /* [in] */ Long desired)
 {
     if (desired < 0) {
@@ -653,7 +1004,7 @@ ECode CParcel::ContinueWrite(
 }
 
 template<class T>
-ECode CParcel::ReadAligned(
+ECode CDBusParcel::ReadAligned(
     /* [out] */ T* value) const
 {
     if (sizeof(value) == 8) {
@@ -673,7 +1024,7 @@ ECode CParcel::ReadAligned(
 }
 
 template<class T>
-ECode CParcel::WriteAligned(
+ECode CDBusParcel::WriteAligned(
     /* [in] */ T value)
 {
     Long oldDataPos = mDataPos;
@@ -692,12 +1043,12 @@ restart_write:
     return ec;
 }
 
-ECode CParcel::CreateObject(
+ECode CDBusParcel::CreateObject(
     /* [out] */ IParcel** parcel)
 {
     VALIDATE_NOT_NULL(parcel);
 
-    *parcel = new CParcel();
+    *parcel = new CDBusParcel();
     REFCOUNT_ADD(*parcel);
     return NOERROR;
 }

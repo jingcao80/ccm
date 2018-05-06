@@ -14,39 +14,24 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccmtypes.h"
+#include "registry.h"
 
 namespace ccm {
 
-void* Triple::AllocData(
-    /* [in] */ Long dataSize)
+ECode RegisterExportObject(
+    /* [in] */ RPCType type,
+    /* [in] */ IObject* object,
+    /* [in] */ IStub* stub)
 {
-    SharedBuffer* buf = SharedBuffer::Alloc(dataSize);
-    if (buf == nullptr) {
-        Logger::E("Triple", "Malloc data which size is %lld failed.", dataSize);
-        return nullptr;
-    }
-    void* data = buf->GetData();
-    memset(data, 0, dataSize);
-    return data;
+    return NOERROR;
 }
 
-Triple& Triple::operator=(
-    /* [in] */ const Triple& other)
+ECode FindExportObject(
+    /* [in] */ RPCType type,
+    /* [in] */ IObject* object,
+    /* [out] */ IStub** stub)
 {
-    if (mData == other.mData) {
-        return *this;
-    }
-
-    if (other.mData != nullptr) {
-        SharedBuffer::GetBufferFromData(other.mData)->AddRef();
-    }
-    if (mData != nullptr) {
-        SharedBuffer::GetBufferFromData(mData)->Release();
-    }
-    mData = other.mData;
-    mSize = other.mSize;
-    return *this;
+    return NOERROR;
 }
 
 }

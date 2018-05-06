@@ -142,6 +142,12 @@ AutoComponentID::~AutoComponentID()
 
 namespace ccm {
 
+extern String DumpUuid(
+    /* [in] */ const Uuid& id);
+
+extern Integer HashUuid(
+    /* [in] */ const Uuid& key);
+
 extern const ComponentID CID_CCMRuntime;
 extern const InterfaceID IID_IInterface;
 
@@ -172,15 +178,23 @@ interface IInterface
 }
 
 #include "ccmintfs.h"
+#include "ccmsharedbuffer.h"
 #include "ccmtypekind.h"
 
 namespace ccm {
 
-extern String DumpUuid(
-    /* [in] */ const Uuid& id);
+struct Triple
+{
+    static void* AllocData(
+        /* [in] */ Long dataSize);
 
-extern Integer HashUuid(
-    /* [in] */ const Uuid& key);
+    Triple& operator=(
+        /* [in] */ const Triple& other);
+
+    void* mData;
+    Long mSize;
+    CcmTypeKind mType;
+};
 
 template<class T>
 struct Type2Kind
@@ -445,6 +459,58 @@ struct DeleteFunc<String, true>
         /* [in] */ void* id)
     {
         *data = nullptr;
+    }
+};
+
+template<>
+struct DeleteFunc<AutoCoclassID, true>
+{
+    inline void operator()(
+        /* [in] */ AutoCoclassID* data,
+        /* [in] */ void* id)
+    {
+        if (data != nullptr && data->mCid.mCid != nullptr) {
+            free(const_cast<ComponentID*>(data->mCid.mCid));
+        }
+    }
+};
+
+template<>
+struct DeleteFunc<AutoInterfaceID, true>
+{
+    inline void operator()(
+        /* [in] */ AutoInterfaceID* data,
+        /* [in] */ void* id)
+    {
+        if (data != nullptr && data->mIid.mCid != nullptr) {
+            free(const_cast<ComponentID*>(data->mIid.mCid));
+        }
+    }
+};
+
+template<>
+struct DeleteFunc<AutoComponentID, true>
+{
+    inline void operator()(
+        /* [in] */ AutoComponentID* data,
+        /* [in] */ void* id)
+    {
+        if (data != nullptr && data->mCid.mUrl != nullptr) {
+            free(const_cast<char*>(data->mCid.mUrl));
+        }
+    }
+};
+
+template<>
+struct DeleteFunc<Triple, false>
+{
+    inline void operator()(
+        /* [in] */ Triple* data,
+        /* [in] */ void* id)
+    {
+        if (data->mData != nullptr) {
+            SharedBuffer::GetBufferFromData(data->mData)->Release();
+        }
     }
 };
 

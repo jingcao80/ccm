@@ -14,39 +14,34 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccmtypes.h"
+#include "CDBusChannelFactory.h"
+#include "CDBusChannel.h"
+#include "util/ccmautoptr.h"
 
 namespace ccm {
 
-void* Triple::AllocData(
-    /* [in] */ Long dataSize)
-{
-    SharedBuffer* buf = SharedBuffer::Alloc(dataSize);
-    if (buf == nullptr) {
-        Logger::E("Triple", "Malloc data which size is %lld failed.", dataSize);
-        return nullptr;
-    }
-    void* data = buf->GetData();
-    memset(data, 0, dataSize);
-    return data;
-}
+CCM_INTERFACE_IMPL_LIGHT_1(CDBusChannelFactory, IRPCChannelFactory);
 
-Triple& Triple::operator=(
-    /* [in] */ const Triple& other)
-{
-    if (mData == other.mData) {
-        return *this;
-    }
+CDBusChannelFactory::CDBusChannelFactory(
+    /* [in] */ RPCType type)
+    : mType(type)
+{}
 
-    if (other.mData != nullptr) {
-        SharedBuffer::GetBufferFromData(other.mData)->AddRef();
+ECode CDBusChannelFactory::CreateChannel(
+    /* [in] */ RPCPeer peer,
+    /* [out] */ IRPCChannel** channel)
+{
+    VALIDATE_NOT_NULL(channel);
+
+    AutoPtr<CDBusChannel> channelObj = new CDBusChannel();
+    ECode ec = channelObj->Initialize(mType, peer);
+    if (FAILED(ec)) {
+        *channel = nullptr;
+        return ec;
     }
-    if (mData != nullptr) {
-        SharedBuffer::GetBufferFromData(mData)->Release();
-    }
-    mData = other.mData;
-    mSize = other.mSize;
-    return *this;
+    *channel = channelObj;
+    REFCOUNT_ADD(*channel);
+    return NOERROR;
 }
 
 }

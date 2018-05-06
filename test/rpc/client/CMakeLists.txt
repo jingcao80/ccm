@@ -33,10 +33,10 @@ set(GENERATED_SOURCES
 set(LINK_EXTERNAL_LIBS
     ${BIN_DIR}/ccmrt.so)
 
-add_executable(testRPC
+add_executable(testRPCCli
     ${SOURCES}
     ${GENERATED_SOURCES})
-target_link_libraries(testRPC ${LINK_EXTERNAL_LIBS})
+target_link_libraries(testRPCCli ${LINK_EXTERNAL_LIBS})
 
 add_custom_command(
     OUTPUT
@@ -50,14 +50,14 @@ add_custom_command(
         "${BIN_DIR}/RPCTestUnit.so")
 
 add_custom_command(
-    TARGET testRPC
+    TARGET testRPCCli
     POST_BUILD
     COMMAND
         "${CMAKE_COMMAND}"
-        -E copy ${OBJ_DIR}/testRPC ${BIN_DIR})
+        -E copy ${OBJ_DIR}/testRPCCli ${BIN_DIR})
 
 install(FILES
-    ${CMAKE_BINARY_DIR}/testRPC
+    ${CMAKE_BINARY_DIR}/testRPCCli
     DESTINATION ${BIN_DIR}
     PERMISSIONS
         OWNER_READ

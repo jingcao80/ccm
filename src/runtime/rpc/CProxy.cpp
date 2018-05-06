@@ -183,10 +183,10 @@ ECode InterfaceProxy::S_GetInterfaceID(
     return thisObj->mObject->GetInterfaceID(object, iid);
 }
 
-ECode InterfaceProxy::PackingArguments(
+ECode InterfaceProxy::MarshalArguments(
     /* [in] */ Registers& regs,
     /* [in] */ IMetaMethod* method,
-    /* [in] */ IArgumentList* argList)
+    /* [in] */ IParcel* argParcel)
 {
     Integer N;
     method->GetParameterNumber(&N);
@@ -204,182 +204,173 @@ ECode InterfaceProxy::PackingArguments(
             switch (kind) {
                 case CcmTypeKind::Char: {
                     Char value = (Char)GetLongValue(regs, intNum++, fpNum);
-                    argList->SetInputArgumentOfChar(i, value);
+                    argParcel->WriteChar(value);
                     break;
                 }
                 case CcmTypeKind::Byte: {
                     Byte value = (Byte)GetLongValue(regs, intNum++, fpNum);
-                    argList->SetInputArgumentOfByte(i, value);
+                    argParcel->WriteByte(value);
                     break;
                 }
                 case CcmTypeKind::Short: {
                     Short value = (Short)GetLongValue(regs, intNum++, fpNum);
-                    argList->SetInputArgumentOfShort(i, value);
+                    argParcel->WriteShort(value);
                     break;
                 }
                 case CcmTypeKind::Integer: {
                     Integer value = (Integer)GetLongValue(regs, intNum++, fpNum);
-                    argList->SetInputArgumentOfInteger(i, value);
+                    argParcel->WriteInteger(value);
                     break;
                 }
                 case CcmTypeKind::Long: {
                     Long value = GetLongValue(regs, intNum++, fpNum);
-                    argList->SetInputArgumentOfLong(i, value);
+                    argParcel->WriteLong(value);
                     break;
                 }
                 case CcmTypeKind::Float: {
                     Float value = (Float)GetDoubleValue(regs, intNum, fpNum++);
-                    argList->SetInputArgumentOfFloat(i, value);
+                    argParcel->WriteFloat(value);
                     break;
                 }
                 case CcmTypeKind::Double: {
                     Double value = GetDoubleValue(regs, intNum, fpNum++);
-                    argList->SetInputArgumentOfDouble(i, value);
+                    argParcel->WriteDouble(value);
                     break;
                 }
                 case CcmTypeKind::Boolean: {
                     Boolean value = (Boolean)GetLongValue(regs, intNum++, fpNum);
-                    argList->SetInputArgumentOfBoolean(i, value);
+                    argParcel->WriteBoolean(value);
                     break;
                 }
                 case CcmTypeKind::String: {
                     String value = *reinterpret_cast<String*>(GetLongValue(regs, intNum++, fpNum));
-                    argList->SetInputArgumentOfString(i, value);
+                    argParcel->WriteString(value);
                     break;
                 }
                 case CcmTypeKind::CoclassID: {
                     CoclassID cid = *reinterpret_cast<CoclassID*>(GetLongValue(regs, intNum++, fpNum));
-                    argList->SetInputArgumentOfCoclassID(i, cid);
+                    argParcel->WriteCoclassID(cid);
                     break;
                 }
                 case CcmTypeKind::ComponentID: {
                     ComponentID cid = *reinterpret_cast<ComponentID*>(GetLongValue(regs, intNum++, fpNum));
-                    argList->SetInputArgumentOfComponentID(i, cid);
+                    argParcel->WriteComponentID(cid);
                     break;
                 }
                 case CcmTypeKind::InterfaceID: {
                     InterfaceID iid = *reinterpret_cast<InterfaceID*>(GetLongValue(regs, intNum++, fpNum));
-                    argList->SetInputArgumentOfInterfaceID(i, iid);
-                    break;
-                }
-                case CcmTypeKind::HANDLE: {
-                    HANDLE value = (HANDLE)GetLongValue(regs, intNum++, fpNum);
-                    argList->SetInputArgumentOfHANDLE(i, value);
+                    argParcel->WriteInterfaceID(iid);
                     break;
                 }
                 case CcmTypeKind::ECode: {
                     ECode value = (ECode)GetLongValue(regs, intNum++, fpNum);
-                    argList->SetInputArgumentOfECode(i, value);
+                    argParcel->WriteECode(value);
                     break;
                 }
                 case CcmTypeKind::Enum: {
                     Integer value = (Integer)GetLongValue(regs, intNum++, fpNum);
-                    argList->SetInputArgumentOfEnumeration(i, value);
+                    argParcel->WriteEnumeration(value);
                     break;
                 }
                 case CcmTypeKind::Array: {
                     HANDLE value = (HANDLE)GetLongValue(regs, intNum++, fpNum);
-                    argList->SetInputArgumentOfArray(i, value);
+                    argParcel->WriteArray(value);
                     break;
                 }
                 case CcmTypeKind::Interface: {
                     IInterface* value = reinterpret_cast<IInterface*>(GetLongValue(regs, intNum++, fpNum));
-                    argList->SetInputArgumentOfInterface(i, value);
+                    argParcel->WriteInterface(value);
                     break;
                 }
+                case CcmTypeKind::HANDLE:
                 default:
                     Logger::E("CProxy", "Invalid [in] type(%d), param index: %d.\n", kind, i);
                     return E_ILLEGAL_ARGUMENT_EXCEPTION;
             }
         }
-        else if (ioAttr == IOAttribute::OUT ||
-                 ioAttr == IOAttribute::IN_OUT) {
+        else if (ioAttr == IOAttribute::IN_OUT) {
             switch (kind) {
                 case CcmTypeKind::Char: {
-                    HANDLE value = (HANDLE)GetLongValue(regs, intNum++, fpNum);
-                    argList->SetOutputArgumentOfChar(i, value);
+                    Char* value = reinterpret_cast<Char*>(GetLongValue(regs, intNum++, fpNum));
+                    argParcel->WriteChar(*value);
                     break;
                 }
                 case CcmTypeKind::Byte: {
-                    HANDLE value = (HANDLE)GetLongValue(regs, intNum++, fpNum);
-                    argList->SetOutputArgumentOfByte(i, value);
+                    Byte* value = reinterpret_cast<Byte*>(GetLongValue(regs, intNum++, fpNum));
+                    argParcel->WriteByte(*value);
                     break;
                 }
                 case CcmTypeKind::Short: {
-                    HANDLE value = (HANDLE)GetLongValue(regs, intNum++, fpNum);
-                    argList->SetOutputArgumentOfShort(i, value);
+                    Short* value = reinterpret_cast<Short*>(GetLongValue(regs, intNum++, fpNum));
+                    argParcel->WriteShort(*value);
                     break;
                 }
                 case CcmTypeKind::Integer: {
-                    HANDLE value = (HANDLE)GetLongValue(regs, intNum++, fpNum);
-                    argList->SetOutputArgumentOfInteger(i, value);
+                    Integer* value = reinterpret_cast<Integer*>(GetLongValue(regs, intNum++, fpNum));
+                    argParcel->WriteInteger(*value);
                     break;
                 }
                 case CcmTypeKind::Long: {
-                    HANDLE value = (HANDLE)GetLongValue(regs, intNum++, fpNum);
-                    argList->SetOutputArgumentOfLong(i, value);
+                    Long* value = reinterpret_cast<Long*>(GetLongValue(regs, intNum++, fpNum));
+                    argParcel->WriteLong(*value);
                     break;
                 }
                 case CcmTypeKind::Float: {
-                    HANDLE value = (HANDLE)GetLongValue(regs, intNum++, fpNum);
-                    argList->SetOutputArgumentOfFloat(i, value);
+                    Float* value = reinterpret_cast<Float*>(GetLongValue(regs, intNum++, fpNum));
+                    argParcel->WriteFloat(*value);
                     break;
                 }
                 case CcmTypeKind::Double: {
-                    HANDLE value = (HANDLE)GetLongValue(regs, intNum++, fpNum);
-                    argList->SetOutputArgumentOfDouble(i, value);
+                    Double* value = reinterpret_cast<Double*>(GetLongValue(regs, intNum++, fpNum));
+                    argParcel->WriteDouble(*value);
                     break;
                 }
                 case CcmTypeKind::Boolean: {
-                    HANDLE value = (HANDLE)GetLongValue(regs, intNum++, fpNum);
-                    argList->SetOutputArgumentOfBoolean(i, value);
+                    Boolean* value = reinterpret_cast<Boolean*>(GetLongValue(regs, intNum++, fpNum));
+                    argParcel->WriteBoolean(*value);
                     break;
                 }
                 case CcmTypeKind::String: {
-                    HANDLE value = (HANDLE)GetLongValue(regs, intNum++, fpNum);
-                    argList->SetOutputArgumentOfString(i, value);
+                    String* value = reinterpret_cast<String*>(GetLongValue(regs, intNum++, fpNum));
+                    argParcel->WriteString(*value);
                     break;
                 }
                 case CcmTypeKind::CoclassID: {
-                    HANDLE value = (HANDLE)GetLongValue(regs, intNum++, fpNum);
-                    argList->SetOutputArgumentOfCoclassID(i, value);
+                    CoclassID* value = reinterpret_cast<CoclassID*>(GetLongValue(regs, intNum++, fpNum));
+                    argParcel->WriteCoclassID(*value);
                     break;
                 }
                 case CcmTypeKind::ComponentID: {
-                    HANDLE value = (HANDLE)GetLongValue(regs, intNum++, fpNum);
-                    argList->SetOutputArgumentOfComponentID(i, value);
+                    ComponentID* value = reinterpret_cast<ComponentID*>(GetLongValue(regs, intNum++, fpNum));
+                    argParcel->WriteComponentID(*value);
                     break;
                 }
                 case CcmTypeKind::InterfaceID: {
-                    HANDLE value = (HANDLE)GetLongValue(regs, intNum++, fpNum);
-                    argList->SetOutputArgumentOfInterfaceID(i, value);
-                    break;
-                }
-                case CcmTypeKind::HANDLE: {
-                    HANDLE value = (HANDLE)GetLongValue(regs, intNum++, fpNum);
-                    argList->SetOutputArgumentOfHANDLE(i, value);
+                    InterfaceID* value = reinterpret_cast<InterfaceID*>(GetLongValue(regs, intNum++, fpNum));
+                    argParcel->WriteInterfaceID(*value);
                     break;
                 }
                 case CcmTypeKind::ECode: {
-                    HANDLE value = (HANDLE)GetLongValue(regs, intNum++, fpNum);
-                    argList->SetOutputArgumentOfECode(i, value);
+                    ECode* value = reinterpret_cast<ECode*>(GetLongValue(regs, intNum++, fpNum));
+                    argParcel->WriteECode(*value);
                     break;
                 }
                 case CcmTypeKind::Enum: {
-                    HANDLE value = (HANDLE)GetLongValue(regs, intNum++, fpNum);
-                    argList->SetOutputArgumentOfEnumeration(i, value);
+                    Integer* value = reinterpret_cast<Integer*>(GetLongValue(regs, intNum++, fpNum));
+                    argParcel->WriteInteger(*value);
                     break;
                 }
                 case CcmTypeKind::Array: {
                     HANDLE value = (HANDLE)GetLongValue(regs, intNum++, fpNum);
-                    argList->SetOutputArgumentOfArray(i, value);
+                    argParcel->WriteArray(value);
                     break;
                 }
                 case CcmTypeKind::Interface: {
-                    HANDLE value = (HANDLE)GetLongValue(regs, intNum++, fpNum);
-                    argList->SetOutputArgumentOfInterface(i, value);
+                    IInterface** value = reinterpret_cast<IInterface**>(GetLongValue(regs, intNum++, fpNum));
+                    argParcel->WriteInterface(*value);
                     break;
                 }
+                case CcmTypeKind::HANDLE:
                 default:
                     Logger::E("CProxy", "Invalid [out] or [in, out] type(%d), param index: %d.\n", kind, i);
                     return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -387,6 +378,14 @@ ECode InterfaceProxy::PackingArguments(
         }
     }
 
+    return NOERROR;
+}
+
+ECode InterfaceProxy::UnmarshalResults(
+        /* [in] */ Registers& regs,
+        /* [in] */ IMetaMethod* method,
+        /* [in] */ IParcel* resParcel)
+{
     return NOERROR;
 }
 
@@ -479,14 +478,14 @@ ECode InterfaceProxy::ProxyEntry(
 
     if (DEBUG) {
         String name, ns;
-        thisObj->mMetadata->GetName(&name);
-        thisObj->mMetadata->GetNamespace(&ns);
+        thisObj->mTargetMetadata->GetName(&name);
+        thisObj->mTargetMetadata->GetNamespace(&ns);
         Logger::D("CProxy", "Call ProxyEntry with interface \"%s%s\"",
                 ns.string(), name.string());
     }
 
     AutoPtr<IMetaMethod> method;
-    thisObj->mMetadata->GetMethod(methodIndex + 4, (IMetaMethod**)&method);
+    thisObj->mTargetMetadata->GetMethod(methodIndex + 4, (IMetaMethod**)&method);
 
     if (DEBUG) {
         String name, signature;
@@ -496,19 +495,23 @@ ECode InterfaceProxy::ProxyEntry(
                 name.string(), signature.string());
     }
 
-    AutoPtr<IArgumentList> argList;
-    method->CreateArgumentList((IArgumentList**)&argList);
-    ECode ec = thisObj->PackingArguments(regs, method, argList);
+    AutoPtr<IParcel> inParcel, outParcel;
+    thisObj->mObject->mChannel->CreateArgumentParcel((IParcel**)&inParcel);
+    ECode ec = thisObj->MarshalArguments(regs, method, inParcel);
     if (FAILED(ec)) goto ProxyExit;
 
-    ec = thisObj->mObject->mHandler->Invoke((IProxy*)thisObj->mObject, method, argList);
+    ec = thisObj->mObject->mChannel->Invoke(
+            thisObj->mObject, method, inParcel, (IParcel**)&outParcel);
+    if (FAILED(ec)) goto ProxyExit;
+
+    ec = thisObj->UnmarshalResults(regs, method, outParcel);
 
 ProxyExit:
     if (DEBUG) {
         Logger::D("CProxy", "Exit ProxyEntry with ec(0x%x)", ec);
     }
 
-    return NOERROR;
+    return ec;
 }
 
 //----------------------------------------------------------------------
@@ -577,17 +580,20 @@ ECode CProxy::GetInterfaceID(
     return E_ILLEGAL_ARGUMENT_EXCEPTION;
 }
 
-ECode CProxy::SetInvocationHandler(
-    /* [in] */ IInvocationHandler* handler)
+ECode CProxy::GetTargetCoclass(
+    /* [out] */ IMetaCoclass** target)
 {
-    mHandler = handler;
+    VALIDATE_NOT_NULL(target);
+
+    *target = mTargetMetadata;
+    REFCOUNT_ADD(*target);
     return NOERROR;
 }
 
 ECode CProxy::IsStubAlive(
     /* [out] */ Boolean* alive)
 {
-    return mHandler->IsStubAlive(alive);
+    return mChannel->IsPeerAlive(alive);
 }
 
 ECode CProxy::LinkToDeath(
@@ -595,7 +601,7 @@ ECode CProxy::LinkToDeath(
     /* [in] */ HANDLE cookie,
     /* [in] */ Integer flags)
 {
-    return mHandler->LinkToDeath(recipient, cookie, flags);
+    return mChannel->LinkToDeath(recipient, cookie, flags);
 }
 
 ECode CProxy::UnlinkToDeath(
@@ -604,11 +610,12 @@ ECode CProxy::UnlinkToDeath(
     /* [in] */ Integer flags,
     /* [out] */ IDeathRecipient** outRecipient)
 {
-    return mHandler->UnlinkToDeath(recipient, cookie, flags, outRecipient);
+    return mChannel->UnlinkToDeath(recipient, cookie, flags, outRecipient);
 }
 
 ECode CProxy::CreateObject(
     /* [in] */ const CoclassID& cid,
+    /* [in] */ IRPCChannel* channel,
     /* [in] */ IProxy** proxy)
 {
     VALIDATE_NOT_NULL(proxy);
@@ -619,7 +626,8 @@ ECode CProxy::CreateObject(
 
     CProxy* proxyObj = new CProxy();
     proxyObj->mCid = cid;
-    proxyObj->mMetadata = mc;
+    proxyObj->mTargetMetadata = mc;
+    proxyObj->mChannel = channel;
 
     Integer interfaceNumber;
     mc->GetInterfaceNumber(&interfaceNumber);
@@ -629,8 +637,8 @@ ECode CProxy::CreateObject(
     for (Integer i = 0; i < interfaceNumber; i++) {
         InterfaceProxy* iproxy = new InterfaceProxy();
         iproxy->mObject = proxyObj;
-        iproxy->mMetadata = interfaces[i];
-        iproxy->mMetadata->GetInterfaceID(&iproxy->mIid);
+        iproxy->mTargetMetadata = interfaces[i];
+        iproxy->mTargetMetadata->GetInterfaceID(&iproxy->mIid);
         iproxy->mVtable = sProxyVtable;
         iproxy->mProxyEntry = reinterpret_cast<HANDLE>(&InterfaceProxy::ProxyEntry);
         proxyObj->mInterfaces[i] = iproxy;

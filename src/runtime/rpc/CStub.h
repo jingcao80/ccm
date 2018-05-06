@@ -33,9 +33,29 @@
 #ifndef __CCM_CSTUB_H__
 #define __CCM_CSTUB_H__
 
+#include "reflection/ccmreflectionapi.h"
+#include "type/ccmarray.h"
+#include "util/ccmautoptr.h"
 #include "util/ccmobject.h"
 
 namespace ccm {
+
+class InterfaceStub
+{
+public:
+    Integer AddRef(
+        /* [in] */ HANDLE id = 0);
+
+    Integer Release(
+        /* [in] */ HANDLE id = 0);
+
+private:
+    friend class CStub;
+
+    InterfaceID mIid;
+    IMetaInterface* mTargetMetadata;
+    IInterface* mObject;
+};
 
 extern const CoclassID CID_CStub;
 
@@ -55,7 +75,17 @@ public:
 
     static ECode CreateObject(
         /* [in] */ IInterface* object,
+        /* [in] */ IRPCChannel* channel,
         /* [in] */ IStub** stub);
+
+private:
+    static constexpr Boolean DEBUG = false;
+
+    AutoPtr<IObject> mTarget;
+    CoclassID mCid;
+    IMetaCoclass* mTargetMetadata;
+    Array<InterfaceStub*> mInterfaces;
+    AutoPtr<IRPCChannel> mChannel;
 };
 
 }

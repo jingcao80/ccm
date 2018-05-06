@@ -21,15 +21,14 @@
 
 namespace ccm {
 
-EXTERN_C COM_PUBLIC ECode CoCreateParcel(
-    /* [out] */ IParcel** parcel);
-
 EXTERN_C COM_PUBLIC ECode CoCreateProxy(
     /* [in] */ const CoclassID& cid,
+    /* [in] */ RPCType type,
     /* [out] */ IProxy** proxy);
 
 EXTERN_C COM_PUBLIC ECode CoCreateStub(
     /* [in] */ IInterface* object,
+    /* [in] */ RPCType type,
     /* [out] */ IStub** stub);
 
 }

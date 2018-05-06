@@ -30,24 +30,24 @@
  * limitations under the License.
  */
 
-#ifndef __CCM_CPARCEL_H__
-#define __CCM_CPARCEL_H__
+#ifndef __CCM_CDBUSPARCEL_H__
+#define __CCM_CDBUSPARCEL_H__
 
 #include "util/ccmobject.h"
 
 namespace ccm {
 
-extern const CoclassID CID_CParcel;
+extern const CoclassID CID_CDbusParcel;
 
 COCLASS_ID(28208469-8814-49af-80f7-8b147391fb94)
-class CParcel
+class CDBusParcel
     : public Object
     , public IParcel
 {
 public:
-    CParcel();
+    CDBusParcel();
 
-    ~CParcel();
+    ~CDBusParcel();
 
     CCM_INTERFACE_DECL();
 
@@ -138,7 +138,7 @@ public:
         /* [in] */ Integer value);
 
     ECode ReadArray(
-        /* [out] */ HANDLE* array);
+        /* [out] */ HANDLE array);
 
     ECode WriteArray(
         /* [in] */ HANDLE array);
@@ -148,6 +148,12 @@ public:
 
     ECode WriteInterface(
         /* [in] */ IInterface* value);
+
+    ECode GetDataPayload(
+        /* [out] */ HANDLE* data);
+
+    ECode GetDataSize(
+        /* [out] */ Long* size);
 
     ECode SetDataPosition(
         /* [in] */ Long pos);
@@ -200,4 +206,4 @@ private:
 
 }
 
-#endif //__CCM_CPARCEL_H__
+#endif //__CCM_CDBUSPARCEL_H__

@@ -23,4 +23,6 @@
 #include "ccmreflectionapi.h"
 #include "ccmrpc.h"
 
+using namespace ccm;
+
 #endif // __CCM_CCMAPI_H__

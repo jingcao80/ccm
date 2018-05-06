@@ -14,39 +14,23 @@
 // limitations under the License.
 //=========================================================================
 
+#ifndef __CCM_REGISTRY_H__
+#define __CCM_REGISTRY_H__
+
 #include "ccmtypes.h"
 
 namespace ccm {
 
-void* Triple::AllocData(
-    /* [in] */ Long dataSize)
-{
-    SharedBuffer* buf = SharedBuffer::Alloc(dataSize);
-    if (buf == nullptr) {
-        Logger::E("Triple", "Malloc data which size is %lld failed.", dataSize);
-        return nullptr;
-    }
-    void* data = buf->GetData();
-    memset(data, 0, dataSize);
-    return data;
-}
+extern ECode RegisterExportObject(
+    /* [in] */ RPCType type,
+    /* [in] */ IObject* object,
+    /* [in] */ IStub* stub);
 
-Triple& Triple::operator=(
-    /* [in] */ const Triple& other)
-{
-    if (mData == other.mData) {
-        return *this;
-    }
-
-    if (other.mData != nullptr) {
-        SharedBuffer::GetBufferFromData(other.mData)->AddRef();
-    }
-    if (mData != nullptr) {
-        SharedBuffer::GetBufferFromData(mData)->Release();
-    }
-    mData = other.mData;
-    mSize = other.mSize;
-    return *this;
-}
+extern ECode FindExportObject(
+    /* [in] */ RPCType type,
+    /* [in] */ IObject* object,
+    /* [out] */ IStub** stub);
 
 }
+
+#endif // __CCM_REGISTRY_H__

@@ -26,7 +26,7 @@ using ccm::test::rpc::IService;
 int main(int argv, char** argc)
 {
     AutoPtr<IProxy> proxy;
-    CoCreateProxy(CID_CService, (IProxy**)&proxy);
+    CoCreateProxy(CID_CService, RPCType::Local, (IProxy**)&proxy);
     printf("==== proxy: %p ====\n", proxy.Get());
 
     IService* svc = IService::Probe(proxy);
@@ -37,16 +37,16 @@ int main(int argv, char** argc)
     svc->TestMethod2(1, 2, 3, 4, 5, 6, 7, 8, 9.9,
             10.9, 11.9, 12.9, 13.9, 14.9, 15.9, 16.9, 17.9, 18.9);
 
-    AutoPtr<IParcel> parcel;
-    CoCreateParcel((IParcel**)&parcel);
-    parcel->WriteInteger(9);
-    parcel->WriteLong(0xffffffffff);
-    parcel->SetDataPosition(0);
-    Integer iValue;
-    parcel->ReadInteger(&iValue);
-    Long lValue;
-    parcel->ReadLong(&lValue);
-    printf("==== iValue: %d, lValue: %llx ====\n", iValue, lValue);
+    // AutoPtr<IParcel> parcel;
+    // CoCreateParcel((IParcel**)&parcel);
+    // parcel->WriteInteger(9);
+    // parcel->WriteLong(0xffffffffff);
+    // parcel->SetDataPosition(0);
+    // Integer iValue;
+    // parcel->ReadInteger(&iValue);
+    // Long lValue;
+    // parcel->ReadLong(&lValue);
+    // printf("==== iValue: %d, lValue: %llx ====\n", iValue, lValue);
 
     printf("==== return ====\n");
     return 0;

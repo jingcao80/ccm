@@ -146,6 +146,15 @@ ECode CMetaConstructor::GetParameter(
     return NOERROR;
 }
 
+ECode CMetaConstructor::HasOutArguments(
+    /* [out] */ Boolean* outArgs)
+{
+    VALIDATE_NOT_NULL(outArgs);
+
+    *outArgs = false;
+    return NOERROR;
+}
+
 ECode CMetaConstructor::CreateArgumentList(
     /* [out] */ IArgumentList** argList)
 {

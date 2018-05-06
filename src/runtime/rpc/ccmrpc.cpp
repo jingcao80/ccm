@@ -15,30 +15,49 @@
 //=========================================================================
 
 #include "ccmrpc.h"
-#include "CParcel.h"
 #include "CProxy.h"
 #include "CStub.h"
+#include "dbus/CDBusChannelFactory.h"
 
 namespace ccm {
 
-ECode CoCreateParcel(
-    /* [out] */ IParcel** parcel)
-{
-    return CParcel::CreateObject(parcel);
-}
+static AutoPtr<IRPCChannelFactory> sLocalFactory = new CDBusChannelFactory(RPCType::Local);
+static AutoPtr<IRPCChannelFactory> sRemoteFactory;
 
 ECode CoCreateProxy(
     /* [in] */ const CoclassID& cid,
+    /* [in] */ RPCType type,
     /* [out] */ IProxy** proxy)
 {
-    return CProxy::CreateObject(cid, proxy);
+    VALIDATE_NOT_NULL(proxy);
+
+    AutoPtr<IRPCChannelFactory> factory =
+            type == RPCType::Local ? sLocalFactory : sRemoteFactory;
+    AutoPtr<IRPCChannel> channel;
+    ECode ec = factory->CreateChannel(RPCPeer::Proxy, (IRPCChannel**)&channel);
+    if (FAILED(ec)) {
+        *proxy = nullptr;
+        return ec;
+    }
+    return CProxy::CreateObject(cid, channel, proxy);
 }
 
 ECode CoCreateStub(
     /* [in] */ IInterface* object,
+    /* [in] */ RPCType type,
     /* [out] */ IStub** stub)
 {
-    return CStub::CreateObject(object, stub);
+    VALIDATE_NOT_NULL(stub);
+
+    AutoPtr<IRPCChannelFactory> factory =
+            type == RPCType::Local ? sLocalFactory : sRemoteFactory;
+    AutoPtr<IRPCChannel> channel;
+    ECode ec = factory->CreateChannel(RPCPeer::Stub, (IRPCChannel**)&channel);
+    if (FAILED(ec)) {
+        *stub = nullptr;
+        return ec;
+    }
+    return CStub::CreateObject(object, channel, stub);
 }
 
 }

@@ -65,6 +65,9 @@ public:
         /* [in] */ const String& name,
         /* [out] */ IMetaParameter** param);
 
+    ECode HasOutArguments(
+        /* [out] */ Boolean* outArgs);
+
     ECode CreateArgumentList(
         /* [out] */ IArgumentList** argList);
 

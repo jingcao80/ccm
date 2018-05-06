@@ -38,6 +38,7 @@ CMetaMethod::CMetaMethod()
     : mMetadata(nullptr)
     , mOwner(nullptr)
     , mIndex(0)
+    , mHasOutArguments(false)
 {}
 
 CMetaMethod::CMetaMethod(
@@ -51,6 +52,7 @@ CMetaMethod::CMetaMethod(
     , mName(mm->mName)
     , mSignature(mm->mSignature)
     , mParameters(mMetadata->mParameterNumber)
+    , mHasOutArguments(false)
 {
     mReturnType = new CMetaType(mc,
             mc->mTypes[mm->mReturnTypeIndex]);
@@ -154,6 +156,17 @@ ECode CMetaMethod::GetParameter(
     return NOERROR;
 }
 
+ECode CMetaMethod::HasOutArguments(
+    /* [out] */ Boolean* outArgs)
+{
+    VALIDATE_NOT_NULL(outArgs);
+
+    BuildAllParameters();
+
+    *outArgs = mHasOutArguments;
+    return NOERROR;
+}
+
 ECode CMetaMethod::CreateArgumentList(
     /* [out] */ IArgumentList** argList)
 {
@@ -199,6 +212,10 @@ void CMetaMethod::BuildAllParameters()
                     mOwner->mOwner->mMetadata, this,
                     mMetadata->mParameters[i], i);
             mParameters.Set(i, mpObj);
+            if (!mHasOutArguments && (mpObj->mIOAttr == IOAttribute::OUT ||
+                    mpObj->mIOAttr == IOAttribute::IN_OUT)) {
+                mHasOutArguments = true;
+            }
         }
     }
 }

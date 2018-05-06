@@ -45,6 +45,7 @@ set(CCMRT_LINK_LIBS
     metadata
     reflection
     rpc
+    rpc-dbus
     type
     util
     -Wl,--no-whole-archive)
@@ -54,7 +55,8 @@ add_library(ccmrt
     ${SOURCES})
 target_link_libraries(ccmrt
     ${CCMRT_LINK_LIBS}
-    dl)
+    dl
+    /usr/local/lib/libdbus-1.so)
 
 set(DEPLOY_HEADERS
     ${RUNTIME_DIR}/ccmapi.h

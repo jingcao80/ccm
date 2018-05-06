@@ -31,8 +31,21 @@
 //=========================================================================
 
 #include "CStub.h"
+#include "registry.h"
 
 namespace ccm {
+
+Integer InterfaceStub::AddRef(
+    /* [in] */ HANDLE id)
+{
+    return 1;
+}
+
+Integer InterfaceStub::Release(
+    /* [in] */ HANDLE id)
+{
+    return 1;
+}
 
 //----------------------------------------------------------------------
 
@@ -52,9 +65,80 @@ ECode CStub::Invoke(
 
 ECode CStub::CreateObject(
     /* [in] */ IInterface* object,
+    /* [in] */ IRPCChannel* channel,
     /* [in] */ IStub** stub)
 {
     VALIDATE_NOT_NULL(stub);
+    *stub = nullptr;
+
+    IObject* obj = IObject::Probe(object);
+    if (obj == nullptr) {
+        Logger::E("CStub", "Object does not have \"IObject\" interface.");
+        return E_INTERFACE_NOT_FOUND_EXCEPTION;
+    }
+
+    AutoPtr<IMetaCoclass> mc;
+    obj->GetCoclass((IMetaCoclass**)&mc);
+    if (mc == nullptr) {
+        Logger::E("CStub", "Fail to get object's Coclass.");
+        return E_NOT_FOUND_EXCEPTION;
+    }
+
+    CoclassID cid;
+    mc->GetCoclassID(&cid);
+
+    if (DEBUG) {
+        Logger::D("CStub", "Object's CoclassID is %s",
+                DumpUuid(cid.mUuid).string());
+    }
+
+    CStub* stubObj = new CStub();
+    stubObj->mTarget = obj;
+    stubObj->mCid = cid;
+    stubObj->mTargetMetadata = mc;
+    stubObj->mChannel = channel;
+
+    Integer interfaceNumber;
+    mc->GetInterfaceNumber(&interfaceNumber);
+    Array<IMetaInterface*> interfaces(interfaceNumber);
+    mc->GetAllInterfaces(interfaces);
+    stubObj->mInterfaces = Array<InterfaceStub*>(interfaceNumber);
+    for (Integer i = 0; i < interfaceNumber; i++) {
+        InterfaceStub* istub = new InterfaceStub();
+        istub->mTargetMetadata = interfaces[i];
+        istub->mTargetMetadata->GetInterfaceID(&istub->mIid);
+        istub->mObject = object->Probe(istub->mIid);
+        if (istub->mObject == nullptr) {
+            String name, ns;
+            interfaces[i]->GetNamespace(&ns);
+            interfaces[i]->GetName(&name);
+            Logger::E("CStub", "Object does not have \"%s%s\" interface.",
+                    ns.string(), name.string());
+            delete stubObj;
+            return E_INTERFACE_NOT_FOUND_EXCEPTION;
+        }
+        stubObj->mInterfaces[i] = istub;
+    }
+
+    RPCType type;
+    channel->GetRPCType(&type);
+    ECode ec = RegisterExportObject(type, obj, stubObj);
+    if (FAILED(ec)) {
+        Logger::E("CStub", "Fail to register export object with ec is 0x%x", ec);
+        delete stubObj;
+        return ec;
+    }
+
+    ec = channel->StartListening();
+    if (FAILED(ec)) {
+        Logger::E("CStub", "Channel start listening failed with ec is 0x%x", ec);
+        delete stubObj;
+        return ec;
+    }
+
+    *stub = stubObj;
+    REFCOUNT_ADD(*stub);
+    return NOERROR;
 }
 
 }

@@ -14,34 +14,20 @@
 # limitations under the License.
 #=========================================================================
 
-set(RPC_DIR ${RUNTIME_DIR}/rpc)
-
-add_subdirectory(dbus)
+set(RPCDBUS_DIR ${RPC_DIR}/dbus)
 
 include_directories(
     ./
     ../
+    ../../
+    /usr/local/include/dbus-1.0
+    /usr/local/lib/dbus-1.0/include
     ${INC_DIR})
 
 set(SOURCES
-    CProxy.cpp
-    CStub.cpp
-    ccmrpc.cpp
-    registry.cpp)
+    CDBusChannel.cpp
+    CDBusChannelFactory.cpp
+    CDBusParcel.cpp)
 
-add_library(rpc STATIC
+add_library(rpc-dbus STATIC
     ${SOURCES})
-
-set(DEPLOY_HEADERS
-    ${RPC_DIR}/ccmrpc.h)
-
-add_custom_command(
-    TARGET rpc
-    POST_BUILD
-    COMMAND
-        "${CMAKE_COMMAND}"
-        -E copy ${DEPLOY_HEADERS} ${INC_DIR})
-
-install(FILES
-    ${DEPLOY_HEADERS}
-    DESTINATION ${INC_DIR})

@@ -92,10 +92,15 @@ public:
         /* [in] */ HANDLE args);
 
 private:
-    ECode PackingArguments(
+    ECode MarshalArguments(
         /* [in] */ Registers& regs,
         /* [in] */ IMetaMethod* method,
-        /* [in] */ IArgumentList* argList);
+        /* [in] */ IParcel* argParcel);
+
+    ECode UnmarshalResults(
+        /* [in] */ Registers& regs,
+        /* [in] */ IMetaMethod* method,
+        /* [in] */ IParcel* resParcel);
 
     Long GetLongValue(
         /* [in] */ Registers& regs,
@@ -114,7 +119,7 @@ private:
     HANDLE* mVtable;    // must be the first member
     HANDLE mProxyEntry;  // must be the second member
     InterfaceID mIid;
-    IMetaInterface* mMetadata;
+    IMetaInterface* mTargetMetadata;
     CProxy* mObject;
 };
 
@@ -132,8 +137,8 @@ public:
 
     CCM_INTERFACE_DECL();
 
-    ECode SetInvocationHandler(
-        /* [in] */ IInvocationHandler* handler) override;
+    ECode GetTargetCoclass(
+        /* [out] */ IMetaCoclass** target);
 
     ECode IsStubAlive(
         /* [out] */ Boolean* alive) override;
@@ -151,15 +156,16 @@ public:
 
     static ECode CreateObject(
         /* [in] */ const CoclassID& cid,
+        /* [in] */ IRPCChannel* channel,
         /* [in] */ IProxy** proxy);
 
 private:
     friend class InterfaceProxy;
 
     CoclassID mCid;
-    IMetaCoclass* mMetadata;
+    IMetaCoclass* mTargetMetadata;
     Array<InterfaceProxy*> mInterfaces;
-    AutoPtr<IInvocationHandler> mHandler;
+    AutoPtr<IRPCChannel> mChannel;
 };
 
 }

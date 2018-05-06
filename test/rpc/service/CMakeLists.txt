@@ -14,34 +14,57 @@
 # limitations under the License.
 #=========================================================================
 
-set(RPC_DIR ${RUNTIME_DIR}/rpc)
+project(RPCTest CXX)
 
-add_subdirectory(dbus)
+set(CLIENT_DIR ${RPC_DIR}/service)
+set(OBJ_DIR ${CMAKE_BINARY_DIR}/test/rpc/service)
 
 include_directories(
     ./
-    ../
-    ${INC_DIR})
+    ${INC_DIR}
+    ${OBJ_DIR})
 
 set(SOURCES
-    CProxy.cpp
-    CStub.cpp
-    ccmrpc.cpp
-    registry.cpp)
+    main.cpp)
 
-add_library(rpc STATIC
-    ${SOURCES})
+set(GENERATED_SOURCES
+    ${OBJ_DIR}/RPCTestUnit.cpp)
 
-set(DEPLOY_HEADERS
-    ${RPC_DIR}/ccmrpc.h)
+set(LINK_EXTERNAL_LIBS
+    ${BIN_DIR}/ccmrt.so)
+
+add_executable(testRPCSrv
+    ${SOURCES}
+    ${GENERATED_SOURCES})
+target_link_libraries(testRPCSrv ${LINK_EXTERNAL_LIBS})
 
 add_custom_command(
-    TARGET rpc
+    OUTPUT
+        ${GENERATED_SOURCES}
+    COMMAND
+        "${BIN_DIR}/ccdl"
+        -g
+        -u
+        -s
+        -d ${OBJ_DIR}
+        "${BIN_DIR}/RPCTestUnit.so")
+
+add_custom_command(
+    TARGET testRPCSrv
     POST_BUILD
     COMMAND
         "${CMAKE_COMMAND}"
-        -E copy ${DEPLOY_HEADERS} ${INC_DIR})
+        -E copy ${OBJ_DIR}/testRPCSrv ${BIN_DIR})
 
 install(FILES
-    ${DEPLOY_HEADERS}
-    DESTINATION ${INC_DIR})
+    ${CMAKE_BINARY_DIR}/testRPCSrv
+    DESTINATION ${BIN_DIR}
+    PERMISSIONS
+        OWNER_READ
+        OWNER_WRITE
+        OWNER_EXECUTE
+        GROUP_READ
+        GROUP_WRITE
+        GROUP_EXECUTE
+        WORLD_READ
+        WORLD_EXECUTE)

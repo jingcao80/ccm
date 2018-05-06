@@ -14,39 +14,31 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccmtypes.h"
+#ifndef __CCM_CDBUSCHANNELFACTORY_H__
+#define __CCM_CDBUSCHANNELFACTORY_H__
+
+#include "ccmrefbase.h"
 
 namespace ccm {
 
-void* Triple::AllocData(
-    /* [in] */ Long dataSize)
+class CDBusChannelFactory
+    : public LightRefBase
+    , public IRPCChannelFactory
 {
-    SharedBuffer* buf = SharedBuffer::Alloc(dataSize);
-    if (buf == nullptr) {
-        Logger::E("Triple", "Malloc data which size is %lld failed.", dataSize);
-        return nullptr;
-    }
-    void* data = buf->GetData();
-    memset(data, 0, dataSize);
-    return data;
-}
+public:
+    CDBusChannelFactory(
+        /* [in] */ RPCType type);
 
-Triple& Triple::operator=(
-    /* [in] */ const Triple& other)
-{
-    if (mData == other.mData) {
-        return *this;
-    }
+    CCM_INTERFACE_DECL();
 
-    if (other.mData != nullptr) {
-        SharedBuffer::GetBufferFromData(other.mData)->AddRef();
-    }
-    if (mData != nullptr) {
-        SharedBuffer::GetBufferFromData(mData)->Release();
-    }
-    mData = other.mData;
-    mSize = other.mSize;
-    return *this;
-}
+    ECode CreateChannel(
+        /* [in] */ RPCPeer peer,
+        /* [out] */ IRPCChannel** channel);
+
+private:
+    RPCType mType;
+};
 
 }
+
+#endif // __CCM_CDBUSCHANNELFACTORY_H__
