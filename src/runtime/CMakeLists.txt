@@ -56,6 +56,7 @@ add_library(ccmrt
 target_link_libraries(ccmrt
     ${CCMRT_LINK_LIBS}
     dl
+    pthread
     /usr/local/lib/libdbus-1.so)
 
 set(DEPLOY_HEADERS

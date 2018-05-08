@@ -816,13 +816,29 @@ ECode CDBusParcel::WriteInterface(
     return NOERROR;
 }
 
-ECode CDBusParcel::GetDataPayload(
+ECode CDBusParcel::GetData(
     /* [out] */ HANDLE* data)
 {
     VALIDATE_NOT_NULL(data);
 
     *data = reinterpret_cast<HANDLE>(mData);
     return NOERROR;
+}
+
+ECode CDBusParcel::SetData(
+    /* [in] */ Byte* data,
+    /* [in] */ Long size)
+{
+    if (size <= 0) {
+        return NOERROR;
+    }
+
+    ECode ec = RestartWrite(size);
+    if (SUCCEEDED(ec)) {
+        memcpy(mData, data, size);
+        mDataSize = size;
+    }
+    return ec;
 }
 
 ECode CDBusParcel::GetDataSize(
@@ -960,6 +976,28 @@ ECode CDBusParcel::GrowData(
             E_OUT_OF_MEMORY_ERROR : ContinueWrite(newSize);
 }
 
+ECode CDBusParcel::RestartWrite(
+    /* [in] */ Long desired)
+{
+    if (desired < 0) {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    Byte* data = (Byte*)realloc(mData, desired);
+    if (data == nullptr && desired > mDataCapacity) {
+        mError = E_OUT_OF_MEMORY_ERROR;
+        return E_OUT_OF_MEMORY_ERROR;
+    }
+
+    if (data != nullptr) {
+        mData = data;
+        mDataCapacity = desired;
+    }
+
+    mDataSize = mDataPos = 0;
+    return NOERROR;
+}
+
 ECode CDBusParcel::ContinueWrite(
     /* [in] */ Long desired)
 {
@@ -1007,7 +1045,7 @@ template<class T>
 ECode CDBusParcel::ReadAligned(
     /* [out] */ T* value) const
 {
-    if (sizeof(value) == 8) {
+    if (sizeof(T) == 8) {
         mDataPos = ALIGN8(mDataPos);
     }
 
@@ -1028,7 +1066,7 @@ ECode CDBusParcel::WriteAligned(
     /* [in] */ T value)
 {
     Long oldDataPos = mDataPos;
-    if (sizeof(value) == 8) {
+    if (sizeof(T) == 8) {
         mDataPos = ALIGN8(mDataPos);
     }
 

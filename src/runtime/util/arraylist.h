@@ -38,6 +38,9 @@ public:
     T Get(
         /* [in] */ Long index);
 
+    void Remove(
+        /* [in] */ Long index);
+
     inline Long GetSize();
 
 private:
@@ -65,8 +68,9 @@ ArrayList<T>::ArrayList(
 template<class T>
 ArrayList<T>::~ArrayList()
 {
+    DeleteFunc<T> deleteF;
     for (Long i = 0; i < mIndex; i++) {
-        mData[i] = (T)nullptr;
+        deleteF(&mData[i], this);
     }
     free(mData);
     mData = nullptr;
@@ -80,7 +84,9 @@ Boolean ArrayList<T>::Add(
         return false;
     }
 
-    mData[mIndex++] = data;
+    AssignFunc<T> assignF;
+    assignF(&mData[mIndex], data, this);
+    mIndex++;
     return true;
 }
 
@@ -92,6 +98,22 @@ T ArrayList<T>::Get(
         return T(nullptr);
     }
     return mData[index];
+}
+
+template<class T>
+void ArrayList<T>::Remove(
+    /* [in] */ Long index)
+{
+    if (index < 0 || index >= mIndex) {
+        return;
+    }
+    DeleteFunc<T> deleteF;
+    deleteF(&mData[index], this);
+    for (Long i = index; i < mIndex - 1; i++) {
+        mData[i] = mData[i + 1];
+    }
+    mData[mIndex - 1] = nullptr;
+    mIndex--;
 }
 
 template<class T>

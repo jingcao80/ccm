@@ -19,6 +19,7 @@
 #include <ccmautoptr.h>
 
 #include <stdio.h>
+#include <unistd.h>
 
 using ccm::test::rpc::CService;
 using ccm::test::rpc::IService;
@@ -32,6 +33,10 @@ int main(int argv, char** argc)
     AutoPtr<IStub> stub;
     CoCreateStub(srv, RPCType::Local, (IStub**)&stub);
     printf("==== stub: %p ====\n", stub.Get());
+
+    while (true) {
+        sleep(5);
+    }
 
     return 0;
 }

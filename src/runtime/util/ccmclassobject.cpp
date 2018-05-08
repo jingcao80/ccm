@@ -20,6 +20,10 @@ namespace ccm {
 
 CCM_INTERFACE_IMPL_1(ClassObject, Object, IClassObject);
 
+ClassObject::ClassObject()
+    : mComponent(nullptr)
+{}
+
 ECode ClassObject::AttachMetadata(
     /* [in] */ IMetaComponent* component)
 {

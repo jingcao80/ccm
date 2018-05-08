@@ -26,6 +26,10 @@ extern ECode RegisterExportObject(
     /* [in] */ IObject* object,
     /* [in] */ IStub* stub);
 
+extern ECode UnregisterExportObject(
+    /* [in] */ RPCType type,
+    /* [in] */ IObject* object);
+
 extern ECode FindExportObject(
     /* [in] */ RPCType type,
     /* [in] */ IObject* object,

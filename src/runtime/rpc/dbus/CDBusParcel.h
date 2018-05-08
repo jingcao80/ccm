@@ -149,11 +149,15 @@ public:
     ECode WriteInterface(
         /* [in] */ IInterface* value);
 
-    ECode GetDataPayload(
+    ECode GetData(
         /* [out] */ HANDLE* data);
 
     ECode GetDataSize(
         /* [out] */ Long* size);
+
+    ECode SetData(
+        /* [in] */ Byte* data,
+        /* [in] */ Long size);
 
     ECode SetDataPosition(
         /* [in] */ Long pos);
@@ -181,6 +185,9 @@ private:
 
     ECode GrowData(
         /* [in] */ Long len);
+
+    ECode RestartWrite(
+        /* [in] */ Long desired);
 
     ECode ContinueWrite(
         /* [in] */ Long desired);

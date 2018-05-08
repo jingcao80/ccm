@@ -26,6 +26,13 @@ ECode RegisterExportObject(
     return NOERROR;
 }
 
+ECode UnregisterExportObject(
+    /* [in] */ RPCType type,
+    /* [in] */ IObject* object)
+{
+    return NOERROR;
+}
+
 ECode FindExportObject(
     /* [in] */ RPCType type,
     /* [in] */ IObject* object,

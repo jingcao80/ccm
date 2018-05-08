@@ -921,6 +921,13 @@ ECode CArgumentList::SetOutputArgumentOfInterface(
     return SetOutputArgumentAddr(index, addr);
 }
 
+ECode CArgumentList::GetArgumentAddress(
+    /* [in] */ Integer index,
+    /* [out] */ HANDLE* addr)
+{
+    return NOERROR;
+}
+
 void CArgumentList::CalculateDataSize(
     /* [in] */ MetaComponent* mc,
     /* [in] */ MetaMethod* mm,

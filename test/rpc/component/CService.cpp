@@ -34,6 +34,7 @@ CService::~CService()
 ECode CService::TestMethod1(
     /* [in] */ Integer arg1)
 {
+    printf("==== [CService::TestMethod1] arg1: %d ====\n", arg1);
     return NOERROR;
 }
 

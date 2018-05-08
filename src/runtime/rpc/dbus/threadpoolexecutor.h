@@ -30,85 +30,65 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CSTUB_H__
-#define __CCM_CSTUB_H__
+#ifndef __THREADPOOLEXECUTOR_H__
+#define __THREADPOOLEXECUTOR_H__
 
-#include "reflection/ccmreflectionapi.h"
-#include "type/ccmarray.h"
-#include "util/ccmautoptr.h"
-#include "util/ccmobject.h"
+#include "ccmautoptr.h"
+#include "ccmrefbase.h"
+#include "util/arraylist.h"
+#include "util/mutex.h"
 
 namespace ccm {
 
-class CStub;
-
-class InterfaceStub
+class ThreadPoolExecutor
+    : public LightRefBase
 {
 public:
-    Integer AddRef(
-        /* [in] */ HANDLE id = 0);
-
-    Integer Release(
-        /* [in] */ HANDLE id = 0);
-
-    ECode Invoke(
-        /* [in] */ IParcel* argParcel,
-        /* [out] */ IParcel** resParcel);
+    class Runnable
+        : public LightRefBase
+    {
+    public:
+        virtual ECode Run() = 0;
+    };
 
 private:
-    ECode UnmarshalArguments(
-        /* [in] */ IMetaMethod* method,
-        /* [in] */ IParcel* argParcel,
-        /* [out] */ IArgumentList** argList);
+    class Worker
+        : public LightRefBase
+    {
+    public:
+        Worker(
+            /* [in] */ Runnable* task,
+            /* [in] */ ThreadPoolExecutor* owner);
 
-    ECode MarshalResults(
-        /* [in] */ IMetaMethod* method,
-        /* [in] */ ECode ec,
-        /* [in] */ IArgumentList* argList,
-        /* [out] */ IParcel** resParcel);
+        ECode Run();
 
-private:
-    friend class CStub;
+    public:
+        pthread_t mThread;
+        AutoPtr<Runnable> mTask;
+        ThreadPoolExecutor* mOwner;
+        Mutex mLock;
+    };
 
-    InterfaceID mIid;
-    IMetaInterface* mTargetMetadata;
-    IInterface* mObject;
-    CStub* mOwner;
-};
-
-extern const CoclassID CID_CStub;
-
-COCLASS_ID(52068014-e347-453f-87a9-0becfb69d8ed)
-class CStub
-    : public Object
-    , public IStub
-{
 public:
-    CCM_INTERFACE_DECL();
+    static AutoPtr<ThreadPoolExecutor> GetInstance();
 
-    CCM_OBJECT_DECL();
+    ECode RunTask(
+        /* [in] */ Runnable* task);
 
-    ECode Invoke(
-        /* [in] */ IParcel* argParcel,
-        /* [out] */ IParcel** resParcel);
-
-    static ECode CreateObject(
-        /* [in] */ IInterface* object,
-        /* [in] */ IRPCChannel* channel,
-        /* [in] */ IStub** stub);
+    ECode StopTask(
+        /* [in] */ Runnable* task);
 
 private:
-    friend class InterfaceStub;
+    static void* ThreadEntry(void* arg);
 
-    static constexpr Boolean DEBUG = false;
+private:
+    static AutoPtr<ThreadPoolExecutor> sInstance;
+    static Mutex sInstanceLock;
 
-    AutoPtr<IObject> mTarget;
-    CoclassID mCid;
-    IMetaCoclass* mTargetMetadata;
-    Array<InterfaceStub*> mInterfaces;
-    AutoPtr<IRPCChannel> mChannel;
+    Mutex mMainLock;
+    ArrayList<Worker*> mWorkers;
 };
 
 }
 
-#endif // __CCM_CSTUB_H__
+#endif // __THREADPOOLEXECUTOR_H__

@@ -26,6 +26,8 @@ class COM_PUBLIC ClassObject
     , public IClassObject
 {
 public:
+    ClassObject();
+
     CCM_INTERFACE_DECL();
 
     ECode AttachMetadata(

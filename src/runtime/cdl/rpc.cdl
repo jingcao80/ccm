@@ -130,11 +130,15 @@ interface IParcel
     WriteInterface(
         [in] IInterface* value);
 
-    GetDataPayload(
+    GetData(
         [out] HANDLE* data);
 
     GetDataSize(
         [out] Long* size);
+
+    SetData(
+        [in] Byte* data,
+        [in] Long size);
 
     SetDataPosition(
         [in] Long pos);
@@ -144,6 +148,7 @@ interface IArgumentList;
 interface IDeathRecipient;
 interface IMetaMethod;
 interface IProxy;
+interface IStub;
 
 [
     uuid(bf89f2ce-ba5f-4f5d-a866-9e34048ee009),
@@ -177,7 +182,8 @@ interface IRPCChannel
         [in] IParcel* argParcel,
         [out] IParcel** resParcel);
 
-    StartListening();
+    StartListening(
+        [in] IStub* stub);
 }
 
 [
@@ -232,8 +238,8 @@ interface IDeathRecipient
 interface IStub
 {
     Invoke(
-        [in] IMetaMethod* method,
-        [in] IArgumentList* args);
+        [in] IParcel* argParcel,
+        [out] IParcel** resParcel);
 }
 
 }

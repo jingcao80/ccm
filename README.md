@@ -7,6 +7,16 @@ CCM stands for C++ Component Model. It can:
 
 **runtime** is the component driver.
 
+### Install cmake
+1. download cmake tarball from https://cmake.org/download/
+2. unzip cmake tarball
+3. make and install cmake according to its README document
+
+### Install DBus
+1. download dbus tarball from https://dbus.freedesktop.org/releases/dbus/
+2. unzip dbus tarball
+3. make and install dbus according to its INSTALL document
+
 ### How to build
 1. <code>cd ccm</code>
 2. <code>source build/envsetup.sh</code>

@@ -675,6 +675,10 @@ interface IArgumentList
     SetOutputArgumentOfInterface(
         [in] Integer index,
         [in] HANDLE addr);
+
+    GetArgumentAddress(
+        [in] Integer index,
+        [out] HANDLE* addr);
 }
 
 }

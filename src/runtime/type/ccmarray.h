@@ -119,6 +119,9 @@ Array<T>::Array(
 {
     if (size < 0 || size > SIZE_MAX) {
         Logger::E("Array", "Invalid array size %lld", size);
+        mData = nullptr;
+        mSize = 0;
+        mType = CcmTypeKind::Unknown;
         return;
     }
 
@@ -126,6 +129,9 @@ Array<T>::Array(
     SharedBuffer* buf = SharedBuffer::Alloc(byteSize);
     if (buf == nullptr) {
         Logger::E("Array", "Malloc array which size is %lld failed.", byteSize);
+        mData = nullptr;
+        mSize = 0;
+        mType = CcmTypeKind::Unknown;
         return;
     }
     void* data = buf->GetData();

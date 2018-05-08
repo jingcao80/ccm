@@ -17,9 +17,110 @@
 #include "CDBusChannel.h"
 #include "CDBusParcel.h"
 #include "util/ccmlogger.h"
-#include <dbus/dbus.h>
 
 namespace ccm {
+
+CDBusChannel::ServiceRunnable::ServiceRunnable(
+    /* [in] */ CDBusChannel* owner,
+    /* [in] */ IStub* target)
+    : mOwner(owner)
+    , mTarget(target)
+    , mRequestToQuit(false)
+{}
+
+ECode CDBusChannel::ServiceRunnable::Run()
+{
+    DBusObjectPathVTable opVTable;
+
+    opVTable.unregister_function = nullptr;
+    opVTable.message_function = CDBusChannel::ServiceRunnable::HandleMessage;
+
+    DBusConnection* conn = dbus_connection_ref(mOwner->mConn);
+
+    dbus_connection_register_object_path(conn,
+            STUB_OBJECT_PATH, &opVTable, static_cast<void*>(this));
+
+    while (true) {
+        DBusDispatchStatus status;
+
+        do {
+            dbus_connection_read_write_dispatch(conn, -1);
+        } while ((status = dbus_connection_get_dispatch_status(conn))
+                == DBUS_DISPATCH_DATA_REMAINS && !mRequestToQuit);
+
+        if (status == DBUS_DISPATCH_NEED_MEMORY) {
+            Logger::E("CDBusChannel", "DBus dispatching needs more memory.");
+            break;
+        }
+    }
+
+    dbus_connection_unref(conn);
+
+    return NOERROR;
+}
+
+DBusHandlerResult CDBusChannel::ServiceRunnable::HandleMessage(
+    /* [in] */ DBusConnection* conn,
+    /* [in] */ DBusMessage* msg,
+    /* [in] */ void* arg)
+{
+    DBusMessageIter args;
+    DBusMessageIter subArg;
+    void* data = nullptr;
+    Integer size = 0;
+
+    CDBusChannel::ServiceRunnable* thisObj = static_cast<CDBusChannel::ServiceRunnable*>(arg);
+
+    if (dbus_message_is_method_call(msg,
+            STUB_INTERFACE_PATH, "GetMetadata")) {
+        if (CDBusChannel::DEBUG) {
+            Logger::D("CDBusChannel", "Handle \"GetMetadata\" message.");
+        }
+    }
+    else if (dbus_message_is_method_call(msg,
+            STUB_INTERFACE_PATH, "Invoke")) {
+        if (CDBusChannel::DEBUG) {
+            Logger::D("CDBusChannel", "Handle \"Invoke\" message.");
+        }
+
+        if (!dbus_message_iter_init(msg, &args)) {
+            Logger::E("CDBusChannel", "\"Invoke\" message has no arguments.");
+            return DBUS_HANDLER_RESULT_HANDLED;
+        }
+        if (DBUS_TYPE_ARRAY != dbus_message_iter_get_arg_type(&args)) {
+            Logger::E("CDBusChannel", "\"Invoke\" message has no array arguments.");
+            return DBUS_HANDLER_RESULT_HANDLED;
+        }
+        dbus_message_iter_recurse(&args, &subArg);
+        dbus_message_iter_get_fixed_array(&subArg, &data, (int*)&size);
+
+        AutoPtr<IParcel> argParcel;
+        thisObj->mOwner->CreateArgumentParcel((IParcel**)&argParcel);
+        argParcel->SetData(static_cast<Byte*>(data), size);
+        AutoPtr<IParcel> resParcel;
+        ECode ec = thisObj->mTarget->Invoke(argParcel, (IParcel**)&resParcel);
+    }
+    else if (dbus_message_is_method_call(msg,
+            STUB_INTERFACE_PATH, "Release")) {
+        if (CDBusChannel::DEBUG) {
+            Logger::D("CDBusChannel", "Handle \"Release\" message.");
+        }
+
+        thisObj->mTarget->Release();
+        thisObj->mRequestToQuit = true;
+    }
+    else {
+        const char* sign = dbus_message_get_signature(msg);
+        if (sign != nullptr && CDBusChannel::DEBUG) {
+            Logger::D("CDBusChannel",
+                    "The message which signature is \"%\" does not be handled.", sign);
+        }
+    }
+
+    return DBUS_HANDLER_RESULT_HANDLED;
+}
+
+//-------------------------------------------------------------------------------
 
 const CoclassID CID_CDBusChannel =
         {{0x8efc6167,0xe82e,0x4c7d,0x89aa,{0x6,0x6,0x8,0xf,0x3,0x9,0x7,0xb,0x2,0x3,0xc,0xc}}, &CID_CCMRuntime};
@@ -27,6 +128,18 @@ const CoclassID CID_CDBusChannel =
 CCM_INTERFACE_IMPL_1(CDBusChannel, Object, IRPCChannel);
 
 CCM_OBJECT_IMPL(CDBusChannel);
+
+CDBusChannel::CDBusChannel()
+    : mConn(nullptr)
+{}
+
+CDBusChannel::~CDBusChannel()
+{
+    if (mConn != nullptr) {
+        dbus_connection_close(mConn);
+        dbus_connection_unref(mConn);
+    }
+}
 
 ECode CDBusChannel::Initialize(
     /* [in] */ RPCType type,
@@ -40,29 +153,27 @@ ECode CDBusChannel::Initialize(
         DBusConnection* conn = nullptr;
         const char* name = nullptr;
         dbus_error_init(&err);
-        conn = dbus_bus_get_private(DBUS_BUS_SYSTEM, &err);
+        conn = dbus_bus_get_private(DBUS_BUS_SESSION, &err);
         if (dbus_error_is_set(&err)) {
             Logger::E("CDBusChannel", "Connect to bus daemon failed, error is \"%s\".",
                     err.message);
-            ec = E_RUNTIME_EXCEPTION;
-            goto Exit;
+            dbus_error_free(&err);
+            return E_RUNTIME_EXCEPTION;
         }
 
         name = dbus_bus_get_unique_name(conn);
         if (name == nullptr) {
             Logger::E("CDBusChannel", "Get unique name failed.");
-            ec = E_RUNTIME_EXCEPTION;
-            goto Exit;
+            if (conn != nullptr) {
+                dbus_connection_close(conn);
+                dbus_connection_unref(conn);
+            }
+            dbus_error_free(&err);
+            return E_RUNTIME_EXCEPTION;
         }
 
+        mConn = conn;
         mName = name;
-
-Exit:
-        if (conn != nullptr) {
-            dbus_connection_close(conn);
-            dbus_connection_unref(conn);
-        }
-        dbus_error_free(&err);
     }
     return ec;
 }
@@ -135,7 +246,7 @@ ECode CDBusChannel::Invoke(
 
     dbus_error_init(&err);
 
-    conn = dbus_bus_get_private(DBUS_BUS_SYSTEM, &err);
+    conn = dbus_bus_get_private(DBUS_BUS_SESSION, &err);
 
     if (dbus_error_is_set(&err)) {
         Logger::E("CDBusChannel", "Connect to bus daemon failed, error is \"%s\".",
@@ -145,7 +256,7 @@ ECode CDBusChannel::Invoke(
     }
 
     msg = dbus_message_new_method_call(
-            mName, mPath, nullptr, "Invoke");
+            mName, STUB_OBJECT_PATH, STUB_INTERFACE_PATH, "Invoke");
     if (msg == nullptr) {
         Logger::E("CDBusChannel", "Fail to create dbus message.");
         ec = E_RUNTIME_EXCEPTION;
@@ -155,7 +266,7 @@ ECode CDBusChannel::Invoke(
     dbus_message_iter_init_append(msg, &args);
     dbus_message_iter_open_container(&args,
             DBUS_TYPE_ARRAY, DBUS_TYPE_BYTE_AS_STRING, &subArg);
-    argParcel->GetDataPayload(&data);
+    argParcel->GetData(&data);
     argParcel->GetDataSize(&size);
     dbus_message_iter_append_fixed_array(&subArg,
             DBUS_TYPE_BYTE, &data, size);
@@ -237,12 +348,15 @@ Exit:
     return ec;
 }
 
-ECode CDBusChannel::StartListening()
+ECode CDBusChannel::StartListening(
+    /* [in] */ IStub* stub)
 {
+    ECode ec = NOERROR;
     if (mPeer == RPCPeer::Stub) {
-
+        AutoPtr<ThreadPoolExecutor::Runnable> r = new ServiceRunnable(this, stub);
+        ec = ThreadPoolExecutor::GetInstance()->RunTask(r);
     }
-    return NOERROR;
+    return ec;
 }
 
 }

@@ -33,9 +33,9 @@ int main(int argv, char** argc)
     svc->AddRef(0);
     printf("==== call IService::TestMethod1 ====\n");
     svc->TestMethod1(9);
-    printf("==== call IService::TestMethod2 ====\n");
-    svc->TestMethod2(1, 2, 3, 4, 5, 6, 7, 8, 9.9,
-            10.9, 11.9, 12.9, 13.9, 14.9, 15.9, 16.9, 17.9, 18.9);
+    // printf("==== call IService::TestMethod2 ====\n");
+    // svc->TestMethod2(1, 2, 3, 4, 5, 6, 7, 8, 9.9,
+    //         10.9, 11.9, 12.9, 13.9, 14.9, 15.9, 16.9, 17.9, 18.9);
 
     // AutoPtr<IParcel> parcel;
     // CoCreateParcel((IParcel**)&parcel);

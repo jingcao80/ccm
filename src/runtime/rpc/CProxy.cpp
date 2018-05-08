@@ -32,6 +32,7 @@
 
 #include "ccmautoptr.h"
 #include "ccmlogger.h"
+#include "ccmrpc.h"
 #include "CProxy.h"
 #include <sys/mman.h>
 
@@ -158,21 +159,21 @@ Integer InterfaceProxy::S_AddRef(
     /* [in] */ InterfaceProxy* thisObj,
     /* [in] */ HANDLE id)
 {
-    return thisObj->mObject->AddRef(id);
+    return thisObj->mOwner->AddRef(id);
 }
 
 Integer InterfaceProxy::S_Release(
     /* [in] */ InterfaceProxy* thisObj,
     /* [in] */ HANDLE id)
 {
-    return thisObj->mObject->Release(id);
+    return thisObj->mOwner->Release(id);
 }
 
 IInterface* InterfaceProxy::S_Probe(
     /* [in] */ InterfaceProxy* thisObj,
     /* [in] */ const InterfaceID& iid)
 {
-    return thisObj->mObject->Probe(iid);
+    return thisObj->mOwner->Probe(iid);
 }
 
 ECode InterfaceProxy::S_GetInterfaceID(
@@ -180,7 +181,7 @@ ECode InterfaceProxy::S_GetInterfaceID(
     /* [in] */ IInterface* object,
     /* [out] */ InterfaceID* iid)
 {
-    return thisObj->mObject->GetInterfaceID(object, iid);
+    return thisObj->mOwner->GetInterfaceID(object, iid);
 }
 
 ECode InterfaceProxy::MarshalArguments(
@@ -496,12 +497,15 @@ ECode InterfaceProxy::ProxyEntry(
     }
 
     AutoPtr<IParcel> inParcel, outParcel;
-    thisObj->mObject->mChannel->CreateArgumentParcel((IParcel**)&inParcel);
+    thisObj->mOwner->mChannel->CreateArgumentParcel((IParcel**)&inParcel);
+    inParcel->WriteInteger(RPC_MAGIC_NUMBER);
+    inParcel->WriteInteger(thisObj->mIndex);
+    inParcel->WriteInteger(methodIndex + 4);
     ECode ec = thisObj->MarshalArguments(regs, method, inParcel);
     if (FAILED(ec)) goto ProxyExit;
 
-    ec = thisObj->mObject->mChannel->Invoke(
-            thisObj->mObject, method, inParcel, (IParcel**)&outParcel);
+    ec = thisObj->mOwner->mChannel->Invoke(
+            thisObj->mOwner, method, inParcel, (IParcel**)&outParcel);
     if (FAILED(ec)) goto ProxyExit;
 
     ec = thisObj->UnmarshalResults(regs, method, outParcel);
@@ -636,7 +640,8 @@ ECode CProxy::CreateObject(
     proxyObj->mInterfaces = Array<InterfaceProxy*>(interfaceNumber);
     for (Integer i = 0; i < interfaceNumber; i++) {
         InterfaceProxy* iproxy = new InterfaceProxy();
-        iproxy->mObject = proxyObj;
+        iproxy->mIndex = i;
+        iproxy->mOwner = proxyObj;
         iproxy->mTargetMetadata = interfaces[i];
         iproxy->mTargetMetadata->GetInterfaceID(&iproxy->mIid);
         iproxy->mVtable = sProxyVtable;

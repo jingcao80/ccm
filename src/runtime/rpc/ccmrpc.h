@@ -21,6 +21,8 @@
 
 namespace ccm {
 
+constexpr Integer RPC_MAGIC_NUMBER = 0x7a79636f;
+
 EXTERN_C COM_PUBLIC ECode CoCreateProxy(
     /* [in] */ const CoclassID& cid,
     /* [in] */ RPCType type,

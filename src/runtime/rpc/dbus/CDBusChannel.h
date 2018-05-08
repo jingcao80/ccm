@@ -17,7 +17,9 @@
 #ifndef CCM_CDBUSCHANNEL_H__
 #define CCM_CDBUSCHANNEL_H__
 
+#include "threadpoolexecutor.h"
 #include "util/ccmobject.h"
+#include <dbus/dbus.h>
 
 namespace ccm {
 
@@ -28,7 +30,34 @@ class CDBusChannel
     : public Object
     , public IRPCChannel
 {
+private:
+    class ServiceRunnable
+        : public ThreadPoolExecutor::Runnable
+    {
+    public:
+        ServiceRunnable(
+            /* [in] */ CDBusChannel* owner,
+            /* [in] */ IStub* target);
+
+        ECode Run();
+
+    private:
+        static DBusHandlerResult HandleMessage(
+            /* [in] */ DBusConnection* conn,
+            /* [in] */ DBusMessage* msg,
+            /* [in] */ void* arg);
+
+    private:
+        CDBusChannel* mOwner;
+        IStub* mTarget;
+        Boolean mRequestToQuit;
+    };
+
 public:
+    CDBusChannel();
+
+    ~CDBusChannel();
+
     CCM_INTERFACE_DECL();
 
     CCM_OBJECT_DECL();
@@ -63,7 +92,8 @@ public:
         /* [in] */ IParcel* argParcel,
         /* [out] */ IParcel** resParcel);
 
-    ECode StartListening();
+    ECode StartListening(
+        /* [in] */ IStub* stub);
 
 private:
     ECode UnmarshalArguments(
@@ -74,11 +104,13 @@ private:
 
 private:
     static constexpr Boolean DEBUG = false;
+    static constexpr const char* STUB_OBJECT_PATH = "/ccm/rpc/CStub";
+    static constexpr const char* STUB_INTERFACE_PATH = "ccm.rpc.IStub";
 
     RPCType mType;
     RPCPeer mPeer;
     String mName;
-    String mPath;
+    DBusConnection* mConn;
 };
 
 }

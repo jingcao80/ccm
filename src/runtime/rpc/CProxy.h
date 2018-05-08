@@ -118,9 +118,10 @@ private:
     static constexpr Boolean DEBUG = false;
     HANDLE* mVtable;    // must be the first member
     HANDLE mProxyEntry;  // must be the second member
+    Integer mIndex;
     InterfaceID mIid;
     IMetaInterface* mTargetMetadata;
-    CProxy* mObject;
+    CProxy* mOwner;
 };
 
 extern const CoclassID CID_CProxy;

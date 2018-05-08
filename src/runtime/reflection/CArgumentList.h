@@ -310,6 +310,10 @@ public:
         /* [in] */ Integer index,
         /* [in] */ HANDLE addr);
 
+    ECode GetArgumentAddress(
+        /* [in] */ Integer index,
+        /* [out] */ HANDLE* addr);
+
 private:
     friend class CMetaConstructor;
     friend class CMetaMethod;
