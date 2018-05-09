@@ -112,6 +112,11 @@ private:
         /* [in] */ Integer intIndex,
         /* [in] */ Integer fpIndex);
 
+    HANDLE GetValueAddress(
+        /* [in] */ Registers& regs,
+        /* [in] */ Integer intIndex,
+        /* [in] */ Integer fpIndex);
+
 private:
     friend class CProxy;
 

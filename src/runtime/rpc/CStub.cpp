@@ -124,12 +124,21 @@ ECode InterfaceStub::UnmarshalArguments(
                     break;
                 }
                 case CcmTypeKind::CoclassID: {
+                    CoclassID* value = new CoclassID();
+                    argParcel->ReadCoclassID(value);
+                    args->SetInputArgumentOfCoclassID(i, *value);
                     break;
                 }
                 case CcmTypeKind::ComponentID: {
+                    ComponentID* value = new ComponentID();
+                    argParcel->ReadComponentID(value);
+                    args->SetInputArgumentOfComponentID(i, *value);
                     break;
                 }
                 case CcmTypeKind::InterfaceID: {
+                    InterfaceID* value = new InterfaceID();
+                    argParcel->ReadInterfaceID(value);
+                    args->SetInputArgumentOfInterfaceID(i, *value);
                     break;
                 }
                 case CcmTypeKind::ECode: {
@@ -145,9 +154,16 @@ ECode InterfaceStub::UnmarshalArguments(
                     break;
                 }
                 case CcmTypeKind::Array: {
+                    Triple* t = new Triple();
+                    argParcel->ReadArray(reinterpret_cast<HANDLE>(t));
+                    args->SetInputArgumentOfArray(i, reinterpret_cast<HANDLE>(t));
                     break;
                 }
                 case CcmTypeKind::Interface: {
+                    AutoPtr<IInterface> value;
+                    argParcel->ReadInterface((IInterface**)&value);
+                    args->SetInputArgumentOfInterface(i, value);
+                    REFCOUNT_ADD(value);
                     break;
                 }
                 case CcmTypeKind::HANDLE:
@@ -157,6 +173,125 @@ ECode InterfaceStub::UnmarshalArguments(
             }
         }
         else if (ioAttr == IOAttribute::OUT || ioAttr == IOAttribute::IN_OUT) {
+            switch (kind) {
+                case CcmTypeKind::Char: {
+                    Char* value = new Char;
+                    if (ioAttr == IOAttribute::IN_OUT) {
+                        argParcel->ReadChar(value);
+                    }
+                    args->SetOutputArgumentOfChar(i, reinterpret_cast<HANDLE>(value));
+                    break;
+                }
+                case CcmTypeKind::Byte: {
+                    Byte* value = new Byte;
+                    if (ioAttr == IOAttribute::IN_OUT) {
+                        argParcel->ReadByte(value);
+                    }
+                    args->SetOutputArgumentOfByte(i, reinterpret_cast<HANDLE>(value));
+                }
+                case CcmTypeKind::Short: {
+                    Short* value = new Short;
+                    if (ioAttr == IOAttribute::IN_OUT) {
+                        argParcel->ReadShort(value);
+                    }
+                    args->SetOutputArgumentOfShort(i, reinterpret_cast<HANDLE>(value));
+                }
+                case CcmTypeKind::Integer: {
+                    Integer* value = new Integer;
+                    if (ioAttr == IOAttribute::IN_OUT) {
+                        argParcel->ReadInteger(value);
+                    }
+                    args->SetOutputArgumentOfInteger(i, reinterpret_cast<HANDLE>(value));
+                }
+                case CcmTypeKind::Long: {
+                    Long* value = new Long;
+                    if (ioAttr == IOAttribute::IN_OUT) {
+                        argParcel->ReadLong(value);
+                    }
+                    args->SetOutputArgumentOfLong(i, reinterpret_cast<HANDLE>(value));
+                }
+                case CcmTypeKind::Float: {
+                    Float* value = new Float;
+                    if (ioAttr == IOAttribute::IN_OUT) {
+                        argParcel->ReadFloat(value);
+                    }
+                    args->SetOutputArgumentOfFloat(i, reinterpret_cast<HANDLE>(value));
+                }
+                case CcmTypeKind::Double: {
+                    Double* value = new Double;
+                    if (ioAttr == IOAttribute::IN_OUT) {
+                        argParcel->ReadDouble(value);
+                    }
+                    args->SetOutputArgumentOfDouble(i, reinterpret_cast<HANDLE>(value));
+                }
+                case CcmTypeKind::Boolean: {
+                    Boolean* value = new Boolean;
+                    if (ioAttr == IOAttribute::IN_OUT) {
+                        argParcel->ReadBoolean(value);
+                    }
+                    args->SetOutputArgumentOfBoolean(i, reinterpret_cast<HANDLE>(value));
+                }
+                case CcmTypeKind::String: {
+                    String* value = new String();
+                    if (ioAttr == IOAttribute::IN_OUT) {
+                        argParcel->ReadString(value);
+                    }
+                    args->SetOutputArgumentOfString(i, reinterpret_cast<HANDLE>(value));
+                }
+                case CcmTypeKind::CoclassID: {
+                    CoclassID* value = new CoclassID();
+                    if (ioAttr == IOAttribute::IN_OUT) {
+                        argParcel->ReadCoclassID(value);
+                    }
+                    args->SetOutputArgumentOfCoclassID(i, reinterpret_cast<HANDLE>(value));
+                }
+                case CcmTypeKind::ComponentID: {
+                    ComponentID* value = new ComponentID();
+                    if (ioAttr == IOAttribute::IN_OUT) {
+                        argParcel->ReadComponentID(value);
+                    }
+                    args->SetOutputArgumentOfComponentID(i, reinterpret_cast<HANDLE>(value));
+                }
+                case CcmTypeKind::InterfaceID: {
+                    InterfaceID* value = new InterfaceID();
+                    if (ioAttr == IOAttribute::IN_OUT) {
+                        argParcel->ReadInterfaceID(value);
+                    }
+                    args->SetOutputArgumentOfInterfaceID(i, reinterpret_cast<HANDLE>(value));
+                }
+                case CcmTypeKind::ECode: {
+                    ECode* value = new ECode;
+                    if (ioAttr == IOAttribute::IN_OUT) {
+                        argParcel->ReadECode(value);
+                    }
+                    args->SetOutputArgumentOfECode(i, reinterpret_cast<HANDLE>(value));
+                }
+                case CcmTypeKind::Enum: {
+                    Integer* value = new Integer;
+                    if (ioAttr == IOAttribute::IN_OUT) {
+                        argParcel->ReadEnumeration(value);
+                    }
+                    args->SetOutputArgumentOfEnumeration(i, reinterpret_cast<HANDLE>(value));
+                }
+                case CcmTypeKind::Array: {
+                    Triple* t = new Triple();
+                    if (ioAttr == IOAttribute::IN_OUT) {
+                        argParcel->ReadArray(reinterpret_cast<HANDLE>(t));
+                    }
+                    args->SetOutputArgumentOfArray(i, reinterpret_cast<HANDLE>(t));
+                }
+                case CcmTypeKind::Interface: {
+                    IInterface** intf = new IInterface*;
+                    if (ioAttr == IOAttribute::IN_OUT) {
+                        argParcel->ReadInterface(intf);
+                    }
+                    args->SetOutputArgumentOfInterface(i, reinterpret_cast<HANDLE>(intf));
+                }
+                case CcmTypeKind::HANDLE:
+                default:
+                    Logger::E("CStub", "Invalid [in, out] or [out] type(%d), param index: %d.\n", kind, i);
+                    return E_ILLEGAL_ARGUMENT_EXCEPTION;
+            }
         }
     }
 
@@ -206,16 +341,42 @@ ECode InterfaceStub::MarshalResults(
                     delete value;
                     break;
                 }
-                case CcmTypeKind::CoclassID:
+                case CcmTypeKind::CoclassID: {
+                    HANDLE addr;
+                    argList->GetArgumentAddress(i, &addr);
+                    AutoCoclassID* value = reinterpret_cast<AutoCoclassID*>(addr);
+                    delete value;
                     break;
-                case CcmTypeKind::ComponentID:
+                }
+                case CcmTypeKind::ComponentID: {
+                    HANDLE addr;
+                    argList->GetArgumentAddress(i, &addr);
+                    AutoComponentID* value = reinterpret_cast<AutoComponentID*>(addr);
+                    delete value;
                     break;
-                case CcmTypeKind::InterfaceID:
+                }
+                case CcmTypeKind::InterfaceID: {
+                    HANDLE addr;
+                    argList->GetArgumentAddress(i, &addr);
+                    AutoInterfaceID* value = reinterpret_cast<AutoInterfaceID*>(addr);
+                    delete value;
                     break;
-                case CcmTypeKind::Array:
+                }
+                case CcmTypeKind::Array: {
+                    HANDLE addr;
+                    argList->GetArgumentAddress(i, &addr);
+                    Triple* t = reinterpret_cast<Triple*>(addr);
+                    t->FreeData();
+                    delete t;
                     break;
-                case CcmTypeKind::Interface:
+                }
+                case CcmTypeKind::Interface: {
+                    HANDLE addr;
+                    argList->GetArgumentAddress(i, &addr);
+                    IInterface* intf = reinterpret_cast<IInterface*>(addr);
+                    REFCOUNT_RELEASE(intf);
                     break;
+                }
                 case CcmTypeKind::HANDLE:
                 default:
                     Logger::E("CStub", "Invalid [in] type(%d), param index: %d.\n", kind, i);
@@ -223,7 +384,140 @@ ECode InterfaceStub::MarshalResults(
             }
         }
         else if (ioAttr == IOAttribute::OUT || ioAttr == IOAttribute::IN_OUT) {
-
+            switch (kind) {
+                case CcmTypeKind::Char: {
+                    HANDLE addr;
+                    argList->GetArgumentAddress(i, &addr);
+                    Char* value = reinterpret_cast<Char*>(addr);
+                    outParcel->WriteChar(*value);
+                    delete value;
+                    break;
+                }
+                case CcmTypeKind::Byte: {
+                    HANDLE addr;
+                    argList->GetArgumentAddress(i, &addr);
+                    Byte* value = reinterpret_cast<Byte*>(addr);
+                    outParcel->WriteByte(*value);
+                    delete value;
+                    break;
+                }
+                case CcmTypeKind::Short: {
+                    HANDLE addr;
+                    argList->GetArgumentAddress(i, &addr);
+                    Short* value = reinterpret_cast<Short*>(addr);
+                    outParcel->WriteShort(*value);
+                    delete value;
+                    break;
+                }
+                case CcmTypeKind::Integer: {
+                    HANDLE addr;
+                    argList->GetArgumentAddress(i, &addr);
+                    Integer* value = reinterpret_cast<Integer*>(addr);
+                    outParcel->WriteInteger(*value);
+                    delete value;
+                    break;
+                }
+                case CcmTypeKind::Long: {
+                    HANDLE addr;
+                    argList->GetArgumentAddress(i, &addr);
+                    Long* value = reinterpret_cast<Long*>(addr);
+                    outParcel->WriteLong(*value);
+                    delete value;
+                    break;
+                }
+                case CcmTypeKind::Float: {
+                    HANDLE addr;
+                    argList->GetArgumentAddress(i, &addr);
+                    Float* value = reinterpret_cast<Float*>(addr);
+                    outParcel->WriteFloat(*value);
+                    delete value;
+                    break;
+                }
+                case CcmTypeKind::Double: {
+                    HANDLE addr;
+                    argList->GetArgumentAddress(i, &addr);
+                    Double* value = reinterpret_cast<Double*>(addr);
+                    outParcel->WriteDouble(*value);
+                    delete value;
+                    break;
+                }
+                case CcmTypeKind::Boolean: {
+                    HANDLE addr;
+                    argList->GetArgumentAddress(i, &addr);
+                    Boolean* value = reinterpret_cast<Boolean*>(addr);
+                    outParcel->WriteBoolean(*value);
+                    delete value;
+                    break;
+                }
+                case CcmTypeKind::String: {
+                    HANDLE addr;
+                    argList->GetArgumentAddress(i, &addr);
+                    String* value = reinterpret_cast<String*>(addr);
+                    outParcel->WriteString(*value);
+                    delete value;
+                    break;
+                }
+                case CcmTypeKind::CoclassID: {
+                    HANDLE addr;
+                    argList->GetArgumentAddress(i, &addr);
+                    CoclassID* value = reinterpret_cast<CoclassID*>(addr);
+                    outParcel->WriteCoclassID(*value);
+                    delete value;
+                    break;
+                }
+                case CcmTypeKind::ComponentID: {
+                    HANDLE addr;
+                    argList->GetArgumentAddress(i, &addr);
+                    ComponentID* value = reinterpret_cast<ComponentID*>(addr);
+                    outParcel->WriteComponentID(*value);
+                    delete value;
+                    break;
+                }
+                case CcmTypeKind::InterfaceID: {
+                    HANDLE addr;
+                    argList->GetArgumentAddress(i, &addr);
+                    InterfaceID* value = reinterpret_cast<InterfaceID*>(addr);
+                    outParcel->WriteInterfaceID(*value);
+                    delete value;
+                    break;
+                }
+                case CcmTypeKind::ECode: {
+                    HANDLE addr;
+                    argList->GetArgumentAddress(i, &addr);
+                    ECode* value = reinterpret_cast<ECode*>(addr);
+                    outParcel->WriteECode(*value);
+                    delete value;
+                    break;
+                }
+                case CcmTypeKind::Enum: {
+                    HANDLE addr;
+                    argList->GetArgumentAddress(i, &addr);
+                    Integer* value = reinterpret_cast<Integer*>(addr);
+                    outParcel->WriteEnumeration(*value);
+                    delete value;
+                    break;
+                }
+                case CcmTypeKind::Array: {
+                    HANDLE addr;
+                    argList->GetArgumentAddress(i, &addr);
+                    Triple* t = reinterpret_cast<Triple*>(addr);
+                    outParcel->WriteArray(reinterpret_cast<HANDLE>(t));
+                    delete t;
+                    break;
+                }
+                case CcmTypeKind::Interface: {
+                    HANDLE addr;
+                    argList->GetArgumentAddress(i, &addr);
+                    IInterface** intf = reinterpret_cast<IInterface**>(addr);
+                    REFCOUNT_RELEASE(*intf);
+                    delete intf;
+                    break;
+                }
+                case CcmTypeKind::HANDLE:
+                default:
+                    Logger::E("CStub", "Invalid [in, out] or [out] type(%d), param index: %d.\n", kind, i);
+                    return E_ILLEGAL_ARGUMENT_EXCEPTION;
+            }
         }
     }
 
@@ -252,13 +546,13 @@ ECode InterfaceStub::Invoke(
         return ec;
     }
 
-    ec = mm->Invoke(mObject, argList);
-    ec = MarshalResults(mm, ec, argList, resParcel);
+    ECode ret = mm->Invoke(mObject, argList);
+    ec = MarshalResults(mm, ret, argList, resParcel);
     if (FAILED(ec)) {
         Logger::E("CStub", "MarshalResults failed with ec is 0x%x.", ec);
     }
 
-    return ec;
+    return ret;
 }
 
 //----------------------------------------------------------------------

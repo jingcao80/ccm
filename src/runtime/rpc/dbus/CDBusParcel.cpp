@@ -487,7 +487,7 @@ ECode CDBusParcel::ReadArray(
             Triple tt;
             tt.mSize = size;
             tt.mType = CcmTypeKind::Char;
-            tt.mData = Triple::AllocData(sizeof(Char) * size);
+            tt.AllocData(sizeof(Char) * size);
             if (tt.mData != nullptr) {
                 ec = Read(tt.mData, sizeof(Char) * size);
             }
@@ -499,7 +499,7 @@ ECode CDBusParcel::ReadArray(
             Triple tt;
             tt.mSize = size;
             tt.mType = CcmTypeKind::Byte;
-            tt.mData = Triple::AllocData(sizeof(Byte) * size);
+            tt.AllocData(sizeof(Byte) * size);
             if (tt.mData != nullptr) {
                 ec = Read(tt.mData, sizeof(Byte) * size);
             }
@@ -511,7 +511,7 @@ ECode CDBusParcel::ReadArray(
             Triple tt;
             tt.mSize = size;
             tt.mType = CcmTypeKind::Short;
-            tt.mData = Triple::AllocData(sizeof(Short) * size);
+            tt.AllocData(sizeof(Short) * size);
             if (tt.mData != nullptr) {
                 ec = Read(tt.mData, sizeof(Short) * size);
             }
@@ -523,7 +523,7 @@ ECode CDBusParcel::ReadArray(
             Triple tt;
             tt.mSize = size;
             tt.mType = CcmTypeKind::Integer;
-            tt.mData = Triple::AllocData(sizeof(Integer) * size);
+            tt.AllocData(sizeof(Integer) * size);
             if (tt.mData != nullptr) {
                 ec = Read(tt.mData, sizeof(Integer) * size);
             }
@@ -535,7 +535,7 @@ ECode CDBusParcel::ReadArray(
             Triple tt;
             tt.mSize = size;
             tt.mType = CcmTypeKind::Long;
-            tt.mData = Triple::AllocData(sizeof(Long) * size);
+            tt.AllocData(sizeof(Long) * size);
             if (tt.mData != nullptr) {
                 ec = Read(tt.mData, sizeof(Long) * size);
             }
@@ -547,7 +547,7 @@ ECode CDBusParcel::ReadArray(
             Triple tt;
             tt.mSize = size;
             tt.mType = CcmTypeKind::Float;
-            tt.mData = Triple::AllocData(sizeof(Float) * size);
+            tt.AllocData(sizeof(Float) * size);
             if (tt.mData != nullptr) {
                 ec = Read(tt.mData, sizeof(Float) * size);
             }
@@ -559,7 +559,7 @@ ECode CDBusParcel::ReadArray(
             Triple tt;
             tt.mSize = size;
             tt.mType = CcmTypeKind::Double;
-            tt.mData = Triple::AllocData(sizeof(Double) * size);
+            tt.AllocData(sizeof(Double) * size);
             if (tt.mData != nullptr) {
                 ec = Read(tt.mData, sizeof(Double) * size);
             }
@@ -571,7 +571,7 @@ ECode CDBusParcel::ReadArray(
             Triple tt;
             tt.mSize = size;
             tt.mType = CcmTypeKind::Boolean;
-            tt.mData = Triple::AllocData(sizeof(Boolean) * size);
+            tt.AllocData(sizeof(Boolean) * size);
             if (tt.mData != nullptr) {
                 ec = Read(tt.mData, sizeof(Boolean) * size);
             }
@@ -644,7 +644,7 @@ ECode CDBusParcel::ReadArray(
             Triple tt;
             tt.mSize = size;
             tt.mType = CcmTypeKind::ECode;
-            tt.mData = Triple::AllocData(sizeof(ECode) * size);
+            tt.AllocData(sizeof(ECode) * size);
             if (tt.mData != nullptr) {
                 ec = Read(tt.mData, sizeof(ECode) * size);
             }
@@ -656,7 +656,7 @@ ECode CDBusParcel::ReadArray(
             Triple tt;
             tt.mSize = size;
             tt.mType = CcmTypeKind::Enum;
-            tt.mData = Triple::AllocData(sizeof(Integer) * size);
+            tt.AllocData(sizeof(Integer) * size);
             if (tt.mData != nullptr) {
                 ec = Read(tt.mData, sizeof(Integer) * size);
             }

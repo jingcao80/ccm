@@ -387,6 +387,143 @@ ECode InterfaceProxy::UnmarshalResults(
         /* [in] */ IMetaMethod* method,
         /* [in] */ IParcel* resParcel)
 {
+    Integer N;
+    method->GetParameterNumber(&N);
+    Integer intNum = 1, fpNum = 0;
+    for (Integer i = 0; i < N; i++) {
+        AutoPtr<IMetaParameter> param;
+        method->GetParameter(i, (IMetaParameter**)&param);
+        AutoPtr<IMetaType> type;
+        param->GetType((IMetaType**)&type);
+        CcmTypeKind kind;
+        type->GetTypeKind((Integer*)&kind);
+        IOAttribute ioAttr;
+        param->GetIOAttribute(&ioAttr);
+        if (ioAttr == IOAttribute::IN) {
+            switch (kind) {
+                case CcmTypeKind::Char:
+                case CcmTypeKind::Byte:
+                case CcmTypeKind::Short:
+                case CcmTypeKind::Integer:
+                case CcmTypeKind::Long:
+                case CcmTypeKind::Boolean:
+                case CcmTypeKind::String:
+                case CcmTypeKind::CoclassID:
+                case CcmTypeKind::ComponentID:
+                case CcmTypeKind::InterfaceID:
+                case CcmTypeKind::ECode:
+                case CcmTypeKind::Enum:
+                case CcmTypeKind::Array:
+                case CcmTypeKind::Interface:
+                    intNum++;
+                    break;
+                case CcmTypeKind::Float:
+                case CcmTypeKind::Double:
+                    fpNum++;
+                    break;
+                case CcmTypeKind::HANDLE:
+                default:
+                    Logger::E("CProxy", "Invalid [in] type(%d), param index: %d.\n", kind, i);
+                    return E_ILLEGAL_ARGUMENT_EXCEPTION;
+            }
+        }
+        else if (ioAttr == IOAttribute::OUT || ioAttr == IOAttribute::IN_OUT) {
+            switch (kind) {
+                case CcmTypeKind::Char: {
+                    Char* addr = reinterpret_cast<Char*>(
+                            GetValueAddress(regs, intNum++, fpNum));
+                    resParcel->ReadChar(addr);
+                    break;
+                }
+                case CcmTypeKind::Byte: {
+                    Byte* addr = reinterpret_cast<Byte*>(
+                            GetValueAddress(regs, intNum++, fpNum));
+                    resParcel->ReadByte(addr);
+                    break;
+                }
+                case CcmTypeKind::Short: {
+                    Short* addr = reinterpret_cast<Short*>(
+                            GetValueAddress(regs, intNum++, fpNum));
+                    resParcel->ReadShort(addr);
+                    break;
+                }
+                case CcmTypeKind::Integer: {
+                    Integer* addr = reinterpret_cast<Integer*>(
+                            GetValueAddress(regs, intNum++, fpNum));
+                    resParcel->ReadInteger(addr);
+                    break;
+                }
+                case CcmTypeKind::Long: {
+                    Long* addr = reinterpret_cast<Long*>(
+                            GetValueAddress(regs, intNum++, fpNum));
+                    resParcel->ReadLong(addr);
+                    break;
+                }
+                case CcmTypeKind::Float: {
+                    Float* addr = reinterpret_cast<Float*>(
+                            GetValueAddress(regs, intNum++, fpNum));
+                    resParcel->ReadFloat(addr);
+                    break;
+                }
+                case CcmTypeKind::Double: {
+                    Double* addr = reinterpret_cast<Double*>(
+                            GetValueAddress(regs, intNum++, fpNum));
+                    resParcel->ReadDouble(addr);
+                    break;
+                }
+                case CcmTypeKind::Boolean: {
+                    Boolean* addr = reinterpret_cast<Boolean*>(
+                            GetValueAddress(regs, intNum++, fpNum));
+                    resParcel->ReadBoolean(addr);
+                    break;
+                }
+                case CcmTypeKind::String: {
+                    String* addr = reinterpret_cast<String*>(
+                            GetValueAddress(regs, intNum++, fpNum));
+                    resParcel->ReadString(addr);
+                    break;
+                }
+                case CcmTypeKind::CoclassID: {
+                    break;
+                }
+                case CcmTypeKind::ComponentID: {
+                    break;
+                }
+                case CcmTypeKind::InterfaceID: {
+                    break;
+                }
+                case CcmTypeKind::ECode: {
+                    ECode* addr = reinterpret_cast<ECode*>(
+                            GetValueAddress(regs, intNum++, fpNum));
+                    resParcel->ReadECode(addr);
+                    break;
+                }
+                case CcmTypeKind::Enum: {
+                    Integer* addr = reinterpret_cast<Integer*>(
+                            GetValueAddress(regs, intNum++, fpNum));
+                    resParcel->ReadEnumeration(addr);
+                    break;
+                }
+                case CcmTypeKind::Array: {
+                    Triple* t = reinterpret_cast<Triple*>(
+                            GetValueAddress(regs, intNum++, fpNum));
+                    resParcel->ReadArray(reinterpret_cast<HANDLE>(t));
+                    break;
+                }
+                case CcmTypeKind::Interface: {
+                    IInterface** intf = reinterpret_cast<IInterface**>(
+                            GetValueAddress(regs, intNum++, fpNum));
+                    resParcel->ReadInterface(intf);
+                    break;
+                }
+                case CcmTypeKind::HANDLE:
+                default:
+                    Logger::E("CProxy", "Invalid [in, out] or [out] type(%d), param index: %d.\n", kind, i);
+                    return E_ILLEGAL_ARGUMENT_EXCEPTION;
+            }
+        }
+    }
+
     return NOERROR;
 }
 
@@ -446,6 +583,34 @@ Double InterfaceProxy::GetDoubleValue(
                     (fpIndex - 7 + intIndex - 6 + 1) * 8;
             GET_STACK(regs.rbp, off, val);
             return val;
+        }
+    }
+}
+
+HANDLE InterfaceProxy::GetValueAddress(
+    /* [in] */ Registers& regs,
+    /* [in] */ Integer intIndex,
+    /* [in] */ Integer fpIndex)
+{
+    switch (intIndex) {
+        case 0:
+            return static_cast<HANDLE>(regs.rdi);
+        case 1:
+            return static_cast<HANDLE>(regs.rsi);
+        case 2:
+            return static_cast<HANDLE>(regs.rdx);
+        case 3:
+            return static_cast<HANDLE>(regs.rcx);
+        case 4:
+            return static_cast<HANDLE>(regs.r8);
+        case 5:
+            return static_cast<HANDLE>(regs.r9);
+        default: {
+            Long val;
+            Integer off = fpIndex <= 7 ? (intIndex - 5 + 1) * 8 :
+                    (intIndex - 5 + fpIndex - 8 + 1) * 8;
+            GET_STACK(regs.rbp, off, val);
+            return static_cast<HANDLE>(val);
         }
     }
 }

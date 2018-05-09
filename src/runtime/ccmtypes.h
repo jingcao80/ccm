@@ -185,8 +185,10 @@ namespace ccm {
 
 struct Triple
 {
-    static void* AllocData(
+    void AllocData(
         /* [in] */ Long dataSize);
+
+    void FreeData();
 
     Triple& operator=(
         /* [in] */ const Triple& other);

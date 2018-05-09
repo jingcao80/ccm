@@ -244,5 +244,8 @@ There are two ways to add comments. One is using syntax "/* <*comment_literal*> 
 | Enum        | Lxx/xx;   |
 | Interface   | Lxx/xx;   |
 
+#### Local Types
+A local type is the type which cannot be transact through rpc. Local types include HANDLE, CoclassID, ComponentID, InterfaceID and Array<*local types*>.
+
 #### Reference
 [Java Syntax Specification](https://users-cs.au.dk/amoeller/RegAut/JavaBNF.html)

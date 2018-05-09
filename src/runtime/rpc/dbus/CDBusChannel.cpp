@@ -64,11 +64,6 @@ DBusHandlerResult CDBusChannel::ServiceRunnable::HandleMessage(
     /* [in] */ DBusMessage* msg,
     /* [in] */ void* arg)
 {
-    DBusMessageIter args;
-    DBusMessageIter subArg;
-    void* data = nullptr;
-    Integer size = 0;
-
     CDBusChannel::ServiceRunnable* thisObj = static_cast<CDBusChannel::ServiceRunnable*>(arg);
 
     if (dbus_message_is_method_call(msg,
@@ -82,6 +77,11 @@ DBusHandlerResult CDBusChannel::ServiceRunnable::HandleMessage(
         if (CDBusChannel::DEBUG) {
             Logger::D("CDBusChannel", "Handle \"Invoke\" message.");
         }
+
+        DBusMessageIter args;
+        DBusMessageIter subArg;
+        void* data = nullptr;
+        Integer size = 0;
 
         if (!dbus_message_iter_init(msg, &args)) {
             Logger::E("CDBusChannel", "\"Invoke\" message has no arguments.");
@@ -99,6 +99,27 @@ DBusHandlerResult CDBusChannel::ServiceRunnable::HandleMessage(
         argParcel->SetData(static_cast<Byte*>(data), size);
         AutoPtr<IParcel> resParcel;
         ECode ec = thisObj->mTarget->Invoke(argParcel, (IParcel**)&resParcel);
+
+        DBusMessage* reply = dbus_message_new_method_return(msg);
+
+        HANDLE resData;
+        Long resSize;
+        dbus_message_iter_init_append(reply, &args);
+        dbus_message_iter_open_container(&args,
+                DBUS_TYPE_ARRAY, DBUS_TYPE_BYTE_AS_STRING, &subArg);
+        resParcel->GetData(&resData);
+        resParcel->GetDataSize(&resSize);
+        dbus_message_iter_append_fixed_array(&subArg,
+                DBUS_TYPE_BYTE, &resData, resSize);
+        dbus_message_iter_close_container(&args, &subArg);
+
+        dbus_uint32_t serial = 0;
+        if (!dbus_connection_send(conn, reply, &serial)) {
+            Logger::E("CDBusChannel", "Send reply message failed.");
+        }
+        dbus_connection_flush(conn);
+
+        dbus_message_unref(reply);
     }
     else if (dbus_message_is_method_call(msg,
             STUB_INTERFACE_PATH, "Release")) {

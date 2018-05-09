@@ -925,6 +925,11 @@ ECode CArgumentList::GetArgumentAddress(
     /* [in] */ Integer index,
     /* [out] */ HANDLE* addr)
 {
+    VALIDATE_NOT_NULL(addr);
+
+    Integer pos = GetPos(index);
+    Long* data = (Long*)GetDataBuffer(index);
+    *addr = static_cast<HANDLE>(data[pos]);
     return NOERROR;
 }
 

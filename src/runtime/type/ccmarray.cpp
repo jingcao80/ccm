@@ -18,17 +18,28 @@
 
 namespace ccm {
 
-void* Triple::AllocData(
+void Triple::AllocData(
     /* [in] */ Long dataSize)
 {
     SharedBuffer* buf = SharedBuffer::Alloc(dataSize);
     if (buf == nullptr) {
         Logger::E("Triple", "Malloc data which size is %lld failed.", dataSize);
-        return nullptr;
+        mData = nullptr;
+        mSize = 0;
+        return;
     }
     void* data = buf->GetData();
     memset(data, 0, dataSize);
-    return data;
+    mData = data;
+}
+
+void Triple::FreeData()
+{
+    if (mData != nullptr) {
+        SharedBuffer::GetBufferFromData(mData)->Release();
+        mData == nullptr;
+    }
+    mSize = 0;
 }
 
 Triple& Triple::operator=(
