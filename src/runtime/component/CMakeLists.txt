@@ -30,16 +30,12 @@ set(SOURCES
 add_library(component STATIC
     ${SOURCES})
 
+COPY(component ${COMPONENT_DIR}/ccmcomponent.h ${INC_DIR})
+COPY(component ${COMPONENT_DIR}/ccmobjectapi.h ${INC_DIR})
+
 set(DEPLOY_HEADERS
     ${COMPONENT_DIR}/ccmcomponent.h
     ${COMPONENT_DIR}/ccmobjectapi.h)
-
-add_custom_command(
-    TARGET component
-    POST_BUILD
-    COMMAND
-        "${CMAKE_COMMAND}"
-        -E copy ${DEPLOY_HEADERS} ${INC_DIR})
 
 install(FILES
     ${DEPLOY_HEADERS}

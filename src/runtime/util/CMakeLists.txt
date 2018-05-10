@@ -32,6 +32,13 @@ set(SOURCES
 add_library(util STATIC
     ${SOURCES})
 
+COPY(util ${UTIL_DIR}/ccmautoptr.h ${INC_DIR})
+COPY(util ${UTIL_DIR}/ccmclassobject.h ${INC_DIR})
+COPY(util ${UTIL_DIR}/ccmlogger.h ${INC_DIR})
+COPY(util ${UTIL_DIR}/ccmobject.h ${INC_DIR})
+COPY(util ${UTIL_DIR}/ccmrefbase.h ${INC_DIR})
+COPY(util ${UTIL_DIR}/ccmspinlock.h ${INC_DIR})
+
 set(DEPLOY_HEADERS
     ${UTIL_DIR}/ccmautoptr.h
     ${UTIL_DIR}/ccmclassobject.h
@@ -39,13 +46,6 @@ set(DEPLOY_HEADERS
     ${UTIL_DIR}/ccmobject.h
     ${UTIL_DIR}/ccmrefbase.h
     ${UTIL_DIR}/ccmspinlock.h)
-
-add_custom_command(
-    TARGET util
-    POST_BUILD
-    COMMAND
-        "${CMAKE_COMMAND}"
-        -E copy ${DEPLOY_HEADERS} ${INC_DIR})
 
 install(FILES
     ${DEPLOY_HEADERS}

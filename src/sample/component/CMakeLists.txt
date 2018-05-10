@@ -54,12 +54,7 @@ add_custom_command(
         -d ${OBJ_DIR}
         "${COMPONENT_DIR}/FooBarDemo.cdl")
 
-add_custom_command(
-    TARGET FooBarDemo
-    POST_BUILD
-    COMMAND
-        "${CMAKE_COMMAND}"
-        -E copy ${OBJ_DIR}/FooBarDemo.so ${BIN_DIR})
+COPY(FooBarDemo ${OBJ_DIR}/FooBarDemo.so ${BIN_DIR})
 
 install(FILES
     ${OBJ_DIR}/FooBarDemo.so

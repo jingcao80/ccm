@@ -49,15 +49,10 @@ add_custom_command(
         -d ${OBJ_DIR}
         "${BIN_DIR}/FooBarDemo.so")
 
-add_custom_command(
-    TARGET demo
-    POST_BUILD
-    COMMAND
-        "${CMAKE_COMMAND}"
-        -E copy ${OBJ_DIR}/demo ${BIN_DIR})
+COPY(demo ${OBJ_DIR}/demo ${BIN_DIR})
 
 install(FILES
-    ${CMAKE_BINARY_DIR}/demo
+    ${OBJ_DIR}/demo
     DESTINATION ${BIN_DIR}
     PERMISSIONS
         OWNER_READ

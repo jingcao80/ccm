@@ -32,15 +32,10 @@ set(SOURCES
 add_library(rpc STATIC
     ${SOURCES})
 
+COPY(rpc ${RPC_DIR}/ccmrpc.h ${INC_DIR})
+
 set(DEPLOY_HEADERS
     ${RPC_DIR}/ccmrpc.h)
-
-add_custom_command(
-    TARGET rpc
-    POST_BUILD
-    COMMAND
-        "${CMAKE_COMMAND}"
-        -E copy ${DEPLOY_HEADERS} ${INC_DIR})
 
 install(FILES
     ${DEPLOY_HEADERS}

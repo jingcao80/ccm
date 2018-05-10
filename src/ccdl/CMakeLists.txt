@@ -73,12 +73,7 @@ set(SOURCES
 add_executable(ccdl ${SOURCES})
 target_link_libraries(ccdl metadata)
 
-add_custom_command(
-    TARGET ccdl
-    POST_BUILD
-    COMMAND
-        "${CMAKE_COMMAND}"
-        -E copy ${CMAKE_BINARY_DIR}/src/ccdl/ccdl ${BIN_DIR})
+COPY(ccdl ${CMAKE_BINARY_DIR}/src/ccdl/ccdl ${BIN_DIR})
 
 install(FILES
     ${CMAKE_BINARY_DIR}/src/ccdl/ccdl

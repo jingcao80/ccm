@@ -31,19 +31,18 @@ set(SOURCES
 add_library(type STATIC
     ${SOURCES})
 
+COPY(type ${TYPE_DIR}/ccmarray.h ${INC_DIR})
+COPY(type ${TYPE_DIR}/ccmsharedbuffer.h ${INC_DIR})
+COPY(type ${TYPE_DIR}/ccmstring.h ${INC_DIR})
+COPY(type ${TYPE_DIR}/ccmtypekind.h ${INC_DIR})
+COPY(type ${TYPE_DIR}/ccmuuid.h ${INC_DIR})
+
 set(DEPLOY_HEADERS
     ${TYPE_DIR}/ccmarray.h
     ${TYPE_DIR}/ccmsharedbuffer.h
     ${TYPE_DIR}/ccmstring.h
     ${TYPE_DIR}/ccmtypekind.h
     ${TYPE_DIR}/ccmuuid.h)
-
-add_custom_command(
-    TARGET type
-    POST_BUILD
-    COMMAND
-        "${CMAKE_COMMAND}"
-        -E copy ${DEPLOY_HEADERS} ${INC_DIR})
 
 install(FILES
     ${DEPLOY_HEADERS}

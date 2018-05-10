@@ -8,14 +8,14 @@ CCM stands for C++ Component Model. It can:
 **runtime** is the component driver.
 
 ### Install cmake
-1. download cmake tarball from https://cmake.org/download/
-2. unzip cmake tarball
-3. make and install cmake according to its README document
+1. <code>sudo apt-get install software-properties-common</code>
+2. <code>sudo add-apt-repository ppa:george-edison55/cmake-3.x</code>
+3. <code>sudo apt-get update</code>
+4. <code>sudo apt-get install cmake</code>
 
 ### Install DBus
-1. download dbus tarball from https://dbus.freedesktop.org/releases/dbus/
-2. unzip dbus tarball
-3. make and install dbus according to its INSTALL document
+1. <code>sudo apt-get update</code>
+2. <code>sudo apt-get install libdbus-1-dev</code>
 
 ### How to build
 1. <code>cd ccm</code>

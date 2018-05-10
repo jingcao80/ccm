@@ -49,15 +49,10 @@ add_custom_command(
         -d ${OBJ_DIR}
         "${BIN_DIR}/ReflectionTestUnit.so")
 
-add_custom_command(
-    TARGET testReflection
-    POST_BUILD
-    COMMAND
-        "${CMAKE_COMMAND}"
-        -E copy ${OBJ_DIR}/testReflection ${BIN_DIR})
+COPY(testReflection ${OBJ_DIR}/testReflection ${BIN_DIR})
 
 install(FILES
-    ${CMAKE_BINARY_DIR}/testReflection
+    ${OBJ_DIR}/testReflection
     DESTINATION ${BIN_DIR}
     PERMISSIONS
         OWNER_READ

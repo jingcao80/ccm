@@ -1,4 +1,13 @@
 
+macro(COPY target file dest)
+    add_custom_command(
+        TARGET ${target}
+        POST_BUILD
+        COMMAND
+            "${CMAKE_COMMAND}"
+            -E copy ${file} ${dest})
+endmacro()
+
 add_compile_options(
     -std=c++11
     -fPIC

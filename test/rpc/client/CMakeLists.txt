@@ -49,15 +49,10 @@ add_custom_command(
         -d ${OBJ_DIR}
         "${BIN_DIR}/RPCTestUnit.so")
 
-add_custom_command(
-    TARGET testRPCCli
-    POST_BUILD
-    COMMAND
-        "${CMAKE_COMMAND}"
-        -E copy ${OBJ_DIR}/testRPCCli ${BIN_DIR})
+COPY(testRPCCli ${OBJ_DIR}/testRPCCli ${BIN_DIR})
 
 install(FILES
-    ${CMAKE_BINARY_DIR}/testRPCCli
+    ${OBJ_DIR}/testRPCCli
     DESTINATION ${BIN_DIR}
     PERMISSIONS
         OWNER_READ

@@ -44,15 +44,10 @@ set(SOURCES
 add_library(reflection STATIC
     ${SOURCES})
 
+COPY(reflection ${REFLECTION_DIR}/ccmreflectionapi.h ${INC_DIR})
+
 set(DEPLOY_HEADERS
     ${REFLECTION_DIR}/ccmreflectionapi.h)
-
-add_custom_command(
-    TARGET reflection
-    POST_BUILD
-    COMMAND
-        "${CMAKE_COMMAND}"
-        -E copy ${DEPLOY_HEADERS} ${INC_DIR})
 
 install(FILES
     ${DEPLOY_HEADERS}

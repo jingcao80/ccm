@@ -52,12 +52,7 @@ add_custom_command(
         -d ${OBJ_DIR}
         "${COMPONENT_DIR}/RPCTestUnit.cdl")
 
-add_custom_command(
-    TARGET RPCTestUnit
-    POST_BUILD
-    COMMAND
-        "${CMAKE_COMMAND}"
-        -E copy ${OBJ_DIR}/RPCTestUnit.so ${BIN_DIR})
+COPY(RPCTestUnit ${OBJ_DIR}/RPCTestUnit.so ${BIN_DIR})
 
 install(FILES
     ${OBJ_DIR}/RPCTestUnit.so

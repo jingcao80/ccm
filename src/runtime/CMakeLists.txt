@@ -17,6 +17,7 @@
 project(runtime CXX)
 
 set(RUNTIME_DIR ${PROJECT_DIR}/src/runtime)
+set(OBJ_DIR ${CMAKE_BINARY_DIR}/src/runtime)
 
 add_subdirectory(util)
 add_subdirectory(type)
@@ -57,7 +58,13 @@ target_link_libraries(ccmrt
     ${CCMRT_LINK_LIBS}
     dl
     pthread
-    /usr/local/lib/libdbus-1.so)
+    /usr/lib/x86_64-linux-gnu/libdbus-1.so)
+
+COPY(ccmrt ${RUNTIME_DIR}/ccmapi.h ${INC_DIR})
+COPY(ccmrt ${RUNTIME_DIR}/ccmdef.h ${INC_DIR})
+COPY(ccmrt ${RUNTIME_DIR}/ccmerror.h ${INC_DIR})
+COPY(ccmrt ${RUNTIME_DIR}/ccmtypes.h ${INC_DIR})
+COPY(ccmrt ${OBJ_DIR}/ccmrt.so ${BIN_DIR})
 
 set(DEPLOY_HEADERS
     ${RUNTIME_DIR}/ccmapi.h
@@ -66,17 +73,7 @@ set(DEPLOY_HEADERS
     ${RUNTIME_DIR}/ccmtypes.h)
 
 set(DEPLOY_LIBS
-    ${CMAKE_BINARY_DIR}/src/runtime/ccmrt.so)
-
-add_custom_command(
-    TARGET ccmrt
-    POST_BUILD
-    COMMAND
-        "${CMAKE_COMMAND}"
-        -E copy ${DEPLOY_HEADERS} ${INC_DIR}
-    COMMAND
-        "${CMAKE_COMMAND}"
-        -E copy ${DEPLOY_LIBS} ${BIN_DIR})
+    ${OBJ_DIR}/ccmrt.so)
 
 install(FILES
     ${DEPLOY_HEADERS}

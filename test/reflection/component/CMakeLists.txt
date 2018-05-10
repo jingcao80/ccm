@@ -52,12 +52,7 @@ add_custom_command(
         -d ${OBJ_DIR}
         "${COMPONENT_DIR}/ReflectionTestUnit.cdl")
 
-add_custom_command(
-    TARGET ReflectionTestUnit
-    POST_BUILD
-    COMMAND
-        "${CMAKE_COMMAND}"
-        -E copy ${OBJ_DIR}/ReflectionTestUnit.so ${BIN_DIR})
+COPY(ReflectionTestUnit ${OBJ_DIR}/ReflectionTestUnit.so ${BIN_DIR})
 
 install(FILES
     ${OBJ_DIR}/ReflectionTestUnit.so

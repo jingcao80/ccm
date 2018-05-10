@@ -20,8 +20,8 @@ include_directories(
     ./
     ../
     ../../
-    /usr/local/include/dbus-1.0
-    /usr/local/lib/dbus-1.0/include
+    /usr/include/dbus-1.0
+    /usr/lib/x86_64-linux-gnu/dbus-1.0/include
     ${INC_DIR})
 
 set(SOURCES
