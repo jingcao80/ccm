@@ -1,2 +1,7 @@
+dist: trusty
 language: cpp
-script: source $TRAVIS_BUILD_DIR/build/envsetup.sh && mkdir out && cd out && cmake .. && make
+install:
+  - sudo apt-get update
+  - sudo apt-get install libdbus-1-dev
+script: 
+  source $TRAVIS_BUILD_DIR/build/envsetup.sh && mkdir out && cd out && cmake .. && make
