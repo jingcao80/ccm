@@ -1,9 +1,7 @@
-addons:
-    apt:
-      update: true
-before_install:
-  - sudo apt-get update
-  - sudo apt-get install libdbus-1-dev
+dist: trusty
+install:
+  - sudo apt-get -qq update
+  - sudo apt-get install -y libdbus-1-dev
 language: cpp
 script: 
   source $TRAVIS_BUILD_DIR/build/envsetup.sh && mkdir out && cd out && cmake .. && make
