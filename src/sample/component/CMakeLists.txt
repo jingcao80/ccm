@@ -34,14 +34,14 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/FooBarDemoPub.cpp
     ${OBJ_DIR}/MetadataWrapper.cpp)
 
-set(LINK_EXTERNAL_LIBS
-    ${BIN_DIR}/ccmrt.so)
+add_library(ccmrt.so UNKNOWN IMPORTED)
+set_property(TARGET ccmrt.so PROPERTY IMPORTED_LOCATION ${BIN_DIR}/ccmrt.so)
 
 add_library(FooBarDemo
     SHARED
     ${SOURCES}
     ${GENERATED_SOURCES})
-target_link_libraries(FooBarDemo -Wl,--no-undefined ${LINK_EXTERNAL_LIBS})
+target_link_libraries(FooBarDemo ccmrt.so)
 
 add_custom_command(
     OUTPUT

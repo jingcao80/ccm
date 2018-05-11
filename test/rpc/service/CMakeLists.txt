@@ -30,13 +30,13 @@ set(SOURCES
 set(GENERATED_SOURCES
     ${OBJ_DIR}/RPCTestUnit.cpp)
 
-set(LINK_EXTERNAL_LIBS
-    ${BIN_DIR}/ccmrt.so)
+add_library(ccmrt.so UNKNOWN IMPORTED)
+set_property(TARGET ccmrt.so PROPERTY IMPORTED_LOCATION ${BIN_DIR}/ccmrt.so)
 
 add_executable(testRPCSrv
     ${SOURCES}
     ${GENERATED_SOURCES})
-target_link_libraries(testRPCSrv ${LINK_EXTERNAL_LIBS})
+target_link_libraries(testRPCSrv ccmrt.so)
 
 add_custom_command(
     OUTPUT
