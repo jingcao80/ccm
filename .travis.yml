@@ -1,3 +1,6 @@
+addons:
+    apt:
+      update: true
 before_install:
   - sudo apt-get update
   - sudo apt-get install libdbus-1-dev
