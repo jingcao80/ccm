@@ -49,26 +49,6 @@ inline bool operator==(
     return !memcmp(&cid1.mUuid, &cid2.mUuid, sizeof(Uuid));
 }
 
-struct AutoCoclassID
-{
-    inline AutoCoclassID();
-    inline ~AutoCoclassID();
-
-    CoclassID mCid;
-};
-
-AutoCoclassID::AutoCoclassID()
-{
-    mCid.mCid = nullptr;
-}
-
-AutoCoclassID::~AutoCoclassID()
-{
-    if (mCid.mCid != nullptr) {
-        free(const_cast<ComponentID*>(mCid.mCid));
-    }
-}
-
 struct InterfaceID
 {
     Uuid                mUuid;
@@ -82,26 +62,6 @@ inline bool operator==(
     return !memcmp(&iid1.mUuid, &iid2.mUuid, sizeof(Uuid));
 }
 
-struct AutoInterfaceID
-{
-    inline AutoInterfaceID();
-    inline ~AutoInterfaceID();
-
-    InterfaceID mIid;
-};
-
-AutoInterfaceID::AutoInterfaceID()
-{
-    mIid.mCid = nullptr;
-}
-
-AutoInterfaceID::~AutoInterfaceID()
-{
-    if (mIid.mCid != nullptr) {
-        free(const_cast<ComponentID*>(mIid.mCid));
-    }
-}
-
 struct ComponentID
 {
     Uuid                mUuid;
@@ -113,26 +73,6 @@ inline bool operator==(
     /* [in] */ const ComponentID& cid2)
 {
     return !memcmp(&cid1.mUuid, &cid2.mUuid, sizeof(Uuid));
-}
-
-struct AutoComponentID
-{
-    inline AutoComponentID();
-    inline ~AutoComponentID();
-
-    ComponentID mCid;
-};
-
-AutoComponentID::AutoComponentID()
-{
-    mCid.mUrl = nullptr;
-}
-
-AutoComponentID::~AutoComponentID()
-{
-    if (mCid.mUrl != nullptr) {
-        free(const_cast<char*>(mCid.mUrl));
-    }
 }
 
 }
@@ -461,45 +401,6 @@ struct DeleteFunc<String, true>
         /* [in] */ void* id)
     {
         *data = nullptr;
-    }
-};
-
-template<>
-struct DeleteFunc<AutoCoclassID, true>
-{
-    inline void operator()(
-        /* [in] */ AutoCoclassID* data,
-        /* [in] */ void* id)
-    {
-        if (data != nullptr && data->mCid.mCid != nullptr) {
-            free(const_cast<ComponentID*>(data->mCid.mCid));
-        }
-    }
-};
-
-template<>
-struct DeleteFunc<AutoInterfaceID, true>
-{
-    inline void operator()(
-        /* [in] */ AutoInterfaceID* data,
-        /* [in] */ void* id)
-    {
-        if (data != nullptr && data->mIid.mCid != nullptr) {
-            free(const_cast<ComponentID*>(data->mIid.mCid));
-        }
-    }
-};
-
-template<>
-struct DeleteFunc<AutoComponentID, true>
-{
-    inline void operator()(
-        /* [in] */ AutoComponentID* data,
-        /* [in] */ void* id)
-    {
-        if (data != nullptr && data->mCid.mUrl != nullptr) {
-            free(const_cast<char*>(data->mCid.mUrl));
-        }
     }
 };
 

@@ -242,8 +242,12 @@ ECode CDBusParcel::ReadCoclassID(
         return NOERROR;
     }
 
-    ComponentID _cid;
-    ec = Read((void*)&_cid, sizeof(ComponentID));
+    ComponentID* cid = (ComponentID*)malloc(sizeof(ComponentID));
+    if (cid == nullptr) {
+        return E_OUT_OF_MEMORY_ERROR;
+    }
+
+    ec = Read((void*)cid, sizeof(ComponentID));
     if (FAILED(ec)) {
         return ec;
     }
@@ -258,13 +262,7 @@ ECode CDBusParcel::ReadCoclassID(
         return E_RUNTIME_EXCEPTION;
     }
 
-    ComponentID* cid = nullptr;
     if (size == 0) {
-        cid = (ComponentID*)malloc(sizeof(ComponentID));
-        if (cid == nullptr) {
-            return E_OUT_OF_MEMORY_ERROR;
-        }
-        cid->mUuid = _cid.mUuid;
         cid->mUrl = nullptr;
     }
     else {
@@ -272,12 +270,10 @@ ECode CDBusParcel::ReadCoclassID(
         if (str == nullptr) {
             return E_RUNTIME_EXCEPTION;
         }
-        cid = (ComponentID*)malloc(sizeof(ComponentID) + size + 1);
-        if (cid == nullptr) {
+        cid->mUrl = (const char*)malloc(size + 1);
+        if (cid->mUrl == nullptr) {
             return E_OUT_OF_MEMORY_ERROR;
         }
-        cid->mUuid = _cid.mUuid;
-        cid->mUrl = (const char*)((uintptr_t)cid + sizeof(ComponentID));
         memcpy(const_cast<char*>(cid->mUrl), str, size + 1);
     }
     value->mCid = cid;
@@ -376,8 +372,12 @@ ECode CDBusParcel::ReadInterfaceID(
         return NOERROR;
     }
 
-    ComponentID _cid;
-    ec = Read((void*)&_cid, sizeof(ComponentID));
+    ComponentID* cid = (ComponentID*)malloc(sizeof(ComponentID));
+    if (cid == nullptr) {
+        return E_OUT_OF_MEMORY_ERROR;
+    }
+
+    ec = Read((void*)cid, sizeof(ComponentID));
     if (FAILED(ec)) {
         return ec;
     }
@@ -392,13 +392,7 @@ ECode CDBusParcel::ReadInterfaceID(
         return E_RUNTIME_EXCEPTION;
     }
 
-    ComponentID* cid = nullptr;
     if (size == 0) {
-        cid = (ComponentID*)malloc(sizeof(ComponentID));
-        if (cid == nullptr) {
-            return E_OUT_OF_MEMORY_ERROR;
-        }
-        cid->mUuid = _cid.mUuid;
         cid->mUrl = nullptr;
     }
     else {
@@ -406,12 +400,10 @@ ECode CDBusParcel::ReadInterfaceID(
         if (str == nullptr) {
             return E_RUNTIME_EXCEPTION;
         }
-        cid = (ComponentID*)malloc(sizeof(ComponentID) + size + 1);
-        if (cid == nullptr) {
+        cid->mUrl = (const char*)malloc(size + 1);
+        if (cid->mUrl == nullptr) {
             return E_OUT_OF_MEMORY_ERROR;
         }
-        cid->mUuid = _cid.mUuid;
-        cid->mUrl = (const char*)((uintptr_t)cid + sizeof(ComponentID));
         memcpy(const_cast<char*>(cid->mUrl), str, size + 1);
     }
     value->mCid = cid;
@@ -596,10 +588,10 @@ ECode CDBusParcel::ReadArray(
             break;
         }
         case CcmTypeKind::CoclassID: {
-            Array<AutoCoclassID> cidArray(size);
+            Array<CoclassID> cidArray(size);
             for (Long i = 0; i < size; i++) {
-                AutoCoclassID& acid = cidArray[i];
-                ec = ReadCoclassID(&acid.mCid);
+                CoclassID& cid = cidArray[i];
+                ec = ReadCoclassID(&cid);
                 if (FAILED(ec)) {
                     t->mData = nullptr;
                     t->mSize = 0;
@@ -611,10 +603,10 @@ ECode CDBusParcel::ReadArray(
             break;
         }
         case CcmTypeKind::ComponentID: {
-            Array<AutoComponentID> cidArray(size);
+            Array<ComponentID> cidArray(size);
             for (Long i = 0; i < size; i++) {
-                AutoComponentID& acid = cidArray[i];
-                ec = ReadComponentID(&acid.mCid);
+                ComponentID& cid = cidArray[i];
+                ec = ReadComponentID(&cid);
                 if (FAILED(ec)) {
                     t->mData = nullptr;
                     t->mSize = 0;
@@ -626,10 +618,10 @@ ECode CDBusParcel::ReadArray(
             break;
         }
         case CcmTypeKind::InterfaceID: {
-            Array<AutoInterfaceID> iidArray(size);
+            Array<InterfaceID> iidArray(size);
             for (Long i = 0; i < size; i++) {
-                AutoInterfaceID& aiid = iidArray[i];
-                ec = ReadInterfaceID(&aiid.mIid);
+                InterfaceID& iid = iidArray[i];
+                ec = ReadInterfaceID(&iid);
                 if (FAILED(ec)) {
                     t->mData = nullptr;
                     t->mSize = 0;
