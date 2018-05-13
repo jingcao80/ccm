@@ -301,7 +301,7 @@ ECode InterfaceStub::MarshalResults(
     /* [out] */ IParcel** resParcel)
 {
     AutoPtr<IParcel> outParcel;
-    mOwner->mChannel->CreateArgumentParcel((IParcel**)&outParcel);
+    mOwner->mChannel->CreateParcel((IParcel**)&outParcel);
 
     outParcel->WriteECode(ec);
     Integer N;
@@ -611,6 +611,16 @@ ECode CStub::Invoke(
     }
 
     return mInterfaces[interfaceIndex]->Invoke(argParcel, resParcel);
+}
+
+AutoPtr<IRPCChannel> CStub::GetChannel()
+{
+    return mChannel;
+}
+
+CoclassID CStub::GetTargetCoclassID()
+{
+    return mCid;
 }
 
 ECode CStub::CreateObject(

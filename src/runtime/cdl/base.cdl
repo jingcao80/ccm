@@ -48,6 +48,9 @@ interface IObject
 
     GetCoclass(
         [out] IMetaCoclass** klass);
+
+    GetHashCode(
+        [out] Integer* hash);
 }
 
 [

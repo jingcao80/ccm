@@ -14,22 +14,7 @@
 # limitations under the License.
 #=========================================================================
 
-set(RPCDBUS_DIR ${RPC_DIR}/dbus)
+set(SM_DIR ${PROJECT_DIR}/src/servicemanager)
 
-include_directories(
-    ./
-    ../
-    ../../
-    /usr/include/dbus-1.0
-    /usr/lib/x86_64-linux-gnu/dbus-1.0/include
-    ${INC_DIR})
-
-set(SOURCES
-    CDBusChannel.cpp
-    CDBusChannelFactory.cpp
-    CDBusParcel.cpp
-    ChannelInfo.cpp
-    threadpoolexecutor.cpp)
-
-add_library(rpc-dbus STATIC
-    ${SOURCES})
+add_subdirectory(exe)
+add_subdirectory(lib)

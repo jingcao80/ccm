@@ -92,6 +92,10 @@ public:
         /* [in] */ IParcel* argParcel,
         /* [out] */ IParcel** resParcel);
 
+    AutoPtr<IRPCChannel> GetChannel();
+
+    CoclassID GetTargetCoclassID();
+
     static ECode CreateObject(
         /* [in] */ IInterface* object,
         /* [in] */ IRPCChannel* channel,

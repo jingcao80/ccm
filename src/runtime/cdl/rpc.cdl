@@ -151,6 +151,16 @@ interface IProxy;
 interface IStub;
 
 [
+    uuid(84ee26c6-6c0a-4329-b627-54e5fc3b06a8),
+    version(0.1.0)
+]
+interface IRPCChannelInfo
+{
+    GetHashCode(
+        [out] Integer* hash);
+}
+
+[
     uuid(bf89f2ce-ba5f-4f5d-a866-9e34048ee009),
     version(0.1.0)
 ]
@@ -159,7 +169,7 @@ interface IRPCChannel
     GetRPCType(
         [out] RPCType* type);
 
-    CreateArgumentParcel(
+    CreateParcel(
         [out] IParcel** parcel);
 
     IsPeerAlive(
@@ -184,6 +194,14 @@ interface IRPCChannel
 
     StartListening(
         [in] IStub* stub);
+
+    MarshalInterface(
+        [in] IInterface* object,
+        [out, callee] Array<Byte>* data);
+
+    UnmarshalInterface(
+        [in] Array<Byte> data,
+        [out] IInterface** object);
 }
 
 [

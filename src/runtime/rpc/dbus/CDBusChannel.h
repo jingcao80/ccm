@@ -69,7 +69,7 @@ public:
     ECode GetRPCType(
         /* [out] */ RPCType* type);
 
-    ECode CreateArgumentParcel(
+    ECode CreateParcel(
         /* [out] */ IParcel** parcel);
 
     ECode IsPeerAlive(
@@ -94,6 +94,14 @@ public:
 
     ECode StartListening(
         /* [in] */ IStub* stub);
+
+    ECode MarshalInterface(
+        /* [in] */ IInterface* object,
+        /* [out, callee] */ Array<Byte>* data);
+
+    ECode UnmarshalInterface(
+        /* [in] */ const Array<Byte>& data,
+        /* [out] */ IInterface** object);
 
 private:
     ECode UnmarshalArguments(

@@ -110,7 +110,7 @@ Array<T>::Array()
 {
     mData = nullptr;
     mSize = 0;
-    mType = CcmTypeKind::Unknown;
+    mType = Type2Kind<T>::Kind();
 }
 
 template<class T>
@@ -121,7 +121,7 @@ Array<T>::Array(
         Logger::E("Array", "Invalid array size %lld", size);
         mData = nullptr;
         mSize = 0;
-        mType = CcmTypeKind::Unknown;
+        mType = Type2Kind<T>::Kind();
         return;
     }
 
@@ -131,7 +131,7 @@ Array<T>::Array(
         Logger::E("Array", "Malloc array which size is %lld failed.", byteSize);
         mData = nullptr;
         mSize = 0;
-        mType = CcmTypeKind::Unknown;
+        mType = Type2Kind<T>::Kind();
         return;
     }
     void* data = buf->GetData();

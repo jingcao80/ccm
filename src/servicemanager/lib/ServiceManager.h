@@ -14,43 +14,41 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_OBJECT_H__
-#define __CCM_OBJECT_H__
+#ifndef __XOS_SERVICEMANAGER_H__
+#define __XOS_SERVICEMANAGER_H__
 
-#include "ccmrefbase.h"
-#include "ccmtypes.h"
+#include <ccmapi.h>
+#include <ccmautoptr.h>
+#include <ccmrefbase.h>
 
-namespace ccm {
+namespace xos {
 
-class COM_PUBLIC Object
-    : public RefBase
-    , public IObject
-    , public IWeakReferenceSource
+class COM_PUBLIC ServiceManager
+    : public LightRefBase
 {
 public:
-    CCM_INTERFACE_DECL();
+    static AutoPtr<ServiceManager> GetInstance();
 
-    ECode AttachMetadata(
-        /* [in] */ IMetaComponent* component,
-        /* [in] */ const String& coclassName) override;
+    ECode AddService(
+        /* [in] */ const String& name,
+        /* [in] */ IInterface* object);
 
-    ECode GetCoclassID(
-        /* [out] */ CoclassID* cid) override;
+    ECode GetService(
+        /* [in] */ const String& name,
+        /* [out] */ IInterface** object);
 
-    ECode GetCoclass(
-        /* [out] */ IMetaCoclass** klass) override;
-
-    ECode GetHashCode(
-        /* [out] */ Integer* hash) override;
-
-    ECode GetWeakReference(
-        /* [out] */ IWeakReference** wr) override;
+    ECode RemoveService(
+        /* [in] */ const String& name);
 
 private:
-    IMetaComponent* mComponent;
-    String mCoclassName;
+    ServiceManager() {}
+    ServiceManager(
+        /* [in] */ ServiceManager&) {}
+
+private:
+    static AutoPtr<ServiceManager> sInstance;
 };
 
 }
 
-#endif // __CCM_OBJECT_H__
+#endif // __XOS_SERVICEMANAGER_H__

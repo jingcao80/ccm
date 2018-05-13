@@ -35,6 +35,25 @@ extern ECode FindExportObject(
     /* [in] */ IObject* object,
     /* [out] */ IStub** stub);
 
+extern ECode FindExportObject(
+    /* [in] */ RPCType type,
+    /* [in] */ IRPCChannelInfo* channelInfo,
+    /* [out] */ IStub** stub);
+
+extern ECode RegisterImportObject(
+    /* [in] */ RPCType type,
+    /* [in] */ IRPCChannelInfo* channelInfo,
+    /* [in] */ IObject* object);
+
+extern ECode UnregisterImportObject(
+    /* [in] */ RPCType type,
+    /* [in] */ IRPCChannelInfo* channelInfo);
+
+extern ECode FindImportObject(
+    /* [in] */ RPCType type,
+    /* [in] */ IRPCChannelInfo* channelInfo,
+    /* [out] */ IObject** object);
+
 }
 
 #endif // __CCM_REGISTRY_H__

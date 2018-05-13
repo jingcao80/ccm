@@ -784,7 +784,7 @@ ECode InterfaceProxy::ProxyEntry(
     }
 
     AutoPtr<IParcel> inParcel, outParcel;
-    thisObj->mOwner->mChannel->CreateArgumentParcel((IParcel**)&inParcel);
+    thisObj->mOwner->mChannel->CreateParcel((IParcel**)&inParcel);
     inParcel->WriteInteger(RPC_MAGIC_NUMBER);
     inParcel->WriteInteger(thisObj->mIndex);
     inParcel->WriteInteger(methodIndex + 4);
@@ -841,6 +841,9 @@ IInterface* CProxy::Probe(
     }
     else if (IID_IObject == iid) {
         return (IObject*)this;
+    }
+    else if (IID_IProxy == iid) {
+        return (IProxy*)this;
     }
     for (Integer i = 0; i < mInterfaces.GetLength(); i++) {
         InterfaceProxy* iproxy = mInterfaces[i];
@@ -902,6 +905,16 @@ ECode CProxy::UnlinkToDeath(
     /* [out] */ IDeathRecipient** outRecipient)
 {
     return mChannel->UnlinkToDeath(recipient, cookie, flags, outRecipient);
+}
+
+AutoPtr<IRPCChannel> CProxy::GetChannel()
+{
+    return mChannel;
+}
+
+CoclassID CProxy::GetTargetCoclassID()
+{
+    return mCid;
 }
 
 ECode CProxy::CreateObject(

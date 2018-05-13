@@ -92,6 +92,15 @@ ECode Object::GetCoclass(
     }
 }
 
+ECode Object::GetHashCode(
+    /* [out] */ Integer* hash)
+{
+    VALIDATE_NOT_NULL(hash);
+
+    *hash = (Integer)reinterpret_cast<HANDLE>(this);
+    return NOERROR;
+}
+
 ECode Object::GetWeakReference(
     /* [out] */ IWeakReference** wr)
 {

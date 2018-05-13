@@ -14,22 +14,42 @@
 # limitations under the License.
 #=========================================================================
 
-set(RPCDBUS_DIR ${RPC_DIR}/dbus)
+project(servicemanager CXX)
+
+set(SM_EXE_DIR ${SM_DIR}/exe)
+set(OBJ_DIR ${CMAKE_BINARY_DIR}/src/servicemanager/exe)
 
 include_directories(
     ./
-    ../
-    ../../
+    ${INC_DIR}
+    ${OBJ_DIR}
     /usr/include/dbus-1.0
-    /usr/lib/x86_64-linux-gnu/dbus-1.0/include
-    ${INC_DIR})
+    /usr/lib/x86_64-linux-gnu/dbus-1.0/include)
 
 set(SOURCES
-    CDBusChannel.cpp
-    CDBusChannelFactory.cpp
-    CDBusParcel.cpp
-    ChannelInfo.cpp
-    threadpoolexecutor.cpp)
+    ServiceManager.cpp
+    main.cpp)
 
-add_library(rpc-dbus STATIC
+add_library(ccmrt.so UNKNOWN IMPORTED)
+set_property(TARGET ccmrt.so PROPERTY IMPORTED_LOCATION ${BIN_DIR}/ccmrt.so)
+
+add_executable(servicemanager
     ${SOURCES})
+target_link_libraries(servicemanager 
+    ccmrt.so
+    /usr/lib/x86_64-linux-gnu/libdbus-1.so)
+
+COPY(servicemanager ${OBJ_DIR}/servicemanager ${BIN_DIR})
+
+install(FILES
+    ${OBJ_DIR}/servicemanager
+    DESTINATION ${BIN_DIR}
+    PERMISSIONS
+        OWNER_READ
+        OWNER_WRITE
+        OWNER_EXECUTE
+        GROUP_READ
+        GROUP_WRITE
+        GROUP_EXECUTE
+        WORLD_READ
+        WORLD_EXECUTE)

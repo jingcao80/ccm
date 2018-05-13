@@ -14,14 +14,13 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_HASHMAP_H__
-#define __CCM_HASHMAP_H__
+#ifndef __XOS_HASHMAP_H__
+#define __XOS_HASHMAP_H__
 
-#include "type/ccmarray.h"
 #include <stdlib.h>
 #include <string.h>
 
-namespace ccm {
+namespace xos {
 
 static const int prime_list[11] =
 {
@@ -219,36 +218,6 @@ public:
         }
     }
 
-    Array<Val> GetValues()
-    {
-        Long N = 0;
-        for (int i = 0; i < mBucketSize; i++) {
-            if (mBuckets[i] != nullptr) {
-                Bucket* curr = mBuckets[i];
-                while (curr != nullptr) {
-                    N++;
-                    curr = curr->mNext;
-                }
-            }
-        }
-
-        Array<Val> values(N);
-        if (N > 0) {
-            Long idx = 0;
-            for (int i = 0; i < mBucketSize; i++) {
-                if (mBuckets[i] != nullptr) {
-                    Bucket* curr = mBuckets[i];
-                    while (curr != nullptr) {
-                        values.Set(idx, curr->mValue);
-                        idx++;
-                        curr = curr->mNext;
-                    }
-                }
-            }
-        }
-        return values;
-    }
-
 private:
     int HashKey(
         /* [in] */ const Key& key)
@@ -262,6 +231,6 @@ private:
     Bucket** mBuckets;
 };
 
-} // namespace ccm
+} // namespace xos
 
-#endif // __CCM_HASHMAP_H__
+#endif // __XOS_HASHMAP_H__

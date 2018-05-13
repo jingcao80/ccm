@@ -23,6 +23,10 @@ namespace ccm {
 
 constexpr Integer RPC_MAGIC_NUMBER = 0x7a79636f;
 
+EXTERN_C COM_PUBLIC ECode CoCreateParcel(
+    /* [in] */ RPCType type,
+    /* [out] */ IParcel** parcel);
+
 EXTERN_C COM_PUBLIC ECode CoCreateProxy(
     /* [in] */ const CoclassID& cid,
     /* [in] */ RPCType type,
@@ -32,6 +36,16 @@ EXTERN_C COM_PUBLIC ECode CoCreateStub(
     /* [in] */ IInterface* object,
     /* [in] */ RPCType type,
     /* [out] */ IStub** stub);
+
+EXTERN_C COM_PUBLIC ECode CoMarshalInterface(
+    /* [in] */ IInterface* object,
+    /* [in] */ RPCType type,
+    /* [out, callee] */ Array<Byte>* data);
+
+EXTERN_C COM_PUBLIC ECode CoUnmarshalInterface(
+    /* [in] */ RPCType type,
+    /* [in] */ const Array<Byte>& data,
+    /* [out] */ IInterface** object);
 
 }
 

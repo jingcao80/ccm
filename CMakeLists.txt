@@ -42,5 +42,6 @@ add_custom_target(
 add_subdirectory(src/runtime/metadata)
 add_subdirectory(src/ccdl)
 add_subdirectory(src/runtime)
+add_subdirectory(src/servicemanager)
 add_subdirectory(src/sample)
 add_subdirectory(test)

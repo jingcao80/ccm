@@ -15,14 +15,61 @@
 //=========================================================================
 
 #include "registry.h"
+#include "util/hashmap.h"
+#include "util/mutex.h"
 
 namespace ccm {
+
+template<>
+struct HashFunc<IObject*>
+{
+    inline Integer operator()(
+        /* [in] */ IObject* data)
+    {
+        Integer hash;
+        data->GetHashCode(&hash);
+        return hash;
+    }
+};
+
+template<>
+struct HashFunc<IRPCChannelInfo*>
+{
+    inline Integer operator()(
+        /* [in] */ IRPCChannelInfo* data)
+    {
+        Integer hash;
+        data->GetHashCode(&hash);
+        return hash;
+    }
+};
+
+static HashMap<IObject*, IStub*> sLocalExportRegistry;
+static Mutex sLocalExportRegistryLock;
+static HashMap<IObject*, IStub*> sRemoteExportRegistry;
+static Mutex sRemoteExportRegistryLock;
+
+static HashMap<IRPCChannelInfo*, IObject*> sLocalImportRegistry;
+static Mutex sLocalImportRegistryLock;
+static HashMap<IRPCChannelInfo*, IObject*> sRemoteImportRegistry;
+static Mutex sRemoteImportRegistryLock;
 
 ECode RegisterExportObject(
     /* [in] */ RPCType type,
     /* [in] */ IObject* object,
     /* [in] */ IStub* stub)
 {
+    if (object == nullptr || stub == nullptr) {
+        return NOERROR;
+    }
+
+    HashMap<IObject*, IStub*>& registry = type == RPCType::Local ?
+            sLocalExportRegistry : sRemoteExportRegistry;
+    Mutex& registryLock = type == RPCType::Local ?
+            sLocalExportRegistryLock : sRemoteExportRegistryLock;
+
+    Mutex::AutoLock lock(registryLock);
+    registry.Put(object, stub);
     return NOERROR;
 }
 
@@ -30,6 +77,17 @@ ECode UnregisterExportObject(
     /* [in] */ RPCType type,
     /* [in] */ IObject* object)
 {
+    if (object == nullptr) {
+        return NOERROR;
+    }
+
+    HashMap<IObject*, IStub*>& registry = type == RPCType::Local ?
+            sLocalExportRegistry : sRemoteExportRegistry;
+    Mutex& registryLock = type == RPCType::Local ?
+            sLocalExportRegistryLock : sRemoteExportRegistryLock;
+
+    Mutex::AutoLock lock(registryLock);
+    registry.Remove(object);
     return NOERROR;
 }
 
@@ -38,6 +96,111 @@ ECode FindExportObject(
     /* [in] */ IObject* object,
     /* [out] */ IStub** stub)
 {
+    VALIDATE_NOT_NULL(stub);
+
+    if (object == nullptr) {
+        *stub = nullptr;
+        return NOERROR;
+    }
+
+    HashMap<IObject*, IStub*>& registry = type == RPCType::Local ?
+            sLocalExportRegistry : sRemoteExportRegistry;
+    Mutex& registryLock = type == RPCType::Local ?
+            sLocalExportRegistryLock : sRemoteExportRegistryLock;
+
+    Mutex::AutoLock lock(registryLock);
+    *stub = registry.Get(object);
+    REFCOUNT_ADD(*stub);
+    return NOERROR;
+}
+
+ECode FindExportObject(
+    /* [in] */ RPCType type,
+    /* [in] */ IRPCChannelInfo* channelInfo,
+    /* [out] */ IStub** stub)
+{
+    VALIDATE_NOT_NULL(stub);
+
+    if (channelInfo == nullptr) {
+        *stub = nullptr;
+        return NOERROR;
+    }
+
+    HashMap<IObject*, IStub*>& registry = type == RPCType::Local ?
+            sLocalExportRegistry : sRemoteExportRegistry;
+    Mutex& registryLock = type == RPCType::Local ?
+            sLocalExportRegistryLock : sRemoteExportRegistryLock;
+
+    Mutex::AutoLock lock(registryLock);
+    Array<IStub*> stubs = registry.GetValues();
+    for (Long i = 0; i < stubs.GetLength(); i++) {
+        IStub* stubObj = stubs[i];
+
+        *stub = stubObj;
+        REFCOUNT_ADD(*stub);
+        return NOERROR;
+    }
+    *stub = nullptr;
+    return NOERROR;
+}
+
+ECode RegisterImportObject(
+    /* [in] */ RPCType type,
+    /* [in] */ IRPCChannelInfo* channelInfo,
+    /* [in] */ IObject* object)
+{
+    if (channelInfo == nullptr || object == nullptr) {
+        return NOERROR;
+    }
+
+    HashMap<IRPCChannelInfo*, IObject*>& registry = type == RPCType::Local ?
+            sLocalImportRegistry : sRemoteImportRegistry;
+    Mutex& registryLock = type == RPCType::Local ?
+            sLocalImportRegistryLock : sRemoteImportRegistryLock;
+
+    Mutex::AutoLock lock(registryLock);
+    registry.Put(channelInfo, object);
+    return NOERROR;
+}
+
+ECode UnregisterImportObject(
+    /* [in] */ RPCType type,
+    /* [in] */ IRPCChannelInfo* channelInfo)
+{
+    if (channelInfo == nullptr) {
+        return NOERROR;
+    }
+
+    HashMap<IRPCChannelInfo*, IObject*>& registry = type == RPCType::Local ?
+            sLocalImportRegistry : sRemoteImportRegistry;
+    Mutex& registryLock = type == RPCType::Local ?
+            sLocalImportRegistryLock : sRemoteImportRegistryLock;
+
+    Mutex::AutoLock lock(registryLock);
+    registry.Remove(channelInfo);
+    return NOERROR;
+}
+
+ECode FindImportObject(
+    /* [in] */ RPCType type,
+    /* [in] */ IRPCChannelInfo* channelInfo,
+    /* [out] */ IObject** object)
+{
+    VALIDATE_NOT_NULL(object);
+
+    if (channelInfo == nullptr) {
+        *object = nullptr;
+        return NOERROR;
+    }
+
+    HashMap<IRPCChannelInfo*, IObject*>& registry = type == RPCType::Local ?
+            sLocalImportRegistry : sRemoteImportRegistry;
+    Mutex& registryLock = type == RPCType::Local ?
+            sLocalImportRegistryLock : sRemoteImportRegistryLock;
+
+    Mutex::AutoLock lock(registryLock);
+    *object = registry.Get(channelInfo);
+    REFCOUNT_ADD(*object);
     return NOERROR;
 }
 

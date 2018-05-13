@@ -160,6 +160,10 @@ public:
         /* [in] */ Integer flags = 0,
         /* [out] */ IDeathRecipient** outRecipient = nullptr) override;
 
+    AutoPtr<IRPCChannel> GetChannel();
+
+    CoclassID GetTargetCoclassID();
+
     static ECode CreateObject(
         /* [in] */ const CoclassID& cid,
         /* [in] */ IRPCChannel* channel,

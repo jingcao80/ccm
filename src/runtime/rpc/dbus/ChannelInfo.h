@@ -14,43 +14,30 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_OBJECT_H__
-#define __CCM_OBJECT_H__
+#ifndef __CCM_CHANNELINFO_H__
+#define __CCM_CHANNELINFO_H__
 
-#include "ccmrefbase.h"
-#include "ccmtypes.h"
+#include "registry.h"
+#include "util/ccmrefbase.h"
 
 namespace ccm {
 
-class COM_PUBLIC Object
-    : public RefBase
-    , public IObject
-    , public IWeakReferenceSource
+class ChannelInfo
+    : public LightRefBase
+    , public IRPCChannelInfo
 {
 public:
     CCM_INTERFACE_DECL();
 
-    ECode AttachMetadata(
-        /* [in] */ IMetaComponent* component,
-        /* [in] */ const String& coclassName) override;
-
-    ECode GetCoclassID(
-        /* [out] */ CoclassID* cid) override;
-
-    ECode GetCoclass(
-        /* [out] */ IMetaCoclass** klass) override;
-
     ECode GetHashCode(
         /* [out] */ Integer* hash) override;
 
-    ECode GetWeakReference(
-        /* [out] */ IWeakReference** wr) override;
-
-private:
-    IMetaComponent* mComponent;
-    String mCoclassName;
+public:
+    String mDBusName;
+    CoclassID mCid;
+    InterfaceID mIid;
 };
 
 }
 
-#endif // __CCM_OBJECT_H__
+#endif // __CCM_CHANNELINFO_H__

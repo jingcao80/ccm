@@ -14,8 +14,13 @@
 // limitations under the License.
 //=========================================================================
 
+#include "ccmrpc.h"
 #include "CDBusChannel.h"
 #include "CDBusParcel.h"
+#include "CProxy.h"
+#include "CStub.h"
+#include "ChannelInfo.h"
+#include "registry.h"
 #include "util/ccmlogger.h"
 
 namespace ccm {
@@ -95,7 +100,7 @@ DBusHandlerResult CDBusChannel::ServiceRunnable::HandleMessage(
         dbus_message_iter_get_fixed_array(&subArg, &data, (int*)&size);
 
         AutoPtr<IParcel> argParcel;
-        thisObj->mOwner->CreateArgumentParcel((IParcel**)&argParcel);
+        thisObj->mOwner->CreateParcel((IParcel**)&argParcel);
         argParcel->SetData(static_cast<Byte*>(data), size);
         AutoPtr<IParcel> resParcel;
         ECode ec = thisObj->mTarget->Invoke(argParcel, (IParcel**)&resParcel);
@@ -208,7 +213,7 @@ ECode CDBusChannel::GetRPCType(
     return NOERROR;
 }
 
-ECode CDBusChannel::CreateArgumentParcel(
+ECode CDBusChannel::CreateParcel(
     /* [out] */ IParcel** parcel)
 {
     VALIDATE_NOT_NULL(parcel)
@@ -378,6 +383,85 @@ ECode CDBusChannel::StartListening(
         ec = ThreadPoolExecutor::GetInstance()->RunTask(r);
     }
     return ec;
+}
+
+ECode CDBusChannel::MarshalInterface(
+    /* [in] */ IInterface* object,
+    /* [out, callee] */ Array<Byte>* data)
+{
+    VALIDATE_NOT_NULL(data);
+
+    ChannelInfo ci;
+
+    AutoPtr<IStub> stub;
+    ECode ec = FindExportObject(mType, IObject::Probe(object),
+            (IStub**)&stub);
+    if (SUCCEEDED(ec)) {
+        CStub* stubObj = (CStub*)stub.Get();
+        CDBusChannel* channel = (CDBusChannel*)stubObj->GetChannel().Get();
+        ci.mDBusName = channel->mName;
+        ci.mCid = stubObj->GetTargetCoclassID();
+        object->GetInterfaceID(object, &ci.mIid);
+    }
+    else {
+        IProxy* proxy = IProxy::Probe(object);
+        if (proxy != nullptr) {
+            CProxy* proxyObj = (CProxy*)proxy;
+            CDBusChannel* channel = (CDBusChannel*)proxyObj->GetChannel().Get();
+            ci.mDBusName = channel->mName;
+            ci.mCid = proxyObj->GetTargetCoclassID();
+            object->GetInterfaceID(object, &ci.mIid);
+        }
+        else {
+            ec = CoCreateStub(object, mType, (IStub**)&stub);
+            if (FAILED(ec)) {
+                Logger::E("CDBusChannel", "Marshal interface failed.");
+                *data = Array<Byte>();
+                return ec;
+            }
+            CStub* stubObj = (CStub*)stub.Get();
+            CDBusChannel* channel = (CDBusChannel*)stubObj->GetChannel().Get();
+            ci.mDBusName = channel->mName;
+            ci.mCid = stubObj->GetTargetCoclassID();
+            object->GetInterfaceID(object, &ci.mIid);
+        }
+    }
+
+    AutoPtr<IParcel> parcel;
+    CreateParcel((IParcel**)&parcel);
+    parcel->WriteString(ci.mDBusName);
+    parcel->WriteCoclassID(ci.mCid);
+    parcel->WriteInterfaceID(ci.mIid);
+    HANDLE buf;
+    parcel->GetData(&buf);
+    Long size;
+    parcel->GetDataSize(&size);
+    Array<Byte> _data(size);
+    _data.Copy(reinterpret_cast<Byte*>(buf), size);
+    *data = _data;
+    return NOERROR;
+}
+
+ECode CDBusChannel::UnmarshalInterface(
+    /* [in] */ const Array<Byte>& data,
+    /* [out] */ IInterface** object)
+{
+    VALIDATE_NOT_NULL(object);
+
+    AutoPtr<IParcel> parcel;
+    CreateParcel((IParcel**)&parcel);
+    parcel->SetData(data.GetPayload(), data.GetLength());
+    ChannelInfo ci;
+    parcel->ReadString(&ci.mDBusName);
+    parcel->ReadCoclassID(&ci.mCid);
+    parcel->ReadInterfaceID(&ci.mIid);
+    AutoPtr<IObject> iobject;
+    ECode ec = FindImportObject(mType, (IRPCChannelInfo*)&ci, (IObject**)&iobject);
+    if (SUCCEEDED(ec)) {
+        *object = iobject->Probe(ci.mIid);
+        REFCOUNT_ADD(*object);
+        return NOERROR;
+    }
 }
 
 }
