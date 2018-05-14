@@ -22,7 +22,7 @@
 using ccm::Logger;
 using xos::ServiceManager;
 
-static const char* SERVICE_MANAGER_DBUS_NAME = "servicemanager";
+static const char* SERVICE_MANAGER_DBUS_NAME = "xos.servicemanager";
 static const char* SERVICE_MANAGER_INTERFACE_PATH = "xos.servicemanager";
 
 int main(int argv, char** argc)

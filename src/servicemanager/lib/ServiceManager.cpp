@@ -20,7 +20,7 @@
 
 namespace xos {
 
-static const char* SERVICE_MANAGER_DBUS_NAME = "servicemanager";
+static const char* SERVICE_MANAGER_DBUS_NAME = "xos.servicemanager";
 static const char* SERVICE_MANAGER_OBJECT_PATH = "/xos/servicemanager";
 static const char* SERVICE_MANAGER_INTERFACE_PATH = "xos.servicemanager";
 

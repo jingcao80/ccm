@@ -17,6 +17,7 @@
 #include "RPCTestUnit.h"
 #include <ccmapi.h>
 #include <ccmautoptr.h>
+#include <ServiceManager.h>
 
 #include <stdio.h>
 #include <unistd.h>
@@ -24,15 +25,14 @@
 using ccm::test::rpc::CService;
 using ccm::test::rpc::IService;
 using ccm::test::rpc::IID_IService;
+using xos::ServiceManager;
 
 int main(int argv, char** argc)
 {
     AutoPtr<IService> srv;
     CService::New(IID_IService, (IInterface**)&srv);
 
-    AutoPtr<IStub> stub;
-    CoCreateStub(srv, RPCType::Local, (IStub**)&stub);
-    printf("==== stub: %p ====\n", stub.Get());
+    ServiceManager::GetInstance()->AddService(String("rpcservice"), srv);
 
     while (true) {
         sleep(5);

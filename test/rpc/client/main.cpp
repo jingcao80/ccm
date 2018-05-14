@@ -17,22 +17,23 @@
 #include "RPCTestUnit.h"
 #include <ccmapi.h>
 #include <ccmautoptr.h>
+#include <ServiceManager.h>
 
 #include <stdio.h>
 
 using ccm::test::rpc::CID_CService;
 using ccm::test::rpc::IService;
+using xos::ServiceManager;
 
 int main(int argv, char** argc)
 {
-    AutoPtr<IProxy> proxy;
-    CoCreateProxy(CID_CService, RPCType::Local, (IProxy**)&proxy);
-    printf("==== proxy: %p ====\n", proxy.Get());
+    AutoPtr<IInterface> obj;
+    ServiceManager::GetInstance()->GetService(String("rpcservice"), (IInterface**)&obj);
+    IService* srv = IService::Probe(obj);
+    printf("==== srv: %p ====\n", srv);
 
-    IService* svc = IService::Probe(proxy);
-    svc->AddRef(0);
     printf("==== call IService::TestMethod1 ====\n");
-    svc->TestMethod1(9);
+    srv->TestMethod1(9);
     // printf("==== call IService::TestMethod2 ====\n");
     // svc->TestMethod2(1, 2, 3, 4, 5, 6, 7, 8, 9.9,
     //         10.9, 11.9, 12.9, 13.9, 14.9, 15.9, 16.9, 17.9, 18.9);

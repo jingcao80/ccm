@@ -60,7 +60,7 @@ ECode RegisterExportObject(
     /* [in] */ IStub* stub)
 {
     if (object == nullptr || stub == nullptr) {
-        return NOERROR;
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     HashMap<IObject*, IStub*>& registry = type == RPCType::Local ?
@@ -78,7 +78,7 @@ ECode UnregisterExportObject(
     /* [in] */ IObject* object)
 {
     if (object == nullptr) {
-        return NOERROR;
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     HashMap<IObject*, IStub*>& registry = type == RPCType::Local ?
@@ -87,8 +87,11 @@ ECode UnregisterExportObject(
             sLocalExportRegistryLock : sRemoteExportRegistryLock;
 
     Mutex::AutoLock lock(registryLock);
-    registry.Remove(object);
-    return NOERROR;
+    if (registry.ContainsKey(object)) {
+        registry.Remove(object);
+        return NOERROR;
+    }
+    return E_NOT_FOUND_EXCEPTION;
 }
 
 ECode FindExportObject(
@@ -100,7 +103,7 @@ ECode FindExportObject(
 
     if (object == nullptr) {
         *stub = nullptr;
-        return NOERROR;
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     HashMap<IObject*, IStub*>& registry = type == RPCType::Local ?
@@ -109,9 +112,13 @@ ECode FindExportObject(
             sLocalExportRegistryLock : sRemoteExportRegistryLock;
 
     Mutex::AutoLock lock(registryLock);
-    *stub = registry.Get(object);
-    REFCOUNT_ADD(*stub);
-    return NOERROR;
+    if (registry.ContainsKey(object)) {
+        *stub = registry.Get(object);
+        REFCOUNT_ADD(*stub);
+        return NOERROR;
+    }
+    *stub = nullptr;
+    return E_NOT_FOUND_EXCEPTION;
 }
 
 ECode FindExportObject(
@@ -123,7 +130,7 @@ ECode FindExportObject(
 
     if (ipack == nullptr) {
         *stub = nullptr;
-        return NOERROR;
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     HashMap<IObject*, IStub*>& registry = type == RPCType::Local ?
@@ -144,7 +151,7 @@ ECode FindExportObject(
         }
     }
     *stub = nullptr;
-    return NOERROR;
+    return E_NOT_FOUND_EXCEPTION;
 }
 
 ECode RegisterImportObject(
@@ -153,7 +160,7 @@ ECode RegisterImportObject(
     /* [in] */ IObject* object)
 {
     if (ipack == nullptr || object == nullptr) {
-        return NOERROR;
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     HashMap<IInterfacePack*, IObject*>& registry = type == RPCType::Local ?
@@ -171,7 +178,7 @@ ECode UnregisterImportObject(
     /* [in] */ IInterfacePack* ipack)
 {
     if (ipack == nullptr) {
-        return NOERROR;
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     HashMap<IInterfacePack*, IObject*>& registry = type == RPCType::Local ?
@@ -180,8 +187,11 @@ ECode UnregisterImportObject(
             sLocalImportRegistryLock : sRemoteImportRegistryLock;
 
     Mutex::AutoLock lock(registryLock);
-    registry.Remove(ipack);
-    return NOERROR;
+    if (registry.ContainsKey(ipack)) {
+        registry.Remove(ipack);
+        return NOERROR;
+    }
+    return E_NOT_FOUND_EXCEPTION;
 }
 
 ECode FindImportObject(
@@ -193,7 +203,7 @@ ECode FindImportObject(
 
     if (ipack == nullptr) {
         *object = nullptr;
-        return NOERROR;
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     HashMap<IInterfacePack*, IObject*>& registry = type == RPCType::Local ?
@@ -202,9 +212,13 @@ ECode FindImportObject(
             sLocalImportRegistryLock : sRemoteImportRegistryLock;
 
     Mutex::AutoLock lock(registryLock);
-    *object = registry.Get(ipack);
-    REFCOUNT_ADD(*object);
-    return NOERROR;
+    if (registry.ContainsKey(ipack)) {
+        *object = registry.Get(ipack);
+        REFCOUNT_ADD(*object);
+        return NOERROR;
+    }
+    *object = nullptr;
+    return E_NOT_FOUND_EXCEPTION;
 }
 
 }

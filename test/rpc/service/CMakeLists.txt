@@ -31,12 +31,14 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/RPCTestUnit.cpp)
 
 add_library(ccmrt.so UNKNOWN IMPORTED)
+add_library(libservicemanager.so UNKNOWN IMPORTED)
 set_property(TARGET ccmrt.so PROPERTY IMPORTED_LOCATION ${BIN_DIR}/ccmrt.so)
+set_property(TARGET libservicemanager.so PROPERTY IMPORTED_LOCATION ${BIN_DIR}/libservicemanager.so)
 
 add_executable(testRPCSrv
     ${SOURCES}
     ${GENERATED_SOURCES})
-target_link_libraries(testRPCSrv ccmrt.so)
+target_link_libraries(testRPCSrv ccmrt.so libservicemanager.so)
 
 add_custom_command(
     OUTPUT
