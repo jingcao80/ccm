@@ -590,6 +590,13 @@ ECode CStub::GetInterfaceID(
     return Object::GetInterfaceID(object, iid);
 }
 
+ECode CStub::Match(
+    /* [in] */ IInterfacePack* ipack,
+    /* [out] */ Boolean* matched)
+{
+    return mChannel->Match(ipack, matched);
+}
+
 ECode CStub::Invoke(
     /* [in] */ IParcel* argParcel,
     /* [out] */ IParcel** resParcel)

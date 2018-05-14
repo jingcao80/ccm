@@ -19,7 +19,7 @@
 #include "CDBusParcel.h"
 #include "CProxy.h"
 #include "CStub.h"
-#include "ChannelInfo.h"
+#include "InterfacePack.h"
 #include "registry.h"
 #include "util/ccmlogger.h"
 
@@ -223,6 +223,16 @@ ECode CDBusChannel::CreateParcel(
     return NOERROR;
 }
 
+ECode CDBusChannel::CreateInterfacePack(
+    /* [out] */ IInterfacePack** ipack)
+{
+    VALIDATE_NOT_NULL(ipack);
+
+    *ipack = new InterfacePack();
+    REFCOUNT_ADD(*ipack);
+    return NOERROR;
+}
+
 ECode CDBusChannel::IsPeerAlive(
     /* [out] */ Boolean* alive)
 {
@@ -385,13 +395,33 @@ ECode CDBusChannel::StartListening(
     return ec;
 }
 
+ECode CDBusChannel::Match(
+    /* [in] */ IInterfacePack* ipack,
+    /* [out] */ Boolean* matched)
+{
+    VALIDATE_NOT_NULL(matched);
+
+    IDBusInterfacePack* idpack = IDBusInterfacePack::Probe(ipack);
+    if (idpack != nullptr) {
+        InterfacePack* pack = (InterfacePack*)idpack;
+        if (pack->GetDBusName().Equals(mName)) {
+            *matched = true;
+            return NOERROR;
+        }
+    }
+    *matched = false;
+    return NOERROR;
+}
+
 ECode CDBusChannel::MarshalInterface(
     /* [in] */ IInterface* object,
-    /* [out, callee] */ Array<Byte>* data)
+    /* [out] */ IInterfacePack** ipack)
 {
-    VALIDATE_NOT_NULL(data);
+    VALIDATE_NOT_NULL(ipack);
 
-    ChannelInfo ci;
+    InterfaceID iid;
+    object->GetInterfaceID(object, &iid);
+    InterfacePack* pack = new InterfacePack();
 
     AutoPtr<IStub> stub;
     ECode ec = FindExportObject(mType, IObject::Probe(object),
@@ -399,66 +429,51 @@ ECode CDBusChannel::MarshalInterface(
     if (SUCCEEDED(ec)) {
         CStub* stubObj = (CStub*)stub.Get();
         CDBusChannel* channel = (CDBusChannel*)stubObj->GetChannel().Get();
-        ci.mDBusName = channel->mName;
-        ci.mCid = stubObj->GetTargetCoclassID();
-        object->GetInterfaceID(object, &ci.mIid);
+        pack->SetDBusName(channel->mName);
+        pack->SetCoclassID(stubObj->GetTargetCoclassID());
+        pack->SetInterfaceID(iid);
     }
     else {
         IProxy* proxy = IProxy::Probe(object);
         if (proxy != nullptr) {
             CProxy* proxyObj = (CProxy*)proxy;
             CDBusChannel* channel = (CDBusChannel*)proxyObj->GetChannel().Get();
-            ci.mDBusName = channel->mName;
-            ci.mCid = proxyObj->GetTargetCoclassID();
-            object->GetInterfaceID(object, &ci.mIid);
+            pack->SetDBusName(channel->mName);
+            pack->SetCoclassID(proxyObj->GetTargetCoclassID());
+            pack->SetInterfaceID(iid);
         }
         else {
             ec = CoCreateStub(object, mType, (IStub**)&stub);
             if (FAILED(ec)) {
                 Logger::E("CDBusChannel", "Marshal interface failed.");
-                *data = Array<Byte>();
+                *ipack = nullptr;
                 return ec;
             }
             CStub* stubObj = (CStub*)stub.Get();
             CDBusChannel* channel = (CDBusChannel*)stubObj->GetChannel().Get();
-            ci.mDBusName = channel->mName;
-            ci.mCid = stubObj->GetTargetCoclassID();
-            object->GetInterfaceID(object, &ci.mIid);
+            pack->SetDBusName(channel->mName);
+            pack->SetCoclassID(stubObj->GetTargetCoclassID());
+            pack->SetInterfaceID(iid);
         }
     }
 
-    AutoPtr<IParcel> parcel;
-    CreateParcel((IParcel**)&parcel);
-    parcel->WriteString(ci.mDBusName);
-    parcel->WriteCoclassID(ci.mCid);
-    parcel->WriteInterfaceID(ci.mIid);
-    HANDLE buf;
-    parcel->GetData(&buf);
-    Long size;
-    parcel->GetDataSize(&size);
-    Array<Byte> _data(size);
-    _data.Copy(reinterpret_cast<Byte*>(buf), size);
-    *data = _data;
+    *ipack = (IInterfacePack*)pack;
+    REFCOUNT_ADD(*ipack);
     return NOERROR;
 }
 
 ECode CDBusChannel::UnmarshalInterface(
-    /* [in] */ const Array<Byte>& data,
+    /* [in] */ IInterfacePack* ipack,
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object);
 
-    AutoPtr<IParcel> parcel;
-    CreateParcel((IParcel**)&parcel);
-    parcel->SetData(data.GetPayload(), data.GetLength());
-    ChannelInfo ci;
-    parcel->ReadString(&ci.mDBusName);
-    parcel->ReadCoclassID(&ci.mCid);
-    parcel->ReadInterfaceID(&ci.mIid);
     AutoPtr<IObject> iobject;
-    ECode ec = FindImportObject(mType, (IRPCChannelInfo*)&ci, (IObject**)&iobject);
+    ECode ec = FindImportObject(mType, ipack, (IObject**)&iobject);
     if (SUCCEEDED(ec)) {
-        *object = iobject->Probe(ci.mIid);
+        InterfaceID iid;
+        ipack->GetInterfaceID(&iid);
+        *object = iobject->Probe(iid);
         REFCOUNT_ADD(*object);
         return NOERROR;
     }

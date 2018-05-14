@@ -37,21 +37,21 @@ extern ECode FindExportObject(
 
 extern ECode FindExportObject(
     /* [in] */ RPCType type,
-    /* [in] */ IRPCChannelInfo* channelInfo,
+    /* [in] */ IInterfacePack* ipack,
     /* [out] */ IStub** stub);
 
 extern ECode RegisterImportObject(
     /* [in] */ RPCType type,
-    /* [in] */ IRPCChannelInfo* channelInfo,
+    /* [in] */ IInterfacePack* ipack,
     /* [in] */ IObject* object);
 
 extern ECode UnregisterImportObject(
     /* [in] */ RPCType type,
-    /* [in] */ IRPCChannelInfo* channelInfo);
+    /* [in] */ IInterfacePack* ipack);
 
 extern ECode FindImportObject(
     /* [in] */ RPCType type,
-    /* [in] */ IRPCChannelInfo* channelInfo,
+    /* [in] */ IInterfacePack* ipack,
     /* [out] */ IObject** object);
 
 }

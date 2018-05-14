@@ -144,21 +144,30 @@ interface IParcel
         [in] Long pos);
 }
 
+[
+    uuid(84ee26c6-6c0a-4329-b627-54e5fc3b06a8),
+    version(0.1.0)
+]
+interface IInterfacePack
+{
+    GetInterfaceID(
+        [out] InterfaceID* iid);
+
+    GetHashCode(
+        [out] Integer* hash);
+
+    ReadFromParcel(
+        [in] IParcel* source);
+
+    WriteToParcel(
+        [in] IParcel* dest);
+}
+
 interface IArgumentList;
 interface IDeathRecipient;
 interface IMetaMethod;
 interface IProxy;
 interface IStub;
-
-[
-    uuid(84ee26c6-6c0a-4329-b627-54e5fc3b06a8),
-    version(0.1.0)
-]
-interface IRPCChannelInfo
-{
-    GetHashCode(
-        [out] Integer* hash);
-}
 
 [
     uuid(bf89f2ce-ba5f-4f5d-a866-9e34048ee009),
@@ -171,6 +180,9 @@ interface IRPCChannel
 
     CreateParcel(
         [out] IParcel** parcel);
+
+    CreateInterfacePack(
+        [out] IInterfacePack** ipack);
 
     IsPeerAlive(
         [out] Boolean* alive);
@@ -195,12 +207,16 @@ interface IRPCChannel
     StartListening(
         [in] IStub* stub);
 
+    Match(
+        [in] IInterfacePack* ipack,
+        [out] Boolean* matched);
+
     MarshalInterface(
         [in] IInterface* object,
-        [out, callee] Array<Byte>* data);
+        [out] IInterfacePack** ipack);
 
     UnmarshalInterface(
-        [in] Array<Byte> data,
+        [in] IInterfacePack* data,
         [out] IInterface** object);
 }
 
@@ -255,6 +271,10 @@ interface IDeathRecipient
 ]
 interface IStub
 {
+    Match(
+        [in] IInterfacePack* ipack,
+        [out] Boolean* matched);
+
     Invoke(
         [in] IParcel* argParcel,
         [out] IParcel** resParcel);

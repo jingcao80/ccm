@@ -88,6 +88,10 @@ public:
 
     CCM_OBJECT_DECL();
 
+    ECode Match(
+        /* [in] */ IInterfacePack* ipack,
+        /* [out] */ Boolean* matched);
+
     ECode Invoke(
         /* [in] */ IParcel* argParcel,
         /* [out] */ IParcel** resParcel);

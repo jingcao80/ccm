@@ -35,13 +35,21 @@ ECode ServiceManager::AddService(
     /* [in] */ const String& name,
     /* [in] */ IInterface* object)
 {
-    Array<Byte> data;
-    ECode ec = CoMarshalInterface(object, RPCType::Local, &data);
+    AutoPtr<IInterfacePack> ipack;
+    ECode ec = CoMarshalInterface(object, RPCType::Local, (IInterfacePack**)&ipack);
     if (FAILED(ec)) {
         Logger::E("ServiceManager", "Marshal the interface which named \"%s\" failed.",
                 name.string());
         return ec;
     }
+
+    AutoPtr<IParcel> parcel;
+    CoCreateParcel(RPCType::Local, (IParcel**)&parcel);
+    ipack->WriteToParcel(parcel);
+    HANDLE buffer;
+    parcel->GetData(&buffer);
+    Long size;
+    parcel->GetDataSize(&size);
 
     DBusError err;
     DBusConnection* conn = nullptr;
@@ -49,7 +57,6 @@ ECode ServiceManager::AddService(
     DBusMessage* reply = nullptr;
     DBusMessageIter args, subArg;
     const char* str = nullptr;
-    Byte* buffer = nullptr;
 
     dbus_error_init(&err);
 
@@ -77,9 +84,8 @@ ECode ServiceManager::AddService(
     dbus_message_iter_append_basic(&args, DBUS_TYPE_STRING, &str);
     dbus_message_iter_open_container(&args,
             DBUS_TYPE_ARRAY, DBUS_TYPE_BYTE_AS_STRING, &subArg);
-    buffer = data.GetPayload();
     dbus_message_iter_append_fixed_array(&subArg,
-            DBUS_TYPE_BYTE, &buffer, data.GetLength());
+            DBUS_TYPE_BYTE, (void*)&buffer, size);
     dbus_message_iter_close_container(&args, &subArg);
 
     reply = dbus_connection_send_with_reply_and_block(conn, msg, -1, &err);
@@ -199,14 +205,18 @@ ECode ServiceManager::GetService(
 
         void* replyData = nullptr;
         Integer replySize;
-
         dbus_message_iter_recurse(&args, &subArg);
         dbus_message_iter_get_fixed_array(&subArg,
                 &replyData, &replySize);
         if (replyData != nullptr) {
-            Array<Byte> data(replySize);
-            data.Copy(static_cast<Byte*>(replyData), replySize);
-            ec = CoUnmarshalInterface(RPCType::Local, data, object);
+            AutoPtr<IParcel> parcel;
+            CoCreateParcel(RPCType::Local, (IParcel**)&parcel);
+            parcel->SetData(static_cast<Byte*>(replyData), replySize);
+
+            AutoPtr<IInterfacePack> ipack;
+            CoCreateInterfacePack(RPCType::Local, (IInterfacePack**)&ipack);
+            ipack->ReadFromParcel(parcel);
+            ec = CoUnmarshalInterface(RPCType::Local, ipack, object);
         }
     }
     else {

@@ -33,10 +33,10 @@ struct HashFunc<IObject*>
 };
 
 template<>
-struct HashFunc<IRPCChannelInfo*>
+struct HashFunc<IInterfacePack*>
 {
     inline Integer operator()(
-        /* [in] */ IRPCChannelInfo* data)
+        /* [in] */ IInterfacePack* data)
     {
         Integer hash;
         data->GetHashCode(&hash);
@@ -49,9 +49,9 @@ static Mutex sLocalExportRegistryLock;
 static HashMap<IObject*, IStub*> sRemoteExportRegistry;
 static Mutex sRemoteExportRegistryLock;
 
-static HashMap<IRPCChannelInfo*, IObject*> sLocalImportRegistry;
+static HashMap<IInterfacePack*, IObject*> sLocalImportRegistry;
 static Mutex sLocalImportRegistryLock;
-static HashMap<IRPCChannelInfo*, IObject*> sRemoteImportRegistry;
+static HashMap<IInterfacePack*, IObject*> sRemoteImportRegistry;
 static Mutex sRemoteImportRegistryLock;
 
 ECode RegisterExportObject(
@@ -116,12 +116,12 @@ ECode FindExportObject(
 
 ECode FindExportObject(
     /* [in] */ RPCType type,
-    /* [in] */ IRPCChannelInfo* channelInfo,
+    /* [in] */ IInterfacePack* ipack,
     /* [out] */ IStub** stub)
 {
     VALIDATE_NOT_NULL(stub);
 
-    if (channelInfo == nullptr) {
+    if (ipack == nullptr) {
         *stub = nullptr;
         return NOERROR;
     }
@@ -135,10 +135,13 @@ ECode FindExportObject(
     Array<IStub*> stubs = registry.GetValues();
     for (Long i = 0; i < stubs.GetLength(); i++) {
         IStub* stubObj = stubs[i];
-
-        *stub = stubObj;
-        REFCOUNT_ADD(*stub);
-        return NOERROR;
+        Boolean matched;
+        stubObj->Match(ipack, &matched);
+        if (matched) {
+            *stub = stubObj;
+            REFCOUNT_ADD(*stub);
+            return NOERROR;
+        }
     }
     *stub = nullptr;
     return NOERROR;
@@ -146,60 +149,60 @@ ECode FindExportObject(
 
 ECode RegisterImportObject(
     /* [in] */ RPCType type,
-    /* [in] */ IRPCChannelInfo* channelInfo,
+    /* [in] */ IInterfacePack* ipack,
     /* [in] */ IObject* object)
 {
-    if (channelInfo == nullptr || object == nullptr) {
+    if (ipack == nullptr || object == nullptr) {
         return NOERROR;
     }
 
-    HashMap<IRPCChannelInfo*, IObject*>& registry = type == RPCType::Local ?
+    HashMap<IInterfacePack*, IObject*>& registry = type == RPCType::Local ?
             sLocalImportRegistry : sRemoteImportRegistry;
     Mutex& registryLock = type == RPCType::Local ?
             sLocalImportRegistryLock : sRemoteImportRegistryLock;
 
     Mutex::AutoLock lock(registryLock);
-    registry.Put(channelInfo, object);
+    registry.Put(ipack, object);
     return NOERROR;
 }
 
 ECode UnregisterImportObject(
     /* [in] */ RPCType type,
-    /* [in] */ IRPCChannelInfo* channelInfo)
+    /* [in] */ IInterfacePack* ipack)
 {
-    if (channelInfo == nullptr) {
+    if (ipack == nullptr) {
         return NOERROR;
     }
 
-    HashMap<IRPCChannelInfo*, IObject*>& registry = type == RPCType::Local ?
+    HashMap<IInterfacePack*, IObject*>& registry = type == RPCType::Local ?
             sLocalImportRegistry : sRemoteImportRegistry;
     Mutex& registryLock = type == RPCType::Local ?
             sLocalImportRegistryLock : sRemoteImportRegistryLock;
 
     Mutex::AutoLock lock(registryLock);
-    registry.Remove(channelInfo);
+    registry.Remove(ipack);
     return NOERROR;
 }
 
 ECode FindImportObject(
     /* [in] */ RPCType type,
-    /* [in] */ IRPCChannelInfo* channelInfo,
+    /* [in] */ IInterfacePack* ipack,
     /* [out] */ IObject** object)
 {
     VALIDATE_NOT_NULL(object);
 
-    if (channelInfo == nullptr) {
+    if (ipack == nullptr) {
         *object = nullptr;
         return NOERROR;
     }
 
-    HashMap<IRPCChannelInfo*, IObject*>& registry = type == RPCType::Local ?
+    HashMap<IInterfacePack*, IObject*>& registry = type == RPCType::Local ?
             sLocalImportRegistry : sRemoteImportRegistry;
     Mutex& registryLock = type == RPCType::Local ?
             sLocalImportRegistryLock : sRemoteImportRegistryLock;
 
     Mutex::AutoLock lock(registryLock);
-    *object = registry.Get(channelInfo);
+    *object = registry.Get(ipack);
     REFCOUNT_ADD(*object);
     return NOERROR;
 }

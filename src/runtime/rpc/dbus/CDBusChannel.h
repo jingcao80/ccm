@@ -67,41 +67,48 @@ public:
         /* [in] */ RPCPeer peer);
 
     ECode GetRPCType(
-        /* [out] */ RPCType* type);
+        /* [out] */ RPCType* type) override;
 
     ECode CreateParcel(
-        /* [out] */ IParcel** parcel);
+        /* [out] */ IParcel** parcel) override;
+
+    ECode CreateInterfacePack(
+        /* [out] */ IInterfacePack** ipack) override;
 
     ECode IsPeerAlive(
-        /* [out] */ Boolean* alive);
+        /* [out] */ Boolean* alive) override;
 
     ECode LinkToDeath(
         /* [in] */ IDeathRecipient* recipient,
         /* [in] */ HANDLE cookie = 0,
-        /* [in] */ Integer flags = 0);
+        /* [in] */ Integer flags = 0) override;
 
     ECode UnlinkToDeath(
         /* [in] */ IDeathRecipient* recipient,
         /* [in] */ HANDLE cookie = 0,
         /* [in] */ Integer flags = 0,
-        /* [out] */ IDeathRecipient** outRecipient = nullptr);
+        /* [out] */ IDeathRecipient** outRecipient = nullptr) override;
 
     ECode Invoke(
         /* [in] */ IProxy* proxy,
         /* [in] */ IMetaMethod* method,
         /* [in] */ IParcel* argParcel,
-        /* [out] */ IParcel** resParcel);
+        /* [out] */ IParcel** resParcel) override;
 
     ECode StartListening(
-        /* [in] */ IStub* stub);
+        /* [in] */ IStub* stub) override;
+
+    ECode Match(
+        /* [in] */ IInterfacePack* ipack,
+        /* [out] */ Boolean* matched) override;
 
     ECode MarshalInterface(
         /* [in] */ IInterface* object,
-        /* [out, callee] */ Array<Byte>* data);
+        /* [out] */ IInterfacePack** ipack) override;
 
     ECode UnmarshalInterface(
-        /* [in] */ const Array<Byte>& data,
-        /* [out] */ IInterface** object);
+        /* [in] */ IInterfacePack* ipack,
+        /* [out] */ IInterface** object) override;
 
 private:
     ECode UnmarshalArguments(

@@ -212,6 +212,53 @@ namespace ccm {
     }
 #endif
 
+#ifndef CCM_INTERFACE_IMPL_LIGHT_2
+#define CCM_INTERFACE_IMPL_LIGHT_2(ClassName, InterfaceName1, InterfaceName2) \
+    Integer ClassName::AddRef(                              \
+        /* [in] */ HANDLE id)                               \
+    {                                                       \
+        return LightRefBase::AddRef(id);                    \
+    }                                                       \
+                                                            \
+    Integer ClassName::Release(                             \
+        /* [in] */ HANDLE id)                               \
+    {                                                       \
+        return LightRefBase::Release(id);                   \
+    }                                                       \
+                                                            \
+    IInterface* ClassName::Probe(                           \
+        /* [in] */ const InterfaceID& iid)                  \
+    {                                                       \
+        if (iid == IID_IInterface) {                        \
+            return (IInterface*)(InterfaceName1*)this;      \
+        }                                                   \
+        else if (iid == IID_##InterfaceName1) {             \
+            return (InterfaceName1*)this;                   \
+        }                                                   \
+        else if (iid == IID_##InterfaceName2) {             \
+            return (InterfaceName2*)this;                   \
+        }                                                   \
+        return nullptr;                                     \
+    }                                                       \
+                                                            \
+    ECode ClassName::GetInterfaceID(                        \
+        /* [in] */ IInterface* object,                      \
+        /* [out] */ InterfaceID* iid)                       \
+    {                                                       \
+        VALIDATE_NOT_NULL(iid);                             \
+                                                            \
+        if (object == (IInterface*)(InterfaceName1*)this) { \
+            *iid = IID_##InterfaceName1;                    \
+            return NOERROR;                                 \
+        }                                                   \
+        else if (object == (IInterface*)(InterfaceName2*)this) {    \
+            *iid = IID_##InterfaceName2;                    \
+            return NOERROR;                                 \
+        }                                                   \
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;                \
+    }
+#endif
+
 #ifndef CCM_OBJECT_DECL
 #define CCM_OBJECT_DECL()                                  \
     ECode GetCoclassID(                                    \

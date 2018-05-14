@@ -27,6 +27,10 @@ EXTERN_C COM_PUBLIC ECode CoCreateParcel(
     /* [in] */ RPCType type,
     /* [out] */ IParcel** parcel);
 
+EXTERN_C COM_PUBLIC ECode CoCreateInterfacePack(
+    /* [in] */ RPCType type,
+    /* [out] */ IInterfacePack** ipack);
+
 EXTERN_C COM_PUBLIC ECode CoCreateProxy(
     /* [in] */ const CoclassID& cid,
     /* [in] */ RPCType type,
@@ -40,11 +44,11 @@ EXTERN_C COM_PUBLIC ECode CoCreateStub(
 EXTERN_C COM_PUBLIC ECode CoMarshalInterface(
     /* [in] */ IInterface* object,
     /* [in] */ RPCType type,
-    /* [out, callee] */ Array<Byte>* data);
+    /* [out] */ IInterfacePack** ipack);
 
 EXTERN_C COM_PUBLIC ECode CoUnmarshalInterface(
     /* [in] */ RPCType type,
-    /* [in] */ const Array<Byte>& data,
+    /* [in] */ IInterfacePack* ipack,
     /* [out] */ IInterface** object);
 
 }

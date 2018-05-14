@@ -41,6 +41,23 @@ ECode CoCreateParcel(
     return channel->CreateParcel(parcel);
 }
 
+ECode CoCreateInterfacePack(
+    /* [in] */ RPCType type,
+    /* [out] */ IInterfacePack** ipack)
+{
+    VALIDATE_NOT_NULL(ipack);
+
+    AutoPtr<IRPCChannelFactory> factory =
+            type == RPCType::Local ? sLocalFactory : sRemoteFactory;
+    AutoPtr<IRPCChannel> channel;
+    ECode ec = factory->CreateChannel(RPCPeer::Proxy, (IRPCChannel**)&channel);
+    if (FAILED(ec)) {
+        *ipack = nullptr;
+        return ec;
+    }
+    return channel->CreateInterfacePack(ipack);
+}
+
 ECode CoCreateProxy(
     /* [in] */ const CoclassID& cid,
     /* [in] */ RPCType type,
@@ -80,12 +97,12 @@ ECode CoCreateStub(
 ECode CoMarshalInterface(
     /* [in] */ IInterface* object,
     /* [in] */ RPCType type,
-    /* [out, callee] */ Array<Byte>* data)
+    /* [out] */ IInterfacePack** ipack)
 {
-    VALIDATE_NOT_NULL(data);
+    VALIDATE_NOT_NULL(ipack);
 
     if (object == nullptr) {
-        *data = Array<Byte>();
+        *ipack = nullptr;
         return NOERROR;
     }
 
@@ -94,20 +111,20 @@ ECode CoMarshalInterface(
     AutoPtr<IRPCChannel> channel;
     ECode ec = factory->CreateChannel(RPCPeer::Stub, (IRPCChannel**)&channel);
     if (FAILED(ec)) {
-        *data = Array<Byte>();
+        *ipack = nullptr;
         return ec;
     }
-    return channel->MarshalInterface(object, data);
+    return channel->MarshalInterface(object, ipack);
 }
 
 ECode CoUnmarshalInterface(
     /* [in] */ RPCType type,
-    /* [in] */ const Array<Byte>& data,
+    /* [in] */ IInterfacePack* data,
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object);
 
-    if (data.IsEmpty()) {
+    if (data == nullptr) {
         *object = nullptr;
         return NOERROR;
     }
