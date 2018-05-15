@@ -296,14 +296,14 @@ ECode InterfaceStub::UnmarshalArguments(
 
 ECode InterfaceStub::MarshalResults(
     /* [in] */ IMetaMethod* method,
-    /* [in] */ ECode ec,
     /* [in] */ IArgumentList* argList,
     /* [out] */ IParcel** resParcel)
 {
+    RPCType type;
+    mOwner->mChannel->GetRPCType(&type);
     AutoPtr<IParcel> outParcel;
-    mOwner->mChannel->CreateParcel((IParcel**)&outParcel);
+    CoCreateParcel(type, (IParcel**)&outParcel);
 
-    outParcel->WriteECode(ec);
     Integer N;
     method->GetParameterNumber(&N);
     for (Integer i = 0; i < N; i++) {
@@ -532,7 +532,7 @@ ECode InterfaceStub::Invoke(
     }
 
     ECode ret = mm->Invoke(mObject, argList);
-    ec = MarshalResults(mm, ret, argList, resParcel);
+    ec = MarshalResults(mm, argList, resParcel);
     if (FAILED(ec)) {
         Logger::E("CStub", "MarshalResults failed with ec is 0x%x.", ec);
     }
@@ -556,13 +556,7 @@ Integer CStub::AddRef(
 Integer CStub::Release(
     /* [in] */ HANDLE id)
 {
-    Integer ref = Object::Release(id);
-    if (ref == 1) {
-        ECode ec = UnregisterExportObject(RPCType::Local, mTarget);
-        if (FAILED(ec)) {
-            Logger::E("CStub", "Unregister export object failed with ec is 0x%x.", ec);
-        }
-    }
+    return Object::Release(id);
 }
 
 IInterface* CStub::Probe(
@@ -588,6 +582,12 @@ ECode CStub::GetInterfaceID(
         return NOERROR;
     }
     return Object::GetInterfaceID(object, iid);
+}
+
+void CStub::OnLastStrongRef(
+    /* [in] */ const void* id)
+{
+    UnregisterExportObject(RPCType::Local, mTarget);
 }
 
 ECode CStub::Match(
@@ -618,6 +618,11 @@ ECode CStub::Invoke(
     }
 
     return mInterfaces[interfaceIndex]->Invoke(argParcel, resParcel);
+}
+
+AutoPtr<IObject> CStub::GetTarget()
+{
+    return mTarget;
 }
 
 AutoPtr<IRPCChannel> CStub::GetChannel()
@@ -659,7 +664,7 @@ ECode CStub::CreateObject(
                 DumpUuid(cid.mUuid).string());
     }
 
-    CStub* stubObj = new CStub();
+    AutoPtr<CStub> stubObj = new CStub();
     stubObj->mTarget = obj;
     stubObj->mCid = cid;
     stubObj->mTargetMetadata = mc;
@@ -688,16 +693,7 @@ ECode CStub::CreateObject(
         stubObj->mInterfaces[i] = istub;
     }
 
-    RPCType type;
-    channel->GetRPCType(&type);
-    ECode ec = RegisterExportObject(type, obj, stubObj);
-    if (FAILED(ec)) {
-        Logger::E("CStub", "Fail to register export object with ec is 0x%x", ec);
-        delete stubObj;
-        return ec;
-    }
-
-    ec = channel->StartListening(stubObj);
+    ECode ec = channel->StartListening(stubObj);
     if (FAILED(ec)) {
         Logger::E("CStub", "Channel start listening failed with ec is 0x%x", ec);
         delete stubObj;

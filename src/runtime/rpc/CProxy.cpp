@@ -783,8 +783,10 @@ ECode InterfaceProxy::ProxyEntry(
                 name.string(), signature.string());
     }
 
+    RPCType type;
+    thisObj->mOwner->mChannel->GetRPCType(&type);
     AutoPtr<IParcel> inParcel, outParcel;
-    thisObj->mOwner->mChannel->CreateParcel((IParcel**)&inParcel);
+    CoCreateParcel(type, (IParcel**)&inParcel);
     inParcel->WriteInteger(RPC_MAGIC_NUMBER);
     inParcel->WriteInteger(thisObj->mIndex);
     inParcel->WriteInteger(methodIndex + 4);
@@ -928,8 +930,8 @@ ECode CProxy::CreateObject(
     AutoPtr<IMetaCoclass> mc;
     CoGetCoclassMetadata(cid, nullptr, (IMetaCoclass**)&mc);
 
-    CProxy* proxyObj = new CProxy();
-    proxyObj->mCid = cid;
+    AutoPtr<CProxy> proxyObj = new CProxy();
+    mc->GetCoclassID(&proxyObj->mCid);
     proxyObj->mTargetMetadata = mc;
     proxyObj->mChannel = channel;
 

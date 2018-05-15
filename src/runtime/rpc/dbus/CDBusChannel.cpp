@@ -17,10 +17,7 @@
 #include "ccmrpc.h"
 #include "CDBusChannel.h"
 #include "CDBusParcel.h"
-#include "CProxy.h"
-#include "CStub.h"
 #include "InterfacePack.h"
-#include "registry.h"
 #include "util/ccmlogger.h"
 
 namespace ccm {
@@ -35,15 +32,44 @@ CDBusChannel::ServiceRunnable::ServiceRunnable(
 
 ECode CDBusChannel::ServiceRunnable::Run()
 {
+    DBusError err;
+
+    dbus_error_init(&err);
+
+    DBusConnection* conn = dbus_bus_get_private(DBUS_BUS_SESSION, &err);
+    if (dbus_error_is_set(&err)) {
+        Logger::E("CDBusChannel", "Connect to bus daemon failed, error is \"%s\".",
+                err.message);
+        dbus_error_free(&err);
+        return E_RUNTIME_EXCEPTION;
+    }
+
+    const char* name = dbus_bus_get_unique_name(conn);
+    if (name == nullptr) {
+        Logger::E("CDBusChannel", "Get unique name failed.");
+        if (conn != nullptr) {
+            dbus_connection_close(conn);
+            dbus_connection_unref(conn);
+        }
+        dbus_error_free(&err);
+        return E_RUNTIME_EXCEPTION;
+    }
+
+    mOwner->mName = name;
+
     DBusObjectPathVTable opVTable;
 
     opVTable.unregister_function = nullptr;
     opVTable.message_function = CDBusChannel::ServiceRunnable::HandleMessage;
 
-    DBusConnection* conn = dbus_connection_ref(mOwner->mConn);
-
     dbus_connection_register_object_path(conn,
             STUB_OBJECT_PATH, &opVTable, static_cast<void*>(this));
+
+    {
+        Mutex::AutoLock lock(mOwner->mLock);
+        mOwner->mStarted = true;
+    }
+    mOwner->mCond.Signal();
 
     while (true) {
         DBusDispatchStatus status;
@@ -59,6 +85,7 @@ ECode CDBusChannel::ServiceRunnable::Run()
         }
     }
 
+    dbus_connection_close(conn);
     dbus_connection_unref(conn);
 
     return NOERROR;
@@ -99,17 +126,17 @@ DBusHandlerResult CDBusChannel::ServiceRunnable::HandleMessage(
         dbus_message_iter_recurse(&args, &subArg);
         dbus_message_iter_get_fixed_array(&subArg, &data, (int*)&size);
 
-        AutoPtr<IParcel> argParcel;
-        thisObj->mOwner->CreateParcel((IParcel**)&argParcel);
+        AutoPtr<IParcel> argParcel = new CDBusParcel();
         argParcel->SetData(static_cast<Byte*>(data), size);
         AutoPtr<IParcel> resParcel;
         ECode ec = thisObj->mTarget->Invoke(argParcel, (IParcel**)&resParcel);
 
         DBusMessage* reply = dbus_message_new_method_return(msg);
 
+        dbus_message_iter_init_append(reply, &args);
+        dbus_message_iter_append_basic(&args, DBUS_TYPE_INT32, &ec);
         HANDLE resData;
         Long resSize;
-        dbus_message_iter_init_append(reply, &args);
         dbus_message_iter_open_container(&args,
                 DBUS_TYPE_ARRAY, DBUS_TYPE_BYTE_AS_STRING, &subArg);
         resParcel->GetData(&resData);
@@ -136,10 +163,10 @@ DBusHandlerResult CDBusChannel::ServiceRunnable::HandleMessage(
         thisObj->mRequestToQuit = true;
     }
     else {
-        const char* sign = dbus_message_get_signature(msg);
-        if (sign != nullptr && CDBusChannel::DEBUG) {
+        const char* name = dbus_message_get_member(msg);
+        if (name != nullptr && CDBusChannel::DEBUG) {
             Logger::D("CDBusChannel",
-                    "The message which signature is \"%\" does not be handled.", sign);
+                    "The message which name is \"%s\" does not be handled.", name);
         }
     }
 
@@ -155,54 +182,13 @@ CCM_INTERFACE_IMPL_1(CDBusChannel, Object, IRPCChannel);
 
 CCM_OBJECT_IMPL(CDBusChannel);
 
-CDBusChannel::CDBusChannel()
-    : mConn(nullptr)
-{}
-
-CDBusChannel::~CDBusChannel()
-{
-    if (mConn != nullptr) {
-        dbus_connection_close(mConn);
-        dbus_connection_unref(mConn);
-    }
-}
-
-ECode CDBusChannel::Initialize(
+CDBusChannel::CDBusChannel(
     /* [in] */ RPCType type,
     /* [in] */ RPCPeer peer)
-{
-    ECode ec = NOERROR;
-    mType = type;
-    mPeer = peer;
-    if (mPeer == RPCPeer::Stub) {
-        DBusError err;
-        DBusConnection* conn = nullptr;
-        const char* name = nullptr;
-        dbus_error_init(&err);
-        conn = dbus_bus_get_private(DBUS_BUS_SESSION, &err);
-        if (dbus_error_is_set(&err)) {
-            Logger::E("CDBusChannel", "Connect to bus daemon failed, error is \"%s\".",
-                    err.message);
-            dbus_error_free(&err);
-            return E_RUNTIME_EXCEPTION;
-        }
-
-        name = dbus_bus_get_unique_name(conn);
-        if (name == nullptr) {
-            Logger::E("CDBusChannel", "Get unique name failed.");
-            if (conn != nullptr) {
-                dbus_connection_close(conn);
-                dbus_connection_unref(conn);
-            }
-            dbus_error_free(&err);
-            return E_RUNTIME_EXCEPTION;
-        }
-
-        mConn = conn;
-        mName = name;
-    }
-    return ec;
-}
+    : mType(type)
+    , mPeer(peer)
+    , mStarted(false)
+{}
 
 ECode CDBusChannel::GetRPCType(
     /* [out] */ RPCType* type)
@@ -210,26 +196,6 @@ ECode CDBusChannel::GetRPCType(
     VALIDATE_NOT_NULL(type);
 
     *type = mType;
-    return NOERROR;
-}
-
-ECode CDBusChannel::CreateParcel(
-    /* [out] */ IParcel** parcel)
-{
-    VALIDATE_NOT_NULL(parcel)
-
-    *parcel = new CDBusParcel();
-    REFCOUNT_ADD(*parcel);
-    return NOERROR;
-}
-
-ECode CDBusChannel::CreateInterfacePack(
-    /* [out] */ IInterfacePack** ipack)
-{
-    VALIDATE_NOT_NULL(ipack);
-
-    *ipack = new InterfacePack();
-    REFCOUNT_ADD(*ipack);
     return NOERROR;
 }
 
@@ -392,6 +358,13 @@ ECode CDBusChannel::StartListening(
         AutoPtr<ThreadPoolExecutor::Runnable> r = new ServiceRunnable(this, stub);
         ec = ThreadPoolExecutor::GetInstance()->RunTask(r);
     }
+
+    {
+        Mutex::AutoLock lock(mLock);
+        while (!mStarted) {
+            mCond.Wait(mLock);
+        }
+    }
     return ec;
 }
 
@@ -411,72 +384,6 @@ ECode CDBusChannel::Match(
     }
     *matched = false;
     return NOERROR;
-}
-
-ECode CDBusChannel::MarshalInterface(
-    /* [in] */ IInterface* object,
-    /* [out] */ IInterfacePack** ipack)
-{
-    VALIDATE_NOT_NULL(ipack);
-
-    InterfaceID iid;
-    object->GetInterfaceID(object, &iid);
-    InterfacePack* pack = new InterfacePack();
-
-    AutoPtr<IStub> stub;
-    ECode ec = FindExportObject(mType, IObject::Probe(object),
-            (IStub**)&stub);
-    if (SUCCEEDED(ec)) {
-        CStub* stubObj = (CStub*)stub.Get();
-        CDBusChannel* channel = (CDBusChannel*)stubObj->GetChannel().Get();
-        pack->SetDBusName(channel->mName);
-        pack->SetCoclassID(stubObj->GetTargetCoclassID());
-        pack->SetInterfaceID(iid);
-    }
-    else {
-        IProxy* proxy = IProxy::Probe(object);
-        if (proxy != nullptr) {
-            CProxy* proxyObj = (CProxy*)proxy;
-            CDBusChannel* channel = (CDBusChannel*)proxyObj->GetChannel().Get();
-            pack->SetDBusName(channel->mName);
-            pack->SetCoclassID(proxyObj->GetTargetCoclassID());
-            pack->SetInterfaceID(iid);
-        }
-        else {
-            ec = CoCreateStub(object, mType, (IStub**)&stub);
-            if (FAILED(ec)) {
-                Logger::E("CDBusChannel", "Marshal interface failed.");
-                *ipack = nullptr;
-                return ec;
-            }
-            CStub* stubObj = (CStub*)stub.Get();
-            CDBusChannel* channel = (CDBusChannel*)stubObj->GetChannel().Get();
-            pack->SetDBusName(channel->mName);
-            pack->SetCoclassID(stubObj->GetTargetCoclassID());
-            pack->SetInterfaceID(iid);
-        }
-    }
-
-    *ipack = (IInterfacePack*)pack;
-    REFCOUNT_ADD(*ipack);
-    return NOERROR;
-}
-
-ECode CDBusChannel::UnmarshalInterface(
-    /* [in] */ IInterfacePack* ipack,
-    /* [out] */ IInterface** object)
-{
-    VALIDATE_NOT_NULL(object);
-
-    AutoPtr<IObject> iobject;
-    ECode ec = FindImportObject(mType, ipack, (IObject**)&iobject);
-    if (SUCCEEDED(ec)) {
-        InterfaceID iid;
-        ipack->GetInterfaceID(&iid);
-        *object = iobject->Probe(iid);
-        REFCOUNT_ADD(*object);
-        return NOERROR;
-    }
 }
 
 }

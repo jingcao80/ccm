@@ -14,8 +14,14 @@
 // limitations under the License.
 //=========================================================================
 
+#include "ccmrpc.h"
 #include "CDBusChannelFactory.h"
 #include "CDBusChannel.h"
+#include "CDBusParcel.h"
+#include "CProxy.h"
+#include "CStub.h"
+#include "InterfacePack.h"
+#include "registry.h"
 #include "util/ccmautoptr.h"
 
 namespace ccm {
@@ -27,20 +33,125 @@ CDBusChannelFactory::CDBusChannelFactory(
     : mType(type)
 {}
 
+ECode CDBusChannelFactory::CreateInterfacePack(
+    /* [out] */ IInterfacePack** ipack)
+{
+    VALIDATE_NOT_NULL(ipack);
+
+    *ipack = new InterfacePack();
+    REFCOUNT_ADD(*ipack);
+    return NOERROR;
+}
+
+ECode CDBusChannelFactory::CreateParcel(
+    /* [out] */ IParcel** parcel)
+{
+    VALIDATE_NOT_NULL(parcel)
+
+    *parcel = new CDBusParcel();
+    REFCOUNT_ADD(*parcel);
+    return NOERROR;
+}
+
 ECode CDBusChannelFactory::CreateChannel(
     /* [in] */ RPCPeer peer,
     /* [out] */ IRPCChannel** channel)
 {
     VALIDATE_NOT_NULL(channel);
 
-    AutoPtr<CDBusChannel> channelObj = new CDBusChannel();
-    ECode ec = channelObj->Initialize(mType, peer);
+    *channel = (IRPCChannel*)new CDBusChannel(mType, peer);
+    REFCOUNT_ADD(*channel);
+    return NOERROR;
+}
+
+ECode CDBusChannelFactory::MarshalInterface(
+    /* [in] */ IInterface* object,
+    /* [out] */ IInterfacePack** ipack)
+{
+    VALIDATE_NOT_NULL(ipack);
+
+    InterfaceID iid;
+    object->GetInterfaceID(object, &iid);
+    InterfacePack* pack = new InterfacePack();
+
+    AutoPtr<IStub> stub;
+    ECode ec = FindExportObject(mType, IObject::Probe(object),
+            (IStub**)&stub);
+    if (SUCCEEDED(ec)) {
+        CDBusChannel* channel = CDBusChannel::GetStubChannel(stub);
+        pack->SetDBusName(channel->mName);
+        pack->SetCoclassID(((CStub*)stub.Get())->GetTargetCoclassID());
+        pack->SetInterfaceID(iid);
+    }
+    else {
+        IProxy* proxy = IProxy::Probe(object);
+        if (proxy != nullptr) {
+            CDBusChannel* channel = CDBusChannel::GetProxyChannel(proxy);
+            pack->SetDBusName(channel->mName);
+            pack->SetCoclassID(((CProxy*)proxy)->GetTargetCoclassID());
+            pack->SetInterfaceID(iid);
+        }
+        else {
+            ec = CoCreateStub(object, mType, (IStub**)&stub);
+            if (FAILED(ec)) {
+                Logger::E("CDBusChannel", "Marshal interface failed.");
+                *ipack = nullptr;
+                return ec;
+            }
+            CDBusChannel* channel = CDBusChannel::GetStubChannel(stub);
+            pack->SetDBusName(channel->mName);
+            pack->SetCoclassID(((CStub*)stub.Get())->GetTargetCoclassID());
+            pack->SetInterfaceID(iid);
+            RegisterExportObject(mType, IObject::Probe(object), stub);
+        }
+    }
+
+    *ipack = (IInterfacePack*)pack;
+    REFCOUNT_ADD(*ipack);
+    return NOERROR;
+}
+
+ECode CDBusChannelFactory::UnmarshalInterface(
+    /* [in] */ IInterfacePack* ipack,
+    /* [out] */ IInterface** object)
+{
+    VALIDATE_NOT_NULL(object);
+
+    AutoPtr<IObject> iobject;
+    ECode ec = FindImportObject(mType, ipack, (IObject**)&iobject);
+    if (SUCCEEDED(ec)) {
+        InterfaceID iid;
+        ipack->GetInterfaceID(&iid);
+        *object = iobject->Probe(iid);
+        REFCOUNT_ADD(*object);
+        return NOERROR;
+    }
+
+    AutoPtr<IStub> stub;
+    ec = FindExportObject(mType, ipack, (IStub**)&stub);
+    if (SUCCEEDED(ec)) {
+        CStub* stubObj = (CStub*)stub.Get();
+        InterfaceID iid;
+        ipack->GetInterfaceID(&iid);
+        *object = stubObj->GetTarget()->Probe(iid);
+        REFCOUNT_ADD(*object);
+        return NOERROR;
+    }
+
+    CoclassID cid;
+    ipack->GetCoclassID(&cid);
+    AutoPtr<IProxy> proxy;
+    ec = CoCreateProxy(cid, mType, (IProxy**)&proxy);
     if (FAILED(ec)) {
-        *channel = nullptr;
+        *object = nullptr;
         return ec;
     }
-    *channel = channelObj;
-    REFCOUNT_ADD(*channel);
+    CDBusChannel* channel = CDBusChannel::GetProxyChannel(proxy);
+    channel->mName = ((InterfacePack*)ipack)->GetDBusName();
+    RegisterImportObject(mType, ipack, IObject::Probe(proxy));
+
+    *object = proxy;
+    REFCOUNT_ADD(*object);
     return NOERROR;
 }
 

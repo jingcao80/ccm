@@ -17,8 +17,12 @@
 #ifndef CCM_CDBUSCHANNEL_H__
 #define CCM_CDBUSCHANNEL_H__
 
+#include "CProxy.h"
+#include "CStub.h"
 #include "threadpoolexecutor.h"
 #include "util/ccmobject.h"
+#include "util/condition.h"
+#include "util/mutex.h"
 #include <dbus/dbus.h>
 
 namespace ccm {
@@ -54,26 +58,16 @@ private:
     };
 
 public:
-    CDBusChannel();
-
-    ~CDBusChannel();
+    CDBusChannel(
+        /* [in] */ RPCType type,
+        /* [in] */ RPCPeer peer);
 
     CCM_INTERFACE_DECL();
 
     CCM_OBJECT_DECL();
 
-    ECode Initialize(
-        /* [in] */ RPCType type,
-        /* [in] */ RPCPeer peer);
-
     ECode GetRPCType(
         /* [out] */ RPCType* type) override;
-
-    ECode CreateParcel(
-        /* [out] */ IParcel** parcel) override;
-
-    ECode CreateInterfacePack(
-        /* [out] */ IInterfacePack** ipack) override;
 
     ECode IsPeerAlive(
         /* [out] */ Boolean* alive) override;
@@ -102,13 +96,11 @@ public:
         /* [in] */ IInterfacePack* ipack,
         /* [out] */ Boolean* matched) override;
 
-    ECode MarshalInterface(
-        /* [in] */ IInterface* object,
-        /* [out] */ IInterfacePack** ipack) override;
+    static CDBusChannel* GetProxyChannel(
+        /* [in] */ IProxy* proxy);
 
-    ECode UnmarshalInterface(
-        /* [in] */ IInterfacePack* ipack,
-        /* [out] */ IInterface** object) override;
+    static CDBusChannel* GetStubChannel(
+        /* [in] */ IStub* stub);
 
 private:
     ECode UnmarshalArguments(
@@ -118,6 +110,8 @@ private:
         /* [in] */ IParcel* argParcel);
 
 private:
+    friend class CDBusChannelFactory;
+
     static constexpr Boolean DEBUG = false;
     static constexpr const char* STUB_OBJECT_PATH = "/ccm/rpc/CStub";
     static constexpr const char* STUB_INTERFACE_PATH = "ccm.rpc.IStub";
@@ -125,8 +119,22 @@ private:
     RPCType mType;
     RPCPeer mPeer;
     String mName;
-    DBusConnection* mConn;
+    Boolean mStarted;
+    Mutex mLock;
+    Condition mCond;
 };
+
+inline CDBusChannel* CDBusChannel::GetProxyChannel(
+    /* [in] */ IProxy* proxy)
+{
+    return (CDBusChannel*)((CProxy*)proxy)->GetChannel().Get();
+}
+
+inline CDBusChannel* CDBusChannel::GetStubChannel(
+    /* [in] */ IStub* stub)
+{
+    return (CDBusChannel*)((CStub*)stub)->GetChannel().Get();
+}
 
 }
 

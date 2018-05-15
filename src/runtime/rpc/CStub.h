@@ -63,7 +63,6 @@ private:
 
     ECode MarshalResults(
         /* [in] */ IMetaMethod* method,
-        /* [in] */ ECode ec,
         /* [in] */ IArgumentList* argList,
         /* [out] */ IParcel** resParcel);
 
@@ -88,6 +87,9 @@ public:
 
     CCM_OBJECT_DECL();
 
+    void OnLastStrongRef(
+        /* [in] */ const void* id) override;
+
     ECode Match(
         /* [in] */ IInterfacePack* ipack,
         /* [out] */ Boolean* matched);
@@ -95,6 +97,8 @@ public:
     ECode Invoke(
         /* [in] */ IParcel* argParcel,
         /* [out] */ IParcel** resParcel);
+
+    AutoPtr<IObject> GetTarget();
 
     AutoPtr<IRPCChannel> GetChannel();
 

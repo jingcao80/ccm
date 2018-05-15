@@ -83,6 +83,8 @@ private:
         /* [in] */ const Mutex&);
 
 private:
+    friend class Condition;
+
     pthread_mutex_t mMutex;
 };
 

@@ -111,7 +111,7 @@ public:
         int hash = HashKey(key);
         if (hash == -1) return;
 
-        int index = hash % mBucketSize;
+        int index = (unsigned int)hash % mBucketSize;
         if (mBuckets[index] == nullptr) {
             Bucket* b = new Bucket();
             assignKeyF(&b->mKey, key, this);
@@ -147,7 +147,7 @@ public:
         int hash = HashKey(key);
         if (hash == -1) return false;
 
-        int index = hash % mBucketSize;
+        int index = (unsigned int)hash % mBucketSize;
         Bucket* curr = mBuckets[index];
         while (curr != nullptr) {
             if (!compareF(curr->mKey, key)) return true;
@@ -165,7 +165,7 @@ public:
         int hash = HashKey(key);
         if (hash == -1) return Val(0);
 
-        int index = hash % mBucketSize;
+        int index = (unsigned int)hash % mBucketSize;
         Bucket* curr = mBuckets[index];
         while (curr != nullptr) {
             if (!compareF(curr->mKey, key)) return curr->mValue;
@@ -183,7 +183,7 @@ public:
         int hash = HashKey(key);
         if (hash == -1) return;
 
-        int index = hash % mBucketSize;
+        int index = (unsigned int)hash % mBucketSize;
         Bucket* curr = mBuckets[index];
         Bucket* prev = curr;
         while (curr != nullptr) {

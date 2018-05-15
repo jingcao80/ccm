@@ -40,6 +40,15 @@ InterfacePack::~InterfacePack()
     ReleaseComponentID(mIid.mCid);
 }
 
+ECode InterfacePack:: GetCoclassID(
+    /* [out] */ CoclassID* cid)
+{
+    VALIDATE_NOT_NULL(cid);
+
+    *cid = mCid;
+    return NOERROR;
+}
+
 ECode InterfacePack::GetInterfaceID(
     /* [out] */ InterfaceID* iid)
 {
@@ -64,6 +73,7 @@ ECode InterfacePack::ReadFromParcel(
     source->ReadString(&mDBusName);
     source->ReadCoclassID(&mCid);
     source->ReadInterfaceID(&mIid);
+    return NOERROR;
 }
 
 ECode InterfacePack::WriteToParcel(

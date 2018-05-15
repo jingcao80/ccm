@@ -32,13 +32,7 @@ ECode CoCreateParcel(
 
     AutoPtr<IRPCChannelFactory> factory =
             type == RPCType::Local ? sLocalFactory : sRemoteFactory;
-    AutoPtr<IRPCChannel> channel;
-    ECode ec = factory->CreateChannel(RPCPeer::Proxy, (IRPCChannel**)&channel);
-    if (FAILED(ec)) {
-        *parcel = nullptr;
-        return ec;
-    }
-    return channel->CreateParcel(parcel);
+    return factory->CreateParcel(parcel);
 }
 
 ECode CoCreateInterfacePack(
@@ -49,13 +43,7 @@ ECode CoCreateInterfacePack(
 
     AutoPtr<IRPCChannelFactory> factory =
             type == RPCType::Local ? sLocalFactory : sRemoteFactory;
-    AutoPtr<IRPCChannel> channel;
-    ECode ec = factory->CreateChannel(RPCPeer::Proxy, (IRPCChannel**)&channel);
-    if (FAILED(ec)) {
-        *ipack = nullptr;
-        return ec;
-    }
-    return channel->CreateInterfacePack(ipack);
+    return factory->CreateInterfacePack(ipack);
 }
 
 ECode CoCreateProxy(
@@ -108,13 +96,7 @@ ECode CoMarshalInterface(
 
     AutoPtr<IRPCChannelFactory> factory =
             type == RPCType::Local ? sLocalFactory : sRemoteFactory;
-    AutoPtr<IRPCChannel> channel;
-    ECode ec = factory->CreateChannel(RPCPeer::Stub, (IRPCChannel**)&channel);
-    if (FAILED(ec)) {
-        *ipack = nullptr;
-        return ec;
-    }
-    return channel->MarshalInterface(object, ipack);
+    return factory->MarshalInterface(object, ipack);
 }
 
 ECode CoUnmarshalInterface(
@@ -131,13 +113,7 @@ ECode CoUnmarshalInterface(
 
     AutoPtr<IRPCChannelFactory> factory =
             type == RPCType::Local ? sLocalFactory : sRemoteFactory;
-    AutoPtr<IRPCChannel> channel;
-    ECode ec = factory->CreateChannel(RPCPeer::Stub, (IRPCChannel**)&channel);
-    if (FAILED(ec)) {
-        *object = nullptr;
-        return ec;
-    }
-    return channel->UnmarshalInterface(data, object);
+    return factory->UnmarshalInterface(data, object);
 }
 
 }

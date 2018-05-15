@@ -34,6 +34,7 @@ int main(int argv, char** argc)
 
     ServiceManager::GetInstance()->AddService(String("rpcservice"), srv);
 
+    printf("==== rpc service wait for calling ====\n");
     while (true) {
         sleep(5);
     }

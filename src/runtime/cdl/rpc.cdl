@@ -150,6 +150,9 @@ interface IParcel
 ]
 interface IInterfacePack
 {
+    GetCoclassID(
+        [out] CoclassID* cid);
+
     GetInterfaceID(
         [out] InterfaceID* iid);
 
@@ -178,12 +181,6 @@ interface IRPCChannel
     GetRPCType(
         [out] RPCType* type);
 
-    CreateParcel(
-        [out] IParcel** parcel);
-
-    CreateInterfacePack(
-        [out] IInterfacePack** ipack);
-
     IsPeerAlive(
         [out] Boolean* alive);
 
@@ -210,14 +207,6 @@ interface IRPCChannel
     Match(
         [in] IInterfacePack* ipack,
         [out] Boolean* matched);
-
-    MarshalInterface(
-        [in] IInterface* object,
-        [out] IInterfacePack** ipack);
-
-    UnmarshalInterface(
-        [in] IInterfacePack* data,
-        [out] IInterface** object);
 }
 
 [
@@ -226,9 +215,23 @@ interface IRPCChannel
 ]
 interface IRPCChannelFactory
 {
+    CreateInterfacePack(
+        [out] IInterfacePack** ipack);
+
+    CreateParcel(
+        [out] IParcel** parcel);
+
     CreateChannel(
         [in] RPCPeer peer,
         [out] IRPCChannel** channel);
+
+    MarshalInterface(
+        [in] IInterface* object,
+        [out] IInterfacePack** ipack);
+
+    UnmarshalInterface(
+        [in] IInterfacePack* data,
+        [out] IInterface** object);
 }
 
 [

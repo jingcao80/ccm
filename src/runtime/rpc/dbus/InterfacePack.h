@@ -47,6 +47,9 @@ public:
 
     CCM_INTERFACE_DECL();
 
+    ECode GetCoclassID(
+        /* [out] */ CoclassID* cid);
+
     ECode GetInterfaceID(
         /* [out] */ InterfaceID* iid) override;
 

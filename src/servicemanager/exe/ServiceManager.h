@@ -22,6 +22,7 @@
 #include <ccmrefbase.h>
 #include "hashmap.h"
 #include "mutex.h"
+#include <dbus/dbus.h>
 
 namespace xos {
 
@@ -50,10 +51,20 @@ public:
     ECode RemoveService(
         /* [in] */ const String& name);
 
+    static DBusHandlerResult HandleMessage(
+            /* [in] */ DBusConnection* conn,
+            /* [in] */ DBusMessage* msg,
+            /* [in] */ void* arg);
+
 private:
     ServiceManager() {}
     ServiceManager(
         /* [in] */ ServiceManager&) {}
+
+public:
+    static constexpr const char* DBUS_NAME = "xos.servicemanager";
+    static constexpr const char* OBJECT_PATH = "/xos/servicemanager";
+    static constexpr const char* INTERFACE_PATH = "xos.servicemanager.IServiceManager";
 
 private:
     static AutoPtr<ServiceManager> sInstance;

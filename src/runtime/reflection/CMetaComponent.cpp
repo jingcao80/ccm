@@ -82,8 +82,7 @@ ECode CMetaComponent::GetComponentID(
 {
     VALIDATE_NOT_NULL(cid);
 
-    cid->mUuid = mCid.mUuid;
-    cid->mUrl = mCid.mUrl;
+    *cid = mCid;
     return NOERROR;
 }
 

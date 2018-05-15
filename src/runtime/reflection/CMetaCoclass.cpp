@@ -79,8 +79,7 @@ ECode CMetaCoclass::GetCoclassID(
 {
     VALIDATE_NOT_NULL(cid);
 
-    cid->mUuid = mCid.mUuid;
-    cid->mCid = mCid.mCid;
+    *cid = mCid;
     return NOERROR;
 }
 

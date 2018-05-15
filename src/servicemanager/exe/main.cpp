@@ -22,9 +22,6 @@
 using ccm::Logger;
 using xos::ServiceManager;
 
-static const char* SERVICE_MANAGER_DBUS_NAME = "xos.servicemanager";
-static const char* SERVICE_MANAGER_INTERFACE_PATH = "xos.servicemanager";
-
 int main(int argv, char** argc)
 {
     DBusError err;
@@ -39,7 +36,7 @@ int main(int argv, char** argc)
         return -1;
     }
 
-    dbus_bus_request_name(conn, SERVICE_MANAGER_DBUS_NAME,
+    dbus_bus_request_name(conn, ServiceManager::DBUS_NAME,
             DBUS_NAME_FLAG_REPLACE_EXISTING, &err);
     if (dbus_error_is_set(&err)) {
         Logger::E("servicemanager", "Request servicemanager dbus name failed, error is \"%s\".",
@@ -50,139 +47,30 @@ int main(int argv, char** argc)
         return -1;
     }
 
+    DBusObjectPathVTable opVTable;
+
+    opVTable.unregister_function = nullptr;
+    opVTable.message_function = ServiceManager::HandleMessage;
+
+    dbus_connection_register_object_path(conn,
+            ServiceManager::OBJECT_PATH, &opVTable, nullptr);
+
     while (true) {
-        dbus_bool_t res = dbus_connection_read_write(conn, -1);
-        if (!res) {
-            Logger::E("servicemanager", "Disconnect to bus daemon.");
-            return -1;
-        }
-        DBusMessage* msg = dbus_connection_pop_message(conn);
-        if (dbus_message_is_method_call(msg,
-                SERVICE_MANAGER_INTERFACE_PATH, "AddService")) {
-            DBusMessageIter args;
-            DBusMessageIter subArg;
-            void* data = nullptr;
-            Integer size = 0;
+        DBusDispatchStatus status;
 
-            if (!dbus_message_iter_init(msg, &args)) {
-                Logger::E("ServiceManager", "\"AddService\" message has no arguments.");
-                continue;
-            }
-            if (DBUS_TYPE_STRING != dbus_message_iter_get_arg_type(&args)) {
-                Logger::E("ServiceManager", "\"AddService\" message has no string arguments.");
-                continue;
-            }
-            const char* str;
-            dbus_message_iter_get_basic(&args, &str);
-            dbus_message_iter_next(&args);
-            if (DBUS_TYPE_ARRAY != dbus_message_iter_get_arg_type(&args)) {
-                Logger::E("ServiceManager", "\"AddService\" message has no array arguments.");
-                continue;
-            }
-            dbus_message_iter_recurse(&args, &subArg);
-            dbus_message_iter_get_fixed_array(&subArg, &data, (int*)&size);
+        do {
+            dbus_connection_read_write_dispatch(conn, -1);
+        } while ((status = dbus_connection_get_dispatch_status(conn))
+                == DBUS_DISPATCH_DATA_REMAINS);
 
-            AutoPtr<IParcel> parcel;
-            CoCreateParcel(RPCType::Local, (IParcel**)&parcel);
-            parcel->SetData(static_cast<Byte*>(data), size);
-            ServiceManager::InterfacePack ipack;
-            parcel->ReadString(&ipack.mDBusName);
-            parcel->ReadCoclassID(&ipack.mCid);
-            parcel->ReadInterfaceID(&ipack.mIid);
-            ECode ec = ServiceManager::GetInstance()->AddService(String(str), ipack);
-
-            DBusMessage* reply = dbus_message_new_method_return(msg);
-            dbus_message_iter_init_append(reply, &args);
-            dbus_message_iter_append_basic(&args, DBUS_TYPE_INT32, &ec);
-            dbus_uint32_t serial = 0;
-            if (!dbus_connection_send(conn, reply, &serial)) {
-                Logger::E("ServiceManager", "Send reply message failed.");
-            }
-            dbus_connection_flush(conn);
-            dbus_message_unref(reply);
-        }
-        else if (dbus_message_is_method_call(msg,
-                SERVICE_MANAGER_INTERFACE_PATH, "GetService")) {
-            DBusMessageIter args;
-            DBusMessageIter subArg;
-
-            if (!dbus_message_iter_init(msg, &args)) {
-                Logger::E("ServiceManager", "\"AddService\" message has no arguments.");
-                continue;
-            }
-            if (DBUS_TYPE_STRING != dbus_message_iter_get_arg_type(&args)) {
-                Logger::E("ServiceManager", "\"AddService\" message has no string arguments.");
-                continue;
-            }
-            const char* str;
-            dbus_message_iter_get_basic(&args, &str);
-
-            ServiceManager::InterfacePack* ipack;
-            ECode ec = ServiceManager::GetInstance()->GetService(String(str), &ipack);
-
-            DBusMessage* reply = dbus_message_new_method_return(msg);
-            dbus_message_iter_init_append(reply, &args);
-            dbus_message_iter_append_basic(&args, DBUS_TYPE_INT32, &ec);
-            HANDLE resData = 0;
-            Long resSize = 0;
-            if (ipack != nullptr) {
-                AutoPtr<IParcel> parcel;
-                CoCreateParcel(RPCType::Local, (IParcel**)&parcel);
-                parcel->WriteString(ipack->mDBusName);
-                parcel->WriteCoclassID(ipack->mCid);
-                parcel->WriteInterfaceID(ipack->mIid);
-                parcel->GetData(&resData);
-                parcel->GetDataSize(&resSize);
-            }
-            dbus_message_iter_open_container(&args,
-                    DBUS_TYPE_ARRAY, DBUS_TYPE_BYTE_AS_STRING, &subArg);
-            dbus_message_iter_append_fixed_array(&subArg,
-                    DBUS_TYPE_BYTE, &resData, resSize);
-            dbus_message_iter_close_container(&args, &subArg);
-
-            dbus_uint32_t serial = 0;
-            if (!dbus_connection_send(conn, reply, &serial)) {
-                Logger::E("ServiceManager", "Send reply message failed.");
-            }
-            dbus_connection_flush(conn);
-            dbus_message_unref(reply);
-        }
-        else if (dbus_message_is_method_call(msg,
-                SERVICE_MANAGER_INTERFACE_PATH, "RemoveService")) {
-            DBusMessageIter args;
-            DBusMessageIter subArg;
-
-            if (!dbus_message_iter_init(msg, &args)) {
-                Logger::E("ServiceManager", "\"AddService\" message has no arguments.");
-                continue;
-            }
-            if (DBUS_TYPE_STRING != dbus_message_iter_get_arg_type(&args)) {
-                Logger::E("ServiceManager", "\"AddService\" message has no string arguments.");
-                continue;
-            }
-            const char* str;
-            dbus_message_iter_get_basic(&args, &str);
-
-            ECode ec = ServiceManager::GetInstance()->RemoveService(String(str));
-
-            DBusMessage* reply = dbus_message_new_method_return(msg);
-            dbus_message_iter_init_append(reply, &args);
-            dbus_message_iter_append_basic(&args, DBUS_TYPE_INT32, &ec);
-            dbus_uint32_t serial = 0;
-            if (!dbus_connection_send(conn, reply, &serial)) {
-                Logger::E("ServiceManager", "Send reply message failed.");
-            }
-            dbus_connection_flush(conn);
-            dbus_message_unref(reply);
-        }
-        else {
-            const char* sign = dbus_message_get_signature(msg);
-            if (sign != nullptr) {
-                Logger::D("servicemanager",
-                        "The message which signature is \"%\" does not be handled.", sign);
-            }
+        if (status == DBUS_DISPATCH_NEED_MEMORY) {
+            Logger::E("CDBusChannel", "DBus dispatching needs more memory.");
+            break;
         }
     }
+
+    dbus_connection_close(conn);
+    dbus_connection_unref(conn);
 
     return 0;
 }

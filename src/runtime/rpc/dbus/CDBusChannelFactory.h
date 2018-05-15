@@ -31,9 +31,23 @@ public:
 
     CCM_INTERFACE_DECL();
 
+    ECode CreateInterfacePack(
+        /* [out] */ IInterfacePack** ipack) override;
+
+    ECode CreateParcel(
+        /* [out] */ IParcel** parcel) override;
+
     ECode CreateChannel(
         /* [in] */ RPCPeer peer,
         /* [out] */ IRPCChannel** channel);
+
+    ECode MarshalInterface(
+        /* [in] */ IInterface* object,
+        /* [out] */ IInterfacePack** ipack) override;
+
+    ECode UnmarshalInterface(
+        /* [in] */ IInterfacePack* ipack,
+        /* [out] */ IInterface** object) override;
 
 private:
     RPCType mType;
