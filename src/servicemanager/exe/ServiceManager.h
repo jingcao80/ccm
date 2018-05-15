@@ -14,8 +14,8 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __XOS_SERVICEMANAGER_H__
-#define __XOS_SERVICEMANAGER_H__
+#ifndef __PISCES_SERVICEMANAGER_H__
+#define __PISCES_SERVICEMANAGER_H__
 
 #include <ccmapi.h>
 #include <ccmautoptr.h>
@@ -24,7 +24,7 @@
 #include "mutex.h"
 #include <dbus/dbus.h>
 
-namespace xos {
+namespace pisces {
 
 class ServiceManager
     : public LightRefBase
@@ -62,9 +62,9 @@ private:
         /* [in] */ ServiceManager&) {}
 
 public:
-    static constexpr const char* DBUS_NAME = "xos.servicemanager";
-    static constexpr const char* OBJECT_PATH = "/xos/servicemanager";
-    static constexpr const char* INTERFACE_PATH = "xos.servicemanager.IServiceManager";
+    static constexpr const char* DBUS_NAME = "pisces.servicemanager";
+    static constexpr const char* OBJECT_PATH = "/pisces/servicemanager";
+    static constexpr const char* INTERFACE_PATH = "pisces.servicemanager.IServiceManager";
 
 private:
     static AutoPtr<ServiceManager> sInstance;
@@ -75,4 +75,4 @@ private:
 
 }
 
-#endif // __XOS_SERVICEMANAGER_H__
+#endif // __PISCES_SERVICEMANAGER_H__

@@ -14,14 +14,14 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __XOS_SERVICEMANAGER_H__
-#define __XOS_SERVICEMANAGER_H__
+#ifndef __PISCES_SERVICEMANAGER_H__
+#define __PISCES_SERVICEMANAGER_H__
 
 #include <ccmapi.h>
 #include <ccmautoptr.h>
 #include <ccmrefbase.h>
 
-namespace xos {
+namespace pisces {
 
 class COM_PUBLIC ServiceManager
     : public LightRefBase
@@ -51,4 +51,4 @@ private:
 
 }
 
-#endif // __XOS_SERVICEMANAGER_H__
+#endif // __PISCES_SERVICEMANAGER_H__

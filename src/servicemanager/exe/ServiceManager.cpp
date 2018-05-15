@@ -16,7 +16,7 @@
 
 #include "ServiceManager.h"
 
-namespace xos {
+namespace pisces {
 
 AutoPtr<ServiceManager> ServiceManager::sInstance = new ServiceManager();
 

@@ -30,13 +30,13 @@
  * limitations under the License.
  */
 
-#ifndef __XOS_MUTEX_H__
-#define __XOS_MUTEX_H__
+#ifndef __PISCES_MUTEX_H__
+#define __PISCES_MUTEX_H__
 
 #include "ccmtypes.h"
 #include <pthread.h>
 
-namespace xos {
+namespace pisces {
 
 class Mutex
 {
@@ -147,4 +147,4 @@ Integer Mutex::TryLock()
 
 }
 
-#endif // __XOS_MUTEX_H__
+#endif // __PISCES_MUTEX_H__

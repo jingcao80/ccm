@@ -20,7 +20,7 @@
 #include <stdio.h>
 
 using ccm::Logger;
-using xos::ServiceManager;
+using pisces::ServiceManager;
 
 int main(int argv, char** argc)
 {

@@ -14,13 +14,13 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __XOS_HASHMAP_H__
-#define __XOS_HASHMAP_H__
+#ifndef __PISCES_HASHMAP_H__
+#define __PISCES_HASHMAP_H__
 
 #include <stdlib.h>
 #include <string.h>
 
-namespace xos {
+namespace pisces {
 
 static const int prime_list[11] =
 {
@@ -231,6 +231,6 @@ private:
     Bucket** mBuckets;
 };
 
-} // namespace xos
+} // namespace pisces
 
-#endif // __XOS_HASHMAP_H__
+#endif // __PISCES_HASHMAP_H__

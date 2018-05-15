@@ -18,11 +18,11 @@
 #include <ccmlogger.h>
 #include <dbus/dbus.h>
 
-namespace xos {
+namespace pisces {
 
-static const char* SERVICE_MANAGER_DBUS_NAME = "xos.servicemanager";
-static const char* SERVICE_MANAGER_OBJECT_PATH = "/xos/servicemanager";
-static const char* SERVICE_MANAGER_INTERFACE_PATH = "xos.servicemanager.IServiceManager";
+static const char* SERVICE_MANAGER_DBUS_NAME = "pisces.servicemanager";
+static const char* SERVICE_MANAGER_OBJECT_PATH = "/pisces/servicemanager";
+static const char* SERVICE_MANAGER_INTERFACE_PATH = "pisces.servicemanager";
 
 AutoPtr<ServiceManager> ServiceManager::sInstance = new ServiceManager();
 
@@ -212,6 +212,7 @@ ECode ServiceManager::GetService(
             AutoPtr<IParcel> parcel;
             CoCreateParcel(RPCType::Local, (IParcel**)&parcel);
             parcel->SetData(static_cast<Byte*>(replyData), replySize);
+
             AutoPtr<IInterfacePack> ipack;
             CoCreateInterfacePack(RPCType::Local, (IInterfacePack**)&ipack);
             ipack->ReadFromParcel(parcel);
