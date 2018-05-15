@@ -25,7 +25,7 @@
 using ccm::test::rpc::CService;
 using ccm::test::rpc::IService;
 using ccm::test::rpc::IID_IService;
-using xos::ServiceManager;
+using pisces::ServiceManager;
 
 int main(int argv, char** argc)
 {

@@ -23,7 +23,7 @@
 
 using ccm::test::rpc::CID_CService;
 using ccm::test::rpc::IService;
-using xos::ServiceManager;
+using pisces::ServiceManager;
 
 int main(int argv, char** argc)
 {
