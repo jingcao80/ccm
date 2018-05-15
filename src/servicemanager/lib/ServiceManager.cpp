@@ -20,10 +20,6 @@
 
 namespace pisces {
 
-static const char* SERVICE_MANAGER_DBUS_NAME = "pisces.servicemanager";
-static const char* SERVICE_MANAGER_OBJECT_PATH = "/pisces/servicemanager";
-static const char* SERVICE_MANAGER_INTERFACE_PATH = "pisces.servicemanager";
-
 AutoPtr<ServiceManager> ServiceManager::sInstance = new ServiceManager();
 
 AutoPtr<ServiceManager> ServiceManager::GetInstance()
@@ -69,9 +65,7 @@ ECode ServiceManager::AddService(
     }
 
     msg = dbus_message_new_method_call(
-            SERVICE_MANAGER_DBUS_NAME,
-            SERVICE_MANAGER_OBJECT_PATH,
-            SERVICE_MANAGER_INTERFACE_PATH,
+            DBUS_NAME, OBJECT_PATH, INTERFACE_PATH,
             "AddService");
     if (msg == nullptr) {
         Logger::E("ServiceManager", "Fail to create dbus message.");
@@ -156,10 +150,7 @@ ECode ServiceManager::GetService(
     }
 
     msg = dbus_message_new_method_call(
-            SERVICE_MANAGER_DBUS_NAME,
-            SERVICE_MANAGER_OBJECT_PATH,
-            SERVICE_MANAGER_INTERFACE_PATH,
-            "GetService");
+            DBUS_NAME, OBJECT_PATH, INTERFACE_PATH, "GetService");
     if (msg == nullptr) {
         Logger::E("ServiceManager", "Fail to create dbus message.");
         ec = E_RUNTIME_EXCEPTION;
@@ -262,10 +253,7 @@ ECode ServiceManager::RemoveService(
     }
 
     msg = dbus_message_new_method_call(
-            SERVICE_MANAGER_DBUS_NAME,
-            SERVICE_MANAGER_OBJECT_PATH,
-            SERVICE_MANAGER_INTERFACE_PATH,
-            "RemoveService");
+            DBUS_NAME, OBJECT_PATH, INTERFACE_PATH, "RemoveService");
     if (msg == nullptr) {
         Logger::E("ServiceManager", "Fail to create dbus message.");
         ec = E_RUNTIME_EXCEPTION;

@@ -46,6 +46,10 @@ private:
         /* [in] */ ServiceManager&) {}
 
 private:
+    static constexpr const char* DBUS_NAME = "pisces.servicemanager";
+    static constexpr const char* OBJECT_PATH = "/pisces/servicemanager";
+    static constexpr const char* INTERFACE_PATH = "pisces.servicemanager.IServiceManager";
+
     static AutoPtr<ServiceManager> sInstance;
 };
 
