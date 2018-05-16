@@ -14,7 +14,7 @@
 # limitations under the License.
 #=========================================================================
 
-set(SM_DIR ${PROJECT_DIR}/src/servicemanager)
+set(SM_DIR ${SRC_DIR}/servicemanager)
 
 add_subdirectory(exe)
 add_subdirectory(lib)

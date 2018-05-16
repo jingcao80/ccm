@@ -38,7 +38,8 @@ int main(int argc, char** argv)
 
     if (options.DoCompile()) {
         Parser parser;
-        if (!parser.Parse(options.GetInputFile(), options.GetMode())) {
+        if (!parser.Parse(options.GetInputFile(),
+                options.GetIncludeDirectories(), options.GetMode())) {
             Logger::E("ccdl", "Parsing failed.");
             return -1;
         }

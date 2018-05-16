@@ -14,7 +14,7 @@
 # limitations under the License.
 #=========================================================================
 
-set(SAMPLE_DIR ${PROJECT_DIR}/src/sample)
+set(SAMPLE_DIR ${SRC_DIR}/sample)
 
 add_subdirectory(component)
 add_subdirectory(client)

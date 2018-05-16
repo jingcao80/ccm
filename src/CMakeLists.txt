@@ -14,30 +14,11 @@
 # limitations under the License.
 #=========================================================================
 
-cmake_minimum_required(VERSION 2.8)
+set(SRC_DIR ${PROJECT_DIR}/src)
 
-file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/inc)
-
-#set(CMAKE_VERBOSE_MAKEFILE on)
-set(PROJECT_DIR ${CMAKE_BINARY_DIR}/../)
-set(BIN_DIR ${PROJECT_DIR}/bin)
-set(INC_DIR ${BIN_DIR}/inc)
-
-include(${PROJECT_DIR}/build/common.cmake)
-
-add_custom_target(
-    clobber
-    COMMAND
-        "${CMAKE_COMMAND}"
-        -E remove_directory ${CMAKE_SOURCE_DIR}/bin
-    COMMAND
-        "${CMAKE_COMMAND}"
-        -E make_directory ${CMAKE_SOURCE_DIR}/bin
-    COMMAND
-        "${CMAKE_COMMAND}"
-        -E make_directory ${CMAKE_SOURCE_DIR}/bin/inc
-    COMMAND
-        "make" clean)
-
-add_subdirectory(src)
-add_subdirectory(test)
+add_subdirectory(runtime/metadata)
+add_subdirectory(ccdl)
+add_subdirectory(runtime)
+#add_subdirectory(libcore)
+add_subdirectory(servicemanager)
+add_subdirectory(sample)

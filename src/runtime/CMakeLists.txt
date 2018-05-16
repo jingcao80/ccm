@@ -16,7 +16,7 @@
 
 project(runtime CXX)
 
-set(RUNTIME_DIR ${PROJECT_DIR}/src/runtime)
+set(RUNTIME_DIR ${SRC_DIR}/runtime)
 set(OBJ_DIR ${CMAKE_BINARY_DIR}/src/runtime)
 
 add_subdirectory(util)

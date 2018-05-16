@@ -76,6 +76,9 @@ void Options::Parse(
         else if (!strcmp("-u", string)) {
             mMode = MODE_USER;
         }
+        else if (!strcmp("-i", string)) {
+            mIncludeDirs = argv[i++];
+        }
         else {
             mInputFile = string;
         }
@@ -91,6 +94,7 @@ void Options::ShowUsage()
            "  -c                Compile the .cdl file to metadata\n"
            "  -d <directory>    Place generated C++ codes into <directory>\n"
            "  -g                Generate C++ codes\n"
+           "  -i                Set directorys which is seperated by \":\" to search .cdl file\n"
            "  -k                Set \"componet\" mode\n"
            "  -m                Set \"metadata\" as metadata input file type\n"
            "  -o <file>         Place the metadata into <file>\n"

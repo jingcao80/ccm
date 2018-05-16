@@ -43,6 +43,13 @@ public:
     ECode GetHashCode(
         /* [out] */ Integer* hash) override;
 
+    ECode Equals(
+        /* [in] */ IInterface* obj,
+        /* [out] */ Boolean* same) override;
+
+    ECode ToString(
+        /* [out] */ String* desc) override;
+
     ECode GetWeakReference(
         /* [out] */ IWeakReference** wr) override;
 

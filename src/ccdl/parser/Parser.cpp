@@ -25,6 +25,7 @@
 
 #include <memory.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 using ccdl::ast::ArrayType;
 using ccdl::ast::PointerType;
@@ -111,6 +112,7 @@ Parser::~Parser()
 
 bool Parser::Parse(
     /* [in] */ const String& filePath,
+    /* [in] */ const String& includeDirs,
     /* [in] */ int mode)
 {
     bool ret = mTokenizer.PushInputFile(filePath);
@@ -120,7 +122,20 @@ bool Parser::Parse(
     }
 
     mMode = mode;
-    mPathPrefix = filePath.Substring(0, filePath.LastIndexOf('/'));
+    String cwd = filePath.Substring(0, filePath.LastIndexOf('/') - 1);
+    if (!cwd.IsNullOrEmpty()) {
+        mIncludeDirs.Add(new String(cwd));
+    }
+    if (!includeDirs.IsNullOrEmpty()) {
+        String dirs = includeDirs;
+        int index = dirs.IndexOf(":");
+        while (index != -1) {
+            mIncludeDirs.Add(new String(dirs.Substring(0, index - 1)));
+            dirs = dirs.Substring(index + 1);
+            index = dirs.IndexOf(":");
+        }
+        mIncludeDirs.Add(new String(dirs));
+    }
 
     mWorld.SetRootFile(filePath);
     mCurrNamespace = mWorld.GetGlobalNamespace();
@@ -1756,7 +1771,23 @@ bool Parser::ParseInclude()
         return false;
     }
 
-    String filePath = mPathPrefix + mTokenizer.GetString();
+    String filePath;
+    for (int i = 0; i < mIncludeDirs.GetSize(); i++) {
+        filePath = String::Format("%s/%s", mIncludeDirs.Get(i)->string(),
+                mTokenizer.GetString().string());
+        if (access(filePath.string(), R_OK) == 0) {
+            break;
+        }
+    }
+    if (filePath.IsNullOrEmpty()) {
+        String message = String::Format("File \"%s\" is invalid.",
+                mTokenizer.GetString().string());
+        LogError(token, message);
+        // jump to next line
+        mTokenizer.SkipCurrentLine();
+        return false;
+    }
+
     if (mParsedFiles.ContainsKey(filePath)) return true;
 
     if (!mTokenizer.PushInputFile(filePath)) {

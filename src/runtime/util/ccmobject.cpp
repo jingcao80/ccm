@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "ccmobject.h"
+#include "ccmautoptr.h"
 
 namespace ccm {
 
@@ -98,6 +99,33 @@ ECode Object::GetHashCode(
     VALIDATE_NOT_NULL(hash);
 
     *hash = (Integer)reinterpret_cast<HANDLE>(this);
+    return NOERROR;
+}
+
+ECode Object::Equals(
+    /* [in] */ IInterface* obj,
+    /* [out] */ Boolean* same)
+{
+    VALIDATE_NOT_NULL(same);
+
+    *same = IObject::Probe(obj) == (IObject*)this;
+    return NOERROR;
+}
+
+ECode Object::ToString(
+    /* [out] */ String* desc)
+{
+    VALIDATE_NOT_NULL(desc);
+
+    AutoPtr<IMetaCoclass> mc;
+    GetCoclass((IMetaCoclass**)&mc);
+    String ns, name;
+    if (mc != nullptr) {
+        mc->GetNamespace(&ns);
+        mc->GetName(&name);
+    }
+    *desc = String::Format("Object[0x%x], Class[%s%s]",
+            this, ns.string(), name.string());
     return NOERROR;
 }
 

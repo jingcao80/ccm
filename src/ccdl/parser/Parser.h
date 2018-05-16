@@ -39,6 +39,7 @@
 #include "../ast/ShiftExpression.h"
 #include "../ast/Type.h"
 #include "../ast/UnaryExpression.h"
+#include "../util/ArrayList.h"
 #include "../util/StringMap.h"
 
 using ccdl::ast::AdditiveExpression;
@@ -101,6 +102,7 @@ public:
 
     bool Parse(
         /* [in] */ const String& filePath,
+        /* [in] */ const String& includeDirs,
         /* [in] */ int mode);
 
     inline std::shared_ptr<Module> GetModule();
@@ -260,7 +262,7 @@ private:
     StringMap<bool> mParsedFiles;
     int mMode;
     Tokenizer mTokenizer;
-    String mPathPrefix;
+    ArrayList<String*> mIncludeDirs;
     World mWorld;
     Pool* mPool;
     Namespace* mCurrNamespace;

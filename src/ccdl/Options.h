@@ -48,6 +48,8 @@ public:
 
     inline int GetMetadataInputType();
 
+    inline String GetIncludeDirectories();
+
     void ShowUsage();
 
 private:
@@ -77,6 +79,7 @@ private:
     String mCodeGenDir;
     String mMetadataOutputFile;
     String mInputFile;
+    String mIncludeDirs;
 };
 
 bool Options::DoCompile()
@@ -127,6 +130,11 @@ int Options::GetMode()
 int Options::GetMetadataInputType()
 {
     return mMetadataInputType;
+}
+
+String Options::GetIncludeDirectories()
+{
+    return mIncludeDirs;
 }
 
 }

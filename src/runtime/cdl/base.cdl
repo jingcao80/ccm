@@ -51,6 +51,13 @@ interface IObject
 
     GetHashCode(
         [out] Integer* hash);
+
+    Equals(
+        [in] IInterface* obj,
+        [out] Boolean* same);
+
+    ToString(
+        [out] String* desc);
 }
 
 [

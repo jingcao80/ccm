@@ -14,30 +14,26 @@
 # limitations under the License.
 #=========================================================================
 
-cmake_minimum_required(VERSION 2.8)
+set(CORE_DIR ${LIBCORE_SRC_DIR}/core)
 
-file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/inc)
+include_directories(
+    ./
+    ../
+    ../../inc
+    ${INC_DIR})
 
-#set(CMAKE_VERBOSE_MAKEFILE on)
-set(PROJECT_DIR ${CMAKE_BINARY_DIR}/../)
-set(BIN_DIR ${PROJECT_DIR}/bin)
-set(INC_DIR ${BIN_DIR}/inc)
+set(SOURCES
+    SyncObject.cpp)
 
-include(${PROJECT_DIR}/build/common.cmake)
+add_library(core STATIC
+    ${SOURCES})
+add_dependencies(core build_libcore)
 
-add_custom_target(
-    clobber
-    COMMAND
-        "${CMAKE_COMMAND}"
-        -E remove_directory ${CMAKE_SOURCE_DIR}/bin
-    COMMAND
-        "${CMAKE_COMMAND}"
-        -E make_directory ${CMAKE_SOURCE_DIR}/bin
-    COMMAND
-        "${CMAKE_COMMAND}"
-        -E make_directory ${CMAKE_SOURCE_DIR}/bin/inc
-    COMMAND
-        "make" clean)
+COPY_AFTER(core ${REFLECTION_DIR}/ccmreflectionapi.h ${INC_DIR})
 
-add_subdirectory(src)
-add_subdirectory(test)
+set(DEPLOY_HEADERS
+    ${REFLECTION_DIR}/ccmreflectionapi.h)
+
+install(FILES
+    ${DEPLOY_HEADERS}
+    DESTINATION ${INC_DIR})
