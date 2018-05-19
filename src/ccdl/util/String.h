@@ -128,6 +128,12 @@ public:
     bool StartsWith(
         /* [in] */ const char* prefix) const;
 
+    bool EndsWith(
+        /* [in] */ const String& suffix) const;
+
+    bool EndsWith(
+        /* [in] */ const char* suffix) const;
+
     String ToLowerCase() const;
 
     String ToUpperCase() const;

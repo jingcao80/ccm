@@ -51,6 +51,7 @@ add_custom_command(
         -c
         -g
         -k
+        -p
         -d ${OBJ_DIR}
         "${COMPONENT_DIR}/FooBarDemo.cdl")
 

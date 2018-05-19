@@ -103,6 +103,7 @@ int main(int argc, char** argv)
         CodeGenerator cg;
         cg.SetDirectory(options.GetCodeGenDirectory());
         cg.SetMetadata(comMetadata.get());
+        cg.SetSparseMode(options.DoInSparseMode());
         switch (options.GetMode()) {
             case Options::MODE_CCMRT:
                 cg.GenerateOnCcmrtMode();

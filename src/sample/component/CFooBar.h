@@ -19,6 +19,8 @@
 
 #include <ccmapi.h>
 #include <ccmobject.h>
+#include "ccm.demo.IFoo.h"
+#include "ccm.demo.IBar.h"
 #include "_ccm_demo_CFooBar.h"
 
 namespace ccm {

@@ -14,6 +14,8 @@
 // limitations under the License.
 //=========================================================================
 
+#include "ccm.demo.CFoo.h"
+#include "ccm.demo.IFoo.h"
 #include "FooBarDemo.h"
 #include <ccmapi.h>
 #include <ccmautoptr.h>

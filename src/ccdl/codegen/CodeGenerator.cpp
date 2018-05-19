@@ -39,6 +39,7 @@ namespace codegen {
 const String CodeGenerator::TAG("CodeGenerator");
 
 CodeGenerator::CodeGenerator()
+    : mSparseMode(false)
 {
     mLicense = String("//=========================================================================\n"
            "// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project\n"
@@ -71,6 +72,9 @@ void CodeGenerator::GenerateOnComponentMode()
     if (!ResolveDirectory()) return;
 
     GenConstantsAndTypesOnComponentMode();
+    if (mSparseMode) {
+        GenInterfaceDeclarationsSparsely();
+    }
     GenCoclasses();
     GenComponentCpp();
     GenMetadataWrapper();
@@ -81,6 +85,10 @@ void CodeGenerator::GenerateOnUserMode()
     if (!ResolveDirectory()) return;
 
     GenConstantsAndTypesOnUserMode();
+    if (mSparseMode) {
+        GenInterfaceDeclarationsSparsely();
+        GenCoclassDeclarationsSparselyOnUserMode();
+    }
     GenComponentCppOnUserMode();
 }
 
@@ -113,8 +121,8 @@ void CodeGenerator::GenConstantsAndTypesOnCcmrtMode()
 
     builder.Append(mLicense);
     builder.Append("\n");
-    builder.Append("#ifndef __CCM_CCMRUNTIMEINTERFACES_H__\n"
-                   "#define __CCM_CCMRUNTIMEINTERFACES_H__\n"
+    builder.Append("#ifndef __CCM_CCMRUNTIMEINTERFACES_H_GEN__\n"
+                   "#define __CCM_CCMRUNTIMEINTERFACES_H_GEN__\n"
                    "\n"
                    "#include \"ccmtypes.h\"\n"
                    "\n"
@@ -176,7 +184,7 @@ void CodeGenerator::GenConstantsAndTypesOnCcmrtMode()
     builder.Append("\n"
                    "}\n"
                    "\n"
-                   "#endif // __CCM_CCMRUNTIMEINTERFACES_H__");
+                   "#endif // __CCM_CCMRUNTIMEINTERFACES_H_GEN__");
 
     String data = builder.ToString();
     file.Write(data.string(), data.GetLength());
@@ -339,13 +347,8 @@ String CodeGenerator::GenInterfaceDeclaration(
 
     builder.AppendFormat("INTERFACE_ID(%s)\n", Uuid(mi->mUuid).Dump().string());
     builder.AppendFormat("interface %s : public ", mi->mName);
-    if (mi->mBaseInterfaceIndex != -1) {
-        builder.Append(
-                mMetaComponent->mInterfaces[mi->mBaseInterfaceIndex]->mName).Append("\n");
-    }
-    else {
-        builder.Append("IInterface\n");
-    }
+    builder.Append(
+            mMetaComponent->mInterfaces[mi->mBaseInterfaceIndex]->mName).Append("\n");
     builder.Append("{\n");
     builder.AppendFormat("    using IInterface::Probe;\n\n"
                          "    inline static %s* Probe(\n"
@@ -667,7 +670,7 @@ void CodeGenerator::GenConstantsAndTypesOnComponentMode()
             mDirectory.string(), mc->mName);
     File file(filePath, File::WRITE);
 
-    String defMacro = String::Format("__%s_h__", mc->mName).ToUpperCase();
+    String defMacro = String::Format("__%s_H_GEN__", mc->mName).ToUpperCase();
 
     StringBuilder builder;
 
@@ -679,34 +682,64 @@ void CodeGenerator::GenConstantsAndTypesOnComponentMode()
     builder.Append("using namespace ccm;\n\n");
 
     builder.AppendFormat("extern const ComponentID CID_%s;\n\n", mc->mName);
-    for (int i = 0; i < mc->mNamespaceNumber; i++) {
-        MetaNamespace* mn = mc->mNamespaces[i];
-        if (mn->mConstantNumber +
-                (mn->mEnumerationNumber - mn->mExternalEnumerationNumber) +
-                (mn->mInterfaceNumber - mn->mExternalInterfaceNumber) == 0) {
-            continue;
+    if (!mSparseMode) {
+        for (int i = 0; i < mc->mNamespaceNumber; i++) {
+            MetaNamespace* mn = mc->mNamespaces[i];
+            if (mn->mConstantNumber +
+                    (mn->mEnumerationNumber - mn->mExternalEnumerationNumber) +
+                    (mn->mInterfaceNumber - mn->mExternalInterfaceNumber) == 0) {
+                continue;
+            }
+            builder.Append(GenNamespaceBegin(String(mn->mName)));
+            builder.Append(GenConstantsInHeader(mn));
+            builder.Append(GenEnumerationPredeclarations(mn));
+            builder.Append(GenInterfaceIDPredeclarations(mn));
+            builder.Append(GenInterfacePredeclarations(mn));
+            builder.Append(GenNamespaceEnd(String(mn->mName)));
+            if (i != mc->mNamespaceNumber - 1) builder.Append("\n");
+            else builder.Append("\n\n");
         }
-        builder.Append(GenNamespaceBegin(String(mn->mName)));
-        builder.Append(GenConstantsInHeader(mn));
-        builder.Append(GenEnumerationPredeclarations(mn));
-        builder.Append(GenInterfaceIDPredeclarations(mn));
-        builder.Append(GenInterfacePredeclarations(mn));
-        builder.Append(GenNamespaceEnd(String(mn->mName)));
-        if (i != mc->mNamespaceNumber - 1) builder.Append("\n");
-        else builder.Append("\n\n");
+        for (int i = 0; i < mc->mNamespaceNumber; i++) {
+            MetaNamespace* mn = mc->mNamespaces[i];
+            if ((mn->mEnumerationNumber - mn->mExternalEnumerationNumber) +
+                    (mn->mInterfaceNumber - mn->mExternalInterfaceNumber) == 0) {
+                continue;
+            }
+            builder.Append(GenNamespaceBegin(String(mn->mName)));
+            builder.Append(GenEnumerationDeclarations(mn));
+            builder.Append(GenInterfaceDeclarations(mn));
+            builder.Append(GenNamespaceEnd(String(mn->mName)));
+            if (i != mc->mNamespaceNumber - 1) builder.Append("\n");
+            else builder.Append("\n");
+        }
     }
-    for (int i = 0; i < mc->mNamespaceNumber; i++) {
-        MetaNamespace* mn = mc->mNamespaces[i];
-        if ((mn->mEnumerationNumber - mn->mExternalEnumerationNumber) +
-                (mn->mInterfaceNumber - mn->mExternalInterfaceNumber) == 0) {
-            continue;
+    else {
+        for (int i = 0; i < mc->mNamespaceNumber; i++) {
+            MetaNamespace* mn = mc->mNamespaces[i];
+            if (mn->mConstantNumber +
+                    (mn->mEnumerationNumber - mn->mExternalEnumerationNumber) +
+                    (mn->mInterfaceNumber - mn->mExternalInterfaceNumber) == 0) {
+                continue;
+            }
+            builder.Append(GenNamespaceBegin(String(mn->mName)));
+            builder.Append(GenConstantsInHeader(mn));
+            builder.Append(GenEnumerationPredeclarations(mn));
+            builder.Append(GenInterfacePredeclarations(mn));
+            builder.Append(GenNamespaceEnd(String(mn->mName)));
+            if (i != mc->mNamespaceNumber - 1) builder.Append("\n");
+            else builder.Append("\n\n");
         }
-        builder.Append(GenNamespaceBegin(String(mn->mName)));
-        builder.Append(GenEnumerationDeclarations(mn));
-        builder.Append(GenInterfaceDeclarations(mn));
-        builder.Append(GenNamespaceEnd(String(mn->mName)));
-        if (i != mc->mNamespaceNumber - 1) builder.Append("\n");
-        else builder.Append("\n");
+        for (int i = 0; i < mc->mNamespaceNumber; i++) {
+            MetaNamespace* mn = mc->mNamespaces[i];
+            if ((mn->mEnumerationNumber - mn->mExternalEnumerationNumber) == 0) {
+                continue;
+            }
+            builder.Append(GenNamespaceBegin(String(mn->mName)));
+            builder.Append(GenEnumerationDeclarations(mn));
+            builder.Append(GenNamespaceEnd(String(mn->mName)));
+            if (i != mc->mNamespaceNumber - 1) builder.Append("\n");
+            else builder.Append("\n");
+        }
     }
     builder.Append("extern void AddComponentCount();\n"
                    "extern void ReleaseComponentCount();\n\n");
@@ -754,6 +787,58 @@ String CodeGenerator::GenNamespaceEnd(
     builder.AppendFormat("} // namespace %s\n", ns.Substring(0, end).string());
 
     return builder.ToString();
+}
+
+void CodeGenerator::GenInterfaceDeclarationsSparsely()
+{
+    MetaComponent* mc = mMetaComponent;
+    for (int i = 0; i < mc->mInterfaceNumber; i++) {
+        MetaInterface* mi = mc->mInterfaces[i];
+        if (mi->mExternal) continue;
+        GenInterfaceDeclarationSparsely(mc->mInterfaces[i]);
+    }
+}
+
+void CodeGenerator::GenInterfaceDeclarationSparsely(
+    /* [in] */ MetaInterface* mi)
+{
+    String filePath = String::Format("%s/%s%s.h", mDirectory.string(),
+            String(mi->mNamespace).Replace("::", ".").string(), mi->mName);
+    File file(filePath, File::WRITE);
+
+    StringBuilder builder;
+
+    builder.Append(mLicense);
+    builder.Append("\n");
+
+    String defMacro = GenDefineMacro(
+            String::Format("%s%s_H_GEN", mi->mNamespace, mi->mName));
+    builder.AppendFormat("#ifndef %s\n", defMacro.string());
+    builder.AppendFormat("#define %s\n\n", defMacro.string());
+    builder.AppendFormat("#include \"%s.h\"\n", mMetaComponent->mName);
+    MetaInterface* bmi = mMetaComponent->mInterfaces[mi->mBaseInterfaceIndex];
+    if (!String("IInterface").Equals(bmi->mName)) {
+        String bfilePath = String::Format("%s%s.h",
+                String(bmi->mNamespace).Replace("::", ".").string(), bmi->mName);
+        builder.AppendFormat("#include \"%s\"\n\n", bfilePath.string());
+    }
+    else {
+        builder.Append("\n");
+    }
+
+    builder.Append("using namespace ccm;\n\n");
+
+    builder.Append(GenNamespaceBegin(String(mi->mNamespace)));
+    builder.AppendFormat("extern const InterfaceID IID_%s;\n\n", mi->mName);
+    builder.Append(GenInterfaceDeclaration(mi));
+    builder.Append(GenNamespaceEnd(String(mi->mNamespace)));
+
+    builder.AppendFormat("\n#endif // %s\n", defMacro.string());
+
+    String data = builder.ToString();
+    file.Write(data.string(), data.GetLength());
+    file.Flush();
+    file.Close();
 }
 
 void CodeGenerator::GenCoclasses()
@@ -836,6 +921,13 @@ void CodeGenerator::GenCoclassCpp(
     builder.Append(mLicense);
     builder.Append("\n");
     builder.AppendFormat("#include \"%s.h\"\n", mk->mName);
+    MetaInterface* mi = mMetaComponent->mInterfaces[mk->mInterfaceIndexes[mk->mInterfaceNumber - 1]];
+    bool isIClassObject = String("IClassObject").Equals(mi->mName);
+    if (!isIClassObject) {
+        String classObjectInterfaceHeader = String::Format("%s%s.h",
+                String(mi->mNamespace).Replace("::", ".").string(), mi->mName);
+        builder.AppendFormat("#include \"%s\"\n", classObjectInterfaceHeader.string());
+    }
     builder.Append("#include <ccmautoptr.h>\n"
                    "#include <ccmclassobject.h>\n"
                    "#include <ccmobject.h>\n"
@@ -1261,7 +1353,7 @@ void CodeGenerator::GenConstantsAndTypesOnUserMode()
             mDirectory.string(), mc->mName);
     File file(filePath, File::WRITE);
 
-    String defMacro = String::Format("__%s_h__", mc->mName).ToUpperCase();
+    String defMacro = String::Format("__%s_H_GEN__", mc->mName).ToUpperCase();
 
     StringBuilder builder;
 
@@ -1273,36 +1365,64 @@ void CodeGenerator::GenConstantsAndTypesOnUserMode()
     builder.Append("using namespace ccm;\n\n");
 
     builder.AppendFormat("extern const ComponentID CID_%s;\n\n", mc->mName);
-    for (int i = 0; i < mc->mNamespaceNumber; i++) {
-        MetaNamespace* mn = mc->mNamespaces[i];
-        if (mn->mConstantNumber +
-                (mn->mEnumerationNumber - mn->mExternalEnumerationNumber) +
-                (mn->mInterfaceNumber - mn->mExternalInterfaceNumber) == 0) {
-            continue;
+    if (!mSparseMode) {
+        for (int i = 0; i < mc->mNamespaceNumber; i++) {
+            MetaNamespace* mn = mc->mNamespaces[i];
+            if (mn->mConstantNumber +
+                    (mn->mEnumerationNumber - mn->mExternalEnumerationNumber) +
+                    (mn->mInterfaceNumber - mn->mExternalInterfaceNumber) == 0) {
+                continue;
+            }
+            builder.Append(GenNamespaceBegin(String(mn->mName)));
+            builder.Append(GenConstantsInHeader(mn));
+            builder.Append(GenEnumerationPredeclarations(mn));
+            builder.Append(GenInterfaceIDPredeclarations(mn));
+            builder.Append(GenInterfacePredeclarations(mn));
+            builder.Append(GenNamespaceEnd(String(mn->mName)));
+            if (i != mc->mNamespaceNumber - 1) builder.Append("\n");
+            else builder.Append("\n\n");
         }
-        builder.Append(GenNamespaceBegin(String(mn->mName)));
-        builder.Append(GenConstantsInHeader(mn));
-        builder.Append(GenEnumerationPredeclarations(mn));
-        builder.Append(GenInterfaceIDPredeclarations(mn));
-        builder.Append(GenInterfacePredeclarations(mn));
-        builder.Append(GenNamespaceEnd(String(mn->mName)));
-        if (i != mc->mNamespaceNumber - 1) builder.Append("\n");
-        else builder.Append("\n\n");
+        for (int i = 0; i < mc->mNamespaceNumber; i++) {
+            MetaNamespace* mn = mc->mNamespaces[i];
+            if ((mn->mEnumerationNumber - mn->mExternalEnumerationNumber)  +
+                    (mn->mInterfaceNumber - mn->mExternalInterfaceNumber) +
+                    mn->mCoclassNumber == 0) {
+                continue;
+            }
+            builder.Append(GenNamespaceBegin(String(mn->mName)));
+            builder.Append(GenEnumerationDeclarations(mn));
+            builder.Append(GenInterfaceDeclarations(mn));
+            builder.Append(GenCoclassDeclarations(mn));
+            builder.Append(GenNamespaceEnd(String(mn->mName)));
+            if (i != mc->mNamespaceNumber - 1) builder.Append("\n");
+            else builder.Append("\n\n");
+        }
     }
-    for (int i = 0; i < mc->mNamespaceNumber; i++) {
-        MetaNamespace* mn = mc->mNamespaces[i];
-        if ((mn->mEnumerationNumber - mn->mExternalEnumerationNumber)  +
-                (mn->mInterfaceNumber - mn->mExternalInterfaceNumber) +
-                mn->mCoclassNumber == 0) {
-            continue;
+    else {
+        for (int i = 0; i < mc->mNamespaceNumber; i++) {
+            MetaNamespace* mn = mc->mNamespaces[i];
+            if (mn->mConstantNumber +
+                    (mn->mEnumerationNumber - mn->mExternalEnumerationNumber) == 0) {
+                continue;
+            }
+            builder.Append(GenNamespaceBegin(String(mn->mName)));
+            builder.Append(GenConstantsInHeader(mn));
+            builder.Append(GenEnumerationPredeclarations(mn));
+            builder.Append(GenNamespaceEnd(String(mn->mName)));
+            if (i != mc->mNamespaceNumber - 1) builder.Append("\n");
+            else builder.Append("\n\n");
         }
-        builder.Append(GenNamespaceBegin(String(mn->mName)));
-        builder.Append(GenEnumerationDeclarations(mn));
-        builder.Append(GenInterfaceDeclarations(mn));
-        builder.Append(GenCoclassDeclarations(mn));
-        builder.Append(GenNamespaceEnd(String(mn->mName)));
-        if (i != mc->mNamespaceNumber - 1) builder.Append("\n");
-        else builder.Append("\n\n");
+        for (int i = 0; i < mc->mNamespaceNumber; i++) {
+            MetaNamespace* mn = mc->mNamespaces[i];
+            if ((mn->mEnumerationNumber - mn->mExternalEnumerationNumber) == 0) {
+                continue;
+            }
+            builder.Append(GenNamespaceBegin(String(mn->mName)));
+            builder.Append(GenEnumerationDeclarations(mn));
+            builder.Append(GenNamespaceEnd(String(mn->mName)));
+            if (i != mc->mNamespaceNumber - 1) builder.Append("\n");
+            else builder.Append("\n\n");
+        }
     }
     builder.AppendFormat("#endif // %s\n", defMacro.string());
 
@@ -1357,22 +1477,79 @@ String CodeGenerator::GenCoclassDeclaration(
     return builder.ToString();
 }
 
-void CodeGenerator::GenComponentCppOnUserMode()
+void CodeGenerator::GenCoclassDeclarationsSparselyOnUserMode()
 {
-    String filePath =
-            String::Format("%s/%s.cpp", mDirectory.string(), mMetaComponent->mName);
+    MetaComponent* mc = mMetaComponent;
+    for (int i = 0; i < mc->mCoclassNumber; i++) {
+        MetaCoclass* mk = mc->mCoclasses[i];
+        GenCoclassDeclarationSparselyOnUserMode(mk);
+    }
+}
+
+void CodeGenerator::GenCoclassDeclarationSparselyOnUserMode(
+    /* [in] */ MetaCoclass* mc)
+{
+    String filePath = String::Format("%s/%s%s.h", mDirectory.string(),
+            String(mc->mNamespace).Replace("::", ".").string(), mc->mName);
     File file(filePath, File::WRITE);
 
     StringBuilder builder;
 
     builder.Append(mLicense);
     builder.Append("\n");
-    builder.AppendFormat("#include \"%s.h\"\n\n"
-                         "#include <ccmapi.h>\n"
-                         "#include <ccmautoptr.h>\n\n"
-                         "using namespace ccm;\n\n", mMetaComponent->mName);
 
+    String defMacro = GenDefineMacro(
+            String::Format("%s%s_H_GEN", mc->mNamespace, mc->mName));
+    builder.AppendFormat("#ifndef %s\n", defMacro.string());
+    builder.AppendFormat("#define %s\n\n", defMacro.string());
+    builder.AppendFormat("#include \"%s.h\"\n\n", mMetaComponent->mName);
+
+    builder.Append("using namespace ccm;\n\n");
+
+    builder.Append(GenNamespaceBegin(String(mc->mNamespace)));
+    builder.Append(GenCoclassDeclaration(mc));
+    builder.Append(GenNamespaceEnd(String(mc->mNamespace)));
+
+    builder.AppendFormat("\n#endif // %s\n", defMacro.string());
+
+    String data = builder.ToString();
+    file.Write(data.string(), data.GetLength());
+    file.Flush();
+    file.Close();
+}
+
+void CodeGenerator::GenComponentCppOnUserMode()
+{
     MetaComponent* mc = mMetaComponent;
+
+    String filePath =
+            String::Format("%s/%s.cpp", mDirectory.string(), mc->mName);
+    File file(filePath, File::WRITE);
+
+    StringBuilder builder;
+
+    builder.Append(mLicense);
+    builder.Append("\n");
+    builder.AppendFormat("#include \"%s.h\"\n", mc->mName);
+    if (mSparseMode) {
+        for (int i = 0; i < mc->mCoclassNumber; i++) {
+            MetaCoclass* mk = mc->mCoclasses[i];
+            String clsHeader = String::Format("%s%s.h",
+                    String(mk->mNamespace).Replace("::", ".").string(), mk->mName);
+            builder.AppendFormat("#include \"%s\"\n", clsHeader.string());
+        }
+        for (int i = 0; i < mc->mInterfaceNumber; i++) {
+            MetaInterface* mi = mc->mInterfaces[i];
+            if (mi->mExternal || !String(mi->mName).EndsWith("ClassObject")) continue;
+            String intfHeader = String::Format("%s%s.h",
+                    String(mi->mNamespace).Replace("::", ".").string(), mi->mName);
+            builder.AppendFormat("#include \"%s\"\n", intfHeader.string());
+        }
+    }
+    builder.Append("\n#include <ccmapi.h>\n"
+                     "#include <ccmautoptr.h>\n\n"
+                     "using namespace ccm;\n\n");
+
     builder.Append(GenComponentID());
     builder.Append("\n");
     for (int i = 0; i < mc->mNamespaceNumber; i++) {

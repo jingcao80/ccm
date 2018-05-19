@@ -54,6 +54,9 @@ public:
     void SetLicense(
         /* [in] */ const String& license);
 
+    inline void SetSparseMode(
+        /* [in] */ bool sparseMode);
+
 private:
     bool ResolveDirectory();
 
@@ -79,6 +82,11 @@ private:
 
     String GenInterfacePredeclarations(
         /* [in] */ MetaNamespace* mn);
+
+    void GenInterfaceDeclarationsSparsely();
+
+    void GenInterfaceDeclarationSparsely(
+        /* [in] */ MetaInterface* mi);
 
     String GenInterfaceDeclarations(
         /* [in] */ MetaNamespace* mn);
@@ -165,6 +173,11 @@ private:
     String GenCoclassDeclaration(
         /* [in] */ MetaCoclass* mc);
 
+    void GenCoclassDeclarationsSparselyOnUserMode();
+
+    void GenCoclassDeclarationSparselyOnUserMode(
+        /* [in] */ MetaCoclass* mc);
+
     void GenComponentCppOnUserMode();
 
     String GenCoclassesOnUserMode(
@@ -183,6 +196,7 @@ private:
     String mDirectory;
     MetaComponent* mMetaComponent;
     String mLicense;
+    bool mSparseMode;
 };
 
 void CodeGenerator::SetDirectory(
@@ -195,6 +209,12 @@ void CodeGenerator::SetMetadata(
     /* [in] */ MetaComponent* component)
 {
     mMetaComponent = component;
+}
+
+void CodeGenerator::SetSparseMode(
+    /* [in] */ bool sparseMode)
+{
+    mSparseMode = sparseMode;
 }
 
 }

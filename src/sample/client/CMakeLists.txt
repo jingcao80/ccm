@@ -45,6 +45,7 @@ add_custom_command(
         "${BIN_DIR}/ccdl"
         -g
         -u
+        -p
         -s
         -d ${OBJ_DIR}
         "${BIN_DIR}/FooBarDemo.so")

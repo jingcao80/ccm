@@ -27,6 +27,7 @@ Options::Options(
     , mDoCompile(false)
     , mDoGenerate(false)
     , mDoSaveMetadata(false)
+    , mSparseMode(false)
     , mOptionNumber(argc)
     , mMode(0)
     , mMetadataInputType(0)
@@ -67,6 +68,9 @@ void Options::Parse(
             mDoSaveMetadata = true;
             mMetadataOutputFile = argv[i++];
         }
+        else if (!strcmp("-p", string)) {
+            mSparseMode = true;
+        }
         else if (!strcmp("-r", string)) {
             mMode = MODE_CCMRT;
         }
@@ -98,6 +102,7 @@ void Options::ShowUsage()
            "  -k                Set \"componet\" mode\n"
            "  -m                Set \"metadata\" as metadata input file type\n"
            "  -o <file>         Place the metadata into <file>\n"
+           "  -p                Generate interface declarations into seperate files in \"component\" mode or \"user\" mode\n"
            "  -r                Set \"ccmrt\" mode\n"
            "  -s                Set \"so\" as metadata input file type\n"
            "  -u                Set \"user\" mode\n");

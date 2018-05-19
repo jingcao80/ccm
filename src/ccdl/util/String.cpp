@@ -422,6 +422,37 @@ bool String::StartsWith(
     return IndexOf(prefix) == 0;
 }
 
+bool String::EndsWith(
+    /* [in] */ const String& suffix) const
+{
+    if (IsNullOrEmpty() || suffix.IsNullOrEmpty()) {
+        return false;
+    }
+
+    if (suffix.GetLength() > GetLength()) {
+        return false;
+    }
+
+    String substr = Substring(GetLength() - suffix.GetLength());
+    return substr.StartsWith(suffix);
+}
+
+bool String::EndsWith(
+    /* [in] */ const char* suffix) const
+{
+    if (IsNullOrEmpty() || suffix == nullptr || suffix[0] == '\0') {
+        return false;
+    }
+
+    int len = strlen(suffix);
+    if (len > GetLength()) {
+        return false;
+    }
+
+    String substr = Substring(GetLength() - len);
+    return substr.StartsWith(suffix);
+}
+
 String String::ToLowerCase() const
 {
     if (IsNullOrEmpty()) return *this;

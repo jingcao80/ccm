@@ -36,6 +36,8 @@ public:
 
     inline bool DoShowUsage();
 
+    inline bool DoInSparseMode();
+
     inline int GetOptionNumber();
 
     inline String GetInputFile();
@@ -70,6 +72,7 @@ private:
     bool mDoCompile;
     bool mDoGenerate;
     bool mDoSaveMetadata;
+    bool mSparseMode;
 
     int mOptionNumber;
     int mMode;
@@ -100,6 +103,11 @@ bool Options::DoGenerateCode()
 bool Options::DoShowUsage()
 {
     return mShowUsage;
+}
+
+bool Options::DoInSparseMode()
+{
+    return mSparseMode;
 }
 
 int Options::GetOptionNumber()
