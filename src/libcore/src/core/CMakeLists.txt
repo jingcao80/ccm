@@ -20,20 +20,20 @@ include_directories(
     ./
     ../
     ../../inc
-    ${INC_DIR})
+    ${INC_DIR}
+    ${OBJ_DIR})
 
 set(SOURCES
-    SyncObject.cpp)
+    NativeLockWord.cpp
+    NativeMonitor.cpp
+    NativeMutex.cpp
+    NativeObject.cpp
+    NativeRuntime.cpp
+    NativeThread.cpp
+    SyncObject.cpp
+    init.cpp
+    nativeapi.cpp)
 
 add_library(core STATIC
     ${SOURCES})
 add_dependencies(core build_libcore)
-
-COPY_AFTER(core ${REFLECTION_DIR}/ccmreflectionapi.h ${INC_DIR})
-
-set(DEPLOY_HEADERS
-    ${REFLECTION_DIR}/ccmreflectionapi.h)
-
-install(FILES
-    ${DEPLOY_HEADERS}
-    DESTINATION ${INC_DIR})

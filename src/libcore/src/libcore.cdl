@@ -21,6 +21,7 @@
 module libcore
 {
 
+include "core/Exceptions.cdl"
 include "core/ISynchronize.cdl"
 
 }

@@ -14,50 +14,32 @@
 // limitations under the License.
 //=========================================================================
 
-#include "core/SyncObject.h"
-#include "core/nativeapi.h"
+#include "core/NativeRuntime.h"
+#include "core/NativeThread.h"
 
 namespace ccm {
 namespace core {
 
-CCM_INTERFACE_IMPL_1(SyncObject, Object, ISynchronize);
+NativeRuntime* NativeRuntime::sInstance = nullptr;
 
-ECode SyncObject::Lock()
+Boolean NativeRuntime::Create()
 {
-    return NOERROR;
+    if (sInstance != nullptr) {
+        return false;
+    }
+    sInstance = new NativeRuntime();
+    if (!sInstance->Init()) {
+        sInstance = nullptr;
+        return false;
+    }
+    return true;
 }
 
-ECode SyncObject::Unlock()
+Boolean NativeRuntime::Init()
 {
-    return NOERROR;
-}
+    NativeThread::Startup();
 
-ECode SyncObject::Notify()
-{
-    return NOERROR;
-}
-
-ECode SyncObject::NotifyAll()
-{
-    return NativeObjectNotifyAll(mNativeObject);
-}
-
-ECode SyncObject::Wait()
-{
-    return NOERROR;
-}
-
-ECode SyncObject::Wait(
-    /* [in] */ Long millis)
-{
-    return NOERROR;
-}
-
-ECode SyncObject::Wait(
-    /* [in] */ Long millis,
-    /* [in] */ Integer nanos)
-{
-    return NOERROR;
+    return true;
 }
 
 }

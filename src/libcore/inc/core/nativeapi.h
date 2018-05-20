@@ -14,51 +14,18 @@
 // limitations under the License.
 //=========================================================================
 
-#include "core/SyncObject.h"
-#include "core/nativeapi.h"
+#ifndef __CCM_CORE_NATIVEAPI_H__
+#define __CCM_CORE_NATIVEAPI_H__
+
+#include "ccmtypes.h"
 
 namespace ccm {
 namespace core {
 
-CCM_INTERFACE_IMPL_1(SyncObject, Object, ISynchronize);
-
-ECode SyncObject::Lock()
-{
-    return NOERROR;
-}
-
-ECode SyncObject::Unlock()
-{
-    return NOERROR;
-}
-
-ECode SyncObject::Notify()
-{
-    return NOERROR;
-}
-
-ECode SyncObject::NotifyAll()
-{
-    return NativeObjectNotifyAll(mNativeObject);
-}
-
-ECode SyncObject::Wait()
-{
-    return NOERROR;
-}
-
-ECode SyncObject::Wait(
-    /* [in] */ Long millis)
-{
-    return NOERROR;
-}
-
-ECode SyncObject::Wait(
-    /* [in] */ Long millis,
-    /* [in] */ Integer nanos)
-{
-    return NOERROR;
-}
+ECode NativeObjectNotifyAll(
+    /* [in] */ HANDLE handle);
 
 }
 }
+
+#endif // __CCM_CORE_NATIVEAPI_H__

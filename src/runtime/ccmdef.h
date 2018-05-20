@@ -17,6 +17,9 @@
 #ifndef __CCM_CCMDEF_H__
 #define __CCM_CCMDEF_H__
 
+#if defined(_DEBUG)
+#include <assert.h>
+#endif
 #include <stdint.h>
 
 namespace ccm {
@@ -46,6 +49,28 @@ namespace ccm {
 #define INIT_PROI_9 __attribute__ ((init_priority (4500)))
 #define INIT_PROI_10 __attribute__ ((init_priority (5000)))
 
+#define CONS_PROI_1 __attribute__ ((constructor (500)))
+#define CONS_PROI_2 __attribute__ ((constructor (1000)))
+#define CONS_PROI_3 __attribute__ ((constructor (1500)))
+#define CONS_PROI_4 __attribute__ ((constructor (2000)))
+#define CONS_PROI_5 __attribute__ ((constructor (2500)))
+#define CONS_PROI_6 __attribute__ ((constructor (3000)))
+#define CONS_PROI_7 __attribute__ ((constructor (3500)))
+#define CONS_PROI_8 __attribute__ ((constructor (4000)))
+#define CONS_PROI_9 __attribute__ ((constructor (4500)))
+#define CONS_PROI_10 __attribute__ ((constructor (5000)))
+
+#define DEST_PROI_1 __attribute__ ((destructor (500)))
+#define DEST_PROI_2 __attribute__ ((destructor (1000)))
+#define DEST_PROI_3 __attribute__ ((destructor (1500)))
+#define DEST_PROI_4 __attribute__ ((destructor (2000)))
+#define DEST_PROI_5 __attribute__ ((destructor (2500)))
+#define DEST_PROI_6 __attribute__ ((destructor (3000)))
+#define DEST_PROI_7 __attribute__ ((destructor (3500)))
+#define DEST_PROI_8 __attribute__ ((destructor (4000)))
+#define DEST_PROI_9 __attribute__ ((destructor (4500)))
+#define DEST_PROI_10 __attribute__ ((destructor (5000)))
+
 #define REFCOUNT_ADD(i)     if (i) { (i)->AddRef(); }
 #define REFCOUNT_RELEASE(i) if (i) { (i)->Release(); }
 
@@ -66,6 +91,26 @@ namespace ccm {
 #define ALIGN(v) ALIGN4(v)
 #elif defined(__x86_64__)
 #define ALIGN(v) ALIGN8(v)
+#endif
+
+#ifndef CHECK
+#if defined(_DEBUG)
+#define CHECK(e)    assert(e)
+#else
+#define CHECK(e)
+#endif
+#endif
+
+#ifndef PACKED
+#define PACKED(x) __attribute__ ((__aligned__(x), __packed__))
+#endif
+
+#ifdef __GNUC__
+#define LIKELY(x)       __builtin_expect(!!(x), 1)
+#define UNLIKELY(x)     __builtin_expect(!!(x), 0)
+#else
+#define LIKELY(x)       (x)
+#define UNLIKELY(x)     (x)
 #endif
 
 #ifndef CCM_INTERFACE_DECL

@@ -43,7 +43,10 @@ set_property(TARGET ccmrt.so PROPERTY IMPORTED_LOCATION ${BIN_DIR}/ccmrt.so)
 add_library(libcore
     SHARED
     ${GENERATED_SOURCES})
-target_link_libraries(libcore ${LIBCORE_LINK_LIBS} ccmrt.so)
+target_link_libraries(libcore
+    ${LIBCORE_LINK_LIBS}
+    ccmrt.so
+    pthread)
 
 add_custom_command(
     OUTPUT
@@ -53,10 +56,11 @@ add_custom_command(
         -c
         -g
         -k
+        -p
         -d ${OBJ_DIR}
         -i ${LIBCORE_DIR}/cdl 
         "${LIBCORE_SRC_DIR}/libcore.cdl")
 
 MKDIR(libcore ${INC_DIR}/core)
 
-COPY_AFTER(libcore ${OBJ_DIR}/libcore.so ${BIN_DIR})
+COPY(libcore ${OBJ_DIR}/libcore.so ${BIN_DIR})

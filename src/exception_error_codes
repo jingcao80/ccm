@@ -14,51 +14,6 @@
 // limitations under the License.
 //=========================================================================
 
-#include "core/SyncObject.h"
-#include "core/nativeapi.h"
-
-namespace ccm {
-namespace core {
-
-CCM_INTERFACE_IMPL_1(SyncObject, Object, ISynchronize);
-
-ECode SyncObject::Lock()
-{
-    return NOERROR;
-}
-
-ECode SyncObject::Unlock()
-{
-    return NOERROR;
-}
-
-ECode SyncObject::Notify()
-{
-    return NOERROR;
-}
-
-ECode SyncObject::NotifyAll()
-{
-    return NativeObjectNotifyAll(mNativeObject);
-}
-
-ECode SyncObject::Wait()
-{
-    return NOERROR;
-}
-
-ECode SyncObject::Wait(
-    /* [in] */ Long millis)
-{
-    return NOERROR;
-}
-
-ECode SyncObject::Wait(
-    /* [in] */ Long millis,
-    /* [in] */ Integer nanos)
-{
-    return NOERROR;
-}
-
-}
-}
+======== Facility_Name ========         ======== Facility_Code ========
+ccmrt                                               0x0
+libcore                                             0x1

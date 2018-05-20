@@ -17,6 +17,7 @@
 #ifndef __CCM_CORE_SYNCOBJECT_H__
 #define __CCM_CORE_SYNCOBJECT_H__
 
+#include "ccm.core.ISynchronize.h"
 #include <ccmobject.h>
 
 namespace ccm {
@@ -45,6 +46,9 @@ public:
     ECode Wait(
         /* [in] */ Long millis,
         /* [in] */ Integer nanos) override;
+
+private:
+    HANDLE mNativeObject = 0;
 };
 
 } // namespace core

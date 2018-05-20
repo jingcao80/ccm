@@ -24,14 +24,14 @@ extern void Uninit_EMPTY_STRING();
 extern void Init_Proxy_Entry();
 extern void Uninit_Proxy_Entry();
 
-static __attribute((constructor))
+static CONS_PROI_1
 void RTInitialize()
 {
     Init_EMPTY_STRING();
     Init_Proxy_Entry();
 }
 
-static __attribute((destructor))
+static DEST_PROI_10
 void RTUninitialize()
 {
     Uninit_EMPTY_STRING();

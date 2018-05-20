@@ -14,51 +14,38 @@
 // limitations under the License.
 //=========================================================================
 
-#include "core/SyncObject.h"
-#include "core/nativeapi.h"
+#ifndef __CCM_CORE_NATIVELOCKWORD_H__
+#define __CCM_CORE_NATIVELOCKWORD_H__
+
+#include <stdint.h>
 
 namespace ccm {
 namespace core {
 
-CCM_INTERFACE_IMPL_1(SyncObject, Object, ISynchronize);
+class NativeMonitor;
 
-ECode SyncObject::Lock()
+class NativeLockWord
 {
-    return NOERROR;
-}
+public:
+    enum LockState {
+        kUnlocked,    // No lock owners.
+        kThinLocked,  // Single uncontended owner.
+        kFatLocked,   // See associated monitor.
+        kHashCode,    // Lock word contains an identity hash.
+        kForwardingAddress,  // Lock word contains the forwarding address of an object.
+    };
 
-ECode SyncObject::Unlock()
-{
-    return NOERROR;
-}
+public:
+    LockState GetState() const;
 
-ECode SyncObject::Notify()
-{
-    return NOERROR;
-}
+    // Return the owner thin lock thread id.
+    uint32_t ThinLockOwner() const;
 
-ECode SyncObject::NotifyAll()
-{
-    return NativeObjectNotifyAll(mNativeObject);
-}
-
-ECode SyncObject::Wait()
-{
-    return NOERROR;
-}
-
-ECode SyncObject::Wait(
-    /* [in] */ Long millis)
-{
-    return NOERROR;
-}
-
-ECode SyncObject::Wait(
-    /* [in] */ Long millis,
-    /* [in] */ Integer nanos)
-{
-    return NOERROR;
-}
+    // Return the Monitor encoded in a fat lock.
+    NativeMonitor* FatLockMonitor() const;
+};
 
 }
 }
+
+#endif // __CCM_CORE_NATIVELOCKWORD_H__
