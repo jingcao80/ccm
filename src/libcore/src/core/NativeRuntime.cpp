@@ -14,6 +14,8 @@
 // limitations under the License.
 //=========================================================================
 
+#include "core/NativeMonitorPool.h"
+#include "core/NativeMutex.h"
 #include "core/NativeRuntime.h"
 #include "core/NativeThread.h"
 
@@ -24,6 +26,8 @@ NativeRuntime* NativeRuntime::sInstance = nullptr;
 
 Boolean NativeRuntime::Create()
 {
+    Locks::Init();
+
     if (sInstance != nullptr) {
         return false;
     }
@@ -37,6 +41,8 @@ Boolean NativeRuntime::Create()
 
 Boolean NativeRuntime::Init()
 {
+    mMonitorPool = NativeMonitorPool::Create();
+
     NativeThread::Startup();
 
     return true;

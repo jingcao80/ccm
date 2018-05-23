@@ -30,9 +30,68 @@ public:
     NativeLockWord GetLockWord(
         /* [in] */ Boolean asVolatile);
 
+    void SetLockWord(
+        /* [in] */ NativeLockWord newVal,
+        /* [in] */ Boolean asVolatile);
+
+    Boolean CasLockWordWeakAcquire(
+        /* [in] */ NativeLockWord oldVal,
+        /* [in] */ NativeLockWord newVal);
+
+    Boolean CasLockWordWeakRelease(
+        /* [in] */ NativeLockWord oldVal,
+        /* [in] */ NativeLockWord newVal);
+
+    ECode MonitorEnter(
+        /* [in] */ NativeThread* self);
+
+    ECode MonitorExit(
+        /* [in] */ NativeThread* self);
+
+    ECode Notify(
+        /* [in] */ NativeThread* self);
+
     ECode NotifyAll(
         /* [in] */ NativeThread* self);
+
+private:
+    // Monitor and hash code information.
+    Atomic<uint32_t> mMonitor;
 };
+
+inline Boolean NativeObject::CasLockWordWeakAcquire(
+    /* [in] */ NativeLockWord oldVal,
+    /* [in] */ NativeLockWord newVal)
+{
+    return mMonitor.CompareExchangeWeakAcquire(
+            oldVal.GetValue(), newVal.GetValue());
+}
+
+inline Boolean NativeObject::CasLockWordWeakRelease(
+    /* [in] */ NativeLockWord oldVal,
+    /* [in] */ NativeLockWord newVal)
+{
+    return mMonitor.CompareExchangeWeakRelease(
+            oldVal.GetValue(), newVal.GetValue());
+}
+
+inline ECode NativeObject::MonitorEnter(
+    /* [in] */ NativeThread* self)
+{
+    return NativeMonitor::MonitorEnter(self, this, /*trylock*/true);
+}
+
+inline ECode NativeObject::MonitorExit(
+    /* [in] */ NativeThread* self)
+{
+    return NativeMonitor::MonitorExit(self, this);
+}
+
+inline ECode NativeObject::Notify(
+    /* [in] */ NativeThread* self)
+{
+    return NativeMonitor::Notify(self, this);
+}
 
 inline ECode NativeObject::NotifyAll(
     /* [in] */ NativeThread* self)

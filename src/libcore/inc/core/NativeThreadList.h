@@ -14,40 +14,32 @@
 // limitations under the License.
 //=========================================================================
 
-#include "core/nativeapi.h"
-#include "core/NativeObject.h"
+#ifndef __CCM_CORE_NATIVETHREADLIST_H__
+#define __CCM_CORE_NATIVETHREADLIST_H__
+
 #include "core/NativeThread.h"
 
 namespace ccm {
 namespace core {
 
-ECode NativeObjectLock(
-    /* [in] */ HANDLE handle)
+class NativeThreadList
 {
-    NativeThread* self = NativeThread::Current();
-    return reinterpret_cast<NativeObject*>(handle)->MonitorEnter(self);
-}
+public:
+    void Resume(
+        /* [in] */ NativeThread* thread,
+        /* [in] */ Boolean forDebugger = false);
 
-ECode NativeObjectUnlock(
-    /* [in] */ HANDLE handle)
-{
-    NativeThread* self = NativeThread::Current();
-    return reinterpret_cast<NativeObject*>(handle)->MonitorExit(self);
-}
-
-ECode NativeObjectNotify(
-    /* [in] */ HANDLE handle)
-{
-    NativeThread* self = NativeThread::Current();
-    return reinterpret_cast<NativeObject*>(handle)->Notify(self);
-}
-
-ECode NativeObjectNotifyAll(
-    /* [in] */ HANDLE handle)
-{
-    NativeThread* self = NativeThread::Current();
-    return reinterpret_cast<NativeObject*>(handle)->NotifyAll(self);
-}
+    // Suspend a thread using its thread id, typically used by lock/monitor inflation. Returns the
+    // thread on success else null. The thread id is used to identify the thread to avoid races with
+    // the thread terminating. Note that as thread ids are recycled this may not suspend the expected
+    // thread, that may be terminating. If the suspension times out then *timeout is set to true.
+    NativeThread* SuspendThreadByThreadId(
+        /* [in] */ uint32_t threadId,
+        /* [in] */ Boolean debugSuspension,
+        /* [in] */ Boolean* timed_out);
+};
 
 }
 }
+
+#endif // __CCM_CORE_NATIVETHREADLIST_H__

@@ -32,6 +32,10 @@ public:
         /* [in] */ const char* tag,
         /* [in] */ const char* format, ...);
 
+    static void V(
+        /* [in] */ const char* tag,
+        /* [in] */ const char* format, ...);
+
     static void W(
         /* [in] */ const char* tag,
         /* [in] */ const char* format, ...);

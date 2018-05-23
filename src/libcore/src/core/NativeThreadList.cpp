@@ -14,27 +14,21 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CORE_NATIVEAPI_H__
-#define __CCM_CORE_NATIVEAPI_H__
-
-#include "ccmtypes.h"
+#include "core/NativeThreadList.h"
 
 namespace ccm {
 namespace core {
 
-ECode NativeObjectLock(
-    /* [in] */ HANDLE handle);
+void NativeThreadList::Resume(
+    /* [in] */ NativeThread* thread,
+    /* [in] */ Boolean forDebugger)
+{}
 
-ECode NativeObjectUnlock(
-    /* [in] */ HANDLE handle);
-
-ECode NativeObjectNotify(
-    /* [in] */ HANDLE handle);
-
-ECode NativeObjectNotifyAll(
-    /* [in] */ HANDLE handle);
+NativeThread* NativeThreadList::SuspendThreadByThreadId(
+    /* [in] */ uint32_t threadId,
+    /* [in] */ Boolean debugSuspension,
+    /* [in] */ Boolean* timed_out)
+{}
 
 }
 }
-
-#endif // __CCM_CORE_NATIVEAPI_H__

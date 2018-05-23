@@ -24,17 +24,17 @@ CCM_INTERFACE_IMPL_1(SyncObject, Object, ISynchronize);
 
 ECode SyncObject::Lock()
 {
-    return NOERROR;
+    return NativeObjectLock(mNativeObject);
 }
 
 ECode SyncObject::Unlock()
 {
-    return NOERROR;
+    return NativeObjectUnlock(mNativeObject);
 }
 
 ECode SyncObject::Notify()
 {
-    return NOERROR;
+    return NativeObjectNotify(mNativeObject);
 }
 
 ECode SyncObject::NotifyAll()

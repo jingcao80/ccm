@@ -52,6 +52,21 @@ void Logger::E(
     printf("\n");
 }
 
+void Logger::V(
+    /* [in] */ const char* tag,
+    /* [in] */ const char* format, ...)
+{
+    if (VERBOSE < sLevel) return;
+
+    va_list argList;
+
+    printf("[%s]: ", tag);
+    va_start(argList, format);
+    vprintf(format, argList);
+    va_end(argList);
+    printf("\n");
+}
+
 void Logger::W(
     /* [in] */ const char* tag,
     /* [in] */ const char* format, ...)

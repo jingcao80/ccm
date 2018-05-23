@@ -19,11 +19,21 @@
 
 #include "core/NativeMonitor.h"
 #include "core/NativeMutex.h"
+#include "core/NativeThreadState.h"
 #include <ccmtypes.h>
 #include <pthread.h>
 
 namespace ccm {
 namespace core {
+
+enum ThreadFlag
+{
+    kSuspendRequest = 1,    // If set implies that suspend_count_ > 0 and the Thread should enter the
+                            // safepoint handler.
+    kCheckpointRequest = 2,  // Request that the thread do some checkpoint work and then continue.
+    kEmptyCheckpointRequest = 4,  // Request that the thread do empty checkpoint and then continue.
+    kActiveSuspendBarrier = 8,  // Register that at least 1 suspend barrier needs to be passed.
+};
 
 class NativeThread
 {
@@ -32,11 +42,22 @@ public:
 
     String ShortDump() const;
 
+    // Transition from non-runnable to runnable state acquiring share on mutator_lock_.
+    ThreadState TransitionFromSuspendedToRunnable();
+
+    // Transition from runnable into a state where mutator privileges are denied. Releases share of
+    // mutator lock.
+    void TransitionFromRunnableToSuspended(
+        /* [in] */ ThreadState newState);
+
     uint32_t GetThreadId() const;
 
     pid_t GetTid() const;
 
     static void Startup();
+
+    void SetMonitorEnterObject(
+        /* [in] */ NativeObject* obj);
 
     void Notify();
 
@@ -59,13 +80,54 @@ private:
     void NotifyLocked(
         /* [in] */ NativeThread* self);
 
+    Boolean ReadFlag(
+        /* [in] */ ThreadFlag flag) const;
+
+    void AtomicClearFlag(
+        /* [in] */ ThreadFlag flag);
+
+    void TransitionToSuspendedAndRunCheckpoints(
+        /* [in] */ ThreadState newState);
+
+    void PassActiveSuspendBarriers();
+
+    Boolean PassActiveSuspendBarriers(
+        /* [in] */ NativeThread* self);
+
+    // 32 bits of atomically changed state and flags. Keeping as 32 bits allows and atomic CAS to
+    // change from being Suspended to Runnable without a suspend request occurring.
+    union PACKED(4) StateAndFlags
+    {
+        StateAndFlags() {}
+        struct PACKED(4)
+        {
+            // Bitfield of flag values. Must be changed atomically so that flag values aren't lost. See
+            // ThreadFlags for bit field meanings.
+            volatile uint16_t mFlags;
+            // Holds the ThreadState. May be changed non-atomically between Suspended (ie not Runnable)
+            // transitions. Changing to Runnable requires that the suspend_request be part of the atomic
+            // operation. If a thread is suspended and a suspend_request is present, a thread may not
+            // change to Runnable as a GC or other operation is in progress.
+            volatile uint16_t mState;
+        } mAsStruct;
+        AtomicInteger mAsAtomicInt;
+        volatile int32_t mAsInt;
+    };
+
     static void ThreadExitCallback(
         /* [in] */ void* arg);
 
 private:
+    // Maximum number of suspend barriers.
+    static constexpr uint32_t kMaxSuspendBarriers = 3;
+
     static Boolean sIsStarted;
 
     static pthread_key_t sPthreadKeySelf;
+
+    // Used to notify threads that they should attempt to resume, they will suspend again if
+    // their suspend count is > 0.
+    static NativeConditionVariable* sResumeCond;
 
     struct PACKED(4) tls_32bit_sized_values
     {
@@ -74,6 +136,8 @@ private:
             , mTid(0)
             , mThreadExitCheckCount(0)
         {}
+
+        union StateAndFlags mStateAndFlags;
 
         // Thin lock thread id. This is a small integer used by the thin lock implementation.
         // This is not to be confused with the native thread's tid, nor is it the value returned
@@ -93,12 +157,22 @@ private:
     {
         tls_ptr_sized_values()
             : mWaitNext(nullptr)
+            , mMonitorEnterObject(nullptr)
         {
             memset(&mHeldMutexes[0], 0, sizeof(mHeldMutexes));
         }
 
         // The next thread in the wait set this thread is part of or null if not waiting.
         NativeThread* mWaitNext;
+
+        // If we're blocked in MonitorEnter, this is the object we're trying to lock.
+        NativeObject* mMonitorEnterObject;
+
+        // Pending barriers that require passing or NULL if non-pending. Installation guarding by
+        // Locks::thread_suspend_count_lock_.
+        // They work effectively as art::Barrier, but implemented directly using AtomicInteger and futex
+        // to avoid additional cost of a mutex and a condition variable, as used in art::Barrier.
+        AtomicInteger* mActiveSuspendBarriers[kMaxSuspendBarriers];
 
         // Support for Mutex lock hierarchy bug detection.
         BaseMutex* mHeldMutexes[kLockLevelCount];
@@ -121,6 +195,12 @@ inline uint32_t NativeThread::GetThreadId() const
 inline pid_t NativeThread::GetTid() const
 {
     return mTls32.mTid;
+}
+
+inline void NativeThread::SetMonitorEnterObject(
+    /* [in] */ NativeObject* obj)
+{
+    mTlsPtr.mMonitorEnterObject = obj;
 }
 
 inline NativeMutex* NativeThread::GetWaitMutex() const
@@ -147,6 +227,18 @@ inline void NativeThread::SetWaitNext(
     /* [in] */ NativeThread* next)
 {
     mTlsPtr.mWaitNext = next;
+}
+
+inline Boolean NativeThread::ReadFlag(
+    /* [in] */ ThreadFlag flag) const
+{
+    return (mTls32.mStateAndFlags.mAsStruct.mFlags & flag) != 0;
+}
+
+inline void NativeThread::AtomicClearFlag(
+    /* [in] */ ThreadFlag flag)
+{
+    mTls32.mStateAndFlags.mAsAtomicInt.FetchAndAndSequentiallyConsistent(-1 ^ flag);
 }
 
 }

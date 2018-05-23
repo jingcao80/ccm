@@ -15,23 +15,43 @@
 //=========================================================================
 
 #include "core/NativeLockWord.h"
+#include "core/NativeMonitor.h"
+#include "core/NativeMonitorPool.h"
+#include <ccmdef.h>
 
 namespace ccm {
 namespace core {
 
-NativeLockWord::LockState NativeLockWord::GetState() const
+NativeLockWord::NativeLockWord(
+    /* [in] */ NativeMonitor* mon)
+    : mValue(mon->GetMonitorId())
 {
-
+    CHECK(FatLockMonitor() == mon);
+    CHECK(mon->GetMonitorId() <= static_cast<uint32_t>(kMaxMonitorId));
 }
 
-uint32_t NativeLockWord::ThinLockOwner() const
+NativeLockWord::LockState NativeLockWord::GetState() const
 {
-
+    if (UNLIKELY(mValue == 0)) {
+        return kUnlocked;
+    }
+    else {
+        uint32_t internalState = (mValue >> kStateShift) & kStateMask;
+        switch (internalState) {
+            case kStateThinOrUnlocked:
+                return kThinLocked;
+            default:
+                CHECK(internalState == kStateFat);
+               return kFatLocked;
+        }
+    }
 }
 
 NativeMonitor* NativeLockWord::FatLockMonitor() const
 {
-
+    CHECK(GetState() == kFatLocked);
+    MonitorId monId = (mValue >> kMonitorIdShift) & kMonitorIdMask;
+    return NativeMonitorPool::MonitorFromMonitorId(monId);
 }
 
 }

@@ -22,7 +22,22 @@ namespace core {
 NativeLockWord NativeObject::GetLockWord(
     /* [in] */ Boolean asVolatile)
 {
+    uint32_t val = asVolatile ? mMonitor.LoadSequentiallyConsistent() :
+            mMonitor.LoadRelaxed();
+    return NativeLockWord(val);
+}
 
+void NativeObject::SetLockWord(
+    /* [in] */ NativeLockWord newVal,
+    /* [in] */ Boolean asVolatile)
+{
+    // Force use of non-transactional mode and do not check.
+    if (asVolatile) {
+        mMonitor.StoreSequentiallyConsistent(newVal.GetValue());
+    }
+    else {
+        mMonitor.StoreRelaxed(newVal.GetValue());
+    }
 }
 
 }

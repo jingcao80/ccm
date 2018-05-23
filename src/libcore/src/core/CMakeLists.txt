@@ -26,10 +26,12 @@ include_directories(
 set(SOURCES
     NativeLockWord.cpp
     NativeMonitor.cpp
+    NativeMonitorPool.cpp
     NativeMutex.cpp
     NativeObject.cpp
     NativeRuntime.cpp
     NativeThread.cpp
+    NativeThreadList.cpp
     SyncObject.cpp
     init.cpp
     nativeapi.cpp)

@@ -40,6 +40,32 @@
 namespace ccm {
 namespace core {
 
+// QuasiAtomic encapsulates two separate facilities that we are
+// trying to move away from:  "quasiatomic" 64 bit operations
+// and custom memory fences.  For the time being, they remain
+// exposed.  Clients should be converted to use either class Atomic
+// below whenever possible, and should eventually use C++11 atomics.
+// The two facilities that do not have a good C++11 analog are
+// ThreadFenceForConstructor and Atomic::*JavaData.
+//
+// NOTE: Two "quasiatomic" operations on the exact same memory address
+// are guaranteed to operate atomically with respect to each other,
+// but no guarantees are made about quasiatomic operations mixed with
+// non-quasiatomic operations on the same address, nor about
+// quasiatomic operations that are performed on partially-overlapping
+// memory.
+class QuasiAtomic
+{
+public:
+    static void ThreadFenceAcquire();
+};
+
+inline void QuasiAtomic::ThreadFenceAcquire()
+{
+    std::atomic_thread_fence(std::memory_order_acquire);
+}
+
+
 template<typename T>
 class PACKED(sizeof(T)) Atomic : public std::atomic<T>
 {

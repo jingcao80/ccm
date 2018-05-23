@@ -22,17 +22,65 @@
 namespace ccm {
 namespace core {
 
+class NativeMonitorList;
+class NativeMonitorPool;
+class NativeThreadList;
+
 class NativeRuntime
 {
 public:
     static Boolean Create();
+
+    static NativeRuntime* Current();
+
+    size_t GetMaxSpinsBeforeThinLockInflation() const;
+
+    NativeMonitorList* GetMonitorList() const;
+
+    NativeMonitorPool* GetMonitorPool() const;
+
+    NativeThreadList* GetThreadList() const;
 
 private:
     Boolean Init();
 
 private:
     static NativeRuntime* sInstance;
+
+    // The number of spins that are done before thread suspension is used to forcibly inflate.
+    size_t mMaxSpinsBeforeThinLockInflation;
+
+    NativeMonitorList* mMonitorList;
+
+    NativeMonitorPool* mMonitorPool;
+
+    NativeThreadList* mThreadList;
 };
+
+inline NativeRuntime* NativeRuntime::Current()
+{
+    return sInstance;
+}
+
+inline size_t NativeRuntime::GetMaxSpinsBeforeThinLockInflation() const
+{
+    return mMaxSpinsBeforeThinLockInflation;
+}
+
+inline NativeMonitorList* NativeRuntime::GetMonitorList() const
+{
+    return mMonitorList;
+}
+
+inline NativeMonitorPool* NativeRuntime::GetMonitorPool() const
+{
+    return mMonitorPool;
+}
+
+inline NativeThreadList* NativeRuntime::GetThreadList() const
+{
+    return mThreadList;
+}
 
 }
 }

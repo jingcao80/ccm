@@ -43,6 +43,13 @@ static inline uint64_t SafeGetTid(
     }
 }
 
+BaseMutex::BaseMutex(
+    /* [in] */ const String& name,
+    /* [in] */ LockLevel level)
+    : mLevel(level)
+    , mName(name)
+{}
+
 void BaseMutex::RegisterAsLocked(
     /* [in] */ NativeThread* self)
 {
@@ -68,6 +75,36 @@ void BaseMutex::RegisterAsUnlocked(
 }
 
 //----------------------------------------------------------------------------
+
+NativeMutex::NativeMutex(
+    /* [in] */ const String& name,
+    /* [in] */ LockLevel level,
+    /* [in] */ Boolean recursive)
+    : BaseMutex(name, level)
+    , mRecursive(recursive)
+    , mRecursionCount(0)
+{
+    CHECK(mState.LoadRelaxed() == 0);
+    CHECK(mNumContenders.LoadRelaxed() == 0);
+    mExclusiveOwner = 0;
+}
+
+NativeMutex::~NativeMutex()
+{
+    if (mState.LoadRelaxed() != 0) {
+        Logger::E("NativeMutex", "destroying mutex with owner: %llu", mExclusiveOwner);
+    }
+    else {
+        if (mExclusiveOwner != 0) {
+            Logger::E("NativeMutex", "unexpectedly found an owner on unlocked mutex %s",
+                    mName.string());
+        }
+        if (mNumContenders.LoadSequentiallyConsistent() != 0) {
+            Logger::E("NativeMutex", "unexpectedly found a contender on mutex %s",
+                    mName.string());
+        }
+    }
+}
 
 void NativeMutex::ExclusiveLock(
     /* [in] */ NativeThread* self)
@@ -141,6 +178,29 @@ Boolean NativeMutex::IsExclusiveHeld(
 
 //----------------------------------------------------------------------------
 
+NativeReaderWriterMutex::NativeReaderWriterMutex(
+    /* [in] */ const String& name,
+    /* [in] */ LockLevel level)
+    : BaseMutex(name, level)
+    , mState(0)
+    , mExclusiveOwner(0)
+    , mNumPendingReaders(0)
+    , mNumPendingWriters(0)
+{  // NOLINT(whitespace/braces)
+}
+
+//----------------------------------------------------------------------------
+
+NativeConditionVariable::NativeConditionVariable(
+    /* [in] */ const String& name,
+    /* [in] */ NativeMutex& mutex)
+    : mName(name)
+    , mGuard(mutex)
+    , mNumWaiters(0)
+{
+    CHECK(mSequence.LoadRelaxed() == 0);
+}
+
 void NativeConditionVariable::Signal(
     /* [in] */ NativeThread* self)
 {
@@ -154,6 +214,28 @@ void NativeConditionVariable::Signal(
         // Check something was woken or else we changed sequence_ before they had chance to wait.
         CHECK((numWoken == 0) || (numWoken == 1));
     }
+}
+
+void NativeConditionVariable::Wait(
+    /* [in] */ NativeThread* self)
+{}
+
+//----------------------------------------------------------------------------
+
+NativeMutatorMutex* Locks::sMutatorLock = nullptr;
+NativeMutex* Locks::sAllocatedMonitorIdsLock = nullptr;
+NativeMutex* Locks::sThreadSuspendCountLock = nullptr;
+
+void Locks::Init()
+{
+    CHECK(sMutatorLock == nullptr);
+    sMutatorLock = new NativeMutatorMutex(String("mutator lock"), kMutatorLock);
+
+    CHECK(sAllocatedMonitorIdsLock == nullptr);
+    sAllocatedMonitorIdsLock = new NativeMutex(String("allocated monitor ids lock"), kMonitorPoolLock);
+
+    CHECK(sThreadSuspendCountLock == nullptr);
+    sThreadSuspendCountLock = new NativeMutex(String("thread suspend count lock"), kThreadSuspendCountLock);
 }
 
 }
