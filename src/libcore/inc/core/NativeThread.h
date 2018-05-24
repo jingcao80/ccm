@@ -42,6 +42,23 @@ public:
 
     String ShortDump() const;
 
+    ThreadState GetState() const;
+
+    ThreadState SetState(
+        /* [in] */ ThreadState newState);
+
+    int GetSuspendCount() const;
+
+    Boolean IsSuspended() const;
+
+    // If delta > 0 and (this != self or suspend_barrier is not null), this function may temporarily
+    // release thread_suspend_count_lock_ internally.
+    Boolean ModifySuspendCount(
+        /* [in] */ NativeThread* self,
+        /* [in] */ Integer delta,
+        /* [in] */ AtomicInteger* suspendBarrier,
+        /* [in] */ Boolean forDebugger);
+
     // Transition from non-runnable to runnable state acquiring share on mutator_lock_.
     ThreadState TransitionFromSuspendedToRunnable();
 
@@ -86,10 +103,21 @@ private:
     void AtomicClearFlag(
         /* [in] */ ThreadFlag flag);
 
+    // Trigger a suspend check by making the suspend_trigger_ TLS value an invalid pointer.
+    // The next time a suspend check is done, it will load from the value at this address
+    // and trigger a SIGSEGV.
+    void TriggerSuspend();
+
     void TransitionToSuspendedAndRunCheckpoints(
         /* [in] */ ThreadState newState);
 
     void PassActiveSuspendBarriers();
+
+    Boolean ModifySuspendCountInternal(
+        /* [in] */ NativeThread* self,
+        /* [in] */ Integer delta,
+        /* [in] */ AtomicInteger* suspendBarrier,
+        /* [in] */ Boolean forDebugger);
 
     Boolean PassActiveSuspendBarriers(
         /* [in] */ NativeThread* self);
@@ -118,6 +146,8 @@ private:
         /* [in] */ void* arg);
 
 private:
+    friend class NativeThreadList;
+
     // Maximum number of suspend barriers.
     static constexpr uint32_t kMaxSuspendBarriers = 3;
 
@@ -132,12 +162,22 @@ private:
     struct PACKED(4) tls_32bit_sized_values
     {
         explicit tls_32bit_sized_values()
-            : mThinLockThreadId(0)
+            : mSuspendCount(0)
+            , mDebugSuspendCount(0)
+            , mThinLockThreadId(0)
             , mTid(0)
             , mThreadExitCheckCount(0)
         {}
 
         union StateAndFlags mStateAndFlags;
+
+        // A non-zero value is used to tell the current thread to enter a safe point
+        // at the next poll.
+        int mSuspendCount;
+
+        // How much of 'suspend_count_' is by request of the debugger, used to set things right
+        // when the debugger detaches. Must be <= suspend_count_.
+        int mDebugSuspendCount;
 
         // Thin lock thread id. This is a small integer used by the thin lock implementation.
         // This is not to be confused with the native thread's tid, nor is it the value returned
@@ -156,11 +196,16 @@ private:
     struct PACKED(sizeof(void*)) tls_ptr_sized_values
     {
         tls_ptr_sized_values()
-            : mWaitNext(nullptr)
+            : mSuspendTrigger(nullptr)
+            , mWaitNext(nullptr)
             , mMonitorEnterObject(nullptr)
         {
             memset(&mHeldMutexes[0], 0, sizeof(mHeldMutexes));
         }
+
+        // In certain modes, setting this to 0 will trigger a SEGV and thus a suspend check.  It is
+        // normally set to the address of itself.
+        uintptr_t* mSuspendTrigger;
 
         // The next thread in the wait set this thread is part of or null if not waiting.
         NativeThread* mWaitNext;
@@ -186,6 +231,18 @@ private:
     // Pointer to the monitor lock we're currently waiting on or null if not waiting.
     NativeMonitor* mWaitMonitor;
 };
+
+inline ThreadState NativeThread::GetState() const
+{
+    CHECK(mTls32.mStateAndFlags.mAsStruct.mState >= kTerminated);
+    CHECK(mTls32.mStateAndFlags.mAsStruct.mState <= kSuspended);
+    return static_cast<ThreadState>(mTls32.mStateAndFlags.mAsStruct.mState);
+}
+
+inline int NativeThread::GetSuspendCount() const
+{
+    return mTls32.mSuspendCount;
+}
 
 inline uint32_t NativeThread::GetThreadId() const
 {
@@ -239,6 +296,11 @@ inline void NativeThread::AtomicClearFlag(
     /* [in] */ ThreadFlag flag)
 {
     mTls32.mStateAndFlags.mAsAtomicInt.FetchAndAndSequentiallyConsistent(-1 ^ flag);
+}
+
+inline void NativeThread::TriggerSuspend()
+{
+    mTlsPtr.mSuspendTrigger = nullptr;
 }
 
 }

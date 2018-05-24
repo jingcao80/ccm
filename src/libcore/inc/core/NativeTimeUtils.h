@@ -14,46 +14,37 @@
 // limitations under the License.
 //=========================================================================
 
-#include "core/NativeMonitorPool.h"
-#include "core/NativeMutex.h"
-#include "core/NativeRuntime.h"
-#include "core/NativeThread.h"
+#ifndef __CCM_CORE_NATIVETIMEUTILS_H__
+#define __CCM_CORE_NATIVETIMEUTILS_H__
+
+#include <stdint.h>
+#include <time.h>
 
 namespace ccm {
 namespace core {
 
-NativeRuntime* NativeRuntime::sInstance = nullptr;
+// Returns the monotonic time since some unspecified starting point in nanoseconds.
+uint64_t NanoTime();
 
-Boolean NativeRuntime::Create()
+// Converts the given number of nanoseconds to milliseconds.
+static constexpr inline uint64_t NsToMs(
+    /* [in] */ uint64_t ns)
 {
-    Locks::Init();
-
-    if (sInstance != nullptr) {
-        return false;
-    }
-    sInstance = new NativeRuntime();
-    if (!sInstance->Init()) {
-        sInstance = nullptr;
-        return false;
-    }
-    return true;
+    return ns / 1000 / 1000;
 }
 
-Boolean NativeRuntime::IsShuttingDown(
-    /* [in] */ NativeThread* self)
+// Converts the given number of milliseconds to nanoseconds
+static constexpr inline uint64_t MsToNs(
+    /* [in] */ uint64_t ms)
 {
-    NativeMutex::AutoLock lock(self, *Locks::sRuntimeShutdownLock);
-    return IsShuttingDownLocked();
+    return ms * 1000 * 1000;
 }
 
-Boolean NativeRuntime::Init()
-{
-    mMonitorPool = NativeMonitorPool::Create();
-
-    NativeThread::Startup();
-
-    return true;
-}
+// Sleep for the given number of nanoseconds, a bad way to handle contention.
+void NanoSleep(
+    /* [in] */ uint64_t ns);
 
 }
 }
+
+#endif // __CCM_CORE_NATIVETIMEUTILS_H__

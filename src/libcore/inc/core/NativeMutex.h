@@ -41,6 +41,8 @@ enum LockLevel {
     kDefaultMutexLevel,
     kMonitorPoolLock,
     kMonitorLock,
+    kThreadListLock,
+    kRuntimeShutdownLock,
     kMutatorLock,
 
     kLockLevelCount  // Must come last.
@@ -68,7 +70,12 @@ protected:
     void RegisterAsUnlocked(
         /* [in] */ NativeThread* self);
 
+    void CheckSafeToWait(
+        /* [in] */ NativeThread* self);
+
 protected:
+    friend class NativeConditionVariable;
+
     const LockLevel mLevel;  // Support for lock hierarchy.
     const String mName;
 };
@@ -124,7 +131,7 @@ public:
     uint64_t GetExclusiveOwnerTid() const;
 
 private:
-    friend class ConditionVariable;
+    friend class NativeConditionVariable;
 
     // 0 is unheld, 1 is held.
     AtomicInteger mState;
@@ -283,12 +290,21 @@ public:
         /* [in] */ const String& name,
         /* [in] */ NativeMutex& mutex);
 
+    void Broadcast(
+        /* [in] */ NativeThread* self);
+
     void Signal(
         /* [in] */ NativeThread* self);
 
     // TODO: No thread safety analysis on Wait and TimedWait as they call mutex operations via their
     //       pointer copy, thereby defeating annotalysis.
     void Wait(
+        /* [in] */ NativeThread* self);
+
+    // Variant of Wait that should be used with caution. Doesn't validate that no mutexes are held
+    // when waiting.
+    // TODO: remove this.
+    void WaitHoldingLocks(
         /* [in] */ NativeThread* self);
 
 private:
@@ -348,6 +364,13 @@ public:
     //  - if the CAS operation fails then goto x     |  .. running ..
     //  .. running ..                                |  .. running ..
     static NativeMutatorMutex* sMutatorLock;
+
+    // Guards shutdown of the runtime.
+    static NativeMutex* sRuntimeShutdownLock;
+
+    // The thread_list_lock_ guards ThreadList::list_. It is also commonly held to stop threads
+    // attaching and detaching.
+    static NativeMutex* sThreadListLock;
 
     static NativeMutex* sAllocatedMonitorIdsLock;
 

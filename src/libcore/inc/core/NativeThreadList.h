@@ -18,9 +18,12 @@
 #define __CCM_CORE_NATIVETHREADLIST_H__
 
 #include "core/NativeThread.h"
+#include <list>
 
 namespace ccm {
 namespace core {
+
+class NativeThread;
 
 class NativeThreadList
 {
@@ -36,7 +39,18 @@ public:
     NativeThread* SuspendThreadByThreadId(
         /* [in] */ uint32_t threadId,
         /* [in] */ Boolean debugSuspension,
-        /* [in] */ Boolean* timed_out);
+        /* [in] */ Boolean* timedOut);
+
+private:
+    Boolean Contains(
+        /* [in] */ NativeThread* thread);
+
+private:
+    // The actual list of all threads.
+    std::list<NativeThread*> mList;
+
+    // Thread suspension timeout in nanoseconds.
+    const uint64_t mThreadSuspendTimeoutNs;
 };
 
 }

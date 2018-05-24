@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "core/NativeThread.h"
+#include "core/NativeTimeUtils.h"
 #include <ccmlogger.h>
 
 namespace ccm {
@@ -40,6 +41,64 @@ String NativeThread::ShortDump() const
     return String();
 }
 
+ThreadState NativeThread::SetState(
+    /* [in] */ ThreadState newState)
+{
+    // Should only be used to change between suspended states.
+    // Cannot use this code to change into or from Runnable as changing to Runnable should
+    // fail if old_state_and_flags.suspend_request is true and changing from Runnable might
+    // miss passing an active suspend barrier.
+    CHECK(newState != kRunnable);
+    union StateAndFlags oldStateAndFlags;
+    oldStateAndFlags.mAsInt = mTls32.mStateAndFlags.mAsInt;
+    CHECK(oldStateAndFlags.mAsStruct.mState != kRunnable);
+    mTls32.mStateAndFlags.mAsStruct.mState = newState;
+    return static_cast<ThreadState>(oldStateAndFlags.mAsStruct.mState);
+}
+
+Boolean NativeThread::IsSuspended() const
+{
+    union StateAndFlags stateAndFlags;
+    stateAndFlags.mAsInt = mTls32.mStateAndFlags.mAsInt;
+    return stateAndFlags.mAsStruct.mState != kRunnable &&
+            (stateAndFlags.mAsStruct.mFlags & kSuspendRequest) != 0;
+}
+
+Boolean NativeThread::ModifySuspendCount(
+    /* [in] */ NativeThread* self,
+    /* [in] */ Integer delta,
+    /* [in] */ AtomicInteger* suspendBarrier,
+    /* [in] */ Boolean forDebugger)
+{
+    if (delta > 0 && suspendBarrier != nullptr) {
+        // When delta > 0 (requesting a suspend), ModifySuspendCountInternal() may fail either if
+        // active_suspend_barriers is full or we are in the middle of a thread flip. Retry in a loop.
+        while (true) {
+            if (LIKELY(ModifySuspendCountInternal(self, delta, suspendBarrier, forDebugger))) {
+                return true;
+            }
+            else {
+                // Failure means the list of active_suspend_barriers is full or we are in the middle of a
+                // thread flip, we should release the thread_suspend_count_lock_ (to avoid deadlock) and
+                // wait till the target thread has executed or Thread::PassActiveSuspendBarriers() or the
+                // flip function. Note that we could not simply wait for the thread to change to a suspended
+                // state, because it might need to run checkpoint function before the state change or
+                // resumes from the resume_cond_, which also needs thread_suspend_count_lock_.
+                //
+                // The list of active_suspend_barriers is very unlikely to be full since more than
+                // kMaxSuspendBarriers threads need to execute SuspendAllInternal() simultaneously, and
+                // target thread stays in kRunnable in the mean time.
+                Locks::sThreadSuspendCountLock->ExclusiveUnlock(self);
+                NanoSleep(100000);
+                Locks::sThreadSuspendCountLock->ExclusiveLock(self);
+            }
+        }
+    }
+    else {
+        return ModifySuspendCountInternal(self, delta, suspendBarrier, forDebugger);
+    }
+}
+
 void NativeThread::TransitionToSuspendedAndRunCheckpoints(
     /* [in] */ ThreadState newState)
 {
@@ -58,6 +117,56 @@ void NativeThread::TransitionToSuspendedAndRunCheckpoints(
             break;
         }
     }
+}
+
+// Attempt to rectify locks so that we dump thread list with required locks before exiting.
+static void UnsafeLogFatalForSuspendCount(
+    /* [in] */ NativeThread* self,
+    /* [in] */ NativeThread* thread)
+{}
+
+Boolean NativeThread::ModifySuspendCountInternal(
+    /* [in] */ NativeThread* self,
+    /* [in] */ Integer delta,
+    /* [in] */ AtomicInteger* suspendBarrier,
+    /* [in] */ Boolean forDebugger)
+{
+    if (UNLIKELY(delta < 0 && mTls32.mSuspendCount <= 0)) {
+        UnsafeLogFatalForSuspendCount(self, this);
+        return false;
+    }
+
+    uint16_t flags = kSuspendRequest;
+    if (delta > 0 && suspendBarrier != nullptr) {
+        uint32_t availableBarrier = kMaxSuspendBarriers;
+        for (uint32_t i = 0; i < kMaxSuspendBarriers; ++i) {
+            if (mTlsPtr.mActiveSuspendBarriers[i] == nullptr) {
+                availableBarrier = i;
+                break;
+            }
+        }
+        if (availableBarrier == kMaxSuspendBarriers) {
+            // No barrier spaces available, we can't add another.
+            return false;
+        }
+        mTlsPtr.mActiveSuspendBarriers[availableBarrier] = suspendBarrier;
+        flags |= kActiveSuspendBarrier;
+    }
+
+    mTls32.mSuspendCount += delta;
+    if (forDebugger) {
+        mTls32.mDebugSuspendCount += delta;
+    }
+
+    if (mTls32.mSuspendCount == 0) {
+        AtomicClearFlag(kSuspendRequest);
+    }
+    else {
+        // Two bits might be set simultaneously.
+        mTls32.mStateAndFlags.mAsAtomicInt.FetchAndOrSequentiallyConsistent(flags);
+        TriggerSuspend();
+    }
+    return true;
 }
 
 void NativeThread::PassActiveSuspendBarriers()

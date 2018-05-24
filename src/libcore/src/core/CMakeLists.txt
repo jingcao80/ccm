@@ -30,8 +30,10 @@ set(SOURCES
     NativeMutex.cpp
     NativeObject.cpp
     NativeRuntime.cpp
+    NativeScopedThreadStateChange.cpp
     NativeThread.cpp
     NativeThreadList.cpp
+    NativeTimeUtils.cpp
     SyncObject.cpp
     init.cpp
     nativeapi.cpp)

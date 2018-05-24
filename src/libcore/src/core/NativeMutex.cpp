@@ -74,6 +74,10 @@ void BaseMutex::RegisterAsUnlocked(
     }
 }
 
+void BaseMutex::CheckSafeToWait(
+    /* [in] */ NativeThread* self)
+{}
+
 //----------------------------------------------------------------------------
 
 NativeMutex::NativeMutex(
@@ -201,6 +205,33 @@ NativeConditionVariable::NativeConditionVariable(
     CHECK(mSequence.LoadRelaxed() == 0);
 }
 
+void NativeConditionVariable::Broadcast(
+    /* [in] */ NativeThread* self)
+{
+    CHECK(self == nullptr || self == NativeThread::Current());
+    // TODO: enable below, there's a race in thread creation that causes false failures currently.
+    // guard_.AssertExclusiveHeld(self);
+    CHECK(mGuard.GetExclusiveOwnerTid() == SafeGetTid(self));
+    if (mNumWaiters > 0) {
+        mSequence++;  // Indicate the broadcast occurred.
+        Boolean done = false;
+        do {
+            int32_t curSequence = mSequence.LoadRelaxed();
+            // Requeue waiters onto mutex. The waiter holds the contender count on the mutex high ensuring
+            // mutex unlocks will awaken the requeued waiter thread.
+            done = futex(mSequence.Address(), FUTEX_CMP_REQUEUE, 0,
+                       reinterpret_cast<const timespec*>(std::numeric_limits<int32_t>::max()),
+                       mGuard.mState.Address(), curSequence) != -1;
+            if (!done) {
+                if (errno != EAGAIN && errno != EINTR) {
+                    Logger::E("NativeConditionVariable", "futex cmp requeue failed for %s",
+                            mName.string());
+                }
+            }
+        } while (!done);
+    }
+}
+
 void NativeConditionVariable::Signal(
     /* [in] */ NativeThread* self)
 {
@@ -218,11 +249,45 @@ void NativeConditionVariable::Signal(
 
 void NativeConditionVariable::Wait(
     /* [in] */ NativeThread* self)
-{}
+{
+    mGuard.CheckSafeToWait(self);
+    WaitHoldingLocks(self);
+}
+
+void NativeConditionVariable::WaitHoldingLocks(
+    /* [in] */ NativeThread* self)
+{
+    CHECK(self == nullptr || self == Thread::Current());
+    mGuard.AssertExclusiveHeld(self);
+    unsigned int oldRecursionCount = mGuard.mRecursionCount;
+    mNumWaiters++;
+    // Ensure the Mutex is contended so that requeued threads are awoken.
+    mGuard.mNumContenders++;
+    mGuard.mRecursionCount = 1;
+    int32_t curSequence = mSequence.LoadRelaxed();
+    mGuard.ExclusiveUnlock(self);
+    if (futex(mSequence.Address(), FUTEX_WAIT, curSequence, nullptr, nullptr, 0) != 0) {
+        // Futex failed, check it is an expected error.
+        // EAGAIN == EWOULDBLK, so we let the caller try again.
+        // EINTR implies a signal was sent to this thread.
+        if ((errno != EINTR) && (errno != EAGAIN)) {
+            Logger::E("NativeConditionVariable", "futex wait failed for %s", mName.string());
+        }
+    }
+    mGuard.ExclusiveLock(self);
+    CHECK(mNumWaiters >= 0);
+    mNumWaiters--;
+    // We awoke and so no longer require awakes from the guard_'s unlock.
+    CHECK(mGuard.mNumContenders.LoadRelaxed() >= 0);
+    mGuard.mNumContenders--;
+    mGuard.mRecursionCount = oldRecursionCount;
+}
 
 //----------------------------------------------------------------------------
 
 NativeMutatorMutex* Locks::sMutatorLock = nullptr;
+NativeMutex* Locks::sRuntimeShutdownLock = nullptr;
+NativeMutex* Locks::sThreadListLock = nullptr;
 NativeMutex* Locks::sAllocatedMonitorIdsLock = nullptr;
 NativeMutex* Locks::sThreadSuspendCountLock = nullptr;
 
@@ -230,6 +295,12 @@ void Locks::Init()
 {
     CHECK(sMutatorLock == nullptr);
     sMutatorLock = new NativeMutatorMutex(String("mutator lock"), kMutatorLock);
+
+    CHECK(sRuntimeShutdownLock == nullptr);
+    sRuntimeShutdownLock = new NativeMutex(String("runtime shutdown lock"), kRuntimeShutdownLock);
+
+    CHECK(sThreadListLock == nullptr);
+    sThreadListLock = new NativeMutex(String("thread list lock"), kThreadListLock);
 
     CHECK(sAllocatedMonitorIdsLock == nullptr);
     sAllocatedMonitorIdsLock = new NativeMutex(String("allocated monitor ids lock"), kMonitorPoolLock);

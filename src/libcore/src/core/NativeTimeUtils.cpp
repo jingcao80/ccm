@@ -14,45 +14,25 @@
 // limitations under the License.
 //=========================================================================
 
-#include "core/NativeMonitorPool.h"
-#include "core/NativeMutex.h"
-#include "core/NativeRuntime.h"
-#include "core/NativeThread.h"
+#include "core/NativeTimeUtils.h"
 
 namespace ccm {
 namespace core {
 
-NativeRuntime* NativeRuntime::sInstance = nullptr;
-
-Boolean NativeRuntime::Create()
+uint64_t NanoTime()
 {
-    Locks::Init();
-
-    if (sInstance != nullptr) {
-        return false;
-    }
-    sInstance = new NativeRuntime();
-    if (!sInstance->Init()) {
-        sInstance = nullptr;
-        return false;
-    }
-    return true;
+  timespec now;
+  clock_gettime(CLOCK_MONOTONIC, &now);
+  return static_cast<uint64_t>(now.tv_sec) * UINT64_C(1000000000) + now.tv_nsec;
 }
 
-Boolean NativeRuntime::IsShuttingDown(
-    /* [in] */ NativeThread* self)
+void NanoSleep(
+    /* [in] */ uint64_t ns)
 {
-    NativeMutex::AutoLock lock(self, *Locks::sRuntimeShutdownLock);
-    return IsShuttingDownLocked();
-}
-
-Boolean NativeRuntime::Init()
-{
-    mMonitorPool = NativeMonitorPool::Create();
-
-    NativeThread::Startup();
-
-    return true;
+    timespec tm;
+    tm.tv_sec = ns / MsToNs(1000);
+    tm.tv_nsec = ns - static_cast<uint64_t>(tm.tv_sec) * MsToNs(1000);
+    nanosleep(&tm, nullptr);
 }
 
 }

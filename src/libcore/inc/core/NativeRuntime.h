@@ -24,12 +24,18 @@ namespace core {
 
 class NativeMonitorList;
 class NativeMonitorPool;
+class NativeThread;
 class NativeThreadList;
 
 class NativeRuntime
 {
 public:
     static Boolean Create();
+
+    Boolean IsShuttingDown(
+        /* [in] */ NativeThread* self);
+
+    Boolean IsShuttingDownLocked();
 
     static NativeRuntime* Current();
 
@@ -55,7 +61,15 @@ private:
     NativeMonitorPool* mMonitorPool;
 
     NativeThreadList* mThreadList;
+
+    // Set when runtime shutdown is past the point that new threads may attach.
+    Boolean mShuttingDown;
 };
+
+inline Boolean NativeRuntime::IsShuttingDownLocked()
+{
+    return mShuttingDown;
+}
 
 inline NativeRuntime* NativeRuntime::Current()
 {
