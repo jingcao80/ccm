@@ -103,6 +103,10 @@ public:
         /* [in] */ uint32_t threadId,
         /* [in] */ uint32_t count);
 
+    static NativeLockWord FromDefault();
+
+    static NativeLockWord Default();
+
     LockState GetState() const;
 
     // Return the owner thin lock thread id.
@@ -115,6 +119,9 @@ public:
     NativeMonitor* FatLockMonitor() const;
 
 private:
+    // Default constructor with no lock ownership.
+    NativeLockWord();
+
     explicit NativeLockWord(
         /* [in] */ uint32_t val);
 
@@ -138,6 +145,16 @@ inline NativeLockWord NativeLockWord::FromThinLockId(
                           (kStateThinOrUnlocked << kStateShift));
 }
 
+inline NativeLockWord NativeLockWord::FromDefault()
+{
+    return NativeLockWord();
+}
+
+inline NativeLockWord NativeLockWord::Default()
+{
+    return NativeLockWord();
+}
+
 inline uint32_t NativeLockWord::ThinLockOwner() const
 {
     CHECK(GetState() == kThinLocked);
@@ -149,6 +166,10 @@ inline uint32_t NativeLockWord::ThinLockCount() const
     CHECK(GetState() == kThinLocked);
     return (mValue >> kThinLockCountShift) & kThinLockCountMask;
 }
+
+inline NativeLockWord::NativeLockWord()
+    : mValue(0)
+{}
 
 inline NativeLockWord::NativeLockWord(
     /* [in] */ uint32_t val)

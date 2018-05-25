@@ -41,6 +41,10 @@ public:
         /* [in] */ Boolean debugSuspension,
         /* [in] */ Boolean* timedOut);
 
+    // Find an existing thread (or self) by its thread id (not tid).
+    NativeThread* FindThreadByThreadId(
+        /* [in] */ uint32_t threadId);
+
 private:
     Boolean Contains(
         /* [in] */ NativeThread* thread);

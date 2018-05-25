@@ -67,6 +67,9 @@ public:
     void TransitionFromRunnableToSuspended(
         /* [in] */ ThreadState newState);
 
+    void AssertThreadSuspensionIsAllowable(
+        /* [in] */ Boolean checkLocks = true) const;
+
     uint32_t GetThreadId() const;
 
     pid_t GetTid() const;
@@ -238,6 +241,10 @@ inline ThreadState NativeThread::GetState() const
     CHECK(mTls32.mStateAndFlags.mAsStruct.mState <= kSuspended);
     return static_cast<ThreadState>(mTls32.mStateAndFlags.mAsStruct.mState);
 }
+
+inline void NativeThread::AssertThreadSuspensionIsAllowable(
+    /* [in] */ Boolean checkLocks) const
+{}
 
 inline int NativeThread::GetSuspendCount() const
 {

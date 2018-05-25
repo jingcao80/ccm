@@ -51,6 +51,8 @@ public:
 
     NativeObject* GetObject();
 
+    NativeThread* GetOwner() const;
+
     MonitorId GetMonitorId() const;
 
     // Inflate the lock on obj. May fail to inflate for spurious reasons, always re-check.
@@ -80,6 +82,12 @@ private:
         /* [in] */ NativeThread* owner,
         /* [in] */ NativeObject* obj);
 
+    static ECode FailedUnlock(
+        /* [in] */ NativeObject* obj,
+        /* [in] */ uint32_t expectedOwnerThreadId,
+        /* [in] */ uint32_t foundOwnerThreadId,
+        /* [in] */ NativeMonitor* mon);
+
     // Try to lock without blocking, returns true if we acquired the lock.
     ECode TryLock(
         /* [in] */ NativeThread* self);
@@ -89,6 +97,9 @@ private:
         /* [in] */ NativeThread* self);
 
     ECode Lock(
+        /* [in] */ NativeThread* self);
+
+    ECode Unlock(
         /* [in] */ NativeThread* self);
 
     static ECode DoNotify(
@@ -147,6 +158,11 @@ inline ECode NativeMonitor::NotifyAll(
 inline NativeObject* NativeMonitor::GetObject()
 {
     return mObj;
+}
+
+inline NativeThread* NativeMonitor::GetOwner() const
+{
+    return mOwner;
 }
 
 inline MonitorId NativeMonitor::GetMonitorId() const

@@ -54,9 +54,20 @@ public:
     ECode NotifyAll(
         /* [in] */ NativeThread* self);
 
+    // Returns a human-readable form of the name of the *class* of the given object.
+    // So given an instance of java.lang.String, the output would
+    // be "java.lang.String". Given an array of int, the output would be "int[]".
+    // Given String.class, the output would be "java.lang.Class<java.lang.String>".
+    static String PrettyTypeOf(
+        /* [in] */ NativeObject* obj);
+
+    String PrettyTypeOf();
+
 private:
     // Monitor and hash code information.
     Atomic<uint32_t> mMonitor;
+
+    HANDLE mCcmObject;
 };
 
 inline Boolean NativeObject::CasLockWordWeakAcquire(

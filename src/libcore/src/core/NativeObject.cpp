@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "core/NativeObject.h"
+#include <ccmautoptr.h>
 
 namespace ccm {
 namespace core {
@@ -38,6 +39,26 @@ void NativeObject::SetLockWord(
     else {
         mMonitor.StoreRelaxed(newVal.GetValue());
     }
+}
+
+String NativeObject::PrettyTypeOf(
+    /* [in] */ NativeObject* obj)
+{
+    if (obj == nullptr) {
+        return String("null");
+    }
+    return obj->PrettyTypeOf();
+}
+
+String NativeObject::PrettyTypeOf()
+{
+    IObject* obj = IObject::Probe(reinterpret_cast<IInterface*>(mCcmObject));
+    AutoPtr<IMetaCoclass> mc;
+    obj->GetCoclass((IMetaCoclass**)&mc);
+    String ns, name;
+    mc->GetNamespace(&ns);
+    mc->GetName(&name);
+    return ns + name;
 }
 
 }

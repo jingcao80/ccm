@@ -132,6 +132,122 @@ ECode NativeMonitor::Lock(
     }
 }
 
+static String ThreadToString(
+    /* [in] */ NativeThread* thread)
+{
+    if (thread == nullptr) {
+        return String("nullptr");
+    }
+    return thread->ShortDump();
+}
+
+ECode NativeMonitor::FailedUnlock(
+    /* [in] */ NativeObject* obj,
+    /* [in] */ uint32_t expectedOwnerThreadId,
+    /* [in] */ uint32_t foundOwnerThreadId,
+    /* [in] */ NativeMonitor* monitor)
+{
+    // Acquire thread list lock so threads won't disappear from under us.
+    String currentOwnerString;
+    String expectedOwnerString;
+    String foundOwnerString;
+    uint32_t currentOwnerThreadId = 0;
+    {
+        NativeMutex::AutoLock lock(NativeThread::Current(), *Locks::sThreadListLock);
+        NativeThreadList* const threadList = NativeRuntime::Current()->GetThreadList();
+        NativeThread* expectedOwner = threadList->FindThreadByThreadId(expectedOwnerThreadId);
+        NativeThread* foundOwner = threadList->FindThreadByThreadId(foundOwnerThreadId);
+
+        // Re-read owner now that we hold lock.
+        NativeThread* currentOwner = (monitor != nullptr) ? monitor->GetOwner() : nullptr;
+        if (currentOwner != nullptr) {
+            currentOwnerThreadId = currentOwner->GetThreadId();
+        }
+        // Get short descriptions of the threads involved.
+        currentOwnerString = ThreadToString(currentOwner);
+        expectedOwnerString = expectedOwner != nullptr ? ThreadToString(expectedOwner) : String("unnamed");
+        foundOwnerString = foundOwner != nullptr ? ThreadToString(foundOwner) : String("unnamed");
+    }
+
+    if (currentOwnerThreadId == 0) {
+        if (foundOwnerThreadId == 0) {
+            Logger::E("NativeMonitor", "unlock of unowned monitor on object of type '%s'"
+                    " on thread '%s'",
+                    NativeObject::PrettyTypeOf(obj).string(),
+                    expectedOwnerString.string());
+            return E_ILLEGAL_MONITOR_STATE_EXCEPTION;
+        }
+        else {
+            // Race: the original read found an owner but now there is none
+            Logger::E("NativeMonitor", "unlock of monitor owned by '%s' on object of type '%s'"
+                    " (where now the monitor appears unowned) on thread '%s'",
+                    foundOwnerString.string(),
+                    NativeObject::PrettyTypeOf(obj).string(),
+                    expectedOwnerString.string());
+            return E_ILLEGAL_MONITOR_STATE_EXCEPTION;
+        }
+    }
+    else {
+        if (foundOwnerThreadId == 0) {
+            // Race: originally there was no owner, there is now
+            Logger::E("NativeMonitor", "unlock of monitor owned by '%s' on object of type '%s'"
+                    " (originally believed to be unowned) on thread '%s'",
+                    currentOwnerString.string(),
+                    NativeObject::PrettyTypeOf(obj).string(),
+                    expectedOwnerString.string());
+            return E_ILLEGAL_MONITOR_STATE_EXCEPTION;
+        }
+        else {
+            if (foundOwnerThreadId != currentOwnerThreadId) {
+                // Race: originally found and current owner have changed
+                Logger::E("NativeMonitor", "unlock of monitor originally owned by '%s' (now"
+                        " owned by '%s') on object of type '%s' on thread '%s'",
+                        foundOwnerString.string(),
+                        currentOwnerString.string(),
+                        NativeObject::PrettyTypeOf(obj).string(),
+                        expectedOwnerString.string());
+                return E_ILLEGAL_MONITOR_STATE_EXCEPTION;
+            }
+            else {
+                Logger::E("NativeMonitor", "unlock of monitor owned by '%s' on object of type '%s'"
+                        " on thread '%s",
+                        currentOwnerString.string(),
+                        NativeObject::PrettyTypeOf(obj).string(),
+                        expectedOwnerString.string());
+                return E_ILLEGAL_MONITOR_STATE_EXCEPTION;
+            }
+        }
+    }
+}
+
+ECode NativeMonitor::Unlock(
+    /* [in] */ NativeThread* self)
+{
+    CHECK(self != nullptr);
+    uint32_t ownerThreadId = 0;
+    {
+        NativeMutex::AutoLock lock(self, mMonitorLock);
+        NativeThread* owner = mOwner;
+        if (owner != nullptr) {
+            ownerThreadId = owner->GetThreadId();
+        }
+        if (owner == self) {
+            // We own the monitor, so nobody else can be in here.
+            if (mLockCount == 0) {
+                mOwner = nullptr;
+                // Wake a contender.
+                mMonitorContenders.Signal(self);
+            }
+            else {
+                --mLockCount;
+            }
+            return NOERROR;
+        }
+    }
+    // We don't own this, so we're not allowed to unlock it.
+    return FailedUnlock(GetObject(), self->GetThreadId(), ownerThreadId, this);
+}
+
 void NativeMonitor::Inflate(
     /* [in] */ NativeThread* self,
     /* [in] */ NativeThread* owner,
@@ -278,7 +394,48 @@ ECode NativeMonitor::MonitorExit(
     /* [in] */ NativeThread* self,
     /* [in] */ NativeObject* obj)
 {
-
+    CHECK(self != nullptr);
+    CHECK(obj != nullptr);
+    self->AssertThreadSuspensionIsAllowable();
+    while (true) {
+        NativeLockWord lockWord = obj->GetLockWord(true);
+        switch (lockWord.GetState()) {
+            case NativeLockWord::kUnlocked:
+                return FailedUnlock(obj, self->GetThreadId(), 0, nullptr);
+            case NativeLockWord::kThinLocked: {
+                uint32_t threadId = self->GetThreadId();
+                uint32_t ownerThreadId = lockWord.ThinLockOwner();
+                if (ownerThreadId != threadId) {
+                    return FailedUnlock(obj, threadId, ownerThreadId, nullptr);
+                }
+                else {
+                    // We own the lock, decrease the recursion count.
+                    NativeLockWord newLw = NativeLockWord::Default();
+                    if (lockWord.ThinLockCount() != 0) {
+                        uint32_t newCount = lockWord.ThinLockCount() - 1;
+                        newLw = NativeLockWord::FromThinLockId(threadId, newCount);
+                    }
+                    else {
+                        newLw = NativeLockWord::FromDefault();
+                    }
+                    // TODO: This really only needs memory_order_release, but we currently have
+                    // no way to specify that. In fact there seem to be no legitimate uses of SetLockWord
+                    // with a final argument of true. This slows down x86 and ARMv7, but probably not v8.
+                    obj->SetLockWord(newLw, true);
+                    // Success!
+                    return NOERROR;
+                }
+            }
+            case NativeLockWord::kFatLocked: {
+                NativeMonitor* mon = lockWord.FatLockMonitor();
+                return mon->Unlock(self);
+            }
+            default: {
+                Logger::E("NativeMonitor", "Invalid monitor state %d", lockWord.GetState());
+                return E_ILLEGAL_MONITOR_STATE_EXCEPTION;
+            }
+        }
+    }
 }
 
 ECode NativeMonitor::Notify(

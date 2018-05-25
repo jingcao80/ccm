@@ -179,5 +179,16 @@ NativeThread* NativeThreadList::SuspendThreadByThreadId(
     }
 }
 
+NativeThread* NativeThreadList::FindThreadByThreadId(
+    /* [in] */ uint32_t threadId)
+{
+    for (const auto& thread : mList) {
+        if (thread->GetThreadId() == threadId) {
+            return thread;
+        }
+    }
+    return nullptr;
+}
+
 }
 }
