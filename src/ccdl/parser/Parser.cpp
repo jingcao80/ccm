@@ -145,12 +145,12 @@ bool Parser::Parse(
 
     ret = ParseFile();
 
+    PostParse();
+
     if (!ret || mErrorHeader != nullptr) {
         DumpError();
         return false;
     }
-
-    PostParse();
 
     if (mNeedDump) Dump();
     return true;
@@ -182,6 +182,9 @@ void Parser::PostParse()
 {
     std::shared_ptr<Module> module = mWorld.GetWorkingModule();
     if (module != nullptr) {
+        for (int i = 0; i < module->GetInterfaceNumber(); i++) {
+            CheckInterfaceIntegrity(module->GetInterface(i));
+        }
         for (int i = 0; i < module->GetCoclassNumber(); i++) {
             GenerateCoclassObject(module.get(), module->GetCoclass(i));
         }
@@ -504,6 +507,9 @@ bool Parser::ParseInterface(
     if (token == Tokenizer::Token::SEMICOLON) {
         token = mTokenizer.GetToken();
         String fullName = mTokenizer.GetIdentifier();
+        if (!fullName.Contains("::")) {
+            fullName = mCurrNamespace->ToString() + fullName;
+        }
         Type* type = mPool->FindType(fullName);
         if (type != nullptr) {
             if (!type->IsInterfaceType()) {
@@ -514,18 +520,10 @@ bool Parser::ParseInterface(
             return parseResult;
         }
 
-        Namespace* ns = nullptr;
-        String itfName;
         int index = fullName.LastIndexOf("::");
-        if (index != -1) {
-            ns = mPool->ParseNamespace(fullName.Substring(0, index - 1));
-            itfName = fullName.Substring(index + 2);
-        }
-        else {
-            ns = mCurrNamespace;
-            itfName = fullName;
-            fullName = mCurrNamespace->ToString() + itfName;
-        }
+        Namespace* ns = mPool->ParseNamespace(fullName.Substring(0, index - 1));
+        String itfName = fullName.Substring(index + 2);
+
         Interface* interface = new Interface();
         interface->SetName(itfName);
         interface->SetNamespace(ns);
@@ -650,6 +648,9 @@ bool Parser::ParseInterfaceBody(
         }
         else if (token == Tokenizer::Token::IDENTIFIER) {
             parseResult = ParseMethod(interface) && parseResult;
+        }
+        else {
+            token = mTokenizer.GetToken();
         }
         token = mTokenizer.PeekToken();
     }
@@ -2198,6 +2199,42 @@ void Parser::GenerateCoclassObject(
         itfco->Specialize();
         klass->SetConstructorDefault(true);
         klass->AddInterface(itfco);
+    }
+}
+
+void Parser::CheckInterfaceIntegrity(
+    /* [in] */ Interface* interface)
+{
+    for (int i = 0; i < interface->GetMethodNumber(); i++) {
+        Method* method = interface->GetMethod(i);
+        for (int j = 0; j < method->GetParameterNumber(); j++) {
+            Parameter* param = method->GetParameter(j);
+            CheckTypeIntegrity(param->GetType());
+        }
+        CheckTypeIntegrity(method->GetReturnType());
+    }
+}
+
+void Parser::CheckTypeIntegrity(
+    /* [in] */ Type* type)
+{
+    while (type->IsPointerType() || type->IsArrayType()) {
+        if (type->IsPointerType()) {
+            type = ((PointerType*)type)->GetBaseType();
+        }
+        else {
+            type = ((ArrayType*)type)->GetElementType();
+        }
+    }
+    if (type->IsInterfaceType()) {
+        Interface* interface = (Interface*)type;
+        if (interface->IsPredecl()) {
+            String message = String::Format("Interface \"%s%s\" is not declared.",
+                    interface->GetNamespace()->ToString().string(),
+                    interface->GetName().string());
+            LogError(Tokenizer::Token::ILLEGAL_TOKEN, message);
+            return;
+        }
     }
 }
 

@@ -22,6 +22,9 @@ module libcore
 {
 
 include "core/Exceptions.cdl"
+include "core/IStackTraceElement.cdl"
 include "core/ISynchronize.cdl"
+include "core/IThread.cdl"
+include "core/IThreadGroup.cdl"
 
 }

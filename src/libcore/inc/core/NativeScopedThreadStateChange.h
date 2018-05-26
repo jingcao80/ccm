@@ -33,19 +33,19 @@ class ScopedThreadStateChange
 public:
     ScopedThreadStateChange(
         /* [in] */ NativeThread* self,
-        /* [in] */ ThreadState newThreadState);
+        /* [in] */ NativeThreadState newThreadState);
 
     ~ScopedThreadStateChange();
 
 protected:
     NativeThread* const mSelf;
 
-    const ThreadState mThreadState;
+    const NativeThreadState mThreadState;
 
 private:
     friend class ScopedObjectAccessUnchecked;
 
-    ThreadState mOldThreadState = kTerminated;
+    NativeThreadState mOldThreadState = kTerminated;
 
     const Boolean mExpectedHasNoThread;
 };

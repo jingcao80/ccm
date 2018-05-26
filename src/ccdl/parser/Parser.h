@@ -242,6 +242,12 @@ private:
         /* [in] */ Pool* pool,
         /* [in] */ Coclass* klass);
 
+    void CheckInterfaceIntegrity(
+        /* [in] */ Interface* interface);
+
+    void CheckTypeIntegrity(
+        /* [in] */ Type* type);
+
     void LogError(
         /* [in] */ Tokenizer::Token token,
         /* [in] */ const String& message);

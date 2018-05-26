@@ -49,5 +49,21 @@ ECode NativeObjectNotifyAll(
     return reinterpret_cast<NativeObject*>(handle)->NotifyAll(self);
 }
 
+ECode NativeObjectWait(
+    /* [in] */ HANDLE handle)
+{
+    NativeThread* self = NativeThread::Current();
+    return reinterpret_cast<NativeObject*>(handle)->Wait(self);
+}
+
+ECode NativeObjectWait(
+    /* [in] */ HANDLE handle,
+    /* [in] */ Long ms,
+    /* [in] */ Integer ns)
+{
+    NativeThread* self = NativeThread::Current();
+    return reinterpret_cast<NativeObject*>(handle)->Wait(self, ms, ns);
+}
+
 }
 }

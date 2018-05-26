@@ -41,8 +41,8 @@ String NativeThread::ShortDump() const
     return String();
 }
 
-ThreadState NativeThread::SetState(
-    /* [in] */ ThreadState newState)
+NativeThreadState NativeThread::SetState(
+    /* [in] */ NativeThreadState newState)
 {
     // Should only be used to change between suspended states.
     // Cannot use this code to change into or from Runnable as changing to Runnable should
@@ -53,7 +53,7 @@ ThreadState NativeThread::SetState(
     oldStateAndFlags.mAsInt = mTls32.mStateAndFlags.mAsInt;
     CHECK(oldStateAndFlags.mAsStruct.mState != kRunnable);
     mTls32.mStateAndFlags.mAsStruct.mState = newState;
-    return static_cast<ThreadState>(oldStateAndFlags.mAsStruct.mState);
+    return static_cast<NativeThreadState>(oldStateAndFlags.mAsStruct.mState);
 }
 
 Boolean NativeThread::IsSuspended() const
@@ -100,7 +100,7 @@ Boolean NativeThread::ModifySuspendCount(
 }
 
 void NativeThread::TransitionToSuspendedAndRunCheckpoints(
-    /* [in] */ ThreadState newState)
+    /* [in] */ NativeThreadState newState)
 {
     CHECK(newState != kRunnable);
     CHECK(GetState() == kRunnable);
@@ -232,7 +232,7 @@ Boolean NativeThread::PassActiveSuspendBarriers(
 }
 
 void NativeThread::TransitionFromRunnableToSuspended(
-    /* [in] */ ThreadState newState)
+    /* [in] */ NativeThreadState newState)
 {
     CHECK(this == Current());
     // Change to non-runnable state, thereby appearing suspended to the system.
@@ -243,12 +243,12 @@ void NativeThread::TransitionFromRunnableToSuspended(
     PassActiveSuspendBarriers();
 }
 
-ThreadState NativeThread::TransitionFromSuspendedToRunnable()
+NativeThreadState NativeThread::TransitionFromSuspendedToRunnable()
 {
     union StateAndFlags oldStateAndFlags;
     oldStateAndFlags.mAsInt = mTls32.mStateAndFlags.mAsInt;
     int16_t oldState = oldStateAndFlags.mAsStruct.mState;
-    CHECK(static_cast<ThreadState>(oldState) != kRunnable);
+    CHECK(static_cast<NativeThreadState>(oldState) != kRunnable);
     do {
         Locks::sMutatorLock->AssertNotHeld(this);  // Otherwise we starve GC..
         oldStateAndFlags.mAsInt = mTls32.mStateAndFlags.mAsInt;
@@ -289,7 +289,7 @@ ThreadState NativeThread::TransitionFromSuspendedToRunnable()
             CHECK(GetSuspendCount() == 0);
         }
     } while (true);
-    return static_cast<ThreadState>(oldState);
+    return static_cast<NativeThreadState>(oldState);
 }
 
 void NativeThread::ThreadExitCallback(

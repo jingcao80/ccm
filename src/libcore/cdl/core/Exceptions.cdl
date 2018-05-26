@@ -18,6 +18,7 @@ namespace ccm {
 namespace core {
 
 const Integer E_ILLEGAL_MONITOR_STATE_EXCEPTION = 0x80010100;
+const Integer E_INTERRUPTED_EXCEPTION = 0x80010101;
 
 }
 }

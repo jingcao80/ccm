@@ -23,7 +23,7 @@ namespace core {
 
 ScopedThreadStateChange::ScopedThreadStateChange(
     /* [in] */ NativeThread* self,
-    /* [in] */ ThreadState newThreadState)
+    /* [in] */ NativeThreadState newThreadState)
     : mSelf(self)
     , mThreadState(newThreadState)
     , mExpectedHasNoThread(false)

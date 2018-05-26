@@ -14,50 +14,16 @@
 // limitations under the License.
 //=========================================================================
 
-#include "core/SyncObject.h"
-#include "core/nativeapi.h"
-
 namespace ccm {
 namespace core {
 
-CCM_INTERFACE_IMPL_1(SyncObject, Object, ISynchronize);
-
-ECode SyncObject::Lock()
+[
+    uuid(96e68b21-4a8c-4f7b-b0db-ac54e3eaa267),
+    version(0.1.0)
+]
+interface IStackTraceElement
 {
-    return NativeObjectLock(mNativeObject);
-}
 
-ECode SyncObject::Unlock()
-{
-    return NativeObjectUnlock(mNativeObject);
-}
-
-ECode SyncObject::Notify()
-{
-    return NativeObjectNotify(mNativeObject);
-}
-
-ECode SyncObject::NotifyAll()
-{
-    return NativeObjectNotifyAll(mNativeObject);
-}
-
-ECode SyncObject::Wait()
-{
-    return NativeObjectWait(mNativeObject);
-}
-
-ECode SyncObject::Wait(
-    /* [in] */ Long millis)
-{
-    return Wait(millis, 0);
-}
-
-ECode SyncObject::Wait(
-    /* [in] */ Long millis,
-    /* [in] */ Integer nanos)
-{
-    return NativeObjectWait(mNativeObject, millis, nanos);
 }
 
 }

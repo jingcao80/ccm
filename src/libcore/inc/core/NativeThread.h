@@ -42,10 +42,10 @@ public:
 
     String ShortDump() const;
 
-    ThreadState GetState() const;
+    NativeThreadState GetState() const;
 
-    ThreadState SetState(
-        /* [in] */ ThreadState newState);
+    NativeThreadState SetState(
+        /* [in] */ NativeThreadState newState);
 
     int GetSuspendCount() const;
 
@@ -60,12 +60,12 @@ public:
         /* [in] */ Boolean forDebugger);
 
     // Transition from non-runnable to runnable state acquiring share on mutator_lock_.
-    ThreadState TransitionFromSuspendedToRunnable();
+    NativeThreadState TransitionFromSuspendedToRunnable();
 
     // Transition from runnable into a state where mutator privileges are denied. Releases share of
     // mutator lock.
     void TransitionFromRunnableToSuspended(
-        /* [in] */ ThreadState newState);
+        /* [in] */ NativeThreadState newState);
 
     void AssertThreadSuspensionIsAllowable(
         /* [in] */ Boolean checkLocks = true) const;
@@ -79,6 +79,11 @@ public:
     void SetMonitorEnterObject(
         /* [in] */ NativeObject* obj);
 
+    Boolean IsInterruptedLocked();
+
+    void SetInterruptedLocked(
+        /* [in] */ Boolean i);
+
     void Notify();
 
     NativeMutex* GetWaitMutex() const;
@@ -86,6 +91,9 @@ public:
     NativeConditionVariable* GetWaitConditionVariable() const;
 
     NativeMonitor* GetWaitMonitor() const;
+
+    void SetWaitMonitor(
+        /* [in] */ NativeMonitor* mon);
 
     NativeThread* GetWaitNext() const;
 
@@ -112,7 +120,7 @@ private:
     void TriggerSuspend();
 
     void TransitionToSuspendedAndRunCheckpoints(
-        /* [in] */ ThreadState newState);
+        /* [in] */ NativeThreadState newState);
 
     void PassActiveSuspendBarriers();
 
@@ -135,7 +143,7 @@ private:
             // Bitfield of flag values. Must be changed atomically so that flag values aren't lost. See
             // ThreadFlags for bit field meanings.
             volatile uint16_t mFlags;
-            // Holds the ThreadState. May be changed non-atomically between Suspended (ie not Runnable)
+            // Holds the NativeThreadState. May be changed non-atomically between Suspended (ie not Runnable)
             // transitions. Changing to Runnable requires that the suspend_request be part of the atomic
             // operation. If a thread is suspended and a suspend_request is present, a thread may not
             // change to Runnable as a GC or other operation is in progress.
@@ -233,13 +241,16 @@ private:
     NativeConditionVariable* mWaitCond;
     // Pointer to the monitor lock we're currently waiting on or null if not waiting.
     NativeMonitor* mWaitMonitor;
+
+    // Thread "interrupted" status; stays raised until queried or thrown.
+    Boolean mInterrupted;
 };
 
-inline ThreadState NativeThread::GetState() const
+inline NativeThreadState NativeThread::GetState() const
 {
     CHECK(mTls32.mStateAndFlags.mAsStruct.mState >= kTerminated);
     CHECK(mTls32.mStateAndFlags.mAsStruct.mState <= kSuspended);
-    return static_cast<ThreadState>(mTls32.mStateAndFlags.mAsStruct.mState);
+    return static_cast<NativeThreadState>(mTls32.mStateAndFlags.mAsStruct.mState);
 }
 
 inline void NativeThread::AssertThreadSuspensionIsAllowable(
@@ -267,6 +278,17 @@ inline void NativeThread::SetMonitorEnterObject(
     mTlsPtr.mMonitorEnterObject = obj;
 }
 
+inline Boolean NativeThread::IsInterruptedLocked()
+{
+    return mInterrupted;
+}
+
+inline void NativeThread::SetInterruptedLocked(
+    /* [in] */ Boolean i)
+{
+    mInterrupted = i;
+}
+
 inline NativeMutex* NativeThread::GetWaitMutex() const
 {
     return mWaitMutex;
@@ -280,6 +302,12 @@ inline NativeConditionVariable* NativeThread::GetWaitConditionVariable() const
 inline NativeMonitor* NativeThread::GetWaitMonitor() const
 {
     return mWaitMonitor;
+}
+
+inline void NativeThread::SetWaitMonitor(
+    /* [in] */ NativeMonitor* mon)
+{
+    mWaitMonitor = mon;
 }
 
 inline NativeThread* NativeThread::GetWaitNext() const

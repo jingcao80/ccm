@@ -34,6 +34,14 @@ ECode NativeObjectNotify(
 ECode NativeObjectNotifyAll(
     /* [in] */ HANDLE handle);
 
+ECode NativeObjectWait(
+    /* [in] */ HANDLE handle);
+
+ECode NativeObjectWait(
+    /* [in] */ HANDLE handle,
+    /* [in] */ Long ms,
+    /* [in] */ Integer ns);
+
 }
 }
 

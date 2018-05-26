@@ -21,6 +21,7 @@
 #include "core/NativeObject.h"
 #include "core/NativeThreadList.h"
 #include <ccmlogger.h>
+#include <inttypes.h>
 
 namespace ccm {
 namespace core {
@@ -74,6 +75,50 @@ Boolean NativeMonitor::Install(
     NativeLockWord fat(this);
     // Publish the updated lock word, which may race with other threads.
     return GetObject()->CasLockWordWeakRelease(lw, fat);
+}
+
+void NativeMonitor::AppendToWaitSet(
+    /* [in] */ NativeThread* thread)
+{
+    CHECK(owner_ == Thread::Current());
+    CHECK(thread != nullptr);
+    CHECK(thread->GetWaitNext() == nullptr);
+    if (mWaitSet == nullptr) {
+        mWaitSet = thread;
+        return;
+    }
+
+    // push_back.
+    NativeThread* t = mWaitSet;
+    while (t->GetWaitNext() != nullptr) {
+        t = t->GetWaitNext();
+    }
+    t->SetWaitNext(thread);
+}
+
+void NativeMonitor::RemoveFromWaitSet(
+    /* [in] */ NativeThread* thread)
+{
+    CHECK(owner_ == Thread::Current());
+    CHECK(thread != nullptr);
+    if (mWaitSet == nullptr) {
+        return;
+    }
+    if (mWaitSet == thread) {
+        mWaitSet = thread->GetWaitNext();
+        thread->SetWaitNext(nullptr);
+        return;
+    }
+
+    NativeThread* t = mWaitSet;
+    while (t->GetWaitNext() != nullptr) {
+        if (t->GetWaitNext() == thread) {
+            t->SetWaitNext(thread->GetWaitNext());
+            thread->SetWaitNext(nullptr);
+            return;
+        }
+        t = t->GetWaitNext();
+    }
 }
 
 ECode NativeMonitor::TryLockLocked(
@@ -246,6 +291,137 @@ ECode NativeMonitor::Unlock(
     }
     // We don't own this, so we're not allowed to unlock it.
     return FailedUnlock(GetObject(), self->GetThreadId(), ownerThreadId, this);
+}
+
+ECode NativeMonitor::Wait(
+    /* [in] */ NativeThread* self,
+    /* [in] */ int64_t ms,
+    /* [in] */ int32_t ns,
+    /* [in] */ Boolean interruptShouldThrow,
+    /* [in] */ NativeThreadState why)
+{
+    CHECK(self != nullptr);
+    CHECK(why == kTimedWaiting || why == kWaiting || why == kSleeping);
+
+    mMonitorLock.Lock(self);
+
+    // Make sure that we hold the lock.
+    if (mOwner != self) {
+        mMonitorLock.Unlock(self);
+        Logger::E("NativeMonitor", "object not locked by thread before wait()");
+        return E_ILLEGAL_MONITOR_STATE_EXCEPTION;
+    }
+
+    // We need to turn a zero-length timed wait into a regular wait because
+    // Object.wait(0, 0) is defined as Object.wait(0), which is defined as Object.wait().
+    if (why == kTimedWaiting && (ms == 0 && ns == 0)) {
+        why = kWaiting;
+    }
+
+    // Enforce the timeout range.
+    if (ms < 0 || ns < 0 || ns > 999999) {
+        mMonitorLock.Unlock(self);
+        Logger::E("NativeMonitor", "timeout arguments out of range: ms=%" PRId64 " ns=%d", ms, ns);
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    /*
+    * Add ourselves to the set of threads waiting on this monitor, and
+    * release our hold.  We need to let it go even if we're a few levels
+    * deep in a recursive lock, and we need to restore that later.
+    *
+    * We append to the wait set ahead of clearing the count and owner
+    * fields so the subroutine can check that the calling thread owns
+    * the monitor.  Aside from that, the order of member updates is
+    * not order sensitive as we hold the pthread mutex.
+    */
+    AppendToWaitSet(self);
+    ++mNumWaiters;
+    Integer prevLockCount = mLockCount;
+    mLockCount = 0;
+    mOwner = nullptr;
+
+    Boolean wasInterrupted = false;
+    {
+        // Pseudo-atomically wait on self's wait_cond_ and release the monitor lock.
+        NativeMutex::AutoLock lock(self, *self->GetWaitMutex());
+
+        // Set wait_monitor_ to the monitor object we will be waiting on. When wait_monitor_ is
+        // non-null a notifying or interrupting thread must signal the thread's wait_cond_ to wake it
+        // up.
+        CHECK(self->GetWaitMonitor() == nullptr);
+        self->SetWaitMonitor(this);
+
+        // Release the monitor lock.
+        mMonitorContenders.Signal(self);
+        mMonitorLock.Unlock(self);
+
+        // Handle the case where the thread was interrupted before we called wait().
+        if (self->IsInterruptedLocked()) {
+            wasInterrupted = true;
+        }
+        else {
+            // Wait for a notification or a timeout to occur.
+            if (why == kWaiting) {
+                self->GetWaitConditionVariable()->Wait(self);
+            }
+            else {
+                CHECK(why == kTimedWaiting || why == kSleeping);
+                self->GetWaitConditionVariable()->TimedWait(self, ms, ns);
+            }
+            wasInterrupted = self->IsInterruptedLocked();
+        }
+    }
+
+    {
+        // We reset the thread's wait_monitor_ field after transitioning back to runnable so
+        // that a thread in a waiting/sleeping state has a non-null wait_monitor_ for debugging
+        // and diagnostic purposes. (If you reset this earlier, stack dumps will claim that threads
+        // are waiting on "null".)
+        NativeMutex::AutoLock lock(self, *self->GetWaitMutex());
+        CHECK(self->GetWaitMonitor() != nullptr);
+        self->SetWaitMonitor(nullptr);
+    }
+
+    ECode ec = NOERROR;
+
+    // Allocate the interrupted exception not holding the monitor lock since it may cause a GC.
+    // If the GC requires acquiring the monitor for enqueuing cleared references, this would
+    // cause a deadlock if the monitor is held.
+    if (wasInterrupted && interruptShouldThrow) {
+        /*
+         * We were interrupted while waiting, or somebody interrupted an
+         * un-interruptible thread earlier and we're bailing out immediately.
+         *
+         * The doc sayeth: "The interrupted status of the current thread is
+         * cleared when this exception is thrown."
+         */
+        {
+            NativeMutex::AutoLock lock(self, *self->GetWaitMutex());
+            self->SetInterruptedLocked(false);
+        }
+        ec = E_INTERRUPTED_EXCEPTION;
+    }
+
+    // Re-acquire the monitor and lock.
+    Lock(self);
+    mMonitorLock.Lock(self);
+    self->GetWaitMutex()->AssertNotHeld(self);
+
+    /*
+    * We remove our thread from wait set after restoring the count
+    * and owner fields so the subroutine can check that the calling
+    * thread owns the monitor. Aside from that, the order of member
+    * updates is not order sensitive as we hold the pthread mutex.
+    */
+    mOwner = self;
+    mLockCount = prevLockCount;
+    --mNumWaiters;
+    RemoveFromWaitSet(self);
+
+    mMonitorLock.Unlock(self);
+
+    return ec;
 }
 
 void NativeMonitor::Inflate(
@@ -478,6 +654,48 @@ ECode NativeMonitor::NotifyAll(
     return NOERROR;
 }
 
+ECode NativeMonitor::Wait(
+    /* [in] */ NativeThread* self,
+    /* [in] */ NativeObject* obj,
+    /* [in] */ int64_t ms,
+    /* [in] */ int32_t ns,
+    /* [in] */ Boolean interruptShouldThrow,
+    /* [in] */ NativeThreadState why)
+{
+    CHECK(self != nullptr);
+    CHECK(obj != nullptr);
+    NativeLockWord lockWord = obj->GetLockWord(true);
+    while (lockWord.GetState() != NativeLockWord::kFatLocked) {
+        switch (lockWord.GetState()) {
+            case NativeLockWord::kUnlocked:
+                Logger::E("NativeMonitor", "object not locked by thread before wait()");
+                return E_ILLEGAL_MONITOR_STATE_EXCEPTION;
+            case NativeLockWord::kThinLocked: {
+                uint32_t threadId = self->GetThreadId();
+                uint32_t ownerThreadId = lockWord.ThinLockOwner();
+                if (ownerThreadId != threadId) {
+                    Logger::E("NativeMonitor", "object not locked by thread before wait()");
+                    return E_ILLEGAL_MONITOR_STATE_EXCEPTION;
+                }
+                else {
+                    // We own the lock, inflate to enqueue ourself on the Monitor. May fail spuriously so
+                    // re-load.
+                    Inflate(self, self, obj);
+                    lockWord = obj->GetLockWord(true);
+                }
+                break;
+            }
+            case NativeLockWord::kFatLocked:
+            default: {
+                Logger::E("NativeMonitor", "Invalid monitor state %d", lockWord.GetState());
+                return E_ILLEGAL_MONITOR_STATE_EXCEPTION;
+            }
+        }
+    }
+    NativeMonitor* mon = lockWord.FatLockMonitor();
+    return mon->Wait(self, ms, ns, interruptShouldThrow, why);
+}
+
 ECode NativeMonitor::DoNotify(
     /* [in] */ NativeThread* self,
     /* [in] */ NativeObject* obj,
@@ -522,7 +740,15 @@ ECode NativeMonitor::DoNotify(
 void NativeMonitorList::Add(
     /* [in] */ NativeMonitor* m)
 {
-
+    NativeThread* self = NativeThread::Current();
+    NativeMutex::AutoLock lock(self, mMonitorListLock);
+    // CMS needs this to block for concurrent reference processing because an object allocated during
+    // the GC won't be marked and concurrent reference processing would incorrectly clear the JNI weak
+    // ref. But CC (kUseReadBarrier == true) doesn't because of the to-space invariant.
+    while (UNLIKELY(!mAllowNewMonitors)) {
+        mMonitorAddCondition.WaitHoldingLocks(self);
+    }
+    mList.push_front(m);
 }
 
 }

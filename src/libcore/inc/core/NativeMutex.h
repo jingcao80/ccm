@@ -126,6 +126,13 @@ public:
     void AssertExclusiveHeld(
         /* [in] */ const NativeThread* self);
 
+    // Assert that the Mutex is not held by the current thread.
+    void AssertNotHeldExclusive(
+        /* [in] */ const NativeThread* self);
+
+    void AssertNotHeld(
+        /* [in] */ const NativeThread* self);
+
     // Id associated with exclusive owner. No memory ordering semantics if called from a thread other
     // than the owner.
     uint64_t GetExclusiveOwnerTid() const;
@@ -159,6 +166,18 @@ inline void NativeMutex::AssertExclusiveHeld(
     /* [in] */ const NativeThread* self)
 {
     CHECK(IsExclusiveHeld(self));
+}
+
+inline void NativeMutex::AssertNotHeldExclusive(
+    /* [in] */ const NativeThread* self)
+{
+    CHECK(!IsExclusiveHeld(self));
+}
+
+inline void NativeMutex::AssertNotHeld(
+    /* [in] */ const NativeThread* self)
+{
+    AssertNotHeldExclusive(self);
 }
 
 inline uint64_t NativeMutex::GetExclusiveOwnerTid() const
@@ -300,6 +319,11 @@ public:
     //       pointer copy, thereby defeating annotalysis.
     void Wait(
         /* [in] */ NativeThread* self);
+
+    Boolean TimedWait(
+        /* [in] */ NativeThread* self,
+        /* [in] */ int64_t ms,
+        /* [in] */ int32_t ns);
 
     // Variant of Wait that should be used with caution. Doesn't validate that no mutexes are held
     // when waiting.

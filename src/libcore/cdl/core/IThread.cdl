@@ -1,0 +1,138 @@
+//=========================================================================
+// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//=========================================================================
+
+namespace ccm {
+namespace core {
+
+enum ThreadState
+{
+    NEW,
+    RUNNABLE,
+    BLOCKED,
+    WAITING,
+    TIMED_WAITING,
+    TERMINATED
+}
+
+interface IStackTraceElement;
+interface IThread;
+interface IThreadGroup;
+
+[
+    uuid(c17e5398-bb0b-4cce-988e-88bda56318c7),
+    version(0.1.0)
+]
+interface IUncaughtExceptionHandler
+{
+    UncaughtException(
+        [in] IThread* t,
+        [in] ECode ec);
+}
+
+[
+    uuid(fb0ec407-baa3-47ed-9a3f-fe666ee9fca0),
+    version(0.1.0)
+]
+interface IThread
+{
+    CheckAccess();
+
+    CountStackFrames(
+        [out] Integer* frameNum);
+
+    Destroy();
+
+    GetContextClassLoader(
+        [out] IClassLoader** loader);
+
+    GetId(
+        [out] Long* id);
+
+    GetName(
+        [out] String* name);
+
+    GetPriority(
+        [out] Integer* priority);
+
+    GetStackTrace(
+        [out, callee] Array<IStackTraceElement*>** trace);
+
+    GetState(
+        [out] ThreadState* state);
+
+    GetThreadGroup(
+        [out] IThreadGroup** tg);
+
+    GetUncaughtExceptionHandler(
+        [out] IUncaughtExceptionHandler** handler);
+
+    DispatchUncaughtException(
+        [in] ECode ec);
+
+    Interrupt();
+
+    IsAlive(
+        [out] Boolean* alive);
+
+    IsDaemon(
+        [out] Boolean* daemon);
+
+    IsInterrupted(
+        [out] Boolean* interrupted);
+
+    Join();
+
+    Join(
+        [in] Long millis);
+
+    Join(
+        [in] Long millis,
+        [in] Integer nanos);
+
+    ParkFor(
+        [in] Long nanos);
+
+    ParkUntil(
+        [in] Long time);
+
+    Resume();
+
+    SetContextClassLoader(
+        [in] IClassLoader* cl);
+
+    SetDaemon(
+        [in] Boolean on);
+
+    SetName(
+        [in] String name);
+
+    SetPriority(
+        [in] Integer newPriority);
+
+    SetUncaughtExceptionHandler(
+        [in] IUncaughtExceptionHandler* handler);
+
+    Start();
+
+    Stop();
+
+    Suspend();
+
+    Unpark();
+}
+
+}
+}

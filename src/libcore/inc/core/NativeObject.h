@@ -54,6 +54,14 @@ public:
     ECode NotifyAll(
         /* [in] */ NativeThread* self);
 
+    ECode Wait(
+        /* [in] */ NativeThread* self);
+
+    ECode Wait(
+        /* [in] */ NativeThread* self,
+        /* [in] */ int64_t ms,
+        /* [in] */ int32_t ns);
+
     // Returns a human-readable form of the name of the *class* of the given object.
     // So given an instance of java.lang.String, the output would
     // be "java.lang.String". Given an array of int, the output would be "int[]".
@@ -108,6 +116,20 @@ inline ECode NativeObject::NotifyAll(
     /* [in] */ NativeThread* self)
 {
     return NativeMonitor::NotifyAll(self, this);
+}
+
+inline ECode NativeObject::Wait(
+    /* [in] */ NativeThread* self)
+{
+    return NativeMonitor::Wait(self, this, 0, 0, true, kWaiting);
+}
+
+inline ECode NativeObject::Wait(
+    /* [in] */ NativeThread* self,
+    /* [in] */ int64_t ms,
+    /* [in] */ int32_t ns)
+{
+    return NativeMonitor::Wait(self, this, ms, ns, true, kTimedWaiting);
 }
 
 }

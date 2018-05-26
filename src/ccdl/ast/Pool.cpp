@@ -205,6 +205,7 @@ Namespace* Pool::ParseNamespace(
             AddNamespace(nsp);
             currNsp->AddNamespace(nsp);
         }
+        headNsp = nsp;
     }
     return headNsp;
 }

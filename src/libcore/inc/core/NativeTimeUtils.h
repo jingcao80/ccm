@@ -17,6 +17,7 @@
 #ifndef __CCM_CORE_NATIVETIMEUTILS_H__
 #define __CCM_CORE_NATIVETIMEUTILS_H__
 
+#include <ccmtypes.h>
 #include <stdint.h>
 #include <time.h>
 
@@ -43,6 +44,15 @@ static constexpr inline uint64_t MsToNs(
 // Sleep for the given number of nanoseconds, a bad way to handle contention.
 void NanoSleep(
     /* [in] */ uint64_t ns);
+
+// Initialize a timespec to either a relative time (ms,ns), or to the absolute
+// time corresponding to the indicated clock value plus the supplied offset.
+void InitTimeSpec(
+    /* [in] */ Boolean absolute,
+    /* [in] */ int clock,
+    /* [in] */ int64_t ms,
+    /* [in] */ int32_t ns,
+    /* [in] */ timespec* ts);
 
 }
 }

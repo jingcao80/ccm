@@ -16,6 +16,7 @@
 
 #include "core/NativeMutex.h"
 #include "core/NativeThread.h"
+#include "core/NativeTimeUtils.h"
 #include <ccmlogger.h>
 #include <errno.h>
 #include <linux/futex.h>
@@ -281,6 +282,47 @@ void NativeConditionVariable::WaitHoldingLocks(
     CHECK(mGuard.mNumContenders.LoadRelaxed() >= 0);
     mGuard.mNumContenders--;
     mGuard.mRecursionCount = oldRecursionCount;
+}
+
+Boolean NativeConditionVariable::TimedWait(
+    /* [in] */ NativeThread* self,
+    /* [in] */ int64_t ms,
+    /* [in] */ int32_t ns)
+{
+    CHECK(self == nullptr || self == Thread::Current());
+    Boolean timedOut = false;
+    mGuard.AssertExclusiveHeld(self);
+    mGuard.CheckSafeToWait(self);
+    unsigned int oldRecursionCount = mGuard.mRecursionCount;
+    timespec rel_ts;
+    InitTimeSpec(false, CLOCK_REALTIME, ms, ns, &rel_ts);
+    mNumWaiters++;
+    // Ensure the Mutex is contended so that requeued threads are awoken.
+    mGuard.mNumContenders++;
+    mGuard.mRecursionCount = 1;
+    int32_t curSequence = mSequence.LoadRelaxed();
+    mGuard.ExclusiveUnlock(self);
+    if (futex(mSequence.Address(), FUTEX_WAIT, curSequence, &rel_ts, nullptr, 0) != 0) {
+        if (errno == ETIMEDOUT) {
+            // Timed out we're done.
+            timedOut = true;
+        }
+        else if ((errno == EAGAIN) || (errno == EINTR)) {
+            // A signal or ConditionVariable::Signal/Broadcast has come in.
+        }
+        else {
+            Logger::E("NativeConditionVariable",
+                    "timed futex wait failed for %s", mName.string());
+        }
+    }
+    mGuard.ExclusiveLock(self);
+    CHECK(mNumWaiters >= 0);
+    mNumWaiters--;
+    // We awoke and so no longer require awakes from the guard_'s unlock.
+    CHECK(mGuard.mNumContenders.LoadRelaxed() >= 0);
+    mGuard.mNumContenders--;
+    mGuard.mRecursionCount = oldRecursionCount;
+    return timedOut;
 }
 
 //----------------------------------------------------------------------------
