@@ -39,6 +39,7 @@ enum LockLevel {
     kLoggingLock = 0,
     kThreadSuspendCountLock,
     kDefaultMutexLevel,
+    kAllocatedThreadIdsLock,
     kMonitorPoolLock,
     kMonitorLock,
     kThreadListLock,
@@ -396,7 +397,13 @@ public:
     // attaching and detaching.
     static NativeMutex* sThreadListLock;
 
+    // Signaled when threads terminate. Used to determine when all non-daemons have terminated.
+    static NativeConditionVariable* sThreadExitCond;
+
     static NativeMutex* sAllocatedMonitorIdsLock;
+
+    // Guard the allocation/deallocation of thread ids.
+    static NativeMutex* sAllocatedThreadIdsLock;
 
     // Allow mutual exclusion when manipulating Thread::suspend_count_.
     // TODO: Does the trade-off of a per-thread lock make sense?

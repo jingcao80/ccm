@@ -14,6 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
+#include "core/nativeapi.h"
 #include "core/NativeMutex.h"
 #include "core/NativeScopedThreadStateChange.h"
 #include "core/NativeThreadList.h"
@@ -188,6 +189,83 @@ NativeThread* NativeThreadList::FindThreadByThreadId(
         }
     }
     return nullptr;
+}
+
+void NativeThreadList::Unregister(
+    /* [in] */ NativeThread* self)
+{
+    CHECK(self == NativeThread::Current());
+    CHECK(self->GetState() != kRunnable);
+    Locks::sMutatorLock->AssertNotHeld(self);
+
+    Logger::V("NativeThreadList", "ThreadList::Unregister() %s",
+            self->ShortDump().string());
+
+    {
+        NativeMutex::AutoLock lock(self, *Locks::sThreadListLock);
+        ++mUnregisteringCount;
+    }
+
+    // Any time-consuming destruction, plus anything that can call back into managed code or
+    // suspend and so on, must happen at this point, and not in ~Thread. The self->Destroy is what
+    // causes the threads to join. It is important to do this after incrementing mUnregisteringCount
+    // since we want the runtime to wait for the daemon threads to exit before deleting the thread
+    // list.
+    self->Destroy();
+
+    uint32_t thinLockId = self->GetThreadId();
+    while (true) {
+        // Remove and delete the Thread* while holding the thread_list_lock_ and
+        // thread_suspend_count_lock_ so that the unregistering thread cannot be suspended.
+        // Note: deliberately not using MutexLock that could hold a stale self pointer.
+        NativeMutex::AutoLock lock(self, *Locks::sThreadListLock);
+        if (!Contains(self)) {
+            String threadName;
+            self->GetThreadName(&threadName);
+            String os;
+            DumpNativeStack(&os, GetTid(), nullptr, nullptr);
+            Logger::E("NativeThreadList", "Request to unregister unattached thread %s\n%s",
+                    threadName.string(), os.string());
+            break;
+        }
+        else {
+            NativeMutex::AutoLock lock2(self, *Locks::sThreadSuspendCountLock);
+            if (!self->IsSuspended()) {
+                mList.remove(self);
+                break;
+            }
+        }
+        // We failed to remove the thread due to a suspend request, loop and try again.
+    }
+    delete self;
+
+    // Release the thread ID after the thread is finished and deleted to avoid cases where we can
+    // temporarily have multiple threads with the same thread id. When this occurs, it causes
+    // problems in FindThreadByThreadId / SuspendThreadByThreadId.
+    ReleaseThreadId(nullptr, thinLockId);
+
+    // Clear the TLS data, so that the underlying native thread is recognizably detached.
+    // (It may wish to reattach later.)
+#ifdef ART_TARGET_ANDROID
+    __get_tls()[TLS_SLOT_ART_THREAD_SELF] = nullptr;
+#else
+    pthread_setspecific(NativeThread::sPthreadKeySelf, nullptr);
+#endif
+
+    // Signal that a thread just detached.
+    NativeMutex::AutoLock lock(nullptr, *Locks::sThreadListLock);
+    --mUnregisteringCount;
+    Locks::sThreadExitCond->Broadcast(nullptr);
+}
+
+void NativeThreadList::ReleaseThreadId(
+    /* [in] */ NativeThread* self,
+    /* [in] */ uint32_t id)
+{
+    NativeMutex::AutoLock lock(self, *Locks::sAllocatedThreadIdsLock);
+    --id;  // Zero is reserved to mean "invalid".
+    CHECK(mAllocatedIds[id]);
+    mAllocatedIds.reset(id);
 }
 
 }

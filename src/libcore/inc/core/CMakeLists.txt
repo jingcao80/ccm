@@ -18,4 +18,7 @@ add_custom_target(deploy_libcore_core_headers)
 
 MKDIR(deploy_libcore_core_headers ${INC_DIR}/core)
 
+COPY(deploy_libcore_core_headers ${LIBCORE_INC_DIR}/core/AutoLock.h ${INC_DIR}/core)
+COPY(deploy_libcore_core_headers ${LIBCORE_INC_DIR}/core/Runnable.h ${INC_DIR}/core)
 COPY(deploy_libcore_core_headers ${LIBCORE_INC_DIR}/core/SyncObject.h ${INC_DIR}/core)
+COPY(deploy_libcore_core_headers ${LIBCORE_INC_DIR}/core/Thread.h ${INC_DIR}/core)

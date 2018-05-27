@@ -47,7 +47,7 @@ public:
         /* [in] */ Long millis,
         /* [in] */ Integer nanos) override;
 
-private:
+protected:
     HANDLE mNativeObject = 0;
 };
 

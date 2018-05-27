@@ -72,6 +72,8 @@ public:
     String PrettyTypeOf();
 
 private:
+    friend class NativeThread;
+
     // Monitor and hash code information.
     Atomic<uint32_t> mMonitor;
 

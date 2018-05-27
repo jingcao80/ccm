@@ -14,9 +14,18 @@
 // limitations under the License.
 //=========================================================================
 
+#include "core/AutoLock.h"
+#include "core/globals.h"
+#include "core/nativeapi.h"
+#include "core/NativeObject.h"
+#include "core/NativeRuntime.h"
+#include "core/NativeRuntimeCallbacks.h"
 #include "core/NativeThread.h"
+#include "core/NativeThreadList.h"
 #include "core/NativeTimeUtils.h"
+#include "core/Thread.h"
 #include <ccmlogger.h>
+#include <limits.h>
 
 namespace ccm {
 namespace core {
@@ -24,6 +33,194 @@ namespace core {
 Boolean NativeThread::sIsStarted = false;
 pthread_key_t NativeThread::sPthreadKeySelf;
 NativeConditionVariable* NativeThread::sResumeCond = nullptr;
+const size_t NativeThread::kStackOverflowImplicitCheckSize = GetStackOverflowReservedBytes(kRuntimeISA);
+
+NativeThread::NativeThread(
+    /* [in] */ Boolean daemon)
+    : mTls32(daemon)
+    , mWaitMonitor(nullptr)
+    , mInterrupted(false)
+{
+    mWaitMutex = new NativeMutex(String("a thread wait mutex"));
+    mWaitCond = new NativeConditionVariable(
+            String("a thread wait condition variable"), *mWaitMutex);
+
+    static_assert((sizeof(NativeThread) % 4) == 0,
+                "NativeThread has a size which is not a multiple of 4.");
+    mTls32.mStateAndFlags.mAsStruct.mFlags = 0;
+    mTls32.mStateAndFlags.mAsStruct.mState = kRunnable;
+    memset(&mTlsPtr.mHeldMutexes[0], 0, sizeof(mTlsPtr.mHeldMutexes));
+    for (uint32_t i = 0; i < kMaxSuspendBarriers; ++i) {
+        mTlsPtr.mActiveSuspendBarriers[i] = nullptr;
+    }
+}
+
+void* NativeThread::CreateCallback(
+    /* [in] */ void* arg)
+{
+    NativeThread* self = reinterpret_cast<NativeThread*>(arg);
+    NativeRuntime* runtime = NativeRuntime::Current();
+    if (runtime == nullptr) {
+        Logger::E("NativeThread", "Thread attaching to non-existent runtime: %s",
+                self->ShortDump().string());
+        return nullptr;
+    }
+    {
+        // TODO: pass self to MutexLock - requires self to equal Thread::Current(), which is only true
+        //       after self->Init().
+        NativeMutex::AutoLock lock(nullptr, *Locks::sRuntimeShutdownLock);
+        // Check that if we got here we cannot be shutting down (as shutdown should never have started
+        // while threads are being born).
+        CHECK(!runtime->IsShuttingDownLocked());
+        // Note: given that the JNIEnv is created in the parent thread, the only failure point here is
+        //       a mess in InitStackHwm. We do not have a reasonable way to recover from that, so abort
+        //       the runtime in such a case. In case this ever changes, we need to make sure here to
+        //       delete the tmp_jni_env, as we own it at this point.
+        Boolean res = self->Init(runtime->GetThreadList());
+        CHECK(res);
+        NativeRuntime::Current()->EndThreadBirth();
+    }
+    {
+        ScopedObjectAccess soa(self);
+
+        // Copy peer into self, deleting global reference when done.
+        CHECK(self->mTlsPtr.mPeer != nullptr);
+        Thread* tPeer = reinterpret_cast<Thread*>(self->mTlsPtr.mPeer);
+        self->mTlsPtr.mOPeer = reinterpret_cast<NativeObject*>(tPeer->mNativeObject);
+        tPeer->Release(reinterpret_cast<HANDLE>(self));
+        self->mTlsPtr.mPeer = 0;
+        self->SetThreadName(tPeer->mName);
+
+        self->SetNativePriority(tPeer->mPriority);
+
+        runtime->GetRuntimeCallbacks()->ThreadStart(self);
+
+        // Invoke the 'run' method of our Thread.
+        tPeer->Run();
+    }
+    // Detach and delete self.
+    NativeRuntime::Current()->GetThreadList()->Unregister(self);
+
+    return nullptr;
+}
+
+static size_t FixStackSize(
+    /* [in] */ size_t stackSize)
+{
+    // A stack size of zero means "use the default".
+    if (stackSize == 0) {
+        stackSize = NativeRuntime::Current()->GetDefaultStackSize();
+    }
+
+    // Use the bionic pthread default stack size for native threads,
+    // so include that here to support apps that expect large native stacks.
+    stackSize += 1 * MB;
+
+    // It's not possible to request a stack smaller than the system-defined PTHREAD_STACK_MIN.
+    if (stackSize < PTHREAD_STACK_MIN) {
+        stackSize = PTHREAD_STACK_MIN;
+    }
+
+    if (NativeRuntime::Current()->ExplicitStackOverflowChecks()) {
+        // It's likely that callers are trying to ensure they have at least a certain amount of
+        // stack space, so we should add our reserved space on top of what they requested, rather
+        // than implicitly take it away from them.
+        stackSize += GetStackOverflowReservedBytes(kRuntimeISA);
+    }
+    else {
+        // If we are going to use implicit stack checks, allocate space for the protected
+        // region at the bottom of the stack.
+        stackSize += NativeThread::kStackOverflowImplicitCheckSize +
+                GetStackOverflowReservedBytes(kRuntimeISA);
+    }
+
+    // Some systems require the stack size to be a multiple of the system page size, so round up.
+    stackSize = RoundUp(stackSize, kPageSize);
+
+    return stackSize;
+}
+
+ECode NativeThread::CreateNativeThread(
+    /* [in] */ Thread* peer,
+    /* [in] */ size_t stackSize,
+    /* [in] */ Boolean daemon)
+{
+    CHECK(peer != nullptr);
+    NativeThread* self = Current();
+
+    Logger::V("NativeThread", "Creating native thread for %s",
+            peer->mName.string());
+
+    NativeRuntime* runtime = NativeRuntime::Current();
+
+    // Atomically start the birth of the thread ensuring the runtime isn't shutting down.
+    Boolean threadStartDuringShutdown = false;
+    {
+        NativeMutex::AutoLock lock(self, *Locks::sRuntimeShutdownLock);
+        if (runtime->IsShuttingDownLocked()) {
+            threadStartDuringShutdown = true;
+        }
+        else {
+            runtime->StartThreadBirth();
+        }
+    }
+    if (threadStartDuringShutdown) {
+        Logger::E("NativeThread", "Thread starting during runtime shutdown");
+        return E_INTERNAL_ERROR;
+    }
+
+    NativeThread* childThread = new NativeThread(daemon);
+    childThread->mTlsPtr.mPeer = reinterpret_cast<HANDLE>(peer);
+    peer->AddRef(reinterpret_cast<HANDLE>(childThread));
+    stackSize = FixStackSize(stackSize);
+
+    peer->mNative = reinterpret_cast<HANDLE>(childThread);
+
+    pthread_attr_t attr;
+    pthread_attr_init(&attr);
+    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+    pthread_attr_setstacksize(&attr, stackSize);
+    pthread_t newPthread;
+    int pthreadCreateResult = pthread_create(&newPthread,
+            &attr, NativeThread::CreateCallback, childThread);
+    pthread_attr_destroy(&attr);
+
+    if (pthreadCreateResult == 0) {
+        return NOERROR;
+    }
+
+    {
+        NativeMutex::AutoLock lock(self, *Locks::sRuntimeShutdownLock);
+        runtime->EndThreadBirth();
+    }
+    // Manually delete the global reference since Thread::Init will not have been run.
+    peer->Release(reinterpret_cast<HANDLE>(childThread));
+    childThread->mTlsPtr.mPeer = 0;
+    delete childThread;
+    childThread = nullptr;
+    // TODO: remove from thread group?
+    peer->mNative = 0;
+    Logger::E("NativeThread", "pthread_create (%ld stack) failed: %s",
+            stackSize, strerror(pthreadCreateResult));
+    return E_OUT_OF_MEMORY_ERROR;
+}
+
+Boolean NativeThread::Init(
+    /* [in] */ NativeThreadList*)
+{
+    // This function does all the initialization that must be run by the native thread it applies to.
+    // (When we create a new thread from managed code, we allocate the Thread* in Thread::Create so
+    // we can handshake with the corresponding native thread when it's ready.) Check this native
+    // thread hasn't been through here already...
+    CHECK(NativeThread::Current() == nullptr);
+
+    // Set pthread_self_ ahead of pthread_setspecific, that makes Thread::Current function, this
+    // avoids pthread_self_ ever being invalid when discovered from Thread::Current().
+    mTlsPtr.mPthreadSelf = pthread_self();
+    CHECK(mIsStarted);
+
+    // SetUpAlternateSignalStack();
+}
 
 NativeThread* NativeThread::Current()
 {
@@ -36,9 +233,22 @@ NativeThread* NativeThread::Current()
     }
 }
 
+void NativeThread::SetThreadName(
+    /* [in] */ const String& name)
+{
+    *mTlsPtr.mName = name;
+    NativeSetThreadName(name);
+}
+
 String NativeThread::ShortDump() const
 {
     return String();
+}
+
+void NativeThread::GetThreadName(
+    /* [in] */ String* name)
+{
+    *name = *mTlsPtr.mName;
 }
 
 NativeThreadState NativeThread::SetState(
@@ -321,6 +531,55 @@ void NativeThread::Startup()
     }
 }
 
+void NativeThread::Destroy()
+{
+    NativeThread* self = this;
+    CHECK(self == NativeThread::Current());
+
+    if (mTlsPtr.mPeer != 0) {
+        Thread* tPeer = reinterpret_cast<Thread*>(mTlsPtr.mPeer);
+        tPeer->Release(reinterpret_cast<HANDLE>(this));
+        mTlsPtr.mPeer = 0;
+    }
+
+    if (mTlsPtr.mOPeer != nullptr) {
+        ScopedObjectAccess soa(self);
+        // We may need to call user-supplied managed code, do this before final clean-up.
+        HandleUncaughtExceptions(soa);
+        RemoveFromThreadGroup(soa);
+
+        Thread* tPeer = (Thread*)reinterpret_cast<SyncObject*>(
+                mTlsPtr.mOPeer->mCcmObject);
+        tPeer->mNative = 0;
+        NativeRuntime* runtime = NativeRuntime::Current();
+        if (runtime != nullptr) {
+            runtime->GetRuntimeCallbacks()->ThreadDeath(self);
+        }
+
+        // Thread.join() is implemented as an Object.wait() on the Thread.lock object. Signal anyone
+        // who is waiting.
+        SyncObject* lock = tPeer->mLock;
+        if (lock != nullptr) {
+            AutoLock locker(lock);
+            lock->NotifyAll();
+        }
+
+        mTlsPtr.mOPeer = nullptr;
+    }
+}
+
+void NativeThread::HandleUncaughtExceptions(
+    /* [in] */ ScopedObjectAccess& soa)
+{
+
+}
+
+void NativeThread::RemoveFromThreadGroup(
+    /* [in] */ ScopedObjectAccess& soa)
+{
+
+}
+
 void NativeThread::Notify()
 {
     NativeThread* self = Current();
@@ -342,6 +601,14 @@ void NativeThread::SetHeldMutex(
 {
     mTlsPtr.mHeldMutexes[level] = mutex;
 }
+
+#if defined(__x86_64__)
+void NativeThread::SetNativePriority(
+    /* [in] */ int newPriority)
+{
+  // Do nothing.
+}
+#endif
 
 }
 }

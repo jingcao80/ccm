@@ -330,7 +330,9 @@ Boolean NativeConditionVariable::TimedWait(
 NativeMutatorMutex* Locks::sMutatorLock = nullptr;
 NativeMutex* Locks::sRuntimeShutdownLock = nullptr;
 NativeMutex* Locks::sThreadListLock = nullptr;
+NativeConditionVariable* Locks::sThreadExitCond = nullptr;
 NativeMutex* Locks::sAllocatedMonitorIdsLock = nullptr;
+NativeMutex* Locks::sAllocatedThreadIdsLock = nullptr;
 NativeMutex* Locks::sThreadSuspendCountLock = nullptr;
 
 void Locks::Init()
@@ -347,8 +349,13 @@ void Locks::Init()
     CHECK(sAllocatedMonitorIdsLock == nullptr);
     sAllocatedMonitorIdsLock = new NativeMutex(String("allocated monitor ids lock"), kMonitorPoolLock);
 
+    CHECK(sAllocatedThreadIdsLock == nullptr);
+    sAllocatedThreadIdsLock = new NativeMutex(String("allocated thread ids lock"), kAllocatedThreadIdsLock);
+
     CHECK(sThreadSuspendCountLock == nullptr);
     sThreadSuspendCountLock = new NativeMutex(String("thread suspend count lock"), kThreadSuspendCountLock);
+
+    sThreadExitCond = new NativeConditionVariable(String("thread exit condition variable"), *sThreadListLock);
 }
 
 }

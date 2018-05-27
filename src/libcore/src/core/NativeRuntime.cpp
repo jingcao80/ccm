@@ -39,6 +39,15 @@ Boolean NativeRuntime::Create()
     return true;
 }
 
+void NativeRuntime::EndThreadBirth()
+{
+    CHECK(mThreadsBeingBorn > 0);
+    mThreadsBeingBorn--;
+    if (mShuttingDownStarted && mThreadsBeingBorn == 0) {
+        mShutdownCond->Broadcast(NativeThread::Current());
+    }
+}
+
 Boolean NativeRuntime::IsShuttingDown(
     /* [in] */ NativeThread* self)
 {
@@ -53,6 +62,11 @@ Boolean NativeRuntime::Init()
     NativeThread::Startup();
 
     return true;
+}
+
+NativeRuntimeCallbacks* NativeRuntime::GetRuntimeCallbacks()
+{
+    return mCallbacks.get();
 }
 
 }

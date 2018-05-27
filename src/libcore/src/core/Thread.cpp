@@ -14,19 +14,21 @@
 // limitations under the License.
 //=========================================================================
 
-[
-    uuid(3657416d-4638-4843-a0b9-eb7ef1794495),
-    url("http://ccm.org/component/library/libcore.so")
-]
-module libcore
+#include "core/NativeThread.h"
+#include "core/Thread.h"
+
+namespace ccm {
+namespace core {
+
+CCM_INTERFACE_IMPL_1(Thread, Runnable, IThread);
+
+ECode Thread::NativeCreate(
+    /* [in] */ Thread* t,
+    /* [in] */ Long stackSize,
+    /* [in] */ Boolean daemon)
 {
+    return NativeThread::CreateNativeThread(t, stackSize, daemon);
+}
 
-include "core/Errors.cdl"
-include "core/Exceptions.cdl"
-include "core/IRunnable.cdl"
-include "core/IStackTraceElement.cdl"
-include "core/ISynchronize.cdl"
-include "core/IThread.cdl"
-include "core/IThreadGroup.cdl"
-
+}
 }

@@ -14,19 +14,31 @@
 // limitations under the License.
 //=========================================================================
 
-[
-    uuid(3657416d-4638-4843-a0b9-eb7ef1794495),
-    url("http://ccm.org/component/library/libcore.so")
-]
-module libcore
-{
+#ifndef __CCM_CORE_NATIVERUNTIMECALLBACKS_H__
+#define __CCM_CORE_NATIVERUNTIMECALLBACKS_H__
 
-include "core/Errors.cdl"
-include "core/Exceptions.cdl"
-include "core/IRunnable.cdl"
-include "core/IStackTraceElement.cdl"
-include "core/ISynchronize.cdl"
-include "core/IThread.cdl"
-include "core/IThreadGroup.cdl"
+#include <vector>
+
+namespace ccm {
+namespace core {
+
+class NativeThread;
+class NativeThreadLifecycleCallback;
+
+class NativeRuntimeCallbacks
+{
+public:
+    void ThreadStart(
+        /* [in] */ NativeThread* self);
+
+    void ThreadDeath(
+        /* [in] */ NativeThread* self);
+
+private:
+    std::vector<NativeThreadLifecycleCallback*> mThreadCallbacks;
+};
 
 }
+}
+
+#endif // __CCM_CORE_NATIVERUNTIMECALLBACKS_H__

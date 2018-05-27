@@ -19,6 +19,7 @@
 
 #include "core/NativeMonitor.h"
 #include "core/NativeMutex.h"
+#include "core/NativeScopedThreadStateChange.h"
 #include "core/NativeThreadState.h"
 #include <ccmtypes.h>
 #include <pthread.h>
@@ -26,7 +27,10 @@
 namespace ccm {
 namespace core {
 
-enum ThreadFlag
+class NativeThreadList;
+class Thread;
+
+enum NativeThreadFlag
 {
     kSuspendRequest = 1,    // If set implies that suspend_count_ > 0 and the Thread should enter the
                             // safepoint handler.
@@ -38,6 +42,13 @@ enum ThreadFlag
 class NativeThread
 {
 public:
+    // Creates a new native thread corresponding to the given managed peer.
+    // Used to implement Thread.start.
+    static ECode CreateNativeThread(
+        /* [in] */ Thread* peer,
+        /* [in] */ size_t stackSize,
+        /* [in] */ Boolean daemon);
+
     static NativeThread* Current();
 
     String ShortDump() const;
@@ -70,9 +81,27 @@ public:
     void AssertThreadSuspensionIsAllowable(
         /* [in] */ Boolean checkLocks = true) const;
 
+    /*
+    * Changes the priority of this thread to match that of the java.lang.Thread object.
+    *
+    * We map a priority value from 1-10 to Linux "nice" values, where lower
+    * numbers indicate higher priority.
+    */
+    void SetNativePriority(
+        /* [in] */ int newPriority);
+
     uint32_t GetThreadId() const;
 
     pid_t GetTid() const;
+
+    // Sets 'name' to the java.lang.Thread's name. This requires no transition to managed code,
+    // allocation, or locking.
+    void GetThreadName(
+        /* [in] */ String* name);
+
+    // Sets the thread's name.
+    void SetThreadName(
+        /* [in] */ const String& name);
 
     static void Startup();
 
@@ -105,19 +134,39 @@ public:
         /* [in] */ BaseMutex* mutex);
 
 private:
+    explicit NativeThread(
+        /* [in] */ Boolean daemon);
+
+    void Destroy();
+
     void NotifyLocked(
         /* [in] */ NativeThread* self);
 
     Boolean ReadFlag(
-        /* [in] */ ThreadFlag flag) const;
+        /* [in] */ NativeThreadFlag flag) const;
 
     void AtomicClearFlag(
-        /* [in] */ ThreadFlag flag);
+        /* [in] */ NativeThreadFlag flag);
 
     // Trigger a suspend check by making the suspend_trigger_ TLS value an invalid pointer.
     // The next time a suspend check is done, it will load from the value at this address
     // and trigger a SIGSEGV.
     void TriggerSuspend();
+
+    static void* CreateCallback(
+        /* [in] */ void* arg);
+
+    void HandleUncaughtExceptions(
+        /* [in] */ ScopedObjectAccess& soa);
+
+    void RemoveFromThreadGroup(
+        /* [in] */ ScopedObjectAccess& soa);
+
+    void SetUpAlternateSignalStack();
+
+    // Initialize a thread.
+    Boolean Init(
+        /* [in] */ NativeThreadList*);
 
     void TransitionToSuspendedAndRunCheckpoints(
         /* [in] */ NativeThreadState newState);
@@ -156,6 +205,9 @@ private:
     static void ThreadExitCallback(
         /* [in] */ void* arg);
 
+public:
+    static const size_t kStackOverflowImplicitCheckSize;
+
 private:
     friend class NativeThreadList;
 
@@ -172,11 +224,12 @@ private:
 
     struct PACKED(4) tls_32bit_sized_values
     {
-        explicit tls_32bit_sized_values()
+        explicit tls_32bit_sized_values(Boolean daemon)
             : mSuspendCount(0)
             , mDebugSuspendCount(0)
             , mThinLockThreadId(0)
             , mTid(0)
+            , mDaemon(daemon)
             , mThreadExitCheckCount(0)
         {}
 
@@ -200,6 +253,9 @@ private:
         // System thread id.
         uint32_t mTid;
 
+        // Is the thread a daemon?
+        const Boolean mDaemon;
+
         // How many times has our pthread key's destructor been called?
         uint32_t mThreadExitCheckCount;
     } mTls32;
@@ -208,8 +264,11 @@ private:
     {
         tls_ptr_sized_values()
             : mSuspendTrigger(nullptr)
+            , mPeer(0)
             , mWaitNext(nullptr)
             , mMonitorEnterObject(nullptr)
+            , mName(nullptr)
+            , mPthreadSelf(0)
         {
             memset(&mHeldMutexes[0], 0, sizeof(mHeldMutexes));
         }
@@ -218,11 +277,20 @@ private:
         // normally set to the address of itself.
         uintptr_t* mSuspendTrigger;
 
+        NativeObject* mOPeer;
+        HANDLE mPeer;
+
         // The next thread in the wait set this thread is part of or null if not waiting.
         NativeThread* mWaitNext;
 
         // If we're blocked in MonitorEnter, this is the object we're trying to lock.
         NativeObject* mMonitorEnterObject;
+
+        // A cached copy of the java.lang.Thread's name.
+        String* mName;
+
+        // A cached pthread_t for the pthread underlying this Thread*.
+        pthread_t mPthreadSelf;
 
         // Pending barriers that require passing or NULL if non-pending. Installation guarding by
         // Locks::thread_suspend_count_lock_.
@@ -322,13 +390,13 @@ inline void NativeThread::SetWaitNext(
 }
 
 inline Boolean NativeThread::ReadFlag(
-    /* [in] */ ThreadFlag flag) const
+    /* [in] */ NativeThreadFlag flag) const
 {
     return (mTls32.mStateAndFlags.mAsStruct.mFlags & flag) != 0;
 }
 
 inline void NativeThread::AtomicClearFlag(
-    /* [in] */ ThreadFlag flag)
+    /* [in] */ NativeThreadFlag flag)
 {
     mTls32.mStateAndFlags.mAsAtomicInt.FetchAndAndSequentiallyConsistent(-1 ^ flag);
 }
@@ -337,6 +405,18 @@ inline void NativeThread::TriggerSuspend()
 {
     mTlsPtr.mSuspendTrigger = nullptr;
 }
+
+class NativeThreadLifecycleCallback
+{
+public:
+    virtual ~NativeThreadLifecycleCallback() {}
+
+    virtual void ThreadStart(
+        /* [in] */ NativeThread* self) = 0;
+
+    virtual void ThreadDeath(
+        /* [in] */ NativeThread* self) = 0;
+};
 
 }
 }

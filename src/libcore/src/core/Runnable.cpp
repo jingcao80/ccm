@@ -14,19 +14,12 @@
 // limitations under the License.
 //=========================================================================
 
-[
-    uuid(3657416d-4638-4843-a0b9-eb7ef1794495),
-    url("http://ccm.org/component/library/libcore.so")
-]
-module libcore
-{
+#include "core/Runnable.h"
 
-include "core/Errors.cdl"
-include "core/Exceptions.cdl"
-include "core/IRunnable.cdl"
-include "core/IStackTraceElement.cdl"
-include "core/ISynchronize.cdl"
-include "core/IThread.cdl"
-include "core/IThreadGroup.cdl"
+namespace ccm {
+namespace core {
 
+CCM_INTERFACE_IMPL_1(Runnable, SyncObject, IRunnable);
+
+}
 }

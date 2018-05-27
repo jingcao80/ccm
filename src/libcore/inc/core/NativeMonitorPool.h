@@ -33,6 +33,7 @@
 #ifndef __CCM_CORE_NATIVEMONITORPOOL_H__
 #define __CCM_CORE_NATIVEMONITORPOOL_H__
 
+#include "core/globals.h"
 #include "core/NativeLockWord.h"
 #include "core/NativeMonitor.h"
 #include "core/NativeMutex.h"
@@ -96,7 +97,6 @@ private:
         /* [in] */ size_t index);
 
 private:
-    static constexpr int kPageSize = 4096;
     // TODO: There are assumptions in the code that monitor addresses are 8B aligned (>>3).
     static constexpr size_t kMonitorAlignment = 8;
     // Size of a monitor, rounded up to a multiple of alignment.

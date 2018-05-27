@@ -14,19 +14,44 @@
 // limitations under the License.
 //=========================================================================
 
-[
-    uuid(3657416d-4638-4843-a0b9-eb7ef1794495),
-    url("http://ccm.org/component/library/libcore.so")
-]
-module libcore
-{
+#ifndef __CCM_CORE_THREAD_H__
+#define __CCM_CORE_THREAD_H__
 
-include "core/Errors.cdl"
-include "core/Exceptions.cdl"
-include "core/IRunnable.cdl"
-include "core/IStackTraceElement.cdl"
-include "core/ISynchronize.cdl"
-include "core/IThread.cdl"
-include "core/IThreadGroup.cdl"
+#include "core/Runnable.h"
+#include "ccm.core.IThread.h"
+
+namespace ccm {
+namespace core {
+
+class COM_PUBLIC Thread
+    : public Runnable
+    , public IThread
+{
+public:
+    CCM_INTERFACE_DECL();
+
+private:
+    ECode NativeCreate(
+        /* [in] */ Thread* t,
+        /* [in] */ Long stackSize,
+        /* [in] */ Boolean daemon);
+
+private:
+    friend class NativeThread;
+
+    HANDLE mNative = 0;
+
+    /**
+     * The synchronization object responsible for this thread's join/sleep/park operations.
+     */
+    SyncObject* mLock;
+
+    String mName;
+
+    Integer mPriority;
+};
 
 }
+}
+
+#endif // __CCM_CORE_THREAD_H__

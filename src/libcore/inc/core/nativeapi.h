@@ -17,10 +17,30 @@
 #ifndef __CCM_CORE_NATIVEAPI_H__
 #define __CCM_CORE_NATIVEAPI_H__
 
-#include "ccmtypes.h"
+#include "core/globals.h"
+#include <ccmtypes.h>
 
 namespace ccm {
 namespace core {
+
+size_t GetStackOverflowReservedBytes(
+    /* [in] */ InstructionSet isa);
+
+void NativeSetThreadName(
+    /* [in] */ const String& name);
+
+// Returns the calling thread's tid. (The C libraries don't expose this.)
+pid_t GetTid();
+
+class BacktraceMap;
+
+// Dumps the native stack for thread 'tid' to 'os'.
+void DumpNativeStack(
+    /* [in] */ String* os,
+    /* [in] */ pid_t tid,
+    /* [in] */ BacktraceMap* map = nullptr,
+    /* [in] */ const char* prefix = "",
+    /* [in] */ void* ucontext = nullptr);
 
 ECode NativeObjectLock(
     /* [in] */ HANDLE handle);

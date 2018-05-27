@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "core/NativeObject.h"
+#include "core/SyncObject.h"
 #include <ccmautoptr.h>
 
 namespace ccm {
@@ -52,7 +53,7 @@ String NativeObject::PrettyTypeOf(
 
 String NativeObject::PrettyTypeOf()
 {
-    IObject* obj = IObject::Probe(reinterpret_cast<IInterface*>(mCcmObject));
+    SyncObject* obj = reinterpret_cast<SyncObject*>(mCcmObject);
     AutoPtr<IMetaCoclass> mc;
     obj->GetCoclass((IMetaCoclass**)&mc);
     String ns, name;

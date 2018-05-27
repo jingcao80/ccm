@@ -18,6 +18,7 @@
 #define __CCM_CORE_NATIVETHREADLIST_H__
 
 #include "core/NativeThread.h"
+#include <bitset>
 #include <list>
 
 namespace ccm {
@@ -45,13 +46,28 @@ public:
     NativeThread* FindThreadByThreadId(
         /* [in] */ uint32_t threadId);
 
+    void Unregister(
+        /* [in] */ NativeThread* self);
+
 private:
+    void ReleaseThreadId(
+        /* [in] */ NativeThread* self,
+        /* [in] */ uint32_t id);
+
     Boolean Contains(
         /* [in] */ NativeThread* thread);
 
+public:
+    static constexpr uint32_t kMaxThreadId = 0xFFFF;
+
 private:
+    std::bitset<kMaxThreadId> mAllocatedIds;
+
     // The actual list of all threads.
     std::list<NativeThread*> mList;
+
+    // Number of threads unregistering, ~ThreadList blocks until this hits 0.
+    int mUnregisteringCount;
 
     // Thread suspension timeout in nanoseconds.
     const uint64_t mThreadSuspendTimeoutNs;

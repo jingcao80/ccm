@@ -17,7 +17,10 @@
 #ifndef __CCM_CORE_NATIVERUNTIME_H__
 #define __CCM_CORE_NATIVERUNTIME_H__
 
+#include "core/NativeMutex.h"
+#include "core/NativeRuntimeCallbacks.h"
 #include <ccmtypes.h>
+#include <memory>
 
 namespace ccm {
 namespace core {
@@ -37,7 +40,13 @@ public:
 
     Boolean IsShuttingDownLocked();
 
+    void StartThreadBirth();
+
+    void EndThreadBirth();
+
     static NativeRuntime* Current();
+
+    size_t GetDefaultStackSize() const;
 
     size_t GetMaxSpinsBeforeThinLockInflation() const;
 
@@ -47,11 +56,18 @@ public:
 
     NativeThreadList* GetThreadList() const;
 
+    Boolean ExplicitStackOverflowChecks() const;
+
+    NativeRuntimeCallbacks* GetRuntimeCallbacks();
+
 private:
     Boolean Init();
 
 private:
     static NativeRuntime* sInstance;
+
+    // The default stack size for managed threads created by the runtime.
+    size_t mDefaultStackSize;
 
     // The number of spins that are done before thread suspension is used to forcibly inflate.
     size_t mMaxSpinsBeforeThinLockInflation;
@@ -62,8 +78,22 @@ private:
 
     NativeThreadList* mThreadList;
 
+    // A non-zero value indicates that a thread has been created but not yet initialized. Guarded by
+    // the shutdown lock so that threads aren't born while we're shutting down.
+    size_t mThreadsBeingBorn;
+
+    // Waited upon until no threads are being born.
+    std::unique_ptr<NativeConditionVariable> mShutdownCond;
+
     // Set when runtime shutdown is past the point that new threads may attach.
     Boolean mShuttingDown;
+
+    // The runtime is starting to shutdown but is blocked waiting on mShutdownCond.
+    Boolean mShuttingDownStarted;
+
+    Boolean mImplicitSoChecks;         // StackOverflow checks are implicit.
+
+    std::unique_ptr<NativeRuntimeCallbacks> mCallbacks;
 };
 
 inline Boolean NativeRuntime::IsShuttingDownLocked()
@@ -71,9 +101,19 @@ inline Boolean NativeRuntime::IsShuttingDownLocked()
     return mShuttingDown;
 }
 
+inline void NativeRuntime::StartThreadBirth()
+{
+    mThreadsBeingBorn++;
+}
+
 inline NativeRuntime* NativeRuntime::Current()
 {
     return sInstance;
+}
+
+inline size_t NativeRuntime::GetDefaultStackSize() const
+{
+    return mDefaultStackSize;
 }
 
 inline size_t NativeRuntime::GetMaxSpinsBeforeThinLockInflation() const
@@ -94,6 +134,11 @@ inline NativeMonitorPool* NativeRuntime::GetMonitorPool() const
 inline NativeThreadList* NativeRuntime::GetThreadList() const
 {
     return mThreadList;
+}
+
+inline Boolean NativeRuntime::ExplicitStackOverflowChecks() const
+{
+    return !mImplicitSoChecks;
 }
 
 }

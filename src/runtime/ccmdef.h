@@ -20,6 +20,7 @@
 #if defined(_DEBUG)
 #include <assert.h>
 #endif
+#include <stddef.h>
 #include <stdint.h>
 
 namespace ccm {
@@ -92,6 +93,18 @@ namespace ccm {
 #elif defined(__x86_64__)
 #define ALIGN(v) ALIGN8(v)
 #endif
+
+template<typename T>
+constexpr T RoundDown(T x, size_t n)
+{
+    return x & ~(n - 1);
+}
+
+template<typename T>
+constexpr T RoundUp(T x, size_t n)
+{
+    return RoundDown(x + n - 1, n);
+}
 
 #ifndef CHECK
 #if defined(_DEBUG)
