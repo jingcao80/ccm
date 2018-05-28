@@ -14,13 +14,12 @@
 // limitations under the License.
 //=========================================================================
 
-[
-    uuid(3657416d-4638-4843-a0b9-eb7ef1794495),
-    url("http://ccm.org/component/library/libcore.so")
-]
-module libcore
-{
+#include "core/CThread.h"
 
-include "core.cdl"
+namespace ccm {
+namespace core {
 
+CCM_OBJECT_IMPL(CThread)
+
+}
 }

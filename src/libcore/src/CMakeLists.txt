@@ -18,6 +18,7 @@ set(LIBCORE_SRC_DIR ${LIBCORE_DIR}/src)
 set(OBJ_DIR ${CMAKE_BINARY_DIR}/src/libcore/src)
 
 set(GENERATED_SOURCES
+    ${OBJ_DIR}/_ccm_core_CThread.cpp
     ${OBJ_DIR}/libcorePub.cpp
     ${OBJ_DIR}/MetadataWrapper.cpp)
 
@@ -30,7 +31,10 @@ add_subdirectory(core)
 
 include_directories(
     ./
-    ${INC_DIR})
+    ../inc
+    ../inc/core
+    ${INC_DIR}
+    ${OBJ_DIR})
 
 set(LIBCORE_LINK_LIBS
     -Wl,--whole-archive

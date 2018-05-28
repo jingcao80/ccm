@@ -46,10 +46,16 @@ public:
     NativeThread* FindThreadByThreadId(
         /* [in] */ uint32_t threadId);
 
+    void Register(
+        /* [in] */ NativeThread* self);
+
     void Unregister(
         /* [in] */ NativeThread* self);
 
 private:
+    uint32_t AllocThreadId(
+        /* [in] */ NativeThread* self);
+
     void ReleaseThreadId(
         /* [in] */ NativeThread* self,
         /* [in] */ uint32_t id);
@@ -61,10 +67,16 @@ public:
     static constexpr uint32_t kMaxThreadId = 0xFFFF;
 
 private:
+    friend class NativeThread;
+
     std::bitset<kMaxThreadId> mAllocatedIds;
 
     // The actual list of all threads.
     std::list<NativeThread*> mList;
+
+    // Ongoing suspend all requests, used to ensure threads added to list_ respect SuspendAll.
+    int mSuspendAllCount;
+    int mDebugSuspendAllCount;
 
     // Number of threads unregistering, ~ThreadList blocks until this hits 0.
     int mUnregisteringCount;

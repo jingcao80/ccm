@@ -23,7 +23,8 @@ namespace core {
 ]
 interface IThreadGroup
 {
-
+    ThreadTerminated(
+        [in] IThread* t);
 }
 
 }

@@ -14,6 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
+#include "core/globals.h"
 #include "core/NativeMutex.h"
 #include "core/NativeThread.h"
 #include "core/NativeTimeUtils.h"
@@ -333,6 +334,7 @@ NativeMutex* Locks::sThreadListLock = nullptr;
 NativeConditionVariable* Locks::sThreadExitCond = nullptr;
 NativeMutex* Locks::sAllocatedMonitorIdsLock = nullptr;
 NativeMutex* Locks::sAllocatedThreadIdsLock = nullptr;
+NativeMutex* Locks::sModifyLdtLock = nullptr;
 NativeMutex* Locks::sThreadSuspendCountLock = nullptr;
 
 void Locks::Init()
@@ -351,6 +353,11 @@ void Locks::Init()
 
     CHECK(sAllocatedThreadIdsLock == nullptr);
     sAllocatedThreadIdsLock = new NativeMutex(String("allocated thread ids lock"), kAllocatedThreadIdsLock);
+
+    if (kRuntimeISA == kX86_64) {
+        CHECK(sModifyLdtLock == nullptr);
+        sModifyLdtLock = new NativeMutex(String("modify_ldt lock"), kModifyLdtLock);
+    }
 
     CHECK(sThreadSuspendCountLock == nullptr);
     sThreadSuspendCountLock = new NativeMutex(String("thread suspend count lock"), kThreadSuspendCountLock);

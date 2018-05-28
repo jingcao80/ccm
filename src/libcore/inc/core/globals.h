@@ -20,6 +20,21 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#if !defined(__has_feature)
+#define __has_feature(x) 0
+#endif
+
+#if __has_feature(address_sanitizer)
+
+#include <sanitizer/asan_interface.h>
+
+#else
+
+// #include <valgrind.h>
+// #include <memcheck/memcheck.h>
+
+#endif
+
 namespace ccm {
 namespace core {
 
@@ -47,6 +62,16 @@ static constexpr InstructionSet kRuntimeISA = kNone;
 
 static constexpr size_t kArm64StackOverflowReservedBytes  = 8192;
 static constexpr size_t kX86_64StackOverflowReservedBytes = 8192;
+
+#if __has_feature(address_sanitizer)
+
+constexpr size_t kMemoryToolStackGuardSizeScale = 2;
+
+#else
+
+constexpr size_t kMemoryToolStackGuardSizeScale = 1;
+
+#endif
 
 }
 }

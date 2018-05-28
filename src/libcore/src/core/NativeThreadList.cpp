@@ -191,6 +191,33 @@ NativeThread* NativeThreadList::FindThreadByThreadId(
     return nullptr;
 }
 
+void NativeThreadList::Register(
+    /* [in] */ NativeThread* self)
+{
+    CHECK(self == NativeThread::Current());
+
+    Logger::V("NativeThreadList", "ThreadList::Register() %s",
+            self->ShortDump().string());
+
+    // Atomically add self to the thread list and make its thread_suspend_count_ reflect ongoing
+    // SuspendAll requests.
+    NativeMutex::AutoLock lock(self, *Locks::sThreadListLock);
+    NativeMutex::AutoLock lock2(self, *Locks::sThreadSuspendCountLock);
+    CHECK(mSuspendAllCount >= mDebugSuspendAllCount);
+    // Modify suspend count in increments of 1 to maintain invariants in ModifySuspendCount. While
+    // this isn't particularly efficient the suspend counts are most commonly 0 or 1.
+    for (int delta = mDebugSuspendAllCount; delta > 0; delta--) {
+        Boolean updated = self->ModifySuspendCount(self, +1, nullptr, true);
+        CHECK(updated);
+    }
+    for (int delta = mSuspendAllCount - mDebugSuspendAllCount; delta > 0; delta--) {
+        Boolean updated = self->ModifySuspendCount(self, +1, nullptr, false);
+        CHECK(updated);
+    }
+    CHECK(!Contains(self));
+    mList.push_back(self);
+}
+
 void NativeThreadList::Unregister(
     /* [in] */ NativeThread* self)
 {
@@ -256,6 +283,20 @@ void NativeThreadList::Unregister(
     NativeMutex::AutoLock lock(nullptr, *Locks::sThreadListLock);
     --mUnregisteringCount;
     Locks::sThreadExitCond->Broadcast(nullptr);
+}
+
+uint32_t NativeThreadList::AllocThreadId(
+    /* [in] */ NativeThread* self)
+{
+    NativeMutex::AutoLock lock(self, *Locks::sAllocatedThreadIdsLock);
+    for (size_t i = 0; i < mAllocatedIds.size(); ++i) {
+        if (!mAllocatedIds[i]) {
+            mAllocatedIds.set(i);
+            return i + 1;  // Zero is reserved to mean "invalid".
+        }
+    }
+    Logger::E("NativeThreadList", "Out of internal thread ids");
+    return 0;
 }
 
 void NativeThreadList::ReleaseThreadId(

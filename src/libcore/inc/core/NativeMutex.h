@@ -39,6 +39,7 @@ enum LockLevel {
     kLoggingLock = 0,
     kThreadSuspendCountLock,
     kDefaultMutexLevel,
+    kModifyLdtLock,
     kAllocatedThreadIdsLock,
     kMonitorPoolLock,
     kMonitorLock,
@@ -404,6 +405,9 @@ public:
 
     // Guard the allocation/deallocation of thread ids.
     static NativeMutex* sAllocatedThreadIdsLock;
+
+    // Guards modification of the LDT on x86.
+    static NativeMutex* sModifyLdtLock;
 
     // Allow mutual exclusion when manipulating Thread::suspend_count_.
     // TODO: Does the trade-off of a per-thread lock make sense?

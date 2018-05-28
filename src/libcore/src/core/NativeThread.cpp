@@ -26,6 +26,11 @@
 #include "core/Thread.h"
 #include <ccmlogger.h>
 #include <limits.h>
+#include <asm/prctl.h>
+#include <sys/mman.h>
+#include <sys/prctl.h>
+#include <sys/syscall.h>
+#include <signal.h>
 
 namespace ccm {
 namespace core {
@@ -34,6 +39,12 @@ Boolean NativeThread::sIsStarted = false;
 pthread_key_t NativeThread::sPthreadKeySelf;
 NativeConditionVariable* NativeThread::sResumeCond = nullptr;
 const size_t NativeThread::kStackOverflowImplicitCheckSize = GetStackOverflowReservedBytes(kRuntimeISA);
+
+// For implicit overflow checks we reserve an extra piece of memory at the bottom
+// of the stack (lowest memory).  The higher portion of the memory
+// is protected against reads and the lower is available for use while
+// throwing the StackOverflow exception.
+constexpr size_t kStackOverflowProtectedSize = 4 * kMemoryToolStackGuardSizeScale * KB;
 
 NativeThread::NativeThread(
     /* [in] */ Boolean daemon)
@@ -53,6 +64,11 @@ NativeThread::NativeThread(
     for (uint32_t i = 0; i < kMaxSuspendBarriers; ++i) {
         mTlsPtr.mActiveSuspendBarriers[i] = nullptr;
     }
+}
+
+void NativeThread::InitTid()
+{
+    mTls32.mTid = ::ccm::core::GetTid();
 }
 
 void* NativeThread::CreateCallback(
@@ -140,6 +156,75 @@ static size_t FixStackSize(
     return stackSize;
 }
 
+// Return the nearest page-aligned address below the current stack top.
+static uint8_t* FindStackTop()
+{
+    return reinterpret_cast<uint8_t*>(
+            AlignDown(__builtin_frame_address(0), kPageSize));
+}
+
+void NativeThread::InstallImplicitProtection()
+{
+    uint8_t* pregion = mTlsPtr.mStackBegin - kStackOverflowProtectedSize;
+    // Page containing current top of stack.
+    uint8_t* stackTop = FindStackTop();
+
+    // Try to directly protect the stack.
+    Logger::V("NativeThread", "installing stack protected region at %p to %p",
+            static_cast<void*>(pregion), static_cast<void*>(pregion + kStackOverflowProtectedSize - 1));
+    if (ProtectStack(/* fatal_on_error */ false)) {
+        // Tell the kernel that we won't be needing these pages any more.
+        // NB. madvise will probably write zeroes into the memory (on linux it does).
+        uint32_t unwantedSize = stackTop - pregion - kPageSize;
+        madvise(pregion, unwantedSize, MADV_DONTNEED);
+        return;
+    }
+
+    // There is a little complexity here that deserves a special mention.  On some
+    // architectures, the stack is created using a VM_GROWSDOWN flag
+    // to prevent memory being allocated when it's not needed.  This flag makes the
+    // kernel only allocate memory for the stack by growing down in memory.  Because we
+    // want to put an mprotected region far away from that at the stack top, we need
+    // to make sure the pages for the stack are mapped in before we call mprotect.
+    //
+    // The failed mprotect in UnprotectStack is an indication of a thread with VM_GROWSDOWN
+    // with a non-mapped stack (usually only the main thread).
+    //
+    // We map in the stack by reading every page from the stack bottom (highest address)
+    // to the stack top. (We then madvise this away.) This must be done by reading from the
+    // current stack pointer downwards. Any access more than a page below the current SP
+    // might cause a segv.
+    // TODO: This comment may be out of date. It seems possible to speed this up. As
+    //       this is normally done once in the zygote on startup, ignore for now.
+    //
+    // AddressSanitizer does not like the part of this functions that reads every stack page.
+    // Looks a lot like an out-of-bounds access.
+
+    // (Defensively) first remove the protection on the protected region as will want to read
+    // and write it. Ignore errors.
+    UnprotectStack();
+
+    Logger::V("NativeThread", "Need to map in stack for thread at %p",
+            static_cast<void*>(pregion));
+
+    // Read every page from the high address to the low.
+    volatile uint8_t dontOptimizeThis;
+    for (uint8_t* p = stackTop; p >= pregion; p -= kPageSize) {
+        dontOptimizeThis = *p;
+    }
+
+    Logger::V("NativeThread", "(again) installing stack protected region at %p to %p",
+            static_cast<void*>(pregion), static_cast<void*>(pregion + kStackOverflowProtectedSize - 1));
+
+    // Protect the bottom of the stack to prevent read/write to it.
+    ProtectStack(/* fatal_on_error */ true);
+
+    // Tell the kernel that we won't be needing these pages any more.
+    // NB. madvise will probably write zeroes into the memory (on linux it does).
+    uint32_t unwantedSize = stackTop - pregion - kPageSize;
+    madvise(pregion, unwantedSize, MADV_DONTNEED);
+}
+
 ECode NativeThread::CreateNativeThread(
     /* [in] */ Thread* peer,
     /* [in] */ size_t stackSize,
@@ -206,7 +291,7 @@ ECode NativeThread::CreateNativeThread(
 }
 
 Boolean NativeThread::Init(
-    /* [in] */ NativeThreadList*)
+    /* [in] */ NativeThreadList* threadList)
 {
     // This function does all the initialization that must be run by the native thread it applies to.
     // (When we create a new thread from managed code, we allocate the Thread* in Thread::Create so
@@ -219,8 +304,43 @@ Boolean NativeThread::Init(
     mTlsPtr.mPthreadSelf = pthread_self();
     CHECK(mIsStarted);
 
-    // SetUpAlternateSignalStack();
+    SetUpAlternateSignalStack();
+    if (!InitStackHwm()) {
+        return false;
+    }
+    InitCpu();
+    RemoveSuspendTrigger();
+    InitTid();
+
+#ifdef ART_TARGET_ANDROID
+    __get_tls()[TLS_SLOT_ART_THREAD_SELF] = this;
+#else
+    pthread_setspecific(NativeThread::sPthreadKeySelf, this);
+#endif
+    CHECK(NativeThread::Current() == this);
+
+    mTls32.mThinLockThreadId = threadList->AllocThreadId(this);
+
+    threadList->Register(this);
+    return true;
 }
+
+static void arch_prctl(int code, void* val)
+{
+    syscall(__NR_arch_prctl, code, val);
+}
+
+#if defined(__x86_64__)
+void NativeThread::InitCpu()
+{
+    NativeMutex::AutoLock lock(nullptr, *Locks::sModifyLdtLock);
+
+    arch_prctl(ARCH_SET_GS, this);
+
+    // Allow easy indirection back to Thread*.
+    mTlsPtr.mSelf = this;
+}
+#endif
 
 NativeThread* NativeThread::Current()
 {
@@ -237,7 +357,69 @@ void NativeThread::SetThreadName(
     /* [in] */ const String& name)
 {
     *mTlsPtr.mName = name;
-    NativeSetThreadName(name);
+    ::ccm::core::SetThreadName(name);
+}
+
+static void GetThreadStack(
+    /* [in] */ pthread_t thread,
+    /* [in] */ void** stackBase,
+    /* [in] */ size_t* stackSize,
+    /* [in] */ size_t* guardSize)
+{
+    pthread_attr_t attributes;
+    pthread_getattr_np(thread, &attributes);
+    pthread_attr_getstack(&attributes, stackBase, stackSize);
+    pthread_attr_getguardsize(&attributes, guardSize);
+    pthread_attr_destroy(&attributes);
+}
+
+Boolean NativeThread::InitStackHwm()
+{
+    void* readStackBase;
+    size_t readStackSize;
+    size_t readGuardSize;
+    GetThreadStack(mTlsPtr.mPthreadSelf, &readStackBase, &readStackSize, &readGuardSize);
+
+    mTlsPtr.mStackBegin = reinterpret_cast<uint8_t*>(readStackBase);
+    mTlsPtr.mStackSize = readStackSize;
+    // The minimum stack size we can cope with is the overflow reserved bytes (typically
+    // 8K) + the protected region size (4K) + another page (4K).  Typically this will
+    // be 8+4+4 = 16K.  The thread won't be able to do much with this stack even the GC takes
+    // between 8K and 12K.
+    uint32_t minStack = GetStackOverflowReservedBytes(kRuntimeISA) + kStackOverflowProtectedSize
+            + 4 * KB;
+    if (readStackSize <= minStack) {
+        Logger::E("NativeThread", "Attempt to attach a thread with a too-small stack");
+        return false;
+    }
+
+    Logger::V("NativeThread", "Native stack is at %p (%lu with %lu guard)",
+            readStackBase, readStackSize, readGuardSize);
+
+    // Set stack_end_ to the bottom of the stack saving space of stack overflows
+
+    NativeRuntime* runtime = NativeRuntime::Current();
+    Boolean implicitStackCheck = !runtime->ExplicitStackOverflowChecks();
+
+    ResetDefaultStackEnd();
+
+    // Install the protected region if we are doing implicit overflow checks.
+    if (implicitStackCheck) {
+        // The thread might have protected region at the bottom.  We need
+        // to install our own region so we need to move the limits
+        // of the stack to make room for it.
+
+        mTlsPtr.mStackBegin += readGuardSize + kStackOverflowProtectedSize;
+        mTlsPtr.mStackEnd += readGuardSize + kStackOverflowProtectedSize;
+        mTlsPtr.mStackSize -= readGuardSize;
+
+        InstallImplicitProtection();
+    }
+
+    // Sanity check.
+    CHECK(FindStackTop() > reinterpret_cast<void*>(mTlsPtr.mStackEnd));
+
+    return true;
 }
 
 String NativeThread::ShortDump() const
@@ -545,7 +727,6 @@ void NativeThread::Destroy()
     if (mTlsPtr.mOPeer != nullptr) {
         ScopedObjectAccess soa(self);
         // We may need to call user-supplied managed code, do this before final clean-up.
-        HandleUncaughtExceptions(soa);
         RemoveFromThreadGroup(soa);
 
         Thread* tPeer = (Thread*)reinterpret_cast<SyncObject*>(
@@ -568,17 +749,51 @@ void NativeThread::Destroy()
     }
 }
 
-void NativeThread::HandleUncaughtExceptions(
-    /* [in] */ ScopedObjectAccess& soa)
-{
-
-}
-
 void NativeThread::RemoveFromThreadGroup(
     /* [in] */ ScopedObjectAccess& soa)
 {
-
+    Thread* tPeer = (Thread*)reinterpret_cast<SyncObject*>(
+            mTlsPtr.mOPeer->mCcmObject);
+    IThreadGroup* group = tPeer->mGroup;
+    if (group != nullptr) {
+        group->ThreadTerminated(tPeer);
+    }
 }
+
+#if defined(__x86_64__)
+
+static void SigAltStack(stack_t* newStack, stack_t* oldStack)
+{
+    if (sigaltstack(newStack, oldStack) == -1) {
+        Logger::E("NativeThread", "sigaltstack failed");
+    }
+}
+
+// The default SIGSTKSZ on linux is 8K.  If we do any logging in a signal
+// handler or do a stack unwind, this is too small.  We allocate 32K
+// instead of the minimum signal stack size.
+// TODO: We shouldn't do logging (with locks) in signal handlers.
+static constexpr int kHostAltSigStackSize =
+        32 * KB < MINSIGSTKSZ ? MINSIGSTKSZ : 32 * KB;
+
+void NativeThread::SetUpAlternateSignalStack()
+{
+    // Create and set an alternate signal stack.
+    stack_t ss;
+    ss.ss_sp = new uint8_t[kHostAltSigStackSize];
+    ss.ss_size = kHostAltSigStackSize;
+    ss.ss_flags = 0;
+    CHECK(ss.ss_sp != nullptr);
+    SigAltStack(&ss, nullptr);
+
+    // Double-check that it worked.
+    ss.ss_sp = nullptr;
+    SigAltStack(nullptr, &ss);
+    Logger::V("NativeThread", "Alternate signal stack is %lu at %p",
+            ss.ss_size, ss.ss_sp);
+}
+
+#endif
 
 void NativeThread::Notify()
 {
@@ -609,6 +824,28 @@ void NativeThread::SetNativePriority(
   // Do nothing.
 }
 #endif
+
+Boolean NativeThread::ProtectStack(
+    /* [in] */ Boolean fatalOnError)
+{
+    void* pregion = mTlsPtr.mStackBegin - kStackOverflowProtectedSize;
+    Logger::V("NativeThread", "Protecting stack at %p", pregion);
+    if (mprotect(pregion, kStackOverflowProtectedSize, PROT_NONE) == -1) {
+        if (fatalOnError) {
+            Logger::E("NativeThread", "Unable to create protected region in stack for implicit overflow check. "
+                    "Reason: %s size: %lu", strerror(errno), kStackOverflowProtectedSize);
+        }
+        return false;
+    }
+    return true;
+}
+
+Boolean NativeThread::UnprotectStack()
+{
+    void* pregion = mTlsPtr.mStackBegin - kStackOverflowProtectedSize;
+    Logger::V("NativeThread", "Unprotecting stack at %p", pregion);
+    return mprotect(pregion, kStackOverflowProtectedSize, PROT_READ | PROT_WRITE) == 0;
+}
 
 }
 }

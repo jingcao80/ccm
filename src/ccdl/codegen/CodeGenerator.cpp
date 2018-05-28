@@ -928,7 +928,8 @@ void CodeGenerator::GenCoclassCpp(
                 String(mi->mNamespace).Replace("::", ".").string(), mi->mName);
         builder.AppendFormat("#include \"%s\"\n", classObjectInterfaceHeader.string());
     }
-    builder.Append("#include <ccmautoptr.h>\n"
+    builder.Append("#include <ccmapi.h>\n"
+                   "#include <ccmautoptr.h>\n"
                    "#include <ccmclassobject.h>\n"
                    "#include <ccmobject.h>\n"
                    "#include <ccmspinlock.h>\n\n"

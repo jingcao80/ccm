@@ -106,6 +106,12 @@ constexpr T RoundUp(T x, size_t n)
     return RoundDown(x + n - 1, n);
 }
 
+template<typename T>
+inline T* AlignDown(T* x, uintptr_t n)
+{
+    return reinterpret_cast<T*>(RoundDown(reinterpret_cast<uintptr_t>(x), n));
+}
+
 #ifndef CHECK
 #if defined(_DEBUG)
 #define CHECK(e)    assert(e)

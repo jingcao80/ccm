@@ -24,6 +24,7 @@ include_directories(
     ${OBJ_DIR})
 
 set(SOURCES
+    core.cpp
     NativeLockWord.cpp
     NativeMonitor.cpp
     NativeMonitorPool.cpp

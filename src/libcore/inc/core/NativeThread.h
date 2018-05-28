@@ -17,6 +17,7 @@
 #ifndef __CCM_CORE_NATIVETHREAD_H__
 #define __CCM_CORE_NATIVETHREAD_H__
 
+#include "core/nativeapi.h"
 #include "core/NativeMonitor.h"
 #include "core/NativeMutex.h"
 #include "core/NativeScopedThreadStateChange.h"
@@ -129,6 +130,11 @@ public:
     void SetWaitNext(
         /* [in] */ NativeThread* next);
 
+    uint8_t* GetStackEnd() const;
+
+    // Set the stack end to that to be used during regular execution
+    void ResetDefaultStackEnd();
+
     void SetHeldMutex(
         /* [in] */ LockLevel level,
         /* [in] */ BaseMutex* mutex);
@@ -148,16 +154,22 @@ private:
     void AtomicClearFlag(
         /* [in] */ NativeThreadFlag flag);
 
+    // Remove the suspend trigger for this thread by making the suspend_trigger_ TLS value
+    // equal to a valid pointer.
+    void RemoveSuspendTrigger();
+
     // Trigger a suspend check by making the suspend_trigger_ TLS value an invalid pointer.
     // The next time a suspend check is done, it will load from the value at this address
     // and trigger a SIGSEGV.
     void TriggerSuspend();
 
+    Boolean ProtectStack(
+        /* [in] */ Boolean fatalOnError = true);
+
+    Boolean UnprotectStack();
+
     static void* CreateCallback(
         /* [in] */ void* arg);
-
-    void HandleUncaughtExceptions(
-        /* [in] */ ScopedObjectAccess& soa);
 
     void RemoveFromThreadGroup(
         /* [in] */ ScopedObjectAccess& soa);
@@ -166,7 +178,13 @@ private:
 
     // Initialize a thread.
     Boolean Init(
-        /* [in] */ NativeThreadList*);
+        /* [in] */ NativeThreadList* threadList);
+
+    void InitCpu();
+
+    void InitTid();
+
+    Boolean InitStackHwm();
 
     void TransitionToSuspendedAndRunCheckpoints(
         /* [in] */ NativeThreadState newState);
@@ -181,6 +199,9 @@ private:
 
     Boolean PassActiveSuspendBarriers(
         /* [in] */ NativeThread* self);
+
+    // Install the protected region for implicit stack checks.
+    void InstallImplicitProtection();
 
     // 32 bits of atomically changed state and flags. Keeping as 32 bits allows and atomic CAS to
     // change from being Suspended to Runnable without a suspend request occurring.
@@ -263,8 +284,13 @@ private:
     struct PACKED(sizeof(void*)) tls_ptr_sized_values
     {
         tls_ptr_sized_values()
-            : mSuspendTrigger(nullptr)
+            : mStackEnd(nullptr)
+            , mSuspendTrigger(nullptr)
+            , mSelf(nullptr)
+            , mOPeer(nullptr)
             , mPeer(0)
+            , mStackBegin(nullptr)
+            , mStackSize(0)
             , mWaitNext(nullptr)
             , mMonitorEnterObject(nullptr)
             , mName(nullptr)
@@ -273,12 +299,27 @@ private:
             memset(&mHeldMutexes[0], 0, sizeof(mHeldMutexes));
         }
 
+        // The end of this thread's stack. This is the lowest safely-addressable address on the stack.
+        // We leave extra space so there's room for the code that throws StackOverflowError.
+        uint8_t* mStackEnd;
+
         // In certain modes, setting this to 0 will trigger a SEGV and thus a suspend check.  It is
         // normally set to the address of itself.
         uintptr_t* mSuspendTrigger;
 
+        // Initialized to "this". On certain architectures (such as x86) reading off of Thread::Current
+        // is easy but getting the address of Thread::Current is hard. This field can be read off of
+        // Thread::Current to give the address.
+        NativeThread* mSelf;
+
         NativeObject* mOPeer;
         HANDLE mPeer;
+
+        // The "lowest addressable byte" of the stack.
+        uint8_t* mStackBegin;
+
+        // Size of the stack.
+        size_t mStackSize;
 
         // The next thread in the wait set this thread is part of or null if not waiting.
         NativeThread* mWaitNext;
@@ -389,6 +430,18 @@ inline void NativeThread::SetWaitNext(
     mTlsPtr.mWaitNext = next;
 }
 
+inline uint8_t* NativeThread::GetStackEnd() const
+{
+    return mTlsPtr.mStackEnd;
+}
+
+inline void NativeThread::ResetDefaultStackEnd()
+{
+    // Our stacks grow down, so we want stack_end_ to be near there, but reserving enough room
+    // to throw a StackOverflowError.
+    mTlsPtr.mStackEnd = mTlsPtr.mStackBegin + GetStackOverflowReservedBytes(kRuntimeISA);
+}
+
 inline Boolean NativeThread::ReadFlag(
     /* [in] */ NativeThreadFlag flag) const
 {
@@ -399,6 +452,11 @@ inline void NativeThread::AtomicClearFlag(
     /* [in] */ NativeThreadFlag flag)
 {
     mTls32.mStateAndFlags.mAsAtomicInt.FetchAndAndSequentiallyConsistent(-1 ^ flag);
+}
+
+inline void NativeThread::RemoveSuspendTrigger()
+{
+    mTlsPtr.mSuspendTrigger = reinterpret_cast<uintptr_t*>(&mTlsPtr.mSuspendTrigger);
 }
 
 inline void NativeThread::TriggerSuspend()

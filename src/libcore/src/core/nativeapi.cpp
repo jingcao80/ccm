@@ -42,7 +42,7 @@ size_t GetStackOverflowReservedBytes(
     }
 }
 
-void NativeSetThreadName(
+void SetThreadName(
     /* [in] */ const String& name)
 {
     const char* threadName = name.string();

@@ -19,6 +19,7 @@
 
 #include "core/Runnable.h"
 #include "ccm.core.IThread.h"
+#include "ccm.core.IThreadGroup.h"
 
 namespace ccm {
 namespace core {
@@ -29,6 +30,95 @@ class COM_PUBLIC Thread
 {
 public:
     CCM_INTERFACE_DECL();
+
+    ECode constructor();
+
+    ECode Run() override;
+
+    ECode CheckAccess() override;
+
+    ECode CountStackFrames(
+        /* [out] */ Integer* frameNum) override;
+
+    ECode Destroy() override;
+
+    ECode GetContextClassLoader(
+        /* [out] */ IClassLoader** loader) override;
+
+    ECode GetId(
+        /* [out] */ Long* id) override;
+
+    ECode GetName(
+        /* [out] */ String* name) override;
+
+    ECode GetPriority(
+        /* [out] */ Integer* priority) override;
+
+    ECode GetStackTrace(
+        /* [out, callee] */ Array<IStackTraceElement*>** trace) override;
+
+    ECode GetState(
+        /* [out] */ ThreadState* state) override;
+
+    ECode GetThreadGroup(
+        /* [out] */ IThreadGroup** tg) override;
+
+    ECode GetUncaughtExceptionHandler(
+        /* [out] */ IUncaughtExceptionHandler** handler) override;
+
+    ECode DispatchUncaughtException(
+        /* [in] */ ECode ec) override;
+
+    ECode Interrupt() override;
+
+    ECode IsAlive(
+        /* [out] */ Boolean* alive) override;
+
+    ECode IsDaemon(
+        /* [out] */ Boolean* daemon) override;
+
+    ECode IsInterrupted(
+        /* [out] */ Boolean* interrupted) override;
+
+    ECode Join() override;
+
+    ECode Join(
+        /* [in] */ Long millis) override;
+
+    ECode Join(
+        /* [in] */ Long millis,
+        /* [in] */ Integer nanos) override;
+
+    ECode ParkFor(
+        /* [in] */ Long nanos) override;
+
+    ECode ParkUntil(
+        /* [in] */ Long time) override;
+
+    ECode Resume() override;
+
+    ECode SetContextClassLoader(
+        /* [in] */ IClassLoader* cl) override;
+
+    ECode SetDaemon(
+        /* [in] */ Boolean on) override;
+
+    ECode SetName(
+        /* [in] */ const String& name) override;
+
+    ECode SetPriority(
+        /* [in] */ Integer newPriority) override;
+
+    ECode SetUncaughtExceptionHandler(
+        /* [in] */ IUncaughtExceptionHandler* handler) override;
+
+    ECode Start() override;
+
+    ECode Stop() override;
+
+    ECode Suspend() override;
+
+    ECode Unpark() override;
 
 private:
     ECode NativeCreate(
@@ -49,6 +139,9 @@ private:
     String mName;
 
     Integer mPriority;
+
+    /* The group of this thread */
+    IThreadGroup* mGroup;
 };
 
 }

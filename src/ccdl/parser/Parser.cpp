@@ -2197,7 +2197,7 @@ void Parser::GenerateCoclassObject(
     else {
         Interface* itfco = FindInterface(String("ccm::IClassObject"));
         itfco->Specialize();
-        klass->SetConstructorDefault(true);
+        klass->SetConstructorDefault(klass->GetConstructorNumber() == 0);
         klass->AddInterface(itfco);
     }
 }

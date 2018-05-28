@@ -26,7 +26,7 @@ namespace core {
 size_t GetStackOverflowReservedBytes(
     /* [in] */ InstructionSet isa);
 
-void NativeSetThreadName(
+void SetThreadName(
     /* [in] */ const String& name);
 
 // Returns the calling thread's tid. (The C libraries don't expose this.)
