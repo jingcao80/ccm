@@ -20,6 +20,7 @@
 #include "core/Runnable.h"
 #include "ccm.core.IThread.h"
 #include "ccm.core.IThreadGroup.h"
+#include <ccmautoptr.h>
 
 namespace ccm {
 namespace core {
@@ -31,7 +32,16 @@ class COM_PUBLIC Thread
 public:
     CCM_INTERFACE_DECL();
 
+    static ECode GetCurrentThread(
+        /* [out] */ IThread** t);
+
     ECode constructor();
+
+    ECode constructor(
+        /* [in] */ IThreadGroup* group,
+        /* [in] */ const String& name,
+        /* [in] */ Integer priority,
+        /* [in] */ Boolean daemon);
 
     ECode Run() override;
 
@@ -121,10 +131,28 @@ public:
     ECode Unpark() override;
 
 private:
+    static Integer GetNextThreadNum();
+
+    static Long GetNextThreadID();
+
+    ECode Init(
+        /* [in] */ IThreadGroup* g,
+        /* [in] */ IRunnable* target,
+        /* [in] */ const String& name,
+        /* [in] */ Long stackSize);
+
+    void Init2(
+        /* [in] */ IThread* parent);
+
     ECode NativeCreate(
         /* [in] */ Thread* t,
         /* [in] */ Long stackSize,
         /* [in] */ Boolean daemon);
+
+    void NativeSetName(
+        /* [in] */ const String& newName);
+
+    static SyncObject* GetStaticLock();
 
 private:
     friend class NativeThread;
@@ -140,8 +168,21 @@ private:
 
     Integer mPriority;
 
+    /* Whether or not the thread is a daemon thread. */
+    Boolean mDaemon = false;
+
+    /* What will be run. */
+    AutoPtr<IRunnable> mTarget;
+
     /* The group of this thread */
     IThreadGroup* mGroup;
+
+    /* The context ClassLoader for this thread */
+    AutoPtr<IClassLoader> mContextClassLoader;
+
+    Long mStackSize;
+
+    Long mTid;
 };
 
 }

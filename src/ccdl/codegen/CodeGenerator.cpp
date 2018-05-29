@@ -1409,6 +1409,7 @@ void CodeGenerator::GenConstantsAndTypesOnUserMode()
             builder.Append(GenNamespaceBegin(String(mn->mName)));
             builder.Append(GenConstantsInHeader(mn));
             builder.Append(GenEnumerationPredeclarations(mn));
+            builder.Append(GenInterfacePredeclarations(mn));
             builder.Append(GenNamespaceEnd(String(mn->mName)));
             if (i != mc->mNamespaceNumber - 1) builder.Append("\n");
             else builder.Append("\n\n");

@@ -25,6 +25,7 @@ namespace ccm {
 namespace core {
 
 class NativeThread;
+class Thread;
 
 class NativeThreadList
 {
@@ -33,6 +34,17 @@ public:
         /* [in] */ NativeThread* thread,
         /* [in] */ Boolean forDebugger = false);
 
+    // Suspend a thread using a peer, typically used by the debugger. Returns the thread on success,
+    // else null. The peer is used to identify the thread to avoid races with the thread terminating.
+    // If the thread should be suspended then value of requestSuspension should be true otherwise
+    // the routine will wait for a previous suspend request. If the suspension times out then *timeout
+    // is set to true.
+    NativeThread* SuspendThreadByPeer(
+        /* [in] */ Thread* peer,
+        /* [in] */ Boolean requestSuspension,
+        /* [in] */ Boolean debugSuspension,
+        /* [out] */ Boolean* timedOut);
+
     // Suspend a thread using its thread id, typically used by lock/monitor inflation. Returns the
     // thread on success else null. The thread id is used to identify the thread to avoid races with
     // the thread terminating. Note that as thread ids are recycled this may not suspend the expected
@@ -40,7 +52,7 @@ public:
     NativeThread* SuspendThreadByThreadId(
         /* [in] */ uint32_t threadId,
         /* [in] */ Boolean debugSuspension,
-        /* [in] */ Boolean* timedOut);
+        /* [out] */ Boolean* timedOut);
 
     // Find an existing thread (or self) by its thread id (not tid).
     NativeThread* FindThreadByThreadId(
@@ -65,6 +77,7 @@ private:
 
 public:
     static constexpr uint32_t kMaxThreadId = 0xFFFF;
+    static constexpr uint32_t kMainThreadId = 1;
 
 private:
     friend class NativeThread;

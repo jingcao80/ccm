@@ -17,6 +17,7 @@
 #ifndef __CCM_CORE_AUTOLOCK_H__
 #define __CCM_CORE_AUTOLOCK_H__
 
+#include "core/SyncObject.h"
 #include "ccm.core.ISynchronize.h"
 
 namespace ccm {
@@ -26,6 +27,12 @@ class AutoLock
 {
 public:
     AutoLock(
+        /* [in] */ SyncObject& obj);
+
+    AutoLock(
+        /* [in] */ SyncObject* obj);
+
+    AutoLock(
         /* [in] */ ISynchronize* obj);
 
     ~AutoLock();
@@ -33,6 +40,20 @@ public:
 private:
     ISynchronize* mSyncObj;
 };
+
+inline AutoLock::AutoLock(
+    /* [in] */ SyncObject& obj)
+    : mSyncObj((ISynchronize*)&obj)
+{
+    mSyncObj->Lock();
+}
+
+inline AutoLock::AutoLock(
+    /* [in] */ SyncObject* obj)
+    : mSyncObj((ISynchronize*)obj)
+{
+    mSyncObj->Lock();
+}
 
 inline AutoLock::AutoLock(
     /* [in] */ ISynchronize* obj)

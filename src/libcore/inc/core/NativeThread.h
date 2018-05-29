@@ -28,8 +28,18 @@
 namespace ccm {
 namespace core {
 
+class IThreadGroup;
 class NativeThreadList;
 class Thread;
+
+// Thread priorities. These must match the Thread.MIN_PRIORITY,
+// Thread.NORM_PRIORITY, and Thread.MAX_PRIORITY constants.
+enum NativeThreadPriority
+{
+    kMinThreadPriority = 1,
+    kNormThreadPriority = 5,
+    kMaxThreadPriority = 10,
+};
 
 enum NativeThreadFlag
 {
@@ -50,7 +60,17 @@ public:
         /* [in] */ size_t stackSize,
         /* [in] */ Boolean daemon);
 
+    // Attaches the calling native thread to the runtime, returning the new native peer.
+    static NativeThread* Attach(
+        /* [in] */ const String& threadName,
+        /* [in] */ Boolean asDaemon,
+        /* [in] */ IThreadGroup* threadGroup,
+        /* [in] */ Boolean createPeer);
+
     static NativeThread* Current();
+
+    static NativeThread* FromManagedThread(
+        /* [in] */ Thread* peer);
 
     String ShortDump() const;
 
@@ -91,11 +111,21 @@ public:
     void SetNativePriority(
         /* [in] */ int newPriority);
 
+    /*
+    * Returns the thread priority for the current thread by querying the system.
+    *
+    * Returns a value from 1 to 10 (compatible with ccm::core::Thread values).
+    */
+    static Integer GetNativePriority();
+
     uint32_t GetThreadId() const;
 
     pid_t GetTid() const;
 
-    // Sets 'name' to the java.lang.Thread's name. This requires no transition to managed code,
+    // Returns the java.lang.Thread's name, or null if this Thread* doesn't have a peer.
+    String GetThreadName();
+
+    // Sets 'name' to the ccm::core::Thread's name. This requires no transition to managed code,
     // allocation, or locking.
     void GetThreadName(
         /* [in] */ String* name);
@@ -103,6 +133,10 @@ public:
     // Sets the thread's name.
     void SetThreadName(
         /* [in] */ const String& name);
+
+    NativeObject* GetPeer() const;
+
+    Thread* GetPeerThread() const;
 
     static void Startup();
 
@@ -142,6 +176,17 @@ public:
 private:
     explicit NativeThread(
         /* [in] */ Boolean daemon);
+
+    template <typename PeerAction>
+    static NativeThread* Attach(
+        /* [in] */ const String& threadName,
+        /* [in] */ Boolean asDaemon,
+        /* [in] */ PeerAction p);
+
+    ECode CreatePeer(
+        /* [in] */ const String& name,
+        /* [in] */ Boolean asDaemon,
+        /* [in] */ IThreadGroup* threadGroup);
 
     void Destroy();
 
@@ -353,6 +398,8 @@ private:
 
     // Thread "interrupted" status; stays raised until queried or thrown.
     Boolean mInterrupted;
+
+    static constexpr Boolean DEBUG = false;
 };
 
 inline NativeThreadState NativeThread::GetState() const
@@ -379,6 +426,13 @@ inline uint32_t NativeThread::GetThreadId() const
 inline pid_t NativeThread::GetTid() const
 {
     return mTls32.mTid;
+}
+
+inline NativeObject* NativeThread::GetPeer() const
+{
+    CHECK(Current() == this);
+    CHECK(mTlsPtr.mPeer == nullptr);
+    return mTlsPtr.mOPeer;
 }
 
 inline void NativeThread::SetMonitorEnterObject(

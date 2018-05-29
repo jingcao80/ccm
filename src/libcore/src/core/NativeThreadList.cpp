@@ -86,10 +86,112 @@ void NativeThreadList::Resume(
     Logger::V("NativeThreadList", "Resume(%p) complete", reinterpret_cast<void*>(thread));
 }
 
+NativeThread* NativeThreadList::SuspendThreadByPeer(
+    /* [in] */ Thread* peer,
+    /* [in] */ Boolean requestSuspension,
+    /* [in] */ Boolean debugSuspension,
+    /* [out] */ Boolean* timedOut)
+{
+    const uint64_t startTime = NanoTime();
+    useconds_t sleepUs = kThreadSuspendInitialSleepUs;
+    *timedOut = false;
+    NativeThread* suspendedThread = nullptr;
+    NativeThread* const self = NativeThread::Current();
+    Logger::V("NativeThreadList", "SuspendThreadByPeer starting");
+    while (true) {
+        NativeThread* thread;
+        {
+            // Note: this will transition to runnable and potentially suspend. We ensure only one thread
+            // is requesting another suspend, to avoid deadlock, by requiring this function be called
+            // holding Locks::thread_list_suspend_thread_lock_. Its important this thread suspend rather
+            // than request thread suspension, to avoid potential cycles in threads requesting each other
+            // suspend.
+            ScopedObjectAccess soa(self);
+            NativeMutex::AutoLock lock(self, *Locks::sThreadListLock);
+            thread = NativeThread::FromManagedThread(peer);
+            if (thread == nullptr) {
+                if (suspendedThread != nullptr) {
+                    NativeMutex::AutoLock lock2(self, *Locks::sThreadSuspendCountLock);
+                    // If we incremented the suspend count but the thread reset its peer, we need to
+                    // re-decrement it since it is shutting down and may deadlock the runtime in
+                    // ThreadList::WaitForOtherNonDaemonThreadsToExit.
+                    Boolean updated = suspendedThread->ModifySuspendCount(
+                            soa.Self(), -1, nullptr, debugSuspension);
+                    CHECK(updated);
+                }
+                Logger::W("NativeThreadList", "No such thread for suspend %p", peer);
+                return nullptr;
+            }
+            if (!Contains(thread)) {
+                CHECK(suspendedThread == nullptr);
+                Logger::V("NativeThreadList", "SuspendThreadByPeer failed for unattached thread: %p",
+                        thread);
+                return nullptr;
+            }
+            Logger::V("NativeThreadList", "SuspendThreadByPeer found thread: %s",
+                    thread->ShortDump().string());
+            {
+                NativeMutex::AutoLock lock2(self, *Locks::sThreadSuspendCountLock);
+                if (requestSuspension) {
+                    if (self->GetSuspendCount() > 0) {
+                        // We hold the suspend count lock but another thread is trying to suspend us. Its not
+                        // safe to try to suspend another thread in case we get a cycle. Start the loop again
+                        // which will allow this thread to be suspended.
+                        continue;
+                    }
+                    CHECK(suspendedThread == nullptr);
+                    suspendedThread = thread;
+                    Boolean updated = suspendedThread->ModifySuspendCount(self, +1, nullptr, debugSuspension);
+                    CHECK(updated);
+                    requestSuspension = false;
+                }
+                else {
+                    // If the caller isn't requesting suspension, a suspension should have already occurred.
+                    CHECK(thread->GetSuspendCount() > 0);
+                }
+                // IsSuspended on the current thread will fail as the current thread is changed into
+                // Runnable above. As the suspend count is now raised if this is the current thread
+                // it will self suspend on transition to Runnable, making it hard to work with. It's simpler
+                // to just explicitly handle the current thread in the callers to this code.
+                CHECK(thread != self);
+                // If thread is suspended (perhaps it was already not Runnable but didn't have a suspend
+                // count, or else we've waited and it has self suspended) or is the current thread, we're
+                // done.
+                if (thread->IsSuspended()) {
+                    Logger::V("NativeThreadList", "SuspendThreadByPeer thread suspended: %s",
+                            thread->ShortDump().string());
+                    return thread;
+                }
+                const uint64_t totalDelay = NanoTime() - startTime;
+                if (totalDelay >= mThreadSuspendTimeoutNs) {
+                    Logger::W("NativeThreadList", "Thread suspension timed out %p", peer);
+                    if (suspendedThread != nullptr) {
+                        CHECK(suspendedThread == thread);
+                        Boolean updated = suspendedThread->ModifySuspendCount(
+                                soa.Self(), -1, nullptr, debugSuspension);
+                        CHECK(updated);
+                    }
+                    *timedOut = true;
+                    return nullptr;
+                }
+                else if (sleepUs == 0 &&
+                    totalDelay > static_cast<uint64_t>(kThreadSuspendMaxYieldUs) * 1000) {
+                    // We have spun for kThreadSuspendMaxYieldUs time, switch to sleeps to prevent
+                    // excessive CPU usage.
+                    sleepUs = kThreadSuspendMaxYieldUs / 2;
+                }
+            }
+        }
+        Logger::V("NativeThreadList", "SuspendThreadByPeer waiting to allow thread chance to suspend");
+        ThreadSuspendSleep(sleepUs);
+        sleepUs = std::min(sleepUs * 2, kThreadSuspendMaxSleepUs);
+    }
+}
+
 NativeThread* NativeThreadList::SuspendThreadByThreadId(
     /* [in] */ uint32_t threadId,
     /* [in] */ Boolean debugSuspension,
-    /* [in] */ Boolean* timedOut)
+    /* [out] */ Boolean* timedOut)
 {
     const uint64_t startTime = NanoTime();
     useconds_t sleepUs = kThreadSuspendInitialSleepUs;

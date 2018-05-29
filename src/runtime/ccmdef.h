@@ -78,6 +78,14 @@ namespace ccm {
 #define VALIDATE_NOT_NULL(i) \
         if (i == nullptr) { return E_ILLEGAL_ARGUMENT_EXCEPTION; }
 
+#ifndef FAIL_RETURN
+#define FAIL_RETURN(expr)           \
+    do {                            \
+        ECode ec = expr;            \
+        if (FAILED(ec)) return ec;  \
+    } while(0);
+#endif
+
 #ifndef MAX
 #define MAX(a, b)       (((a) > (b)) ? (a) : (b))
 #endif

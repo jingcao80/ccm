@@ -23,6 +23,10 @@ namespace core {
 ]
 interface IThreadGroup
 {
+    // @hide
+    AddUnstarted();
+
+    // @hide
     ThreadTerminated(
         [in] IThread* t);
 }

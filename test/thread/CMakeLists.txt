@@ -14,8 +14,8 @@
 # limitations under the License.
 #=========================================================================
 
-set(TEST_DIR ${PROJECT_DIR}/test)
+project(test-thread CXX)
 
-add_subdirectory(reflection)
-add_subdirectory(rpc)
-add_subdirectory(thread)
+set(THREAD_DIR ${TEST_DIR}/thread)
+
+add_subdirectory(client)

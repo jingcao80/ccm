@@ -14,12 +14,20 @@
 // limitations under the License.
 //=========================================================================
 
-namespace ccm {
-namespace core {
+#include "ccm.core.CThread.h"
+#include "ccm.core.IThread.h"
+#include <ccmautoptr.h>
+#include <stdio.h>
 
-const Integer E_ILLEGAL_MONITOR_STATE_EXCEPTION = 0x80010100;
-const Integer E_INTERRUPTED_EXCEPTION = 0x80010101;
-const Integer E_NULL_POINTER_EXCEPTION = 0x80010102;
+using ccm::core::CThread;
+using ccm::core::IThread;
+using ccm::core::IID_IThread;
 
-}
+int main(int argv, char** argc)
+{
+    AutoPtr<IThread> t;
+    CThread::New(IID_IThread, (IInterface**)&t);
+    printf("==== Create thread %p ====\n", t.Get());
+
+    return 0;
 }

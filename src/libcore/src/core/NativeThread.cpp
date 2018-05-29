@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "core/AutoLock.h"
+#include "core/CThread.h"
 #include "core/globals.h"
 #include "core/nativeapi.h"
 #include "core/NativeObject.h"
@@ -118,6 +119,13 @@ void* NativeThread::CreateCallback(
     NativeRuntime::Current()->GetThreadList()->Unregister(self);
 
     return nullptr;
+}
+
+NativeThread* NativeThread::FromManagedThread(
+    /* [in] */ Thread* peer)
+{
+    NativeThread* result = reinterpret_cast<NativeThread*>(peer->mNative);
+    return result;
 }
 
 static size_t FixStackSize(
@@ -353,11 +361,144 @@ NativeThread* NativeThread::Current()
     }
 }
 
+template <typename PeerAction>
+NativeThread* NativeThread::Attach(
+    /* [in] */ const String& threadName,
+    /* [in] */ Boolean asDaemon,
+    /* [in] */ PeerAction peerAction)
+{
+    NativeRuntime* runtime = NativeRuntime::Current();
+    if (runtime == nullptr) {
+        Logger::E("NativeThread", "Thread attaching to non-existent runtime: %s",
+                threadName.string());
+        return nullptr;
+    }
+    NativeThread* self;
+    {
+        NativeMutex::AutoLock lock(nullptr, *Locks::sRuntimeShutdownLock);
+        if (runtime->IsShuttingDownLocked()) {
+            Logger::W("NativeThread", "Thread attaching while runtime is shutting down: %s",
+                    threadName.string());
+            return nullptr;
+        }
+        else {
+            NativeRuntime::Current()->StartThreadBirth();
+            self = new NativeThread(asDaemon);
+            Boolean initSuccess = self->Init(runtime->GetThreadList());
+            NativeRuntime::Current()->EndThreadBirth();
+            if (!initSuccess) {
+                delete self;
+                return nullptr;
+            }
+        }
+    }
+
+    CHECK(self->GetState() != kRunnable);
+    self->SetState(kRunnable);
+
+    // Run the action that is acting on the peer.
+    if (!peerAction(self)) {
+        runtime->GetThreadList()->Unregister(self);
+        // Unregister deletes self, no need to do this here.
+        return nullptr;
+    }
+
+    if (DEBUG) {
+        if (!threadName.IsNull()) {
+            Logger::V("NativeThread", "Attaching thread %s", threadName.string());
+        }
+        else {
+            Logger::V("NativeThread", "Attaching unnamed thread.");
+        }
+    }
+
+    {
+        ScopedObjectAccess soa(self);
+        runtime->GetRuntimeCallbacks()->ThreadStart(self);
+    }
+
+    return self;
+}
+
+NativeThread* NativeThread::Attach(
+    /* [in] */ const String& threadName,
+    /* [in] */ Boolean asDaemon,
+    /* [in] */ IThreadGroup* threadGroup,
+    /* [in] */ Boolean createPeer)
+{
+    auto createPeerAction = [&](NativeThread* self) {
+        if (createPeer) {
+            ECode ec = self->CreatePeer(threadName, asDaemon, threadGroup);
+            if (FAILED(ec)) {
+                Logger::E("NativeThread", "Exception creating thread peer:0x%08x", ec);
+                return false;
+            }
+        }
+        else {
+            // These aren't necessary, but they improve diagnostics for unit tests & command-line tools.
+            if (!threadName.IsNull()) {
+                *self->mTlsPtr.mName = threadName;
+                ::ccm::core::SetThreadName(threadName);
+            }
+            else {
+                Logger::W("NativeThread", "%s attached without supplying a name",
+                        NativeThread::Current()->ShortDump().string());
+            }
+        }
+        return true;
+    };
+    return Attach(threadName, asDaemon, createPeerAction);
+}
+
+ECode NativeThread::CreatePeer(
+    /* [in] */ const String& name,
+    /* [in] */ Boolean asDaemon,
+    /* [in] */ IThreadGroup* threadGroup)
+{
+    NativeRuntime* runtime = NativeRuntime::Current();
+    CHECK(runtime->IsStarted());
+
+    if (threadGroup == nullptr) {
+        threadGroup = runtime->GetMainThreadGroup();
+    }
+    Integer threadPriority = GetNativePriority();
+    Boolean threadIsDaemon = asDaemon;
+
+    AutoPtr<IThread> peer;
+    ECode ec = CThread::New(threadGroup, name, threadPriority, threadIsDaemon,
+            IID_IThread, (IInterface**)&peer);
+    if (FAILED(ec)) {
+        return ec;
+    }
+    {
+        ScopedObjectAccess soa(this);
+        mTlsPtr.mOPeer = reinterpret_cast<NativeObject*>(
+                ((Thread*)peer.Get())->mNativeObject);
+    }
+
+    NativeThread* self = this;
+    CHECK(self == NativeThread::Current());
+    ((Thread*)peer.Get())->mNative = reinterpret_cast<HANDLE>(self);
+
+    ScopedObjectAccess soa(self);
+    String peerThreadName = GetThreadName();
+    SetThreadName(peerThreadName);
+
+    return NOERROR;
+}
+
 void NativeThread::SetThreadName(
     /* [in] */ const String& name)
 {
     *mTlsPtr.mName = name;
     ::ccm::core::SetThreadName(name);
+}
+
+Thread* NativeThread::GetPeerThread() const
+{
+    Thread* tPeer = (Thread*)reinterpret_cast<SyncObject*>(
+            GetPeer()->mCcmObject);
+    return tPeer;
 }
 
 static void GetThreadStack(
@@ -425,6 +566,16 @@ Boolean NativeThread::InitStackHwm()
 String NativeThread::ShortDump() const
 {
     return String();
+}
+
+String NativeThread::GetThreadName()
+{
+    if (mTlsPtr.mOPeer == nullptr) {
+        return String();
+    }
+    Thread* tPeer = (Thread*)reinterpret_cast<SyncObject*>(
+            mTlsPtr.mOPeer->mCcmObject);
+    return tPeer->mName;
 }
 
 void NativeThread::GetThreadName(
@@ -823,6 +974,12 @@ void NativeThread::SetNativePriority(
 {
   // Do nothing.
 }
+
+int NativeThread::GetNativePriority()
+{
+    return kNormThreadPriority;
+}
+
 #endif
 
 Boolean NativeThread::ProtectStack(

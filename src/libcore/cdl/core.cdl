@@ -33,6 +33,12 @@ coclass CThread
 {
     constructor();
 
+    constructor(
+        [in] IThreadGroup* group,
+        [in] String name,
+        [in] Integer priority,
+        [in] Boolean daemon);
+
     interface IRunnable;
     interface IThread;
 }

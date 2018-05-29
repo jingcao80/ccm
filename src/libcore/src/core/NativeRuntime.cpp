@@ -58,10 +58,19 @@ Boolean NativeRuntime::IsShuttingDown(
 Boolean NativeRuntime::Init()
 {
     mMonitorPool = NativeMonitorPool::Create();
-
     NativeThread::Startup();
 
+    NativeThread* self = NativeThread::Attach(String("main"), false, nullptr, false);
+    CHECK(self->GetThreadId() == NativeThreadList::kMainThreadId);
+    CHECK(self != nullptr);
+
     return true;
+}
+
+AutoPtr<IThreadGroup> NativeRuntime::GetMainThreadGroup() const
+{
+    CHECK(mMainThreadGroup != nullptr);
+    return mMainThreadGroup;
 }
 
 NativeRuntimeCallbacks* NativeRuntime::GetRuntimeCallbacks()

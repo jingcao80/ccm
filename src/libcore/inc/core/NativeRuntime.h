@@ -19,6 +19,8 @@
 
 #include "core/NativeMutex.h"
 #include "core/NativeRuntimeCallbacks.h"
+#include "ccm.core.IThreadGroup.h"
+#include <ccmautoptr.h>
 #include <ccmtypes.h>
 #include <memory>
 
@@ -45,6 +47,9 @@ public:
     void EndThreadBirth();
 
     static NativeRuntime* Current();
+
+    // Returns the "main" ThreadGroup, used when attaching user threads.
+    AutoPtr<IThreadGroup> GetMainThreadGroup() const;
 
     size_t GetDefaultStackSize() const;
 
@@ -90,6 +95,8 @@ private:
 
     // The runtime is starting to shutdown but is blocked waiting on mShutdownCond.
     Boolean mShuttingDownStarted;
+
+    AutoPtr<IThreadGroup> mMainThreadGroup;
 
     Boolean mImplicitSoChecks;         // StackOverflow checks are implicit.
 
