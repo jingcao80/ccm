@@ -29,6 +29,7 @@ enum NativeThreadState {
     kWaiting,                         // WAITING        TS_WAIT      in Object.wait()
     kWaitingForSignalCatcherOutput,   // WAITING        TS_WAIT      waiting for signal catcher IO to complete
     kWaitingInMainSignalCatcherLoop,  // WAITING        TS_WAIT      blocking/reading/processing signals
+    kNative,                          // RUNNABLE       TS_RUNNING   running in a native method
 };
 
 }

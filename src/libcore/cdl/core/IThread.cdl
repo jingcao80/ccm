@@ -48,6 +48,21 @@ interface IUncaughtExceptionHandler
 ]
 interface IThread
 {
+    /**
+     * The minimum priority that a thread can have.
+     */
+    const Integer MIN_PRIORITY = 1;
+
+    /**
+     * The default priority that is assigned to a thread.
+     */
+    const Integer NORM_PRIORITY = 5;
+
+    /**
+     * The maximum priority that a thread can have.
+     */
+    const Integer MAX_PRIORITY = 10;
+
     CheckAccess();
 
     CountStackFrames(

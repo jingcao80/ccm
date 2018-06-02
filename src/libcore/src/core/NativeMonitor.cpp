@@ -737,6 +737,24 @@ ECode NativeMonitor::DoNotify(
     }
 }
 
+//------------------------------------------------------------------------------------------------------
+
+NativeMonitorList::NativeMonitorList()
+    : mAllowNewMonitors(true)
+    , mMonitorListLock(String("MonitorList lock"), kMonitorListLock)
+    , mMonitorAddCondition(String("MonitorList disallow condition"), mMonitorListLock)
+{}
+
+NativeMonitorList::~NativeMonitorList()
+{
+    NativeThread* self = NativeThread::Current();
+    NativeMutex::AutoLock lock(self, mMonitorListLock);
+    // Release all monitors to the pool.
+    // TODO: Is it an invariant that *all* open monitors are in the list? Then we could
+    // clear faster in the pool.
+    NativeMonitorPool::ReleaseMonitors(self, &mList);
+}
+
 void NativeMonitorList::Add(
     /* [in] */ NativeMonitor* m)
 {

@@ -39,8 +39,31 @@ coclass CThread
         [in] Integer priority,
         [in] Boolean daemon);
 
+    // @hide
+    constructor(
+        [in] HANDLE peer);
+
     interface IRunnable;
     interface IThread;
+}
+
+[
+    uuid(730c7375-05c3-4b86-933c-ab2808164280),
+    version(0.1.0)
+]
+coclass CThreadGroup
+{
+    // @hide
+    constructor();
+
+    constructor(
+        [in] String name);
+
+    constructor(
+        [in] IThreadGroup* parent,
+        [in] String name);
+
+    interface IThreadGroup;
 }
 
 }

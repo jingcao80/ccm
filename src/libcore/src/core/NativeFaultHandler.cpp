@@ -14,26 +14,21 @@
 // limitations under the License.
 //=========================================================================
 
+#include "core/NativeFaultHandler.h"
+
 namespace ccm {
 namespace core {
 
-[
-    uuid(b25cfd17-1013-406e-b0cd-74be7637571c),
-    version(0.1.0)
-]
-interface IThreadGroup
+NativeFaultManager sFaultManager;
+
+NativeFaultManager::NativeFaultManager()
+    : mInitialized(false)
 {
-    // @hide
-    AddUnstarted();
-
-    // @hide
-    Add(
-        [in] IThread* t);
-
-    // @hide
-    ThreadTerminated(
-        [in] IThread* t);
+    sigaction(SIGSEGV, nullptr, &mOldaction);
 }
+
+NativeFaultManager::~NativeFaultManager()
+{}
 
 }
 }

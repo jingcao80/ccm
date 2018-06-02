@@ -15,11 +15,13 @@
 //=========================================================================
 
 #include "core/CThread.h"
+#include "core/CThreadGroup.h"
 
 namespace ccm {
 namespace core {
 
 CCM_OBJECT_IMPL(CThread)
+CCM_OBJECT_IMPL(CThreadGroup)
 
 }
 }

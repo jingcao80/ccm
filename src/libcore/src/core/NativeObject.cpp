@@ -21,6 +21,11 @@
 namespace ccm {
 namespace core {
 
+NativeObject::NativeObject(
+    /* [in] */ HANDLE ccmObject)
+    : mCcmObject(ccmObject)
+{}
+
 NativeLockWord NativeObject::GetLockWord(
     /* [in] */ Boolean asVolatile)
 {

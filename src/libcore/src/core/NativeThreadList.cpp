@@ -15,6 +15,8 @@
 //=========================================================================
 
 #include "core/nativeapi.h"
+#include "core/NativeLockWord.h"
+#include "core/NativeMonitor.h"
 #include "core/NativeMutex.h"
 #include "core/NativeScopedThreadStateChange.h"
 #include "core/NativeThreadList.h"
@@ -29,6 +31,16 @@ namespace core {
 static constexpr useconds_t kThreadSuspendInitialSleepUs = 0;
 static constexpr useconds_t kThreadSuspendMaxYieldUs = 3000;
 static constexpr useconds_t kThreadSuspendMaxSleepUs = 5000;
+
+NativeThreadList::NativeThreadList(
+    /* [in] */ uint64_t threadSuspendTimeoutNs)
+    : mSuspendAllCount(0)
+    , mDebugSuspendAllCount(0)
+    , mUnregisteringCount(0)
+    , mThreadSuspendTimeoutNs(threadSuspendTimeoutNs)
+{
+    CHECK(NativeMonitor::IsValidLockWord(NativeLockWord::FromThinLockId(kMaxThreadId, 1, 0)));
+}
 
 Boolean NativeThreadList::Contains(
     /* [in] */ NativeThread* thread)

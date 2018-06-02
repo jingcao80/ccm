@@ -24,7 +24,7 @@ include_directories(
     ${OBJ_DIR})
 
 set(SOURCES
-    core.cpp
+    NativeFaultHandler.cpp
     NativeLockWord.cpp
     NativeMonitor.cpp
     NativeMonitorPool.cpp
@@ -39,6 +39,8 @@ set(SOURCES
     Runnable.cpp
     SyncObject.cpp
     Thread.cpp
+    ThreadGroup.cpp
+    core.cpp
     init.cpp
     nativeapi.cpp)
 

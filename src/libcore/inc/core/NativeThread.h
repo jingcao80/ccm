@@ -140,6 +140,10 @@ public:
 
     static void Startup();
 
+    static void FinishStartup();
+
+    static void Shutdown();
+
     void SetMonitorEnterObject(
         /* [in] */ NativeObject* obj);
 

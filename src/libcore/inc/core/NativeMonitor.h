@@ -162,6 +162,11 @@ private:
         /* [in] */ Boolean interruptShouldThrow,
         /* [in] */ NativeThreadState why);
 
+public:
+    // The default number of spins that are done before thread suspension is used to forcibly inflate
+    // a lock word.
+    constexpr static size_t kDefaultMaxSpinsBeforeThinLockInflation = 50;
+
 private:
     friend class NativeMonitorPool;
 
@@ -222,12 +227,17 @@ inline MonitorId NativeMonitor::GetMonitorId() const
 class NativeMonitorList
 {
 public:
+    NativeMonitorList();
+
+    ~NativeMonitorList();
+
     void Add(
         /* [in] */ NativeMonitor* m);
 
-private:
+public:
     typedef std::list<NativeMonitor*, std::allocator<NativeMonitor*>> Monitors;
 
+private:
     // During sweeping we may free an object and on a separate thread have an object created using
     // the newly freed memory. That object may then have its lock-word inflated and a monitor created.
     // If we allow new monitor registration during sweeping this monitor may be incorrectly freed as

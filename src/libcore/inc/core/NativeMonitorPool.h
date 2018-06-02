@@ -57,6 +57,10 @@ public:
         /* [in] */ NativeThread* self,
         /* [in] */ NativeMonitor* monitor);
 
+    static void ReleaseMonitors(
+        /* [in] */ NativeThread* self,
+        /* [in] */ NativeMonitorList::Monitors* monitors);
+
     static NativeMonitor* MonitorFromMonitorId(
         /* [in] */ MonitorId monId);
 
@@ -79,6 +83,10 @@ private:
     void ReleaseMonitorToPool(
         /* [in] */ NativeThread* self,
         /* [in] */ NativeMonitor* monitor);
+
+    void ReleaseMonitorsToPool(
+        /* [in] */ NativeThread* self,
+        /* [in] */ NativeMonitorList::Monitors* monitors);
 
     // Note: This is safe as we do not ever move chunks.  All needed entries in the monitor_chunks_
     // data structure are read-only once we get here.  Updates happen-before this call because
@@ -167,6 +175,13 @@ inline void NativeMonitorPool::ReleaseMonitor(
     /* [in] */ NativeMonitor* monitor)
 {
     GetMonitorPool()->ReleaseMonitorToPool(self, monitor);
+}
+
+inline void NativeMonitorPool::ReleaseMonitors(
+    /* [in] */ NativeThread* self,
+    /* [in] */ NativeMonitorList::Monitors* monitors)
+{
+    GetMonitorPool()->ReleaseMonitorsToPool(self, monitors);
 }
 
 inline NativeMonitor* NativeMonitorPool::MonitorFromMonitorId(

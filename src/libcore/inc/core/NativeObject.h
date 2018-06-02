@@ -27,6 +27,9 @@ namespace core {
 class NativeObject
 {
 public:
+    NativeObject(
+        /* [in] */ HANDLE ccmObject);
+
     NativeLockWord GetLockWord(
         /* [in] */ Boolean asVolatile);
 

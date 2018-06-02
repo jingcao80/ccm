@@ -43,6 +43,9 @@ public:
         /* [in] */ Integer priority,
         /* [in] */ Boolean daemon);
 
+    ECode constructor(
+        /* [in] */ HANDLE peer);
+
     ECode Run() override;
 
     ECode CheckAccess() override;
@@ -130,6 +133,9 @@ public:
 
     ECode Unpark() override;
 
+    static Thread* From(
+        /* [in] */ IThread* t);
+
 private:
     static Integer GetNextThreadNum();
 
@@ -184,6 +190,12 @@ private:
 
     Long mTid;
 };
+
+inline Thread* Thread::From(
+    /* [in] */ IThread* t)
+{
+    return (Thread*)t;
+}
 
 }
 }

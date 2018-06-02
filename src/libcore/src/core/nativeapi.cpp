@@ -84,6 +84,25 @@ void DumpNativeStack(
     /* [in] */ void* ucontext)
 {}
 
+HANDLE CreateNativeObject(
+    /* [in] */ HANDLE ccmObject)
+{
+    NativeObject* obj = new NativeObject(ccmObject);
+    if (obj == nullptr) {
+        Logger::E("nativeapi", "Out of memory.");
+    }
+    return reinterpret_cast<HANDLE>(obj);
+}
+
+void DestroyNativeObject(
+    /* [in] */ HANDLE handle)
+{
+    NativeObject* obj = reinterpret_cast<NativeObject*>(handle);
+    if (obj != nullptr) {
+        delete obj;
+    }
+}
+
 ECode NativeObjectLock(
     /* [in] */ HANDLE handle)
 {

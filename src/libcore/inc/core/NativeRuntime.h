@@ -35,6 +35,11 @@ class NativeThreadList;
 class NativeRuntime
 {
 public:
+    ~NativeRuntime();
+
+    // Starts a runtime, which may cause threads to be started and code to run.
+    Boolean Start();
+
     static Boolean Create();
 
     Boolean IsShuttingDown(
@@ -65,7 +70,12 @@ public:
 
     NativeRuntimeCallbacks* GetRuntimeCallbacks();
 
+    void InitThreadGroups(
+        /* [in] */ NativeThread* self);
+
 private:
+    NativeRuntime();
+
     Boolean Init();
 
 private:
@@ -96,9 +106,22 @@ private:
     // The runtime is starting to shutdown but is blocked waiting on mShutdownCond.
     Boolean mShuttingDownStarted;
 
+    Boolean mStarted;
+
+    // New flag added which tells us if the runtime has finished starting. If
+    // this flag is set then the Daemon threads are created and the class loader
+    // is created. This flag is needed for knowing if its safe to request CMS.
+    Boolean mFinishedStarting;
+
     AutoPtr<IThreadGroup> mMainThreadGroup;
 
+    AutoPtr<IThreadGroup> mSystemThreadGroup;
+
     Boolean mImplicitSoChecks;         // StackOverflow checks are implicit.
+
+    // Whether or not the sig chain (and implicitly the fault handler) should be
+    // disabled.
+    Boolean mNoSigChain;
 
     std::unique_ptr<NativeRuntimeCallbacks> mCallbacks;
 };

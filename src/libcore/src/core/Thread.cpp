@@ -195,6 +195,12 @@ ECode Thread::constructor(
     return NOERROR;
 }
 
+ECode Thread::constructor(
+    /* [in] */ HANDLE peer)
+{
+    return NOERROR;
+}
+
 ECode Thread::Run()
 {
     return NOERROR;

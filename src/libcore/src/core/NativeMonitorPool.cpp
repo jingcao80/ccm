@@ -140,6 +140,15 @@ void NativeMonitorPool::ReleaseMonitorToPool(
     monitor->mMonitorId = id;
 }
 
+void NativeMonitorPool::ReleaseMonitorsToPool(
+    /* [in] */ NativeThread* self,
+    /* [in] */ NativeMonitorList::Monitors* monitors)
+{
+    for (NativeMonitor* mon : *monitors) {
+        ReleaseMonitorToPool(self, mon);
+    }
+}
+
 NativeMonitor* NativeMonitorPool::LookupMonitor(
     /* [in] */ MonitorId monId)
 {

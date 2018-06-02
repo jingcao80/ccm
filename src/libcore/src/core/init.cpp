@@ -28,6 +28,12 @@ void CoreStartup()
         Logger::E("CoreStartup", "Creating NativeRuntime failed.");
         return;
     }
+
+    NativeRuntime* runtime = NativeRuntime::Current();
+    Boolean started = runtime->Start();
+    if (!started) {
+        Logger::E("CoreStartup", "Starting NativeRuntime failed.");
+    }
 }
 
 }

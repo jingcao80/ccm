@@ -43,6 +43,7 @@ enum LockLevel {
     kAllocatedThreadIdsLock,
     kMonitorPoolLock,
     kMonitorLock,
+    kMonitorListLock,
     kThreadListLock,
     kRuntimeShutdownLock,
     kMutatorLock,

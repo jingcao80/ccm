@@ -14,26 +14,23 @@
 // limitations under the License.
 //=========================================================================
 
+#ifndef __CCM_CORE_CTHREADGROUP_H__
+#define __CCM_CORE_CTHREADGROUP_H__
+
+#include "core/ThreadGroup.h"
+#include "_ccm_core_CThreadGroup.h"
+
 namespace ccm {
 namespace core {
 
-[
-    uuid(b25cfd17-1013-406e-b0cd-74be7637571c),
-    version(0.1.0)
-]
-interface IThreadGroup
+Coclass(CThreadGroup)
+    , public ThreadGroup
 {
-    // @hide
-    AddUnstarted();
-
-    // @hide
-    Add(
-        [in] IThread* t);
-
-    // @hide
-    ThreadTerminated(
-        [in] IThread* t);
-}
+public:
+    CCM_OBJECT_DECL();
+};
 
 }
 }
+
+#endif // __CCM_CORE_CTHREADGROUP_H__

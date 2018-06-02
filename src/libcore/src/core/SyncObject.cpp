@@ -22,6 +22,16 @@ namespace core {
 
 CCM_INTERFACE_IMPL_1(SyncObject, Object, ISynchronize);
 
+SyncObject::SyncObject()
+{
+    mNativeObject = CreateNativeObject(reinterpret_cast<HANDLE>(this));
+}
+
+SyncObject::~SyncObject()
+{
+    DestroyNativeObject(mNativeObject);
+}
+
 ECode SyncObject::Lock()
 {
     return NativeObjectLock(mNativeObject);

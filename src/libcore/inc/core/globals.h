@@ -63,15 +63,7 @@ static constexpr InstructionSet kRuntimeISA = kNone;
 static constexpr size_t kArm64StackOverflowReservedBytes  = 8192;
 static constexpr size_t kX86_64StackOverflowReservedBytes = 8192;
 
-#if __has_feature(address_sanitizer)
-
 constexpr size_t kMemoryToolStackGuardSizeScale = 2;
-
-#else
-
-constexpr size_t kMemoryToolStackGuardSizeScale = 1;
-
-#endif
 
 }
 }

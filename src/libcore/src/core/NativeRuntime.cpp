@@ -14,15 +14,42 @@
 // limitations under the License.
 //=========================================================================
 
+#include "core/CThreadGroup.h"
+#include "core/NativeMonitor.h"
 #include "core/NativeMonitorPool.h"
 #include "core/NativeMutex.h"
 #include "core/NativeRuntime.h"
 #include "core/NativeThread.h"
+#include "core/NativeThreadList.h"
 
 namespace ccm {
 namespace core {
 
 NativeRuntime* NativeRuntime::sInstance = nullptr;
+
+NativeRuntime::NativeRuntime()
+    : mDefaultStackSize(0)
+    , mMaxSpinsBeforeThinLockInflation(NativeMonitor::kDefaultMaxSpinsBeforeThinLockInflation)
+    , mMonitorList(nullptr)
+    , mMonitorPool(nullptr)
+    , mThreadList(nullptr)
+    , mThreadsBeingBorn(0)
+    , mShutdownCond(new NativeConditionVariable(String("Runtime shutdown"), *Locks::sRuntimeShutdownLock))
+    , mShuttingDown(false)
+    , mShuttingDownStarted(false)
+    , mStarted(false)
+    , mFinishedStarting(false)
+    , mImplicitSoChecks(false)
+    , mNoSigChain(false)
+{
+    mCallbacks.reset(new NativeRuntimeCallbacks());
+}
+
+NativeRuntime::~NativeRuntime()
+{
+    CHECK(sInstance == nullptr || sInstance == this);
+    sInstance = nullptr;
+}
 
 Boolean NativeRuntime::Create()
 {
@@ -36,6 +63,30 @@ Boolean NativeRuntime::Create()
         sInstance = nullptr;
         return false;
     }
+    return true;
+}
+
+Boolean NativeRuntime::Start()
+{
+    Logger::V("NativeRuntime", "Start entering");
+
+    CHECK(!mNoSigChain);
+
+    // Restore main thread state to kNative as expected by native code.
+    NativeThread* self = NativeThread::Current();
+
+    self->TransitionFromRunnableToSuspended(kNative);
+
+    mStarted = true;
+
+    // Initialize well known thread group values that may be accessed threads while attaching.
+    InitThreadGroups(self);
+
+    NativeThread::FinishStartup();
+
+    Logger::V("NativeRuntime", "Start exiting");
+    mFinishedStarting = true;
+
     return true;
 }
 
@@ -57,7 +108,26 @@ Boolean NativeRuntime::IsShuttingDown(
 
 Boolean NativeRuntime::Init()
 {
+    mDefaultStackSize = 1 * MB;
+
+    mMaxSpinsBeforeThinLockInflation = NativeMonitor::kDefaultMaxSpinsBeforeThinLockInflation;
+
+    mMonitorList = new NativeMonitorList;
     mMonitorPool = NativeMonitorPool::Create();
+    mThreadList = new NativeThreadList(NativeThreadList::kDefaultThreadSuspendTimeout);
+
+    // Change the implicit checks flags based on runtime architecture.
+    switch (kRuntimeISA) {
+        case kArm64:
+        case kX86_64:
+            // Installing stack protection does not play well with valgrind.
+            mImplicitSoChecks = true;
+            break;
+        default:
+            // Keep the defaults.
+            break;
+    }
+
     NativeThread::Startup();
 
     NativeThread* self = NativeThread::Attach(String("main"), false, nullptr, false);
@@ -65,6 +135,15 @@ Boolean NativeRuntime::Init()
     CHECK(self != nullptr);
 
     return true;
+}
+
+void NativeRuntime::InitThreadGroups(
+    /* [in] */ NativeThread* self)
+{
+    mMainThreadGroup = CThreadGroup::GetMainThreadGroup();
+    CHECK(mMainThreadGroup != nullptr);
+    mSystemThreadGroup = CThreadGroup::GetSystemThreadGroup();
+    CHECK(mSystemThreadGroup);
 }
 
 AutoPtr<IThreadGroup> NativeRuntime::GetMainThreadGroup() const

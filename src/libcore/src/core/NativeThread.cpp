@@ -47,6 +47,8 @@ const size_t NativeThread::kStackOverflowImplicitCheckSize = GetStackOverflowRes
 // throwing the StackOverflow exception.
 constexpr size_t kStackOverflowProtectedSize = 4 * kMemoryToolStackGuardSizeScale * KB;
 
+static const char* kThreadNameDuringStartup = "<native thread without managed peer>";
+
 NativeThread::NativeThread(
     /* [in] */ Boolean daemon)
     : mTls32(daemon)
@@ -56,11 +58,12 @@ NativeThread::NativeThread(
     mWaitMutex = new NativeMutex(String("a thread wait mutex"));
     mWaitCond = new NativeConditionVariable(
             String("a thread wait condition variable"), *mWaitMutex);
+    mTlsPtr.mName = new String(kThreadNameDuringStartup);
 
     static_assert((sizeof(NativeThread) % 4) == 0,
                 "NativeThread has a size which is not a multiple of 4.");
     mTls32.mStateAndFlags.mAsStruct.mFlags = 0;
-    mTls32.mStateAndFlags.mAsStruct.mState = kRunnable;
+    mTls32.mStateAndFlags.mAsStruct.mState = kNative;
     memset(&mTlsPtr.mHeldMutexes[0], 0, sizeof(mTlsPtr.mHeldMutexes));
     for (uint32_t i = 0; i < kMaxSuspendBarriers; ++i) {
         mTlsPtr.mActiveSuspendBarriers[i] = nullptr;
@@ -394,7 +397,7 @@ NativeThread* NativeThread::Attach(
     }
 
     CHECK(self->GetState() != kRunnable);
-    self->SetState(kRunnable);
+    self->SetState(kNative);
 
     // Run the action that is acting on the peer.
     if (!peerAction(self)) {
@@ -457,7 +460,6 @@ ECode NativeThread::CreatePeer(
 {
     NativeRuntime* runtime = NativeRuntime::Current();
     CHECK(runtime->IsStarted());
-
     if (threadGroup == nullptr) {
         threadGroup = runtime->GetMainThreadGroup();
     }
@@ -465,16 +467,17 @@ ECode NativeThread::CreatePeer(
     Boolean threadIsDaemon = asDaemon;
 
     AutoPtr<IThread> peer;
-    ECode ec = CThread::New(threadGroup, name, threadPriority, threadIsDaemon,
-            IID_IThread, (IInterface**)&peer);
-    if (FAILED(ec)) {
-        return ec;
-    }
+    CThread::New(reinterpret_cast<HANDLE>(this), IID_IThread, (IInterface**)&peer);
     {
         ScopedObjectAccess soa(this);
         mTlsPtr.mOPeer = reinterpret_cast<NativeObject*>(
-                ((Thread*)peer.Get())->mNativeObject);
+                Thread::From(peer)->mNativeObject);
     }
+    ECode ec = Thread::From(peer)->constructor(threadGroup, name, threadPriority, threadIsDaemon);
+    if (FAILED(ec)) {
+        return ec;
+    }
+    threadGroup->Add(peer);
 
     NativeThread* self = this;
     CHECK(self == NativeThread::Current());
@@ -864,6 +867,16 @@ void NativeThread::Startup()
     }
 }
 
+void NativeThread::FinishStartup()
+{
+    NativeRuntime* runtime = NativeRuntime::Current();
+    CHECK(runtime->IsStarted());
+
+    // Finish attaching the main thread.
+    ScopedObjectAccess soa(NativeThread::Current());
+    NativeThread::Current()->CreatePeer(String("main"), false, runtime->GetMainThreadGroup());
+}
+
 void NativeThread::Destroy()
 {
     NativeThread* self = this;
@@ -907,6 +920,7 @@ void NativeThread::RemoveFromThreadGroup(
             mTlsPtr.mOPeer->mCcmObject);
     IThreadGroup* group = tPeer->mGroup;
     if (group != nullptr) {
+        ScopedThreadStateChange tsc(soa.Self(), kNative);
         group->ThreadTerminated(tPeer);
     }
 }

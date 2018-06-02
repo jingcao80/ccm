@@ -18,6 +18,7 @@
 #define __CCM_CORE_NATIVETHREADLIST_H__
 
 #include "core/NativeThread.h"
+#include "core/NativeTimeUtils.h"
 #include <bitset>
 #include <list>
 
@@ -30,6 +31,9 @@ class Thread;
 class NativeThreadList
 {
 public:
+    explicit NativeThreadList(
+        /* [in] */ uint64_t threadSuspendTimeoutNs);
+
     void Resume(
         /* [in] */ NativeThread* thread,
         /* [in] */ Boolean forDebugger = false);
@@ -78,6 +82,7 @@ private:
 public:
     static constexpr uint32_t kMaxThreadId = 0xFFFF;
     static constexpr uint32_t kMainThreadId = 1;
+    static constexpr uint64_t kDefaultThreadSuspendTimeout = MsToNs(10000);
 
 private:
     friend class NativeThread;

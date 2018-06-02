@@ -42,6 +42,12 @@ void DumpNativeStack(
     /* [in] */ const char* prefix = "",
     /* [in] */ void* ucontext = nullptr);
 
+HANDLE CreateNativeObject(
+    /* [in] */ HANDLE ccmObject);
+
+void DestroyNativeObject(
+    /* [in] */ HANDLE handle);
+
 ECode NativeObjectLock(
     /* [in] */ HANDLE handle);
 

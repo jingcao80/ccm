@@ -30,6 +30,10 @@ class COM_PUBLIC SyncObject
 public:
     CCM_INTERFACE_DECL();
 
+    SyncObject();
+
+    virtual ~SyncObject();
+
     ECode Lock() override;
 
     ECode Unlock() override;
