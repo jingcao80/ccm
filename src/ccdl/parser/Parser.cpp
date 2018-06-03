@@ -517,6 +517,8 @@ bool Parser::ParseInterface(
                 LogError(token, message);
                 parseResult = false;
             }
+            String itfName = fullName.Substring(fullName.LastIndexOf("::") + 2);
+            mCurrContext->AddPredeclaration(itfName, fullName);
             return parseResult;
         }
 

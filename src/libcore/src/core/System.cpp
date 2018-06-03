@@ -14,42 +14,26 @@
 // limitations under the License.
 //=========================================================================
 
+#include "core/System.h"
+#include <time.h>
+
 namespace ccm {
 namespace core {
 
-[
-    uuid(b25cfd17-1013-406e-b0cd-74be7637571c),
-    version(0.1.0)
-]
-interface IThreadGroup
+Long System::GetCurrentTimeMillis()
 {
-    GetName(
-        [out] String* name);
+    timespec now;
+    now.tv_sec = now.tv_nsec = 0;
+    clock_gettime(CLOCK_MONOTONIC, &now);
+    return static_cast<Long>(now.tv_sec) * 1000 + now.tv_nsec / 1000000;
+}
 
-    GetMaxPriority(
-        [out] Integer* priority);
-
-    ActiveCount(
-        [out] Integer* count);
-
-    Enumerate(
-        [out] Array<IThread*> list,
-        [out] Integer* count);
-
-    // @hide
-    AddUnstarted();
-
-    // @hide
-    Add(
-        [in] IThread* t);
-
-    // @hide
-    ThreadStartFailed(
-        [in] IThread* t);
-
-    // @hide
-    ThreadTerminated(
-        [in] IThread* t);
+Long System::GetNanoTime()
+{
+    timespec now;
+    now.tv_sec = now.tv_nsec = 0;
+    clock_gettime(CLOCK_MONOTONIC, &now);
+    return static_cast<Long>(now.tv_sec) * 1000000000LL + now.tv_nsec;
 }
 
 }

@@ -18,9 +18,13 @@
 #define __CCM_CORE_THREAD_H__
 
 #include "core/Runnable.h"
+#include "ccm.core.IStackTraceElement.h"
 #include "ccm.core.IThread.h"
 #include "ccm.core.IThreadGroup.h"
+#include "ccm.io.IInterruptible.h"
 #include <ccmautoptr.h>
+
+using ccm::io::IInterruptible;
 
 namespace ccm {
 namespace core {
@@ -29,11 +33,23 @@ class COM_PUBLIC Thread
     : public Runnable
     , public IThread
 {
+private:
+    /** Park states */
+    class ParkState
+    {
+    private:
+        /** park state indicating unparked */
+        static constexpr Integer UNPARKED = 1;
+
+        /** park state indicating preemptively unparked */
+        static constexpr Integer PREEMPTIVELY_UNPARKED = 2;
+
+        /** park state indicating parked */
+        static constexpr Integer PARKED = 3;
+    };
+
 public:
     CCM_INTERFACE_DECL();
-
-    static ECode GetCurrentThread(
-        /* [out] */ IThread** t);
 
     ECode constructor();
 
@@ -46,54 +62,64 @@ public:
     ECode constructor(
         /* [in] */ HANDLE peer);
 
+    ECode BlockedOn(
+        /* [in] */ IInterruptible* b);
+
+    static ECode GetCurrentThread(
+        /* [out] */ IThread** t);
+
+    static void Yield();
+
+    static ECode Sleep(
+        /* [in] */ Long millis);
+
+    static ECode Sleep(
+        /* [in] */ Long millis,
+        /* [in] */ Integer nanos);
+
+    ECode Start() override;
+
     ECode Run() override;
 
-    ECode CheckAccess() override;
-
-    ECode CountStackFrames(
-        /* [out] */ Integer* frameNum) override;
-
-    ECode Destroy() override;
-
-    ECode GetContextClassLoader(
-        /* [out] */ IClassLoader** loader) override;
-
-    ECode GetId(
-        /* [out] */ Long* id) override;
-
-    ECode GetName(
-        /* [out] */ String* name) override;
-
-    ECode GetPriority(
-        /* [out] */ Integer* priority) override;
-
-    ECode GetStackTrace(
-        /* [out, callee] */ Array<IStackTraceElement*>** trace) override;
-
-    ECode GetState(
-        /* [out] */ ThreadState* state) override;
-
-    ECode GetThreadGroup(
-        /* [out] */ IThreadGroup** tg) override;
-
-    ECode GetUncaughtExceptionHandler(
-        /* [out] */ IUncaughtExceptionHandler** handler) override;
-
-    ECode DispatchUncaughtException(
-        /* [in] */ ECode ec) override;
+    ECode Stop() override;
 
     ECode Interrupt() override;
 
-    ECode IsAlive(
-        /* [out] */ Boolean* alive) override;
-
-    ECode IsDaemon(
-        /* [out] */ Boolean* daemon) override;
+    static Boolean Interrupted();
 
     ECode IsInterrupted(
         /* [out] */ Boolean* interrupted) override;
 
-    ECode Join() override;
+    ECode Destroy() override;
+
+    ECode IsAlive(
+        /* [out] */ Boolean* alive) override;
+
+    ECode Suspend() override;
+
+    ECode Resume() override;
+
+    ECode SetPriority(
+        /* [in] */ Integer newPriority) override;
+
+    ECode GetPriority(
+        /* [out] */ Integer* priority) override;
+
+    ECode SetName(
+        /* [in] */ const String& name) override;
+
+    ECode GetThreadGroup(
+        /* [out] */ IThreadGroup** tg) override;
+
+    static ECode ActiveCount(
+        /* [out] */ Integer* count);
+
+    static ECode Enumerate(
+        /* [out] */ Array<IThread*>& tarray,
+        /* [out] */ Integer* count);
+
+    ECode CountStackFrames(
+        /* [out] */ Integer* frameNum) override;
 
     ECode Join(
         /* [in] */ Long millis) override;
@@ -102,34 +128,56 @@ public:
         /* [in] */ Long millis,
         /* [in] */ Integer nanos) override;
 
+    ECode Join() override;
+
+    static void DumpStack();
+
+    ECode SetDaemon(
+        /* [in] */ Boolean on) override;
+
+    ECode IsDaemon(
+        /* [out] */ Boolean* daemon) override;
+
+    ECode CheckAccess() override;
+
+    ECode ToString(
+        /* [out] */ String* desc) override;
+
+    ECode GetContextClassLoader(
+        /* [out] */ IClassLoader** loader) override;
+
+    ECode SetContextClassLoader(
+        /* [in] */ IClassLoader* cl) override;
+
+
+
+
+    ECode GetId(
+        /* [out] */ Long* id) override;
+
+    ECode GetName(
+        /* [out] */ String* name) override;
+
+    ECode GetStackTrace(
+        /* [out, callee] */ Array<IStackTraceElement*>* trace) override;
+
+    ECode GetState(
+        /* [out] */ ThreadState* state) override;
+
+    ECode GetUncaughtExceptionHandler(
+        /* [out] */ IUncaughtExceptionHandler** handler) override;
+
+    ECode DispatchUncaughtException(
+        /* [in] */ ECode ec) override;
+
     ECode ParkFor(
         /* [in] */ Long nanos) override;
 
     ECode ParkUntil(
         /* [in] */ Long time) override;
 
-    ECode Resume() override;
-
-    ECode SetContextClassLoader(
-        /* [in] */ IClassLoader* cl) override;
-
-    ECode SetDaemon(
-        /* [in] */ Boolean on) override;
-
-    ECode SetName(
-        /* [in] */ const String& name) override;
-
-    ECode SetPriority(
-        /* [in] */ Integer newPriority) override;
-
     ECode SetUncaughtExceptionHandler(
         /* [in] */ IUncaughtExceptionHandler* handler) override;
-
-    ECode Start() override;
-
-    ECode Stop() override;
-
-    ECode Suspend() override;
 
     ECode Unpark() override;
 
@@ -140,6 +188,11 @@ private:
     static Integer GetNextThreadNum();
 
     static Long GetNextThreadID();
+
+    static ECode Sleep(
+        /* [in] */ SyncObject* lock,
+        /* [in] */ Long millis,
+        /* [in] */ Integer nanos);
 
     ECode Init(
         /* [in] */ IThreadGroup* g,
@@ -155,20 +208,29 @@ private:
         /* [in] */ Long stackSize,
         /* [in] */ Boolean daemon);
 
+    void Exit();
+
     void NativeSetName(
         /* [in] */ const String& newName);
+
+    void NativeSetPriority(
+        /* [in] */ Integer newPriority);
+
+    ECode NativeInterrupt();
 
     static SyncObject* GetStaticLock();
 
 private:
     friend class NativeThread;
 
-    HANDLE mNative = 0;
-
     /**
      * The synchronization object responsible for this thread's join/sleep/park operations.
      */
-    SyncObject* mLock;
+    SyncObject mLock;
+
+    HANDLE mNative = 0;
+
+    Boolean mStarted = false;
 
     String mName;
 
@@ -189,6 +251,14 @@ private:
     Long mStackSize;
 
     Long mTid;
+
+    Integer mThreadStatus = 0;
+
+    AutoPtr<IInterruptible> mBlocker;
+
+    SyncObject mBlockerLock;
+
+    static constexpr Integer NANOS_PER_MILLI = 1000000;
 };
 
 inline Thread* Thread::From(

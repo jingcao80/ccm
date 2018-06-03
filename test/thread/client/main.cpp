@@ -16,6 +16,7 @@
 
 #include "ccm.core.CThread.h"
 #include "ccm.core.IThread.h"
+#include "ccm.io.IInterruptible.h"
 #include <ccmautoptr.h>
 #include <stdio.h>
 

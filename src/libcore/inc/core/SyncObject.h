@@ -52,6 +52,8 @@ public:
         /* [in] */ Integer nanos) override;
 
 protected:
+    friend class Thread;
+
     HANDLE mNativeObject = 0;
 };
 

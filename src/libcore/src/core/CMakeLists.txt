@@ -38,6 +38,7 @@ set(SOURCES
     NativeTimeUtils.cpp
     Runnable.cpp
     SyncObject.cpp
+    System.cpp
     Thread.cpp
     ThreadGroup.cpp
     core.cpp

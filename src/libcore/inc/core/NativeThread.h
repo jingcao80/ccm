@@ -147,7 +147,14 @@ public:
     void SetMonitorEnterObject(
         /* [in] */ NativeObject* obj);
 
+    Boolean Interrupted();
+
+    Boolean IsInterrupted();
+
     Boolean IsInterruptedLocked();
+
+    void Interrupt(
+        /* [in] */ NativeThread* self);
 
     void SetInterruptedLocked(
         /* [in] */ Boolean i);

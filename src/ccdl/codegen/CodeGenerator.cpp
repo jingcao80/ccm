@@ -522,7 +522,9 @@ String CodeGenerator::GenType(
             }
             break;
         case CcmTypeKind::Interface:
-            builder.Append(mc->mInterfaces[mt->mIndex]->mName);
+            builder.AppendFormat("%s%s",
+                    mc->mInterfaces[mt->mIndex]->mNamespace,
+                    mc->mInterfaces[mt->mIndex]->mName);
             break;
         default:
             break;
@@ -1403,7 +1405,8 @@ void CodeGenerator::GenConstantsAndTypesOnUserMode()
         for (int i = 0; i < mc->mNamespaceNumber; i++) {
             MetaNamespace* mn = mc->mNamespaces[i];
             if (mn->mConstantNumber +
-                    (mn->mEnumerationNumber - mn->mExternalEnumerationNumber) == 0) {
+                    (mn->mEnumerationNumber - mn->mExternalEnumerationNumber) +
+                    (mn->mInterfaceNumber - mn->mExternalInterfaceNumber) == 0) {
                 continue;
             }
             builder.Append(GenNamespaceBegin(String(mn->mName)));

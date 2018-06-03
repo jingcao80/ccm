@@ -46,9 +46,25 @@ public:
         /* [in] */ IThreadGroup* parent,
         /* [in] */ const String& name);
 
+    ECode GetName(
+        /* [out] */ String* name);
+
+    ECode GetMaxPriority(
+        /* [out] */ Integer* priority);
+
+    ECode ActiveCount(
+        /* [out] */ Integer* count);
+
+    ECode Enumerate(
+        /* [out] */ Array<IThread*>& list,
+        /* [out] */ Integer* count);
+
     ECode AddUnstarted();
 
     ECode Add(
+        /* [in] */ IThread* t);
+
+    ECode ThreadStartFailed(
         /* [in] */ IThread* t);
 
     ECode ThreadTerminated(

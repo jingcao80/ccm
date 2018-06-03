@@ -14,43 +14,26 @@
 // limitations under the License.
 //=========================================================================
 
+#ifndef __CCM_CORE_SYSTEM_H__
+#define __CCM_CORE_SYSTEM_H__
+
+#include <ccmtypes.h>
+
 namespace ccm {
 namespace core {
 
-[
-    uuid(b25cfd17-1013-406e-b0cd-74be7637571c),
-    version(0.1.0)
-]
-interface IThreadGroup
+class System
 {
-    GetName(
-        [out] String* name);
+public:
+    static Long GetCurrentTimeMillis();
 
-    GetMaxPriority(
-        [out] Integer* priority);
+    static Long GetNanoTime();
 
-    ActiveCount(
-        [out] Integer* count);
-
-    Enumerate(
-        [out] Array<IThread*> list,
-        [out] Integer* count);
-
-    // @hide
-    AddUnstarted();
-
-    // @hide
-    Add(
-        [in] IThread* t);
-
-    // @hide
-    ThreadStartFailed(
-        [in] IThread* t);
-
-    // @hide
-    ThreadTerminated(
-        [in] IThread* t);
-}
+private:
+    System();
+};
 
 }
 }
+
+#endif // __CCM_CORE_SYSTEM_H__

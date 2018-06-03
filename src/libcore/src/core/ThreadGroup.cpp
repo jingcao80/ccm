@@ -80,6 +80,31 @@ ECode ThreadGroup::constructor(
     return NOERROR;
 }
 
+ECode ThreadGroup::GetName(
+    /* [out] */ String* name)
+{
+    return NOERROR;
+}
+
+ECode ThreadGroup::GetMaxPriority(
+    /* [out] */ Integer* priority)
+{
+    return NOERROR;
+}
+
+ECode ThreadGroup::ActiveCount(
+    /* [out] */ Integer* count)
+{
+    return NOERROR;
+}
+
+ECode ThreadGroup::Enumerate(
+    /* [out] */ Array<IThread*>& list,
+    /* [out] */ Integer* count)
+{
+    return NOERROR;
+}
+
 ECode ThreadGroup::Add(
     /* [in] */ IThreadGroup* g)
 {
@@ -126,6 +151,12 @@ ECode ThreadGroup::Add(
     // decremented.
     mNUnstartedThreads--;
 
+    return NOERROR;
+}
+
+ECode ThreadGroup::ThreadStartFailed(
+    /* [in] */ IThread* t)
+{
     return NOERROR;
 }
 

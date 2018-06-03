@@ -14,41 +14,18 @@
 // limitations under the License.
 //=========================================================================
 
+interface ccm::core::IThread;
+
 namespace ccm {
-namespace core {
+namespace io {
 
 [
-    uuid(b25cfd17-1013-406e-b0cd-74be7637571c),
+    uuid(f6e25f86-4f88-4e18-bd93-e1dea5bcf946),
     version(0.1.0)
 ]
-interface IThreadGroup
+interface IInterruptible
 {
-    GetName(
-        [out] String* name);
-
-    GetMaxPriority(
-        [out] Integer* priority);
-
-    ActiveCount(
-        [out] Integer* count);
-
-    Enumerate(
-        [out] Array<IThread*> list,
-        [out] Integer* count);
-
-    // @hide
-    AddUnstarted();
-
-    // @hide
-    Add(
-        [in] IThread* t);
-
-    // @hide
-    ThreadStartFailed(
-        [in] IThread* t);
-
-    // @hide
-    ThreadTerminated(
+    Interrupt(
         [in] IThread* t);
 }
 

@@ -903,7 +903,7 @@ void NativeThread::Destroy()
 
         // Thread.join() is implemented as an Object.wait() on the Thread.lock object. Signal anyone
         // who is waiting.
-        SyncObject* lock = tPeer->mLock;
+        SyncObject* lock = &tPeer->mLock;
         if (lock != nullptr) {
             AutoLock locker(lock);
             lock->NotifyAll();
@@ -959,6 +959,31 @@ void NativeThread::SetUpAlternateSignalStack()
 }
 
 #endif
+
+Boolean NativeThread::Interrupted()
+{
+    NativeMutex::AutoLock lock(Current(), *mWaitMutex);
+    Boolean interrupted = IsInterruptedLocked();
+    SetInterruptedLocked(false);
+    return interrupted;
+}
+
+Boolean NativeThread::IsInterrupted()
+{
+    NativeMutex::AutoLock lock(Current(), *mWaitMutex);
+    return IsInterruptedLocked();
+}
+
+void NativeThread::Interrupt(
+    /* [in] */ NativeThread* self)
+{
+    NativeMutex::AutoLock lock(self, *mWaitMutex);
+    if (mInterrupted) {
+        return;
+    }
+    mInterrupted = true;
+    NotifyLocked(self);
+}
 
 void NativeThread::Notify()
 {

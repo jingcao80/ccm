@@ -14,6 +14,8 @@
 // limitations under the License.
 //=========================================================================
 
+interface ccm::io::IInterruptible;
+
 namespace ccm {
 namespace core {
 
@@ -63,6 +65,10 @@ interface IThread
      */
     const Integer MAX_PRIORITY = 10;
 
+    // @hide
+    BlockedOn(
+        [in] IInterruptible* b);
+
     CheckAccess();
 
     CountStackFrames(
@@ -83,7 +89,7 @@ interface IThread
         [out] Integer* priority);
 
     GetStackTrace(
-        [out, callee] Array<IStackTraceElement*>** trace);
+        [out, callee] Array<IStackTraceElement*>* trace);
 
     GetState(
         [out] ThreadState* state);
