@@ -51,11 +51,20 @@ public:
         /* [in] */ Long millis,
         /* [in] */ Integer nanos) override;
 
+    static SyncObject* From(
+        /* [in] */ IInterface* obj);
+
 protected:
     friend class Thread;
 
     HANDLE mNativeObject = 0;
 };
+
+inline SyncObject* SyncObject::From(
+    /* [in] */ IInterface* obj)
+{
+    return (SyncObject*)ISynchronize::Probe(obj);
+}
 
 } // namespace core
 } // namespace ccm

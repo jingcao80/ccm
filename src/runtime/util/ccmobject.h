@@ -53,6 +53,9 @@ public:
     ECode GetWeakReference(
         /* [out] */ IWeakReference** wr) override;
 
+    static String ToString(
+        /* [in] */ IInterface* obj);
+
 private:
     IMetaComponent* mComponent;
     String mCoclassName;

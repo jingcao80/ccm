@@ -737,6 +737,38 @@ ECode NativeMonitor::DoNotify(
     }
 }
 
+uint32_t NativeMonitor::GetLockOwnerThreadId(
+    /* [in] */ NativeObject* obj)
+{
+    CHECK(obj != nullptr);
+    NativeLockWord lockWord = obj->GetLockWord(true);
+    switch (lockWord.GetState()) {
+        case NativeLockWord::kUnlocked:
+            return NativeThreadList::kInvalidThreadId;
+        case NativeLockWord::kThinLocked:
+            return lockWord.ThinLockOwner();
+        case NativeLockWord::kFatLocked: {
+            NativeMonitor* mon = lockWord.FatLockMonitor();
+            return mon->GetOwnerThreadId();
+        }
+        default: {
+            return NativeThreadList::kInvalidThreadId;
+        }
+    }
+}
+
+uint32_t NativeMonitor::GetOwnerThreadId()
+{
+    NativeMutex::AutoLock lock(NativeThread::Current(), mMonitorLock);
+    NativeThread* owner = mOwner;
+    if (owner != nullptr) {
+        return owner->GetThreadId();
+    }
+    else {
+        return NativeThreadList::kInvalidThreadId;
+    }
+}
+
 //------------------------------------------------------------------------------------------------------
 
 NativeMonitorList::NativeMonitorList()

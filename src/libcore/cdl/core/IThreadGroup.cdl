@@ -23,25 +23,75 @@ namespace core {
 ]
 interface IThreadGroup
 {
-    GetName(
-        [out] String* name);
-
-    GetMaxPriority(
-        [out] Integer* priority);
-
     ActiveCount(
         [out] Integer* count);
+
+    ActiveGroupCount(
+        [out] Integer* count);
+
+    // @hide
+    Add(
+        [in] IThread* t);
+
+    // @hide
+    AddUnstarted();
+
+    CheckAccess();
+
+    Destroy();
 
     Enumerate(
         [out] Array<IThread*> list,
         [out] Integer* count);
 
-    // @hide
-    AddUnstarted();
+    Enumerate(
+        [out] Array<IThread*> list,
+        [in] Boolean recurse,
+        [out] Integer* count);
 
-    // @hide
-    Add(
-        [in] IThread* t);
+    Enumerate(
+        [out] Array<IThreadGroup*> list,
+        [out] Integer* count);
+
+    Enumerate(
+        [out] Array<IThreadGroup*> list,
+        [in] Boolean recurse,
+        [out] Integer* count);
+
+    GetMaxPriority(
+        [out] Integer* priority);
+
+    GetName(
+        [out] String* name);
+
+    GetParent(
+        [out] IThreadGroup** parent);
+
+    Interrupt();
+
+    IsDaemon(
+        [out] Boolean* daemon);
+
+    IsDestroyed(
+        [out] Boolean* destroyed);
+
+    List();
+
+    ParentOf(
+        [in] IThreadGroup* g,
+        [out] Boolean* result);
+
+    Resume();
+
+    SetDaemon(
+        [in] Boolean daemon);
+
+    SetMaxPriority(
+        [in] Integer pri);
+
+    Stop();
+
+    Suspend();
 
     // @hide
     ThreadStartFailed(

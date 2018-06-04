@@ -14,11 +14,30 @@
 // limitations under the License.
 //=========================================================================
 
+#ifndef __CCM_CORE_MATH_H__
+#define __CCM_CORE_MATH_H__
+
+#include <ccmtypes.h>
+
 namespace ccm {
 namespace core {
 
-const Integer E_INTERNAL_ERROR = 0x80010000;
-const Integer E_ASSERTION_ERROR = 0x80010001;
+class Math
+{
+public:
+    static Integer Min(
+        /* [in] */ Integer a,
+        /* [in] */ Integer b);
+};
+
+inline Integer Math::Min(
+    /* [in] */ Integer a,
+    /* [in] */ Integer b)
+{
+    return (a <= b) ? a : b;
+}
 
 }
 }
+
+#endif //__CCM_CORE_MATH_H__

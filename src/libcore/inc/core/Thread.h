@@ -37,7 +37,7 @@ private:
     /** Park states */
     class ParkState
     {
-    private:
+    public:
         /** park state indicating unparked */
         static constexpr Integer UNPARKED = 1;
 
@@ -108,6 +108,9 @@ public:
     ECode SetName(
         /* [in] */ const String& name) override;
 
+    ECode GetName(
+        /* [out] */ String* name) override;
+
     ECode GetThreadGroup(
         /* [out] */ IThreadGroup** tg) override;
 
@@ -149,37 +152,25 @@ public:
     ECode SetContextClassLoader(
         /* [in] */ IClassLoader* cl) override;
 
-
-
-
-    ECode GetId(
-        /* [out] */ Long* id) override;
-
-    ECode GetName(
-        /* [out] */ String* name) override;
+    static Boolean HoldsLock(
+        /* [in] */ IInterface* obj);
 
     ECode GetStackTrace(
         /* [out, callee] */ Array<IStackTraceElement*>* trace) override;
 
+    ECode GetId(
+        /* [out] */ Long* id) override;
+
     ECode GetState(
         /* [out] */ ThreadState* state) override;
 
-    ECode GetUncaughtExceptionHandler(
-        /* [out] */ IUncaughtExceptionHandler** handler) override;
-
-    ECode DispatchUncaughtException(
-        /* [in] */ ECode ec) override;
+    ECode Unpark() override;
 
     ECode ParkFor(
         /* [in] */ Long nanos) override;
 
     ECode ParkUntil(
         /* [in] */ Long time) override;
-
-    ECode SetUncaughtExceptionHandler(
-        /* [in] */ IUncaughtExceptionHandler* handler) override;
-
-    ECode Unpark() override;
 
     static Thread* From(
         /* [in] */ IThread* t);
@@ -210,11 +201,19 @@ private:
 
     void Exit();
 
+    Boolean NativeHoldsLock(
+        /* [in] */ IInterface* obj);
+
+    static Array<IStackTraceElement*> Get_EMPTY_STACK_TRACE();
+
     void NativeSetName(
         /* [in] */ const String& newName);
 
     void NativeSetPriority(
         /* [in] */ Integer newPriority);
+
+    ThreadState NativeGetStatus(
+        /* [in] */ Boolean hasBeenStarted);
 
     ECode NativeInterrupt();
 
@@ -259,6 +258,8 @@ private:
     SyncObject mBlockerLock;
 
     static constexpr Integer NANOS_PER_MILLI = 1000000;
+
+    Integer mParkState = ParkState::UNPARKED;
 };
 
 inline Thread* Thread::From(

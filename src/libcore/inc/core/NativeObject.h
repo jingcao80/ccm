@@ -45,6 +45,8 @@ public:
         /* [in] */ NativeLockWord oldVal,
         /* [in] */ NativeLockWord newVal);
 
+    uint32_t GetLockOwnerThreadId();
+
     ECode MonitorEnter(
         /* [in] */ NativeThread* self);
 
@@ -97,6 +99,11 @@ inline Boolean NativeObject::CasLockWordWeakRelease(
 {
     return mMonitor.CompareExchangeWeakRelease(
             oldVal.GetValue(), newVal.GetValue());
+}
+
+inline uint32_t NativeObject::GetLockOwnerThreadId()
+{
+    return NativeMonitor::GetLockOwnerThreadId(this);
 }
 
 inline ECode NativeObject::MonitorEnter(

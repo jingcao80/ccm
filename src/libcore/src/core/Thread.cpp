@@ -24,6 +24,7 @@
 #include "core/SyncObject.h"
 #include "core/System.h"
 #include "core/Thread.h"
+#include <unwind.h>
 
 namespace ccm {
 namespace core {
@@ -382,6 +383,15 @@ ECode Thread::SetName(
     return NOERROR;
 }
 
+ECode Thread::GetName(
+    /* [out] */ String* name)
+{
+    VALIDATE_NOT_NULL(name);
+
+    *name = mName;
+    return NOERROR;
+}
+
 ECode Thread::GetThreadGroup(
     /* [out] */ IThreadGroup** tg)
 {
@@ -493,6 +503,14 @@ ECode Thread::Join()
 
 void Thread::DumpStack()
 {
+    AutoPtr<IThread> t;
+    GetCurrentThread((IThread**)&t);
+    Array<IStackTraceElement*> frames;
+    t->GetStackTrace(&frames);
+    for (Integer i = 0; i < frames.GetLength(); i++) {
+        Logger::D("Thread", "Frame[%d] %s", i,
+                Object::ToString(frames[i]).string());
+    }
 }
 
 ECode Thread::SetDaemon(
@@ -567,8 +585,91 @@ ECode Thread::SetContextClassLoader(
     return NOERROR;
 }
 
+Boolean Thread::HoldsLock(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<IThread> t;
+    GetCurrentThread((IThread**)&t);
+    return From(t)->NativeHoldsLock(obj);
+}
 
+Boolean Thread::NativeHoldsLock(
+    /* [in] */ IInterface* obj)
+{
+    SyncObject* so = SyncObject::From(obj);
+    if (so == nullptr) {
+        Logger::E("Thread", "%p is not an object.");
+        return false;
+    }
+    NativeThread* self = NativeThread::Current();
+    NativeMutex::AutoLock lock(self, *Locks::sThreadListLock);
+    NativeThread* thread = NativeThread::FromManagedThread(this);
+    return thread->HoldsLock(reinterpret_cast<NativeObject*>(so->mNativeObject));
+}
 
+Array<IStackTraceElement*> Thread::Get_EMPTY_STACK_TRACE()
+{
+    static Array<IStackTraceElement*> EMPTY_STACK_TRACE(0);
+    return EMPTY_STACK_TRACE;
+}
+
+static _Unwind_Reason_Code calculate_frames(_Unwind_Context* context, void* arg)
+{
+    Integer* frameNum = static_cast<Integer*>(arg);
+
+    uintptr_t ip = _Unwind_GetIP(context);
+
+    if (ip == 0) {
+        return _URC_END_OF_STACK;
+    }
+    *frameNum++;
+    return _URC_CONTINUE_UNWIND;
+}
+
+static _Unwind_Reason_Code trace_frames(_Unwind_Context* context, void* arg)
+{
+    Array<IStackTraceElement*>* frames = static_cast<Array<IStackTraceElement*>*>(arg);
+
+    uintptr_t ip = _Unwind_GetIP(context);
+
+    if (ip == 0) {
+        return _URC_END_OF_STACK;
+    }
+
+    // TODO:
+    return _URC_CONTINUE_UNWIND;
+}
+
+ECode Thread::GetStackTrace(
+    /* [out, callee] */ Array<IStackTraceElement*>* trace)
+{
+    VALIDATE_NOT_NULL(trace);
+
+    Integer frameNum = 0;
+    _Unwind_Backtrace(calculate_frames, static_cast<void*>(&frameNum));
+    Array<IStackTraceElement*> frames(frameNum);
+    _Unwind_Backtrace(trace_frames, static_cast<void*>(&frames));
+    *trace = frames;
+    return NOERROR;
+}
+
+ECode Thread::GetId(
+    /* [out] */ Long* id)
+{
+    VALIDATE_NOT_NULL(id);
+
+    *id = mTid;
+    return NOERROR;
+}
+
+ECode Thread::GetState(
+    /* [out] */ ThreadState* state)
+{
+    VALIDATE_NOT_NULL(state);
+
+    *state = NativeGetStatus(mStarted);
+    return NOERROR;
+}
 
 void Thread::NativeSetName(
     /* [in] */ const String& newName)
@@ -609,6 +710,35 @@ void Thread::NativeSetPriority(
     }
 }
 
+ThreadState Thread::NativeGetStatus(
+    /* [in] */ Boolean hasBeenStarted)
+{
+    NativeThread* self = NativeThread::Current();
+    ScopedObjectAccess soa(self);
+    NativeThreadState threadState = hasBeenStarted ?
+            kTerminated : kStarting;
+    NativeMutex::AutoLock lock(soa.Self(), *Locks::sThreadListLock);
+    NativeThread* thread = NativeThread::FromManagedThread(this);
+    if (thread != nullptr) {
+        threadState = thread->GetState();
+    }
+    switch (threadState) {
+        case kTerminated:                       return ThreadState::TERMINATED;
+        case kRunnable:                         return ThreadState::RUNNABLE;
+        case kTimedWaiting:                     return ThreadState::TIMED_WAITING;
+        case kSleeping:                         return ThreadState::TIMED_WAITING;
+        case kBlocked:                          return ThreadState::BLOCKED;
+        case kWaiting:                          return ThreadState::WAITING;
+        case kStarting:                         return ThreadState::NEW;
+        case kNative:                           return ThreadState::RUNNABLE;
+        case kWaitingForSignalCatcherOutput:    return ThreadState::WAITING;
+        case kWaitingInMainSignalCatcherLoop:   return ThreadState::WAITING;
+        default:
+            Logger::E("Thread", "Unexpected thread state: %d", threadState);
+            return (ThreadState)-1;
+    }
+}
+
 ECode Thread::NativeInterrupt()
 {
     NativeThread* self = NativeThread::Current();
@@ -620,69 +750,82 @@ ECode Thread::NativeInterrupt()
     return NOERROR;
 }
 
-ECode Thread::GetId(
-    /* [out] */ Long* id)
+ECode Thread::Unpark()
 {
-    VALIDATE_NOT_NULL(id);
-
-    *id = mTid;
-    return NOERROR;
-}
-
-ECode Thread::GetName(
-    /* [out] */ String* name)
-{
-    VALIDATE_NOT_NULL(name);
-
-    *name = mName;
-    return NOERROR;
-}
-
-ECode Thread::GetStackTrace(
-    /* [out, callee] */ Array<IStackTraceElement*>* trace)
-{
-    return NOERROR;
-}
-
-ECode Thread::GetState(
-    /* [out] */ ThreadState* state)
-{
-    return NOERROR;
-}
-
-ECode Thread::GetUncaughtExceptionHandler(
-    /* [out] */ IUncaughtExceptionHandler** handler)
-{
-    return NOERROR;
-}
-
-ECode Thread::DispatchUncaughtException(
-    /* [in] */ ECode ec)
-{
+    AutoLock lock(mLock);
+    switch (mParkState) {
+        case ParkState::PREEMPTIVELY_UNPARKED: {
+            break;
+        }
+        case ParkState::UNPARKED: {
+            mParkState = ParkState::PREEMPTIVELY_UNPARKED;
+            break;
+        }
+        default: {
+            mParkState = ParkState::UNPARKED;
+            mLock.NotifyAll();
+            break;
+        }
+    }
     return NOERROR;
 }
 
 ECode Thread::ParkFor(
     /* [in] */ Long nanos)
 {
+    AutoLock lock(mLock);
+    switch (mParkState) {
+        case ParkState::PREEMPTIVELY_UNPARKED: {
+            mParkState = ParkState::UNPARKED;
+            break;
+        }
+        case ParkState::UNPARKED: {
+            Long millis = nanos / NANOS_PER_MILLI;
+            nanos %= NANOS_PER_MILLI;
+
+            mParkState = ParkState::PARKED;
+            ECode ec = mLock.Wait(millis, (Integer)nanos);
+            if (ec == E_INTERRUPTED_EXCEPTION) {
+                Interrupt();
+            }
+            /*
+             * Note: If parkState manages to become
+             * PREEMPTIVELY_UNPARKED before hitting this
+             * code, it should left in that state.
+             */
+            if (mParkState == ParkState::PARKED) {
+                mParkState = ParkState::UNPARKED;
+            }
+            break;
+        }
+        default: {
+            Logger::E("Thread", "Attempt to repark.");
+            return E_ASSERTION_ERROR;
+        }
+    }
     return NOERROR;
 }
 
 ECode Thread::ParkUntil(
     /* [in] */ Long time)
 {
-    return NOERROR;
-}
-
-ECode Thread::SetUncaughtExceptionHandler(
-    /* [in] */ IUncaughtExceptionHandler* handler)
-{
-    return NOERROR;
-}
-
-ECode Thread::Unpark()
-{
-    return NOERROR;
+    AutoLock lock(mLock);
+    Long currentTime = System::GetCurrentTimeMillis();
+    if (time < currentTime) {
+        mParkState = ParkState::UNPARKED;
+        return NOERROR;
+    }
+    else {
+        Long delayMillis = time - currentTime;
+        // Long.MAX_VALUE / NANOS_PER_MILLI (0x8637BD05SF6) is the largest
+        // long value that won't overflow to negative value when
+        // multiplyed by NANOS_PER_MILLI (10^6).
+        Long maxValue = (LONG_MAX_VALUE / NANOS_PER_MILLI);
+        if (delayMillis > maxValue) {
+            delayMillis = maxValue;
+        }
+        return ParkFor(delayMillis * NANOS_PER_MILLI);
+    }
 }
 
 SyncObject* Thread::GetStaticLock()

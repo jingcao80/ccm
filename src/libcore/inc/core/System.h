@@ -17,7 +17,11 @@
 #ifndef __CCM_CORE_SYSTEM_H__
 #define __CCM_CORE_SYSTEM_H__
 
+#include "ccm.io.IPrintStream.h"
+#include <ccmautoptr.h>
 #include <ccmtypes.h>
+
+using ccm::io::IPrintStream;
 
 namespace ccm {
 namespace core {
@@ -25,6 +29,8 @@ namespace core {
 class System
 {
 public:
+    static AutoPtr<IPrintStream> GetOut();
+
     static Long GetCurrentTimeMillis();
 
     static Long GetNanoTime();

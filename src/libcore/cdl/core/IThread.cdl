@@ -34,17 +34,6 @@ interface IThread;
 interface IThreadGroup;
 
 [
-    uuid(c17e5398-bb0b-4cce-988e-88bda56318c7),
-    version(0.1.0)
-]
-interface IUncaughtExceptionHandler
-{
-    UncaughtException(
-        [in] IThread* t,
-        [in] ECode ec);
-}
-
-[
     uuid(fb0ec407-baa3-47ed-9a3f-fe666ee9fca0),
     version(0.1.0)
 ]
@@ -97,12 +86,6 @@ interface IThread
     GetThreadGroup(
         [out] IThreadGroup** tg);
 
-    GetUncaughtExceptionHandler(
-        [out] IUncaughtExceptionHandler** handler);
-
-    DispatchUncaughtException(
-        [in] ECode ec);
-
     Interrupt();
 
     IsAlive(
@@ -142,9 +125,6 @@ interface IThread
 
     SetPriority(
         [in] Integer newPriority);
-
-    SetUncaughtExceptionHandler(
-        [in] IUncaughtExceptionHandler* handler);
 
     Start();
 

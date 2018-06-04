@@ -20,6 +20,12 @@
 namespace ccm {
 namespace core {
 
+AutoPtr<IPrintStream> System::GetOut()
+{
+    static AutoPtr<IPrintStream> sOut;
+    return sOut;
+}
+
 Long System::GetCurrentTimeMillis()
 {
     timespec now;

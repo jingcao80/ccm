@@ -81,6 +81,7 @@ private:
 
 public:
     static constexpr uint32_t kMaxThreadId = 0xFFFF;
+    static constexpr uint32_t kInvalidThreadId = 0;
     static constexpr uint32_t kMainThreadId = 1;
     static constexpr uint64_t kDefaultThreadSuspendTimeout = MsToNs(10000);
 

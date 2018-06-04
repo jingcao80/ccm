@@ -1021,6 +1021,12 @@ int NativeThread::GetNativePriority()
 
 #endif
 
+Boolean NativeThread::HoldsLock(
+    /* [in] */ NativeObject* object)
+{
+    return object != nullptr && object->GetLockOwnerThreadId() == GetThreadId();
+}
+
 Boolean NativeThread::ProtectStack(
     /* [in] */ Boolean fatalOnError)
 {

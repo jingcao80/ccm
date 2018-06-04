@@ -139,4 +139,18 @@ ECode Object::GetWeakReference(
     return NOERROR;
 }
 
+String Object::ToString(
+    /* [in] */ IInterface* obj)
+{
+    IObject* o = IObject::Probe(obj);
+    if (o != nullptr) {
+        String info;
+        o->ToString(&info);
+        return info;
+    }
+    else {
+        return String("%p is not an object.");
+    }
+}
+
 }

@@ -18,6 +18,9 @@ CCM stands for C++ Component Model. It can:
 1. <code>sudo apt-get update</code>
 2. <code>sudo apt-get install libdbus-1-dev</code>
 
+### Install Unwind
+1. <code>sudo apt-get install libunwind8-dev</code>
+
 ### How to build
 1. <code>cd ccm</code>
 2. <code>source build/envsetup.sh</code>

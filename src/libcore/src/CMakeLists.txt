@@ -24,8 +24,8 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/MetadataWrapper.cpp)
 
 add_custom_target(build_libcore
-    DEPENDS 
-        deploy_libcore_headers 
+    DEPENDS
+        deploy_libcore_headers
         ${GENERATED_SOURCES})
 
 add_subdirectory(core)
@@ -51,7 +51,8 @@ add_library(libcore
 target_link_libraries(libcore
     ${LIBCORE_LINK_LIBS}
     ccmrt.so
-    pthread)
+    pthread
+    unwind)
 
 add_custom_command(
     OUTPUT
@@ -63,7 +64,7 @@ add_custom_command(
         -k
         -p
         -d ${OBJ_DIR}
-        -i ${LIBCORE_DIR}/cdl 
+        -i ${LIBCORE_DIR}/cdl
         "${LIBCORE_SRC_DIR}/libcore.cdl")
 
 MKDIR(libcore ${INC_DIR}/core)

@@ -102,6 +102,9 @@ public:
     void AssertThreadSuspensionIsAllowable(
         /* [in] */ Boolean checkLocks = true) const;
 
+    Boolean HoldsLock(
+        /* [in] */ NativeObject* object);
+
     /*
     * Changes the priority of this thread to match that of the java.lang.Thread object.
     *

@@ -35,6 +35,10 @@ class NativeObject;
 class NativeMonitor
 {
 public:
+    // Return the thread id of the lock owner or 0 when there is no owner.
+    static uint32_t GetLockOwnerThreadId(
+        /* [in] */ NativeObject* obj);
+
     static ECode MonitorEnter(
         /* [in] */ NativeThread* self,
         /* [in] */ NativeObject* obj,
@@ -161,6 +165,8 @@ private:
         /* [in] */ int32_t nsec,
         /* [in] */ Boolean interruptShouldThrow,
         /* [in] */ NativeThreadState why);
+
+    uint32_t GetOwnerThreadId();
 
 public:
     // The default number of spins that are done before thread suspension is used to forcibly inflate
