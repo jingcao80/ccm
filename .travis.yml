@@ -2,6 +2,7 @@ dist: trusty
 install:
   - sudo apt-get -qq update
   - sudo apt-get install -y libdbus-1-dev
+  - sudo apt-get install libunwind8-dev
 language: cpp
-script: 
+script:
   source $TRAVIS_BUILD_DIR/build/envsetup.sh && mkdir out && cd out && cmake .. && make
