@@ -220,6 +220,9 @@ public:
     static String Format(
         /* [in] */ const char* format ...);
 
+    static String ValueOfChar(
+        /* [in] */ Char c);
+
     inline static Boolean IsASCII(
         /* [in] */ char c);
 

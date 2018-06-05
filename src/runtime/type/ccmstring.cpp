@@ -747,6 +747,16 @@ String String::Format(
     return str;
 }
 
+String String::ValueOfChar(
+    /* [in] */ Char c)
+{
+    Integer byteSize = GetByteSize(c);
+    char buf[5];
+    WriteUTF8Bytes(buf, c, byteSize);
+    buf[byteSize] = '\0';
+    return String(buf);
+}
+
 Integer String::UTF8SequenceLengthNonASCII(
     /* [in] */ char b0)
 {

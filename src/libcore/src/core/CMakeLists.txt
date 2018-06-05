@@ -24,6 +24,7 @@ include_directories(
     ${OBJ_DIR})
 
 set(SOURCES
+    Character.cpp
     NativeFaultHandler.cpp
     NativeLockWord.cpp
     NativeMonitor.cpp

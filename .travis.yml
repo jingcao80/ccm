@@ -3,6 +3,7 @@ install:
   - sudo apt-get -qq update
   - sudo apt-get install -y libdbus-1-dev
   - sudo apt-get install -y libunwind8-dev
+  - sudo apt-get install -y libicu-dev
 language: cpp
 script:
   source $TRAVIS_BUILD_DIR/build/envsetup.sh && mkdir out && cd out && cmake .. && make
