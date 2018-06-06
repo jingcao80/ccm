@@ -120,6 +120,12 @@ inline T* AlignDown(T* x, uintptr_t n)
     return reinterpret_cast<T*>(RoundDown(reinterpret_cast<uintptr_t>(x), n));
 }
 
+template<typename T, int N>
+inline int ArrayLength(const T (&)[N])
+{
+    return N;
+}
+
 #ifndef CHECK
 #if defined(_DEBUG)
 #define CHECK(e)    assert(e)
