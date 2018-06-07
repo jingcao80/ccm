@@ -350,6 +350,170 @@ public:
 
         static AutoPtr<UnicodeBlock> LEPCHA;
 
+        static AutoPtr<UnicodeBlock> OL_CHIKI;
+
+        static AutoPtr<UnicodeBlock> VEDIC_EXTENSIONS;
+
+        static AutoPtr<UnicodeBlock> PHONETIC_EXTENSIONS_SUPPLEMENT;
+
+        static AutoPtr<UnicodeBlock> COMBINING_DIACRITICAL_MARKS_SUPPLEMENT;
+
+        static AutoPtr<UnicodeBlock> GLAGOLITIC;
+
+        static AutoPtr<UnicodeBlock> LATIN_EXTENDED_C;
+
+        static AutoPtr<UnicodeBlock> COPTIC;
+
+        static AutoPtr<UnicodeBlock> GEORGIAN_SUPPLEMENT;
+
+        static AutoPtr<UnicodeBlock> TIFINAGH;
+
+        static AutoPtr<UnicodeBlock> ETHIOPIC_EXTENDED;
+
+        static AutoPtr<UnicodeBlock> CYRILLIC_EXTENDED_A;
+
+        static AutoPtr<UnicodeBlock> SUPPLEMENTAL_PUNCTUATION;
+
+        static AutoPtr<UnicodeBlock> CJK_STROKES;
+
+        static AutoPtr<UnicodeBlock> LISU;
+
+        static AutoPtr<UnicodeBlock> VAI;
+
+        static AutoPtr<UnicodeBlock> CYRILLIC_EXTENDED_B;
+
+        static AutoPtr<UnicodeBlock> BAMUM;
+
+        static AutoPtr<UnicodeBlock> MODIFIER_TONE_LETTERS;
+
+        static AutoPtr<UnicodeBlock> LATIN_EXTENDED_D;
+
+        static AutoPtr<UnicodeBlock> SYLOTI_NAGRI;
+
+        static AutoPtr<UnicodeBlock> COMMON_INDIC_NUMBER_FORMS;
+
+        static AutoPtr<UnicodeBlock> PHAGS_PA;
+
+        static AutoPtr<UnicodeBlock> SAURASHTRA;
+
+        static AutoPtr<UnicodeBlock> DEVANAGARI_EXTENDED;
+
+        static AutoPtr<UnicodeBlock> KAYAH_LI;
+
+        static AutoPtr<UnicodeBlock> REJANG;
+
+        static AutoPtr<UnicodeBlock> HANGUL_JAMO_EXTENDED_A;
+
+        static AutoPtr<UnicodeBlock> JAVANESE;
+
+        static AutoPtr<UnicodeBlock> CHAM;
+
+        static AutoPtr<UnicodeBlock> MYANMAR_EXTENDED_A;
+
+        static AutoPtr<UnicodeBlock> TAI_VIET;
+
+        static AutoPtr<UnicodeBlock> ETHIOPIC_EXTENDED_A;
+
+        static AutoPtr<UnicodeBlock> MEETEI_MAYEK;
+
+        static AutoPtr<UnicodeBlock> HANGUL_JAMO_EXTENDED_B;
+
+        static AutoPtr<UnicodeBlock> VERTICAL_FORMS;
+
+        static AutoPtr<UnicodeBlock> ANCIENT_GREEK_NUMBERS;
+
+        static AutoPtr<UnicodeBlock> ANCIENT_SYMBOLS;
+
+        static AutoPtr<UnicodeBlock> PHAISTOS_DISC;
+
+        static AutoPtr<UnicodeBlock> LYCIAN;
+
+        static AutoPtr<UnicodeBlock> CARIAN;
+
+        static AutoPtr<UnicodeBlock> OLD_PERSIAN;
+
+        static AutoPtr<UnicodeBlock> IMPERIAL_ARAMAIC;
+
+        static AutoPtr<UnicodeBlock> PHOENICIAN;
+
+        static AutoPtr<UnicodeBlock> LYDIAN;
+
+        static AutoPtr<UnicodeBlock> KHAROSHTHI;
+
+        static AutoPtr<UnicodeBlock> OLD_SOUTH_ARABIAN;
+
+        static AutoPtr<UnicodeBlock> AVESTAN;
+
+        static AutoPtr<UnicodeBlock> INSCRIPTIONAL_PARTHIAN;
+
+        static AutoPtr<UnicodeBlock> INSCRIPTIONAL_PAHLAVI;
+
+        static AutoPtr<UnicodeBlock> OLD_TURKIC;
+
+        static AutoPtr<UnicodeBlock> RUMI_NUMERAL_SYMBOLS;
+
+        static AutoPtr<UnicodeBlock> BRAHMI;
+
+        static AutoPtr<UnicodeBlock> KAITHI;
+
+        static AutoPtr<UnicodeBlock> CUNEIFORM;
+
+        static AutoPtr<UnicodeBlock> CUNEIFORM_NUMBERS_AND_PUNCTUATION;
+
+        static AutoPtr<UnicodeBlock> EGYPTIAN_HIEROGLYPHS;
+
+        static AutoPtr<UnicodeBlock> BAMUM_SUPPLEMENT;
+
+        static AutoPtr<UnicodeBlock> KANA_SUPPLEMENT;
+
+        static AutoPtr<UnicodeBlock> ANCIENT_GREEK_MUSICAL_NOTATION;
+
+        static AutoPtr<UnicodeBlock> COUNTING_ROD_NUMERALS;
+
+        static AutoPtr<UnicodeBlock> MAHJONG_TILES;
+
+        static AutoPtr<UnicodeBlock> DOMINO_TILES;
+
+        static AutoPtr<UnicodeBlock> PLAYING_CARDS;
+
+        static AutoPtr<UnicodeBlock> ENCLOSED_ALPHANUMERIC_SUPPLEMENT;
+
+        static AutoPtr<UnicodeBlock> ENCLOSED_IDEOGRAPHIC_SUPPLEMENT;
+
+        static AutoPtr<UnicodeBlock> MISCELLANEOUS_SYMBOLS_AND_PICTOGRAPHS;
+
+        static AutoPtr<UnicodeBlock> EMOTICONS;
+
+        static AutoPtr<UnicodeBlock> TRANSPORT_AND_MAP_SYMBOLS;
+
+        static AutoPtr<UnicodeBlock> ALCHEMICAL_SYMBOLS;
+
+        static AutoPtr<UnicodeBlock> CJK_UNIFIED_IDEOGRAPHS_EXTENSION_C;
+
+        static AutoPtr<UnicodeBlock> CJK_UNIFIED_IDEOGRAPHS_EXTENSION_D;
+
+        static AutoPtr<UnicodeBlock> ARABIC_EXTENDED_A;
+
+        static AutoPtr<UnicodeBlock> SUNDANESE_SUPPLEMENT;
+
+        static AutoPtr<UnicodeBlock> MEETEI_MAYEK_EXTENSIONS;
+
+        static AutoPtr<UnicodeBlock> MEROITIC_HIEROGLYPHS;
+
+        static AutoPtr<UnicodeBlock> MEROITIC_CURSIVE;
+
+        static AutoPtr<UnicodeBlock> SORA_SOMPENG;
+
+        static AutoPtr<UnicodeBlock> CHAKMA;
+
+        static AutoPtr<UnicodeBlock> SHARADA;
+
+        static AutoPtr<UnicodeBlock> TAKRI;
+
+        static AutoPtr<UnicodeBlock> MIAO;
+
+        static AutoPtr<UnicodeBlock> ARABIC_MATHEMATICAL_ALPHABETIC_SYMBOLS;
+
         static constexpr Integer sBlockStarts[] = {
             0x0000,   // 0000..007F; Basic Latin
             0x0080,   // 0080..00FF; Latin-1 Supplement

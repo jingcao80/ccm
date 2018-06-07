@@ -14,6 +14,16 @@
 // limitations under the License.
 //=========================================================================
 
-include "io/IInterruptible.cdl"
-include "io/IPrintStream.cdl"
-include "io/ISerializable.cdl"
+namespace ccm {
+namespace core {
+
+[
+    uuid(6491e4b7-83a3-4218-828d-529e1f80264f),
+    version(0.1.0)
+]
+interface IStringBuffer
+{
+}
+
+}
+}

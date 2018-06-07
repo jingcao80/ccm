@@ -14,6 +14,32 @@
 // limitations under the License.
 //=========================================================================
 
-include "io/IInterruptible.cdl"
-include "io/IPrintStream.cdl"
-include "io/ISerializable.cdl"
+interface ccm::io::ISerializable;
+
+namespace ccm {
+namespace core {
+
+[
+    uuid(cbc6b55a-c06e-4ddc-b7f8-f0cc0bf94ff9),
+    version(0.1.0)
+]
+coclass CStringBuilder
+{
+    constructor();
+
+    constructor(
+        [in] Integer capacity);
+
+    constructor(
+        [in] String str);
+
+    constructor(
+        [in] ICharSequence* seq);
+
+    interface ISerializable;
+    interface ICharSequence;
+    interface IStringBuilder;
+}
+
+}
+}

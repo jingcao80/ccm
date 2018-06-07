@@ -14,6 +14,15 @@
 // limitations under the License.
 //=========================================================================
 
-include "io/IInterruptible.cdl"
-include "io/IPrintStream.cdl"
-include "io/ISerializable.cdl"
+namespace ccm {
+namespace io {
+
+[
+    uuid(2baa70ff-2124-477e-9b1e-f16bc1909e68),
+    version(0.1.0)
+]
+interface ISerializable
+{}
+
+}
+}

@@ -142,14 +142,19 @@ ECode Object::GetWeakReference(
 String Object::ToString(
     /* [in] */ IInterface* obj)
 {
-    IObject* o = IObject::Probe(obj);
-    if (o != nullptr) {
-        String info;
-        o->ToString(&info);
-        return info;
+    if (obj == nullptr) {
+        return String("null");
     }
     else {
-        return String("%p is not an object.");
+        IObject* o = IObject::Probe(obj);
+        if (o != nullptr) {
+            String info;
+            o->ToString(&info);
+            return info;
+        }
+        else {
+            return String("not a coclass object.");
+        }
     }
 }
 

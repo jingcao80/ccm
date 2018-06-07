@@ -14,6 +14,30 @@
 // limitations under the License.
 //=========================================================================
 
-include "io/IInterruptible.cdl"
-include "io/IPrintStream.cdl"
-include "io/ISerializable.cdl"
+namespace ccm {
+namespace core {
+
+[
+    uuid(21107670-c69c-4bab-b7a2-476469271786),
+    version(0.1.0)
+]
+interface ICharSequence
+{
+    GetLength(
+        [out] Integer* number);
+
+    GetCharAt(
+        [in] Integer index,
+        [out] Char* c);
+
+    SubSequence(
+        [in] Integer start,
+        [in] Integer end,
+        [out] ICharSequence** subcsq);
+
+    ToString(
+        [out] String* str);
+}
+
+}
+}

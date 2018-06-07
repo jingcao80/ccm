@@ -396,6 +396,12 @@ Character::UnicodeBlock::UnicodeBlock(
 
 Character::UnicodeBlock::UnicodeBlock(
     /* [in] */ const String& idName,
+    /* [in] */ const String& alias)
+    : Subset(idName)
+{}
+
+Character::UnicodeBlock::UnicodeBlock(
+    /* [in] */ const String& idName,
     /* [in] */ const String& alias1,
     /* [in] */ const String& alias2)
     : Subset(idName)
@@ -862,6 +868,285 @@ AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::BATAK =
         new UnicodeBlock(String("BATAK"));
 AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::LEPCHA =
         new UnicodeBlock(String("LEPCHA"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::OL_CHIKI =
+        new UnicodeBlock(String("OL_CHIKI"),
+                         String("OL CHIKI"),
+                         String("OLCHIKI"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::VEDIC_EXTENSIONS =
+        new UnicodeBlock(String("VEDIC_EXTENSIONS"),
+                         String("VEDIC EXTENSIONS"),
+                         String("VEDICEXTENSIONS"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::PHONETIC_EXTENSIONS_SUPPLEMENT =
+        new UnicodeBlock(String("PHONETIC_EXTENSIONS_SUPPLEMENT"),
+                         String("PHONETIC EXTENSIONS SUPPLEMENT"),
+                         String("PHONETICEXTENSIONSSUPPLEMENT"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::COMBINING_DIACRITICAL_MARKS_SUPPLEMENT =
+        new UnicodeBlock(String("COMBINING_DIACRITICAL_MARKS_SUPPLEMENT"),
+                         String("COMBINING DIACRITICAL MARKS SUPPLEMENT"),
+                         String("COMBININGDIACRITICALMARKSSUPPLEMENT"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::GLAGOLITIC =
+        new UnicodeBlock(String("GLAGOLITIC"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::LATIN_EXTENDED_C =
+        new UnicodeBlock(String("LATIN_EXTENDED_C"),
+                         String("LATIN EXTENDED-C"),
+                         String("LATINEXTENDED-C"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::COPTIC =
+        new UnicodeBlock(String("COPTIC"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::GEORGIAN_SUPPLEMENT =
+        new UnicodeBlock(String("GEORGIAN_SUPPLEMENT"),
+                         String("GEORGIAN SUPPLEMENT"),
+                         String("GEORGIANSUPPLEMENT"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::TIFINAGH =
+        new UnicodeBlock(String("TIFINAGH"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::ETHIOPIC_EXTENDED =
+        new UnicodeBlock(String("ETHIOPIC_EXTENDED"),
+                         String("ETHIOPIC EXTENDED"),
+                         String("ETHIOPICEXTENDED"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::CYRILLIC_EXTENDED_A =
+        new UnicodeBlock(String("CYRILLIC_EXTENDED_A"),
+                         String("CYRILLIC EXTENDED-A"),
+                         String("CYRILLICEXTENDED-A"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::SUPPLEMENTAL_PUNCTUATION =
+        new UnicodeBlock(String("SUPPLEMENTAL_PUNCTUATION"),
+                         String("SUPPLEMENTAL PUNCTUATION"),
+                         String("SUPPLEMENTALPUNCTUATION"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::CJK_STROKES =
+        new UnicodeBlock(String("CJK_STROKES"),
+                         String("CJK STROKES"),
+                         String("CJKSTROKES"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::LISU =
+        new UnicodeBlock(String("LISU"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::VAI =
+        new UnicodeBlock(String("VAI"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::CYRILLIC_EXTENDED_B =
+        new UnicodeBlock(String("CYRILLIC_EXTENDED_B"),
+                         String("CYRILLIC EXTENDED-B"),
+                         String("CYRILLICEXTENDED-B"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::BAMUM =
+        new UnicodeBlock(String("BAMUM"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::MODIFIER_TONE_LETTERS =
+        new UnicodeBlock(String("MODIFIER_TONE_LETTERS"),
+                         String("MODIFIER TONE LETTERS"),
+                         String("MODIFIERTONELETTERS"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::LATIN_EXTENDED_D =
+        new UnicodeBlock(String("LATIN_EXTENDED_D"),
+                         String("LATIN EXTENDED-D"),
+                         String("LATINEXTENDED-D"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::SYLOTI_NAGRI =
+        new UnicodeBlock(String("SYLOTI_NAGRI"),
+                         String("SYLOTI NAGRI"),
+                         String("SYLOTINAGRI"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::COMMON_INDIC_NUMBER_FORMS =
+        new UnicodeBlock(String("COMMON_INDIC_NUMBER_FORMS"),
+                         String("COMMON INDIC NUMBER FORMS"),
+                         String("COMMONINDICNUMBERFORMS"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::PHAGS_PA =
+        new UnicodeBlock(String("PHAGS_PA"),
+                         String("PHAGS-PA"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::SAURASHTRA =
+        new UnicodeBlock(String("SAURASHTRA"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::DEVANAGARI_EXTENDED =
+        new UnicodeBlock(String("DEVANAGARI_EXTENDED"),
+                         String("DEVANAGARI EXTENDED"),
+                         String("DEVANAGARIEXTENDED"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::KAYAH_LI =
+        new UnicodeBlock(String("KAYAH_LI"),
+                         String("KAYAH LI"),
+                         String("KAYAHLI"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::REJANG =
+        new UnicodeBlock(String("REJANG"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::HANGUL_JAMO_EXTENDED_A =
+        new UnicodeBlock(String("HANGUL_JAMO_EXTENDED_A"),
+                         String("HANGUL JAMO EXTENDED-A"),
+                         String("HANGULJAMOEXTENDED-A"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::JAVANESE =
+        new UnicodeBlock(String("JAVANESE"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::CHAM =
+        new UnicodeBlock(String("CHAM"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::MYANMAR_EXTENDED_A =
+        new UnicodeBlock(String("MYANMAR_EXTENDED_A"),
+                         String("MYANMAR EXTENDED-A"),
+                         String("MYANMAREXTENDED-A"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::TAI_VIET =
+        new UnicodeBlock(String("TAI_VIET"),
+                         String("TAI VIET"),
+                         String("TAIVIET"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::ETHIOPIC_EXTENDED_A =
+        new UnicodeBlock(String("ETHIOPIC_EXTENDED_A"),
+                         String("ETHIOPIC EXTENDED-A"),
+                         String("ETHIOPICEXTENDED-A"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::MEETEI_MAYEK =
+        new UnicodeBlock(String("MEETEI_MAYEK"),
+                         String("MEETEI MAYEK"),
+                         String("MEETEIMAYEK"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::HANGUL_JAMO_EXTENDED_B =
+        new UnicodeBlock(String("HANGUL_JAMO_EXTENDED_B"),
+                         String("HANGUL JAMO EXTENDED-B"),
+                         String("HANGULJAMOEXTENDED-B"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::VERTICAL_FORMS =
+        new UnicodeBlock(String("VERTICAL_FORMS"),
+                         String("VERTICAL FORMS"),
+                         String("VERTICALFORMS"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::ANCIENT_GREEK_NUMBERS =
+        new UnicodeBlock(String("ANCIENT_GREEK_NUMBERS"),
+                         String("ANCIENT GREEK NUMBERS"),
+                         String("ANCIENTGREEKNUMBERS"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::ANCIENT_SYMBOLS =
+        new UnicodeBlock(String("ANCIENT_SYMBOLS"),
+                         String("ANCIENT SYMBOLS"),
+                         String("ANCIENTSYMBOLS"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::PHAISTOS_DISC =
+        new UnicodeBlock(String("PHAISTOS_DISC"),
+                         String("PHAISTOS DISC"),
+                         String("PHAISTOSDISC"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::LYCIAN =
+        new UnicodeBlock(String("LYCIAN"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::CARIAN =
+        new UnicodeBlock(String("CARIAN"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::OLD_PERSIAN =
+        new UnicodeBlock(String("OLD_PERSIAN"),
+                         String("OLD PERSIAN"),
+                         String("OLDPERSIAN"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::IMPERIAL_ARAMAIC =
+        new UnicodeBlock(String("IMPERIAL_ARAMAIC"),
+                         String("IMPERIAL ARAMAIC"),
+                         String("IMPERIALARAMAIC"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::PHOENICIAN =
+        new UnicodeBlock(String("PHOENICIAN"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::LYDIAN =
+        new UnicodeBlock(String("LYDIAN"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::KHAROSHTHI =
+        new UnicodeBlock(String("KHAROSHTHI"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::OLD_SOUTH_ARABIAN =
+        new UnicodeBlock(String("OLD_SOUTH_ARABIAN"),
+                         String("OLD SOUTH ARABIAN"),
+                         String("OLDSOUTHARABIAN"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::AVESTAN =
+        new UnicodeBlock(String("AVESTAN"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::INSCRIPTIONAL_PARTHIAN =
+        new UnicodeBlock(String("INSCRIPTIONAL_PARTHIAN"),
+                         String("INSCRIPTIONAL PARTHIAN"),
+                         String("INSCRIPTIONALPARTHIAN"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::INSCRIPTIONAL_PAHLAVI =
+        new UnicodeBlock(String("INSCRIPTIONAL_PAHLAVI"),
+                         String("INSCRIPTIONAL PAHLAVI"),
+                         String("INSCRIPTIONALPAHLAVI"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::OLD_TURKIC =
+        new UnicodeBlock(String("OLD_TURKIC"),
+                         String("OLD TURKIC"),
+                         String("OLDTURKIC"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::RUMI_NUMERAL_SYMBOLS =
+        new UnicodeBlock(String("RUMI_NUMERAL_SYMBOLS"),
+                         String("RUMI NUMERAL SYMBOLS"),
+                         String("RUMINUMERALSYMBOLS"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::BRAHMI =
+        new UnicodeBlock(String("BRAHMI"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::KAITHI =
+        new UnicodeBlock(String("KAITHI"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::CUNEIFORM =
+        new UnicodeBlock(String("CUNEIFORM"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::CUNEIFORM_NUMBERS_AND_PUNCTUATION =
+        new UnicodeBlock(String("CUNEIFORM_NUMBERS_AND_PUNCTUATION"),
+                         String("CUNEIFORM NUMBERS AND PUNCTUATION"),
+                         String("CUNEIFORMNUMBERSANDPUNCTUATION"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::EGYPTIAN_HIEROGLYPHS =
+        new UnicodeBlock(String("EGYPTIAN_HIEROGLYPHS"),
+                         String("EGYPTIAN HIEROGLYPHS"),
+                         String("EGYPTIANHIEROGLYPHS"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::BAMUM_SUPPLEMENT =
+        new UnicodeBlock(String("BAMUM_SUPPLEMENT"),
+                         String("BAMUM SUPPLEMENT"),
+                         String("BAMUMSUPPLEMENT"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::KANA_SUPPLEMENT =
+        new UnicodeBlock(String("KANA_SUPPLEMENT"),
+                         String("KANA SUPPLEMENT"),
+                         String("KANASUPPLEMENT"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::ANCIENT_GREEK_MUSICAL_NOTATION =
+        new UnicodeBlock(String("ANCIENT_GREEK_MUSICAL_NOTATION"),
+                         String("ANCIENT GREEK MUSICAL NOTATION"),
+                         String("ANCIENTGREEKMUSICALNOTATION"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::COUNTING_ROD_NUMERALS =
+        new UnicodeBlock(String("COUNTING_ROD_NUMERALS"),
+                         String("COUNTING ROD NUMERALS"),
+                         String("COUNTINGRODNUMERALS"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::MAHJONG_TILES =
+        new UnicodeBlock(String("MAHJONG_TILES"),
+                         String("MAHJONG TILES"),
+                         String("MAHJONGTILES"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::DOMINO_TILES =
+        new UnicodeBlock(String("DOMINO_TILES"),
+                         String("DOMINO TILES"),
+                         String("DOMINOTILES"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::PLAYING_CARDS =
+        new UnicodeBlock(String("PLAYING_CARDS"),
+                         String("PLAYING CARDS"),
+                         String("PLAYINGCARDS"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::ENCLOSED_ALPHANUMERIC_SUPPLEMENT =
+        new UnicodeBlock(String("ENCLOSED_ALPHANUMERIC_SUPPLEMENT"),
+                         String("ENCLOSED ALPHANUMERIC SUPPLEMENT"),
+                         String("ENCLOSEDALPHANUMERICSUPPLEMENT"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::ENCLOSED_IDEOGRAPHIC_SUPPLEMENT =
+        new UnicodeBlock(String("ENCLOSED_IDEOGRAPHIC_SUPPLEMENT"),
+                         String("ENCLOSED IDEOGRAPHIC SUPPLEMENT"),
+                         String("ENCLOSEDIDEOGRAPHICSUPPLEMENT"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::MISCELLANEOUS_SYMBOLS_AND_PICTOGRAPHS =
+        new UnicodeBlock(String("MISCELLANEOUS_SYMBOLS_AND_PICTOGRAPHS"),
+                         String("MISCELLANEOUS SYMBOLS AND PICTOGRAPHS"),
+                         String("MISCELLANEOUSSYMBOLSANDPICTOGRAPHS"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::EMOTICONS =
+        new UnicodeBlock(String("EMOTICONS"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::TRANSPORT_AND_MAP_SYMBOLS =
+        new UnicodeBlock(String("TRANSPORT_AND_MAP_SYMBOLS"),
+                         String("TRANSPORT AND MAP SYMBOLS"),
+                         String("TRANSPORTANDMAPSYMBOLS"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::ALCHEMICAL_SYMBOLS =
+        new UnicodeBlock(String("ALCHEMICAL_SYMBOLS"),
+                         String("ALCHEMICAL SYMBOLS"),
+                         String("ALCHEMICALSYMBOLS"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::CJK_UNIFIED_IDEOGRAPHS_EXTENSION_C =
+        new UnicodeBlock(String("CJK_UNIFIED_IDEOGRAPHS_EXTENSION_C"),
+                         String("CJK UNIFIED IDEOGRAPHS EXTENSION C"),
+                         String("CJKUNIFIEDIDEOGRAPHSEXTENSIONC"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::CJK_UNIFIED_IDEOGRAPHS_EXTENSION_D =
+        new UnicodeBlock(String("CJK_UNIFIED_IDEOGRAPHS_EXTENSION_D"),
+                         String("CJK UNIFIED IDEOGRAPHS EXTENSION D"),
+                         String("CJKUNIFIEDIDEOGRAPHSEXTENSIOND"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::ARABIC_EXTENDED_A =
+        new UnicodeBlock(String("ARABIC_EXTENDED_A"),
+                         String("ARABIC EXTENDED-A"),
+                         String("ARABICEXTENDED-A"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::SUNDANESE_SUPPLEMENT =
+        new UnicodeBlock(String("SUNDANESE_SUPPLEMENT"),
+                         String("SUNDANESE SUPPLEMENT"),
+                         String("SUNDANESESUPPLEMENT"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::MEETEI_MAYEK_EXTENSIONS =
+        new UnicodeBlock(String("MEETEI_MAYEK_EXTENSIONS"),
+                         String("MEETEI MAYEK EXTENSIONS"),
+                         String("MEETEIMAYEKEXTENSIONS"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::MEROITIC_HIEROGLYPHS =
+        new UnicodeBlock(String("MEROITIC_HIEROGLYPHS"),
+                         String("MEROITIC HIEROGLYPHS"),
+                         String("MEROITICHIEROGLYPHS"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::MEROITIC_CURSIVE =
+        new UnicodeBlock(String("MEROITIC_CURSIVE"),
+                         String("MEROITIC CURSIVE"),
+                         String("MEROITICCURSIVE"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::SORA_SOMPENG =
+        new UnicodeBlock(String("SORA_SOMPENG"),
+                         String("SORA SOMPENG"),
+                         String("SORASOMPENG"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::CHAKMA =
+        new UnicodeBlock(String("CHAKMA"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::SHARADA =
+        new UnicodeBlock(String("SHARADA"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::TAKRI =
+        new UnicodeBlock(String("TAKRI"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::MIAO =
+        new UnicodeBlock(String("MIAO"));
+AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::ARABIC_MATHEMATICAL_ALPHABETIC_SYMBOLS =
+        new UnicodeBlock(String("ARABIC_MATHEMATICAL_ALPHABETIC_SYMBOLS"),
+                         String("ARABIC MATHEMATICAL ALPHABETIC SYMBOLS"),
+                         String("ARABICMATHEMATICALALPHABETICSYMBOLS"));
 
 constexpr Integer Character::UnicodeBlock::sBlockStarts[];
 
@@ -874,6 +1159,254 @@ Character::UnicodeBlock* const Character::UnicodeBlock::sBlocks[] = {
     SPACING_MODIFIER_LETTERS,
     COMBINING_DIACRITICAL_MARKS,
     GREEK,
+    CYRILLIC,
+    CYRILLIC_SUPPLEMENTARY,
+    ARMENIAN,
+    HEBREW,
+    ARABIC,
+    SYRIAC,
+    ARABIC_SUPPLEMENT,
+    THAANA,
+    NKO,
+    SAMARITAN,
+    MANDAIC,
+    nullptr,
+    ARABIC_EXTENDED_A,
+    DEVANAGARI,
+    BENGALI,
+    GURMUKHI,
+    GUJARATI,
+    ORIYA,
+    TAMIL,
+    TELUGU,
+    KANNADA,
+    MALAYALAM,
+    SINHALA,
+    THAI,
+    LAO,
+    TIBETAN,
+    MYANMAR,
+    GEORGIAN,
+    HANGUL_JAMO,
+    ETHIOPIC,
+    ETHIOPIC_SUPPLEMENT,
+    CHEROKEE,
+    UNIFIED_CANADIAN_ABORIGINAL_SYLLABICS,
+    OGHAM,
+    RUNIC,
+    TAGALOG,
+    HANUNOO,
+    BUHID,
+    TAGBANWA,
+    KHMER,
+    MONGOLIAN,
+    UNIFIED_CANADIAN_ABORIGINAL_SYLLABICS_EXTENDED,
+    LIMBU,
+    TAI_LE,
+    NEW_TAI_LUE,
+    KHMER_SYMBOLS,
+    BUGINESE,
+    TAI_THAM,
+    nullptr,
+    BALINESE,
+    SUNDANESE,
+    BATAK,
+    LEPCHA,
+    OL_CHIKI,
+    nullptr,
+    SUNDANESE_SUPPLEMENT,
+    VEDIC_EXTENSIONS,
+    PHONETIC_EXTENSIONS,
+    PHONETIC_EXTENSIONS_SUPPLEMENT,
+    COMBINING_DIACRITICAL_MARKS_SUPPLEMENT,
+    LATIN_EXTENDED_ADDITIONAL,
+    GREEK_EXTENDED,
+    GENERAL_PUNCTUATION,
+    SUPERSCRIPTS_AND_SUBSCRIPTS,
+    CURRENCY_SYMBOLS,
+    COMBINING_MARKS_FOR_SYMBOLS,
+    LETTERLIKE_SYMBOLS,
+    NUMBER_FORMS,
+    ARROWS,
+    MATHEMATICAL_OPERATORS,
+    MISCELLANEOUS_TECHNICAL,
+    CONTROL_PICTURES,
+    OPTICAL_CHARACTER_RECOGNITION,
+    ENCLOSED_ALPHANUMERICS,
+    BOX_DRAWING,
+    BLOCK_ELEMENTS,
+    GEOMETRIC_SHAPES,
+    MISCELLANEOUS_SYMBOLS,
+    DINGBATS,
+    MISCELLANEOUS_MATHEMATICAL_SYMBOLS_A,
+    SUPPLEMENTAL_ARROWS_A,
+    BRAILLE_PATTERNS,
+    SUPPLEMENTAL_ARROWS_B,
+    MISCELLANEOUS_MATHEMATICAL_SYMBOLS_B,
+    SUPPLEMENTAL_MATHEMATICAL_OPERATORS,
+    MISCELLANEOUS_SYMBOLS_AND_ARROWS,
+    GLAGOLITIC,
+    LATIN_EXTENDED_C,
+    COPTIC,
+    GEORGIAN_SUPPLEMENT,
+    TIFINAGH,
+    ETHIOPIC_EXTENDED,
+    CYRILLIC_EXTENDED_A,
+    SUPPLEMENTAL_PUNCTUATION,
+    CJK_RADICALS_SUPPLEMENT,
+    KANGXI_RADICALS,
+    nullptr,
+    IDEOGRAPHIC_DESCRIPTION_CHARACTERS,
+    CJK_SYMBOLS_AND_PUNCTUATION,
+    HIRAGANA,
+    KATAKANA,
+    BOPOMOFO,
+    HANGUL_COMPATIBILITY_JAMO,
+    KANBUN,
+    BOPOMOFO_EXTENDED,
+    CJK_STROKES,
+    KATAKANA_PHONETIC_EXTENSIONS,
+    ENCLOSED_CJK_LETTERS_AND_MONTHS,
+    CJK_COMPATIBILITY,
+    CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A,
+    YIJING_HEXAGRAM_SYMBOLS,
+    CJK_UNIFIED_IDEOGRAPHS,
+    YI_SYLLABLES,
+    YI_RADICALS,
+    LISU,
+    VAI,
+    CYRILLIC_EXTENDED_B,
+    BAMUM,
+    MODIFIER_TONE_LETTERS,
+    LATIN_EXTENDED_D,
+    SYLOTI_NAGRI,
+    COMMON_INDIC_NUMBER_FORMS,
+    PHAGS_PA,
+    SAURASHTRA,
+    DEVANAGARI_EXTENDED,
+    KAYAH_LI,
+    REJANG,
+    HANGUL_JAMO_EXTENDED_A,
+    JAVANESE,
+    nullptr,
+    CHAM,
+    MYANMAR_EXTENDED_A,
+    TAI_VIET,
+    MEETEI_MAYEK_EXTENSIONS,
+    ETHIOPIC_EXTENDED_A,
+    nullptr,
+    MEETEI_MAYEK,
+    HANGUL_SYLLABLES,
+    HANGUL_JAMO_EXTENDED_B,
+    HIGH_SURROGATES,
+    HIGH_PRIVATE_USE_SURROGATES,
+    LOW_SURROGATES,
+    PRIVATE_USE_AREA,
+    CJK_COMPATIBILITY_IDEOGRAPHS,
+    ALPHABETIC_PRESENTATION_FORMS,
+    ARABIC_PRESENTATION_FORMS_A,
+    VARIATION_SELECTORS,
+    VERTICAL_FORMS,
+    COMBINING_HALF_MARKS,
+    CJK_COMPATIBILITY_FORMS,
+    SMALL_FORM_VARIANTS,
+    ARABIC_PRESENTATION_FORMS_B,
+    HALFWIDTH_AND_FULLWIDTH_FORMS,
+    SPECIALS,
+    LINEAR_B_SYLLABARY,
+    LINEAR_B_IDEOGRAMS,
+    AEGEAN_NUMBERS,
+    ANCIENT_GREEK_NUMBERS,
+    ANCIENT_SYMBOLS,
+    PHAISTOS_DISC,
+    nullptr,
+    LYCIAN,
+    CARIAN,
+    nullptr,
+    OLD_ITALIC,
+    GOTHIC,
+    nullptr,
+    UGARITIC,
+    OLD_PERSIAN,
+    nullptr,
+    DESERET,
+    SHAVIAN,
+    OSMANYA,
+    nullptr,
+    CYPRIOT_SYLLABARY,
+    IMPERIAL_ARAMAIC,
+    nullptr,
+    PHOENICIAN,
+    LYDIAN,
+    nullptr,
+    MEROITIC_HIEROGLYPHS,
+    MEROITIC_CURSIVE,
+    KHAROSHTHI,
+    OLD_SOUTH_ARABIAN,
+    nullptr,
+    AVESTAN,
+    INSCRIPTIONAL_PARTHIAN,
+    INSCRIPTIONAL_PAHLAVI,
+    nullptr,
+    OLD_TURKIC,
+    nullptr,
+    RUMI_NUMERAL_SYMBOLS,
+    nullptr,
+    BRAHMI,
+    KAITHI,
+    SORA_SOMPENG,
+    CHAKMA,
+    nullptr,
+    SHARADA,
+    nullptr,
+    TAKRI,
+    nullptr,
+    CUNEIFORM,
+    CUNEIFORM_NUMBERS_AND_PUNCTUATION,
+    nullptr,
+    EGYPTIAN_HIEROGLYPHS,
+    nullptr,
+    BAMUM_SUPPLEMENT,
+    nullptr,
+    MIAO,
+    nullptr,
+    KANA_SUPPLEMENT,
+    nullptr,
+    BYZANTINE_MUSICAL_SYMBOLS,
+    MUSICAL_SYMBOLS,
+    ANCIENT_GREEK_MUSICAL_NOTATION,
+    nullptr,
+    TAI_XUAN_JING_SYMBOLS,
+    COUNTING_ROD_NUMERALS,
+    nullptr,
+    MATHEMATICAL_ALPHANUMERIC_SYMBOLS,
+    nullptr,
+    ARABIC_MATHEMATICAL_ALPHABETIC_SYMBOLS,
+    nullptr,
+    MAHJONG_TILES,
+    DOMINO_TILES,
+    PLAYING_CARDS,
+    ENCLOSED_ALPHANUMERIC_SUPPLEMENT,
+    ENCLOSED_IDEOGRAPHIC_SUPPLEMENT,
+    MISCELLANEOUS_SYMBOLS_AND_PICTOGRAPHS,
+    EMOTICONS,
+    nullptr,
+    TRANSPORT_AND_MAP_SYMBOLS,
+    ALCHEMICAL_SYMBOLS,
+    nullptr,
+    CJK_UNIFIED_IDEOGRAPHS_EXTENSION_B,
+    nullptr,
+    CJK_UNIFIED_IDEOGRAPHS_EXTENSION_C,
+    CJK_UNIFIED_IDEOGRAPHS_EXTENSION_D,
+    nullptr,
+    CJK_COMPATIBILITY_IDEOGRAPHS_SUPPLEMENT,
+    nullptr,
+    TAGS,
+    nullptr,
+    VARIATION_SELECTORS_SUPPLEMENT,
+    nullptr,
+    SUPPLEMENTARY_PRIVATE_USE_AREA_A,
+    SUPPLEMENTARY_PRIVATE_USE_AREA_B
 };
 
 AutoPtr<Character::UnicodeBlock> Character::UnicodeBlock::Of(

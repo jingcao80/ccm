@@ -23,5 +23,6 @@ module libcore
 
 include "core.cdl"
 include "io.cdl"
+include "core2.cdl"
 
 }

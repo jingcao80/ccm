@@ -14,6 +14,28 @@
 // limitations under the License.
 //=========================================================================
 
-include "io/IInterruptible.cdl"
-include "io/IPrintStream.cdl"
-include "io/ISerializable.cdl"
+namespace ccm {
+namespace core {
+
+interface ICharSequence;
+
+[
+    uuid(46d6e833-cb8a-4b12-9e3c-bfc25bf7c8f7),
+    version(0.1.0)
+]
+interface IAppendable
+{
+    Append(
+        [in] ICharSequence* csq);
+
+    Append(
+        [in] ICharSequence* csq,
+        [in] Integer start,
+        [in] Integer end);
+
+    Append(
+        [in] Char c);
+}
+
+}
+}
