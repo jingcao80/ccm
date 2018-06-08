@@ -273,6 +273,7 @@ private:
     Pool* mPool;
     Namespace* mCurrNamespace;
     FileContext* mCurrContext;
+    Type* mParsingType;
     int mStatus;
     Error* mErrorHeader;
     Error* mCurrError;

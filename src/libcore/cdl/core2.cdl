@@ -35,6 +35,28 @@ coclass CString
 }
 
 [
+    uuid(8c3a55f1-63c5-4abd-b68c-46773877a655),
+    version(0.1.0)
+]
+coclass CStringBuffer
+{
+    constructor();
+
+    constructor(
+        [in] Integer capacity);
+
+    constructor(
+        [in] String str);
+
+    constructor(
+        [in] ICharSequence* seq);
+
+    interface ISerializable;
+    interface ICharSequence;
+    interface IStringBuffer;
+}
+
+[
     uuid(cbc6b55a-c06e-4ddc-b7f8-f0cc0bf94ff9),
     version(0.1.0)
 ]

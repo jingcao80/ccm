@@ -90,6 +90,7 @@ Parser::Parser()
     , mPool(nullptr)
     , mCurrNamespace(nullptr)
     , mCurrContext(nullptr)
+    , mParsingType(nullptr)
     , mStatus(NOERROR)
     , mErrorHeader(nullptr)
     , mCurrError(nullptr)
@@ -606,6 +607,8 @@ bool Parser::ParseInterface(
         interface->SetBaseInterface(FindInterface(String("ccm::IInterface")));
     }
 
+    mParsingType = interface;
+
     parseResult = ParseInterfaceBody(interface) && parseResult;
 
     if (parseResult) {
@@ -834,6 +837,9 @@ Type* Parser::ParseType()
     }
     else if (token == Tokenizer::Token::IDENTIFIER) {
         type = FindType(mTokenizer.GetIdentifier());
+        if (type == nullptr && mParsingType->GetName().Equals(mTokenizer.GetIdentifier())) {
+            type = mParsingType;
+        }
     }
     else if (token == Tokenizer::Token::ARRAY) {
         type = ParseArrayType();

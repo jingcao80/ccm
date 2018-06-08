@@ -23,11 +23,162 @@ namespace core {
 ]
 interface IStringBuffer
 {
+    Append(
+        [in] IInterface* obj);
+
+    Append(
+        [in] String str);
+
+    Append(
+        [in] IStringBuffer* sb);
+
+    Append(
+        [in] ICharSequence* s);
+
+    Append(
+        [in] ICharSequence* s,
+        [in] Integer start,
+        [in] Integer end);
+
+    Append(
+        [in] Array<Char> str);
+
+    Append(
+        [in] Array<Char> str,
+        [in] Integer offset,
+        [in] Integer len);
+
+    Append(
+        [in] Boolean b);
+
+    Append(
+        [in] Char c);
+
+    Append(
+        [in] Integer i);
+
+    Append(
+        [in] Long l);
+
+    Append(
+        [in] Float f);
+
+    Append(
+        [in] Double d);
+
+    Delete(
+        [in] Integer start,
+        [in] Integer end);
+
+    DeleteCharAt(
+        [in] Integer index);
+
+    EnsureCapacity(
+        [in] Integer minimumCapacity);
+
+    GetCapacity(
+        [out] Integer* capacity);
+
+    Replace(
+        [in] Integer start,
+        [in] Integer end,
+        [in] String str);
+
+    Insert(
+        [in] Integer index,
+        [in] Array<Char> str,
+        [in] Integer offset,
+        [in] Integer len);
+
+    Insert(
+        [in] Integer offset,
+        [in] IInterface* obj);
+
+    Insert(
+        [in] Integer offset,
+        [in] String str);
+
+    Insert(
+        [in] Integer offset,
+        [in] Array<Char> str);
+
+    Insert(
+        [in] Integer dstOffset,
+        [in] ICharSequence* s);
+
+    Insert(
+        [in] Integer dstOffset,
+        [in] ICharSequence* s,
+        [in] Integer start,
+        [in] Integer end);
+
+    Insert(
+        [in] Integer offset,
+        [in] Boolean b);
+
+    Insert(
+        [in] Integer offset,
+        [in] Char c);
+
+    Insert(
+        [in] Integer offset,
+        [in] Integer i);
+
+    Insert(
+        [in] Integer offset,
+        [in] Long l);
+
+    Insert(
+        [in] Integer offset,
+        [in] Float f);
+
+    Insert(
+        [in] Integer offset,
+        [in] Double d);
+
+    IndexOf(
+        [in] String str,
+        [out] Integer* idx);
+
+    IndexOf(
+        [in] String str,
+        [in] Integer fromIndex,
+        [out] Integer* idx);
+
+    LastIndexOf(
+        [in] String str,
+        [out] Integer* idx);
+
+    LastIndexOf(
+        [in] String str,
+        [in] Integer fromIndex,
+        [out] Integer* idx);
+
+    Reverse();
+
     GetChars(
         [in] Integer start,
         [in] Integer end,
         [out] Array<Char> dst,
         [in] Integer dstStart);
+
+    SetCharAt(
+        [in] Integer index,
+        [in] Char ch);
+
+    SetLength(
+        [in] Integer newLength);
+
+    Substring(
+        [in] Integer start,
+        [out] String* str);
+
+    Substring(
+        [in] Integer start,
+        [in] Integer end,
+        [out] String* str);
+
+    TrimToSize();
 }
 
 }

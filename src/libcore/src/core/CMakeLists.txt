@@ -27,6 +27,7 @@ set(SOURCES
     AbstractStringBuilder.cpp
     Character.cpp
     CString.cpp
+    CStringBuffer.cpp
     CStringBuilder.cpp
     NativeFaultHandler.cpp
     NativeLockWord.cpp

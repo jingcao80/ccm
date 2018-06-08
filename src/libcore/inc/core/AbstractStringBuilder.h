@@ -204,8 +204,6 @@ public:
 
     virtual ECode Reverse();
 
-
-
 private:
     void EnsureCapacityInternal(
         /* [in] */ Integer minimumCapacity);

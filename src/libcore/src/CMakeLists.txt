@@ -19,6 +19,7 @@ set(OBJ_DIR ${CMAKE_BINARY_DIR}/src/libcore/src)
 
 set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_core_CString.cpp
+    ${OBJ_DIR}/_ccm_core_CStringBuffer.cpp
     ${OBJ_DIR}/_ccm_core_CStringBuilder.cpp
     ${OBJ_DIR}/_ccm_core_CThread.cpp
     ${OBJ_DIR}/_ccm_core_CThreadGroup.cpp
