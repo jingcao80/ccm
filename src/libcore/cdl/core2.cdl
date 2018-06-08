@@ -20,6 +20,21 @@ namespace ccm {
 namespace core {
 
 [
+    uuid(10e6419e-b8d0-44be-b309-54086eb3e560),
+    version(0.1.0)
+]
+coclass CString
+{
+    constructor(
+        [in] String str);
+
+    interface ISerializable;
+    interface ICharSequence;
+    interface IComparable;
+    interface IString;
+}
+
+[
     uuid(cbc6b55a-c06e-4ddc-b7f8-f0cc0bf94ff9),
     version(0.1.0)
 ]

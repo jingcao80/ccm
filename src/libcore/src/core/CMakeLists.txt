@@ -26,6 +26,7 @@ include_directories(
 set(SOURCES
     AbstractStringBuilder.cpp
     Character.cpp
+    CString.cpp
     CStringBuilder.cpp
     NativeFaultHandler.cpp
     NativeLockWord.cpp

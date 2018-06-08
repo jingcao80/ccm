@@ -389,13 +389,18 @@ Integer String::IndexOf(
     Integer byteSize;
     const char* p = mString;
     const char* end = mString + GetByteLength() + 1;
-    while (*p != '\0' && p < end) {
+    const char* psub = nullptr;
+    while (*p && p < end) {
         byteSize = UTF8SequenceLength(*p);
         if (byteSize == 0 || p + byteSize >= end) break;
-        if (i >= fromCharIndex) {
-            const char* ci = strstr(p, string);
-            return ci == nullptr ? -1 :
-                    ToCharIndex(ci - mString);
+        if (i >= fromCharIndex && psub == nullptr) {
+            psub = strstr(p, string);
+            if (psub == nullptr) {
+                return -1;
+            }
+        }
+        if (p == psub) {
+            return i;
         }
         p += byteSize;
         i++;

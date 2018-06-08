@@ -235,6 +235,11 @@ public:
     static Integer GetByteSize(
         /* [in] */ Char c);
 
+    static void WriteUTF8Bytes(
+        /* [in] */ char* dst,
+        /* [in] */ Char c,
+        /* [in] */ Integer bytes);
+
 private:
     void WriteCharArray(
         /* [in] */ const Array<Char>& charArray,
@@ -267,11 +272,6 @@ private:
     static Char GetCharInternal(
         /* [in] */ const char* cur,
         /* [in] */ Integer* byteSize);
-
-    static void WriteUTF8Bytes(
-        /* [in] */ char* dst,
-        /* [in] */ Char c,
-        /* [in] */ Integer bytes);
 
 public:
     static constexpr Char INVALID_CHAR = 0x110000;

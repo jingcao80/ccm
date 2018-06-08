@@ -18,17 +18,11 @@ namespace ccm {
 namespace core {
 
 [
-    uuid(6491e4b7-83a3-4218-828d-529e1f80264f),
+    uuid(d676d0a0-4708-49b6-9b97-a0a6be4223cd),
     version(0.1.0)
 ]
-interface IStringBuffer
-{
-    GetChars(
-        [in] Integer start,
-        [in] Integer end,
-        [out] Array<Char> dst,
-        [in] Integer dstStart);
-}
+interface IString
+{}
 
 }
 }

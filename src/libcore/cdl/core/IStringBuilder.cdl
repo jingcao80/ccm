@@ -75,6 +75,12 @@ interface IStringBuilder
     DeleteCharAt(
         [in] Integer index);
 
+    EnsureCapacity(
+        [in] Integer minimumCapacity);
+
+    GetCapacity(
+        [out] Integer* capacity);
+
     Replace(
         [in] Integer start,
         [in] Integer end,
@@ -151,6 +157,30 @@ interface IStringBuilder
         [out] Integer* idx);
 
     Reverse();
+
+    GetChars(
+        [in] Integer start,
+        [in] Integer end,
+        [out] Array<Char> dst,
+        [in] Integer dstStart);
+
+    SetCharAt(
+        [in] Integer index,
+        [in] Char ch);
+
+    SetLength(
+        [in] Integer newLength);
+
+    Substring(
+        [in] Integer start,
+        [out] String* str);
+
+    Substring(
+        [in] Integer start,
+        [in] Integer end,
+        [out] String* str);
+
+    TrimToSize();
 }
 
 }

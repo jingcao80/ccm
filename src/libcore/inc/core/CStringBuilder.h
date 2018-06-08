@@ -175,6 +175,39 @@ public:
         /* [out] */ Integer* idx) override;
 
     ECode Reverse() override;
+
+    ECode ToString(
+        /* [out] */ String* str) override;
+
+    ECode EnsureCapacity(
+        /* [in] */ Integer minimumCapacity) override;
+
+    ECode GetCapacity(
+        /* [out] */ Integer* capacity) override;
+
+    ECode GetChars(
+        /* [in] */ Integer start,
+        /* [in] */ Integer end,
+        /* [out] */ Array<Char>& dst,
+        /* [in] */ Integer dstStart) override;
+
+    ECode SetCharAt(
+        /* [in] */ Integer index,
+        /* [in] */ Char ch) override;
+
+    ECode SetLength(
+        /* [in] */ Integer newLength) override;
+
+    ECode Substring(
+        /* [in] */ Integer start,
+        /* [out] */ String* str) override;
+
+    ECode Substring(
+        /* [in] */ Integer start,
+        /* [in] */ Integer end,
+        /* [out] */ String* str) override;
+
+    ECode TrimToSize() override;
 };
 
 }

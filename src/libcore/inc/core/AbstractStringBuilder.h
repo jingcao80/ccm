@@ -19,6 +19,7 @@
 
 #include "ccm.core.IAppendable.h"
 #include "ccm.core.ICharSequence.h"
+#include "ccm.core.IStringBuffer.h"
 #include "core/SyncObject.h"
 
 namespace ccm {
@@ -32,15 +33,38 @@ class AbstractStringBuilder
 public:
     CCM_INTERFACE_DECL();
 
+    virtual ~AbstractStringBuilder();
+
     ECode constructor(
         /* [in] */ Integer capacity);
 
     ECode GetLength(
-        /* [out] */ Integer* number);
+        /* [out] */ Integer* number) override;
+
+    virtual ECode GetCapacity(
+        /* [out] */ Integer* capacity);
+
+    virtual ECode EnsureCapacity(
+        /* [in] */ Integer minimumCapacity);
+
+    virtual ECode TrimToSize();
+
+    virtual ECode SetLength(
+        /* [in] */ Integer newLength);
 
     ECode GetCharAt(
         /* [in] */ Integer index,
-        /* [out] */ Char* c);
+        /* [out] */ Char* c) override;
+
+    virtual ECode GetChars(
+        /* [in] */ Integer start,
+        /* [in] */ Integer end,
+        /* [out] */ Array<Char>& dst,
+        /* [in] */ Integer dstStart);
+
+    virtual ECode SetCharAt(
+        /* [in] */ Integer index,
+        /* [in] */ Char ch);
 
     virtual ECode Append(
         /* [in] */ const String& str);
@@ -93,6 +117,20 @@ public:
         /* [in] */ Integer start,
         /* [in] */ Integer end,
         /* [in] */ const String& str);
+
+    virtual ECode Substring(
+        /* [in] */ Integer start,
+        /* [out] */ String* str);
+
+    ECode SubSequence(
+        /* [in] */ Integer start,
+        /* [in] */ Integer end,
+        /* [out] */ ICharSequence** subcsq);
+
+    virtual ECode Substring(
+        /* [in] */ Integer start,
+        /* [in] */ Integer end,
+        /* [out] */ String* str);
 
     virtual ECode Insert(
         /* [in] */ Integer index,
@@ -166,14 +204,42 @@ public:
 
     virtual ECode Reverse();
 
-    ECode SubSequence(
-        /* [in] */ Integer start,
-        /* [in] */ Integer end,
-        /* [out] */ ICharSequence** subcsq);
 
-    ECode ToString(
-        /* [out] */ String* str);
+
+private:
+    void EnsureCapacityInternal(
+        /* [in] */ Integer minimumCapacity);
+
+    Integer NewCapacity(
+        /* [in] */ Integer minCapacity);
+
+    ECode AppendNull();
+
+    static Char GetCharInternal(
+        /* [in] */ const char* cur,
+        /* [in] */ Integer* byteSize);
+
+    inline static Boolean IsASCII(
+        /* [in] */ char c);
+
+protected:
+    char* mValue = nullptr;
+
+    Integer mCapacity = 0;
+
+    Integer mCount = 0;
+
+    Integer mByteCount = 0;
+
+private:
+    static constexpr Integer MAX_ARRAY_SIZE = INTEGER_MAX_VALUE - 8;
 };
+
+Boolean AbstractStringBuilder::IsASCII(
+    /* [in] */ char c)
+{
+    return (c & 0x80) == 0;
+}
 
 }
 }

@@ -18,16 +18,14 @@ namespace ccm {
 namespace core {
 
 [
-    uuid(6491e4b7-83a3-4218-828d-529e1f80264f),
+    uuid(0a64e9a5-54ac-4cbd-a638-452ee2d134bd),
     version(0.1.0)
 ]
-interface IStringBuffer
+interface IComparable
 {
-    GetChars(
-        [in] Integer start,
-        [in] Integer end,
-        [out] Array<Char> dst,
-        [in] Integer dstStart);
+    CompareTo(
+        [in] IInterface* other,
+        [out] Integer* result);
 }
 
 }

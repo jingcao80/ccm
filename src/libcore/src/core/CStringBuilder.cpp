@@ -277,5 +277,72 @@ ECode CStringBuilder::Reverse()
     return AbstractStringBuilder::Reverse();
 }
 
+ECode CStringBuilder::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str);
+
+    if (mCount == 0) {
+        *str = "";
+        return NOERROR;
+    }
+    *str = String(mValue, mByteCount);
+    return NOERROR;
+}
+
+ECode CStringBuilder::EnsureCapacity(
+    /* [in] */ Integer minimumCapacity)
+{
+    return AbstractStringBuilder::EnsureCapacity(minimumCapacity);
+}
+
+ECode CStringBuilder::GetCapacity(
+    /* [out] */ Integer* capacity)
+{
+    return AbstractStringBuilder::GetCapacity(capacity);
+}
+
+ECode CStringBuilder::GetChars(
+    /* [in] */ Integer start,
+    /* [in] */ Integer end,
+    /* [out] */ Array<Char>& dst,
+    /* [in] */ Integer dstStart)
+{
+    return AbstractStringBuilder::GetChars(start, end, dst, dstStart);
+}
+
+ECode CStringBuilder::SetCharAt(
+    /* [in] */ Integer index,
+    /* [in] */ Char ch)
+{
+    return AbstractStringBuilder::SetCharAt(index, ch);
+}
+
+ECode CStringBuilder::SetLength(
+    /* [in] */ Integer newLength)
+{
+    return AbstractStringBuilder::SetLength(newLength);
+}
+
+ECode CStringBuilder::Substring(
+    /* [in] */ Integer start,
+    /* [out] */ String* str)
+{
+    return AbstractStringBuilder::Substring(start, str);
+}
+
+ECode CStringBuilder::Substring(
+    /* [in] */ Integer start,
+    /* [in] */ Integer end,
+    /* [out] */ String* str)
+{
+    return AbstractStringBuilder::Substring(start, end, str);
+}
+
+ECode CStringBuilder::TrimToSize()
+{
+    return AbstractStringBuilder::TrimToSize();
+}
+
 }
 }
