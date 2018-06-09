@@ -23,7 +23,7 @@
 
 namespace ccm {
 
-typedef unsigned char   Byte;
+typedef char            Byte;
 typedef short           Short;
 typedef int             Integer;
 typedef long long int   Long;

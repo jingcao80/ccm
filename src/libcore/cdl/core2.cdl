@@ -20,6 +20,35 @@ namespace ccm {
 namespace core {
 
 [
+    uuid(df471c09-381f-40c4-9e24-c92b31dd9146),
+    version(0.1.0)
+]
+coclass CBoolean
+{
+    constructor(
+           [in] Boolean value);
+
+   interface IBoolean;
+   interface ISerializable;
+   interface IComparable;
+}
+
+[
+    uuid(bdf665c0-8a7a-4621-ba55-e6a097dfc85d),
+    version(0.1.0)
+]
+coclass CByte
+{
+    constructor(
+        [in] Byte value);
+
+    interface IByte;
+    interface INumber;
+    interface ISerializable;
+    interface IComparable;
+}
+
+[
     uuid(10e6419e-b8d0-44be-b309-54086eb3e560),
     version(0.1.0)
 ]

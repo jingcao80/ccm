@@ -16,6 +16,7 @@
 
 #include "core/AbstractStringBuilder.h"
 #include "core/CString.h"
+#include "ccm.core.ILong.h"
 #include <ccmlogger.h>
 
 namespace ccm {
@@ -392,7 +393,7 @@ ECode AbstractStringBuilder::Append(
 ECode AbstractStringBuilder::Append(
     /* [in] */ Integer i)
 {
-    if (i == INTEGER_MIN_VALUE) {
+    if (i == IInteger::MIN_VALUE) {
         return Append(String("-2147483648"));
     }
     return Append(String::Format("%d", i));
@@ -401,7 +402,7 @@ ECode AbstractStringBuilder::Append(
 ECode AbstractStringBuilder::Append(
     /* [in] */ Long l)
 {
-    if (l == LONG_MIN_VALUE) {
+    if (l == ILong::MIN_VALUE) {
         return Append(String("-9223372036854775808"));
     }
     return Append(String::Format("%lld", l));

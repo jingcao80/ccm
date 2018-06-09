@@ -24,6 +24,7 @@
 #include "core/SyncObject.h"
 #include "core/System.h"
 #include "core/Thread.h"
+#include "ccm.core.ILong.h"
 #include <unwind.h>
 
 namespace ccm {
@@ -820,7 +821,7 @@ ECode Thread::ParkUntil(
         // Long.MAX_VALUE / NANOS_PER_MILLI (0x8637BD05SF6) is the largest
         // long value that won't overflow to negative value when
         // multiplyed by NANOS_PER_MILLI (10^6).
-        Long maxValue = (LONG_MAX_VALUE / NANOS_PER_MILLI);
+        Long maxValue = (ILong::MAX_VALUE / NANOS_PER_MILLI);
         if (delayMillis > maxValue) {
             delayMillis = maxValue;
         }

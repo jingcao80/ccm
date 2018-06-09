@@ -554,7 +554,7 @@ String CodeGenerator::GenValue(
         case CcmTypeKind::Byte: {
             const char* format = mv.mRadix == 8 ? "%o" :
                     mv.mRadix == 10 ? "%d" : "0x%x";
-            return String::Format(format, (unsigned char)mv.mInteger);
+            return String::Format(format, (char)mv.mInteger);
         }
         case CcmTypeKind::Short: {
             const char* format = mv.mRadix == 8 ? "%o" :

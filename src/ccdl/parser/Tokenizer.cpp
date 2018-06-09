@@ -198,7 +198,7 @@ Tokenizer::Token Tokenizer::ReadToken()
         if (IsEscape(c)) {
             continue;
         }
-        else if (IsAlphabet(c) || c == '_' || c == '-') {
+        else if (IsAlphabet(c) || c == '_' || (c == '-' && IsAlphabet(mFile->Peek()))) {
             return ReadIdentifier(c);
         }
         else if (IsDecimalDigital(c)) {
@@ -512,7 +512,7 @@ Tokenizer::Token Tokenizer::ReadIdentifier(
 
     builder.Append((char)c);
     while ((c = mFile->Read()) != -1) {
-        if (IsAlphabet(c) || c == '_' || c== '-' || IsDecimalDigital(c)) {
+        if (IsAlphabet(c) || c == '_' || c == '-' || IsDecimalDigital(c)) {
             builder.Append((char)c);
             continue;
         }

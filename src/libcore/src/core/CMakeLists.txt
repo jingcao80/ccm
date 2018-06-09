@@ -25,6 +25,8 @@ include_directories(
 
 set(SOURCES
     AbstractStringBuilder.cpp
+    CBoolean.cpp
+    CByte.cpp
     Character.cpp
     CString.cpp
     CStringBuffer.cpp

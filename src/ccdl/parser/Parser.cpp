@@ -101,6 +101,8 @@ Parser::~Parser()
 {
     mPool = nullptr;
     mCurrNamespace = nullptr;
+    mCurrContext = nullptr;
+    mParsingType = nullptr;
 
     mCurrError = mErrorHeader;
     while (mCurrError != nullptr) {
@@ -537,7 +539,7 @@ bool Parser::ParseInterface(
         return parseResult;
     }
 
-    if (attr == nullptr) {
+    if (attr == nullptr || attr->mUuid.IsNullOrEmpty() || attr->mVersion.IsNullOrEmpty()) {
         String message = String::Format("Interface %s should have attributes.", itfName.string());
         LogError(token, message);
         parseResult = false;
@@ -1224,7 +1226,7 @@ UnaryExpression* Parser::ParseUnaryExpression(
 
     if (token == Tokenizer::Token::PLUS || token == Tokenizer::Token::MINUS ||
             token == Tokenizer::Token::COMPLIMENT || token == Tokenizer::Token::NOT) {
-        token = mTokenizer.PeekToken();
+        token = mTokenizer.GetToken();
 
         UnaryExpression* operand = ParseUnaryExpression(exprType);
         if (operand == nullptr) return nullptr;
@@ -1477,7 +1479,7 @@ bool Parser::ParseCoclass(
         return false;
     }
 
-    if (attr == nullptr) {
+    if (attr == nullptr || attr->mUuid.IsNullOrEmpty() || attr->mVersion.IsNullOrEmpty()) {
         String message = String::Format("Coclass %s should have attributes.", className.string());
         LogError(token, message);
         parseResult = false;

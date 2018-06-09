@@ -19,6 +19,7 @@
 
 #include "ccm.core.IAppendable.h"
 #include "ccm.core.ICharSequence.h"
+#include "ccm.core.IInteger.h"
 #include "ccm.core.IStringBuffer.h"
 #include "core/SyncObject.h"
 
@@ -230,7 +231,7 @@ protected:
     Integer mByteCount = 0;
 
 private:
-    static constexpr Integer MAX_ARRAY_SIZE = INTEGER_MAX_VALUE - 8;
+    static constexpr Integer MAX_ARRAY_SIZE = IInteger::MAX_VALUE - 8;
 };
 
 Boolean AbstractStringBuilder::IsASCII(

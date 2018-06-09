@@ -18,6 +18,8 @@ set(LIBCORE_SRC_DIR ${LIBCORE_DIR}/src)
 set(OBJ_DIR ${CMAKE_BINARY_DIR}/src/libcore/src)
 
 set(GENERATED_SOURCES
+    ${OBJ_DIR}/_ccm_core_CBoolean.cpp
+    ${OBJ_DIR}/_ccm_core_CByte.cpp
     ${OBJ_DIR}/_ccm_core_CString.cpp
     ${OBJ_DIR}/_ccm_core_CStringBuffer.cpp
     ${OBJ_DIR}/_ccm_core_CStringBuilder.cpp

@@ -17,8 +17,13 @@
 include "core/Errors.cdl"
 include "core/Exceptions.cdl"
 include "core/IAppendable.cdl"
+include "core/IBoolean.cdl"
+include "core/IByte.cdl"
 include "core/ICharSequence.cdl"
 include "core/IComparable.cdl"
+include "core/IInteger.cdl"
+include "core/ILong.cdl"
+include "core/INumber.cdl"
 include "core/IRunnable.cdl"
 include "core/IStackTraceElement.cdl"
 include "core/IString.cdl"
@@ -30,30 +35,6 @@ include "core/IThreadGroup.cdl"
 
 namespace ccm {
 namespace core {
-
-/**
- * A constant holding the minimum value an {@code int} can
- * have, -2<sup>31</sup>.
- */
-const Integer INTEGER_MIN_VALUE = 0x80000000;
-
-/**
- * A constant holding the maximum value an {@code int} can
- * have, 2<sup>31</sup>-1.
- */
-const Integer INTEGER_MAX_VALUE = 0x7fffffff;
-
-/**
- * A constant holding the minimum value a {@code long} can
- * have, -2<sup>63</sup>.
- */
-const Long LONG_MIN_VALUE = 0x8000000000000000ll;
-
-/**
- * A constant holding the maximum value a {@code long} can
- * have, 2<sup>63</sup>-1.
- */
-const Long LONG_MAX_VALUE = 0x7fffffffffffffffll;
 
 [
     uuid(339a8069-7448-4d12-9c50-d45497fb245b),
