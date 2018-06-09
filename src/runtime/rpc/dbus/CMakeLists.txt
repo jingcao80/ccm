@@ -20,6 +20,8 @@ include_directories(
     ./
     ../
     ../../
+    ../../type
+    ../../util
     /usr/include/dbus-1.0
     /usr/lib/x86_64-linux-gnu/dbus-1.0/include
     ${INC_DIR})
@@ -33,3 +35,4 @@ set(SOURCES
 
 add_library(rpc-dbus STATIC
     ${SOURCES})
+add_dependencies(rpc-dbus cdl)

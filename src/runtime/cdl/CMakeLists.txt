@@ -28,6 +28,7 @@ set(GENERATED_SOURCES
 
 add_library(cdl STATIC
     ${GENERATED_SOURCES})
+add_dependencies(cdl ccdl)
 
 add_custom_command(
     OUTPUT

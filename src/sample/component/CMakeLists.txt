@@ -42,6 +42,7 @@ add_library(FooBarDemo
     ${SOURCES}
     ${GENERATED_SOURCES})
 target_link_libraries(FooBarDemo ccmrt.so)
+add_dependencies(FooBarDemo ccmrt)
 
 add_custom_command(
     OUTPUT

@@ -31,6 +31,7 @@ set(SOURCES
 
 add_library(util STATIC
     ${SOURCES})
+add_dependencies(util cdl)
 
 COPY(util ${UTIL_DIR}/ccmautoptr.h ${INC_DIR})
 COPY(util ${UTIL_DIR}/ccmclassobject.h ${INC_DIR})

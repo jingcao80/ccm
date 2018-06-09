@@ -19,12 +19,12 @@ project(runtime CXX)
 set(RUNTIME_DIR ${SRC_DIR}/runtime)
 set(OBJ_DIR ${CMAKE_BINARY_DIR}/src/runtime)
 
-add_subdirectory(util)
-add_subdirectory(type)
-add_subdirectory(rpc)
-add_subdirectory(reflection)
-add_subdirectory(component)
 add_subdirectory(cdl)
+add_subdirectory(component)
+add_subdirectory(reflection)
+add_subdirectory(rpc)
+add_subdirectory(type)
+add_subdirectory(util)
 
 include_directories(
     ./

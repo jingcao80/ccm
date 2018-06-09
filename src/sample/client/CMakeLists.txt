@@ -37,6 +37,7 @@ add_executable(demo
     ${SOURCES}
     ${GENERATED_SOURCES})
 target_link_libraries(demo ccmrt.so)
+add_dependencies(demo FooBarDemo)
 
 add_custom_command(
     OUTPUT

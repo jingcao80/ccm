@@ -43,6 +43,7 @@ set(SOURCES
 
 add_library(reflection STATIC
     ${SOURCES})
+add_dependencies(reflection cdl)
 
 COPY(reflection ${REFLECTION_DIR}/ccmreflectionapi.h ${INC_DIR})
 

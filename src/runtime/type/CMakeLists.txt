@@ -30,6 +30,7 @@ set(SOURCES
 
 add_library(type STATIC
     ${SOURCES})
+add_dependencies(type cdl)
 
 COPY(type ${TYPE_DIR}/ccmarray.h ${INC_DIR})
 COPY(type ${TYPE_DIR}/ccmsharedbuffer.h ${INC_DIR})

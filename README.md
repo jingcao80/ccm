@@ -34,7 +34,7 @@ CCM stands for C++ Component Model. It can:
 
 #### Rebuild
 1. <code>make clobber</code>
-2. <code>make</code>
+2. <code>make</code> or <code> make -j*n*</code>
 
 ### Run sample
 1. <code>cd ccm/bin</code>

@@ -29,6 +29,7 @@ set(SOURCES
 
 add_library(component STATIC
     ${SOURCES})
+add_dependencies(component cdl)
 
 COPY(component ${COMPONENT_DIR}/ccmcomponent.h ${INC_DIR})
 COPY(component ${COMPONENT_DIR}/ccmobjectapi.h ${INC_DIR})

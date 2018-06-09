@@ -21,6 +21,8 @@ add_subdirectory(dbus)
 include_directories(
     ./
     ../
+    ../type
+    ../util
     ${INC_DIR})
 
 set(SOURCES
@@ -31,6 +33,7 @@ set(SOURCES
 
 add_library(rpc STATIC
     ${SOURCES})
+add_dependencies(rpc cdl)
 
 COPY(rpc ${RPC_DIR}/ccmrpc.h ${INC_DIR})
 

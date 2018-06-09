@@ -40,6 +40,7 @@ add_library(ReflectionTestUnit
     ${SOURCES}
     ${GENERATED_SOURCES})
 target_link_libraries(ReflectionTestUnit ccmrt.so)
+add_dependencies(ReflectionTestUnit libservicemanager)
 
 add_custom_command(
     OUTPUT

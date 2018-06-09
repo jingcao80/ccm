@@ -15,6 +15,7 @@
 #=========================================================================
 
 add_custom_target(deploy_libcore_core_headers)
+add_dependencies(deploy_libcore_core_headers ccmrt)
 
 MKDIR(deploy_libcore_core_headers ${INC_DIR}/core)
 

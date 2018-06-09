@@ -30,10 +30,9 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccmautoptr.h"
-#include "ccmlogger.h"
 #include "ccmrpc.h"
 #include "CProxy.h"
+#include "util/ccmlogger.h"
 #include <sys/mman.h>
 
 namespace ccm {

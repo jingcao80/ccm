@@ -38,6 +38,7 @@ add_library(libservicemanager
 target_link_libraries(libservicemanager
     ccmrt.so
     /usr/lib/x86_64-linux-gnu/libdbus-1.so)
+add_dependencies(libservicemanager libcore)
 
 COPY(libservicemanager ${SM_LIB_DIR}/ServiceManager.h ${INC_DIR})
 COPY(libservicemanager ${OBJ_DIR}/libservicemanager.so ${BIN_DIR})

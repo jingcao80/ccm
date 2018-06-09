@@ -39,6 +39,7 @@ add_executable(testThreadCli
     ${SOURCES}
     ${GENERATED_SOURCES})
 target_link_libraries(testThreadCli ccmrt.so libcore.so)
+add_dependencies(testThreadCli libservicemanager)
 
 add_custom_command(
     OUTPUT

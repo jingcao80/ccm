@@ -72,6 +72,7 @@ set(SOURCES
 
 add_executable(ccdl ${SOURCES})
 target_link_libraries(ccdl metadata)
+add_dependencies(ccdl metadata)
 
 COPY(ccdl ${CMAKE_BINARY_DIR}/src/ccdl/ccdl ${BIN_DIR})
 

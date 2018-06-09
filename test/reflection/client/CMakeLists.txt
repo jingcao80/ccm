@@ -37,6 +37,7 @@ add_executable(testReflection
     ${SOURCES}
     ${GENERATED_SOURCES})
 target_link_libraries(testReflection ccmrt.so)
+add_dependencies(testReflection ReflectionTestUnit)
 
 add_custom_command(
     OUTPUT

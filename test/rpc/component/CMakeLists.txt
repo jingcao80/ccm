@@ -40,6 +40,7 @@ add_library(RPCTestUnit
     ${SOURCES}
     ${GENERATED_SOURCES})
 target_link_libraries(RPCTestUnit ccmrt.so)
+add_dependencies(RPCTestUnit libservicemanager)
 
 add_custom_command(
     OUTPUT
