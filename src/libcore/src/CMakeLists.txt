@@ -20,6 +20,11 @@ set(OBJ_DIR ${CMAKE_BINARY_DIR}/src/libcore/src)
 set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_core_CBoolean.cpp
     ${OBJ_DIR}/_ccm_core_CByte.cpp
+    ${OBJ_DIR}/_ccm_core_CChar.cpp
+    ${OBJ_DIR}/_ccm_core_CFloat.cpp
+    ${OBJ_DIR}/_ccm_core_CInteger.cpp
+    ${OBJ_DIR}/_ccm_core_CLong.cpp
+    ${OBJ_DIR}/_ccm_core_CShort.cpp
     ${OBJ_DIR}/_ccm_core_CString.cpp
     ${OBJ_DIR}/_ccm_core_CStringBuffer.cpp
     ${OBJ_DIR}/_ccm_core_CStringBuilder.cpp

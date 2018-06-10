@@ -27,7 +27,12 @@ set(SOURCES
     AbstractStringBuilder.cpp
     CBoolean.cpp
     CByte.cpp
+    CChar.cpp
     Character.cpp
+    CFloat.cpp
+    CInteger.cpp
+    CLong.cpp
+    CShort.cpp
     CString.cpp
     CStringBuffer.cpp
     CStringBuilder.cpp

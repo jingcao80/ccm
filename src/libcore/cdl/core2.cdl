@@ -49,6 +49,80 @@ coclass CByte
 }
 
 [
+    uuid(f30fd610-ee65-4fc0-8191-e840c7f73125),
+    version(0.1.0)
+]
+coclass CChar
+{
+    constructor(
+        [in] Char value);
+
+    interface IChar;
+    interface ISerializable;
+    interface IComparable;
+}
+
+[
+    uuid(569b10e8-38d5-41f6-a89a-36fcde449413),
+    version(0.1.0)
+]
+coclass CFloat
+{
+    constructor(
+        [in] Float value);
+
+    interface IFloat;
+    interface INumber;
+    interface ISerializable;
+    interface IComparable;
+}
+
+[
+    uuid(55469170-d13e-4567-9435-3bf4c5ebf1e4),
+    version(0.1.0)
+]
+coclass CInteger
+{
+    constructor(
+        [in] Integer value);
+
+    interface IInteger;
+    interface INumber;
+    interface ISerializable;
+    interface IComparable;
+}
+
+[
+    uuid(bc8830e2-23f7-4a25-b61e-dbc9cce385b2),
+    version(0.1.0)
+]
+coclass CLong
+{
+    constructor(
+        [in] Long value);
+
+    interface ILong;
+    interface INumber;
+    interface ISerializable;
+    interface IComparable;
+}
+
+[
+    uuid(cdff023b-ba1b-4e14-bf1b-8ebf9fe80214),
+    version(0.1.0)
+]
+coclass CShort
+{
+    constructor(
+        [in] Short value);
+
+    interface IShort;
+    interface INumber;
+    interface ISerializable;
+    interface IComparable;
+}
+
+[
     uuid(10e6419e-b8d0-44be-b309-54086eb3e560),
     version(0.1.0)
 ]
