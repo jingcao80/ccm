@@ -63,6 +63,21 @@ coclass CChar
 }
 
 [
+    uuid(38abe6d2-1428-4a97-8177-b24d09593d15),
+    version(0.1.0)
+]
+coclass CDouble
+{
+    constructor(
+        [in] Double value);
+
+    interface IDouble;
+    interface INumber;
+    interface ISerializable;
+    interface IComparable;
+}
+
+[
     uuid(569b10e8-38d5-41f6-a89a-36fcde449413),
     version(0.1.0)
 ]

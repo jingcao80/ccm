@@ -61,6 +61,12 @@ public:
 
     String EnumeratorValue() override;
 
+    bool IsPositiveInfinity() override;
+
+    bool IsNegativeInfinity() override;
+
+    bool IsNaN() override;
+
     Expression* Clone() override;
 
 private:

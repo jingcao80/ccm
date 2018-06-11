@@ -17,11 +17,13 @@
 include "core/Errors.cdl"
 include "core/Exceptions.cdl"
 include "core/IAppendable.cdl"
+include "core/IArray.cdl"
 include "core/IBoolean.cdl"
 include "core/IByte.cdl"
 include "core/IChar.cdl"
 include "core/ICharSequence.cdl"
 include "core/IComparable.cdl"
+include "core/IDouble.cdl"
 include "core/IFloat.cdl"
 include "core/IInteger.cdl"
 include "core/ILong.cdl"
@@ -38,6 +40,19 @@ include "core/IThreadGroup.cdl"
 
 namespace ccm {
 namespace core {
+
+[
+    uuid(bc5be123-34ab-4373-ab98-31c3e3c68b1b),
+    version(0.1.0)
+]
+coclass CArray
+{
+    constructor(
+        [in] InterfaceID elemId,
+        [in] Long size);
+
+    interface IArray;
+}
 
 [
     uuid(339a8069-7448-4d12-9c50-d45497fb245b),

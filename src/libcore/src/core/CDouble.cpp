@@ -14,25 +14,25 @@
 // limitations under the License.
 //=========================================================================
 
-#include "core/CFloat.h"
+#include "core/CDouble.h"
 
 using ccm::io::IID_ISerializable;
 
 namespace ccm {
 namespace core {
 
-CCM_INTERFACE_IMPL_4(CFloat, SyncObject, IFloat, INumber, ISerializable, IComparable);
+CCM_INTERFACE_IMPL_4(CDouble, SyncObject, IDouble, INumber, ISerializable, IComparable);
 
-CCM_OBJECT_IMPL(CFloat);
+CCM_OBJECT_IMPL(CDouble);
 
-ECode CFloat::constructor(
-    /* [in] */ Float value)
+ECode CDouble::constructor(
+    /* [in] */ Double value)
 {
     mValue = value;
     return NOERROR;
 }
 
-ECode CFloat::ByteValue(
+ECode CDouble::ByteValue(
     /* [out] */ Byte* value)
 {
     VALIDATE_NOT_NULL(value);
@@ -41,7 +41,7 @@ ECode CFloat::ByteValue(
     return NOERROR;
 }
 
-ECode CFloat::ShortValue(
+ECode CDouble::ShortValue(
     /* [out] */ Short* value)
 {
     VALIDATE_NOT_NULL(value);
@@ -50,7 +50,7 @@ ECode CFloat::ShortValue(
     return NOERROR;
 }
 
-ECode CFloat::IntValue(
+ECode CDouble::IntValue(
     /* [out] */ Integer* value)
 {
     VALIDATE_NOT_NULL(value);
@@ -59,7 +59,7 @@ ECode CFloat::IntValue(
     return NOERROR;
 }
 
-ECode CFloat::LongValue(
+ECode CDouble::LongValue(
     /* [out] */ Long* value)
 {
     VALIDATE_NOT_NULL(value);
@@ -68,7 +68,7 @@ ECode CFloat::LongValue(
     return NOERROR;
 }
 
-ECode CFloat::FloatValue(
+ECode CDouble::FloatValue(
     /* [out] */ Float* value)
 {
     VALIDATE_NOT_NULL(value);
@@ -77,7 +77,7 @@ ECode CFloat::FloatValue(
     return NOERROR;
 }
 
-ECode CFloat::DoubleValue(
+ECode CDouble::DoubleValue(
     /* [out] */ Double* value)
 {
     VALIDATE_NOT_NULL(value);
@@ -86,8 +86,8 @@ ECode CFloat::DoubleValue(
     return NOERROR;
 }
 
-ECode CFloat::GetValue(
-    /* [out] */ Float* value)
+ECode CDouble::GetValue(
+    /* [out] */ Double* value)
 {
     VALIDATE_NOT_NULL(value);
 
@@ -95,7 +95,7 @@ ECode CFloat::GetValue(
     return NOERROR;
 }
 
-ECode CFloat::IsInfinite(
+ECode CDouble::IsInfinite(
     /* [out] */ Boolean* infinite)
 {
     VALIDATE_NOT_NULL(infinite);
@@ -104,7 +104,7 @@ ECode CFloat::IsInfinite(
     return NOERROR;
 }
 
-ECode CFloat::IsNaN(
+ECode CDouble::IsNaN(
     /* [out] */ Boolean* nan)
 {
     VALIDATE_NOT_NULL(nan);
@@ -113,43 +113,43 @@ ECode CFloat::IsNaN(
     return NOERROR;
 }
 
-ECode CFloat::CompareTo(
+ECode CDouble::CompareTo(
     /* [in] */ IInterface* other,
     /* [out] */ Integer* result)
 {
     VALIDATE_NOT_NULL(result);
 
-    IFloat* f = IFloat::Probe(other);
-    if (f == nullptr) {
+    IDouble* d = IDouble::Probe(other);
+    if (d == nullptr) {
         *result = -1;
         return NOERROR;
     }
 
-    Float fv;
-    f->GetValue(&fv);
-    *result = mValue == fv ? 0 : (mValue > fv ? 1 : -1);
+    Double dv;
+    d->GetValue(&dv);
+    *result = mValue == dv ? 0 : (mValue > dv ? 1 : -1);
     return NOERROR;
 }
 
-ECode CFloat::Equals(
+ECode CDouble::Equals(
     /* [in] */ IInterface* other,
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
 
-    IFloat* f = IFloat::Probe(other);
-    if (f == nullptr) {
+    IDouble* d = IDouble::Probe(other);
+    if (d == nullptr) {
         *result = false;
         return NOERROR;
     }
 
-    Float fv;
-    f->GetValue(&fv);
-    *result = mValue == fv;
+    Double dv;
+    d->GetValue(&dv);
+    *result = mValue == dv;
     return NOERROR;
 }
 
-ECode CFloat::GetHashCode(
+ECode CDouble::GetHashCode(
     /* [out] */ Integer* hash)
 {
     VALIDATE_NOT_NULL(hash);
@@ -158,7 +158,7 @@ ECode CFloat::GetHashCode(
     return NOERROR;
 }
 
-ECode CFloat::ToString(
+ECode CDouble::ToString(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str);

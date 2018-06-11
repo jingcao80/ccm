@@ -74,6 +74,30 @@ String ExclusiveOrExpression::EnumeratorValue()
     return mRightOperand->EnumeratorValue();
 }
 
+bool ExclusiveOrExpression::IsPositiveInfinity()
+{
+    if (mLeftOperand != nullptr || mRightOperand == nullptr) {
+        return false;
+    }
+    return mRightOperand->IsPositiveInfinity();
+}
+
+bool ExclusiveOrExpression::IsNegativeInfinity()
+{
+    if (mLeftOperand != nullptr || mRightOperand == nullptr) {
+        return false;
+    }
+    return mRightOperand->IsNegativeInfinity();
+}
+
+bool ExclusiveOrExpression::IsNaN()
+{
+    if (mLeftOperand != nullptr || mRightOperand == nullptr) {
+        return false;
+    }
+    return mRightOperand->IsNaN();
+}
+
 Expression* ExclusiveOrExpression::Clone()
 {
     ExclusiveOrExpression* newExpr = new ExclusiveOrExpression();
@@ -86,6 +110,7 @@ Expression* ExclusiveOrExpression::Clone()
     newExpr->mOperator = mOperator;
     newExpr->mType = mType;
     newExpr->mRadix = mRadix;
+    newExpr->mScientificNotation = mScientificNotation;
     return newExpr;
 }
 

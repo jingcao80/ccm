@@ -550,6 +550,7 @@ Tokenizer::Token Tokenizer::ReadNumber(
     builder.Append((char)c);
     mBit = 32;
     mRadix = c == '0' ? 8 : 10;
+    mScientificNotation = false;
     int state = c == '0' ? NUMBER_INT_0 : NUMBER_INT;
     while ((c = mFile->Read()) != -1) {
         if (state == NUMBER_INT_0) {
@@ -602,6 +603,7 @@ Tokenizer::Token Tokenizer::ReadNumber(
             else if (c == 'e' || c == 'E') {
                 builder.Append((char)c);
                 state = NUMBER_FP_EXP;
+                mScientificNotation = true;
                 continue;
             }
             else if (!IsEscape(c)) {
@@ -617,7 +619,18 @@ Tokenizer::Token Tokenizer::ReadNumber(
             else if (c == 'e' || c == 'E') {
                 builder.Append((char)c);
                 state = NUMBER_FP_EXP;
+                mScientificNotation = true;
                 continue;
+            }
+            else if (c == 'f' || c == 'F') {
+                break;
+            }
+            else if (c == 'd' || c == 'D') {
+                mBit = 64;
+                break;
+            }
+            else if (!IsEscape(c)) {
+                mFile->Unread(c);
             }
             break;
         }

@@ -162,6 +162,21 @@ String UnaryExpression::EnumeratorValue()
     return String(nullptr);
 }
 
+bool UnaryExpression::IsPositiveInfinity()
+{
+    return false;
+}
+
+bool UnaryExpression::IsNegativeInfinity()
+{
+    return false;
+}
+
+bool UnaryExpression::IsNaN()
+{
+    return false;
+}
+
 Expression* UnaryExpression::Clone()
 {
     UnaryExpression* newExpr = new UnaryExpression();
@@ -174,6 +189,7 @@ Expression* UnaryExpression::Clone()
     newExpr->mOperator = mOperator;
     newExpr->mType = mType;
     newExpr->mRadix = mRadix;
+    newExpr->mScientificNotation = mScientificNotation;
     return newExpr;
 }
 

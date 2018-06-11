@@ -377,7 +377,9 @@ String CodeGenerator::GenInterfaceConstant(
     StringBuilder builder;
 
     MetaType* mt = mMetaComponent->mTypes[mc->mTypeIndex];
-    if (mt->mKind == CcmTypeKind::String) {
+    if ((mt->mKind == CcmTypeKind::String) ||
+            ((mt->mKind == CcmTypeKind::Float || mt->mKind == CcmTypeKind::Double) &&
+            (mc->mValue.mAttributes & FP_MASK))) {
         builder.AppendFormat("    static const %s %s;\n", GenType(mt).string(),
                 mc->mName);
     }
@@ -552,29 +554,55 @@ String CodeGenerator::GenValue(
         case CcmTypeKind::Char:
             return String::Format("\'%c\'", mv.mInteger);
         case CcmTypeKind::Byte: {
-            const char* format = mv.mRadix == 8 ? "%o" :
-                    mv.mRadix == 10 ? "%d" : "0x%x";
+            int radix = mv.mAttributes & RADIX_MASK;
+            const char* format = radix == 8 ? "%o" :
+                    radix == 10 ? "%d" : "0x%x";
             return String::Format(format, (char)mv.mInteger);
         }
         case CcmTypeKind::Short: {
-            const char* format = mv.mRadix == 8 ? "%o" :
-                    mv.mRadix == 10 ? "%d" : "0x%x";
+            int radix = mv.mAttributes & RADIX_MASK;
+            const char* format = radix == 8 ? "%o" :
+                    radix == 10 ? "%d" : "0x%x";
             return String::Format(format, (short)mv.mInteger);
         }
         case CcmTypeKind::Integer: {
-            const char* format = mv.mRadix == 8 ? "%o" :
-                    mv.mRadix == 10 ? "%d" : "0x%x";
+            int radix = mv.mAttributes & RADIX_MASK;
+            const char* format = radix == 8 ? "%o" :
+                    radix == 10 ? "%d" : "0x%x";
             return String::Format(format, mv.mInteger);
         }
         case CcmTypeKind::Long: {
-            const char* format = mv.mRadix == 8 ? "%lloll" :
-                    mv.mRadix == 10 ? "%lldll" : "0x%llxll";
+            int radix = mv.mAttributes & RADIX_MASK;
+            const char* format = radix == 8 ? "%lloll" :
+                    radix == 10 ? "%lldll" : "0x%llxll";
             return String::Format(format, mv.mLong);
         }
-        case CcmTypeKind::Float:
-            return String::Format("%f", mv.mFloat);
-        case CcmTypeKind::Double:
-            return String::Format("%e", mv.mDouble);
+        case CcmTypeKind::Float: {
+            if (mv.mAttributes & POSITIVE_INFINITY_MASK) {
+                return String("1.0f / 0.0f");
+            }
+            else if (mv.mAttributes & NEGATIVE_INFINITY_MASK) {
+                return String("-1.0f / 0.0f");
+            }
+            else if (mv.mAttributes & NAN_MASK) {
+                return String("0.0f / 0.0f");
+            }
+            return String::Format(mv.mAttributes & SCIENTIFIC_NOTATION_MASK ?
+                    "%e" : "%f", mv.mFloat);
+        }
+        case CcmTypeKind::Double: {
+            if (mv.mAttributes & POSITIVE_INFINITY_MASK) {
+                return String("1.0d / 0.0d");
+            }
+            else if (mv.mAttributes & NEGATIVE_INFINITY_MASK) {
+                return String("-1.0d / 0.0d");
+            }
+            else if (mv.mAttributes & NAN_MASK) {
+                return String("0.0d / 0.0d");
+            }
+            return String::Format(mv.mAttributes & SCIENTIFIC_NOTATION_MASK ?
+                    "%e" : "%f", mv.mDouble);
+        }
         case CcmTypeKind::Boolean:
             return mv.mBoolean ? String("true") : String("false");
         case CcmTypeKind::String:
@@ -1122,6 +1150,22 @@ void CodeGenerator::GenComponentCpp()
 
     builder.Append(mLicense);
     builder.Append("\n");
+    if (mSparseMode) {
+        for (int i = 0; i < mMetaComponent->mInterfaceNumber; i++) {
+            MetaInterface* mi = mMetaComponent->mInterfaces[i];
+            for (int j = 0; j < mi->mConstantNumber; j++) {
+                MetaConstant* mc = mi->mConstants[j];
+                MetaType* mt = mMetaComponent->mTypes[mc->mTypeIndex];
+                if ((mt->mKind == CcmTypeKind::String) ||
+                        ((mt->mKind == CcmTypeKind::Float || mt->mKind == CcmTypeKind::Double) &&
+                        (mc->mValue.mAttributes & FP_MASK))) {
+                    builder.AppendFormat("#include \"%s%s.h\"\n",
+                            String(mi->mNamespace).Replace("::", ".").string(), mi->mName);
+                    break;
+                }
+            }
+        }
+    }
     builder.AppendFormat("#include \"%s.h\"\n"
                          "#include <ccmcomponent.h>\n"
                          "#include <ccmrefbase.h>\n\n"
@@ -1194,6 +1238,11 @@ String CodeGenerator::GenInterfaceConstantsInCpp(
             MetaType* mt = mMetaComponent->mTypes[mc->mTypeIndex];
             if (mt->mKind == CcmTypeKind::String) {
                 builder.AppendFormat("const %s %s::%s(%s);\n", GenType(mt).string(),
+                        mi->mName, mc->mName, GenValue(mt, mc->mValue).string());
+            }
+            else if ((mt->mKind == CcmTypeKind::Float || mt->mKind == CcmTypeKind::Double) &&
+                    (mc->mValue.mAttributes & FP_MASK)) {
+                builder.AppendFormat("const %s %s::%s = %s;\n", GenType(mt).string(),
                         mi->mName, mc->mName, GenValue(mt, mc->mValue).string());
             }
         }
@@ -1545,10 +1594,26 @@ void CodeGenerator::GenComponentCppOnUserMode()
         }
         for (int i = 0; i < mc->mInterfaceNumber; i++) {
             MetaInterface* mi = mc->mInterfaces[i];
-            if (mi->mExternal || !String(mi->mName).EndsWith("ClassObject")) continue;
-            String intfHeader = String::Format("%s%s.h",
-                    String(mi->mNamespace).Replace("::", ".").string(), mi->mName);
-            builder.AppendFormat("#include \"%s\"\n", intfHeader.string());
+            if (mi->mExternal) continue;
+            if (!String(mi->mName).EndsWith("ClassObject")) {
+                for (int j = 0; j < mi->mConstantNumber; j++) {
+                    MetaConstant* mc = mi->mConstants[j];
+                    MetaType* mt = mMetaComponent->mTypes[mc->mTypeIndex];
+                    if ((mt->mKind == CcmTypeKind::String) ||
+                            ((mt->mKind == CcmTypeKind::Float || mt->mKind == CcmTypeKind::Double) &&
+                            (mc->mValue.mAttributes & FP_MASK))) {
+                        String intfHeader = String::Format("%s%s.h",
+                                String(mi->mNamespace).Replace("::", ".").string(), mi->mName);
+                        builder.AppendFormat("#include \"%s\"\n", intfHeader.string());
+                        break;
+                    }
+                }
+            }
+            else {
+                String intfHeader = String::Format("%s%s.h",
+                        String(mi->mNamespace).Replace("::", ".").string(), mi->mName);
+                builder.AppendFormat("#include \"%s\"\n", intfHeader.string());
+            }
         }
     }
     builder.Append("\n#include <ccmapi.h>\n"

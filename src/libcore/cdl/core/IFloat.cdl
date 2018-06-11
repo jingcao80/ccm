@@ -23,6 +23,42 @@ namespace core {
 ]
 interface IFloat
 {
+    /**
+     * A constant holding the positive infinity of type
+     * {@code float}.
+     */
+    const Float POSITIVE_INFINITY = 1.0f / 0.0f;
+
+    /**
+     * A constant holding the negative infinity of type
+     * {@code float}.
+     */
+    const Float NEGATIVE_INFINITY = -1.0f / 0.0f;
+
+    /**
+     * A constant holding a Not-a-Number (NaN) value of type
+     * {@code float}.
+     */
+    const Float NaN = 0.0f / 0.0f;
+
+    /**
+     * A constant holding the largest positive finite value of type
+     * {@code float}, (2-2<sup>-23</sup>)&middot;2<sup>127</sup>.
+     */
+    const Float MAX_VALUE = 3.4028235e+38f;
+
+    /**
+     * A constant holding the smallest positive normal value of type
+     * {@code float}, 2<sup>-126</sup>.
+     */
+    const Float MIN_NORMAL = 1.17549435E-38f;
+
+    /**
+     * A constant holding the smallest positive nonzero value of type
+     * {@code float}, 2<sup>-149</sup>.
+     */
+    const Float MIN_VALUE = 1.4e-45f;
+
     GetValue(
         [out] Float* value);
 

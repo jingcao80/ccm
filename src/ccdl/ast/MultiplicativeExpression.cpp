@@ -166,6 +166,36 @@ String MultiplicativeExpression::EnumeratorValue()
     return mRightOperand->EnumeratorValue();
 }
 
+bool MultiplicativeExpression::IsPositiveInfinity()
+{
+    if (mLeftOperand == nullptr || mRightOperand == nullptr) {
+        return false;
+    }
+    return (mLeftOperand->FloatValue() == 1.0) &&
+            (mRightOperand->FloatValue() == 0.0) &&
+            (mOperator == DIVIDE);
+}
+
+bool MultiplicativeExpression::IsNegativeInfinity()
+{
+    if (mLeftOperand == nullptr || mRightOperand == nullptr) {
+        return false;
+    }
+    return (mLeftOperand->FloatValue() == -1.0) &&
+            (mRightOperand->FloatValue() == 0.0) &&
+            (mOperator == DIVIDE);
+}
+
+bool MultiplicativeExpression::IsNaN()
+{
+    if (mLeftOperand == nullptr || mRightOperand == nullptr) {
+        return false;
+    }
+    return (mLeftOperand->FloatValue() == 0.0) &&
+            (mRightOperand->FloatValue() == 0.0) &&
+            (mOperator == DIVIDE);
+}
+
 Expression* MultiplicativeExpression::Clone()
 {
     MultiplicativeExpression* newExpr = new MultiplicativeExpression();
@@ -178,6 +208,7 @@ Expression* MultiplicativeExpression::Clone()
     newExpr->mOperator = mOperator;
     newExpr->mType = mType;
     newExpr->mRadix = mRadix;
+    newExpr->mScientificNotation = mScientificNotation;
     return newExpr;
 }
 

@@ -113,6 +113,13 @@ struct MetaInterface
     bool                mExternal;
 };
 
+#define RADIX_MASK                  0x0f
+#define SCIENTIFIC_NOTATION_MASK    0x10
+#define POSITIVE_INFINITY_MASK      0x20
+#define NEGATIVE_INFINITY_MASK      0x40
+#define NAN_MASK                    0x80
+#define FP_MASK                     0xE0
+
 struct MetaValue
 {
     union {
@@ -123,7 +130,7 @@ struct MetaValue
         double          mDouble;
         char*           mString;
     };
-    unsigned char       mRadix;
+    unsigned char       mAttributes;
 };
 
 struct MetaConstant

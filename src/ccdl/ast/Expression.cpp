@@ -25,6 +25,7 @@ Expression::Expression()
     , mOperator(-1)
     , mType(nullptr)
     , mRadix(10)
+    , mScientificNotation(false)
 {}
 
 Expression::~Expression()

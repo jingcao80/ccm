@@ -437,6 +437,7 @@ MetaConstant* MetaBuilder::WriteMetaConstant(
     mc->mName = WriteString(constant->GetName());
     Type* type = constant->GetType();
     mc->mTypeIndex = mModule->IndexOf(type);
+    mc->mValue.mAttributes = 0;
     if (type->IsByteType() || type->IsShortType() || type->IsIntegerType()) {
         mc->mValue.mInteger = constant->GetValue()->IntegerValue();
     }
@@ -448,9 +449,33 @@ MetaConstant* MetaBuilder::WriteMetaConstant(
     }
     else if (type->IsFloatType()) {
         mc->mValue.mFloat = constant->GetValue()->FloatValue();
+        if (constant->GetValue()->IsPositiveInfinity()) {
+            mc->mValue.mAttributes |= POSITIVE_INFINITY_MASK;
+        }
+        if (constant->GetValue()->IsNegativeInfinity()) {
+            mc->mValue.mAttributes |= NEGATIVE_INFINITY_MASK;
+        }
+        if (constant->GetValue()->IsNaN()) {
+            mc->mValue.mAttributes |= NAN_MASK;
+        }
+        if (constant->GetValue()->IsScientificNotation()) {
+            mc->mValue.mAttributes |= SCIENTIFIC_NOTATION_MASK;
+        }
     }
     else if (type->IsDoubleType()) {
         mc->mValue.mDouble = constant->GetValue()->DoubleValue();
+        if (constant->GetValue()->IsPositiveInfinity()) {
+            mc->mValue.mAttributes |= POSITIVE_INFINITY_MASK;
+        }
+        if (constant->GetValue()->IsNegativeInfinity()) {
+            mc->mValue.mAttributes |= NEGATIVE_INFINITY_MASK;
+        }
+        if (constant->GetValue()->IsNaN()) {
+            mc->mValue.mAttributes |= NAN_MASK;
+        }
+        if (constant->GetValue()->IsScientificNotation()) {
+            mc->mValue.mAttributes |= SCIENTIFIC_NOTATION_MASK;
+        }
     }
     else if (type->IsBooleanType()) {
         mc->mValue.mBoolean = constant->GetValue()->BooleanValue();
@@ -464,9 +489,9 @@ MetaConstant* MetaBuilder::WriteMetaConstant(
                     constant->GetValue()->EnumeratorValue());
     }
     if (type->IsIntegralType()) {
-        mc->mValue.mRadix = constant->GetValue()->GetRadix();
+        mc->mValue.mAttributes |= (constant->GetValue()->GetRadix() & RADIX_MASK);
     }
-    else mc->mValue.mRadix = 0;
+    else mc->mValue.mAttributes |= 0;
     // end address
     mBasePtr = mBasePtr + sizeof(MetaConstant);
 
@@ -654,9 +679,33 @@ MetaParameter* MetaBuilder::WriteMetaParameter(
         }
         else if (type->IsFloatType()) {
             mp->mDefaultValue.mFloat = param->GetDefaultValue()->FloatValue();
+            if (param->GetDefaultValue()->IsPositiveInfinity()) {
+                mp->mDefaultValue.mAttributes |= POSITIVE_INFINITY_MASK;
+            }
+            if (param->GetDefaultValue()->IsNegativeInfinity()) {
+                mp->mDefaultValue.mAttributes |= NEGATIVE_INFINITY_MASK;
+            }
+            if (param->GetDefaultValue()->IsNaN()) {
+                mp->mDefaultValue.mAttributes |= NAN_MASK;
+            }
+            if (param->GetDefaultValue()->IsScientificNotation()) {
+                mp->mDefaultValue.mAttributes |= SCIENTIFIC_NOTATION_MASK;
+            }
         }
         else if (type->IsDoubleType()) {
             mp->mDefaultValue.mDouble = param->GetDefaultValue()->DoubleValue();
+            if (param->GetDefaultValue()->IsPositiveInfinity()) {
+                mp->mDefaultValue.mAttributes |= POSITIVE_INFINITY_MASK;
+            }
+            if (param->GetDefaultValue()->IsNegativeInfinity()) {
+                mp->mDefaultValue.mAttributes |= NEGATIVE_INFINITY_MASK;
+            }
+            if (param->GetDefaultValue()->IsNaN()) {
+                mp->mDefaultValue.mAttributes |= NAN_MASK;
+            }
+            if (param->GetDefaultValue()->IsScientificNotation()) {
+                mp->mDefaultValue.mAttributes |= SCIENTIFIC_NOTATION_MASK;
+            }
         }
         else if (type->IsBooleanType()) {
             mp->mDefaultValue.mBoolean = param->GetDefaultValue()->BooleanValue();

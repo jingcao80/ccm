@@ -49,6 +49,11 @@ public:
     inline void SetRadix(
         /* [in] */ int radix);
 
+    inline bool IsScientificNotation();
+
+    inline void SetScientificNotation(
+        /* [in] */ bool scientificNotation);
+
     virtual int IntegerValue() = 0;
 
     virtual long long int LongValue() = 0;
@@ -65,6 +70,12 @@ public:
 
     virtual String EnumeratorValue() = 0;
 
+    virtual bool IsPositiveInfinity() = 0;
+
+    virtual bool IsNegativeInfinity() = 0;
+
+    virtual bool IsNaN() = 0;
+
     virtual Expression* Clone() = 0;
 
 protected:
@@ -73,6 +84,7 @@ protected:
     int mOperator;
     Type* mType;
     int mRadix;
+    bool mScientificNotation;
 };
 
 void Expression::SetLeftOperand(
@@ -113,6 +125,17 @@ void Expression::SetRadix(
     /* [in] */ int radix)
 {
     mRadix = radix;
+}
+
+bool Expression::IsScientificNotation()
+{
+    return mScientificNotation;
+}
+
+void Expression::SetScientificNotation(
+    /* [in] */ bool scientificNotation)
+{
+    mScientificNotation = scientificNotation;
 }
 
 }

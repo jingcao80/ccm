@@ -146,6 +146,8 @@ public:
 
     inline int GetRadix();
 
+    inline bool IsScientificNotation();
+
     inline long long int GetIntegralValue();
 
     inline double GetFloatingPointValue();
@@ -229,6 +231,7 @@ private:
     double mFloatingPointValue;
     int mBit;
     int mRadix;
+    bool mScientificNotation;
 };
 
 int Tokenizer::GetCharacter()
@@ -254,6 +257,11 @@ bool Tokenizer::Is64Bit()
 int Tokenizer::GetRadix()
 {
     return mRadix;
+}
+
+bool Tokenizer::IsScientificNotation()
+{
+    return mScientificNotation;
 }
 
 long long int Tokenizer::GetIntegralValue()

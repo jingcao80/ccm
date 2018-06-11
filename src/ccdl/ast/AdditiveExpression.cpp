@@ -157,6 +157,30 @@ String AdditiveExpression::EnumeratorValue()
     return mRightOperand->EnumeratorValue();
 }
 
+bool AdditiveExpression::IsPositiveInfinity()
+{
+    if (mLeftOperand != nullptr || mRightOperand == nullptr) {
+        return false;
+    }
+    return mRightOperand->IsPositiveInfinity();
+}
+
+bool AdditiveExpression::IsNegativeInfinity()
+{
+    if (mLeftOperand != nullptr || mRightOperand == nullptr) {
+        return false;
+    }
+    return mRightOperand->IsNegativeInfinity();
+}
+
+bool AdditiveExpression::IsNaN()
+{
+    if (mLeftOperand != nullptr || mRightOperand == nullptr) {
+        return false;
+    }
+    return mRightOperand->IsNaN();
+}
+
 Expression* AdditiveExpression::Clone()
 {
     AdditiveExpression* newExpr = new AdditiveExpression();
@@ -169,6 +193,7 @@ Expression* AdditiveExpression::Clone()
     newExpr->mOperator = mOperator;
     newExpr->mType = mType;
     newExpr->mRadix = mRadix;
+    newExpr->mScientificNotation = mScientificNotation;
     return newExpr;
 }
 

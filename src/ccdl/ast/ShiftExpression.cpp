@@ -94,6 +94,30 @@ String ShiftExpression::EnumeratorValue()
     return mRightOperand->EnumeratorValue();
 }
 
+bool ShiftExpression::IsPositiveInfinity()
+{
+    if (mLeftOperand != nullptr || mRightOperand == nullptr) {
+        return false;
+    }
+    return mRightOperand->IsPositiveInfinity();
+}
+
+bool ShiftExpression::IsNegativeInfinity()
+{
+    if (mLeftOperand != nullptr || mRightOperand == nullptr) {
+        return false;
+    }
+    return mRightOperand->IsNegativeInfinity();
+}
+
+bool ShiftExpression::IsNaN()
+{
+    if (mLeftOperand != nullptr || mRightOperand == nullptr) {
+        return false;
+    }
+    return mRightOperand->IsNaN();
+}
+
 Expression* ShiftExpression::Clone()
 {
     ShiftExpression* newExpr = new ShiftExpression();
@@ -106,6 +130,7 @@ Expression* ShiftExpression::Clone()
     newExpr->mOperator = mOperator;
     newExpr->mType = mType;
     newExpr->mRadix = mRadix;
+    newExpr->mScientificNotation = mScientificNotation;
     return newExpr;
 }
 

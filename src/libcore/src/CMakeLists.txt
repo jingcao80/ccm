@@ -18,9 +18,11 @@ set(LIBCORE_SRC_DIR ${LIBCORE_DIR}/src)
 set(OBJ_DIR ${CMAKE_BINARY_DIR}/src/libcore/src)
 
 set(GENERATED_SOURCES
+    ${OBJ_DIR}/_ccm_core_CArray.cpp
     ${OBJ_DIR}/_ccm_core_CBoolean.cpp
     ${OBJ_DIR}/_ccm_core_CByte.cpp
     ${OBJ_DIR}/_ccm_core_CChar.cpp
+    ${OBJ_DIR}/_ccm_core_CDouble.cpp
     ${OBJ_DIR}/_ccm_core_CFloat.cpp
     ${OBJ_DIR}/_ccm_core_CInteger.cpp
     ${OBJ_DIR}/_ccm_core_CLong.cpp

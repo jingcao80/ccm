@@ -14,43 +14,29 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCDL_AST_INCLUSIVEOREXPRESSION_H__
-#define __CCDL_AST_INCLUSIVEOREXPRESSION_H__
+namespace ccm {
+namespace core {
 
-#include "Expression.h"
-
-namespace ccdl {
-namespace ast {
-
-class InclusiveOrExpression : public Expression
+[
+    uuid(0a5ffe64-d284-4772-852c-962cee7a9604),
+    version(0.1.0)
+]
+interface IArray
 {
-public:
-    int IntegerValue() override;
+    GetLength(
+        [out] Long* size);
 
-    long long int LongValue() override;
+    Get(
+        [in] Long index,
+        [out] IInterface** element);
 
-    float FloatValue() override;
+    Set(
+        [in] Long index,
+        [in] IInterface* element);
 
-    double DoubleValue() override;
-
-    char CharacterValue() override;
-
-    bool BooleanValue() override;
-
-    String StringValue() override;
-
-    String EnumeratorValue() override;
-
-    bool IsPositiveInfinity() override;
-
-    bool IsNegativeInfinity() override;
-
-    bool IsNaN() override;
-
-    Expression* Clone() override;
-};
+    GetTypeId(
+        [out] InterfaceID* id);
+}
 
 }
 }
-
-#endif // __CCDL_AST_INCLUSIVEOREXPRESSION_H__

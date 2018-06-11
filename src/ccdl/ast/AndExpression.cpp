@@ -74,6 +74,30 @@ String AndExpression::EnumeratorValue()
     return mRightOperand->EnumeratorValue();
 }
 
+bool AndExpression::IsPositiveInfinity()
+{
+    if (mLeftOperand != nullptr || mRightOperand == nullptr) {
+        return false;
+    }
+    return mRightOperand->IsPositiveInfinity();
+}
+
+bool AndExpression::IsNegativeInfinity()
+{
+    if (mLeftOperand != nullptr || mRightOperand == nullptr) {
+        return false;
+    }
+    return mRightOperand->IsNegativeInfinity();
+}
+
+bool AndExpression::IsNaN()
+{
+    if (mLeftOperand != nullptr || mRightOperand == nullptr) {
+        return false;
+    }
+    return mRightOperand->IsNaN();
+}
+
 Expression* AndExpression::Clone()
 {
     AndExpression* newExpr = new AndExpression();
@@ -86,6 +110,7 @@ Expression* AndExpression::Clone()
     newExpr->mOperator = mOperator;
     newExpr->mType = mType;
     newExpr->mRadix = mRadix;
+    newExpr->mScientificNotation = mScientificNotation;
     return newExpr;
 }
 

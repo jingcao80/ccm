@@ -1004,6 +1004,7 @@ InclusiveOrExpression* Parser::ParseInclusiveOrExpression(
     incOrExpr->SetRightOperand(rightExpr);
     incOrExpr->SetType(rightExpr->GetType());
     incOrExpr->SetRadix(rightExpr->GetRadix());
+    incOrExpr->SetScientificNotation(rightExpr->IsScientificNotation());
 
     while (mTokenizer.PeekToken() == Tokenizer::Token::INCLUSIVE_OR) {
         mTokenizer.GetToken();
@@ -1039,6 +1040,7 @@ ExclusiveOrExpression* Parser::ParseExclusiveOrExpression(
     excOrExpr->SetRightOperand(rightExpr);
     excOrExpr->SetType(rightExpr->GetType());
     excOrExpr->SetRadix(rightExpr->GetRadix());
+    excOrExpr->SetScientificNotation(rightExpr->IsScientificNotation());
 
     while (mTokenizer.PeekToken() == Tokenizer::Token::EXCLUSIVE_OR) {
         mTokenizer.GetToken();
@@ -1074,6 +1076,7 @@ AndExpression* Parser::ParseAndExpression(
     andExpr->SetRightOperand(rightExpr);
     andExpr->SetType(rightExpr->GetType());
     andExpr->SetRadix(rightExpr->GetRadix());
+    andExpr->SetScientificNotation(rightExpr->IsScientificNotation());
 
     while (mTokenizer.PeekToken() == Tokenizer::Token::AND) {
         mTokenizer.GetToken();
@@ -1109,6 +1112,7 @@ ShiftExpression* Parser::ParseShiftExpression(
     shiExpr->SetRightOperand(rightExpr);
     shiExpr->SetType(rightExpr->GetType());
     shiExpr->SetRadix(rightExpr->GetRadix());
+    shiExpr->SetScientificNotation(rightExpr->IsScientificNotation());
 
     while (mTokenizer.PeekToken() == Tokenizer::Token::SHIFT_LEFT ||
             mTokenizer.PeekToken() == Tokenizer::Token::SHIFT_RIGHT ||
@@ -1150,6 +1154,7 @@ AdditiveExpression* Parser::ParseAdditiveExpression(
     addExpr->SetRightOperand(rightExpr);
     addExpr->SetType(rightExpr->GetType());
     addExpr->SetRadix(rightExpr->GetRadix());
+    addExpr->SetScientificNotation(rightExpr->IsScientificNotation());
 
     while (mTokenizer.PeekToken() == Tokenizer::Token::PLUS ||
             mTokenizer.PeekToken() == Tokenizer::Token::MINUS) {
@@ -1188,6 +1193,7 @@ MultiplicativeExpression* Parser::ParseMultiplicativeExpression(
     multiExpr->SetRightOperand(rightExpr);
     multiExpr->SetType(rightExpr->GetType());
     multiExpr->SetRadix(rightExpr->GetRadix());
+    multiExpr->SetScientificNotation(rightExpr->IsScientificNotation());
 
     while (mTokenizer.PeekToken() == Tokenizer::Token::ASTERISK ||
             mTokenizer.PeekToken() == Tokenizer::Token::DIVIDE ||
@@ -1261,6 +1267,7 @@ UnaryExpression* Parser::ParseUnaryExpression(
         unaryExpr->SetLeftOperand(operand);
         unaryExpr->SetType(operand->GetType());
         unaryExpr->SetRadix(operand->GetRadix());
+        unaryExpr->SetScientificNotation(operand->IsScientificNotation());
         return unaryExpr;
     }
 }
@@ -1363,6 +1370,7 @@ PostfixExpression* Parser::ParseFloatingPointNumber(
                 mPool->FindType(String("ccm::Double")) : mPool->FindType(String("ccm::Float"));
         postExpr->SetType(fpType);
         postExpr->SetFloatingPointValue(mTokenizer.GetFloatingPointValue());
+        postExpr->SetScientificNotation(mTokenizer.IsScientificNotation());
         return postExpr;
     }
     else {

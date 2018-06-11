@@ -14,17 +14,50 @@
 // limitations under the License.
 //=========================================================================
 
+#ifndef __CCM_CORE_CARRAY_H__
+#define __CCM_CORE_CARRAY_H__
+
+#include "ccm.core.IArray.h"
+#include "_ccm_core_CArray.h"
+#include "core/SyncObject.h"
+#include <ccmarray.h>
+
 namespace ccm {
 namespace core {
 
-const Integer E_ILLEGAL_MONITOR_STATE_EXCEPTION = 0x80010100;
-const Integer E_INTERRUPTED_EXCEPTION = 0x80010101;
-const Integer E_NULL_POINTER_EXCEPTION = 0x80010102;
-const Integer E_ILLEGAL_THREAD_STATE_EXCEPTION = 0x80010103;
-const Integer E_UNSUPPORTED_OPERATION_EXCEPTION = 0x80010104;
-const Integer E_STRING_INDEX_OUT_OF_BOUNDS_EXCEPTION = 0x80010105;
-const Integer E_INDEX_OUT_OF_BOUNDS_EXCEPTION = 0x80010106;
-const Integer E_NUMBER_FORMAT_EXCEPTION = 0x80010107;
+Coclass(CArray)
+    , public SyncObject
+    , public IArray
+{
+public:
+    CCM_INTERFACE_DECL();
+
+    CCM_OBJECT_DECL();
+
+    ECode constructor(
+        /* [in] */ const InterfaceID& elemId,
+        /* [in] */ Long size);
+
+    ECode GetLength(
+        /* [out] */ Long* size);
+
+    ECode Get(
+        /* [in] */ Long index,
+        /* [out] */ IInterface** element);
+
+    ECode Set(
+        /* [in] */ Long index,
+        /* [in] */ IInterface* element);
+
+    ECode GetTypeId(
+        /* [out] */ InterfaceID* id);
+
+private:
+    Array<IInterface*> mElements;
+    InterfaceID mElementTypeId;
+};
 
 }
 }
+
+#endif // __CCM_CORE_CARRAY_H__

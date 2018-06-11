@@ -25,11 +25,13 @@ include_directories(
 
 set(SOURCES
     AbstractStringBuilder.cpp
+    CArray.cpp
     CBoolean.cpp
     CByte.cpp
     CChar.cpp
-    Character.cpp
+    CDouble.cpp
     CFloat.cpp
+    Character.cpp
     CInteger.cpp
     CLong.cpp
     CShort.cpp
@@ -49,6 +51,7 @@ set(SOURCES
     NativeThreadList.cpp
     NativeTimeUtils.cpp
     Runnable.cpp
+    StringUtils.cpp
     SyncObject.cpp
     System.cpp
     Thread.cpp

@@ -74,6 +74,30 @@ String InclusiveOrExpression::EnumeratorValue()
     return mRightOperand->EnumeratorValue();
 }
 
+bool InclusiveOrExpression::IsPositiveInfinity()
+{
+    if (mLeftOperand != nullptr || mRightOperand == nullptr) {
+        return false;
+    }
+    return mRightOperand->IsPositiveInfinity();
+}
+
+bool InclusiveOrExpression::IsNegativeInfinity()
+{
+    if (mLeftOperand != nullptr || mRightOperand == nullptr) {
+        return false;
+    }
+    return mRightOperand->IsNegativeInfinity();
+}
+
+bool InclusiveOrExpression::IsNaN()
+{
+    if (mLeftOperand != nullptr || mRightOperand == nullptr) {
+        return false;
+    }
+    return mRightOperand->IsNaN();
+}
+
 Expression* InclusiveOrExpression::Clone()
 {
     InclusiveOrExpression* newExpr = new InclusiveOrExpression();
@@ -86,6 +110,7 @@ Expression* InclusiveOrExpression::Clone()
     newExpr->mOperator = mOperator;
     newExpr->mType = mType;
     newExpr->mRadix = mRadix;
+    newExpr->mScientificNotation = mScientificNotation;
     return newExpr;
 }
 

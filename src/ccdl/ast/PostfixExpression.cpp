@@ -66,6 +66,21 @@ String PostfixExpression::EnumeratorValue()
     return mEnumeratorName;
 }
 
+bool PostfixExpression::IsPositiveInfinity()
+{
+    return false;
+}
+
+bool PostfixExpression::IsNegativeInfinity()
+{
+    return false;
+}
+
+bool PostfixExpression::IsNaN()
+{
+    return false;
+}
+
 Expression* PostfixExpression::Clone()
 {
     PostfixExpression* newExpr = new PostfixExpression();

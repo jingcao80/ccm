@@ -14,43 +14,42 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCDL_AST_INCLUSIVEOREXPRESSION_H__
-#define __CCDL_AST_INCLUSIVEOREXPRESSION_H__
+namespace ccm {
+namespace core {
 
-#include "Expression.h"
-
-namespace ccdl {
-namespace ast {
-
-class InclusiveOrExpression : public Expression
+[
+    uuid(6aeffb3e-f757-44b6-a71f-2ddc607f11c8),
+    version(0.1.0)
+]
+interface IDouble
 {
-public:
-    int IntegerValue() override;
+    /**
+     * A constant holding the positive infinity of type
+     * {@code double}.
+     */
+    const Double POSITIVE_INFINITY = 1.0d / 0.0d;
 
-    long long int LongValue() override;
+    /**
+     * A constant holding the negative infinity of type
+     * {@code double}.
+     */
+    const Double NEGATIVE_INFINITY = -1.0d / 0.0d;
 
-    float FloatValue() override;
+    /**
+     * A constant holding a Not-a-Number (NaN) value of type
+     * {@code double}.
+     */
+    const Double NaN = 0.0d / 0.0d;
 
-    double DoubleValue() override;
+    GetValue(
+        [out] Double* value);
 
-    char CharacterValue() override;
+    IsInfinite(
+        [out] Boolean* result);
 
-    bool BooleanValue() override;
-
-    String StringValue() override;
-
-    String EnumeratorValue() override;
-
-    bool IsPositiveInfinity() override;
-
-    bool IsNegativeInfinity() override;
-
-    bool IsNaN() override;
-
-    Expression* Clone() override;
-};
+    IsNaN(
+        [out] Boolean* result);
+}
 
 }
 }
-
-#endif // __CCDL_AST_INCLUSIVEOREXPRESSION_H__

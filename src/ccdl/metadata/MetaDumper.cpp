@@ -120,8 +120,8 @@ String MetaDumper::DumpMetaConstant(
             DumpMetaType(mMetaComponet->mTypes[mc->mTypeIndex])).Append("\n");
     builder.Append(prefix).Append("    mValue:").Append(
             DumpConstantValue(mc)).Append("\n");
-    if (mc->mValue.mRadix != 0 ) {
-        builder.Append(prefix).AppendFormat("    mRadix:%d\n", mc->mValue.mRadix);
+    if (mc->mValue.mAttributes & RADIX_MASK) {
+        builder.Append(prefix).AppendFormat("    mRadix:%d\n", mc->mValue.mAttributes & RADIX_MASK);
     }
     builder.Append(prefix).Append("}\n");
 
