@@ -14,47 +14,38 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CORE_MATH_H__
-#define __CCM_CORE_MATH_H__
-
-#include <ccmtypes.h>
+#include "core/Math.h"
 
 namespace ccm {
 namespace core {
 
-class Math
+union FloatInteger
 {
-public:
-    static Integer Max(
-        /* [in] */ Integer a,
-        /* [in] */ Integer b);
-
-    static Integer Min(
-        /* [in] */ Integer a,
-        /* [in] */ Integer b);
-
-    COM_PUBLIC static Integer FloatToRawIntBits(
-        /* [in] */ Float value);
-
-    COM_PUBLIC static Long DoubleToRawLongBits(
-        /* [in] */ Double d);
+    unsigned int bits;
+    Float f;
 };
 
-inline Integer Math::Max(
-    /* [in] */ Integer a,
-    /* [in] */ Integer b)
+Integer Math::FloatToRawIntBits(
+    /* [in] */ Float value)
 {
-    return (a >= b) ? a : b;
+    FloatInteger f;
+    f.f = value;
+    return f.bits;
 }
 
-inline Integer Math::Min(
-    /* [in] */ Integer a,
-    /* [in] */ Integer b)
+union DoubleInteger
 {
-    return (a <= b) ? a : b;
+    uint64_t bits;
+    Double d;
+};
+
+Long Math::DoubleToRawLongBits(
+    /* [in] */ Double value)
+{
+    DoubleInteger d;
+    d.d = value;
+    return d.bits;
 }
 
 }
 }
-
-#endif //__CCM_CORE_MATH_H__

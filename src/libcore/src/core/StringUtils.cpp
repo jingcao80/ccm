@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "core/Character.h"
+#include "core/StringToReal.h"
 #include "core/StringUtils.h"
 #include "ccm.core.IByte.h"
 #include "ccm.core.IInteger.h"
@@ -132,7 +133,8 @@ ECode StringUtils::ParseInt(
         Logger::E("StringUtils", "s == %s", s.string());
         return E_NUMBER_FORMAT_EXCEPTION;
     }
-    return negative ? result : -result;
+    *value = negative ? result : -result;
+    return NOERROR;
 }
 
 ECode StringUtils::ParseLong(
@@ -206,7 +208,203 @@ ECode StringUtils::ParseLong(
         Logger::E("StringUtils", "s == %s", s.string());
         return E_NUMBER_FORMAT_EXCEPTION;
     }
-    return negative ? result : -result;
+    *value = negative ? result : -result;
+    return NOERROR;
+}
+
+ECode StringUtils::ParseFloat(
+    /* [in] */ const String& s,
+    /* [out] */ Float* value)
+{
+    VALIDATE_NOT_NULL(value);
+
+    return StringToReal::ParseFloat(s, value);
+}
+
+ECode StringUtils::ParseDouble(
+    /* [in] */ const String& s,
+    /* [out] */ Double* value)
+{
+    VALIDATE_NOT_NULL(value);
+
+    return StringToReal::ParseDouble(s, value);
+}
+
+static Char digits[] = {
+    '0' , '1' , '2' , '3' , '4' , '5' ,
+    '6' , '7' , '8' , '9' , 'a' , 'b' ,
+    'c' , 'd' , 'e' , 'f' , 'g' , 'h' ,
+    'i' , 'j' , 'k' , 'l' , 'm' , 'n' ,
+    'o' , 'p' , 'q' , 'r' , 's' , 't' ,
+    'u' , 'v' , 'w' , 'x' , 'y' , 'z'
+};
+
+static Char digitTens[] = {
+    '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
+    '1', '1', '1', '1', '1', '1', '1', '1', '1', '1',
+    '2', '2', '2', '2', '2', '2', '2', '2', '2', '2',
+    '3', '3', '3', '3', '3', '3', '3', '3', '3', '3',
+    '4', '4', '4', '4', '4', '4', '4', '4', '4', '4',
+    '5', '5', '5', '5', '5', '5', '5', '5', '5', '5',
+    '6', '6', '6', '6', '6', '6', '6', '6', '6', '6',
+    '7', '7', '7', '7', '7', '7', '7', '7', '7', '7',
+    '8', '8', '8', '8', '8', '8', '8', '8', '8', '8',
+    '9', '9', '9', '9', '9', '9', '9', '9', '9', '9',
+};
+
+static Char digitOnes[] = {
+    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+};
+
+static void GetChars(
+    /* [in] */ Integer i,
+    /* [in] */ Integer index,
+    /* [out] */ Array<Char>& buf)
+{
+    Integer q, r;
+    Integer charPos = index;
+    Char sign = 0;
+
+    if (i < 0) {
+        sign = '-';
+        i = -i;
+    }
+
+    // Generate two digits per iteration
+    while (i >= 65536) {
+        q = i / 100;
+        // really: r = i - (q * 100);
+        r = i - ((q << 6) + (q << 5) + (q << 2));
+        i = q;
+        buf[--charPos] = digitOnes[r];
+        buf[--charPos] = digitTens[r];
+    }
+
+    // Fall thru to fast mode for smaller numbers
+    // assert(i <= 65536, i);
+    for (;;) {
+        q = (unsigned int)(i * 52429) >> (16 + 3);
+        r = i - ((q << 3) + (q << 1));  // r = i-(q*10) ...
+        buf [--charPos] = digits[r];
+        i = q;
+        if (i == 0) break;
+    }
+    if (sign != 0) {
+        buf[--charPos] = sign;
+    }
+}
+
+static Integer sizeTable[] = {
+    9, 99, 999, 9999, 99999, 999999, 9999999,
+    99999999, 999999999, IInteger::MAX_VALUE };
+
+static Integer StringSize(
+    /* [in] */ Integer x)
+{
+    for (Integer i = 0; ; i++) {
+        if (x <= sizeTable[i]) {
+            return i + 1;
+        }
+    }
+}
+
+String StringUtils::ToString(
+    /* [in] */ Integer i)
+{
+    if (i == IInteger::MIN_VALUE) {
+        return String("-2147483648");
+    }
+
+    Boolean negative = i < 0;
+    Integer size = negative ? StringSize(-i) + 1 : StringSize(i);
+    Array<Char> buf(size);
+    GetChars(i, size, buf);
+    return String(buf);
+}
+
+String StringUtils::ToString(
+    /* [in] */ Integer i,
+    /* [in] */ Integer radix)
+{
+    if (radix < Character::MIN_RADIX || radix > Character::MAX_RADIX) {
+        radix = 10;
+    }
+
+    if (radix == 10) {
+        return ToString(i);
+    }
+
+    Array<Char> buf(33);
+    Boolean negative = (i < 0);
+    Integer charPos = 32;
+
+    if (!negative) {
+        i = -i;
+    }
+
+    while (i <= -radix) {
+        buf[charPos--] = digits[-(i % radix)];
+        i = i / radix;
+    }
+    buf[charPos] = digits[-i];
+
+    if (negative) {
+        buf[--charPos] = '-';
+    }
+
+    return String(buf, charPos, (33 - charPos));
+}
+
+String StringUtils::ToString(
+    /* [in] */ Long i)
+{
+    if (i == ILong::MIN_VALUE) {
+        return String("-9223372036854775808");
+    }
+    Integer size = (i < 0) ? StringSize(-i) + 1 : StringSize(i);
+    Array<Char> buf(size);
+    GetChars(i, size, buf);
+    return String(buf);
+}
+
+String StringUtils::ToString(
+    /* [in] */ Long i,
+    /* [in] */ Integer radix)
+{
+    if (radix < Character::MIN_RADIX || radix > Character::MAX_RADIX) {
+        radix = 10;
+    }
+    if (radix == 10) {
+        return ToString(i);
+    }
+    Array<Char> buf(65);
+    Integer charPos = 64;
+    Boolean negative = (i < 0);
+
+    if (!negative) {
+        i = -i;
+    }
+
+    while (i <= -radix) {
+        buf[charPos--] = digits[-(i % radix)];
+        i = i / radix;
+    }
+    buf[charPos] = digits[-i];
+
+    if (negative) {
+        buf[--charPos] = '-';
+    }
+
+    return String(buf, charPos, (65 - charPos));
 }
 
 }

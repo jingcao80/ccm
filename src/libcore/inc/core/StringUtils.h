@@ -25,58 +25,68 @@ namespace core {
 class StringUtils
 {
 public:
-    static ECode ParseByte(
+    COM_PUBLIC static ECode ParseByte(
         /* [in] */ const String& s,
         /* [out] */ Byte* value);
 
-    static ECode ParseByte(
+    COM_PUBLIC static ECode ParseByte(
         /* [in] */ const String& s,
         /* [in] */ Integer radix,
         /* [out] */ Byte* value);
 
-    static ECode ParseShort(
+    COM_PUBLIC static ECode ParseShort(
         /* [in] */ const String& s,
         /* [out] */ Short* value);
 
-    static ECode ParseShort(
+    COM_PUBLIC static ECode ParseShort(
         /* [in] */ const String& s,
         /* [in] */ Integer radix,
         /* [out] */ Short* value);
 
-    static ECode ParseInt(
+    COM_PUBLIC static ECode ParseInt(
         /* [in] */ const String& s,
         /* [out] */ Integer* value);
 
-    static ECode ParseInt(
+    COM_PUBLIC static ECode ParseInt(
         /* [in] */ const String& s,
         /* [in] */ Integer radix,
         /* [out] */ Integer* value);
 
-    static ECode ParseLong(
+    COM_PUBLIC static ECode ParseLong(
         /* [in] */ const String& s,
         /* [out] */ Long* value);
 
-    static ECode ParseLong(
+    COM_PUBLIC static ECode ParseLong(
         /* [in] */ const String& s,
         /* [in] */ Integer radix,
         /* [out] */ Long* value);
 
-    static ECode ParseFloat(
+    COM_PUBLIC static ECode ParseFloat(
         /* [in] */ const String& s,
         /* [out] */ Float* value);
 
-    static ECode ParseDouble(
+    COM_PUBLIC static ECode ParseDouble(
         /* [in] */ const String& s,
         /* [out] */ Double* value);
 
-    static String ToString(
+    COM_PUBLIC static String ToString(
         /* [in] */ Byte b);
 
-    static String ToString(
+    COM_PUBLIC static String ToString(
+        /* [in] */ Short b);
+
+    COM_PUBLIC static String ToString(
         /* [in] */ Integer i);
 
-    static String ToString(
+    COM_PUBLIC static String ToString(
         /* [in] */ Integer i,
+        /* [in] */ Integer radix);
+
+    COM_PUBLIC static String ToString(
+        /* [in] */ Long i);
+
+    COM_PUBLIC static String ToString(
+        /* [in] */ Long i,
         /* [in] */ Integer radix);
 
 private:
@@ -111,6 +121,18 @@ inline ECode StringUtils::ParseLong(
     /* [out] */ Long* value)
 {
     return ParseLong(s, 10, value);
+}
+
+inline String StringUtils::ToString(
+    /* [in] */ Byte b)
+{
+    return ToString((Integer)b);
+}
+
+inline String StringUtils::ToString(
+    /* [in] */ Short b)
+{
+    return ToString((Integer)b);
 }
 
 }

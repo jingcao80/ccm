@@ -812,27 +812,26 @@ void String::WriteCharArray(
     if (start < 0 || start > charArray.GetLength() || length < 0) {
         return;
     }
-
     length = start + length <= charArray.GetLength() ?
             length : charArray.GetLength() - start;
 
-    Integer byteSize = 0;
+    Integer totalByteSize = 0;
     for (Integer i = start; i < length; i++) {
-        byteSize += GetByteSize(charArray[i]);
+        totalByteSize += GetByteSize(charArray[i]);
     }
 
-    char* buf = LockBuffer(byteSize);
+    char* buf = LockBuffer(totalByteSize);
     if (buf == nullptr) {
         return;
     }
 
     for (Integer i = start; i < length; i++) {
-        byteSize = GetByteSize(charArray[i]);
+        Integer byteSize = GetByteSize(charArray[i]);
         WriteUTF8Bytes(buf, charArray[i], byteSize);
         buf += byteSize;
     }
-    UnlockBuffer(byteSize);
-    buf[byteSize] = '\0';
+    UnlockBuffer(totalByteSize);
+    buf[totalByteSize] = '\0';
 }
 
 void String::AppendBytes(

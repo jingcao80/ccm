@@ -14,47 +14,27 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CORE_MATH_H__
-#define __CCM_CORE_MATH_H__
+#ifndef __CCM_CORE_HEXSTRINGPARSER_H__
+#define __CCM_CORE_HEXSTRINGPARSER_H__
 
 #include <ccmtypes.h>
 
 namespace ccm {
 namespace core {
 
-class Math
+class HexStringParser
 {
 public:
-    static Integer Max(
-        /* [in] */ Integer a,
-        /* [in] */ Integer b);
+    static ECode ParseFloat(
+        /* [in] */ const String& s,
+        /* [out] */ Float* value);
 
-    static Integer Min(
-        /* [in] */ Integer a,
-        /* [in] */ Integer b);
-
-    COM_PUBLIC static Integer FloatToRawIntBits(
-        /* [in] */ Float value);
-
-    COM_PUBLIC static Long DoubleToRawLongBits(
-        /* [in] */ Double d);
+    static ECode ParseDouble(
+        /* [in] */ const String& s,
+        /* [out] */ Double* value);
 };
 
-inline Integer Math::Max(
-    /* [in] */ Integer a,
-    /* [in] */ Integer b)
-{
-    return (a >= b) ? a : b;
-}
-
-inline Integer Math::Min(
-    /* [in] */ Integer a,
-    /* [in] */ Integer b)
-{
-    return (a <= b) ? a : b;
-}
-
 }
 }
 
-#endif //__CCM_CORE_MATH_H__
+#endif // __CCM_CORE_HEXSTRINGPARSER_H__

@@ -38,6 +38,8 @@ set(SOURCES
     CString.cpp
     CStringBuffer.cpp
     CStringBuilder.cpp
+    HexStringParser.cpp
+    Math.cpp
     NativeFaultHandler.cpp
     NativeLockWord.cpp
     NativeMonitor.cpp
@@ -51,11 +53,13 @@ set(SOURCES
     NativeThreadList.cpp
     NativeTimeUtils.cpp
     Runnable.cpp
+    StringToReal.cpp
     StringUtils.cpp
     SyncObject.cpp
     System.cpp
     Thread.cpp
     ThreadGroup.cpp
+    cbigint.cpp
     core.cpp
     init.cpp
     nativeapi.cpp)
