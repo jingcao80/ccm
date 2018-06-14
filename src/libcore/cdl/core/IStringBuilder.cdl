@@ -54,9 +54,6 @@ interface IStringBuilder
         [in] Boolean b);
 
     Append(
-        [in] Char c);
-
-    Append(
         [in] Integer i);
 
     Append(
@@ -67,6 +64,9 @@ interface IStringBuilder
 
     Append(
         [in] Double d);
+
+    AppendChar(
+        [in] Char c);
 
     Delete(
         [in] Integer start,

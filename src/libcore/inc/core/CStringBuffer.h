@@ -105,7 +105,7 @@ public:
     ECode Append(
         /* [in] */ Boolean b) override;
 
-    ECode Append(
+    ECode AppendChar(
         /* [in] */ Char c) override;
 
     ECode Append(

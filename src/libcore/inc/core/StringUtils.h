@@ -89,6 +89,12 @@ public:
         /* [in] */ Long i,
         /* [in] */ Integer radix);
 
+    COM_PUBLIC static String ToString(
+        /* [in] */ Float f);
+
+    COM_PUBLIC static String ToString(
+        /* [in] */ Double d);
+
 private:
     StringUtils();
     StringUtils(const StringUtils&);

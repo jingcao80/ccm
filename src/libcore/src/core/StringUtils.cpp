@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "core/Character.h"
+#include "core/RealToString.h"
 #include "core/StringToReal.h"
 #include "core/StringUtils.h"
 #include "ccm.core.IByte.h"
@@ -405,6 +406,18 @@ String StringUtils::ToString(
     }
 
     return String(buf, charPos, (65 - charPos));
+}
+
+String StringUtils::ToString(
+    /* [in] */ Float f)
+{
+    return RealToString::FloatToString(f);
+}
+
+String StringUtils::ToString(
+    /* [in] */ Double d)
+{
+    return RealToString::DoubleToString(d);
 }
 
 }

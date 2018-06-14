@@ -172,7 +172,7 @@ ECode CStringBuffer::Append(
     return AbstractStringBuilder::Append(b);
 }
 
-ECode CStringBuffer::Append(
+ECode CStringBuffer::AppendChar(
     /* [in] */ Char c)
 {
     AutoLock lock(this);

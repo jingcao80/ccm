@@ -18,6 +18,7 @@
 #define __CCM_CORE_MATH_H__
 
 #include <ccmtypes.h>
+#include <math.h>
 
 namespace ccm {
 namespace core {
@@ -25,6 +26,12 @@ namespace core {
 class Math
 {
 public:
+    static Double Log(
+        /* [in] */ Double a);
+
+    static Double Ceil(
+        /* [in] */ Double a);
+
     static Integer Max(
         /* [in] */ Integer a,
         /* [in] */ Integer b);
@@ -38,7 +45,22 @@ public:
 
     COM_PUBLIC static Long DoubleToRawLongBits(
         /* [in] */ Double d);
+
+public:
+    COM_PUBLIC static const Long LONG_POWERS_OF_TEN[];
 };
+
+inline Double Math::Log(
+    /* [in] */ Double a)
+{
+    return log(a);
+}
+
+inline Double Math::Ceil(
+        /* [in] */ Double a)
+{
+    return ceil(a);
+}
 
 inline Integer Math::Max(
     /* [in] */ Integer a,

@@ -103,7 +103,7 @@ ECode CStringBuilder::Append(
     return AbstractStringBuilder::Append(b);
 }
 
-ECode CStringBuilder::Append(
+ECode CStringBuilder::AppendChar(
     /* [in] */ Char c)
 {
     return AbstractStringBuilder::Append(c);

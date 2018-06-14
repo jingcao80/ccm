@@ -30,6 +30,7 @@
 #include <asm/prctl.h>
 #include <sys/mman.h>
 #include <sys/prctl.h>
+#include <sys/resource.h>
 #include <sys/syscall.h>
 #include <signal.h>
 
@@ -174,6 +175,18 @@ static uint8_t* FindStackTop()
             AlignDown(__builtin_frame_address(0), kPageSize));
 }
 
+#define GET_REG(reg, var)       \
+    __asm__ __volatile__(       \
+        "mov    %%"#reg", %0;"  \
+        : "=m"(var)             \
+    )
+
+#define SET_REG(reg, var)       \
+    __asm__ __volatile__(       \
+        "mov    %0, %%"#reg";"  \
+        :: "m"(var)             \
+    )
+
 void NativeThread::InstallImplicitProtection()
 {
     uint8_t* pregion = mTlsPtr.mStackBegin - kStackOverflowProtectedSize;
@@ -219,10 +232,18 @@ void NativeThread::InstallImplicitProtection()
             static_cast<void*>(pregion));
 
     // Read every page from the high address to the low.
+    // We need to set sp register during reading in order to pass through the check statement
+    // "if (unlikely(address + 65536 + 32 * sizeof(unsigned long) < regs->sp))"
+    // in function __do_page_fault in linux-source/arch/x86/mm/fault.c.
+    Long oldRegSp;
+    GET_REG(rsp, oldRegSp);
     volatile uint8_t dontOptimizeThis;
     for (uint8_t* p = stackTop; p >= pregion; p -= kPageSize) {
+        uint8_t* pp = p + 0xf;
+        SET_REG(rsp, pp);
         dontOptimizeThis = *p;
     }
+    SET_REG(rsp, oldRegSp);
 
     Logger::V("NativeThread", "(again) installing stack protected region at %p to %p",
             static_cast<void*>(pregion), static_cast<void*>(pregion + kStackOverflowProtectedSize - 1));
@@ -515,6 +536,28 @@ static void GetThreadStack(
     pthread_attr_getstack(&attributes, stackBase, stackSize);
     pthread_attr_getguardsize(&attributes, guardSize);
     pthread_attr_destroy(&attributes);
+#if defined(__GLIBC__)
+    // If we're the main thread, check whether we were run with an unlimited stack. In that case,
+    // glibc will have reported a 2GB stack for our 32-bit process, and our stack overflow detection
+    // will be broken because we'll die long before we get close to 2GB.
+    Boolean isMainThread = (GetTid() == getpid());
+    if (isMainThread) {
+        rlimit stackLimit;
+        if (getrlimit(RLIMIT_STACK, &stackLimit) == -1) {
+            Logger::E("NativeThread", "getrlimit(RLIMIT_STACK) failed");
+        }
+        if (stackLimit.rlim_cur == RLIM_INFINITY) {
+            size_t oldStackSize = *stackSize;
+
+            // Use the kernel default limit as our size, and adjust the base to match.
+            *stackSize = 8 * MB;
+            *stackBase = reinterpret_cast<uint8_t*>(*stackBase) + (oldStackSize - *stackSize);
+
+            Logger::V("NativeThread", "Limiting unlimited stack (reported as %ld) to %ld with base %p",
+                    oldStackSize, *stackSize, *stackBase);
+        }
+    }
+#endif
 }
 
 Boolean NativeThread::InitStackHwm()

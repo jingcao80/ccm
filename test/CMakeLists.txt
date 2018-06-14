@@ -18,4 +18,5 @@ set(TEST_DIR ${PROJECT_DIR}/test)
 
 add_subdirectory(reflection)
 add_subdirectory(rpc)
+add_subdirectory(string)
 add_subdirectory(thread)

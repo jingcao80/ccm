@@ -14,16 +14,42 @@
 // limitations under the License.
 //=========================================================================
 
+namespace ccm {
+namespace util {
+namespace regex {
+
 [
-    uuid(3657416d-4638-4843-a0b9-eb7ef1794495),
-    url("http://ccm.org/component/library/libcore.so")
+    uuid(37d33b90-45d9-4b01-88e8-982e7e830c21),
+    version(0.1.0)
 ]
-module libcore
+interface IMatchResult
 {
+    End(
+        [out] Integer* index);
 
-include "core.cdl"
-include "io.cdl"
-include "core2.cdl"
-include "util.cdl"
 
+    End(
+        [in] Integer group,
+        [out] Integer* index);
+
+    Group(
+        [out] String* subseq);
+
+    Group(
+        [in] Integer group,
+        [out] String* subseq);
+
+    GroupCount(
+        [out] Integer* number);
+
+    Start(
+        [out] Integer* index);
+
+    Start(
+        [in] Integer group,
+        [out] Integer* index);
+}
+
+}
+}
 }

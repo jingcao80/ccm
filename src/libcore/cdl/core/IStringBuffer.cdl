@@ -52,9 +52,6 @@ interface IStringBuffer
         [in] Boolean b);
 
     Append(
-        [in] Char c);
-
-    Append(
         [in] Integer i);
 
     Append(
@@ -65,6 +62,9 @@ interface IStringBuffer
 
     Append(
         [in] Double d);
+
+    AppendChar(
+        [in] Char c);
 
     Delete(
         [in] Integer start,

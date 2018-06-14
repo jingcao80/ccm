@@ -52,6 +52,7 @@ set(SOURCES
     NativeThread.cpp
     NativeThreadList.cpp
     NativeTimeUtils.cpp
+    RealToString.cpp
     Runnable.cpp
     StringToReal.cpp
     StringUtils.cpp
