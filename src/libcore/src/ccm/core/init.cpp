@@ -14,23 +14,27 @@
 // limitations under the License.
 //=========================================================================
 
-include "util/regex/IMatcher.cdl"
-include "util/regex/IMatchResult.cdl"
-include "util/regex/IPattern.cdl"
+#include "ccm/core/NativeRuntime.h"
+#include <ccmlogger.h>
+#include <ccmtypes.h>
 
 namespace ccm {
-namespace util {
-namespace regex {
+namespace core {
 
-[
-    uuid(698f1b9a-dd5e-4ae4-924c-c1addd038571),
-    version(0.1.0)
-]
-coclass CPatternFactory
+static CONS_PROI_1
+void CoreStartup()
 {
-    interface IPatternFactory;
+    if (!NativeRuntime::Create()) {
+        Logger::E("CoreStartup", "Creating NativeRuntime failed.");
+        return;
+    }
+
+    NativeRuntime* runtime = NativeRuntime::Current();
+    Boolean started = runtime->Start();
+    if (!started) {
+        Logger::E("CoreStartup", "Starting NativeRuntime failed.");
+    }
 }
 
-}
 }
 }

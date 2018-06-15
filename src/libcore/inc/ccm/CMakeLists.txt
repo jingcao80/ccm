@@ -14,4 +14,12 @@
 # limitations under the License.
 #=========================================================================
 
-add_subdirectory(ccm)
+set(LIBCORE_CCM_INC_DIR ${LIBCORE_DIR}/inc/ccm)
+
+add_subdirectory(core)
+add_subdirectory(util)
+
+add_custom_target(deploy_libcore_headers
+    DEPENDS
+        deploy_libcore_core_headers
+        deploy_libcore_util_headers)

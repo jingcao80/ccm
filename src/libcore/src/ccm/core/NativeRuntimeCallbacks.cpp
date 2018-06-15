@@ -14,23 +14,27 @@
 // limitations under the License.
 //=========================================================================
 
-include "util/regex/IMatcher.cdl"
-include "util/regex/IMatchResult.cdl"
-include "util/regex/IPattern.cdl"
+#include "ccm/core/NativeRuntimeCallbacks.h"
+#include "ccm/core/NativeThread.h"
 
 namespace ccm {
-namespace util {
-namespace regex {
+namespace core {
 
-[
-    uuid(698f1b9a-dd5e-4ae4-924c-c1addd038571),
-    version(0.1.0)
-]
-coclass CPatternFactory
+void NativeRuntimeCallbacks::ThreadStart(
+    /* [in] */ NativeThread* self)
 {
-    interface IPatternFactory;
+    for (NativeThreadLifecycleCallback* cb : mThreadCallbacks) {
+        cb->ThreadStart(self);
+    }
 }
 
+void NativeRuntimeCallbacks::ThreadDeath(
+    /* [in] */ NativeThread* self)
+{
+    for (NativeThreadLifecycleCallback* cb : mThreadCallbacks) {
+        cb->ThreadDeath(self);
+    }
 }
+
 }
 }

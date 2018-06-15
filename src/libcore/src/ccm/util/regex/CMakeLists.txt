@@ -14,4 +14,20 @@
 # limitations under the License.
 #=========================================================================
 
-add_subdirectory(ccm)
+set(REGEX_DIR ${UTIL_DIR}/regex)
+
+include_directories(
+    ./
+    ../
+    ../../../inc
+    ${INC_DIR}
+    ${OBJ_DIR})
+
+set(SOURCES
+    CPatternFactory.cpp
+    Matcher.cpp
+    Pattern.cpp)
+
+add_library(regex STATIC
+    ${SOURCES})
+add_dependencies(regex build_libcore)

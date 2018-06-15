@@ -14,4 +14,20 @@
 # limitations under the License.
 #=========================================================================
 
-add_subdirectory(ccm)
+set(UTIL_DIR ${LIBCORE_CCM_SRC_DIR}/util)
+
+include_directories(
+    ./
+    ../
+    ../../../inc
+    ${INC_DIR}
+    ${OBJ_DIR})
+
+add_subdirectory(regex)
+
+set(SOURCES
+    EmptyArray.cpp)
+
+add_library(libcore_util STATIC
+    ${SOURCES})
+add_dependencies(libcore_util build_libcore)

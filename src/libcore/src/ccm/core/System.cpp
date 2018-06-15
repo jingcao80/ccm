@@ -14,23 +14,33 @@
 // limitations under the License.
 //=========================================================================
 
-include "util/regex/IMatcher.cdl"
-include "util/regex/IMatchResult.cdl"
-include "util/regex/IPattern.cdl"
+#include "ccm/core/System.h"
+#include <time.h>
 
 namespace ccm {
-namespace util {
-namespace regex {
+namespace core {
 
-[
-    uuid(698f1b9a-dd5e-4ae4-924c-c1addd038571),
-    version(0.1.0)
-]
-coclass CPatternFactory
+AutoPtr<IPrintStream> System::GetOut()
 {
-    interface IPatternFactory;
+    static AutoPtr<IPrintStream> sOut;
+    return sOut;
 }
 
+Long System::GetCurrentTimeMillis()
+{
+    timespec now;
+    now.tv_sec = now.tv_nsec = 0;
+    clock_gettime(CLOCK_MONOTONIC, &now);
+    return static_cast<Long>(now.tv_sec) * 1000 + now.tv_nsec / 1000000;
 }
+
+Long System::GetNanoTime()
+{
+    timespec now;
+    now.tv_sec = now.tv_nsec = 0;
+    clock_gettime(CLOCK_MONOTONIC, &now);
+    return static_cast<Long>(now.tv_sec) * 1000000000LL + now.tv_nsec;
+}
+
 }
 }

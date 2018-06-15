@@ -14,23 +14,12 @@
 // limitations under the License.
 //=========================================================================
 
-include "util/regex/IMatcher.cdl"
-include "util/regex/IMatchResult.cdl"
-include "util/regex/IPattern.cdl"
+#include "ccm/core/Runnable.h"
 
 namespace ccm {
-namespace util {
-namespace regex {
+namespace core {
 
-[
-    uuid(698f1b9a-dd5e-4ae4-924c-c1addd038571),
-    version(0.1.0)
-]
-coclass CPatternFactory
-{
-    interface IPatternFactory;
-}
+CCM_INTERFACE_IMPL_1(Runnable, SyncObject, IRunnable);
 
-}
 }
 }

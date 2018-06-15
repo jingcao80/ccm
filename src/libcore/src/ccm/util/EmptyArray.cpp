@@ -14,23 +14,12 @@
 // limitations under the License.
 //=========================================================================
 
-include "util/regex/IMatcher.cdl"
-include "util/regex/IMatchResult.cdl"
-include "util/regex/IPattern.cdl"
+#include "ccm/util/EmptyArray.h"
 
-namespace ccm {
+namespace ccm  {
 namespace util {
-namespace regex {
 
-[
-    uuid(698f1b9a-dd5e-4ae4-924c-c1addd038571),
-    version(0.1.0)
-]
-coclass CPatternFactory
-{
-    interface IPatternFactory;
-}
+const Array<String> EmptyArray::STRING(0);
 
-}
 }
 }

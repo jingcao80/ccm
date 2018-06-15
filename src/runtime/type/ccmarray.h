@@ -43,6 +43,8 @@ public:
 
     T* GetPayload() const;
 
+    Boolean IsNull() const;
+
     Boolean IsEmpty() const;
 
     Long Copy(
@@ -103,6 +105,8 @@ public:
     void Clear();
 
     Array Clone() const;
+
+    static Array Null();
 };
 
 template<class T>
@@ -190,6 +194,12 @@ template<class T>
 T* Array<T>::GetPayload() const
 {
     return static_cast<T*>(mData);
+}
+
+template<class T>
+Boolean Array<T>::IsNull() const
+{
+    return mSize == 0;
 }
 
 template<class T>
@@ -449,6 +459,12 @@ Array<T> Array<T>::Clone() const
     newArray.mType = mType;
 
     return newArray;
+}
+
+template<class T>
+Array<T> Array<T>::Null()
+{
+    return Array<T>();
 }
 
 }

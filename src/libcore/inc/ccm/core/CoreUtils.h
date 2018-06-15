@@ -14,23 +14,26 @@
 // limitations under the License.
 //=========================================================================
 
-include "util/regex/IMatcher.cdl"
-include "util/regex/IMatchResult.cdl"
-include "util/regex/IPattern.cdl"
+#ifndef __CCM_CORE_COREUTILS_H__
+#define __CCM_CORE_COREUTILS_H__
+
+#include "ccm.core.ICharSequence.h"
+#include <ccmautoptr.h>
 
 namespace ccm {
-namespace util {
-namespace regex {
+namespace core {
 
-[
-    uuid(698f1b9a-dd5e-4ae4-924c-c1addd038571),
-    version(0.1.0)
-]
-coclass CPatternFactory
+class CoreUtils
 {
-    interface IPatternFactory;
-}
+public:
+    static AutoPtr<ICharSequence> Box(
+        /* [in] */ const String& str);
+
+    static String Unbox(
+        /* [in] */ ICharSequence* seq);
+};
 
 }
 }
-}
+
+#endif // __CCM_CORE_COREUTILS_H__

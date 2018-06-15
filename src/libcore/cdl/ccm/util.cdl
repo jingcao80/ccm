@@ -14,6 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
+include "util/regex/Exceptions.cdl"
 include "util/regex/IMatcher.cdl"
 include "util/regex/IMatchResult.cdl"
 include "util/regex/IPattern.cdl"

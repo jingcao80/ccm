@@ -1653,7 +1653,7 @@ String CodeGenerator::GenCoclassesOnUserMode(
     if (mn->mCoclassNumber == 0) return String();
 
     for (int i = 0; i < mn->mCoclassNumber; i++) {
-        MetaCoclass* mc = mMetaComponent->mCoclasses[i];
+        MetaCoclass* mc = mMetaComponent->mCoclasses[mn->mCoclassIndexes[i]];
         builder.Append(GenCoclassOnUserMode(mc));
         if (i != mn->mCoclassNumber - 1) builder.Append("\n");
     }

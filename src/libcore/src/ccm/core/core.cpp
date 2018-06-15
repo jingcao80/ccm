@@ -14,23 +14,14 @@
 // limitations under the License.
 //=========================================================================
 
-include "util/regex/IMatcher.cdl"
-include "util/regex/IMatchResult.cdl"
-include "util/regex/IPattern.cdl"
+#include "ccm/core/CThread.h"
+#include "ccm/core/CThreadGroup.h"
 
 namespace ccm {
-namespace util {
-namespace regex {
+namespace core {
 
-[
-    uuid(698f1b9a-dd5e-4ae4-924c-c1addd038571),
-    version(0.1.0)
-]
-coclass CPatternFactory
-{
-    interface IPatternFactory;
-}
+CCM_OBJECT_IMPL(CThread)
+CCM_OBJECT_IMPL(CThreadGroup)
 
-}
 }
 }

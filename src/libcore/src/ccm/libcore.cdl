@@ -14,23 +14,16 @@
 // limitations under the License.
 //=========================================================================
 
-include "util/regex/IMatcher.cdl"
-include "util/regex/IMatchResult.cdl"
-include "util/regex/IPattern.cdl"
-
-namespace ccm {
-namespace util {
-namespace regex {
-
 [
-    uuid(698f1b9a-dd5e-4ae4-924c-c1addd038571),
-    version(0.1.0)
+    uuid(3657416d-4638-4843-a0b9-eb7ef1794495),
+    url("http://ccm.org/component/library/libcore.so")
 ]
-coclass CPatternFactory
+module libcore
 {
-    interface IPatternFactory;
-}
 
-}
-}
+include "core.cdl"
+include "io.cdl"
+include "core2.cdl"
+include "util.cdl"
+
 }
