@@ -21,6 +21,7 @@ file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/inc)
 #set(CMAKE_VERBOSE_MAKEFILE on)
 set(PROJECT_DIR ${CMAKE_BINARY_DIR}/../)
 set(BIN_DIR ${PROJECT_DIR}/bin)
+set(EXTERNAL_DIR ${PROJECT_DIR}/external)
 set(INC_DIR ${BIN_DIR}/inc)
 
 include(${PROJECT_DIR}/build/common.cmake)
