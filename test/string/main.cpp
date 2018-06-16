@@ -15,52 +15,98 @@
 //=========================================================================
 
 #include <core/StringUtils.h>
-#include <ccmautoptr.h>
-#include <stdio.h>
+#include <gtest/gtest.h>
 
 using namespace ccm;
 using ccm::core::StringUtils;
 
-int main(int argv, char** argc)
+Byte ParseByte(const char* s, Integer radix = 10)
 {
-    String byteStr("119");
-    Byte b;
-    StringUtils::ParseByte(byteStr, &b);
-    printf("==== StringUtils::ParseByte(\"%s\") is %d ====\n", byteStr.string(), b);
+    Byte value = 0;
+    StringUtils::ParseByte(String(s), radix, &value);
+    return value;
+}
 
-    String byteHexStr("77");
-    StringUtils::ParseByte(byteHexStr, 16, &b);
-    printf("==== StringUtils::ParseByte(\"%s\", 16) is %d ====\n", byteHexStr.string(), b);
+const char* ByteToString(Byte b)
+{
+    return StringUtils::ToString(b).string();
+}
 
-    printf("==== StringUtils::ToString(%d) is %s ====\n", b, StringUtils::ToString(b).string());
+Short ParseShort(const char* s, Integer radix = 10)
+{
+    Short value = 0;
+    StringUtils::ParseShort(String(s), radix, &value);
+    return value;
+}
 
+const char* ShortToString(Short s)
+{
+    return StringUtils::ToString(s).string();
+}
 
-    String shortStr("12345");
-    Short s;
-    StringUtils::ParseShort(shortStr, &s);
-    printf("==== StringUtils::ParseShort(\"%s\") is %d ====\n", shortStr.string(), s);
+Float ParseFloat(const char* s)
+{
+    Float value = 0;
+    StringUtils::ParseFloat(String(s), &value);
+    return value;
+}
 
-    String shortHexStr("3039");
-    StringUtils::ParseShort(shortHexStr, 16, &s);
-    printf("==== StringUtils::ParseShort(\"%s\", 16) is %d ====\n", shortHexStr.string(), s);
+const char* FloatToString(Float f)
+{
+    return StringUtils::ToString(f).string();
+}
 
-    printf("==== StringUtils::ToString(%d) is %s ====\n", s, StringUtils::ToString(s).string());
+Double ParseDouble(const char* s)
+{
+    Double value = 0;
+    StringUtils::ParseDouble(String(s), &value);
+    return value;
+}
 
+const char* DoubleToString(Double d)
+{
+    return StringUtils::ToString(d).string();
+}
 
-    String floatStr("0.01234");
-    Float a;
-    StringUtils::ParseFloat(floatStr, &a);
-    printf("==== StringUtils::ParseFloat(\"%s\") is %f ====\n", floatStr.string(), a);
+TEST(StringTest, ParseByteTest)
+{
+    EXPECT_EQ(119, ParseByte("119"));
+    EXPECT_EQ(119, ParseByte("77", 16));
+}
 
-    printf("==== StringUtils::ToString(%f) is %s ====\n", a, StringUtils::ToString(a).string());
+TEST(StringTest, ByteToStringTest)
+{
+    EXPECT_STREQ("119", ByteToString(119));
+}
 
+TEST(StringTest, ParseShortTest)
+{
+    EXPECT_EQ(12345, ParseShort("12345"));
+    EXPECT_EQ(12345, ParseShort("3039", 16));
+}
 
-    String doubleStr("0.056789e-23");
-    Double d;
-    StringUtils::ParseDouble(doubleStr, &d);
-    printf("==== StringUtils::ParseDouble(\"%s\") is %e ====\n", doubleStr.string(), d);
+TEST(StringTest, ShortToStringTest)
+{
+    EXPECT_STREQ("12345", ShortToString(12345));
+}
 
-    printf("==== StringUtils::ToString(%e) is %s ====\n", d, StringUtils::ToString(d).string());
+TEST(StringTest, ParseFloatTest)
+{
+    EXPECT_FLOAT_EQ(0.01234, ParseFloat("0.01234"));
+}
 
-    return 0;
+TEST(StringTest, ParseDoubleTest)
+{
+    EXPECT_DOUBLE_EQ(0.056789e-23, ParseDouble("0.056789e-23"));
+}
+
+TEST(StringTest, DoubleToStringTest)
+{
+    EXPECT_STREQ("5.6789E-25", DoubleToString(0.056789e-23));
+}
+
+int main(int argc, char **argv)
+{
+    testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }

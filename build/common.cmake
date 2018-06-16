@@ -17,6 +17,19 @@ macro(MKDIR target dir)
             -E make_directory ${dir})
 endmacro()
 
+macro(IMPORT_LIBRARY target)
+    add_library(${target} UNKNOWN IMPORTED)
+    set_property(TARGET ${target} PROPERTY IMPORTED_LOCATION ${BIN_DIR}/${target})
+endmacro()
+
+macro(IMPORT_GTEST)
+    add_library(libgtest.a UNKNOWN IMPORTED)
+    set_property(TARGET libgtest.a PROPERTY IMPORTED_LOCATION ${TEST_DIR}/gtest/lib/libgtest.a)
+    add_library(libgtest_main.a UNKNOWN IMPORTED)
+    set_property(TARGET libgtest_main.a PROPERTY IMPORTED_LOCATION ${TEST_DIR}/gtest/lib/libgtest_main.a)
+    set(GTEST_LIBS libgtest.a libgtest_main.a pthread)
+endmacro()
+
 add_compile_options(
     -std=c++11
     -fPIC

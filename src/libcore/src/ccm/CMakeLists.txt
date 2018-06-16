@@ -59,8 +59,7 @@ set(LIBCORE_LINK_LIBS
     libcore_util
     -Wl,--no-whole-archive)
 
-add_library(ccmrt.so UNKNOWN IMPORTED)
-set_property(TARGET ccmrt.so PROPERTY IMPORTED_LOCATION ${BIN_DIR}/ccmrt.so)
+IMPORT_LIBRARY(ccmrt.so)
 
 add_library(libcore
     SHARED

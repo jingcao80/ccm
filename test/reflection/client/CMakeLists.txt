@@ -30,8 +30,7 @@ set(SOURCES
 set(GENERATED_SOURCES
     ${OBJ_DIR}/ReflectionTestUnit.cpp)
 
-add_library(ccmrt.so UNKNOWN IMPORTED)
-set_property(TARGET ccmrt.so PROPERTY IMPORTED_LOCATION ${BIN_DIR}/ccmrt.so)
+IMPORT_LIBRARY(ccmrt.so)
 
 add_executable(testReflection
     ${SOURCES}

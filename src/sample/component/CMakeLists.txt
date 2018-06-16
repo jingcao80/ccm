@@ -34,8 +34,7 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/FooBarDemoPub.cpp
     ${OBJ_DIR}/MetadataWrapper.cpp)
 
-add_library(ccmrt.so UNKNOWN IMPORTED)
-set_property(TARGET ccmrt.so PROPERTY IMPORTED_LOCATION ${BIN_DIR}/ccmrt.so)
+IMPORT_LIBRARY(ccmrt.so)
 
 add_library(FooBarDemo
     SHARED

@@ -30,10 +30,8 @@ set(SOURCES
 set(GENERATED_SOURCES
     ${OBJ_DIR}/libcore.cpp)
 
-add_library(ccmrt.so UNKNOWN IMPORTED)
-add_library(libcore.so UNKNOWN IMPORTED)
-set_property(TARGET ccmrt.so PROPERTY IMPORTED_LOCATION ${BIN_DIR}/ccmrt.so)
-set_property(TARGET libcore.so PROPERTY IMPORTED_LOCATION ${BIN_DIR}/libcore.so)
+IMPORT_LIBRARY(ccmrt.so)
+IMPORT_LIBRARY(libcore.so)
 
 add_executable(testThreadCli
     ${SOURCES}

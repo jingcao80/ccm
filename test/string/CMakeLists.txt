@@ -27,14 +27,13 @@ include_directories(
 set(SOURCES
     main.cpp)
 
-add_library(ccmrt.so UNKNOWN IMPORTED)
-add_library(libcore.so UNKNOWN IMPORTED)
-set_property(TARGET ccmrt.so PROPERTY IMPORTED_LOCATION ${BIN_DIR}/ccmrt.so)
-set_property(TARGET libcore.so PROPERTY IMPORTED_LOCATION ${BIN_DIR}/libcore.so)
+IMPORT_LIBRARY(ccmrt.so)
+IMPORT_LIBRARY(libcore.so)
+IMPORT_GTEST()
 
 add_executable(testString
     ${SOURCES})
-target_link_libraries(testString ccmrt.so libcore.so)
+target_link_libraries(testString ccmrt.so libcore.so ${GTEST_LIBS})
 add_dependencies(testString libservicemanager)
 
 COPY(testString ${OBJ_DIR}/testString ${BIN_DIR})
