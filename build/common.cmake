@@ -27,6 +27,7 @@ macro(IMPORT_GTEST)
     set_property(TARGET libgtest.a PROPERTY IMPORTED_LOCATION ${TEST_DIR}/gtest/lib/libgtest.a)
     add_library(libgtest_main.a UNKNOWN IMPORTED)
     set_property(TARGET libgtest_main.a PROPERTY IMPORTED_LOCATION ${TEST_DIR}/gtest/lib/libgtest_main.a)
+    include_directories(${TEST_DIR}/gtest/inc)
     set(GTEST_LIBS libgtest.a libgtest_main.a pthread)
 endmacro()
 
