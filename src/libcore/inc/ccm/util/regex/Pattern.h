@@ -51,17 +51,17 @@ public:
         /* [out] */ IPattern** pattern);
 
     ECode GetPattern(
-        /* [out] */ String* pattStr);
+        /* [out] */ String* pattStr) override;
 
     ECode ToString(
-        /* [out] */ String* pattStr);
+        /* [out] */ String* pattStr) override;
 
     ECode Matcher(
         /* [in] */ ICharSequence* input,
-        /* [out] */ IMatcher** matcher);
+        /* [out] */ IMatcher** matcher) override;
 
     ECode Flags(
-        /* [out] */ Integer* flags);
+        /* [out] */ Integer* flags) override;
 
     static ECode Matches(
         /* [in] */ const String& regex,
@@ -71,7 +71,7 @@ public:
     ECode Split(
         /* [in] */ ICharSequence* input,
         /* [in] */ Integer limit,
-        /* [out, callee] */ Array<String>* strArray);
+        /* [out, callee] */ Array<String>* strArray) override;
 
     static ECode FastSplit(
         /* [in] */ const String& re,
@@ -81,11 +81,14 @@ public:
 
     ECode Split(
         /* [in] */ ICharSequence* input,
-        /* [out, callee] */ Array<String>* strArray);
+        /* [out, callee] */ Array<String>* strArray) override;
 
     static ECode Quote(
         /* [in] */ const String& s,
         /* [out] */ String* pattStr);
+
+    static Pattern* From(
+        /* [in] */ IPattern* p);
 
 private:
     Pattern();
@@ -102,12 +105,20 @@ private:
         /* [out] */ HANDLE* handle);
 
 private:
+    friend class Matcher;
+
     String mPattern;
 
     Integer mFlags = 0;
 
     HANDLE mNative = 0;
 };
+
+inline Pattern* Pattern::From(
+    /* [in] */ IPattern* p)
+{
+    return (Pattern*)p;
+}
 
 }
 }

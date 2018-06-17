@@ -15,14 +15,22 @@
 //=========================================================================
 
 #include "ccm/core/Character.h"
+#include "ccm/core/CoreUtils.h"
 #include "ccm/core/RealToString.h"
 #include "ccm/core/StringToReal.h"
 #include "ccm/core/StringUtils.h"
+#include "ccm/util/regex/Pattern.h"
 #include "ccm.core.IByte.h"
 #include "ccm.core.IInteger.h"
 #include "ccm.core.ILong.h"
 #include "ccm.core.IShort.h"
+#include "ccm.util.regex.IMatcher.h"
+#include "ccm.util.regex.IPattern.h"
 #include <ccmlogger.h>
+
+using ccm::util::regex::IMatcher;
+using ccm::util::regex::IPattern;
+using ccm::util::regex::Pattern;
 
 namespace ccm {
 namespace core {
@@ -418,6 +426,54 @@ String StringUtils::ToString(
     /* [in] */ Double d)
 {
     return RealToString::DoubleToString(d);
+}
+
+ECode StringUtils::ReplaceFirst(
+    /* [in] */ const String& input,
+    /* [in] */ const String& regex,
+    /* [in] */ const String& replacement,
+    /* [out] */ String* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    AutoPtr<IPattern> p;
+    Pattern::Compile(regex, (IPattern**)&p);
+    AutoPtr<IMatcher> m;
+    p->Matcher(CoreUtils::Box(input), (IMatcher**)&m);
+    return m->ReplaceFirst(replacement, result);
+}
+
+ECode StringUtils::ReplaceAll(
+    /* [in] */ const String& input,
+    /* [in] */ const String& regex,
+    /* [in] */ const String& replacement,
+    /* [out] */ String* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    AutoPtr<IPattern> p;
+    Pattern::Compile(regex, (IPattern**)&p);
+    AutoPtr<IMatcher> m;
+    p->Matcher(CoreUtils::Box(input), (IMatcher**)&m);
+    return m->ReplaceAll(replacement, result);
+}
+
+Array<String> StringUtils::Split(
+    /* [in] */ const String& input,
+    /* [in] */ const String& regex,
+    /* [in] */ Integer limit)
+{
+    // Try fast splitting without allocating Pattern object
+    Array<String> strArr;
+    Pattern::FastSplit(regex, input, limit, &strArr);
+    if (!strArr.IsNull()) {
+        return strArr;
+    }
+
+    AutoPtr<IPattern> p;
+    Pattern::Compile(regex, (IPattern**)&p);
+    p->Split(CoreUtils::Box(input), limit, &strArr);
+    return strArr;
 }
 
 }

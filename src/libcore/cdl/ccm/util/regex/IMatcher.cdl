@@ -68,7 +68,7 @@ interface IMatcher
         [out] Boolean* result);
 
     Pattern(
-        [out] IPattern* pattern);
+        [out] IPattern** pattern);
 
     Region(
         [in] Integer start,

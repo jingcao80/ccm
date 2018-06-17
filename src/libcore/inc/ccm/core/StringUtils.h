@@ -95,6 +95,27 @@ public:
     COM_PUBLIC static String ToString(
         /* [in] */ Double d);
 
+    COM_PUBLIC static ECode ReplaceFirst(
+        /* [in] */ const String& input,
+        /* [in] */ const String& regex,
+        /* [in] */ const String& replacement,
+        /* [out] */ String* result);
+
+    COM_PUBLIC static ECode ReplaceAll(
+        /* [in] */ const String& input,
+        /* [in] */ const String& regex,
+        /* [in] */ const String& replacement,
+        /* [out] */ String* result);
+
+    static Array<String> Split(
+        /* [in] */ const String& input,
+        /* [in] */ const String& regex);
+
+    COM_PUBLIC static Array<String> Split(
+        /* [in] */ const String& input,
+        /* [in] */ const String& regex, 
+        /* [in] */ Integer limit); 
+
 private:
     StringUtils();
     StringUtils(const StringUtils&);
@@ -139,6 +160,13 @@ inline String StringUtils::ToString(
     /* [in] */ Short b)
 {
     return ToString((Integer)b);
+}
+
+inline Array<String> StringUtils::Split(
+    /* [in] */ const String& input,
+    /* [in] */ const String& regex)
+{
+    return Split(input, regex, 0);
 }
 
 }

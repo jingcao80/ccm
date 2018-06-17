@@ -51,10 +51,40 @@ private:
         /* [in] */ const String& signStr);
 
     void ParseExponent(
-        /* [in] */ const String& exponentStr);
+        /* [in] */ String exponentStr);
 
     void ParseMantissa(
         /* [in] */ const String& significantStr);
+
+    void SetInfinite();
+
+    void SetZero();
+
+    void CheckedAddExponent(
+        /* [in] */ Long offset);
+
+    void ProcessNormalNumber();
+
+    void ProcessSubNormalNumber();
+
+    void FitMantissaInDesiredWidth(
+        /* [in] */ Integer desiredWidth);
+
+    void DiscardTrailingBits(
+        /* [in] */ Long num);
+
+    void Round();
+
+    String GetNormalizedSignificand(
+        /* [in] */ const String& strIntegerPart, 
+        /* [in] */ const String& strDecimalPart);
+
+    Integer GetOffset(
+        /* [in] */ String strIntegerPart, 
+        /* [in] */ const String& strDecimalPart);
+
+    Integer CountBitsLength(
+        /* [in] */ Long value);
 
     static AutoPtr<IPattern> MAKE_PATTERN();
 
@@ -66,6 +96,10 @@ private:
     static constexpr Integer FLOAT_EXPONENT_WIDTH = 8;
 
     static constexpr Integer FLOAT_MANTISSA_WIDTH = 23;
+
+    static constexpr Integer HEX_RADIX = 16;
+
+    static constexpr Integer MAX_SIGNIFICANT_LENGTH = 15;
 
     const Integer EXPONENT_WIDTH;
 
@@ -84,6 +118,8 @@ private:
     Long mExponent;
 
     Long mMantissa;
+
+    String mAbandonedNumber = String("");
 };
 
 }

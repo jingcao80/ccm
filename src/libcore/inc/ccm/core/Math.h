@@ -26,10 +26,10 @@ namespace core {
 class Math
 {
 public:
-    static Double Log(
+    static Double Ceil(
         /* [in] */ Double a);
 
-    static Double Ceil(
+    static Double Log(
         /* [in] */ Double a);
 
     static Integer Max(
@@ -39,6 +39,9 @@ public:
     static Integer Min(
         /* [in] */ Integer a,
         /* [in] */ Integer b);
+
+    static Integer Signum(
+        /* [in] */ Long i);
 
     COM_PUBLIC static Integer FloatToRawIntBits(
         /* [in] */ Float value);
@@ -52,20 +55,23 @@ public:
     COM_PUBLIC static Double LongBitsToDouble(
         /* [in] */ Long value);
 
+    COM_PUBLIC static Integer NumberOfLeadingZeros(
+        /* [in] */ Long value);
+
 public:
     COM_PUBLIC static const Long LONG_POWERS_OF_TEN[];
 };
-
-inline Double Math::Log(
-    /* [in] */ Double a)
-{
-    return log(a);
-}
 
 inline Double Math::Ceil(
         /* [in] */ Double a)
 {
     return ceil(a);
+}
+
+inline Double Math::Log(
+    /* [in] */ Double a)
+{
+    return log(a);
 }
 
 inline Integer Math::Max(
@@ -80,6 +86,13 @@ inline Integer Math::Min(
     /* [in] */ Integer b)
 {
     return (a <= b) ? a : b;
+}
+
+inline Integer Math::Signum(
+    /* [in] */ Long i)
+{
+    // HD, Section 2-7
+    return (Integer) ((i >> 63) | (((unsigned Long)-i) >> 63));
 }
 
 }

@@ -85,5 +85,22 @@ Double Math::LongBitsToDouble(
     return d.d;
 }
 
+Integer Math::NumberOfLeadingZeros(
+    /* [in] */ Long value)
+{
+    if (value == 0) {
+        return 64;
+    }
+    Integer n = 1;
+    Integer x = (Integer)(((unsigned Long)value) >> 32);
+    if (x == 0) { n += 32; x = (Integer)value; }
+    if (((unsigned Integer)x) >> 16 == 0) { n += 16; x <<= 16; }
+    if (((unsigned Integer)x) >> 24 == 0) { n +=  8; x <<=  8; }
+    if (((unsigned Integer)x) >> 28 == 0) { n +=  4; x <<=  4; }
+    if (((unsigned Integer)x) >> 30 == 0) { n +=  2; x <<=  2; }
+    n -= ((unsigned Integer)x) >> 31;
+    return n;
+}
+
 }
 }

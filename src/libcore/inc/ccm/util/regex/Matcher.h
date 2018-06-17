@@ -23,6 +23,8 @@
 #include "ccm.util.regex.IMatchResult.h"
 #include "ccm.util.regex.IPattern.h"
 #include "ccm/core/SyncObject.h"
+#include <ccmautoptr.h>
+#include <ccmrefbase.h>
 
 using ccm::core::ICharSequence;
 using ccm::core::IStringBuffer;
@@ -37,6 +39,47 @@ class Matcher final
     , public IMatcher
     , public IMatchResult
 {
+private:
+    class OffsetBasedMatchResult
+        : public LightRefBase
+        , public IMatchResult
+    {
+    public:
+        OffsetBasedMatchResult(
+            /* [in] */ const String& input, 
+            /* [in] */ const Array<Integer>& offsets);
+
+        CCM_INTERFACE_DECL();
+
+        ECode Start(
+            /* [out] */ Integer* index) override;
+
+        ECode Start(
+            /* [in] */ Integer group,
+            /* [out] */ Integer* index) override;
+
+        ECode End(
+            /* [out] */ Integer* index) override;
+
+        ECode End(
+            /* [in] */ Integer group,
+            /* [out] */ Integer* index) override;
+
+        ECode Group(
+            /* [out] */ String* subseq) override;
+
+        ECode Group(
+            /* [in] */ Integer group,
+            /* [out] */ String* subseq) override;
+
+        ECode GroupCount(
+            /* [out] */ Integer* number) override;
+
+    private:
+        String mInput;
+        Array<Integer> mOffsets;
+    };
+
 public:
     Matcher();
 
@@ -46,111 +89,236 @@ public:
         /* [in] */ IPattern* parent,
         /* [in] */ ICharSequence* text);
 
-    ECode AppendReplacement(
-        /* [in] */ IStringBuffer* sb,
-        /* [in] */ const String& replacement);
+    ECode Pattern(
+        /* [out] */ IPattern** pattern) override;
 
-    ECode AppendTail(
-        /* [in] */ IStringBuffer* sb);
+    ECode ToMatchResult(
+        /* [out] */ IMatchResult** result) override;
+
+    ECode UsePattern(
+        /* [in] */ IPattern* newPattern) override;
+
+    ECode End(
+        /* [out] */ Integer* index) override;
+
+    ECode End(
+        /* [in] */ Integer group,
+        /* [out] */ Integer* index) override;
 
     ECode End(
         /* [in] */ const String& name,
-        /* [out] */ Integer* index);
+        /* [out] */ Integer* index) override;
 
-    ECode Find(
-        /* [out] */ Boolean* result);
+    ECode Group(
+        /* [out] */ String* subseq) override;
 
-    ECode Find(
-        /* [in] */ Integer start,
-        /* [out] */ Boolean* result);
+    ECode Group(
+        /* [in] */ Integer group,
+        /* [out] */ String* subseq) override;
 
     ECode Group(
         /* [in] */ const String& name,
-        /* [out] */ String* subseq);
+        /* [out] */ String* subseq) override;
 
-    ECode HasAnchoringBounds(
-        /* [out] */ Boolean* result);
-
-    ECode HasTransparentBounds(
-        /* [out] */ Boolean* result);
-
-    ECode HitEnd(
-        /* [out] */ Boolean* result);
-
-    ECode LookingAt(
-        /* [out] */ Boolean* result);
+    ECode GroupCount(
+        /* [out] */ Integer* number) override;
 
     ECode Matches(
-        /* [out] */ Boolean* result);
+        /* [out] */ Boolean* result) override;
 
-    ECode Pattern(
-        /* [out] */ IPattern* pattern);
+    ECode Find(
+        /* [out] */ Boolean* result) override;
 
-    ECode Region(
+    ECode Find(
         /* [in] */ Integer start,
-        /* [in] */ Integer end);
+        /* [out] */ Boolean* result) override;
 
-    ECode RegionStart(
-        /* [out] */ Integer* start);
+    ECode LookingAt(
+        /* [out] */ Boolean* result) override;
 
-    ECode RegionEnd(
-        /* [out] */ Integer* end);
+    static ECode QuoteReplacement(
+        /* [in] */ const String& s,
+        /* [out] */ String* str);
+
+    ECode AppendReplacement(
+        /* [in] */ IStringBuffer* sb,
+        /* [in] */ const String& replacement) override;
+
+    ECode AppendTail(
+        /* [in] */ IStringBuffer* sb) override;
 
     ECode ReplaceAll(
         /* [in] */ const String& replacement,
-        /* [out] */ String* str);
+        /* [out] */ String* str) override;
 
     ECode ReplaceFirst(
         /* [in] */ const String& replacement,
-        /* [out] */ String* str);
+        /* [out] */ String* str) override;
+
+    ECode Region(
+        /* [in] */ Integer start,
+        /* [in] */ Integer end) override;
+
+    ECode RegionStart(
+        /* [out] */ Integer* start) override;
+
+    ECode RegionEnd(
+        /* [out] */ Integer* end) override;
+
+    ECode HasTransparentBounds(
+        /* [out] */ Boolean* result) override;
+
+    ECode UseTransparentBounds(
+        /* [in] */ Boolean value) override;
+
+    ECode HasAnchoringBounds(
+        /* [out] */ Boolean* result) override;
+
+    ECode UseAnchoringBounds(
+        /* [in] */ Boolean value) override;
+
+    ECode ToString(
+        /* [in] */ String* str) override;
+
+    ECode HitEnd(
+        /* [out] */ Boolean* result) override;
 
     ECode RequireEnd(
-        /* [out] */ Boolean* result);
+        /* [out] */ Boolean* result) override;
 
-    ECode Reset();
+    ECode Reset() override;
 
     ECode Reset(
-        /* [in] */ ICharSequence* input);
+        /* [in] */ ICharSequence* input) override;
+
+    ECode Start(
+        /* [out] */ Integer* index) override;
+
+    ECode Start(
+        /* [in] */ Integer group,
+        /* [out] */ Integer* index) override;
 
     ECode Start(
         /* [in] */ const String& name,
-        /* [out] */ Integer* index);
+        /* [out] */ Integer* index) override;
 
-    ECode ToMatchResult(
-        /* [out] */ IMatchResult** result);
+private:
+    ECode AppendEvaluated(
+        /* [in] */ IStringBuffer* buffer, 
+        /* [in] */ const String& s);
 
-    ECode UseAnchoringBounds(
+    ECode Reset(
+        /* [in] */ ICharSequence* input, 
+        /* [in] */ Integer start, 
+        /* [in] */ Integer end);
+
+    void ResetForInput();
+
+    ECode EnsureMatch();
+
+    static ECode GetMatchedGroupIndex(
+        /* [in] */ HANDLE patternAddr, 
+        /* [in] */ const String& name,
+        /* [out] */ Integer* group);
+
+    static Integer GetMatchedGroupIndexImpl(
+        /* [in] */ HANDLE patternAddr, 
+        /* [in] */ const String& name);
+
+    static Boolean FindImpl(
+        /* [in] */ HANDLE addr, 
+        /* [in] */ Integer startIndex, 
+        /* [in] */ Array<Integer>& offsets);
+
+    static Boolean FindNextImpl(
+        /* [in] */ HANDLE addr, 
+        /* [in] */ Array<Integer>& offsets);
+
+    static Integer GroupCountImpl(
+        /* [in] */ HANDLE addr);
+
+    static Boolean HitEndImpl(
+        /* [in] */ HANDLE addr);
+
+    static Boolean LookingAtImpl(
+        /* [in] */ HANDLE addr, 
+        /* [in] */ Array<Integer>& offsets);
+
+    static Boolean MatchesImpl(
+        /* [in] */ HANDLE addr, 
+        /* [in] */ Array<Integer>& offsets);
+
+    static HANDLE OpenImpl(
+        /* [in] */ HANDLE patternAddr);
+
+    static Boolean RequireEndImpl(
+        /* [in] */ HANDLE addr);
+
+    static void SetInputImpl(
+        /* [in] */ HANDLE addr, 
+        /* [in] */ const String& s, 
+        /* [in] */ Integer start, 
+        /* [in] */ Integer end);
+
+    static void UseAnchoringBoundsImpl(
+        /* [in] */ HANDLE addr, 
         /* [in] */ Boolean value);
 
-    ECode UsePattern(
-        /* [in] */ IPattern* newPattern);
-
-    ECode UseTransparentBounds(
+    static void UseTransparentBoundsImpl(
+        /* [in] */ HANDLE addr, 
         /* [in] */ Boolean value);
 
-    ECode End(
-        /* [out] */ Integer* index);
+private:
+    AutoPtr<IPattern> mPattern;
 
-    ECode End(
-        /* [in] */ Integer group,
-        /* [out] */ Integer* index);
+    /**
+     * The address of the native peer.
+     * Uses of this must be manually synchronized to avoid native crashes.
+     */
+    HANDLE mNative = 0;
 
-    ECode Group(
-        /* [out] */ String* subseq);
+    /**
+     * Holds the input text.
+     */
+    String mInput;
 
-    ECode Group(
-        /* [in] */ Integer group,
-        /* [out] */ String* subseq);
+    /**
+     * Holds the start of the region, or 0 if the matching should start at the
+     * beginning of the text.
+     */
+    Integer mRegionStart = 0;
 
-    ECode GroupCount(
-        /* [out] */ Integer* number);
+    /**
+     * Holds the end of the region, or input.length() if the matching should
+     * go until the end of the input.
+     */
+    Integer mRegionEnd = 0;
 
-    ECode Start(
-        /* [out] */ Integer* index);
+    /**
+     * Holds the position where the next append operation will take place.
+     */
+    Integer mAppendPos = 0;
 
-    ECode Start(
-        /* [in] */ Integer group,
-        /* [out] */ Integer* index);
+    /**
+     * Reflects whether a match has been found during the most recent find
+     * operation.
+     */
+    Boolean mMatchFound = false;
+
+    /**
+     * Holds the offsets for the most recent match.
+     */
+    Array<Integer> mMatchOffsets;
+
+    /**
+     * Reflects whether the bounds of the region are anchoring.
+     */
+    Boolean mAnchoringBounds = true;
+
+    /**
+     * Reflects whether the bounds of the region are transparent.
+     */
+    Boolean mTransparentBounds = false;
 };
 
 }

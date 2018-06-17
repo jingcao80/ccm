@@ -14,10 +14,13 @@
 // limitations under the License.
 //=========================================================================
 
+#include "ccm/core/Character.h"
 #include "ccm/core/CoreUtils.h"
 #include "ccm/core/HexStringParser.h"
 #include "ccm/core/Math.h"
+#include "ccm/core/StringUtils.h"
 #include "ccm/util/regex/Pattern.h"
+#include "ccm.core.ILong.h"
 #include "ccm.util.regex.IMatcher.h"
 #include "ccm.util.regex.IMatchResult.h"
 #include <ccmlogger.h>
@@ -105,12 +108,195 @@ void HexStringParser::ParseHexSign(
 }
 
 void HexStringParser::ParseExponent(
-    /* [in] */ const String& exponentStr)
-{}
+    /* [in] */ String exponentStr)
+{
+    Char leadingChar = exponentStr.GetChar(0);
+    Integer expSign = (leadingChar == '-' ? -1 : 1);
+    if (!Character::IsDigit(leadingChar)) {
+        exponentStr = exponentStr.Substring(1);
+    }
+
+    Long value;
+    ECode ec = StringUtils::ParseLong(exponentStr, &value);
+    if (FAILED(ec)) {
+        mExponent = expSign * ILong::MAX_VALUE;
+        return;
+    }
+    mExponent = expSign * value;
+    CheckedAddExponent(EXPONENT_BASE);
+}
 
 void HexStringParser::ParseMantissa(
     /* [in] */ const String& significantStr)
-{}
+{
+    Array<String> strings = StringUtils::Split(significantStr, String("\\."));
+    String strIntegerPart = strings[0];
+    String strDecimalPart = strings.GetLength() > 1 ? strings[1] : String("");
+
+    String significand = GetNormalizedSignificand(strIntegerPart, strDecimalPart);
+    if (significand.Equals("0")) {
+        SetZero();
+        return;
+    }
+
+    Integer offset = GetOffset(strIntegerPart, strDecimalPart);
+    CheckedAddExponent(offset);
+
+    if (mExponent >= MAX_EXPONENT) {
+        SetInfinite();
+        return;
+    }
+
+    if (mExponent <= MIN_EXPONENT) {
+        SetZero();
+        return;
+    }
+
+    if (significand.GetLength() > MAX_SIGNIFICANT_LENGTH) {
+        mAbandonedNumber = significand.Substring(MAX_SIGNIFICANT_LENGTH);
+        significand = significand.Substring(0, MAX_SIGNIFICANT_LENGTH);
+    }
+
+    StringUtils::ParseLong(significand, HEX_RADIX, &mMantissa);
+
+    if (mExponent >= 1) {
+        ProcessNormalNumber();
+    } 
+    else{
+        ProcessSubNormalNumber();
+    }
+}
+
+void HexStringParser::SetInfinite()
+{
+    mExponent = MAX_EXPONENT;
+    mMantissa = 0;
+}
+
+void HexStringParser::SetZero()
+{
+    mExponent = 0;
+    mMantissa = 0;
+}
+
+void HexStringParser::CheckedAddExponent(
+    /* [in] */ Long offset)
+{
+    Long result = mExponent + offset;
+    Integer expSign = Math::Signum(mExponent);
+    if (expSign * Math::Signum(offset) > 0 && expSign * Math::Signum(result) < 0) {
+        mExponent = expSign * ILong::MAX_VALUE;
+    }
+    else {
+        mExponent = result;
+    }
+}
+
+void HexStringParser::ProcessNormalNumber()
+{
+    Integer desiredWidth = MANTISSA_WIDTH + 2;
+    FitMantissaInDesiredWidth(desiredWidth);
+    Round();
+    mMantissa = mMantissa & MANTISSA_MASK;
+}
+
+void HexStringParser::ProcessSubNormalNumber()
+{
+    Integer desiredWidth = MANTISSA_WIDTH + 1;
+    desiredWidth += (Integer)mExponent;//lends bit from mantissa to exponent
+    mExponent = 0;
+    FitMantissaInDesiredWidth(desiredWidth);
+    Round();
+    mMantissa = mMantissa & MANTISSA_MASK;
+}
+
+void HexStringParser::FitMantissaInDesiredWidth(
+    /* [in] */ Integer desiredWidth)
+{
+    Integer bitLength = CountBitsLength(mMantissa);
+    if (bitLength > desiredWidth) {
+        DiscardTrailingBits(bitLength - desiredWidth);
+    } 
+    else {
+        mMantissa <<= (desiredWidth - bitLength);
+    }
+}
+
+void HexStringParser::DiscardTrailingBits(
+    /* [in] */ Long num)
+{
+    Long mask = ~(-1ll << num);
+    mAbandonedNumber = String::Format("%s%lld", 
+            mAbandonedNumber.string(), mMantissa & mask);
+    mMantissa >>= num;
+}
+
+void HexStringParser::Round()
+{
+    String result;
+    StringUtils::ReplaceAll(mAbandonedNumber, String("0+"), String(""), &result);
+    Boolean moreThanZero = (result.GetLength() > 0 ? true : false);
+
+    Integer lastDiscardedBit = (Integer) (mMantissa & 1ll);
+    mMantissa >>= 1;
+    Integer tailBitInMantissa = (Integer) (mMantissa & 1ll);
+
+    if (lastDiscardedBit == 1 && (moreThanZero || tailBitInMantissa == 1)) {
+        Integer oldLength = CountBitsLength(mMantissa);
+        mMantissa += 1ll;
+        Integer newLength = CountBitsLength(mMantissa);
+
+        //Rounds up to exponent when whole bits of mantissa are one-bits.
+        if (oldLength >= MANTISSA_WIDTH && newLength > oldLength) {
+            CheckedAddExponent(1);
+        }
+    }
+}
+
+String HexStringParser::GetNormalizedSignificand(
+    /* [in] */ const String& strIntegerPart, 
+    /* [in] */ const String& strDecimalPart)
+{
+    String significand = strIntegerPart + strDecimalPart;
+    StringUtils::ReplaceFirst(significand, String("^0+"), String(""), &significand);
+    if (significand.GetLength() == 0) {
+        significand = "0";
+    }
+    return significand;
+}
+
+Integer HexStringParser::GetOffset(
+    /* [in] */ String strIntegerPart, 
+    /* [in] */ const String& strDecimalPart)
+{
+    StringUtils::ReplaceFirst(strIntegerPart, String("^0+"), String(""), &strIntegerPart);
+
+    //If the Integer part is a nonzero number.
+    if (strIntegerPart.GetLength() != 0) {
+        String leadingNumber = strIntegerPart.Substring(0, 1);
+        Long value;
+        StringUtils::ParseLong(leadingNumber, HEX_RADIX, &value);
+        return (strIntegerPart.GetLength() - 1) * 4 + CountBitsLength(value) - 1;
+    }
+
+    //If the Integer part is a zero number.
+    Integer i;
+    for (i = 0; i < strDecimalPart.GetLength() && strDecimalPart.GetChar(i) == '0'; i++);
+    if (i == strDecimalPart.GetLength()) {
+        return 0;
+    }
+    String leadingNumber = strDecimalPart.Substring(i, i + 1);
+    Long value;
+    StringUtils::ParseLong(leadingNumber, HEX_RADIX, &value);
+    return (-i - 1) * 4 + CountBitsLength(value) - 1;
+}
+
+Integer HexStringParser::CountBitsLength(
+    /* [in] */ Long value)
+{
+    Integer leadingZeros = Math::NumberOfLeadingZeros(value);
+    return ILong::SIZE - leadingZeros;
+}
 
 AutoPtr<IPattern> HexStringParser::MAKE_PATTERN()
 {

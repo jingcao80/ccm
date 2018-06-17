@@ -160,6 +160,8 @@ ECode Pattern::Split(
         *strArray = fast;
         return NOERROR;
     }
+
+
 }
 
 ECode Pattern::FastSplit(

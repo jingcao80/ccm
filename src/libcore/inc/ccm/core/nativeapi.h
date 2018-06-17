@@ -19,6 +19,7 @@
 
 #include "ccm/core/globals.h"
 #include <ccmtypes.h>
+#include <unicode/utypes.h>
 
 namespace ccm {
 namespace core {
@@ -67,6 +68,10 @@ ECode NativeObjectWait(
     /* [in] */ HANDLE handle,
     /* [in] */ Long ms,
     /* [in] */ Integer ns);
+
+Boolean MaybeCauseIcuException(
+    /* [in] */ const char* function, 
+    /* [in] */ UErrorCode error);
 
 }
 }

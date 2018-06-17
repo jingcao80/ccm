@@ -35,6 +35,8 @@ interface ILong
      */
     const Long MAX_VALUE = 0x7fffffffffffffffll;
 
+    const Integer SIZE = 64;
+
     GetValue(
         [out] Long* value);
 }
