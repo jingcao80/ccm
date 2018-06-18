@@ -367,7 +367,7 @@ ECode Matcher::QuoteReplacement(
         }
         sb->AppendChar(c);
     }
-    return ICharSequence::Probe(sb)->ToString(str);
+    return sb->ToString(str);
 }
 
 ECode Matcher::AppendReplacement(
@@ -465,7 +465,7 @@ ECode Matcher::ReplaceAll(
         FAIL_RETURN(AppendReplacement(buffer, replacement));
     }
     AppendTail(buffer);
-    return ICharSequence::Probe(buffer)->ToString(str);
+    return buffer->ToString(str);
 }
 
 ECode Matcher::ReplaceFirst(
@@ -483,7 +483,7 @@ ECode Matcher::ReplaceFirst(
         FAIL_RETURN(AppendReplacement(buffer, replacement));
     }
     AppendTail(buffer);
-    return ICharSequence::Probe(buffer)->ToString(str);
+    return buffer->ToString(str);
 }
 
 ECode Matcher::Region(
@@ -572,7 +572,7 @@ ECode Matcher::ToString(
         sb->Append(subseq);
     }
     sb->AppendChar(']');
-    return ICharSequence::Probe(sb)->ToString(str);
+    return sb->ToString(str);
 }
 
 ECode Matcher::HitEnd(

@@ -41,14 +41,36 @@ interface IDouble
      */
     const Double NaN = 0.0d / 0.0d;
 
+    ByteValue(
+        [out] Byte* value);
+
+    CompareTo(
+        [in] IInterface* other,
+        [out] Integer* result);
+
+    DoubleValue(
+        [out] Double* value);
+
+    FloatValue(
+        [out] Float* value);
+
     GetValue(
         [out] Double* value);
+
+    IntValue(
+        [out] Integer* value);
 
     IsInfinite(
         [out] Boolean* result);
 
     IsNaN(
         [out] Boolean* result);
+
+    LongValue(
+        [out] Long* value);
+
+    ShortValue(
+        [out] Short* value);
 }
 
 }

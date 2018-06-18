@@ -114,6 +114,8 @@ interface IThread
 
     Resume();
 
+    Run();
+
     SetContextClassLoader(
         [in] IClassLoader* cl);
 

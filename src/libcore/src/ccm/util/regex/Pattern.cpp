@@ -345,7 +345,7 @@ ECode Pattern::Quote(
     }
     sb->Append(s.Substring(current, s.GetLength()));
     sb->Append(String("\\E"));
-    return ICharSequence::Probe(sb)->ToString(pattStr);
+    return sb->ToString(pattStr);
 }
 
 ECode Pattern::Compile()

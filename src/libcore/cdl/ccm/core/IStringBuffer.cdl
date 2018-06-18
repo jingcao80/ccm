@@ -79,6 +79,13 @@ interface IStringBuffer
     GetCapacity(
         [out] Integer* capacity);
 
+    GetCharAt(
+        [in] Integer index,
+        [out] Char* c);
+
+    GetLength(
+        [out] Integer* number);
+
     Replace(
         [in] Integer start,
         [in] Integer end,
@@ -169,6 +176,11 @@ interface IStringBuffer
     SetLength(
         [in] Integer newLength);
 
+    SubSequence(
+        [in] Integer start,
+        [in] Integer end,
+        [out] ICharSequence** subcsq);
+
     Substring(
         [in] Integer start,
         [out] String* str);
@@ -176,6 +188,9 @@ interface IStringBuffer
     Substring(
         [in] Integer start,
         [in] Integer end,
+        [out] String* str);
+
+    ToString(
         [out] String* str);
 
     TrimToSize();

@@ -344,5 +344,26 @@ ECode CStringBuilder::TrimToSize()
     return AbstractStringBuilder::TrimToSize();
 }
 
+ECode CStringBuilder::GetCharAt(
+    /* [in] */ Integer index,
+    /* [out] */ Char* c)
+{
+    return AbstractStringBuilder::GetCharAt(index, c);
+}
+
+ECode CStringBuilder::GetLength(
+    /* [out] */ Integer* number)
+{
+    return AbstractStringBuilder::GetLength(number);
+}
+
+ECode CStringBuilder::SubSequence(
+    /* [in] */ Integer start,
+    /* [in] */ Integer end,
+    /* [out] */ ICharSequence** subcsq)
+{
+    return AbstractStringBuilder::SubSequence(start, end, subcsq);
+}
+
 }
 }

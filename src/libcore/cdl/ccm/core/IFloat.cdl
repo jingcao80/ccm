@@ -59,14 +59,36 @@ interface IFloat
      */
     const Float MIN_VALUE = 1.4e-45f;
 
+    ByteValue(
+        [out] Byte* value);
+
+    CompareTo(
+        [in] IInterface* other,
+        [out] Integer* result);
+
+    DoubleValue(
+        [out] Double* value);
+
+    FloatValue(
+        [out] Float* value);
+
     GetValue(
         [out] Float* value);
+
+    IntValue(
+        [out] Integer* value);
 
     IsInfinite(
         [out] Boolean* infinite);
 
     IsNaN(
         [out] Boolean* nan);
+
+    LongValue(
+        [out] Long* value);
+
+    ShortValue(
+        [out] Short* value);
 }
 
 }

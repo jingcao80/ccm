@@ -113,7 +113,7 @@ String RealToString::ConvertFloat(
     }
     String s;
     if (sb == nullptr) {
-        ICharSequence::Probe(dst)->ToString(&s);
+        dst->ToString(&s);
     }
     return s;
 }
@@ -194,7 +194,7 @@ String RealToString::ConvertDouble(
     }
     String s;
     if (sb == nullptr) {
-        ICharSequence::Probe(dst)->ToString(&s);
+        dst->ToString(&s);
     }
     return s;
 }

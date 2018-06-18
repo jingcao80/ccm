@@ -35,8 +35,30 @@ interface IInteger
      */
     const Integer MAX_VALUE = 0x7fffffff;
 
+    ByteValue(
+        [out] Byte* value);
+
+    CompareTo(
+        [in] IInterface* other,
+        [out] Integer* result);
+
+    DoubleValue(
+        [out] Double* value);
+
+    FloatValue(
+        [out] Float* value);
+
     GetValue(
         [out] Integer* value);
+
+    IntValue(
+        [out] Integer* value);
+
+    LongValue(
+        [out] Long* value);
+
+    ShortValue(
+        [out] Short* value);
 }
 
 }

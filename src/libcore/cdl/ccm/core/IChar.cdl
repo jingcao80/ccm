@@ -23,6 +23,10 @@ namespace core {
 ]
 interface IChar
 {
+    CompareTo(
+        [in] IInterface* other,
+        [out] Integer* result);
+
     GetValue(
         [out] Char* value);
 }

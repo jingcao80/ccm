@@ -208,6 +208,18 @@ public:
         /* [out] */ String* str) override;
 
     ECode TrimToSize() override;
+
+    ECode GetCharAt(
+        /* [in] */ Integer index,
+        /* [out] */ Char* c) override;
+
+    ECode GetLength(
+        /* [out] */ Integer* number) override;
+
+    ECode SubSequence(
+        /* [in] */ Integer start,
+        /* [in] */ Integer end,
+        /* [out] */ ICharSequence** subcsq) override;
 };
 
 }

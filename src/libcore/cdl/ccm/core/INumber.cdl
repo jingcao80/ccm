@@ -26,8 +26,11 @@ interface INumber
     ByteValue(
         [out] Byte* value);
 
-    ShortValue(
-        [out] Short* value);
+    DoubleValue(
+        [out] Double* value);
+
+    FloatValue(
+        [out] Float* value);
 
     IntValue(
         [out] Integer* value);
@@ -35,11 +38,8 @@ interface INumber
     LongValue(
         [out] Long* value);
 
-    FloatValue(
-        [out] Float* value);
-
-    DoubleValue(
-        [out] Double* value);
+    ShortValue(
+        [out] Short* value);
 }
 
 }

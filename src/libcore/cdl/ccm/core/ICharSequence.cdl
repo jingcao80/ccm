@@ -23,12 +23,12 @@ namespace core {
 ]
 interface ICharSequence
 {
-    GetLength(
-        [out] Integer* number);
-
     GetCharAt(
         [in] Integer index,
         [out] Char* c);
+
+    GetLength(
+        [out] Integer* number);
 
     SubSequence(
         [in] Integer start,

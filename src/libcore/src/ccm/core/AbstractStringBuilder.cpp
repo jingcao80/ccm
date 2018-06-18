@@ -279,7 +279,7 @@ ECode AbstractStringBuilder::Append(
         return AppendNull();
     }
     String str;
-    ICharSequence::Probe(sb)->ToString(&str);
+    sb->ToString(&str);
     return Append(str);
 }
 
