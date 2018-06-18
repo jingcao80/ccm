@@ -93,7 +93,7 @@ public:
 private:
     Pattern();
 
-    ECode constructor(
+    ECode Constructor(
         /* [in] */ const String& p,
         /* [in] */ Integer f);
 

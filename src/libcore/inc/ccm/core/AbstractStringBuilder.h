@@ -36,7 +36,7 @@ public:
 
     virtual ~AbstractStringBuilder();
 
-    ECode constructor(
+    ECode Constructor(
         /* [in] */ Integer capacity);
 
     ECode GetLength(

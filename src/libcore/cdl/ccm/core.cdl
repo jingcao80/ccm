@@ -49,7 +49,7 @@ namespace core {
 ]
 coclass CArray
 {
-    constructor(
+    Constructor(
         [in] InterfaceID elemId,
         [in] Long size);
 
@@ -62,16 +62,16 @@ coclass CArray
 ]
 coclass CThread
 {
-    constructor();
+    Constructor();
 
-    constructor(
+    Constructor(
         [in] IThreadGroup* group,
         [in] String name,
         [in] Integer priority,
         [in] Boolean daemon);
 
     // @hide
-    constructor(
+    Constructor(
         [in] HANDLE peer);
 
     interface IRunnable;
@@ -85,12 +85,12 @@ coclass CThread
 coclass CThreadGroup
 {
     // @hide
-    constructor();
+    Constructor();
 
-    constructor(
+    Constructor(
         [in] String name);
 
-    constructor(
+    Constructor(
         [in] IThreadGroup* parent,
         [in] String name);
 

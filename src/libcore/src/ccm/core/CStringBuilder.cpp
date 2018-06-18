@@ -25,30 +25,30 @@ CCM_INTERFACE_IMPL_2(CStringBuilder, AbstractStringBuilder, ISerializable, IStri
 
 CCM_OBJECT_IMPL(CStringBuilder);
 
-ECode CStringBuilder::constructor()
+ECode CStringBuilder::Constructor()
 {
-    return constructor(16);
+    return Constructor(16);
 }
 
-ECode CStringBuilder::constructor(
+ECode CStringBuilder::Constructor(
     /* [in] */ Integer capacity)
 {
-    return AbstractStringBuilder::constructor(16);
+    return AbstractStringBuilder::Constructor(16);
 }
 
-ECode CStringBuilder::constructor(
+ECode CStringBuilder::Constructor(
     /* [in] */ const String& str)
 {
-    constructor(str.GetByteLength() + 16);
+    Constructor(str.GetByteLength() + 16);
     return Append(str);
 }
 
-ECode CStringBuilder::constructor(
+ECode CStringBuilder::Constructor(
     /* [in] */ ICharSequence* seq)
 {
     String str;
     seq->ToString(&str);
-    return constructor(str);
+    return Constructor(str);
 }
 
 ECode CStringBuilder::Append(

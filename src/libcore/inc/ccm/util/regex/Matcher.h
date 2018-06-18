@@ -46,7 +46,7 @@ private:
     {
     public:
         OffsetBasedMatchResult(
-            /* [in] */ const String& input, 
+            /* [in] */ const String& input,
             /* [in] */ const Array<Integer>& offsets);
 
         CCM_INTERFACE_DECL();
@@ -85,7 +85,7 @@ public:
 
     CCM_INTERFACE_DECL();
 
-    ECode constructor(
+    ECode Constructor(
         /* [in] */ IPattern* parent,
         /* [in] */ ICharSequence* text);
 
@@ -204,12 +204,12 @@ public:
 
 private:
     ECode AppendEvaluated(
-        /* [in] */ IStringBuffer* buffer, 
+        /* [in] */ IStringBuffer* buffer,
         /* [in] */ const String& s);
 
     ECode Reset(
-        /* [in] */ ICharSequence* input, 
-        /* [in] */ Integer start, 
+        /* [in] */ ICharSequence* input,
+        /* [in] */ Integer start,
         /* [in] */ Integer end);
 
     void ResetForInput();
@@ -217,21 +217,21 @@ private:
     ECode EnsureMatch();
 
     static ECode GetMatchedGroupIndex(
-        /* [in] */ HANDLE patternAddr, 
+        /* [in] */ HANDLE patternAddr,
         /* [in] */ const String& name,
         /* [out] */ Integer* group);
 
     static Integer GetMatchedGroupIndexImpl(
-        /* [in] */ HANDLE patternAddr, 
+        /* [in] */ HANDLE patternAddr,
         /* [in] */ const String& name);
 
     static Boolean FindImpl(
-        /* [in] */ HANDLE addr, 
-        /* [in] */ Integer startIndex, 
+        /* [in] */ HANDLE addr,
+        /* [in] */ Integer startIndex,
         /* [in] */ Array<Integer>& offsets);
 
     static Boolean FindNextImpl(
-        /* [in] */ HANDLE addr, 
+        /* [in] */ HANDLE addr,
         /* [in] */ Array<Integer>& offsets);
 
     static Integer GroupCountImpl(
@@ -241,11 +241,11 @@ private:
         /* [in] */ HANDLE addr);
 
     static Boolean LookingAtImpl(
-        /* [in] */ HANDLE addr, 
+        /* [in] */ HANDLE addr,
         /* [in] */ Array<Integer>& offsets);
 
     static Boolean MatchesImpl(
-        /* [in] */ HANDLE addr, 
+        /* [in] */ HANDLE addr,
         /* [in] */ Array<Integer>& offsets);
 
     static HANDLE OpenImpl(
@@ -255,17 +255,17 @@ private:
         /* [in] */ HANDLE addr);
 
     static void SetInputImpl(
-        /* [in] */ HANDLE addr, 
-        /* [in] */ const String& s, 
-        /* [in] */ Integer start, 
+        /* [in] */ HANDLE addr,
+        /* [in] */ const String& s,
+        /* [in] */ Integer start,
         /* [in] */ Integer end);
 
     static void UseAnchoringBoundsImpl(
-        /* [in] */ HANDLE addr, 
+        /* [in] */ HANDLE addr,
         /* [in] */ Boolean value);
 
     static void UseTransparentBoundsImpl(
-        /* [in] */ HANDLE addr, 
+        /* [in] */ HANDLE addr,
         /* [in] */ Boolean value);
 
 private:

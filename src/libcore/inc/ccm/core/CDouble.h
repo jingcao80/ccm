@@ -41,7 +41,7 @@ public:
 
     CCM_OBJECT_DECL();
 
-    ECode constructor(
+    ECode Constructor(
         /* [in] */ Double value);
 
     ECode ByteValue(

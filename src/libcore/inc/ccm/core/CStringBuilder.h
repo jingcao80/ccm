@@ -38,15 +38,15 @@ public:
 
     CCM_OBJECT_DECL();
 
-    ECode constructor();
+    ECode Constructor();
 
-    ECode constructor(
+    ECode Constructor(
         /* [in] */ Integer capacity);
 
-    ECode constructor(
+    ECode Constructor(
         /* [in] */ const String& str);
 
-    ECode constructor(
+    ECode Constructor(
         /* [in] */ ICharSequence* seq);
 
     ECode Append(

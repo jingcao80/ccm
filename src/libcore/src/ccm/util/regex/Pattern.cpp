@@ -49,7 +49,7 @@ Pattern::~Pattern()
     }
 }
 
-ECode Pattern::constructor(
+ECode Pattern::Constructor(
     /* [in] */ const String& p,
     /* [in] */ Integer f)
 {
@@ -74,7 +74,7 @@ ECode Pattern::Compile(
     VALIDATE_NOT_NULL(pattern);
 
     AutoPtr<Pattern> pObj = new Pattern();
-    FAIL_RETURN(pObj->constructor(regex, 0));
+    FAIL_RETURN(pObj->Constructor(regex, 0));
     *pattern = (IPattern*)pObj;
     REFCOUNT_ADD(*pattern);
     return NOERROR;
@@ -88,7 +88,7 @@ ECode Pattern::Compile(
     VALIDATE_NOT_NULL(pattern);
 
     AutoPtr<Pattern> pObj = new Pattern();
-    FAIL_RETURN(pObj->constructor(regex, flags));
+    FAIL_RETURN(pObj->Constructor(regex, flags));
     *pattern = (IPattern*)pObj;
     REFCOUNT_ADD(*pattern);
     return NOERROR;
@@ -120,7 +120,7 @@ ECode Pattern::Matcher(
 
     AutoPtr<ccm::util::regex::Matcher> mObj =
             new ccm::util::regex::Matcher();
-    FAIL_RETURN(mObj->constructor(this, input));
+    FAIL_RETURN(mObj->Constructor(this, input));
     *matcher = (IMatcher*)mObj;
     REFCOUNT_ADD(*matcher);
     return NOERROR;

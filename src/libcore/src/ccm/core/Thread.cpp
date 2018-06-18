@@ -174,13 +174,13 @@ void Thread::Init2(
     parent->GetContextClassLoader((IClassLoader**)&mContextClassLoader);
 }
 
-ECode Thread::constructor()
+ECode Thread::Constructor()
 {
     String name = String::Format("Thread-%d", GetNextThreadNum());
     return Init(nullptr, nullptr, name, 0);
 }
 
-ECode Thread::constructor(
+ECode Thread::Constructor(
     /* [in] */ IThreadGroup* group,
     /* [in] */ const String& name,
     /* [in] */ Integer priority,
@@ -205,7 +205,7 @@ ECode Thread::constructor(
     return NOERROR;
 }
 
-ECode Thread::constructor(
+ECode Thread::Constructor(
     /* [in] */ HANDLE peer)
 {
     return NOERROR;

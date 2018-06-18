@@ -31,7 +31,7 @@ AbstractStringBuilder::~AbstractStringBuilder()
     }
 }
 
-ECode AbstractStringBuilder::constructor(
+ECode AbstractStringBuilder::Constructor(
     /* [in] */ Integer capacity)
 {
     mValue = (char*)malloc(capacity);

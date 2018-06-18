@@ -40,12 +40,12 @@ public:
 
     CCM_INTERFACE_DECL();
 
-    ECode constructor();
+    ECode Constructor();
 
-    ECode constructor(
+    ECode Constructor(
         /* [in] */ const String& name);
 
-    ECode constructor(
+    ECode Constructor(
         /* [in] */ IThreadGroup* parent,
         /* [in] */ const String& name);
 

@@ -25,7 +25,7 @@ CCM_INTERFACE_IMPL_4(CDouble, SyncObject, IDouble, INumber, ISerializable, IComp
 
 CCM_OBJECT_IMPL(CDouble);
 
-ECode CDouble::constructor(
+ECode CDouble::Constructor(
     /* [in] */ Double value)
 {
     mValue = value;

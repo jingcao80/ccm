@@ -51,15 +51,15 @@ private:
 public:
     CCM_INTERFACE_DECL();
 
-    ECode constructor();
+    ECode Constructor();
 
-    ECode constructor(
+    ECode Constructor(
         /* [in] */ IThreadGroup* group,
         /* [in] */ const String& name,
         /* [in] */ Integer priority,
         /* [in] */ Boolean daemon);
 
-    ECode constructor(
+    ECode Constructor(
         /* [in] */ HANDLE peer);
 
     ECode BlockedOn(

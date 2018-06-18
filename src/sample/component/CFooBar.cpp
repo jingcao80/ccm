@@ -33,12 +33,12 @@ CFooBar::~CFooBar()
     printf("==== Call ~CFooBar() ====\n");
 }
 
-ECode CFooBar::constructor()
+ECode CFooBar::Constructor()
 {
     return NOERROR;
 }
 
-ECode CFooBar::constructor(
+ECode CFooBar::Constructor(
     /* [in] */ Long data)
 {
     return NOERROR;

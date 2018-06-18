@@ -54,24 +54,24 @@ AutoPtr<IThreadGroup> ThreadGroup::GetMainThreadGroup()
     return sMainThreadGroup;
 }
 
-ECode ThreadGroup::constructor()
+ECode ThreadGroup::Constructor()
 {
     mName = "system";
     mMaxPriority = IThread::MAX_PRIORITY;
     return NOERROR;
 }
 
-ECode ThreadGroup::constructor(
+ECode ThreadGroup::Constructor(
     /* [in] */ const String& name)
 {
     AutoPtr<IThread> t;
     Thread::GetCurrentThread((IThread**)&t);
     AutoPtr<IThreadGroup> tg;
     t->GetThreadGroup((IThreadGroup**)&tg);
-    return constructor(tg, name);
+    return Constructor(tg, name);
 }
 
-ECode ThreadGroup::constructor(
+ECode ThreadGroup::Constructor(
     /* [in] */ IThreadGroup* parent,
     /* [in] */ const String& name)
 {

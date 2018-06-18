@@ -25,7 +25,7 @@ CCM_INTERFACE_IMPL_4(CShort, SyncObject, IShort, INumber, ISerializable, ICompar
 
 CCM_OBJECT_IMPL(CShort);
 
-ECode CShort::constructor(
+ECode CShort::Constructor(
     /* [in] */ Short value)
 {
     mValue = value;

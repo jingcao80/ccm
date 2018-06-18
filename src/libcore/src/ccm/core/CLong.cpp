@@ -25,7 +25,7 @@ CCM_INTERFACE_IMPL_4(CLong, SyncObject, ILong, INumber, ISerializable, IComparab
 
 CCM_OBJECT_IMPL(CLong);
 
-ECode CLong::constructor(
+ECode CLong::Constructor(
     /* [in] */ Long value)
 {
     mValue = value;

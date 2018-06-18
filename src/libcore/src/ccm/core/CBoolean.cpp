@@ -25,7 +25,7 @@ CCM_INTERFACE_IMPL_3(CBoolean, SyncObject, IBoolean, IComparable, ISerializable)
 
 CCM_OBJECT_IMPL(CBoolean);
 
-ECode CBoolean::constructor(
+ECode CBoolean::Constructor(
     /* [in] */ Boolean value)
 {
     mValue = value;

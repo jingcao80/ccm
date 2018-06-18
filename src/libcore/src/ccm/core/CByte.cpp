@@ -25,7 +25,7 @@ CCM_INTERFACE_IMPL_4(CByte, SyncObject, IByte, INumber, ISerializable, IComparab
 
 CCM_OBJECT_IMPL(CByte);
 
-ECode CByte::constructor(
+ECode CByte::Constructor(
     /* [in] */ Byte value)
 {
     mValue = value;

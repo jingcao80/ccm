@@ -51,9 +51,9 @@ coclass CFoo
 ]
 coclass CFooBar
 {
-    constructor();
+    Constructor();
 
-    constructor(
+    Constructor(
         [in] Long data);
 
     interface IFoo;

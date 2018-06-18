@@ -494,7 +494,7 @@ ECode NativeThread::CreatePeer(
         mTlsPtr.mOPeer = reinterpret_cast<NativeObject*>(
                 Thread::From(peer)->mNativeObject);
     }
-    ECode ec = Thread::From(peer)->constructor(threadGroup, name, threadPriority, threadIsDaemon);
+    ECode ec = Thread::From(peer)->Constructor(threadGroup, name, threadPriority, threadIsDaemon);
     if (FAILED(ec)) {
         return ec;
     }

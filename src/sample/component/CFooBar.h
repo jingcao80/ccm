@@ -38,9 +38,9 @@ public:
 
     CCM_INTERFACE_DECL();
 
-    ECode constructor();
+    ECode Constructor();
 
-    ECode constructor(
+    ECode Constructor(
         /* [in] */ Long data);
 
     ECode Foo(

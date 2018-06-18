@@ -39,17 +39,17 @@ namespace ccm {
 namespace util {
 namespace regex {
 
-class MatcherState 
+class MatcherState
 {
 public:
     MatcherState(icu::RegexMatcher* matcher)
         : mMatcher(matcher)
         , mUChars(nullptr)
         , mUText(nullptr)
-        , mStatus(U_ZERO_ERROR) 
+        , mStatus(U_ZERO_ERROR)
     {}
 
-    Boolean updateInput(const String& input) 
+    Boolean updateInput(const String& input)
     {
         // First, close the UText struct, since we're about to allocate a new one.
         if (mUText != nullptr) {
@@ -98,24 +98,24 @@ public:
         return true;
     }
 
-    ~MatcherState() 
+    ~MatcherState()
     {
         if (mUText != nullptr) {
             utext_close(mUText);
         }
     }
 
-    icu::RegexMatcher* matcher() 
+    icu::RegexMatcher* matcher()
     {
         return mMatcher.get();
     }
 
-    UErrorCode& status() 
+    UErrorCode& status()
     {
         return mStatus;
     }
 
-    void updateOffsets(Array<Integer>& offsets) 
+    void updateOffsets(Array<Integer>& offsets)
     {
         if (offsets.IsNull()) {
             return;
@@ -143,7 +143,7 @@ CCM_INTERFACE_IMPL_2(Matcher, SyncObject, IMatcher, IMatchResult);
 Matcher::Matcher()
 {}
 
-ECode Matcher::constructor(
+ECode Matcher::Constructor(
     /* [in] */ IPattern* parent,
     /* [in] */ ICharSequence* text)
 {
@@ -275,7 +275,7 @@ ECode Matcher::Group(
     if (from == -1 || to == -1) {
         *subseq = nullptr;
         return NOERROR;
-    } 
+    }
     else {
         *subseq = mInput.Substring(from, to);
         return NOERROR;
@@ -382,7 +382,7 @@ ECode Matcher::AppendReplacement(
 }
 
 ECode Matcher::AppendEvaluated(
-    /* [in] */ IStringBuffer* buffer, 
+    /* [in] */ IStringBuffer* buffer,
     /* [in] */ const String& s)
 {
     Boolean escape = false;
@@ -394,20 +394,20 @@ ECode Matcher::AppendEvaluated(
         Char c = s.GetChar(i);
         if (c == '\\' && !escape) {
             escape = true;
-        } 
+        }
         else if (c == '$' && !escape) {
             dollar = true;
-        } 
+        }
         else if (c >= '0' && c <= '9' && dollar) {
             String subseq;
             FAIL_RETURN(Group(c - '0', &subseq));
             buffer->Append(subseq);
             dollar = false;
-        } 
+        }
         else if (c == '{' && dollar) {
             escapeNamedGroup = true;
             escapeNamedGroupStart = i;
-        } 
+        }
         else if (c == '}' && dollar && escapeNamedGroup) {
             String namedGroupName =
                     s.Substring(escapeNamedGroupStart + 1, i);
@@ -416,10 +416,10 @@ ECode Matcher::AppendEvaluated(
             buffer->Append(subseq);
             dollar = false;
             escapeNamedGroup = false;
-        } 
+        }
         else if (c != '}' && dollar && escapeNamedGroup) {
             continue;
-        } 
+        }
         else {
             buffer->AppendChar(c);
             dollar = false;
@@ -458,7 +458,7 @@ ECode Matcher::ReplaceAll(
 
     FAIL_RETURN(Reset());
     AutoPtr<IStringBuffer> buffer;
-    CStringBuffer::New(mInput.GetLength(), 
+    CStringBuffer::New(mInput.GetLength(),
             IID_IStringBuffer, (IInterface**)&buffer);
     Boolean found;
     while(Find(&found), found) {
@@ -476,7 +476,7 @@ ECode Matcher::ReplaceFirst(
 
     FAIL_RETURN(Reset());
     AutoPtr<IStringBuffer> buffer;
-    CStringBuffer::New(mInput.GetLength(), 
+    CStringBuffer::New(mInput.GetLength(),
             IID_IStringBuffer, (IInterface**)&buffer);
     Boolean found;
     if (Find(&found), found) {
@@ -613,8 +613,8 @@ ECode Matcher::Reset(
 }
 
 ECode Matcher::Reset(
-    /* [in] */ ICharSequence* input, 
-    /* [in] */ Integer start, 
+    /* [in] */ ICharSequence* input,
+    /* [in] */ Integer start,
     /* [in] */ Integer end)
 {
     if (input == nullptr) {
@@ -688,7 +688,7 @@ ECode Matcher::Start(
 }
 
 ECode Matcher::GetMatchedGroupIndex(
-    /* [in] */ HANDLE patternAddr, 
+    /* [in] */ HANDLE patternAddr,
     /* [in] */ const String& name,
     /* [out] */ Integer* group)
 {
@@ -696,7 +696,7 @@ ECode Matcher::GetMatchedGroupIndex(
 
     Integer result = GetMatchedGroupIndexImpl(patternAddr, name);
     if (result < 0) {
-        Logger::E("Matcher", "No capturing group in the pattern with the name %s", 
+        Logger::E("Matcher", "No capturing group in the pattern with the name %s",
                 name.string());
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
@@ -705,7 +705,7 @@ ECode Matcher::GetMatchedGroupIndex(
 }
 
 Integer Matcher::GetMatchedGroupIndexImpl(
-    /* [in] */ HANDLE patternAddr, 
+    /* [in] */ HANDLE patternAddr,
     /* [in] */ const String& name)
 {
 #if defined(__GLIBC__)
@@ -731,8 +731,8 @@ Integer Matcher::GetMatchedGroupIndexImpl(
 }
 
 Boolean Matcher::FindImpl(
-    /* [in] */ HANDLE addr, 
-    /* [in] */ Integer startIndex, 
+    /* [in] */ HANDLE addr,
+    /* [in] */ Integer startIndex,
     /* [in] */ Array<Integer>& offsets)
 {
     MatcherState* state = reinterpret_cast<MatcherState*>(addr);
@@ -744,7 +744,7 @@ Boolean Matcher::FindImpl(
 }
 
 Boolean Matcher::FindNextImpl(
-    /* [in] */ HANDLE addr, 
+    /* [in] */ HANDLE addr,
     /* [in] */ Array<Integer>& offsets)
 {
     MatcherState* state = reinterpret_cast<MatcherState*>(addr);
@@ -770,7 +770,7 @@ Boolean Matcher::HitEndImpl(
 }
 
 Boolean Matcher::LookingAtImpl(
-    /* [in] */ HANDLE addr, 
+    /* [in] */ HANDLE addr,
     /* [in] */ Array<Integer>& offsets)
 {
     MatcherState* state = reinterpret_cast<MatcherState*>(addr);
@@ -782,7 +782,7 @@ Boolean Matcher::LookingAtImpl(
 }
 
 Boolean Matcher::MatchesImpl(
-    /* [in] */ HANDLE addr, 
+    /* [in] */ HANDLE addr,
     /* [in] */ Array<Integer>& offsets)
 {
     MatcherState* state = reinterpret_cast<MatcherState*>(addr);
@@ -814,9 +814,9 @@ Boolean Matcher::RequireEndImpl(
 }
 
 void Matcher::SetInputImpl(
-    /* [in] */ HANDLE addr, 
-    /* [in] */ const String& s, 
-    /* [in] */ Integer start, 
+    /* [in] */ HANDLE addr,
+    /* [in] */ const String& s,
+    /* [in] */ Integer start,
     /* [in] */ Integer end)
 {
     MatcherState* state = reinterpret_cast<MatcherState*>(addr);
@@ -826,7 +826,7 @@ void Matcher::SetInputImpl(
 }
 
 void Matcher::UseAnchoringBoundsImpl(
-    /* [in] */ HANDLE addr, 
+    /* [in] */ HANDLE addr,
     /* [in] */ Boolean value)
 {
     MatcherState* state = reinterpret_cast<MatcherState*>(addr);
@@ -834,7 +834,7 @@ void Matcher::UseAnchoringBoundsImpl(
 }
 
 void Matcher::UseTransparentBoundsImpl(
-    /* [in] */ HANDLE addr, 
+    /* [in] */ HANDLE addr,
     /* [in] */ Boolean value)
 {
     MatcherState* state = reinterpret_cast<MatcherState*>(addr);
@@ -845,7 +845,7 @@ void Matcher::UseTransparentBoundsImpl(
 CCM_INTERFACE_IMPL_LIGHT_1(Matcher::OffsetBasedMatchResult, IMatchResult);
 
 Matcher::OffsetBasedMatchResult::OffsetBasedMatchResult(
-    /* [in] */ const String& input, 
+    /* [in] */ const String& input,
     /* [in] */ const Array<Integer>& offsets)
 {
     mInput = input;

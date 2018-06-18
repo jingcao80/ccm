@@ -23,7 +23,7 @@ CCM_INTERFACE_IMPL_1(CArray, SyncObject, IArray);
 
 CCM_OBJECT_IMPL(CArray);
 
-ECode CArray::constructor(
+ECode CArray::Constructor(
     /* [in] */ const InterfaceID& elemId,
     /* [in] */ Long size)
 {

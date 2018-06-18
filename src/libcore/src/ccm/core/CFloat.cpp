@@ -25,7 +25,7 @@ CCM_INTERFACE_IMPL_4(CFloat, SyncObject, IFloat, INumber, ISerializable, ICompar
 
 CCM_OBJECT_IMPL(CFloat);
 
-ECode CFloat::constructor(
+ECode CFloat::Constructor(
     /* [in] */ Float value)
 {
     mValue = value;

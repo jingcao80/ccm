@@ -35,7 +35,7 @@ sKeywords[33] =
     { String("CoclassID"), Tokenizer::Token::COCLASSID },
     { String("ComponentID"), Tokenizer::Token::COMPONENTID },
     { String("const"), Tokenizer::Token::CONST },
-    { String("constructor"), Tokenizer::Token::CONSTRUCTOR },
+    { String("Constructor"), Tokenizer::Token::CONSTRUCTOR },
     { String("description"), Tokenizer::Token::DESCRIPTION },
     { String("Double"), Tokenizer::Token::DOUBLE },
     { String("ECode"), Tokenizer::Token::ECODE },
@@ -816,7 +816,7 @@ const char* Tokenizer::DumpToken(
         case Token::CONST:
             return "const";
         case Token::CONSTRUCTOR:
-            return "constructor";
+            return "Constructor";
         case Token::DESCRIPTION:
             return "description";
         case Token::DIVIDE:

@@ -39,7 +39,7 @@ public:
 
     CCM_OBJECT_DECL();
 
-    ECode constructor(
+    ECode Constructor(
         /* [in] */ Char value);
 
     ECode GetValue(

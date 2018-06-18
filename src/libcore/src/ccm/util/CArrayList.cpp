@@ -28,7 +28,7 @@ CCM_INTERFACE_IMPL_7(CArrayList, SyncObject, IArrayList, IList, ICollection,
 
 CCM_OBJECT_IMPL(CArrayList);
 
-ECode CArrayList::constructor()
+ECode CArrayList::Constructor()
 {
     return NOERROR;
 }

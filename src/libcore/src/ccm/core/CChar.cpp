@@ -25,7 +25,7 @@ CCM_INTERFACE_IMPL_3(CChar, SyncObject, IChar, ISerializable, IComparable);
 
 CCM_OBJECT_IMPL(CChar);
 
-ECode CChar::constructor(
+ECode CChar::Constructor(
     /* [in] */ Char value)
 {
     mValue = value;

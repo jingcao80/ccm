@@ -25,7 +25,7 @@ CCM_INTERFACE_IMPL_4(CInteger, SyncObject, IInteger, INumber, ISerializable, ICo
 
 CCM_OBJECT_IMPL(CInteger);
 
-ECode CInteger::constructor(
+ECode CInteger::Constructor(
     /* [in] */ Integer value)
 {
     mValue = value;

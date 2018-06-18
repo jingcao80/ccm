@@ -1564,7 +1564,7 @@ bool Parser::ParseCoclassConstructor(
     bool parseResult = true;
     Tokenizer::Token token;
 
-    // read "constructor"
+    // read "Constructor"
     token = mTokenizer.GetToken();
     token = mTokenizer.GetToken();
     if (token != Tokenizer::Token::PARENTHESES_OPEN) {
@@ -1578,7 +1578,7 @@ bool Parser::ParseCoclassConstructor(
     }
 
     Method* method = new Method();
-    method->SetName(String("constructor"));
+    method->SetName(String("Constructor"));
 
     token = mTokenizer.PeekToken();
     while (token != Tokenizer::Token::PARENTHESES_CLOSE &&
@@ -1604,7 +1604,7 @@ bool Parser::ParseCoclassConstructor(
 
     if (parseResult) {
         if (klass->FindConstructor(method->GetName(), method->GetSignature()) != nullptr) {
-            LogError(token, String::Format("The constructor \"%s\" is redeclared.",
+            LogError(token, String::Format("The Constructor \"%s\" is redeclared.",
                     method->ToString().string()));
             delete method;
             return false;

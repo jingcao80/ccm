@@ -24,7 +24,7 @@ namespace core {
 CCM_INTERFACE_IMPL_4(CString, SyncObject, ICharSequence, IComparable, ISerializable, IString);
 CCM_OBJECT_IMPL(CString);
 
-ECode CString::constructor(
+ECode CString::Constructor(
     /* [in] */ const String& str)
 {
     mString = str;

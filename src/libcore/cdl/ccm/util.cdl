@@ -38,7 +38,7 @@ namespace util {
 ]
 coclass CArrayList
 {
-    constructor();
+    Constructor();
 
     interface IArrayList;
     interface IList;

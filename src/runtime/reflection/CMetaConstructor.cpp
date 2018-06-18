@@ -46,7 +46,7 @@ CMetaConstructor::CMetaConstructor(
     , mOwner(mcObj)
     , mClassObjectInterface(mi)
     , mIndex(index)
-    , mName("constructor")
+    , mName("Constructor")
     , mSignature(mm->mSignature)
     , mIsDefault(mcObj->mMetadata->mConstructorDefault)
     , mParameters(mm->mParameterNumber)

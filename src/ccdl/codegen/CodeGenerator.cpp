@@ -1056,7 +1056,7 @@ String CodeGenerator::GenCoclassObject(
         builder.Append("    if (addr == nullptr) return E_OUT_OF_MEMORY_ERROR;\n\n");
         builder.AppendFormat("    %s* _obj = new(addr) %s();\n", mk->mName, mk->mName);
         if (mm->mParameterNumber != 2 || !mk->mConstructorDefault) {
-            builder.Append("    ECode ec = _obj->constructor(");
+            builder.Append("    ECode ec = _obj->Constructor(");
             for (int i = 0; i < mm->mParameterNumber - 2; i++) {
                 builder.Append(mm->mParameters[i]->mName);
                 if (i != mm->mParameterNumber - 3) builder.Append(", ");

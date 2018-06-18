@@ -34,7 +34,7 @@ public:
 
     CCM_OBJECT_DECL();
 
-    ECode constructor(
+    ECode Constructor(
         /* [in] */ const InterfaceID& elemId,
         /* [in] */ Long size);
 
