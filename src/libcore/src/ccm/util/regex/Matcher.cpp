@@ -717,7 +717,7 @@ Integer Matcher::GetMatchedGroupIndexImpl(
     groupNameUnicodeStr.setTo(false, (const UChar*)groupName.GetPayload(), groupName.GetLength());
     UErrorCode status = U_ZERO_ERROR;
 
-    // icu 55 supports
+    // need icu 55
     Integer result = pattern->groupNumberFromName(groupNameUnicodeStr, status);
     if (U_SUCCESS(status)) {
         return result;

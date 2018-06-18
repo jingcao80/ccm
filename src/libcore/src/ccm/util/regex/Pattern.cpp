@@ -14,15 +14,19 @@
 // limitations under the License.
 //=========================================================================
 
+#include "ccm/core/CoreUtils.h"
 #include "ccm/core/CStringBuilder.h"
+#include "ccm/util/CArrayList.h"
 #include "ccm/util/EmptyArray.h"
 #include "ccm/util/regex/Matcher.h"
 #include "ccm/util/regex/Pattern.h"
+#include "ccm.util.IArrayList.h"
 #include <ccmautoptr.h>
 #include <ccmlogger.h>
 #include <unicode/regex.h>
 #include <unicode/unistr.h>
 
+using ccm::core::CoreUtils;
 using ccm::core::CStringBuilder;
 using ccm::core::ICharSequence;
 using ccm::core::IStringBuilder;
@@ -161,7 +165,70 @@ ECode Pattern::Split(
         return NOERROR;
     }
 
+    Integer index = 0;
+    Boolean matchLimited = limit > 0;
+    AutoPtr<IArrayList> matchList;
+    CArrayList::New(IID_IArrayList, (IInterface**)&matchList);
+    AutoPtr<IMatcher> m;
+    Matcher(input, (IMatcher**)&m);
 
+    Integer size;
+    Boolean found;
+    while(m->Find(&found), found) {
+        if (!matchLimited || (matchList->GetSize(&size), size < limit - 1)) {
+            Integer startIndex;
+            m->Start(&startIndex);
+            AutoPtr<ICharSequence> match;
+            input->SubSequence(index, startIndex, (ICharSequence**)&match);
+            matchList->Add(match);
+            m->End(&index);
+        }
+        else if (matchList->GetSize(&size), size == limit - 1) { // last one
+            Integer len;
+            input->GetLength(&len);
+            AutoPtr<ICharSequence> match;
+            input->SubSequence(index, len, (ICharSequence**)&match);
+            matchList->Add(match);
+            m->End(&index);
+        }
+    }
+
+    // If no match was found, return this
+    if (index == 0) {
+        String str;
+        input->ToString(&str);
+        *strArray = Array<String>(1);
+        strArray->Set(0, str);
+        return NOERROR;
+    }
+
+    // Add remaining segment
+    if (!matchLimited || (matchList->GetSize(&size), size < limit)) {
+        Integer len;
+        input->GetLength(&len);
+        AutoPtr<ICharSequence> match;
+        input->SubSequence(index, len, (ICharSequence**)&match);
+        matchList->Add(match);
+    }
+
+    // Construct result
+    matchList->GetSize(&size);
+    if (limit == 0) {
+        while (size > 0) {
+            AutoPtr<IInterface> obj;
+            matchList->Get(size - 1, (IInterface**)&obj);
+            if (CoreUtils::Unbox(ICharSequence::Probe(obj)).Equals("")) {
+                size--;
+            }
+            else break;
+        }
+    }
+    AutoPtr<IList> subList;
+    matchList->SubList(0, size, (IList**)&subList);
+    Array<IInterface*> seqArray;
+    subList->ToArray(&seqArray);
+    *strArray = CoreUtils::Unbox(seqArray);
+    return NOERROR;
 }
 
 ECode Pattern::FastSplit(

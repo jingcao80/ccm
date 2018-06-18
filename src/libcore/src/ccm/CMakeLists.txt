@@ -32,6 +32,7 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_core_CStringBuilder.cpp
     ${OBJ_DIR}/_ccm_core_CThread.cpp
     ${OBJ_DIR}/_ccm_core_CThreadGroup.cpp
+    ${OBJ_DIR}/_ccm_util_CArrayList.cpp
     ${OBJ_DIR}/_ccm_util_regex_CPatternFactory.cpp
     ${OBJ_DIR}/libcorePub.cpp
     ${OBJ_DIR}/MetadataWrapper.cpp)
@@ -48,6 +49,7 @@ include_directories(
     ./
     ../../inc
     ../../inc/ccm/core
+    ../../inc/ccm/util
     ../../inc/ccm/util/regex
     ${INC_DIR}
     ${OBJ_DIR})

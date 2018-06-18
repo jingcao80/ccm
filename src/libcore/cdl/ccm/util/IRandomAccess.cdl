@@ -14,29 +14,15 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CORE_COREUTILS_H__
-#define __CCM_CORE_COREUTILS_H__
-
-#include "ccm.core.ICharSequence.h"
-#include <ccmautoptr.h>
-
 namespace ccm {
-namespace core {
+namespace util {
 
-class CoreUtils
-{
-public:
-    static AutoPtr<ICharSequence> Box(
-        /* [in] */ const String& str);
-
-    static String Unbox(
-        /* [in] */ ICharSequence* seq);
-
-    static Array<String> Unbox(
-        /* [in] */ const Array<IInterface*>& seqArray);
-};
+[
+    uuid(071151aa-f5e7-44df-a448-0aaf9204595c),
+    version(0.1.0)
+]
+interface IRandomAccess
+{}
 
 }
 }
-
-#endif // __CCM_CORE_COREUTILS_H__

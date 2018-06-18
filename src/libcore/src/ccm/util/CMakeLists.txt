@@ -26,6 +26,7 @@ include_directories(
 add_subdirectory(regex)
 
 set(SOURCES
+    CArrayList.cpp
     EmptyArray.cpp)
 
 add_library(libcore_util STATIC

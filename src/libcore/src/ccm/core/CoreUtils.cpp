@@ -38,5 +38,20 @@ String CoreUtils::Unbox(
     return str;
 }
 
+Array<String> CoreUtils::Unbox(
+    /* [in] */ const Array<IInterface*>& seqArray)
+{
+    if (seqArray.IsEmpty()) {
+        return Array<String>::Null();
+    }
+
+    Long size = seqArray.GetLength();
+    Array<String> strArray(size);
+    for (Long i = 0; i < size; i++) {
+        strArray[i] = Unbox(ICharSequence::Probe(seqArray[i]));
+    }
+    return strArray;
+}
+
 }
 }

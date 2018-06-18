@@ -38,6 +38,13 @@ interface IMatcher
         [in] IStringBuffer* sb);
 
     End(
+        [out] Integer* index);
+
+    End(
+        [in] Integer group,
+        [out] Integer* index);
+
+    End(
         [in] String name,
         [out] Integer* index);
 
@@ -49,8 +56,18 @@ interface IMatcher
         [out] Boolean* result);
 
     Group(
+        [out] String* subseq);
+
+    Group(
+        [in] Integer group,
+        [out] String* subseq);
+
+    Group(
         [in] String name,
         [out] String* subseq);
+
+    GroupCount(
+        [out] Integer* number);
 
     HasAnchoringBounds(
         [out] Boolean* result);
@@ -95,6 +112,13 @@ interface IMatcher
 
     Reset(
         [in] ICharSequence* input);
+
+    Start(
+        [out] Integer* index);
+
+    Start(
+        [in] Integer group,
+        [out] Integer* index);
 
     Start(
         [in] String name,

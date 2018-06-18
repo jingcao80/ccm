@@ -14,13 +14,41 @@
 // limitations under the License.
 //=========================================================================
 
+include "util/IArrayList.cdl"
+include "util/ICollection.cdl"
+include "util/IIterator.cdl"
+include "util/IList.cdl"
+include "util/IListIterator.cdl"
+include "util/IRandomAccess.cdl"
 include "util/regex/Exceptions.cdl"
 include "util/regex/IMatcher.cdl"
 include "util/regex/IMatchResult.cdl"
 include "util/regex/IPattern.cdl"
 
+interface ccm::core::ICloneable;
+interface ccm::core::IIterable;
+interface ccm::io::ISerializable;
+
 namespace ccm {
 namespace util {
+
+[
+    uuid(7dbd4e0a-4bf2-4ccb-a4e9-bfe232b40ba4),
+    version(0.1.0)
+]
+coclass CArrayList
+{
+    constructor();
+
+    interface IArrayList;
+    interface IList;
+    interface ICollection;
+    interface IRandomAccess;
+    interface IIterable;
+    interface ICloneable;
+    interface ISerializable;
+}
+
 namespace regex {
 
 [

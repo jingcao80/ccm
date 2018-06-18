@@ -364,6 +364,222 @@ inline int ArrayLength(const T (&)[N])
     }
 #endif
 
+#ifndef CCM_INTERFACE_IMPL_5
+#define CCM_INTERFACE_IMPL_5(ClassName, SupperClassName, Interface1, Interface2, Interface3, Interface4, Interface5) \
+    Integer ClassName::AddRef(                                  \
+        /* [in] */ HANDLE id)                                   \
+    {                                                           \
+        return SupperClassName::AddRef(id);                     \
+    }                                                           \
+                                                                \
+    Integer ClassName::Release(                                 \
+        /* [in] */ HANDLE id)                                   \
+    {                                                           \
+        return SupperClassName::Release(id);                    \
+    }                                                           \
+                                                                \
+    IInterface* ClassName::Probe(                               \
+        /* [in] */ const InterfaceID& iid)                      \
+    {                                                           \
+        if (iid == IID_IInterface) {                            \
+            return (IInterface*)(Interface1*)this;              \
+        }                                                       \
+        else if (iid == IID_##Interface1) {                     \
+            return (Interface1*)this;                           \
+        }                                                       \
+        else if (iid == IID_##Interface2) {                     \
+            return (Interface2*)this;                           \
+        }                                                       \
+        else if (iid == IID_##Interface3) {                     \
+            return (Interface3*)this;                           \
+        }                                                       \
+        else if (iid == IID_##Interface4) {                     \
+            return (Interface4*)this;                           \
+        }                                                       \
+        else if (iid == IID_##Interface5) {                     \
+            return (Interface5*)this;                           \
+        }                                                       \
+        return SupperClassName::Probe(iid);                     \
+    }                                                           \
+                                                                \
+    ECode ClassName::GetInterfaceID(                            \
+        /* [in] */ IInterface* object,                          \
+        /* [out] */ InterfaceID* iid)                           \
+    {                                                           \
+        VALIDATE_NOT_NULL(iid);                                 \
+                                                                \
+        if (object == (IInterface*)(Interface1*)this) {         \
+            *iid = IID_##Interface1;                            \
+        }                                                       \
+        else if (object == (IInterface*)(Interface2*)this) {    \
+            *iid = IID_##Interface2;                            \
+        }                                                       \
+        else if (object == (IInterface*)(Interface3*)this) {    \
+            *iid = IID_##Interface3;                            \
+        }                                                       \
+        else if (object == (IInterface*)(Interface4*)this) {    \
+            *iid = IID_##Interface4;                            \
+        }                                                       \
+        else if (object == (IInterface*)(Interface5*)this) {    \
+            *iid = IID_##Interface5;                            \
+        }                                                       \
+        else {                                                  \
+            return SupperClassName::GetInterfaceID(object, iid); \
+        }                                                       \
+        return NOERROR;                                         \
+    }
+#endif
+
+#ifndef CCM_INTERFACE_IMPL_6
+#define CCM_INTERFACE_IMPL_6(ClassName, SupperClassName, Interface1, Interface2, Interface3, Interface4, Interface5, Interface6) \
+    Integer ClassName::AddRef(                                  \
+        /* [in] */ HANDLE id)                                   \
+    {                                                           \
+        return SupperClassName::AddRef(id);                     \
+    }                                                           \
+                                                                \
+    Integer ClassName::Release(                                 \
+        /* [in] */ HANDLE id)                                   \
+    {                                                           \
+        return SupperClassName::Release(id);                    \
+    }                                                           \
+                                                                \
+    IInterface* ClassName::Probe(                               \
+        /* [in] */ const InterfaceID& iid)                      \
+    {                                                           \
+        if (iid == IID_IInterface) {                            \
+            return (IInterface*)(Interface1*)this;              \
+        }                                                       \
+        else if (iid == IID_##Interface1) {                     \
+            return (Interface1*)this;                           \
+        }                                                       \
+        else if (iid == IID_##Interface2) {                     \
+            return (Interface2*)this;                           \
+        }                                                       \
+        else if (iid == IID_##Interface3) {                     \
+            return (Interface3*)this;                           \
+        }                                                       \
+        else if (iid == IID_##Interface4) {                     \
+            return (Interface4*)this;                           \
+        }                                                       \
+        else if (iid == IID_##Interface5) {                     \
+            return (Interface5*)this;                           \
+        }                                                       \
+        else if (iid == IID_##Interface6) {                     \
+            return (Interface6*)this;                           \
+        }                                                       \
+        return SupperClassName::Probe(iid);                     \
+    }                                                           \
+                                                                \
+    ECode ClassName::GetInterfaceID(                            \
+        /* [in] */ IInterface* object,                          \
+        /* [out] */ InterfaceID* iid)                           \
+    {                                                           \
+        VALIDATE_NOT_NULL(iid);                                 \
+                                                                \
+        if (object == (IInterface*)(Interface1*)this) {         \
+            *iid = IID_##Interface1;                            \
+        }                                                       \
+        else if (object == (IInterface*)(Interface2*)this) {    \
+            *iid = IID_##Interface2;                            \
+        }                                                       \
+        else if (object == (IInterface*)(Interface3*)this) {    \
+            *iid = IID_##Interface3;                            \
+        }                                                       \
+        else if (object == (IInterface*)(Interface4*)this) {    \
+            *iid = IID_##Interface4;                            \
+        }                                                       \
+        else if (object == (IInterface*)(Interface5*)this) {    \
+            *iid = IID_##Interface5;                            \
+        }                                                       \
+        else if (object == (IInterface*)(Interface6*)this) {    \
+            *iid = IID_##Interface6;                            \
+        }                                                       \
+        else {                                                  \
+            return SupperClassName::GetInterfaceID(object, iid); \
+        }                                                       \
+        return NOERROR;                                         \
+    }
+#endif
+
+#ifndef CCM_INTERFACE_IMPL_7
+#define CCM_INTERFACE_IMPL_7(ClassName, SupperClassName, Interface1, Interface2, Interface3, Interface4, Interface5, Interface6, Interface7) \
+    Integer ClassName::AddRef(                                  \
+        /* [in] */ HANDLE id)                                   \
+    {                                                           \
+        return SupperClassName::AddRef(id);                     \
+    }                                                           \
+                                                                \
+    Integer ClassName::Release(                                 \
+        /* [in] */ HANDLE id)                                   \
+    {                                                           \
+        return SupperClassName::Release(id);                    \
+    }                                                           \
+                                                                \
+    IInterface* ClassName::Probe(                               \
+        /* [in] */ const InterfaceID& iid)                      \
+    {                                                           \
+        if (iid == IID_IInterface) {                            \
+            return (IInterface*)(Interface1*)this;              \
+        }                                                       \
+        else if (iid == IID_##Interface1) {                     \
+            return (Interface1*)this;                           \
+        }                                                       \
+        else if (iid == IID_##Interface2) {                     \
+            return (Interface2*)this;                           \
+        }                                                       \
+        else if (iid == IID_##Interface3) {                     \
+            return (Interface3*)this;                           \
+        }                                                       \
+        else if (iid == IID_##Interface4) {                     \
+            return (Interface4*)this;                           \
+        }                                                       \
+        else if (iid == IID_##Interface5) {                     \
+            return (Interface5*)this;                           \
+        }                                                       \
+        else if (iid == IID_##Interface6) {                     \
+            return (Interface6*)this;                           \
+        }                                                       \
+        else if (iid == IID_##Interface7) {                     \
+            return (Interface7*)this;                           \
+        }                                                       \
+        return SupperClassName::Probe(iid);                     \
+    }                                                           \
+                                                                \
+    ECode ClassName::GetInterfaceID(                            \
+        /* [in] */ IInterface* object,                          \
+        /* [out] */ InterfaceID* iid)                           \
+    {                                                           \
+        VALIDATE_NOT_NULL(iid);                                 \
+                                                                \
+        if (object == (IInterface*)(Interface1*)this) {         \
+            *iid = IID_##Interface1;                            \
+        }                                                       \
+        else if (object == (IInterface*)(Interface2*)this) {    \
+            *iid = IID_##Interface2;                            \
+        }                                                       \
+        else if (object == (IInterface*)(Interface3*)this) {    \
+            *iid = IID_##Interface3;                            \
+        }                                                       \
+        else if (object == (IInterface*)(Interface4*)this) {    \
+            *iid = IID_##Interface4;                            \
+        }                                                       \
+        else if (object == (IInterface*)(Interface5*)this) {    \
+            *iid = IID_##Interface5;                            \
+        }                                                       \
+        else if (object == (IInterface*)(Interface6*)this) {    \
+            *iid = IID_##Interface6;                            \
+        }                                                       \
+        else if (object == (IInterface*)(Interface7*)this) {    \
+            *iid = IID_##Interface7;                            \
+        }                                                       \
+        else {                                                  \
+            return SupperClassName::GetInterfaceID(object, iid); \
+        }                                                       \
+        return NOERROR;                                         \
+    }
+#endif
+
 #ifndef CCM_INTERFACE_IMPL_LIGHT_1
 #define CCM_INTERFACE_IMPL_LIGHT_1(ClassName, InterfaceName) \
     Integer ClassName::AddRef(                             \

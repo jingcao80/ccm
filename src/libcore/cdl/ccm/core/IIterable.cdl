@@ -14,29 +14,20 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CORE_COREUTILS_H__
-#define __CCM_CORE_COREUTILS_H__
-
-#include "ccm.core.ICharSequence.h"
-#include <ccmautoptr.h>
+interface ccm::util::IIterator;
 
 namespace ccm {
 namespace core {
 
-class CoreUtils
+[
+    uuid(dd6c303a-21c3-487f-b431-906b286f00f5),
+    version(0.1.0)
+]
+interface IIterable
 {
-public:
-    static AutoPtr<ICharSequence> Box(
-        /* [in] */ const String& str);
-
-    static String Unbox(
-        /* [in] */ ICharSequence* seq);
-
-    static Array<String> Unbox(
-        /* [in] */ const Array<IInterface*>& seqArray);
-};
+    GetIterator(
+        [out] IIterator** it);
+}
 
 }
 }
-
-#endif // __CCM_CORE_COREUTILS_H__
