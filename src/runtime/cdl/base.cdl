@@ -16,6 +16,7 @@
 
 interface ccm::IMetaCoclass;
 interface ccm::IMetaComponent;
+interface ccm::IMetaInterface;
 
 namespace ccm {
 
@@ -76,6 +77,10 @@ interface IClassLoader
     LoadCoclass(
         [in] String fullName,
         [out] IMetaCoclass** klass);
+
+    LoadInterface(
+        [in] String fullName,
+        [out] IMetaInterface** intf);
 }
 
 [

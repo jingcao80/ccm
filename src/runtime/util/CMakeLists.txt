@@ -27,7 +27,8 @@ set(SOURCES
     ccmlogger.cpp
     ccmobject.cpp
     ccmrefbase.cpp
-    ccmspinlock.cpp)
+    ccmspinlock.cpp
+    mutex.cpp)
 
 add_library(util STATIC
     ${SOURCES})

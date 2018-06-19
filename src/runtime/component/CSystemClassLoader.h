@@ -50,6 +50,10 @@ public:
         /* [in] */ const String& fullName,
         /* [out] */ IMetaCoclass** klass);
 
+    ECode LoadInterface(
+        /* [in] */ const String& fullName,
+        /* [out] */ IMetaInterface** intf);
+
 private:
     CSystemClassLoader();
 

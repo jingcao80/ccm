@@ -21,6 +21,7 @@ MKDIR(deploy_libcore_core_headers ${INC_DIR}/core)
 
 COPY(deploy_libcore_core_headers ${LIBCORE_CCM_INC_DIR}/core/AutoLock.h ${INC_DIR}/core)
 COPY(deploy_libcore_core_headers ${LIBCORE_CCM_INC_DIR}/core/Character.h ${INC_DIR}/core)
+COPY(deploy_libcore_core_headers ${LIBCORE_CCM_INC_DIR}/core/ClassLoader.h ${INC_DIR}/core)
 COPY(deploy_libcore_core_headers ${LIBCORE_CCM_INC_DIR}/core/CoreUtils.h ${INC_DIR}/core)
 COPY(deploy_libcore_core_headers ${LIBCORE_CCM_INC_DIR}/core/Math.h ${INC_DIR}/core)
 COPY(deploy_libcore_core_headers ${LIBCORE_CCM_INC_DIR}/core/Runnable.h ${INC_DIR}/core)

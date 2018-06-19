@@ -31,12 +31,11 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/libcore.cpp)
 
 IMPORT_LIBRARY(ccmrt.so)
-IMPORT_LIBRARY(libcore.so)
 
 add_executable(testThreadCli
     ${SOURCES}
     ${GENERATED_SOURCES})
-target_link_libraries(testThreadCli ccmrt.so libcore.so)
+target_link_libraries(testThreadCli ccmrt.so)
 add_dependencies(testThreadCli libservicemanager)
 
 add_custom_command(

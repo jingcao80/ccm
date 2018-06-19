@@ -60,6 +60,7 @@ CMetaComponent::CMetaComponent(
     mCid.mUuid = metadata->mUuid;
     mCid.mUrl = mUrl.string();
 
+    LoadAllClassObjectGetters();
     BuildIInterface();
 }
 
@@ -267,6 +268,10 @@ ECode CMetaComponent::GetClassObject(
 {
     VALIDATE_NOT_NULL(object);
 
+    ClassObjectGetter* getter = mClassObjects.Get(cid.mUuid);
+    if (getter != nullptr) {
+        return getter->mGetter(object);
+    }
     return mComponent->mSoGetClassObject(cid, object);
 }
 
@@ -428,6 +433,16 @@ AutoPtr<IMetaInterface> CMetaComponent::BuildInterface(
         ret = mMetaInterfaceNameMap.Get(fullName);
     }
     return ret;
+}
+
+void CMetaComponent::LoadAllClassObjectGetters()
+{
+    Integer N;
+    ClassObjectGetter* getters = mComponent->mSoGetAllClassObjects(&N);
+    for (Integer i = 0; i < N; i++) {
+        CoclassID cid = getters[i].mCid;
+        mClassObjects.Put(cid.mUuid, &getters[i]);
+    }
 }
 
 void CMetaComponent::BuildIInterface()

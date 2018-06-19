@@ -14,40 +14,4 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_COMPONENT_H__
-#define __CCM_COMPONENT_H__
-
-#include "ccmtypes.h"
-
-namespace ccm {
-
-typedef ECode (*GetterPtr)(IClassObject**);
-
-struct ClassObjectGetter
-{
-    CoclassID   mCid;
-    GetterPtr   mGetter;
-};
-
-typedef ECode (*GetClassObjectPtr)(const CoclassID&, IClassObject**);
-typedef ClassObjectGetter* (*GetAllClassObjectsPtr)(int* size);
-typedef Boolean (*CanUnloadPtr)();
-
-struct MetadataWrapper
-{
-    int             mSize;
-    unsigned char   mMetadata[0];
-};
-
-struct CcmComponent
-{
-    void*                   mSoHandle;
-    GetClassObjectPtr       mSoGetClassObject;
-    GetAllClassObjectsPtr   mSoGetAllClassObjects;
-    CanUnloadPtr            mSoCanUnload;
-    MetadataWrapper*        mMetadataWrapper;
-};
-
-} // namespace ccm
-
-#endif // __CCM_COMPONENT_H__
+#include "ccm/core/ClassLoader.h"

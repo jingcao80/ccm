@@ -33,6 +33,7 @@ set(SOURCES
     CFloat.cpp
     Character.cpp
     CInteger.cpp
+    ClassLoader.cpp
     CLong.cpp
     CoreUtils.cpp
     CShort.cpp

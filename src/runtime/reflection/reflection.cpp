@@ -61,6 +61,13 @@ ECode CoGetComponentMetadataFromFile(
         return E_COMPONENT_IO_EXCEPTION;
     }
 
+    GetAllClassObjectsPtr getAllFunc = (GetAllClassObjectsPtr)dlsym(handle, "soGetAllClassObjects");
+    if (getAllFunc == nullptr) {
+        Logger::E("CCMRT", "Dlsym \"soGetAllClassObjects\" function from "
+                "component failed. The reason is %s.", strerror(errno));
+        return E_COMPONENT_IO_EXCEPTION;
+    }
+
     CanUnloadPtr canFunc = (CanUnloadPtr)dlsym(handle, "soCanUnload");
     if (canFunc == nullptr) {
         Logger::E("CCMRT", "Dlsym \"soCanUnload\" function from "
@@ -82,6 +89,7 @@ ECode CoGetComponentMetadataFromFile(
     }
     ccmComp->mSoHandle = handle;
     ccmComp->mSoGetClassObject = getFunc;
+    ccmComp->mSoGetAllClassObjects = getAllFunc;
     ccmComp->mSoCanUnload = canFunc;
     ccmComp->mMetadataWrapper = metadata;
 

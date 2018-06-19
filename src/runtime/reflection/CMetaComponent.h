@@ -110,6 +110,8 @@ public:
         /* [in] */ Integer index);
 
 private:
+    void LoadAllClassObjectGetters();
+
     void BuildIInterface();
 
     void ReleaseResources();
@@ -133,6 +135,7 @@ public:
     HashMap<Uuid, IMetaInterface*> mMetaInterfaceIdMap;
     Boolean mMetaInterfacesAllBuilt;
     AutoPtr<IMetaInterface> mIInterface;
+    HashMap<Uuid, ClassObjectGetter*> mClassObjects;
 };
 
 }

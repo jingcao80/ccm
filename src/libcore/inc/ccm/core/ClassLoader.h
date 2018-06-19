@@ -14,40 +14,22 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_COMPONENT_H__
-#define __CCM_COMPONENT_H__
+#ifndef __CCM_CORE_CLASSLOADER_H__
+#define __CCM_CORE_CLASSLOADER_H__
 
-#include "ccmtypes.h"
+#include "ccm/core/SyncObject.h"
 
 namespace ccm {
+namespace core {
 
-typedef ECode (*GetterPtr)(IClassObject**);
-
-struct ClassObjectGetter
+class ClassLoader
+    : public SyncObject
+    , public IClassLoader
 {
-    CoclassID   mCid;
-    GetterPtr   mGetter;
+
 };
 
-typedef ECode (*GetClassObjectPtr)(const CoclassID&, IClassObject**);
-typedef ClassObjectGetter* (*GetAllClassObjectsPtr)(int* size);
-typedef Boolean (*CanUnloadPtr)();
+}
+}
 
-struct MetadataWrapper
-{
-    int             mSize;
-    unsigned char   mMetadata[0];
-};
-
-struct CcmComponent
-{
-    void*                   mSoHandle;
-    GetClassObjectPtr       mSoGetClassObject;
-    GetAllClassObjectsPtr   mSoGetAllClassObjects;
-    CanUnloadPtr            mSoCanUnload;
-    MetadataWrapper*        mMetadataWrapper;
-};
-
-} // namespace ccm
-
-#endif // __CCM_COMPONENT_H__
+#endif // __CCM_CORE_CLASSLOADER_H__

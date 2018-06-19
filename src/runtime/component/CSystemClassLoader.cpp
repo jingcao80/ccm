@@ -79,6 +79,18 @@ ECode CSystemClassLoader::LoadComponent(
         return E_COMPONENT_IO_EXCEPTION;
     }
 
+    {
+        // Dlopening a component maybe cause to run its initialization which
+        // running nested LoadComponent about itself, so we check mComponents again.
+        Mutex::AutoLock lock(mComponentsLock);
+        IMetaComponent* mc = mComponents.Get(compId.mUuid);
+        if (mc != nullptr) {
+            *component = mc;
+            REFCOUNT_ADD(*component);
+            return NOERROR;
+        }
+    }
+
     ec = CoGetComponentMetadataFromFile(
             reinterpret_cast<HANDLE>(handle), this, component);
     if (FAILED(ec)) {
@@ -272,7 +284,38 @@ ECode CSystemClassLoader::LoadCoclass(
     /* [in] */ const String& fullName,
     /* [out] */ IMetaCoclass** klass)
 {
-    return NOERROR;
+    VALIDATE_NOT_NULL(klass);
+
+    Array<IMetaComponent*> components;
+    {
+        Mutex::AutoLock lock(mComponentsLock);
+        components = mComponents.GetValues();
+    }
+    for (Integer i = 0; i < components.GetLength(); i++) {
+        components[i]->GetCoclass(fullName, klass);
+        if (*klass != nullptr) return NOERROR;
+    }
+    *klass = nullptr;
+    return E_NOT_FOUND_EXCEPTION;
+}
+
+ECode CSystemClassLoader::LoadInterface(
+    /* [in] */ const String& fullName,
+    /* [out] */ IMetaInterface** intf)
+{
+    VALIDATE_NOT_NULL(intf);
+
+    Array<IMetaComponent*> components;
+    {
+        Mutex::AutoLock lock(mComponentsLock);
+        components = mComponents.GetValues();
+    }
+    for (Integer i = 0; i < components.GetLength(); i++) {
+        components[i]->GetInterface(fullName, intf);
+        if (*intf != nullptr) return NOERROR;
+    }
+    *intf = nullptr;
+    return E_NOT_FOUND_EXCEPTION;
 }
 
 void CSystemClassLoader::InitClassPath()
