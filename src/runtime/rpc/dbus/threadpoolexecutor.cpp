@@ -34,6 +34,7 @@
 #include "util/ccmlogger.h"
 #include <assert.h>
 #include <errno.h>
+#include <pthread.h>
 #include <signal.h>
 
 namespace ccm {

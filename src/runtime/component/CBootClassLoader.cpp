@@ -14,7 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
-#include "CSystemClassLoader.h"
+#include "CBootClassLoader.h"
 #include "reflection/ccmreflectionapi.h"
 #include "reflection/CMetaComponent.h"
 #include "metadata/Component.h"
@@ -29,27 +29,27 @@ using ccm::metadata::MetaComponent;
 
 namespace ccm {
 
-const CoclassID CID_CSystemClassLoader =
+const CoclassID CID_CBootClassLoader =
         {{0x861efebf,0x54c8,0x4939,0xa2ab,{0x4,0xb,0xa,0xc,0xf,0x2,0xc,0xa,0xf,0xa,0x1,0xe}}, &CID_CCMRuntime};
 
-AutoPtr<IClassLoader> CSystemClassLoader::sInstance = new CSystemClassLoader();
-const String CSystemClassLoader::TAG("CSystemClassLoader");
+AutoPtr<IClassLoader> CBootClassLoader::sInstance = new CBootClassLoader();
+const String CBootClassLoader::TAG("CBootClassLoader");
 
-CCM_OBJECT_IMPL(CSystemClassLoader);
-CCM_INTERFACE_IMPL_1(CSystemClassLoader, Object, IClassLoader);
+CCM_OBJECT_IMPL(CBootClassLoader);
+CCM_INTERFACE_IMPL_1(CBootClassLoader, Object, IClassLoader);
 
-CSystemClassLoader::CSystemClassLoader()
+CBootClassLoader::CBootClassLoader()
     : mDebug(false)
 {
     InitClassPath();
 }
 
-AutoPtr<IClassLoader> CSystemClassLoader::GetInstance()
+AutoPtr<IClassLoader> CBootClassLoader::GetInstance()
 {
     return sInstance;
 }
 
-ECode CSystemClassLoader::LoadComponent(
+ECode CBootClassLoader::LoadComponent(
     /* [in] */ const ComponentID& compId,
     /* [out] */ IMetaComponent** component)
 {
@@ -106,7 +106,7 @@ ECode CSystemClassLoader::LoadComponent(
     return NOERROR;
 }
 
-ECode CSystemClassLoader::FindComponent(
+ECode CBootClassLoader::FindComponent(
     /* [in] */ const ComponentID& compId,
     /* [out] */ String* compPath)
 {
@@ -262,7 +262,7 @@ ECode CSystemClassLoader::FindComponent(
     }
 }
 
-ECode CSystemClassLoader::UnloadComponent(
+ECode CBootClassLoader::UnloadComponent(
     /* [in] */ const ComponentID& compId)
 {
     Mutex::AutoLock lock(mComponentsLock);
@@ -280,7 +280,7 @@ ECode CSystemClassLoader::UnloadComponent(
     return E_COMPONENT_UNLOAD_EXCEPTION;
 }
 
-ECode CSystemClassLoader::LoadCoclass(
+ECode CBootClassLoader::LoadCoclass(
     /* [in] */ const String& fullName,
     /* [out] */ IMetaCoclass** klass)
 {
@@ -299,7 +299,7 @@ ECode CSystemClassLoader::LoadCoclass(
     return E_NOT_FOUND_EXCEPTION;
 }
 
-ECode CSystemClassLoader::LoadInterface(
+ECode CBootClassLoader::LoadInterface(
     /* [in] */ const String& fullName,
     /* [out] */ IMetaInterface** intf)
 {
@@ -318,7 +318,7 @@ ECode CSystemClassLoader::LoadInterface(
     return E_NOT_FOUND_EXCEPTION;
 }
 
-void CSystemClassLoader::InitClassPath()
+void CBootClassLoader::InitClassPath()
 {
     String cpath(getenv("CLASS_PATH"));
     if (!cpath.IsNullOrEmpty()) {

@@ -16,7 +16,7 @@
 
 project(StringTest CXX)
 
-set(STRING_DIR ${TEST_DIR}/client)
+set(STRING_DIR ${TEST_DIR}/string)
 set(OBJ_DIR ${CMAKE_BINARY_DIR}/test/string)
 
 include_directories(

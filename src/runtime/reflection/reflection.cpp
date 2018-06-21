@@ -19,7 +19,7 @@
 #include "ccmreflectionapi.h"
 #include "CMetaComponent.h"
 #include "Component.h"
-#include "CSystemClassLoader.h"
+#include "CBootClassLoader.h"
 #include "MetaSerializer.h"
 #include <dlfcn.h>
 #include <errno.h>
@@ -37,7 +37,7 @@ ECode CoGetComponentMetadata(
     VALIDATE_NOT_NULL(mc);
 
     if (loader == nullptr) {
-        loader = CSystemClassLoader::GetInstance();
+        loader = CBootClassLoader::GetInstance();
     }
 
     return loader->LoadComponent(cid, mc);
@@ -120,7 +120,7 @@ ECode CoGetCoclassMetadata(
     VALIDATE_NOT_NULL(mc);
 
     if (loader == nullptr) {
-        loader = CSystemClassLoader::GetInstance();
+        loader = CBootClassLoader::GetInstance();
     }
 
     AutoPtr<IMetaComponent> component;

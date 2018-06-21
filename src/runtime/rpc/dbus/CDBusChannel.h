@@ -21,7 +21,6 @@
 #include "CStub.h"
 #include "threadpoolexecutor.h"
 #include "util/ccmobject.h"
-#include "util/condition.h"
 #include "util/mutex.h"
 #include <dbus/dbus.h>
 

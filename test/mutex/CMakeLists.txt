@@ -14,12 +14,37 @@
 # limitations under the License.
 #=========================================================================
 
-set(TEST_DIR ${PROJECT_DIR}/test)
+project(MutexTest CXX)
 
-# testMutex tests mutex in ccmrt, so running testMutex needs export
-# mutex.h and related methods from ccmrt.so
-#add_subdirectory(mutex)
-add_subdirectory(reflection)
-add_subdirectory(rpc)
-add_subdirectory(string)
-add_subdirectory(thread)
+set(MUTEX_DIR ${TEST_DIR}/mutex)
+set(OBJ_DIR ${CMAKE_BINARY_DIR}/test/mutex)
+
+include_directories(
+    ./
+    ${INC_DIR}
+    ${OBJ_DIR})
+
+set(SOURCES
+    main.cpp)
+
+IMPORT_LIBRARY(ccmrt.so)
+
+add_executable(testMutex
+    ${SOURCES})
+target_link_libraries(testMutex ccmrt.so pthread)
+add_dependencies(testMutex libservicemanager)
+
+COPY(testMutex ${OBJ_DIR}/testMutex ${BIN_DIR})
+
+install(FILES
+    ${OBJ_DIR}/testMutex
+    DESTINATION ${BIN_DIR}
+    PERMISSIONS
+        OWNER_READ
+        OWNER_WRITE
+        OWNER_EXECUTE
+        GROUP_READ
+        GROUP_WRITE
+        GROUP_EXECUTE
+        WORLD_READ
+        WORLD_EXECUTE)

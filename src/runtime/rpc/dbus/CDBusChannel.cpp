@@ -188,6 +188,7 @@ CDBusChannel::CDBusChannel(
     : mType(type)
     , mPeer(peer)
     , mStarted(false)
+    , mCond(mLock)
 {}
 
 ECode CDBusChannel::GetRPCType(
@@ -362,7 +363,7 @@ ECode CDBusChannel::StartListening(
     {
         Mutex::AutoLock lock(mLock);
         while (!mStarted) {
-            mCond.Wait(mLock);
+            mCond.Wait();
         }
     }
     return ec;

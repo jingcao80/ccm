@@ -34,119 +34,113 @@
 #define __CCM_MUTEX_H__
 
 #include "ccmtypes.h"
-#include <pthread.h>
+#include <atomic>
 
 namespace ccm {
 
 class Mutex
 {
 public:
-    enum {
-        PRIVATE = 0,
-        SHARED = 1
-    };
-
     class AutoLock
     {
     public:
-        inline explicit AutoLock(
+        explicit AutoLock(
             /* [in] */ Mutex& mutex);
 
-        inline explicit AutoLock(
+        explicit AutoLock(
             /* [in] */ Mutex* mutex);
 
-        inline ~AutoLock();
+        ~AutoLock();
 
     private:
         Mutex& mLock;
     };
 
 public:
-    inline Mutex();
-
     inline Mutex(
-        /* [in] */ Integer type);
+        /* [in] */ Boolean recursive = false);
 
-    inline ~Mutex();
+    void Lock();
 
-    inline Integer Lock();
-
-    inline Integer Unlock();
-
-    inline Integer TryLock();
-
-private:
-    Mutex(
-        /* [in] */ const Mutex&);
-
-    Mutex& operator=(
-        /* [in] */ const Mutex&);
+    void Unlock();
 
 private:
     friend class Condition;
 
-    pthread_mutex_t mMutex;
+    // 0 is unheld, 1 is held.
+    std::atomic<int32_t> mState;
+    // Exclusive owner.
+    volatile uint64_t mExclusiveOwner;
+    // Number of waiting contenders.
+    std::atomic<int32_t> mNumContenders;
+    const Boolean mRecursive;
+    unsigned int mRecursionCount;
 };
 
-Mutex::AutoLock::AutoLock(
+inline Mutex::AutoLock::AutoLock(
     /* [in] */ Mutex& mutex)
     : mLock(mutex)
 {
     mLock.Lock();
 }
 
-Mutex::AutoLock::AutoLock(
+inline Mutex::AutoLock::AutoLock(
     /* [in] */ Mutex* mutex)
     : mLock(*mutex)
 {
     mLock.Lock();
 }
 
-Mutex::AutoLock::~AutoLock()
+inline Mutex::AutoLock::~AutoLock()
 {
     mLock.Unlock();
 }
 
-Mutex::Mutex()
+inline Mutex::Mutex(
+    /* [in] */ Boolean recursive)
+    : mExclusiveOwner(0)
+    , mRecursive(recursive)
+    , mRecursionCount(0)
+{}
+
+//----------------------------------------------------------
+
+class Condition
 {
-    pthread_mutex_init(&mMutex, nullptr);
-}
+public:
+    explicit Condition(
+        /* [in] */ Mutex& mutex);
 
-Mutex::Mutex(
-    /* [in] */ Integer type)
-{
-    if (type == SHARED) {
-        pthread_mutexattr_t attr;
-        pthread_mutexattr_init(&attr);
-        pthread_mutexattr_setpshared(&attr, PTHREAD_PROCESS_SHARED);
-        pthread_mutex_init(&mMutex, &attr);
-        pthread_mutexattr_destroy(&attr);
-    }
-    else {
-        pthread_mutex_init(&mMutex, nullptr);
-    }
-}
+    void Wait();
 
-Mutex::~Mutex()
-{
-    pthread_mutex_destroy(&mMutex);
-}
+    Boolean TimedWait(
+        /* [in] */ int64_t ms,
+        /* [in] */ int32_t ns);
 
-Integer Mutex::Lock()
-{
-    return pthread_mutex_lock(&mMutex);
-}
+    void Signal();
 
-Integer Mutex::Unlock()
-{
-    return pthread_mutex_unlock(&mMutex);
-}
+    void SignalAll();
 
-Integer Mutex::TryLock()
-{
-    return pthread_mutex_trylock(&mMutex);
-}
+private:
+    // The Mutex being used by waiters. It is an error to mix condition variables between different
+    // Mutexes.
+    Mutex& mGuard;
+    // A counter that is modified by signals and broadcasts. This ensures that when a waiter gives up
+    // their Mutex and another thread takes it and signals, the waiting thread observes that sequence_
+    // changed and doesn't enter the wait. Modified while holding guard_, but is read by futex wait
+    // without guard_ held.
+    std::atomic<int32_t> mSequence;
+    // Number of threads that have come into to wait, not the length of the waiters on the futex as
+    // waiters may have been requeued onto guard_. Guarded by guard_.
+    volatile int32_t mNumWaiters;
+};
+
+inline Condition::Condition(
+    /* [in] */ Mutex& mutex)
+    : mGuard(mutex)
+    , mNumWaiters(0)
+{}
 
 }
 
-#endif // __CCM_MUTEX_H__
+#endif // __CCM_MUTEX_H__BAK

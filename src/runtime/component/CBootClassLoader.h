@@ -28,7 +28,7 @@ namespace ccm {
 extern const CoclassID CID_CSystemClassLoader;
 
 COCLASS_ID(861efebf-54c8-4939-a2ab-4bacf2cafa1e)
-class CSystemClassLoader
+class CBootClassLoader
     : public Object
     , public IClassLoader
 {
@@ -55,7 +55,7 @@ public:
         /* [out] */ IMetaInterface** intf);
 
 private:
-    CSystemClassLoader();
+    CBootClassLoader();
 
     void InitClassPath();
 

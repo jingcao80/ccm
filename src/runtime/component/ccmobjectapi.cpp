@@ -16,7 +16,7 @@
 
 #include "ccmcomponent.h"
 #include "ccmobjectapi.h"
-#include "CSystemClassLoader.h"
+#include "CBootClassLoader.h"
 #include "reflection/CMetaComponent.h"
 #include "util/ccmautoptr.h"
 
@@ -31,7 +31,7 @@ ECode CoCreateObjectInstance(
     VALIDATE_NOT_NULL(object);
 
     if (loader == nullptr) {
-        loader = CSystemClassLoader::GetInstance();
+        loader = CBootClassLoader::GetInstance();
     }
 
     AutoPtr<IClassObject> factory;
@@ -52,7 +52,7 @@ ECode CoAcquireClassFactory(
     VALIDATE_NOT_NULL(object);
 
     if (loader == nullptr) {
-        loader = CSystemClassLoader::GetInstance();
+        loader = CBootClassLoader::GetInstance();
     }
 
     AutoPtr<IMetaComponent> component;
@@ -68,6 +68,11 @@ ECode CoAcquireClassFactory(
         (*object)->AttachMetadata(component);
     }
     return ec;
+}
+
+AutoPtr<IClassLoader> CoGetBootClassLoader()
+{
+    return CBootClassLoader::GetInstance();
 }
 
 }

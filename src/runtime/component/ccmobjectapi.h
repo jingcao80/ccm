@@ -18,6 +18,7 @@
 #define __CCM_CCMOBJECTAPI_H__
 
 #include "ccmtypes.h"
+#include "ccmautoptr.h"
 
 namespace ccm {
 
@@ -31,6 +32,8 @@ EXTERN_C COM_PUBLIC ECode CoAcquireClassFactory(
     /* [in] */ const CoclassID& cid,
     /* [in] */ IClassLoader* loader,
     /* [out] */ IClassObject** object);
+
+EXTERN_C COM_PUBLIC AutoPtr<IClassLoader> CoGetBootClassLoader();
 
 } // namespace ccm
 
