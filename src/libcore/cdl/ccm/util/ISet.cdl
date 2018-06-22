@@ -19,30 +19,20 @@ namespace util {
 
 interface ICollection;
 interface IIterator;
-interface IListIterator;
 
 [
-    uuid(1e687607-efae-42a7-8ce2-24e51c81a616),
+    uuid(163ff32d-c566-4666-8b18-73b5062751c0),
     version(0.1.0)
 ]
-interface IList
+interface ISet
 {
     Add(
         [in] IInterface* obj,
-        [out] Boolean* result = nullptr);
-
-    Add(
-        [in] Integer index,
-        [in] IInterface* obj);
+        [out] Boolean* modified = nullptr);
 
     AddAll(
         [in] ICollection* c,
-        [out] Boolean* result = nullptr);
-
-    AddAll(
-        [in] Integer index,
-        [in] ICollection* c,
-        [out] Boolean* result = nullptr);
+        [out] Boolean* changed = nullptr);
 
     Clear();
 
@@ -58,62 +48,29 @@ interface IList
         [in] IInterface* obj,
         [out] Boolean* result);
 
-    Get(
-        [in] Integer index,
-        [out] IInterface** obj);
-
     GetHashCode(
         [out] Integer* hash);
 
     GetIterator(
         [out] IIterator** it);
 
-    GetListIterator(
-        [out] IListIterator** it);
-
-    GetListIterator(
-        [in] Integer index,
-        [out] IListIterator** it);
-
     GetSize(
         [out] Integer* size);
 
-    IndexOf(
-        [in] IInterface* obj,
-        [out] Integer* index);
-
     IsEmpty(
-        [out] Boolean* empty);
-
-    LastIndexOf(
-        [in] IInterface* obj,
-        [out] Integer* index);
+        [out] Boolean* result);
 
     Remove(
         [in] IInterface* obj,
-        [out] Boolean* result = nullptr);
-
-    Remove(
-        [in] Integer index,
-        [out] IInterface** obj = nullptr);
+        [out] Boolean* contained = nullptr);
 
     RemoveAll(
         [in] ICollection* c,
-        [out] Boolean* result = nullptr);
+        [out] Boolean* changed = nullptr);
 
     RetainAll(
         [in] ICollection* c,
-        [out] Boolean* result = nullptr);
-
-    Set(
-        [in] Integer index,
-        [in] IInterface* obj,
-        [out] IInterface** prevObj = nullptr);
-
-    SubList(
-        [in] Integer fromIndex,
-        [in] Integer toIndex,
-        [out] IList** subList);
+        [out] Boolean* changed = nullptr);
 
     ToArray(
         [out] Array<IInterface*> objs);
