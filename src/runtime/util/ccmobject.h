@@ -53,6 +53,13 @@ public:
     ECode GetWeakReference(
         /* [out] */ IWeakReference** wr) override;
 
+    static Integer GetHashCode(
+        /* [in] */ IInterface* obj);
+
+    static Boolean Equals(
+        /* [in] */ IInterface* obj1,
+        /* [in] */ IInterface* obj2);
+
     static String ToString(
         /* [in] */ IInterface* obj);
 

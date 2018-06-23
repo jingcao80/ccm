@@ -113,6 +113,16 @@ interface IInterface
     virtual ECode GetInterfaceID(
         /* [in] */ IInterface* object,
         /* [out] */ InterfaceID* iid) = 0;
+
+    inline static Boolean Equals(
+        /* [in] */ IInterface* object1,
+        /* [in] */ IInterface* object2)
+    {
+        if (object1 == nullptr || object2 == nullptr) {
+            return false;
+        }
+        return IInterface::Probe(object1) == IInterface::Probe(object2);
+    }
 };
 
 }

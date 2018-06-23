@@ -14,18 +14,22 @@
 // limitations under the License.
 //=========================================================================
 
+#ifndef __CCM_UTIL_COLLECTIONS_H__
+#define __CCM_UTIL_COLLECTIONS_H__
+
+#include "ccm.util.IEnumeration.h"
+#include <ccmautoptr.h>
+
 namespace ccm {
-namespace core {
+namespace util {
 
-[
-    uuid(5ff88e9d-b164-4ac5-b923-194ba8de7d3b),
-    version(0.1.0)
-]
-interface ICloneable
+class Collections
 {
-    Clone(
-        [out] IInterface** obj);
-}
+public:
+    static AutoPtr<IEnumeration> GetEmptyEnumeration();
+};
 
 }
 }
+
+#endif // __CCM_UTIL_COLLECTIONS_H__

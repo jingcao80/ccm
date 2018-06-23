@@ -18,16 +18,46 @@
 #define __CCM_CORE_CLASSLOADER_H__
 
 #include "ccm/core/SyncObject.h"
+#include <ccmautoptr.h>
 
 namespace ccm {
 namespace core {
 
-class ClassLoader
+class COM_PUBLIC ClassLoader
     : public SyncObject
     , public IClassLoader
 {
+private:
+    class SystemClassLoader
+    {
+    public:
+        static AutoPtr<IClassLoader> sLoader;
+    };
 
+public:
+    CCM_INTERFACE_DECL();
+
+    ECode LoadCoclass(
+        /* [in] */ const String& fullName,
+        /* [out] */ IMetaCoclass** klass);
+
+    static AutoPtr<IClassLoader> GetSystemClassLoader();
+
+protected:
+    AutoPtr<IMetaCoclass> FindLoadedClass(
+        /* [in] */ const String& name);
+
+private:
+    static AutoPtr<IClassLoader> CreateSystemClassLoader();
+
+private:
+    AutoPtr<IClassLoader> mParent;
 };
+
+inline AutoPtr<IClassLoader> ClassLoader::GetSystemClassLoader()
+{
+    return SystemClassLoader::sLoader;
+}
 
 }
 }

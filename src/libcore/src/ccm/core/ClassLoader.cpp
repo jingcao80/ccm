@@ -15,3 +15,25 @@
 //=========================================================================
 
 #include "ccm/core/ClassLoader.h"
+
+namespace ccm {
+namespace core {
+
+AutoPtr<IClassLoader> ClassLoader::SystemClassLoader::sLoader = CreateSystemClassLoader();
+
+CCM_INTERFACE_IMPL_1(ClassLoader, SyncObject, IClassLoader);
+
+ECode ClassLoader::LoadCoclass(
+    /* [in] */ const String& fullName,
+    /* [out] */ IMetaCoclass** klass)
+{
+
+}
+
+AutoPtr<IClassLoader> ClassLoader::CreateSystemClassLoader()
+{
+
+}
+
+}
+}

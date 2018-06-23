@@ -117,9 +117,6 @@ interface IArrayList
         [out] IList** subList);
 
     ToArray(
-        [out] Array<IInterface*> objs);
-
-    ToArray(
         [out, callee] Array<IInterface*>* objs);
 }
 

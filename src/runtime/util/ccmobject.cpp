@@ -139,6 +139,35 @@ ECode Object::GetWeakReference(
     return NOERROR;
 }
 
+Integer Object::GetHashCode(
+    /* [in] */ IInterface* obj)
+{
+    IObject* o = IObject::Probe(obj);
+    if (o != nullptr) {
+        Integer hash;
+        o->GetHashCode(&hash);
+        return hash;
+    }
+    return reinterpret_cast<uintptr_t>(IInterface::Probe(obj));
+}
+
+Boolean Object::Equals(
+    /* [in] */ IInterface* obj1,
+    /* [in] */ IInterface* obj2)
+{
+    if (IInterface::Probe(obj1) == IInterface::Probe(obj2)) {
+        return true;
+    }
+
+    IObject* o1 = IObject::Probe(obj1);
+    if (o1 == nullptr) {
+        return false;
+    }
+    Boolean result;
+    o1->Equals(obj2, &result);
+    return result;
+}
+
 String Object::ToString(
     /* [in] */ IInterface* obj)
 {

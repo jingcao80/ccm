@@ -141,10 +141,10 @@ public:
         /* [out] */ IList** subList) override;
 
     ECode ToArray(
-        /* [out] */ Array<IInterface*>& objs) override;
-
-    ECode ToArray(
         /* [out, callee] */ Array<IInterface*>* objs) override;
+
+    ECode Clone(
+        /* [out] */ IInterface** obj) override;
 };
 
 }

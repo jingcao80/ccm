@@ -14,18 +14,28 @@
 // limitations under the License.
 //=========================================================================
 
+#ifndef __CCM_UTIL_ARRAYS_H__
+#define __CCM_UTIL_ARRAYS_H__
+
+#include <ccmtypes.h>
+
 namespace ccm {
-namespace core {
+namespace util {
 
-[
-    uuid(5ff88e9d-b164-4ac5-b923-194ba8de7d3b),
-    version(0.1.0)
-]
-interface ICloneable
+class Arrays
 {
-    Clone(
-        [out] IInterface** obj);
-}
+public:
+    static ECode CopyOf(
+        /* [in] */ const Array<IInterface*>& original,
+        /* [in] */ Integer newLength,
+        /* [out, callee] */ Array<IInterface*>* newArray);
+
+private:
+    Arrays()
+    {}
+};
 
 }
 }
+
+#endif // __CCM_UTIL_ARRAYS_H__

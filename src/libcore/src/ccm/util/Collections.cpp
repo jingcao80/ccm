@@ -13,19 +13,3 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //=========================================================================
-
-namespace ccm {
-namespace core {
-
-[
-    uuid(5ff88e9d-b164-4ac5-b923-194ba8de7d3b),
-    version(0.1.0)
-]
-interface ICloneable
-{
-    Clone(
-        [out] IInterface** obj);
-}
-
-}
-}

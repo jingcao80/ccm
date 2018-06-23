@@ -191,13 +191,13 @@ ECode CArrayList::SubList(
 }
 
 ECode CArrayList::ToArray(
-    /* [out] */ Array<IInterface*>& objs)
+    /* [out, callee] */ Array<IInterface*>* objs)
 {
     return NOERROR;
 }
 
-ECode CArrayList::ToArray(
-    /* [out, callee] */ Array<IInterface*>* objs)
+ECode CArrayList::Clone(
+    /* [out] */ IInterface** obj)
 {
     return NOERROR;
 }
