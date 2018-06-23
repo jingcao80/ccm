@@ -18,6 +18,7 @@
 #define __CCM_UTIL_HASHTABLE_H__
 
 #include "ccm/core/SyncObject.h"
+#include "ccm/util/AbstractSet.h"
 #include "ccm.core.ICloneable.h"
 #include "ccm.core.IInteger.h"
 #include "ccm.io.ISerializable.h"
@@ -46,6 +47,69 @@ class Hashtable
     , public ISerializable
 {
 private:
+    class KeySet
+        : public AbstractSet
+    {
+    public:
+        ECode GetIterator(
+            /* [out] */ IIterator** it) override;
+
+        ECode GetSize(
+            /* [out] */ Integer* size) override;
+
+        ECode Contains(
+            /* [in] */ IInterface* obj,
+            /* [out] */ Boolean* result) override;
+
+        ECode Remove(
+            /* [in] */ IInterface* obj,
+            /* [out] */ Boolean* contained = nullptr) override;
+
+        ECode Clear() override;
+    };
+
+    class EntrySet
+        : public AbstractSet
+    {
+    public:
+        ECode GetIterator(
+            /* [out] */ IIterator** it) override;
+
+        ECode Add(
+            /* [in] */ IInterface* obj,
+            /* [out] */ Boolean* changed = nullptr) override;
+
+        ECode Contains(
+            /* [in] */ IInterface* obj,
+            /* [out] */ Boolean* result) override;
+
+        ECode Remove(
+            /* [in] */ IInterface* obj,
+            /* [out] */ Boolean* changed = nullptr) override;
+
+        ECode GetSize(
+            /* [out] */ Integer* size) override;
+
+        ECode Clear() override;
+    };
+
+    class ValueCollection
+        : public AbstractCollection
+    {
+    public:
+        ECode GetIterator(
+            /* [out] */ IIterator** it) override;
+
+        ECode GetSize(
+            /* [out] */ Integer* size) override;
+
+        ECode Contains(
+            /* [in] */ IInterface* obj,
+            /* [out] */ Boolean* result) override;
+
+        ECode Clear() override;
+    };
+
     class HashtableEntry
         : public LightRefBase
         , public IMapEntry
@@ -177,6 +241,9 @@ public:
 
     ECode GetEntrySet(
         /* [out] */ ISet** entries) override;
+
+    ECode GetValues(
+        /* [out] */ ICollection** values) override;
 
 protected:
     void Rehash();

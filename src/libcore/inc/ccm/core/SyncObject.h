@@ -54,6 +54,8 @@ public:
     static SyncObject* From(
         /* [in] */ IInterface* obj);
 
+    using Object::Equals;
+
 protected:
     friend class Thread;
 

@@ -32,6 +32,8 @@ class AbstractCollection
     , public ICollection
 {
 public:
+    CCM_INTERFACE_DECL();
+
     ECode IsEmpty(
         /* [out] */ Boolean* empty) override;
 
@@ -70,6 +72,13 @@ public:
 
     ECode ToString(
         /* [out] */ String* str) override;
+
+    ECode Equals(
+        /* [in] */ IInterface* obj,
+        /* [out] */ Boolean* result) override;
+
+    ECode GetHashCode(
+        /* [out] */ Integer* hash) override;
 
 private:
     static ECode FinishToArray(

@@ -17,8 +17,11 @@
 #ifndef __CCM_UTIL_COLLECTIONS_H__
 #define __CCM_UTIL_COLLECTIONS_H__
 
+#include "ccm.core.ISynchronize.h"
 #include "ccm.util.IEnumeration.h"
 #include <ccmautoptr.h>
+
+using ccm::core::ISynchronize;
 
 namespace ccm {
 namespace util {
@@ -26,6 +29,14 @@ namespace util {
 class Collections
 {
 public:
+    static AutoPtr<ICollection> CreateSynchronizedCollection(
+        /* [in] */ ICollection* c,
+        /* [in] */ ISynchronize* mutex);
+
+    static AutoPtr<ISet> CreateSynchronizedSet(
+        /* [in] */ ISet* s,
+        /* [in] */ ISynchronize* mutex);
+
     static AutoPtr<IEnumeration> GetEmptyEnumeration();
 };
 

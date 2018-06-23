@@ -29,6 +29,8 @@ using ccm::core::IID_IStringBuilder;
 namespace ccm {
 namespace util {
 
+CCM_INTERFACE_IMPL_1(AbstractCollection, SyncObject, ICollection);
+
 ECode AbstractCollection::IsEmpty(
     /* [out] */ Boolean* empty)
 {
@@ -317,6 +319,19 @@ ECode AbstractCollection::ToString(
         sb->AppendChar(',');
         sb->AppendChar(' ');
     }
+}
+
+ECode AbstractCollection::Equals(
+    /* [in] */ IInterface* obj,
+    /* [out] */ Boolean* result)
+{
+    return SyncObject::Equals(obj, result);
+}
+
+ECode AbstractCollection::GetHashCode(
+    /* [out] */ Integer* hash)
+{
+    return SyncObject::GetHashCode(hash);
 }
 
 }

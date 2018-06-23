@@ -348,12 +348,40 @@ ECode Hashtable::GetKeySet(
     VALIDATE_NOT_NULL(keys);
 
     if (mKeySet == nullptr) {
-
+        mKeySet = Collections::CreateSynchronizedSet(new KeySet(), this);
     }
     *keys = mKeySet;
     REFCOUNT_ADD(*keys);
     return NOERROR;
 }
+
+ECode Hashtable::GetEntrySet(
+    /* [out] */ ISet** entries)
+{
+    VALIDATE_NOT_NULL(entries);
+
+    if (mEntrySet == nullptr) {
+        mEntrySet = Collections::CreateSynchronizedSet(new EntrySet(), this);
+    }
+    *entries = mEntrySet;
+    REFCOUNT_ADD(*entries);
+    return NOERROR;
+}
+
+ECode Hashtable::GetValues(
+    /* [out] */ ICollection** values)
+{
+    VALIDATE_NOT_NULL(values);
+
+    if (mValues == nullptr) {
+        mValues = Collections::CreateSynchronizedCollection(
+                new ValueCollection(), this);
+    }
+    *values = mValues;
+    REFCOUNT_ADD(*values);
+    return NOERROR;
+}
+
 
 //-------------------------------------------------------------------------
 

@@ -27,6 +27,7 @@ add_subdirectory(regex)
 
 set(SOURCES
     AbstractCollection.cpp
+    AbstractSet.cpp
     Arrays.cpp
     CArrayList.cpp
     Collections.cpp
