@@ -43,6 +43,9 @@ public:
     static Integer Signum(
         /* [in] */ Long i);
 
+    static Boolean IsNaN(
+        /* [in] */ Float f);
+
     COM_PUBLIC static Integer FloatToRawIntBits(
         /* [in] */ Float value);
 
@@ -93,6 +96,12 @@ inline Integer Math::Signum(
 {
     // HD, Section 2-7
     return (Integer) ((i >> 63) | (((unsigned Long)-i) >> 63));
+}
+
+inline Boolean Math::IsNaN(
+    /* [in] */ Float f)
+{
+    return (f != f);
 }
 
 }

@@ -41,11 +41,11 @@ ECode AbstractSet::Equals(
     }
     ICollection* c = ICollection::Probe(obj);
     Integer othSize, thisSize;
-    if (c->GetSize(&othSize), ISet::GetSize(&thisSize), othSize != thisSize) {
+    if (c->GetSize(&othSize), GetSize(&thisSize), othSize != thisSize) {
         *result = false;
         return NOERROR;
     }
-    return ISet::ContainsAll(c, result);
+    return ContainsAll(c, result);
 }
 
 ECode AbstractSet::GetHashCode(
@@ -55,7 +55,7 @@ ECode AbstractSet::GetHashCode(
 
     Integer h = 0;
     AutoPtr<IIterator> it;
-    ISet::GetIterator((IIterator**)&it);
+    GetIterator((IIterator**)&it);
     Boolean hasNext;
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> obj;
@@ -75,7 +75,7 @@ ECode AbstractSet::RemoveAll(
     Boolean modified = false;
 
     Integer othSize, thisSize;
-    if (ISet::GetSize(&thisSize), c->GetSize(&othSize), thisSize > othSize) {
+    if (GetSize(&thisSize), c->GetSize(&othSize), thisSize > othSize) {
         AutoPtr<IIterator> it;
         c->GetIterator((IIterator**)&it);
         Boolean hasNext;
@@ -83,13 +83,13 @@ ECode AbstractSet::RemoveAll(
             AutoPtr<IInterface> obj;
             it->GetNext((IInterface**)&obj);
             Boolean changed;
-            ISet::Remove(obj, &changed);
+            Remove(obj, &changed);
             modified |= changed;
         }
     }
     else {
         AutoPtr<IIterator> it;
-        ISet::GetIterator((IIterator**)&it);
+        GetIterator((IIterator**)&it);
         Boolean hasNext;
         while (it->HasNext(&hasNext), hasNext) {
             AutoPtr<IInterface> obj;

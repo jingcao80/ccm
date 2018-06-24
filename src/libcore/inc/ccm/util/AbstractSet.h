@@ -62,6 +62,11 @@ public:
 
     ECode ToArray(
         /* [out, callee] */ Array<IInterface*>* objs) override;
+
+    using ISet::ContainsAll;
+    using ISet::GetIterator;
+    using ISet::GetSize;
+    using ISet::Remove;
 };
 
 }

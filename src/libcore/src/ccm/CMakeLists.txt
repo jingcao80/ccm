@@ -33,6 +33,7 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_core_CThread.cpp
     ${OBJ_DIR}/_ccm_core_CThreadGroup.cpp
     ${OBJ_DIR}/_ccm_util_CArrayList.cpp
+    ${OBJ_DIR}/_ccm_util_CHashtable.cpp
     ${OBJ_DIR}/_ccm_util_regex_CPatternFactory.cpp
     ${OBJ_DIR}/libcorePub.cpp
     ${OBJ_DIR}/MetadataWrapper.cpp)

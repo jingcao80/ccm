@@ -29,6 +29,7 @@
 #include "ccm.util.IMap.h"
 #include "ccm.util.IMapEntry.h"
 #include "ccm.util.IIterator.h"
+#include <ccmautoptr.h>
 
 using ccm::core::ICloneable;
 using ccm::core::IInteger;
@@ -51,6 +52,11 @@ private:
         : public AbstractSet
     {
     public:
+        KeySet(
+            /* [in] */ Hashtable* owner)
+            : mOwner(owner)
+        {}
+
         ECode GetIterator(
             /* [out] */ IIterator** it) override;
 
@@ -66,12 +72,20 @@ private:
             /* [out] */ Boolean* contained = nullptr) override;
 
         ECode Clear() override;
+
+    private:
+        Hashtable* mOwner;
     };
 
     class EntrySet
         : public AbstractSet
     {
     public:
+        EntrySet(
+            /* [in] */ Hashtable* owner)
+            : mOwner(owner)
+        {}
+
         ECode GetIterator(
             /* [out] */ IIterator** it) override;
 
@@ -91,12 +105,20 @@ private:
             /* [out] */ Integer* size) override;
 
         ECode Clear() override;
+
+    private:
+        Hashtable* mOwner;
     };
 
     class ValueCollection
         : public AbstractCollection
     {
     public:
+        ValueCollection(
+            /* [in] */ Hashtable* owner)
+            : mOwner(owner)
+        {}
+
         ECode GetIterator(
             /* [out] */ IIterator** it) override;
 
@@ -108,6 +130,9 @@ private:
             /* [out] */ Boolean* result) override;
 
         ECode Clear() override;
+
+    private:
+        Hashtable* mOwner;
     };
 
     class HashtableEntry
@@ -128,13 +153,6 @@ private:
 
         CCM_INTERFACE_DECL();
 
-        ECode Equals(
-            /* [in] */ IInterface* obj,
-            /* [out] */ Boolean* result) override;
-
-        ECode GetHashCode(
-            /* [out] */ Integer* hash) override;
-
         ECode GetKey(
             /* [out] */ IInterface** key) override;
 
@@ -145,11 +163,23 @@ private:
             /* [in] */ IInterface* value,
             /* [out] */ IInterface** prevValue = nullptr) override;
 
+        ECode Equals(
+            /* [in] */ IInterface* obj,
+            /* [out] */ Boolean* result) override;
+
+        ECode GetHashCode(
+            /* [out] */ Integer* hash) override;
+
+        String ToString();
+
+    protected:
+        AutoPtr<HashtableEntry> Clone();
+
     public:
         Integer mHash;
         AutoPtr<IInterface> mKey;
         AutoPtr<IInterface> mValue;
-        HashtableEntry* mNext;
+        AutoPtr<HashtableEntry> mNext;
     };
 
     class Enumerator
@@ -159,10 +189,15 @@ private:
     {
     public:
         Enumerator(
+            /* [in] */ Hashtable* owner,
             /* [in] */ Integer type,
             /* [in] */ Boolean iterator)
-            : mType(type)
+            : mOwner(owner)
+            , mTable(owner->mTable)
+            , mIndex(mTable.GetLength())
+            , mType(type)
             , mIterator(iterator)
+            , mExpectedModCount(mOwner->mModCount)
         {}
 
         CCM_INTERFACE_DECL();
@@ -173,21 +208,51 @@ private:
         ECode GetNextElement(
             /* [out] */ IInterface** object) override;
 
-        ECode GetNext(
-            /* [out] */ IInterface** object) override;
-
         ECode HasNext(
             /* [out] */ Boolean* result) override;
+
+        ECode GetNext(
+            /* [out] */ IInterface** object) override;
 
         ECode Remove() override;
 
     public:
+        Hashtable* mOwner;
+        Array<HashtableEntry*> mTable;
+        Integer mIndex;
+        AutoPtr<HashtableEntry> mEntry;
+        AutoPtr<HashtableEntry> mLastReturned;
         Integer mType;
 
+        /**
+         * Indicates whether this Enumerator is serving as an Iterator
+         * or an Enumeration.  (true -> Iterator).
+         */
         Boolean mIterator;
+
+        /**
+         * The modCount value that the iterator believes that the backing
+         * Hashtable should have.  If this expectation is violated, the iterator
+         * has detected concurrent modification.
+         */
+        Integer mExpectedModCount;
     };
 
 public:
+    CCM_INTERFACE_DECL();
+
+    ECode Constructor();
+
+    ECode Constructor(
+        /* [in] */ Integer initialCapacity);
+
+    ECode Constructor(
+        /* [in] */ Integer initialCapacity,
+        /* [in] */ Float loadFactor);
+
+    ECode Constructor(
+        /* [in] */ IMap* t);
+
     ECode GetSize(
         /* [out] */ Integer* size) override;
 
@@ -245,6 +310,13 @@ public:
     ECode GetValues(
         /* [out] */ ICollection** values) override;
 
+    ECode Equals(
+        /* [in] */ IInterface* obj,
+        /* [out] */ Boolean* result) override;
+
+    ECode GetHashCode(
+        /* [out] */ Integer* hash) override;
+
 protected:
     void Rehash();
 
@@ -294,6 +366,7 @@ private:
 
     static constexpr Integer KEYS = 0;
     static constexpr Integer VALUES = 1;
+    static constexpr Integer ENTRIES = 2;
 };
 
 }

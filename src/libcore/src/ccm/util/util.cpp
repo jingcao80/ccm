@@ -14,34 +14,12 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/util/Collections.h"
+#include "ccm/util/CHashtable.h"
 
 namespace ccm {
 namespace util {
 
-AutoPtr<ICollection> Collections::CreateSynchronizedCollection(
-    /* [in] */ ICollection* c,
-    /* [in] */ ISynchronize* mutex)
-{
-    return nullptr;
-}
-
-AutoPtr<ISet> Collections::CreateSynchronizedSet(
-    /* [in] */ ISet* s,
-    /* [in] */ ISynchronize* mutex)
-{
-    return nullptr;
-}
-
-AutoPtr<IIterator> Collections::GetEmptyIterator()
-{
-    return nullptr;
-}
-
-AutoPtr<IEnumeration> Collections::GetEmptyEnumeration()
-{
-    return nullptr;
-}
+CCM_OBJECT_IMPL(CHashtable);
 
 }
 }

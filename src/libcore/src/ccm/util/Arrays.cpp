@@ -15,3 +15,17 @@
 //=========================================================================
 
 #include "ccm/util/Arrays.h"
+
+namespace ccm {
+namespace util {
+
+ECode Arrays::CopyOf(
+    /* [in] */ const Array<IInterface*>& original,
+    /* [in] */ Integer newLength,
+    /* [out, callee] */ Array<IInterface*>* newArray)
+{
+    return NOERROR;
+}
+
+}
+}

@@ -43,7 +43,8 @@ interface IDictionary
 
     Put(
         [in] IInterface* key,
-        [in] IInterface* value);
+        [in] IInterface* value,
+        [out] IInterface** prevValue = nullptr);
 
     Remove(
         [in] IInterface* key,

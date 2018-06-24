@@ -18,7 +18,10 @@
 #define __CCM_UTIL_COLLECTIONS_H__
 
 #include "ccm.core.ISynchronize.h"
+#include "ccm.util.ICollection.h"
 #include "ccm.util.IEnumeration.h"
+#include "ccm.util.IIterator.h"
+#include "ccm.util.ISet.h"
 #include <ccmautoptr.h>
 
 using ccm::core::ISynchronize;
@@ -36,6 +39,8 @@ public:
     static AutoPtr<ISet> CreateSynchronizedSet(
         /* [in] */ ISet* s,
         /* [in] */ ISynchronize* mutex);
+
+    static AutoPtr<IIterator> GetEmptyIterator();
 
     static AutoPtr<IEnumeration> GetEmptyEnumeration();
 };

@@ -14,34 +14,11 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/util/Collections.h"
-
 namespace ccm {
 namespace util {
 
-AutoPtr<ICollection> Collections::CreateSynchronizedCollection(
-    /* [in] */ ICollection* c,
-    /* [in] */ ISynchronize* mutex)
-{
-    return nullptr;
-}
-
-AutoPtr<ISet> Collections::CreateSynchronizedSet(
-    /* [in] */ ISet* s,
-    /* [in] */ ISynchronize* mutex)
-{
-    return nullptr;
-}
-
-AutoPtr<IIterator> Collections::GetEmptyIterator()
-{
-    return nullptr;
-}
-
-AutoPtr<IEnumeration> Collections::GetEmptyEnumeration()
-{
-    return nullptr;
-}
+const Integer E_NO_SUCH_ELEMENT_EXCEPTION = 0x80010900;
+const Integer E_CONCURRENT_MODIFICATION_EXCEPTION = 0x80010901;
 
 }
 }

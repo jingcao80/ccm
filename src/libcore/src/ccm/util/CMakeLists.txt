@@ -32,7 +32,8 @@ set(SOURCES
     CArrayList.cpp
     Collections.cpp
     EmptyArray.cpp
-    Hashtable.cpp)
+    Hashtable.cpp
+    util.cpp)
 
 add_library(libcore_util STATIC
     ${SOURCES})
