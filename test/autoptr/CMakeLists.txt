@@ -14,14 +14,38 @@
 # limitations under the License.
 #=========================================================================
 
-set(TEST_DIR ${PROJECT_DIR}/test)
+project(AutoPtrTest CXX)
 
-add_subdirectory(autoptr)
-add_subdirectory(hashtable)
-# testMutex tests mutex in ccmrt, so running testMutex needs export
-# mutex.h and related methods from ccmrt.so
-#add_subdirectory(mutex)
-add_subdirectory(reflection)
-add_subdirectory(rpc)
-add_subdirectory(string)
-add_subdirectory(thread)
+set(AUTOPTR_DIR ${TEST_DIR}/mutex)
+set(OBJ_DIR ${CMAKE_BINARY_DIR}/test/autoptr)
+
+include_directories(
+    ./
+    ${INC_DIR}
+    ${OBJ_DIR})
+
+set(SOURCES
+    main.cpp)
+
+IMPORT_LIBRARY(ccmrt.so)
+IMPORT_GTEST()
+
+add_executable(testAutoPtr
+    ${SOURCES})
+target_link_libraries(testAutoPtr ccmrt.so ${GTEST_LIBS})
+add_dependencies(testAutoPtr libservicemanager)
+
+COPY(testAutoPtr ${OBJ_DIR}/testAutoPtr ${BIN_DIR})
+
+install(FILES
+    ${OBJ_DIR}/testAutoPtr
+    DESTINATION ${BIN_DIR}
+    PERMISSIONS
+        OWNER_READ
+        OWNER_WRITE
+        OWNER_EXECUTE
+        GROUP_READ
+        GROUP_WRITE
+        GROUP_EXECUTE
+        WORLD_READ
+        WORLD_EXECUTE)

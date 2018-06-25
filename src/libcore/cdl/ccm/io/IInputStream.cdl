@@ -15,18 +15,48 @@
 //=========================================================================
 
 namespace ccm {
-namespace core {
+namespace io {
 
-const Integer E_ILLEGAL_MONITOR_STATE_EXCEPTION = 0x80010100;
-const Integer E_INTERRUPTED_EXCEPTION = 0x80010101;
-const Integer E_NULL_POINTER_EXCEPTION = 0x80010102;
-const Integer E_ILLEGAL_THREAD_STATE_EXCEPTION = 0x80010103;
-const Integer E_STRING_INDEX_OUT_OF_BOUNDS_EXCEPTION = 0x80010104;
-const Integer E_INDEX_OUT_OF_BOUNDS_EXCEPTION = 0x80010105;
-const Integer E_NUMBER_FORMAT_EXCEPTION = 0x80010106;
-const Integer E_ILLEGAL_STATE_EXCEPTION = 0x80010107;
-const Integer E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION = 0x80010108;
-const Integer E_ARITHMETIC_EXCEPTION = 0x80010109;
+/*
+ * @involve ccm::io::ICloseable
+ * @involve ccm::core::IAutoCloseable
+ */
+[
+    uuid(ffea83b0-bb5d-4a13-b9e8-9a430b97e854),
+    version(0.1.0)
+]
+interface IInputStream
+{
+    Available(
+        [out] Integer* number);
+
+    Close();
+
+    IsMarkSupported(
+        [out] Boolean* supported);
+
+    Mark(
+        [in] Integer readLimit);
+
+    Read(
+        [out] Integer* value);
+
+    Read(
+        [in] Array<Byte>* buffer,
+        [out] Integer* number);
+
+    Read(
+        [in] Array<Byte>* buffer,
+        [in] Integer offset,
+        [in] Integer size,
+        [out] Integer* number);
+
+    Reset();
+
+    Skip(
+        [in] Long byteCount,
+        [out] Long* number);
+}
 
 }
 }

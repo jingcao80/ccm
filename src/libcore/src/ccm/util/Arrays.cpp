@@ -14,7 +14,10 @@
 // limitations under the License.
 //=========================================================================
 
+#include "ccm/core/Math.h"
 #include "ccm/util/Arrays.h"
+
+using ccm::core::Math;
 
 namespace ccm {
 namespace util {
@@ -24,6 +27,17 @@ ECode Arrays::CopyOf(
     /* [in] */ Integer newLength,
     /* [out, callee] */ Array<IInterface*>* newArray)
 {
+    VALIDATE_NOT_NULL(newArray);
+
+    if (newLength < 0) {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    Array<IInterface*> copy = Array<IInterface*>(newLength);
+    Integer N = Math::Min(original.GetLength(), newLength);
+    for (Integer i = 0; i < N; i++) {
+        copy.Set(i, original[i]);
+    }
+    *newArray = copy;
     return NOERROR;
 }
 

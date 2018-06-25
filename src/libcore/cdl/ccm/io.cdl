@@ -14,6 +14,13 @@
 // limitations under the License.
 //=========================================================================
 
+include "io/ICloseable.cdl"
+include "io/IFlushable.cdl"
+include "io/IInputStream.cdl"
 include "io/IInterruptible.cdl"
+include "io/IOutputStream.cdl"
 include "io/IPrintStream.cdl"
+include "io/IPrintWriter.cdl"
+include "io/IReader.cdl"
 include "io/ISerializable.cdl"
+include "io/IWriter.cdl"

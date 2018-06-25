@@ -26,13 +26,13 @@ namespace core {
 class CoreUtils
 {
 public:
-    static AutoPtr<ICharSequence> Box(
+    COM_PUBLIC static AutoPtr<ICharSequence> Box(
         /* [in] */ const String& str);
 
-    static String Unbox(
+    COM_PUBLIC static String Unbox(
         /* [in] */ ICharSequence* seq);
 
-    static Array<String> Unbox(
+    COM_PUBLIC static Array<String> Unbox(
         /* [in] */ const Array<IInterface*>& seqArray);
 };
 

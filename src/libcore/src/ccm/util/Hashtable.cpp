@@ -862,7 +862,7 @@ ECode Hashtable::Enumerator::GetNext(
 ECode Hashtable::Enumerator::Remove()
 {
     if (!mIterator) {
-        return ccm::core::E_UNSUPPORTED_OPERATION_EXCEPTION;
+        return E_UNSUPPORTED_OPERATION_EXCEPTION;
     }
     if (mLastReturned == nullptr) {
         return ccm::core::E_ILLEGAL_STATE_EXCEPTION;
