@@ -67,7 +67,7 @@ interface IProperties
     SetProperty(
         [in] String key,
         [in] String value,
-        [out] String* prevValue);
+        [out] String* prevValue = nullptr);
 
     StringPropertyNames(
         [out] ISet** names);

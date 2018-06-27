@@ -33,6 +33,7 @@ set(SOURCES
     Collections.cpp
     EmptyArray.cpp
     Hashtable.cpp
+    Properties.cpp
     util.cpp)
 
 add_library(libcore_util STATIC

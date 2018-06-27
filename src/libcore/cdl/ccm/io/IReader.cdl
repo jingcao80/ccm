@@ -22,7 +22,11 @@ namespace io {
     version(0.1.0)
 ]
 interface IReader
-{}
+{
+    Read(
+        [in] Array<Char> buffer,
+        [out] Integer* number);
+}
 
 }
 }

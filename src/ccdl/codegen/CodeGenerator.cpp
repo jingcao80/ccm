@@ -511,8 +511,14 @@ String CodeGenerator::GenType(
             break;
         case CcmTypeKind::Array:
             if ((attr & Parameter::ATTR_MASK) == Parameter::IN) {
-                builder.AppendFormat("const Array<%s>&",
-                    GenType(mc->mTypes[mt->mNestedTypeIndex], attr).string());
+                if (mt->mPointerNumber == 0) {
+                    builder.AppendFormat("const Array<%s>&",
+                        GenType(mc->mTypes[mt->mNestedTypeIndex], attr).string());
+                }
+                else if (mt->mPointerNumber == 1) {
+                    builder.AppendFormat("const Array<%s>",
+                        GenType(mc->mTypes[mt->mNestedTypeIndex], attr).string());
+                }
             }
             else if ((attr & Parameter::ATTR_MASK) == Parameter::OUT) {
                 builder.AppendFormat("Array<%s>&",

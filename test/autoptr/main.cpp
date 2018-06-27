@@ -56,12 +56,36 @@ void CallCA(CA* obj)
     EXPECT_FALSE(CA_DESTROYED);
 }
 
+void CallCA2(AutoPtr<CA> obj)
+{
+    EXPECT_TRUE(CA_CREATED);
+    EXPECT_EQ(1, obj->GetStrongCount());
+    EXPECT_FALSE(CA_DESTROYED);
+}
+
+void CallCA3(AutoPtr<CA>&& obj)
+{
+    EXPECT_TRUE(CA_CREATED);
+    EXPECT_EQ(1, obj->GetStrongCount());
+    EXPECT_FALSE(CA_DESTROYED);
+}
+
 TEST(AutoPtrTest, AutoPtrParameterTest)
 {
     Init();
     EXPECT_FALSE(CA_CREATED);
     EXPECT_FALSE(CA_DESTROYED);
     CallCA(CreateCA());
+    EXPECT_TRUE(CA_DESTROYED);
+    Init();
+    EXPECT_FALSE(CA_CREATED);
+    EXPECT_FALSE(CA_DESTROYED);
+    CallCA2(new CA());
+    EXPECT_TRUE(CA_DESTROYED);
+    Init();
+    EXPECT_FALSE(CA_CREATED);
+    EXPECT_FALSE(CA_DESTROYED);
+    CallCA3(AutoPtr<CA>(new CA()));
     EXPECT_TRUE(CA_DESTROYED);
 }
 
