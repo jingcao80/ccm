@@ -62,7 +62,7 @@ interface IProperties
 
     Save(
         [in] IOutputStream* outstream,
-        [in] String comment);
+        [in] String comments);
 
     SetProperty(
         [in] String key,

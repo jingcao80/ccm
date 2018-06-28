@@ -839,7 +839,8 @@ Type* Parser::ParseType()
     }
     else if (token == Tokenizer::Token::IDENTIFIER) {
         type = FindType(mTokenizer.GetIdentifier());
-        if (type == nullptr && mParsingType->GetName().Equals(mTokenizer.GetIdentifier())) {
+        if (type == nullptr && mParsingType != nullptr &&
+                mParsingType->GetName().Equals(mTokenizer.GetIdentifier())) {
             type = mParsingType;
         }
     }

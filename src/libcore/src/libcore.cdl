@@ -21,9 +21,10 @@
 module libcore
 {
 
-include "core.cdl"
-include "io.cdl"
-include "core2.cdl"
-include "util.cdl"
+include "ccm/core.cdl"
+include "ccm/io.cdl"
+include "ccm/core2.cdl"
+include "ccm/util.cdl"
+include "ccmrt/system.cdl"
 
 }

@@ -42,5 +42,20 @@ Long System::GetNanoTime()
     return static_cast<Long>(now.tv_sec) * 1000000000LL + now.tv_nsec;
 }
 
+ECode System::GetProperty(
+    /* [in] */ const String& key,
+    /* [out] */ String* value)
+{
+    return NOERROR;
+}
+
+ECode System::GetProperty(
+    /* [in] */ const String& key,
+    /* [in] */ const String& def,
+    /* [out] */ String* value)
+{
+    return NOERROR;
+}
+
 }
 }

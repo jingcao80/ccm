@@ -35,6 +35,15 @@ public:
 
     static Long GetNanoTime();
 
+    static ECode GetProperty(
+        /* [in] */ const String& key,
+        /* [out] */ String* value);
+
+    static ECode GetProperty(
+        /* [in] */ const String& key,
+        /* [in] */ const String& def,
+        /* [out] */ String* value);
+
 private:
     System();
 };

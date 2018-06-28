@@ -14,28 +14,51 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/core/ClassLoader.h"
-#include "ccm/core/System.h"
+#include "ccmrt/system/CPathClassLoader.h"
 
-namespace ccm {
-namespace core {
+namespace ccmrt {
+namespace system {
 
-AutoPtr<IClassLoader> ClassLoader::SystemClassLoader::sLoader = CreateSystemClassLoader();
+ECode CPathClassLoader::Constructor (
+    /* [in] */ const String& classPath,
+    /* [in] */ IClassLoader* parent)
+{
+    return NOERROR;
+}
 
-CCM_INTERFACE_IMPL_1(ClassLoader, SyncObject, IClassLoader);
+ECode CPathClassLoader::Constructor (
+    /* [in] */ const String& classPath,
+    /* [in] */ const String& librarySearchPath,
+    /* [in] */ IClassLoader* parent)
+{
+    return NOERROR;
+}
 
-ECode ClassLoader::LoadCoclass(
+ECode CPathClassLoader::LoadComponent(
+    /* [in] */ const ComponentID& compId,
+    /* [out] */ IMetaComponent** component)
+{
+    return NOERROR;
+}
+
+ECode CPathClassLoader::UnloadComponent(
+    /* [in] */ const ComponentID& compId)
+{
+    return NOERROR;
+}
+
+ECode CPathClassLoader::LoadCoclass(
     /* [in] */ const String& fullName,
     /* [out] */ IMetaCoclass** klass)
 {
-
+    return NOERROR;
 }
 
-AutoPtr<IClassLoader> ClassLoader::CreateSystemClassLoader()
+ECode CPathClassLoader::LoadInterface(
+    /* [in] */ const String& fullName,
+    /* [out] */ IMetaInterface** intf)
 {
-    String classPath, librarySearchPath;
-    System::GetProperty(String("ccm.class.path"), String("."), &classPath);
-    System::GetProperty(String("ccm.library.path"), String(""), &librarySearchPath);
+    return NOERROR;
 }
 
 }

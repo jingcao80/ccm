@@ -14,7 +14,18 @@
 # limitations under the License.
 #=========================================================================
 
-set(LIBCORE_CCM_SRC_DIR ${LIBCORE_DIR}/src/ccm)
+set(SYSTEM_DIR ${LIBCORE_CCMRT_SRC_DIR}/system)
 
-add_subdirectory(core)
-add_subdirectory(util)
+include_directories(
+    ./
+    ../
+    ../../../inc
+    ${INC_DIR}
+    ${OBJ_DIR})
+
+set(SOURCES
+    CPathClassLoader.cpp)
+
+add_library(system STATIC
+    ${SOURCES})
+add_dependencies(system build_libcore)

@@ -14,7 +14,6 @@
 # limitations under the License.
 #=========================================================================
 
-set(LIBCORE_CCM_SRC_DIR ${LIBCORE_DIR}/src/ccm)
+set(LIBCORE_CCMRT_SRC_DIR ${LIBCORE_DIR}/src/ccmrt)
 
-add_subdirectory(core)
-add_subdirectory(util)
+add_subdirectory(system)

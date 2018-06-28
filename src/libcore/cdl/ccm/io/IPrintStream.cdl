@@ -27,6 +27,9 @@ interface IPrintStream
         [in] String s);
 
     Println(
+        [in] String s);
+
+    Println(
         [in] IInterface* x);
 }
 

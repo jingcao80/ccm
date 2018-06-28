@@ -20,13 +20,21 @@
 #include "ccm/util/Hashtable.h"
 #include "ccm.io.IBufferedWriter.h"
 #include "ccm.io.IInputStream.h"
+#include "ccm.io.IOutputStream.h"
+#include "ccm.io.IPrintStream.h"
+#include "ccm.io.IPrintWriter.h"
 #include "ccm.io.IReader.h"
+#include "ccm.io.IWriter.h"
 #include "ccm.util.IProperties.h"
 #include <ccmrefbase.h>
 
 using ccm::io::IBufferedWriter;
 using ccm::io::IInputStream;
+using ccm::io::IOutputStream;
+using ccm::io::IPrintStream;
+using ccm::io::IPrintWriter;
 using ccm::io::IReader;
+using ccm::io::IWriter;
 
 namespace ccm {
 namespace util {
@@ -78,6 +86,51 @@ public:
     ECode Load(
         /* [in] */ IInputStream* instream) override;
 
+    ECode Save(
+        /* [in] */ IOutputStream* outstream,
+        /* [in] */ const String& comments) override;
+
+    ECode Store(
+        /* [in] */ IWriter* writer,
+        /* [in] */ const String& comment) override;
+
+    ECode Store(
+        /* [in] */ IOutputStream* outstream,
+        /* [in] */ const String& comment) override;
+
+    ECode LoadFromXML(
+        /* [in] */ IInputStream* instream) override;
+
+    ECode StoreToXML(
+        /* [in] */ IOutputStream* os,
+        /* [in] */ const String& comment) override;
+
+    ECode StoreToXML(
+        /* [in] */ IOutputStream* os,
+        /* [in] */ const String& comment,
+        /* [in] */ const String& encoding) override;
+
+    ECode GetProperty(
+        /* [in] */ const String& key,
+        /* [out] */ String* value) override;
+
+    ECode GetProperty(
+        /* [in] */ const String& key,
+        /* [in] */ const String& defaultValue,
+        /* [out] */ String* value) override;
+
+    ECode PropertyNames(
+        /* [out] */ IEnumeration** names) override;
+
+    ECode StringPropertyNames(
+        /* [out] */ ISet** names) override;
+
+    ECode List(
+        /* [in] */ IPrintStream* outstream) override;
+
+    ECode List(
+        /* [in] */ IPrintWriter* outwriter) override;
+
 private:
     ECode Load0 (
         /* [in] */ AutoPtr<LineReader> lr);
@@ -97,6 +150,17 @@ private:
     static ECode WriteComments(
         /* [in] */ IBufferedWriter* bw,
         /* [in] */ const String& comments);
+
+    ECode Store0(
+        /* [in] */ IBufferedWriter* bw,
+        /* [in] */ const String& comments,
+        /* [in] */ Boolean escUnicode);
+
+    void Enumerate(
+        /* [in] */ IHashtable* h);
+
+    void EnumerateStringProperties(
+        /* [in] */ IHashtable* h);
 
     static Char ToHex(
         /* [in] */ Integer nibble);

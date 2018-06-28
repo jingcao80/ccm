@@ -17,10 +17,13 @@
 #include "ccm/core/Character.h"
 #include "ccm/core/CoreUtils.h"
 #include "ccm/core/CStringBuffer.h"
+#include "ccm/util/CHashtable.h"
 #include "ccm/util/Properties.h"
 #include "ccm.core.ICharSequence.h"
 #include "ccm.core.IInteger.h"
+#include "ccm.core.IString.h"
 #include "ccm.core.IStringBuffer.h"
+#include "ccm.io.IWriter.h"
 #include <ccmlogger.h>
 
 using ccm::core::Character;
@@ -28,8 +31,10 @@ using ccm::core::CoreUtils;
 using ccm::core::CStringBuffer;
 using ccm::core::ICharSequence;
 using ccm::core::IInteger;
+using ccm::core::IString;
 using ccm::core::IStringBuffer;
 using ccm::core::IID_IStringBuffer;
+using ccm::io::IWriter;
 
 namespace ccm {
 namespace util {
@@ -278,7 +283,252 @@ ECode Properties::WriteComments(
     /* [in] */ IBufferedWriter* bw,
     /* [in] */ const String& comments)
 {
+    FAIL_RETURN(IWriter::Probe(bw)->Write(String("#")));
+    Integer len = comments.GetLength();
+    Integer current = 0;
+    Integer last = 0;
+    Array<Char> uu(6);
+    uu[0] = '\\';
+    uu[1] = 'u';
+    while (current < len) {
+        Char c = comments.GetChar(current);
+        if (c > 0x00ff || c == '\n' || c == '\r') {
+            if (last != current) {
+                FAIL_RETURN(IWriter::Probe(bw)->Write(comments.Substring(last, current)));
+            }
+            if (c > 0x00ff) {
+                uu[2] = ToHex((c >> 12) & 0xf);
+                uu[3] = ToHex((c >>  8) & 0xf);
+                uu[4] = ToHex((c >>  4) & 0xf);
+                uu[5] = ToHex( c        & 0xf);
+                FAIL_RETURN(IWriter::Probe(bw)->Write(String(uu)));
+            }
+            else {
+                FAIL_RETURN(bw->NewLine());
+                if (c == '\r' &&
+                    current != len - 1 &&
+                    comments.GetChar(current + 1) == '\n') {
+                    current++;
+                }
+                if (current == len - 1 ||
+                    (comments.GetChar(current + 1) != '#' &&
+                    comments.GetChar(current + 1) != '!'))
+                    FAIL_RETURN(IWriter::Probe(bw)->Write(String("#")));
+            }
+            last = current + 1;
+        }
+        current++;
+    }
+    if (last != current) {
+        FAIL_RETURN(IWriter::Probe(bw)->Write(comments.Substring(last, current)));
+    }
+    FAIL_RETURN(bw->NewLine());
+    return NOERROR;
+}
 
+ECode Properties::Save(
+    /* [in] */ IOutputStream* outstream,
+    /* [in] */ const String& comments)
+{
+    Store(outstream, comments);
+    return NOERROR;
+}
+
+ECode Properties::Store(
+    /* [in] */ IWriter* writer,
+    /* [in] */ const String& comment)
+{
+    return NOERROR;
+}
+
+ECode Properties::Store(
+    /* [in] */ IOutputStream* outstream,
+    /* [in] */ const String& comment)
+{
+    return NOERROR;
+}
+
+ECode Properties::Store0(
+    /* [in] */ IBufferedWriter* bw,
+    /* [in] */ const String& comments,
+    /* [in] */ Boolean escUnicode)
+{
+    if (!comments.IsNull()) {
+        FAIL_RETURN(WriteComments(bw, comments));
+    }
+    return NOERROR;
+}
+
+ECode Properties::LoadFromXML(
+    /* [in] */ IInputStream* instream)
+{
+    return NOERROR;
+}
+
+ECode Properties::StoreToXML(
+    /* [in] */ IOutputStream* os,
+    /* [in] */ const String& comment)
+{
+    return StoreToXML(os, comment, String("UTF-8"));
+}
+
+ECode Properties::StoreToXML(
+    /* [in] */ IOutputStream* os,
+    /* [in] */ const String& comment,
+    /* [in] */ const String& encoding)
+{
+    return NOERROR;
+}
+
+ECode Properties::GetProperty(
+    /* [in] */ const String& key,
+    /* [out] */ String* value)
+{
+    VALIDATE_NOT_NULL(value);
+
+    AutoPtr<IInterface> oval;
+    Hashtable::Get(CoreUtils::Box(key), (IInterface**)&oval);
+    String sval;
+    if (IString::Probe(oval) != nullptr) {
+        ICharSequence::Probe(oval)->ToString(&sval);
+    }
+    if (sval.IsNull() && mDefaults != nullptr) {
+        mDefaults->GetProperty(key, &sval);
+    }
+    *value = sval;
+    return NOERROR;
+}
+
+ECode Properties::GetProperty(
+    /* [in] */ const String& key,
+    /* [in] */ const String& defaultValue,
+    /* [out] */ String* value)
+{
+    VALIDATE_NOT_NULL(value);
+
+    String val;
+    GetProperty(key, &val);
+    *value = val.IsNull() ? defaultValue : val;
+    return NOERROR;
+}
+
+ECode Properties::PropertyNames(
+    /* [out] */ IEnumeration** names)
+{
+    VALIDATE_NOT_NULL(names);
+
+    AutoPtr<IHashtable> h;
+    CHashtable::New(IID_IHashtable, (IInterface**)&h);
+    Enumerate(h);
+    return h->GetKeys(names);
+}
+
+ECode Properties::StringPropertyNames(
+    /* [out] */ ISet** names)
+{
+    VALIDATE_NOT_NULL(names);
+
+    AutoPtr<IHashtable> h;
+    CHashtable::New(IID_IHashtable, (IInterface**)&h);
+    EnumerateStringProperties(h);
+    return h->GetKeySet(names);
+}
+
+ECode Properties::List(
+    /* [in] */ IPrintStream* outstream)
+{
+    outstream->Println(String("-- listing properties --"));
+    AutoPtr<IHashtable> h;
+    CHashtable::New(IID_IHashtable, (IInterface**)&h);
+    Enumerate(h);
+    AutoPtr<IEnumeration> e;
+    h->GetKeys((IEnumeration**)&e);
+    Boolean hasMore;
+    while (e->HasMoreElements(&hasMore), hasMore) {
+        AutoPtr<IInterface> okey;
+        e->GetNextElement((IInterface**)&okey);
+        String key = CoreUtils::Unbox(ICharSequence::Probe(okey));
+        AutoPtr<IInterface> oval;
+        h->Get(okey, (IInterface**)&oval);
+        String val = CoreUtils::Unbox(ICharSequence::Probe(oval));
+        if (val.GetLength() > 40) {
+            val = val.Substring(0, 37) + "...";
+        }
+        outstream->Println(key + "=" + val);
+    }
+    return NOERROR;
+}
+
+ECode Properties::List(
+    /* [in] */ IPrintWriter* outwriter)
+{
+    outwriter->Println(String("-- listing properties --"));
+    AutoPtr<IHashtable> h;
+    CHashtable::New(IID_IHashtable, (IInterface**)&h);
+    Enumerate(h);
+    AutoPtr<IEnumeration> e;
+    h->GetKeys((IEnumeration**)&e);
+    Boolean hasMore;
+    while (e->HasMoreElements(&hasMore), hasMore) {
+        AutoPtr<IInterface> okey;
+        e->GetNextElement((IInterface**)&okey);
+        String key = CoreUtils::Unbox(ICharSequence::Probe(okey));
+        AutoPtr<IInterface> oval;
+        h->Get(okey, (IInterface**)&oval);
+        String val = CoreUtils::Unbox(ICharSequence::Probe(oval));
+        if (val.GetLength() > 40) {
+            val = val.Substring(0, 37) + "...";
+        }
+        outwriter->Println(key + "=" + val);
+    }
+    return NOERROR;
+}
+
+void Properties::Enumerate(
+    /* [in] */ IHashtable* h)
+{
+    if (mDefaults != nullptr) {
+        ((Properties*)mDefaults.Get())->Enumerate(h);
+    }
+    AutoPtr<IEnumeration> e;
+    GetKeys((IEnumeration**)&e);
+    Boolean hasMore;
+    while (e->HasMoreElements(&hasMore), hasMore) {
+        AutoPtr<IInterface> okey;
+        e->GetNextElement((IInterface**)&okey);
+        AutoPtr<IInterface> oval;
+        Get(okey, (IInterface**)&oval);
+        h->Put(okey, oval);
+    }
+}
+
+void Properties::EnumerateStringProperties(
+    /* [in] */ IHashtable* h)
+{
+    if (mDefaults != nullptr) {
+        ((Properties*)mDefaults.Get())->EnumerateStringProperties(h);
+    }
+    AutoPtr<IEnumeration> e;
+    GetKeys((IEnumeration**)&e);
+    Boolean hasMore;
+    while (e->HasMoreElements(&hasMore), hasMore) {
+        AutoPtr<IInterface> okey;
+        e->GetNextElement((IInterface**)&okey);
+        AutoPtr<IInterface> oval;
+        Get(okey, (IInterface**)&oval);
+        if (IString::Probe(okey) != nullptr && IString::Probe(oval) != nullptr) {
+            h->Put(okey, oval);
+        }
+    }
+}
+
+Char Properties::ToHex(
+    /* [in] */ Integer nibble)
+{
+    static char sHexDigit[] = {
+        '0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'
+    };
+    return sHexDigit[nibble & 0xF];
 }
 
 //-------------------------------------------------------------------

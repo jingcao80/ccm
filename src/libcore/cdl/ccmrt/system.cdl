@@ -14,23 +14,28 @@
 // limitations under the License.
 //=========================================================================
 
-include "util/regex/IMatcher.cdl"
-include "util/regex/IMatchResult.cdl"
-include "util/regex/IPattern.cdl"
+interface ccm::IClassLoader;
 
-namespace ccm {
-namespace util {
-namespace regex {
+namespace ccmrt {
+namespace system {
 
 [
-    uuid(698f1b9a-dd5e-4ae4-924c-c1addd038571),
+    uuid(dfa48353-9f1b-453d-a227-00f2390abe44),
     version(0.1.0)
 ]
-coclass CPatternFactory
+coclass CPathClassLoader
 {
-    interface IPatternFactory;
+    Constructor (
+        [in] String classPath,
+        [in] IClassLoader* parent);
+
+    Constructor (
+        [in] String classPath,
+        [in] String librarySearchPath,
+        [in] IClassLoader* parent);
+
+    interface IClassLoader;
 }
 
-}
 }
 }
