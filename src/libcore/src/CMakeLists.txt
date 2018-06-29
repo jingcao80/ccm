@@ -72,6 +72,7 @@ add_library(libcore
 target_link_libraries(libcore
     ${LIBCORE_LINK_LIBS}
     ccmrt.so
+    dl
     pthread
     unwind
     icuuc

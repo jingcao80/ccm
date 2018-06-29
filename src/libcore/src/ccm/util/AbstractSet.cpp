@@ -132,6 +132,13 @@ ECode AbstractSet::IsEmpty(
     return AbstractCollection::IsEmpty(empty);
 }
 
+ECode AbstractSet::Remove(
+    /* [in] */ IInterface* obj,
+    /* [out] */ Boolean* contained)
+{
+    return AbstractCollection::Remove(obj, contained);
+}
+
 ECode AbstractSet::RetainAll(
     /* [in] */ ICollection* c,
     /* [out] */ Boolean* changed)

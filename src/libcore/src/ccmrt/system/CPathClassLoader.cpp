@@ -14,7 +14,10 @@
 // limitations under the License.
 //=========================================================================
 
+#include "ccm/core/StringUtils.h"
 #include "ccmrt/system/CPathClassLoader.h"
+
+using ccm::core::StringUtils;
 
 namespace ccmrt {
 namespace system {
@@ -23,42 +26,49 @@ ECode CPathClassLoader::Constructor (
     /* [in] */ const String& classPath,
     /* [in] */ IClassLoader* parent)
 {
+    mClassPath = StringUtils::Split(classPath, String(":"));
+    FAIL_RETURN(ClassLoader::Constructor(parent));
+    LoadComponentsInClassPath();
     return NOERROR;
 }
 
-ECode CPathClassLoader::Constructor (
-    /* [in] */ const String& classPath,
-    /* [in] */ const String& librarySearchPath,
-    /* [in] */ IClassLoader* parent)
-{
-    return NOERROR;
-}
-
-ECode CPathClassLoader::LoadComponent(
-    /* [in] */ const ComponentID& compId,
-    /* [out] */ IMetaComponent** component)
-{
-    return NOERROR;
-}
-
-ECode CPathClassLoader::UnloadComponent(
-    /* [in] */ const ComponentID& compId)
-{
-    return NOERROR;
-}
-
-ECode CPathClassLoader::LoadCoclass(
+ECode CPathClassLoader::FindCoclass(
     /* [in] */ const String& fullName,
     /* [out] */ IMetaCoclass** klass)
 {
-    return NOERROR;
+    for (Integer i = 0; i < mComponents.GetLength(); i++) {
+        if (mComponents[i] == nullptr) continue;
+        mComponents[i]->GetCoclass(fullName, klass);
+        if (*klass != nullptr) return NOERROR;
+    }
+    return E_CLASS_NOT_FOUND_EXCEPTION;
 }
 
-ECode CPathClassLoader::LoadInterface(
+ECode CPathClassLoader::FindInterface(
     /* [in] */ const String& fullName,
     /* [out] */ IMetaInterface** intf)
 {
-    return NOERROR;
+    for (Integer i = 0; i < mComponents.GetLength(); i++) {
+        if (mComponents[i] == nullptr) continue;
+        mComponents[i]->GetInterface(fullName, intf);
+        if (*intf != nullptr) return NOERROR;
+    }
+    return E_INTERFACE_NOT_FOUND_EXCEPTION;
+}
+
+void CPathClassLoader::LoadComponentsInClassPath()
+{
+    AutoPtr<IClassLoader> parent;
+    GetParent((IClassLoader**)&parent);
+    mComponents = Array<IMetaComponent*>(mClassPath.GetLength());
+    for (Integer i = 0; i < mClassPath.GetLength(); i++) {
+        AutoPtr<IMetaComponent> component;
+        String path = mClassPath[i];
+        if (!path.IsNullOrEmpty()) {
+            parent->LoadComponent(path, (IMetaComponent**)&component);
+        }
+        mComponents.Set(i, component.Get());
+    }
 }
 
 }

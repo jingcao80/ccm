@@ -68,6 +68,10 @@ interface IObject
 interface IClassLoader
 {
     LoadComponent(
+        [in] String path,
+        [out] IMetaComponent** component);
+
+    LoadComponent(
         [in] ComponentID compId,
         [out] IMetaComponent** component);
 
@@ -81,6 +85,9 @@ interface IClassLoader
     LoadInterface(
         [in] String fullName,
         [out] IMetaInterface** intf);
+
+    GetParent(
+        [out] IClassLoader** parent);
 }
 
 [

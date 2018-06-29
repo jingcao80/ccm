@@ -18,7 +18,10 @@
 #define __CCM_CORE_CLASSLOADER_H__
 
 #include "ccm/core/SyncObject.h"
+#include "ccm.util.IHashMap.h"
 #include <ccmautoptr.h>
+
+using ccm::util::IHashMap;
 
 namespace ccm {
 namespace core {
@@ -39,19 +42,55 @@ public:
 
     ECode LoadCoclass(
         /* [in] */ const String& fullName,
-        /* [out] */ IMetaCoclass** klass);
+        /* [out] */ IMetaCoclass** klass) override;
+
+    ECode GetParent(
+        /* [out] */ IClassLoader** parent) override;
 
     static AutoPtr<IClassLoader> GetSystemClassLoader();
 
+    ECode LoadInterface(
+        /* [in] */ const String& fullName,
+        /* [out] */ IMetaInterface** intf) override;
+
+    ECode LoadComponent(
+        /* [in] */ const String& path,
+        /* [out] */ IMetaComponent** component) override;
+
+    ECode LoadComponent(
+        /* [in] */ const ComponentID& compId,
+        /* [out] */ IMetaComponent** component) override;
+
+    ECode UnloadComponent(
+        /* [in] */ const ComponentID& compId) override;
+
 protected:
-    AutoPtr<IMetaCoclass> FindLoadedClass(
-        /* [in] */ const String& name);
+    ECode Constructor(
+        /* [in] */ IClassLoader* parent);
+
+    virtual ECode FindCoclass(
+        /* [in] */ const String& fullName,
+        /* [out] */ IMetaCoclass** klass);
+
+    virtual AutoPtr<IMetaCoclass> FindLoadedCoclass(
+        /* [in] */ const String& fullName);
+
+    virtual ECode FindInterface(
+        /* [in] */ const String& fullName,
+        /* [out] */ IMetaInterface** intf);
+
+    virtual AutoPtr<IMetaInterface> FindLoadedInterface(
+        /* [in] */ const String& fullName);
 
 private:
     static AutoPtr<IClassLoader> CreateSystemClassLoader();
 
 private:
     AutoPtr<IClassLoader> mParent;
+
+    AutoPtr<IHashMap> mLoadedCoclasses;
+
+    AutoPtr<IHashMap> mLoadedInterfaces;
 };
 
 inline AutoPtr<IClassLoader> ClassLoader::GetSystemClassLoader()

@@ -40,19 +40,26 @@ public:
     CCM_INTERFACE_DECL();
 
     ECode LoadComponent(
+        /* [in] */ const String& path,
+        /* [out] */ IMetaComponent** component) override;
+
+    ECode LoadComponent(
         /* [in] */ const ComponentID& compId,
-        /* [out] */ IMetaComponent** component);
+        /* [out] */ IMetaComponent** component) override;
 
     ECode UnloadComponent(
-        /* [in] */ const ComponentID& compId);
+        /* [in] */ const ComponentID& compId) override;
 
     ECode LoadCoclass(
         /* [in] */ const String& fullName,
-        /* [out] */ IMetaCoclass** klass);
+        /* [out] */ IMetaCoclass** klass) override;
 
     ECode LoadInterface(
         /* [in] */ const String& fullName,
-        /* [out] */ IMetaInterface** intf);
+        /* [out] */ IMetaInterface** intf) override;
+
+    ECode GetParent(
+        /* [out] */ IClassLoader** parent) override;
 
 private:
     CBootClassLoader();
@@ -69,6 +76,7 @@ private:
     Boolean mDebug;
     ArrayList<String> mClassPath;
     HashMap<Uuid, IMetaComponent*> mComponents;
+    HashMap<String, IMetaComponent*> mComponentPathMap;
     Mutex mComponentsLock;
 };
 

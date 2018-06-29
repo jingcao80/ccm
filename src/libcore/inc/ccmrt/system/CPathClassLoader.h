@@ -30,29 +30,25 @@ Coclass(CPathClassLoader)
     , public ClassLoader
 {
 public:
-    ECode Constructor (
+    ECode Constructor(
         /* [in] */ const String& classPath,
         /* [in] */ IClassLoader* parent);
 
-    ECode Constructor (
-        /* [in] */ const String& classPath,
-        /* [in] */ const String& librarySearchPath,
-        /* [in] */ IClassLoader* parent);
-
-    ECode LoadComponent(
-        /* [in] */ const ComponentID& compId,
-        /* [out] */ IMetaComponent** component);
-
-    ECode UnloadComponent(
-        /* [in] */ const ComponentID& compId);
-
-    ECode LoadCoclass(
+private:
+    ECode FindCoclass(
         /* [in] */ const String& fullName,
-        /* [out] */ IMetaCoclass** klass);
+        /* [out] */ IMetaCoclass** klass) override;
 
-    ECode LoadInterface(
+    ECode FindInterface(
         /* [in] */ const String& fullName,
-        /* [out] */ IMetaInterface** intf);
+        /* [out] */ IMetaInterface** intf) override;
+
+    void LoadComponentsInClassPath();
+
+private:
+    Array<String> mClassPath;
+
+    Array<IMetaComponent*> mComponents;
 };
 
 }

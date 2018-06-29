@@ -14,22 +14,29 @@
 // limitations under the License.
 //=========================================================================
 
-interface ccm::IClassLoader;
+namespace ccm {
+namespace util {
 
-namespace ccmrt {
-namespace system {
-
+/**
+ * @Involve
+ * interface IMap;
+ * interface ICloneable;
+ * interface ISerializable;
+ */
 [
-    uuid(dfa48353-9f1b-453d-a227-00f2390abe44),
+    uuid(3b25617c-5ccc-428c-8daf-1bdc855ce1a8),
     version(0.1.0)
 ]
-coclass CPathClassLoader
+interface IHashMap
 {
-    Constructor (
-        [in] String classPath,
-        [in] IClassLoader* parent);
+    Get(
+        [in] IInterface* key,
+        [out] IInterface** value);
 
-    interface IClassLoader;
+    Put(
+        [in] IInterface* key,
+        [in] IInterface* value,
+        [out] IInterface** prevValue = nullptr);
 }
 
 }

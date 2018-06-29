@@ -50,6 +50,61 @@ AutoPtr<IClassLoader> CBootClassLoader::GetInstance()
 }
 
 ECode CBootClassLoader::LoadComponent(
+    /* [in] */ const String& path,
+    /* [out] */ IMetaComponent** component)
+{
+    VALIDATE_NOT_NULL(component);
+    *component = nullptr;
+
+    {
+        Mutex::AutoLock lock(mComponentsLock);
+        IMetaComponent* mc = mComponentPathMap.Get(path);
+        if (mc != nullptr) {
+            *component = mc;
+            REFCOUNT_ADD(*component);
+            return NOERROR;
+        }
+    }
+
+    void* handle = dlopen(path.string(), RTLD_NOW);
+    if (handle == nullptr) {
+        Logger::E(TAG, "Dlopen \"%s\" failed. The reason is %s.",
+                path.string(), strerror(errno));
+        return E_COMPONENT_IO_EXCEPTION;
+    }
+
+    {
+        // Dlopening a component maybe cause to run its initialization which
+        // running nested LoadComponent about itself, so we check mComponents again.
+        Mutex::AutoLock lock(mComponentsLock);
+        IMetaComponent* mc = mComponentPathMap.Get(path);
+        if (mc != nullptr) {
+            *component = mc;
+            REFCOUNT_ADD(*component);
+            return NOERROR;
+        }
+    }
+
+    ECode ec = CoGetComponentMetadataFromFile(
+            reinterpret_cast<HANDLE>(handle), this, component);
+    if (FAILED(ec)) {
+        dlclose(handle);
+        return ec;
+    }
+
+    ComponentID compId;
+    (*component)->GetComponentID(&compId);
+
+    {
+        Mutex::AutoLock lock(mComponentsLock);
+        mComponents.Put(compId.mUuid, *component);
+        mComponentPathMap.Put(path, *component);
+    }
+
+    return NOERROR;
+}
+
+ECode CBootClassLoader::LoadComponent(
     /* [in] */ const ComponentID& compId,
     /* [out] */ IMetaComponent** component)
 {
@@ -101,6 +156,7 @@ ECode CBootClassLoader::LoadComponent(
     {
         Mutex::AutoLock lock(mComponentsLock);
         mComponents.Put(compId.mUuid, *component);
+        mComponentPathMap.Put(compPath, *component);
     }
 
     return NOERROR;
@@ -274,6 +330,7 @@ ECode CBootClassLoader::UnloadComponent(
         int ret = dlclose(mcObj->mComponent->mSoHandle);
         if (ret == 0) {
             mComponents.Remove(compId.mUuid);
+            mComponentPathMap.Remove(mcObj->mUrl);
             return NOERROR;
         }
     }
@@ -296,7 +353,7 @@ ECode CBootClassLoader::LoadCoclass(
         if (*klass != nullptr) return NOERROR;
     }
     *klass = nullptr;
-    return E_NOT_FOUND_EXCEPTION;
+    return E_CLASS_NOT_FOUND_EXCEPTION;
 }
 
 ECode CBootClassLoader::LoadInterface(
@@ -315,7 +372,16 @@ ECode CBootClassLoader::LoadInterface(
         if (*intf != nullptr) return NOERROR;
     }
     *intf = nullptr;
-    return E_NOT_FOUND_EXCEPTION;
+    return E_INTERFACE_NOT_FOUND_EXCEPTION;
+}
+
+ECode CBootClassLoader::GetParent(
+    /* [out] */ IClassLoader** parent)
+{
+    VALIDATE_NOT_NULL(parent);
+
+    *parent = nullptr;
+    return NOERROR;
 }
 
 void CBootClassLoader::InitClassPath()

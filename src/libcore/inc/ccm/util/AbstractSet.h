@@ -56,6 +56,10 @@ public:
     ECode IsEmpty(
         /* [out] */ Boolean* empty) override;
 
+    ECode Remove(
+        /* [in] */ IInterface* obj,
+        /* [out] */ Boolean* contained = nullptr) override;
+
     ECode RetainAll(
         /* [in] */ ICollection* c,
         /* [out] */ Boolean* changed = nullptr) override;
@@ -66,7 +70,6 @@ public:
     using ISet::ContainsAll;
     using ISet::GetIterator;
     using ISet::GetSize;
-    using ISet::Remove;
 };
 
 }

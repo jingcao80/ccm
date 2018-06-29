@@ -27,12 +27,14 @@ add_subdirectory(regex)
 
 set(SOURCES
     AbstractCollection.cpp
+    AbstractMap.cpp
     AbstractSet.cpp
     Arrays.cpp
     CArrayList.cpp
     Collections.cpp
     EmptyArray.cpp
     Hashtable.cpp
+    HashMap.cpp
     Properties.cpp
     util.cpp)
 

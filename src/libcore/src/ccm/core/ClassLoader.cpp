@@ -15,7 +15,12 @@
 //=========================================================================
 
 #include "ccm/core/ClassLoader.h"
+#include "ccm/core/CoreUtils.h"
 #include "ccm/core/System.h"
+#include "ccmrt/system/CPathClassLoader.h"
+#include <ccmapi.h>
+
+using ccmrt::system::CPathClassLoader;
 
 namespace ccm {
 namespace core {
@@ -24,18 +29,138 @@ AutoPtr<IClassLoader> ClassLoader::SystemClassLoader::sLoader = CreateSystemClas
 
 CCM_INTERFACE_IMPL_1(ClassLoader, SyncObject, IClassLoader);
 
+ECode ClassLoader::Constructor(
+    /* [in] */ IClassLoader* parent)
+{
+    mParent = parent;
+    return NOERROR;
+}
+
 ECode ClassLoader::LoadCoclass(
     /* [in] */ const String& fullName,
     /* [out] */ IMetaCoclass** klass)
 {
+    VALIDATE_NOT_NULL(klass);
 
+    AutoPtr<IMetaCoclass> c = FindLoadedCoclass(fullName);
+    if (c == nullptr) {
+        if (mParent != nullptr) {
+            mParent->LoadCoclass(fullName, (IMetaCoclass**)&c);
+        }
+        if (c == nullptr) {
+            FAIL_RETURN(FindCoclass(fullName, (IMetaCoclass**)&c));
+        }
+        mLoadedCoclasses->Put(CoreUtils::Box(fullName), c);
+    }
+    *klass = c;
+    REFCOUNT_ADD(*klass);
+    return NOERROR;
 }
 
 AutoPtr<IClassLoader> ClassLoader::CreateSystemClassLoader()
 {
-    String classPath, librarySearchPath;
+    String classPath;
     System::GetProperty(String("ccm.class.path"), String("."), &classPath);
-    System::GetProperty(String("ccm.library.path"), String(""), &librarySearchPath);
+
+    AutoPtr<IClassLoader> cl;
+    CPathClassLoader::New(classPath, CoGetBootClassLoader(),
+            IID_IClassLoader, (IInterface**)&cl);
+    CHECK(cl != nullptr);
+    return cl;
+}
+
+ECode ClassLoader::FindCoclass(
+    /* [in] */ const String& fullName,
+    /* [out] */ IMetaCoclass** klass)
+{
+    return E_CLASS_NOT_FOUND_EXCEPTION;
+}
+
+AutoPtr<IMetaCoclass> ClassLoader::FindLoadedCoclass(
+    /* [in] */ const String& fullName)
+{
+    AutoPtr<IInterface> value;
+    mLoadedCoclasses->Get(CoreUtils::Box(fullName), (IInterface**)&value);
+    return IMetaCoclass::Probe(value);
+}
+
+ECode ClassLoader::GetParent(
+    /* [out] */ IClassLoader** parent)
+{
+    VALIDATE_NOT_NULL(parent);
+
+    *parent = mParent;
+    REFCOUNT_ADD(*parent);
+    return NOERROR;
+}
+
+ECode ClassLoader::LoadInterface(
+    /* [in] */ const String& fullName,
+    /* [out] */ IMetaInterface** intf)
+{
+    VALIDATE_NOT_NULL(intf);
+
+    AutoPtr<IMetaInterface> i = FindLoadedInterface(fullName);
+    if (i == nullptr) {
+        if (mParent != nullptr) {
+            mParent->LoadInterface(fullName, (IMetaInterface**)&i);
+        }
+        if (i == nullptr) {
+            FAIL_RETURN(FindInterface(fullName, (IMetaInterface**)&i));
+            mLoadedInterfaces->Put(CoreUtils::Box(fullName), i);
+        }
+    }
+    *intf = i;
+    REFCOUNT_ADD(*intf);
+    return NOERROR;
+}
+
+ECode ClassLoader::FindInterface(
+    /* [in] */ const String& fullName,
+    /* [out] */ IMetaInterface** intf)
+{
+    return E_INTERFACE_NOT_FOUND_EXCEPTION;
+}
+
+AutoPtr<IMetaInterface> ClassLoader::FindLoadedInterface(
+    /* [in] */ const String& fullName)
+{
+    AutoPtr<IInterface> value;
+    mLoadedInterfaces->Get(CoreUtils::Box(fullName), (IInterface**)&value);
+    return IMetaInterface::Probe(value);
+}
+
+ECode ClassLoader::LoadComponent(
+    /* [in] */ const String& path,
+    /* [out] */ IMetaComponent** component)
+{
+    VALIDATE_NOT_NULL(component);
+
+    if (mParent != nullptr) {
+        return mParent->LoadComponent(path, component);
+    }
+    return E_UNSUPPORTED_OPERATION_EXCEPTION;
+}
+
+ECode ClassLoader::LoadComponent(
+    /* [in] */ const ComponentID& compId,
+    /* [out] */ IMetaComponent** component)
+{
+    VALIDATE_NOT_NULL(component);
+
+    if (mParent != nullptr) {
+        return mParent->LoadComponent(compId, component);
+    }
+    return E_UNSUPPORTED_OPERATION_EXCEPTION;
+}
+
+ECode ClassLoader::UnloadComponent(
+    /* [in] */ const ComponentID& compId)
+{
+    if (mParent != nullptr) {
+        return mParent->UnloadComponent(compId);
+    }
+    return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
 }
