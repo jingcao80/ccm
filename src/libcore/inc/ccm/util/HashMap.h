@@ -83,6 +83,112 @@ protected:
         AutoPtr<Node> mNext;
     };
 
+    INTERFACE_ID(2b2b51d9-c2c4-4312-8a06-67de1c1f754b)
+    interface ITreeNode : public IInterface
+    {
+        inline static ITreeNode* Probe(
+            /* [in] */ IInterface* object)
+        {
+            static const InterfaceID IID_ITreeNode =
+                    {{0x2b2b51d9,0xc2c4,0x4312,0x8a06,
+                    {0x6,0x7,0xd,0xe,0x1,0xc,0x1,0xf,0x7,0x5,0x4,0xb}},
+                    &CID_libcore};
+            if (object == nullptr) return nullptr;
+            return (ITreeNode*)object->Probe(IID_ITreeNode);
+        }
+    };
+
+    class TreeNode
+        : public ITreeNode
+    {
+
+    };
+
+public:
+    ECode Constructor(
+        /* [in] */ Integer initialCapacity,
+        /* [in] */ Float loadFactor);
+
+    ECode Constructor(
+        /* [in] */ Integer initialCapacity);
+
+    ECode Constructor();
+
+    ECode Constructor(
+        /* [in] */ IMap* m);
+
+    ECode GetSize(
+        /* [out] */ Integer* size);
+
+    ECode IsEmpty(
+        /* [out] */ Boolean* result);
+
+    ECode Get(
+        /* [in] */ IInterface* key,
+        /* [out] */ IInterface** value);
+
+protected:
+    static Integer Hash(
+        /* [in] */ IInterface* key);
+
+    /**
+     * Returns a power of two size for the given target capacity.
+     */
+    static Integer TableSizeFor(
+        /* [in] */ Integer cap);
+
+    void PutMapEntries(
+        /* [in] */ IMap* m,
+        /* [in] */ Boolean evict);
+
+    AutoPtr<Node> GetNode(
+        /* [in] */ Integer hash,
+        /* [in] */ IInterface* key);
+
+    AutoPtr<IInterface> PutVal(
+        /* [in] */ Integer hash,
+        /* [in] */ IInterface* key,
+        /* [in] */ IInterface* value,
+        /* [in] */ Boolean onlyIfAbsent,
+        /* [in] */ Boolean evict);
+
+    Array<Node*> Resize();
+
+protected:
+    /**
+     * The maximum capacity, used if a higher value is implicitly specified
+     * by either of the constructors with arguments.
+     * MUST be a power of two <= 1<<30.
+     */
+    static constexpr Integer MAXIMUM_CAPACITY = 1 << 30;
+
+    /**
+     * The load factor used when none specified in constructor.
+     */
+    static constexpr Float DEFAULT_LOAD_FACTOR = 0.75f;
+
+    /**
+     * The table, initialized on first use, and resized as
+     * necessary. When allocated, length is always a power of two.
+     * (We also tolerate length zero in some operations to allow
+     * bootstrapping mechanics that are currently not needed.)
+     */
+    Array<Node*> mTable;
+
+    /**
+     * The number of key-value mappings contained in this map.
+     */
+    Integer mSize = 0;
+
+    /**
+     * The next size value at which to resize (capacity * load factor).
+     */
+    Integer mThreshold = 0;
+
+    /**
+     * The load factor for the hash table.
+     */
+    Float mLoadFactor = 0;
 };
 
 }

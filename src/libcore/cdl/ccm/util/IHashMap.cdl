@@ -33,6 +33,12 @@ interface IHashMap
         [in] IInterface* key,
         [out] IInterface** value);
 
+    GetSize(
+        [out] Integer* size);
+
+    IsEmpty(
+        [out] Boolean* result);
+
     Put(
         [in] IInterface* key,
         [in] IInterface* value,
