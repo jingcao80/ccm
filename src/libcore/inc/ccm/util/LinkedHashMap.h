@@ -14,14 +14,37 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/util/CHashMap.h"
-#include "ccm/util/CHashtable.h"
+#ifndef __CCM_UTIL_LINKEDHASHMAP_H__
+#define __CCM_UTIL_LINKEDHASHMAP_H__
+
+#include "ccm/util/HashMap.h"
 
 namespace ccm {
 namespace util {
 
-CCM_OBJECT_IMPL(CHashMap);
-CCM_OBJECT_IMPL(CHashtable);
+class LinkedHashMap
+{
+public:
+    class LinkedHashMapEntry
+        : public HashMap::Node
+    {
+    public:
+        LinkedHashMapEntry(
+            /* [in] */ Integer hash,
+            /* [in] */ IInterface* key,
+            /* [in] */ IInterface* value,
+            /* [in] */ Node* next)
+            : HashMap::Node(hash, key, value, next)
+        {}
+
+    public:
+        LinkedHashMapEntry* mBefore;
+        LinkedHashMapEntry* mAfter;
+    };
+
+};
 
 }
 }
+
+#endif // __CCM_UTIL_LINKEDHASHMAP_H__

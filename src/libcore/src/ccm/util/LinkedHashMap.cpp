@@ -13,15 +13,3 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //=========================================================================
-
-#include "ccm/util/CHashMap.h"
-#include "ccm/util/CHashtable.h"
-
-namespace ccm {
-namespace util {
-
-CCM_OBJECT_IMPL(CHashMap);
-CCM_OBJECT_IMPL(CHashtable);
-
-}
-}

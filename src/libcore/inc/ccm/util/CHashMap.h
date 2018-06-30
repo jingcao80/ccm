@@ -14,14 +14,23 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/util/CHashMap.h"
-#include "ccm/util/CHashtable.h"
+#ifndef __CCM_UTIL_CHASHMAP_H__
+#define __CCM_UTIL_CHASHMAP_H__
+
+#include "ccm/util/HashMap.h"
+#include "_ccm_util_CHashMap.h"
 
 namespace ccm {
 namespace util {
 
-CCM_OBJECT_IMPL(CHashMap);
-CCM_OBJECT_IMPL(CHashtable);
+Coclass(CHashMap)
+    , public HashMap
+{
+public:
+    CCM_OBJECT_DECL();
+};
 
 }
 }
+
+#endif // __CCM_UTIL_CHASHMAP_H__

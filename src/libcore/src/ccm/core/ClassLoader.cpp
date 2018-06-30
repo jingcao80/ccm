@@ -17,9 +17,12 @@
 #include "ccm/core/ClassLoader.h"
 #include "ccm/core/CoreUtils.h"
 #include "ccm/core/System.h"
+#include "ccm/util/CHashMap.h"
 #include "ccmrt/system/CPathClassLoader.h"
 #include <ccmapi.h>
 
+using ccm::util::CHashMap;
+using ccm::util::IID_IHashMap;
 using ccmrt::system::CPathClassLoader;
 
 namespace ccm {
@@ -33,6 +36,8 @@ ECode ClassLoader::Constructor(
     /* [in] */ IClassLoader* parent)
 {
     mParent = parent;
+    CHashMap::New(IID_IHashMap, (IInterface**)&mLoadedCoclasses);
+    CHashMap::New(IID_IHashMap, (IInterface**)&mLoadedInterfaces);
     return NOERROR;
 }
 

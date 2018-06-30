@@ -30,6 +30,8 @@ using ccm::core::IID_IStringBuilder;
 namespace ccm {
 namespace util {
 
+CCM_INTERFACE_IMPL_1(AbstractMap, SyncObject, IMap);
+
 ECode AbstractMap::GetSize(
     /* [out] */ Integer* size)
 {

@@ -74,14 +74,14 @@ interface IMap
     GetHashCode(
         [out] Integer* hash);
 
-    GetValues(
-        [out] ICollection** values);
-
     GetKeySet(
         [out] ISet** keys);
 
     GetSize(
         [out] Integer* size);
+
+    GetValues(
+        [out] ICollection** values);
 
     IsEmpty(
         [out] Boolean* result);

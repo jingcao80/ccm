@@ -29,12 +29,41 @@ namespace util {
 ]
 interface IHashMap
 {
+    Clear();
+
+    Clone(
+        [out] IInterface** obj);
+
+    ContainsKey(
+        [in] IInterface* key,
+        [out] Boolean* result);
+
+    ContainsValue(
+        [in] IInterface* value,
+        [out] Boolean* result);
+
+    Equals(
+        [in] IInterface* obj,
+        [out] Boolean* result);
+
     Get(
         [in] IInterface* key,
         [out] IInterface** value);
 
+    GetEntrySet(
+        [out] ISet** entries);
+
+    GetHashCode(
+        [out] Integer* hash);
+
+    GetKeySet(
+        [out] ISet** keys);
+
     GetSize(
         [out] Integer* size);
+
+    GetValues(
+        [out] ICollection** values);
 
     IsEmpty(
         [out] Boolean* result);
@@ -42,6 +71,13 @@ interface IHashMap
     Put(
         [in] IInterface* key,
         [in] IInterface* value,
+        [out] IInterface** prevValue = nullptr);
+
+    PutAll(
+        [in] IMap* m);
+
+    Remove(
+        [in] IInterface* key,
         [out] IInterface** prevValue = nullptr);
 }
 

@@ -54,6 +54,9 @@ ECode System::GetProperty(
     /* [in] */ const String& def,
     /* [out] */ String* value)
 {
+    VALIDATE_NOT_NULL(value);
+
+    *value = def;
     return NOERROR;
 }
 

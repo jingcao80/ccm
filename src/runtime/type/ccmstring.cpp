@@ -110,7 +110,9 @@ String::String(
 {
     mString = other.mString;
     mCharCount = other.mCharCount;
-    SharedBuffer::GetBufferFromData(mString)->AddRef();
+    if (mString != nullptr) {
+        SharedBuffer::GetBufferFromData(mString)->AddRef();
+    }
 }
 
 String::String(

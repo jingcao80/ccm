@@ -58,6 +58,30 @@ coclass CArrayList
 }
 
 [
+    uuid(afe87a5a-0e0b-4c33-975e-2ec5caa60afc),
+    version(0.1.0)
+]
+coclass CHashMap
+{
+    Constructor();
+
+    Constructor(
+        [in] Integer initialCapacity);
+
+    Constructor(
+        [in] IMap* m);
+
+    Constructor(
+        [in] Integer initialCapacity,
+        [in] Float loadFactor);
+
+    interface IHashMap;
+    interface IMap;
+    interface ICloneable;
+    interface ISerializable;
+}
+
+[
     uuid(10c87f0c-91e6-4fa1-905e-8ce9f513318f),
     version(0.1.0)
 ]

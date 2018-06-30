@@ -35,7 +35,9 @@ set(SOURCES
     EmptyArray.cpp
     Hashtable.cpp
     HashMap.cpp
+    LinkedHashMap.cpp
     Properties.cpp
+    TreeNode.cpp
     util.cpp)
 
 add_library(libcore_util STATIC

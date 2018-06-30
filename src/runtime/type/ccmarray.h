@@ -174,11 +174,14 @@ template<class T>
 Array<T>::~Array()
 {
     if (mData != nullptr) {
-        DeleteFunc<T> deleteF;
-        for (Long i = 0; i < mSize; i++) {
-            deleteF(&static_cast<T*>(mData)[i], this);
+        SharedBuffer* sb = SharedBuffer::GetBufferFromData(mData);
+        if (sb->OnlyOwner()) {
+            DeleteFunc<T> deleteF;
+            for (Long i = 0; i < mSize; i++) {
+                deleteF(&static_cast<T*>(mData)[i], this);
+            }
         }
-        SharedBuffer::GetBufferFromData(mData)->Release();
+        sb->Release();
         mData = nullptr;
     }
     mSize = 0;
