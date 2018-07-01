@@ -302,6 +302,10 @@ protected:
     static Integer Hash(
         /* [in] */ IInterface* key);
 
+    static Integer CompareComparables(
+        /* [in] */ IInterface* k,
+        /* [in] */ IInterface* x);
+
     /**
      * Returns a power of two size for the given target capacity.
      */
@@ -440,6 +444,8 @@ protected:
      * The load factor for the hash table.
      */
     Float mLoadFactor = 0;
+
+    friend class TreeNode;
 };
 
 }

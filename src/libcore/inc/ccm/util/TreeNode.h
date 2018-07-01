@@ -18,6 +18,9 @@
 #define __CCM_UTIL_TREENODE_H__
 
 #include "ccm/util/LinkedHashMap.h"
+#include "ccm.core.IComparable.h"
+
+using ccm::core::IComparable;
 
 namespace ccm {
 namespace util {
@@ -54,6 +57,11 @@ public:
         /* [in] */ Array<Node*>& tab,
         /* [in] */ TreeNode* root);
 
+    AutoPtr<TreeNode> Find(
+        /* [in] */ Integer h,
+        /* [in] */ IInterface* k,
+        /* [in] */ Boolean compare);
+
     AutoPtr<TreeNode> GetTreeNode(
         /* [in] */ Integer h,
         /* [in] */ IInterface* k);
@@ -79,12 +87,18 @@ public:
         /* [in] */ Integer index,
         /* [in] */ Integer bit);
 
+    static Boolean CheckInvariants(
+        /* [in] */ TreeNode* t);
+
     static Boolean IsTreeNode(
         /* [in] */ HashMap::Node* node);
 
 public:
     TreeNode* mParent = nullptr;
+    TreeNode* mLeft = nullptr;
+    TreeNode* mRight = nullptr;
     TreeNode* mPrev = nullptr;
+    Boolean mRed = false;
 };
 
 inline Boolean TreeNode::IsTreeNode(

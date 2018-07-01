@@ -43,6 +43,18 @@ Integer HashMap::Hash(
     return h;
 }
 
+Integer HashMap::CompareComparables(
+    /* [in] */ IInterface* k,
+    /* [in] */ IInterface* x)
+{
+    if (x == nullptr || IComparable::Probe(x) == nullptr) {
+        return 0;
+    }
+    Integer result;
+    IComparable::Probe(k)->CompareTo(x, &result);
+    return result;
+}
+
 Integer HashMap::TableSizeFor(
     /* [in] */ Integer cap)
 {
