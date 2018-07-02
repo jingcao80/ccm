@@ -66,8 +66,15 @@ public:
         /* [in] */ Integer h,
         /* [in] */ IInterface* k);
 
+    static Integer TieBreakOrder(
+        /* [in] */ IInterface* a,
+        /* [in] */ IInterface* b);
+
     void Treeify(
         /* [in] */ Array<Node*>& tab);
+
+    AutoPtr<Node> Untreeify(
+        /* [in] */ HashMap* map);
 
     AutoPtr<TreeNode> PutTreeVal(
         /* [in] */ HashMap* map,
@@ -86,6 +93,22 @@ public:
         /* [in] */ Array<Node*>& tab,
         /* [in] */ Integer index,
         /* [in] */ Integer bit);
+
+    static AutoPtr<TreeNode> RotateLeft(
+        /* [in] */ TreeNode* root,
+        /* [in] */ TreeNode* p);
+
+    static AutoPtr<TreeNode> RotateRight(
+        /* [in] */ TreeNode* root,
+        /* [in] */ TreeNode* p);
+
+    static AutoPtr<TreeNode> BalanceInsertion(
+        /* [in] */ TreeNode* root,
+        /* [in] */ TreeNode* x);
+
+    static AutoPtr<TreeNode> BalanceDeletion(
+        /* [in] */ TreeNode* root,
+        /* [in] */ TreeNode* x);
 
     static Boolean CheckInvariants(
         /* [in] */ TreeNode* t);

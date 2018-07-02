@@ -139,6 +139,21 @@ ECode Object::GetWeakReference(
     return NOERROR;
 }
 
+String Object::GetCoclassName(
+    /* [in] */ IInterface* obj)
+{
+    String name;
+    IObject* o = IObject::Probe(obj);
+    if (o != nullptr) {
+        AutoPtr<IMetaCoclass> mc;
+        o->GetCoclass((IMetaCoclass**)&mc);
+        if (mc != nullptr) {
+            mc->GetName(&name);
+        }
+    }
+    return name;
+}
+
 Integer Object::GetHashCode(
     /* [in] */ IInterface* obj)
 {

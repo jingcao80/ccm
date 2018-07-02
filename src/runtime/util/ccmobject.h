@@ -53,6 +53,9 @@ public:
     ECode GetWeakReference(
         /* [out] */ IWeakReference** wr) override;
 
+    static String GetCoclassName(
+        /* [in] */ IInterface* obj);
+
     static Integer GetHashCode(
         /* [in] */ IInterface* obj);
 

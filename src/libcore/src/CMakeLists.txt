@@ -60,6 +60,7 @@ add_custom_target(build_libcore
 set(LIBCORE_LINK_LIBS
     -Wl,--whole-archive
     core
+    io
     regex
     libcore_util
     system

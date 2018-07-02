@@ -17,6 +17,7 @@
 set(TEST_DIR ${PROJECT_DIR}/test)
 
 add_subdirectory(autoptr)
+add_subdirectory(hashmap)
 add_subdirectory(hashtable)
 # testMutex tests mutex in ccmrt, so running testMutex needs export
 # mutex.h and related methods from ccmrt.so

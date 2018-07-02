@@ -263,7 +263,36 @@ Array<Char> String::GetChars(
     return charArray;
 }
 
- Array<Short> String::GetUTF16Chars(
+ECode String::GetChars(
+    /* [in] */ Integer srcBegin,
+    /* [in] */ Integer srcEnd,
+    /* [out] */ Array<Char>& dst,
+    /* [in] */ Integer dstBegin) const
+{
+    if (srcBegin < 0 || srcEnd > GetLength() ||
+            srcEnd < srcBegin || dst.IsNull() || dstBegin < 0 ||
+            dstBegin > dst.GetLength() ||
+            (srcEnd - srcBegin > dst.GetLength() - dstBegin)) {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    Integer byteSize, i = 0;
+    const char* p = mString;
+    const char* end = mString + GetByteLength() + 1;
+    while (*p && p < end) {
+        Char unicode = GetCharInternal(p, &byteSize);
+        if (byteSize == 0 || p + byteSize >= end) break;
+        if (i >= srcBegin && i < srcEnd) {
+            dst[dstBegin + i - srcBegin] = unicode;
+            if (i == srcEnd - 1) break;
+        }
+        p += byteSize;
+        i++;
+    }
+    return NOERROR;
+}
+
+Array<Short> String::GetUTF16Chars(
     /* [in] */ Integer start) const
 {
     Integer utf16Count = GetUTF16Length(start);
@@ -295,6 +324,43 @@ Array<Char> String::GetChars(
     }
 
     return utf16Array;
+}
+
+ECode String::GetUTF16Chars(
+    /* [in] */ Integer srcBegin,
+    /* [in] */ Integer srcEnd,
+    /* [out] */ Array<Short>& dst,
+    /* [in] */ Integer dstBegin) const
+{
+    if (srcBegin < 0 || srcEnd > GetLength() ||
+            srcEnd < srcBegin || dst.IsNull() || dstBegin < 0 ||
+            dstBegin > dst.GetLength() ||
+            (srcEnd - srcBegin > dst.GetLength() - dstBegin)) {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    Integer byteSize, count = 0, i = 0;
+    const char* p = mString;
+    const char* end = mString + GetByteLength() + 1;
+    while (*p && p < end) {
+        Char unicode = GetCharInternal(p, &byteSize);
+        if (byteSize == 0 || p + byteSize >= end) break;
+        if (count >= srcBegin && count < srcEnd) {
+            if (unicode <= 0xFFFF) {
+                dst[i++] = unicode;
+            }
+            else {
+                // Multiple UTF16 characters with surrogates
+                unicode =  unicode - 0x10000;
+                dst[i++] = (Short)((unicode >> 10) + 0xD800);
+                dst[i++] = (Short)((unicode & 0x3FF) + 0xDC00);
+            }
+            if (count == srcEnd - 1) break;
+        }
+        p += byteSize;
+        count++;
+    }
+    return NOERROR;
 }
 
 Integer String::Compare(

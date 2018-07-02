@@ -217,8 +217,6 @@ ECode HashMap::Put(
     /* [in] */ IInterface* value,
     /* [out] */ IInterface** prevValue)
 {
-    VALIDATE_NOT_NULL(prevValue);
-
     AutoPtr<IInterface> v = PutVal(Hash(key), key, value, false, true);
     if (prevValue != nullptr) {
         *prevValue = v;

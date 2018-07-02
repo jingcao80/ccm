@@ -14,10 +14,10 @@
 # limitations under the License.
 #=========================================================================
 
-project(HashtableTest CXX)
+project(HashmapTest CXX)
 
-set(HASHTABLE_DIR ${TEST_DIR}/hashtable)
-set(OBJ_DIR ${CMAKE_BINARY_DIR}/test/hashtable)
+set(HASHMAP_DIR ${TEST_DIR}/hashmap)
+set(OBJ_DIR ${CMAKE_BINARY_DIR}/test/hashmap)
 
 include_directories(
     ./
@@ -34,11 +34,11 @@ IMPORT_LIBRARY(ccmrt.so)
 IMPORT_LIBRARY(libcore.so)
 IMPORT_GTEST()
 
-add_executable(testHashtable
+add_executable(testHashMap
     ${SOURCES}
     ${GENERATED_SOURCES})
-target_link_libraries(testHashtable ccmrt.so libcore.so ${GTEST_LIBS})
-add_dependencies(testHashtable libservicemanager)
+target_link_libraries(testHashMap ccmrt.so libcore.so ${GTEST_LIBS})
+add_dependencies(testHashMap libservicemanager)
 
 add_custom_command(
     OUTPUT
@@ -52,10 +52,10 @@ add_custom_command(
         -d ${OBJ_DIR}
         "${BIN_DIR}/libcore.so")
 
-COPY(testHashtable ${OBJ_DIR}/testHashtable ${BIN_DIR})
+COPY(testHashMap ${OBJ_DIR}/testHashMap ${BIN_DIR})
 
 install(FILES
-    ${OBJ_DIR}/testHashtable
+    ${OBJ_DIR}/testHashMap
     DESTINATION ${BIN_DIR}
     PERMISSIONS
         OWNER_READ

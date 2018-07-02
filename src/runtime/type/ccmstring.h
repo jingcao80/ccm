@@ -93,8 +93,20 @@ public:
     Array<Char> GetChars(
         /* [in] */ Integer start = 0) const;
 
+    ECode GetChars(
+        /* [in] */ Integer srcBegin,
+        /* [in] */ Integer srcEnd,
+        /* [out] */ Array<Char>& dst,
+        /* [in] */ Integer dstBegin) const;
+
     Array<Short> GetUTF16Chars(
         /* [in] */ Integer start = 0) const;
+
+    ECode GetUTF16Chars(
+        /* [in] */ Integer srcBegin,
+        /* [in] */ Integer srcEnd,
+        /* [out] */ Array<Short>& dst,
+        /* [in] */ Integer dstBegin) const;
 
     inline Integer Compare(
         /* [in] */ const String& other) const;

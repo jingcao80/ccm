@@ -404,6 +404,13 @@ protected:
     static constexpr Integer TREEIFY_THRESHOLD = 8;
 
     /**
+     * The bin count threshold for untreeifying a (split) bin during a
+     * resize operation. Should be less than TREEIFY_THRESHOLD, and at
+     * most 6 to mesh with shrinkage detection under removal.
+     */
+    static constexpr Integer UNTREEIFY_THRESHOLD = 6;
+
+    /**
      * The smallest table capacity for which bins may be treeified.
      * (Otherwise the table is resized if too many nodes in a bin.)
      * Should be at least 4 * TREEIFY_THRESHOLD to avoid conflicts

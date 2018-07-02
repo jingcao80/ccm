@@ -14,57 +14,18 @@
 // limitations under the License.
 //=========================================================================
 
-interface ccm::core::ICharSequence;
+#ifndef __CCM_IO_BUFFEREDWRITER_H__
+#define __CCM_IO_BUFFEREDWRITER_H__
 
 namespace ccm {
 namespace io {
 
-/**
- * @Involve
- * interface ccm::core::IAppendable;
- * interface ccm::io::ICloseable;
- * interface ccm::io::IFlushable;
- */
-[
-    uuid(cca035d8-6f23-4eac-a581-294d5ff8c41f),
-    version(0.1.0)
-]
-interface IWriter
+class BufferWriter
 {
-    Append(
-        [in] ICharSequence* csq);
 
-    Append(
-        [in] ICharSequence* csq,
-        [in] Integer start,
-        [in] Integer end);
-
-    Append(
-        [in] Char c);
-
-    Close();
-
-    Flush();
-
-    Write(
-        [in] Integer c);
-
-    Write(
-        [in] Array<Char> buffer);
-
-    Write(
-        [in] Array<Char> buffer,
-        [in] Integer off,
-        [in] Integer len);
-
-    Write(
-        [in] String str);
-
-    Write(
-        [in] String str,
-        [in] Integer off,
-        [in] Integer len);
-}
+};
 
 }
 }
+
+#endif // __CCM_IO_BUFFEREDWRITER_H__

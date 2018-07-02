@@ -17,6 +17,7 @@
 set(LIBCORE_CCM_INC_DIR ${LIBCORE_DIR}/inc/ccm)
 
 add_subdirectory(core)
+add_subdirectory(io)
 add_subdirectory(util)
 
 add_custom_target(deploy_libcore_headers

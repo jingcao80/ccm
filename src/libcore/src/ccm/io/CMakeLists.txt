@@ -14,8 +14,19 @@
 # limitations under the License.
 #=========================================================================
 
-set(LIBCORE_CCM_SRC_DIR ${LIBCORE_DIR}/src/ccm)
+set(IO_DIR ${LIBCORE_CCM_SRC_DIR}/io)
 
-add_subdirectory(core)
-add_subdirectory(io)
-add_subdirectory(util)
+include_directories(
+    ./
+    ../
+    ../../../inc
+    ${INC_DIR}
+    ${OBJ_DIR})
+
+set(SOURCES
+    BufferedWriter.cpp
+    Writer.cpp)
+
+add_library(io STATIC
+    ${SOURCES})
+add_dependencies(io build_libcore)
