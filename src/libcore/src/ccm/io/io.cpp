@@ -14,24 +14,14 @@
 // limitations under the License.
 //=========================================================================
 
+#include "ccm/io/CBufferedWriter.h"
+#include "ccm/io/COutputStreamWriter.h"
+
 namespace ccm {
 namespace io {
 
-/**
- * @Involve
- * @involve ccm::io::IWriter
- * interface ccm::core::IAppendable;
- * interface ccm::io::ICloseable;
- * interface ccm::io::IFlushable;
- */
-[
-    uuid(f4aadb4e-6469-49e1-9987-8a46a73f7923),
-    version(0.1.0)
-]
-interface IBufferedWriter
-{
-    NewLine();
-}
+CCM_OBJECT_IMPL(CBufferedWriter);
+CCM_OBJECT_IMPL(COutputStreamWriter);
 
 }
 }

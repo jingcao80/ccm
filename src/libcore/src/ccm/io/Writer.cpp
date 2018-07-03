@@ -20,9 +20,12 @@
 
 using ccm::core::AutoLock;
 using ccm::core::CoreUtils;
+using ccm::core::IID_IAppendable;
 
 namespace ccm {
 namespace io {
+
+CCM_INTERFACE_IMPL_4(Writer, SyncObject, IWriter, IAppendable, ICloseable, IFlushable);
 
 Writer::~Writer()
 {

@@ -19,7 +19,7 @@ set(REGEX_DIR ${UTIL_DIR}/regex)
 include_directories(
     ./
     ../
-    ../../../inc
+    ../../../../inc
     ${INC_DIR}
     ${OBJ_DIR})
 

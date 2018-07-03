@@ -14,24 +14,39 @@
 // limitations under the License.
 //=========================================================================
 
+#include "ccm/io/charset/StreamEncoder.h"
+
 namespace ccm {
 namespace io {
+namespace charset {
 
-/**
- * @Involve
- * @involve ccm::io::IWriter
- * interface ccm::core::IAppendable;
- * interface ccm::io::ICloseable;
- * interface ccm::io::IFlushable;
- */
-[
-    uuid(f4aadb4e-6469-49e1-9987-8a46a73f7923),
-    version(0.1.0)
-]
-interface IBufferedWriter
+ECode StreamEncoder::ForOutputStreamWriter(
+    /* [in] */ IOutputStream* out,
+    /* [in] */ ISynchronize* lock,
+    /* [in] */ const String& charsetName,
+    /* [out] */ IStreamEncoder** encoder)
 {
-    NewLine();
+    return NOERROR;
 }
 
+ECode StreamEncoder::ForOutputStreamWriter(
+    /* [in] */ IOutputStream* out,
+    /* [in] */ ISynchronize* lock,
+    /* [in] */ ICharset* cs,
+    /* [out] */ IStreamEncoder** encoder)
+{
+    return NOERROR;
+}
+
+ECode StreamEncoder::ForOutputStreamWriter(
+    /* [in] */ IOutputStream* out,
+    /* [in] */ ISynchronize* lock,
+    /* [in] */ ICharsetEncoder* enc,
+    /* [out] */ IStreamEncoder** encoder)
+{
+    return NOERROR;
+}
+
+}
 }
 }

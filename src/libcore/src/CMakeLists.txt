@@ -23,6 +23,7 @@ include_directories(
     ./
     ../inc
     ../inc/ccm/core
+    ../inc/ccm/io
     ../inc/ccm/util
     ../inc/ccm/util/regex
     ../inc/ccmrt/system
@@ -44,6 +45,8 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_core_CStringBuilder.cpp
     ${OBJ_DIR}/_ccm_core_CThread.cpp
     ${OBJ_DIR}/_ccm_core_CThreadGroup.cpp
+    ${OBJ_DIR}/_ccm_io_CBufferedWriter.cpp
+    ${OBJ_DIR}/_ccm_io_COutputStreamWriter.cpp
     ${OBJ_DIR}/_ccm_util_CArrayList.cpp
     ${OBJ_DIR}/_ccm_util_CHashMap.cpp
     ${OBJ_DIR}/_ccm_util_CHashtable.cpp
@@ -60,6 +63,7 @@ add_custom_target(build_libcore
 set(LIBCORE_LINK_LIBS
     -Wl,--whole-archive
     core
+    charset
     io
     regex
     libcore_util

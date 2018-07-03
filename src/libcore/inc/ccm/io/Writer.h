@@ -43,6 +43,8 @@ class Writer
 protected:
     virtual ~Writer();
 
+    CCM_INTERFACE_DECL();
+
     ECode Constructor();
 
     ECode Constructor(

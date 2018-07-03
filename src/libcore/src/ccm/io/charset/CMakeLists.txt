@@ -14,23 +14,18 @@
 # limitations under the License.
 #=========================================================================
 
-set(IO_DIR ${LIBCORE_CCM_SRC_DIR}/io)
-
-add_subdirectory(charset)
+set(CHARSET_DIR ${IO_DIR}/charset)
 
 include_directories(
     ./
     ../
-    ../../../inc
+    ../../../../inc
     ${INC_DIR}
     ${OBJ_DIR})
 
 set(SOURCES
-    BufferedWriter.cpp
-    OutputStreamWriter.cpp
-    Writer.cpp
-    io.cpp)
+    StreamEncoder.cpp)
 
-add_library(io STATIC
+add_library(charset STATIC
     ${SOURCES})
-add_dependencies(io build_libcore)
+add_dependencies(charset build_libcore)

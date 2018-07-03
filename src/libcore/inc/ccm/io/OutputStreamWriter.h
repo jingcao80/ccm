@@ -14,29 +14,50 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_IO_BUFFEREDWRITER_H__
-#define __CCM_IO_BUFFEREDWRITER_H__
+#ifndef __CCM_IO_OUTPUTSTREAMWRITER_H__
+#define __CCM_IO_OUTPUTSTREAMWRITER_H__
 
 #include "ccm/io/Writer.h"
-#include "ccm.io.IBufferedWriter.h"
+#include "ccm/io/charset/StreamEncoder.h"
+#include "ccm.io.IOutputStream.h"
+#include "ccm.io.IOutputStreamWriter.h"
+#include "ccm.io.charset.ICharset.h"
+#include "ccm.io.charset.ICharsetEncoder.h"
+#include "ccm.io.charset.IStreamEncoder.h"
 #include <ccmautoptr.h>
+
+using ccm::io::charset::ICharset;
+using ccm::io::charset::ICharsetEncoder;
+using ccm::io::charset::IStreamEncoder;
+using ccm::io::charset::StreamEncoder;
 
 namespace ccm {
 namespace io {
 
-class BufferedWriter
+class OutputStreamWriter
     : public Writer
-    , public IBufferedWriter
+    , public IOutputStreamWriter
 {
 public:
     CCM_INTERFACE_DECL();
 
     ECode Constructor(
-        /* [in] */ IWriter* out);
+        /* [in] */ IOutputStream* out,
+        /* [in] */ const String& charsetName);
 
     ECode Constructor(
-        /* [in] */ IWriter* out,
-        /* [in] */ Integer sz);
+        /* [in] */ IOutputStream* out);
+
+    ECode Constructor(
+        /* [in] */ IOutputStream* out,
+        /* [in] */ ICharset* cs);
+
+    ECode Constructor(
+        /* [in] */ IOutputStream* out,
+        /* [in] */ ICharsetEncoder* enc);
+
+    ECode GetEncoding(
+        /* [out] */ String* name) override;
 
     ECode Write(
         /* [in] */ Integer c) override;
@@ -51,33 +72,18 @@ public:
         /* [in] */ Integer off,
         /* [in] */ Integer len) override;
 
-    ECode NewLine() override;
-
     ECode Flush() override;
 
     ECode Close() override;
-
-    using Writer::Write;
 
 protected:
     ECode FlushBuffer();
 
 private:
-    ECode EnsureOpen();
-
-private:
-    AutoPtr<IWriter> mOut;
-
-    Array<Char> mCb;
-    Integer mNChars;
-    Integer mNextChar;
-
-    static constexpr Integer sDefaultCharBufferSize = 8192;
-
-    String mLineSeparator;
+    AutoPtr<IStreamEncoder> mSe;
 };
 
 }
 }
 
-#endif // __CCM_IO_BUFFEREDWRITER_H__
+#endif // __CCM_IO_OUTPUTSTREAMWRITER_H__

@@ -16,22 +16,17 @@
 
 namespace ccm {
 namespace io {
+namespace charset {
 
-/**
- * @Involve
- * @involve ccm::io::IWriter
- * interface ccm::core::IAppendable;
- * interface ccm::io::ICloseable;
- * interface ccm::io::IFlushable;
- */
 [
-    uuid(f4aadb4e-6469-49e1-9987-8a46a73f7923),
+    uuid(1b6e3b85-c728-4a3f-a840-1d7b0eacc764),
     version(0.1.0)
 ]
-interface IBufferedWriter
+interface ICharsetEncoder
 {
-    NewLine();
+
 }
 
+}
 }
 }

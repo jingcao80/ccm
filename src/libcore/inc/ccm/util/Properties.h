@@ -92,11 +92,11 @@ public:
 
     ECode Store(
         /* [in] */ IWriter* writer,
-        /* [in] */ const String& comment) override;
+        /* [in] */ const String& comments) override;
 
     ECode Store(
         /* [in] */ IOutputStream* outstream,
-        /* [in] */ const String& comment) override;
+        /* [in] */ const String& comments) override;
 
     ECode LoadFromXML(
         /* [in] */ IInputStream* instream) override;

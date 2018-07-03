@@ -25,12 +25,13 @@ namespace io {
  * interface ccm::io::IFlushable;
  */
 [
-    uuid(f4aadb4e-6469-49e1-9987-8a46a73f7923),
+    uuid(3bebf7a8-0001-4ad5-8b5a-b0353070b31d),
     version(0.1.0)
 ]
-interface IBufferedWriter
+interface IOutputStreamWriter
 {
-    NewLine();
+    GetEncoding(
+        [out] String* name);
 }
 
 }

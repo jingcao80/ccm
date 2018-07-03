@@ -17,6 +17,8 @@
 #include "ccm/core/Character.h"
 #include "ccm/core/CoreUtils.h"
 #include "ccm/core/CStringBuffer.h"
+#include "ccm/io/CBufferedWriter.h"
+#include "ccm/io/COutputStreamWriter.h"
 #include "ccm/util/CHashtable.h"
 #include "ccm/util/Properties.h"
 #include "ccm.core.ICharSequence.h"
@@ -34,6 +36,12 @@ using ccm::core::IInteger;
 using ccm::core::IString;
 using ccm::core::IStringBuffer;
 using ccm::core::IID_IStringBuffer;
+using ccm::io::CBufferedWriter;
+using ccm::io::COutputStreamWriter;
+using ccm::io::IBufferedWriter;
+using ccm::io::IOutputStreamWriter;
+using ccm::io::IID_IBufferedWriter;
+using ccm::io::IID_IOutputStreamWriter;
 using ccm::io::IWriter;
 
 namespace ccm {
@@ -336,16 +344,27 @@ ECode Properties::Save(
 
 ECode Properties::Store(
     /* [in] */ IWriter* writer,
-    /* [in] */ const String& comment)
+    /* [in] */ const String& comments)
 {
-    return NOERROR;
+    AutoPtr<IBufferedWriter> bw =
+            IBufferedWriter::Probe(writer);
+    if (bw == nullptr) {
+        CBufferedWriter::New(writer, IID_IBufferedWriter, (IInterface**)&bw);
+    }
+    return Store0(bw, comments, false);
 }
 
 ECode Properties::Store(
     /* [in] */ IOutputStream* outstream,
-    /* [in] */ const String& comment)
+    /* [in] */ const String& comments)
 {
-    return NOERROR;
+    AutoPtr<IOutputStreamWriter> sw;
+    COutputStreamWriter::New(outstream, String("8859_1"),
+            IID_IOutputStreamWriter, (IInterface**)&sw);
+    AutoPtr<IBufferedWriter> bw;
+    CBufferedWriter::New(IWriter::Probe(sw),
+            IID_IBufferedWriter, (IInterface**)&bw);
+    return Store0(bw, comments, true);
 }
 
 ECode Properties::Store0(

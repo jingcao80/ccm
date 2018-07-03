@@ -17,5 +17,6 @@
 ======== Libcore_Namespace ========     ======== Namespace_Code ========
 ccm.core.Errors                                     0x0
 ccm.core.Exceptions                                 0x1
+ccm.io.Exceptions                                   0x2
 ccm.util.Exceptions                                 0x9
 ccm.util.regex.Exceptions                           0xa

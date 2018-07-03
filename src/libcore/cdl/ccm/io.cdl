@@ -14,14 +14,77 @@
 // limitations under the License.
 //=========================================================================
 
+include "ccm/io/Exceptions.cdl"
 include "ccm/io/IBufferedWriter.cdl"
 include "ccm/io/ICloseable.cdl"
 include "ccm/io/IFlushable.cdl"
 include "ccm/io/IInputStream.cdl"
 include "ccm/io/IInterruptible.cdl"
 include "ccm/io/IOutputStream.cdl"
+include "ccm/io/IOutputStreamWriter.cdl"
 include "ccm/io/IPrintStream.cdl"
 include "ccm/io/IPrintWriter.cdl"
 include "ccm/io/IReader.cdl"
 include "ccm/io/ISerializable.cdl"
 include "ccm/io/IWriter.cdl"
+include "ccm/io/charset/ICharset.cdl"
+include "ccm/io/charset/ICharsetEncoder.cdl"
+include "ccm/io/charset/IStreamEncoder.cdl"
+
+interface ccm::core::IAppendable;
+interface ccm::io::charset::ICharset;
+interface ccm::io::charset::ICharsetEncoder;
+
+namespace ccm {
+namespace io {
+
+[
+    uuid(cf7b3ffb-46ce-44fc-9057-d8ec03c820b7),
+    version(0.1.0)
+]
+coclass CBufferedWriter
+{
+    Constructor(
+        [in] IWriter* outW);
+
+    Constructor(
+        [in] IWriter* outW,
+        [in] Integer sz);
+
+    interface IBufferedWriter;
+    interface IWriter;
+    interface IAppendable;
+    interface ICloseable;
+    interface IFlushable;
+}
+
+[
+    uuid(3f1442a5-ce76-40b3-8889-c9431c810c1d),
+    version(0.1.0)
+]
+coclass COutputStreamWriter
+{
+    Constructor(
+        [in] IOutputStream* outstream,
+        [in] String charsetName);
+
+    Constructor(
+        [in] IOutputStream* outstream);
+
+    Constructor(
+        [in] IOutputStream* outstream,
+        [in] ICharset* cs);
+
+    Constructor(
+        [in] IOutputStream* outstream,
+        [in] ICharsetEncoder* enc);
+
+    interface IOutputStreamWriter;
+    interface IWriter;
+    interface IAppendable;
+    interface ICloseable;
+    interface IFlushable;
+}
+
+}
+}
