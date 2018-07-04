@@ -180,6 +180,8 @@ private:
         AutoPtr<IInterface> mKey;
         AutoPtr<IInterface> mValue;
         AutoPtr<HashtableEntry> mNext;
+
+        friend class Hashtable;
     };
 
     class Enumerator
@@ -295,9 +297,6 @@ public:
 
     ECode Clear() override;
 
-    ECode Clone(
-        /* [out] */ IInterface** obj) override;
-
     ECode ToString(
         /* [out] */ String* str) override;
 
@@ -319,6 +318,9 @@ public:
 
 protected:
     void Rehash();
+
+    ECode CloneImpl(
+        /* [out] */ IHashtable* newObj);
 
 private:
     void AddEntry(

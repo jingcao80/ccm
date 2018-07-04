@@ -345,10 +345,18 @@ ECode Hashtable::Clear()
     mCount = 0;
 }
 
-ECode Hashtable::Clone(
-    /* [out] */ IInterface** obj)
+ECode Hashtable::CloneImpl(
+    /* [out] */ IHashtable* newObj)
 {
     AutoLock lock(this);
+    Hashtable* t = (Hashtable*)newObj;
+    t->mTable = Array<HashtableEntry*>(mTable.GetLength());
+    for (Integer i = mTable.GetLength() - 1; i >=0; i--) {
+        if (mTable[i] != nullptr) {
+            t->mTable.Set(i, mTable[i]->Clone());
+        }
+    }
+    return NOERROR;
 }
 
 ECode Hashtable::ToString(

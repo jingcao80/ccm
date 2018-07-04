@@ -17,6 +17,7 @@
 include "ccm/util/Exceptions.cdl"
 include "ccm/util/IArrayList.cdl"
 include "ccm/util/ICollection.cdl"
+include "ccm/util/IDate.cdl"
 include "ccm/util/IDictionary.cdl"
 include "ccm/util/IEnumeration.cdl"
 include "ccm/util/IHashtable.cdl"
@@ -34,6 +35,7 @@ include "ccm/util/regex/IMatchResult.cdl"
 include "ccm/util/regex/IPattern.cdl"
 
 interface ccm::core::ICloneable;
+interface ccm::core::IComparable;
 interface ccm::core::IIterable;
 interface ccm::io::ISerializable;
 
@@ -54,6 +56,46 @@ coclass CArrayList
     interface IRandomAccess;
     interface IIterable;
     interface ICloneable;
+    interface ISerializable;
+}
+
+[
+    uuid(57b9bd7b-d0d5-42c5-9784-202614517a4f),
+    version(0.1.0)
+]
+coclass CDate
+{
+    Constructor();
+
+    Constructor(
+        [in] Long date);
+
+    Constructor(
+        [in] Integer year,
+        [in] Integer month,
+        [in] Integer date);
+
+    Constructor(
+        [in] Integer year,
+        [in] Integer month,
+        [in] Integer date,
+        [in] Integer hrs,
+        [in] Integer min);
+
+    Constructor(
+        [in] Integer year,
+        [in] Integer month,
+        [in] Integer date,
+        [in] Integer hrs,
+        [in] Integer min,
+        [in] Integer sec);
+
+    Constructor(
+        [in] String s);
+
+    interface IDate;
+    interface ICloneable;
+    interface IComparable;
     interface ISerializable;
 }
 

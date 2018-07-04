@@ -14,13 +14,16 @@
 // limitations under the License.
 //=========================================================================
 
+#include "ccm/core/AutoLock.h"
 #include "ccm/core/Character.h"
 #include "ccm/core/CoreUtils.h"
 #include "ccm/core/CStringBuffer.h"
 #include "ccm/io/CBufferedWriter.h"
 #include "ccm/io/COutputStreamWriter.h"
+#include "ccm/util/CDate.h"
 #include "ccm/util/CHashtable.h"
 #include "ccm/util/Properties.h"
+#include "ccm/util/XMLUtils.h"
 #include "ccm.core.ICharSequence.h"
 #include "ccm.core.IInteger.h"
 #include "ccm.core.IString.h"
@@ -28,6 +31,7 @@
 #include "ccm.io.IWriter.h"
 #include <ccmlogger.h>
 
+using ccm::core::AutoLock;
 using ccm::core::Character;
 using ccm::core::CoreUtils;
 using ccm::core::CStringBuffer;
@@ -375,13 +379,36 @@ ECode Properties::Store0(
     if (!comments.IsNull()) {
         FAIL_RETURN(WriteComments(bw, comments));
     }
+    AutoPtr<IDate> d;
+    CDate::New(IID_IDate, (IInterface**)&d);
+    IWriter::Probe(bw)->Write(String("#") + Object::ToString(d));
+    bw->NewLine();
+    {
+        AutoLock lock(this);
+        AutoPtr<IEnumeration> e;
+        GetKeys((IEnumeration**)&e);
+        Boolean hasMore;
+        while (e->HasMoreElements(&hasMore), hasMore) {
+            AutoPtr<IInterface> ko, vo;
+            e->GetNextElement((IInterface**)&ko);
+            String key = CoreUtils::Unbox(ICharSequence::Probe(ko));
+            Get(ko, (IInterface**)&vo);
+            String val = CoreUtils::Unbox(ICharSequence::Probe(vo));
+            key = SaveConvert(key, true, escUnicode);
+            val = SaveConvert(val, false, escUnicode);
+            IWriter::Probe(bw)->Write(key + "=" + val);
+            bw->NewLine();
+        }
+    }
+    IWriter::Probe(bw)->Flush();
     return NOERROR;
 }
 
 ECode Properties::LoadFromXML(
     /* [in] */ IInputStream* instream)
 {
-    return NOERROR;
+    FAIL_RETURN(XMLUtils::Load(this, instream));
+    return instream->Close();
 }
 
 ECode Properties::StoreToXML(
@@ -396,7 +423,7 @@ ECode Properties::StoreToXML(
     /* [in] */ const String& comment,
     /* [in] */ const String& encoding)
 {
-    return NOERROR;
+    return XMLUtils::Save(this, os, comment, encoding);
 }
 
 ECode Properties::GetProperty(

@@ -14,26 +14,18 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_UTIL_CHASHMAP_H__
-#define __CCM_UTIL_CHASHMAP_H__
-
-#include "ccm/util/HashMap.h"
-#include "_ccm_util_CHashMap.h"
-
 namespace ccm {
-namespace util {
+namespace core {
 
-Coclass(CHashMap)
-    , public HashMap
+[
+    uuid(a8d886cf-a4f1-4733-b5ff-a670789b9c25),
+    version(0.1.0)
+]
+interface ISecurityManager
 {
-public:
-    CCM_OBJECT_DECL();
-
-    ECode Clone(
-        /* [out] */ IInterface** obj) override;
-};
+    CheckPropertyAccess(
+        [in] String key);
+}
 
 }
 }
-
-#endif // __CCM_UTIL_CHASHMAP_H__

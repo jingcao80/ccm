@@ -14,17 +14,17 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_UTIL_CHASHMAP_H__
-#define __CCM_UTIL_CHASHMAP_H__
+#ifndef __CCM_UTIL_CDATE_H__
+#define __CCM_UTIL_CDATE_H__
 
-#include "ccm/util/HashMap.h"
-#include "_ccm_util_CHashMap.h"
+#include "ccm/util/Date.h"
+#include "_ccm_util_CDate.h"
 
 namespace ccm {
 namespace util {
 
-Coclass(CHashMap)
-    , public HashMap
+Coclass(CDate)
+    , public Date
 {
 public:
     CCM_OBJECT_DECL();
@@ -36,4 +36,4 @@ public:
 }
 }
 
-#endif // __CCM_UTIL_CHASHMAP_H__
+#endif // __CCM_UTIL_CDATE_H__

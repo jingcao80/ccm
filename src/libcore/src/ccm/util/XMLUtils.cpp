@@ -14,26 +14,26 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_UTIL_CHASHMAP_H__
-#define __CCM_UTIL_CHASHMAP_H__
-
-#include "ccm/util/HashMap.h"
-#include "_ccm_util_CHashMap.h"
+#include "ccm/util/XMLUtils.h"
 
 namespace ccm {
 namespace util {
 
-Coclass(CHashMap)
-    , public HashMap
+ECode XMLUtils::Load(
+    /* [in] */ IProperties* props,
+    /* [in] */ IInputStream* in)
 {
-public:
-    CCM_OBJECT_DECL();
+    return NOERROR;
+}
 
-    ECode Clone(
-        /* [out] */ IInterface** obj) override;
-};
+ECode XMLUtils::Save(
+    /* [in] */ IProperties* props,
+    /* [in] */ IOutputStream* os,
+    /* [in] */ const String& comment,
+    /* [in] */ const String& encoding)
+{
+    return NOERROR;
+}
 
 }
 }
-
-#endif // __CCM_UTIL_CHASHMAP_H__

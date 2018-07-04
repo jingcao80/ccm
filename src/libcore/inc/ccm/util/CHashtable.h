@@ -28,6 +28,9 @@ Coclass(CHashtable)
 {
 public:
     CCM_OBJECT_DECL();
+
+    ECode Clone(
+        /* [out] */ IInterface** obj) override;
 };
 
 }

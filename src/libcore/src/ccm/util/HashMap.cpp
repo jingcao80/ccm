@@ -546,9 +546,12 @@ ECode HashMap::GetEntrySet(
     return NOERROR;
 }
 
-ECode HashMap::Clone(
-    /* [out] */ IInterface** obj)
+ECode HashMap::CloneImpl(
+    /* [in] */ IHashMap* newObj)
 {
+    HashMap* clone = (HashMap*)newObj;
+    clone->Reinitialize();
+    clone->PutMapEntries(this, false);
     return NOERROR;
 }
 

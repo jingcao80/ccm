@@ -14,14 +14,47 @@
 // limitations under the License.
 //=========================================================================
 
+#include "ccm/util/CDate.h"
 #include "ccm/util/CHashMap.h"
 #include "ccm/util/CHashtable.h"
 
 namespace ccm {
 namespace util {
 
+CCM_OBJECT_IMPL(CDate);
+ECode CDate::Clone(
+    /* [out] */ IInterface** obj)
+{
+    return NOERROR;
+}
+
 CCM_OBJECT_IMPL(CHashMap);
+ECode CHashMap::Clone(
+    /* [out] */ IInterface** obj)
+{
+    VALIDATE_NOT_NULL(obj);
+
+    AutoPtr<IHashMap> map;
+    CHashMap::New(IID_IHashMap, (IInterface**)&map);
+    FAIL_RETURN(HashMap::CloneImpl(map));
+    *obj = map;
+    REFCOUNT_ADD(*obj);
+    return NOERROR;
+}
+
 CCM_OBJECT_IMPL(CHashtable);
+ECode CHashtable::Clone(
+    /* [out] */ IInterface** obj)
+{
+    VALIDATE_NOT_NULL(obj);
+
+    AutoPtr<IHashtable> ht;
+    CHashtable::New(IID_IHashtable, (IInterface**)&ht);
+    FAIL_RETURN(Hashtable::CloneImpl(ht));
+    *obj = ht;
+    REFCOUNT_ADD(*obj);
+    return NOERROR;
+}
 
 }
 }

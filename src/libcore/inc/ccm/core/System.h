@@ -17,19 +17,44 @@
 #ifndef __CCM_CORE_SYSTEM_H__
 #define __CCM_CORE_SYSTEM_H__
 
+#include "ccm/util/Properties.h"
+#include "ccm.core.ISecurityManager.h"
 #include "ccm.io.IPrintStream.h"
+#include "ccm.util.IProperties.h"
 #include <ccmautoptr.h>
 #include <ccmtypes.h>
 
 using ccm::io::IPrintStream;
+using ccm::util::IProperties;
+using ccm::util::Properties;
 
 namespace ccm {
 namespace core {
 
+static void StaticInitializeSystem();
+
 class System
 {
+protected:
+    class PropertiesWithNonOverrideableDefaults
+        : public Properties
+    {
+    public:
+        PropertiesWithNonOverrideableDefaults(
+            /* [in] */ IProperties* defaults)
+        {}
+
+        ECode Clone(
+            /* [out] */ IInterface** obj) override;
+
+        ECode ToString(
+            /* [in] */ String* str) override;
+    };
+
 public:
     static AutoPtr<IPrintStream> GetOut();
+
+    static AutoPtr<ISecurityManager> GetSecurityManager();
 
     static Long GetCurrentTimeMillis();
 
@@ -46,6 +71,23 @@ public:
 
 private:
     System();
+
+    static AutoPtr<IProperties> InitProperties();
+
+    static AutoPtr<IProperties> SetDefaultChangeableProperties(
+        /* [in] */ IProperties* p);
+
+    static void StaticInitialize();
+
+    static ECode CheckKey(
+        /* [in] */ const String& key);
+
+private:
+    static AutoPtr<IProperties> sProps;
+
+    static AutoPtr<IProperties> sUnchangeableProps;
+
+    friend void StaticInitializeSystem();
 };
 
 }

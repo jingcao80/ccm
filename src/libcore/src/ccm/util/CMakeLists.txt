@@ -32,12 +32,14 @@ set(SOURCES
     Arrays.cpp
     CArrayList.cpp
     Collections.cpp
+    Date.cpp
     EmptyArray.cpp
     Hashtable.cpp
     HashMap.cpp
     LinkedHashMap.cpp
     Properties.cpp
     TreeNode.cpp
+    XMLUtils.cpp
     util.cpp)
 
 add_library(libcore_util STATIC

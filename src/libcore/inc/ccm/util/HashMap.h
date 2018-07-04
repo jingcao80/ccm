@@ -288,9 +288,6 @@ public:
     ECode GetEntrySet(
         /* [out] */ ISet** entries) override;
 
-    ECode Clone(
-        /* [out] */ IInterface** obj) override;
-
     ECode Equals(
         /* [in] */ IInterface* obj,
         /* [out] */ Boolean* result) override;
@@ -339,6 +336,9 @@ protected:
         /* [in] */ IInterface* value,
         /* [in] */ Boolean matchValue,
         /* [in] */ Boolean movable);
+
+    ECode CloneImpl(
+        /* [in] */ IHashMap* newObj);
 
     Float GetLoadFactor();
 
