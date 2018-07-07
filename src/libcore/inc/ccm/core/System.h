@@ -31,7 +31,7 @@ using ccm::util::Properties;
 namespace ccm {
 namespace core {
 
-static void StaticInitializeSystem();
+static CONS_PROI_4 void StaticInitializeSystem();
 
 class System
 {
@@ -40,9 +40,8 @@ protected:
         : public Properties
     {
     public:
-        PropertiesWithNonOverrideableDefaults(
-            /* [in] */ IProperties* defaults)
-        {}
+        ECode Constructor(
+            /* [in] */ IProperties* defaults);
 
         ECode Clone(
             /* [out] */ IInterface** obj) override;
@@ -71,6 +70,8 @@ public:
 
 private:
     System();
+
+    static AutoPtr<IProperties> InitUnchangeableSystemProperties();
 
     static AutoPtr<IProperties> InitProperties();
 

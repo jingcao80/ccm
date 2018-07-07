@@ -51,6 +51,7 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_util_CDate.cpp
     ${OBJ_DIR}/_ccm_util_CHashMap.cpp
     ${OBJ_DIR}/_ccm_util_CHashtable.cpp
+    ${OBJ_DIR}/_ccm_util_CProperties.cpp
     ${OBJ_DIR}/_ccm_util_regex_CPatternFactory.cpp
     ${OBJ_DIR}/_ccmrt_system_CPathClassLoader.cpp
     ${OBJ_DIR}/libcorePub.cpp

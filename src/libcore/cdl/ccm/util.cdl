@@ -148,6 +148,25 @@ coclass CHashtable
     interface ISerializable;
 }
 
+[
+    uuid(2f6a7390-6aed-4f7d-863e-3f007635ba14),
+    version(0.1.0)
+]
+coclass CProperties
+{
+    Constructor();
+
+    Constructor(
+        [in] IProperties* defaults);
+
+    interface IProperties;
+    interface IHashtable;
+    interface IDictionary;
+    interface IMap;
+    interface ICloneable;
+    interface ISerializable;
+}
+
 namespace regex {
 
 [

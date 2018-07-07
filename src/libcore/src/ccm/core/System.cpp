@@ -14,17 +14,24 @@
 // limitations under the License.
 //=========================================================================
 
+#include "ccm/core/CoreUtils.h"
 #include "ccm/core/System.h"
+#include "ccm/util/CProperties.h"
+#include "ccm.util.IHashtable.h"
 #include <ccmlogger.h>
 #include <time.h>
+
+using ccm::util::CProperties;
+using ccm::util::IID_IProperties;
+using ccm::util::IHashtable;
 
 namespace ccm {
 namespace core {
 
-INIT_PROI_2 AutoPtr<IProperties> System::sProps;
-AutoPtr<IProperties> System::sUnchangeableProps;
+INIT_PROI_3 AutoPtr<IProperties> System::sProps;
+INIT_PROI_3 AutoPtr<IProperties> System::sUnchangeableProps;
 
-static CONS_PROI_2 void StaticInitializeSystem()
+static CONS_PROI_4 void StaticInitializeSystem()
 {
     System::StaticInitialize();
 }
@@ -56,16 +63,42 @@ Long System::GetNanoTime()
     return static_cast<Long>(now.tv_sec) * 1000000000LL + now.tv_nsec;
 }
 
+AutoPtr<IProperties> System::InitUnchangeableSystemProperties()
+{
+    AutoPtr<IProperties> p;
+    CProperties::New(IID_IProperties, (IInterface**)&p);
+
+    p->SetProperty(String("ccm.class.path"), String(getenv("CLASS_PATH")));
+
+    return p;
+}
+
 AutoPtr<IProperties> System::InitProperties()
 {
-    AutoPtr<IProperties> p = new PropertiesWithNonOverrideableDefaults(sUnchangeableProps);
+    AutoPtr<PropertiesWithNonOverrideableDefaults> p = new PropertiesWithNonOverrideableDefaults();
+    p->Constructor(sUnchangeableProps);
     SetDefaultChangeableProperties(p);
-    return p;
+    return p.Get();
 }
 
 AutoPtr<IProperties> System::SetDefaultChangeableProperties(
     /* [in] */ IProperties* p)
-{}
+{
+    Boolean contains;
+    String tmpdirProp("ccm.io.tmpdir");
+    if (IHashtable::Probe(sUnchangeableProps)->ContainsKey(
+            CoreUtils::Box(tmpdirProp), &contains), !contains) {
+        p->SetProperty(tmpdirProp, String("/tmp"));
+    }
+
+    String uhProp("user.home");
+    if (IHashtable::Probe(sUnchangeableProps)->ContainsKey(
+            CoreUtils::Box(uhProp), &contains), !contains) {
+        p->SetProperty(uhProp, String(""));
+    }
+
+    return p;
+}
 
 ECode System::GetProperty(
     /* [in] */ const String& key,
@@ -79,7 +112,7 @@ ECode System::GetProperty(
         sm->CheckPropertyAccess(key);
     }
 
-    return NOERROR;
+    return sProps->GetProperty(key, value);
 }
 
 ECode System::GetProperty(
@@ -89,8 +122,13 @@ ECode System::GetProperty(
 {
     VALIDATE_NOT_NULL(value);
 
-    *value = def;
-    return NOERROR;
+    FAIL_RETURN(CheckKey(key));
+    AutoPtr<ISecurityManager> sm = GetSecurityManager();
+    if (sm != nullptr) {
+        sm->CheckPropertyAccess(key);
+    }
+
+    return sProps->GetProperty(key, def, value);
 }
 
 ECode System::CheckKey(
@@ -105,10 +143,17 @@ ECode System::CheckKey(
 
 void System::StaticInitialize()
 {
+    sUnchangeableProps = InitUnchangeableSystemProperties();
     sProps = InitProperties();
 }
 
 //----------------------------------------------------------------------
+
+ECode System::PropertiesWithNonOverrideableDefaults::Constructor(
+    /* [in] */ IProperties* defaults)
+{
+    return Properties::Constructor(defaults);
+}
 
 ECode System::PropertiesWithNonOverrideableDefaults::Clone(
     /* [out] */ IInterface** obj)

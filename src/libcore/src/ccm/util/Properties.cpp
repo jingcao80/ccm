@@ -61,6 +61,7 @@ ECode Properties::Constructor()
 ECode Properties::Constructor(
     /* [in] */ IProperties* defaults)
 {
+    Hashtable::Constructor();
     mDefaults = defaults;
     return NOERROR;
 }

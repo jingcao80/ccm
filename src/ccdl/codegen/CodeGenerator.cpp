@@ -1386,7 +1386,7 @@ String CodeGenerator::GenComponentObject()
                          "}\n\n",
                          mMetaComponent->mName, mMetaComponent->mName,
                          mMetaComponent->mName, mMetaComponent->mName);
-    builder.AppendFormat("C%s sComponentObject;\n\n", mMetaComponent->mName);
+    builder.AppendFormat("static __attribute__ ((init_priority (300))) C%s sComponentObject;\n\n", mMetaComponent->mName);
     builder.Append("EXTERN_C COM_PUBLIC Boolean soCanUnload()\n"
                    "{\n"
                    "    return sComponentObject.GetStrongCount() == 1;\n"

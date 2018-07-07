@@ -17,6 +17,7 @@
 #include "ccm/util/CDate.h"
 #include "ccm/util/CHashMap.h"
 #include "ccm/util/CHashtable.h"
+#include "ccm/util/CProperties.h"
 
 namespace ccm {
 namespace util {
@@ -52,6 +53,20 @@ ECode CHashtable::Clone(
     CHashtable::New(IID_IHashtable, (IInterface**)&ht);
     FAIL_RETURN(Hashtable::CloneImpl(ht));
     *obj = ht;
+    REFCOUNT_ADD(*obj);
+    return NOERROR;
+}
+
+CCM_OBJECT_IMPL(CProperties);
+ECode CProperties::Clone(
+    /* [out] */ IInterface** obj)
+{
+    VALIDATE_NOT_NULL(obj);
+
+    AutoPtr<IProperties> prop;
+    CProperties::New(IID_IProperties, (IInterface**)&prop);
+    FAIL_RETURN(Properties::CloneImpl(IHashtable::Probe(prop)));
+    *obj = prop;
     REFCOUNT_ADD(*obj);
     return NOERROR;
 }

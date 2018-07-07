@@ -36,7 +36,7 @@ static int get_lower_bound(const int* first, const int* last, int n)
     for (int i = 0; first + i != last; i++) {
         int l = *(first + i);
         int r = *(first + i + 1);
-        if (l < n && n < r) {
+        if (l <= n && n < r) {
             return (n - l) < (r - n) ? l : r;
         }
     }
