@@ -1023,7 +1023,7 @@ String CodeGenerator::GenCoclassObject(
     }
     builder.Append("};\n\n");
     builder.AppendFormat("static %s* s%sClassObject = nullptr;\n", mi->mName, mk->mName);
-    builder.AppendFormat("static Spinlock s%sClassObjectLock;\n\n", mk->mName);
+    builder.AppendFormat("static __attribute__ ((init_priority (300))) Spinlock s%sClassObjectLock;\n\n", mk->mName);
     if (!isIClassObject) {
         builder.AppendFormat("CCM_INTERFACE_IMPL_1(%sClassObject, ClassObject, %s);\n\n",
                 mk->mName, mi->mName);
@@ -1386,7 +1386,7 @@ String CodeGenerator::GenComponentObject()
                          "}\n\n",
                          mMetaComponent->mName, mMetaComponent->mName,
                          mMetaComponent->mName, mMetaComponent->mName);
-    builder.AppendFormat("static __attribute__ ((init_priority (300))) C%s sComponentObject;\n\n", mMetaComponent->mName);
+    builder.AppendFormat("static __attribute__ ((init_priority (200))) C%s sComponentObject;\n\n", mMetaComponent->mName);
     builder.Append("EXTERN_C COM_PUBLIC Boolean soCanUnload()\n"
                    "{\n"
                    "    return sComponentObject.GetStrongCount() == 1;\n"

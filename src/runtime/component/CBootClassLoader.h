@@ -64,7 +64,7 @@ public:
 private:
     CBootClassLoader();
 
-    void InitClassPath();
+    void InitComponentPath();
 
     ECode FindComponent(
         /* [in] */ const ComponentID& compId,
@@ -74,7 +74,7 @@ private:
     static AutoPtr<IClassLoader> sInstance;
     static const String TAG;
     Boolean mDebug;
-    ArrayList<String> mClassPath;
+    ArrayList<String> mComponentPath;
     HashMap<Uuid, IMetaComponent*> mComponents;
     HashMap<String, IMetaComponent*> mComponentPathMap;
     Mutex mComponentsLock;

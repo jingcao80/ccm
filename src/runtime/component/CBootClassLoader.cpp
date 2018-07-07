@@ -41,7 +41,7 @@ CCM_INTERFACE_IMPL_1(CBootClassLoader, Object, IClassLoader);
 CBootClassLoader::CBootClassLoader()
     : mDebug(false)
 {
-    InitClassPath();
+    InitComponentPath();
 }
 
 AutoPtr<IClassLoader> CBootClassLoader::GetInstance()
@@ -183,13 +183,13 @@ ECode CBootClassLoader::FindComponent(
     }
 
     FILE* fd = nullptr;
-    for (Long i = 0; i < mClassPath.GetSize(); i++) {
-        String filePath = mClassPath.Get(i) + "/" + compFile;
+    for (Long i = 0; i < mComponentPath.GetSize(); i++) {
+        String filePath = mComponentPath.Get(i) + "/" + compFile;
         fd = fopen(filePath.string(), "rb");
         if (fd != nullptr) {
             if (mDebug) {
                 Logger::D(TAG, "Find \"%\" component in directory \"%s\".",
-                        compFile.string(), mClassPath.Get(i).string());
+                        compFile.string(), mComponentPath.Get(i).string());
             }
             *compPath = filePath;
             break;
@@ -384,21 +384,21 @@ ECode CBootClassLoader::GetParent(
     return NOERROR;
 }
 
-void CBootClassLoader::InitClassPath()
+void CBootClassLoader::InitComponentPath()
 {
-    String cpath(getenv("CLASS_PATH"));
+    String cpath(getenv("COMPONENT_PATH"));
     if (!cpath.IsNullOrEmpty()) {
         Integer index = cpath.IndexOf(":");
         while (index != -1) {
-            mClassPath.Add(cpath.Substring(0, index - 1));
+            mComponentPath.Add(cpath.Substring(0, index - 1));
             cpath = cpath.Substring(index + 1);
             index = cpath.IndexOf(":");
         }
-        if (!cpath.IsNullOrEmpty()) mClassPath.Add(cpath);
+        if (!cpath.IsNullOrEmpty()) mComponentPath.Add(cpath);
     }
     else {
         char* cwd = getcwd(nullptr, 0);
-        mClassPath.Add(String(cwd));
+        mComponentPath.Add(String(cwd));
         free(cwd);
     }
 }
