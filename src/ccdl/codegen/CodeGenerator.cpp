@@ -1023,7 +1023,11 @@ String CodeGenerator::GenCoclassObject(
     }
     builder.Append("};\n\n");
     builder.AppendFormat("static %s* s%sClassObject = nullptr;\n", mi->mName, mk->mName);
-    builder.AppendFormat("static __attribute__ ((init_priority (300))) Spinlock s%sClassObjectLock;\n\n", mk->mName);
+    builder.AppendFormat("static Spinlock& Get%sClassObjectLock()\n"
+                         "{\n"
+                         "    static Spinlock s%sClassObjectLock;\n"
+                         "    return s%sClassObjectLock;\n"
+                         "}\n\n", mk->mName, mk->mName, mk->mName);
     if (!isIClassObject) {
         builder.AppendFormat("CCM_INTERFACE_IMPL_1(%sClassObject, ClassObject, %s);\n\n",
                 mk->mName, mi->mName);
@@ -1034,11 +1038,12 @@ String CodeGenerator::GenCoclassObject(
                          "}\n\n", mk->mName, mk->mName);
     builder.AppendFormat("%sClassObject::~%sClassObject()\n"
                          "{\n"
-                         "    s%sClassObjectLock.Lock();\n"
+                         "    Spinlock& lock = Get%sClassObjectLock();\n"
+                         "    lock.Lock();\n"
                          "    s%sClassObject = nullptr;\n"
-                         "    s%sClassObjectLock.Unlock();\n"
+                         "    lock.Unlock();\n"
                          "    ReleaseComponentCount();\n"
-                         "}\n\n", mk->mName, mk->mName, mk->mName, mk->mName, mk->mName);
+                         "}\n\n", mk->mName, mk->mName, mk->mName, mk->mName);
     if (!isIClassObject && !hasConstructorWithoutArgu) {
         builder.AppendFormat("ECode %sClassObject::CreateObject(\n"
                              "    /* [in] */ const InterfaceID& iid,\n"
@@ -1082,18 +1087,19 @@ String CodeGenerator::GenCoclassObject(
         builder.Append("}\n\n");
     }
 
-    builder.AppendFormat("ECode Get%sClassObject(IClassObject** classObject)\n", mk->mName);
-    builder.Append("{\n");
-    builder.Append("    VALIDATE_NOT_NULL(classObject);\n\n");
-    builder.AppendFormat("    s%sClassObjectLock.Lock();\n", mk->mName);
-    builder.AppendFormat("    if (s%sClassObject == nullptr) {\n", mk->mName);
-    builder.AppendFormat("        s%sClassObject = new %sClassObject();\n", mk->mName, mk->mName);
-    builder.Append("    }\n");
-    builder.AppendFormat("    s%sClassObjectLock.Unlock();\n", mk->mName);
-    builder.AppendFormat("    *classObject = IClassObject::Probe(s%sClassObject);\n", mk->mName);
-    builder.Append("    REFCOUNT_ADD(*classObject);\n"
-                   "    return NOERROR;\n");
-    builder.Append("}\n\n");
+    builder.AppendFormat("ECode Get%sClassObject(IClassObject** classObject)\n"
+                         "{\n"
+                         "    VALIDATE_NOT_NULL(classObject);\n\n"
+                         "    Spinlock& lock = Get%sClassObjectLock();\n"
+                         "    lock.Lock();\n"
+                         "    if (s%sClassObject == nullptr) {\n"
+                         "        s%sClassObject = new %sClassObject();\n"
+                         "    }\n"
+                         "    lock.Unlock();\n"
+                         "    *classObject = IClassObject::Probe(s%sClassObject);\n"
+                         "    REFCOUNT_ADD(*classObject);\n"
+                         "    return NOERROR;\n"
+                         "}\n\n", mk->mName, mk->mName, mk->mName, mk->mName, mk->mName, mk->mName);
 
     return builder.ToString();
 }
