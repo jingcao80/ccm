@@ -20,6 +20,7 @@
 #include "ArrayList.h"
 #include "String.h"
 
+#include <stdint.h>
 #include <stdlib.h>
 #include <memory>
 
@@ -38,7 +39,7 @@ static int get_lower_bound(const int* first, const int* last, int n)
     for (int i = 0; first + i != last; i++) {
         int l = *(first + i);
         int r = *(first + i + 1);
-        if (l < n && n < r) {
+        if (l <= n && n < r) {
             return (n - l) < (r - n) ? l : r;
         }
     }
@@ -59,6 +60,24 @@ public:
         T mValue;
     };
 
+private:
+    struct Bucket
+    {
+        Bucket()
+            : mNext(nullptr)
+        {}
+
+        ~Bucket()
+        {
+            mNext = nullptr;
+        }
+
+        int mHash;
+        String mKey;
+        T mValue;
+        struct Bucket* mNext;
+    };
+
 public:
     StringMap(
         /* [in] */ int size = 50)
@@ -68,6 +87,7 @@ public:
     {
         mBucketSize = get_next_prime(size);
         mBuckets = (Bucket**)calloc(sizeof(Bucket*), mBucketSize);
+        mThreshold = mBucketSize * LOAD_FACTOR;
     }
 
     ~StringMap()
@@ -91,9 +111,14 @@ public:
         /* [in] */ T value)
     {
         if (key.IsNull()) return;
-        int index = HashString(key) % mBucketSize;
+        if (mDataSize >= mThreshold) {
+            Rehash();
+        }
+        int hash = HashString(key);
+        int index = hash % mBucketSize;
         if (mBuckets[index] == nullptr) {
             Bucket* b = new Bucket();
+            b->mHash = hash;
             b->mKey = key;
             b->mValue = value;
             mBuckets[index] = b;
@@ -115,6 +140,7 @@ public:
                 prev = prev->mNext;
             }
             Bucket* b = new Bucket();
+            b->mHash = hash;
             b->mKey = key;
             b->mValue = value;
             prev->mNext = b;
@@ -129,10 +155,11 @@ public:
     {
         if (key.IsNull()) return false;
 
-        int index = HashString(key) % mBucketSize;
+        int hash = HashString(key);
+        int index = hash % mBucketSize;
         Bucket* curr = mBuckets[index];
         while (curr != nullptr) {
-            if (curr->mKey.Equals(key)) return true;
+            if (curr->mHash == hash && curr->mKey.Equals(key)) return true;
             curr = curr->mNext;
         }
 
@@ -146,10 +173,11 @@ public:
             return T(0);
         }
 
-        int index = HashString(key) % mBucketSize;
+        int hash = HashString(key);
+        int index = hash % mBucketSize;
         Bucket* curr = mBuckets[index];
         while (curr != nullptr) {
-            if (curr->mKey.Equals(key)) return curr->mValue;
+            if (curr->mHash == hash && curr->mKey.Equals(key)) return curr->mValue;
             curr = curr->mNext;
         }
 
@@ -215,23 +243,58 @@ private:
         return (hash & 0x7FFFFFFF);
     }
 
-    struct Bucket
+    void Rehash()
     {
-        Bucket()
-            : mNext(nullptr)
-        {}
-
-        ~Bucket()
-        {
-            mNext = nullptr;
+        if (mBucketSize == MAX_BUCKET_SIZE) {
+            return;
         }
+        int oldBucketSize = mBucketSize;
+        mBucketSize = oldBucketSize * 2 + 1;
+        if (mBucketSize > MAX_BUCKET_SIZE || mBucketSize < 0) {
+            mBucketSize = MAX_BUCKET_SIZE;
+        }
+        Bucket** newBuckets = (Bucket**)calloc(sizeof(Bucket*), mBucketSize);
+        if (newBuckets == nullptr) {
+            return;
+        }
+        for (int i = 0; i < oldBucketSize; i++) {
+            Bucket* curr = mBuckets[i];
+            while (curr != nullptr) {
+                Bucket* next = curr->mNext;
+                curr->mNext = nullptr;
+                PutBucket(newBuckets, mBucketSize, curr);
+                curr = next;
+            }
+        }
+        free(mBuckets);
+        mBuckets = newBuckets;
+        mThreshold = mBucketSize * LOAD_FACTOR;
+    }
 
-        String mKey;
-        T mValue;
-        struct Bucket* mNext;
-    };
+    void PutBucket(
+        /* [in] */ Bucket** buckets,
+        /* [in] */ int bucketSize,
+        /* [in] */ Bucket* bucket)
+    {
+        int index = bucket->mHash % bucketSize;
+        if (buckets[index] == nullptr) {
+            buckets[index] = bucket;
+            return;
+        }
+        else {
+            Bucket* prev = mBuckets[index];
+            while (prev->mNext != nullptr) {
+                prev = prev->mNext;
+            }
+            prev->mNext = bucket;
+            return;
+        }
+    }
 
 private:
+    static constexpr float LOAD_FACTOR = 0.75;
+    static constexpr int MAX_BUCKET_SIZE = INT32_MAX - 8;
+    int mThreshold;
     int mDataSize;
     int mBucketSize;
     Bucket** mBuckets;

@@ -71,6 +71,7 @@ private:
             mNext = nullptr;
         }
 
+        int mHash;
         Key mKey;
         Val mValue;
         struct Bucket* mNext;
@@ -82,6 +83,7 @@ public:
     {
         mBucketSize = get_next_prime(size);
         mBuckets = (Bucket**)calloc(sizeof(Bucket*), mBucketSize);
+        mThreshold = mBucketSize * LOAD_FACTOR;
     }
 
     ~HashMap()
@@ -108,15 +110,21 @@ public:
         AssignFunc<Key> assignKeyF;
         AssignFunc<Val> assignValF;
 
+        if (mCount >= mThreshold) {
+            Rehash();
+        }
+
         int hash = HashKey(key);
         if (hash == -1) return;
 
         int index = (unsigned int)hash % mBucketSize;
         if (mBuckets[index] == nullptr) {
             Bucket* b = new Bucket();
+            b->mHash = hash;
             assignKeyF(&b->mKey, key, this);
             assignValF(&b->mValue, value, this);
             mBuckets[index] = b;
+            mCount++;
             return;
         }
         else {
@@ -132,9 +140,11 @@ public:
                 prev = prev->mNext;
             }
             Bucket* b = new Bucket();
+            b->mHash = hash;
             assignKeyF(&b->mKey, key, this);
             assignValF(&b->mValue, value, this);
             prev->mNext = b;
+            mCount++;
             return;
         }
     }
@@ -150,7 +160,7 @@ public:
         int index = (unsigned int)hash % mBucketSize;
         Bucket* curr = mBuckets[index];
         while (curr != nullptr) {
-            if (!compareF(curr->mKey, key)) return true;
+            if (curr->mHash == hash && !compareF(curr->mKey, key)) return true;
             curr = curr->mNext;
         }
 
@@ -168,7 +178,7 @@ public:
         int index = (unsigned int)hash % mBucketSize;
         Bucket* curr = mBuckets[index];
         while (curr != nullptr) {
-            if (!compareF(curr->mKey, key)) return curr->mValue;
+            if (curr->mHash == hash && !compareF(curr->mKey, key)) return curr->mValue;
             curr = curr->mNext;
         }
 
@@ -187,7 +197,7 @@ public:
         Bucket* curr = mBuckets[index];
         Bucket* prev = curr;
         while (curr != nullptr) {
-            if (!compareF(curr->mKey, key)) {
+            if (curr->mHash == hash && !compareF(curr->mKey, key)) {
                 if (curr == mBuckets[index]) {
                     mBuckets[index] = curr->mNext;
                 }
@@ -257,7 +267,59 @@ private:
         return hashF(key);
     }
 
+    void Rehash()
+    {
+        if (mBucketSize == MAX_BUCKET_SIZE) {
+            return;
+        }
+        int oldBucketSize = mBucketSize;
+        mBucketSize = oldBucketSize * 2 + 1;
+        if (mBucketSize > MAX_BUCKET_SIZE || mBucketSize < 0) {
+            mBucketSize = MAX_BUCKET_SIZE;
+        }
+        Bucket** newBuckets = (Bucket**)calloc(sizeof(Bucket*), mBucketSize);
+        if (newBuckets == nullptr) {
+            return;
+        }
+        for (int i = 0; i < oldBucketSize; i++) {
+            Bucket* curr = mBuckets[i];
+            while (curr != nullptr) {
+                Bucket* next = curr->mNext;
+                curr->mNext = nullptr;
+                PutBucket(newBuckets, mBucketSize, curr);
+                curr = next;
+            }
+        }
+        free(mBuckets);
+        mBuckets = newBuckets;
+        mThreshold = mBucketSize * LOAD_FACTOR;
+    }
+
+    void PutBucket(
+        /* [in] */ Bucket** buckets,
+        /* [in] */ int bucketSize,
+        /* [in] */ Bucket* bucket)
+    {
+        int index = bucket->mHash % bucketSize;
+        if (buckets[index] == nullptr) {
+            buckets[index] = bucket;
+            return;
+        }
+        else {
+            Bucket* prev = mBuckets[index];
+            while (prev->mNext != nullptr) {
+                prev = prev->mNext;
+            }
+            prev->mNext = bucket;
+            return;
+        }
+    }
+
 private:
+    static constexpr float LOAD_FACTOR = 0.75;
+    static constexpr int MAX_BUCKET_SIZE = INT32_MAX - 8;
+    int mThreshold;
+    int mCount;
     int mBucketSize;
     Bucket** mBuckets;
 };
