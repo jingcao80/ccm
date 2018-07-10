@@ -16,11 +16,13 @@
 
 #include "ccm/core/System.h"
 #include "ccm/util/Date.h"
+#include "ccm/util/calendar/CalendarUtils.h"
 
 using ccm::core::IID_ICloneable;
 using ccm::core::IID_IComparable;
 using ccm::core::System;
 using ccm::io::IID_ISerializable;
+using ccm::util::calendar::CalendarUtils;
 
 namespace ccm {
 namespace util {
@@ -65,6 +67,17 @@ ECode Date::Constructor(
     /* [in] */ Integer min,
     /* [in] */ Integer sec)
 {
+    Integer y = year + 1900;
+    // month is 0-based. So we have to normalize month to support Long.MAX_VALUE.
+    if (month >= 12) {
+        y += month / 12;
+        month %= 12;
+    }
+    else if (month < 0) {
+        y += CalendarUtils::FloorDivide(month, 12);
+        month = CalendarUtils::Mod(month, 12);
+    }
+
     return NOERROR;
 }
 

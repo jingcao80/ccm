@@ -18,9 +18,11 @@
 #define __CCM_CORE_CLASSLOADER_H__
 
 #include "ccm/core/SyncObject.h"
+#include "ccm.io.IInputStream.h"
 #include "ccm.util.IHashMap.h"
 #include <ccmautoptr.h>
 
+using ccm::io::IInputStream;
 using ccm::util::IHashMap;
 
 namespace ccm {
@@ -63,6 +65,9 @@ public:
 
     ECode UnloadComponent(
         /* [in] */ const ComponentID& compId) override;
+
+    static AutoPtr<IInputStream> GetSystemResourceAsStream(
+        /* [in] */ const String& name);
 
 protected:
     ECode Constructor(

@@ -282,7 +282,7 @@ private:
             return;
         }
         else {
-            Bucket* prev = mBuckets[index];
+            Bucket* prev = buckets[index];
             while (prev->mNext != nullptr) {
                 prev = prev->mNext;
             }

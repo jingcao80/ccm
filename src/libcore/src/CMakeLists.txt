@@ -64,8 +64,9 @@ add_custom_target(build_libcore
 
 set(LIBCORE_LINK_LIBS
     -Wl,--whole-archive
-    core
+    calendar
     charset
+    core
     io
     regex
     libcore_util

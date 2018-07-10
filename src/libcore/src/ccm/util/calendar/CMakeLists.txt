@@ -14,35 +14,20 @@
 # limitations under the License.
 #=========================================================================
 
-set(UTIL_DIR ${LIBCORE_CCM_SRC_DIR}/util)
+set(CALENDAR_DIR ${UTIL_DIR}/calendar)
 
 include_directories(
     ./
     ../
-    ../../../inc
+    ../../../../inc
     ${INC_DIR}
     ${OBJ_DIR})
 
-add_subdirectory(calendar)
-add_subdirectory(regex)
-
 set(SOURCES
-    AbstractCollection.cpp
-    AbstractMap.cpp
-    AbstractSet.cpp
-    Arrays.cpp
-    CArrayList.cpp
-    Collections.cpp
-    Date.cpp
-    EmptyArray.cpp
-    Hashtable.cpp
-    HashMap.cpp
-    LinkedHashMap.cpp
-    Properties.cpp
-    TreeNode.cpp
-    XMLUtils.cpp
-    util.cpp)
+    AbstractCalendar.cpp
+    CalendarSystem.cpp
+    CalendarUtils.cpp)
 
-add_library(libcore_util STATIC
+add_library(calendar STATIC
     ${SOURCES})
-add_dependencies(libcore_util build_libcore)
+add_dependencies(calendar build_libcore)

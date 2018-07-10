@@ -76,6 +76,10 @@ public:
         /* [in] */ const String& fullName,
         /* [out] */ IMetaInterface** intf) override;
 
+    ECode ContainsInterface(
+        /* [in] */ const String& fullName,
+        /* [out] */ Boolean* result) override;
+
     ECode GetMethodNumber(
         /* [out] */ Integer* number) override;
 

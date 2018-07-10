@@ -135,6 +135,10 @@ interface IMetaCoclass
         [in] String fullName,
         [out] IMetaInterface** intf);
 
+    ContainsInterface(
+        [in] String fullName,
+        [out] Boolean* result);
+
     GetMethodNumber(
         [out] Integer* number);
 

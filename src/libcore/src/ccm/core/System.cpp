@@ -141,10 +141,11 @@ ECode System::CheckKey(
     return NOERROR;
 }
 
-void System::StaticInitialize()
+ECode System::StaticInitialize()
 {
     sUnchangeableProps = InitUnchangeableSystemProperties();
     sProps = InitProperties();
+    return NOERROR;
 }
 
 //----------------------------------------------------------------------

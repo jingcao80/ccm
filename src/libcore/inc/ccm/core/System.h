@@ -78,7 +78,7 @@ private:
     static AutoPtr<IProperties> SetDefaultChangeableProperties(
         /* [in] */ IProperties* p);
 
-    static void StaticInitialize();
+    static ECode StaticInitialize();
 
     static ECode CheckKey(
         /* [in] */ const String& key);

@@ -14,6 +14,8 @@
 // limitations under the License.
 //=========================================================================
 
+#include "ccm/util/calendar/CalendarUtils.h"
+
 namespace ccm {
 namespace util {
 namespace calendar {

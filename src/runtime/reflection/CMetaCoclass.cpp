@@ -193,6 +193,33 @@ ECode CMetaCoclass::GetInterface(
     return NOERROR;
 }
 
+ECode CMetaCoclass::ContainsInterface(
+    /* [in] */ const String& fullName,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    if (mMetaInterfaces.IsEmpty()) {
+        *result = false;
+        return NOERROR;
+    }
+
+    BuildAllInterfaces();
+
+    for (Integer i = 0; i < mMetaInterfaces.GetLength(); i++) {
+        IMetaInterface* miObj = mMetaInterfaces[i];
+        String name, ns;
+        miObj->GetName(&name);
+        miObj->GetNamespace(&ns);
+        if (fullName.Equals(ns + name)) {
+            *result = true;
+            return NOERROR;
+        }
+    }
+    *result = false;
+    return NOERROR;
+}
+
 ECode CMetaCoclass::GetMethodNumber(
     /* [out] */ Integer* number)
 {
