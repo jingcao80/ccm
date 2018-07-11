@@ -37,6 +37,8 @@ class CalendarSystem
     , public ICalendarSystem
 {
 public:
+    CCM_INTERFACE_DECL();
+
     static AutoPtr<IGregorian> GetGregorianCalendar();
 
     static ECode ForName(

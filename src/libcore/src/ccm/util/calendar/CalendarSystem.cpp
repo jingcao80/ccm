@@ -37,6 +37,8 @@ INIT_PROI_3 AutoPtr<IMap> CalendarSystem::sNames;
 INIT_PROI_3 AutoPtr<IConcurrentMap> CalendarSystem::sCalendars;
 INIT_PROI_3 AutoPtr<IGregorian> CalendarSystem::GREGORIAN_INSTANCE;
 
+CCM_INTERFACE_IMPL_1(CalendarSystem, SyncObject, ICalendarSystem);
+
 ECode CalendarSystem::StaticInitialize()
 {
     static Boolean sInitialized = false;
