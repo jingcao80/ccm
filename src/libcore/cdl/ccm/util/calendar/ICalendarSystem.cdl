@@ -44,8 +44,7 @@ interface ICalendarSystem
 
     GetCalendarDate(
         [in] Long millis,
-        [in] ICalendarDate* inDate,
-        [out] ICalendarDate** outDate);
+        [in] ICalendarDate* date);
 
     GetCalendarDate(
         [in] Long millis,
@@ -89,7 +88,7 @@ interface ICalendarSystem
 
     Normalize(
         [in] ICalendarDate* date,
-        [out] Boolean* result);
+        [out] Boolean* result = nullptr);
 
     SetEra(
         [in] ICalendarDate* date,

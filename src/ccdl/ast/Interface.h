@@ -67,6 +67,9 @@ public:
     inline Constant* GetConstant(
         /* [in] */ int index);
 
+    Constant* FindConstant(
+        /* [in] */ const String& name);
+
     bool AddMethod(
         /* [in] */ Method* method);
 

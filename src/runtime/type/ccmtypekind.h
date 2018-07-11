@@ -39,6 +39,7 @@ enum class CcmTypeKind
     Enum,
     Array,
     Interface,
+    Coclass,
 };
 
 }

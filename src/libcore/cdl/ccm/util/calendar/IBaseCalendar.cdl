@@ -1,0 +1,83 @@
+//=========================================================================
+// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//=========================================================================
+
+interface ccm::util::calendar::ICalendarDate;
+
+namespace ccm {
+namespace util {
+namespace calendar {
+
+/*
+ * @Involve interface ccm::util::calendar::ICalendarSystem
+ */
+[
+    uuid(6fcbaf39-7d01-4928-8647-002fadd1c00d),
+    version(0.1.0)
+]
+interface IBaseCalendar
+{
+    const Integer JANUARY = 1;
+    const Integer FEBRUARY = 2;
+    const Integer MARCH = 3;
+    const Integer APRIL = 4;
+    const Integer MAY = 5;
+    const Integer JUNE = 6;
+    const Integer JULY = 7;
+    const Integer AUGUST = 8;
+    const Integer SEPTEMBER = 9;
+    const Integer OCTOBER = 10;
+    const Integer NOVEMBER = 11;
+    const Integer DECEMBER = 12;
+
+    const Integer SUNDAY = 1;
+    const Integer MONDAY = 2;
+    const Integer TUESDAY = 3;
+    const Integer WEDNESDAY = 4;
+    const Integer THURSDAY = 5;
+    const Integer FRIDAY = 6;
+    const Integer SATURDAY = 7;
+
+    GetCalendarDateFromFixedDate(
+        [in] ICalendarDate* date,
+        [in] Long fixedDate);
+
+    GetDayOfWeek(
+        [in] ICalendarDate* date,
+        [out] Integer* days);
+
+    GetDayOfYear(
+        [in] ICalendarDate* date,
+        [out] Long* days);
+
+    GetFixedDate(
+        [in] ICalendarDate* date,
+        [out] Long* fraction);
+
+    GetFixedDate(
+        [in] Integer year,
+        [in] Integer month,
+        [in] Integer dayOfMonth,
+        [in] ICalendarDate* cache,
+        [out] Long* fraction);
+
+    GetYearFromFixedDate(
+        [in] Long fixedDate,
+        [out] Integer* year);
+}
+
+}
+}
+}

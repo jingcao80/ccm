@@ -818,6 +818,10 @@ CcmTypeKind MetaBuilder::Type2CcdlType(
     else if (type->IsInterfaceType()) {
         return CcmTypeKind::Interface;
     }
+    else if (type->IsCoclassType()) {
+        return CcmTypeKind::Coclass;
+    }
+    return CcmTypeKind::Unknown;
 }
 
 }

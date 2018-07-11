@@ -616,6 +616,11 @@ bool Parser::ParseInterface(
     if (parseResult) {
         interface->SetDeclared();
         interface->SetAttribute(*attr);
+        for (int i = 0; i < interface->GetTemporaryTypeNumber(); i++) {
+            Type* type = interface->GetTemporaryType(i);
+            mPool->AddTemporaryType(type);
+        }
+        interface->ClearTemporaryTypes(false);
         mPool->AddInterface(interface);
     }
     else {
@@ -868,10 +873,13 @@ Type* Parser::ParseType()
         }
         PointerType* ptrType = (PointerType*)mPool->FindType(ptrTypeStr);
         if (ptrType == nullptr) {
+            ptrType = (PointerType*)mParsingType->FindTemporaryType(ptrTypeStr);
+        }
+        if (ptrType == nullptr) {
             ptrType = new PointerType();
             ptrType->SetBaseType(type);
             ptrType->SetPointerNumber(ptrNumber);
-            mPool->AddTemporaryType(ptrType);
+            mParsingType->AddTemporaryType(ptrType);
         }
         type = ptrType;
     }
@@ -1457,6 +1465,62 @@ PostfixExpression* Parser::ParseIdentifier(
             return nullptr;
         }
     }
+    else if (exprType->IsNumericType()) {
+        String idStr = mTokenizer.GetIdentifier();
+        int idx = idStr.IndexOf("::");
+        if (idx != 0) {
+            String typeStr = idStr.Substring(0, idx - 1);
+            String constStr = idStr.Substring(idx + 2);
+            Type* type = FindType(typeStr);
+            if (type == nullptr) {
+                String message = String::Format("Type \"%s\" is not found", typeStr.string());
+                LogError(token, message);
+                return nullptr;
+            }
+            if (!type->IsInterfaceType()) {
+                String message = String::Format("Type \"%s\" is not interface", typeStr.string());
+                LogError(token, message);
+                return nullptr;
+            }
+            Constant* constant = ((Interface*)type)->FindConstant(constStr);
+            if (constant == nullptr) {
+                String message = String::Format("\"%s\" is not a constant of %s",
+                        constStr.string(), idStr.string());
+                LogError(token, message);
+                return nullptr;
+            }
+            if (exprType->IsIntegerType()) {
+                if (constant->GetType()->IsIntegerType()) {
+                    PostfixExpression* postExpr = new PostfixExpression();
+                    postExpr->SetType(exprType);
+                    postExpr->SetIntegralValue(constant->GetValue()->IntegerValue());
+                    postExpr->SetRadix(constant->GetValue()->GetRadix());
+                    return postExpr;
+                }
+                String message = String::Format("\"%s\" is not an Integer constant.",
+                        idStr.string());
+                LogError(token, message);
+                return nullptr;
+            }
+            else if (exprType->IsLongType()) {
+                if (constant->GetType()->IsLongType()) {
+                    PostfixExpression* postExpr = new PostfixExpression();
+                    postExpr->SetType(exprType);
+                    postExpr->SetIntegralValue(constant->GetValue()->LongValue());
+                    postExpr->SetRadix(constant->GetValue()->GetRadix());
+                    return postExpr;
+                }
+                String message = String::Format("\"%s\" is not a Long constant.",
+                        idStr.string());
+                LogError(token, message);
+                return nullptr;
+            }
+        }
+        String message = String::Format("\"%s\" is not a constant for %s",
+                idStr.string(), exprType->GetName().string());
+        LogError(token, message);
+        return nullptr;
+    }
     else {
         String message = String::Format("\"%s\" can not be assigned to \"%s\" type.",
                 mTokenizer.GetIdentifier().string(), exprType->GetName().string());
@@ -1498,10 +1562,16 @@ bool Parser::ParseCoclass(
     klass->SetName(className);
     klass->SetNamespace(mCurrNamespace);
 
+    mParsingType = klass;
     parseResult = ParseCoclassBody(klass) && parseResult;
 
     if (parseResult) {
         klass->SetAttribute(*attr);
+        for (int i = 0; i < klass->GetTemporaryTypeNumber(); i++) {
+            Type* type = klass->GetTemporaryType(i);
+            mPool->AddTemporaryType(type);
+        }
+        klass->ClearTemporaryTypes(false);
         mPool->AddCoclass(klass);
     }
     else {

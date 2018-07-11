@@ -18,6 +18,7 @@
 #define __CCDL_AST_TYPE_H__
 
 #include "Node.h"
+#include "../util/ArrayList.h"
 #include "../util/String.h"
 
 namespace ccdl {
@@ -113,6 +114,20 @@ public:
 
     virtual void Specialize();
 
+    bool AddTemporaryType(
+        /* [in] */ Type* type);
+
+    inline Type* GetTemporaryType(
+        /* [in] */ int index);
+
+    Type* FindTemporaryType(
+        /* [in] */ const String& typeStr);
+
+    inline int GetTemporaryTypeNumber();
+
+    inline void ClearTemporaryTypes(
+        /* [in] */ bool release);
+
     String ToString() override;
 
     virtual String ToShortString();
@@ -127,6 +142,7 @@ protected:
     bool mExternal;
     bool mSpecialized;
     Type* mSourceType;
+    ArrayList<Type*> mTempTypes;
 };
 
 String Type::GetName()
@@ -187,6 +203,23 @@ void Type::SetSourceType(
     /* [in] */ Type* source)
 {
     mSourceType = source;
+}
+
+Type* Type::GetTemporaryType(
+    /* [in] */ int index)
+{
+    return mTempTypes.Get(index);
+}
+
+int Type::GetTemporaryTypeNumber()
+{
+    return mTempTypes.GetSize();
+}
+
+void Type::ClearTemporaryTypes(
+    /* [in] */ bool release)
+{
+    return mTempTypes.Clear(release);
 }
 
 }

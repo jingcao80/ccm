@@ -75,6 +75,18 @@ bool Interface::AddConstant(
     return mConstants.Add(constant);
 }
 
+Constant* Interface::FindConstant(
+    /* [in] */ const String& name)
+{
+    for (int i = 0; i < GetConstantNumber(); i++) {
+        Constant* constant = mConstants.Get(i);
+        if (constant->GetName().Equals(name)) {
+            return constant;
+        }
+    }
+    return nullptr;
+}
+
 bool Interface::AddMethod(
     /* [in] */ Method* method)
 {

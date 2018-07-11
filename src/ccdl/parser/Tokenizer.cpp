@@ -658,6 +658,9 @@ Tokenizer::Token Tokenizer::ReadNumber(
     }
     mNumberString = builder.ToString();
     if (state == NUMBER_INT_0 || state == NUMBER_INT) {
+        if (mNumberString.Equals("0x8000000000000000")) {
+            mNumberString = String("-") + mNumberString;
+        }
         mIntegralValue = strtoll(mNumberString.string(), NULL, mRadix);
         return Token::NUMBER_INTEGRAL;
     }

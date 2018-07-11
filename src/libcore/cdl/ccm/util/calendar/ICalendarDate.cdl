@@ -14,6 +14,8 @@
 // limitations under the License.
 //=========================================================================
 
+interface ccm::core::IInteger;
+interface ccm::core::ILong;
 interface ccm::util::ITimeZone;
 interface ccm::util::calendar::IEra;
 
@@ -30,6 +32,10 @@ namespace calendar {
 ]
 interface ICalendarDate
 {
+    const Integer FIELD_UNDEFINED = IInteger::MIN_VALUE;
+
+    const Long TIME_UNDEFINED = ILong::MIN_VALUE;
+
     AddDate(
         [in] Integer year,
         [in] Integer month,
@@ -154,6 +160,9 @@ interface ICalendarDate
 
     SetStandardTime(
         [in] Boolean standardTime);
+
+    SetTimeOfDay(
+        [in] Long fraction);
 
     SetTimeOfDay(
         [in] Integer hours,

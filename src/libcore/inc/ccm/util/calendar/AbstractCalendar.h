@@ -55,8 +55,34 @@ public:
 
     ECode GetCalendarDate(
         /* [in] */ Long millis,
+        /* [in] */ ICalendarDate* date) override;
+
+    ECode GetTime(
+        /* [in] */ ICalendarDate* date,
+        /* [out] */ Long* time) override;
+
+    virtual Long GetTimeOfDayValue(
+        /* [in] */ ICalendarDate* date);
+
+    ECode SetTimeOfDay(
+        /* [in] */ ICalendarDate* date,
+        /* [in] */ Integer timeOfDay) override;
+
+    ECode GetWeekLength(
+        /* [out] */ Integer* weeks) override;
+
+    ECode GetNthDayOfWeek(
+        /* [in] */ Integer nth,
+        /* [in] */ Integer dayOfWeek,
         /* [in] */ ICalendarDate* inDate,
         /* [out] */ ICalendarDate** outDate) override;
+
+    static Long GetDayOfWeekDateOnOrBefore(
+        /* [in] */ Long fixedDate,
+        /* [in] */ Integer dayOfWeek);
+
+    Boolean ValidateTime(
+        /* [in] */ ICalendarDate* date);
 
 protected:
     AbstractCalendar()
@@ -65,11 +91,28 @@ protected:
     virtual void SetEras(
         /* [in] */ const Array<IEra*>& eras);
 
-    virtual void GetCalendarDateFromFixedDate(
-        /* [in] */ ICalendarDate* date,
-        /* [in] */ Long fixedDate);
+    virtual Long GetTimeOfDay(
+        /* [in] */ ICalendarDate* date);
 
     virtual Boolean IsLeapYear(
+        /* [in] */ ICalendarDate* date) = 0;
+
+    static Long GetDayOfWeekDateBefore(
+        /* [in] */ Long fixedDate,
+        /* [in] */ Integer dayOfWeek);
+
+    static Long GetDayOfWeekDateAfter(
+        /* [in] */ Long fixedDate,
+        /* [in] */ Integer dayOfWeek);
+
+    virtual Long GetFixedDate(
+        /* [in] */ ICalendarDate* date) = 0;
+
+    virtual void GetCalendarDateFromFixedDate(
+        /* [in] */ ICalendarDate* date,
+        /* [in] */ Long fixedDate) = 0;
+
+    Integer NormalizeTime(
         /* [in] */ ICalendarDate* date);
 
 protected:

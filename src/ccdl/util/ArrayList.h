@@ -98,6 +98,19 @@ public:
         return -1;
     }
 
+    void Clear(
+        /* [in] */ bool release)
+    {
+        for (int i = 0; i < mIndex; i++) {
+            if (release && mRelease) {
+                T data = mElements[i];
+                delete data;
+            }
+            mElements[i] = nullptr;
+        }
+        mIndex = 0;
+    }
+
 private:
     bool EnsureCapacity()
     {

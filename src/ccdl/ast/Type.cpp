@@ -26,6 +26,7 @@ Type::Type()
     , mExternal(false)
     , mSpecialized(true)
     , mSourceType(nullptr)
+    , mTempTypes(5)
 {}
 
 Type::~Type()
@@ -158,6 +159,28 @@ bool Type::IsPointerType()
 
 void Type::Specialize()
 {}
+
+bool Type::AddTemporaryType(
+    /* [in] */ Type* type)
+{
+    if (type == nullptr) return true;
+
+    return mTempTypes.Add(type);
+}
+
+Type* Type::FindTemporaryType(
+    /* [in] */ const String& typeStr)
+{
+    if (typeStr.IsNullOrEmpty()) return nullptr;
+
+    for (int i = 0; i < mTempTypes.GetSize(); i++) {
+        Type* type = mTempTypes.Get(i);
+        if (type->ToString().Equals(typeStr)) {
+            return type;
+        }
+    }
+    return nullptr;
+}
 
 String Type::ToString()
 {
