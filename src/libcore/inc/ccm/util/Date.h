@@ -22,11 +22,14 @@
 #include "ccm.core.IComparable.h"
 #include "ccm.io.ISerializable.h"
 #include "ccm.util.IDate.h"
+#include "ccm.util.calendar.IBaseCalendar.h"
+#include <ccmautoptr.h>
 
 using ccm::core::ICloneable;
 using ccm::core::IComparable;
 using ccm::core::SyncObject;
 using ccm::io::ISerializable;
+using ccm::util::calendar::IBaseCalendar;
 
 namespace ccm {
 namespace util {
@@ -138,6 +141,10 @@ public:
 protected:
     ECode CloneImpl(
         /* [in] */ IDate* newObj);
+
+private:
+    static AutoPtr<IBaseCalendar> GetCalendarSystem(
+        /* [in] */ Integer year);
 
 private:
     Long mFastTime;

@@ -39,6 +39,7 @@ set(SOURCES
     HashMap.cpp
     LinkedHashMap.cpp
     Properties.cpp
+    TimeZone.cpp
     TreeNode.cpp
     XMLUtils.cpp
     util.cpp)

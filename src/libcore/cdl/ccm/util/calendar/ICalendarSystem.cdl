@@ -53,7 +53,7 @@ interface ICalendarSystem
 
     GetMonthLength(
         [in] ICalendarDate* date,
-        [out] Integer months);
+        [out] Integer* days);
 
     GetName(
         [out] String* name);
@@ -66,18 +66,18 @@ interface ICalendarSystem
 
     GetTime(
         [in] ICalendarDate* date,
-        [out] Long* time);
+        [out] Long* time = nullptr);
 
     GetWeekLength(
         [out] Integer* weeks);
 
     GetYearLength(
         [in] ICalendarDate* date,
-        [out] Integer* years);
+        [out] Integer* days);
 
     GetYearLengthInMonths(
         [in] ICalendarDate* date,
-        [out] Integer* years);
+        [out] Integer* months);
 
     NewCalendarDate(
         [out] ICalendarDate** date);

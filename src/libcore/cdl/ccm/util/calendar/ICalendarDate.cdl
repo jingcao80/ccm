@@ -108,20 +108,20 @@ interface ICalendarDate
         [out] Integer* offset);
 
     IsDaylightTime(
-        [out] Boolean* result);
+        [out] Boolean* daylightTime);
 
     IsLeapYear(
-        [out] Boolean* result);
+        [out] Boolean* leapYear);
 
     IsNormalized(
-        [out] Boolean* result);
+        [out] Boolean* normalized);
 
     IsSameDate(
         [in] ICalendarDate* date,
-        [out] Boolean* result);
+        [out] Boolean* same);
 
     IsStandardTime(
-        [out] Boolean* result);
+        [out] Boolean* standardTime);
 
     SetDate(
         [in] Integer year,
@@ -133,6 +133,9 @@ interface ICalendarDate
 
     SetDayOfMonth(
         [in] Integer date);
+
+    SetDayOfWeek(
+        [in] Integer dayOfWeek);
 
     SetEra(
         [in] IEra* era);

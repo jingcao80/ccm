@@ -59,7 +59,7 @@ public:
 
     ECode GetTime(
         /* [in] */ ICalendarDate* date,
-        /* [out] */ Long* time) override;
+        /* [out] */ Long* time = nullptr) override;
 
     virtual Long GetTimeOfDayValue(
         /* [in] */ ICalendarDate* date);
@@ -108,7 +108,7 @@ protected:
     virtual Long GetFixedDate(
         /* [in] */ ICalendarDate* date) = 0;
 
-    virtual void GetCalendarDateFromFixedDate(
+    virtual ECode GetCalendarDateFromFixedDate(
         /* [in] */ ICalendarDate* date,
         /* [in] */ Long fixedDate) = 0;
 

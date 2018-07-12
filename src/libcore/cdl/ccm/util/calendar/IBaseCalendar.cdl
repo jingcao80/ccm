@@ -21,6 +21,27 @@ namespace util {
 namespace calendar {
 
 /*
+ * @Involve interface ccm::util::calendar::ICalendarDate
+ */
+[
+    uuid(30757418-7756-453b-9f1f-c88de7ef583c),
+    version(0.1.0)
+]
+interface IBaseCalendarDate
+{
+    GetNormalizedYear(
+        [out] Integer* normalizedYear);
+
+    SetNormalizedDate(
+        [in] Integer normalizedYear,
+        [in] Integer month,
+        [in] Integer dayOfMonth);
+
+    SetNormalizedYear(
+        [in] Integer normalizedYear);
+}
+
+/*
  * @Involve interface ccm::util::calendar::ICalendarSystem
  */
 [
@@ -70,7 +91,7 @@ interface IBaseCalendar
         [in] Integer year,
         [in] Integer month,
         [in] Integer dayOfMonth,
-        [in] ICalendarDate* cache,
+        [in] IBaseCalendarDate* cache,
         [out] Long* fraction);
 
     GetYearFromFixedDate(

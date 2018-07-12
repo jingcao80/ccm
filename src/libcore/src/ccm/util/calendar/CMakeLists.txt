@@ -26,6 +26,7 @@ include_directories(
 set(SOURCES
     AbstractCalendar.cpp
     BaseCalendar.cpp
+    CalendarDate.cpp
     CalendarSystem.cpp
     CalendarUtils.cpp)
 

@@ -18,7 +18,9 @@
 #define __CCM_UTIL_CALENDAR_BASECALENDAR_H__
 
 #include "ccm/util/calendar/AbstractCalendar.h"
+#include "ccm/util/calendar/CalendarDate.h"
 #include "ccm.util.calendar.IBaseCalendar.h"
+#include "ccm.util.calendar.IBaseCalendarDate.h"
 
 namespace ccm {
 namespace util {
@@ -30,21 +32,137 @@ class BaseCalendar
 {
 public:
     class Date
-        : public SyncObject
-        , public ICalendarDate
+        : public CalendarDate
+        , public IBaseCalendarDate
     {
     public:
         CCM_INTERFACE_DECL();
+
+        ECode SetNormalizedDate(
+            /* [in] */ Integer normalizedYear,
+            /* [in] */ Integer month,
+            /* [in] */ Integer dayOfMonth) override;
 
     protected:
         ECode Constructor();
 
         ECode Constructor(
             /* [in] */ ITimeZone* zone);
+
+        Boolean Hit(
+            /* [in] */ Integer year);
+
+        Boolean Hit(
+            /* [in] */ Long fixedDate);
+
+        Integer GetCachedYear();
+
+        Long GetCachedJan1();
+
+        void SetCache(
+            /* [in] */ Integer year,
+            /* [in] */ Long jan1,
+            /* [in] */ Integer len);
+
+    protected:
+        // Cache for the fixed date of January 1 and year length of the
+        // cachedYear. A simple benchmark showed 7% performance
+        // improvement with >90% cache hit. The initial values are for Gregorian.
+        Integer mCachedYear = 2004;
+        Long mCachedFixedDateJan1 = 731581ll;
+        Long mCachedFixedDateNextJan1 = mCachedFixedDateJan1 + 366;
+
+        friend class BaseCalendar;
     };
 
 public:
     CCM_INTERFACE_DECL();
+
+    ECode Validate(
+        /* [in] */ ICalendarDate* date,
+        /* [out] */ Boolean* result) override;
+
+    ECode Normalize(
+        /* [in] */ ICalendarDate* date,
+        /* [out] */ Boolean* result = nullptr) override;
+
+    ECode GetYearLength(
+        /* [in] */ ICalendarDate* date,
+        /* [out] */ Integer* days) override;
+
+    ECode GetYearLengthInMonths(
+        /* [in] */ ICalendarDate* date,
+        /* [out] */ Integer* months) override;
+
+    ECode GetMonthLength(
+        /* [in] */ ICalendarDate* date,
+        /* [out] */ Integer* days) override;
+
+    ECode GetDayOfYear(
+        /* [in] */ ICalendarDate* date,
+        /* [out] */ Long* days) override;
+
+    ECode GetFixedDate(
+        /* [in] */ ICalendarDate* date,
+        /* [out] */ Long* fraction) override;
+
+    ECode GetFixedDate(
+        /* [in] */ Integer year,
+        /* [in] */ Integer month,
+        /* [in] */ Integer dayOfMonth,
+        /* [in] */ IBaseCalendarDate* cache,
+        /* [out] */ Long* fraction) override;
+
+    ECode GetCalendarDateFromFixedDate(
+        /* [in] */ ICalendarDate* date,
+        /* [in] */ Long fixedDate) override;
+
+    static Integer GetDayOfWeekFromFixedDate(
+        /* [in] */ Long fixedDate);
+
+    ECode GetDayOfWeek(
+        /* [in] */ ICalendarDate* date,
+        /* [out] */ Integer* days) override;
+
+    ECode GetYearFromFixedDate(
+        /* [in] */ Long fixedDate,
+        /* [out] */ Integer* year) override;
+
+protected:
+    virtual void NormalizeMonth(
+        /* [in] */ ICalendarDate* date);
+
+    Long GetDayOfYear(
+        /* [in] */ Integer year,
+        /* [in] */ Integer month,
+        /* [in] */ Integer dayOfMonth);
+
+    Integer GetGregorianYearFromFixedDate(
+        /* [in] */ Long fixedDate);
+
+    Boolean IsLeapYear(
+        /* [in] */ ICalendarDate* date) override;
+
+    virtual Boolean IsLeapYear(
+        /* [in] */ Integer normalizedYear);
+
+private:
+    Integer GetMonthLength(
+        /* [in] */ Integer year,
+        /* [in] */ Integer month);
+
+protected:
+    static constexpr Integer DAYS_IN_MONTH[]
+        //  12   1   2   3   4   5   6   7   8   9  10  11  12
+        = {31, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+
+    static constexpr Integer ACCUMULATED_DAYS_IN_MONTH[]
+        //  12/1 1/1 2/1 3/1 4/1 5/1 6/1 7/1 8/1 9/1 10/1 11/1 12/1
+        = {-30, 0, 31, 59, 90,120,151,181,212,243, 273, 304, 334};
+
+    static constexpr Integer ACCUMULATED_DAYS_IN_MONTH_LEAP[]
+        //  12/1 1/1 2/1   3/1   4/1   5/1   6/1   7/1   8/1   9/1   10/1   11/1   12/1
+        = {-30, 0, 31, 59+1, 90+1,120+1,151+1,181+1,212+1,243+1, 273+1, 304+1, 334+1};
 
 private:
     // The base Gregorian year of FIXED_DATES[]

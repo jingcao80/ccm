@@ -180,8 +180,6 @@ ECode AbstractCalendar::GetTime(
     /* [in] */ ICalendarDate* date,
     /* [out] */ Long* time)
 {
-    VALIDATE_NOT_NULL(time);
-
     Long gd = GetFixedDate(date);
     Long ms = (gd - EPOCH_OFFSET) * DAY_IN_MILLIS + GetTimeOfDay(date);
     Integer zoneOffset = 0;
@@ -191,7 +189,7 @@ ECode AbstractCalendar::GetTime(
         Boolean result;
         if (date->IsNormalized(&result), result) {
             date->GetZoneOffset(&zoneOffset);
-            *time = ms - zoneOffset;
+            if (time != nullptr) *time = ms - zoneOffset;
             return NOERROR;
         }
         // adjust time zone and daylight saving
@@ -217,7 +215,7 @@ ECode AbstractCalendar::GetTime(
     }
     ms -= zoneOffset;
     GetCalendarDate(ms, date);
-    *time = ms;
+    if (time != nullptr) *time = ms;
     return NOERROR;
 }
 

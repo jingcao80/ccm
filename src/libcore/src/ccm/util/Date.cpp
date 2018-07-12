@@ -77,6 +77,7 @@ ECode Date::Constructor(
         y += CalendarUtils::FloorDivide(month, 12);
         month = CalendarUtils::Mod(month, 12);
     }
+    AutoPtr<IBaseCalendar> cal = GetCalendarSystem(y);
 
     return NOERROR;
 }
@@ -220,6 +221,12 @@ ECode Date::CloneImpl(
     /* [in] */ IDate* newObj)
 {
     return NOERROR;
+}
+
+AutoPtr<IBaseCalendar> Date::GetCalendarSystem(
+    /* [in] */ Integer year)
+{
+    return nullptr;
 }
 
 }
