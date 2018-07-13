@@ -27,7 +27,9 @@ ClassObject::ClassObject()
 ECode ClassObject::AttachMetadata(
     /* [in] */ IMetaComponent* component)
 {
-    mComponent = component;
+    if (mComponent != component) {
+        mComponent = component;
+    }
     return NOERROR;
 }
 

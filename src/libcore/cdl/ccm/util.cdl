@@ -36,6 +36,7 @@ include "ccm/util/calendar/ICalendarDate.cdl"
 include "ccm/util/calendar/ICalendarSystem.cdl"
 include "ccm/util/calendar/IEra.cdl"
 include "ccm/util/calendar/IGregorian.cdl"
+include "ccm/util/calendar/IJulianCalendar.cdl"
 include "ccm/util/calendar/ILocalGregorianCalendar.cdl"
 include "ccm/util/concurrent/IConcurrentMap.cdl"
 include "ccm/util/regex/Exceptions.cdl"
@@ -174,6 +175,52 @@ coclass CProperties
     interface IMap;
     interface ICloneable;
     interface ISerializable;
+}
+
+namespace calendar {
+
+[
+    uuid(f726de31-d4f4-440b-b8a5-dfb25fea88d2),
+    version(0.1.0)
+]
+coclass CGregorian
+{
+    Constructor();
+
+    interface IGregorian;
+    interface IBaseCalendar;
+    interface ICalendarSystem;
+}
+
+[
+    uuid(d6038b88-1454-4a8a-a17d-dbf16151a36b),
+    version(0.1.0)
+]
+coclass CJulianCalendar
+{
+    Constructor();
+
+    interface IJulianCalendar;
+    interface IBaseCalendar;
+    interface ICalendarSystem;
+}
+
+[
+    uuid(4b4a5802-2e14-45cf-9894-2c9645972a5c),
+    version(0.1.0)
+]
+coclass CLocalGregorianCalendar
+{
+    // @hide
+    Constructor(
+        [in] String name,
+        [in] Array<IEra*> eras);
+
+    interface ILocalGregorianCalendar;
+    interface IBaseCalendar;
+    interface ICalendarSystem;
+}
+
 }
 
 namespace regex {

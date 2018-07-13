@@ -23,11 +23,14 @@ namespace calendar {
  * @Involve interface ccm::util::calendar::ICalendarSystem
  */
 [
-    uuid(3a5186e5-3c8f-434b-909d-025dff364f78),
+    uuid(20fc4e96-408a-40e6-9cbf-036ccd189307),
     version(0.1.0)
 ]
-interface IGregorian
+interface IJulianCalendar
 {
+    IsLeapYear(
+        [in] Integer jyear,
+        [out] Boolean* leapYear);
 }
 
 }

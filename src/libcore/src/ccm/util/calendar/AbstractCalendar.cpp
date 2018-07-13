@@ -25,6 +25,11 @@ namespace ccm {
 namespace util {
 namespace calendar {
 
+ECode AbstractCalendar::Constructor()
+{
+    return NOERROR;
+}
+
 ECode AbstractCalendar::GetEra(
     /* [in] */ const String& eraName,
     /* [out] */ IEra** era)
@@ -180,7 +185,8 @@ ECode AbstractCalendar::GetTime(
     /* [in] */ ICalendarDate* date,
     /* [out] */ Long* time)
 {
-    Long gd = GetFixedDate(date);
+    Long gd;
+    GetFixedDate(date, &gd);
     Long ms = (gd - EPOCH_OFFSET) * DAY_IN_MILLIS + GetTimeOfDay(date);
     Integer zoneOffset = 0;
     AutoPtr<ITimeZone> zi;
@@ -298,7 +304,8 @@ ECode AbstractCalendar::GetNthDayOfWeek(
     ICloneable::Probe(inDate)->Clone((IInterface**)&co);
     ICalendarDate* ndate = ICalendarDate::Probe(co);
     Normalize(ndate);
-    Long fd = GetFixedDate(ndate);
+    Long fd;
+    GetFixedDate(ndate, &fd);
     Long nfd;
     if (nth > 0) {
         nfd = 7 * nth + GetDayOfWeekDateBefore(fd, dayOfWeek);

@@ -22,6 +22,11 @@ namespace ccm {
 namespace util {
 namespace calendar {
 
+constexpr Integer BaseCalendar::FIXED_DATES[];
+constexpr Integer BaseCalendar::DAYS_IN_MONTH[];
+constexpr Integer BaseCalendar::ACCUMULATED_DAYS_IN_MONTH[];
+constexpr Integer BaseCalendar::ACCUMULATED_DAYS_IN_MONTH_LEAP[];
+
 CCM_INTERFACE_IMPL_1(BaseCalendar, AbstractCalendar, IBaseCalendar);
 
 ECode BaseCalendar::Validate(
@@ -137,7 +142,9 @@ ECode BaseCalendar::Normalize(
         bdate->SetDayOfWeek(dow);
     }
     bdate->GetNormalizedYear(&y);
-    date->SetLeapYear(IsLeapYear(y));
+    Boolean isLeap;
+    IsLeapYear(y, &isLeap);
+    date->SetLeapYear(isLeap);
     date->SetZoneOffset(0);
     date->SetDaylightSaving(0);
     date->SetNormalized(true);
@@ -177,7 +184,8 @@ ECode BaseCalendar::GetYearLength(
     Date* bdate = (Date*)IBaseCalendarDate::Probe(date);
     Integer year;
     bdate->GetNormalizedYear(&year);
-    *days = IsLeapYear(year) ? 366 : 365;
+    Boolean isLeap;
+    *days = (IsLeapYear(year, &isLeap), isLeap ? 366 : 365);
     return NOERROR;
 }
 
@@ -215,7 +223,8 @@ Integer BaseCalendar::GetMonthLength(
     /* [in] */ Integer month)
 {
     Integer days = DAYS_IN_MONTH[month];
-    if (month == FEBRUARY && IsLeapYear(year)) {
+    Boolean isLeap;
+    if (month == FEBRUARY && (IsLeapYear(year, &isLeap), isLeap)) {
         days++;
     }
     return days;
@@ -241,7 +250,8 @@ Long BaseCalendar::GetDayOfYear(
     /* [in] */ Integer month,
     /* [in] */ Integer dayOfMonth)
 {
-    return dayOfMonth + (IsLeapYear(year) ?
+    Boolean isLeap;
+    return dayOfMonth + ((IsLeapYear(year, &isLeap), isLeap) ?
             ACCUMULATED_DAYS_IN_MONTH_LEAP[month] : ACCUMULATED_DAYS_IN_MONTH[month]);
 }
 
@@ -290,7 +300,9 @@ ECode BaseCalendar::GetFixedDate(
     if (n >= 0 && n < ArrayLength(FIXED_DATES)) {
         Long jan1 = FIXED_DATES[n];
         if (cache != nullptr) {
-            cache->SetCache(year, jan1, IsLeapYear(year) ? 366 : 365);
+            Boolean isLeap;
+            IsLeapYear(year, &isLeap);
+            cache->SetCache(year, jan1, isLeap ? 366 : 365);
         }
         *fraction = isJan1 ? jan1 : jan1 + GetDayOfYear(year, month, dayOfMonth) - 1;
         return NOERROR;
@@ -315,12 +327,14 @@ ECode BaseCalendar::GetFixedDate(
     }
 
     if (month > FEBRUARY) {
-        days -=  IsLeapYear(year) ? 1 : 2;
+        Boolean isLeap;
+        days -= (IsLeapYear(year, &isLeap), isLeap) ? 1 : 2;
     }
 
     // If it's January 1, update the cache.
     if (cache != nullptr && isJan1) {
-        cache->SetCache(year, days, IsLeapYear(year) ? 366 : 365);
+        Boolean isLeap;
+        cache->SetCache(year, days, (IsLeapYear(year, &isLeap), isLeap) ? 366 : 365);
     }
 
     *fraction = days;
@@ -338,7 +352,7 @@ ECode BaseCalendar::GetCalendarDateFromFixedDate(
     if (bdate->Hit(fixedDate)) {
         year = bdate->GetCachedYear();
         jan1 = bdate->GetCachedJan1();
-        isLeap = IsLeapYear(year);
+        IsLeapYear(year, &isLeap);
     }
     else {
         // Looking up FIXED_DATES[] here didn't improve performance
@@ -346,7 +360,7 @@ ECode BaseCalendar::GetCalendarDateFromFixedDate(
         // will look up FIXED_DATES[] actually.
         year = GetGregorianYearFromFixedDate(fixedDate);
         GetFixedDate(year, JANUARY, 1, nullptr, &jan1);
-        isLeap = IsLeapYear(year);
+        IsLeapYear(year, &isLeap);
         // Update the cache data
         bdate->SetCache(year, jan1, isLeap ? 366 : 365);
     }
@@ -457,13 +471,19 @@ Boolean BaseCalendar::IsLeapYear(
     Date* bdate = (Date*)IBaseCalendarDate::Probe(date);
     Integer year;
     bdate->GetNormalizedYear(&year);
-    return IsLeapYear(year);
+    Boolean leapYear;
+    IsLeapYear(year, &leapYear);
+    return leapYear;
 }
 
-Boolean BaseCalendar::IsLeapYear(
-    /* [in] */ Integer normalizedYear)
+ECode BaseCalendar::IsLeapYear(
+    /* [in] */ Integer normalizedYear,
+    /* [out] */ Boolean* leapYear)
 {
-    return CalendarUtils::IsGregorianLeapYear(normalizedYear);
+    VALIDATE_NOT_NULL(leapYear);
+
+    *leapYear = CalendarUtils::IsGregorianLeapYear(normalizedYear);
+    return NOERROR;
 }
 
 //-------------------------------------------------------------------------

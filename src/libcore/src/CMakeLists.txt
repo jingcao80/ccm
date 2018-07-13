@@ -25,6 +25,7 @@ include_directories(
     ../inc/ccm/core
     ../inc/ccm/io
     ../inc/ccm/util
+    ../inc/ccm/util/calendar
     ../inc/ccm/util/regex
     ../inc/ccmrt/system
     ${INC_DIR}
@@ -52,6 +53,9 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_util_CHashMap.cpp
     ${OBJ_DIR}/_ccm_util_CHashtable.cpp
     ${OBJ_DIR}/_ccm_util_CProperties.cpp
+    ${OBJ_DIR}/_ccm_util_calendar_CGregorian.cpp
+    ${OBJ_DIR}/_ccm_util_calendar_CJulianCalendar.cpp
+    ${OBJ_DIR}/_ccm_util_calendar_CLocalGregorianCalendar.cpp
     ${OBJ_DIR}/_ccm_util_regex_CPatternFactory.cpp
     ${OBJ_DIR}/_ccmrt_system_CPathClassLoader.cpp
     ${OBJ_DIR}/libcorePub.cpp

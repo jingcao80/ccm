@@ -18,12 +18,14 @@
 #define __CCM_UTIL_CALENDAR_CALENDARDATE_H__
 
 #include "ccm/core/SyncObject.h"
+#include "ccm.core.ICloneable.h"
 #include "ccm.util.ILocale.h"
 #include "ccm.util.ITimeZone.h"
 #include "ccm.util.calendar.ICalendarDate.h"
 #include "ccm.util.calendar.IEra.h"
 #include <ccmautoptr.h>
 
+using ccm::core::ICloneable;
 using ccm::core::SyncObject;
 
 namespace ccm {
@@ -33,11 +35,11 @@ namespace calendar {
 class CalendarDate
     : public SyncObject
     , public ICalendarDate
+    , public ICloneable
 {
 public:
     CCM_INTERFACE_DECL();
 
-protected:
     ECode Constructor();
 
     ECode Constructor(

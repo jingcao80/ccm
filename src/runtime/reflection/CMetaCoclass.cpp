@@ -289,7 +289,15 @@ ECode CMetaCoclass::CreateObject(
 {
     VALIDATE_NOT_NULL(object);
 
-    return CoCreateObjectInstance(mCid, iid, mOwner->mLoader, object);
+    AutoPtr<IClassObject> factory;
+    ECode ec = mOwner->GetClassObject(mCid, (IClassObject**)&factory);
+    if (FAILED(ec)) {
+        *object = nullptr;
+        return ec;
+    }
+
+    factory->AttachMetadata(mOwner);
+    return factory->CreateObject(iid, object);
 }
 
 void CMetaCoclass::BuildAllConstructors()

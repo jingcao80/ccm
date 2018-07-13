@@ -43,12 +43,6 @@ public:
             /* [in] */ Integer month,
             /* [in] */ Integer dayOfMonth) override;
 
-    protected:
-        ECode Constructor();
-
-        ECode Constructor(
-            /* [in] */ ITimeZone* zone);
-
         Boolean Hit(
             /* [in] */ Integer year);
 
@@ -63,6 +57,12 @@ public:
             /* [in] */ Integer year,
             /* [in] */ Long jan1,
             /* [in] */ Integer len);
+
+    protected:
+        ECode Constructor();
+
+        ECode Constructor(
+            /* [in] */ ITimeZone* zone);
 
     protected:
         // Cache for the fixed date of January 1 and year length of the
@@ -143,8 +143,9 @@ protected:
     Boolean IsLeapYear(
         /* [in] */ ICalendarDate* date) override;
 
-    virtual Boolean IsLeapYear(
-        /* [in] */ Integer normalizedYear);
+    virtual ECode IsLeapYear(
+        /* [in] */ Integer normalizedYear,
+        /* [out] */ Boolean* leapYear);
 
 private:
     Integer GetMonthLength(

@@ -14,20 +14,21 @@
 // limitations under the License.
 //=========================================================================
 
+#include "ccm/util/calendar/Era.h"
+
 namespace ccm {
 namespace util {
 namespace calendar {
 
-/*
- * @Involve interface ccm::util::calendar::IBaseCalendar
- * @Involve interface ccm::util::calendar::ICalendarSystem
- */
-[
-    uuid(3a5186e5-3c8f-434b-909d-025dff364f78),
-    version(0.1.0)
-]
-interface IGregorian
+CCM_INTERFACE_IMPL_1(Era, SyncObject, IEra);
+
+ECode Era::Constructor(
+    /* [in] */ const String& name,
+    /* [in] */ const String& abbr,
+    /* [in] */ Long since,
+    /* [in] */ Boolean localTime)
 {
+    return NOERROR;
 }
 
 }

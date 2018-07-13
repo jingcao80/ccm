@@ -85,8 +85,7 @@ public:
         /* [in] */ ICalendarDate* date);
 
 protected:
-    AbstractCalendar()
-    {}
+    ECode Constructor();
 
     virtual void SetEras(
         /* [in] */ const Array<IEra*>& eras);
@@ -105,8 +104,9 @@ protected:
         /* [in] */ Long fixedDate,
         /* [in] */ Integer dayOfWeek);
 
-    virtual Long GetFixedDate(
-        /* [in] */ ICalendarDate* date) = 0;
+    virtual ECode GetFixedDate(
+        /* [in] */ ICalendarDate* date,
+        /* [out] */ Long* fraction) = 0;
 
     virtual ECode GetCalendarDateFromFixedDate(
         /* [in] */ ICalendarDate* date,

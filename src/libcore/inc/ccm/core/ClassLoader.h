@@ -36,7 +36,7 @@ private:
     class SystemClassLoader
     {
     public:
-        static AutoPtr<IClassLoader> sLoader;
+        static AutoPtr<IClassLoader> GetInstance();
     };
 
 public:
@@ -100,7 +100,7 @@ private:
 
 inline AutoPtr<IClassLoader> ClassLoader::GetSystemClassLoader()
 {
-    return SystemClassLoader::sLoader;
+    return SystemClassLoader::GetInstance();
 }
 
 }

@@ -22,13 +22,14 @@
 
 using ccm::core::CStringBuilder;
 using ccm::core::IStringBuilder;
+using ccm::core::IID_ICloneable;
 using ccm::core::IID_IStringBuilder;
 
 namespace ccm {
 namespace util {
 namespace calendar {
 
-CCM_INTERFACE_IMPL_1(CalendarDate, SyncObject, ICalendarDate);
+CCM_INTERFACE_IMPL_2(CalendarDate, SyncObject, ICalendarDate, ICloneable);
 
 ECode CalendarDate::Constructor()
 {

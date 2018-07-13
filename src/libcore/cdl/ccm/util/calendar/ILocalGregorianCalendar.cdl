@@ -18,12 +18,24 @@ namespace ccm {
 namespace util {
 namespace calendar {
 
+/*
+ * @Involve interface ccm::util::calendar::IBaseCalendar
+ * @Involve interface ccm::util::calendar::ICalendarSystem
+ */
 [
     uuid(56b39c04-1748-42e8-901d-64449245f389),
     version(0.1.0)
 ]
 interface ILocalGregorianCalendar
 {
+    IsLeapYear(
+        [in] Integer gregorianYear,
+        [out] Boolean* leapYear);
+
+    IsLeapYear(
+        [in] IEra* era,
+        [in] Integer year,
+        [out] Boolean* leapYear);
 }
 
 }

@@ -28,7 +28,11 @@ set(SOURCES
     BaseCalendar.cpp
     CalendarDate.cpp
     CalendarSystem.cpp
-    CalendarUtils.cpp)
+    CalendarUtils.cpp
+    Era.cpp
+    Gregorian.cpp
+    JulianCalendar.cpp
+    LocalGregorianCalendar.cpp)
 
 add_library(calendar STATIC
     ${SOURCES})

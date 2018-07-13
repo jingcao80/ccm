@@ -18,6 +18,9 @@
 #include "ccm/util/CHashMap.h"
 #include "ccm/util/CHashtable.h"
 #include "ccm/util/CProperties.h"
+#include "ccm/util/calendar/CGregorian.h"
+#include "ccm/util/calendar/CJulianCalendar.h"
+#include "ccm/util/calendar/CLocalGregorianCalendar.h"
 
 namespace ccm {
 namespace util {
@@ -69,6 +72,14 @@ ECode CProperties::Clone(
     *obj = prop;
     REFCOUNT_ADD(*obj);
     return NOERROR;
+}
+
+namespace calendar {
+
+CCM_OBJECT_IMPL(CGregorian);
+CCM_OBJECT_IMPL(CJulianCalendar);
+CCM_OBJECT_IMPL(CLocalGregorianCalendar);
+
 }
 
 }

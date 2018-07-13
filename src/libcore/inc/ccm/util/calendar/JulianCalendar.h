@@ -14,20 +14,19 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_UTIL_CALENDAR_LOCALGREGORIANCALENDAR_H__
-#define __CCM_UTIL_CALENDAR_LOCALGREGORIANCALENDAR_H__
+#ifndef __CCM_UTIL_CALENDAR_JULIANCALENDAR_H__
+#define __CCM_UTIL_CALENDAR_JULIANCALENDAR_H__
 
 #include "ccm/util/calendar/BaseCalendar.h"
-#include "ccm.util.calendar.IEra.h"
-#include "ccm.util.calendar.ILocalGregorianCalendar.h"
+#include "ccm.util.calendar.IJulianCalendar.h"
 
 namespace ccm {
 namespace util {
 namespace calendar {
 
-class LocalGregorianCalendar
+class JulianCalendar
     : public BaseCalendar
-    , public ILocalGregorianCalendar
+    , public IJulianCalendar
 {
 protected:
     class Date
@@ -42,11 +41,8 @@ protected:
         ECode SetEra(
             /* [in] */ IEra* era) override;
 
-        ECode AddYear(
-            /* [in] */ Integer n) override;
-
-        ECode SetYear(
-            /* [in] */ Integer year) override;
+        void SetKnownEra(
+            /* [in] */ IEra* era);
 
         ECode GetNormalizedYear(
             /* [out] */ Integer* normalizedYear) override;
@@ -54,35 +50,19 @@ protected:
         ECode SetNormalizedYear(
             /* [in] */ Integer normalizedYear) override;
 
-        void SetLocalEra(
-            /* [in] */ IEra* era);
-
-        void SetLocalYear(
-            /* [in] */ Integer year);
-
         ECode ToString(
             /* [out] */ String* desc) override;
 
         ECode Clone(
             /* [out] */ IInterface** obj) override;
 
-    private:
-        Integer mGregorianYear = FIELD_UNDEFINED;
-
-        friend class LocalGregorianCalendar;
+        friend class JulianCalendar;
     };
-
-protected:
-    static ECode GetLocalGregorianCalendar(
-        /* [in] */ const String& name,
-        /* [out] */ ILocalGregorianCalendar** calendar);
 
 public:
     CCM_INTERFACE_DECL();
 
-    ECode Constructor(
-        /* [in] */ const String& name,
-        /* [in] */ const Array<IEra*>& eras);
+    ECode Constructor();
 
     ECode GetName(
         /* [out] */ String* name) override;
@@ -96,12 +76,12 @@ public:
 
     ECode GetCalendarDate(
         /* [in] */ Long millis,
-        /* [in] */ ITimeZone* zone,
-        /* [out] */ ICalendarDate** date) override;
+        /* [in] */ ICalendarDate* date) override;
 
     ECode GetCalendarDate(
         /* [in] */ Long millis,
-        /* [in] */ ICalendarDate* date) override;
+        /* [in] */ ITimeZone* zone,
+        /* [out] */ ICalendarDate** date) override;
 
     ECode NewCalendarDate(
         /* [out] */ ICalendarDate** date) override;
@@ -110,52 +90,42 @@ public:
         /* [in] */ ITimeZone* zone,
         /* [out] */ ICalendarDate** date) override;
 
-    ECode Validate(
-        /* [in] */ ICalendarDate* date,
-        /* [out] */ Boolean* result) override;
-
-    ECode Normalize(
-        /* [in] */ ICalendarDate* date,
-        /* [out] */ Boolean* result = nullptr) override;
-
-    ECode IsLeapYear(
-        /* [in] */ Integer gregorianYear,
-        /* [out] */ Boolean* leapYear) override;
-
-    ECode IsLeapYear(
-        /* [in] */ IEra* era,
+    ECode GetFixedDate(
         /* [in] */ Integer year,
-        /* [out] */ Boolean* leapYear) override;
+        /* [in] */ Integer month,
+        /* [in] */ Integer dayOfMonth,
+        /* [in] */ IBaseCalendarDate* cache,
+        /* [out] */ Long* fraction) override;
 
     ECode GetCalendarDateFromFixedDate(
         /* [in] */ ICalendarDate* date,
         /* [in] */ Long fixedDate) override;
 
-protected:
-    void NormalizeMonth(
-        /* [in] */ ICalendarDate* date) override;
+    ECode GetYearFromFixedDate(
+        /* [in] */ Long fixedDate,
+        /* [out] */ Integer* year) override;
 
-    void NormalizeYear(
-        /* [in] */ ICalendarDate* date);
+    ECode GetDayOfWeek(
+        /* [in] */ ICalendarDate* date,
+        /* [out] */ Integer* days) override;
 
-private:
-    void AdjustYear(
-        /* [in] */ Date* ldate,
-        /* [in] */ Long millis,
-        /* [in] */ Integer zoneOffset);
+    ECode IsLeapYear(
+        /* [in] */ Integer jyear,
+        /* [out] */ Boolean* leapYear) override;
 
-    Boolean ValidateEra(
-        /* [in] */ IEra* era);
+    using BaseCalendar::GetFixedDate;
 
 private:
-    String mName;
-    Array<IEra*> mEras;
+    static const Array<IEra*>& GetEras();
 
-    friend class CalendarSystem;
+private:
+    static constexpr Integer BCE = 0;
+    static constexpr Integer CE = 1;
+    static constexpr Integer JULIAN_EPOCH = -1;
 };
 
 }
 }
 }
 
-#endif // __CCM_UTIL_CALENDAR_LOCALGREGORIANCALENDAR_H__
+#endif // __CCM_UTIL_CALENDAR_JULIANCALENDAR_H__

@@ -47,7 +47,17 @@ ECode CalendarSystem::StaticInitialize()
     {
         AutoLock lock(sLock);
         if (!sInitialized) {
+            AutoPtr<IClassLoader> loader = ClassLoader::GetSystemClassLoader();
+            AutoPtr<IMetaCoclass> gregorianClass;
+            loader->LoadCoclass(String("ccm::util::calendar::CGregorian"), (IMetaCoclass**)&gregorianClass);
+            AutoPtr<IMetaCoclass> japaneseClass;
+            loader->LoadCoclass(String("ccm::util::calendar::CLocalGregorianCalendar"), (IMetaCoclass**)&japaneseClass);
+            AutoPtr<IMetaCoclass> julianClass;
+            loader->LoadCoclass(String("ccm::util::calendar::CJulianCalendar"), (IMetaCoclass**)&julianClass);
             CHashMap::New(IID_IMap, (IInterface**)&sNames);
+            sNames->Put(CoreUtils::Box(String("gregorian")), gregorianClass);
+            sNames->Put(CoreUtils::Box(String("japanese")), japaneseClass);
+            sNames->Put(CoreUtils::Box(String("julian")), julianClass);
 
             sInitialized = true;
         }

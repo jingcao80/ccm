@@ -28,8 +28,6 @@ using ccmrt::system::CPathClassLoader;
 namespace ccm {
 namespace core {
 
-AutoPtr<IClassLoader> ClassLoader::SystemClassLoader::sLoader = CreateSystemClassLoader();
-
 CCM_INTERFACE_IMPL_1(ClassLoader, SyncObject, IClassLoader);
 
 ECode ClassLoader::Constructor(
@@ -166,6 +164,14 @@ ECode ClassLoader::UnloadComponent(
         return mParent->UnloadComponent(compId);
     }
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
+}
+
+//-------------------------------------------------------------------------
+
+AutoPtr<IClassLoader> ClassLoader::SystemClassLoader::GetInstance()
+{
+    static AutoPtr<IClassLoader> sLoader = CreateSystemClassLoader();
+    return sLoader;
 }
 
 }

@@ -14,22 +14,25 @@
 // limitations under the License.
 //=========================================================================
 
+#ifndef __CCM_UTIL_CALENDAR_CLOCALGREGORIANCALENDAR_H__
+#define __CCM_UTIL_CALENDAR_CLOCALGREGORIANCALENDAR_H__
+
+#include "ccm/util/calendar/LocalGregorianCalendar.h"
+#include "_ccm_util_calendar_CLocalGregorianCalendar.h"
+
 namespace ccm {
 namespace util {
 namespace calendar {
 
-/*
- * @Involve interface ccm::util::calendar::IBaseCalendar
- * @Involve interface ccm::util::calendar::ICalendarSystem
- */
-[
-    uuid(3a5186e5-3c8f-434b-909d-025dff364f78),
-    version(0.1.0)
-]
-interface IGregorian
+Coclass(CLocalGregorianCalendar)
+    , public LocalGregorianCalendar
 {
-}
+public:
+    CCM_OBJECT_DECL();
+};
 
 }
 }
 }
+
+#endif // __CCM_UTIL_CALENDAR_CLOCALGREGORIANCALENDAR_H__
