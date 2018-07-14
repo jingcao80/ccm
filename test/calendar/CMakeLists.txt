@@ -14,10 +14,10 @@
 # limitations under the License.
 #=========================================================================
 
-project(AutoPtrTest CXX)
+project(CalendarTest CXX)
 
-set(AUTOPTR_DIR ${TEST_DIR}/autoptr)
-set(OBJ_DIR ${CMAKE_BINARY_DIR}/test/autoptr)
+set(calendar_DIR ${TEST_DIR}/calendar)
+set(OBJ_DIR ${CMAKE_BINARY_DIR}/test/calendar)
 
 include_directories(
     ./
@@ -27,18 +27,33 @@ include_directories(
 set(SOURCES
     main.cpp)
 
+set(GENERATED_SOURCES
+    ${OBJ_DIR}/libcore.cpp)
+
 IMPORT_LIBRARY(ccmrt.so)
-IMPORT_GTEST()
 
-add_executable(testAutoPtr
-    ${SOURCES})
-target_link_libraries(testAutoPtr ccmrt.so ${GTEST_LIBS})
-add_dependencies(testAutoPtr libservicemanager)
+add_executable(testCalendar
+    ${SOURCES}
+    ${GENERATED_SOURCES})
+target_link_libraries(testCalendar ccmrt.so)
+add_dependencies(testCalendar libservicemanager)
 
-COPY(testAutoPtr ${OBJ_DIR}/testAutoPtr ${BIN_DIR})
+add_custom_command(
+    OUTPUT
+        ${GENERATED_SOURCES}
+    COMMAND
+        "${BIN_DIR}/ccdl"
+        -g
+        -u
+        -p
+        -s
+        -d ${OBJ_DIR}
+        "${BIN_DIR}/libcore.so")
+
+COPY(testCalendar ${OBJ_DIR}/testCalendar ${BIN_DIR})
 
 install(FILES
-    ${OBJ_DIR}/testAutoPtr
+    ${OBJ_DIR}/testCalendar
     DESTINATION ${BIN_DIR}
     PERMISSIONS
         OWNER_READ

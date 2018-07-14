@@ -31,6 +31,7 @@ set(SOURCES
     CalendarUtils.cpp
     Era.cpp
     Gregorian.cpp
+    ImmutableGregorianDate.cpp
     JulianCalendar.cpp
     LocalGregorianCalendar.cpp)
 

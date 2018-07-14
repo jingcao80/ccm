@@ -20,6 +20,7 @@
 #include "ccm.util.IHashtable.h"
 #include <ccmlogger.h>
 #include <time.h>
+#include <sys/time.h>
 
 using ccm::util::CProperties;
 using ccm::util::IID_IProperties;
@@ -49,10 +50,10 @@ AutoPtr<ISecurityManager> System::GetSecurityManager()
 
 Long System::GetCurrentTimeMillis()
 {
-    timespec now;
-    now.tv_sec = now.tv_nsec = 0;
-    clock_gettime(CLOCK_MONOTONIC, &now);
-    return static_cast<Long>(now.tv_sec) * 1000 + now.tv_nsec / 1000000;
+    struct timeval tv;
+    gettimeofday(&tv, (struct timezone *) NULL);
+    Long when = tv.tv_sec * 1000LL + tv.tv_usec / 1000;
+    return when;
 }
 
 Long System::GetNanoTime()

@@ -29,8 +29,7 @@ namespace ccm {
 namespace util {
 namespace regex {
 
-class CPatternFactory
-    : public _CPatternFactory
+Coclass(CPatternFactory)
     , public Object
     , public IPatternFactory
 {

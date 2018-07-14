@@ -545,6 +545,17 @@ void BaseCalendar::Date::SetCache(
     mCachedFixedDateNextJan1 = jan1 + len;
 }
 
+ECode BaseCalendar::Date::CloneImpl(
+    /* [out] */ IBaseCalendarDate* newObj)
+{
+    BaseCalendar::Date* date = (BaseCalendar::Date*)newObj;
+    CalendarDate::CloneImpl(date);
+    date->mCachedYear = mCachedYear;
+    date->mCachedFixedDateJan1 = mCachedFixedDateJan1;
+    date->mCachedFixedDateNextJan1 = mCachedFixedDateNextJan1;
+    return NOERROR;
+}
+
 }
 }
 }

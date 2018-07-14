@@ -64,6 +64,9 @@ public:
         ECode Constructor(
             /* [in] */ ITimeZone* zone);
 
+        ECode CloneImpl(
+            /* [out] */ IBaseCalendarDate* newObj);
+
     protected:
         // Cache for the fixed date of January 1 and year length of the
         // cachedYear. A simple benchmark showed 7% performance

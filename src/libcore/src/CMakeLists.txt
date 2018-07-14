@@ -44,6 +44,7 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_core_CString.cpp
     ${OBJ_DIR}/_ccm_core_CStringBuffer.cpp
     ${OBJ_DIR}/_ccm_core_CStringBuilder.cpp
+    ${OBJ_DIR}/_ccm_core_CSystem.cpp
     ${OBJ_DIR}/_ccm_core_CThread.cpp
     ${OBJ_DIR}/_ccm_core_CThreadGroup.cpp
     ${OBJ_DIR}/_ccm_io_CBufferedWriter.cpp
@@ -53,6 +54,7 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_util_CHashMap.cpp
     ${OBJ_DIR}/_ccm_util_CHashtable.cpp
     ${OBJ_DIR}/_ccm_util_CProperties.cpp
+    ${OBJ_DIR}/_ccm_util_calendar_CEra.cpp
     ${OBJ_DIR}/_ccm_util_calendar_CGregorian.cpp
     ${OBJ_DIR}/_ccm_util_calendar_CJulianCalendar.cpp
     ${OBJ_DIR}/_ccm_util_calendar_CLocalGregorianCalendar.cpp

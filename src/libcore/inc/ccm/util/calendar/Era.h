@@ -78,9 +78,10 @@ public:
 private:
     String mName;
     String mAbbr;
-    Long mSince;
+    Long mSince = 0;
     AutoPtr<ICalendarDate> mSinceDate;
-    Boolean mLocalTime;
+    Boolean mLocalTime = false;
+    Integer mHash = 0;
 };
 
 }

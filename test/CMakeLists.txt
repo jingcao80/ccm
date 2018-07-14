@@ -16,6 +16,7 @@
 
 set(TEST_DIR ${PROJECT_DIR}/test)
 
+add_subdirectory(calendar)
 add_subdirectory(autoptr)
 add_subdirectory(hashmap)
 add_subdirectory(hashtable)

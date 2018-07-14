@@ -39,6 +39,7 @@ include "ccm/core/IString.cdl"
 include "ccm/core/IStringBuffer.cdl"
 include "ccm/core/IStringBuilder.cdl"
 include "ccm/core/ISynchronize.cdl"
+include "ccm/core/ISystem.cdl"
 include "ccm/core/IThread.cdl"
 include "ccm/core/IThreadGroup.cdl"
 
@@ -56,6 +57,15 @@ coclass CArray
         [in] Long size);
 
     interface IArray;
+}
+
+[
+    uuid(6cdec0e6-ee66-4ba3-b167-e8d45e029fbd),
+    version(0.1.0)
+]
+coclass CSystem
+{
+    interface ISystem;
 }
 
 [

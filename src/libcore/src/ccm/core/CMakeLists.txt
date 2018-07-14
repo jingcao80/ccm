@@ -40,6 +40,7 @@ set(SOURCES
     CString.cpp
     CStringBuffer.cpp
     CStringBuilder.cpp
+    CSystem.cpp
     HexStringParser.cpp
     Math.cpp
     NativeFaultHandler.cpp

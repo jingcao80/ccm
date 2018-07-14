@@ -17,11 +17,14 @@
 #include "ccm/core/CStringBuffer.h"
 #include "ccm/core/System.h"
 #include "ccm/util/calendar/CalendarUtils.h"
+#include "ccm/util/calendar/CEra.h"
 #include "ccm/util/calendar/JulianCalendar.h"
+#include "ccm.core.ILong.h"
 #include "ccm.core.IStringBuffer.h"
 #include <ccmlogger.h>
 
 using ccm::core::CStringBuffer;
+using ccm::core::ILong;
 using ccm::core::IStringBuffer;
 using ccm::core::IID_IStringBuffer;
 using ccm::core::System;
@@ -237,9 +240,22 @@ ECode JulianCalendar::IsLeapYear(
     return NOERROR;
 }
 
+static const Array<IEra*> CreateEras()
+{
+    AutoPtr<IEra> bce, ce;
+    CEra::New(String("BeforeCommonEra"), String("B.C.E."), ILong::MIN_VALUE, false,
+            IID_IEra, (IInterface**)&bce);
+    CEra::New(String("CommonEra"), String("C.E."), -62135709175808ll, true,
+            IID_IEra, (IInterface**)&ce);
+    Array<IEra*> eras(2);
+    eras.Set(0, bce);
+    eras.Set(1, ce);
+    return eras;
+}
+
 const Array<IEra*>& JulianCalendar::GetEras()
 {
-    static Array<IEra*> sEras;
+    static Array<IEra*> sEras = CreateEras();
     return sEras;
 }
 

@@ -180,6 +180,21 @@ coclass CProperties
 namespace calendar {
 
 [
+    uuid(40eab8b9-84da-4399-a171-ce260a17204a),
+    version(0.1.0)
+]
+coclass CEra
+{
+    Constructor(
+        [in] String name,
+        [in] String abbr,
+        [in] Long since,
+        [in] Boolean localTime);
+
+    interface IEra;
+}
+
+[
     uuid(f726de31-d4f4-440b-b8a5-dfb25fea88d2),
     version(0.1.0)
 ]
