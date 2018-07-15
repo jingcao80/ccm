@@ -153,9 +153,6 @@ Array<T>::Array(
     if (other.mData != nullptr) {
         SharedBuffer::GetBufferFromData(other.mData)->AddRef();
     }
-    if (mData != nullptr) {
-        SharedBuffer::GetBufferFromData(mData)->Release();
-    }
     mData = other.mData;
     mSize = other.mSize;
 }

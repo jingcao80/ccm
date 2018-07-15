@@ -191,6 +191,7 @@ ECode CArrayList::SubList(
 }
 
 ECode CArrayList::ToArray(
+    /* [in] */ const InterfaceID& iid,
     /* [out, callee] */ Array<IInterface*>* objs)
 {
     return NOERROR;

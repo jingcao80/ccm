@@ -29,6 +29,7 @@ set(SOURCES
     CalendarDate.cpp
     CalendarSystem.cpp
     CalendarUtils.cpp
+    CCalendarSystemFactory.cpp
     Era.cpp
     Gregorian.cpp
     ImmutableGregorianDate.cpp

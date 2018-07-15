@@ -77,6 +77,7 @@ ECode AbstractCollection::Contains(
 }
 
 ECode AbstractCollection::ToArray(
+    /* [in] */ const InterfaceID& iid,
     /* [out, callee] */ Array<IInterface*>* objs)
 {
     VALIDATE_NOT_NULL(objs);
@@ -94,12 +95,12 @@ ECode AbstractCollection::ToArray(
         }
         AutoPtr<IInterface> e;
         it->GetNext((IInterface**)&e);
-        r.Set(i, e);
+        r.Set(i, e->Probe(iid));
     }
     Boolean hasNext;
     it->HasNext(&hasNext);
     if (hasNext) {
-        return FinishToArray(r, it, objs);
+        return FinishToArray(r, it, iid, objs);
     }
     else {
         *objs = r;
@@ -110,6 +111,7 @@ ECode AbstractCollection::ToArray(
 ECode AbstractCollection::FinishToArray(
     /* [in] */ Array<IInterface*>& r,
     /* [in] */ IIterator* it,
+    /* [in] */ const InterfaceID& iid,
     /* [out, callee] */ Array<IInterface*>* objs)
 {
     Integer i = r.GetLength();
@@ -128,7 +130,7 @@ ECode AbstractCollection::FinishToArray(
         }
         AutoPtr<IInterface> obj;
         it->GetNext((IInterface**)&obj);
-        r.Set(i++, obj);
+        r.Set(i++, obj->Probe(iid));
     }
     // trim if overallocated
     if (i == r.GetLength()) {

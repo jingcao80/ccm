@@ -147,9 +147,10 @@ ECode AbstractSet::RetainAll(
 }
 
 ECode AbstractSet::ToArray(
+    /* [in] */ const InterfaceID& iid,
     /* [out, callee] */ Array<IInterface*>* objs)
 {
-    return AbstractCollection::ToArray(objs);
+    return AbstractCollection::ToArray(iid, objs);
 }
 
 }

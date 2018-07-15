@@ -80,12 +80,13 @@ ECode Collections::SynchronizedCollection::Contains(
 }
 
 ECode Collections::SynchronizedCollection::ToArray(
+    /* [in] */ const InterfaceID& iid,
     /* [out, callee] */ Array<IInterface*>* objs)
 {
     VALIDATE_NOT_NULL(objs);
 
     AutoLock lock(mMutex);
-    return mC->ToArray(objs);
+    return mC->ToArray(iid, objs);
 }
 
 ECode Collections::SynchronizedCollection::GetIterator(
@@ -285,9 +286,10 @@ ECode Collections::SynchronizedSet::RetainAll(
 }
 
 ECode Collections::SynchronizedSet::ToArray(
+    /* [in] */ const InterfaceID& iid,
     /* [out, callee] */ Array<IInterface*>* objs)
 {
-    return SynchronizedCollection::ToArray(objs);
+    return SynchronizedCollection::ToArray(iid, objs);
 }
 
 //----------------------------------------------------------------

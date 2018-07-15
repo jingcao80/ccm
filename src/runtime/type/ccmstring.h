@@ -184,6 +184,12 @@ public:
     inline Boolean StartsWith(
         /* [in] */ const char* prefix) const;
 
+    Boolean EndsWith(
+        /* [in] */ const String& prefix) const;
+
+    inline Boolean EndsWith(
+        /* [in] */ const char* prefix) const;
+
     String& operator=(
         /* [in] */ const String& other);
 
@@ -414,6 +420,12 @@ Boolean String::StartsWith(
     /* [in] */ const char* prefix) const
 {
     return IndexOf(prefix) == 0;
+}
+
+Boolean String::EndsWith(
+    /* [in] */ const char* prefix) const
+{
+    return EndsWith(String(prefix));
 }
 
 String String::Replace(

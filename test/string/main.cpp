@@ -105,6 +105,11 @@ TEST(StringTest, DoubleToStringTest)
     EXPECT_STREQ("5.6789E-25", DoubleToString(0.056789e-23));
 }
 
+TEST(StringTest, StringEndsWithTest)
+{
+    EXPECT_TRUE(String("HelloWorld").EndsWith("World"));
+}
+
 int main(int argc, char **argv)
 {
     testing::InitGoogleTest(&argc, argv);

@@ -69,6 +69,7 @@ private:
             /* [out] */ Boolean* result) override;
 
         ECode ToArray(
+            /* [in] */ const InterfaceID& iid,
             /* [out, callee] */ Array<IInterface*>* objs) override;
 
         ECode GetIterator(
@@ -181,6 +182,7 @@ private:
             /* [out] */ Boolean* changed = nullptr) override;
 
         ECode ToArray(
+            /* [in] */ const InterfaceID& iid,
             /* [out, callee] */ Array<IInterface*>* objs) override;
     };
 

@@ -15,14 +15,19 @@
 //=========================================================================
 
 #include "ccm/core/CStringBuffer.h"
+#include "ccm/core/StringUtils.h"
 #include "ccm/core/System.h"
+#include "ccm/util/CArrayList.h"
+#include "ccm/util/CStringTokenizer.h"
 #include "ccm/util/calendar/CalendarUtils.h"
+#include "ccm/util/calendar/CEra.h"
 #include "ccm/util/calendar/LocalGregorianCalendar.h"
-#include "ccm.core.IStringBuffer.h"
+#include <ccmlogger.h>
 
 using ccm::core::CStringBuffer;
 using ccm::core::IStringBuffer;
 using ccm::core::IID_IStringBuffer;
+using ccm::core::StringUtils;
 using ccm::core::System;
 
 namespace ccm {
@@ -37,6 +42,83 @@ ECode LocalGregorianCalendar::GetLocalGregorianCalendar(
 {
     VALIDATE_NOT_NULL(calendar);
 
+    AutoPtr<IProperties> calendarProps;
+    ECode ec = GetCalendarProperties((IProperties**)&calendarProps);
+    if (FAILED(ec)) {
+        return E_RUNTIME_EXCEPTION;
+    }
+
+    // Parse calendar.*.eras
+    String props;
+    calendarProps->GetProperty(String("calendar.") + name + ".eras", &props);
+    if (props.IsNull()) {
+        *calendar = nullptr;
+        return NOERROR;
+    }
+    AutoPtr<IList> eras;
+    CArrayList::New(IID_IList, (IInterface**)&eras);
+    AutoPtr<IStringTokenizer> eraTokens;
+    CStringTokenizer::New(props, String(";"), IID_IStringTokenizer, (IInterface**)&eraTokens);
+    Boolean hasMore;
+    while (eraTokens->HasMoreTokens(&hasMore), hasMore) {
+        String items;
+        eraTokens->GetNextToken(&items);
+        items.Trim();
+        AutoPtr<IStringTokenizer> itemTokens;
+        CStringTokenizer::New(items, String(","), IID_IStringTokenizer, (IInterface**)&itemTokens);
+        String eraName;
+        Boolean localTime = true;
+        Long since = 0;
+        String abbr;
+
+        Boolean itemHasMore;
+        while (itemTokens->HasMoreTokens(&itemHasMore), itemHasMore) {
+            String item;
+            itemTokens->GetNextToken(&item);
+            Integer index = item.IndexOf('=');
+            // it must be in the key=value form.
+            if (index == -1) {
+                *calendar = nullptr;
+                return NOERROR;
+            }
+            String key = item.Substring(0, index);
+            String value = item.Substring(index + 1);
+            if (String("name").Equals(key)) {
+                eraName = value;
+            }
+            else if (String("since").Equals(key)) {
+                if (value.EndsWith("u")) {
+                    localTime = false;
+                    StringUtils::ParseLong(value.Substring(0, value.GetLength() - 1), &since);
+                }
+                else {
+                    StringUtils::ParseLong(value, &since);
+                }
+            }
+            else if (String("abbr").Equals(key)) {
+                abbr = value;
+            }
+            else {
+                Logger::E("LocalGregorianCalendar", "Unknown key word: %s", key.string());
+                return E_RUNTIME_EXCEPTION;
+            }
+        }
+        AutoPtr<IEra> era;
+        CEra::New(eraName, abbr, since, localTime, IID_IEra, (IInterface**)&era);
+        eras->Add(era);
+    }
+    Boolean empty;
+    if (eras->IsEmpty(&empty), empty) {
+        Logger::E("LocalGregorianCalendar", "No eras for %s", name.string());
+        return E_RUNTIME_EXCEPTION;
+    }
+    Array<IEra*> eraArray;
+    eras->ToArray(IID_IEra, (Array<IInterface*>*)&eraArray);
+
+    AutoPtr<LocalGregorianCalendar> lgcal = new LocalGregorianCalendar();
+    FAIL_RETURN(lgcal->Constructor(name, eraArray));
+    *calendar = lgcal.Get();
+    REFCOUNT_ADD(*calendar);
     return NOERROR;
 }
 

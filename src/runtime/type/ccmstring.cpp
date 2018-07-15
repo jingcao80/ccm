@@ -523,6 +523,13 @@ Integer String::LastIndexOf(
     return ToCharIndex(byteIndex);
 }
 
+Boolean String::EndsWith(
+    /* [in] */ const String& prefix) const
+{
+    Integer fromCharIndex = GetLength() - prefix.GetLength();
+    return IndexOf(prefix, fromCharIndex) == fromCharIndex;
+}
+
 String& String::operator=(
     /* [in] */ const String& other)
 {

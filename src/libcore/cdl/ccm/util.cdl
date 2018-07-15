@@ -30,6 +30,7 @@ include "ccm/util/IMap.cdl"
 include "ccm/util/IProperties.cdl"
 include "ccm/util/IRandomAccess.cdl"
 include "ccm/util/ISet.cdl"
+include "ccm/util/IStringTokenizer.cdl"
 include "ccm/util/ITimeZone.cdl"
 include "ccm/util/calendar/IBaseCalendar.cdl"
 include "ccm/util/calendar/ICalendarDate.cdl"
@@ -177,7 +178,38 @@ coclass CProperties
     interface ISerializable;
 }
 
+[
+    uuid(6858c0ba-e3a0-48fd-8f22-bbdc4503d83d),
+    version(0.1.0)
+]
+coclass CStringTokenizer
+{
+    Constructor(
+        [in] String str,
+        [in] String delim,
+        [in] Boolean returnDelims);
+
+    Constructor(
+        [in] String str,
+        [in] String delim);
+
+    Constructor(
+        [in] String str);
+
+    interface IStringTokenizer;
+    interface IEnumeration;
+}
+
 namespace calendar {
+
+[
+    uuid(d8b9fb39-2e68-4209-8cd3-9a2f0235f9e2),
+    version(0.1.0)
+]
+coclass CCalendarSystemFactory
+{
+    interface ICalendarSystemFactory;
+}
 
 [
     uuid(40eab8b9-84da-4399-a171-ce260a17204a),
@@ -200,6 +232,7 @@ coclass CEra
 ]
 coclass CGregorian
 {
+    // @hide
     Constructor();
 
     interface IGregorian;
@@ -213,6 +246,7 @@ coclass CGregorian
 ]
 coclass CJulianCalendar
 {
+    // @hide
     Constructor();
 
     interface IJulianCalendar;

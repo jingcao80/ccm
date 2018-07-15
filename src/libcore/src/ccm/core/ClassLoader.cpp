@@ -166,6 +166,12 @@ ECode ClassLoader::UnloadComponent(
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
+AutoPtr<IInputStream> ClassLoader::GetSystemResourceAsStream(
+    /* [in] */ const String& name)
+{
+    return nullptr;
+}
+
 //-------------------------------------------------------------------------
 
 AutoPtr<IClassLoader> ClassLoader::SystemClassLoader::GetInstance()

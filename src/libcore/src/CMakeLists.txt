@@ -54,6 +54,8 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_util_CHashMap.cpp
     ${OBJ_DIR}/_ccm_util_CHashtable.cpp
     ${OBJ_DIR}/_ccm_util_CProperties.cpp
+    ${OBJ_DIR}/_ccm_util_CStringTokenizer.cpp
+    ${OBJ_DIR}/_ccm_util_calendar_CCalendarSystemFactory.cpp
     ${OBJ_DIR}/_ccm_util_calendar_CEra.cpp
     ${OBJ_DIR}/_ccm_util_calendar_CGregorian.cpp
     ${OBJ_DIR}/_ccm_util_calendar_CJulianCalendar.cpp

@@ -14,44 +14,23 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/core/CoreUtils.h"
-#include "ccm/core/CString.h"
+#ifndef __CCM_UTIL_CSTRINGTOKENIZER_H__
+#define __CCM_UTIL_CSTRINGTOKENIZER_H__
+
+#include "ccm/util/StringTokenizer.h"
+#include "_ccm_util_CStringTokenizer.h"
 
 namespace ccm {
-namespace core {
+namespace util {
 
-AutoPtr<ICharSequence> CoreUtils::Box(
-    /* [in] */ const String& str)
+Coclass(CStringTokenizer)
+    , public StringTokenizer
 {
-    AutoPtr<ICharSequence> seq;
-    CString::New(str, IID_ICharSequence, (IInterface**)&seq);
-    return seq;
-}
-
-String CoreUtils::Unbox(
-    /* [in] */ ICharSequence* seq)
-{
-    String str;
-    if (seq != nullptr) {
-        seq->ToString(&str);
-    }
-    return str;
-}
-
-Array<String> CoreUtils::Unbox(
-    /* [in] */ const Array<ICharSequence*>& seqArray)
-{
-    if (seqArray.IsEmpty()) {
-        return Array<String>::Null();
-    }
-
-    Long size = seqArray.GetLength();
-    Array<String> strArray(size);
-    for (Long i = 0; i < size; i++) {
-        strArray[i] = Unbox(seqArray[i]);
-    }
-    return strArray;
-}
+public:
+    CCM_OBJECT_DECL();
+};
 
 }
 }
+
+#endif // __CCM_UTIL_CSTRINGTOKENIZER_H__

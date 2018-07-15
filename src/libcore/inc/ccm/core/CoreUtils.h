@@ -33,7 +33,7 @@ public:
         /* [in] */ ICharSequence* seq);
 
     COM_PUBLIC static Array<String> Unbox(
-        /* [in] */ const Array<IInterface*>& seqArray);
+        /* [in] */ const Array<ICharSequence*>& seqArray);
 };
 
 }

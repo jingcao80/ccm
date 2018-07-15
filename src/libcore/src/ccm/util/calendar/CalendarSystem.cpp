@@ -20,6 +20,7 @@
 #include "ccm/util/CHashMap.h"
 #include "ccm/util/CProperties.h"
 #include "ccm/util/calendar/CalendarSystem.h"
+#include "ccm/util/calendar/CGregorian.h"
 #include "ccm/util/calendar/LocalGregorianCalendar.h"
 #include "ccm.util.IMap.h"
 #include "ccm.util.calendar.ILocalGregorianCalendar.h"
@@ -59,6 +60,8 @@ ECode CalendarSystem::StaticInitialize()
             sNames->Put(CoreUtils::Box(String("japanese")), japaneseClass);
             sNames->Put(CoreUtils::Box(String("julian")), julianClass);
 
+            CGregorian::New(IID_IGregorian, (IInterface**)&GREGORIAN_INSTANCE);
+
             sInitialized = true;
         }
     }
@@ -81,7 +84,7 @@ ECode CalendarSystem::ForName(
     StaticInitialize();
 
     if (String("gregorian").Equals(calendarName)) {
-        *system = ICalendarSystem::Probe(GREGORIAN_INSTANCE);
+        *system = ICalendarSystem::Probe(GetGregorianCalendar());
         REFCOUNT_ADD(*system);
         return NOERROR;
     }

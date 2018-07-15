@@ -16,10 +16,10 @@
 
 #include "ccm.core.CSystem.h"
 #include "ccm.core.ISystem.h"
-#include "ccm.util.calendar.CGregorian.h"
+#include "ccm.util.calendar.CCalendarSystemFactory.h"
 #include "ccm.util.calendar.ICalendarDate.h"
 #include "ccm.util.calendar.ICalendarSystem.h"
-#include "ccm.util.calendar.IGregorian.h"
+#include "ccm.util.calendar.ICalendarSystemFactory.h"
 #include <ccmautoptr.h>
 #include <ccmobject.h>
 
@@ -29,20 +29,24 @@ using namespace ccm;
 using ccm::core::CSystem;
 using ccm::core::ISystem;
 using ccm::core::IID_ISystem;
-using ccm::util::calendar::CGregorian;
+using ccm::util::calendar::CCalendarSystemFactory;
 using ccm::util::calendar::ICalendarDate;
 using ccm::util::calendar::ICalendarSystem;
-using ccm::util::calendar::IGregorian;
+using ccm::util::calendar::ICalendarSystemFactory;
 using ccm::util::calendar::IID_ICalendarSystem;
+using ccm::util::calendar::IID_ICalendarSystemFactory;
 
 void TestCGregorian()
 {
+    AutoPtr<ICalendarSystemFactory> factory;
+    CCalendarSystemFactory::New(IID_ICalendarSystemFactory, (IInterface**)&factory);
+    AutoPtr<ICalendarSystem> gcal;
+    factory->ForName(String("gregorian"), (ICalendarSystem**)&gcal);
+
     AutoPtr<ISystem> sys;
     CSystem::New(IID_ISystem, (IInterface**)&sys);
     Long millis;
     sys->GetCurrentTimeMillis(&millis);
-    AutoPtr<ICalendarSystem> gcal;
-    CGregorian::New(IID_ICalendarSystem, (IInterface**)&gcal);
     AutoPtr<ICalendarDate> date;
     gcal->GetCalendarDate(millis, (ICalendarDate**)&date);
     printf("==== date: %s ====\n", Object::ToString(date).string());

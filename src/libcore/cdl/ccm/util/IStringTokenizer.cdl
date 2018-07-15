@@ -14,43 +14,36 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/core/CoreUtils.h"
-#include "ccm/core/CString.h"
-
 namespace ccm {
-namespace core {
+namespace util {
 
-AutoPtr<ICharSequence> CoreUtils::Box(
-    /* [in] */ const String& str)
+/*
+ * @Involve interface ccm::util::IEnumeration
+ */
+[
+    uuid(8283c934-d3ce-4a7b-ad50-a97f757ce121),
+    version(0.1.0)
+]
+interface IStringTokenizer
 {
-    AutoPtr<ICharSequence> seq;
-    CString::New(str, IID_ICharSequence, (IInterface**)&seq);
-    return seq;
-}
+    CountTokens(
+        [out] Integer* number);
 
-String CoreUtils::Unbox(
-    /* [in] */ ICharSequence* seq)
-{
-    String str;
-    if (seq != nullptr) {
-        seq->ToString(&str);
-    }
-    return str;
-}
+    HasMoreElements(
+        [out] Boolean* hasMore);
 
-Array<String> CoreUtils::Unbox(
-    /* [in] */ const Array<ICharSequence*>& seqArray)
-{
-    if (seqArray.IsEmpty()) {
-        return Array<String>::Null();
-    }
+    HasMoreTokens(
+        [out] Boolean* hasMore);
 
-    Long size = seqArray.GetLength();
-    Array<String> strArray(size);
-    for (Long i = 0; i < size; i++) {
-        strArray[i] = Unbox(seqArray[i]);
-    }
-    return strArray;
+    GetNextElement(
+        [out] IInterface** element);
+
+    GetNextToken(
+        [out] String* token);
+
+    GetNextToken(
+        [in] String delim,
+        [out] String* token);
 }
 
 }

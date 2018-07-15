@@ -141,6 +141,7 @@ public:
         /* [out] */ IList** subList) override;
 
     ECode ToArray(
+        /* [in] */ const InterfaceID& iid,
         /* [out, callee] */ Array<IInterface*>* objs) override;
 
     ECode Clone(

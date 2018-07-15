@@ -117,6 +117,7 @@ interface IArrayList
         [out] IList** subList);
 
     ToArray(
+        [in] InterfaceID iid,
         [out, callee] Array<IInterface*>* objs);
 }
 

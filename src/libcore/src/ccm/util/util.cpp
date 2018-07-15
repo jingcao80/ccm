@@ -18,6 +18,7 @@
 #include "ccm/util/CHashMap.h"
 #include "ccm/util/CHashtable.h"
 #include "ccm/util/CProperties.h"
+#include "ccm/util/CStringTokenizer.h"
 #include "ccm/util/calendar/CEra.h"
 #include "ccm/util/calendar/CGregorian.h"
 #include "ccm/util/calendar/CJulianCalendar.h"
@@ -74,6 +75,8 @@ ECode CProperties::Clone(
     REFCOUNT_ADD(*obj);
     return NOERROR;
 }
+
+CCM_OBJECT_IMPL(CStringTokenizer);
 
 namespace calendar {
 

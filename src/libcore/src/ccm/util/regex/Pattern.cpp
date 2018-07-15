@@ -30,6 +30,7 @@ using ccm::core::CoreUtils;
 using ccm::core::CStringBuilder;
 using ccm::core::ICharSequence;
 using ccm::core::IStringBuilder;
+using ccm::core::IID_ICharSequence;
 using ccm::core::IID_IStringBuilder;
 using ccm::io::IID_ISerializable;
 
@@ -225,8 +226,8 @@ ECode Pattern::Split(
     }
     AutoPtr<IList> subList;
     matchList->SubList(0, size, (IList**)&subList);
-    Array<IInterface*> seqArray;
-    subList->ToArray(&seqArray);
+    Array<ICharSequence*> seqArray;
+    subList->ToArray(IID_ICharSequence, (Array<IInterface*>*)&seqArray);
     *strArray = CoreUtils::Unbox(seqArray);
     return NOERROR;
 }

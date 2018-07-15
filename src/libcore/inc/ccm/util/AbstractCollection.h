@@ -42,6 +42,7 @@ public:
         /* [out] */ Boolean* result) override;
 
     ECode ToArray(
+        /* [in] */ const InterfaceID& iid,
         /* [out, callee] */ Array<IInterface*>* objs) override;
 
     ECode Add(
@@ -84,6 +85,7 @@ private:
     static ECode FinishToArray(
         /* [in] */ Array<IInterface*>& r,
         /* [in] */ IIterator* it,
+        /* [in] */ const InterfaceID& iid,
         /* [out, callee] */ Array<IInterface*>* objs);
 
     static ECode HugeCapacity(

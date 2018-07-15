@@ -28,6 +28,7 @@ add_subdirectory(regex)
 
 set(SOURCES
     AbstractCollection.cpp
+    AbstractList.cpp
     AbstractMap.cpp
     AbstractSet.cpp
     Arrays.cpp
@@ -39,6 +40,7 @@ set(SOURCES
     HashMap.cpp
     LinkedHashMap.cpp
     Properties.cpp
+    StringTokenizer.cpp
     TimeZone.cpp
     TreeNode.cpp
     XMLUtils.cpp

@@ -14,44 +14,39 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/core/CoreUtils.h"
-#include "ccm/core/CString.h"
+#ifndef __CCM_UTIL_CALENDAR_CCALENDARSYSTEMFACTORY_H__
+#define __CCM_UTIL_CALENDAR_CCALENDARSYSTEMFACTORY_H__
+
+#include "ccm.util.calendar.ICalendarSystemFactory.h"
+#include "_ccm_util_calendar_CCalendarSystemFactory.h"
+#include <ccmobject.h>
 
 namespace ccm {
-namespace core {
+namespace util {
+namespace calendar {
 
-AutoPtr<ICharSequence> CoreUtils::Box(
-    /* [in] */ const String& str)
+Coclass(CCalendarSystemFactory)
+    , public Object
+    , public ICalendarSystemFactory
 {
-    AutoPtr<ICharSequence> seq;
-    CString::New(str, IID_ICharSequence, (IInterface**)&seq);
-    return seq;
-}
+public:
+    CCM_INTERFACE_DECL();
 
-String CoreUtils::Unbox(
-    /* [in] */ ICharSequence* seq)
-{
-    String str;
-    if (seq != nullptr) {
-        seq->ToString(&str);
-    }
-    return str;
-}
+    CCM_OBJECT_DECL();
 
-Array<String> CoreUtils::Unbox(
-    /* [in] */ const Array<ICharSequence*>& seqArray)
-{
-    if (seqArray.IsEmpty()) {
-        return Array<String>::Null();
-    }
+    ECode ForName(
+        /* [in] */ const String& calendarName,
+        /* [out] */ ICalendarSystem** system) override;
 
-    Long size = seqArray.GetLength();
-    Array<String> strArray(size);
-    for (Long i = 0; i < size; i++) {
-        strArray[i] = Unbox(seqArray[i]);
-    }
-    return strArray;
-}
+    ECode GetCalendarProperties(
+        /* [out] */ IProperties** prop) override;
+
+    ECode GetGregorianCalendar(
+        /* [out] */ IGregorian** gcal) override;
+};
 
 }
 }
+}
+
+#endif // __CCM_UTIL_CALENDAR_CCALENDARSYSTEMFACTORY_H__
