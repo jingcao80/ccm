@@ -31,6 +31,7 @@ set(SOURCES
     AbstractList.cpp
     AbstractMap.cpp
     AbstractSet.cpp
+    ArrayList.cpp
     Arrays.cpp
     CArrayList.cpp
     Collections.cpp

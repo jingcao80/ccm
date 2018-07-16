@@ -326,7 +326,7 @@ ECode Hashtable::PutAll(
     Boolean hasNext;
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> obj;
-        it->GetNext((IInterface**)&obj);
+        it->Next((IInterface**)&obj);
         AutoPtr<IInterface> key, value;
         IMapEntry::Probe(obj)->GetKey((IInterface**)&key);
         IMapEntry::Probe(obj)->GetValue((IInterface**)&value);
@@ -382,7 +382,7 @@ ECode Hashtable::ToString(
     sb->AppendChar('{');
     for (Integer i = 0; ; i++) {
         AutoPtr<IInterface> e;
-        it->GetNext((IInterface**)&e);
+        it->Next((IInterface**)&e);
         AutoPtr<IInterface> key, value;
         IMapEntry::Probe(e)->GetKey((IInterface**)&key);
         IMapEntry::Probe(e)->GetValue((IInterface**)&value);
@@ -469,7 +469,7 @@ ECode Hashtable::Equals(
     Boolean hasNext;
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> o;
-        it->GetNext((IInterface**)&o);
+        it->Next((IInterface**)&o);
         IMapEntry* e = IMapEntry::Probe(o);
         AutoPtr<IInterface> key, value;
         e->GetKey((IInterface**)&key);
@@ -827,11 +827,9 @@ ECode Hashtable::Enumerator::HasMoreElements(
     return NOERROR;
 }
 
-ECode Hashtable::Enumerator::GetNextElement(
+ECode Hashtable::Enumerator::NextElement(
     /* [out] */ IInterface** object)
 {
-    VALIDATE_NOT_NULL(object);
-
     AutoPtr<HashtableEntry> et = mEntry;
     Integer i = mIndex;
     while (et == nullptr && i > 0) {
@@ -842,9 +840,11 @@ ECode Hashtable::Enumerator::GetNextElement(
     if (et != nullptr) {
         HashtableEntry* e = mLastReturned = mEntry;
         mEntry = e->mNext;
-        *object = mType == KEYS ? e->mKey : (
-                mType == VALUES ? e->mValue : e);
-        REFCOUNT_ADD(*object);
+        if (object != nullptr) {
+            *object = mType == KEYS ? e->mKey : (
+                    mType == VALUES ? e->mValue : e);
+            REFCOUNT_ADD(*object);
+        }
         return NOERROR;
     }
     return E_NO_SUCH_ELEMENT_EXCEPTION;
@@ -856,15 +856,13 @@ ECode Hashtable::Enumerator::HasNext(
     return HasMoreElements(result);
 }
 
-ECode Hashtable::Enumerator::GetNext(
+ECode Hashtable::Enumerator::Next(
     /* [out] */ IInterface** object)
 {
-    VALIDATE_NOT_NULL(object);
-
     if (mOwner->mModCount != mExpectedModCount) {
         return E_CONCURRENT_MODIFICATION_EXCEPTION;
     }
-    return GetNextElement(object);
+    return NextElement(object);
 }
 
 ECode Hashtable::Enumerator::Remove()

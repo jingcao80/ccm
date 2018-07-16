@@ -18,6 +18,10 @@
 #define __CCM_UTIL_ABSTRACTLIST_H__
 
 #include "ccm/util/AbstractCollection.h"
+#include "ccm.util.IIterator.h"
+#include "ccm.util.IList.h"
+#include "ccm.util.IListIterator.h"
+#include <ccmrefbase.h>
 
 namespace ccm {
 namespace util {
@@ -26,7 +30,99 @@ class AbstractList
     : public AbstractCollection
     , public IList
 {
+private:
+    class Itr
+        : public LightRefBase
+        , public IIterator
+    {
+    public:
+        Itr(
+            /* [in] */ AbstractList* owner)
+            : mOwner(owner)
+            , mExpectedModCount(mOwner->mModCount)
+        {}
+
+        CCM_INTERFACE_DECL();
+
+        ECode HasNext(
+            /* [out] */ Boolean* result) override;
+
+        ECode Next(
+            /* [out] */ IInterface** object = nullptr) override;
+
+        ECode Remove() override;
+
+    protected:
+        ECode CheckForComodification();
+
+    protected:
+        AbstractList* mOwner;
+
+        /**
+         * Index of element to be returned by subsequent call to next.
+         */
+        Integer mCursor = 0;
+
+        /**
+         * Index of element returned by most recent call to next or
+         * previous.  Reset to -1 if this element is deleted by a call
+         * to remove.
+         */
+        Integer mLastRet = -1;
+
+        /**
+         * The modCount value that the iterator believes that the backing
+         * List should have.  If this expectation is violated, the iterator
+         * has detected concurrent modification.
+         */
+        Integer mExpectedModCount;
+    };
+
+    class ListItr
+        : public Itr
+        , public IListIterator
+    {
+    public:
+        ListItr(
+            /* [in] */ AbstractList* owner,
+            /* [in] */ Integer index)
+            : Itr(owner)
+        {
+            mCursor = index;
+        }
+
+        CCM_INTERFACE_DECL();
+
+        ECode HasPrevious(
+            /* [out] */ Boolean* result) override;
+
+        ECode Previous(
+            /* [out] */ IInterface** object = nullptr) override;
+
+        ECode GetNextIndex(
+            /* [out] */ Integer* index) override;
+
+        ECode GetPreviousIndex(
+            /* [out] */ Integer* index) override;
+
+        ECode Set(
+            /* [in] */ IInterface* object) override;
+
+        ECode Add(
+            /* [in] */ IInterface* object) override;
+
+        ECode HasNext(
+            /* [out] */ Boolean* result) override;
+
+        ECode Next(
+            /* [out] */ IInterface** object = nullptr) override;
+
+        ECode Remove() override;
+    };
+
 public:
+    CCM_INTERFACE_DECL();
+
     ECode Add(
         /* [in] */ IInterface* obj,
         /* [out] */ Boolean* result = nullptr) override;
@@ -69,9 +165,68 @@ public:
         /* [in] */ Integer index,
         /* [out] */ IListIterator** it) override;
 
+    ECode SubList(
+        /* [in] */ Integer fromIndex,
+        /* [in] */ Integer toIndex,
+        /* [out] */ IList** subList) override;
+
+    ECode Equals(
+        /* [in] */ IInterface* obj,
+        /* [out] */ Boolean* result) override;
+
+    ECode GetHashCode(
+        /* [out] */ Integer* hash) override;
+
+    ECode Contains(
+        /* [in] */ IInterface* obj,
+        /* [out] */ Boolean* result) override;
+
+    ECode ContainsAll(
+        /* [in] */ ICollection* c,
+        /* [out] */ Boolean* result) override;
+
+    ECode IsEmpty(
+        /* [out] */ Boolean* empty) override;
+
+    ECode Remove(
+        /* [in] */ IInterface* obj,
+        /* [out] */ Boolean* changed = nullptr) override;
+
+    ECode RemoveAll(
+        /* [in] */ ICollection* c,
+        /* [out] */ Boolean* changed = nullptr) override;
+
+    ECode RetainAll(
+        /* [in] */ ICollection* c,
+        /* [out] */ Boolean* changed = nullptr) override;
+
+    ECode ToArray(
+        /* [out, callee] */ Array<IInterface*>* objs) override;
+
+    ECode ToArray(
+        /* [in] */ const InterfaceID& iid,
+        /* [out, callee] */ Array<IInterface*>* objs) override;
+
+    using IList::GetSize;
+
 protected:
     ECode Constructor();
 
+    virtual ECode RemoveRange(
+        /* [in] */ Integer fromIndex,
+        /* [in] */ Integer toIndex);
+
+private:
+    ECode RangeCheckForAdd(
+        /* [in] */ Integer index);
+
+    String OutOfBoundsMsg(
+        /* [in] */ Integer index);
+
+protected:
+    Integer mModCount = 0;
+
+    friend class Sublist;
 };
 
 }

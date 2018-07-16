@@ -23,8 +23,8 @@ namespace util {
 ]
 interface IIterator
 {
-    GetNext(
-        [out] IInterface** object);
+    Next(
+        [out] IInterface** object = nullptr);
 
     HasNext(
         [out] Boolean* result);

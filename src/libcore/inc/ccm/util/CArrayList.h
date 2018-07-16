@@ -79,6 +79,9 @@ public:
         /* [in] */ ICollection* c,
         /* [out] */ Boolean* result) override;
 
+    ECode EnsureCapacity(
+        /* [in] */ Integer minCapacity) override;
+
     ECode Equals(
         /* [in] */ IInterface* obj,
         /* [out] */ Boolean* result) override;
@@ -133,7 +136,7 @@ public:
     ECode Set(
         /* [in] */ Integer index,
         /* [in] */ IInterface* obj,
-        /* [out] */ IInterface** prevObj) override;
+        /* [out] */ IInterface** prevObj = nullptr) override;
 
     ECode SubList(
         /* [in] */ Integer fromIndex,
@@ -141,8 +144,13 @@ public:
         /* [out] */ IList** subList) override;
 
     ECode ToArray(
+        /* [out, callee] */ Array<IInterface*>* objs) override;
+
+    ECode ToArray(
         /* [in] */ const InterfaceID& iid,
         /* [out, callee] */ Array<IInterface*>* objs) override;
+
+    ECode TrimToSize() override;
 
     ECode Clone(
         /* [out] */ IInterface** obj) override;

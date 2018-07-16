@@ -80,6 +80,15 @@ ECode Collections::SynchronizedCollection::Contains(
 }
 
 ECode Collections::SynchronizedCollection::ToArray(
+    /* [out, callee] */ Array<IInterface*>* objs)
+{
+    VALIDATE_NOT_NULL(objs);
+
+    AutoLock lock(mMutex);
+    return mC->ToArray(objs);
+}
+
+ECode Collections::SynchronizedCollection::ToArray(
     /* [in] */ const InterfaceID& iid,
     /* [out, callee] */ Array<IInterface*>* objs)
 {
@@ -286,6 +295,12 @@ ECode Collections::SynchronizedSet::RetainAll(
 }
 
 ECode Collections::SynchronizedSet::ToArray(
+    /* [out, callee] */ Array<IInterface*>* objs)
+{
+    return SynchronizedCollection::ToArray(objs);
+}
+
+ECode Collections::SynchronizedSet::ToArray(
     /* [in] */ const InterfaceID& iid,
     /* [out, callee] */ Array<IInterface*>* objs)
 {
@@ -305,7 +320,7 @@ ECode Collections::EmptyIterator::HasNext(
     return NOERROR;
 }
 
-ECode Collections::EmptyIterator::GetNext(
+ECode Collections::EmptyIterator::Next(
     /* [out] */ IInterface** object)
 {
     return E_NO_SUCH_ELEMENT_EXCEPTION;
@@ -335,7 +350,7 @@ ECode Collections::EmptyEnumeration::HasMoreElements(
     return NOERROR;
 }
 
-ECode Collections::EmptyEnumeration::GetNextElement(
+ECode Collections::EmptyEnumeration::NextElement(
     /* [out] */ IInterface** object)
 {
     return E_NO_SUCH_ELEMENT_EXCEPTION;

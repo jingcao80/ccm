@@ -207,14 +207,14 @@ private:
         ECode HasMoreElements(
             /* [out] */ Boolean* result) override;
 
-        ECode GetNextElement(
-            /* [out] */ IInterface** object) override;
+        ECode NextElement(
+            /* [out] */ IInterface** object = nullptr) override;
 
         ECode HasNext(
             /* [out] */ Boolean* result) override;
 
-        ECode GetNext(
-            /* [out] */ IInterface** object) override;
+        ECode Next(
+            /* [out] */ IInterface** object = nullptr) override;
 
         ECode Remove() override;
 

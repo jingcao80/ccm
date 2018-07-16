@@ -391,7 +391,7 @@ ECode Properties::Store0(
         Boolean hasMore;
         while (e->HasMoreElements(&hasMore), hasMore) {
             AutoPtr<IInterface> ko, vo;
-            e->GetNextElement((IInterface**)&ko);
+            e->NextElement((IInterface**)&ko);
             String key = CoreUtils::Unbox(ICharSequence::Probe(ko));
             Get(ko, (IInterface**)&vo);
             String val = CoreUtils::Unbox(ICharSequence::Probe(vo));
@@ -493,7 +493,7 @@ ECode Properties::List(
     Boolean hasMore;
     while (e->HasMoreElements(&hasMore), hasMore) {
         AutoPtr<IInterface> okey;
-        e->GetNextElement((IInterface**)&okey);
+        e->NextElement((IInterface**)&okey);
         String key = CoreUtils::Unbox(ICharSequence::Probe(okey));
         AutoPtr<IInterface> oval;
         h->Get(okey, (IInterface**)&oval);
@@ -518,7 +518,7 @@ ECode Properties::List(
     Boolean hasMore;
     while (e->HasMoreElements(&hasMore), hasMore) {
         AutoPtr<IInterface> okey;
-        e->GetNextElement((IInterface**)&okey);
+        e->NextElement((IInterface**)&okey);
         String key = CoreUtils::Unbox(ICharSequence::Probe(okey));
         AutoPtr<IInterface> oval;
         h->Get(okey, (IInterface**)&oval);
@@ -542,7 +542,7 @@ void Properties::Enumerate(
     Boolean hasMore;
     while (e->HasMoreElements(&hasMore), hasMore) {
         AutoPtr<IInterface> okey;
-        e->GetNextElement((IInterface**)&okey);
+        e->NextElement((IInterface**)&okey);
         AutoPtr<IInterface> oval;
         Get(okey, (IInterface**)&oval);
         h->Put(okey, oval);
@@ -560,7 +560,7 @@ void Properties::EnumerateStringProperties(
     Boolean hasMore;
     while (e->HasMoreElements(&hasMore), hasMore) {
         AutoPtr<IInterface> okey;
-        e->GetNextElement((IInterface**)&okey);
+        e->NextElement((IInterface**)&okey);
         AutoPtr<IInterface> oval;
         Get(okey, (IInterface**)&oval);
         if (IString::Probe(okey) != nullptr && IString::Probe(oval) != nullptr) {

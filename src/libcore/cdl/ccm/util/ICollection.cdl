@@ -19,6 +19,9 @@ namespace util {
 
 interface IIterator;
 
+/*
+ * @Involve interface ccm::core::IIterable;
+ */
 [
     uuid(2618a380-071b-440b-84b7-d3ac4a3de3ad),
     version(0.1.0)
@@ -70,6 +73,9 @@ interface ICollection
     RetainAll(
         [in] ICollection* c,
         [out] Boolean* changed = nullptr);
+
+    ToArray(
+        [out, callee] Array<IInterface*>* objs);
 
     ToArray(
         [in] InterfaceID iid,

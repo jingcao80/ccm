@@ -19,9 +19,11 @@
 
 #include "ccm/core/SyncObject.h"
 #include "ccm.core.IInteger.h"
+#include "ccm.core.IIterable.h"
 #include "ccm.util.ICollection.h"
 
 using ccm::core::IInteger;
+using ccm::core::IIterable;
 using ccm::core::SyncObject;
 
 namespace ccm {
@@ -30,9 +32,13 @@ namespace util {
 class AbstractCollection
     : public SyncObject
     , public ICollection
+    , public IIterable
 {
 public:
     CCM_INTERFACE_DECL();
+
+    ECode GetIterator(
+        /* [out] */ IIterator** it) = 0;
 
     ECode IsEmpty(
         /* [out] */ Boolean* empty) override;
@@ -40,6 +46,9 @@ public:
     ECode Contains(
         /* [in] */ IInterface* obj,
         /* [out] */ Boolean* result) override;
+
+    ECode ToArray(
+        /* [out, callee] */ Array<IInterface*>* objs) override;
 
     ECode ToArray(
         /* [in] */ const InterfaceID& iid,
@@ -82,6 +91,11 @@ public:
         /* [out] */ Integer* hash) override;
 
 private:
+    static ECode FinishToArray(
+        /* [in] */ Array<IInterface*>& r,
+        /* [in] */ IIterator* it,
+        /* [out, callee] */ Array<IInterface*>* objs);
+
     static ECode FinishToArray(
         /* [in] */ Array<IInterface*>& r,
         /* [in] */ IIterator* it,

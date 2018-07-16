@@ -33,13 +33,12 @@ TEST(StringTokenizerTest, StringTokenizerTest)
     tokenizer->CountTokens(&count);
     EXPECT_EQ(4, count);
     String token1, token2, token3, token4;
-    tokenizer->GetNextToken(&token1);
+    tokenizer->NextToken(&token1);
     EXPECT_STREQ("hello", token1.string());
-    tokenizer->GetNextToken(&token2);
+    tokenizer->NextToken(&token2);
     EXPECT_STREQ("world", token2.string());
-    tokenizer->GetNextToken(&token3);
-    EXPECT_STREQ("hello", token3.string());
-    tokenizer->GetNextToken(&token4);
+    tokenizer->NextToken();
+    tokenizer->NextToken(&token4);
     EXPECT_STREQ("shanghai", token4.string());
 }
 

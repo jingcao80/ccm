@@ -116,11 +116,9 @@ ECode StringTokenizer::HasMoreTokens(
     return NOERROR;
 }
 
-ECode StringTokenizer::GetNextToken(
+ECode StringTokenizer::NextToken(
     /* [out] */ String* token)
 {
-    VALIDATE_NOT_NULL(token);
-
     mCurrentPosition = (mNewPosition >= 0 && !mDelimsChanged) ?
             mNewPosition : SkipDelimiters(mCurrentPosition);
 
@@ -132,20 +130,20 @@ ECode StringTokenizer::GetNextToken(
     }
     Integer start = mCurrentPosition;
     mCurrentPosition = ScanToken(mCurrentPosition);
-    *token = mStr.Substring(start, mCurrentPosition);
+    if (token != nullptr) {
+        *token = mStr.Substring(start, mCurrentPosition);
+    }
     return NOERROR;
 }
 
-ECode StringTokenizer::GetNextToken(
+ECode StringTokenizer::NextToken(
     /* [in] */ const String& delim,
     /* [out] */ String* token)
 {
-    VALIDATE_NOT_NULL(token);
-
     mDelimiters = delim;
     mDelimsChanged = true;
     SetMaxDelimCodePoint();
-    return GetNextToken(token);
+    return NextToken(token);
 }
 
 ECode StringTokenizer::HasMoreElements(
@@ -154,15 +152,15 @@ ECode StringTokenizer::HasMoreElements(
     return HasMoreTokens(hasMore);
 }
 
-ECode StringTokenizer::GetNextElement(
+ECode StringTokenizer::NextElement(
     /* [out] */ IInterface** element)
 {
-    VALIDATE_NOT_NULL(element);
-
     String token;
-    FAIL_RETURN(GetNextToken(&token));
-    *element = CoreUtils::Box(token);
-    REFCOUNT_ADD(*element);
+    FAIL_RETURN(NextToken(&token));
+    if (element != nullptr) {
+        *element = CoreUtils::Box(token);
+        REFCOUNT_ADD(*element);
+    }
     return NOERROR;
 }
 

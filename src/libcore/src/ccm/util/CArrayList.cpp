@@ -81,6 +81,12 @@ ECode CArrayList::ContainsAll(
     return NOERROR;
 }
 
+ECode CArrayList::EnsureCapacity(
+    /* [in] */ Integer minCapacity)
+{
+    return NOERROR;
+}
+
 ECode CArrayList::Equals(
     /* [in] */ IInterface* obj,
     /* [out] */ Boolean* result)
@@ -191,8 +197,19 @@ ECode CArrayList::SubList(
 }
 
 ECode CArrayList::ToArray(
+    /* [out, callee] */ Array<IInterface*>* objs)
+{
+    return NOERROR;
+}
+
+ECode CArrayList::ToArray(
     /* [in] */ const InterfaceID& iid,
     /* [out, callee] */ Array<IInterface*>* objs)
+{
+    return NOERROR;
+}
+
+ECode CArrayList::TrimToSize()
 {
     return NOERROR;
 }

@@ -17,6 +17,9 @@
 namespace ccm {
 namespace util {
 
+/*
+ * @Involve interface ccm::util::IIterator
+ */
 [
     uuid(e8665718-bf0d-4054-850c-a30098de04b8),
     version(0.1.0)
@@ -26,14 +29,14 @@ interface IListIterator
     Add(
         [in] IInterface* object);
 
-    GetNext(
-        [out] IInterface** object);
+    Next(
+        [out] IInterface** object = nullptr);
 
     GetNextIndex(
         [out] Integer* index);
 
-    GetPrevious(
-        [out] IInterface** object);
+    Previous(
+        [out] IInterface** object = nullptr);
 
     GetPreviousIndex(
         [out] Integer* index);

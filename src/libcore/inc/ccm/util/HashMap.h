@@ -206,8 +206,8 @@ public:
         KeyIterator(
             /* [in] */ HashMap* owner);
 
-        ECode GetNext(
-            /* [out] */ IInterface** object) override;
+        ECode Next(
+            /* [out] */ IInterface** object = nullptr) override;
     };
 
     class ValueIterator
@@ -217,8 +217,8 @@ public:
         ValueIterator(
             /* [in] */ HashMap* owner);
 
-        ECode GetNext(
-            /* [out] */ IInterface** object) override;
+        ECode Next(
+            /* [out] */ IInterface** object = nullptr) override;
     };
 
     class EntryIterator
@@ -228,8 +228,8 @@ public:
         EntryIterator(
             /* [in] */ HashMap* owner);
 
-        ECode GetNext(
-            /* [out] */ IInterface** object) override;
+        ECode Next(
+            /* [out] */ IInterface** object = nullptr) override;
     };
 
 public:

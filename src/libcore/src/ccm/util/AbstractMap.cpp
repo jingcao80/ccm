@@ -67,7 +67,7 @@ ECode AbstractMap::ContainsValue(
         Boolean hasNext;
         while (it->HasNext(&hasNext), hasNext) {
             AutoPtr<IInterface> e;
-            it->GetNext((IInterface**)&e);
+            it->Next((IInterface**)&e);
             AutoPtr<IInterface> v;
             if (IMapEntry::Probe(e)->GetValue((IInterface**)&v),
                     v == nullptr) {
@@ -80,7 +80,7 @@ ECode AbstractMap::ContainsValue(
         Boolean hasNext;
         while (it->HasNext(&hasNext), hasNext) {
             AutoPtr<IInterface> e;
-            it->GetNext((IInterface**)&e);
+            it->Next((IInterface**)&e);
             AutoPtr<IInterface> v;
             if (IMapEntry::Probe(e)->GetValue((IInterface**)&v),
                     Object::Equals(value, v)) {
@@ -107,7 +107,7 @@ ECode AbstractMap::ContainsKey(
         Boolean hasNext;
         while (it->HasNext(&hasNext), hasNext) {
             AutoPtr<IInterface> e;
-            it->GetNext((IInterface**)&e);
+            it->Next((IInterface**)&e);
             AutoPtr<IInterface> k;
             if (IMapEntry::Probe(e)->GetKey((IInterface**)&k),
                     k == nullptr) {
@@ -120,7 +120,7 @@ ECode AbstractMap::ContainsKey(
         Boolean hasNext;
         while (it->HasNext(&hasNext), hasNext) {
             AutoPtr<IInterface> e;
-            it->GetNext((IInterface**)&e);
+            it->Next((IInterface**)&e);
             AutoPtr<IInterface> k;
             if (IMapEntry::Probe(e)->GetKey((IInterface**)&k),
                     Object::Equals(key, k)) {
@@ -147,7 +147,7 @@ ECode AbstractMap::Get(
         Boolean hasNext;
         while (it->HasNext(&hasNext), hasNext) {
             AutoPtr<IInterface> e;
-            it->GetNext((IInterface**)&e);
+            it->Next((IInterface**)&e);
             AutoPtr<IInterface> k;
             if (IMapEntry::Probe(e)->GetKey((IInterface**)&k),
                     k == nullptr) {
@@ -159,7 +159,7 @@ ECode AbstractMap::Get(
         Boolean hasNext;
         while (it->HasNext(&hasNext), hasNext) {
             AutoPtr<IInterface> e;
-            it->GetNext((IInterface**)&e);
+            it->Next((IInterface**)&e);
             AutoPtr<IInterface> k;
             if (IMapEntry::Probe(e)->GetKey((IInterface**)&k),
                     Object::Equals(key, k)) {
@@ -195,7 +195,7 @@ ECode AbstractMap::Remove(
         while (correctEntry == nullptr &&
                 (it->HasNext(&hasNext), hasNext)) {
             AutoPtr<IInterface> e;
-            it->GetNext((IInterface**)&e);
+            it->Next((IInterface**)&e);
             AutoPtr<IInterface> k;
             if (IMapEntry::Probe(e)->GetKey((IInterface**)&k),
                     k == nullptr) {
@@ -208,7 +208,7 @@ ECode AbstractMap::Remove(
         while (correctEntry == nullptr &&
                 (it->HasNext(&hasNext), hasNext)) {
             AutoPtr<IInterface> e;
-            it->GetNext((IInterface**)&e);
+            it->Next((IInterface**)&e);
             AutoPtr<IInterface> k;
             if (IMapEntry::Probe(e)->GetKey((IInterface**)&k),
                     Object::Equals(key, k)) {
@@ -240,7 +240,7 @@ ECode AbstractMap::PutAll(
     Boolean hasNext;
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> e;
-        it->GetNext((IInterface**)&e);
+        it->Next((IInterface**)&e);
         AutoPtr<IInterface> k, v;
         IMapEntry::Probe(e)->GetKey((IInterface**)&k);
         IMapEntry::Probe(e)->GetValue((IInterface**)&v);
@@ -324,14 +324,13 @@ ECode AbstractMap::GetKeySet(
                         return E_ILLEGAL_ARGUMENT_EXCEPTION;
                     }
 
-                    ECode GetNext(
-                        /* [out] */ IInterface** object) override
+                    ECode Next(
+                        /* [out] */ IInterface** object = nullptr) override
                     {
-                        VALIDATE_NOT_NULL(object);
-
                         AutoPtr<IInterface> e;
-                        mIt->GetNext((IInterface**)&e);
-                        return IMapEntry::Probe(e)->GetKey(object);
+                        mIt->Next((IInterface**)&e);
+                        return object != nullptr ?
+                                IMapEntry::Probe(e)->GetKey(object) : NOERROR;
                     }
 
                     ECode HasNext(
@@ -459,14 +458,13 @@ ECode AbstractMap::GetValues(
                         return E_ILLEGAL_ARGUMENT_EXCEPTION;
                     }
 
-                    ECode GetNext(
-                        /* [out] */ IInterface** object) override
+                    ECode Next(
+                        /* [out] */ IInterface** object = nullptr) override
                     {
-                        VALIDATE_NOT_NULL(object);
-
                         AutoPtr<IInterface> e;
-                        mIt->GetNext((IInterface**)&e);
-                        return IMapEntry::Probe(e)->GetValue(object);
+                        mIt->Next((IInterface**)&e);
+                        return object != nullptr ?
+                                IMapEntry::Probe(e)->GetValue(object) : NOERROR;
                     }
 
                     ECode HasNext(
@@ -555,7 +553,7 @@ ECode AbstractMap::Equals(
     Boolean hasNext;
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> e;
-        it->GetNext((IInterface**)&e);
+        it->Next((IInterface**)&e);
         AutoPtr<IInterface> key, value;
         IMapEntry::Probe(e)->GetKey((IInterface**)&key);
         IMapEntry::Probe(e)->GetValue((IInterface**)&value);
@@ -594,7 +592,7 @@ ECode AbstractMap::GetHashCode(
     Boolean hasNext;
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> e;
-        it->GetNext((IInterface**)&e);
+        it->Next((IInterface**)&e);
         h += Object::GetHashCode(e);
     }
     *hash = h;
@@ -619,7 +617,7 @@ ECode AbstractMap::ToString(
     sb->AppendChar('{');
     for (;;) {
         AutoPtr<IInterface> e;
-        it->GetNext((IInterface**)&e);
+        it->Next((IInterface**)&e);
         AutoPtr<IInterface> key, value;
         IMapEntry::Probe(e)->GetKey((IInterface**)&key);
         IMapEntry::Probe(e)->GetValue((IInterface**)&value);

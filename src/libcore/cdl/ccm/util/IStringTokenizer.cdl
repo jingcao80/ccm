@@ -35,15 +35,15 @@ interface IStringTokenizer
     HasMoreTokens(
         [out] Boolean* hasMore);
 
-    GetNextElement(
-        [out] IInterface** element);
+    NextElement(
+        [out] IInterface** element = nullptr);
 
-    GetNextToken(
-        [out] String* token);
+    NextToken(
+        [out] String* token = nullptr);
 
-    GetNextToken(
+    NextToken(
         [in] String delim,
-        [out] String* token);
+        [out] String* token = nullptr);
 }
 
 }

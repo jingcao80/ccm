@@ -59,7 +59,7 @@ ECode AbstractSet::GetHashCode(
     Boolean hasNext;
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> obj;
-        it->GetNext((IInterface**)&obj);
+        it->Next((IInterface**)&obj);
         if (obj != nullptr) {
             h += Object::GetHashCode(obj);
         }
@@ -81,7 +81,7 @@ ECode AbstractSet::RemoveAll(
         Boolean hasNext;
         while (it->HasNext(&hasNext), hasNext) {
             AutoPtr<IInterface> obj;
-            it->GetNext((IInterface**)&obj);
+            it->Next((IInterface**)&obj);
             Boolean changed;
             Remove(obj, &changed);
             modified |= changed;
@@ -93,7 +93,7 @@ ECode AbstractSet::RemoveAll(
         Boolean hasNext;
         while (it->HasNext(&hasNext), hasNext) {
             AutoPtr<IInterface> obj;
-            it->GetNext((IInterface**)&obj);
+            it->Next((IInterface**)&obj);
             Boolean contains;
             if (c->Contains(obj, &contains), contains) {
                 it->Remove();
@@ -144,6 +144,12 @@ ECode AbstractSet::RetainAll(
     /* [out] */ Boolean* changed)
 {
     return AbstractCollection::RetainAll(c, changed);
+}
+
+ECode AbstractSet::ToArray(
+    /* [out, callee] */ Array<IInterface*>* objs)
+{
+    return AbstractCollection::ToArray(objs);
 }
 
 ECode AbstractSet::ToArray(

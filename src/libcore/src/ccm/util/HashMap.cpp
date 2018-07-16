@@ -132,7 +132,7 @@ void HashMap::PutMapEntries(
         Boolean hasNext;
         while (it->HasNext(&hasNext), hasNext) {
             AutoPtr<IInterface> o;
-            it->GetNext((IInterface**)&o);
+            it->Next((IInterface**)&o);
             IMapEntry* e = IMapEntry::Probe(o);
             AutoPtr<IInterface> key, value;
             e->GetKey((IInterface**)&key);
@@ -927,15 +927,15 @@ HashMap::KeyIterator::KeyIterator(
     : HashIterator(owner)
 {}
 
-ECode HashMap::KeyIterator::GetNext(
+ECode HashMap::KeyIterator::Next(
     /* [out] */ IInterface** object)
 {
-    VALIDATE_NOT_NULL(object);
-
     AutoPtr<Node> node;
     FAIL_RETURN(GetNextNode((Node**)&node));
-    *object = node->mKey;
-    REFCOUNT_ADD(*object);
+    if (object != nullptr) {
+        *object = node->mKey;
+        REFCOUNT_ADD(*object);
+    }
     return NOERROR;
 }
 
@@ -946,15 +946,15 @@ HashMap::ValueIterator::ValueIterator(
     : HashIterator(owner)
 {}
 
-ECode HashMap::ValueIterator::GetNext(
+ECode HashMap::ValueIterator::Next(
     /* [out] */ IInterface** object)
 {
-    VALIDATE_NOT_NULL(object);
-
     AutoPtr<Node> node;
     FAIL_RETURN(GetNextNode((Node**)&node));
-    *object = node->mValue;
-    REFCOUNT_ADD(*object);
+    if (object != nullptr) {
+        *object = node->mValue;
+        REFCOUNT_ADD(*object);
+    }
     return NOERROR;
 }
 
@@ -965,15 +965,15 @@ HashMap::EntryIterator::EntryIterator(
     : HashIterator(owner)
 {}
 
-ECode HashMap::EntryIterator::GetNext(
+ECode HashMap::EntryIterator::Next(
     /* [out] */ IInterface** object)
 {
-    VALIDATE_NOT_NULL(object);
-
     AutoPtr<Node> node;
     FAIL_RETURN(GetNextNode((Node**)&node));
-    *object = (IMapEntry*)node;
-    REFCOUNT_ADD(*object);
+    if (object != nullptr) {
+        *object = (IMapEntry*)node;
+        REFCOUNT_ADD(*object);
+    }
     return NOERROR;
 }
 

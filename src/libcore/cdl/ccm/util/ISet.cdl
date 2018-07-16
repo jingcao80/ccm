@@ -73,6 +73,9 @@ interface ISet
         [out] Boolean* changed = nullptr);
 
     ToArray(
+        [out, callee] Array<IInterface*>* objs);
+
+    ToArray(
         [in] InterfaceID iid,
         [out, callee] Array<IInterface*>* objs);
 }

@@ -49,18 +49,18 @@ public:
     ECode HasMoreTokens(
         /* [out] */ Boolean* hasMore) override;
 
-    ECode GetNextToken(
-        /* [out] */ String* token) override;
+    ECode NextToken(
+        /* [out] */ String* token = nullptr) override;
 
-    ECode GetNextToken(
+    ECode NextToken(
         /* [in] */ const String& delim,
-        /* [out] */ String* token) override;
+        /* [out] */ String* token = nullptr) override;
 
     ECode HasMoreElements(
         /* [out] */ Boolean* hasMore) override;
 
-    ECode GetNextElement(
-        /* [out] */ IInterface** element) override;
+    ECode NextElement(
+        /* [out] */ IInterface** element = nullptr) override;
 
     ECode CountTokens(
         /* [out] */ Integer* number) override;

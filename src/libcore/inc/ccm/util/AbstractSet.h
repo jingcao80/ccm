@@ -65,6 +65,9 @@ public:
         /* [out] */ Boolean* changed = nullptr) override;
 
     ECode ToArray(
+        /* [out, callee] */ Array<IInterface*>* objs) override;
+
+    ECode ToArray(
         /* [in] */ const InterfaceID& iid,
         /* [out, callee] */ Array<IInterface*>* objs) override;
 

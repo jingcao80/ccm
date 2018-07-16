@@ -62,7 +62,7 @@ ECode LocalGregorianCalendar::GetLocalGregorianCalendar(
     Boolean hasMore;
     while (eraTokens->HasMoreTokens(&hasMore), hasMore) {
         String items;
-        eraTokens->GetNextToken(&items);
+        eraTokens->NextToken(&items);
         items.Trim();
         AutoPtr<IStringTokenizer> itemTokens;
         CStringTokenizer::New(items, String(","), IID_IStringTokenizer, (IInterface**)&itemTokens);
@@ -74,7 +74,7 @@ ECode LocalGregorianCalendar::GetLocalGregorianCalendar(
         Boolean itemHasMore;
         while (itemTokens->HasMoreTokens(&itemHasMore), itemHasMore) {
             String item;
-            itemTokens->GetNextToken(&item);
+            itemTokens->NextToken(&item);
             Integer index = item.IndexOf('=');
             // it must be in the key=value form.
             if (index == -1) {

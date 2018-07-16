@@ -26,8 +26,8 @@ interface IEnumeration
     HasMoreElements(
         [out] Boolean* result);
 
-    GetNextElement(
-        [out] IInterface** object);
+    NextElement(
+        [out] IInterface** object = nullptr);
 }
 
 }

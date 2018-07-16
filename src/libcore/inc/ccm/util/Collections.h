@@ -69,6 +69,9 @@ private:
             /* [out] */ Boolean* result) override;
 
         ECode ToArray(
+            /* [out, callee] */ Array<IInterface*>* objs) override;
+
+        ECode ToArray(
             /* [in] */ const InterfaceID& iid,
             /* [out, callee] */ Array<IInterface*>* objs) override;
 
@@ -182,6 +185,9 @@ private:
             /* [out] */ Boolean* changed = nullptr) override;
 
         ECode ToArray(
+            /* [out, callee] */ Array<IInterface*>* objs) override;
+
+        ECode ToArray(
             /* [in] */ const InterfaceID& iid,
             /* [out, callee] */ Array<IInterface*>* objs) override;
     };
@@ -196,8 +202,8 @@ private:
         ECode HasNext(
             /* [out] */ Boolean* result) override;
 
-        ECode GetNext(
-            /* [out] */ IInterface** object) override;
+        ECode Next(
+            /* [out] */ IInterface** object = nullptr) override;
 
         ECode Remove() override;
 
@@ -214,8 +220,8 @@ private:
         ECode HasMoreElements(
             /* [out] */ Boolean* result) override;
 
-        ECode GetNextElement(
-            /* [out] */ IInterface** object) override;
+        ECode NextElement(
+            /* [out] */ IInterface** object = nullptr) override;
 
         static AutoPtr<IEnumeration> Get_EMPTY_ENUMERATION();
     };

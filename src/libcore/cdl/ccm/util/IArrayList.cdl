@@ -22,6 +22,14 @@ interface IIterator;
 interface IList;
 interface IListIterator;
 
+/*
+ * @Involve interface ccm::util::IList
+ * @Involve interface ccm::util::ICollection
+ * @Involve interface ccm::util::IRandomAccess
+ * @Involve interface ccm::core::ICloneable
+ * @Involve interface ccm::core::IIterable
+ * @Involve interface ccm::io::ISerializable
+ */
 [
     uuid(d0dcbefa-d6ac-4f0e-96b7-e7697606f877),
     version(0.1.0)
@@ -54,6 +62,9 @@ interface IArrayList
     ContainsAll(
         [in] ICollection* c,
         [out] Boolean* result);
+
+    EnsureCapacity(
+        [in] Integer minCapacity);
 
     Equals(
         [in] IInterface* obj,
@@ -109,7 +120,7 @@ interface IArrayList
     Set(
         [in] Integer index,
         [in] IInterface* obj,
-        [out] IInterface** prevObj);
+        [out] IInterface** prevObj = nullptr);
 
     SubList(
         [in] Integer fromIndex,
@@ -117,8 +128,13 @@ interface IArrayList
         [out] IList** subList);
 
     ToArray(
+        [out, callee] Array<IInterface*>* objs);
+
+    ToArray(
         [in] InterfaceID iid,
         [out, callee] Array<IInterface*>* objs);
+
+    TrimToSize();
 }
 
 }
