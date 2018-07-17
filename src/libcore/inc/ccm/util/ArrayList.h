@@ -23,6 +23,7 @@
 #include "ccm.io.ISerializable.h"
 #include "ccm.util.IArrayList.h"
 #include "ccm.util.IRandomAccess.h"
+#include <ccmautoptr.h>
 
 using ccm::core::ICloneable;
 using ccm::core::IInteger;
@@ -39,6 +40,153 @@ class ArrayList
     , public ISerializable
 
 {
+private:
+    class Itr
+        : public LightRefBase
+        , public IIterator
+    {
+    public:
+        Itr(
+            /* [in] */ ArrayList* owner)
+            : mOwner(owner)
+            , mLimit(owner->mSize)
+            , mExpectedModCount(owner->mModCount)
+        {}
+
+        CCM_INTERFACE_DECL();
+
+        ECode HasNext(
+            /* [out] */ Boolean* result) override;
+
+        ECode Next(
+            /* [out] */ IInterface** object = nullptr) override;
+
+        ECode Remove() override;
+
+    protected:
+        ArrayList* mOwner;
+        Integer mLimit;
+        Integer mCursor = 0;
+        Integer mLastRet = -1;
+        Integer mExpectedModCount;
+    };
+
+    class ListItr
+        : public Itr
+        , public IListIterator
+    {
+    public:
+        ListItr(
+            /* [in] */ ArrayList* owner,
+            /* [in] */ Integer index)
+            : Itr(owner)
+        {
+            mCursor = index;
+        }
+
+        CCM_INTERFACE_DECL();
+
+        ECode HasPrevious(
+            /* [out] */ Boolean* result) override;
+
+        ECode GetNextIndex(
+            /* [out] */ Integer* index) override;
+
+        ECode GetPreviousIndex(
+            /* [out] */ Integer* index) override;
+
+        ECode Previous(
+            /* [out] */ IInterface** object = nullptr) override;
+
+        ECode Set(
+            /* [in] */ IInterface* object) override;
+
+        ECode Add(
+            /* [in] */ IInterface* object) override;
+
+        ECode HasNext(
+            /* [out] */ Boolean* result) override;
+
+        ECode Next(
+            /* [out] */ IInterface** object = nullptr) override;
+
+        ECode Remove() override;
+    };
+
+    class Sublist
+        : public AbstractList
+        , public IRandomAccess
+    {
+    public:
+        CCM_INTERFACE_DECL();
+
+        ECode Constructor(
+            /* [in] */ ArrayList* owner,
+            /* [in] */ AbstractList* parent,
+            /* [in] */ Integer offset,
+            /* [in] */ Integer fromIndex,
+            /* [in] */ Integer toIndex);
+
+        ECode Set(
+            /* [in] */ Integer index,
+            /* [in] */ IInterface* obj,
+            /* [out] */ IInterface** prevObj = nullptr) override;
+
+        ECode Get(
+            /* [in] */ Integer index,
+            /* [out] */ IInterface** obj) override;
+
+        ECode GetSize(
+            /* [out] */ Integer* size) override;
+
+        ECode Add(
+            /* [in] */ Integer index,
+            /* [in] */ IInterface* obj) override;
+
+        ECode Remove(
+            /* [in] */ Integer index,
+            /* [out] */ IInterface** obj = nullptr) override;
+
+        ECode AddAll(
+            /* [in] */ ICollection* c,
+            /* [out] */ Boolean* result = nullptr) override;
+
+        ECode AddAll(
+            /* [in] */ Integer index,
+            /* [in] */ ICollection* c,
+            /* [out] */ Boolean* result = nullptr) override;
+
+        ECode GetIterator(
+            /* [out] */ IIterator** it) override;
+
+        ECode GetListIterator(
+            /* [in] */ Integer index,
+            /* [out] */ IListIterator** it) override;
+
+        ECode SubList(
+            /* [in] */ Integer fromIndex,
+            /* [in] */ Integer toIndex,
+            /* [out] */ IList** subList) override;
+
+        using AbstractList::GetListIterator;
+
+    protected:
+        ECode RemoveRange(
+            /* [in] */ Integer fromIndex,
+            /* [in] */ Integer toIndex) override;
+
+    private:
+        String OutOfBoundsMsg(
+            /* [in] */ Integer index);
+
+    private:
+        ArrayList* mOwner;
+        AutoPtr<AbstractList> mParent;
+        Integer mParentOffset;
+        Integer mOffset;
+        Integer mSize;
+    };
+
 public:
     CCM_INTERFACE_DECL();
 
@@ -116,6 +264,53 @@ public:
         /* [in] */ ICollection* c,
         /* [out] */ Boolean* result = nullptr) override;
 
+    ECode RemoveAll(
+        /* [in] */ ICollection* c,
+        /* [out] */ Boolean* result = nullptr) override;
+
+    ECode RetainAll(
+        /* [in] */ ICollection* c,
+        /* [out] */ Boolean* result = nullptr) override;
+
+    ECode GetListIterator(
+        /* [in] */ Integer index,
+        /* [out] */ IListIterator** it) override;
+
+    ECode GetListIterator(
+        /* [out] */ IListIterator** it) override;
+
+    ECode GetIterator(
+        /* [out] */ IIterator** it) override;
+
+    ECode SubList(
+        /* [in] */ Integer fromIndex,
+        /* [in] */ Integer toIndex,
+        /* [out] */ IList** subList) override;
+
+    ECode ContainsAll(
+        /* [in] */ ICollection* c,
+        /* [out] */ Boolean* result) override;
+
+    ECode Equals(
+        /* [in] */ IInterface* obj,
+        /* [out] */ Boolean* result) override;
+
+    ECode GetHashCode(
+        /* [out] */ Integer* hash) override;
+
+protected:
+    ECode CloneImpl(
+        /* [in] */ IArrayList* newObj);
+
+    ECode RemoveRange(
+        /* [in] */ Integer fromIndex,
+        /* [in] */ Integer toIndex) override;
+
+    static ECode SubListRangeCheck(
+        /* [in] */ Integer fromIndex,
+        /* [in] */ Integer toIndex,
+        /* [in] */ Integer size);
+
 private:
     void EnsureCapacityInternal(
         /* [in] */ Integer minCapacity);
@@ -129,14 +324,15 @@ private:
     static Integer HugeCapacity(
         /* [in] */ Integer minCapacity);
 
-    ECode CloneImpl(
-        /* [in] */ IArrayList* newObj);
-
     void FastRemove(
         /* [in] */ Integer index);
 
     String OutOfBoundsMsg(
         /* [in] */ Integer index);
+
+    Boolean BatchRemove(
+        /* [in] */ ICollection* c,
+        /* [in] */ Boolean complement);
 
     static Array<IInterface*> GetEMPTY_ELEMENTDATA();
 

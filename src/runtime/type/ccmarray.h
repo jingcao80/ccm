@@ -93,13 +93,10 @@ public:
         /* [in] */ Long index,
         /* [in] */ T value);
 
+    inline Boolean Equals(
+        /* [in] */ const Array<T>& other);
+
     Array& operator=(
-        /* [in] */ const Array<T>& other);
-
-    inline Boolean operator==(
-        /* [in] */ const Array<T>& other);
-
-    inline Boolean operator!=(
         /* [in] */ const Array<T>& other);
 
     inline T& operator[](
@@ -394,6 +391,14 @@ void Array<T>::Set(
 }
 
 template<class T>
+Boolean Array<T>::Equals(
+    /* [in] */ const Array<T>& other)
+{
+    return mData == other.mData && mSize == other.mSize &&
+            mType == other.mType;
+}
+
+template<class T>
 Array<T>& Array<T>::operator=(
     /* [in] */ const Array<T>& other)
 {
@@ -410,22 +415,6 @@ Array<T>& Array<T>::operator=(
     mData = other.mData;
     mSize = other.mSize;
     return *this;
-}
-
-template<class T>
-Boolean Array<T>::operator==(
-    /* [in] */ const Array<T>& other)
-{
-    return mData == other.mData && mSize == other.mSize &&
-            mType == other.mType;
-}
-
-template<class T>
-Boolean Array<T>::operator!=(
-    /* [in] */ const Array<T>& other)
-{
-    return mData != other.mData || mSize != other.mSize &&
-            mType != other.mType;
 }
 
 template<class T>

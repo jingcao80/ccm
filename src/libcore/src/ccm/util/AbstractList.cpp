@@ -22,6 +22,103 @@
 namespace ccm {
 namespace util {
 
+class Sublist
+    : public AbstractList
+{
+public:
+    ECode Constructor(
+        /* [in] */ AbstractList* list,
+        /* [in] */ Integer fromIndex,
+        /* [in] */ Integer toIndex);
+
+    ECode Set(
+        /* [in] */ Integer index,
+        /* [in] */ IInterface* obj,
+        /* [out] */ IInterface** prevObj = nullptr) override;
+
+    ECode Get(
+        /* [in] */ Integer index,
+        /* [out] */ IInterface** obj) override;
+
+    ECode GetSize(
+        /* [out] */ Integer* size) override;
+
+    ECode Add(
+        /* [in] */ Integer index,
+        /* [in] */ IInterface* obj) override;
+
+    ECode Remove(
+        /* [in] */ Integer index,
+        /* [out] */ IInterface** obj = nullptr) override;
+
+    ECode AddAll(
+        /* [in] */ ICollection* c,
+        /* [out] */ Boolean* result = nullptr) override;
+
+    ECode AddAll(
+        /* [in] */ Integer index,
+        /* [in] */ ICollection* c,
+        /* [out] */ Boolean* result = nullptr) override;
+
+    ECode GetIterator(
+        /* [out] */ IIterator** it) override;
+
+    ECode GetListIterator(
+        /* [in] */ Integer index,
+        /* [out] */ IListIterator** it) override;
+
+    ECode SubList(
+        /* [in] */ Integer fromIndex,
+        /* [in] */ Integer toIndex,
+        /* [out] */ IList** subList) override;
+
+    using AbstractList::GetListIterator;
+
+protected:
+    ECode RemoveRange(
+        /* [in] */ Integer fromIndex,
+        /* [in] */ Integer toIndex) override;
+
+private:
+    ECode RangeCheck(
+        /* [in] */ Integer index);
+
+    ECode RangeCheckForAdd(
+        /* [in] */ Integer index);
+
+    String OutOfBoundsMsg(
+        /* [in] */ Integer index);
+
+    ECode CheckForComodification();
+
+private:
+    AutoPtr<AbstractList> mL;
+    Integer mOffset;
+    Integer mSize;
+};
+
+//-------------------------------------------------------------------------
+
+class RandomAccessSubList
+    : public Sublist
+    , public IRandomAccess
+{
+public:
+    CCM_INTERFACE_DECL();
+
+    ECode Constructor(
+        /* [in] */ AbstractList* list,
+        /* [in] */ Integer fromIndex,
+        /* [in] */ Integer toIndex);
+
+    ECode SubList(
+        /* [in] */ Integer fromIndex,
+        /* [in] */ Integer toIndex,
+        /* [out] */ IList** subList) override;
+};
+
+//-------------------------------------------------------------------------
+
 CCM_INTERFACE_IMPL_1(AbstractList, AbstractCollection, IList);
 
 ECode AbstractList::Constructor()
@@ -185,7 +282,22 @@ ECode AbstractList::SubList(
     /* [in] */ Integer toIndex,
     /* [out] */ IList** subList)
 {
-    return NOERROR;
+    VALIDATE_NOT_NULL(subList);
+
+    if (Probe(IID_IRandomAccess) != nullptr) {
+        AutoPtr<RandomAccessSubList> list = new RandomAccessSubList();
+        FAIL_RETURN(list->Constructor(this, fromIndex, toIndex));
+        *subList = list.Get();
+        REFCOUNT_ADD(*subList);
+        return NOERROR;
+    }
+    else {
+        AutoPtr<Sublist> list = new Sublist();
+        FAIL_RETURN(list->Constructor(this, fromIndex, toIndex));
+        *subList = list.Get();
+        REFCOUNT_ADD(*subList);
+        return NOERROR;
+    }
 }
 
 ECode AbstractList::Equals(
@@ -487,81 +599,6 @@ ECode AbstractList::ListItr::Remove()
 
 //-------------------------------------------------------------------------
 
-class Sublist
-    : public AbstractList
-{
-public:
-    ECode Constructor(
-        /* [in] */ AbstractList* list,
-        /* [in] */ Integer fromIndex,
-        /* [in] */ Integer toIndex);
-
-    ECode Set(
-        /* [in] */ Integer index,
-        /* [in] */ IInterface* obj,
-        /* [out] */ IInterface** prevObj = nullptr) override;
-
-    ECode Get(
-        /* [in] */ Integer index,
-        /* [out] */ IInterface** obj) override;
-
-    ECode GetSize(
-        /* [out] */ Integer* size) override;
-
-    ECode Add(
-        /* [in] */ Integer index,
-        /* [in] */ IInterface* obj) override;
-
-    ECode Remove(
-        /* [in] */ Integer index,
-        /* [out] */ IInterface** obj = nullptr) override;
-
-    ECode AddAll(
-        /* [in] */ ICollection* c,
-        /* [out] */ Boolean* result = nullptr) override;
-
-    ECode AddAll(
-        /* [in] */ Integer index,
-        /* [in] */ ICollection* c,
-        /* [out] */ Boolean* result = nullptr) override;
-
-    ECode GetIterator(
-        /* [out] */ IIterator** it) override;
-
-    ECode GetListIterator(
-        /* [in] */ Integer index,
-        /* [out] */ IListIterator** it) override;
-
-    ECode SubList(
-        /* [in] */ Integer fromIndex,
-        /* [in] */ Integer toIndex,
-        /* [out] */ IList** subList) override;
-
-    using AbstractList::GetListIterator;
-
-protected:
-    ECode RemoveRange(
-        /* [in] */ Integer fromIndex,
-        /* [in] */ Integer toIndex) override;
-
-private:
-    ECode RangeCheck(
-        /* [in] */ Integer index);
-
-    ECode RangeCheckForAdd(
-        /* [in] */ Integer index);
-
-    String OutOfBoundsMsg(
-        /* [in] */ Integer index);
-
-    ECode CheckForComodification();
-
-private:
-    AutoPtr<AbstractList> mL;
-    Integer mOffset;
-    Integer mSize;
-};
-
 ECode Sublist::Constructor(
     /* [in] */ AbstractList* list,
     /* [in] */ Integer fromIndex,
@@ -847,6 +884,7 @@ ECode Sublist::GetListIterator(
         Sublist* mOwner;
         AutoPtr<IListIterator> mIt;
     };
+
     *it = new _ListIterator(this, index);
     REFCOUNT_ADD(*it);
     return NOERROR;
@@ -901,24 +939,6 @@ ECode Sublist::CheckForComodification()
 }
 
 //-------------------------------------------------------------------------
-
-class RandomAccessSubList
-    : public Sublist
-    , public IRandomAccess
-{
-public:
-    CCM_INTERFACE_DECL();
-
-    ECode Constructor(
-        /* [in] */ AbstractList* list,
-        /* [in] */ Integer fromIndex,
-        /* [in] */ Integer toIndex);
-
-    ECode SubList(
-        /* [in] */ Integer fromIndex,
-        /* [in] */ Integer toIndex,
-        /* [out] */ IList** subList) override;
-};
 
 CCM_INTERFACE_IMPL_1(RandomAccessSubList, Sublist, IRandomAccess);
 

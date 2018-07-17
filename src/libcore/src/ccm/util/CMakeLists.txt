@@ -33,7 +33,6 @@ set(SOURCES
     AbstractSet.cpp
     ArrayList.cpp
     Arrays.cpp
-    CArrayList.cpp
     Collections.cpp
     Date.cpp
     EmptyArray.cpp

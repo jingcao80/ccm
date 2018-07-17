@@ -14,26 +14,22 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_UTIL_CARRAYLIST_H__
-#define __CCM_UTIL_CARRAYLIST_H__
-
-#include "ccm/util/ArrayList.h"
-#include "_ccm_util_CArrayList.h"
-
 namespace ccm {
-namespace util {
+namespace io {
 
-Coclass(CArrayList)
-    , public ArrayList
+[
+    uuid(64d64034-3b89-4cc0-b446-d20c3a6a0f8f),
+    version(0.1.0)
+]
+interface IFile
 {
-public:
-    CCM_OBJECT_DECL();
+    GetPath(
+        [out] String* path);
 
-    ECode Clone(
-        /* [out] */ IInterface** obj) override;
-};
+    // @hide
+    GetPrefixLength(
+        [out] Integer* length);
+}
 
 }
 }
-
-#endif //__CCM_UTIL_CARRAYLIST_H__

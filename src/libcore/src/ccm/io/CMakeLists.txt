@@ -27,7 +27,9 @@ include_directories(
 
 set(SOURCES
     BufferedWriter.cpp
+    FileSystem.cpp
     OutputStreamWriter.cpp
+    UnixFileSystem.cpp
     Writer.cpp
     io.cpp)
 

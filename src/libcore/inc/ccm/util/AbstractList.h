@@ -177,6 +177,10 @@ public:
     ECode GetHashCode(
         /* [out] */ Integer* hash) override;
 
+    virtual ECode RemoveRange(
+        /* [in] */ Integer fromIndex,
+        /* [in] */ Integer toIndex);
+
     ECode Contains(
         /* [in] */ IInterface* obj,
         /* [out] */ Boolean* result) override;
@@ -212,10 +216,6 @@ public:
 protected:
     ECode Constructor();
 
-    virtual ECode RemoveRange(
-        /* [in] */ Integer fromIndex,
-        /* [in] */ Integer toIndex);
-
 private:
     ECode RangeCheckForAdd(
         /* [in] */ Integer index);
@@ -223,10 +223,8 @@ private:
     String OutOfBoundsMsg(
         /* [in] */ Integer index);
 
-protected:
+public:
     Integer mModCount = 0;
-
-    friend class Sublist;
 };
 
 }

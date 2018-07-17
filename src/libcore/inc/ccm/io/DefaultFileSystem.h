@@ -14,26 +14,27 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_UTIL_CARRAYLIST_H__
-#define __CCM_UTIL_CARRAYLIST_H__
+#ifndef __CCM_IO_DEFAULTFILESYSTEM_H__
+#define __CCM_IO_DEFAULTFILESYSTEM_H__
 
-#include "ccm/util/ArrayList.h"
-#include "_ccm_util_CArrayList.h"
+#include "ccm/io/UnixFileSystem.h"
+#include <ccmautoptr.h>
 
 namespace ccm {
-namespace util {
+namespace io {
 
-Coclass(CArrayList)
-    , public ArrayList
+class DefaultFileSystem
 {
 public:
-    CCM_OBJECT_DECL();
-
-    ECode Clone(
-        /* [out] */ IInterface** obj) override;
+    static AutoPtr<FileSystem> GetFileSystem();
 };
 
+inline AutoPtr<FileSystem> DefaultFileSystem::GetFileSystem()
+{
+    return new UnixFileSystem();
+}
+
 }
 }
 
-#endif //__CCM_UTIL_CARRAYLIST_H__
+#endif // __CCM_IO_DEFAULTFILESYSTEM_H__

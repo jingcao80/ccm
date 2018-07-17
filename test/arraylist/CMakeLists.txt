@@ -14,10 +14,10 @@
 # limitations under the License.
 #=========================================================================
 
-project(CalendarTest CXX)
+project(ArrayListTest CXX)
 
-set(calendar_DIR ${TEST_DIR}/calendar)
-set(OBJ_DIR ${CMAKE_BINARY_DIR}/test/calendar)
+set(arraylist_DIR ${TEST_DIR}/arraylist)
+set(OBJ_DIR ${CMAKE_BINARY_DIR}/test/arraylist)
 
 include_directories(
     ./
@@ -31,12 +31,14 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/libcore.cpp)
 
 IMPORT_LIBRARY(ccmrt.so)
+IMPORT_LIBRARY(libcore.so)
+IMPORT_GTEST()
 
-add_executable(testCalendar
+add_executable(testArrayList
     ${SOURCES}
     ${GENERATED_SOURCES})
-target_link_libraries(testCalendar ccmrt.so)
-add_dependencies(testCalendar libservicemanager)
+target_link_libraries(testArrayList ccmrt.so libcore.so ${GTEST_LIBS})
+add_dependencies(testArrayList libservicemanager)
 
 add_custom_command(
     OUTPUT
@@ -50,10 +52,10 @@ add_custom_command(
         -d ${OBJ_DIR}
         "${BIN_DIR}/libcore.so")
 
-COPY(testCalendar ${OBJ_DIR}/testCalendar ${BIN_DIR})
+COPY(testArrayList ${OBJ_DIR}/testArrayList ${BIN_DIR})
 
 install(FILES
-    ${OBJ_DIR}/testCalendar
+    ${OBJ_DIR}/testArrayList
     DESTINATION ${BIN_DIR}
     PERMISSIONS
         OWNER_READ

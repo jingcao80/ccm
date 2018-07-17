@@ -14,6 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
+#include "ccm/util/CArrayList.h"
 #include "ccm/util/CDate.h"
 #include "ccm/util/CHashMap.h"
 #include "ccm/util/CHashtable.h"
@@ -26,6 +27,20 @@
 
 namespace ccm {
 namespace util {
+
+CCM_OBJECT_IMPL(CArrayList);
+ECode CArrayList::Clone(
+    /* [out] */ IInterface** obj)
+{
+    VALIDATE_NOT_NULL(obj);
+
+    AutoPtr<IArrayList> list;
+    CArrayList::New(IID_IArrayList, (IInterface**)&list);
+    FAIL_RETURN(ArrayList::CloneImpl(list));
+    *obj = list;
+    REFCOUNT_ADD(*obj);
+    return NOERROR;
+}
 
 CCM_OBJECT_IMPL(CDate);
 ECode CDate::Clone(
