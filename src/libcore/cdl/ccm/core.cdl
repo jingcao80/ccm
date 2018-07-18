@@ -42,6 +42,7 @@ include "ccm/core/ISynchronize.cdl"
 include "ccm/core/ISystem.cdl"
 include "ccm/core/IThread.cdl"
 include "ccm/core/IThreadGroup.cdl"
+include "ccm/core/IThreadLocal.cdl"
 
 namespace ccm {
 namespace core {

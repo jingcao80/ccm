@@ -24,6 +24,7 @@ include_directories(
     ${OBJ_DIR})
 
 set(SOURCES
+    BlockGuard.cpp
     CPathClassLoader.cpp)
 
 add_library(system STATIC

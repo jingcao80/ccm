@@ -53,6 +53,7 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_util_CDate.cpp
     ${OBJ_DIR}/_ccm_util_CHashMap.cpp
     ${OBJ_DIR}/_ccm_util_CHashtable.cpp
+    ${OBJ_DIR}/_ccm_util_CLinkedHashMap.cpp
     ${OBJ_DIR}/_ccm_util_CProperties.cpp
     ${OBJ_DIR}/_ccm_util_CStringTokenizer.cpp
     ${OBJ_DIR}/_ccm_util_calendar_CCalendarSystemFactory.cpp

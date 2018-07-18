@@ -17,6 +17,7 @@
 #ifndef __CCM_IO_UNIXFILESYSTEM_H__
 #define __CCM_IO_UNIXFILESYSTEM_H__
 
+#include "ccm/io/ExpiringCache.h"
 #include "ccm/io/FileSystem.h"
 
 namespace ccm {
@@ -66,10 +67,21 @@ public:
         /* [in] */ const String& path,
         /* [out] */ String* canonicalizedPath) override;
 
+    ECode GetBooleanAttributes(
+        /* [in] */ IFile* f,
+        /* [out] */ Integer* attr) override;
+
+private:
+    ECode Canonicalize0(
+        /* [in] */ const String& path,
+        /* [out] */ String* canonicalizedPath);
+
 private:
     Char mSlash;
     Char mColon;
     String mCcmHome;
+    ExpiringCache mCache;
+    ExpiringCache mCcmHomePrefixCache;
 };
 
 }

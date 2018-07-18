@@ -14,25 +14,26 @@
 // limitations under the License.
 //=========================================================================
 
-include "ccmrt/system/IBlockGuard.cdl"
+#ifndef __CCM_UTIL_CLINKEDHASHMAP_H__
+#define __CCM_UTIL_CLINKEDHASHMAP_H__
 
-interface ccm::IClassLoader;
+#include "ccm/util/LinkedHashMap.h"
+#include "_ccm_util_CLinkedHashMap.h"
 
-namespace ccmrt {
-namespace system {
+namespace ccm {
+namespace util {
 
-[
-    uuid(dfa48353-9f1b-453d-a227-00f2390abe44),
-    version(0.1.0)
-]
-coclass CPathClassLoader
+Coclass(CLinkedHashMap)
+    , public LinkedHashMap
 {
-    Constructor (
-        [in] String classPath,
-        [in] IClassLoader* parent);
+public:
+    CCM_OBJECT_DECL();
 
-    interface IClassLoader;
-}
+    ECode Clone(
+        /* [out] */ IInterface** obj) override;
+};
 
 }
 }
+
+#endif // __CCM_UTIL_CLINKEDHASHMAP_H__

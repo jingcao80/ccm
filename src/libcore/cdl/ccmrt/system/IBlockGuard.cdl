@@ -14,24 +14,49 @@
 // limitations under the License.
 //=========================================================================
 
-include "ccmrt/system/IBlockGuard.cdl"
-
-interface ccm::IClassLoader;
-
 namespace ccmrt {
 namespace system {
 
 [
-    uuid(dfa48353-9f1b-453d-a227-00f2390abe44),
+    uuid(17faccd7-40f0-43ba-a68a-b127bf175642),
     version(0.1.0)
 ]
-coclass CPathClassLoader
+interface IBlockGuardPolicy
 {
-    Constructor (
-        [in] String classPath,
-        [in] IClassLoader* parent);
+    OnWriteToDisk();
 
-    interface IClassLoader;
+    OnReadFromDisk();
+
+    OnNetwork();
+
+    OnUnbufferedIO();
+
+    GetPolicyMask(
+        [out] Integer* mask);
+}
+
+[
+    uuid(eca31f7d-c4f5-4bb4-af3e-c015af278c29),
+    version(0.1.0)
+]
+interface IBlockGuard
+{
+    const Integer DISALLOW_DISK_WRITE = 0x01;
+    const Integer DISALLOW_DISK_READ = 0x02;
+    const Integer DISALLOW_NETWORK = 0x04;
+    const Integer PASS_RESTRICTIONS_VIA_RPC = 0x08;
+    const Integer PENALTY_LOG = 0x10;
+    const Integer PENALTY_DIALOG = 0x20;
+    const Integer PENALTY_DEATH = 0x40;
+
+    GetLaxPolicy(
+        [out] IBlockGuardPolicy** policy);
+
+    GetThreadPolicy(
+        [out] IBlockGuardPolicy** policy);
+
+    SetThreadPolicy(
+        [in] IBlockGuardPolicy* policy);
 }
 
 }

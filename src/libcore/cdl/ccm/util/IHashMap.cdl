@@ -18,10 +18,9 @@ namespace ccm {
 namespace util {
 
 /**
- * @Involve
- * interface IMap;
- * interface ICloneable;
- * interface ISerializable;
+ * @Involve interface ccm::util::IMap
+ * @Involve interface ccm::core::ICloneable
+ * @Involve interface ccm::io::ISerializable
  */
 [
     uuid(3b25617c-5ccc-428c-8daf-1bdc855ce1a8),

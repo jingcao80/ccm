@@ -18,6 +18,7 @@
 #include "ccm/util/CDate.h"
 #include "ccm/util/CHashMap.h"
 #include "ccm/util/CHashtable.h"
+#include "ccm/util/CLinkedHashMap.h"
 #include "ccm/util/CProperties.h"
 #include "ccm/util/CStringTokenizer.h"
 #include "ccm/util/calendar/CEra.h"
@@ -73,6 +74,20 @@ ECode CHashtable::Clone(
     CHashtable::New(IID_IHashtable, (IInterface**)&ht);
     FAIL_RETURN(Hashtable::CloneImpl(ht));
     *obj = ht;
+    REFCOUNT_ADD(*obj);
+    return NOERROR;
+}
+
+CCM_OBJECT_IMPL(CLinkedHashMap);
+ECode CLinkedHashMap::Clone(
+/* [out] */ IInterface** obj)
+{
+    VALIDATE_NOT_NULL(obj);
+
+    AutoPtr<ILinkedHashMap> map;
+    CLinkedHashMap::New(IID_ILinkedHashMap, (IInterface**)&map);
+    FAIL_RETURN(LinkedHashMap::CloneImpl(map));
+    *obj = map;
     REFCOUNT_ADD(*obj);
     return NOERROR;
 }

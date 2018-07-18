@@ -14,24 +14,24 @@
 // limitations under the License.
 //=========================================================================
 
-include "ccmrt/system/IBlockGuard.cdl"
+interface ccm::util::IMapEntry;
 
-interface ccm::IClassLoader;
+namespace ccm {
+namespace util {
 
-namespace ccmrt {
-namespace system {
-
+/**
+ * @Involve interface ccm::util::IMap
+ * @Involve interface ccm::core::ICloneable
+ * @Involve interface ccm::io::ISerializable
+ */
 [
-    uuid(dfa48353-9f1b-453d-a227-00f2390abe44),
+    uuid(b916c8bb-1d3e-4c7b-9d68-794c586a5e46),
     version(0.1.0)
 ]
-coclass CPathClassLoader
+interface ILinkedHashMap
 {
-    Constructor (
-        [in] String classPath,
-        [in] IClassLoader* parent);
-
-    interface IClassLoader;
+    GetEldest(
+        [out] IMapEntry** entry);
 }
 
 }

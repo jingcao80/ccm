@@ -14,24 +14,20 @@
 // limitations under the License.
 //=========================================================================
 
-include "ccmrt/system/IBlockGuard.cdl"
-
-interface ccm::IClassLoader;
-
-namespace ccmrt {
-namespace system {
+namespace ccm {
+namespace core {
 
 [
-    uuid(dfa48353-9f1b-453d-a227-00f2390abe44),
+    uuid(8d3b5361-18be-40a4-8a8d-7ded4ac1824f),
     version(0.1.0)
 ]
-coclass CPathClassLoader
+interface IThreadLocal
 {
-    Constructor (
-        [in] String classPath,
-        [in] IClassLoader* parent);
+    Get(
+        [out] IInterface** value);
 
-    interface IClassLoader;
+    Set(
+        [in] IInterface* value);
 }
 
 }

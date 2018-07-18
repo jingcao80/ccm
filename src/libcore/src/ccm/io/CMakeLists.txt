@@ -27,6 +27,7 @@ include_directories(
 
 set(SOURCES
     BufferedWriter.cpp
+    ExpiringCache.cpp
     FileSystem.cpp
     OutputStreamWriter.cpp
     UnixFileSystem.cpp

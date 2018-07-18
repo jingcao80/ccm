@@ -173,6 +173,26 @@ ECode UnixFileSystem::Canonicalize(
     /* [in] */ const String& path,
     /* [out] */ String* canonicalizedPath)
 {
+    VALIDATE_NOT_NULL(canonicalizedPath);
+
+    if (!sUseCanonCaches) {
+        return Canonicalize0(path, canonicalizedPath);
+    }
+    else {
+        String res = mCache.Get(path);
+        if (res.IsNull()) {
+            String dir;
+            String resDir;
+        }
+        *canonicalizedPath = res;
+        return NOERROR;
+    }
+}
+
+ECode UnixFileSystem::GetBooleanAttributes(
+    /* [in] */ IFile* f,
+    /* [out] */ Integer* attr)
+{
     return NOERROR;
 }
 

@@ -23,6 +23,7 @@ include "ccm/util/IEnumeration.cdl"
 include "ccm/util/IHashtable.cdl"
 include "ccm/util/IHashMap.cdl"
 include "ccm/util/IIterator.cdl"
+include "ccm/util/ILinkedHashMap.cdl"
 include "ccm/util/IList.cdl"
 include "ccm/util/IListIterator.cdl"
 include "ccm/util/ILocale.cdl"
@@ -154,6 +155,36 @@ coclass CHashtable
 
     interface IHashtable;
     interface IDictionary;
+    interface IMap;
+    interface ICloneable;
+    interface ISerializable;
+}
+
+[
+    uuid(737c1ff9-c4b3-4d55-a67f-160a411d289b),
+    version(0.1.0)
+]
+coclass CLinkedHashMap
+{
+    Constructor();
+
+    Constructor(
+        [in] Integer initialCapacity);
+
+    Constructor(
+        [in] Integer initialCapacity,
+        [in] Float loadFactor);
+
+    Constructor(
+        [in] Integer initialCapacity,
+        [in] Float loadFactor,
+        [in] Boolean accessOrder);
+
+    Constructor(
+        [in] IMap* m);
+
+    interface ILinkedHashMap;
+    interface IHashMap;
     interface IMap;
     interface ICloneable;
     interface ISerializable;
