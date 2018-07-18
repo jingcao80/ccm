@@ -14,28 +14,44 @@
 // limitations under the License.
 //=========================================================================
 
+#ifndef __CCM_IO_CFILE_H__
+#define __CCM_IO_CFILE_H__
+
+#include "ccm/core/SyncObject.h"
+#include "ccm.io.IFile.h"
+#include "_ccm_io_CFile.h"
+
+using ccm::core::SyncObject;
+
 namespace ccm {
 namespace io {
 
-[
-    uuid(64d64034-3b89-4cc0-b446-d20c3a6a0f8f),
-    version(0.1.0)
-]
-interface IFile
+Coclass(CFile)
+    , public SyncObject
+    , public IFile
 {
-    Exists(
-        [out] Boolean* existed);
+public:
+    CCM_INTERFACE_DECL();
 
-    GetPath(
-        [out] String* path);
+    CCM_OBJECT_DECL();
 
-    // @hide
-    GetPrefixLength(
-        [out] Integer* length);
+    ECode Constructor(
+        /* [in] */ const String& pathname);
 
-    IsDirectory(
-        [out] Boolean* directory);
+    ECode Exists(
+        /* [out] */ Boolean* existed) override;
+
+    ECode GetPath(
+        /* [out] */ String* path) override;
+
+    ECode GetPrefixLength(
+        /* [out] */ Integer* length) override;
+
+    ECode IsDirectory(
+        /* [out] */ Boolean* directory) override;
+};
+
+}
 }
 
-}
-}
+#endif // __CCM_IO_CFILE_H__

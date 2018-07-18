@@ -60,6 +60,18 @@ coclass CBufferedWriter
 }
 
 [
+    uuid(0d9c5571-7eaa-44e1-815f-c6af421c780d),
+    version(0.1.0)
+]
+coclass CFile
+{
+    Constructor(
+        [in] String pathname);
+
+    interface IFile;
+}
+
+[
     uuid(3f1442a5-ce76-40b3-8889-c9431c810c1d),
     version(0.1.0)
 ]

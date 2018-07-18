@@ -463,6 +463,13 @@ inline String operator+(
     return ret += string2;
 }
 
+inline String operator+(
+    /* [in] */ const String& string1,
+    /* [in] */ Char c)
+{
+    return String::Format("%s%c", string1.string(), c);
+}
+
 }
 
 #endif //__CCM_STRING_H__

@@ -71,6 +71,10 @@ public:
         /* [in] */ IFile* f,
         /* [out] */ Integer* attr) override;
 
+protected:
+    static String ParentOrNull(
+        /* [in] */ const String& path);
+
 private:
     ECode Canonicalize0(
         /* [in] */ const String& path,

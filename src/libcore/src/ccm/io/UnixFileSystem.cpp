@@ -15,9 +15,16 @@
 //=========================================================================
 
 #include "ccm/core/System.h"
+#include "ccm/io/CFile.h"
 #include "ccm/io/UnixFileSystem.h"
+#include "ccmrt/system/BlockGuard.h"
+#include "ccmrt.system.IBlockGuardPolicy.h"
 
 using ccm::core::System;
+using ccm::io::CFile;
+using ccm::io::IFile;
+using ccmrt::system::BlockGuard;
+using ccmrt::system::IBlockGuardPolicy;
 
 namespace ccm {
 namespace io {
@@ -183,6 +190,45 @@ ECode UnixFileSystem::Canonicalize(
         if (res.IsNull()) {
             String dir;
             String resDir;
+            if (sUseCanonPrefixCache) {
+                // Note that this can cause symlinks that should
+                // be resolved to a destination directory to be
+                // resolved to the directory they're contained in
+                dir = ParentOrNull(path);
+                if (!dir.IsNull()) {
+                    resDir = mCcmHomePrefixCache.Get(dir);
+                    if (!resDir.IsNull()) {
+                        // Hit only in prefix cache; full path is canonical
+                        String filename = path.Substring(1 + dir.GetLength());
+                        res = resDir + mSlash + filename;
+                        mCache.Put(dir + mSlash + filename, res);
+                    }
+                }
+            }
+            if (res.IsNull()) {
+                AutoPtr<IBlockGuardPolicy> policy;
+                BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+                FAIL_RETURN(policy->OnReadFromDisk());
+                FAIL_RETURN(Canonicalize0(path, &res));
+                mCache.Put(path, res);
+                if (sUseCanonPrefixCache &&
+                        !dir.IsNull() && dir.StartsWith(mCcmHome)) {
+                    resDir = ParentOrNull(res);
+                    // Note that we don't allow a resolved symlink
+                    // to elsewhere in java.home to pollute the
+                    // prefix cache (java.home prefix cache could
+                    // just as easily be a set at this point)
+                    if (!resDir.IsNull() && resDir.Equals(dir)) {
+                        AutoPtr<IFile> f;
+                        CFile::New(res, IID_IFile, (IInterface**)&f);
+                        Boolean result;
+                        if ((f->Exists(&result), result) &&
+                            (f->IsDirectory(&result), !result)) {
+                            mCcmHomePrefixCache.Put(dir, resDir);
+                        }
+                    }
+                }
+            }
         }
         *canonicalizedPath = res;
         return NOERROR;

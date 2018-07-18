@@ -14,27 +14,42 @@
 // limitations under the License.
 //=========================================================================
 
+#include "ccm/io/CFile.h"
+
 namespace ccm {
 namespace io {
 
-[
-    uuid(64d64034-3b89-4cc0-b446-d20c3a6a0f8f),
-    version(0.1.0)
-]
-interface IFile
+CCM_INTERFACE_IMPL_1(CFile, SyncObject, IFile);
+CCM_OBJECT_IMPL(CFile);
+
+ECode CFile::Constructor(
+    /* [in] */ const String& pathname)
 {
-    Exists(
-        [out] Boolean* existed);
+    return NOERROR;
+}
 
-    GetPath(
-        [out] String* path);
+ECode CFile::Exists(
+    /* [out] */ Boolean* existed)
+{
+    return NOERROR;
+}
 
-    // @hide
-    GetPrefixLength(
-        [out] Integer* length);
+ECode CFile::GetPath(
+    /* [out] */ String* path)
+{
+    return NOERROR;
+}
 
-    IsDirectory(
-        [out] Boolean* directory);
+ECode CFile::GetPrefixLength(
+    /* [out] */ Integer* length)
+{
+    return NOERROR;
+}
+
+ECode CFile::IsDirectory(
+    /* [out] */ Boolean* directory)
+{
+    return NOERROR;
 }
 
 }
