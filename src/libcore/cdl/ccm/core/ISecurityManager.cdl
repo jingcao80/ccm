@@ -23,6 +23,9 @@ namespace core {
 ]
 interface ISecurityManager
 {
+    CheckRead(
+        [in] String file);
+
     CheckPropertyAccess(
         [in] String key);
 }

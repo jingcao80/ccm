@@ -26,6 +26,8 @@ interface IThreadLocal
     Get(
         [out] IInterface** value);
 
+    Remove();
+
     Set(
         [in] IInterface* value);
 }

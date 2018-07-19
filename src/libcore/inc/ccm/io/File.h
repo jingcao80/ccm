@@ -14,31 +14,19 @@
 // limitations under the License.
 //=========================================================================
 
+#ifndef __CCM_IO_FILE_H__
+#define __CCM_IO_FILE_H__
+
 namespace ccm {
 namespace io {
 
-[
-    uuid(64d64034-3b89-4cc0-b446-d20c3a6a0f8f),
-    version(0.1.0)
-]
-interface IFile
+class File
 {
-    Exists(
-        [out] Boolean* existed);
-
-    GetName(
-        [out] String* name);
-
-    GetPath(
-        [out] String* path);
-
-    // @hide
-    GetPrefixLength(
-        [out] Integer* length);
-
-    IsDirectory(
-        [out] Boolean* directory);
-}
+public:
+    static Char GetSeparatorChar();
+};
 
 }
 }
+
+#endif // __CCM_IO_FILE_H__

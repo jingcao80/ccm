@@ -14,31 +14,23 @@
 // limitations under the License.
 //=========================================================================
 
+#ifndef __CCM_CORE_CTHREADLOCAL_H__
+#define __CCM_CORE_CTHREADLOCAL_H__
+
+#include "ccm/core/ThreadLocal.h"
+#include "_ccm_core_CThreadLocal.h"
+
 namespace ccm {
-namespace io {
+namespace core {
 
-[
-    uuid(64d64034-3b89-4cc0-b446-d20c3a6a0f8f),
-    version(0.1.0)
-]
-interface IFile
+Coclass(CThreadLocal)
+    , public ThreadLocal
 {
-    Exists(
-        [out] Boolean* existed);
-
-    GetName(
-        [out] String* name);
-
-    GetPath(
-        [out] String* path);
-
-    // @hide
-    GetPrefixLength(
-        [out] Integer* length);
-
-    IsDirectory(
-        [out] Boolean* directory);
-}
+public:
+    CCM_OBJECT_DECL();
+};
 
 }
 }
+
+#endif // __CCM_CORE_CTHREADLOCAL_H__

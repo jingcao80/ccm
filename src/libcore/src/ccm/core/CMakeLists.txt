@@ -63,6 +63,7 @@ set(SOURCES
     System.cpp
     Thread.cpp
     ThreadGroup.cpp
+    ThreadLocal.cpp
     cbigint.cpp
     core.cpp
     init.cpp

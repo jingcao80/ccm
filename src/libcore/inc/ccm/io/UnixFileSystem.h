@@ -71,6 +71,73 @@ public:
         /* [in] */ IFile* f,
         /* [out] */ Integer* attr) override;
 
+    ECode CheckAccess(
+        /* [in] */ IFile* f,
+        /* [in] */ Integer access,
+        /* [out] */ Boolean* result) override;
+
+    ECode GetLastModifiedTime(
+        /* [in] */ IFile* f,
+        /* [out] */ Long* time) override;
+
+    ECode GetLength(
+        /* [in] */ IFile* f,
+        /* [out] */ Long* length) override;
+
+    ECode SetPermission(
+        /* [in] */ IFile* f,
+        /* [in] */ Integer access,
+        /* [in] */ Boolean enable,
+        /* [in] */ Boolean owneronly,
+        /* [out] */ Boolean* succeeded) override;
+
+    ECode CreateFileExclusively(
+        /* [in] */ const String& pathname,
+        /* [out] */ Boolean* succeeded) override;
+
+    ECode Delete(
+        /* [in] */ IFile* f,
+        /* [out] */ Boolean* succeeded) override;
+
+    ECode List(
+        /* [in] */ IFile* f,
+        /* [out, callee] */ Array<String>* elements) override;
+
+    ECode CreateDirectory(
+        /* [in] */ IFile* f,
+        /* [out] */ Boolean* succeeded) override;
+
+    ECode Rename(
+        /* [in] */ IFile* f1,
+        /* [in] */ IFile* f2,
+        /* [out] */ Boolean* succeeded) override;
+
+    ECode SetLastModifiedTime(
+        /* [in] */ IFile* f,
+        /* [in] */ Long time,
+        /* [out] */ Boolean* succeeded) override;
+
+    ECode SetReadOnly(
+        /* [in] */ IFile* f,
+        /* [out] */ Boolean* succeeded) override;
+
+    ECode ListRoots(
+        /* [out, callee] */ Array<IFile*>* roots) override;
+
+    ECode GetSpace(
+        /* [in] */ IFile* f,
+        /* [in] */ Integer t,
+        /* [out] */ Long* space) override;
+
+    ECode Compare(
+        /* [in] */ IFile* f1,
+        /* [in] */ IFile* f2,
+        /* [out] */ Integer* result) override;
+
+    ECode GetHashCode(
+        /* [in] */ IFile* f,
+        /* [out] */ Integer* hash) override;
+
 protected:
     static String ParentOrNull(
         /* [in] */ const String& path);
@@ -79,6 +146,54 @@ private:
     ECode Canonicalize0(
         /* [in] */ const String& path,
         /* [out] */ String* canonicalizedPath);
+
+    Integer GetBooleanAttributes0(
+        /* [in] */ const String& abspath);
+
+    Boolean CheckAccess0(
+        /* [in] */ IFile* f,
+        /* [in] */ Integer access);
+
+    Long GetLastModifiedTime0(
+        /* [in] */ IFile* f);
+
+    Long GetLength0(
+        /* [in] */ IFile* f);
+
+    Boolean SetPermission0(
+        /* [in] */ IFile* f,
+        /* [in] */ Integer access,
+        /* [in] */ Boolean enable,
+        /* [in] */ Boolean owneronly);
+
+    ECode CreateFileExclusively0(
+        /* [in] */ const String& path,
+        /* [out] */ Boolean* succeeded);
+
+    Boolean Delete0(
+        /* [in] */ IFile* f);
+
+    ECode List0(
+        /* [in] */ IFile* f,
+        /* [out, callee] */ Array<String>* elements);
+
+    Boolean CreateDirectory0(
+        /* [in] */ IFile* f);
+
+    Boolean Rename0(
+        /* [in] */ IFile* f1,
+        /* [in] */ IFile* f2);
+
+    Boolean SetLastModifiedTime0(
+        /* [in] */ IFile* f,
+        /* [in] */ Long time);
+
+    Boolean SetReadOnly0(
+        /* [in] */ IFile* f);
+
+    Long GetSpace0(
+        /* [in] */ IFile* f,
+        /* [in] */ Integer t);
 
 private:
     Char mSlash;

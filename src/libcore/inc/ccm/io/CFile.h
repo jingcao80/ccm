@@ -18,6 +18,7 @@
 #define __CCM_IO_CFILE_H__
 
 #include "ccm/core/SyncObject.h"
+#include "ccm/io/File.h"
 #include "ccm.io.IFile.h"
 #include "_ccm_io_CFile.h"
 
@@ -40,6 +41,9 @@ public:
 
     ECode Exists(
         /* [out] */ Boolean* existed) override;
+
+    ECode GetName(
+        /* [out] */ String* name) override;
 
     ECode GetPath(
         /* [out] */ String* path) override;

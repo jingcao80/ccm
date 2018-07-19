@@ -110,5 +110,16 @@ coclass CThreadGroup
     interface IThreadGroup;
 }
 
+[
+    uuid(dce1a0c3-b23d-4b89-bdaf-8a1bf581ee44),
+    version(0.1.0)
+]
+coclass CThreadLocal
+{
+    Constructor();
+
+    interface IThreadLocal;
+}
+
 }
 }

@@ -29,11 +29,14 @@ set(SOURCES
     BufferedWriter.cpp
     CFile.cpp
     ExpiringCache.cpp
+    File.cpp
     FileSystem.cpp
     OutputStreamWriter.cpp
     UnixFileSystem.cpp
     Writer.cpp
-    io.cpp)
+    canonicalize_md.cpp
+    io.cpp
+    io_util_md.cpp)
 
 add_library(io STATIC
     ${SOURCES})

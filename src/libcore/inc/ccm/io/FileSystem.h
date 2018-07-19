@@ -91,7 +91,7 @@ public:
 
     virtual ECode GetLength(
         /* [in] */ IFile* f,
-        /* [out] */ Long length) = 0;
+        /* [out] */ Long* length) = 0;
 
     virtual ECode CreateFileExclusively(
         /* [in] */ const String& pathname,

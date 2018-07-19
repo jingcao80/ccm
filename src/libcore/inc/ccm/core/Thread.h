@@ -18,6 +18,7 @@
 #define __CCM_CORE_THREAD_H__
 
 #include "ccm/core/Runnable.h"
+#include "ccm/core/ThreadLocal.h"
 #include "ccm.core.IStackTraceElement.h"
 #include "ccm.core.IThread.h"
 #include "ccm.core.IThreadGroup.h"
@@ -220,8 +221,6 @@ private:
     static SyncObject* GetStaticLock();
 
 private:
-    friend class NativeThread;
-
     /**
      * The synchronization object responsible for this thread's join/sleep/park operations.
      */
@@ -247,6 +246,8 @@ private:
     /* The context ClassLoader for this thread */
     AutoPtr<IClassLoader> mContextClassLoader;
 
+    AutoPtr<ThreadLocal::ThreadLocalMap> mThreadLocals;
+
     Long mStackSize;
 
     Long mTid;
@@ -260,6 +261,9 @@ private:
     static constexpr Integer NANOS_PER_MILLI = 1000000;
 
     Integer mParkState = ParkState::UNPARKED;
+
+    friend class NativeThread;
+    friend class ThreadLocal;
 };
 
 inline Thread* Thread::From(

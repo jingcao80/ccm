@@ -34,6 +34,12 @@ ECode CFile::Exists(
     return NOERROR;
 }
 
+ECode CFile::GetName(
+    /* [out] */ String* name)
+{
+    return NOERROR;
+}
+
 ECode CFile::GetPath(
     /* [out] */ String* path)
 {

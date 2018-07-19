@@ -13,32 +13,3 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //=========================================================================
-
-namespace ccm {
-namespace io {
-
-[
-    uuid(64d64034-3b89-4cc0-b446-d20c3a6a0f8f),
-    version(0.1.0)
-]
-interface IFile
-{
-    Exists(
-        [out] Boolean* existed);
-
-    GetName(
-        [out] String* name);
-
-    GetPath(
-        [out] String* path);
-
-    // @hide
-    GetPrefixLength(
-        [out] Integer* length);
-
-    IsDirectory(
-        [out] Boolean* directory);
-}
-
-}
-}

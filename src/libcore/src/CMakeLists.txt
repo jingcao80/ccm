@@ -47,6 +47,7 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_core_CSystem.cpp
     ${OBJ_DIR}/_ccm_core_CThread.cpp
     ${OBJ_DIR}/_ccm_core_CThreadGroup.cpp
+    ${OBJ_DIR}/_ccm_core_CThreadLocal.cpp
     ${OBJ_DIR}/_ccm_io_CBufferedWriter.cpp
     ${OBJ_DIR}/_ccm_io_CFile.cpp
     ${OBJ_DIR}/_ccm_io_COutputStreamWriter.cpp

@@ -14,8 +14,11 @@
 // limitations under the License.
 //=========================================================================
 
+#include "ccm/core/ThreadLocal.h"
 #include "ccmrt/system/BlockGuard.h"
 #include <ccmlogger.h>
+
+using ccm::core::ThreadLocal;
 
 namespace ccmrt {
 namespace system {
@@ -26,9 +29,27 @@ AutoPtr<IBlockGuardPolicy> BlockGuard::GetLAX_POLICY()
     return LAX_POLICY;
 }
 
+static AutoPtr<IThreadLocal> CreateThreadLocal()
+{
+    class _ThreadLocal
+        : public ThreadLocal
+    {
+    protected:
+        AutoPtr<IInterface> InitialValue() override
+        {
+            return BlockGuard::GetLAX_POLICY().Get();
+        }
+    };
+
+    AutoPtr<_ThreadLocal> tl = new _ThreadLocal();
+    tl->Constructor();
+    return tl.Get();
+}
+
 AutoPtr<IThreadLocal> BlockGuard::GetPolicyThreadLocal()
 {
-    return nullptr;
+    static AutoPtr<IThreadLocal> sThreadPolicy = CreateThreadLocal();
+    return sThreadPolicy;
 }
 
 ECode BlockGuard::GetThreadPolicy(
