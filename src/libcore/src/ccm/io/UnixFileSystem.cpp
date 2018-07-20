@@ -37,7 +37,7 @@ using ccm::io::IFile;
 using ccmrt::system::BlockGuard;
 using ccmrt::system::IBlockGuardPolicy;
 
-extern int canonicalize(char *path, const char *out, int len);
+extern int canonicalize(char *path, char *out, int len);
 int handleOpen(const char *path, int oflag, int mode);
 
 namespace ccm {

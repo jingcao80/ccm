@@ -15,12 +15,14 @@
 //=========================================================================
 
 #include "ccm/io/CBufferedWriter.h"
+#include "ccm/io/CFile.h"
 #include "ccm/io/COutputStreamWriter.h"
 
 namespace ccm {
 namespace io {
 
 CCM_OBJECT_IMPL(CBufferedWriter);
+CCM_OBJECT_IMPL(CFile);
 CCM_OBJECT_IMPL(COutputStreamWriter);
 
 }

@@ -41,6 +41,7 @@ include "ccm/util/calendar/IGregorian.cdl"
 include "ccm/util/calendar/IJulianCalendar.cdl"
 include "ccm/util/calendar/ILocalGregorianCalendar.cdl"
 include "ccm/util/concurrent/IConcurrentMap.cdl"
+include "ccm/util/concurrent/atomic/IAtomicInteger.cdl"
 include "ccm/util/regex/Exceptions.cdl"
 include "ccm/util/regex/IMatcher.cdl"
 include "ccm/util/regex/IMatchResult.cdl"
@@ -49,6 +50,7 @@ include "ccm/util/regex/IPattern.cdl"
 interface ccm::core::ICloneable;
 interface ccm::core::IComparable;
 interface ccm::core::IIterable;
+interface ccm::core::INumber;
 interface ccm::io::ISerializable;
 
 namespace ccm {
@@ -299,6 +301,30 @@ coclass CLocalGregorianCalendar
     interface ILocalGregorianCalendar;
     interface IBaseCalendar;
     interface ICalendarSystem;
+}
+
+}
+
+namespace concurrent {
+
+namespace atomic {
+
+[
+    uuid(37e94445-0ee6-460f-9105-4afed59d6586),
+    version(0.1.0)
+]
+coclass CAtomicInteger
+{
+    Constructor();
+
+    Constructor(
+        [in] Integer initialValue);
+
+    interface IAtomicInteger;
+    interface INumber;
+    interface ISerializable;
+}
+
 }
 
 }

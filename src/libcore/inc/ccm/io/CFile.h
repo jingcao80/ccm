@@ -17,42 +17,17 @@
 #ifndef __CCM_IO_CFILE_H__
 #define __CCM_IO_CFILE_H__
 
-#include "ccm/core/SyncObject.h"
 #include "ccm/io/File.h"
-#include "ccm.io.IFile.h"
 #include "_ccm_io_CFile.h"
-
-using ccm::core::SyncObject;
 
 namespace ccm {
 namespace io {
 
 Coclass(CFile)
-    , public SyncObject
-    , public IFile
+    , public File
 {
 public:
-    CCM_INTERFACE_DECL();
-
     CCM_OBJECT_DECL();
-
-    ECode Constructor(
-        /* [in] */ const String& pathname);
-
-    ECode Exists(
-        /* [out] */ Boolean* existed) override;
-
-    ECode GetName(
-        /* [out] */ String* name) override;
-
-    ECode GetPath(
-        /* [out] */ String* path) override;
-
-    ECode GetPrefixLength(
-        /* [out] */ Integer* length) override;
-
-    ECode IsDirectory(
-        /* [out] */ Boolean* directory) override;
 };
 
 }

@@ -28,6 +28,9 @@ interface ISecurityManager
 
     CheckPropertyAccess(
         [in] String key);
+
+    CheckWrite(
+        [in] String file);
 }
 
 }

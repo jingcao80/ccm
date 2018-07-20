@@ -17,6 +17,9 @@
 namespace ccm {
 namespace core {
 
+/*
+ * @Involve interface ccm::io::ISerializable
+ */
 [
     uuid(0098d083-e425-45a0-b842-2f76869f7c7e),
     version(0.1.0)

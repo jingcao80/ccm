@@ -35,6 +35,7 @@ include "ccm/io/charset/IStreamEncoder.cdl"
 interface ccm::core::IAppendable;
 interface ccm::io::charset::ICharset;
 interface ccm::io::charset::ICharsetEncoder;
+interface ccm::net::IURI;
 
 namespace ccm {
 namespace io {
@@ -67,6 +68,27 @@ coclass CFile
 {
     Constructor(
         [in] String pathname);
+
+    Constructor(
+        [in] String parent,
+        [in] String child);
+
+    Constructor(
+        [in] IFile* parent,
+        [in] String child);
+
+    Constructor(
+        [in] IURI* uri);
+
+    // @hide
+    Constructor(
+        [in] String pathname,
+        [in] Integer prefixLength);
+
+    // @hide
+    Constructor(
+        [in] String child,
+        [in] IFile* parent);
 
     interface IFile;
 }

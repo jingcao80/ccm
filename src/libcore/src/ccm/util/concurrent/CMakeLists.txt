@@ -14,20 +14,19 @@
 # limitations under the License.
 #=========================================================================
 
-set(TEST_DIR ${PROJECT_DIR}/test)
+set(CONCURRENT_DIR ${UTIL_DIR}/concurrent)
 
-add_subdirectory(arraylist)
-add_subdirectory(atomicinteger)
-add_subdirectory(autoptr)
-add_subdirectory(calendar)
-add_subdirectory(hashmap)
-add_subdirectory(hashtable)
-add_subdirectory(localstaticvariable)
-# testMutex tests mutex in ccmrt, so running testMutex needs export
-# mutex.h and related methods from ccmrt.so
-#add_subdirectory(mutex)
-add_subdirectory(reflection)
-add_subdirectory(rpc)
-add_subdirectory(string)
-add_subdirectory(stringtokenizer)
-add_subdirectory(thread)
+include_directories(
+    ./
+    ../
+    ../../../../inc
+    ${INC_DIR}
+    ${OBJ_DIR})
+
+set(SOURCES
+    concurrent.cpp
+    atomic/AtomicInteger.cpp)
+
+add_library(concurrent STATIC
+    ${SOURCES})
+add_dependencies(concurrent build_libcore)

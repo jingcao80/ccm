@@ -24,6 +24,7 @@ include_directories(
     ${OBJ_DIR})
 
 add_subdirectory(calendar)
+add_subdirectory(concurrent)
 add_subdirectory(regex)
 
 set(SOURCES

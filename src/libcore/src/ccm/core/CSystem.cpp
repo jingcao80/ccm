@@ -32,5 +32,14 @@ ECode CSystem::GetCurrentTimeMillis(
     return NOERROR;
 }
 
+ECode CSystem::GetNanoTime(
+    /* [out] */ Long* time)
+{
+    VALIDATE_NOT_NULL(time);
+
+    *time = System::GetNanoTime();
+    return NOERROR;
+}
+
 }
 }

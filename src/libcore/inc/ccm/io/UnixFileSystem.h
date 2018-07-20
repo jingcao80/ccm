@@ -203,6 +203,9 @@ private:
     ExpiringCache mCcmHomePrefixCache;
 };
 
+inline UnixFileSystem::UnixFileSystem()
+{}
+
 }
 }
 

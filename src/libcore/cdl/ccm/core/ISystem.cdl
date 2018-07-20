@@ -25,6 +25,9 @@ interface ISystem
 {
     GetCurrentTimeMillis(
         [out] Long* millis);
+
+    GetNanoTime(
+        [out] Long* time);
 }
 
 }

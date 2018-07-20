@@ -14,18 +14,16 @@
 // limitations under the License.
 //=========================================================================
 
-[
-    uuid(3657416d-4638-4843-a0b9-eb7ef1794495),
-    url("http://ccm.org/component/library/libcore.so")
-]
-module libcore
-{
+#include "ccm/util/concurrent/atomic/CAtomicInteger.h"
 
-include "ccm/core.cdl"
-include "ccm/io.cdl"
-include "ccm/core2.cdl"
-include "ccm/net.cdl"
-include "ccm/util.cdl"
-include "ccmrt/system.cdl"
+namespace ccm {
+namespace util {
+namespace concurrent {
+namespace atomic {
 
+CCM_OBJECT_IMPL(CAtomicInteger);
+
+}
+}
+}
 }

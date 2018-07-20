@@ -58,11 +58,18 @@ class QuasiAtomic
 {
 public:
     static void ThreadFenceAcquire();
+
+    static void ThreadFenceRelease();
 };
 
 inline void QuasiAtomic::ThreadFenceAcquire()
 {
     std::atomic_thread_fence(std::memory_order_acquire);
+}
+
+inline void QuasiAtomic::ThreadFenceRelease()
+{
+    std::atomic_thread_fence(std::memory_order_release);
 }
 
 

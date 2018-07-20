@@ -35,6 +35,9 @@ public:
 
     ECode GetCurrentTimeMillis(
         /* [out] */ Long* millis) override;
+
+    ECode GetNanoTime(
+        /* [out] */ Long* time) override;
 };
 
 }

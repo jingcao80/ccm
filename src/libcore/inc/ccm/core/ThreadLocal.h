@@ -20,9 +20,12 @@
 #include "ccm/core/SyncObject.h"
 #include "ccm.core.IThread.h"
 #include "ccm.core.IThreadLocal.h"
+#include "ccm.util.concurrent.atomic.IAtomicInteger.h"
 #include <ccmautoptr.h>
 #include <ccmobject.h>
 #include <ccmrefbase.h>
+
+using ccm::util::concurrent::atomic::IAtomicInteger;
 
 namespace ccm {
 namespace core {
@@ -64,6 +67,10 @@ protected:
             /* [in] */ Integer i,
             /* [in] */ Integer len);
 
+        static Integer GetPrevIndex(
+            /* [in] */ Integer i,
+            /* [in] */ Integer len);
+
         AutoPtr<Entry> GetEntry(
             /* [in] */ ThreadLocal* key);
 
@@ -92,6 +99,10 @@ protected:
             /* [in] */ Integer n);
 
         void Rehash();
+
+        void Resize();
+
+        void ExpungeStaleEntries();
 
     private:
         static constexpr Integer INITIAL_CAPACITY = 16;
@@ -136,6 +147,8 @@ private:
 
     ECode SetInitialValue(
         /* [out] */ IInterface** value);
+
+    static AutoPtr<IAtomicInteger> GetHashCodeGenerator();
 
 private:
     Integer mThreadLocalHashCode;

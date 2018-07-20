@@ -14,20 +14,51 @@
 // limitations under the License.
 //=========================================================================
 
+interface ccm::net::IURI;
+interface ccm::net::IURL;
+
 namespace ccm {
 namespace io {
 
+/*
+ * @Involve interface ccm::core::IComparable
+ * @Involve interface ccm::io::ISerializable
+ */
 [
     uuid(64d64034-3b89-4cc0-b446-d20c3a6a0f8f),
     version(0.1.0)
 ]
 interface IFile
 {
+    CanRead(
+        [out] Boolean* read);
+
+    CanWrite(
+        [out] Boolean* write);
+
     Exists(
         [out] Boolean* existed);
 
+    GetAbsoluteFile(
+        [out] IFile** f);
+
+    GetAbsolutePath(
+        [out] String* path);
+
+    GetCanonicalFile(
+        [out] IFile** f);
+
+    GetCanonicalPath(
+        [out] String* path);
+
     GetName(
         [out] String* name);
+
+    GetParent(
+        [out] String* parent);
+
+    GetParentFile(
+        [out] IFile** parent);
 
     GetPath(
         [out] String* path);
@@ -36,8 +67,29 @@ interface IFile
     GetPrefixLength(
         [out] Integer* length);
 
+    IsAbsolute(
+        [out] Boolean* absolute);
+
     IsDirectory(
         [out] Boolean* directory);
+
+    IsFile(
+        [out] Boolean* file);
+
+    IsHidden(
+        [out] Boolean* hidden);
+
+    LastModified(
+        [out] Long* time);
+
+    GetLength(
+        [out] Long* len);
+
+    ToURI(
+        [out] IURI** id);
+
+    ToURL(
+        [out] IURL** locator);
 }
 
 }

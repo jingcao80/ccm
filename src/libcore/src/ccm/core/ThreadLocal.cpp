@@ -16,11 +16,28 @@
 
 #include "ccm/core/Thread.h"
 #include "ccm/core/ThreadLocal.h"
+#include "ccm/util/concurrent/atomic/CAtomicInteger.h"
+
+using ccm::util::concurrent::atomic::CAtomicInteger;
+using ccm::util::concurrent::atomic::IID_IAtomicInteger;
 
 namespace ccm {
 namespace core {
 
 CCM_INTERFACE_IMPL_1(ThreadLocal, SyncObject, IThreadLocal);
+
+static AutoPtr<IAtomicInteger> CreateGenerator()
+{
+    AutoPtr<IAtomicInteger> atomic;
+    CAtomicInteger::New(IID_IAtomicInteger, (IInterface**)&atomic);
+    return atomic;
+}
+
+AutoPtr<IAtomicInteger> ThreadLocal::GetHashCodeGenerator()
+{
+    static AutoPtr<IAtomicInteger> GENERATOR = CreateGenerator();
+    return GENERATOR;
+}
 
 ECode ThreadLocal::Constructor()
 {
@@ -30,7 +47,10 @@ ECode ThreadLocal::Constructor()
 
 Integer ThreadLocal::GetNextHashCode()
 {
-    return 0;
+    AutoPtr<IAtomicInteger> gen = GetHashCodeGenerator();
+    Integer hash;
+    gen->GetAndAdd(HASH_INCREMENT, &hash);
+    return hash;
 }
 
 AutoPtr<IInterface> ThreadLocal::InitialValue()
@@ -139,7 +159,14 @@ Integer ThreadLocal::ThreadLocalMap::GetNextIndex(
     /* [in] */ Integer i,
     /* [in] */ Integer len)
 {
-    return ((i + 1 < len) ? i + 1 : 0);
+    return (i + 1 < len) ? i + 1 : 0;
+}
+
+Integer ThreadLocal::ThreadLocalMap::GetPrevIndex(
+    /* [in] */ Integer i,
+    /* [in] */ Integer len)
+{
+    return (i - 1 >= 0) ? i - 1 : len - 1;
 }
 
 AutoPtr<ThreadLocal::ThreadLocalMap::Entry>
@@ -245,23 +272,196 @@ void ThreadLocal::ThreadLocalMap::ReplaceStaleEntry(
     /* [in] */ ThreadLocal* key,
     /* [in] */ IInterface* value,
     /* [in] */ Integer staleSlot)
-{}
+{
+    Array<Entry*>& tab = mTable;
+    Integer len = tab.GetLength();
+    AutoPtr<Entry> e;
+
+    Integer slotToExpunge = staleSlot;
+    for (Integer i = GetPrevIndex(staleSlot, len);
+            (e = tab[i], e != nullptr);
+            i = GetPrevIndex(i, len)) {
+        AutoPtr<IThreadLocal> tl;
+        if (e->mKey != nullptr) {
+            e->mKey->Resolve(IID_IThreadLocal, (IInterface**)&tl);
+        }
+        ThreadLocal* k = ThreadLocal::From(tl);
+        if (k == nullptr) {
+            slotToExpunge = i;
+        }
+    }
+
+    // Find either the key or trailing null slot of run, whichever
+    // occurs first
+    for (Integer i = GetNextIndex(staleSlot, len);
+            (e = tab[i], e != nullptr);
+            i = GetNextIndex(i, len)) {
+        AutoPtr<IThreadLocal> tl;
+        if (e->mKey != nullptr) {
+            e->mKey->Resolve(IID_IThreadLocal, (IInterface**)&tl);
+        }
+        ThreadLocal* k = ThreadLocal::From(tl);
+
+        // If we find key, then we need to swap it
+        // with the stale entry to maintain hash table order.
+        // The newly stale slot, or any other stale slot
+        // encountered above it, can then be sent to expungeStaleEntry
+        // to remove or rehash all of the other entries in run.
+        if (k == key) {
+            e->mValue = value;
+
+            tab.Set(i, tab[staleSlot]);
+            tab.Set(staleSlot, e);
+
+            // Start expunge at preceding stale entry if it exists
+            if (slotToExpunge == staleSlot) {
+                slotToExpunge = i;
+            }
+            CleanSomeSlots(ExpungeStaleEntry(slotToExpunge), len);
+            return;
+        }
+
+        // If we didn't find stale entry on backward scan, the
+        // first stale entry seen while scanning for key is the
+        // first still present in the run.
+        if (k == nullptr && slotToExpunge == staleSlot) {
+            slotToExpunge = i;
+        }
+    }
+
+    // If key not found, put new entry in stale slot
+    tab[staleSlot]->mValue = nullptr;
+    tab.Set(staleSlot, new Entry(key, value));
+
+    // If there are any other stale entries in run, expunge them
+    if (slotToExpunge != staleSlot) {
+        CleanSomeSlots(ExpungeStaleEntry(slotToExpunge), len);
+    }
+}
 
 Integer ThreadLocal::ThreadLocalMap::ExpungeStaleEntry(
     /* [in] */ Integer staleSlot)
 {
-    return 0;
+    Array<Entry*>& tab = mTable;
+    Integer len = tab.GetLength();
+
+    // expunge entry at staleSlot
+    tab[staleSlot]->mValue = nullptr;
+    tab.Set(staleSlot, nullptr);
+    mSize--;
+
+    // Rehash until we encounter null
+    AutoPtr<Entry> e;
+    Integer i;
+    for (i = GetNextIndex(staleSlot, len);
+            (e = tab[i], e != nullptr);
+            i = GetNextIndex(i, len)) {
+        AutoPtr<IThreadLocal> tl;
+        if (e->mKey != nullptr) {
+            e->mKey->Resolve(IID_IThreadLocal, (IInterface**)&tl);
+        }
+        ThreadLocal* k = ThreadLocal::From(tl);
+        if (k == nullptr) {
+            e->mValue = nullptr;
+            tab.Set(i, nullptr);
+            mSize--;
+        }
+        else {
+            Integer h = k->mThreadLocalHashCode & (len - 1);
+            if (h != i) {
+                tab.Set(i, nullptr);
+
+                // Unlike Knuth 6.4 Algorithm R, we must scan until
+                // null because multiple entries could have been stale.
+                while (tab[h] != nullptr) {
+                    h = GetNextIndex(h, len);
+                }
+                tab.Set(h, e);
+            }
+        }
+    }
+    return i;
 }
 
 Boolean ThreadLocal::ThreadLocalMap::CleanSomeSlots(
     /* [in] */ Integer i,
     /* [in] */ Integer n)
 {
-    return false;
+    Boolean removed = false;
+    Integer len = mTable.GetLength();
+    do {
+        i = GetNextIndex(i, len);
+        Entry* e = mTable[i];
+        AutoPtr<IThreadLocal> tl;
+        if (e != nullptr && (e->mKey == nullptr ||
+                (e->mKey->Resolve(IID_IThreadLocal, (IInterface**)&tl),
+                tl == nullptr))) {
+            n = len;
+            removed = true;
+            i = ExpungeStaleEntry(i);
+        }
+    } while ((n = ((unsigned Integer)n) >> 1) != 0);
+    return removed;
 }
 
 void ThreadLocal::ThreadLocalMap::Rehash()
-{}
+{
+    ExpungeStaleEntries();
+
+    // Use lower threshold for doubling to avoid hysteresis
+    if (mSize >= mThreshold - mThreshold / 4) {
+        Resize();
+    }
+}
+
+void ThreadLocal::ThreadLocalMap::Resize()
+{
+    Array<Entry*> oldTab = mTable;
+    Integer oldLen = oldTab.GetLength();
+    Integer newLen = oldLen * 2;
+    Array<Entry*> newTab(newLen);
+    Integer count = 0;
+
+    for (Integer j = 0; j < oldLen; ++j) {
+        Entry* e = oldTab[j];
+        if (e != nullptr) {
+            AutoPtr<IThreadLocal> tl;
+            if (e->mKey != nullptr) {
+                e->mKey->Resolve(IID_IThreadLocal, (IInterface**)&tl);
+            }
+            ThreadLocal* k = ThreadLocal::From(tl);
+            if (k == nullptr) {
+                e->mValue = nullptr;
+            }
+            else {
+                Integer h = k->mThreadLocalHashCode & (newLen - 1);
+                while (newTab[h] != nullptr) {
+                    h = GetNextIndex(h, newLen);
+                }
+                newTab.Set(h, e);
+                count++;
+            }
+        }
+    }
+
+    SetThreshold(newLen);
+    mSize = count;
+    mTable = newTab;
+}
+
+void ThreadLocal::ThreadLocalMap::ExpungeStaleEntries()
+{
+    Integer len = mTable.GetLength();
+    for (Integer j = 0; j < len; j++) {
+        Entry* e = mTable[j];
+        AutoPtr<IThreadLocal> tl;
+        if (e != nullptr && (e->mKey == nullptr ||
+                (e->mKey->Resolve(IID_IThreadLocal, (IInterface**)&tl),
+                tl == nullptr))) {
+            ExpungeStaleEntry(j);
+        }
+    }
+}
 
 //-------------------------------------------------------------------------
 
