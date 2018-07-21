@@ -14,35 +14,20 @@
 // limitations under the License.
 //=========================================================================
 
-interface ccm::security::IPermission;
+#include "ccm/security/action/GetPropertyAction.h"
+#include "_ccm_security_action_CGetPropertyAction.h"
 
 namespace ccm {
-namespace core {
+namespace security {
+namespace action {
 
-[
-    uuid(a8d886cf-a4f1-4733-b5ff-a670789b9c25),
-    version(0.1.0)
-]
-interface ISecurityManager
+Coclass(CGetPropertyAction)
+    , public GetPropertyAction
 {
-    CheckDelete(
-        [in] String file);
+public:
+    CCM_OBJECT_DECL();
+};
 
-    CheckExec(
-        [in] String file);
-
-    CheckPermission(
-        [in] IPermission* perm);
-
-    CheckPropertyAccess(
-        [in] String key);
-
-    CheckRead(
-        [in] String file);
-
-    CheckWrite(
-        [in] String file);
 }
-
 }
 }

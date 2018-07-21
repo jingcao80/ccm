@@ -15,33 +15,34 @@
 //=========================================================================
 
 interface ccm::security::IPermission;
+interface ccm::util::IEnumeration;
 
 namespace ccm {
-namespace core {
+namespace security {
 
+/*
+ * @Involve interface ccm::io::ISerializable
+ */
 [
-    uuid(a8d886cf-a4f1-4733-b5ff-a670789b9c25),
+    uuid(8bdc918c-d6b9-457b-8d4c-24cdb0a4ed42),
     version(0.1.0)
 ]
-interface ISecurityManager
+interface IPermissionCollection
 {
-    CheckDelete(
-        [in] String file);
+    Add(
+        [in] IPermission* permission);
 
-    CheckExec(
-        [in] String file);
+    GetElements(
+        [out] IEnumeration** elements);
 
-    CheckPermission(
-        [in] IPermission* perm);
+    Implies(
+        [in] IPermission* permission,
+        [out] Boolean* result);
 
-    CheckPropertyAccess(
-        [in] String key);
+    IsReadOnly(
+        [out] Boolean* readonly);
 
-    CheckRead(
-        [in] String file);
-
-    CheckWrite(
-        [in] String file);
+    SetReadOnly();
 }
 
 }

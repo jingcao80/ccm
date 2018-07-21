@@ -14,16 +14,26 @@
 // limitations under the License.
 //=========================================================================
 
+#include "ccm/core/CoreUtils.h"
 #include "ccm/core/System.h"
 #include "ccm/io/CFile.h"
 #include "ccm/io/DefaultFileSystem.h"
 #include "ccm/io/File.h"
+#include "ccm/util/CArrayList.h"
+#include "ccm.core.ICharSequence.h"
+#include "ccm.util.IList.h"
 #include <ccmlogger.h>
 
+using ccm::core::CoreUtils;
 using ccm::core::IID_IComparable;
+using ccm::core::ICharSequence;
+using ccm::core::IID_ICharSequence;
 using ccm::core::ISecurityManager;
 using ccm::core::System;
 using ccm::io::IID_ISerializable;
+using ccm::util::CArrayList;
+using ccm::util::IList;
+using ccm::util::IID_IList;
 
 namespace ccm {
 namespace io {
@@ -34,6 +44,15 @@ AutoPtr<FileSystem> File::GetFS()
 {
     static AutoPtr<FileSystem> FS = DefaultFileSystem::GetFileSystem();
     return FS;
+}
+
+Boolean File::IsInvalid()
+{
+    if (mStatus == PathStatus::UNKNOWN) {
+        mStatus = (mPath.IndexOf((Char)'\0') < 0) ? PathStatus::CHECKED
+                                            : PathStatus::INVALID;
+    }
+    return mStatus == PathStatus::INVALID;
 }
 
 ECode File::GetPrefixLength(
@@ -325,35 +344,35 @@ ECode File::ToURI(
 }
 
 ECode File::CanRead(
-    /* [out] */ Boolean* read)
+    /* [out] */ Boolean* readable)
 {
-    VALIDATE_NOT_NULL(read);
+    VALIDATE_NOT_NULL(readable);
 
     AutoPtr<ISecurityManager> security = System::GetSecurityManager();
     if (security != nullptr) {
         FAIL_RETURN(security->CheckRead(mPath));
     }
     if (IsInvalid()) {
-        *read = false;
+        *readable = false;
         return NOERROR;
     }
-    return GetFS()->CheckAccess(this, FileSystem::ACCESS_READ, read);
+    return GetFS()->CheckAccess(this, FileSystem::ACCESS_READ, readable);
 }
 
 ECode File::CanWrite(
-    /* [out] */ Boolean* write)
+    /* [out] */ Boolean* writeable)
 {
-    VALIDATE_NOT_NULL(write);
+    VALIDATE_NOT_NULL(writeable);
 
     AutoPtr<ISecurityManager> security = System::GetSecurityManager();
     if (security != nullptr) {
         FAIL_RETURN(security->CheckWrite(mPath));
     }
     if (IsInvalid()) {
-        *write = false;
+        *writeable = false;
         return NOERROR;
     }
-    return GetFS()->CheckAccess(this, FileSystem::ACCESS_WRITE, write);
+    return GetFS()->CheckAccess(this, FileSystem::ACCESS_WRITE, writeable);
 }
 
 ECode File::Exists(
@@ -461,17 +480,459 @@ ECode File::GetLength(
     return GetFS()->GetLength(this, len);
 }
 
+ECode File::CreateNewFile(
+    /* [out] */ Boolean* succeeded)
+{
+    VALIDATE_NOT_NULL(succeeded);
+
+    AutoPtr<ISecurityManager> security = System::GetSecurityManager();
+    if (security != nullptr) {
+        FAIL_RETURN(security->CheckWrite(mPath));
+    }
+    if (IsInvalid()) {
+        Logger::E("File", "Invalid file path");
+        return E_IO_EXCEPTION;
+    }
+    return GetFS()->CreateFileExclusively(mPath, succeeded);
+}
+
+ECode File::Delete(
+    /* [out] */ Boolean* succeeded)
+{
+    VALIDATE_NOT_NULL(succeeded);
+
+    AutoPtr<ISecurityManager> security = System::GetSecurityManager();
+    if (security != nullptr) {
+        FAIL_RETURN(security->CheckDelete(mPath));
+    }
+    if (IsInvalid()) {
+        *succeeded = false;
+        return NOERROR;
+    }
+    return GetFS()->Delete(this, succeeded);
+}
+
+ECode File::DeleteOnExit()
+{
+    return NOERROR;
+}
+
+ECode File::List(
+    /* [out, callee] */ Array<String>* files)
+{
+    VALIDATE_NOT_NULL(files);
+
+    AutoPtr<ISecurityManager> security = System::GetSecurityManager();
+    if (security != nullptr) {
+        FAIL_RETURN(security->CheckRead(mPath));
+    }
+    if (IsInvalid()) {
+        *files = Array<String>::Null();
+        return NOERROR;
+    }
+    return GetFS()->List(this, files);
+}
+
+ECode File::List(
+    /* [in] */ IFilenameFilter* filter,
+    /* [out, callee] */ Array<String>* files)
+{
+    VALIDATE_NOT_NULL(files);
+
+    Array<String> names;
+    FAIL_RETURN(List(&names));
+    if (names.IsNull() || filter == nullptr) {
+        *files = names;
+        return NOERROR;
+    }
+    AutoPtr<IList> v;
+    CArrayList::New(IID_IList, (IInterface**)&v);
+    for (Integer i = 0; i < names.GetLength(); i++) {
+        Boolean accepted;
+        if (filter->Accept(this, names[i], &accepted), accepted) {
+            v->Add(CoreUtils::Box(names[i]));
+        }
+    }
+    Array<ICharSequence*> seqs;
+    v->ToArray(IID_ICharSequence, (Array<IInterface*>*)&seqs);
+    *files = CoreUtils::Unbox(seqs);
+    return NOERROR;
+}
+
+ECode File::ListFiles(
+    /* [out, callee] */ Array<IFile*>* files)
+{
+    VALIDATE_NOT_NULL(files);
+
+    Array<String> ss;
+    FAIL_RETURN(List(&ss));
+    if (ss.IsNull()) {
+        *files = Array<IFile*>::Null();
+        return NOERROR;
+    }
+    Integer n = ss.GetLength();
+    Array<IFile*> fs(n);
+    for (Integer i = 0; i < n; i++) {
+        AutoPtr<IFile> f;
+        CFile::New(ss[i], this, IID_IFile, (IInterface**)&f);
+        fs.Set(i, f);
+    }
+    *files = fs;
+    return NOERROR;
+}
+
+ECode File::ListFiles(
+    /* [in] */ IFilenameFilter* filter,
+    /* [out, callee] */ Array<IFile*>* files)
+{
+    VALIDATE_NOT_NULL(files);
+
+    Array<String> ss;
+    FAIL_RETURN(List(&ss));
+    if (ss.IsNull()) {
+        *files = Array<IFile*>::Null();
+        return NOERROR;
+    }
+    AutoPtr<IList> v;
+    CArrayList::New(IID_IList, (IInterface**)&v);
+    for (Integer i = 0; i < ss.GetLength(); i++) {
+        Boolean accepted;
+        if (filter == nullptr ||
+                (filter->Accept(this, ss[i], &accepted), accepted)) {
+            AutoPtr<IFile> f;
+            CFile::New(ss[i], this, IID_IFile, (IInterface**)&f);
+            v->Add(f);
+        }
+    }
+    return v->ToArray((Array<IInterface*>*)files);
+}
+
+ECode File::ListFiles(
+    /* [in] */ IFileFilter* filter,
+    /* [out, callee] */ Array<IFile*>* files)
+{
+    VALIDATE_NOT_NULL(files);
+
+    Array<String> ss;
+    FAIL_RETURN(List(&ss));
+    if (ss.IsNull()) {
+        *files = Array<IFile*>::Null();
+        return NOERROR;
+    }
+    AutoPtr<IList> v;
+    CArrayList::New(IID_IList, (IInterface**)&v);
+    for (Integer i = 0; i < ss.GetLength(); i++) {
+        AutoPtr<IFile> f;
+        CFile::New(ss[i], this, IID_IFile, (IInterface**)&f);
+        Boolean accepted;
+        if (filter == nullptr ||
+                (filter->Accept(f, &accepted), accepted)) {
+            v->Add(f);
+        }
+    }
+    return v->ToArray((Array<IInterface*>*)files);
+}
+
+ECode File::Mkdir(
+    /* [out] */ Boolean* succeeded)
+{
+    VALIDATE_NOT_NULL(succeeded);
+
+    AutoPtr<ISecurityManager> security = System::GetSecurityManager();
+    if (security != nullptr) {
+        FAIL_RETURN(security->CheckWrite(mPath));
+    }
+    if (IsInvalid()) {
+        *succeeded = false;
+        return NOERROR;
+    }
+    return GetFS()->CreateDirectory(this, succeeded);
+}
+
+ECode File::Mkdirs(
+    /* [out] */ Boolean* succeeded)
+{
+    VALIDATE_NOT_NULL(succeeded);
+
+    Boolean existed;
+    FAIL_RETURN(Exists(&existed));
+    if (existed) {
+        *succeeded = false;
+        return NOERROR;
+    }
+    FAIL_RETURN(Mkdir(succeeded));
+    if (*succeeded) {
+        return NOERROR;
+    }
+    AutoPtr<IFile> canonFile;
+    ECode ec = GetCanonicalFile((IFile**)&canonFile);
+    if (FAILED(ec)) {
+        *succeeded = false;
+        return NOERROR;
+    }
+
+    AutoPtr<IFile> parent;
+    canonFile->GetParentFile((IFile**)&parent);
+    if (parent == nullptr) {
+        *succeeded = false;
+        return NOERROR;
+    }
+    FAIL_RETURN(parent->Mkdirs(succeeded));
+    if (!*succeeded) {
+        FAIL_RETURN(parent->Exists(&existed));
+        if (!existed) {
+            *succeeded = false;
+            return NOERROR;
+        }
+    }
+    return canonFile->Mkdir(succeeded);
+}
+
+ECode File::RenameTo(
+    /* [in] */ IFile* dest,
+    /* [out] */ Boolean* succeeded)
+{
+    VALIDATE_NOT_NULL(succeeded);
+
+    if (dest == nullptr) {
+        return ccm::core::E_NULL_POINTER_EXCEPTION;
+    }
+
+    AutoPtr<ISecurityManager> security = System::GetSecurityManager();
+    if (security != nullptr) {
+        FAIL_RETURN(security->CheckWrite(mPath));
+        String dPath;
+        dest->GetPath(&dPath);
+        FAIL_RETURN(security->CheckWrite(dPath));
+    }
+    if (IsInvalid() || From(dest)->IsInvalid()) {
+        *succeeded = false;
+        return NOERROR;
+    }
+    return GetFS()->Rename(this, dest, succeeded);
+}
+
+ECode File::SetLastModified(
+    /* [in] */ Long time,
+    /* [out] */ Boolean* succeeded)
+{
+    VALIDATE_NOT_NULL(succeeded);
+
+    if (time < 0) {
+        Logger::E("File", "Negative time");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    AutoPtr<ISecurityManager> security = System::GetSecurityManager();
+    if (security != nullptr) {
+        FAIL_RETURN(security->CheckWrite(mPath));
+    }
+    if (IsInvalid()) {
+        *succeeded = false;
+        return NOERROR;
+    }
+    return GetFS()->SetLastModifiedTime(this, time, succeeded);
+}
+
+ECode File::SetReadOnly(
+    /* [out] */ Boolean* succeeded)
+{
+    VALIDATE_NOT_NULL(succeeded);
+
+    AutoPtr<ISecurityManager> security = System::GetSecurityManager();
+    if (security != nullptr) {
+        FAIL_RETURN(security->CheckWrite(mPath));
+    }
+    if (IsInvalid()) {
+        *succeeded = false;
+        return NOERROR;
+    }
+    return GetFS()->SetReadOnly(this, succeeded);
+}
+
+ECode File::SetWritable(
+    /* [in] */ Boolean writable,
+    /* [in] */ Boolean ownerOnly,
+    /* [out] */ Boolean* succeeded)
+{
+    VALIDATE_NOT_NULL(succeeded);
+
+    AutoPtr<ISecurityManager> security = System::GetSecurityManager();
+    if (security != nullptr) {
+        FAIL_RETURN(security->CheckWrite(mPath));
+    }
+    if (IsInvalid()) {
+        *succeeded = false;
+        return NOERROR;
+    }
+    return GetFS()->SetPermission(this,
+            FileSystem::ACCESS_WRITE, writable, ownerOnly, succeeded);
+}
+
+ECode File::SetWritable(
+    /* [in] */ Boolean writable,
+    /* [out] */ Boolean* succeeded)
+{
+    return SetWritable(writable, true, succeeded);
+}
+
+ECode File::SetReadable(
+    /* [in] */ Boolean readable,
+    /* [in] */ Boolean ownerOnly,
+    /* [out] */ Boolean* succeeded)
+{
+    VALIDATE_NOT_NULL(succeeded);
+
+    AutoPtr<ISecurityManager> security = System::GetSecurityManager();
+    if (security != nullptr) {
+        FAIL_RETURN(security->CheckWrite(mPath));
+    }
+    if (IsInvalid()) {
+        *succeeded = false;
+        return NOERROR;
+    }
+    return GetFS()->SetPermission(this,
+            FileSystem::ACCESS_READ, readable, ownerOnly, succeeded);
+}
+
+ECode File::SetReadable(
+    /* [in] */ Boolean readable,
+    /* [out] */ Boolean* succeeded)
+{
+    return SetReadable(readable, true, succeeded);
+}
+
+ECode File::SetExecutable(
+    /* [in] */ Boolean executable,
+    /* [in] */ Boolean ownerOnly,
+    /* [out] */ Boolean* succeeded)
+{
+    VALIDATE_NOT_NULL(succeeded);
+
+    AutoPtr<ISecurityManager> security = System::GetSecurityManager();
+    if (security != nullptr) {
+        FAIL_RETURN(security->CheckWrite(mPath));
+    }
+    if (IsInvalid()) {
+        *succeeded = false;
+        return NOERROR;
+    }
+    return GetFS()->SetPermission(this,
+            FileSystem::ACCESS_EXECUTE, executable, ownerOnly, succeeded);
+}
+
+ECode File::SetExecutable(
+    /* [in] */ Boolean executable,
+    /* [out] */ Boolean* succeeded)
+{
+    return SetExecutable(executable, true, succeeded);
+}
+
+ECode File::CanExecute(
+    /* [out] */ Boolean* executable)
+{
+    VALIDATE_NOT_NULL(executable);
+
+    AutoPtr<ISecurityManager> security = System::GetSecurityManager();
+    if (security != nullptr) {
+        FAIL_RETURN(security->CheckExec(mPath));
+    }
+    if (IsInvalid()) {
+        *executable = false;
+        return NOERROR;
+    }
+    return GetFS()->CheckAccess(this, FileSystem::ACCESS_EXECUTE, executable);
+}
+
+ECode File::ListRoots(
+    /* [out, callee] */ Array<IFile*>* roots)
+{
+    return GetFS()->ListRoots(roots);
+}
+
+ECode File::GetTotalSpace(
+    /* [out] */ Long* space)
+{
+    VALIDATE_NOT_NULL(space);
+
+    AutoPtr<ISecurityManager> security = System::GetSecurityManager();
+    if (security != nullptr) {
+        // FAIL_RETURN(security->CheckPermission());
+        FAIL_RETURN(security->CheckRead(mPath));
+    }
+    if (IsInvalid()) {
+        *space = 0;
+        return NOERROR;
+    }
+    return GetFS()->GetSpace(this, FileSystem::SPACE_TOTAL, space);
+}
+
+ECode File::GetFreeSpace(
+    /* [out] */ Long* space)
+{
+    VALIDATE_NOT_NULL(space);
+
+    AutoPtr<ISecurityManager> security = System::GetSecurityManager();
+    if (security != nullptr) {
+        // FAIL_RETURN(security->CheckPermission());
+        FAIL_RETURN(security->CheckRead(mPath));
+    }
+    if (IsInvalid()) {
+        *space = 0;
+        return NOERROR;
+    }
+    return GetFS()->GetSpace(this, FileSystem::SPACE_FREE, space);
+}
+
+ECode File::GetUsableSpace(
+    /* [out] */ Long* space)
+{
+    VALIDATE_NOT_NULL(space);
+
+    AutoPtr<ISecurityManager> security = System::GetSecurityManager();
+    if (security != nullptr) {
+        // FAIL_RETURN(security->CheckPermission());
+        FAIL_RETURN(security->CheckRead(mPath));
+    }
+    if (IsInvalid()) {
+        *space = 0;
+        return NOERROR;
+    }
+    return GetFS()->GetSpace(this, FileSystem::SPACE_USABLE, space);
+}
 
 ECode File::CompareTo(
     /* [in] */ IInterface* other,
     /* [out] */ Integer* result)
 {
+    return GetFS()->Compare(this, IFile::Probe(other), result);
+}
+
+ECode File::Equals(
+    /* [in] */ IInterface* obj,
+    /* [out] */ Boolean* same)
+{
+    VALIDATE_NOT_NULL(same);
+
+    if (obj != nullptr && IFile::Probe(obj) != nullptr) {
+        Integer result;
+        CompareTo(obj, &result);
+        *same = result == 0;
+        return NOERROR;
+    }
+    *same = false;
     return NOERROR;
 }
 
-Boolean File::IsInvalid()
+ECode File::GetHashCode(
+    /* [out] */ Integer* hash)
 {
-    return false;
+    return GetFS()->GetHashCode(this, hash);
+}
+
+ECode File::ToString(
+    /* [out] */ String* desc)
+{
+    return GetPath(desc);
 }
 
 }

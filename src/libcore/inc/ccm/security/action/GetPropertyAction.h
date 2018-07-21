@@ -14,35 +14,42 @@
 // limitations under the License.
 //=========================================================================
 
-interface ccm::security::IPermission;
+#ifndef __CCM_SECURITY_ACTION_GETPROPERTYACTION_H__
+#define __CCM_SECURITY_ACTION_GETPROPERTYACTION_H__
+
+#include "ccm/core/SyncObject.h"
+#include "ccm.security.IPrivilegedAction.h"
+
+using ccm::core::SyncObject;
 
 namespace ccm {
-namespace core {
+namespace security {
+namespace action {
 
-[
-    uuid(a8d886cf-a4f1-4733-b5ff-a670789b9c25),
-    version(0.1.0)
-]
-interface ISecurityManager
+class GetPropertyAction
+    : public SyncObject
+    , public IPrivilegedAction
 {
-    CheckDelete(
-        [in] String file);
+public:
+    CCM_INTERFACE_DECL();
 
-    CheckExec(
-        [in] String file);
+    ECode Constructor(
+        /* [in] */ const String& theProp);
 
-    CheckPermission(
-        [in] IPermission* perm);
+    ECode Constructor(
+        /* [in] */ const String& theProp,
+        /* [in] */ const String& defaultVal);
 
-    CheckPropertyAccess(
-        [in] String key);
+    ECode Run(
+        /* [out] */ IInterface** result) override;
 
-    CheckRead(
-        [in] String file);
+private:
+    String mTheProp;
+    String mDefaultVal;
+};
 
-    CheckWrite(
-        [in] String file);
+}
+}
 }
 
-}
-}
+#endif // __CCM_SECURITY_ACTION_GETPROPERTYACTION_H__

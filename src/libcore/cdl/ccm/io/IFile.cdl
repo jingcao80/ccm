@@ -14,6 +14,8 @@
 // limitations under the License.
 //=========================================================================
 
+interface ccm::io::IFileFilter;
+interface ccm::io::IFilenameFilter;
 interface ccm::net::IURI;
 interface ccm::net::IURL;
 
@@ -30,11 +32,22 @@ namespace io {
 ]
 interface IFile
 {
+    CanExecute(
+        [out] Boolean* executable);
+
     CanRead(
-        [out] Boolean* read);
+        [out] Boolean* readable);
 
     CanWrite(
-        [out] Boolean* write);
+        [out] Boolean* writeable);
+
+    CreateNewFile(
+        [out] Boolean* succeeded);
+
+    Delete(
+        [out] Boolean* succeeded);
+
+    DeleteOnExit();
 
     Exists(
         [out] Boolean* existed);
@@ -50,6 +63,12 @@ interface IFile
 
     GetCanonicalPath(
         [out] String* path);
+
+    GetFreeSpace(
+        [out] Long* space);
+
+    GetLength(
+        [out] Long* len);
 
     GetName(
         [out] String* name);
@@ -67,6 +86,12 @@ interface IFile
     GetPrefixLength(
         [out] Integer* length);
 
+    GetTotalSpace(
+        [out] Long* space);
+
+    GetUsableSpace(
+        [out] Long* space);
+
     IsAbsolute(
         [out] Boolean* absolute);
 
@@ -82,8 +107,67 @@ interface IFile
     LastModified(
         [out] Long* time);
 
-    GetLength(
-        [out] Long* len);
+    List(
+        [out, callee] Array<String>* files);
+
+    List(
+        [in] IFilenameFilter* filter,
+        [out, callee] Array<String>* files);
+
+    ListFiles(
+        [out, callee] Array<IFile*>* files);
+
+    ListFiles(
+        [in] IFilenameFilter* filter,
+        [out, callee] Array<IFile*>* files);
+
+    ListFiles(
+        [in] IFileFilter* filter,
+        [out, callee] Array<IFile*>* files);
+
+    Mkdir(
+        [out] Boolean* succeeded);
+
+    Mkdirs(
+        [out] Boolean* succeeded);
+
+    RenameTo(
+        [in] IFile* dest,
+        [out] Boolean* succeeded);
+
+    SetExecutable(
+        [in] Boolean executable,
+        [out] Boolean* succeeded);
+
+    SetExecutable(
+        [in] Boolean executable,
+        [in] Boolean ownerOnly,
+        [out] Boolean* succeeded);
+
+    SetLastModified(
+        [in] Long time,
+        [out] Boolean* succeeded);
+
+    SetReadOnly(
+        [out] Boolean* succeeded);
+
+    SetReadable(
+        [in] Boolean readable,
+        [out] Boolean* succeeded);
+
+    SetReadable(
+        [in] Boolean readable,
+        [in] Boolean ownerOnly,
+        [out] Boolean* succeeded);
+
+    SetWritable(
+        [in] Boolean writable,
+        [out] Boolean* succeeded);
+
+    SetWritable(
+        [in] Boolean writable,
+        [in] Boolean ownerOnly,
+        [out] Boolean* succeeded);
 
     ToURI(
         [out] IURI** id);

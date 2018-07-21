@@ -21,6 +21,8 @@
 #include "ccm/io/FileSystem.h"
 #include "ccm.core.IComparable.h"
 #include "ccm.io.IFile.h"
+#include "ccm.io.IFileFilter.h"
+#include "ccm.io.IFilenameFilter.h"
 #include "ccm.io.ISerializable.h"
 #include "ccm.net.IURI.h"
 #include "ccm.net.IURL.h"
@@ -40,6 +42,14 @@ class File
     , public ISerializable
     , public IComparable
 {
+private:
+    enum class PathStatus
+    {
+        UNKNOWN,
+        INVALID,
+        CHECKED,
+    };
+
 public:
     CCM_INTERFACE_DECL();
 
@@ -104,10 +114,10 @@ public:
         /* [out] */ IURI** id) override;
 
     ECode CanRead(
-        /* [out] */ Boolean* read) override;
+        /* [out] */ Boolean* readable) override;
 
     ECode CanWrite(
-        /* [out] */ Boolean* write) override;
+        /* [out] */ Boolean* writeable) override;
 
     ECode Exists(
         /* [out] */ Boolean* existed) override;
@@ -127,20 +137,107 @@ public:
     ECode GetLength(
         /* [out] */ Long* len) override;
 
-    static File* From(
-        /* [in] */ IFile* f);
+    ECode CreateNewFile(
+        /* [out] */ Boolean* succeeded) override;
 
+    ECode Delete(
+        /* [out] */ Boolean* succeeded) override;
 
+    ECode DeleteOnExit() override;
 
+    ECode List(
+        /* [out, callee] */ Array<String>* files) override;
 
+    ECode List(
+        /* [in] */ IFilenameFilter* filter,
+        /* [out, callee] */ Array<String>* files) override;
 
+    ECode ListFiles(
+        /* [out, callee] */ Array<IFile*>* files) override;
 
+    ECode ListFiles(
+        /* [in] */ IFilenameFilter* filter,
+        /* [out, callee] */ Array<IFile*>* files) override;
 
+    ECode ListFiles(
+        /* [in] */ IFileFilter* filter,
+        /* [out, callee] */ Array<IFile*>* files) override;
 
+    ECode Mkdir(
+        /* [out] */ Boolean* succeeded) override;
+
+    ECode Mkdirs(
+        /* [out] */ Boolean* succeeded) override;
+
+    ECode RenameTo(
+        /* [in] */ IFile* dest,
+        /* [out] */ Boolean* succeeded) override;
+
+    ECode SetLastModified(
+        /* [in] */ Long time,
+        /* [out] */ Boolean* succeeded) override;
+
+    ECode SetReadOnly(
+        /* [out] */ Boolean* succeeded) override;
+
+    ECode SetWritable(
+        /* [in] */ Boolean writable,
+        /* [in] */ Boolean ownerOnly,
+        /* [out] */ Boolean* succeeded) override;
+
+    ECode SetWritable(
+        /* [in] */ Boolean writable,
+        /* [out] */ Boolean* succeeded) override;
+
+    ECode SetReadable(
+        /* [in] */ Boolean readable,
+        /* [in] */ Boolean ownerOnly,
+        /* [out] */ Boolean* succeeded) override;
+
+    ECode SetReadable(
+        /* [in] */ Boolean readable,
+        /* [out] */ Boolean* succeeded) override;
+
+    ECode SetExecutable(
+        /* [in] */ Boolean executable,
+        /* [in] */ Boolean ownerOnly,
+        /* [out] */ Boolean* succeeded) override;
+
+    ECode SetExecutable(
+        /* [in] */ Boolean executable,
+        /* [out] */ Boolean* succeeded) override;
+
+    ECode CanExecute(
+        /* [out] */ Boolean* executable) override;
+
+    static ECode ListRoots(
+        /* [out, callee] */ Array<IFile*>* roots);
+
+    ECode GetTotalSpace(
+        /* [out] */ Long* space) override;
+
+    ECode GetFreeSpace(
+        /* [out] */ Long* space) override;
+
+    ECode GetUsableSpace(
+        /* [out] */ Long* space) override;
 
     ECode CompareTo(
         /* [in] */ IInterface* other,
         /* [out] */ Integer* result) override;
+
+    ECode Equals(
+        /* [in] */ IInterface* obj,
+        /* [out] */ Boolean* same) override;
+
+    ECode GetHashCode(
+        /* [out] */ Integer* hash) override;
+
+    ECode ToString(
+        /* [out] */ String* desc) override;
+
+    static File* From(
+        /* [in] */ IFile* f);
 
 protected:
     Boolean IsInvalid();
@@ -154,6 +251,8 @@ private:
 
 private:
     String mPath;
+
+    PathStatus mStatus = PathStatus::UNKNOWN;
 
     /**
      * The length of this abstract pathname's prefix, or zero if it has no

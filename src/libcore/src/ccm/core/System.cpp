@@ -110,7 +110,7 @@ ECode System::GetProperty(
     FAIL_RETURN(CheckKey(key));
     AutoPtr<ISecurityManager> sm = GetSecurityManager();
     if (sm != nullptr) {
-        sm->CheckPropertyAccess(key);
+        FAIL_RETURN(sm->CheckPropertyAccess(key));
     }
 
     return sProps->GetProperty(key, value);
@@ -126,7 +126,7 @@ ECode System::GetProperty(
     FAIL_RETURN(CheckKey(key));
     AutoPtr<ISecurityManager> sm = GetSecurityManager();
     if (sm != nullptr) {
-        sm->CheckPropertyAccess(key);
+        FAIL_RETURN(sm->CheckPropertyAccess(key));
     }
 
     return sProps->GetProperty(key, def, value);

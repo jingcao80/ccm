@@ -14,11 +14,16 @@
 // limitations under the License.
 //=========================================================================
 
+#include "ccm/core/CoreUtils.h"
 #include "ccm/core/System.h"
 #include "ccm/io/CFile.h"
 #include "ccm/io/UnixFileSystem.h"
+#include "ccm/security/AccessController.h"
+#include "ccm/security/action/CGetPropertyAction.h"
 #include "ccmrt/system/BlockGuard.h"
+#include "ccm.core.ICharSequence.h"
 #include "ccm.core.ISecurityManager.h"
+#include "ccm.security.IPrivilegedAction.h"
 #include "ccmrt.system.IBlockGuardPolicy.h"
 #include <dirent.h>
 #include <errno.h>
@@ -30,10 +35,16 @@
 #include <stdio.h>
 #include <unistd.h>
 
+using ccm::core::CoreUtils;
+using ccm::core::ICharSequence;
 using ccm::core::ISecurityManager;
 using ccm::core::System;
 using ccm::io::CFile;
 using ccm::io::IFile;
+using ccm::security::AccessController;
+using ccm::security::IPrivilegedAction;
+using ccm::security::IID_IPrivilegedAction;
+using ccm::security::action::CGetPropertyAction;
 using ccmrt::system::BlockGuard;
 using ccmrt::system::IBlockGuardPolicy;
 
@@ -42,6 +53,27 @@ int handleOpen(const char *path, int oflag, int mode);
 
 namespace ccm {
 namespace io {
+
+UnixFileSystem::UnixFileSystem()
+{
+    AutoPtr<IPrivilegedAction> fsAction, psAction, hmAction;
+    CGetPropertyAction::New(String("file.separator"),
+            IID_IPrivilegedAction, (IInterface**)&fsAction);
+    CGetPropertyAction::New(String("path.separator"),
+            IID_IPrivilegedAction, (IInterface**)&psAction);
+    CGetPropertyAction::New(String("ccm.home"),
+            IID_IPrivilegedAction, (IInterface**)&hmAction);
+    AutoPtr<IInterface> fsRet, psRet, hmRet;
+    ECode ec = AccessController::DoPrivileged(fsAction, (IInterface**)&fsRet);
+    CHECK(SUCCEEDED(ec));
+    mSlash = CoreUtils::Unbox(ICharSequence::Probe(fsRet)).GetChar(0);
+    ec = AccessController::DoPrivileged(psAction, (IInterface**)&psRet);
+    CHECK(SUCCEEDED(ec));
+    mColon = CoreUtils::Unbox(ICharSequence::Probe(psRet)).GetChar(0);
+    ec = AccessController::DoPrivileged(hmAction, (IInterface**)&hmRet);
+    CHECK(SUCCEEDED(ec));
+    mCcmHome = CoreUtils::Unbox(ICharSequence::Probe(hmRet));
+}
 
 ECode UnixFileSystem::GetSeparator(
     /* [out] */ Char* separator)

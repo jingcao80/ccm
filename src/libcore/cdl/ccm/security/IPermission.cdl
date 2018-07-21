@@ -14,34 +14,36 @@
 // limitations under the License.
 //=========================================================================
 
-interface ccm::security::IPermission;
+interface ccm::security::IPermissionCollection;
 
 namespace ccm {
-namespace core {
+namespace security {
 
+/*
+ * @Involve interface ccm::security::IGuard
+ * @Involve interface ccm::io::ISerializable
+ */
 [
-    uuid(a8d886cf-a4f1-4733-b5ff-a670789b9c25),
+    uuid(93cc3a78-0afc-4b41-999c-aaa643c6e1a3),
     version(0.1.0)
 ]
-interface ISecurityManager
+interface IPermission
 {
-    CheckDelete(
-        [in] String file);
+    CheckGuard(
+        [in] IInterface* object);
 
-    CheckExec(
-        [in] String file);
+    GetActions(
+        [out] String* actions);
 
-    CheckPermission(
-        [in] IPermission* perm);
+    GetName(
+        [out] String* name);
 
-    CheckPropertyAccess(
-        [in] String key);
+    Implies(
+        [in] IPermission* permission,
+        [out] Boolean* result);
 
-    CheckRead(
-        [in] String file);
-
-    CheckWrite(
-        [in] String file);
+    NewPermissionCollection(
+        [out] IPermissionCollection** permissions);
 }
 
 }

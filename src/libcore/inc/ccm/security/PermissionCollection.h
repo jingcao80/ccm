@@ -14,35 +14,31 @@
 // limitations under the License.
 //=========================================================================
 
-interface ccm::security::IPermission;
+#ifndef __CCM_SECURITY_PERMISSIONCOLLECTION_H__
+#define __CCM_SECURITY_PERMISSIONCOLLECTION_H__
+
+#include "ccm/core/SyncObject.h"
+#include "ccm.security.IPermissionCollection.h"
+
+using ccm::core::SyncObject;
 
 namespace ccm {
-namespace core {
+namespace security {
 
-[
-    uuid(a8d886cf-a4f1-4733-b5ff-a670789b9c25),
-    version(0.1.0)
-]
-interface ISecurityManager
+class PermissionCollection
+    : public SyncObject
+    , public IPermissionCollection
 {
-    CheckDelete(
-        [in] String file);
+public:
+    CCM_INTERFACE_DECL();
 
-    CheckExec(
-        [in] String file);
+    ECode SetReadOnly() override;
 
-    CheckPermission(
-        [in] IPermission* perm);
-
-    CheckPropertyAccess(
-        [in] String key);
-
-    CheckRead(
-        [in] String file);
-
-    CheckWrite(
-        [in] String file);
-}
+    ECode IsReadOnly(
+        /* [out] */ Boolean* readonly) override;
+};
 
 }
 }
+
+#endif // __CCM_SECURITY_PERMISSIONCOLLECTION_H__

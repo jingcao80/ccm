@@ -14,34 +14,21 @@
 // limitations under the License.
 //=========================================================================
 
-interface ccm::security::IPermission;
+interface ccm::io::IFile;
 
 namespace ccm {
-namespace core {
+namespace io {
 
 [
-    uuid(a8d886cf-a4f1-4733-b5ff-a670789b9c25),
+    uuid(0b2dca26-5399-4264-b1cb-af295694925b),
     version(0.1.0)
 ]
-interface ISecurityManager
+interface IFilenameFilter
 {
-    CheckDelete(
-        [in] String file);
-
-    CheckExec(
-        [in] String file);
-
-    CheckPermission(
-        [in] IPermission* perm);
-
-    CheckPropertyAccess(
-        [in] String key);
-
-    CheckRead(
-        [in] String file);
-
-    CheckWrite(
-        [in] String file);
+    Accept(
+        [in] IFile* dir,
+        [in] String name,
+        [out] Boolean* accepted);
 }
 
 }

@@ -14,35 +14,26 @@
 // limitations under the License.
 //=========================================================================
 
-interface ccm::security::IPermission;
+#ifndef __CCM_SECURITY_ACCESSCONTROLLER_H__
+#define __CCM_SECURITY_ACCESSCONTROLLER_H__
+
+#include "ccm.security.IPrivilegedAction.h"
 
 namespace ccm {
-namespace core {
+namespace security {
 
-[
-    uuid(a8d886cf-a4f1-4733-b5ff-a670789b9c25),
-    version(0.1.0)
-]
-interface ISecurityManager
+class AccessController
 {
-    CheckDelete(
-        [in] String file);
+public:
+    static ECode DoPrivileged(
+        /* [in] */ IPrivilegedAction* action,
+        /* [out] */ IInterface** result);
 
-    CheckExec(
-        [in] String file);
-
-    CheckPermission(
-        [in] IPermission* perm);
-
-    CheckPropertyAccess(
-        [in] String key);
-
-    CheckRead(
-        [in] String file);
-
-    CheckWrite(
-        [in] String file);
-}
+private:
+    AccessController();
+};
 
 }
 }
+
+#endif // __CCM_SECURITY_ACCESSCONTROLLER_H__

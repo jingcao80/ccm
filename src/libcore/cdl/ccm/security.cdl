@@ -14,34 +14,32 @@
 // limitations under the License.
 //=========================================================================
 
-interface ccm::security::IPermission;
+include "ccm/security/IGuard.cdl"
+include "ccm/security/IPermission.cdl"
+include "ccm/security/IPermissionCollection.cdl"
+include "ccm/security/IPrivilegedAction.cdl"
 
 namespace ccm {
-namespace core {
+namespace security {
+
+namespace action {
 
 [
-    uuid(a8d886cf-a4f1-4733-b5ff-a670789b9c25),
+    uuid(b2412c80-ec7f-46de-a4de-6ade765814da),
     version(0.1.0)
 ]
-interface ISecurityManager
+coclass CGetPropertyAction
 {
-    CheckDelete(
-        [in] String file);
+    Constructor(
+        [in] String theProp);
 
-    CheckExec(
-        [in] String file);
+    Constructor(
+        [in] String theProp
+        [in] String defaultVal);
 
-    CheckPermission(
-        [in] IPermission* perm);
+    interface IPrivilegedAction;
+}
 
-    CheckPropertyAccess(
-        [in] String key);
-
-    CheckRead(
-        [in] String file);
-
-    CheckWrite(
-        [in] String file);
 }
 
 }

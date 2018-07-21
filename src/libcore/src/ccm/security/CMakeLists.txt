@@ -14,9 +14,21 @@
 # limitations under the License.
 #=========================================================================
 
-set(LIBCORE_CCM_SRC_DIR ${LIBCORE_DIR}/src/ccm)
+set(IO_DIR ${LIBCORE_CCM_SRC_DIR}/io)
 
-add_subdirectory(core)
-add_subdirectory(io)
-add_subdirectory(security)
-add_subdirectory(util)
+include_directories(
+    ./
+    ../
+    ../../../inc
+    ${INC_DIR}
+    ${OBJ_DIR})
+
+set(SOURCES
+    AccessController.cpp
+    PermissionCollection.cpp
+    security.cpp
+    action/GetPropertyAction.cpp)
+
+add_library(security STATIC
+    ${SOURCES})
+add_dependencies(security build_libcore)

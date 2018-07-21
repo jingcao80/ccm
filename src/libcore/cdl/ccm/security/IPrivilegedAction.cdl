@@ -14,34 +14,17 @@
 // limitations under the License.
 //=========================================================================
 
-interface ccm::security::IPermission;
-
 namespace ccm {
-namespace core {
+namespace security {
 
 [
-    uuid(a8d886cf-a4f1-4733-b5ff-a670789b9c25),
+    uuid(69b1afca-4562-40d1-bb20-44c95743e6f9),
     version(0.1.0)
 ]
-interface ISecurityManager
+interface IPrivilegedAction
 {
-    CheckDelete(
-        [in] String file);
-
-    CheckExec(
-        [in] String file);
-
-    CheckPermission(
-        [in] IPermission* perm);
-
-    CheckPropertyAccess(
-        [in] String key);
-
-    CheckRead(
-        [in] String file);
-
-    CheckWrite(
-        [in] String file);
+    Run(
+        [out] IInterface** result);
 }
 
 }

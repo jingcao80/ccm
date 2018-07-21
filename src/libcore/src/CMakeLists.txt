@@ -24,6 +24,8 @@ include_directories(
     ../inc
     ../inc/ccm/core
     ../inc/ccm/io
+    ../inc/ccm/security
+    ../inc/ccm/security/action
     ../inc/ccm/util
     ../inc/ccm/util/calendar
     ../inc/ccm/util/concurrent/atomic
@@ -52,6 +54,7 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_io_CBufferedWriter.cpp
     ${OBJ_DIR}/_ccm_io_CFile.cpp
     ${OBJ_DIR}/_ccm_io_COutputStreamWriter.cpp
+    ${OBJ_DIR}/_ccm_security_action_CGetPropertyAction.cpp
     ${OBJ_DIR}/_ccm_util_CArrayList.cpp
     ${OBJ_DIR}/_ccm_util_CDate.cpp
     ${OBJ_DIR}/_ccm_util_CHashMap.cpp
@@ -84,6 +87,7 @@ set(LIBCORE_LINK_LIBS
     io
     regex
     libcore_util
+    security
     system
     -Wl,--no-whole-archive)
 
