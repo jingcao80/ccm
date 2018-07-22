@@ -22,6 +22,7 @@ include "ccm/util/IDictionary.cdl"
 include "ccm/util/IEnumeration.cdl"
 include "ccm/util/IHashtable.cdl"
 include "ccm/util/IHashMap.cdl"
+include "ccm/util/IHashSet.cdl"
 include "ccm/util/IIterator.cdl"
 include "ccm/util/ILinkedHashMap.cdl"
 include "ccm/util/IList.cdl"
@@ -138,6 +139,37 @@ coclass CHashMap
 }
 
 [
+    uuid(3b1f6a9d-3d2b-43ab-b61f-caa766e84303),
+    version(0.1.0)
+]
+coclass CHashSet
+{
+    Constructor();
+
+    Constructor(
+        [in] ICollection* c);
+
+    Constructor(
+        [in] Integer initialCapacity);
+
+    Constructor(
+        [in] Integer initialCapacity,
+        [in] Float loadFactor);
+
+    Constructor(
+        [in] Integer initialCapacity,
+        [in] Float loadFactor,
+        [in] Boolean dummy);
+
+    interface IHashSet;
+    interface ISet;
+    interface ICollection;
+    interface IIterable;
+    interface ISerializable;
+    interface ICloneable;
+}
+
+[
     uuid(10c87f0c-91e6-4fa1-905e-8ce9f513318f),
     version(0.1.0)
 ]
@@ -190,6 +222,32 @@ coclass CLinkedHashMap
     interface IMap;
     interface ICloneable;
     interface ISerializable;
+}
+
+[
+    uuid(2a5b0a37-7877-4ee5-9b3a-439538f70354),
+    version(0.1.0)
+]
+coclass CLinkedHashSet
+{
+    Constructor();
+
+    Constructor(
+        [in] ICollection* c);
+
+    Constructor(
+        [in] Integer initialCapacity);
+
+    Constructor(
+        [in] Integer initialCapacity,
+        [in] Float loadFactor);
+
+    interface IHashSet;
+    interface ISet;
+    interface ICollection;
+    interface IIterable;
+    interface ISerializable;
+    interface ICloneable;
 }
 
 [

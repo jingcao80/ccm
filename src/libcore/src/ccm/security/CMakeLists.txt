@@ -25,7 +25,10 @@ include_directories(
 
 set(SOURCES
     AccessController.cpp
+    BasicPermission.cpp
+    Permission.cpp
     PermissionCollection.cpp
+    Permissions.cpp
     security.cpp
     action/GetPropertyAction.cpp)
 

@@ -15,22 +15,34 @@
 //=========================================================================
 
 #include "ccm/core/CoreUtils.h"
+#include "ccm/core/CRuntimePermission.h"
+#include "ccm/core/Math.h"
+#include "ccm/core/StringUtils.h"
 #include "ccm/core/System.h"
 #include "ccm/io/CFile.h"
 #include "ccm/io/DefaultFileSystem.h"
+#include "ccm/io/DeleteOnExitHook.h"
 #include "ccm/io/File.h"
 #include "ccm/util/CArrayList.h"
 #include "ccm.core.ICharSequence.h"
+#include "ccm.core.ILong.h"
+#include "ccm.security.IPermission.h"
 #include "ccm.util.IList.h"
 #include <ccmlogger.h>
 
 using ccm::core::CoreUtils;
+using ccm::core::CRuntimePermission;
 using ccm::core::IID_IComparable;
 using ccm::core::ICharSequence;
 using ccm::core::IID_ICharSequence;
+using ccm::core::ILong;
 using ccm::core::ISecurityManager;
+using ccm::core::Math;
+using ccm::core::StringUtils;
 using ccm::core::System;
 using ccm::io::IID_ISerializable;
+using ccm::security::IPermission;
+using ccm::security::IID_IPermission;
 using ccm::util::CArrayList;
 using ccm::util::IList;
 using ccm::util::IID_IList;
@@ -514,6 +526,14 @@ ECode File::Delete(
 
 ECode File::DeleteOnExit()
 {
+    AutoPtr<ISecurityManager> security = System::GetSecurityManager();
+    if (security != nullptr) {
+        FAIL_RETURN(security->CheckDelete(mPath));
+    }
+    if (IsInvalid()) {
+        return NOERROR;
+    }
+    DeleteOnExitHook::Add(mPath);
     return NOERROR;
 }
 
@@ -856,7 +876,9 @@ ECode File::GetTotalSpace(
 
     AutoPtr<ISecurityManager> security = System::GetSecurityManager();
     if (security != nullptr) {
-        // FAIL_RETURN(security->CheckPermission());
+        AutoPtr<IPermission> perm;
+        CRuntimePermission::New(String("getFileSystemAttributes"), IID_IPermission, (IInterface**)&perm);
+        FAIL_RETURN(security->CheckPermission(perm));
         FAIL_RETURN(security->CheckRead(mPath));
     }
     if (IsInvalid()) {
@@ -873,7 +895,9 @@ ECode File::GetFreeSpace(
 
     AutoPtr<ISecurityManager> security = System::GetSecurityManager();
     if (security != nullptr) {
-        // FAIL_RETURN(security->CheckPermission());
+        AutoPtr<IPermission> perm;
+        CRuntimePermission::New(String("getFileSystemAttributes"), IID_IPermission, (IInterface**)&perm);
+        FAIL_RETURN(security->CheckPermission(perm));
         FAIL_RETURN(security->CheckRead(mPath));
     }
     if (IsInvalid()) {
@@ -890,7 +914,9 @@ ECode File::GetUsableSpace(
 
     AutoPtr<ISecurityManager> security = System::GetSecurityManager();
     if (security != nullptr) {
-        // FAIL_RETURN(security->CheckPermission());
+        AutoPtr<IPermission> perm;
+        CRuntimePermission::New(String("getFileSystemAttributes"), IID_IPermission, (IInterface**)&perm);
+        FAIL_RETURN(security->CheckPermission(perm));
         FAIL_RETURN(security->CheckRead(mPath));
     }
     if (IsInvalid()) {
@@ -898,6 +924,59 @@ ECode File::GetUsableSpace(
         return NOERROR;
     }
     return GetFS()->GetSpace(this, FileSystem::SPACE_USABLE, space);
+}
+
+ECode File::CreateTempFile(
+    /* [in] */ const String& prefix,
+    /* [in] */ const String& _suffix,
+    /* [in] */ IFile* directory,
+    /* [out] */ IFile** temp)
+{
+    VALIDATE_NOT_NULL(temp);
+
+    if (prefix.GetLength() < 3) {
+        Logger::E("File", "Prefix string too short");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    String suffix = _suffix;
+    if (suffix.IsNull()) {
+        suffix = ".tmp";
+    }
+
+    AutoPtr<IFile> tmpdir = directory;
+    if (tmpdir == nullptr) {
+        String dir;
+        FAIL_RETURN(System::GetProperty(String("ccm.io.tmpdir"), String("."), &dir));
+        CFile::New(dir, IID_IFile, (IInterface**)&tmpdir);
+    }
+
+    AutoPtr<IFile> f;
+    Integer attrs;
+    do {
+        f = nullptr;
+        TempDirectory::GenerateFile(prefix, suffix, tmpdir, (IFile**)&f);
+    } while (GetFS()->GetBooleanAttributes(f, &attrs),
+            (attrs & FileSystem::BA_EXISTS) != 0);
+
+    String path;
+    f->GetPath(&path);
+    Boolean succeeded;
+    if (GetFS()->CreateFileExclusively(path, &succeeded), !succeeded) {
+        Logger::E("File", "Unable to create temporary file");
+        return E_IO_EXCEPTION;
+    }
+
+    *temp = f;
+    REFCOUNT_ADD(*temp);
+    return NOERROR;
+}
+
+ECode File::CreateTempFile(
+    /* [in] */ const String& prefix,
+    /* [in] */ const String& suffix,
+    /* [out] */ IFile** temp)
+{
+    return CreateTempFile(prefix, suffix, nullptr, temp);
 }
 
 ECode File::CompareTo(
@@ -933,6 +1012,35 @@ ECode File::ToString(
     /* [out] */ String* desc)
 {
     return GetPath(desc);
+}
+
+//-------------------------------------------------------------------------
+
+ECode File::TempDirectory::GenerateFile(
+    /* [in] */ const String& prefix,
+    /* [in] */ const String& suffix,
+    /* [in] */ IFile* dir,
+    /* [out] */ IFile** temp)
+{
+    Long n = Math::RandomLongInternal();
+    if (n == ILong::MIN_VALUE) {
+        n = 0;      // corner case
+    }
+    else {
+        n = Math::Abs(n);
+    }
+
+    String name = prefix + StringUtils::ToString(n) + suffix;
+    AutoPtr<IFile> f;
+    CFile::New(dir, name, IID_IFile, (IInterface**)&f);
+    String fName; Boolean invalid;
+    if ((f->GetName(&fName), !name.Equals(fName)) || File::From(f)->IsInvalid()) {
+        Logger::E("File", "Unable to create temporary file");
+        return E_IO_EXCEPTION;
+    }
+    *temp = f;
+    REFCOUNT_ADD(*temp);
+    return NOERROR;
 }
 
 }

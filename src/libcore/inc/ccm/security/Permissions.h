@@ -14,18 +14,38 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/core/CRuntimePermission.h"
-#include "ccm/core/CThread.h"
-#include "ccm/core/CThreadGroup.h"
-#include "ccm/core/CThreadLocal.h"
+#ifndef __CCM_SECURITY_PERMISSIONS_H__
+#define __CCM_SECURITY_PERMISSIONS_H__
+
+#include "ccm/security/PermissionCollection.h"
+#include "ccm.io.ISerializable.h"
+#include "ccm.util.IEnumeration.h"
+
+using ccm::io::ISerializable;
+using ccm::util::IEnumeration;
 
 namespace ccm {
-namespace core {
+namespace security {
 
-CCM_OBJECT_IMPL(CRuntimePermission);
-CCM_OBJECT_IMPL(CThread);
-CCM_OBJECT_IMPL(CThreadGroup);
-CCM_OBJECT_IMPL(CThreadLocal);
+class Permissions
+    : public PermissionCollection
+    , public ISerializable
+{
+public:
+    CCM_INTERFACE_DECL();
+
+    ECode Add(
+        /* [in] */ IPermission* permission) override;
+
+    ECode Implies(
+        /* [in] */ IPermission* permission,
+        /* [out] */ Boolean* result) override;
+
+    ECode GetElements(
+        /* [out] */ IEnumeration** elements) override;
+};
 
 }
 }
+
+#endif // __CCM_SECURITY_PERMISSIONS_H__

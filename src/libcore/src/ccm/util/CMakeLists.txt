@@ -39,7 +39,9 @@ set(SOURCES
     EmptyArray.cpp
     Hashtable.cpp
     HashMap.cpp
+    HashSet.cpp
     LinkedHashMap.cpp
+    LinkedHashSet.cpp
     Properties.cpp
     StringTokenizer.cpp
     TimeZone.cpp

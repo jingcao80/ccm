@@ -14,18 +14,41 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/core/CRuntimePermission.h"
-#include "ccm/core/CThread.h"
-#include "ccm/core/CThreadGroup.h"
-#include "ccm/core/CThreadLocal.h"
+#include "ccm/core/Math.h"
+#include "ccm/util/LinkedHashSet.h"
+
+using ccm::core::Math;
 
 namespace ccm {
-namespace core {
+namespace util {
 
-CCM_OBJECT_IMPL(CRuntimePermission);
-CCM_OBJECT_IMPL(CThread);
-CCM_OBJECT_IMPL(CThreadGroup);
-CCM_OBJECT_IMPL(CThreadLocal);
+ECode LinkedHashSet::Constructor(
+    /* [in] */ Integer initialCapacity,
+    /* [in] */ Float loadFactor)
+{
+    return HashSet::Constructor(initialCapacity, loadFactor, true);
+}
+
+ECode LinkedHashSet::Constructor(
+    /* [in] */ Integer initialCapacity)
+{
+    return HashSet::Constructor(initialCapacity, .75f, true);
+}
+
+ECode LinkedHashSet::Constructor()
+{
+    return HashSet::Constructor(16, .75f, true);
+}
+
+ECode LinkedHashSet::Constructor(
+    /* [in] */ ICollection* c)
+{
+    Integer size;
+    c->GetSize(&size);
+    HashSet::Constructor(Math::Max(2 * size, 11), .75f, true);
+    AddAll(c);
+    return NOERROR;
+}
 
 }
 }

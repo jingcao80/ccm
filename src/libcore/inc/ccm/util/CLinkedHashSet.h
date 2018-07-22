@@ -14,18 +14,26 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/core/CRuntimePermission.h"
-#include "ccm/core/CThread.h"
-#include "ccm/core/CThreadGroup.h"
-#include "ccm/core/CThreadLocal.h"
+#ifndef __CCM_UTIL_CLINKEDHASHSET_H__
+#define __CCM_UTIL_CLINKEDHASHSET_H__
+
+#include "ccm/util/LinkedHashSet.h"
+#include "_ccm_util_CLinkedHashSet.h"
 
 namespace ccm {
-namespace core {
+namespace util {
 
-CCM_OBJECT_IMPL(CRuntimePermission);
-CCM_OBJECT_IMPL(CThread);
-CCM_OBJECT_IMPL(CThreadGroup);
-CCM_OBJECT_IMPL(CThreadLocal);
+Coclass(CLinkedHashSet)
+    , public LinkedHashSet
+{
+public:
+    CCM_OBJECT_DECL();
+
+    ECode Clone(
+        /* [out] */ IInterface** obj) override;
+};
 
 }
 }
+
+#endif // __CCM_UTIL_CLINKEDHASHSET_H__

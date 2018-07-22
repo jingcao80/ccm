@@ -32,6 +32,11 @@ public:
     static Double Log(
         /* [in] */ Double a);
 
+    static Long RandomLongInternal();
+
+    static Long Abs(
+        /* [in] */ Long a);
+
     static Integer Max(
         /* [in] */ Integer a,
         /* [in] */ Integer b);
@@ -75,6 +80,12 @@ inline Double Math::Log(
     /* [in] */ Double a)
 {
     return log(a);
+}
+
+inline Long Math::Abs(
+    /* [in] */ Long a)
+{
+    return (a < 0) ? -a : a;
 }
 
 inline Integer Math::Max(

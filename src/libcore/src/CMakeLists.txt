@@ -43,6 +43,7 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_core_CFloat.cpp
     ${OBJ_DIR}/_ccm_core_CInteger.cpp
     ${OBJ_DIR}/_ccm_core_CLong.cpp
+    ${OBJ_DIR}/_ccm_core_CRuntimePermission.cpp
     ${OBJ_DIR}/_ccm_core_CShort.cpp
     ${OBJ_DIR}/_ccm_core_CString.cpp
     ${OBJ_DIR}/_ccm_core_CStringBuffer.cpp
@@ -54,12 +55,15 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_io_CBufferedWriter.cpp
     ${OBJ_DIR}/_ccm_io_CFile.cpp
     ${OBJ_DIR}/_ccm_io_COutputStreamWriter.cpp
+    ${OBJ_DIR}/_ccm_security_CPermissions.cpp
     ${OBJ_DIR}/_ccm_security_action_CGetPropertyAction.cpp
     ${OBJ_DIR}/_ccm_util_CArrayList.cpp
     ${OBJ_DIR}/_ccm_util_CDate.cpp
     ${OBJ_DIR}/_ccm_util_CHashMap.cpp
+    ${OBJ_DIR}/_ccm_util_CHashSet.cpp
     ${OBJ_DIR}/_ccm_util_CHashtable.cpp
     ${OBJ_DIR}/_ccm_util_CLinkedHashMap.cpp
+    ${OBJ_DIR}/_ccm_util_CLinkedHashSet.cpp
     ${OBJ_DIR}/_ccm_util_CProperties.cpp
     ${OBJ_DIR}/_ccm_util_CStringTokenizer.cpp
     ${OBJ_DIR}/_ccm_util_calendar_CCalendarSystemFactory.cpp

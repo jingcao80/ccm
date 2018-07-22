@@ -19,8 +19,20 @@ include "ccm/security/IPermission.cdl"
 include "ccm/security/IPermissionCollection.cdl"
 include "ccm/security/IPrivilegedAction.cdl"
 
+interface ccm::io::ISerializable;
+
 namespace ccm {
 namespace security {
+
+[
+    uuid(c9a89c69-63a6-4636-b77a-97c83ba380ee),
+    version(0.1.0)
+]
+coclass CPermissions
+{
+    interface IPermissionCollection;
+    interface ISerializable;
+}
 
 namespace action {
 

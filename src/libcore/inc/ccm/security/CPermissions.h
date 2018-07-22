@@ -14,18 +14,23 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/core/CRuntimePermission.h"
-#include "ccm/core/CThread.h"
-#include "ccm/core/CThreadGroup.h"
-#include "ccm/core/CThreadLocal.h"
+#ifndef __CCM_SECURITY_CPERMISSIONS_H__
+#define __CCM_SECURITY_CPERMISSIONS_H__
+
+#include "ccm/security/Permissions.h"
+#include "_ccm_security_CPermissions.h"
 
 namespace ccm {
-namespace core {
+namespace security {
 
-CCM_OBJECT_IMPL(CRuntimePermission);
-CCM_OBJECT_IMPL(CThread);
-CCM_OBJECT_IMPL(CThreadGroup);
-CCM_OBJECT_IMPL(CThreadLocal);
+Coclass(CPermissions)
+    , public Permissions
+{
+public:
+    CCM_OBJECT_DECL();
+};
 
 }
 }
+
+#endif // __CCM_SECURITY_CPERMISSIONS_H__

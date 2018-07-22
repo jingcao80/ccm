@@ -14,18 +14,42 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/core/CRuntimePermission.h"
-#include "ccm/core/CThread.h"
-#include "ccm/core/CThreadGroup.h"
-#include "ccm/core/CThreadLocal.h"
+#ifndef __CCM_CORE_RUNTIMEPERMISSION_H__
+#define __CCM_CORE_RUNTIMEPERMISSION_H__
+
+#include "ccm/security/BasicPermission.h"
+
+using ccm::security::BasicPermission;
 
 namespace ccm {
 namespace core {
 
-CCM_OBJECT_IMPL(CRuntimePermission);
-CCM_OBJECT_IMPL(CThread);
-CCM_OBJECT_IMPL(CThreadGroup);
-CCM_OBJECT_IMPL(CThreadLocal);
+class RuntimePermission
+    : public BasicPermission
+{
+public:
+    ECode Constructor(
+        /* [in] */ const String& name);
+
+    ECode Constructor(
+        /* [in] */ const String& name,
+        /* [in] */ const String& actions);
+};
+
+inline ECode RuntimePermission::Constructor(
+    /* [in] */ const String& name)
+{
+    return BasicPermission::Constructor(name);
+}
+
+inline ECode RuntimePermission::Constructor(
+    /* [in] */ const String& name,
+    /* [in] */ const String& actions)
+{
+    return BasicPermission::Constructor(name, actions);
+}
 
 }
 }
+
+#endif // __CCM_CORE_RUNTIMEPERMISSION_H__

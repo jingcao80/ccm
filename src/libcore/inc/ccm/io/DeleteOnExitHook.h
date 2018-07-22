@@ -14,18 +14,29 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/core/CRuntimePermission.h"
-#include "ccm/core/CThread.h"
-#include "ccm/core/CThreadGroup.h"
-#include "ccm/core/CThreadLocal.h"
+#ifndef __CCM_IO_DELETEONEXITHOOK_H__
+#define __CCM_IO_DELETEONEXITHOOK_H__
+
+#include "ccm/core/SyncObject.h"
+
+using ccm::core::SyncObject;
 
 namespace ccm {
-namespace core {
+namespace io {
 
-CCM_OBJECT_IMPL(CRuntimePermission);
-CCM_OBJECT_IMPL(CThread);
-CCM_OBJECT_IMPL(CThreadGroup);
-CCM_OBJECT_IMPL(CThreadLocal);
+class DeleteOnExitHook
+{
+public:
+    static void Add(
+        /* [in] */ const String& file);
+
+private:
+    DeleteOnExitHook();
+
+    static SyncObject& GetLock();
+};
 
 }
 }
+
+#endif // __CCM_IO_DELETEONEXITHOOK_H__

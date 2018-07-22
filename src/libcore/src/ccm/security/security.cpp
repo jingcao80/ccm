@@ -14,10 +14,13 @@
 // limitations under the License.
 //=========================================================================
 
+#include "ccm/security/CPermissions.h"
 #include "ccm/security/action/CGetPropertyAction.h"
 
 namespace ccm {
 namespace security {
+
+CCM_OBJECT_IMPL(CPermissions);
 
 namespace action {
 

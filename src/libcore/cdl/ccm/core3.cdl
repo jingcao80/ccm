@@ -14,18 +14,30 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/core/CRuntimePermission.h"
-#include "ccm/core/CThread.h"
-#include "ccm/core/CThreadGroup.h"
-#include "ccm/core/CThreadLocal.h"
+interface ccm::io::ISerializable;
+interface ccm::security::IGuard;
+interface ccm::security::IPermission;
 
 namespace ccm {
 namespace core {
 
-CCM_OBJECT_IMPL(CRuntimePermission);
-CCM_OBJECT_IMPL(CThread);
-CCM_OBJECT_IMPL(CThreadGroup);
-CCM_OBJECT_IMPL(CThreadLocal);
+[
+    uuid(106e254e-0909-4238-8db4-2e343715c9ad),
+    version(0.1.0)
+]
+coclass CRuntimePermission
+{
+    Constructor(
+        [in] String name);
+
+    Constructor(
+        [in] String name,
+        [in] String actions);
+
+    interface IPermission;
+    interface IGuard;
+    interface ISerializable;
+}
 
 }
 }

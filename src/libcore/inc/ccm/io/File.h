@@ -50,6 +50,19 @@ private:
         CHECKED,
     };
 
+    class TempDirectory
+    {
+    public:
+        static ECode GenerateFile(
+            /* [in] */ const String& prefix,
+            /* [in] */ const String& suffix,
+            /* [in] */ IFile* dir,
+            /* [out] */ IFile** temp);
+
+    private:
+        TempDirectory();
+    };
+
 public:
     CCM_INTERFACE_DECL();
 
@@ -221,6 +234,17 @@ public:
 
     ECode GetUsableSpace(
         /* [out] */ Long* space) override;
+
+    static ECode CreateTempFile(
+        /* [in] */ const String& prefix,
+        /* [in] */ const String& suffix,
+        /* [in] */ IFile* directory,
+        /* [out] */ IFile** temp);
+
+    static ECode CreateTempFile(
+        /* [in] */ const String& prefix,
+        /* [in] */ const String& suffix,
+        /* [out] */ IFile** temp);
 
     ECode CompareTo(
         /* [in] */ IInterface* other,

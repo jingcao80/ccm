@@ -17,8 +17,10 @@
 #include "ccm/util/CArrayList.h"
 #include "ccm/util/CDate.h"
 #include "ccm/util/CHashMap.h"
+#include "ccm/util/CHashSet.h"
 #include "ccm/util/CHashtable.h"
 #include "ccm/util/CLinkedHashMap.h"
+#include "ccm/util/CLinkedHashSet.h"
 #include "ccm/util/CProperties.h"
 #include "ccm/util/CStringTokenizer.h"
 #include "ccm/util/calendar/CEra.h"
@@ -64,6 +66,20 @@ ECode CHashMap::Clone(
     return NOERROR;
 }
 
+CCM_OBJECT_IMPL(CHashSet);
+ECode CHashSet::Clone(
+    /* [out] */ IInterface** obj)
+{
+    VALIDATE_NOT_NULL(obj);
+
+    AutoPtr<IHashSet> set;
+    CHashSet::New(IID_IHashSet, (IInterface**)&set);
+    FAIL_RETURN(HashSet::CloneImpl(set));
+    *obj = set;
+    REFCOUNT_ADD(*obj);
+    return NOERROR;
+}
+
 CCM_OBJECT_IMPL(CHashtable);
 ECode CHashtable::Clone(
     /* [out] */ IInterface** obj)
@@ -88,6 +104,20 @@ ECode CLinkedHashMap::Clone(
     CLinkedHashMap::New(IID_ILinkedHashMap, (IInterface**)&map);
     FAIL_RETURN(LinkedHashMap::CloneImpl(map));
     *obj = map;
+    REFCOUNT_ADD(*obj);
+    return NOERROR;
+}
+
+CCM_OBJECT_IMPL(CLinkedHashSet);
+ECode CLinkedHashSet::Clone(
+    /* [out] */ IInterface** obj)
+{
+    VALIDATE_NOT_NULL(obj);
+
+    AutoPtr<IHashSet> set;
+    CLinkedHashSet::New(IID_IHashSet, (IInterface**)&set);
+    FAIL_RETURN(LinkedHashSet::CloneImpl(set));
+    *obj = set;
     REFCOUNT_ADD(*obj);
     return NOERROR;
 }

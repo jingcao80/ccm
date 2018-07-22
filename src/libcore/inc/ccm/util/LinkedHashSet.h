@@ -14,18 +14,32 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/core/CRuntimePermission.h"
-#include "ccm/core/CThread.h"
-#include "ccm/core/CThreadGroup.h"
-#include "ccm/core/CThreadLocal.h"
+#ifndef __CCM_UTIL_LinkedHashSet_H__
+#define __CCM_UTIL_LinkedHashSet_H__
+
+#include "ccm/util/HashSet.h"
 
 namespace ccm {
-namespace core {
+namespace util {
 
-CCM_OBJECT_IMPL(CRuntimePermission);
-CCM_OBJECT_IMPL(CThread);
-CCM_OBJECT_IMPL(CThreadGroup);
-CCM_OBJECT_IMPL(CThreadLocal);
+class LinkedHashSet
+    : public HashSet
+{
+public:
+    ECode Constructor(
+        /* [in] */ Integer initialCapacity,
+        /* [in] */ Float loadFactor);
+
+    ECode Constructor(
+        /* [in] */ Integer initialCapacity);
+
+    ECode Constructor();
+
+    ECode Constructor(
+        /* [in] */ ICollection* c);
+};
 
 }
 }
+
+#endif // __CCM_UTIL_LinkedHashSet_H__

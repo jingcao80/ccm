@@ -14,21 +14,23 @@
 // limitations under the License.
 //=========================================================================
 
+interface ccm::util::IIterator;
+
 namespace ccm {
 namespace util {
 
-interface ICollection;
-interface IIterator;
-
 /*
+ * @Involve interface ccm::util::ISet
  * @Involve interface ccm::util::ICollection
+ * @Involve interface ccm::io::ISerializable
  * @Involve interface ccm::core::IIterable
+ * @Involve interface ccm::core::ICloneable
  */
 [
-    uuid(163ff32d-c566-4666-8b18-73b5062751c0),
+    uuid(4f2e0d90-13b0-4ac9-857a-caaf328e4216),
     version(0.1.0)
 ]
-interface ISet
+interface IHashSet
 {
     Add(
         [in] IInterface* obj,

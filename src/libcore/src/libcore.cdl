@@ -26,6 +26,7 @@ include "ccm/io.cdl"
 include "ccm/core2.cdl"
 include "ccm/net.cdl"
 include "ccm/security.cdl"
+include "ccm/core3.cdl"
 include "ccm/util.cdl"
 include "ccmrt/system.cdl"
 

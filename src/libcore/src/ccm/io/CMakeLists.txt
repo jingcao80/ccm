@@ -27,6 +27,7 @@ include_directories(
 
 set(SOURCES
     BufferedWriter.cpp
+    DeleteOnExitHook.cpp
     ExpiringCache.cpp
     File.cpp
     FileSystem.cpp
