@@ -23,6 +23,7 @@
 #include "ccm.util.ICollection.h"
 #include "ccm.util.IEnumeration.h"
 #include "ccm.util.IIterator.h"
+#include "ccm.util.IList.h"
 #include "ccm.util.ISet.h"
 #include <ccmautoptr.h>
 #include <ccmrefbase.h>
@@ -227,6 +228,14 @@ private:
     };
 
 public:
+    static void Reverse(
+        /* [in] */ IList* list);
+
+    static void Swap(
+        /* [in] */ IList* list,
+        /* [in] */ Integer i,
+        /* [in] */ Integer j);
+
     static AutoPtr<ICollection> CreateSynchronizedCollection(
         /* [in] */ ICollection* c,
         /* [in] */ ISynchronize* mutex);
@@ -238,6 +247,9 @@ public:
     static AutoPtr<IIterator> GetEmptyIterator();
 
     static AutoPtr<IEnumeration> GetEmptyEnumeration();
+
+private:
+    static constexpr Integer REVERSE_THRESHOLD = 18;
 };
 
 }

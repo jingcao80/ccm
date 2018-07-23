@@ -14,36 +14,31 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_UTIL_LinkedHashSet_H__
-#define __CCM_UTIL_LinkedHashSet_H__
+#ifndef __CCM_CORE_CRuntimeFactory_H__
+#define __CCM_CORE_CRuntimeFactory_H__
 
-#include "ccm/util/HashSet.h"
-#include "ccm.util.ILinkedHashSet.h"
+#include "ccm.core.IRuntime.h"
+#include "ccm.core.IRuntimeFactory.h"
+#include "_ccm_core_CRuntimeFactory.h"
+#include <ccmobject.h>
 
 namespace ccm {
-namespace util {
+namespace core {
 
-class LinkedHashSet
-    : public HashSet
-    , public ILinkedHashSet
+Coclass(CRuntimeFactory)
+    , public Object
+    , public IRuntimeFactory
 {
 public:
     CCM_INTERFACE_DECL();
 
-    ECode Constructor(
-        /* [in] */ Integer initialCapacity,
-        /* [in] */ Float loadFactor);
+    CCM_OBJECT_DECL();
 
-    ECode Constructor(
-        /* [in] */ Integer initialCapacity);
-
-    ECode Constructor();
-
-    ECode Constructor(
-        /* [in] */ ICollection* c);
+    ECode GetRuntime(
+        /* [out] */ IRuntime** runtime) override;
 };
 
 }
 }
 
-#endif // __CCM_UTIL_LinkedHashSet_H__
+#endif // __CCM_CORE_CRuntimeFactory_H__

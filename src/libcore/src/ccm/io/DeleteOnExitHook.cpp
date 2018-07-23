@@ -15,13 +15,50 @@
 //=========================================================================
 
 #include "ccm/core/AutoLock.h"
+#include "ccm/core/CoreUtils.h"
+#include "ccm/core/Thread.h"
+#include "ccm/io/CFile.h"
 #include "ccm/io/DeleteOnExitHook.h"
+#include "ccm/util/CArrayList.h"
+#include "ccm/util/Collections.h"
+#include "ccm.core.ICharSequence.h"
+#include "ccm.util.ICollection.h"
+#include "ccm.util.IIterator.h"
+#include "ccm.util.IList.h"
 #include <ccmlogger.h>
 
 using ccm::core::AutoLock;
+using ccm::core::CoreUtils;
+using ccm::core::ICharSequence;
+using ccm::core::IThread;
+using ccm::core::Thread;
+using ccm::util::CArrayList;
+using ccm::util::Collections;
+using ccm::util::IArrayList;
+using ccm::util::ICollection;
+using ccm::util::IID_IArrayList;
+using ccm::util::IIterator;
+using ccm::util::IList;
 
 namespace ccm {
 namespace io {
+
+AutoPtr<IHashSet> DeleteOnExitHook::FILES;
+
+ECode DeleteOnExitHook::StaticInitialize()
+{
+    class _Thread
+        : public Thread
+    {
+    public:
+        ECode Run() override
+        {
+            RunHooks();
+        }
+    };
+
+    AutoPtr<IThread> hook = new _Thread();
+}
 
 SyncObject& DeleteOnExitHook::GetLock()
 {
@@ -29,11 +66,45 @@ SyncObject& DeleteOnExitHook::GetLock()
     return sLock;
 }
 
-void DeleteOnExitHook::Add(
+ECode DeleteOnExitHook::Add(
     /* [in] */ const String& file)
 {
     AutoLock lock(GetLock());
 
+    if (FILES == nullptr) {
+        Logger::E("DeleteOnExitHook", "Shutdown in progress");
+        return ccm::core::E_ILLEGAL_STATE_EXCEPTION;
+    }
+
+    FILES->Add(CoreUtils::Box(file));
+    return NOERROR;
+}
+
+void DeleteOnExitHook::RunHooks()
+{
+    AutoPtr<IHashSet> theFiles;
+
+    {
+        AutoLock lock(GetLock());
+        theFiles = FILES;
+        FILES = nullptr;
+    }
+
+    AutoPtr<IArrayList> toBeDeleted;
+    CArrayList::New(ICollection::Probe(theFiles), IID_IArrayList, (IInterface**)&toBeDeleted);
+
+    Collections::Reverse(IList::Probe(toBeDeleted));
+    AutoPtr<IIterator> it;
+    toBeDeleted->GetIterator((IIterator**)&it);
+    Boolean hasNext;
+    while (it->HasNext(&hasNext), hasNext) {
+        AutoPtr<IInterface> obj;
+        it->Next((IInterface**)&obj);
+        String filename = CoreUtils::Unbox(ICharSequence::Probe(obj));
+        AutoPtr<IFile> f;
+        CFile::New(filename, IID_IFile, (IInterface**)&f);
+        f->Delete();
+    }
 }
 
 }

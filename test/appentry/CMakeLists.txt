@@ -14,36 +14,49 @@
 # limitations under the License.
 #=========================================================================
 
-project(libservicemanager CXX)
+project(AppEntryTest CXX)
 
-set(SM_LIB_DIR ${SM_DIR}/lib)
-set(OBJ_DIR ${CMAKE_BINARY_DIR}/src/servicemanager/lib)
+set(appentry_DIR ${TEST_DIR}/appentry)
+set(OBJ_DIR ${CMAKE_BINARY_DIR}/test/appentry)
 
 include_directories(
     ./
     ${INC_DIR}
-    ${OBJ_DIR}
-    /usr/include/dbus-1.0
-    /usr/lib/x86_64-linux-gnu/dbus-1.0/include)
+    ${OBJ_DIR})
 
 set(SOURCES
-    ServiceManager.cpp)
+    main.cpp)
+
+set(GENERATED_SOURCES
+    ${OBJ_DIR}/libcore.cpp)
 
 IMPORT_LIBRARY(ccmrt.so)
+IMPORT_LIBRARY(libcore.so)
+IMPORT_LIBRARY(libappentry.a)
+IMPORT_GTEST()
 
-add_library(libservicemanager
-    SHARED
-    ${SOURCES})
-target_link_libraries(libservicemanager
-    ccmrt.so
-    dbus-1)
-add_dependencies(libservicemanager libcore)
+add_executable(testAppEntry
+    ${SOURCES}
+    ${GENERATED_SOURCES})
+target_link_libraries(testAppEntry libappentry.a ccmrt.so libcore.so ${GTEST_LIBS})
+add_dependencies(testAppEntry libservicemanager)
 
-COPY(libservicemanager ${SM_LIB_DIR}/ServiceManager.h ${INC_DIR})
-COPY(libservicemanager ${OBJ_DIR}/libservicemanager.so ${BIN_DIR})
+add_custom_command(
+    OUTPUT
+        ${GENERATED_SOURCES}
+    COMMAND
+        "${BIN_DIR}/ccdl"
+        -g
+        -u
+        -p
+        -s
+        -d ${OBJ_DIR}
+        "${BIN_DIR}/libcore.so")
+
+COPY(testAppEntry ${OBJ_DIR}/testAppEntry ${BIN_DIR})
 
 install(FILES
-    ${OBJ_DIR}/libservicemanager.so
+    ${OBJ_DIR}/testAppEntry
     DESTINATION ${BIN_DIR}
     PERMISSIONS
         OWNER_READ

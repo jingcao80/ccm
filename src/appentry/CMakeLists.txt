@@ -14,36 +14,50 @@
 # limitations under the License.
 #=========================================================================
 
-project(libservicemanager CXX)
+project(libappentry CXX)
 
-set(SM_LIB_DIR ${SM_DIR}/lib)
-set(OBJ_DIR ${CMAKE_BINARY_DIR}/src/servicemanager/lib)
+set(appentry_DIR ${SRC_DIR}/appentry)
+set(OBJ_DIR ${CMAKE_BINARY_DIR}/src/appentry)
 
 include_directories(
     ./
     ${INC_DIR}
-    ${OBJ_DIR}
-    /usr/include/dbus-1.0
-    /usr/lib/x86_64-linux-gnu/dbus-1.0/include)
+    ${OBJ_DIR})
 
 set(SOURCES
-    ServiceManager.cpp)
+    entry.cpp)
+
+set(GENERATED_SOURCES
+    ${OBJ_DIR}/libcore.cpp)
 
 IMPORT_LIBRARY(ccmrt.so)
+IMPORT_LIBRARY(libcore.so)
 
-add_library(libservicemanager
-    SHARED
-    ${SOURCES})
-target_link_libraries(libservicemanager
+add_library(libappentry
+    STATIC
+    ${SOURCES}
+    ${GENERATED_SOURCES})
+target_link_libraries(libappentry
     ccmrt.so
-    dbus-1)
-add_dependencies(libservicemanager libcore)
+    libcore.so)
+add_dependencies(libappentry libcore)
 
-COPY(libservicemanager ${SM_LIB_DIR}/ServiceManager.h ${INC_DIR})
-COPY(libservicemanager ${OBJ_DIR}/libservicemanager.so ${BIN_DIR})
+add_custom_command(
+    OUTPUT
+        ${GENERATED_SOURCES}
+    COMMAND
+        "${BIN_DIR}/ccdl"
+        -g
+        -u
+        -p
+        -s
+        -d ${OBJ_DIR}
+        "${BIN_DIR}/libcore.so")
+
+COPY(libappentry ${OBJ_DIR}/libappentry.a ${BIN_DIR})
 
 install(FILES
-    ${OBJ_DIR}/libservicemanager.so
+    ${OBJ_DIR}/libappentry.a
     DESTINATION ${BIN_DIR}
     PERMISSIONS
         OWNER_READ

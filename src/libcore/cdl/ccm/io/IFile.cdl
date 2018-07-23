@@ -45,7 +45,7 @@ interface IFile
         [out] Boolean* succeeded);
 
     Delete(
-        [out] Boolean* succeeded);
+        [out] Boolean* succeeded = nullptr);
 
     DeleteOnExit();
 

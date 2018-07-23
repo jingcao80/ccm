@@ -14,36 +14,48 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_UTIL_LinkedHashSet_H__
-#define __CCM_UTIL_LinkedHashSet_H__
+#ifndef __CCM_CORE_RUNTIME_H__
+#define __CCM_CORE_RUNTIME_H__
 
-#include "ccm/util/HashSet.h"
-#include "ccm.util.ILinkedHashSet.h"
+#include "ccm/core/SyncObject.h"
+#include "ccm.core.IRuntime.h"
+#include "ccm.util.IList.h"
+#include <ccmautoptr.h>
+
+using ccm::util::IList;
 
 namespace ccm {
-namespace util {
+namespace core {
 
-class LinkedHashSet
-    : public HashSet
-    , public ILinkedHashSet
+class Runtime
+    : public SyncObject
+    , public IRuntime
 {
 public:
     CCM_INTERFACE_DECL();
 
-    ECode Constructor(
-        /* [in] */ Integer initialCapacity,
-        /* [in] */ Float loadFactor);
+    static ECode GetRuntime(
+        /* [out] */ IRuntime** runtime);
 
-    ECode Constructor(
-        /* [in] */ Integer initialCapacity);
+    ECode Exit(
+        /* [in] */ Integer status) override;
 
-    ECode Constructor();
+    ECode AddShutdownHook(
+        /* [in] */ IThread* hook) override;
 
-    ECode Constructor(
-        /* [in] */ ICollection* c);
+private:
+    Runtime();
+
+    static void NativeExit(
+        /* [in] */ Integer status);
+
+private:
+    AutoPtr<IList> mShutdownHooks;
+
+    Boolean mShuttingDown = false;
 };
 
 }
 }
 
-#endif // __CCM_UTIL_LinkedHashSet_H__
+#endif // __CCM_CORE_RUNTIME_H__

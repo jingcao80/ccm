@@ -154,7 +154,7 @@ public:
         /* [out] */ Boolean* succeeded) override;
 
     ECode Delete(
-        /* [out] */ Boolean* succeeded) override;
+        /* [out] */ Boolean* succeeded = nullptr) override;
 
     ECode DeleteOnExit() override;
 

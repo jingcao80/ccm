@@ -18,8 +18,11 @@
 #define __CCM_IO_DELETEONEXITHOOK_H__
 
 #include "ccm/core/SyncObject.h"
+#include "ccm.util.IHashSet.h"
+#include <ccmautoptr.h>
 
 using ccm::core::SyncObject;
+using ccm::util::IHashSet;
 
 namespace ccm {
 namespace io {
@@ -27,13 +30,20 @@ namespace io {
 class DeleteOnExitHook
 {
 public:
-    static void Add(
+    static ECode Add(
         /* [in] */ const String& file);
+
+    static void RunHooks();
 
 private:
     DeleteOnExitHook();
 
     static SyncObject& GetLock();
+
+    static ECode StaticInitialize();
+
+private:
+    static AutoPtr<IHashSet> FILES;
 };
 
 }

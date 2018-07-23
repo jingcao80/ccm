@@ -43,6 +43,7 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_core_CFloat.cpp
     ${OBJ_DIR}/_ccm_core_CInteger.cpp
     ${OBJ_DIR}/_ccm_core_CLong.cpp
+    ${OBJ_DIR}/_ccm_core_CRuntimeFactory.cpp
     ${OBJ_DIR}/_ccm_core_CRuntimePermission.cpp
     ${OBJ_DIR}/_ccm_core_CShort.cpp
     ${OBJ_DIR}/_ccm_core_CString.cpp

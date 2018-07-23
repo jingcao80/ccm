@@ -36,7 +36,7 @@ add_executable(servicemanager
     ${SOURCES})
 target_link_libraries(servicemanager 
     ccmrt.so
-    /usr/lib/x86_64-linux-gnu/libdbus-1.so)
+    dbus-1)
 add_dependencies(servicemanager libcore)
 
 COPY(servicemanager ${OBJ_DIR}/servicemanager ${BIN_DIR})

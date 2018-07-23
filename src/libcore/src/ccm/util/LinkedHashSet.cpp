@@ -22,6 +22,8 @@ using ccm::core::Math;
 namespace ccm {
 namespace util {
 
+CCM_INTERFACE_IMPL_1(LinkedHashSet, HashSet, ILinkedHashSet);
+
 ECode LinkedHashSet::Constructor(
     /* [in] */ Integer initialCapacity,
     /* [in] */ Float loadFactor)

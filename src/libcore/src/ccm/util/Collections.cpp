@@ -16,12 +16,49 @@
 
 #include "ccm/core/AutoLock.h"
 #include "ccm/util/Collections.h"
+#include "ccm.util.IListIterator.h"
+#include "ccm.util.IRandomAccess.h"
 
 using ccm::core::AutoLock;
 using ccm::io::IID_ISerializable;
 
 namespace ccm {
 namespace util {
+
+void Collections::Reverse(
+    /* [in] */ IList* list)
+{
+    Integer size;
+    list->GetSize(&size);
+    if (size < REVERSE_THRESHOLD || IRandomAccess::Probe(list) != nullptr) {
+        for (Integer i = 0, mid = size >> 1, j = size - 1; i < mid; i++, j--) {
+            Swap(list, i, j);
+        }
+    }
+    else {
+        AutoPtr<IListIterator> fwd, rev;
+        list->GetListIterator((IListIterator**)&fwd);
+        list->GetListIterator(size, (IListIterator**)&rev);
+        for (Integer i = 0, mid = size >> 1; i < mid; i++) {
+            AutoPtr<IInterface> e1, e2;
+            rev->Previous((IInterface**)&e1);
+            fwd->Next((IInterface**)&e2);
+            fwd->Set(e1);
+            rev->Set(e2);
+        }
+    }
+}
+
+void Collections::Swap(
+    /* [in] */ IList* list,
+    /* [in] */ Integer i,
+    /* [in] */ Integer j)
+{
+    AutoPtr<IInterface> e1, e2;
+    list->Get(i, (IInterface**)&e1);
+    list->Set(j, e1, (IInterface**)&e2);
+    list->Set(i, e2);
+}
 
 AutoPtr<ICollection> Collections::CreateSynchronizedCollection(
     /* [in] */ ICollection* c,

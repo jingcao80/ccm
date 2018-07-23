@@ -263,6 +263,7 @@ private:
     Integer mParkState = ParkState::UNPARKED;
 
     friend class NativeThread;
+    friend class Runtime;
     friend class ThreadLocal;
 };
 

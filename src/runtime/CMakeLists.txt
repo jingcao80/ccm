@@ -58,7 +58,7 @@ target_link_libraries(ccmrt
     ${CCMRT_LINK_LIBS}
     dl
     pthread
-    /usr/lib/x86_64-linux-gnu/libdbus-1.so)
+    dbus-1)
 
 COPY(ccmrt ${RUNTIME_DIR}/ccmapi.h ${INC_DIR})
 COPY(ccmrt ${RUNTIME_DIR}/ccmdef.h ${INC_DIR})

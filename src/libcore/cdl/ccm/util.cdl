@@ -25,6 +25,7 @@ include "ccm/util/IHashMap.cdl"
 include "ccm/util/IHashSet.cdl"
 include "ccm/util/IIterator.cdl"
 include "ccm/util/ILinkedHashMap.cdl"
+include "ccm/util/ILinkedHashSet.cdl"
 include "ccm/util/IList.cdl"
 include "ccm/util/IListIterator.cdl"
 include "ccm/util/ILocale.cdl"
@@ -64,6 +65,12 @@ namespace util {
 coclass CArrayList
 {
     Constructor();
+
+    Constructor(
+        [in] Integer initialCapacity);
+
+    Constructor(
+        [in] ICollection* c);
 
     interface IArrayList;
     interface IList;
@@ -242,6 +249,7 @@ coclass CLinkedHashSet
         [in] Integer initialCapacity,
         [in] Float loadFactor);
 
+    interface ILinkedHashSet;
     interface IHashSet;
     interface ISet;
     interface ICollection;

@@ -36,6 +36,7 @@ set(SOURCES
     ClassLoader.cpp
     CLong.cpp
     CoreUtils.cpp
+    CRuntimeFactory.cpp
     CShort.cpp
     CString.cpp
     CStringBuffer.cpp
@@ -57,6 +58,7 @@ set(SOURCES
     NativeTimeUtils.cpp
     RealToString.cpp
     Runnable.cpp
+    Runtime.cpp
     StringToReal.cpp
     StringUtils.cpp
     SyncObject.cpp

@@ -14,36 +14,14 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_UTIL_LinkedHashSet_H__
-#define __CCM_UTIL_LinkedHashSet_H__
+#include <ccmtypes.h>
 
-#include "ccm/util/HashSet.h"
-#include "ccm.util.ILinkedHashSet.h"
+#include <stdio.h>
 
-namespace ccm {
-namespace util {
+using namespace ccm;
 
-class LinkedHashSet
-    : public HashSet
-    , public ILinkedHashSet
+ECode Main(Array<String>& args)
 {
-public:
-    CCM_INTERFACE_DECL();
-
-    ECode Constructor(
-        /* [in] */ Integer initialCapacity,
-        /* [in] */ Float loadFactor);
-
-    ECode Constructor(
-        /* [in] */ Integer initialCapacity);
-
-    ECode Constructor();
-
-    ECode Constructor(
-        /* [in] */ ICollection* c);
-};
-
+    printf("==== call Main ====\n");
+    return NOERROR;
 }
-}
-
-#endif // __CCM_UTIL_LinkedHashSet_H__

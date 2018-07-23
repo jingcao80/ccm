@@ -14,36 +14,35 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_UTIL_LinkedHashSet_H__
-#define __CCM_UTIL_LinkedHashSet_H__
+#include "ccm.core.CRuntimeFactory.h"
+#include "ccm.core.IRuntime.h"
+#include "ccm.core.IRuntimeFactory.h"
+#include <ccmautoptr.h>
 
-#include "ccm/util/HashSet.h"
-#include "ccm.util.ILinkedHashSet.h"
+using namespace ccm;
+using ccm::core::CRuntimeFactory;
+using ccm::core::IRuntime;
+using ccm::core::IRuntimeFactory;
+using ccm::core::IID_IRuntimeFactory;
 
-namespace ccm {
-namespace util {
+extern ECode Main(Array<String>& args);
 
-class LinkedHashSet
-    : public HashSet
-    , public ILinkedHashSet
+int main(int argv, char** argc)
 {
-public:
-    CCM_INTERFACE_DECL();
+    Array<String> args(argv);
 
-    ECode Constructor(
-        /* [in] */ Integer initialCapacity,
-        /* [in] */ Float loadFactor);
+    for (int i = 0; i < argv; i++) {
+        args[i] = argc[i];
+    }
 
-    ECode Constructor(
-        /* [in] */ Integer initialCapacity);
+    AutoPtr<IRuntimeFactory> rtFactory;
+    CRuntimeFactory::New(IID_IRuntimeFactory, (IInterface**)&rtFactory);
+    AutoPtr<IRuntime> runtime;
+    rtFactory->GetRuntime((IRuntime**)&runtime);
 
-    ECode Constructor();
+    ECode ec = Main(args);
 
-    ECode Constructor(
-        /* [in] */ ICollection* c);
-};
+    runtime->Exit(SUCCEEDED(ec) ? 0 : 1);
 
+    return 0;
 }
-}
-
-#endif // __CCM_UTIL_LinkedHashSet_H__
