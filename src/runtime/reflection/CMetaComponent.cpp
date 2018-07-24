@@ -440,7 +440,7 @@ void CMetaComponent::LoadAllClassObjectGetters()
     Integer N;
     ClassObjectGetter* getters = mComponent->mSoGetAllClassObjects(&N);
     for (Integer i = 0; i < N; i++) {
-        CoclassID cid = getters[i].mCid;
+        const CoclassID& cid = getters[i].mCid;
         mClassObjects.Put(cid.mUuid, &getters[i]);
     }
 }

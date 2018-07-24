@@ -80,6 +80,7 @@ private:
 public:
     HashMap(
         /* [in] */ int size = 50)
+        : mCount(0)
     {
         mBucketSize = get_next_prime(size);
         mBuckets = (Bucket**)calloc(sizeof(Bucket*), mBucketSize);

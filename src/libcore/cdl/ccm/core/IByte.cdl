@@ -35,6 +35,8 @@ interface IByte
      */
     const Byte MAX_VALUE = 127;
 
+    const Integer SIZE = 8;
+
     ByteValue(
         [out] Byte* value);
 

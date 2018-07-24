@@ -14,16 +14,23 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/util/concurrent/atomic/CAtomicInteger.h"
+#include "ccm/core/StrictMath.h"
+#include <fdlibm.h>
 
 namespace ccm {
-namespace util {
-namespace concurrent {
-namespace atomic {
+namespace core {
 
-CCM_OBJECT_IMPL(CAtomicInteger);
+Double StrictMath::Log(
+    /* [in] */ Double a)
+{
+    return (Double)ieee_log((double)a);
+}
 
+Double StrictMath::Sqrt(
+    /* [in] */ Double a)
+{
+    return (Double)ieee_sqrt((double)a);
 }
-}
+
 }
 }

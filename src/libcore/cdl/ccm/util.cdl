@@ -31,6 +31,7 @@ include "ccm/util/IListIterator.cdl"
 include "ccm/util/ILocale.cdl"
 include "ccm/util/IMap.cdl"
 include "ccm/util/IProperties.cdl"
+include "ccm/util/IRandom.cdl"
 include "ccm/util/IRandomAccess.cdl"
 include "ccm/util/ISet.cdl"
 include "ccm/util/IStringTokenizer.cdl"
@@ -44,6 +45,7 @@ include "ccm/util/calendar/IJulianCalendar.cdl"
 include "ccm/util/calendar/ILocalGregorianCalendar.cdl"
 include "ccm/util/concurrent/IConcurrentMap.cdl"
 include "ccm/util/concurrent/atomic/IAtomicInteger.cdl"
+include "ccm/util/concurrent/atomic/IAtomicLong.cdl"
 include "ccm/util/regex/Exceptions.cdl"
 include "ccm/util/regex/IMatcher.cdl"
 include "ccm/util/regex/IMatchResult.cdl"
@@ -278,6 +280,21 @@ coclass CProperties
 }
 
 [
+    uuid(1d590d6f-70ee-497a-b8a9-e99212e04f53),
+    version(0.1.0)
+]
+coclass CRandom
+{
+    Constructor();
+
+    Constructor(
+        [in] Long seed);
+
+    interface IRandom;
+    interface ISerializable;
+}
+
+[
     uuid(6858c0ba-e3a0-48fd-8f22-bbdc4503d83d),
     version(0.1.0)
 ]
@@ -387,6 +404,22 @@ coclass CAtomicInteger
         [in] Integer initialValue);
 
     interface IAtomicInteger;
+    interface INumber;
+    interface ISerializable;
+}
+
+[
+    uuid(067d7bcc-d79c-43be-ada6-459adf04619e),
+    version(0.1.0)
+]
+coclass CAtomicLong
+{
+    Constructor();
+
+    Constructor(
+        [in] Long initialValue);
+
+    interface IAtomicLong;
     interface INumber;
     interface ISerializable;
 }

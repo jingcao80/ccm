@@ -14,14 +14,14 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_UTIL_CONCURRENT_ATOMIC_ATOMICINTEGER_H__
-#define __CCM_UTIL_CONCURRENT_ATOMIC_ATOMICINTEGER_H__
+#ifndef __CCM_UTIL_CONCURRENT_ATOMIC_ATOMICLONG_H__
+#define __CCM_UTIL_CONCURRENT_ATOMIC_ATOMICLONG_H__
 
 #include "ccm/core/NativeAtomic.h"
 #include "ccm/core/SyncObject.h"
 #include "ccm.core.INumber.h"
 #include "ccm.io.ISerializable.h"
-#include "ccm.util.concurrent.atomic.IAtomicInteger.h"
+#include "ccm.util.concurrent.atomic.IAtomicLong.h"
 
 using ccm::core::SyncObject;
 using ccm::core::INumber;
@@ -32,9 +32,9 @@ namespace util {
 namespace concurrent {
 namespace atomic {
 
-class AtomicInteger
+class AtomicLong
     : public SyncObject
-    , public IAtomicInteger
+    , public IAtomicLong
     , public INumber
     , public ISerializable
 {
@@ -42,52 +42,52 @@ public:
     CCM_INTERFACE_DECL();
 
     ECode Constructor(
-        /* [in] */ Integer initialValue);
+        /* [in] */ Long initialValue);
 
     ECode Constructor();
 
     ECode Get(
-        /* [out] */ Integer* value) override;
+        /* [out] */ Long* value) override;
 
     ECode Set(
-        /* [in] */ Integer value) override;
+        /* [in] */ Long value) override;
 
     ECode LzaySet(
-        /* [in] */ Integer value) override;
+        /* [in] */ Long value) override;
 
     ECode GetAndSet(
-        /* [in] */ Integer newValue,
-        /* [out] */ Integer* prevValue) override;
+        /* [in] */ Long newValue,
+        /* [out] */ Long* prevValue) override;
 
     ECode CompareAndSet(
-        /* [in] */ Integer expect,
-        /* [in] */ Integer update,
+        /* [in] */ Long expect,
+        /* [in] */ Long update,
         /* [out] */ Boolean* succeeded = nullptr) override;
 
     ECode WeakCompareAndSet(
-        /* [in] */ Integer expect,
-        /* [in] */ Integer update,
+        /* [in] */ Long expect,
+        /* [in] */ Long update,
         /* [out] */ Boolean* succeeded = nullptr) override;
 
     ECode GetAndIncrement(
-        /* [out] */ Integer* prevValue) override;
+        /* [out] */ Long* prevValue) override;
 
     ECode GetAndDecrement(
-        /* [out] */ Integer* prevValue) override;
+        /* [out] */ Long* prevValue) override;
 
     ECode GetAndAdd(
-        /* [in] */ Integer delta,
-        /* [out] */ Integer* prevValue) override;
+        /* [in] */ Long delta,
+        /* [out] */ Long* prevValue) override;
 
     ECode IncrementAndGet(
-        /* [out] */ Integer* value) override;
+        /* [out] */ Long* value) override;
 
     ECode DecrementAndGet(
-        /* [out] */ Integer* value) override;
+        /* [out] */ Long* value) override;
 
     ECode AddAndGet(
-        /* [in] */ Integer delta,
-        /* [out] */ Integer* value) override;
+        /* [in] */ Long delta,
+        /* [out] */ Long* value) override;
 
     ECode ToString(
         /* [out] */ String* desc) override;
@@ -111,7 +111,7 @@ public:
         /* [out] */ Short* value) override;
 
 private:
-    ccm::core::AtomicInteger mValue;
+    ccm::core::AtomicLong mValue;
 };
 
 }
@@ -119,4 +119,4 @@ private:
 }
 }
 
-#endif // __CCM_UTIL_CONCURRENT_ATOMIC_ATOMICINTEGER_H__
+#endif // __CCM_UTIL_CONCURRENT_ATOMIC_ATOMICLONG_H__

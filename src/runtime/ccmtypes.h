@@ -240,19 +240,19 @@ public:
 };
 
 #define CREATE_MEMBER_DETECTOR(X)                                                   \
-template<class T>                                                                \
+template<class T>                                                                   \
 class Detect_##X                                                                    \
 {                                                                                   \
     struct Fallback { int X; };                                                     \
     struct Derived : T, Fallback { };                                               \
                                                                                     \
-    template<class U, U> struct Check;                                           \
+    template<class U, U> struct Check;                                              \
                                                                                     \
     typedef char ArrayOfOne[1];                                                     \
     typedef char ArrayOfTwo[2];                                                     \
                                                                                     \
-    template<class U> static ArrayOfOne & func(Check<int Fallback::*, &U::X> *); \
-    template<class U> static ArrayOfTwo & func(...);                             \
+    template<class U> static ArrayOfOne & func(Check<int Fallback::*, &U::X> *);    \
+    template<class U> static ArrayOfTwo & func(...);                                \
 public:                                                                             \
     typedef Detect_##X type;                                                        \
     enum { exists = sizeof(func<Derived>(0)) == 2 };                                \

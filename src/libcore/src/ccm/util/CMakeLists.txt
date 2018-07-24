@@ -43,6 +43,7 @@ set(SOURCES
     LinkedHashMap.cpp
     LinkedHashSet.cpp
     Properties.cpp
+    Random.cpp
     StringTokenizer.cpp
     TimeZone.cpp
     TreeNode.cpp

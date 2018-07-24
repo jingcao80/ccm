@@ -22,11 +22,14 @@
 #include "ccm/util/CLinkedHashMap.h"
 #include "ccm/util/CLinkedHashSet.h"
 #include "ccm/util/CProperties.h"
+#include "ccm/util/CRandom.h"
 #include "ccm/util/CStringTokenizer.h"
 #include "ccm/util/calendar/CEra.h"
 #include "ccm/util/calendar/CGregorian.h"
 #include "ccm/util/calendar/CJulianCalendar.h"
 #include "ccm/util/calendar/CLocalGregorianCalendar.h"
+#include "ccm/util/concurrent/atomic/CAtomicInteger.h"
+#include "ccm/util/concurrent/atomic/CAtomicLong.h"
 
 namespace ccm {
 namespace util {
@@ -136,6 +139,7 @@ ECode CProperties::Clone(
     return NOERROR;
 }
 
+CCM_OBJECT_IMPL(CRandom);
 CCM_OBJECT_IMPL(CStringTokenizer);
 
 namespace calendar {
@@ -145,6 +149,15 @@ CCM_OBJECT_IMPL(CGregorian);
 CCM_OBJECT_IMPL(CJulianCalendar);
 CCM_OBJECT_IMPL(CLocalGregorianCalendar);
 
+}
+
+namespace concurrent {
+namespace atomic {
+
+CCM_OBJECT_IMPL(CAtomicInteger);
+CCM_OBJECT_IMPL(CAtomicLong);
+
+}
 }
 
 }

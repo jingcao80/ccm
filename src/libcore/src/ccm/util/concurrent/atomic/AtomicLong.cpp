@@ -15,7 +15,7 @@
 //=========================================================================
 
 #include "ccm/core/StringUtils.h"
-#include "ccm/util/concurrent/atomic/AtomicInteger.h"
+#include "ccm/util/concurrent/atomic/AtomicLong.h"
 
 using ccm::core::IID_INumber;
 using ccm::core::StringUtils;
@@ -26,22 +26,22 @@ namespace util {
 namespace concurrent {
 namespace atomic {
 
-CCM_INTERFACE_IMPL_3(AtomicInteger, SyncObject, IAtomicInteger, INumber, ISerializable);
+CCM_INTERFACE_IMPL_3(AtomicLong, SyncObject, IAtomicLong, INumber, ISerializable);
 
-ECode AtomicInteger::Constructor(
-    /* [in] */ Integer initialValue)
+ECode AtomicLong::Constructor(
+    /* [in] */ Long initialValue)
 {
     mValue.StoreRelaxed(initialValue);
     return NOERROR;
 }
 
-ECode AtomicInteger::Constructor()
+ECode AtomicLong::Constructor()
 {
     return NOERROR;
 }
 
-ECode AtomicInteger::Get(
-    /* [out] */ Integer* value)
+ECode AtomicLong::Get(
+    /* [out] */ Long* value)
 {
     VALIDATE_NOT_NULL(value);
 
@@ -49,27 +49,27 @@ ECode AtomicInteger::Get(
     return NOERROR;
 }
 
-ECode AtomicInteger::Set(
-    /* [in] */ Integer value)
+ECode AtomicLong::Set(
+    /* [in] */ Long value)
 {
-    mValue.StoreRelaxed(value);
+    mValue.StoreSequentiallyConsistent(value);
     return NOERROR;
 }
 
-ECode AtomicInteger::LzaySet(
-    /* [in] */ Integer value)
+ECode AtomicLong::LzaySet(
+    /* [in] */ Long value)
 {
     mValue.StoreRelease(value);
     return NOERROR;
 }
 
-ECode AtomicInteger::GetAndSet(
-    /* [in] */ Integer newValue,
-    /* [out] */ Integer* prevValue)
+ECode AtomicLong::GetAndSet(
+    /* [in] */ Long newValue,
+    /* [out] */ Long* prevValue)
 {
     VALIDATE_NOT_NULL(prevValue);
 
-    Integer v;
+    Long v;
     do {
         v = mValue.LoadSequentiallyConsistent();
     } while (!mValue.CompareExchangeStrongSequentiallyConsistent(v, newValue));
@@ -77,9 +77,9 @@ ECode AtomicInteger::GetAndSet(
     return NOERROR;
 }
 
-ECode AtomicInteger::CompareAndSet(
-    /* [in] */ Integer expect,
-    /* [in] */ Integer update,
+ECode AtomicLong::CompareAndSet(
+    /* [in] */ Long expect,
+    /* [in] */ Long update,
     /* [out] */ Boolean* succeeded)
 {
     VALIDATE_NOT_NULL(succeeded);
@@ -89,9 +89,9 @@ ECode AtomicInteger::CompareAndSet(
     return NOERROR;
 }
 
-ECode AtomicInteger::WeakCompareAndSet(
-    /* [in] */ Integer expect,
-    /* [in] */ Integer update,
+ECode AtomicLong::WeakCompareAndSet(
+    /* [in] */ Long expect,
+    /* [in] */ Long update,
     /* [out] */ Boolean* succeeded)
 {
     VALIDATE_NOT_NULL(succeeded);
@@ -101,12 +101,12 @@ ECode AtomicInteger::WeakCompareAndSet(
     return NOERROR;
 }
 
-ECode AtomicInteger::GetAndIncrement(
-    /* [out] */ Integer* prevValue)
+ECode AtomicLong::GetAndIncrement(
+    /* [out] */ Long* prevValue)
 {
     VALIDATE_NOT_NULL(prevValue);
 
-    Integer v;
+    Long v;
     do {
         v = mValue.LoadSequentiallyConsistent();
     } while (!mValue.CompareExchangeStrongSequentiallyConsistent(v, v + 1));
@@ -114,12 +114,12 @@ ECode AtomicInteger::GetAndIncrement(
     return NOERROR;
 }
 
-ECode AtomicInteger::GetAndDecrement(
-    /* [out] */ Integer* prevValue)
+ECode AtomicLong::GetAndDecrement(
+    /* [out] */ Long* prevValue)
 {
     VALIDATE_NOT_NULL(prevValue);
 
-    Integer v;
+    Long v;
     do {
         v = mValue.LoadSequentiallyConsistent();
     } while (!mValue.CompareExchangeStrongSequentiallyConsistent(v, v - 1));
@@ -127,13 +127,13 @@ ECode AtomicInteger::GetAndDecrement(
     return NOERROR;
 }
 
-ECode AtomicInteger::GetAndAdd(
-    /* [in] */ Integer delta,
-    /* [out] */ Integer* prevValue)
+ECode AtomicLong::GetAndAdd(
+    /* [in] */ Long delta,
+    /* [out] */ Long* prevValue)
 {
     VALIDATE_NOT_NULL(prevValue);
 
-    Integer v;
+    Long v;
     do {
         v = mValue.LoadSequentiallyConsistent();
     } while (!mValue.CompareExchangeStrongSequentiallyConsistent(v, v + delta));
@@ -141,12 +141,12 @@ ECode AtomicInteger::GetAndAdd(
     return NOERROR;
 }
 
-ECode AtomicInteger::IncrementAndGet(
-    /* [out] */ Integer* value)
+ECode AtomicLong::IncrementAndGet(
+    /* [out] */ Long* value)
 {
     VALIDATE_NOT_NULL(value);
 
-    Integer v;
+    Long v;
     do {
         v = mValue.LoadSequentiallyConsistent();
     } while (!mValue.CompareExchangeStrongSequentiallyConsistent(v, v + 1));
@@ -154,12 +154,12 @@ ECode AtomicInteger::IncrementAndGet(
     return NOERROR;
 }
 
-ECode AtomicInteger::DecrementAndGet(
-    /* [out] */ Integer* value)
+ECode AtomicLong::DecrementAndGet(
+    /* [out] */ Long* value)
 {
     VALIDATE_NOT_NULL(value);
 
-    Integer v;
+    Long v;
     do {
         v = mValue.LoadSequentiallyConsistent();
     } while (!mValue.CompareExchangeStrongSequentiallyConsistent(v, v - 1));
@@ -167,13 +167,13 @@ ECode AtomicInteger::DecrementAndGet(
     return NOERROR;
 }
 
-ECode AtomicInteger::AddAndGet(
-    /* [in] */ Integer delta,
-    /* [out] */ Integer* value)
+ECode AtomicLong::AddAndGet(
+    /* [in] */ Long delta,
+    /* [out] */ Long* value)
 {
     VALIDATE_NOT_NULL(value);
 
-    Integer v;
+    Long v;
     do {
         v = mValue.LoadSequentiallyConsistent();
     } while (!mValue.CompareExchangeStrongSequentiallyConsistent(v, v + delta));
@@ -181,71 +181,71 @@ ECode AtomicInteger::AddAndGet(
     return NOERROR;
 }
 
-ECode AtomicInteger::ToString(
+ECode AtomicLong::ToString(
     /* [out] */ String* desc)
 {
     VALIDATE_NOT_NULL(desc);
 
-    *desc = StringUtils::ToString(mValue.LoadRelaxed());
+    *desc = StringUtils::ToString((Long)mValue.LoadRelaxed());
     return NOERROR;
 }
 
-ECode AtomicInteger::IntValue(
+ECode AtomicLong::IntValue(
     /* [out] */ Integer* value)
+{
+    VALIDATE_NOT_NULL(value);
+
+    Long v;
+    Get(&v);
+    *value = (Integer)v;
+    return NOERROR;
+}
+
+ECode AtomicLong::LongValue(
+    /* [out] */ Long* value)
 {
     return Get(value);
 }
 
-ECode AtomicInteger::LongValue(
-    /* [out] */ Long* value)
-{
-    VALIDATE_NOT_NULL(value);
-
-    Integer v;
-    Get(&v);
-    *value = (Long)v;
-    return NOERROR;
-}
-
-ECode AtomicInteger::FloatValue(
+ECode AtomicLong::FloatValue(
     /* [out] */ Float* value)
 {
     VALIDATE_NOT_NULL(value);
 
-    Integer v;
+    Long v;
     Get(&v);
     *value = (Float)v;
     return NOERROR;
 }
 
-ECode AtomicInteger::DoubleValue(
+ECode AtomicLong::DoubleValue(
     /* [out] */ Double* value)
 {
     VALIDATE_NOT_NULL(value);
 
-    Integer v;
+    Long v;
     Get(&v);
     *value = (Double)v;
     return NOERROR;
 }
 
-ECode AtomicInteger::ByteValue(
+ECode AtomicLong::ByteValue(
     /* [out] */ Byte* value)
 {
     VALIDATE_NOT_NULL(value);
 
-    Integer v;
+    Long v;
     Get(&v);
     *value = (Byte)v;
     return NOERROR;
 }
 
-ECode AtomicInteger::ShortValue(
+ECode AtomicLong::ShortValue(
     /* [out] */ Short* value)
 {
     VALIDATE_NOT_NULL(value);
 
-    Integer v;
+    Long v;
     Get(&v);
     *value = (Short)v;
     return NOERROR;

@@ -14,54 +14,25 @@
 // limitations under the License.
 //=========================================================================
 
+#ifndef __CCM_CORE_STRICTMATH_H__
+#define __CCM_CORE_STRICTMATH_H__
+
+#include <ccmtypes.h>
+
 namespace ccm {
 namespace core {
 
-[
-    uuid(2108de07-543c-4cc5-9a59-d25121b4568e),
-    version(0.1.0)
-]
-interface IInteger
+class StrictMath
 {
-    /**
-     * A constant holding the minimum value an {@code int} can
-     * have, -2<sup>31</sup>.
-     */
-    const Integer MIN_VALUE = 0x80000000;
+public:
+    static Double Log(
+        /* [in] */ Double a);
 
-    /**
-     * A constant holding the maximum value an {@code int} can
-     * have, 2<sup>31</sup>-1.
-     */
-    const Integer MAX_VALUE = 0x7fffffff;
-
-    const Integer SIZE = 32;
-
-    ByteValue(
-        [out] Byte* value);
-
-    CompareTo(
-        [in] IInterface* other,
-        [out] Integer* result);
-
-    DoubleValue(
-        [out] Double* value);
-
-    FloatValue(
-        [out] Float* value);
-
-    GetValue(
-        [out] Integer* value);
-
-    IntValue(
-        [out] Integer* value);
-
-    LongValue(
-        [out] Long* value);
-
-    ShortValue(
-        [out] Short* value);
-}
+    static Double Sqrt(
+        /* [in] */ Double a);
+};
 
 }
 }
+
+#endif // __CCM_CORE_STRICTMATH_H__

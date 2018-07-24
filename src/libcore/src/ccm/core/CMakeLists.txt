@@ -20,6 +20,7 @@ include_directories(
     ./
     ../
     ../../../inc
+    ${EXTERNAL_DIR}/fdlibm53/inc
     ${INC_DIR}
     ${OBJ_DIR})
 
@@ -59,6 +60,7 @@ set(SOURCES
     RealToString.cpp
     Runnable.cpp
     Runtime.cpp
+    StrictMath.cpp
     StringToReal.cpp
     StringUtils.cpp
     SyncObject.cpp

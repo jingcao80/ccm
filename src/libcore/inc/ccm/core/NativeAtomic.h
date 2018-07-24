@@ -365,6 +365,7 @@ T Atomic<T>::MaxValue()
 }
 
 typedef Atomic<int32_t> AtomicInteger;
+typedef Atomic<int64_t> AtomicLong;
 
 }
 }

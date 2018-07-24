@@ -66,6 +66,7 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_util_CLinkedHashMap.cpp
     ${OBJ_DIR}/_ccm_util_CLinkedHashSet.cpp
     ${OBJ_DIR}/_ccm_util_CProperties.cpp
+    ${OBJ_DIR}/_ccm_util_CRandom.cpp
     ${OBJ_DIR}/_ccm_util_CStringTokenizer.cpp
     ${OBJ_DIR}/_ccm_util_calendar_CCalendarSystemFactory.cpp
     ${OBJ_DIR}/_ccm_util_calendar_CEra.cpp
@@ -73,6 +74,7 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_util_calendar_CJulianCalendar.cpp
     ${OBJ_DIR}/_ccm_util_calendar_CLocalGregorianCalendar.cpp
     ${OBJ_DIR}/_ccm_util_concurrent_atomic_CAtomicInteger.cpp
+    ${OBJ_DIR}/_ccm_util_concurrent_atomic_CAtomicLong.cpp
     ${OBJ_DIR}/_ccm_util_regex_CPatternFactory.cpp
     ${OBJ_DIR}/_ccmrt_system_CPathClassLoader.cpp
     ${OBJ_DIR}/libcorePub.cpp
@@ -108,7 +110,8 @@ target_link_libraries(libcore
     pthread
     unwind
     icuuc
-    icui18n)
+    icui18n
+    ${EXTERNAL_DIR}/fdlibm53/lib/libm.a)
 
 add_custom_command(
     OUTPUT

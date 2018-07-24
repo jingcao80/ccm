@@ -24,8 +24,8 @@ include_directories(
     ${OBJ_DIR})
 
 set(SOURCES
-    concurrent.cpp
-    atomic/AtomicInteger.cpp)
+    atomic/AtomicInteger.cpp
+    atomic/AtomicLong.cpp)
 
 add_library(concurrent STATIC
     ${SOURCES})
