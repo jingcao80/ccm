@@ -39,7 +39,7 @@ add_executable(testAppEntry
     ${SOURCES}
     ${GENERATED_SOURCES})
 target_link_libraries(testAppEntry libappentry.a ccmrt.so libcore.so ${GTEST_LIBS})
-add_dependencies(testAppEntry libservicemanager)
+add_dependencies(testAppEntry libappentry)
 
 add_custom_command(
     OUTPUT
