@@ -17,8 +17,11 @@
 #include "ccm/core/CoreUtils.h"
 #include "ccm/core/System.h"
 #include "ccm/security/action/GetPropertyAction.h"
+#include "ccm.core.ICharSequence.h"
+#include <ccmautoptr.h>
 
 using ccm::core::CoreUtils;
+using ccm::core::ICharSequence;
 using ccm::core::System;
 
 namespace ccm {
@@ -50,8 +53,9 @@ ECode GetPropertyAction::Run(
 
     String value;
     FAIL_RETURN(System::GetProperty(mTheProp, &value));
-    *result = value.IsNull() ? CoreUtils::Box(mDefaultVal)
-                             : CoreUtils::Box(value);
+    AutoPtr<ICharSequence> seq = value.IsNull() ?
+            CoreUtils::Box(mDefaultVal) : CoreUtils::Box(value);
+    *result = seq;
     REFCOUNT_ADD(*result);
     return NOERROR;
 }

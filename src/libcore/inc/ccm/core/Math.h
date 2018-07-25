@@ -32,7 +32,14 @@ public:
     static Double Log(
         /* [in] */ Double a);
 
-    static Long RandomLongInternal();
+    COM_PUBLIC static Double Random();
+
+    COM_PUBLIC static void SetRandomSeedInternal(
+        /* [in] */ Long seed);
+
+    COM_PUBLIC static Integer RandomIntInternal();
+
+    COM_PUBLIC static Long RandomLongInternal();
 
     static Long Abs(
         /* [in] */ Long a);

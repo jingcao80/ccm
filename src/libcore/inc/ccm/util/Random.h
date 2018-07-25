@@ -71,12 +71,6 @@ public:
     ECode NextGaussian(
         /* [out] */ Double* value) override;
 
-
-
-
-
-
-
 protected:
     virtual Integer Next(
         /* [in] */ Integer bits);

@@ -15,6 +15,12 @@
 //=========================================================================
 
 #include "ccm/core/Math.h"
+#include "ccm/util/CRandom.h"
+#include "ccm.util.IRandom.h"
+
+using ccm::util::CRandom;
+using ccm::util::IRandom;
+using ccm::util::IID_IRandom;
 
 namespace ccm {
 namespace core {
@@ -40,6 +46,46 @@ const Long Math::LONG_POWERS_OF_TEN[] = {
     100000000000000000ll,
     1000000000000000000ll,
 };
+
+static AutoPtr<IRandom> CreateRandom()
+{
+    AutoPtr<IRandom> random;
+    CRandom::New(IID_IRandom, (IInterface**)&random);
+    return random;
+}
+
+static AutoPtr<IRandom> GetRandomNumberGenerator()
+{
+    static AutoPtr<IRandom> sRandomNumberGenerator = CreateRandom();
+    return sRandomNumberGenerator;
+}
+
+Double Math::Random()
+{
+    Double rv;
+    GetRandomNumberGenerator()->NextDouble(&rv);
+    return rv;
+}
+
+void Math::SetRandomSeedInternal(
+    /* [in] */ Long seed)
+{
+    GetRandomNumberGenerator()->SetSeed(seed);
+}
+
+Integer Math::RandomIntInternal()
+{
+    Integer rv;
+    GetRandomNumberGenerator()->NextInt(&rv);
+    return rv;
+}
+
+Long Math::RandomLongInternal()
+{
+    Long rv;
+    GetRandomNumberGenerator()->NextLong(&rv);
+    return rv;
+}
 
 union FloatInteger
 {
