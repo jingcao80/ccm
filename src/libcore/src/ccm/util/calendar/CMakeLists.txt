@@ -36,6 +36,6 @@ set(SOURCES
     JulianCalendar.cpp
     LocalGregorianCalendar.cpp)
 
-add_library(calendar STATIC
+add_library(ccm_util_calendar STATIC
     ${SOURCES})
-add_dependencies(calendar build_libcore)
+add_dependencies(ccm_util_calendar build_libcore)

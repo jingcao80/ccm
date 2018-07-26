@@ -73,6 +73,6 @@ set(SOURCES
     init.cpp
     nativeapi.cpp)
 
-add_library(core STATIC
+add_library(ccm_core STATIC
     ${SOURCES})
-add_dependencies(core build_libcore)
+add_dependencies(ccm_core build_libcore)

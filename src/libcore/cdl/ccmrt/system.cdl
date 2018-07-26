@@ -15,6 +15,7 @@
 //=========================================================================
 
 include "ccmrt/system/IBlockGuard.cdl"
+include "ccmrt/system/ICloseGuard.cdl"
 
 interface ccm::IClassLoader;
 

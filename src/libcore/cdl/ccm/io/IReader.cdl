@@ -24,7 +24,7 @@ namespace io {
 interface IReader
 {
     Read(
-        [in] Array<Char> buffer,
+        [out] Array<Char> buffer,
         [out] Integer* number);
 }
 

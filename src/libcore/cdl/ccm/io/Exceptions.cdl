@@ -18,6 +18,9 @@ namespace ccm {
 namespace io {
 
 const Integer E_IO_EXCEPTION = 0x80010200;
+const Integer E_IO_SYNC_FAILED_EXCEPTION = 0x80010201;
+const Integer E_FILE_NOT_FOUND_EXCEPTION = 0x80010202;
+const Integer E_USE_MANUAL_SKIP_EXCEPTION = 0x80010203;
 
 }
 }

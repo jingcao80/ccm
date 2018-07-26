@@ -39,10 +39,14 @@
  * questions.
  */
 
+#include "libcore.h"
+#include <ccmtypes.h>
 #include <sys/stat.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <unistd.h>
+
+using namespace ccm;
 
 /*
  * Retry the operation if it is interrupted
@@ -53,7 +57,7 @@
     } while((_result == -1) && (errno == EINTR)); \
 } while(0)
 
-int handleOpen(const char *path, int oflag, int mode)
+int handleOpen(const char* path, int oflag, int mode)
 {
     int fd;
     RESTARTABLE(open64(path, oflag, mode), fd);
@@ -74,4 +78,21 @@ int handleOpen(const char *path, int oflag, int mode)
         }
     }
     return fd;
+}
+
+ECode fileOpen(const char* path, int flags, int* fd)
+{
+#if defined(__linux__) || defined(_ALLBSD_SOURCE)
+    /* Remove trailing slashes, since the kernel won't */
+    char *p = (char *)path + strlen(path) - 1;
+    while ((p > path) && (*p == '/'))
+        *p-- = '\0';
+#endif
+    *fd = handleOpen(path, flags, 0666);
+    if (*fd != -1) {
+        return NOERROR;
+    }
+    else {
+        return ccm::io::E_FILE_NOT_FOUND_EXCEPTION;
+    }
 }

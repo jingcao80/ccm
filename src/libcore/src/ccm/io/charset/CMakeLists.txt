@@ -26,6 +26,6 @@ include_directories(
 set(SOURCES
     StreamEncoder.cpp)
 
-add_library(charset STATIC
+add_library(ccm_io_charset STATIC
     ${SOURCES})
-add_dependencies(charset build_libcore)
+add_dependencies(ccm_io_charset build_libcore)

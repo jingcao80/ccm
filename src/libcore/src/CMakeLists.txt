@@ -18,6 +18,7 @@ set(OBJ_DIR ${CMAKE_BINARY_DIR}/src/libcore/src/)
 
 add_subdirectory(ccm)
 add_subdirectory(ccmrt)
+add_subdirectory(libcore)
 
 include_directories(
     ./
@@ -55,6 +56,8 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_core_CThreadLocal.cpp
     ${OBJ_DIR}/_ccm_io_CBufferedWriter.cpp
     ${OBJ_DIR}/_ccm_io_CFile.cpp
+    ${OBJ_DIR}/_ccm_io_CFileDescriptor.cpp
+    ${OBJ_DIR}/_ccm_io_CFileInputStream.cpp
     ${OBJ_DIR}/_ccm_io_COutputStreamWriter.cpp
     ${OBJ_DIR}/_ccm_security_CPermissions.cpp
     ${OBJ_DIR}/_ccm_security_action_CGetPropertyAction.cpp
@@ -87,15 +90,17 @@ add_custom_target(build_libcore
 
 set(LIBCORE_LINK_LIBS
     -Wl,--whole-archive
-    calendar
-    charset
-    concurrent
-    core
-    io
-    regex
-    libcore_util
-    security
-    system
+    ccm_core
+    ccm_io
+    ccm_io_ch
+    ccm_io_charset
+    ccm_security
+    ccm_util
+    ccm_util_calendar
+    ccm_util_concurrent
+    ccm_util_regex
+    ccmrt_system
+    libcore_io
     -Wl,--no-whole-archive)
 
 IMPORT_LIBRARY(ccmrt.so)

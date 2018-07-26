@@ -1,0 +1,176 @@
+//=========================================================================
+// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//=========================================================================
+
+interface ccm::io::IFileDescriptor;
+interface ccm::net::IInetAddress;
+interface ccm::net::ISocketAddress;
+interface pisces::system::IStructAddrinfo;
+interface pisces::system::IStructCapUserData;
+interface pisces::system::IStructCapUserHeader;
+interface pisces::system::IStructFlock;
+interface pisces::system::IStructStat;
+interface pisces::system::IStructStatVfs;
+
+namespace libcore {
+namespace io {
+
+[
+    uuid(4ed1247b-e111-490f-88a9-b5caa0f4d4bb),
+    version(0.1.0)
+]
+interface IOs
+{
+    Accept(
+        [in] IFileDescriptor* fd,
+        [in] ISocketAddress* peerAddress
+        [out] IFileDescriptor** retFd);
+
+    Access(
+        [in] String path,
+        [in] Integer mode,
+        [out] Boolean* result);
+
+    Bind(
+        [in] IFileDescriptor* fd,
+        [in] IInetAddress* address,
+        [in] Integer port);
+
+    Bind(
+        [in] IFileDescriptor* fd,
+        [in] ISocketAddress* address);
+
+    Capget(
+        [in] IStructCapUserHeader* hdr,
+        [out, callee] Array<IStructCapUserData*> data);
+
+    Capset(
+        [in] IStructCapUserHeader* hdr,
+        [in] Array<IStructCapUserData*> data);
+
+    Chmod(
+        [in] String path,
+        [in] Integer mode);
+
+    Chown(
+        [in] String path,
+        [in] Integer uid,
+        [in] Integer gid);
+
+    Close(
+        [in] IFileDescriptor* fd);
+
+    Connect(
+        [in] IFileDescriptor* fd,
+        [in] IInetAddress* address,
+        [in] Integer port);
+
+    Connect(
+        [in] IFileDescriptor* fd,
+        [in] ISocketAddress* address);
+
+    Dup(
+        [in] IFileDescriptor* oldFd,
+        [out] IFileDescriptor** retFd);
+
+    Dup2(
+        [in] IFileDescriptor* oldFd,
+        [in] Integer newFd,
+        [out] IFileDescriptor** retFd);
+
+    Environ(
+        [out, callee] Array<String> env);
+
+    Execv(
+        [in] String filename,
+        [in] Array<String> argv);
+
+    Execve(
+        [in] String filename,
+        [in] Array<String> argv,
+        [in] Array<String> envp);
+
+    Fchmod(
+        [in] IFileDescriptor* fd,
+        [in] Integer mode);
+
+    Fchown(
+        [in] IFileDescriptor* fd,
+        [in] Integer uid,
+        [in] Integer gid);
+
+    FcntlFlock(
+        [in] IFileDescriptor* fd,
+        [in] Integer cmd,
+        [in] IStructFlock* arg,
+        [out] Integer* result);
+
+    FcntlInt(
+        [in] IFileDescriptor* fd,
+        [in] Integer cmd,
+        [in] Integer arg,
+        [out] Integer* result);
+
+    FcntlVoid(
+        [in] IFileDescriptor* fd,
+        [in] Integer cmd,
+        [out] Integer* result);
+
+    Fdatasync(
+        [in] IFileDescriptor* fd);
+
+    Fstat(
+        [in] IFileDescriptor* fd,
+        [out] IStructStat** stat);
+
+    Fstatvfs(
+        [in] IFileDescriptor* fd,
+        [out] IStructStatVfs** statVfs);
+
+    Fsync(
+        [in] IFileDescriptor* fd);
+
+    Ftruncate(
+        [in] IFileDescriptor* fd,
+        [in] Long length);
+
+    Gai_Strerror(
+        [in] Integer error,
+        [out] String* strerror);
+
+    Getegid(
+        [out] Integer* egid);
+
+    Geteuid(
+        [out] Integer* euid);
+
+    Getgid(
+        [out] Integer* gid);
+
+    Getenv(
+        [in] String name,
+        [out] String* value);
+
+    Pisces_Getaddrinfo(
+        [in] String node,
+        [in] IStructAddrinfo* hints,
+        [in] Integer netId,
+        [out, callee] Array<IInetAddress*> infos);
+
+
+}
+
+}
+}

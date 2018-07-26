@@ -283,6 +283,8 @@ private:
      * prefix.
      */
     Integer mPrefixLength;
+
+    friend class FileInputStream;
 };
 
 inline File* File::From(

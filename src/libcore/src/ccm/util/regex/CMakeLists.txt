@@ -28,6 +28,6 @@ set(SOURCES
     Matcher.cpp
     Pattern.cpp)
 
-add_library(regex STATIC
+add_library(ccm_util_regex STATIC
     ${SOURCES})
-add_dependencies(regex build_libcore)
+add_dependencies(ccm_util_regex build_libcore)

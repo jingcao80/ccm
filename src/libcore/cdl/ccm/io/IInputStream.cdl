@@ -18,8 +18,8 @@ namespace ccm {
 namespace io {
 
 /*
- * @involve ccm::io::ICloseable
- * @involve ccm::core::IAutoCloseable
+ * @Involve ccm::io::ICloseable
+ * @Involve ccm::core::IAutoCloseable
  */
 [
     uuid(ffea83b0-bb5d-4a13-b9e8-9a430b97e854),
@@ -42,11 +42,11 @@ interface IInputStream
         [out] Integer* value);
 
     Read(
-        [in] Array<Byte> buffer,
+        [out] Array<Byte> buffer,
         [out] Integer* number);
 
     Read(
-        [in] Array<Byte> buffer,
+        [out] Array<Byte> buffer,
         [in] Integer offset,
         [in] Integer size,
         [out] Integer* number);

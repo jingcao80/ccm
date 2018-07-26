@@ -16,6 +16,7 @@
 
 set(IO_DIR ${LIBCORE_CCM_SRC_DIR}/io)
 
+add_subdirectory(ch)
 add_subdirectory(charset)
 
 include_directories(
@@ -30,7 +31,10 @@ set(SOURCES
     DeleteOnExitHook.cpp
     ExpiringCache.cpp
     File.cpp
+    FileDescriptor.cpp
+    FileInputStream.cpp
     FileSystem.cpp
+    InputStream.cpp
     OutputStreamWriter.cpp
     UnixFileSystem.cpp
     Writer.cpp
@@ -38,6 +42,6 @@ set(SOURCES
     io.cpp
     io_util_md.cpp)
 
-add_library(io STATIC
+add_library(ccm_io STATIC
     ${SOURCES})
-add_dependencies(io build_libcore)
+add_dependencies(ccm_io build_libcore)

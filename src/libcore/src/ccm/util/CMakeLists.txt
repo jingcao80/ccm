@@ -50,6 +50,6 @@ set(SOURCES
     XMLUtils.cpp
     util.cpp)
 
-add_library(libcore_util STATIC
+add_library(ccm_util STATIC
     ${SOURCES})
-add_dependencies(libcore_util build_libcore)
+add_dependencies(ccm_util build_libcore)

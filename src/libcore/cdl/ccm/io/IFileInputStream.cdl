@@ -22,6 +22,8 @@ namespace io {
 
 /*
  * @Involve interface ccm::io::IInputStream;
+ * @Involve ccm::io::ICloseable
+ * @Involve ccm::core::IAutoCloseable
  */
 [
     uuid(4062b7ff-4bea-4200-a9f6-8d2b706956fc),

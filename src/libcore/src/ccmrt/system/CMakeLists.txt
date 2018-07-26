@@ -25,8 +25,9 @@ include_directories(
 
 set(SOURCES
     BlockGuard.cpp
+    CloseGuard.cpp
     CPathClassLoader.cpp)
 
-add_library(system STATIC
+add_library(ccmrt_system STATIC
     ${SOURCES})
-add_dependencies(system build_libcore)
+add_dependencies(ccmrt_system build_libcore)

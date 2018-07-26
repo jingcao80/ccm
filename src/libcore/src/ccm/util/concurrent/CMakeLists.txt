@@ -27,6 +27,6 @@ set(SOURCES
     atomic/AtomicInteger.cpp
     atomic/AtomicLong.cpp)
 
-add_library(concurrent STATIC
+add_library(ccm_util_concurrent STATIC
     ${SOURCES})
-add_dependencies(concurrent build_libcore)
+add_dependencies(ccm_util_concurrent build_libcore)

@@ -29,5 +29,7 @@ include "ccm/security.cdl"
 include "ccm/core3.cdl"
 include "ccm/util.cdl"
 include "ccmrt/system.cdl"
+include "libcore/io.cdl"
+include "pisces/system.cdl"
 
 }

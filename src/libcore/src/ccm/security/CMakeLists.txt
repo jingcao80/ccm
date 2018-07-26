@@ -32,6 +32,6 @@ set(SOURCES
     security.cpp
     action/GetPropertyAction.cpp)
 
-add_library(security STATIC
+add_library(ccm_security STATIC
     ${SOURCES})
-add_dependencies(security build_libcore)
+add_dependencies(ccm_security build_libcore)

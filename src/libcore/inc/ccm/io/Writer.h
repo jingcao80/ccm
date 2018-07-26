@@ -19,6 +19,7 @@
 
 #include "ccm/core/SyncObject.h"
 #include "ccm.core.IAppendable.h"
+#include "ccm.core.IAutoCloseable.h"
 #include "ccm.core.ICharSequence.h"
 #include "ccm.core.ISynchronize.h"
 #include "ccm.io.ICloseable.h"
@@ -26,6 +27,7 @@
 #include "ccm.io.IWriter.h"
 
 using ccm::core::IAppendable;
+using ccm::core::IAutoCloseable;
 using ccm::core::ICharSequence;
 using ccm::core::ISynchronize;
 using ccm::core::SyncObject;
@@ -39,6 +41,7 @@ class Writer
     , public IAppendable
     , public ICloseable
     , public IFlushable
+    , public IAutoCloseable
 {
 protected:
     virtual ~Writer();
