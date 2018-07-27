@@ -25,7 +25,8 @@ include_directories(
 
 set(SOURCES
     IoBridge.cpp
-    IoTracker.cpp)
+    IoTracker.cpp
+    Linux.cpp)
 
 add_library(libcore_io STATIC
     ${SOURCES})

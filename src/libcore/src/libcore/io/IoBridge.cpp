@@ -14,7 +14,10 @@
 // limitations under the License.
 //=========================================================================
 
+#include "ccm/util/Arrays.h"
 #include "libcore/io/IoBridge.h"
+
+using ccm::util::Arrays;
 
 namespace libcore {
 namespace io {
@@ -32,6 +35,13 @@ ECode IoBridge::Read(
     /* [in] */ Integer byteCount,
     /* [out] */ Integer* number)
 {
+    VALIDATE_NOT_NULL(number);
+
+    FAIL_RETURN(Arrays::CheckOffsetAndCount(bytes.GetLength(), byteOffset, byteCount));
+    if (byteCount == 0) {
+        *number = 0;
+        return NOERROR;
+    }
     return NOERROR;
 }
 

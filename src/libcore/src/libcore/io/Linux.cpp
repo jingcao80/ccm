@@ -14,33 +14,26 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_UTIL_ARRAYS_H__
-#define __CCM_UTIL_ARRAYS_H__
+#include "libcore/io/Linux.h"
 
-#include <ccmtypes.h>
+namespace libcore {
+namespace io {
 
-namespace ccm {
-namespace util {
-
-class Arrays
+ECode Linux::Accept(
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ ISocketAddress* peerAddress,
+    /* [out] */ IFileDescriptor** retFd)
 {
-public:
-    static ECode CheckOffsetAndCount(
-        /* [in] */ Integer arrayLength,
-        /* [in] */ Integer offset,
-        /* [in] */ Integer count);
+    return NOERROR;
+}
 
-    static ECode CopyOf(
-        /* [in] */ const Array<IInterface*>& original,
-        /* [in] */ Integer newLength,
-        /* [out, callee] */ Array<IInterface*>* newArray);
-
-private:
-    Arrays()
-    {}
-};
+ECode Linux::Access(
+    /* [in] */ const String& path,
+    /* [in] */ Integer mode,
+    /* [out] */ Boolean* result)
+{
+    return NOERROR;
+}
 
 }
 }
-
-#endif // __CCM_UTIL_ARRAYS_H__

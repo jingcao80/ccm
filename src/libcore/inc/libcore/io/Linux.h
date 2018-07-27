@@ -14,33 +14,43 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_UTIL_ARRAYS_H__
-#define __CCM_UTIL_ARRAYS_H__
+#ifndef __LIBCORE_IO_LINUX_H__
+#define __LIBCORE_IO_LINUX_H__
 
-#include <ccmtypes.h>
+#include "ccm/core/SyncObject.h"
+#include "ccm.io.IFileDescriptor.h"
+#include "ccm.net.ISocketAddress.h"
+#include "libcore.io.IOs.h"
 
-namespace ccm {
-namespace util {
+using ccm::core::SyncObject;
+using ccm::io::IFileDescriptor;
+using ccm::net::ISocketAddress;
 
-class Arrays
+namespace libcore {
+namespace io {
+
+class Linux
+    : public SyncObject
+    , public IOs
 {
 public:
-    static ECode CheckOffsetAndCount(
-        /* [in] */ Integer arrayLength,
-        /* [in] */ Integer offset,
-        /* [in] */ Integer count);
+    Linux();
 
-    static ECode CopyOf(
-        /* [in] */ const Array<IInterface*>& original,
-        /* [in] */ Integer newLength,
-        /* [out, callee] */ Array<IInterface*>* newArray);
+    ECode Accept(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ ISocketAddress* peerAddress,
+        /* [out] */ IFileDescriptor** retFd) override;
 
-private:
-    Arrays()
-    {}
+    ECode Access(
+        /* [in] */ const String& path,
+        /* [in] */ Integer mode,
+        /* [out] */ Boolean* result) override;
 };
 
+inline Linux::Linux()
+{}
+
 }
 }
 
-#endif // __CCM_UTIL_ARRAYS_H__
+#endif // __LIBCORE_IO_LINUX_H__

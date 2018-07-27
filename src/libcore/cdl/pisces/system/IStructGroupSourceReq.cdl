@@ -14,33 +14,15 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_UTIL_ARRAYS_H__
-#define __CCM_UTIL_ARRAYS_H__
+namespace pisces {
+namespace system {
 
-#include <ccmtypes.h>
-
-namespace ccm {
-namespace util {
-
-class Arrays
-{
-public:
-    static ECode CheckOffsetAndCount(
-        /* [in] */ Integer arrayLength,
-        /* [in] */ Integer offset,
-        /* [in] */ Integer count);
-
-    static ECode CopyOf(
-        /* [in] */ const Array<IInterface*>& original,
-        /* [in] */ Integer newLength,
-        /* [out, callee] */ Array<IInterface*>* newArray);
-
-private:
-    Arrays()
-    {}
-};
+[
+    uuid(eacfe43a-2ee8-4a73-be66-dc47f954e81e),
+    version(0.1.0)
+]
+interface IStructGroupSourceReq
+{}
 
 }
 }
-
-#endif // __CCM_UTIL_ARRAYS_H__

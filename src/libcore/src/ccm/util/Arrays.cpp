@@ -22,6 +22,17 @@ using ccm::core::Math;
 namespace ccm {
 namespace util {
 
+ECode Arrays::CheckOffsetAndCount(
+    /* [in] */ Integer arrayLength,
+    /* [in] */ Integer offset,
+    /* [in] */ Integer count)
+{
+    if ((offset | count) < 0 || offset > arrayLength || arrayLength - offset < count) {
+        return ccm::core::E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+    }
+    return NOERROR;
+}
+
 ECode Arrays::CopyOf(
     /* [in] */ const Array<IInterface*>& original,
     /* [in] */ Integer newLength,

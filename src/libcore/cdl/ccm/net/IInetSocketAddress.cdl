@@ -14,33 +14,15 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_UTIL_ARRAYS_H__
-#define __CCM_UTIL_ARRAYS_H__
-
-#include <ccmtypes.h>
-
 namespace ccm {
-namespace util {
+namespace net {
 
-class Arrays
-{
-public:
-    static ECode CheckOffsetAndCount(
-        /* [in] */ Integer arrayLength,
-        /* [in] */ Integer offset,
-        /* [in] */ Integer count);
-
-    static ECode CopyOf(
-        /* [in] */ const Array<IInterface*>& original,
-        /* [in] */ Integer newLength,
-        /* [out, callee] */ Array<IInterface*>* newArray);
-
-private:
-    Arrays()
-    {}
-};
+[
+    uuid(49a9b44d-d53d-4645-a104-fe30b3b3b8b6),
+    version(0.1.0)
+]
+interface IInetSocketAddress
+{}
 
 }
 }
-
-#endif // __CCM_UTIL_ARRAYS_H__

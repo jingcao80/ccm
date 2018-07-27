@@ -14,15 +14,27 @@
 // limitations under the License.
 //=========================================================================
 
+interface ccm::IInterface;
+interface ccm::io::IByteBuffer;
 interface ccm::io::IFileDescriptor;
 interface ccm::net::IInetAddress;
+interface ccm::net::IInetSocketAddress;
 interface ccm::net::ISocketAddress;
 interface pisces::system::IStructAddrinfo;
 interface pisces::system::IStructCapUserData;
 interface pisces::system::IStructCapUserHeader;
 interface pisces::system::IStructFlock;
+interface pisces::system::IStructGroupReq;
+interface pisces::system::IStructGroupSourceReq;
+interface pisces::system::IStructIfaddrs;
+interface pisces::system::IStructLinger;
+interface pisces::system::IStructPasswd;
+interface pisces::system::IStructPollfd;
 interface pisces::system::IStructStat;
 interface pisces::system::IStructStatVfs;
+interface pisces::system::IStructTimeval;
+interface pisces::system::IStructUcred;
+interface pisces::system::IStructUtsname;
 
 namespace libcore {
 namespace io {
@@ -35,7 +47,7 @@ interface IOs
 {
     Accept(
         [in] IFileDescriptor* fd,
-        [in] ISocketAddress* peerAddress
+        [in] ISocketAddress* peerAddress,
         [out] IFileDescriptor** retFd);
 
     Access(
@@ -163,13 +175,508 @@ interface IOs
         [in] String name,
         [out] String* value);
 
+    Getnameinfo(
+        [in] IInetAddress* address,
+        [in] Integer flags,
+        [out] String* info);
+
+    Getpeername(
+        [in] IFileDescriptor* fd,
+        [out] ISocketAddress** name);
+
+    Getpgid(
+        [in] Integer pid,
+        [out] Integer* pgid);
+
+    Getpid(
+        [out] Integer* pid);
+
+    Getppid(
+        [out] Integer* ppid);
+
+    Getpwnam(
+        [in] String name,
+        [out] IStructPasswd** pwnam);
+
+    Getpwuid(
+        [in] Integer uid,
+        [out] IStructPasswd** pwuid);
+
+    Getsockname(
+        [in] IFileDescriptor* fd,
+        [out] ISocketAddress** socket);
+
+    GetsockoptByte(
+        [in] IFileDescriptor* fd,
+        [in] Integer level,
+        [in] Integer option,
+        [out] Integer* sockopt);
+
+    GetsockoptInAddr(
+        [in] IFileDescriptor* fd,
+        [in] Integer level,
+        [in] Integer option,
+        [out] IInetAddress** addr);
+
+    GetsockoptInt(
+        [in] IFileDescriptor* fd,
+        [in] Integer level,
+        [in] Integer option,
+        [out] Integer* sockopt);
+
+    GetsockoptLinger(
+        [in] IFileDescriptor* fd,
+        [in] Integer level,
+        [in] Integer option,
+        [out] IStructLinger** linger);
+
+    GetsockoptTimeval(
+        [in] IFileDescriptor* fd,
+        [in] Integer level,
+        [in] Integer option,
+        [out] IStructTimeval** timeval);
+
+    GetsockoptUcred(
+        [in] IFileDescriptor* fd,
+        [in] Integer level,
+        [in] Integer option,
+        [out] IStructUcred** ucred);
+
+    Gettid(
+        [out] Integer* tid);
+
+    Getuid(
+        [out] Integer* uid);
+
+    Getxattr(
+        [in] String path,
+        [in] String name,
+        [out, callee] Array<Byte> attr);
+
+    Getifaddrs(
+        [out, callee] Array<IStructIfaddrs*> addrs);
+
+    If_indextoname(
+        [in] Integer index,
+        [out] String* name);
+
+    If_nametoindex(
+        [in] String name,
+        [out] Integer* index);
+
+    Inet_pton(
+        [in] Integer family,
+        [in] String address,
+        [out] IInetAddress** addr);
+
+    IoctlInetAddress(
+        [in] IFileDescriptor* fd,
+        [in] Integer cmd,
+        [in] String interfaceName,
+        [out] IInetAddress** addr);
+
+    IoctlInt(
+        [in] IFileDescriptor* fd,
+        [in] Integer cmd,
+        [in, out] Integer* arg,
+        [out] Integer* result);
+
+    IoctlMTU(
+        [in] IFileDescriptor* fd,
+        [in] String interfaceName,
+        [out] Integer* mtu);
+
+    Isatty(
+        [in] IFileDescriptor* fd,
+        [out] Boolean* isatty);
+
+    Kill(
+        [in] Integer pid,
+        [in] Integer signal);
+
+    Lchown(
+        [in] String path,
+        [in] Integer uid,
+        [in] Integer gid);
+
+    Link(
+        [in] String oldPath,
+        [in] String newPath);
+
+    Listen(
+        [in] IFileDescriptor* fd,
+        [in] Integer backlog);
+
+    Listxattr(
+        [in] String path,
+        [out, callee] Array<String> attr);
+
+    Lseek(
+        [in] IFileDescriptor* fd,
+        [in] Long offset,
+        [in] Integer whence,
+        [out] Long* result);
+
+    Lstat(
+        [in] String path,
+        [out] IStructStat** stat);
+
+    Mincore(
+        [in] Long address,
+        [in] Long byteCount,
+        [in] Array<Byte> vector);
+
+    Mkdir(
+        [in] String path,
+        [in] Integer mode);
+
+    Mkfifo(
+        [in] String path,
+        [in] Integer mode);
+
+    Mlock(
+        [in] Long address,
+        [in] Long byteCount);
+
+    Mmap(
+        [in] Long address,
+        [in] Long byteCount,
+        [in] Integer prot,
+        [in] Integer flags,
+        [in] IFileDescriptor* fd,
+        [in] Long offset,
+        [out] Long* result);
+
+    Msync(
+        [in] Long address,
+        [in] Long byteCount,
+        [in] Integer flags);
+
+    Munlock(
+        [in] Long address,
+        [in] Long byteCount);
+
+    Munmap(
+        [in] Long address,
+        [in] Long byteCount);
+
+    Open(
+        [in] String path,
+        [in] Integer flags,
+        [in] Integer mode,
+        [out] IFileDescriptor** fd);
+
+    Pipe2(
+        [in] Integer flags,
+        [out, callee] Array<IFileDescriptor*> fds);
+
     Pisces_Getaddrinfo(
         [in] String node,
         [in] IStructAddrinfo* hints,
         [in] Integer netId,
         [out, callee] Array<IInetAddress*> infos);
 
+    Poll(
+        [in] Array<IStructPollfd*> fds,
+        [in] Integer timeoutMs,
+        [out] Integer* result);
 
+    Posix_fallocate(
+        [in] IFileDescriptor* fd,
+        [in] Long offset,
+        [in] Long length);
+
+    Prctl(
+        [in] Integer option,
+        [in] Long arg2,
+        [in] Long arg3,
+        [in] Long arg4,
+        [in] Long arg5,
+        [out] Integer* prctl);
+
+    Pread(
+        [in] IFileDescriptor* fd,
+        [out] Array<Byte> bytes,
+        [in] Integer byteOffset,
+        [in] Integer byteCount,
+        [in] Long offset,
+        [out] Integer* num);
+
+    Pread(
+        [in] IFileDescriptor* fd,
+        [in] IByteBuffer* buffer,
+        [in] Long offset,
+        [out] Integer* num);
+
+    Pwrite(
+        [in] IFileDescriptor* fd,
+        [in] Array<Byte> bytes,
+        [in] Integer byteOffset,
+        [in] Integer byteCount,
+        [in] Long offset,
+        [out] Integer* num);
+
+    Pwrite(
+        [in] IFileDescriptor* fd,
+        [in] IByteBuffer* buffer,
+        [in] Long offset,
+        [out] Integer* num);
+
+    Read(
+        [in] IFileDescriptor* fd,
+        [out] Array<Byte> bytes,
+        [in] Integer byteOffset,
+        [in] Integer byteCount,
+        [out] Integer* num);
+
+    Read(
+        [in] IFileDescriptor* fd,
+        [in] IByteBuffer* buffer,
+        [out] Integer* num);
+
+    Readlink(
+        [in] String path,
+        [out] String* link);
+
+    Realpath(
+        [in] String path,
+        [out] String* realpath);
+
+    Readv(
+        [in] IFileDescriptor* fd,
+        [out] Array<IInterface*> buffers,
+        [out] Array<Integer> offsets,
+        [out] Array<Integer> byteCounts,
+        [out] Integer* num);
+
+    Recvfrom(
+        [in] IFileDescriptor* fd,
+        [out] Array<Byte> bytes,
+        [in] Integer byteOffset,
+        [in] Integer byteCount,
+        [in] Integer flags,
+        [in] IInetSocketAddress* srcAddress,
+        [out] Integer* num);
+
+    Recvfrom(
+        [in] IFileDescriptor* fd,
+        [in] IByteBuffer* buffer,
+        [in] Integer flags,
+        [in] IInetSocketAddress* srcAddress,
+        [out] Integer* num);
+
+    Remove(
+        [in] String path);
+
+    Rename(
+        [in] String oldPath,
+        [in] String newPath);
+
+    Sendto(
+        [in] IFileDescriptor* fd,
+        [in] Array<Byte> bytes,
+        [in] Integer byteOffset,
+        [in] Integer byteCount,
+        [in] Integer flags,
+        [in] IInetAddress* inetAddress,
+        [in] Integer port,
+        [out] Integer* result);
+
+    Sendto(
+        [in] IFileDescriptor* fd,
+        [in] Array<Byte> bytes,
+        [in] Integer byteOffset,
+        [in] Integer byteCount,
+        [in] Integer flags,
+        [in] ISocketAddress* address,
+        [out] Integer* result);
+
+    Sendto(
+        [in] IFileDescriptor* fd,
+        [in] IByteBuffer* buffer,
+        [in] Integer flags,
+        [in] IInetAddress* inetAddress,
+        [in] Integer port,
+        [out] Integer* result);
+
+    Sendfile(
+        [in] IFileDescriptor* outFd,
+        [in] IFileDescriptor* inFd,
+        [in, out] Long* inOffset,
+        [in] Long byteCount,
+        [out] Long* result);
+
+    Setegid(
+        [in] Integer egid);
+
+    Setenv(
+        [in] String name,
+        [in] String value,
+        [in] Boolean overwrite);
+
+    Seteuid(
+        [in] Integer euid);
+
+    Setgid(
+        [in] Integer gid);
+
+    Setpgid(
+        [in] Integer pid,
+        [in] Integer pgid);
+
+    Setregid(
+        [in] Integer rgid,
+        [in] Integer egid);
+
+    Setreuid(
+        [in] Integer ruid,
+        [in] Integer euid);
+
+    Setsid(
+        [out] Integer* sid);
+
+    SetsockoptByte(
+        [in] IFileDescriptor* fd,
+        [in] Integer level,
+        [in] Integer option,
+        [in] Integer value);
+
+    SetsockoptIfreq(
+        [in] IFileDescriptor* fd,
+        [in] Integer level,
+        [in] Integer option,
+        [in] String value);
+
+    SetsockoptInt(
+        [in] IFileDescriptor* fd,
+        [in] Integer level,
+        [in] Integer option,
+        [in] Integer value);
+
+    SetsockoptIpMreqn(
+        [in] IFileDescriptor* fd,
+        [in] Integer level,
+        [in] Integer option,
+        [in] Integer value);
+
+    SetsockoptGroupReq(
+        [in] IFileDescriptor* fd,
+        [in] Integer level,
+        [in] Integer option,
+        [in] IStructGroupReq* value);
+
+    SetsockoptGroupSourceReq(
+        [in] IFileDescriptor* fd,
+        [in] Integer level,
+        [in] Integer option,
+        [in] IStructGroupSourceReq* value);
+
+    SetsockoptLinger(
+        [in] IFileDescriptor* fd,
+        [in] Integer level,
+        [in] Integer option,
+        [in] IStructLinger* value);
+
+    SetsockoptTimeval(
+        [in] IFileDescriptor* fd,
+        [in] Integer level,
+        [in] Integer option,
+        [in] IStructTimeval* value);
+
+    Setuid(
+        [in] Integer uid);
+
+    Setxattr(
+        [in] String path,
+        [in] String name,
+        [in] Array<Byte> value,
+        [in] Integer flags);
+
+    Shutdown(
+        [in] IFileDescriptor* fd,
+        [in] Integer how);
+
+    Socket(
+        [in] Integer socketDomain,
+        [in] Integer type,
+        [in] Integer protocol,
+        [out] IFileDescriptor** fd);
+
+    Socketpair(
+        [in] Integer socketDomain,
+        [in] Integer type,
+        [in] Integer protocol,
+        [in] IFileDescriptor* fd1,
+        [in] IFileDescriptor* fd2);
+
+    Stat(
+        [in] String path,
+        [out] IStructStat** stat);
+
+    StatVfs(
+        [in] String path,
+        [out] IStructStatVfs** statfs);
+
+    Strerror(
+        [in] Integer errnum,
+        [out] String* strerr);
+
+    Strsignal(
+        [in] Integer signal,
+        [out] String* strSignal);
+
+    Symlink(
+        [in] String oldPath,
+        [in] String newPath);
+
+    Sysconf(
+        [in] Integer name,
+        [out] Long* result);
+
+    Tcdrain(
+        [in] IFileDescriptor* fd);
+
+    Tcsendbreak(
+        [in] IFileDescriptor* fd,
+        [in] Integer duration);
+
+    Umask(
+        [in] Integer mask,
+        [out] Integer* result);
+
+    Uname(
+        [out] IStructUtsname** uname);
+
+    Unlink(
+        [in] String pathname);
+
+    Unsetenv(
+        [in] String name);
+
+    Waitpid(
+        [in] Integer pid,
+        [in, out] Integer* status,
+        [in] Integer options,
+        [out] Integer* result);
+
+    Write(
+        [in] IFileDescriptor* fd,
+        [in] Array<Byte>* bytes,
+        [in] Integer byteOffset,
+        [in] Integer byteCount,
+        [out] Integer* num);
+
+    Write(
+        [in] IFileDescriptor* fd,
+        [in] IByteBuffer* buffer,
+        [out] Integer* num);
+
+    Writev(
+        [in] IFileDescriptor* fd,
+        [in] Array<IInterface*> buffers,
+        [in] Array<Integer> offsets,
+        [in] Array<Integer> byteCounts,
+        [out] Integer* result);
 }
 
 }
