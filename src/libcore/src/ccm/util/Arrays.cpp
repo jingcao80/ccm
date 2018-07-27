@@ -16,6 +16,7 @@
 
 #include "ccm/core/Math.h"
 #include "ccm/util/Arrays.h"
+#include "libcore.h"
 
 using ccm::core::Math;
 
