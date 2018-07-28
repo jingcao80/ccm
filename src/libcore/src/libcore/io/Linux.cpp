@@ -19,6 +19,8 @@
 namespace libcore {
 namespace io {
 
+CCM_INTERFACE_IMPL_1(Linux, SyncObject, IOs);
+
 ECode Linux::Accept(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ ISocketAddress* peerAddress,

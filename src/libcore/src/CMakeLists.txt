@@ -19,6 +19,7 @@ set(OBJ_DIR ${CMAKE_BINARY_DIR}/src/libcore/src/)
 add_subdirectory(ccm)
 add_subdirectory(ccmrt)
 add_subdirectory(libcore)
+add_subdirectory(pisces)
 
 include_directories(
     ./
@@ -101,6 +102,7 @@ set(LIBCORE_LINK_LIBS
     ccm_util_regex
     ccmrt_system
     libcore_io
+    pisces_system
     -Wl,--no-whole-archive)
 
 IMPORT_LIBRARY(ccmrt.so)

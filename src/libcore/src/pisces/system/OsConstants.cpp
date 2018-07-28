@@ -14,24 +14,17 @@
 // limitations under the License.
 //=========================================================================
 
+#include "pisces/system/OsConstants.h"
+#include <sys/socket.h>
+
 namespace pisces {
 namespace system {
 
-[
-    uuid(8fa6e1d2-7213-478c-91b0-586df09a4fa9),
-    version(0.1.0)
-]
-interface IStructLinger
-{
-    GetLinger(
-        [out] Integer* linger);
-
-    GetOnoff(
-        [out] Integer* onoff);
-
-    IsOn(
-        [out] Boolean* on);
-}
+const Integer OsConstants::AF_INET_ = AF_INET;
+const Integer OsConstants::AF_INET6_ = AF_INET6;
+const Integer OsConstants::SOL_SOCKET_ = SOL_SOCKET;
+const Integer OsConstants::SO_DOMAIN_ = SO_DOMAIN;
+const Integer OsConstants::SO_LINGER_ = SO_LINGER;
 
 }
 }

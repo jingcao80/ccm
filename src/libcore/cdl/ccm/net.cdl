@@ -14,6 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
+include "ccm/net/IDatagramPacket.cdl"
 include "ccm/net/IInetAddress.cdl"
 include "ccm/net/IInetSocketAddress.cdl"
 include "ccm/net/ISocketAddress.cdl"

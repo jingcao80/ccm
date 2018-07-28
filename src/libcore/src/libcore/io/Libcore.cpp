@@ -14,43 +14,21 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/util/Arrays.h"
-#include "libcore/io/IoBridge.h"
 #include "libcore/io/Libcore.h"
-
-using ccm::util::Arrays;
+#include "libcore/io/Linux.h"
 
 namespace libcore {
 namespace io {
 
-ECode IoBridge::CloseAndSignalBlockedThreads(
-    /* [in] */ IFileDescriptor* fd)
+AutoPtr<IOs> Libcore::GetRawOs()
 {
-    return NOERROR;
+    static AutoPtr<IOs> sRawOs = new Linux();
+    return sRawOs;
 }
 
-ECode IoBridge::Read(
-    /* [in] */ IFileDescriptor* fd,
-    /* [out] */ Array<Byte>& bytes,
-    /* [in] */ Integer byteOffset,
-    /* [in] */ Integer byteCount,
-    /* [out] */ Integer* number)
+AutoPtr<IOs> Libcore::GetOs()
 {
-    VALIDATE_NOT_NULL(number);
-
-    FAIL_RETURN(Arrays::CheckOffsetAndCount(bytes.GetLength(), byteOffset, byteCount));
-    if (byteCount == 0) {
-        *number = 0;
-        return NOERROR;
-    }
-    Integer readCount;
-    FAIL_RETURN(Libcore::GetOs()->Read(fd, bytes, byteOffset, byteCount, &readCount));
-    if (readCount == 0) {
-        *number = -1;
-        return NOERROR;
-    }
-    *number = readCount;
-    return NOERROR;
+    return nullptr;
 }
 
 }

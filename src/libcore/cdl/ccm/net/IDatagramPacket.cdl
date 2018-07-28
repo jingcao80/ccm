@@ -14,24 +14,15 @@
 // limitations under the License.
 //=========================================================================
 
-namespace pisces {
-namespace system {
+namespace ccm {
+namespace net {
 
 [
-    uuid(8fa6e1d2-7213-478c-91b0-586df09a4fa9),
+    uuid(74feab7b-a39b-47a8-bbc7-6af9897c36e9),
     version(0.1.0)
 ]
-interface IStructLinger
-{
-    GetLinger(
-        [out] Integer* linger);
-
-    GetOnoff(
-        [out] Integer* onoff);
-
-    IsOn(
-        [out] Boolean* on);
-}
+interface IDatagramPacket
+{}
 
 }
 }

@@ -438,7 +438,8 @@ String CodeGenerator::GenParameter(
 
 String CodeGenerator::GenType(
     /* [in] */ MetaType* mt,
-    /* [in] */ int attr)
+    /* [in] */ int attr,
+    /* [in] */ bool inArray)
 {
     StringBuilder builder;
 
@@ -469,7 +470,7 @@ String CodeGenerator::GenType(
             builder.Append("Boolean");
             break;
         case CcmTypeKind::String:
-            if ((attr & Parameter::ATTR_MASK) == Parameter::IN) {
+            if ((attr & Parameter::ATTR_MASK) == Parameter::IN && !inArray) {
                 builder.Append("const String&");
             }
             else {
@@ -477,26 +478,26 @@ String CodeGenerator::GenType(
             }
             break;
         case CcmTypeKind::CoclassID:
-            if ((attr & Parameter::ATTR_MASK) == Parameter::IN) {
+            if ((attr & Parameter::ATTR_MASK) == Parameter::IN && !inArray) {
                 builder.Append("const CoclassID&");
             }
-            else if ((attr & Parameter::ATTR_MASK) == Parameter::OUT) {
+            else {
                 builder.Append("CoclassID");
             }
             break;
         case CcmTypeKind::ComponentID:
-            if ((attr & Parameter::ATTR_MASK) == Parameter::IN) {
+            if ((attr & Parameter::ATTR_MASK) == Parameter::IN && !inArray) {
                 builder.Append("const ComponentID&");
             }
-            else if ((attr & Parameter::ATTR_MASK) == Parameter::OUT) {
+            else {
                 builder.Append("ComponentID");
             }
             break;
         case CcmTypeKind::InterfaceID:
-            if ((attr & Parameter::ATTR_MASK) == Parameter::IN) {
+            if ((attr & Parameter::ATTR_MASK) == Parameter::IN && !inArray) {
                 builder.Append("const InterfaceID&");
             }
-            else if ((attr & Parameter::ATTR_MASK) == Parameter::OUT) {
+            else {
                 builder.Append("InterfaceID");
             }
             break;
@@ -513,20 +514,20 @@ String CodeGenerator::GenType(
             if ((attr & Parameter::ATTR_MASK) == Parameter::IN) {
                 if (mt->mPointerNumber == 0) {
                     builder.AppendFormat("const Array<%s>&",
-                        GenType(mc->mTypes[mt->mNestedTypeIndex], attr).string());
+                        GenType(mc->mTypes[mt->mNestedTypeIndex], attr, true).string());
                 }
                 else if (mt->mPointerNumber == 1) {
                     builder.AppendFormat("const Array<%s>",
-                        GenType(mc->mTypes[mt->mNestedTypeIndex], attr).string());
+                        GenType(mc->mTypes[mt->mNestedTypeIndex], attr, true).string());
                 }
             }
             else if ((attr & Parameter::ATTR_MASK) == Parameter::OUT) {
                 builder.AppendFormat("Array<%s>&",
-                    GenType(mc->mTypes[mt->mNestedTypeIndex], attr).string());
+                    GenType(mc->mTypes[mt->mNestedTypeIndex], attr, true).string());
             }
             else if ((attr & Parameter::ATTR_MASK) == (Parameter::OUT | Parameter::CALLEE)) {
                 builder.AppendFormat("Array<%s>",
-                    GenType(mc->mTypes[mt->mNestedTypeIndex], attr).string());
+                    GenType(mc->mTypes[mt->mNestedTypeIndex], attr, true).string());
             }
             break;
         case CcmTypeKind::Interface:

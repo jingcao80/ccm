@@ -14,24 +14,27 @@
 // limitations under the License.
 //=========================================================================
 
-namespace pisces {
-namespace system {
+#ifndef __LIBCORE_IO_LIBCORE_H__
+#define __LIBCORE_IO_LIBCORE_H__
 
-[
-    uuid(8fa6e1d2-7213-478c-91b0-586df09a4fa9),
-    version(0.1.0)
-]
-interface IStructLinger
+#include "libcore.io.IOs.h"
+#include <ccmautoptr.h>
+
+namespace libcore {
+namespace io {
+
+class Libcore
 {
-    GetLinger(
-        [out] Integer* linger);
+public:
+    static AutoPtr<IOs> GetRawOs();
 
-    GetOnoff(
-        [out] Integer* onoff);
+    static AutoPtr<IOs> GetOs();
 
-    IsOn(
-        [out] Boolean* on);
+private:
+    Libcore();
+};
+
+}
 }
 
-}
-}
+#endif // __LIBCORE_IO_LIBCORE_H__

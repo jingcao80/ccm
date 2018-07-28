@@ -14,24 +14,30 @@
 // limitations under the License.
 //=========================================================================
 
+#ifndef __PISCES_SYSTEM_OSCONSTANTS_H__
+#define __PISCES_SYSTEM_OSCONSTANTS_H__
+
+#include <ccmtypes.h>
+
+using namespace ccm;
+
 namespace pisces {
 namespace system {
 
-[
-    uuid(8fa6e1d2-7213-478c-91b0-586df09a4fa9),
-    version(0.1.0)
-]
-interface IStructLinger
+class OsConstants final
 {
-    GetLinger(
-        [out] Integer* linger);
+public:
+    static const Integer AF_INET_;
+    static const Integer AF_INET6_;
+    static const Integer SOL_SOCKET_;
+    static const Integer SO_DOMAIN_;
+    static const Integer SO_LINGER_;
 
-    GetOnoff(
-        [out] Integer* onoff);
+private:
+    OsConstants();
+};
 
-    IsOn(
-        [out] Boolean* on);
+}
 }
 
-}
-}
+#endif // __PISCES_SYSTEM_OSCONSTANTS_H__

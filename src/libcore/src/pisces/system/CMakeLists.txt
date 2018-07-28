@@ -14,7 +14,7 @@
 # limitations under the License.
 #=========================================================================
 
-set(IO_DIR ${LIBCORE_LIBCORE_SRC_DIR}/io)
+set(SYSTEM_DIR ${LIBCORE_LIBCORE_SRC_DIR}/system)
 
 include_directories(
     ./
@@ -24,13 +24,8 @@ include_directories(
     ${OBJ_DIR})
 
 set(SOURCES
-    BlockGuardOs.cpp
-    ForwardingOs.cpp
-    IoBridge.cpp
-    IoTracker.cpp
-    Libcore.cpp
-    Linux.cpp)
+    OsConstants.cpp)
 
-add_library(libcore_io STATIC
+add_library(pisces_system STATIC
     ${SOURCES})
-add_dependencies(libcore_io build_libcore)
+add_dependencies(pisces_system build_libcore)

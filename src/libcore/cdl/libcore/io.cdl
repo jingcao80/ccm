@@ -14,4 +14,6 @@
 // limitations under the License.
 //=========================================================================
 
+include "libcore/io/IIoBridge.cdl"
+include "libcore/io/ILibcore.cdl"
 include "libcore/io/IOs.cdl"

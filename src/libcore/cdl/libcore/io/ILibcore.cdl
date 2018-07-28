@@ -14,23 +14,22 @@
 // limitations under the License.
 //=========================================================================
 
-namespace pisces {
-namespace system {
+interface libcore::io::IOs;
+
+namespace libcore {
+namespace io {
 
 [
-    uuid(8fa6e1d2-7213-478c-91b0-586df09a4fa9),
+    uuid(f3f6610a-f7dc-40e0-a25d-daa20e1829bf),
     version(0.1.0)
 ]
-interface IStructLinger
+interface ILibcore
 {
-    GetLinger(
-        [out] Integer* linger);
+    GetRawOs(
+        [out] IOs** os);
 
-    GetOnoff(
-        [out] Integer* onoff);
-
-    IsOn(
-        [out] Boolean* on);
+    GetOs(
+        [out] IOs** os);
 }
 
 }

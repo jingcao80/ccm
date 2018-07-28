@@ -66,7 +66,7 @@ interface IOs
 
     Capget(
         [in] IStructCapUserHeader* hdr,
-        [out, callee] Array<IStructCapUserData*> data);
+        [out, callee] Array<IStructCapUserData*>* data);
 
     Capset(
         [in] IStructCapUserHeader* hdr,
@@ -103,7 +103,7 @@ interface IOs
         [out] IFileDescriptor** retFd);
 
     Environ(
-        [out, callee] Array<String> env);
+        [out, callee] Array<String>* env);
 
     Execv(
         [in] String filename,
@@ -251,10 +251,10 @@ interface IOs
     Getxattr(
         [in] String path,
         [in] String name,
-        [out, callee] Array<Byte> attr);
+        [out, callee] Array<Byte>* attr);
 
     Getifaddrs(
-        [out, callee] Array<IStructIfaddrs*> addrs);
+        [out, callee] Array<IStructIfaddrs*>* addrs);
 
     If_indextoname(
         [in] Integer index,
@@ -309,7 +309,7 @@ interface IOs
 
     Listxattr(
         [in] String path,
-        [out, callee] Array<String> attr);
+        [out, callee] Array<String>* attr);
 
     Lseek(
         [in] IFileDescriptor* fd,
@@ -368,13 +368,13 @@ interface IOs
 
     Pipe2(
         [in] Integer flags,
-        [out, callee] Array<IFileDescriptor*> fds);
+        [out, callee] Array<IFileDescriptor*>* fds);
 
     Pisces_Getaddrinfo(
         [in] String node,
         [in] IStructAddrinfo* hints,
         [in] Integer netId,
-        [out, callee] Array<IInetAddress*> infos);
+        [out, callee] Array<IInetAddress*>* infos);
 
     Poll(
         [in] Array<IStructPollfd*> fds,
@@ -661,7 +661,7 @@ interface IOs
 
     Write(
         [in] IFileDescriptor* fd,
-        [in] Array<Byte>* bytes,
+        [in] Array<Byte> bytes,
         [in] Integer byteOffset,
         [in] Integer byteCount,
         [out] Integer* num);

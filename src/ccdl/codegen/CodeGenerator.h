@@ -105,7 +105,8 @@ private:
 
     String GenType(
         /* [in] */ MetaType* mt,
-        /* [in] */ int attr = 0);
+        /* [in] */ int attr = 0,
+        /* [in] */ bool inArray = false);
 
     String GenValue(
         /* [in] */ MetaType* mt,

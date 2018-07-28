@@ -14,8 +14,8 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __LIBCORE_IO_LINUX_H__
-#define __LIBCORE_IO_LINUX_H__
+#ifndef __LIBCORE_IO_FORWARDINGOS_H__
+#define __LIBCORE_IO_FORWARDINGOS_H__
 
 #include "ccm/core/SyncObject.h"
 #include "ccm.io.IByteBuffer.h"
@@ -39,6 +39,7 @@
 #include "pisces.system.IStructTimeval.h"
 #include "pisces.system.IStructUcred.h"
 #include "pisces.system.IStructUtsname.h"
+#include <ccmautoptr.h>
 
 using ccm::core::SyncObject;
 using ccm::io::IByteBuffer;
@@ -65,12 +66,13 @@ using pisces::system::IStructUtsname;
 namespace libcore {
 namespace io {
 
-class Linux
+class ForwardingOs
     : public SyncObject
     , public IOs
 {
 public:
-    Linux();
+    ForwardingOs(
+        /* [in] */ IOs* os);
 
     CCM_INTERFACE_DECL();
 
@@ -706,12 +708,17 @@ public:
         /* [in] */ const Array<Integer>& offsets,
         /* [in] */ const Array<Integer>& byteCounts,
         /* [out] */ Integer* result) override;
+
+protected:
+    AutoPtr<IOs> mOs;
 };
 
-inline Linux::Linux()
+inline ForwardingOs::ForwardingOs(
+    /* [in] */ IOs* os)
+    : mOs(os)
 {}
 
 }
 }
 
-#endif // __LIBCORE_IO_LINUX_H__
+#endif // __LIBCORE_IO_FORWARDINGOS_H__
