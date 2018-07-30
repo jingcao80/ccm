@@ -14,24 +14,18 @@
 // limitations under the License.
 //=========================================================================
 
-#include "libcore/io/BlockGuardOs.h"
-#include "libcore/io/Libcore.h"
-#include "libcore/io/Linux.h"
+#include "gtest.h"
 
-namespace libcore {
-namespace io {
+namespace testing {
 
-AutoPtr<IOs> Libcore::GetRawOs()
+GTEST_API_ void InitGoogleTest(Array<String>& args)
 {
-    static AutoPtr<IOs> sRawOs = new Linux();
-    return sRawOs;
+    int argc = args.GetLength();
+    Array<char*> argv(argc);
+    for (Integer i = 0; i < argc; i++) {
+        argv[i] = const_cast<char*>(args[i].string());
+    }
+    testing::InitGoogleTest(&argc, argv.GetPayload());
 }
 
-AutoPtr<IOs> Libcore::GetOs()
-{
-    static AutoPtr<IOs> sOs = new BlockGuardOs(GetRawOs());
-    return sOs;
-}
-
-}
 }

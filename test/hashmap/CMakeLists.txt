@@ -38,7 +38,7 @@ add_executable(testHashMap
     ${SOURCES}
     ${GENERATED_SOURCES})
 target_link_libraries(testHashMap ccmrt.so libcore.so ${GTEST_LIBS})
-add_dependencies(testHashMap libservicemanager)
+add_dependencies(testHashMap libtest)
 
 add_custom_command(
     OUTPUT

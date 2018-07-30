@@ -16,12 +16,14 @@
 
 set(TEST_DIR ${PROJECT_DIR}/test)
 
+add_subdirectory(libtest)
 add_subdirectory(appentry)
 add_subdirectory(arraylist)
 add_subdirectory(atomicinteger)
 add_subdirectory(autoptr)
 add_subdirectory(calendar)
 add_subdirectory(file)
+add_subdirectory(fileinputstream)
 add_subdirectory(hashmap)
 add_subdirectory(hashtable)
 add_subdirectory(localstaticvariable)

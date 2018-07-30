@@ -468,6 +468,10 @@ interface IOs
     Remove(
         [in] String path);
 
+    Removexattr(
+        [in] String path,
+        [in] String name);
+
     Rename(
         [in] String oldPath,
         [in] String newPath);

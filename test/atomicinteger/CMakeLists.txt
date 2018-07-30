@@ -38,7 +38,7 @@ add_executable(testAtomicInteger
     ${SOURCES}
     ${GENERATED_SOURCES})
 target_link_libraries(testAtomicInteger ccmrt.so libcore.so ${GTEST_LIBS})
-add_dependencies(testAtomicInteger libservicemanager)
+add_dependencies(testAtomicInteger libtest)
 
 add_custom_command(
     OUTPUT

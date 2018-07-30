@@ -38,7 +38,7 @@ add_executable(testRandom
     ${SOURCES}
     ${GENERATED_SOURCES})
 target_link_libraries(testRandom ccmrt.so libcore.so ${GTEST_LIBS})
-add_dependencies(testRandom libservicemanager)
+add_dependencies(testRandom libtest)
 
 add_custom_command(
     OUTPUT

@@ -51,10 +51,277 @@ public:
     ECode Close(
         /* [in] */ IFileDescriptor* fd) override;
 
+    ECode Connect(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ IInetAddress* address,
+        /* [in] */ Integer port) override;
+
+    ECode Connect(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ ISocketAddress* address) override;
+
+    ECode Execv(
+        /* [in] */ const String& filename,
+        /* [in] */ const Array<String>& argv) override;
+
+    ECode Execve(
+        /* [in] */ const String& filename,
+        /* [in] */ const Array<String>& argv,
+        /* [in] */ const Array<String>& envp) override;
+
+    ECode Fchmod(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ Integer mode) override;
+
+    ECode Fchown(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ Integer uid,
+        /* [in] */ Integer gid) override;
+
+    ECode Fdatasync(
+        /* [in] */ IFileDescriptor* fd) override;
+
+    ECode Fstat(
+        /* [in] */ IFileDescriptor* fd,
+        /* [out] */ IStructStat** stat) override;
+
+    ECode Fstatvfs(
+        /* [in] */ IFileDescriptor* fd,
+        /* [out] */ IStructStatVfs** statVfs) override;
+
+    ECode Fsync(
+        /* [in] */ IFileDescriptor* fd) override;
+
+    ECode Ftruncate(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ Long length) override;
+
+    ECode Getxattr(
+        /* [in] */ const String& path,
+        /* [in] */ const String& name,
+        /* [out, callee] */ Array<Byte>* attr) override;
+
+    ECode Lchown(
+        /* [in] */ const String& path,
+        /* [in] */ Integer uid,
+        /* [in] */ Integer gid) override;
+
+    ECode Link(
+        /* [in] */ const String& oldPath,
+        /* [in] */ const String& newPath) override;
+
+    ECode Lseek(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ Long offset,
+        /* [in] */ Integer whence,
+        /* [out] */ Long* result) override;
+
+    ECode Lstat(
+        /* [in] */ const String& path,
+        /* [out] */ IStructStat** stat) override;
+
+    ECode Mkdir(
+        /* [in] */ const String& path,
+        /* [in] */ Integer mode) override;
+
+    ECode Mkfifo(
+        /* [in] */ const String& path,
+        /* [in] */ Integer mode) override;
+
+    ECode Msync(
+        /* [in] */ Long address,
+        /* [in] */ Long byteCount,
+        /* [in] */ Integer flags) override;
+
+    ECode Open(
+        /* [in] */ const String& path,
+        /* [in] */ Integer flags,
+        /* [in] */ Integer mode,
+        /* [out] */ IFileDescriptor** fd) override;
+
+    ECode Poll(
+        /* [in] */ const Array<IStructPollfd*>& fds,
+        /* [in] */ Integer timeoutMs,
+        /* [out] */ Integer* result) override;
+
+    ECode Posix_fallocate(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ Long offset,
+        /* [in] */ Long length) override;
+
+    ECode Pread(
+        /* [in] */ IFileDescriptor* fd,
+        /* [out] */ Array<Byte>& bytes,
+        /* [in] */ Integer byteOffset,
+        /* [in] */ Integer byteCount,
+        /* [in] */ Long offset,
+        /* [out] */ Integer* num) override;
+
+    ECode Pread(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ IByteBuffer* buffer,
+        /* [in] */ Long offset,
+        /* [out] */ Integer* num) override;
+
+    ECode Pwrite(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ const Array<Byte>& bytes,
+        /* [in] */ Integer byteOffset,
+        /* [in] */ Integer byteCount,
+        /* [in] */ Long offset,
+        /* [out] */ Integer* num) override;
+
+    ECode Pwrite(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ IByteBuffer* buffer,
+        /* [in] */ Long offset,
+        /* [out] */ Integer* num) override;
+
+    ECode Read(
+        /* [in] */ IFileDescriptor* fd,
+        /* [out] */ Array<Byte>& bytes,
+        /* [in] */ Integer byteOffset,
+        /* [in] */ Integer byteCount,
+        /* [out] */ Integer* num) override;
+
+    ECode Read(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ IByteBuffer* buffer,
+        /* [out] */ Integer* num) override;
+
+    ECode Readlink(
+        /* [in] */ const String& path,
+        /* [out] */ String* link) override;
+
+    ECode Realpath(
+        /* [in] */ const String& path,
+        /* [out] */ String* realpath) override;
+
+    ECode Readv(
+        /* [in] */ IFileDescriptor* fd,
+        /* [out] */ Array<IInterface*>& buffers,
+        /* [out] */ Array<Integer>& offsets,
+        /* [out] */ Array<Integer>& byteCounts,
+        /* [out] */ Integer* num) override;
+
+    ECode Recvfrom(
+        /* [in] */ IFileDescriptor* fd,
+        /* [out] */ Array<Byte>& bytes,
+        /* [in] */ Integer byteOffset,
+        /* [in] */ Integer byteCount,
+        /* [in] */ Integer flags,
+        /* [in] */ IInetSocketAddress* srcAddress,
+        /* [out] */ Integer* num) override;
+
+    ECode Recvfrom(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ IByteBuffer* buffer,
+        /* [in] */ Integer flags,
+        /* [in] */ IInetSocketAddress* srcAddress,
+        /* [out] */ Integer* num) override;
+
+    ECode Remove(
+        /* [in] */ const String& path) override;
+
+    ECode Rename(
+        /* [in] */ const String& oldPath,
+        /* [in] */ const String& newPath) override;
+
+    ECode Removexattr(
+        /* [in] */ const String& path,
+        /* [in] */ const String& name) override;
+
+    ECode Sendfile(
+        /* [in] */ IFileDescriptor* outFd,
+        /* [in] */ IFileDescriptor* inFd,
+        /* [in, out] */ Long* inOffset,
+        /* [in] */ Long byteCount,
+        /* [out] */ Long* result) override;
+
+    ECode Sendto(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ const Array<Byte>& bytes,
+        /* [in] */ Integer byteOffset,
+        /* [in] */ Integer byteCount,
+        /* [in] */ Integer flags,
+        /* [in] */ IInetAddress* inetAddress,
+        /* [in] */ Integer port,
+        /* [out] */ Integer* result) override;
+
+    ECode Sendto(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ const Array<Byte>& bytes,
+        /* [in] */ Integer byteOffset,
+        /* [in] */ Integer byteCount,
+        /* [in] */ Integer flags,
+        /* [in] */ ISocketAddress* address,
+        /* [out] */ Integer* result) override;
+
+    ECode Sendto(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ IByteBuffer* buffer,
+        /* [in] */ Integer flags,
+        /* [in] */ IInetAddress* inetAddress,
+        /* [in] */ Integer port,
+        /* [out] */ Integer* result) override;
+
+    ECode Setxattr(
+        /* [in] */ const String& path,
+        /* [in] */ const String& name,
+        /* [in] */ const Array<Byte>& value,
+        /* [in] */ Integer flags) override;
+
+    ECode Socket(
+        /* [in] */ Integer socketDomain,
+        /* [in] */ Integer type,
+        /* [in] */ Integer protocol,
+        /* [out] */ IFileDescriptor** fd) override;
+
+    ECode Socketpair(
+        /* [in] */ Integer socketDomain,
+        /* [in] */ Integer type,
+        /* [in] */ Integer protocol,
+        /* [in] */ IFileDescriptor* fd1,
+        /* [in] */ IFileDescriptor* fd2) override;
+
+    ECode Stat(
+        /* [in] */ const String& path,
+        /* [out] */ IStructStat** stat) override;
+
+    ECode StatVfs(
+        /* [in] */ const String& path,
+        /* [out] */ IStructStatVfs** statfs) override;
+
+    ECode Symlink(
+        /* [in] */ const String& oldPath,
+        /* [in] */ const String& newPath) override;
+
+    ECode Unlink(
+        /* [in] */ const String& pathname) override;
+
+    ECode Write(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ const Array<Byte>& bytes,
+        /* [in] */ Integer byteOffset,
+        /* [in] */ Integer byteCount,
+        /* [out] */ Integer* num) override;
+
+    ECode Write(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ IByteBuffer* buffer,
+        /* [out] */ Integer* num) override;
+
+    ECode Writev(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ const Array<IInterface*>& buffers,
+        /* [in] */ const Array<Integer>& offsets,
+        /* [in] */ const Array<Integer>& byteCounts,
+        /* [out] */ Integer* result) override;
+
 private:
     ECode TagSocket(
         /* [in] */ IFileDescriptor* fd,
-        /* [out] */ IFileDescriptor** taggedFd);
+        /* [out] */ IFileDescriptor** taggedFd = nullptr);
 
     ECode UntagSocket(
         /* [in] */ IFileDescriptor* fd);

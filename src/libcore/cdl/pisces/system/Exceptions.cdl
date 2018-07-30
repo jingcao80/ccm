@@ -14,24 +14,20 @@
 // limitations under the License.
 //=========================================================================
 
-#include "libcore/io/BlockGuardOs.h"
-#include "libcore/io/Libcore.h"
-#include "libcore/io/Linux.h"
+namespace pisces {
+namespace system {
 
-namespace libcore {
-namespace io {
-
-AutoPtr<IOs> Libcore::GetRawOs()
-{
-    static AutoPtr<IOs> sRawOs = new Linux();
-    return sRawOs;
-}
-
-AutoPtr<IOs> Libcore::GetOs()
-{
-    static AutoPtr<IOs> sOs = new BlockGuardOs(GetRawOs());
-    return sOs;
-}
+/**
+ * ECode layout
+ *
+ * +-----+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+ * | Bit |31|30|29|28|27|26|25|24|23|22|21|20|19|18|17|16|15|14|13|12|11|10|09|08|07|06|05|04|03|02|01|00|
+ * +-----+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+ * |Field|S |C |                     Facility            |       Namespace       |         errno         |
+ * +-----+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+ *
+ */
+const Integer E_ERRNO_EXCEPTION = 0x8001e000;
 
 }
 }

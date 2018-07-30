@@ -19,9 +19,38 @@
 namespace ccmrt {
 namespace system {
 
+Boolean CloseGuard::ENABLED = true;
+
+CCM_INTERFACE_IMPL_1(CloseGuard, SyncObject, ICloseGuard);
+
+AutoPtr<ICloseGuard> CloseGuard::GetNOOP()
+{
+    static AutoPtr<ICloseGuard> NOOP = new CloseGuard();
+    return NOOP;
+}
+
 AutoPtr<ICloseGuard> CloseGuard::Get()
 {
-    return nullptr;
+    if (!ENABLED) {
+        return GetNOOP();
+    }
+    return new CloseGuard();
+}
+
+ECode CloseGuard::Close()
+{
+    return NOERROR;
+}
+
+ECode CloseGuard::Open(
+    /* [in] */ const String& closer)
+{
+    return NOERROR;
+}
+
+ECode CloseGuard::WarnIfOpen()
+{
+    return NOERROR;
 }
 
 }

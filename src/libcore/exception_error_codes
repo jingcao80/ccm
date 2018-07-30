@@ -15,8 +15,10 @@
 //=========================================================================
 
 ======== Libcore_Namespace ========     ======== Namespace_Code ========
-ccm.core.Errors                                     0x0
-ccm.core.Exceptions                                 0x1
-ccm.io.Exceptions                                   0x2
-ccm.util.Exceptions                                 0x9
-ccm.util.regex.Exceptions                           0xa
+ccm.core.Errors                                     0x00
+ccm.core.Exceptions                                 0x01
+ccm.io.Exceptions                                   0x02
+ccm.util.Exceptions                                 0x09
+ccm.util.regex.Exceptions                           0x0a
+pisces.system.Exceptions                            0xe0
+pisces.system.Exceptions                            0xe1

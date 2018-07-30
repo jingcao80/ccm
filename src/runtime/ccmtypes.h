@@ -405,6 +405,15 @@ struct DeleteFunc<T, true>
 };
 
 template<>
+struct DeleteFunc<char*, false>
+{
+    inline void operator()(
+        /* [in] */ char** data,
+        /* [in] */ void* id)
+    {}
+};
+
+template<>
 struct DeleteFunc<String, true>
 {
     inline void operator()(

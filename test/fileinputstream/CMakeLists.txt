@@ -14,10 +14,10 @@
 # limitations under the License.
 #=========================================================================
 
-project(FileTest CXX)
+project(FileInputStreamTest CXX)
 
-set(file_DIR ${TEST_DIR}/file)
-set(OBJ_DIR ${CMAKE_BINARY_DIR}/test/file)
+set(fileinputstream_DIR ${TEST_DIR}/fileinputstream)
+set(OBJ_DIR ${CMAKE_BINARY_DIR}/test/fileinputstream)
 
 include_directories(
     ./
@@ -32,13 +32,15 @@ set(GENERATED_SOURCES
 
 IMPORT_LIBRARY(ccmrt.so)
 IMPORT_LIBRARY(libcore.so)
+IMPORT_LIBRARY(libappentry.a)
+IMPORT_LIBRARY(libtest.a)
 IMPORT_GTEST()
 
-add_executable(testFile
+add_executable(testFileInputStream
     ${SOURCES}
     ${GENERATED_SOURCES})
-target_link_libraries(testFile ccmrt.so libcore.so ${GTEST_LIBS})
-add_dependencies(testFile libtest)
+target_link_libraries(testFileInputStream libappentry.a libtest.a ccmrt.so libcore.so ${GTEST_LIBS})
+add_dependencies(testFileInputStream libtest)
 
 add_custom_command(
     OUTPUT
@@ -52,10 +54,11 @@ add_custom_command(
         -d ${OBJ_DIR}
         "${BIN_DIR}/libcore.so")
 
-COPY(testFile ${OBJ_DIR}/testFile ${BIN_DIR})
+COPY(testFileInputStream ${OBJ_DIR}/testFileInputStream ${BIN_DIR})
+COPY(testFileInputStream ${fileinputstream_DIR}/testfile ${BIN_DIR})
 
 install(FILES
-    ${OBJ_DIR}/testFile
+    ${OBJ_DIR}/testFileInputStream
     DESTINATION ${BIN_DIR}
     PERMISSIONS
         OWNER_READ

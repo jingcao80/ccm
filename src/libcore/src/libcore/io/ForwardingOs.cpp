@@ -711,11 +711,28 @@ ECode ForwardingOs::Remove(
     return mOs->Remove(path);
 }
 
+ECode ForwardingOs::Removexattr(
+    /* [in] */ const String& path,
+    /* [in] */ const String& name)
+{
+    return mOs->Removexattr(path, name);
+}
+
 ECode ForwardingOs::Rename(
     /* [in] */ const String& oldPath,
     /* [in] */ const String& newPath)
 {
     return mOs->Rename(oldPath, newPath);
+}
+
+ECode ForwardingOs::Sendfile(
+    /* [in] */ IFileDescriptor* outFd,
+    /* [in] */ IFileDescriptor* inFd,
+    /* [in, out] */ Long* inOffset,
+    /* [in] */ Long byteCount,
+    /* [out] */ Long* result)
+{
+    return mOs->Sendfile(outFd, inFd, inOffset, byteCount, result);
 }
 
 ECode ForwardingOs::Sendto(
@@ -752,16 +769,6 @@ ECode ForwardingOs::Sendto(
     /* [out] */ Integer* result)
 {
     return mOs->Sendto(fd, buffer, flags, inetAddress, port, result);
-}
-
-ECode ForwardingOs::Sendfile(
-    /* [in] */ IFileDescriptor* outFd,
-    /* [in] */ IFileDescriptor* inFd,
-    /* [in, out] */ Long* inOffset,
-    /* [in] */ Long byteCount,
-    /* [out] */ Long* result)
-{
-    return mOs->Sendfile(outFd, inFd, inOffset, byteCount, result);
 }
 
 ECode ForwardingOs::Setegid(

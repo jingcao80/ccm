@@ -497,6 +497,10 @@ public:
     ECode Remove(
         /* [in] */ const String& path) override;
 
+    ECode Removexattr(
+        /* [in] */ const String& path,
+        /* [in] */ const String& name) override;
+
     ECode Rename(
         /* [in] */ const String& oldPath,
         /* [in] */ const String& newPath) override;

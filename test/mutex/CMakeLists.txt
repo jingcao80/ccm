@@ -32,7 +32,7 @@ IMPORT_LIBRARY(ccmrt.so)
 add_executable(testMutex
     ${SOURCES})
 target_link_libraries(testMutex ccmrt.so pthread)
-add_dependencies(testMutex libservicemanager)
+add_dependencies(testMutex libtest)
 
 COPY(testMutex ${OBJ_DIR}/testMutex ${BIN_DIR})
 

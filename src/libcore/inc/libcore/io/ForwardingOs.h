@@ -499,9 +499,20 @@ public:
     ECode Remove(
         /* [in] */ const String& path) override;
 
+    ECode Removexattr(
+        /* [in] */ const String& path,
+        /* [in] */ const String& name) override;
+
     ECode Rename(
         /* [in] */ const String& oldPath,
         /* [in] */ const String& newPath) override;
+
+    ECode Sendfile(
+        /* [in] */ IFileDescriptor* outFd,
+        /* [in] */ IFileDescriptor* inFd,
+        /* [in, out] */ Long* inOffset,
+        /* [in] */ Long byteCount,
+        /* [out] */ Long* result) override;
 
     ECode Sendto(
         /* [in] */ IFileDescriptor* fd,
@@ -529,13 +540,6 @@ public:
         /* [in] */ IInetAddress* inetAddress,
         /* [in] */ Integer port,
         /* [out] */ Integer* result) override;
-
-    ECode Sendfile(
-        /* [in] */ IFileDescriptor* outFd,
-        /* [in] */ IFileDescriptor* inFd,
-        /* [in, out] */ Long* inOffset,
-        /* [in] */ Long byteCount,
-        /* [out] */ Long* result) override;
 
     ECode Setegid(
         /* [in] */ Integer egid) override;

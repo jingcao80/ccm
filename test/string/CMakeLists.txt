@@ -34,7 +34,7 @@ IMPORT_GTEST()
 add_executable(testString
     ${SOURCES})
 target_link_libraries(testString ccmrt.so libcore.so ${GTEST_LIBS})
-add_dependencies(testString libservicemanager)
+add_dependencies(testString libtest)
 
 COPY(testString ${OBJ_DIR}/testString ${BIN_DIR})
 

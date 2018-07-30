@@ -24,6 +24,7 @@ include_directories(
     ${OBJ_DIR})
 
 set(SOURCES
+    AsynchronousCloseMonitor.cpp
     BlockGuardOs.cpp
     ForwardingOs.cpp
     IoBridge.cpp

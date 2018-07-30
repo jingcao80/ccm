@@ -15,6 +15,8 @@
 //=========================================================================
 
 #include "pisces/system/OsConstants.h"
+#include <fcntl.h>
+#include <sys/mman.h>
 #include <sys/socket.h>
 
 namespace pisces {
@@ -22,6 +24,9 @@ namespace system {
 
 const Integer OsConstants::AF_INET_ = AF_INET;
 const Integer OsConstants::AF_INET6_ = AF_INET6;
+const Integer OsConstants::MS_SYNC_ = MS_SYNC;
+const Integer OsConstants::O_ACCMODE_ = O_ACCMODE;
+const Integer OsConstants::O_RDONLY_ = O_RDONLY;
 const Integer OsConstants::SOL_SOCKET_ = SOL_SOCKET;
 const Integer OsConstants::SO_DOMAIN_ = SO_DOMAIN;
 const Integer OsConstants::SO_LINGER_ = SO_LINGER;

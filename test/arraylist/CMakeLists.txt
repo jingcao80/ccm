@@ -38,7 +38,7 @@ add_executable(testArrayList
     ${SOURCES}
     ${GENERATED_SOURCES})
 target_link_libraries(testArrayList ccmrt.so libcore.so ${GTEST_LIBS})
-add_dependencies(testArrayList libservicemanager)
+add_dependencies(testArrayList libtest)
 
 add_custom_command(
     OUTPUT

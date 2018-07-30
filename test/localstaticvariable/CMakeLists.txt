@@ -38,7 +38,7 @@ add_executable(testLocalStaticVariable
     ${SOURCES}
     ${GENERATED_SOURCES})
 target_link_libraries(testLocalStaticVariable ccmrt.so libcore.so ${GTEST_LIBS})
-add_dependencies(testLocalStaticVariable libservicemanager)
+add_dependencies(testLocalStaticVariable libtest)
 
 add_custom_command(
     OUTPUT

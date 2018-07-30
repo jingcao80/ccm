@@ -36,7 +36,7 @@ add_executable(testCalendar
     ${SOURCES}
     ${GENERATED_SOURCES})
 target_link_libraries(testCalendar ccmrt.so)
-add_dependencies(testCalendar libservicemanager)
+add_dependencies(testCalendar libtest)
 
 add_custom_command(
     OUTPUT

@@ -14,10 +14,10 @@
 # limitations under the License.
 #=========================================================================
 
-project(FileTest CXX)
+project(libtest CXX)
 
-set(file_DIR ${TEST_DIR}/file)
-set(OBJ_DIR ${CMAKE_BINARY_DIR}/test/file)
+set(libtest_DIR ${TEST_DIR}/libtest)
+set(OBJ_DIR ${CMAKE_BINARY_DIR}/test/libtest)
 
 include_directories(
     ./
@@ -25,7 +25,7 @@ include_directories(
     ${OBJ_DIR})
 
 set(SOURCES
-    main.cpp)
+    wrapper.cpp)
 
 set(GENERATED_SOURCES
     ${OBJ_DIR}/libcore.cpp)
@@ -34,11 +34,12 @@ IMPORT_LIBRARY(ccmrt.so)
 IMPORT_LIBRARY(libcore.so)
 IMPORT_GTEST()
 
-add_executable(testFile
+add_library(libtest
+    STATIC
     ${SOURCES}
     ${GENERATED_SOURCES})
-target_link_libraries(testFile ccmrt.so libcore.so ${GTEST_LIBS})
-add_dependencies(testFile libtest)
+target_link_libraries(libtest ccmrt.so libcore.so ${GTEST_LIBS})
+add_dependencies(libtest libservicemanager)
 
 add_custom_command(
     OUTPUT
@@ -52,10 +53,13 @@ add_custom_command(
         -d ${OBJ_DIR}
         "${BIN_DIR}/libcore.so")
 
-COPY(testFile ${OBJ_DIR}/testFile ${BIN_DIR})
+MKDIR(libtest ${INC_DIR}/test)
+
+COPY(libtest ${libtest_DIR}/gtest.h ${INC_DIR}/test)
+COPY(libtest ${OBJ_DIR}/libtest.a ${BIN_DIR})
 
 install(FILES
-    ${OBJ_DIR}/testFile
+    ${OBJ_DIR}/libtest.a
     DESTINATION ${BIN_DIR}
     PERMISSIONS
         OWNER_READ

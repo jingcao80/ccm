@@ -31,11 +31,28 @@ class CloseGuard
     , public ICloseGuard
 {
 public:
+    CCM_INTERFACE_DECL();
+
     static AutoPtr<ICloseGuard> Get();
+
+    ECode Close() override;
+
+    ECode Open(
+        /* [in] */ const String& closer) override;
+
+    ECode WarnIfOpen() override;
 
 private:
     CloseGuard();
+
+    static AutoPtr<ICloseGuard> GetNOOP();
+
+private:
+    static Boolean ENABLED;
 };
+
+inline CloseGuard::CloseGuard()
+{}
 
 }
 }

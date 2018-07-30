@@ -37,7 +37,7 @@ add_executable(testStringTokenizer
     ${SOURCES}
     ${GENERATED_SOURCES})
 target_link_libraries(testStringTokenizer ccmrt.so ${GTEST_LIBS})
-add_dependencies(testStringTokenizer libservicemanager)
+add_dependencies(testStringTokenizer libtest)
 
 add_custom_command(
     OUTPUT

@@ -14,24 +14,13 @@
 // limitations under the License.
 //=========================================================================
 
-#include "libcore/io/BlockGuardOs.h"
-#include "libcore/io/Libcore.h"
-#include "libcore/io/Linux.h"
+#include <ccmtypes.h>
+#include <gtest/gtest.h>
 
-namespace libcore {
-namespace io {
+using namespace ccm;
 
-AutoPtr<IOs> Libcore::GetRawOs()
-{
-    static AutoPtr<IOs> sRawOs = new Linux();
-    return sRawOs;
-}
+namespace testing {
 
-AutoPtr<IOs> Libcore::GetOs()
-{
-    static AutoPtr<IOs> sOs = new BlockGuardOs(GetRawOs());
-    return sOs;
-}
+GTEST_API_ void InitGoogleTest(Array<String>& args);
 
-}
 }

@@ -33,7 +33,7 @@ IMPORT_GTEST()
 add_executable(testAutoPtr
     ${SOURCES})
 target_link_libraries(testAutoPtr ccmrt.so ${GTEST_LIBS})
-add_dependencies(testAutoPtr libservicemanager)
+add_dependencies(testAutoPtr libtest)
 
 COPY(testAutoPtr ${OBJ_DIR}/testAutoPtr ${BIN_DIR})
 
