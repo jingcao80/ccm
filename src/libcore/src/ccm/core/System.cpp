@@ -142,6 +142,14 @@ ECode System::CheckKey(
     return NOERROR;
 }
 
+ECode System::Log(
+    /* [in] */ Char type,
+    /* [in] */ const String& message,
+    /* [in] */ IStackTrace* st)
+{
+    return NOERROR;
+}
+
 ECode System::StaticInitialize()
 {
     sUnchangeableProps = InitUnchangeableSystemProperties();

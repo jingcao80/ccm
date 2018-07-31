@@ -45,8 +45,10 @@ set(SOURCES
     CSystem.cpp
     HexStringParser.cpp
     Math.cpp
+    NativeBacktrace.cpp
     NativeFaultHandler.cpp
     NativeLockWord.cpp
+    NativeMapData.cpp
     NativeMonitor.cpp
     NativeMonitorPool.cpp
     NativeMutex.cpp
@@ -60,6 +62,8 @@ set(SOURCES
     RealToString.cpp
     Runnable.cpp
     Runtime.cpp
+    StackTrace.cpp
+    StackTraceElement.cpp
     StrictMath.cpp
     StringToReal.cpp
     StringUtils.cpp

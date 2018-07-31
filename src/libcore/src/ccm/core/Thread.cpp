@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "ccm/core/AutoLock.h"
+#include "ccm/core/CStackTrace.h"
 #include "ccm/core/NativeMonitor.h"
 #include "ccm/core/NativeMutex.h"
 #include "ccm/core/NativeObject.h"
@@ -25,6 +26,7 @@
 #include "ccm/core/System.h"
 #include "ccm/core/Thread.h"
 #include "ccm.core.ILong.h"
+#include "ccm.core.IStackTrace.h"
 #include <unwind.h>
 
 namespace ccm {
@@ -614,43 +616,17 @@ Array<IStackTraceElement*> Thread::Get_EMPTY_STACK_TRACE()
     return EMPTY_STACK_TRACE;
 }
 
-static _Unwind_Reason_Code calculate_frames(_Unwind_Context* context, void* arg)
-{
-    Integer* frameNum = static_cast<Integer*>(arg);
-
-    uintptr_t ip = _Unwind_GetIP(context);
-
-    if (ip == 0) {
-        return _URC_END_OF_STACK;
-    }
-    *frameNum++;
-    return _URC_CONTINUE_UNWIND;
-}
-
-static _Unwind_Reason_Code trace_frames(_Unwind_Context* context, void* arg)
-{
-    Array<IStackTraceElement*>* frames = static_cast<Array<IStackTraceElement*>*>(arg);
-
-    uintptr_t ip = _Unwind_GetIP(context);
-
-    if (ip == 0) {
-        return _URC_END_OF_STACK;
-    }
-
-    // TODO:
-    return _URC_CONTINUE_UNWIND;
-}
-
 ECode Thread::GetStackTrace(
     /* [out, callee] */ Array<IStackTraceElement*>* trace)
 {
     VALIDATE_NOT_NULL(trace);
 
-    Integer frameNum = 0;
-    _Unwind_Backtrace(calculate_frames, static_cast<void*>(&frameNum));
-    Array<IStackTraceElement*> frames(frameNum);
-    _Unwind_Backtrace(trace_frames, static_cast<void*>(&frames));
-    *trace = frames;
+    AutoPtr<IStackTrace> strace;
+    CStackTrace::New(IID_IStackTrace, (IInterface**)&strace);
+    ECode ec = strace->GetStackTrace(trace);
+    if (FAILED(ec)) {
+        *trace = Get_EMPTY_STACK_TRACE();
+    }
     return NOERROR;
 }
 

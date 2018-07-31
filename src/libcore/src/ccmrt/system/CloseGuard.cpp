@@ -14,7 +14,14 @@
 // limitations under the License.
 //=========================================================================
 
+#include "ccm/core/CStackTrace.h"
+#include "ccm/core/System.h"
 #include "ccmrt/system/CloseGuard.h"
+#include <ccmlogger.h>
+
+using ccm::core::CStackTrace;
+using ccm::core::IID_IStackTrace;
+using ccm::core::System;
 
 namespace ccmrt {
 namespace system {
@@ -29,6 +36,27 @@ AutoPtr<ICloseGuard> CloseGuard::GetNOOP()
     return NOOP;
 }
 
+AutoPtr<ICloseGuardReporter> CloseGuard::GetOrSetREPORTER(
+    /* [in] */ ICloseGuardReporter* reporter)
+{
+    static AutoPtr<ICloseGuardReporter> REPORTER = new DefaultReporter();
+    if (reporter != nullptr) {
+        REPORTER = reporter;
+    }
+    return REPORTER;
+}
+
+AutoPtr<ICloseGuardTracker> CloseGuard::GetOrSetTRACKER(
+    /* [in] */ ICloseGuardTracker* tracker)
+{
+    static AutoPtr<ICloseGuardTracker> DEFAULT_TRACKER = new DefaultTracker();
+    static AutoPtr<ICloseGuardTracker> TRACKER = DEFAULT_TRACKER;
+    if (tracker != nullptr) {
+        TRACKER = tracker;
+    }
+    return TRACKER;
+}
+
 AutoPtr<ICloseGuard> CloseGuard::Get()
 {
     if (!ENABLED) {
@@ -37,18 +65,87 @@ AutoPtr<ICloseGuard> CloseGuard::Get()
     return new CloseGuard();
 }
 
-ECode CloseGuard::Close()
+ECode CloseGuard::SetReporter(
+    /* [in] */ ICloseGuardReporter* reporter)
 {
+    if (reporter == nullptr) {
+        Logger::E("CloseGuard", "reporter == null");
+        return ccm::core::E_NULL_POINTER_EXCEPTION;
+    }
+    GetOrSetREPORTER(reporter);
+    return NOERROR;
+}
+
+ECode CloseGuard::SetTracker(
+    /* [in] */ ICloseGuardTracker* tracker)
+{
+    if (tracker == nullptr) {
+        Logger::E("CloseGuard", "tracker == null");
+        return ccm::core::E_NULL_POINTER_EXCEPTION;
+    }
+    GetOrSetTRACKER(tracker);
     return NOERROR;
 }
 
 ECode CloseGuard::Open(
     /* [in] */ const String& closer)
 {
+    if (closer.IsNull()) {
+        Logger::E("CloseGuard", "closer == null");
+        return ccm::core::E_NULL_POINTER_EXCEPTION;
+    }
+    if ((ICloseGuard*)this == GetNOOP() || !ENABLED) {
+        return NOERROR;
+    }
+    String message = String::Format("Explicit termination method '%s' not called", closer.string());
+    CStackTrace::New(message, IID_IStackTrace, (IInterface**)&mAllocationSite);
+    GetOrSetTRACKER(nullptr)->Open(mAllocationSite);
+    return NOERROR;
+}
+
+ECode CloseGuard::Close()
+{
+    GetOrSetTRACKER(nullptr)->Close(mAllocationSite);
+    mAllocationSite = nullptr;
     return NOERROR;
 }
 
 ECode CloseGuard::WarnIfOpen()
+{
+    if (mAllocationSite == nullptr || !ENABLED) {
+        return NOERROR;
+    }
+
+    String message("A resource was acquired at attached stack trace but never released. "
+                   "See ccm.io.ICloseable for information on avoiding resource leaks.");
+
+    GetOrSetREPORTER(nullptr)->Report(message, mAllocationSite);
+    return NOERROR;
+}
+
+//-------------------------------------------------------------------------
+
+CCM_INTERFACE_IMPL_1(CloseGuard::DefaultReporter, SyncObject, ICloseGuardReporter);
+
+ECode CloseGuard::DefaultReporter::Report(
+    /* [in] */ const String& message,
+    /* [in] */ IStackTrace* allocationSite)
+{
+    return System::LogW(message, allocationSite);
+}
+
+//-------------------------------------------------------------------------
+
+CCM_INTERFACE_IMPL_1(CloseGuard::DefaultTracker, SyncObject, ICloseGuardTracker);
+
+ECode CloseGuard::DefaultTracker::Open(
+    /* [in] */ IStackTrace* allocationSite)
+{
+    return NOERROR;
+}
+
+ECode CloseGuard::DefaultTracker::Close(
+    /* [in] */ IStackTrace* allocationSite)
 {
     return NOERROR;
 }

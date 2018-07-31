@@ -19,6 +19,7 @@
 
 #include "ccm/util/Properties.h"
 #include "ccm.core.ISecurityManager.h"
+#include "ccm.core.IStackTrace.h"
 #include "ccm.io.IPrintStream.h"
 #include "ccm.util.IProperties.h"
 #include <ccmautoptr.h>
@@ -68,6 +69,10 @@ public:
         /* [in] */ const String& def,
         /* [out] */ String* value);
 
+    static ECode LogW(
+        /* [in] */ const String& message,
+        /* [in] */ IStackTrace* st);
+
 private:
     System();
 
@@ -83,6 +88,11 @@ private:
     static ECode CheckKey(
         /* [in] */ const String& key);
 
+    static ECode Log(
+        /* [in] */ Char type,
+        /* [in] */ const String& message,
+        /* [in] */ IStackTrace* st);
+
 private:
     static AutoPtr<IProperties> sProps;
 
@@ -90,6 +100,13 @@ private:
 
     friend void StaticInitializeSystem();
 };
+
+inline ECode System::LogW(
+    /* [in] */ const String& message,
+    /* [in] */ IStackTrace* st)
+{
+    return Log('W', message, st);
+}
 
 }
 }

@@ -138,6 +138,37 @@ coclass CShort
 }
 
 [
+    uuid(16a75841-ffee-43a5-bd5c-4f8362361b35),
+    version(0.1.0)
+]
+coclass CStackTrace
+{
+    Constructor();
+
+    Constructor(
+        [in] String message);
+
+    interface IStackTrace;
+    interface ISerializable;
+}
+
+[
+    uuid(c2fee305-a2bb-453a-9248-473bbef55fd0),
+    version(0.1.0)
+]
+coclass CStackTraceElement
+{
+    Constructor(
+        [in] String no,
+        [in] String pc,
+        [in] String soname,
+        [in] String symbol);
+
+    interface IStackTraceElement;
+    interface ISerializable;
+}
+
+[
     uuid(10e6419e-b8d0-44be-b309-54086eb3e560),
     version(0.1.0)
 ]

@@ -14,31 +14,28 @@
 // limitations under the License.
 //=========================================================================
 
-#include "gtest.h"
+interface ccm::core::IStackTraceElement;
+interface ccm::io::IPrintStream;
 
 namespace ccm {
+namespace core {
 
-template<>
-struct DeleteFunc<char*, false>
+[
+    uuid(b03ae37d-1d06-4a25-8d44-9790d292c9bf),
+    version(0.1.0)
+]
+interface IStackTrace
 {
-    inline void operator()(
-        /* [in] */ char** data,
-        /* [in] */ void* id)
-    {}
-};
+    FillInStackTrace();
 
+    GetStackTrace(
+        [out, callee] Array<IStackTraceElement*>* stack);
+
+    PrintStackTrace();
+
+    PrintStackTrace(
+        [in] IPrintStream* s);
 }
 
-namespace testing {
-
-GTEST_API_ void InitGoogleTest(Array<String>& args)
-{
-    int argc = args.GetLength();
-    Array<char*> argv(argc);
-    for (Integer i = 0; i < argc; i++) {
-        argv[i] = const_cast<char*>(args[i].string());
-    }
-    testing::InitGoogleTest(&argc, argv.GetPayload());
 }
-
 }

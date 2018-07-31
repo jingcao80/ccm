@@ -14,8 +14,34 @@
 // limitations under the License.
 //=========================================================================
 
+interface ccm::core::IStackTrace;
+
 namespace ccmrt {
 namespace system {
+
+[
+    uuid(c2d11c90-b701-4375-81aa-87a5d7c6d3d8),
+    version(0.1.0)
+]
+interface ICloseGuardReporter
+{
+    Report(
+        [in] String message,
+        [in] IStackTrace* allocationSite);
+}
+
+[
+    uuid(34ef05c4-3333-4275-848c-f33b0d7d0a56),
+    version(0.1.0)
+]
+interface ICloseGuardTracker
+{
+    Open(
+        [in] IStackTrace* allocationSite);
+
+    Close(
+        [in] IStackTrace* allocationSite);
+}
 
 [
     uuid(40008bce-3e40-4fe0-bfc7-fe3be7585246),

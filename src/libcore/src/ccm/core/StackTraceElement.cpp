@@ -14,31 +14,27 @@
 // limitations under the License.
 //=========================================================================
 
-#include "gtest.h"
+#include "ccm/core/StackTraceElement.h"
+
+using ccm::io::IID_ISerializable;
 
 namespace ccm {
+namespace core {
 
-template<>
-struct DeleteFunc<char*, false>
+CCM_INTERFACE_IMPL_2(StackTraceElement, SyncObject, IStackTraceElement, ISerializable);
+
+ECode StackTraceElement::Constructor(
+    /* [in] */ const String& no,
+    /* [in] */ const String& pc,
+    /* [in] */ const String& soname,
+    /* [in] */ const String& symbol)
 {
-    inline void operator()(
-        /* [in] */ char** data,
-        /* [in] */ void* id)
-    {}
-};
-
+    mNo = no;
+    mPC = pc;
+    mSoname = soname;
+    mSymbol = symbol;
+    return NOERROR;
 }
 
-namespace testing {
-
-GTEST_API_ void InitGoogleTest(Array<String>& args)
-{
-    int argc = args.GetLength();
-    Array<char*> argv(argc);
-    for (Integer i = 0; i < argc; i++) {
-        argv[i] = const_cast<char*>(args[i].string());
-    }
-    testing::InitGoogleTest(&argc, argv.GetPayload());
 }
-
 }

@@ -48,6 +48,8 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_core_CRuntimeFactory.cpp
     ${OBJ_DIR}/_ccm_core_CRuntimePermission.cpp
     ${OBJ_DIR}/_ccm_core_CShort.cpp
+    ${OBJ_DIR}/_ccm_core_CStackTrace.cpp
+    ${OBJ_DIR}/_ccm_core_CStackTraceElement.cpp
     ${OBJ_DIR}/_ccm_core_CString.cpp
     ${OBJ_DIR}/_ccm_core_CStringBuffer.cpp
     ${OBJ_DIR}/_ccm_core_CStringBuilder.cpp

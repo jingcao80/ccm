@@ -14,31 +14,40 @@
 // limitations under the License.
 //=========================================================================
 
-#include "gtest.h"
+#ifndef __CCM_CORE_STACKTRACEELEMENT_H__
+#define __CCM_CORE_STACKTRACEELEMENT_H__
+
+#include "ccm/core/SyncObject.h"
+#include "ccm.core.IStackTraceElement.h"
+#include "ccm.io.ISerializable.h"
+
+using ccm::io::ISerializable;
 
 namespace ccm {
+namespace core {
 
-template<>
-struct DeleteFunc<char*, false>
+class StackTraceElement
+    : public SyncObject
+    , public IStackTraceElement
+    , public ISerializable
 {
-    inline void operator()(
-        /* [in] */ char** data,
-        /* [in] */ void* id)
-    {}
+public:
+    CCM_INTERFACE_DECL();
+
+    ECode Constructor(
+        /* [in] */ const String& no,
+        /* [in] */ const String& pc,
+        /* [in] */ const String& soname,
+        /* [in] */ const String& symbol);
+
+private:
+    String mNo;
+    String mPC;
+    String mSoname;
+    String mSymbol;
 };
 
 }
-
-namespace testing {
-
-GTEST_API_ void InitGoogleTest(Array<String>& args)
-{
-    int argc = args.GetLength();
-    Array<char*> argv(argc);
-    for (Integer i = 0; i < argc; i++) {
-        argv[i] = const_cast<char*>(args[i].string());
-    }
-    testing::InitGoogleTest(&argc, argv.GetPayload());
 }
 
-}
+#endif // __CCM_CORE_CSTACKTRACEELEMENT_H__

@@ -15,6 +15,8 @@
 //=========================================================================
 
 #include "ccm/core/CRuntimePermission.h"
+#include "ccm/core/CStackTrace.h"
+#include "ccm/core/CStackTraceElement.h"
 #include "ccm/core/CThread.h"
 #include "ccm/core/CThreadGroup.h"
 #include "ccm/core/CThreadLocal.h"
@@ -23,6 +25,8 @@ namespace ccm {
 namespace core {
 
 CCM_OBJECT_IMPL(CRuntimePermission);
+CCM_OBJECT_IMPL(CStackTrace);
+CCM_OBJECT_IMPL(CStackTraceElement);
 CCM_OBJECT_IMPL(CThread);
 CCM_OBJECT_IMPL(CThreadGroup);
 CCM_OBJECT_IMPL(CThreadLocal);

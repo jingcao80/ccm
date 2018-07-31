@@ -14,31 +14,23 @@
 // limitations under the License.
 //=========================================================================
 
-#include "gtest.h"
+#ifndef __CCM_CORE_CSTACKTRACE_H__
+#define __CCM_CORE_CSTACKTRACE_H__
+
+#include "ccm/core/StackTrace.h"
+#include "_ccm_core_CStackTrace.h"
 
 namespace ccm {
+namespace core {
 
-template<>
-struct DeleteFunc<char*, false>
+Coclass(CStackTrace)
+    , public StackTrace
 {
-    inline void operator()(
-        /* [in] */ char** data,
-        /* [in] */ void* id)
-    {}
+public:
+    CCM_OBJECT_DECL();
 };
 
 }
-
-namespace testing {
-
-GTEST_API_ void InitGoogleTest(Array<String>& args)
-{
-    int argc = args.GetLength();
-    Array<char*> argv(argc);
-    for (Integer i = 0; i < argc; i++) {
-        argv[i] = const_cast<char*>(args[i].string());
-    }
-    testing::InitGoogleTest(&argc, argv.GetPayload());
 }
 
-}
+#endif // __CCM_CORE_CSTACKTRACE_H__
