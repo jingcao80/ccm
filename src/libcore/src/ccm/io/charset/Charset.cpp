@@ -14,11 +14,4 @@
 // limitations under the License.
 //=========================================================================
 
-include "ccm/net/IDatagramPacket.cdl"
-include "ccm/net/IDatagramSocket.cdl"
-include "ccm/net/IInetAddress.cdl"
-include "ccm/net/IInetSocketAddress.cdl"
-include "ccm/net/ISocket.cdl"
-include "ccm/net/ISocketAddress.cdl"
-include "ccm/net/IURI.cdl"
-include "ccm/net/IURL.cdl"
+#include "ccm/io/charset/Charset.h"

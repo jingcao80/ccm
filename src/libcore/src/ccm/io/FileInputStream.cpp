@@ -158,7 +158,7 @@ ECode FileInputStream::Read(
         Logger::E("FileInputStream", "Stream Closed");
         return E_IO_EXCEPTION;
     }
-    mTracker->TrackIo(size);
+    FAIL_RETURN(mTracker->TrackIo(size));
     return IoBridge::Read(mFd, buffer, offset, size, number);
 }
 

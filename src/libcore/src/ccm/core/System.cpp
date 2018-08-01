@@ -16,12 +16,22 @@
 
 #include "ccm/core/CoreUtils.h"
 #include "ccm/core/System.h"
+#include "ccm/io/CPrintWriter.h"
+#include "ccm/io/CStringWriter.h"
 #include "ccm/util/CProperties.h"
+#include "ccm.io.IPrintWriter.h"
+#include "ccm.io.IStringWriter.h"
 #include "ccm.util.IHashtable.h"
 #include <ccmlogger.h>
 #include <time.h>
 #include <sys/time.h>
 
+using ccm::io::CPrintWriter;
+using ccm::io::CStringWriter;
+using ccm::io::IPrintWriter;
+using ccm::io::IStringWriter;
+using ccm::io::IID_IPrintWriter;
+using ccm::io::IID_IStringWriter;
 using ccm::util::CProperties;
 using ccm::util::IID_IProperties;
 using ccm::util::IHashtable;
@@ -147,6 +157,27 @@ ECode System::Log(
     /* [in] */ const String& message,
     /* [in] */ IStackTrace* st)
 {
+    Integer level;
+    switch(type) {
+        case 'D': case 'd': level = Logger::DEBUG; break;
+        case 'E': case 'e': level = Logger::ERROR; break;
+        case 'V': case 'v': level = Logger::VERBOSE; break;
+        case 'W': case 'w': level = Logger::WARNING; break;
+        default: level = Logger::VERBOSE; break;
+    }
+
+    Logger::Log(level, "System", "%s", message.string());
+    if (st != nullptr) {
+        AutoPtr<IStringWriter> sw;
+        CStringWriter::New(IID_IStringWriter, (IInterface**)&sw);
+        AutoPtr<IPrintWriter> pw;
+        CPrintWriter::New(IWriter::Probe(sw), IID_IPrintWriter, (IInterface**)&pw);
+        st->PrintStackTrace(pw);
+        String backtrace;
+        sw->ToString(&backtrace);
+        Logger::Log(level, "System", "%s", backtrace.string());
+    }
+
     return NOERROR;
 }
 

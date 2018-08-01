@@ -14,11 +14,23 @@
 // limitations under the License.
 //=========================================================================
 
-include "ccm/net/IDatagramPacket.cdl"
-include "ccm/net/IDatagramSocket.cdl"
-include "ccm/net/IInetAddress.cdl"
-include "ccm/net/IInetSocketAddress.cdl"
-include "ccm/net/ISocket.cdl"
-include "ccm/net/ISocketAddress.cdl"
-include "ccm/net/IURI.cdl"
-include "ccm/net/IURL.cdl"
+#ifndef __CCM_IO_CSTRINGWRITER_H__
+#define __CCM_IO_CSTRINGWRITER_H__
+
+#include "ccm/io/StringWriter.h"
+#include "_ccm_io_CStringWriter.h"
+
+namespace ccm {
+namespace io {
+
+Coclass(CStringWriter)
+    , public StringWriter
+{
+public:
+    CCM_OBJECT_DECL();
+};
+
+}
+}
+
+#endif // __CCM_IO_CSTRINGWRITER_H__

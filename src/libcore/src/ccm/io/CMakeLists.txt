@@ -33,9 +33,13 @@ set(SOURCES
     File.cpp
     FileDescriptor.cpp
     FileInputStream.cpp
+    FileOutputStream.cpp
     FileSystem.cpp
     InputStream.cpp
+    OutputStream.cpp
     OutputStreamWriter.cpp
+    PrintWriter.cpp
+    StringWriter.cpp
     UnixFileSystem.cpp
     Writer.cpp
     canonicalize_md.cpp

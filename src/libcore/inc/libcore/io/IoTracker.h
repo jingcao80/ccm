@@ -24,12 +24,31 @@ using ccm::core::SyncObject;
 namespace libcore {
 namespace io {
 
-class IoTracker
+class IoTracker final
     : public SyncObject
 {
 public:
-    void TrackIo(
+    enum class Mode
+    {
+        READ,
+        WRITE
+    };
+
+public:
+    ECode TrackIo(
         /* [in] */ Integer byteCount);
+
+    ECode TrackIo(
+        /* [in] */ Integer byteCount,
+        /* [in] */ Mode mode);
+
+    void Reset();
+
+private:
+    Integer mOpCount = 0;
+    Integer mTotalByteCount = 0;
+    Boolean mIsOpen = true;
+    Mode mMode = Mode::READ;
 };
 
 }

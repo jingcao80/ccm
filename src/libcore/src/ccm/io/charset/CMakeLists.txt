@@ -24,6 +24,7 @@ include_directories(
     ${OBJ_DIR})
 
 set(SOURCES
+    Charset.cpp
     StreamEncoder.cpp)
 
 add_library(ccm_io_charset STATIC

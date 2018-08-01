@@ -26,7 +26,8 @@ include_directories(
 set(SOURCES
     BlockGuard.cpp
     CloseGuard.cpp
-    CPathClassLoader.cpp)
+    CPathClassLoader.cpp
+    SocketTagger.cpp)
 
 add_library(ccmrt_system STATIC
     ${SOURCES})

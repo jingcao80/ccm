@@ -22,6 +22,7 @@ include "ccm/io/IFile.cdl"
 include "ccm/io/IFileDescriptor.cdl"
 include "ccm/io/IFileFilter.cdl"
 include "ccm/io/IFileInputStream.cdl"
+include "ccm/io/IFileOutputStream.cdl"
 include "ccm/io/IFilenameFilter.cdl"
 include "ccm/io/IFlushable.cdl"
 include "ccm/io/IInputStream.cdl"
@@ -32,6 +33,7 @@ include "ccm/io/IPrintStream.cdl"
 include "ccm/io/IPrintWriter.cdl"
 include "ccm/io/IReader.cdl"
 include "ccm/io/ISerializable.cdl"
+include "ccm/io/IStringWriter.cdl"
 include "ccm/io/IWriter.cdl"
 include "ccm/io/channels/IFileChannel.cdl"
 include "ccm/io/charset/ICharset.cdl"
@@ -141,6 +143,40 @@ coclass CFileInputStream
 }
 
 [
+    uuid(6d5f9b98-ce5c-4e30-a5ca-c0c74e0dc8fd),
+    version(0.1.0)
+]
+coclass CFileOutputStream
+{
+    Constructor(
+        [in] String name);
+
+    Constructor(
+        [in] String name,
+        [in] Boolean append);
+
+    Constructor(
+        [in] IFile* file);
+
+    Constructor(
+        [in] IFile* file,
+        [in] Boolean append);
+
+    Constructor(
+        [in] IFileDescriptor* fdObj);
+
+    Constructor(
+        [in] IFileDescriptor* fdObj,
+        [in] Boolean isFdOwner);
+
+    interface IFileOutputStream;
+    interface IOutputStream;
+    interface IFlushable;
+    interface ICloseable;
+    interface IAutoCloseable;
+}
+
+[
     uuid(3f1442a5-ce76-40b3-8889-c9431c810c1d),
     version(0.1.0)
 ]
@@ -162,6 +198,51 @@ coclass COutputStreamWriter
         [in] ICharsetEncoder* enc);
 
     interface IOutputStreamWriter;
+    interface IWriter;
+    interface IAppendable;
+    interface ICloseable;
+    interface IFlushable;
+    interface IAutoCloseable;
+}
+
+[
+    uuid(5de87670-f240-43cd-b06d-a758b4914e76),
+    version(0.1.0)
+]
+coclass CPrintWriter
+{
+    Constructor(
+        [in] IWriter* outstream);
+
+    Constructor(
+        [in] IWriter* outstream,
+        [in] Boolean autoFlush);
+
+    Constructor(
+        [in] IOutputStream* outstream);
+
+    Constructor(
+        [in] IOutputStream* outstream,
+        [in] Boolean autoFlush);
+
+    Constructor(
+        [in] String fileName);
+
+    interface IPrintWriter;
+}
+
+[
+    uuid(2a886435-1ec8-4311-be20-03cff45b0dc8),
+    version(0.1.0)
+]
+coclass CStringWriter
+{
+    Constructor();
+
+    Constructor(
+        [in] Integer initialSize);
+
+    interface IStringWriter;
     interface IWriter;
     interface IAppendable;
     interface ICloseable;

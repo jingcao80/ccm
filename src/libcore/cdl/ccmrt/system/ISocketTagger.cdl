@@ -14,11 +14,37 @@
 // limitations under the License.
 //=========================================================================
 
-include "ccm/net/IDatagramPacket.cdl"
-include "ccm/net/IDatagramSocket.cdl"
-include "ccm/net/IInetAddress.cdl"
-include "ccm/net/IInetSocketAddress.cdl"
-include "ccm/net/ISocket.cdl"
-include "ccm/net/ISocketAddress.cdl"
-include "ccm/net/IURI.cdl"
-include "ccm/net/IURL.cdl"
+interface ccm::io::IFileDescriptor;
+interface ccm::net::IDatagramSocket;
+interface ccm::net::ISocket;
+
+namespace ccmrt {
+namespace system {
+
+[
+    uuid(bcf86319-3e1c-4c50-93cd-daea5797f296),
+    version(0.1.0)
+]
+interface ISocketTagger
+{
+    Tag(
+        [in] IFileDescriptor* socketDescriptor);
+
+    Tag(
+        [in] IDatagramSocket* socket);
+
+    Tag(
+        [in] ISocket* socket);
+
+    Untag(
+        [in] IFileDescriptor* socketDescriptor);
+
+    Untag(
+        [in] IDatagramSocket* socket);
+
+    Untag(
+        [in] ISocket* socket);
+}
+
+}
+}

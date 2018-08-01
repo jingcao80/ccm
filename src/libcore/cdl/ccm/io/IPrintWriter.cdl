@@ -17,6 +17,13 @@
 namespace ccm {
 namespace io {
 
+/**
+ * @Involve interfade ccm::io::IWriter;
+ * @Involve interface ccm::core::IAppendable;
+ * @Involve interface ccm::io::ICloseable;
+ * @Involve interface ccm::io::IFlushable;
+ * @involve interface ccm::core::IAutoCloseable
+ */
 [
     uuid(680fba48-d41b-4a09-9b10-7077eada7b89),
     version(0.1.0)

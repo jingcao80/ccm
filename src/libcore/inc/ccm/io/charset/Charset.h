@@ -14,11 +14,25 @@
 // limitations under the License.
 //=========================================================================
 
-include "ccm/net/IDatagramPacket.cdl"
-include "ccm/net/IDatagramSocket.cdl"
-include "ccm/net/IInetAddress.cdl"
-include "ccm/net/IInetSocketAddress.cdl"
-include "ccm/net/ISocket.cdl"
-include "ccm/net/ISocketAddress.cdl"
-include "ccm/net/IURI.cdl"
-include "ccm/net/IURL.cdl"
+#ifndef __CCM_IO_CHARSET_CHARSET_H__
+#define __CCM_IO_CHARSET_CHARSET_H__
+
+#include "ccm.io.charset.ICharset.h"
+
+namespace ccm {
+namespace io {
+namespace charset {
+
+class Charset
+{
+public:
+    static ECode ForName(
+        /* [in] */ const String& charsetName,
+        /* [out] */ ICharset** cs);
+};
+
+}
+}
+}
+
+#endif // __CCM_IO_CHARSET_CHARSET_H__

@@ -16,6 +16,7 @@
 
 interface ccm::core::IStackTraceElement;
 interface ccm::io::IPrintStream;
+interface ccm::io::IPrintWriter;
 
 namespace ccm {
 namespace core {
@@ -35,6 +36,9 @@ interface IStackTrace
 
     PrintStackTrace(
         [in] IPrintStream* s);
+
+    PrintStackTrace(
+        [in] IPrintWriter* s);
 }
 
 }

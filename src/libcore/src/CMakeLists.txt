@@ -61,7 +61,10 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_io_CFile.cpp
     ${OBJ_DIR}/_ccm_io_CFileDescriptor.cpp
     ${OBJ_DIR}/_ccm_io_CFileInputStream.cpp
+    ${OBJ_DIR}/_ccm_io_CFileOutputStream.cpp
     ${OBJ_DIR}/_ccm_io_COutputStreamWriter.cpp
+    ${OBJ_DIR}/_ccm_io_CPrintWriter.cpp
+    ${OBJ_DIR}/_ccm_io_CStringWriter.cpp
     ${OBJ_DIR}/_ccm_security_CPermissions.cpp
     ${OBJ_DIR}/_ccm_security_action_CGetPropertyAction.cpp
     ${OBJ_DIR}/_ccm_util_CArrayList.cpp

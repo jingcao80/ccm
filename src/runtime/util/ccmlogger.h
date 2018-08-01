@@ -40,6 +40,11 @@ public:
         /* [in] */ const char* tag,
         /* [in] */ const char* format, ...);
 
+    static void Log(
+        /* [in] */ int level,
+        /* [in] */ const char* tag,
+        /* [in] */ const char* format, ...);
+
     static void SetLevel(
         /* [in] */ int level);
 

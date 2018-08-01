@@ -61,6 +61,10 @@ namespace io {
     if (_rc == -1) { \
         /* If the syscall failed, re-set errno: throwing an exception might have modified it. */ \
         errno = _syscallErrno; \
+        *outEc = pisces::system::E_ERRNO_EXCEPTION | (errno & 0x000000ff); \
+    } \
+    else { \
+        *outEc = NOERROR; \
     } \
     _rc; })
 

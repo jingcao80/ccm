@@ -51,6 +51,12 @@ ECode StackTrace::PrintStackTrace(
     return NOERROR;
 }
 
+ECode StackTrace::PrintStackTrace(
+    /* [in] */ IPrintWriter* s)
+{
+    return NOERROR;
+}
+
 ECode StackTrace::FillInStackTrace()
 {
     mFrameCount = GetBacktrace(mFrames.GetPayload(), mFrames.GetLength());

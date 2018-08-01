@@ -21,10 +21,12 @@
 #include "ccm.core.IStackTrace.h"
 #include "ccm.core.IStackTraceElement.h"
 #include "ccm.io.IPrintStream.h"
+#include "ccm.io.IPrintWriter.h"
 #include "ccm.io.ISerializable.h"
 #include <ccmautoptr.h>
 
 using ccm::io::IPrintStream;
+using ccm::io::IPrintWriter;
 using ccm::io::ISerializable;
 
 namespace ccm {
@@ -47,6 +49,9 @@ public:
 
     ECode PrintStackTrace(
         /* [in] */ IPrintStream* s) override;
+
+    ECode PrintStackTrace(
+        /* [in] */ IPrintWriter* s) override;
 
     ECode FillInStackTrace() override;
 

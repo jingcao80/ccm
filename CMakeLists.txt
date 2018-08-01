@@ -16,6 +16,11 @@
 
 cmake_minimum_required(VERSION 2.8)
 
+if (NOT CMAKE_BUILD_TYPE)
+    message(STATUS "No build type selected (options are: Debug Release), default to Release.")
+    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type (default Release)" FORCE)
+endif()
+
 file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/inc)
 
 #set(CMAKE_VERBOSE_MAKEFILE on)

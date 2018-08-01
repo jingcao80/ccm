@@ -14,14 +14,46 @@
 // limitations under the License.
 //=========================================================================
 
+#include "ccmrt/system/BlockGuard.h"
 #include "libcore/io/IoTracker.h"
+#include "ccmrt.system.IBlockGuardPolicy.h"
+
+using ccmrt::system::BlockGuard;
+using ccmrt::system::IBlockGuardPolicy;
 
 namespace libcore {
 namespace io {
 
-void IoTracker::TrackIo(
+ECode IoTracker::TrackIo(
     /* [in] */ Integer byteCount)
-{}
+{
+    ++mOpCount;
+    mTotalByteCount += byteCount;
+    if (mIsOpen && mOpCount > 10 && mTotalByteCount < 10 * 512) {
+        AutoPtr<IBlockGuardPolicy> policy;
+        BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+        FAIL_RETURN(policy->OnUnbufferedIO());
+        mIsOpen = false;
+    }
+    return NOERROR;
+}
+
+ECode IoTracker::TrackIo(
+    /* [in] */ Integer byteCount,
+    /* [in] */ Mode mode)
+{
+    if (mMode != mode) {
+        Reset();
+        mMode = mode;
+    }
+    return TrackIo(byteCount);
+}
+
+void IoTracker::Reset()
+{
+    mOpCount = 0;
+    mTotalByteCount = 0;
+}
 
 }
 }

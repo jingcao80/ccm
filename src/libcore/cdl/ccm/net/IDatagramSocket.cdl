@@ -14,11 +14,23 @@
 // limitations under the License.
 //=========================================================================
 
-include "ccm/net/IDatagramPacket.cdl"
-include "ccm/net/IDatagramSocket.cdl"
-include "ccm/net/IInetAddress.cdl"
-include "ccm/net/IInetSocketAddress.cdl"
-include "ccm/net/ISocket.cdl"
-include "ccm/net/ISocketAddress.cdl"
-include "ccm/net/IURI.cdl"
-include "ccm/net/IURL.cdl"
+interface ccm::io::IFileDescriptor;
+
+namespace ccm {
+namespace net {
+
+[
+    uuid(d3590256-ae75-46e9-a0d6-940ec8e94649),
+    version(0.1.0)
+]
+interface IDatagramSocket
+{
+    GetFileDescriptor(
+        [out] IFileDescriptor** fd);
+
+    IsClosed(
+        [out] Boolean* closed);
+}
+
+}
+}

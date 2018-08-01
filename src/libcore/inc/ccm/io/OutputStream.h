@@ -14,26 +14,45 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/io/CBufferedWriter.h"
-#include "ccm/io/CFile.h"
-#include "ccm/io/CFileDescriptor.h"
-#include "ccm/io/CFileInputStream.h"
-#include "ccm/io/CFileOutputStream.h"
-#include "ccm/io/COutputStreamWriter.h"
-#include "ccm/io/CPrintWriter.h"
-#include "ccm/io/CStringWriter.h"
+#ifndef __CCM_IO_OUTPUTSTREAM_H__
+#define __CCM_IO_OUTPUTSTREAM_H__
+
+#include "ccm/core/SyncObject.h"
+#include "ccm.core.IAutoCloseable.h"
+#include "ccm.io.IOutputStream.h"
+#include "ccm.io.IFlushable.h"
+#include "ccm.io.ICloseable.h"
+
+using ccm::core::IAutoCloseable;
+using ccm::core::SyncObject;
 
 namespace ccm {
 namespace io {
 
-CCM_OBJECT_IMPL(CBufferedWriter);
-CCM_OBJECT_IMPL(CFile);
-CCM_OBJECT_IMPL(CFileDescriptor);
-CCM_OBJECT_IMPL(CFileInputStream);
-CCM_OBJECT_IMPL(CFileOutputStream);
-CCM_OBJECT_IMPL(COutputStreamWriter);
-CCM_OBJECT_IMPL(CPrintWriter);
-CCM_OBJECT_IMPL(CStringWriter);
+class OutputStream
+    : public SyncObject
+    , public IOutputStream
+    , public IFlushable
+    , public ICloseable
+    , public IAutoCloseable
+{
+public:
+    CCM_INTERFACE_DECL();
+
+    ECode Write(
+        /* [in] */ const Array<Byte>& buffer) override;
+
+    ECode Write(
+        /* [in] */ const Array<Byte>& buffer,
+        /* [in] */ Integer offset,
+        /* [in] */ Integer size) override;
+
+    ECode Flush() override;
+
+    ECode Close() override;
+};
 
 }
 }
+
+#endif // __CCM_IO_OUTPUTSTREAM_H__

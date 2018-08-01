@@ -31,15 +31,11 @@ macro(IMPORT_GTEST)
     set(GTEST_LIBS libgtest.a libgtest_main.a pthread)
 endmacro()
 
-add_compile_options(
-    -std=c++11
-    -fPIC
-    -fvisibility=hidden
-    -fno-exceptions
-    -fno-rtti
-    -ffunction-sections
-    -fdata-sections
-    -funwind-tables)
+set(COMMON_CXX_FLAGS
+    "-std=c++11 -fPIC -fno-exceptions -fno-rtti -ffunction-sections -fdata-sections")
+
+set(CMAKE_CXX_FLAGS_RELEASE "${COMMON_CXX_FLAGS} -fvisibility=hidden -Os")
+set(CMAKE_CXX_FLAGS_DEBUG "${COMMON_CXX_FLAGS} -O0 -g")
 
 set(CMAKE_SHARED_LIBRARY_PREFIX "")
 set(CMAKE_STATIC_LIBRARY_PREFIX "")

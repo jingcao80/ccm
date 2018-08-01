@@ -16,6 +16,7 @@
 
 include "ccmrt/system/IBlockGuard.cdl"
 include "ccmrt/system/ICloseGuard.cdl"
+include "ccmrt/system/ISocketTagger.cdl"
 
 interface ccm::IClassLoader;
 

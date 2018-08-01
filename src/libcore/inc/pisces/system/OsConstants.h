@@ -29,6 +29,7 @@ class OsConstants final
 public:
     static const Integer AF_INET_;
     static const Integer AF_INET6_;
+    static const Integer EINVAL_;
     static const Integer MS_SYNC_;
     static const Integer O_ACCMODE_;
     static const Integer O_RDONLY_;

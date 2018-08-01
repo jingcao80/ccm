@@ -15,12 +15,14 @@
 //=========================================================================
 
 #include "ccmrt/system/BlockGuard.h"
+#include "ccmrt/system/SocketTagger.h"
 #include "libcore/io/BlockGuardOs.h"
 #include "libcore/io/Libcore.h"
 #include "pisces/system/OsConstants.h"
 #include "ccmrt.system.IBlockGuardPolicy.h"
 
 using ccmrt::system::BlockGuard;
+using ccmrt::system::SocketTagger;
 using ccmrt::system::IBlockGuardPolicy;
 using pisces::system::OsConstants;
 
@@ -31,12 +33,24 @@ ECode BlockGuardOs::TagSocket(
     /* [in] */ IFileDescriptor* fd,
     /* [out] */ IFileDescriptor** taggedFd)
 {
+    VALIDATE_NOT_NULL(taggedFd);
+
+    ECode ec = SocketTagger::Get()->Tag(fd);
+    if (FAILED(ec)) {
+        return pisces::system::E_ERRNO_EXCEPTION | (OsConstants::EINVAL_ & 0x000000ff);
+    }
+    *taggedFd = fd;
+    REFCOUNT_ADD(*taggedFd);
     return NOERROR;
 }
 
 ECode BlockGuardOs::UntagSocket(
     /* [in] */ IFileDescriptor* fd)
 {
+    ECode ec = SocketTagger::Get()->Untag(fd);
+    if (FAILED(ec)) {
+        return pisces::system::E_ERRNO_EXCEPTION | (OsConstants::EINVAL_ & 0x000000ff);
+    }
     return NOERROR;
 }
 

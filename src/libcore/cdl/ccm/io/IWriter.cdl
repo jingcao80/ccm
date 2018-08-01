@@ -20,10 +20,10 @@ namespace ccm {
 namespace io {
 
 /**
- * @Involve
- * interface ccm::core::IAppendable;
- * interface ccm::io::ICloseable;
- * interface ccm::io::IFlushable;
+ * @Involve interface ccm::core::IAppendable;
+ * @Involve interface ccm::io::ICloseable;
+ * @Involve interface ccm::io::IFlushable;
+ * @involve interface ccm::core::IAutoCloseable
  */
 [
     uuid(cca035d8-6f23-4eac-a581-294d5ff8c41f),
