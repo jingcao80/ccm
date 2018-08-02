@@ -29,7 +29,11 @@ CCM stands for C++ Component Model. It can:
 2. <code>source build/envsetup.sh</code>
 2. <code>mkdir out</code>
 3. <code>cd out</code>
-4. <code>cmake ..</code>
+4. <code>cmake ..</code> for release build  
+    or  
+   <code>cmake -DCMAKE_BUILD_TYPE=Release ..</code>code> for release build  
+    or  
+   <code>cmake -DCMAKE_BUILD_TYPE=Debug ..</code>code> for debug build
 5. <code>make</code>
 
 #### Rebuild

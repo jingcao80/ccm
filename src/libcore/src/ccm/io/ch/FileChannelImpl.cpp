@@ -30,6 +30,17 @@ AutoPtr<IFileChannel> FileChannelImpl::Open(
     return nullptr;
 }
 
+AutoPtr<IFileChannel> FileChannelImpl::Open(
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ const String& path,
+    /* [in] */ Boolean readable,
+    /* [in] */ Boolean writable,
+    /* [in] */ Boolean append,
+    /* [in] */ IInterface* parent)
+{
+    return nullptr;
+}
+
 }
 }
 }

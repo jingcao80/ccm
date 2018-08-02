@@ -58,6 +58,7 @@ TEST(FileInputStreamTest, FileInputStreamReadTest)
     input->Read(buffer, 0, 75, &number);
     EXPECT_EQ(number, strlen(LICENSE[0]));
     EXPECT_STREQ(LICENSE[0], String(buffer.GetPayload(), number).string());
+    input->Close();
 }
 
 ECode Main(Array<String>& args)

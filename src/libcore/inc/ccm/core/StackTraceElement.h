@@ -40,6 +40,9 @@ public:
         /* [in] */ const String& soname,
         /* [in] */ const String& symbol);
 
+    ECode ToString(
+        /* [out] */ String* desc) override;
+
 private:
     String mNo;
     String mPC;

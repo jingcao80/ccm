@@ -37,6 +37,12 @@ public:
         /* [in] */ Integer byteCount,
         /* [out] */ Integer* number);
 
+    static ECode Write(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ const Array<Byte>& bytes,
+        /* [in] */ Integer byteOffset,
+        /* [in] */ Integer byteCount);
+
 private:
     IoBridge();
 };

@@ -17,11 +17,20 @@
 #ifndef __CCM_IO_FILEOUTPUTSTREAM_H__
 #define __CCM_IO_FILEOUTPUTSTREAM_H__
 
+#include "ccm/core/SyncObject.h"
 #include "ccm/io/OutputStream.h"
+#include "libcore/io/IoTracker.h"
 #include "ccm.io.IFile.h"
 #include "ccm.io.IFileDescriptor.h"
 #include "ccm.io.IFileOutputStream.h"
+#include "ccm.io.channels.IFileChannel.h"
+#include "ccmrt.system.ICloseGuard.h"
 #include <ccmautoptr.h>
+
+using ccm::core::SyncObject;
+using ccm::io::channels::IFileChannel;
+using ccmrt::system::ICloseGuard;
+using libcore::io::IoTracker;
 
 namespace ccm {
 namespace io {
@@ -31,6 +40,10 @@ class FileOutputStream
     , public IFileOutputStream
 {
 public:
+    FileOutputStream();
+
+    ~FileOutputStream();
+
     CCM_INTERFACE_DECL();
 
     ECode Constructor(
@@ -54,10 +67,6 @@ public:
         /* [in] */ IFileDescriptor* fdObj,
         /* [in] */ Boolean isFdOwner);
 
-    ECode Close() override;
-
-    ECode Flush() override;
-
     ECode Write(
         /* [in] */ Integer byte) override;
 
@@ -68,6 +77,35 @@ public:
         /* [in] */ const Array<Byte>& buffer,
         /* [in] */ Integer offset,
         /* [in] */ Integer size) override;
+
+    ECode Close() override;
+
+    ECode GetFD(
+        /* [out] */ IFileDescriptor** fd) override final;
+
+    ECode GetChannel(
+        /* [out] */ IFileChannel** channel) override;
+
+private:
+    ECode Open(
+        /* [in] */ const String& name,
+        /* [in] */ Boolean append);
+
+private:
+    AutoPtr<IFileDescriptor> mFd;
+
+    Boolean mAppend;
+
+    AutoPtr<IFileChannel> mChannel;
+
+    SyncObject mCloseLock;
+    Boolean mClosed = false;
+
+    String mPath;
+
+    AutoPtr<ICloseGuard> mGuard;
+    Boolean mIsFdOwner;
+    AutoPtr<IoTracker> mTracker;
 };
 
 }

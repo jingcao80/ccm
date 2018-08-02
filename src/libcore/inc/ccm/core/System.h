@@ -69,6 +69,9 @@ public:
         /* [in] */ const String& def,
         /* [out] */ String* value);
 
+    static ECode LogE(
+        /* [in] */ const String& message);
+
     static ECode LogW(
         /* [in] */ const String& message,
         /* [in] */ IStackTrace* st);
@@ -100,6 +103,12 @@ private:
 
     friend void StaticInitializeSystem();
 };
+
+inline ECode System::LogE(
+    /* [in] */ const String& message)
+{
+    return Log('E', message, nullptr);
+}
 
 inline ECode System::LogW(
     /* [in] */ const String& message,

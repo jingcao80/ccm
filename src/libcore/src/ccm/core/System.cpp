@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "ccm/core/CoreUtils.h"
+#include "ccm/core/HardcodedSystemProperties.h"
 #include "ccm/core/System.h"
 #include "ccm/io/CPrintWriter.h"
 #include "ccm/io/CStringWriter.h"
@@ -35,6 +36,7 @@ using ccm::io::IID_IStringWriter;
 using ccm::util::CProperties;
 using ccm::util::IID_IProperties;
 using ccm::util::IHashtable;
+using ccm::util::IID_IHashtable;
 
 namespace ccm {
 namespace core {
@@ -76,12 +78,28 @@ Long System::GetNanoTime()
 
 AutoPtr<IProperties> System::InitUnchangeableSystemProperties()
 {
-    AutoPtr<IProperties> p;
-    CProperties::New(IID_IProperties, (IInterface**)&p);
+    AutoPtr<IHashtable> p;
+    CProperties::New(IID_IHashtable, (IInterface**)&p);
 
-    p->SetProperty(String("ccm.class.path"), String(getenv("CLASS_PATH")));
+    p->Put(CoreUtils::Box(String("ccm.class.path")),
+           CoreUtils::Box(String(getenv("CLASS_PATH"))));
 
-    return p;
+    Integer N = ArrayLength(HardcodedSystemProperties::STATIC_PROPERTIES);
+    for (Integer i = 0; i < N; i++) {
+        String pair[2] = HardcodedSystemProperties::STATIC_PROPERTIES[i];
+        Boolean contains;
+        if (p->ContainsKey(CoreUtils::Box(pair[0]), &contains), contains) {
+            LogE(String("Ignoring command line argument: -D") + pair[0]);
+        }
+        if (pair[1].IsNull()) {
+            p->Remove(CoreUtils::Box(pair[0]));
+        }
+        else {
+            p->Put(CoreUtils::Box(pair[0]), CoreUtils::Box(pair[1]));
+        }
+    }
+
+    return IProperties::Probe(p);
 }
 
 AutoPtr<IProperties> System::InitProperties()
@@ -175,7 +193,7 @@ ECode System::Log(
         st->PrintStackTrace(pw);
         String backtrace;
         sw->ToString(&backtrace);
-        Logger::Log(level, "System", "%s", backtrace.string());
+        Logger::Log(level, "System", "\n%s", backtrace.string());
     }
 
     return NOERROR;

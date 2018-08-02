@@ -14,19 +14,26 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/io/charset/Charset.h"
+#ifndef __CCM_CORE_HARDCODEDSYSTEMPROPERTIES_H__
+#define __CCM_CORE_HARDCODEDSYSTEMPROPERTIES_H__
+
+#include <ccmtypes.h>
 
 namespace ccm {
-namespace io {
-namespace charset {
+namespace core {
 
-ECode Charset::ForName(
-    /* [in] */ const String& charsetName,
-    /* [out] */ ICharset** cs)
+class HardcodedSystemProperties final
 {
-    return NOERROR;
-}
+private:
+    HardcodedSystemProperties();
+
+public:
+    static const String CCM_VERSION;
+
+    static const String STATIC_PROPERTIES[3][2];
+};
 
 }
 }
-}
+
+#endif // __CCM_CORE_HARDCODEDSYSTEMPROPERTIES_H__

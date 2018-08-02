@@ -43,6 +43,7 @@ set(SOURCES
     CStringBuffer.cpp
     CStringBuilder.cpp
     CSystem.cpp
+    HardcodedSystemProperties.cpp
     HexStringParser.cpp
     Math.cpp
     NativeBacktrace.cpp

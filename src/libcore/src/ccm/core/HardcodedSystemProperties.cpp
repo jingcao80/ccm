@@ -14,19 +14,18 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/io/charset/Charset.h"
+#include "ccm/core/HardcodedSystemProperties.h"
 
 namespace ccm {
-namespace io {
-namespace charset {
+namespace core {
 
-ECode Charset::ForName(
-    /* [in] */ const String& charsetName,
-    /* [out] */ ICharset** cs)
-{
-    return NOERROR;
-}
+INIT_PROI_3 const String HardcodedSystemProperties::CCM_VERSION("0");
 
-}
+INIT_PROI_3 const String HardcodedSystemProperties::STATIC_PROPERTIES[3][2] = {
+    { String("file.separator"), String("/") },
+    { String("line.separator"), String("\n") },
+    { String("path.separator"), String(":") },
+};
+
 }
 }

@@ -14,7 +14,9 @@
 // limitations under the License.
 //=========================================================================
 
+#include "ccm/core/CStringBuilder.h"
 #include "ccm/core/StackTraceElement.h"
+#include <ccmautoptr.h>
 
 using ccm::io::IID_ISerializable;
 
@@ -34,6 +36,25 @@ ECode StackTraceElement::Constructor(
     mSoname = soname;
     mSymbol = symbol;
     return NOERROR;
+}
+
+ECode StackTraceElement::ToString(
+    /* [out] */ String* desc)
+{
+    VALIDATE_NOT_NULL(desc);
+
+    AutoPtr<IStringBuilder> sb;
+    CStringBuilder::New(IID_IStringBuilder, (IInterface**)&sb);
+    sb->Append(mNo);
+    sb->Append(String("  "));
+    sb->Append(mPC);
+    sb->AppendChar(' ');
+    sb->Append(mSoname);
+    if (!mSymbol.IsNullOrEmpty()) {
+        sb->AppendChar(' ');
+        sb->Append(mSymbol);
+    }
+    return sb->ToString(desc);
 }
 
 }

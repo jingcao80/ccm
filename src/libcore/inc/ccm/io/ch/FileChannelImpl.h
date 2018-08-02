@@ -36,6 +36,14 @@ public:
         /* [in] */ Boolean readable,
         /* [in] */ Boolean writable,
         /* [in] */ IInterface* parent);
+
+    static AutoPtr<IFileChannel> Open(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ const String& path,
+        /* [in] */ Boolean readable,
+        /* [in] */ Boolean writable,
+        /* [in] */ Boolean append,
+        /* [in] */ IInterface* parent);
 };
 
 }

@@ -228,6 +228,17 @@ coclass CPrintWriter
     Constructor(
         [in] String fileName);
 
+    Constructor(
+        [in] String fileName,
+        [in] String csn);
+
+    Constructor(
+        [in] IFile* file);
+
+    Constructor(
+        [in] IFile* file,
+        [in] String csn);
+
     interface IPrintWriter;
 }
 

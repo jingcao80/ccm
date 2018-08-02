@@ -23,6 +23,9 @@ namespace io {
 ]
 interface IPrintStream
 {
+    CheckError(
+        [out] Boolean* hasErrors);
+
     Print(
         [in] String s);
 

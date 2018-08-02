@@ -44,12 +44,33 @@ ECode IoBridge::Read(
         return NOERROR;
     }
     Integer readCount;
-    FAIL_RETURN(Libcore::GetOs()->Read(fd, bytes, byteOffset, byteCount, &readCount));
+    ECode ec = Libcore::GetOs()->Read(fd, bytes, byteOffset, byteCount, &readCount);
+    if (FAILED(ec)) return ccm::io::E_IO_EXCEPTION;
     if (readCount == 0) {
         *number = -1;
         return NOERROR;
     }
     *number = readCount;
+    return NOERROR;
+}
+
+ECode IoBridge::Write(
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ const Array<Byte>& bytes,
+    /* [in] */ Integer byteOffset,
+    /* [in] */ Integer byteCount)
+{
+    FAIL_RETURN(Arrays::CheckOffsetAndCount(bytes.GetLength(), byteOffset, byteCount));
+    if (byteCount == 0) {
+        return NOERROR;
+    }
+    while (byteCount > 0) {
+        Integer bytesWritten;
+        ECode ec = Libcore::GetOs()->Write(fd, bytes, byteOffset, byteCount, &bytesWritten);
+        if (FAILED(ec)) return ccm::io::E_IO_EXCEPTION;
+        byteCount -= bytesWritten;
+        byteOffset += bytesWritten;
+    }
     return NOERROR;
 }
 

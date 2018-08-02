@@ -285,6 +285,7 @@ private:
     Integer mPrefixLength;
 
     friend class FileInputStream;
+    friend class FileOutputStream;
 };
 
 inline File* File::From(

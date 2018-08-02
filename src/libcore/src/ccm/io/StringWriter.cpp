@@ -30,6 +30,7 @@ ECode StringWriter::Constructor()
 {
     CStringBuffer::New(IID_IStringBuffer, (IInterface**)&mBuf);
     mLock = ISynchronize::Probe(mBuf);
+    REFCOUNT_ADD(mLock);
     return NOERROR;
 }
 
@@ -42,6 +43,7 @@ ECode StringWriter::Constructor(
     }
     CStringBuffer::New(IID_IStringBuffer, (IInterface**)&mBuf);
     mLock = ISynchronize::Probe(mBuf);
+    REFCOUNT_ADD(mLock);
     return NOERROR;
 }
 

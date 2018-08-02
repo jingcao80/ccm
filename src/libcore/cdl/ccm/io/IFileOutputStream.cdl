@@ -14,6 +14,9 @@
 // limitations under the License.
 //=========================================================================
 
+interface ccm::io::IFileDescriptor;
+interface ccm::io::channels::IFileChannel;
+
 namespace ccm {
 namespace io {
 
@@ -29,6 +32,11 @@ namespace io {
 ]
 interface IFileOutputStream
 {
+    GetChannel(
+        [out] IFileChannel** channel);
+
+    GetFD(
+        [out] IFileDescriptor** fd);
 }
 
 }

@@ -1086,7 +1086,9 @@ ECode Linux::Write(
     /* [in] */ Integer byteCount,
     /* [out] */ Integer* num)
 {
-    return NOERROR;
+    ECode ec;
+    *num = IO_FAILURE_RETRY(&ec, ssize_t, write, fd, bytes.GetPayload() + byteOffset, byteCount);
+    return ec;
 }
 
 ECode Linux::Write(

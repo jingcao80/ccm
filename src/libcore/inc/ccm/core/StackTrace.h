@@ -24,6 +24,7 @@
 #include "ccm.io.IPrintWriter.h"
 #include "ccm.io.ISerializable.h"
 #include <ccmautoptr.h>
+#include <ccmrefbase.h>
 
 using ccm::io::IPrintStream;
 using ccm::io::IPrintWriter;
@@ -37,6 +38,65 @@ class StackTrace
     , public IStackTrace
     , public ISerializable
 {
+private:
+    class PrintStreamOrWriter
+        : public LightRefBase
+    {
+    public:
+        virtual AutoPtr<ISynchronize> Lock() = 0;
+
+        virtual ECode Println(
+            /* [in] */ IInterface* o) = 0;
+    };
+
+    class WrappedPrintStream
+        : public PrintStreamOrWriter
+    {
+    public:
+        WrappedPrintStream(
+            /* [in] */ IPrintStream* printStream)
+            : mPrintStream(printStream)
+        {}
+
+        AutoPtr<ISynchronize> Lock() override
+        {
+            return ISynchronize::Probe(mPrintStream);
+        }
+
+        ECode Println(
+            /* [in] */ IInterface* o) override
+        {
+            return mPrintStream->Println(o);
+        }
+
+    private:
+        AutoPtr<IPrintStream> mPrintStream;
+    };
+
+    class WrappedPrintWriter
+        : public PrintStreamOrWriter
+    {
+    public:
+        WrappedPrintWriter(
+            /* [in] */ IPrintWriter* printWriter)
+            : mPrintWriter(printWriter)
+        {}
+
+        AutoPtr<ISynchronize> Lock() override
+        {
+            return ISynchronize::Probe(mPrintWriter);
+        }
+
+        ECode Println(
+            /* [in] */ IInterface* o) override
+        {
+            return mPrintWriter->Println(o);
+        }
+
+    private:
+        AutoPtr<IPrintWriter> mPrintWriter;
+    };
+
 public:
     CCM_INTERFACE_DECL();
 
@@ -59,6 +119,9 @@ public:
         /* [out, callee] */ Array<IStackTraceElement*>* stack) override;
 
 private:
+    ECode PrintStackTrace(
+        /* [in] */ PrintStreamOrWriter* s);
+
     Array<IStackTraceElement*> GetOurStackTrace();
 
     AutoPtr<IStackTraceElement> ParseElement(

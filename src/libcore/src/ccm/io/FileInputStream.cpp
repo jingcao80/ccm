@@ -101,7 +101,7 @@ ECode FileInputStream::Constructor(
     BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
     FAIL_RETURN(policy->OnReadFromDisk());
     FAIL_RETURN(Open(name));
-    mGuard->Open(String("close"));
+    mGuard->Open(String("Close"));
     return NOERROR;
 }
 

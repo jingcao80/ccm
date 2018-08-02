@@ -76,7 +76,7 @@ public:
     ECode Close() override;
 
     ECode GetFD(
-        /* [out] */ IFileDescriptor** fd) override;
+        /* [out] */ IFileDescriptor** fd) override final;
 
     ECode GetChannel(
         /* [out] */ IFileChannel** channel) override;

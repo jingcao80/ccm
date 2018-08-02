@@ -14,6 +14,8 @@
 // limitations under the License.
 //=========================================================================
 
+interface ccm::util::ILocale;
+
 namespace ccm {
 namespace io {
 
@@ -30,8 +32,82 @@ namespace io {
 ]
 interface IPrintWriter
 {
+    CheckError(
+        [out] Boolean* hasErrors);
+
+    Format(
+        [in] String format,
+        [in] Array<IInterface*>* args);
+
+    Format(
+        [in] ILocale* l,
+        [in] String format,
+        [in] Array<IInterface*>* args);
+
+    Print(
+        [in] Boolean b);
+
+    PrintChar(
+        [in] Char c);
+
+    Print(
+        [in] Integer i);
+
+    Print(
+        [in] Long l);
+
+    Print(
+        [in] Float f);
+
+    Print(
+        [in] Double d);
+
+    Print(
+        [in] Array<Char> s);
+
+    Print(
+        [in] String s);
+
+    Print(
+        [in] IInterface* obj);
+
+    Printf(
+        [in] String format,
+        [in] Array<IInterface*>* args);
+
+    Printf(
+        [in] ILocale* l,
+        [in] String format,
+        [in] Array<IInterface*>* args);
+
+    Println();
+
+    Println(
+        [in] Boolean b);
+
+    PrintCharln(
+        [in] Char c);
+
+    Println(
+        [in] Integer i);
+
+    Println(
+        [in] Long l);
+
+    Println(
+        [in] Float f);
+
+    Println(
+        [in] Double x);
+
+    Println(
+        [in] Array<Char> s);
+
     Println(
         [in] String s);
+
+    Println(
+        [in] IInterface* obj);
 }
 
 }
