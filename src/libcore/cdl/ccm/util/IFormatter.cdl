@@ -15,18 +15,20 @@
 //=========================================================================
 
 namespace ccm {
-namespace io {
+namespace util {
 
 /*
- * @involve interface ccm::core::IAutoCloseable
+ * @Involve interface ccm::io::ICloseable
+ * @Involve interface ccm::io::IFlushable
+ * @Involve interface ccm::core::IAutoCloseable
  */
 [
-    uuid(dcd6e9cb-b6b5-4840-9e62-9cb25b17f07e),
+    uuid(20aae661-0408-4d5e-a0ef-77e433774fac),
     version(0.1.0)
 ]
-interface ICloseable
+interface IFormatter
 {
-    Close();
+
 }
 
 }

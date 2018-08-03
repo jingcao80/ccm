@@ -14,44 +14,19 @@
 # limitations under the License.
 #=========================================================================
 
-set(UTIL_DIR ${LIBCORE_CCM_SRC_DIR}/util)
+set(LOCALE_DIR ${UTIL_DIR}/locale)
 
 include_directories(
     ./
     ../
-    ../../../inc
+    ../../../../inc
     ${INC_DIR}
     ${OBJ_DIR})
 
-add_subdirectory(calendar)
-add_subdirectory(concurrent)
-add_subdirectory(locale)
-add_subdirectory(regex)
-
 set(SOURCES
-    AbstractCollection.cpp
-    AbstractList.cpp
-    AbstractMap.cpp
-    AbstractSet.cpp
-    ArrayList.cpp
-    Arrays.cpp
-    Collections.cpp
-    Date.cpp
-    EmptyArray.cpp
-    Formatter.cpp
-    Hashtable.cpp
-    HashMap.cpp
-    HashSet.cpp
-    LinkedHashMap.cpp
-    LinkedHashSet.cpp
-    Properties.cpp
-    Random.cpp
-    StringTokenizer.cpp
-    TimeZone.cpp
-    TreeNode.cpp
-    XMLUtils.cpp
-    util.cpp)
+    BaseLocale.cpp
+    LocaleUtils.cpp)
 
-add_library(ccm_util STATIC
+add_library(ccm_util_locale STATIC
     ${SOURCES})
-add_dependencies(ccm_util build_libcore)
+add_dependencies(ccm_util_locale build_libcore)

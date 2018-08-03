@@ -30,8 +30,6 @@
 #include "ccm.security.IPrivilegedAction.h"
 #include <ccmlogger.h>
 
-#include <stdio.h>
-
 using ccm::core::AutoLock;
 using ccm::core::CoreUtils;
 using ccm::core::IThread;
@@ -55,7 +53,7 @@ ECode PrintWriter::ToCharset(
     VALIDATE_NOT_NULL(cs);
 
     if (csn.IsNull()) {
-        Logger::E("Charset", "charsetName is null");
+        Logger::E("PrintWriter", "charsetName is null");
         return ccm::core::E_NULL_POINTER_EXCEPTION;
     }
     ECode ec = Charset::ForName(csn, cs);

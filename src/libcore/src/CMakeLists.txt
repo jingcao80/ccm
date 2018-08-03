@@ -104,6 +104,7 @@ set(LIBCORE_LINK_LIBS
     ccm_util
     ccm_util_calendar
     ccm_util_concurrent
+    ccm_util_locale
     ccm_util_regex
     ccmrt_system
     libcore_io
