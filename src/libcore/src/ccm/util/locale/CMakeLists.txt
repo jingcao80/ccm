@@ -25,6 +25,7 @@ include_directories(
 
 set(SOURCES
     BaseLocale.cpp
+    LocaleObjectCache.cpp
     LocaleUtils.cpp)
 
 add_library(ccm_util_locale STATIC
