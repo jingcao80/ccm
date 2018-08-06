@@ -14,26 +14,4 @@
 // limitations under the License.
 //=========================================================================
 
-namespace ccm {
-namespace util {
-
-[
-    uuid(b77f3ad5-3301-486b-a529-24fe27caa151),
-    version(0.1.0)
-]
-interface ILocaleCategory
-{}
-
-/*
- * @Involve ccm::core::ICloneable
- * @Involve ccm::io::ISerializable
- */
-[
-    uuid(e23a921a-6d45-4b08-89e3-f09778118022),
-    version(0.1.0)
-]
-interface ILocale
-{}
-
-}
-}
+#include "ccm/util/Locale.h"

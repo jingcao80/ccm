@@ -14,26 +14,35 @@
 // limitations under the License.
 //=========================================================================
 
+#ifndef __CCM_UTIL_LOCALE_H__
+#define __CCM_UTIL_LOCALE_H__
+
+#include "ccm/core/SyncObject.h"
+#include "ccm.util.ILocale.h"
+#include "ccm.util.ILocaleCategory.h"
+#include <ccmautoptr.h>
+
+using ccm::core::SyncObject;
+
 namespace ccm {
 namespace util {
 
-[
-    uuid(b77f3ad5-3301-486b-a529-24fe27caa151),
-    version(0.1.0)
-]
-interface ILocaleCategory
-{}
+class Locale
+    : public SyncObject
+    , public ILocale
+{
+public:
+    static AutoPtr<ILocaleCategory> GetDisplayCategory();
 
-/*
- * @Involve ccm::core::ICloneable
- * @Involve ccm::io::ISerializable
- */
-[
-    uuid(e23a921a-6d45-4b08-89e3-f09778118022),
-    version(0.1.0)
-]
-interface ILocale
-{}
+    static AutoPtr<ILocaleCategory> GetFormatCategory();
+
+    static AutoPtr<ILocale> GetDefault();
+
+    static AutoPtr<ILocale> GetDefault(
+        /* [in] */ ILocaleCategory* category);
+};
 
 }
 }
+
+#endif // __CCM_UTIL_LOCALE_H__

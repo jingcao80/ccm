@@ -14,6 +14,9 @@
 // limitations under the License.
 //=========================================================================
 
+interface ccm::core::IAppendable;
+interface ccm::util::ILocale;
+
 namespace ccm {
 namespace util {
 
@@ -28,7 +31,30 @@ namespace util {
 ]
 interface IFormatter
 {
+    Close();
 
+    Flush();
+
+    Format(
+        [in] String format,
+        [in] Array<IInterface*>* args);
+
+    Format(
+        [in] ILocale* l,
+        [in] String format,
+        [in] Array<IInterface*>* args);
+
+    GetIoException(
+        [out] ECode* ec);
+
+    GetLocale(
+        [out] ILocale** locale);
+
+    GetOut(
+        [out] IAppendable** output);
+
+    ToString(
+        [out] String* str);
 }
 
 }

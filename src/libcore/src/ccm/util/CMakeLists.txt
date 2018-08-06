@@ -44,6 +44,7 @@ set(SOURCES
     HashSet.cpp
     LinkedHashMap.cpp
     LinkedHashSet.cpp
+    Locale.cpp
     Properties.cpp
     Random.cpp
     StringTokenizer.cpp

@@ -23,10 +23,13 @@
 #include "ccm.io.ICloseable.h"
 #include "ccm.io.IFile.h"
 #include "ccm.io.IFlushable.h"
+#include "ccm.io.IOutputStream.h"
+#include "ccm.io.IPrintStream.h"
 #include "ccm.io.charset.ICharset.h"
 #include "ccm.util.IFormatter.h"
 #include "ccm.util.ILocale.h"
 #include <ccmautoptr.h>
+#include <ccmrefbase.h>
 
 using ccm::core::IAppendable;
 using ccm::core::IAutoCloseable;
@@ -34,6 +37,8 @@ using ccm::core::SyncObject;
 using ccm::io::ICloseable;
 using ccm::io::IFile;
 using ccm::io::IFlushable;
+using ccm::io::IOutputStream;
+using ccm::io::IPrintStream;
 using ccm::io::charset::ICharset;
 
 namespace ccm {
@@ -46,10 +51,204 @@ class Formatter
     , public IFlushable
     , public IAutoCloseable
 {
+private:
+    static const InterfaceID IID_IFormatString;
+    INTERFACE_ID(d6dc3cb6-3ca2-4066-a773-e89e69b00a6d)
+    interface IFormatString
+        : public IInterface
+    {
+        inline static IFormatString* Probe(
+            /* [in] */ IInterface* object)
+        {
+            if (object == nullptr) return nullptr;
+            return (IFormatString*)object->Probe(IID_IFormatString);
+        }
+
+        virtual ECode GetIndex(
+            /* [out] */ Integer* idx) = 0;
+
+        virtual ECode Print(
+            /* [in] */ IInterface* arg,
+            /* [in] */ ILocale* l) = 0;
+
+        virtual ECode ToString(
+            /* [out] */ String* str) = 0;
+    };
+
+    class FixedString
+        : public LightRefBase
+        , public IFormatString
+    {
+    public:
+        CCM_INTERFACE_DECL();
+
+        FixedString(
+            /* [in] */ Formatter* owner,
+            /* [in] */ const String& s)
+            : mOwner(owner)
+            , mS(s)
+        {}
+
+        ECode GetIndex(
+            /* [out] */ Integer* idx) override;
+
+        ECode Print(
+            /* [in] */ IInterface* arg,
+            /* [in] */ ILocale* l) override;
+
+        ECode ToString(
+            /* [out] */ String* str) override;
+
+    private:
+        Formatter* mOwner;
+        String mS;
+    };
+
+    class FormatSpecifier
+        : public LightRefBase
+        , public IFormatString
+    {
+    public:
+        CCM_INTERFACE_DECL();
+
+        ECode Constructor(
+            /* [in] */ const String& indexStr,
+            /* [in] */ const String& flagsStr,
+            /* [in] */ const String& widthStr,
+            /* [in] */ const String& precisionStr,
+            /* [in] */ const String& tTStr,
+            /* [in] */ const String& convStr);
+
+        ECode GetIndex(
+            /* [out] */ Integer* idx) override;
+
+        ECode Print(
+            /* [in] */ IInterface* arg,
+            /* [in] */ ILocale* l) override;
+
+        ECode ToString(
+            /* [out] */ String* str) override;
+    };
+
+    class FormatSpecifierParser
+        : public LightRefBase
+    {
+    public:
+        ECode Constructor(
+            /* [in] */ const String& format,
+            /* [in] */ Integer startIdx);
+
+        String NextInt();
+
+        Boolean NextIsInt();
+
+        AutoPtr<FormatSpecifier> GetFormatSpecifier();
+
+        Integer GetEndIdx();
+
+    private:
+        static String GetFLAGS();
+
+        ECode Peek(
+            /* [out] */ Char* c);
+
+        ECode Advance(
+            /* [out] */ Char* c = nullptr);
+
+        void Back(
+            /* [in] */ Integer len);
+
+    private:
+        String mFormat;
+        Integer mCursor;
+        AutoPtr<FormatSpecifier> mFs;
+
+        String mIndex;
+        String mFlags;
+        String mWidth;
+        String mPrecision;
+        String mTT;
+        String mConv;
+    };
+
 public:
     CCM_INTERFACE_DECL();
 
     ECode Constructor();
+
+    ECode Constructor(
+        /* [in] */ IAppendable* a);
+
+    ECode Constructor(
+        /* [in] */ ILocale* l);
+
+    ECode Constructor(
+        /* [in] */ IAppendable* a,
+        /* [in] */ ILocale* l);
+
+    ECode Constructor(
+        /* [in] */  const String& fileName);
+
+    ECode Constructor(
+        /* [in] */ const String& fileName,
+        /* [in] */ const String& csn);
+
+    ECode Constructor(
+        /* [in] */ const String& fileName,
+        /* [in] */ const String& csn,
+        /* [in] */ ILocale* l);
+
+    ECode Constructor(
+        /* [in] */ IFile* file);
+
+    ECode Constructor(
+        /* [in] */ IFile* file,
+        /* [in] */ const String& csn);
+
+    ECode Constructor(
+        /* [in] */ IFile* file,
+        /* [in] */ const String& csn,
+        /* [in] */ ILocale* l);
+
+    ECode Constructor(
+        /* [in] */ IPrintStream* ps);
+
+    ECode Constructor(
+        /* [in] */ IOutputStream* os);
+
+    ECode Constructor(
+        /* [in] */ IOutputStream* os,
+        /* [in] */ const String& csn);
+
+    ECode Constructor(
+        /* [in] */ IOutputStream* os,
+        /* [in] */ const String& csn,
+        /* [in] */ ILocale* l);
+
+    ECode GetLocale(
+        /* [out] */ ILocale** locale) override;
+
+    ECode GetOut(
+        /* [out] */ IAppendable** output) override;
+
+    ECode ToString(
+        /* [out] */ String* str) override;
+
+    ECode Flush() override;
+
+    ECode Close() override;
+
+    ECode GetIoException(
+        /* [out] */ ECode* ec) override;
+
+    ECode Format(
+        /* [in] */ const String& format,
+        /* [in] */ const Array<IInterface*>* args) override;
+
+    ECode Format(
+        /* [in] */ ILocale* l,
+        /* [in] */ const String& format,
+        /* [in] */ const Array<IInterface*>* args) override;
 
 private:
     static ECode ToCharset(
@@ -63,17 +262,25 @@ private:
         /* [in] */ ILocale* l,
         /* [in] */ IAppendable* a);
 
-    static Char GetZero(
-        /* [in] */ ILocale* l);
-
     ECode Constructor(
         /* [in] */ ICharset* charset,
         /* [in] */ ILocale* l,
         /* [in] */ IFile* file);
 
+    static Char GetZero(
+        /* [in] */ ILocale* l);
+
+    ECode EnsureOpen();
+
+    ECode Parse(
+        /* [in] */ const String& s,
+        /* [out, callee] */ Array<IFormatString*>* formats);
+
 private:
     AutoPtr<IAppendable> mA;
     AutoPtr<ILocale> mL;
+
+    ECode mLastException;
 
     Char mZero;
 };
