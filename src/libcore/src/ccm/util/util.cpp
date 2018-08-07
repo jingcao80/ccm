@@ -16,6 +16,7 @@
 
 #include "ccm/util/CArrayList.h"
 #include "ccm/util/CDate.h"
+#include "ccm/util/CFormatter.h"
 #include "ccm/util/CHashMap.h"
 #include "ccm/util/CHashSet.h"
 #include "ccm/util/CHashtable.h"
@@ -54,6 +55,8 @@ ECode CDate::Clone(
 {
     return NOERROR;
 }
+
+CCM_OBJECT_IMPL(CFormatter);
 
 CCM_OBJECT_IMPL(CHashMap);
 ECode CHashMap::Clone(

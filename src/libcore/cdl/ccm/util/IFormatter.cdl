@@ -20,6 +20,12 @@ interface ccm::util::ILocale;
 namespace ccm {
 namespace util {
 
+enum FormatterBigDecimalLayoutForm
+{
+    SCIENTIFIC,
+    DECIMAL_FLOAT
+}
+
 /*
  * @Involve interface ccm::io::ICloseable
  * @Involve interface ccm::io::IFlushable

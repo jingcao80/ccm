@@ -43,6 +43,7 @@ namespace core {
 
 INIT_PROI_3 AutoPtr<IProperties> System::sProps;
 INIT_PROI_3 AutoPtr<IProperties> System::sUnchangeableProps;
+INIT_PROI_3 String System::sLineSeparator;
 
 static CONS_PROI_4 void StaticInitializeSystem()
 {
@@ -203,6 +204,9 @@ ECode System::StaticInitialize()
 {
     sUnchangeableProps = InitUnchangeableSystemProperties();
     sProps = InitProperties();
+
+    sProps->GetProperty(String("line.separator"), &sLineSeparator);
+
     return NOERROR;
 }
 

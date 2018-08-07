@@ -20,12 +20,15 @@
 #include "ccm/core/SyncObject.h"
 #include "ccm.core.IAppendable.h"
 #include "ccm.core.IAutoCloseable.h"
+#include "ccm.core.IStringBuilder.h"
 #include "ccm.io.ICloseable.h"
 #include "ccm.io.IFile.h"
 #include "ccm.io.IFlushable.h"
 #include "ccm.io.IOutputStream.h"
 #include "ccm.io.IPrintStream.h"
 #include "ccm.io.charset.ICharset.h"
+#include "ccm.math.IBigDecimal.h"
+#include "ccm.math.IBigInteger.h"
 #include "ccm.util.IFormatter.h"
 #include "ccm.util.ILocale.h"
 #include <ccmautoptr.h>
@@ -33,6 +36,7 @@
 
 using ccm::core::IAppendable;
 using ccm::core::IAutoCloseable;
+using ccm::core::IStringBuilder;
 using ccm::core::SyncObject;
 using ccm::io::ICloseable;
 using ccm::io::IFile;
@@ -40,6 +44,8 @@ using ccm::io::IFlushable;
 using ccm::io::IOutputStream;
 using ccm::io::IPrintStream;
 using ccm::io::charset::ICharset;
+using ccm::math::IBigDecimal;
+using ccm::math::IBigInteger;
 
 namespace ccm {
 namespace util {
@@ -52,6 +58,71 @@ class Formatter
     , public IAutoCloseable
 {
 private:
+    class Flags
+        : public LightRefBase
+    {
+    public:
+        static AutoPtr<Flags> GetNONE();
+        static AutoPtr<Flags> GetLEFT_JUSTIFY();
+        static AutoPtr<Flags> GetUPPERCASE();
+        static AutoPtr<Flags> GetALTERNATE();
+        static AutoPtr<Flags> GetPLUS();
+        static AutoPtr<Flags> GetLEADING_SPACE();
+        static AutoPtr<Flags> GetZERO_PAD();
+        static AutoPtr<Flags> GetGROUP();
+        static AutoPtr<Flags> GetPARENTHESES();
+        static AutoPtr<Flags> GetPREVIOUS();
+
+        inline Integer ValueOf()
+        {
+            return mFlags;
+        }
+
+        inline Boolean Contains(
+            /* [in] */ Flags* f)
+        {
+            return (mFlags & f->ValueOf()) == f->ValueOf();
+        }
+
+        inline AutoPtr<Flags> Dup()
+        {
+            return new Flags(mFlags);
+        }
+
+        inline void Add(
+            /* [in] */ Flags* f)
+        {
+            mFlags |= f->ValueOf();
+        }
+
+        inline void Remove(
+            /* [in] */ Flags* f)
+        {
+            mFlags &= ~f->ValueOf();
+        }
+
+        static ECode Parse(
+            /* [in] */ const String& s,
+            /* [out] */ Flags** f);
+
+        inline static String ToString(
+            /* [in] */ Flags* f)
+        {
+            return f->ToString();
+        }
+
+        String ToString();
+
+    private:
+        inline Flags(
+            /* [in] */ Integer f)
+            : mFlags(f)
+        {}
+
+    private:
+        Integer mFlags;
+    };
+
     static const InterfaceID IID_IFormatString;
     INTERFACE_ID(d6dc3cb6-3ca2-4066-a773-e89e69b00a6d)
     interface IFormatString
@@ -112,6 +183,7 @@ private:
         CCM_INTERFACE_DECL();
 
         ECode Constructor(
+            /* [in] */ Formatter* owner,
             /* [in] */ const String& indexStr,
             /* [in] */ const String& flagsStr,
             /* [in] */ const String& widthStr,
@@ -122,12 +194,197 @@ private:
         ECode GetIndex(
             /* [out] */ Integer* idx) override;
 
+        inline AutoPtr<Flags> GetFlags()
+        {
+            return mF;
+        }
+
+        inline Integer Width()
+        {
+            return mWidth;
+        }
+
+        inline Integer Precision()
+        {
+            return mPrecision;
+        }
+
         ECode Print(
             /* [in] */ IInterface* arg,
             /* [in] */ ILocale* l) override;
 
         ECode ToString(
             /* [out] */ String* str) override;
+
+    private:
+        Integer Index(
+            /* [in] */ const String& s);
+
+        ECode ToFlags(
+            /* [in] */ const String& s,
+            /* [out] */ Flags** f = nullptr);
+
+        ECode Width(
+            /* [in] */ const String& s,
+            /* [out] */ Integer* w = nullptr);
+
+        ECode Precision(
+            /* [in] */ const String& s,
+            /* [out] */ Integer* p = nullptr);
+
+        ECode Conversion(
+            /* [in] */ const String& s,
+            /* [out] */ Char* c = nullptr);
+
+        inline Char Conversion()
+        {
+            return mC;
+        }
+
+        ECode PrintInteger(
+            /* [in] */ IInterface* arg,
+            /* [in] */ ILocale* l);
+
+        ECode PrintFloat(
+            /* [in] */ IInterface* arg,
+            /* [in] */ ILocale* l);
+
+        ECode PrintDateTime(
+            /* [in] */ IInterface* arg,
+            /* [in] */ ILocale* l);
+
+        ECode PrintCharacter(
+            /* [in] */ IInterface* arg);
+
+        ECode PrintString(
+            /* [in] */ IInterface* arg,
+            /* [in] */ ILocale* l);
+
+        ECode PrintBoolean(
+            /* [in] */ IInterface* arg);
+
+        ECode PrintHashCode(
+            /* [in] */ IInterface* arg);
+
+        ECode Print(
+            /* [in] */ const String& s);
+
+        String Justify(
+            /* [in] */ const String& s);
+
+        ECode CheckGeneral();
+
+        ECode CheckDateTime();
+
+        ECode CheckCharacter();
+
+        ECode CheckInteger();
+
+        ECode CheckBadFlags(
+            /* [in] */ const Array<Flags*>& badFlags);
+
+        ECode CheckFloat();
+
+        ECode CheckNumeric();
+
+        ECode CheckText();
+
+        ECode Print(
+            /* [in] */ Byte value,
+            /* [in] */ ILocale* l)
+        {
+            return NOERROR;
+        }
+
+        ECode Print(
+            /* [in] */ Short value,
+            /* [in] */ ILocale* l)
+        {
+            return NOERROR;
+        }
+
+        ECode Print(
+            /* [in] */ Integer value,
+            /* [in] */ ILocale* l)
+        {
+            return NOERROR;
+        }
+
+        ECode Print(
+            /* [in] */ Long value,
+            /* [in] */ ILocale* l)
+        {
+            return NOERROR;
+        }
+
+        void LeadingSign(
+            /* [in] */ IStringBuilder* sb,
+            /* [in] */ Boolean neg)
+        {}
+
+        void TrailingSign(
+            /* [in] */ IStringBuilder* sb,
+            /* [in] */ Boolean neg)
+        {}
+
+        ECode Print(
+            /* [in] */ IBigInteger* value,
+            /* [in] */ ILocale* l)
+        {
+            return NOERROR;
+        }
+
+        ECode Print(
+            /* [in] */ Float value,
+            /* [in] */ ILocale* l)
+        {
+            return NOERROR;
+        }
+
+        ECode Print(
+            /* [in] */ Double value,
+            /* [in] */ ILocale* l)
+        {
+            return NOERROR;
+        }
+
+        ECode Print(
+            /* [in] */ IStringBuilder* sb,
+            /* [in] */ Double value,
+            /* [in] */ ILocale* l,
+            /* [in] */ Flags* f,
+            /* [in] */ Char c,
+            /* [in] */ Integer precision,
+            /* [in] */ Boolean neg)
+        {
+            return NOERROR;
+        }
+
+        ECode Print(
+            /* [in] */ IBigDecimal* value,
+            /* [in] */ ILocale* l)
+        {
+            return NOERROR;
+        }
+
+        inline ECode FailMismatch()
+        {
+            return E_FORMAT_FLAGS_CONVERSION_MISMATCH_EXCEPTION;
+        }
+
+        inline ECode FailConversion()
+        {
+            return E_ILLEGAL_FORMAT_CONVERSION_EXCEPTION;
+        }
+
+    private:
+        Formatter* mOwner;
+        Integer mIndex = -1;
+        AutoPtr<Flags> mF = Flags::GetNONE();
+        Integer mWidth = 0;
+        Integer mPrecision = 0;
+        Boolean mDt = false;
+        Char mC = 0;
     };
 
     class FormatSpecifierParser
@@ -135,6 +392,7 @@ private:
     {
     public:
         ECode Constructor(
+            /* [in] */ Formatter* owner,
             /* [in] */ const String& format,
             /* [in] */ Integer startIdx);
 
@@ -142,9 +400,15 @@ private:
 
         Boolean NextIsInt();
 
-        AutoPtr<FormatSpecifier> GetFormatSpecifier();
+        inline AutoPtr<FormatSpecifier> GetFormatSpecifier()
+        {
+            return mFs;
+        }
 
-        Integer GetEndIdx();
+        inline Integer GetEndIdx()
+        {
+            return mCursor;
+        }
 
     private:
         static String GetFLAGS();
@@ -155,8 +419,16 @@ private:
         ECode Advance(
             /* [out] */ Char* c = nullptr);
 
-        void Back(
-            /* [in] */ Integer len);
+        inline void Back(
+            /* [in] */ Integer len)
+        {
+            mCursor -= len;
+        }
+
+        inline Boolean IsEnd()
+        {
+            return mCursor == mFormat.GetLength();
+        }
 
     private:
         String mFormat;
@@ -169,6 +441,67 @@ private:
         String mPrecision;
         String mTT;
         String mConv;
+    };
+
+    class Conversion
+    {
+    public:
+        static Boolean IsValid(
+            /* [in] */ Char c);
+
+        static Boolean IsGeneral(
+            /* [in] */ Char c);
+
+        static Boolean IsCharacter(
+            /* [in] */ Char c);
+
+        static Boolean IsInteger(
+            /* [in] */ Char c);
+
+        static Boolean IsFloat(
+            /* [in] */ Char c);
+
+        static Boolean IsText(
+            /* [in] */ Char c);
+
+    public:
+        // Byte, Short, Integer, Long, BigInteger
+        static constexpr Char DECIMAL_INTEGER     = 'd';
+        static constexpr Char OCTAL_INTEGER       = 'o';
+        static constexpr Char HEXADECIMAL_INTEGER = 'x';
+        static constexpr Char HEXADECIMAL_INTEGER_UPPER = 'X';
+
+        // Float, Double, BigDecimal
+        static constexpr Char SCIENTIFIC          = 'e';
+        static constexpr Char SCIENTIFIC_UPPER    = 'E';
+        static constexpr Char GENERAL             = 'g';
+        static constexpr Char GENERAL_UPPER       = 'G';
+        static constexpr Char DECIMAL_FLOAT       = 'f';
+        static constexpr Char HEXADECIMAL_FLOAT   = 'a';
+        static constexpr Char HEXADECIMAL_FLOAT_UPPER = 'A';
+
+        // Character, Byte, Short, Integer
+        static constexpr Char CHARACTER           = 'c';
+        static constexpr Char CHARACTER_UPPER     = 'C';
+
+        // ccm.util.CDate, ccm.util.CCalendar, long
+        static constexpr Char DATE_TIME           = 't';
+        static constexpr Char DATE_TIME_UPPER     = 'T';
+
+        // if (arg.TYPE != boolean) return boolean
+        // if (arg != null) return true; else return false;
+        static constexpr Char BOOLEAN             = 'b';
+        static constexpr Char BOOLEAN_UPPER       = 'B';
+        // if (arg instanceof Formattable) arg.formatTo()
+        // else arg.toString();
+        static constexpr Char STRING              = 's';
+        static constexpr Char STRING_UPPER        = 'S';
+        // arg.hashCode()
+        static constexpr Char HASHCODE            = 'h';
+        static constexpr Char HASHCODE_UPPER      = 'H';
+
+        static constexpr Char LINE_SEPARATOR      = 'n';
+        static constexpr Char PERCENT_SIGN        = '%';
     };
 
 public:

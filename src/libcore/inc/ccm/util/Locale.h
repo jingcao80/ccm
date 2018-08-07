@@ -32,14 +32,26 @@ class Locale
     , public ILocale
 {
 public:
-    static AutoPtr<ILocaleCategory> GetDisplayCategory();
+    static AutoPtr<ILocaleCategory> GetDisplayCategory()
+    {
+        return nullptr;
+    }
 
-    static AutoPtr<ILocaleCategory> GetFormatCategory();
+    static AutoPtr<ILocaleCategory> GetFormatCategory()
+    {
+        return nullptr;
+    }
 
-    static AutoPtr<ILocale> GetDefault();
+    static AutoPtr<ILocale> GetDefault()
+    {
+        return nullptr;
+    }
 
     static AutoPtr<ILocale> GetDefault(
-        /* [in] */ ILocaleCategory* category);
+        /* [in] */ ILocaleCategory* category)
+    {
+        return nullptr;
+    }
 };
 
 }

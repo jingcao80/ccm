@@ -14,21 +14,23 @@
 // limitations under the License.
 //=========================================================================
 
+interface ccm::util::IFormatter;
+
 namespace ccm {
 namespace util {
 
-const Integer E_NO_SUCH_ELEMENT_EXCEPTION = 0x80010900;
-const Integer E_CONCURRENT_MODIFICATION_EXCEPTION = 0x80010901;
-const Integer E_FORMATTER_CLOSED_EXCEPTION = 0x80010902;
-const Integer E_MISSING_FORMAT_ARGUMENT_EXCEPTION = 0x80010903;
-const Integer E_ILLEGAL_FORMAT_PRECISION_EXCEPTION = 0x80010904;
-const Integer E_UNKNOWN_FORMAT_CONVERSION_EXCEPTION = 0x80010905;
-const Integer E_ILLEGAL_FORMAT_WIDTH_EXCEPTION = 0x80010906;
-const Integer E_ILLEGAL_FORMAT_CODE_POINT_EXCEPTION = 0x80010907;
-const Integer E_MISSING_FORMAT_WIDTH_EXCEPTION = 0x80010908;
-const Integer E_ILLEGAL_FORMAT_FLAGS_EXCEPTION = 0x80010909;
-const Integer E_FORMAT_FLAGS_CONVERSION_MISMATCH_EXCEPTION = 0x8001090a;
-const Integer E_ILLEGAL_FORMAT_CONVERSION_EXCEPTION = 0x8001090b;
+[
+    uuid(a509a4a4-6b8d-43fa-8364-e748406d9b5a),
+    version(0.1.0)
+]
+interface IFormattable
+{
+    FormatTo(
+        [in] IFormatter* formatter,
+        [in] Integer flags,
+        [in] Integer width,
+        [in] Integer precision);
+}
 
 }
 }

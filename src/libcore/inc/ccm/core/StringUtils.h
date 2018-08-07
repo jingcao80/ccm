@@ -70,6 +70,9 @@ public:
         /* [out] */ Double* value);
 
     COM_PUBLIC static String ToString(
+        /* [in] */ Boolean b);
+
+    COM_PUBLIC static String ToString(
         /* [in] */ Byte b);
 
     COM_PUBLIC static String ToString(
@@ -113,8 +116,8 @@ public:
 
     COM_PUBLIC static Array<String> Split(
         /* [in] */ const String& input,
-        /* [in] */ const String& regex, 
-        /* [in] */ Integer limit); 
+        /* [in] */ const String& regex,
+        /* [in] */ Integer limit);
 
 private:
     StringUtils();
@@ -148,6 +151,12 @@ inline ECode StringUtils::ParseLong(
     /* [out] */ Long* value)
 {
     return ParseLong(s, 10, value);
+}
+
+inline String StringUtils::ToString(
+    /* [in] */ Boolean b)
+{
+    return b ? String("true") : String("false");
 }
 
 inline String StringUtils::ToString(

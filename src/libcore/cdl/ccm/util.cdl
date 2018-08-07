@@ -20,6 +20,7 @@ include "ccm/util/ICollection.cdl"
 include "ccm/util/IDate.cdl"
 include "ccm/util/IDictionary.cdl"
 include "ccm/util/IEnumeration.cdl"
+include "ccm/util/IFormattable.cdl"
 include "ccm/util/IFormatter.cdl"
 include "ccm/util/IHashtable.cdl"
 include "ccm/util/IHashMap.cdl"
@@ -52,10 +53,17 @@ include "ccm/util/regex/IMatcher.cdl"
 include "ccm/util/regex/IMatchResult.cdl"
 include "ccm/util/regex/IPattern.cdl"
 
+interface ccm::core::IAppendable;
+interface ccm::core::IAutoCloseable;
 interface ccm::core::ICloneable;
 interface ccm::core::IComparable;
 interface ccm::core::IIterable;
 interface ccm::core::INumber;
+interface ccm::io::ICloseable;
+interface ccm::io::IFile;
+interface ccm::io::IFlushable;
+interface ccm::io::IOutputStream;
+interface ccm::io::IPrintStream;
 interface ccm::io::ISerializable;
 
 namespace ccm {
@@ -122,6 +130,69 @@ coclass CDate
     interface ICloneable;
     interface IComparable;
     interface ISerializable;
+}
+
+[
+    uuid(ca21100d-664d-4cf1-af77-48c252def9a2),
+    version(0.1.0)
+]
+coclass CFormatter
+{
+    Constructor();
+
+    Constructor(
+        [in] IAppendable* a);
+
+    Constructor(
+        [in] ILocale* l);
+
+    Constructor(
+        [in] IAppendable* a,
+        [in] ILocale* l);
+
+    Constructor(
+        [in] String fileName);
+
+    Constructor(
+        [in] String fileName,
+        [in] String csn);
+
+    Constructor(
+        [in] String fileName,
+        [in] String csn,
+        [in] ILocale* l);
+
+    Constructor(
+        [in] IFile* file);
+
+    Constructor(
+        [in] IFile* file,
+        [in] String csn);
+
+    Constructor(
+        [in] IFile* file,
+        [in] String csn,
+        [in] ILocale* l);
+
+    Constructor(
+        [in] IPrintStream* ps);
+
+    Constructor(
+        [in] IOutputStream* os);
+
+    Constructor(
+        [in] IOutputStream* os,
+        [in] String csn);
+
+    Constructor(
+        [in] IOutputStream* os,
+        [in] String csn,
+        [in] ILocale* l);
+
+    interface IFormatter;
+    interface ICloseable;
+    interface IFlushable;
+    interface IAutoCloseable;
 }
 
 [

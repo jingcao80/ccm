@@ -60,6 +60,8 @@ public:
 
     static Long GetNanoTime();
 
+    static String GetLineSeparator();
+
     static ECode GetProperty(
         /* [in] */ const String& key,
         /* [out] */ String* value);
@@ -101,8 +103,15 @@ private:
 
     static AutoPtr<IProperties> sUnchangeableProps;
 
+    static String sLineSeparator;
+
     friend void StaticInitializeSystem();
 };
+
+inline String System::GetLineSeparator()
+{
+    return sLineSeparator;
+}
 
 inline ECode System::LogE(
     /* [in] */ const String& message)
