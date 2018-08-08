@@ -608,7 +608,7 @@ String CodeGenerator::GenValue(
                 return String("0.0d / 0.0d");
             }
             return String::Format(mv.mAttributes & SCIENTIFIC_NOTATION_MASK ?
-                    "%e" : "%f", mv.mDouble);
+                    "%.16e" : "%f", mv.mDouble);
         }
         case CcmTypeKind::Boolean:
             return mv.mBoolean ? String("true") : String("false");

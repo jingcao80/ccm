@@ -41,6 +41,40 @@ interface IDouble
      */
     const Double NaN = 0.0d / 0.0d;
 
+    /**
+     * A constant holding the largest positive finite value of type
+     * {@code double}.
+     */
+    const Double MAX_VALUE = 1.7976931348623157e+308;
+
+    /**
+     * A constant holding the smallest positive normal value of type
+     * {@code double}.
+     */
+    const Double MIN_NORMAL = 2.2250738585072014E-308;
+
+    /**
+     * A constant holding the smallest positive nonzero value of type
+     * {@code double}.
+     */
+    const Double MIN_VALUE = 4.9e-324;
+
+    /**
+     * Maximum exponent a finite {@code double} variable may have.
+     */
+    const Integer MAX_EXPONENT = 1023;
+
+    /**
+     * Minimum exponent a normalized {@code double} variable may
+     * have.
+     */
+    const Integer MIN_EXPONENT = -1022;
+
+    /**
+     * The number of bits used to represent a {@code double} value.
+     */
+    const Integer SIZE = 64;
+
     ByteValue(
         [out] Byte* value);
 

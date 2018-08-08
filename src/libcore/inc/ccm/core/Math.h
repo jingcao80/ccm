@@ -44,6 +44,9 @@ public:
     static Long Abs(
         /* [in] */ Long a);
 
+    static Double Abs(
+        /* [in] */ Double a);
+
     static Integer Max(
         /* [in] */ Integer a,
         /* [in] */ Integer b);
@@ -58,11 +61,20 @@ public:
     static Boolean IsNaN(
         /* [in] */ Float f);
 
+    static Boolean IsNaN(
+        /* [in] */ Double v);
+
+    COM_PUBLIC static Boolean IsInfinite(
+        /* [in] */ Double v);
+
     COM_PUBLIC static Integer FloatToRawIntBits(
         /* [in] */ Float value);
 
     COM_PUBLIC static Float IntBitsToFloat(
         /* [in] */ Integer value);
+
+    COM_PUBLIC static Long DoubleToLongBits(
+        /* [in] */ Double value);
 
     COM_PUBLIC static Long DoubleToRawLongBits(
         /* [in] */ Double value);
@@ -72,6 +84,10 @@ public:
 
     COM_PUBLIC static Integer NumberOfLeadingZeros(
         /* [in] */ Long value);
+
+    COM_PUBLIC static Integer Compare(
+        /* [in] */ Double d1,
+        /* [in] */ Double d2);
 
 public:
     COM_PUBLIC static const Long LONG_POWERS_OF_TEN[];
@@ -93,6 +109,12 @@ inline Long Math::Abs(
     /* [in] */ Long a)
 {
     return (a < 0) ? -a : a;
+}
+
+inline Double Math::Abs(
+    /* [in] */ Double a)
+{
+    return LongBitsToDouble(0x7fffffffffffffffll & DoubleToRawLongBits(a));
 }
 
 inline Integer Math::Max(
@@ -120,6 +142,12 @@ inline Boolean Math::IsNaN(
     /* [in] */ Float f)
 {
     return (f != f);
+}
+
+inline Boolean Math::IsNaN(
+    /* [in] */ Double v)
+{
+    return (v != v);
 }
 
 }

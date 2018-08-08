@@ -18,6 +18,7 @@
 #define __CCM_UTIL_TIMEZONE_H__
 
 #include "ccm.util.ITimeZone.h"
+#include <ccmautoptr.h>
 
 namespace ccm {
 namespace util {
@@ -25,8 +26,9 @@ namespace util {
 class TimeZone
 {
 public:
-    static ECode GetDefault(
-        /* [out] */ ITimeZone** zone);
+    static AutoPtr<ITimeZone> GetDefault();
+
+    static AutoPtr<ITimeZone> GetDefaultRef();
 };
 
 }

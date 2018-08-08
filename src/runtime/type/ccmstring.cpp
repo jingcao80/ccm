@@ -391,6 +391,63 @@ Integer String::CompareIgnoreCase(
     return strcasecmp(mString, string);
 }
 
+Boolean String::RegionMatches(
+    /* [in] */ Integer toffset,
+    /* [in] */ const String& other,
+    /* [in] */ Integer ooffset,
+    /* [in] */ Integer len) const
+{
+    Integer to = toffset;
+    Integer po = ooffset;
+    if ((ooffset < 0) || (toffset < 0)
+            || (toffset > GetLength() - len)
+            || (ooffset > other.GetLength() - len)) {
+        return false;
+    }
+    Integer tsize, osize;
+    const char* tstr = mString + ToByteIndex(toffset);
+    const char* ostr = other.string() + ToByteIndex(ooffset);
+    while (len-- > 0) {
+        Char tc = GetCharInternal(tstr, &tsize);
+        Char oc = GetCharInternal(ostr, &osize);
+        if (tsize != osize || tc != oc) {
+            return false;
+        }
+        tstr += tsize;
+        ostr += osize;
+    }
+    return true;
+}
+
+Boolean String::RegionMatchesIgnoreCase(
+    /* [in] */ Integer toffset,
+    /* [in] */ const String& other,
+    /* [in] */ Integer ooffset,
+    /* [in] */ Integer len) const
+{
+    Integer to = toffset;
+    Integer po = ooffset;
+    if ((ooffset < 0) || (toffset < 0)
+            || (toffset > GetLength() - len)
+            || (ooffset > other.GetLength() - len)) {
+        return false;
+    }
+    Integer tsize, osize;
+    const char* tstr = mString + ToByteIndex(toffset);
+    const char* ostr = other.string() + ToByteIndex(ooffset);
+    while (len-- > 0) {
+        Char tc = GetCharInternal(tstr, &tsize);
+        Char oc = GetCharInternal(ostr, &osize);
+        if (tsize != osize || (toupper(tc) != toupper(oc) &&
+                tolower(tc) != tolower(oc))) {
+            return false;
+        }
+        tstr += tsize;
+        ostr += osize;
+    }
+    return true;
+}
+
 String String::Substring(
     /* [in] */ Integer charStart,
     /* [in] */ Integer charEnd) const

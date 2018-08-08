@@ -14,7 +14,7 @@
 # limitations under the License.
 #=========================================================================
 
-set(IO_DIR ${LIBCORE_CCM_SRC_DIR}/io)
+set(SECURITY_DIR ${LIBCORE_CCM_SRC_DIR}/security)
 
 include_directories(
     ./

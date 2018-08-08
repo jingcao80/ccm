@@ -14,11 +14,18 @@
 # limitations under the License.
 #=========================================================================
 
-set(LIBCORE_CCM_SRC_DIR ${LIBCORE_DIR}/src/ccm)
+set(MISC_DIR ${LIBCORE_CCM_SRC_DIR}/misc)
 
-add_subdirectory(core)
-add_subdirectory(io)
-add_subdirectory(misc)
-add_subdirectory(security)
-add_subdirectory(util)
+include_directories(
+    ./
+    ../
+    ../../../inc
+    ${INC_DIR}
+    ${OBJ_DIR})
 
+set(SOURCES
+    DoubleConsts.cpp)
+
+add_library(ccm_misc STATIC
+    ${SOURCES})
+add_dependencies(ccm_misc build_libcore)

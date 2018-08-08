@@ -23,6 +23,11 @@ namespace math {
 ]
 interface IBigDecimal
 {
+    Abs(
+        [out] IBigDecimal** value);
+
+    Signum(
+        [out] Integer* sign);
 }
 
 }

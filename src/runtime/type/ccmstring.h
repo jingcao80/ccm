@@ -132,6 +132,30 @@ public:
     inline Boolean EqualsIgnoreCase(
         /* [in] */ const char* string) const;
 
+    Boolean RegionMatches(
+        /* [in] */ Integer toffset,
+        /* [in] */ const String& other,
+        /* [in] */ Integer ooffset,
+        /* [in] */ Integer len) const;
+
+    inline Boolean RegionMatches(
+        /* [in] */ Integer toffset,
+        /* [in] */ const char* string,
+        /* [in] */ Integer ooffset,
+        /* [in] */ Integer len) const;
+
+    Boolean RegionMatchesIgnoreCase(
+        /* [in] */ Integer toffset,
+        /* [in] */ const String& other,
+        /* [in] */ Integer ooffset,
+        /* [in] */ Integer len) const;
+
+    inline Boolean RegionMatchesIgnoreCase(
+        /* [in] */ Integer toffset,
+        /* [in] */ const char* other,
+        /* [in] */ Integer ooffset,
+        /* [in] */ Integer len) const;
+
     inline String Substring(
         /* [in] */ Integer charStart) const;
 
@@ -370,6 +394,24 @@ Boolean String::EqualsIgnoreCase(
     /* [in] */ const char* string) const
 {
     return CompareIgnoreCase(string) == 0;
+}
+
+Boolean String::RegionMatches(
+    /* [in] */ Integer toffset,
+    /* [in] */ const char* string,
+    /* [in] */ Integer ooffset,
+    /* [in] */ Integer len) const
+{
+    return RegionMatches(toffset, String(string), ooffset, len);
+}
+
+Boolean String::RegionMatchesIgnoreCase(
+    /* [in] */ Integer toffset,
+    /* [in] */ const char* other,
+    /* [in] */ Integer ooffset,
+    /* [in] */ Integer len) const
+{
+    return RegionMatchesIgnoreCase(toffset, String(other), ooffset, len);
 }
 
 String String::Substring(

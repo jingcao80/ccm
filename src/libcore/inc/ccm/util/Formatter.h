@@ -29,6 +29,7 @@
 #include "ccm.io.charset.ICharset.h"
 #include "ccm.math.IBigDecimal.h"
 #include "ccm.math.IBigInteger.h"
+#include "ccm.util.ICalendar.h"
 #include "ccm.util.IFormatter.h"
 #include "ccm.util.ILocale.h"
 #include <ccmautoptr.h>
@@ -103,6 +104,10 @@ private:
 
         static ECode Parse(
             /* [in] */ const String& s,
+            /* [out] */ Flags** f);
+
+        static ECode Parse(
+            /* [in] */ Char c,
             /* [out] */ Flags** f);
 
         inline static String ToString(
@@ -291,62 +296,39 @@ private:
 
         ECode Print(
             /* [in] */ Byte value,
-            /* [in] */ ILocale* l)
-        {
-            return NOERROR;
-        }
+            /* [in] */ ILocale* l);
 
         ECode Print(
             /* [in] */ Short value,
-            /* [in] */ ILocale* l)
-        {
-            return NOERROR;
-        }
+            /* [in] */ ILocale* l);
 
         ECode Print(
             /* [in] */ Integer value,
-            /* [in] */ ILocale* l)
-        {
-            return NOERROR;
-        }
+            /* [in] */ ILocale* l);
 
         ECode Print(
             /* [in] */ Long value,
-            /* [in] */ ILocale* l)
-        {
-            return NOERROR;
-        }
+            /* [in] */ ILocale* l);
 
         void LeadingSign(
             /* [in] */ IStringBuilder* sb,
-            /* [in] */ Boolean neg)
-        {}
+            /* [in] */ Boolean neg);
 
         void TrailingSign(
             /* [in] */ IStringBuilder* sb,
-            /* [in] */ Boolean neg)
-        {}
+            /* [in] */ Boolean neg);
 
         ECode Print(
             /* [in] */ IBigInteger* value,
-            /* [in] */ ILocale* l)
-        {
-            return NOERROR;
-        }
+            /* [in] */ ILocale* l);
 
         ECode Print(
             /* [in] */ Float value,
-            /* [in] */ ILocale* l)
-        {
-            return NOERROR;
-        }
+            /* [in] */ ILocale* l);
 
         ECode Print(
             /* [in] */ Double value,
-            /* [in] */ ILocale* l)
-        {
-            return NOERROR;
-        }
+            /* [in] */ ILocale* l);
 
         ECode Print(
             /* [in] */ IStringBuilder* sb,
@@ -355,17 +337,51 @@ private:
             /* [in] */ Flags* f,
             /* [in] */ Char c,
             /* [in] */ Integer precision,
-            /* [in] */ Boolean neg)
-        {
-            return NOERROR;
-        }
+            /* [in] */ Boolean neg);
+
+        Array<Char> AddZeros(
+            /* [in] */ const Array<Char>& v,
+            /* [in] */ Integer prec);
+
+        String HexDouble(
+            /* [in] */ Double d,
+            /* [in] */ Integer prec);
 
         ECode Print(
             /* [in] */ IBigDecimal* value,
-            /* [in] */ ILocale* l)
-        {
-            return NOERROR;
-        }
+            /* [in] */ ILocale* l);
+
+        ECode Print(
+            /* [in] */ IStringBuilder* sb,
+            /* [in] */ IBigDecimal* value,
+            /* [in] */ ILocale* l,
+            /* [in] */ Flags* f,
+            /* [in] */ Char c,
+            /* [in] */ Integer precision,
+            /* [in] */ Boolean neg);
+
+        Integer AdjustWidth(
+            /* [in] */ Integer width,
+            /* [in] */ Flags* f,
+            /* [in] */ Boolean neg);
+
+        Array<Char> AddDot(
+            /* [in] */ const Array<Char>& mant);
+
+        Array<Char> TrailingZeros(
+            /* [in] */ const Array<Char>& mant,
+            /* [in] */ Integer nzeros);
+
+        ECode Print(
+            /* [in] */ ICalendar* t,
+            /* [in] */ Char c,
+            /* [in] */ ILocale* l);
+
+        ECode Print(
+            /* [in] */ IStringBuilder* sb,
+            /* [in] */ ICalendar* t,
+            /* [in] */ Char c,
+            /* [in] */ ILocale* l);
 
         inline ECode FailMismatch()
         {
@@ -376,6 +392,23 @@ private:
         {
             return E_ILLEGAL_FORMAT_CONVERSION_EXCEPTION;
         }
+
+        Char GetZero(
+            /* [in] */ ILocale* l);
+
+        void LocalizedMagnitude(
+            /* [in] */ IStringBuilder* sb,
+            /* [in] */ Long value,
+            /* [in] */ Flags* f,
+            /* [in] */ Integer width,
+            /* [in] */ ILocale* l);
+
+        void LocalizedMagnitude(
+            /* [in] */ IStringBuilder* sb,
+            /* [in] */ const Array<Char>& value,
+            /* [in] */ Flags* f,
+            /* [in] */ Integer width,
+            /* [in] */ ILocale* l);
 
     private:
         Formatter* mOwner;
@@ -464,6 +497,9 @@ private:
         static Boolean IsText(
             /* [in] */ Char c);
 
+    private:
+        Conversion();
+
     public:
         // Byte, Short, Integer, Long, BigInteger
         static constexpr Char DECIMAL_INTEGER     = 'd';
@@ -502,6 +538,54 @@ private:
 
         static constexpr Char LINE_SEPARATOR      = 'n';
         static constexpr Char PERCENT_SIGN        = '%';
+    };
+
+    class DateTime
+    {
+    public:
+        static Boolean IsValid(
+            /* [in] */ Char c);
+
+    private:
+        DateTime();
+
+    public:
+        static constexpr Char HOUR_OF_DAY_0 = 'H'; // (00 - 23)
+        static constexpr Char HOUR_0        = 'I'; // (01 - 12)
+        static constexpr Char HOUR_OF_DAY   = 'k'; // (0 - 23) -- like H
+        static constexpr Char HOUR          = 'l'; // (1 - 12) -- like I
+        static constexpr Char MINUTE        = 'M'; // (00 - 59)
+        static constexpr Char NANOSECOND    = 'N'; // (000000000 - 999999999)
+        static constexpr Char MILLISECOND   = 'L'; // (000 - 999)
+        static constexpr Char MILLISECOND_SINCE_EPOCH = 'Q'; // (0 - 99...?)
+        static constexpr Char AM_PM         = 'p'; // (am or pm)
+        static constexpr Char SECONDS_SINCE_EPOCH = 's'; // (0 - 99...?)
+        static constexpr Char SECOND        = 'S'; // (00 - 60 - leap second)
+        static constexpr Char TIME          = 'T'; // (24 hour hh:mm:ss)
+        static constexpr Char ZONE_NUMERIC  = 'z'; // (-1200 - +1200) - ls minus?
+        static constexpr Char ZONE          = 'Z'; // (symbol)
+
+        // Date
+        static constexpr Char NAME_OF_DAY_ABBREV    = 'a'; // 'a'
+        static constexpr Char NAME_OF_DAY           = 'A'; // 'A'
+        static constexpr Char NAME_OF_MONTH_ABBREV  = 'b'; // 'b'
+        static constexpr Char NAME_OF_MONTH         = 'B'; // 'B'
+        static constexpr Char CENTURY               = 'C'; // (00 - 99)
+        static constexpr Char DAY_OF_MONTH_0        = 'd'; // (01 - 31)
+        static constexpr Char DAY_OF_MONTH          = 'e'; // (1 - 31) -- like d
+        static constexpr Char NAME_OF_MONTH_ABBREV_X  = 'h'; // -- same b
+        static constexpr Char DAY_OF_YEAR           = 'j'; // (001 - 366)
+        static constexpr Char MONTH                 = 'm'; // (01 - 12)
+        static constexpr Char YEAR_2                = 'y'; // (00 - 99)
+        static constexpr Char YEAR_4                = 'Y'; // (0000 - 9999)
+
+        // Composites
+        static constexpr Char TIME_12_HOUR  = 'r'; // (hh:mm:ss [AP]M)
+        static constexpr Char TIME_24_HOUR  = 'R'; // (hh:mm same as %H:%M)
+        static constexpr Char DATE_TIME             = 'c';
+                                            // (Sat Nov 04 12:02:33 EST 1999)
+        static constexpr Char DATE                  = 'D'; // (mm/dd/yy)
+        static constexpr Char ISO_STANDARD_DATE     = 'F'; // (%Y-%m-%d)
     };
 
 public:

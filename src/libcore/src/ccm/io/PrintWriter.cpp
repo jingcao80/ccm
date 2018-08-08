@@ -26,6 +26,8 @@
 #include "ccm/io/charset/Charset.h"
 #include "ccm/security/AccessController.h"
 #include "ccm/security/action/CGetPropertyAction.h"
+#include "ccm/util/CFormatter.h"
+#include "ccm/util/Locale.h"
 #include "ccm.core.IThread.h"
 #include "ccm.security.IPrivilegedAction.h"
 #include <ccmlogger.h>
@@ -40,6 +42,9 @@ using ccm::security::AccessController;
 using ccm::security::IPrivilegedAction;
 using ccm::security::IID_IPrivilegedAction;
 using ccm::security::action::CGetPropertyAction;
+using ccm::util::CFormatter;
+using ccm::util::IID_IFormatter;
+using ccm::util::Locale;
 
 namespace ccm {
 namespace io {
@@ -505,6 +510,36 @@ ECode PrintWriter::Format(
     /* [in] */ const String& format,
     /* [in] */ const Array<IInterface*>* args)
 {
+    ECode ec;
+    {
+        AutoLock lock(mLock);
+        ec = EnsureOpen();
+        if (FAILED(ec)) goto ERROR;
+        AutoPtr<ILocale> l;
+        if ((mFormatter == nullptr) ||
+                (mFormatter->GetLocale((ILocale**)&l),
+                    l != Locale::GetDefault())) {
+            mFormatter = nullptr;
+            CFormatter::New(this, IID_IFormatter, (IInterface**)&mFormatter);
+        }
+        ec = mFormatter->Format(Locale::GetDefault(), format, args);
+        if (FAILED(ec)) goto ERROR;
+        if (mAutoFlush) {
+            ec = mOut->Flush();
+            if (FAILED(ec)) goto ERROR;
+        }
+        return NOERROR;
+    }
+
+ERROR:
+    if (ec == E_INTERRUPTED_IO_EXCEPTION) {
+        AutoPtr<IThread> t;
+        Thread::GetCurrentThread((IThread**)&t);
+        t->Interrupt();
+    }
+    else if (ec == E_IO_EXCEPTION) {
+        mTrouble = true;
+    }
     return NOERROR;
 }
 
@@ -513,6 +548,35 @@ ECode PrintWriter::Format(
     /* [in] */ const String& format,
     /* [in] */ const Array<IInterface*>* args)
 {
+    ECode ec;
+    {
+        AutoLock lock(mLock);
+        ec = EnsureOpen();
+        if (FAILED(ec)) goto ERROR;
+        AutoPtr<ILocale> fl;
+        if ((mFormatter == nullptr) ||
+                (mFormatter->GetLocale((ILocale**)&fl), fl != l)) {
+            mFormatter = nullptr;
+            CFormatter::New(this, l, IID_IFormatter, (IInterface**)&mFormatter);
+        }
+        ec = mFormatter->Format(l, format, args);
+        if (FAILED(ec)) goto ERROR;
+        if (mAutoFlush) {
+            ec = mOut->Flush();
+            if (FAILED(ec)) goto ERROR;
+        }
+        return NOERROR;
+    }
+
+ERROR:
+    if (ec == E_INTERRUPTED_IO_EXCEPTION) {
+        AutoPtr<IThread> t;
+        Thread::GetCurrentThread((IThread**)&t);
+        t->Interrupt();
+    }
+    else if (ec == E_IO_EXCEPTION) {
+        mTrouble = true;
+    }
     return NOERROR;
 }
 

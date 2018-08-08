@@ -33,8 +33,7 @@ CCM_INTERFACE_IMPL_2(CalendarDate, SyncObject, ICalendarDate, ICloneable);
 
 ECode CalendarDate::Constructor()
 {
-    AutoPtr<ITimeZone> zone;
-    TimeZone::GetDefault((ITimeZone**)&zone);
+    AutoPtr<ITimeZone> zone = TimeZone::GetDefault();
     return Constructor(zone);
 }
 

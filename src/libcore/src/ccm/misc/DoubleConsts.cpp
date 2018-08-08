@@ -14,20 +14,17 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/util/TimeZone.h"
+#include "ccm/misc/DoubleConsts.h"
+#include "ccm.core.IDouble.h"
+
+using ccm::core::IDouble;
 
 namespace ccm {
-namespace util {
+namespace misc {
 
-AutoPtr<ITimeZone> TimeZone::GetDefault()
-{
-    return nullptr;
-}
-
-AutoPtr<ITimeZone> TimeZone::GetDefaultRef()
-{
-    return nullptr;
-}
+const Double DoubleConsts::POSITIVE_INFINITY = IDouble::POSITIVE_INFINITY;
+const Double DoubleConsts::NEGATIVE_INFINITY = IDouble::NEGATIVE_INFINITY;
+const Double DoubleConsts::NaN = IDouble::NaN;
 
 }
 }

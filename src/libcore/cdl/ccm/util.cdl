@@ -16,6 +16,7 @@
 
 include "ccm/util/Exceptions.cdl"
 include "ccm/util/IArrayList.cdl"
+include "ccm/util/ICalendar.cdl"
 include "ccm/util/ICollection.cdl"
 include "ccm/util/IDate.cdl"
 include "ccm/util/IDictionary.cdl"

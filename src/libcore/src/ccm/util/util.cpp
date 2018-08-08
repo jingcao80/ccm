@@ -53,6 +53,13 @@ CCM_OBJECT_IMPL(CDate);
 ECode CDate::Clone(
     /* [out] */ IInterface** obj)
 {
+    VALIDATE_NOT_NULL(obj);
+
+    AutoPtr<IDate> date;
+    CDate::New(IID_IDate, (IInterface**)&date);
+    FAIL_RETURN(Date::CloneImpl(date));
+    *obj = date;
+    REFCOUNT_ADD(*obj);
     return NOERROR;
 }
 

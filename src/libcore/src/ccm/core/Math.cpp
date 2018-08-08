@@ -15,9 +15,12 @@
 //=========================================================================
 
 #include "ccm/core/Math.h"
+#include "ccm/misc/DoubleConsts.h"
 #include "ccm/util/CRandom.h"
+#include "ccm.core.IDouble.h"
 #include "ccm.util.IRandom.h"
 
+using ccm::misc::DoubleConsts;
 using ccm::util::CRandom;
 using ccm::util::IRandom;
 using ccm::util::IID_IRandom;
@@ -87,6 +90,12 @@ Long Math::RandomLongInternal()
     return rv;
 }
 
+Boolean Math::IsInfinite(
+    /* [in] */ Double v)
+{
+    return (v == IDouble::POSITIVE_INFINITY) || (v == IDouble::NEGATIVE_INFINITY);
+}
+
 union FloatInteger
 {
     unsigned int bits;
@@ -107,6 +116,20 @@ Float Math::IntBitsToFloat(
     FloatInteger f;
     f.bits = value;
     return f.f;
+}
+
+Long Math::DoubleToLongBits(
+    /* [in] */ Double value)
+{
+    Long result = DoubleToRawLongBits(value);
+    // Check for NaN based on values of bit fields, maximum
+    // exponent and nonzero significand.
+    if (((result & DoubleConsts::EXP_BIT_MASK) ==
+            DoubleConsts::EXP_BIT_MASK) &&
+            (result & DoubleConsts::SIGNIF_BIT_MASK) != 0ll) {
+        result = 0x7ff8000000000000ll;
+    }
+    return result;
 }
 
 union DoubleInteger
@@ -146,6 +169,26 @@ Integer Math::NumberOfLeadingZeros(
     if (((unsigned Integer)x) >> 30 == 0) { n +=  2; x <<=  2; }
     n -= ((unsigned Integer)x) >> 31;
     return n;
+}
+
+Integer Math::Compare(
+    /* [in] */ Double d1,
+    /* [in] */ Double d2)
+{
+    if (d1 < d2) {
+        return -1;           // Neither val is NaN, thisVal is smaller
+    }
+    if (d1 > d2) {
+        return 1;            // Neither val is NaN, thisVal is larger
+    }
+
+    // Cannot use doubleToRawLongBits because of possibility of NaNs.
+    Long thisBits = DoubleToLongBits(d1);
+    Long anotherBits = DoubleToLongBits(d2);
+
+    return (thisBits == anotherBits ?  0 : // Values are equal
+            (thisBits < anotherBits ? -1 : // (-0.0, 0.0) or (!NaN, NaN)
+             1));                          // (0.0, -0.0) or (NaN, !NaN)
 }
 
 }

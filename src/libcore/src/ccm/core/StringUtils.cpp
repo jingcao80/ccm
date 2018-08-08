@@ -248,6 +248,15 @@ static Char digits[] = {
     'u' , 'v' , 'w' , 'x' , 'y' , 'z'
 };
 
+static Char upperCaseDigits[] = {
+    '0' , '1' , '2' , '3' , '4' , '5' ,
+    '6' , '7' , '8' , '9' , 'A' , 'B' ,
+    'C' , 'D' , 'E' , 'F' , 'G' , 'H' ,
+    'I' , 'J' , 'K' , 'L' , 'M' , 'N' ,
+    'O' , 'P' , 'Q' , 'R' , 'S' , 'T' ,
+    'U' , 'V' , 'W' , 'X' , 'Y' , 'Z'
+};
+
 static Char digitTens[] = {
     '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
     '1', '1', '1', '1', '1', '1', '1', '1', '1', '1',
@@ -426,6 +435,77 @@ String StringUtils::ToString(
     /* [in] */ Double d)
 {
     return RealToString::DoubleToString(d);
+}
+
+String StringUtils::ToOctalString(
+    /* [in] */ Integer i)
+{
+    Integer bufLen = 11;  // Max number of octal digits in an Int32
+    char buf[11];
+    Integer cursor = bufLen;
+
+    do {
+        buf[--cursor] = digits[i & 7];
+    } while ((i = (((unsigned Integer)i) >> 3) ) != 0);
+
+    return String(buf + cursor, bufLen - cursor);
+}
+
+String StringUtils::ToOctalString(
+    /* [in] */ Long i)
+{
+    Integer v = (Integer)i;
+    if (i >= 0 && v == i) {
+        return ToOctalString(v);
+    }
+
+    Integer bufLen = 22;  // Max number of octal digits in a long
+    char buf[22];
+    Integer cursor = bufLen;
+
+    do {
+        buf[--cursor] = digits[((Integer)i) & 7];
+    } while ((i = (((unsigned Long)i) >> 3)) != 0);
+
+    return String(buf + cursor, bufLen - cursor);
+}
+
+String StringUtils::ToHexString(
+    /* [in] */ Integer i,
+    /* [in] */ Boolean upperCase,
+    /* [in] */ Integer minWidth)
+{
+    Integer bufLen = 8;  // Max number of hex digits in an int
+    char buf[8];
+    Integer cursor = bufLen;
+
+    const Char* DIGITS = upperCase ? upperCaseDigits : digits;
+    do {
+        buf[--cursor] = DIGITS[i & 0xf];
+    } while ((i = (((unsigned Integer)i) >> 4)) != 0 || (bufLen - cursor < minWidth));
+
+    return String(buf + cursor, bufLen - cursor);
+}
+
+String StringUtils::ToHexString(
+    /* [in] */ Long i,
+    /* [in] */ Boolean upperCase)
+{
+    Integer v = (Integer)i;
+    if (i >= 0 && v == i) {
+        return ToHexString(v, upperCase, 0);
+    }
+
+    Integer bufLen = 16;  // Max number of hex digits in a long
+    char buf[16];
+    Integer cursor = bufLen;
+
+    const Char* DIGITS = upperCase ? upperCaseDigits : digits;
+    do {
+        buf[--cursor] = DIGITS[((Integer)i) & 0xF];
+    } while ((i = (((unsigned Long)i) >> 4)) != 0);
+
+    return String(buf + cursor, bufLen - cursor);
 }
 
 ECode StringUtils::ReplaceFirst(

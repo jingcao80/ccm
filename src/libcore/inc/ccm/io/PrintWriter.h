@@ -22,10 +22,12 @@
 #include "ccm.io.IPrintStream.h"
 #include "ccm.io.IPrintWriter.h"
 #include "ccm.io.charset.ICharset.h"
+#include "ccm.util.IFormatter.h"
 #include "ccm.util.ILocale.h"
 #include <ccmautoptr.h>
 
 using ccm::io::charset::ICharset;
+using ccm::util::IFormatter;
 using ccm::util::ILocale;
 
 namespace ccm {
@@ -189,6 +191,7 @@ protected:
 private:
     Boolean mAutoFlush;
     Boolean mTrouble = false;
+    AutoPtr<IFormatter> mFormatter;
     AutoPtr<IPrintStream> mPsOut;
 
     /**

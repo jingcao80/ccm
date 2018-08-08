@@ -23,6 +23,7 @@
 #include "ccm.io.ISerializable.h"
 #include "ccm.util.IDate.h"
 #include "ccm.util.calendar.IBaseCalendar.h"
+#include "ccm.util.calendar.IBaseCalendarDate.h"
 #include <ccmautoptr.h>
 
 using ccm::core::ICloneable;
@@ -30,6 +31,7 @@ using ccm::core::IComparable;
 using ccm::core::SyncObject;
 using ccm::io::ISerializable;
 using ccm::util::calendar::IBaseCalendar;
+using ccm::util::calendar::IBaseCalendarDate;
 
 namespace ccm {
 namespace util {
@@ -71,6 +73,18 @@ public:
 
     ECode Constructor(
         /* [in] */ const String& s);
+
+    static Long UTC(
+        /* [in] */ Integer year,
+        /* [in] */ Integer month,
+        /* [in] */ Integer date,
+        /* [in] */ Integer hrs,
+        /* [in] */ Integer min,
+        /* [in] */ Integer sec);
+
+    static ECode Parse(
+        /* [in] */ const String& s,
+        /* [out] */ Long* date);
 
     ECode After(
         /* [in] */ IDate* when,
@@ -138,17 +152,51 @@ public:
         /* [in] */ IInterface* other,
         /* [out] */ Integer* result) override;
 
+    static Date* From(
+        /* [in] */ IDate* date);
+
 protected:
     ECode CloneImpl(
         /* [in] */ IDate* newObj);
 
 private:
+    static SyncObject& GetLock();
+
+    static AutoPtr<IBaseCalendar> GetGcal();
+
+    static Array<String>& GetWtb();
+
+    Long GetTimeImpl();
+
+    AutoPtr<IBaseCalendarDate> Normalize(
+        /* [in] */ IBaseCalendarDate* date);
+
     static AutoPtr<IBaseCalendar> GetCalendarSystem(
         /* [in] */ Integer year);
 
 private:
     Long mFastTime;
+
+    AutoPtr<IBaseCalendarDate> mCdate;
+
+    static Integer sDefaultCenturyStart;
+
+    static constexpr Integer sTtb[] = {
+        14, 1, 0, 0, 0, 0, 0, 0, 0,
+        2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
+        10000 + 0, 10000 + 0, 10000 + 0,    // GMT/UT/UTC
+        10000 + 5 * 60, 10000 + 4 * 60,     // EST/EDT
+        10000 + 6 * 60, 10000 + 5 * 60,     // CST/CDT
+        10000 + 7 * 60, 10000 + 6 * 60,     // MST/MDT
+        10000 + 8 * 60, 10000 + 7 * 60      // PST/PDT
+    };
 };
+
+inline Date* Date::From(
+    /* [in] */ IDate* date)
+{
+    return (Date*)date;
+}
 
 }
 }

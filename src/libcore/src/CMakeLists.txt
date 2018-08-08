@@ -101,6 +101,7 @@ set(LIBCORE_LINK_LIBS
     ccm_io
     ccm_io_ch
     ccm_io_charset
+    ccm_misc
     ccm_security
     ccm_util
     ccm_util_calendar

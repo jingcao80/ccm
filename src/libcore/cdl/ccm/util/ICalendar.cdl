@@ -14,20 +14,15 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/util/TimeZone.h"
-
 namespace ccm {
 namespace util {
 
-AutoPtr<ITimeZone> TimeZone::GetDefault()
-{
-    return nullptr;
-}
-
-AutoPtr<ITimeZone> TimeZone::GetDefaultRef()
-{
-    return nullptr;
-}
+[
+    uuid(837f48fc-ccf7-4098-90cb-d02a3b83ef2f),
+    version(0.1.0)
+]
+interface ICalendar
+{}
 
 }
 }

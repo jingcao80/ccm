@@ -17,6 +17,7 @@
 #include "ccm/core/Character.h"
 #include "ccm/core/CoreUtils.h"
 #include "ccm/core/CStringBuilder.h"
+#include "ccm/core/Math.h"
 #include "ccm/core/StringUtils.h"
 #include "ccm/core/System.h"
 #include "ccm/io/CBufferedWriter.h"
@@ -56,6 +57,7 @@ using ccm::core::IFloat;
 using ccm::core::IInteger;
 using ccm::core::ILong;
 using ccm::core::IShort;
+using ccm::core::Math;
 using ccm::core::StringUtils;
 using ccm::core::System;
 using ccm::io::CBufferedWriter;
@@ -507,14 +509,63 @@ AutoPtr<Formatter::Flags> Formatter::Flags::GetPREVIOUS()
 
 ECode Formatter::Flags::Parse(
     /* [in] */ const String& s,
-    /* [out] */ Flags** f)
+    /* [out] */ Flags** retf)
 {
+    VALIDATE_NOT_NULL(retf);
+
+    Array<Char> ca = s.GetChars();
+    AutoPtr<Flags> f = new Flags(0);
+    for (Integer i = 0; i < ca.GetLength(); i++) {
+        AutoPtr<Flags> v;
+        FAIL_RETURN(Parse(ca[i], (Flags**)&v));
+        if (f->Contains(v)) {
+            return E_DUPLICATE_FORMAT_FLAGS_EXCEPTION;
+        }
+        f->Add(v);
+    }
+    *retf = f;
+    REFCOUNT_ADD(*retf);
+    return NOERROR;
+}
+
+ECode Formatter::Flags::Parse(
+    /* [in] */ Char c,
+    /* [out] */ Flags** retf)
+{
+    AutoPtr<Flags> f;
+    switch (c) {
+        case '-': f = GetLEFT_JUSTIFY(); break;
+        case '#': f = GetALTERNATE(); break;
+        case '+': f = GetPLUS(); break;
+        case ' ': f = GetLEADING_SPACE(); break;
+        case '0': f = GetZERO_PAD(); break;
+        case ',': f = GetGROUP(); break;
+        case '(': f = GetPARENTHESES(); break;
+        case '<': f = GetPREVIOUS(); break;
+        default:
+            return E_UNKNOWN_FORMAT_FLAGS_EXCEPTION;
+    }
+    *retf = f;
+    REFCOUNT_ADD(*retf);
     return NOERROR;
 }
 
 String Formatter::Flags::ToString()
 {
-    return String("");
+    AutoPtr<IStringBuilder> sb;
+    CStringBuilder::New(IID_IStringBuilder, (IInterface**)&sb);
+    if (Contains(GetLEFT_JUSTIFY()))  sb->AppendChar('-');
+    if (Contains(GetUPPERCASE()))     sb->AppendChar('^');
+    if (Contains(GetALTERNATE()))     sb->AppendChar('#');
+    if (Contains(GetPLUS()))          sb->AppendChar('+');
+    if (Contains(GetLEADING_SPACE())) sb->AppendChar(' ');
+    if (Contains(GetZERO_PAD()))      sb->AppendChar('0');
+    if (Contains(GetGROUP()))         sb->AppendChar(',');
+    if (Contains(GetPARENTHESES()))   sb->AppendChar('(');
+    if (Contains(GetPREVIOUS()))      sb->AppendChar('<');
+    String str;
+    sb->ToString(&str);
+    return str;
 }
 
 //-------------------------------------------------------------------------
@@ -995,6 +1046,21 @@ ECode Formatter::FormatSpecifier::CheckDateTime()
     if (mPrecision != -1) {
         return E_ILLEGAL_FORMAT_PRECISION_EXCEPTION;
     }
+    if (!DateTime::IsValid(mC)) {
+        return E_UNKNOWN_FORMAT_CONVERSION_EXCEPTION;
+    }
+    Array<Flags*> badFlags(6);
+    badFlags.Set(0, Flags::GetALTERNATE());
+    badFlags.Set(1, Flags::GetPLUS());
+    badFlags.Set(2, Flags::GetLEADING_SPACE());
+    badFlags.Set(3, Flags::GetZERO_PAD());
+    badFlags.Set(4, Flags::GetGROUP());
+    badFlags.Set(5, Flags::GetPARENTHESES());
+    FAIL_RETURN(CheckBadFlags(badFlags));
+    // '-' requires a width
+    if (mWidth == -1 && mF->Contains(Flags::GetLEFT_JUSTIFY())) {
+        return E_MISSING_FORMAT_WIDTH_EXCEPTION;
+    }
     return NOERROR;
 }
 
@@ -1131,6 +1197,397 @@ ECode Formatter::FormatSpecifier::CheckText()
     return NOERROR;
 }
 
+ECode Formatter::FormatSpecifier::Print(
+    /* [in] */ Byte value,
+    /* [in] */ ILocale* l)
+{
+    Long v = value;
+    if (value < 0 &&
+            (mC == Conversion::OCTAL_INTEGER ||
+             mC == Conversion::HEXADECIMAL_INTEGER)) {
+        v += (1ll << 8);
+    }
+    return Print(v, l);
+}
+
+ECode Formatter::FormatSpecifier::Print(
+    /* [in] */ Short value,
+    /* [in] */ ILocale* l)
+{
+    Long v = value;
+    if (value < 0 &&
+            (mC == Conversion::OCTAL_INTEGER ||
+             mC == Conversion::HEXADECIMAL_INTEGER)) {
+        v += (1ll << 16);
+    }
+    return Print(v, l);
+}
+
+ECode Formatter::FormatSpecifier::Print(
+    /* [in] */ Integer value,
+    /* [in] */ ILocale* l)
+{
+    Long v = value;
+    if (value < 0 &&
+            (mC == Conversion::OCTAL_INTEGER ||
+             mC == Conversion::HEXADECIMAL_INTEGER)) {
+        v += (1ll << 32);
+    }
+    return Print(v, l);
+}
+
+ECode Formatter::FormatSpecifier::Print(
+    /* [in] */ Long value,
+    /* [in] */ ILocale* l)
+{
+    AutoPtr<IStringBuilder> sb;
+    CStringBuilder::New(IID_IStringBuilder, (IInterface**)&sb);
+
+    if (mC == Conversion::DECIMAL_INTEGER) {
+        Boolean neg = value < 0;
+        Array<Char> va;
+        if (value < 0) {
+            va = StringUtils::ToString(value, 10).Substring(1).GetChars();
+        }
+        else {
+            va = StringUtils::ToString(value, 10).GetChars();
+        }
+
+        // leading sign indicator
+        LeadingSign(sb, neg);
+
+        // the value
+        LocalizedMagnitude(sb, va, mF, AdjustWidth(mWidth, mF, neg), l);
+
+        // trailing sign indicator
+        TrailingSign(sb, neg);
+    }
+    else if (mC == Conversion::OCTAL_INTEGER) {
+        Array<Flags*> badFlags(3);
+        badFlags.Set(0, Flags::GetPARENTHESES());
+        badFlags.Set(1, Flags::GetLEADING_SPACE());
+        badFlags.Set(2, Flags::GetPLUS());
+        FAIL_RETURN(CheckBadFlags(badFlags));
+        String s = StringUtils::ToOctalString(value);
+        Integer len = mF->Contains(Flags::GetALTERNATE()) ?
+                s.GetLength() + 1 : s.GetLength();
+
+        // apply ALTERNATE (radix indicator for octal) before ZERO_PAD
+        if (mF->Contains(Flags::GetALTERNATE())) {
+            sb->AppendChar('0');
+        }
+        if (mF->Contains(Flags::GetZERO_PAD())) {
+            for (Integer i = 0; i < mWidth - len; i++) {
+                sb->AppendChar('0');
+            }
+        }
+        sb->Append(s);
+    }
+    else if (mC == Conversion::HEXADECIMAL_INTEGER) {
+        Array<Flags*> badFlags(3);
+        badFlags.Set(0, Flags::GetPARENTHESES());
+        badFlags.Set(1, Flags::GetLEADING_SPACE());
+        badFlags.Set(2, Flags::GetPLUS());
+        FAIL_RETURN(CheckBadFlags(badFlags));
+        String s = StringUtils::ToHexString(value);
+        Integer len = mF->Contains(Flags::GetALTERNATE()) ?
+                s.GetLength() + 2 : s.GetLength();
+
+        // apply ALTERNATE (radix indicator for hex) before ZERO_PAD
+        if (mF->Contains(Flags::GetALTERNATE())) {
+            sb->Append(mF->Contains(Flags::GetUPPERCASE()) ? String("0X") : String("0x"));
+        }
+        if (mF->Contains(Flags::GetZERO_PAD())) {
+            for (Integer i = 0; i < mWidth - len; i++) {
+                sb->AppendChar('0');
+            }
+        }
+        if (mF->Contains(Flags::GetUPPERCASE())) {
+            s = s.ToUpperCase();
+        }
+        sb->Append(s);
+    }
+
+    // justify based on width
+    String str;
+    sb->ToString(&str);
+    return mOwner->mA->Append(CoreUtils::Box(Justify(str)));
+}
+
+void Formatter::FormatSpecifier::LeadingSign(
+    /* [in] */ IStringBuilder* sb,
+    /* [in] */ Boolean neg)
+{
+    if (!neg) {
+        if (mF->Contains(Flags::GetPLUS())) {
+            sb->AppendChar('+');
+        }
+        else if (mF->Contains(Flags::GetLEADING_SPACE())) {
+            sb->AppendChar(' ');
+        }
+    }
+    else {
+        if (mF->Contains(Flags::GetPARENTHESES())) {
+            sb->AppendChar('(');
+        }
+        else {
+            sb->AppendChar('-');
+        }
+    }
+}
+
+void Formatter::FormatSpecifier::TrailingSign(
+    /* [in] */ IStringBuilder* sb,
+    /* [in] */ Boolean neg)
+{
+    if (neg && mF->Contains(Flags::GetPARENTHESES())) {
+        sb->AppendChar(')');
+    }
+}
+
+ECode Formatter::FormatSpecifier::Print(
+    /* [in] */ IBigInteger* value,
+    /* [in] */ ILocale* l)
+{
+    return NOERROR;
+}
+
+ECode Formatter::FormatSpecifier::Print(
+    /* [in] */ Float value,
+    /* [in] */ ILocale* l)
+{
+    return Print((Double)value, l);
+}
+
+ECode Formatter::FormatSpecifier::Print(
+    /* [in] */ Double value,
+    /* [in] */ ILocale* l)
+{
+    AutoPtr<IStringBuilder> sb;
+    CStringBuilder::New(IID_IStringBuilder, (IInterface**)&sb);
+    Boolean neg = Math::Compare(value, 0.0) == -1;
+
+    if (!Math::IsNaN(value)) {
+        Double v = Math::Abs(value);
+
+        // leading sign indicator
+        LeadingSign(sb, neg);
+
+        // the value
+        if (!Math::IsInfinite(v)) {
+            FAIL_RETURN(Print(sb, v, l, mF, mC, mPrecision, neg));
+        }
+        else {
+            sb->Append(mF->Contains(Flags::GetUPPERCASE()) ?
+                    String("INFINITY") : String("Infinity"));
+        }
+
+        // trailing sign indicator
+        TrailingSign(sb, neg);
+    }
+    else {
+        sb->Append(mF->Contains(Flags::GetUPPERCASE()) ? String("NAN") : String("NaN"));
+    }
+
+    // justify based on width
+    String str;
+    sb->ToString(&str);
+    return mOwner->mA->Append(CoreUtils::Box(Justify(str)));
+}
+
+ECode Formatter::FormatSpecifier::Print(
+    /* [in] */ IStringBuilder* sb,
+    /* [in] */ Double value,
+    /* [in] */ ILocale* l,
+    /* [in] */ Flags* f,
+    /* [in] */ Char c,
+    /* [in] */ Integer precision,
+    /* [in] */ Boolean neg)
+{
+    return NOERROR;
+}
+
+Array<Char> Formatter::FormatSpecifier::AddZeros(
+    /* [in] */ const Array<Char>& v,
+    /* [in] */ Integer prec)
+{
+    // Look for the dot.  If we don't find one, the we'll need to add
+    // it before we add the zeros.
+    Integer i;
+    for (i = 0; i < v.GetLength(); i++) {
+        if (v[i] == '.') {
+            break;
+        }
+    }
+    Boolean needDot = false;
+    if (i == v.GetLength()) {
+        needDot = true;
+    }
+
+    // Determine existing precision.
+    Integer outPrec = v.GetLength() - i - (needDot ? 0 : 1);
+    CHECK(outPrec <= prec);
+    if (outPrec == prec) {
+        return v;
+    }
+
+    // Create new array with existing contents.
+    Array<Char> tmp(v.GetLength() + prec - outPrec + (needDot ? 1 : 0));
+    tmp.Copy(v, v.GetLength());
+
+    // Add dot if previously determined to be necessary.
+    Integer start = v.GetLength();
+    if (needDot) {
+        tmp[v.GetLength()] = '.';
+        start++;
+    }
+
+    // Add zeros.
+    for (Integer j = start; j < tmp.GetLength(); j++) {
+        tmp[j] = '0';
+    }
+
+    return tmp;
+}
+
+String Formatter::FormatSpecifier::HexDouble(
+    /* [in] */ Double d,
+    /* [in] */ Integer prec)
+{
+    return String("");
+}
+
+ECode Formatter::FormatSpecifier::Print(
+    /* [in] */ IBigDecimal* value,
+    /* [in] */ ILocale* l)
+{
+    if (mC == Conversion::HEXADECIMAL_FLOAT) {
+        return FailConversion();
+    }
+    AutoPtr<IStringBuilder> sb;
+    CStringBuilder::New(IID_IStringBuilder, (IInterface**)&sb);
+    Integer sign;
+    value->Signum(&sign);
+    Boolean neg = sign == -1;
+    AutoPtr<IBigDecimal> v;
+    value->Abs((IBigDecimal**)&v);
+    // leading sign indicator
+    LeadingSign(sb, neg);
+
+    // the value
+    FAIL_RETURN(Print(sb, v, l, mF, mC, mPrecision, neg));
+
+    // trailing sign indicator
+    TrailingSign(sb, neg);
+
+    // justify based on width
+    String str;
+    sb->ToString(&str);
+    return mOwner->mA->Append(CoreUtils::Box(Justify(str)));
+}
+
+ECode Formatter::FormatSpecifier::Print(
+    /* [in] */ IStringBuilder* sb,
+    /* [in] */ IBigDecimal* value,
+    /* [in] */ ILocale* l,
+    /* [in] */ Flags* f,
+    /* [in] */ Char c,
+    /* [in] */ Integer precision,
+    /* [in] */ Boolean neg)
+{
+    return NOERROR;
+}
+
+Integer Formatter::FormatSpecifier::AdjustWidth(
+    /* [in] */ Integer width,
+    /* [in] */ Flags* f,
+    /* [in] */ Boolean neg)
+{
+    Integer newW = mWidth;
+    if (newW != -1 && neg && mF->Contains(Flags::GetPARENTHESES())) {
+        newW--;
+    }
+    return newW;
+}
+
+Array<Char> Formatter::FormatSpecifier::AddDot(
+    /* [in] */ const Array<Char>& mant)
+{
+    Array<Char> tmp(mant.GetLength() + 1);
+    tmp.Copy(mant, mant.GetLength());
+    tmp[tmp.GetLength() - 1] = '.';
+    return tmp;
+}
+
+Array<Char> Formatter::FormatSpecifier::TrailingZeros(
+    /* [in] */ const Array<Char>& mant,
+    /* [in] */ Integer nzeros)
+{
+    Array<Char> tmp = mant;
+    if (nzeros > 0) {
+        tmp = Array<Char>(mant.GetLength() + nzeros);
+        tmp.Copy(mant, mant.GetLength());
+        for (Integer i = mant.GetLength(); i < tmp.GetLength(); i++) {
+            tmp[i] = '0';
+        }
+    }
+    return tmp;
+}
+
+ECode Formatter::FormatSpecifier::Print(
+    /* [in] */ ICalendar* t,
+    /* [in] */ Char c,
+    /* [in] */ ILocale* l)
+{
+    AutoPtr<IStringBuilder> sb;
+    CStringBuilder::New(IID_IStringBuilder, (IInterface**)&sb);
+    FAIL_RETURN(Print(sb, t, c, l));
+
+    // justify based on width
+    String str;
+    sb->ToString(&str);
+    String s = Justify(str);
+    if (mF->Contains(Flags::GetUPPERCASE())) {
+        s = s.ToUpperCase();
+    }
+
+    return mOwner->mA->Append(CoreUtils::Box(s));
+}
+
+ECode Formatter::FormatSpecifier::Print(
+    /* [in] */ IStringBuilder* sb,
+    /* [in] */ ICalendar* t,
+    /* [in] */ Char c,
+    /* [in] */ ILocale* l)
+{
+    return NOERROR;
+}
+
+Char Formatter::FormatSpecifier::GetZero(
+    /* [in] */ ILocale* l)
+{
+    return mOwner->mZero;
+}
+
+void Formatter::FormatSpecifier::LocalizedMagnitude(
+    /* [in] */ IStringBuilder* sb,
+    /* [in] */ Long value,
+    /* [in] */ Flags* f,
+    /* [in] */ Integer width,
+    /* [in] */ ILocale* l)
+{
+    Array<Char> va = StringUtils::ToString(value, 10).GetChars();
+    LocalizedMagnitude(sb, va, f, width, l);
+}
+
+void Formatter::FormatSpecifier::LocalizedMagnitude(
+    /* [in] */ IStringBuilder* sb,
+    /* [in] */ const Array<Char>& value,
+    /* [in] */ Flags* f,
+    /* [in] */ Integer width,
+    /* [in] */ ILocale* l)
+{}
+
 //-------------------------------------------------------------------------
 
 String Formatter::FormatSpecifierParser::GetFLAGS()
@@ -1246,37 +1703,126 @@ ECode Formatter::FormatSpecifierParser::Advance(
 Boolean Formatter::Conversion::IsValid(
     /* [in] */ Char c)
 {
-    return false;
+    return (IsGeneral(c) || IsInteger(c) || IsFloat(c) || IsText(c)
+            || c == 't' || IsCharacter(c));
 }
 
 Boolean Formatter::Conversion::IsGeneral(
     /* [in] */ Char c)
 {
-    return false;
+    switch (c) {
+        case BOOLEAN:
+        case BOOLEAN_UPPER:
+        case STRING:
+        case STRING_UPPER:
+        case HASHCODE:
+        case HASHCODE_UPPER:
+            return true;
+        default:
+            return false;
+    }
 }
 
 Boolean Formatter::Conversion::IsCharacter(
     /* [in] */ Char c)
 {
-    return false;
+    switch (c) {
+        case CHARACTER:
+        case CHARACTER_UPPER:
+            return true;
+        default:
+            return false;
+    }
 }
 
 Boolean Formatter::Conversion::IsInteger(
     /* [in] */ Char c)
 {
-    return false;
+    switch (c) {
+        case DECIMAL_INTEGER:
+        case OCTAL_INTEGER:
+        case HEXADECIMAL_INTEGER:
+        case HEXADECIMAL_INTEGER_UPPER:
+            return true;
+        default:
+            return false;
+    }
 }
 
 Boolean Formatter::Conversion::IsFloat(
     /* [in] */ Char c)
 {
-    return false;
+    switch (c) {
+        case SCIENTIFIC:
+        case SCIENTIFIC_UPPER:
+        case GENERAL:
+        case GENERAL_UPPER:
+        case DECIMAL_FLOAT:
+        case HEXADECIMAL_FLOAT:
+        case HEXADECIMAL_FLOAT_UPPER:
+            return true;
+        default:
+            return false;
+    }
 }
 
 Boolean Formatter::Conversion::IsText(
     /* [in] */ Char c)
 {
-    return false;
+    switch (c) {
+        case LINE_SEPARATOR:
+        case PERCENT_SIGN:
+            return true;
+        default:
+            return false;
+    }
+}
+
+//-------------------------------------------------------------------------
+
+Boolean Formatter::DateTime::IsValid(
+    /* [in] */ Char c)
+{
+    switch (c) {
+        case HOUR_OF_DAY_0:
+        case HOUR_0:
+        case HOUR_OF_DAY:
+        case HOUR:
+        case MINUTE:
+        case NANOSECOND:
+        case MILLISECOND:
+        case MILLISECOND_SINCE_EPOCH:
+        case AM_PM:
+        case SECONDS_SINCE_EPOCH:
+        case SECOND:
+        case TIME:
+        case ZONE_NUMERIC:
+        case ZONE:
+
+        // Date
+        case NAME_OF_DAY_ABBREV:
+        case NAME_OF_DAY:
+        case NAME_OF_MONTH_ABBREV:
+        case NAME_OF_MONTH:
+        case CENTURY:
+        case DAY_OF_MONTH_0:
+        case DAY_OF_MONTH:
+        case NAME_OF_MONTH_ABBREV_X:
+        case DAY_OF_YEAR:
+        case MONTH:
+        case YEAR_2:
+        case YEAR_4:
+
+        // Composites
+        case TIME_12_HOUR:
+        case TIME_24_HOUR:
+        case DATE_TIME:
+        case DATE:
+        case ISO_STANDARD_DATE:
+            return true;
+        default:
+            return false;
+    }
 }
 
 }

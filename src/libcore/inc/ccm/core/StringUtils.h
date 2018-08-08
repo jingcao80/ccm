@@ -98,6 +98,21 @@ public:
     COM_PUBLIC static String ToString(
         /* [in] */ Double d);
 
+    COM_PUBLIC static String ToOctalString(
+        /* [in] */ Integer i);
+
+    COM_PUBLIC static String ToOctalString(
+        /* [in] */ Long i);
+
+    COM_PUBLIC static String ToHexString(
+        /* [in] */ Integer i,
+        /* [in] */ Boolean upperCase = true,
+        /* [in] */ Integer minWidth = 0);
+
+    COM_PUBLIC static String ToHexString(
+        /* [in] */ Long i,
+        /* [in] */ Boolean upperCase = true);
+
     COM_PUBLIC static ECode ReplaceFirst(
         /* [in] */ const String& input,
         /* [in] */ const String& regex,
