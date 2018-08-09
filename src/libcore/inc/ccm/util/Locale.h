@@ -32,6 +32,18 @@ class Locale
     , public ILocale
 {
 public:
+    class Category
+    {
+    public:
+        static AutoPtr<ILocaleCategory> GetDISPLAY();
+    };
+
+public:
+    static AutoPtr<ILocale> GetUS()
+    {
+        return nullptr;
+    }
+
     static AutoPtr<ILocaleCategory> GetDisplayCategory()
     {
         return nullptr;

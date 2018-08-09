@@ -17,12 +17,105 @@
 namespace ccm {
 namespace util {
 
+/*
+ * @Involve interface ccm::io::ISerializable
+ * @Involve interface ccm::core::ICloneable
+ * @Involve interface ccm::core::IComparable
+ */
 [
     uuid(837f48fc-ccf7-4098-90cb-d02a3b83ef2f),
     version(0.1.0)
 ]
 interface ICalendar
-{}
+{
+    const Integer ERA = 0;
+
+    const Integer YEAR = 1;
+
+    const Integer MONTH = 2;
+
+    const Integer WEEK_OF_YEAR = 3;
+
+    const Integer WEEK_OF_MONTH = 4;
+
+    const Integer DATE = 5;
+
+    const Integer DAY_OF_MONTH = 5;
+
+    const Integer DAY_OF_YEAR = 6;
+
+    const Integer DAY_OF_WEEK = 7;
+
+    const Integer DAY_OF_WEEK_IN_MONTH = 8;
+
+    const Integer AM_PM = 9;
+
+    const Integer HOUR = 10;
+
+    const Integer HOUR_OF_DAY = 11;
+
+    const Integer MINUTE = 12;
+
+    const Integer SECOND = 13;
+
+    const Integer MILLISECOND = 14;
+
+    const Integer ZONE_OFFSET = 15;
+
+    const Integer DST_OFFSET = 16;
+
+    const Integer FIELD_COUNT = 17;
+
+    const Integer SUNDAY = 1;
+
+    const Integer MONDAY = 2;
+
+    const Integer TUESDAY = 3;
+
+    const Integer WEDNESDAY = 4;
+
+    const Integer THURSDAY = 5;
+
+    const Integer FRIDAY = 6;
+
+    const Integer SATURDAY = 7;
+
+    const Integer JANUARY = 0;
+
+    const Integer FEBRUARY = 1;
+
+    const Integer MARCH = 2;
+
+    const Integer APRIL = 3;
+
+    const Integer MAY = 4;
+
+    const Integer JUNE = 5;
+
+    const Integer JULY = 6;
+
+    const Integer AUGUST = 7;
+
+    const Integer SEPTEMBER = 8;
+
+    const Integer OCTOBER = 9;
+
+    const Integer NOVEMBER = 10;
+
+    const Integer DECEMBER = 11;
+
+    const Integer UNDECIMBER = 12;
+
+    const Integer AM = 0;
+
+    const Integer PM = 1;
+
+    const Integer ALL_STYLES = 0;
+
+    const Integer SHORT = 1;
+
+    const Integer LONG = 2;
+}
 
 }
 }

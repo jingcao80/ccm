@@ -20,6 +20,10 @@ interface ccm::util::ILocale;
 namespace ccm {
 namespace util {
 
+/*
+ * @Involve interface ccm::io::ISerializable
+ * @Involve interface ccm::core::ICloneable
+ */
 [
     uuid(d1094f3a-c45b-4188-a973-266a5ad2e84a),
     version(0.1.0)

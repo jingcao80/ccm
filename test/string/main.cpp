@@ -110,6 +110,16 @@ TEST(StringTest, StringEndsWithTest)
     EXPECT_TRUE(String("HelloWorld").EndsWith("World"));
 }
 
+TEST(StringTest, ToLowerCaseTest)
+{
+    EXPECT_STREQ("helloworld:)", String("HellOWoRlD:)").ToLowerCase().string());
+}
+
+TEST(StringTest, ToUpperCaseTest)
+{
+    EXPECT_STREQ("HELLOWORLD:)", String("HellOWoRlD:)").ToUpperCase().string());
+}
+
 int main(int argc, char **argv)
 {
     testing::InitGoogleTest(&argc, argv);

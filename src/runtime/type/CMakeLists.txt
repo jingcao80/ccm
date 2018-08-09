@@ -26,7 +26,8 @@ set(SOURCES
     ccmarray.cpp
     ccmsharedbuffer.cpp
     ccmstring.cpp
-    ccmuuid.cpp)
+    ccmuuid.cpp
+    ucase.cpp)
 
 add_library(type STATIC
     ${SOURCES})

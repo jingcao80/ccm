@@ -14,32 +14,27 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/util/locale/LocaleObjectCache.h"
+#include "ccm.util.CDate.h"
+#include "ccm.util.IDate.h"
+#include <ccmautoptr.h>
+#include <gtest/gtest.h>
 
-namespace ccm {
-namespace util {
-namespace locale {
+using namespace ccm;
+using ccm::util::CDate;
+using ccm::util::IDate;
+using ccm::util::IID_IDate;
 
-AutoPtr<IInterface> LocaleObjectCache::NormalizeKey(
-    /* [in] */ IInterface* key)
+TEST(DateTest, ToGMTStringTest)
 {
-    return key;
+    AutoPtr<IDate> date;
+    CDate::New(IID_IDate, (IInterface**)&date);
+    String dateStr;
+    date->ToGMTString(&dateStr);
+    printf("==== gmt: %s ====\n", dateStr.string());
 }
 
-ECode LocaleObjectCache::Put(
-    /* [in] */ IInterface* key,
-    /* [in] */ IInterface* value)
+int main(int argc, char **argv)
 {
-    return NOERROR;
-}
-
-ECode LocaleObjectCache::Get(
-    /* [in] */ IInterface* key,
-    /* [out] */ IInterface** value)
-{
-    return NOERROR;
-}
-
-}
-}
+    testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }

@@ -14,32 +14,29 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/util/locale/LocaleObjectCache.h"
+// Copyright (C) 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html
+/*
+*******************************************************************************
+*
+*   Copyright (C) 2004-2012, International Business Machines
+*   Corporation and others.  All Rights Reserved.
+*
+*******************************************************************************
+*/
 
-namespace ccm {
-namespace util {
-namespace locale {
+#ifndef __UCASE_H__
+#define __UCASE_H__
 
-AutoPtr<IInterface> LocaleObjectCache::NormalizeKey(
-    /* [in] */ IInterface* key)
-{
-    return key;
-}
+#include "ccmtypes.h"
 
-ECode LocaleObjectCache::Put(
-    /* [in] */ IInterface* key,
-    /* [in] */ IInterface* value)
-{
-    return NOERROR;
-}
+ccm::Char u_tolower(
+    /* [in] */ ccm::Char c);
 
-ECode LocaleObjectCache::Get(
-    /* [in] */ IInterface* key,
-    /* [out] */ IInterface** value)
-{
-    return NOERROR;
-}
+ccm::Char u_toupper(
+    /* [in] */ ccm::Char c);
 
-}
-}
-}
+ccm::Char u_totitle(
+    /* [in] */ ccm::Char c);
+
+#endif // __UCASE_H__

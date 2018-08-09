@@ -32,6 +32,7 @@
 
 #include "ccmsharedbuffer.h"
 #include "ccmtypes.h"
+#include "ucase.h"
 #include "util/ccmlogger.h"
 
 #include <ctype.h>
@@ -438,8 +439,8 @@ Boolean String::RegionMatchesIgnoreCase(
     while (len-- > 0) {
         Char tc = GetCharInternal(tstr, &tsize);
         Char oc = GetCharInternal(ostr, &osize);
-        if (tsize != osize || (toupper(tc) != toupper(oc) &&
-                tolower(tc) != tolower(oc))) {
+        if (tsize != osize || (u_toupper(tc) != u_toupper(oc) &&
+                u_tolower(tc) != u_tolower(oc))) {
             return false;
         }
         tstr += tsize;
@@ -673,14 +674,22 @@ String& String::operator+=(
 String String::ToLowerCase() const
 {
     String lowerStr(nullptr);
-    for (Integer i = 0; i < GetByteLength(); i++) {
-        char l = tolower(mString[i]);
-        if (l != mString[i]) {
+    Integer byteSize;
+    const char* p = mString;
+    const char* end = mString + GetByteLength() + 1;
+    char* dst = nullptr;
+    while (*p && p < end) {
+        Char c = GetCharInternal(p, &byteSize);
+        if (byteSize == 0 || p + byteSize >= end) break;
+        Char l = u_tolower(c);
+        if (l != c) {
             if (lowerStr.IsNull()) {
                 lowerStr = String(mString, GetByteLength());
+                char* dst = const_cast<char*>(lowerStr.string());
             }
-            lowerStr.mString[i] = l;
+            WriteUTF8Bytes(dst + (p - mString), l, byteSize);
         }
+        p += byteSize;
     }
     return lowerStr.IsNull() ? *this : lowerStr;
 }
@@ -688,14 +697,22 @@ String String::ToLowerCase() const
 String String::ToUpperCase() const
 {
     String upperStr(nullptr);
-    for (Integer i = 0; i < GetByteLength(); i++) {
-        char l = toupper(mString[i]);
-        if (l != mString[i]) {
+    Integer byteSize;
+    const char* p = mString;
+    const char* end = mString + GetByteLength() + 1;
+    char* dst = nullptr;
+    while (*p && p < end) {
+        Char c = GetCharInternal(p, &byteSize);
+        if (byteSize == 0 || p + byteSize >= end) break;
+        Char l = u_toupper(c);
+        if (l != c) {
             if (upperStr.IsNull()) {
                 upperStr = String(mString, GetByteLength());
+                char* dst = const_cast<char*>(upperStr.string());
             }
-            upperStr.mString[i] = l;
+            WriteUTF8Bytes(dst + (p - mString), l, byteSize);
         }
+        p += byteSize;
     }
     return upperStr.IsNull() ? *this : upperStr;
 }
@@ -963,7 +980,7 @@ void String::WriteCharArray(
         buf += byteSize;
     }
     UnlockBuffer(totalByteSize);
-    buf[totalByteSize] = '\0';
+    mString[totalByteSize] = '\0';
 }
 
 void String::AppendBytes(

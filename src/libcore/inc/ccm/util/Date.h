@@ -20,6 +20,7 @@
 #include "ccm/core/SyncObject.h"
 #include "ccm.core.ICloneable.h"
 #include "ccm.core.IComparable.h"
+#include "ccm.core.IStringBuilder.h"
 #include "ccm.io.ISerializable.h"
 #include "ccm.util.IDate.h"
 #include "ccm.util.calendar.IBaseCalendar.h"
@@ -28,6 +29,7 @@
 
 using ccm::core::ICloneable;
 using ccm::core::IComparable;
+using ccm::core::IStringBuilder;
 using ccm::core::SyncObject;
 using ccm::io::ISerializable;
 using ccm::util::calendar::IBaseCalendar;
@@ -86,16 +88,23 @@ public:
         /* [in] */ const String& s,
         /* [out] */ Long* date);
 
-    ECode After(
-        /* [in] */ IDate* when,
-        /* [out] */ Boolean* after) override;
+    ECode GetYear(
+        /* [out] */ Integer* year) override;
 
-    ECode Before(
-        /* [in] */ IDate* when,
-        /* [out] */ Boolean* before) override;
+    ECode SetYear(
+        /* [in] */ Integer year) override;
+
+    ECode GetMonth(
+        /* [out] */ Integer* month) override;
+
+    ECode SetMonth(
+        /* [in] */ Integer month) override;
 
     ECode GetDate(
         /* [out] */ Integer* date) override;
+
+    ECode SetDate(
+        /* [in] */ Integer date) override;
 
     ECode GetDay(
         /* [out] */ Integer* day) override;
@@ -103,54 +112,60 @@ public:
     ECode GetHours(
         /* [out] */ Integer* hours) override;
 
-    ECode GetMinutes(
-        /* [out] */ Integer* minutes) override;
-
-    ECode GetMonth(
-        /* [out] */ Integer* month) override;
-
-    ECode GetSeconds(
-        /* [out] */ Integer* seconds) override;
-
-    ECode GetTime(
-        /* [out] */ Long* time) override;
-
-    ECode GetTimezoneOffset(
-        /* [out] */ Integer* tzOffset) override;
-
-    ECode GetYear(
-        /* [out] */ Integer* year) override;
-
-    ECode SetDate(
-        /* [in] */ Integer date) override;
-
     ECode SetHours(
         /* [in] */ Integer hours) override;
+
+    ECode GetMinutes(
+        /* [out] */ Integer* minutes) override;
 
     ECode SetMinutes(
         /* [in] */ Integer minutes) override;
 
-    ECode SetMonth(
-        /* [in] */ Integer month) override;
+    ECode GetSeconds(
+        /* [out] */ Integer* seconds) override;
 
     ECode SetSeconds(
         /* [in] */ Integer seconds) override;
 
+    ECode GetTime(
+        /* [out] */ Long* time) override;
+
     ECode SetTime(
         /* [in] */ Long time) override;
 
-    ECode SetYear(
-        /* [in] */ Integer year) override;
+    ECode Before(
+        /* [in] */ IDate* when,
+        /* [out] */ Boolean* before) override;
 
-    ECode ToGMTString(
-        /* [out] */ String* str) override;
+    ECode After(
+        /* [in] */ IDate* when,
+        /* [out] */ Boolean* after) override;
 
-    ECode ToLocaleString(
-        /* [out] */ String* str) override;
+    ECode Equals(
+        /* [in] */ IInterface* obj,
+        /* [out] */ Boolean* same) override;
+
+    static Long GetMillisOf(
+        /* [in] */ IDate* date);
 
     ECode CompareTo(
         /* [in] */ IInterface* other,
         /* [out] */ Integer* result) override;
+
+    ECode GetHashCode(
+        /* [out] */ Integer* hash) override;
+
+    ECode ToString(
+        /* [out] */ String* desc) override;
+
+    ECode ToLocaleString(
+        /* [out] */ String* str) override;
+
+    ECode ToGMTString(
+        /* [out] */ String* str) override;
+
+    ECode GetTimezoneOffset(
+        /* [out] */ Integer* tzOffset) override;
 
     static Date* From(
         /* [in] */ IDate* date);
@@ -168,13 +183,31 @@ private:
 
     Long GetTimeImpl();
 
+    void ConvertToAbbr(
+        /* [in] */ IStringBuilder* sb,
+        /* [in] */ const String& name);
+
+    AutoPtr<IBaseCalendarDate> GetCalendarDate();
+
+    AutoPtr<IBaseCalendarDate> Normalize();
+
     AutoPtr<IBaseCalendarDate> Normalize(
         /* [in] */ IBaseCalendarDate* date);
 
     static AutoPtr<IBaseCalendar> GetCalendarSystem(
         /* [in] */ Integer year);
 
+    static AutoPtr<IBaseCalendar> GetCalendarSystem(
+        /* [in] */ Long utc);
+
+    static AutoPtr<IBaseCalendar> GetCalendarSystem(
+        /* [in] */ IBaseCalendarDate* cdate);
+
+    static AutoPtr<IBaseCalendar> GetJulianCalendar();
+
 private:
+    static AutoPtr<IBaseCalendar> sJcal;
+
     Long mFastTime;
 
     AutoPtr<IBaseCalendarDate> mCdate;

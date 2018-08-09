@@ -17,19 +17,100 @@
 #ifndef __CCM_UTIL_TIMEZONE_H__
 #define __CCM_UTIL_TIMEZONE_H__
 
+#include "ccm/core/SyncObject.h"
+#include "ccm.core.ICloneable.h"
+#include "ccm.core.IStringBuilder.h"
+#include "ccm.io.ISerializable.h"
 #include "ccm.util.ITimeZone.h"
 #include <ccmautoptr.h>
+
+using ccm::core::ICloneable;
+using ccm::core::IStringBuilder;
+using ccm::core::SyncObject;
+using ccm::io::ISerializable;
 
 namespace ccm {
 namespace util {
 
 class TimeZone
+    : public SyncObject
+    , public ITimeZone
+    , public ISerializable
+    , public ICloneable
 {
 public:
+    CCM_INTERFACE_DECL();
+
+    ECode Constructor();
+
+    ECode GetOffset(
+        /* [in] */ Long date,
+        /* [out] */ Integer* offset);
+
+    Integer GetOffsets(
+        /* [in] */ Long date,
+        /* [out] */ Array<Integer>* offsets);
+
+    ECode GetID(
+        /* [out] */ String* id);
+
+    ECode SetID(
+        /* [in] */ const String& ID);
+
+    ECode GetDisplayName(
+        /* [out] */ String* name) override final;
+
+    ECode GetDisplayName(
+        /* [in] */ ILocale* locale,
+        /* [out] */ String* name) override final;
+
+    ECode GetDisplayName(
+        /* [in] */ Boolean daylight,
+        /* [in] */ Integer style,
+        /* [out] */ String* name) override final;
+
+    ECode GetDisplayName(
+        /* [in] */ Boolean daylightTime,
+        /* [in] */ Integer style,
+        /* [in] */ ILocale* locale,
+        /* [out] */ String* name) override;
+
+    static String CreateGmtOffsetString(
+        /* [in] */ Boolean includeGmt,
+        /* [in] */ Boolean includeMinuteSeparator,
+        /* [in] */ Integer offsetMillis);
+
+    ECode GetDSTSavings(
+        /* [out] */ Integer* savingTime) override;
+
+    ECode ObservesDaylightTime(
+        /* [out] */ Boolean* result) override;
+
+    static ECode GetTimeZone(
+        /* [in] */ const String& id,
+        /* [out] */ ITimeZone** zone);
+
+
     static AutoPtr<ITimeZone> GetDefault();
 
     static AutoPtr<ITimeZone> GetDefaultRef();
+
+private:
+    static SyncObject& GetLock();
+
+    static void AppendNumber(
+        /* [in] */ IStringBuilder* sb,
+        /* [in] */ Integer count,
+        /* [in] */ Integer value);
+
+private:
+    String mID;
 };
+
+inline ECode TimeZone::Constructor()
+{
+    return NOERROR;
+}
 
 }
 }
