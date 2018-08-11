@@ -248,6 +248,11 @@ public:
 
     static AutoPtr<IEnumeration> GetEmptyEnumeration();
 
+    static AutoPtr<ISet> GetEmptySet()
+    {
+        return nullptr;
+    }
+
 private:
     static constexpr Integer REVERSE_THRESHOLD = 18;
 };

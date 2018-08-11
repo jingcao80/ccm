@@ -14,6 +14,8 @@
 // limitations under the License.
 //=========================================================================
 
+interface ccm::util::ISet;
+
 namespace ccm {
 namespace util {
 
@@ -22,7 +24,19 @@ namespace util {
     version(0.1.0)
 ]
 interface ILocaleCategory
-{}
+{
+    GetLanguageKey(
+        [out] String* key);
+
+    GetScriptKey(
+        [out] String* key);
+
+    GetCountryKey(
+        [out] String* key);
+
+    GetVariantKey(
+        [out] String* key);
+}
 
 /*
  * @Involve ccm::core::ICloneable
@@ -33,7 +47,39 @@ interface ILocaleCategory
     version(0.1.0)
 ]
 interface ILocale
-{}
+{
+    GetCountry(
+        [out] String* country);
+
+    GetExtension(
+        [in] Char key,
+        [out] String* extension);
+
+    GetExtensionKeys(
+        [out] ISet** keys);
+
+    GetLanguage(
+        [out] String* language);
+
+    GetScript(
+        [out] String* script);
+
+    GetUnicodeLocaleAttributes(
+        [out] ISet** attrs);
+
+    GetUnicodeLocaleKeys(
+        [out] ISet** keys);
+
+    GetUnicodeLocaleType(
+        [in] String key,
+        [out] String* type);
+
+    GetVariant(
+        [out] String* variant);
+
+    ToLanguageTag(
+        [out] String* langTag);
+}
 
 }
 }

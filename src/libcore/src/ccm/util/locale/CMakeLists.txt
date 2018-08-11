@@ -25,6 +25,8 @@ include_directories(
 
 set(SOURCES
     BaseLocale.cpp
+    LanguageTag.cpp
+    LocaleExtensions.cpp
     LocaleObjectCache.cpp
     LocaleUtils.cpp)
 

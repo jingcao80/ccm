@@ -14,7 +14,18 @@
 # limitations under the License.
 #=========================================================================
 
-set(LIBCORE_LIBCORE_SRC_DIR ${LIBCORE_DIR}/src/libcore)
+set(ICU_DIR ${LIBCORE_LIBCORE_SRC_DIR}/icu)
 
-add_subdirectory(icu)
-add_subdirectory(io)
+include_directories(
+    ./
+    ../
+    ../../../inc
+    ${INC_DIR}
+    ${OBJ_DIR})
+
+set(SOURCES
+    ICU.cpp)
+
+add_library(libcore_icu STATIC
+    ${SOURCES})
+add_dependencies(libcore_icu build_libcore)

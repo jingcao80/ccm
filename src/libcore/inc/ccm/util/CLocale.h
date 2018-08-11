@@ -14,32 +14,36 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CLASSOBJECT_H__
-#define __CCM_CLASSOBJECT_H__
+#ifndef __CCM_UTIL_CLOCALE_H__
+#define __CCM_UTIL_CLOCALE_H__
 
-#include "ccmobject.h"
+#include "ccm/util/Locale.h"
+#include "_ccm_util_CLocale.h"
 
 namespace ccm {
+namespace util {
 
-class COM_PUBLIC ClassObject
-    : public Object
-    , public IClassObject
+Coclass(CLocale)
+    , public Locale
 {
 public:
-    ClassObject();
+    CCM_OBJECT_DECL();
 
-    CCM_INTERFACE_DECL();
+    ECode Clone(
+        /* [out] */ IInterface** obj) override;
 
-    ECode AttachMetadata(
-        /* [in] */ IMetaComponent* component) override;
+    static ECode New(
+        /* [in] */ const InterfaceID& iid,
+        /* [out] */ ccm::IInterface** object);
 
-    ECode GetMetadate(
-        /* [out] */ IMetaComponent** component) override;
-
-protected:
-    IMetaComponent* mComponent;
+    static ECode New(
+        /* [in] */ BaseLocale* baseLocale,
+        /* [in] */ LocaleExtensions* extensions,
+        /* [in] */ const InterfaceID& iid,
+        /* [out] */ ccm::IInterface** object);
 };
 
 }
+}
 
-#endif //__CCM_CLASSOBJECT_H__
+#endif // __CCM_UTIL_CLOCALE_H__

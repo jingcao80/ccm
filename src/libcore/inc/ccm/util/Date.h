@@ -175,7 +175,7 @@ protected:
         /* [in] */ IDate* newObj);
 
 private:
-    static SyncObject& GetLock();
+    static SyncObject& GetClassLock();
 
     static AutoPtr<IBaseCalendar> GetGcal();
 

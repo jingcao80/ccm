@@ -33,4 +33,14 @@ ECode ClassObject::AttachMetadata(
     return NOERROR;
 }
 
+ECode ClassObject::GetMetadate(
+    /* [out] */ IMetaComponent** component)
+{
+    VALIDATE_NOT_NULL(component);
+
+    *component = mComponent;
+    REFCOUNT_ADD(*component);
+    return NOERROR;
+}
+
 }

@@ -56,7 +56,7 @@ constexpr Integer Date::sTtb[];
 
 CCM_INTERFACE_IMPL_4(Date, SyncObject, IDate, ICloneable, IComparable, ISerializable);
 
-SyncObject& Date::GetLock()
+SyncObject& Date::GetClassLock()
 {
     static SyncObject sLock;
     return sLock;
@@ -407,7 +407,7 @@ syntax:
         // Parse 2-digit years within the correct default century.
         if (year < 100) {
             {
-                AutoLock lock(GetLock());
+                AutoLock lock(GetClassLock());
                 if (sDefaultCenturyStart == 0) {
                     AutoPtr<ICalendarDate> cdate;
                     ICalendarSystem::Probe(GetGcal())->GetCalendarDate((ICalendarDate**)&cdate);
@@ -858,7 +858,7 @@ AutoPtr<IBaseCalendar> Date::GetCalendarSystem(
 
 AutoPtr<IBaseCalendar> Date::GetJulianCalendar()
 {
-    AutoLock lock(GetLock());
+    AutoLock lock(GetClassLock());
 
     if (sJcal == nullptr) {
         AutoPtr<ICalendarSystem> system;

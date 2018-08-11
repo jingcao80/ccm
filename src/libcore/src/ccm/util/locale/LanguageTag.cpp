@@ -14,32 +14,12 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CLASSOBJECT_H__
-#define __CCM_CLASSOBJECT_H__
-
-#include "ccmobject.h"
+#include "ccm/util/locale/LanguageTag.h"
 
 namespace ccm {
-
-class COM_PUBLIC ClassObject
-    : public Object
-    , public IClassObject
-{
-public:
-    ClassObject();
-
-    CCM_INTERFACE_DECL();
-
-    ECode AttachMetadata(
-        /* [in] */ IMetaComponent* component) override;
-
-    ECode GetMetadate(
-        /* [out] */ IMetaComponent** component) override;
-
-protected:
-    IMetaComponent* mComponent;
-};
+namespace util {
+namespace locale {
 
 }
-
-#endif //__CCM_CLASSOBJECT_H__
+}
+}

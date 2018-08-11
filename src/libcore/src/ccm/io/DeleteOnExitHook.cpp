@@ -60,7 +60,7 @@ ECode DeleteOnExitHook::StaticInitialize()
     AutoPtr<IThread> hook = new _Thread();
 }
 
-SyncObject& DeleteOnExitHook::GetLock()
+SyncObject& DeleteOnExitHook::GetClassLock()
 {
     static SyncObject sLock;
     return sLock;
@@ -69,7 +69,7 @@ SyncObject& DeleteOnExitHook::GetLock()
 ECode DeleteOnExitHook::Add(
     /* [in] */ const String& file)
 {
-    AutoLock lock(GetLock());
+    AutoLock lock(GetClassLock());
 
     if (FILES == nullptr) {
         Logger::E("DeleteOnExitHook", "Shutdown in progress");
@@ -85,7 +85,7 @@ void DeleteOnExitHook::RunHooks()
     AutoPtr<IHashSet> theFiles;
 
     {
-        AutoLock lock(GetLock());
+        AutoLock lock(GetClassLock());
         theFiles = FILES;
         FILES = nullptr;
     }

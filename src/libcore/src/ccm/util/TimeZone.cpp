@@ -20,10 +20,12 @@
 #include "ccm/util/CDate.h"
 #include "ccm/util/Locale.h"
 #include "ccm/util/TimeZone.h"
+#include "ccm.core.ICloneable.h"
 #include <ccmlogger.h>
 
 using ccm::core::AutoLock;
 using ccm::core::CStringBuilder;
+using ccm::core::ICloneable;
 using ccm::core::IStringBuilder;
 using ccm::core::IID_ICloneable;
 using ccm::core::IID_IStringBuilder;
@@ -35,7 +37,7 @@ namespace util {
 
 CCM_INTERFACE_IMPL_3(TimeZone, SyncObject, ITimeZone, ISerializable, ICloneable);
 
-SyncObject& TimeZone::GetLock()
+SyncObject& TimeZone::GetClassLock()
 {
     static SyncObject sLock;
     return sLock;
@@ -207,25 +209,91 @@ ECode TimeZone::GetTimeZone(
 {
     VALIDATE_NOT_NULL(zone);
 
-    AutoLock lock(GetLock());
+    AutoLock lock(GetClassLock());
 
     if (id.IsNull()) {
         Logger::E("TimeZone", "id == null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
+    if (id.GetLength() == 3) {
+        if (id.Equals("GMT")) {
 
+        }
+        if (id.Equals("UTC")) {
+
+        }
+    }
 }
 
+ECode TimeZone::GetCustomTimeZone(
+    /* [in] */ const String& id,
+    /* [out] */ ITimeZone** zone)
+{
+    return NOERROR;
+}
+
+Array<String> TimeZone::GetAvailableIDs(
+    /* [in] */ Integer rawOffset)
+{
+    return Array<String>::Null();
+}
+
+Array<String> TimeZone::GetAvailableIDs()
+{
+    return Array<String>::Null();
+}
 
 AutoPtr<ITimeZone> TimeZone::GetDefault()
 {
-    return nullptr;
+    AutoPtr<IInterface> obj;
+    ICloneable::Probe(GetDefaultRef())->Clone((IInterface**)&obj);
+    return ITimeZone::Probe(obj);
 }
 
 AutoPtr<ITimeZone> TimeZone::GetDefaultRef()
 {
     return nullptr;
+}
+
+ECode TimeZone::SetDefault(
+    /* [in] */ ITimeZone* timeZone)
+{
+    return NOERROR;
+}
+
+ECode TimeZone::HasSameRules(
+    /* [in] */ ITimeZone* other,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    if (other == nullptr) {
+        *result = false;
+        return NOERROR;
+    }
+
+    Integer thisOffset, otherOffset;
+    GetRawOffset(&thisOffset);
+    other->GetRawOffset(&otherOffset);
+    if (thisOffset != otherOffset) {
+        *result = false;
+        return NOERROR;
+    }
+
+    Boolean thisDaylight, otherDaylight;
+    UseDaylightTime(&thisDaylight);
+    other->UseDaylightTime(&otherDaylight);
+    *result = thisDaylight == otherDaylight;
+    return NOERROR;
+}
+
+ECode TimeZone::CloneImpl(
+    /* [in] */ ITimeZone* newObj)
+{
+    TimeZone* tz = (TimeZone*)newObj;
+    tz->mID = mID;
+    return NOERROR;
 }
 
 }

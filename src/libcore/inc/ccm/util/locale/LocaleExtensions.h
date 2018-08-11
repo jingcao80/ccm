@@ -14,39 +14,64 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_IO_DELETEONEXITHOOK_H__
-#define __CCM_IO_DELETEONEXITHOOK_H__
+#ifndef __CCM_UTIL_LOCALE_LOCALEEXTENSIONS_H__
+#define __CCM_UTIL_LOCALE_LOCALEEXTENSIONS_H__
 
 #include "ccm/core/SyncObject.h"
-#include "ccm.util.IHashSet.h"
+#include "ccm.util.ISet.h"
 #include <ccmautoptr.h>
 
 using ccm::core::SyncObject;
-using ccm::util::IHashSet;
 
 namespace ccm {
-namespace io {
+namespace util {
+namespace locale {
 
-class DeleteOnExitHook
+class LocaleExtensions
+    : public SyncObject
 {
 public:
-    static ECode Add(
-        /* [in] */ const String& file);
+    AutoPtr<ISet> GetKeys()
+    {
+        return nullptr;
+    }
 
-    static void RunHooks();
+    String GetExtensionValue(
+        /* [in] */ Char key)
+    {
+        return String();
+    }
 
-private:
-    DeleteOnExitHook();
+    AutoPtr<ISet> GetUnicodeLocaleAttributes()
+    {
+        return nullptr;
+    }
 
-    static SyncObject& GetClassLock();
+    AutoPtr<ISet> GetUnicodeLocaleKeys()
+    {
+        return nullptr;
+    }
 
-    static ECode StaticInitialize();
+    static Boolean IsValidKey(
+        /* [in] */ Char c)
+    {
+        return false;
+    }
 
-private:
-    static AutoPtr<IHashSet> FILES;
+    String GetUnicodeLocaleType(
+        /* [in] */ const String& unicodeLocaleKey)
+    {
+        return String();
+    }
+
+    String GetID()
+    {
+        return String();
+    }
 };
 
 }
 }
+}
 
-#endif // __CCM_IO_DELETEONEXITHOOK_H__
+#endif // __CCM_UTIL_LOCALE_LOCALEEXTENSIONS_H__

@@ -14,32 +14,17 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CLASSOBJECT_H__
-#define __CCM_CLASSOBJECT_H__
+namespace libcore {
+namespace icu {
 
-#include "ccmobject.h"
-
-namespace ccm {
-
-class COM_PUBLIC ClassObject
-    : public Object
-    , public IClassObject
+[
+    uuid(dc68f94d-21c9-4b4c-942d-277a012a5bc9),
+    version(0.1.0)
+]
+interface IICU
 {
-public:
-    ClassObject();
-
-    CCM_INTERFACE_DECL();
-
-    ECode AttachMetadata(
-        /* [in] */ IMetaComponent* component) override;
-
-    ECode GetMetadate(
-        /* [out] */ IMetaComponent** component) override;
-
-protected:
-    IMetaComponent* mComponent;
-};
 
 }
 
-#endif //__CCM_CLASSOBJECT_H__
+}
+}

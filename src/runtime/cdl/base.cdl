@@ -29,6 +29,9 @@ interface IClassObject
     AttachMetadata(
         [in] IMetaComponent* component);
 
+    GetMetadate(
+        [out] IMetaComponent** component);
+
     CreateObject(
         [in] InterfaceID iid,
         [out] IInterface** object);

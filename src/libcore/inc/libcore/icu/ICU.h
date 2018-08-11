@@ -14,32 +14,33 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CLASSOBJECT_H__
-#define __CCM_CLASSOBJECT_H__
+#ifndef __LIBCORE_ICU_ICU_H__
+#define __LIBCORE_ICU_ICU_H__
 
-#include "ccmobject.h"
+#include "ccm.util.ILocale.h"
 
-namespace ccm {
+using ccm::util::ILocale;
 
-class COM_PUBLIC ClassObject
-    : public Object
-    , public IClassObject
+namespace libcore {
+namespace icu {
+
+class ICU
 {
 public:
-    ClassObject();
+    static Array<String> GetISOLanguages();
 
-    CCM_INTERFACE_DECL();
+    static Array<String> GetISOCountries();
 
-    ECode AttachMetadata(
-        /* [in] */ IMetaComponent* component) override;
+    static Array<ILocale*> GetAvailableLocales();
 
-    ECode GetMetadate(
-        /* [out] */ IMetaComponent** component) override;
+    static ECode SetDefaultLocale(
+        /* [in] */ const String& languageTag);
 
-protected:
-    IMetaComponent* mComponent;
+private:
+    ICU();
 };
 
 }
+}
 
-#endif //__CCM_CLASSOBJECT_H__
+#endif // __LIBCORE_ICU_ICU_H__

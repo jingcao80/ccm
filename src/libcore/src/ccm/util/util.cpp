@@ -22,7 +22,9 @@
 #include "ccm/util/CHashtable.h"
 #include "ccm/util/CLinkedHashMap.h"
 #include "ccm/util/CLinkedHashSet.h"
+#include "ccm/util/CLocale.h"
 #include "ccm/util/CProperties.h"
+#include "ccm/util/CPropertyPermission.h"
 #include "ccm/util/CRandom.h"
 #include "ccm/util/CStringTokenizer.h"
 #include "ccm/util/calendar/CEra.h"
@@ -31,6 +33,10 @@
 #include "ccm/util/calendar/CLocalGregorianCalendar.h"
 #include "ccm/util/concurrent/atomic/CAtomicInteger.h"
 #include "ccm/util/concurrent/atomic/CAtomicLong.h"
+#include "ccm.util.ICLocaleClassObject.h"
+#include <ccmapi.h>
+#include <ccmclassobject.h>
+#include <new>
 
 namespace ccm {
 namespace util {
@@ -135,6 +141,68 @@ ECode CLinkedHashSet::Clone(
     return NOERROR;
 }
 
+CCM_OBJECT_IMPL(CLocale);
+ECode CLocale::Clone(
+    /* [out] */ IInterface** obj)
+{
+    VALIDATE_NOT_NULL(obj);
+
+    AutoPtr<ILocale> locale;
+    CLocale::New(IID_ILocale, (IInterface**)&locale);
+    FAIL_RETURN(Locale::CloneImpl(locale));
+    *obj = locale;
+    REFCOUNT_ADD(*obj);
+    return NOERROR;
+}
+
+ECode CLocale::New(
+    /* [in] */ const InterfaceID& iid,
+    /* [out] */ ccm::IInterface** object)
+{
+    AutoPtr<IClassObject> clsObject;
+    ECode ec = CoAcquireClassFactory(CID_CLocale, nullptr, (IClassObject**)&clsObject);
+    if (FAILED(ec)) return ec;
+
+    void* addr = calloc(sizeof(CLocale), 1);
+    if (addr == nullptr) return E_OUT_OF_MEMORY_ERROR;
+
+    CLocale* _obj = new(addr) CLocale();
+
+    AutoPtr<IMetaComponent> comp;
+    clsObject->GetMetadate((IMetaComponent**)&comp);
+    _obj->AttachMetadata(comp, String("ccm::util::CLocale"));
+    *object = _obj->Probe(iid);
+    REFCOUNT_ADD(*object);
+    return NOERROR;
+};
+
+ECode CLocale::New(
+    /* [in] */ BaseLocale* baseLocale,
+    /* [in] */ LocaleExtensions* extensions,
+    /* [in] */ const InterfaceID& iid,
+    /* [out] */ ccm::IInterface** object)
+{
+    AutoPtr<IClassObject> clsObject;
+    ECode ec = CoAcquireClassFactory(CID_CLocale, nullptr, (IClassObject**)&clsObject);
+    if (FAILED(ec)) return ec;
+
+    void* addr = calloc(sizeof(CLocale), 1);
+    if (addr == nullptr) return E_OUT_OF_MEMORY_ERROR;
+
+    CLocale* _obj = new(addr) CLocale();
+    ec = _obj->Constructor(baseLocale, extensions);
+    if (FAILED(ec)) {
+        free(addr);
+        return ec;
+    }
+    AutoPtr<IMetaComponent> comp;
+    clsObject->GetMetadate((IMetaComponent**)&comp);
+    _obj->AttachMetadata(comp, String("ccm::util::CLocale"));
+    *object = _obj->Probe(iid);
+    REFCOUNT_ADD(*object);
+    return NOERROR;
+};
+
 CCM_OBJECT_IMPL(CProperties);
 ECode CProperties::Clone(
     /* [out] */ IInterface** obj)
@@ -149,6 +217,7 @@ ECode CProperties::Clone(
     return NOERROR;
 }
 
+CCM_OBJECT_IMPL(CPropertyPermission);
 CCM_OBJECT_IMPL(CRandom);
 CCM_OBJECT_IMPL(CStringTokenizer);
 

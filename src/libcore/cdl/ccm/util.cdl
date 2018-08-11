@@ -49,6 +49,7 @@ include "ccm/util/calendar/ILocalGregorianCalendar.cdl"
 include "ccm/util/concurrent/IConcurrentMap.cdl"
 include "ccm/util/concurrent/atomic/IAtomicInteger.cdl"
 include "ccm/util/concurrent/atomic/IAtomicLong.cdl"
+include "ccm/util/locale/ILanguageTag.cdl"
 include "ccm/util/regex/Exceptions.cdl"
 include "ccm/util/regex/IMatcher.cdl"
 include "ccm/util/regex/IMatchResult.cdl"
@@ -66,6 +67,8 @@ interface ccm::io::IFlushable;
 interface ccm::io::IOutputStream;
 interface ccm::io::IPrintStream;
 interface ccm::io::ISerializable;
+interface ccm::security::IGuard;
+interface ccm::security::IPermission;
 
 namespace ccm {
 namespace util {
@@ -334,6 +337,29 @@ coclass CLinkedHashSet
 }
 
 [
+    uuid(d64e331d-41f4-40b1-b71b-7492ffc7f5b2),
+    version(0.1.0)
+]
+coclass CLocale
+{
+    Constructor(
+        [in] String language,
+        [in] String country,
+        [in] String variant);
+
+    Constructor(
+        [in] String language,
+        [in] String country);
+
+    Constructor(
+        [in] String language);
+
+    interface ILocale;
+    interface ISerializable;
+    interface ICloneable;
+}
+
+[
     uuid(2f6a7390-6aed-4f7d-863e-3f007635ba14),
     version(0.1.0)
 ]
@@ -349,6 +375,21 @@ coclass CProperties
     interface IDictionary;
     interface IMap;
     interface ICloneable;
+    interface ISerializable;
+}
+
+[
+    uuid(0ce2245f-c9d7-4a24-8fda-56ab5d38ea18),
+    version(0.1.0)
+]
+coclass CPropertyPermission
+{
+    Constructor(
+        [in] String name,
+        [in] String actioins);
+
+    interface IPermission;
+    interface IGuard;
     interface ISerializable;
 }
 

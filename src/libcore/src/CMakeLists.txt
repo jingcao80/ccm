@@ -75,7 +75,9 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_util_CHashtable.cpp
     ${OBJ_DIR}/_ccm_util_CLinkedHashMap.cpp
     ${OBJ_DIR}/_ccm_util_CLinkedHashSet.cpp
+    ${OBJ_DIR}/_ccm_util_CLocale.cpp
     ${OBJ_DIR}/_ccm_util_CProperties.cpp
+    ${OBJ_DIR}/_ccm_util_CPropertyPermission.cpp
     ${OBJ_DIR}/_ccm_util_CRandom.cpp
     ${OBJ_DIR}/_ccm_util_CStringTokenizer.cpp
     ${OBJ_DIR}/_ccm_util_calendar_CCalendarSystemFactory.cpp
@@ -109,6 +111,7 @@ set(LIBCORE_LINK_LIBS
     ccm_util_locale
     ccm_util_regex
     ccmrt_system
+    libcore_icu
     libcore_io
     pisces_system
     -Wl,--no-whole-archive)

@@ -14,39 +14,49 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_IO_DELETEONEXITHOOK_H__
-#define __CCM_IO_DELETEONEXITHOOK_H__
+#ifndef __CCM_UTIL_LOCALE_LANGUAGETAG_H__
+#define __CCM_UTIL_LOCALE_LANGUAGETAG_H__
 
-#include "ccm/core/SyncObject.h"
-#include "ccm.util.IHashSet.h"
+#include "ccm/util/locale/BaseLocale.h"
+#include "ccm/util/locale/LocaleExtensions.h"
+#include "ccm.util.locale.ILanguageTag.h"
 #include <ccmautoptr.h>
 
-using ccm::core::SyncObject;
-using ccm::util::IHashSet;
-
 namespace ccm {
-namespace io {
+namespace util {
+namespace locale {
 
-class DeleteOnExitHook
+class LanguageTag
 {
 public:
-    static ECode Add(
-        /* [in] */ const String& file);
+    static AutoPtr<ILanguageTag> ParseLocale(
+        /* [in] */ BaseLocale* baseLocale,
+        /* [in] */ LocaleExtensions* localeExtensions)
+    {
+        return nullptr;
+    }
 
-    static void RunHooks();
+    static String CanonicalizeLanguage(
+        /* [in] */ const String& s)
+    {
+        return String();
+    }
 
-private:
-    DeleteOnExitHook();
+    static String CanonicalizeScript(
+        /* [in] */ const String& s)
+    {
+        return String();
+    }
 
-    static SyncObject& GetClassLock();
-
-    static ECode StaticInitialize();
-
-private:
-    static AutoPtr<IHashSet> FILES;
+    static String CanonicalizeRegion(
+        /* [in] */ const String& s)
+    {
+        return String();
+    }
 };
 
 }
 }
+}
 
-#endif // __CCM_IO_DELETEONEXITHOOK_H__
+#endif // __CCM_UTIL_LOCALE_LANGUAGETAG_H__

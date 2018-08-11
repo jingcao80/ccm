@@ -923,7 +923,7 @@ void CodeGenerator::GenCoclassHeader(
                          "    virtual ~_%s();\n\n", mk->mName, mk->mName);
     MetaInterface* mi = mMetaComponent->mInterfaces[mk->mInterfaceIndexes[mk->mInterfaceNumber - 1]];
     bool isIClassObject = String("IClassObject").Equals(mi->mName);
-    int start = isIClassObject ? 1 : 0;
+    int start = isIClassObject ? 2 : 0;
     for (int i = start; i < mi->mMethodNumber; i++) {
         MetaMethod* mm = mi->mMethods[i];
         builder.Append("    static ECode New(\n");
@@ -1005,7 +1005,7 @@ String CodeGenerator::GenCoclassObject(
         builder.Append("    CCM_INTERFACE_DECL();\n\n");
     }
     bool hasConstructorWithoutArgu = false;
-    int start = isIClassObject ? 1 : 0;
+    int start = isIClassObject ? 2 : 0;
     for (int i = start; i < mi->mMethodNumber; i++) {
         MetaMethod* mm = mi->mMethods[i];
         if (mm->mParameterNumber == 2) hasConstructorWithoutArgu = true;
@@ -1121,7 +1121,7 @@ String CodeGenerator::GenCoclassMethods(
                          "}\n\n", mk->mName, mk->mName, mk->mName, mk->mName, mk->mName, mk->mName);
     MetaInterface* mi = mMetaComponent->mInterfaces[mk->mInterfaceIndexes[mk->mInterfaceNumber - 1]];
     bool isIClassObject = String("IClassObject").Equals(mi->mName);
-    int start = isIClassObject ? 1 : 0;
+    int start = isIClassObject ? 2 : 0;
     for (int i = start; i < mi->mMethodNumber; i++) {
         MetaMethod* mm = mi->mMethods[i];
         builder.AppendFormat("ECode _%s::New(\n", mk->mName);
@@ -1528,7 +1528,7 @@ String CodeGenerator::GenCoclassDeclaration(
                    "public:\n");
     MetaInterface* mi = mMetaComponent->mInterfaces[mc->mInterfaceIndexes[mc->mInterfaceNumber - 1]];
     bool isIClassObject = String("IClassObject").Equals(mi->mName);
-    int start = isIClassObject ? 1 : 0;
+    int start = isIClassObject ? 2 : 0;
     for (int i = start; i < mi->mMethodNumber; i++) {
         MetaMethod* mm = mi->mMethods[i];
         builder.Append("    static ECode New(\n");
@@ -1683,7 +1683,7 @@ String CodeGenerator::GenCoclassOnUserMode(
     builder.AppendFormat("// %s\n", mc->mName);
     MetaInterface* mi = mMetaComponent->mInterfaces[mc->mInterfaceIndexes[mc->mInterfaceNumber - 1]];
     bool isIClassObject = String("IClassObject").Equals(mi->mName);
-    int start = isIClassObject ? 1 : 0;
+    int start = isIClassObject ? 2 : 0;
     for (int i = start; i < mi->mMethodNumber; i++) {
         MetaMethod* mm = mi->mMethods[i];
         builder.AppendFormat("ECode %s::New(\n", mc->mName);

@@ -90,13 +90,32 @@ public:
         /* [in] */ const String& id,
         /* [out] */ ITimeZone** zone);
 
+    static ECode GetCustomTimeZone(
+        /* [in] */ const String& id,
+        /* [out] */ ITimeZone** zone);
+
+    static Array<String> GetAvailableIDs(
+        /* [in] */ Integer rawOffset);
+
+    static Array<String> GetAvailableIDs();
 
     static AutoPtr<ITimeZone> GetDefault();
 
     static AutoPtr<ITimeZone> GetDefaultRef();
 
+    static ECode SetDefault(
+        /* [in] */ ITimeZone* timeZone);
+
+    ECode HasSameRules(
+        /* [in] */ ITimeZone* other,
+        /* [out] */ Boolean* result) override;
+
+protected:
+    ECode CloneImpl(
+        /* [in] */ ITimeZone* newObj);
+
 private:
-    static SyncObject& GetLock();
+    static SyncObject& GetClassLock();
 
     static void AppendNumber(
         /* [in] */ IStringBuilder* sb,

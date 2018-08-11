@@ -14,32 +14,36 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CLASSOBJECT_H__
-#define __CCM_CLASSOBJECT_H__
+#ifndef __CCM_UTIL_CPROPERTYPERMISSION_H__
+#define __CCM_UTIL_CPROPERTYPERMISSION_H__
 
-#include "ccmobject.h"
+#include "ccm/security/BasicPermission.h"
+#include "_ccm_util_CPropertyPermission.h"
+
+using ccm::security::BasicPermission;
 
 namespace ccm {
+namespace util {
 
-class COM_PUBLIC ClassObject
-    : public Object
-    , public IClassObject
+Coclass(CPropertyPermission)
+    , public BasicPermission
 {
 public:
-    ClassObject();
+    CCM_OBJECT_DECL();
 
-    CCM_INTERFACE_DECL();
-
-    ECode AttachMetadata(
-        /* [in] */ IMetaComponent* component) override;
-
-    ECode GetMetadate(
-        /* [out] */ IMetaComponent** component) override;
-
-protected:
-    IMetaComponent* mComponent;
+    ECode Constructor(
+        /* [in] */ const String& name,
+        /* [in] */ const String& actioins);
 };
 
+inline ECode CPropertyPermission::Constructor(
+    /* [in] */ const String& name,
+    /* [in] */ const String& actioins)
+{
+    return BasicPermission::Constructor(String(""), String(""));
 }
 
-#endif //__CCM_CLASSOBJECT_H__
+}
+}
+
+#endif // __CCM_UTIL_CPROPERTYPERMISSION_H__
