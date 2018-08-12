@@ -14,6 +14,8 @@
 // limitations under the License.
 //=========================================================================
 
+interface ccm::util::IList;
+
 namespace ccm {
 namespace util {
 namespace locale {
@@ -24,16 +26,27 @@ namespace locale {
 ]
 interface ILanguageTag
 {
+    const String PRIVATEUSE = "x";
+
     const String SEP = "-";
+
+    GetExtensions(
+        [out] IList** extensions);
 
     GetLanguage(
         [out] String* language);
+
+    GetPrivateuse(
+        [out] String* privateuse);
 
     GetRegion(
         [out] String* region);
 
     GetScript(
         [out] String* script);
+
+    GetVariants(
+        [out] IList** variants);
 }
 
 }

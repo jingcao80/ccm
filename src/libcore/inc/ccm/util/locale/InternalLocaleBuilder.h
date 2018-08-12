@@ -14,58 +14,36 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_UTIL_LOCALE_LANGUAGETAG_H__
-#define __CCM_UTIL_LOCALE_LANGUAGETAG_H__
+#ifndef __CCM_UTIL_LOCALE_INTERNALLOCALEBUILDER_H__
+#define __CCM_UTIL_LOCALE_INTERNALLOCALEBUILDER_H__
 
+#include "ccm/core/SyncObject.h"
 #include "ccm/util/locale/BaseLocale.h"
 #include "ccm/util/locale/LocaleExtensions.h"
-#include "ccm/util/locale/ParseStatus.h"
 #include "ccm.util.locale.ILanguageTag.h"
-#include <ccmautoptr.h>
+
+using ccm::core::SyncObject;
 
 namespace ccm {
 namespace util {
 namespace locale {
 
-class LanguageTag
+class InternalLocaleBuilder
+    : public SyncObject
 {
 public:
-    static AutoPtr<ILanguageTag> Parse(
-        /* [in] */ const String& languageTag,
-        /* [in] */ ParseStatus* sts)
+    void SetLanguageTag(
+        /* [in] */ ILanguageTag* langtag)
+    {}
+
+    AutoPtr<BaseLocale> GetBaseLocale()
     {
         return nullptr;
     }
 
-    static AutoPtr<ILanguageTag> ParseLocale(
-        /* [in] */ BaseLocale* baseLocale,
-        /* [in] */ LocaleExtensions* localeExtensions)
+    AutoPtr<LocaleExtensions> GetLocaleExtensions()
     {
         return nullptr;
-    }
-
-    static String CanonicalizeLanguage(
-        /* [in] */ const String& s)
-    {
-        return String();
-    }
-
-    static String CanonicalizeScript(
-        /* [in] */ const String& s)
-    {
-        return String();
-    }
-
-    static String CanonicalizeRegion(
-        /* [in] */ const String& s)
-    {
-        return String();
-    }
-
-    static String CanonicalizeExtension(
-        /* [in] */ const String& s)
-    {
-        return String();
     }
 };
 
@@ -73,4 +51,5 @@ public:
 }
 }
 
-#endif // __CCM_UTIL_LOCALE_LANGUAGETAG_H__
+
+#endif // __CCM_UTIL_LOCALE_INTERNALLOCALEBUILDER_H__

@@ -15,14 +15,17 @@
 //=========================================================================
 
 #include "ccm/core/AutoLock.h"
+#include "ccm/core/CoreUtils.h"
 #include "ccm/core/CStringBuilder.h"
 #include "ccm/core/System.h"
 #include "ccm/util/CLocale.h"
 #include "ccm/util/Collections.h"
 #include "ccm/util/CPropertyPermission.h"
 #include "ccm/util/Locale.h"
+#include "ccm/util/locale/InternalLocaleBuilder.h"
 #include "ccm/util/locale/LanguageTag.h"
 #include "libcore/icu/ICU.h"
+#include "ccm.core.ICharSequence.h"
 #include "ccm.core.IStringBuilder.h"
 #include "ccm.core.ISecurityManager.h"
 #include "ccm.security.IPermission.h"
@@ -30,7 +33,9 @@
 #include <ccmlogger.h>
 
 using ccm::core::AutoLock;
+using ccm::core::CoreUtils;
 using ccm::core::CStringBuilder;
+using ccm::core::ICharSequence;
 using ccm::core::ISecurityManager;
 using ccm::core::IStringBuilder;
 using ccm::core::IID_IStringBuilder;
@@ -40,12 +45,14 @@ using ccm::io::IID_ISerializable;
 using ccm::security::IPermission;
 using ccm::security::IID_IPermission;
 using ccm::util::locale::ILanguageTag;
+using ccm::util::locale::InternalLocaleBuilder;
 using ccm::util::locale::LanguageTag;
 using libcore::icu::ICU;
 
 namespace ccm {
 namespace util {
 
+INIT_PROI_3 const String Locale::UNDETERMINED_LANGUAGE("und");
 INIT_PROI_3 AutoPtr<ILocale> Locale::sDefaultDisplayLocale;
 INIT_PROI_3 AutoPtr<ILocale> Locale::sDefaultFormatLocale;
 
@@ -499,7 +506,162 @@ ECode Locale::ToLanguageTag(
         buf->Append(LanguageTag::CanonicalizeRegion(subtag));
     }
 
+    AutoPtr<IList> subtags;
+    tag->GetVariants((IList**)&subtags);
+    AutoPtr<IIterator> it;
+    subtags->GetIterator((IIterator**)&it);
+    Boolean hasNext;
+    while (it->HasNext(&hasNext), hasNext) {
+        AutoPtr<IInterface> obj;
+        it->Next((IInterface**)&obj);
+        buf->Append(ILanguageTag::SEP);
+        buf->Append(CoreUtils::Unbox(ICharSequence::Probe(obj)));
+    }
 
+    subtags = nullptr;
+    tag->GetExtensions((IList**)&subtags);
+    it = nullptr;
+    subtags->GetIterator((IIterator**)&it);
+    while (it->HasNext(&hasNext), hasNext) {
+        AutoPtr<IInterface> obj;
+        it->Next((IInterface**)&obj);
+        buf->Append(ILanguageTag::SEP);
+        buf->Append(LanguageTag::CanonicalizeExtension(
+                CoreUtils::Unbox(ICharSequence::Probe(obj))));
+    }
+
+    tag->GetPrivateuse(&subtag);
+    if (subtag.GetLength() > 0) {
+        Integer len;
+        if (buf->GetLength(&len), len > 0) {
+            buf->Append(ILanguageTag::SEP);
+        }
+        buf->Append(ILanguageTag::PRIVATEUSE);
+        buf->Append(ILanguageTag::SEP);
+        buf->Append(subtag);
+    }
+
+    buf->ToString(langTag);
+    {
+        AutoLock lock(this);
+        if (mLanguageTag.IsNull()) {
+            mLanguageTag = *langTag;
+        }
+    }
+    *langTag = mLanguageTag;
+    return NOERROR;
+}
+
+AutoPtr<ILocale> Locale::ForLanguageTag(
+    /* [in] */ const String& languageTag)
+{
+    AutoPtr<ILanguageTag> tag = LanguageTag::Parse(languageTag, nullptr);
+    AutoPtr<InternalLocaleBuilder> bldr = new InternalLocaleBuilder();
+    bldr->SetLanguageTag(tag);
+    AutoPtr<BaseLocale> base = bldr->GetBaseLocale();
+    AutoPtr<LocaleExtensions> exts = bldr->GetLocaleExtensions();
+    if (exts == nullptr && (base->GetVariant().GetLength() > 0)) {
+        exts = GetCompatibilityExtensions(base->GetLanguage(), base->GetScript(),
+                base->GetRegion(), base->GetVariant());
+    }
+    return GetInstance(base, exts);
+}
+
+ECode Locale::GetISO3Language(
+    /* [out] */ String* language)
+{
+    VALIDATE_NOT_NULL(language);
+
+    String lang = mBaseLocale->GetLanguage();
+    if (lang.GetLength() == 3) {
+        *language = lang;
+        return NOERROR;
+    }
+    else if (lang.IsEmpty()) {
+        *language = "";
+        return NOERROR;
+    }
+
+    String language3 = ICU::GetISO3Language(lang);
+    if (!lang.IsEmpty() && language3.IsEmpty()) {
+        String str;
+        ToString(&str);
+        Logger::E("Locale", "Couldn't find 3-letter language code for %sFormatData_%sShortLanguage",
+                lang.string(), str.string());
+        return E_MISSING_RESOURCE_EXCEPTION;
+    }
+    *language = language3;
+    return NOERROR;
+}
+
+ECode Locale::GetISO3Country(
+    /* [out] */ String* country)
+{
+    VALIDATE_NOT_NULL(country);
+
+    String region = mBaseLocale->GetRegion();
+    if (region.GetLength() == 3) {
+        *country = region;
+        return NOERROR;
+    }
+    else if (region.IsEmpty()) {
+        *country = "";
+        return NOERROR;
+    }
+
+    // Prefix "en-" because ICU doesn't really care about what the language is.
+    String country3 = ICU::GetISO3Country(String("en-") + region);
+    if (!region.IsEmpty() && country3.IsEmpty()) {
+        String str;
+        ToString(&str);
+        Logger::E("Locale", "Couldn't find 3-letter country code for %sFormatData_%sShortCountry",
+                region.string(), str.string());
+        return E_MISSING_RESOURCE_EXCEPTION;
+    }
+    *country = country3;
+    return NOERROR;
+}
+
+ECode Locale::GetDisplayLanguage(
+    /* [out] */ String* language)
+{
+    VALIDATE_NOT_NULL(language);
+
+    return GetDisplayLanguage(GetDefault(GetDisplayCategory()), language);
+}
+
+ECode Locale::GetDisplayLanguage(
+    /* [in] */ ILocale* locale,
+    /* [out] */ String* language)
+{
+    VALIDATE_NOT_NULL(language);
+
+    String languageCode = mBaseLocale->GetLanguage();
+    if (languageCode.IsEmpty()) {
+        *language = "";
+        return NOERROR;
+    }
+
+    // Hacks for backward compatibility.
+    //
+    // Our language tag will contain "und" if the languageCode is invalid
+    // or missing. ICU will then return "langue indéterminée" or the equivalent
+    // display language for the indeterminate language code.
+    //
+    String normalizedLanguage;
+    FAIL_RETURN(NormalizeAndValidateLanguage(
+            languageCode, false, &normalizedLanguage));
+    if (UNDETERMINED_LANGUAGE.Equals(normalizedLanguage)) {
+        *language = languageCode;
+        return NOERROR;
+    }
+
+    String result = ICU::GetDisplayLanguage(this, locale);
+    if (result.IsNull()) {
+        result = ICU::GetDisplayLanguage(this, GetDefault());
+    }
+    *language = result;
+    return NOERROR;
 }
 
 //-------------------------------------------------------------------------

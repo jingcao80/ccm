@@ -186,14 +186,24 @@ public:
     ECode ToLanguageTag(
         /* [out] */ String* langTag) override;
 
-
-
-
     static AutoPtr<ILocale> ForLanguageTag(
-        /* [in] */ const String& languageTag)
-    {
-        return nullptr;
-    }
+        /* [in] */ const String& languageTag);
+
+    ECode GetISO3Language(
+        /* [out] */ String* language) override;
+
+    ECode GetISO3Country(
+        /* [out] */ String* country) override;
+
+    ECode GetDisplayLanguage(
+        /* [out] */ String* language) override;
+
+    ECode GetDisplayLanguage(
+        /* [in] */ ILocale* locale,
+        /* [out] */ String* language) override;
+
+
+
 
     static AutoPtr<ILocaleCategory> GetDisplayCategory()
     {
@@ -237,6 +247,14 @@ private:
     static AutoPtr<ILocale> InitDefault(
         /* [in] */ ILocaleCategory* category);
 
+    static ECode NormalizeAndValidateLanguage(
+        /* [in] */ const String& language,
+        /* [in] */ Boolean strict,
+        /* [out] */ String* retLanguage)
+    {
+        return NOERROR;
+    }
+
 
 
     static Boolean IsUnicodeExtensionKey(
@@ -261,6 +279,8 @@ private:
     }
 
 private:
+    static const String UNDETERMINED_LANGUAGE;
+
     AutoPtr<BaseLocale> mBaseLocale;
     AutoPtr<LocaleExtensions> mLocaleExtensions;
 

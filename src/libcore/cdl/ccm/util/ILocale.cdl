@@ -51,12 +51,25 @@ interface ILocale
     GetCountry(
         [out] String* country);
 
+    GetDisplayLanguage(
+        [out] String* language);
+
+    GetDisplayLanguage(
+        [in] ILocale* locale,
+        [out] String* language);
+
     GetExtension(
         [in] Char key,
         [out] String* extension);
 
     GetExtensionKeys(
         [out] ISet** keys);
+
+    GetISO3Country(
+        [out] String* country);
+
+    GetISO3Language(
+        [out] String* language);
 
     GetLanguage(
         [out] String* language);

@@ -27,14 +27,45 @@ namespace icu {
 class ICU
 {
 public:
-    static Array<String> GetISOLanguages();
+    static Array<String> GetISOLanguages()
+    {
+        return Array<String>::Null();
+    }
 
-    static Array<String> GetISOCountries();
+    static Array<String> GetISOCountries()
+    {
+        return Array<String>::Null();
+    }
 
-    static Array<ILocale*> GetAvailableLocales();
+    static Array<ILocale*> GetAvailableLocales()
+    {
+        return Array<ILocale*>::Null();
+    }
+
+    static String GetISO3Country(
+        /* [in] */ const String& languageTag)
+    {
+        return String();
+    }
+
+    static String GetISO3Language(
+        /* [in] */ const String& languageTag)
+    {
+        return String();
+    }
 
     static ECode SetDefaultLocale(
-        /* [in] */ const String& languageTag);
+        /* [in] */ const String& languageTag)
+    {
+        return NOERROR;
+    }
+
+    static String GetDisplayLanguage(
+        /* [in] */ ILocale* targetLocale,
+        /* [in] */ ILocale* locale)
+    {
+        return String();
+    }
 
 private:
     ICU();
