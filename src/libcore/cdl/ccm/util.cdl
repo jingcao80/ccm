@@ -360,6 +360,17 @@ coclass CLocale
 }
 
 [
+    uuid(755282d7-1444-44e3-be80-6260508875d3),
+    version(0.1.0)
+]
+coclass CLocaleBuilder
+{
+    Constructor();
+
+    interface ILocaleBuilder;
+}
+
+[
     uuid(2f6a7390-6aed-4f7d-863e-3f007635ba14),
     version(0.1.0)
 ]

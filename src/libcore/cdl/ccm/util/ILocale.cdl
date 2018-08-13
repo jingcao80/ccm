@@ -38,6 +38,54 @@ interface ILocaleCategory
         [out] String* key);
 }
 
+interface ILocale;
+
+[
+    uuid(533f5611-bdc2-4c2a-a6f7-07a9267080c2),
+    version(0.1.0)
+]
+interface ILocaleBuilder
+{
+    AddUnicodeLocaleAttribute(
+        [in] String attribute);
+
+    Build(
+        [out] ILocale** locale);
+
+    Clear();
+
+    ClearExtensions();
+
+    RemoveUnicodeLocaleAttribute(
+        [in] String attribute);
+
+    SetExtension(
+        [in] Char key,
+        [in] String value);
+
+    SetLanguage(
+        [in] String language);
+
+    SetLanguageTag(
+        [in] String languageTag);
+
+    SetLocale(
+        [in] ILocale* locale);
+
+    SetRegion(
+        [in] String region);
+
+    SetScript(
+        [in] String script);
+
+    SetUnicodeLocaleKeyword(
+        [in] String key,
+        [in] String type);
+
+    SetVariant(
+        [in] String variant);
+}
+
 /*
  * @Involve ccm::core::ICloneable
  * @Involve ccm::io::ISerializable
@@ -51,12 +99,40 @@ interface ILocale
     GetCountry(
         [out] String* country);
 
+    GetDisplayCountry(
+        [out] String* country);
+
+    GetDisplayCountry(
+        [in] ILocale* locale,
+        [out] String* country);
+
     GetDisplayLanguage(
         [out] String* language);
 
     GetDisplayLanguage(
         [in] ILocale* locale,
         [out] String* language);
+
+    GetDisplayName(
+        [out] String* name);
+
+    GetDisplayName(
+        [in] ILocale* locale,
+        [out] String* name);
+
+    GetDisplayScript(
+        [out] String* script);
+
+    GetDisplayScript(
+        [in] ILocale* inLocale,
+        [out] String* script);
+
+    GetDisplayVariant(
+        [out] String* variant);
+
+    GetDisplayVariant(
+        [in] ILocale* inLocale,
+        [out] String* variant);
 
     GetExtension(
         [in] Char key,

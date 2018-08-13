@@ -29,7 +29,8 @@ set(SOURCES
     LanguageTag.cpp
     LocaleExtensions.cpp
     LocaleObjectCache.cpp
-    LocaleUtils.cpp)
+    LocaleUtils.cpp
+    StringTokenIterator.cpp)
 
 add_library(ccm_util_locale STATIC
     ${SOURCES})

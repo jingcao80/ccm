@@ -76,6 +76,7 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_util_CLinkedHashMap.cpp
     ${OBJ_DIR}/_ccm_util_CLinkedHashSet.cpp
     ${OBJ_DIR}/_ccm_util_CLocale.cpp
+    ${OBJ_DIR}/_ccm_util_CLocaleBuilder.cpp
     ${OBJ_DIR}/_ccm_util_CProperties.cpp
     ${OBJ_DIR}/_ccm_util_CPropertyPermission.cpp
     ${OBJ_DIR}/_ccm_util_CRandom.cpp

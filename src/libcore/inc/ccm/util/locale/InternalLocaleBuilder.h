@@ -32,9 +32,52 @@ class InternalLocaleBuilder
     : public SyncObject
 {
 public:
-    void SetLanguageTag(
+    ECode SetLanguage(
+        /* [in] */ const String& language)
+    {
+        return NOERROR;
+    }
+
+    ECode SetScript(
+        /* [in] */ const String& script)
+    {
+        return NOERROR;
+    }
+
+    ECode SetRegion(
+        /* [in] */ const String& region)
+    {
+        return NOERROR;
+    }
+
+    ECode SetVariant(
+        /* [in] */ const String& variant)
+    {
+        return NOERROR;
+    }
+
+    ECode SetExtension(
+        /* [in] */ Char singleton,
+        /* [in] */ const String& value)
+    {
+        return NOERROR;
+    }
+
+    ECode SetLanguageTag(
         /* [in] */ ILanguageTag* langtag)
-    {}
+    {
+        return NOERROR;
+    }
+
+    ECode Clear()
+    {
+        return NOERROR;
+    }
+
+    ECode ClearExtensions()
+    {
+        return NOERROR;
+    }
 
     AutoPtr<BaseLocale> GetBaseLocale()
     {
@@ -44,6 +87,32 @@ public:
     AutoPtr<LocaleExtensions> GetLocaleExtensions()
     {
         return nullptr;
+    }
+
+    ECode SetLocale(
+        /* [in] */ BaseLocale* base,
+        /* [in] */ LocaleExtensions* localeExtensions)
+    {
+        return NOERROR;
+    }
+
+    ECode AddUnicodeLocaleAttribute(
+        /* [in] */ const String& attribute)
+    {
+        return NOERROR;
+    }
+
+    ECode RemoveUnicodeLocaleAttribute(
+        /* [in] */ const String& attribute)
+    {
+        return NOERROR;
+    }
+
+    ECode SetUnicodeLocaleKeyword(
+        /* [in] */ const String& key,
+        /* [in] */ const String& type)
+    {
+        return NOERROR;
     }
 };
 

@@ -253,6 +253,8 @@ public:
         return nullptr;
     }
 
+    static AutoPtr<IList> GetEmptyList();
+
 private:
     static constexpr Integer REVERSE_THRESHOLD = 18;
 };

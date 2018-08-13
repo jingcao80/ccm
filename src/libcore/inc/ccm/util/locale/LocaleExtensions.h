@@ -31,6 +31,16 @@ class LocaleExtensions
     : public SyncObject
 {
 public:
+    static AutoPtr<LocaleExtensions> GetCALENDAR_JAPANESE()
+    {
+        return nullptr;
+    }
+
+    static AutoPtr<LocaleExtensions> GetNUMBER_THAI()
+    {
+        return nullptr;
+    }
+
     AutoPtr<ISet> GetKeys()
     {
         return nullptr;
@@ -68,6 +78,9 @@ public:
     {
         return String();
     }
+
+    ECode GetHashCode(
+        /* [out] */ Integer* hash) override;
 };
 
 }

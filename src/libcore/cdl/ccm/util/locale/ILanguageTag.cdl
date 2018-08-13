@@ -28,10 +28,17 @@ interface ILanguageTag
 {
     const String PRIVATEUSE = "x";
 
+    const String PRIVUSE_VARIANT_PREFIX = "lvariant";
+
     const String SEP = "-";
+
+    const String UNDETERMINED = "und";
 
     GetExtensions(
         [out] IList** extensions);
+
+    GetExtlangs(
+        [out] IList** extlangs);
 
     GetLanguage(
         [out] String* language);
@@ -47,6 +54,57 @@ interface ILanguageTag
 
     GetVariants(
         [out] IList** variants);
+}
+
+[
+    uuid(7e62806b-e189-4d46-a996-6aac02afd105),
+    version(0.1.0)
+]
+interface ILanguageTagFactory
+{
+    IsLanguage(
+        [in] String s,
+        [out] Boolean* result);
+
+    IsExtlang(
+        [in] String s,
+        [out] Boolean* result);
+
+    IsScript(
+        [in] String s,
+        [out] Boolean* result);
+
+    IsRegion(
+        [in] String s,
+        [out] Boolean* result);
+
+    IsVariant(
+        [in] String s,
+        [out] Boolean* result);
+
+    IsExtensionSingleton(
+        [in] String s,
+        [out] Boolean* result);
+
+    IsExtensionSingletonChar(
+        [in] Char c,
+        [out] Boolean* result);
+
+    IsExtensionSubtag(
+        [in] String s,
+        [out] Boolean* result);
+
+    IsPrivateusePrefix(
+        [in] String s,
+        [out] Boolean* result);
+
+    IsPrivateusePrefixChar(
+        [in] Char c,
+        [out] Boolean* result);
+
+    IsPrivateuseSubtag(
+        [in] String s,
+        [out] Boolean* result);
 }
 
 }

@@ -19,19 +19,23 @@
 
 #include "ccm/core/SyncObject.h"
 #include "ccm/util/locale/BaseLocale.h"
+#include "ccm/util/locale/InternalLocaleBuilder.h"
 #include "ccm/util/locale/LocaleExtensions.h"
 #include "ccm/util/locale/LocaleObjectCache.h"
 #include "ccm.core.ICloneable.h"
 #include "ccm.io.ISerializable.h"
 #include "ccm.util.ILocale.h"
+#include "ccm.util.ILocaleBuilder.h"
 #include "ccm.util.ILocaleCategory.h"
 #include <ccmautoptr.h>
 #include <ccmobject.h>
+#include <ccmrefbase.h>
 
 using ccm::core::ICloneable;
 using ccm::core::SyncObject;
 using ccm::io::ISerializable;
 using ccm::util::locale::BaseLocale;
+using ccm::util::locale::InternalLocaleBuilder;
 using ccm::util::locale::LocaleExtensions;
 using ccm::util::locale::LocaleObjectCache;
 
@@ -46,9 +50,96 @@ class Locale
 {
 public:
     class Category
+        : public LightRefBase
+        , public ILocaleCategory
     {
     public:
+        CCM_INTERFACE_DECL();
+
         static AutoPtr<ILocaleCategory> GetDISPLAY();
+
+        static AutoPtr<ILocaleCategory> GetFORMAT();
+
+        inline Category(
+            /* [in] */ const String& languageKey,
+            /* [in] */ const String& scriptKey,
+            /* [in] */ const String& countryKey,
+            /* [in] */ const String& variantKey)
+            : mLanguageKey(languageKey)
+            , mScriptKey(scriptKey)
+            , mCountryKey(countryKey)
+            , mVariantKey(variantKey)
+        {}
+
+        ECode GetLanguageKey(
+            /* [out] */ String* key) override;
+
+        ECode GetScriptKey(
+            /* [out] */ String* key) override;
+
+        ECode GetCountryKey(
+            /* [out] */ String* key) override;
+
+        ECode GetVariantKey(
+            /* [out] */ String* key) override;
+
+    public:
+        String mLanguageKey;
+        String mScriptKey;
+        String mCountryKey;
+        String mVariantKey;
+    };
+
+    class Builder
+        : public Object
+        , public ILocaleBuilder
+    {
+    public:
+        CCM_INTERFACE_DECL();
+
+        ECode Constructor();
+
+        ECode SetLocale(
+            /* [in] */ ILocale* locale) override;
+
+        ECode SetLanguageTag(
+            /* [in] */ const String& languageTag) override;
+
+        ECode SetLanguage(
+            /* [in] */ const String& language) override;
+
+        ECode SetScript(
+            /* [in] */ const String& script) override;
+
+        ECode SetRegion(
+            /* [in] */ const String& region) override;
+
+        ECode SetVariant(
+            /* [in] */ const String& variant) override;
+
+        ECode SetExtension(
+            /* [in] */ Char key,
+            /* [in] */ const String& value) override;
+
+        ECode SetUnicodeLocaleKeyword(
+            /* [in] */ const String& key,
+            /* [in] */ const String& type) override;
+
+        ECode AddUnicodeLocaleAttribute(
+            /* [in] */ const String& attribute) override;
+
+        ECode RemoveUnicodeLocaleAttribute(
+            /* [in] */ const String& attribute) override;
+
+        ECode Clear() override;
+
+        ECode ClearExtensions() override;
+
+        ECode Build(
+            /* [out] */ ILocale** locale) override;
+
+    private:
+        AutoPtr<InternalLocaleBuilder> mLocaleBuilder;
     };
 
 private:
@@ -87,10 +178,49 @@ private:
 public:
     CCM_INTERFACE_DECL();
 
-    static AutoPtr<ILocale> GetUS()
-    {
-        return nullptr;
-    }
+    static AutoPtr<ILocale> GetENGLISH();
+
+    static AutoPtr<ILocale> GetFRENCH();
+
+    static AutoPtr<ILocale> GetGERMAN();
+
+    static AutoPtr<ILocale> GetITALIAN();
+
+    static AutoPtr<ILocale> GetJAPANESE();
+
+    static AutoPtr<ILocale> GetKOREAN();
+
+    static AutoPtr<ILocale> GetCHINESE();
+
+    static AutoPtr<ILocale> GetSIMPLIFIED_CHINESE();
+
+    static AutoPtr<ILocale> GetTRADITIONAL_CHINESE();
+
+    static AutoPtr<ILocale> GetFRANCE();
+
+    static AutoPtr<ILocale> GetGERMANY();
+
+    static AutoPtr<ILocale> GetITALY();
+
+    static AutoPtr<ILocale> GetJAPAN();
+
+    static AutoPtr<ILocale> GetKOREA();
+
+    static AutoPtr<ILocale> GetCHINA();
+
+    static AutoPtr<ILocale> GetPRC();
+
+    static AutoPtr<ILocale> GetTAIWAN();
+
+    static AutoPtr<ILocale> GetUK();
+
+    static AutoPtr<ILocale> GetUS();
+
+    static AutoPtr<ILocale> GetCANADA();
+
+    static AutoPtr<ILocale> GetCANADA_FRENCH();
+
+    static AutoPtr<ILocale> GetROOT();
 
     ECode Constructor(
         /* [in] */ BaseLocale* baseLocale,
@@ -202,35 +332,44 @@ public:
         /* [in] */ ILocale* locale,
         /* [out] */ String* language) override;
 
+    ECode GetDisplayScript(
+        /* [out] */ String* script) override;
 
+    ECode GetDisplayScript(
+        /* [in] */ ILocale* inLocale,
+        /* [out] */ String* script) override;
 
+    ECode GetDisplayCountry(
+        /* [out] */ String* country) override;
 
-    static AutoPtr<ILocaleCategory> GetDisplayCategory()
-    {
-        return nullptr;
-    }
+    ECode GetDisplayCountry(
+        /* [in] */ ILocale* locale,
+        /* [out] */ String* country) override;
 
-    static AutoPtr<ILocaleCategory> GetFormatCategory()
-    {
-        return nullptr;
-    }
+    ECode GetDisplayVariant(
+        /* [out] */ String* variant) override;
 
+    ECode GetDisplayVariant(
+        /* [in] */ ILocale* inLocale,
+        /* [out] */ String* variant) override;
 
+    ECode GetDisplayName(
+        /* [out] */ String* name) override;
 
+    ECode GetDisplayName(
+        /* [in] */ ILocale* locale,
+        /* [out] */ String* name) override;
 
+    ECode GetHashCode(
+        /* [out] */ Integer* hash) override;
 
-
-
-
-
-
+    ECode Equals(
+        /* [in] */ IInterface* obj,
+        /* [out] */ Boolean* same) override;
 
 protected:
     ECode CloneImpl(
-        /* [in] */ ILocale* newObj)
-    {
-        return NOERROR;
-    }
+        /* [in] */ ILocale* newObj);
 
 private:
     static SyncObject& GetClassLock();
@@ -250,39 +389,50 @@ private:
     static ECode NormalizeAndValidateLanguage(
         /* [in] */ const String& language,
         /* [in] */ Boolean strict,
-        /* [out] */ String* retLanguage)
-    {
-        return NOERROR;
-    }
+        /* [out] */ String* retLanguage);
 
+    static Boolean IsAsciiAlphaNum(
+        /* [in] */ const String& string);
 
+    static ECode NormalizeAndValidateRegion(
+        /* [in] */ const String& region,
+        /* [in] */ Boolean strict,
+        /* [out] */ String* retRegion);
+
+    static Boolean IsValidBcp47Alpha(
+        /* [in] */ const String& string,
+        /* [in] */ Integer lowerBound,
+        /* [in] */ Integer upperBound);
+
+    static Boolean IsUnM49AreaCode(
+        /* [in] */ const String& code);
+
+    static ECode NormalizeAndValidateVariant(
+        /* [in] */ const String& variant,
+        /* [out] */ String* retVariant);
+
+    static Boolean IsValidVariantSubtag(
+        /* [in] */ const String& subTag);
 
     static Boolean IsUnicodeExtensionKey(
-        /* [in] */ const String& s)
-    {
-        return false;
-    }
+        /* [in] */ const String& s);
 
     static String ConvertOldISOCodes(
-        /* [in] */ const String& language)
-    {
-        return String();
-    }
+        /* [in] */ const String& language);
 
     static AutoPtr<LocaleExtensions> GetCompatibilityExtensions(
         /* [in] */ const String& language,
         /* [in] */ const String& script,
         /* [in] */ const String& country,
-        /* [in] */ const String& variant)
-    {
-        return nullptr;
-    }
+        /* [in] */ const String& variant);
 
 private:
     static const String UNDETERMINED_LANGUAGE;
 
     AutoPtr<BaseLocale> mBaseLocale;
     AutoPtr<LocaleExtensions> mLocaleExtensions;
+
+    Integer mHashCodeValue = 0;
 
     static AutoPtr<ILocale> sDefaultDisplayLocale;
     static AutoPtr<ILocale> sDefaultFormatLocale;

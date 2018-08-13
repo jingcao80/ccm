@@ -17,6 +17,7 @@
 #ifndef __CCM_UTIL_LOCALE_LANGUAGETAG_H__
 #define __CCM_UTIL_LOCALE_LANGUAGETAG_H__
 
+#include "ccm/util/Collections.h"
 #include "ccm/util/locale/BaseLocale.h"
 #include "ccm/util/locale/LocaleExtensions.h"
 #include "ccm/util/locale/ParseStatus.h"
@@ -28,8 +29,12 @@ namespace util {
 namespace locale {
 
 class LanguageTag
+    : public SyncObject
+    , public ILanguageTag
 {
 public:
+    CCM_INTERFACE_DECL();
+
     static AutoPtr<ILanguageTag> Parse(
         /* [in] */ const String& languageTag,
         /* [in] */ ParseStatus* sts)
@@ -67,6 +72,19 @@ public:
     {
         return String();
     }
+
+private:
+    static AutoPtr<IMap> GetGRANDFATHERED();
+
+private:
+    String mLanguage = String("");
+    String mScript = String("");
+    String mRegion = String("");
+    String mPrivateuse = String("");
+
+    AutoPtr<IList> mExtlangs = Collections::GetEmptyList();
+    AutoPtr<IList> mVariants = Collections::GetEmptyList();
+    AutoPtr<IList> mExtensions = Collections::GetEmptyList();
 };
 
 }

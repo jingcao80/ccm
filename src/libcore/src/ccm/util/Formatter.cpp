@@ -128,7 +128,7 @@ ECode Formatter::Constructor(
 
 ECode Formatter::Constructor()
 {
-    AutoPtr<ILocale> l = Locale::GetDefault(Locale::GetFormatCategory());
+    AutoPtr<ILocale> l = Locale::GetDefault(Locale::Category::GetFORMAT());
     AutoPtr<IAppendable> a;
     CStringBuilder::New(IID_IAppendable, (IInterface**)&a);
     return Constructor(l, a);
@@ -137,7 +137,7 @@ ECode Formatter::Constructor()
 ECode Formatter::Constructor(
     /* [in] */ IAppendable* a)
 {
-    AutoPtr<ILocale> l = Locale::GetDefault(Locale::GetFormatCategory());
+    AutoPtr<ILocale> l = Locale::GetDefault(Locale::Category::GetFORMAT());
     AutoPtr<IAppendable> aa = NonNullAppendable(a);
     return Constructor(l, aa);
 }
@@ -161,7 +161,7 @@ ECode Formatter::Constructor(
 ECode Formatter::Constructor(
     /* [in] */  const String& fileName)
 {
-    AutoPtr<ILocale> l = Locale::GetDefault(Locale::GetFormatCategory());
+    AutoPtr<ILocale> l = Locale::GetDefault(Locale::Category::GetFORMAT());
     AutoPtr<IOutputStream> fos;
     FAIL_RETURN(CFileOutputStream::New(fileName, IID_IOutputStream, (IInterface**)&fos));
     AutoPtr<IWriter> osw;
@@ -175,7 +175,7 @@ ECode Formatter::Constructor(
     /* [in] */ const String& fileName,
     /* [in] */ const String& csn)
 {
-    AutoPtr<ILocale> l = Locale::GetDefault(Locale::GetFormatCategory());
+    AutoPtr<ILocale> l = Locale::GetDefault(Locale::Category::GetFORMAT());
     return Constructor(fileName, csn, l);
 }
 
@@ -194,7 +194,7 @@ ECode Formatter::Constructor(
 ECode Formatter::Constructor(
     /* [in] */ IFile* file)
 {
-    AutoPtr<ILocale> l = Locale::GetDefault(Locale::GetFormatCategory());
+    AutoPtr<ILocale> l = Locale::GetDefault(Locale::Category::GetFORMAT());
     AutoPtr<IOutputStream> fos;
     FAIL_RETURN(CFileOutputStream::New(file, IID_IOutputStream, (IInterface**)&fos));
     AutoPtr<IWriter> osw;
@@ -208,7 +208,7 @@ ECode Formatter::Constructor(
     /* [in] */ IFile* file,
     /* [in] */ const String& csn)
 {
-    AutoPtr<ILocale> l = Locale::GetDefault(Locale::GetFormatCategory());
+    AutoPtr<ILocale> l = Locale::GetDefault(Locale::Category::GetFORMAT());
     return Constructor(file, csn, l);
 }
 
@@ -228,14 +228,14 @@ ECode Formatter::Constructor(
     if (ps == nullptr) {
         return ccm::core::E_NULL_POINTER_EXCEPTION;
     }
-    AutoPtr<ILocale> l = Locale::GetDefault(Locale::GetFormatCategory());
+    AutoPtr<ILocale> l = Locale::GetDefault(Locale::Category::GetFORMAT());
     return Constructor(l, IAppendable::Probe(ps));
 }
 
 ECode Formatter::Constructor(
     /* [in] */ IOutputStream* os)
 {
-    AutoPtr<ILocale> l = Locale::GetDefault(Locale::GetFormatCategory());
+    AutoPtr<ILocale> l = Locale::GetDefault(Locale::Category::GetFORMAT());
     AutoPtr<IWriter> osw;
     FAIL_RETURN(COutputStreamWriter::New(os, IID_IWriter, (IInterface**)&osw));
     AutoPtr<IAppendable> a;
@@ -247,7 +247,7 @@ ECode Formatter::Constructor(
     /* [in] */ IOutputStream* os,
     /* [in] */ const String& csn)
 {
-    AutoPtr<ILocale> l = Locale::GetDefault(Locale::GetFormatCategory());
+    AutoPtr<ILocale> l = Locale::GetDefault(Locale::Category::GetFORMAT());
     return Constructor(os, csn, l);
 }
 

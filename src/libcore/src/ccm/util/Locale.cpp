@@ -17,13 +17,15 @@
 #include "ccm/core/AutoLock.h"
 #include "ccm/core/CoreUtils.h"
 #include "ccm/core/CStringBuilder.h"
+#include "ccm/core/StringUtils.h"
 #include "ccm/core/System.h"
 #include "ccm/util/CLocale.h"
 #include "ccm/util/Collections.h"
 #include "ccm/util/CPropertyPermission.h"
 #include "ccm/util/Locale.h"
-#include "ccm/util/locale/InternalLocaleBuilder.h"
 #include "ccm/util/locale/LanguageTag.h"
+#include "ccm/util/locale/LocaleUtils.h"
+#include "ccm/util/locale/ParseStatus.h"
 #include "libcore/icu/ICU.h"
 #include "ccm.core.ICharSequence.h"
 #include "ccm.core.IStringBuilder.h"
@@ -39,14 +41,16 @@ using ccm::core::ICharSequence;
 using ccm::core::ISecurityManager;
 using ccm::core::IStringBuilder;
 using ccm::core::IID_IStringBuilder;
-using ccm::core::System;
 using ccm::core::IID_ICloneable;
+using ccm::core::System;
+using ccm::core::StringUtils;
 using ccm::io::IID_ISerializable;
 using ccm::security::IPermission;
 using ccm::security::IID_IPermission;
 using ccm::util::locale::ILanguageTag;
-using ccm::util::locale::InternalLocaleBuilder;
 using ccm::util::locale::LanguageTag;
+using ccm::util::locale::LocaleUtils;
+using ccm::util::locale::ParseStatus;
 using libcore::icu::ICU;
 
 namespace ccm {
@@ -68,6 +72,135 @@ AutoPtr<Locale::Cache> Locale::GetLOCALECACHE()
 {
     static AutoPtr<Cache> LOCALECACHE = new Cache();
     return LOCALECACHE;
+}
+
+AutoPtr<ILocale> Locale::GetENGLISH()
+{
+    static AutoPtr<ILocale> ENGLISH = CreateConstant(String("en"), String(""));
+    return ENGLISH;
+}
+
+AutoPtr<ILocale> Locale::GetFRENCH()
+{
+    static AutoPtr<ILocale> FRENCH = CreateConstant(String("fr"), String(""));
+    return FRENCH;
+}
+
+AutoPtr<ILocale> Locale::GetGERMAN()
+{
+    static AutoPtr<ILocale> GERMAN = CreateConstant(String("de"), String(""));
+    return GERMAN;
+}
+
+AutoPtr<ILocale> Locale::GetITALIAN()
+{
+    static AutoPtr<ILocale> ITALIAN = CreateConstant(String("it"), String(""));
+    return ITALIAN;
+}
+
+AutoPtr<ILocale> Locale::GetJAPANESE()
+{
+    static AutoPtr<ILocale> JAPANESE = CreateConstant(String("ja"), String(""));
+    return JAPANESE;
+}
+
+AutoPtr<ILocale> Locale::GetKOREAN()
+{
+    static AutoPtr<ILocale> KOREAN = CreateConstant(String("ko"), String(""));
+    return KOREAN;
+}
+
+AutoPtr<ILocale> Locale::GetCHINESE()
+{
+    static AutoPtr<ILocale> CHINESE = CreateConstant(String("zh"), String(""));
+    return CHINESE;
+}
+
+AutoPtr<ILocale> Locale::GetSIMPLIFIED_CHINESE()
+{
+    static AutoPtr<ILocale> SIMPLIFIED_CHINESE = CreateConstant(String("zh"), String("CN"));
+    return SIMPLIFIED_CHINESE;
+}
+
+AutoPtr<ILocale> Locale::GetTRADITIONAL_CHINESE()
+{
+    static AutoPtr<ILocale> TRADITIONAL_CHINESE = CreateConstant(String("zh"), String("TW"));
+    return TRADITIONAL_CHINESE;
+}
+
+AutoPtr<ILocale> Locale::GetFRANCE()
+{
+    static AutoPtr<ILocale> FRANCE = CreateConstant(String("fr"), String("FR"));
+    return FRANCE;
+}
+
+AutoPtr<ILocale> Locale::GetGERMANY()
+{
+    static AutoPtr<ILocale> GERMANY = CreateConstant(String("de"), String("DE"));
+    return GERMANY;
+}
+
+AutoPtr<ILocale> Locale::GetITALY()
+{
+    static AutoPtr<ILocale> ITALY = CreateConstant(String("it"), String("IT"));
+    return ITALY;
+}
+
+AutoPtr<ILocale> Locale::GetJAPAN()
+{
+    static AutoPtr<ILocale> JAPAN = CreateConstant(String("ja"), String("JP"));
+    return JAPAN;
+}
+
+AutoPtr<ILocale> Locale::GetKOREA()
+{
+    static AutoPtr<ILocale> KOREA = CreateConstant(String("ko"), String("KR"));
+    return KOREA;
+}
+
+AutoPtr<ILocale> Locale::GetCHINA()
+{
+    return GetSIMPLIFIED_CHINESE();
+}
+
+AutoPtr<ILocale> Locale::GetPRC()
+{
+    return GetSIMPLIFIED_CHINESE();
+}
+
+AutoPtr<ILocale> Locale::GetTAIWAN()
+{
+    return GetTRADITIONAL_CHINESE();
+}
+
+AutoPtr<ILocale> Locale::GetUK()
+{
+    static AutoPtr<ILocale> UK = CreateConstant(String("en"), String("GB"));
+    return UK;
+}
+
+AutoPtr<ILocale> Locale::GetUS()
+{
+    static AutoPtr<ILocale> US = CreateConstant(String("en"), String("US"));
+    return US;
+}
+
+AutoPtr<ILocale> Locale::GetCANADA()
+{
+    static AutoPtr<ILocale> CANADA = CreateConstant(String("en"), String("CA"));
+    return CANADA;
+}
+
+AutoPtr<ILocale> Locale::GetCANADA_FRENCH()
+{
+    static AutoPtr<ILocale> CANADA_FRENCH = CreateConstant(String("fr"), String("CA"));
+    return CANADA_FRENCH;
+}
+
+AutoPtr<ILocale> Locale::GetROOT()
+{
+    static AutoPtr<ILocale> ROOT = CreateConstant(String(""), String(""));
+    return ROOT;
 }
 
 AutoPtr<ILocale> Locale::GetOrSetDefaultLocale(
@@ -169,7 +302,7 @@ AutoPtr<ILocale> Locale::GetDefault()
 AutoPtr<ILocale> Locale::GetDefault(
     /* [in] */ ILocaleCategory* category)
 {
-    if (category == GetDisplayCategory()) {
+    if (category == Category::GetDISPLAY()) {
         if (sDefaultDisplayLocale == nullptr) {
             AutoLock lock(GetClassLock());
             if (sDefaultDisplayLocale == nullptr) {
@@ -178,7 +311,7 @@ AutoPtr<ILocale> Locale::GetDefault(
         }
         return sDefaultDisplayLocale;
     }
-    if (category == GetFormatCategory()) {
+    if (category == Category::GetFORMAT()) {
         if (sDefaultFormatLocale == nullptr) {
             AutoLock lock(GetClassLock());
             if (sDefaultFormatLocale == nullptr) {
@@ -254,8 +387,8 @@ ECode Locale::SetDefault(
 {
     AutoLock lock(GetClassLock());
 
-    FAIL_RETURN(SetDefault(GetDisplayCategory(), newLocale));
-    FAIL_RETURN(SetDefault(GetFormatCategory(), newLocale));
+    FAIL_RETURN(SetDefault(Category::GetDISPLAY(), newLocale));
+    FAIL_RETURN(SetDefault(Category::GetFORMAT(), newLocale));
     GetOrSetDefaultLocale(newLocale);
     String languageTag;
     newLocale->ToLanguageTag(&languageTag);
@@ -284,11 +417,11 @@ ECode Locale::SetDefault(
                 IID_IPermission, (IInterface**)&pp);
         FAIL_RETURN(sm->CheckPermission(pp));
     }
-    if (category == GetDisplayCategory()) {
+    if (category == Category::GetDISPLAY()) {
         sDefaultDisplayLocale = newLocale;
         return NOERROR;
     }
-    if (category == GetFormatCategory()) {
+    if (category == Category::GetFORMAT()) {
         sDefaultFormatLocale = newLocale;
         return NOERROR;
     }
@@ -557,7 +690,8 @@ AutoPtr<ILocale> Locale::ForLanguageTag(
 {
     AutoPtr<ILanguageTag> tag = LanguageTag::Parse(languageTag, nullptr);
     AutoPtr<InternalLocaleBuilder> bldr = new InternalLocaleBuilder();
-    bldr->SetLanguageTag(tag);
+    ECode ec = bldr->SetLanguageTag(tag);
+    CHECK(SUCCEEDED(ec));
     AutoPtr<BaseLocale> base = bldr->GetBaseLocale();
     AutoPtr<LocaleExtensions> exts = bldr->GetLocaleExtensions();
     if (exts == nullptr && (base->GetVariant().GetLength() > 0)) {
@@ -627,7 +761,7 @@ ECode Locale::GetDisplayLanguage(
 {
     VALIDATE_NOT_NULL(language);
 
-    return GetDisplayLanguage(GetDefault(GetDisplayCategory()), language);
+    return GetDisplayLanguage(GetDefault(Category::GetDISPLAY()), language);
 }
 
 ECode Locale::GetDisplayLanguage(
@@ -662,6 +796,431 @@ ECode Locale::GetDisplayLanguage(
     }
     *language = result;
     return NOERROR;
+}
+
+ECode Locale::NormalizeAndValidateLanguage(
+    /* [in] */ const String& language,
+    /* [in] */ Boolean strict,
+    /* [out] */ String* retLanguage)
+{
+    if (language.IsNullOrEmpty()) {
+        *retLanguage = "";
+        return NOERROR;
+    }
+
+    String lowercaseLanguage = language.ToLowerCase(/*Locale::ROOT*/);
+    if (!IsValidBcp47Alpha(lowercaseLanguage, 2, 3)) {
+        if (strict) {
+            Logger::E("Locale", "Invalid language: %s", language.string());
+            return E_ILLFORMED_LOCALE_EXCEPTION;
+        }
+        else {
+            *retLanguage = UNDETERMINED_LANGUAGE;
+            return NOERROR;
+        }
+    }
+
+    *retLanguage = lowercaseLanguage;
+    return NOERROR;
+}
+
+Boolean Locale::IsAsciiAlphaNum(
+    /* [in] */ const String& string)
+{
+    for (Integer i = 0; i < string.GetByteLength(); i++) {
+        char c = string.string()[i];
+        if (!(c >= 'a' && c <= 'z' ||
+                c >= 'A' && c <= 'Z' ||
+                c >= '0' && c <= '9')) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+ECode Locale::GetDisplayScript(
+    /* [out] */ String* script)
+{
+    VALIDATE_NOT_NULL(script);
+
+    return GetDisplayScript(GetDefault(Category::GetDISPLAY()), script);
+}
+
+ECode Locale::GetDisplayScript(
+    /* [in] */ ILocale* inLocale,
+    /* [out] */ String* script)
+{
+    VALIDATE_NOT_NULL(script);
+
+    String scriptCode = mBaseLocale->GetScript();
+    if (scriptCode.IsEmpty()) {
+        *script = "";
+        return NOERROR;
+    }
+
+    String result = ICU::GetDisplayScript(this, inLocale);
+    if (result.IsNull()) {
+        result = ICU::GetDisplayScript(this, GetDefault(Category::GetDISPLAY()));
+    }
+
+    *script = result;
+    return NOERROR;
+}
+
+ECode Locale::GetDisplayCountry(
+    /* [out] */ String* country)
+{
+    VALIDATE_NOT_NULL(country);
+
+    return GetDisplayCountry(GetDefault(Category::GetDISPLAY()), country);
+}
+
+ECode Locale::GetDisplayCountry(
+    /* [in] */ ILocale* locale,
+    /* [out] */ String* country)
+{
+    VALIDATE_NOT_NULL(country);
+
+    String countryCode = mBaseLocale->GetRegion();
+    if (countryCode.IsEmpty()) {
+        *country = "";
+        return NOERROR;
+    }
+
+    String normalizedRegion;
+    FAIL_RETURN(NormalizeAndValidateRegion(countryCode, false, &normalizedRegion));
+    if (normalizedRegion.IsEmpty()) {
+        *country = countryCode;
+        return NOERROR;
+    }
+
+    String result = ICU::GetDisplayCountry(this, locale);
+    if (result.IsNull()) {
+        result = ICU::GetDisplayCountry(this, GetDefault());
+    }
+    *country = result;
+    return NOERROR;
+}
+
+ECode Locale::NormalizeAndValidateRegion(
+    /* [in] */ const String& region,
+    /* [in] */ Boolean strict,
+    /* [out] */ String* retRegion)
+{
+    if (region.IsNullOrEmpty()) {
+        *retRegion = "";
+        return NOERROR;
+    }
+
+    String uppercaseRegion = region.ToUpperCase(/*Locale::ROOT*/);
+    if (!IsValidBcp47Alpha(uppercaseRegion, 2, 2) &&
+            !IsUnM49AreaCode(uppercaseRegion)) {
+        if (strict) {
+            Logger::E("Locale", "Invalid region: %s", region.string());
+            return E_ILLFORMED_LOCALE_EXCEPTION;
+        }
+        else {
+            *retRegion = "";
+            return NOERROR;
+        }
+    }
+
+    *retRegion = uppercaseRegion;
+    return NOERROR;
+}
+
+Boolean Locale::IsValidBcp47Alpha(
+    /* [in] */ const String& string,
+    /* [in] */ Integer lowerBound,
+    /* [in] */ Integer upperBound)
+{
+    Integer length = string.GetByteLength();
+    if (length < lowerBound || length > upperBound) {
+        return false;
+    }
+
+    for (Integer i = 0; i < length; i++) {
+        char c = string.string()[i];
+        if (!(c >= 'a' && c <= 'z' ||
+                c >= 'A' && c <= 'Z')) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+Boolean Locale::IsUnM49AreaCode(
+    /* [in] */ const String& code)
+{
+    if (code.GetByteLength() != 3) {
+        return false;
+    }
+
+    for (Integer i = 0; i < 3; ++i) {
+        char c = code.string()[i];
+        if (!(c >= '0' && c <= '9')) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+ECode Locale::GetDisplayVariant(
+    /* [out] */ String* variant)
+{
+    VALIDATE_NOT_NULL(variant);
+
+    return GetDisplayVariant(GetDefault(Category::GetDISPLAY()), variant);
+}
+
+ECode Locale::GetDisplayVariant(
+    /* [in] */ ILocale* inLocale,
+    /* [out] */ String* variant)
+{
+    VALIDATE_NOT_NULL(variant);
+
+    String variantCode = mBaseLocale->GetVariant();
+    if (variantCode.IsEmpty()) {
+        *variant = "";
+        return NOERROR;
+    }
+
+    String normalizedVariant;
+    ECode ec = NormalizeAndValidateVariant(variantCode, &normalizedVariant);
+    if (FAILED(ec)) {
+        *variant = variantCode;
+        return NOERROR;
+    }
+
+    String result = ICU::GetDisplayVariant(this, inLocale);
+    if (result.IsNull()) {
+        result = ICU::GetDisplayVariant(this, GetDefault());
+    }
+
+    if (result.IsEmpty()) {
+        *variant = variantCode;
+        return NOERROR;
+    }
+    *variant = result;
+    return NOERROR;
+}
+
+ECode Locale::NormalizeAndValidateVariant(
+    /* [in] */ const String& variant,
+    /* [out] */ String* retVariant)
+{
+    if (variant.IsNullOrEmpty()) {
+        *retVariant = "";
+        return NOERROR;
+    }
+
+    String normalizedVariant = variant.Replace('-', '_');
+    Array<String> subTags = StringUtils::Split(normalizedVariant, String("_"));
+
+    for (Integer i = 0; i < subTags.GetLength(); i++) {
+        if (!IsValidVariantSubtag(subTags[i])) {
+            Logger::E("Locale", "Invalid variant: %s", variant.string());
+            return E_ILLFORMED_LOCALE_EXCEPTION;
+        }
+    }
+
+    *retVariant = normalizedVariant;
+    return NOERROR;
+}
+
+Boolean Locale::IsValidVariantSubtag(
+    /* [in] */ const String& subTag)
+{
+    // The BCP-47 spec states that :
+    // - Subtags can be between [5, 8] alphanumeric chars in length.
+    // - Subtags that start with a number are allowed to be 4 chars in length.
+    if (subTag.GetByteLength() >= 5 && subTag.GetByteLength() <= 8) {
+        if (IsAsciiAlphaNum(subTag)) {
+            return true;
+        }
+    }
+    else if (subTag.GetByteLength() == 4) {
+        char firstChar = subTag.string()[0];
+        if ((firstChar >= '0' && firstChar <= '9') && IsAsciiAlphaNum(subTag)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+ECode Locale::GetDisplayName(
+    /* [out] */ String* name)
+{
+    VALIDATE_NOT_NULL(name);
+
+    return GetDisplayName(GetDefault(Category::GetDISPLAY()), name);
+}
+
+ECode Locale::GetDisplayName(
+    /* [in] */ ILocale* locale,
+    /* [out] */ String* name)
+{
+    VALIDATE_NOT_NULL(name);
+
+    Integer count = 0;
+    AutoPtr<IStringBuilder> buffer;
+    CStringBuilder::New(IID_IStringBuilder, (IInterface**)&buffer);
+    String languageCode = mBaseLocale->GetLanguage();
+    if (!languageCode.IsEmpty()) {
+        String displayLanguage;
+        FAIL_RETURN(GetDisplayLanguage(locale, &displayLanguage));
+        buffer->Append(displayLanguage.IsEmpty() ? languageCode : displayLanguage);
+        ++count;
+    }
+    String scriptCode = mBaseLocale->GetScript();
+    if (!scriptCode.IsEmpty()) {
+        if (count == 1) {
+            buffer->Append(String(" ("));
+        }
+        String displayScript;
+        FAIL_RETURN(GetDisplayScript(locale, &displayScript));
+        buffer->Append(displayScript.IsEmpty() ? scriptCode : displayScript);
+        ++count;
+    }
+    String countryCode = mBaseLocale->GetRegion();
+    if (!countryCode.IsEmpty()) {
+        if (count == 1) {
+            buffer->Append(String(" ("));
+        }
+        else if (count == 2) {
+            buffer->AppendChar(',');
+        }
+        String displayCountry;
+        FAIL_RETURN(GetDisplayCountry(locale, &displayCountry));
+        buffer->Append(displayCountry.IsEmpty() ? countryCode : displayCountry);
+        ++count;
+    }
+    String variantCode = mBaseLocale->GetVariant();
+    if (!variantCode.IsEmpty()) {
+        if (count == 1) {
+            buffer->Append(String(" ("));
+        }
+        else if (count == 2 || count == 3) {
+            buffer->AppendChar(',');
+        }
+        String displayVariant;
+        FAIL_RETURN(GetDisplayVariant(locale, &displayVariant));
+        buffer->Append(displayVariant.IsEmpty() ? variantCode : displayVariant);
+        ++count;
+    }
+    if (count > 1) {
+        buffer->AppendChar(')');
+    }
+    return buffer->ToString(name);
+}
+
+ECode Locale::CloneImpl(
+    /* [in] */ ILocale* newObj)
+{
+    Locale* l = (Locale*)newObj;
+
+    l->mBaseLocale = mBaseLocale;
+    l->mLocaleExtensions = mLocaleExtensions;
+    l->mLanguageTag = mLanguageTag;
+    return NOERROR;
+}
+
+ECode Locale::GetHashCode(
+    /* [out] */ Integer* hash)
+{
+    VALIDATE_NOT_NULL(hash);
+
+    Integer hc = mHashCodeValue;
+    if (hc == 0) {
+        mBaseLocale->GetHashCode(&hc);
+        if (mLocaleExtensions != nullptr) {
+            Integer lhc;
+            mLocaleExtensions->GetHashCode(&lhc);
+            hc ^= lhc;
+        }
+        mHashCodeValue = hc;
+    }
+    *hash = hc;
+    return NOERROR;
+}
+
+ECode Locale::Equals(
+    /* [in] */ IInterface* obj,
+    /* [out] */ Boolean* same)
+{
+    VALIDATE_NOT_NULL(same);
+
+    if (IInterface::Equals((ILocale*)this, obj)) {
+        *same = true;
+        return NOERROR;
+    }
+    if (ILocale::Probe(obj) == nullptr) {
+        *same = false;
+        return NOERROR;
+    }
+    Locale* l = (Locale*)ILocale::Probe(obj);
+    BaseLocale* otherBase = l->mBaseLocale;
+    if (mBaseLocale->Equals((IObject*)otherBase, same), !*same) {
+        return NOERROR;
+    }
+    if (mLocaleExtensions == nullptr) {
+        *same = l->mLocaleExtensions == nullptr;
+        return NOERROR;
+    }
+    return mLocaleExtensions->Equals((IObject*)l->mLocaleExtensions, same);
+}
+
+Boolean Locale::IsUnicodeExtensionKey(
+    /* [in] */ const String& s)
+{
+    return (s.GetByteLength() == 2) && LocaleUtils::IsAlphaNumericString(s);
+}
+
+String Locale::ConvertOldISOCodes(
+    /* [in] */ const String& language_)
+{
+    String language = LocaleUtils::ToLowerString(language_);
+    if (language.Equals("he")) {
+        return String("iw");
+    }
+    else if (language.Equals("yi")) {
+        return String("ji");
+    }
+    else if (language.Equals("id")) {
+        return String("in");
+    }
+    else {
+        return language;
+    }
+}
+
+AutoPtr<LocaleExtensions> Locale::GetCompatibilityExtensions(
+    /* [in] */ const String& language,
+    /* [in] */ const String& script,
+    /* [in] */ const String& country,
+    /* [in] */ const String& variant)
+{
+    AutoPtr<LocaleExtensions> extensions;
+    // Special cases for backward compatibility support
+    if (LocaleUtils::CaseIgnoreMatch(language, String("ja")) &&
+            script.GetLength() == 0 &&
+            LocaleUtils::CaseIgnoreMatch(country, String("jp")) &&
+            variant.Equals("JP")) {
+        // ja_JP_JP -> u-ca-japanese (calendar = japanese)
+        extensions = LocaleExtensions::GetCALENDAR_JAPANESE();
+    }
+    else if (LocaleUtils::CaseIgnoreMatch(language, String("th")) &&
+            script.GetLength() == 0 &&
+            LocaleUtils::CaseIgnoreMatch(country, String("th")) &&
+            variant.Equals("TH")) {
+        // th_TH_TH -> u-nu-thai (numbersystem = thai)
+        extensions = LocaleExtensions::GetNUMBER_THAI();
+    }
+    return extensions;
 }
 
 //-------------------------------------------------------------------------
@@ -740,6 +1299,188 @@ ECode Locale::LocaleKey::GetHashCode(
     VALIDATE_NOT_NULL(hash);
 
     *hash = mHash;
+    return NOERROR;
+}
+
+//-------------------------------------------------------------------------
+
+CCM_INTERFACE_IMPL_LIGHT_1(Locale::Category, ILocaleCategory);
+
+AutoPtr<ILocaleCategory> Locale::Category::GetDISPLAY()
+{
+    static AutoPtr<ILocaleCategory> DISPLAY = new Category(
+            String("user.language.display"),
+            String("user.script.display"),
+            String("user.country.display"),
+            String("user.variant.display"));
+    return DISPLAY;
+}
+
+AutoPtr<ILocaleCategory> Locale::Category::GetFORMAT()
+{
+    static AutoPtr<ILocaleCategory> FORMAT = new Category(
+            String("user.language.format"),
+            String("user.script.format"),
+            String("user.country.format"),
+            String("user.variant.format"));
+    return FORMAT;
+}
+
+ECode Locale::Category::GetLanguageKey(
+    /* [out] */ String* key)
+{
+    VALIDATE_NOT_NULL(key);
+
+    *key = mLanguageKey;
+    return  NOERROR;
+}
+
+ECode Locale::Category::GetScriptKey(
+    /* [out] */ String* key)
+{
+    VALIDATE_NOT_NULL(key);
+
+    *key = mScriptKey;
+    return NOERROR;
+}
+
+ECode Locale::Category::GetCountryKey(
+    /* [out] */ String* key)
+{
+    VALIDATE_NOT_NULL(key);
+
+    *key = mCountryKey;
+    return NOERROR;
+}
+
+ECode Locale::Category::GetVariantKey(
+    /* [out] */ String* key)
+{
+    VALIDATE_NOT_NULL(key);
+
+    *key = mVariantKey;
+    return NOERROR;
+}
+
+//-------------------------------------------------------------------------
+
+CCM_INTERFACE_IMPL_1(Locale::Builder, Object, ILocaleBuilder);
+
+ECode Locale::Builder::Constructor()
+{
+    mLocaleBuilder = new InternalLocaleBuilder();
+    return NOERROR;
+}
+
+ECode Locale::Builder::SetLocale(
+    /* [in] */ ILocale* locale)
+{
+    Locale* l = (Locale*)locale;
+    ECode ec = mLocaleBuilder->SetLocale(l->mBaseLocale, l->mLocaleExtensions);
+    return SUCCEEDED(ec) ? ec : E_ILLFORMED_LOCALE_EXCEPTION;
+}
+
+ECode Locale::Builder::SetLanguageTag(
+    /* [in] */ const String& languageTag)
+{
+    AutoPtr<ParseStatus> sts = new ParseStatus();
+    AutoPtr<ILanguageTag> tag = LanguageTag::Parse(languageTag, sts);
+    if (sts->IsError()) {
+        Logger::E("Locale::Builder", "%s", sts->GetErrorMessage().string());
+        return E_ILLFORMED_LOCALE_EXCEPTION;
+    }
+    ECode ec = mLocaleBuilder->SetLanguageTag(tag);
+    return SUCCEEDED(ec) ? ec : E_ILLFORMED_LOCALE_EXCEPTION;
+}
+
+ECode Locale::Builder::SetLanguage(
+    /* [in] */ const String& language)
+{
+    ECode ec = mLocaleBuilder->SetLanguage(language);
+    return SUCCEEDED(ec) ? ec : E_ILLFORMED_LOCALE_EXCEPTION;
+}
+
+ECode Locale::Builder::SetScript(
+    /* [in] */ const String& script)
+{
+    ECode ec = mLocaleBuilder->SetScript(script);
+    return SUCCEEDED(ec) ? ec : E_ILLFORMED_LOCALE_EXCEPTION;
+}
+
+ECode Locale::Builder::SetRegion(
+    /* [in] */ const String& region)
+{
+    ECode ec = mLocaleBuilder->SetRegion(region);
+    return SUCCEEDED(ec) ? ec : E_ILLFORMED_LOCALE_EXCEPTION;
+}
+
+ECode Locale::Builder::SetVariant(
+    /* [in] */ const String& variant)
+{
+    ECode ec = mLocaleBuilder->SetVariant(variant);
+    return SUCCEEDED(ec) ? ec : E_ILLFORMED_LOCALE_EXCEPTION;
+}
+
+ECode Locale::Builder::SetExtension(
+    /* [in] */ Char key,
+    /* [in] */ const String& value)
+{
+    ECode ec = mLocaleBuilder->SetExtension(key, value);
+    return SUCCEEDED(ec) ? ec : E_ILLFORMED_LOCALE_EXCEPTION;
+}
+
+ECode Locale::Builder::SetUnicodeLocaleKeyword(
+    /* [in] */ const String& key,
+    /* [in] */ const String& type)
+{
+    ECode ec = mLocaleBuilder->SetUnicodeLocaleKeyword(key, type);
+    return SUCCEEDED(ec) ? ec : E_ILLFORMED_LOCALE_EXCEPTION;
+}
+
+ECode Locale::Builder::AddUnicodeLocaleAttribute(
+    /* [in] */ const String& attribute)
+{
+    ECode ec = mLocaleBuilder->AddUnicodeLocaleAttribute(attribute);
+    return SUCCEEDED(ec) ? ec : E_ILLFORMED_LOCALE_EXCEPTION;
+}
+
+ECode Locale::Builder::RemoveUnicodeLocaleAttribute(
+    /* [in] */ const String& attribute)
+{
+    if (attribute.IsNull()) {
+        Logger::E("Locale::Builder", "attribute == nullptr");
+        return ccm::core::E_NULL_POINTER_EXCEPTION;
+    }
+
+    ECode ec = mLocaleBuilder->RemoveUnicodeLocaleAttribute(attribute);
+    return SUCCEEDED(ec) ? ec : E_ILLFORMED_LOCALE_EXCEPTION;
+}
+
+ECode Locale::Builder::Clear()
+{
+    return mLocaleBuilder->Clear();
+}
+
+ECode Locale::Builder::ClearExtensions()
+{
+    return mLocaleBuilder->ClearExtensions();
+}
+
+ECode Locale::Builder::Build(
+    /* [out] */ ILocale** locale)
+{
+    VALIDATE_NOT_NULL(locale);
+
+    AutoPtr<BaseLocale> baseloc = mLocaleBuilder->GetBaseLocale();
+    AutoPtr<LocaleExtensions> extensions = mLocaleBuilder->GetLocaleExtensions();
+    if (extensions == nullptr && baseloc->GetVariant().GetLength() > 0) {
+        extensions = Locale::GetCompatibilityExtensions(
+                baseloc->GetLanguage(), baseloc->GetScript(),
+                baseloc->GetRegion(), baseloc->GetVariant());
+    }
+    AutoPtr<ILocale> l = Locale::GetInstance(baseloc, extensions);
+    *locale = l;
+    REFCOUNT_ADD(*locale);
     return NOERROR;
 }
 

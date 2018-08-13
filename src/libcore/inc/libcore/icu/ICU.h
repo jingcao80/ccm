@@ -60,7 +60,28 @@ public:
         return NOERROR;
     }
 
+    static String GetDisplayCountry(
+        /* [in] */ ILocale* targetLocale,
+        /* [in] */ ILocale* locale)
+    {
+        return String();
+    }
+
     static String GetDisplayLanguage(
+        /* [in] */ ILocale* targetLocale,
+        /* [in] */ ILocale* locale)
+    {
+        return String();
+    }
+
+    static String GetDisplayVariant(
+        /* [in] */ ILocale* targetLocale,
+        /* [in] */ ILocale* locale)
+    {
+        return String();
+    }
+
+    static String GetDisplayScript(
         /* [in] */ ILocale* targetLocale,
         /* [in] */ ILocale* locale)
     {

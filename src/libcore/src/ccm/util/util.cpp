@@ -23,6 +23,7 @@
 #include "ccm/util/CLinkedHashMap.h"
 #include "ccm/util/CLinkedHashSet.h"
 #include "ccm/util/CLocale.h"
+#include "ccm/util/CLocaleBuilder.h"
 #include "ccm/util/CProperties.h"
 #include "ccm/util/CPropertyPermission.h"
 #include "ccm/util/CRandom.h"
@@ -202,6 +203,8 @@ ECode CLocale::New(
     REFCOUNT_ADD(*object);
     return NOERROR;
 };
+
+CCM_OBJECT_IMPL(CLocaleBuilder);
 
 CCM_OBJECT_IMPL(CProperties);
 ECode CProperties::Clone(
