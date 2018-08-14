@@ -14,36 +14,26 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CORE_COREUTILS_H__
-#define __CCM_CORE_COREUTILS_H__
-
-#include "ccm.core.IChar.h"
-#include "ccm.core.ICharSequence.h"
+#include "ccm.util.CLocale.h"
+#include "ccm.util.ILocale.h"
 #include <ccmautoptr.h>
+#include <gtest/gtest.h>
 
-namespace ccm {
-namespace core {
+using namespace ccm;
+using ccm::util::CLocale;
+using ccm::util::ILocale;
+using ccm::util::IID_ILocale;
 
-class CoreUtils
+TEST(LocaleTest, NewTest)
 {
-public:
-    COM_PUBLIC static AutoPtr<IChar> Box(
-        /* [in] */ Char c);
-
-    COM_PUBLIC static AutoPtr<ICharSequence> Box(
-        /* [in] */ const String& str);
-
-    COM_PUBLIC static Char Unbox(
-        /* [in] */ IChar* ch);
-
-    COM_PUBLIC static String Unbox(
-        /* [in] */ ICharSequence* seq);
-
-    COM_PUBLIC static Array<String> Unbox(
-        /* [in] */ const Array<ICharSequence*>& seqArray);
-};
-
-}
+    AutoPtr<ILocale> locale;
+    ECode ec = CLocale::New(String("en"), IID_ILocale, (IInterface**)&locale);
+    EXPECT_EQ(ec, NOERROR);
+    EXPECT_TRUE(locale != nullptr);
 }
 
-#endif // __CCM_CORE_COREUTILS_H__
+int main(int argc, char **argv)
+{
+    testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
+}

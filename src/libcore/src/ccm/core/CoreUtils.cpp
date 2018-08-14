@@ -15,10 +15,19 @@
 //=========================================================================
 
 #include "ccm/core/CoreUtils.h"
+#include "ccm/core/CChar.h"
 #include "ccm/core/CString.h"
 
 namespace ccm {
 namespace core {
+
+AutoPtr<IChar> CoreUtils::Box(
+    /* [in] */ Char c)
+{
+    AutoPtr<IChar> ch;
+    CChar::New(c, IID_IChar, (IInterface**)&ch);
+    return ch;
+}
 
 AutoPtr<ICharSequence> CoreUtils::Box(
     /* [in] */ const String& str)
@@ -26,6 +35,14 @@ AutoPtr<ICharSequence> CoreUtils::Box(
     AutoPtr<ICharSequence> seq;
     CString::New(str, IID_ICharSequence, (IInterface**)&seq);
     return seq;
+}
+
+Char CoreUtils::Unbox(
+    /* [in] */ IChar* ch)
+{
+    Char c;
+    ch->GetValue(&c);
+    return c;
 }
 
 String CoreUtils::Unbox(

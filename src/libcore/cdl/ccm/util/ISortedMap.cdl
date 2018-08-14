@@ -14,36 +14,50 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CORE_COREUTILS_H__
-#define __CCM_CORE_COREUTILS_H__
-
-#include "ccm.core.IChar.h"
-#include "ccm.core.ICharSequence.h"
-#include <ccmautoptr.h>
+interface ccm::util::ICollection;
+interface ccm::util::IComparator;
+interface ccm::util::ISet;
 
 namespace ccm {
-namespace core {
+namespace util {
 
-class CoreUtils
+[
+    uuid(d29b6732-8fdc-45ed-93c1-3fe8207030e1),
+    version(0.1.0)
+]
+interface ISortedMap
 {
-public:
-    COM_PUBLIC static AutoPtr<IChar> Box(
-        /* [in] */ Char c);
+    Comparator(
+        [out] IComparator** comparator);
 
-    COM_PUBLIC static AutoPtr<ICharSequence> Box(
-        /* [in] */ const String& str);
+    EntrySet(
+        [out] ISet** entryset);
 
-    COM_PUBLIC static Char Unbox(
-        /* [in] */ IChar* ch);
+    FirstKey(
+        [out] IInterface** key);
 
-    COM_PUBLIC static String Unbox(
-        /* [in] */ ICharSequence* seq);
+    HeadMap(
+        [in] IInterface* toKey,
+        [out] ISortedMap** headmap);
 
-    COM_PUBLIC static Array<String> Unbox(
-        /* [in] */ const Array<ICharSequence*>& seqArray);
-};
+    KeySet(
+        [out] ISet** keyset);
+
+    LastKey(
+        [out] IInterface** key);
+
+    SubMap(
+        [in] IInterface* fromKey,
+        [in] IInterface* toKey,
+        [out] ISortedMap** submap);
+
+    TailMap(
+        [in] IInterface* fromKey,
+        [out] ISortedMap** tailmap);
+
+    Values(
+        [out] ICollection** values);
+}
 
 }
 }
-
-#endif // __CCM_CORE_COREUTILS_H__

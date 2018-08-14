@@ -24,6 +24,7 @@
 #include "ccm.util.IEnumeration.h"
 #include "ccm.util.IIterator.h"
 #include "ccm.util.IList.h"
+#include "ccm.util.IMap.h"
 #include "ccm.util.ISet.h"
 #include <ccmautoptr.h>
 #include <ccmrefbase.h>
@@ -236,6 +237,18 @@ public:
         /* [in] */ Integer i,
         /* [in] */ Integer j);
 
+    static AutoPtr<ISet> CreateUnmodifiableSet(
+        /* [in] */ ISet* set)
+    {
+        return nullptr;
+    }
+
+    static AutoPtr<IList> CreateUnmodifiableList(
+        /* [in] */ IList* list)
+    {
+        return nullptr;
+    }
+
     static AutoPtr<ICollection> CreateSynchronizedCollection(
         /* [in] */ ICollection* c,
         /* [in] */ ISynchronize* mutex);
@@ -253,7 +266,19 @@ public:
         return nullptr;
     }
 
-    static AutoPtr<IList> GetEmptyList();
+    static AutoPtr<IList> GetEmptyList()
+    {
+        return nullptr;
+    }
+
+    static AutoPtr<IMap> GetEmptyMap();
+
+    static AutoPtr<IMap> CreateSingletonMap(
+        /* [in] */ IInterface* key,
+        /* [in] */ IInterface* value)
+    {
+        return nullptr;
+    }
 
 private:
     static constexpr Integer REVERSE_THRESHOLD = 18;

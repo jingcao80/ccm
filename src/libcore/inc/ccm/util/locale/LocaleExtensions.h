@@ -18,6 +18,7 @@
 #define __CCM_UTIL_LOCALE_LOCALEEXTENSIONS_H__
 
 #include "ccm/core/SyncObject.h"
+#include "ccm/util/locale/Extension.h"
 #include "ccm.util.ISet.h"
 #include <ccmautoptr.h>
 
@@ -42,6 +43,12 @@ public:
     }
 
     AutoPtr<ISet> GetKeys()
+    {
+        return nullptr;
+    }
+
+    AutoPtr<Extension> GetExtension(
+        /* [in] */ Char key)
     {
         return nullptr;
     }

@@ -14,36 +14,21 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CORE_COREUTILS_H__
-#define __CCM_CORE_COREUTILS_H__
-
-#include "ccm.core.IChar.h"
-#include "ccm.core.ICharSequence.h"
-#include <ccmautoptr.h>
+#include "ccm/util/locale/Extension.h"
 
 namespace ccm {
-namespace core {
+namespace util {
+namespace locale {
 
-class CoreUtils
+ECode Extension::ToString(
+    /* [out] */ String* desc)
 {
-public:
-    COM_PUBLIC static AutoPtr<IChar> Box(
-        /* [in] */ Char c);
+    VALIDATE_NOT_NULL(desc);
 
-    COM_PUBLIC static AutoPtr<ICharSequence> Box(
-        /* [in] */ const String& str);
-
-    COM_PUBLIC static Char Unbox(
-        /* [in] */ IChar* ch);
-
-    COM_PUBLIC static String Unbox(
-        /* [in] */ ICharSequence* seq);
-
-    COM_PUBLIC static Array<String> Unbox(
-        /* [in] */ const Array<ICharSequence*>& seqArray);
-};
+    *desc = GetID();
+    return NOERROR;
+}
 
 }
 }
-
-#endif // __CCM_CORE_COREUTILS_H__
+}

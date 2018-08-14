@@ -14,36 +14,24 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CORE_COREUTILS_H__
-#define __CCM_CORE_COREUTILS_H__
-
-#include "ccm.core.IChar.h"
-#include "ccm.core.ICharSequence.h"
-#include <ccmautoptr.h>
-
 namespace ccm {
-namespace core {
+namespace util {
 
-class CoreUtils
+[
+    uuid(c548a9de-f3d8-4acb-83f3-00c65c1b56b2),
+    version(0.1.0)
+]
+interface IComparator
 {
-public:
-    COM_PUBLIC static AutoPtr<IChar> Box(
-        /* [in] */ Char c);
+    Compare(
+        [in] IInterface* o1,
+        [in] IInterface* o2,
+        [out] Integer* result);
 
-    COM_PUBLIC static AutoPtr<ICharSequence> Box(
-        /* [in] */ const String& str);
-
-    COM_PUBLIC static Char Unbox(
-        /* [in] */ IChar* ch);
-
-    COM_PUBLIC static String Unbox(
-        /* [in] */ ICharSequence* seq);
-
-    COM_PUBLIC static Array<String> Unbox(
-        /* [in] */ const Array<ICharSequence*>& seqArray);
-};
+    Equals(
+        [in] IInterface* obj,
+        [out] Boolean* isEqual);
+}
 
 }
 }
-
-#endif // __CCM_CORE_COREUTILS_H__

@@ -20,7 +20,9 @@
 #include "ccm/util/Collections.h"
 #include "ccm/util/locale/BaseLocale.h"
 #include "ccm/util/locale/LocaleExtensions.h"
+#include "ccm/util/locale/LocaleUtils.h"
 #include "ccm/util/locale/ParseStatus.h"
+#include "ccm/util/locale/StringTokenIterator.h"
 #include "ccm.util.locale.ILanguageTag.h"
 #include <ccmautoptr.h>
 
@@ -37,44 +39,129 @@ public:
 
     static AutoPtr<ILanguageTag> Parse(
         /* [in] */ const String& languageTag,
-        /* [in] */ ParseStatus* sts)
-    {
-        return nullptr;
-    }
+        /* [in] */ ParseStatus* sts);
 
     static AutoPtr<ILanguageTag> ParseLocale(
         /* [in] */ BaseLocale* baseLocale,
-        /* [in] */ LocaleExtensions* localeExtensions)
-    {
-        return nullptr;
-    }
+        /* [in] */ LocaleExtensions* localeExtensions);
+
+    ECode GetLanguage(
+        /* [out] */ String* language) override;
+
+    ECode GetExtlangs(
+        /* [out] */ IList** extlangs) override;
+
+    ECode GetScript(
+        /* [out] */ String* script) override;
+
+    ECode GetRegion(
+        /* [out] */ String* region) override;
+
+    ECode GetVariants(
+        /* [out] */ IList** variants) override;
+
+    ECode GetExtensions(
+        /* [out] */ IList** extensions) override;
+
+    ECode GetPrivateuse(
+        /* [out] */ String* privateuse) override;
+
+    static Boolean IsLanguage(
+        /* [in] */ const String& s);
+
+    static Boolean IsExtlang(
+        /* [in] */ const String& s);
+
+    static Boolean IsScript(
+        /* [in] */ const String& s);
+
+    static Boolean IsRegion(
+        /* [in] */ const String& s);
+
+    static Boolean IsVariant(
+        /* [in] */ const String& s);
+
+    static Boolean IsExtensionSingleton(
+        /* [in] */ const String& s);
+
+    static Boolean IsExtensionSingletonChar(
+        /* [in] */ Char c);
+
+    static Boolean IsExtensionSubtag(
+        /* [in] */ const String& s);
+
+    static Boolean IsPrivateusePrefix(
+        /* [in] */ const String& s);
+
+    static Boolean IsPrivateusePrefixChar(
+        /* [in] */ Char c);
+
+    static Boolean IsPrivateuseSubtag(
+        /* [in] */ const String& s);
 
     static String CanonicalizeLanguage(
-        /* [in] */ const String& s)
-    {
-        return String();
-    }
+        /* [in] */ const String& s);
+
+    static String CanonicalizeExtlang(
+        /* [in] */ const String& s);
 
     static String CanonicalizeScript(
-        /* [in] */ const String& s)
-    {
-        return String();
-    }
+        /* [in] */ const String& s);
 
     static String CanonicalizeRegion(
-        /* [in] */ const String& s)
-    {
-        return String();
-    }
+        /* [in] */ const String& s);
+
+    static String CanonicalizeVariant(
+        /* [in] */ const String& s);
 
     static String CanonicalizeExtension(
-        /* [in] */ const String& s)
-    {
-        return String();
-    }
+        /* [in] */ const String& s);
+
+    static String CanonicalizeExtensionSingleton(
+        /* [in] */ const String& s);
+
+    static String CanonicalizeExtensionSubtag(
+        /* [in] */ const String& s);
+
+    static String CanonicalizePrivateuse(
+        /* [in] */ const String& s);
+
+    static String CanonicalizePrivateuseSubtag(
+        /* [in] */ const String& s);
+
+    ECode ToString(
+        /* [out] */ String* desc) override;
 
 private:
     static AutoPtr<IMap> GetGRANDFATHERED();
+
+    Boolean ParseLanguage(
+        /* [in] */ StringTokenIterator* itr,
+        /* [in] */ ParseStatus* sts);
+
+    Boolean ParseExtlangs(
+        /* [in] */ StringTokenIterator* itr,
+        /* [in] */ ParseStatus* sts);
+
+    Boolean ParseScript(
+        /* [in] */ StringTokenIterator* itr,
+        /* [in] */ ParseStatus* sts);
+
+    Boolean ParseRegion(
+        /* [in] */ StringTokenIterator* itr,
+        /* [in] */ ParseStatus* sts);
+
+    Boolean ParseVariants(
+        /* [in] */ StringTokenIterator* itr,
+        /* [in] */ ParseStatus* sts);
+
+    Boolean ParseExtensions(
+        /* [in] */ StringTokenIterator* itr,
+        /* [in] */ ParseStatus* sts);
+
+    Boolean ParsePrivateuse(
+        /* [in] */ StringTokenIterator* itr,
+        /* [in] */ ParseStatus* sts);
 
 private:
     String mLanguage = String("");
@@ -86,6 +173,66 @@ private:
     AutoPtr<IList> mVariants = Collections::GetEmptyList();
     AutoPtr<IList> mExtensions = Collections::GetEmptyList();
 };
+
+inline String LanguageTag::CanonicalizeLanguage(
+    /* [in] */ const String& s)
+{
+    return LocaleUtils::ToLowerString(s);
+}
+
+inline String LanguageTag::CanonicalizeExtlang(
+    /* [in] */ const String& s)
+{
+    return LocaleUtils::ToLowerString(s);
+}
+
+inline String LanguageTag::CanonicalizeScript(
+    /* [in] */ const String& s)
+{
+    return LocaleUtils::ToTitleString(s);
+}
+
+inline String LanguageTag::CanonicalizeRegion(
+    /* [in] */ const String& s)
+{
+    return LocaleUtils::ToUpperString(s);
+}
+
+inline String LanguageTag::CanonicalizeVariant(
+    /* [in] */ const String& s)
+{
+    return LocaleUtils::ToLowerString(s);
+}
+
+inline String LanguageTag::CanonicalizeExtension(
+    /* [in] */ const String& s)
+{
+    return LocaleUtils::ToLowerString(s);
+}
+
+inline String LanguageTag::CanonicalizeExtensionSingleton(
+    /* [in] */ const String& s)
+{
+    return LocaleUtils::ToLowerString(s);
+}
+
+inline String LanguageTag::CanonicalizeExtensionSubtag(
+    /* [in] */ const String& s)
+{
+    return LocaleUtils::ToLowerString(s);
+}
+
+inline String LanguageTag::CanonicalizePrivateuse(
+    /* [in] */ const String& s)
+{
+    return LocaleUtils::ToLowerString(s);
+}
+
+inline String LanguageTag::CanonicalizePrivateuseSubtag(
+    /* [in] */ const String& s)
+{
+    return LocaleUtils::ToLowerString(s);
+}
 
 }
 }

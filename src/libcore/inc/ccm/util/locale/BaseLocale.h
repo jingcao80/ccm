@@ -134,6 +134,9 @@ private:
         /* [in] */ const String& region,
         /* [in] */ const String& variant);
 
+public:
+    static const String SEP;
+
 private:
     String mLanguage;
     String mScript;

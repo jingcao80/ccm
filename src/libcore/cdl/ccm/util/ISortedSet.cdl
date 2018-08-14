@@ -14,36 +14,44 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CORE_COREUTILS_H__
-#define __CCM_CORE_COREUTILS_H__
-
-#include "ccm.core.IChar.h"
-#include "ccm.core.ICharSequence.h"
-#include <ccmautoptr.h>
+interface ccm::util::IComparator;
 
 namespace ccm {
-namespace core {
+namespace util {
 
-class CoreUtils
+/*
+ * @Involve interface ccm::util::ISet
+ * @Involve interface ccm::util::ICollection
+ * @Involve interface ccm::core::IIterable
+ */
+[
+    uuid(87972ee6-547a-4ae5-b17d-a7e8f8ec794a),
+    version(0.1.0)
+]
+interface ISortedSet
 {
-public:
-    COM_PUBLIC static AutoPtr<IChar> Box(
-        /* [in] */ Char c);
+    Comparator(
+        [out] IComparator** comparator);
 
-    COM_PUBLIC static AutoPtr<ICharSequence> Box(
-        /* [in] */ const String& str);
+    First(
+        [out] IInterface** element);
 
-    COM_PUBLIC static Char Unbox(
-        /* [in] */ IChar* ch);
+    HeadSet(
+        [in] IInterface* toElement,
+        [out] ISortedSet** headset);
 
-    COM_PUBLIC static String Unbox(
-        /* [in] */ ICharSequence* seq);
+    Last(
+        [out] IInterface** element);
 
-    COM_PUBLIC static Array<String> Unbox(
-        /* [in] */ const Array<ICharSequence*>& seqArray);
-};
+    SubSet(
+        [in] IInterface* fromElement,
+        [in] IInterface* toElement,
+        [out] ISortedSet** subset);
+
+    TailSet(
+        [in] IInterface* fromElement,
+        [out] ISortedSet** tailset);
+}
 
 }
 }
-
-#endif // __CCM_CORE_COREUTILS_H__

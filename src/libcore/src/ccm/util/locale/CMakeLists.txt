@@ -25,12 +25,14 @@ include_directories(
 
 set(SOURCES
     BaseLocale.cpp
+    Extension.cpp
     InternalLocaleBuilder.cpp
     LanguageTag.cpp
     LocaleExtensions.cpp
     LocaleObjectCache.cpp
     LocaleUtils.cpp
-    StringTokenIterator.cpp)
+    StringTokenIterator.cpp
+    UnicodeLocaleExtension.cpp)
 
 add_library(ccm_util_locale STATIC
     ${SOURCES})

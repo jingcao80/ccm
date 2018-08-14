@@ -31,6 +31,8 @@ namespace locale {
 static const InterfaceID IID_BaseLocale =
         {{0xd4f5d57e,0x3ac4,0x4289,0xbda9,{0x7,0x8,0x0,0xf,0x4,0x0,0x9,0x7,0xa,0xc,0x6,0x5}}, &CID_libcore};
 
+const String BaseLocale::SEP("_");
+
 BaseLocale::Cache* BaseLocale::Get_CACHE()
 {
     static AutoPtr<Cache> CACHE = new Cache();
