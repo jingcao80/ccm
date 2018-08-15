@@ -94,6 +94,11 @@ interface IMap
     PutAll(
         [in] IMap* m);
 
+    PutIfAbsent(
+        [in] IInterface* key,
+        [in] IInterface* value,
+        [out] IInterface** prevValue = nullptr);
+
     Remove(
         [in] IInterface* key,
         [out] IInterface** prevValue = nullptr);

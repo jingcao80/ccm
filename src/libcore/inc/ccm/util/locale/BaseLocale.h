@@ -93,6 +93,9 @@ private:
     };
 
 public:
+    IInterface* Probe(
+        /* [in] */ const InterfaceID& iid) override;
+
     static AutoPtr<BaseLocale> CreateInstance(
         /* [in] */ const String& language,
         /* [in] */ const String& region);

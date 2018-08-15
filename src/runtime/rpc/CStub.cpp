@@ -588,6 +588,7 @@ void CStub::OnLastStrongRef(
     /* [in] */ const void* id)
 {
     UnregisterExportObject(RPCType::Local, mTarget);
+    Object::OnLastStrongRef(id);
 }
 
 ECode CStub::Match(

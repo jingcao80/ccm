@@ -19,7 +19,7 @@
 
 #include <ccmautoptr.h>
 #include <ccmobject.h>
-#include <ccmtypes.h>
+#include <ccmrefbase.h>
 
 namespace ccm {
 namespace util {
@@ -28,6 +28,33 @@ namespace locale {
 class LocaleObjectCache
     : public Object
 {
+private:
+    class CacheEntry
+        : public LightRefBase
+        , public IInterface
+    {
+    public:
+        CCM_INTERFACE_DECL();
+
+    public:
+        AutoPtr<IInterface> mKey;
+        AutoPtr<IWeakReference> mValue;
+    };
+
+    class StaleEntriesObserver
+        : public LightRefBase
+        , public IReferenceCallback
+    {
+    public:
+        CCM_INTERFACE_DECL();
+
+        ECode OnLastStrongRef(
+            /* [in] */ IObject* obj) override;
+
+        ECode OnLastWeakRef(
+            /* [in] */ IObject* obj) override;
+    };
+
 public:
     ECode Put(
         /* [in] */ IInterface* key,
@@ -43,6 +70,9 @@ protected:
 
     virtual AutoPtr<IInterface> NormalizeKey(
         /* [in] */ IInterface* key);
+
+private:
+    void CleanStaleEntries();
 };
 
 }

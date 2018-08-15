@@ -28,6 +28,8 @@
 #include "ccm/util/CPropertyPermission.h"
 #include "ccm/util/CRandom.h"
 #include "ccm/util/CStringTokenizer.h"
+#include "ccm/util/CTreeMap.h"
+#include "ccm/util/CTreeSet.h"
 #include "ccm/util/calendar/CEra.h"
 #include "ccm/util/calendar/CGregorian.h"
 #include "ccm/util/calendar/CJulianCalendar.h"
@@ -223,6 +225,10 @@ ECode CProperties::Clone(
 CCM_OBJECT_IMPL(CPropertyPermission);
 CCM_OBJECT_IMPL(CRandom);
 CCM_OBJECT_IMPL(CStringTokenizer);
+CCM_OBJECT_IMPL(CTreeMap);
+CCM_INTERFACE_IMPL_1(CTreeMap, SyncObject, ITreeMap);
+CCM_OBJECT_IMPL(CTreeSet);
+CCM_INTERFACE_IMPL_1(CTreeSet, SyncObject, ITreeSet);
 
 namespace calendar {
 

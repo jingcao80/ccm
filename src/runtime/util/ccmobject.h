@@ -17,6 +17,7 @@
 #ifndef __CCM_OBJECT_H__
 #define __CCM_OBJECT_H__
 
+#include "ccmautoptr.h"
 #include "ccmrefbase.h"
 #include "ccmtypes.h"
 
@@ -47,11 +48,20 @@ public:
         /* [in] */ IInterface* obj,
         /* [out] */ Boolean* same) override;
 
+    ECode SetReferenceCallback(
+        /* [in] */ IReferenceCallback* callback) override;
+
     ECode ToString(
         /* [out] */ String* desc) override;
 
     ECode GetWeakReference(
         /* [out] */ IWeakReference** wr) override;
+
+    void OnLastStrongRef(
+        /* [in] */ const void* id) override;
+
+    void OnLastWeakRef(
+        /* [in] */ const void* id) override;
 
     static String GetCoclassName(
         /* [in] */ IInterface* obj);
@@ -69,6 +79,7 @@ public:
 private:
     IMetaComponent* mComponent;
     String mCoclassName;
+    AutoPtr<IReferenceCallback> mRefCallback;
 };
 
 }

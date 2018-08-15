@@ -1,0 +1,98 @@
+//=========================================================================
+// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//=========================================================================
+
+interface ccm::util::IIterator;
+interface ccm::util::ISortedSet;
+
+namespace ccm {
+namespace util {
+
+/*
+ * @Involve interface ccm::util::ISortedSet
+ * @Involve interface ccm::util::ISet
+ * @Involve interface ccm::util::ICollection
+ * @Involve interface ccm::core::IIterable
+ */
+[
+    uuid(d9a99667-b9b3-43bb-94dc-7645f7313c57),
+    version(0.1.0)
+]
+interface INavigableSet
+{
+    Ceiling(
+        [in] IInterface* e,
+        [out] IInterface** ceilingE);
+
+    DescendingIterator(
+        [out] IIterator** it);
+
+    DescendingSet(
+        [out] INavigableSet** set);
+
+    Floor(
+        [in] IInterface* e,
+        [out] IInterface** floorE);
+
+    GetIterator(
+        [out] IIterator** it);
+
+    HeadSet(
+        [in] IInterface* toElement
+        [out] ISortedSet** headset);
+
+    HeadSet(
+        [in] IInterface* toElement,
+        [in] Boolean inclusive,
+        [out] INavigableSet** headset);
+
+    Higher(
+        [in] IInterface* e,
+        [out] IInterface** higherE);
+
+    Lower(
+        [in] IInterface* e,
+        [out] IInterface** lowerE);
+
+    PollFirst(
+        [out] IInterface** e);
+
+    PollLast(
+        [out] IInterface** e);
+
+    SubSet(
+        [in] IInterface* fromElement,
+        [in] IInterface* toElement,
+        [out] ISortedSet** subset);
+
+    SubSet(
+        [in] IInterface* fromElement,
+        [in] Boolean fromInclusive,
+        [in] IInterface* toElement,
+        [in] Boolean toInclusive,
+        [out] INavigableSet** subset);
+
+    TailSet(
+        [in] IInterface* fromElement,
+        [out] ISortedSet** tailset);
+
+    TailSet(
+        [in] IInterface* fromElement,
+        [in] Boolean inclusive,
+        [out] INavigableSet** tailset);
+}
+
+}
+}

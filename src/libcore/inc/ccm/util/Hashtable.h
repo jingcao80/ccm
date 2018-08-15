@@ -316,6 +316,11 @@ public:
     ECode GetHashCode(
         /* [out] */ Integer* hash) override;
 
+    ECode PutIfAbsent(
+        /* [in] */ IInterface* key,
+        /* [in] */ IInterface* value,
+        /* [out] */ IInterface** prevValue = nullptr) override;
+
 protected:
     void Rehash();
 

@@ -37,6 +37,8 @@ interface IClassObject
         [out] IInterface** object);
 }
 
+interface IReferenceCallback;
+
 [
     uuid(00000000-0000-0000-0000-000000000003),
     version(0.1.0)
@@ -59,6 +61,9 @@ interface IObject
     Equals(
         [in] IInterface* obj,
         [out] Boolean* same);
+
+    SetReferenceCallback(
+        [in] IReferenceCallback* callback);
 
     ToString(
         [out] String* desc);
@@ -112,6 +117,19 @@ interface IWeakReferenceSource
 {
     GetWeakReference(
         [out] IWeakReference** wr);
+}
+
+[
+    uuid(00000000-0000-0000-0000-000000000007),
+    version(0.1.0)
+]
+interface IReferenceCallback
+{
+    OnLastStrongRef(
+        [in] IObject* obj);
+
+    OnLastWeakRef(
+        [in] IObject* obj);
 }
 
 }

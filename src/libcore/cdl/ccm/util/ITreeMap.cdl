@@ -14,52 +14,23 @@
 // limitations under the License.
 //=========================================================================
 
-interface ccm::util::ICollection;
-interface ccm::util::IComparator;
-interface ccm::util::ISet;
-
 namespace ccm {
 namespace util {
 
 /*
+ * @Involve interface ccm::util::INavigableMap
+ * @Involve interface ccm::util::ISortedMap
  * @Involve interface ccm::util::IMap
+ * @Involve interface ccm::core::ICloneable
+ * @Involve interface ccm::io::ISerializable
  */
 [
-    uuid(d29b6732-8fdc-45ed-93c1-3fe8207030e1),
+    uuid(ae691caf-3a86-4ef7-bc4e-b88a659e1c37),
     version(0.1.0)
 ]
-interface ISortedMap
+interface ITreeMap
 {
-    Comparator(
-        [out] IComparator** comparator);
 
-    EntrySet(
-        [out] ISet** entryset);
-
-    FirstKey(
-        [out] IInterface** key);
-
-    HeadMap(
-        [in] IInterface* toKey,
-        [out] ISortedMap** headmap);
-
-    KeySet(
-        [out] ISet** keyset);
-
-    LastKey(
-        [out] IInterface** key);
-
-    SubMap(
-        [in] IInterface* fromKey,
-        [in] IInterface* toKey,
-        [out] ISortedMap** submap);
-
-    TailMap(
-        [in] IInterface* fromKey,
-        [out] ISortedMap** tailmap);
-
-    Values(
-        [out] ICollection** values);
 }
 
 }

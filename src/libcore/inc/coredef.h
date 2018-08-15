@@ -14,36 +14,19 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/util/locale/LocaleObjectCache.h"
+#ifndef __CCM_COREDEF_H__
+#define __CCM_COREDEF_H__
 
-namespace ccm {
-namespace util {
-namespace locale {
+#define FOR_EACH(Type, element, TypeCastFunc, container) \
+    { \
+        AutoPtr<IIterator> it; \
+        container->GetIterator((IIterator**)&it); \
+        Boolean hasNext; \
+        while (it->HasNext(&hasNext), hasNext) { \
+            AutoPtr<IInterface> obj; \
+            it->Next((IInterface**)&obj); \
+            Type element = (Type)TypeCastFunc(obj);
 
-AutoPtr<IInterface> LocaleObjectCache::NormalizeKey(
-    /* [in] */ IInterface* key)
-{
-    return key;
-}
+#define END_FOR_EACH() }}
 
-ECode LocaleObjectCache::Put(
-    /* [in] */ IInterface* key,
-    /* [in] */ IInterface* value)
-{
-    return NOERROR;
-}
-
-ECode LocaleObjectCache::Get(
-    /* [in] */ IInterface* key,
-    /* [out] */ IInterface** value)
-{
-    VALIDATE_NOT_NULL(value);
-
-
-
-    return NOERROR;
-}
-
-}
-}
-}
+#endif // __CCM_COREDEF_H__

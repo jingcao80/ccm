@@ -15,7 +15,6 @@
 //=========================================================================
 
 #include "ccmobject.h"
-#include "ccmautoptr.h"
 
 namespace ccm {
 
@@ -112,6 +111,13 @@ ECode Object::Equals(
     return NOERROR;
 }
 
+ECode Object::SetReferenceCallback(
+    /* [in] */ IReferenceCallback* callback)
+{
+    mRefCallback = callback;
+    return NOERROR;
+}
+
 ECode Object::ToString(
     /* [out] */ String* desc)
 {
@@ -137,6 +143,22 @@ ECode Object::GetWeakReference(
     *wr = new WeakReferenceImpl((IObject*)this, CreateWeak(this));
     REFCOUNT_ADD(*wr)
     return NOERROR;
+}
+
+void Object::OnLastStrongRef(
+    /* [in] */ const void* id)
+{
+    if (UNLIKELY(mRefCallback != nullptr)) {
+        mRefCallback->OnLastStrongRef(this);
+    }
+}
+
+void Object::OnLastWeakRef(
+    /* [in] */ const void* id)
+{
+    if (UNLIKELY(mRefCallback != nullptr)) {
+        mRefCallback->OnLastWeakRef(this);
+    }
 }
 
 String Object::GetCoclassName(

@@ -65,6 +65,11 @@ public:
     ECode PutAll(
         /* [in] */ IMap* m) override;
 
+    ECode PutIfAbsent(
+        /* [in] */ IInterface* key,
+        /* [in] */ IInterface* value,
+        /* [out] */ IInterface** prevValue = nullptr) override;
+
     ECode Clear() override;
 
     ECode GetKeySet(

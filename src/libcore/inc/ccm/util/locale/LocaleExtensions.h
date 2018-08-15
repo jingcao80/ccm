@@ -19,6 +19,7 @@
 
 #include "ccm/core/SyncObject.h"
 #include "ccm/util/locale/Extension.h"
+#include "ccm.util.IMap.h"
 #include "ccm.util.ISet.h"
 #include <ccmautoptr.h>
 
@@ -32,63 +33,71 @@ class LocaleExtensions
     : public SyncObject
 {
 public:
-    static AutoPtr<LocaleExtensions> GetCALENDAR_JAPANESE()
-    {
-        return nullptr;
-    }
+    IInterface* Probe(
+        /* [in] */ const InterfaceID& iid) override;
 
-    static AutoPtr<LocaleExtensions> GetNUMBER_THAI()
-    {
-        return nullptr;
-    }
+    static AutoPtr<LocaleExtensions> GetCALENDAR_JAPANESE();
 
-    AutoPtr<ISet> GetKeys()
-    {
-        return nullptr;
-    }
+    static AutoPtr<LocaleExtensions> GetNUMBER_THAI();
+
+    LocaleExtensions(
+        /* [in] */ IMap* extensions,
+        /* [in] */ ISet* uattributes,
+        /* [in] */ IMap* ukeywords);
+
+    AutoPtr<ISet> GetKeys();
 
     AutoPtr<Extension> GetExtension(
-        /* [in] */ Char key)
-    {
-        return nullptr;
-    }
+        /* [in] */ Char key);
 
     String GetExtensionValue(
-        /* [in] */ Char key)
-    {
-        return String();
-    }
+        /* [in] */ Char key);
 
-    AutoPtr<ISet> GetUnicodeLocaleAttributes()
-    {
-        return nullptr;
-    }
+    AutoPtr<ISet> GetUnicodeLocaleAttributes();
 
-    AutoPtr<ISet> GetUnicodeLocaleKeys()
-    {
-        return nullptr;
-    }
-
-    static Boolean IsValidKey(
-        /* [in] */ Char c)
-    {
-        return false;
-    }
+    AutoPtr<ISet> GetUnicodeLocaleKeys();
 
     String GetUnicodeLocaleType(
-        /* [in] */ const String& unicodeLocaleKey)
-    {
-        return String();
-    }
+        /* [in] */ const String& unicodeLocaleKey);
 
-    String GetID()
-    {
-        return String();
-    }
+    Boolean IsEmpty();
+
+    static Boolean IsValidKey(
+        /* [in] */ Char c);
+
+    static Boolean IsValidUnicodeLocaleKey(
+        /* [in] */ const String& ukey);
+
+    ECode ToString(
+        /* [out] */ String* desc) override;
+
+    String GetID();
 
     ECode GetHashCode(
         /* [out] */ Integer* hash) override;
+
+    ECode Equals(
+        /* [in] */ IInterface* obj,
+        /* [out] */ Boolean* same) override;
+
+private:
+    LocaleExtensions(
+        /* [in] */ const String& id,
+        /* [in] */ Char key,
+        /* [in] */ Extension* value);
+
+    static String ToID(
+        /* [in] */ ISortedMap* map);
+
+private:
+    AutoPtr<IMap> mExtensionMap;
+    String mId;
 };
+
+inline String LocaleExtensions::GetID()
+{
+    return mId;
+}
 
 }
 }

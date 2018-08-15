@@ -536,6 +536,39 @@ ECode Hashtable::GetHashCode(
     return NOERROR;
 }
 
+ECode Hashtable::PutIfAbsent(
+    /* [in] */ IInterface* key,
+    /* [in] */ IInterface* value,
+    /* [out] */ IInterface** prevValue)
+{
+    if (value == nullptr) {
+        return ccm::core::E_NULL_POINTER_EXCEPTION;
+    }
+
+    AutoLock lock(this);
+    // Makes sure the key is not already in the hashtable.
+    Integer hash = Object::GetHashCode(key);
+    Integer index = (hash & 0x7FFFFFFF) % mTable.GetLength();
+    HashtableEntry* entry = mTable[index];
+    for (; entry != nullptr; entry = entry->mNext) {
+        if ((entry->mHash == hash) && Object::Equals(entry->mKey, key)) {
+            IInterface* old = entry->mValue;
+            if (old == nullptr) {
+                entry->mValue = value;
+            }
+            if (prevValue != nullptr) {
+                *prevValue = old;
+                REFCOUNT_ADD(*prevValue);
+            }
+            return NOERROR;
+        }
+    }
+
+    AddEntry(hash, key, value, index);
+    if (prevValue != nullptr) *prevValue = nullptr;
+    return NOERROR;
+}
+
 //-------------------------------------------------------------------------
 
 ECode Hashtable::KeySet::GetIterator(

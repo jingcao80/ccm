@@ -34,6 +34,8 @@ include "ccm/util/IList.cdl"
 include "ccm/util/IListIterator.cdl"
 include "ccm/util/ILocale.cdl"
 include "ccm/util/IMap.cdl"
+include "ccm/util/INavigableMap.cdl"
+include "ccm/util/INavigableSet.cdl"
 include "ccm/util/IProperties.cdl"
 include "ccm/util/IRandom.cdl"
 include "ccm/util/IRandomAccess.cdl"
@@ -42,6 +44,8 @@ include "ccm/util/ISortedMap.cdl"
 include "ccm/util/ISortedSet.cdl"
 include "ccm/util/IStringTokenizer.cdl"
 include "ccm/util/ITimeZone.cdl"
+include "ccm/util/ITreeMap.cdl"
+include "ccm/util/ITreeSet.cdl"
 include "ccm/util/calendar/IBaseCalendar.cdl"
 include "ccm/util/calendar/ICalendarDate.cdl"
 include "ccm/util/calendar/ICalendarSystem.cdl"
@@ -442,6 +446,61 @@ coclass CStringTokenizer
 
     interface IStringTokenizer;
     interface IEnumeration;
+}
+
+[
+    uuid(3ef0ae4d-d83b-453f-aeee-646d84b7538b),
+    version(0.1.0)
+]
+coclass CTreeMap
+{
+    Constructor();
+
+    Constructor(
+        [in] IComparator* comparator);
+
+    Constructor(
+        [in] IMap* m);
+
+    Constructor(
+        [in] ISortedMap* m);
+
+    interface ITreeMap;
+    interface INavigableMap;
+    interface ISortedMap;
+    interface IMap;
+    interface ICloneable;
+    interface ISerializable;
+}
+
+[
+    uuid(22c0eedd-c096-4a9e-be93-0b9e6261fd39),
+    version(0.1.0)
+]
+coclass CTreeSet
+{
+    Constructor();
+
+    Constructor(
+        [in] IComparator* comparator);
+
+    Constructor(
+        [in] INavigableMap* m);
+
+    Constructor(
+        [in] ICollection* c);
+
+    Constructor(
+        [in] ISortedSet* s);
+
+    interface ITreeSet;
+    interface INavigableSet;
+    interface ISortedSet;
+    interface ISet;
+    interface ICollection;
+    interface IIterable;
+    interface ICloneable;
+    interface ISerializable;
 }
 
 namespace calendar {

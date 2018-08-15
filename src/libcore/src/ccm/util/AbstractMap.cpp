@@ -249,6 +249,24 @@ ECode AbstractMap::PutAll(
     return NOERROR;
 }
 
+ECode AbstractMap::PutIfAbsent(
+    /* [in] */ IInterface* key,
+    /* [in] */ IInterface* value,
+    /* [out] */ IInterface** prevValue)
+{
+    AutoPtr<IInterface> v;
+    Get(key, (IInterface**)&v);
+    if (v == nullptr) {
+        Put(key, value, (IInterface**)&v);
+    }
+
+    if (prevValue != nullptr) {
+        *prevValue = v;
+        REFCOUNT_ADD(*prevValue);
+    }
+    return NOERROR;
+}
+
 ECode AbstractMap::Clear()
 {
     AutoPtr<ISet> entries;

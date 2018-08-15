@@ -546,6 +546,19 @@ ECode HashMap::GetEntrySet(
     return NOERROR;
 }
 
+ECode HashMap::PutIfAbsent(
+    /* [in] */ IInterface* key,
+    /* [in] */ IInterface* value,
+    /* [out] */ IInterface** prevValue)
+{
+    AutoPtr<IInterface> v = PutVal(Hash(key), key, value, true, true);
+    if (prevValue != nullptr) {
+        *prevValue = v;
+        REFCOUNT_ADD(*prevValue);
+    }
+    return NOERROR;
+}
+
 ECode HashMap::CloneImpl(
     /* [in] */ IHashMap* newObj)
 {

@@ -32,6 +32,55 @@ class InternalLocaleBuilder
     : public SyncObject
 {
 public:
+    class CaseInsensitiveString
+        : public Object
+    {
+    public:
+        CaseInsensitiveString(
+            /* [in] */ const String& s);
+
+        inline String Value()
+        {
+            return mStr;
+        }
+
+        ECode GetHashCode(
+            /* [out] */ Integer* hash) override;
+
+        ECode Equals(
+            /* [in] */ IInterface* obj,
+            /* [out] */ Boolean* same) override;
+
+    private:
+        String mStr;
+        String mLowerStr;
+    };
+
+    class CaseInsensitiveChar
+        : public Object
+    {
+    public:
+        CaseInsensitiveChar(
+            /* [in] */ Char c);
+
+        inline Char Value()
+        {
+            return mCh;
+        }
+
+        ECode GetHashCode(
+            /* [out] */ Integer* hash) override;
+
+        ECode Equals(
+            /* [in] */ IInterface* obj,
+            /* [out] */ Boolean* same) override;
+
+    private:
+        Char mCh;
+        Char mLowerCh;
+    };
+
+public:
     ECode SetLanguage(
         /* [in] */ const String& language)
     {
@@ -87,6 +136,12 @@ public:
     AutoPtr<LocaleExtensions> GetLocaleExtensions()
     {
         return nullptr;
+    }
+
+    static String RemovePrivateuseVariant(
+        /* [in] */ const String& privuseVal)
+    {
+        return String();
     }
 
     ECode SetLocale(

@@ -288,6 +288,11 @@ public:
     ECode GetEntrySet(
         /* [out] */ ISet** entries) override;
 
+    ECode PutIfAbsent(
+        /* [in] */ IInterface* key,
+        /* [in] */ IInterface* value,
+        /* [out] */ IInterface** prevValue = nullptr) override;
+
     ECode Equals(
         /* [in] */ IInterface* obj,
         /* [out] */ Boolean* result) override;

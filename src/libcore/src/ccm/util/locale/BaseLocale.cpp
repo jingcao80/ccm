@@ -60,6 +60,15 @@ BaseLocale::BaseLocale(
     mVariant = !variant.IsNull() ? variant : String("");
 }
 
+IInterface* BaseLocale::Probe(
+    /* [in] */ const InterfaceID& iid)
+{
+    if (iid == IID_BaseLocale) {
+        return (IInterface*)(IObject*)this;
+    }
+    return Object::Probe(iid);
+}
+
 AutoPtr<BaseLocale> BaseLocale::CreateInstance(
     /* [in] */ const String& language,
     /* [in] */ const String& region)

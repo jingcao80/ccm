@@ -271,7 +271,10 @@ public:
         return nullptr;
     }
 
-    static AutoPtr<IMap> GetEmptyMap();
+    static AutoPtr<IMap> GetEmptyMap()
+    {
+        return nullptr;
+    }
 
     static AutoPtr<IMap> CreateSingletonMap(
         /* [in] */ IInterface* key,
