@@ -14,38 +14,29 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_UTIL_ARRAYS_H__
-#define __CCM_UTIL_ARRAYS_H__
+#ifndef __CCM_UTIL_CONCURRENT_HELPERS_H__
+#define __CCM_UTIL_CONCURRENT_HELPERS_H__
 
 #include <ccmtypes.h>
 
 namespace ccm {
 namespace util {
+namespace concurrent {
 
-class Arrays
+class Helpers
 {
 public:
-    static ECode CheckOffsetAndCount(
-        /* [in] */ Integer arrayLength,
-        /* [in] */ Integer offset,
-        /* [in] */ Integer count);
-
-    static ECode CopyOf(
-        /* [in] */ const Array<String> & original,
-        /* [in] */ Integer newLength,
-        /* [out, callee] */ Array<String>* newArray);
-
-    static ECode CopyOf(
-        /* [in] */ const Array<IInterface*>& original,
-        /* [in] */ Integer newLength,
-        /* [out, callee] */ Array<IInterface*>* newArray);
+    static String ToString(
+        /* [in] */ const Array<String>& a,
+        /* [in] */ Integer size,
+        /* [in] */ Integer charLength);
 
 private:
-    Arrays()
-    {}
+    Helpers();
 };
 
 }
 }
+}
 
-#endif // __CCM_UTIL_ARRAYS_H__
+#endif // __CCM_UTIL_CONCURRENT_HELPERS_H__

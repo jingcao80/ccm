@@ -24,6 +24,8 @@ include_directories(
     ${OBJ_DIR})
 
 set(SOURCES
+    ConcurrentLinkedQueue.cpp
+    Helpers.cpp
     atomic/AtomicInteger.cpp
     atomic/AtomicLong.cpp)
 

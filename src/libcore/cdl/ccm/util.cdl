@@ -37,6 +37,7 @@ include "ccm/util/IMap.cdl"
 include "ccm/util/INavigableMap.cdl"
 include "ccm/util/INavigableSet.cdl"
 include "ccm/util/IProperties.cdl"
+include "ccm/util/IQueue.cdl"
 include "ccm/util/IRandom.cdl"
 include "ccm/util/IRandomAccess.cdl"
 include "ccm/util/ISet.cdl"
@@ -53,6 +54,7 @@ include "ccm/util/calendar/IEra.cdl"
 include "ccm/util/calendar/IGregorian.cdl"
 include "ccm/util/calendar/IJulianCalendar.cdl"
 include "ccm/util/calendar/ILocalGregorianCalendar.cdl"
+include "ccm/util/concurrent/IConcurrentLinkedQueue.cdl"
 include "ccm/util/concurrent/IConcurrentMap.cdl"
 include "ccm/util/concurrent/atomic/IAtomicInteger.cdl"
 include "ccm/util/concurrent/atomic/IAtomicLong.cdl"
@@ -576,6 +578,23 @@ coclass CLocalGregorianCalendar
 }
 
 namespace concurrent {
+
+[
+    uuid(eb235f4e-904f-4534-97a8-e5a70cee8846),
+    version(0.1.0)
+]
+coclass CConcurrentLinkedQueue
+{
+    Constructor();
+
+    Constructor(
+        [in] ICollection* c);
+
+    interface IConcurrentLinkedQueue;
+    interface IQueue;
+    interface ICollection;
+    interface IIterable;
+}
 
 namespace atomic {
 

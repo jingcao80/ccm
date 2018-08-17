@@ -29,4 +29,29 @@
 
 #define END_FOR_EACH() }}
 
+#define PUT_OBJECT(object, field, value) \
+    object->field = value;
+
+#define PUT_ORDERED_OBJECT(object, field, value) \
+    ccm::core::QuasiAtomic::ThreadFenceRelease(); \
+    object->field = value;
+
+#define COMPARE_AND_SWAP_OBJECT(object, field, expectedValue, newValue) \
+    reinterpret_cast<ccm::core::AtomicLong*>(&object->field)-> \
+        CompareExchangeStrongSequentiallyConsistent( \
+            reinterpret_cast<int64_t>(expectedValue), \
+            reinterpret_cast<int64_t>(newValue));
+
+#define VOLATILE
+
+#define VOLATILE_GET(lvalue, variable) \
+        lvalue = variable; \
+        ccm::core::QuasiAtomic::ThreadFenceAcquire();
+
+#define VOLATILE_SET(variable, rvalue) \
+        ccm::core::QuasiAtomic::ThreadFenceRelease(); \
+        variable = rvalue; \
+        ccm::core::QuasiAtomic::ThreadFenceSequentiallyConsistent();
+
+
 #endif // __CCM_COREDEF_H__

@@ -14,38 +14,39 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_UTIL_ARRAYS_H__
-#define __CCM_UTIL_ARRAYS_H__
-
-#include <ccmtypes.h>
-
 namespace ccm {
 namespace util {
 
-class Arrays
+/*
+ * @Involve interface ccm::util::ICollection;
+ * @Involve interface ccm::core::IIterable;
+ */
+[
+    uuid(361efe2d-dc2c-4234-aaa3-275ff00515f5),
+    version(0.1.0)
+]
+interface IQueue
 {
-public:
-    static ECode CheckOffsetAndCount(
-        /* [in] */ Integer arrayLength,
-        /* [in] */ Integer offset,
-        /* [in] */ Integer count);
+    Add(
+        [in] IInterface* e,
+        [out] Boolean* changed = nullptr);
 
-    static ECode CopyOf(
-        /* [in] */ const Array<String> & original,
-        /* [in] */ Integer newLength,
-        /* [out, callee] */ Array<String>* newArray);
+    Element(
+        [out] IInterface** head);
 
-    static ECode CopyOf(
-        /* [in] */ const Array<IInterface*>& original,
-        /* [in] */ Integer newLength,
-        /* [out, callee] */ Array<IInterface*>* newArray);
+    Offer(
+        [in] IInterface* e,
+        [out] Boolean* changed = nullptr);
 
-private:
-    Arrays()
-    {}
-};
+    Peek(
+        [out] IInterface** head);
+
+    Poll(
+        [out] IInterface** head = nullptr);
+
+    Remove(
+        [out] IInterface** head = nullptr);
+}
 
 }
 }
-
-#endif // __CCM_UTIL_ARRAYS_H__

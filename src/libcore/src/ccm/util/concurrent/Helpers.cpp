@@ -14,38 +14,34 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_UTIL_ARRAYS_H__
-#define __CCM_UTIL_ARRAYS_H__
-
-#include <ccmtypes.h>
+#include "ccm/util/concurrent/Helpers.h"
 
 namespace ccm {
 namespace util {
+namespace concurrent {
 
-class Arrays
+String Helpers::ToString(
+    /* [in] */ const Array<String>& a,
+    /* [in] */ Integer size,
+    /* [in] */ Integer charLength)
 {
-public:
-    static ECode CheckOffsetAndCount(
-        /* [in] */ Integer arrayLength,
-        /* [in] */ Integer offset,
-        /* [in] */ Integer count);
-
-    static ECode CopyOf(
-        /* [in] */ const Array<String> & original,
-        /* [in] */ Integer newLength,
-        /* [out, callee] */ Array<String>* newArray);
-
-    static ECode CopyOf(
-        /* [in] */ const Array<IInterface*>& original,
-        /* [in] */ Integer newLength,
-        /* [out, callee] */ Array<IInterface*>* newArray);
-
-private:
-    Arrays()
-    {}
-};
+    Array<Char> chars(charLength + 2 * size);
+    chars[0] = '[';
+    Integer j = 1;
+    for (Integer i = 0; i < size; i++) {
+        if (i > 0) {
+            chars[j++] = ',';
+            chars[j++] = ' ';
+        }
+        const String& s = a[i];
+        Integer len = s.GetLength();
+        s.GetChars(0, len, chars, j);
+        j += len;
+    }
+    chars[j] = ']';
+    return String(chars);
+}
 
 }
 }
-
-#endif // __CCM_UTIL_ARRAYS_H__
+}

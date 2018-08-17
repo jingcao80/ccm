@@ -1,0 +1,104 @@
+//=========================================================================
+// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//=========================================================================
+
+namespace ccm {
+namespace util {
+namespace concurrent {
+
+/*
+ * @Involve interface ccm::util::IQueue
+ * @Involve interface ccm::util::ICollection;
+ * @Involve interface ccm::core::IIterable;
+ */
+[
+    uuid(685b592e-da44-4fc4-96c8-42585d92d865),
+    version(0.1.0)
+]
+interface IConcurrentLinkedQueue
+{
+    Add(
+        [in] IInterface* obj,
+        [out] Boolean* changed = nullptr);
+
+    AddAll(
+        [in] ICollection* c,
+        [out] Boolean* changed = nullptr);
+
+    Clear();
+
+    Contains(
+        [in] IInterface* obj,
+        [out] Boolean* result);
+
+    ContainsAll(
+        [in] ICollection* c,
+        [out] Boolean* result);
+
+    Element(
+        [out] IInterface** head);
+
+    Equals(
+        [in] IInterface* obj,
+        [out] Boolean* result);
+
+    GetHashCode(
+        [out] Integer* hash);
+
+    GetIterator(
+        [out] IIterator** it);
+
+    GetSize(
+        [out] Integer* size);
+
+    IsEmpty(
+        [out] Boolean* empty);
+
+    Offer(
+        [in] IInterface* e,
+        [out] Boolean* changed = nullptr);
+
+    Peek(
+        [out] IInterface** head);
+
+    Poll(
+        [out] IInterface** head = nullptr);
+
+    Remove(
+        [out] IInterface** head = nullptr);
+
+    Remove(
+        [in] IInterface* obj,
+        [out] Boolean* changed = nullptr);
+
+    RemoveAll(
+        [in] ICollection* c,
+        [out] Boolean* changed = nullptr);
+
+    RetainAll(
+        [in] ICollection* c,
+        [out] Boolean* changed = nullptr);
+
+    ToArray(
+        [out, callee] Array<IInterface*>* objs);
+
+    ToArray(
+        [in] InterfaceID iid,
+        [out, callee] Array<IInterface*>* objs);
+}
+
+}
+}
+}

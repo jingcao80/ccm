@@ -14,38 +14,42 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_UTIL_ARRAYS_H__
-#define __CCM_UTIL_ARRAYS_H__
+#ifndef __CCM_UTIL_ABSTRACTQUEUE_H__
+#define __CCM_UTIL_ABSTRACTQUEUE_H__
 
-#include <ccmtypes.h>
+#include "ccm/util/AbstractCollection.h"
+#include "ccm.util.IQueue.h"
 
 namespace ccm {
 namespace util {
 
-class Arrays
+class AbstractQueue
+    : public AbstractCollection
+    , public IQueue
 {
 public:
-    static ECode CheckOffsetAndCount(
-        /* [in] */ Integer arrayLength,
-        /* [in] */ Integer offset,
-        /* [in] */ Integer count);
+    CCM_INTERFACE_DECL();
 
-    static ECode CopyOf(
-        /* [in] */ const Array<String> & original,
-        /* [in] */ Integer newLength,
-        /* [out, callee] */ Array<String>* newArray);
+    ECode Add(
+        /* [in] */ IInterface* e,
+        /* [out] */ Boolean* changed = nullptr) override;
 
-    static ECode CopyOf(
-        /* [in] */ const Array<IInterface*>& original,
-        /* [in] */ Integer newLength,
-        /* [out, callee] */ Array<IInterface*>* newArray);
+    ECode Remove(
+        /* [out] */ IInterface** head = nullptr) override;
 
-private:
-    Arrays()
-    {}
+    ECode Element(
+        /* [out] */ IInterface** head) override;
+
+    ECode Clear() override;
+
+    ECode AddAll(
+        /* [in] */ ICollection* c,
+        /* [out] */ Boolean* changed = nullptr) override;
+
+    using AbstractCollection::Equals;
 };
 
 }
 }
 
-#endif // __CCM_UTIL_ARRAYS_H__
+#endif // __CCM_UTIL_ABSTRACTQUEUE_H__

@@ -30,6 +30,7 @@ include_directories(
     ../inc/ccm/security/action
     ../inc/ccm/util
     ../inc/ccm/util/calendar
+    ../inc/ccm/util/concurrent
     ../inc/ccm/util/concurrent/atomic
     ../inc/ccm/util/regex
     ../inc/ccmrt/system
@@ -88,6 +89,7 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_util_calendar_CGregorian.cpp
     ${OBJ_DIR}/_ccm_util_calendar_CJulianCalendar.cpp
     ${OBJ_DIR}/_ccm_util_calendar_CLocalGregorianCalendar.cpp
+    ${OBJ_DIR}/_ccm_util_concurrent_CConcurrentLinkedQueue.cpp
     ${OBJ_DIR}/_ccm_util_concurrent_atomic_CAtomicInteger.cpp
     ${OBJ_DIR}/_ccm_util_concurrent_atomic_CAtomicLong.cpp
     ${OBJ_DIR}/_ccm_util_regex_CPatternFactory.cpp

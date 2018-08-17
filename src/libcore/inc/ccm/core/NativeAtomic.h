@@ -60,6 +60,8 @@ public:
     static void ThreadFenceAcquire();
 
     static void ThreadFenceRelease();
+
+    static void ThreadFenceSequentiallyConsistent();
 };
 
 inline void QuasiAtomic::ThreadFenceAcquire()
@@ -70,6 +72,11 @@ inline void QuasiAtomic::ThreadFenceAcquire()
 inline void QuasiAtomic::ThreadFenceRelease()
 {
     std::atomic_thread_fence(std::memory_order_release);
+}
+
+inline void QuasiAtomic::ThreadFenceSequentiallyConsistent()
+{
+    std::atomic_thread_fence(std::memory_order_seq_cst);
 }
 
 

@@ -14,38 +14,25 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_UTIL_ARRAYS_H__
-#define __CCM_UTIL_ARRAYS_H__
+#ifndef __CCM_UTIL_CONCURRENT_CCONCURRENTLINKEDQUEUE_H__
+#define __CCM_UTIL_CONCURRENT_CCONCURRENTLINKEDQUEUE_H__
 
-#include <ccmtypes.h>
+#include "ccm/util/concurrent/ConcurrentLinkedQueue.h"
+#include "_ccm_util_concurrent_CConcurrentLinkedQueue.h"
 
 namespace ccm {
 namespace util {
+namespace concurrent {
 
-class Arrays
+Coclass(CConcurrentLinkedQueue)
+    , public ConcurrentLinkedQueue
 {
 public:
-    static ECode CheckOffsetAndCount(
-        /* [in] */ Integer arrayLength,
-        /* [in] */ Integer offset,
-        /* [in] */ Integer count);
-
-    static ECode CopyOf(
-        /* [in] */ const Array<String> & original,
-        /* [in] */ Integer newLength,
-        /* [out, callee] */ Array<String>* newArray);
-
-    static ECode CopyOf(
-        /* [in] */ const Array<IInterface*>& original,
-        /* [in] */ Integer newLength,
-        /* [out, callee] */ Array<IInterface*>* newArray);
-
-private:
-    Arrays()
-    {}
+    CCM_OBJECT_DECL();
 };
 
 }
 }
+}
 
-#endif // __CCM_UTIL_ARRAYS_H__
+#endif // __CCM_UTIL_CONCURRENT_CCONCURRENTLINKEDQUEUE_H__

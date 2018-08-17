@@ -35,6 +35,25 @@ ECode Arrays::CheckOffsetAndCount(
 }
 
 ECode Arrays::CopyOf(
+    /* [in] */ const Array<String> & original,
+    /* [in] */ Integer newLength,
+    /* [out, callee] */ Array<String>* newArray)
+{
+    VALIDATE_NOT_NULL(newArray);
+
+    if (newLength < 0) {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    Array<String> copy = Array<String>(newLength);
+    Integer N = Math::Min(original.GetLength(), newLength);
+    for (Integer i = 0; i < N; i++) {
+        copy[i] = original[i];
+    }
+    *newArray = copy;
+    return NOERROR;
+}
+
+ECode Arrays::CopyOf(
     /* [in] */ const Array<IInterface*>& original,
     /* [in] */ Integer newLength,
     /* [out, callee] */ Array<IInterface*>* newArray)
