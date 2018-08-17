@@ -163,13 +163,13 @@ ECode ConcurrentLinkedQueue::Offer(
                 }
                 if (changed != nullptr) {
                     *changed = true;
-                    return NOERROR;
                 }
+                return NOERROR;
             }
             // Lost CAS race to another thread; re-read next
         }
         else {
-            VOLATILE_GET(Boolean off, p);
+            VOLATILE_GET(Boolean off, p->mIsOff);
             if (off) {
                 // We have fallen off list.  If tail is unchanged, it
                 // will also be off-list, in which case we need to
@@ -459,7 +459,7 @@ ECode ConcurrentLinkedQueue::AddAll(
             // Lost CAS race to another thread; re-read next
         }
         else {
-            VOLATILE_GET(Boolean off, p);
+            VOLATILE_GET(Boolean off, p->mIsOff);
             if (off) {
                 // We have fallen off list.  If tail is unchanged, it
                 // will also be off-list, in which case we need to
