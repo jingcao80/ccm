@@ -17,6 +17,7 @@
 #ifndef __CCM_UTIL_LOCALE_BASELOCALE_H__
 #define __CCM_UTIL_LOCALE_BASELOCALE_H__
 
+#include "coredef.h"
 #include "ccm/util/locale/LocaleObjectCache.h"
 #include "ccm.core.IComparable.h"
 #include <ccmautoptr.h>
@@ -146,7 +147,7 @@ private:
     String mRegion;
     String mVariant;
 
-    Integer mHash = 0;
+    VOLATILE Integer mHash = 0;
 };
 
 inline String BaseLocale::GetLanguage()

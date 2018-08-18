@@ -17,6 +17,7 @@
 #ifndef __CCM_UTIL_LOCALE_H__
 #define __CCM_UTIL_LOCALE_H__
 
+#include "coredef.h"
 #include "ccm/core/SyncObject.h"
 #include "ccm/util/locale/BaseLocale.h"
 #include "ccm/util/locale/InternalLocaleBuilder.h"
@@ -432,12 +433,12 @@ private:
     AutoPtr<BaseLocale> mBaseLocale;
     AutoPtr<LocaleExtensions> mLocaleExtensions;
 
-    Integer mHashCodeValue = 0;
+    VOLATILE Integer mHashCodeValue = 0;
 
-    static AutoPtr<ILocale> sDefaultDisplayLocale;
-    static AutoPtr<ILocale> sDefaultFormatLocale;
+    VOLATILE static AutoPtr<ILocale> sDefaultDisplayLocale;
+    VOLATILE static AutoPtr<ILocale> sDefaultFormatLocale;
 
-    String mLanguageTag;
+    VOLATILE String mLanguageTag;
 };
 
 inline AutoPtr<BaseLocale> Locale::GetBaseLocale()

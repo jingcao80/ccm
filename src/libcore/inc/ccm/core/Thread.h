@@ -17,6 +17,7 @@
 #ifndef __CCM_CORE_THREAD_H__
 #define __CCM_CORE_THREAD_H__
 
+#include "coredef.h"
 #include "ccm/core/Runnable.h"
 #include "ccm/core/ThreadLocal.h"
 #include "ccm.core.IStackTraceElement.h"
@@ -226,11 +227,11 @@ private:
      */
     SyncObject mLock;
 
-    HANDLE mNative = 0;
+    VOLATILE HANDLE mNative = 0;
 
     Boolean mStarted = false;
 
-    String mName;
+    VOLATILE String mName;
 
     Integer mPriority;
 
@@ -252,9 +253,9 @@ private:
 
     Long mTid;
 
-    Integer mThreadStatus = 0;
+    VOLATILE Integer mThreadStatus = 0;
 
-    AutoPtr<IInterruptible> mBlocker;
+    VOLATILE AutoPtr<IInterruptible> mBlocker;
 
     SyncObject mBlockerLock;
 

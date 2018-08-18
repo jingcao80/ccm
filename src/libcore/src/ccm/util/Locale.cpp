@@ -17,6 +17,7 @@
 #include "ccm/core/AutoLock.h"
 #include "ccm/core/CoreUtils.h"
 #include "ccm/core/CStringBuilder.h"
+#include "ccm/core/NativeAtomic.h"
 #include "ccm/core/StringUtils.h"
 #include "ccm/core/System.h"
 #include "ccm/util/CLocale.h"
@@ -208,9 +209,10 @@ AutoPtr<ILocale> Locale::GetOrSetDefaultLocale(
 {
     static AutoPtr<ILocale> sDefaultLocale = InitDefault();
     if (locale != nullptr) {
-        sDefaultLocale = locale;
+        VOLATILE_SET(sDefaultLocale, locale);
     }
-    return sDefaultLocale;
+    VOLATILE_GET(AutoPtr<ILocale> l, sDefaultLocale);
+    return l;
 }
 
 ECode Locale::Constructor(
@@ -303,22 +305,28 @@ AutoPtr<ILocale> Locale::GetDefault(
     /* [in] */ ILocaleCategory* category)
 {
     if (category == Category::GetDISPLAY()) {
-        if (sDefaultDisplayLocale == nullptr) {
+        VOLATILE_GET(AutoPtr<ILocale> l, sDefaultDisplayLocale);
+        if (l == nullptr) {
             AutoLock lock(GetClassLock());
-            if (sDefaultDisplayLocale == nullptr) {
-                sDefaultDisplayLocale = InitDefault(category);
+            VOLATILE_GET(l, sDefaultDisplayLocale);
+            if (l == nullptr) {
+                l = InitDefault(category);
+                VOLATILE_SET(sDefaultDisplayLocale, l);
             }
         }
-        return sDefaultDisplayLocale;
+        return l;
     }
     if (category == Category::GetFORMAT()) {
-        if (sDefaultFormatLocale == nullptr) {
+        VOLATILE_GET(AutoPtr<ILocale> l, sDefaultFormatLocale);
+        if (l == nullptr) {
             AutoLock lock(GetClassLock());
-            if (sDefaultFormatLocale == nullptr) {
-                sDefaultFormatLocale == InitDefault(category);
+            VOLATILE_GET(l, sDefaultFormatLocale);
+            if (l == nullptr) {
+                l = InitDefault(category);
+                VOLATILE_SET(sDefaultFormatLocale, l);
             }
         }
-        return sDefaultFormatLocale;
+        return l;
     }
     return GetDefault();
 }
@@ -418,11 +426,11 @@ ECode Locale::SetDefault(
         FAIL_RETURN(sm->CheckPermission(pp));
     }
     if (category == Category::GetDISPLAY()) {
-        sDefaultDisplayLocale = newLocale;
+        VOLATILE_SET(sDefaultDisplayLocale, newLocale);
         return NOERROR;
     }
     if (category == Category::GetFORMAT()) {
-        sDefaultFormatLocale = newLocale;
+        VOLATILE_SET(sDefaultFormatLocale, newLocale);
         return NOERROR;
     }
     Logger::E("Locale", "Unknown Category");
@@ -612,8 +620,9 @@ ECode Locale::ToLanguageTag(
 {
     VALIDATE_NOT_NULL(langTag);
 
-    if (!mLanguageTag.IsNull()) {
-        *langTag = mLanguageTag;
+    VOLATILE_GET(String languageTag, mLanguageTag);
+    if (!languageTag.IsNull()) {
+        *langTag = languageTag;
         return NOERROR;
     }
 
@@ -677,11 +686,13 @@ ECode Locale::ToLanguageTag(
     buf->ToString(langTag);
     {
         AutoLock lock(this);
-        if (mLanguageTag.IsNull()) {
-            mLanguageTag = *langTag;
+        VOLATILE_GET(String languageTag, mLanguageTag);
+        if (languageTag.IsNull()) {
+            VOLATILE_SET(mLanguageTag, *langTag);
+            return NOERROR;
         }
     }
-    *langTag = mLanguageTag;
+    VOLATILE_GET(*langTag, languageTag);
     return NOERROR;
 }
 
@@ -1134,7 +1145,7 @@ ECode Locale::GetHashCode(
 {
     VALIDATE_NOT_NULL(hash);
 
-    Integer hc = mHashCodeValue;
+    VOLATILE_GET(Integer hc, mHashCodeValue);
     if (hc == 0) {
         mBaseLocale->GetHashCode(&hc);
         if (mLocaleExtensions != nullptr) {
@@ -1142,7 +1153,7 @@ ECode Locale::GetHashCode(
             mLocaleExtensions->GetHashCode(&lhc);
             hc ^= lhc;
         }
-        mHashCodeValue = hc;
+        VOLATILE_SET(mHashCodeValue, hc);
     }
     *hash = hc;
     return NOERROR;

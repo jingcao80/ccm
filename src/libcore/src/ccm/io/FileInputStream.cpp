@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "ccm/core/AutoLock.h"
+#include "ccm/core/NativeAtomic.h"
 #include "ccm/core/System.h"
 #include "ccm/io/CFile.h"
 #include "ccm/io/CFileDescriptor.h"
@@ -154,7 +155,8 @@ ECode FileInputStream::Read(
 {
     VALIDATE_NOT_NULL(number);
 
-    if (mClosed && size > 0) {
+    VOLATILE_GET(Boolean closed, mClosed);
+    if (closed && size > 0) {
         Logger::E("FileInputStream", "Stream Closed");
         return E_IO_EXCEPTION;
     }
@@ -168,7 +170,8 @@ ECode FileInputStream::Skip(
 {
     VALIDATE_NOT_NULL(number);
 
-    if (mClosed) {
+    VOLATILE_GET(Boolean closed, mClosed);
+    if (closed) {
         Logger::E("FileInputStream", "Stream Closed");
         return E_IO_EXCEPTION;
     }
@@ -239,7 +242,8 @@ ECode FileInputStream::Available(
 {
     VALIDATE_NOT_NULL(number);
 
-    if (mClosed) {
+    VOLATILE_GET(Boolean closed, mClosed);
+    if (closed) {
         Logger::E("FileInputStream", "Stream Closed");
         return E_IO_EXCEPTION;
     }
@@ -262,10 +266,11 @@ ECode FileInputStream::Close()
     {
         AutoLock lock(mCloseLock);
 
-        if (mClosed) {
+        VOLATILE_GET(Boolean closed, mClosed);
+        if (closed) {
             return NOERROR;
         }
-        mClosed = true;
+        VOLATILE_SET(mClosed, true);
     }
 
     mGuard->Close();

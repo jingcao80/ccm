@@ -17,6 +17,7 @@
 #ifndef __CCM_UTIL_HASHTABLE_H__
 #define __CCM_UTIL_HASHTABLE_H__
 
+#include "coredef.h"
 #include "ccm/core/SyncObject.h"
 #include "ccm/util/AbstractSet.h"
 #include "ccm.core.ICloneable.h"
@@ -367,9 +368,9 @@ private:
 
     static constexpr Integer MAX_ARRAY_SIZE = IInteger::MAX_VALUE - 8;
 
-    AutoPtr<ISet> mKeySet;
-    AutoPtr<ISet> mEntrySet;
-    AutoPtr<ICollection> mValues;
+    VOLATILE AutoPtr<ISet> mKeySet;
+    VOLATILE AutoPtr<ISet> mEntrySet;
+    VOLATILE AutoPtr<ICollection> mValues;
 
     static constexpr Integer KEYS = 0;
     static constexpr Integer VALUES = 1;

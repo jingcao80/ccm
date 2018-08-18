@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "ccm/core/AutoLock.h"
+#include "ccm/core/NativeAtomic.h"
 #include "ccm/core/System.h"
 #include "ccm/io/CFile.h"
 #include "ccm/io/CFileDescriptor.h"
@@ -173,7 +174,8 @@ ECode FileOutputStream::Write(
     /* [in] */ Integer offset,
     /* [in] */ Integer size)
 {
-    if (mClosed && size > 0) {
+    VOLATILE_GET(Boolean closed, mClosed);
+    if (closed && size > 0) {
         Logger::E("FileOutputStream", "Stream Closed");
         return E_IO_EXCEPTION;
     }
@@ -186,10 +188,11 @@ ECode FileOutputStream::Close()
     {
         AutoLock lock(mCloseLock);
 
-        if (mClosed) {
+        VOLATILE_GET(Boolean closed, mClosed);
+        if (closed) {
             return NOERROR;
         }
-        mClosed = true;
+        VOLATILE_SET(mClosed, true);
     }
 
     mGuard->Close();

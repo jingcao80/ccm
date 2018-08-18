@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "ccm/core/CStringBuilder.h"
+#include "ccm/core/NativeAtomic.h"
 #include "ccm/util/locale/BaseLocale.h"
 #include "ccm/util/locale/LocaleUtils.h"
 #include "ccm.core.IStringBuilder.h"
@@ -169,14 +170,14 @@ ECode BaseLocale::GetHashCode(
 {
     VALIDATE_NOT_NULL(hash);
 
-    Integer h = mHash;
+    VOLATILE_GET(Integer h, mHash);
     if (h == 0) {
         // Generating a hash value from language, script, region and variant
         h = mLanguage.GetHashCode();
         h = 31 * h + mScript.GetHashCode();
         h = 31 * h + mRegion.GetHashCode();
         h = 31 * h + mVariant.GetHashCode();
-        mHash = h;
+        VOLATILE_SET(mHash, h);
     }
     *hash = h;
     return NOERROR;

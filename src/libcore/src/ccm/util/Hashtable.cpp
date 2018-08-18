@@ -17,6 +17,7 @@
 #include "ccm/core/AutoLock.h"
 #include "ccm/core/CStringBuilder.h"
 #include "ccm/core/Math.h"
+#include "ccm/core/NativeAtomic.h"
 #include "ccm/util/Collections.h"
 #include "ccm/util/Hashtable.h"
 #include "ccm.core.IStringBuilder.h"
@@ -404,10 +405,12 @@ ECode Hashtable::GetKeySet(
 {
     VALIDATE_NOT_NULL(keys);
 
-    if (mKeySet == nullptr) {
-        mKeySet = Collections::CreateSynchronizedSet(new KeySet(this), this);
+    VOLATILE_GET(AutoPtr<ISet> keySet, mKeySet);
+    if (keySet == nullptr) {
+        keySet = Collections::CreateSynchronizedSet(new KeySet(this), this);
+        VOLATILE_SET(mKeySet, keySet);
     }
-    *keys = mKeySet;
+    *keys = keySet;
     REFCOUNT_ADD(*keys);
     return NOERROR;
 }
@@ -417,10 +420,12 @@ ECode Hashtable::GetEntrySet(
 {
     VALIDATE_NOT_NULL(entries);
 
-    if (mEntrySet == nullptr) {
-        mEntrySet = Collections::CreateSynchronizedSet(new EntrySet(this), this);
+    VOLATILE_GET(AutoPtr<ISet> entrySet, mEntrySet);
+    if (entrySet == nullptr) {
+        entrySet = Collections::CreateSynchronizedSet(new EntrySet(this), this);
+        VOLATILE_SET(mEntrySet, entrySet);
     }
-    *entries = mEntrySet;
+    *entries = entrySet;
     REFCOUNT_ADD(*entries);
     return NOERROR;
 }
@@ -430,11 +435,13 @@ ECode Hashtable::GetValues(
 {
     VALIDATE_NOT_NULL(values);
 
-    if (mValues == nullptr) {
-        mValues = Collections::CreateSynchronizedCollection(
+    VOLATILE_GET(AutoPtr<ICollection> valueColl, mValues);
+    if (valueColl == nullptr) {
+        valueColl = Collections::CreateSynchronizedCollection(
                 new ValueCollection(this), this);
+        VOLATILE_SET(mValues, valueColl);
     }
-    *values = mValues;
+    *values = valueColl;
     REFCOUNT_ADD(*values);
     return NOERROR;
 }

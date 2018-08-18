@@ -16,6 +16,7 @@
 
 #include "ccm/core/AutoLock.h"
 #include "ccm/core/CStackTrace.h"
+#include "ccm/core/NativeAtomic.h"
 #include "ccm/core/NativeMonitor.h"
 #include "ccm/core/NativeMutex.h"
 #include "ccm/core/NativeObject.h"
@@ -53,7 +54,7 @@ ECode Thread::BlockedOn(
 {
     AutoLock lock(mBlockerLock);
 
-    mBlocker = b;
+    VOLATILE_SET(mBlocker, b);
     return NOERROR;
 }
 
@@ -196,7 +197,7 @@ ECode Thread::Constructor(
         threadName = String::Format("Thread-%d", GetNextThreadNum());
     }
 
-    mName = name;
+    VOLATILE_SET(mName, name);
 
     mPriority = priority;
     mDaemon = daemon;
@@ -217,7 +218,8 @@ ECode Thread::Start()
 {
     AutoLock lock(this);
 
-    if (mThreadStatus != 0 || mStarted) {
+    VOLATILE_GET(Integer tstatus, mThreadStatus);
+    if (tstatus != 0 || mStarted) {
         return E_ILLEGAL_THREAD_STATE_EXCEPTION;
     }
 
@@ -259,7 +261,7 @@ void Thread::Exit()
         mGroup = nullptr;
     }
     mTarget = nullptr;
-    mBlocker = nullptr;
+    VOLATILE_SET(mBlocker, nullptr);
 }
 
 ECode Thread::Stop()
@@ -278,7 +280,7 @@ ECode Thread::Interrupt()
     {
         AutoLock lock(mBlockerLock);
 
-        AutoPtr<IInterruptible> b = mBlocker;
+        VOLATILE_GET(AutoPtr<IInterruptible> b, mBlocker);
         if (b != nullptr) {
             FAIL_RETURN(NativeInterrupt());
             return b->Interrupt(this);
@@ -314,7 +316,8 @@ ECode Thread::IsAlive(
 {
     VALIDATE_NOT_NULL(alive);
 
-    *alive = mNative != 0;
+    VOLATILE_GET(HANDLE native, mNative);
+    *alive = native != 0;
     return NOERROR;
 }
 
@@ -376,7 +379,7 @@ ECode Thread::SetName(
 
     {
         AutoLock lock(this);
-        mName = name;
+        VOLATILE_SET(mName, name);
         Boolean alive;
         if (IsAlive(&alive), alive) {
             NativeSetName(mName);
@@ -391,7 +394,7 @@ ECode Thread::GetName(
 {
     VALIDATE_NOT_NULL(name);
 
-    *name = mName;
+    VOLATILE_GET(*name, mName);
     return NOERROR;
 }
 

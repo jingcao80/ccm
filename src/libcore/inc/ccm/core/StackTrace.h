@@ -17,6 +17,7 @@
 #ifndef __CCM_CORE_STACKTRACK_H__
 #define __CCM_CORE_STACKTRACK_H__
 
+#include "coredef.h"
 #include "ccm/core/SyncObject.h"
 #include "ccm.core.IStackTrace.h"
 #include "ccm.core.IStackTraceElement.h"
@@ -131,7 +132,7 @@ private:
     static constexpr Integer MAX_FRAME_DEPTH = 64;
 
     String mDetailMessage;
-    Array<IStackTraceElement*> mStackTrace;
+    VOLATILE Array<IStackTraceElement*> mStackTrace;
     Array<uintptr_t> mFrames = Array<uintptr_t>(MAX_FRAME_DEPTH);
     Integer mFrameCount = 0;
 };

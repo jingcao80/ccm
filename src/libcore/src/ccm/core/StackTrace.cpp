@@ -16,6 +16,7 @@
 
 #include "ccm/core/AutoLock.h"
 #include "ccm/core/CStackTraceElement.h"
+#include "ccm/core/NativeAtomic.h"
 #include "ccm/core/NativeBacktrace.h"
 #include "ccm/core/StackTrace.h"
 #include "ccm.core.IStackTraceElement.h"
@@ -92,7 +93,7 @@ Array<IStackTraceElement*> StackTrace::GetOurStackTrace()
 {
     if (mFrameCount > 0) {
         String backtrace = DumpBacktrace(mFrames.GetPayload(), mFrameCount);
-        mStackTrace = Array<IStackTraceElement*>(mFrameCount);
+        VOLATILE_SET(mStackTrace, Array<IStackTraceElement*>(mFrameCount));
         Integer fromIdx = 0;
         Integer lrIdx = backtrace.IndexOf('\n', fromIdx);
         Integer count = 0;

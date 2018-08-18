@@ -45,7 +45,7 @@ ECode AtomicLong::Get(
 {
     VALIDATE_NOT_NULL(value);
 
-    *value = mValue.LoadRelaxed();
+    *value = mValue.LoadAcquire();
     return NOERROR;
 }
 

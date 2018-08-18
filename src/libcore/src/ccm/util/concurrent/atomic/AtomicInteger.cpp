@@ -45,14 +45,14 @@ ECode AtomicInteger::Get(
 {
     VALIDATE_NOT_NULL(value);
 
-    *value = mValue.LoadRelaxed();
+    *value = mValue.LoadAcquire();
     return NOERROR;
 }
 
 ECode AtomicInteger::Set(
     /* [in] */ Integer value)
 {
-    mValue.StoreRelaxed(value);
+    mValue.StoreSequentiallyConsistent(value);
     return NOERROR;
 }
 
