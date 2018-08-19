@@ -37,7 +37,7 @@ interface IClassObject
         [out] IInterface** object);
 }
 
-interface IReferenceCallback;
+interface IReferenceObserver;
 
 [
     uuid(00000000-0000-0000-0000-000000000003),
@@ -62,8 +62,8 @@ interface IObject
         [in] IInterface* obj,
         [out] Boolean* same);
 
-    SetReferenceCallback(
-        [in] IReferenceCallback* callback);
+    SetReferenceObserver(
+        [in] IReferenceObserver* observer);
 
     ToString(
         [out] String* desc);
@@ -123,7 +123,7 @@ interface IWeakReferenceSource
     uuid(00000000-0000-0000-0000-000000000007),
     version(0.1.0)
 ]
-interface IReferenceCallback
+interface IReferenceObserver
 {
     OnLastStrongRef(
         [in] IObject* obj);

@@ -111,10 +111,10 @@ ECode Object::Equals(
     return NOERROR;
 }
 
-ECode Object::SetReferenceCallback(
-    /* [in] */ IReferenceCallback* callback)
+ECode Object::SetReferenceObserver(
+    /* [in] */ IReferenceObserver* observer)
 {
-    mRefCallback = callback;
+    mRefObserver = observer;
     return NOERROR;
 }
 
@@ -148,16 +148,16 @@ ECode Object::GetWeakReference(
 void Object::OnLastStrongRef(
     /* [in] */ const void* id)
 {
-    if (UNLIKELY(mRefCallback != nullptr)) {
-        mRefCallback->OnLastStrongRef(this);
+    if (UNLIKELY(mRefObserver != nullptr)) {
+        mRefObserver->OnLastStrongRef(this);
     }
 }
 
 void Object::OnLastWeakRef(
     /* [in] */ const void* id)
 {
-    if (UNLIKELY(mRefCallback != nullptr)) {
-        mRefCallback->OnLastWeakRef(this);
+    if (UNLIKELY(mRefObserver != nullptr)) {
+        mRefObserver->OnLastWeakRef(this);
     }
 }
 
@@ -222,6 +222,18 @@ String Object::ToString(
             return String("not a coclass object.");
         }
     }
+}
+
+AutoPtr<IWeakReference> Object::GetWeakReference(
+    /* [in] */ IInterface* obj)
+{
+    IWeakReferenceSource* wrSource = IWeakReferenceSource::Probe(obj);
+    if (wrSource == nullptr) {
+        return nullptr;
+    }
+    AutoPtr<IWeakReference> wr;
+    wrSource->GetWeakReference((IWeakReference**)&wr);
+    return wr;
 }
 
 }

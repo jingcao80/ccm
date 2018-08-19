@@ -17,9 +17,15 @@
 #ifndef __CCM_UTIL_LOCALE_LOCALEOBJECTCACHE_H__
 #define __CCM_UTIL_LOCALE_LOCALEOBJECTCACHE_H__
 
+#include "ccm.util.IQueue.h"
+#include "ccm.util.concurrent.IConcurrentLinkedQueue.h"
+#include "ccm.util.concurrent.IConcurrentMap.h"
 #include <ccmautoptr.h>
 #include <ccmobject.h>
 #include <ccmrefbase.h>
+
+using ccm::util::concurrent::IConcurrentLinkedQueue;
+using ccm::util::concurrent::IConcurrentMap;
 
 namespace ccm {
 namespace util {
@@ -31,21 +37,14 @@ class LocaleObjectCache
 private:
     class CacheEntry
         : public LightRefBase
-        , public IInterface
+        , public IReferenceObserver
     {
     public:
-        CCM_INTERFACE_DECL();
+        CacheEntry(
+            /* [in] */ IInterface* key,
+            /* [in] */ IInterface* value,
+            /* [in] */ IQueue* queue);
 
-    public:
-        AutoPtr<IInterface> mKey;
-        AutoPtr<IWeakReference> mValue;
-    };
-
-    class StaleEntriesObserver
-        : public LightRefBase
-        , public IReferenceCallback
-    {
-    public:
         CCM_INTERFACE_DECL();
 
         ECode OnLastStrongRef(
@@ -53,10 +52,21 @@ private:
 
         ECode OnLastWeakRef(
             /* [in] */ IObject* obj) override;
+
+        static CacheEntry* From(
+            /* [in] */ IInterface* entry)
+        {
+            return (CacheEntry*)entry;
+        }
+
+    public:
+        AutoPtr<IInterface> mKey;
+        AutoPtr<IWeakReference> mValue;
+        AutoPtr<IQueue> mQueue;
     };
 
 public:
-    ECode Put(
+    AutoPtr<IInterface> Put(
         /* [in] */ IInterface* key,
         /* [in] */ IInterface* value);
 
@@ -65,6 +75,13 @@ public:
         /* [out] */ IInterface** value);
 
 protected:
+    LocaleObjectCache();
+
+    LocaleObjectCache(
+        /* [in] */ Integer initialCapacity,
+        /* [in] */ Float loadFactor,
+        /* [in] */ Integer concurrencyLevel);
+
     virtual AutoPtr<IInterface> CreateObject(
         /* [in] */ IInterface* key) = 0;
 
@@ -73,7 +90,15 @@ protected:
 
 private:
     void CleanStaleEntries();
+
+private:
+    AutoPtr<IConcurrentMap> mMap;
+    AutoPtr<IConcurrentLinkedQueue> mQueue;
 };
+
+inline LocaleObjectCache::LocaleObjectCache()
+    : LocaleObjectCache(16, 0.75f, 16)
+{}
 
 }
 }

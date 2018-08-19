@@ -48,8 +48,8 @@ public:
         /* [in] */ IInterface* obj,
         /* [out] */ Boolean* same) override;
 
-    ECode SetReferenceCallback(
-        /* [in] */ IReferenceCallback* callback) override;
+    ECode SetReferenceObserver(
+        /* [in] */ IReferenceObserver* observer) override;
 
     ECode ToString(
         /* [out] */ String* desc) override;
@@ -76,10 +76,13 @@ public:
     static String ToString(
         /* [in] */ IInterface* obj);
 
+    static AutoPtr<IWeakReference> GetWeakReference(
+        /* [in] */ IInterface* obj);
+
 private:
     IMetaComponent* mComponent;
     String mCoclassName;
-    AutoPtr<IReferenceCallback> mRefCallback;
+    AutoPtr<IReferenceObserver> mRefObserver;
 };
 
 }

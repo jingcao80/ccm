@@ -596,6 +596,32 @@ coclass CConcurrentLinkedQueue
     interface IIterable;
 }
 
+[
+    uuid(37a99b95-311c-45b0-8033-c6e0aca4c502),
+    version(0.1.0)
+]
+coclass CConcurrentHashMap
+{
+    Constructor();
+
+    Constructor(
+        [in] Integer initialCapacity);
+
+    Constructor(
+        [in] Integer initialCapacity,
+        [in] Float loadFactor);
+
+    Constructor(
+        [in] Integer initialCapacity,
+        [in] Float loadFactor,
+        [in] Integer concurrencyLevel);
+
+    Constructor(
+        [in] IMap* m);
+
+    interface IConcurrentMap;
+}
+
 namespace atomic {
 
 [

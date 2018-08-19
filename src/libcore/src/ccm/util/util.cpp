@@ -35,6 +35,7 @@
 #include "ccm/util/calendar/CJulianCalendar.h"
 #include "ccm/util/calendar/CLocalGregorianCalendar.h"
 #include "ccm/util/concurrent/CConcurrentLinkedQueue.h"
+#include "ccm/util/concurrent/CConcurrentHashMap.h"
 #include "ccm/util/concurrent/atomic/CAtomicInteger.h"
 #include "ccm/util/concurrent/atomic/CAtomicLong.h"
 #include "ccm.util.ICLocaleClassObject.h"
@@ -243,6 +244,7 @@ CCM_OBJECT_IMPL(CLocalGregorianCalendar);
 namespace concurrent {
 
 CCM_OBJECT_IMPL(CConcurrentLinkedQueue);
+CCM_OBJECT_IMPL(CConcurrentHashMap);
 
 namespace atomic {
 
