@@ -19,17 +19,67 @@ namespace util {
 namespace concurrent {
 
 /*
+ * @Involve interface ccm::util::concurrent::IConcurrentMap
  * @Involve interface ccm::util::IMap
+ * @Involve interface ccm::io::ISerializable
  */
 [
-    uuid(5de1af5c-b22b-4789-ae3f-9b3a6d1e578f),
+    uuid(7f68ef50-b944-403d-a1d3-1fe5c81c094e),
     version(0.1.0)
 ]
-interface IConcurrentMap
+interface IConcurrentHashMap
 {
+    Clear();
+
+    ContainsKey(
+        [in] IInterface* key,
+        [out] Boolean* result);
+
+    ContainsValue(
+        [in] IInterface* value,
+        [out] Boolean* result);
+
+    Equals(
+        [in] IInterface* obj,
+        [out] Boolean* result);
+
+    Get(
+        [in] IInterface* key,
+        [out] IInterface** value);
+
+    GetEntrySet(
+        [out] ISet** entries);
+
+    GetHashCode(
+        [out] Integer* hash);
+
+    GetKeySet(
+        [out] ISet** keys);
+
+    GetSize(
+        [out] Integer* size);
+
+    GetValues(
+        [out] ICollection** values);
+
+    IsEmpty(
+        [out] Boolean* result);
+
+    Put(
+        [in] IInterface* key,
+        [in] IInterface* value,
+        [out] IInterface** prevValue = nullptr);
+
+    PutAll(
+        [in] IMap* m);
+
     PutIfAbsent(
         [in] IInterface* key,
         [in] IInterface* value,
+        [out] IInterface** prevValue = nullptr);
+
+    Remove(
+        [in] IInterface* key,
         [out] IInterface** prevValue = nullptr);
 
     Remove(

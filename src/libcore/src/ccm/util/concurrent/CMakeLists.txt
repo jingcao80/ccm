@@ -25,6 +25,7 @@ include_directories(
 
 set(SOURCES
     ConcurrentLinkedQueue.cpp
+    ConcurrentHashMap.cpp
     Helpers.cpp
     atomic/AtomicInteger.cpp
     atomic/AtomicLong.cpp)

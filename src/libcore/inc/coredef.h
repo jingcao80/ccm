@@ -36,11 +36,14 @@
     ccm::core::QuasiAtomic::ThreadFenceRelease(); \
     object->field = value;
 
-#define COMPARE_AND_SWAP_OBJECT(object, field, expectedValue, newValue) \
-    reinterpret_cast<ccm::core::AtomicLong*>(&object->field)-> \
+#define COMPARE_AND_SWAP_OBJECT_INADDR(handleAddr, expectedValue, newValue) \
+    reinterpret_cast<ccm::core::AtomicLong*>(handleAddr)-> \
         CompareExchangeStrongSequentiallyConsistent( \
             reinterpret_cast<int64_t>(expectedValue), \
             reinterpret_cast<int64_t>(newValue));
+
+#define COMPARE_AND_SWAP_OBJECT(object, field, expectedValue, newValue) \
+    COMPARE_AND_SWAP_OBJECT_INADDR(&object->field, expectedValue, newValue)
 
 #define VOLATILE
 
@@ -51,6 +54,11 @@
 #define VOLATILE_SET(variable, rvalue) \
         ccm::core::QuasiAtomic::ThreadFenceRelease(); \
         variable = rvalue; \
+        ccm::core::QuasiAtomic::ThreadFenceSequentiallyConsistent();
+
+#define VOLATILE_ARRAY_SET(array, index, value) \
+        ccm::core::QuasiAtomic::ThreadFenceRelease(); \
+        array.Set(index, value); \
         ccm::core::QuasiAtomic::ThreadFenceSequentiallyConsistent();
 
 
