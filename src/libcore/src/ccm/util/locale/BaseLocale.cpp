@@ -15,7 +15,6 @@
 //=========================================================================
 
 #include "ccm/core/CStringBuilder.h"
-#include "ccm/core/NativeAtomic.h"
 #include "ccm/util/locale/BaseLocale.h"
 #include "ccm/util/locale/LocaleUtils.h"
 #include "ccm.core.IStringBuilder.h"

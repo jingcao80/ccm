@@ -17,9 +17,9 @@
 #ifndef __CCM_CORE_THREAD_H__
 #define __CCM_CORE_THREAD_H__
 
-#include "coredef.h"
 #include "ccm/core/Runnable.h"
 #include "ccm/core/ThreadLocal.h"
+#include "ccm/core/volatile.h"
 #include "ccm.core.IStackTraceElement.h"
 #include "ccm.core.IThread.h"
 #include "ccm.core.IThreadGroup.h"

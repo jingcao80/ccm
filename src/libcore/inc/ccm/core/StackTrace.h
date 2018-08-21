@@ -17,8 +17,8 @@
 #ifndef __CCM_CORE_STACKTRACK_H__
 #define __CCM_CORE_STACKTRACK_H__
 
-#include "coredef.h"
 #include "ccm/core/SyncObject.h"
+#include "ccm/core/volatile.h"
 #include "ccm.core.IStackTrace.h"
 #include "ccm.core.IStackTraceElement.h"
 #include "ccm.io.IPrintStream.h"

@@ -14,6 +14,8 @@
 // limitations under the License.
 //=========================================================================
 
+interface ccm::util::IEnumeration;
+
 namespace ccm {
 namespace util {
 namespace concurrent {
@@ -31,6 +33,10 @@ interface IConcurrentHashMap
 {
     Clear();
 
+    Contains(
+        [in] IInterface* value,
+        [out] Boolean* result);
+
     ContainsKey(
         [in] IInterface* key,
         [out] Boolean* result);
@@ -38,6 +44,9 @@ interface IConcurrentHashMap
     ContainsValue(
         [in] IInterface* value,
         [out] Boolean* result);
+
+    Elements(
+        [out] IEnumeration** elements);
 
     Equals(
         [in] IInterface* obj,
@@ -56,6 +65,10 @@ interface IConcurrentHashMap
     GetKeySet(
         [out] ISet** keys);
 
+    GetKeySet(
+        [in] IInterface* mappedValue,
+        [out] ISet** keys);
+
     GetSize(
         [out] Integer* size);
 
@@ -64,6 +77,9 @@ interface IConcurrentHashMap
 
     IsEmpty(
         [out] Boolean* result);
+
+    Keys(
+        [out] IEnumeration** keys);
 
     Put(
         [in] IInterface* key,

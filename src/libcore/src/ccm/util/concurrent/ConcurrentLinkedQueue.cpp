@@ -14,7 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/core/NativeAtomic.h"
+#include "coredef.h"
 #include "ccm/util/Arrays.h"
 #include "ccm/util/concurrent/Helpers.h"
 #include "ccm/util/concurrent/ConcurrentLinkedQueue.h"

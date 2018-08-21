@@ -17,7 +17,7 @@
 #ifndef __CCM_IO_FILEOUTPUTSTREAM_H__
 #define __CCM_IO_FILEOUTPUTSTREAM_H__
 
-#include "coredef.h"
+#include "ccm/core/volatile.h"
 #include "ccm/core/SyncObject.h"
 #include "ccm/io/OutputStream.h"
 #include "libcore/io/IoTracker.h"

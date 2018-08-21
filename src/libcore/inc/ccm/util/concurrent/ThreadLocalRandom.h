@@ -14,19 +14,26 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_COREDEF_H__
-#define __CCM_COREDEF_H__
+#ifndef __CCM_UTIL_CONCURRENT_THREADLOCALRANDOM_H__
+#define __CCM_UTIL_CONCURRENT_THREADLOCALRANDOM_H__
 
-#define FOR_EACH(Type, element, TypeCastFunc, container) \
-    { \
-        AutoPtr<IIterator> it; \
-        container->GetIterator((IIterator**)&it); \
-        Boolean hasNext; \
-        while (it->HasNext(&hasNext), hasNext) { \
-            AutoPtr<IInterface> obj; \
-            it->Next((IInterface**)&obj); \
-            Type element = (Type)TypeCastFunc(obj);
+namespace ccm {
+namespace util {
+namespace concurrent {
 
-#define END_FOR_EACH() }}
+class ThreadLocalRandom
+{
+public:
+    static void LocalInit();
 
-#endif // __CCM_COREDEF_H__
+    static Integer GetProbe();
+
+    static Integer AdvanceProbe(
+        /* [in] */ Integer probe);
+};
+
+}
+}
+}
+
+#endif // __CCM_UTIL_CONCURRENT_THREADLOCALRANDOM_H__

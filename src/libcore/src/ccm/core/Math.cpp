@@ -155,6 +155,22 @@ Double Math::LongBitsToDouble(
 }
 
 Integer Math::NumberOfLeadingZeros(
+    /* [in] */ Integer value)
+{
+    if (value == 0) {
+        return 32;
+    }
+    Integer n = 1;
+    Integer i = value;
+    if (((unsigned Integer)i) >> 16 == 0) { n += 16; i <<= 16; }
+    if (((unsigned Integer)i) >> 24 == 0) { n +=  8; i <<=  8; }
+    if (((unsigned Integer)i) >> 28 == 0) { n +=  4; i <<=  4; }
+    if (((unsigned Integer)i) >> 30 == 0) { n +=  2; i <<=  2; }
+    n -= ((unsigned Integer)i) >> 31;
+    return n;
+}
+
+Integer Math::NumberOfLeadingZeros(
     /* [in] */ Long value)
 {
     if (value == 0) {

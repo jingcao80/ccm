@@ -96,6 +96,9 @@ public:
     inline Boolean Equals(
         /* [in] */ const Array<T>& other);
 
+    inline Boolean operator==(
+        /* [in] */ const Array<T>& other);
+
     Array& operator=(
         /* [in] */ const Array<T>& other);
 
@@ -392,6 +395,14 @@ void Array<T>::Set(
 
 template<class T>
 Boolean Array<T>::Equals(
+    /* [in] */ const Array<T>& other)
+{
+    return mData == other.mData && mSize == other.mSize &&
+            mType == other.mType;
+}
+
+template<class T>
+Boolean Array<T>::operator==(
     /* [in] */ const Array<T>& other)
 {
     return mData == other.mData && mSize == other.mSize &&

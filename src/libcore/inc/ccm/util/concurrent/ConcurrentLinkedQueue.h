@@ -17,7 +17,7 @@
 #ifndef __CCM_UTIL_CONCURRENT_CONCURRENTLINKEDQUEUE_H__
 #define __CCM_UTIL_CONCURRENT_CONCURRENTLINKEDQUEUE_H__
 
-#include "coredef.h"
+#include "ccm/core/volatile.h"
 #include "ccm/util/AbstractQueue.h"
 #include "ccm.io.ISerializable.h"
 #include "ccm.util.IIterator.h"

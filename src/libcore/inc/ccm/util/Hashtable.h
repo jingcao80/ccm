@@ -17,7 +17,7 @@
 #ifndef __CCM_UTIL_HASHTABLE_H__
 #define __CCM_UTIL_HASHTABLE_H__
 
-#include "coredef.h"
+#include "ccm/core/volatile.h"
 #include "ccm/core/SyncObject.h"
 #include "ccm/util/AbstractSet.h"
 #include "ccm.core.ICloneable.h"

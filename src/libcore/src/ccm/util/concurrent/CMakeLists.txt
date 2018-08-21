@@ -27,6 +27,7 @@ set(SOURCES
     ConcurrentLinkedQueue.cpp
     ConcurrentHashMap.cpp
     Helpers.cpp
+    ThreadLocalRandom.cpp
     atomic/AtomicInteger.cpp
     atomic/AtomicLong.cpp)
 

@@ -15,7 +15,6 @@
 //=========================================================================
 
 #include "ccm/core/AutoLock.h"
-#include "ccm/core/NativeAtomic.h"
 #include "ccm/core/System.h"
 #include "ccm/io/CFile.h"
 #include "ccm/io/CFileDescriptor.h"

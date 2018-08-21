@@ -83,6 +83,9 @@ public:
         /* [in] */ Long value);
 
     COM_PUBLIC static Integer NumberOfLeadingZeros(
+        /* [in] */ Integer value);
+
+    COM_PUBLIC static Integer NumberOfLeadingZeros(
         /* [in] */ Long value);
 
     COM_PUBLIC static Integer Compare(

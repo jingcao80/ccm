@@ -17,7 +17,6 @@
 #include "ccm/core/AutoLock.h"
 #include "ccm/core/CStringBuilder.h"
 #include "ccm/core/Math.h"
-#include "ccm/core/NativeAtomic.h"
 #include "ccm/util/Collections.h"
 #include "ccm/util/Hashtable.h"
 #include "ccm.core.IStringBuilder.h"

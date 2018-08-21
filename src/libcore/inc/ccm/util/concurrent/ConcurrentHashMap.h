@@ -17,10 +17,12 @@
 #ifndef __CCM_UTIL_CONCURRENT_CONCURRENTHASHMAP_H__
 #define __CCM_UTIL_CONCURRENT_CONCURRENTHASHMAP_H__
 
-#include "coredef.h"
+#include "ccm/core/volatile.h"
 #include "ccm/core/SyncObject.h"
 #include "ccm.io.ISerializable.h"
 #include "ccm.util.ICollection.h"
+#include "ccm.util.IEnumeration.h"
+#include "ccm.util.IIterator.h"
 #include "ccm.util.IMap.h"
 #include "ccm.util.IMapEntry.h"
 #include "ccm.util.ISet.h"
@@ -84,31 +86,75 @@ public:
         VOLATILE AutoPtr<Node> mNext;
     };
 
+    /**
+     * A node inserted at head of bins during transfer operations.
+     */
+    class ForwardingNode
+        : public Node
+    {
+    public:
+        ForwardingNode(
+            /* [in] */ Array<Node*>& tab);
+
+        IInterface* Probe(
+            /* [in] */ const InterfaceID& iid) override;
+
+    public:
+        Array<Node*> mNextTable;
+    };
+
     class ReservationNode
         : public Node
     {
+    public:
+        IInterface* Probe(
+            /* [in] */ const InterfaceID& iid) override;
+    };
 
+    class CounterCell
+        : public LightRefBase
+    {
+    public:
+        inline CounterCell(
+            /* [in] */ Long x)
+        {
+            VOLATILE_SET(mValue, x);
+        }
+
+    public:
+        VOLATILE Long mValue;
     };
 
     class TreeNode
         : public Node
     {
     public:
+        TreeNode(
+            /* [in] */ Integer hash,
+            /* [in] */ IInterface* key,
+            /* [in] */ IInterface* val,
+            /* [in] */ Node* next,
+            /* [in] */ TreeNode* parent);
+
         AutoPtr<TreeNode> FindTreeNode(
             /* [in] */ Integer h,
             /* [in] */ IInterface* k,
             /* [in] */ Boolean compare);
+
+    public:
+        TreeNode* mParent = nullptr;
+        TreeNode* mLeft = nullptr;
+        TreeNode* mRight = nullptr;
+        TreeNode* mPrev = nullptr;
+        Boolean mRed;
     };
 
     class TreeBin
         : public Node
     {
     public:
-        inline static TreeBin* From(
-            /* [in] */ Node* node)
-        {
-            return (TreeBin*)node;
-        }
+        TreeBin(
+            /* [in] */ TreeNode* b);
 
         AutoPtr<TreeNode> PutTreeVal(
             /* [in] */ Integer h,
@@ -117,6 +163,12 @@ public:
 
         Boolean RemoveTreeNode(
             /* [in] */ TreeNode* p);
+
+        inline static TreeBin* From(
+            /* [in] */ Node* node)
+        {
+            return (TreeBin*)node;
+        }
 
     public:
         AutoPtr<TreeNode> mRoot;
@@ -134,6 +186,80 @@ public:
             /* [in] */ Integer limit);
 
         AutoPtr<Node> Advance();
+    };
+
+    class BaseIterator
+        : public Traverser
+    {
+
+    };
+
+    class KeyIterator
+        : public BaseIterator
+        , public IIterator
+        , public IEnumeration
+    {
+    public:
+        KeyIterator(
+            /* [in] */ Array<Node*>& tab,
+            /* [in] */ Integer size,
+            /* [in] */ Integer index,
+            /* [in] */ Integer limit,
+            /* [in] */ ConcurrentHashMap* map);
+
+        CCM_INTERFACE_DECL();
+
+        ECode Next(
+            /* [out] */ IInterface** object = nullptr) override;
+
+        ECode NextElement(
+            /* [out] */ IInterface** object = nullptr) override;
+
+        ECode HasNext(
+            /* [out] */ Boolean* result) override;
+
+        ECode Remove() override;
+
+        ECode HasMoreElements(
+            /* [out] */ Boolean* result) override;
+    };
+
+    class ValueIterator
+        : public BaseIterator
+        , public IIterator
+        , public IEnumeration
+    {
+    public:
+        ValueIterator(
+            /* [in] */ Array<Node*>& tab,
+            /* [in] */ Integer size,
+            /* [in] */ Integer index,
+            /* [in] */ Integer limit,
+            /* [in] */ ConcurrentHashMap* map);
+
+        CCM_INTERFACE_DECL();
+
+        ECode Next(
+            /* [out] */ IInterface** object = nullptr) override;
+
+        ECode NextElement(
+            /* [out] */ IInterface** object = nullptr) override;
+
+        ECode HasNext(
+            /* [out] */ Boolean* result) override;
+
+        ECode Remove() override;
+
+        ECode HasMoreElements(
+            /* [out] */ Boolean* result) override;
+    };
+
+    class EntryIterator
+        : public BaseIterator
+        , public IIterator
+    {
+    public:
+        CCM_INTERFACE_DECL();
     };
 
     class CollectionView
@@ -240,9 +366,109 @@ public:
             /* [out, callee] */ Array<IInterface*>* objs) override;
     };
 
+    class ValuesView
+        : public CollectionView
+    {
+    public:
+        ValuesView(
+            /* [in] */ ConcurrentHashMap* map);
+
+        ECode Contains(
+            /* [in] */ IInterface* obj,
+            /* [out] */ Boolean* result) override;
+
+        ECode Remove(
+            /* [in] */ IInterface* obj,
+            /* [out] */ Boolean* changed = nullptr) override;
+
+        ECode GetIterator(
+            /* [out] */ IIterator** it) override;
+
+        ECode Add(
+            /* [in] */ IInterface* obj,
+            /* [out] */ Boolean* changed = nullptr) override;
+
+        ECode AddAll(
+            /* [in] */ ICollection* c,
+            /* [out] */ Boolean* changed = nullptr) override;
+
+        ECode Equals(
+            /* [in] */ IInterface* obj,
+            /* [out] */ Boolean* result) override;
+
+        ECode GetHashCode(
+            /* [out] */ Integer* hash) override;
+    };
+
+    class EntrySetView
+        : public CollectionView
+        , public ISet
+    {
+    public:
+        EntrySetView(
+            /* [in] */ ConcurrentHashMap* map);
+
+        CCM_INTERFACE_DECL();
+
+        ECode Contains(
+            /* [in] */ IInterface* obj,
+            /* [out] */ Boolean* result) override;
+
+        ECode Remove(
+            /* [in] */ IInterface* obj,
+            /* [out] */ Boolean* changed = nullptr) override;
+
+        ECode GetIterator(
+            /* [out] */ IIterator** it) override;
+
+        ECode Add(
+            /* [in] */ IInterface* obj,
+            /* [out] */ Boolean* changed = nullptr) override;
+
+        ECode AddAll(
+            /* [in] */ ICollection* c,
+            /* [out] */ Boolean* changed = nullptr) override;
+
+        ECode GetHashCode(
+            /* [out] */ Integer* hash) override;
+
+        ECode Equals(
+            /* [in] */ IInterface* obj,
+            /* [out] */ Boolean* result) override;
+
+        ECode Clear() override;
+
+        ECode ContainsAll(
+            /* [in] */ ICollection* c,
+            /* [out] */ Boolean* result) override;
+
+        ECode GetSize(
+            /* [out] */ Integer* size) override;
+
+        ECode IsEmpty(
+            /* [out] */ Boolean* empty) override;
+
+        ECode RemoveAll(
+            /* [in] */ ICollection* c,
+            /* [out] */ Boolean* changed = nullptr) override;
+
+        ECode RetainAll(
+            /* [in] */ ICollection* c,
+            /* [out] */ Boolean* changed = nullptr) override;
+
+        ECode ToArray(
+            /* [out, callee] */ Array<IInterface*>* objs) override;
+
+        ECode ToArray(
+            /* [in] */ const InterfaceID& iid,
+            /* [out, callee] */ Array<IInterface*>* objs) override;
+    };
+
 
 public:
     CCM_INTERFACE_DECL();
+
+    static Integer GetNCPU();
 
     static Integer Spread(
         /* [in] */ Integer h);
@@ -329,14 +555,62 @@ public:
     ECode GetValues(
         /* [out] */ ICollection** values) override;
 
+    ECode GetEntrySet(
+        /* [out] */ ISet** entries) override;
 
+    ECode GetHashCode(
+        /* [out] */ Integer* hash) override;
 
+    ECode ToString(
+        /* [out] */ String* desc) override;
 
-    Long SumCount();
+    ECode Equals(
+        /* [in] */ IInterface* obj,
+        /* [out] */ Boolean* result) override;
+
+    ECode PutIfAbsent(
+        /* [in] */ IInterface* key,
+        /* [in] */ IInterface* value,
+        /* [out] */ IInterface** prevValue = nullptr) override;
+
+    ECode Remove(
+        /* [in] */ IInterface* key,
+        /* [in] */ IInterface* value,
+        /* [out] */ Boolean* result = nullptr) override;
+
+    ECode Replace(
+        /* [in] */ IInterface* key,
+        /* [in] */ IInterface* oldValue,
+        /* [in] */ IInterface* newValue,
+        /* [out] */ Boolean* result = nullptr) override;
+
+    ECode Replace(
+        /* [in] */ IInterface* key,
+        /* [in] */ IInterface* value,
+        /* [out] */ IInterface** prevValue = nullptr) override;
+
+    ECode Contains(
+        /* [in] */ IInterface* value,
+        /* [out] */ Boolean* result) override;
+
+    ECode Keys(
+        /* [out] */ IEnumeration** keys) override;
+
+    ECode Elements(
+        /* [out] */ IEnumeration** elements) override;
+
+    ECode GetKeySet(
+        /* [in] */ IInterface* mappedValue,
+        /* [out] */ ISet** keys) override;
+
+    static Integer ResizeStamp(
+        /* [in] */ Integer n);
 
     Array<Node*> HelpTransfer(
-        /* [in] */ Array<Node*> tab,
+        /* [in] */ Array<Node*>& tab,
         /* [in] */ Node* f);
+
+    Long SumCount();
 
     AutoPtr<Node> Untreeify(
         /* [in] */ Node* b);
@@ -347,12 +621,20 @@ private:
 
     Array<Node*> InitTable();
 
-    void TryPresize(
-        /* [in] */ Integer size);
-
     void AddCount(
         /* [in] */ Long x,
         /* [in] */ Integer check);
+
+    void TryPresize(
+        /* [in] */ Integer size);
+
+    void Transfer(
+        /* [in] */ Array<Node*>& tab,
+        /* [in] */ Array<Node*>* nextTab);
+
+    void FullAddCount(
+        /* [in] */ Long x,
+        /* [in] */ Boolean wasUncontended);
 
     void TreeifyBin(
         /* [in] */ Array<Node*>& tab,
@@ -368,6 +650,21 @@ public:
      * shrinkage.
      */
     static constexpr Integer TREEIFY_THRESHOLD = 8;
+
+    /**
+     * The bin count threshold for untreeifying a (split) bin during a
+     * resize operation. Should be less than TREEIFY_THRESHOLD, and at
+     * most 6 to mesh with shrinkage detection under removal.
+     */
+    static constexpr Integer UNTREEIFY_THRESHOLD = 6;
+
+    /**
+     * The smallest table capacity for which bins may be treeified.
+     * (Otherwise the table is resized if too many nodes in a bin.)
+     * The value should be at least 4 * TREEIFY_THRESHOLD to avoid
+     * conflicts between resizing and treeification thresholds.
+     */
+    static constexpr Integer MIN_TREEIFY_CAPACITY = 64;
 
     static constexpr Integer MOVED = -1; // hash for forwarding nodes
     static constexpr Integer HASH_BITS = 0x7fffffff; // usable bits of normal node hash
@@ -388,10 +685,48 @@ private:
     static constexpr Integer DEFAULT_CAPACITY = 16;
 
     /**
+     * Minimum number of rebinnings per transfer step. Ranges are
+     * subdivided to allow multiple resizer threads.  This value
+     * serves as a lower bound to avoid resizers encountering
+     * excessive memory contention.  The value should be at least
+     * DEFAULT_CAPACITY.
+     */
+    static constexpr Integer MIN_TRANSFER_STRIDE = 16;
+
+    /**
+     * The number of bits used for generation stamp in sizeCtl.
+     * Must be at least 6 for 32bit arrays.
+     */
+    static constexpr Integer RESIZE_STAMP_BITS = 16;
+
+    /**
+     * The maximum number of threads that can help resize.
+     * Must fit in 32 - RESIZE_STAMP_BITS bits.
+     */
+    static constexpr Integer MAX_RESIZERS = (1 << (32 - RESIZE_STAMP_BITS)) - 1;
+
+    /**
+     * The bit shift for recording size stamp in sizeCtl.
+     */
+    static constexpr Integer RESIZE_STAMP_SHIFT = 32 - RESIZE_STAMP_BITS;
+
+    /**
      * The array of bins. Lazily initialized upon first insertion.
      * Size is always a power of two. Accessed directly by iterators.
      */
     VOLATILE Array<Node*> mTable;
+
+    /**
+     * The next table to use; non-null only while resizing.
+     */
+    VOLATILE Array<Node*> mNextTable;
+
+    /**
+     * Base counter value, used mainly when there is no contention,
+     * but also as a fallback during table initialization
+     * races. Updated via CAS.
+     */
+    VOLATILE Long mBaseCount;
 
     /**
      * Table initialization and resizing control.  When negative, the
@@ -403,7 +738,24 @@ private:
      */
     VOLATILE Integer mSizeCtl;
 
+    /**
+     * The next table index (plus one) to split while resizing.
+     */
+    VOLATILE Integer mTransferIndex;
+
+    /**
+     * Spinlock (locked via CAS) used when resizing and/or creating CounterCells.
+     */
+    VOLATILE Integer mCellsBusy;
+
+    /**
+     * Table of counter cells. When non-null, size is a power of 2.
+     */
+    VOLATILE Array<CounterCell*> mCounterCells;
+
     AutoPtr<KeySetView> mKeySet;
+    AutoPtr<ValuesView> mValues;
+    AutoPtr<EntrySetView> mEntrySet;
 };
 
 inline Integer ConcurrentHashMap::Spread(

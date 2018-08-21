@@ -16,7 +16,6 @@
 
 #include "ccm/core/AutoLock.h"
 #include "ccm/core/CStackTraceElement.h"
-#include "ccm/core/NativeAtomic.h"
 #include "ccm/core/NativeBacktrace.h"
 #include "ccm/core/StackTrace.h"
 #include "ccm.core.IStackTraceElement.h"

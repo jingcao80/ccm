@@ -17,7 +17,7 @@
 #ifndef __CCM_UTIL_LOCALE_BASELOCALE_H__
 #define __CCM_UTIL_LOCALE_BASELOCALE_H__
 
-#include "coredef.h"
+#include "ccm/core/volatile.h"
 #include "ccm/util/locale/LocaleObjectCache.h"
 #include "ccm.core.IComparable.h"
 #include <ccmautoptr.h>

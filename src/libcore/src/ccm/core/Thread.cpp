@@ -16,7 +16,6 @@
 
 #include "ccm/core/AutoLock.h"
 #include "ccm/core/CStackTrace.h"
-#include "ccm/core/NativeAtomic.h"
 #include "ccm/core/NativeMonitor.h"
 #include "ccm/core/NativeMutex.h"
 #include "ccm/core/NativeObject.h"

@@ -17,7 +17,7 @@
 #ifndef __CCM_IO_FILEINPUTSTREAM_H__
 #define __CCM_IO_FILEINPUTSTREAM_H__
 
-#include "coredef.h"
+#include "ccm/core/volatile.h"
 #include "ccm/io/InputStream.h"
 #include "libcore/io/IoTracker.h"
 #include "ccm.io.IFile.h"
