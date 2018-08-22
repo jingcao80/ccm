@@ -51,6 +51,8 @@ public:
 
     inline operator T*() const;
 
+    inline T** operator&();
+
     inline T* operator->() const;
 
     inline T& operator*() const;
@@ -181,6 +183,12 @@ template<class T>
 AutoPtr<T>::operator T*() const
 {
     return mPtr;
+}
+
+template<class T>
+T** AutoPtr<T>::operator&()
+{
+    return &mPtr;
 }
 
 template<class T>

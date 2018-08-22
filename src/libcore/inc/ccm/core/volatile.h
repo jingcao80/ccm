@@ -29,6 +29,21 @@ using namespace ccm;
 #define COMPARE_AND_SWAP_INT(object, field, expectedValue, newValue) \
     COMPARE_AND_SWAP_INT_INADDR(&object->field, expectedValue, newValue)
 
+inline Integer GetAndAddInt(Integer* addr, Integer delta)
+{
+    Integer v;
+    do {
+        v = reinterpret_cast<ccm::core::AtomicInteger*>(addr)->LoadSequentiallyConsistent();
+    } while (!COMPARE_AND_SWAP_INT_INADDR(addr, v, v + delta));
+    return v;
+}
+
+#define GET_AND_ADD_INT_INADDR(intAddr, delta) \
+    GetAndAddInt(intAddr, delta)
+
+#define GET_AND_ADD_INT(object, field, delta) \
+    GET_AND_ADD_INT_INADDR(&object->field, delta)
+
 #define COMPARE_AND_SWAP_LONG_INADDR(longAddr, expectedValue, newValue) \
     reinterpret_cast<ccm::core::AtomicLong*>(longAddr)-> \
         CompareExchangeStrongSequentiallyConsistent( \
@@ -36,6 +51,7 @@ using namespace ccm;
 
 #define COMPARE_AND_SWAP_LONG(object, field, expectedValue, newValue) \
     COMPARE_AND_SWAP_LONG_INADDR(&object->field, expectedValue, newValue)
+
 
 #define PUT_OBJECT(object, field, value) \
     object->field = value;

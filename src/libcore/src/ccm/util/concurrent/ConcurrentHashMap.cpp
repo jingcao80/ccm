@@ -21,7 +21,10 @@
 #include "ccm/core/Math.h"
 #include "ccm/core/NativeAtomic.h"
 #include "ccm/util/concurrent/ConcurrentHashMap.h"
+#include "ccm/util/concurrent/Helpers.h"
 #include "ccm/util/concurrent/ThreadLocalRandom.h"
+#include "ccm/util/concurrent/locks/LockSupport.h"
+#include "ccm.core.IComparable.h"
 #include "ccm.core.IInteger.h"
 #include "ccm.core.IStringBuilder.h"
 #include "ccm.util.IIterator.h"
@@ -31,11 +34,13 @@
 using ccm::core::AutoLock;
 using ccm::core::CStringBuilder;
 using ccm::core::CThread;
+using ccm::core::IComparable;
 using ccm::core::IInteger;
 using ccm::core::IStringBuilder;
 using ccm::core::IID_IStringBuilder;
 using ccm::core::Math;
 using ccm::io::IID_ISerializable;
+using ccm::util::concurrent::locks::LockSupport;
 
 namespace ccm {
 namespace util {
@@ -60,6 +65,16 @@ Integer ConcurrentHashMap::TableSizeFor(
     n |= ((unsigned Integer)n) >> 8;
     n |= ((unsigned Integer)n) >> 16;
     return (n < 0) ? 1 : (n >= MAXIMUM_CAPACITY) ? MAXIMUM_CAPACITY : n + 1;
+}
+
+Integer ConcurrentHashMap::CompareComparables(
+    /* [in] */ IInterface* k,
+    /* [in] */ IInterface* x)
+{
+    if (x == nullptr) return 0;
+    Integer result;
+    IComparable::Probe(k)->CompareTo(x, &result);
+    return result;
 }
 
 AutoPtr<ConcurrentHashMap::Node> ConcurrentHashMap::TabAt(
@@ -184,11 +199,7 @@ ECode ConcurrentHashMap::Get(
             REFCOUNT_ADD(*value);
             return NOERROR;
         }
-        while (true) {
-            VOLATILE_GET(e, e->mNext);
-            if (e == nullptr) {
-                break;
-            }
+        while (VOLATILE_GET_INLINE(e, e->mNext), e != nullptr) {
             if (e->mHash == h &&
                     (((ek = e->mKey), IInterface::Equals(ek, key)) ||
                     (ek != nullptr && Object::Equals(key, ek)))) {
@@ -750,11 +761,7 @@ Array<ConcurrentHashMap::Node*> ConcurrentHashMap::InitTable()
 {
     Array<Node*> tab;
     Integer sc;
-    while (true) {
-        VOLATILE_GET(tab, mTable);
-        if (tab.GetLength() > 0) {
-            break;
-        }
+    while (VOLATILE_GET_INLINE(tab, mTable), tab.IsNull() || tab.GetLength() == 0) {
         VOLATILE_GET(sc, mSizeCtl);
         if (sc < 0) {
             CThread::Yield(); // lost initialization race; just spin
@@ -782,7 +789,8 @@ void ConcurrentHashMap::AddCount(
     Long b, s = 0;
     VOLATILE_GET(as, mCounterCells);
     if (!as.IsNull() ||
-            !COMPARE_AND_SWAP_LONG(this, mBaseCount, b = mBaseCount, s = b + x)) {
+            (VOLATILE_GET_INLINE(b, mBaseCount),
+            !COMPARE_AND_SWAP_LONG(this, mBaseCount, b, s = b + x))) {
         AutoPtr<CounterCell> a;
         Long v;
         Integer m;
@@ -1186,6 +1194,783 @@ AutoPtr<ConcurrentHashMap::Node> ConcurrentHashMap::Untreeify(
         tl = p;
     }
     return hd;
+}
+
+//-------------------------------------------------------------------------
+
+CCM_INTERFACE_IMPL_1(ConcurrentHashMap::Node, SyncObject, IMapEntry);
+
+ECode ConcurrentHashMap::Node::GetKey(
+    /* [out] */ IInterface** key)
+{
+    *key = mKey;
+    REFCOUNT_ADD(*key);
+    return NOERROR;
+}
+
+ECode ConcurrentHashMap::Node::GetValue(
+    /* [out] */ IInterface** value)
+{
+    VOLATILE_GET(*value, mVal);
+    REFCOUNT_ADD(*value);
+    return NOERROR;
+}
+
+ECode ConcurrentHashMap::Node::GetHashCode(
+    /* [out] */ Integer* hash)
+{
+    VOLATILE_GET(IInterface* val, mVal);
+    *hash = Object::GetHashCode(mKey) ^ Object::GetHashCode(val);
+    return NOERROR;
+}
+
+ECode ConcurrentHashMap::Node::ToString(
+    /* [out] */ String* desc)
+{
+    *desc = Helpers::MapEntryToString(mKey, mVal);
+    return NOERROR;
+}
+
+ECode ConcurrentHashMap::Node::SetValue(
+    /* [in] */ IInterface* value,
+    /* [out] */ IInterface** prevValue)
+{
+    return E_UNSUPPORTED_OPERATION_EXCEPTION;
+}
+
+ECode ConcurrentHashMap::Node::Equals(
+    /* [in] */ IInterface* obj,
+    /* [out] */ Boolean* result)
+{
+    IMapEntry* entry = IMapEntry::Probe(obj);
+    if (entry == nullptr) {
+        *result = false;
+        return NOERROR;
+    }
+    AutoPtr<IInterface> k, v;
+    entry->GetKey(&k);
+    if (k == nullptr || (!IInterface::Equals(k, mKey) &&
+            !Object::Equals(k, mKey))) {
+        *result = false;
+        return NOERROR;
+    }
+    entry->GetValue(&v);
+    if (v == nullptr) {
+        *result = false;
+        return NOERROR;
+    }
+    VOLATILE_GET(AutoPtr<IInterface> val, mVal);
+    *result = IInterface::Equals(v, val) || Object::Equals(v, val);
+    return NOERROR;
+}
+
+AutoPtr<ConcurrentHashMap::Node> ConcurrentHashMap::Node::Find(
+    /* [in] */ Integer h,
+    /* [in] */ IInterface* k)
+{
+    AutoPtr<Node> e = this;
+    if (k != nullptr) {
+        do {
+            AutoPtr<IInterface> ek;
+            if (e->mHash == h &&
+                    ((ek = e->mKey, IInterface::Equals(ek, k)) ||
+                        (ek != nullptr && Object::Equals(k, ek)))) {
+                return e;
+            }
+        } while (VOLATILE_GET_INLINE(e, e->mNext), e != nullptr);
+    }
+    return nullptr;
+}
+
+//-------------------------------------------------------------------------
+
+IInterface* ConcurrentHashMap::ForwardingNode::Probe(
+    /* [in] */ const InterfaceID& iid)
+{
+    if (iid == IID_ForwardingNode) {
+        return (IInterface*)(IObject*)this;
+    }
+    return Node::Probe(iid);
+}
+
+AutoPtr<ConcurrentHashMap::Node> ConcurrentHashMap::ForwardingNode::Find(
+    /* [in] */ Integer h,
+    /* [in] */ IInterface* k)
+{
+    // loop to avoid arbitrarily deep recursion on forwarding nodes
+    Array<Node*> tab = mNextTable;
+OUTER:
+    for (;;) {
+        AutoPtr<Node> e;
+        Integer n;
+        if (k == nullptr || tab.IsNull() || (n = tab.GetLength()) == 0 ||
+                (e = TabAt(tab, (n - 1) & h)) == nullptr) {
+            return nullptr;
+        }
+        for (;;) {
+            Integer eh;
+            AutoPtr<IInterface> ek;
+            if ((eh = e->mHash) == h &&
+                    ((ek = e->mKey, IInterface::Equals(ek, k)) ||
+                        (ek != nullptr && Object::Equals(k, ek)))) {
+                return e;
+            }
+            if (eh < 0) {
+                if (e->Probe(IID_ForwardingNode) != nullptr) {
+                    tab = ((ForwardingNode*)e.Get())->mNextTable;
+                    goto OUTER;
+                }
+                else {
+                    return e->Find(h, k);
+                }
+            }
+            if (VOLATILE_GET_INLINE(e, e->mNext), e == nullptr) {
+                return nullptr;
+            }
+        }
+    }
+}
+
+//-------------------------------------------------------------------------
+
+IInterface* ConcurrentHashMap::ReservationNode::Probe(
+    /* [in] */ const InterfaceID& iid)
+{
+    if (iid == IID_ReservationNode) {
+        return (IInterface*)(IObject*)this;
+    }
+    return Node::Probe(iid);
+}
+
+AutoPtr<ConcurrentHashMap::Node> ConcurrentHashMap::ReservationNode::Find(
+    /* [in] */ Integer h,
+    /* [in] */ IInterface* k)
+{
+    return nullptr;
+}
+
+//-------------------------------------------------------------------------
+
+AutoPtr<ConcurrentHashMap::Node> ConcurrentHashMap::TreeNode::Find(
+    /* [in] */ Integer h,
+    /* [in] */ IInterface* k)
+{
+    return (Node*)FindTreeNode(h, k, false).Get();
+}
+
+AutoPtr<ConcurrentHashMap::TreeNode> ConcurrentHashMap::TreeNode::FindTreeNode(
+    /* [in] */ Integer h,
+    /* [in] */ IInterface* k,
+    /* [in] */ Boolean compare)
+{
+    if (k != nullptr) {
+        AutoPtr<TreeNode> p = this;
+        do {
+            Integer ph, dir;
+            AutoPtr<IInterface> pk;
+            AutoPtr<TreeNode> q, pl = p->mLeft, pr = p->mRight;
+            if ((ph = p->mHash) > h) {
+                p = pl;
+            }
+            else if (ph < h) {
+                p = pr;
+            }
+            else if ((pk = p->mKey, IInterface::Equals(pk, k)) ||
+                    (pk != nullptr, Object::Equals(k, pk))) {
+                return p;
+            }
+            else if (pl == nullptr) {
+                p = pr;
+            }
+            else if (pr = nullptr) {
+                p = pl;
+            }
+            else if ((compare || IComparable::Probe(k) != nullptr) &&
+                    (dir = CompareComparables(k, pk)) != 0) {
+                p = (dir < 0) ? pl : pr;
+            }
+            else if ((q = pr->FindTreeNode(h, k, compare)) != nullptr) {
+                return q;
+            }
+            else {
+                p = pl;
+            }
+        } while (p != nullptr);
+    }
+    return nullptr;
+}
+
+//-------------------------------------------------------------------------
+
+ConcurrentHashMap::TreeBin::TreeBin(
+    /* [in] */ TreeNode* b)
+    : Node(TREEBIN, nullptr, nullptr, nullptr)
+{
+    VOLATILE_SET(mFirst, b);
+    AutoPtr<TreeNode> r;
+    for (AutoPtr<TreeNode> x = b, next; x != nullptr; x = next) {
+        VOLATILE_GET(next, (TreeNode*)x->mNext.Get());
+        x->mLeft = x->mRight = nullptr;
+        if (r == nullptr) {
+            x->mParent = nullptr;
+            x->mRed = false;
+            r = x;
+        }
+        else {
+            AutoPtr<IInterface> k = x->mKey;
+            Integer h = x->mHash;
+            Boolean compare = false;
+            for (AutoPtr<TreeNode> p = r;;) {
+                Integer dir, ph;
+                AutoPtr<IInterface> pk = p->mKey;
+                if ((ph = p->mHash) > h) {
+                    dir = -1;
+                }
+                else if (ph < h) {
+                    dir = 1;
+                }
+                else if ((!compare && (compare = IComparable::Probe(k) != nullptr, !compare)) ||
+                        (dir = CompareComparables(k, pk)) == 0) {
+                    dir = TieBreakOrder(k, pk);
+                }
+                AutoPtr<TreeNode> xp = p;
+                if ((p = (dir <= 0) ? p->mLeft : p->mRight) == nullptr) {
+                    x->mParent = xp;
+                    if (dir <= 0) {
+                        xp->mLeft = x;
+                    }
+                    else {
+                        xp->mRight = x;
+                    }
+                    r = BalanceInsertion(r, x);
+                    break;
+                }
+            }
+        }
+    }
+    mRoot = r;
+    CHECK(CheckInvariants(mRoot));
+}
+
+IInterface* ConcurrentHashMap::TreeBin::Probe(
+    /* [in] */ const InterfaceID& iid)
+{
+    if (iid == IID_TreeBin) {
+        return (IInterface*)(IObject*)this;
+    }
+    return Node::Probe(iid);
+}
+
+Integer ConcurrentHashMap::TreeBin::TieBreakOrder(
+    /* [in] */ IInterface* a,
+    /* [in] */ IInterface* b)
+{
+    Integer d = 0;
+    if (a == nullptr || b == nullptr ||
+            (d = Object::GetCoclassName(a).Compare(
+                Object::GetCoclassName(b))) == 0) {
+        d = Object::GetHashCode(a) <= Object::GetHashCode(b) ?
+                -1 : 1;
+    }
+    return d;
+}
+
+void ConcurrentHashMap::TreeBin::LockRoot()
+{
+    if (!COMPARE_AND_SWAP_INT(this, mLockState, 0, WRITER)) {
+        ContendedLock(); // offload to separate method
+    }
+}
+
+void ConcurrentHashMap::TreeBin::UnlockRoot()
+{
+    mLockState = 0;
+}
+
+void ConcurrentHashMap::TreeBin::ContendedLock()
+{
+    Boolean waiting = false;
+    for (Integer s;;) {
+        if (((s = mLockState) & ~WAITER) == 0) {
+            if (COMPARE_AND_SWAP_INT(this, mLockState, s, WRITER)) {
+                if (waiting) {
+                    mWaiter = nullptr;
+                }
+                return;
+            }
+        }
+        else if ((s & WAITER) == 0) {
+            if (COMPARE_AND_SWAP_INT(this, mLockState, s, s | WAITER)) {
+                waiting = true;
+                CThread::GetCurrentThread((IThread**)&mWaiter);
+            }
+        }
+        else if (waiting) {
+            LockSupport::Park((IObject*)this);
+        }
+    }
+}
+
+AutoPtr<ConcurrentHashMap::Node> ConcurrentHashMap::TreeBin::Find(
+    /* [in] */ Integer h,
+    /* [in] */ IInterface* k)
+{
+    if (k != nullptr) {
+        for (AutoPtr<Node> e = mFirst.Get(); e != nullptr;) {
+            Integer s;
+            AutoPtr<IInterface> ek;
+            VOLATILE_GET(s, mLockState);
+            if ((s & (WAITER | WRITER)) != 0) {
+                if (e->mHash == h &&
+                    ((ek = e->mKey, IInterface::Equals(ek, k)) ||
+                        (ek != nullptr && Object::Equals(k, ek)))) {
+                    return e;
+                }
+                VOLATILE_GET(e, e->mNext);
+            }
+            else if (COMPARE_AND_SWAP_INT(this, mLockState, s,
+                    s + READER)) {
+                AutoPtr<TreeNode> r, p;
+                p = (r = mRoot) == nullptr ? nullptr :
+                        r->FindTreeNode(h, k, false);
+                AutoPtr<IThread> w;
+                if (GET_AND_ADD_INT(this, mLockState, -READER) ==
+                        (READER | WAITER) && (w = mWaiter) != nullptr) {
+                    LockSupport::Unpark(w);
+                }
+            }
+        }
+    }
+    return nullptr;
+}
+
+AutoPtr<ConcurrentHashMap::TreeNode> ConcurrentHashMap::TreeBin::PutTreeVal(
+    /* [in] */ Integer h,
+    /* [in] */ IInterface* k,
+    /* [in] */ IInterface* v)
+{
+    Boolean compare = false;
+    Boolean searched = false;
+    for (AutoPtr<TreeNode> p = mRoot;;) {
+        Integer dir, ph;
+        AutoPtr<IInterface> pk;
+        if (p == nullptr) {
+            mFirst = mRoot = new TreeNode(h, k, v, nullptr, nullptr);
+            break;
+        }
+        else if ((ph = p->mHash) > h) {
+            dir = -1;
+        }
+        else if (ph < h) {
+            dir = 1;
+        }
+        else if ((pk = p->mKey, IInterface::Equals(pk, k)) ||
+                (pk != nullptr && Object::Equals(k, pk))) {
+            return p;
+        }
+        else if ((!compare && (compare = IComparable::Probe(k) != nullptr, !compare)) ||
+                        (dir = CompareComparables(k, pk)) == 0) {
+            if (!searched) {
+                AutoPtr<TreeNode> q, ch;
+                searched = true;
+                if (((ch = p->mLeft) != nullptr &&
+                        (q = ch->FindTreeNode(h, k, compare)) != nullptr) ||
+                        ((ch = p->mRight) != nullptr &&
+                            (q = ch->FindTreeNode(h, k, compare)) != nullptr)) {
+                    return q;
+                }
+            }
+            dir = TieBreakOrder(k, pk);
+        }
+
+        AutoPtr<TreeNode> xp = p;
+        if ((p = dir <= 0 ? p->mLeft : p->mRight) == nullptr) {
+            AutoPtr<TreeNode> x, f = mFirst;
+            mFirst = x = new TreeNode(h, k, v, f, xp);
+            if (f != nullptr) {
+                f->mPrev = x;
+            }
+            if (dir <= 0) {
+                xp->mLeft = x;
+            }
+            else {
+                xp->mRight = x;
+            }
+            if (!xp->mRed) {
+                x->mRed = true;
+            }
+            else {
+                LockRoot();
+                mRoot = BalanceInsertion(mRoot, x);
+                UnlockRoot();
+            }
+            break;
+        }
+    }
+    CHECK(CheckInvariants(mRoot));
+    return nullptr;
+}
+
+Boolean ConcurrentHashMap::TreeBin::RemoveTreeNode(
+    /* [in] */ TreeNode* p)
+{
+    VOLATILE_GET(AutoPtr<TreeNode> next, (TreeNode*)p->mNext.Get());
+    AutoPtr<TreeNode> pred = p->mPrev; // unlink traversal pointers
+    AutoPtr<TreeNode> r, rl;
+    if (pred == nullptr) {
+        mFirst = next;
+    }
+    else {
+        VOLATILE_SET(pred->mNext, next);
+    }
+    if (next != nullptr) {
+        next->mPrev = pred;
+    }
+    if (mFirst == nullptr) {
+        mRoot = nullptr;
+        return true;
+    }
+    if ((r = mRoot) == nullptr || r->mRight == nullptr || // too small
+            (rl = r->mLeft) == nullptr || rl->mLeft == nullptr) {
+        return true;
+    }
+    LockRoot();
+    AutoPtr<TreeNode> replacement;
+    AutoPtr<TreeNode> pl = p->mLeft;
+    AutoPtr<TreeNode> pr = p->mRight;
+    if (pl != nullptr && pr != nullptr) {
+        AutoPtr<TreeNode> s = pr, sl;
+        while ((sl = s->mLeft) != nullptr) { // find successor
+            s = sl;
+        }
+        Boolean c = s->mRed;
+        s->mRed = p->mRed;
+        p->mRed = c; // swap colors
+        AutoPtr<TreeNode> sr = s->mRight;
+        AutoPtr<TreeNode> pp = p->mParent;
+        if (s == pr) { // p was s's direct parent
+            p->mParent = s;
+            s->mRight = p;
+        }
+        else {
+            AutoPtr<TreeNode> sp = s->mParent;
+            if ((p->mParent = sp) != nullptr) {
+                if (s == sp->mLeft) {
+                    sp->mLeft = p;
+                }
+                else {
+                    sp->mRight = p;
+                }
+            }
+            if ((s->mRight = pr) != nullptr) {
+                pr->mParent = s;
+            }
+        }
+        p->mLeft = nullptr;
+        if ((p->mRight = sr) != nullptr) {
+            sr->mParent = p;
+        }
+        if ((s->mLeft = pl) != nullptr) {
+            pl->mParent = s;
+        }
+        if ((s->mParent = pp) == nullptr) {
+            r = s;
+        }
+        else if (p == pp->mLeft) {
+            pp->mLeft = s;
+        }
+        else {
+            pp->mRight = s;
+        }
+        if (sr != nullptr) {
+            replacement = sr;
+        }
+        else {
+            replacement = p;
+        }
+    }
+    else if (pl != nullptr) {
+        replacement = pl;
+    }
+    else if (pr != nullptr) {
+        replacement = pr;
+    }
+    else {
+        replacement = p;
+    }
+    if (replacement != p) {
+        AutoPtr<TreeNode> pp = replacement->mParent = p->mParent;
+        if (pp == nullptr) {
+            r = replacement;
+        }
+        else if (p == pp->mLeft) {
+            pp->mLeft = replacement;
+        }
+        else {
+            pp->mRight = replacement;
+        }
+        p->mLeft = p->mRight = p->mParent = nullptr;
+    }
+
+    mRoot = p->mRed ? r : BalanceDeletion(r, replacement);
+
+    if (p == replacement) { // detach pointers
+        AutoPtr<TreeNode> pp;
+        if ((pp = p->mParent) != nullptr) {
+            if (p == pp->mLeft) {
+                pp->mLeft = nullptr;
+            }
+            else if (p == pp->mRight) {
+                pp->mRight = nullptr;
+            }
+            p->mParent = nullptr;
+        }
+    }
+    UnlockRoot();
+    CHECK(CheckInvariants(mRoot));
+    return false;
+}
+
+AutoPtr<ConcurrentHashMap::TreeNode> ConcurrentHashMap::TreeBin::RotateLeft(
+    /* [in] */ TreeNode* root_,
+    /* [in] */ TreeNode* p)
+{
+    AutoPtr<TreeNode> r, pp, rl, root = root_;
+    if (p != nullptr && (r = p->mRight) != nullptr) {
+        if ((rl = p->mRight = r->mLeft) != nullptr) {
+            rl->mParent = p;
+        }
+        if ((pp = r->mParent = p->mParent) == nullptr) {
+            (root = r)->mRed = false;
+        }
+        else if (pp->mLeft == p) {
+            pp->mLeft = r;
+        }
+        else {
+            pp->mRight = r;
+        }
+        r->mLeft = p;
+        p->mParent = r;
+    }
+    return root;
+}
+
+AutoPtr<ConcurrentHashMap::TreeNode> ConcurrentHashMap::TreeBin::RotateRight(
+    /* [in] */ TreeNode* root_,
+    /* [in] */ TreeNode* p)
+{
+    AutoPtr<TreeNode> l, pp, lr, root = root_;
+    if (p != nullptr && (l = p->mLeft) != nullptr) {
+        if ((lr = p->mLeft = l->mRight) != nullptr) {
+            lr->mParent = p;
+        }
+        if ((pp = l->mParent = p->mParent) == nullptr) {
+            (root = l)->mRed = false;
+        }
+        else if (pp->mRight == p) {
+            pp->mRight = l;
+        }
+        else {
+            pp->mLeft = l;
+        }
+        l->mRight = p;
+        p->mParent = l;
+    }
+    return root;
+}
+
+AutoPtr<ConcurrentHashMap::TreeNode> ConcurrentHashMap::TreeBin::BalanceInsertion(
+    /* [in] */ TreeNode* root_,
+    /* [in] */ TreeNode* x)
+{
+    AutoPtr<TreeNode> root = root_;
+    x->mRed = true;
+    for (AutoPtr<TreeNode> xp, xpp, xppl, xppr;;) {
+        if ((xp = x->mParent) == nullptr) {
+            x->mRed = false;
+            return x;
+        }
+        else if (!xp->mRed || (xpp = xp->mParent) == nullptr) {
+            return root;
+        }
+        if (xp == (xppl = xpp->mLeft)) {
+            if ((xppr = xpp->mRight) != nullptr && xppr->mRed) {
+                xppr->mRed = false;
+                xp->mRed = false;
+                xpp->mRed = true;
+                x = xpp;
+            }
+            else {
+                if (x == xp->mRight) {
+                    root = RotateLeft(root, x = xp);
+                    xpp = (xp = x->mParent) == nullptr ? nullptr : xp->mParent;
+                }
+                if (xp != nullptr) {
+                    xp->mRed = false;
+                    if (xpp != nullptr) {
+                        xpp->mRed = true;
+                        root = RotateRight(root, xpp);
+                    }
+                }
+            }
+        }
+        else {
+            if (xppl != nullptr && xppl->mRed) {
+                xppl->mRed = false;
+                xp->mRed = false;
+                xpp->mRed = true;
+                x = xpp;
+            }
+            else {
+                if (x == xp->mLeft) {
+                    root = RotateRight(root, x = xp);
+                    xpp = (xp = x->mParent) == nullptr ? nullptr : xp->mParent;
+                }
+                if (xp != nullptr) {
+                    xp->mRed = false;
+                    if (xpp != nullptr) {
+                        xpp->mRed = true;
+                        root = RotateLeft(root, xpp);
+                    }
+                }
+            }
+        }
+    }
+}
+
+AutoPtr<ConcurrentHashMap::TreeNode> ConcurrentHashMap::TreeBin::BalanceDeletion(
+    /* [in] */ TreeNode* root_,
+    /* [in] */ TreeNode* x)
+{
+    AutoPtr<TreeNode> root = root_;
+    for (AutoPtr<TreeNode> xp, xpl, xpr;;) {
+        if (x == nullptr || x == root) {
+            return root;
+        }
+        else if ((xp = x->mParent) == nullptr) {
+            x->mRed = false;
+            return x;
+        }
+        else if (x->mRed) {
+            x->mRed = false;
+            return root;
+        }
+        else if ((xpl = xp->mLeft) == x) {
+            if ((xpr = xp->mRight) != nullptr && xpr->mRed) {
+                xpr->mRed = false;
+                xp->mRed = true;
+                root = RotateLeft(root, xp);
+                xpr = (xp = x->mParent) == nullptr ? nullptr : xp->mRight;
+            }
+            if (xpr == nullptr) {
+                x = xp;
+            }
+            else {
+                AutoPtr<TreeNode> sl = xpr->mLeft, sr = xpr->mRight;
+                if ((sr == nullptr || !sr->mRed) &&
+                    (sl == nullptr || !sl->mRed)) {
+                    xpr->mRed = true;
+                    x = xp;
+                }
+                else {
+                    if (sr == nullptr || !sr->mRed) {
+                        if (sl != nullptr) {
+                            sl->mRed = false;
+                        }
+                        xpr->mRed = true;
+                        root = RotateRight(root, xpr);
+                        xpr = (xp = x->mParent) == nullptr ?
+                            nullptr : xp->mRight;
+                    }
+                    if (xpr != nullptr) {
+                        xpr->mRed = (xp == nullptr) ? false : xp->mRed;
+                        if ((sr = xpr->mRight) != nullptr) {
+                            sr->mRed = false;
+                        }
+                    }
+                    if (xp != nullptr) {
+                        xp->mRed = false;
+                        root = RotateLeft(root, xp);
+                    }
+                    x = root;
+                }
+            }
+        }
+        else { // symmetric
+            if (xpl != nullptr && xpl->mRed) {
+                xpl->mRed = false;
+                xp->mRed = true;
+                root = RotateRight(root, xp);
+                xpl = (xp = x->mParent) == nullptr ? nullptr : xp->mLeft;
+            }
+            if (xpl == nullptr) {
+                x = xp;
+            }
+            else {
+                AutoPtr<TreeNode> sl = xpl->mLeft, sr = xpl->mRight;
+                if ((sl == nullptr || !sl->mRed) &&
+                    (sr == nullptr || !sr->mRed)) {
+                    xpl->mRed = true;
+                    x = xp;
+                }
+                else {
+                    if (sl == nullptr || !sl->mRed) {
+                        if (sr != nullptr) {
+                            sr->mRed = false;
+                        }
+                        xpl->mRed = true;
+                        root = RotateLeft(root, xpl);
+                        xpl = (xp = x->mParent) == nullptr ?
+                            nullptr : xp->mLeft;
+                    }
+                    if (xpl != nullptr) {
+                        xpl->mRed = (xp == nullptr) ? false : xp->mRed;
+                        if ((sl = xpl->mLeft) != nullptr) {
+                            sl->mRed = false;
+                        }
+                    }
+                    if (xp != nullptr) {
+                        xp->mRed = false;
+                        root = RotateRight(root, xp);
+                    }
+                    x = root;
+                }
+            }
+        }
+    }
+}
+
+Boolean ConcurrentHashMap::TreeBin::CheckInvariants(
+    /* [in] */ TreeNode* t)
+{
+    AutoPtr<TreeNode> tp = t->mParent, tl = t->mLeft, tr = t->mRight,
+        tb = t->mPrev;
+    VOLATILE_GET(AutoPtr<TreeNode> tn, (TreeNode*)t->mNext.Get());
+    if (tb != nullptr && !VOLATILE_EQUALS(t, (TreeNode*)tb->mNext.Get())) {
+        return false;
+    }
+    if (tn != nullptr && tn->mPrev != t) {
+        return false;
+    }
+    if (tp != nullptr && t != tp->mLeft && t != tp->mRight) {
+        return false;
+    }
+    if (tl != nullptr && (tl->mParent != t || tl->mHash > t->mHash)) {
+        return false;
+    }
+    if (tr != nullptr && (tr->mParent != t || tr->mHash < t->mHash)) {
+        return false;
+    }
+    if (t->mRed && tl != nullptr && tl->mRed && tr != nullptr && tr->mRed) {
+        return false;
+    }
+    if (tl != nullptr && !CheckInvariants(tl)) {
+        return false;
+    }
+    if (tr != nullptr && !CheckInvariants(tr)) {
+        return false;
+    }
+    return true;
 }
 
 //-------------------------------------------------------------------------

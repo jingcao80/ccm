@@ -42,6 +42,35 @@ String Helpers::ToString(
     return String(chars);
 }
 
+String Helpers::MapEntryToString(
+    /* [in] */ IInterface* key,
+    /* [in] */ IInterface* val)
+{
+    String k, v;
+    Integer klen, vlen;
+    Array<Char> chars((klen = (k = ObjectToString(key)).GetLength()) +
+            (vlen = (v = ObjectToString(val)).GetLength()) + 1);
+    k.GetChars(0, klen, chars, 0);
+    chars[klen] = '=';
+    v.GetChars(0, vlen, chars, klen + 1);
+    return String(chars);
+}
+
+String Helpers::ObjectToString(
+    /* [in] */ IInterface* x)
+{
+    if (x == nullptr) {
+        return String("null");
+    }
+    IObject* o = IObject::Probe(x);
+    if (o == nullptr) {
+        return String("null");
+    }
+    String s;
+    o->ToString(&s);
+    return s.IsNull() ? String("null") : s;
+}
+
 }
 }
 }

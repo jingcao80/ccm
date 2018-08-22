@@ -19,6 +19,7 @@
 
 #include "ccm/core/volatile.h"
 #include "ccm/core/SyncObject.h"
+#include "ccm.core.IThread.h"
 #include "ccm.io.ISerializable.h"
 #include "ccm.util.ICollection.h"
 #include "ccm.util.IEnumeration.h"
@@ -29,6 +30,7 @@
 #include "ccm.util.concurrent.IConcurrentHashMap.h"
 #include <ccmrefbase.h>
 
+using ccm::core::IThread;
 using ccm::core::SyncObject;
 using ccm::io::ISerializable;
 
@@ -48,26 +50,19 @@ public:
         , public IMapEntry
     {
     public:
-        Node(
+        inline Node(
             /* [in] */ Integer hash,
             /* [in] */ IInterface* key,
             /* [in] */ IInterface* val,
-            /* [in] */ Node* next);
+            /* [in] */ Node* next)
+            : mHash(hash)
+            , mKey(key)
+        {
+            VOLATILE_SET(mVal, val);
+            VOLATILE_SET(mNext, next);
+        }
 
         CCM_INTERFACE_DECL();
-
-        ECode GetHashCode(
-            /* [out] */ Integer* hash) override;
-
-        AutoPtr<Node> Find(
-            /* [in] */ Integer h,
-            /* [in] */ IInterface* k);
-
-
-
-        ECode Equals(
-            /* [in] */ IInterface* obj,
-            /* [out] */ Boolean* result) override;
 
         ECode GetKey(
             /* [out] */ IInterface** key) override;
@@ -75,9 +70,23 @@ public:
         ECode GetValue(
             /* [out] */ IInterface** value) override;
 
+        ECode GetHashCode(
+            /* [out] */ Integer* hash) override;
+
+        ECode ToString(
+            /* [out] */ String* desc) override;
+
         ECode SetValue(
             /* [in] */ IInterface* value,
             /* [out] */ IInterface** prevValue = nullptr) override;
+
+        ECode Equals(
+            /* [in] */ IInterface* obj,
+            /* [out] */ Boolean* result) override;
+
+        virtual AutoPtr<Node> Find(
+            /* [in] */ Integer h,
+            /* [in] */ IInterface* k);
 
     public:
         Integer mHash;
@@ -93,11 +102,18 @@ public:
         : public Node
     {
     public:
-        ForwardingNode(
-            /* [in] */ Array<Node*>& tab);
+        inline ForwardingNode(
+            /* [in] */ Array<Node*>& tab)
+            : Node(MOVED, nullptr, nullptr, nullptr)
+            , mNextTable(tab)
+        {}
 
         IInterface* Probe(
             /* [in] */ const InterfaceID& iid) override;
+
+        AutoPtr<Node> Find(
+            /* [in] */ Integer h,
+            /* [in] */ IInterface* k) override;
 
     public:
         Array<Node*> mNextTable;
@@ -107,8 +123,16 @@ public:
         : public Node
     {
     public:
+        inline ReservationNode()
+            : Node(RESERVED, nullptr, nullptr, nullptr)
+        {}
+
         IInterface* Probe(
             /* [in] */ const InterfaceID& iid) override;
+
+        AutoPtr<Node> Find(
+            /* [in] */ Integer h,
+            /* [in] */ IInterface* k) override;
     };
 
     class CounterCell
@@ -129,12 +153,19 @@ public:
         : public Node
     {
     public:
-        TreeNode(
+        inline TreeNode(
             /* [in] */ Integer hash,
             /* [in] */ IInterface* key,
             /* [in] */ IInterface* val,
             /* [in] */ Node* next,
-            /* [in] */ TreeNode* parent);
+            /* [in] */ TreeNode* parent)
+            : Node(hash, key, val, next)
+            , mParent(parent)
+        {}
+
+        AutoPtr<Node> Find(
+            /* [in] */ Integer h,
+            /* [in] */ IInterface* k) override;
 
         AutoPtr<TreeNode> FindTreeNode(
             /* [in] */ Integer h,
@@ -149,12 +180,30 @@ public:
         Boolean mRed;
     };
 
+    /**
+     * TreeNodes used at the heads of bins. TreeBins do not hold user
+     * keys or values, but instead point to list of TreeNodes and
+     * their root. They also maintain a parasitic read-write lock
+     * forcing writers (who hold bin lock) to wait for readers (who do
+     * not) to complete before tree restructuring operations.
+     */
     class TreeBin
         : public Node
     {
     public:
         TreeBin(
             /* [in] */ TreeNode* b);
+
+        IInterface* Probe(
+            /* [in] */ const InterfaceID& iid) override;
+
+        static Integer TieBreakOrder(
+            /* [in] */ IInterface* a,
+            /* [in] */ IInterface* b);
+
+        AutoPtr<Node> Find(
+            /* [in] */ Integer h,
+            /* [in] */ IInterface* k) override;
 
         AutoPtr<TreeNode> PutTreeVal(
             /* [in] */ Integer h,
@@ -164,15 +213,59 @@ public:
         Boolean RemoveTreeNode(
             /* [in] */ TreeNode* p);
 
+        /* ------------------------------------------------------------ */
+        // Red-black tree methods, all adapted from CLR
+
+        static AutoPtr<TreeNode> RotateLeft(
+            /* [in] */ TreeNode* root,
+            /* [in] */ TreeNode* p);
+
+        static AutoPtr<TreeNode> RotateRight(
+            /* [in] */ TreeNode* root,
+            /* [in] */ TreeNode* p);
+
+        static AutoPtr<TreeNode> BalanceInsertion(
+            /* [in] */ TreeNode* root,
+            /* [in] */ TreeNode* x);
+
+        static AutoPtr<TreeNode> BalanceDeletion(
+            /* [in] */ TreeNode* root,
+            /* [in] */ TreeNode* x);
+
+        static Boolean CheckInvariants(
+            /* [in] */ TreeNode* t);
+
         inline static TreeBin* From(
             /* [in] */ Node* node)
         {
             return (TreeBin*)node;
         }
 
+    private:
+        /**
+         * Acquires write lock for tree restructuring.
+         */
+        void LockRoot();
+
+        /**
+         * Releases write lock for tree restructuring.
+         */
+        void UnlockRoot();
+
+        /**
+         * Possibly blocks awaiting root lock.
+         */
+        void ContendedLock();
+
     public:
         AutoPtr<TreeNode> mRoot;
         VOLATILE AutoPtr<TreeNode> mFirst;
+        VOLATILE AutoPtr<IThread> mWaiter;
+        VOLATILE Integer mLockState;
+        // values for lockState
+        static constexpr Integer WRITER = 1; // set while holding write lock
+        static constexpr Integer WAITER = 2; // set when waiting for write lock
+        static constexpr Integer READER = 4; // increment value for setting read lock
     };
 
     class Traverser
@@ -473,6 +566,10 @@ public:
     static Integer Spread(
         /* [in] */ Integer h);
 
+    static Integer CompareComparables(
+        /* [in] */ IInterface* k,
+        /* [in] */ IInterface* x);
+
     static AutoPtr<Node> TabAt(
         /* [in] */ Array<Node*>& tab,
         /* [in] */ Integer i);
@@ -667,6 +764,8 @@ public:
     static constexpr Integer MIN_TREEIFY_CAPACITY = 64;
 
     static constexpr Integer MOVED = -1; // hash for forwarding nodes
+    static constexpr Integer TREEBIN = -2; // hash for roots of trees
+    static constexpr Integer RESERVED = -3; // hash for transient reservations
     static constexpr Integer HASH_BITS = 0x7fffffff; // usable bits of normal node hash
 
 private:

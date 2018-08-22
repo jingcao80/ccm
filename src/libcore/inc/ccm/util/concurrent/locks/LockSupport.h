@@ -14,36 +14,31 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_UTIL_CONCURRENT_HELPERS_H__
-#define __CCM_UTIL_CONCURRENT_HELPERS_H__
+#ifndef __CCM_UTIL_CONCURRENT_LOCKS_LOCKSUPPORT_H__
+#define __CCM_UTIL_CONCURRENT_LOCKS_LOCKSUPPORT_H__
 
-#include <ccmtypes.h>
+#include "ccm.core.IThread.h"
+
+using ccm::core::IThread;
 
 namespace ccm {
 namespace util {
 namespace concurrent {
+namespace locks {
 
-class Helpers
+class LockSupport
 {
 public:
-    static String ToString(
-        /* [in] */ const Array<String>& a,
-        /* [in] */ Integer size,
-        /* [in] */ Integer charLength);
+    static ECode Unpark(
+        /* [in] */ IThread* thread);
 
-    static String MapEntryToString(
-        /* [in] */ IInterface* key,
-        /* [in] */ IInterface* val);
-
-private:
-    Helpers();
-
-    static String ObjectToString(
-        /* [in] */ IInterface* x);
+    static ECode Park(
+        /* [in] */ IInterface* blocker);
 };
 
 }
 }
 }
+}
 
-#endif // __CCM_UTIL_CONCURRENT_HELPERS_H__
+#endif // __CCM_UTIL_CONCURRENT_LOCKS_LOCKSUPPORT_H__

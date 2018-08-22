@@ -36,11 +36,32 @@ public:
     {
         CA_DESTROYED = true;
     }
+
+    Integer Get()
+    {
+        return mValue;
+    }
+
+    void Set(
+        /* [in] */ Integer i)
+    {
+        mValue = i;
+    }
+
+private:
+    Integer mValue = 99;
 };
 
 AutoPtr<CA> CreateCA()
 {
     return new CA();
+}
+
+void CreateCA2(
+    /* [out] */ CA** o)
+{
+    *o = new CA();
+    REFCOUNT_ADD(*o);
 }
 
 void Init()
@@ -68,6 +89,20 @@ void CallCA3(AutoPtr<CA>&& obj)
     EXPECT_TRUE(CA_CREATED);
     EXPECT_EQ(1, obj->GetStrongCount());
     EXPECT_FALSE(CA_DESTROYED);
+}
+
+TEST(AutoPtrTest, AutoPtrOutParameterTest)
+{
+    Init();
+    EXPECT_FALSE(CA_CREATED);
+    EXPECT_FALSE(CA_DESTROYED);
+    AutoPtr<CA> ca;
+    CreateCA2(&ca);
+    EXPECT_TRUE(CA_CREATED);
+    EXPECT_FALSE(CA_DESTROYED);
+    EXPECT_EQ(99, ca->Get());
+    ca->Set(999);
+    EXPECT_EQ(999, ca->Get());
 }
 
 TEST(AutoPtrTest, AutoPtrParameterTest)
