@@ -21,6 +21,18 @@
 
 using namespace ccm;
 
+#define GET_INT_INADDR(intAddr) \
+    reinterpret_cast<ccm::core::AtomicInteger*>(intAddr)->LoadRelaxed();
+
+#define GET_INT(object, field) \
+    GET_INT_INADDR(&object->field)
+
+#define PUT_INT_INADDR(intAddr, value) \
+    reinterpret_cast<ccm::core::AtomicInteger*>(intAddr)->StoreRelaxed(value);
+
+#define PUT_INT(object, field, value) \
+    PUT_INT_INADDR(&object->field, value)
+
 #define COMPARE_AND_SWAP_INT_INADDR(intAddr, expectedValue, newValue) \
     reinterpret_cast<ccm::core::AtomicInteger*>(intAddr)-> \
         CompareExchangeStrongSequentiallyConsistent( \

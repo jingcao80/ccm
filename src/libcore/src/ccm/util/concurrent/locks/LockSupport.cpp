@@ -14,26 +14,45 @@
 // limitations under the License.
 //=========================================================================
 
-#include "pisces/system/OsConstants.h"
-#include <errno.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <sys/mman.h>
-#include <sys/socket.h>
+#include "ccm/core/CThread.h"
+#include "ccm/core/volatile.h"
+#include "ccm/util/concurrent/locks/LockSupport.h"
 
-namespace pisces {
-namespace system {
+using ccm::core::CThread;
 
-const Integer OsConstants::AF_INET_ = AF_INET;
-const Integer OsConstants::AF_INET6_ = AF_INET6;
-const Integer OsConstants::EINVAL_ = EINVAL;
-const Integer OsConstants::MS_SYNC_ = MS_SYNC;
-const Integer OsConstants::O_ACCMODE_ = O_ACCMODE;
-const Integer OsConstants::O_RDONLY_ = O_RDONLY;
-const Integer OsConstants::SOL_SOCKET_ = SOL_SOCKET;
-const Integer OsConstants::SO_DOMAIN_ = SO_DOMAIN;
-const Integer OsConstants::SO_LINGER_ = SO_LINGER;
-const Integer OsConstants::_SC_NPROCESSORS_CONF_ = _SC_NPROCESSORS_CONF;
+namespace ccm {
+namespace util {
+namespace concurrent {
+namespace locks {
 
+void LockSupport::SetBlocker(
+    /* [in] */ IThread* t,
+    /* [in] */ IInterface* arg)
+{
+    PUT_OBJECT(CThread::From(t), mParkBlocker, arg);
+}
+
+ECode LockSupport::Unpark(
+    /* [in] */ IThread* thread)
+{
+    if (thread != nullptr) {
+        return thread->Unpark();
+    }
+    return NOERROR;
+}
+
+ECode LockSupport::Park(
+    /* [in] */ IInterface* blocker)
+{
+    AutoPtr<IThread> t;
+    CThread::GetCurrentThread(&t);
+    SetBlocker(t, blocker);
+    t->ParkFor(0ll);
+    SetBlocker(t, nullptr);
+    return NOERROR;
+}
+
+}
+}
 }
 }

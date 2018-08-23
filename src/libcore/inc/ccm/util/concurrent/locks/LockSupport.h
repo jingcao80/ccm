@@ -34,6 +34,11 @@ public:
 
     static ECode Park(
         /* [in] */ IInterface* blocker);
+
+private:
+    static void SetBlocker(
+        /* [in] */ IThread* t,
+        /* [in] */ IInterface* arg);
 };
 
 }

@@ -28,6 +28,9 @@ interface IRuntime
     AddShutdownHook(
         [in] IThread* hook);
 
+    AvailableProcessors(
+        [out] Integer* ncpu);
+
     Exit(
         [in] Integer status);
 }

@@ -19,6 +19,7 @@
 
 #include "ccm/core/volatile.h"
 #include "ccm/core/SyncObject.h"
+#include "ccm.core.IInteger.h"
 #include "ccm.core.IThread.h"
 #include "ccm.io.ISerializable.h"
 #include "ccm.util.ICollection.h"
@@ -30,6 +31,7 @@
 #include "ccm.util.concurrent.IConcurrentHashMap.h"
 #include <ccmrefbase.h>
 
+using ccm::core::IInteger;
 using ccm::core::IThread;
 using ccm::core::SyncObject;
 using ccm::io::ISerializable;
@@ -268,23 +270,111 @@ public:
         static constexpr Integer READER = 4; // increment value for setting read lock
     };
 
+    /**
+     * Records the table, its length, and current traversal index for a
+     * traverser that must process a region of a forwarded table before
+     * proceeding with current table.
+     */
+    class TableStack
+        : public LightRefBase
+    {
+    public:
+        Integer mLength;
+        Integer mIndex;
+        Array<Node*> mTab;
+        AutoPtr<TableStack> mNext;
+    };
+
+    /**
+     * Encapsulates traversal for methods such as containsValue; also
+     * serves as a base class for other iterators and spliterators.
+     *
+     * Method advance visits once each still-valid node that was
+     * reachable upon iterator construction. It might miss some that
+     * were added to a bin after the bin was visited, which is OK wrt
+     * consistency guarantees. Maintaining this property in the face
+     * of possible ongoing resizes requires a fair amount of
+     * bookkeeping state that is difficult to optimize away amidst
+     * volatile accesses.  Even so, traversal maintains reasonable
+     * throughput.
+     *
+     * Normally, iteration proceeds bin-by-bin traversing lists.
+     * However, if the table has been resized, then all future steps
+     * must traverse both the bin at the current index as well as at
+     * (index + baseSize); and so on for further resizings. To
+     * paranoically cope with potential sharing by users of iterators
+     * across threads, iteration terminates if a bounds checks fails
+     * for a table read.
+     */
     class Traverser
         : public LightRefBase
     {
     public:
-        Traverser(
+        inline Traverser(
             /* [in] */ Array<Node*>& tab,
             /* [in] */ Integer size,
             /* [in] */ Integer index,
-            /* [in] */ Integer limit);
+            /* [in] */ Integer limit)
+            : mTab(tab)
+            , mBaseSize(size)
+            , mIndex(index)
+            , mBaseIndex(index)
+            , mBaseLimit(limit)
+        {}
 
+        /**
+         * Advances if possible, returning next valid node, or null if none.
+         */
         AutoPtr<Node> Advance();
+
+        /**
+         * Saves traversal state upon encountering a forwarding node.
+         */
+        void PushState(
+            /* [in] */ Array<Node*>& t,
+            /* [in] */ Integer i,
+            /* [in] */ Integer n);
+
+        void RecoverState(
+            /* [in] */ Integer n);
+
+    public:
+        Array<Node*> mTab; // current table; updated if resized
+        AutoPtr<Node> mNext; // the next entry to use
+        AutoPtr<TableStack> mStack, mSpare; // to save/restore on ForwardingNodes
+        Integer mIndex; // index of bin to use next
+        Integer mBaseIndex; // current index of initial table
+        Integer mBaseLimit; // index bound for initial table
+        Integer mBaseSize; // initial table size
     };
 
     class BaseIterator
         : public Traverser
     {
+    public:
+        inline BaseIterator(
+            /* [in] */ Array<Node*>& tab,
+            /* [in] */ Integer size,
+            /* [in] */ Integer index,
+            /* [in] */ Integer limit,
+            /* [in] */ ConcurrentHashMap* map)
+            : Traverser(tab, size, index, limit)
+            , mMap(map)
+        {
+            Advance();
+        }
 
+        ECode HasNext(
+            /* [out] */ Boolean* result);
+
+        ECode HasMoreElements(
+            /* [out] */ Boolean* result);
+
+        ECode Remove();
+
+    public:
+        ConcurrentHashMap* mMap;
+        AutoPtr<Node> mLastReturned;
     };
 
     class KeyIterator
@@ -293,12 +383,14 @@ public:
         , public IEnumeration
     {
     public:
-        KeyIterator(
+        inline KeyIterator(
             /* [in] */ Array<Node*>& tab,
             /* [in] */ Integer size,
             /* [in] */ Integer index,
             /* [in] */ Integer limit,
-            /* [in] */ ConcurrentHashMap* map);
+            /* [in] */ ConcurrentHashMap* map)
+            : BaseIterator(tab, index, size, limit, map)
+        {}
 
         CCM_INTERFACE_DECL();
 
@@ -323,12 +415,14 @@ public:
         , public IEnumeration
     {
     public:
-        ValueIterator(
+        inline ValueIterator(
             /* [in] */ Array<Node*>& tab,
             /* [in] */ Integer size,
             /* [in] */ Integer index,
             /* [in] */ Integer limit,
-            /* [in] */ ConcurrentHashMap* map);
+            /* [in] */ ConcurrentHashMap* map)
+            : BaseIterator(tab, index, size, limit, map)
+        {}
 
         CCM_INTERFACE_DECL();
 
@@ -352,7 +446,66 @@ public:
         , public IIterator
     {
     public:
+        inline EntryIterator(
+            /* [in] */ Array<Node*>& tab,
+            /* [in] */ Integer size,
+            /* [in] */ Integer index,
+            /* [in] */ Integer limit,
+            /* [in] */ ConcurrentHashMap* map)
+            : BaseIterator(tab, index, size, limit, map)
+        {}
+
         CCM_INTERFACE_DECL();
+
+        ECode Next(
+            /* [out] */ IInterface** object = nullptr) override;
+
+        ECode HasNext(
+            /* [out] */ Boolean* result) override;
+
+        ECode Remove() override;
+    };
+
+    class MapEntry
+        : public Object
+        , public IMapEntry
+    {
+    public:
+        inline MapEntry(
+            /* [in] */ IInterface* key,
+            /* [in] */ IInterface* val,
+            /* [in] */ ConcurrentHashMap* map)
+            : mKey(key)
+            , mVal(val)
+            , mMap(map)
+        {}
+
+        CCM_INTERFACE_DECL();
+
+        ECode GetKey(
+            /* [out] */ IInterface** key) override;
+
+        ECode GetValue(
+            /* [out] */ IInterface** value) override;
+
+        ECode GetHashCode(
+            /* [out] */ Integer* hash) override;
+
+        ECode ToString(
+            /* [out] */ String* desc) override;
+
+        ECode Equals(
+            /* [in] */ IInterface* obj,
+            /* [out] */ Boolean* result) override;
+
+        ECode SetValue(
+            /* [in] */ IInterface* value,
+            /* [out] */ IInterface** prevValue = nullptr) override;
+
+    public:
+        AutoPtr<IInterface> mKey;
+        AutoPtr<IInterface> mVal;
+        ConcurrentHashMap* mMap;
     };
 
     class CollectionView
@@ -361,6 +514,11 @@ public:
         , public ISerializable
     {
     public:
+        CollectionView(
+            /* [in] */ ConcurrentHashMap* map)
+            : mMap(map)
+        {}
+
         CCM_INTERFACE_DECL();
 
         ECode Clear() override;
@@ -392,6 +550,12 @@ public:
         ECode RetainAll(
             /* [in] */ ICollection* c,
             /* [out] */ Boolean* changed = nullptr) override;
+
+        using SyncObject::Equals;
+        using SyncObject::GetHashCode;
+
+    public:
+        ConcurrentHashMap* mMap;
     };
 
     class KeySetView
@@ -399,9 +563,12 @@ public:
         , public ISet
     {
     public:
-        KeySetView(
+        inline KeySetView(
             /* [in] */ ConcurrentHashMap* map,
-            /* [in] */ IInterface* value);
+            /* [in] */ IInterface* value)
+            : CollectionView(map)
+            , mValue(value)
+        {}
 
         CCM_INTERFACE_DECL();
 
@@ -457,14 +624,19 @@ public:
         ECode ToArray(
             /* [in] */ const InterfaceID& iid,
             /* [out, callee] */ Array<IInterface*>* objs) override;
+
+    private:
+        AutoPtr<IInterface> mValue;
     };
 
     class ValuesView
         : public CollectionView
     {
     public:
-        ValuesView(
-            /* [in] */ ConcurrentHashMap* map);
+        inline ValuesView(
+            /* [in] */ ConcurrentHashMap* map)
+            : CollectionView(map)
+        {}
 
         ECode Contains(
             /* [in] */ IInterface* obj,
@@ -498,8 +670,10 @@ public:
         , public ISet
     {
     public:
-        EntrySetView(
-            /* [in] */ ConcurrentHashMap* map);
+        inline EntrySetView(
+            /* [in] */ ConcurrentHashMap* map)
+            : CollectionView(map)
+        {}
 
         CCM_INTERFACE_DECL();
 
@@ -556,7 +730,6 @@ public:
             /* [in] */ const InterfaceID& iid,
             /* [out, callee] */ Array<IInterface*>* objs) override;
     };
-
 
 public:
     CCM_INTERFACE_DECL();
@@ -696,6 +869,9 @@ public:
     ECode Elements(
         /* [out] */ IEnumeration** elements) override;
 
+    ECode GetMappingCount(
+        /* [out] */ Long* count) override;
+
     ECode GetKeySet(
         /* [in] */ IInterface* mappedValue,
         /* [out] */ ISet** keys) override;
@@ -738,6 +914,12 @@ private:
         /* [in] */ Integer index);
 
 public:
+    /**
+     * The largest possible (non-power of two) array size.
+     * Needed by toArray and related methods.
+     */
+    static constexpr Integer MAX_ARRAY_SIZE = IInteger::MAX_VALUE - 8;
+
     /**
      * The bin count threshold for using a tree rather than list for a
      * bin.  Bins are converted to trees when adding an element to a

@@ -43,6 +43,9 @@ public:
     ECode AddShutdownHook(
         /* [in] */ IThread* hook) override;
 
+    ECode AvailableProcessors(
+        /* [out] */ Integer* ncpu) override;
+
 private:
     Runtime();
 

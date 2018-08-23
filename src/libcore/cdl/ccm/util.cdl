@@ -620,7 +620,10 @@ coclass CConcurrentHashMap
     Constructor(
         [in] IMap* m);
 
+    interface IConcurrentHashMap;
     interface IConcurrentMap;
+    interface IMap;
+    interface ISerializable;
 }
 
 namespace atomic {

@@ -36,6 +36,7 @@ public:
     static const Integer SOL_SOCKET_;
     static const Integer SO_DOMAIN_;
     static const Integer SO_LINGER_;
+    static const Integer _SC_NPROCESSORS_CONF_;
 
 private:
     OsConstants();

@@ -1029,6 +1029,14 @@ ECode Linux::Sysconf(
     /* [in] */ Integer name,
     /* [out] */ Long* result)
 {
+    VALIDATE_NOT_NULL(result);
+
+    // Since -1 is a valid result from sysconf(3), detecting failure is a little more awkward.
+    errno = 0;
+    *result = sysconf(name);
+    if (*result == -1ll && errno == EINVAL) {
+        return pisces::system::E_ERRNO_EXCEPTION;
+    }
     return NOERROR;
 }
 

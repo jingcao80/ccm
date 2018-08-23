@@ -29,7 +29,8 @@ set(SOURCES
     Helpers.cpp
     ThreadLocalRandom.cpp
     atomic/AtomicInteger.cpp
-    atomic/AtomicLong.cpp)
+    atomic/AtomicLong.cpp
+    locks/LockSupport)
 
 add_library(ccm_util_concurrent STATIC
     ${SOURCES})

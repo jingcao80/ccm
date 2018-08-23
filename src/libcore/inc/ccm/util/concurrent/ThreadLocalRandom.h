@@ -17,6 +17,8 @@
 #ifndef __CCM_UTIL_CONCURRENT_THREADLOCALRANDOM_H__
 #define __CCM_UTIL_CONCURRENT_THREADLOCALRANDOM_H__
 
+#include <ccmtypes.h>
+
 namespace ccm {
 namespace util {
 namespace concurrent {
@@ -30,6 +32,19 @@ public:
 
     static Integer AdvanceProbe(
         /* [in] */ Integer probe);
+
+private:
+    static Long Mix64(
+        /* [in] */ Long z);
+
+    static Integer Mix32(
+        /* [in] */ Long z);
+
+private:
+    /**
+     * The increment for generating probe values.
+     */
+    static constexpr Integer PROBE_INCREMENT = 0x9e3779b9;
 };
 
 }

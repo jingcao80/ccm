@@ -221,6 +221,30 @@ private:
 
     static SyncObject* GetStaticLock();
 
+public:
+    /**
+     * The argument supplied to the current call to
+     * ccm::util::concurrent::locks::LockSupport::Park.
+     * Set by ccm::util::concurrent::locks::LockSupport::SetBlocker
+     * Accessed using ccm::util::concurrent::locks::LockSupport::GetBlocker
+     */
+    VOLATILE AutoPtr<IInterface> mParkBlocker;
+
+    // The following three initially uninitialized fields are exclusively
+    // managed by class ccm::util::concurrent::ThreadLocalRandom. These
+    // fields are used to build the high-performance PRNGs in the
+    // concurrent code, and we can not risk accidental false sharing.
+    // Hence, the fields are isolated with @Contended.
+
+    /** The current seed for a ThreadLocalRandom */
+    Long mThreadLocalRandomSeed;
+
+    /** Probe hash value; nonzero if threadLocalRandomSeed initialized */
+    Integer mThreadLocalRandomProbe;
+
+    /** Secondary seed isolated from public ThreadLocalRandom sequence */
+    Integer mThreadLocalRandomSecondarySeed;
+
 private:
     /**
      * The synchronization object responsible for this thread's join/sleep/park operations.

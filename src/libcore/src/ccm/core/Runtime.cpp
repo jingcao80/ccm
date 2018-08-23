@@ -18,10 +18,14 @@
 #include "ccm/core/Runtime.h"
 #include "ccm/core/Thread.h"
 #include "ccm/util/CArrayList.h"
+#include "libcore/io/Libcore.h"
+#include "pisces/system/OsConstants.h"
 #include <ccmlogger.h>
 
 using ccm::util::CArrayList;
 using ccm::util::IID_IList;
+using libcore::io::Libcore;
+using pisces::system::OsConstants;
 
 namespace ccm {
 namespace core {
@@ -106,6 +110,17 @@ ECode Runtime::AddShutdownHook(
 
     mShutdownHooks->Add(hook);
 
+    return NOERROR;
+}
+
+ECode Runtime::AvailableProcessors(
+    /* [out] */ Integer* ncpu)
+{
+    VALIDATE_NOT_NULL(ncpu);
+
+    Long result;
+    Libcore::GetOs()->Sysconf(OsConstants::_SC_NPROCESSORS_CONF_, &result);
+    *ncpu = result;
     return NOERROR;
 }
 
