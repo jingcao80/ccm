@@ -124,7 +124,7 @@ ECode Object::ToString(
     VALIDATE_NOT_NULL(desc);
 
     AutoPtr<IMetaCoclass> mc;
-    GetCoclass((IMetaCoclass**)&mc);
+    GetCoclass(&mc);
     String ns, name;
     if (mc != nullptr) {
         mc->GetNamespace(&ns);
@@ -168,7 +168,7 @@ String Object::GetCoclassName(
     IObject* o = IObject::Probe(obj);
     if (o != nullptr) {
         AutoPtr<IMetaCoclass> mc;
-        o->GetCoclass((IMetaCoclass**)&mc);
+        o->GetCoclass(&mc);
         if (mc != nullptr) {
             mc->GetName(&name);
         }
@@ -232,7 +232,7 @@ AutoPtr<IWeakReference> Object::GetWeakReference(
         return nullptr;
     }
     AutoPtr<IWeakReference> wr;
-    wrSource->GetWeakReference((IWeakReference**)&wr);
+    wrSource->GetWeakReference(&wr);
     return wr;
 }
 

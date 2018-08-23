@@ -32,7 +32,7 @@ ECode ServiceManager::AddService(
     /* [in] */ IInterface* object)
 {
     AutoPtr<IInterfacePack> ipack;
-    ECode ec = CoMarshalInterface(object, RPCType::Local, (IInterfacePack**)&ipack);
+    ECode ec = CoMarshalInterface(object, RPCType::Local, &ipack);
     if (FAILED(ec)) {
         Logger::E("ServiceManager", "Marshal the interface which named \"%s\" failed.",
                 name.string());
@@ -40,7 +40,7 @@ ECode ServiceManager::AddService(
     }
 
     AutoPtr<IParcel> parcel;
-    CoCreateParcel(RPCType::Local, (IParcel**)&parcel);
+    CoCreateParcel(RPCType::Local, &parcel);
     ipack->WriteToParcel(parcel);
     HANDLE buffer;
     parcel->GetData(&buffer);
@@ -201,11 +201,11 @@ ECode ServiceManager::GetService(
                 &replyData, &replySize);
         if (replyData != nullptr) {
             AutoPtr<IParcel> parcel;
-            CoCreateParcel(RPCType::Local, (IParcel**)&parcel);
+            CoCreateParcel(RPCType::Local, &parcel);
             parcel->SetData(static_cast<Byte*>(replyData), replySize);
 
             AutoPtr<IInterfacePack> ipack;
-            CoCreateInterfacePack(RPCType::Local, (IInterfacePack**)&ipack);
+            CoCreateInterfacePack(RPCType::Local, &ipack);
             ipack->ReadFromParcel(parcel);
             ec = CoUnmarshalInterface(RPCType::Local, ipack, object);
         }

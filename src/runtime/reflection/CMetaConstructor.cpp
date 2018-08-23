@@ -221,7 +221,7 @@ ECode CMetaConstructor::CreateObject(
 
     AutoPtr<IClassObject> clsObj;
     ECode ec = CoAcquireClassFactory(mOwner->mCid,
-            mOwner->mOwner->mLoader, (IClassObject**)&clsObj);
+            mOwner->mOwner->mLoader, &clsObj);
     if (FAILED(ec)) return ec;
     argList->SetInputArgumentOfInterfaceID(
             mParameters.GetLength(), IID_IInterface);

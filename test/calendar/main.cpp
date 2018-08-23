@@ -41,17 +41,17 @@ void TestCGregorian()
     AutoPtr<ICalendarSystemFactory> factory;
     CCalendarSystemFactory::New(IID_ICalendarSystemFactory, (IInterface**)&factory);
     AutoPtr<ICalendarSystem> gcal;
-    factory->ForName(String("gregorian"), (ICalendarSystem**)&gcal);
+    factory->ForName(String("gregorian"), &gcal);
 
     AutoPtr<ISystem> sys;
     CSystem::New(IID_ISystem, (IInterface**)&sys);
     Long millis;
     sys->GetCurrentTimeMillis(&millis);
     AutoPtr<ICalendarDate> date;
-    gcal->GetCalendarDate(millis, (ICalendarDate**)&date);
+    gcal->GetCalendarDate(millis, &date);
     printf("==== date: %s ====\n", Object::ToString(date).string());
     date = nullptr;
-    gcal->GetCalendarDate((ICalendarDate**)&date);
+    gcal->GetCalendarDate(&date);
     printf("==== date: %s ====\n", Object::ToString(date).string());
 }
 

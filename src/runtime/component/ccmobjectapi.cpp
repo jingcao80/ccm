@@ -35,7 +35,7 @@ ECode CoCreateObjectInstance(
     }
 
     AutoPtr<IClassObject> factory;
-    ECode ec = CoAcquireClassFactory(cid, loader, (IClassObject**)&factory);
+    ECode ec = CoAcquireClassFactory(cid, loader, &factory);
     if (FAILED(ec)) {
         *object = nullptr;
         return ec;
@@ -56,7 +56,7 @@ ECode CoAcquireClassFactory(
     }
 
     AutoPtr<IMetaComponent> component;
-    ECode ec = loader->LoadComponent(*cid.mCid, (IMetaComponent**)&component);
+    ECode ec = loader->LoadComponent(*cid.mCid, &component);
     if (FAILED(ec)) {
         *object = nullptr;
         return ec;

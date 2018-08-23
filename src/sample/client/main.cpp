@@ -36,7 +36,7 @@ int main(int argc, char** argv)
     foo->Foo(9);
 
     AutoPtr<IMetaComponent> mc;
-    CoGetComponentMetadata(CID_FooBarDemo, nullptr, (IMetaComponent**)&mc);
+    CoGetComponentMetadata(CID_FooBarDemo, nullptr, &mc);
     String name;
     mc->GetName(&name);
     printf("==== component name: %s ====\n\n", name.string());
@@ -70,7 +70,7 @@ int main(int argc, char** argv)
     printf("\n");
 
     AutoPtr<IInterface> obj;
-    klasses[0]->CreateObject(IID_IInterface, (IInterface**)&obj);
+    klasses[0]->CreateObject(IID_IInterface, &obj);
 
     return 0;
 }

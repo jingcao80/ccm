@@ -23,7 +23,7 @@
 int main(int argv, char** argc)
 {
     AutoPtr<IMetaComponent> mc;
-    CoGetComponentMetadata(CID_ReflectionTestUnit, nullptr, (IMetaComponent**)&mc);
+    CoGetComponentMetadata(CID_ReflectionTestUnit, nullptr, &mc);
     String name;
     mc->GetName(&name);
     printf("==== component name: %s ====\n\n", name.string());
@@ -59,7 +59,7 @@ int main(int argv, char** argc)
     printf("\n");
 
     AutoPtr<IInterface> obj;
-    klasses[0]->CreateObject(IID_IInterface, (IInterface**)&obj);
+    klasses[0]->CreateObject(IID_IInterface, &obj);
 
     AutoPtr<IMetaCoclass> klass = klasses[0];
     String clsName, clsNs;
@@ -80,7 +80,7 @@ int main(int argv, char** argc)
     printf("\n");
 
     AutoPtr<IMetaMethod> method;
-    klass->GetMethod(String("TestMethod1"), String("(I)E"), (IMetaMethod**)&method);
+    klass->GetMethod(String("TestMethod1"), String("(I)E"), &method);
     Integer paramNumber;
     method->GetParameterNumber(&paramNumber);
     printf("==== method TestMethod1 has %d parameters ====\n", paramNumber);
@@ -95,7 +95,7 @@ int main(int argv, char** argc)
         IOAttribute attr;
         param->GetIOAttribute(&attr);
         AutoPtr<IMetaType> type;
-        param->GetType((IMetaType**)&type);
+        param->GetType(&type);
         String tname;
         type->GetName(&tname);
         printf("==== [%d] parameter name: %s, index: %d, attr: %d, type: %s ====\n",
@@ -104,12 +104,12 @@ int main(int argv, char** argc)
     printf("\n");
 
     AutoPtr<IArgumentList> args;
-    method->CreateArgumentList((IArgumentList**)&args);
+    method->CreateArgumentList(&args);
     args->SetInputArgumentOfInteger(0, 9);
     method->Invoke(obj, args);
 
     klass = nullptr;
-    IObject::Probe(obj)->GetCoclass((IMetaCoclass**)&klass);
+    IObject::Probe(obj)->GetCoclass(&klass);
     klass->GetName(&clsName);
     klass->GetNamespace(&clsNs);
     printf("==== object class name: %s, namespace: %s ====\n",

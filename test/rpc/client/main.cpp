@@ -28,7 +28,7 @@ using pisces::ServiceManager;
 int main(int argv, char** argc)
 {
     AutoPtr<IInterface> obj;
-    ServiceManager::GetInstance()->GetService(String("rpcservice"), (IInterface**)&obj);
+    ServiceManager::GetInstance()->GetService(String("rpcservice"), &obj);
     IService* srv = IService::Probe(obj);
     printf("==== srv: %p ====\n", srv);
 
@@ -39,7 +39,7 @@ int main(int argv, char** argc)
     //         10.9, 11.9, 12.9, 13.9, 14.9, 15.9, 16.9, 17.9, 18.9);
 
     // AutoPtr<IParcel> parcel;
-    // CoCreateParcel((IParcel**)&parcel);
+    // CoCreateParcel(&parcel);
     // parcel->WriteInteger(9);
     // parcel->WriteLong(0xffffffffff);
     // parcel->SetDataPosition(0);

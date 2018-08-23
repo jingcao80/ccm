@@ -56,7 +56,7 @@ ECode CoCreateProxy(
     AutoPtr<IRPCChannelFactory> factory =
             type == RPCType::Local ? sLocalFactory : sRemoteFactory;
     AutoPtr<IRPCChannel> channel;
-    ECode ec = factory->CreateChannel(RPCPeer::Proxy, (IRPCChannel**)&channel);
+    ECode ec = factory->CreateChannel(RPCPeer::Proxy, &channel);
     if (FAILED(ec)) {
         *proxy = nullptr;
         return ec;
@@ -74,7 +74,7 @@ ECode CoCreateStub(
     AutoPtr<IRPCChannelFactory> factory =
             type == RPCType::Local ? sLocalFactory : sRemoteFactory;
     AutoPtr<IRPCChannel> channel;
-    ECode ec = factory->CreateChannel(RPCPeer::Stub, (IRPCChannel**)&channel);
+    ECode ec = factory->CreateChannel(RPCPeer::Stub, &channel);
     if (FAILED(ec)) {
         *stub = nullptr;
         return ec;

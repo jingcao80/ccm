@@ -124,7 +124,7 @@ ECode CoGetCoclassMetadata(
     }
 
     AutoPtr<IMetaComponent> component;
-    ECode ec = loader->LoadComponent(*cid.mCid, (IMetaComponent**)&component);
+    ECode ec = loader->LoadComponent(*cid.mCid, &component);
     if (FAILED(ec)) {
         *mc = nullptr;
         return ec;

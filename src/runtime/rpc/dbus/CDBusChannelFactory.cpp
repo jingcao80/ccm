@@ -75,8 +75,7 @@ ECode CDBusChannelFactory::MarshalInterface(
     InterfacePack* pack = new InterfacePack();
 
     AutoPtr<IStub> stub;
-    ECode ec = FindExportObject(mType, IObject::Probe(object),
-            (IStub**)&stub);
+    ECode ec = FindExportObject(mType, IObject::Probe(object), &stub);
     if (SUCCEEDED(ec)) {
         CDBusChannel* channel = CDBusChannel::GetStubChannel(stub);
         pack->SetDBusName(channel->mName);
@@ -92,7 +91,7 @@ ECode CDBusChannelFactory::MarshalInterface(
             pack->SetInterfaceID(iid);
         }
         else {
-            ec = CoCreateStub(object, mType, (IStub**)&stub);
+            ec = CoCreateStub(object, mType, &stub);
             if (FAILED(ec)) {
                 Logger::E("CDBusChannel", "Marshal interface failed.");
                 *ipack = nullptr;
@@ -118,7 +117,7 @@ ECode CDBusChannelFactory::UnmarshalInterface(
     VALIDATE_NOT_NULL(object);
 
     AutoPtr<IObject> iobject;
-    ECode ec = FindImportObject(mType, ipack, (IObject**)&iobject);
+    ECode ec = FindImportObject(mType, ipack, &iobject);
     if (SUCCEEDED(ec)) {
         InterfaceID iid;
         ipack->GetInterfaceID(&iid);
@@ -128,7 +127,7 @@ ECode CDBusChannelFactory::UnmarshalInterface(
     }
 
     AutoPtr<IStub> stub;
-    ec = FindExportObject(mType, ipack, (IStub**)&stub);
+    ec = FindExportObject(mType, ipack, &stub);
     if (SUCCEEDED(ec)) {
         CStub* stubObj = (CStub*)stub.Get();
         InterfaceID iid;
@@ -141,7 +140,7 @@ ECode CDBusChannelFactory::UnmarshalInterface(
     CoclassID cid;
     ipack->GetCoclassID(&cid);
     AutoPtr<IProxy> proxy;
-    ec = CoCreateProxy(cid, mType, (IProxy**)&proxy);
+    ec = CoCreateProxy(cid, mType, &proxy);
     if (FAILED(ec)) {
         *object = nullptr;
         return ec;

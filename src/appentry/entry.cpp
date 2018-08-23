@@ -38,7 +38,7 @@ int main(int argv, char** argc)
     AutoPtr<IRuntimeFactory> rtFactory;
     CRuntimeFactory::New(IID_IRuntimeFactory, (IInterface**)&rtFactory);
     AutoPtr<IRuntime> runtime;
-    rtFactory->GetRuntime((IRuntime**)&runtime);
+    rtFactory->GetRuntime(&runtime);
 
     ECode ec = Main(args);
 

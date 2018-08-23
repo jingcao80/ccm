@@ -234,7 +234,7 @@ ECode CMetaCoclass::GetMethodNumber(
                     mi->mName);
             if (fullName.Equals("ccm::IInterface")) continue;
             AutoPtr<IMetaInterface> miObj;
-            GetInterface(fullName, (IMetaInterface**)&miObj);
+            GetInterface(fullName, &miObj);
             Integer intfMethodNum;
             miObj->GetMethodNumber(&intfMethodNum);
             num += intfMethodNum - 4;
@@ -290,7 +290,7 @@ ECode CMetaCoclass::CreateObject(
     VALIDATE_NOT_NULL(object);
 
     AutoPtr<IClassObject> factory;
-    ECode ec = mOwner->GetClassObject(mCid, (IClassObject**)&factory);
+    ECode ec = mOwner->GetClassObject(mCid, &factory);
     if (FAILED(ec)) {
         *object = nullptr;
         return ec;
@@ -354,7 +354,7 @@ void CMetaCoclass::BuildInterfaceMethod(
     miObj->GetMethodNumber(&N);
     for (Integer i = miObj == mOwner->mIInterface ? 0 : 4; i < N; i++) {
         AutoPtr<IMetaMethod> mmObj;
-        miObj->GetMethod(i, (IMetaMethod**)&mmObj);
+        miObj->GetMethod(i, &mmObj);
         mMetaMethods.Set(*index, mmObj);
         (*index)++;
     }

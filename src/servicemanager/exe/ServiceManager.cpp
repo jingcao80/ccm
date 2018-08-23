@@ -124,7 +124,7 @@ DBusHandlerResult ServiceManager::HandleMessage(
         dbus_message_iter_recurse(&args, &subArg);
         dbus_message_iter_get_fixed_array(&subArg, &data, (int*)&size);
 
-        CoCreateParcel(RPCType::Local, (IParcel**)&parcel);
+        CoCreateParcel(RPCType::Local, &parcel);
         parcel->SetData(static_cast<Byte*>(data), size);
         parcel->ReadString(&ipack.mDBusName);
         parcel->ReadCoclassID(&ipack.mCid);
@@ -173,7 +173,7 @@ DBusHandlerResult ServiceManager::HandleMessage(
         Long resSize = 0;
         if (ipack != nullptr) {
             AutoPtr<IParcel> parcel;
-            CoCreateParcel(RPCType::Local, (IParcel**)&parcel);
+            CoCreateParcel(RPCType::Local, &parcel);
             parcel->WriteString(ipack->mDBusName);
             parcel->WriteCoclassID(ipack->mCid);
             parcel->WriteInterfaceID(ipack->mIid);

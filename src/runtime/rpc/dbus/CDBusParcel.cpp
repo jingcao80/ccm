@@ -676,7 +676,7 @@ ECode CDBusParcel::ReadArray(
             Array<IInterface*> intfArray(size);
             for (Long i = 0; i < size; i++) {
                 AutoPtr<IInterface> obj;
-                ec = ReadInterface((IInterface**)&obj);
+                ec = ReadInterface(&obj);
                 if (FAILED(ec)) {
                     t->mData = nullptr;
                     t->mSize = 0;

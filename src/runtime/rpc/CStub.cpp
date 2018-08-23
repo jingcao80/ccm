@@ -54,15 +54,15 @@ ECode InterfaceStub::UnmarshalArguments(
     /* [out] */ IArgumentList** argList)
 {
     AutoPtr<IArgumentList> args;
-    method->CreateArgumentList((IArgumentList**)&args);
+    method->CreateArgumentList(&args);
 
     Integer N;
     method->GetParameterNumber(&N);
     for (Integer i = 0; i < N; i++) {
         AutoPtr<IMetaParameter> param;
-        method->GetParameter(i, (IMetaParameter**)&param);
+        method->GetParameter(i, &param);
         AutoPtr<IMetaType> type;
-        param->GetType((IMetaType**)&type);
+        param->GetType(&type);
         CcmTypeKind kind;
         type->GetTypeKind((Integer*)&kind);
         IOAttribute ioAttr;
@@ -143,7 +143,7 @@ ECode InterfaceStub::UnmarshalArguments(
                 }
                 case CcmTypeKind::Interface: {
                     AutoPtr<IInterface> value;
-                    argParcel->ReadInterface((IInterface**)&value);
+                    argParcel->ReadInterface(&value);
                     args->SetInputArgumentOfInterface(i, value);
                     REFCOUNT_ADD(value);
                     break;
@@ -302,15 +302,15 @@ ECode InterfaceStub::MarshalResults(
     RPCType type;
     mOwner->mChannel->GetRPCType(&type);
     AutoPtr<IParcel> outParcel;
-    CoCreateParcel(type, (IParcel**)&outParcel);
+    CoCreateParcel(type, &outParcel);
 
     Integer N;
     method->GetParameterNumber(&N);
     for (Integer i = 0; i < N; i++) {
         AutoPtr<IMetaParameter> param;
-        method->GetParameter(i, (IMetaParameter**)&param);
+        method->GetParameter(i, &param);
         AutoPtr<IMetaType> type;
-        param->GetType((IMetaType**)&type);
+        param->GetType(&type);
         CcmTypeKind kind;
         type->GetTypeKind((Integer*)&kind);
         IOAttribute ioAttr;
@@ -523,9 +523,9 @@ ECode InterfaceStub::Invoke(
         return E_RUNTIME_EXCEPTION;
     }
     AutoPtr<IMetaMethod> mm;
-    mTargetMetadata->GetMethod(methodIndex, (IMetaMethod**)&mm);
+    mTargetMetadata->GetMethod(methodIndex, &mm);
     AutoPtr<IArgumentList> argList;
-    ECode ec = UnmarshalArguments(mm, argParcel, (IArgumentList**)&argList);
+    ECode ec = UnmarshalArguments(mm, argParcel, &argList);
     if (FAILED(ec)) {
         Logger::E("CStub", "UnmarshalArguments failed with ec is 0x%x.", ec);
         return ec;
@@ -651,7 +651,7 @@ ECode CStub::CreateObject(
     }
 
     AutoPtr<IMetaCoclass> mc;
-    obj->GetCoclass((IMetaCoclass**)&mc);
+    obj->GetCoclass(&mc);
     if (mc == nullptr) {
         Logger::E("CStub", "Fail to get object's Coclass.");
         return E_NOT_FOUND_EXCEPTION;

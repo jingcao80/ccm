@@ -193,9 +193,9 @@ ECode InterfaceProxy::MarshalArguments(
     Integer intNum = 1, fpNum = 0;
     for (Integer i = 0; i < N; i++) {
         AutoPtr<IMetaParameter> param;
-        method->GetParameter(i, (IMetaParameter**)&param);
+        method->GetParameter(i, &param);
         AutoPtr<IMetaType> type;
-        param->GetType((IMetaType**)&type);
+        param->GetType(&type);
         CcmTypeKind kind;
         type->GetTypeKind((Integer*)&kind);
         IOAttribute ioAttr;
@@ -264,7 +264,7 @@ ECode InterfaceProxy::MarshalArguments(
                     while (eKind == CcmTypeKind::Array) {
                         aType = eType;
                         eType = nullptr;
-                        aType->GetElementType((IMetaType**)&eType);
+                        aType->GetElementType(&eType);
                         eType->GetTypeKind((Integer*)&eKind);
                     }
                     if (eKind == CcmTypeKind::CoclassID ||
@@ -357,7 +357,7 @@ ECode InterfaceProxy::MarshalArguments(
                     while (eKind == CcmTypeKind::Array) {
                         aType = eType;
                         eType = nullptr;
-                        aType->GetElementType((IMetaType**)&eType);
+                        aType->GetElementType(&eType);
                         eType->GetTypeKind((Integer*)&eKind);
                     }
                     if (eKind == CcmTypeKind::CoclassID ||
@@ -409,7 +409,7 @@ ECode InterfaceProxy::MarshalArguments(
                     while (eKind == CcmTypeKind::Array) {
                         aType = eType;
                         eType = nullptr;
-                        aType->GetElementType((IMetaType**)&eType);
+                        aType->GetElementType(&eType);
                         eType->GetTypeKind((Integer*)&eKind);
                     }
                     if (eKind == CcmTypeKind::CoclassID ||
@@ -441,7 +441,7 @@ ECode InterfaceProxy::MarshalArguments(
                     while (eKind == CcmTypeKind::Array) {
                         aType = eType;
                         eType = nullptr;
-                        aType->GetElementType((IMetaType**)&eType);
+                        aType->GetElementType(&eType);
                         eType->GetTypeKind((Integer*)&eKind);
                     }
                     if (eKind == CcmTypeKind::CoclassID ||
@@ -491,9 +491,9 @@ ECode InterfaceProxy::UnmarshalResults(
     Integer intNum = 1, fpNum = 0;
     for (Integer i = 0; i < N; i++) {
         AutoPtr<IMetaParameter> param;
-        method->GetParameter(i, (IMetaParameter**)&param);
+        method->GetParameter(i, &param);
         AutoPtr<IMetaType> type;
-        param->GetType((IMetaType**)&type);
+        param->GetType(&type);
         CcmTypeKind kind;
         type->GetTypeKind((Integer*)&kind);
         IOAttribute ioAttr;
@@ -772,7 +772,7 @@ ECode InterfaceProxy::ProxyEntry(
     }
 
     AutoPtr<IMetaMethod> method;
-    thisObj->mTargetMetadata->GetMethod(methodIndex + 4, (IMetaMethod**)&method);
+    thisObj->mTargetMetadata->GetMethod(methodIndex + 4, &method);
 
     if (DEBUG) {
         String name, signature;
@@ -785,7 +785,7 @@ ECode InterfaceProxy::ProxyEntry(
     RPCType type;
     thisObj->mOwner->mChannel->GetRPCType(&type);
     AutoPtr<IParcel> inParcel, outParcel;
-    CoCreateParcel(type, (IParcel**)&inParcel);
+    CoCreateParcel(type, &inParcel);
     inParcel->WriteInteger(RPC_MAGIC_NUMBER);
     inParcel->WriteInteger(thisObj->mIndex);
     inParcel->WriteInteger(methodIndex + 4);
@@ -793,7 +793,7 @@ ECode InterfaceProxy::ProxyEntry(
     if (FAILED(ec)) goto ProxyExit;
 
     ec = thisObj->mOwner->mChannel->Invoke(
-            thisObj->mOwner, method, inParcel, (IParcel**)&outParcel);
+            thisObj->mOwner, method, inParcel, &outParcel);
     if (FAILED(ec)) goto ProxyExit;
 
     ec = thisObj->UnmarshalResults(regs, method, outParcel);
@@ -927,7 +927,7 @@ ECode CProxy::CreateObject(
     *proxy = nullptr;
 
     AutoPtr<IMetaCoclass> mc;
-    CoGetCoclassMetadata(cid, nullptr, (IMetaCoclass**)&mc);
+    CoGetCoclassMetadata(cid, nullptr, &mc);
 
     AutoPtr<CProxy> proxyObj = new CProxy();
     mc->GetCoclassID(&proxyObj->mCid);

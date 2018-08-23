@@ -31,7 +31,7 @@ ECode IoTracker::TrackIo(
     mTotalByteCount += byteCount;
     if (mIsOpen && mOpCount > 10 && mTotalByteCount < 10 * 512) {
         AutoPtr<IBlockGuardPolicy> policy;
-        BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+        BlockGuard::GetThreadPolicy(&policy);
         FAIL_RETURN(policy->OnUnbufferedIO());
         mIsOpen = false;
     }

@@ -62,10 +62,10 @@ ECode BlockGuardOs::Accept(
     VALIDATE_NOT_NULL(retFd);
 
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnNetwork());
     AutoPtr<IFileDescriptor> acceptFd;
-    mOs->Accept(fd, peerAddress, (IFileDescriptor**)&acceptFd);
+    mOs->Accept(fd, peerAddress, &acceptFd);
     if (IsInetSocket(acceptFd)) {
         return TagSocket(acceptFd, retFd);
     }
@@ -82,7 +82,7 @@ ECode BlockGuardOs::Access(
     VALIDATE_NOT_NULL(result);
 
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnReadFromDisk());
     return mOs->Access(path, mode, result);
 }
@@ -92,7 +92,7 @@ ECode BlockGuardOs::Chmod(
     /* [in] */ Integer mode)
 {
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnWriteToDisk());
     return mOs->Chmod(path, mode);
 }
@@ -103,7 +103,7 @@ ECode BlockGuardOs::Chown(
     /* [in] */ Integer gid)
 {
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnWriteToDisk());
     return mOs->Chown(path, uid, gid);
 }
@@ -118,7 +118,7 @@ ECode BlockGuardOs::Close(
             // We allow non-linger sockets so that apps can close their network
             // connections in methods like onDestroy which will run on the UI thread.
             AutoPtr<IBlockGuardPolicy> policy;
-            BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+            BlockGuard::GetThreadPolicy(&policy);
             FAIL_RETURN(policy->OnNetwork());
         }
         if (IsInetSocket(fd)) {
@@ -158,7 +158,7 @@ ECode BlockGuardOs::Connect(
     /* [in] */ Integer port)
 {
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnNetwork());
     return mOs->Connect(fd, address, port);
 }
@@ -168,7 +168,7 @@ ECode BlockGuardOs::Connect(
     /* [in] */ ISocketAddress* address)
 {
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnNetwork());
     return mOs->Connect(fd, address);
 }
@@ -178,7 +178,7 @@ ECode BlockGuardOs::Execv(
     /* [in] */ const Array<String>& argv)
 {
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnReadFromDisk());
     return mOs->Execv(filename, argv);
 }
@@ -189,7 +189,7 @@ ECode BlockGuardOs::Execve(
     /* [in] */ const Array<String>& envp)
 {
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnReadFromDisk());
     return mOs->Execve(filename, argv, envp);
 }
@@ -199,7 +199,7 @@ ECode BlockGuardOs::Fchmod(
     /* [in] */ Integer mode)
 {
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnWriteToDisk());
     return mOs->Fchmod(fd, mode);
 }
@@ -210,7 +210,7 @@ ECode BlockGuardOs::Fchown(
     /* [in] */ Integer gid)
 {
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnWriteToDisk());
     return mOs->Fchown(fd, uid, gid);
 }
@@ -219,7 +219,7 @@ ECode BlockGuardOs::Fdatasync(
     /* [in] */ IFileDescriptor* fd)
 {
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnWriteToDisk());
     return mOs->Fdatasync(fd);
 }
@@ -231,7 +231,7 @@ ECode BlockGuardOs::Fstat(
     VALIDATE_NOT_NULL(stat);
 
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnReadFromDisk());
     return mOs->Fstat(fd, stat);
 }
@@ -243,7 +243,7 @@ ECode BlockGuardOs::Fstatvfs(
     VALIDATE_NOT_NULL(statVfs);
 
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnReadFromDisk());
     return mOs->Fstatvfs(fd, statVfs);
 }
@@ -252,7 +252,7 @@ ECode BlockGuardOs::Fsync(
     /* [in] */ IFileDescriptor* fd)
 {
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnWriteToDisk());
     return mOs->Fsync(fd);
 }
@@ -262,7 +262,7 @@ ECode BlockGuardOs::Ftruncate(
     /* [in] */ Long length)
 {
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnWriteToDisk());
     return mOs->Ftruncate(fd, length);
 }
@@ -275,7 +275,7 @@ ECode BlockGuardOs::Getxattr(
     VALIDATE_NOT_NULL(attr);
 
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnReadFromDisk());
     return mOs->Getxattr(path, name, attr);
 }
@@ -286,7 +286,7 @@ ECode BlockGuardOs::Lchown(
     /* [in] */ Integer gid)
 {
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnWriteToDisk());
     return mOs->Lchown(path, uid, gid);
 }
@@ -296,7 +296,7 @@ ECode BlockGuardOs::Link(
     /* [in] */ const String& newPath)
 {
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnWriteToDisk());
     return mOs->Link(oldPath, newPath);
 }
@@ -310,7 +310,7 @@ ECode BlockGuardOs::Lseek(
     VALIDATE_NOT_NULL(result);
 
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnReadFromDisk());
     return mOs->Lseek(fd, offset, whence, result);
 }
@@ -322,7 +322,7 @@ ECode BlockGuardOs::Lstat(
     VALIDATE_NOT_NULL(stat);
 
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnReadFromDisk());
     return mOs->Lstat(path, stat);
 }
@@ -332,7 +332,7 @@ ECode BlockGuardOs::Mkdir(
     /* [in] */ Integer mode)
 {
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnWriteToDisk());
     return mOs->Mkdir(path, mode);
 }
@@ -342,7 +342,7 @@ ECode BlockGuardOs::Mkfifo(
     /* [in] */ Integer mode)
 {
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnWriteToDisk());
     return mOs->Mkfifo(path, mode);
 }
@@ -354,7 +354,7 @@ ECode BlockGuardOs::Msync(
 {
     if ((flags & OsConstants::MS_SYNC_) != 0) {
         AutoPtr<IBlockGuardPolicy> policy;
-        BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+        BlockGuard::GetThreadPolicy(&policy);
         FAIL_RETURN(policy->OnWriteToDisk());
     }
     return mOs->Msync(address, byteCount, flags);
@@ -369,7 +369,7 @@ ECode BlockGuardOs::Open(
     VALIDATE_NOT_NULL(fd);
 
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnReadFromDisk());
     if ((flags & OsConstants::O_ACCMODE_) != OsConstants::O_RDONLY_) {
         FAIL_RETURN(policy->OnWriteToDisk());
@@ -388,7 +388,7 @@ ECode BlockGuardOs::Poll(
     // but 0 means "poll and return immediately", which shouldn't be subject to BlockGuard.
     if (timeoutMs != 0) {
         AutoPtr<IBlockGuardPolicy> policy;
-        BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+        BlockGuard::GetThreadPolicy(&policy);
         FAIL_RETURN(policy->OnNetwork());
     }
     return mOs->Poll(fds, timeoutMs, result);
@@ -400,7 +400,7 @@ ECode BlockGuardOs::Posix_fallocate(
     /* [in] */ Long length)
 {
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnWriteToDisk());
     return mOs->Posix_fallocate(fd, offset, length);
 }
@@ -416,7 +416,7 @@ ECode BlockGuardOs::Pread(
     VALIDATE_NOT_NULL(num);
 
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnReadFromDisk());
     return mOs->Pread(fd, bytes, byteOffset, byteCount, offset, num);
 }
@@ -430,7 +430,7 @@ ECode BlockGuardOs::Pread(
     VALIDATE_NOT_NULL(num);
 
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnReadFromDisk());
     return mOs->Pread(fd, buffer, offset, num);
 }
@@ -446,7 +446,7 @@ ECode BlockGuardOs::Pwrite(
     VALIDATE_NOT_NULL(num);
 
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnWriteToDisk());
     return mOs->Pwrite(fd, bytes, byteOffset, byteCount, offset, num);
 }
@@ -460,7 +460,7 @@ ECode BlockGuardOs::Pwrite(
     VALIDATE_NOT_NULL(num);
 
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnWriteToDisk());
     return mOs->Pwrite(fd, buffer, offset, num);
 }
@@ -475,7 +475,7 @@ ECode BlockGuardOs::Read(
     VALIDATE_NOT_NULL(num);
 
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnReadFromDisk());
     return mOs->Read(fd, bytes, byteOffset, byteCount, num);
 }
@@ -488,7 +488,7 @@ ECode BlockGuardOs::Read(
     VALIDATE_NOT_NULL(num);
 
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnReadFromDisk());
     return mOs->Read(fd, buffer, num);
 }
@@ -500,7 +500,7 @@ ECode BlockGuardOs::Readlink(
     VALIDATE_NOT_NULL(link);
 
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnReadFromDisk());
     return mOs->Readlink(path, link);
 }
@@ -512,7 +512,7 @@ ECode BlockGuardOs::Realpath(
     VALIDATE_NOT_NULL(realpath);
 
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnReadFromDisk());
     return mOs->Realpath(path, realpath);
 }
@@ -527,7 +527,7 @@ ECode BlockGuardOs::Readv(
     VALIDATE_NOT_NULL(num);
 
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnReadFromDisk());
     return mOs->Readv(fd, buffers, offsets, byteCounts, num);
 }
@@ -544,7 +544,7 @@ ECode BlockGuardOs::Recvfrom(
     VALIDATE_NOT_NULL(num);
 
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnNetwork());
     return mOs->Recvfrom(fd, bytes, byteOffset, byteCount, flags, srcAddress, num);
 }
@@ -559,7 +559,7 @@ ECode BlockGuardOs::Recvfrom(
     VALIDATE_NOT_NULL(num);
 
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnNetwork());
     return mOs->Recvfrom(fd, buffer, flags, srcAddress, num);
 }
@@ -568,7 +568,7 @@ ECode BlockGuardOs::Remove(
     /* [in] */ const String& path)
 {
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnWriteToDisk());
     return mOs->Remove(path);
 }
@@ -578,7 +578,7 @@ ECode BlockGuardOs::Removexattr(
     /* [in] */ const String& name)
 {
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnWriteToDisk());
     return mOs->Removexattr(path, name);
 }
@@ -588,7 +588,7 @@ ECode BlockGuardOs::Rename(
     /* [in] */ const String& newPath)
 {
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnWriteToDisk());
     return mOs->Rename(oldPath, newPath);
 }
@@ -603,7 +603,7 @@ ECode BlockGuardOs::Sendfile(
     VALIDATE_NOT_NULL(result);
 
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnWriteToDisk());
     return mOs->Sendfile(outFd, inFd, inOffset, byteCount, result);
 }
@@ -622,7 +622,7 @@ ECode BlockGuardOs::Sendto(
 
     if (inetAddress != nullptr) {
         AutoPtr<IBlockGuardPolicy> policy;
-        BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+        BlockGuard::GetThreadPolicy(&policy);
         FAIL_RETURN(policy->OnNetwork());
     }
     return mOs->Sendto(fd, bytes, byteOffset, byteCount, flags, inetAddress, port, result);
@@ -640,7 +640,7 @@ ECode BlockGuardOs::Sendto(
     VALIDATE_NOT_NULL(result);
 
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnNetwork());
     return mOs->Sendto(fd, bytes, byteOffset, byteCount, flags, address, result);
 }
@@ -656,7 +656,7 @@ ECode BlockGuardOs::Sendto(
     VALIDATE_NOT_NULL(result);
 
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnNetwork());
     return mOs->Sendto(fd, buffer, flags, inetAddress, port, result);
 }
@@ -668,7 +668,7 @@ ECode BlockGuardOs::Setxattr(
     /* [in] */ Integer flags)
 {
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnWriteToDisk());
     return mOs->Setxattr(path, name, value, flags);
 }
@@ -710,7 +710,7 @@ ECode BlockGuardOs::Stat(
     VALIDATE_NOT_NULL(stat);
 
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnReadFromDisk());
     return mOs->Stat(path, stat);
 }
@@ -722,7 +722,7 @@ ECode BlockGuardOs::StatVfs(
     VALIDATE_NOT_NULL(statfs);
 
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnReadFromDisk());
     return mOs->StatVfs(path, statfs);
 }
@@ -732,7 +732,7 @@ ECode BlockGuardOs::Symlink(
     /* [in] */ const String& newPath)
 {
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnWriteToDisk());
     return mOs->Symlink(oldPath, newPath);
 }
@@ -741,7 +741,7 @@ ECode BlockGuardOs::Unlink(
     /* [in] */ const String& pathname)
 {
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnWriteToDisk());
     return mOs->Unlink(pathname);
 }
@@ -756,7 +756,7 @@ ECode BlockGuardOs::Write(
     VALIDATE_NOT_NULL(num);
 
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnWriteToDisk());
     return mOs->Write(fd, bytes, byteOffset, byteCount, num);
 }
@@ -769,7 +769,7 @@ ECode BlockGuardOs::Write(
     VALIDATE_NOT_NULL(num);
 
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnWriteToDisk());
     return mOs->Write(fd, buffer, num);
 }
@@ -784,7 +784,7 @@ ECode BlockGuardOs::Writev(
     VALIDATE_NOT_NULL(result);
 
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnWriteToDisk());
     return mOs->Writev(fd, buffers, offsets, byteCounts, result);
 }
