@@ -116,7 +116,7 @@ ECode Thread::Sleep(
     Long duration = (millis * NANOS_PER_MILLI) + nanos;
 
     AutoPtr<IThread> t;
-    GetCurrentThread((IThread**)&t);
+    GetCurrentThread(&t);
     SyncObject* lock = &From(t)->mLock;
 
     {
@@ -149,10 +149,10 @@ ECode Thread::Init(
     /* [in] */ Long stackSize)
 {
     AutoPtr<IThread> parent;
-    GetCurrentThread((IThread**)&parent);
+    GetCurrentThread(&parent);
     AutoPtr<IThreadGroup> gg = g;
     if (gg == nullptr) {
-        parent->GetThreadGroup((IThreadGroup**)&gg);
+        parent->GetThreadGroup(&gg);
     }
 
     gg->AddUnstarted();
@@ -173,7 +173,7 @@ ECode Thread::Init(
 void Thread::Init2(
     /* [in] */ IThread* parent)
 {
-    parent->GetContextClassLoader((IClassLoader**)&mContextClassLoader);
+    parent->GetContextClassLoader(&mContextClassLoader);
 }
 
 ECode Thread::Constructor()
@@ -201,7 +201,7 @@ ECode Thread::Constructor(
     mPriority = priority;
     mDaemon = daemon;
     AutoPtr<IThread> parent;
-    GetCurrentThread((IThread**)&parent);
+    GetCurrentThread(&parent);
     Init2(parent);
     mTid = GetNextThreadID();
     return NOERROR;
@@ -271,7 +271,7 @@ ECode Thread::Stop()
 ECode Thread::Interrupt()
 {
     AutoPtr<IThread> t;
-    GetCurrentThread((IThread**)&t);
+    GetCurrentThread(&t);
     if ((IThread*)this != t.Get()) {
         FAIL_RETURN(CheckAccess());
     }
@@ -338,7 +338,7 @@ ECode Thread::SetPriority(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     AutoPtr<IThreadGroup> g;
-    GetThreadGroup((IThreadGroup**)&g);
+    GetThreadGroup(&g);
     if (g != nullptr) {
         Integer maxPriority;
         g->GetMaxPriority(&maxPriority);
@@ -418,9 +418,9 @@ ECode Thread::ActiveCount(
     VALIDATE_NOT_NULL(count);
 
     AutoPtr<IThread> t;
-    GetCurrentThread((IThread**)&t);
+    GetCurrentThread(&t);
     AutoPtr<IThreadGroup> g;
-    t->GetThreadGroup((IThreadGroup**)&g);
+    t->GetThreadGroup(&g);
     return g->ActiveCount(count);
 }
 
@@ -431,9 +431,9 @@ ECode Thread::Enumerate(
     VALIDATE_NOT_NULL(count);
 
     AutoPtr<IThread> t;
-    GetCurrentThread((IThread**)&t);
+    GetCurrentThread(&t);
     AutoPtr<IThreadGroup> g;
-    t->GetThreadGroup((IThreadGroup**)&g);
+    t->GetThreadGroup(&g);
     return g->Enumerate(tarray, count);
 }
 
@@ -509,7 +509,7 @@ ECode Thread::Join()
 void Thread::DumpStack()
 {
     AutoPtr<IThread> t;
-    GetCurrentThread((IThread**)&t);
+    GetCurrentThread(&t);
     Array<IStackTraceElement*> frames;
     t->GetStackTrace(&frames);
     for (Integer i = 0; i < frames.GetLength(); i++) {
@@ -550,7 +550,7 @@ ECode Thread::ToString(
     VALIDATE_NOT_NULL(desc);
 
     AutoPtr<IThreadGroup> g;
-    GetThreadGroup((IThreadGroup**)&g);
+    GetThreadGroup(&g);
     if (g != nullptr) {
         String name;
         GetName(&name);
@@ -594,7 +594,7 @@ Boolean Thread::HoldsLock(
     /* [in] */ IInterface* obj)
 {
     AutoPtr<IThread> t;
-    GetCurrentThread((IThread**)&t);
+    GetCurrentThread(&t);
     return From(t)->NativeHoldsLock(obj);
 }
 

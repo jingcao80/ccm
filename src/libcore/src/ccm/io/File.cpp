@@ -685,14 +685,14 @@ ECode File::Mkdirs(
         return NOERROR;
     }
     AutoPtr<IFile> canonFile;
-    ECode ec = GetCanonicalFile((IFile**)&canonFile);
+    ECode ec = GetCanonicalFile(&canonFile);
     if (FAILED(ec)) {
         *succeeded = false;
         return NOERROR;
     }
 
     AutoPtr<IFile> parent;
-    canonFile->GetParentFile((IFile**)&parent);
+    canonFile->GetParentFile(&parent);
     if (parent == nullptr) {
         *succeeded = false;
         return NOERROR;
@@ -954,7 +954,7 @@ ECode File::CreateTempFile(
     Integer attrs;
     do {
         f = nullptr;
-        TempDirectory::GenerateFile(prefix, suffix, tmpdir, (IFile**)&f);
+        TempDirectory::GenerateFile(prefix, suffix, tmpdir, &f);
     } while (GetFS()->GetBooleanAttributes(f, &attrs),
             (attrs & FileSystem::BA_EXISTS) != 0);
 

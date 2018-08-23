@@ -34,14 +34,14 @@ ECode OutputStreamWriter::Constructor(
     if (charsetName.IsNull()) {
         return ccm::core::E_NULL_POINTER_EXCEPTION;
     }
-    return StreamEncoder::ForOutputStreamWriter(out, this, charsetName, (IStreamEncoder**)&mSe);
+    return StreamEncoder::ForOutputStreamWriter(out, this, charsetName, &mSe);
 }
 
 ECode OutputStreamWriter::Constructor(
     /* [in] */ IOutputStream* out)
 {
     Writer::Constructor(ISynchronize::Probe(out));
-    return StreamEncoder::ForOutputStreamWriter(out, this, String(), (IStreamEncoder**)&mSe);
+    return StreamEncoder::ForOutputStreamWriter(out, this, String(), &mSe);
 }
 
 ECode OutputStreamWriter::Constructor(
@@ -52,7 +52,7 @@ ECode OutputStreamWriter::Constructor(
     if (cs == nullptr) {
         return ccm::core::E_NULL_POINTER_EXCEPTION;
     }
-    return StreamEncoder::ForOutputStreamWriter(out, this, cs, (IStreamEncoder**)&mSe);
+    return StreamEncoder::ForOutputStreamWriter(out, this, cs, &mSe);
 }
 
 ECode OutputStreamWriter::Constructor(
@@ -63,7 +63,7 @@ ECode OutputStreamWriter::Constructor(
     if (enc == nullptr) {
         return ccm::core::E_NULL_POINTER_EXCEPTION;
     }
-    return StreamEncoder::ForOutputStreamWriter(out, this, enc, (IStreamEncoder**)&mSe);
+    return StreamEncoder::ForOutputStreamWriter(out, this, enc, &mSe);
 }
 
 ECode OutputStreamWriter::GetEncoding(

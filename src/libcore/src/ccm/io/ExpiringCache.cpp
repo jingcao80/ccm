@@ -109,7 +109,7 @@ AutoPtr<ExpiringCache::Entry> ExpiringCache::GetEntryFor(
     /* [in] */ const String& key)
 {
     AutoPtr<IInterface> obj;
-    mMap->Get(CoreUtils::Box(key), (IInterface**)&obj);
+    mMap->Get(CoreUtils::Box(key), &obj);
     Entry* entry = (Entry*)obj.Get();
     if (entry != nullptr) {
         Long delta = System::GetCurrentTimeMillis() - entry->GetTimestamp();
@@ -124,17 +124,17 @@ AutoPtr<ExpiringCache::Entry> ExpiringCache::GetEntryFor(
 void ExpiringCache::Cleanup()
 {
     AutoPtr<ISet> keySet;
-    mMap->GetKeySet((ISet**)&keySet);
+    mMap->GetKeySet(&keySet);
     Integer size;
     keySet->GetSize(&size);
     Array<String> keys(size);
     Integer i = 0;
     AutoPtr<IIterator> it;
-    keySet->GetIterator((IIterator**)&it);
+    keySet->GetIterator(&it);
     Boolean hasNext;
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> obj;
-        it->Next((IInterface**)&obj);
+        it->Next(&obj);
         keys[i++] = CoreUtils::Unbox(ICharSequence::Probe(obj));
     }
     for (Integer j = 0; j < keys.GetLength(); j++) {

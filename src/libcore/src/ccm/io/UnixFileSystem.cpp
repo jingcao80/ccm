@@ -64,13 +64,13 @@ UnixFileSystem::UnixFileSystem()
     CGetPropertyAction::New(String("ccm.home"),
             IID_IPrivilegedAction, (IInterface**)&hmAction);
     AutoPtr<IInterface> fsRet, psRet, hmRet;
-    ECode ec = AccessController::DoPrivileged(fsAction, (IInterface**)&fsRet);
+    ECode ec = AccessController::DoPrivileged(fsAction, &fsRet);
     CHECK(SUCCEEDED(ec));
     mSlash = CoreUtils::Unbox(ICharSequence::Probe(fsRet)).GetChar(0);
-    ec = AccessController::DoPrivileged(psAction, (IInterface**)&psRet);
+    ec = AccessController::DoPrivileged(psAction, &psRet);
     CHECK(SUCCEEDED(ec));
     mColon = CoreUtils::Unbox(ICharSequence::Probe(psRet)).GetChar(0);
-    ec = AccessController::DoPrivileged(hmAction, (IInterface**)&hmRet);
+    ec = AccessController::DoPrivileged(hmAction, &hmRet);
     CHECK(SUCCEEDED(ec));
     mCcmHome = CoreUtils::Unbox(ICharSequence::Probe(hmRet));
 }
@@ -253,7 +253,7 @@ ECode UnixFileSystem::Canonicalize(
             }
             if (res.IsNull()) {
                 AutoPtr<IBlockGuardPolicy> policy;
-                BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+                BlockGuard::GetThreadPolicy(&policy);
                 FAIL_RETURN(policy->OnReadFromDisk());
                 FAIL_RETURN(Canonicalize0(path, &res));
                 mCache.Put(path, res);
@@ -363,7 +363,7 @@ ECode UnixFileSystem::GetBooleanAttributes(
     VALIDATE_NOT_NULL(attr);
 
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnReadFromDisk());
 
     String path;
@@ -384,7 +384,7 @@ ECode UnixFileSystem::CheckAccess(
     VALIDATE_NOT_NULL(result);
 
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnReadFromDisk());
     *result = CheckAccess0(f, access);
     return NOERROR;
@@ -427,7 +427,7 @@ ECode UnixFileSystem::GetLastModifiedTime(
     VALIDATE_NOT_NULL(time);
 
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnReadFromDisk());
     *time = GetLastModifiedTime0(f);
     return NOERROR;
@@ -454,7 +454,7 @@ ECode UnixFileSystem::GetLength(
     VALIDATE_NOT_NULL(length);
 
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnReadFromDisk());
     *length = GetLength0(f);
     return NOERROR;
@@ -484,7 +484,7 @@ ECode UnixFileSystem::SetPermission(
     VALIDATE_NOT_NULL(succeeded);
 
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnReadFromDisk());
     *succeeded = SetPermission0(f, access, enable, owneronly);
     return NOERROR;
@@ -551,7 +551,7 @@ ECode UnixFileSystem::CreateFileExclusively(
     VALIDATE_NOT_NULL(succeeded);
 
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnReadFromDisk());
     return CreateFileExclusively0(pathname, succeeded);
 }
@@ -590,7 +590,7 @@ ECode UnixFileSystem::Delete(
     mCache.Clear();
     mCcmHomePrefixCache.Clear();
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnReadFromDisk());
     *succeeded = Delete0(f);
     return NOERROR;
@@ -616,7 +616,7 @@ ECode UnixFileSystem::List(
     VALIDATE_NOT_NULL(elements);
 
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnReadFromDisk());
     return List0(f, elements);
 }
@@ -675,7 +675,7 @@ ECode UnixFileSystem::CreateDirectory(
     VALIDATE_NOT_NULL(succeeded);
 
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnReadFromDisk());
     *succeeded = CreateDirectory0(f);
     return NOERROR;
@@ -704,7 +704,7 @@ ECode UnixFileSystem::Rename(
     mCache.Clear();
     mCcmHomePrefixCache.Clear();
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnReadFromDisk());
     *succeeded = Rename0(f1, f2);
     return NOERROR;
@@ -733,7 +733,7 @@ ECode UnixFileSystem::SetLastModifiedTime(
     VALIDATE_NOT_NULL(succeeded);
 
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnReadFromDisk());
     *succeeded = SetLastModifiedTime0(f, time);
     return NOERROR;
@@ -775,7 +775,7 @@ ECode UnixFileSystem::SetReadOnly(
     VALIDATE_NOT_NULL(succeeded);
 
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnReadFromDisk());
     *succeeded = SetReadOnly0(f);
     return NOERROR;
@@ -826,7 +826,7 @@ ECode UnixFileSystem::GetSpace(
     VALIDATE_NOT_NULL(space);
 
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnReadFromDisk());
     *space = GetSpace0(f, t);
     return NOERROR;

@@ -65,9 +65,9 @@ ECode ThreadGroup::Constructor(
     /* [in] */ const String& name)
 {
     AutoPtr<IThread> t;
-    Thread::GetCurrentThread((IThread**)&t);
+    Thread::GetCurrentThread(&t);
     AutoPtr<IThreadGroup> tg;
-    t->GetThreadGroup((IThreadGroup**)&tg);
+    t->GetThreadGroup(&tg);
     return Constructor(tg, name);
 }
 
@@ -187,7 +187,7 @@ ECode ThreadGroup::ParentOf(
             return NOERROR;
         }
         AutoPtr<IThreadGroup> p;
-        group->GetParent((IThreadGroup**)&p);
+        group->GetParent(&p);
         group = p;
     }
     *result = false;
@@ -382,7 +382,7 @@ ECode ThreadGroup::Stop()
 {
     if (StopOrSuspend(false)) {
         AutoPtr<IThread> t;
-        Thread::GetCurrentThread((IThread**)&t);
+        Thread::GetCurrentThread(&t);
         return t->Stop();
     }
     return NOERROR;
@@ -414,7 +414,7 @@ ECode ThreadGroup::Suspend()
 {
     if (StopOrSuspend(true)) {
         AutoPtr<IThread> t;
-        Thread::GetCurrentThread((IThread**)&t);
+        Thread::GetCurrentThread(&t);
         return t->Suspend();
     }
     return NOERROR;
@@ -425,7 +425,7 @@ Boolean ThreadGroup::StopOrSuspend(
 {
     Boolean suicide = false;
     AutoPtr<IThread> us;
-    Thread::GetCurrentThread((IThread**)&us);
+    Thread::GetCurrentThread(&us);
     Integer ngroupsSnapshot = 0;
     Array<IThreadGroup*> groupsSnapshot;
     {
@@ -687,7 +687,7 @@ ECode ThreadGroup::ToString(
     VALIDATE_NOT_NULL(desc);
 
     AutoPtr<IMetaCoclass> klass;
-    GetCoclass((IMetaCoclass**)&klass);
+    GetCoclass(&klass);
     String cName;
     klass->GetName(&cName);
     String name;

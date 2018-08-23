@@ -517,9 +517,9 @@ ECode StringUtils::ReplaceFirst(
     VALIDATE_NOT_NULL(result);
 
     AutoPtr<IPattern> p;
-    Pattern::Compile(regex, (IPattern**)&p);
+    Pattern::Compile(regex, &p);
     AutoPtr<IMatcher> m;
-    p->Matcher(CoreUtils::Box(input), (IMatcher**)&m);
+    p->Matcher(CoreUtils::Box(input), &m);
     return m->ReplaceFirst(replacement, result);
 }
 
@@ -532,9 +532,9 @@ ECode StringUtils::ReplaceAll(
     VALIDATE_NOT_NULL(result);
 
     AutoPtr<IPattern> p;
-    Pattern::Compile(regex, (IPattern**)&p);
+    Pattern::Compile(regex, &p);
     AutoPtr<IMatcher> m;
-    p->Matcher(CoreUtils::Box(input), (IMatcher**)&m);
+    p->Matcher(CoreUtils::Box(input), &m);
     return m->ReplaceAll(replacement, result);
 }
 
@@ -551,7 +551,7 @@ Array<String> StringUtils::Split(
     }
 
     AutoPtr<IPattern> p;
-    Pattern::Compile(regex, (IPattern**)&p);
+    Pattern::Compile(regex, &p);
     p->Split(CoreUtils::Box(input), limit, &strArr);
     return strArr;
 }

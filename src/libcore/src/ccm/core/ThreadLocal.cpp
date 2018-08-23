@@ -64,7 +64,7 @@ ECode ThreadLocal::Get(
     VALIDATE_NOT_NULL(value);
 
     AutoPtr<IThread> t;
-    Thread::GetCurrentThread((IThread**)&t);
+    Thread::GetCurrentThread(&t);
     AutoPtr<ThreadLocalMap> map = GetMap(t);
     if (map != nullptr) {
         AutoPtr<ThreadLocalMap::Entry> e = map->GetEntry(this);
@@ -84,7 +84,7 @@ ECode ThreadLocal::SetInitialValue(
 
     AutoPtr<IInterface> v = InitialValue();
     AutoPtr<IThread> t;
-    Thread::GetCurrentThread((IThread**)&t);
+    Thread::GetCurrentThread(&t);
     AutoPtr<ThreadLocalMap> map = GetMap(t);
     if (map != nullptr) {
         map->Set(this, v);
@@ -101,7 +101,7 @@ ECode ThreadLocal::Set(
     /* [in] */ IInterface* value)
 {
     AutoPtr<IThread> t;
-    Thread::GetCurrentThread((IThread**)&t);
+    Thread::GetCurrentThread(&t);
     AutoPtr<ThreadLocalMap> map = GetMap(t);
     if (map != nullptr) {
         map->Set(this, value);
@@ -115,7 +115,7 @@ ECode ThreadLocal::Set(
 ECode ThreadLocal::Remove()
 {
     AutoPtr<IThread> t;
-    Thread::GetCurrentThread((IThread**)&t);
+    Thread::GetCurrentThread(&t);
     AutoPtr<ThreadLocalMap> map = GetMap(t);
     if (map != nullptr) {
         map->Remove(this);
@@ -469,7 +469,7 @@ ThreadLocal::ThreadLocalMap::Entry::Entry(
     /* [in] */ ThreadLocal* k,
     /* [in] */ IInterface* v)
 {
-    k->GetWeakReference((IWeakReference**)&mKey);
+    k->GetWeakReference(&mKey);
     mValue = v;
 }
 

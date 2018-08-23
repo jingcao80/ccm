@@ -114,7 +114,7 @@ ECode FileOutputStream::Constructor(
     mIsFdOwner = true;
 
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnWriteToDisk());
     FAIL_RETURN(Open(name, append));
     mGuard->Open(String("Close"));

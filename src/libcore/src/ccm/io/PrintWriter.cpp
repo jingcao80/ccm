@@ -82,7 +82,7 @@ ECode PrintWriter::Constructor(
     CGetPropertyAction::New(String("line.separator"),
             IID_IPrivilegedAction, (IInterface**)&lsAction);
     AutoPtr<IInterface> lsRet;
-    FAIL_RETURN(AccessController::DoPrivileged(lsAction, (IInterface**)&lsRet));
+    FAIL_RETURN(AccessController::DoPrivileged(lsAction, &lsRet));
     mLineSeparator = CoreUtils::Unbox(ICharSequence::Probe(lsRet));
     return NOERROR;
 }
@@ -139,7 +139,7 @@ ECode PrintWriter::Constructor(
     AutoPtr<IFile> f;
     CFile::New(fileName, IID_IFile, (IInterface**)&f);
     AutoPtr<ICharset> cs;
-    FAIL_RETURN(ToCharset(csn, (ICharset**)&cs));
+    FAIL_RETURN(ToCharset(csn, &cs));
     return Constructor(cs, f);
 }
 
@@ -159,7 +159,7 @@ ECode PrintWriter::Constructor(
     /* [in] */ const String& csn)
 {
     AutoPtr<ICharset> cs;
-    FAIL_RETURN(ToCharset(csn, (ICharset**)&cs));
+    FAIL_RETURN(ToCharset(csn, &cs));
     return Constructor(cs, file);
 }
 
@@ -250,7 +250,7 @@ ECode PrintWriter::Write(
 ERROR:
     if (ec == E_INTERRUPTED_IO_EXCEPTION) {
         AutoPtr<IThread> t;
-        Thread::GetCurrentThread((IThread**)&t);
+        Thread::GetCurrentThread(&t);
         t->Interrupt();
     }
     else if (ec == E_IO_EXCEPTION) {
@@ -277,7 +277,7 @@ ECode PrintWriter::Write(
 ERROR:
     if (ec == E_INTERRUPTED_IO_EXCEPTION) {
         AutoPtr<IThread> t;
-        Thread::GetCurrentThread((IThread**)&t);
+        Thread::GetCurrentThread(&t);
         t->Interrupt();
     }
     else if (ec == E_IO_EXCEPTION) {
@@ -310,7 +310,7 @@ ECode PrintWriter::Write(
 ERROR:
     if (ec == E_INTERRUPTED_IO_EXCEPTION) {
         AutoPtr<IThread> t;
-        Thread::GetCurrentThread((IThread**)&t);
+        Thread::GetCurrentThread(&t);
         t->Interrupt();
     }
     else if (ec == E_IO_EXCEPTION) {
@@ -338,7 +338,7 @@ void PrintWriter::NewLine()
 ERROR:
     if (ec == E_INTERRUPTED_IO_EXCEPTION) {
         AutoPtr<IThread> t;
-        Thread::GetCurrentThread((IThread**)&t);
+        Thread::GetCurrentThread(&t);
         t->Interrupt();
     }
     else if (ec == E_IO_EXCEPTION) {
@@ -517,7 +517,7 @@ ECode PrintWriter::Format(
         if (FAILED(ec)) goto ERROR;
         AutoPtr<ILocale> l;
         if ((mFormatter == nullptr) ||
-                (mFormatter->GetLocale((ILocale**)&l),
+                (mFormatter->GetLocale(&l),
                     l != Locale::GetDefault())) {
             mFormatter = nullptr;
             CFormatter::New(this, IID_IFormatter, (IInterface**)&mFormatter);
@@ -534,7 +534,7 @@ ECode PrintWriter::Format(
 ERROR:
     if (ec == E_INTERRUPTED_IO_EXCEPTION) {
         AutoPtr<IThread> t;
-        Thread::GetCurrentThread((IThread**)&t);
+        Thread::GetCurrentThread(&t);
         t->Interrupt();
     }
     else if (ec == E_IO_EXCEPTION) {
@@ -555,7 +555,7 @@ ECode PrintWriter::Format(
         if (FAILED(ec)) goto ERROR;
         AutoPtr<ILocale> fl;
         if ((mFormatter == nullptr) ||
-                (mFormatter->GetLocale((ILocale**)&fl), fl != l)) {
+                (mFormatter->GetLocale(&fl), fl != l)) {
             mFormatter = nullptr;
             CFormatter::New(this, l, IID_IFormatter, (IInterface**)&mFormatter);
         }
@@ -571,7 +571,7 @@ ECode PrintWriter::Format(
 ERROR:
     if (ec == E_INTERRUPTED_IO_EXCEPTION) {
         AutoPtr<IThread> t;
-        Thread::GetCurrentThread((IThread**)&t);
+        Thread::GetCurrentThread(&t);
         t->Interrupt();
     }
     else if (ec == E_IO_EXCEPTION) {

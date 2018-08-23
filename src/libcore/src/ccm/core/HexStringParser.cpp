@@ -77,7 +77,7 @@ ECode HexStringParser::Parse(
     static const AutoPtr<IPattern> PATTERN = MAKE_PATTERN();
 
     AutoPtr<IMatcher> matcher;
-    PATTERN->Matcher(CoreUtils::Box(hexString), (IMatcher**)&matcher);
+    PATTERN->Matcher(CoreUtils::Box(hexString), &matcher);
     Boolean matched;
     if (matcher->Matches(&matched), !matched) {
         Logger::E("HexStringParser", "Invalid hex %s:%s",
@@ -161,7 +161,7 @@ void HexStringParser::ParseMantissa(
 
     if (mExponent >= 1) {
         ProcessNormalNumber();
-    } 
+    }
     else{
         ProcessSubNormalNumber();
     }
@@ -216,7 +216,7 @@ void HexStringParser::FitMantissaInDesiredWidth(
     Integer bitLength = CountBitsLength(mMantissa);
     if (bitLength > desiredWidth) {
         DiscardTrailingBits(bitLength - desiredWidth);
-    } 
+    }
     else {
         mMantissa <<= (desiredWidth - bitLength);
     }
@@ -226,7 +226,7 @@ void HexStringParser::DiscardTrailingBits(
     /* [in] */ Long num)
 {
     Long mask = ~(-1ll << num);
-    mAbandonedNumber = String::Format("%s%lld", 
+    mAbandonedNumber = String::Format("%s%lld",
             mAbandonedNumber.string(), mMantissa & mask);
     mMantissa >>= num;
 }
@@ -254,7 +254,7 @@ void HexStringParser::Round()
 }
 
 String HexStringParser::GetNormalizedSignificand(
-    /* [in] */ const String& strIntegerPart, 
+    /* [in] */ const String& strIntegerPart,
     /* [in] */ const String& strDecimalPart)
 {
     String significand = strIntegerPart + strDecimalPart;
@@ -266,7 +266,7 @@ String HexStringParser::GetNormalizedSignificand(
 }
 
 Integer HexStringParser::GetOffset(
-    /* [in] */ String strIntegerPart, 
+    /* [in] */ String strIntegerPart,
     /* [in] */ const String& strDecimalPart)
 {
     StringUtils::ReplaceFirst(strIntegerPart, String("^0+"), String(""), &strIntegerPart);
@@ -306,7 +306,7 @@ AutoPtr<IPattern> HexStringParser::MAKE_PATTERN()
     static const String HEX_PATTERN = String("[\\x00-\\x20]*([+-]?)") + HEX_SIGNIFICANT
             + BINARY_EXPONENT + FLOAT_TYPE_SUFFIX + "[\\x00-\\x20]*";
     AutoPtr<IPattern> p;
-    Pattern::Compile(HEX_PATTERN, (IPattern**)&p);
+    Pattern::Compile(HEX_PATTERN, &p);
     return p;
 }
 

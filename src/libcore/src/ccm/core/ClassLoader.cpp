@@ -48,10 +48,10 @@ ECode ClassLoader::LoadCoclass(
     AutoPtr<IMetaCoclass> c = FindLoadedCoclass(fullName);
     if (c == nullptr) {
         if (mParent != nullptr) {
-            mParent->LoadCoclass(fullName, (IMetaCoclass**)&c);
+            mParent->LoadCoclass(fullName, &c);
         }
         if (c == nullptr) {
-            FAIL_RETURN(FindCoclass(fullName, (IMetaCoclass**)&c));
+            FAIL_RETURN(FindCoclass(fullName, &c));
         }
         mLoadedCoclasses->Put(CoreUtils::Box(fullName), c);
     }
@@ -83,7 +83,7 @@ AutoPtr<IMetaCoclass> ClassLoader::FindLoadedCoclass(
     /* [in] */ const String& fullName)
 {
     AutoPtr<IInterface> value;
-    mLoadedCoclasses->Get(CoreUtils::Box(fullName), (IInterface**)&value);
+    mLoadedCoclasses->Get(CoreUtils::Box(fullName), &value);
     return IMetaCoclass::Probe(value);
 }
 
@@ -106,10 +106,10 @@ ECode ClassLoader::LoadInterface(
     AutoPtr<IMetaInterface> i = FindLoadedInterface(fullName);
     if (i == nullptr) {
         if (mParent != nullptr) {
-            mParent->LoadInterface(fullName, (IMetaInterface**)&i);
+            mParent->LoadInterface(fullName, &i);
         }
         if (i == nullptr) {
-            FAIL_RETURN(FindInterface(fullName, (IMetaInterface**)&i));
+            FAIL_RETURN(FindInterface(fullName, &i));
             mLoadedInterfaces->Put(CoreUtils::Box(fullName), i);
         }
     }
@@ -129,7 +129,7 @@ AutoPtr<IMetaInterface> ClassLoader::FindLoadedInterface(
     /* [in] */ const String& fullName)
 {
     AutoPtr<IInterface> value;
-    mLoadedInterfaces->Get(CoreUtils::Box(fullName), (IInterface**)&value);
+    mLoadedInterfaces->Get(CoreUtils::Box(fullName), &value);
     return IMetaInterface::Probe(value);
 }
 

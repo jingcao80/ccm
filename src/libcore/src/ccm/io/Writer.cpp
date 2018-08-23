@@ -118,7 +118,7 @@ ECode Writer::Append(
         cs = CoreUtils::Box(String("null"));
     }
     AutoPtr<ICharSequence> subcs;
-    cs->SubSequence(start, end, (ICharSequence**)&subcs);
+    cs->SubSequence(start, end, &subcs);
     return Write(CoreUtils::Unbox(subcs));
 }
 

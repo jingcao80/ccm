@@ -98,7 +98,7 @@ ECode FileInputStream::Constructor(
     mPath = name;
 
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnReadFromDisk());
     FAIL_RETURN(Open(name));
     mGuard->Open(String("Close"));
@@ -176,7 +176,7 @@ ECode FileInputStream::Skip(
     }
 
     AutoPtr<IBlockGuardPolicy> policy;
-    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    BlockGuard::GetThreadPolicy(&policy);
     FAIL_RETURN(policy->OnReadFromDisk());
     ECode ec = Skip0(byteCount, number);
     if (ec == E_USE_MANUAL_SKIP_EXCEPTION) {
