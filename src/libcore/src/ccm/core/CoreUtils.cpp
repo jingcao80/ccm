@@ -14,9 +14,11 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/core/CoreUtils.h"
+#include "ccm/core/CBoolean.h"
 #include "ccm/core/CChar.h"
+#include "ccm/core/CoreUtils.h"
 #include "ccm/core/CString.h"
+#include "ccm/core/System.h"
 
 namespace ccm {
 namespace core {
@@ -27,6 +29,14 @@ AutoPtr<IChar> CoreUtils::Box(
     AutoPtr<IChar> ch;
     CChar::New(c, IID_IChar, (IInterface**)&ch);
     return ch;
+}
+
+AutoPtr<IBoolean> CoreUtils::Box(
+    /* [in] */ Boolean b)
+{
+    AutoPtr<IBoolean> bo;
+    CBoolean::New(b, IID_IBoolean, (IInterface**)&bo);
+    return bo;
 }
 
 AutoPtr<ICharSequence> CoreUtils::Box(
@@ -43,6 +53,14 @@ Char CoreUtils::Unbox(
     Char c;
     ch->GetValue(&c);
     return c;
+}
+
+Boolean CoreUtils::Unbox(
+    /* [in] */ IBoolean* bo)
+{
+    Boolean b;
+    bo->GetValue(&b);
+    return b;
 }
 
 String CoreUtils::Unbox(
@@ -68,6 +86,18 @@ Array<String> CoreUtils::Unbox(
         strArray[i] = Unbox(seqArray[i]);
     }
     return strArray;
+}
+
+Boolean CoreUtils::GetBoolean(
+    /* [in] */ const String& name)
+{
+    Boolean result = false;
+    String value;
+    ECode ec = System::GetProperty(name, &value);
+    if (SUCCEEDED(ec)) {
+        result = (!value.IsNull() && value.EqualsIgnoreCase("true"));
+    }
+    return result;
 }
 
 }

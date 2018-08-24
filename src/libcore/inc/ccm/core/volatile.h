@@ -56,6 +56,12 @@ inline Integer GetAndAddInt(Integer* addr, Integer delta)
 #define GET_AND_ADD_INT(object, field, delta) \
     GET_AND_ADD_INT_INADDR(&object->field, delta)
 
+#define PUT_LONG_INADDR(longAddr, value) \
+    reinterpret_cast<ccm::core::AtomicLong*>(longAddr)->StoreRelaxed(value);
+
+#define PUT_LONG(object, field, value) \
+    PUT_LONG_INADDR(&object->field, value)
+
 #define COMPARE_AND_SWAP_LONG_INADDR(longAddr, expectedValue, newValue) \
     reinterpret_cast<ccm::core::AtomicLong*>(longAddr)-> \
         CompareExchangeStrongSequentiallyConsistent( \
@@ -63,7 +69,6 @@ inline Integer GetAndAddInt(Integer* addr, Integer delta)
 
 #define COMPARE_AND_SWAP_LONG(object, field, expectedValue, newValue) \
     COMPARE_AND_SWAP_LONG_INADDR(&object->field, expectedValue, newValue)
-
 
 #define PUT_OBJECT(object, field, value) \
     object->field = value;

@@ -17,7 +17,9 @@
 #ifndef __CCM_UTIL_CONCURRENT_THREADLOCALRANDOM_H__
 #define __CCM_UTIL_CONCURRENT_THREADLOCALRANDOM_H__
 
-#include <ccmtypes.h>
+#include "ccm.util.concurrent.atomic.IAtomicLong.h"
+
+using ccm::util::concurrent::atomic::IAtomicLong;
 
 namespace ccm {
 namespace util {
@@ -34,6 +36,10 @@ public:
         /* [in] */ Integer probe);
 
 private:
+    static AutoPtr<IAtomicLong> GetSeeder();
+
+    static void StaticInitialize();
+
     static Long Mix64(
         /* [in] */ Long z);
 
@@ -45,6 +51,11 @@ private:
      * The increment for generating probe values.
      */
     static constexpr Integer PROBE_INCREMENT = 0x9e3779b9;
+
+    /**
+     * The increment of seeder per new instance.
+     */
+    static constexpr Long SEEDER_INCREMENT = 0xbb67ae8584caa73bll;
 };
 
 }

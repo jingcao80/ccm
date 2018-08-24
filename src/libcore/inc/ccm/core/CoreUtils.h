@@ -30,17 +30,26 @@ public:
     COM_PUBLIC static AutoPtr<IChar> Box(
         /* [in] */ Char c);
 
+    COM_PUBLIC static AutoPtr<IBoolean> Box(
+        /* [in] */ Boolean b);
+
     COM_PUBLIC static AutoPtr<ICharSequence> Box(
         /* [in] */ const String& str);
 
     COM_PUBLIC static Char Unbox(
         /* [in] */ IChar* ch);
 
+    COM_PUBLIC static Boolean Unbox(
+        /* [in] */ IBoolean* bo);
+
     COM_PUBLIC static String Unbox(
         /* [in] */ ICharSequence* seq);
 
     COM_PUBLIC static Array<String> Unbox(
         /* [in] */ const Array<ICharSequence*>& seqArray);
+
+    COM_PUBLIC static Boolean GetBoolean(
+        /* [in] */ const String& name);
 };
 
 }
