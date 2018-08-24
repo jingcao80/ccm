@@ -305,7 +305,7 @@ ECode JulianCalendar::Date::GetNormalizedYear(
     GetYear(&year);
 
     AutoPtr<IEra> era;
-    if (GetEra((IEra**)&era), era == GetEras()[BCE]) {
+    if (GetEra(&era), era == GetEras()[BCE]) {
         *normalizedYear = 1 - year;
         return NOERROR;
     }
@@ -338,7 +338,7 @@ ECode JulianCalendar::Date::ToString(
     AutoPtr<IStringBuffer> sb;
     CStringBuffer::New(IID_IStringBuffer, (IInterface**)&sb);
     AutoPtr<IEra> era;
-    GetEra((IEra**)&era);
+    GetEra(&era);
     if (era != nullptr) {
         String abbr;
         era->GetAbbreviation(&abbr);

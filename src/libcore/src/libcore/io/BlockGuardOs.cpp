@@ -147,7 +147,7 @@ Boolean BlockGuardOs::IsLingerSocket(
 {
     AutoPtr<IStructLinger> linger;
     FAIL_RETURN(Libcore::GetOs()->GetsockoptLinger(
-            fd, OsConstants::SOL_SOCKET_, OsConstants::SO_LINGER_, (IStructLinger**)&linger));
+            fd, OsConstants::SOL_SOCKET_, OsConstants::SO_LINGER_, &linger));
     Boolean on; Integer l;
     return (linger->IsOn(&on), on) && (linger->GetLinger(&l), l > 0);
 }

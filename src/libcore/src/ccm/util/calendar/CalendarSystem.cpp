@@ -50,11 +50,11 @@ ECode CalendarSystem::StaticInitialize()
         if (!sInitialized) {
             AutoPtr<IClassLoader> loader = ClassLoader::GetSystemClassLoader();
             AutoPtr<IMetaCoclass> gregorianClass;
-            loader->LoadCoclass(String("ccm::util::calendar::CGregorian"), (IMetaCoclass**)&gregorianClass);
+            loader->LoadCoclass(String("ccm::util::calendar::CGregorian"), &gregorianClass);
             AutoPtr<IMetaCoclass> japaneseClass;
-            loader->LoadCoclass(String("ccm::util::calendar::CLocalGregorianCalendar"), (IMetaCoclass**)&japaneseClass);
+            loader->LoadCoclass(String("ccm::util::calendar::CLocalGregorianCalendar"), &japaneseClass);
             AutoPtr<IMetaCoclass> julianClass;
-            loader->LoadCoclass(String("ccm::util::calendar::CJulianCalendar"), (IMetaCoclass**)&julianClass);
+            loader->LoadCoclass(String("ccm::util::calendar::CJulianCalendar"), &julianClass);
             CHashMap::New(IID_IMap, (IInterface**)&sNames);
             sNames->Put(CoreUtils::Box(String("gregorian")), gregorianClass);
             sNames->Put(CoreUtils::Box(String("japanese")), japaneseClass);
@@ -109,7 +109,7 @@ ECode CalendarSystem::ForName(
     if (calendarClass->ContainsInterface(String("ccm::util::calendar::ILocalGregorianCalendar"),
             &contains), contains) {
         AutoPtr<ILocalGregorianCalendar> lgCalendar;
-        LocalGregorianCalendar::GetLocalGregorianCalendar(calendarName, (ILocalGregorianCalendar**)&lgCalendar);
+        LocalGregorianCalendar::GetLocalGregorianCalendar(calendarName, &lgCalendar);
         cal = ICalendarSystem::Probe(lgCalendar);
     }
     else {

@@ -185,7 +185,7 @@ ECode Formatter::Constructor(
     /* [in] */ ILocale* l)
 {
     AutoPtr<ICharset> cs;
-    FAIL_RETURN(ToCharset(csn, (ICharset**)&cs));
+    FAIL_RETURN(ToCharset(csn, &cs));
     AutoPtr<IFile> f;
     FAIL_RETURN(CFile::New(fileName, IID_IFile, (IInterface**)&f));
     return Constructor(cs, l, f);
@@ -218,7 +218,7 @@ ECode Formatter::Constructor(
     /* [in] */ ILocale* l)
 {
     AutoPtr<ICharset> cs;
-    FAIL_RETURN(ToCharset(csn, (ICharset**)&cs));
+    FAIL_RETURN(ToCharset(csn, &cs));
     return Constructor(cs, l, file);
 }
 
@@ -517,7 +517,7 @@ ECode Formatter::Flags::Parse(
     AutoPtr<Flags> f = new Flags(0);
     for (Integer i = 0; i < ca.GetLength(); i++) {
         AutoPtr<Flags> v;
-        FAIL_RETURN(Parse(ca[i], (Flags**)&v));
+        FAIL_RETURN(Parse(ca[i], &v));
         if (f->Contains(v)) {
             return E_DUPLICATE_FORMAT_FLAGS_EXCEPTION;
         }
@@ -681,7 +681,7 @@ ECode Formatter::FormatSpecifier::ToFlags(
     /* [out] */ Flags** f)
 {
     mF = nullptr;
-    FAIL_RETURN(Flags::Parse(s, (Flags**)&mF));
+    FAIL_RETURN(Flags::Parse(s, &mF));
     if (mF->Contains(Flags::GetPREVIOUS())) {
         mIndex = -1;
     }
@@ -905,10 +905,10 @@ ECode Formatter::FormatSpecifier::PrintString(
     if (IFormattable::Probe(arg) != nullptr) {
         AutoPtr<IFormatter> fmt = mOwner;
         AutoPtr<ILocale> ll;
-        FAIL_RETURN(fmt->GetLocale((ILocale**)&ll));
+        FAIL_RETURN(fmt->GetLocale(&ll));
         if (ll != l) {
             AutoPtr<IAppendable> out;
-            fmt->GetOut((IAppendable**)&out);
+            fmt->GetOut(&out);
             CFormatter::New(out, l, IID_IFormatter, (IInterface**)&fmt);
         }
         IFormattable::Probe(arg)->FormatTo(fmt, mF->ValueOf(), mWidth, mPrecision);
@@ -1470,7 +1470,7 @@ ECode Formatter::FormatSpecifier::Print(
     value->Signum(&sign);
     Boolean neg = sign == -1;
     AutoPtr<IBigDecimal> v;
-    value->Abs((IBigDecimal**)&v);
+    value->Abs(&v);
     // leading sign indicator
     LeadingSign(sb, neg);
 

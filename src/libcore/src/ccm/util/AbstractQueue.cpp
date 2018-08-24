@@ -42,7 +42,7 @@ ECode AbstractQueue::Remove(
     /* [out] */ IInterface** head)
 {
     AutoPtr<IInterface> x;
-    Poll((IInterface**)&x);
+    Poll(&x);
     if (x != nullptr) {
         if (head != nullptr) {
             *head = x;
@@ -68,7 +68,7 @@ ECode AbstractQueue::Element(
 ECode AbstractQueue::Clear()
 {
     AutoPtr<IInterface> x;
-    while (Poll((IInterface**)&x), x != nullptr) {
+    while (Poll(&x), x != nullptr) {
         x = nullptr;
     }
     return NOERROR;

@@ -557,7 +557,7 @@ ECode Matcher::ToString(
     sb->Append(String("ccm::util::regex::Matcher"));
     sb->Append("[pattern=");
     AutoPtr<IPattern> p;
-    Pattern((IPattern**)&p);
+    Pattern(&p);
     sb->Append(Object::ToString(p));
     sb->Append(String(" region="));
     Integer start, end;

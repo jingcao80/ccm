@@ -903,7 +903,7 @@ ECode ArrayList::Sublist::GetIterator(
     VALIDATE_NOT_NULL(it);
 
     AutoPtr<IListIterator> lit;
-    GetListIterator((IListIterator**)&lit);
+    GetListIterator(&lit);
     *it = IIterator::Probe(lit);
     REFCOUNT_ADD(*it);
     return NOERROR;

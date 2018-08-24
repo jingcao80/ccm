@@ -88,7 +88,7 @@ ECode BaseCalendar::Normalize(
 
     Date* bdate = (Date*)IBaseCalendarDate::Probe(date);
     AutoPtr<ITimeZone> zi;
-    bdate->GetZone((ITimeZone**)&zi);
+    bdate->GetZone(&zi);
 
     // If the date has a time zone, then we need to recalculate
     // the calendar fields. Let getTime() do it.

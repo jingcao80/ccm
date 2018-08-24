@@ -439,7 +439,7 @@ ECode CalendarDate::IsSameDate(
     *same = (GetDayOfWeek(&thisDate), date->GetDayOfWeek(&othDate), thisDate == othDate) &&
             (GetMonth(&thisDate), date->GetMonth(&othDate), thisDate == othDate) &&
             (GetYear(&thisDate), date->GetYear(&othDate), thisDate == othDate) &&
-            (GetEra((IEra**)&thisEra), date->GetEra((IEra**)&othEra), thisEra == othEra);
+            (GetEra(&thisEra), date->GetEra(&othEra), thisEra == othEra);
     return NOERROR;
 }
 
@@ -470,7 +470,7 @@ ECode CalendarDate::Equals(
         return NOERROR;
     }
     AutoPtr<IEra> thisEra, othEra;
-    *same = (GetEra((IEra**)&thisEra), that->GetEra((IEra**)&othEra), thisEra == othEra) &&
+    *same = (GetEra(&thisEra), that->GetEra(&othEra), thisEra == othEra) &&
             mYear == that->mYear &&
             mMonth == that->mMonth &&
             mDayOfMonth == that->mDayOfMonth &&
@@ -496,7 +496,7 @@ ECode CalendarDate::GetHashCode(
     Integer normalized = (IsNormalized(&norm), norm) ? 1 : 0;
     Integer era = 0;
     AutoPtr<IEra> e;
-    GetEra((IEra**)&e);
+    GetEra(&e);
     if (e != nullptr) {
         era = Object::GetHashCode(e);
     }

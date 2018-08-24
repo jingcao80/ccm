@@ -165,7 +165,7 @@ ECode CLocale::New(
     /* [out] */ ccm::IInterface** object)
 {
     AutoPtr<IClassObject> clsObject;
-    ECode ec = CoAcquireClassFactory(CID_CLocale, nullptr, (IClassObject**)&clsObject);
+    ECode ec = CoAcquireClassFactory(CID_CLocale, nullptr, &clsObject);
     if (FAILED(ec)) return ec;
 
     void* addr = calloc(sizeof(CLocale), 1);
@@ -174,7 +174,7 @@ ECode CLocale::New(
     CLocale* _obj = new(addr) CLocale();
 
     AutoPtr<IMetaComponent> comp;
-    clsObject->GetMetadate((IMetaComponent**)&comp);
+    clsObject->GetMetadate(&comp);
     _obj->AttachMetadata(comp, String("ccm::util::CLocale"));
     *object = _obj->Probe(iid);
     REFCOUNT_ADD(*object);
@@ -188,7 +188,7 @@ ECode CLocale::New(
     /* [out] */ ccm::IInterface** object)
 {
     AutoPtr<IClassObject> clsObject;
-    ECode ec = CoAcquireClassFactory(CID_CLocale, nullptr, (IClassObject**)&clsObject);
+    ECode ec = CoAcquireClassFactory(CID_CLocale, nullptr, &clsObject);
     if (FAILED(ec)) return ec;
 
     void* addr = calloc(sizeof(CLocale), 1);
@@ -201,7 +201,7 @@ ECode CLocale::New(
         return ec;
     }
     AutoPtr<IMetaComponent> comp;
-    clsObject->GetMetadate((IMetaComponent**)&comp);
+    clsObject->GetMetadate(&comp);
     _obj->AttachMetadata(comp, String("ccm::util::CLocale"));
     *object = _obj->Probe(iid);
     REFCOUNT_ADD(*object);

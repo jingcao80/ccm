@@ -144,9 +144,9 @@ ECode Pattern::Matches(
     VALIDATE_NOT_NULL(matched);
 
     AutoPtr<IPattern> p;
-    Compile(regex, (IPattern**)&p);
+    Compile(regex, &p);
     AutoPtr<IMatcher> m;
-    p->Matcher(input, (IMatcher**)&m);
+    p->Matcher(input, &m);
     return m->Matches(matched);
 }
 
@@ -171,7 +171,7 @@ ECode Pattern::Split(
     AutoPtr<IArrayList> matchList;
     CArrayList::New(IID_IArrayList, (IInterface**)&matchList);
     AutoPtr<IMatcher> m;
-    Matcher(input, (IMatcher**)&m);
+    Matcher(input, &m);
 
     Integer size;
     Boolean found;
@@ -180,7 +180,7 @@ ECode Pattern::Split(
             Integer startIndex;
             m->Start(&startIndex);
             AutoPtr<ICharSequence> match;
-            input->SubSequence(index, startIndex, (ICharSequence**)&match);
+            input->SubSequence(index, startIndex, &match);
             matchList->Add(match);
             m->End(&index);
         }
@@ -188,7 +188,7 @@ ECode Pattern::Split(
             Integer len;
             input->GetLength(&len);
             AutoPtr<ICharSequence> match;
-            input->SubSequence(index, len, (ICharSequence**)&match);
+            input->SubSequence(index, len, &match);
             matchList->Add(match);
             m->End(&index);
         }
@@ -208,7 +208,7 @@ ECode Pattern::Split(
         Integer len;
         input->GetLength(&len);
         AutoPtr<ICharSequence> match;
-        input->SubSequence(index, len, (ICharSequence**)&match);
+        input->SubSequence(index, len, &match);
         matchList->Add(match);
     }
 
@@ -217,7 +217,7 @@ ECode Pattern::Split(
     if (limit == 0) {
         while (size > 0) {
             AutoPtr<IInterface> obj;
-            matchList->Get(size - 1, (IInterface**)&obj);
+            matchList->Get(size - 1, &obj);
             if (CoreUtils::Unbox(ICharSequence::Probe(obj)).Equals("")) {
                 size--;
             }
@@ -225,7 +225,7 @@ ECode Pattern::Split(
         }
     }
     AutoPtr<IList> subList;
-    matchList->SubList(0, size, (IList**)&subList);
+    matchList->SubList(0, size, &subList);
     Array<ICharSequence*> seqArray;
     subList->ToArray(IID_ICharSequence, (Array<IInterface*>*)&seqArray);
     *strArray = CoreUtils::Unbox(seqArray);

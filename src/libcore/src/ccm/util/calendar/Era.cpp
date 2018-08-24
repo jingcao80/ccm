@@ -41,7 +41,7 @@ ECode Era::Constructor(
     mLocalTime = localTime;
     AutoPtr<IGregorian> gcal = CalendarSystem::GetGregorianCalendar();
     AutoPtr<ICalendarDate> d;
-    ICalendarSystem::Probe(gcal)->NewCalendarDate(nullptr, (ICalendarDate**)&d);
+    ICalendarSystem::Probe(gcal)->NewCalendarDate(nullptr, &d);
     ICalendarSystem::Probe(gcal)->GetCalendarDate(since, d);
     AutoPtr<ImmutableGregorianDate> date = new ImmutableGregorianDate();
     ECode ec = date->Constructor(IBaseCalendarDate::Probe(d));
@@ -171,7 +171,7 @@ ECode Era::ToString(
     sb->AppendChar(')');
     sb->Append(String(" since "));
     AutoPtr<ICalendarDate> sinceDate;
-    GetSinceDate((ICalendarDate**)&sinceDate);
+    GetSinceDate(&sinceDate);
     sb->Append(Object::ToString(sinceDate));
     if (mLocalTime) {
         Integer length;

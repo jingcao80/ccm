@@ -81,24 +81,24 @@ UnicodeLocaleExtension::UnicodeLocaleExtension(
         AutoPtr<IStringBuilder> sb;
         CStringBuilder::New(IID_IStringBuilder, (IInterface**)&sb);
         AutoPtr<IIterator> it;
-        mAttributes->GetIterator((IIterator**)&it);
+        mAttributes->GetIterator(&it);
         Boolean hasNext;
         while (it->HasNext(&hasNext), hasNext) {
             AutoPtr<IInterface> attribute;
-            it->Next((IInterface**)&attribute);
+            it->Next(&attribute);
             sb->Append(ILanguageTag::SEP);
             sb->Append(ICharSequence::Probe(attribute));
         }
         AutoPtr<ISet> entries;
-        mKeywords->GetEntrySet((ISet**)&entries);
+        mKeywords->GetEntrySet(&entries);
         it = nullptr;
-        entries->GetIterator((IIterator**)&it);
+        entries->GetIterator(&it);
         while (it->HasNext(&hasNext), hasNext) {
             AutoPtr<IInterface> keyword;
-            it->Next((IInterface**)&keyword);
+            it->Next(&keyword);
             AutoPtr<IInterface> key, value;
-            IMapEntry::Probe(keyword)->GetKey((IInterface**)&key);
-            IMapEntry::Probe(keyword)->GetValue((IInterface**)&value);
+            IMapEntry::Probe(keyword)->GetKey(&key);
+            IMapEntry::Probe(keyword)->GetValue(&value);
 
             sb->Append(ILanguageTag::SEP);
             sb->Append(ICharSequence::Probe(key));
@@ -129,7 +129,7 @@ AutoPtr<ISet> UnicodeLocaleExtension::GetUnicodeLocaleKeys()
         return Collections::GetEmptySet();
     }
     AutoPtr<ISet> keyset;
-    mKeywords->GetKeySet((ISet**)&keyset);
+    mKeywords->GetKeySet(&keyset);
     return Collections::CreateUnmodifiableSet(keyset);
 }
 
@@ -137,7 +137,7 @@ String UnicodeLocaleExtension::GetUnicodeLocaleType(
     /* [in] */ const String& unicodeLocaleKey)
 {
     AutoPtr<IInterface> value;
-    mKeywords->Get(CoreUtils::Box(unicodeLocaleKey), (IInterface**)&value);
+    mKeywords->Get(CoreUtils::Box(unicodeLocaleKey), &value);
     return CoreUtils::Unbox(ICharSequence::Probe(value));
 }
 

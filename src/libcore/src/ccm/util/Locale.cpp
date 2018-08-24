@@ -292,7 +292,7 @@ AutoPtr<ILocale> Locale::GetInstance(
 {
     AutoPtr<LocaleKey> key = new LocaleKey(baseloc, extensions);
     AutoPtr<IInterface> value;
-    GetLOCALECACHE()->Get((IObject*)key.Get(), (IInterface**)&value);
+    GetLOCALECACHE()->Get((IObject*)key.Get(), &value);
     return ILocale::Probe(value);
 }
 
@@ -649,24 +649,24 @@ ECode Locale::ToLanguageTag(
     }
 
     AutoPtr<IList> subtags;
-    tag->GetVariants((IList**)&subtags);
+    tag->GetVariants(&subtags);
     AutoPtr<IIterator> it;
-    subtags->GetIterator((IIterator**)&it);
+    subtags->GetIterator(&it);
     Boolean hasNext;
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> obj;
-        it->Next((IInterface**)&obj);
+        it->Next(&obj);
         buf->Append(ILanguageTag::SEP);
         buf->Append(CoreUtils::Unbox(ICharSequence::Probe(obj)));
     }
 
     subtags = nullptr;
-    tag->GetExtensions((IList**)&subtags);
+    tag->GetExtensions(&subtags);
     it = nullptr;
-    subtags->GetIterator((IIterator**)&it);
+    subtags->GetIterator(&it);
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> obj;
-        it->Next((IInterface**)&obj);
+        it->Next(&obj);
         buf->Append(ILanguageTag::SEP);
         buf->Append(LanguageTag::CanonicalizeExtension(
                 CoreUtils::Unbox(ICharSequence::Probe(obj))));

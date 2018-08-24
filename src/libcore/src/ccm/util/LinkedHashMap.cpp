@@ -441,7 +441,7 @@ ECode LinkedHashMap::LinkedEntrySet::Contains(
     }
     IMapEntry* e = IMapEntry::Probe(obj);
     AutoPtr<IInterface> key;
-    e->GetKey((IInterface**)&key);
+    e->GetKey(&key);
     AutoPtr<Node> candiate = mOwner->GetNode(Hash(key), key);
     *result = candiate != nullptr && Object::Equals((IMapEntry*)candiate.Get(), e);
     return NOERROR;
@@ -511,7 +511,7 @@ ECode LinkedHashMap::LinkedKeyIterator::Next(
     VALIDATE_NOT_NULL(object);
 
     AutoPtr<LinkedHashMapEntry> node;
-    FAIL_RETURN(GetNextNode((LinkedHashMapEntry**)&node));
+    FAIL_RETURN(GetNextNode(&node));
     return node->GetKey(object);
 }
 
@@ -523,7 +523,7 @@ ECode LinkedHashMap::LinkedValueIterator::Next(
     VALIDATE_NOT_NULL(object);
 
     AutoPtr<LinkedHashMapEntry> node;
-    FAIL_RETURN(GetNextNode((LinkedHashMapEntry**)&node));
+    FAIL_RETURN(GetNextNode(&node));
     return node->GetValue(object);
 }
 
@@ -535,7 +535,7 @@ ECode LinkedHashMap::LinkedEntryIterator::Next(
     VALIDATE_NOT_NULL(object);
 
     AutoPtr<LinkedHashMapEntry> node;
-    FAIL_RETURN(GetNextNode((LinkedHashMapEntry**)&node));
+    FAIL_RETURN(GetNextNode(&node));
     *object = (IMapEntry*)node.Get();
     return NOERROR;
 }

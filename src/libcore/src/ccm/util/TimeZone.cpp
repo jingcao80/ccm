@@ -247,7 +247,7 @@ Array<String> TimeZone::GetAvailableIDs()
 AutoPtr<ITimeZone> TimeZone::GetDefault()
 {
     AutoPtr<IInterface> obj;
-    ICloneable::Probe(GetDefaultRef())->Clone((IInterface**)&obj);
+    ICloneable::Probe(GetDefaultRef())->Clone(&obj);
     return ITimeZone::Probe(obj);
 }
 

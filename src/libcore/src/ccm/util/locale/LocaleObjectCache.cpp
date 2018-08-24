@@ -48,10 +48,10 @@ ECode LocaleObjectCache::Get(
 
     CleanStaleEntries();
     AutoPtr<IInterface> entry;
-    IMap::Probe(mMap)->Get(key, (IInterface**)&entry);
+    IMap::Probe(mMap)->Get(key, &entry);
     if (entry != nullptr) {
         CacheEntry::From(entry)->mValue->Resolve(
-                IID_IInterface, (IInterface**)&v);
+                IID_IInterface, &v);
     }
     if (v == nullptr) {
         AutoPtr<IInterface> normalizedKey = NormalizeKey(key);
@@ -63,13 +63,13 @@ ECode LocaleObjectCache::Get(
 
         AutoPtr<CacheEntry> newEntry = new CacheEntry(key, newVal, IQueue::Probe(mQueue));
         entry = nullptr;
-        mMap->PutIfAbsent(key, newEntry.Get(), (IInterface**)&entry);
+        mMap->PutIfAbsent(key, newEntry.Get(), &entry);
         if (entry == nullptr) {
             v = newVal;
         }
         else {
             CacheEntry::From(entry)->mValue->Resolve(
-                    IID_IInterface, (IInterface**)&v);
+                    IID_IInterface, &v);
             if (v == nullptr) {
                 IMap::Probe(mMap)->Put(key, newEntry.Get());
                 v = newVal;
@@ -87,13 +87,13 @@ AutoPtr<IInterface> LocaleObjectCache::Put(
 {
     AutoPtr<CacheEntry> entry = new CacheEntry(key, value, IQueue::Probe(mQueue));
     AutoPtr<IInterface> oldEntry;
-    IMap::Probe(mMap)->Put(key, entry, (IInterface**)&oldEntry);
+    IMap::Probe(mMap)->Put(key, entry, &oldEntry);
     if (oldEntry == nullptr) {
         return nullptr;
     }
     AutoPtr<IInterface> v;
     CacheEntry::From(oldEntry)->mValue->Resolve(
-            IID_IInterface, (IInterface**)&v);
+            IID_IInterface, &v);
     return v;
 }
 
@@ -102,7 +102,7 @@ void LocaleObjectCache::CleanStaleEntries()
     IMap* map = IMap::Probe(mMap);
     while (true) {
         AutoPtr<IInterface> obj;
-        mQueue->Poll((IInterface**)&obj);
+        mQueue->Poll(&obj);
         if (obj == nullptr) {
             return;
         }

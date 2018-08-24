@@ -132,7 +132,7 @@ ECode AbstractCalendar::GetCalendarDate(
 
     // adjust to local time if `date' has time zone.
     AutoPtr<ITimeZone> zi;
-    date->GetZone((ITimeZone**)&zi);
+    date->GetZone(&zi);
     if (zi != nullptr) {
         Array<Integer> offsets(2);
         zi->GetOffset(millis, &zoneOffset);
@@ -190,7 +190,7 @@ ECode AbstractCalendar::GetTime(
     Long ms = (gd - EPOCH_OFFSET) * DAY_IN_MILLIS + GetTimeOfDay(date);
     Integer zoneOffset = 0;
     AutoPtr<ITimeZone> zi;
-    date->GetZone((ITimeZone**)&zi);
+    date->GetZone(&zi);
     if (zi != nullptr) {
         Boolean result;
         if (date->IsNormalized(&result), result) {
@@ -301,7 +301,7 @@ ECode AbstractCalendar::GetNthDayOfWeek(
     VALIDATE_NOT_NULL(outDate);
 
     AutoPtr<IInterface> co;
-    ICloneable::Probe(inDate)->Clone((IInterface**)&co);
+    ICloneable::Probe(inDate)->Clone(&co);
     ICalendarDate* ndate = ICalendarDate::Probe(co);
     Normalize(ndate);
     Long fd;

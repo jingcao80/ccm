@@ -90,11 +90,11 @@ LocaleExtensions::LocaleExtensions(
     CTreeMap::New(IID_ISortedMap, (IInterface**)&map);
     if (hasExtension) {
         AutoPtr<ISet> entryset;
-        extensions->GetEntrySet((ISet**)&entryset);
+        extensions->GetEntrySet(&entryset);
         FOR_EACH(IMapEntry*, ext, IMapEntry::Probe, entryset) {
             AutoPtr<IInterface> keyObj, valueObj;
-            ext->GetKey((IInterface**)&keyObj);
-            ext->GetValue((IInterface**)&valueObj);
+            ext->GetKey(&keyObj);
+            ext->GetValue(&valueObj);
             Char key = LocaleUtils::ToLower(
                     ((InternalLocaleBuilder::CaseInsensitiveChar*)IObject::Probe(keyObj))->Value());
             String value = CoreUtils::Unbox(ICharSequence::Probe(valueObj));
@@ -125,11 +125,11 @@ LocaleExtensions::LocaleExtensions(
         if (hasUKeywords) {
             CTreeMap::New(IID_ISortedMap, (IInterface**)&ukmap);
             AutoPtr<ISet> entryset;
-            ukeywords->GetEntrySet((ISet**)&entryset);
+            ukeywords->GetEntrySet(&entryset);
             FOR_EACH(IMapEntry*, kwd, IMapEntry::Probe, entryset) {
                 AutoPtr<IInterface> keyObj, valueObj;
-                kwd->GetKey((IInterface**)&keyObj);
-                kwd->GetValue((IInterface**)&valueObj);
+                kwd->GetKey(&keyObj);
+                kwd->GetValue(&valueObj);
                 String key = LocaleUtils::ToLowerString(
                         ((InternalLocaleBuilder::CaseInsensitiveString*)IObject::Probe(keyObj))->Value());
                 String type = LocaleUtils::ToLowerString(CoreUtils::Unbox(ICharSequence::Probe(valueObj)));
@@ -169,7 +169,7 @@ AutoPtr<ISet> LocaleExtensions::GetKeys()
         return Collections::GetEmptySet();
     }
     AutoPtr<ISet> keyset;
-    mExtensionMap->GetKeySet((ISet**)&keyset);
+    mExtensionMap->GetKeySet(&keyset);
     return Collections::CreateUnmodifiableSet(keyset);
 }
 
@@ -177,7 +177,7 @@ AutoPtr<Extension> LocaleExtensions::GetExtension(
     /* [in] */ Char key)
 {
     AutoPtr<IInterface> value;
-    mExtensionMap->Get(CoreUtils::Box(LocaleUtils::ToLower(key)), (IInterface**)&value);
+    mExtensionMap->Get(CoreUtils::Box(LocaleUtils::ToLower(key)), &value);
     return (Extension*)IObject::Probe(value);
 }
 
@@ -185,7 +185,7 @@ String LocaleExtensions::GetExtensionValue(
     /* [in] */ Char key)
 {
     AutoPtr<IInterface> value;
-    mExtensionMap->Get(CoreUtils::Box(LocaleUtils::ToLower(key)), (IInterface**)&value);
+    mExtensionMap->Get(CoreUtils::Box(LocaleUtils::ToLower(key)), &value);
     if (value == nullptr) {
         return String();
     }
@@ -196,7 +196,7 @@ AutoPtr<ISet> LocaleExtensions::GetUnicodeLocaleAttributes()
 {
     AutoPtr<IInterface> value;
     mExtensionMap->Get(CoreUtils::Box(UnicodeLocaleExtension::SINGLETON),
-            (IInterface**)&value);
+            &value);
     if (value == nullptr) {
         return Collections::GetEmptySet();
     }
@@ -207,7 +207,7 @@ AutoPtr<ISet> LocaleExtensions::GetUnicodeLocaleKeys()
 {
     AutoPtr<IInterface> value;
     mExtensionMap->Get(CoreUtils::Box(UnicodeLocaleExtension::SINGLETON),
-            (IInterface**)&value);
+            &value);
     if (value == nullptr) {
         return Collections::GetEmptySet();
     }
@@ -219,7 +219,7 @@ String LocaleExtensions::GetUnicodeLocaleType(
 {
     AutoPtr<IInterface> value;
     mExtensionMap->Get(CoreUtils::Box(UnicodeLocaleExtension::SINGLETON),
-            (IInterface**)&value);
+            &value);
     if (value == nullptr) {
         return String();
     }
@@ -254,11 +254,11 @@ String LocaleExtensions::ToID(
     CStringBuilder::New(IID_IStringBuilder, (IInterface**)&buf);
     AutoPtr<Extension> privuse;
     AutoPtr<ISet> entryset;
-    IMap::Probe(map)->GetEntrySet((ISet**)&entryset);
+    IMap::Probe(map)->GetEntrySet(&entryset);
     FOR_EACH(IMapEntry*, entry, IMapEntry::Probe, entryset) {
         AutoPtr<IInterface> singleton, extension;
-        entry->GetKey((IInterface**)&singleton);
-        entry->GetValue((IInterface**)&extension);
+        entry->GetKey(&singleton);
+        entry->GetValue(&extension);
         if (LanguageTag::IsPrivateusePrefixChar(CoreUtils::Unbox(IChar::Probe(singleton)))) {
             privuse = (Extension*)IObject::Probe(extension);
         }

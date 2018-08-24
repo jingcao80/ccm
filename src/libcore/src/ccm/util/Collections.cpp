@@ -37,12 +37,12 @@ void Collections::Reverse(
     }
     else {
         AutoPtr<IListIterator> fwd, rev;
-        list->GetListIterator((IListIterator**)&fwd);
-        list->GetListIterator(size, (IListIterator**)&rev);
+        list->GetListIterator(&fwd);
+        list->GetListIterator(size, &rev);
         for (Integer i = 0, mid = size >> 1; i < mid; i++) {
             AutoPtr<IInterface> e1, e2;
-            rev->Previous((IInterface**)&e1);
-            fwd->Next((IInterface**)&e2);
+            rev->Previous(&e1);
+            fwd->Next(&e2);
             fwd->Set(e1);
             rev->Set(e2);
         }
@@ -55,8 +55,8 @@ void Collections::Swap(
     /* [in] */ Integer j)
 {
     AutoPtr<IInterface> e1, e2;
-    list->Get(i, (IInterface**)&e1);
-    list->Set(j, e1, (IInterface**)&e2);
+    list->Get(i, &e1);
+    list->Set(j, e1, &e2);
     list->Set(i, e2);
 }
 

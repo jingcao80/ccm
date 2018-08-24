@@ -240,7 +240,7 @@ ECode ConcurrentHashMap::ContainsKey(
     VALIDATE_NOT_NULL(result);
 
     AutoPtr<IInterface> v;
-    Get(key, (IInterface**)&v);
+    Get(key, &v);
     *result = v != nullptr;
     return NOERROR;
 }
@@ -376,11 +376,11 @@ ECode ConcurrentHashMap::PutAll(
     m->GetSize(&size);
     TryPresize(size);
     AutoPtr<ISet> entrySet;
-    m->GetEntrySet((ISet**)&entrySet);
+    m->GetEntrySet(&entrySet);
     FOR_EACH(IMapEntry*, e, IMapEntry::Probe, entrySet) {
         AutoPtr<IInterface> k, v;
-        e->GetKey((IInterface**)&k);
-        e->GetValue((IInterface**)&v);
+        e->GetKey(&k);
+        e->GetValue(&v);
         PutVal(k, v, false);
     } END_FOR_EACH();
     return NOERROR;
@@ -641,27 +641,27 @@ ECode ConcurrentHashMap::Equals(
         for (AutoPtr<Node> p; (p = it.Advance()) != nullptr;) {
             VOLATILE_GET(AutoPtr<IInterface> val, p->mVal);
             AutoPtr<IInterface> v;
-            m->Get(p->mKey, (IInterface**)&v);
+            m->Get(p->mKey, &v);
             if (v == nullptr || (!IInterface::Equals(v, val) && !Object::Equals(v, val))) {
                 *result = false;
                 return NOERROR;
             }
         }
         AutoPtr<ISet> entrySet;
-        m->GetEntrySet((ISet**)&entrySet);
+        m->GetEntrySet(&entrySet);
         FOR_EACH(IMapEntry*, e, IMapEntry::Probe, entrySet) {
             AutoPtr<IInterface> mk, mv, v;
-            e->GetKey((IInterface**)&mk);
+            e->GetKey(&mk);
             if (mk == nullptr) {
                 *result = false;
                 return NOERROR;
             }
-            e->GetValue((IInterface**)&mv);
+            e->GetValue(&mv);
             if (mv == nullptr) {
                 *result = false;
                 return NOERROR;
             }
-            Get(mk, (IInterface**)&v);
+            Get(mk, &v);
             if (v == nullptr || (!IInterface::Equals(mv ,v) && !Object::Equals(mv, v))) {
                 *result = false;
                 return NOERROR;
@@ -695,7 +695,7 @@ ECode ConcurrentHashMap::Remove(
         }
     }
     AutoPtr<IInterface> prevValue;
-    FAIL_RETURN(ReplaceNode(key, nullptr, value, (IInterface**)&prevValue));
+    FAIL_RETURN(ReplaceNode(key, nullptr, value, &prevValue));
     *result = prevValue != nullptr;
     return NOERROR;
 }
@@ -710,7 +710,7 @@ ECode ConcurrentHashMap::Replace(
         return ccm::core::E_NULL_POINTER_EXCEPTION;
     }
     AutoPtr<IInterface> prevValue;
-    FAIL_RETURN(ReplaceNode(key, newValue, oldValue, (IInterface**)&prevValue));
+    FAIL_RETURN(ReplaceNode(key, newValue, oldValue, &prevValue));
     *result = prevValue != nullptr;
     return NOERROR;
 }
@@ -1532,7 +1532,7 @@ void ConcurrentHashMap::TreeBin::ContendedLock()
         else if ((s & WAITER) == 0) {
             if (COMPARE_AND_SWAP_INT(this, mLockState, s, s | WAITER)) {
                 waiting = true;
-                CThread::GetCurrentThread((IThread**)&mWaiter);
+                CThread::GetCurrentThread(&mWaiter);
             }
         }
         else if (waiting) {

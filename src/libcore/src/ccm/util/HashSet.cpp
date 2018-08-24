@@ -83,7 +83,7 @@ ECode HashSet::GetIterator(
     VALIDATE_NOT_NULL(it);
 
     AutoPtr<ISet> keys;
-    mMap->GetKeySet((ISet**)&keys);
+    mMap->GetKeySet(&keys);
     return keys->GetIterator(it);
 }
 
@@ -111,7 +111,7 @@ ECode HashSet::Add(
     /* [out] */ Boolean* modified)
 {
     AutoPtr<IInterface> prevVal;
-    mMap->Put(obj, GetPRESENT(), (IInterface**)&prevVal);
+    mMap->Put(obj, GetPRESENT(), &prevVal);
     if (modified != nullptr) {
         *modified = prevVal == nullptr;
     }
@@ -123,7 +123,7 @@ ECode HashSet::Remove(
     /* [out] */ Boolean* contained)
 {
     AutoPtr<IInterface> prevVal;
-    mMap->Remove(obj, (IInterface**)&prevVal);
+    mMap->Remove(obj, &prevVal);
     if (contained != nullptr) {
         *contained = IInterface::Equals(prevVal, GetPRESENT());
     }
@@ -140,7 +140,7 @@ ECode HashSet::CloneImpl(
 {
     HashSet* set = (HashSet*)newObj;
     AutoPtr<IInterface> map;
-    FAIL_RETURN(ICloneable::Probe(set->mMap)->Clone((IInterface**)&map));
+    FAIL_RETURN(ICloneable::Probe(set->mMap)->Clone(&map));
     mMap = IHashMap::Probe(map);
     return NOERROR;
 }

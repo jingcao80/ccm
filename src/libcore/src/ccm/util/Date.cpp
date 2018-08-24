@@ -142,7 +142,7 @@ ECode Date::Constructor(
     AutoPtr<IBaseCalendar> cal = GetCalendarSystem(y);
     AutoPtr<ICalendarDate> cdate;
     ICalendarSystem::Probe(cal)->NewCalendarDate(
-            TimeZone::GetDefaultRef(), (ICalendarDate**)&cdate);
+            TimeZone::GetDefaultRef(), &cdate);
     mCdate = IBaseCalendarDate::Probe(cdate);
     mCdate->SetNormalizedDate(y, month + 1, date);
     cdate->SetTimeOfDay(hrs, min, sec, 0);
@@ -167,7 +167,7 @@ ECode Date::CloneImpl(
     dateObj->mFastTime = mFastTime;
     if (mCdate != nullptr) {
         AutoPtr<IInterface> cdate;
-        ICloneable::Probe(mCdate)->Clone((IInterface**)&cdate);
+        ICloneable::Probe(mCdate)->Clone(&cdate);
         dateObj->mCdate = IBaseCalendarDate::Probe(cdate);
     }
     return NOERROR;
@@ -194,7 +194,7 @@ Long Date::UTC(
     Integer m = month + 1;
     AutoPtr<IBaseCalendar> cal = GetCalendarSystem(y);
     AutoPtr<ICalendarDate> cdate;
-    ICalendarSystem::Probe(cal)->NewCalendarDate(nullptr, (ICalendarDate**)&cdate);
+    ICalendarSystem::Probe(cal)->NewCalendarDate(nullptr, &cdate);
     AutoPtr<IBaseCalendarDate> udate = IBaseCalendarDate::Probe(cdate);
     udate->SetNormalizedDate(y, m, date);
     cdate->SetTimeOfDay(hrs, min, sec, 0);
@@ -410,7 +410,7 @@ syntax:
                 AutoLock lock(GetClassLock());
                 if (sDefaultCenturyStart == 0) {
                     AutoPtr<ICalendarDate> cdate;
-                    ICalendarSystem::Probe(GetGcal())->GetCalendarDate((ICalendarDate**)&cdate);
+                    ICalendarSystem::Probe(GetGcal())->GetCalendarDate(&cdate);
                     Integer y;
                     cdate->GetYear(&y);
                     sDefaultCenturyStart = y - 80;
@@ -426,13 +426,13 @@ syntax:
         if (tzoffset == -1) {
             AutoPtr<ICalendarDate> ldate;
             ICalendarSystem::Probe(cal)->NewCalendarDate(
-                    TimeZone::GetDefaultRef(), (ICalendarDate**)&ldate);
+                    TimeZone::GetDefaultRef(), &ldate);
             ldate->SetDate(year, mon + 1, mday);
             ldate->SetTimeOfDay(hour, min, sec, 0);
             return ICalendarSystem::Probe(cal)->GetTime(ldate, date);
         }
         AutoPtr<ICalendarDate> udate;
-        ICalendarSystem::Probe(cal)->NewCalendarDate(nullptr, (ICalendarDate**)&udate);
+        ICalendarSystem::Probe(cal)->NewCalendarDate(nullptr, &udate);
         udate->SetDate(year, mon + 1, mday);
         udate->SetTimeOfDay(hour, min, sec, 0);
         Long time;
@@ -631,7 +631,7 @@ Long Date::GetMillisOf(
         return dateObj->mFastTime;
     }
     AutoPtr<IInterface> cdate;
-    ICloneable::Probe(dateObj->mCdate)->Clone((IInterface**)&cdate);
+    ICloneable::Probe(dateObj->mCdate)->Clone(&cdate);
     Long time;
     ICalendarSystem::Probe(GetGcal())->GetTime(ICalendarDate::Probe(cdate), &time);
     return time;
@@ -698,7 +698,7 @@ ECode Date::ToString(
     CalendarUtils::Sprintf0d(sb, seconds, 2);
     sb->AppendChar(' '); // ss
     AutoPtr<ITimeZone> zi;
-    date->GetZone((ITimeZone**)&zi);
+    date->GetZone(&zi);
     if (zi != nullptr) {
         Boolean daylight;
         date->IsDaylightTime(&daylight);
@@ -738,7 +738,7 @@ ECode Date::ToGMTString(
     GetTime(&t);
     AutoPtr<ICalendarDate> date;
     ICalendarSystem::Probe(GetCalendarSystem(t))->GetCalendarDate(
-            t, nullptr, (ICalendarDate**)&date);
+            t, nullptr, &date);
     AutoPtr<IStringBuilder> sb;
     CStringBuilder::New(32, IID_IStringBuilder, (IInterface**)&sb);
     Integer month, days, hours, minutes, seconds, year;
@@ -785,7 +785,7 @@ AutoPtr<IBaseCalendarDate> Date::GetCalendarDate()
         AutoPtr<IBaseCalendar> cal = GetCalendarSystem(mFastTime);
         AutoPtr<ICalendarDate> cdate;
         ICalendarSystem::Probe(cal)->GetCalendarDate(mFastTime,
-                TimeZone::GetDefaultRef(), (ICalendarDate**)&cdate);
+                TimeZone::GetDefaultRef(), &cdate);
         mCdate = IBaseCalendarDate::Probe(cdate);
     }
     return mCdate;
@@ -797,7 +797,7 @@ AutoPtr<IBaseCalendarDate> Date::Normalize()
         AutoPtr<IBaseCalendar> cal = GetCalendarSystem(mFastTime);
         AutoPtr<ICalendarDate> cdate;
         ICalendarSystem::Probe(cal)->GetCalendarDate(mFastTime,
-                TimeZone::GetDefaultRef(), (ICalendarDate**)&cdate);
+                TimeZone::GetDefaultRef(), &cdate);
         mCdate = IBaseCalendarDate::Probe(cdate);
         return mCdate;
     }
@@ -815,7 +815,7 @@ AutoPtr<IBaseCalendarDate> Date::Normalize()
     // fields with the new TimeZone.
     AutoPtr<ITimeZone> tz = TimeZone::GetDefaultRef();
     AutoPtr<ITimeZone> zone;
-    if (cdate->GetZone((ITimeZone**)&zone), tz != zone) {
+    if (cdate->GetZone(&zone), tz != zone) {
         cdate->SetZone(tz);
         AutoPtr<IBaseCalendar> cal = GetCalendarSystem(mCdate);
         ICalendarSystem::Probe(cal)->GetCalendarDate(mFastTime, cdate);
@@ -850,7 +850,7 @@ AutoPtr<IBaseCalendar> Date::GetCalendarSystem(
         return GetGcal();
     }
     AutoPtr<IEra> era;
-    if (ICalendarDate::Probe(cdate)->GetEra((IEra**)&era), era != nullptr) {
+    if (ICalendarDate::Probe(cdate)->GetEra(&era), era != nullptr) {
         return sJcal;
     }
     return GetGcal();
@@ -862,7 +862,7 @@ AutoPtr<IBaseCalendar> Date::GetJulianCalendar()
 
     if (sJcal == nullptr) {
         AutoPtr<ICalendarSystem> system;
-        CalendarSystem::ForName(String("julian"), (ICalendarSystem**)&system);
+        CalendarSystem::ForName(String("julian"), &system);
         sJcal = IBaseCalendar::Probe(system);
     }
     return sJcal;

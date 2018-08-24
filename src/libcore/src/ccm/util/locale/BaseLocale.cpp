@@ -100,7 +100,7 @@ AutoPtr<BaseLocale> BaseLocale::GetInstance(
 
     AutoPtr<Key> key = new Key(language, script, region, variant);
     AutoPtr<IInterface> value;
-    Get_CACHE()->Get((IComparable*)key.Get(), (IInterface**)&value);
+    Get_CACHE()->Get((IComparable*)key.Get(), &value);
     return (BaseLocale*)IObject::Probe(value);
 }
 

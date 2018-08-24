@@ -320,16 +320,16 @@ ECode Hashtable::PutAll(
 {
     AutoLock lock(this);
     AutoPtr<ISet> entries;
-    m->GetEntrySet((ISet**)&entries);
+    m->GetEntrySet(&entries);
     AutoPtr<IIterator> it;
-    entries->GetIterator((IIterator**)&it);
+    entries->GetIterator(&it);
     Boolean hasNext;
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> obj;
-        it->Next((IInterface**)&obj);
+        it->Next(&obj);
         AutoPtr<IInterface> key, value;
-        IMapEntry::Probe(obj)->GetKey((IInterface**)&key);
-        IMapEntry::Probe(obj)->GetValue((IInterface**)&value);
+        IMapEntry::Probe(obj)->GetKey(&key);
+        IMapEntry::Probe(obj)->GetValue(&value);
         FAIL_RETURN(Put(key, value));
     }
     return NOERROR;
@@ -375,17 +375,17 @@ ECode Hashtable::ToString(
     AutoPtr<IStringBuilder> sb;
     CStringBuilder::New(IID_IStringBuilder, (IInterface**)&sb);
     AutoPtr<ISet> entries;
-    GetEntrySet((ISet**)&entries);
+    GetEntrySet(&entries);
     AutoPtr<IIterator> it;
-    entries->GetIterator((IIterator**)&it);
+    entries->GetIterator(&it);
 
     sb->AppendChar('{');
     for (Integer i = 0; ; i++) {
         AutoPtr<IInterface> e;
-        it->Next((IInterface**)&e);
+        it->Next(&e);
         AutoPtr<IInterface> key, value;
-        IMapEntry::Probe(e)->GetKey((IInterface**)&key);
-        IMapEntry::Probe(e)->GetValue((IInterface**)&value);
+        IMapEntry::Probe(e)->GetKey(&key);
+        IMapEntry::Probe(e)->GetValue(&value);
         sb->Append(IInterface::Equals(key, (IHashtable*)this) ?
                 String("(this Map)") : Object::ToString(key));
         sb->Append(Object::Equals(value, (IHashtable*)this) ?
@@ -469,21 +469,21 @@ ECode Hashtable::Equals(
     }
 
     AutoPtr<ISet> entries;
-    GetEntrySet((ISet**)&entries);
+    GetEntrySet(&entries);
     AutoPtr<IIterator> it;
-    entries->GetIterator((IIterator**)&it);
+    entries->GetIterator(&it);
     Boolean hasNext;
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> o;
-        it->Next((IInterface**)&o);
+        it->Next(&o);
         IMapEntry* e = IMapEntry::Probe(o);
         AutoPtr<IInterface> key, value;
-        e->GetKey((IInterface**)&key);
-        e->GetValue((IInterface**)&value);
+        e->GetKey(&key);
+        e->GetValue(&value);
         if (value == nullptr) {
             AutoPtr<IInterface> v1;
             Boolean contains;
-            if ((t->Get(key, (IInterface**)&v1), v1 != nullptr) ||
+            if ((t->Get(key, &v1), v1 != nullptr) ||
                 (t->ContainsKey(key, &contains), !contains)) {
                 *result = false;
                 return NOERROR;
@@ -491,7 +491,7 @@ ECode Hashtable::Equals(
         }
         else {
             AutoPtr<IInterface> v1;
-            t->Get(key, (IInterface**)&v1);
+            t->Get(key, &v1);
             if (!Object::Equals(value, v1)) {
                 *result = false;
                 return NOERROR;
@@ -615,7 +615,7 @@ ECode Hashtable::KeySet::Remove(
     VALIDATE_NOT_NULL(contained);
 
     AutoPtr<IInterface> prevValue;
-    mOwner->Remove(obj, (IInterface**)&prevValue);
+    mOwner->Remove(obj, &prevValue);
     *contained = prevValue != nullptr;
     return NOERROR;
 }
@@ -662,7 +662,7 @@ ECode Hashtable::EntrySet::Contains(
 
     IMapEntry* entry = IMapEntry::Probe(obj);
     AutoPtr<IInterface> key;
-    entry->GetKey((IInterface**)&key);
+    entry->GetKey(&key);
     Integer hash = Object::GetHashCode(key);
     Integer index = (hash & 0x7FFFFFFF) % mOwner->mTable.GetLength();
 
@@ -689,7 +689,7 @@ ECode Hashtable::EntrySet::Remove(
 
     IMapEntry* entry = IMapEntry::Probe(obj);
     AutoPtr<IInterface> key;
-    entry->GetKey((IInterface**)&key);
+    entry->GetKey(&key);
     Integer hash = Object::GetHashCode(key);
     Integer index = (hash & 0x7FFFFFFF) % mOwner->mTable.GetLength();
 
@@ -825,8 +825,8 @@ ECode Hashtable::HashtableEntry::Equals(
     IMapEntry* e = IMapEntry::Probe(obj);
 
     AutoPtr<IInterface> key, value;
-    e->GetKey((IInterface**)&key);
-    e->GetValue((IInterface**)&value);
+    e->GetKey(&key);
+    e->GetValue(&value);
     *result = (mKey == nullptr ? key == nullptr : Object::Equals(mKey, key)) &&
             (mValue == nullptr ? value == nullptr : Object::Equals(mValue, value));
     return NOERROR;

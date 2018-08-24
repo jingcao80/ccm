@@ -59,13 +59,13 @@ ECode CPathClassLoader::FindInterface(
 void CPathClassLoader::LoadComponentsInClassPath()
 {
     AutoPtr<IClassLoader> parent;
-    GetParent((IClassLoader**)&parent);
+    GetParent(&parent);
     mComponents = Array<IMetaComponent*>(mClassPath.GetLength());
     for (Integer i = 0; i < mClassPath.GetLength(); i++) {
         AutoPtr<IMetaComponent> component;
         String path = mClassPath[i];
         if (!path.IsNullOrEmpty()) {
-            parent->LoadComponent(path, (IMetaComponent**)&component);
+            parent->LoadComponent(path, &component);
         }
         mComponents.Set(i, component.Get());
     }
