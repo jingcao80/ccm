@@ -22,7 +22,7 @@
 using namespace ccm;
 
 #define GET_INT_INADDR(intAddr) \
-    reinterpret_cast<ccm::core::AtomicInteger*>(intAddr)->LoadRelaxed();
+    reinterpret_cast<ccm::core::AtomicInteger*>(intAddr)->LoadRelaxed()
 
 #define GET_INT(object, field) \
     GET_INT_INADDR(&object->field)
@@ -55,6 +55,12 @@ inline Integer GetAndAddInt(Integer* addr, Integer delta)
 
 #define GET_AND_ADD_INT(object, field, delta) \
     GET_AND_ADD_INT_INADDR(&object->field, delta)
+
+#define GET_LONG_INADDR(longAddr) \
+    reinterpret_cast<ccm::core::AtomicLong*>(longAddr)->LoadRelaxed()
+
+#define GET_LONG(object, field) \
+    GET_LONG_INADDR(&object->field)
 
 #define PUT_LONG_INADDR(longAddr, value) \
     reinterpret_cast<ccm::core::AtomicLong*>(longAddr)->StoreRelaxed(value);

@@ -16,6 +16,7 @@
 
 #include "ccm/core/CoreUtils.h"
 #include "ccm/core/CThread.h"
+#include "ccm/core/Math.h"
 #include "ccm/core/System.h"
 #include "ccm/core/volatile.h"
 #include "ccm/security/AccessController.h"
@@ -30,6 +31,7 @@ using ccm::core::CoreUtils;
 using ccm::core::CThread;
 using ccm::core::IBoolean;
 using ccm::core::IThread;
+using ccm::core::Math;
 using ccm::core::System;
 using ccm::security::AccessController;
 using ccm::security::CSecureRandom;
@@ -45,6 +47,8 @@ using ccm::util::concurrent::atomic::IID_IAtomicLong;
 namespace ccm {
 namespace util {
 namespace concurrent {
+
+CCM_INTERFACE_IMPL_1(ThreadLocalRandom, Random, IThreadLocalRandom);
 
 static AutoPtr<IAtomicInteger> CreateAtomicInteger()
 {
@@ -170,6 +174,109 @@ void ThreadLocalRandom::LocalInit()
     CThread::GetCurrentThread(&t);
     PUT_LONG(CThread::From(t), mThreadLocalRandomSeed, seed);
     PUT_INT(CThread::From(t), mThreadLocalRandomProbe, probe);
+}
+
+AutoPtr<IThreadLocalRandom> ThreadLocalRandom::GetCurrent()
+{
+    static const AutoPtr<IThreadLocalRandom> sInstance = new ThreadLocalRandom();
+    AutoPtr<IThread> t;
+    CThread::GetCurrentThread(&t);
+    if (GET_INT(CThread::From(t), mThreadLocalRandomProbe) == 0) {
+        LocalInit();
+    }
+    return sInstance;
+}
+
+ECode ThreadLocalRandom::SetSeed(
+    /* [in] */ Long seed)
+{
+    if (mInitialized) {
+        return E_UNSUPPORTED_OPERATION_EXCEPTION;
+    }
+    return NOERROR;
+}
+
+Long ThreadLocalRandom::NextSeed()
+{
+    AutoPtr<IThread> t;
+    CThread::GetCurrentThread(&t);
+    Long r = GET_LONG(CThread::From(t), mThreadLocalRandomSeed);
+    PUT_LONG(CThread::From(t), mThreadLocalRandomSeed, r + GAMMA);
+    return r;
+}
+
+Integer ThreadLocalRandom::Next(
+    /* [in] */ Integer bits)
+{
+    return (Integer)(((unsigned Long)Mix64(NextSeed())) >> (64 - bits));
+}
+
+Long ThreadLocalRandom::InternalNextLong(
+    /* [in] */ Long origin,
+    /* [in] */ Long bound)
+{
+    Long r = Mix64(NextSeed());
+    if (origin < bound) {
+        Long n = bound - origin, m = n - 1;
+        if ((n & m) == 0ll) { // power of two
+            r = (r & m) + origin;
+        }
+        else if (n > 0ll) {  // reject over-represented candidates
+            for (Long u = ((unsigned Long)r) >> 1;            // ensure nonnegative
+                 u + m - (r = u % n) < 0ll;    // rejection check
+                 u = ((unsigned Long)Mix64(NextSeed())) >> 1) // retry
+                ;
+            r += origin;
+        }
+        else {              // range not representable as long
+            while (r < origin || r >= bound) {
+                r = Mix64(NextSeed());
+            }
+        }
+    }
+    return r;
+}
+
+Integer ThreadLocalRandom::InternalNextInt(
+    /* [in] */ Integer origin,
+    /* [in] */ Integer bound)
+{
+    Integer r = Mix32(NextSeed());
+    if (origin < bound) {
+        Integer n = bound - origin, m = n - 1;
+        if ((n & m) == 0) {
+            r = (r & m) + origin;
+        }
+        else if (n > 0) {
+            for (Integer u = ((unsigned Integer)r) >> 1;
+                 u + m - (r = u % n) < 0;
+                 u = ((unsigned Integer)Mix32(NextSeed())) >> 1)
+                ;
+            r += origin;
+        }
+        else {
+            while (r < origin || r >= bound) {
+                r = Mix32(NextSeed());
+            }
+        }
+    }
+    return r;
+}
+
+Double ThreadLocalRandom::InternalNextDouble(
+    /* [in] */ Double origin,
+    /* [in] */ Double bound)
+{
+    Long l;
+    NextLong(&l);
+    Double r = ((unsigned Long)l >> 11) * DOUBLE_UNIT;
+    if (origin < bound) {
+        r = r * (bound - origin) + origin;
+        if (r >= bound) { // correct for rounding
+            r = Math::LongBitsToDouble(Math::DoubleToLongBits(bound) - 1);
+        }
+    }
+    return r;
 }
 
 Integer ThreadLocalRandom::GetProbe()
