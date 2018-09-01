@@ -27,7 +27,28 @@ namespace concurrent {
 ]
 interface IThreadLocalRandom
 {
+    NextDouble(
+        [in] Double bound,
+        [out] Double* value);
 
+    NextDouble(
+        [in] Double origin,
+        [in] Double bound,
+        [out] Double* value);
+
+    NextInt(
+        [in] Integer origin,
+        [in] Integer bound,
+        [out] Integer* value);
+
+    NextLong(
+        [in] Long bound,
+        [out] Long* value);
+
+    NextLong(
+        [in] Long origin,
+        [in] Long bound,
+        [out] Long* value);
 }
 
 }

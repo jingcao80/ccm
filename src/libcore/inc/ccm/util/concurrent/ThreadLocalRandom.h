@@ -18,9 +18,11 @@
 #define __CCM_UTIL_CONCURRENT_THREADLOCALRANDOM_H__
 
 #include "ccm/util/Random.h"
+#include "ccm.core.IThreadLocal.h"
 #include "ccm.util.concurrent.IThreadLocalRandom.h"
 #include "ccm.util.concurrent.atomic.IAtomicLong.h"
 
+using ccm::core::IThreadLocal;
 using ccm::util::concurrent::atomic::IAtomicLong;
 
 namespace ccm {
@@ -55,11 +57,57 @@ public:
         /* [in] */ Double origin,
         /* [in] */ Double bound);
 
+    ECode NextInt(
+        /* [out] */ Integer* value) override;
+
+    ECode NextInt(
+        /* [in] */ Integer bound,
+        /* [out] */ Integer* value) override;
+
+    ECode NextInt(
+        /* [in] */ Integer origin,
+        /* [in] */ Integer bound,
+        /* [out] */ Integer* value) override;
+
+    ECode NextLong(
+        /* [out] */ Long* value) override;
+
+    ECode NextLong(
+        /* [in] */ Long bound,
+        /* [out] */ Long* value) override;
+
+    ECode NextLong(
+        /* [in] */ Long origin,
+        /* [in] */ Long bound,
+        /* [out] */ Long* value) override;
+
+    ECode NextDouble(
+        /* [out] */ Double* value) override;
+
+    ECode NextDouble(
+        /* [in] */ Double bound,
+        /* [out] */ Double* value) override;
+
+    ECode NextDouble(
+        /* [in] */ Double origin,
+        /* [in] */ Double bound,
+        /* [out] */ Double* value) override;
+
+    ECode NextBoolean(
+        /* [out] */ Boolean* value) override;
+
+    ECode NextFloat(
+        /* [out] */ Float* value) override;
+
+    ECode NextGaussian(
+        /* [out] */ Double* value) override;
 
     static Integer GetProbe();
 
     static Integer AdvanceProbe(
         /* [in] */ Integer probe);
+
+    static Integer NextSecondarySeed();
 
 protected:
     virtual Integer Next(
@@ -67,6 +115,9 @@ protected:
 
 private:
     ThreadLocalRandom();
+
+    /** Rarely-used holder for the second of a pair of Gaussians */
+    static AutoPtr<IThreadLocal> GetNextLocalGaussian();
 
     static AutoPtr<IAtomicLong> GetSeeder();
 
@@ -99,7 +150,7 @@ private:
 
     // Constants from SplittableRandom
     static constexpr Double DOUBLE_UNIT = 0x1.0p-53;  // 1.0  / (1L << 53)
-    static constexpr Float  FLOAT_UNIT  = 0x1.0p-24f; // 1.0f / (1 << 24)
+    static constexpr Float FLOAT_UNIT  = 0x1.0p-24f; // 1.0f / (1 << 24)
 };
 
 inline ThreadLocalRandom::ThreadLocalRandom()

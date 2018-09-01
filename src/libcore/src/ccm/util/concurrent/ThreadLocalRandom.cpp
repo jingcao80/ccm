@@ -16,7 +16,9 @@
 
 #include "ccm/core/CoreUtils.h"
 #include "ccm/core/CThread.h"
+#include "ccm/core/CThreadLocal.h"
 #include "ccm/core/Math.h"
+#include "ccm/core/StrictMath.h"
 #include "ccm/core/System.h"
 #include "ccm/core/volatile.h"
 #include "ccm/security/AccessController.h"
@@ -25,13 +27,20 @@
 #include "ccm/util/concurrent/atomic/CAtomicInteger.h"
 #include "ccm/util/concurrent/atomic/CAtomicLong.h"
 #include "ccm.core.IBoolean.h"
+#include "ccm.core.IDouble.h"
 #include "ccm.security.IPrivilegedAction.h"
+#include <ccmlogger.h>
+#include <pthread.h>
 
 using ccm::core::CoreUtils;
 using ccm::core::CThread;
+using ccm::core::CThreadLocal;
 using ccm::core::IBoolean;
+using ccm::core::IDouble;
+using ccm::core::IID_IThreadLocal;
 using ccm::core::IThread;
 using ccm::core::Math;
+using ccm::core::StrictMath;
 using ccm::core::System;
 using ccm::security::AccessController;
 using ccm::security::CSecureRandom;
@@ -49,6 +58,19 @@ namespace util {
 namespace concurrent {
 
 CCM_INTERFACE_IMPL_1(ThreadLocalRandom, Random, IThreadLocalRandom);
+
+static AutoPtr<IThreadLocal> CreateThreadLocal()
+{
+    AutoPtr<IThreadLocal> l;
+    CThreadLocal::New(IID_IThreadLocal, (IInterface**)&l);
+    return l;
+}
+
+AutoPtr<IThreadLocal> ThreadLocalRandom::GetNextLocalGaussian()
+{
+    static AutoPtr<IThreadLocal> sNextLocalGaussian = CreateThreadLocal();
+    return sNextLocalGaussian;
+}
 
 static AutoPtr<IAtomicInteger> CreateAtomicInteger()
 {
@@ -72,6 +94,8 @@ AutoPtr<IAtomicLong> ThreadLocalRandom::GetSeeder()
             Mix64(System::GetNanoTime()));
     return sSeeder;
 }
+
+static pthread_once_t sThreadLocalRandomIsStaticInitialized = PTHREAD_ONCE_INIT;
 
 void ThreadLocalRandom::StaticInitialize()
 {
@@ -178,6 +202,7 @@ void ThreadLocalRandom::LocalInit()
 
 AutoPtr<IThreadLocalRandom> ThreadLocalRandom::GetCurrent()
 {
+    pthread_once(&sThreadLocalRandomIsStaticInitialized, StaticInitialize);
     static const AutoPtr<IThreadLocalRandom> sInstance = new ThreadLocalRandom();
     AutoPtr<IThread> t;
     CThread::GetCurrentThread(&t);
@@ -279,6 +304,186 @@ Double ThreadLocalRandom::InternalNextDouble(
     return r;
 }
 
+ECode ThreadLocalRandom::NextInt(
+    /* [out] */ Integer* value)
+{
+    VALIDATE_NOT_NULL(value);
+
+    *value = Mix32(NextSeed());
+    return NOERROR;
+}
+
+ECode ThreadLocalRandom::NextInt(
+    /* [in] */ Integer bound,
+    /* [out] */ Integer* value)
+{
+    VALIDATE_NOT_NULL(value);
+
+    if (bound <= 0) {
+        Logger::E("ThreadLocalRandom", "bound must be positive");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    Integer r = Mix32(NextSeed());
+    Integer m = bound - 1;
+    if ((bound & m) == 0) { // power of two
+        r &= m;
+    }
+    else { // reject over-represented candidates
+        for (Integer u = (unsigned Integer)r >> 1;
+             u + m - (r = u % bound) < 0;
+             u = (unsigned Integer)Mix32(NextSeed()) >> 1)
+            ;
+    }
+    *value = r;
+    return NOERROR;
+}
+
+ECode ThreadLocalRandom::NextInt(
+    /* [in] */ Integer origin,
+    /* [in] */ Integer bound,
+    /* [out] */ Integer* value)
+{
+    VALIDATE_NOT_NULL(value);
+
+    if (origin >= bound) {
+        Logger::E("ThreadLocalRandom", "bound must be greater than origin");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    *value = InternalNextInt(origin, bound);
+    return NOERROR;
+}
+
+ECode ThreadLocalRandom::NextLong(
+    /* [out] */ Long* value)
+{
+    VALIDATE_NOT_NULL(value);
+
+    *value = Mix64(NextSeed());
+    return NOERROR;
+}
+
+ECode ThreadLocalRandom::NextLong(
+    /* [in] */ Long bound,
+    /* [out] */ Long* value)
+{
+    VALIDATE_NOT_NULL(value);
+
+    if (bound <= 0) {
+        Logger::E("ThreadLocalRandom", "bound must be positive");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    Long r = Mix64(NextSeed());
+    Long m = bound - 1;
+    if ((bound & m) == 0ll) { // power of two
+        r &= m;
+    }
+    else { // reject over-represented candidates
+        for (Long u = (unsigned Long)r >> 1;
+             u + m - (r = u % bound) < 0ll;
+             u = (unsigned Long)Mix64(NextSeed()) >> 1)
+            ;
+    }
+    return r;
+}
+
+ECode ThreadLocalRandom::NextLong(
+    /* [in] */ Long origin,
+    /* [in] */ Long bound,
+    /* [out] */ Long* value)
+{
+    VALIDATE_NOT_NULL(value);
+
+    if (origin >= bound) {
+        Logger::E("ThreadLocalRandom", "bound must be greater than origin");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    *value = InternalNextLong(origin, bound);
+    return NOERROR;
+}
+
+ECode ThreadLocalRandom::NextDouble(
+    /* [out] */ Double* value)
+{
+    VALIDATE_NOT_NULL(value);
+
+    *value = ((unsigned Long)Mix64(NextSeed()) >> 11) * DOUBLE_UNIT;
+    return NOERROR;
+}
+
+ECode ThreadLocalRandom::NextDouble(
+    /* [in] */ Double bound,
+    /* [out] */ Double* value)
+{
+    VALIDATE_NOT_NULL(value);
+
+    if (!(bound > 0.0)) {
+        Logger::E("ThreadLocalRandom", "bound must be positive");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    Double result = ((unsigned Long)Mix64(NextSeed()) >> 11) * DOUBLE_UNIT * bound;
+    *value = (result < bound) ? result : // correct for rounding
+            Math::LongBitsToDouble(Math::DoubleToLongBits(bound) - 1);
+    return NOERROR;
+}
+
+ECode ThreadLocalRandom::NextDouble(
+    /* [in] */ Double origin,
+    /* [in] */ Double bound,
+    /* [out] */ Double* value)
+{
+    VALIDATE_NOT_NULL(value);
+
+    if (!(origin < bound)) {
+        Logger::E("ThreadLocalRandom", "bound must be greater than origin");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    *value = InternalNextDouble(origin, bound);
+    return NOERROR;
+}
+
+ECode ThreadLocalRandom::NextBoolean(
+    /* [out] */ Boolean* value)
+{
+    VALIDATE_NOT_NULL(value);
+
+    *value = Mix32(NextSeed()) < 0;
+    return NOERROR;
+}
+
+ECode ThreadLocalRandom::NextFloat(
+    /* [out] */ Float* value)
+{
+    VALIDATE_NOT_NULL(value);
+
+    *value = ((unsigned Integer)Mix32(NextSeed()) >> 8) * FLOAT_UNIT;
+    return NOERROR;
+}
+
+ECode ThreadLocalRandom::NextGaussian(
+    /* [out] */ Double* value)
+{
+    VALIDATE_NOT_NULL(value);
+
+    // Use nextLocalGaussian instead of nextGaussian field
+    AutoPtr<IInterface> d;
+    GetNextLocalGaussian()->Get(&d);
+    if (d != nullptr) {
+        GetNextLocalGaussian()->Set(nullptr);
+        *value = CoreUtils::Unbox(IDouble::Probe(d));
+        return NOERROR;
+    }
+    Double v1, v2, s;
+    do {
+        v1 = 2 * (NextDouble(&v1), v1) - 1; // between -1 and 1
+        v2 = 2 * (NextDouble(&v2), v2) - 1; // between -1 and 1
+        s = v1 * v1 + v2 * v2;
+    } while (s >= 1 || s == 0);
+    Double multiplier = StrictMath::Sqrt(-2 * StrictMath::Log(s) / s);
+    GetNextLocalGaussian()->Set(CoreUtils::Box(v2 * multiplier));
+    *value = v1 * multiplier;
+    return NOERROR;
+}
+
 Integer ThreadLocalRandom::GetProbe()
 {
     AutoPtr<IThread> t;
@@ -296,6 +501,26 @@ Integer ThreadLocalRandom::AdvanceProbe(
     CThread::GetCurrentThread(&t);
     PUT_INT(CThread::From(t), mThreadLocalRandomProbe, probe);
     return probe;
+}
+
+Integer ThreadLocalRandom::NextSecondarySeed()
+{
+    pthread_once(&sThreadLocalRandomIsStaticInitialized, StaticInitialize);
+    Integer r;
+    Long seed;
+    AutoPtr<IThread> t;
+    CThread::GetCurrentThread(&t);
+    if ((r = GET_INT(CThread::From(t), mThreadLocalRandomSecondarySeed)) != 0) {
+        r ^= r << 13;   // xorshift
+        r ^= (unsigned Integer)r >> 17;
+        r ^= r << 5;
+    }
+    else if (GetSeeder()->GetAndAdd(SEEDER_INCREMENT, &seed),
+            (r = Mix32(seed)) == 0) {
+        r = 1; // avoid zero
+    }
+    PUT_INT(CThread::From(t), mThreadLocalRandomSecondarySeed, r);
+    return r;
 }
 
 }
