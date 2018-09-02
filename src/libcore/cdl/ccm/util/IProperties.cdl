@@ -27,6 +27,13 @@ namespace util {
 interface IEnumeration;
 interface ISet;
 
+/*
+ * @Involve interface ccm::util::IHashtable;
+ * @Involve interface ccm::util::IDictionary;
+ * @Involve interface ccm::util::IMap;
+ * @Involve interface ccm::core::ICloneable;
+ * @Involve interface ccm::io::ISerializable;
+ */
 [
     uuid(417c6542-16e1-4542-b387-3f5075d73bee),
     version(0.1.0)

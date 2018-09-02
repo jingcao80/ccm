@@ -28,6 +28,7 @@
 #include "ccm.util.IMap.h"
 #include "ccm.util.IMapEntry.h"
 #include "ccm.util.ISet.h"
+#include "ccm.util.concurrent.IConcurrentMap.h"
 #include "ccm.util.concurrent.IConcurrentHashMap.h"
 #include <ccmrefbase.h>
 
@@ -43,6 +44,7 @@ namespace concurrent {
 class ConcurrentHashMap
     : public SyncObject
     , public IConcurrentHashMap
+    , public IConcurrentMap
     , public IMap
     , public ISerializable
 {

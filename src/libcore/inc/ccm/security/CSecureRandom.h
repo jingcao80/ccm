@@ -18,14 +18,16 @@
 #define __CCM_SECURITY_CSECURERANDOM_H__
 
 #include "ccm/security/SecureRandom.h"
+#include "_ccm_security_CSecureRandom.h"
 
 namespace ccm {
 namespace security {
 
-class CSecureRandom
-    : public SecureRandom
+Coclass(CSecureRandom)
+    , public SecureRandom
 {
-
+public:
+    CCM_OBJECT_DECL();
 };
 
 }

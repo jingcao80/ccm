@@ -14,21 +14,18 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/security/CPermissions.h"
-#include "ccm/security/CSecureRandom.h"
-#include "ccm/security/action/CGetPropertyAction.h"
-
 namespace ccm {
 namespace security {
 
-CCM_OBJECT_IMPL(CPermissions);
-CCM_OBJECT_IMPL(CSecureRandom);
-
-namespace action {
-
-CCM_OBJECT_IMPL(CGetPropertyAction);
-
-}
+/*
+ * @Involve interface ccm::io::ISerializable
+ */
+[
+    uuid(0af71205-21f9-4a74-8e20-f778ba65638a),
+    version(0.1.0)
+]
+interface ISecureRandomSpi
+{}
 
 }
 }

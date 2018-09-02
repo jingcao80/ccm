@@ -14,20 +14,23 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/security/CPermissions.h"
-#include "ccm/security/CSecureRandom.h"
-#include "ccm/security/action/CGetPropertyAction.h"
+interface ccm::security::IProvider;
 
 namespace ccm {
 namespace security {
 
-CCM_OBJECT_IMPL(CPermissions);
-CCM_OBJECT_IMPL(CSecureRandom);
-
-namespace action {
-
-CCM_OBJECT_IMPL(CGetPropertyAction);
-
+/*
+ * @Involve interface ccm::util::IRandom
+ * @Involve interface ccm::io:ISerializable
+ */
+[
+    uuid(a9d0a2ef-0248-448d-ae16-2ff4df8ab0d7),
+    version(0.1.0)
+]
+interface ISecureRandom
+{
+    GetProvider(
+        [out] IProvider** provider);
 }
 
 }

@@ -29,6 +29,7 @@ set(SOURCES
     Permission.cpp
     PermissionCollection.cpp
     Permissions.cpp
+    SecureRandom.cpp
     security.cpp
     action/GetPropertyAction.cpp)
 

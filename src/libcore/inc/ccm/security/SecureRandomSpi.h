@@ -14,21 +14,45 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/security/CPermissions.h"
-#include "ccm/security/CSecureRandom.h"
-#include "ccm/security/action/CGetPropertyAction.h"
+#ifndef __CCM_SECURITY_SECURERANDOMSPI_H__
+#define __CCM_SECURITY_SECURERANDOMSPI_H__
+
+#include "ccm/core/SyncObject.h"
+#include "ccm.io.ISerializable.h"
+#include "ccm.security.ISecureRandomSpi.h"
+
+using ccm::core::SyncObject;
+using ccm::io::ISerializable;
 
 namespace ccm {
 namespace security {
 
-CCM_OBJECT_IMPL(CPermissions);
-CCM_OBJECT_IMPL(CSecureRandom);
+class SecureRandomSpi
+    : public SyncObject
+    , public ISecureRandomSpi
+    , public ISerializable
+{
+public:
+    CCM_INTERFACE_DECL();
 
-namespace action {
+    static SecureRandomSpi* From(
+        /* [in] */ ISecureRandomSpi* spi);
 
-CCM_OBJECT_IMPL(CGetPropertyAction);
+protected:
+    virtual ECode EngineSetSeed(
+        /* [in] */ const Array<Byte>& seed) = 0;
 
+    friend class SecureRandom;
+};
+
+inline SecureRandomSpi* SecureRandomSpi::From(
+    /* [in] */ ISecureRandomSpi* spi)
+{
+    return (SecureRandomSpi*)spi;
 }
 
 }
 }
+
+
+#endif // __CCM_SECURITY_SECURERANDOMSPI_H__

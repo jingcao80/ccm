@@ -58,7 +58,7 @@ static const InterfaceID IID_ReservationNode =
 static const InterfaceID IID_TreeBin =
         {{0xd0cca191,0x9e15,0x48d4,0xb94a,{0xf,0xb,0x2,0x8,0x8,0x9,0x2,0xe,0x4,0x5,0xa,0x9}}, &CID_libcore};
 
-CCM_INTERFACE_IMPL_3(ConcurrentHashMap, SyncObject, IConcurrentHashMap, IMap, ISerializable);
+CCM_INTERFACE_IMPL_4(ConcurrentHashMap, SyncObject, IConcurrentHashMap, IConcurrentMap, IMap, ISerializable);
 
 static Integer AcquireNCPU()
 {

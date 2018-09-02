@@ -17,16 +17,92 @@
 #ifndef __CCM_SECURITY_SECURERANDOM_H__
 #define __CCM_SECURITY_SECURERANDOM_H__
 
+#include "ccm/core/volatile.h"
+#include "ccm/util/Random.h"
+#include "ccm.security.IProvider.h"
+#include "ccm.security.ISecureRandom.h"
+#include "ccm.security.ISecureRandomSpi.h"
+
+using ccm::util::Random;
+
 namespace ccm {
 namespace security {
 
 class SecureRandom
+    : public Random
+    , public ISecureRandom
 {
 public:
+    CCM_INTERFACE_DECL();
+
+    ECode Constructor();
+
+    ECode Constructor(
+        /* [in] */ const Array<Byte>& seed);
+
+    static ECode GetInstance(
+        /* [in] */ const String& algorithm,
+        /* [in] */ ISecureRandom** sr);
+
+    AutoPtr<ISecureRandomSpi> GetSecureRandomSpi();
+
+    ECode GetProvider(
+        /* [out] */ IProvider** provider) override;
+
     static ECode GetSeed(
         /* [in] */ Integer numBytes,
         /* [out, callee] */ Array<Byte>* seed);
+
+    static SecureRandom* From(
+        /* [in] */ ISecureRandom* random);
+
+protected:
+    ECode Constructor(
+        /* [in] */ ISecureRandomSpi* secureRandomSpi,
+        /* [in] */ IProvider* provider);
+
+private:
+    ECode GetDefaultPRNG(
+        /* [in] */ Boolean setSeed,
+        /* [in] */ const Array<Byte>& seed);
+
+    ECode Constructor(
+        /* [in] */ ISecureRandomSpi* secureRandomSpi,
+        /* [in] */ IProvider* provider,
+        /* [in] */ const String& algorithm);
+
+    static String GetPrngAlgorithm()
+    {
+        return String();
+    }
+
+private:
+    AutoPtr<IProvider> mProvider;
+
+    AutoPtr<ISecureRandomSpi> mSecureRandomSpi;
+
+    String mAlgorithm;
+
+    VOLATILE static AutoPtr<ISecureRandom> sSeedGenerator;
 };
+
+inline ECode SecureRandom::Constructor(
+    /* [in] */ ISecureRandomSpi* secureRandomSpi,
+    /* [in] */ IProvider* provider)
+{
+    return Constructor(secureRandomSpi, provider, String());
+}
+
+inline AutoPtr<ISecureRandomSpi> SecureRandom::GetSecureRandomSpi()
+{
+    return mSecureRandomSpi;
+}
+
+inline SecureRandom* SecureRandom::From(
+    /* [in] */ ISecureRandom* random)
+{
+    return (SecureRandom*)random;
+}
 
 }
 }

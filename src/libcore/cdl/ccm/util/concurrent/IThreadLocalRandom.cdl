@@ -20,6 +20,7 @@ namespace concurrent {
 
 /*
  * @Involve interface ccm::util::IRandom
+ * @Involve interface ccm::io:ISerializable
  */
 [
     uuid(100a074a-b631-4d9f-80a8-f83c67655f5a),
