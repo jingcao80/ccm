@@ -31,7 +31,8 @@ set(SOURCES
     Permissions.cpp
     SecureRandom.cpp
     security.cpp
-    action/GetPropertyAction.cpp)
+    action/GetPropertyAction.cpp
+    cca/InstanceFactory.cpp)
 
 add_library(ccm_security STATIC
     ${SOURCES})

@@ -14,39 +14,42 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_UTIL_CLOCALE_H__
-#define __CCM_UTIL_CLOCALE_H__
+#ifndef __CCM_SECURITY_CCA_INSTANCEFACTORY_H__
+#define __CCM_SECURITY_CCA_INSTANCEFACTORY_H__
 
-#include "ccm/util/Locale.h"
-#include "_ccm_util_CLocale.h"
-#include "_ccm_util_CLocaleBuilder.h"
+#include "ccm.security.IProvider.h"
+#include "ccm.security.cca.IInstance.h"
 
 namespace ccm {
-namespace util {
+namespace security {
+namespace cca {
 
-Coclass(CLocale)
-    , public Locale
+class InstanceFactory
 {
 public:
-    CCM_OBJECT_DECL();
-
-    ECode Clone(
-        /* [out] */ IInterface** obj) override;
-
-    static ECode New(
+    static ECode GetInstance(
+        /* [in] */ const String& type,
         /* [in] */ const InterfaceID& iid,
-        /* [out] */ ccm::IInterface** object);
+        /* [in] */ const String& algorithm,
+        /* [out] */ IInstance** instance);
 
-    static ECode New(
-        /* [in] */ BaseLocale* baseLocale,
-        /* [in] */ LocaleExtensions* extensions,
+    static ECode GetInstance(
+        /* [in] */ const String& type,
         /* [in] */ const InterfaceID& iid,
-        /* [out] */ ccm::IInterface** object);
+        /* [in] */ const String& algorithm,
+        /* [in] */ const String& provider,
+        /* [out] */ IInstance** instance);
 
-    using _CLocale::New;
+    static ECode GetInstance(
+        /* [in] */ const String& type,
+        /* [in] */ const InterfaceID& iid,
+        /* [in] */ const String& algorithm,
+        /* [in] */ IProvider* provider,
+        /* [out] */ IInstance** instance);
 };
 
 }
 }
+}
 
-#endif // __CCM_UTIL_CLOCALE_H__
+#endif // __CCM_SECURITY_CCA_INSTANCEFACTORY_H__

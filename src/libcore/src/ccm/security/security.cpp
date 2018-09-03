@@ -17,12 +17,42 @@
 #include "ccm/security/CPermissions.h"
 #include "ccm/security/CSecureRandom.h"
 #include "ccm/security/action/CGetPropertyAction.h"
+#include <ccmapi.h>
+#include <new>
 
 namespace ccm {
 namespace security {
 
 CCM_OBJECT_IMPL(CPermissions);
 CCM_OBJECT_IMPL(CSecureRandom);
+ECode CSecureRandom::New(
+    /* [in] */ ISecureRandomSpi* secureRandomSpi,
+    /* [in] */ IProvider* provider,
+    /* [in] */ const String& algorithm,
+    /* [in] */ const InterfaceID& iid,
+    /* [out] */ ccm::IInterface** object)
+{
+    AutoPtr<IClassObject> clsObject;
+    ECode ec = CoAcquireClassFactory(CID_CSecureRandom, nullptr, &clsObject);
+    if (FAILED(ec)) return ec;
+
+    void* addr = calloc(sizeof(CSecureRandom), 1);
+    if (addr == nullptr) return E_OUT_OF_MEMORY_ERROR;
+
+    CSecureRandom* _obj = new(addr) CSecureRandom();
+    ec = _obj->Constructor(secureRandomSpi, provider, algorithm);
+    if (FAILED(ec)) {
+        free(addr);
+        return ec;
+    }
+
+    AutoPtr<IMetaComponent> comp;
+    clsObject->GetMetadate(&comp);
+    _obj->AttachMetadata(comp, String("ccm::security::CSecureRandom"));
+    *object = _obj->Probe(iid);
+    REFCOUNT_ADD(*object);
+    return NOERROR;
+};
 
 namespace action {
 

@@ -42,16 +42,42 @@ public:
 
     static ECode GetInstance(
         /* [in] */ const String& algorithm,
-        /* [in] */ ISecureRandom** sr);
+        /* [out] */ ISecureRandom** sr);
+
+    static ECode GetInstance(
+        /* [in] */ const String& algorithm,
+        /* [in] */ const String& provider,
+        /* [out] */ ISecureRandom** sr);
+
+    static ECode GetInstance(
+        /* [in] */ const String& algorithm,
+        /* [in] */ IProvider* provider,
+        /* [out] */ ISecureRandom** sr);
 
     AutoPtr<ISecureRandomSpi> GetSecureRandomSpi();
 
     ECode GetProvider(
         /* [out] */ IProvider** provider) override;
 
+    ECode GetAlgorithm(
+        /* [out] */ String* algorithm) override;
+
+    ECode SetSeed(
+        /* [in] */ const Array<Byte>& seed) override;
+
+    ECode SetSeed(
+        /* [in] */ Long seed) override;
+
+    ECode NextBytes(
+        /* [out] */ Array<Byte>& bytes) override;
+
     static ECode GetSeed(
         /* [in] */ Integer numBytes,
         /* [out, callee] */ Array<Byte>* seed);
+
+    ECode GenerateSeed(
+        /* [in] */ Integer numBytes,
+        /* [out, callee] */ Array<Byte>* seed) override;
 
     static SecureRandom* From(
         /* [in] */ ISecureRandom* random);
@@ -60,6 +86,9 @@ protected:
     ECode Constructor(
         /* [in] */ ISecureRandomSpi* secureRandomSpi,
         /* [in] */ IProvider* provider);
+
+    Integer Next(
+        /* [in] */ Integer bits) override;
 
 private:
     ECode GetDefaultPRNG(
@@ -70,6 +99,9 @@ private:
         /* [in] */ ISecureRandomSpi* secureRandomSpi,
         /* [in] */ IProvider* provider,
         /* [in] */ const String& algorithm);
+
+    static Array<Byte> LongToByteArray(
+        /* [in] */ Long l);
 
     static String GetPrngAlgorithm()
     {
@@ -84,6 +116,8 @@ private:
     String mAlgorithm;
 
     VOLATILE static AutoPtr<ISecureRandom> sSeedGenerator;
+
+    friend class CSecureRandom;
 };
 
 inline ECode SecureRandom::Constructor(

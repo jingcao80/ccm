@@ -13,33 +13,3 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //=========================================================================
-
-#ifndef __CCM_SECURITY_CSECURERANDOM_H__
-#define __CCM_SECURITY_CSECURERANDOM_H__
-
-#include "ccm/security/SecureRandom.h"
-#include "_ccm_security_CSecureRandom.h"
-
-namespace ccm {
-namespace security {
-
-Coclass(CSecureRandom)
-    , public SecureRandom
-{
-public:
-    CCM_OBJECT_DECL();
-
-    static ECode New(
-        /* [in] */ ISecureRandomSpi* secureRandomSpi,
-        /* [in] */ IProvider* provider,
-        /* [in] */ const String& algorithm,
-        /* [in] */ const InterfaceID& iid,
-        /* [out] */ ccm::IInterface** object);
-
-    using _CSecureRandom::New;
-};
-
-}
-}
-
-#endif // __CCM_SECURITY_CSECURERANDOM_H__

@@ -40,7 +40,6 @@
 #include "ccm/util/concurrent/atomic/CAtomicLong.h"
 #include "ccm.util.ICLocaleClassObject.h"
 #include <ccmapi.h>
-#include <ccmclassobject.h>
 #include <new>
 
 namespace ccm {

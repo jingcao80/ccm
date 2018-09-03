@@ -29,8 +29,18 @@ namespace security {
 ]
 interface ISecureRandom
 {
+    GenerateSeed(
+        [in] Integer numBytes,
+        [out, callee] Array<Byte>* seed);
+
+    GetAlgorithm(
+        [out] String* algorithm);
+
     GetProvider(
         [out] IProvider** provider);
+
+    SetSeed(
+        [in] Array<Byte> seed);
 }
 
 }

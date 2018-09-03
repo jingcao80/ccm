@@ -14,39 +14,32 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_UTIL_CLOCALE_H__
-#define __CCM_UTIL_CLOCALE_H__
-
-#include "ccm/util/Locale.h"
-#include "_ccm_util_CLocale.h"
-#include "_ccm_util_CLocaleBuilder.h"
+interface ccm::security::IProvider;
 
 namespace ccm {
-namespace util {
+namespace security {
+namespace cca {
 
-Coclass(CLocale)
-    , public Locale
+[
+    uuid(2c685889-e192-41fe-953b-2dbffc54203a),
+    version(0.1.0)
+]
+interface IInstance
 {
-public:
-    CCM_OBJECT_DECL();
+    GetImpl(
+        [out] IInterface** impl);
 
-    ECode Clone(
-        /* [out] */ IInterface** obj) override;
+    GetProvider(
+        [out] IProvider** provider);
+}
 
-    static ECode New(
-        /* [in] */ const InterfaceID& iid,
-        /* [out] */ ccm::IInterface** object);
-
-    static ECode New(
-        /* [in] */ BaseLocale* baseLocale,
-        /* [in] */ LocaleExtensions* extensions,
-        /* [in] */ const InterfaceID& iid,
-        /* [out] */ ccm::IInterface** object);
-
-    using _CLocale::New;
-};
+[
+    uuid(b8e28501-8a94-4767-b5e9-60e6793f49f8),
+    version(0.1.0)
+]
+interface IInstanceFactory
+{}
 
 }
 }
-
-#endif // __CCM_UTIL_CLOCALE_H__
+}

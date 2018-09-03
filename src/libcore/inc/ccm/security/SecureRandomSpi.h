@@ -42,6 +42,13 @@ protected:
     virtual ECode EngineSetSeed(
         /* [in] */ const Array<Byte>& seed) = 0;
 
+    virtual ECode EngineNextBytes(
+        /* [out] */ Array<Byte>& bytes) = 0;
+
+    virtual ECode EngineGenerateSeed(
+        /* [in] */ Integer numBytes,
+        /* [out, callee] */ Array<Byte>* seed) = 0;
+
     friend class SecureRandom;
 };
 

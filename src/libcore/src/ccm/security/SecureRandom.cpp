@@ -14,10 +14,18 @@
 // limitations under the License.
 //=========================================================================
 
+#include "ccm/core/AutoLock.h"
 #include "ccm/security/CSecureRandom.h"
 #include "ccm/security/SecureRandom.h"
 #include "ccm/security/SecureRandomSpi.h"
+#include "ccm/security/cca/InstanceFactory.h"
+#include "ccm.security.cca.IInstance.h"
+#include <ccmautoptr.h>
 #include <ccmlogger.h>
+
+using ccm::core::AutoLock;
+using ccm::security::cca::InstanceFactory;
+using ccm::security::cca::IInstance;
 
 namespace ccm {
 namespace security {
@@ -87,9 +95,61 @@ ECode SecureRandom::Constructor(
 
 ECode SecureRandom::GetInstance(
     /* [in] */ const String& algorithm,
-    /* [in] */ ISecureRandom** sr)
+    /* [out] */ ISecureRandom** sr)
 {
-    return NOERROR;
+    VALIDATE_NOT_NULL(sr);
+
+    AutoPtr<IInstance> instance;
+    FAIL_RETURN(InstanceFactory::GetInstance(String("CSecureRandom"),
+            IID_ISecureRandomSpi, algorithm, &instance));
+    AutoPtr<IInterface> impl;
+    instance->GetImpl(&impl);
+    AutoPtr<IProvider> provider;
+    instance->GetProvider(&provider);
+    return CSecureRandom::New(ISecureRandomSpi::Probe(impl),
+            provider, algorithm, IID_ISecureRandom, (IInterface**)sr);
+}
+
+ECode SecureRandom::GetInstance(
+    /* [in] */ const String& algorithm,
+    /* [in] */ const String& provider,
+    /* [out] */ ISecureRandom** sr)
+{
+    VALIDATE_NOT_NULL(sr);
+
+    AutoPtr<IInstance> instance;
+    ECode ec = InstanceFactory::GetInstance(String("CSecureRandom"),
+            IID_ISecureRandomSpi, algorithm, provider, &instance);
+    if (FAILED(ec)) {
+        if (provider.Equals("Crypto")) {
+            Logger::E("SecureRandom", "CCM no longer support the Crypto provider.");
+        }
+        return ec;
+    }
+    AutoPtr<IInterface> impl;
+    instance->GetImpl(&impl);
+    AutoPtr<IProvider> providerObj;
+    instance->GetProvider(&providerObj);
+    return CSecureRandom::New(ISecureRandomSpi::Probe(impl),
+            providerObj, algorithm, IID_ISecureRandom, (IInterface**)sr);
+}
+
+ECode SecureRandom::GetInstance(
+    /* [in] */ const String& algorithm,
+    /* [in] */ IProvider* provider,
+    /* [out] */ ISecureRandom** sr)
+{
+    VALIDATE_NOT_NULL(sr);
+
+    AutoPtr<IInstance> instance;
+    FAIL_RETURN(InstanceFactory::GetInstance(String("CSecureRandom"),
+            IID_ISecureRandomSpi, algorithm, provider, &instance));
+    AutoPtr<IInterface> impl;
+    instance->GetImpl(&impl);
+    AutoPtr<IProvider> providerObj;
+    instance->GetProvider(&providerObj);
+    return CSecureRandom::New(ISecureRandomSpi::Probe(impl),
+            providerObj, algorithm, IID_ISecureRandom, (IInterface**)sr);
 }
 
 ECode SecureRandom::GetProvider(
@@ -102,14 +162,88 @@ ECode SecureRandom::GetProvider(
     return NOERROR;
 }
 
+ECode SecureRandom::GetAlgorithm(
+    /* [out] */ String* algorithm)
+{
+    VALIDATE_NOT_NULL(algorithm);
+
+    *algorithm = !mAlgorithm.IsNull() ? mAlgorithm : String("unknown");
+    return NOERROR;
+}
+
+ECode SecureRandom::SetSeed(
+    /* [in] */ const Array<Byte>& seed)
+{
+    AutoLock lock(this);
+    return SecureRandomSpi::From(mSecureRandomSpi)->EngineSetSeed(seed);
+}
+
+ECode SecureRandom::SetSeed(
+    /* [in] */ Long seed)
+{
+    /*
+     * Ignore call from super constructor (as well as any other calls
+     * unfortunate enough to be passing 0).  It's critical that we
+     * ignore call from superclass constructor, as digest has not
+     * yet been initialized at that point.
+     */
+    if (seed != 0) {
+        return SecureRandomSpi::From(mSecureRandomSpi)->EngineSetSeed(
+                LongToByteArray(seed));
+    }
+    return NOERROR;
+}
+
+ECode SecureRandom::NextBytes(
+    /* [out] */ Array<Byte>& bytes)
+{
+    AutoLock lock(this);
+    return SecureRandomSpi::From(mSecureRandomSpi)->EngineNextBytes(bytes);
+}
+
+Integer SecureRandom::Next(
+    /* [in] */ Integer bits)
+{
+    Integer numBytes = (bits + 7) / 8;
+    Array<Byte> b(numBytes);
+    Integer next = 0;
+
+    NextBytes(b);
+    for (Integer i = 0; i < numBytes; i++) {
+        next = (next << 8) + (b[i] && 0xff);
+    }
+
+    return (unsigned Integer)next >> (numBytes * 8 - bits);
+}
+
 ECode SecureRandom::GetSeed(
     /* [in] */ Integer numBytes,
     /* [out, callee] */ Array<Byte>* seed)
 {
     if (sSeedGenerator == nullptr) {
-
+        CSecureRandom::New(IID_ISecureRandom, (IInterface**)&sSeedGenerator);
     }
-    return NOERROR;
+    return sSeedGenerator->GenerateSeed(numBytes, seed);
+}
+
+ECode SecureRandom::GenerateSeed(
+    /* [in] */ Integer numBytes,
+    /* [out, callee] */ Array<Byte>* seed)
+{
+    return SecureRandomSpi::From(mSecureRandomSpi)->EngineGenerateSeed(numBytes, seed);
+}
+
+Array<Byte> SecureRandom::LongToByteArray(
+    /* [in] */ Long l)
+{
+    Array<Byte> retVal(8);
+
+    for (Integer i = 0; i < 8; i++) {
+        retVal[i] = (Byte) l;
+        l >>= 8;
+    }
+
+    return retVal;
 }
 
 }
