@@ -31,21 +31,30 @@ public:
         /* [in] */ const String& type,
         /* [in] */ const InterfaceID& iid,
         /* [in] */ const String& algorithm,
-        /* [out] */ IInstance** instance);
+        /* [out] */ IInstance** instance)
+    {
+        return NOERROR;
+    }
 
     static ECode GetInstance(
         /* [in] */ const String& type,
         /* [in] */ const InterfaceID& iid,
         /* [in] */ const String& algorithm,
         /* [in] */ const String& provider,
-        /* [out] */ IInstance** instance);
+        /* [out] */ IInstance** instance)
+    {
+        return NOERROR;
+    }
 
     static ECode GetInstance(
         /* [in] */ const String& type,
         /* [in] */ const InterfaceID& iid,
         /* [in] */ const String& algorithm,
         /* [in] */ IProvider* provider,
-        /* [out] */ IInstance** instance);
+        /* [out] */ IInstance** instance)
+    {
+        return NOERROR;
+    }
 };
 
 }

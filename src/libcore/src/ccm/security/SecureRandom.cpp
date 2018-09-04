@@ -14,18 +14,31 @@
 // limitations under the License.
 //=========================================================================
 
+#include "coredef.h"
 #include "ccm/core/AutoLock.h"
 #include "ccm/security/CSecureRandom.h"
 #include "ccm/security/SecureRandom.h"
 #include "ccm/security/SecureRandomSpi.h"
 #include "ccm/security/cca/InstanceFactory.h"
+#include "ccm/security/cca/Providers.h"
+#include "ccm.security.IProvider.h"
+#include "ccm.security.IProviderService.h"
 #include "ccm.security.cca.IInstance.h"
+#include "ccm.security.cca.IProviderList.h"
+#include "ccm.util.IIterator.h"
+#include "ccm.util.IList.h"
+#include "ccm.util.ISet.h"
 #include <ccmautoptr.h>
 #include <ccmlogger.h>
 
 using ccm::core::AutoLock;
 using ccm::security::cca::InstanceFactory;
 using ccm::security::cca::IInstance;
+using ccm::security::cca::IProviderList;
+using ccm::security::cca::Providers;
+using ccm::util::IIterator;
+using ccm::util::IList;
+using ccm::util::ISet;
 
 namespace ccm {
 namespace security {
@@ -244,6 +257,27 @@ Array<Byte> SecureRandom::LongToByteArray(
     }
 
     return retVal;
+}
+
+String SecureRandom::GetPrngAlgorithm()
+{
+    AutoPtr<IProviderList> pl = Providers::GetProviderList();
+    AutoPtr<IList> ps;
+    pl->Providers(&ps);
+    FOR_EACH(IProvider*, p, IProvider::Probe, ps) {
+        AutoPtr<ISet> ss;
+        p->GetServices(&ss);
+        FOR_EACH(IProviderService*, s, IProviderService::Probe, ss) {
+            String type;
+            s->GetType(&type);
+            if (type.Equals("CSecureRandom")) {
+                String algorithm;
+                s->GetAlgorithm(&algorithm);
+                return algorithm;
+            }
+        } END_FOR_EACH();
+    } END_FOR_EACH();
+    return String();
 }
 
 }

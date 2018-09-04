@@ -14,29 +14,22 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm.util.CLocale.h"
-#include "ccm.util.ILocale.h"
-#include <ccmautoptr.h>
-#include <gtest/gtest.h>
+interface ccm::util::IList;
 
-using namespace ccm;
-using ccm::util::CLocale;
-using ccm::util::ILocale;
-using ccm::util::IID_ILocale;
+namespace ccm {
+namespace security {
+namespace cca {
 
-TEST(LocaleTest, NewTest)
+[
+    uuid(70795130-9314-4e18-b3a8-4241278b579b),
+    version(0.1.0)
+]
+interface IProviderList
 {
-    AutoPtr<ILocale> locale;
-    ECode ec = CLocale::New(String("en"), IID_ILocale, (IInterface**)&locale);
-    EXPECT_EQ(ec, NOERROR);
-    EXPECT_TRUE(locale != nullptr);
-    String country;
-    locale->GetCountry(&country);
-    EXPECT_STREQ(country.string(), "");
+    Providers(
+        [out] IList** providers);
 }
 
-int main(int argc, char **argv)
-{
-    testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
+}
+}
 }

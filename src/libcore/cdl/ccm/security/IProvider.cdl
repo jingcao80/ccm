@@ -14,8 +14,23 @@
 // limitations under the License.
 //=========================================================================
 
+interface ccm::util::ISet;
+
 namespace ccm {
 namespace security {
+
+[
+    uuid(598540a9-9845-4be4-ab0e-36f817026101),
+    version(0.1.0)
+]
+interface IProviderService
+{
+    GetAlgorithm(
+        [out] String* algorithm);
+
+    GetType(
+        [out] String* type);
+}
 
 /*
  * @Involve interface ccm::util::IProperties;
@@ -30,7 +45,10 @@ namespace security {
     version(0.1.0)
 ]
 interface IProvider
-{}
+{
+    GetServices(
+        [out] ISet** services);
+}
 
 }
 }

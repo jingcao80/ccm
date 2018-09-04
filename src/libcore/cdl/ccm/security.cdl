@@ -22,6 +22,7 @@ include "ccm/security/IProvider.cdl"
 include "ccm/security/ISecureRandom.cdl"
 include "ccm/security/ISecureRandomSpi.cdl"
 include "ccm/security/cca/IInstanceFactory.cdl"
+include "ccm/security/cca/IProviderList.cdl"
 
 interface ccm::io::ISerializable;
 interface ccm::util::IRandom;

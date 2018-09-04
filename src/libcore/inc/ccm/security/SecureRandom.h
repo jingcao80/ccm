@@ -103,10 +103,7 @@ private:
     static Array<Byte> LongToByteArray(
         /* [in] */ Long l);
 
-    static String GetPrngAlgorithm()
-    {
-        return String();
-    }
+    static String GetPrngAlgorithm();
 
 private:
     AutoPtr<IProvider> mProvider;
