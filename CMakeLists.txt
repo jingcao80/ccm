@@ -45,5 +45,12 @@ add_custom_target(
     COMMAND
         "make" clean)
 
+add_custom_target(
+    rebuild
+    DEPENDS
+        clobber
+    COMMAND
+        "make")
+
 add_subdirectory(src)
 add_subdirectory(test)

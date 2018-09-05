@@ -60,6 +60,10 @@ public:
 
     static Long GetNanoTime();
 
+    static ECode SetUnchangeableSystemProperty(
+        /* [in] */ const String& key,
+        /* [in] */ const String& value);
+
     static String GetLineSeparator();
 
     static ECode GetProperty(
@@ -87,6 +91,8 @@ private:
 
     static AutoPtr<IProperties> SetDefaultChangeableProperties(
         /* [in] */ IProperties* p);
+
+    static ECode AddLegacyLocaleSystemProperties();
 
     static ECode StaticInitialize();
 

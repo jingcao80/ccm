@@ -36,10 +36,13 @@ set(SOURCES
     AbstractSet.cpp
     ArrayList.cpp
     Arrays.cpp
+    Calendar.cpp
+    CLocaleFactory.cpp
     Collections.cpp
     Date.cpp
     EmptyArray.cpp
     Formatter.cpp
+    GregorianCalendar.cpp
     Hashtable.cpp
     HashMap.cpp
     HashSet.cpp

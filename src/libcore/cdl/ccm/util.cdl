@@ -24,6 +24,7 @@ include "ccm/util/IDictionary.cdl"
 include "ccm/util/IEnumeration.cdl"
 include "ccm/util/IFormattable.cdl"
 include "ccm/util/IFormatter.cdl"
+include "ccm/util/IGregorianCalendar.cdl"
 include "ccm/util/IHashtable.cdl"
 include "ccm/util/IHashMap.cdl"
 include "ccm/util/IHashSet.cdl"
@@ -379,6 +380,15 @@ coclass CLocaleBuilder
     Constructor();
 
     interface ILocaleBuilder;
+}
+
+[
+    uuid(92cb7faf-8a8a-4fdd-b6ec-d43a2b55349f),
+    version(0.1.0)
+]
+coclass CLocaleFactory
+{
+    interface ILocaleFactory;
 }
 
 [

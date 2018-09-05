@@ -170,5 +170,15 @@ interface ILocale
         [out] String* langTag);
 }
 
+[
+    uuid(e7ebb9fa-52aa-470d-bdd6-873bf2c1e87d),
+    version(0.1.0)
+]
+interface ILocaleFactory
+{
+    GetDefault(
+        [out] ILocale** l);
+}
+
 }
 }

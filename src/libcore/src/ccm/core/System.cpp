@@ -19,6 +19,7 @@
 #include "ccm/core/System.h"
 #include "ccm/io/CPrintWriter.h"
 #include "ccm/io/CStringWriter.h"
+#include "ccm/util/CLocale.h"
 #include "ccm/util/CProperties.h"
 #include "ccm.io.IPrintWriter.h"
 #include "ccm.io.IStringWriter.h"
@@ -33,6 +34,7 @@ using ccm::io::IPrintWriter;
 using ccm::io::IStringWriter;
 using ccm::io::IID_IPrintWriter;
 using ccm::io::IID_IStringWriter;
+using ccm::util::CLocale;
 using ccm::util::CProperties;
 using ccm::util::IID_IProperties;
 using ccm::util::IHashtable;
@@ -130,6 +132,48 @@ AutoPtr<IProperties> System::SetDefaultChangeableProperties(
     return p;
 }
 
+ECode System::SetUnchangeableSystemProperty(
+    /* [in] */ const String& key,
+    /* [in] */ const String& value)
+{
+    FAIL_RETURN(CheckKey(key));
+    IHashtable::Probe(sUnchangeableProps)->Put(CoreUtils::Box(key), CoreUtils::Box(value));
+    return NOERROR;
+}
+
+ECode System::AddLegacyLocaleSystemProperties()
+{
+    String locale;
+    FAIL_RETURN(GetProperty(String("user.locale"), String(""), &locale));
+    if (!locale.IsEmpty()) {
+        AutoPtr<ILocale> l = CLocale::ForLanguageTag(locale);
+        String language, country, variant;
+        l->GetLanguage(&language);
+        l->GetCountry(&country);
+        l->GetVariant(&variant);
+        SetUnchangeableSystemProperty(String("user.language"), language);
+        SetUnchangeableSystemProperty(String("user.region"), country);
+        SetUnchangeableSystemProperty(String("user.variant"), variant);
+    }
+    else {
+        // If "user.locale" isn't set we fall back to our old defaults of
+        // language="en" and region="US" (if unset) and don't attempt to set it.
+        // The Locale class will fall back to using user.language and
+        // user.region if unset.
+        String language, region;
+        FAIL_RETURN(GetProperty(String("user.language"), String(""), &language));
+        FAIL_RETURN(GetProperty(String("user.region"), String(""), &region));
+
+        if (language.IsEmpty()) {
+            SetUnchangeableSystemProperty(String("user.language"), String("en"));
+        }
+
+        if (region.IsEmpty()) {
+            SetUnchangeableSystemProperty(String("user.region"), String("US"));
+        }
+    }
+}
+
 ECode System::GetProperty(
     /* [in] */ const String& key,
     /* [out] */ String* value)
@@ -204,6 +248,7 @@ ECode System::StaticInitialize()
 {
     sUnchangeableProps = InitUnchangeableSystemProperties();
     sProps = InitProperties();
+    AddLegacyLocaleSystemProperties();
 
     sProps->GetProperty(String("line.separator"), &sLineSeparator);
 
