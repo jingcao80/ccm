@@ -14,6 +14,8 @@
 // limitations under the License.
 //=========================================================================
 
+interface ccm::util::IDate;
+
 namespace ccm {
 namespace util {
 
@@ -115,6 +117,55 @@ interface ICalendar
     const Integer SHORT = 1;
 
     const Integer LONG = 2;
+
+    Clear();
+
+    Clear(
+        [in] Integer field);
+
+    Get(
+        [in] Integer field,
+        [out] Integer* value);
+
+    GetTime(
+        [out] IDate** date);
+
+    GetTimeInMillis(
+        [out] Long* time);
+
+    IsSet(
+        [in] Integer field,
+        [out] Boolean* result);
+
+    Set(
+        [in] Integer field,
+        [in] Integer value);
+
+    Set(
+        [in] Integer year,
+        [in] Integer month,
+        [in] Integer date);
+
+    Set(
+        [in] Integer year,
+        [in] Integer month,
+        [in] Integer date,
+        [in] Integer hourOfDay,
+        [in] Integer minute);
+
+    Set(
+        [in] Integer year,
+        [in] Integer month,
+        [in] Integer date,
+        [in] Integer hourOfDay,
+        [in] Integer minute,
+        [in] Integer second);
+
+    SetTime(
+        [in] IDate* date);
+
+    SetTimeInMillis(
+        [in] Long millis);
 }
 
 }
