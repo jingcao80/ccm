@@ -14,10 +14,12 @@
 // limitations under the License.
 //=========================================================================
 
+#include "ccm/text/DateFormatSymbols.h"
 #include "ccm/util/Calendar.h"
 #include "ccm/util/CLocale.h"
 #include "ccm/util/CDate.h"
 #include "ccm/util/TimeZone.h"
+#include "ccm/util/locale/provider/CalendarDataUtility.h"
 #include "ccm.core.IInteger.h"
 #include <ccmautoptr.h>
 
@@ -25,6 +27,8 @@ using ccm::core::IID_ICloneable;
 using ccm::core::IID_IComparable;
 using ccm::core::IInteger;
 using ccm::io::IID_ISerializable;
+using ccm::text::DateFormatSymbols;
+using ccm::util::locale::provider::CalendarDataUtility;
 
 namespace ccm {
 namespace util {
@@ -263,6 +267,62 @@ ECode Calendar::IsSet(
     }
 
     *result = mStamp[field] != UNSET;
+    return NOERROR;
+}
+
+ECode Calendar::GetDisplayName(
+    /* [in] */ Integer field,
+    /* [in] */ Integer style,
+    /* [in] */ ILocale* locale,
+    /* [out] */ String* name)
+{
+    VALIDATE_NOT_NULL(name);
+
+    if (style = ALL_STYLES) {
+        style = SHORT;
+    }
+    Boolean result;
+    FAIL_RETURN(CheckDisplayNameParams(field, style, SHORT, NARROW_FORMAT, locale,
+            ERA_MASK | MONTH_MASK | DAY_OF_WEEK_MASK | AM_PM_MASK, &result));
+    if (!result) {
+        *name = nullptr;
+        return NOERROR;
+    }
+
+    String calendarType;
+    GetCalendarType(&calendarType);
+    Integer fieldValue;
+    Get(field, &fieldValue);
+    // the standalone and narrow styles are supported only through CalendarDataProviders.
+    if (IsStandaloneStyle(style) || IsNarrowFormatStyle(style)) {
+        String val;
+        CalendarDataUtility::RetrieveFieldValueName(calendarType,
+                field, fieldValue, style, locale, &val);
+
+        // Perform fallback here to follow the CLDR rules
+        if (val.IsNull()) {
+            if (IsNarrowFormatStyle(style)) {
+                CalendarDataUtility::RetrieveFieldValueName(calendarType,
+                        field, fieldValue, ToStandaloneStyle(style), locale, &val);
+            }
+            else if (IsStandaloneStyle(style)) {
+                CalendarDataUtility::RetrieveFieldValueName(calendarType,
+                        field, fieldValue, GetBaseStyle(style), locale, &val);
+            }
+        }
+        *name = val;
+        return NOERROR;
+    }
+
+    AutoPtr<IDateFormatSymbols> symbols = DateFormatSymbols::GetInstance(locale);
+    Array<String> strings = GetFieldStrings(field, style, symbols);
+    if (!strings.IsNull()) {
+        if (fieldValue < strings.GetLength()) {
+            *name = strings[fieldValue];
+            return NOERROR;
+        }
+    }
+    *name = nullptr;
     return NOERROR;
 }
 

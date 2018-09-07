@@ -14,12 +14,18 @@
 # limitations under the License.
 #=========================================================================
 
-set(LIBCORE_CCM_SRC_DIR ${LIBCORE_DIR}/src/ccm)
+set(TEXT_DIR ${LIBCORE_CCM_SRC_DIR}/text)
 
-add_subdirectory(core)
-add_subdirectory(io)
-add_subdirectory(misc)
-add_subdirectory(security)
-add_subdirectory(text)
-add_subdirectory(util)
+include_directories(
+    ./
+    ../
+    ../../../inc
+    ${INC_DIR}
+    ${OBJ_DIR})
 
+set(SOURCES
+    DateFormatSymbols.cpp)
+
+add_library(ccm_text STATIC
+    ${SOURCES})
+add_dependencies(ccm_text build_libcore)

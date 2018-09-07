@@ -113,6 +113,7 @@ set(LIBCORE_LINK_LIBS
     ccm_io_charset
     ccm_misc
     ccm_security
+    ccm_text
     ccm_util
     ccm_util_calendar
     ccm_util_concurrent

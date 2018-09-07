@@ -21,6 +21,7 @@
 #include "ccm.core.ICloneable.h"
 #include "ccm.core.IComparable.h"
 #include "ccm.io.ISerializable.h"
+#include "ccm.text.IDateFormatSymbols.h"
 #include "ccm.util.ICalendar.h"
 #include "ccm.util.IDate.h"
 #include "ccm.util.ILocale.h"
@@ -30,6 +31,7 @@ using ccm::core::ICloneable;
 using ccm::core::IComparable;
 using ccm::core::SyncObject;
 using ccm::io::ISerializable;
+using ccm::text::IDateFormatSymbols;
 
 namespace ccm {
 namespace util {
@@ -118,6 +120,35 @@ protected:
         /* [in] */ Integer field,
         /* [out] */ Boolean* result) override final;
 
+    ECode GetDisplayName(
+        /* [in] */ Integer field,
+        /* [in] */ Integer style,
+        /* [in] */ ILocale* locale,
+        /* [out] */ String* name) override;
+
+
+
+    ECode CheckDisplayNameParams(
+        /* [in] */ Integer field,
+        /* [in] */ Integer style,
+        /* [in] */ Integer minStyle,
+        /* [in] */ Integer maxStyle,
+        /* [in] */ ILocale* locale,
+        /* [in] */ Integer fieldMask,
+        /* [out] */ Boolean* result)
+    {
+        return NOERROR;
+    }
+
+    Integer GetBaseStyle(
+        /* [in] */ Integer style);
+
+    ECode GetCalendarType(
+        /* [out] */ String* type) override
+    {
+        return NOERROR;
+    }
+
 protected:
     virtual ECode ComputeTime() = 0;
 
@@ -140,6 +171,23 @@ private:
         /* [in] */ ITimeZone* zone,
         /* [in] */ ILocale* aLocale);
 
+    Array<String> GetFieldStrings(
+        /* [in] */ Integer field,
+        /* [in] */ Integer style,
+        /* [in] */ IDateFormatSymbols* symbols)
+    {
+        return Array<String>::Null();
+    }
+
+    Integer ToStandaloneStyle(
+        /* [in] */ Integer style);
+
+    Boolean IsStandaloneStyle(
+        /* [in] */ Integer style);
+
+    Boolean IsNarrowFormatStyle(
+        /* [in] */ Integer style);
+
     void SetWeekCountData(
         /* [in] */ ILocale* desiredLocale)
     {}
@@ -149,6 +197,15 @@ private:
 
     void AdjustStamp()
     {}
+
+public:
+    static constexpr Integer STANDALONE_MASK = 0x8000;
+
+    static constexpr Integer ERA_MASK = (1 << ERA);
+    static constexpr Integer YEAR_MASK = (1 << YEAR);
+    static constexpr Integer MONTH_MASK = (1 << MONTH);
+    static constexpr Integer DAY_OF_WEEK_MASK = (1 << DAY_OF_WEEK);
+    static constexpr Integer AM_PM_MASK = (1 << AM_PM);
 
 protected:
     Array<Integer> mFields;
@@ -188,6 +245,30 @@ inline void Calendar::InternalSet(
     /* [in] */ Integer value)
 {
     mFields[field] = value;
+}
+
+inline Integer Calendar::GetBaseStyle(
+    /* [in] */ Integer style)
+{
+    return style & ~STANDALONE_MASK;
+}
+
+inline Integer Calendar::ToStandaloneStyle(
+    /* [in] */ Integer style)
+{
+    return style | STANDALONE_MASK;
+}
+
+inline Boolean Calendar::IsStandaloneStyle(
+    /* [in] */ Integer style)
+{
+    return (style & STANDALONE_MASK) != 0;
+}
+
+inline Boolean Calendar::IsNarrowFormatStyle(
+    /* [in] */ Integer style)
+{
+    return style == NARROW_FORMAT;
 }
 
 }

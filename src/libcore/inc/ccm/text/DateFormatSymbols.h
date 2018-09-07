@@ -14,25 +14,41 @@
 // limitations under the License.
 //=========================================================================
 
-[
-    uuid(3657416d-4638-4843-a0b9-eb7ef1794495),
-    url("http://ccm.org/component/library/libcore.so")
-]
-module libcore
-{
+#ifndef __CCM_TEXT_DATEFORMATSYMBOLS_H__
+#define __CCM_TEXT_DATEFORMATSYMBOLS_H__
 
-include "ccm/core.cdl"
-include "ccm/io.cdl"
-include "ccm/core2.cdl"
-include "ccm/math.cdl"
-include "ccm/net.cdl"
-include "ccm/security.cdl"
-include "ccm/core3.cdl"
-include "ccm/text.cdl"
-include "ccm/util.cdl"
-include "ccmrt/system.cdl"
-include "libcore/icu.cdl"
-include "libcore/io.cdl"
-include "pisces/system.cdl"
+#include "ccm/core/SyncObject.h"
+#include "ccm.core.ICloneable.h"
+#include "ccm.io.ISerializable.h"
+#include "ccm.text.IDateFormatSymbols.h"
+#include "ccm.util.ILocale.h"
+#include <ccmautoptr.h>
+
+using ccm::core::SyncObject;
+using ccm::core::ICloneable;
+using ccm::io::ISerializable;
+using ccm::util::ILocale;
+
+namespace ccm {
+namespace text {
+
+class DateFormatSymbols
+    : public SyncObject
+    , public IDateFormatSymbols
+    , public ISerializable
+    , public ICloneable
+{
+public:
+    CCM_INTERFACE_DECL();
+
+    static AutoPtr<IDateFormatSymbols> GetInstance(
+        /* [in] */ ILocale* locale)
+    {
+        return nullptr;
+    }
+};
 
 }
+}
+
+#endif // __CCM_TEXT_DATEFORMATSYMBOLS_H__

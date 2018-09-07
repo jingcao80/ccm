@@ -32,7 +32,8 @@ set(SOURCES
     LocaleObjectCache.cpp
     LocaleUtils.cpp
     StringTokenIterator.cpp
-    UnicodeLocaleExtension.cpp)
+    UnicodeLocaleExtension.cpp
+    provider/CalendarDataUtility.cpp)
 
 add_library(ccm_util_locale STATIC
     ${SOURCES})

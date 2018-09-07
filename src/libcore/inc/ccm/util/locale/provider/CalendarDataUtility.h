@@ -14,25 +14,34 @@
 // limitations under the License.
 //=========================================================================
 
-[
-    uuid(3657416d-4638-4843-a0b9-eb7ef1794495),
-    url("http://ccm.org/component/library/libcore.so")
-]
-module libcore
-{
+#ifndef __CCM_UTIL_LOCALE_PROVIDER_CALENDARDATAUTILITY_H__
+#define __CCM_UTIL_LOCALE_PROVIDER_CALENDARDATAUTILITY_H__
 
-include "ccm/core.cdl"
-include "ccm/io.cdl"
-include "ccm/core2.cdl"
-include "ccm/math.cdl"
-include "ccm/net.cdl"
-include "ccm/security.cdl"
-include "ccm/core3.cdl"
-include "ccm/text.cdl"
-include "ccm/util.cdl"
-include "ccmrt/system.cdl"
-include "libcore/icu.cdl"
-include "libcore/io.cdl"
-include "pisces/system.cdl"
+#include "ccm.util.ILocale.h"
+
+namespace ccm {
+namespace util {
+namespace locale {
+namespace provider {
+
+class CalendarDataUtility
+{
+public:
+    static ECode RetrieveFieldValueName(
+        /* [in] */ const String& id,
+        /* [in] */ Integer field,
+        /* [in] */ Integer value,
+        /* [in] */ Integer style,
+        /* [in] */ ILocale* locale,
+        /* [out] */ String* name)
+    {
+        return NOERROR;
+    }
+};
 
 }
+}
+}
+}
+
+#endif // __CCM_UTIL_LOCALE_PROVIDER_CALENDARDATAUTILITY_H__

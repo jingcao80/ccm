@@ -118,6 +118,8 @@ interface ICalendar
 
     const Integer LONG = 2;
 
+    const Integer NARROW_FORMAT = 4;
+
     Clear();
 
     Clear(
@@ -126,6 +128,15 @@ interface ICalendar
     Get(
         [in] Integer field,
         [out] Integer* value);
+
+    GetCalendarType(
+        [out] String* type);
+
+    GetDisplayName(
+        [in] Integer field,
+        [in] Integer style,
+        [in] ILocale* locale,
+        [out] String* name);
 
     GetTime(
         [out] IDate** date);
