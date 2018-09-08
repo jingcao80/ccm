@@ -25,6 +25,7 @@
 #include "ccm.util.ICalendar.h"
 #include "ccm.util.IDate.h"
 #include "ccm.util.ILocale.h"
+#include "ccm.util.IMap.h"
 #include "ccm.util.ITimeZone.h"
 
 using ccm::core::ICloneable;
@@ -32,6 +33,7 @@ using ccm::core::IComparable;
 using ccm::core::SyncObject;
 using ccm::io::ISerializable;
 using ccm::text::IDateFormatSymbols;
+using ccm::util::IMap;
 
 namespace ccm {
 namespace util {
@@ -126,7 +128,11 @@ protected:
         /* [in] */ ILocale* locale,
         /* [out] */ String* name) override;
 
-
+    ECode GetDisplayNames(
+        /* [in] */ Integer field,
+        /* [in] */ Integer style,
+        /* [in] */ ILocale* locale,
+        /* [out] */ IMap** names) override;
 
     ECode CheckDisplayNameParams(
         /* [in] */ Integer field,
@@ -135,10 +141,31 @@ protected:
         /* [in] */ Integer maxStyle,
         /* [in] */ ILocale* locale,
         /* [in] */ Integer fieldMask,
-        /* [out] */ Boolean* result)
-    {
-        return NOERROR;
-    }
+        /* [out] */ Boolean* result);
+
+    Boolean IsExternallySet(
+        /* [in] */ Integer field);
+
+    Integer GetSetStateFields();
+
+    void SetFieldsComputed(
+        /* [in] */ Integer fieldMask);
+
+    void SetFieldsNormalized(
+        /* [in] */ Integer fieldMask);
+
+    Boolean IsPartiallyNormalized();
+
+    Boolean IsFullyNormalized();
+
+    void SetUnnormalized();
+
+    static Boolean IsFieldSet(
+        /* [in] */ Integer fieldMask,
+        /* [in] */ Integer field);
+
+    Integer SelectFields();
+
 
     Integer GetBaseStyle(
         /* [in] */ Integer style);
@@ -161,23 +188,22 @@ protected:
         /* [in] */ Integer field,
         /* [in] */ Integer value);
 
-    virtual ECode Complete()
-    {
-        return NOERROR;
-    }
+    virtual ECode Complete();
 
 private:
     static AutoPtr<ICalendar> CreateCalendar(
         /* [in] */ ITimeZone* zone,
         /* [in] */ ILocale* aLocale);
 
+    AutoPtr<IMap> GetDisplayNamesImpl(
+        /* [in] */ Integer field,
+        /* [in] */ Integer style,
+        /* [in] */ ILocale* locale);
+
     Array<String> GetFieldStrings(
         /* [in] */ Integer field,
         /* [in] */ Integer style,
-        /* [in] */ IDateFormatSymbols* symbols)
-    {
-        return Array<String>::Null();
-    }
+        /* [in] */ IDateFormatSymbols* symbols);
 
     Integer ToStandaloneStyle(
         /* [in] */ Integer style);
@@ -185,8 +211,18 @@ private:
     Boolean IsStandaloneStyle(
         /* [in] */ Integer style);
 
+    Boolean IsNarrowStyle(
+        /* [in]*/ Integer style);
+
     Boolean IsNarrowFormatStyle(
         /* [in] */ Integer style);
+
+    static Integer AggregateStamp(
+        /* [in] */ Integer stamp_a,
+        /* [in] */ Integer stamp_b);
+
+
+
 
     void SetWeekCountData(
         /* [in] */ ILocale* desiredLocale)
@@ -199,13 +235,26 @@ private:
     {}
 
 public:
-    static constexpr Integer STANDALONE_MASK = 0x8000;
+    static constexpr Integer ALL_FIELDS = (1 << FIELD_COUNT) - 1;
 
     static constexpr Integer ERA_MASK = (1 << ERA);
     static constexpr Integer YEAR_MASK = (1 << YEAR);
     static constexpr Integer MONTH_MASK = (1 << MONTH);
+    static constexpr Integer WEEK_OF_YEAR_MASK = (1 << WEEK_OF_YEAR);
+    static constexpr Integer WEEK_OF_MONTH_MASK = (1 << WEEK_OF_MONTH);
+    static constexpr Integer DAY_OF_MONTH_MASK = (1 << DAY_OF_MONTH);
+    static constexpr Integer DATE_MASK = DAY_OF_MONTH_MASK;
+    static constexpr Integer DAY_OF_YEAR_MASK = (1 << DAY_OF_YEAR);
     static constexpr Integer DAY_OF_WEEK_MASK = (1 << DAY_OF_WEEK);
+    static constexpr Integer DAY_OF_WEEK_IN_MONTH_MASK = (1 << DAY_OF_WEEK_IN_MONTH);
     static constexpr Integer AM_PM_MASK = (1 << AM_PM);
+    static constexpr Integer HOUR_MASK = (1 << HOUR);
+    static constexpr Integer HOUR_OF_DAY_MASK = (1 << HOUR_OF_DAY);
+    static constexpr Integer MINUTE_MASK = (1 << MINUTE);
+    static constexpr Integer SECOND_MASK = (1 << SECOND);
+    static constexpr Integer MILLISECOND_MASK = (1 << MILLISECOND);
+    static constexpr Integer ZONE_OFFSET_MASK = (1 << ZONE_OFFSET);
+    static constexpr Integer DST_OFFSET_MASK = (1 << DST_OFFSET);
 
 protected:
     Array<Integer> mFields;
@@ -229,6 +278,8 @@ private:
 
     static constexpr Integer UNSET = 0;
 
+    static constexpr Integer COMPUTED = 1;
+
     static constexpr Integer MINIMUM_USER_STAMP = 2;
 
     Integer mNextStamp = MINIMUM_USER_STAMP;
@@ -245,6 +296,34 @@ inline void Calendar::InternalSet(
     /* [in] */ Integer value)
 {
     mFields[field] = value;
+}
+
+inline Boolean Calendar::IsExternallySet(
+    /* [in] */ Integer field)
+{
+    return mStamp[field] >= MINIMUM_USER_STAMP;
+}
+
+inline Boolean Calendar::IsPartiallyNormalized()
+{
+    return mAreFieldsSet && !mAreAllFieldsSet;
+}
+
+inline Boolean Calendar::IsFullyNormalized()
+{
+    return mAreFieldsSet && mAreAllFieldsSet;
+}
+
+inline void Calendar::SetUnnormalized()
+{
+    mAreFieldsSet = mAreAllFieldsSet = false;
+}
+
+inline Boolean Calendar::IsFieldSet(
+    /* [in] */ Integer fieldMask,
+    /* [in] */ Integer field)
+{
+    return (fieldMask & (1 << field)) != 0;
 }
 
 inline Integer Calendar::GetBaseStyle(
@@ -265,10 +344,26 @@ inline Boolean Calendar::IsStandaloneStyle(
     return (style & STANDALONE_MASK) != 0;
 }
 
+inline Boolean Calendar::IsNarrowStyle(
+    /* [in]*/ Integer style)
+{
+    return style == NARROW_FORMAT || style == NARROW_STANDALONE;
+}
+
 inline Boolean Calendar::IsNarrowFormatStyle(
     /* [in] */ Integer style)
 {
     return style == NARROW_FORMAT;
+}
+
+inline Integer Calendar::AggregateStamp(
+    /* [in] */ Integer stamp_a,
+    /* [in] */ Integer stamp_b)
+{
+    if (stamp_a == UNSET || stamp_b == UNSET) {
+        return UNSET;
+    }
+    return (stamp_a > stamp_b) ? stamp_a : stamp_b;
 }
 
 }

@@ -17,6 +17,7 @@
 #include "ccm/core/CBoolean.h"
 #include "ccm/core/CChar.h"
 #include "ccm/core/CDouble.h"
+#include "ccm/core/CInteger.h"
 #include "ccm/core/CoreUtils.h"
 #include "ccm/core/CString.h"
 #include "ccm/core/System.h"
@@ -38,6 +39,14 @@ AutoPtr<IBoolean> CoreUtils::Box(
     AutoPtr<IBoolean> bo;
     CBoolean::New(b, IID_IBoolean, (IInterface**)&bo);
     return bo;
+}
+
+AutoPtr<IInteger> CoreUtils::Box(
+    /* [in] */ Integer i)
+{
+    AutoPtr<IInteger> io;
+    CInteger::New(i, IID_IInteger, (IInterface**)&io);
+    return io;
 }
 
 AutoPtr<IDouble> CoreUtils::Box(
@@ -70,6 +79,14 @@ Boolean CoreUtils::Unbox(
     Boolean b;
     bo->GetValue(&b);
     return b;
+}
+
+Integer CoreUtils::Unbox(
+    /* [in] */ IInteger* io)
+{
+    Integer i;
+    io->GetValue(&i);
+    return i;
 }
 
 Double CoreUtils::Unbox(

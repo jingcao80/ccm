@@ -26,7 +26,25 @@ namespace text {
     version(0.1.0)
 ]
 interface IDateFormatSymbols
-{}
+{
+    GetAmPmStrings(
+        [out, callee] Array<String>* ampm);
+
+    GetEras(
+        [out, callee] Array<String>* eras);
+
+    GetMonths(
+        [out, callee] Array<String>* months);
+
+    GetShortMonths(
+        [out, callee] Array<String>* months);
+
+    GetShortWeekdays(
+        [out, callee] Array<String>* weekdays);
+
+    GetWeekdays(
+        [out, callee] Array<String>* weekdays);
+}
 
 }
 }

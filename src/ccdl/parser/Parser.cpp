@@ -1468,55 +1468,62 @@ PostfixExpression* Parser::ParseIdentifier(
     else if (exprType->IsNumericType()) {
         String idStr = mTokenizer.GetIdentifier();
         int idx = idStr.IndexOf("::");
-        if (idx != 0) {
+        String constStr;
+        Type* type;
+        if (idx > 0) {
             String typeStr = idStr.Substring(0, idx - 1);
-            String constStr = idStr.Substring(idx + 2);
-            Type* type = FindType(typeStr);
+            constStr = idStr.Substring(idx + 2);
+            type = FindType(typeStr);
             if (type == nullptr) {
                 String message = String::Format("Type \"%s\" is not found", typeStr.string());
                 LogError(token, message);
                 return nullptr;
             }
-            if (!type->IsInterfaceType()) {
-                String message = String::Format("Type \"%s\" is not interface", typeStr.string());
-                LogError(token, message);
-                return nullptr;
-            }
-            Constant* constant = ((Interface*)type)->FindConstant(constStr);
-            if (constant == nullptr) {
-                String message = String::Format("\"%s\" is not a constant of %s",
-                        constStr.string(), idStr.string());
-                LogError(token, message);
-                return nullptr;
-            }
-            if (exprType->IsIntegerType()) {
-                if (constant->GetType()->IsIntegerType()) {
-                    PostfixExpression* postExpr = new PostfixExpression();
-                    postExpr->SetType(exprType);
-                    postExpr->SetIntegralValue(constant->GetValue()->IntegerValue());
-                    postExpr->SetRadix(constant->GetValue()->GetRadix());
-                    return postExpr;
-                }
-                String message = String::Format("\"%s\" is not an Integer constant.",
-                        idStr.string());
-                LogError(token, message);
-                return nullptr;
-            }
-            else if (exprType->IsLongType()) {
-                if (constant->GetType()->IsLongType()) {
-                    PostfixExpression* postExpr = new PostfixExpression();
-                    postExpr->SetType(exprType);
-                    postExpr->SetIntegralValue(constant->GetValue()->LongValue());
-                    postExpr->SetRadix(constant->GetValue()->GetRadix());
-                    return postExpr;
-                }
-                String message = String::Format("\"%s\" is not a Long constant.",
-                        idStr.string());
-                LogError(token, message);
-                return nullptr;
-            }
         }
-        String message = String::Format("\"%s\" is not a constant for %s",
+        else {
+            constStr = idStr;
+            type = mParsingType;
+        }
+        if (!type->IsInterfaceType()) {
+            String message = String::Format("Type \"%s\" is not interface", type->ToString().string());
+            LogError(token, message);
+            return nullptr;
+        }
+        Constant* constant = ((Interface*)type)->FindConstant(constStr);
+        if (constant == nullptr) {
+            String message = String::Format("\"%s\" is not a constant of %s",
+                    constStr.string(), idStr.string());
+            LogError(token, message);
+            return nullptr;
+        }
+        if (exprType->IsIntegerType()) {
+            if (constant->GetType()->IsIntegerType()) {
+                PostfixExpression* postExpr = new PostfixExpression();
+                postExpr->SetType(exprType);
+                postExpr->SetIntegralValue(constant->GetValue()->IntegerValue());
+                postExpr->SetRadix(constant->GetValue()->GetRadix());
+
+                return postExpr;
+            }
+            String message = String::Format("\"%s\" is not an Integer constant.",
+                    idStr.string());
+            LogError(token, message);
+            return nullptr;
+        }
+        else if (exprType->IsLongType()) {
+            if (constant->GetType()->IsLongType()) {
+                PostfixExpression* postExpr = new PostfixExpression();
+                postExpr->SetType(exprType);
+                postExpr->SetIntegralValue(constant->GetValue()->LongValue());
+                postExpr->SetRadix(constant->GetValue()->GetRadix());
+                return postExpr;
+            }
+            String message = String::Format("\"%s\" is not a Long constant.",
+                    idStr.string());
+            LogError(token, message);
+            return nullptr;
+        }
+        String message = String::Format("\"%s\" is not a constant of %s",
                 idStr.string(), exprType->GetName().string());
         LogError(token, message);
         return nullptr;

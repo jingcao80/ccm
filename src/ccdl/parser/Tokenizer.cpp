@@ -263,6 +263,20 @@ Tokenizer::Token Tokenizer::ReadToken()
                 return ReadCharacter(c);
             case ';':
                 return Token::SEMICOLON;
+            case '&':
+                return Token::AND;
+            case '~':
+                return Token::COMPLIMENT;
+            case '^':
+                return Token::EXCLUSIVE_OR;
+            case '|':
+                return Token::INCLUSIVE_OR;
+            case '%':
+                return Token::MODULO;
+            case '!':
+                return Token::NOT;
+            case '+':
+                return Token::PLUS;
             default:
                 // todo:
                 continue;

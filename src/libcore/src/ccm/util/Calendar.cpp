@@ -14,8 +14,11 @@
 // limitations under the License.
 //=========================================================================
 
+#include "ccm/core/CoreUtils.h"
+#include "ccm/core/Math.h"
 #include "ccm/text/DateFormatSymbols.h"
 #include "ccm/util/Calendar.h"
+#include "ccm/util/CHashMap.h"
 #include "ccm/util/CLocale.h"
 #include "ccm/util/CDate.h"
 #include "ccm/util/TimeZone.h"
@@ -23,11 +26,15 @@
 #include "ccm.core.IInteger.h"
 #include <ccmautoptr.h>
 
+using ccm::core::CoreUtils;
 using ccm::core::IID_ICloneable;
 using ccm::core::IID_IComparable;
 using ccm::core::IInteger;
+using ccm::core::Math;
 using ccm::io::IID_ISerializable;
 using ccm::text::DateFormatSymbols;
+using ccm::util::CHashMap;
+using ccm::util::IID_IMap;
 using ccm::util::locale::provider::CalendarDataUtility;
 
 namespace ccm {
@@ -296,18 +303,18 @@ ECode Calendar::GetDisplayName(
     // the standalone and narrow styles are supported only through CalendarDataProviders.
     if (IsStandaloneStyle(style) || IsNarrowFormatStyle(style)) {
         String val;
-        CalendarDataUtility::RetrieveFieldValueName(calendarType,
-                field, fieldValue, style, locale, &val);
+        FAIL_RETURN(CalendarDataUtility::RetrieveFieldValueName(calendarType,
+                field, fieldValue, style, locale, &val));
 
         // Perform fallback here to follow the CLDR rules
         if (val.IsNull()) {
             if (IsNarrowFormatStyle(style)) {
-                CalendarDataUtility::RetrieveFieldValueName(calendarType,
-                        field, fieldValue, ToStandaloneStyle(style), locale, &val);
+                FAIL_RETURN(CalendarDataUtility::RetrieveFieldValueName(calendarType,
+                        field, fieldValue, ToStandaloneStyle(style), locale, &val));
             }
             else if (IsStandaloneStyle(style)) {
-                CalendarDataUtility::RetrieveFieldValueName(calendarType,
-                        field, fieldValue, GetBaseStyle(style), locale, &val);
+                FAIL_RETURN(CalendarDataUtility::RetrieveFieldValueName(calendarType,
+                        field, fieldValue, GetBaseStyle(style), locale, &val));
             }
         }
         *name = val;
@@ -324,6 +331,362 @@ ECode Calendar::GetDisplayName(
     }
     *name = nullptr;
     return NOERROR;
+}
+
+ECode Calendar::GetDisplayNames(
+    /* [in] */ Integer field,
+    /* [in] */ Integer style,
+    /* [in] */ ILocale* locale,
+    /* [out] */ IMap** names)
+{
+    VALIDATE_NOT_NULL(names);
+
+    Boolean result;
+    FAIL_RETURN(CheckDisplayNameParams(field, style, ALL_STYLES, NARROW_FORMAT, locale,
+            ERA_MASK | MONTH_MASK | DAY_OF_WEEK_MASK | AM_PM_MASK, &result));
+    if (!result) {
+        *names = nullptr;
+        return NOERROR;
+    }
+
+    Complete();
+
+    String calendarType;
+    GetCalendarType(&calendarType);
+    if (style == ALL_STYLES || IsStandaloneStyle(style) || IsNarrowFormatStyle(style)) {
+        AutoPtr<IMap> map;
+        FAIL_RETURN(CalendarDataUtility::RetrieveFieldValueNames(calendarType, field, style, locale, &map));
+
+        if (map == nullptr) {
+            if (IsNarrowFormatStyle(style)) {
+                FAIL_RETURN(CalendarDataUtility::RetrieveFieldValueNames(calendarType, field,
+                        ToStandaloneStyle(style), locale, &map));
+            }
+            else if (style != ALL_STYLES) {
+                FAIL_RETURN(CalendarDataUtility::RetrieveFieldValueNames(calendarType, field,
+                        GetBaseStyle(style), locale, &map));
+            }
+        }
+        *names = map;
+        REFCOUNT_ADD(*names);
+        return NOERROR;
+    }
+
+    // SHORT or LONG
+    AutoPtr<IMap> map = GetDisplayNamesImpl(field, style, locale);
+    *names = map;
+    REFCOUNT_ADD(*names);
+    return NOERROR;
+}
+
+AutoPtr<IMap> Calendar::GetDisplayNamesImpl(
+    /* [in] */ Integer field,
+    /* [in] */ Integer style,
+    /* [in] */ ILocale* locale)
+{
+    AutoPtr<IDateFormatSymbols> symbols = DateFormatSymbols::GetInstance(locale);
+    Array<String> strings = GetFieldStrings(field, style, symbols);
+    if (!strings.IsNull()) {
+        AutoPtr<IMap> names;
+        CHashMap::New(IID_IMap, (IInterface**)&names);
+        for (Integer i = 0; i < strings.GetLength(); i++) {
+            if (strings[i].GetLength() == 0) {
+                continue;
+            }
+            names->Put(CoreUtils::Box(strings[i]), CoreUtils::Box(i));
+        }
+        return names;
+    }
+    return nullptr;
+}
+
+ECode Calendar::CheckDisplayNameParams(
+    /* [in] */ Integer field,
+    /* [in] */ Integer style,
+    /* [in] */ Integer minStyle,
+    /* [in] */ Integer maxStyle,
+    /* [in] */ ILocale* locale,
+    /* [in] */ Integer fieldMask,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    Integer baseStyle = GetBaseStyle(style); // Ignore the standalone mask
+    if (field < 0 || field > mFields.GetLength() ||
+            baseStyle < minStyle || baseStyle > maxStyle) {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    // 3 is not a valid base style (unlike 1, 2 and 4). Throw if used.
+    if (baseStyle == 3) {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    if (locale == nullptr) {
+        return ccm::core::E_NULL_POINTER_EXCEPTION;
+    }
+    *result = IsFieldSet(fieldMask, field);
+    return NOERROR;
+}
+
+Array<String> Calendar::GetFieldStrings(
+    /* [in] */ Integer field,
+    /* [in] */ Integer style,
+    /* [in] */ IDateFormatSymbols* symbols)
+{
+    Integer baseStyle = GetBaseStyle(style); // ignore the standalone mask
+
+    // DateFormatSymbols doesn't support any narrow names.
+    if (baseStyle == NARROW_FORMAT) {
+        return Array<String>::Null();
+    }
+
+    Array<String> strings;
+    switch (field) {
+        case ERA:
+            symbols->GetEras(&strings);
+            break;
+
+        case MONTH:
+            baseStyle == LONG ? symbols->GetMonths(&strings) :
+                                symbols->GetShortMonths(&strings);
+            break;
+
+        case DAY_OF_WEEK:
+            baseStyle == LONG ? symbols->GetWeekdays(&strings) :
+                                symbols->GetShortWeekdays(&strings);
+            break;
+
+        case AM_PM:
+            symbols->GetAmPmStrings(&strings);
+            break;
+    }
+    return strings;
+}
+
+ECode Calendar::Complete()
+{
+    if (!mIsTimeSet) {
+        UpdateTime();
+    }
+    if (!mAreFieldsSet || !mAreAllFieldsSet) {
+        ComputeFields(); // fills in unset fields
+        mAreAllFieldsSet = mAreFieldsSet = true;
+    }
+    return NOERROR;
+}
+
+Integer Calendar::GetSetStateFields()
+{
+    Integer mask = 0;
+    for (Integer i = 0; i < mFields.GetLength(); i++) {
+        if (mStamp[i] != UNSET) {
+            mask |= 1 << i;
+        }
+    }
+    return mask;
+}
+
+void Calendar::SetFieldsComputed(
+    /* [in] */ Integer fieldMask)
+{
+    if (fieldMask == ALL_FIELDS) {
+        for (Integer i = 0; i < mFields.GetLength(); i++) {
+            mStamp[i] = COMPUTED;
+            mIsSet[i] = true;
+        }
+        mAreFieldsSet = mAreAllFieldsSet = true;
+    }
+    else {
+        for (Integer i = 0; i < mFields.GetLength(); i++) {
+            if ((fieldMask & 1) == 1) {
+                mStamp[i] = COMPUTED;
+                mIsSet[i] = true;
+            }
+            else {
+                if (mAreAllFieldsSet && !mIsSet[i]) {
+                    mAreAllFieldsSet = false;
+                }
+            }
+            fieldMask = (unsigned Integer)fieldMask >> 1;
+        }
+    }
+}
+
+void Calendar::SetFieldsNormalized(
+    /* [in] */ Integer fieldMask)
+{
+    if (fieldMask != ALL_FIELDS) {
+        for (Integer i = 0; i < mFields.GetLength(); i++) {
+            if ((fieldMask & 1) == 0) {
+                mStamp[i] = mFields[i] = 0; // UNSET == 0
+                mIsSet[i] = false;
+            }
+            fieldMask >>= 1;
+        }
+    }
+
+    // Some or all of the fields are in sync with the
+    // milliseconds, but the stamp values are not normalized yet.
+    mAreFieldsSet = true;
+    mAreAllFieldsSet = false;
+}
+
+Integer Calendar::SelectFields()
+{
+    // This implementation has been taken from the GregorianCalendar class.
+
+    // The YEAR field must always be used regardless of its SET
+    // state because YEAR is a mandatory field to determine the date
+    // and the default value (EPOCH_YEAR) may change through the
+    // normalization process.
+    Integer fieldMask = YEAR_MASK;
+
+    if (mStamp[ERA] != UNSET) {
+        fieldMask |= ERA_MASK;
+    }
+    // Find the most recent group of fields specifying the day within
+    // the year.  These may be any of the following combinations:
+    //   MONTH + DAY_OF_MONTH
+    //   MONTH + WEEK_OF_MONTH + DAY_OF_WEEK
+    //   MONTH + DAY_OF_WEEK_IN_MONTH + DAY_OF_WEEK
+    //   DAY_OF_YEAR
+    //   WEEK_OF_YEAR + DAY_OF_WEEK
+    // We look for the most recent of the fields in each group to determine
+    // the age of the group.  For groups involving a week-related field such
+    // as WEEK_OF_MONTH, DAY_OF_WEEK_IN_MONTH, or WEEK_OF_YEAR, both the
+    // week-related field and the DAY_OF_WEEK must be set for the group as a
+    // whole to be considered.  (See bug 4153860 - liu 7/24/98.)
+    Integer dowStamp = mStamp[DAY_OF_WEEK];
+    Integer monthStamp = mStamp[MONTH];
+    Integer domStamp = mStamp[DAY_OF_MONTH];
+    Integer womStamp = AggregateStamp(mStamp[WEEK_OF_MONTH], dowStamp);
+    Integer dowimStamp = AggregateStamp(mStamp[DAY_OF_WEEK_IN_MONTH], dowStamp);
+    Integer doyStamp = mStamp[DAY_OF_YEAR];
+    Integer woyStamp = AggregateStamp(mStamp[WEEK_OF_YEAR], dowStamp);
+
+    Integer bestStamp = domStamp;
+    if (womStamp > bestStamp) {
+        bestStamp = womStamp;
+    }
+    if (dowimStamp > bestStamp) {
+        bestStamp = dowimStamp;
+    }
+    if (doyStamp > bestStamp) {
+        bestStamp = doyStamp;
+    }
+    if (woyStamp > bestStamp) {
+        bestStamp = woyStamp;
+    }
+
+    /* No complete combination exists.  Look for WEEK_OF_MONTH,
+     * DAY_OF_WEEK_IN_MONTH, or WEEK_OF_YEAR alone.  Treat DAY_OF_WEEK alone
+     * as DAY_OF_WEEK_IN_MONTH.
+     */
+    if (bestStamp == UNSET) {
+        womStamp = mStamp[WEEK_OF_MONTH];
+        dowimStamp = Math::Max(mStamp[DAY_OF_WEEK_IN_MONTH], dowStamp);
+        woyStamp = mStamp[WEEK_OF_YEAR];
+        bestStamp = Math::Max(Math::Max(womStamp, dowimStamp), woyStamp);
+
+        /* Treat MONTH alone or no fields at all as DAY_OF_MONTH.  This may
+         * result in bestStamp = domStamp = UNSET if no fields are set,
+         * which indicates DAY_OF_MONTH.
+         */
+        if (bestStamp == UNSET) {
+            bestStamp = domStamp = monthStamp;
+        }
+    }
+
+    if (bestStamp == domStamp ||
+       (bestStamp == womStamp && mStamp[WEEK_OF_MONTH] >= mStamp[WEEK_OF_YEAR]) ||
+       (bestStamp == dowimStamp && mStamp[DAY_OF_WEEK_IN_MONTH] >= mStamp[WEEK_OF_YEAR])) {
+        fieldMask |= MONTH_MASK;
+        if (bestStamp == domStamp) {
+            fieldMask |= DAY_OF_MONTH_MASK;
+        }
+        else {
+            CHECK(bestStamp == womStamp || bestStamp == dowimStamp);
+            if (dowStamp != UNSET) {
+                fieldMask |= DAY_OF_WEEK_MASK;
+            }
+            if (womStamp == dowimStamp) {
+                // When they are equal, give the priority to
+                // WEEK_OF_MONTH for compatibility.
+                if (mStamp[WEEK_OF_MONTH] >= mStamp[DAY_OF_WEEK_IN_MONTH]) {
+                    fieldMask |= WEEK_OF_MONTH_MASK;
+                }
+                else {
+                    fieldMask |= DAY_OF_WEEK_IN_MONTH_MASK;
+                }
+            }
+            else {
+                if (bestStamp == womStamp) {
+                    fieldMask |= WEEK_OF_MONTH_MASK;
+                }
+                else {
+                    CHECK(bestStamp == dowimStamp);
+                    if (mStamp[DAY_OF_WEEK_IN_MONTH] != UNSET) {
+                        fieldMask |= DAY_OF_WEEK_IN_MONTH_MASK;
+                    }
+                }
+            }
+        }
+    }
+    else {
+        CHECK(bestStamp == doyStamp || bestStamp == woyStamp ||
+                bestStamp == UNSET);
+        if (bestStamp == doyStamp) {
+            fieldMask |= DAY_OF_YEAR_MASK;
+        }
+        else {
+            CHECK(bestStamp == woyStamp);
+            if (dowStamp != UNSET) {
+                fieldMask |= DAY_OF_WEEK_MASK;
+            }
+            fieldMask |= WEEK_OF_YEAR_MASK;
+        }
+    }
+
+    // Find the best set of fields specifying the time of day.  There
+    // are only two possibilities here; the HOUR_OF_DAY or the
+    // AM_PM and the HOUR.
+    Integer hourOfDayStamp = mStamp[HOUR_OF_DAY];
+    Integer hourStamp = AggregateStamp(mStamp[HOUR], mStamp[AM_PM]);
+    bestStamp = (hourStamp > hourOfDayStamp) ? hourStamp : hourOfDayStamp;
+
+    // if bestStamp is still UNSET, then take HOUR or AM_PM. (See 4846659)
+    if (bestStamp == UNSET) {
+        bestStamp = Math::Max(mStamp[HOUR], mStamp[AM_PM]);
+    }
+
+    // Hours
+    if (bestStamp != UNSET) {
+        if (bestStamp == hourOfDayStamp) {
+            fieldMask |= HOUR_OF_DAY_MASK;
+        }
+        else {
+            fieldMask |= HOUR_MASK;
+            if (mStamp[AM_PM] != UNSET) {
+                fieldMask |= AM_PM_MASK;
+            }
+        }
+    }
+    if (mStamp[MINUTE] != UNSET) {
+        fieldMask |= MINUTE_MASK;
+    }
+    if (mStamp[SECOND] != UNSET) {
+        fieldMask |= SECOND_MASK;
+    }
+    if (mStamp[MILLISECOND] != UNSET) {
+        fieldMask |= MILLISECOND_MASK;
+    }
+    if (mStamp[ZONE_OFFSET] >= MINIMUM_USER_STAMP) {
+            fieldMask |= ZONE_OFFSET_MASK;
+    }
+    if (mStamp[DST_OFFSET] >= MINIMUM_USER_STAMP) {
+        fieldMask |= DST_OFFSET_MASK;
+    }
+
+    return fieldMask;
 }
 
 }

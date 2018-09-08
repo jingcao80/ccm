@@ -18,6 +18,7 @@
 #define __CCM_UTIL_LOCALE_PROVIDER_CALENDARDATAUTILITY_H__
 
 #include "ccm.util.ILocale.h"
+#include "ccm.util.IMap.h"
 
 namespace ccm {
 namespace util {
@@ -34,6 +35,16 @@ public:
         /* [in] */ Integer style,
         /* [in] */ ILocale* locale,
         /* [out] */ String* name)
+    {
+        return NOERROR;
+    }
+
+    static ECode RetrieveFieldValueNames(
+        /* [in] */ const String& id,
+        /* [in] */ Integer field,
+        /* [in] */ Integer style,
+        /* [in] */ ILocale* locale,
+        /* [out] */ IMap** names)
     {
         return NOERROR;
     }

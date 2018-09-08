@@ -20,6 +20,7 @@
 #include "ccm.core.IChar.h"
 #include "ccm.core.ICharSequence.h"
 #include "ccm.core.IDouble.h"
+#include "ccm.core.IInteger.h"
 #include <ccmautoptr.h>
 
 namespace ccm {
@@ -34,6 +35,9 @@ public:
     COM_PUBLIC static AutoPtr<IBoolean> Box(
         /* [in] */ Boolean b);
 
+    COM_PUBLIC static AutoPtr<IInteger> Box(
+        /* [in] */ Integer i);
+
     COM_PUBLIC static AutoPtr<IDouble> Box(
         /* [in] */ Double d);
 
@@ -45,6 +49,9 @@ public:
 
     COM_PUBLIC static Boolean Unbox(
         /* [in] */ IBoolean* bo);
+
+    COM_PUBLIC static Integer Unbox(
+        /* [in] */ IInteger* io);
 
     COM_PUBLIC static Double Unbox(
         /* [in] */ IDouble* dobj);
