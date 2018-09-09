@@ -16,6 +16,7 @@
 
 interface ccm::util::IDate;
 interface ccm::util::IMap;
+interface ccm::util::ITimeZone;
 
 namespace ccm {
 namespace util {
@@ -125,12 +126,36 @@ interface ICalendar
 
     const Integer NARROW_STANDALONE = NARROW_FORMAT | STANDALONE_MASK;
 
+    Add(
+        [in] Integer field,
+        [in] Integer amount);
+
+    After(
+        [in] IInterface* when,
+        [out] Boolean* after);
+
+    Before(
+        [in] IInterface* when,
+        [out] Boolean* before);
+
     Clear();
 
     Clear(
         [in] Integer field);
 
+    CompareTo(
+        [in] ICalendar* another,
+        [out] Integer* result);
+
     Get(
+        [in] Integer field,
+        [out] Integer* value);
+
+    GetActualMaximum(
+        [in] Integer field,
+        [out] Integer* value);
+
+    GetActualMinimum(
         [in] Integer field,
         [out] Integer* value);
 
@@ -149,15 +174,60 @@ interface ICalendar
         [in] ILocale* locale,
         [out] IMap** names);
 
+    GetFirstDayOfWeek(
+        [out] Integer* value);
+
+    GetGreatestMinimum(
+        [in] Integer field,
+        [out] Integer* value);
+
+    GetLeastMaximum(
+        [in] Integer field,
+        [out] Integer* value);
+
+    GetMaximum(
+        [in] Integer field,
+        [out] Integer* value);
+
+    GetMinimalDaysInFirstWeek(
+        [out] Integer* value);
+
+    GetMinimum(
+        [in] Integer field,
+        [out] Integer* value);
+
     GetTime(
         [out] IDate** date);
 
     GetTimeInMillis(
         [out] Long* time);
 
+    GetTimeZone(
+        [out] ITimeZone** zone);
+
+    GetWeeksInWeekYear(
+        [out] Integer* weeks);
+
+    GetWeekYear(
+        [out] Integer* weekYear);
+
+    IsLenient(
+        [out] Boolean* lenient);
+
     IsSet(
         [in] Integer field,
         [out] Boolean* result);
+
+    IsWeekDateSupported(
+        [out] Boolean* supported);
+
+    Roll(
+        [in] Integer field,
+        [in] Boolean up);
+
+    Roll(
+        [in] Integer field,
+        [in] Integer amount);
 
     Set(
         [in] Integer field,
@@ -183,11 +253,28 @@ interface ICalendar
         [in] Integer minute,
         [in] Integer second);
 
+    SetFirstDayOfWeek(
+        [in] Integer value);
+
+    SetLenient(
+        [in] Boolean lenient);
+
+    SetMinimalDaysInFirstWeek(
+        [in] Integer value);
+
     SetTime(
         [in] IDate* date);
 
     SetTimeInMillis(
         [in] Long millis);
+
+    SetTimeZone(
+        [in] ITimeZone* value);
+
+    SetWeekDate(
+        [in] Integer weekYear,
+        [in] Integer weekOfYear,
+        [in] Integer dayOfWeek);
 }
 
 }

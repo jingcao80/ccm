@@ -14,5 +14,23 @@
 // limitations under the License.
 //=========================================================================
 
-include "libcore/icu/IICU.cdl"
-include "libcore/icu/ILocaleData.cdl"
+interface ccm::core::IInteger;
+
+namespace libcore {
+namespace icu {
+
+[
+    uuid(b3ead832-20d3-43cd-9246-7654f4626ae4),
+    version(0.1.0)
+]
+interface ILocaleData
+{
+    GetFirstDayOfWeek(
+        [out] IInteger** day);
+
+    GetMinimalDaysInFirstWeek(
+        [out] IInteger** days);
+}
+
+}
+}

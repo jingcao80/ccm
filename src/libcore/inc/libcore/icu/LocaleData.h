@@ -14,5 +14,37 @@
 // limitations under the License.
 //=========================================================================
 
-include "libcore/icu/IICU.cdl"
-include "libcore/icu/ILocaleData.cdl"
+#ifndef __LIBCORE_ICU_LOCALEDATE_H__
+#define __LIBCORE_ICU_LOCALEDATE_H__
+
+#include "ccm/core/SyncObject.h"
+#include "ccm.util.ILocale.h"
+#include "libcore.icu.ILocaleData.h"
+#include <ccmautoptr.h>
+
+using ccm::core::SyncObject;
+using ccm::util::ILocale;
+using libcore::icu::ILocaleData;
+
+namespace libcore {
+namespace icu {
+
+class LocaleData
+    : public SyncObject
+    , public ILocaleData
+{
+public:
+    CCM_INTERFACE_DECL();
+
+    static ECode Get(
+        /* [in] */ ILocale* locale,
+        /* [out] */ ILocaleData** data)
+    {
+        return NOERROR;
+    }
+};
+
+}
+}
+
+#endif // __LIBCORE_ICU_LOCALEDATE_H__

@@ -14,7 +14,9 @@
 // limitations under the License.
 //=========================================================================
 
+#include "ccm/core/CArray.h"
 #include "ccm/core/CoreUtils.h"
+#include "ccm/core/CStringBuilder.h"
 #include "ccm/core/Math.h"
 #include "ccm/text/DateFormatSymbols.h"
 #include "ccm/util/Calendar.h"
@@ -22,23 +24,41 @@
 #include "ccm/util/CLocale.h"
 #include "ccm/util/CDate.h"
 #include "ccm/util/TimeZone.h"
+#include "ccm/util/concurrent/CConcurrentHashMap.h"
 #include "ccm/util/locale/provider/CalendarDataUtility.h"
+#include "libcore/icu/LocaleData.h"
+#include "ccm.core.IArray.h"
 #include "ccm.core.IInteger.h"
 #include <ccmautoptr.h>
 
+using ccm::core::CArray;
 using ccm::core::CoreUtils;
+using ccm::core::CStringBuilder;
+using ccm::core::IArray;
+using ccm::core::IID_IArray;
 using ccm::core::IID_ICloneable;
 using ccm::core::IID_IComparable;
+using ccm::core::IID_IInteger;
+using ccm::core::IID_IStringBuilder;
 using ccm::core::IInteger;
 using ccm::core::Math;
 using ccm::io::IID_ISerializable;
 using ccm::text::DateFormatSymbols;
 using ccm::util::CHashMap;
 using ccm::util::IID_IMap;
+using ccm::util::concurrent::CConcurrentHashMap;
+using ccm::util::concurrent::IID_IConcurrentMap;
 using ccm::util::locale::provider::CalendarDataUtility;
+using libcore::icu::ILocaleData;
+using libcore::icu::LocaleData;
 
 namespace ccm {
 namespace util {
+
+Calendar::Calendar()
+{
+    CConcurrentHashMap::New(3, IID_IConcurrentMap, (IInterface**)&mCachedLocaleData);
+}
 
 CCM_INTERFACE_IMPL_4(Calendar, SyncObject, ICalendar, ISerializable, ICloneable, IComparable);
 
@@ -687,6 +707,541 @@ Integer Calendar::SelectFields()
     }
 
     return fieldMask;
+}
+
+ECode Calendar::GetCalendarType(
+    /* [out] */ String* type)
+{
+    VALIDATE_NOT_NULL(type);
+
+    *type = GetCoclassName((IObject*)this);
+    return NOERROR;
+}
+
+ECode Calendar::Equals(
+    /* [in] */ IInterface* obj,
+    /* [out] */ Boolean* same)
+{
+    VALIDATE_NOT_NULL(same);
+
+    if (IInterface::Equals((IObject*)this, obj)) {
+        *same = true;
+        return NOERROR;
+    }
+    Calendar* that = (Calendar*)ICalendar::Probe(obj);
+    if (that == nullptr) {
+        *same = false;
+        return NOERROR;
+    }
+    *same = CompareTo(GetMillisOf(that)) == 0 &&
+            mLenient == that->mLenient &&
+            mFirstDayOfWeek == that->mFirstDayOfWeek &&
+            mMinimalDaysInFirstWeek == that->mMinimalDaysInFirstWeek &&
+            Object::Equals(mZone, that->mZone);
+    return NOERROR;
+}
+
+ECode Calendar::GetHashCode(
+    /* [out] */ Integer* hash)
+{
+    VALIDATE_NOT_NULL(hash);
+
+    Integer otheritems = (mLenient ? 1 : 0)
+            | (mFirstDayOfWeek << 1)
+            | (mMinimalDaysInFirstWeek << 4)
+            | (Object::GetHashCode(mZone) << 7);
+    Long t = GetMillisOf(this);
+    *hash = (Integer) t ^ (Integer)(t >> 32) ^ otheritems;
+    return NOERROR;
+}
+
+ECode Calendar::Before(
+    /* [in] */ IInterface* when,
+    /* [out] */ Boolean* before)
+{
+    VALIDATE_NOT_NULL(before);
+
+    ICalendar* cal = ICalendar::Probe(when);
+    if (cal == nullptr) {
+        *before = false;
+        return NOERROR;
+    }
+    Integer compare;
+    CompareTo(cal, &compare);
+    *before = compare < 0;
+    return NOERROR;
+}
+
+ECode Calendar::After(
+    /* [in] */ IInterface* when,
+    /* [out] */ Boolean* after)
+{
+    VALIDATE_NOT_NULL(after);
+
+    ICalendar* cal = ICalendar::Probe(when);
+    if (cal == nullptr) {
+        *after = false;
+        return NOERROR;
+    }
+    Integer compare;
+    CompareTo(cal, &compare);
+    *after = compare > 0;
+    return NOERROR;
+}
+
+ECode Calendar::CompareTo(
+    /* [in] */ ICalendar* another,
+    /* [out] */ Integer* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    *result = CompareTo(GetMillisOf((Calendar*)another));
+    return NOERROR;
+}
+
+ECode Calendar::Roll(
+    /* [in] */ Integer field,
+    /* [in] */ Integer amount)
+{
+    while (amount > 0) {
+        Roll(field, true);
+        amount--;
+    }
+    while (amount < 0) {
+        Roll(field, false);
+        amount++;
+    }
+    return NOERROR;
+}
+
+ECode Calendar::SetTimeZone(
+    /* [in] */ ITimeZone* value)
+{
+    mZone = value;
+    mSharedZone = false;
+    /* Recompute the fields from the time using the new zone.  This also
+     * works if mIsTimeSet is false (after a call to Set()).  In that case
+     * the time will be computed from the fields using the new zone, then
+     * the fields will get recomputed from that.  Consider the sequence of
+     * calls: cal->SetTimeZone(EST); cal->Set(HOUR, 1); cal->SetTimeZone(PST).
+     * Is cal set to 1 o'clock EST or 1 o'clock PST?  Answer: PST.  More
+     * generally, a call to SetTimeZone() affects calls to Set() BEFORE AND
+     * AFTER it up to the next call to Complete().
+     */
+    mAreAllFieldsSet = mAreFieldsSet = false;
+    return NOERROR;
+}
+
+ECode Calendar::GetTimeZone(
+    /* [out] */ ITimeZone** zone)
+{
+    VALIDATE_NOT_NULL(zone);
+
+    // If the TimeZone object is shared by other Calendar instances, then
+    // create a clone.
+    if (mSharedZone) {
+        AutoPtr<ITimeZone> clone;
+        ICloneable::Probe(mZone)->Clone(IID_ITimeZone, (IInterface**)&clone);
+        mZone = clone;
+        mSharedZone = false;
+    }
+    *zone = mZone;
+    REFCOUNT_ADD(*zone);
+    return NOERROR;
+}
+
+AutoPtr<ITimeZone> Calendar::GetZone()
+{
+    return mZone;
+}
+
+ECode Calendar::SetLenient(
+    /* [in] */ Boolean lenient)
+{
+    mLenient = lenient;
+    return NOERROR;
+}
+
+ECode Calendar::IsLenient(
+    /* [out] */ Boolean* lenient)
+{
+    VALIDATE_NOT_NULL(lenient);
+
+    *lenient = mLenient;
+    return NOERROR;
+}
+
+ECode Calendar::SetFirstDayOfWeek(
+    /* [in] */ Integer value)
+{
+    if (mFirstDayOfWeek == value) {
+        return NOERROR;
+    }
+    mFirstDayOfWeek = value;
+    InvalidateWeekFields();
+    return NOERROR;
+}
+
+ECode Calendar::GetFirstDayOfWeek(
+    /* [out] */ Integer* value)
+{
+    VALIDATE_NOT_NULL(value);
+
+    *value = mFirstDayOfWeek;
+    return NOERROR;
+}
+
+ECode Calendar::SetMinimalDaysInFirstWeek(
+    /* [in] */ Integer value)
+{
+    if (mMinimalDaysInFirstWeek == value) {
+        return NOERROR;
+    }
+    mMinimalDaysInFirstWeek = value;
+    InvalidateWeekFields();
+    return NOERROR;
+}
+
+ECode Calendar::GetMinimalDaysInFirstWeek(
+    /* [out] */ Integer* value)
+{
+    VALIDATE_NOT_NULL(value);
+
+    *value = mMinimalDaysInFirstWeek;
+    return NOERROR;
+}
+
+ECode Calendar::IsWeekDateSupported(
+    /* [out] */ Boolean* supported)
+{
+    VALIDATE_NOT_NULL(supported);
+
+    *supported = false;
+    return NOERROR;
+}
+
+ECode Calendar::GetWeekYear(
+    /* [out] */ Integer* weekYear)
+{
+    return E_UNSUPPORTED_OPERATION_EXCEPTION;
+}
+
+ECode Calendar::SetWeekDate(
+    /* [in] */ Integer weekYear,
+    /* [in] */ Integer weekOfYear,
+    /* [in] */ Integer dayOfWeek)
+{
+    return E_UNSUPPORTED_OPERATION_EXCEPTION;
+}
+
+ECode Calendar::GetWeeksInWeekYear(
+    /* [out] */ Integer* weeks)
+{
+    return E_UNSUPPORTED_OPERATION_EXCEPTION;
+}
+
+ECode Calendar::GetActualMinimum(
+    /* [in] */ Integer field,
+    /* [out] */ Integer* value)
+{
+    VALIDATE_NOT_NULL(value);
+
+    Integer fieldValue, endValue;
+    GetGreatestMinimum(field, &fieldValue);
+    GetMinimum(field, &endValue);
+
+    // if we know that the minimum value is always the same, just return it
+    if (fieldValue == endValue) {
+        *value = fieldValue;
+        return NOERROR;
+    }
+
+    // clone the calendar so we don't mess with the real one, and set it to
+    // accept anything for the field values
+    AutoPtr<ICalendar> work;
+    Clone(IID_ICalendar, (IInterface**)&work);
+    work->SetLenient(true);
+
+    // now try each value from GetLeastMinimum() to GetMinimum() one by one until
+    // we get a value that normalizes to another value.  The last value that
+    // normalizes to itself is the actual minimum for the current date
+    Integer result = fieldValue;
+
+    do {
+        work->Set(field, fieldValue);
+        if (work->Get(field, value), *value != fieldValue) {
+            break;
+        }
+        else {
+            result = fieldValue;
+            fieldValue--;
+        }
+    } while (fieldValue >= endValue);
+
+    *value = result;
+    return NOERROR;
+}
+
+ECode Calendar::GetActualMaximum(
+    /* [in] */ Integer field,
+    /* [out] */ Integer* value)
+{
+    VALIDATE_NOT_NULL(value);
+
+    Integer fieldValue, endValue;
+    GetLeastMaximum(field, &fieldValue);
+    GetMaximum(field, &endValue);
+
+    // if we know that the maximum value is always the same, just return it.
+    if (fieldValue == endValue) {
+        *value = fieldValue;
+        return NOERROR;
+    }
+
+    // clone the calendar so we don't mess with the real one, and set it to
+    // accept anything for the field values
+    AutoPtr<ICalendar> work;
+    Clone(IID_ICalendar, (IInterface**)&work);
+    work->SetLenient(true);
+
+    // if we're counting weeks, set the day of the week to Sunday.  We know the
+    // last week of a month or year will contain the first day of the week.
+    if (field == WEEK_OF_YEAR || field == WEEK_OF_MONTH) {
+        work->Set(DAY_OF_WEEK, mFirstDayOfWeek);
+    }
+
+    // now try each value from GetLeastMaximum() to GetMaximum() one by one until
+    // we get a value that normalizes to another value.  The last value that
+    // normalizes to itself is the actual maximum for the current date
+    Integer result = fieldValue;
+
+    do {
+        work->Set(field, fieldValue);
+        if (work->Get(field, value), *value != fieldValue) {
+            break;
+        }
+        else {
+            result = fieldValue;
+            fieldValue++;
+        }
+    } while (fieldValue <= endValue);
+
+    *value = result;
+    return NOERROR;
+}
+
+ECode Calendar::CloneImpl(
+    /* [in] */ ICalendar* newObj)
+{
+    Calendar* other = (Calendar*)newObj;
+
+    other->mFields = Array<Integer>(FIELD_COUNT);
+    other->mIsSet = Array<Boolean>(FIELD_COUNT);
+    other->mStamp = Array<Integer>(FIELD_COUNT);
+    for (Integer i = 0; i < FIELD_COUNT; i++) {
+        other->mFields[i] = mFields[i];
+        other->mStamp[i] = mStamp[i];
+        other->mIsSet[i] = mIsSet[i];
+    }
+    AutoPtr<ITimeZone> zone;
+    ICloneable::Probe(mZone)->Clone(IID_ITimeZone, (IInterface**)&zone);
+    other->mZone = zone;
+    return NOERROR;
+}
+
+static Array<String> CreateFIELD_NAME()
+{
+    Array<String> names(17);
+    names[0] = "ERA";
+    names[1] = "YEAR";
+    names[2] = "MONTH";
+    names[3] = "WEEK_OF_YEAR";
+    names[4] = "WEEK_OF_MONTH";
+    names[5] = "DAY_OF_MONTH";
+    names[6] = "DAY_OF_YEAR";
+    names[7] = "DAY_OF_WEEK";
+    names[8] = "DAY_OF_WEEK_IN_MONTH";
+    names[9] = "AM_PM";
+    names[10] = "HOUR";
+    names[11] = "HOUR_OF_DAY";
+    names[12] = "MINUTE";
+    names[13] = "SECOND";
+    names[14] = "MILLISECOND";
+    names[15] = "ZONE_OFFSET";
+    names[16] = "DST_OFFSET";
+    return names;
+}
+
+Array<String>& Calendar::GetFIELD_NAME()
+{
+    static Array<String> FIELD_NAME = CreateFIELD_NAME();
+    return FIELD_NAME;
+}
+
+String Calendar::GetFieldName(
+    /* [in] */ Integer field)
+{
+    return GetFIELD_NAME()[field];
+}
+
+ECode Calendar::ToString(
+    /* [out] */ String* desc)
+{
+    VALIDATE_NOT_NULL(desc);
+
+    AutoPtr<IStringBuilder> buffer;
+    CStringBuilder::New(800, IID_IStringBuilder, (IInterface**)&buffer);
+    buffer->Append(GetCoclassName((IObject*)this));
+    buffer->AppendChar('[');
+    AppendValue(buffer, String("time"), mIsTimeSet, mTime);
+    buffer->Append(String(",areFieldsSet="));
+    buffer->Append(mAreFieldsSet);
+    buffer->Append(String(",areAllFieldsSet="));
+    buffer->Append(mAreAllFieldsSet);
+    buffer->Append(String(",lenient="));
+    buffer->Append(mLenient);
+    buffer->Append(String(",zone="));
+    buffer->Append(mZone);
+    AppendValue(buffer, String(",firstDayOfWeek"), true, (Long)mFirstDayOfWeek);
+    AppendValue(buffer, String(",minimalDaysInFirstWeek"), true, (Long)mMinimalDaysInFirstWeek);
+    for (Integer i = 0; i < FIELD_COUNT; ++i) {
+        Boolean set;
+        IsSet(i, &set);
+        buffer->AppendChar(',');
+        AppendValue(buffer, GetFIELD_NAME()[i], set, (Long)mFields[i]);
+    }
+    buffer->AppendChar(']');
+    return buffer->ToString(desc);
+}
+
+void Calendar::AppendValue(
+    /* [in] */ IStringBuilder* sb,
+    /* [in] */ const String& item,
+    /* [in] */ Boolean valid,
+    /* [in] */ Long value)
+{
+    sb->Append(item);
+    sb->AppendChar('=');
+    if (valid) {
+        sb->Append(value);
+    }
+    else {
+        sb->AppendChar('?');
+    }
+}
+
+void Calendar::SetWeekCountData(
+    /* [in] */ ILocale* desiredLocale)
+{
+    /* try to get the Locale data from the cache */
+    AutoPtr<IArray> data;
+    IMap::Probe(mCachedLocaleData)->Get(desiredLocale, (IInterface**)&data);
+    if (data == nullptr) {
+        CArray::New(IID_IInteger, 2, IID_IArray, (IInterface**)&data);
+        AutoPtr<ILocaleData> localeData;
+        LocaleData::Get(desiredLocale, &localeData);
+        AutoPtr<IInteger> day, days;
+        localeData->GetFirstDayOfWeek(&day);
+        localeData->GetMinimalDaysInFirstWeek(&days);
+        mCachedLocaleData->PutIfAbsent(desiredLocale, data);
+    }
+    AutoPtr<IInteger> v0, v1;
+    data->Get(0, (IInterface**)&v0);
+    data->Get(1, (IInterface**)&v1);
+    mFirstDayOfWeek = CoreUtils::Unbox(v0);
+    mMinimalDaysInFirstWeek = CoreUtils::Unbox(v1);
+}
+
+void Calendar::UpdateTime()
+{
+    ComputeTime();
+    mIsTimeSet = true;
+}
+
+Integer Calendar::CompareTo(
+    /* [in] */ Long t)
+{
+    Long thisTime = GetMillisOf(this);
+    return (thisTime > t) ? 1 : (thisTime == t) ? 0 : -1;
+}
+
+Long Calendar::GetMillisOf(
+    /* [in] */ Calendar* calendar)
+{
+    if (calendar->mIsTimeSet) {
+        return calendar->mTime;
+    }
+    AutoPtr<ICalendar> cal;
+    ((ICloneable*)calendar)->Clone(IID_ICalendar, (IInterface**)&cal);
+    cal->SetLenient(true);
+    Long time;
+    cal->GetTimeInMillis(&time);
+    return time;
+}
+
+void Calendar::AdjustStamp()
+{
+    Integer max = MINIMUM_USER_STAMP;
+    Integer newStamp = MINIMUM_USER_STAMP;
+
+    for (;;) {
+        Integer min = IInteger::MAX_VALUE;
+        for (Integer i = 0; i < mStamp.GetLength(); i++) {
+            Integer v = mStamp[i];
+            if (v >= newStamp && min > v) {
+                min = v;
+            }
+            if (max < v) {
+                max = v;
+            }
+        }
+        if (max != min && min == IInteger::MAX_VALUE) {
+            break;
+        }
+        for (Integer i = 0; i < mStamp.GetLength(); i++) {
+            if (mStamp[i] == min) {
+                mStamp[i] = newStamp;
+            }
+        }
+        newStamp++;
+        if (min == max) {
+            break;
+        }
+    }
+    mNextStamp = newStamp;
+}
+
+void Calendar::InvalidateWeekFields()
+{
+    if (mStamp[WEEK_OF_MONTH] != COMPUTED &&
+        mStamp[WEEK_OF_YEAR] != COMPUTED) {
+        return;
+    }
+
+    // We have to check the new values of these fields after changing
+    // firstDayOfWeek and/or minimalDaysInFirstWeek. If the field values
+    // have been changed, then set the new values. (4822110)
+    AutoPtr<ICalendar> cal;
+    Clone(IID_ICalendar, (IInterface**)&cal);
+    cal->SetLenient(true);
+    cal->Clear(WEEK_OF_MONTH);
+    cal->Clear(WEEK_OF_YEAR);
+
+    if (mStamp[WEEK_OF_MONTH] == COMPUTED) {
+        Integer weekOfMonth;
+        cal->Get(WEEK_OF_MONTH, &weekOfMonth);
+        if (mFields[WEEK_OF_MONTH] != weekOfMonth) {
+            mFields[WEEK_OF_MONTH] = weekOfMonth;
+        }
+    }
+
+    if (mStamp[WEEK_OF_YEAR] == COMPUTED) {
+        Integer weekOfYear;
+        cal->Get(WEEK_OF_YEAR, &weekOfYear);
+        if (mFields[WEEK_OF_YEAR] != weekOfYear) {
+            mFields[WEEK_OF_YEAR] = weekOfYear;
+        }
+    }
 }
 
 }

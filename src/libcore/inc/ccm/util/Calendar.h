@@ -20,6 +20,7 @@
 #include "ccm/core/SyncObject.h"
 #include "ccm.core.ICloneable.h"
 #include "ccm.core.IComparable.h"
+#include "ccm.core.IStringBuilder.h"
 #include "ccm.io.ISerializable.h"
 #include "ccm.text.IDateFormatSymbols.h"
 #include "ccm.util.ICalendar.h"
@@ -27,13 +28,16 @@
 #include "ccm.util.ILocale.h"
 #include "ccm.util.IMap.h"
 #include "ccm.util.ITimeZone.h"
+#include "ccm.util.concurrent.IConcurrentMap.h"
 
 using ccm::core::ICloneable;
 using ccm::core::IComparable;
+using ccm::core::IStringBuilder;
 using ccm::core::SyncObject;
 using ccm::io::ISerializable;
 using ccm::text::IDateFormatSymbols;
 using ccm::util::IMap;
+using ccm::util::concurrent::IConcurrentMap;
 
 namespace ccm {
 namespace util {
@@ -49,6 +53,8 @@ public:
     CCM_INTERFACE_DECL();
 
 protected:
+    Calendar();
+
     ECode Constructor();
 
     ECode Constructor(
@@ -166,15 +172,91 @@ protected:
 
     Integer SelectFields();
 
-
     Integer GetBaseStyle(
         /* [in] */ Integer style);
 
     ECode GetCalendarType(
-        /* [out] */ String* type) override
-    {
-        return NOERROR;
-    }
+        /* [out] */ String* type) override;
+
+    ECode Equals(
+        /* [in] */ IInterface* obj,
+        /* [out] */ Boolean* same) override;
+
+    ECode GetHashCode(
+        /* [out] */ Integer* hash) override;
+
+    ECode Before(
+        /* [in] */ IInterface* when,
+        /* [out] */ Boolean* before) override;
+
+    ECode After(
+        /* [in] */ IInterface* when,
+        /* [out] */ Boolean* after) override;
+
+    ECode CompareTo(
+        /* [in] */ ICalendar* another,
+        /* [out] */ Integer* result) override;
+
+    ECode Roll(
+        /* [in] */ Integer field,
+        /* [in] */ Integer amount) override;
+
+    ECode SetTimeZone(
+        /* [in] */ ITimeZone* value) override;
+
+    ECode GetTimeZone(
+        /* [out] */ ITimeZone** zone) override;
+
+    virtual AutoPtr<ITimeZone> GetZone();
+
+    void SetZoneShared(
+        /* [in] */ Boolean shared);
+
+    ECode SetLenient(
+        /* [in] */ Boolean lenient) override;
+
+    ECode IsLenient(
+        /* [out] */ Boolean* lenient) override;
+
+    ECode SetFirstDayOfWeek(
+        /* [in] */ Integer value) override;
+
+    ECode GetFirstDayOfWeek(
+        /* [out] */ Integer* value) override;
+
+    ECode SetMinimalDaysInFirstWeek(
+        /* [in] */ Integer value) override;
+
+    ECode GetMinimalDaysInFirstWeek(
+        /* [out] */ Integer* value) override;
+
+    ECode IsWeekDateSupported(
+        /* [out] */ Boolean* supported) override;
+
+    ECode GetWeekYear(
+        /* [out] */ Integer* weekYear) override;
+
+    ECode SetWeekDate(
+        /* [in] */ Integer weekYear,
+        /* [in] */ Integer weekOfYear,
+        /* [in] */ Integer dayOfWeek) override;
+
+    ECode GetWeeksInWeekYear(
+        /* [out] */ Integer* weeks) override;
+
+    ECode GetActualMinimum(
+        /* [in] */ Integer field,
+        /* [out] */ Integer* value) override;
+
+    ECode GetActualMaximum(
+        /* [in] */ Integer field,
+        /* [out] */ Integer* value) override;
+
+    static String GetFieldName(
+        /* [in] */ Integer field);
+
+    ECode ToString(
+        /* [out] */ String* desc) override;
 
 protected:
     virtual ECode ComputeTime() = 0;
@@ -189,6 +271,9 @@ protected:
         /* [in] */ Integer value);
 
     virtual ECode Complete();
+
+    ECode CloneImpl(
+        /* [in] */ ICalendar* newObj);
 
 private:
     static AutoPtr<ICalendar> CreateCalendar(
@@ -221,18 +306,28 @@ private:
         /* [in] */ Integer stamp_a,
         /* [in] */ Integer stamp_b);
 
+    static Array<String>& GetFIELD_NAME();
 
-
+    static void AppendValue(
+        /* [in] */ IStringBuilder* sb,
+        /* [in] */ const String& item,
+        /* [in] */ Boolean valid,
+        /* [in] */ Long value);
 
     void SetWeekCountData(
-        /* [in] */ ILocale* desiredLocale)
-    {}
+        /* [in] */ ILocale* desiredLocale);
 
-    void UpdateTime()
-    {}
+    void UpdateTime();
 
-    void AdjustStamp()
-    {}
+    Integer CompareTo(
+        /* [in] */ Long t);
+
+    static Long GetMillisOf(
+        /* [in] */ Calendar* calendar);
+
+    void AdjustStamp();
+
+    void InvalidateWeekFields();
 
 public:
     static constexpr Integer ALL_FIELDS = (1 << FIELD_COUNT) - 1;
@@ -272,9 +367,17 @@ protected:
 private:
     Array<Integer> mStamp;
 
+    Boolean mLenient = true;
+
     AutoPtr<ITimeZone> mZone;
 
     Boolean mSharedZone = false;
+
+    Integer mFirstDayOfWeek = 0;
+
+    Integer mMinimalDaysInFirstWeek = 0;
+
+    AutoPtr<IConcurrentMap> mCachedLocaleData;
 
     static constexpr Integer UNSET = 0;
 
@@ -364,6 +467,12 @@ inline Integer Calendar::AggregateStamp(
         return UNSET;
     }
     return (stamp_a > stamp_b) ? stamp_a : stamp_b;
+}
+
+inline void Calendar::SetZoneShared(
+    /* [in] */ Boolean shared)
+{
+    mSharedZone = shared;
 }
 
 }
