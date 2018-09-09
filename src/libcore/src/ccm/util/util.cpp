@@ -47,6 +47,7 @@ namespace util {
 
 CCM_OBJECT_IMPL(CArrayList);
 ECode CArrayList::Clone(
+    /* [in] */ const InterfaceID& iid,
     /* [out] */ IInterface** obj)
 {
     VALIDATE_NOT_NULL(obj);
@@ -54,13 +55,14 @@ ECode CArrayList::Clone(
     AutoPtr<IArrayList> list;
     CArrayList::New(IID_IArrayList, (IInterface**)&list);
     FAIL_RETURN(ArrayList::CloneImpl(list));
-    *obj = list;
+    *obj = list->Probe(iid);
     REFCOUNT_ADD(*obj);
     return NOERROR;
 }
 
 CCM_OBJECT_IMPL(CDate);
 ECode CDate::Clone(
+    /* [in] */ const InterfaceID& iid,
     /* [out] */ IInterface** obj)
 {
     VALIDATE_NOT_NULL(obj);
@@ -68,7 +70,7 @@ ECode CDate::Clone(
     AutoPtr<IDate> date;
     CDate::New(IID_IDate, (IInterface**)&date);
     FAIL_RETURN(Date::CloneImpl(date));
-    *obj = date;
+    *obj = date->Probe(iid);
     REFCOUNT_ADD(*obj);
     return NOERROR;
 }
@@ -77,6 +79,7 @@ CCM_OBJECT_IMPL(CFormatter);
 
 CCM_OBJECT_IMPL(CHashMap);
 ECode CHashMap::Clone(
+    /* [in] */ const InterfaceID& iid,
     /* [out] */ IInterface** obj)
 {
     VALIDATE_NOT_NULL(obj);
@@ -84,13 +87,14 @@ ECode CHashMap::Clone(
     AutoPtr<IHashMap> map;
     CHashMap::New(IID_IHashMap, (IInterface**)&map);
     FAIL_RETURN(HashMap::CloneImpl(map));
-    *obj = map;
+    *obj = map->Probe(iid);
     REFCOUNT_ADD(*obj);
     return NOERROR;
 }
 
 CCM_OBJECT_IMPL(CHashSet);
 ECode CHashSet::Clone(
+    /* [in] */ const InterfaceID& iid,
     /* [out] */ IInterface** obj)
 {
     VALIDATE_NOT_NULL(obj);
@@ -98,13 +102,14 @@ ECode CHashSet::Clone(
     AutoPtr<IHashSet> set;
     CHashSet::New(IID_IHashSet, (IInterface**)&set);
     FAIL_RETURN(HashSet::CloneImpl(set));
-    *obj = set;
+    *obj = set->Probe(iid);
     REFCOUNT_ADD(*obj);
     return NOERROR;
 }
 
 CCM_OBJECT_IMPL(CHashtable);
 ECode CHashtable::Clone(
+    /* [in] */ const InterfaceID& iid,
     /* [out] */ IInterface** obj)
 {
     VALIDATE_NOT_NULL(obj);
@@ -112,27 +117,29 @@ ECode CHashtable::Clone(
     AutoPtr<IHashtable> ht;
     CHashtable::New(IID_IHashtable, (IInterface**)&ht);
     FAIL_RETURN(Hashtable::CloneImpl(ht));
-    *obj = ht;
+    *obj = ht->Probe(iid);
     REFCOUNT_ADD(*obj);
     return NOERROR;
 }
 
 CCM_OBJECT_IMPL(CLinkedHashMap);
 ECode CLinkedHashMap::Clone(
-/* [out] */ IInterface** obj)
+    /* [in] */ const InterfaceID& iid,
+    /* [out] */ IInterface** obj)
 {
     VALIDATE_NOT_NULL(obj);
 
     AutoPtr<ILinkedHashMap> map;
     CLinkedHashMap::New(IID_ILinkedHashMap, (IInterface**)&map);
     FAIL_RETURN(LinkedHashMap::CloneImpl(map));
-    *obj = map;
+    *obj = map->Probe(iid);
     REFCOUNT_ADD(*obj);
     return NOERROR;
 }
 
 CCM_OBJECT_IMPL(CLinkedHashSet);
 ECode CLinkedHashSet::Clone(
+    /* [in] */ const InterfaceID& iid,
     /* [out] */ IInterface** obj)
 {
     VALIDATE_NOT_NULL(obj);
@@ -140,13 +147,14 @@ ECode CLinkedHashSet::Clone(
     AutoPtr<IHashSet> set;
     CLinkedHashSet::New(IID_IHashSet, (IInterface**)&set);
     FAIL_RETURN(LinkedHashSet::CloneImpl(set));
-    *obj = set;
+    *obj = set->Probe(iid);
     REFCOUNT_ADD(*obj);
     return NOERROR;
 }
 
 CCM_OBJECT_IMPL(CLocale);
 ECode CLocale::Clone(
+    /* [in] */ const InterfaceID& iid,
     /* [out] */ IInterface** obj)
 {
     VALIDATE_NOT_NULL(obj);
@@ -154,7 +162,7 @@ ECode CLocale::Clone(
     AutoPtr<ILocale> locale;
     CLocale::New(IID_ILocale, (IInterface**)&locale);
     FAIL_RETURN(Locale::CloneImpl(locale));
-    *obj = locale;
+    *obj = locale->Probe(iid);
     REFCOUNT_ADD(*obj);
     return NOERROR;
 }
@@ -211,6 +219,7 @@ CCM_OBJECT_IMPL(CLocaleBuilder);
 
 CCM_OBJECT_IMPL(CProperties);
 ECode CProperties::Clone(
+    /* [in] */ const InterfaceID& iid,
     /* [out] */ IInterface** obj)
 {
     VALIDATE_NOT_NULL(obj);
@@ -218,7 +227,7 @@ ECode CProperties::Clone(
     AutoPtr<IProperties> prop;
     CProperties::New(IID_IProperties, (IInterface**)&prop);
     FAIL_RETURN(Properties::CloneImpl(IHashtable::Probe(prop)));
-    *obj = prop;
+    *obj = prop->Probe(iid);
     REFCOUNT_ADD(*obj);
     return NOERROR;
 }

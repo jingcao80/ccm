@@ -24,6 +24,7 @@ namespace core {
 interface ICloneable
 {
     Clone(
+        [in] InterfaceID iid,
         [out] IInterface** obj);
 }
 

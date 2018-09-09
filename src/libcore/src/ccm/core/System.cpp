@@ -264,6 +264,7 @@ ECode System::PropertiesWithNonOverrideableDefaults::Constructor(
 }
 
 ECode System::PropertiesWithNonOverrideableDefaults::Clone(
+    /* [in] */ const InterfaceID& iid,
     /* [out] */ IInterface** obj)
 {
     return NOERROR;

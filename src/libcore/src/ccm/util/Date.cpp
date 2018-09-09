@@ -46,6 +46,8 @@ using ccm::util::calendar::CalendarUtils;
 using ccm::util::calendar::ICalendarDate;
 using ccm::util::calendar::ICalendarSystem;
 using ccm::util::calendar::IEra;
+using ccm::util::calendar::IID_IBaseCalendarDate;
+using ccm::util::calendar::IID_ICalendarDate;
 
 namespace ccm {
 namespace util {
@@ -166,9 +168,9 @@ ECode Date::CloneImpl(
 
     dateObj->mFastTime = mFastTime;
     if (mCdate != nullptr) {
-        AutoPtr<IInterface> cdate;
-        ICloneable::Probe(mCdate)->Clone(&cdate);
-        dateObj->mCdate = IBaseCalendarDate::Probe(cdate);
+        AutoPtr<IBaseCalendarDate> cdate;
+        ICloneable::Probe(mCdate)->Clone(IID_IBaseCalendarDate, (IInterface**)&cdate);
+        dateObj->mCdate = cdate;
     }
     return NOERROR;
 }
@@ -630,10 +632,10 @@ Long Date::GetMillisOf(
                 normalized)) {
         return dateObj->mFastTime;
     }
-    AutoPtr<IInterface> cdate;
-    ICloneable::Probe(dateObj->mCdate)->Clone(&cdate);
+    AutoPtr<ICalendarDate> cdate;
+    ICloneable::Probe(dateObj->mCdate)->Clone(IID_ICalendarDate, (IInterface**)&cdate);
     Long time;
-    ICalendarSystem::Probe(GetGcal())->GetTime(ICalendarDate::Probe(cdate), &time);
+    ICalendarSystem::Probe(GetGcal())->GetTime(cdate, &time);
     return time;
 }
 

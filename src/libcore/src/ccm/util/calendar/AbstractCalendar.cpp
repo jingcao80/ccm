@@ -300,9 +300,8 @@ ECode AbstractCalendar::GetNthDayOfWeek(
 {
     VALIDATE_NOT_NULL(outDate);
 
-    AutoPtr<IInterface> co;
-    ICloneable::Probe(inDate)->Clone(&co);
-    ICalendarDate* ndate = ICalendarDate::Probe(co);
+    AutoPtr<ICalendarDate> ndate;
+    ICloneable::Probe(inDate)->Clone(IID_ICalendarDate, (IInterface**)&ndate);
     Normalize(ndate);
     Long fd;
     GetFixedDate(ndate, &fd);

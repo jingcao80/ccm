@@ -30,6 +30,7 @@ public:
     CCM_OBJECT_DECL();
 
     ECode Clone(
+        /* [in] */ const InterfaceID& iid,
         /* [out] */ IInterface** obj) override;
 };
 

@@ -45,6 +45,7 @@ protected:
             /* [in] */ IProperties* defaults);
 
         ECode Clone(
+            /* [in] */ const InterfaceID& iid,
             /* [out] */ IInterface** obj) override;
 
         ECode ToString(

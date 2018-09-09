@@ -129,6 +129,7 @@ ECode Gregorian::Date::SetNormalizedYear(
 }
 
 ECode Gregorian::Date::Clone(
+    /* [in] */ const InterfaceID& iid,
     /* [out] */ IInterface** obj)
 {
     VALIDATE_NOT_NULL(obj);
@@ -137,7 +138,7 @@ ECode Gregorian::Date::Clone(
     ECode ec = date->Constructor();
     if (FAILED(ec)) return ec;
     FAIL_RETURN(CloneImpl(date.Get()));
-    *obj = (ICalendarDate*)date.Get();
+    *obj = date->Probe(iid);
     REFCOUNT_ADD(*obj);
     return NOERROR;
 }

@@ -46,6 +46,7 @@ protected:
             /* [in] */ Integer normalizedYear) override;
 
         ECode Clone(
+            /* [in] */ const InterfaceID& iid,
             /* [out] */ IInterface** obj) override;
     };
 

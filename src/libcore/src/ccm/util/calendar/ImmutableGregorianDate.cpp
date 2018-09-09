@@ -320,6 +320,7 @@ ECode ImmutableGregorianDate::GetHashCode(
 }
 
 ECode ImmutableGregorianDate::Clone(
+    /* [in] */ const InterfaceID& iid,
     /* [out] */ IInterface** obj)
 {
     VALIDATE_NOT_NULL(obj);
@@ -327,7 +328,7 @@ ECode ImmutableGregorianDate::Clone(
     AutoPtr<ImmutableGregorianDate> date = new ImmutableGregorianDate();
     date->mDate = mDate;
     BaseCalendar::Date::CloneImpl(date.Get());
-    *obj = (IBaseCalendarDate*)date.Get();
+    *obj = date->Probe(iid);
     REFCOUNT_ADD(*obj);
     return NOERROR;
 }

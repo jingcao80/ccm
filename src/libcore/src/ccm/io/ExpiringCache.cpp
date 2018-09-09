@@ -45,6 +45,7 @@ ExpiringCache::ExpiringCache(
     {
     public:
         ECode Clone(
+            /* [in] */ const InterfaceID& iid,
             /* [out] */ IInterface** obj) override
         {
             return E_UNSUPPORTED_OPERATION_EXCEPTION;

@@ -139,9 +139,9 @@ ECode HashSet::CloneImpl(
     /* [in] */ IHashSet* newObj)
 {
     HashSet* set = (HashSet*)newObj;
-    AutoPtr<IInterface> map;
-    FAIL_RETURN(ICloneable::Probe(set->mMap)->Clone(&map));
-    mMap = IHashMap::Probe(map);
+    AutoPtr<IHashMap> map;
+    FAIL_RETURN(ICloneable::Probe(set->mMap)->Clone(IID_IHashMap, (IInterface**)&map));
+    mMap = map;
     return NOERROR;
 }
 
