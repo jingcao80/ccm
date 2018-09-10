@@ -28,7 +28,11 @@ namespace util {
     version(0.1.0)
 ]
 interface IGregorianCalendar
-{}
+{
+    const Integer BC = 0;
+
+    const Integer AD = 1;
+}
 
 }
 }
