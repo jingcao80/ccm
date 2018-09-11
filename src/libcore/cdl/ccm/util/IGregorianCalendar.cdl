@@ -14,6 +14,8 @@
 // limitations under the License.
 //=========================================================================
 
+interface ccm::util::IDate;
+
 namespace ccm {
 namespace util {
 
@@ -32,6 +34,9 @@ interface IGregorianCalendar
     const Integer BC = 0;
 
     const Integer AD = 1;
+
+    SetGregorianChange(
+        [in] IDate* date);
 }
 
 }

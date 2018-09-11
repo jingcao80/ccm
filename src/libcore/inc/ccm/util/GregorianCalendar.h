@@ -18,12 +18,15 @@
 #define __CCM_UTIL_GREGORIANCALENDAR_H__
 
 #include "ccm/util/Calendar.h"
+#include "ccm.util.IDate.h"
 #include "ccm.util.IGregorianCalendar.h"
 #include "ccm.util.ILocale.h"
 #include "ccm.util.ITimeZone.h"
+#include "ccm.util.calendar.IBaseCalendar.h"
 #include "ccm.util.calendar.IBaseCalendarDate.h"
 #include "ccm.util.calendar.IGregorian.h"
 
+using ccm::util::calendar::IBaseCalendar;
 using ccm::util::calendar::IBaseCalendarDate;
 using ccm::util::calendar::IGregorian;
 
@@ -78,10 +81,77 @@ public:
         /* [in] */ Integer second,
         /* [in] */ Integer millis);
 
+    ECode Constructor(
+        /* [in] */ ITimeZone* zone,
+        /* [in] */ ILocale* locale,
+        /* [in] */ Boolean flag);
+
+    ECode Constructor(
+        /* [in] */ Long milliseconds);
+
+    ECode SetGregorianChange(
+        /* [in] */ IDate* date) override;
+
 private:
     static AutoPtr<IGregorian> GetGcal();
 
+    void SetGregorianChange(
+        /* [in] */ Long cutoverTime);
+
+
+    static AutoPtr<IBaseCalendar> GetJulianCalendarSystem()
+    {
+        return nullptr;
+    }
+
+    AutoPtr<IBaseCalendarDate> GetGregorianCutoverDate()
+    {
+        return nullptr;
+    }
+
+public:
+    static constexpr Long DEFAULT_GREGORIAN_CUTOVER = -12219292800000ll;
+
 private:
+    static constexpr Integer EPOCH_OFFSET = 719163; // Fixed date of January 1, 1970 (Gregorian)
+    static constexpr Integer EPOCH_YEAR = 1970;
+
+    // Useful millisecond constants.  Although ONE_DAY and ONE_WEEK can fit
+    // into ints, they must be longs in order to prevent arithmetic overflow
+    // when performing (bug 4173516).
+    static constexpr Integer ONE_SECOND = 1000;
+    static constexpr Integer ONE_MINUTE = 60 * ONE_SECOND;
+    static constexpr Integer ONE_HOUR = 60 * ONE_MINUTE;
+    static constexpr Long ONE_DAY = 24 * ONE_HOUR;
+    static constexpr Long ONE_WEEK = 7 * ONE_DAY;
+
+    /**
+     * The point at which the Gregorian calendar rules are used, measured in
+     * milliseconds from the standard epoch.  Default is October 15, 1582
+     * (Gregorian) 00:00:00 UTC or -12219292800000L.  For this value, October 4,
+     * 1582 (Julian) is followed by October 15, 1582 (Gregorian).  This
+     * corresponds to Julian day number 2299161.
+     */
+    Long mGregorianCutover = DEFAULT_GREGORIAN_CUTOVER;
+
+    /**
+     * The fixed date of the gregorianCutover.
+     */
+    Long mGregorianCutoverDate =
+            (((DEFAULT_GREGORIAN_CUTOVER + 1) / ONE_DAY) - 1) + EPOCH_OFFSET; // == 577736
+
+    /**
+     * The normalized year of the gregorianCutover in Gregorian, with
+     * 0 representing 1 BCE, -1 representing 2 BCE, etc.
+     */
+    Integer mGregorianCutoverYear = 1582;
+
+    /**
+     * The normalized year of the gregorianCutover in Julian, with 0
+     * representing 1 BCE, -1 representing 2 BCE, etc.
+     */
+    Integer mGregorianCutoverYearJulian = 1582;
+
     AutoPtr<IBaseCalendarDate> mGdate;
 };
 

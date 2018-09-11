@@ -19,11 +19,15 @@
 #include "ccm/util/GregorianCalendar.h"
 #include "ccm/util/TimeZone.h"
 #include "ccm/util/calendar/CalendarSystem.h"
+#include "ccm/util/calendar/CalendarUtils.h"
+#include "ccm.core.ILong.h"
 #include "ccm.util.calendar.ICalendarDate.h"
 #include "ccm.util.calendar.ICalendarSystem.h"
 
+using ccm::core::ILong;
 using ccm::core::System;
 using ccm::util::calendar::CalendarSystem;
+using ccm::util::calendar::CalendarUtils;
 using ccm::util::calendar::ICalendarDate;
 using ccm::util::calendar::ICalendarSystem;
 
@@ -143,6 +147,76 @@ ECode GregorianCalendar::Constructor(
     // public.
     InternalSet(MILLISECOND, millis);
     return NOERROR;
+}
+
+ECode GregorianCalendar::Constructor(
+    /* [in] */ ITimeZone* zone,
+    /* [in] */ ILocale* locale,
+    /* [in] */ Boolean flag)
+{
+    Constructor(zone, locale);
+    AutoPtr<ICalendarDate> date;
+    ICalendarSystem::Probe(GetGcal())->NewCalendarDate(GetZone(), &date);
+    mGdate = IBaseCalendarDate::Probe(date);
+    return NOERROR;
+}
+
+ECode GregorianCalendar::Constructor(
+    /* [in] */ Long milliseconds)
+{
+    Constructor();
+    SetTimeInMillis(milliseconds);
+    return NOERROR;
+}
+
+ECode GregorianCalendar::SetGregorianChange(
+    /* [in] */ IDate* date)
+{
+    Long cutoverTime;
+    date->GetTime(&cutoverTime);
+    if (cutoverTime == mGregorianCutover) {
+        return NOERROR;
+    }
+    // Before changing the cutover date, make sure to have the
+    // time of this calendar.
+    Complete();
+    SetGregorianChange(cutoverTime);
+    return NOERROR;
+}
+
+void GregorianCalendar::SetGregorianChange(
+    /* [in] */ Long cutoverTime)
+{
+    mGregorianCutover = cutoverTime;
+    mGregorianCutoverDate = CalendarUtils::FloorDivide(cutoverTime, ONE_DAY)
+            + EPOCH_OFFSET;
+
+    // To provide the "pure" Julian calendar as advertised.
+    // Strictly speaking, the last millisecond should be a
+    // Gregorian date. However, the API doc specifies that setting
+    // the cutover date to ILong::MAX_VALUE will make this calendar
+    // a pure Julian calendar. (See 4167995)
+    if (cutoverTime == ILong::MAX_VALUE) {
+        mGregorianCutoverDate++;
+    }
+
+    AutoPtr<IBaseCalendarDate> d = GetGregorianCutoverDate();
+
+    // Set the cutover year (in the Gregorian year numbering)
+    ICalendarDate::Probe(d)->GetYear(&mGregorianCutoverYear);
+
+    AutoPtr<IBaseCalendar> julianCal = GetJulianCalendarSystem();
+    AutoPtr<ICalendarDate> date;
+    ICalendarSystem::Probe(julianCal)->NewCalendarDate(TimeZone::NO_TIMEZONE, &date);
+    d = IBaseCalendarDate::Probe(date);
+    julianCal->GetCalendarDateFromFixedDate(date, mGregorianCutoverDate - 1);
+    d->GetNormalizedYear(&mGregorianCutoverYearJulian);
+
+    if (mTime < mGregorianCutover) {
+        // The field values are no longer valid under the new
+        // cutover date.
+        SetUnnormalized();
+    }
 }
 
 }

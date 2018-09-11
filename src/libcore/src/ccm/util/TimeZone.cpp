@@ -37,6 +37,8 @@ namespace util {
 
 CCM_INTERFACE_IMPL_3(TimeZone, SyncObject, ITimeZone, ISerializable, ICloneable);
 
+AutoPtr<ITimeZone> TimeZone::NO_TIMEZONE;
+
 SyncObject& TimeZone::GetClassLock()
 {
     static SyncObject sLock;

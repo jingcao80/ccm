@@ -122,6 +122,9 @@ private:
         /* [in] */ Integer count,
         /* [in] */ Integer value);
 
+public:
+    static AutoPtr<ITimeZone> NO_TIMEZONE;
+
 private:
     String mID;
 };
