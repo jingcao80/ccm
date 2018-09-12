@@ -92,6 +92,27 @@ public:
     ECode SetGregorianChange(
         /* [in] */ IDate* date) override;
 
+    ECode GetGregorianChange(
+        /* [out] */ IDate** date) override final;
+
+    ECode IsLeapYear(
+        /* [in] */ Integer year,
+        /* [out] */ Boolean* leap) override;
+
+    ECode GetCalendarType(
+        /* [out] */ String* type) override;
+
+    ECode Equals(
+        /* [in] */ IInterface* obj,
+        /* [out] */ Boolean* same) override;
+
+    ECode GetHashCode(
+        /* [out] */ Integer* hash) override;
+
+    ECode Add(
+        /* [in] */ Integer field,
+        /* [in] */ Integer amount) override;
+
 private:
     static AutoPtr<IGregorian> GetGcal();
 
@@ -104,12 +125,43 @@ private:
         return nullptr;
     }
 
+    AutoPtr<IBaseCalendarDate> GetCalendarDate(
+        /* [in] */ Long fd)
+    {
+        return nullptr;
+    }
+
+    Long AdjustForZoneAndDaylightSavingsTime(
+        /* [in] */ Integer tzMask,
+        /* [in] */ Long utcTimeInMillis,
+        /* [in] */ ITimeZone* zone)
+    {
+        return 0;
+    }
+
     AutoPtr<IBaseCalendarDate> GetGregorianCutoverDate()
     {
         return nullptr;
     }
 
+    Integer InternalGetEra()
+    {
+        return 0;
+    }
+
+    void PinDayOfMonth()
+    {}
+
+    Long GetCurrentFixedDate()
+    {
+        return 0;
+    }
+
 public:
+    static constexpr Integer BCE = 0;
+
+    static constexpr Integer CE = 1;
+
     static constexpr Long DEFAULT_GREGORIAN_CUTOVER = -12219292800000ll;
 
 private:
