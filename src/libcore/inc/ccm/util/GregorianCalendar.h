@@ -113,6 +113,14 @@ public:
         /* [in] */ Integer field,
         /* [in] */ Integer amount) override;
 
+    ECode Roll(
+        /* [in] */ Integer field,
+        /* [in] */ Boolean up) override;
+
+    ECode Roll(
+        /* [in] */ Integer field,
+        /* [in] */ Integer amount) override;
+
 private:
     static AutoPtr<IGregorian> GetGcal();
 
@@ -155,6 +163,37 @@ private:
     Long GetCurrentFixedDate()
     {
         return 0;
+    }
+
+    Boolean IsCutoverYear(
+        /* [in] */ Integer normalizedYear)
+    {
+        return false;
+    }
+
+    Integer MonthLength(
+        /* [in] */ Integer month,
+        /* [in] */ Integer year)
+    {
+        return 0;
+    }
+
+    Integer MonthLength(
+        /* [in] */ Integer month)
+    {
+        return 0;
+    }
+
+    static Integer GetRolledValue(
+        /* [in] */ Integer value,
+        /* [in] */ Integer amount,
+        /* [in] */ Integer min,
+        /* [in] */ Integer max)
+    {}
+
+    AutoPtr<IBaseCalendar> GetCutoverCalendarSystem()
+    {
+        return nullptr;
     }
 
 public:
@@ -204,7 +243,21 @@ private:
      */
     Integer mGregorianCutoverYearJulian = 1582;
 
+    /**
+     * gdate always has a sun.util.calendar.Gregorian.Date instance to
+     * avoid overhead of creating it. The assumption is that most
+     * app
+     */
     AutoPtr<IBaseCalendarDate> mGdate;
+
+    /**
+     * Reference to either gdate or a JulianCalendar.Date
+     * instance. After calling complete(), this value is guaranteed to
+     * be set.
+     */
+    AutoPtr<IBaseCalendarDate> mCdate;
+
+    AutoPtr<IBaseCalendar> mCalsys;
 };
 
 }

@@ -491,6 +491,258 @@ ECode GregorianCalendar::Add(
     }
 }
 
+ECode GregorianCalendar::Roll(
+    /* [in] */ Integer field,
+    /* [in] */ Boolean up)
+{
+    return Roll(field, up ? +1 : -1);
+}
+
+ECode GregorianCalendar::Roll(
+    /* [in] */ Integer field,
+    /* [in] */ Integer amount)
+{
+    // If amount == 0, do nothing even the given field is out of
+    // range.
+    if (amount == 0) {
+        return NOERROR;
+    }
+
+    if (field < 0 || field >= ZONE_OFFSET) {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    // Sync the time and calendar fields.
+    Complete();
+
+    Integer min, max;
+    GetMinimum(field, &min);
+    GetMaximum(field, &max);
+
+    switch(field) {
+        case AM_PM:
+        case ERA:
+        case YEAR:
+        case MINUTE:
+        case SECOND:
+        case MILLISECOND:
+            // These fields are handled simply, since they have fixed minima
+            // and maxima.  The field DAY_OF_MONTH is almost as simple.  Other
+            // fields are complicated, since the range within they must roll
+            // varies depending on the date.
+            break;
+
+        case HOUR:
+        case HOUR_OF_DAY:
+            {
+                Integer unit = max + 1; // 12 or 24 hours
+                Integer h = InternalGet(field);
+                Integer nh = (h + amount) % unit;
+                if (nh < 0) {
+                    nh += unit;
+                }
+                mTime += ONE_HOUR * (nh - h);
+
+                // The day might have changed, which could happen if
+                // the daylight saving time transition brings it to
+                // the next day, although it's very unlikely. But we
+                // have to make sure not to change the larger fields.
+                AutoPtr<ICalendarDate> d;
+                ICalendarSystem::Probe(mCalsys)->GetCalendarDate(
+                        mTime, GetZone(), &d);
+                Integer days;
+                if (d->GetDayOfMonth(&days), days != InternalGet(DAY_OF_MONTH)) {
+                    d->SetDate(InternalGet(YEAR),
+                            InternalGet(MONTH) + 1,
+                            InternalGet(DAY_OF_MONTH));
+                    if (field == HOUR) {
+                        CHECK(InternalGet(AM_PM) == PM);
+                        d->AddHours(+12); // restore PM
+                    }
+                    ICalendarSystem::Probe(mCalsys)->GetTime(d, &mTime);
+                }
+                Integer hourOfDay;
+                d->GetHours(&hourOfDay);
+                InternalSet(field, hourOfDay % unit);
+                if (field == HOUR) {
+                    InternalSet(HOUR_OF_DAY, hourOfDay);
+                }
+                else {
+                    InternalSet(AM_PM, hourOfDay / 12);
+                    InternalSet(HOUR, hourOfDay % 12);
+                }
+
+                // Time zone offset and/or daylight saving might have changed.
+                Integer zoneOffset, saving;
+                d->GetZoneOffset(&zoneOffset);
+                d->GetDaylightSaving(&saving);
+                InternalSet(ZONE_OFFSET, zoneOffset - saving);
+                InternalSet(DST_OFFSET, saving);
+                return NOERROR;
+            }
+
+        case MONTH:
+            // Rolling the month involves both pinning the final value to [0, 11]
+            // and adjusting the DAY_OF_MONTH if necessary.  We only adjust the
+            // DAY_OF_MONTH if, after updating the MONTH field, it is illegal.
+            // E.g., <jan31>.roll(MONTH, 1) -> <feb28> or <feb29>.
+            {
+                Integer normYear;
+                mCdate->GetNormalizedYear(&normYear);
+                if (!IsCutoverYear(normYear)) {
+                    Integer mon = (InternalGet(MONTH) + amount) % 12;
+                    if (mon < 0) {
+                        mon += 12;
+                    }
+                    Set(MONTH, mon);
+
+                    // Keep the day of month in the range.  We don't want to spill over
+                    // into the next month; e.g., we don't want jan31 + 1 mo -> feb31 ->
+                    // mar3.
+                    Integer monthLen = MonthLength(mon);
+                    if (InternalGet(DAY_OF_MONTH) > monthLen) {
+                        Set(DAY_OF_MONTH, monthLen);
+                    }
+                }
+                else {
+                    // We need to take care of different lengths in
+                    // year and month due to the cutover.
+                    Integer yearLength;
+                    GetActualMaximum(MONTH, &yearLength);
+                    yearLength += 1;
+                    Integer mon = (InternalGet(MONTH) + amount) % yearLength;
+                    if (mon < 0) {
+                        mon += yearLength;
+                    }
+                    Set(MONTH, mon);
+                    Integer monthLen;
+                    GetActualMaximum(DAY_OF_MONTH, &monthLen);
+                    if (InternalGet(DAY_OF_MONTH) > monthLen) {
+                        Set(DAY_OF_MONTH, monthLen);
+                    }
+                }
+                return NOERROR;
+            }
+
+        case WEEK_OF_YEAR:
+            {
+                Integer y;
+                mCdate->GetNormalizedYear(&y);
+                GetActualMaximum(WEEK_OF_YEAR, &max);
+                Set(DAY_OF_WEEK, InternalGet(DAY_OF_WEEK));
+                Integer woy = InternalGet(WEEK_OF_YEAR);
+                Integer value = woy + amount;
+                if (!IsCutoverYear(y)) {
+                    Integer weekYear;
+                    GetWeekYear(&weekYear);
+                    if (weekYear == y) {
+                        // If the new value is in between min and max
+                        // (exclusive), then we can use the value.
+                        if (value > min && value < max) {
+                            Set(WEEK_OF_YEAR, value);
+                            return NOERROR;
+                        }
+                        Long fd = GetCurrentFixedDate();
+                        // Make sure that the min week has the current DAY_OF_WEEK
+                        // in the calendar year
+                        Long day1 = fd - (7 * (woy - min));
+                        Integer year;
+                        if (mCalsys->GetYearFromFixedDate(day1, &year), year != y) {
+                            min++;
+                        }
+
+                        // Make sure the same thing for the max week
+                        fd += 7 * (max - InternalGet(WEEK_OF_YEAR));
+                        if (mCalsys->GetYearFromFixedDate(fd, &year), year != y) {
+                            max--;
+                        }
+                    }
+                    else {
+                        // When WEEK_OF_YEAR and YEAR are out of sync,
+                        // adjust woy and amount to stay in the calendar year.
+                        if (weekYear > y) {
+                            if (amount < 0) {
+                                amount++;
+                            }
+                            woy = max;
+                        }
+                        else {
+                            if (amount > 0) {
+                                amount -= woy - max;
+                            }
+                            woy = min;
+                        }
+                    }
+                    Set(field, GetRolledValue(woy, amount, min, max));
+                    return NOERROR;
+                }
+
+                // Handle cutover here.
+                Long fd = GetCurrentFixedDate();
+                AutoPtr<IBaseCalendar> cal;
+                if (mGregorianCutoverYear == mGregorianCutoverYearJulian) {
+                    cal = GetCutoverCalendarSystem();
+                }
+                else if (y == mGregorianCutoverYear) {
+                    cal = IBaseCalendar::Probe(GetGcal());
+                }
+                else {
+                    cal = GetJulianCalendarSystem();
+                }
+                Long day1 = fd - (7 * (woy - min));
+                // Make sure that the min week has the current DAY_OF_WEEK
+                Integer year;
+                if (cal->GetYearFromFixedDate(day1, &year), year != y) {
+                    min++;
+                }
+
+                // Make sure the same thing for the max week
+                fd += 7 * (max - woy);
+                cal = (fd >= mGregorianCutoverDate) ? IBaseCalendar::Probe(GetGcal()) : GetJulianCalendarSystem().Get();
+                if (cal->GetYearFromFixedDate(fd, &year), year != y) {
+                    max--;
+                }
+                // value: the new WEEK_OF_YEAR which must be converted
+                // to month and day of month.
+                value = GetRolledValue(woy, amount, min, max) - 1;
+                AutoPtr<IBaseCalendarDate> d = GetCalendarDate(day1 + value * 7);
+                Integer month, days;
+                ICalendarDate::Probe(d)->GetMonth(&month);
+                ICalendarDate::Probe(d)->GetDayOfMonth(&days);
+                Set(MONTH, month - 1);
+                Set(DAY_OF_MONTH, days);
+                return NOERROR;
+            }
+
+        case WEEK_OF_MONTH:
+            {
+
+            }
+
+        case DAY_OF_MONTH:
+            {
+
+            }
+
+        case DAY_OF_YEAR:
+            {
+
+            }
+
+        case DAY_OF_WEEK:
+            {
+
+            }
+
+        case DAY_OF_WEEK_IN_MONTH:
+            {
+
+            }
+    }
+
+    Set(field, GetRolledValue(InternalGet(field), amount, min, max));
+}
+
 }
 }
 
