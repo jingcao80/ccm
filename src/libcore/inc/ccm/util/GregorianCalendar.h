@@ -121,12 +121,41 @@ public:
         /* [in] */ Integer field,
         /* [in] */ Integer amount) override;
 
+    ECode GetMinimum(
+        /* [in] */ Integer field,
+        /* [out] */ Integer* value) override;
+
+    ECode GetMaximum(
+        /* [in] */ Integer field,
+        /* [out] */ Integer* value) override;
+
+    ECode GetGreatestMinimum(
+        /* [in] */ Integer field,
+        /* [out] */ Integer* value) override;
+
+    ECode GetLeastMaximum(
+        /* [in] */ Integer field,
+        /* [out] */ Integer* value) override;
+
+    ECode GetActualMinimum(
+        /* [in] */ Integer field,
+        /* [out] */ Integer* value) override;
+
+    ECode GetActualMaximum(
+        /* [in] */ Integer field,
+        /* [out] */ Integer* value) override;
+
 private:
     static AutoPtr<IGregorian> GetGcal();
 
     void SetGregorianChange(
         /* [in] */ Long cutoverTime);
 
+
+    Long GetYearOffsetInMillis()
+    {
+        return 0;
+    }
 
     static AutoPtr<IBaseCalendar> GetJulianCalendarSystem()
     {
@@ -196,12 +225,22 @@ private:
         return nullptr;
     }
 
-public:
-    static constexpr Integer BCE = 0;
+    Long GetFixedDateMonth1(
+        /* [in] */ IBaseCalendarDate* date,
+        /* [in] */ Long fixedDate)
+    {
+        return 0;
+    }
 
-    static constexpr Integer CE = 1;
+    Integer ActualMonthLength()
+    {
+        return 0;
+    }
 
-    static constexpr Long DEFAULT_GREGORIAN_CUTOVER = -12219292800000ll;
+    AutoPtr<GregorianCalendar> GetNormalizedCalendar()
+    {
+        return nullptr;
+    }
 
 private:
     static constexpr Integer EPOCH_OFFSET = 719163; // Fixed date of January 1, 1970 (Gregorian)
@@ -216,6 +255,72 @@ private:
     static constexpr Long ONE_DAY = 24 * ONE_HOUR;
     static constexpr Long ONE_WEEK = 7 * ONE_DAY;
 
+public:
+    static constexpr Integer BCE = 0;
+
+    static constexpr Integer CE = 1;
+
+    static constexpr Integer MIN_VALUES[] = {
+        BCE,            // ERA
+        1,              // YEAR
+        JANUARY,        // MONTH
+        1,              // WEEK_OF_YEAR
+        0,              // WEEK_OF_MONTH
+        1,              // DAY_OF_MONTH
+        1,              // DAY_OF_YEAR
+        SUNDAY,         // DAY_OF_WEEK
+        1,              // DAY_OF_WEEK_IN_MONTH
+        AM,             // AM_PM
+        0,              // HOUR
+        0,              // HOUR_OF_DAY
+        0,              // MINUTE
+        0,              // SECOND
+        0,              // MILLISECOND
+        -13 * ONE_HOUR, // ZONE_OFFSET (UNIX compatibility)
+        0               // DST_OFFSET
+    };
+    static constexpr Integer LEAST_MAX_VALUES[] = {
+        CE,             // ERA
+        292269054,      // YEAR
+        DECEMBER,       // MONTH
+        52,             // WEEK_OF_YEAR
+        4,              // WEEK_OF_MONTH
+        28,             // DAY_OF_MONTH
+        365,            // DAY_OF_YEAR
+        SATURDAY,       // DAY_OF_WEEK
+        4,              // DAY_OF_WEEK_IN
+        PM,             // AM_PM
+        11,             // HOUR
+        23,             // HOUR_OF_DAY
+        59,             // MINUTE
+        59,             // SECOND
+        999,            // MILLISECOND
+        14 * ONE_HOUR,  // ZONE_OFFSET
+        20 * ONE_MINUTE // DST_OFFSET (historical least maximum)
+    };
+    static constexpr Integer MAX_VALUES[] = {
+        CE,             // ERA
+        292278994,      // YEAR
+        DECEMBER,       // MONTH
+        53,             // WEEK_OF_YEAR
+        6,              // WEEK_OF_MONTH
+        31,             // DAY_OF_MONTH
+        366,            // DAY_OF_YEAR
+        SATURDAY,       // DAY_OF_WEEK
+        6,              // DAY_OF_WEEK_IN
+        PM,             // AM_PM
+        11,             // HOUR
+        23,             // HOUR_OF_DAY
+        59,             // MINUTE
+        59,             // SECOND
+        999,            // MILLISECOND
+        14 * ONE_HOUR,  // ZONE_OFFSET
+        2 * ONE_HOUR    // DST_OFFSET (double summer time)
+    };
+
+    static constexpr Long DEFAULT_GREGORIAN_CUTOVER = -12219292800000ll;
+
+private:
     /**
      * The point at which the Gregorian calendar rules are used, measured in
      * milliseconds from the standard epoch.  Default is October 15, 1582

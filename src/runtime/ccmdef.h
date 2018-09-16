@@ -128,9 +128,11 @@ inline int ArrayLength(const T (&)[N])
 
 #ifndef CHECK
 #if defined(_DEBUG)
-#define CHECK(e)    assert(e)
+#define CHECK(e)        assert(e)
+#define BLOCK_CHECK()   if (true)
 #else
 #define CHECK(e)
+#define BLOCK_CHECK()   if (false)
 #endif
 #endif
 

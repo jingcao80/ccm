@@ -14,11 +14,13 @@
 // limitations under the License.
 //=========================================================================
 
+#include "ccm/core/Math.h"
 #include "ccm/core/System.h"
 #include "ccm/util/CDate.h"
 #include "ccm/util/CLocale.h"
 #include "ccm/util/GregorianCalendar.h"
 #include "ccm/util/TimeZone.h"
+#include "ccm/util/calendar/BaseCalendar.h"
 #include "ccm/util/calendar/CalendarSystem.h"
 #include "ccm/util/calendar/CalendarUtils.h"
 #include "ccm.core.ILong.h"
@@ -26,16 +28,23 @@
 #include "ccm.util.calendar.ICalendarSystem.h"
 
 using ccm::core::ILong;
+using ccm::core::Math;
 using ccm::core::System;
+using ccm::util::calendar::BaseCalendar;
 using ccm::util::calendar::CalendarSystem;
 using ccm::util::calendar::CalendarUtils;
 using ccm::util::calendar::ICalendarDate;
 using ccm::util::calendar::ICalendarSystem;
+using ccm::util::calendar::IID_ICalendarDate;
 
 namespace ccm {
 namespace util {
 
 CCM_INTERFACE_IMPL_1(GregorianCalendar, Calendar, IGregorianCalendar);
+
+constexpr Integer GregorianCalendar::MIN_VALUES[];
+constexpr Integer GregorianCalendar::LEAST_MAX_VALUES[];
+constexpr Integer GregorianCalendar::MAX_VALUES[];
 
 AutoPtr<IGregorian> GregorianCalendar::GetGcal()
 {
@@ -716,31 +725,657 @@ ECode GregorianCalendar::Roll(
 
         case WEEK_OF_MONTH:
             {
+                Integer normYear;
+                mCdate->GetNormalizedYear(&normYear);
+                Boolean isCutoverYear = IsCutoverYear(normYear);
+                // dow: relative day of week from first day of week
+                Integer firstDay;
+                GetFirstDayOfWeek(&firstDay);
+                Integer dow = InternalGet(DAY_OF_WEEK) - firstDay;
+                if (dow < 0) {
+                    dow += 7;
+                }
 
+                Long fd = GetCurrentFixedDate();
+                Long month1;     // fixed date of the first day (usually 1) of the month
+                Integer monthLength; // actual month length
+                if (isCutoverYear) {
+                    month1 = GetFixedDateMonth1(mCdate, fd);
+                    monthLength = ActualMonthLength();
+                }
+                else {
+                    month1 = fd - InternalGet(DAY_OF_MONTH) + 1;
+                    ICalendarSystem::Probe(mCalsys)->GetMonthLength(
+                            ICalendarDate::Probe(mCdate), &monthLength);
+                }
+
+                // the first day of week of the month.
+                Long monthDay1st = BaseCalendar::GetDayOfWeekDateOnOrBefore(
+                        month1 + 6, firstDay);
+
+                // if the week has enough days to form a week, the
+                // week starts from the previous month.
+                Integer minDays;
+                GetMinimalDaysInFirstWeek(&minDays);
+                if ((Integer)(monthDay1st - month1) >= minDays) {
+                    monthDay1st -= 7;
+                }
+                GetActualMaximum(field, &max);
+
+                // value: the new WEEK_OF_MONTH value
+                Integer value = GetRolledValue(InternalGet(field), amount, 1, max) - 1;
+
+                // nfd: fixed date of the rolled date
+                Long nfd = monthDay1st + value * 7 + dow;
+
+                // Unlike WEEK_OF_YEAR, we need to change day of week if the
+                // nfd is out of the month.
+                if (nfd < month1) {
+                    nfd = month1;
+                }
+                else if (nfd >= (month1 + monthLength)) {
+                    nfd = month1 + monthLength - 1;
+                }
+                Integer dayOfMonth;
+                if (isCutoverYear) {
+                    // If we are in the cutover year, convert nfd to
+                    // its calendar date and use dayOfMonth.
+                    AutoPtr<IBaseCalendarDate> d = GetCalendarDate(nfd);
+                    ICalendarDate::Probe(d)->GetDayOfMonth(&dayOfMonth);
+                }
+                else {
+                    dayOfMonth = (Integer)(nfd - month1) + 1;
+                }
+                Set(DAY_OF_MONTH, dayOfMonth);
+                return NOERROR;
             }
 
         case DAY_OF_MONTH:
             {
+                Integer normYear;
+                mCdate->GetNormalizedYear(&normYear);
+                if (!IsCutoverYear(normYear)) {
+                    ICalendarSystem::Probe(mCalsys)->GetMonthLength(
+                            ICalendarDate::Probe(mCdate), &max);
+                    break;
+                }
 
+                // Cutover year handling
+                Long fd = GetCurrentFixedDate();
+                Long month1 = GetFixedDateMonth1(mCdate, fd);
+                // It may not be a regular month. Convert the date and range to
+                // the relative values, perform the roll, and
+                // convert the result back to the rolled date.
+                Integer value = GetRolledValue((Integer)(fd - month1), amount, 0, ActualMonthLength() - 1);
+                AutoPtr<IBaseCalendarDate> d = GetCalendarDate(month1 + value);
+                BLOCK_CHECK() {
+                    Integer month;
+                    ICalendarDate::Probe(d)->GetMonth(&month);
+                    CHECK(month - 1 == InternalGet(MONTH));
+                }
+                Integer dayOfMonth;
+                ICalendarDate::Probe(d)->GetDayOfMonth(&dayOfMonth);
+                Set(DAY_OF_MONTH, dayOfMonth);
+                return NOERROR;
             }
 
         case DAY_OF_YEAR:
             {
+                GetActualMaximum(field, &max);
+                Integer normYear;
+                mCdate->GetNormalizedYear(&normYear);
+                if (!IsCutoverYear(normYear)) {
+                    break;
+                }
 
+                // Handle cutover here.
+                Long fd = GetCurrentFixedDate();
+                Long jan1 = fd - InternalGet(DAY_OF_YEAR) + 1;
+                Integer value = GetRolledValue((Integer)(fd - jan1) + 1, amount, min, max);
+                AutoPtr<IBaseCalendarDate> d = GetCalendarDate(jan1 + value - 1);
+                Integer month, dayOfMonth;
+                ICalendarDate::Probe(d)->GetMonth(&month);
+                ICalendarDate::Probe(d)->GetDayOfMonth(&dayOfMonth);
+                Set(MONTH, month - 1);
+                Set(DAY_OF_MONTH, dayOfMonth);
+                return NOERROR;
             }
 
         case DAY_OF_WEEK:
             {
+                Integer normYear;
+                mCdate->GetNormalizedYear(&normYear);
+                if (!IsCutoverYear(normYear)) {
+                    // If the week of year is in the same year, we can
+                    // just change DAY_OF_WEEK.
+                    Integer weekOfYear = InternalGet(WEEK_OF_YEAR);
+                    if (weekOfYear > 1 && weekOfYear < 52) {
+                        Set(WEEK_OF_YEAR, weekOfYear); // update stamp[WEEK_OF_YEAR]
+                        max = SATURDAY;
+                        break;
+                    }
+                }
 
+                // We need to handle it in a different way around year
+                // boundaries and in the cutover year. Note that
+                // changing era and year values violates the roll
+                // rule: not changing larger calendar fields...
+                amount %= 7;
+                if (amount == 0) {
+                    return NOERROR;
+                }
+                Long fd = GetCurrentFixedDate();
+                Integer firstDay;
+                GetFirstDayOfWeek(&firstDay);
+                Long dowFirst = BaseCalendar::GetDayOfWeekDateOnOrBefore(
+                        fd, firstDay);
+                fd += amount;
+                if (fd < dowFirst) {
+                    fd += 7;
+                }
+                else if (fd >= dowFirst + 7) {
+                    fd -= 7;
+                }
+                AutoPtr<IBaseCalendarDate> d = GetCalendarDate(fd);
+                Integer year, month, dayOfMonth;
+                d->GetNormalizedYear(&normYear);
+                ICalendarDate* date = ICalendarDate::Probe(d);
+                date->GetYear(&year);
+                date->GetMonth(&month);
+                date->GetDayOfMonth(&dayOfMonth);
+                Set(ERA, (normYear <= 0 ? BCE : CE));
+                Set(year, month - 1, dayOfMonth);
+                return NOERROR;
             }
 
         case DAY_OF_WEEK_IN_MONTH:
             {
+                min = 1; // after normalized, min should be 1.
+                Integer normYear;
+                mCdate->GetNormalizedYear(&normYear);
+                if (!IsCutoverYear(normYear)) {
+                    Integer dom = InternalGet(DAY_OF_MONTH);
+                    Integer monthLength;
+                    ICalendarSystem::Probe(mCalsys)->GetMonthLength(
+                            ICalendarDate::Probe(mCdate), &monthLength);
+                    Integer lastDays = monthLength % 7;
+                    max = monthLength / 7;
+                    Integer x = (dom - 1) % 7;
+                    if (x < lastDays) {
+                        max++;
+                    }
+                    Set(DAY_OF_WEEK, InternalGet(DAY_OF_WEEK));
+                    break;
+                }
 
+                // Cutover year handling
+                Long fd = GetCurrentFixedDate();
+                Long month1 = GetFixedDateMonth1(mCdate, fd);
+                Integer monthLength = ActualMonthLength();
+                Integer lastDays = monthLength % 7;
+                max = monthLength / 7;
+                Integer x = (Integer)(fd - month1) % 7;
+                if (x < lastDays) {
+                    max++;
+                }
+                Integer value = GetRolledValue(InternalGet(field), amount, min, max) - 1;
+                fd = month1 + value * 7 + x;
+                AutoPtr<IBaseCalendar> cal = (fd >= mGregorianCutoverDate) ?
+                        IBaseCalendar::Probe(GetGcal()) : GetJulianCalendarSystem().Get();
+                AutoPtr<ICalendarDate> date;
+                ICalendarSystem::Probe(cal)->NewCalendarDate(TimeZone::NO_TIMEZONE, &date);
+                cal->GetCalendarDateFromFixedDate(date, fd);
+                Integer dayOfMonth;
+                date->GetDayOfMonth(&dayOfMonth);
+                Set(DAY_OF_MONTH, dayOfMonth);
+                return NOERROR;
             }
     }
 
     Set(field, GetRolledValue(InternalGet(field), amount, min, max));
+}
+
+ECode GregorianCalendar::GetMinimum(
+    /* [in] */ Integer field,
+    /* [out] */ Integer* value)
+{
+    VALIDATE_NOT_NULL(value);
+
+    *value = MIN_VALUES[field];
+    return NOERROR;
+}
+
+ECode GregorianCalendar::GetMaximum(
+    /* [in] */ Integer field,
+    /* [out] */ Integer* value)
+{
+    VALIDATE_NOT_NULL(value);
+
+    switch (field) {
+        case MONTH:
+        case DAY_OF_MONTH:
+        case DAY_OF_YEAR:
+        case WEEK_OF_YEAR:
+        case WEEK_OF_MONTH:
+        case DAY_OF_WEEK_IN_MONTH:
+        case YEAR:
+            {
+                // On or after Gregorian 200-3-1, Julian and Gregorian
+                // calendar dates are the same or Gregorian dates are
+                // larger (i.e., there is a "gap") after 300-3-1.
+                if (mGregorianCutoverYear > 200) {
+                    break;
+                }
+                // There might be "overlapping" dates.
+                AutoPtr<IGregorianCalendar> clone;
+                Clone(IID_IGregorianCalendar, (IInterface**)&clone);
+                GregorianCalendar* gc = (GregorianCalendar*)clone.Get();
+                gc->SetLenient(true);
+                gc->SetTimeInMillis(mGregorianCutover);
+                Integer v1, v2;
+                gc->GetActualMaximum(field, &v1);
+                gc->SetTimeInMillis(mGregorianCutover - 1);
+                gc->GetActualMaximum(field, &v2);
+                *value = Math::Max(MAX_VALUES[field], Math::Max(v1, v2));
+                return NOERROR;
+            }
+    }
+    *value = MAX_VALUES[field];
+    return NOERROR;
+}
+
+ECode GregorianCalendar::GetGreatestMinimum(
+    /* [in] */ Integer field,
+    /* [out] */ Integer* value)
+{
+    VALIDATE_NOT_NULL(value);
+
+    if (field == DAY_OF_MONTH) {
+        AutoPtr<IBaseCalendarDate> d = GetGregorianCutoverDate();
+        Long mon1 = GetFixedDateMonth1(d, mGregorianCutoverDate);
+        d = GetCalendarDate(mon1);
+        Integer dayOfMonth;
+        ICalendarDate::Probe(d)->GetDayOfMonth(&dayOfMonth);
+        *value = Math::Max(MIN_VALUES[field], dayOfMonth);
+        return NOERROR;
+    }
+    *value = MIN_VALUES[field];
+    return NOERROR;
+}
+
+ECode GregorianCalendar::GetLeastMaximum(
+    /* [in] */ Integer field,
+    /* [out] */ Integer* value)
+{
+    VALIDATE_NOT_NULL(value);
+
+    switch (field) {
+        case MONTH:
+        case DAY_OF_MONTH:
+        case DAY_OF_YEAR:
+        case WEEK_OF_YEAR:
+        case WEEK_OF_MONTH:
+        case DAY_OF_WEEK_IN_MONTH:
+        case YEAR:
+            {
+                AutoPtr<IGregorianCalendar> clone;
+                Clone(IID_IGregorianCalendar, (IInterface**)&clone);
+                GregorianCalendar* gc = (GregorianCalendar*)clone.Get();
+                gc->SetLenient(true);
+                gc->SetTimeInMillis(mGregorianCutover);
+                Integer v1, v2;
+                gc->GetActualMaximum(field, &v1);
+                gc->SetTimeInMillis(mGregorianCutover - 1);
+                gc->GetActualMaximum(field, &v2);
+                *value = Math::Min(LEAST_MAX_VALUES[field], Math::Min(v1, v2));
+                return NOERROR;
+            }
+    }
+    *value = LEAST_MAX_VALUES[field];
+    return NOERROR;
+}
+
+ECode GregorianCalendar::GetActualMinimum(
+    /* [in] */ Integer field,
+    /* [out] */ Integer* value)
+{
+    VALIDATE_NOT_NULL(value);
+
+    if (field == DAY_OF_MONTH) {
+        AutoPtr<GregorianCalendar> gc = GetNormalizedCalendar();
+        Integer year;
+        gc->mCdate->GetNormalizedYear(&year);
+        if (year == mGregorianCutoverYear || year == mGregorianCutoverYearJulian) {
+            Long date;
+            gc->mCalsys->GetFixedDate(ICalendarDate::Probe(gc->mCdate), &date);
+            Long month1 = GetFixedDateMonth1(gc->mCdate, date);
+            AutoPtr<IBaseCalendarDate> d = GetCalendarDate(month1);
+            return ICalendarDate::Probe(d)->GetDayOfMonth(value);
+        }
+    }
+    return GetMinimum(field, value);
+}
+
+ECode GregorianCalendar::GetActualMaximum(
+    /* [in] */ Integer field,
+    /* [out] */ Integer* retValue)
+{
+    VALIDATE_NOT_NULL(retValue);
+
+    Integer fieldsForFixedMax = ERA_MASK | DAY_OF_WEEK_MASK | HOUR_MASK | AM_PM_MASK |
+            HOUR_OF_DAY_MASK | MINUTE_MASK | SECOND_MASK | MILLISECOND_MASK |
+            ZONE_OFFSET_MASK | DST_OFFSET_MASK;
+    if ((fieldsForFixedMax & (1 << field)) != 0) {
+        return GetMaximum(field, retValue);
+    }
+
+    AutoPtr<GregorianCalendar> gc = GetNormalizedCalendar();
+    AutoPtr<IBaseCalendarDate> date = gc->mCdate;
+    AutoPtr<IBaseCalendar> cal = gc->mCalsys;
+    Integer normalizedYear;
+    date->GetNormalizedYear(&normalizedYear);
+
+    Integer value = -1;
+    switch (field) {
+        case MONTH:
+            {
+                if (!gc->IsCutoverYear(normalizedYear)) {
+                    value = DECEMBER;
+                    break;
+                }
+
+                // January 1 of the next year may or may not exist.
+                Long nextJan1;
+                do {
+                    IBaseCalendar::Probe(GetGcal())->GetFixedDate(
+                            ++normalizedYear, IBaseCalendar::JANUARY, 1, nullptr, &nextJan1);
+                } while (nextJan1 < mGregorianCutoverDate);
+                AutoPtr<ICalendarDate> d;
+                ICloneable::Probe(date)->Clone(IID_ICalendarDate, (IInterface**)&d);
+                cal->GetCalendarDateFromFixedDate(d, nextJan1 - 1);
+                Integer month;
+                d->GetMonth(&month);
+                value = month - 1;
+            }
+            break;
+
+        case DAY_OF_MONTH:
+            {
+                ICalendarSystem::Probe(cal)->GetMonthLength(ICalendarDate::Probe(date), &value);
+                Integer dayOfMonth;
+                if (!gc->IsCutoverYear(normalizedYear) ||
+                        (ICalendarDate::Probe(date)->GetDayOfMonth(&dayOfMonth), dayOfMonth == value)) {
+                    break;
+                }
+
+                // Handle cutover year.
+                Long fd = gc->GetCurrentFixedDate();
+                if (fd >= mGregorianCutoverDate) {
+                    break;
+                }
+                Integer monthLength = gc->ActualMonthLength();
+                Long monthEnd = gc->GetFixedDateMonth1(gc->mCdate, fd) + monthLength - 1;
+                // Convert the fixed date to its calendar date.
+                AutoPtr<IBaseCalendarDate> d = gc->GetCalendarDate(monthEnd);
+                ICalendarDate::Probe(d)->GetDayOfMonth(&value);
+            }
+            break;
+
+        case DAY_OF_YEAR:
+            {
+                if (!gc->IsCutoverYear(normalizedYear)) {
+                    ICalendarSystem::Probe(cal)->GetYearLength(ICalendarDate::Probe(date), &value);
+                    break;
+                }
+
+                // Handle cutover year.
+                Long jan1;
+                if (mGregorianCutoverYear == mGregorianCutoverYearJulian) {
+                    AutoPtr<IBaseCalendar> cocal = gc->GetCutoverCalendarSystem();
+                    cocal->GetFixedDate(normalizedYear, 1, 1, nullptr, &jan1);
+                }
+                else if (normalizedYear == mGregorianCutoverYearJulian) {
+                    cal->GetFixedDate(normalizedYear, 1, 1, nullptr, &jan1);
+                }
+                else {
+                    jan1 = mGregorianCutoverDate;
+                }
+                // January 1 of the next year may or may not exist.
+                Long nextJan1;
+                IBaseCalendar::Probe(GetGcal())->GetFixedDate(++normalizedYear, 1, 1, nullptr, &nextJan1);
+                if (nextJan1 < mGregorianCutoverDate) {
+                    nextJan1 = mGregorianCutoverDate;
+                }
+                BLOCK_CHECK() {
+                    Integer normYear, month, dayOfMonth;
+                    date->GetNormalizedYear(&normYear);
+                    ICalendarDate::Probe(date)->GetMonth(&month);
+                    ICalendarDate::Probe(date)->GetDayOfMonth(&dayOfMonth);
+                    Long d;
+                    cal->GetFixedDate(normYear, month, dayOfMonth, date, &d);
+                    CHECK(jan1 < d);
+                    CHECK(nextJan1 >= d);
+                }
+                value = (Integer)(nextJan1 - jan1);
+            }
+            break;
+
+        case WEEK_OF_YEAR:
+            {
+                if (!gc->IsCutoverYear(normalizedYear)) {
+                    // Get the day of week of January 1 of the year
+                    AutoPtr<ICalendarDate> d;
+                    ICalendarSystem::Probe(cal)->NewCalendarDate(TimeZone::NO_TIMEZONE, &d);
+                    Integer year;
+                    ICalendarDate::Probe(date)->GetYear(&year);
+                    d->SetDate(year, IBaseCalendar::JANUARY, 1);
+                    Integer dayOfWeek;
+                    cal->GetDayOfWeek(d, &dayOfWeek);
+                    // Normalize the day of week with the firstDayOfWeek value
+                    Integer firstDayOfWeek;
+                    GetFirstDayOfWeek(&firstDayOfWeek);
+                    dayOfWeek -= firstDayOfWeek;
+                    if (dayOfWeek < 0) {
+                        dayOfWeek += 7;
+                    }
+                    value = 52;
+                    Integer minDays;
+                    GetMinimalDaysInFirstWeek(&minDays);
+                    Integer magic = dayOfWeek + minDays - 1;
+                    Boolean leap;
+                    if ((magic == 6) ||
+                        ((ICalendarDate::Probe(date)->IsLeapYear(&leap), leap) && (magic == 5 || magic == 12))) {
+                        value++;
+                    }
+                    break;
+                }
+
+                if (gc == this) {
+                    AutoPtr<IGregorianCalendar> clone;
+                    gc->Clone(IID_IGregorianCalendar, (IInterface**)&clone);
+                    gc = (GregorianCalendar*)clone.Get();
+                }
+                Integer maxDayOfYear;
+                GetActualMaximum(DAY_OF_YEAR, &maxDayOfYear);
+                gc->Set(DAY_OF_YEAR, maxDayOfYear);
+                gc->Get(WEEK_OF_YEAR, &value);
+                Integer weeks;
+                gc->GetWeekYear(&weeks);
+                if (InternalGet(YEAR) != weeks) {
+                    gc->Set(DAY_OF_YEAR, maxDayOfYear - 7);
+                    gc->Get(WEEK_OF_YEAR, &value);
+                }
+            }
+            break;
+
+        case WEEK_OF_MONTH:
+            {
+                if (!gc->IsCutoverYear(normalizedYear)) {
+                    AutoPtr<ICalendarDate> d;
+                    ICalendarSystem::Probe(cal)->NewCalendarDate(nullptr, &d);
+                    Integer year, month;
+                    ICalendarDate::Probe(date)->GetYear(&year);
+                    ICalendarDate::Probe(date)->GetMonth(&month);
+                    d->SetDate(year, month, 1);
+                    Integer dayOfWeek;
+                    cal->GetDayOfWeek(d, &dayOfWeek);
+                    Integer monthLength;
+                    ICalendarSystem::Probe(cal)->GetMonthLength(d, &monthLength);
+                    Integer firstDayOfWeek;
+                    GetFirstDayOfWeek(&firstDayOfWeek);
+                    dayOfWeek -= firstDayOfWeek;
+                    if (dayOfWeek < 0) {
+                        dayOfWeek += 7;
+                    }
+                    Integer nDaysFirstWeek = 7 - dayOfWeek; // # of days in the first week
+                    value = 3;
+                    Integer minDays;
+                    GetMinimalDaysInFirstWeek(&minDays);
+                    if (nDaysFirstWeek >= minDays) {
+                        value++;
+                    }
+                    monthLength -= nDaysFirstWeek + 7 * 3;
+                    if (monthLength > 0) {
+                        value++;
+                        if (monthLength > 7) {
+                            value++;
+                        }
+                    }
+                    break;
+                }
+
+                // Cutover year handling
+                if (gc == this) {
+                    AutoPtr<IGregorianCalendar> clone;
+                    gc->Clone(IID_IGregorianCalendar, (IInterface**)&clone);
+                    gc = (GregorianCalendar*)clone.Get();
+                }
+                Integer y = gc->InternalGet(YEAR);
+                Integer m = gc->InternalGet(MONTH);
+                Integer year, month;
+                do {
+                    gc->Get(WEEK_OF_MONTH, &value);
+                    gc->Add(WEEK_OF_MONTH, +1);
+                } while ((gc->Get(YEAR, &year), year == y) && (gc->Get(MONTH, &month), month == m));
+            }
+            break;
+
+        case DAY_OF_WEEK_IN_MONTH:
+            {
+                // may be in the Gregorian cutover month
+                Integer ndays, dow1;
+                Integer dow;
+                ICalendarDate::Probe(date)->GetDayOfWeek(&dow);
+                if (!gc->IsCutoverYear(normalizedYear)) {
+                    AutoPtr<ICalendarDate> d;
+                    ICloneable::Probe(date)->Clone(IID_ICalendarDate, (IInterface**)&d);
+                    ICalendarSystem::Probe(cal)->GetMonthLength(d, &ndays);
+                    d->SetDayOfMonth(1);
+                    ICalendarSystem::Probe(cal)->Normalize(d);
+                    d->GetDayOfWeek(&dow1);
+                }
+                else {
+                    // Let a cloned GregorianCalendar take care of the cutover cases.
+                    if (gc == this) {
+                        AutoPtr<IGregorianCalendar> clone;
+                        gc->Clone(IID_IGregorianCalendar, (IInterface**)&clone);
+                        gc = (GregorianCalendar*)clone.Get();
+                    }
+                    ndays = gc->ActualMonthLength();
+                    Integer dayOfMonth;
+                    gc->GetActualMinimum(DAY_OF_MONTH, &dayOfMonth);
+                    gc->Set(DAY_OF_MONTH, dayOfMonth);
+                    gc->Get(DAY_OF_WEEK, &dow1);
+                }
+                Integer x = dow - dow1;
+                if (x < 0) {
+                    x += 7;
+                }
+                ndays -= x;
+                value = (ndays + 6) / 7;
+            }
+            break;
+
+        case YEAR:
+            /* The year computation is no different, in principle, from the
+             * others, however, the range of possible maxima is large.  In
+             * addition, the way we know we've exceeded the range is different.
+             * For these reasons, we use the special case code below to handle
+             * this field.
+             *
+             * The actual maxima for YEAR depend on the type of calendar:
+             *
+             *     Gregorian = May 17, 292275056 BCE - Aug 17, 292278994 CE
+             *     Julian    = Dec  2, 292269055 BCE - Jan  3, 292272993 CE
+             *     Hybrid    = Dec  2, 292269055 BCE - Aug 17, 292278994 CE
+             *
+             * We know we've exceeded the maximum when either the month, date,
+             * time, or era changes in response to setting the year.  We don't
+             * check for month, date, and time here because the year and era are
+             * sufficient to detect an invalid year setting.  NOTE: If code is
+             * added to check the month and date in the future for some reason,
+             * Feb 29 must be allowed to shift to Mar 1 when setting the year.
+             */
+            {
+                if (gc == this) {
+                    AutoPtr<IGregorianCalendar> clone;
+                    gc->Clone(IID_IGregorianCalendar, (IInterface**)&clone);
+                    gc = (GregorianCalendar*)clone.Get();
+                }
+
+                // Calculate the millisecond offset from the beginning
+                // of the year of this calendar and adjust the max
+                // year value if we are beyond the limit in the max
+                // year.
+                Long current = gc->GetYearOffsetInMillis();
+
+                if (gc->InternalGetEra() == CE) {
+                    gc->SetTimeInMillis(ILong::MAX_VALUE);
+                    gc->Get(YEAR, &value);
+                    Long maxEnd = gc->GetYearOffsetInMillis();
+                    if (current > maxEnd) {
+                        value--;
+                    }
+                }
+                else {
+                    Long time;
+                    gc->GetTimeInMillis(&time);
+                    AutoPtr<ICalendarSystem> mincal = time >= mGregorianCutover ?
+                        ICalendarSystem::Probe(GetGcal()) : ICalendarSystem::Probe(GetJulianCalendarSystem());
+                    AutoPtr<ICalendarDate> d;
+                    mincal->GetCalendarDate(ILong::MIN_VALUE, GetZone(), &d);
+                    Long dayOfYear;
+                    cal->GetDayOfYear(d, &dayOfYear);
+                    Integer hours;
+                    d->GetHours(&hours);
+                    Long maxEnd = (dayOfYear - 1) * 24 + hours;
+                    Integer minutes, seconds, millis;
+                    d->GetMinutes(&minutes);
+                    d->GetSeconds(&seconds);
+                    d->GetMillis(&millis);
+                    maxEnd *= 60;
+                    maxEnd += minutes;
+                    maxEnd *= 60;
+                    maxEnd += seconds;
+                    maxEnd *= 1000;
+                    maxEnd += millis;
+                    d->GetYear(&value);
+                    if (value <= 0) {
+                        CHECK(mincal == gcal);
+                        value = 1 - value;
+                    }
+                    if (current < maxEnd) {
+                        value--;
+                    }
+                }
+            }
+            break;
+
+        default:
+            return ccm::core::E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+    }
+    *retValue = value;
+    return NOERROR;
 }
 
 }
