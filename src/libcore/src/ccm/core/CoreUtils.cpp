@@ -21,6 +21,7 @@
 #include "ccm/core/CoreUtils.h"
 #include "ccm/core/CString.h"
 #include "ccm/core/System.h"
+#include "ccm.core.ICloneable.h"
 
 namespace ccm {
 namespace core {
@@ -132,6 +133,19 @@ Boolean CoreUtils::GetBoolean(
         result = (!value.IsNull() && value.EqualsIgnoreCase("true"));
     }
     return result;
+}
+
+AutoPtr<IInterface> CoreUtils::Clone(
+    /* [in] */ IInterface* obj,
+    /* [in] */ const InterfaceID& iid)
+{
+    ICloneable* cloneable = ICloneable::Probe(obj);
+    if (cloneable == nullptr) {
+        return nullptr;
+    }
+    AutoPtr<IInterface> clone;
+    cloneable->Clone(iid, &clone);
+    return clone;
 }
 
 }

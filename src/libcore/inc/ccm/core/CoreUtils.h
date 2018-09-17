@@ -64,6 +64,10 @@ public:
 
     COM_PUBLIC static Boolean GetBoolean(
         /* [in] */ const String& name);
+
+    COM_PUBLIC static AutoPtr<IInterface> Clone(
+        /* [in] */ IInterface* obj,
+        /* [in] */ const InterfaceID& iid);
 };
 
 }

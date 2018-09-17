@@ -269,7 +269,7 @@ interface ICalendar
         [in] Long millis);
 
     SetTimeZone(
-        [in] ITimeZone* value);
+        [in] ITimeZone* zone);
 
     SetWeekDate(
         [in] Integer weekYear,

@@ -145,17 +145,26 @@ public:
         /* [in] */ Integer field,
         /* [out] */ Integer* value) override;
 
+    ECode GetTimeZone(
+        /* [out] */ ITimeZone** zone) override;
+
+    ECode SetTimeZone(
+        /* [in] */ ITimeZone* zone) override;
+
+    ECode IsWeekDateSupported(
+        /* [out] */ Boolean* supported) override;
+
+protected:
+    ECode CloneImpl(
+        /* [in] */ IGregorianCalendar* newObj);
+
 private:
     static AutoPtr<IGregorian> GetGcal();
 
     void SetGregorianChange(
         /* [in] */ Long cutoverTime);
 
-
-    Long GetYearOffsetInMillis()
-    {
-        return 0;
-    }
+    Long GetYearOffsetInMillis();
 
     static AutoPtr<IBaseCalendar> GetJulianCalendarSystem()
     {
@@ -363,6 +372,19 @@ private:
     AutoPtr<IBaseCalendarDate> mCdate;
 
     AutoPtr<IBaseCalendar> mCalsys;
+
+    /**
+     * Temporary int[2] to get time zone offsets. zoneOffsets[0] gets
+     * the GMT offset value and zoneOffsets[1] gets the DST saving
+     * value.
+     */
+    Array<Integer> mZoneOffsets;
+
+    /**
+     * Temporary storage for saving original fields[] values in
+     * non-lenient mode.
+     */
+    Array<Integer> mOriginalFields;
 };
 
 }

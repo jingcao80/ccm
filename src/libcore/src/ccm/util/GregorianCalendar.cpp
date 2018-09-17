@@ -14,6 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
+#include "ccm/core/CoreUtils.h"
 #include "ccm/core/Math.h"
 #include "ccm/core/System.h"
 #include "ccm/util/CDate.h"
@@ -27,6 +28,7 @@
 #include "ccm.util.calendar.ICalendarDate.h"
 #include "ccm.util.calendar.ICalendarSystem.h"
 
+using ccm::core::CoreUtils;
 using ccm::core::ILong;
 using ccm::core::Math;
 using ccm::core::System;
@@ -35,6 +37,7 @@ using ccm::util::calendar::CalendarSystem;
 using ccm::util::calendar::CalendarUtils;
 using ccm::util::calendar::ICalendarDate;
 using ccm::util::calendar::ICalendarSystem;
+using ccm::util::calendar::IID_IBaseCalendarDate;
 using ccm::util::calendar::IID_ICalendarDate;
 
 namespace ccm {
@@ -1375,6 +1378,71 @@ ECode GregorianCalendar::GetActualMaximum(
             return ccm::core::E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
     *retValue = value;
+    return NOERROR;
+}
+
+Long GregorianCalendar::GetYearOffsetInMillis()
+{
+    Long t = (InternalGet(DAY_OF_YEAR) - 1) * 24;
+        t += InternalGet(HOUR_OF_DAY);
+        t *= 60;
+        t += InternalGet(MINUTE);
+        t *= 60;
+        t += InternalGet(SECOND);
+        t *= 1000;
+    return t + InternalGet(MILLISECOND) -
+            (InternalGet(ZONE_OFFSET) + InternalGet(DST_OFFSET));
+}
+
+ECode GregorianCalendar::CloneImpl(
+    /* [in] */ IGregorianCalendar* newObj)
+{
+    GregorianCalendar* other = (GregorianCalendar*)newObj;
+
+    other->mGdate = (IBaseCalendarDate*)CoreUtils::Clone(mGdate, IID_IBaseCalendarDate).Get();
+    if (mCdate != nullptr) {
+        if (mCdate != mGdate) {
+            other->mCdate = (IBaseCalendarDate*)CoreUtils::Clone(mCdate, IID_IBaseCalendarDate).Get();
+        }
+        else {
+            other->mCdate = other->mGdate;
+        }
+    }
+    return NOERROR;
+}
+
+ECode GregorianCalendar::GetTimeZone(
+    /* [out] */ ITimeZone** zone)
+{
+    VALIDATE_NOT_NULL(zone);
+
+    Calendar::GetTimeZone(zone);
+    // To share the zone by CalendarDates
+    ICalendarDate::Probe(mGdate)->SetZone(*zone);
+    if (mCdate != nullptr && mCdate != mGdate) {
+        ICalendarDate::Probe(mCdate)->SetZone(*zone);
+    }
+    return NOERROR;
+}
+
+ECode GregorianCalendar::SetTimeZone(
+    /* [in] */ ITimeZone* zone)
+{
+    Calendar::SetTimeZone(zone);
+    // To share the zone by CalendarDates
+    ICalendarDate::Probe(mGdate)->SetZone(zone);
+    if (mCdate != nullptr && mCdate != mGdate) {
+        ICalendarDate::Probe(mCdate)->SetZone(zone);
+    }
+    return NOERROR;
+}
+
+ECode GregorianCalendar::IsWeekDateSupported(
+    /* [out] */ Boolean* supported)
+{
+    VALIDATE_NOT_NULL(supported);
+
+    *supported = true;
     return NOERROR;
 }
 
