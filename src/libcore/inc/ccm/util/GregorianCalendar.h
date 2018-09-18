@@ -154,6 +154,17 @@ public:
     ECode IsWeekDateSupported(
         /* [out] */ Boolean* supported) override;
 
+    ECode GetWeekYear(
+        /* [out] */ Integer* weekYear) override;
+
+    ECode SetWeekDate(
+        /* [in] */ Integer weekYear,
+        /* [in] */ Integer weekOfYear,
+        /* [in] */ Integer dayOfWeek) override;
+
+    ECode GetWeeksInWeekYear(
+        /* [out] */ Integer* weeks) override;
+
 protected:
     ECode CloneImpl(
         /* [in] */ IGregorianCalendar* newObj);

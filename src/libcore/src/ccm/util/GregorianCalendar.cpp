@@ -27,6 +27,7 @@
 #include "ccm.core.ILong.h"
 #include "ccm.util.calendar.ICalendarDate.h"
 #include "ccm.util.calendar.ICalendarSystem.h"
+#include <ccmlogger.h>
 
 using ccm::core::CoreUtils;
 using ccm::core::ILong;
@@ -1444,6 +1445,193 @@ ECode GregorianCalendar::IsWeekDateSupported(
 
     *supported = true;
     return NOERROR;
+}
+
+ECode GregorianCalendar::GetWeekYear(
+    /* [out] */ Integer* weekYear)
+{
+    VALIDATE_NOT_NULL(weekYear);
+
+    Integer year;
+    Get(YEAR, &year); // implicitly calls complete()
+    if (InternalGetEra() == BCE) {
+        year = 1 - year;
+    }
+
+    // Fast path for the Gregorian calendar years that are never
+    // affected by the Julian-Gregorian transition
+    if (year > mGregorianCutoverYear + 1) {
+        Integer weekOfYear = InternalGet(WEEK_OF_YEAR);
+        if (InternalGet(MONTH) == JANUARY) {
+            if (weekOfYear >= 52) {
+                --year;
+            }
+        }
+        else {
+            if (weekOfYear == 1) {
+                ++year;
+            }
+        }
+        *weekYear = year;
+        return NOERROR;
+    }
+
+    // General (slow) path
+    Integer dayOfYear = InternalGet(DAY_OF_YEAR);
+    Integer maxDayOfYear;
+    GetActualMaximum(DAY_OF_YEAR, &maxDayOfYear);
+    Integer minimalDays;
+    GetMinimalDaysInFirstWeek(&minimalDays);
+
+    // Quickly check the possibility of year adjustments before
+    // cloning this GregorianCalendar.
+    if (dayOfYear > minimalDays && dayOfYear < (maxDayOfYear - 6)) {
+        *weekYear = year;
+        return NOERROR;
+    }
+
+    // Create a clone to work on the calculation
+    AutoPtr<IGregorianCalendar> clone;
+    Clone(IID_IGregorianCalendar, (IInterface**)&clone);
+    GregorianCalendar* cal = (GregorianCalendar*)clone.Get();
+    cal->SetLenient(true);
+    // Use GMT so that intermediate date calculations won't
+    // affect the time of day fields.
+    AutoPtr<ITimeZone> zone;
+    TimeZone::GetTimeZone(String("GMT"), &zone);
+    cal->SetTimeZone(zone);
+    // Go to the first day of the year, which is usually January 1.
+    cal->Set(DAY_OF_YEAR, 1);
+    cal->Complete();
+
+    // Get the first day of the first day-of-week in the year.
+    Integer firstDayOfWeek, dayOfWeek;
+    GetFirstDayOfWeek(&firstDayOfWeek);
+    cal->Get(DAY_OF_WEEK, &dayOfWeek);
+    Integer delta = firstDayOfWeek - dayOfWeek;
+    if (delta != 0) {
+        if (delta < 0) {
+            delta += 7;
+        }
+        cal->Add(DAY_OF_YEAR, delta);
+    }
+    Integer minDayOfYear;
+    cal->Get(DAY_OF_YEAR, &minDayOfYear);
+    if (dayOfYear < minDayOfYear) {
+        if (minDayOfYear <= minimalDays) {
+            --year;
+        }
+    }
+    else {
+        cal->Set(YEAR, year + 1);
+        cal->Set(DAY_OF_YEAR, 1);
+        cal->Complete();
+        GetFirstDayOfWeek(&firstDayOfWeek);
+        cal->Get(DAY_OF_WEEK, &dayOfWeek);
+        Integer del = firstDayOfWeek - dayOfWeek;
+        if (del != 0) {
+            if (del < 0) {
+                del += 7;
+            }
+            cal->Add(DAY_OF_YEAR, del);
+        }
+        cal->Get(DAY_OF_YEAR, &minDayOfYear);
+        minDayOfYear = minDayOfYear - 1;
+        if (minDayOfYear == 0) {
+            minDayOfYear = 7;
+        }
+        if (minDayOfYear >= minimalDays) {
+            Integer days = maxDayOfYear - dayOfYear + 1;
+            if (days <= (7 - minDayOfYear)) {
+                ++year;
+            }
+        }
+    }
+    *weekYear = year;
+    return NOERROR;
+}
+
+ECode GregorianCalendar::SetWeekDate(
+    /* [in] */ Integer weekYear,
+    /* [in] */ Integer weekOfYear,
+    /* [in] */ Integer dayOfWeek)
+{
+    if (dayOfWeek < SUNDAY || dayOfWeek > SATURDAY) {
+        Logger::E("GregorianCalendar", "invalid dayOfWeek: %d", dayOfWeek);
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    // To avoid changing the time of day fields by date
+    // calculations, use a clone with the GMT time zone.
+    AutoPtr<IGregorianCalendar> clone;
+    Clone(IID_IGregorianCalendar, (IInterface**)&clone);
+    GregorianCalendar* gc = (GregorianCalendar*)clone.Get();
+    gc->SetLenient(true);
+    Integer era;
+    gc->Get(ERA, &era);
+    gc->Clear();
+    AutoPtr<ITimeZone> zone;
+    TimeZone::GetTimeZone(String("GMT"), &zone);
+    gc->SetTimeZone(zone);
+    gc->Set(ERA, era);
+    gc->Set(YEAR, weekYear);
+    gc->Set(WEEK_OF_YEAR, 1);
+    Integer firstDayOfWeek;
+    GetFirstDayOfWeek(&firstDayOfWeek);
+    gc->Set(DAY_OF_WEEK, firstDayOfWeek);
+    Integer days = dayOfWeek - firstDayOfWeek;
+    if (days < 0) {
+        days += 7;
+    }
+    days += 7 * (weekOfYear - 1);
+    if (days != 0) {
+        gc->Add(DAY_OF_YEAR, days);
+    }
+    else {
+        gc->Complete();
+    }
+
+    Boolean lenient;
+    Integer gcWeekYear;
+    if ((IsLenient(&lenient), !lenient) &&
+        ((gc->GetWeekYear(&gcWeekYear), gcWeekYear != weekYear)
+         || gc->InternalGet(WEEK_OF_YEAR) != weekOfYear
+         || gc->InternalGet(DAY_OF_WEEK) != dayOfWeek)) {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    Set(ERA, gc->InternalGet(ERA));
+    Set(YEAR, gc->InternalGet(YEAR));
+    Set(MONTH, gc->InternalGet(MONTH));
+    Set(DAY_OF_MONTH, gc->InternalGet(DAY_OF_MONTH));
+
+    // to avoid throwing an IllegalArgumentException in
+    // non-lenient, set WEEK_OF_YEAR internally
+    InternalSet(WEEK_OF_YEAR, weekOfYear);
+    Complete();
+    return NOERROR;
+}
+
+ECode GregorianCalendar::GetWeeksInWeekYear(
+    /* [out] */ Integer* weeks)
+{
+    VALIDATE_NOT_NULL(weeks);
+
+    AutoPtr<GregorianCalendar> gc = GetNormalizedCalendar();
+    Integer weekYear;
+    gc->GetWeekYear(&weekYear);
+    if (weekYear == gc->InternalGet(YEAR)) {
+        return gc->GetActualMaximum(WEEK_OF_YEAR, weeks);
+    }
+
+    // Use the 2nd week for calculating the max of WEEK_OF_YEAR
+    if (gc == this) {
+        AutoPtr<IGregorianCalendar> clone;
+        Clone(IID_IGregorianCalendar, (IInterface**)&clone);
+        gc = (GregorianCalendar*)clone.Get();
+    }
+    gc->SetWeekDate(weekYear, 2, InternalGet(DAY_OF_WEEK));
+    return gc->GetActualMaximum(WEEK_OF_YEAR, weeks);
 }
 
 }
