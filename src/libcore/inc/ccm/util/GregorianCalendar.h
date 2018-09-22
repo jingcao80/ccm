@@ -18,17 +18,23 @@
 #define __CCM_UTIL_GREGORIANCALENDAR_H__
 
 #include "ccm/util/Calendar.h"
+#include "ccm.core.ILong.h"
 #include "ccm.util.IDate.h"
 #include "ccm.util.IGregorianCalendar.h"
 #include "ccm.util.ILocale.h"
 #include "ccm.util.ITimeZone.h"
 #include "ccm.util.calendar.IBaseCalendar.h"
 #include "ccm.util.calendar.IBaseCalendarDate.h"
+#include "ccm.util.calendar.IEra.h"
 #include "ccm.util.calendar.IGregorian.h"
+#include "ccm.util.calendar.IJulianCalendar.h"
 
+using ccm::core::ILong;
 using ccm::util::calendar::IBaseCalendar;
 using ccm::util::calendar::IBaseCalendarDate;
+using ccm::util::calendar::IEra;
 using ccm::util::calendar::IGregorian;
+using ccm::util::calendar::IJulianCalendar;
 
 namespace ccm {
 namespace util {
@@ -169,6 +175,8 @@ protected:
     ECode CloneImpl(
         /* [in] */ IGregorianCalendar* newObj);
 
+    ECode ComputeFields() override;
+
 private:
     static AutoPtr<IGregorian> GetGcal();
 
@@ -176,6 +184,19 @@ private:
         /* [in] */ Long cutoverTime);
 
     Long GetYearOffsetInMillis();
+
+    Integer ComputeFields(
+        /* [in] */ Integer fieldMask,
+        /* [in] */ Integer tzMask);
+
+
+
+    Integer GetWeekNumber(
+        /* [in] */ Long fixedDay1,
+        /* [in] */ Long fixedDate)
+    {
+        return 0;
+    }
 
     static AutoPtr<IBaseCalendar> GetJulianCalendarSystem()
     {
@@ -262,6 +283,13 @@ private:
         return nullptr;
     }
 
+    Long GetFixedDateJan1(
+        /* [in] */ IBaseCalendarDate* date,
+        /* [in] */ Long fixedDate)
+    {
+        return 0;
+    }
+
 private:
     static constexpr Integer EPOCH_OFFSET = 719163; // Fixed date of January 1, 1970 (Gregorian)
     static constexpr Integer EPOCH_YEAR = 1970;
@@ -341,6 +369,13 @@ public:
     static constexpr Long DEFAULT_GREGORIAN_CUTOVER = -12219292800000ll;
 
 private:
+    // Reference to the JulianCalendar instance (singleton), set as needed. See
+    // getJulianCalendarSystem().
+    static AutoPtr<IJulianCalendar> sJcal;
+
+    // JulianCalendar eras. See getJulianCalendarSystem().
+    static Array<IEra*> sJeras;
+
     /**
      * The point at which the Gregorian calendar rules are used, measured in
      * milliseconds from the standard epoch.  Default is October 15, 1582
@@ -396,6 +431,8 @@ private:
      * non-lenient mode.
      */
     Array<Integer> mOriginalFields;
+
+    Long mCachedFixedDate = ILong::MIN_VALUE;
 };
 
 }

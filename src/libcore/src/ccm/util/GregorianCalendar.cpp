@@ -27,6 +27,7 @@
 #include "ccm.core.ILong.h"
 #include "ccm.util.calendar.ICalendarDate.h"
 #include "ccm.util.calendar.ICalendarSystem.h"
+#include "libcore.util.IZoneInfo.h"
 #include <ccmlogger.h>
 
 using ccm::core::CoreUtils;
@@ -40,6 +41,7 @@ using ccm::util::calendar::ICalendarDate;
 using ccm::util::calendar::ICalendarSystem;
 using ccm::util::calendar::IID_IBaseCalendarDate;
 using ccm::util::calendar::IID_ICalendarDate;
+using libcore::util::IZoneInfo;
 
 namespace ccm {
 namespace util {
@@ -49,6 +51,8 @@ CCM_INTERFACE_IMPL_1(GregorianCalendar, Calendar, IGregorianCalendar);
 constexpr Integer GregorianCalendar::MIN_VALUES[];
 constexpr Integer GregorianCalendar::LEAST_MAX_VALUES[];
 constexpr Integer GregorianCalendar::MAX_VALUES[];
+AutoPtr<IJulianCalendar> GregorianCalendar::sJcal;
+Array<IEra*> GregorianCalendar::sJeras;
 
 AutoPtr<IGregorian> GregorianCalendar::GetGcal()
 {
@@ -1632,6 +1636,334 @@ ECode GregorianCalendar::GetWeeksInWeekYear(
     }
     gc->SetWeekDate(weekYear, 2, InternalGet(DAY_OF_WEEK));
     return gc->GetActualMaximum(WEEK_OF_YEAR, weeks);
+}
+
+ECode GregorianCalendar::ComputeFields()
+{
+    Integer mask;
+    if (IsPartiallyNormalized()) {
+        // Determine which calendar fields need to be computed.
+        mask = GetSetStateFields();
+        Integer fieldMask = ~mask & ALL_FIELDS;
+        // We have to call computTime in case calsys == null in
+        // order to set calsys and cdate. (6263644)
+        if (fieldMask != 0 || mCalsys == nullptr) {
+            mask |= ComputeFields(fieldMask,
+                    mask & (ZONE_OFFSET_MASK | DST_OFFSET_MASK));
+            CHECK(mask == ALL_FIELDS);
+        }
+    }
+    else {
+        mask = ALL_FIELDS;
+        ComputeFields(mask, 0);
+    }
+    // After computing all the fields, set the field state to `COMPUTED'.
+    SetFieldsComputed(mask);
+    return NOERROR;
+}
+
+Integer GregorianCalendar::ComputeFields(
+    /* [in] */ Integer fieldMask,
+    /* [in] */ Integer tzMask)
+{
+    Integer zoneOffset = 0;
+    AutoPtr<ITimeZone> tz = GetZone();
+    if (mZoneOffsets.IsNull()) {
+        mZoneOffsets = Array<Integer>(2);
+    }
+    if (tzMask != (ZONE_OFFSET_MASK | DST_OFFSET_MASK)) {
+        if (IZoneInfo::Probe(tz) != nullptr) {
+            IZoneInfo* zoneInfo = IZoneInfo::Probe(tz);
+            zoneInfo->GetOffsetsByUtcTime(mTime, mZoneOffsets, &zoneOffset);
+        }
+        else {
+            tz->GetOffset(mTime, &zoneOffset);
+            tz->GetRawOffset(&mZoneOffsets[0]);
+            mZoneOffsets[1] = zoneOffset - mZoneOffsets[0];
+        }
+    }
+    if (tzMask != 0) {
+        if (IsFieldSet(tzMask, ZONE_OFFSET)) {
+            mZoneOffsets[0] = InternalGet(ZONE_OFFSET);
+        }
+        if (IsFieldSet(tzMask, DST_OFFSET)) {
+            mZoneOffsets[1] = InternalGet(DST_OFFSET);
+        }
+        zoneOffset = mZoneOffsets[0] + mZoneOffsets[1];
+    }
+
+    // By computing time and zoneOffset separately, we can take
+    // the wider range of time+zoneOffset than the previous
+    // implementation.
+    Long fixedDate = zoneOffset / ONE_DAY;
+    Integer timeOfDay = zoneOffset % (Integer)ONE_DAY;
+    fixedDate += mTime / ONE_DAY;
+    timeOfDay += (Integer) (mTime % ONE_DAY);
+    if (timeOfDay >= ONE_DAY) {
+        timeOfDay -= ONE_DAY;
+        ++fixedDate;
+    }
+    else {
+        while (timeOfDay < 0) {
+            timeOfDay += ONE_DAY;
+            --fixedDate;
+        }
+    }
+    fixedDate += EPOCH_OFFSET;
+
+    Integer era = CE;
+    Integer year;
+    if (fixedDate >= mGregorianCutoverDate) {
+        BLOCK_CHECK() {
+            Boolean normalized;
+            if (mCachedFixedDate != ILong::MIN_VALUE &&
+                    (ICalendarDate::Probe(mGdate)->IsNormalized(&normalized), !normalized)) {
+                Logger::E("GregorianCalendar", "cache control: not normalized");
+            }
+            Integer normYear, month, dayOfMonth;
+            Long date;
+            if (mCachedFixedDate != ILong::MIN_VALUE &&
+                    (mGdate->GetNormalizedYear(&normYear),
+                     ICalendarDate::Probe(mGdate)->GetMonth(&month),
+                     ICalendarDate::Probe(mGdate)->GetDayOfMonth(&dayOfMonth),
+                     IBaseCalendar::Probe(GetGcal())->GetFixedDate(normYear, month, dayOfMonth, mGdate, &date),
+                     date == mCachedFixedDate)) {
+                Logger::E("GregorianCalendar", "cache control: inconsictency, cachedFixedDate=%lld"
+                        ", computed=%lld, date=%s", mCachedFixedDate, date, Object::ToString(mGdate).string());
+            }
+        }
+
+        // See if we can use gdate to avoid date calculation.
+        if (fixedDate != mCachedFixedDate) {
+            IBaseCalendar::Probe(GetGcal())->GetCalendarDateFromFixedDate(
+                    ICalendarDate::Probe(mGdate), fixedDate);
+            mCachedFixedDate = fixedDate;
+        }
+
+        ICalendarDate::Probe(mGdate)->GetYear(&year);
+        if (year <= 0) {
+            year = 1 - year;
+            era = BCE;
+        }
+        mCalsys = IBaseCalendar::Probe(GetGcal());
+        mCdate = mGdate;
+        BLOCK_CHECK() {
+            Integer dayOfWeek;
+            ICalendarDate::Probe(mCdate)->GetDayOfWeek(&dayOfWeek);
+            if (dayOfWeek <= 0) {
+                Logger::E("GregorianCalendar", "dow=%d, date=%s", dayOfWeek, Object::ToString(mCdate).string());
+            }
+        }
+    }
+    else {
+        // Handle Julian calendar dates.
+        mCalsys = GetJulianCalendarSystem();
+        AutoPtr<ICalendarDate> date;
+        ICalendarSystem::Probe(sJcal)->NewCalendarDate(GetZone(), &date);
+        mCdate = IBaseCalendarDate::Probe(date);
+        IBaseCalendar::Probe(sJcal)->GetCalendarDateFromFixedDate(date, fixedDate);
+        AutoPtr<IEra> e;
+        date->GetEra(&e);
+        if (e == sJeras[0]) {
+            era = BCE;
+        }
+        date->GetYear(&year);
+    }
+
+    // Always set the ERA and YEAR values.
+    InternalSet(ERA, era);
+    InternalSet(YEAR, year);
+    Integer mask = fieldMask | (ERA_MASK | YEAR_MASK);
+
+    Integer month, dayOfMonth;
+    ICalendarDate::Probe(mCdate)->GetMonth(&month);
+    month = month - 1; // 0-based;
+    ICalendarDate::Probe(mCdate)->GetDayOfMonth(&dayOfMonth);
+
+    // Set the basic date fields.
+    if ((fieldMask & (MONTH_MASK | DAY_OF_MONTH_MASK | DAY_OF_WEEK_MASK))
+            != 0) {
+        Integer dayOfWeek;
+        ICalendarDate::Probe(mCdate)->GetDayOfWeek(&dayOfWeek);
+        InternalSet(MONTH, month);
+        InternalSet(DAY_OF_MONTH, dayOfMonth);
+        InternalSet(DAY_OF_WEEK, dayOfWeek);
+        mask |= MONTH_MASK | DAY_OF_MONTH_MASK | DAY_OF_WEEK_MASK;
+    }
+
+    if ((fieldMask & (HOUR_OF_DAY_MASK | AM_PM_MASK | HOUR_MASK
+            | MINUTE_MASK | SECOND_MASK | MILLISECOND_MASK)) != 0) {
+        if (timeOfDay != 0) {
+            Integer hours = timeOfDay / ONE_HOUR;
+            InternalSet(HOUR_OF_DAY, hours);
+            InternalSet(AM_PM, hours / 12); // Assume AM == 0
+            InternalSet(HOUR, hours % 12);
+            Integer r = timeOfDay % ONE_HOUR;
+            InternalSet(MINUTE, r / ONE_MINUTE);
+            r %= ONE_MINUTE;
+            InternalSet(SECOND, r / ONE_SECOND);
+            InternalSet(MILLISECOND, r % ONE_SECOND);
+        }
+        else {
+            InternalSet(HOUR_OF_DAY, 0);
+            InternalSet(AM_PM, AM);
+            InternalSet(HOUR, 0);
+            InternalSet(MINUTE, 0);
+            InternalSet(SECOND, 0);
+            InternalSet(MILLISECOND, 0);
+        }
+        mask |= (HOUR_OF_DAY_MASK | AM_PM_MASK | HOUR_MASK
+                | MINUTE_MASK | SECOND_MASK | MILLISECOND_MASK);
+    }
+
+    if ((fieldMask & (ZONE_OFFSET_MASK | DST_OFFSET_MASK)) != 0) {
+        InternalSet(ZONE_OFFSET, mZoneOffsets[0]);
+        InternalSet(DST_OFFSET, mZoneOffsets[1]);
+        mask |= (ZONE_OFFSET_MASK | DST_OFFSET_MASK);
+    }
+
+    if ((fieldMask & (DAY_OF_YEAR_MASK | WEEK_OF_YEAR_MASK | WEEK_OF_MONTH_MASK | DAY_OF_WEEK_IN_MONTH_MASK)) != 0) {
+        Integer normalizedYear;
+        mCdate->GetNormalizedYear(&normalizedYear);
+        Long fixedDateJan1;
+        mCalsys->GetFixedDate(normalizedYear, 1, 1, mCdate, &fixedDateJan1);
+        Integer dayOfYear = (Integer)(fixedDate - fixedDateJan1) + 1;
+        Long fixedDateMonth1 = fixedDate - dayOfMonth + 1;
+        Integer cutoverGap = 0;
+        Integer cutoverYear = (mCalsys == IBaseCalendar::Probe(GetGcal())) ? mGregorianCutoverYear : mGregorianCutoverYearJulian;
+        Integer relativeDayOfMonth = dayOfMonth - 1;
+
+        // If we are in the cutover year, we need some special handling.
+        if (normalizedYear == cutoverYear) {
+            // Need to take care of the "missing" days.
+            if (mGregorianCutoverYearJulian <= mGregorianCutoverYear) {
+                // We need to find out where we are. The cutover
+                // gap could even be more than one year.  (One
+                // year difference in ~48667 years.)
+                fixedDateJan1 = GetFixedDateJan1(mCdate, fixedDate);
+                if (fixedDate >= mGregorianCutoverDate) {
+                    fixedDateMonth1 = GetFixedDateMonth1(mCdate, fixedDate);
+                }
+            }
+            Integer realDayOfYear = (Integer)(fixedDate - fixedDateJan1) + 1;
+            cutoverGap = dayOfYear - realDayOfYear;
+            dayOfYear = realDayOfYear;
+            relativeDayOfMonth = (Integer)(fixedDate - fixedDateMonth1);
+        }
+        InternalSet(DAY_OF_YEAR, dayOfYear);
+        InternalSet(DAY_OF_WEEK_IN_MONTH, relativeDayOfMonth / 7 + 1);
+
+        Integer weekOfYear = GetWeekNumber(fixedDateJan1, fixedDate);
+
+        // The spec is to calculate WEEK_OF_YEAR in the
+        // ISO8601-style. This creates problems, though.
+        if (weekOfYear == 0) {
+            // If the date belongs to the last week of the
+            // previous year, use the week number of "12/31" of
+            // the "previous" year. Again, if the previous year is
+            // the Gregorian cutover year, we need to take care of
+            // it.  Usually the previous day of January 1 is
+            // December 31, which is not always true in
+            // GregorianCalendar.
+            Long fixedDec31 = fixedDateJan1 - 1;
+            Long prevJan1  = fixedDateJan1 - 365;
+            if (normalizedYear > (cutoverYear + 1)) {
+                if (CalendarUtils::IsGregorianLeapYear(normalizedYear - 1)) {
+                    --prevJan1;
+                }
+            }
+            else if (normalizedYear <= mGregorianCutoverYearJulian) {
+                if (CalendarUtils::IsJulianLeapYear(normalizedYear - 1)) {
+                    --prevJan1;
+                }
+            }
+            else {
+                AutoPtr<IBaseCalendar> calForJan1 = mCalsys;
+                //int prevYear = normalizedYear - 1;
+                Integer prevYear;
+                GetCalendarDate(fixedDec31)->GetNormalizedYear(&prevYear);
+                if (prevYear == mGregorianCutoverYear) {
+                    calForJan1 = GetCutoverCalendarSystem();
+                    if (calForJan1 == IBaseCalendar::Probe(sJcal)) {
+                        calForJan1->GetFixedDate(prevYear,
+                                IBaseCalendar::JANUARY, 1, nullptr, &prevJan1);
+                    }
+                    else {
+                        prevJan1 = mGregorianCutoverDate;
+                        calForJan1 = IBaseCalendar::Probe(GetGcal());
+                    }
+                }
+                else if (prevYear <= mGregorianCutoverYearJulian) {
+                    calForJan1 = GetJulianCalendarSystem();
+                    calForJan1->GetFixedDate(prevYear,
+                            IBaseCalendar::JANUARY, 1, nullptr, &prevJan1);
+                }
+            }
+            weekOfYear = GetWeekNumber(prevJan1, fixedDec31);
+        }
+        else {
+            if (normalizedYear > mGregorianCutoverYear ||
+                    normalizedYear < (mGregorianCutoverYearJulian - 1)) {
+                // Regular years
+                if (weekOfYear >= 52) {
+                    Long nextJan1 = fixedDateJan1 + 365;
+                    Boolean leapYear;
+                    if (ICalendarDate::Probe(mCdate)->IsLeapYear(&leapYear), leapYear) {
+                        nextJan1++;
+                    }
+                    Integer firstDayOfWeek;
+                    GetFirstDayOfWeek(&firstDayOfWeek);
+                    Long nextJan1st = BaseCalendar::GetDayOfWeekDateOnOrBefore(nextJan1 + 6,
+                            firstDayOfWeek);
+                    Integer ndays = (Integer)(nextJan1st - nextJan1);
+                    Integer minimalDays;
+                    if ((GetMinimalDaysInFirstWeek(&minimalDays), ndays >= minimalDays) && fixedDate >= (nextJan1st - 7)) {
+                        // The first days forms a week in which the date is included.
+                        weekOfYear = 1;
+                    }
+                }
+            }
+            else {
+                AutoPtr<IBaseCalendar> calForJan1 = mCalsys;
+                Integer nextYear = normalizedYear + 1;
+                if (nextYear == (mGregorianCutoverYearJulian + 1) &&
+                    nextYear < mGregorianCutoverYear) {
+                    // In case the gap is more than one year.
+                    nextYear = mGregorianCutoverYear;
+                }
+                if (nextYear == mGregorianCutoverYear) {
+                    calForJan1 = GetCutoverCalendarSystem();
+                }
+
+                Long nextJan1;
+                if (nextYear > mGregorianCutoverYear
+                    || mGregorianCutoverYearJulian == mGregorianCutoverYear
+                    || nextYear == mGregorianCutoverYearJulian) {
+                    calForJan1->GetFixedDate(nextYear,
+                            IBaseCalendar::JANUARY, 1, nullptr, &nextJan1);
+                }
+                else {
+                    nextJan1 = mGregorianCutoverDate;
+                    calForJan1 = IBaseCalendar::Probe(GetGcal());
+                }
+
+                Integer firstDayOfWeek;
+                GetFirstDayOfWeek(&firstDayOfWeek);
+                Long nextJan1st = BaseCalendar::GetDayOfWeekDateOnOrBefore(
+                        nextJan1 + 6, firstDayOfWeek);
+                Integer ndays = (Integer)(nextJan1st - nextJan1);
+                Integer minimalDays;
+                if ((GetMinimalDaysInFirstWeek(&minimalDays), ndays >= minimalDays) && fixedDate >= (nextJan1st - 7)) {
+                    // The first days forms a week in which the date is included.
+                    weekOfYear = 1;
+                }
+            }
+        }
+        InternalSet(WEEK_OF_YEAR, weekOfYear);
+        InternalSet(WEEK_OF_MONTH, GetWeekNumber(fixedDateMonth1, fixedDate));
+        mask |= (DAY_OF_YEAR_MASK | WEEK_OF_YEAR_MASK | WEEK_OF_MONTH_MASK | DAY_OF_WEEK_IN_MONTH_MASK);
+    }
+    return mask;
 }
 
 }
