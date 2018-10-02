@@ -31,7 +31,7 @@ interface IZoneInfo
     GetOffsetsByUtcTime(
         [in] Long utcTimeInMillis,
         [out] Array<Integer> offsets,
-        [out] Integer* total);
+        [out] Integer* total = nullptr);
 }
 
 }

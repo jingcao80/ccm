@@ -66,7 +66,7 @@ ECode TimeZone::GetOffset(
 
 Integer TimeZone::GetOffsets(
     /* [in] */ Long date,
-    /* [out] */ Array<Integer>* offsets)
+    /* [out] */ Array<Integer>& offsets)
 {
     Integer rawoffset;
     GetRawOffset(&rawoffset);
@@ -77,9 +77,9 @@ Integer TimeZone::GetOffsets(
     if (InDaylightTime(dateObj, &daylightTime), daylightTime) {
         GetDSTSavings(&dstoffset);
     }
-    if (offsets != nullptr) {
-        (*offsets)[0] = rawoffset;
-        (*offsets)[1] = dstoffset;
+    if (!offsets.IsNull()) {
+        offsets[0] = rawoffset;
+        offsets[1] = dstoffset;
     }
     return rawoffset + dstoffset;
 }

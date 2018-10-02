@@ -177,6 +177,8 @@ protected:
 
     ECode ComputeFields() override;
 
+    ECode ComputeTime() override;
+
 private:
     static AutoPtr<IGregorian> GetGcal();
 
@@ -189,106 +191,69 @@ private:
         /* [in] */ Integer fieldMask,
         /* [in] */ Integer tzMask);
 
-
-
     Integer GetWeekNumber(
         /* [in] */ Long fixedDay1,
-        /* [in] */ Long fixedDate)
-    {
-        return 0;
-    }
-
-    static AutoPtr<IBaseCalendar> GetJulianCalendarSystem()
-    {
-        return nullptr;
-    }
-
-    AutoPtr<IBaseCalendarDate> GetCalendarDate(
-        /* [in] */ Long fd)
-    {
-        return nullptr;
-    }
+        /* [in] */ Long fixedDate);
 
     Long AdjustForZoneAndDaylightSavingsTime(
         /* [in] */ Integer tzMask,
         /* [in] */ Long utcTimeInMillis,
-        /* [in] */ ITimeZone* zone)
-    {
-        return 0;
-    }
+        /* [in] */ ITimeZone* zone);
 
-    AutoPtr<IBaseCalendarDate> GetGregorianCutoverDate()
-    {
-        return nullptr;
-    }
+    Integer AdjustDstOffsetForInvalidWallClock(
+        /* [in] */ Long standardTimeInZone,
+        /* [in] */ ITimeZone* zone,
+        /* [in] */ Integer dstOffset);
 
-    Integer InternalGetEra()
-    {
-        return 0;
-    }
+    Long GetFixedDate(
+        /* [in] */ IBaseCalendar* cal,
+        /* [in] */ Integer year,
+        /* [in] */ Integer fieldMask);
 
-    void PinDayOfMonth()
-    {}
+    AutoPtr<GregorianCalendar> GetNormalizedCalendar();
 
-    Long GetCurrentFixedDate()
-    {
-        return 0;
-    }
+    static AutoPtr<IBaseCalendar> GetJulianCalendarSystem();
+
+    AutoPtr<IBaseCalendar> GetCutoverCalendarSystem();
 
     Boolean IsCutoverYear(
-        /* [in] */ Integer normalizedYear)
-    {
-        return false;
-    }
+        /* [in] */ Integer normalizedYear);
+
+    Long GetFixedDateJan1(
+        /* [in] */ IBaseCalendarDate* date,
+        /* [in] */ Long fixedDate);
+
+    Long GetFixedDateMonth1(
+        /* [in] */ IBaseCalendarDate* date,
+        /* [in] */ Long fixedDate);
+
+    AutoPtr<IBaseCalendarDate> GetCalendarDate(
+        /* [in] */ Long fd);
+
+    AutoPtr<IBaseCalendarDate> GetGregorianCutoverDate();
+
+    AutoPtr<IBaseCalendarDate> GetLastJulianDate();
 
     Integer MonthLength(
         /* [in] */ Integer month,
-        /* [in] */ Integer year)
-    {
-        return 0;
-    }
+        /* [in] */ Integer year);
 
     Integer MonthLength(
-        /* [in] */ Integer month)
-    {
-        return 0;
-    }
+        /* [in] */ Integer month);
+
+    Integer ActualMonthLength();
+
+    void PinDayOfMonth();
+
+    Long GetCurrentFixedDate();
 
     static Integer GetRolledValue(
         /* [in] */ Integer value,
         /* [in] */ Integer amount,
         /* [in] */ Integer min,
-        /* [in] */ Integer max)
-    {}
+        /* [in] */ Integer max);
 
-    AutoPtr<IBaseCalendar> GetCutoverCalendarSystem()
-    {
-        return nullptr;
-    }
-
-    Long GetFixedDateMonth1(
-        /* [in] */ IBaseCalendarDate* date,
-        /* [in] */ Long fixedDate)
-    {
-        return 0;
-    }
-
-    Integer ActualMonthLength()
-    {
-        return 0;
-    }
-
-    AutoPtr<GregorianCalendar> GetNormalizedCalendar()
-    {
-        return nullptr;
-    }
-
-    Long GetFixedDateJan1(
-        /* [in] */ IBaseCalendarDate* date,
-        /* [in] */ Long fixedDate)
-    {
-        return 0;
-    }
+    Integer InternalGetEra();
 
 private:
     static constexpr Integer EPOCH_OFFSET = 719163; // Fixed date of January 1, 1970 (Gregorian)
@@ -307,6 +272,11 @@ public:
     static constexpr Integer BCE = 0;
 
     static constexpr Integer CE = 1;
+
+    static constexpr Integer MONTH_LENGTH[]
+        = {31,28,31,30,31,30,31,31,30,31,30,31}; // 0-based
+    static constexpr Integer LEAP_MONTH_LENGTH[]
+        = {31,29,31,30,31,30,31,31,30,31,30,31}; // 0-based
 
     static constexpr Integer MIN_VALUES[] = {
         BCE,            // ERA
@@ -372,6 +342,7 @@ private:
     // Reference to the JulianCalendar instance (singleton), set as needed. See
     // getJulianCalendarSystem().
     static AutoPtr<IJulianCalendar> sJcal;
+    static SyncObject sJcalLock;
 
     // JulianCalendar eras. See getJulianCalendarSystem().
     static Array<IEra*> sJeras;

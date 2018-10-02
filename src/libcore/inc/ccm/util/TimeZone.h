@@ -49,7 +49,7 @@ public:
 
     Integer GetOffsets(
         /* [in] */ Long date,
-        /* [out] */ Array<Integer>* offsets);
+        /* [out] */ Array<Integer>& offsets);
 
     ECode GetID(
         /* [out] */ String* id);
@@ -110,6 +110,9 @@ public:
         /* [in] */ ITimeZone* other,
         /* [out] */ Boolean* result) override;
 
+    static TimeZone* From(
+        /* [in] */ ITimeZone* zone);
+
 protected:
     ECode CloneImpl(
         /* [in] */ ITimeZone* newObj);
@@ -132,6 +135,12 @@ private:
 inline ECode TimeZone::Constructor()
 {
     return NOERROR;
+}
+
+inline TimeZone* TimeZone::From(
+    /* [in] */ ITimeZone* zone)
+{
+    return (TimeZone*)zone;
 }
 
 }
