@@ -143,10 +143,6 @@ interface ICalendar
     Clear(
         [in] Integer field);
 
-    CompareTo(
-        [in] ICalendar* another,
-        [out] Integer* result);
-
     Get(
         [in] Integer field,
         [out] Integer* value);

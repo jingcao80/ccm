@@ -20,6 +20,7 @@
 #include "ccm/core/System.h"
 #include "ccm/util/CDate.h"
 #include "ccm/util/Date.h"
+#include "ccm/util/CGregorianCalendar.h"
 #include "ccm/util/Locale.h"
 #include "ccm/util/TimeZone.h"
 #include "ccm/util/calendar/CalendarSystem.h"
@@ -772,6 +773,12 @@ ECode Date::GetTimezoneOffset(
 
     Integer zoneOffset;
     if (mCdate == nullptr) {
+        AutoPtr<ICalendar> cal;
+        CGregorianCalendar::New(mFastTime, IID_ICalendar, (IInterface**)&cal);
+        Integer zoff, doff;
+        cal->Get(ICalendar::ZONE_OFFSET, &zoff);
+        cal->Get(ICalendar::DST_OFFSET, &doff);
+        zoneOffset = (zoff + doff);
     }
     else {
         Normalize();
@@ -825,9 +832,69 @@ AutoPtr<IBaseCalendarDate> Date::Normalize()
 }
 
 AutoPtr<IBaseCalendarDate> Date::Normalize(
-    /* [in] */ IBaseCalendarDate* date)
+    /* [in] */ IBaseCalendarDate* date_)
 {
-    return nullptr;
+    AutoPtr<IBaseCalendarDate> date = date_;
+
+    Integer y, m, d, hh, mm, ss, ms;
+    date->GetNormalizedYear(&y);
+    ICalendarDate* cdate = ICalendarDate::Probe(date);
+    cdate->GetMonth(&m);
+    cdate->GetDayOfMonth(&d);
+    cdate->GetHours(&hh);
+    cdate->GetMinutes(&mm);
+    cdate->GetSeconds(&ss);
+    cdate->GetMillis(&ms);
+    AutoPtr<ITimeZone> tz;
+    cdate->GetZone(&tz);
+
+    // If the specified year can't be handled using a long value
+    // in milliseconds, GregorianCalendar is used for full
+    // compatibility with underflow and overflow. This is required
+    // by some JCK tests. The limits are based max year values -
+    // years that can be represented by max values of d, hh, mm,
+    // ss and ms. Also, let GregorianCalendar handle the default
+    // cutover year so that we don't need to worry about the
+    // transition here.
+    if (y == 1582 || y > 280000000 || y < -280000000) {
+        if (tz == nullptr) {
+            TimeZone::GetTimeZone(String("GMT"), &tz);
+        }
+        AutoPtr<ICalendar> gc;
+        CGregorianCalendar::New(tz, IID_ICalendar, (IInterface**)&gc);
+        gc->Clear();
+        gc->Set(ICalendar::MILLISECOND, ms);
+        gc->Set(y, m - 1, d, hh, mm, ss);
+        gc->GetTimeInMillis(&mFastTime);
+        AutoPtr<IBaseCalendar> cal = GetCalendarSystem(mFastTime);
+        AutoPtr<ICalendarDate> cdate;
+        ICalendarSystem::Probe(cal)->GetCalendarDate(mFastTime, tz, &cdate);
+        return IBaseCalendarDate::Probe(cdate);
+    }
+
+    AutoPtr<IBaseCalendar> cal = GetCalendarSystem(y);
+    if (cal != GetCalendarSystem(date)) {
+        AutoPtr<ICalendarDate> cdate;
+        ICalendarSystem::Probe(cal)->NewCalendarDate(tz, &cdate);
+        date = IBaseCalendarDate::Probe(cdate);
+        date->SetNormalizedDate(y, m, d);
+        cdate->SetTimeOfDay(hh, mm, ss, ms);
+    }
+    // Perform the GregorianCalendar-style normalization.
+    ICalendarSystem::Probe(cal)->GetTime(ICalendarDate::Probe(date), &mFastTime);
+
+    // In case the normalized date requires the other calendar
+    // system, we need to recalculate it using the other one.
+    AutoPtr<IBaseCalendar> ncal = GetCalendarSystem(mFastTime);
+    if (ncal != cal) {
+        AutoPtr<ICalendarDate> cdate;
+        ICalendarSystem::Probe(ncal)->NewCalendarDate(tz, &cdate);
+        date = IBaseCalendarDate::Probe(cdate);
+        date->SetNormalizedDate(y, m, d);
+        cdate->SetTimeOfDay(hh, mm, ss, ms);
+        ICalendarSystem::Probe(ncal)->GetTime(cdate, &mFastTime);
+    }
+    return date;
 }
 
 AutoPtr<IBaseCalendar> Date::GetCalendarSystem(
@@ -842,7 +909,13 @@ AutoPtr<IBaseCalendar> Date::GetCalendarSystem(
 AutoPtr<IBaseCalendar> Date::GetCalendarSystem(
     /* [in] */ Long utc)
 {
-    return nullptr;
+    Integer offset;
+    if (utc >= 0
+        || utc >= GregorianCalendar::DEFAULT_GREGORIAN_CUTOVER
+                    - (TimeZone::GetDefaultRef()->GetOffset(utc, &offset), offset)) {
+        return GetGcal();
+    }
+    return GetJulianCalendar();
 }
 
 AutoPtr<IBaseCalendar> Date::GetCalendarSystem(

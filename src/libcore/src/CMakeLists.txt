@@ -72,6 +72,7 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_util_CArrayList.cpp
     ${OBJ_DIR}/_ccm_util_CDate.cpp
     ${OBJ_DIR}/_ccm_util_CFormatter.cpp
+    ${OBJ_DIR}/_ccm_util_CGregorianCalendar.cpp
     ${OBJ_DIR}/_ccm_util_CHashMap.cpp
     ${OBJ_DIR}/_ccm_util_CHashSet.cpp
     ${OBJ_DIR}/_ccm_util_CHashtable.cpp

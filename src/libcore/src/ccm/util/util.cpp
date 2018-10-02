@@ -17,6 +17,7 @@
 #include "ccm/util/CArrayList.h"
 #include "ccm/util/CDate.h"
 #include "ccm/util/CFormatter.h"
+#include "ccm/util/CGregorianCalendar.h"
 #include "ccm/util/CHashMap.h"
 #include "ccm/util/CHashSet.h"
 #include "ccm/util/CHashtable.h"
@@ -76,6 +77,107 @@ ECode CDate::Clone(
 }
 
 CCM_OBJECT_IMPL(CFormatter);
+
+CCM_OBJECT_IMPL(CGregorianCalendar);
+ECode CGregorianCalendar::Clone(
+    /* [in] */ const InterfaceID& iid,
+    /* [out] */ IInterface** obj)
+{
+    VALIDATE_NOT_NULL(obj);
+
+    AutoPtr<IGregorianCalendar> gcal;
+    CGregorianCalendar::New(IID_IGregorianCalendar, (IInterface**)&gcal);
+    FAIL_RETURN(GregorianCalendar::CloneImpl(gcal));
+    *obj = gcal->Probe(iid);
+    REFCOUNT_ADD(*obj);
+    return NOERROR;
+}
+
+ECode CGregorianCalendar::New(
+    /* [in] */ Integer year,
+    /* [in] */ Integer month,
+    /* [in] */ Integer dayOfMonth,
+    /* [in] */ Integer hourOfDay,
+    /* [in] */ Integer minute,
+    /* [in] */ Integer second,
+    /* [in] */ Integer millis,
+    /* [in] */ const InterfaceID& iid,
+    /* [out] */ ccm::IInterface** object)
+{
+    AutoPtr<IClassObject> clsObject;
+    ECode ec = CoAcquireClassFactory(CID_CGregorianCalendar, nullptr, &clsObject);
+    if (FAILED(ec)) return ec;
+
+    void* addr = calloc(sizeof(CGregorianCalendar), 1);
+    if (addr == nullptr) return E_OUT_OF_MEMORY_ERROR;
+
+    CGregorianCalendar* _obj = new(addr) CGregorianCalendar();
+    ec = _obj->Constructor(year, month, dayOfMonth, hourOfDay, minute, second, millis);
+    if (FAILED(ec)) {
+        free(addr);
+        return ec;
+    }
+    AutoPtr<IMetaComponent> comp;
+    clsObject->GetMetadate(&comp);
+    _obj->AttachMetadata(comp, String("ccm::util::CGregorianCalendar"));
+    *object = _obj->Probe(iid);
+    REFCOUNT_ADD(*object);
+    return NOERROR;
+}
+
+ECode CGregorianCalendar::New(
+    /* [in] */ ITimeZone* zone,
+    /* [in] */ ILocale* locale,
+    /* [in] */ Boolean flag,
+    /* [in] */ const InterfaceID& iid,
+    /* [out] */ ccm::IInterface** object)
+{
+    AutoPtr<IClassObject> clsObject;
+    ECode ec = CoAcquireClassFactory(CID_CGregorianCalendar, nullptr, &clsObject);
+    if (FAILED(ec)) return ec;
+
+    void* addr = calloc(sizeof(CGregorianCalendar), 1);
+    if (addr == nullptr) return E_OUT_OF_MEMORY_ERROR;
+
+    CGregorianCalendar* _obj = new(addr) CGregorianCalendar();
+    ec = _obj->Constructor(zone, locale, flag);
+    if (FAILED(ec)) {
+        free(addr);
+        return ec;
+    }
+    AutoPtr<IMetaComponent> comp;
+    clsObject->GetMetadate(&comp);
+    _obj->AttachMetadata(comp, String("ccm::util::CGregorianCalendar"));
+    *object = _obj->Probe(iid);
+    REFCOUNT_ADD(*object);
+    return NOERROR;
+}
+
+ECode CGregorianCalendar::New(
+    /* [in] */ Long milliseconds,
+    /* [in] */ const InterfaceID& iid,
+    /* [out] */ ccm::IInterface** object)
+{
+    AutoPtr<IClassObject> clsObject;
+    ECode ec = CoAcquireClassFactory(CID_CGregorianCalendar, nullptr, &clsObject);
+    if (FAILED(ec)) return ec;
+
+    void* addr = calloc(sizeof(CGregorianCalendar), 1);
+    if (addr == nullptr) return E_OUT_OF_MEMORY_ERROR;
+
+    CGregorianCalendar* _obj = new(addr) CGregorianCalendar();
+    ec = _obj->Constructor(milliseconds);
+    if (FAILED(ec)) {
+        free(addr);
+        return ec;
+    }
+    AutoPtr<IMetaComponent> comp;
+    clsObject->GetMetadate(&comp);
+    _obj->AttachMetadata(comp, String("ccm::util::CGregorianCalendar"));
+    *object = _obj->Probe(iid);
+    REFCOUNT_ADD(*object);
+    return NOERROR;
+}
 
 CCM_OBJECT_IMPL(CHashMap);
 ECode CHashMap::Clone(

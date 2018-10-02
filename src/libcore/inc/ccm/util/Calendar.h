@@ -194,7 +194,7 @@ protected:
         /* [out] */ Boolean* after) override;
 
     ECode CompareTo(
-        /* [in] */ ICalendar* another,
+        /* [in] */ IInterface* another,
         /* [out] */ Integer* result) override;
 
     ECode Roll(

@@ -20,6 +20,7 @@
 #include "ccm/core/Math.h"
 #include "ccm/text/DateFormatSymbols.h"
 #include "ccm/util/Calendar.h"
+#include "ccm/util/CGregorianCalendar.h"
 #include "ccm/util/CHashMap.h"
 #include "ccm/util/CLocale.h"
 #include "ccm/util/CDate.h"
@@ -124,7 +125,9 @@ AutoPtr<ICalendar> Calendar::CreateCalendar(
     /* [in] */ ITimeZone* zone,
     /* [in] */ ILocale* aLocale)
 {
-    return nullptr;
+    AutoPtr<ICalendar> cal;
+    CGregorianCalendar::New(zone, aLocale, IID_ICalendar, (IInterface**)&cal);
+    return cal;
 }
 
 Array<ILocale*> Calendar::GetAvailableLocales()
@@ -790,12 +793,15 @@ ECode Calendar::After(
 }
 
 ECode Calendar::CompareTo(
-    /* [in] */ ICalendar* another,
+    /* [in] */ IInterface* another,
     /* [out] */ Integer* result)
 {
     VALIDATE_NOT_NULL(result);
 
-    *result = CompareTo(GetMillisOf((Calendar*)another));
+    if (ICalendar::Probe(another) == nullptr) {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    *result = CompareTo(GetMillisOf((Calendar*)ICalendar::Probe(another)));
     return NOERROR;
 }
 

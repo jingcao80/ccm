@@ -212,6 +212,51 @@ coclass CFormatter
 }
 
 [
+    uuid(e3a4ed7a-c706-4a8a-9116-2c9fcfe97a25),
+    version(0.1.0)
+]
+coclass CGregorianCalendar
+{
+    Constructor();
+
+    Constructor(
+        [in] ITimeZone* zone);
+
+    Constructor(
+        [in] ILocale* locale);
+
+    Constructor(
+        [in] ITimeZone* zone,
+        [in] ILocale* locale);
+
+    Constructor(
+        [in] Integer year,
+        [in] Integer month,
+        [in] Integer dayOfMonth);
+
+    Constructor(
+        [in] Integer year,
+        [in] Integer month,
+        [in] Integer dayOfMonth,
+        [in] Integer hourOfDay,
+        [in] Integer minute);
+
+    Constructor(
+        [in] Integer year,
+        [in] Integer month,
+        [in] Integer dayOfMonth,
+        [in] Integer hourOfDay,
+        [in] Integer minute,
+        [in] Integer second);
+
+    interface IGregorianCalendar;
+    interface ICalendar;
+    interface ISerializable;
+    interface ICloneable;
+    interface IComparable;
+}
+
+[
     uuid(afe87a5a-0e0b-4c33-975e-2ec5caa60afc),
     version(0.1.0)
 ]
