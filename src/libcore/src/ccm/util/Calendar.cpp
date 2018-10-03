@@ -24,6 +24,7 @@
 #include "ccm/util/CHashMap.h"
 #include "ccm/util/CLocale.h"
 #include "ccm/util/CDate.h"
+#include "ccm/util/JapaneseImperialCalendar.h"
 #include "ccm/util/TimeZone.h"
 #include "ccm/util/concurrent/CConcurrentHashMap.h"
 #include "ccm/util/locale/provider/CalendarDataUtility.h"
@@ -118,7 +119,9 @@ AutoPtr<ICalendar> Calendar::GetJapaneseImperialInstance(
     /* [in] */ ITimeZone* zone,
     /* [in] */ ILocale* aLocale)
 {
-    return nullptr;
+    AutoPtr<JapaneseImperialCalendar> jCal = new JapaneseImperialCalendar();
+    jCal->Constructor(zone, aLocale);
+    return (ICalendar*)jCal.Get();
 }
 
 AutoPtr<ICalendar> Calendar::CreateCalendar(

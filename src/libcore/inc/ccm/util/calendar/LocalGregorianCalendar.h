@@ -23,6 +23,12 @@
 
 namespace ccm {
 namespace util {
+class JapaneseImperialCalendar;
+}
+}
+
+namespace ccm {
+namespace util {
 namespace calendar {
 
 class LocalGregorianCalendar
@@ -153,6 +159,7 @@ private:
     Array<IEra*> mEras;
 
     friend class CalendarSystem;
+    friend class ccm::util::JapaneseImperialCalendar;
 };
 
 }

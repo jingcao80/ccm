@@ -46,6 +46,7 @@ set(SOURCES
     Hashtable.cpp
     HashMap.cpp
     HashSet.cpp
+    JapaneseImperialCalendar.cpp
     LinkedHashMap.cpp
     LinkedHashSet.cpp
     Locale.cpp
