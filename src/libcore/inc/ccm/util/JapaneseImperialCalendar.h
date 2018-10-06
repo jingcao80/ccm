@@ -19,10 +19,12 @@
 
 #include "ccm/util/Calendar.h"
 #include "ccm/util/calendar/LocalGregorianCalendar.h"
+#include "ccm.core.ILong.h"
 #include "ccm.util.IJapaneseImperialCalendar.h"
 #include "ccm.util.calendar.ICalendarSystem.h"
 #include "ccm.util.calendar.IEra.h"
 
+using ccm::core::ILong;
 using ccm::util::calendar::ICalendarSystem;
 using ccm::util::calendar::IEra;
 using ccm::util::calendar::LocalGregorianCalendar;
@@ -56,14 +58,19 @@ public:
     ECode GetHashCode(
         /* [out] */ Integer* hash) override;
 
-
-
     ECode Add(
         /* [in] */ Integer field,
-        /* [in] */ Integer amount) override
-    {
-        return NOERROR;
-    }
+        /* [in] */ Integer amount) override;
+
+    ECode Roll(
+        /* [in] */ Integer field,
+        /* [in] */ Boolean up) override;
+
+    ECode Roll(
+        /* [in] */ Integer field,
+        /* [in] */ Integer amount) override;
+
+
 
     ECode GetGreatestMinimum(
         /* [in] */ Integer field,
@@ -93,12 +100,7 @@ public:
         return NOERROR;
     }
 
-    ECode Roll(
-        /* [in] */ Integer field,
-        /* [in] */ Boolean up) override
-    {
-        return NOERROR;
-    }
+
 
     ECode Clone(
         /* [in] */ const InterfaceID& iid,
@@ -132,13 +134,68 @@ private:
 
 
 
+    /**
+     * After adjustments such as add(MONTH), add(YEAR), we don't want the
+     * month to jump around.  E.g., we don't want Jan 31 + 1 month to go to Mar
+     * 3, we want it to go to Feb 28.  Adjustments which might run into this
+     * problem call this method to retain the proper month.
+     */
+    void PinDayOfMonth(
+        /* [in] */ LocalGregorianCalendar::Date* date)
+    {}
+
+    static Integer GetEraIndex(
+        /* [in] */ LocalGregorianCalendar::Date* date)
+    {
+        return 0;
+    }
+
     static AutoPtr<LocalGregorianCalendar::Date> GetCalendarDate(
         /* [in] */ Long fd)
     {
         return nullptr;
     }
 
+    /**
+     * Returns the new value after 'roll'ing the specified value and amount.
+     */
+    static Integer GetRolledValue(
+        /* [in] */ Integer value,
+        /* [in] */ Integer amount,
+        /* [in] */ Integer min,
+        /* [in] */ Integer max)
+    {
+        return 0;
+    }
+
+    Boolean IsTransitionYear(
+        /* [in] */ Integer normalizedYear)
+    {
+        return false;
+    }
+
+    Integer MonthLength(
+        /* [in] */ Integer month)
+    {
+        return 0;
+    }
+
+    Long GetFixedDateMonth1(
+        /* [in] */ LocalGregorianCalendar::Date* date,
+        /* [in] */ Long fixedDate)
+    {
+        return 0;
+    }
+
+    Integer ActualMonthLength()
+    {
+        return 0;
+    }
+
 private:
+    static constexpr Integer EPOCH_OFFSET   = 719163; // Fixed date of January 1, 1970 (Gregorian)
+    static constexpr Integer EPOCH_YEAR     = 1970;
+
     // Useful millisecond constants.  Although ONE_DAY and ONE_WEEK can fit
     // into ints, they must be longs in order to prevent arithmetic overflow
     // when performing (bug 4173516).
@@ -245,6 +302,12 @@ private:
      * avoid overhead of creating it for each calculation.
      */
     AutoPtr<LocalGregorianCalendar::Date> mJdate;
+
+    /**
+     * The fixed date corresponding to jdate. If the value is
+     * Long.MIN_VALUE, the fixed date value is unknown.
+     */
+    Long mCachedFixedDate = ILong::MIN_VALUE;
 
     static Boolean sInitialized;
     static SyncObject sInitLock;
