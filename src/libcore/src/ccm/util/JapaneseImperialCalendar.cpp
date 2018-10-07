@@ -14,28 +14,33 @@
 // limitations under the License.
 //=========================================================================
 
+#include "coredef.h"
 #include "ccm/core/AutoLock.h"
+#include "ccm/core/CoreUtils.h"
 #include "ccm/core/Math.h"
 #include "ccm/core/System.h"
+#include "ccm/util/CHashSet.h"
 #include "ccm/util/JapaneseImperialCalendar.h"
 #include "ccm/util/TimeZone.h"
 #include "ccm/util/calendar/CalendarSystem.h"
 #include "ccm/util/calendar/CEra.h"
+#include "ccm/util/locale/provider/CalendarDataUtility.h"
 #include "ccm.core.IInteger.h"
 #include "ccm.util.calendar.IBaseCalendar.h"
-#include "ccm.util.calendar.ICalendarDate.h"
 
 using ccm::core::AutoLock;
+using ccm::core::CoreUtils;
 using ccm::core::IInteger;
 using ccm::core::Math;
 using ccm::core::System;
+using ccm::util::CHashSet;
 using ccm::util::calendar::CalendarSystem;
 using ccm::util::calendar::CEra;
 using ccm::util::calendar::IBaseCalendar;
-using ccm::util::calendar::ICalendarDate;
 using ccm::util::calendar::ICalendarSystem;
 using ccm::util::calendar::IID_ICalendarDate;
 using ccm::util::calendar::IID_IEra;
+using ccm::util::locale::provider::CalendarDataUtility;
 
 namespace ccm {
 namespace util {
@@ -900,6 +905,620 @@ ECode JapaneseImperialCalendar::Roll(
     }
 
     Set(field, GetRolledValue(InternalGet(field), amount, min, max));
+    return NOERROR;
+}
+
+ECode JapaneseImperialCalendar::GetDisplayName(
+    /* [in] */ Integer field,
+    /* [in] */ Integer style,
+    /* [in] */ ILocale* locale,
+    /* [out] */ String* name)
+{
+    VALIDATE_NOT_NULL(name);
+
+    Boolean result;
+    FAIL_RETURN(CheckDisplayNameParams(field, style, SHORT, NARROW_FORMAT, locale,
+            ERA_MASK | YEAR_MASK | MONTH_MASK | DAY_OF_WEEK_MASK | AM_PM_MASK, &result))
+    if (!result) {
+        *name = nullptr;
+        return NOERROR;
+    }
+
+    Integer fieldValue;
+    Get(field, &fieldValue);
+
+    // "GanNen" is supported only in the LONG style.
+    Integer eraValue;
+    if (field == YEAR
+            && (GetBaseStyle(style) != LONG || fieldValue != 1 || (Get(ERA, &eraValue), eraValue) == 0)) {
+        *name = nullptr;
+        return NOERROR;
+    }
+
+    String type;
+    GetCalendarType(&type);
+    CalendarDataUtility::RetrieveFieldValueName(type, field,
+            fieldValue, style, locale, name);
+    // If the ERA value is null, then
+    // try to get its name or abbreviation from the Era instance.
+    if (name->IsNull() && field == ERA && fieldValue < sEras.GetLength()) {
+        IEra* era = sEras[fieldValue];
+        if (style == SHORT) {
+            era->GetAbbreviation(name);
+        }
+        else {
+            era->GetName(name);
+        }
+    }
+    return NOERROR;
+}
+
+ECode JapaneseImperialCalendar::GetDisplayNames(
+    /* [in] */ Integer field,
+    /* [in] */ Integer style,
+    /* [in] */ ILocale* locale,
+    /* [out] */ IMap** names)
+{
+    VALIDATE_NOT_NULL(names);
+
+    Boolean result;
+    FAIL_RETURN(CheckDisplayNameParams(field, style, ALL_STYLES, NARROW_FORMAT, locale,
+            ERA_MASK | YEAR_MASK | MONTH_MASK | DAY_OF_WEEK_MASK | AM_PM_MASK, &result));
+    if (!result) {
+        *names = nullptr;
+        return NOERROR;
+    }
+
+    String type;
+    GetCalendarType(&type);
+    CalendarDataUtility::RetrieveFieldValueNames(type, field, style, locale, names);
+    // If strings[] has fewer than eras[], get more names from eras[].
+    if (*names != nullptr) {
+        if (field == ERA) {
+            Integer size;
+            (*names)->GetSize(&size);
+            if (style == ALL_STYLES) {
+                AutoPtr<ISet> values;
+                CHashSet::New(IID_ISet, (IInterface**)&values);
+                // count unique era values
+                AutoPtr<ISet> keySet;
+                (*names)->GetKeySet(&keySet);
+                FOR_EACH(IInterface*, key, , keySet) {
+                    AutoPtr<IInterface> value;
+                    (*names)->Get(key, &value);
+                    values->Add(value);
+                } END_FOR_EACH();
+                values->GetSize(&size);
+            }
+            if (size < sEras.GetLength()) {
+                Integer baseStyle = GetBaseStyle(style);
+                for (Integer i = size; i < sEras.GetLength(); i++) {
+                    IEra* era = sEras[i];
+                    if (baseStyle == ALL_STYLES || baseStyle == SHORT
+                            || baseStyle == NARROW_FORMAT) {
+                        String name;
+                        era->GetAbbreviation(&name);
+                        (*names)->Put(CoreUtils::Box(name), CoreUtils::Box(i));
+                    }
+                    if (baseStyle == ALL_STYLES || baseStyle == LONG) {
+                        String name;
+                        era->GetName(&name);
+                        (*names)->Put(CoreUtils::Box(name), CoreUtils::Box(i));
+                    }
+                }
+            }
+        }
+    }
+    return NOERROR;
+}
+
+ECode JapaneseImperialCalendar::GetMinimum(
+    /* [in] */ Integer field,
+    /* [out] */ Integer* value)
+{
+    VALIDATE_NOT_NULL(value);
+
+    if (field < 0 || field >= FIELD_COUNT) {
+        return ccm::core::E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+    }
+
+    *value = MIN_VALUES[field];
+    return NOERROR;
+}
+
+ECode JapaneseImperialCalendar::GetMaximum(
+    /* [in] */ Integer field,
+    /* [out] */ Integer* value)
+{
+    VALIDATE_NOT_NULL(value);
+
+    if (field < 0 || field >= FIELD_COUNT) {
+        return ccm::core::E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+    }
+
+    switch (field) {
+        case YEAR:
+        {
+            // The value should depend on the time zone of this calendar.
+            AutoPtr<ICalendarDate> d;
+            GetJcal()->GetCalendarDate(ILong::MAX_VALUE, GetZone(), &d);
+            Integer y;
+            d->GetYear(&y);
+            *value = Math::Max(LEAST_MAX_VALUES[YEAR], y);
+            return NOERROR;
+        }
+    }
+    *value = MAX_VALUES[field];
+    return NOERROR;
+}
+
+ECode JapaneseImperialCalendar::GetGreatestMinimum(
+    /* [in] */ Integer field,
+    /* [out] */ Integer* value)
+{
+    VALIDATE_NOT_NULL(value);
+
+    if (field < 0 || field >= FIELD_COUNT) {
+        return ccm::core::E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+    }
+
+    *value = field == YEAR ? 1 : MIN_VALUES[field];
+    return NOERROR;
+}
+
+ECode JapaneseImperialCalendar::GetLeastMaximum(
+    /* [in] */ Integer field,
+    /* [out] */ Integer* value)
+{
+    VALIDATE_NOT_NULL(value);
+
+    if (field < 0 || field >= FIELD_COUNT) {
+        return ccm::core::E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+    }
+
+    switch (field) {
+        case YEAR:
+        {
+            Integer y;
+            GetMaximum(YEAR, &y);
+            *value = Math::Min(LEAST_MAX_VALUES[YEAR], y);
+            return NOERROR;
+        }
+    }
+    *value = LEAST_MAX_VALUES[field];
+    return NOERROR;
+}
+
+ECode JapaneseImperialCalendar::GetActualMinimum(
+    /* [in] */ Integer field,
+    /* [out] */ Integer* value)
+{
+    VALIDATE_NOT_NULL(value);
+
+    if (field < 0 || field >= FIELD_COUNT) {
+        return ccm::core::E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+    }
+
+    if (!IsFieldSet(YEAR_MASK | MONTH_MASK | WEEK_OF_YEAR_MASK, field)) {
+        return GetMinimum(field, value);
+    }
+
+    *value = 0;
+    AutoPtr<JapaneseImperialCalendar> jc = GetNormalizedCalendar();
+    // Get a local date which includes time of day and time zone,
+    // which are missing in jc.jdate.
+    Long millis;
+    jc->GetTimeInMillis(&millis);
+    AutoPtr<ICalendarDate> jd;
+    GetJcal()->GetCalendarDate(millis, GetZone(), &jd);
+    Integer eraIndex = GetEraIndex((LocalGregorianCalendar::Date*)jd.Get());
+    switch (field) {
+        case YEAR:
+        {
+            if (eraIndex > BEFORE_MEIJI) {
+                *value = 1;
+                Long since;
+                sEras[eraIndex]->GetSince(GetZone(), &since);
+                AutoPtr<ICalendarDate> d;
+                GetJcal()->GetCalendarDate(since, GetZone(), &d);
+                // Use the same year in jd to take care of leap
+                // years. i.e., both jd and d must agree on leap
+                // or common years.
+                Integer y;
+                d->GetYear(&y);
+                jd->SetYear(y);
+                GetJcal()->Normalize(jd);
+                BLOCK_CHECK() {
+                    Boolean jdLeap, dLeap;
+                    jd->IsLeapYear(&jdLeap);
+                    d->IsLeapYear(&dLeap);
+                    CHECK(jdLeap == dLeap);
+                }
+                if (GetYearOffsetInMillis(jd) < GetYearOffsetInMillis(d)) {
+                    (*value)++;
+                }
+            }
+            else {
+                GetMinimum(field, value);
+                AutoPtr<ICalendarDate> d;
+                GetJcal()->GetCalendarDate(ILong::MIN_VALUE, GetZone(), &d);
+                // Use an equvalent year of d.getYear() if
+                // possible. Otherwise, ignore the leap year and
+                // common year difference.
+                Integer y;
+                d->GetYear(&y);
+                if (y > 400) {
+                    y -= 400;
+                }
+                jd->SetYear(y);
+                GetJcal()->Normalize(jd);
+                if (GetYearOffsetInMillis(jd) < GetYearOffsetInMillis(d)) {
+                    (*value)++;
+                }
+            }
+            break;
+        }
+
+        case MONTH:
+        {
+            // In Before Meiji and Meiji, January is the first month.
+            Integer y;
+            if (eraIndex > MEIJI && (jd->GetYear(&y), y) == 1) {
+                Long since;
+                sEras[eraIndex]->GetSince(GetZone(), &since);
+                AutoPtr<ICalendarDate> d;
+                GetJcal()->GetCalendarDate(since, GetZone(), &d);
+                Integer m, jdDom, dDom;
+                *value = (d->GetMonth(&m), m) - 1;
+                if ((jd->GetDayOfMonth(&jdDom), jdDom) <
+                        (d->GetDayOfMonth(&dDom), dDom)) {
+                    (*value)++;
+                }
+            }
+            break;
+        }
+
+        case WEEK_OF_YEAR:
+        {
+            *value = 1;
+            AutoPtr<ICalendarDate> d;
+            GetJcal()->GetCalendarDate(ILong::MIN_VALUE, GetZone(), &d);
+            // shift 400 years to avoid underflow
+            d->AddYear(+400);
+            GetJcal()->Normalize(d);
+            AutoPtr<IEra> era;
+            d->GetEra(&era);
+            jd->SetEra(era);
+            Integer y;
+            d->GetYear(&y);
+            jd->SetYear(y);
+            GetJcal()->Normalize(jd);
+
+            Long jan1, fd;
+            IBaseCalendar* bc = IBaseCalendar::Probe(GetJcal());
+            bc->GetFixedDate(d, &jan1);
+            bc->GetFixedDate(jd, &fd);
+            Integer woy = GetWeekNumber(jan1, fd);
+            Long day1 = fd - (7 * (woy - 1));
+            Long jdTod, dTod;
+            if ((day1 < jan1) ||
+                    (day1 == jan1 &&
+                    (jd->GetTimeOfDay(&jdTod), jdTod) <
+                    (d->GetTimeOfDay(&dTod), dTod))) {
+                (*value)++;
+            }
+            break;
+        }
+    }
+    return NOERROR;
+}
+
+ECode JapaneseImperialCalendar::GetActualMaximum(
+    /* [in] */ Integer field,
+    /* [out] */ Integer* value)
+{
+    VALIDATE_NOT_NULL(value);
+
+    if (field < 0 || field >= FIELD_COUNT) {
+        return ccm::core::E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+    }
+
+    constexpr Integer fieldsForFixedMax = ERA_MASK | DAY_OF_WEEK_MASK |
+            HOUR_MASK | AM_PM_MASK | HOUR_OF_DAY_MASK |MINUTE_MASK |
+            SECOND_MASK | MILLISECOND_MASK | ZONE_OFFSET_MASK | DST_OFFSET_MASK;
+    if ((fieldsForFixedMax & (1 << field)) != 0) {
+        return GetMaximum(field, value);
+    }
+
+    AutoPtr<JapaneseImperialCalendar> jc = GetNormalizedCalendar();
+    AutoPtr<LocalGregorianCalendar::Date> date = jc->mJdate;
+    Integer normalizedYear;
+    date->GetNormalizedYear(&normalizedYear);
+
+    *value = -1;
+    switch (field) {
+        case MONTH:
+        {
+            *value = DECEMBER;
+            if (IsTransitionYear(normalizedYear)) {
+                // TODO: there may be multiple transitions in a year.
+                Integer eraIndex = GetEraIndex(date);
+                Integer y;
+                if (date->GetYear(&y), y != 1) {
+                    eraIndex++;
+                    CHECK(eraIndex < sEras.GetLength());
+                }
+                Long transition = sSinceFixedDates[eraIndex];
+                Long fd = jc->mCachedFixedDate;
+                if (fd < transition) {
+                    AutoPtr<ICalendarDate> ldate;
+                    date->Clone(IID_ICalendarDate, (IInterface**)&ldate);
+                    IBaseCalendar::Probe(GetJcal())->GetCalendarDateFromFixedDate(ldate, transition - 1);
+                    Integer m;
+                    *value = (ldate->GetMonth(&m), m) - 1;
+                }
+            }
+            else {
+                AutoPtr<ICalendarDate> d;
+                GetJcal()->GetCalendarDate(ILong::MAX_VALUE, GetZone(), &d);
+                AutoPtr<IEra> daEra, dEra;
+                Integer daY, dY;
+                if ((date->GetEra(&daEra), daEra) == (d->GetEra(&dEra), dEra) &&
+                        (date->GetYear(&daY), daY) == (d->GetYear(&dY), dY)) {
+                    Integer m;
+                    *value = (d->GetMonth(&m), m) - 1;
+                }
+            }
+            break;
+        }
+
+        case DAY_OF_MONTH:
+            GetJcal()->GetMonthLength(date, value);
+            break;
+
+        case DAY_OF_YEAR:
+        {
+            if (IsTransitionYear(normalizedYear)) {
+                // Handle transition year.
+                // TODO: there may be multiple transitions in a year.
+                Integer eraIndex = GetEraIndex(date);
+                Integer y;
+                if (date->GetYear(&y), y != 1) {
+                    eraIndex++;
+                    CHECK(eraIndex < sEras.GetLength());
+                }
+                Long transition = sSinceFixedDates[eraIndex];
+                Long fd = jc->mCachedFixedDate;
+                AutoPtr<ICalendarDate> d;
+                GetGcal()->NewCalendarDate(TimeZone::NO_TIMEZONE, &d);
+                d->SetDate(normalizedYear, IBaseCalendar::JANUARY, 1);
+                if (fd < transition) {
+                    Long date;
+                    IBaseCalendar::Probe(GetGcal())->GetFixedDate(d, &date);
+                    *value = (Integer)(transition - date);
+                }
+                else {
+                    d->AddYear(+1);
+                    Long date;
+                    IBaseCalendar::Probe(GetGcal())->GetFixedDate(d, &date);
+                    *value = (Integer)(date - transition);
+                }
+            }
+            else {
+                AutoPtr<ICalendarDate> d;
+                GetJcal()->GetCalendarDate(ILong::MAX_VALUE, GetZone(), &d);
+                AutoPtr<IEra> daEra, dEra;
+                Integer daY, dY;
+                if ((date->GetEra(&daEra), daEra) == (d->GetEra(&dEra), dEra) &&
+                        (date->GetYear(&daY), daY) == (d->GetYear(&dY), dY)) {
+                    Long fd;
+                    IBaseCalendar::Probe(GetGcal())->GetFixedDate(d, &fd);
+                    Long jan1 = GetFixedDateJan1((LocalGregorianCalendar::Date*)d.Get(), fd);
+                    *value = (Integer)(fd - jan1) + 1;
+                }
+                else if ((date->GetYear(&daY), daY) == (GetMinimum(YEAR, &dY), dY)) {
+                    AutoPtr<ICalendarDate> d1;
+                    GetJcal()->GetCalendarDate(ILong::MIN_VALUE, GetZone(), &d1);
+                    Long fd1;
+                    IBaseCalendar::Probe(GetGcal())->GetFixedDate(d1, &fd1);
+                    d1->AddYear(1);
+                    d1->SetMonth(IBaseCalendar::JANUARY);
+                    d1->SetDayOfMonth(1);
+                    GetJcal()->Normalize(d1);
+                    Long fd2;
+                    IBaseCalendar::Probe(GetGcal())->GetFixedDate(d1, &fd2);
+                    *value = (Integer)(fd2 - fd1);
+                }
+                else {
+                    GetJcal()->GetYearLength(date, value);
+                }
+            }
+            break;
+        }
+
+        case WEEK_OF_YEAR:
+        {
+            if (!IsTransitionYear(normalizedYear)) {
+                AutoPtr<ICalendarDate> jd;
+                GetJcal()->GetCalendarDate(ILong::MAX_VALUE, GetZone(), &jd);
+                AutoPtr<IEra> daEra, jdEra;
+                Integer daY, jdY;
+                if ((date->GetEra(&daEra), daEra) == (jd->GetEra(&jdEra), jdEra) &&
+                        (date->GetYear(&daY), daY) == (jd->GetYear(&jdY), jdY)) {
+                    Long fd;
+                    IBaseCalendar::Probe(GetJcal())->GetFixedDate(jd, &fd);
+                    Long jan1 = GetFixedDateJan1((LocalGregorianCalendar::Date*)jd.Get(), fd);
+                    *value = GetWeekNumber(jan1, fd);
+                }
+                else if ((date->GetEra(&daEra), daEra) == nullptr &&
+                        (date->GetYear(&daY), daY) == (GetMinimum(YEAR, &jdY), jdY)) {
+                    AutoPtr<ICalendarDate> d;
+                    GetJcal()->GetCalendarDate(ILong::MIN_VALUE, GetZone(), &d);
+                    // shift 400 years to avoid underflow
+                    d->AddYear(+400);
+                    GetJcal()->Normalize(d);
+                    AutoPtr<IEra> dEra;
+                    d->GetEra(&dEra);
+                    jd->SetEra(dEra);
+                    Integer y;
+                    d->GetYear(&y);
+                    jd->SetDate(y + 1, IBaseCalendar::JANUARY, 1);
+                    GetJcal()->Normalize(jd);
+                    Long jan1, nextJan1;
+                    IBaseCalendar::Probe(GetJcal())->GetFixedDate(d, &jan1);
+                    IBaseCalendar::Probe(GetJcal())->GetFixedDate(jd, &nextJan1);
+                    Integer dayOfWeek;
+                    GetFirstDayOfWeek(&dayOfWeek);
+                    Long nextJan1st = LocalGregorianCalendar::GetDayOfWeekDateOnOrBefore(nextJan1 + 6,
+                            dayOfWeek);
+                    Integer ndays = (Integer)(nextJan1st - nextJan1);
+                    Integer minDays;
+                    GetMinimalDaysInFirstWeek(&minDays);
+                    if (ndays >= minDays) {
+                        nextJan1st -= 7;
+                    }
+                    *value = GetWeekNumber(jan1, nextJan1st);
+                }
+                else {
+                    // Get the day of week of January 1 of the year
+                    AutoPtr<ICalendarDate> d;
+                    GetGcal()->NewCalendarDate(TimeZone::NO_TIMEZONE, &d);
+                    d->SetDate(normalizedYear, IBaseCalendar::JANUARY, 1);
+                    Integer dayOfWeek, dow;
+                    IBaseCalendar::Probe(GetGcal())->GetDayOfWeek(d, &dayOfWeek);
+                    // Normalize the day of week with the firstDayOfWeek value
+                    dayOfWeek -= (GetFirstDayOfWeek(&dow), dow);
+                    if (dayOfWeek < 0) {
+                        dayOfWeek += 7;
+                    }
+                    *value = 52;
+                    Integer minDays;
+                    GetMinimalDaysInFirstWeek(&minDays);
+                    Integer magic = dayOfWeek + minDays - 1;
+                    Boolean leap;
+                    if ((magic == 6) ||
+                            ((date->IsLeapYear(&leap), leap) && (magic == 5 || magic == 12))) {
+                        (*value)++;
+                    }
+                }
+                break;
+            }
+
+            if (jc == this) {
+                AutoPtr<IJapaneseImperialCalendar> cal;
+                jc->Clone(IID_IJapaneseImperialCalendar, (IInterface**)&cal);
+                jc = (JapaneseImperialCalendar*)cal.Get();
+            }
+            Integer max;
+            GetActualMaximum(DAY_OF_YEAR, &max);
+            jc->Set(DAY_OF_YEAR, max);
+            jc->Get(WEEK_OF_YEAR, value);
+            if (*value == 1 && max > 7) {
+                jc->Add(WEEK_OF_YEAR, -1);
+                jc->Get(WEEK_OF_YEAR, value);
+            }
+            break;
+        }
+
+        case WEEK_OF_MONTH:
+        {
+            AutoPtr<ICalendarDate> jd;
+            GetJcal()->GetCalendarDate(ILong::MAX_VALUE, GetZone(), &jd);
+            AutoPtr<IEra> daEra, jdEra;
+            Integer daY, jdY;
+            if ((date->GetEra(&daEra), daEra) == (jd->GetEra(&jdEra), jdEra) &&
+                    (date->GetYear(&daY), daY) == (jd->GetYear(&jdY), jdY)) {
+                AutoPtr<ICalendarDate> d;
+                GetGcal()->NewCalendarDate(TimeZone::NO_TIMEZONE, &d);
+                Integer m;
+                date->GetMonth(&m);
+                d->SetDate(normalizedYear, m, 1);
+                Integer dayOfWeek, monthLength, dow;
+                IBaseCalendar::Probe(GetGcal())->GetDayOfWeek(d, &dayOfWeek);
+                GetGcal()->GetMonthLength(d, &monthLength);
+                dayOfWeek -= (GetFirstDayOfWeek(&dow), dow);
+                if (dayOfWeek < 0) {
+                    dayOfWeek += 7;
+                }
+                Integer nDaysFirstWeek = 7 - dayOfWeek; // # of days in the first week
+                *value = 3;
+                Integer minDays;
+                GetMinimalDaysInFirstWeek(&minDays);
+                if (nDaysFirstWeek >= minDays) {
+                    (*value)++;
+                }
+                monthLength -= nDaysFirstWeek + 7 * 3;
+                if (monthLength > 0) {
+                    (*value)++;
+                    if (monthLength > 7) {
+                        (*value)++;
+                    }
+                }
+            }
+            else {
+                Long fd;
+                IBaseCalendar::Probe(GetJcal())->GetFixedDate(jd, &fd);
+                Integer dom;
+                Long month1 = fd - (jd->GetDayOfMonth(&dom), dom) + 1;
+                *value = GetWeekNumber(month1, fd);
+            }
+            break;
+        }
+
+        case DAY_OF_WEEK_IN_MONTH:
+        {
+            Integer ndays, dow1, dow;
+            date->GetDayOfWeek(&dow);
+            AutoPtr<ICalendarDate> d;
+            date->Clone(IID_ICalendarDate, (IInterface**)&d);
+            GetJcal()->GetMonthLength(d, &ndays);
+            d->SetDayOfMonth(1);
+            GetJcal()->Normalize(d);
+            d->GetDayOfWeek(&dow1);
+            Integer x = dow - dow1;
+            if (x < 0) {
+                x += 7;
+            }
+            ndays -= x;
+            *value = (ndays + 6) / 7;
+            break;
+        }
+
+        case YEAR:
+        {
+            Long millis;
+            jc->GetTimeInMillis(&millis);
+            AutoPtr<ICalendarDate> jd, d;
+            GetJcal()->GetCalendarDate(millis, GetZone(), &jd);
+            Integer eraIndex = GetEraIndex(date);
+            if (eraIndex == sEras.GetLength() - 1) {
+                GetJcal()->GetCalendarDate(ILong::MAX_VALUE, GetZone(), &d);
+                d->GetYear(value);
+                // Use an equivalent year for the
+                // getYearOffsetInMillis call to avoid overflow.
+                if (*value > 400) {
+                    jd->SetYear(*value - 400);
+                }
+            }
+            else {
+                Long time;
+                sEras[eraIndex + 1]->GetSince(GetZone(), &time);
+                GetJcal()->GetCalendarDate(time - 1, GetZone(), &d);
+                d->GetYear(value);
+                // Use the same year as d.getYear() to be
+                // consistent with leap and common years.
+                jd->SetYear(*value);
+            }
+            GetJcal()->Normalize(jd);
+            if (GetYearOffsetInMillis(jd) > GetYearOffsetInMillis(d)) {
+                (*value)--;
+            }
+            break;
+        }
+
+        default:
+            return ccm::core::E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+    }
     return NOERROR;
 }
 

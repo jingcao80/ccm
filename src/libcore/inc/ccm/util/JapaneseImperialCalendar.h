@@ -21,10 +21,12 @@
 #include "ccm/util/calendar/LocalGregorianCalendar.h"
 #include "ccm.core.ILong.h"
 #include "ccm.util.IJapaneseImperialCalendar.h"
+#include "ccm.util.calendar.ICalendarDate.h"
 #include "ccm.util.calendar.ICalendarSystem.h"
 #include "ccm.util.calendar.IEra.h"
 
 using ccm::core::ILong;
+using ccm::util::calendar::ICalendarDate;
 using ccm::util::calendar::ICalendarSystem;
 using ccm::util::calendar::IEra;
 using ccm::util::calendar::LocalGregorianCalendar;
@@ -70,35 +72,42 @@ public:
         /* [in] */ Integer field,
         /* [in] */ Integer amount) override;
 
-
-
-    ECode GetGreatestMinimum(
+    ECode GetDisplayName(
         /* [in] */ Integer field,
-        /* [out] */ Integer* value) override
-    {
-        return NOERROR;
-    }
+        /* [in] */ Integer style,
+        /* [in] */ ILocale* locale,
+        /* [out] */ String* name) override;
 
-    ECode GetLeastMaximum(
+    ECode GetDisplayNames(
         /* [in] */ Integer field,
-        /* [out] */ Integer* value) override
-    {
-        return NOERROR;
-    }
+        /* [in] */ Integer style,
+        /* [in] */ ILocale* locale,
+        /* [out] */ IMap** names) override;
 
     ECode GetMinimum(
         /* [in] */ Integer field,
-        /* [out] */ Integer* value) override
-    {
-        return NOERROR;
-    }
+        /* [out] */ Integer* value) override;
 
     ECode GetMaximum(
         /* [in] */ Integer field,
-        /* [out] */ Integer* value) override
-    {
-        return NOERROR;
-    }
+        /* [out] */ Integer* value) override;
+
+    ECode GetGreatestMinimum(
+        /* [in] */ Integer field,
+        /* [out] */ Integer* value) override;
+
+    ECode GetLeastMaximum(
+        /* [in] */ Integer field,
+        /* [out] */ Integer* value) override;
+
+    ECode GetActualMinimum(
+        /* [in] */ Integer field,
+        /* [out] */ Integer* value) override;
+
+    ECode GetActualMaximum(
+        /* [in] */ Integer field,
+        /* [out] */ Integer* value) override;
+
 
 
 
@@ -133,6 +142,19 @@ private:
     static ECode StaticInitialize();
 
 
+
+    Long GetYearOffsetInMillis(
+        /* [in] */ ICalendarDate* date)
+    {
+        return 0;
+    }
+
+    Integer GetWeekNumber(
+        /* [in] */ Long fixedDay1,
+        /* [in] */ Long fixedDate)
+    {
+        return 0;
+    }
 
     /**
      * After adjustments such as add(MONTH), add(YEAR), we don't want the
@@ -180,6 +202,13 @@ private:
         return 0;
     }
 
+    Long GetFixedDateJan1(
+        /* [in] */ LocalGregorianCalendar::Date* date,
+        /* [in] */ Long fixedDate)
+    {
+        return 0;
+    }
+
     Long GetFixedDateMonth1(
         /* [in] */ LocalGregorianCalendar::Date* date,
         /* [in] */ Long fixedDate)
@@ -190,6 +219,11 @@ private:
     Integer ActualMonthLength()
     {
         return 0;
+    }
+
+    AutoPtr<JapaneseImperialCalendar> GetNormalizedCalendar()
+    {
+        return nullptr;
     }
 
 private:

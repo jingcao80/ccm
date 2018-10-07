@@ -956,6 +956,10 @@ ECode GregorianCalendar::GetMinimum(
 {
     VALIDATE_NOT_NULL(value);
 
+    if (field < 0 || field >= FIELD_COUNT) {
+        return ccm::core::E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+    }
+
     *value = MIN_VALUES[field];
     return NOERROR;
 }
@@ -965,6 +969,10 @@ ECode GregorianCalendar::GetMaximum(
     /* [out] */ Integer* value)
 {
     VALIDATE_NOT_NULL(value);
+
+    if (field < 0 || field >= FIELD_COUNT) {
+        return ccm::core::E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+    }
 
     switch (field) {
         case MONTH:
@@ -1005,6 +1013,10 @@ ECode GregorianCalendar::GetGreatestMinimum(
 {
     VALIDATE_NOT_NULL(value);
 
+    if (field < 0 || field >= FIELD_COUNT) {
+        return ccm::core::E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+    }
+
     if (field == DAY_OF_MONTH) {
         AutoPtr<IBaseCalendarDate> d = GetGregorianCutoverDate();
         Long mon1 = GetFixedDateMonth1(d, mGregorianCutoverDate);
@@ -1023,6 +1035,10 @@ ECode GregorianCalendar::GetLeastMaximum(
     /* [out] */ Integer* value)
 {
     VALIDATE_NOT_NULL(value);
+
+    if (field < 0 || field >= FIELD_COUNT) {
+        return ccm::core::E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+    }
 
     switch (field) {
         case MONTH:
@@ -1056,6 +1072,10 @@ ECode GregorianCalendar::GetActualMinimum(
 {
     VALIDATE_NOT_NULL(value);
 
+    if (field < 0 || field >= FIELD_COUNT) {
+        return ccm::core::E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+    }
+
     if (field == DAY_OF_MONTH) {
         AutoPtr<GregorianCalendar> gc = GetNormalizedCalendar();
         Integer year;
@@ -1076,6 +1096,10 @@ ECode GregorianCalendar::GetActualMaximum(
     /* [out] */ Integer* retValue)
 {
     VALIDATE_NOT_NULL(retValue);
+
+    if (field < 0 || field >= FIELD_COUNT) {
+        return ccm::core::E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+    }
 
     Integer fieldsForFixedMax = ERA_MASK | DAY_OF_WEEK_MASK | HOUR_MASK | AM_PM_MASK |
             HOUR_OF_DAY_MASK | MINUTE_MASK | SECOND_MASK | MILLISECOND_MASK |
