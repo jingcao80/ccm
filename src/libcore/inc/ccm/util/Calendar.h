@@ -317,7 +317,7 @@ private:
     void SetWeekCountData(
         /* [in] */ ILocale* desiredLocale);
 
-    void UpdateTime();
+    ECode UpdateTime();
 
     Integer CompareTo(
         /* [in] */ Long t);

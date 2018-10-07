@@ -19,14 +19,17 @@
 #include "ccm/core/CoreUtils.h"
 #include "ccm/core/Math.h"
 #include "ccm/core/System.h"
+#include "ccm/util/CGregorianCalendar.h"
 #include "ccm/util/CHashSet.h"
 #include "ccm/util/JapaneseImperialCalendar.h"
 #include "ccm/util/TimeZone.h"
 #include "ccm/util/calendar/CalendarSystem.h"
+#include "ccm/util/calendar/CalendarUtils.h"
 #include "ccm/util/calendar/CEra.h"
 #include "ccm/util/locale/provider/CalendarDataUtility.h"
 #include "ccm.core.IInteger.h"
 #include "ccm.util.calendar.IBaseCalendar.h"
+#include <ccmlogger.h>
 
 using ccm::core::AutoLock;
 using ccm::core::CoreUtils;
@@ -35,6 +38,7 @@ using ccm::core::Math;
 using ccm::core::System;
 using ccm::util::CHashSet;
 using ccm::util::calendar::CalendarSystem;
+using ccm::util::calendar::CalendarUtils;
 using ccm::util::calendar::CEra;
 using ccm::util::calendar::IBaseCalendar;
 using ccm::util::calendar::ICalendarSystem;
@@ -1520,6 +1524,784 @@ ECode JapaneseImperialCalendar::GetActualMaximum(
             return ccm::core::E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
     return NOERROR;
+}
+
+Long JapaneseImperialCalendar::GetYearOffsetInMillis(
+    /* [in] */ ICalendarDate* date)
+{
+    Long doy;
+    IBaseCalendar::Probe(GetJcal())->GetDayOfYear(date, &doy);
+    Long t = (doy - 1) * ONE_DAY;
+    Long tod;
+    date->GetTimeOfDay(&tod);
+    Integer zo;
+    date->GetZoneOffset(&zo);
+    return t + tod - zo;
+}
+
+ECode JapaneseImperialCalendar::Clone(
+    /* [in] */ const InterfaceID& iid,
+    /* [out] */ IInterface** obj)
+{
+    VALIDATE_NOT_NULL(obj);
+
+    AutoPtr<JapaneseImperialCalendar> other = new JapaneseImperialCalendar();
+    Calendar::CloneImpl(other.Get());
+    AutoPtr<ICalendarDate> date;
+    mJdate->Clone(IID_ICalendarDate, (IInterface**)&date);
+    other->mJdate = (LocalGregorianCalendar::Date*)date.Get();
+    *obj = (IJapaneseImperialCalendar*)other.Get();
+    REFCOUNT_ADD(*obj);
+    return NOERROR;
+}
+
+ECode JapaneseImperialCalendar::GetTimeZone(
+    /* [out] */ ITimeZone** zone)
+{
+    VALIDATE_NOT_NULL(zone);
+
+    Calendar::GetTimeZone(zone);
+    mJdate->SetZone(*zone);
+    return NOERROR;
+}
+
+ECode JapaneseImperialCalendar::SetTimeZone(
+    /* [in] */ ITimeZone* zone)
+{
+    Calendar::SetTimeZone(zone);
+    mJdate->SetZone(zone);
+    return NOERROR;
+}
+
+ECode JapaneseImperialCalendar::ComputeFields()
+{
+    Integer mask = 0;
+    if (IsPartiallyNormalized()) {
+        // Determine which calendar fields need to be computed.
+        mask = GetSetStateFields();
+        Integer fieldMask = ~mask & ALL_FIELDS;
+        if (fieldMask != 0 || mCachedFixedDate == ILong::MIN_VALUE) {
+            mask |= ComputeFields(fieldMask,
+                    mask & (ZONE_OFFSET_MASK | DST_OFFSET_MASK));
+            CHECK(mask == ALL_FIELDS);
+        }
+    }
+    else {
+        // Specify all fields
+        mask = ALL_FIELDS;
+        ComputeFields(mask, 0);
+    }
+    // After computing all the fields, set the field state to `COMPUTED'.
+    SetFieldsComputed(mask);
+    return NOERROR;
+}
+
+Integer JapaneseImperialCalendar::ComputeFields(
+    /* [in] */ Integer fieldMask,
+    /* [in] */ Integer tzMask)
+{
+    Integer zoneOffset = 0;
+    AutoPtr<ITimeZone> tz = GetZone();
+    if (mZoneOffsets.IsNull()) {
+        mZoneOffsets = Array<Integer>(2);
+    }
+    if (tzMask != (ZONE_OFFSET_MASK | DST_OFFSET_MASK)) {
+        // Android-changed: remove ZoneInfo support.
+        tz->GetOffset(mTime, &zoneOffset);
+        tz->GetRawOffset(&mZoneOffsets[0]);
+        mZoneOffsets[1] = zoneOffset - mZoneOffsets[0];
+    }
+    if (tzMask != 0) {
+        if (IsFieldSet(tzMask, ZONE_OFFSET)) {
+            mZoneOffsets[0] = InternalGet(ZONE_OFFSET);
+        }
+        if (IsFieldSet(tzMask, DST_OFFSET)) {
+            mZoneOffsets[1] = InternalGet(DST_OFFSET);
+        }
+        zoneOffset = mZoneOffsets[0] + mZoneOffsets[1];
+    }
+
+    // By computing time and zoneOffset separately, we can take
+    // the wider range of time+zoneOffset than the previous
+    // implementation.
+    Long fixedDate = zoneOffset / ONE_DAY;
+    Integer timeOfDay = zoneOffset % (Integer)ONE_DAY;
+    fixedDate += mTime / ONE_DAY;
+    timeOfDay += (Integer) (mTime % ONE_DAY);
+    if (timeOfDay >= ONE_DAY) {
+        timeOfDay -= ONE_DAY;
+        ++fixedDate;
+    }
+    else {
+        while (timeOfDay < 0) {
+            timeOfDay += ONE_DAY;
+            --fixedDate;
+        }
+    }
+    fixedDate += EPOCH_OFFSET;
+
+    // See if we can use jdate to avoid date calculation.
+    if (fixedDate != mCachedFixedDate || fixedDate < 0) {
+        IBaseCalendar::Probe(GetJcal())->GetCalendarDateFromFixedDate(mJdate, fixedDate);
+        mCachedFixedDate = fixedDate;
+    }
+    Integer era = GetEraIndex(mJdate);
+    Integer year;
+    mJdate->GetYear(&year);
+
+    // Always set the ERA and YEAR values.
+    InternalSet(ERA, era);
+    InternalSet(YEAR, year);
+    Integer mask = fieldMask | (ERA_MASK | YEAR_MASK);
+
+    Integer month, dayOfMonth;
+    mJdate->GetMonth(&month);
+    month -= 1; // 0-based
+    mJdate->GetDayOfMonth(&dayOfMonth);
+
+    // Set the basic date fields.
+    if ((fieldMask & (MONTH_MASK | DAY_OF_MONTH_MASK | DAY_OF_WEEK_MASK))
+            != 0) {
+        Integer dayOfWeek;
+        mJdate->GetDayOfWeek(&dayOfWeek);
+        InternalSet(MONTH, month);
+        InternalSet(DAY_OF_MONTH, dayOfMonth);
+        InternalSet(DAY_OF_WEEK, dayOfWeek);
+        mask |= MONTH_MASK | DAY_OF_MONTH_MASK | DAY_OF_WEEK_MASK;
+    }
+
+    if ((fieldMask & (HOUR_OF_DAY_MASK | AM_PM_MASK | HOUR_MASK |
+            MINUTE_MASK | SECOND_MASK | MILLISECOND_MASK)) != 0) {
+        if (timeOfDay != 0) {
+            Integer hours = timeOfDay / ONE_HOUR;
+            InternalSet(HOUR_OF_DAY, hours);
+            InternalSet(AM_PM, hours / 12); // Assume AM == 0
+            InternalSet(HOUR, hours % 12);
+            Integer r = timeOfDay % ONE_HOUR;
+            InternalSet(MINUTE, r / ONE_MINUTE);
+            r %= ONE_MINUTE;
+            InternalSet(SECOND, r / ONE_SECOND);
+            InternalSet(MILLISECOND, r % ONE_SECOND);
+        }
+        else {
+            InternalSet(HOUR_OF_DAY, 0);
+            InternalSet(AM_PM, AM);
+            InternalSet(HOUR, 0);
+            InternalSet(MINUTE, 0);
+            InternalSet(SECOND, 0);
+            InternalSet(MILLISECOND, 0);
+        }
+        mask |= (HOUR_OF_DAY_MASK | AM_PM_MASK | HOUR_MASK |
+                MINUTE_MASK | SECOND_MASK | MILLISECOND_MASK);
+    }
+
+    if ((fieldMask & (ZONE_OFFSET_MASK | DST_OFFSET_MASK)) != 0) {
+        InternalSet(ZONE_OFFSET, mZoneOffsets[0]);
+        InternalSet(DST_OFFSET, mZoneOffsets[1]);
+        mask |= (ZONE_OFFSET_MASK | DST_OFFSET_MASK);
+    }
+
+    if ((fieldMask & (DAY_OF_YEAR_MASK | WEEK_OF_YEAR_MASK |
+            WEEK_OF_MONTH_MASK | DAY_OF_WEEK_IN_MONTH_MASK)) != 0) {
+        Integer normalizedYear;
+        mJdate->GetNormalizedYear(&normalizedYear);
+        // If it's a year of an era transition, we need to handle
+        // irregular year boundaries.
+        Boolean transitionYear = IsTransitionYear(normalizedYear);
+        Integer dayOfYear;
+        Long fixedDateJan1;
+        if (transitionYear) {
+            fixedDateJan1 = GetFixedDateJan1(mJdate, fixedDate);
+            dayOfYear = (Integer)(fixedDate - fixedDateJan1) + 1;
+        }
+        else if (normalizedYear == MIN_VALUES[YEAR]) {
+            AutoPtr<ICalendarDate> dx;
+            GetJcal()->GetCalendarDate(ILong::MIN_VALUE, GetZone(), &dx);
+            IBaseCalendar::Probe(GetJcal())->GetFixedDate(dx, &fixedDateJan1);
+            dayOfYear = (Integer)(fixedDate - fixedDateJan1) + 1;
+        }
+        else {
+            Long doy;
+            IBaseCalendar::Probe(GetJcal())->GetDayOfYear(mJdate, &doy);
+            dayOfYear = doy;
+            fixedDateJan1 = fixedDate - dayOfYear + 1;
+        }
+        Long fixedDateMonth1 = transitionYear ?
+                GetFixedDateMonth1(mJdate, fixedDate) : fixedDate - dayOfMonth + 1;
+
+        InternalSet(DAY_OF_YEAR, dayOfYear);
+        InternalSet(DAY_OF_WEEK_IN_MONTH, (dayOfMonth - 1) / 7 + 1);
+
+        Integer weekOfYear = GetWeekNumber(fixedDateJan1, fixedDate);
+
+        // The spec is to calculate WEEK_OF_YEAR in the
+        // ISO8601-style. This creates problems, though.
+        if (weekOfYear == 0) {
+            // If the date belongs to the last week of the
+            // previous year, use the week number of "12/31" of
+            // the "previous" year. Again, if the previous year is
+            // a transition year, we need to take care of it.
+            // Usually the previous day of the first day of a year
+            // is December 31, which is not always true in the
+            // Japanese imperial calendar system.
+            Long fixedDec31 = fixedDateJan1 - 1;
+            Long prevJan1;
+            AutoPtr<LocalGregorianCalendar::Date> d = GetCalendarDate(fixedDec31);
+            Integer normYear;
+            if (!(transitionYear || (d->GetNormalizedYear(&normYear), IsTransitionYear(normYear)))) {
+                prevJan1 = fixedDateJan1 - 365;
+                Boolean leap;
+                if (d->IsLeapYear(&leap), leap) {
+                    --prevJan1;
+                }
+            }
+            else if (transitionYear) {
+                Integer y;
+                if (mJdate->GetYear(&y), y == 1) {
+                    // As of Heisei (since Meiji) there's no case
+                    // that there are multiple transitions in a
+                    // year.  Historically there was such
+                    // case. There might be such case again in the
+                    // future.
+                    if (era > HEISEI) {
+                        AutoPtr<ICalendarDate> pd;
+                        sEras[era - 1]->GetSinceDate(&pd);
+                        if (pd->GetYear(&y), normalizedYear == y) {
+                            Integer m, dom;
+                            pd->GetMonth(&m);
+                            pd->GetDayOfMonth(&dom);
+                            d->SetMonth(m);
+                            d->SetDayOfMonth(dom);
+                        }
+                    }
+                    else {
+                        d->SetMonth(LocalGregorianCalendar::JANUARY);
+                        d->SetDayOfMonth(1);
+                    }
+                    GetJcal()->Normalize(d);
+                    IBaseCalendar::Probe(GetJcal())->GetFixedDate(d, &prevJan1);
+                }
+                else {
+                    prevJan1 = fixedDateJan1 - 365;
+                    Boolean leap;
+                    if (d->IsLeapYear(&leap), leap) {
+                        --prevJan1;
+                    }
+                }
+            }
+            else {
+                AutoPtr<ICalendarDate> cd;
+                sEras[GetEraIndex(mJdate)]->GetSinceDate(&cd);
+                Integer m, dom;
+                cd->GetMonth(&m);
+                cd->GetDayOfMonth(&dom);
+                d->SetMonth(m);
+                d->SetDayOfMonth(dom);
+                GetJcal()->Normalize(d);
+                IBaseCalendar::Probe(GetJcal())->GetFixedDate(d, &prevJan1);
+            }
+            weekOfYear = GetWeekNumber(prevJan1, fixedDec31);
+        }
+        else {
+            if (!transitionYear) {
+                // Regular years
+                if (weekOfYear >= 52) {
+                    Long nextJan1 = fixedDateJan1 + 365;
+                    Boolean leap;
+                    if (mJdate->IsLeapYear(&leap), leap) {
+                        nextJan1++;
+                    }
+                    Integer dayOfWeek;
+                    GetFirstDayOfWeek(&dayOfWeek);
+                    Long nextJan1st = LocalGregorianCalendar::GetDayOfWeekDateOnOrBefore(nextJan1 + 6,
+                            dayOfWeek);
+                    Integer ndays = (Integer)(nextJan1st - nextJan1);
+                    Integer minDays;
+                    GetMinimalDaysInFirstWeek(&minDays);
+                    if (ndays >= minDays && fixedDate >= (nextJan1st - 7)) {
+                        // The first days forms a week in which the date is included.
+                        weekOfYear = 1;
+                    }
+                }
+            }
+            else {
+                AutoPtr<ICalendarDate> d;
+                mJdate->Clone(IID_ICalendarDate, (IInterface**)&d);
+                Long nextJan1;
+                Integer y;
+                if (mJdate->GetYear(&y), y == 1) {
+                    d->AddYear(+1);
+                    d->SetMonth(LocalGregorianCalendar::JANUARY);
+                    d->SetDayOfMonth(1);
+                    IBaseCalendar::Probe(GetJcal())->GetFixedDate(d, &nextJan1);
+                }
+                else {
+                    Integer nextEraIndex = GetEraIndex((LocalGregorianCalendar::Date*)d.Get()) + 1;
+                    AutoPtr<ICalendarDate> cd;
+                    sEras[nextEraIndex]->GetSinceDate(&cd);
+                    d->SetEra(sEras[nextEraIndex]);
+                    Integer m, dom;
+                    cd->GetMonth(&m);
+                    cd->GetDayOfMonth(&dom);
+                    d->SetDate(1, m, dom);
+                    GetJcal()->Normalize(d);
+                    IBaseCalendar::Probe(GetJcal())->GetFixedDate(d, &nextJan1);
+                }
+                Integer dayOfWeek;
+                GetFirstDayOfWeek(&dayOfWeek);
+                Long nextJan1st = LocalGregorianCalendar::GetDayOfWeekDateOnOrBefore(nextJan1 + 6,
+                        dayOfWeek);
+                Integer ndays = (Integer)(nextJan1st - nextJan1);
+                Integer minDays;
+                GetMinimalDaysInFirstWeek(&minDays);
+                if (ndays >= minDays && fixedDate >= (nextJan1st - 7)) {
+                    // The first days forms a week in which the date is included.
+                    weekOfYear = 1;
+                }
+            }
+        }
+        InternalSet(WEEK_OF_YEAR, weekOfYear);
+        InternalSet(WEEK_OF_MONTH, GetWeekNumber(fixedDateMonth1, fixedDate));
+        mask |= (DAY_OF_YEAR_MASK | WEEK_OF_YEAR_MASK | WEEK_OF_MONTH_MASK | DAY_OF_WEEK_IN_MONTH_MASK);
+    }
+    return mask;
+}
+
+Integer JapaneseImperialCalendar::GetWeekNumber(
+    /* [in] */ Long fixedDay1,
+    /* [in] */ Long fixedDate)
+{
+    // We can always use `jcal' since Julian and Gregorian are the
+    // same thing for this calculation.
+    Integer dayOfWeek;
+    GetFirstDayOfWeek(&dayOfWeek);
+    Long fixedDay1st = LocalGregorianCalendar::GetDayOfWeekDateOnOrBefore(fixedDay1 + 6,
+            dayOfWeek);
+    Integer ndays = (Integer)(fixedDay1st - fixedDay1);
+    CHECK(ndays <= 7);
+    Integer minDays;
+    GetMinimalDaysInFirstWeek(&minDays);
+    if (ndays >= minDays) {
+        fixedDay1st -= 7;
+    }
+    Integer normalizedDayOfPeriod = (Integer)(fixedDate - fixedDay1st);
+    if (normalizedDayOfPeriod >= 0) {
+        return normalizedDayOfPeriod / 7 + 1;
+    }
+    return CalendarUtils::FloorDivide(normalizedDayOfPeriod, 7) + 1;
+}
+
+ECode JapaneseImperialCalendar::ComputeTime()
+{
+    // In non-lenient mode, perform brief checking of calendar
+    // fields which have been set externally. Through this
+    // checking, the field values are stored in originalFields[]
+    // to see if any of them are normalized later.
+    Boolean lenient;
+    if (IsLenient(&lenient), !lenient) {
+        if (mOriginalFields.IsNull()) {
+            mOriginalFields = Array<Integer>(FIELD_COUNT);
+        }
+        for (Integer field = 0; field < FIELD_COUNT; field++) {
+            Integer value = InternalGet(field);
+            if (IsExternallySet(field)) {
+                // Quick validation for any out of range values
+                Integer min, max;
+                if (value < (GetMinimum(field, &min), min) || value > (GetMaximum(field, &max), max)) {
+                    Logger::E("JapaneseImperialCalendar", "illegal field %s", GetFieldName(field).string());
+                    return E_ILLEGAL_ARGUMENT_EXCEPTION;
+                }
+            }
+            mOriginalFields[field] = value;
+        }
+    }
+
+    // Let the super class determine which calendar fields to be
+    // used to calculate the time.
+    Integer fieldMask = SelectFields();
+
+    Integer year;
+    Integer era;
+
+    Boolean set;
+    if (IsSet(ERA, &set), set) {
+        era = InternalGet(ERA);
+        year = (IsSet(YEAR, &set), set) ? InternalGet(YEAR) : 1;
+    }
+    else {
+        if (IsSet(YEAR, &set), set) {
+            era = sEras.GetLength() - 1;
+            year = InternalGet(YEAR);
+        }
+        else {
+            // Equivalent to 1970 (Gregorian)
+            era = SHOWA;
+            year = 45;
+        }
+    }
+
+    // Calculate the time of day. We rely on the convention that
+    // an UNSET field has 0.
+    Long timeOfDay = 0;
+    if (IsFieldSet(fieldMask, HOUR_OF_DAY)) {
+        timeOfDay += (Long) InternalGet(HOUR_OF_DAY);
+    }
+    else {
+        timeOfDay += InternalGet(HOUR);
+        // The default value of AM_PM is 0 which designates AM.
+        if (IsFieldSet(fieldMask, AM_PM)) {
+            timeOfDay += 12 * InternalGet(AM_PM);
+        }
+    }
+    timeOfDay *= 60;
+    timeOfDay += InternalGet(MINUTE);
+    timeOfDay *= 60;
+    timeOfDay += InternalGet(SECOND);
+    timeOfDay *= 1000;
+    timeOfDay += InternalGet(MILLISECOND);
+
+    // Convert the time of day to the number of days and the
+    // millisecond offset from midnight.
+    Long fixedDate = timeOfDay / ONE_DAY;
+    timeOfDay %= ONE_DAY;
+    while (timeOfDay < 0) {
+        timeOfDay += ONE_DAY;
+        --fixedDate;
+    }
+
+    // Calculate the fixed date since January 1, 1 (Gregorian).
+    fixedDate += GetFixedDate(era, year, fieldMask);
+
+    // millis represents local wall-clock time in milliseconds.
+    Long millis = (fixedDate - EPOCH_OFFSET) * ONE_DAY + timeOfDay;
+
+    // Compute the time zone offset and DST offset.  There are two potential
+    // ambiguities here.  We'll assume a 2:00 am (wall time) switchover time
+    // for discussion purposes here.
+    // 1. The transition into DST.  Here, a designated time of 2:00 am - 2:59 am
+    //    can be in standard or in DST depending.  However, 2:00 am is an invalid
+    //    representation (the representation jumps from 1:59:59 am Std to 3:00:00 am DST).
+    //    We assume standard time.
+    // 2. The transition out of DST.  Here, a designated time of 1:00 am - 1:59 am
+    //    can be in standard or DST.  Both are valid representations (the rep
+    //    jumps from 1:59:59 DST to 1:00:00 Std).
+    //    Again, we assume standard time.
+    // We use the TimeZone object, unless the user has explicitly set the ZONE_OFFSET
+    // or DST_OFFSET fields; then we use those fields.
+    AutoPtr<ITimeZone> zone = GetZone();
+    if (mZoneOffsets.IsNull()) {
+        mZoneOffsets = Array<Integer>(2);
+    }
+    Integer tzMask = fieldMask & (ZONE_OFFSET_MASK | DST_OFFSET_MASK);
+    if (tzMask != (ZONE_OFFSET_MASK | DST_OFFSET_MASK)) {
+        // Android-changed: remove ZoneInfo support
+        Integer offset;
+        zone->GetRawOffset(&offset);
+        TimeZone::From(zone)->GetOffsets(millis - offset, mZoneOffsets);
+    }
+    if (tzMask != 0) {
+        if (IsFieldSet(tzMask, ZONE_OFFSET)) {
+            mZoneOffsets[0] = InternalGet(ZONE_OFFSET);
+        }
+        if (IsFieldSet(tzMask, DST_OFFSET)) {
+            mZoneOffsets[1] = InternalGet(DST_OFFSET);
+        }
+    }
+
+    // Adjust the time zone offset values to get the UTC time.
+    millis -= mZoneOffsets[0] + mZoneOffsets[1];
+
+    // Set this calendar's time in milliseconds
+    mTime = millis;
+
+    Integer mask = ComputeFields(fieldMask | GetSetStateFields(), tzMask);
+
+    if (IsLenient(&lenient), !lenient) {
+        for (Integer field = 0; field < FIELD_COUNT; field++) {
+            if (!IsExternallySet(field)) {
+                continue;
+            }
+            if (mOriginalFields[field] != InternalGet(field)) {
+                Integer wrongValue = InternalGet(field);
+                // Restore the original field values
+                mFields.Copy(mOriginalFields, 0, mFields.GetLength());
+                Logger::E("JapaneseImperialCalendar", "%s = %d, expected %d",
+                            GetFieldName(field).string(), wrongValue, mOriginalFields[field]);
+                return E_ILLEGAL_ARGUMENT_EXCEPTION;
+            }
+        }
+    }
+    SetFieldsNormalized(mask);
+    return NOERROR;
+}
+
+Long JapaneseImperialCalendar::GetFixedDate(
+    /* [in] */ Integer era,
+    /* [in] */ Integer year,
+    /* [in] */ Integer fieldMask)
+{
+    Integer month = JANUARY;
+    Integer firstDayOfMonth = 1;
+    if (IsFieldSet(fieldMask, MONTH)) {
+        // No need to check if MONTH has been set (no isSet(MONTH)
+        // call) since its unset value happens to be JANUARY (0).
+        month = InternalGet(MONTH);
+
+        // If the month is out of range, adjust it into range.
+        if (month > DECEMBER) {
+            year += month / 12;
+            month %= 12;
+        }
+        else if (month < JANUARY) {
+            Array<Integer> rem(1);
+            year += CalendarUtils::FloorDivide(month, 12, rem);
+            month = rem[0];
+        }
+    }
+    else {
+        if (year == 1 && era != 0) {
+            AutoPtr<ICalendarDate> d;
+            sEras[era]->GetSinceDate(&d);
+            d->GetMonth(&month);
+            month = month - 1;
+            d->GetDayOfMonth(&firstDayOfMonth);
+        }
+    }
+
+    // Adjust the base date if year is the minimum value.
+    if (year == MIN_VALUES[YEAR]) {
+        AutoPtr<ICalendarDate> dx;
+        GetJcal()->GetCalendarDate(ILong::MIN_VALUE, GetZone(), &dx);
+        Integer m;
+        dx->GetMonth(&m);
+        m = m - 1;
+        if (month < m) {
+            month = m;
+        }
+        if (month == m) {
+            dx->GetDayOfMonth(&firstDayOfMonth);
+        }
+    }
+
+    AutoPtr<ICalendarDate> date;
+    GetJcal()->NewCalendarDate(TimeZone::NO_TIMEZONE, &date);
+    date->SetEra(era > 0 ? sEras[era] : nullptr);
+    date->SetDate(year, month + 1, firstDayOfMonth);
+    GetJcal()->Normalize(date);
+
+    // Get the fixed date since Jan 1, 1 (Gregorian). We are on
+    // the first day of either `month' or January in 'year'.
+    Long fixedDate;
+    IBaseCalendar::Probe(GetJcal())->GetFixedDate(date, &fixedDate);
+
+    if (IsFieldSet(fieldMask, MONTH)) {
+        // Month-based calculations
+        if (IsFieldSet(fieldMask, DAY_OF_MONTH)) {
+            // We are on the "first day" of the month (which may
+            // not be 1). Just add the offset if DAY_OF_MONTH is
+            // set. If the isSet call returns false, that means
+            // DAY_OF_MONTH has been selected just because of the
+            // selected combination. We don't need to add any
+            // since the default value is the "first day".
+            Boolean set;
+            if (IsSet(DAY_OF_MONTH, &set), set) {
+                // To avoid underflow with DAY_OF_MONTH-firstDayOfMonth, add
+                // DAY_OF_MONTH, then subtract firstDayOfMonth.
+                fixedDate += InternalGet(DAY_OF_MONTH);
+                fixedDate -= firstDayOfMonth;
+            }
+        }
+        else {
+            if (IsFieldSet(fieldMask, WEEK_OF_MONTH)) {
+                Integer dayOfWeek;
+                GetFirstDayOfWeek(&dayOfWeek);
+                Long firstDayOfWeek = LocalGregorianCalendar::GetDayOfWeekDateOnOrBefore(
+                        fixedDate + 6, dayOfWeek);
+                // If we have enough days in the first week, then
+                // move to the previous week.
+                Integer minDays;
+                GetMinimalDaysInFirstWeek(&minDays);
+                if ((firstDayOfWeek - fixedDate) >= minDays) {
+                    firstDayOfWeek -= 7;
+                }
+                if (IsFieldSet(fieldMask, DAY_OF_WEEK)) {
+                    firstDayOfWeek = LocalGregorianCalendar::GetDayOfWeekDateOnOrBefore(
+                            firstDayOfWeek + 6, InternalGet(DAY_OF_WEEK));
+                }
+                // In lenient mode, we treat days of the previous
+                // months as a part of the specified
+                // WEEK_OF_MONTH. See 4633646.
+                fixedDate = firstDayOfWeek + 7 * (InternalGet(WEEK_OF_MONTH) - 1);
+            }
+            else {
+                Integer dayOfWeek;
+                if (IsFieldSet(fieldMask, DAY_OF_WEEK)) {
+                    dayOfWeek = InternalGet(DAY_OF_WEEK);
+                }
+                else {
+                    GetFirstDayOfWeek(&dayOfWeek);
+                }
+                // We are basing this on the day-of-week-in-month.  The only
+                // trickiness occurs if the day-of-week-in-month is
+                // negative.
+                Integer dowim;
+                if (IsFieldSet(fieldMask, DAY_OF_WEEK_IN_MONTH)) {
+                    dowim = InternalGet(DAY_OF_WEEK_IN_MONTH);
+                }
+                else {
+                    dowim = 1;
+                }
+                if (dowim >= 0) {
+                    fixedDate = LocalGregorianCalendar::GetDayOfWeekDateOnOrBefore(
+                            fixedDate + (7 * dowim) - 1, dayOfWeek);
+                }
+                else {
+                    // Go to the first day of the next week of
+                    // the specified week boundary.
+                    Integer lastDate = MonthLength(month, year) + (7 * (dowim + 1));
+                    // Then, get the day of week date on or before the last date.
+                    fixedDate = LocalGregorianCalendar::GetDayOfWeekDateOnOrBefore(
+                            fixedDate + lastDate - 1, dayOfWeek);
+                }
+            }
+        }
+    }
+    else {
+        // We are on the first day of the year.
+        if (IsFieldSet(fieldMask, DAY_OF_YEAR)) {
+            Integer normalizedYear;
+            ((LocalGregorianCalendar::Date*)date.Get())->GetNormalizedYear(&normalizedYear);
+            if (IsTransitionYear(normalizedYear)) {
+                fixedDate = GetFixedDateJan1((LocalGregorianCalendar::Date*)date.Get(), fixedDate);
+            }
+            // Add the offset, then subtract 1. (Make sure to avoid underflow.)
+            fixedDate += InternalGet(DAY_OF_YEAR);
+            fixedDate--;
+        }
+        else {
+            Integer dow;
+            GetFirstDayOfWeek(&dow);
+            Long firstDayOfWeek = LocalGregorianCalendar::GetDayOfWeekDateOnOrBefore(
+                    fixedDate + 6, dow);
+            // If we have enough days in the first week, then move
+            // to the previous week.
+            Integer minDays;
+            GetMinimalDaysInFirstWeek(&minDays);
+            if ((firstDayOfWeek - fixedDate) >= minDays) {
+                firstDayOfWeek -= 7;
+            }
+            if (IsFieldSet(fieldMask, DAY_OF_WEEK)) {
+                Integer dayOfWeek = InternalGet(DAY_OF_WEEK);
+                if (dayOfWeek != dow) {
+                    firstDayOfWeek = LocalGregorianCalendar::GetDayOfWeekDateOnOrBefore(
+                            firstDayOfWeek + 6, dayOfWeek);
+                }
+            }
+            fixedDate = firstDayOfWeek + 7 * ((Long)InternalGet(WEEK_OF_YEAR) - 1);
+        }
+    }
+    return fixedDate;
+}
+
+Long JapaneseImperialCalendar::GetFixedDateJan1(
+    /* [in] */ LocalGregorianCalendar::Date* date,
+    /* [in] */ Long fixedDate)
+{
+    AutoPtr<IEra> era;
+    date->GetEra(&era);
+    Integer y;
+    if (era != nullptr && (date->GetYear(&y), y) == 1) {
+        for (Integer eraIndex = GetEraIndex(date); eraIndex > 0; eraIndex--) {
+            AutoPtr<ICalendarDate> d;
+            sEras[eraIndex]->GetSinceDate(&d);
+            Long fd;
+            IBaseCalendar::Probe(GetGcal())->GetFixedDate(d, &fd);
+            // There might be multiple era transitions in a year.
+            if (fd > fixedDate) {
+                continue;
+            }
+            return fd;
+        }
+    }
+    AutoPtr<ICalendarDate> d;
+    GetGcal()->NewCalendarDate(TimeZone::NO_TIMEZONE, &d);
+    Integer normalizedYear;
+    date->GetNormalizedYear(&normalizedYear);
+    d->SetDate(normalizedYear, IBaseCalendar::JANUARY, 1);
+    Long fd;
+    IBaseCalendar::Probe(GetGcal())->GetFixedDate(d, &fd);
+    return fd;
+}
+
+Long JapaneseImperialCalendar::GetFixedDateMonth1(
+    /* [in] */ LocalGregorianCalendar::Date* date,
+    /* [in] */ Long fixedDate)
+{
+    Integer eraIndex = GetTransitionEraIndex(date);
+    if (eraIndex != -1) {
+        Long transition = sSinceFixedDates[eraIndex];
+        // If the given date is on or after the transition date, then
+        // return the transition date.
+        if (transition <= fixedDate) {
+            return transition;
+        }
+    }
+
+    // Otherwise, we can use the 1st day of the month.
+    Integer dom;
+    date->GetDayOfMonth(&dom);
+    return fixedDate - dom + 1;
+}
+
+AutoPtr<LocalGregorianCalendar::Date> JapaneseImperialCalendar::GetCalendarDate(
+    /* [in] */ Long fd)
+{
+    AutoPtr<ICalendarDate> d;
+    GetJcal()->NewCalendarDate(TimeZone::NO_TIMEZONE, &d);
+    IBaseCalendar::Probe(GetJcal())->GetCalendarDateFromFixedDate(d, fd);
+    return (LocalGregorianCalendar::Date*)d.Get();
+}
+
+Integer JapaneseImperialCalendar::MonthLength(
+    /* [in] */ Integer month,
+    /* [in] */ Integer gregorianYear)
+{
+    return CalendarUtils::IsGregorianLeapYear(gregorianYear) ?
+            CGregorianCalendar::LEAP_MONTH_LENGTH[month] : CGregorianCalendar::MONTH_LENGTH[month];
+}
+
+Integer JapaneseImperialCalendar::MonthLength(
+    /* [in] */ Integer month)
+{
+    BLOCK_CHECK() {
+        Boolean normalized;
+        mJdate->IsNormalized(&normalized);
+        CHECK(normalized);
+    }
+    Boolean leap;
+    return (mJdate->IsLeapYear(&leap), leap) ?
+            CGregorianCalendar::LEAP_MONTH_LENGTH[month] : CGregorianCalendar::MONTH_LENGTH[month];
+}
+
+Integer JapaneseImperialCalendar::ActualMonthLength()
+{
+    Integer length;
+    GetJcal()->GetMonthLength(mJdate, &length);
+    Integer eraIndex = GetTransitionEraIndex(mJdate);
+    if (eraIndex == -1) {
+        Long transitionFixedDate = sSinceFixedDates[eraIndex];
+        AutoPtr<ICalendarDate> d;
+        sEras[eraIndex]->GetSinceDate(&d);
+        Integer dom;
+        d->GetDayOfMonth(&dom);
+        if (transitionFixedDate <= mCachedFixedDate) {
+            length -= dom - 1;
+        }
+        else {
+            length = dom - 1;
+        }
+    }
+    return length;
 }
 
 }

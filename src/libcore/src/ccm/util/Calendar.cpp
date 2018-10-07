@@ -162,7 +162,7 @@ ECode Calendar::GetTimeInMillis(
     VALIDATE_NOT_NULL(time);
 
     if (!mIsTimeSet) {
-        UpdateTime();
+        FAIL_RETURN(UpdateTime());
     }
     *time = mTime;
     return NOERROR;
@@ -491,7 +491,7 @@ Array<String> Calendar::GetFieldStrings(
 ECode Calendar::Complete()
 {
     if (!mIsTimeSet) {
-        UpdateTime();
+        FAIL_RETURN(UpdateTime());
     }
     if (!mAreFieldsSet || !mAreAllFieldsSet) {
         ComputeFields(); // fills in unset fields
@@ -1161,10 +1161,11 @@ void Calendar::SetWeekCountData(
     mMinimalDaysInFirstWeek = CoreUtils::Unbox(v1);
 }
 
-void Calendar::UpdateTime()
+ECode Calendar::UpdateTime()
 {
-    ComputeTime();
+    FAIL_RETURN(ComputeTime());
     mIsTimeSet = true;
+    return NOERROR;
 }
 
 Integer Calendar::CompareTo(

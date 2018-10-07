@@ -108,26 +108,20 @@ public:
         /* [in] */ Integer field,
         /* [out] */ Integer* value) override;
 
-
-
-
     ECode Clone(
         /* [in] */ const InterfaceID& iid,
-        /* [out] */ IInterface** obj) override
-    {
-        return NOERROR;
-    }
+        /* [out] */ IInterface** obj) override;
+
+    ECode GetTimeZone(
+        /* [out] */ ITimeZone** zone) override;
+
+    ECode SetTimeZone(
+        /* [in] */ ITimeZone* zone) override;
 
 protected:
-    ECode ComputeFields() override
-    {
-        return NOERROR;
-    }
+    ECode ComputeFields() override;
 
-    ECode ComputeTime() override
-    {
-        return NOERROR;
-    }
+    ECode ComputeTime() override;
 
 private:
     static AutoPtr<ICalendarSystem> GetJcal();
@@ -141,20 +135,42 @@ private:
 
     static ECode StaticInitialize();
 
-
-
     Long GetYearOffsetInMillis(
-        /* [in] */ ICalendarDate* date)
-    {
-        return 0;
-    }
+        /* [in] */ ICalendarDate* date);
+
+    Integer ComputeFields(
+        /* [in] */ Integer fieldMask,
+        /* [in] */ Integer tzMask);
 
     Integer GetWeekNumber(
         /* [in] */ Long fixedDay1,
-        /* [in] */ Long fixedDate)
-    {
-        return 0;
-    }
+        /* [in] */ Long fixedDate);
+
+    Long GetFixedDate(
+        /* [in] */ Integer era,
+        /* [in] */ Integer year,
+        /* [in] */ Integer fieldMask);
+
+    Long GetFixedDateJan1(
+        /* [in] */ LocalGregorianCalendar::Date* date,
+        /* [in] */ Long fixedDate);
+
+    Long GetFixedDateMonth1(
+        /* [in] */ LocalGregorianCalendar::Date* date,
+        /* [in] */ Long fixedDate);
+
+    static AutoPtr<LocalGregorianCalendar::Date> GetCalendarDate(
+        /* [in] */ Long fd);
+
+    Integer MonthLength(
+        /* [in] */ Integer month,
+        /* [in] */ Integer gregorianYear);
+
+    Integer MonthLength(
+        /* [in] */ Integer month);
+
+    Integer ActualMonthLength();
+
 
     /**
      * After adjustments such as add(MONTH), add(YEAR), we don't want the
@@ -172,11 +188,7 @@ private:
         return 0;
     }
 
-    static AutoPtr<LocalGregorianCalendar::Date> GetCalendarDate(
-        /* [in] */ Long fd)
-    {
-        return nullptr;
-    }
+
 
     /**
      * Returns the new value after 'roll'ing the specified value and amount.
@@ -196,30 +208,17 @@ private:
         return false;
     }
 
-    Integer MonthLength(
-        /* [in] */ Integer month)
+
+
+    static Integer GetTransitionEraIndex(
+        /* [in] */ LocalGregorianCalendar::Date* date)
     {
         return 0;
     }
 
-    Long GetFixedDateJan1(
-        /* [in] */ LocalGregorianCalendar::Date* date,
-        /* [in] */ Long fixedDate)
-    {
-        return 0;
-    }
 
-    Long GetFixedDateMonth1(
-        /* [in] */ LocalGregorianCalendar::Date* date,
-        /* [in] */ Long fixedDate)
-    {
-        return 0;
-    }
 
-    Integer ActualMonthLength()
-    {
-        return 0;
-    }
+
 
     AutoPtr<JapaneseImperialCalendar> GetNormalizedCalendar()
     {
@@ -336,6 +335,19 @@ private:
      * avoid overhead of creating it for each calculation.
      */
     AutoPtr<LocalGregorianCalendar::Date> mJdate;
+
+    /**
+     * Temporary int[2] to get time zone offsets. zoneOffsets[0] gets
+     * the GMT offset value and zoneOffsets[1] gets the daylight saving
+     * value.
+     */
+    Array<Integer> mZoneOffsets;
+
+    /**
+     * Temporary storage for saving original fields[] values in
+     * non-lenient mode.
+     */
+    Array<Integer> mOriginalFields;
 
     /**
      * The fixed date corresponding to jdate. If the value is
