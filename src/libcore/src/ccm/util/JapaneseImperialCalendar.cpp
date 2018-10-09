@@ -2304,5 +2304,161 @@ Integer JapaneseImperialCalendar::ActualMonthLength()
     return length;
 }
 
+Integer JapaneseImperialCalendar::GetTransitionEraIndex(
+    /* [in] */ LocalGregorianCalendar::Date* date)
+{
+    Integer eraIndex = GetEraIndex(date);
+    AutoPtr<ICalendarDate> transitionDate;
+    sEras[eraIndex]->GetSinceDate(&transitionDate);
+    Integer ty, tm, dy, dm;
+    if ((transitionDate->GetYear(&ty), ty) == (date->GetNormalizedYear(&dy), dy) &&
+            (transitionDate->GetMonth(&tm), tm) == (date->GetMonth(&dm), dm)) {
+        return eraIndex;
+    }
+    if (eraIndex < sEras.GetLength() - 1) {
+        transitionDate = nullptr;
+        sEras[++eraIndex]->GetSinceDate(&transitionDate);
+        if ((transitionDate->GetYear(&ty), ty) == (date->GetNormalizedYear(&dy), dy) &&
+                (transitionDate->GetMonth(&tm), tm) == (date->GetMonth(&dm), dm)) {
+            return eraIndex;
+        }
+    }
+    return -1;
+}
+
+Boolean JapaneseImperialCalendar::IsTransitionYear(
+    /* [in] */ Integer normalizedYear)
+{
+    for (Integer i = sEras.GetLength() - 1; i > 0; i--) {
+        AutoPtr<ICalendarDate> date;
+        sEras[i]->GetSinceDate(&date);
+        Integer transitionYear;
+        date->GetYear(&transitionYear);
+        if (normalizedYear == transitionYear) {
+            return true;
+        }
+        if (normalizedYear > transitionYear) {
+            break;
+        }
+    }
+    return false;
+}
+
+Integer JapaneseImperialCalendar::GetEraIndex(
+    /* [in] */ LocalGregorianCalendar::Date* date)
+{
+    AutoPtr<IEra> era;
+    date->GetEra(&era);
+    for (Integer i = sEras.GetLength() - 1; i > 0; i--) {
+        if (sEras[i] == era) {
+            return i;
+        }
+    }
+    return 0;
+}
+
+AutoPtr<JapaneseImperialCalendar> JapaneseImperialCalendar::GetNormalizedCalendar()
+{
+    AutoPtr<JapaneseImperialCalendar> jc;
+    if (IsFullyNormalized()) {
+        jc = this;
+    }
+    else {
+        // Create a clone and normalize the calendar fields
+        AutoPtr<IJapaneseImperialCalendar> cal;
+        Clone(IID_IJapaneseImperialCalendar, (IInterface**)&cal);
+        jc = (JapaneseImperialCalendar*)cal.Get();
+        jc->SetLenient(true);
+        jc->Complete();
+    }
+    return jc;
+}
+
+void JapaneseImperialCalendar::PinDayOfMonth(
+    /* [in] */ LocalGregorianCalendar::Date* date)
+{
+    Integer year, dom, y;
+    date->GetYear(&year);
+    date->GetDayOfMonth(&dom);
+    if (year != (GetMinimum(YEAR, &y), y)) {
+        date->SetDayOfMonth(1);
+        GetJcal()->Normalize(date);
+        Integer monthLength;
+        GetJcal()->GetMonthLength(date, &monthLength);
+        if (dom > monthLength) {
+            date->SetDayOfMonth(monthLength);
+        }
+        else {
+            date->SetDayOfMonth(dom);
+        }
+        GetJcal()->Normalize(date);
+    }
+    else {
+        AutoPtr<ICalendarDate> d, realDate;
+        GetJcal()->GetCalendarDate(ILong::MIN_VALUE, GetZone(), &d);
+        GetJcal()->GetCalendarDate(mTime, GetZone(), &realDate);
+        Long tod;
+        realDate->GetTimeOfDay(&tod);
+        // Use an equivalent year.
+        realDate->AddYear(+400);
+        Integer mon;
+        date->GetMonth(&mon);
+        realDate->SetMonth(mon);
+        realDate->SetDayOfMonth(1);
+        GetJcal()->Normalize(realDate);
+        Integer monthLength;
+        GetJcal()->GetMonthLength(realDate, &monthLength);
+        if (dom > monthLength) {
+            realDate->SetDayOfMonth(monthLength);
+        }
+        else {
+            Integer dDom;
+            d->GetDayOfMonth(&dDom);
+            if (dom < dDom) {
+                realDate->SetDayOfMonth(dDom);
+            }
+            else {
+                realDate->SetDayOfMonth(dom);
+            }
+        }
+        Integer rDom, dDom;
+        Long dTod;
+        if ((realDate->GetDayOfMonth(&rDom), rDom) == (d->GetDayOfMonth(&dDom), dDom) &&
+                tod < (d->GetTimeOfDay(&dTod), dTod)) {
+            realDate->SetDayOfMonth(Math::Min(dom + 1, monthLength));
+        }
+        // restore the year.
+        realDate->GetMonth(&mon);
+        date->SetDate(year, mon, rDom);
+        // Don't normalize date here so as not to cause underflow.
+    }
+}
+
+Integer JapaneseImperialCalendar::GetRolledValue(
+    /* [in] */ Integer value,
+    /* [in] */ Integer amount,
+    /* [in] */ Integer min,
+    /* [in] */ Integer max)
+{
+    CHECK(value >= min && value <= max);
+    Integer range = max - min + 1;
+    amount %= range;
+    Integer n = value + amount;
+    if (n > max) {
+        n -= range;
+    }
+    else if (n < min) {
+        n += range;
+    }
+    CHECK(n >= min && n <= max);
+    return n;
+}
+
+Integer JapaneseImperialCalendar::InternalGetEra()
+{
+    Boolean set;
+    return (IsSet(ERA, &set), set) ? InternalGet(ERA) : sEras.GetLength() - 1;
+}
+
 }
 }

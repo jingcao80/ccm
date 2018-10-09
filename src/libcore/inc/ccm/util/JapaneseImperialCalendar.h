@@ -171,6 +171,16 @@ private:
 
     Integer ActualMonthLength();
 
+    static Integer GetTransitionEraIndex(
+        /* [in] */ LocalGregorianCalendar::Date* date);
+
+    Boolean IsTransitionYear(
+        /* [in] */ Integer normalizedYear);
+
+    static Integer GetEraIndex(
+        /* [in] */ LocalGregorianCalendar::Date* date);
+
+    AutoPtr<JapaneseImperialCalendar> GetNormalizedCalendar();
 
     /**
      * After adjustments such as add(MONTH), add(YEAR), we don't want the
@@ -179,16 +189,7 @@ private:
      * problem call this method to retain the proper month.
      */
     void PinDayOfMonth(
-        /* [in] */ LocalGregorianCalendar::Date* date)
-    {}
-
-    static Integer GetEraIndex(
-        /* [in] */ LocalGregorianCalendar::Date* date)
-    {
-        return 0;
-    }
-
-
+        /* [in] */ LocalGregorianCalendar::Date* date);
 
     /**
      * Returns the new value after 'roll'ing the specified value and amount.
@@ -197,33 +198,9 @@ private:
         /* [in] */ Integer value,
         /* [in] */ Integer amount,
         /* [in] */ Integer min,
-        /* [in] */ Integer max)
-    {
-        return 0;
-    }
+        /* [in] */ Integer max);
 
-    Boolean IsTransitionYear(
-        /* [in] */ Integer normalizedYear)
-    {
-        return false;
-    }
-
-
-
-    static Integer GetTransitionEraIndex(
-        /* [in] */ LocalGregorianCalendar::Date* date)
-    {
-        return 0;
-    }
-
-
-
-
-
-    AutoPtr<JapaneseImperialCalendar> GetNormalizedCalendar()
-    {
-        return nullptr;
-    }
+    Integer InternalGetEra();
 
 private:
     static constexpr Integer EPOCH_OFFSET   = 719163; // Fixed date of January 1, 1970 (Gregorian)
