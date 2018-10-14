@@ -14,5 +14,17 @@
 // limitations under the License.
 //=========================================================================
 
-include "libcore/util/IZoneInfo.cdl"
-include "libcore/util/IZoneInfoDB.cdl"
+#include "libcore/icu/TimeZoneNames.h"
+
+namespace libcore {
+namespace icu {
+
+ECode TimeZoneNames::GetZoneStrings(
+    /* [in] */ ILocale* locale,
+    /* [out, callee] */ Array<Array<String>>* zoneStrings)
+{
+    return NOERROR;
+}
+
+}
+}

@@ -21,6 +21,9 @@
 #include "ccm/util/Locale.h"
 #include "ccm/util/TimeZone.h"
 #include "ccm.core.ICloneable.h"
+#include "libcore/icu/TimeZoneNames.h"
+#include "libcore/util/ZoneInfoDB.h"
+#include "libcore.util.IZoneInfo.h"
 #include <ccmlogger.h>
 
 using ccm::core::AutoLock;
@@ -31,6 +34,9 @@ using ccm::core::IID_ICloneable;
 using ccm::core::IID_IStringBuilder;
 using ccm::core::StringUtils;
 using ccm::io::IID_ISerializable;
+using libcore::icu::TimeZoneNames;
+using libcore::util::IZoneInfo;
+using libcore::util::ZoneInfoDB;
 
 namespace ccm {
 namespace util {
@@ -132,6 +138,43 @@ ECode TimeZone::GetDisplayName(
     /* [in] */ ILocale* locale,
     /* [out] */ String* name)
 {
+    VALIDATE_NOT_NULL(name);
+
+    if (style != SHORT && style != LONG) {
+        Logger::E("TimeZone", "Illegal style: %d", style);
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    Array<Array<String>> zoneStrings;
+    TimeZoneNames::GetZoneStrings(locale, &zoneStrings);
+    String id;
+    GetID(&id);
+    String result;
+    TimeZoneNames::GetDisplayName(zoneStrings, id, daylightTime, style, &result);
+    if (!result.IsNull()) {
+        *name = result;
+        return NOERROR;
+    }
+
+    // If we get here, it's because icu4c has nothing for us. Most commonly, this is in the
+    // case of short names. For Pacific/Fiji, for example, icu4c has nothing better to offer
+    // than "GMT+12:00". Why do we re-do this work ourselves? Because we have up-to-date
+    // time zone transition data, which icu4c _doesn't_ use --- it uses its own baked-in copy,
+    // which only gets updated when we update icu4c. http://b/7955614 and http://b/8026776.
+
+    // TODO: should we generate these once, in TimeZoneNames.getDisplayName? Revisit when we
+    // upgrade to icu4c 50 and rewrite the underlying native code. See also the
+    // "element[j] != null" check in SimpleDateFormat.parseTimeZone, and the extra work in
+    // DateFormatSymbols.getZoneStrings.
+    Integer offsetMillis;
+    GetRawOffset(&offsetMillis);
+    if (daylightTime) {
+        Integer savingTime;
+        GetDSTSavings(&savingTime);
+        offsetMillis += savingTime;
+    }
+    *name = CreateGmtOffsetString(true /* includeGmt */, true /* includeMinuteSeparator */,
+            offsetMillis);
     return NOERROR;
 }
 
@@ -220,11 +263,31 @@ ECode TimeZone::GetTimeZone(
 
     if (id.GetLength() == 3) {
         if (id.Equals("GMT")) {
-
+            return ICloneable::Probe(GetGMT())->Clone(
+                    IID_ITimeZone, (IInterface**)zone);
         }
         if (id.Equals("UTC")) {
-
+            return ICloneable::Probe(GetUTC())->Clone(
+                    IID_ITimeZone, (IInterface**)zone);
         }
+    }
+
+    AutoPtr<IZoneInfo> zoneInfo;
+    ZoneInfoDB::GetInstance()->MakeTimeZone(id, &zoneInfo);
+    AutoPtr<ITimeZone> tz = ITimeZone::Probe(zoneInfo);
+
+    if (tz == nullptr && id.GetLength() > 3 && id.StartsWith("GMT")) {
+        FAIL_RETURN(GetCustomTimeZone(id, &tz));
+    }
+
+    if (tz != nullptr) {
+        *zone = tz;
+        REFCOUNT_ADD(*zone);
+        return NOERROR;
+    }
+    else {
+        return ICloneable::Probe(GetGMT())->Clone(
+                IID_ITimeZone, (IInterface**)zone);
     }
 }
 

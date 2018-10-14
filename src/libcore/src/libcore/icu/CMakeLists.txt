@@ -24,7 +24,8 @@ include_directories(
     ${OBJ_DIR})
 
 set(SOURCES
-    ICU.cpp)
+    ICU.cpp
+    TimeZoneNames.cpp)
 
 add_library(libcore_icu STATIC
     ${SOURCES})

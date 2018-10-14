@@ -125,6 +125,16 @@ private:
         /* [in] */ Integer count,
         /* [in] */ Integer value);
 
+    static AutoPtr<ITimeZone> GetGMT()
+    {
+        return nullptr;
+    }
+
+    static AutoPtr<ITimeZone> GetUTC()
+    {
+        return nullptr;
+    }
+
 public:
     static AutoPtr<ITimeZone> NO_TIMEZONE;
 

@@ -14,5 +14,28 @@
 // limitations under the License.
 //=========================================================================
 
-include "libcore/util/IZoneInfo.cdl"
-include "libcore/util/IZoneInfoDB.cdl"
+interface libcore::util::IZoneInfo;
+
+namespace libcore {
+namespace util {
+
+[
+    uuid(c2f5daa8-9f22-480b-8c63-fb9e79b7719b),
+    version(0.1.0)
+]
+interface IZoneInfoDB
+{}
+
+[
+    uuid(0ab77469-0ac6-4ced-bbc2-2c7eb0478a0e),
+    version(0.1.0)
+]
+interface IZoneInfoDBTzData
+{
+    MakeTimeZone(
+        [in] String id,
+        [out] IZoneInfo** zone);
+}
+
+}
+}

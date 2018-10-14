@@ -52,6 +52,7 @@ set(SOURCES
     Locale.cpp
     Properties.cpp
     Random.cpp
+    SimpleTimeZone.cpp
     StringTokenizer.cpp
     TimeZone.cpp
     TreeNode.cpp

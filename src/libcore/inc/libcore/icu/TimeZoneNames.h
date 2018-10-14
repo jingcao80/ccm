@@ -14,5 +14,35 @@
 // limitations under the License.
 //=========================================================================
 
-include "libcore/util/IZoneInfo.cdl"
-include "libcore/util/IZoneInfoDB.cdl"
+#ifndef __LIBCORE_ICU_TIMEZONENAMES_H__
+#define __LIBCORE_ICU_TIMEZONENAMES_H__
+
+#include "ccm.util.ILocale.h"
+
+using ccm::util::ILocale;
+
+namespace libcore {
+namespace icu {
+
+class TimeZoneNames
+{
+public:
+    static ECode GetDisplayName(
+        /* [in] */ const Array<Array<String>>& zoneStrings,
+        /* [in] */ const String& id,
+        /* [in] */ Boolean daylight,
+        /* [in] */ Integer style,
+        /* [out] */ String* name)
+    {
+        return NOERROR;
+    }
+
+    static ECode GetZoneStrings(
+        /* [in] */ ILocale* locale,
+        /* [out, callee] */ Array<Array<String>>* zoneStrings);
+};
+
+}
+}
+
+#endif // __LIBCORE_ICU_TIMEZONENAMES_H__

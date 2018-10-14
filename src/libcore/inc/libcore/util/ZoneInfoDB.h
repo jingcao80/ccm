@@ -14,5 +14,33 @@
 // limitations under the License.
 //=========================================================================
 
-include "libcore/util/IZoneInfo.cdl"
-include "libcore/util/IZoneInfoDB.cdl"
+#ifndef __LIBCORE_UTIL_ZONEINFODB_H__
+#define __LIBCORE_UTIL_ZONEINFODB_H__
+
+#include "libcore.util.IZoneInfoDBTzData.h"
+
+namespace libcore {
+namespace util {
+
+class ZoneInfoDB
+{
+public:
+    class TzData
+        : public SyncObject
+        , public IZoneInfoDBTzData
+    {
+    public:
+
+    };
+
+public:
+    static AutoPtr<IZoneInfoDBTzData> GetInstance()
+    {
+        return nullptr;
+    }
+};
+
+}
+}
+
+#endif // __LIBCORE_UTIL_ZONEINFODB_H__
