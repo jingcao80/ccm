@@ -19,6 +19,17 @@
 
 #include "ccm/util/TimeZone.h"
 #include "ccm.util.ISimpleTimeZone.h"
+#include "ccm.util.calendar.IBaseCalendar.h"
+#include "ccm.util.calendar.IBaseCalendarDate.h"
+#include "ccm.util.calendar.ICalendarDate.h"
+#include "ccm.util.calendar.ICalendarSystem.h"
+#include "ccm.util.calendar.IGregorian.h"
+
+using ccm::util::calendar::IBaseCalendar;
+using ccm::util::calendar::IBaseCalendarDate;
+using ccm::util::calendar::ICalendarDate;
+using ccm::util::calendar::ICalendarSystem;
+using ccm::util::calendar::IGregorian;
 
 namespace ccm {
 namespace util {
@@ -75,33 +86,118 @@ public:
         /* [in] */ Integer dstSavings);
 
     ECode SetStartYear(
-        /* [in] */ Integer year);
+        /* [in] */ Integer year) override;
 
     ECode SetStartRule(
         /* [in] */ Integer startMonth,
         /* [in] */ Integer startDay,
         /* [in] */ Integer startDayOfWeek,
-        /* [in] */ Integer startTime);
+        /* [in] */ Integer startTime) override;
 
     ECode SetStartRule(
         /* [in] */ Integer startMonth,
         /* [in] */ Integer startDay,
-        /* [in] */ Integer startTime);
+        /* [in] */ Integer startTime) override;
 
     ECode SetStartRule(
         /* [in] */ Integer startMonth,
         /* [in] */ Integer startDay,
         /* [in] */ Integer startDayOfWeek,
         /* [in] */ Integer startTime,
-        /* [in] */ Boolean after);
+        /* [in] */ Boolean after) override;
 
     ECode SetEndRule(
         /* [in] */ Integer endMonth,
         /* [in] */ Integer endDay,
         /* [in] */ Integer endDayOfWeek,
-        /* [in] */ Integer endTime);
+        /* [in] */ Integer endTime) override;
+
+    ECode SetEndRule(
+        /* [in] */ Integer endMonth,
+        /* [in] */ Integer endDay,
+        /* [in] */ Integer endTime) override;
+
+    ECode SetEndRule(
+        /* [in] */ Integer endMonth,
+        /* [in] */ Integer endDay,
+        /* [in] */ Integer endDayOfWeek,
+        /* [in] */ Integer endTime,
+        /* [in] */ Boolean after) override;
+
+    ECode GetOffset(
+        /* [in] */ Long date,
+        /* [out] */ Integer* offset) override;
+
+    virtual Integer GetOffsets(
+        /* [in] */ Long date,
+        /* [in] */ Array<Integer>&& offsets);
+
+    ECode GetOffset(
+        /* [in] */ Integer era,
+        /* [in] */ Integer year,
+        /* [in] */ Integer month,
+        /* [in] */ Integer day,
+        /* [in] */ Integer dayOfWeek,
+        /* [in] */ Integer milliseconds,
+        /* [out] */ Integer* offset) override;
+
+    ECode GetRawOffset(
+        /* [out] */ Integer* offset) override;
+
+    ECode SetRawOffset(
+        /* [in] */ Integer offsetMillis) override;
+
+    ECode SetDSTSavings(
+        /* [in] */ Integer millisSavedDuringDST) override;
+
+    ECode GetDSTSavings(
+        /* [out] */ Integer* savingTime) override;
+
+    ECode UseDaylightTime(
+        /* [out] */ Boolean* result) override;
+
+    ECode ObservesDaylightTime(
+        /* [out] */ Boolean* result) override;
+
+    ECode InDaylightTime(
+        /* [in] */ IDate* date,
+        /* [out] */ Boolean* result) override;
 
 private:
+    Integer GetOffset(
+        /* [in] */ ICalendarSystem* cal,
+        /* [in] */ ICalendarDate* cdate,
+        /* [in] */ Integer year,
+        /* [in] */ Long time);
+
+    Long GetStart(
+        /* [in] */ ICalendarSystem* cal,
+        /* [in] */ ICalendarDate* cdate,
+        /* [in] */ Integer year);
+
+    Long GetEnd(
+        /* [in] */ ICalendarSystem* cal,
+        /* [in] */ ICalendarDate* cdate,
+        /* [in] */ Integer year);
+
+    Long GetTransition(
+        /* [in] */ ICalendarSystem* cal,
+        /* [in] */ ICalendarDate* cdate,
+        /* [in] */ Integer mode,
+        /* [in] */ Integer year,
+        /* [in] */ Integer month,
+        /* [in] */ Integer dayOfMonth,
+        /* [in] */ Integer dayOfWeek,
+        /* [in] */ Integer timeOfDay);
+
+
+
+
+    static const AutoPtr<IGregorian> GetGcal()
+    {
+        return nullptr;
+    }
+
     void InvalidateCache()
     {}
 
@@ -248,8 +344,68 @@ private:
      */
     Integer mRawOffset;
 
+    /**
+     * A boolean value which is true if and only if this zone uses daylight
+     * saving time.  If this value is false, several other fields are ignored.
+     */
+    Boolean mUseDaylight = false; // indicate if this time zone uses DST
+
     static constexpr Integer mMillisPerHour = 60 * 60 * 1000;
     static constexpr Integer mMillisPerDay = 24 * mMillisPerHour;
+
+    /**
+     * Variables specifying the mode of the start rule.  Takes the following
+     * values:
+     * <dl>
+     * <dt><code>DOM_MODE</code></dt>
+     * <dd>
+     * Exact day of week; e.g., March 1.
+     * </dd>
+     * <dt><code>DOW_IN_MONTH_MODE</code></dt>
+     * <dd>
+     * Day of week in month; e.g., last Sunday in March.
+     * </dd>
+     * <dt><code>DOW_GE_DOM_MODE</code></dt>
+     * <dd>
+     * Day of week after day of month; e.g., Sunday on or after March 15.
+     * </dd>
+     * <dt><code>DOW_LE_DOM_MODE</code></dt>
+     * <dd>
+     * Day of week before day of month; e.g., Sunday on or before March 15.
+     * </dd>
+     * </dl>
+     * The setting of this field affects the interpretation of the
+     * <code>startDay</code> field.
+     * <p>If <code>useDaylight</code> is false, this value is ignored.
+     */
+    Integer mStartMode;
+
+    /**
+     * Variables specifying the mode of the end rule.  Takes the following
+     * values:
+     * <dl>
+     * <dt><code>DOM_MODE</code></dt>
+     * <dd>
+     * Exact day of week; e.g., March 1.
+     * </dd>
+     * <dt><code>DOW_IN_MONTH_MODE</code></dt>
+     * <dd>
+     * Day of week in month; e.g., last Sunday in March.
+     * </dd>
+     * <dt><code>DOW_GE_DOM_MODE</code></dt>
+     * <dd>
+     * Day of week after day of month; e.g., Sunday on or after March 15.
+     * </dd>
+     * <dt><code>DOW_LE_DOM_MODE</code></dt>
+     * <dd>
+     * Day of week before day of month; e.g., Sunday on or before March 15.
+     * </dd>
+     * </dl>
+     * The setting of this field affects the interpretation of the
+     * <code>endDay</code> field.
+     * <p>If <code>useDaylight</code> is false, this value is ignored.
+     */
+    Integer mEndMode;
 
     /**
      * A positive value indicating the amount of time saved during DST in
@@ -258,6 +414,31 @@ private:
      * <p>If <code>useDaylight</code> is false, this value is ignored.
      */
     Integer mDstSavings;
+
+    /**
+     * Cache values representing a single period of daylight saving
+     * time. When the cache values are valid, cacheStart is the start
+     * time (inclusive) of daylight saving time and cacheEnd is the
+     * end time (exclusive).
+     *
+     * cacheYear has a year value if both cacheStart and cacheEnd are
+     * in the same year. cacheYear is set to startYear - 1 if
+     * cacheStart and cacheEnd are in different years. cacheStart is 0
+     * if the cache values are void. cacheYear is a long to support
+     * Integer.MIN_VALUE - 1 (JCK requirement).
+     */
+    Long mCacheYear;
+    Long mCacheStart;
+    Long mCacheEnd;
+
+    /**
+     * Constants specifying values of startMode and endMode.
+     */
+    static constexpr Integer DOM_MODE = 1; // Exact day of month, "Mar 1"
+    static constexpr Integer DOW_IN_MONTH_MODE = 2; // Day of week in month, "lastSun"
+    static constexpr Integer DOW_GE_DOM_MODE = 3; // Day of week after day of month, "Sun>=15"
+    static constexpr Integer DOW_LE_DOM_MODE = 4; // Day of week before day of month, "Sun<=21"
+
 };
 
 }

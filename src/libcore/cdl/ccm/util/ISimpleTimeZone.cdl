@@ -46,11 +46,26 @@ interface ISimpleTimeZone
      */
     const Integer UTC_TIME = 2;
 
+    SetDSTSavings(
+        [in] Integer millisSavedDuringDST);
+
+    SetEndRule(
+        [in] Integer endMonth,
+        [in] Integer endDay,
+        [in] Integer endTime);
+
     SetEndRule(
         [in] Integer endMonth,
         [in] Integer endDay,
         [in] Integer endDayOfWeek,
         [in] Integer endTime);
+
+    SetEndRule(
+        [in] Integer endMonth,
+        [in] Integer endDay,
+        [in] Integer endDayOfWeek,
+        [in] Integer endTime,
+        [in] Boolean after);
 
     SetStartRule(
         [in] Integer startMonth,
