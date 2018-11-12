@@ -163,7 +163,27 @@ public:
         /* [in] */ IDate* date,
         /* [out] */ Boolean* result) override;
 
+    ECode GetHashCode(
+        /* [out] */ Integer* hash) override;
+
+    ECode Equals(
+        /* [in] */ IInterface* obj,
+        /* [out] */ Boolean* same) override;
+
+    ECode HasSameRules(
+        /* [in] */ ITimeZone* other,
+        /* [out] */ Boolean* result) override;
+
+    ECode ToString(
+        /* [out] */ String* desc) override;
+
+protected:
+    ECode CloneImpl(
+        /* [in] */ SimpleTimeZone* newObj);
+
 private:
+    static const AutoPtr<IGregorian> GetGcal();
+
     Integer GetOffset(
         /* [in] */ ICalendarSystem* cal,
         /* [in] */ ICalendarDate* cdate,
@@ -190,31 +210,13 @@ private:
         /* [in] */ Integer dayOfWeek,
         /* [in] */ Integer timeOfDay);
 
+    void InvalidateCache();
 
+    ECode DecodeRules();
 
+    ECode DecodeStartRule();
 
-    static const AutoPtr<IGregorian> GetGcal()
-    {
-        return nullptr;
-    }
-
-    void InvalidateCache()
-    {}
-
-    ECode DecodeRules()
-    {
-        return NOERROR;
-    }
-
-    ECode DecodeStartRule()
-    {
-        return NOERROR;
-    }
-
-    ECode DecodeEndRule()
-    {
-        return NOERROR;
-    }
+    ECode DecodeEndRule();
 
 private:
     /**
@@ -352,6 +354,9 @@ private:
 
     static constexpr Integer mMillisPerHour = 60 * 60 * 1000;
     static constexpr Integer mMillisPerDay = 24 * mMillisPerHour;
+
+    static constexpr Byte sStaticMonthLength[] = {31,28,31,30,31,30,31,31,30,31,30,31};
+    static constexpr Byte sStaticLeapMonthLength[] = {31,29,31,30,31,30,31,31,30,31,30,31};
 
     /**
      * Variables specifying the mode of the start rule.  Takes the following

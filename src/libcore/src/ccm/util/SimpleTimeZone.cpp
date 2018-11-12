@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "ccm/core/AutoLock.h"
+#include "ccm/core/CStringBuilder.h"
 #include "ccm/util/GregorianCalendar.h"
 #include "ccm/util/SimpleTimeZone.h"
 #include "ccm/util/calendar/CalendarSystem.h"
@@ -22,6 +23,9 @@
 #include <ccmlogger.h>
 
 using ccm::core::AutoLock;
+using ccm::core::CStringBuilder;
+using ccm::core::IStringBuilder;
+using ccm::core::IID_IStringBuilder;
 using ccm::util::GregorianCalendar;
 using ccm::util::calendar::CalendarSystem;
 using ccm::util::calendar::CalendarUtils;
@@ -30,6 +34,14 @@ namespace ccm {
 namespace util {
 
 CCM_INTERFACE_IMPL_1(SimpleTimeZone, TimeZone, ISimpleTimeZone);
+
+constexpr Byte SimpleTimeZone::sStaticMonthLength[];
+constexpr Byte SimpleTimeZone::sStaticLeapMonthLength[];
+
+const AutoPtr<IGregorian> SimpleTimeZone::GetGcal()
+{
+    return CalendarSystem::GetGregorianCalendar();
+}
 
 ECode SimpleTimeZone::Constructor(
     /* [in] */ Integer rawOffset,
@@ -553,6 +565,269 @@ ECode SimpleTimeZone::InDaylightTime(
     Integer offset;
     GetOffset(time, &offset);
     *result = offset != mRawOffset;
+    return NOERROR;
+}
+
+ECode SimpleTimeZone::CloneImpl(
+    /* [in] */ SimpleTimeZone* newObj)
+{
+    VALIDATE_NOT_NULL(newObj);
+
+    newObj->mStartMonth = mStartMonth;
+    newObj->mStartDay = mStartDay;
+    newObj->mStartDayOfWeek = mStartDayOfWeek;
+    newObj->mStartTime = mStartTime;
+    newObj->mStartTimeMode = mStartTimeMode;
+    newObj->mEndMonth = mEndMonth;
+    newObj->mEndDay = mEndDay;
+    newObj->mEndDayOfWeek = mEndDayOfWeek;
+    newObj->mEndTime = mEndTime;
+    newObj->mEndTimeMode = mEndTimeMode;
+    newObj->mStartYear = mStartYear;
+    newObj->mRawOffset = mRawOffset;
+    newObj->mUseDaylight = mUseDaylight;
+    newObj->mStartMode = mStartMode;
+    newObj->mEndMode = mEndMode;
+    newObj->mDstSavings = mDstSavings;
+    newObj->mCacheYear = mCacheYear;
+    newObj->mCacheStart = mCacheStart;
+    newObj->mCacheEnd = mCacheEnd;
+    return NOERROR;
+}
+
+ECode SimpleTimeZone::GetHashCode(
+    /* [out] */ Integer* hash)
+{
+    VALIDATE_NOT_NULL(hash);
+
+    AutoLock lock(this);
+
+    *hash = mStartMonth ^ mStartDay ^ mStartDayOfWeek ^ mStartTime ^
+            mEndMonth ^ mEndDay ^ mEndDayOfWeek ^ mEndTime ^ mRawOffset;
+    return NOERROR;
+}
+
+ECode SimpleTimeZone::Equals(
+    /* [in] */ IInterface* obj,
+    /* [out] */ Boolean* same)
+{
+    VALIDATE_NOT_NULL(same);
+
+    SimpleTimeZone* that = (SimpleTimeZone*)ISimpleTimeZone::Probe(obj);
+
+    if (that == nullptr) {
+        *same = false;
+        return NOERROR;
+    }
+
+    if (this == that) {
+        *same = true;
+        return NOERROR;
+    }
+
+    String thisID, thatID;
+    GetID(&thisID);
+    that->GetID(&thatID);
+
+    if (!thisID.Equals(thatID)) {
+        *same = false;
+        return NOERROR;
+    }
+
+    return HasSameRules(that, same);
+}
+
+ECode SimpleTimeZone::HasSameRules(
+    /* [in] */ ITimeZone* other,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    SimpleTimeZone* that = (SimpleTimeZone*)other;
+
+    if (that == nullptr) {
+        *result = false;
+        return NOERROR;
+    }
+
+    if (this == that) {
+        *result = true;
+        return NOERROR;
+    }
+    *result = mRawOffset == that->mRawOffset &&
+            mUseDaylight == that->mUseDaylight &&
+            (!mUseDaylight
+             // Only check rules if using DST
+             || (mDstSavings == that->mDstSavings &&
+                 mStartMode == that->mStartMode &&
+                 mStartMonth == that->mStartMonth &&
+                 mStartDay == that->mStartDay &&
+                 mStartDayOfWeek == that->mStartDayOfWeek &&
+                 mStartTime == that->mStartTime &&
+                 mStartTimeMode == that->mStartTimeMode &&
+                 mEndMode == that->mEndMode &&
+                 mEndMonth == that->mEndMonth &&
+                 mEndDay == that->mEndDay &&
+                 mEndDayOfWeek == that->mEndDayOfWeek &&
+                 mEndTime == that->mEndTime &&
+                 mEndTimeMode == that->mEndTimeMode &&
+                 mStartYear == that->mStartYear));
+    return NOERROR;
+}
+
+ECode SimpleTimeZone::ToString(
+    /* [out] */ String* desc)
+{
+    VALIDATE_NOT_NULL(desc);
+
+    AutoPtr<IStringBuilder> sb;
+    CStringBuilder::New(IID_IStringBuilder, (IInterface**)&sb);
+    sb->Append(GetCoclassName((ISimpleTimeZone*)this));
+    sb->Append(String("[id="));
+    String id;
+    GetID(&id);
+    sb->Append(id);
+    sb->Append(String(",offset="));
+    sb->Append(mRawOffset);
+    sb->Append(String(",dstSavings="));
+    sb->Append(mDstSavings);
+    sb->Append(String(",useDaylight="));
+    sb->Append(mUseDaylight);
+    sb->Append(String(",startYear="));
+    sb->Append(mStartYear);
+    sb->Append(String(",startMode="));
+    sb->Append(mStartMode);
+    sb->Append(String(",startMonth="));
+    sb->Append(mStartMonth);
+    sb->Append(String(",startDay="));
+    sb->Append(mStartDay);
+    sb->Append(String(",startDayOfWeek="));
+    sb->Append(mStartDayOfWeek);
+    sb->Append(String(",startTime="));
+    sb->Append(mStartTime);
+    sb->Append(String(",startTimeMode="));
+    sb->Append(mStartTimeMode);
+    sb->Append(String(",endMode="));
+    sb->Append(mEndMode);
+    sb->Append(String(",endMonth="));
+    sb->Append(mEndMonth);
+    sb->Append(String(",endDay="));
+    sb->Append(mEndDay);
+    sb->Append(String(",endDayOfWeek="));
+    sb->Append(mEndDayOfWeek);
+    sb->Append(String(",endTime="));
+    sb->Append(mEndTime);
+    sb->Append(String(",endTimeMode="));
+    sb->Append(mEndTimeMode);
+    sb->AppendChar(']');
+    return sb->ToString(desc);
+}
+
+void SimpleTimeZone::InvalidateCache()
+{
+    mCacheYear = mStartYear - 1;
+    mCacheStart = mCacheEnd = 0;
+}
+
+ECode SimpleTimeZone::DecodeRules()
+{
+    FAIL_RETURN(DecodeStartRule());
+    return DecodeEndRule();
+}
+
+ECode SimpleTimeZone::DecodeStartRule()
+{
+    mUseDaylight = (mStartDay != 0) && (mEndDay != 0);
+    if (mStartDay != 0) {
+        if (mStartMonth < ICalendar::JANUARY || mStartMonth > ICalendar::DECEMBER) {
+            Logger::E("SimpleTimeZone", "Illegal start month %d", mStartMonth);
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+        if (mStartTime < 0 || mStartTime > mMillisPerDay) {
+            Logger::E("SimpleTimeZone", "Illegal start time %d", mStartTime);
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+        if (mStartDayOfWeek == 0) {
+            mStartMode = DOM_MODE;
+        }
+        else {
+            if (mStartDayOfWeek > 0) {
+                mStartMode = DOW_IN_MONTH_MODE;
+            }
+            else {
+                mStartDayOfWeek = -mStartDayOfWeek;
+                if (mStartDay > 0) {
+                    mStartMode = DOW_GE_DOM_MODE;
+                }
+                else {
+                    mStartDay = -mStartDay;
+                    mStartMode = DOW_LE_DOM_MODE;
+                }
+            }
+            if (mStartDayOfWeek > ICalendar::SATURDAY) {
+                Logger::E("SimpleTimeZone", "Illegal start day of week %d", mStartDayOfWeek);
+                return E_ILLEGAL_ARGUMENT_EXCEPTION;
+            }
+        }
+        if (mStartMode == DOW_IN_MONTH_MODE) {
+            if (mStartDay < -5 || mStartDay > 5) {
+                Logger::E("SimpleTimeZone", "Illegal start day of week in month %d", mStartDay);
+                return E_ILLEGAL_ARGUMENT_EXCEPTION;
+            }
+        }
+        else if (mStartDay < 1 || mStartDay > sStaticMonthLength[mStartMonth]) {
+            Logger::E("SimpleTimeZone", "Illegal start day %d", mStartDay);
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+    }
+    return NOERROR;
+}
+
+ECode SimpleTimeZone::DecodeEndRule()
+{
+    mUseDaylight = (mStartDay != 0) && (mEndDay != 0);
+    if (mEndDay != 0) {
+        if (mEndMonth < ICalendar::JANUARY || mEndMonth > ICalendar::DECEMBER) {
+            Logger::E("SimpleTimeZone", "Illegal end month %d", mEndMonth);
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+        if (mEndTime < 0 || mEndTime > mMillisPerDay) {
+            Logger::E("SimpleTimeZone", "Illegal end time %d", mEndTime);
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+        if (mEndDayOfWeek == 0) {
+            mEndMode = DOM_MODE;
+        }
+        else {
+            if (mEndDayOfWeek > 0) {
+                mEndMode = DOW_IN_MONTH_MODE;
+            }
+            else {
+                mEndDayOfWeek = -mEndDayOfWeek;
+                if (mEndDay > 0) {
+                    mEndMode = DOW_GE_DOM_MODE;
+                }
+                else {
+                    mEndDay = -mEndDay;
+                    mEndMode = DOW_LE_DOM_MODE;
+                }
+            }
+            if (mEndDayOfWeek > ICalendar::SATURDAY) {
+                Logger::E("SimpleTimeZone", "Illegal end day of week %d", mEndDayOfWeek);
+                return E_ILLEGAL_ARGUMENT_EXCEPTION;
+            }
+        }
+        if (mEndMode == DOW_IN_MONTH_MODE) {
+            if (mEndDay < -5 || mEndDay > 5) {
+                Logger::E("SimpleTimeZone", "Illegal end day of week in month %d", mEndDay);
+                return E_ILLEGAL_ARGUMENT_EXCEPTION;
+            }
+        }
+        else if (mEndDay < 1 || mEndDay > sStaticMonthLength[mEndMonth]) {
+            Logger::E("SimpleTimeZone", "Illegal end day %d", mEndDay);
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+    }
     return NOERROR;
 }
 
