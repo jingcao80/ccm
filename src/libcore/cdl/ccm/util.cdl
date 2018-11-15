@@ -488,6 +488,62 @@ coclass CRandom
 }
 
 [
+    uuid(23da10ba-6998-4274-9e3e-f44bfbeaf27b),
+    version(0.1.0)
+]
+coclass CSimpleTimeZone
+{
+    Constructor(
+        [in] Integer rawOffset,
+        [in] String id);
+
+    Constructor(
+        [in] Integer rawOffset,
+        [in] String id,
+        [in] Integer startMonth,
+        [in] Integer startDay,
+        [in] Integer startDayOfWeek,
+        [in] Integer startTime,
+        [in] Integer endMonth,
+        [in] Integer endDay,
+        [in] Integer endDayOfWeek,
+        [in] Integer endTime);
+
+    Constructor(
+        [in] Integer rawOffset,
+        [in] String id,
+        [in] Integer startMonth,
+        [in] Integer startDay,
+        [in] Integer startDayOfWeek,
+        [in] Integer startTime,
+        [in] Integer endMonth,
+        [in] Integer endDay,
+        [in] Integer endDayOfWeek,
+        [in] Integer endTime,
+        [in] Integer dstSavings);
+
+    Constructor(
+        [in] Integer rawOffset,
+        [in] String id,
+        [in] Integer startMonth,
+        [in] Integer startDay,
+        [in] Integer startDayOfWeek,
+        [in] Integer startTime,
+        [in] Integer startTimeMode,
+        [in] Integer endMonth,
+        [in] Integer endDay,
+        [in] Integer endDayOfWeek,
+        [in] Integer endTime,
+        [in] Integer endTimeMode,
+        [in] Integer dstSavings);
+
+    interface ISimpleTimeZone;
+    interface ITimeZone;
+    interface ISerializable;
+    interface ICloneable;
+}
+
+[
     uuid(6858c0ba-e3a0-48fd-8f22-bbdc4503d83d),
     version(0.1.0)
 ]

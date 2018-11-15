@@ -28,6 +28,7 @@
 #include "ccm/util/CProperties.h"
 #include "ccm/util/CPropertyPermission.h"
 #include "ccm/util/CRandom.h"
+#include "ccm/util/CSimpleTimeZone.h"
 #include "ccm/util/CStringTokenizer.h"
 #include "ccm/util/CTreeMap.h"
 #include "ccm/util/CTreeSet.h"
@@ -336,6 +337,43 @@ ECode CProperties::Clone(
 
 CCM_OBJECT_IMPL(CPropertyPermission);
 CCM_OBJECT_IMPL(CRandom);
+
+CCM_OBJECT_IMPL(CSimpleTimeZone);
+ECode CSimpleTimeZone::Clone(
+    /* [in] */ const InterfaceID& iid,
+    /* [out] */ IInterface** obj)
+{
+    VALIDATE_NOT_NULL(obj);
+
+    AutoPtr<ISimpleTimeZone> zone;
+    CSimpleTimeZone::New(IID_ISimpleTimeZone, (IInterface**)&zone);
+    FAIL_RETURN(SimpleTimeZone::CloneImpl(zone));
+    *obj = zone->Probe(iid);
+    REFCOUNT_ADD(*obj);
+    return NOERROR;
+}
+
+ECode CSimpleTimeZone::New(
+    /* [in] */ const InterfaceID& iid,
+    /* [out] */ ccm::IInterface** object)
+{
+    AutoPtr<IClassObject> clsObject;
+    ECode ec = CoAcquireClassFactory(CID_CSimpleTimeZone, nullptr, &clsObject);
+    if (FAILED(ec)) return ec;
+
+    void* addr = calloc(sizeof(CSimpleTimeZone), 1);
+    if (addr == nullptr) return E_OUT_OF_MEMORY_ERROR;
+
+    CSimpleTimeZone* _obj = new(addr) CSimpleTimeZone();
+
+    AutoPtr<IMetaComponent> comp;
+    clsObject->GetMetadate(&comp);
+    _obj->AttachMetadata(comp, String("ccm::util::CSimpleTimeZone"));
+    *object = _obj->Probe(iid);
+    REFCOUNT_ADD(*object);
+    return NOERROR;
+};
+
 CCM_OBJECT_IMPL(CStringTokenizer);
 CCM_OBJECT_IMPL(CTreeMap);
 CCM_INTERFACE_IMPL_1(CTreeMap, SyncObject, ITreeMap);

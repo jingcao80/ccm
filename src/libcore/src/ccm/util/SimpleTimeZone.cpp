@@ -40,7 +40,8 @@ constexpr Byte SimpleTimeZone::sStaticLeapMonthLength[];
 
 const AutoPtr<IGregorian> SimpleTimeZone::GetGcal()
 {
-    return CalendarSystem::GetGregorianCalendar();
+    static const AutoPtr<IGregorian> sGcal = CalendarSystem::GetGregorianCalendar();
+    return sGcal;
 }
 
 ECode SimpleTimeZone::Constructor(
@@ -569,29 +570,30 @@ ECode SimpleTimeZone::InDaylightTime(
 }
 
 ECode SimpleTimeZone::CloneImpl(
-    /* [in] */ SimpleTimeZone* newObj)
+    /* [in] */ ISimpleTimeZone* newObj)
 {
     VALIDATE_NOT_NULL(newObj);
 
-    newObj->mStartMonth = mStartMonth;
-    newObj->mStartDay = mStartDay;
-    newObj->mStartDayOfWeek = mStartDayOfWeek;
-    newObj->mStartTime = mStartTime;
-    newObj->mStartTimeMode = mStartTimeMode;
-    newObj->mEndMonth = mEndMonth;
-    newObj->mEndDay = mEndDay;
-    newObj->mEndDayOfWeek = mEndDayOfWeek;
-    newObj->mEndTime = mEndTime;
-    newObj->mEndTimeMode = mEndTimeMode;
-    newObj->mStartYear = mStartYear;
-    newObj->mRawOffset = mRawOffset;
-    newObj->mUseDaylight = mUseDaylight;
-    newObj->mStartMode = mStartMode;
-    newObj->mEndMode = mEndMode;
-    newObj->mDstSavings = mDstSavings;
-    newObj->mCacheYear = mCacheYear;
-    newObj->mCacheStart = mCacheStart;
-    newObj->mCacheEnd = mCacheEnd;
+    SimpleTimeZone* clone = (SimpleTimeZone*)newObj;
+    clone->mStartMonth = mStartMonth;
+    clone->mStartDay = mStartDay;
+    clone->mStartDayOfWeek = mStartDayOfWeek;
+    clone->mStartTime = mStartTime;
+    clone->mStartTimeMode = mStartTimeMode;
+    clone->mEndMonth = mEndMonth;
+    clone->mEndDay = mEndDay;
+    clone->mEndDayOfWeek = mEndDayOfWeek;
+    clone->mEndTime = mEndTime;
+    clone->mEndTimeMode = mEndTimeMode;
+    clone->mStartYear = mStartYear;
+    clone->mRawOffset = mRawOffset;
+    clone->mUseDaylight = mUseDaylight;
+    clone->mStartMode = mStartMode;
+    clone->mEndMode = mEndMode;
+    clone->mDstSavings = mDstSavings;
+    clone->mCacheYear = mCacheYear;
+    clone->mCacheStart = mCacheStart;
+    clone->mCacheEnd = mCacheEnd;
     return NOERROR;
 }
 

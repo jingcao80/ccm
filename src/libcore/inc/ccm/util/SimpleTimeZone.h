@@ -179,11 +179,9 @@ public:
 
 protected:
     ECode CloneImpl(
-        /* [in] */ SimpleTimeZone* newObj);
+        /* [in] */ ISimpleTimeZone* newObj);
 
 private:
-    static const AutoPtr<IGregorian> GetGcal();
-
     Integer GetOffset(
         /* [in] */ ICalendarSystem* cal,
         /* [in] */ ICalendarDate* cdate,
@@ -217,6 +215,8 @@ private:
     ECode DecodeStartRule();
 
     ECode DecodeEndRule();
+
+    static const AutoPtr<IGregorian> GetGcal();
 
 private:
     /**

@@ -15,25 +15,34 @@
 //=========================================================================
 
 #include "ccm/core/AutoLock.h"
+#include "ccm/core/CoreUtils.h"
 #include "ccm/core/CStringBuilder.h"
 #include "ccm/core/StringUtils.h"
 #include "ccm/util/CDate.h"
+#include "ccm/util/CSimpleTimeZone.h"
 #include "ccm/util/Locale.h"
 #include "ccm/util/TimeZone.h"
+#include "ccm/util/regex/Pattern.h"
 #include "ccm.core.ICloneable.h"
+#include "ccm.util.regex.IMatcher.h"
 #include "libcore/icu/TimeZoneNames.h"
 #include "libcore/util/ZoneInfoDB.h"
 #include "libcore.util.IZoneInfo.h"
 #include <ccmlogger.h>
 
 using ccm::core::AutoLock;
+using ccm::core::CoreUtils;
 using ccm::core::CStringBuilder;
+using ccm::core::E_ASSERTION_ERROR;
+using ccm::core::E_NUMBER_FORMAT_EXCEPTION;
 using ccm::core::ICloneable;
 using ccm::core::IStringBuilder;
 using ccm::core::IID_ICloneable;
 using ccm::core::IID_IStringBuilder;
 using ccm::core::StringUtils;
 using ccm::io::IID_ISerializable;
+using ccm::util::regex::IMatcher;
+using ccm::util::regex::Pattern;
 using libcore::icu::TimeZoneNames;
 using libcore::util::IZoneInfo;
 using libcore::util::ZoneInfoDB;
@@ -43,7 +52,46 @@ namespace util {
 
 CCM_INTERFACE_IMPL_3(TimeZone, SyncObject, ITimeZone, ISerializable, ICloneable);
 
+static AutoPtr<IPattern> CreateCUSTOM_ZONE_ID_PATTERN()
+{
+    AutoPtr<IPattern> pattern;
+    Pattern::Compile(String("^GMT[-+](\\d{1,2})(:?(\\d\\d))?$"), &pattern);
+    return pattern;
+}
+
+static AutoPtr<ITimeZone> CreateGMT()
+{
+    AutoPtr<ITimeZone> zone;
+    CSimpleTimeZone::New(0, String("GMT"), IID_ITimeZone, (IInterface**)&zone);
+    return zone;
+}
+
+static AutoPtr<ITimeZone> CreateUTC()
+{
+    AutoPtr<ITimeZone> zone;
+    CSimpleTimeZone::New(0, String("UTC"), IID_ITimeZone, (IInterface**)&zone);
+    return zone;
+}
+
 AutoPtr<ITimeZone> TimeZone::NO_TIMEZONE;
+
+AutoPtr<IPattern> TimeZone::GetCUSTOM_ZONE_ID_PATTERN()
+{
+    static const AutoPtr<IPattern> CUSTOM_ZONE_ID_PATTERN = CreateCUSTOM_ZONE_ID_PATTERN();
+    return CUSTOM_ZONE_ID_PATTERN;
+}
+
+AutoPtr<ITimeZone> TimeZone::GetGMT()
+{
+    static const AutoPtr<ITimeZone> GMT = CreateGMT();
+    return GMT;
+}
+
+AutoPtr<ITimeZone> TimeZone::GetUTC()
+{
+    static const AutoPtr<ITimeZone> UTC = CreateUTC();
+    return UTC;
+}
 
 SyncObject& TimeZone::GetClassLock()
 {
@@ -295,7 +343,46 @@ ECode TimeZone::GetCustomTimeZone(
     /* [in] */ const String& id,
     /* [out] */ ITimeZone** zone)
 {
-    return NOERROR;
+    VALIDATE_NOT_NULL(zone);
+
+    AutoPtr<IMatcher> m;
+    GetCUSTOM_ZONE_ID_PATTERN()->Matcher(CoreUtils::Box(id), &m);
+    Boolean matched;
+    if (m->Matches(&matched), !matched) {
+        *zone = nullptr;
+        return NOERROR;
+    }
+
+    Integer hour;
+    Integer minute = 0;
+    String part;
+    m->Group(1, &part);
+    ECode ec = StringUtils::ParseInt(part, &hour);
+    if (ec == E_NUMBER_FORMAT_EXCEPTION) {
+        return E_ASSERTION_ERROR;
+    }
+    m->Group(3, &part);
+    if (!part.IsNull()) {
+        ec = StringUtils::ParseInt(part, &minute);
+        if (ec == E_NUMBER_FORMAT_EXCEPTION) {
+            return E_ASSERTION_ERROR;
+        }
+    }
+
+    if (hour < 0 || hour > 23 || minute < 0 || minute > 59) {
+        *zone = nullptr;
+        return NOERROR;
+    }
+
+    Char sign = id.GetChar(3);
+    Integer raw = (hour * 3600000) + (minute * 60000);
+    if (sign == '-') {
+        raw = -raw;
+    }
+
+    String cleanId = String::Format("GMT%c%02d:%02d", sign, hour, minute);
+
+    return CSimpleTimeZone::New(raw, cleanId, zone);
 }
 
 Array<String> TimeZone::GetAvailableIDs(

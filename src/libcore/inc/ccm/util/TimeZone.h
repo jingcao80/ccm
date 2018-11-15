@@ -22,12 +22,14 @@
 #include "ccm.core.IStringBuilder.h"
 #include "ccm.io.ISerializable.h"
 #include "ccm.util.ITimeZone.h"
+#include "ccm.util.regex.IPattern.h"
 #include <ccmautoptr.h>
 
 using ccm::core::ICloneable;
 using ccm::core::IStringBuilder;
 using ccm::core::SyncObject;
 using ccm::io::ISerializable;
+using ccm::util::regex::IPattern;
 
 namespace ccm {
 namespace util {
@@ -125,15 +127,11 @@ private:
         /* [in] */ Integer count,
         /* [in] */ Integer value);
 
-    static AutoPtr<ITimeZone> GetGMT()
-    {
-        return nullptr;
-    }
+    static AutoPtr<IPattern> GetCUSTOM_ZONE_ID_PATTERN();
 
-    static AutoPtr<ITimeZone> GetUTC()
-    {
-        return nullptr;
-    }
+    static AutoPtr<ITimeZone> GetGMT();
+
+    static AutoPtr<ITimeZone> GetUTC();
 
 public:
     static AutoPtr<ITimeZone> NO_TIMEZONE;
