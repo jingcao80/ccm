@@ -382,7 +382,7 @@ ECode TimeZone::GetCustomTimeZone(
 
     String cleanId = String::Format("GMT%c%02d:%02d", sign, hour, minute);
 
-    return CSimpleTimeZone::New(raw, cleanId, zone);
+    return CSimpleTimeZone::New(raw, cleanId, IID_ITimeZone, (IInterface**)zone);
 }
 
 Array<String> TimeZone::GetAvailableIDs(
