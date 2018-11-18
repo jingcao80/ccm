@@ -14,9 +14,27 @@
 // limitations under the License.
 //=========================================================================
 
-include "ccm/text/IAttributedCharacterIterator.cdl"
-include "ccm/text/ICharacterIterator.cdl"
-include "ccm/text/IDateFormatSymbols.cdl"
-include "ccm/text/IFieldPosition.cdl"
-include "ccm/text/IFormat.cdl"
-include "ccm/text/IParsePosition.cdl"
+namespace ccm {
+namespace text {
+
+[
+    uuid(945c1201-ef77-48a8-9e96-6797d1e47c1c),
+    version(0.1.0)
+]
+interface IParsePosition
+{
+    GetErrorIndex(
+        [out] Integer* index);
+
+    GetIndex(
+        [out] Integer* index);
+
+    SetErrorIndex(
+        [in] Integer index);
+
+    SetIndex(
+        [in] Integer index);
+}
+
+}
+}

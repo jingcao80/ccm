@@ -1,0 +1,65 @@
+//=========================================================================
+// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//=========================================================================
+
+namespace ccm {
+namespace text {
+
+/*
+ * @Involve interface ccm::core::ICloneable
+ */
+[
+    uuid(42437f78-3feb-49cb-94e4-fa4dd4c7ee67),
+    version(0.1.0)
+]
+interface ICharacterIterator
+{
+    /**
+     * Constant that is returned when the iterator has reached either the end
+     * or the beginning of the text. The value is '\\uFFFF', the "not a
+     * character" value which should not occur in any valid Unicode string.
+     */
+    const Char DONE = 0xffffffff;
+
+    Current(
+        [out] Char* currChar);
+
+    First(
+        [out] Char* firstChar);
+
+    GetBeginIndex(
+        [out] Integer* beginIndex);
+
+    GetEndIndex(
+        [out] Integer* endIndex);
+
+    GetIndex(
+        [out] Integer* currIndex);
+
+    Last(
+        [out] Char* lastChar);
+
+    Next(
+        [out] Char* nextChar);
+
+    Previous(
+        [out] Char* prevChar);
+
+    SetIndex(
+        [in] Integer position);
+}
+
+}
+}

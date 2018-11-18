@@ -1,0 +1,75 @@
+//=========================================================================
+// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//=========================================================================
+
+interface ccm::util::IMap;
+interface ccm::util::ISet;
+
+namespace ccm {
+namespace text {
+
+[
+    uuid(09d5b6df-58ba-4836-aea3-c6b95c44649f),
+    version(0.1.0)
+]
+interface IAttributedCharacterIteratorAttribute
+{}
+
+/*
+ * @Involve interface ccm::text::ICharacterIterator;
+ * @Involve interface ccm::core::ICloneable
+ */
+[
+    uuid(6b6208f7-c072-4f70-b8d9-e22962027b59),
+    version(0.1.0)
+]
+interface IAttributedCharacterIterator
+{
+    GetAllAttributeKeys(
+        [out] ISet** keys);
+
+    GetAttribute(
+        [in] IAttributedCharacterIteratorAttribute* attribute,
+        [out] IInterface** value);
+
+    GetAttributes(
+        [out] IMap** attributes);
+
+    GetRunLimit(
+        [out] Integer* index);
+
+    GetRunLimit(
+        [in] IAttributedCharacterIteratorAttribute* attribute,
+        [out] Integer* index);
+
+    GetRunLimit(
+        [in] ISet* attributes,
+        [out] Integer* index);
+
+    GetRunStart(
+        [out] Integer* index);
+
+    GetRunStart(
+        [in] IAttributedCharacterIteratorAttribute* attribute,
+        [out] Integer* index);
+
+    GetRunStart(
+        [in] ISet* attributes,
+        [out] Integer* index);
+}
+
+}
+}
+

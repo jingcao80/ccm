@@ -14,9 +14,39 @@
 // limitations under the License.
 //=========================================================================
 
-include "ccm/text/IAttributedCharacterIterator.cdl"
-include "ccm/text/ICharacterIterator.cdl"
-include "ccm/text/IDateFormatSymbols.cdl"
-include "ccm/text/IFieldPosition.cdl"
-include "ccm/text/IFormat.cdl"
-include "ccm/text/IParsePosition.cdl"
+interface ccm::text::IFormatField;
+interface ccm::text::IFormatFieldDelegate;
+
+namespace ccm {
+namespace text {
+
+[
+    uuid(a847451b-46f3-441e-ba9f-ed0b37e5ebfa),
+    version(0.1.0)
+]
+interface IFieldPosition
+{
+    GetBeginIndex(
+        [out] Integer* index);
+
+    GetEndIndex(
+        [out] Integer* index);
+
+    GetField(
+        [out] Integer* field);
+
+    GetFieldAttribute(
+        [out] IFormatField** attribute);
+
+    GetFieldDelegate(
+        [out] IFormatFieldDelegate** delegate);
+
+    SetBeginIndex(
+        [in] Integer index);
+
+    SetEndIndex(
+        [in] Integer index);
+}
+
+}
+}

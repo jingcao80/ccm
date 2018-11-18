@@ -1,0 +1,91 @@
+//=========================================================================
+// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//=========================================================================
+
+interface ccm::core::IStringBuffer;
+interface ccm::text::IAttributedCharacterIterator;
+interface ccm::text::IFieldPosition;
+interface ccm::text::IParsePosition;
+
+namespace ccm {
+namespace text {
+
+/*
+ * @Involve interface ccm::text::IAttributedCharacterIteratorAttribute;
+ */
+[
+    uuid(e895ef85-dd19-4c51-849a-f94b0c21ae4b),
+    version(0.1.0)
+]
+interface IFormatField
+{}
+
+[
+    uuid(0579f322-5ab7-4c43-84b5-dbc4313db1fd),
+    version(0.1.0)
+]
+interface IFormatFieldDelegate
+{
+    Formatted(
+        [in] IFormatField* attr,
+        [in] IInterface* value,
+        [in] Integer start,
+        [in] Integer end,
+        [in] IStringBuffer* buffer);
+
+    Formatted(
+        [in] Integer fieldID,
+        [in] IFormatField* attr,
+        [in] IInterface* value,
+        [in] Integer start,
+        [in] Integer end,
+        [in] IStringBuffer* buffer);
+}
+
+/*
+ * @Involve interface ccm::io::ISerializable;
+ * @Involve interface ccm::core::ICloneable;
+ */
+[
+    uuid(3ca986f7-ad84-4023-8f5f-b3c836266040),
+    version(0.1.0)
+]
+interface IFormat
+{
+    Format(
+        [in] IInterface* obj,
+        [out] String* string);
+
+    Format(
+        [in] IInterface* obj,
+        [in, out] IStringBuffer* toAppendTo,
+        [in] IFieldPosition* pos);
+
+    FormatToCharacterIterator(
+        [in] IInterface* obj,
+        [out] IAttributedCharacterIterator** it);
+
+    ParseObject(
+        [in] String source,
+        [out] IInterface** object);
+
+    ParseObject(
+        [in] String source,
+        [in] IParsePosition* pos,
+        [out] IInterface** object);
+}
+
+}
+}
