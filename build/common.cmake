@@ -24,12 +24,17 @@ endmacro()
 
 macro(IMPORT_GTEST)
     add_library(libgtest.a UNKNOWN IMPORTED)
-    set_property(TARGET libgtest.a PROPERTY IMPORTED_LOCATION ${PROJECT_DIR}/out/lib/gtestd.a)
+    set_property(TARGET libgtest.a PROPERTY IMPORTED_LOCATION ${PROJECT_DIR}/out/lib/gtest.a)
     add_library(libgtest_main.a UNKNOWN IMPORTED)
-    set_property(TARGET libgtest_main.a PROPERTY IMPORTED_LOCATION ${PROJECT_DIR}/out/lib/gtest_maind.a)
+    set_property(TARGET libgtest_main.a PROPERTY IMPORTED_LOCATION ${PROJECT_DIR}/out/lib/gtest_main.a)
     include_directories(${EXTERNAL_DIR}/googletest/include)
     set(GTEST_LIBS libgtest.a libgtest_main.a pthread)
 endmacro()
+
+if (NOT CMAKE_BUILD_TYPE)
+    message(STATUS "No build type selected (options are: Debug Release), default to Release.")
+    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type (default Release)" FORCE)
+endif()
 
 set(COMMON_CXX_FLAGS
     "-std=c++11 -fPIC -fno-exceptions -fno-rtti -ffunction-sections -fdata-sections")
