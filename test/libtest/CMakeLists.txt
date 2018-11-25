@@ -39,7 +39,7 @@ add_library(libtest
     ${SOURCES}
     ${GENERATED_SOURCES})
 target_link_libraries(libtest ccmrt.so libcore.so ${GTEST_LIBS})
-add_dependencies(libtest libservicemanager)
+add_dependencies(libtest libservicemanager gtest_main)
 
 add_custom_command(
     OUTPUT

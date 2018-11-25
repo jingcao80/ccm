@@ -24,10 +24,10 @@ endmacro()
 
 macro(IMPORT_GTEST)
     add_library(libgtest.a UNKNOWN IMPORTED)
-    set_property(TARGET libgtest.a PROPERTY IMPORTED_LOCATION ${EXTERNAL_DIR}/gtest/lib/libgtest.a)
+    set_property(TARGET libgtest.a PROPERTY IMPORTED_LOCATION ${PROJECT_DIR}/out/lib/gtestd.a)
     add_library(libgtest_main.a UNKNOWN IMPORTED)
-    set_property(TARGET libgtest_main.a PROPERTY IMPORTED_LOCATION ${EXTERNAL_DIR}/gtest/lib/libgtest_main.a)
-    include_directories(${EXTERNAL_DIR}/gtest/inc)
+    set_property(TARGET libgtest_main.a PROPERTY IMPORTED_LOCATION ${PROJECT_DIR}/out/lib/gtest_maind.a)
+    include_directories(${EXTERNAL_DIR}/googletest/include)
     set(GTEST_LIBS libgtest.a libgtest_main.a pthread)
 endmacro()
 

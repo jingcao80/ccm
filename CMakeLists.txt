@@ -52,5 +52,6 @@ add_custom_target(
     COMMAND
         "make")
 
+add_subdirectory(external)
 add_subdirectory(src)
 add_subdirectory(test)
