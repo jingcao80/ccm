@@ -14,12 +14,38 @@
 // limitations under the License.
 //=========================================================================
 
-======== Libcore_Namespace ========     ======== Namespace_Code ========
-ccm.core.Errors                                     0x00
-ccm.core.Exceptions                                 0x01
-ccm.io.Exceptions                                   0x02
-ccm.text.Exceptions                                 0x08
-ccm.util.Exceptions                                 0x09
-ccm.util.regex.Exceptions                           0x0a
-pisces.system.Exceptions                            0xe0
-pisces.system.Exceptions                            0xe1
+#ifndef __CCM_TEXT_DONTCAREFIELDPOSITION_H__
+#define __CCM_TEXT_DONTCAREFIELDPOSITION_H__
+
+#include "ccm/text/FieldPosition.h"
+
+namespace ccm {
+namespace text {
+
+static const AutoPtr<IFieldPosition> CreateDontCareFieldPosition();
+
+class DontCareFieldPosition
+    : public FieldPosition
+{
+public:
+    static const AutoPtr<IFieldPosition> GetInstance();
+
+    ECode GetFieldDelegate(
+        /* [out] */ IFormatFieldDelegate** delegate) override;
+
+    ECode ToString(
+        /* [out] */ String* desc) override;
+
+private:
+    ECode Constructor();
+
+private:
+    AutoPtr<IFormatFieldDelegate> mNoDelegate;
+
+    friend const AutoPtr<IFieldPosition> CreateDontCareFieldPosition();
+};
+
+}
+}
+
+#endif // __CCM_TEXT_DONTCAREFIELDPOSITION_H__

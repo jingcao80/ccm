@@ -28,6 +28,7 @@ include_directories(
     ../inc/ccm/io
     ../inc/ccm/security
     ../inc/ccm/security/action
+    ../inc/ccm/text
     ../inc/ccm/util
     ../inc/ccm/util/calendar
     ../inc/ccm/util/concurrent
@@ -69,6 +70,9 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_security_CPermissions.cpp
     ${OBJ_DIR}/_ccm_security_CSecureRandom.cpp
     ${OBJ_DIR}/_ccm_security_action_CGetPropertyAction.cpp
+    ${OBJ_DIR}/_ccm_text_CAttributedCharacterIteratorAttribute.cpp
+    ${OBJ_DIR}/_ccm_text_CSimpleDateFormat.cpp
+    ${OBJ_DIR}/_ccm_text_CParsePosition.cpp
     ${OBJ_DIR}/_ccm_util_CArrayList.cpp
     ${OBJ_DIR}/_ccm_util_CDate.cpp
     ${OBJ_DIR}/_ccm_util_CFormatter.cpp

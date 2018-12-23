@@ -14,9 +14,68 @@
 // limitations under the License.
 //=========================================================================
 
+include "ccm/text/Exceptions.cdl"
 include "ccm/text/IAttributedCharacterIterator.cdl"
 include "ccm/text/ICharacterIterator.cdl"
+include "ccm/text/IDateFormat.cdl"
 include "ccm/text/IDateFormatSymbols.cdl"
 include "ccm/text/IFieldPosition.cdl"
 include "ccm/text/IFormat.cdl"
+include "ccm/text/INumberFormat.cdl"
 include "ccm/text/IParsePosition.cdl"
+include "ccm/text/ISimpleDateFormat.cdl"
+
+interface ccm::core::ICloneable;
+interface ccm::io::ISerializable;
+interface ccm::util::ILocale;
+
+namespace ccm {
+namespace text {
+
+[
+    uuid(812928e8-cbef-4bbe-a33d-792341c3d681),
+    version(0.1.0)
+]
+coclass CAttributedCharacterIteratorAttribute
+{
+    interface IAttributedCharacterIteratorAttribute;
+    interface ISerializable;
+}
+
+[
+    uuid(5dd60879-0252-4319-a926-70517a5484e1),
+    version(0.1.0)
+]
+coclass CParsePosition
+{
+    Constructor(
+        [in] Integer index);
+
+    interface IParsePosition;
+}
+
+[
+    uuid(abcdea41-9127-42d0-a5e0-ac4f1bb9d249),
+    version(0.1.0)
+]
+coclass CSimpleDateFormat
+{
+    Constructor();
+
+    Constructor(
+        [in] String pattern);
+
+    Constructor(
+        [in] Integer timeStyle,
+        [in] Integer dateStyle,
+        [in] ILocale* loc);
+
+    interface ISimpleDateFormat;
+    interface IDateFormat;
+    interface IFormat;
+    interface ISerializable;
+    interface ICloneable;
+}
+
+}
+}

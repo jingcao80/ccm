@@ -14,12 +14,23 @@
 // limitations under the License.
 //=========================================================================
 
-======== Libcore_Namespace ========     ======== Namespace_Code ========
-ccm.core.Errors                                     0x00
-ccm.core.Exceptions                                 0x01
-ccm.io.Exceptions                                   0x02
-ccm.text.Exceptions                                 0x08
-ccm.util.Exceptions                                 0x09
-ccm.util.regex.Exceptions                           0x0a
-pisces.system.Exceptions                            0xe0
-pisces.system.Exceptions                            0xe1
+#ifndef __CCM_TEXT_CPARSEPOSITION_H__
+#define __CCM_TEXT_CPARSEPOSITION_H__
+
+#include "ccm/text/ParsePosition.h"
+#include "_ccm_text_CParsePosition.h"
+
+namespace ccm {
+namespace text {
+
+Coclass(CParsePosition)
+    , public ParsePosition
+{
+public:
+    CCM_OBJECT_DECL();
+};
+
+}
+}
+
+#endif // __CCM_TEXT_CPARSEPOSITION_H__

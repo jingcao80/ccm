@@ -20,6 +20,9 @@ interface ccm::util::ISet;
 namespace ccm {
 namespace text {
 
+/*
+ * @Involve interface ccm::io::ISerializable
+ */
 [
     uuid(09d5b6df-58ba-4836-aea3-c6b95c44649f),
     version(0.1.0)

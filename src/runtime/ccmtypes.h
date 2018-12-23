@@ -49,6 +49,13 @@ inline bool operator==(
     return !memcmp(&cid1.mUuid, &cid2.mUuid, sizeof(Uuid));
 }
 
+inline bool operator!=(
+    /* [in] */ const CoclassID& cid1,
+    /* [in] */ const CoclassID& cid2)
+{
+    return memcmp(&cid1.mUuid, &cid2.mUuid, sizeof(Uuid));
+}
+
 struct InterfaceID
 {
     Uuid                mUuid;
@@ -62,6 +69,13 @@ inline bool operator==(
     return !memcmp(&iid1.mUuid, &iid2.mUuid, sizeof(Uuid));
 }
 
+inline bool operator!=(
+    /* [in] */ const InterfaceID& iid1,
+    /* [in] */ const InterfaceID& iid2)
+{
+    return memcmp(&iid1.mUuid, &iid2.mUuid, sizeof(Uuid));
+}
+
 struct ComponentID
 {
     Uuid                mUuid;
@@ -73,6 +87,13 @@ inline bool operator==(
     /* [in] */ const ComponentID& cid2)
 {
     return !memcmp(&cid1.mUuid, &cid2.mUuid, sizeof(Uuid));
+}
+
+inline bool operator!=(
+    /* [in] */ const ComponentID& cid1,
+    /* [in] */ const ComponentID& cid2)
+{
+    return memcmp(&cid1.mUuid, &cid2.mUuid, sizeof(Uuid));
 }
 
 }

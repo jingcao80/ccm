@@ -24,7 +24,13 @@ include_directories(
     ${OBJ_DIR})
 
 set(SOURCES
-    DateFormatSymbols.cpp)
+    AttributedCharacterIteratorAttribute.cpp
+    DateFormat.cpp
+    DateFormatSymbols.cpp
+    DontCareFieldPosition.cpp
+    FieldPosition.cpp
+    ParsePosition.cpp
+    text.cpp)
 
 add_library(ccm_text STATIC
     ${SOURCES})

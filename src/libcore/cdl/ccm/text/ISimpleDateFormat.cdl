@@ -14,12 +14,23 @@
 // limitations under the License.
 //=========================================================================
 
-======== Libcore_Namespace ========     ======== Namespace_Code ========
-ccm.core.Errors                                     0x00
-ccm.core.Exceptions                                 0x01
-ccm.io.Exceptions                                   0x02
-ccm.text.Exceptions                                 0x08
-ccm.util.Exceptions                                 0x09
-ccm.util.regex.Exceptions                           0x0a
-pisces.system.Exceptions                            0xe0
-pisces.system.Exceptions                            0xe1
+namespace ccm {
+namespace text {
+
+/*
+ * @Involve interface ccm::text::IDateFormat;
+ * @Involve interface ccm::text::IFormat;
+ * @Involve interface ccm::io::ISerializable;
+ * @Involve interface ccm::core::ICloneable;
+ */
+[
+    uuid(e2b13317-e567-4a78-96d1-caacffa88817),
+    version(0.1.0)
+]
+interface ISimpleDateFormat
+{
+
+}
+
+}
+}

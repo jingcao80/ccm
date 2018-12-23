@@ -161,6 +161,18 @@ void Object::OnLastWeakRef(
     }
 }
 
+AutoPtr<IMetaCoclass> Object::GetCoclass(
+    /* [in] */ IInterface* obj)
+{
+    IObject* o = IObject::Probe(obj);
+    if (o != nullptr) {
+        AutoPtr<IMetaCoclass> mc;
+        o->GetCoclass(&mc);
+        return mc;
+    }
+    return nullptr;
+}
+
 String Object::GetCoclassName(
     /* [in] */ IInterface* obj)
 {
