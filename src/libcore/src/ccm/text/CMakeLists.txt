@@ -30,6 +30,7 @@ set(SOURCES
     DontCareFieldPosition.cpp
     FieldPosition.cpp
     ParsePosition.cpp
+    SimpleDateFormat.cpp
     text.cpp)
 
 add_library(ccm_text STATIC

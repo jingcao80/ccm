@@ -61,6 +61,11 @@ public:
     inline void SetConstructorDefault(
         /* [in] */ bool isDefault);
 
+    inline bool IsConstructorDeleted();
+
+    inline void SetConstructorDeleted(
+        /* [in] */ bool deleted);
+
     bool AddInterface(
         /* [in] */ Interface* interface);
 
@@ -79,6 +84,7 @@ private:
     String mVersion;
     String mDescription;
     bool mConstructorDefault;
+    bool mConstructorDeleted;
     ArrayList<Method*> mConstructors;
     ArrayList<Interface*> mInterfaces;
 };
@@ -108,6 +114,17 @@ void Coclass::SetConstructorDefault(
     /* [in] */ bool isDefault)
 {
     mConstructorDefault = isDefault;
+}
+
+bool Coclass::IsConstructorDeleted()
+{
+    return mConstructorDeleted;
+}
+
+void Coclass::SetConstructorDeleted(
+    /* [in] */ bool deleted)
+{
+    mConstructorDeleted = deleted;
 }
 
 int Coclass::GetInterfaceNumber()

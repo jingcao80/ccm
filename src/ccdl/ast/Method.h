@@ -53,6 +53,11 @@ public:
     inline Parameter* GetParameter(
         /* [in] */ int index);
 
+    inline void SetDeleted(
+        /* [in] */ bool deleted);
+
+    inline bool IsDeleted();
+
     void DeepCopy(
         /* [in] */ Method* source,
         /* [in] */ Pool* pool);
@@ -70,6 +75,7 @@ private:
     String mSignature;
     Type* mReturnType;
     ArrayList<Parameter*> mParameters;
+    bool mDeleted;
 };
 
 String Method::GetName()
@@ -103,6 +109,17 @@ Parameter* Method::GetParameter(
     /* [in] */ int index)
 {
     return mParameters.Get(index);
+}
+
+void Method::SetDeleted(
+    /* [in] */ bool deleted)
+{
+    mDeleted = deleted;
+}
+
+bool Method::IsDeleted()
+{
+    return mDeleted;
 }
 
 }

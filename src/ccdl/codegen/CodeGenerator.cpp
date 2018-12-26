@@ -926,6 +926,7 @@ void CodeGenerator::GenCoclassHeader(
     int start = isIClassObject ? 2 : 0;
     for (int i = start; i < mi->mMethodNumber; i++) {
         MetaMethod* mm = mi->mMethods[i];
+        if (mm->mDeleted || (!mk->mConstructorDefault && mk->mConstructorDeleted)) continue;
         builder.Append("    static ECode New(\n");
         for (int j = 0; j < mm->mParameterNumber; j++) {
             builder.AppendFormat("        %s", GenParameter(mm->mParameters[j]).string());
@@ -1064,26 +1065,31 @@ String CodeGenerator::GenCoclassObject(
         builder.Append(")\n"
                        "{\n");
         builder.Append("    VALIDATE_NOT_NULL(object);\n\n");
-        builder.AppendFormat("    void* addr = calloc(sizeof(%s), 1);\n", mk->mName);
-        builder.Append("    if (addr == nullptr) return E_OUT_OF_MEMORY_ERROR;\n\n");
-        builder.AppendFormat("    %s* _obj = new(addr) %s();\n", mk->mName, mk->mName);
-        if (mm->mParameterNumber != 2 || !mk->mConstructorDefault) {
-            builder.Append("    ECode ec = _obj->Constructor(");
-            for (int i = 0; i < mm->mParameterNumber - 2; i++) {
-                builder.Append(mm->mParameters[i]->mName);
-                if (i != mm->mParameterNumber - 3) builder.Append(", ");
-            }
-            builder.Append(");\n");
-            builder.Append("    if (FAILED(ec)) {\n"
-                           "        free(addr);\n"
-                           "        return ec;\n"
-                           "    }\n");
+        if (mm->mDeleted || (!mk->mConstructorDefault && mk->mConstructorDeleted)) {
+            builder.Append("    *object = nullptr;\n");
         }
-        builder.AppendFormat("    _obj->AttachMetadata(mComponent, String(\"%s%s\"));\n",
-                mk->mNamespace, mk->mName);
-        builder.AppendFormat("    *object = _obj->Probe(%s);\n"
-                             "    REFCOUNT_ADD(*object);\n",
-                             mm->mParameters[mm->mParameterNumber - 2]->mName);
+        else {
+            builder.AppendFormat("    void* addr = calloc(sizeof(%s), 1);\n", mk->mName);
+            builder.Append("    if (addr == nullptr) return E_OUT_OF_MEMORY_ERROR;\n\n");
+            builder.AppendFormat("    %s* _obj = new(addr) %s();\n", mk->mName, mk->mName);
+            if (mm->mParameterNumber != 2 || !mk->mConstructorDefault) {
+                builder.Append("    ECode ec = _obj->Constructor(");
+                for (int i = 0; i < mm->mParameterNumber - 2; i++) {
+                    builder.Append(mm->mParameters[i]->mName);
+                    if (i != mm->mParameterNumber - 3) builder.Append(", ");
+                }
+                builder.Append(");\n");
+                builder.Append("    if (FAILED(ec)) {\n"
+                               "        free(addr);\n"
+                               "        return ec;\n"
+                               "    }\n");
+            }
+            builder.AppendFormat("    _obj->AttachMetadata(mComponent, String(\"%s%s\"));\n",
+                    mk->mNamespace, mk->mName);
+            builder.AppendFormat("    *object = _obj->Probe(%s);\n"
+                                 "    REFCOUNT_ADD(*object);\n",
+                                 mm->mParameters[mm->mParameterNumber - 2]->mName);
+        }
         builder.Append("    return NOERROR;\n");
         builder.Append("}\n\n");
     }
@@ -1124,6 +1130,7 @@ String CodeGenerator::GenCoclassMethods(
     int start = isIClassObject ? 2 : 0;
     for (int i = start; i < mi->mMethodNumber; i++) {
         MetaMethod* mm = mi->mMethods[i];
+        if (mm->mDeleted || (!mk->mConstructorDefault && mk->mConstructorDeleted)) continue;
         builder.AppendFormat("ECode _%s::New(\n", mk->mName);
         for (int j = 0; j < mm->mParameterNumber; j++) {
             builder.AppendFormat("    %s", GenParameter(mm->mParameters[j]).string());

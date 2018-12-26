@@ -40,6 +40,15 @@ public:
     ECode ToString(
         /* [out] */ String* str) override;
 
+    static ECode GetLANGUAGE(
+        /* [out] */ IAttributedCharacterIteratorAttribute** attribute);
+
+    static ECode GetREADING(
+        /* [out] */ IAttributedCharacterIteratorAttribute** attribute);
+
+    static ECode GetINPUT_METHOD_SEGMENT(
+        /* [out] */ IAttributedCharacterIteratorAttribute** attribute);
+
 protected:
     virtual String GetName();
 

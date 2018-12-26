@@ -16,6 +16,7 @@
 
 #include "ccm/core/CoreUtils.h"
 #include "ccm/text/AttributedCharacterIteratorAttribute.h"
+#include "ccm/text/CAttributedCharacterIteratorAttribute.h"
 #include "ccm/util/CHashMap.h"
 #include <ccmlogger.h>
 
@@ -26,8 +27,6 @@ using ccm::util::IID_IMap;
 
 namespace ccm {
 namespace text {
-
-extern const CoclassID CID_CAttributedCharacterIteratorAttribute;
 
 CCM_INTERFACE_IMPL_1(AttributedCharacterIteratorAttribute, SyncObject, IAttributedCharacterIteratorAttribute);
 
@@ -88,6 +87,53 @@ ECode AttributedCharacterIteratorAttribute::ReadResolve(
         Logger::E("AttributedCharacterIteratorAttribute", "unknown attribute name");
         return E_INVALID_OBJECT_EXCEPTION;
     }
+    return NOERROR;
+}
+
+static AutoPtr<IAttributedCharacterIteratorAttribute> CreateAttributedCharacterIteratorAttribute(
+    /* [in] */ const String& name)
+{
+    AutoPtr<IAttributedCharacterIteratorAttribute> attribute;
+    CAttributedCharacterIteratorAttribute::New(name, IID_IAttributedCharacterIteratorAttribute, (IInterface**)&attribute);
+    return attribute;
+}
+
+ECode AttributedCharacterIteratorAttribute::GetLANGUAGE(
+    /* [out] */ IAttributedCharacterIteratorAttribute** attribute)
+{
+    VALIDATE_NOT_NULL(attribute);
+
+    static const AutoPtr<IAttributedCharacterIteratorAttribute> sLANGUAGE =
+            CreateAttributedCharacterIteratorAttribute(String("language"));
+
+    *attribute = sLANGUAGE;
+    REFCOUNT_ADD(*attribute);
+    return NOERROR;
+}
+
+ECode AttributedCharacterIteratorAttribute::GetREADING(
+    /* [out] */ IAttributedCharacterIteratorAttribute** attribute)
+{
+    VALIDATE_NOT_NULL(attribute);
+
+    static const AutoPtr<IAttributedCharacterIteratorAttribute> sREADING =
+            CreateAttributedCharacterIteratorAttribute(String("reading"));
+
+    *attribute = sREADING;
+    REFCOUNT_ADD(*attribute);
+    return NOERROR;
+}
+
+ECode AttributedCharacterIteratorAttribute::GetINPUT_METHOD_SEGMENT(
+    /* [out] */ IAttributedCharacterIteratorAttribute** attribute)
+{
+    VALIDATE_NOT_NULL(attribute);
+
+    static const AutoPtr<IAttributedCharacterIteratorAttribute> sINPUT_METHOD_SEGMENT =
+            CreateAttributedCharacterIteratorAttribute(String("input_method_segment"));
+
+    *attribute = sINPUT_METHOD_SEGMENT;
+    REFCOUNT_ADD(*attribute);
     return NOERROR;
 }
 

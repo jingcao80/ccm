@@ -1672,6 +1672,15 @@ bool Parser::ParseCoclassConstructor(
     mTokenizer.GetToken();
 
     token = mTokenizer.GetToken();
+    if (token == Tokenizer::Token::ASSIGNMENT) {
+        token = mTokenizer.PeekToken();
+        if (token == Tokenizer::Token::DELETE) {
+            mTokenizer.GetToken();
+            method->SetDeleted(true);
+        }
+        token = mTokenizer.GetToken();
+    }
+
     if (token != Tokenizer::Token::SEMICOLON) {
         LogError(token, String("\";\" is expected."));
         // jump to next line
@@ -2293,7 +2302,13 @@ void Parser::GenerateCoclassObject(
     else {
         Interface* itfco = FindInterface(String("ccm::IClassObject"));
         itfco->Specialize();
-        klass->SetConstructorDefault(klass->GetConstructorNumber() == 0);
+        if (klass->GetConstructorNumber() == 0) {
+            klass->SetConstructorDefault(true);
+        }
+        else {
+            klass->SetConstructorDefault(false);
+            klass->SetConstructorDeleted(klass->GetConstructor(0)->IsDeleted());
+        }
         klass->AddInterface(itfco);
     }
 }

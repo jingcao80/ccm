@@ -23,6 +23,7 @@ namespace ast {
 
 Coclass::Coclass()
     : mConstructorDefault(false)
+    , mConstructorDeleted(false)
     , mConstructors(5, false)
     , mInterfaces(10, false)
 {}

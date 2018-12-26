@@ -23,6 +23,7 @@ namespace ast {
 
 Method::Method()
     : mReturnType(nullptr)
+    , mDeleted(false)
 {}
 
 String Method::GetSignature()

@@ -38,6 +38,8 @@ namespace text {
 ]
 coclass CAttributedCharacterIteratorAttribute
 {
+    Constructor() = delete;
+
     interface IAttributedCharacterIteratorAttribute;
     interface ISerializable;
 }

@@ -83,6 +83,7 @@ struct MetaCoclass
     int                 mInterfaceNumber;
     int*                mInterfaceIndexes;
     bool                mConstructorDefault;
+    bool                mConstructorDeleted;
 };
 
 struct MetaEnumeration
@@ -147,6 +148,7 @@ struct MetaMethod
     int                 mReturnTypeIndex;
     int                 mParameterNumber;
     MetaParameter**     mParameters;
+    bool                mDeleted;
 };
 
 struct MetaParameter

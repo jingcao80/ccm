@@ -417,6 +417,7 @@ MetaCoclass* MetaBuilder::WriteMetaCoclass(
     mBasePtr = ALIGN4(mBasePtr + sizeof(MetaCoclass));
     mc->mInterfaceIndexes = reinterpret_cast<int*>(mBasePtr);
     mc->mConstructorDefault = klass->HasDefaultConstructor();
+    mc->mConstructorDeleted = klass->IsConstructorDeleted();
     // end address
     mBasePtr = mBasePtr + sizeof(int) * ITF_NUM;
 
@@ -590,6 +591,7 @@ MetaMethod* MetaBuilder::WriteMetaMethod(
     // mParameters's address
     mBasePtr = ALIGN(mBasePtr + sizeof(MetaMethod));
     mm->mParameters = reinterpret_cast<MetaParameter**>(mBasePtr);
+    mm->mDeleted = method->IsDeleted();
     // end address
     mBasePtr = mBasePtr + sizeof(MetaParameter*) * PARAM_NUM;
 
