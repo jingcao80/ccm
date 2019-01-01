@@ -46,6 +46,47 @@ public:
     {
         return nullptr;
     }
+
+    static AutoPtr<IDateFormatSymbols> GetInstanceRef(
+        /* [in] */ ILocale* locale)
+    {
+        return nullptr;
+    }
+
+public:
+    /**
+     * Unlocalized date-time pattern characters. For example: 'y', 'd', etc.
+     * All locales use the same these unlocalized pattern characters.
+     *
+     * Pretend to support 'L' and 'c' for now. It's meant for standalone weekday and
+     * month names, but we just use the non-standalone versions for now.
+     */
+    static const String sPatternChars;
+
+    static const Integer PATTERN_ERA = 0; // G
+    static const Integer PATTERN_YEAR = 1; // y
+    static const Integer PATTERN_MONTH = 2; // M
+    static const Integer PATTERN_DAY_OF_MONTH = 3; // d
+    static const Integer PATTERN_HOUR_OF_DAY1 = 4; // k
+    static const Integer PATTERN_HOUR_OF_DAY0 = 5; // H
+    static const Integer PATTERN_MINUTE = 6; // m
+    static const Integer PATTERN_SECOND = 7; // s
+    static const Integer PATTERN_MILLISECOND = 8; // S
+    static const Integer PATTERN_DAY_OF_WEEK = 9; // E
+    static const Integer PATTERN_DAY_OF_YEAR = 10; // D
+    static const Integer PATTERN_DAY_OF_WEEK_IN_MONTH = 11; // F
+    static const Integer PATTERN_WEEK_OF_YEAR = 12; // w
+    static const Integer PATTERN_WEEK_OF_MONTH = 13; // W
+    static const Integer PATTERN_AM_PM = 14; // a
+    static const Integer PATTERN_HOUR1 = 15; // h
+    static const Integer PATTERN_HOUR0 = 16; // K
+    static const Integer PATTERN_ZONE_NAME = 17; // z
+    static const Integer PATTERN_ZONE_VALUE = 18; // Z
+    static const Integer PATTERN_WEEK_YEAR = 19; // Y
+    static const Integer PATTERN_ISO_DAY_OF_WEEK = 20; // u
+    static const Integer PATTERN_ISO_ZONE = 21; // X
+    static const Integer PATTERN_MONTH_STANDALONE = 22; // L
+    static const Integer PATTERN_STANDALONE_DAY_OF_WEEK = 23; // c
 };
 
 }

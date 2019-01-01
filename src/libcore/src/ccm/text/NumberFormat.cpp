@@ -14,23 +14,3 @@
 // limitations under the License.
 //=========================================================================
 
-namespace ccm {
-namespace text {
-
-/*
- * @Involve interface ccm::text::IFormat;
- * @Involve interface ccm::io::ISerializable;
- * @Involve interface ccm::core::ICloneable;
- */
-[
-    uuid(69ff7998-7fb1-4f1b-940d-30ad8d233113),
-    version(0.1.0)
-]
-interface INumberFormat
-{
-    SetGroupingUsed(
-        [in] Boolean value);
-}
-
-}
-}

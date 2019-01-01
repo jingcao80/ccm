@@ -14,22 +14,30 @@
 // limitations under the License.
 //=========================================================================
 
+interface ccm::text::IAttributedCharacterIterator;
+interface ccm::text::IAttributedCharacterIteratorAttribute;
+
 namespace ccm {
 namespace text {
 
-/*
- * @Involve interface ccm::text::IFormat;
- * @Involve interface ccm::io::ISerializable;
- * @Involve interface ccm::core::ICloneable;
- */
 [
-    uuid(69ff7998-7fb1-4f1b-940d-30ad8d233113),
+    uuid(b3004d6b-0223-4bcb-8b6d-7824de3aeb3a),
     version(0.1.0)
 ]
-interface INumberFormat
+interface IAttributedString
 {
-    SetGroupingUsed(
-        [in] Boolean value);
+    AddAttribute(
+        [in] IAttributedCharacterIteratorAttribute* attribute,
+        [in] IInterface* value);
+
+    AddAttribute(
+        [in] IAttributedCharacterIteratorAttribute* attribute,
+        [in] IInterface* value,
+        [in] Integer beginIndex,
+        [in] Integer endIndex);
+
+    GetIterator(
+        [out] IAttributedCharacterIterator** it);
 }
 
 }

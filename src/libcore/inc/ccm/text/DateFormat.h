@@ -51,6 +51,8 @@ class DateFormat
     , public ICloneable
 {
 public:
+    CCM_INTERFACE_DECL();
+
     using IDateFormat::Format;
 
     ECode Format(

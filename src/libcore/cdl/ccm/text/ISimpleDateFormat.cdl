@@ -14,6 +14,8 @@
 // limitations under the License.
 //=========================================================================
 
+interface ccm::util::IDate;
+
 namespace ccm {
 namespace text {
 
@@ -29,7 +31,11 @@ namespace text {
 ]
 interface ISimpleDateFormat
 {
+    Get2DigitYearStart(
+        [out] IDate** startDate);
 
+    Set2DigitYearStart(
+        [in] IDate* startDate);
 }
 
 }

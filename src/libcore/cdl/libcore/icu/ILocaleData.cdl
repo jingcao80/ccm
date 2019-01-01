@@ -25,11 +25,19 @@ namespace icu {
 ]
 interface ILocaleData
 {
+    GetDateFormat(
+        [in] Integer style,
+        [out] String* dateFormat);
+
     GetFirstDayOfWeek(
         [out] IInteger** day);
 
     GetMinimalDaysInFirstWeek(
         [out] IInteger** days);
+
+    GetTimeFormat(
+        [in] Integer style,
+        [out] String* timeFormat);
 }
 
 }

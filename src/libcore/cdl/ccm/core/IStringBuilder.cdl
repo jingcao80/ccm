@@ -85,6 +85,12 @@ interface IStringBuilder
         [in] Integer index,
         [out] Char* c);
 
+    GetChars(
+        [in] Integer start,
+        [in] Integer end,
+        [out] Array<Char> dst,
+        [in] Integer dstStart);
+
     GetLength(
         [out] Integer* number);
 
@@ -164,12 +170,6 @@ interface IStringBuilder
         [out] Integer* idx);
 
     Reverse();
-
-    GetChars(
-        [in] Integer start,
-        [in] Integer end,
-        [out] Array<Char> dst,
-        [in] Integer dstStart);
 
     SetCharAt(
         [in] Integer index,

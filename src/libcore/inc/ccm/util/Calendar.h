@@ -50,10 +50,9 @@ class Calendar
     , public IComparable
 {
 public:
-    CCM_INTERFACE_DECL();
-
-protected:
     Calendar();
+
+    CCM_INTERFACE_DECL();
 
     ECode Constructor();
 

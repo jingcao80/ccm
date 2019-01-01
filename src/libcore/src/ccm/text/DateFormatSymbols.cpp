@@ -15,3 +15,11 @@
 //=========================================================================
 
 #include "ccm/text/DateFormatSymbols.h"
+
+namespace ccm {
+namespace text {
+
+const String DateFormatSymbols::sPatternChars("GyMdkHmsSEDFwWahKzZYuXLc");
+
+}
+}

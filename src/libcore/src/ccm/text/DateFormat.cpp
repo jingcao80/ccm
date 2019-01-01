@@ -28,8 +28,10 @@
 
 using ccm::core::CoreUtils;
 using ccm::core::CStringBuffer;
+using ccm::core::IID_ICloneable;
 using ccm::core::IID_IStringBuffer;
 using ccm::core::INumber;
+using ccm::io::IID_ISerializable;
 using ccm::util::CDate;
 using ccm::util::CLocale;
 using ccm::util::IID_ICalendar;
@@ -40,6 +42,8 @@ namespace ccm {
 namespace text {
 
 Boolean DateFormat::sIs24Hour = false;
+
+CCM_INTERFACE_IMPL_4(DateFormat, SyncObject, IDateFormat, IFormat, ISerializable, ICloneable);
 
 ECode DateFormat::Format(
     /* [in] */ IInterface* obj,

@@ -14,23 +14,23 @@
 // limitations under the License.
 //=========================================================================
 
+#ifndef __CCM_TEXT_CATTRIBUTEDSTRING_H__
+#define __CCM_TEXT_CATTRIBUTEDSTRING_H__
+
+#include "ccm/text/AttributedString.h"
+#include "_ccm_text_CAttributedString.h"
+
 namespace ccm {
 namespace text {
 
-/*
- * @Involve interface ccm::text::IFormat;
- * @Involve interface ccm::io::ISerializable;
- * @Involve interface ccm::core::ICloneable;
- */
-[
-    uuid(69ff7998-7fb1-4f1b-940d-30ad8d233113),
-    version(0.1.0)
-]
-interface INumberFormat
+Coclass(CAttributedString)
+    , public AttributedString
 {
-    SetGroupingUsed(
-        [in] Boolean value);
-}
+public:
+    CCM_OBJECT_DECL();
+};
 
 }
 }
+
+#endif // __CCM_TEXT_CATTRIBUTEDSTRING_H__

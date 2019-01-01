@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "ccm/text/CAttributedCharacterIteratorAttribute.h"
+#include "ccm/text/CAttributedString.h"
 #include "ccm/text/CSimpleDateFormat.h"
 #include "ccm/text/CParsePosition.h"
 #include <ccmapi.h>
@@ -50,6 +51,7 @@ ECode CAttributedCharacterIteratorAttribute::New(
     return NOERROR;
 };
 
+CCM_OBJECT_IMPL(CAttributedString);
 CCM_OBJECT_IMPL(CSimpleDateFormat);
 CCM_OBJECT_IMPL(CParsePosition);
 

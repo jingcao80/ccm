@@ -25,10 +25,14 @@ include_directories(
 
 set(SOURCES
     AttributedCharacterIteratorAttribute.cpp
+    AttributedString.cpp
+    CharacterIteratorFieldDelegate.cpp
     DateFormat.cpp
     DateFormatSymbols.cpp
     DontCareFieldPosition.cpp
     FieldPosition.cpp
+    MessageFormat.cpp
+    NumberFormat.cpp
     ParsePosition.cpp
     SimpleDateFormat.cpp
     text.cpp)

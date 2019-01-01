@@ -16,6 +16,7 @@
 
 include "ccm/text/Exceptions.cdl"
 include "ccm/text/IAttributedCharacterIterator.cdl"
+include "ccm/text/IAttributedString.cdl"
 include "ccm/text/ICharacterIterator.cdl"
 include "ccm/text/IDateFormat.cdl"
 include "ccm/text/IDateFormatSymbols.cdl"
@@ -28,6 +29,7 @@ include "ccm/text/ISimpleDateFormat.cdl"
 interface ccm::core::ICloneable;
 interface ccm::io::ISerializable;
 interface ccm::util::ILocale;
+interface ccm::util::IMap;
 
 namespace ccm {
 namespace text {
@@ -42,6 +44,37 @@ coclass CAttributedCharacterIteratorAttribute
 
     interface IAttributedCharacterIteratorAttribute;
     interface ISerializable;
+}
+
+[
+    uuid(d90f0463-63bb-43dd-8ae6-69152b0fcbd1),
+    version(0.1.0)
+]
+coclass CAttributedString
+{
+    Constructor(
+        [in] Array<IAttributedCharacterIterator*> iterators);
+
+    Constructor(
+        [in] String text);
+
+    Constructor(
+        [in] String text,
+        [in] IMap* attributes);
+
+    Constructor(
+        [in] IAttributedCharacterIterator* text);
+
+    Constructor(
+        [in] IAttributedCharacterIterator* text,
+        [in] Integer beginIndex,
+        [in] Integer endIndex);
+
+    Constructor(
+        [in] IAttributedCharacterIterator* text,
+        [in] Integer beginIndex,
+        [in] Integer endIndex,
+        [in] Array<IAttributedCharacterIteratorAttribute*> attributes);
 }
 
 [

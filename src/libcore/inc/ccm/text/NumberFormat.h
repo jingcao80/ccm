@@ -14,23 +14,32 @@
 // limitations under the License.
 //=========================================================================
 
+#ifndef __CCM_TEXT_NUMBERFORMAT_H__
+#define __CCM_TEXT_NUMBERFORMAT_H__
+
+#include "ccm/core/SyncObject.h"
+#include "ccm.text.INumberFormat.h"
+#include "ccm.util.ILocale.h"
+
+using ccm::core::SyncObject;
+using ccm::util::ILocale;
+
 namespace ccm {
 namespace text {
 
-/*
- * @Involve interface ccm::text::IFormat;
- * @Involve interface ccm::io::ISerializable;
- * @Involve interface ccm::core::ICloneable;
- */
-[
-    uuid(69ff7998-7fb1-4f1b-940d-30ad8d233113),
-    version(0.1.0)
-]
-interface INumberFormat
+class NumberFormat
+    : public SyncObject
 {
-    SetGroupingUsed(
-        [in] Boolean value);
-}
+public:
+    static ECode GetIntegerInstance(
+        /* [in] */ ILocale* locale,
+        /* [out] */ INumberFormat** instance)
+    {
+        return NOERROR;
+    }
+};
 
 }
 }
+
+#endif // __CCM_TEXT_NUMBERFORMAT_H__
