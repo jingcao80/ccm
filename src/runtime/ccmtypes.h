@@ -178,6 +178,7 @@ struct Type2Kind
     }
 
     enum { isPrimitiveType = false };
+    enum { isStringType = false };
 };
 
 #define TYPE2KIND_SPEC(type, kind, value)       \
@@ -189,6 +190,7 @@ struct Type2Kind
                 return kind;                    \
             }                                   \
             enum { isPrimitiveType = value };   \
+            enum { isStringType = (kind == CcmTypeKind::String) };  \
         };
 
 TYPE2KIND_SPEC(Byte, CcmTypeKind::Byte, true);
@@ -242,6 +244,7 @@ class TypeTraits
 public:
     typedef T   BareType;
     enum { isPointer = 0 };
+    enum { isArray = SUPERSUBCLASS_STRICT(Triple, T) };
 };
 
 template<class T>
@@ -250,6 +253,7 @@ class TypeTraits<T*>
 public:
     typedef T   BareType;
     enum { isPointer = 1 };
+    enum { isArray = 0 };
 };
 
 template<class T>
@@ -258,6 +262,7 @@ class TypeTraits<const T*>
 public:
     typedef T   BareType;
     enum { isPointer = 1 };
+    enum { isArray = 0 };
 };
 
 #define CREATE_MEMBER_DETECTOR(X)                                                   \
@@ -380,13 +385,55 @@ struct AssignFunc<T, true>
 
 //-----------------------------------------------------------------
 
+template<class T, Boolean = TypeTraits<T>::isArray>
+struct DeleteTriple
+{
+    void operator()(
+        /* [in] */ T* data,
+        /* [in] */ void* id)
+    {}
+};
+
+template<class T>
+struct DeleteTriple<Array<T>, true>
+{
+    void operator()(
+        /* [in] */ Array<T>* data,
+        /* [in] */ void* id)
+    {
+        if (data->mData != nullptr) {
+            SharedBuffer* sb = SharedBuffer::GetBufferFromData(data->mData);
+            if (sb->OnlyOwner()) {
+                if (Type2Kind<T>::isStringType) {
+                    String* payload = reinterpret_cast<String*>(data->mData);
+                    for (Long i = 0; i < data->mSize; i++) {
+                        payload[i] = nullptr;
+                    }
+                }
+                if (!Type2Kind<T>::isPrimitiveType) {
+                    IInterface** payload = reinterpret_cast<IInterface**>(data->mData);
+                    for (Long i = 0; i < data->mSize; i++) {
+                        payload[i]->Release();
+                    }
+                }
+            }
+            sb->Release();
+        }
+    }
+};
+
 template<class T, Boolean hasAddRefAndRelease>
 struct DeleteImpl
 {
     void operator()(
         /* [in] */ T* data,
         /* [in] */ void* id)
-    {}
+    {
+        if (TypeTraits<T>::isArray) {
+            DeleteTriple<T> func;
+            func(data, id);
+        }
+    }
 };
 
 template<class T>
@@ -433,19 +480,6 @@ struct DeleteFunc<String, true>
         /* [in] */ void* id)
     {
         *data = nullptr;
-    }
-};
-
-template<>
-struct DeleteFunc<Triple, false>
-{
-    inline void operator()(
-        /* [in] */ Triple* data,
-        /* [in] */ void* id)
-    {
-        if (data->mData != nullptr) {
-            SharedBuffer::GetBufferFromData(data->mData)->Release();
-        }
     }
 };
 

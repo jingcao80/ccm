@@ -421,7 +421,14 @@ Array<T>& Array<T>::operator=(
         SharedBuffer::GetBufferFromData(other.mData)->AddRef();
     }
     if (mData != nullptr) {
-        SharedBuffer::GetBufferFromData(mData)->Release();
+        SharedBuffer* sb = SharedBuffer::GetBufferFromData(mData);
+        if (sb->OnlyOwner()) {
+            DeleteFunc<T> deleteF;
+            for (Long i = 0; i < mSize; i++) {
+                deleteF(&static_cast<T*>(mData)[i], this);
+            }
+        }
+        sb->Release();
     }
     mData = other.mData;
     mSize = other.mSize;
@@ -448,11 +455,17 @@ template<class T>
 void Array<T>::Clear()
 {
     if (mData != nullptr) {
-        SharedBuffer::GetBufferFromData(mData)->Release();
+        SharedBuffer* sb = SharedBuffer::GetBufferFromData(mData);
+        if (sb->OnlyOwner()) {
+            DeleteFunc<T> deleteF;
+            for (Long i = 0; i < mSize; i++) {
+                deleteF(&static_cast<T*>(mData)[i], this);
+            }
+        }
+        sb->Release();
+        mData = nullptr;
     }
-    mData = nullptr;
     mSize = 0;
-    mType = CcmTypeKind::Unknown;
 }
 
 template<class T>

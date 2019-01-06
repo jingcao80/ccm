@@ -18,6 +18,7 @@ set(TEST_DIR ${PROJECT_DIR}/test)
 
 add_subdirectory(libtest)
 add_subdirectory(appentry)
+add_subdirectory(array)
 add_subdirectory(arraylist)
 add_subdirectory(atomicinteger)
 add_subdirectory(autoptr)
