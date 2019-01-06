@@ -676,7 +676,7 @@ Tokenizer::Token Tokenizer::ReadNumber(
         if (mNumberString.Equals("0x8000000000000000")) {
             mNumberString = String("-") + mNumberString;
         }
-        mIntegralValue = strtoll(mNumberString.string(), NULL, mRadix);
+        mIntegralValue = strtoll(mNumberString.string(), nullptr, mRadix);
         return Token::NUMBER_INTEGRAL;
     }
     else {

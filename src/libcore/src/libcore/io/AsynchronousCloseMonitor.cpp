@@ -47,7 +47,7 @@ namespace io {
  * question). For now at least, this seems like a good compromise for Android.
  */
 static std::mutex blockedThreadListMutex;
-static AsynchronousCloseMonitor* blockedThreadList = NULL;
+static AsynchronousCloseMonitor* blockedThreadList = nullptr;
 
 /**
  * The specific signal chosen here is arbitrary, but bionic needs to know so that SIGRTMIN
@@ -74,7 +74,7 @@ void AsynchronousCloseMonitor::Init()
     memset(&sa, 0, sizeof(sa));
     sa.sa_handler = blockedThreadSignalHandler;
     sa.sa_flags = 0;
-    int rc = sigaction(BLOCKED_THREAD_SIGNAL, &sa, NULL);
+    int rc = sigaction(BLOCKED_THREAD_SIGNAL, &sa, nullptr);
     if (rc == -1) {
         Logger::E("AsynchronousCloseMonitor", "setting blocked thread signal handler failed: %s", strerror(errno));
     }
@@ -84,7 +84,7 @@ void AsynchronousCloseMonitor::SignalBlockedThreads(
     /* [in] */ Integer fd)
 {
     std::lock_guard<std::mutex> lock(blockedThreadListMutex);
-    for (AsynchronousCloseMonitor* it = blockedThreadList; it != NULL; it = it->mNext) {
+    for (AsynchronousCloseMonitor* it = blockedThreadList; it != nullptr; it = it->mNext) {
         if (it->mFd == fd) {
             it->mSignaled = true;
             pthread_kill(it->mThread, BLOCKED_THREAD_SIGNAL);
@@ -102,9 +102,9 @@ AsynchronousCloseMonitor::AsynchronousCloseMonitor(
     mFd = fd;
     mSignaled = false;
     // Insert ourselves at the head of the intrusive doubly-linked list...
-    mPrev = NULL;
+    mPrev = nullptr;
     mNext = blockedThreadList;
-    if (mNext != NULL) {
+    if (mNext != nullptr) {
         mNext->mPrev = this;
     }
     blockedThreadList = this;
@@ -114,10 +114,10 @@ AsynchronousCloseMonitor::~AsynchronousCloseMonitor()
 {
     std::lock_guard<std::mutex> lock(blockedThreadListMutex);
     // Unlink ourselves from the intrusive doubly-linked list...
-    if (mNext != NULL) {
+    if (mNext != nullptr) {
         mNext->mPrev = mPrev;
     }
-    if (mPrev == NULL) {
+    if (mPrev == nullptr) {
         blockedThreadList = mNext;
     }
     else {

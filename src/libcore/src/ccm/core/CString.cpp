@@ -62,7 +62,7 @@ ECode CString::SubSequence(
     VALIDATE_NOT_NULL(subcsq);
 
     if (start < 0 || start >= end || end > mString.GetLength()) {
-        *subcsq = NULL;
+        *subcsq = nullptr;
         return E_STRING_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
@@ -77,7 +77,7 @@ ECode CString::CompareTo(
     VALIDATE_NOT_NULL(result)
 
     ICharSequence* o = ICharSequence::Probe(other);
-    if (o == NULL) {
+    if (o == nullptr) {
         *result = -1;
         return NOERROR;
     }
@@ -95,7 +95,7 @@ ECode CString::Equals(
     VALIDATE_NOT_NULL(result)
 
     ICharSequence* o = ICharSequence::Probe(obj);
-    if (o == NULL) {
+    if (o == nullptr) {
         *result = false;
         return NOERROR;
     }

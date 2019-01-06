@@ -49,7 +49,7 @@ File::File(
     , mReader(this)
 {
     if (path == nullptr || path[0] == '\0') {
-        mFd = NULL;
+        mFd = nullptr;
         return;
     }
 
@@ -73,7 +73,7 @@ File::File(
     , mReader(this)
 {
     if (path.IsNullOrEmpty()) {
-        mFd = NULL;
+        mFd = nullptr;
         return;
     }
 

@@ -63,7 +63,7 @@ AutoPtr<ThreadPoolExecutor> ThreadPoolExecutor::GetInstance()
 {
     {
         Mutex::AutoLock lock(sInstanceLock);
-        if (sInstance == NULL) {
+        if (sInstance == nullptr) {
             sInstance = new ThreadPoolExecutor();
         }
     }

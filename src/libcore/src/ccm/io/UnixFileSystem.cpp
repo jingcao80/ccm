@@ -646,7 +646,7 @@ ECode UnixFileSystem::List0(
     Integer maxLen = 16;
     struct dirent64* result;
     Array<String> rv(maxLen);
-    while ((readdir64_r(dir, ptr, &result) == 0)  && (result != NULL)) {
+    while ((readdir64_r(dir, ptr, &result) == 0)  && (result != nullptr)) {
         if (!strcmp(ptr->d_name, ".") || !strcmp(ptr->d_name, "..")) {
             continue;
         }

@@ -66,7 +66,7 @@ AutoPtr<ISecurityManager> System::GetSecurityManager()
 Long System::GetCurrentTimeMillis()
 {
     struct timeval tv;
-    gettimeofday(&tv, (struct timezone *) NULL);
+    gettimeofday(&tv, (struct timezone *) nullptr);
     Long when = tv.tv_sec * 1000LL + tv.tv_usec / 1000;
     return when;
 }

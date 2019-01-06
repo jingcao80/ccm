@@ -60,7 +60,7 @@ void* SharedBuffer::Alloc(
     }
 
     void* handle = malloc(sizeof(struct SharedBuffer) + size + 1);
-    if (handle == NULL) {
+    if (handle == nullptr) {
         Logger::E(TAG, "Fail to malloc %d memory", size);
         return nullptr;
     }
