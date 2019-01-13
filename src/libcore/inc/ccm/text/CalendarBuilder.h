@@ -14,45 +14,37 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_UTIL_ARRAYS_H__
-#define __CCM_UTIL_ARRAYS_H__
+#ifndef __CCM_TEXT_CALENDARBUILDER_H__
+#define __CCM_TEXT_CALENDARBUILDER_H__
 
-#include "ccm.util.IList.h"
+#include "ccm/core/SyncObject.h"
+#include "ccm.util.ICalendar.h"
+
+using ccm::core::SyncObject;
+using ccm::util::ICalendar;
 
 namespace ccm {
-namespace util {
+namespace text {
 
-class Arrays
+class CalendarBuilder
+    : public SyncObject
 {
 public:
-    static ECode CheckOffsetAndCount(
-        /* [in] */ Integer arrayLength,
-        /* [in] */ Integer offset,
-        /* [in] */ Integer count);
+    static Integer ToISODayOfWeek(
+        /* [in] */ Integer calendarDayOfWeek);
 
-    static ECode CopyOf(
-        /* [in] */ const Array<String> & original,
-        /* [in] */ Integer newLength,
-        /* [out, callee] */ Array<String>* newArray);
-
-    static ECode CopyOf(
-        /* [in] */ const Array<IInterface*>& original,
-        /* [in] */ Integer newLength,
-        /* [out, callee] */ Array<IInterface*>* newArray);
-
-    static ECode AsList(
-        /* [in] */ const Array<IInterface*>& a,
-        /* [out] */ IList** list)
-    {
-        return NOERROR;
-    }
-
-private:
-    Arrays()
-    {}
+public:
+    static constexpr Integer WEEK_YEAR = ICalendar::FIELD_COUNT;
+    static constexpr Integer ISO_DAY_OF_WEEK = 1000; // pseudo field index
 };
 
+inline Integer CalendarBuilder::ToISODayOfWeek(
+    /* [in] */ Integer calendarDayOfWeek)
+{
+    return calendarDayOfWeek == ICalendar::SUNDAY ? 7 : calendarDayOfWeek -1 ;
+}
+
 }
 }
 
-#endif // __CCM_UTIL_ARRAYS_H__
+#endif // __CCM_TEXT_CALENDARBUILDER_H__

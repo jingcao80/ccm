@@ -17,16 +17,19 @@
 #ifndef __CCM_TEXT_SIMPLEDATEFORMAT_H__
 #define __CCM_TEXT_SIMPLEDATEFORMAT_H__
 
+#include "ccm/text/CalendarBuilder.h"
 #include "ccm/text/DateFormat.h"
 #include "ccm.core.IStringBuilder.h"
 #include "ccm.core.IStringBuffer.h"
 #include "ccm.text.IFieldPosition.h"
 #include "ccm.text.IFormatFieldDelegate.h"
 #include "ccm.text.ISimpleDateFormat.h"
+#include "ccm.util.ISet.h"
 #include "ccm.util.concurrent.IConcurrentMap.h"
 
 using ccm::core::IStringBuilder;
 using ccm::core::IStringBuffer;
+using ccm::util::ISet;
 using ccm::util::concurrent::IConcurrentMap;
 
 namespace ccm {
@@ -99,22 +102,53 @@ private:
         /* [in, out] */ IStringBuffer* toAppendTo,
         /* [in] */ IFormatFieldDelegate* delegate);
 
-
-    static AutoPtr<IConcurrentMap> GetCachedNumberFormatData();
-
     ECode SubFormat(
         /* [in] */ Integer patternCharIndex,
         /* [in] */ Integer count,
         /* [in] */ IFormatFieldDelegate* delegate,
         /* [in] */ IStringBuffer* buffer,
-        /* [in] */ Boolean useDateFormatSymbols)
-    {
-        return NOERROR;
-    }
+        /* [in] */ Boolean useDateFormatSymbols);
+
+
+    static AutoPtr<IConcurrentMap> GetCachedNumberFormatData();
+
+    static AutoPtr<ISet> GetUTC_ZONE_IDS();
+
+
 
     Boolean UseDateFormatSymbols()
     {
         return false;
+    }
+
+    /**
+     * Formats a number with the specified minimum and maximum number of digits.
+     */
+    void ZeroPaddingNumber(
+        /* [in] */ Integer value,
+        /* [in] */ Integer minDigits,
+        /* [in] */ Integer maxDigits,
+        /* [in] */ IStringBuffer* buffer)
+    {}
+
+    String FormatWeekday(
+        /* [in] */ Integer count,
+        /* [in] */ Integer value,
+        /* [in] */ Boolean useDateFormatSymbols,
+        /* [in] */ Boolean standalone)
+    {
+        return String(nullptr);
+    }
+
+    String FormatMonth(
+        /* [in] */ Integer count,
+        /* [in] */ Integer value,
+        /* [in] */ Integer maxIntCount,
+        /* [in] */ IStringBuffer* buffer,
+        /* [in] */ Boolean useDateFormatSymbols,
+        /* [in] */ Boolean standalone)
+    {
+        return String(nullptr);
     }
 
 protected:
@@ -166,6 +200,68 @@ private:
      * deserialized.
      */
     AutoPtr<ILocale> mLocale;
+
+    // Map index into pattern character string to Calendar field number
+    static constexpr Integer PATTERN_INDEX_TO_CALENDAR_FIELD[] = {
+        ICalendar::ERA,
+        ICalendar::YEAR,
+        ICalendar::MONTH,
+        ICalendar::DATE,
+        ICalendar::HOUR_OF_DAY,
+        ICalendar::HOUR_OF_DAY,
+        ICalendar::MINUTE,
+        ICalendar::SECOND,
+        ICalendar::MILLISECOND,
+        ICalendar::DAY_OF_WEEK,
+        ICalendar::DAY_OF_YEAR,
+        ICalendar::DAY_OF_WEEK_IN_MONTH,
+        ICalendar::WEEK_OF_YEAR,
+        ICalendar::WEEK_OF_MONTH,
+        ICalendar::AM_PM,
+        ICalendar::HOUR,
+        ICalendar::HOUR,
+        ICalendar::ZONE_OFFSET,
+        ICalendar::ZONE_OFFSET,
+        CalendarBuilder::WEEK_YEAR,         // Pseudo Calendar field
+        CalendarBuilder::ISO_DAY_OF_WEEK,   // Pseudo Calendar field
+        ICalendar::ZONE_OFFSET,
+        // 'L' and 'c',
+        ICalendar::MONTH,
+        ICalendar::DAY_OF_WEEK
+    };
+
+    // Map index into pattern character string to DateFormat field number
+    static constexpr Integer PATTERN_INDEX_TO_DATE_FORMAT_FIELD[] = {
+        IDateFormat::ERA_FIELD,
+        IDateFormat::YEAR_FIELD,
+        IDateFormat::MONTH_FIELD,
+        IDateFormat::DATE_FIELD,
+        IDateFormat::HOUR_OF_DAY1_FIELD,
+        IDateFormat::HOUR_OF_DAY0_FIELD,
+        IDateFormat::MINUTE_FIELD,
+        IDateFormat::SECOND_FIELD,
+        IDateFormat::MILLISECOND_FIELD,
+        IDateFormat::DAY_OF_WEEK_FIELD,
+        IDateFormat::DAY_OF_YEAR_FIELD,
+        IDateFormat::DAY_OF_WEEK_IN_MONTH_FIELD,
+        IDateFormat::WEEK_OF_YEAR_FIELD,
+        IDateFormat::WEEK_OF_MONTH_FIELD,
+        IDateFormat::AM_PM_FIELD,
+        IDateFormat::HOUR1_FIELD,
+        IDateFormat::HOUR0_FIELD,
+        IDateFormat::TIMEZONE_FIELD,
+        IDateFormat::TIMEZONE_FIELD,
+        IDateFormat::YEAR_FIELD,
+        IDateFormat::DAY_OF_WEEK_FIELD,
+        IDateFormat::TIMEZONE_FIELD,
+        // 'L' and 'c'
+        IDateFormat::MONTH_FIELD,
+        IDateFormat::DAY_OF_WEEK_FIELD
+    };
+
+    static const IDateFormatField* PATTERN_INDEX_TO_DATE_FORMAT_FIELD_ID[24];
+
+    static const String UTC;
 };
 
 }

@@ -16,11 +16,13 @@
 
 #include "ccm/core/CoreUtils.h"
 #include "ccm/core/CStringBuffer.h"
+#include "ccm/text/CDateFormatField.h"
 #include "ccm/text/CParsePosition.h"
 #include "ccm/text/CSimpleDateFormat.h"
 #include "ccm/text/DateFormat.h"
 #include "ccm/text/DontCareFieldPosition.h"
 #include "ccm/util/CDate.h"
+#include "ccm/util/CHashMap.h"
 #include "ccm/util/CLocale.h"
 #include "ccm.core.INumber.h"
 #include "libcore/icu/ICU.h"
@@ -31,11 +33,14 @@ using ccm::core::CStringBuffer;
 using ccm::core::IID_ICloneable;
 using ccm::core::IID_IStringBuffer;
 using ccm::core::INumber;
+using ccm::io::E_INVALID_OBJECT_EXCEPTION;
 using ccm::io::IID_ISerializable;
 using ccm::util::CDate;
+using ccm::util::CHashMap;
 using ccm::util::CLocale;
 using ccm::util::IID_ICalendar;
 using ccm::util::IID_IDate;
+using ccm::util::IID_IMap;
 using libcore::icu::ICU;
 
 namespace ccm {
@@ -349,6 +354,222 @@ ECode DateFormat::Get(
         return NOERROR;
     }
     return CSimpleDateFormat::New(String("M/d/yy h:mm a"), IID_IDateFormat, (IInterface**)instance);
+}
+
+
+//--------------------------------------------------------------------
+
+Array<IDateFormatField*> DateFormat::Field::sCalendarToFieldMapping(ICalendar::FIELD_COUNT);
+
+static AutoPtr<IMap> CreateMap()
+{
+    AutoPtr<IMap> map;
+    CHashMap::New(18, IID_IMap, (IInterface**)&map);
+    return map;
+}
+
+AutoPtr<IMap> DateFormat::Field:: GetInstanceMap()
+{
+    static const AutoPtr<IMap> sInstanceMap = CreateMap();
+    return sInstanceMap;
+}
+
+CCM_INTERFACE_IMPL_2(DateFormat::Field, AttributedCharacterIteratorAttribute, IDateFormatField, IFormatField);
+
+ECode DateFormat::Field::Constructor(
+    /* [in] */ const String& name,
+    /* [in] */ Integer calendarField)
+{
+    AttributedCharacterIteratorAttribute::Constructor(name);
+    mCalendarField = calendarField;
+    CoclassID cid;
+    GetCoclassID(&cid);
+    if (cid == CID_CDateFormatField) {
+        GetInstanceMap()->Put(CoreUtils::Box(name), (IDateFormatField*)this);
+        if (calendarField >= 0) {
+            sCalendarToFieldMapping.Set(calendarField, (IDateFormatField*)this);
+        }
+    }
+    return NOERROR;
+}
+
+ECode DateFormat::Field::OfCalendarField(
+    /* [in] */ Integer calendarField,
+    /* [out] */ IDateFormatField** field)
+{
+    VALIDATE_NOT_NULL(field);
+
+    if (calendarField < 0 || calendarField >= sCalendarToFieldMapping.GetLength()) {
+        Logger::E("DateFormat::Field", "Unknown Calendar constant %d", calendarField);
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    *field = sCalendarToFieldMapping[calendarField];
+    REFCOUNT_ADD(*field);
+    return NOERROR;
+}
+
+ECode DateFormat::Field::GetCalendarField(
+    /* [out] */ Integer* calendarField)
+{
+    VALIDATE_NOT_NULL(calendarField);
+
+    *calendarField = mCalendarField;
+    return NOERROR;
+}
+
+ECode DateFormat::Field::ReadResolve(
+    /* [out] */ IInterface** obj)
+{
+    VALIDATE_NOT_NULL(obj);
+
+    CoclassID cid;
+    GetCoclassID(&cid);
+    if (cid != CID_CDateFormatField) {
+        Logger::E("DateFormat::Field", "subclass didn't correctly implement readResolve");
+        return E_INVALID_OBJECT_EXCEPTION;
+    }
+
+    GetInstanceMap()->Get(CoreUtils::Box(GetName()), obj);
+    if (*obj == nullptr) {
+        Logger::E("DateFormat::Field", "unknown attribute name");
+        return E_INVALID_OBJECT_EXCEPTION;
+    }
+    return NOERROR;
+}
+
+static AutoPtr<IDateFormatField> CreateField(
+    /* [in] */ const String& name,
+    /* [in] */ Integer calendarField)
+{
+    AutoPtr<IDateFormatField> field;
+    CDateFormatField::New(name, calendarField, IID_IDateFormatField, (IInterface**)&field);
+    return field;
+}
+
+const AutoPtr<IDateFormatField> DateFormat::Field::GetERA()
+{
+    static const AutoPtr<IDateFormatField> ERA =
+            CreateField(String("era"), ICalendar::ERA);
+    return ERA;
+}
+
+const AutoPtr<IDateFormatField> DateFormat::Field::GetYEAR()
+{
+    static const AutoPtr<IDateFormatField> YEAR =
+            CreateField(String("year"), ICalendar::YEAR);
+    return YEAR;
+}
+
+const AutoPtr<IDateFormatField> DateFormat::Field::GetMONTH()
+{
+    static const AutoPtr<IDateFormatField> MONTH =
+            CreateField(String("month"), ICalendar::MONTH);
+    return MONTH;
+}
+
+const AutoPtr<IDateFormatField> DateFormat::Field::GetDAY_OF_MONTH()
+{
+    static const AutoPtr<IDateFormatField> DAY_OF_MONTH =
+            CreateField(String("day of month"), ICalendar::DAY_OF_MONTH);
+    return DAY_OF_MONTH;
+}
+
+const AutoPtr<IDateFormatField> DateFormat::Field::GetHOUR_OF_DAY1()
+{
+    static const AutoPtr<IDateFormatField> HOUR_OF_DAY1 =
+            CreateField(String("hour of day 1"), -1);
+    return HOUR_OF_DAY1;
+}
+
+const AutoPtr<IDateFormatField> DateFormat::Field::GetHOUR_OF_DAY0()
+{
+    static const AutoPtr<IDateFormatField> HOUR_OF_DAY0 =
+            CreateField(String("hour of day"), ICalendar::HOUR_OF_DAY);
+    return HOUR_OF_DAY0;
+}
+
+const AutoPtr<IDateFormatField> DateFormat::Field::GetMINUTE()
+{
+    static const AutoPtr<IDateFormatField> MINUTE =
+            CreateField(String("minute"), ICalendar::MINUTE);
+    return MINUTE;
+}
+
+const AutoPtr<IDateFormatField> DateFormat::Field::GetSECOND()
+{
+    static const AutoPtr<IDateFormatField> SECOND =
+            CreateField(String("second"), ICalendar::SECOND);
+    return SECOND;
+}
+
+const AutoPtr<IDateFormatField> DateFormat::Field::GetMILLISECOND()
+{
+    static const AutoPtr<IDateFormatField> MILLISECOND =
+            CreateField(String("millisecond"), ICalendar::MILLISECOND);
+    return MILLISECOND;
+}
+
+const AutoPtr<IDateFormatField> DateFormat::Field::GetDAY_OF_WEEK()
+{
+    static const AutoPtr<IDateFormatField> DAY_OF_WEEK =
+            CreateField(String("day of week"), ICalendar::DAY_OF_WEEK);
+    return DAY_OF_WEEK;
+}
+
+const AutoPtr<IDateFormatField> DateFormat::Field::GetDAY_OF_YEAR()
+{
+    static const AutoPtr<IDateFormatField> DAY_OF_YEAR =
+            CreateField(String("day of year"), ICalendar::DAY_OF_YEAR);
+    return DAY_OF_YEAR;
+}
+
+const AutoPtr<IDateFormatField> DateFormat::Field::GetDAY_OF_WEEK_IN_MONTH()
+{
+    static const AutoPtr<IDateFormatField> DAY_OF_WEEK_IN_MONTH =
+            CreateField(String("day of week in month"), ICalendar::DAY_OF_WEEK_IN_MONTH);
+    return DAY_OF_WEEK_IN_MONTH;
+}
+
+const AutoPtr<IDateFormatField> DateFormat::Field::GetWEEK_OF_YEAR()
+{
+    static const AutoPtr<IDateFormatField> WEEK_OF_YEAR =
+            CreateField(String("week of year"), ICalendar::WEEK_OF_YEAR);
+    return WEEK_OF_YEAR;
+}
+
+const AutoPtr<IDateFormatField> DateFormat::Field::GetWEEK_OF_MONTH()
+{
+    static const AutoPtr<IDateFormatField> WEEK_OF_MONTH =
+            CreateField(String("week of month"), ICalendar::WEEK_OF_MONTH);
+    return WEEK_OF_MONTH;
+}
+
+const AutoPtr<IDateFormatField> DateFormat::Field::GetAM_PM()
+{
+    static const AutoPtr<IDateFormatField> AM_PM =
+            CreateField(String("am pm"), ICalendar::AM_PM);
+    return AM_PM;
+}
+
+const AutoPtr<IDateFormatField> DateFormat::Field::GetHOUR1()
+{
+    static const AutoPtr<IDateFormatField> HOUR1 =
+            CreateField(String("hour 1"), -1);
+    return HOUR1;
+}
+
+const AutoPtr<IDateFormatField> DateFormat::Field::GetHOUR0()
+{
+    static const AutoPtr<IDateFormatField> HOUR0 =
+            CreateField(String("hour"), ICalendar::HOUR);
+    return HOUR0;
+}
+
+const AutoPtr<IDateFormatField> DateFormat::Field::GetTIME_ZONE()
+{
+    static const AutoPtr<IDateFormatField> TIME_ZONE =
+            CreateField(String("time zone"), -1);
+    return TIME_ZONE;
 }
 
 }

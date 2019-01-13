@@ -14,45 +14,29 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_UTIL_ARRAYS_H__
-#define __CCM_UTIL_ARRAYS_H__
+#ifndef __CCM_TEXT_CDATEFORMATFIELD_H__
+#define __CCM_TEXT_CDATEFORMATFIELD_H__
 
-#include "ccm.util.IList.h"
+#include "ccm/text/DateFormat.h"
+#include "_ccm_text_CDateFormatField.h"
 
 namespace ccm {
-namespace util {
+namespace text {
 
-class Arrays
+Coclass(CDateFormatField)
+    , public DateFormat::Field
 {
 public:
-    static ECode CheckOffsetAndCount(
-        /* [in] */ Integer arrayLength,
-        /* [in] */ Integer offset,
-        /* [in] */ Integer count);
+    CCM_OBJECT_DECL();
 
-    static ECode CopyOf(
-        /* [in] */ const Array<String> & original,
-        /* [in] */ Integer newLength,
-        /* [out, callee] */ Array<String>* newArray);
-
-    static ECode CopyOf(
-        /* [in] */ const Array<IInterface*>& original,
-        /* [in] */ Integer newLength,
-        /* [out, callee] */ Array<IInterface*>* newArray);
-
-    static ECode AsList(
-        /* [in] */ const Array<IInterface*>& a,
-        /* [out] */ IList** list)
-    {
-        return NOERROR;
-    }
-
-private:
-    Arrays()
-    {}
+    static ECode New(
+        /* [in] */ const String& name,
+        /* [in] */ Integer calendarField,
+        /* [in] */ const InterfaceID& iid,
+        /* [out] */ ccm::IInterface** object);
 };
 
 }
 }
 
-#endif // __CCM_UTIL_ARRAYS_H__
+#endif // __CCM_TEXT_CDATEFORMATFIELD_H__

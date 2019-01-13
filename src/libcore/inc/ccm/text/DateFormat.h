@@ -18,12 +18,16 @@
 #define __CCM_TEXT_DATEFORMAT_H__
 
 #include "ccm/core/SyncObject.h"
+#include "ccm/text/AttributedCharacterIteratorAttribute.h"
 #include "ccm.core.ICloneable.h"
 #include "ccm.core.IStringBuffer.h"
 #include "ccm.io.ISerializable.h"
+#include "ccm.text.IAttributedCharacterIteratorAttribute.h"
 #include "ccm.text.IDateFormat.h"
+#include "ccm.text.IDateFormatField.h"
 #include "ccm.text.IFieldPosition.h"
 #include "ccm.text.IFormat.h"
+#include "ccm.text.IFormatField.h"
 #include "ccm.text.INumberFormat.h"
 #include "ccm.text.IParsePosition.h"
 #include "ccm.util.ICalendar.h"
@@ -50,6 +54,75 @@ class DateFormat
     , public ISerializable
     , public ICloneable
 {
+public:
+    class Field
+        : public AttributedCharacterIteratorAttribute
+        , public IDateFormatField
+        , public IFormatField
+    {
+    public:
+        CCM_INTERFACE_DECL();
+
+        static ECode OfCalendarField(
+            /* [in] */ Integer calendarField,
+            /* [out] */ IDateFormatField** field);
+
+        ECode GetCalendarField(
+            /* [out] */ Integer* calendarField) override;
+
+        static const AutoPtr<IDateFormatField> GetERA();
+
+        static const AutoPtr<IDateFormatField> GetYEAR();
+
+        static const AutoPtr<IDateFormatField> GetMONTH();
+
+        static const AutoPtr<IDateFormatField> GetDAY_OF_MONTH();
+
+        static const AutoPtr<IDateFormatField> GetHOUR_OF_DAY1();
+
+        static const AutoPtr<IDateFormatField> GetHOUR_OF_DAY0();
+
+        static const AutoPtr<IDateFormatField> GetMINUTE();
+
+        static const AutoPtr<IDateFormatField> GetSECOND();
+
+        static const AutoPtr<IDateFormatField> GetMILLISECOND();
+
+        static const AutoPtr<IDateFormatField> GetDAY_OF_WEEK();
+
+        static const AutoPtr<IDateFormatField> GetDAY_OF_YEAR();
+
+        static const AutoPtr<IDateFormatField> GetDAY_OF_WEEK_IN_MONTH();
+
+        static const AutoPtr<IDateFormatField> GetWEEK_OF_YEAR();
+
+        static const AutoPtr<IDateFormatField> GetWEEK_OF_MONTH();
+
+        static const AutoPtr<IDateFormatField> GetAM_PM();
+
+        static const AutoPtr<IDateFormatField> GetHOUR1();
+
+        static const AutoPtr<IDateFormatField> GetHOUR0();
+
+        static const AutoPtr<IDateFormatField> GetTIME_ZONE();
+
+    protected:
+        ECode Constructor(
+            /* [in] */ const String& name,
+            /* [in] */ Integer calendarField);
+
+        ECode ReadResolve(
+            /* [out] */ IInterface** obj) override;
+
+    private:
+        static AutoPtr<IMap> GetInstanceMap();
+
+    private:
+        static Array<IDateFormatField*> sCalendarToFieldMapping;
+
+        Integer mCalendarField;
+    };
+
 public:
     CCM_INTERFACE_DECL();
 

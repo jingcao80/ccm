@@ -26,6 +26,7 @@ include_directories(
 set(SOURCES
     AttributedCharacterIteratorAttribute.cpp
     AttributedString.cpp
+    CalendarBuilder.cpp
     CharacterIteratorFieldDelegate.cpp
     DateFormat.cpp
     DateFormatSymbols.cpp

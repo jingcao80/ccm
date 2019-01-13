@@ -27,6 +27,20 @@ namespace ccm {
 namespace text {
 
 /*
+ * @Involve interface ccm::text::IFormatField
+ * @Involve interface ccm::text::IAttributedCharacterIteratorAttribute;
+ */
+[
+    uuid(09b0ec7d-890c-4dda-80dd-e2c32807eda6),
+    version(0.1.0)
+]
+interface IDateFormatField
+{
+    GetCalendarField(
+        [out] Integer* calendarField);
+}
+
+/*
  * @Involve interface ccm::text::IFormat;
  * @Involve interface ccm::io::ISerializable;
  * @Involve interface ccm::core::ICloneable;

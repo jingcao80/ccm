@@ -53,7 +53,20 @@ public:
         return nullptr;
     }
 
+    Array<Array<String>> GetZoneStringsWrapper()
+    {
+        return Array<Array<String>>::Null();
+    }
+
+    static DateFormatSymbols* From(
+        /* [in] */ IDateFormatSymbols* obj);
+
 public:
+    /**
+     * Indicates that zoneStrings is set externally with setZoneStrings() method.
+     */
+    Boolean mIsZoneStringsSet = false;
+
     /**
      * Unlocalized date-time pattern characters. For example: 'y', 'd', etc.
      * All locales use the same these unlocalized pattern characters.
@@ -88,6 +101,12 @@ public:
     static const Integer PATTERN_MONTH_STANDALONE = 22; // L
     static const Integer PATTERN_STANDALONE_DAY_OF_WEEK = 23; // c
 };
+
+inline DateFormatSymbols* DateFormatSymbols::From(
+    /* [in] */ IDateFormatSymbols* obj)
+{
+    return (DateFormatSymbols*)obj;
+}
 
 }
 }

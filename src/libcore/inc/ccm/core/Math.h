@@ -26,11 +26,15 @@ namespace core {
 class Math
 {
 public:
+    static Double Log(
+        /* [in] */ Double a);
+
     static Double Ceil(
         /* [in] */ Double a);
 
-    static Double Log(
-        /* [in] */ Double a);
+    static Double Pow(
+        /* [in] */ Double a,
+        /* [in] */ Double b);
 
     COM_PUBLIC static Double Random();
 
@@ -96,16 +100,23 @@ public:
     COM_PUBLIC static const Long LONG_POWERS_OF_TEN[];
 };
 
+inline Double Math::Log(
+    /* [in] */ Double a)
+{
+    return log(a);
+}
+
 inline Double Math::Ceil(
         /* [in] */ Double a)
 {
     return ceil(a);
 }
 
-inline Double Math::Log(
-    /* [in] */ Double a)
+inline Double Math::Pow(
+    /* [in] */ Double a,
+    /* [in] */ Double b)
 {
-    return log(a);
+    return pow(a, b);
 }
 
 inline Long Math::Abs(

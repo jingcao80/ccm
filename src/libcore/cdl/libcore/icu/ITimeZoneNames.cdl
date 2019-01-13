@@ -14,6 +14,46 @@
 // limitations under the License.
 //=========================================================================
 
-include "libcore/icu/IICU.cdl"
-include "libcore/icu/ILocaleData.cdl"
-include "libcore/icu/ITimeZoneNames.cdl"
+namespace libcore {
+namespace icu {
+
+enum ITimeZoneNamesNameType
+{
+    /**
+     * Long display name, such as "Eastern Time".
+     */
+    ONG_GENERIC,
+
+    /**
+     * Long display name for standard time, such as "Eastern Standard Time".
+     */
+    LONG_STANDARD,
+
+    /**
+     * Long display name for daylight saving time, such as "Eastern Daylight Time".
+     */
+    LONG_DAYLIGHT,
+
+    /**
+     * Short display name, such as "ET".
+     */
+    SHORT_GENERIC,
+
+    /**
+     * Short display name for standard time, such as "EST".
+     */
+    SHORT_STANDARD,
+
+    /**
+     * Short display name for daylight saving time, such as "EDT".
+     */
+    SHORT_DAYLIGHT,
+
+    /**
+     * Exemplar location name, such as "Los Angeles".
+     */
+    EXEMPLAR_LOCATION,
+}
+
+}
+}

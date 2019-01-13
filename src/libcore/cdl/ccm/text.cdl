@@ -78,6 +78,20 @@ coclass CAttributedString
 }
 
 [
+    uuid(43ac1b62-c9d8-4345-a293-f27cf49427f0),
+    version(0.1.0)
+]
+coclass CDateFormatField
+{
+    Constructor() = delete;
+
+    interface IDateFormatField;
+    interface IFormatField;
+    interface IAttributedCharacterIteratorAttribute;
+    interface ISerializable;
+}
+
+[
     uuid(5dd60879-0252-4319-a926-70517a5484e1),
     version(0.1.0)
 ]

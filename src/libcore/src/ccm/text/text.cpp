@@ -16,6 +16,7 @@
 
 #include "ccm/text/CAttributedCharacterIteratorAttribute.h"
 #include "ccm/text/CAttributedString.h"
+#include "ccm/text/CDateFormatField.h"
 #include "ccm/text/CSimpleDateFormat.h"
 #include "ccm/text/CParsePosition.h"
 #include <ccmapi.h>
@@ -52,6 +53,35 @@ ECode CAttributedCharacterIteratorAttribute::New(
 };
 
 CCM_OBJECT_IMPL(CAttributedString);
+
+CCM_OBJECT_IMPL(CDateFormatField);
+ECode CDateFormatField::New(
+    /* [in] */ const String& name,
+    /* [in] */ Integer calendarField,
+    /* [in] */ const InterfaceID& iid,
+    /* [out] */ ccm::IInterface** object)
+{
+    AutoPtr<IClassObject> clsObject;
+    ECode ec = CoAcquireClassFactory(CID_CDateFormatField, nullptr, &clsObject);
+    if (FAILED(ec)) return ec;
+
+    void* addr = calloc(sizeof(CDateFormatField), 1);
+    if (addr == nullptr) return E_OUT_OF_MEMORY_ERROR;
+
+    CDateFormatField* _obj = new(addr) CDateFormatField();
+    ec = _obj->Constructor(name, calendarField);
+    if (FAILED(ec)) {
+        free(addr);
+        return ec;
+    }
+    AutoPtr<IMetaComponent> comp;
+    clsObject->GetMetadate(&comp);
+    _obj->AttachMetadata(comp, String("ccm::text::CDateFormatField"));
+    *object = _obj->Probe(iid);
+    REFCOUNT_ADD(*object);
+    return NOERROR;
+}
+
 CCM_OBJECT_IMPL(CSimpleDateFormat);
 CCM_OBJECT_IMPL(CParsePosition);
 

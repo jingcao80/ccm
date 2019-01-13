@@ -18,19 +18,28 @@
 #include "ccm/core/CoreUtils.h"
 #include "ccm/core/CStringBuffer.h"
 #include "ccm/core/CStringBuilder.h"
+#include "ccm/core/Math.h"
 #include "ccm/core/System.h"
 #include "ccm/text/CharacterIteratorFieldDelegate.h"
 #include "ccm/text/DateFormatSymbols.h"
 #include "ccm/text/MessageFormat.h"
 #include "ccm/text/NumberFormat.h"
+#include "ccm/util/Arrays.h"
 #include "ccm/util/Calendar.h"
 #include "ccm/util/CDate.h"
+#include "ccm/util/CHashSet.h"
+#include "ccm/util/Collections.h"
 #include "ccm/util/Locale.h"
 #include "ccm/util/TimeZone.h"
+#include "ccm/util/calendar/CalendarUtils.h"
 #include "ccm/util/concurrent/CConcurrentHashMap.h"
 #include "ccm.core.INumber.h"
+#include "ccm.util.ICollection.h"
+#include "ccm.util.IGregorianCalendar.h"
+#include "ccm.util.IList.h"
 #include "ccm.util.IMap.h"
 #include "libcore/icu/LocaleData.h"
+#include "libcore/icu/TimeZoneNames.h"
 #include "libcore.icu.ILocaleData.h"
 #include <ccmlogger.h>
 
@@ -41,17 +50,28 @@ using ccm::core::E_NULL_POINTER_EXCEPTION;
 using ccm::core::IID_IStringBuffer;
 using ccm::core::IID_IStringBuilder;
 using ccm::core::INumber;
+using ccm::core::Math;
 using ccm::core::System;
+using ccm::util::Arrays;
 using ccm::util::Calendar;
 using ccm::util::CDate;
+using ccm::util::CHashSet;
+using ccm::util::Collections;
+using ccm::util::ICollection;
 using ccm::util::IID_IDate;
+using ccm::util::IID_ISet;
+using ccm::util::IGregorianCalendar;
+using ccm::util::IList;
 using ccm::util::IMap;
 using ccm::util::Locale;
 using ccm::util::TimeZone;
+using ccm::util::calendar::CalendarUtils;
 using ccm::util::concurrent::CConcurrentHashMap;
 using ccm::util::concurrent::IID_IConcurrentMap;
 using libcore::icu::ILocaleData;
+using libcore::icu::ITimeZoneNamesNameType;
 using libcore::icu::LocaleData;
+using libcore::icu::TimeZoneNames;
 
 namespace ccm {
 namespace text {
@@ -71,6 +91,63 @@ AutoPtr<IConcurrentMap> SimpleDateFormat::GetCachedNumberFormatData()
     static const AutoPtr<IConcurrentMap> sCachedNumberFormatData = CreateMap();
     return sCachedNumberFormatData;
 }
+
+static AutoPtr<ISet> CreateSet()
+{
+    Array<String> zones(8);
+    zones[0] = "Etc/UCT";
+    zones[1] = "Etc/UTC";
+    zones[2] = "Etc/Universal";
+    zones[3] = "Etc/Zulu";
+    zones[4] = "UCT";
+    zones[5] = "UTC";
+    zones[6] = "Universal";
+    zones[7] = "Zulu";
+    AutoPtr<IList> c;
+    Arrays::AsList(CoreUtils::Box(zones).ToInterfaces(), &c);
+    AutoPtr<ISet> s;
+    CHashSet::New(ICollection::Probe(c), IID_ISet, (IInterface**)&s);
+    return Collections::CreateUnmodifiableSet(s);
+}
+
+AutoPtr<ISet> SimpleDateFormat::GetUTC_ZONE_IDS()
+{
+    static const AutoPtr<ISet> UTC_ZONE_IDS = CreateSet();
+    return UTC_ZONE_IDS;
+}
+
+constexpr Integer SimpleDateFormat::PATTERN_INDEX_TO_CALENDAR_FIELD[];
+constexpr Integer SimpleDateFormat::PATTERN_INDEX_TO_DATE_FORMAT_FIELD[];
+const IDateFormatField* SimpleDateFormat::PATTERN_INDEX_TO_DATE_FORMAT_FIELD_ID[24] =
+{
+    DateFormat::Field::GetERA(),
+    DateFormat::Field::GetYEAR(),
+    DateFormat::Field::GetMONTH(),
+    DateFormat::Field::GetDAY_OF_MONTH(),
+    DateFormat::Field::GetHOUR_OF_DAY1(),
+    DateFormat::Field::GetHOUR_OF_DAY0(),
+    DateFormat::Field::GetMINUTE(),
+    DateFormat::Field::GetSECOND(),
+    DateFormat::Field::GetMILLISECOND(),
+    DateFormat::Field::GetDAY_OF_WEEK(),
+    DateFormat::Field::GetDAY_OF_YEAR(),
+    DateFormat::Field::GetDAY_OF_WEEK_IN_MONTH(),
+    DateFormat::Field::GetWEEK_OF_YEAR(),
+    DateFormat::Field::GetWEEK_OF_MONTH(),
+    DateFormat::Field::GetAM_PM(),
+    DateFormat::Field::GetHOUR1(),
+    DateFormat::Field::GetHOUR0(),
+    DateFormat::Field::GetTIME_ZONE(),
+    DateFormat::Field::GetTIME_ZONE(),
+    DateFormat::Field::GetYEAR(),
+    DateFormat::Field::GetDAY_OF_WEEK(),
+    DateFormat::Field::GetTIME_ZONE(),
+    // 'L' and 'c'
+    DateFormat::Field::GetMONTH(),
+    DateFormat::Field::GetDAY_OF_WEEK()
+};
+
+const String SimpleDateFormat::UTC("UTC");
 
 CCM_INTERFACE_IMPL_1(SimpleDateFormat, DateFormat, ISimpleDateFormat);
 
@@ -460,6 +537,292 @@ ECode SimpleDateFormat::FormatToCharacterIterator(
     String text;
     sb->ToString(&text);
     return delegate->GetIterator(text, it);
+}
+
+ECode SimpleDateFormat::SubFormat(
+    /* [in] */ Integer patternCharIndex,
+    /* [in] */ Integer count,
+    /* [in] */ IFormatFieldDelegate* delegate,
+    /* [in] */ IStringBuffer* buffer,
+    /* [in] */ Boolean useDateFormatSymbols)
+{
+    Integer maxIntCount = IInteger::MAX_VALUE;
+    String current;
+    Integer beginOffset;
+    buffer->GetLength(&beginOffset);
+
+    Integer field = PATTERN_INDEX_TO_CALENDAR_FIELD[patternCharIndex];
+    Integer value;
+    if (field == CalendarBuilder::WEEK_YEAR) {
+        Boolean supported;
+        if (mCalendar->IsWeekDateSupported(&supported), supported) {
+            mCalendar->GetWeekYear(&value);
+        }
+        else {
+            patternCharIndex = DateFormatSymbols::PATTERN_YEAR;
+            field = PATTERN_INDEX_TO_CALENDAR_FIELD[patternCharIndex];
+            mCalendar->Get(field, &value);
+        }
+    }
+    else if (field == CalendarBuilder::ISO_DAY_OF_WEEK) {
+        mCalendar->Get(ICalendar::DAY_OF_WEEK, &value);
+        value = CalendarBuilder::ToISODayOfWeek(value);
+    }
+    else {
+        mCalendar->Get(field, &value);
+    }
+
+    Integer style = (count >= 4) ? ICalendar::LONG : ICalendar::SHORT;
+    if (!useDateFormatSymbols && field != CalendarBuilder::ISO_DAY_OF_WEEK) {
+        mCalendar->GetDisplayName(field, style, mLocale, &current);
+    }
+
+    // Note: zeroPaddingNumber() assumes that maxDigits is either
+    // 2 or maxIntCount. If we make any changes to this,
+    // zeroPaddingNumber() must be fixed.
+
+    switch (patternCharIndex) {
+        case DateFormatSymbols::PATTERN_ERA: // 'G'
+        {
+            if (useDateFormatSymbols) {
+                Array<String> eras;
+                mFormatData->GetEras(&eras);
+                if (value < eras.GetLength()) {
+                    current = eras[value];
+                }
+            }
+            if (current.IsNull()) {
+                current = "";
+            }
+            break;
+        }
+
+        case DateFormatSymbols::PATTERN_WEEK_YEAR: // 'Y'
+        case DateFormatSymbols::PATTERN_YEAR: // 'y'
+        {
+            if (IGregorianCalendar::Probe(mCalendar) != nullptr) {
+                if (count != 2) {
+                    ZeroPaddingNumber(value, count, maxIntCount, buffer);
+                }
+                else {
+                    ZeroPaddingNumber(value, 2, 2, buffer);
+                } // clip 1996 to 96
+            }
+            else {
+                if (current.IsNull()) {
+                    ZeroPaddingNumber(value, style == ICalendar::LONG ? 1 : count,
+                            maxIntCount, buffer);
+                }
+            }
+            break;
+        }
+
+        case DateFormatSymbols::PATTERN_MONTH: // 'M'
+        {
+            current = FormatMonth(count, value, maxIntCount, buffer, useDateFormatSymbols,
+                    false /* standalone */);
+            break;
+        }
+
+        case DateFormatSymbols::PATTERN_MONTH_STANDALONE: // 'L'
+        {
+            current = FormatMonth(count, value, maxIntCount, buffer, useDateFormatSymbols,
+                    true /* standalone */);
+            break;
+        }
+
+        case DateFormatSymbols::PATTERN_HOUR_OF_DAY1: // 'k' 1-based.  eg, 23:59 + 1 hour =>> 24:59
+        {
+            if (current.IsNull()) {
+                if (value == 0) {
+                    mCalendar->GetMaximum(ICalendar::HOUR_OF_DAY, &value);
+                    ZeroPaddingNumber(value + 1, count, maxIntCount, buffer);
+                }
+                else {
+                    ZeroPaddingNumber(value, count, maxIntCount, buffer);
+                }
+            }
+            break;
+        }
+
+        case DateFormatSymbols::PATTERN_DAY_OF_WEEK: // 'E'
+        {
+            current = FormatWeekday(count, value, useDateFormatSymbols, false /* standalone */);
+            break;
+        }
+
+        case DateFormatSymbols::PATTERN_STANDALONE_DAY_OF_WEEK: // 'c'
+        {
+            current = FormatWeekday(count, value, useDateFormatSymbols, true /* standalone */);
+            break;
+        }
+
+        case DateFormatSymbols::PATTERN_AM_PM: // 'a'
+        {
+            if (useDateFormatSymbols) {
+                Array<String> ampm;
+                mFormatData->GetAmPmStrings(&ampm);
+                current = ampm[value];
+            }
+            break;
+        }
+
+        case DateFormatSymbols::PATTERN_HOUR1: // 'h' 1-based.  eg, 11PM + 1 hour =>> 12 AM
+        {
+            if (current.IsNull()) {
+                if (value == 0) {
+                    mCalendar->GetLeastMaximum(ICalendar::HOUR, &value);
+                    ZeroPaddingNumber(value + 1, count, maxIntCount, buffer);
+                }
+                else {
+                    ZeroPaddingNumber(value, count, maxIntCount, buffer);
+                }
+            }
+            break;
+        }
+
+        case DateFormatSymbols::PATTERN_ZONE_NAME: // 'z'
+        {
+            if (current.IsNull()) {
+                AutoPtr<ITimeZone> tz;
+                mCalendar->GetTimeZone(&tz);
+                mCalendar->Get(ICalendar::DST_OFFSET, &value);
+                Boolean daylight = (value != 0);
+                String zoneString;
+                if (DateFormatSymbols::From(mFormatData)->mIsZoneStringsSet) {
+                    Integer tzstyle = count < 4 ? ITimeZone::SHORT : ITimeZone::LONG;
+                    Array<Array<String>> zoneStrings = DateFormatSymbols::From(mFormatData)->GetZoneStringsWrapper();
+                    String tzID;
+                    tz->GetID(&tzID);
+                    TimeZoneNames::GetDisplayName(zoneStrings, tzID, daylight, tzstyle, &zoneString);
+                }
+                else {
+                    String tzID;
+                    tz->GetID(&tzID);
+                    Boolean contained;
+                    if (GetUTC_ZONE_IDS()->Contains(CoreUtils::Box(tzID), &contained), contained) {
+                        zoneString = UTC;
+                    }
+                    else {
+                        ITimeZoneNamesNameType nameType;
+                        if (count < 4) {
+                            nameType = daylight
+                                    ? ITimeZoneNamesNameType::SHORT_DAYLIGHT
+                                    : ITimeZoneNamesNameType::SHORT_STANDARD;
+                        }
+                        else {
+                            nameType =  daylight
+                                    ? ITimeZoneNamesNameType::LONG_DAYLIGHT
+                                    : ITimeZoneNamesNameType::LONG_STANDARD;
+                        }
+                        CHECK(0);
+                        // String canonicalID =
+                    }
+                }
+                if (!zoneString.IsNull()) {
+                    buffer->Append(zoneString);
+                }
+                else {
+                    Integer zoneOffset, dstOffset;
+                    mCalendar->Get(ICalendar::ZONE_OFFSET, &zoneOffset);
+                    mCalendar->Get(ICalendar::DST_OFFSET, &dstOffset);
+                    Integer offsetMillis = zoneOffset + dstOffset;
+                    buffer->Append(TimeZone::CreateGmtOffsetString(true, true, offsetMillis));
+                }
+            }
+            break;
+        }
+
+        case DateFormatSymbols::PATTERN_ZONE_VALUE: // 'Z' ("-/+hhmm" form)
+        {
+            Integer zoneOffset, dstOffset;
+            mCalendar->Get(ICalendar::ZONE_OFFSET, &zoneOffset);
+            mCalendar->Get(ICalendar::DST_OFFSET, &dstOffset);
+            value = zoneOffset + dstOffset;
+            Boolean includeSeparator = (count >= 4);
+            Boolean includeGmt = (count >= 4);
+            buffer->Append(TimeZone::CreateGmtOffsetString(includeGmt, includeSeparator, value));
+
+            break;
+        }
+
+        case DateFormatSymbols::PATTERN_ISO_ZONE: // 'X'
+        {
+            Integer zoneOffset, dstOffset;
+            mCalendar->Get(ICalendar::ZONE_OFFSET, &zoneOffset);
+            mCalendar->Get(ICalendar::DST_OFFSET, &dstOffset);
+            value = zoneOffset + dstOffset;
+
+            if (value == 0) {
+                buffer->AppendChar('Z');
+                break;
+            }
+
+            value /= 60000;
+            if (value >= 0) {
+                buffer->AppendChar('+');
+            }
+            else {
+                buffer->AppendChar('-');
+                value = -value;
+            }
+
+            CalendarUtils::Sprintf0d(buffer, value / 60, 2);
+            if (count == 1) {
+                break;
+            }
+
+            if (count == 3) {
+                buffer->Append(':');
+            }
+            CalendarUtils::Sprintf0d(buffer, value % 60, 2);
+            break;
+        }
+
+        case DateFormatSymbols::PATTERN_MILLISECOND: // 'S'
+        {
+            // Fractional seconds must be treated specially. We must always convert the parsed
+            // value into a fractional second [0, 1) and then widen it out to the appropriate
+            // formatted size. For example, an initial value of 789 will be converted
+            // 0.789 and then become ".7" (S) or ".78" (SS) or "0.789" (SSS) or "0.7890" (SSSS)
+            // in the resulting formatted output.
+            if (current.IsNull()) {
+                value = (Integer)(((Double) value / 1000) * Math::Pow(10, count));
+                ZeroPaddingNumber(value, count, count, buffer);
+            }
+            break;
+        }
+
+        default:
+        // case DateFormatSymbols::PATTERN_DAY_OF_MONTH:         // 'd'
+        // case DateFormatSymbols::PATTERN_HOUR_OF_DAY0:         // 'H' 0-based.  eg, 23:59 + 1 hour =>> 00:59
+        // case DateFormatSymbols::PATTERN_MINUTE:               // 'm'
+        // case DateFormatSymbols::PATTERN_SECOND:               // 's'
+        // case DateFormatSymbols::PATTERN_DAY_OF_YEAR:          // 'D'
+        // case DateFormatSymbols::PATTERN_DAY_OF_WEEK_IN_MONTH: // 'F'
+        // case DateFormatSymbols::PATTERN_WEEK_OF_YEAR:         // 'w'
+        // case DateFormatSymbols::PATTERN_WEEK_OF_MONTH:        // 'W'
+        // case DateFormatSymbols::PATTERN_HOUR0:                // 'K' eg, 11PM + 1 hour =>> 0 AM
+        // case DateFormatSymbols::PATTERN_ISO_DAY_OF_WEEK:      // 'u' pseudo field, Monday = 1, ..., Sunday = 7
+        {
+            if (current.IsNull()) {
+                ZeroPaddingNumber(value, count, maxIntCount, buffer);
+            }
+            break;
+        }
+    } // switch (patternCharIndex)
+
+    if (!current.IsNull()) {
+        buffer->Append(current);
+    }
+
+    Integer fieldID = PATTERN_INDEX_TO_DATE_FORMAT_FIELD[patternCharIndex];
+    IDateFormatField* f = const_cast<IDateFormatField*>(
+            PATTERN_INDEX_TO_DATE_FORMAT_FIELD_ID[patternCharIndex]);
+
+    Integer length;
+    buffer->GetLength(&length);
+    return delegate->Formatted(fieldID, IFormatField::Probe(f), f, beginOffset, length, buffer);
 }
 
 }
