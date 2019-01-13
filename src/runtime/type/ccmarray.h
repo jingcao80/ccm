@@ -113,6 +113,8 @@ public:
     Array Clone() const;
 
     static Array Null();
+
+    Array<IInterface*> ToInterfaces();
 };
 
 template<class T>
@@ -500,6 +502,18 @@ template<class T>
 Array<T> Array<T>::Null()
 {
     return Array<T>();
+}
+
+template<class T>
+Array<IInterface*> Array<T>::ToInterfaces()
+{
+    if (TypeTraits<T>::isPointer) {
+        typedef typename TypeTraits<T>::BareType BareType;
+        if (SUPERSUBCLASS(IInterface, BareType)) {
+            return *reinterpret_cast<Array<IInterface*>*>(this);
+        }
+    }
+    return Array<IInterface*>::Null();
 }
 
 }

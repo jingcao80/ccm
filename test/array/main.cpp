@@ -15,9 +15,13 @@
 //=========================================================================
 
 #include "ccmobject.h"
+#include "ccm.core.ICharSequence.h"
+#include <core/CoreUtils.h>
 #include <gtest/gtest.h>
 
 using namespace ccm;
+using ccm::core::CoreUtils;
+using ccm::core::ICharSequence;
 
 class CA
     : public Object
@@ -167,6 +171,30 @@ TEST(ArrayTest, ObjectArrayArrayClearTest)
     EXPECT_EQ(CA::ADD_COUNT, arraySize * size);
     EXPECT_EQ(CA::RELEASE_COUNT, arraySize * size);
     EXPECT_EQ(CA::DEST_COUNT, arraySize * size);
+}
+
+TEST(ArrayTest, ICharSequenceArrayToInterfaceArrayTest)
+{
+    Array<String> strArray(3);
+    strArray[0] = "hello";
+    strArray[1] = "world";
+    strArray[2] = "helloworld";
+    Array<ICharSequence*> seqArray = CoreUtils::Box(strArray);
+    String str0, str1, str2;
+    seqArray[0]->ToString(&str0);
+    seqArray[1]->ToString(&str1);
+    seqArray[2]->ToString(&str2);
+    EXPECT_STREQ(str0.string(), "hello");
+    EXPECT_STREQ(str1.string(), "world");
+    EXPECT_STREQ(str2.string(), "helloworld");
+
+    Array<IInterface*> itfArray = seqArray.ToInterfaces();
+    ICharSequence::Probe(seqArray[0])->ToString(&str0);
+    ICharSequence::Probe(seqArray[1])->ToString(&str1);
+    ICharSequence::Probe(seqArray[2])->ToString(&str2);
+    EXPECT_STREQ(str0.string(), "hello");
+    EXPECT_STREQ(str1.string(), "world");
+    EXPECT_STREQ(str2.string(), "helloworld");
 }
 
 int main(int argc, char **argv)

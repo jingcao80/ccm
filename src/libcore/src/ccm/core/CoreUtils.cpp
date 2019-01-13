@@ -66,6 +66,21 @@ AutoPtr<ICharSequence> CoreUtils::Box(
     return seq;
 }
 
+Array<ICharSequence*> CoreUtils::Box(
+    /* [in] */ const Array<String>& strArray)
+{
+    if (strArray.IsEmpty()) {
+        return Array<ICharSequence*>::Null();
+    }
+
+    Long size = strArray.GetLength();
+    Array<ICharSequence*> seqArray(size);
+    for (Long i = 0; i < size; i++) {
+        seqArray.Set(i, Box(strArray[i]));
+    }
+    return seqArray;
+}
+
 Char CoreUtils::Unbox(
     /* [in] */ IChar* ch)
 {

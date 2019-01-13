@@ -44,6 +44,9 @@ public:
     COM_PUBLIC static AutoPtr<ICharSequence> Box(
         /* [in] */ const String& str);
 
+    COM_PUBLIC static Array<ICharSequence*> Box(
+        /* [in] */ const Array<String>& strArray);
+
     COM_PUBLIC static Char Unbox(
         /* [in] */ IChar* ch);
 
