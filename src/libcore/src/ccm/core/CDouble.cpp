@@ -50,7 +50,7 @@ ECode CDouble::ShortValue(
     return NOERROR;
 }
 
-ECode CDouble::IntValue(
+ECode CDouble::IntegerValue(
     /* [out] */ Integer* value)
 {
     VALIDATE_NOT_NULL(value);

@@ -190,7 +190,7 @@ ECode AtomicInteger::ToString(
     return NOERROR;
 }
 
-ECode AtomicInteger::IntValue(
+ECode AtomicInteger::IntegerValue(
     /* [out] */ Integer* value)
 {
     return Get(value);

@@ -50,7 +50,7 @@ ECode CInteger::ShortValue(
     return NOERROR;
 }
 
-ECode CInteger::IntValue(
+ECode CInteger::IntegerValue(
     /* [out] */ Integer* value)
 {
     VALIDATE_NOT_NULL(value);

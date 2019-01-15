@@ -92,7 +92,7 @@ public:
     ECode ToString(
         /* [out] */ String* desc) override;
 
-    ECode IntValue(
+    ECode IntegerValue(
         /* [out] */ Integer* value) override;
 
     ECode LongValue(

@@ -50,7 +50,7 @@ public:
     ECode ShortValue(
         /* [out] */ Short* value) override;
 
-    ECode IntValue(
+    ECode IntegerValue(
         /* [out] */ Integer* value) override;
 
     ECode LongValue(

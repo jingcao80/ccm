@@ -17,6 +17,11 @@
 namespace ccm {
 namespace core {
 
+/*
+ * @Involve interface ccm::core::INumber
+ * @Involve interface ccm::core::IComparable
+ * @Involve interface ccm::io::ISerializable
+ */
 [
     uuid(b0acf41b-e045-461e-88a4-64c1486ac78a),
     version(0.1.0)
@@ -53,7 +58,7 @@ interface ILong
     GetValue(
         [out] Long* value);
 
-    IntValue(
+    IntegerValue(
         [out] Integer* value);
 
     LongValue(

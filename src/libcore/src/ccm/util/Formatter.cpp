@@ -798,7 +798,7 @@ ECode Formatter::FormatSpecifier::PrintInteger(
     }
     else if (IInteger::Probe(arg) != nullptr) {
         Integer value;
-        IInteger::Probe(arg)->IntValue(&value);
+        IInteger::Probe(arg)->IntegerValue(&value);
         return Print(value, l);
     }
     else if (ILong::Probe(arg) != nullptr) {
@@ -884,7 +884,7 @@ ECode Formatter::FormatSpecifier::PrintCharacter(
     }
     else if (IInteger::Probe(arg) != nullptr) {
         Integer i;
-        IInteger::Probe(arg)->IntValue(&i);
+        IInteger::Probe(arg)->IntegerValue(&i);
         if (Character::IsValidCodePoint(i)) {
             s = String::ValueOfChar((Char)i);
         }

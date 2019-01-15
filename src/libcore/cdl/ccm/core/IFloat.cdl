@@ -17,6 +17,11 @@
 namespace ccm {
 namespace core {
 
+/*
+ * @Involve interface ccm::core::INumber
+ * @Involve interface ccm::core::IComparable
+ * @Involve interface ccm::io::ISerializable
+ */
 [
     uuid(b39e1aff-9fc5-45b2-850b-a0c070167916),
     version(0.1.0)
@@ -75,7 +80,7 @@ interface IFloat
     GetValue(
         [out] Float* value);
 
-    IntValue(
+    IntegerValue(
         [out] Integer* value);
 
     IsInfinite(

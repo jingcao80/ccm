@@ -50,7 +50,7 @@ ECode CByte::ShortValue(
     return NOERROR;
 }
 
-ECode CByte::IntValue(
+ECode CByte::IntegerValue(
     /* [out] */ Integer* value)
 {
     VALIDATE_NOT_NULL(value);

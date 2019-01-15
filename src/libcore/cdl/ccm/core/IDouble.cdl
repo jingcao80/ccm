@@ -17,6 +17,11 @@
 namespace ccm {
 namespace core {
 
+/*
+ * @Involve interface ccm::core::INumber
+ * @Involve interface ccm::core::IComparable
+ * @Involve interface ccm::io::ISerializable
+ */
 [
     uuid(6aeffb3e-f757-44b6-a71f-2ddc607f11c8),
     version(0.1.0)
@@ -91,7 +96,7 @@ interface IDouble
     GetValue(
         [out] Double* value);
 
-    IntValue(
+    IntegerValue(
         [out] Integer* value);
 
     IsInfinite(

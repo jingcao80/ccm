@@ -35,7 +35,7 @@ interface INumber
     FloatValue(
         [out] Float* value);
 
-    IntValue(
+    IntegerValue(
         [out] Integer* value);
 
     LongValue(

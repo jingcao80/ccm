@@ -50,7 +50,7 @@ ECode CFloat::ShortValue(
     return NOERROR;
 }
 
-ECode CFloat::IntValue(
+ECode CFloat::IntegerValue(
     /* [out] */ Integer* value)
 {
     VALIDATE_NOT_NULL(value);

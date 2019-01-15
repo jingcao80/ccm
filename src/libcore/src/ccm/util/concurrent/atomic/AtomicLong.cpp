@@ -190,7 +190,7 @@ ECode AtomicLong::ToString(
     return NOERROR;
 }
 
-ECode AtomicLong::IntValue(
+ECode AtomicLong::IntegerValue(
     /* [out] */ Integer* value)
 {
     VALIDATE_NOT_NULL(value);

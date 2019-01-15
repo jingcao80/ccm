@@ -50,7 +50,7 @@ ECode CLong::ShortValue(
     return NOERROR;
 }
 
-ECode CLong::IntValue(
+ECode CLong::IntegerValue(
     /* [out] */ Integer* value)
 {
     VALIDATE_NOT_NULL(value);

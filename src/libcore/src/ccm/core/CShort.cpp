@@ -50,7 +50,7 @@ ECode CShort::ShortValue(
     return NOERROR;
 }
 
-ECode CShort::IntValue(
+ECode CShort::IntegerValue(
     /* [out] */ Integer* value)
 {
     VALIDATE_NOT_NULL(value);
