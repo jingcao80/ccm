@@ -14,6 +14,11 @@
 // limitations under the License.
 //=========================================================================
 
+interface ccm::core::INumber;
+interface ccm::core::IStringBuffer;
+interface ccm::text::IFieldPosition;
+interface ccm::text::IParsePosition;
+
 namespace ccm {
 namespace text {
 
@@ -28,8 +33,33 @@ namespace text {
 ]
 interface INumberFormat
 {
+    Format(
+        [in] Long number,
+        [in, out] IStringBuffer* toAppendTo,
+        [in] IFieldPosition* pos);
+
+    Format(
+        [in] Double number,
+        [in, out] IStringBuffer* toAppendTo,
+        [in] IFieldPosition* pos);
+
+    Parse(
+        [in] String source,
+        [out] INumber** number);
+
+    Parse(
+        [in] String source,
+        [in] IParsePosition* parsePosition,
+        [out] INumber** number);
+
     SetGroupingUsed(
         [in] Boolean value);
+
+    SetMaximumIntegerDigits(
+        [in] Integer newValue);
+
+    SetMinimumIntegerDigits(
+        [in] Integer newValue);
 }
 
 }

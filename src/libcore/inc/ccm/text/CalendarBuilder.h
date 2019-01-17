@@ -30,18 +30,91 @@ class CalendarBuilder
     : public SyncObject
 {
 public:
+    CalendarBuilder();
+
+    void Set(
+        /* [in] */ Integer index,
+        /* [in] */ Integer value);
+
+    void AddYear(
+        /* [in] */ Integer value);
+
+    Boolean IsSet(
+        /* [in] */ Integer index);
+
+    void Clear(
+        /* [in] */ Integer index);
+
+    void Establish(
+        /* [in] */ ICalendar* cal);
+
     static Integer ToISODayOfWeek(
         /* [in] */ Integer calendarDayOfWeek);
+
+    static Integer ToCalendarDayOfWeek(
+        /* [in] */ Integer isoDayOfWeek);
+
+    static Boolean IsValidDayOfWeek(
+        /* [in] */ Integer dayOfWeek);
 
 public:
     static constexpr Integer WEEK_YEAR = ICalendar::FIELD_COUNT;
     static constexpr Integer ISO_DAY_OF_WEEK = 1000; // pseudo field index
+
+private:
+    static constexpr Integer UNSET = 0;
+    static constexpr Integer COMPUTED = 1;
+    static constexpr Integer MINIMUM_USER_STAMP = 2;
+
+    static constexpr Integer MAX_FIELD = ICalendar::FIELD_COUNT + 1;
+
+    Array<Integer> mField;
+    Integer mNextStamp;
+    Integer mMaxFieldIndex;
 };
+
+inline CalendarBuilder::CalendarBuilder()
+    : mField(MAX_FIELD * 2)
+    , mNextStamp(MINIMUM_USER_STAMP)
+    , mMaxFieldIndex(-1)
+{}
+
+inline void CalendarBuilder::AddYear(
+    /* [in] */ Integer value)
+{
+    mField[MAX_FIELD + ICalendar::YEAR] += value;
+    mField[MAX_FIELD + WEEK_YEAR] += value;
+}
+
+inline Boolean CalendarBuilder::IsSet(
+    /* [in] */ Integer index)
+{
+    if (index == ISO_DAY_OF_WEEK) {
+        index = ICalendar::DAY_OF_WEEK;
+    }
+    return mField[index] > UNSET;
+}
+
+inline void CalendarBuilder::Clear(
+    /* [in] */ Integer index)
+{
+    if (index == ISO_DAY_OF_WEEK) {
+        index = ICalendar::DAY_OF_WEEK;
+    }
+    mField[index] = UNSET;
+    mField[MAX_FIELD + index] = 0;
+}
 
 inline Integer CalendarBuilder::ToISODayOfWeek(
     /* [in] */ Integer calendarDayOfWeek)
 {
     return calendarDayOfWeek == ICalendar::SUNDAY ? 7 : calendarDayOfWeek -1 ;
+}
+
+inline Boolean CalendarBuilder::IsValidDayOfWeek(
+    /* [in] */ Integer dayOfWeek)
+{
+    return dayOfWeek > 0 && dayOfWeek <= 7;
 }
 
 }

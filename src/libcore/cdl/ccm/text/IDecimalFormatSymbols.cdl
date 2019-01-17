@@ -22,31 +22,16 @@ namespace text {
  * @Involve interface ccm::core::ICloneable
  */
 [
-    uuid(b2e89609-5020-4f1a-ae3b-3406c4021da1),
+    uuid(e7a8ca7c-5f0b-4d11-b50e-25d3593720d8),
     version(0.1.0)
 ]
-interface IDateFormatSymbols
+interface IDecimalFormatSymbols
 {
-    GetAmPmStrings(
-        [out, callee] Array<String>* ampm);
+    GetMinusSign(
+        [out] Char* minusSign);
 
-    GetEras(
-        [out, callee] Array<String>* eras);
-
-    GetLocalPatternChars(
-        [out] String* localPatternChars);
-
-    GetMonths(
-        [out, callee] Array<String>* months);
-
-    GetShortMonths(
-        [out, callee] Array<String>* months);
-
-    GetShortWeekdays(
-        [out, callee] Array<String>* weekdays);
-
-    GetWeekdays(
-        [out, callee] Array<String>* weekdays);
+    GetZeroDigit(
+        [out] Char* zeroDigit);
 }
 
 }

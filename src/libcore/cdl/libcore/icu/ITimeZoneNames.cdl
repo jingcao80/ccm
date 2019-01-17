@@ -55,5 +55,13 @@ enum ITimeZoneNamesNameType
     EXEMPLAR_LOCATION,
 }
 
+[
+    uuid(c209b4df-11e7-4ba0-a8d8-5f8b116fadee),
+    version(0.1.0)
+]
+interface ITimeZoneNames
+{
+}
+
 }
 }

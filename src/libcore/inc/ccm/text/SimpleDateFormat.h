@@ -23,14 +23,17 @@
 #include "ccm.core.IStringBuffer.h"
 #include "ccm.text.IFieldPosition.h"
 #include "ccm.text.IFormatFieldDelegate.h"
+#include "ccm.text.INumberFormat.h"
 #include "ccm.text.ISimpleDateFormat.h"
 #include "ccm.util.ISet.h"
 #include "ccm.util.concurrent.IConcurrentMap.h"
+#include "libcore.icu.ITimeZoneNames.h"
 
 using ccm::core::IStringBuilder;
 using ccm::core::IStringBuffer;
 using ccm::util::ISet;
 using ccm::util::concurrent::IConcurrentMap;
+using libcore::icu::ITimeZoneNames;
 
 namespace ccm {
 namespace text {
@@ -70,11 +73,41 @@ public:
         /* [in] */ IInterface* obj,
         /* [out] */ IAttributedCharacterIterator** it) override;
 
+    ECode Parse(
+        /* [in] */ const String& text,
+        /* [in] */ IParsePosition* pos,
+        /* [out] */ IDate** date) override;
+
+    ECode ToPattern(
+        /* [out] */ String* pattern) override;
+
+    ECode ToLocalizedPattern(
+        /* [out] */ String* pattern) override;
+
+    ECode ApplyPattern(
+        /* [in] */ const String& pattern) override;
+
+    ECode ApplyLocalizedPattern(
+        /* [in] */ const String& pattern) override;
+
+    ECode SetDateFormatSymbols(
+        /* [in] */ IDateFormatSymbols* newFormatSymbols) override;
+
+    ECode GetHashCode(
+        /* [out] */ Integer* hash) override;
+
+    ECode Equals(
+        /* [in] */ IInterface* obj,
+        /* [out] */ Boolean* same) override;
+
 protected:
     ECode Constructor(
         /* [in] */ Integer timeStyle,
         /* [in] */ Integer dateStyle,
         /* [in] */ ILocale* locale);
+
+    ECode CloneImpl(
+        /* [in] */ SimpleDateFormat* newObj);
 
 private:
     ECode Initialize(
@@ -109,17 +142,19 @@ private:
         /* [in] */ IStringBuffer* buffer,
         /* [in] */ Boolean useDateFormatSymbols);
 
+    String FormatWeekday(
+        /* [in] */ Integer count,
+        /* [in] */ Integer value,
+        /* [in] */ Boolean useDateFormatSymbols,
+        /* [in] */ Boolean standalone);
 
-    static AutoPtr<IConcurrentMap> GetCachedNumberFormatData();
-
-    static AutoPtr<ISet> GetUTC_ZONE_IDS();
-
-
-
-    Boolean UseDateFormatSymbols()
-    {
-        return false;
-    }
+    String FormatMonth(
+        /* [in] */ Integer count,
+        /* [in] */ Integer value,
+        /* [in] */ Integer maxIntCount,
+        /* [in] */ IStringBuffer* buffer,
+        /* [in] */ Boolean useDateFormatSymbols,
+        /* [in] */ Boolean standalone);
 
     /**
      * Formats a number with the specified minimum and maximum number of digits.
@@ -128,28 +163,107 @@ private:
         /* [in] */ Integer value,
         /* [in] */ Integer minDigits,
         /* [in] */ Integer maxDigits,
-        /* [in] */ IStringBuffer* buffer)
-    {}
+        /* [in] */ IStringBuffer* buffer);
 
-    String FormatWeekday(
+    ECode ParseInternal(
+        /* [in] */ const String& text,
+        /* [in] */ IParsePosition* pos,
+        /* [out] */ IDate** date);
+
+    Integer MatchString(
+        /* [in] */ const String& text,
+        /* [in] */ Integer start,
+        /* [in] */ Integer field,
+        /* [in] */ Array<String>& data,
+        /* [in] */ CalendarBuilder* calb);
+
+    Integer MatchString(
+        /* [in] */ const String& text,
+        /* [in] */ Integer start,
+        /* [in] */ Integer field,
+        /* [in] */ IMap* data,
+        /* [in] */ CalendarBuilder* calb);
+
+    Integer MatchZoneString(
+        /* [in] */ const String& text,
+        /* [in] */ Integer start,
+        /* [in] */ Array<String>& zoneNames);
+
+    Integer SubParseZoneString(
+        /* [in] */ const String& text,
+        /* [in] */ Integer start,
+        /* [in] */ CalendarBuilder* calb);
+
+    AutoPtr<ITimeZoneNames> GetTimeZoneNames();
+
+    Integer SubParseZoneStringFromICU(
+        /* [in] */ const String& text,
+        /* [in] */ Integer start,
+        /* [in] */ CalendarBuilder* calb);
+
+    Integer SubParseZoneStringFromSymbols(
+        /* [in] */ const String& text,
+        /* [in] */ Integer start,
+        /* [in] */ CalendarBuilder* calb);
+
+    Integer SubParseNumericZone(
+        /* [in] */ const String& text,
+        /* [in] */ Integer start,
+        /* [in] */ Integer sign,
+        /* [in] */ Integer count,
+        /* [in] */ Boolean colonRequired,
+        /* [in] */ CalendarBuilder* calb);
+
+    Boolean IsDigit(
+        /* [in] */ Char c);
+
+    Integer SubParse(
+        /* [in] */ const String& text,
+        /* [in] */ Integer start,
+        /* [in] */ Integer patternCharIndex,
+        /* [in] */ Integer count,
+        /* [in] */ Boolean obeyCount,
+        /* [in] */ Array<Boolean>& ambiguousYear,
+        /* [in] */ IParsePosition* origPos,
+        /* [in] */ Boolean useFollowingMinusSignAsDelimiter,
+        /* [in] */ CalendarBuilder* calb);
+
+    Integer ParseMonth(
+        /* [in] */ const String& text,
         /* [in] */ Integer count,
         /* [in] */ Integer value,
+        /* [in] */ Integer start,
+        /* [in] */ Integer field,
+        /* [in] */ IParsePosition* pos,
         /* [in] */ Boolean useDateFormatSymbols,
-        /* [in] */ Boolean standalone)
-    {
-        return String(nullptr);
-    }
+        /* [in] */ Boolean standalone,
+        /* [in] */ CalendarBuilder* out);
 
-    String FormatMonth(
-        /* [in] */ Integer count,
-        /* [in] */ Integer value,
-        /* [in] */ Integer maxIntCount,
-        /* [in] */ IStringBuffer* buffer,
+    Integer ParseWeekday(
+        /* [in] */ const String& text,
+        /* [in] */ Integer start,
+        /* [in] */ Integer field,
         /* [in] */ Boolean useDateFormatSymbols,
-        /* [in] */ Boolean standalone)
-    {
-        return String(nullptr);
-    }
+        /* [in] */ Boolean standalone,
+        /* [in] */ CalendarBuilder* out);
+
+    String GetCalendarName();
+
+    Boolean UseDateFormatSymbols();
+
+    Boolean IsGregorianCalendar();
+
+    ECode TranslatePattern(
+        /* [in] */ const String& pattern,
+        /* [in] */ const String& from,
+        /* [in] */ const String& to,
+        /* [out] */ String* result);
+
+    void CheckNegativeNumberExpression();
+
+    static AutoPtr<IConcurrentMap> GetCachedNumberFormatData();
+
+    static AutoPtr<ISet> GetUTC_ZONE_IDS();
 
 protected:
     /**
@@ -168,6 +282,20 @@ private:
      */
     String mPattern;
 
+    AutoPtr<INumberFormat> mOriginalNumberFormat;
+    String mOriginalNumberPattern;
+
+    /**
+     * The minus sign to be used with format and parse.
+     */
+    Char mMinusSign = '-';
+
+    /**
+     * True when a negative sign follows a number.
+     * (True as default in Arabic.)
+     */
+    Boolean mHasFollowingMinusSign = false;
+
     /**
      * The compiled pattern.
      */
@@ -178,6 +306,11 @@ private:
      */
     const static Integer TAG_QUOTE_ASCII_CHAR = 100;
     const static Integer TAG_QUOTE_CHARS = 101;
+
+    /**
+     * Locale dependent digit zero.
+     */
+    Char mZeroDigit = 0;
 
     /**
      * The symbols used by this formatter for week names, month names,
@@ -191,7 +324,13 @@ private:
      */
     AutoPtr<IDate> mDefaultCenturyStart;
 
-    Integer mDefaultCenturyStartYear;
+    Integer mDefaultCenturyStartYear = 0;
+
+    static constexpr Integer MILLIS_PER_MINUTE = 60 * 1000;
+
+    // For time zones that have no names, use strings GMT+minutes and
+    // GMT-minutes. For instance, in France the time zone is GMT+60.
+    static const String GMT;
 
     /**
      * The Locale used to instantiate this
@@ -200,6 +339,11 @@ private:
      * deserialized.
      */
     AutoPtr<ILocale> mLocale;
+
+    /**
+     * ICU TimeZoneNames used to format and parse time zone names.
+     */
+    AutoPtr<ITimeZoneNames> mTimeZoneNames;
 
     // Map index into pattern character string to Calendar field number
     static constexpr Integer PATTERN_INDEX_TO_CALENDAR_FIELD[] = {

@@ -17,16 +17,28 @@
 #ifndef __LIBCORE_ICU_TIMEZONENAMES_H__
 #define __LIBCORE_ICU_TIMEZONENAMES_H__
 
+#include "ccm/core/SyncObject.h"
 #include "ccm.util.ILocale.h"
+#include "libcore.icu.ITimeZoneNames.h"
 
+using ccm::core::SyncObject;
 using ccm::util::ILocale;
+using libcore::icu::ITimeZoneNames;
 
 namespace libcore {
 namespace icu {
 
 class TimeZoneNames
+    : public SyncObject
+    , public ITimeZoneNames
 {
 public:
+    static AutoPtr<ITimeZoneNames> GetInstance(
+        /* [in] */ ILocale* locale)
+    {
+        return nullptr;
+    }
+
     static ECode GetDisplayName(
         /* [in] */ const Array<Array<String>>& zoneStrings,
         /* [in] */ const String& id,

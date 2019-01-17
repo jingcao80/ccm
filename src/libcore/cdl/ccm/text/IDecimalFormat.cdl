@@ -14,39 +14,28 @@
 // limitations under the License.
 //=========================================================================
 
+interface ccm::text::IDecimalFormatSymbols;
+
 namespace ccm {
 namespace text {
 
 /*
- * @Involve interface ccm::io::ISerializable
- * @Involve interface ccm::core::ICloneable
+ * @Involve interface ccm::text::INumberFormat;
+ * @Involve interface ccm::text::IFormat;
+ * @Involve interface ccm::io::ISerializable;
+ * @Involve interface ccm::core::ICloneable;
  */
 [
-    uuid(b2e89609-5020-4f1a-ae3b-3406c4021da1),
+    uuid(b1615f6c-db57-44fd-aa14-fd68dcc56992),
     version(0.1.0)
 ]
-interface IDateFormatSymbols
+interface IDecimalFormat
 {
-    GetAmPmStrings(
-        [out, callee] Array<String>* ampm);
+    GetDecimalFormatSymbols(
+        [out] IDecimalFormatSymbols** symbols);
 
-    GetEras(
-        [out, callee] Array<String>* eras);
-
-    GetLocalPatternChars(
-        [out] String* localPatternChars);
-
-    GetMonths(
-        [out, callee] Array<String>* months);
-
-    GetShortMonths(
-        [out, callee] Array<String>* months);
-
-    GetShortWeekdays(
-        [out, callee] Array<String>* weekdays);
-
-    GetWeekdays(
-        [out, callee] Array<String>* weekdays);
+    ToPattern(
+        [out] String* pattern);
 }
 
 }

@@ -14,6 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
+interface ccm::text::IDateFormatSymbols;
 interface ccm::util::IDate;
 
 namespace ccm {
@@ -31,11 +32,26 @@ namespace text {
 ]
 interface ISimpleDateFormat
 {
+    ApplyLocalizedPattern(
+        [in] String pattern);
+
+    ApplyPattern(
+        [in] String pattern);
+
     Get2DigitYearStart(
         [out] IDate** startDate);
 
     Set2DigitYearStart(
         [in] IDate* startDate);
+
+    SetDateFormatSymbols(
+        [in] IDateFormatSymbols* newFormatSymbols);
+
+    ToLocalizedPattern(
+        [out] String* pattern);
+
+    ToPattern(
+        [out] String* pattern);
 }
 
 }

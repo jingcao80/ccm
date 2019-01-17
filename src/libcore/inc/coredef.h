@@ -27,6 +27,16 @@
             it->Next(&obj); \
             Type element = (Type)TypeCastFunc(obj);
 
+#define FOR_EACH_2(Type, element, TypeCastFuncInner, TypeCastFuncOuter, container) \
+    { \
+        AutoPtr<IIterator> it; \
+        container->GetIterator(&it); \
+        Boolean hasNext; \
+        while (it->HasNext(&hasNext), hasNext) { \
+            AutoPtr<IInterface> obj; \
+            it->Next(&obj); \
+            Type element = (Type)TypeCastFuncOuter(TypeCastFuncInner(obj));
+
 #define END_FOR_EACH() }}
 
 #endif // __CCM_COREDEF_H__

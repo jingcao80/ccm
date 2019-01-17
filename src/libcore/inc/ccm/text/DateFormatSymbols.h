@@ -53,6 +53,52 @@ public:
         return nullptr;
     }
 
+    Array<String> GetTinyMonths()
+    {
+        return Array<String>::Null();
+    }
+
+    Array<String> GetStandAloneMonths()
+    {
+        return Array<String>::Null();
+    }
+
+    Array<String> GetShortStandAloneMonths()
+    {
+        return Array<String>::Null();
+    }
+
+    Array<String> GetTinyStandAloneMonths()
+    {
+        return Array<String>::Null();
+    }
+
+    Array<String> GetTinyWeekdays()
+    {
+        return Array<String>::Null();
+    }
+
+    Array<String> GetStandAloneWeekdays()
+    {
+        return Array<String>::Null();
+    }
+
+    Array<String> GetShortStandAloneWeekdays()
+    {
+        return Array<String>::Null();
+    }
+
+    Array<String> GetTinyStandAloneWeekdays()
+    {
+        return Array<String>::Null();
+    }
+
+    Integer GetZoneIndex(
+        /* [in] */ const String& ID)
+    {
+        return -1;
+    }
+
     Array<Array<String>> GetZoneStringsWrapper()
     {
         return Array<Array<String>>::Null();
