@@ -27,13 +27,13 @@
 #include "ccm.text.ISimpleDateFormat.h"
 #include "ccm.util.ISet.h"
 #include "ccm.util.concurrent.IConcurrentMap.h"
-#include "libcore.icu.ITimeZoneNames.h"
+#include "pisces.icu.text.ITimeZoneNames.h"
 
 using ccm::core::IStringBuilder;
 using ccm::core::IStringBuffer;
 using ccm::util::ISet;
 using ccm::util::concurrent::IConcurrentMap;
-using libcore::icu::ITimeZoneNames;
+using pisces::icu::text::ITimeZoneNames;
 
 namespace ccm {
 namespace text {

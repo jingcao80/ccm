@@ -14,38 +14,34 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __LIBCORE_ICU_TIMEZONENAMES_H__
-#define __LIBCORE_ICU_TIMEZONENAMES_H__
+#ifndef __PISCES_ICU_TEXT_H__
+#define __PISCES_ICU_TEXT_H__
 
+#include "core/SyncObject.h"
 #include "ccm.util.ILocale.h"
+#include "pisces.icu.text.ITimeZoneNames.h"
 
+using ccm::core::SyncObject;
 using ccm::util::ILocale;
 
-namespace libcore {
+namespace pisces {
 namespace icu {
+namespace text {
 
 class TimeZoneNames
+    : public SyncObject
+    , public ITimeZoneNames
 {
 public:
-    static ECode GetDisplayName(
-        /* [in] */ const Array<Array<String>>& zoneStrings,
-        /* [in] */ const String& id,
-        /* [in] */ Boolean daylight,
-        /* [in] */ Integer style,
-        /* [out] */ String* name)
+    static AutoPtr<ITimeZoneNames> GetInstance(
+        /* [in] */ ILocale* locale)
     {
-        return NOERROR;
+        return nullptr;
     }
-
-    static ECode GetZoneStrings(
-        /* [in] */ ILocale* locale,
-        /* [out, callee] */ Array<Array<String>>* zoneStrings);
-
-private:
-    TimeZoneNames();
 };
 
 }
 }
+}
 
-#endif // __LIBCORE_ICU_TIMEZONENAMES_H__
+#endif // __PISCES_ICU_TEXT_H__

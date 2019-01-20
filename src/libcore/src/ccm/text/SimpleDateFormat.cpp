@@ -48,6 +48,7 @@
 #include "libcore/icu/LocaleData.h"
 #include "libcore/icu/TimeZoneNames.h"
 #include "libcore.icu.ILocaleData.h"
+#include "pisces/icu/text/TimeZoneNames.h"
 #include <ccmlogger.h>
 
 using ccm::core::Character;
@@ -79,9 +80,9 @@ using ccm::util::calendar::CalendarUtils;
 using ccm::util::concurrent::CConcurrentHashMap;
 using ccm::util::concurrent::IID_IConcurrentMap;
 using libcore::icu::ILocaleData;
-using libcore::icu::ITimeZoneNamesNameType;
 using libcore::icu::LocaleData;
-using libcore::icu::TimeZoneNames;
+using pisces::icu::text::TimeZoneNames;
+using pisces::icu::text::ITimeZoneNamesNameType;
 
 namespace ccm {
 namespace text {
@@ -705,7 +706,7 @@ ECode SimpleDateFormat::SubFormat(
                     Array<Array<String>> zoneStrings = DateFormatSymbols::From(mFormatData)->GetZoneStringsWrapper();
                     String tzID;
                     tz->GetID(&tzID);
-                    TimeZoneNames::GetDisplayName(zoneStrings, tzID, daylight, tzstyle, &zoneString);
+                    libcore::icu::TimeZoneNames::GetDisplayName(zoneStrings, tzID, daylight, tzstyle, &zoneString);
                 }
                 else {
                     String tzID;

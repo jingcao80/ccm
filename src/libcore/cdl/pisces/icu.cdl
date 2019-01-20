@@ -14,38 +14,4 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __LIBCORE_ICU_TIMEZONENAMES_H__
-#define __LIBCORE_ICU_TIMEZONENAMES_H__
-
-#include "ccm.util.ILocale.h"
-
-using ccm::util::ILocale;
-
-namespace libcore {
-namespace icu {
-
-class TimeZoneNames
-{
-public:
-    static ECode GetDisplayName(
-        /* [in] */ const Array<Array<String>>& zoneStrings,
-        /* [in] */ const String& id,
-        /* [in] */ Boolean daylight,
-        /* [in] */ Integer style,
-        /* [out] */ String* name)
-    {
-        return NOERROR;
-    }
-
-    static ECode GetZoneStrings(
-        /* [in] */ ILocale* locale,
-        /* [out, callee] */ Array<Array<String>>* zoneStrings);
-
-private:
-    TimeZoneNames();
-};
-
-}
-}
-
-#endif // __LIBCORE_ICU_TIMEZONENAMES_H__
+include "pisces/icu/text/ITimeZoneNames.cdl"

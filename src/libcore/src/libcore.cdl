@@ -34,6 +34,7 @@ include "ccmrt/system.cdl"
 include "libcore/icu.cdl"
 include "libcore/io.cdl"
 include "libcore/util.cdl"
+include "pisces/icu.cdl"
 include "pisces/system.cdl"
 
 }

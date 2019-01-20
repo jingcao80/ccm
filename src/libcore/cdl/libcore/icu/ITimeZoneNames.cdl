@@ -17,51 +17,5 @@
 namespace libcore {
 namespace icu {
 
-enum ITimeZoneNamesNameType
-{
-    /**
-     * Long display name, such as "Eastern Time".
-     */
-    ONG_GENERIC,
-
-    /**
-     * Long display name for standard time, such as "Eastern Standard Time".
-     */
-    LONG_STANDARD,
-
-    /**
-     * Long display name for daylight saving time, such as "Eastern Daylight Time".
-     */
-    LONG_DAYLIGHT,
-
-    /**
-     * Short display name, such as "ET".
-     */
-    SHORT_GENERIC,
-
-    /**
-     * Short display name for standard time, such as "EST".
-     */
-    SHORT_STANDARD,
-
-    /**
-     * Short display name for daylight saving time, such as "EDT".
-     */
-    SHORT_DAYLIGHT,
-
-    /**
-     * Exemplar location name, such as "Los Angeles".
-     */
-    EXEMPLAR_LOCATION,
-}
-
-[
-    uuid(c209b4df-11e7-4ba0-a8d8-5f8b116fadee),
-    version(0.1.0)
-]
-interface ITimeZoneNames
-{
-}
-
 }
 }
