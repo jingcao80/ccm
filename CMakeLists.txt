@@ -26,27 +26,6 @@ set(INC_DIR ${BIN_DIR}/inc)
 
 include(${PROJECT_DIR}/build/common.cmake)
 
-add_custom_target(
-    clobber
-    COMMAND
-        "${CMAKE_COMMAND}"
-        -E remove_directory ${CMAKE_SOURCE_DIR}/bin
-    COMMAND
-        "${CMAKE_COMMAND}"
-        -E make_directory ${CMAKE_SOURCE_DIR}/bin
-    COMMAND
-        "${CMAKE_COMMAND}"
-        -E make_directory ${CMAKE_SOURCE_DIR}/bin/inc
-    COMMAND
-        "make" clean)
-
-add_custom_target(
-    rebuild
-    DEPENDS
-        clobber
-    COMMAND
-        "make")
-
 add_subdirectory(external)
 add_subdirectory(src)
 add_subdirectory(test)

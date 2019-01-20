@@ -27,18 +27,18 @@ CCM stands for C++ Component Model. It can:
 ### How to build
 1. <code>cd ccm</code>
 2. <code>source build/envsetup.sh</code>
-2. <code>mkdir out</code>
-3. <code>cd out</code>
-4. <code>cmake ..</code> for release build  
-    or  
-   <code>cmake -DCMAKE_BUILD_TYPE=Release ..</code>code> for release build  
-    or  
-   <code>cmake -DCMAKE_BUILD_TYPE=Debug ..</code>code> for debug build
-5. <code>make</code>
+4. <code>build</code> or <code>build -j*n*</code> for release build
 
-#### Rebuild
-1. <code>make clobber</code>
-2. <code>make</code> or <code> make -j*n*</code>
+### Change build type
+1. <code>release</code> for release build
+    or
+   <code>debug</code> for debug build
+
+### Rebuild
+1. <code>rebuild</code> or <code>rebuild -j*n*</code>
+
+### Clobber
+1. <code>clobber</code>
 
 ### Run sample
 1. <code>cd ccm/bin</code>
