@@ -6,4 +6,4 @@ install:
   - sudo apt-get install -y libicu-dev
 language: cpp
 script:
-  source $TRAVIS_BUILD_DIR/build/envsetup.sh && mkdir out && cd out && cmake .. && make && make clobber && make -j8
+  source $TRAVIS_BUILD_DIR/build/envsetup.sh && build && clobber && build -j8
