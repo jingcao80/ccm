@@ -41,10 +41,10 @@ interface IRandom
     NextGaussian(
         [out] Double* value);
 
-    NextInt(
+    NextInteger(
         [out] Integer* value);
 
-    NextInt(
+    NextInteger(
         [in] Integer bound,
         [out] Integer* value);
 

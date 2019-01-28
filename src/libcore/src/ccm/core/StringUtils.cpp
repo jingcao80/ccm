@@ -43,7 +43,7 @@ ECode StringUtils::ParseByte(
     VALIDATE_NOT_NULL(value);
 
     Integer i;
-    FAIL_RETURN(ParseInt(s, radix, &i));
+    FAIL_RETURN(ParseInteger(s, radix, &i));
     if (i < IByte::MIN_VALUE || i > IByte::MAX_VALUE) {
         Logger::E("StringUtils", "Value out of range. Value:\"%s\" Radix:%d",
                 s.string(), radix);
@@ -61,7 +61,7 @@ ECode StringUtils::ParseShort(
     VALIDATE_NOT_NULL(value);
 
     Integer i;
-    FAIL_RETURN(ParseInt(s, radix, &i));
+    FAIL_RETURN(ParseInteger(s, radix, &i));
     if (i < IShort::MIN_VALUE || i > IShort::MAX_VALUE) {
         Logger::E("StringUtils", "Value out of range. Value:\"%s\" Radix:%d",
                 s.string(), radix);
@@ -71,7 +71,7 @@ ECode StringUtils::ParseShort(
     return NOERROR;
 }
 
-ECode StringUtils::ParseInt(
+ECode StringUtils::ParseInteger(
     /* [in] */ const String& s,
     /* [in] */ Integer radix,
     /* [out] */ Integer* value)

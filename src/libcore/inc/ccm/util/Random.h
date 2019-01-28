@@ -49,10 +49,10 @@ public:
     ECode NextBytes(
         /* [out] */ Array<Byte>& bytes) override;
 
-    ECode NextInt(
+    ECode NextInteger(
         /* [out] */ Integer* value) override;
 
-    ECode NextInt(
+    ECode NextInteger(
         /* [in] */ Integer bound,
         /* [out] */ Integer* value) override;
 

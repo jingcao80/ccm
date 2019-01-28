@@ -79,7 +79,7 @@ void Math::SetRandomSeedInternal(
 Integer Math::RandomIntInternal()
 {
     Integer rv;
-    GetRandomNumberGenerator()->NextInt(&rv);
+    GetRandomNumberGenerator()->NextInteger(&rv);
     return rv;
 }
 

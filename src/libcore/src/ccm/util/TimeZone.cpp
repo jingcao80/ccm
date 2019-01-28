@@ -357,13 +357,13 @@ ECode TimeZone::GetCustomTimeZone(
     Integer minute = 0;
     String part;
     m->Group(1, &part);
-    ECode ec = StringUtils::ParseInt(part, &hour);
+    ECode ec = StringUtils::ParseInteger(part, &hour);
     if (ec == E_NUMBER_FORMAT_EXCEPTION) {
         return E_ASSERTION_ERROR;
     }
     m->Group(3, &part);
     if (!part.IsNull()) {
-        ec = StringUtils::ParseInt(part, &minute);
+        ec = StringUtils::ParseInteger(part, &minute);
         if (ec == E_NUMBER_FORMAT_EXCEPTION) {
             return E_ASSERTION_ERROR;
         }

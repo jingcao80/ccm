@@ -38,6 +38,9 @@ public:
     COM_PUBLIC static AutoPtr<IInteger> Box(
         /* [in] */ Integer i);
 
+    COM_PUBLIC static AutoPtr<ILong> Box(
+        /* [in] */ Long l);
+
     COM_PUBLIC static AutoPtr<IDouble> Box(
         /* [in] */ Double d);
 
@@ -55,6 +58,9 @@ public:
 
     COM_PUBLIC static Integer Unbox(
         /* [in] */ IInteger* io);
+
+    COM_PUBLIC static Long Unbox(
+        /* [in] */ ILong* lo);
 
     COM_PUBLIC static Double Unbox(
         /* [in] */ IDouble* dobj);

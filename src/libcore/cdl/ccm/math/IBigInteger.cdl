@@ -17,12 +17,144 @@
 namespace ccm {
 namespace math {
 
+/*
+ * @Involve interface ccm::core::INumber
+ * @Involve interface ccm::core::IComparable
+ * @Involve interface ccm::io::ISerializable
+ */
 [
     uuid(9860031d-a5ad-446b-a7ef-24b75fe6daa1),
     version(0.1.0)
 ]
 interface IBigInteger
 {
+    Abs(
+        [out] IBigInteger** value);
+
+    Add(
+        [in] IBigInteger* value,
+        [out] IBigInteger** result);
+
+    And(
+        [in] IBigInteger* value,
+        [out] IBigInteger** result);
+
+    AndNot(
+        [in] IBigInteger* value,
+        [out] IBigInteger** result);
+
+    BitCount(
+        [out] Integer* count);
+
+    BitLength(
+        [out] Integer* length);
+
+    ClearBit(
+        [in] Integer n,
+        [out] IBigInteger** value);
+
+    Divide(
+        [in] IBigInteger* divisor,
+        [out] IBigInteger** result);
+
+    DivideAndRemainder(
+        [in] IBigInteger* divisor,
+        [out, callee] Array<IBigInteger*>* result);
+
+    FlipBit(
+        [in] Integer n,
+        [out] IBigInteger** value);
+
+    Gcd(
+        [in] IBigInteger* value,
+        [out] IBigInteger** result);
+
+    GetLowestSetBit(
+        [out] Integer* setBit);
+
+    IsProbablePrime(
+        [in] Integer certainty,
+        [out] Boolean* prime);
+
+    Max(
+        [in] IBigInteger* value,
+        [out] IBigInteger** result);
+
+    Min(
+        [in] IBigInteger* value,
+        [out] IBigInteger** result);
+
+    Mod(
+        [in] IBigInteger* m,
+        [out] IBigInteger** result);
+
+    ModInverse(
+        [in] IBigInteger* m,
+        [out] IBigInteger** result);
+
+    ModPow(
+        [in] IBigInteger* exponent,
+        [in] IBigInteger* modulus,
+        [out] IBigInteger** result);
+
+    Multiply(
+        [in] IBigInteger* value,
+        [out] IBigInteger** result);
+
+    Negate(
+        [out] IBigInteger** value);
+
+    NextProbablePrime(
+        [out] IBigInteger** value);
+
+    Not(
+        [out] IBigInteger** value);
+
+    Or(
+        [in] IBigInteger* value,
+        [out] IBigInteger** result);
+
+    Pow(
+        [in] Integer exp,
+        [out] IBigInteger** value);
+
+    Remainder(
+        [in] IBigInteger* divisor,
+        [out] IBigInteger** result);
+
+    SetBit(
+        [in] Integer n,
+        [out] IBigInteger** value);
+
+    ShiftLeft(
+        [in] Integer n,
+        [out] IBigInteger** value);
+
+    ShiftRight(
+        [in] Integer n,
+        [out] IBigInteger** value);
+
+    Signum(
+        [out] Integer* sign);
+
+    Subtract(
+        [in] IBigInteger* value,
+        [out] IBigInteger** result);
+
+    TestBit(
+        [in] Integer n,
+        [out] Boolean* set);
+
+    ToByteArray(
+        [out, callee] Array<Byte>* array);
+
+    ToString(
+        [in] Integer radix,
+        [out] String* value);
+
+    Xor(
+        [in] IBigInteger* value,
+        [out] IBigInteger** result);
 }
 
 }

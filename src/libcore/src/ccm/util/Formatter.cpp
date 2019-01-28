@@ -26,6 +26,7 @@
 #include "ccm/io/COutputStreamWriter.h"
 #include "ccm/io/charset/Charset.h"
 #include "ccm/util/CArrayList.h"
+#include "ccm/util/Calendar.h"
 #include "ccm/util/CFormatter.h"
 #include "ccm/util/Formatter.h"
 #include "ccm/util/Locale.h"
@@ -40,6 +41,7 @@
 #include "ccm.io.IFile.h"
 #include "ccm.io.IOutputStream.h"
 #include "ccm.io.IWriter.h"
+#include "ccm.util.IDate.h"
 #include "ccm.util.IFormattable.h"
 #include <ccmlogger.h>
 
@@ -73,6 +75,8 @@ using ccm::io::IID_IWriter;
 using ccm::io::IOutputStream;
 using ccm::io::IWriter;
 using ccm::io::charset::Charset;
+using ccm::util::Calendar;
+using ccm::util::IDate;
 
 namespace ccm {
 namespace util {
@@ -658,7 +662,7 @@ Integer Formatter::FormatSpecifier::Index(
     /* [in] */ const String& s)
 {
     if (!s.IsNull()) {
-        ECode ec = StringUtils::ParseInt(s, &mIndex);
+        ECode ec = StringUtils::ParseInteger(s, &mIndex);
         CHECK(SUCCEEDED(ec));
     }
     else {
@@ -696,7 +700,7 @@ ECode Formatter::FormatSpecifier::Width(
 {
     mWidth = -1;
     if (!s.IsNull()) {
-        ECode ec = StringUtils::ParseInt(s, &mWidth);
+        ECode ec = StringUtils::ParseInteger(s, &mWidth);
         CHECK(SUCCEEDED(ec));
         if (mWidth < 0) {
             return E_ILLEGAL_FORMAT_WIDTH_EXCEPTION;
@@ -712,7 +716,7 @@ ECode Formatter::FormatSpecifier::Precision(
 {
     mPrecision = -1;
     if (!s.IsNull()) {
-        ECode ec = StringUtils::ParseInt(s, &mPrecision);
+        ECode ec = StringUtils::ParseInteger(s, &mPrecision);
         CHECK(SUCCEEDED(ec));
         if (mPrecision < 0) {
             return E_ILLEGAL_FORMAT_PRECISION_EXCEPTION;
@@ -846,8 +850,24 @@ ECode Formatter::FormatSpecifier::PrintDateTime(
     if (arg == nullptr) {
         return Print(String("null"));
     }
+    AutoPtr<ICalendar> cal;
 
-    return NOERROR;
+    if (ILong::Probe(arg) != nullptr) {
+        cal = Calendar::GetInstance(l == nullptr ? Locale::GetUS().Get() : l);
+        cal->SetTimeInMillis(CoreUtils::Unbox(ILong::Probe(arg)));
+    }
+    else if (IDate::Probe(arg) != nullptr) {
+        cal = Calendar::GetInstance(l == nullptr ? Locale::GetUS().Get() : l);
+        cal->SetTime(IDate::Probe(arg));
+    }
+    else if (ICalendar::Probe(arg) != nullptr) {
+        cal = (ICalendar*)CoreUtils::Clone(arg, IID_ICalendar).Get();
+        cal->SetLenient(true);
+    }
+    else {
+        return FailConversion();
+    }
+    return Print(cal, mC, l);
 }
 
 ECode Formatter::FormatSpecifier::PrintCharacter(
@@ -1349,7 +1369,76 @@ ECode Formatter::FormatSpecifier::Print(
     /* [in] */ IBigInteger* value,
     /* [in] */ ILocale* l)
 {
-    return NOERROR;
+    AutoPtr<IStringBuilder> sb;
+    CStringBuilder::New(IID_IStringBuilder, (IInterface**)&sb);
+    Integer sign;
+    value->Signum(&sign);
+    Boolean neg = sign == -1;
+    AutoPtr<IBigInteger> v;
+    value->Abs(&v);
+
+    // leading sign indicator
+    LeadingSign(sb, neg);
+
+    if (mC == Conversion::DECIMAL_INTEGER) {
+        Array<Char> va = Object::ToString(v).GetChars();
+        LocalizedMagnitude(sb, va, mF, AdjustWidth(mWidth, mF, neg), l);
+    }
+    else if (mC == Conversion::OCTAL_INTEGER) {
+        String s;
+        v->ToString(8, &s);
+
+        Integer len;
+        sb->GetLength(&len);
+        len += s.GetLength();
+        if (neg && mF->Contains(Flags::GetPARENTHESES())) {
+            len++;
+        }
+
+        // apply ALTERNATE (radix indicator for octal) before ZERO_PAD
+        if (mF->Contains(Flags::GetALTERNATE())) {
+            len++;
+            sb->AppendChar('0');
+        }
+        if (mF->Contains(Flags::GetZERO_PAD())) {
+            for (Integer i = 0; i < mWidth - len; i++) {
+                sb->AppendChar('0');
+            }
+        }
+        sb->Append(s);
+    }
+    else if (mC == Conversion::HEXADECIMAL_INTEGER) {
+        String s;
+        v->ToString(16, &s);
+
+        Integer len;
+        sb->GetLength(&len);
+        len += s.GetLength();
+        if (neg && mF->Contains(Flags::GetPARENTHESES())) {
+            len++;
+        }
+
+        // apply ALTERNATE (radix indicator for hex) before ZERO_PAD
+        if (mF->Contains(Flags::GetALTERNATE())) {
+            len += 2;
+            sb->Append(mF->Contains(Flags::GetUPPERCASE()) ? String("0X") : String("0x"));
+        }
+        if (mF->Contains(Flags::GetZERO_PAD())) {
+            for (Integer i = 0; i < mWidth - len; i++) {
+                sb->AppendChar('0');
+            }
+        }
+        if (mF->Contains(Flags::GetUPPERCASE())) {
+            s = s.ToUpperCase();
+        }
+        sb->Append(s);
+    }
+
+    TrailingSign(sb, neg);
+
+    String str;
+    sb->ToString(&str);
+    return mOwner->mA->Append(CoreUtils::Box(Justify(str)));
 }
 
 ECode Formatter::FormatSpecifier::Print(
@@ -1404,6 +1493,20 @@ ECode Formatter::FormatSpecifier::Print(
     /* [in] */ Integer precision,
     /* [in] */ Boolean neg)
 {
+    if (mC == Conversion::SCIENTIFIC) {
+        Integer prec = (precision == -1 ? 6 : precision);
+
+
+    }
+    else if (mC == Conversion::DECIMAL_FLOAT) {
+
+    }
+    else if (mC == Conversion::GENERAL) {
+
+    }
+    else if (mC == Conversion::HEXADECIMAL_FLOAT) {
+
+    }
     return NOERROR;
 }
 

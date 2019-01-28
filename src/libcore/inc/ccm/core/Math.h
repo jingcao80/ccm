@@ -29,6 +29,9 @@ public:
     static Double Log(
         /* [in] */ Double a);
 
+    static Double Sqrt(
+        /* [in] */ Double a);
+
     static Double Ceil(
         /* [in] */ Double a);
 
@@ -89,6 +92,12 @@ public:
     COM_PUBLIC static Integer NumberOfLeadingZeros(
         /* [in] */ Integer value);
 
+    COM_PUBLIC static Integer NumberOfTrailingZeros(
+        /* [in] */ Integer value)
+    {
+        return -1;
+    }
+
     COM_PUBLIC static Integer NumberOfLeadingZeros(
         /* [in] */ Long value);
 
@@ -104,6 +113,12 @@ inline Double Math::Log(
     /* [in] */ Double a)
 {
     return log(a);
+}
+
+inline Double Math::Sqrt(
+    /* [in] */ Double a)
+{
+    return sqrt(a);
 }
 
 inline Double Math::Ceil(

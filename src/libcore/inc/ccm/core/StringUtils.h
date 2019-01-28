@@ -43,11 +43,11 @@ public:
         /* [in] */ Integer radix,
         /* [out] */ Short* value);
 
-    COM_PUBLIC static ECode ParseInt(
+    COM_PUBLIC static ECode ParseInteger(
         /* [in] */ const String& s,
         /* [out] */ Integer* value);
 
-    COM_PUBLIC static ECode ParseInt(
+    COM_PUBLIC static ECode ParseInteger(
         /* [in] */ const String& s,
         /* [in] */ Integer radix,
         /* [out] */ Integer* value);
@@ -154,11 +154,11 @@ inline ECode StringUtils::ParseShort(
     return ParseShort(s, 10, value);
 }
 
-inline ECode StringUtils::ParseInt(
+inline ECode StringUtils::ParseInteger(
     /* [in] */ const String& s,
     /* [out] */ Integer* value)
 {
-    return ParseInt(s, 10, value);
+    return ParseInteger(s, 10, value);
 }
 
 inline ECode StringUtils::ParseLong(

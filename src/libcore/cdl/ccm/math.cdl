@@ -16,3 +16,49 @@
 
 include "ccm/math/IBigDecimal.cdl"
 include "ccm/math/IBigInteger.cdl"
+
+interface ccm::core::IComparable;
+interface ccm::core::INumber;
+interface ccm::io::ISerializable;
+interface ccm::util::IRandom;
+
+namespace ccm {
+namespace math {
+
+[
+    uuid(7a1ab981-ac06-4343-9746-db146876d3ac),
+    version(0.1.0)
+]
+coclass CBigInteger
+{
+    Constructor(
+        [in] Integer numBits,
+        [in] IRandom* random);
+
+    Constructor(
+        [in] Integer bitLength,
+        [in] Integer certainty,
+        [in] IRandom* random);
+
+    Constructor(
+        [in] String value);
+
+    Constructor(
+        [in] String value,
+        [in] Integer radix);
+
+    Constructor(
+        [in] Integer signum,
+        [in] Array<Byte> magnitude);
+
+    Constructor(
+        [in] Array<Byte> value);
+
+    interface IBigInteger;
+    interface INumber;
+    interface IComparable;
+    interface ISerializable;
+}
+
+}
+}

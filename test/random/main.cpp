@@ -30,8 +30,8 @@ TEST(RandomTest, NextIntTest)
     AutoPtr<IRandom> random;
     CRandom::New(IID_IRandom, (IInterface**)&random);
     Integer r1, r2;
-    random->NextInt(&r1);
-    random->NextInt(&r2);
+    random->NextInteger(&r1);
+    random->NextInteger(&r2);
     EXPECT_TRUE(r1 != r2);
     printf("==== r1: %d, r2: %d ====\n", r1, r2);
 }

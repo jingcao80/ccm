@@ -26,6 +26,7 @@ include_directories(
     ../inc
     ../inc/ccm/core
     ../inc/ccm/io
+    ../inc/ccm/math
     ../inc/ccm/security
     ../inc/ccm/security/action
     ../inc/ccm/text
@@ -67,6 +68,7 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_io_COutputStreamWriter.cpp
     ${OBJ_DIR}/_ccm_io_CPrintWriter.cpp
     ${OBJ_DIR}/_ccm_io_CStringWriter.cpp
+    ${OBJ_DIR}/_ccm_math_CBigInteger.cpp
     ${OBJ_DIR}/_ccm_security_CPermissions.cpp
     ${OBJ_DIR}/_ccm_security_CSecureRandom.cpp
     ${OBJ_DIR}/_ccm_security_action_CGetPropertyAction.cpp
@@ -119,6 +121,7 @@ set(LIBCORE_LINK_LIBS
     ccm_io
     ccm_io_ch
     ccm_io_charset
+    ccm_math
     ccm_misc
     ccm_security
     ccm_text
@@ -146,7 +149,8 @@ target_link_libraries(libcore
     unwind
     icuuc
     icui18n
-    ${EXTERNAL_DIR}/fdlibm53/lib/libm.a)
+    ${EXTERNAL_DIR}/fdlibm53/lib/libm.a
+    ${EXTERNAL_DIR}/boringssl/lib/libcrypto.so)
 
 add_custom_command(
     OUTPUT

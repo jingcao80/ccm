@@ -122,14 +122,14 @@ ECode Random::NextBytes(
 {
     for (Integer i = 0, len = bytes.GetLength(); i < len;) {
         Integer rnd, n;
-        for (NextInt(&rnd), n = Math::Min(len - i, IInteger::SIZE / IByte::SIZE);
+        for (NextInteger(&rnd), n = Math::Min(len - i, IInteger::SIZE / IByte::SIZE);
                 n-- >0; rnd >>= IByte::SIZE) {
             bytes[i++] = (Byte)rnd;
         }
     }
 }
 
-ECode Random::NextInt(
+ECode Random::NextInteger(
     /* [out] */ Integer* value)
 {
     VALIDATE_NOT_NULL(value);
@@ -138,7 +138,7 @@ ECode Random::NextInt(
     return NOERROR;
 }
 
-ECode Random::NextInt(
+ECode Random::NextInteger(
     /* [in] */ Integer bound,
     /* [out] */ Integer* value)
 {

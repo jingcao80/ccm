@@ -304,7 +304,7 @@ Double ThreadLocalRandom::InternalNextDouble(
     return r;
 }
 
-ECode ThreadLocalRandom::NextInt(
+ECode ThreadLocalRandom::NextInteger(
     /* [out] */ Integer* value)
 {
     VALIDATE_NOT_NULL(value);
@@ -313,7 +313,7 @@ ECode ThreadLocalRandom::NextInt(
     return NOERROR;
 }
 
-ECode ThreadLocalRandom::NextInt(
+ECode ThreadLocalRandom::NextInteger(
     /* [in] */ Integer bound,
     /* [out] */ Integer* value)
 {
@@ -338,7 +338,7 @@ ECode ThreadLocalRandom::NextInt(
     return NOERROR;
 }
 
-ECode ThreadLocalRandom::NextInt(
+ECode ThreadLocalRandom::NextInteger(
     /* [in] */ Integer origin,
     /* [in] */ Integer bound,
     /* [out] */ Integer* value)

@@ -18,6 +18,7 @@ set(LIBCORE_CCM_SRC_DIR ${LIBCORE_DIR}/src/ccm)
 
 add_subdirectory(core)
 add_subdirectory(io)
+add_subdirectory(math)
 add_subdirectory(misc)
 add_subdirectory(security)
 add_subdirectory(text)

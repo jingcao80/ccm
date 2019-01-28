@@ -17,7 +17,7 @@
 #ifndef __PISCES_ICU_TEXT_H__
 #define __PISCES_ICU_TEXT_H__
 
-#include "core/SyncObject.h"
+#include "ccm/core/SyncObject.h"
 #include "ccm.util.ILocale.h"
 #include "pisces.icu.text.ITimeZoneNames.h"
 

@@ -959,7 +959,7 @@ ECode StringToReal::InitialParse(
 
         // Parse the integer exponent.
         Integer e;
-        ECode ec = StringUtils::ParseInt(exponentString, &e);
+        ECode ec = StringUtils::ParseInteger(exponentString, &e);
         if (SUCCEEDED(ec)) {
             pair.mE = negativeExponent ? -e : e;
         }

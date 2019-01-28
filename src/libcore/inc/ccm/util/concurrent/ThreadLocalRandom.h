@@ -57,14 +57,14 @@ public:
         /* [in] */ Double origin,
         /* [in] */ Double bound);
 
-    ECode NextInt(
+    ECode NextInteger(
         /* [out] */ Integer* value) override;
 
-    ECode NextInt(
+    ECode NextInteger(
         /* [in] */ Integer bound,
         /* [out] */ Integer* value) override;
 
-    ECode NextInt(
+    ECode NextInteger(
         /* [in] */ Integer origin,
         /* [in] */ Integer bound,
         /* [out] */ Integer* value) override;

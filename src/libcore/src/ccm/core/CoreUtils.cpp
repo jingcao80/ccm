@@ -18,6 +18,7 @@
 #include "ccm/core/CChar.h"
 #include "ccm/core/CDouble.h"
 #include "ccm/core/CInteger.h"
+#include "ccm/core/CLong.h"
 #include "ccm/core/CoreUtils.h"
 #include "ccm/core/CString.h"
 #include "ccm/core/System.h"
@@ -48,6 +49,14 @@ AutoPtr<IInteger> CoreUtils::Box(
     AutoPtr<IInteger> io;
     CInteger::New(i, IID_IInteger, (IInterface**)&io);
     return io;
+}
+
+AutoPtr<ILong> CoreUtils::Box(
+    /* [in] */ Long l)
+{
+    AutoPtr<ILong> lo;
+    CLong::New(l, IID_ILong, (IInterface**)&lo);
+    return lo;
 }
 
 AutoPtr<IDouble> CoreUtils::Box(
@@ -103,6 +112,14 @@ Integer CoreUtils::Unbox(
     Integer i;
     io->GetValue(&i);
     return i;
+}
+
+Long CoreUtils::Unbox(
+    /* [in] */ ILong* lo)
+{
+    Long l;
+    lo->GetValue(&l);
+    return l;
 }
 
 Double CoreUtils::Unbox(
