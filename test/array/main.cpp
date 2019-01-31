@@ -197,6 +197,61 @@ TEST(ArrayTest, ICharSequenceArrayToInterfaceArrayTest)
     EXPECT_STREQ(str2.string(), "helloworld");
 }
 
+TEST(ArrayTest, IntegerArrayInitializerListConstructorTest)
+{
+    Array<Integer> intArray{ 1, 2, 3 };
+    EXPECT_EQ(intArray.GetLength(), 3);
+    EXPECT_EQ(intArray[0], 1);
+    EXPECT_EQ(intArray[1], 2);
+    EXPECT_EQ(intArray[2], 3);
+}
+
+TEST(ArrayTest, IntegerArrayInitializerListCopyConstructorTest)
+{
+    Array<Integer> intArray;
+
+    EXPECT_EQ(intArray.GetLength(), 0);
+
+    intArray = { 9, 99, 999, 9999 };
+    EXPECT_EQ(intArray.GetLength(), 4);
+    EXPECT_EQ(intArray[0], 9);
+    EXPECT_EQ(intArray[1], 99);
+    EXPECT_EQ(intArray[2], 999);
+    EXPECT_EQ(intArray[3], 9999);
+}
+
+TEST(ArrayTest, ObjectArrayInitializerListConstructorTest)
+{
+    CA::Initialize();
+    Array<IObject*> objArray{
+        new CA(), new CA(), new CA(), new CA(), new CA() };
+    Long size = objArray.GetLength();
+    EXPECT_EQ(size, 5);
+    EXPECT_EQ(CA::CONS_COUNT, size);
+    EXPECT_EQ(CA::ADD_COUNT, size);
+    objArray.Clear();
+    EXPECT_EQ(CA::RELEASE_COUNT, size);
+    EXPECT_EQ(CA::DEST_COUNT, size);
+    EXPECT_EQ(objArray.GetLength(), 0);
+}
+
+TEST(ArrayTest, ObjectArrayInitializerListCopyConstructorTest)
+{
+    CA::Initialize();
+    Array<IObject*> objArray;
+    EXPECT_EQ(objArray.GetLength(), 0);
+    objArray = {
+        new CA(), new CA(), new CA(), new CA(), new CA() };
+    Long size = objArray.GetLength();
+    EXPECT_EQ(size, 5);
+    EXPECT_EQ(CA::CONS_COUNT, size);
+    EXPECT_EQ(CA::ADD_COUNT, size);
+    objArray.Clear();
+    EXPECT_EQ(CA::RELEASE_COUNT, size);
+    EXPECT_EQ(CA::DEST_COUNT, size);
+    EXPECT_EQ(objArray.GetLength(), 0);
+}
+
 int main(int argc, char **argv)
 {
     testing::InitGoogleTest(&argc, argv);

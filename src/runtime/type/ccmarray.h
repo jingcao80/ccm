@@ -19,6 +19,7 @@
 
 #include "ccmsharedbuffer.h"
 #include "ccmlogger.h"
+#include <initializer_list>
 
 namespace ccm {
 
@@ -36,6 +37,9 @@ public:
 
     Array(
         /* [in] */ Array<T>&& other);
+
+    Array(
+        /* [in] */ std::initializer_list<T> list);
 
     ~Array();
 
@@ -102,6 +106,9 @@ public:
     Array& operator=(
         /* [in] */ const Array<T>& other);
 
+    Array& operator=(
+        /* [in] */ std::initializer_list<T> list);
+
     inline T& operator[](
         /* [in] */ Long index);
 
@@ -115,7 +122,38 @@ public:
     static Array Null();
 
     Array<IInterface*> ToInterfaces();
+
+private:
+    Boolean Alloc(
+        /* [in] */ Long size);
 };
+
+template<class T>
+Boolean Array<T>::Alloc(
+    /* [in] */ Long size)
+{
+    if (size < 0 || size > SIZE_MAX) {
+        Logger::E("Array", "Invalid array size %lld", size);
+        mData = nullptr;
+        mSize = 0;
+        return false;
+    }
+
+    Long byteSize = sizeof(T) * size;
+    SharedBuffer* buf = SharedBuffer::Alloc(byteSize);
+    if (buf == nullptr) {
+        Logger::E("Array", "Malloc array which size is %lld failed.", byteSize);
+        mData = nullptr;
+        mSize = 0;
+        return false;
+    }
+    void* data = buf->GetData();
+    memset(data, 0, byteSize);
+
+    mData = reinterpret_cast<T*>(data);
+    mSize = size;
+    return true;
+}
 
 template<class T>
 Array<T>::Array()
@@ -129,29 +167,8 @@ template<class T>
 Array<T>::Array(
     /* [in] */ Long size)
 {
-    if (size < 0 || size > SIZE_MAX) {
-        Logger::E("Array", "Invalid array size %lld", size);
-        mData = nullptr;
-        mSize = 0;
-        mType = Type2Kind<T>::Kind();
-        return;
-    }
-
-    Long byteSize = sizeof(T) * size;
-    SharedBuffer* buf = SharedBuffer::Alloc(byteSize);
-    if (buf == nullptr) {
-        Logger::E("Array", "Malloc array which size is %lld failed.", byteSize);
-        mData = nullptr;
-        mSize = 0;
-        mType = Type2Kind<T>::Kind();
-        return;
-    }
-    void* data = buf->GetData();
-    memset(data, 0, byteSize);
-
-    mData = reinterpret_cast<T*>(data);
-    mSize = size;
     mType = Type2Kind<T>::Kind();
+    Alloc(size);
 }
 
 template<class T>
@@ -173,6 +190,21 @@ Array<T>::Array(
     mSize = other.mSize;
     other.mData = nullptr;
     other.mSize = 0;
+}
+
+template<class T>
+Array<T>::Array(
+    /* [in] */ std::initializer_list<T> list)
+    : Array(list.size())
+{
+    mType = Type2Kind<T>::Kind();
+    if (Alloc(list.size())) {
+        Long i;
+        typename std::initializer_list<T>::const_iterator it;
+        for (it = list.begin(), i = 0; it != list.end(); ++it, ++i) {
+            Set(i, *it);
+        }
+    }
 }
 
 template<class T>
@@ -438,6 +470,33 @@ Array<T>& Array<T>::operator=(
 }
 
 template<class T>
+Array<T>& Array<T>::operator=(
+    /* [in] */ std::initializer_list<T> list)
+{
+    if (mData != nullptr) {
+        SharedBuffer* sb = SharedBuffer::GetBufferFromData(mData);
+        if (sb->OnlyOwner()) {
+            DeleteFunc<T> deleteF;
+            for (Long i = 0; i < mSize; i++) {
+                deleteF(&static_cast<T*>(mData)[i], this);
+            }
+        }
+        sb->Release();
+        mData = nullptr;
+        mSize = 0;
+    }
+
+    if (Alloc(list.size())) {
+        Long i;
+        typename std::initializer_list<T>::const_iterator it;
+        for (it = list.begin(), i = 0; it != list.end(); ++it, ++i) {
+            Set(i, *it);
+        }
+    }
+    return *this;
+}
+
+template<class T>
 T& Array<T>::operator[](
     /* [in] */ Long index)
 {
@@ -475,25 +534,16 @@ Array<T> Array<T>::Clone() const
 {
     Array<T> newArray;
 
-    Long byteSize = sizeof(T) * mSize;
-    SharedBuffer* buf = SharedBuffer::Alloc(byteSize);
-    if (buf == nullptr) {
-        Logger::E("Array", "Malloc array which size is %lld failed.", byteSize);
+    if (!newArray.Alloc(mSize)) {
         return newArray;
     }
-    void* data = buf->GetData();
-    memset(data, 0, byteSize);
 
     T* src = static_cast<T*>(mData);
-    T* des = static_cast<T*>(data);
+    T* des = static_cast<T*>(newArray.mData);
     for (Long i = 0; i < mSize; i++) {
         AssignFunc<T> assignF;
-        assignF(&des[i], src[i], data);
+        assignF(&des[i], src[i], des);
     }
-
-    newArray.mData = data;
-    newArray.mSize = mSize;
-    newArray.mType = mType;
 
     return newArray;
 }
