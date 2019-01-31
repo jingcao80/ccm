@@ -76,18 +76,13 @@ AutoPtr<IBigInteger> BigInteger::GetMINUS_ONE()
 
 static Array<IBigInteger*> CreateValues()
 {
-    Array<IBigInteger*> values(11);
-    values.Set(0, BigInteger::GetZERO());
-    values.Set(1, BigInteger::GetONE());
-    values.Set(2, CreateBigInteger(1, 2));
-    values.Set(3, CreateBigInteger(1, 3));
-    values.Set(4, CreateBigInteger(1, 4));
-    values.Set(5, CreateBigInteger(1, 5));
-    values.Set(6, CreateBigInteger(1, 6));
-    values.Set(7, CreateBigInteger(1, 7));
-    values.Set(8, CreateBigInteger(1, 8));
-    values.Set(9, CreateBigInteger(1, 9));
-    values.Set(10, BigInteger::GetTEN());
+    Array<IBigInteger*> values {
+        BigInteger::GetZERO(), BigInteger::GetONE(),
+        CreateBigInteger(1, 2), CreateBigInteger(1, 3),
+        CreateBigInteger(1, 4), CreateBigInteger(1, 5),
+        CreateBigInteger(1, 6), CreateBigInteger(1, 7),
+        CreateBigInteger(1, 8), CreateBigInteger(1, 9),
+        BigInteger::GetTEN() };
 
     return values;
 }
@@ -672,7 +667,7 @@ ECode BigInteger::And(
 
     PrepareRepresentation();
     From(value)->PrepareRepresentation();
-    return Logical::And(this, value, result);
+    return Logical::And(this, From(value), result);
 }
 
 ECode BigInteger::Or(
@@ -683,7 +678,7 @@ ECode BigInteger::Or(
 
     PrepareRepresentation();
     From(value)->PrepareRepresentation();
-    return Logical::Or(this, value, result);
+    return Logical::Or(this, From(value), result);
 }
 
 ECode BigInteger::Xor(
@@ -694,7 +689,7 @@ ECode BigInteger::Xor(
 
     PrepareRepresentation();
     From(value)->PrepareRepresentation();
-    return Logical::Xor(this, value, result);
+    return Logical::Xor(this, From(value), result);
 }
 
 ECode BigInteger::AndNot(
