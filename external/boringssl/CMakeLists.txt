@@ -14,7 +14,7 @@
 # limitations under the License.
 #=========================================================================
 
-set(EXTERNAL_DIR ${PROJECT_DIR}/external)
+set(BORINGSSL_DIR ${EXTERNAL_DIR}/boringssl)
 
-add_subdirectory(boringssl)
-add_subdirectory(googletest)
+add_custom_target(deploy_boringssl_libraries)
+COPY(deploy_boringssl_libraries ${BORINGSSL_DIR}/lib/libcrypto.so ${BIN_DIR})

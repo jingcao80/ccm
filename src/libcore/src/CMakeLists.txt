@@ -137,6 +137,7 @@ set(LIBCORE_LINK_LIBS
     -Wl,--no-whole-archive)
 
 IMPORT_LIBRARY(ccmrt.so)
+IMPORT_LIBRARY(libcrypto.so)
 
 add_library(libcore
     SHARED
@@ -144,13 +145,14 @@ add_library(libcore
 target_link_libraries(libcore
     ${LIBCORE_LINK_LIBS}
     ccmrt.so
+    libcrypto.so
     dl
     pthread
     unwind
     icuuc
     icui18n
-    ${EXTERNAL_DIR}/fdlibm53/lib/libm.a
-    ${EXTERNAL_DIR}/boringssl/lib/libcrypto.so)
+    ${EXTERNAL_DIR}/fdlibm53/lib/libm.a)
+add_dependencies(libcore deploy_boringssl_libraries)
 
 add_custom_command(
     OUTPUT
