@@ -27,16 +27,21 @@ class Conversion
 public:
     static String BigInteger2String(
         /* [in] */ BigInteger* value,
-        /* [in] */ Integer radix)
-    {
-        return String(nullptr);
-    }
+        /* [in] */ Integer radix);
+
+    static String ToDecimalScaledString(
+        /* [in] */ BigInteger* value,
+        /* [in] */ Integer scale);
+
+    static String ToDecimalScaledString(
+        /* [in] */ Long value,
+        /* [in] */ Integer scale);
+
+    static Long DivideLongByBillion(
+        /* [in] */ Long a);
 
     static Double BigInteger2Double(
-        /* [in] */ BigInteger* value)
-    {
-        return 0;
-    }
+        /* [in] */ BigInteger* value);
 
 private:
     Conversion();
