@@ -30,6 +30,10 @@ public:
         /* [in] */ Integer offset,
         /* [in] */ Integer count);
 
+    static ECode Fill(
+        /* [in] */ Array<Boolean>& a,
+        /* [in] */ Boolean value);
+
     static ECode CopyOf(
         /* [in] */ const Array<String> & original,
         /* [in] */ Integer newLength,

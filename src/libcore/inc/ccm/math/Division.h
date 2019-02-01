@@ -14,33 +14,29 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_MATH_PRIMALITY_H__
-#define __CCM_MATH_PRIMALITY_H__
-
-#include "ccm/math/CBigInteger.h"
+#ifndef __CCM_MATH_DIVISION_H__
+#define __CCM_MATH_DIVISION_H__
 
 namespace ccm {
 namespace math {
 
-class Primality
+class Division
 {
 public:
-    static ECode NextProbablePrime(
-        /* [in] */ BigInteger* n,
-        /* [out] */ IBigInteger** value);
+    static Integer DivideArrayByInteger(
+        /* [in] */ Array<Integer>& quotient,
+        /* [in] */ Array<Integer>& dividend,
+        /* [in] */ Integer dividendLength,
+        /* [in] */ Integer divisor)
+    {
+        return 1;
+    }
 
 private:
-    Primality();
-
-    /** All BigInteger prime numbers with bit length lesser than 10 bits. */
-    static Array<IBigInteger*> GetBIprimes();
-
-private:
-    /** All prime numbers with bit length lesser than 10 bits. */
-    static const Array<Integer> sPrimes;
+    Division();
 };
 
 }
 }
 
-#endif // __CCM_MATH_PRIMALITY_H__
+#endif // __CCM_MATH_DIVISION_H__

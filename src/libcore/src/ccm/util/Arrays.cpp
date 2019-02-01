@@ -34,6 +34,16 @@ ECode Arrays::CheckOffsetAndCount(
     return NOERROR;
 }
 
+ECode Arrays::Fill(
+    /* [in] */ Array<Boolean>& a,
+    /* [in] */ Boolean value)
+{
+    for (Integer i = 0, len = a.GetLength(); i < len; i++) {
+        a[i] = value;
+    }
+    return NOERROR;
+}
+
 ECode Arrays::CopyOf(
     /* [in] */ const Array<String> & original,
     /* [in] */ Integer newLength,

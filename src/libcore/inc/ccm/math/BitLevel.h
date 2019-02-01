@@ -37,6 +37,13 @@ public:
         return NOERROR;
     }
 
+    static Boolean NonZeroDroppedBits(
+        /* [in] */ Integer numberOfBits,
+        /* [in] */ Array<Integer>& digits)
+    {
+        return false;
+    }
+
     static ECode ShiftLeftOneBit(
         /* [in] */ IBigInteger* source,
         /* [out] */ IBigInteger** result)

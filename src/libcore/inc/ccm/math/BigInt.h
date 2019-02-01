@@ -106,6 +106,15 @@ public:
         /* [in] */ Integer n)
     {}
 
+    void AddPositiveInteger(
+        /* [in] */ Integer w)
+    {}
+
+    static Integer RemainderByPositiveInteger(
+        /* [in] */ BigInt* a,
+        /* [in] */ Integer w)
+    {}
+
     static AutoPtr<BigInt> Addition(
         /* [in] */ BigInt* a,
         /* [in] */ BigInt* b)

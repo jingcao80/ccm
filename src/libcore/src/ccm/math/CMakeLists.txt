@@ -29,6 +29,7 @@ set(SOURCES
     BigInteger.cpp
     Conversion.cpp
     Logical.cpp
+    Primality.cpp
     math.cpp)
 
 add_library(ccm_math STATIC
