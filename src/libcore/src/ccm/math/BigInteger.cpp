@@ -211,7 +211,7 @@ ECode BigInteger::Constructor(
     /* [in] */ const String& value)
 {
     AutoPtr<BigInt> bigInt = new BigInt();
-    bigInt->PutDecString(value);
+    FAIL_RETURN(bigInt->PutDecString(value));
     SetBigInt(bigInt);
     return NOERROR;
 }
@@ -226,13 +226,13 @@ ECode BigInteger::Constructor(
     }
     if (radix == 10) {
         AutoPtr<BigInt> bigInt = new BigInt();
-        bigInt->PutDecString(value);
+        FAIL_RETURN(bigInt->PutDecString(value));
         SetBigInt(bigInt);
         return NOERROR;
     }
     else if (radix == 16) {
         AutoPtr<BigInt> bigInt = new BigInt();
-        bigInt->PutHexString(value);
+        FAIL_RETURN(bigInt->PutHexString(value));
         SetBigInt(bigInt);
         return NOERROR;
     }
@@ -301,7 +301,7 @@ AutoPtr<BigInt> BigInteger::GetBigInt()
             return mBigInt;
         }
         AutoPtr<BigInt> bigInt = new BigInt();
-        bigInt->PutLittleEndianInts(mDigits, (mSign < 0));
+        bigInt->PutLittleEndianIntegers(mDigits, (mSign < 0));
         SetBigInt(bigInt);
         return bigInt;
     }
@@ -344,7 +344,7 @@ void BigInteger::PrepareRepresentation()
     Integer sign = mBigInt->Sign();
     Array<Integer> digits;
     if (sign != 0) {
-        digits = mBigInt->LittleEndianIntsMagnitude();
+        digits = mBigInt->LittleEndianIntegersMagnitude();
     }
     else {
         digits = Array<Integer>(1);

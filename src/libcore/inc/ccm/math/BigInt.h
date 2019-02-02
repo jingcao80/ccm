@@ -39,50 +39,49 @@ public:
 
     AutoPtr<BigInt> Copy();
 
+    void PutLongInt(
+        /* [in] */ Long val);
+
     void PutULongInt(
         /* [in] */ Long val,
-        /* [in] */ Boolean neg)
-    {}
+        /* [in] */ Boolean neg);
 
-    void PutDecString(
-        /* [in] */ const String& original)
-    {}
+    ECode PutDecString(
+        /* [in] */ const String& original);
 
-    void PutHexString(
-        /* [in] */ const String& original)
-    {}
+    ECode PutHexString(
+        /* [in] */ const String& original);
+
+    ECode CheckString(
+        /* [in] */ const String& original,
+        /* [in] */ Integer base,
+        /* [out] */ String* result);
 
     void PutBigEndian(
         /* [in] */ const Array<Byte>& a,
-        /* [in] */ Boolean neg)
-    {}
+        /* [in] */ Boolean neg);
 
-    void PutLittleEndianInts(
+    void PutLittleEndianIntegers(
         /* [in] */ const Array<Integer>& a,
-        /* [in] */ Boolean neg)
-    {}
+        /* [in] */ Boolean neg);
 
     void PutBigEndianTwosComplement(
-        /* [in] */ const Array<Byte>& a)
-    {}
+        /* [in] */ const Array<Byte>& a);
 
     Long LongInt();
 
     String DecString();
 
-    Array<Integer> LittleEndianIntsMagnitude()
-    {
-        return Array<Integer>::Null();
-    }
+    String HexString();
 
-    Integer Sign()
-    {
-        return -1;
-    }
+    Array<Byte> BigEndianMagnitude();
+
+    Array<Integer> LittleEndianIntegersMagnitude();
+
+    Integer Sign();
 
     void SetSign(
-        /* [in] */ Integer val)
-    {}
+        /* [in] */ Integer val);
 
     Boolean TwosCompFitsIntoBytes(
         /* [in] */ Integer desiredByteCount);
@@ -90,109 +89,85 @@ public:
     Integer BitLength();
 
     Boolean IsBitSet(
-        /* [in] */ Integer n)
-    {
-        return false;
-    }
+        /* [in] */ Integer n);
 
     static AutoPtr<BigInt> Shift(
         /* [in] */ BigInt* a,
-        /* [in] */ Integer n)
-    {
-        return nullptr;
-    }
+        /* [in] */ Integer n);
 
     void Shift(
-        /* [in] */ Integer n)
-    {}
+        /* [in] */ Integer n);
 
     void AddPositiveInteger(
-        /* [in] */ Integer w)
-    {}
+        /* [in] */ Integer w);
+
+    void MultiplyByPositiveInteger(
+        /* [in] */ Integer w);
 
     static Integer RemainderByPositiveInteger(
         /* [in] */ BigInt* a,
-        /* [in] */ Integer w)
-    {}
+        /* [in] */ Integer w);
 
     static AutoPtr<BigInt> Addition(
         /* [in] */ BigInt* a,
-        /* [in] */ BigInt* b)
-    {
-        return nullptr;
-    }
+        /* [in] */ BigInt* b);
+
+    void Add(
+        /* [in] */ BigInt* a);
 
     static AutoPtr<BigInt> Subtraction(
         /* [in] */ BigInt* a,
-        /* [in] */ BigInt* b)
-    {
-        return nullptr;
-    }
+        /* [in] */ BigInt* b);
 
     static AutoPtr<BigInt> Gcd(
         /* [in] */ BigInt* a,
-        /* [in] */ BigInt* b)
-    {
-        return nullptr;
-    }
+        /* [in] */ BigInt* b);
 
     static AutoPtr<BigInt> Product(
         /* [in] */ BigInt* a,
-        /* [in] */ BigInt* b)
-    {
-        return nullptr;
-    }
+        /* [in] */ BigInt* b);
+
+    static AutoPtr<BigInt> BigExp(
+        /* [in] */ BigInt* a,
+        /* [in] */ BigInt* p);
 
     static AutoPtr<BigInt> Exp(
         /* [in] */ BigInt* a,
-        /* [in] */ Integer p)
-    {
-        return nullptr;
-    }
+        /* [in] */ Integer p);
 
     static void Division(
         /* [in] */ BigInt* dividend,
         /* [in] */ BigInt* divisor,
         /* [in] */ BigInt* quotient,
-        /* [in] */ BigInt* remainder)
-    {}
+        /* [in] */ BigInt* remainder);
 
     static AutoPtr<BigInt> Modulus(
         /* [in] */ BigInt* a,
-        /* [in] */ BigInt* m)
-    {
-        return nullptr;
-    }
+        /* [in] */ BigInt* m);
 
     static AutoPtr<BigInt> ModExp(
         /* [in] */ BigInt* a,
         /* [in] */ BigInt* p,
-        /* [in] */ BigInt* m)
-    {
-        return nullptr;
-    }
+        /* [in] */ BigInt* m);
 
     static AutoPtr<BigInt> ModInverse(
         /* [in] */ BigInt* a,
-        /* [in] */ BigInt* m)
-    {
-        return nullptr;
-    }
+        /* [in] */ BigInt* m);
 
     static AutoPtr<BigInt> GeneratePrimeDefault(
-        /* [in] */ Integer bitLength)
-    {
-        return nullptr;
-    }
+        /* [in] */ Integer bitLength);
 
     Boolean IsPrime(
-        /* [in] */ Integer certainty)
-    {
-        return false;
-    }
+        /* [in] */ Integer certainty);
 
 private:
     void MakeValid();
+
+    static AutoPtr<BigInt> NewBigInt();
+
+    static String ToAscii(
+        /* [in] */ const String& s,
+        /* [in] */ Integer base);
 
 public:
     Long mBignum = 0;
