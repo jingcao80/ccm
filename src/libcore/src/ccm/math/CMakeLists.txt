@@ -27,7 +27,9 @@ include_directories(
 set(SOURCES
     BigInt.cpp
     BigInteger.cpp
+    BitLevel.cpp
     Conversion.cpp
+    Division.cpp
     Logical.cpp
     Primality.cpp
     math.cpp)

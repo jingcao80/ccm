@@ -17,6 +17,8 @@
 #ifndef __CCM_MATH_DIVISION_H__
 #define __CCM_MATH_DIVISION_H__
 
+#include <ccmtypes.h>
+
 namespace ccm {
 namespace math {
 
@@ -27,10 +29,7 @@ public:
         /* [in] */ Array<Integer>& quotient,
         /* [in] */ Array<Integer>& dividend,
         /* [in] */ Integer dividendLength,
-        /* [in] */ Integer divisor)
-    {
-        return 1;
-    }
+        /* [in] */ Integer divisor);
 
 private:
     Division();

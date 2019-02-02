@@ -170,6 +170,32 @@ Integer Math::NumberOfLeadingZeros(
     return n;
 }
 
+Integer Math::NumberOfTrailingZeros(
+    /* [in] */ Integer value)
+{
+    Integer y;
+    if (value == 0) return 32;
+    Integer n = 31;
+    Integer i = value;
+    y = i <<16; if (y != 0) { n = n -16; i = y; }
+    y = i << 8; if (y != 0) { n = n - 8; i = y; }
+    y = i << 4; if (y != 0) { n = n - 4; i = y; }
+    y = i << 2; if (y != 0) { n = n - 2; i = y; }
+    n -= ((unsigned Integer)(i << 1)) >> 31;
+    return n;
+}
+
+Integer Math::BitCount(
+    /* [in] */ Integer i)
+{
+    i = i - ((((unsigned Integer)i) >> 1) & 0x55555555);
+    i = (i & 0x33333333) + ((((unsigned Integer)i) >> 2) & 0x33333333);
+    i = (i + (((unsigned Integer)i) >> 4)) & 0x0f0f0f0f;
+    i = i + (((unsigned Integer)i) >> 8);
+    i = i + (((unsigned Integer)i) >> 16);
+    return i & 0x3f;
+}
+
 Integer Math::NumberOfLeadingZeros(
     /* [in] */ Long value)
 {

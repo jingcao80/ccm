@@ -26,50 +26,56 @@ class BitLevel
 {
 public:
     static Integer BitLength(
-        /* [in] */ IBigInteger* value)
-    {
-        return NOERROR;
-    }
+        /* [in] */ BigInteger* value);
 
     static Integer BitCount(
-        /* [in] */ IBigInteger* value)
-    {
-        return NOERROR;
-    }
+        /* [in] */ BigInteger* value);
+
+    static Boolean TestBit(
+        /* [in] */ BigInteger* value,
+        /* [in] */ Integer n);
 
     static Boolean NonZeroDroppedBits(
         /* [in] */ Integer numberOfBits,
-        /* [in] */ Array<Integer>& digits)
-    {
-        return false;
-    }
+        /* [in] */ Array<Integer>& digits);
+
+    static void ShiftLeftOneBit(
+        /* [in] */ Array<Integer>& result,
+        /* [in] */ Array<Integer>& source,
+        /* [in] */ Integer srcLen);
 
     static ECode ShiftLeftOneBit(
-        /* [in] */ IBigInteger* source,
-        /* [out] */ IBigInteger** result)
-    {
-        return NOERROR;
-    }
+        /* [in] */ BigInteger* source,
+        /* [out] */ IBigInteger** result);
 
     static ECode ShiftRight(
-        /* [in] */ IBigInteger* source,
+        /* [in] */ BigInteger* source,
         /* [in] */ Integer count,
-        /* [out] */ IBigInteger** result)
-    {
-        return NOERROR;
-    }
+        /* [out] */ IBigInteger** result);
+
+    static Boolean ShiftRight(
+        /* [in] */ Array<Integer>& result,
+        /* [in] */ Integer resultLen,
+        /* [in] */ Array<Integer>& source,
+        /* [in] */ Integer intCount,
+        /* [in] */ Integer count);
 
     static ECode FlipBit(
-        /* [in] */ IBigInteger* value,
+        /* [in] */ BigInteger* value,
         /* [in] */ Integer n,
-        /* [out] */ IBigInteger** result)
-    {
-        return NOERROR;
-    }
+        /* [out] */ IBigInteger** result);
 
 private:
     BitLevel();
 };
+
+inline Boolean BitLevel::TestBit(
+    /* [in] */ BigInteger* value,
+    /* [in] */ Integer n)
+{
+    value->PrepareRepresentation();
+    return ((value->mDigits[n >> 5] & (1 << (n & 31))) != 0);
+}
 
 }
 }

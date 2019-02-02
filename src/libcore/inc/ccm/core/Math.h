@@ -93,10 +93,10 @@ public:
         /* [in] */ Integer value);
 
     COM_PUBLIC static Integer NumberOfTrailingZeros(
-        /* [in] */ Integer value)
-    {
-        return -1;
-    }
+        /* [in] */ Integer value);
+
+    COM_PUBLIC static Integer BitCount(
+        /* [in] */ Integer i);
 
     COM_PUBLIC static Integer NumberOfLeadingZeros(
         /* [in] */ Long value);
