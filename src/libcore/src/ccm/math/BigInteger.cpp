@@ -311,7 +311,7 @@ void BigInteger::SetBigInt(
     /* [in] */ BigInt* bigInt)
 {
     mBigInt = bigInt;
-    mIsValid = true;
+    mNativeIsValid = true;
 }
 
 void BigInteger::SetRepresentation(
@@ -708,7 +708,7 @@ ECode BigInteger::IntegerValue(
 {
     VALIDATE_NOT_NULL(value);
 
-    if (mIsValid && mBigInt->TwosCompFitsIntoBytes(4)) {
+    if (mNativeIsValid && mBigInt->TwosCompFitsIntoBytes(4)) {
         *value = (Integer)mBigInt->LongInt();
         return NOERROR;
     }
@@ -722,7 +722,7 @@ ECode BigInteger::LongValue(
 {
     VALIDATE_NOT_NULL(value);
 
-    if (mIsValid && mBigInt->TwosCompFitsIntoBytes(8)) {
+    if (mNativeIsValid && mBigInt->TwosCompFitsIntoBytes(8)) {
         *value = mBigInt->LongInt();
         return NOERROR;
     }

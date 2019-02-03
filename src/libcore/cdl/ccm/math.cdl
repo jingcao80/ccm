@@ -60,5 +60,14 @@ coclass CBigInteger
     interface ISerializable;
 }
 
+[
+    uuid(3d32adb7-698c-4d2e-8421-fa2df3e0211c),
+    version(0.1.0)
+]
+coclass CBigIntegerFactory
+{
+    interface IBigIntegerFactory;
+}
+
 }
 }

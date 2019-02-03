@@ -50,6 +50,33 @@ ECode CBigInteger::New(
 
 ECode CBigInteger::New(
     /* [in] */ Integer sign,
+    /* [in] */ Long value,
+    /* [in] */ const InterfaceID& iid,
+    /* [out] */ ccm::IInterface** object)
+{
+    AutoPtr<IClassObject> clsObject;
+    ECode ec = CoAcquireClassFactory(CID_CBigInteger, nullptr, &clsObject);
+    if (FAILED(ec)) return ec;
+
+    void* addr = calloc(sizeof(CBigInteger), 1);
+    if (addr == nullptr) return E_OUT_OF_MEMORY_ERROR;
+
+    CBigInteger* _obj = new(addr) CBigInteger();
+    ec = _obj->Constructor(sign, value);
+    if (FAILED(ec)) {
+        free(addr);
+        return ec;
+    }
+    AutoPtr<IMetaComponent> comp;
+    clsObject->GetMetadate(&comp);
+    _obj->AttachMetadata(comp, String("ccm::math::CBigInteger"));
+    *object = _obj->Probe(iid);
+    REFCOUNT_ADD(*object);
+    return NOERROR;
+}
+
+ECode CBigInteger::New(
+    /* [in] */ Integer sign,
     /* [in] */ Integer numberLength,
     /* [in] */ const Array<Integer>& digits,
     /* [in] */ const InterfaceID& iid,

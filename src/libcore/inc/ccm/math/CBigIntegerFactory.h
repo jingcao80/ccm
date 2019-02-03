@@ -14,43 +14,31 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_MATH_CBIGINTEGER_H__
-#define __CCM_MATH_CBIGINTEGER_H__
+#ifndef __CCM_MATH_CBIGINTEGERFACTORY_H__
+#define __CCM_MATH_CBIGINTEGERFACTORY_H__
 
-#include "ccm/math/BigInteger.h"
-#include "_ccm_math_CBigInteger.h"
+#include "ccm/math/CBigInteger.h"
+#include "ccm.math.IBigIntegerFactory.h"
+#include "_ccm_math_CBigIntegerFactory.h"
 
 namespace ccm {
 namespace math {
 
-Coclass(CBigInteger)
-    , public BigInteger
+class CBigIntegerFactory
+    : public Object
+    , public IBigIntegerFactory
 {
 public:
+    CCM_INTERFACE_DECL();
+
     CCM_OBJECT_DECL();
 
-    static ECode New(
-        /* [in] */ BigInt* bigInt,
-        /* [in] */ const InterfaceID& iid,
-        /* [out] */ ccm::IInterface** object);
-
-    static ECode New(
-        /* [in] */ Integer sign,
+    ECode ValueOf(
         /* [in] */ Long value,
-        /* [in] */ const InterfaceID& iid,
-        /* [out] */ ccm::IInterface** object);
-
-    static ECode New(
-        /* [in] */ Integer sign,
-        /* [in] */ Integer numberLength,
-        /* [in] */ const Array<Integer>& digits,
-        /* [in] */ const InterfaceID& iid,
-        /* [out] */ ccm::IInterface** object);
-
-    using _CBigInteger::New;
+        /* [out] */ IBigInteger** result);
 };
 
 }
 }
 
-#endif // __CCM_MATH_CBIGINTEGER_H__
+#endif // __CCM_MATH_CBIGINTEGERFACTORY_H__
