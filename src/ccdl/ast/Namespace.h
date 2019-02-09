@@ -80,6 +80,9 @@ public:
     inline Enumeration* GetEnumeration(
         /* [in] */ int index);
 
+    bool UpdateEnumeration(
+        /* [in] */ Enumeration* enumn);
+
     bool AddInterface(
         /* [in] */ Interface* itf);
 

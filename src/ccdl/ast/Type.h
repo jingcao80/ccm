@@ -44,6 +44,12 @@ public:
     virtual void SetNamespace(
         /* [in] */ Namespace* ns);
 
+    inline bool IsPredecl();
+
+    inline void SetPredecl();
+
+    virtual void SetDeclared();
+
     inline Pool* GetPool();
 
     inline void SetPool(
@@ -135,9 +141,12 @@ public:
     String Dump(
         /* [in] */ const String& prefix) override;
 
+    String Kind();
+
 protected:
     String mName;
     Namespace* mNamespace;
+    bool mIsPredecl;
     Pool* mPool;
     bool mExternal;
     bool mSpecialized;
@@ -159,6 +168,16 @@ void Type::SetName(
 Namespace* Type::GetNamespace()
 {
     return mNamespace;
+}
+
+bool Type::IsPredecl()
+{
+    return mIsPredecl;
+}
+
+void Type::SetPredecl()
+{
+    mIsPredecl = true;
 }
 
 Pool* Type::GetPool()

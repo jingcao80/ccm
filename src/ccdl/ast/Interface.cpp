@@ -23,8 +23,7 @@ namespace ccdl {
 namespace ast {
 
 Interface::Interface()
-    : mIsPredecl(false)
-    , mBaseInterface(nullptr)
+    : mBaseInterface(nullptr)
     , mConstants(10)
     , mMethods(20)
 {}

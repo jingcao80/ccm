@@ -29,6 +29,16 @@ Enumeration::Enumerator::Enumerator(
     , mValue(value)
 {}
 
+void Enumeration::SetDeclared()
+{
+    if (mIsPredecl) {
+        if (mNamespace != nullptr) {
+            mNamespace->UpdateEnumeration(this);
+        }
+        mIsPredecl = false;
+    }
+}
+
 void Enumeration::SetNamespace(
     /* [in] */ Namespace* ns)
 {

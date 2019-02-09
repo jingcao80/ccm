@@ -22,6 +22,7 @@ namespace ast {
 
 Type::Type()
     : mNamespace(nullptr)
+    , mIsPredecl(false)
     , mPool(nullptr)
     , mExternal(false)
     , mSpecialized(true)
@@ -40,6 +41,13 @@ void Type::SetNamespace(
     /* [in] */ Namespace* ns)
 {
     mNamespace = ns;
+}
+
+void Type::SetDeclared()
+{
+    if (mIsPredecl) {
+        mIsPredecl = false;
+    }
 }
 
 bool Type::IsPrimitiveType()
@@ -196,6 +204,17 @@ String Type::Dump(
     /* [in] */ const String& prefix)
 {
     return ToString();
+}
+
+String Type::Kind()
+{
+    if (IsInterfaceType()) {
+        return String("Interface");
+    }
+    else if (IsEnumerationType()) {
+        return String("Enumeration");
+    }
+    return String("Type");
 }
 
 }

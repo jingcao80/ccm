@@ -36,6 +36,9 @@ public:
 
     ~Pool();
 
+    bool AddEnumerationPredeclaration(
+        /* [in] */ Enumeration* enumn);
+
     bool AddEnumeration(
         /* [in] */ Enumeration* enumeration);
 
@@ -142,7 +145,6 @@ protected:
     ArrayList<Coclass*> mCoclasses;
     ArrayList<Constant*> mConstants;
     ArrayList<Enumeration*> mEnumerations;
-    ArrayList<Interface*> mInterfacePredecls;
     ArrayList<Interface*> mInterfaces;
     ArrayList<Namespace*> mNamespaces;
     ArrayList<Type*> mTempTypes;

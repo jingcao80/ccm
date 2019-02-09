@@ -58,6 +58,16 @@ bool MetaBuilder::IsValid()
         }
     }
 
+    // check if all the enumerations in mModule are declared.
+    for (int i = 0; i < mModule->GetEnumerationNumber(); i++) {
+        Enumeration* enumn = mModule->GetEnumeration(i);
+        if (enumn->IsPredecl()) {
+            Logger::E(TAG, "Enumeration \"%s\" is not declared",
+                    enumn->GetName().string());
+            return false;
+        }
+    }
+
     return true;
 }
 

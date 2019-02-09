@@ -520,14 +520,14 @@ bool Parser::ParseInterface(
                 LogError(token, message);
                 parseResult = false;
             }
-            String itfName = fullName.Substring(fullName.LastIndexOf("::") + 2);
+            itfName = fullName.Substring(fullName.LastIndexOf("::") + 2);
             mCurrContext->AddPredeclaration(itfName, fullName);
             return parseResult;
         }
 
         int index = fullName.LastIndexOf("::");
         Namespace* ns = mPool->ParseNamespace(fullName.Substring(0, index - 1));
-        String itfName = fullName.Substring(index + 2);
+        itfName = fullName.Substring(index + 2);
 
         Interface* interface = new Interface();
         interface->SetName(itfName);
@@ -551,7 +551,7 @@ bool Parser::ParseInterface(
     Type* type = mPool->FindType(currNsString.IsNullOrEmpty() ?
             itfName : currNsString + itfName);
     if (type != nullptr) {
-        if (type->IsInterfaceType() && ((Interface*)type)->IsPredecl()) {
+        if (type->IsInterfaceType() && type->IsPredecl()) {
             interface = (Interface*)type;
         }
         else {
@@ -1451,16 +1451,45 @@ PostfixExpression* Parser::ParseIdentifier(
 {
     Tokenizer::Token token = mTokenizer.GetToken();
     if (exprType->IsEnumerationType()) {
-        String enumName = mTokenizer.GetIdentifier();
-        if (((Enumeration*)exprType)->Contains(enumName)) {
+        String idStr = mTokenizer.GetIdentifier();
+        if (((Enumeration*)exprType)->Contains(idStr)) {
             PostfixExpression* postExpr = new PostfixExpression();
             postExpr->SetType(exprType);
-            postExpr->SetEnumerator(enumName);
+            postExpr->SetEnumerator(idStr);
             return postExpr;
         }
         else {
+            int idx = idStr.LastIndexOf("::");
+            if (idx > 0) {
+                String typeStr = idStr.Substring(0, idx - 1);
+                String constStr = idStr.Substring(idx + 2);
+                Type* type = FindType(typeStr);
+                if (type == nullptr) {
+                    String message = String::Format("Type \"%s\" is not found", typeStr.string());
+                    LogError(token, message);
+                    return nullptr;
+                }
+                if (!type->IsInterfaceType()) {
+                    String message = String::Format("Type \"%s\" is not interface", type->ToString().string());
+                    LogError(token, message);
+                    return nullptr;
+                }
+                Constant* constant = ((Interface*)type)->FindConstant(constStr);
+                if (constant == nullptr) {
+                    String message = String::Format("\"%s\" is not a constant of %s",
+                            constStr.string(), idStr.string());
+                    LogError(token, message);
+                    return nullptr;
+                }
+                PostfixExpression* postExpr = new PostfixExpression();
+                postExpr->SetType(exprType);
+                postExpr->SetIntegralValue(constant->GetValue()->IntegerValue());
+                postExpr->SetRadix(constant->GetValue()->GetRadix());
+
+                return postExpr;
+            }
             String message = String::Format("\"%s\" is not a valid enumerator of %s",
-                    enumName.string(), exprType->GetName().string());
+                    idStr.string(), exprType->GetName().string());
             LogError(token, message);
             return nullptr;
         }
@@ -1767,37 +1796,82 @@ bool Parser::ParseEnumeration()
         return false;
     }
 
-    String currNsString = mCurrNamespace->ToString();
-    Type* type = mPool->FindType(currNsString.IsNullOrEmpty() ?
-            enumName : currNsString + "::" + enumName);
-    if (type != nullptr) {
-        String message;
-        if (type->IsEnumerationType()) {
-            message = String::Format("Enumeration %s has already been declared.", enumName.string());
+    token = mTokenizer.PeekToken();
+    if (token == Tokenizer::Token::SEMICOLON) {
+        token = mTokenizer.GetToken();
+        String fullName = mTokenizer.GetIdentifier();
+        if (!fullName.Contains("::")) {
+            fullName = mCurrNamespace->ToString() + fullName;
         }
-        else {
-            message = String::Format("Enumeration %s is name conflict.", enumName.string());
+        Type* type = mPool->FindType(fullName);
+        if (type != nullptr) {
+            if (!type->IsEnumerationType()) {
+                String message = String::Format("Enumeration %s is name conflict.", enumName.string());
+                LogError(token, message);
+                parseResult = false;
+            }
+            enumName = fullName.Substring(fullName.LastIndexOf("::") + 2);
+            mCurrContext->AddPredeclaration(enumName, fullName);
+            return parseResult;
         }
-        LogError(token, message);
-        // jump over '}'
-        while (token != Tokenizer::Token::BRACES_CLOSE &&
-                token != Tokenizer::Token::END_OF_FILE) {
-            token = mTokenizer.GetToken();
-        }
-        return false;
+
+        int index = fullName.LastIndexOf("::");
+        Namespace* ns = mPool->ParseNamespace(fullName.Substring(0, index - 1));
+        enumName = fullName.Substring(index + 2);
+
+        Enumeration* enumeration = new Enumeration();
+        enumeration->SetName(enumName);
+        enumeration->SetNamespace(ns);
+        enumeration->SetPredecl();
+        mPool->AddEnumerationPredeclaration(enumeration);
+
+        mCurrContext->AddPredeclaration(enumName, fullName);
+        return parseResult;
     }
 
-    Enumeration* enumeration = new Enumeration();
-    enumeration->SetName(enumName);
-    enumeration->SetNamespace(mCurrNamespace);
+    Enumeration* enumeration = nullptr;
+
+    String currNsString = mCurrNamespace->ToString();
+    Type* type = mPool->FindType(currNsString.IsNullOrEmpty() ?
+            enumName : currNsString + enumName);
+    if (type != nullptr) {
+        if (type->IsEnumerationType() && type->IsPredecl()) {
+            enumeration = (Enumeration*)type;
+        }
+        else {
+            String message;
+            if (type->IsEnumerationType()) {
+                message = String::Format("Enumeration %s has already been declared.", enumName.string());
+            }
+            else {
+                message = String::Format("Enumeration %s is name conflict.", enumName.string());
+            }
+            LogError(token, message);
+            // jump over '}'
+            while (token != Tokenizer::Token::BRACES_CLOSE &&
+                    token != Tokenizer::Token::END_OF_FILE) {
+                token = mTokenizer.GetToken();
+            }
+            return false;
+        }
+    }
+
+    bool newAdded = false;
+    if (enumeration == nullptr) {
+        enumeration = new Enumeration();
+        enumeration->SetName(enumName);
+        enumeration->SetNamespace(mCurrNamespace);
+        newAdded = true;
+    }
 
     parseResult = ParseEnumerationBody(enumeration) && parseResult;
 
     if (parseResult) {
+        enumeration->SetDeclared();
         mPool->AddEnumeration(enumeration);
     }
     else {
-        delete enumeration;
+        if (newAdded) delete enumeration;
     }
 
     return parseResult;
@@ -2337,15 +2411,13 @@ void Parser::CheckTypeIntegrity(
             type = ((ArrayType*)type)->GetElementType();
         }
     }
-    if (type->IsInterfaceType()) {
-        Interface* interface = (Interface*)type;
-        if (interface->IsPredecl()) {
-            String message = String::Format("Interface \"%s%s\" is not declared.",
-                    interface->GetNamespace()->ToString().string(),
-                    interface->GetName().string());
-            LogError(Tokenizer::Token::ILLEGAL_TOKEN, message);
-            return;
-        }
+    if (type->IsPredecl()) {
+        String message = String::Format("%s \"%s%s\" is not declared. type: %p",
+                type->Kind().string(),
+                type->GetNamespace()->ToString().string(),
+                type->GetName().string(), type);
+        LogError(Tokenizer::Token::ILLEGAL_TOKEN, message);
+        return;
     }
 }
 

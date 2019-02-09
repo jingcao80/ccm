@@ -38,11 +38,7 @@ class Interface : public Type
 public:
     Interface();
 
-    inline bool IsPredecl();
-
-    inline void SetPredecl();
-
-    void SetDeclared();
+    void SetDeclared() override;
 
     void SetNamespace(
         /* [in] */ Namespace* ns) override;
@@ -106,7 +102,6 @@ public:
     static constexpr int METHOD_MAX_NUMBER = 240 + 4;
 
 private:
-    bool mIsPredecl;
     Interface* mBaseInterface;
     Uuid mUuid;
     String mVersion;
@@ -118,16 +113,6 @@ private:
 Interface* Interface::GetBaseInterface()
 {
     return mBaseInterface;
-}
-
-bool Interface::IsPredecl()
-{
-    return mIsPredecl;
-}
-
-void Interface::SetPredecl()
-{
-    mIsPredecl = true;
 }
 
 Uuid& Interface::GetUuid()

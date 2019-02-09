@@ -57,6 +57,8 @@ public:
         /* [in] */ Constant* source,
         /* [in] */ Pool* pool);
 
+    String ToString() override;
+
     String Dump(
         /* [in] */ const String& prefix) override;
 

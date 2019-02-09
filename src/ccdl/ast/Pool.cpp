@@ -26,7 +26,6 @@ Pool::Pool()
     : mCoclasses(20)
     , mConstants(10)
     , mEnumerations(10)
-    , mInterfacePredecls(20, false)
     , mInterfaces(20)
     , mNamespaces(5)
     , mTempTypes(20)
@@ -34,13 +33,15 @@ Pool::Pool()
 {}
 
 Pool::~Pool()
+{}
+
+bool Pool::AddEnumerationPredeclaration(
+    /* [in] */ Enumeration* enumn)
 {
-    for (int i = 0; i < mInterfacePredecls.GetSize(); i++) {
-        Interface* intf = mInterfacePredecls.Get(i);
-        if (intf->IsPredecl()) {
-            delete intf;
-        }
-    }
+    if (enumn == nullptr) return true;
+
+    mTypes.Put(enumn->ToString(), enumn);
+    return true;
 }
 
 bool Pool::AddEnumeration(
@@ -69,7 +70,6 @@ bool Pool::AddInterfacePredeclaration(
 {
     if (interface == nullptr) return true;
 
-    if (!mInterfacePredecls.Add(interface)) return false;
     mTypes.Put(interface->ToString(), interface);
     return true;
 }
@@ -362,6 +362,7 @@ String Pool::Dump(
     StringBuilder builder;
 
     for (int i = 0; i < mEnumerations.GetSize(); i++) {
+        if (mEnumerations.Get(i)->IsPredecl()) continue;
         String enumStr = mEnumerations.Get(i)->Dump(String("  "));
         builder.Append(enumStr).Append("\n");
     }

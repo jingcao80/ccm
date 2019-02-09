@@ -40,6 +40,8 @@ public:
     };
 
 public:
+    void SetDeclared() override;
+
     void SetNamespace(
         /* [in] */ Namespace* ns) override;
 

@@ -92,6 +92,15 @@ int Namespace::GetExternalEnumerationNumber()
     return number;
 }
 
+bool Namespace::UpdateEnumeration(
+    /* [in] */ Enumeration* enumn)
+{
+    if (enumn == nullptr) return true;
+
+    mEnumerations.Remove(enumn);
+    return mEnumerations.Add(enumn);
+}
+
 bool Namespace::AddInterface(
     /* [in] */ Interface* itf)
 {

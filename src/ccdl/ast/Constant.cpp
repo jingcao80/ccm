@@ -46,6 +46,11 @@ void Constant::DeepCopy(
     mValue->SetType(mType);
 }
 
+String Constant::ToString()
+{
+    return mName;
+}
+
 String Constant::Dump(
     /* [in] */ const String& prefix)
 {
