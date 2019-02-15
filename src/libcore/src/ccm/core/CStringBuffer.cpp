@@ -317,7 +317,7 @@ ECode CStringBuffer::Insert(
     return AbstractStringBuilder::Insert(offset, b);
 }
 
-ECode CStringBuffer::Insert(
+ECode CStringBuffer::InsertChar(
     /* [in] */ Integer offset,
     /* [in] */ Char c)
 {

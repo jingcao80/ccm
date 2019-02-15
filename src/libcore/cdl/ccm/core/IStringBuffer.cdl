@@ -129,7 +129,7 @@ interface IStringBuffer
         [in] Integer offset,
         [in] Boolean b);
 
-    Insert(
+    InsertChar(
         [in] Integer offset,
         [in] Char c);
 

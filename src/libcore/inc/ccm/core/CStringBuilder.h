@@ -136,7 +136,7 @@ public:
         /* [in] */ Integer offset,
         /* [in] */ Boolean b) override;
 
-    ECode Insert(
+    ECode InsertChar(
         /* [in] */ Integer offset,
         /* [in] */ Char c) override;
 
