@@ -154,6 +154,17 @@ Double Math::LongBitsToDouble(
     return d.d;
 }
 
+Integer Math::HighestOneBit(
+    /* [in] */ Integer i)
+{
+    i |= (i >> 1);
+    i |= (i >> 2);
+    i |= (i >> 4);
+    i |= (i >> 8);
+    i |= (i >> 16);
+    return i - (((unsigned Integer)i) >> 1);
+}
+
 Integer Math::NumberOfLeadingZeros(
     /* [in] */ Integer value)
 {

@@ -34,6 +34,49 @@ ECode Arrays::CheckOffsetAndCount(
     return NOERROR;
 }
 
+Integer Arrays::BinarySearch(
+    /* [in] */ const Array<Long>& a,
+    /* [in] */ Long key)
+{
+    return BinarySearch0(a, 0, a.GetLength(), key);
+}
+
+Integer Arrays::BinarySearch0(
+    /* [in] */ const Array<Long>& a,
+    /* [in] */ Integer fromIndex,
+    /* [in] */ Integer toIndex,
+    /* [in] */ Long key)
+{
+    Integer low = fromIndex;
+    Integer high = toIndex - 1;
+
+    while (low <= high) {
+        Integer mid = (low + high) >> 1;
+        Long midVal = a[mid];
+
+        if (midVal < key) {
+            low = mid + 1;
+        }
+        else if (midVal > key) {
+            high = mid - 1;
+        }
+        else {
+            return mid; // key found
+        }
+    }
+    return -(low + 1);  // key not found.
+}
+
+ECode Arrays::Fill(
+    /* [in] */ Array<Char>& a,
+    /* [in] */ Char value)
+{
+    for (Integer i = 0, len = a.GetLength(); i < len; i++) {
+        a[i] = value;
+    }
+    return NOERROR;
+}
+
 ECode Arrays::Fill(
     /* [in] */ Array<Boolean>& a,
     /* [in] */ Boolean value)

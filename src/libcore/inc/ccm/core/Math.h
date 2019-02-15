@@ -29,6 +29,9 @@ public:
     static Double Log(
         /* [in] */ Double a);
 
+    static Double Log10(
+        /* [in] */ Double a);
+
     static Double Sqrt(
         /* [in] */ Double a);
 
@@ -48,6 +51,9 @@ public:
 
     COM_PUBLIC static Long RandomLongInternal();
 
+    static Integer Abs(
+        /* [in] */ Integer a);
+
     static Long Abs(
         /* [in] */ Long a);
 
@@ -61,6 +67,9 @@ public:
     static Integer Min(
         /* [in] */ Integer a,
         /* [in] */ Integer b);
+
+    static Integer Signum(
+        /* [in] */ Integer i);
 
     static Integer Signum(
         /* [in] */ Long i);
@@ -89,6 +98,9 @@ public:
     COM_PUBLIC static Double LongBitsToDouble(
         /* [in] */ Long value);
 
+    COM_PUBLIC static Integer HighestOneBit(
+        /* [in] */ Integer i);
+
     COM_PUBLIC static Integer NumberOfLeadingZeros(
         /* [in] */ Integer value);
 
@@ -115,6 +127,12 @@ inline Double Math::Log(
     return log(a);
 }
 
+inline Double Math::Log10(
+    /* [in] */ Double a)
+{
+    return log10(a);
+}
+
 inline Double Math::Sqrt(
     /* [in] */ Double a)
 {
@@ -132,6 +150,12 @@ inline Double Math::Pow(
     /* [in] */ Double b)
 {
     return pow(a, b);
+}
+
+inline Integer Math::Abs(
+    /* [in] */ Integer a)
+{
+    return (a < 0) ? -a : a;
 }
 
 inline Long Math::Abs(
@@ -161,9 +185,14 @@ inline Integer Math::Min(
 }
 
 inline Integer Math::Signum(
+    /* [in] */ Integer i)
+{
+    return (i >> 31) | (((unsigned Integer)-i) >> 31);
+}
+
+inline Integer Math::Signum(
     /* [in] */ Long i)
 {
-    // HD, Section 2-7
     return (Integer) ((i >> 63) | (((unsigned Long)-i) >> 63));
 }
 

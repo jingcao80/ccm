@@ -45,7 +45,7 @@ ECode CalendarSystem::StaticInitialize()
     static Boolean sInitialized = false;
     static SyncObject sLock;
 
-    {
+    if (!sInitialized) {
         AutoLock lock(sLock);
         if (!sInitialized) {
             AutoPtr<IClassLoader> loader = ClassLoader::GetSystemClassLoader();
