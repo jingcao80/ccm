@@ -18,6 +18,7 @@
 #define __CCM_AUTOPTR_H__
 
 #include "ccmtypes.h"
+#include <utility>
 
 namespace ccm {
 

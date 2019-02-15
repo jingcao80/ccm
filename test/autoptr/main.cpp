@@ -156,6 +156,25 @@ TEST(AutoPtrTest, AutoPtrReturnValueTest3)
     EXPECT_TRUE(CA_DESTROYED);
 }
 
+TEST(AutoPtrTest, StdMoveTest)
+{
+    Init();
+    EXPECT_FALSE(CA_CREATED);
+    EXPECT_FALSE(CA_DESTROYED);
+    {
+        AutoPtr<CA> obj = CreateCA();
+        EXPECT_TRUE(CA_CREATED);
+        EXPECT_EQ(1, obj->GetStrongCount());
+        AutoPtr<CA> obj1 = std::move(obj);
+        EXPECT_TRUE(obj == nullptr);
+        EXPECT_EQ(1, obj1->GetStrongCount());
+        AutoPtr<CA> obj2 = obj1;
+        EXPECT_EQ(2, obj2->GetStrongCount());
+        EXPECT_TRUE(obj1 == obj2);
+    }
+    EXPECT_TRUE(CA_DESTROYED);
+}
+
 int main(int argc, char **argv)
 {
     testing::InitGoogleTest(&argc, argv);
