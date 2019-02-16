@@ -346,7 +346,7 @@ ECode AbstractStringBuilder::Append(
     /* [in] */ Integer len)
 {
     if (offset < 0 || offset >= str.GetLength() || len < 0 ||
-        (offset + len >= str.GetLength())) {
+        (offset + len > str.GetLength())) {
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
     EnsureCapacityInternal(mByteCount + len * 4);
