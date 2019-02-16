@@ -267,15 +267,15 @@ public:
     ECode ShortValue(
         /* [out] */ Short* value) override;
 
-    static AutoPtr<IBigInteger> GetZERO();
+    static const AutoPtr<IBigInteger> GetZERO();
 
-    static AutoPtr<IBigInteger> GetONE();
+    static const AutoPtr<IBigInteger> GetONE();
 
-    static AutoPtr<IBigInteger> GetTEN();
+    static const AutoPtr<IBigInteger> GetTEN();
 
-    static AutoPtr<IBigInteger> GetMINUS_ONE();
+    static const AutoPtr<IBigInteger> GetMINUS_ONE();
 
-    static Array<IBigInteger*> GetSMALL_VALUES();
+    static const Array<IBigInteger*>& GetSMALL_VALUES();
 
 private:
     static Boolean IsSmallPrime(
@@ -322,6 +322,8 @@ private:
     Integer mFirstNonzeroDigit = 0;
 
     Integer mHashCode = 0;
+
+    friend class BigDecimal;
 };
 
 inline BigInteger* BigInteger::From(

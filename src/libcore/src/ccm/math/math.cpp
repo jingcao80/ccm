@@ -14,12 +14,69 @@
 // limitations under the License.
 //=========================================================================
 
+#include "ccm/math/CBigDecimal.h"
 #include "ccm/math/CBigInteger.h"
+#include "ccm/math/CMathContext.h"
 #include <ccmapi.h>
 #include <new>
 
 namespace ccm {
 namespace math {
+
+CCM_OBJECT_IMPL(CBigDecimal);
+ECode CBigDecimal::New(
+    /* [in] */ Long smallValue,
+    /* [in] */ Integer scale,
+    /* [in] */ const InterfaceID& iid,
+    /* [out] */ ccm::IInterface** object)
+{
+    AutoPtr<IClassObject> clsObject;
+    ECode ec = CoAcquireClassFactory(CID_CBigDecimal, nullptr, &clsObject);
+    if (FAILED(ec)) return ec;
+
+    void* addr = calloc(sizeof(CBigDecimal), 1);
+    if (addr == nullptr) return E_OUT_OF_MEMORY_ERROR;
+
+    CBigDecimal* _obj = new(addr) CBigDecimal();
+    ec = _obj->Constructor(smallValue, scale);
+    if (FAILED(ec)) {
+        free(addr);
+        return ec;
+    }
+    AutoPtr<IMetaComponent> comp;
+    clsObject->GetMetadate(&comp);
+    _obj->AttachMetadata(comp, String("ccm::math::CBigDecimal"));
+    *object = _obj->Probe(iid);
+    REFCOUNT_ADD(*object);
+    return NOERROR;
+}
+
+ECode CBigDecimal::New(
+    /* [in] */ Integer smallValue,
+    /* [in] */ Integer scale,
+    /* [in] */ const InterfaceID& iid,
+    /* [out] */ ccm::IInterface** object)
+{
+    AutoPtr<IClassObject> clsObject;
+    ECode ec = CoAcquireClassFactory(CID_CBigDecimal, nullptr, &clsObject);
+    if (FAILED(ec)) return ec;
+
+    void* addr = calloc(sizeof(CBigDecimal), 1);
+    if (addr == nullptr) return E_OUT_OF_MEMORY_ERROR;
+
+    CBigDecimal* _obj = new(addr) CBigDecimal();
+    ec = _obj->Constructor(smallValue, scale);
+    if (FAILED(ec)) {
+        free(addr);
+        return ec;
+    }
+    AutoPtr<IMetaComponent> comp;
+    clsObject->GetMetadate(&comp);
+    _obj->AttachMetadata(comp, String("ccm::math::CBigDecimal"));
+    *object = _obj->Probe(iid);
+    REFCOUNT_ADD(*object);
+    return NOERROR;
+}
 
 CCM_OBJECT_IMPL(CBigInteger);
 ECode CBigInteger::New(
@@ -102,6 +159,8 @@ ECode CBigInteger::New(
     REFCOUNT_ADD(*object);
     return NOERROR;
 }
+
+CCM_OBJECT_IMPL(CMathContext);
 
 }
 }

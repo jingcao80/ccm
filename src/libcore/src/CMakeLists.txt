@@ -68,8 +68,10 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_io_COutputStreamWriter.cpp
     ${OBJ_DIR}/_ccm_io_CPrintWriter.cpp
     ${OBJ_DIR}/_ccm_io_CStringWriter.cpp
+    ${OBJ_DIR}/_ccm_math_CBigDecimal.cpp
     ${OBJ_DIR}/_ccm_math_CBigInteger.cpp
     ${OBJ_DIR}/_ccm_math_CBigIntegerFactory.cpp
+    ${OBJ_DIR}/_ccm_math_CMathContext.cpp
     ${OBJ_DIR}/_ccm_security_CPermissions.cpp
     ${OBJ_DIR}/_ccm_security_CSecureRandom.cpp
     ${OBJ_DIR}/_ccm_security_action_CGetPropertyAction.cpp
@@ -134,6 +136,7 @@ set(LIBCORE_LINK_LIBS
     ccmrt_system
     libcore_icu
     libcore_io
+    libcore_math
     pisces_system
     -Wl,--no-whole-archive)
 

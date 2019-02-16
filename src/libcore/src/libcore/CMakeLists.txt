@@ -18,3 +18,4 @@ set(LIBCORE_LIBCORE_SRC_DIR ${LIBCORE_DIR}/src/libcore)
 
 add_subdirectory(icu)
 add_subdirectory(io)
+add_subdirectory(math)

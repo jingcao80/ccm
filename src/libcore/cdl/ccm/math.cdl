@@ -16,6 +16,8 @@
 
 include "ccm/math/IBigDecimal.cdl"
 include "ccm/math/IBigInteger.cdl"
+include "ccm/math/IMathContext.cdl"
+include "ccm/math/RoundingMode.cdl"
 
 interface ccm::core::IComparable;
 interface ccm::core::INumber;
@@ -24,6 +26,80 @@ interface ccm::util::IRandom;
 
 namespace ccm {
 namespace math {
+
+[
+    uuid(c0f44da4-575b-44e6-b234-2208a28582ae),
+    version(0.1.0)
+]
+coclass CBigDecimal
+{
+    Constructor(
+        [in] Array<Char> arr,
+        [in] Integer offset,
+        [in] Integer len);
+
+    Constructor(
+        [in] Array<Char> arr,
+        [in] Integer offset,
+        [in] Integer len,
+        [in] IMathContext* mc);
+
+    Constructor(
+        [in] Array<Char> arr);
+
+    Constructor(
+        [in] Array<Char> arr,
+        [in] IMathContext* mc);
+
+    Constructor(
+        [in] String value);
+
+    Constructor(
+        [in] String value,
+        [in] IMathContext* mc);
+
+    Constructor(
+        [in] Double value);
+
+    Constructor(
+        [in] Double value,
+        [in] IMathContext* mc);
+
+    Constructor(
+        [in] IBigInteger* value);
+
+    Constructor(
+        [in] IBigInteger* value,
+        [in] IMathContext* mc);
+
+    Constructor(
+        [in] IBigInteger* unscaledValue,
+        [in] Integer scale);
+
+    Constructor(
+        [in] IBigInteger* unscaledValue,
+        [in] Integer scale,
+        [in] IMathContext* mc);
+
+    Constructor(
+        [in] Integer value);
+
+    Constructor(
+        [in] Integer value,
+        [in] IMathContext* mc);
+
+    Constructor(
+        [in] Long value);
+
+    Constructor(
+        [in] Long value,
+        [in] IMathContext* mc);
+
+    interface IBigDecimal;
+    interface INumber;
+    interface IComparable;
+    interface ISerializable;
+}
 
 [
     uuid(7a1ab981-ac06-4343-9746-db146876d3ac),
@@ -67,6 +143,26 @@ coclass CBigInteger
 coclass CBigIntegerFactory
 {
     interface IBigIntegerFactory;
+}
+
+[
+    uuid(5542bfb6-c4d8-4fb2-a9b9-9683c61ad170),
+    version(0.1.0)
+]
+coclass CMathContext
+{
+    Constructor(
+        [in] Integer precision);
+
+    Constructor(
+        [in] Integer precision,
+        [in] RoundingMode roundingMode);
+
+    Constructor(
+        [in] String s);
+
+    interface IMathContext;
+    interface ISerializable;
 }
 
 }

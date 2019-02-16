@@ -14,30 +14,18 @@
 # limitations under the License.
 #=========================================================================
 
-set(MATH_DIR ${LIBCORE_CCM_SRC_DIR}/math)
+set(MATH_DIR ${LIBCORE_LIBCORE_SRC_DIR}/math)
 
 include_directories(
     ./
     ../
     ../../../inc
-    ${EXTERNAL_DIR}/boringssl/inc
     ${INC_DIR}
     ${OBJ_DIR})
 
 set(SOURCES
-    BigDecimal.cpp
-    BigInt.cpp
-    BigInteger.cpp
-    BitLevel.cpp
-    CBigIntegerFactory.cpp
-    Conversion.cpp
-    Division.cpp
-    Logical.cpp
-    MathContext.cpp
-    Multiplication.cpp
-    Primality.cpp
-    math.cpp)
+    MathUtils.cpp)
 
-add_library(ccm_math STATIC
+add_library(libcore_math STATIC
     ${SOURCES})
-add_dependencies(ccm_math build_libcore)
+add_dependencies(libcore_math build_libcore)

@@ -50,27 +50,27 @@ static AutoPtr<IBigInteger> CreateBigInteger(
     return bi;
 }
 
-AutoPtr<IBigInteger> BigInteger::GetZERO()
+const AutoPtr<IBigInteger> BigInteger::GetZERO()
 {
-    static AutoPtr<IBigInteger> ZERO = CreateBigInteger(0, 0);
+    static const AutoPtr<IBigInteger> ZERO = CreateBigInteger(0, 0);
     return ZERO;
 }
 
-AutoPtr<IBigInteger> BigInteger::GetONE()
+const AutoPtr<IBigInteger> BigInteger::GetONE()
 {
-    static AutoPtr<IBigInteger> ONE = CreateBigInteger(1, 1);
+    static const AutoPtr<IBigInteger> ONE = CreateBigInteger(1, 1);
     return ONE;
 }
 
-AutoPtr<IBigInteger> BigInteger::GetTEN()
+const AutoPtr<IBigInteger> BigInteger::GetTEN()
 {
-    static AutoPtr<IBigInteger> TEN = CreateBigInteger(1, 10);
+    static const AutoPtr<IBigInteger> TEN = CreateBigInteger(1, 10);
     return TEN;
 }
 
-AutoPtr<IBigInteger> BigInteger::GetMINUS_ONE()
+const AutoPtr<IBigInteger> BigInteger::GetMINUS_ONE()
 {
-    static AutoPtr<IBigInteger> MINUS_ONE = CreateBigInteger(-1, 1);
+    static const AutoPtr<IBigInteger> MINUS_ONE = CreateBigInteger(-1, 1);
     return MINUS_ONE;
 }
 
@@ -87,9 +87,9 @@ static Array<IBigInteger*> CreateValues()
     return values;
 }
 
-Array<IBigInteger*> BigInteger::GetSMALL_VALUES()
+const Array<IBigInteger*>& BigInteger::GetSMALL_VALUES()
 {
-    static Array<IBigInteger*> SMALL_VALUES = CreateValues();
+    static const Array<IBigInteger*> SMALL_VALUES = CreateValues();
     return SMALL_VALUES;
 }
 
