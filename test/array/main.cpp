@@ -252,6 +252,25 @@ TEST(ArrayTest, ObjectArrayInitializerListCopyConstructorTest)
     EXPECT_EQ(objArray.GetLength(), 0);
 }
 
+TEST(ArrayTest, ObjectArrayStdMoveTest)
+{
+    CA::Initialize();
+    Array<CA*> objArray(2);
+    objArray.Set(0, new CA());
+    objArray.Set(1, new CA());
+    EXPECT_TRUE(objArray[0] != nullptr);
+    EXPECT_EQ(1, objArray[0]->GetStrongCount());
+    EXPECT_TRUE(objArray[1] != nullptr);
+    EXPECT_EQ(1, objArray[1]->GetStrongCount());
+    AutoPtr<CA> obj;
+    obj = objArray[0];
+    EXPECT_TRUE(objArray[0] != nullptr);
+    EXPECT_EQ(2, objArray[0]->GetStrongCount());
+    obj = std::move(objArray[1]);
+    EXPECT_TRUE(objArray[1] != nullptr);
+    EXPECT_EQ(2, obj->GetStrongCount());
+}
+
 int main(int argc, char **argv)
 {
     testing::InitGoogleTest(&argc, argv);
