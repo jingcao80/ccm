@@ -57,6 +57,12 @@ AutoPtr<CA> CreateCA()
     return new CA();
 }
 
+AutoPtr<CA> GetCA()
+{
+    static const AutoPtr<CA> gCA = new CA();
+    return gCA;
+}
+
 void CreateCA2(
     /* [out] */ CA** o)
 {
@@ -171,6 +177,45 @@ TEST(AutoPtrTest, StdMoveTest)
         AutoPtr<CA> obj2 = obj1;
         EXPECT_EQ(2, obj2->GetStrongCount());
         EXPECT_TRUE(obj1 == obj2);
+    }
+    EXPECT_TRUE(CA_DESTROYED);
+}
+
+TEST(AutoPtrTest, GetCATest)
+{
+    Init();
+    EXPECT_FALSE(CA_CREATED);
+    EXPECT_FALSE(CA_DESTROYED);
+    {
+        GetCA();
+        EXPECT_TRUE(CA_CREATED);
+        EXPECT_EQ(2, GetCA()->GetStrongCount());
+        AutoPtr<CA> obj = GetCA();
+        EXPECT_EQ(2, obj->GetStrongCount());
+        AutoPtr<CA> obj1 = std::move(obj);
+        EXPECT_TRUE(obj == nullptr);
+        EXPECT_EQ(2, obj1->GetStrongCount());
+    }
+    EXPECT_EQ(2, GetCA()->GetStrongCount());
+}
+
+TEST(AutoPtrTest, MoveToTest)
+{
+    Init();
+    EXPECT_FALSE(CA_CREATED);
+    EXPECT_FALSE(CA_DESTROYED);
+    {
+        AutoPtr<CA> obj = CreateCA();
+        EXPECT_TRUE(CA_CREATED);
+        EXPECT_EQ(1, obj->GetStrongCount());
+        AutoPtr<CA> obj1;
+        obj.MoveTo((CA**)&obj1);
+        EXPECT_TRUE(obj == nullptr);
+        EXPECT_EQ(1, obj1->GetStrongCount());
+        EXPECT_EQ(2, GetCA()->GetStrongCount());
+        AutoPtr<CA> obj2;
+        GetCA().MoveTo((CA**)&obj2);
+        EXPECT_EQ(2, obj2->GetStrongCount());
     }
     EXPECT_TRUE(CA_DESTROYED);
 }
