@@ -647,6 +647,7 @@ String& String::operator+=(
     memcpy(buf + origByteSize, other.string(), other.GetByteLength());
     buf[newByteSize] = '\0';
     UnlockBuffer(newByteSize);
+    ClearCounted();
     return *this;
 }
 
@@ -668,6 +669,7 @@ String& String::operator+=(
     memcpy(buf + origByteSize, string, stringByteSize);
     buf[newByteSize] = '\0';
     UnlockBuffer(newByteSize);
+    ClearCounted();
     return *this;
 }
 
