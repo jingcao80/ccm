@@ -267,13 +267,13 @@ public:
     ECode ShortValue(
         /* [out] */ Short* value) override;
 
-    static const AutoPtr<IBigInteger> GetZERO();
+    static AutoPtr<IBigInteger> GetZERO();
 
-    static const AutoPtr<IBigInteger> GetONE();
+    static AutoPtr<IBigInteger> GetONE();
 
-    static const AutoPtr<IBigInteger> GetTEN();
+    static AutoPtr<IBigInteger> GetTEN();
 
-    static const AutoPtr<IBigInteger> GetMINUS_ONE();
+    static AutoPtr<IBigInteger> GetMINUS_ONE();
 
     static const Array<IBigInteger*>& GetSMALL_VALUES();
 

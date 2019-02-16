@@ -195,19 +195,19 @@ AutoPtr<IBigDecimal> CreateBigDecimal(
     return value;
 }
 
-const AutoPtr<IBigDecimal> BigDecimal::GetZERO()
+AutoPtr<IBigDecimal> BigDecimal::GetZERO()
 {
     static const AutoPtr<IBigDecimal> ZERO = CreateBigDecimal(0, 0);
     return ZERO;
 }
 
-const AutoPtr<IBigDecimal> BigDecimal::GetONE()
+AutoPtr<IBigDecimal> BigDecimal::GetONE()
 {
     static const AutoPtr<IBigDecimal> ONE = CreateBigDecimal(1, 0);
     return ONE;
 }
 
-const AutoPtr<IBigDecimal> BigDecimal::GetTEN()
+AutoPtr<IBigDecimal> BigDecimal::GetTEN()
 {
     static const AutoPtr<IBigDecimal> TEN = CreateBigDecimal(10, 0);
     return TEN;
@@ -1376,7 +1376,7 @@ ECode BigDecimal::DivideToIntegralValue(
     FAIL_RETURN(SafeLongToInteger(newScale, &intScale));
     From(integralValue)->mScale = intScale;
     From(integralValue)->SetUnscaledValue(strippedBI);
-    *result = std::move(integralValue);
+    integralValue.MoveTo(result);
     return NOERROR;
 }
 
@@ -1525,7 +1525,7 @@ ECode BigDecimal::Pow(
     }
     // The final value is rounded to the destination precision
     From(accum)->InplaceRound(mc);
-    *value = std::move(accum);
+    accum.MoveTo(value);
     return NOERROR;
 }
 
@@ -1560,7 +1560,7 @@ ECode BigDecimal::Abs(
         CBigDecimal::New(GetUnscaledValue(), mScale, IID_IBigDecimal, (IInterface**)&result);
     }
     From(result)->InplaceRound(mc);
-    *value = std::move(result);
+    result.MoveTo(value);
     return NOERROR;
 }
 
@@ -1678,8 +1678,7 @@ ECode BigDecimal::UnscaledValue(
 {
     VALIDATE_NOT_NULL(value);
 
-    AutoPtr<IBigInteger> bi = GetUnscaledValue();
-    *value = std::move(bi);
+    GetUnscaledValue().MoveTo(value);
     return NOERROR;
 }
 
@@ -1693,7 +1692,7 @@ ECode BigDecimal::Round(
     CBigDecimal::New(GetUnscaledValue(), mScale, IID_IBigDecimal, (IInterface**)&bd);
 
     From(bd)->InplaceRound(mc);
-    *result = std::move(bd);
+    bd.MoveTo(result);
     return NOERROR;
 }
 
@@ -2189,8 +2188,7 @@ ECode BigDecimal::ToBigInteger(
     VALIDATE_NOT_NULL(value);
 
     if ((mScale == 0) || IsZero()) {
-        AutoPtr<IBigInteger> bi = GetUnscaledValue();
-        *value = std::move(bi);
+        GetUnscaledValue().MoveTo(value);
         return NOERROR;
     }
     else if (mScale < 0) {
@@ -2207,8 +2205,7 @@ ECode BigDecimal::ToBigIntegerExact(
     VALIDATE_NOT_NULL(value);
 
     if ((mScale == 0) || IsZero()) {
-        AutoPtr<IBigInteger> bi = GetUnscaledValue();
-        *value = std::move(bi);
+        GetUnscaledValue().MoveTo(value);
         return NOERROR;
     }
     else if (mScale < 0) {

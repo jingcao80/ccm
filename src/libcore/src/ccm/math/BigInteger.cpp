@@ -50,25 +50,25 @@ static AutoPtr<IBigInteger> CreateBigInteger(
     return bi;
 }
 
-const AutoPtr<IBigInteger> BigInteger::GetZERO()
+AutoPtr<IBigInteger> BigInteger::GetZERO()
 {
     static const AutoPtr<IBigInteger> ZERO = CreateBigInteger(0, 0);
     return ZERO;
 }
 
-const AutoPtr<IBigInteger> BigInteger::GetONE()
+AutoPtr<IBigInteger> BigInteger::GetONE()
 {
     static const AutoPtr<IBigInteger> ONE = CreateBigInteger(1, 1);
     return ONE;
 }
 
-const AutoPtr<IBigInteger> BigInteger::GetTEN()
+AutoPtr<IBigInteger> BigInteger::GetTEN()
 {
     static const AutoPtr<IBigInteger> TEN = CreateBigInteger(1, 10);
     return TEN;
 }
 
-const AutoPtr<IBigInteger> BigInteger::GetMINUS_ONE()
+AutoPtr<IBigInteger> BigInteger::GetMINUS_ONE()
 {
     static const AutoPtr<IBigInteger> MINUS_ONE = CreateBigInteger(-1, 1);
     return MINUS_ONE;

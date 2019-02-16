@@ -345,11 +345,11 @@ public:
     ECode ShortValue(
         /* [out] */ Short* value) override;
 
-    static const AutoPtr<IBigDecimal> GetZERO();
+    static AutoPtr<IBigDecimal> GetZERO();
 
-    static const AutoPtr<IBigDecimal> GetONE();
+    static AutoPtr<IBigDecimal> GetONE();
 
-    static const AutoPtr<IBigDecimal> GetTEN();
+    static AutoPtr<IBigDecimal> GetTEN();
 
 protected:
     ECode Constructor(
