@@ -102,6 +102,15 @@ coclass CBigDecimal
 }
 
 [
+    uuid(5c82b383-d9de-4b34-a397-a3bc218adf4e),
+    version(0.1.0)
+]
+coclass CBigDecimalFactory
+{
+    interface IBigDecimalFactory;
+}
+
+[
     uuid(7a1ab981-ac06-4343-9746-db146876d3ac),
     version(0.1.0)
 ]

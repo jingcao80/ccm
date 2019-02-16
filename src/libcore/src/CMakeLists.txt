@@ -69,6 +69,7 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_io_CPrintWriter.cpp
     ${OBJ_DIR}/_ccm_io_CStringWriter.cpp
     ${OBJ_DIR}/_ccm_math_CBigDecimal.cpp
+    ${OBJ_DIR}/_ccm_math_CBigDecimalFactory.cpp
     ${OBJ_DIR}/_ccm_math_CBigInteger.cpp
     ${OBJ_DIR}/_ccm_math_CBigIntegerFactory.cpp
     ${OBJ_DIR}/_ccm_math_CMathContext.cpp

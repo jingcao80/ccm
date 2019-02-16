@@ -29,6 +29,7 @@ set(SOURCES
     BigInt.cpp
     BigInteger.cpp
     BitLevel.cpp
+    CBigDecimalFactory.cpp
     CBigIntegerFactory.cpp
     Conversion.cpp
     Division.cpp
