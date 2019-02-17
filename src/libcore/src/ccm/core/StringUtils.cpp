@@ -382,6 +382,70 @@ String StringUtils::ToString(
     return String(buf, charPos, (33 - charPos));
 }
 
+static void GetChars(
+    /* [in] */ Long i,
+    /* [in] */ Integer index,
+    /* [out] */ Array<Char>& buf)
+{
+    Long q;
+    Integer r;
+    Integer charPos = index;
+    Char sign = 0;
+
+    if (i < 0) {
+        sign = '-';
+        i = -i;
+    }
+
+    // Get 2 digits/iteration using longs until quotient fits into an int
+    while (i > IInteger::MAX_VALUE) {
+        q = i / 100;
+        // really: r = i - (q * 100);
+        r = (Integer)(i - ((q << 6) + (q << 5) + (q << 2)));
+        i = q;
+        buf[--charPos] = digitOnes[r];
+        buf[--charPos] = digitTens[r];
+    }
+
+    // Get 2 digits/iteration using ints
+    Integer q2;
+    Integer i2 = (Integer)i;
+    while (i2 >= 65536) {
+        q2 = i2 / 100;
+        // really: r = i2 - (q * 100);
+        r = i2 - ((q2 << 6) + (q2 << 5) + (q2 << 2));
+        i2 = q2;
+        buf[--charPos] = digitOnes[r];
+        buf[--charPos] = digitTens[r];
+    }
+
+    // Fall thru to fast mode for smaller numbers
+    // assert(i2 <= 65536, i2);
+    for (;;) {
+        q2 = ((unsigned Integer)(i2 * 52429)) >> (16+3);
+        r = i2 - ((q2 << 3) + (q2 << 1));  // r = i2-(q2*10) ...
+        buf[--charPos] = digits[r];
+        i2 = q2;
+        if (i2 == 0) break;
+    }
+    if (sign != 0) {
+        buf[--charPos] = sign;
+    }
+}
+
+static Integer StringSize(
+    /* [in] */ Long x)
+{
+    Long p = 10;
+    for (Integer i = 1; i < 19; i++) {
+        if (x < p) {
+            return i;
+        }
+        p = 10 * p;
+    }
+    return 19;
+}
+
 String StringUtils::ToString(
     /* [in] */ Long i)
 {

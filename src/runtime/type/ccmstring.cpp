@@ -963,11 +963,11 @@ void String::WriteCharArray(
     if (start < 0 || start > charArray.GetLength() || length < 0) {
         return;
     }
-    length = start + length <= charArray.GetLength() ?
-            length : charArray.GetLength() - start;
+    length = (start + length) <= charArray.GetLength() ?
+            length : (charArray.GetLength() - start);
 
     Integer totalByteSize = 0;
-    for (Integer i = start; i < length; i++) {
+    for (Integer i = start; i < start + length; i++) {
         totalByteSize += GetByteSize(charArray[i]);
     }
 
@@ -976,7 +976,7 @@ void String::WriteCharArray(
         return;
     }
 
-    for (Integer i = start; i < length; i++) {
+    for (Integer i = start; i < start + length; i++) {
         Integer byteSize = GetByteSize(charArray[i]);
         WriteUTF8Bytes(buf, charArray[i], byteSize);
         buf += byteSize;
