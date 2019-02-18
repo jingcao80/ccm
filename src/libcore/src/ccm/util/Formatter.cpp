@@ -527,8 +527,7 @@ ECode Formatter::Flags::Parse(
         }
         f->Add(v);
     }
-    *retf = f;
-    REFCOUNT_ADD(*retf);
+    f.MoveTo(retf);
     return NOERROR;
 }
 
@@ -549,8 +548,7 @@ ECode Formatter::Flags::Parse(
         default:
             return E_UNKNOWN_FORMAT_FLAGS_EXCEPTION;
     }
-    *retf = f;
-    REFCOUNT_ADD(*retf);
+    f.MoveTo(retf);
     return NOERROR;
 }
 

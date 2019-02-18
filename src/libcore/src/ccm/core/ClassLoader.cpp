@@ -55,8 +55,7 @@ ECode ClassLoader::LoadCoclass(
         }
         mLoadedCoclasses->Put(CoreUtils::Box(fullName), c);
     }
-    *klass = c;
-    REFCOUNT_ADD(*klass);
+    c.MoveTo(klass);
     return NOERROR;
 }
 
@@ -113,8 +112,7 @@ ECode ClassLoader::LoadInterface(
             mLoadedInterfaces->Put(CoreUtils::Box(fullName), i);
         }
     }
-    *intf = i;
-    REFCOUNT_ADD(*intf);
+    i.MoveTo(intf);
     return NOERROR;
 }
 

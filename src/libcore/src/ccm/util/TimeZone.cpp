@@ -329,8 +329,7 @@ ECode TimeZone::GetTimeZone(
     }
 
     if (tz != nullptr) {
-        *zone = tz;
-        REFCOUNT_ADD(*zone);
+        tz.MoveTo(zone);
         return NOERROR;
     }
     else {

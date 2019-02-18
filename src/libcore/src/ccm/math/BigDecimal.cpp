@@ -1449,8 +1449,7 @@ ECode BigDecimal::Pow(
     VALIDATE_NOT_NULL(value);
 
     if (n == 0) {
-        *value = GetONE();
-        REFCOUNT_ADD(*value);
+        GetONE().MoveTo(value);
         return NOERROR;
     }
     if ((n < 0) || (n > 999999999)) {

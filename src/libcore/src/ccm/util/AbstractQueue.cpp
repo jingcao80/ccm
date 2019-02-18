@@ -45,8 +45,7 @@ ECode AbstractQueue::Remove(
     Poll(&x);
     if (x != nullptr) {
         if (head != nullptr) {
-            *head = x;
-            REFCOUNT_ADD(*head);
+            x.MoveTo(head);
         }
         return NOERROR;
     }

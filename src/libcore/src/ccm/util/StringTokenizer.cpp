@@ -17,9 +17,11 @@
 #include "ccm/core/Character.h"
 #include "ccm/core/CoreUtils.h"
 #include "ccm/util/StringTokenizer.h"
+#include "ccm.core.ICharSequence.h"
 
 using ccm::core::Character;
 using ccm::core::CoreUtils;
+using ccm::core::ICharSequence;
 
 namespace ccm {
 namespace util {
@@ -158,8 +160,7 @@ ECode StringTokenizer::NextElement(
     String token;
     FAIL_RETURN(NextToken(&token));
     if (element != nullptr) {
-        *element = CoreUtils::Box(token);
-        REFCOUNT_ADD(*element);
+        CoreUtils::Box(token).MoveTo((ICharSequence**)element);
     }
     return NOERROR;
 }

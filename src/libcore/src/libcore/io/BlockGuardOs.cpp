@@ -69,8 +69,7 @@ ECode BlockGuardOs::Accept(
     if (IsInetSocket(acceptFd)) {
         return TagSocket(acceptFd, retFd);
     }
-    *retFd = acceptFd;
-    REFCOUNT_ADD(*retFd);
+    acceptFd.MoveTo(retFd);
     return NOERROR;
 }
 

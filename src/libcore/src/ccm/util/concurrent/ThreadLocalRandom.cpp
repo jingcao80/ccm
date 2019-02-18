@@ -146,10 +146,8 @@ void ThreadLocalRandom::StaticInitialize()
         {
             VALIDATE_NOT_NULL(result);
 
-            AutoPtr<IBoolean> value = CoreUtils::Box(
-                    CoreUtils::GetBoolean(String("ccm.util.secureRandomSeed")));
-            *result = value;
-            REFCOUNT_ADD(*result);
+            CoreUtils::Box(
+                    CoreUtils::GetBoolean(String("ccm.util.secureRandomSeed"))).MoveTo((IBoolean**)result);
             return NOERROR;
         }
     };

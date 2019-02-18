@@ -97,7 +97,7 @@ void CallCA3(AutoPtr<CA>&& obj)
     EXPECT_FALSE(CA_DESTROYED);
 }
 
-TEST(AutoPtrTest, AutoPtrOutParameterTest)
+TEST(AutoPtrTest, TestAutoPtrOutParameter)
 {
     Init();
     EXPECT_FALSE(CA_CREATED);
@@ -111,7 +111,7 @@ TEST(AutoPtrTest, AutoPtrOutParameterTest)
     EXPECT_EQ(999, ca->Get());
 }
 
-TEST(AutoPtrTest, AutoPtrParameterTest)
+TEST(AutoPtrTest, TestAutoPtrParameter)
 {
     Init();
     EXPECT_FALSE(CA_CREATED);
@@ -130,7 +130,7 @@ TEST(AutoPtrTest, AutoPtrParameterTest)
     EXPECT_TRUE(CA_DESTROYED);
 }
 
-TEST(AutoPtrTest, AutoPtrReturnValueTest1)
+TEST(AutoPtrTest, TestAutoPtrReturnValue1)
 {
     Init();
     EXPECT_FALSE(CA_CREATED);
@@ -140,7 +140,7 @@ TEST(AutoPtrTest, AutoPtrReturnValueTest1)
     EXPECT_TRUE(CA_DESTROYED);
 }
 
-TEST(AutoPtrTest, AutoPtrReturnValueTest2)
+TEST(AutoPtrTest, TestAutoPtrReturnValue2)
 {
     Init();
     EXPECT_FALSE(CA_CREATED);
@@ -150,7 +150,7 @@ TEST(AutoPtrTest, AutoPtrReturnValueTest2)
     EXPECT_FALSE(CA_DESTROYED);
 }
 
-TEST(AutoPtrTest, AutoPtrReturnValueTest3)
+TEST(AutoPtrTest, TestAutoPtrReturnValue3)
 {
     Init();
     EXPECT_FALSE(CA_CREATED);
@@ -162,7 +162,7 @@ TEST(AutoPtrTest, AutoPtrReturnValueTest3)
     EXPECT_TRUE(CA_DESTROYED);
 }
 
-TEST(AutoPtrTest, StdMoveTest)
+TEST(AutoPtrTest, TestStdMove)
 {
     Init();
     EXPECT_FALSE(CA_CREATED);
@@ -181,7 +181,7 @@ TEST(AutoPtrTest, StdMoveTest)
     EXPECT_TRUE(CA_DESTROYED);
 }
 
-TEST(AutoPtrTest, GetCATest)
+TEST(AutoPtrTest, TestGetCA)
 {
     Init();
     EXPECT_FALSE(CA_CREATED);
@@ -199,7 +199,7 @@ TEST(AutoPtrTest, GetCATest)
     EXPECT_EQ(2, GetCA()->GetStrongCount());
 }
 
-TEST(AutoPtrTest, MoveToTest)
+TEST(AutoPtrTest, TestMoveTo)
 {
     Init();
     EXPECT_FALSE(CA_CREATED);
@@ -213,7 +213,11 @@ TEST(AutoPtrTest, MoveToTest)
         EXPECT_TRUE(obj == nullptr);
         EXPECT_EQ(1, obj1->GetStrongCount());
         EXPECT_EQ(2, GetCA()->GetStrongCount());
-        AutoPtr<CA> obj2;
+        AutoPtr<CA> obj2 = GetCA();
+        EXPECT_EQ(2, obj2->GetStrongCount());
+        EXPECT_EQ(3, GetCA()->GetStrongCount());
+        EXPECT_TRUE(obj2 == GetCA());
+        obj2 = nullptr;
         GetCA().MoveTo((CA**)&obj2);
         EXPECT_EQ(2, obj2->GetStrongCount());
     }

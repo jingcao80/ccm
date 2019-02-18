@@ -55,8 +55,7 @@ ECode GetPropertyAction::Run(
     FAIL_RETURN(System::GetProperty(mTheProp, &value));
     AutoPtr<ICharSequence> seq = value.IsNull() ?
             CoreUtils::Box(mDefaultVal) : CoreUtils::Box(value);
-    *result = seq;
-    REFCOUNT_ADD(*result);
+    seq.MoveTo((ICharSequence**)result);
     return NOERROR;
 }
 

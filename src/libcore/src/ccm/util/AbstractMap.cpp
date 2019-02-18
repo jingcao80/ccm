@@ -220,7 +220,6 @@ ECode AbstractMap::Remove(
     if (correctEntry != nullptr) {
         if (prevValue != nullptr) {
             correctEntry->GetValue(prevValue);
-            REFCOUNT_ADD(*prevValue);
         }
         it->Remove();
     }
@@ -403,8 +402,7 @@ ECode AbstractMap::GetKeySet(
         };
         mKeySet = ks = new _Set(this);
     }
-    *keys = ks;
-    REFCOUNT_ADD(*keys);
+    ks.MoveTo(keys);
     return NOERROR;
 }
 
@@ -537,8 +535,7 @@ ECode AbstractMap::GetValues(
         };
         mValues = vals = new _Collection(this);
     }
-    *values = vals;
-    REFCOUNT_ADD(*values);
+    vals.MoveTo(values);
     return NOERROR;
 }
 

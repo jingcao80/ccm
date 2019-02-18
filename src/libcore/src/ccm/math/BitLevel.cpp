@@ -123,8 +123,8 @@ ECode BitLevel::ShiftRight(
     Integer intCount = count >> 5; // count of integers
     count &= 31; // count of remaining bits
     if (intCount >= source->mNumberLength) {
-        *result = ((source->mSign < 0) ? CBigInteger::GetMINUS_ONE() : CBigInteger::GetZERO());
-        REFCOUNT_ADD(*result);
+        AutoPtr<IBigInteger> bi = ((source->mSign < 0) ? CBigInteger::GetMINUS_ONE() : CBigInteger::GetZERO());
+        bi.MoveTo(result);
         return NOERROR;
     }
     Integer i;

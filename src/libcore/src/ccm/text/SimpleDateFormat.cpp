@@ -1134,8 +1134,7 @@ ECode SimpleDateFormat::ParseInternal(
         }
     }
 
-    *date = parsedDate;
-    REFCOUNT_ADD(*date);
+    parsedDate.MoveTo(date);
     return NOERROR;
 }
 

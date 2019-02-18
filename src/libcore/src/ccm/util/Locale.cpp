@@ -521,12 +521,10 @@ ECode Locale::GetExtensionKeys(
 
     Boolean hasExt;
     if (HasExtensions(&hasExt), !hasExt) {
-        *keys = Collections::GetEmptySet();
-        REFCOUNT_ADD(*keys);
+        Collections::GetEmptySet().MoveTo(keys);
         return NOERROR;
     }
-    *keys = mLocaleExtensions->GetKeys();
-    REFCOUNT_ADD(*keys);
+    mLocaleExtensions->GetKeys().MoveTo(keys);
     return NOERROR;
 }
 
@@ -537,12 +535,10 @@ ECode Locale::GetUnicodeLocaleAttributes(
 
     Boolean hasExt;
     if (HasExtensions(&hasExt), !hasExt) {
-        *attrs = Collections::GetEmptySet();
-        REFCOUNT_ADD(*attrs);
+        Collections::GetEmptySet().MoveTo(attrs);
         return NOERROR;
     }
-    *attrs = mLocaleExtensions->GetUnicodeLocaleAttributes();
-    REFCOUNT_ADD(*attrs);
+    mLocaleExtensions->GetUnicodeLocaleAttributes().MoveTo(attrs);
     return NOERROR;
 }
 
@@ -568,12 +564,10 @@ ECode Locale::GetUnicodeLocaleKeys(
     VALIDATE_NOT_NULL(keys);
 
     if (mLocaleExtensions == nullptr) {
-        *keys = Collections::GetEmptySet();
-        REFCOUNT_ADD(*keys);
+        Collections::GetEmptySet().MoveTo(keys);
         return NOERROR;
     }
-    *keys = mLocaleExtensions->GetUnicodeLocaleKeys();
-    REFCOUNT_ADD(*keys);
+    mLocaleExtensions->GetUnicodeLocaleKeys().MoveTo(keys);
     return NOERROR;
 }
 
@@ -1489,9 +1483,7 @@ ECode Locale::Builder::Build(
                 baseloc->GetLanguage(), baseloc->GetScript(),
                 baseloc->GetRegion(), baseloc->GetVariant());
     }
-    AutoPtr<ILocale> l = Locale::GetInstance(baseloc, extensions);
-    *locale = l;
-    REFCOUNT_ADD(*locale);
+    Locale::GetInstance(baseloc, extensions).MoveTo(locale);
     return NOERROR;
 }
 

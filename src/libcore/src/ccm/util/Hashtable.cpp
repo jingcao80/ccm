@@ -409,8 +409,7 @@ ECode Hashtable::GetKeySet(
         keySet = Collections::CreateSynchronizedSet(new KeySet(this), this);
         VOLATILE_SET(mKeySet, keySet);
     }
-    *keys = keySet;
-    REFCOUNT_ADD(*keys);
+    keySet.MoveTo(keys);
     return NOERROR;
 }
 
@@ -424,8 +423,7 @@ ECode Hashtable::GetEntrySet(
         entrySet = Collections::CreateSynchronizedSet(new EntrySet(this), this);
         VOLATILE_SET(mEntrySet, entrySet);
     }
-    *entries = entrySet;
-    REFCOUNT_ADD(*entries);
+    entrySet.MoveTo(entries);
     return NOERROR;
 }
 
@@ -440,8 +438,7 @@ ECode Hashtable::GetValues(
                 new ValueCollection(this), this);
         VOLATILE_SET(mValues, valueColl);
     }
-    *values = valueColl;
-    REFCOUNT_ADD(*values);
+    valueColl.MoveTo(values);
     return NOERROR;
 }
 

@@ -393,15 +393,13 @@ ECode Calendar::GetDisplayNames(
                         GetBaseStyle(style), locale, &map));
             }
         }
-        *names = map;
-        REFCOUNT_ADD(*names);
+        map.MoveTo(names);
         return NOERROR;
     }
 
     // SHORT or LONG
     AutoPtr<IMap> map = GetDisplayNamesImpl(field, style, locale);
-    *names = map;
-    REFCOUNT_ADD(*names);
+    map.MoveTo(names);
     return NOERROR;
 }
 

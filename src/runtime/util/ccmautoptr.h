@@ -51,7 +51,7 @@ public:
         /* [in] */ AutoPtr<T>&& other);
 
     void MoveTo(
-        /* [in] */ T** other);
+        /* [out] */ T** other);
 
     inline operator T*() const;
 
@@ -185,7 +185,7 @@ AutoPtr<T>& AutoPtr<T>::operator=(
 
 template<class T>
 void AutoPtr<T>::MoveTo(
-    /* [in] */ T** other)
+    /* [out] */ T** other)
 {
     *other = mPtr;
     mPtr = nullptr;

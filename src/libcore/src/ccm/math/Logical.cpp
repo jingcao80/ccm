@@ -27,14 +27,12 @@ ECode Logical::Not(
     /* [out] */ IBigInteger** result)
 {
     if (value->mSign == 0) {
-        *result = CBigInteger::GetMINUS_ONE();
-        REFCOUNT_ADD(*result);
+        CBigInteger::GetMINUS_ONE().MoveTo(result);
         return NOERROR;
     }
     Boolean same;
     if (value->Equals(CBigInteger::GetMINUS_ONE(), &same), same) {
-        *result = CBigInteger::GetZERO();
-        REFCOUNT_ADD(*result);
+        CBigInteger::GetZERO().MoveTo(result);
         return NOERROR;
     }
     Array<Integer> resDigits(value->mNumberLength + 1);
@@ -78,8 +76,7 @@ ECode Logical::And(
     /* [out] */ IBigInteger** result)
 {
     if (that->mSign == 0 || value->mSign == 0) {
-        *result = CBigInteger::GetZERO();
-        REFCOUNT_ADD(*result);
+        CBigInteger::GetZERO().MoveTo(result);
         return NOERROR;
     }
     Boolean same;
@@ -124,8 +121,7 @@ ECode Logical::AddPositive(
     Integer i = Math::Max(value->GetFirstNonzeroDigit(), that->GetFirstNonzeroDigit());
 
     if (i >= resLength) {
-        *result = CBigInteger::GetZERO();
-        REFCOUNT_ADD(*result);
+        CBigInteger::GetZERO().MoveTo(result);
         return NOERROR;
     }
 
@@ -148,8 +144,7 @@ ECode Logical::AddDiffSigns(
     // Look if the trailing zeros of the negative will "blank" all
     // the positive digits
     if (iNeg >= positive->mNumberLength) {
-        *result = CBigInteger::GetZERO();
-        REFCOUNT_ADD(*result);
+        CBigInteger::GetZERO().MoveTo(result);
         return NOERROR;
     }
     Integer resLength = positive->mNumberLength;
@@ -247,8 +242,7 @@ ECode Logical::AndNot(
         return NOERROR;
     }
     if (value->mSign == 0) {
-        *result = CBigInteger::GetZERO();
-        REFCOUNT_ADD(*result);
+        CBigInteger::GetZERO().MoveTo(result);
         return NOERROR;
     }
     Boolean same;
@@ -256,8 +250,7 @@ ECode Logical::AndNot(
         return that->Not(result);
     }
     if (that->Equals(CBigInteger::GetMINUS_ONE(), &same), same) {
-        *result = CBigInteger::GetZERO();
-        REFCOUNT_ADD(*result);
+        CBigInteger::GetZERO().MoveTo(result);
         return NOERROR;
     }
 
@@ -417,8 +410,7 @@ ECode Logical::AddNotNegative(
     Integer iThat =  that->GetFirstNonzeroDigit();
 
     if (iValue >= that->mNumberLength) {
-        *result = CBigInteger::GetZERO();
-        REFCOUNT_ADD(*result);
+        CBigInteger::GetZERO().MoveTo(result);
         return NOERROR;
     }
 
@@ -468,8 +460,7 @@ ECode Logical::Or(
     Boolean same;
     if ((that->Equals(CBigInteger::GetMINUS_ONE(), &same), same) ||
             (value->Equals(CBigInteger::GetMINUS_ONE(), &same), same)) {
-        *result = CBigInteger::GetMINUS_ONE();
-        REFCOUNT_ADD(*result);
+        CBigInteger::GetMINUS_ONE().MoveTo(result);
         return NOERROR;
     }
     if (that->mSign == 0) {

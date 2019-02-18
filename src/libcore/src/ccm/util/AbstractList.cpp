@@ -465,8 +465,7 @@ ECode AbstractList::Itr::Next(
     mLastRet = i;
     mCursor = i + 1;
     if (object != nullptr) {
-        *object = next;
-        REFCOUNT_ADD(*object);
+        next.MoveTo(object);
     }
     return NOERROR;
 }
@@ -524,8 +523,7 @@ ECode AbstractList::ListItr::Previous(
     }
     mLastRet = mCursor = i;
     if (object != nullptr) {
-        *object = prev;
-        REFCOUNT_ADD(*object);
+        prev.MoveTo(object);
     }
     return NOERROR;
 }

@@ -482,8 +482,7 @@ ECode LinkedHashMap::LinkedHashIterator::GetNextNode(
     }
     mCurrent = e;
     mNext = e->mAfter;
-    *node = e;
-    REFCOUNT_ADD(*node);
+    e.MoveTo(node);
     return NOERROR;
 }
 

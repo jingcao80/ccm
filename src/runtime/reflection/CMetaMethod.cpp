@@ -174,8 +174,7 @@ ECode CMetaMethod::CreateArgumentList(
 
     AutoPtr<IArgumentList> args = new CArgumentList(
             mOwner->mOwner->mMetadata, mMetadata);
-    *argList = args;
-    REFCOUNT_ADD(*argList);
+    args.MoveTo(argList);
     return NOERROR;
 }
 

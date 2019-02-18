@@ -149,8 +149,7 @@ ECode CDBusChannelFactory::UnmarshalInterface(
     channel->mName = ((InterfacePack*)ipack)->GetDBusName();
     RegisterImportObject(mType, ipack, IObject::Probe(proxy));
 
-    *object = proxy;
-    REFCOUNT_ADD(*object);
+    proxy.MoveTo((IProxy**)object);
     return NOERROR;
 }
 

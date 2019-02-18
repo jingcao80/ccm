@@ -92,8 +92,7 @@ ECode ThreadLocal::SetInitialValue(
     else {
         CreateMap(t, v);
     }
-    *value = v;
-    REFCOUNT_ADD(*value);
+    v.MoveTo(value);
     return NOERROR;
 }
 

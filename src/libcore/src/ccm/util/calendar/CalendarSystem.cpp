@@ -93,8 +93,7 @@ ECode CalendarSystem::ForName(
     IMap::Probe(sCalendars)->Get(CoreUtils::Box(calendarName),
             (IInterface**)&cal);
     if (cal != nullptr) {
-        *system = cal;
-        REFCOUNT_ADD(*system);
+        cal.MoveTo(system);
         return NOERROR;
     }
 
@@ -127,8 +126,12 @@ ECode CalendarSystem::ForName(
 
     AutoPtr<ICalendarSystem> cs;
     sCalendars->PutIfAbsent(CoreUtils::Box(calendarName), cal, (IInterface**)&cs);
-    *system = cs == nullptr ? cal : cs;
-    REFCOUNT_ADD(*system);
+    if (cs == nullptr) {
+        cal.MoveTo(system);
+    }
+    else {
+        cs.MoveTo(system);
+    }
     return NOERROR;
 }
 
@@ -146,8 +149,7 @@ ECode CalendarSystem::GetCalendarProperties(
     ECode ec = calendarProps->Load(is);
     is->Close();
     if (FAILED(ec)) return ec;
-    *prop = calendarProps;
-    REFCOUNT_ADD(*prop);
+    calendarProps.MoveTo(prop);
     return NOERROR;
 }
 

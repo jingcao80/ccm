@@ -533,9 +533,7 @@ ECode LanguageTag::GetExtlangs(
         REFCOUNT_ADD(*extlangs);
         return NOERROR;
     }
-    AutoPtr<IList> unmodL = Collections::CreateUnmodifiableList(mExtlangs);
-    *extlangs = unmodL;
-    REFCOUNT_ADD(*extlangs);
+    Collections::CreateUnmodifiableList(mExtlangs).MoveTo(extlangs);
     return NOERROR;
 }
 
@@ -568,9 +566,7 @@ ECode LanguageTag::GetVariants(
         REFCOUNT_ADD(*variants);
         return NOERROR;
     }
-    AutoPtr<IList> unmodL = Collections::CreateUnmodifiableList(mVariants);
-    *variants = unmodL;
-    REFCOUNT_ADD(*variants);
+    Collections::CreateUnmodifiableList(mVariants).MoveTo(variants);
     return NOERROR;
 }
 
@@ -585,9 +581,7 @@ ECode LanguageTag::GetExtensions(
         REFCOUNT_ADD(*extensions);
         return NOERROR;
     }
-    AutoPtr<IList> unmodL = Collections::CreateUnmodifiableList(mExtensions);
-    *extensions = unmodL;
-    REFCOUNT_ADD(*extensions);
+    Collections::CreateUnmodifiableList(mExtensions).MoveTo(extensions);
     return NOERROR;
 }
 

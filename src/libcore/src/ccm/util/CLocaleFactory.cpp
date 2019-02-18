@@ -29,9 +29,7 @@ ECode CLocaleFactory::GetDefault(
 {
     VALIDATE_NOT_NULL(l);
 
-    AutoPtr<ILocale> lo = Locale::GetDefault();
-    *l = lo;
-    REFCOUNT_ADD(*l);
+    Locale::GetDefault().MoveTo(l);
     return NOERROR;
 }
 

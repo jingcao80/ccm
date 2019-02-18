@@ -43,9 +43,7 @@ ECode CCalendarSystemFactory::GetGregorianCalendar(
 {
     VALIDATE_NOT_NULL(gcal);
 
-    AutoPtr<IGregorian> g = CalendarSystem::GetGregorianCalendar();
-    *gcal = g;
-    REFCOUNT_ADD(*gcal);
+    CalendarSystem::GetGregorianCalendar().MoveTo(gcal);
     return NOERROR;
 }
 

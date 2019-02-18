@@ -216,8 +216,7 @@ RESTART_FROM_HEAD:
                     UpdateHead(h, (q != nullptr) ? q : p);
                 }
                 if (head != nullptr) {
-                    *head = item;
-                    REFCOUNT_ADD(*head);
+                    item.MoveTo(head);
                     return NOERROR;
                 }
             }
@@ -256,16 +255,14 @@ RESTART_FROM_HEAD:
             VOLATILE_GET(AutoPtr<IInterface> item, p->mItem);
             if (item != nullptr) {
                 UpdateHead(h, p);
-                *head = item;
-                REFCOUNT_ADD(*head);
+                item.MoveTo(head);
                 return NOERROR;
             }
             else {
                 VOLATILE_GET(q, p->mNext);
                 if (q == nullptr) {
                     UpdateHead(h, p);
-                    *head = item;
-                    REFCOUNT_ADD(*head);
+                    item.MoveTo(head);
                     return NOERROR;
                 }
                 else {

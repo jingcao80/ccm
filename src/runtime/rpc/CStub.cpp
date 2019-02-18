@@ -289,8 +289,7 @@ ECode InterfaceStub::UnmarshalArguments(
         }
     }
 
-    *argList = args;
-    REFCOUNT_ADD(*argList);
+    args.MoveTo(argList);
     return NOERROR;
 }
 
@@ -506,8 +505,7 @@ ECode InterfaceStub::MarshalResults(
         }
     }
 
-    *resParcel = outParcel;
-    REFCOUNT_ADD(*resParcel);
+    outParcel.MoveTo(resParcel);
     return NOERROR;
 }
 

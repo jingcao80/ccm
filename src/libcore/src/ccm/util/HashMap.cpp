@@ -219,8 +219,7 @@ ECode HashMap::Put(
 {
     AutoPtr<IInterface> v = PutVal(Hash(key), key, value, false, true);
     if (prevValue != nullptr) {
-        *prevValue = v;
-        REFCOUNT_ADD(*prevValue);
+        v.MoveTo(prevValue);
     }
     return NOERROR;
 }
@@ -513,8 +512,7 @@ ECode HashMap::GetKeySet(
         ks = new KeySet(this);
         mKeySet = ks;
     }
-    *keys = ks;
-    REFCOUNT_ADD(*keys);
+    ks.MoveTo(keys);
     return NOERROR;
 }
 
@@ -528,8 +526,7 @@ ECode HashMap::GetValues(
         vs = new Values(this);
         mValues = vs;
     }
-    *values = vs;
-    REFCOUNT_ADD(*values);
+    vs.MoveTo(values);
     return NOERROR;
 }
 
@@ -553,8 +550,7 @@ ECode HashMap::PutIfAbsent(
 {
     AutoPtr<IInterface> v = PutVal(Hash(key), key, value, true, true);
     if (prevValue != nullptr) {
-        *prevValue = v;
-        REFCOUNT_ADD(*prevValue);
+        v.MoveTo(prevValue);
     }
     return NOERROR;
 }
@@ -912,8 +908,7 @@ ECode HashMap::HashIterator::GetNextNode(
         do {}
         while (mIndex < t.GetLength() && (mNext = t[mIndex++], mNext == nullptr));
     }
-    *node = e;
-    REFCOUNT_ADD(*node);
+    e.MoveTo(node);
     return NOERROR;
 }
 

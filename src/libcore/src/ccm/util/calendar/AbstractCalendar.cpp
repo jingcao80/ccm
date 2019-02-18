@@ -313,8 +313,7 @@ ECode AbstractCalendar::GetNthDayOfWeek(
         nfd = 7 * nth + GetDayOfWeekDateAfter(fd, dayOfWeek);
     }
     GetCalendarDateFromFixedDate(ndate, nfd);
-    *outDate = ndate;
-    REFCOUNT_ADD(*outDate);
+    ndate.MoveTo(outDate);
     return NOERROR;
 }
 

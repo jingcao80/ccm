@@ -363,8 +363,7 @@ ECode BigInteger::ValueOf(
         if (value != -1) {
             return CBigInteger::New(-1, -value, IID_IBigInteger, (IInterface**)bi);
         }
-        *bi = GetMINUS_ONE();
-        REFCOUNT_ADD(*bi);
+        GetMINUS_ONE().MoveTo(bi);
         return NOERROR;
     }
     else if (value < GetSMALL_VALUES().GetLength()) {

@@ -353,8 +353,7 @@ ECode ConcurrentHashMap::PutVal(
                 }
                 if (oldVal != nullptr) {
                     if (prevValue != nullptr) {
-                        *prevValue = oldVal;
-                        REFCOUNT_ADD(*prevValue);
+                        oldVal.MoveTo(prevValue);
                     }
                     return NOERROR;
                 }
@@ -481,8 +480,7 @@ ECode ConcurrentHashMap::ReplaceNode(
                         AddCount(-1ll, -1);
                     }
                     if (prevValue != nullptr) {
-                        *prevValue = oldVal;
-                        REFCOUNT_ADD(*prevValue);
+                        oldVal.MoveTo(prevValue);
                     }
                     return NOERROR;
                 }
@@ -2130,8 +2128,7 @@ ECode ConcurrentHashMap::KeyIterator::Next(
     AutoPtr<IInterface> k = p->mKey;
     mLastReturned = p;
     Advance();
-    *object = k;
-    REFCOUNT_ADD(*object);
+    k.MoveTo(object);
     return NOERROR;
 }
 
@@ -2174,8 +2171,7 @@ ECode ConcurrentHashMap::ValueIterator::Next(
     VOLATILE_GET(AutoPtr<IInterface> v, p->mVal);
     mLastReturned = p;
     Advance();
-    *object = v;
-    REFCOUNT_ADD(*object);
+    v.MoveTo(object);
     return NOERROR;
 }
 

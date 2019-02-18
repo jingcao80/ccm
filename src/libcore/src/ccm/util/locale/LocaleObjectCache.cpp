@@ -76,8 +76,7 @@ ECode LocaleObjectCache::Get(
             }
         }
     }
-    *value = v;
-    REFCOUNT_ADD(*value);
+    v.MoveTo(value);
     return NOERROR;
 }
 

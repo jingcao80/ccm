@@ -966,8 +966,7 @@ ECode File::CreateTempFile(
         return E_IO_EXCEPTION;
     }
 
-    *temp = f;
-    REFCOUNT_ADD(*temp);
+    f.MoveTo(temp);
     return NOERROR;
 }
 
@@ -1038,8 +1037,7 @@ ECode File::TempDirectory::GenerateFile(
         Logger::E("File", "Unable to create temporary file");
         return E_IO_EXCEPTION;
     }
-    *temp = f;
-    REFCOUNT_ADD(*temp);
+    f.MoveTo(temp);
     return NOERROR;
 }
 
