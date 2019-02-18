@@ -14,48 +14,34 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/core/CStringBuilder.h"
-#include "ccm/core/StackTraceElement.h"
+#include "ccm.core.CStringBuilder.h"
+#include "ccm.core.IStringBuilder.h"
 #include <ccmautoptr.h>
+#include <ccmobject.h>
+#include <gtest/gtest.h>
 
-using ccm::io::IID_ISerializable;
+using namespace ccm;
+using ccm::core::CStringBuilder;
+using ccm::core::IID_IStringBuilder;
+using ccm::core::IStringBuilder;
 
-namespace ccm {
-namespace core {
-
-CCM_INTERFACE_IMPL_2(StackTraceElement, SyncObject, IStackTraceElement, ISerializable);
-
-ECode StackTraceElement::Constructor(
-    /* [in] */ const String& no,
-    /* [in] */ const String& pc,
-    /* [in] */ const String& soname,
-    /* [in] */ const String& symbol)
+TEST(CharTest, TestIStringBuilderAppend)
 {
-    mNo = no;
-    mPC = pc;
-    mSoname = soname;
-    mSymbol = symbol;
-    return NOERROR;
-}
-
-ECode StackTraceElement::ToString(
-    /* [out] */ String* desc)
-{
-    VALIDATE_NOT_NULL(desc);
-
     AutoPtr<IStringBuilder> sb;
     CStringBuilder::New(IID_IStringBuilder, (IInterface**)&sb);
-    sb->Append(mNo);
-    sb->Append(String("  "));
-    sb->Append(mPC);
-    sb->Append(U' ');
-    sb->Append(mSoname);
-    if (!mSymbol.IsNullOrEmpty()) {
-        sb->Append(U' ');
-        sb->Append(mSymbol);
-    }
-    return sb->ToString(desc);
+    sb->Append(U'H');
+    EXPECT_STREQ("H", Object::ToString(sb).string());
+    sb->Append(U'e');
+    sb->Append(U'l');
+    sb->Append(U'l');
+    sb->Append(U'o');
+    EXPECT_STREQ("Hello", Object::ToString(sb).string());
+    sb->Append(String(" World."));
+    EXPECT_STREQ("Hello World.", Object::ToString(sb).string());
 }
 
-}
+int main(int argc, char **argv)
+{
+    testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }

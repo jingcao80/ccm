@@ -162,12 +162,12 @@ ECode BigInt::CheckString(
     Integer i = 0;
     if (charCount > 0) {
         Char ch = s.GetChar(0);
-        if (ch == '+') {
+        if (ch == U'+') {
             // We support leading +, but OpenSSL doesn't, so we need to strip it.
             s = s.Substring(1);
             --charCount;
         }
-        else if (ch == '-') {
+        else if (ch == U'-') {
             ++i;
         }
     }
@@ -201,9 +201,9 @@ String BigInt::ToAscii(
         Char ch = s.GetChar(i);
         Integer value = Character::Digit(ch, base);
         if (value >= 0 && value <= 9) {
-            ch = (Char)('0' + value);
+            ch = (Char)(U'0' + value);
         }
-        result->AppendChar(ch);
+        result->Append(ch);
     }
     String str;
     result->ToString(&str);

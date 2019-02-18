@@ -601,7 +601,7 @@ ECode ConcurrentHashMap::ToString(
     Traverser it(t, f, 0, f);
     AutoPtr<IStringBuilder> sb;
     CStringBuilder::New(IID_IStringBuilder, (IInterface**)&sb);
-    sb->AppendChar('{');
+    sb->Append(U'{');
     AutoPtr<Node> p;
     if ((p = it.Advance()) != nullptr) {
         for (;;) {
@@ -609,17 +609,17 @@ ECode ConcurrentHashMap::ToString(
             VOLATILE_GET(AutoPtr<IInterface> v, p->mVal);
             sb->Append(IInterface::Equals(k, (IMap*)this) ?
                     String("(this Map)") : Object::ToString(k));
-            sb->AppendChar('=');
+            sb->Append(U'=');
             sb->Append(IInterface::Equals(v, (IMap*)this) ?
                     String("(this Map)") : Object::ToString(v));
             if ((p = it.Advance()) == nullptr) {
                 break;
             }
-            sb->AppendChar(',');
-            sb->AppendChar(' ');
+            sb->Append(U',');
+            sb->Append(U' ');
         }
     }
-    sb->AppendChar('}');
+    sb->Append(U'}');
     return sb->ToString(desc);
 }
 
@@ -2410,7 +2410,7 @@ ECode ConcurrentHashMap::CollectionView::ToString(
 {
     AutoPtr<IStringBuilder> sb;
     CStringBuilder::New(IID_IStringBuilder, (IInterface**)&sb);
-    sb->AppendChar('[');
+    sb->Append(U'[');
     FOR_EACH(IInterface*, e, , this) {
         if (IInterface::Equals(e, (IObject*)this)) {
             sb->Append(String("(this Collection)"));
@@ -2421,10 +2421,10 @@ ECode ConcurrentHashMap::CollectionView::ToString(
         if (it->HasNext(&hasNext), !hasNext) {
             break;
         }
-        sb->AppendChar(',');
-        sb->AppendChar(' ');
+        sb->Append(U',');
+        sb->Append(U' ');
     } END_FOR_EACH();
-    sb->AppendChar(']');
+    sb->Append(U']');
     return sb->ToString(desc);
 }
 

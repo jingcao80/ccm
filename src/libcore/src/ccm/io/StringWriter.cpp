@@ -50,7 +50,7 @@ ECode StringWriter::Constructor(
 ECode StringWriter::Write(
     /* [in] */ Integer c)
 {
-    return mBuf->AppendChar((Char)c);
+    return mBuf->Append((Char)c);
 }
 
 ECode StringWriter::Write(

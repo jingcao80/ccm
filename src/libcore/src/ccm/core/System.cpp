@@ -222,10 +222,10 @@ ECode System::Log(
 {
     Integer level;
     switch(type) {
-        case 'D': case 'd': level = Logger::DEBUG; break;
-        case 'E': case 'e': level = Logger::ERROR; break;
-        case 'V': case 'v': level = Logger::VERBOSE; break;
-        case 'W': case 'w': level = Logger::WARNING; break;
+        case U'D': case U'd': level = Logger::DEBUG; break;
+        case U'E': case U'e': level = Logger::ERROR; break;
+        case U'V': case U'v': level = Logger::VERBOSE; break;
+        case U'W': case U'w': level = Logger::WARNING; break;
         default: level = Logger::VERBOSE; break;
     }
 

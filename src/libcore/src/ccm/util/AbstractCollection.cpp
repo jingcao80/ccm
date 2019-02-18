@@ -371,19 +371,19 @@ ECode AbstractCollection::ToString(
 
     AutoPtr<IStringBuilder> sb;
     CStringBuilder::New(IID_IStringBuilder, (IInterface**)&sb);
-    sb->AppendChar('[');
+    sb->Append(U'[');
     for (;;) {
         AutoPtr<IInterface> e;
         it->Next(&e);
         sb->Append(IInterface::Equals(e, (ICollection*)this) ?
                 String("(this Collection)") : Object::ToString(e));
         if (it->HasNext(&hasNext), !hasNext) {
-            sb->AppendChar(']');
+            sb->Append(U']');
             sb->ToString(str);
             return NOERROR;
         }
-        sb->AppendChar(',');
-        sb->AppendChar(' ');
+        sb->Append(U',');
+        sb->Append(U' ');
     }
 }
 

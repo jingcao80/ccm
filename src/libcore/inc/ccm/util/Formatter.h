@@ -502,42 +502,42 @@ private:
 
     public:
         // Byte, Short, Integer, Long, BigInteger
-        static constexpr Char DECIMAL_INTEGER     = 'd';
-        static constexpr Char OCTAL_INTEGER       = 'o';
-        static constexpr Char HEXADECIMAL_INTEGER = 'x';
-        static constexpr Char HEXADECIMAL_INTEGER_UPPER = 'X';
+        static constexpr Char DECIMAL_INTEGER     = U'd';
+        static constexpr Char OCTAL_INTEGER       = U'o';
+        static constexpr Char HEXADECIMAL_INTEGER = U'x';
+        static constexpr Char HEXADECIMAL_INTEGER_UPPER = U'X';
 
         // Float, Double, BigDecimal
-        static constexpr Char SCIENTIFIC          = 'e';
-        static constexpr Char SCIENTIFIC_UPPER    = 'E';
-        static constexpr Char GENERAL             = 'g';
-        static constexpr Char GENERAL_UPPER       = 'G';
-        static constexpr Char DECIMAL_FLOAT       = 'f';
-        static constexpr Char HEXADECIMAL_FLOAT   = 'a';
-        static constexpr Char HEXADECIMAL_FLOAT_UPPER = 'A';
+        static constexpr Char SCIENTIFIC          = U'e';
+        static constexpr Char SCIENTIFIC_UPPER    = U'E';
+        static constexpr Char GENERAL             = U'g';
+        static constexpr Char GENERAL_UPPER       = U'G';
+        static constexpr Char DECIMAL_FLOAT       = U'f';
+        static constexpr Char HEXADECIMAL_FLOAT   = U'a';
+        static constexpr Char HEXADECIMAL_FLOAT_UPPER = U'A';
 
         // Character, Byte, Short, Integer
-        static constexpr Char CHARACTER           = 'c';
-        static constexpr Char CHARACTER_UPPER     = 'C';
+        static constexpr Char CHARACTER           = U'c';
+        static constexpr Char CHARACTER_UPPER     = U'C';
 
         // ccm.util.CDate, ccm.util.CCalendar, long
-        static constexpr Char DATE_TIME           = 't';
-        static constexpr Char DATE_TIME_UPPER     = 'T';
+        static constexpr Char DATE_TIME           = U't';
+        static constexpr Char DATE_TIME_UPPER     = U'T';
 
         // if (arg.TYPE != boolean) return boolean
         // if (arg != null) return true; else return false;
-        static constexpr Char BOOLEAN             = 'b';
-        static constexpr Char BOOLEAN_UPPER       = 'B';
+        static constexpr Char BOOLEAN             = U'b';
+        static constexpr Char BOOLEAN_UPPER       = U'B';
         // if (arg instanceof Formattable) arg.formatTo()
         // else arg.toString();
-        static constexpr Char STRING              = 's';
-        static constexpr Char STRING_UPPER        = 'S';
+        static constexpr Char STRING              = U's';
+        static constexpr Char STRING_UPPER        = U'S';
         // arg.hashCode()
-        static constexpr Char HASHCODE            = 'h';
-        static constexpr Char HASHCODE_UPPER      = 'H';
+        static constexpr Char HASHCODE            = U'h';
+        static constexpr Char HASHCODE_UPPER      = U'H';
 
-        static constexpr Char LINE_SEPARATOR      = 'n';
-        static constexpr Char PERCENT_SIGN        = '%';
+        static constexpr Char LINE_SEPARATOR      = U'n';
+        static constexpr Char PERCENT_SIGN        = U'%';
     };
 
     class DateTime
@@ -550,42 +550,42 @@ private:
         DateTime();
 
     public:
-        static constexpr Char HOUR_OF_DAY_0 = 'H'; // (00 - 23)
-        static constexpr Char HOUR_0        = 'I'; // (01 - 12)
-        static constexpr Char HOUR_OF_DAY   = 'k'; // (0 - 23) -- like H
-        static constexpr Char HOUR          = 'l'; // (1 - 12) -- like I
-        static constexpr Char MINUTE        = 'M'; // (00 - 59)
-        static constexpr Char NANOSECOND    = 'N'; // (000000000 - 999999999)
-        static constexpr Char MILLISECOND   = 'L'; // (000 - 999)
-        static constexpr Char MILLISECOND_SINCE_EPOCH = 'Q'; // (0 - 99...?)
-        static constexpr Char AM_PM         = 'p'; // (am or pm)
-        static constexpr Char SECONDS_SINCE_EPOCH = 's'; // (0 - 99...?)
-        static constexpr Char SECOND        = 'S'; // (00 - 60 - leap second)
-        static constexpr Char TIME          = 'T'; // (24 hour hh:mm:ss)
-        static constexpr Char ZONE_NUMERIC  = 'z'; // (-1200 - +1200) - ls minus?
-        static constexpr Char ZONE          = 'Z'; // (symbol)
+        static constexpr Char HOUR_OF_DAY_0 = U'H'; // (00 - 23)
+        static constexpr Char HOUR_0        = U'I'; // (01 - 12)
+        static constexpr Char HOUR_OF_DAY   = U'k'; // (0 - 23) -- like H
+        static constexpr Char HOUR          = U'l'; // (1 - 12) -- like I
+        static constexpr Char MINUTE        = U'M'; // (00 - 59)
+        static constexpr Char NANOSECOND    = U'N'; // (000000000 - 999999999)
+        static constexpr Char MILLISECOND   = U'L'; // (000 - 999)
+        static constexpr Char MILLISECOND_SINCE_EPOCH = U'Q'; // (0 - 99...?)
+        static constexpr Char AM_PM         = U'p'; // (am or pm)
+        static constexpr Char SECONDS_SINCE_EPOCH = U's'; // (0 - 99...?)
+        static constexpr Char SECOND        = U'S'; // (00 - 60 - leap second)
+        static constexpr Char TIME          = U'T'; // (24 hour hh:mm:ss)
+        static constexpr Char ZONE_NUMERIC  = U'z'; // (-1200 - +1200) - ls minus?
+        static constexpr Char ZONE          = U'Z'; // (symbol)
 
         // Date
-        static constexpr Char NAME_OF_DAY_ABBREV    = 'a'; // 'a'
-        static constexpr Char NAME_OF_DAY           = 'A'; // 'A'
-        static constexpr Char NAME_OF_MONTH_ABBREV  = 'b'; // 'b'
-        static constexpr Char NAME_OF_MONTH         = 'B'; // 'B'
-        static constexpr Char CENTURY               = 'C'; // (00 - 99)
-        static constexpr Char DAY_OF_MONTH_0        = 'd'; // (01 - 31)
-        static constexpr Char DAY_OF_MONTH          = 'e'; // (1 - 31) -- like d
-        static constexpr Char NAME_OF_MONTH_ABBREV_X  = 'h'; // -- same b
-        static constexpr Char DAY_OF_YEAR           = 'j'; // (001 - 366)
-        static constexpr Char MONTH                 = 'm'; // (01 - 12)
-        static constexpr Char YEAR_2                = 'y'; // (00 - 99)
-        static constexpr Char YEAR_4                = 'Y'; // (0000 - 9999)
+        static constexpr Char NAME_OF_DAY_ABBREV    = U'a'; // 'a'
+        static constexpr Char NAME_OF_DAY           = U'A'; // 'A'
+        static constexpr Char NAME_OF_MONTH_ABBREV  = U'b'; // 'b'
+        static constexpr Char NAME_OF_MONTH         = U'B'; // 'B'
+        static constexpr Char CENTURY               = U'C'; // (00 - 99)
+        static constexpr Char DAY_OF_MONTH_0        = U'd'; // (01 - 31)
+        static constexpr Char DAY_OF_MONTH          = U'e'; // (1 - 31) -- like d
+        static constexpr Char NAME_OF_MONTH_ABBREV_X  = U'h'; // -- same b
+        static constexpr Char DAY_OF_YEAR           = U'j'; // (001 - 366)
+        static constexpr Char MONTH                 = U'm'; // (01 - 12)
+        static constexpr Char YEAR_2                = U'y'; // (00 - 99)
+        static constexpr Char YEAR_4                = U'Y'; // (0000 - 9999)
 
         // Composites
-        static constexpr Char TIME_12_HOUR  = 'r'; // (hh:mm:ss [AP]M)
-        static constexpr Char TIME_24_HOUR  = 'R'; // (hh:mm same as %H:%M)
-        static constexpr Char DATE_TIME             = 'c';
+        static constexpr Char TIME_12_HOUR  = U'r'; // (hh:mm:ss [AP]M)
+        static constexpr Char TIME_24_HOUR  = U'R'; // (hh:mm same as %H:%M)
+        static constexpr Char DATE_TIME             = U'c';
                                             // (Sat Nov 04 12:02:33 EST 1999)
-        static constexpr Char DATE                  = 'D'; // (mm/dd/yy)
-        static constexpr Char ISO_STANDARD_DATE     = 'F'; // (%Y-%m-%d)
+        static constexpr Char DATE                  = U'D'; // (mm/dd/yy)
+        static constexpr Char ISO_STANDARD_DATE     = U'F'; // (%Y-%m-%d)
     };
 
 public:

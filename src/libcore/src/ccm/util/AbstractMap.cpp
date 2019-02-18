@@ -632,7 +632,7 @@ ECode AbstractMap::ToString(
 
     AutoPtr<IStringBuilder> sb;
     CStringBuilder::New(IID_IStringBuilder, (IInterface**)&sb);
-    sb->AppendChar('{');
+    sb->Append(U'{');
     for (;;) {
         AutoPtr<IInterface> e;
         it->Next(&e);
@@ -645,7 +645,7 @@ ECode AbstractMap::ToString(
         else {
             sb->Append(key);
         }
-        sb->AppendChar('=');
+        sb->Append(U'=');
         if (IInterface::Equals(value, (IMap*)this)) {
             sb->Append(String("(this Map)"));
         }
@@ -653,11 +653,11 @@ ECode AbstractMap::ToString(
             sb->Append(value);
         }
         if (it->HasNext(&hasNext), !hasNext) {
-            sb->AppendChar('}');
+            sb->Append(U'}');
             return sb->ToString(str);
         }
-        sb->AppendChar(',');
-        sb->AppendChar(' ');
+        sb->Append(U',');
+        sb->Append(U' ');
     }
 }
 

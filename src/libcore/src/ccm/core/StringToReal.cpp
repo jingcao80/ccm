@@ -913,12 +913,12 @@ ECode StringToReal::InitialParse(
         Logger::E("StringToReal", "Invalid Double: \"%s\"", s.string());
         return E_NUMBER_FORMAT_EXCEPTION;
     }
-    pair.mNegative = (s.GetChar(0) == '-');
+    pair.mNegative = (s.GetChar(0) == U'-');
 
     // We ignore trailing double or float indicators; the method you called determines
     // what you'll get.
     Char c = s.GetChar(length - 1);
-    if (c == 'D' || c == 'd' || c == 'F' || c == 'f') {
+    if (c == U'D' || c == U'd' || c == U'F' || c == U'f') {
         length--;
         if (length == 0) {
             Logger::E("StringToReal", "Invalid Double: \"%s\"", s.string());
@@ -926,7 +926,7 @@ ECode StringToReal::InitialParse(
         }
     }
 
-    Integer end = Math::Max(s.IndexOf('E'), s.IndexOf('e'));
+    Integer end = Math::Max(s.IndexOf(U'E'), s.IndexOf(U'e'));
     if (end != -1) {
         // Is there anything after the 'e'?
         if (end + 1 == length) {
@@ -938,8 +938,8 @@ ECode StringToReal::InitialParse(
         Integer exponentOffset = end + 1;
         Boolean negativeExponent = false;
         Char firstExponentChar = s.GetChar(exponentOffset);
-        if (firstExponentChar == '+' || firstExponentChar == '-') {
-            negativeExponent = (firstExponentChar == '-');
+        if (firstExponentChar == U'+' || firstExponentChar == U'-') {
+            negativeExponent = (firstExponentChar == U'-');
             ++exponentOffset;
         }
 
@@ -951,7 +951,7 @@ ECode StringToReal::InitialParse(
         }
         for (Integer i = 0; i < exponentString.GetLength(); ++i) {
             Char ch = exponentString.GetChar(i);
-            if (ch < '0' || ch > '9') {
+            if (ch < U'0' || ch > U'9') {
                 Logger::E("StringToReal", "Invalid Double: \"%s\"", s.string());
                 return E_NUMBER_FORMAT_EXCEPTION;
             }
@@ -983,12 +983,12 @@ ECode StringToReal::InitialParse(
 
     Integer start = 0;
     c = s.GetChar(start);
-    if (c == '-') {
+    if (c == U'-') {
         ++start;
         --length;
         pair.mNegative = true;
     }
-    else if (c == '+') {
+    else if (c == U'+') {
         ++start;
         --length;
     }
@@ -1001,14 +1001,14 @@ ECode StringToReal::InitialParse(
     Integer decimal = -1;
     for (Integer i = start; i < end; i++) {
         Char mc = s.GetChar(i);
-        if (mc == '.') {
+        if (mc == U'.') {
             if (decimal != -1) {
                 Logger::E("StringToReal", "Invalid Double: \"%s\"", s.string());
                 return E_NUMBER_FORMAT_EXCEPTION;
             }
             decimal = i;
         }
-        else if (mc < '0' || mc > '9') {
+        else if (mc < U'0' || mc > U'9') {
             Logger::E("StringToReal", "Invalid Double: \"%s\"", s.string());
             return E_NUMBER_FORMAT_EXCEPTION;
         }
@@ -1034,12 +1034,12 @@ ECode StringToReal::InitialParse(
     }
 
     end = length;
-    while (end > 1 && s.GetChar(end - 1) == '0') {
+    while (end > 1 && s.GetChar(end - 1) == U'0') {
         --end;
     }
 
     start = 0;
-    while (start < end - 1 && s.GetChar(start) == '0') {
+    while (start < end - 1 && s.GetChar(start) == U'0') {
         start++;
     }
 
@@ -1085,12 +1085,12 @@ ECode StringToReal::ParseName(
     Integer i = 0;
     Integer length = name.GetLength();
     Char firstChar = name.GetChar(i);
-    if (firstChar == '-') {
+    if (firstChar == U'-') {
         negative = true;
         ++i;
         --length;
     }
-    else if (firstChar == '+') {
+    else if (firstChar == U'+') {
         ++i;
         --length;
     }
@@ -1121,7 +1121,7 @@ ECode StringToReal::ParseFloat(
 
     // See if this could be a named float
     Char last = ss.GetChar(length - 1);
-    if (last == 'y' || last == 'N') {
+    if (last == U'y' || last == U'N') {
         return ParseName(ss, false, value);
     }
 
@@ -1160,7 +1160,7 @@ ECode StringToReal::ParseDouble(
 
     // See if this could be a named double
     Char last = ss.GetChar(length - 1);
-    if (last == 'y' || last == 'N') {
+    if (last == U'y' || last == U'N') {
         Float result;
         ECode ec = ParseName(ss, true, &result);
         *value = result;

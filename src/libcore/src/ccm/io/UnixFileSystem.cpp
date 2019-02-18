@@ -106,7 +106,7 @@ ECode UnixFileSystem::Normalize(
     for (Integer i = 0; i < n; i++) {
         Char current = normalized[i];
         // Remove duplicate slashes.
-        if (!(current == '/' && prevChar == '/')) {
+        if (!(current == U'/' && prevChar == U'/')) {
             normalized[index++] = current;
         }
 
@@ -114,7 +114,7 @@ ECode UnixFileSystem::Normalize(
     }
 
     // Omit the trailing slash, except when pathname == "/".
-    if (prevChar == '/' && n > 1) {
+    if (prevChar == U'/' && n > 1) {
         index--;
     }
 
@@ -137,7 +137,7 @@ ECode UnixFileSystem::PrefixLength(
         *length = 0;
         return NOERROR;
     }
-    *length = path.GetChar(0) == '/' ? 1 : 0;
+    *length = path.GetChar(0) == U'/' ? 1 : 0;
     return NOERROR;
 }
 
@@ -153,7 +153,7 @@ ECode UnixFileSystem::Resolve(
         return NOERROR;
     }
 
-    if (child.GetChar(0) == '/') {
+    if (child.GetChar(0) == U'/') {
         if (parent.Equals("/")) {
             *resolvedPath = child;
             return NOERROR;
@@ -308,7 +308,7 @@ String UnixFileSystem::ParentOrNull(
     Integer nonDotCount = 0;
     while (idx > 0) {
         Char c = path.GetChar(idx);
-        if (c == '.') {
+        if (c == U'.') {
             if (++adjacentDots >= 2) {
                 return String();
             }
@@ -371,7 +371,7 @@ ECode UnixFileSystem::GetBooleanAttributes(
     Integer value = GetBooleanAttributes0(path);
     String name;
     f->GetName(&name);
-    Boolean hidden = (name.GetLength() > 0) && (name.GetChar(0) == '.');
+    Boolean hidden = (name.GetLength() > 0) && (name.GetChar(0) == U'.');
     *attr = value | (hidden ? BA_HIDDEN : 0);
     return NOERROR;
 }

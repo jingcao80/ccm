@@ -288,7 +288,7 @@ private:
     /**
      * The minus sign to be used with format and parse.
      */
-    Char mMinusSign = '-';
+    Char mMinusSign = U'-';
 
     /**
      * True when a negative sign follows a number.

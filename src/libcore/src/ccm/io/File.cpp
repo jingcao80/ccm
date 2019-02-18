@@ -61,7 +61,7 @@ AutoPtr<FileSystem> File::GetFS()
 Boolean File::IsInvalid()
 {
     if (mStatus == PathStatus::UNKNOWN) {
-        mStatus = (mPath.IndexOf((Char)'\0') < 0) ? PathStatus::CHECKED
+        mStatus = (mPath.IndexOf(U'\0') < 0) ? PathStatus::CHECKED
                                             : PathStatus::INVALID;
     }
     return mStatus == PathStatus::INVALID;
@@ -209,8 +209,8 @@ ECode File::Constructor(
 
     FileSystem* fs = GetFS();
     fs->FromURIPath(p, &p);
-    if (GetSeparatorChar() != '/') {
-        p = p.Replace('/', GetSeparatorChar());
+    if (GetSeparatorChar() != U'/') {
+        p = p.Replace(U'/', GetSeparatorChar());
     }
     fs->Normalize(p, &mPath);
     fs->PrefixLength(mPath, &mPrefixLength);
@@ -331,8 +331,8 @@ String File::Slashify(
     /* [in] */ Boolean isDirectory)
 {
     String p = path;
-    if (GetSeparatorChar() != '/') {
-        p = p.Replace(GetSeparatorChar(), '/');
+    if (GetSeparatorChar() != U'/') {
+        p = p.Replace(GetSeparatorChar(), U'/');
     }
     if (!p.StartsWith("/")) {
         p = String("/") + p;

@@ -271,7 +271,7 @@ Char Formatter::GetZero(
     /* [in] */ ILocale* l)
 {
     // not implemented;
-    return '0';
+    return U'0';
 }
 
 ECode Formatter::GetLocale(
@@ -428,8 +428,8 @@ ECode Formatter::Parse(
     AutoPtr<IArrayList> al;
     CArrayList::New(IID_IArrayList, (IInterface**)&al);
     for (Integer i = 0, len = s.GetLength(); i < len;) {
-        Integer nextPercent = s.IndexOf('%', i);
-        if (s.GetChar(i) != '%') {
+        Integer nextPercent = s.IndexOf(U'%', i);
+        if (s.GetChar(i) != U'%') {
             // This is plain-text part, find the maximal plain-text
             // sequence and store it.
             Integer plainTextStart = i;
@@ -538,14 +538,14 @@ ECode Formatter::Flags::Parse(
 {
     AutoPtr<Flags> f;
     switch (c) {
-        case '-': f = GetLEFT_JUSTIFY(); break;
-        case '#': f = GetALTERNATE(); break;
-        case '+': f = GetPLUS(); break;
-        case ' ': f = GetLEADING_SPACE(); break;
-        case '0': f = GetZERO_PAD(); break;
-        case ',': f = GetGROUP(); break;
-        case '(': f = GetPARENTHESES(); break;
-        case '<': f = GetPREVIOUS(); break;
+        case U'-': f = GetLEFT_JUSTIFY(); break;
+        case U'#': f = GetALTERNATE(); break;
+        case U'+': f = GetPLUS(); break;
+        case U' ': f = GetLEADING_SPACE(); break;
+        case U'0': f = GetZERO_PAD(); break;
+        case U',': f = GetGROUP(); break;
+        case U'(': f = GetPARENTHESES(); break;
+        case U'<': f = GetPREVIOUS(); break;
         default:
             return E_UNKNOWN_FORMAT_FLAGS_EXCEPTION;
     }
@@ -558,15 +558,15 @@ String Formatter::Flags::ToString()
 {
     AutoPtr<IStringBuilder> sb;
     CStringBuilder::New(IID_IStringBuilder, (IInterface**)&sb);
-    if (Contains(GetLEFT_JUSTIFY()))  sb->AppendChar('-');
-    if (Contains(GetUPPERCASE()))     sb->AppendChar('^');
-    if (Contains(GetALTERNATE()))     sb->AppendChar('#');
-    if (Contains(GetPLUS()))          sb->AppendChar('+');
-    if (Contains(GetLEADING_SPACE())) sb->AppendChar(' ');
-    if (Contains(GetZERO_PAD()))      sb->AppendChar('0');
-    if (Contains(GetGROUP()))         sb->AppendChar(',');
-    if (Contains(GetPARENTHESES()))   sb->AppendChar('(');
-    if (Contains(GetPREVIOUS()))      sb->AppendChar('<');
+    if (Contains(GetLEFT_JUSTIFY()))  sb->Append(U'-');
+    if (Contains(GetUPPERCASE()))     sb->Append(U'^');
+    if (Contains(GetALTERNATE()))     sb->Append(U'#');
+    if (Contains(GetPLUS()))          sb->Append(U'+');
+    if (Contains(GetLEADING_SPACE())) sb->Append(U' ');
+    if (Contains(GetZERO_PAD()))      sb->Append(U'0');
+    if (Contains(GetGROUP()))         sb->Append(U',');
+    if (Contains(GetPARENTHESES()))   sb->Append(U'(');
+    if (Contains(GetPREVIOUS()))      sb->Append(U'<');
     String str;
     sb->ToString(&str);
     return str;
@@ -776,7 +776,7 @@ ECode Formatter::FormatSpecifier::Print(
         case Conversion::LINE_SEPARATOR:
             return mOwner->mA->Append(CoreUtils::Box(System::GetLineSeparator()));
         case Conversion::PERCENT_SIGN:
-            return mOwner->mA->Append('%');
+            return mOwner->mA->Append(U'%');
         default:
             CHECK(0);
     }
@@ -999,13 +999,13 @@ String Formatter::FormatSpecifier::Justify(
     Integer sp = mWidth - s.GetLength();
     if (!pad) {
         for (Integer i = 0; i < sp; i++) {
-            sb->AppendChar(' ');
+            sb->Append(U' ');
         }
     }
     sb->Append(s);
     if (pad) {
         for (Integer i = 0; i < sp; i++) {
-            sb->AppendChar(' ');
+            sb->Append(U' ');
         }
     }
     String str;
@@ -1025,19 +1025,19 @@ ECode Formatter::FormatSpecifier::ToString(
     sb->Append(dupf->ToString());
     if (mIndex > 0) {
         sb->Append(mIndex);
-        sb->AppendChar('$');
+        sb->Append(U'$');
     }
     if (mWidth != -1) {
         sb->Append(mWidth);
     }
     if (mPrecision != -1) {
-        sb->AppendChar('.');
+        sb->Append(U'.');
         sb->Append(mPrecision);
     }
     if (mDt) {
-        sb->AppendChar(mF->Contains(Flags::GetUPPERCASE()) ? 'T' : 't');
+        sb->Append(mF->Contains(Flags::GetUPPERCASE()) ? U'T' : U't');
     }
-    sb->AppendChar(mF->Contains(Flags::GetUPPERCASE()) ?
+    sb->Append(mF->Contains(Flags::GetUPPERCASE()) ?
             Character::ToUpperCase(mC) : mC);
     return sb->ToString(str);
 }
@@ -1294,11 +1294,11 @@ ECode Formatter::FormatSpecifier::Print(
 
         // apply ALTERNATE (radix indicator for octal) before ZERO_PAD
         if (mF->Contains(Flags::GetALTERNATE())) {
-            sb->AppendChar('0');
+            sb->Append(U'0');
         }
         if (mF->Contains(Flags::GetZERO_PAD())) {
             for (Integer i = 0; i < mWidth - len; i++) {
-                sb->AppendChar('0');
+                sb->Append(U'0');
             }
         }
         sb->Append(s);
@@ -1319,7 +1319,7 @@ ECode Formatter::FormatSpecifier::Print(
         }
         if (mF->Contains(Flags::GetZERO_PAD())) {
             for (Integer i = 0; i < mWidth - len; i++) {
-                sb->AppendChar('0');
+                sb->Append(U'0');
             }
         }
         if (mF->Contains(Flags::GetUPPERCASE())) {
@@ -1340,18 +1340,18 @@ void Formatter::FormatSpecifier::LeadingSign(
 {
     if (!neg) {
         if (mF->Contains(Flags::GetPLUS())) {
-            sb->AppendChar('+');
+            sb->Append(U'+');
         }
         else if (mF->Contains(Flags::GetLEADING_SPACE())) {
-            sb->AppendChar(' ');
+            sb->Append(U' ');
         }
     }
     else {
         if (mF->Contains(Flags::GetPARENTHESES())) {
-            sb->AppendChar('(');
+            sb->Append(U'(');
         }
         else {
-            sb->AppendChar('-');
+            sb->Append(U'-');
         }
     }
 }
@@ -1361,7 +1361,7 @@ void Formatter::FormatSpecifier::TrailingSign(
     /* [in] */ Boolean neg)
 {
     if (neg && mF->Contains(Flags::GetPARENTHESES())) {
-        sb->AppendChar(')');
+        sb->Append(U')');
     }
 }
 
@@ -1398,11 +1398,11 @@ ECode Formatter::FormatSpecifier::Print(
         // apply ALTERNATE (radix indicator for octal) before ZERO_PAD
         if (mF->Contains(Flags::GetALTERNATE())) {
             len++;
-            sb->AppendChar('0');
+            sb->Append(U'0');
         }
         if (mF->Contains(Flags::GetZERO_PAD())) {
             for (Integer i = 0; i < mWidth - len; i++) {
-                sb->AppendChar('0');
+                sb->Append(U'0');
             }
         }
         sb->Append(s);
@@ -1425,7 +1425,7 @@ ECode Formatter::FormatSpecifier::Print(
         }
         if (mF->Contains(Flags::GetZERO_PAD())) {
             for (Integer i = 0; i < mWidth - len; i++) {
-                sb->AppendChar('0');
+                sb->Append(U'0');
             }
         }
         if (mF->Contains(Flags::GetUPPERCASE())) {
@@ -1518,7 +1518,7 @@ Array<Char> Formatter::FormatSpecifier::AddZeros(
     // it before we add the zeros.
     Integer i;
     for (i = 0; i < v.GetLength(); i++) {
-        if (v[i] == '.') {
+        if (v[i] == U'.') {
             break;
         }
     }
@@ -1541,13 +1541,13 @@ Array<Char> Formatter::FormatSpecifier::AddZeros(
     // Add dot if previously determined to be necessary.
     Integer start = v.GetLength();
     if (needDot) {
-        tmp[v.GetLength()] = '.';
+        tmp[v.GetLength()] = U'.';
         start++;
     }
 
     // Add zeros.
     for (Integer j = start; j < tmp.GetLength(); j++) {
-        tmp[j] = '0';
+        tmp[j] = U'0';
     }
 
     return tmp;
@@ -1618,7 +1618,7 @@ Array<Char> Formatter::FormatSpecifier::AddDot(
 {
     Array<Char> tmp(mant.GetLength() + 1);
     tmp.Copy(mant, mant.GetLength());
-    tmp[tmp.GetLength() - 1] = '.';
+    tmp[tmp.GetLength() - 1] = U'.';
     return tmp;
 }
 
@@ -1631,7 +1631,7 @@ Array<Char> Formatter::FormatSpecifier::TrailingZeros(
         tmp = Array<Char>(mant.GetLength() + nzeros);
         tmp.Copy(mant, mant.GetLength());
         for (Integer i = mant.GetLength(); i < tmp.GetLength(); i++) {
-            tmp[i] = '0';
+            tmp[i] = U'0';
         }
     }
     return tmp;
@@ -1711,11 +1711,11 @@ ECode Formatter::FormatSpecifierParser::Constructor(
         String nint = NextInt();
         Char c;
         FAIL_RETURN(Peek(&c));
-        if (c == '$') {
+        if (c == U'$') {
             mIndex = nint;
             Advance();
         }
-        else if (nint.GetChar(0) == '0') {
+        else if (nint.GetChar(0) == U'0') {
             // This is a flag, skip to parsing flags.
             Back(nint.GetLength());
         }
@@ -1742,7 +1742,7 @@ ECode Formatter::FormatSpecifierParser::Constructor(
     // Precision
     Char c;
     FAIL_RETURN(Peek(&c));
-    if (c == '.') {
+    if (c == U'.') {
         Advance();
         if (!NextIsInt()) {
             return E_ILLEGAL_FORMAT_PRECISION_EXCEPTION;
@@ -1750,7 +1750,7 @@ ECode Formatter::FormatSpecifierParser::Constructor(
         mPrecision = NextInt();
     }
     FAIL_RETURN(Peek(&c));
-    if (c == 't' || c == 'T') {
+    if (c == U't' || c == U'T') {
         Advance(&c);
         mTT = String::Format("%c", c);
     }
@@ -1807,7 +1807,7 @@ Boolean Formatter::Conversion::IsValid(
     /* [in] */ Char c)
 {
     return (IsGeneral(c) || IsInteger(c) || IsFloat(c) || IsText(c)
-            || c == 't' || IsCharacter(c));
+            || c == U't' || IsCharacter(c));
 }
 
 Boolean Formatter::Conversion::IsGeneral(

@@ -537,34 +537,34 @@ ECode CalendarDate::ToString(
     AutoPtr<IStringBuilder> sb;
     CStringBuilder::New(IID_IStringBuilder, (IInterface**)&sb);
     CalendarUtils::Sprintf0d(sb, mYear, 4);
-    sb->AppendChar('-');
+    sb->Append(U'-');
     CalendarUtils::Sprintf0d(sb, mMonth, 2);
-    sb->AppendChar('-');
+    sb->Append(U'-');
     CalendarUtils::Sprintf0d(sb, mDayOfMonth, 2);
-    sb->AppendChar('T');
+    sb->Append(U'T');
     CalendarUtils::Sprintf0d(sb, mHours, 2);
-    sb->AppendChar(':');
+    sb->Append(U':');
     CalendarUtils::Sprintf0d(sb, mMinutes, 2);
-    sb->AppendChar(':');
+    sb->Append(U':');
     CalendarUtils::Sprintf0d(sb, mSeconds, 2);
-    sb->AppendChar('.');
+    sb->Append(U'.');
     CalendarUtils::Sprintf0d(sb, mMillis, 3);
     if (mZoneOffset == 0) {
-        sb->AppendChar('Z');
+        sb->Append(U'Z');
     }
     else if (mZoneOffset != FIELD_UNDEFINED) {
         Integer offset;
         Char sign;
         if (mZoneOffset > 0) {
             offset = mZoneOffset;
-            sign = '+';
+            sign = U'+';
         }
         else {
             offset = -mZoneOffset;
-            sign = '-';
+            sign = U'-';
         }
         offset /= 60000;
-        sb->AppendChar(sign);
+        sb->Append(sign);
         CalendarUtils::Sprintf0d(sb, offset / 60, 2);
         CalendarUtils::Sprintf0d(sb, offset % 60, 2);
     }

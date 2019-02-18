@@ -29,7 +29,7 @@ typedef int             Integer;
 typedef long long int   Long;
 typedef float           Float;
 typedef double          Double;
-typedef unsigned int    Char;
+typedef char32_t        Char;
 typedef bool            Boolean;
 typedef uintptr_t       HANDLE;
 typedef int             ECode;

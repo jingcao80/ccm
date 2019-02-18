@@ -721,7 +721,7 @@ ECode SimpleTimeZone::ToString(
     sb->Append(mEndTime);
     sb->Append(String(",endTimeMode="));
     sb->Append(mEndTimeMode);
-    sb->AppendChar(']');
+    sb->Append(U']');
     return sb->ToString(desc);
 }
 

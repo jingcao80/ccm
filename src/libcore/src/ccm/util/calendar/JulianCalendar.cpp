@@ -334,7 +334,7 @@ ECode JulianCalendar::Date::ToString(
 
     String time;
     BaseCalendar::Date::ToString(&time);
-    time = time.Substring(time.IndexOf('T'));
+    time = time.Substring(time.IndexOf(U'T'));
     AutoPtr<IStringBuffer> sb;
     CStringBuffer::New(IID_IStringBuffer, (IInterface**)&sb);
     AutoPtr<IEra> era;
@@ -344,16 +344,16 @@ ECode JulianCalendar::Date::ToString(
         era->GetAbbreviation(&abbr);
         if (!abbr.IsNull()) {
             sb->Append(abbr);
-            sb->AppendChar(' ');
+            sb->Append(U' ');
         }
     }
     Integer year, month, dom;
     GetYear(&year);
     sb->Append(year);
-    sb->AppendChar('-');
+    sb->Append(U'-');
     GetMonth(&month);
     CalendarUtils::Sprintf0d(sb, month, 2);
-    sb->AppendChar('-');
+    sb->Append(U'-');
     GetDayOfMonth(&dom);
     CalendarUtils::Sprintf0d(sb, dom, 2);
     sb->Append(time);

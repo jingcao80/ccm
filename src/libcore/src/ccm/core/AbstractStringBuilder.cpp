@@ -299,10 +299,10 @@ ECode AbstractStringBuilder::AppendNull()
 {
     Integer c = mByteCount;
     EnsureCapacityInternal(c + 4);
-    mValue[c++] = 'n';
-    mValue[c++] = 'u';
-    mValue[c++] = 'l';
-    mValue[c++] = 'l';
+    mValue[c++] = U'n';
+    mValue[c++] = U'u';
+    mValue[c++] = U'l';
+    mValue[c++] = U'l';
     mByteCount = c;
     mCount += 4;
     return NOERROR;
@@ -361,19 +361,19 @@ ECode AbstractStringBuilder::Append(
 {
     if (b) {
         EnsureCapacityInternal(mByteCount + 4);
-        mValue[mByteCount++] = 't';
-        mValue[mByteCount++] = 'r';
-        mValue[mByteCount++] = 'u';
-        mValue[mByteCount++] = 'e';
+        mValue[mByteCount++] = U't';
+        mValue[mByteCount++] = U'r';
+        mValue[mByteCount++] = U'u';
+        mValue[mByteCount++] = U'e';
         mCount += 4;
     }
     else {
         EnsureCapacityInternal(mByteCount + 5);
-        mValue[mByteCount++] = 'f';
-        mValue[mByteCount++] = 'a';
-        mValue[mByteCount++] = 'l';
-        mValue[mByteCount++] = 's';
-        mValue[mByteCount++] = 'e';
+        mValue[mByteCount++] = U'f';
+        mValue[mByteCount++] = U'a';
+        mValue[mByteCount++] = U'l';
+        mValue[mByteCount++] = U's';
+        mValue[mByteCount++] = U'e';
         mCount += 5;
     }
     return NOERROR;

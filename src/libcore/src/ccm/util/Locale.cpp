@@ -347,7 +347,7 @@ AutoPtr<ILocale> Locale::InitDefault()
     System::GetProperty(String("user.region"), &region);
     if (!region.IsNull()) {
         // region can be of form country, country_variant, or _variant
-        Integer i = region.IndexOf('_');
+        Integer i = region.IndexOf(U'_');
         if (i >= 0) {
             country = region.Substring(0, i);
             variant = region.Substring(i + 1);
@@ -591,11 +591,11 @@ ECode Locale::ToString(
     AutoPtr<IStringBuilder> result;
     CStringBuilder::New(mBaseLocale->GetLanguage(), IID_IStringBuilder, (IInterface**)&result);
     if (r || (l && (v || s || e))) {
-        result->AppendChar('_');
+        result->Append(U'_');
         result->Append(mBaseLocale->GetRegion()); // This may just append '_'
     }
     if (v && (l || r)) {
-        result->AppendChar('_');
+        result->Append(U'_');
         result->Append(mBaseLocale->GetVariant());
     }
 
@@ -605,9 +605,9 @@ ECode Locale::ToString(
     }
 
     if (e && (l || r)) {
-        result->AppendChar('_');
+        result->Append(U'_');
         if (!s) {
-            result->AppendChar('#');
+            result->Append(U'#');
         }
         result->Append(mLocaleExtensions->GetID());
     }
@@ -840,9 +840,9 @@ Boolean Locale::IsAsciiAlphaNum(
 {
     for (Integer i = 0; i < string.GetByteLength(); i++) {
         char c = string.string()[i];
-        if (!(c >= 'a' && c <= 'z' ||
-                c >= 'A' && c <= 'Z' ||
-                c >= '0' && c <= '9')) {
+        if (!(c >= U'a' && c <= U'z' ||
+                c >= U'A' && c <= U'Z' ||
+                c >= U'0' && c <= U'9')) {
             return false;
         }
     }
@@ -953,8 +953,8 @@ Boolean Locale::IsValidBcp47Alpha(
 
     for (Integer i = 0; i < length; i++) {
         char c = string.string()[i];
-        if (!(c >= 'a' && c <= 'z' ||
-                c >= 'A' && c <= 'Z')) {
+        if (!(c >= U'a' && c <= U'z' ||
+                c >= U'A' && c <= U'Z')) {
             return false;
         }
     }
@@ -971,7 +971,7 @@ Boolean Locale::IsUnM49AreaCode(
 
     for (Integer i = 0; i < 3; ++i) {
         char c = code.string()[i];
-        if (!(c >= '0' && c <= '9')) {
+        if (!(c >= U'0' && c <= U'9')) {
             return false;
         }
     }
@@ -1028,7 +1028,7 @@ ECode Locale::NormalizeAndValidateVariant(
         return NOERROR;
     }
 
-    String normalizedVariant = variant.Replace('-', '_');
+    String normalizedVariant = variant.Replace(U'-', U'_');
     Array<String> subTags = StringUtils::Split(normalizedVariant, String("_"));
 
     for (Integer i = 0; i < subTags.GetLength(); i++) {
@@ -1055,7 +1055,7 @@ Boolean Locale::IsValidVariantSubtag(
     }
     else if (subTag.GetByteLength() == 4) {
         char firstChar = subTag.string()[0];
-        if ((firstChar >= '0' && firstChar <= '9') && IsAsciiAlphaNum(subTag)) {
+        if ((firstChar >= U'0' && firstChar <= U'9') && IsAsciiAlphaNum(subTag)) {
             return true;
         }
     }
@@ -1103,7 +1103,7 @@ ECode Locale::GetDisplayName(
             buffer->Append(String(" ("));
         }
         else if (count == 2) {
-            buffer->AppendChar(',');
+            buffer->Append(U',');
         }
         String displayCountry;
         FAIL_RETURN(GetDisplayCountry(locale, &displayCountry));
@@ -1116,7 +1116,7 @@ ECode Locale::GetDisplayName(
             buffer->Append(String(" ("));
         }
         else if (count == 2 || count == 3) {
-            buffer->AppendChar(',');
+            buffer->Append(U',');
         }
         String displayVariant;
         FAIL_RETURN(GetDisplayVariant(locale, &displayVariant));
@@ -1124,7 +1124,7 @@ ECode Locale::GetDisplayName(
         ++count;
     }
     if (count > 1) {
-        buffer->AppendChar(')');
+        buffer->Append(U')');
     }
     return buffer->ToString(name);
 }

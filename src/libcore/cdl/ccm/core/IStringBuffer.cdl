@@ -63,7 +63,7 @@ interface IStringBuffer
     Append(
         [in] Double d);
 
-    AppendChar(
+    Append(
         [in] Char c);
 
     Delete(
@@ -129,7 +129,7 @@ interface IStringBuffer
         [in] Integer offset,
         [in] Boolean b);
 
-    InsertChar(
+    Insert(
         [in] Integer offset,
         [in] Char c);
 

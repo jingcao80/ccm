@@ -114,7 +114,7 @@ ECode Properties::Load0 (
         while (keyLen < limit) {
             c = lr->mLineBuf[keyLen];
             //need check if escaped.
-            if ((c == '=' ||  c == ':') && !precedingBackslash) {
+            if ((c == U'=' ||  c == U':') && !precedingBackslash) {
                 valueStart = keyLen + 1;
                 hasSep = true;
                 break;
@@ -123,7 +123,7 @@ ECode Properties::Load0 (
                 valueStart = keyLen + 1;
                 break;
             }
-            if (c == '\\') {
+            if (c == U'\\') {
                 precedingBackslash = !precedingBackslash;
             }
             else {
@@ -134,7 +134,7 @@ ECode Properties::Load0 (
         while (valueStart < limit) {
             c = lr->mLineBuf[valueStart];
             if (!Character::IsWhitespace(c)) {
-                if (!hasSep && (c == '=' ||  c == ':')) {
+                if (!hasSep && (c == U'=' ||  c == U':')) {
                     hasSep = true;
                 }
                 else {
@@ -174,25 +174,25 @@ ECode Properties::LoadConvert(
 
     while (off < end) {
         aChar = in[off++];
-        if (aChar == '\\') {
+        if (aChar == U'\\') {
             aChar = in[off++];
-            if(aChar == 'u') {
+            if(aChar == U'u') {
                 // Read the xxxx
                 Integer value = 0;
                 for (Integer i = 0; i < 4; i++) {
                     aChar = in[off++];
                     switch (aChar) {
-                        case '0': case '1': case '2': case '3': case '4':
-                        case '5': case '6': case '7': case '8': case '9':
-                            value = (value << 4) + aChar - '0';
+                        case U'0': case U'1': case U'2': case U'3': case U'4':
+                        case U'5': case U'6': case U'7': case U'8': case U'9':
+                            value = (value << 4) + aChar - U'0';
                             break;
-                        case 'a': case 'b': case 'c':
-                        case 'd': case 'e': case 'f':
-                            value = (value << 4) + 10 + aChar - 'a';
+                        case U'a': case U'b': case U'c':
+                        case U'd': case U'e': case U'f':
+                            value = (value << 4) + 10 + aChar - U'a';
                             break;
-                        case 'A': case 'B': case 'C':
-                        case 'D': case 'E': case 'F':
-                            value = (value << 4) + 10 + aChar - 'A';
+                        case U'A': case U'B': case U'C':
+                        case U'D': case U'E': case U'F':
+                            value = (value << 4) + 10 + aChar - U'A';
                             break;
                         default:
                             Logger::E("Properties", "Malformed \\uxxxx encoding.");
@@ -202,10 +202,10 @@ ECode Properties::LoadConvert(
                 out[outLen++] = (char)value;
             }
             else {
-                if (aChar == 't') aChar = '\t';
-                else if (aChar == 'r') aChar = '\r';
-                else if (aChar == 'n') aChar = '\n';
-                else if (aChar == 'f') aChar = '\f';
+                if (aChar == U't') aChar = U'\t';
+                else if (aChar == U'r') aChar = U'\r';
+                else if (aChar == U'n') aChar = U'\n';
+                else if (aChar == U'f') aChar = U'\f';
                 out[outLen++] = aChar;
             }
         }
@@ -235,55 +235,55 @@ String Properties::SaveConvert(
         // Handle common case first, selecting largest block that
         // avoids the specials below
         if ((aChar > 61) && (aChar < 127)) {
-            if (aChar == '\\') {
-                outBuffer->AppendChar('\\');
-                outBuffer->AppendChar('\\');
+            if (aChar == U'\\') {
+                outBuffer->Append(U'\\');
+                outBuffer->Append(U'\\');
                 continue;
             }
-            outBuffer->AppendChar(aChar);
+            outBuffer->Append(aChar);
             continue;
         }
         switch(aChar) {
-            case ' ':
+            case U' ':
                 if (x == 0 || escapeSpace) {
-                    outBuffer->AppendChar('\\');
+                    outBuffer->Append(U'\\');
                 }
-                outBuffer->AppendChar(' ');
+                outBuffer->Append(U' ');
                 break;
-            case '\t':
-                outBuffer->AppendChar('\\');
-                outBuffer->AppendChar('t');
+            case U'\t':
+                outBuffer->Append(U'\\');
+                outBuffer->Append(U't');
                 break;
-            case '\n':
-                outBuffer->AppendChar('\\');
-                outBuffer->AppendChar('n');
+            case U'\n':
+                outBuffer->Append(U'\\');
+                outBuffer->Append(U'n');
                 break;
-            case '\r':
-                outBuffer->AppendChar('\\');
-                outBuffer->AppendChar('r');
+            case U'\r':
+                outBuffer->Append(U'\\');
+                outBuffer->Append(U'r');
                 break;
-            case '\f':
-                outBuffer->AppendChar('\\');
-                outBuffer->AppendChar('f');
+            case U'\f':
+                outBuffer->Append(U'\\');
+                outBuffer->Append(U'f');
                 break;
-            case '=': // Fall through
-            case ':': // Fall through
-            case '#': // Fall through
-            case '!':
-                outBuffer->AppendChar('\\');
-                outBuffer->AppendChar(aChar);
+            case U'=': // Fall through
+            case U':': // Fall through
+            case U'#': // Fall through
+            case U'!':
+                outBuffer->Append(U'\\');
+                outBuffer->Append(aChar);
                 break;
             default:
                 if (((aChar < 0x0020) || (aChar > 0x007e)) & escapeUnicode ) {
-                    outBuffer->AppendChar('\\');
-                    outBuffer->AppendChar('u');
-                    outBuffer->AppendChar(ToHex((aChar >> 12) & 0xF));
-                    outBuffer->AppendChar(ToHex((aChar >>  8) & 0xF));
-                    outBuffer->AppendChar(ToHex((aChar >>  4) & 0xF));
-                    outBuffer->AppendChar(ToHex( aChar        & 0xF));
+                    outBuffer->Append(U'\\');
+                    outBuffer->Append(U'u');
+                    outBuffer->Append(ToHex((aChar >> 12) & 0xF));
+                    outBuffer->Append(ToHex((aChar >>  8) & 0xF));
+                    outBuffer->Append(ToHex((aChar >>  4) & 0xF));
+                    outBuffer->Append(ToHex( aChar        & 0xF));
                 }
                 else {
-                    outBuffer->AppendChar(aChar);
+                    outBuffer->Append(aChar);
                 }
         }
     }
@@ -301,11 +301,11 @@ ECode Properties::WriteComments(
     Integer current = 0;
     Integer last = 0;
     Array<Char> uu(6);
-    uu[0] = '\\';
-    uu[1] = 'u';
+    uu[0] = U'\\';
+    uu[1] = U'u';
     while (current < len) {
         Char c = comments.GetChar(current);
-        if (c > 0x00ff || c == '\n' || c == '\r') {
+        if (c > 0x00ff || c == U'\n' || c == U'\r') {
             if (last != current) {
                 FAIL_RETURN(IWriter::Probe(bw)->Write(comments.Substring(last, current)));
             }
@@ -318,14 +318,14 @@ ECode Properties::WriteComments(
             }
             else {
                 FAIL_RETURN(bw->NewLine());
-                if (c == '\r' &&
+                if (c == U'\r' &&
                     current != len - 1 &&
-                    comments.GetChar(current + 1) == '\n') {
+                    comments.GetChar(current + 1) == U'\n') {
                     current++;
                 }
                 if (current == len - 1 ||
-                    (comments.GetChar(current + 1) != '#' &&
-                    comments.GetChar(current + 1) != '!'))
+                    (comments.GetChar(current + 1) != U'#' &&
+                    comments.GetChar(current + 1) != U'!'))
                     FAIL_RETURN(IWriter::Probe(bw)->Write(String("#")));
             }
             last = current + 1;
@@ -572,8 +572,8 @@ void Properties::EnumerateStringProperties(
 Char Properties::ToHex(
     /* [in] */ Integer nibble)
 {
-    static char sHexDigit[] = {
-        '0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'
+    static Char sHexDigit[] = {
+        U'0',U'1',U'2',U'3',U'4',U'5',U'6',U'7',U'8',U'9',U'A',U'B',U'C',U'D',U'E',U'F'
     };
     return sHexDigit[nibble & 0xF];
 }
@@ -634,7 +634,7 @@ ECode Properties::LineReader::ReadLine(
         }
         if (skipLF) {
             skipLF = false;
-            if (c == '\n') {
+            if (c == U'\n') {
                 continue;
             }
         }
@@ -642,7 +642,7 @@ ECode Properties::LineReader::ReadLine(
             if (Character::IsWhitespace(c)) {
                 continue;
             }
-            if (!appendedLineBegin && (c == '\r' || c == '\n')) {
+            if (!appendedLineBegin && (c == U'\r' || c == U'\n')) {
                 continue;
             }
             skipWhiteSpace = false;
@@ -650,13 +650,13 @@ ECode Properties::LineReader::ReadLine(
         }
         if (isNewLine) {
             isNewLine = false;
-            if (c == '#' || c == '!') {
+            if (c == U'#' || c == U'!') {
                 isCommentLine = true;
                 continue;
             }
         }
 
-        if (c != '\n' && c != '\r') {
+        if (c != U'\n' && c != U'\r') {
             mLineBuf[len++] = c;
             if (len == mLineBuf.GetLength()) {
                 Integer newLength = mLineBuf.GetLength() * 2;
@@ -668,7 +668,7 @@ ECode Properties::LineReader::ReadLine(
                 mLineBuf = buf;
             }
             //flip the preceding backslash flag
-            if (c == '\\') {
+            if (c == U'\\') {
                 precedingBackslash = !precedingBackslash;
             }
             else {
@@ -705,7 +705,7 @@ ECode Properties::LineReader::ReadLine(
                 skipWhiteSpace = true;
                 appendedLineBegin = true;
                 precedingBackslash = false;
-                if (c == '\r') {
+                if (c == U'\r') {
                     skipLF = true;
                 }
             }

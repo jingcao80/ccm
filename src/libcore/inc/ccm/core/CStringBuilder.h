@@ -77,7 +77,7 @@ public:
     ECode Append(
         /* [in] */ Boolean b) override;
 
-    ECode AppendChar(
+    ECode Append(
         /* [in] */ Char c) override;
 
     ECode Append(
@@ -136,7 +136,7 @@ public:
         /* [in] */ Integer offset,
         /* [in] */ Boolean b) override;
 
-    ECode InsertChar(
+    ECode Insert(
         /* [in] */ Integer offset,
         /* [in] */ Char c) override;
 

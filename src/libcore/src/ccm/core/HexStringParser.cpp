@@ -111,7 +111,7 @@ void HexStringParser::ParseExponent(
     /* [in] */ String exponentStr)
 {
     Char leadingChar = exponentStr.GetChar(0);
-    Integer expSign = (leadingChar == '-' ? -1 : 1);
+    Integer expSign = (leadingChar == U'-' ? -1 : 1);
     if (!Character::IsDigit(leadingChar)) {
         exponentStr = exponentStr.Substring(1);
     }
@@ -281,7 +281,7 @@ Integer HexStringParser::GetOffset(
 
     //If the Integer part is a zero number.
     Integer i;
-    for (i = 0; i < strDecimalPart.GetLength() && strDecimalPart.GetChar(i) == '0'; i++);
+    for (i = 0; i < strDecimalPart.GetLength() && strDecimalPart.GetChar(i) == U'0'; i++);
     if (i == strDecimalPart.GetLength()) {
         return 0;
     }

@@ -232,9 +232,9 @@ String TimeZone::CreateGmtOffsetString(
     /* [in] */ Integer offsetMillis)
 {
     Integer offsetMinutes = offsetMillis / 60000;
-    Char sign = '+';
+    Char sign = U'+';
     if (offsetMinutes < 0) {
-        sign = '-';
+        sign = U'-';
         offsetMinutes = -offsetMinutes;
     }
     AutoPtr<IStringBuilder> sb;
@@ -242,10 +242,10 @@ String TimeZone::CreateGmtOffsetString(
     if (includeGmt) {
         sb->Append(String("GMT"));
     }
-    sb->AppendChar(sign);
+    sb->Append(sign);
     AppendNumber(sb, 2, offsetMinutes / 60);
     if (includeMinuteSeparator) {
-        sb->AppendChar(':');
+        sb->Append(U':');
     }
     AppendNumber(sb, 2, offsetMinutes % 60);
     String offsetStr;
@@ -260,7 +260,7 @@ void TimeZone::AppendNumber(
 {
     String string = StringUtils::ToString(value);
     for (Integer i = 0; i < count - string.GetLength(); i++) {
-        sb->AppendChar('0');
+        sb->Append(U'0');
     }
     sb->Append(string);
 }
@@ -376,7 +376,7 @@ ECode TimeZone::GetCustomTimeZone(
 
     Char sign = id.GetChar(3);
     Integer raw = (hour * 3600000) + (minute * 60000);
-    if (sign == '-') {
+    if (sign == U'-') {
         raw = -raw;
     }
 

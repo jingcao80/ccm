@@ -97,7 +97,7 @@ String Conversion::BigInteger2String(
             } while (((resDigit /= radix) != 0) && (currentChar != 0));
             Integer delta = charsPerInt - previous + currentChar;
             for (i = 0; i < delta && currentChar > 0; i++) {
-                result[--currentChar] = '0';
+                result[--currentChar] = U'0';
             }
             for (i = tempLen - 1; (i > 0) && (temp[i] == 0); i--) {
                 ;
@@ -117,11 +117,11 @@ String Conversion::BigInteger2String(
             }
         }
     }
-    while (result[currentChar] == '0') {
+    while (result[currentChar] == U'0') {
         currentChar++;
     }
     if (sign == -1) {
-        result[--currentChar] = '-';
+        result[--currentChar] = U'-';
     }
     return String(result, currentChar, resLengthInChars - currentChar);
 }
@@ -223,7 +223,7 @@ String Conversion::ToDecimalScaledString(
             } while (((resDigit /= 10) != 0) && (currentChar != 0));
             Integer delta = 9 - previous + currentChar;
             for (Integer i = 0; (i < delta) && (currentChar > 0); i++) {
-                result[--currentChar] = '0';
+                result[--currentChar] = U'0';
             }
             Integer j = tempLen - 1;
             for (; temp[j] == 0; j--) {
@@ -235,7 +235,7 @@ String Conversion::ToDecimalScaledString(
             tempLen = j + 1;
         }
 BIG_LOOP:
-        while (result[currentChar] == '0') {
+        while (result[currentChar] == U'0') {
             currentChar++;
         }
     }
@@ -243,7 +243,7 @@ BIG_LOOP:
     Integer exponent = resLengthInChars - currentChar - scale - 1;
     if (scale == 0) {
         if (negNumber) {
-            result[--currentChar] = '-';
+            result[--currentChar] = U'-';
         }
         return String(result, currentChar, resLengthInChars - currentChar);
     }
@@ -254,20 +254,20 @@ BIG_LOOP:
             for (Integer j = resLengthInChars - 1; j >= insertPoint; j--) {
                 result[j + 1] = result[j];
             }
-            result[++insertPoint] = '.';
+            result[++insertPoint] = U'.';
             if (negNumber) {
-                result[--currentChar] = '-';
+                result[--currentChar] = U'-';
             }
             return String(result, currentChar, resLengthInChars - currentChar + 1);
         }
         // special case 2
         for (Integer j = 2; j < -exponent + 1; j++) {
-            result[--currentChar] = '0';
+            result[--currentChar] = U'0';
         }
-        result[--currentChar] = '.';
-        result[--currentChar] = '0';
+        result[--currentChar] = U'.';
+        result[--currentChar] = U'0';
         if (negNumber) {
-            result[--currentChar] = '-';
+            result[--currentChar] = U'-';
         }
         return String(result, currentChar, resLengthInChars - currentChar);
     }
@@ -276,20 +276,20 @@ BIG_LOOP:
     AutoPtr<IStringBuilder> result1;
     CStringBuilder::New(16 + endPoint - startPoint, IID_IStringBuilder, (IInterface**)&result1);
     if (negNumber) {
-        result1->AppendChar('-');
+        result1->Append(U'-');
     }
     if (endPoint - startPoint >= 1) {
-        result1->AppendChar(result[currentChar]);
-        result1->AppendChar('.');
+        result1->Append(result[currentChar]);
+        result1->Append(U'.');
         result1->Append(result, currentChar + 1, resLengthInChars -
                 currentChar - 1);
     }
     else {
         result1->Append(result, currentChar, resLengthInChars - currentChar);
     }
-    result1->AppendChar('E');
+    result1->Append(U'E');
     if (exponent > 0) {
-        result1->AppendChar('+');
+        result1->Append(U'+');
     }
     result1->Append(StringUtils::ToString(exponent));
     String str;
@@ -353,7 +353,7 @@ String Conversion::ToDecimalScaledString(
     Long exponent = (Long)resLengthInChars - (Long)currentChar - scale - 1;
     if (scale == 0) {
         if (negNumber) {
-            result[--currentChar] = '-';
+            result[--currentChar] = U'-';
         }
         return String(result, currentChar, resLengthInChars - currentChar);
     }
@@ -364,20 +364,20 @@ String Conversion::ToDecimalScaledString(
             for (Integer j = resLengthInChars - 1; j >= insertPoint; j--) {
                 result[j + 1] = result[j];
             }
-            result[++insertPoint] = '.';
+            result[++insertPoint] = U'.';
             if (negNumber) {
-                result[--currentChar] = '-';
+                result[--currentChar] = U'-';
             }
             return String(result, currentChar, resLengthInChars - currentChar + 1);
         }
         // special case 2
         for (Integer j = 2; j < -exponent + 1; j++) {
-            result[--currentChar] = '0';
+            result[--currentChar] = U'0';
         }
-        result[--currentChar] = '.';
-        result[--currentChar] = '0';
+        result[--currentChar] = U'.';
+        result[--currentChar] = U'0';
         if (negNumber) {
-            result[--currentChar] = '-';
+            result[--currentChar] = U'-';
         }
         return String(result, currentChar, resLengthInChars - currentChar);
     }
@@ -386,19 +386,19 @@ String Conversion::ToDecimalScaledString(
     AutoPtr<IStringBuilder> result1;
     CStringBuilder::New(16 + endPoint - startPoint, IID_IStringBuilder, (IInterface**)&result1);
     if (negNumber) {
-        result1->AppendChar('-');
+        result1->Append(U'-');
     }
     if (endPoint - startPoint >= 1) {
-        result1->AppendChar(result[currentChar]);
-        result1->AppendChar('.');
+        result1->Append(result[currentChar]);
+        result1->Append(U'.');
         result1->Append(result, currentChar + 1, resLengthInChars - currentChar - 1);
     }
     else {
         result1->Append(result, currentChar, resLengthInChars - currentChar);
     }
-    result1->AppendChar('E');
+    result1->Append(U'E');
     if (exponent > 0) {
-        result1->AppendChar('+');
+        result1->Append(U'+');
     }
     result1->Append(StringUtils::ToString(exponent));
     String str;

@@ -687,7 +687,7 @@ String String::ToLowerCase() const
         if (l != c) {
             if (lowerStr.IsNull()) {
                 lowerStr = String(mString, GetByteLength());
-                char* dst = const_cast<char*>(lowerStr.string());
+                dst = const_cast<char*>(lowerStr.string());
             }
             WriteUTF8Bytes(dst + (p - mString), l, byteSize);
         }
@@ -710,7 +710,7 @@ String String::ToUpperCase() const
         if (l != c) {
             if (upperStr.IsNull()) {
                 upperStr = String(mString, GetByteLength());
-                char* dst = const_cast<char*>(upperStr.string());
+                dst = const_cast<char*>(upperStr.string());
             }
             WriteUTF8Bytes(dst + (p - mString), l, byteSize);
         }

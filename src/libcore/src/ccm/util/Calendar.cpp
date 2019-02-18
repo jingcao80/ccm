@@ -1101,7 +1101,7 @@ ECode Calendar::ToString(
     AutoPtr<IStringBuilder> buffer;
     CStringBuilder::New(800, IID_IStringBuilder, (IInterface**)&buffer);
     buffer->Append(GetCoclassName((IObject*)this));
-    buffer->AppendChar('[');
+    buffer->Append(U'[');
     AppendValue(buffer, String("time"), mIsTimeSet, mTime);
     buffer->Append(String(",areFieldsSet="));
     buffer->Append(mAreFieldsSet);
@@ -1116,10 +1116,10 @@ ECode Calendar::ToString(
     for (Integer i = 0; i < FIELD_COUNT; ++i) {
         Boolean set;
         IsSet(i, &set);
-        buffer->AppendChar(',');
+        buffer->Append(U',');
         AppendValue(buffer, GetFIELD_NAME()[i], set, (Long)mFields[i]);
     }
-    buffer->AppendChar(']');
+    buffer->Append(U']');
     return buffer->ToString(desc);
 }
 
@@ -1130,12 +1130,12 @@ void Calendar::AppendValue(
     /* [in] */ Long value)
 {
     sb->Append(item);
-    sb->AppendChar('=');
+    sb->Append(U'=');
     if (valid) {
         sb->Append(value);
     }
     else {
-        sb->AppendChar('?');
+        sb->Append(U'?');
     }
 }
 

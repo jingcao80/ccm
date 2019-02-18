@@ -86,7 +86,7 @@ ECode MathContext::Constructor(
     Integer roundingModeLength = String("roundingMode=").GetLength();
 
     Integer spaceIndex;
-    if (!s.StartsWith("precision=") || (spaceIndex = s.IndexOf(' ', precisionLength)) == -1) {
+    if (!s.StartsWith("precision=") || (spaceIndex = s.IndexOf(U' ', precisionLength)) == -1) {
         Logger::E("MathContext", "Missing precision: %s", s.string());
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }

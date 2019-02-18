@@ -172,7 +172,7 @@ ECode CStringBuffer::Append(
     return AbstractStringBuilder::Append(b);
 }
 
-ECode CStringBuffer::AppendChar(
+ECode CStringBuffer::Append(
     /* [in] */ Char c)
 {
     AutoLock lock(this);
@@ -317,7 +317,7 @@ ECode CStringBuffer::Insert(
     return AbstractStringBuilder::Insert(offset, b);
 }
 
-ECode CStringBuffer::InsertChar(
+ECode CStringBuffer::Insert(
     /* [in] */ Integer offset,
     /* [in] */ Char c)
 {

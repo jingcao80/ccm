@@ -379,7 +379,7 @@ ECode Hashtable::ToString(
     AutoPtr<IIterator> it;
     entries->GetIterator(&it);
 
-    sb->AppendChar('{');
+    sb->Append(U'{');
     for (Integer i = 0; ; i++) {
         AutoPtr<IInterface> e;
         it->Next(&e);
@@ -392,7 +392,7 @@ ECode Hashtable::ToString(
                 String("(this Map") : Object::ToString(value));
 
         if (i == max) {
-            sb->AppendChar('}');
+            sb->Append(U'}');
             return sb->ToString(str);
         }
         sb->Append(String(", "));

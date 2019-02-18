@@ -161,14 +161,14 @@ ECode Era::ToString(
 
     AutoPtr<IStringBuilder> sb;
     CStringBuilder::New(IID_IStringBuilder, (IInterface**)&sb);
-    sb->AppendChar('[');
+    sb->Append(U'[');
     String name, abbr;
     GetName(&name);
     sb->Append(name);
     sb->Append(String(" ("));
     GetAbbreviation(&abbr);
     sb->Append(abbr);
-    sb->AppendChar(')');
+    sb->Append(U')');
     sb->Append(String(" since "));
     AutoPtr<ICalendarDate> sinceDate;
     GetSinceDate(&sinceDate);
@@ -179,7 +179,7 @@ ECode Era::ToString(
         sb->SetLength(length - 1); // remove 'Z'
         sb->Append(String(" local time"));
     }
-    sb->AppendChar(']');
+    sb->Append(U']');
     return sb->ToString(desc);
 }
 

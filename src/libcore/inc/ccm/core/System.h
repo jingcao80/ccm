@@ -123,14 +123,14 @@ inline String System::GetLineSeparator()
 inline ECode System::LogE(
     /* [in] */ const String& message)
 {
-    return Log('E', message, nullptr);
+    return Log(U'E', message, nullptr);
 }
 
 inline ECode System::LogW(
     /* [in] */ const String& message,
     /* [in] */ IStackTrace* st)
 {
-    return Log('W', message, st);
+    return Log(U'W', message, st);
 }
 
 }

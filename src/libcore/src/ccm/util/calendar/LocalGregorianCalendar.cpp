@@ -75,7 +75,7 @@ ECode LocalGregorianCalendar::GetLocalGregorianCalendar(
         while (itemTokens->HasMoreTokens(&itemHasMore), itemHasMore) {
             String item;
             itemTokens->NextToken(&item);
-            Integer index = item.IndexOf('=');
+            Integer index = item.IndexOf(U'=');
             // it must be in the key=value form.
             if (index == -1) {
                 *calendar = nullptr;
@@ -548,7 +548,7 @@ ECode LocalGregorianCalendar::Date::ToString(
 
     String time;
     BaseCalendar::Date::ToString(&time);
-    time = time.Substring(time.IndexOf('T'));
+    time = time.Substring(time.IndexOf(U'T'));
     AutoPtr<IStringBuffer> sb;
     CStringBuffer::New(IID_IStringBuffer, (IInterface**)&sb);
     AutoPtr<IEra> era;
@@ -563,10 +563,10 @@ ECode LocalGregorianCalendar::Date::ToString(
     Integer year, month, dom;
     GetYear(&year);
     sb->Append(year);
-    sb->AppendChar('.');
+    sb->Append(U'.');
     GetMonth(&month);
     CalendarUtils::Sprintf0d(sb, month, 2);
-    sb->AppendChar('.');
+    sb->Append(U'.');
     GetDayOfMonth(&dom);
     CalendarUtils::Sprintf0d(sb, dom, 2);
     sb->Append(time);

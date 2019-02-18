@@ -1145,7 +1145,7 @@ ECode BigInteger::ParseFromString(
 
     Integer sign;
     Integer startChar;
-    if (value.GetChar(0) == '-') {
+    if (value.GetChar(0) == U'-') {
         sign = -1;
         startChar = 1;
         stringLength--;

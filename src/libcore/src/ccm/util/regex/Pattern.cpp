@@ -252,7 +252,7 @@ ECode Pattern::FastSplit(
     if (len == 1 && FASTSPLIT_METACHARACTERS.IndexOf(ch) == -1) {
         // We're looking for a single non-metacharacter. Easy.
     }
-    else if (len == 2 && ch == '\\') {
+    else if (len == 2 && ch == U'\\') {
         // We're looking for a quoted character.
         // Quoted metacharacters are effectively single non-metacharacters.
         ch = re.GetChar(1);

@@ -94,13 +94,13 @@ Array<IStackTraceElement*> StackTrace::GetOurStackTrace()
         String backtrace = DumpBacktrace(mFrames.GetPayload(), mFrameCount);
         VOLATILE_SET(mStackTrace, Array<IStackTraceElement*>(mFrameCount));
         Integer fromIdx = 0;
-        Integer lrIdx = backtrace.IndexOf('\n', fromIdx);
+        Integer lrIdx = backtrace.IndexOf(U'\n', fromIdx);
         Integer count = 0;
         while (lrIdx != -1 && count < mFrameCount) {
             String line = backtrace.Substring(fromIdx, lrIdx).Trim();
             mStackTrace.Set(count++, ParseElement(line));
             fromIdx = lrIdx + 1;
-            lrIdx = backtrace.IndexOf('\n', fromIdx);
+            lrIdx = backtrace.IndexOf(U'\n', fromIdx);
         }
     }
     return mStackTrace;

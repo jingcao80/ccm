@@ -26,19 +26,19 @@ String Helpers::ToString(
     /* [in] */ Integer charLength)
 {
     Array<Char> chars(charLength + 2 * size);
-    chars[0] = '[';
+    chars[0] = U'[';
     Integer j = 1;
     for (Integer i = 0; i < size; i++) {
         if (i > 0) {
-            chars[j++] = ',';
-            chars[j++] = ' ';
+            chars[j++] = U',';
+            chars[j++] = U' ';
         }
         const String& s = a[i];
         Integer len = s.GetLength();
         s.GetChars(0, len, chars, j);
         j += len;
     }
-    chars[j] = ']';
+    chars[j] = U']';
     return String(chars);
 }
 
@@ -51,7 +51,7 @@ String Helpers::MapEntryToString(
     Array<Char> chars((klen = (k = ObjectToString(key)).GetLength()) +
             (vlen = (v = ObjectToString(val)).GetLength()) + 1);
     k.GetChars(0, klen, chars, 0);
-    chars[klen] = '=';
+    chars[klen] = U'=';
     v.GetChars(0, vlen, chars, klen + 1);
     return String(chars);
 }

@@ -293,12 +293,12 @@ ECode SimpleDateFormat::Compile(
     for (Integer i = 0; i < length; i++) {
         Char c = pattern.GetChar(i);
 
-        if (c == '\'') {
+        if (c == U'\'') {
             // '' is treated as a single quote regardless of being
             // in a quoted section.
             if ((i + 1) < length) {
                 c = pattern.GetChar(i + 1);
-                if (c == '\'') {
+                if (c == U'\'') {
                     i++;
                     if (count != 0) {
                         FAIL_RETURN(Encode(lastTag, count, compiledCode));
@@ -306,10 +306,10 @@ ECode SimpleDateFormat::Compile(
                         count = 0;
                     }
                     if (inQuote) {
-                        tmpBuffer->AppendChar(c);
+                        tmpBuffer->Append(c);
                     }
                     else {
-                        compiledCode->AppendChar((Char)(TAG_QUOTE_ASCII_CHAR << 8 | c));
+                        compiledCode->Append((Char)(TAG_QUOTE_ASCII_CHAR << 8 | c));
                     }
                     continue;
                 }
@@ -335,11 +335,11 @@ ECode SimpleDateFormat::Compile(
                     Char ch;
                     tmpBuffer->GetCharAt(0, &ch);
                     if (ch < 128) {
-                        compiledCode->AppendChar((Char)(TAG_QUOTE_ASCII_CHAR << 8 | ch));
+                        compiledCode->Append((Char)(TAG_QUOTE_ASCII_CHAR << 8 | ch));
                     }
                     else {
-                        compiledCode->AppendChar((Char)(TAG_QUOTE_CHARS << 8 | 1));
-                        compiledCode->AppendChar(ch);
+                        compiledCode->Append((Char)(TAG_QUOTE_CHARS << 8 | 1));
+                        compiledCode->Append(ch);
                     }
                 }
                 else {
@@ -351,10 +351,10 @@ ECode SimpleDateFormat::Compile(
             continue;
         }
         if (inQuote) {
-            tmpBuffer->AppendChar(c);
+            tmpBuffer->Append(c);
             continue;
         }
-        if (!(c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z')) {
+        if (!(c >= U'a' && c <= U'z' || c >= U'A' && c <= U'Z')) {
             if (count != 0) {
                 FAIL_RETURN(Encode(lastTag, count, compiledCode));
                 lastTag = -1;
@@ -362,7 +362,7 @@ ECode SimpleDateFormat::Compile(
             }
             if (c < 128) {
                 // In most cases, c would be a delimiter, such as ':'.
-                compiledCode->AppendChar((Char)(TAG_QUOTE_ASCII_CHAR << 8 | c));
+                compiledCode->Append((Char)(TAG_QUOTE_ASCII_CHAR << 8 | c));
             }
             else {
                 // Take any contiguous non-ASCII alphabet characters and
@@ -370,13 +370,13 @@ ECode SimpleDateFormat::Compile(
                 Integer j;
                 for (j = i + 1; j < length; j++) {
                     Char d = pattern.GetChar(j);
-                    if (d == '\'' || (d >= 'a' && d <= 'z' || d >= 'A' && d <= 'Z')) {
+                    if (d == U'\'' || (d >= U'a' && d <= U'z' || d >= U'A' && d <= U'Z')) {
                         break;
                     }
                 }
-                compiledCode->AppendChar((Char)(TAG_QUOTE_CHARS << 8 | (j - i)));
+                compiledCode->Append((Char)(TAG_QUOTE_CHARS << 8 | (j - i)));
                 for (; i < j; i++) {
-                    compiledCode->AppendChar(pattern.GetChar(i));
+                    compiledCode->Append(pattern.GetChar(i));
                 }
                 i--;
             }
@@ -425,12 +425,12 @@ ECode SimpleDateFormat::Encode(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     if (length < 255) {
-        buffer->AppendChar((Char)(tag << 8 | length));
+        buffer->Append((Char)(tag << 8 | length));
     }
     else {
-        buffer->AppendChar((Char)((tag << 8) | 0xff));
-        buffer->AppendChar((Char)(((unsigned Integer)length) >> 16));
-        buffer->AppendChar((Char)(length & 0xffff));
+        buffer->Append((Char)((tag << 8) | 0xff));
+        buffer->Append((Char)(((unsigned Integer)length) >> 16));
+        buffer->Append((Char)(length & 0xffff));
     }
     return NOERROR;
 }
@@ -502,7 +502,7 @@ ECode SimpleDateFormat::Format(
 
         switch (tag) {
             case TAG_QUOTE_ASCII_CHAR:
-                toAppendTo->AppendChar((Char)count);
+                toAppendTo->Append((Char)count);
                 break;
 
             case TAG_QUOTE_CHARS:
@@ -766,16 +766,16 @@ ECode SimpleDateFormat::SubFormat(
             value = zoneOffset + dstOffset;
 
             if (value == 0) {
-                buffer->AppendChar('Z');
+                buffer->Append(U'Z');
                 break;
             }
 
             value /= 60000;
             if (value >= 0) {
-                buffer->AppendChar('+');
+                buffer->Append(U'+');
             }
             else {
-                buffer->AppendChar('-');
+                buffer->Append(U'-');
                 value = -value;
             }
 
@@ -785,7 +785,7 @@ ECode SimpleDateFormat::SubFormat(
             }
 
             if (count == 3) {
-                buffer->Append(':');
+                buffer->Append(U':');
             }
             CalendarUtils::Sprintf0d(buffer, value % 60, 2);
             break;
@@ -947,24 +947,24 @@ void SimpleDateFormat::ZeroPaddingNumber(
         if (value < 100 && minDigits >= 1 && minDigits <= 2) {
             if (value < 10) {
                 if (minDigits == 2) {
-                    buffer->AppendChar(mZeroDigit);
+                    buffer->Append(mZeroDigit);
                 }
-                buffer->AppendChar(mZeroDigit + value);
+                buffer->Append((Char)(mZeroDigit + value));
             }
             else {
-                buffer->AppendChar(mZeroDigit + value / 10);
-                buffer->AppendChar(mZeroDigit + value % 10);
+                buffer->Append((Char)(mZeroDigit + value / 10));
+                buffer->Append((Char)(mZeroDigit + value % 10));
             }
             return;
         }
         else if (value >= 1000 && value < 10000) {
             if (minDigits == 4) {
-                buffer->AppendChar(mZeroDigit + value / 1000);
+                buffer->Append((Char)(mZeroDigit + value / 1000));
                 value %= 1000;
-                buffer->AppendChar(mZeroDigit + value / 100);
+                buffer->Append((Char)(mZeroDigit + value / 100));
                 value %= 100;
-                buffer->AppendChar(mZeroDigit + value / 10);
-                buffer->AppendChar(mZeroDigit + value % 10);
+                buffer->Append((Char)(mZeroDigit + value / 10));
+                buffer->Append((Char)(mZeroDigit + value % 10));
                 return;
             }
             if (minDigits == 2 && maxDigits == 2) {
@@ -1170,7 +1170,7 @@ Integer SimpleDateFormat::MatchString(
 
         // When the input option ends with a period (usually an abbreviated form), attempt
         // to match all chars up to that period.
-        if ((data[i].GetChar(length - 1) == '.') &&
+        if ((data[i].GetChar(length - 1) == U'.') &&
                 ((length - 1) > bestMatchLength) &&
                 text.RegionMatchesIgnoreCase(start, data[i], 0, length - 1)) {
             bestMatch = i;
@@ -1363,10 +1363,10 @@ Integer SimpleDateFormat::SubParseNumericZone(
         if (!IsDigit(c)) {
             break;
         }
-        hours = c - '0';
+        hours = c - U'0';
         c = text.GetChar(index++);
         if (IsDigit(c)) {
-            hours = hours * 10 + (c - '0');
+            hours = hours * 10 + (c - U'0');
         }
         else {
             --index;
@@ -1387,7 +1387,7 @@ Integer SimpleDateFormat::SubParseNumericZone(
             //   false       |  true    |  error  |  ok
             //   true        |  false   |   ok    | error
             //   true        |  true    |   ok    |  ok
-            if (c == ':') {
+            if (c == U':') {
                 c = text.GetChar(index++);
             }
             else if (colonRequired) {
@@ -1396,12 +1396,12 @@ Integer SimpleDateFormat::SubParseNumericZone(
             if (!IsDigit(c)) {
                 break;
             }
-            minutes = c - '0';
+            minutes = c - U'0';
             c = text.GetChar(index++);
             if (!IsDigit(c)) {
                 break;
             }
-            minutes = minutes * 10 + (c - '0');
+            minutes = minutes * 10 + (c - U'0');
             if (minutes > 59) {
                 break;
             }
@@ -1417,7 +1417,7 @@ Integer SimpleDateFormat::SubParseNumericZone(
 Boolean SimpleDateFormat::IsDigit(
     /* [in] */ Char c)
 {
-    return c >= '0' && c <= '9';
+    return c >= U'0' && c <= U'9';
 }
 
 Integer SimpleDateFormat::SubParse(
@@ -1453,7 +1453,7 @@ Integer SimpleDateFormat::SubParse(
             return -1;
         }
         Char c = text.GetChar(index);
-        if (c != ' ' && c != '\t') {
+        if (c != U' ' && c != U'\t') {
             break;
         }
         pos->SetIndex(++index);
@@ -1676,15 +1676,15 @@ Integer SimpleDateFormat::SubParse(
                 Integer sign = 0;
                 pos->GetIndex(&index);
                 Char c = text.GetChar(index);
-                if (c == '+') {
+                if (c == U'+') {
                     sign = 1;
                 }
-                else if (c == '-') {
+                else if (c == U'-') {
                     sign = -1;
                 }
                 if (sign == 0) {
                     // Try parsing a custom time zone "GMT+hh:mm" or "GMT".
-                    if ((c == 'G' || c == 'g') &&
+                    if ((c == U'G' || c == U'g') &&
                             (text.GetLength() - start) >= GMT.GetLength() &&
                             text.RegionMatchesIgnoreCase(start, GMT, 0, GMT.GetLength())) {
                         index = start + GMT.GetLength();
@@ -1692,10 +1692,10 @@ Integer SimpleDateFormat::SubParse(
 
                         if ((text.GetLength() - index) > 0) {
                             c = text.GetChar(index);
-                            if (c == '+') {
+                            if (c == U'+') {
                                 sign = 1;
                             }
-                            else if (c == '-') {
+                            else if (c == U'-') {
                                 sign = -1;
                             }
                         }
@@ -1747,7 +1747,7 @@ Integer SimpleDateFormat::SubParse(
 
                 Integer sign;
                 Char c = text.GetChar(index);
-                if (c == 'Z') {
+                if (c == U'Z') {
                     calb->Set(ICalendar::ZONE_OFFSET, 0);
                     calb->Set(ICalendar::DST_OFFSET, 0);
                     pos->SetIndex(++index);
@@ -1755,10 +1755,10 @@ Integer SimpleDateFormat::SubParse(
                 }
 
                 // parse text as "+/-hh[[:]mm]" based on count
-                if (c == '+') {
+                if (c == U'+') {
                     sign = 1;
                 }
-                else if (c == '-') {
+                else if (c == U'-') {
                     sign = -1;
                 }
                 else {
@@ -1990,15 +1990,15 @@ ECode SimpleDateFormat::TranslatePattern(
     for (Integer i = 0; i < pattern.GetLength(); ++i) {
         Char c = pattern.GetChar(i);
         if (inQuote) {
-            if (c == '\'') {
+            if (c == U'\'') {
                 inQuote = false;
             }
         }
         else {
-            if (c == '\'') {
+            if (c == U'\'') {
                 inQuote = true;
             }
-            else if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {
+            else if ((c >= U'a' && c <= U'z') || (c >= U'A' && c <= U'Z')) {
                 Integer ci = from.IndexOf(c);
                 if (ci >= 0) {
                     // patternChars is longer than localPatternChars due
@@ -2014,7 +2014,7 @@ ECode SimpleDateFormat::TranslatePattern(
                 }
             }
         }
-        sb->AppendChar(c);
+        sb->Append(c);
     }
     if (inQuote) {
         Logger::E("SimpleDateFormat", "Unfinished quote in pattern");
@@ -2113,13 +2113,13 @@ void SimpleDateFormat::CheckNegativeNumberExpression()
         if (!numberPattern.Equals(mOriginalNumberPattern)) {
             mHasFollowingMinusSign = false;
 
-            Integer separatorIndex = numberPattern.IndexOf(';');
+            Integer separatorIndex = numberPattern.IndexOf(U';');
             // If the negative subpattern is not absent, we have to analayze
             // it in order to check if it has a following minus sign.
             if (separatorIndex > -1) {
-                Integer minusIndex = numberPattern.IndexOf('-', separatorIndex);
-                if ((minusIndex > numberPattern.LastIndexOf('0')) &&
-                    (minusIndex > numberPattern.LastIndexOf('#'))) {
+                Integer minusIndex = numberPattern.IndexOf(U'-', separatorIndex);
+                if ((minusIndex > numberPattern.LastIndexOf(U'0')) &&
+                    (minusIndex > numberPattern.LastIndexOf(U'#'))) {
                     mHasFollowingMinusSign = true;
                     AutoPtr<IDecimalFormatSymbols> symbols;
                     IDecimalFormat::Probe(mNumberFormat)->GetDecimalFormatSymbols(&symbols);

@@ -67,7 +67,7 @@ public:
     static AutoPtr<UnicodeLocaleExtension> GetNU_THAI();
 
 public:
-    static constexpr Char SINGLETON = 'u';
+    static constexpr Char SINGLETON = U'u';
 
 private:
     AutoPtr<ISet> mAttributes;

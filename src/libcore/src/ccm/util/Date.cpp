@@ -236,16 +236,16 @@ syntax:
         while (i < limit) {
             c = s.GetChar(i);
             i++;
-            if (c <= ' ' || c == ',') {
+            if (c <= U' ' || c == U',') {
                 continue;
             }
-            if (c == '(') { // skip comments
+            if (c == U'(') { // skip comments
                 Integer depth = 1;
                 while (i < limit) {
                     c = s.GetChar(i);
                     i++;
-                    if (c == '(') depth++;
-                    else if (c == ')') {
+                    if (c == U'(') depth++;
+                    else if (c == U')') {
                         if (--depth <= 0) {
                             break;
                         }
@@ -253,13 +253,13 @@ syntax:
                 }
                 continue;
             }
-            if ('0' <= c && c <= '9') {
-                n = c - '0';
-                while ((i < limit) && ('0' <= (c = s.GetChar(i))) && (c <= '9')) {
-                    n = n * 10 + c - '0';
+            if (U'0' <= c && c <= U'9') {
+                n = c - U'0';
+                while ((i < limit) && (U'0' <= (c = s.GetChar(i))) && (c <= U'9')) {
+                    n = n * 10 + c - U'0';
                     i++;
                 }
-                if ((prevc == '+') || (prevc == '-' && year != IInteger::MIN_VALUE)) {
+                if ((prevc == U'+') || (prevc == U'-' && year != IInteger::MIN_VALUE)) {
                     if (tzoffset != 0 && tzoffset != -1) {
                         return E_ILLEGAL_ARGUMENT_EXCEPTION;
                     }
@@ -272,10 +272,10 @@ syntax:
                         // parse the number following it as loosely as the original hours
                         // section (i.e, no range or validity checks).
                         Integer minutesPart = 0;
-                        if (i < limit && (s.GetChar(i) == ':')) {
+                        if (i < limit && (s.GetChar(i) == U':')) {
                             i++;
-                            while (i < limit && '0' <= (c = s.GetChar(i)) && c <= '9') {
-                                minutesPart = (minutesPart * 10) + (c - '0');
+                            while (i < limit && U'0' <= (c = s.GetChar(i)) && c <= U'9') {
+                                minutesPart = (minutesPart * 10) + (c - U'0');
                                 i++;
                             }
                         }
@@ -286,7 +286,7 @@ syntax:
                         n = (n % 100) + ((n / 100) * 60); // eg "GMT-0430"
                     }
 
-                    if (prevc == '+') { // plus means east of GMT
+                    if (prevc == U'+') { // plus means east of GMT
                         n = -n;
                     }
 
@@ -296,7 +296,7 @@ syntax:
                     if (year != IInteger::MIN_VALUE) {
                         return E_ILLEGAL_ARGUMENT_EXCEPTION;
                     }
-                    else if (c <= ' ' || c == ',' || c == '/' || i >= limit) {
+                    else if (c <= U' ' || c == U',' || c == U'/' || i >= limit) {
                         // year = n < 1900 ? n : n - 1900;
                         year = n;
                     }
@@ -304,7 +304,7 @@ syntax:
                         return E_ILLEGAL_ARGUMENT_EXCEPTION;
                     }
                 }
-                else if (c == ':') {
+                else if (c == U':') {
                     if (hour < 0) {
                         hour = (Byte)n;
                     }
@@ -315,7 +315,7 @@ syntax:
                         return E_ILLEGAL_ARGUMENT_EXCEPTION;
                     }
                 }
-                else if (c == '/') {
+                else if (c == U'/') {
                     if (mon < 0) {
                         mon = (Byte)(n - 1);
                     }
@@ -326,7 +326,7 @@ syntax:
                         return E_ILLEGAL_ARGUMENT_EXCEPTION;
                     }
                 }
-                else if (i < limit && c != ',' && c > ' ' && c != '-') {
+                else if (i < limit && c != U',' && c > U' ' && c != U'-') {
                     return E_ILLEGAL_ARGUMENT_EXCEPTION;
                 }
                 else if (hour >= 0 && min < 0) {
@@ -347,14 +347,14 @@ syntax:
                 }
                 prevc = 0;
             }
-            else if (c == '/' || c == ':' || c == '+' || c == '-') {
+            else if (c == U'/' || c == U':' || c == U'+' || c == U'-') {
                 prevc = c;
             }
             else {
                 Integer st = i - 1;
                 while (i < limit) {
                     c = s.GetChar(i);
-                    if (!(('A' <= c && c <= 'Z') || ('a' <= c && c <= 'z'))) {
+                    if (!((U'A' <= c && c <= U'Z') || (U'a' <= c && c <= U'z'))) {
                         break;
                     }
                     i++;
@@ -682,7 +682,7 @@ ECode Date::ToString(
         index = 8;
     }
     ConvertToAbbr(sb, GetWtb()[index]);
-    sb->AppendChar(' '); // EEE
+    sb->Append(U' '); // EEE
     Integer month, days, hours, minutes, seconds, year;
     date->GetMonth(&month);
     date->GetDayOfMonth(&days);
@@ -691,15 +691,15 @@ ECode Date::ToString(
     date->GetSeconds(&seconds);
     date->GetYear(&year);
     ConvertToAbbr(sb, GetWtb()[month - 1 + 2 + 7]);
-    sb->AppendChar(' '); // MMM
+    sb->Append(U' '); // MMM
     CalendarUtils::Sprintf0d(sb, days, 2);
-    sb->AppendChar(' '); // dd
+    sb->Append(U' '); // dd
     CalendarUtils::Sprintf0d(sb, hours, 2);
-    sb->AppendChar(':'); // HH
+    sb->Append(U':'); // HH
     CalendarUtils::Sprintf0d(sb, minutes, 2);
-    sb->AppendChar(':'); // mm
+    sb->Append(U':'); // mm
     CalendarUtils::Sprintf0d(sb, seconds, 2);
-    sb->AppendChar(' '); // ss
+    sb->Append(U' '); // ss
     AutoPtr<ITimeZone> zi;
     date->GetZone(&zi);
     if (zi != nullptr) {
@@ -712,7 +712,7 @@ ECode Date::ToString(
     else {
         sb->Append(String("GMT"));
     }
-    sb->AppendChar(' ');
+    sb->Append(U' ');
     sb->Append(year); // yyyy
     return sb->ToString(desc);
 }
@@ -721,9 +721,9 @@ void Date::ConvertToAbbr(
     /* [in] */ IStringBuilder* sb,
     /* [in] */ const String& name)
 {
-    sb->AppendChar(Character::ToUpperCase(name.GetChar(0)));
-    sb->AppendChar(name.GetChar(1));
-    sb->AppendChar(name.GetChar(2));
+    sb->Append(Character::ToUpperCase(name.GetChar(0)));
+    sb->Append(name.GetChar(1));
+    sb->Append(name.GetChar(2));
 }
 
 ECode Date::ToLocaleString(
@@ -752,15 +752,15 @@ ECode Date::ToGMTString(
     date->GetMinutes(&minutes);
     date->GetSeconds(&seconds);
     CalendarUtils::Sprintf0d(sb, days, 1);
-    sb->AppendChar(' '); // d
+    sb->Append(U' '); // d
     ConvertToAbbr(sb, GetWtb()[month - 1 + 2 + 7]);
-    sb->AppendChar(' '); // MMM
+    sb->Append(U' '); // MMM
     sb->Append(year);
-    sb->AppendChar(' '); // yyyy
+    sb->Append(U' '); // yyyy
     CalendarUtils::Sprintf0d(sb, hours, 2);
-    sb->AppendChar(':'); // HH
+    sb->Append(U':'); // HH
     CalendarUtils::Sprintf0d(sb, minutes, 2);
-    sb->AppendChar(':'); // mm
+    sb->Append(U':'); // mm
     CalendarUtils::Sprintf0d(sb, seconds, 2); // ss
     sb->Append(String(" GMT")); // ' GMT'
     return sb->ToString(str);

@@ -100,8 +100,8 @@ Boolean Character::IsIdentifierIgnorableImpl(
 Char Character::ToLowerCase(
     /* [in] */ Char c)
 {
-    if (c >= 'A' && c <= 'Z') {
-        return c + ('a' - 'A');
+    if (c >= U'A' && c <= U'Z') {
+        return c + (U'a' - U'A');
     }
 
     // All ASCII codepoints except the ones above remain unchanged.
@@ -121,8 +121,8 @@ Char Character::ToLowerCaseImpl(
 Char Character::ToUpperCase(
     /* [in] */ Char c)
 {
-    if (c >= 'a' && c <= 'z') {
-        return c - ('a' - 'A');
+    if (c >= U'a' && c <= U'z') {
+        return c - (U'a' - U'A');
     }
 
     // All ASCII codepoints except the ones above remain unchanged.
@@ -155,14 +155,14 @@ Integer Character::Digit(
     if (c < 128) {
         // Optimized for ASCII
         Integer result = -1;
-        if ('0' <= c && c <= '9') {
-            result = c - '0';
+        if (U'0' <= c && c <= U'9') {
+            result = c - U'0';
         }
-        else if ('a' <= c && c <= 'z') {
-            result = 10 + (c - 'a');
+        else if (U'a' <= c && c <= U'z') {
+            result = 10 + (c - U'a');
         }
-        else if ('A' <= c && c <= 'Z') {
-            result = 10 + (c - 'A');
+        else if (U'A' <= c && c <= U'Z') {
+            result = 10 + (c - U'A');
         }
         return result < radix ? result : -1;
     }
@@ -181,14 +181,14 @@ Integer Character::GetNumericValue(
 {
     // This is both an optimization and papers over differences between Java and ICU.
     if (c < 128) {
-        if (c >= '0' && c <= '9') {
-            return c - '0';
+        if (c >= U'0' && c <= U'9') {
+            return c - U'0';
         }
-        if (c >= 'a' && c <= 'z') {
-            return c - ('a' - 10);
+        if (c >= U'a' && c <= U'z') {
+            return c - (U'a' - 10);
         }
-        if (c >= 'A' && c <= 'Z') {
-            return c - ('A' - 10);
+        if (c >= U'A' && c <= U'Z') {
+            return c - (U'A' - 10);
         }
         return -1;
     }
@@ -306,15 +306,15 @@ Char Character::ForDigit(
     /* [in] */ Integer radix)
 {
     if ((digit >= radix) || (digit < 0)) {
-        return '\0';
+        return U'\0';
     }
     if ((radix < MIN_RADIX) || (radix > MAX_RADIX)) {
-        return '\0';
+        return U'\0';
     }
     if (digit < 10) {
-        return (Char)('0' + digit);
+        return (Char)(U'0' + digit);
     }
-    return (Char)('a' - 10 + digit);
+    return (Char)(U'a' - 10 + digit);
 }
 
 Byte Character::GetDirectionality(

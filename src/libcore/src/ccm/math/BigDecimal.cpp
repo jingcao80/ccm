@@ -176,7 +176,7 @@ const Array<IBigDecimal*>& BigDecimal::GetZERO_SCALED_BY()
 static Array<Char> CreateCH_ZEROS()
 {
     Array<Char> ch_zeros(100);
-    Arrays::Fill(ch_zeros, '0');
+    Arrays::Fill(ch_zeros, U'0');
     return ch_zeros;
 }
 
@@ -258,16 +258,16 @@ ECode BigDecimal::Constructor(
     CStringBuilder::New(len, IID_IStringBuilder, (IInterface**)&unscaledBuffer);
     Integer bufLength = 0;
     // To skip a possible '+' symbol
-    if ((offset <= last) && (in[offset] == '+')) {
+    if ((offset <= last) && (in[offset] == U'+')) {
         offset++;
         begin++;
     }
     Integer counter = 0;
     Boolean wasNonZero = false;
     // Accumulating all digits until a possible decimal point
-    for (; (offset <= last) && (in[offset] != '.') && (in[offset] != 'e') && (in[offset] != 'E'); offset++) {
+    for (; (offset <= last) && (in[offset] != U'.') && (in[offset] != U'e') && (in[offset] != U'E'); offset++) {
         if (!wasNonZero) {
-            if (in[offset] == '0') {
+            if (in[offset] == U'0') {
                 counter++;
             }
             else {
@@ -278,13 +278,13 @@ ECode BigDecimal::Constructor(
     unscaledBuffer->Append(in, begin, offset - begin);
     bufLength += offset - begin;
     // A decimal point was found
-    if ((offset <= last) && (in[offset] == '.')) {
+    if ((offset <= last) && (in[offset] == U'.')) {
         offset++;
         // Accumulating all digits until a possible exponent
         begin = offset;
-        for (; (offset <= last) && (in[offset] != 'e') && (in[offset] != 'E'); offset++) {
+        for (; (offset <= last) && (in[offset] != U'e') && (in[offset] != U'E'); offset++) {
             if (!wasNonZero) {
-                if (in[offset] == '0') {
+                if (in[offset] == U'0') {
                     counter++;
                 }
                 else {
@@ -300,13 +300,13 @@ ECode BigDecimal::Constructor(
         mScale = 0;
     }
     // An exponent was found
-    if ((offset <= last) && ((in[offset] == 'e') || (in[offset] == 'E'))) {
+    if ((offset <= last) && ((in[offset] == U'e') || (in[offset] == U'E'))) {
         offset++;
         // Checking for a possible sign of scale
         begin = offset;
-        if ((offset <= last) && (in[offset] == '+')) {
+        if ((offset <= last) && (in[offset] == U'+')) {
             offset++;
-            if ((offset <= last) && (in[offset] != '-')) {
+            if ((offset <= last) && (in[offset] != U'-')) {
                 begin++;
             }
         }
@@ -2040,7 +2040,7 @@ ECode BigDecimal::ToString(
     result->Append(intString);
     if ((mScale > 0) && (exponent >= -6)) {
         if (exponent >= 0) {
-            result->InsertChar(end - mScale, '.');
+            result->Insert(end - mScale, U'.');
         }
         else {
             result->Insert(begin - 1, String("0."));
@@ -2049,12 +2049,12 @@ ECode BigDecimal::ToString(
     }
     else {
         if (end - begin >= 1) {
-            result->InsertChar(begin, '.');
+            result->Insert(begin, U'.');
             end++;
         }
-        result->InsertChar(end, 'E');
+        result->Insert(end, U'E');
         if (exponent > 0) {
-            result->InsertChar(++end, '+');
+            result->Insert(++end, U'+');
         }
         result->Insert(++end, StringUtils::ToString(exponent));
     }
@@ -2083,7 +2083,7 @@ ECode BigDecimal::ToEngineeringString(
 
     if ((mScale > 0) && (exponent >= -6)) {
         if (exponent >= 0) {
-            result->InsertChar(end - mScale, '.');
+            result->Insert(end - mScale, U'.');
         }
         else {
             result->Insert(begin - 1, String("0."));
@@ -2111,18 +2111,18 @@ ECode BigDecimal::ToEngineeringString(
             }
             if (delta < 3) {
                 for (Integer i = rem - delta; i > 0; i--) {
-                    result->InsertChar(end++, '0');
+                    result->Insert(end++, U'0');
                 }
             }
         }
         if (end - begin >= 1) {
-            result->InsertChar(begin, '.');
+            result->Insert(begin, U'.');
             end++;
         }
         if (exponent != 0) {
-            result->InsertChar(end, 'E');
+            result->Insert(end, U'E');
             if (exponent > 0) {
-                result->InsertChar(++end, '+');
+                result->Insert(++end, U'+');
             }
             result->Insert(++end, StringUtils::ToString(exponent));
         }
@@ -2151,7 +2151,7 @@ ECode BigDecimal::ToPlainString(
 
     if (begin == 1) {
         // If the number is negative, we insert a '-' character at front
-        result->AppendChar('-');
+        result->Append(U'-');
     }
     if (mScale > 0) {
         delta -= (intString.GetLength() - begin);
@@ -2167,7 +2167,7 @@ ECode BigDecimal::ToPlainString(
         else {
             delta = begin - delta;
             result->Append(intString.Substring(begin, delta));
-            result->AppendChar('.');
+            result->Append(U'.');
             result->Append(intString.Substring(delta));
         }
     }

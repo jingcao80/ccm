@@ -354,7 +354,7 @@ ECode Matcher::QuoteReplacement(
 {
     VALIDATE_NOT_NULL(str);
 
-    if ((s.IndexOf('\\') == -1) && (s.IndexOf('$') == -1)) {
+    if ((s.IndexOf(U'\\') == -1) && (s.IndexOf(U'$') == -1)) {
         *str = s;
         return NOERROR;
     }
@@ -362,10 +362,10 @@ ECode Matcher::QuoteReplacement(
     CStringBuilder::New(IID_IStringBuilder, (IInterface**)&sb);
     for (Integer i = 0; i < s.GetLength(); i++) {
         Char c = s.GetChar(i);
-        if (c == '\\' || c == '$') {
-            sb->AppendChar('\\');
+        if (c == U'\\' || c == U'$') {
+            sb->Append(U'\\');
         }
-        sb->AppendChar(c);
+        sb->Append(c);
     }
     return sb->ToString(str);
 }
@@ -392,23 +392,23 @@ ECode Matcher::AppendEvaluated(
 
     for (Integer i = 0; i < s.GetLength(); i++) {
         Char c = s.GetChar(i);
-        if (c == '\\' && !escape) {
+        if (c == U'\\' && !escape) {
             escape = true;
         }
-        else if (c == '$' && !escape) {
+        else if (c == U'$' && !escape) {
             dollar = true;
         }
-        else if (c >= '0' && c <= '9' && dollar) {
+        else if (c >= U'0' && c <= U'9' && dollar) {
             String subseq;
-            FAIL_RETURN(Group(c - '0', &subseq));
+            FAIL_RETURN(Group(c - U'0', &subseq));
             buffer->Append(subseq);
             dollar = false;
         }
-        else if (c == '{' && dollar) {
+        else if (c == U'{' && dollar) {
             escapeNamedGroup = true;
             escapeNamedGroupStart = i;
         }
-        else if (c == '}' && dollar && escapeNamedGroup) {
+        else if (c == U'}' && dollar && escapeNamedGroup) {
             String namedGroupName =
                     s.Substring(escapeNamedGroupStart + 1, i);
             String subseq;
@@ -417,11 +417,11 @@ ECode Matcher::AppendEvaluated(
             dollar = false;
             escapeNamedGroup = false;
         }
-        else if (c != '}' && dollar && escapeNamedGroup) {
+        else if (c != U'}' && dollar && escapeNamedGroup) {
             continue;
         }
         else {
-            buffer->AppendChar(c);
+            buffer->Append(c);
             dollar = false;
             escape = false;
             escapeNamedGroup = false;
@@ -564,14 +564,14 @@ ECode Matcher::ToString(
     RegionStart(&start);
     RegionEnd(&end);
     sb->Append(start);
-    sb->AppendChar(',');
+    sb->Append(U',');
     sb->Append(end);
     sb->Append(String(" lastmatch="));
     String subseq;
     if (mMatchFound && (Group(&subseq), !subseq.IsNull())) {
         sb->Append(subseq);
     }
-    sb->AppendChar(']');
+    sb->Append(U']');
     return sb->ToString(str);
 }
 

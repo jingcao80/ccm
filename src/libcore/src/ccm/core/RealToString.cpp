@@ -205,10 +205,10 @@ void RealToString::FreeFormatExponential(
 {
     Integer digitIndex = 0;
     if (!positive) {
-        sb->AppendChar('-');
+        sb->Append(U'-');
     }
-    sb->AppendChar('0' + sDigits[digitIndex++]);
-    sb->AppendChar('.');
+    sb->Append((Char)(U'0' + sDigits[digitIndex++]));
+    sb->Append(U'.');
 
     Integer k = sFirstK;
     Integer exponent = k;
@@ -217,13 +217,13 @@ void RealToString::FreeFormatExponential(
         if (digitIndex >= sDigitCount) {
             break;
         }
-        sb->AppendChar('0' + sDigits[digitIndex++]);
+        sb->Append((Char)(U'0' + sDigits[digitIndex++]));
     }
 
     if (k == exponent - 1) {
-        sb->AppendChar('0');
+        sb->Append(U'0');
     }
-    sb->AppendChar('E');
+    sb->Append(U'E');
     sb->Append(StringUtils::ToString(exponent));
 }
 
@@ -233,26 +233,26 @@ void RealToString::FreeFormat(
 {
     Integer digitIndex = 0;
     if (!positive) {
-        sb->AppendChar('-');
+        sb->Append(U'-');
     }
     Integer k = sFirstK;
     if (k < 0) {
-        sb->AppendChar('0');
-        sb->AppendChar('.');
+        sb->Append(U'0');
+        sb->Append(U'.');
         for (Integer i = k + 1; i < 0; ++i) {
-            sb->AppendChar('0');
+            sb->Append(U'0');
         }
     }
     Integer U = sDigits[digitIndex++];
     do {
         if (U != -1) {
-            sb->AppendChar('0' + U);
+            sb->Append((Char)(U'0' + U));
         }
         else if (k >= -1) {
-            sb->AppendChar('0');
+            sb->Append(U'0');
         }
         if (k == 0) {
-            sb->AppendChar('.');
+            sb->Append(U'.');
         }
         k--;
         U = digitIndex < sDigitCount ? sDigits[digitIndex++] : -1;

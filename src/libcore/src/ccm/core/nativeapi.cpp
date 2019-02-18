@@ -148,7 +148,7 @@ ECode NativeObjectWait(
 }
 
 Boolean MaybeCauseIcuException(
-    /* [in] */ const char* function, 
+    /* [in] */ const char* function,
     /* [in] */ UErrorCode error)
 {
     if (U_SUCCESS(error)) {
@@ -157,13 +157,13 @@ Boolean MaybeCauseIcuException(
     const char* exceptionClass = "java/lang/RuntimeException";
     if (error == U_ILLEGAL_ARGUMENT_ERROR) {
         Logger::E("IcuException", "E_ILLEGAL_ARGUMENT_EXCEPTION");
-    } 
+    }
     else if (error == U_INDEX_OUTOFBOUNDS_ERROR || error == U_BUFFER_OVERFLOW_ERROR) {
         Logger::E("IcuException", "E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION");
-    } 
+    }
     else if (error == U_UNSUPPORTED_ERROR) {
         Logger::E("IcuException", "E_UNSUPPORTED_OPERATION_EXCEPTION");
-    } 
+    }
     else if (error == U_FORMAT_INEXACT_ERROR) {
         Logger::E("IcuException", "E_ARITHMETIC_EXCEPTION");
     }

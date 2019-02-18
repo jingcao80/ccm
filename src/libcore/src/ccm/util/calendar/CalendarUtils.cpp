@@ -55,7 +55,7 @@ ECode CalendarUtils::Sprintf0d(
 {
     Long d = value;
     if (d < 0) {
-        sb->AppendChar('-');
+        sb->Append(U'-');
         d = -d;
         --width;
     }
@@ -64,7 +64,7 @@ ECode CalendarUtils::Sprintf0d(
         n *= 10;
     }
     for (Integer i = 1; i < width && d < n; i++) {
-        sb->AppendChar('0');
+        sb->Append(U'0');
         n /= 10;
     }
     sb->Append(d);
@@ -78,7 +78,7 @@ ECode CalendarUtils::Sprintf0d(
 {
     Long d = value;
     if (d < 0) {
-        sb->AppendChar('-');
+        sb->Append(U'-');
         d = -d;
         --width;
     }
@@ -87,7 +87,7 @@ ECode CalendarUtils::Sprintf0d(
         n *= 10;
     }
     for (Integer i = 1; i < width && d < n; i++) {
-        sb->AppendChar('0');
+        sb->Append(U'0');
         n /= 10;
     }
     sb->Append(d);

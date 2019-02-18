@@ -103,7 +103,7 @@ ECode CStringBuilder::Append(
     return AbstractStringBuilder::Append(b);
 }
 
-ECode CStringBuilder::AppendChar(
+ECode CStringBuilder::Append(
     /* [in] */ Char c)
 {
     return AbstractStringBuilder::Append(c);
@@ -207,7 +207,7 @@ ECode CStringBuilder::Insert(
     return AbstractStringBuilder::Insert(offset, b);
 }
 
-ECode CStringBuilder::InsertChar(
+ECode CStringBuilder::Insert(
     /* [in] */ Integer offset,
     /* [in] */ Char c)
 {

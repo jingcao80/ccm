@@ -121,25 +121,25 @@ inline String LocaleUtils::ToUpperString(
 inline Boolean LocaleUtils::IsUpper(
     /* [in] */ Char c)
 {
-    return c >= 'A' && c <= 'Z';
+    return c >= U'A' && c <= U'Z';
 }
 
 inline Boolean LocaleUtils::IsLower(
     /* [in] */ Char c)
 {
-    return c >= 'a' && c <= 'z';
+    return c >= U'a' && c <= U'z';
 }
 
 inline Boolean LocaleUtils::IsAlpha(
     /* [in] */ Char c)
 {
-    return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
+    return (c >= U'A' && c <= U'Z') || (c >= U'a' && c <= U'z');
 }
 
 inline Boolean LocaleUtils::IsNumeric(
     /* [in] */ Char c)
 {
-    return (c >= '0' && c <= '9');
+    return (c >= U'0' && c <= U'9');
 }
 
 inline Boolean LocaleUtils::IsAlphaNumeric(

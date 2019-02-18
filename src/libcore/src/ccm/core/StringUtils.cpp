@@ -102,12 +102,12 @@ ECode StringUtils::ParseInteger(
 
     if (len > 0) {
         Char firstChar = s.GetChar(0);
-        if (firstChar < '0') { // Possible leading "+" or "-"
-            if (firstChar == '-') {
+        if (firstChar < U'0') { // Possible leading "+" or "-"
+            if (firstChar == U'-') {
                 negative = true;
                 limit = IInteger::MIN_VALUE;
             }
-            else if (firstChar != '+') {
+            else if (firstChar != U'+') {
                 Logger::E("StringUtils", "s == %s", s.string());
                 return E_NUMBER_FORMAT_EXCEPTION;
             }
@@ -177,12 +177,12 @@ ECode StringUtils::ParseLong(
 
     if (len > 0) {
         Char firstChar = s.GetChar(0);
-        if (firstChar < '0') { // Possible leading "+" or "-"
-            if (firstChar == '-') {
+        if (firstChar < U'0') { // Possible leading "+" or "-"
+            if (firstChar == U'-') {
                 negative = true;
                 limit = ILong::MIN_VALUE;
             }
-            else if (firstChar != '+') {
+            else if (firstChar != U'+') {
                 Logger::E("StringUtils", "s == %s", s.string());
                 return E_NUMBER_FORMAT_EXCEPTION;
             }
@@ -240,47 +240,47 @@ ECode StringUtils::ParseDouble(
 }
 
 static Char digits[] = {
-    '0' , '1' , '2' , '3' , '4' , '5' ,
-    '6' , '7' , '8' , '9' , 'a' , 'b' ,
-    'c' , 'd' , 'e' , 'f' , 'g' , 'h' ,
-    'i' , 'j' , 'k' , 'l' , 'm' , 'n' ,
-    'o' , 'p' , 'q' , 'r' , 's' , 't' ,
-    'u' , 'v' , 'w' , 'x' , 'y' , 'z'
+    U'0' , U'1' , U'2' , U'3' , U'4' , U'5' ,
+    U'6' , U'7' , U'8' , U'9' , U'a' , U'b' ,
+    U'c' , U'd' , U'e' , U'f' , U'g' , U'h' ,
+    U'i' , U'j' , U'k' , U'l' , U'm' , U'n' ,
+    U'o' , U'p' , U'q' , U'r' , U's' , U't' ,
+    U'u' , U'v' , U'w' , U'x' , U'y' , U'z'
 };
 
 static Char upperCaseDigits[] = {
-    '0' , '1' , '2' , '3' , '4' , '5' ,
-    '6' , '7' , '8' , '9' , 'A' , 'B' ,
-    'C' , 'D' , 'E' , 'F' , 'G' , 'H' ,
-    'I' , 'J' , 'K' , 'L' , 'M' , 'N' ,
-    'O' , 'P' , 'Q' , 'R' , 'S' , 'T' ,
-    'U' , 'V' , 'W' , 'X' , 'Y' , 'Z'
+    U'0' , U'1' , U'2' , U'3' , U'4' , U'5' ,
+    U'6' , U'7' , U'8' , U'9' , U'A' , U'B' ,
+    U'C' , U'D' , U'E' , U'F' , U'G' , U'H' ,
+    U'I' , U'J' , U'K' , U'L' , U'M' , U'N' ,
+    U'O' , U'P' , U'Q' , U'R' , U'S' , U'T' ,
+    U'U' , U'V' , U'W' , U'X' , U'Y' , U'Z'
 };
 
 static Char digitTens[] = {
-    '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
-    '1', '1', '1', '1', '1', '1', '1', '1', '1', '1',
-    '2', '2', '2', '2', '2', '2', '2', '2', '2', '2',
-    '3', '3', '3', '3', '3', '3', '3', '3', '3', '3',
-    '4', '4', '4', '4', '4', '4', '4', '4', '4', '4',
-    '5', '5', '5', '5', '5', '5', '5', '5', '5', '5',
-    '6', '6', '6', '6', '6', '6', '6', '6', '6', '6',
-    '7', '7', '7', '7', '7', '7', '7', '7', '7', '7',
-    '8', '8', '8', '8', '8', '8', '8', '8', '8', '8',
-    '9', '9', '9', '9', '9', '9', '9', '9', '9', '9',
+    U'0', U'0', U'0', U'0', U'0', U'0', U'0', U'0', U'0', U'0',
+    U'1', U'1', U'1', U'1', U'1', U'1', U'1', U'1', U'1', U'1',
+    U'2', U'2', U'2', U'2', U'2', U'2', U'2', U'2', U'2', U'2',
+    U'3', U'3', U'3', U'3', U'3', U'3', U'3', U'3', U'3', U'3',
+    U'4', U'4', U'4', U'4', U'4', U'4', U'4', U'4', U'4', U'4',
+    U'5', U'5', U'5', U'5', U'5', U'5', U'5', U'5', U'5', U'5',
+    U'6', U'6', U'6', U'6', U'6', U'6', U'6', U'6', U'6', U'6',
+    U'7', U'7', U'7', U'7', U'7', U'7', U'7', U'7', U'7', U'7',
+    U'8', U'8', U'8', U'8', U'8', U'8', U'8', U'8', U'8', U'8',
+    U'9', U'9', U'9', U'9', U'9', U'9', U'9', U'9', U'9', U'9',
 };
 
 static Char digitOnes[] = {
-    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+    U'0', U'1', U'2', U'3', U'4', U'5', U'6', U'7', U'8', U'9',
+    U'0', U'1', U'2', U'3', U'4', U'5', U'6', U'7', U'8', U'9',
+    U'0', U'1', U'2', U'3', U'4', U'5', U'6', U'7', U'8', U'9',
+    U'0', U'1', U'2', U'3', U'4', U'5', U'6', U'7', U'8', U'9',
+    U'0', U'1', U'2', U'3', U'4', U'5', U'6', U'7', U'8', U'9',
+    U'0', U'1', U'2', U'3', U'4', U'5', U'6', U'7', U'8', U'9',
+    U'0', U'1', U'2', U'3', U'4', U'5', U'6', U'7', U'8', U'9',
+    U'0', U'1', U'2', U'3', U'4', U'5', U'6', U'7', U'8', U'9',
+    U'0', U'1', U'2', U'3', U'4', U'5', U'6', U'7', U'8', U'9',
+    U'0', U'1', U'2', U'3', U'4', U'5', U'6', U'7', U'8', U'9',
 };
 
 static void GetChars(
@@ -293,7 +293,7 @@ static void GetChars(
     Char sign = 0;
 
     if (i < 0) {
-        sign = '-';
+        sign = U'-';
         i = -i;
     }
 
@@ -376,7 +376,7 @@ String StringUtils::ToString(
     buf[charPos] = digits[-i];
 
     if (negative) {
-        buf[--charPos] = '-';
+        buf[--charPos] = U'-';
     }
 
     return String(buf, charPos, (33 - charPos));
@@ -393,7 +393,7 @@ static void GetChars(
     Char sign = 0;
 
     if (i < 0) {
-        sign = '-';
+        sign = U'-';
         i = -i;
     }
 
@@ -483,7 +483,7 @@ String StringUtils::ToString(
     buf[charPos] = digits[-i];
 
     if (negative) {
-        buf[--charPos] = '-';
+        buf[--charPos] = U'-';
     }
 
     return String(buf, charPos, (65 - charPos));
