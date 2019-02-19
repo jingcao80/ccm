@@ -1024,7 +1024,7 @@ String CodeGenerator::GenCoclassObject(
                        "        /* [out] */ IInterface** object);\n\n");
     }
     builder.Append("};\n\n");
-    builder.AppendFormat("static %s* s%sClassObject = nullptr;\n", mi->mName, mk->mName);
+    builder.AppendFormat("static %sClassObject* s%sClassObject = nullptr;\n", mk->mName, mk->mName);
     builder.AppendFormat("static Spinlock& Get%sClassObjectLock()\n"
                          "{\n"
                          "    static Spinlock s%sClassObjectLock;\n"
@@ -1098,15 +1098,20 @@ String CodeGenerator::GenCoclassObject(
                          "{\n"
                          "    VALIDATE_NOT_NULL(classObject);\n\n"
                          "    Spinlock& lock = Get%sClassObjectLock();\n"
+                         "AGAIN:\n"
                          "    lock.Lock();\n"
                          "    if (s%sClassObject == nullptr) {\n"
                          "        s%sClassObject = new %sClassObject();\n"
                          "    }\n"
+                         "    else if (s%sClassObject->GetStrongCount() == 0) {\n"
+                         "        lock.Unlock();\n"
+                         "        goto AGAIN;\n"
+                         "    }\n"
+                         "    s%sClassObject->AddRef();\n"
                          "    lock.Unlock();\n"
-                         "    *classObject = IClassObject::Probe(s%sClassObject);\n"
-                         "    REFCOUNT_ADD(*classObject);\n"
+                         "    *classObject = (IClassObject*)s%sClassObject;\n"
                          "    return NOERROR;\n"
-                         "}\n\n", mk->mName, mk->mName, mk->mName, mk->mName, mk->mName, mk->mName);
+                         "}\n\n", mk->mName, mk->mName, mk->mName, mk->mName, mk->mName, mk->mName, mk->mName, mk->mName);
 
     return builder.ToString();
 }
