@@ -32,6 +32,11 @@ public:
         CONS_COUNT++;
     }
 
+    CA(
+        /* [in] */ Integer value)
+        : mValue(value)
+    {}
+
     ~CA()
     {
         DEST_COUNT++;
@@ -64,6 +69,8 @@ public:
     static Integer ADD_COUNT;
     static Integer RELEASE_COUNT;
     static Integer DEST_COUNT;
+
+    Integer mValue;
 };
 
 Integer CA::CONS_COUNT;
@@ -71,7 +78,7 @@ Integer CA::ADD_COUNT;
 Integer CA::RELEASE_COUNT;
 Integer CA::DEST_COUNT;
 
-TEST(ArrayTest, ObjectArrayTest)
+TEST(ArrayTest, TestObjectArray)
 {
     CA::Initialize();
     Integer size = 199;
@@ -86,7 +93,7 @@ TEST(ArrayTest, ObjectArrayTest)
     EXPECT_EQ(CA::DEST_COUNT, size);
 }
 
-TEST(ArrayTest, ObjectArraySelfAssignmentTest)
+TEST(ArrayTest, TestObjectArraySelfAssignment)
 {
     CA::Initialize();
     Integer size = 199;
@@ -101,7 +108,7 @@ TEST(ArrayTest, ObjectArraySelfAssignmentTest)
     EXPECT_EQ(CA::DEST_COUNT, 0);
 }
 
-TEST(ArrayTest, ObjectArrayClearTest)
+TEST(ArrayTest, TestObjectArrayClear)
 {
     CA::Initialize();
     Integer size = 99;
@@ -116,7 +123,7 @@ TEST(ArrayTest, ObjectArrayClearTest)
     EXPECT_EQ(CA::DEST_COUNT, size);
 }
 
-TEST(ArrayTest, ObjectArrayArrayTest)
+TEST(ArrayTest, TestObjectArrayArray)
 {
     CA::Initialize();
     Integer arraySize = 9;
@@ -135,7 +142,7 @@ TEST(ArrayTest, ObjectArrayArrayTest)
     EXPECT_EQ(CA::DEST_COUNT, arraySize * size);
 }
 
-TEST(ArrayTest, ObjectArrayArraySelfAssignmentTest)
+TEST(ArrayTest, TestObjectArrayArraySelfAssignment)
 {
     CA::Initialize();
     Integer arraySize = 9;
@@ -154,7 +161,7 @@ TEST(ArrayTest, ObjectArrayArraySelfAssignmentTest)
     EXPECT_EQ(CA::DEST_COUNT, 0);
 }
 
-TEST(ArrayTest, ObjectArrayArrayClearTest)
+TEST(ArrayTest, TestObjectArrayArrayClear)
 {
     CA::Initialize();
     Integer arraySize = 9;
@@ -173,7 +180,7 @@ TEST(ArrayTest, ObjectArrayArrayClearTest)
     EXPECT_EQ(CA::DEST_COUNT, arraySize * size);
 }
 
-TEST(ArrayTest, ICharSequenceArrayToInterfaceArrayTest)
+TEST(ArrayTest, TestICharSequenceArrayToInterfaceArray)
 {
     Array<String> strArray(3);
     strArray[0] = "hello";
@@ -197,7 +204,7 @@ TEST(ArrayTest, ICharSequenceArrayToInterfaceArrayTest)
     EXPECT_STREQ(str2.string(), "helloworld");
 }
 
-TEST(ArrayTest, IntegerArrayInitializerListConstructorTest)
+TEST(ArrayTest, TestIntegerArrayInitializerListConstructor)
 {
     Array<Integer> intArray{ 1, 2, 3 };
     EXPECT_EQ(intArray.GetLength(), 3);
@@ -206,7 +213,7 @@ TEST(ArrayTest, IntegerArrayInitializerListConstructorTest)
     EXPECT_EQ(intArray[2], 3);
 }
 
-TEST(ArrayTest, IntegerArrayInitializerListCopyConstructorTest)
+TEST(ArrayTest, TestIntegerArrayInitializerListCopyConstructor)
 {
     Array<Integer> intArray;
 
@@ -220,7 +227,7 @@ TEST(ArrayTest, IntegerArrayInitializerListCopyConstructorTest)
     EXPECT_EQ(intArray[3], 9999);
 }
 
-TEST(ArrayTest, ObjectArrayInitializerListConstructorTest)
+TEST(ArrayTest, TestObjectArrayInitializerListConstructor)
 {
     CA::Initialize();
     Array<IObject*> objArray{
@@ -235,7 +242,7 @@ TEST(ArrayTest, ObjectArrayInitializerListConstructorTest)
     EXPECT_EQ(objArray.GetLength(), 0);
 }
 
-TEST(ArrayTest, ObjectArrayInitializerListCopyConstructorTest)
+TEST(ArrayTest, TestObjectArrayInitializerListCopyConstructor)
 {
     CA::Initialize();
     Array<IObject*> objArray;
@@ -252,7 +259,7 @@ TEST(ArrayTest, ObjectArrayInitializerListCopyConstructorTest)
     EXPECT_EQ(objArray.GetLength(), 0);
 }
 
-TEST(ArrayTest, ObjectArrayStdMoveTest)
+TEST(ArrayTest, TestObjectArrayStdMove)
 {
     CA::Initialize();
     Array<CA*> objArray(2);
@@ -269,6 +276,94 @@ TEST(ArrayTest, ObjectArrayStdMoveTest)
     obj = std::move(objArray[1]);
     EXPECT_TRUE(objArray[1] != nullptr);
     EXPECT_EQ(2, obj->GetStrongCount());
+}
+
+TEST(ArrayTest, TestIntegerRangeFor)
+{
+    Array<Integer> intArray{
+        9, 99, 999, 9999, 99999
+    };
+    EXPECT_TRUE(intArray.GetPayload() == intArray.begin());
+    EXPECT_TRUE(intArray.GetPayload() + 5 == intArray.end());
+    Integer i = 0;
+    for (Integer v : intArray) {
+        if (i == 0) {
+            EXPECT_EQ(9, v);
+        }
+        else if (i == 1) {
+            EXPECT_EQ(99, v);
+        }
+        else if (i == 2) {
+            EXPECT_EQ(999, v);
+        }
+        else if (i == 3) {
+            EXPECT_EQ(9999, v);
+        }
+        else if (i == 4) {
+            EXPECT_EQ(99999, v);
+        }
+        i++;
+    }
+    EXPECT_EQ(5, i);
+}
+
+TEST(ArrayTest, TestObjectRangeFor)
+{
+    Array<CA*> objArray{
+        new CA(9), new CA(99), new CA(999), new CA(9999), new CA(99999)
+    };
+    EXPECT_TRUE(objArray.GetPayload() == objArray.begin());
+    EXPECT_TRUE(objArray.GetPayload() + 5 == objArray.end());
+    Integer i = 0;
+    for (AutoPtr<CA> o : objArray) {
+        if (i == 0) {
+            EXPECT_EQ(9, o->mValue);
+            EXPECT_EQ(2, o->GetStrongCount());
+        }
+        else if (i == 1) {
+            EXPECT_EQ(99, o->mValue);
+            EXPECT_EQ(2, o->GetStrongCount());
+        }
+        else if (i == 2) {
+            EXPECT_EQ(999, o->mValue);
+            EXPECT_EQ(2, o->GetStrongCount());
+        }
+        else if (i == 3) {
+            EXPECT_EQ(9999, o->mValue);
+            EXPECT_EQ(2, o->GetStrongCount());
+        }
+        else if (i == 4) {
+            EXPECT_EQ(99999, o->mValue);
+            EXPECT_EQ(2, o->GetStrongCount());
+        }
+        i++;
+    }
+    EXPECT_EQ(5, i);
+    i = 0;
+    for (CA* o : objArray) {
+        if (i == 0) {
+            EXPECT_EQ(9, o->mValue);
+            EXPECT_EQ(1, o->GetStrongCount());
+        }
+        else if (i == 1) {
+            EXPECT_EQ(99, o->mValue);
+            EXPECT_EQ(1, o->GetStrongCount());
+        }
+        else if (i == 2) {
+            EXPECT_EQ(999, o->mValue);
+            EXPECT_EQ(1, o->GetStrongCount());
+        }
+        else if (i == 3) {
+            EXPECT_EQ(9999, o->mValue);
+            EXPECT_EQ(1, o->GetStrongCount());
+        }
+        else if (i == 4) {
+            EXPECT_EQ(99999, o->mValue);
+            EXPECT_EQ(1, o->GetStrongCount());
+        }
+        i++;
+    }
+    EXPECT_EQ(5, i);
 }
 
 int main(int argc, char **argv)

@@ -115,6 +115,10 @@ public:
     inline const T& operator[](
         /* [in] */ Long index) const;
 
+    T* begin();
+
+    T* end();
+
     void Clear();
 
     Array Clone() const;
@@ -510,6 +514,18 @@ const T& Array<T>::operator[](
 {
     T* array = static_cast<T*>(mData);
     return array[index];
+}
+
+template<class T>
+T* Array<T>::begin()
+{
+    return static_cast<T*>(mData);
+}
+
+template<class T>
+T* Array<T>::end()
+{
+    return static_cast<T*>(mData) + mSize;
 }
 
 template<class T>
