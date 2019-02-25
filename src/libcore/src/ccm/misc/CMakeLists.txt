@@ -24,7 +24,8 @@ include_directories(
     ${OBJ_DIR})
 
 set(SOURCES
-    DoubleConsts.cpp)
+    DoubleConsts.cpp
+    FormattedFloatingDecimal.cpp)
 
 add_library(ccm_misc STATIC
     ${SOURCES})

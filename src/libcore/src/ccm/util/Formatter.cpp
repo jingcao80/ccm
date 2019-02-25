@@ -25,11 +25,19 @@
 #include "ccm/io/CFileOutputStream.h"
 #include "ccm/io/COutputStreamWriter.h"
 #include "ccm/io/charset/Charset.h"
+#include "ccm/math/CBigDecimal.h"
+#include "ccm/math/CMathContext.h"
+#include "ccm/misc/DoubleConsts.h"
+#include "ccm/misc/FormattedFloatingDecimal.h"
+#include "ccm/text/DateFormatSymbols.h"
+#include "ccm/text/DecimalFormatSymbols.h"
+#include "ccm/text/NumberFormat.h"
 #include "ccm/util/CArrayList.h"
 #include "ccm/util/Calendar.h"
 #include "ccm/util/CFormatter.h"
 #include "ccm/util/Formatter.h"
 #include "ccm/util/Locale.h"
+#include "libcore/icu/LocaleData.h"
 #include "ccm.core.IBoolean.h"
 #include "ccm.core.IByte.h"
 #include "ccm.core.IChar.h"
@@ -41,8 +49,11 @@
 #include "ccm.io.IFile.h"
 #include "ccm.io.IOutputStream.h"
 #include "ccm.io.IWriter.h"
+#include "ccm.misc.IFormattedFloatingDecimal.h"
+#include "ccm.text.IDecimalFormat.h"
 #include "ccm.util.IDate.h"
 #include "ccm.util.IFormattable.h"
+#include "libcore.icu.ILocaleData.h"
 #include <ccmlogger.h>
 
 using ccm::core::Character;
@@ -75,11 +86,31 @@ using ccm::io::IID_IWriter;
 using ccm::io::IOutputStream;
 using ccm::io::IWriter;
 using ccm::io::charset::Charset;
+using ccm::math::CBigDecimal;
+using ccm::math::CMathContext;
+using ccm::math::IID_IBigDecimal;
+using ccm::math::IID_IMathContext;
+using ccm::math::IMathContext;
+using ccm::math::RoundingMode;
+using ccm::misc::DoubleConsts;
+using ccm::misc::FormattedFloatingDecimal;
+using ccm::misc::FormattedFloatingDecimalForm;
+using ccm::misc::IFormattedFloatingDecimal;
+using ccm::text::DateFormatSymbols;
+using ccm::text::DecimalFormatSymbols;
+using ccm::text::IDecimalFormat;
+using ccm::text::IDecimalFormatSymbols;
+using ccm::text::INumberFormat;
+using ccm::text::NumberFormat;
 using ccm::util::Calendar;
 using ccm::util::IDate;
+using libcore::icu::LocaleData;
+using libcore::icu::ILocaleData;
 
 namespace ccm {
 namespace util {
+
+Double Formatter::sScaleUp = 0.0;
 
 CCM_INTERFACE_IMPL_4(Formatter, SyncObject, IFormatter, ICloseable, IFlushable, IAutoCloseable);
 
@@ -270,8 +301,15 @@ ECode Formatter::Constructor(
 Char Formatter::GetZero(
     /* [in] */ ILocale* l)
 {
-    // not implemented;
-    return U'0';
+    if ((l != nullptr) && (!Object::Equals(l, Locale::GetUS()))) {
+        AutoPtr<IDecimalFormatSymbols> dfs = DecimalFormatSymbols::GetInstance(l);
+        Char c;
+        dfs->GetZeroDigit(&c);
+        return c;
+    }
+    else {
+        return U'0';
+    }
 }
 
 ECode Formatter::GetLocale(
@@ -933,7 +971,7 @@ ECode Formatter::FormatSpecifier::PrintString(
     }
     else {
         if (mF->Contains(Flags::GetALTERNATE())) {
-            return FailMismatch();
+            return FailMismatch(Flags::GetALTERNATE(), U's');
         }
         if (arg == nullptr) {
             return Print(String("null"));
@@ -1044,7 +1082,7 @@ ECode Formatter::FormatSpecifier::CheckGeneral()
 {
     if ((mC == Conversion::BOOLEAN || mC == Conversion::HASHCODE) &&
             mF->Contains(Flags::GetALTERNATE())) {
-        return FailMismatch();
+        return FailMismatch(Flags::GetALTERNATE(), mC);
     }
     // '-' requires a width
     if (mWidth == -1 && mF->Contains(Flags::GetLEFT_JUSTIFY())) {
@@ -1131,7 +1169,7 @@ ECode Formatter::FormatSpecifier::CheckBadFlags(
 {
     for (Integer i = 0; i < badFlags.GetLength(); i++) {
         if (mF->Contains(badFlags[i])) {
-            return FailMismatch();
+            return FailMismatch(badFlags[i], mC);
         }
     }
     return NOERROR;
@@ -1494,16 +1532,176 @@ ECode Formatter::FormatSpecifier::Print(
     if (mC == Conversion::SCIENTIFIC) {
         Integer prec = (precision == -1 ? 6 : precision);
 
+        AutoPtr<IFormattedFloatingDecimal> fd;
+        FormattedFloatingDecimal::ValueOf(value, prec,
+                FormattedFloatingDecimalForm::SCIENTIFIC, &fd);
 
+        Array<Char> mantissa;
+        fd->GetMantissa(&mantissa);
+        Array<Char> mant = AddZeros(mantissa, prec);
+
+        // If the precision is zero and the '#' flag is set, add the
+        // requested decimal point.
+        if (f->Contains(Flags::GetALTERNATE()) && (prec == 0)){
+            mant = AddDot(mant);
+        }
+
+        Array<Char> exp;
+        if (value == 0.0) {
+            exp = { U'+', U'0', U'0' };
+        }
+        else {
+            fd->GetExponent(&exp);
+        }
+
+        Integer newW = mWidth;
+        if (mWidth != -1) {
+            newW = AdjustWidth(mWidth - exp.GetLength() - 1, f, neg);
+            LocalizedMagnitude(sb, mant, f, newW, l);
+        }
+
+        AutoPtr<ILocale> separatorLocale = (l != nullptr) ? l : Locale::GetDefault().Get();
+        AutoPtr<ILocaleData> localeData;
+        LocaleData::Get(separatorLocale, &localeData);
+        String exponentSeparator;
+        localeData->GetExponentSeparator(&exponentSeparator);
+        sb->Append(f->Contains(Flags::GetUPPERCASE()) ?
+                exponentSeparator.ToUpperCase() :
+                exponentSeparator.ToLowerCase());
+
+        AutoPtr<Flags> flags = f->Dup();
+        flags->Remove(Flags::GetGROUP());
+        Char sign = exp[0];
+        CHECK(sign == U'+' || sign == U'-');
+        sb->Append(sign);
+
+        Array<Char> tmp(exp.GetLength() - 1);
+        tmp.Copy(0, exp, 1, exp.GetLength() - 1);
+        sb->Append(LocalizedMagnitude(nullptr, tmp, flags, -1, l));
     }
     else if (mC == Conversion::DECIMAL_FLOAT) {
+        // Create a new FormattedFloatingDecimal with the desired
+        // precision.
+        Integer prec = (precision == -1 ? 6 : precision);
 
+        AutoPtr<IFormattedFloatingDecimal> fd;
+        FormattedFloatingDecimal::ValueOf(value, prec,
+                FormattedFloatingDecimalForm::DECIMAL_FLOAT, &fd);
+
+        Array<Char> mantissa;
+        fd->GetMantissa(&mantissa);
+        Array<Char> mant = AddZeros(mantissa, prec);
+
+        // If the precision is zero and the '#' flag is set, add the
+        // requested decimal point.
+        if (f->Contains(Flags::GetALTERNATE()) && (prec == 0)) {
+            mant = AddDot(mant);
+        }
+
+        Integer newW = mWidth;
+        if (mWidth != -1) {
+            newW = AdjustWidth(mWidth, f, neg);
+        }
+        LocalizedMagnitude(sb, mant, f, newW, l);
     }
     else if (mC == Conversion::GENERAL) {
+        Integer prec = precision;
+        if (precision == -1) {
+            prec = 6;
+        }
+        else if (precision == 0) {
+            prec = 1;
+        }
 
+        Array<Char> exp;
+        Array<Char> mant;
+        Integer expRounded;
+        if (value == 0.0) {
+            exp = Array<Char>::Null();
+            mant = { U'0' };
+            expRounded = 0;
+        }
+        else {
+            AutoPtr<IFormattedFloatingDecimal> fd;
+            FormattedFloatingDecimal::ValueOf(value, prec,
+                    FormattedFloatingDecimalForm::GENERAL, &fd);
+            fd->GetExponent(&exp);
+            fd->GetMantissa(&mant);
+            fd->GetExponentRounded(&expRounded);
+        }
+
+        if (!exp.IsNull()) {
+            prec -= 1;
+        }
+        else {
+            prec -= expRounded + 1;
+        }
+
+        mant = AddZeros(mant, prec);
+        // If the precision is zero and the '#' flag is set, add the
+        // requested decimal point.
+        if (f->Contains(Flags::GetALTERNATE()) && (prec == 0)) {
+            mant = AddDot(mant);
+        }
+
+        Integer newW = mWidth;
+        if (mWidth != -1) {
+            if (!exp.IsNull()) {
+                newW = AdjustWidth(mWidth - exp.GetLength() - 1, f, neg);
+            }
+            else {
+                newW = AdjustWidth(mWidth, f, neg);
+            }
+        }
+        LocalizedMagnitude(sb, mant, f, newW, l);
+
+        if (!exp.IsNull()) {
+            sb->Append(f->Contains(Flags::GetUPPERCASE()) ? U'E' : U'e');
+
+            AutoPtr<Flags> flags = f->Dup();
+            flags->Remove(Flags::GetGROUP());
+            Char sign = exp[0];
+            CHECK(sign == U'+' || sign == U'-');
+            sb->Append(sign);
+
+            Array<Char> tmp(exp.GetLength() - 1);
+            tmp.Copy(0, exp, 1, exp.GetLength() - 1);
+            sb->Append(LocalizedMagnitude(nullptr, tmp, flags, -1, l));
+        }
     }
     else if (mC == Conversion::HEXADECIMAL_FLOAT) {
+        Integer prec = precision;
+        if (precision == -1) {
+            // assume that we want all of the digits
+            prec = 0;
+        }
+        else if (precision == 0) {
+            prec = 1;
+        }
 
+        String s = HexDouble(value, prec);
+
+        Array<Char> va;
+        Boolean upper = f->Contains(Flags::GetUPPERCASE());
+        sb->Append(upper ? String("0X") : String("0x"));
+
+        if (f->Contains(Flags::GetZERO_PAD())) {
+            for (Integer i = 0; i < mWidth - s.GetLength() - 2; i++) {
+                sb->Append(U'0');
+            }
+        }
+
+        Integer idx = s.IndexOf(U'p');
+        va = s.Substring(0, idx).GetChars();
+        if (upper) {
+            String tmp(va);
+            // don't localize hex
+            tmp = tmp.ToUpperCase();
+            va = tmp.GetChars();
+        }
+        sb->Append(prec != 0 ? AddZeros(va, prec) : va);
+        sb->Append(upper ? U'P' : U'p');
+        sb->Append(s.Substring(idx + 1));
     }
     return NOERROR;
 }
@@ -1555,7 +1753,82 @@ String Formatter::FormatSpecifier::HexDouble(
     /* [in] */ Double d,
     /* [in] */ Integer prec)
 {
-    return String("");
+    if (!Math::IsFinite(d) || d == 0.0 || prec == 0 || prec >= 13) {
+        // remove "0x"
+        return StringUtils::ToHexString(d).Substring(2);
+    }
+    else {
+        Integer exponent = Math::GetExponent(d);
+        Boolean subnormal = (exponent == DoubleConsts::MIN_EXPONENT - 1);
+
+        // If this is subnormal input so normalize (could be faster to
+        // do as integer operation).
+        if (subnormal) {
+            Formatter::sScaleUp = Math::Scalb(1.0, 54);
+            d *= sScaleUp;
+            // Calculate the exponent.  This is not just exponent + 54
+            // since the former is not the normalized exponent.
+            exponent = Math::GetExponent(d);
+            CHECK(exponent >= DoubleConsts::MIN_EXPONENT &&
+                    exponent <= DoubleConsts::MAX_EXPONENT);
+        }
+
+        Integer precision = 1 + prec * 4;
+        Integer shiftDistance = DoubleConsts::SIGNIFICAND_WIDTH - precision;
+        CHECK(shiftDistance >= 1 && shiftDistance < DoubleConsts::SIGNIFICAND_WIDTH);
+
+        Long doppel = Math::DoubleToLongBits(d);
+        // Deterime the number of bits to keep.
+        Long newSignif = (doppel & (DoubleConsts::EXP_BIT_MASK |
+                DoubleConsts::SIGNIF_BIT_MASK)) >> shiftDistance;
+        // Bits to round away.
+        Long roundingBits = doppel & ~(~0LL << shiftDistance);
+
+        // To decide how to round, look at the low-order bit of the
+        // working significand, the highest order discarded bit (the
+        // round bit) and whether any of the lower order discarded bits
+        // are nonzero (the sticky bit).
+
+        Boolean leastZero = (newSignif & 0x1LL) == 0LL;
+        Boolean round = ((1LL << (shiftDistance - 1)) & roundingBits) != 0LL;
+        Boolean sticky = shiftDistance > 1 &&
+                (~(1LL << (shiftDistance - 1)) & roundingBits) != 0;
+        if ((leastZero && round && sticky) || (!leastZero && round)) {
+            newSignif++;
+        }
+
+        Long signBit = doppel & DoubleConsts::SIGN_BIT_MASK;
+        newSignif = signBit | (newSignif << shiftDistance);
+        Double result = Math::LongBitsToDouble(newSignif);
+
+        if (Math::IsInfinite(result)) {
+            // Infinite result generated by rounding
+            return String("1.0p1024");
+        }
+        else {
+            String res = StringUtils::ToHexString(result).Substring(2);
+            if (!subnormal) {
+                return res;
+            }
+            else {
+                // Create a normalized subnormal string.
+                Integer idx = res.IndexOf(U'p');
+                if (idx == -1) {
+                    // No 'p' character in hex string.
+                    CHECK(0);
+                    return String(nullptr);
+                }
+                else {
+                    // Get exponent and append at the end.
+                    String exp = res.Substring(idx + 1);
+                    Integer iexp;
+                    StringUtils::ParseInteger(exp, &iexp);
+                    iexp = iexp - 54;
+                    return res.Substring(0, idx) + "p" + StringUtils::ToString(iexp);
+                }
+            }
+        }
+    }
 }
 
 ECode Formatter::FormatSpecifier::Print(
@@ -1596,6 +1869,166 @@ ECode Formatter::FormatSpecifier::Print(
     /* [in] */ Integer precision,
     /* [in] */ Boolean neg)
 {
+    if (c == Conversion::SCIENTIFIC) {
+        // Create a new BigDecimal with the desired precision.
+        Integer prec = (precision == -1 ? 6 : precision);
+        Integer scale, origPrec;
+        value->Scale(&scale);
+        value->Precision(&origPrec);
+        Integer nzeros = 0;
+        Integer compPrec;
+
+        if (prec > origPrec - 1) {
+            compPrec = origPrec;
+            nzeros = prec - (origPrec - 1);
+        }
+        else {
+            compPrec = prec + 1;
+        }
+
+        AutoPtr<IMathContext> mc;
+        CMathContext::New(compPrec, IID_IMathContext, (IInterface**)&mc);
+        AutoPtr<IBigInteger> bi;
+        value->UnscaledValue(&bi);
+        AutoPtr<IBigDecimal> v;
+        CBigDecimal::New(bi, scale, mc, IID_IBigDecimal, (IInterface**)&v);
+
+        bi = nullptr;
+        v->UnscaledValue(&bi);
+        v->Scale(&scale);
+        BigDecimalLayout bdl(bi, scale, FormatterBigDecimalLayoutForm::SCIENTIFIC);
+
+        Array<Char> mMant = bdl.Mantissa();
+
+        // Add a decimal point if necessary.  The mantissa may not
+        // contain a decimal point if the scale is zero (the internal
+        // representation has no fractional part) or the original
+        // precision is one. Append a decimal point if '#' is set or if
+        // we require zero padding to get to the requested precision.
+        if ((origPrec == 1 || !bdl.HasDot()) && (
+                nzeros > 0 || f->Contains(Flags::GetALTERNATE()))) {
+            mMant = AddDot(mMant);
+        }
+
+        // Add trailing zeros in the case precision is greater than
+        // the number of available digits after the decimal separator.
+        mMant = TrailingZeros(mMant, nzeros);
+
+        Array<Char> exp = bdl.Exponent();
+        Integer newW = mWidth;
+        if (mWidth != -1) {
+            newW = AdjustWidth(mWidth - exp.GetLength() - 1, f, neg);
+        }
+        LocalizedMagnitude(sb, mMant, f, newW, l);
+
+        sb->Append(f->Contains(Flags::GetUPPERCASE()) ? U'E' : U'e');
+
+        AutoPtr<Flags> flags = f->Dup();
+        flags->Remove(Flags::GetGROUP());
+        Char sign = exp[0];
+        CHECK(sign == U'+' || sign == U'-');
+        sb->Append(exp[0]);
+
+        Array<Char> tmp(exp.GetLength() - 1);
+        tmp.Copy(0, exp, 1, exp.GetLength() - 1);
+        sb->Append(LocalizedMagnitude(nullptr, tmp, flags, -1, l));
+    }
+    else if (c == Conversion::DECIMAL_FLOAT) {
+        // Create a new BigDecimal with the desired precision.
+        Integer prec = (precision == -1 ? 6 : precision);
+        Integer scale;
+        value->Scale(&scale);
+
+        if (scale > prec) {
+            // more "scale" digits than the requested "precision"
+            Integer compPrec;
+            value->Precision(&compPrec);
+            if (compPrec <= scale) {
+                // case of 0.xxxxxx
+                AutoPtr<IBigDecimal> tempBD;
+                value->SetScale(prec, RoundingMode::HALF_UP, &tempBD);
+                tempBD = std::move(value);
+            }
+            else {
+                compPrec -= (scale - prec);
+                AutoPtr<IMathContext> mc;
+                CMathContext::New(compPrec, IID_IMathContext, (IInterface**)&mc);
+                AutoPtr<IBigInteger> tempBI;
+                value->UnscaledValue(&tempBI);
+                AutoPtr<IBigDecimal> tempBD;
+                CBigDecimal::New(tempBI, scale, mc, IID_IBigDecimal, (IInterface**)&tempBD);
+                value = std::move(tempBD);
+            }
+        }
+        AutoPtr<IBigInteger> bi;
+        value->UnscaledValue(&bi);
+        value->Scale(&scale);
+        BigDecimalLayout bdl(bi, scale, FormatterBigDecimalLayoutForm::DECIMAL_FLOAT);
+
+        Array<Char> mant = bdl.Mantissa();
+        Integer nzeros = (bdl.Scale() < prec ? prec - bdl.Scale() : 0);
+
+        // Add a decimal point if necessary.  The mantissa may not
+        // contain a decimal point if the scale is zero (the internal
+        // representation has no fractional part).  Append a decimal
+        // point if '#' is set or we require zero padding to get to the
+        // requested precision.
+        if (bdl.Scale() == 0 && (f->Contains(Flags::GetALTERNATE()) || nzeros > 0)) {
+            mant = AddDot(bdl.Mantissa());
+        }
+
+        // Add trailing zeros if the precision is greater than the
+        // number of available digits after the decimal separator.
+        mant = TrailingZeros(mant, nzeros);
+
+        LocalizedMagnitude(sb, mant, f, AdjustWidth(mWidth, f, neg), l);
+    }
+    else if (c == Conversion::GENERAL) {
+        Integer prec = precision;
+        if (precision == -1) {
+            prec = 6;
+        }
+        else if (precision == 0) {
+            prec = 1;
+        }
+
+        AutoPtr<IBigDecimal> tenToTheNegFour;
+        CBigDecimal::ValueOf(1, 4, &tenToTheNegFour);
+        AutoPtr<IBigDecimal> tenToThePrec;
+        CBigDecimal::ValueOf(1, -prec, &tenToThePrec);
+        Integer comp;
+        if ((Object::Equals(value, CBigDecimal::GetZERO())) ||
+                ((IComparable::Probe(value)->CompareTo(tenToTheNegFour, &comp), comp != -1) &&
+                (IComparable::Probe(value)->CompareTo(tenToThePrec, &comp), comp == -1))) {
+            Integer scale;
+            value->Scale(&scale);
+            AutoPtr<IBigInteger> bi;
+            value->UnscaledValue(&bi);
+            Integer e = -scale + (Object::ToString(bi).GetLength() - 1);
+
+            // xxx.yyy
+            //   g precision (# sig digits) = #x + #y
+            //   f precision = #y
+            //   exponent = #x - 1
+            // => f precision = g precision - exponent - 1
+            // 0.000zzz
+            //   g precision (# sig digits) = #z
+            //   f precision = #0 (after '.') + #z
+            //   exponent = - #0 (after '.') - 1
+            // => f precision = g precision - exponent - 1
+            prec = prec - e - 1;
+
+            return Print(sb, value, l, f, Conversion::DECIMAL_FLOAT, prec, neg);
+        }
+        else {
+            return Print(sb, value, l, f, Conversion::SCIENTIFIC, prec - 1, neg);
+        }
+    }
+    else if (c == Conversion::HEXADECIMAL_FLOAT) {
+        // This conversion isn't supported.  The error should be
+        // reported earlier.
+        CHECK(0);
+    }
     return NOERROR;
 }
 
@@ -1656,21 +2089,282 @@ ECode Formatter::FormatSpecifier::Print(
 }
 
 ECode Formatter::FormatSpecifier::Print(
-    /* [in] */ IStringBuilder* sb,
+    /* [in] */ IStringBuilder* _sb,
     /* [in] */ ICalendar* t,
     /* [in] */ Char c,
     /* [in] */ ILocale* l)
 {
+    AutoPtr<IStringBuilder> sb = _sb;
+    if (sb == nullptr) {
+        CStringBuilder::New(IID_IStringBuilder, (IInterface**)&sb);
+    }
+    switch(c) {
+        case DateTime::HOUR_OF_DAY_0: // 'H' (00 - 23)
+        case DateTime::HOUR_0:        // 'I' (01 - 12)
+        case DateTime::HOUR_OF_DAY:   // 'k' (0 - 23) -- like H
+        case DateTime::HOUR: {        // 'l' (1 - 12) -- like I
+            Integer i;
+            t->Get(ICalendar::HOUR_OF_DAY, &i);
+            if (c == DateTime::HOUR_0 || c == DateTime::HOUR) {
+                i = ((i == 0 || i == 12) ? 12 : i % 12);
+            }
+            AutoPtr<Flags> flags = ((c == DateTime::HOUR_OF_DAY_0 ||
+                    c == DateTime::HOUR_0) ? Flags::GetZERO_PAD() : Flags::GetNONE());
+            sb->Append(LocalizedMagnitude(nullptr, i, flags, 2, l));
+            break;
+        }
+        case DateTime::MINUTE: { // 'M' (00 - 59)
+            Integer i;
+            t->Get(ICalendar::MINUTE, &i);
+            AutoPtr<Flags> flags = Flags::GetZERO_PAD();
+            sb->Append(LocalizedMagnitude(nullptr, i, flags, 2, l));
+            break;
+        }
+        case DateTime::NANOSECOND: { // 'N' (000000000 - 999999999)
+            Integer i;
+            t->Get(ICalendar::MILLISECOND, &i);
+            i = i * 1000000;
+            AutoPtr<Flags> flags = Flags::GetZERO_PAD();
+            sb->Append(LocalizedMagnitude(nullptr, i, flags, 9, l));
+            break;
+        }
+        case DateTime::MILLISECOND_SINCE_EPOCH: { // 'Q' (0 - 99...?)
+            Long i;
+            t->GetTimeInMillis(&i);
+            AutoPtr<Flags> flags = Flags::GetNONE();
+            sb->Append(LocalizedMagnitude(nullptr, i, flags, mWidth, l));
+            break;
+        }
+        case DateTime::AM_PM: { // 'p' (am or pm)
+            Array<String> ampm { String("AM"), String("PM") };
+            if (l != nullptr && l != Locale::GetUS()) {
+                AutoPtr<IDateFormatSymbols> dfs = DateFormatSymbols::GetInstance(l);
+                dfs->GetAmPmStrings(&ampm);
+            }
+            Integer i;
+            t->Get(ICalendar::AM_PM, &i);
+            String s = ampm[i];
+            sb->Append(s.ToLowerCase(/* l != nullptr ? l : Locale::GetUS() */));
+            break;
+        }
+        case DateTime::SECONDS_SINCE_EPOCH: { // 's' (0 - 99...?)
+            Long i;
+            t->GetTimeInMillis(&i);
+            i = i / 1000;
+            AutoPtr<Flags> flags = Flags::GetNONE();
+            sb->Append(LocalizedMagnitude(nullptr, i, flags, mWidth, l));
+            break;
+        }
+        case DateTime::SECOND: { // 'S' (00 - 60 - leap second)
+            Integer i;
+            t->Get(ICalendar::SECOND, &i);
+            AutoPtr<Flags> flags = Flags::GetZERO_PAD();
+            sb->Append(LocalizedMagnitude(nullptr, i, flags, 2, l));
+            break;
+        }
+        case DateTime::ZONE_NUMERIC: { // 'z' ({-|+}####) - ls minus?
+            Integer zoff, doff;
+            t->Get(ICalendar::ZONE_OFFSET, &zoff);
+            t->Get(ICalendar::DST_OFFSET, &doff);
+            Integer i = zoff + doff;
+            Boolean neg = i < 0;
+            sb->Append(neg ? U'-' : U'+');
+            if (neg) {
+                i = -i;
+            }
+            Integer min = i / 60000;
+            // combine minute and hour into a single integer
+            Integer offset = (min / 60) * 100 + (min % 60);
+            AutoPtr<Flags> flags = Flags::GetZERO_PAD();
+            sb->Append(LocalizedMagnitude(nullptr, offset, flags, 4, l));
+            break;
+        }
+        case DateTime::ZONE: { // 'Z' (symbol)
+            AutoPtr<ITimeZone> tz;
+            t->GetTimeZone(&tz);
+            Integer i;
+            t->Get(ICalendar::DST_OFFSET, &i);
+            String disName;
+            tz->GetDisplayName(i != 0, ITimeZone::SHORT,
+                    (l == nullptr) ? Locale::GetUS().Get() : l, &disName);
+            sb->Append(disName);
+            break;
+        }
+
+        // Date
+        case DateTime::NAME_OF_DAY_ABBREV: // 'a'
+        case DateTime::NAME_OF_DAY: {      // 'A'
+            Integer i;
+            t->Get(ICalendar::DAY_OF_WEEK, &i);
+            AutoPtr<ILocale> lt = ((l == nullptr) ? Locale::GetUS().Get() : l);
+            AutoPtr<IDateFormatSymbols> dfs = DateFormatSymbols::GetInstance(lt);
+            if (c == DateTime::NAME_OF_DAY) {
+                Array<String> weekdays;
+                dfs->GetWeekdays(&weekdays);
+                sb->Append(weekdays[i]);
+            }
+            else {
+                Array<String> weekdays;
+                dfs->GetShortWeekdays(&weekdays);
+                sb->Append(weekdays[i]);
+            }
+            break;
+        }
+        case DateTime::NAME_OF_MONTH_ABBREV:     // 'b'
+        case DateTime::NAME_OF_MONTH_ABBREV_X: // 'h' -- same b
+        case DateTime::NAME_OF_MONTH: {        // 'B'
+            Integer i;
+            t->Get(ICalendar::MONTH, &i);
+            AutoPtr<ILocale> lt = ((l == nullptr) ? Locale::GetUS().Get() : l);
+            AutoPtr<IDateFormatSymbols> dfs = DateFormatSymbols::GetInstance(lt);
+            if (c == DateTime::NAME_OF_MONTH) {
+                Array<String> months;
+                dfs->GetMonths(&months);
+                sb->Append(months[i]);
+            }
+            else {
+                Array<String> months;
+                dfs->GetShortMonths(&months);
+                sb->Append(months[i]);
+            }
+            break;
+        }
+        case DateTime::CENTURY:     // 'C' (00 - 99)
+        case DateTime::YEAR_2:      // 'y' (00 - 99)
+        case DateTime::YEAR_4: {    // 'Y' (0000 - 9999)
+            Integer i;
+            t->Get(ICalendar::YEAR, &i);
+            Integer size = 2;
+            switch(c) {
+                case DateTime::CENTURY:
+                    i /= 100;
+                    break;
+                case DateTime::YEAR_2:
+                    i %= 100;
+                    break;
+                case DateTime::YEAR_4:
+                    size = 4;
+                    break;
+            }
+            AutoPtr<Flags> flags = Flags::GetZERO_PAD();
+            sb->Append(LocalizedMagnitude(nullptr, i, flags, size, l));
+            break;
+        }
+        case DateTime::DAY_OF_MONTH_0:  // 'd' (01 - 31)
+        case DateTime::DAY_OF_MONTH: {  // 'e' (1 - 31) -- like d
+            Integer i;
+            t->Get(ICalendar::DATE, &i);
+            AutoPtr<Flags> flags = (c == DateTime::DAY_OF_MONTH_0 ?
+                    Flags::GetZERO_PAD() : Flags::GetNONE());
+            sb->Append(LocalizedMagnitude(nullptr, i, flags, 2, l));
+            break;
+        }
+        case DateTime::DAY_OF_YEAR: {  // 'j' (001 - 366)
+            Integer i;
+            t->Get(ICalendar::DAY_OF_YEAR, &i);
+            AutoPtr<Flags> flags = Flags::GetZERO_PAD();
+            sb->Append(LocalizedMagnitude(nullptr, i, flags, 3, l));
+            break;
+        }
+        case DateTime::MONTH: { // 'm' (01 - 12)
+            Integer i;
+            t->Get(ICalendar::MONTH, &i);
+            i = i + 1;
+            AutoPtr<Flags> flags = Flags::GetZERO_PAD();
+            sb->Append(LocalizedMagnitude(nullptr, i, flags, 2, l));
+            break;
+        }
+
+        // Composites
+        case DateTime::TIME:        // 'T' (24 hour hh:mm:ss - %tH:%tM:%tS)
+        case DateTime::TIME_24_HOUR: {  // 'R' (hh:mm same as %H:%M)
+            Char sep = U':';
+            Print(sb, t, DateTime::HOUR_OF_DAY_0, l);
+            sb->Append(sep);
+            Print(sb, t, DateTime::MINUTE, l);
+            if (c == DateTime::TIME) {
+                sb->Append(sep);
+                Print(sb, t, DateTime::SECOND, l);
+            }
+            break;
+        }
+        case DateTime::TIME_12_HOUR: {  // 'r' (hh:mm:ss [AP]M)
+            Char sep = U':';
+            Print(sb, t, DateTime::HOUR_0, l);
+            sb->Append(sep);
+            Print(sb, t, DateTime::MINUTE, l);
+            sb->Append(sep);
+            Print(sb, t, DateTime::SECOND, l);
+            sb->Append(U' ');
+            // this may be in wrong place for some locales
+            AutoPtr<IStringBuilder> tsb;
+            CStringBuilder::New(IID_IStringBuilder, (IInterface**)&tsb);
+            Print(tsb, t, DateTime::AM_PM, l);
+            sb->Append(Object::ToString(tsb).ToUpperCase(/*l != nullptr ? l : Locale::GetUS().Get()*/));
+            break;
+        }
+        case DateTime::DATE_TIME: { // 'c' (Sat Nov 04 12:02:33 EST 1999)
+            Char sep = U' ';
+            Print(sb, t, DateTime::NAME_OF_DAY_ABBREV, l);
+            sb->Append(sep);
+            Print(sb, t, DateTime::NAME_OF_MONTH_ABBREV, l);
+            sb->Append(sep);
+            Print(sb, t, DateTime::DAY_OF_MONTH_0, l);
+            sb->Append(sep);
+            Print(sb, t, DateTime::TIME, l);
+            sb->Append(sep);
+            Print(sb, t, DateTime::ZONE, l);
+            sb->Append(sep);
+            Print(sb, t, DateTime::YEAR_4, l);
+            break;
+        }
+        case DateTime::DATE: {  // 'D' (mm/dd/yy)
+            Char sep = U'/';
+            Print(sb, t, DateTime::MONTH, l);
+            sb->Append(sep);
+            Print(sb, t, DateTime::DAY_OF_MONTH_0, l);
+            sb->Append(sep);
+            Print(sb, t, DateTime::YEAR_2, l);
+            break;
+        }
+        case DateTime::ISO_STANDARD_DATE: { // 'F' (%Y-%m-%d)
+            Char sep = U'-';
+            Print(sb, t, DateTime::YEAR_4, l);
+            sb->Append(sep);
+            Print(sb, t, DateTime::MONTH, l);
+            sb->Append(sep);
+            Print(sb, t, DateTime::DAY_OF_MONTH_0, l);
+            break;
+        }
+        default:
+            CHECK(0);
+    }
     return NOERROR;
+}
+
+ECode Formatter::FormatSpecifier::FailMismatch(
+    /* [in] */ Flags* f,
+    /* [in] */ Char c)
+{
+    Logger::E("Formatter::FormatSpecifier", "f: %s, c: %c", f->ToString().string(), c);
+    return E_FORMAT_FLAGS_CONVERSION_MISMATCH_EXCEPTION;
 }
 
 Char Formatter::FormatSpecifier::GetZero(
     /* [in] */ ILocale* l)
 {
+    AutoPtr<ILocale> ll;
+    mOwner->GetLocale(&ll);
+    if ((l != nullptr) && !Object::Equals(l, ll)) {
+        AutoPtr<IDecimalFormatSymbols> dfs = DecimalFormatSymbols::GetInstance(l);
+        Char c;
+        dfs->GetZeroDigit(&c);
+        return c;
+    }
     return mOwner->mZero;
 }
 
-void Formatter::FormatSpecifier::LocalizedMagnitude(
+AutoPtr<IStringBuilder> Formatter::FormatSpecifier::LocalizedMagnitude(
     /* [in] */ IStringBuilder* sb,
     /* [in] */ Long value,
     /* [in] */ Flags* f,
@@ -1678,16 +2372,96 @@ void Formatter::FormatSpecifier::LocalizedMagnitude(
     /* [in] */ ILocale* l)
 {
     Array<Char> va = StringUtils::ToString(value, 10).GetChars();
-    LocalizedMagnitude(sb, va, f, width, l);
+    return LocalizedMagnitude(sb, va, f, width, l);
 }
 
-void Formatter::FormatSpecifier::LocalizedMagnitude(
-    /* [in] */ IStringBuilder* sb,
+AutoPtr<IStringBuilder> Formatter::FormatSpecifier::LocalizedMagnitude(
+    /* [in] */ IStringBuilder* _sb,
     /* [in] */ const Array<Char>& value,
     /* [in] */ Flags* f,
     /* [in] */ Integer width,
     /* [in] */ ILocale* l)
-{}
+{
+    AutoPtr<IStringBuilder> sb = _sb;
+    if (sb == nullptr) {
+        CStringBuilder::New(IID_IStringBuilder, (IInterface**)&sb);
+    }
+    Integer begin;
+    sb->GetLength(&begin);
+
+    Char zero = GetZero(l);
+
+    // determine localized grouping separator and size
+    Char grpSep = U'\0';
+    Integer grpSize = -1;
+    Char decSep = U'\0';
+
+    Integer len = value.GetLength();
+    Integer dot = len;
+    for (Integer j = 0; j < len; j++) {
+        if (value[j] == U'.') {
+            dot = j;
+            break;
+        }
+    }
+
+    if (dot < len) {
+        if (l == nullptr || Object::Equals(l, Locale::GetUS())) {
+            decSep = U'.';
+        }
+        else {
+            AutoPtr<IDecimalFormatSymbols> dfs = DecimalFormatSymbols::GetInstance(l);
+            dfs->GetDecimalSeparator(&decSep);
+        }
+    }
+
+    if (f->Contains(Flags::GetGROUP())) {
+        if (l == nullptr || Object::Equals(l, Locale::GetUS())) {
+            grpSep = U',';
+            grpSize = 3;
+        }
+        else {
+            AutoPtr<IDecimalFormatSymbols> dfs = DecimalFormatSymbols::GetInstance(l);
+            dfs->GetGroupingSeparator(&grpSep);
+            AutoPtr<INumberFormat> nf;
+            NumberFormat::GetIntegerInstance(l, &nf);
+            AutoPtr<IDecimalFormat> df = IDecimalFormat::Probe(nf);
+            df->GetGroupingSize(&grpSize);
+
+            Boolean used;
+            Integer size;
+            if ((df->IsGroupingUsed(&used), !used) || (df->GetGroupingSize(&size), size == 0)) {
+                grpSep = U'\0';
+            }
+        }
+    }
+
+    // localize the digits inserting group separators as necessary
+    for (Integer j = 0; j < len; j++) {
+        if (j == dot) {
+            sb->Append(decSep);
+            // no more group separators after the decimal separator
+            grpSep = U'\0';
+            continue;
+        }
+
+        Char c = value[j];
+        sb->Append((Char)(c - U'0' + zero));
+        if (grpSep != U'\0' && j != dot - 1 && ((dot - j) % grpSize == 1)) {
+            sb->Append(grpSep);
+        }
+    }
+
+    // apply zero padding
+    sb->GetLength(&len);
+    if (width != -1 && f->Contains(Flags::GetZERO_PAD())) {
+        for (Integer k = 0; k < width - len; k++) {
+            sb->Insert(begin, zero);
+        }
+    }
+
+    return sb;
+}
 
 //-------------------------------------------------------------------------
 
@@ -1797,6 +2571,143 @@ ECode Formatter::FormatSpecifierParser::Advance(
     }
     *c = mFormat.GetChar(mCursor++);
     return NOERROR;
+}
+
+//-------------------------------------------------------------------------
+
+Formatter::BigDecimalLayout::BigDecimalLayout(
+    /* [in] */ IBigInteger* integerValue,
+    /* [in] */ Integer scale,
+    /* [in] */ FormatterBigDecimalLayoutForm form)
+{
+    Layout(integerValue, scale, form);
+}
+
+Array<Char> Formatter::BigDecimalLayout::LayoutChars()
+{
+    AutoPtr<IStringBuilder> sb;
+    CStringBuilder::New(ICharSequence::Probe(mMant), IID_IStringBuilder, (IInterface**)&sb);
+    if (mExp != nullptr) {
+        sb->Append(U'E');
+        sb->Append(mExp);
+    }
+    return ToCharArray(sb);
+}
+
+Array<Char> Formatter::BigDecimalLayout::ToCharArray(
+    /* [in] */ IStringBuilder* sb)
+{
+    if (sb == nullptr) {
+        return Array<Char>::Null();
+    }
+    Integer size;
+    sb->GetLength(&size);
+    Array<Char> result(size);
+    sb->GetChars(0, result.GetLength(), result, 0);
+    return result;
+}
+
+void Formatter::BigDecimalLayout::Layout(
+    /* [in] */ IBigInteger* integerValue,
+    /* [in] */ Integer scale,
+    /* [in] */ FormatterBigDecimalLayoutForm form)
+{
+    Array<Char> coeff = Object::ToString(integerValue).GetChars();
+    mScale = scale;
+
+    // Construct a buffer, with sufficient capacity for all cases.
+    // If E-notation is needed, length will be: +1 if negative, +1
+    // if '.' needed, +2 for "E+", + up to 10 for adjusted
+    // exponent.  Otherwise it could have +1 if negative, plus
+    // leading "0.00000"
+    mMant = nullptr;
+    CStringBuilder::New(coeff.GetLength() + 14, IID_IStringBuilder, (IInterface**)&mMant);
+
+    if (scale == 0) {
+        Integer len = coeff.GetLength();
+        if (len > 1) {
+            mMant->Append(coeff[0]);
+            if (form == FormatterBigDecimalLayoutForm::SCIENTIFIC) {
+                mMant->Append(U'.');
+                mDot = true;
+                mMant->Append(coeff, 1, len - 1);
+                mExp = nullptr;
+                CStringBuilder::New(String("+"), IID_IStringBuilder, (IInterface**)&mExp);
+                if (len < 10) {
+                    mExp->Append(String("0"));
+                    mExp->Append(len - 1);
+                }
+                else {
+                    mExp->Append(len - 1);
+                }
+            }
+            else {
+                mMant->Append(coeff, 1, len -1 );
+            }
+        }
+        else {
+            mMant->Append(coeff);
+            if (form == FormatterBigDecimalLayoutForm::SCIENTIFIC) {
+                mExp = nullptr;
+                CStringBuilder::New(String("+00"), IID_IStringBuilder, (IInterface**)&mExp);
+            }
+        }
+        return;
+    }
+    Long adjusted = -(Long)scale + (coeff.GetLength() - 1);
+    if (form == FormatterBigDecimalLayoutForm::DECIMAL_FLOAT) {
+        // count of padding zeros
+        Integer pad = scale - coeff.GetLength();
+        if (pad >= 0) {
+            // 0.xxx form
+            mMant->Append(String("0."));
+            mDot = true;
+            for (; pad > 0; pad--) {
+                mMant->Append(U'0');
+            }
+            mMant->Append(coeff);
+        }
+        else {
+            if (-pad < coeff.GetLength()) {
+                // xx.xx form
+                mMant->Append(coeff, 0, -pad);
+                mMant->Append(U'.');
+                mDot = true;
+                mMant->Append(coeff, -pad, scale);
+            }
+            else {
+                // xx form
+                mMant->Append(coeff, 0, coeff.GetLength());
+                for (Integer i = 0; i < -scale; i++) {
+                    mMant->Append(U'0');
+                }
+                mScale = 0;
+            }
+        }
+    }
+    else {
+        // x.xxx form
+        mMant->Append(coeff[0]);
+        if (coeff.GetLength() > 1) {
+            mMant->Append(U'.');
+            mDot = true;
+            mMant->Append(coeff, 1, coeff.GetLength() - 1);
+        }
+        mExp = nullptr;
+        CStringBuilder::New(IID_IStringBuilder, (IInterface**)&mExp);
+        if (adjusted != 0) {
+            Long abs = Math::Abs(adjusted);
+            // require sign
+            mExp->Append(adjusted < 0 ? U'-' : U'+');
+            if (abs < 10) {
+                mExp->Append(U'0');
+            }
+            mExp->Append(abs);
+        }
+        else {
+            mExp->Append(String("+00"));
+        }
+    }
 }
 
 //-------------------------------------------------------------------------

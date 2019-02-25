@@ -28,8 +28,38 @@ public:
     static const Double POSITIVE_INFINITY;
     static const Double NEGATIVE_INFINITY;
     static const Double NaN;
-    // static constexpr Double MAX_VALUE = java.lang.Double.MAX_VALUE;
-    // static constexpr Double MIN_VALUE = java.lang.Double.MIN_VALUE;
+    static const Double MAX_VALUE;
+    static const Double MIN_VALUE;
+
+    /**
+     * A constant holding the smallest positive normal value of type
+     * <code>double</code>, 2<sup>-1022</sup>.  It is equal to the
+     * value returned by
+     * <code>Double::LongBitsToDouble(0x0010000000000000L)</code>.
+     */
+    static constexpr Double MIN_NORMAL = 2.2250738585072014E-308;
+
+    /**
+     * The number of logical bits in the significand of a
+     * <code>double</code> number, including the implicit bit.
+     */
+    static constexpr Integer SIGNIFICAND_WIDTH = 53;
+
+    /**
+     * Maximum exponent a finite <code>double</code> number may have.
+     */
+    static constexpr Integer MAX_EXPONENT = 1023;
+
+    /**
+     * Minimum exponent a normalized <code>double</code> number may
+     * have.
+     */
+    static constexpr Integer MIN_EXPONENT = -1022;
+
+    /**
+     * Bias used in representing a <code>double</code> exponent.
+     */
+    static constexpr Integer EXP_BIAS = 1023;
 
     /**
      * Bit mask to isolate the sign bit of a <code>double</code>.

@@ -34,6 +34,12 @@ interface IDecimalFormat
     GetDecimalFormatSymbols(
         [out] IDecimalFormatSymbols** symbols);
 
+    GetGroupingSize(
+        [out] Integer* size);
+
+    IsGroupingUsed(
+        [out] Boolean* used);
+
     ToPattern(
         [out] String* pattern);
 }

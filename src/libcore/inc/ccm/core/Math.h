@@ -74,6 +74,17 @@ public:
     static Integer Signum(
         /* [in] */ Long i);
 
+    COM_PUBLIC static Double CopySign(
+        /* [in] */ Double magnitude,
+        /* [in] */ Double sign);
+
+    COM_PUBLIC static Integer GetExponent(
+        /* [in] */ Double d);
+
+    COM_PUBLIC static Double Scalb(
+        /* [in] */ Double d,
+        /* [in] */ Integer scaleFactor);
+
     static Boolean IsNaN(
         /* [in] */ Float f);
 
@@ -82,6 +93,9 @@ public:
 
     COM_PUBLIC static Boolean IsInfinite(
         /* [in] */ Double v);
+
+    COM_PUBLIC static Boolean IsFinite(
+        /* [in] */ Double d);
 
     COM_PUBLIC static Integer FloatToRawIntBits(
         /* [in] */ Float value);
@@ -116,6 +130,14 @@ public:
     COM_PUBLIC static Integer Compare(
         /* [in] */ Double d1,
         /* [in] */ Double d2);
+
+private:
+    static Double PowerOfTwoD(
+        /* [in] */ Integer n);
+
+    static Double GetsTwoToTheDoubleScaleUp();
+
+    static Double GetsTwoToTheDoubleScaleDown();
 
 public:
     COM_PUBLIC static const Long LONG_POWERS_OF_TEN[];

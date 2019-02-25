@@ -27,6 +27,12 @@ namespace text {
 ]
 interface IDecimalFormatSymbols
 {
+    GetDecimalSeparator(
+        [out] Char* decSep);
+
+    GetGroupingSeparator(
+        [out] Char* grpSep);
+
     GetMinusSign(
         [out] Char* minusSign);
 

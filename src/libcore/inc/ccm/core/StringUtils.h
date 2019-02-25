@@ -113,6 +113,9 @@ public:
         /* [in] */ Long i,
         /* [in] */ Boolean upperCase = true);
 
+    COM_PUBLIC static String ToHexString(
+        /* [in] */ Double d);
+
     COM_PUBLIC static ECode ReplaceFirst(
         /* [in] */ const String& input,
         /* [in] */ const String& regex,

@@ -14,28 +14,38 @@
 // limitations under the License.
 //=========================================================================
 
-[
-    uuid(3657416d-4638-4843-a0b9-eb7ef1794495),
-    url("http://ccm.org/component/library/libcore.so")
-]
-module libcore
-{
+#ifndef __CCM_TEXT_DECIMALFORMATSYMBOLS_H__
+#define __CCM_TEXT_DECIMALFORMATSYMBOLS_H__
 
-include "ccm/core.cdl"
-include "ccm/io.cdl"
-include "ccm/core2.cdl"
-include "ccm/math.cdl"
-include "ccm/misc.cdl"
-include "ccm/net.cdl"
-include "ccm/security.cdl"
-include "ccm/core3.cdl"
-include "ccm/text.cdl"
-include "ccm/util.cdl"
-include "ccmrt/system.cdl"
-include "libcore/icu.cdl"
-include "libcore/io.cdl"
-include "libcore/util.cdl"
-include "pisces/icu.cdl"
-include "pisces/system.cdl"
+#include "ccm/core/SyncObject.h"
+#include "ccm.core.ICloneable.h"
+#include "ccm.io.ISerializable.h"
+#include "ccm.text.IDecimalFormatSymbols.h"
+#include "ccm.util.ILocale.h"
+
+using ccm::core::ICloneable;
+using ccm::core::SyncObject;
+using ccm::io::ISerializable;
+using ccm::util::ILocale;
+
+namespace ccm {
+namespace text {
+
+class DecimalFormatSymbols
+    : public SyncObject
+    , public IDecimalFormatSymbols
+    , public ICloneable
+    , public ISerializable
+{
+public:
+    static AutoPtr<IDecimalFormatSymbols> GetInstance(
+        /* [in] */ ILocale* locale)
+    {
+        return nullptr;
+    }
+};
 
 }
+}
+
+#endif // __CCM_TEXT_DECIMALFORMATSYMBOLS_H__

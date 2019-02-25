@@ -29,6 +29,9 @@ interface ILocaleData
         [in] Integer style,
         [out] String* dateFormat);
 
+    GetExponentSeparator(
+        [out] String* expSeparator);
+
     GetFirstDayOfWeek(
         [out] IInteger** day);
 

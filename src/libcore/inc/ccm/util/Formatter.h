@@ -383,10 +383,9 @@ private:
             /* [in] */ Char c,
             /* [in] */ ILocale* l);
 
-        inline ECode FailMismatch()
-        {
-            return E_FORMAT_FLAGS_CONVERSION_MISMATCH_EXCEPTION;
-        }
+        ECode FailMismatch(
+            /* [in] */ Flags* f,
+            /* [in] */ Char c);
 
         inline ECode FailConversion()
         {
@@ -396,14 +395,14 @@ private:
         Char GetZero(
             /* [in] */ ILocale* l);
 
-        void LocalizedMagnitude(
+        AutoPtr<IStringBuilder> LocalizedMagnitude(
             /* [in] */ IStringBuilder* sb,
             /* [in] */ Long value,
             /* [in] */ Flags* f,
             /* [in] */ Integer width,
             /* [in] */ ILocale* l);
 
-        void LocalizedMagnitude(
+        AutoPtr<IStringBuilder> LocalizedMagnitude(
             /* [in] */ IStringBuilder* sb,
             /* [in] */ const Array<Char>& value,
             /* [in] */ Flags* f,
@@ -474,6 +473,52 @@ private:
         String mPrecision;
         String mTT;
         String mConv;
+    };
+
+    class BigDecimalLayout
+    {
+    public:
+        BigDecimalLayout(
+            /* [in] */ IBigInteger* integerValue,
+            /* [in] */ Integer scale,
+            /* [in] */ FormatterBigDecimalLayoutForm form);
+
+        inline Boolean HasDot()
+        {
+            return mDot;
+        }
+
+        inline Integer Scale()
+        {
+            return mScale;
+        }
+
+        Array<Char> LayoutChars();
+
+        inline Array<Char> Mantissa()
+        {
+            return ToCharArray(mMant);
+        }
+
+        inline Array<Char> Exponent()
+        {
+            return ToCharArray(mExp);
+        }
+
+    private:
+        Array<Char> ToCharArray(
+            /* [in] */ IStringBuilder* sb);
+
+        void Layout(
+            /* [in] */ IBigInteger* integerValue,
+            /* [in] */ Integer scale,
+            /* [in] */ FormatterBigDecimalLayoutForm form);
+
+    private:
+        AutoPtr<IStringBuilder> mMant;
+        AutoPtr<IStringBuilder> mExp;
+        Boolean mDot = false;
+        Integer mScale = 0;
     };
 
     class Conversion
@@ -700,6 +745,7 @@ private:
     ECode mLastException;
 
     Char mZero;
+    static Double sScaleUp;
 };
 
 }

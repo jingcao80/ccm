@@ -16,9 +16,12 @@
 
 #include "ccm/core/Character.h"
 #include "ccm/core/CoreUtils.h"
+#include "ccm/core/CStringBuilder.h"
+#include "ccm/core/Math.h"
 #include "ccm/core/RealToString.h"
 #include "ccm/core/StringToReal.h"
 #include "ccm/core/StringUtils.h"
+#include "ccm/misc/DoubleConsts.h"
 #include "ccm/util/regex/Pattern.h"
 #include "ccm.core.IByte.h"
 #include "ccm.core.IInteger.h"
@@ -28,6 +31,7 @@
 #include "ccm.util.regex.IPattern.h"
 #include <ccmlogger.h>
 
+using ccm::misc::DoubleConsts;
 using ccm::util::regex::IMatcher;
 using ccm::util::regex::IPattern;
 using ccm::util::regex::Pattern;
@@ -570,6 +574,71 @@ String StringUtils::ToHexString(
     } while ((i = (((unsigned Long)i) >> 4)) != 0);
 
     return String(buf + cursor, bufLen - cursor);
+}
+
+String StringUtils::ToHexString(
+    /* [in] */ Double d)
+{
+    if (!Math::IsFinite(d)) {
+        // For infinity and NaN, use the decimal output.
+        return ToString(d);
+    }
+    else {
+        // Initialized to maximum size of output.
+        AutoPtr<IStringBuilder> answer;
+        CStringBuilder::New(24, IID_IStringBuilder, (IInterface**)&answer);
+
+        if (Math::CopySign(1.0, d) == -1.0){
+            answer->Append(U'-');
+        }
+
+        answer->Append(String("0x"));
+
+        d = Math::Abs(d);
+
+        if (d == 0.0) {
+            answer->Append(String("0.0p0"));
+        }
+        else {
+            Boolean subnormal = (d < DoubleConsts::MIN_NORMAL);
+
+            // Isolate significand bits and OR in a high-order bit
+            // so that the string representation has a known
+            // length.
+            Long signifBits = (Math::DoubleToLongBits(d) &
+                    DoubleConsts::SIGNIF_BIT_MASK) |
+                    0x1000000000000000LL;
+
+            // Subnormal values have a 0 implicit bit; normal
+            // values have a 1 implicit bit.
+            answer->Append(subnormal ? String("0.") : String("1."));
+
+            // Isolate the low-order 13 digits of the hex
+            // representation.  If all the digits are zero,
+            // replace with a single 0; otherwise, remove all
+            // trailing zeros.
+            String signif = StringUtils::ToHexString(signifBits).Substring(3, 16);
+            if (signif.Equals("0000000000000")) { // 13 zeros
+                answer->Append(U'0');
+            }
+            else {
+                String replacedStr;
+                StringUtils::ReplaceFirst(signif, String("0{1,12}$"), String(""), &replacedStr);
+                answer->Append(replacedStr);
+            }
+
+            answer->Append(U'p');
+            // If the value is subnormal, use the E_min exponent
+            // value for double; otherwise, extract and report d's
+            // exponent (the representation of a subnormal uses
+            // E_min -1).
+            answer->Append(subnormal ? DoubleConsts::MIN_EXPONENT :
+                    Math::GetExponent(d));
+        }
+        String answerStr;
+        answer->ToString(&answerStr);
+        return answerStr;
+    }
 }
 
 ECode StringUtils::ReplaceFirst(

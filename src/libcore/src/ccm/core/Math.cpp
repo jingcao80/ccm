@@ -63,6 +63,18 @@ static AutoPtr<IRandom> GetRandomNumberGenerator()
     return sRandomNumberGenerator;
 }
 
+Double Math::GetsTwoToTheDoubleScaleUp()
+{
+    static Double sTwoToTheDoubleScaleUp = PowerOfTwoD(512);
+    return sTwoToTheDoubleScaleUp;
+}
+
+Double Math::GetsTwoToTheDoubleScaleDown()
+{
+    static Double sTwoToTheDoubleScaleDown = PowerOfTwoD(-512);
+    return sTwoToTheDoubleScaleDown;
+}
+
 Double Math::Random()
 {
     Double rv;
@@ -90,10 +102,127 @@ Long Math::RandomLongInternal()
     return rv;
 }
 
+Double Math::CopySign(
+    /* [in] */ Double magnitude,
+    /* [in] */ Double sign)
+{
+    return LongBitsToDouble((DoubleToRawLongBits(sign) &
+            (DoubleConsts::SIGNIF_BIT_MASK)) |
+            (DoubleToRawLongBits(magnitude) &
+            (DoubleConsts::EXP_BIT_MASK |
+            DoubleConsts::SIGNIF_BIT_MASK)));
+}
+
+Integer Math::GetExponent(
+    /* [in] */ Double d)
+{
+    /*
+     * Bitwise convert d to long, mask out exponent bits, shift
+     * to the right and then subtract out double's bias adjust to
+     * get true exponent value.
+     */
+    return (Integer)(((DoubleToRawLongBits(d) & DoubleConsts::EXP_BIT_MASK) >>
+            (DoubleConsts::SIGNIFICAND_WIDTH - 1)) - DoubleConsts::EXP_BIAS);
+}
+
+Double Math::Scalb(
+    /* [in] */ Double d,
+    /* [in] */ Integer scaleFactor)
+{
+    /*
+     * This method does not need to be declared strictfp to
+     * compute the same correct result on all platforms.  When
+     * scaling up, it does not matter what order the
+     * multiply-store operations are done; the result will be
+     * finite or overflow regardless of the operation ordering.
+     * However, to get the correct result when scaling down, a
+     * particular ordering must be used.
+     *
+     * When scaling down, the multiply-store operations are
+     * sequenced so that it is not possible for two consecutive
+     * multiply-stores to return subnormal results.  If one
+     * multiply-store result is subnormal, the next multiply will
+     * round it away to zero.  This is done by first multiplying
+     * by 2 ^ (scaleFactor % n) and then multiplying several
+     * times by by 2^n as needed where n is the exponent of number
+     * that is a covenient power of two.  In this way, at most one
+     * real rounding error occurs.  If the double value set is
+     * being used exclusively, the rounding will occur on a
+     * multiply.  If the double-extended-exponent value set is
+     * being used, the products will (perhaps) be exact but the
+     * stores to d are guaranteed to round to the double value
+     * set.
+     *
+     * It is _not_ a valid implementation to first multiply d by
+     * 2^MIN_EXPONENT and then by 2 ^ (scaleFactor %
+     * MIN_EXPONENT) since even in a strictfp program double
+     * rounding on underflow could occur; e.g. if the scaleFactor
+     * argument was (MIN_EXPONENT - n) and the exponent of d was a
+     * little less than -(MIN_EXPONENT - n), meaning the final
+     * result would be subnormal.
+     *
+     * Since exact reproducibility of this method can be achieved
+     * without any undue performance burden, there is no
+     * compelling reason to allow double rounding on underflow in
+     * scalb.
+     */
+
+    // magnitude of a power of two so large that scaling a finite
+    // nonzero value by it would be guaranteed to over or
+    // underflow; due to rounding, scaling down takes takes an
+    // additional power of two which is reflected here
+    Integer MAX_SCALE = DoubleConsts::MAX_EXPONENT + -DoubleConsts::MIN_EXPONENT +
+            DoubleConsts::SIGNIFICAND_WIDTH + 1;
+    Integer exp_adjust = 0;
+    Integer scale_increment = 0;
+    Double exp_delta = IDouble::NaN;
+
+    // Make sure scaling factor is in a reasonable range
+
+    if (scaleFactor < 0) {
+        scaleFactor = Math::Max(scaleFactor, -MAX_SCALE);
+        scale_increment = -512;
+        exp_delta = GetsTwoToTheDoubleScaleDown();
+    }
+    else {
+        scaleFactor = Math::Min(scaleFactor, MAX_SCALE);
+        scale_increment = 512;
+        exp_delta = GetsTwoToTheDoubleScaleUp();
+    }
+
+    // Calculate (scaleFactor % +/-512), 512 = 2^9, using
+    // technique from "Hacker's Delight" section 10-2.
+    Integer t = ((unsigned Integer)(scaleFactor >> 9 - 1)) >> 32 - 9;
+    exp_adjust = ((scaleFactor + t) & (512 - 1)) - t;
+
+    d *= PowerOfTwoD(exp_adjust);
+    scaleFactor -= exp_adjust;
+
+    while (scaleFactor != 0) {
+        d *= exp_delta;
+        scaleFactor -= scale_increment;
+    }
+    return d;
+}
+
+Double Math::PowerOfTwoD(
+    /* [in] */ Integer n)
+{
+    CHECK(n >= DoubleConsts::MIN_EXPONENT && n <= DoubleConsts::MAX_EXPONENT);
+    return LongBitsToDouble((((Long)n + (Long)DoubleConsts::EXP_BIAS) <<
+            (DoubleConsts::SIGNIFICAND_WIDTH - 1)) & DoubleConsts::EXP_BIT_MASK);
+}
+
 Boolean Math::IsInfinite(
     /* [in] */ Double v)
 {
     return (v == IDouble::POSITIVE_INFINITY) || (v == IDouble::NEGATIVE_INFINITY);
+}
+
+Boolean Math::IsFinite(
+    /* [in] */ Double d)
+{
+    return Abs(d) <= DoubleConsts::MAX_VALUE;
 }
 
 union FloatInteger

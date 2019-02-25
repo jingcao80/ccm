@@ -35,11 +35,17 @@ public:
         /* [in] */ Long key);
 
     static ECode Fill(
-        /* [in] */ Array<Char>& a,
+        /* [out] */ Array<Char>& a,
         /* [in] */ Char value);
 
     static ECode Fill(
-        /* [in] */ Array<Boolean>& a,
+        /* [out] */ Array<Char>& a,
+        /* [in] */ Integer fromIndex,
+        /* [in] */ Integer toIndex,
+        /* [in] */ Char value);
+
+    static ECode Fill(
+        /* [out] */ Array<Boolean>& a,
         /* [in] */ Boolean value);
 
     static ECode CopyOf(
