@@ -27,14 +27,30 @@ include_directories(
 set(SOURCES
     main.cpp)
 
+set(GENERATED_SOURCES
+    ${OBJ_DIR}/libcore.cpp)
+
 IMPORT_LIBRARY(ccmrt.so)
 IMPORT_LIBRARY(libcore.so)
 IMPORT_GTEST()
 
 add_executable(testString
-    ${SOURCES})
+    ${SOURCES}
+    ${GENERATED_SOURCES})
 target_link_libraries(testString ccmrt.so libcore.so ${GTEST_LIBS})
 add_dependencies(testString libtest)
+
+add_custom_command(
+    OUTPUT
+        ${GENERATED_SOURCES}
+    COMMAND
+        "${BIN_DIR}/ccdl"
+        -g
+        -u
+        -p
+        -s
+        -d ${OBJ_DIR}
+        "${BIN_DIR}/libcore.so")
 
 COPY(testString ${OBJ_DIR}/testString ${BIN_DIR})
 

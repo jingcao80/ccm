@@ -14,6 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
+#include "ccm/core/CArray.h"
 #include "ccm/core/CBoolean.h"
 #include "ccm/core/CChar.h"
 #include "ccm/core/CDouble.h"
@@ -90,6 +91,24 @@ Array<ICharSequence*> CoreUtils::Box(
     return seqArray;
 }
 
+AutoPtr<IArray> CoreUtils::Box(
+    /* [in] */ const Array<IInterface*>& objArray)
+{
+    if (objArray.IsEmpty()) {
+        return nullptr;
+    }
+
+    Long size = objArray.GetLength();
+    InterfaceID iid;
+    objArray[0]->GetInterfaceID(objArray[0], &iid);
+    AutoPtr<IArray> arrObj;
+    CArray::New(iid, size, IID_IArray, (IInterface**)&arrObj);
+    for (Long i = 0; i < size; i++) {
+        arrObj->Set(i, objArray[i]);
+    }
+    return arrObj;
+}
+
 Char CoreUtils::Unbox(
     /* [in] */ IChar* ch)
 {
@@ -153,6 +172,24 @@ Array<String> CoreUtils::Unbox(
         strArray[i] = Unbox(seqArray[i]);
     }
     return strArray;
+}
+
+Array<IInterface*> CoreUtils::Unbox(
+    /* [in] */ IArray* arrObj)
+{
+    if (arrObj == nullptr) {
+        return Array<IInterface*>::Null();
+    }
+
+    Long size;
+    arrObj->GetLength(&size);
+    Array<IInterface*> objArray(size);
+    for (Long i = 0; i < size; i++) {
+        AutoPtr<IInterface> obj;
+        arrObj->Get(i, &obj);
+        objArray.Set(i, obj);
+    }
+    return objArray;
 }
 
 Boolean CoreUtils::GetBoolean(

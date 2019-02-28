@@ -17,11 +17,31 @@
 #include "ccm/core/Math.h"
 #include "ccm/util/Arrays.h"
 #include "libcore.h"
+#include <ccmlogger.h>
 
+using ccm::core::E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
 using ccm::core::Math;
 
 namespace ccm {
 namespace util {
+
+ECode Arrays::RangeCheck(
+    /* [in] */ Integer arrayLength,
+    /* [in] */ Integer fromIndex,
+    /* [in] */ Integer toIndex)
+{
+    if (fromIndex > toIndex) {
+        Logger::E("Arrays", "fromIndex(%d) > toIndex(%d)", fromIndex, toIndex);
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    if (fromIndex < 0) {
+        return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+    }
+    if (toIndex > arrayLength) {
+        return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+    }
+    return NOERROR;
+}
 
 ECode Arrays::CheckOffsetAndCount(
     /* [in] */ Integer arrayLength,
@@ -72,6 +92,19 @@ ECode Arrays::Fill(
     /* [in] */ Char value)
 {
     for (Integer i = 0, len = a.GetLength(); i < len; i++) {
+        a[i] = value;
+    }
+    return NOERROR;
+}
+
+ECode Arrays::Fill(
+    /* [out] */ Array<Char>& a,
+    /* [in] */ Integer fromIndex,
+    /* [in] */ Integer toIndex,
+    /* [in] */ Char value)
+{
+    FAIL_RETURN(RangeCheck(a.GetLength(), fromIndex, toIndex));
+    for (Integer i = fromIndex; i < toIndex; i++) {
         a[i] = value;
     }
     return NOERROR;

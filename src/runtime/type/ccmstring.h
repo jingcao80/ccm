@@ -262,7 +262,7 @@ public:
     static String Format(
         /* [in] */ const char* format ...);
 
-    static String ValueOfChar(
+    static String ValueOf(
         /* [in] */ Char c);
 
     inline static Boolean IsASCII(

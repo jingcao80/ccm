@@ -69,6 +69,11 @@ private:
     Arrays()
     {}
 
+    static ECode RangeCheck(
+        /* [in] */ Integer arrayLength,
+        /* [in] */ Integer fromIndex,
+        /* [in] */ Integer toIndex);
+
     static Integer BinarySearch0(
         /* [in] */ const Array<Long>& a,
         /* [in] */ Integer fromIndex,

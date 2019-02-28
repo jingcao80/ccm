@@ -1308,7 +1308,7 @@ inline Integer Character::HashCode(
 inline String Character::ToString(
     /* [in] */ Char c)
 {
-    return String::ValueOfChar(c);
+    return String::ValueOf(c);
 }
 
 inline Boolean Character::IsValidCodePoint(

@@ -22,6 +22,7 @@
 #include "ccm/core/StringToReal.h"
 #include "ccm/core/StringUtils.h"
 #include "ccm/misc/DoubleConsts.h"
+#include "ccm/util/CFormatter.h"
 #include "ccm/util/regex/Pattern.h"
 #include "ccm.core.IByte.h"
 #include "ccm.core.IInteger.h"
@@ -32,6 +33,9 @@
 #include <ccmlogger.h>
 
 using ccm::misc::DoubleConsts;
+using ccm::util::CFormatter;
+using ccm::util::IFormatter;
+using ccm::util::IID_IFormatter;
 using ccm::util::regex::IMatcher;
 using ccm::util::regex::IPattern;
 using ccm::util::regex::Pattern;
@@ -687,6 +691,27 @@ Array<String> StringUtils::Split(
     Pattern::Compile(regex, &p);
     p->Split(CoreUtils::Box(input), limit, &strArr);
     return strArr;
+}
+
+String StringUtils::Format(
+    /* [in] */ const String& format,
+    /* [in] */ const Array<IInterface*>* args)
+{
+    AutoPtr<IFormatter> formatter;
+    CFormatter::New(IID_IFormatter, (IInterface**)&formatter);
+    formatter->Format(format, args);
+    return Object::ToString(formatter);
+}
+
+String StringUtils::Format(
+    /* [in] */ ILocale* l,
+    /* [in] */ const String& format,
+    /* [in] */ const Array<IInterface*>* args)
+{
+    AutoPtr<IFormatter> formatter;
+    CFormatter::New(l, IID_IFormatter, (IInterface**)&formatter);
+    formatter->Format(format, args);
+    return Object::ToString(formatter);
 }
 
 }

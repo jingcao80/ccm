@@ -665,7 +665,7 @@ Boolean LanguageTag::IsExtensionSingleton(
 Boolean LanguageTag::IsExtensionSingletonChar(
     /* [in] */ Char c)
 {
-    return IsExtensionSingleton(String::ValueOfChar(c));
+    return IsExtensionSingleton(String::ValueOf(c));
 }
 
 Boolean LanguageTag::IsExtensionSubtag(
@@ -687,7 +687,7 @@ Boolean LanguageTag::IsPrivateusePrefix(
 Boolean LanguageTag::IsPrivateusePrefixChar(
     /* [in] */ Char c)
 {
-    return LocaleUtils::CaseIgnoreMatch(PRIVATEUSE, String::ValueOfChar(c));
+    return LocaleUtils::CaseIgnoreMatch(PRIVATEUSE, String::ValueOf(c));
 }
 
 Boolean LanguageTag::IsPrivateuseSubtag(

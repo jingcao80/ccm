@@ -91,7 +91,7 @@ ECode CChar::ToString(
 {
     VALIDATE_NOT_NULL(str);
 
-    *str = String::ValueOfChar(mValue);
+    *str = String::ValueOf(mValue);
     return NOERROR;
 }
 

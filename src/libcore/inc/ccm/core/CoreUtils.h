@@ -17,6 +17,7 @@
 #ifndef __CCM_CORE_COREUTILS_H__
 #define __CCM_CORE_COREUTILS_H__
 
+#include "ccm.core.IArray.h"
 #include "ccm.core.IChar.h"
 #include "ccm.core.ICharSequence.h"
 #include "ccm.core.IDouble.h"
@@ -50,6 +51,9 @@ public:
     COM_PUBLIC static Array<ICharSequence*> Box(
         /* [in] */ const Array<String>& strArray);
 
+    COM_PUBLIC static AutoPtr<IArray> Box(
+        /* [in] */ const Array<IInterface*>& objArray);
+
     COM_PUBLIC static Char Unbox(
         /* [in] */ IChar* ch);
 
@@ -70,6 +74,9 @@ public:
 
     COM_PUBLIC static Array<String> Unbox(
         /* [in] */ const Array<ICharSequence*>& seqArray);
+
+    COM_PUBLIC static Array<IInterface*> Unbox(
+        /* [in] */ IArray* arrObj);
 
     COM_PUBLIC static Boolean GetBoolean(
         /* [in] */ const String& name);

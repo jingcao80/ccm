@@ -903,7 +903,7 @@ String String::Format(
     return str;
 }
 
-String String::ValueOfChar(
+String String::ValueOf(
     /* [in] */ Char c)
 {
     Integer byteSize = GetByteSize(c);

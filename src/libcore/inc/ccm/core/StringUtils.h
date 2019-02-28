@@ -17,7 +17,9 @@
 #ifndef __CCM_CORE_STRINGUTILS_H__
 #define __CCM_CORE_STRINGUTILS_H__
 
-#include <ccmtypes.h>
+#include "ccm.util.ILocale.h"
+
+using ccm::util::ILocale;
 
 namespace ccm {
 namespace core {
@@ -136,6 +138,15 @@ public:
         /* [in] */ const String& input,
         /* [in] */ const String& regex,
         /* [in] */ Integer limit);
+
+    COM_PUBLIC static String Format(
+        /* [in] */ const String& format,
+        /* [in] */ const Array<IInterface*>* args);
+
+    COM_PUBLIC static String Format(
+        /* [in] */ ILocale* l,
+        /* [in] */ const String& format,
+        /* [in] */ const Array<IInterface*>* args);
 
 private:
     StringUtils();
