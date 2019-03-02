@@ -39,6 +39,7 @@ set(SOURCES
     Calendar.cpp
     CLocaleFactory.cpp
     Collections.cpp
+    Currency.cpp
     Date.cpp
     EmptyArray.cpp
     Formatter.cpp

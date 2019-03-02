@@ -25,22 +25,55 @@ namespace icu {
 ]
 interface ILocaleData
 {
+    GetCurrencySymbol(
+        [out] String* currencySymbol);
+
     GetDateFormat(
         [in] Integer style,
         [out] String* dateFormat);
 
+    GetDecimalSeparator(
+        [out] Char* decSeparator);
+
     GetExponentSeparator(
         [out] String* expSeparator);
+
+    GetGroupingSeparator(
+        [out] Char* grpSeparator);
 
     GetFirstDayOfWeek(
         [out] IInteger** day);
 
+    GetInfinity(
+        [out] String* infinity);
+
+    GetInternationalCurrencySymbol(
+        [out] String* intlCurrencySymbol);
+
     GetMinimalDaysInFirstWeek(
         [out] IInteger** days);
+
+    GetMinusSign(
+        [out] String* sign);
+
+    GetNaN(
+        [out] String* nan);
+
+    GetPatternSeparator(
+        [out] Char* patSeparator);
+
+    GetPercent(
+        [out] String* percent);
+
+    GetPerMill(
+        [out] Char* perMill);
 
     GetTimeFormat(
         [in] Integer style,
         [out] String* timeFormat);
+
+    GetZeroDigit(
+        [out] Char* zeroDigit);
 }
 
 }

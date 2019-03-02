@@ -88,6 +88,57 @@ public:
         return String();
     }
 
+    static String GetCurrencyCode(
+        /* [in] */ const String& countryCode)
+    {
+        return String();
+    }
+
+    static Array<String> GetAvailableCurrencyCodes()
+    {
+        return Array<String>::Null();
+    }
+
+    static String GetCurrencyDisplayName(
+        /* [in] */ ILocale* locale,
+        /* [in] */ const String& currencyCode)
+    {
+        return String();
+    }
+
+    static String GetCurrencyDisplayName(
+        /* [in] */ const String& languageTag,
+        /* [in] */ const String& currencyCode)
+    {
+        return String();
+    }
+
+    static String GetCurrencySymbol(
+        /* [in] */ ILocale* locale,
+        /* [in] */ const String& currencyCode)
+    {
+        return String();
+    }
+
+    static String GetCurrencySymbol(
+        /* [in] */ const String& languageTag,
+        /* [in] */ const String& currencyCode)
+    {
+        return String();
+    }
+
+    static Integer GetCurrencyFractionDigits(
+        /* [in] */ const String& currencyCode)
+    {
+        return -1;
+    }
+
+    static Integer GetCurrencyNumericCode(
+        /* [in] */ const String& currencyCode)
+    {
+        return -1;
+    }
+
 private:
     ICU();
 };
