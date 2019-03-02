@@ -46,7 +46,7 @@ using libcore::icu::ICU;
 namespace ccm {
 namespace text {
 
-Boolean DateFormat::sIs24Hour = false;
+AutoPtr<IBoolean> DateFormat::sIs24Hour;
 
 CCM_INTERFACE_IMPL_4(DateFormat, SyncObject, IDateFormat, IFormat, ISerializable, ICloneable);
 
@@ -201,7 +201,7 @@ ECode DateFormat::GetInstance(
 }
 
 ECode DateFormat::Set24HourTimePref(
-    /* [in] */ Boolean is24Hour)
+    /* [in] */ IBoolean* is24Hour)
 {
     sIs24Hour = is24Hour;
     return NOERROR;

@@ -717,22 +717,18 @@ ECode Formatter::FormatSpecifier::GetIndex(
 }
 
 ECode Formatter::FormatSpecifier::ToFlags(
-    /* [in] */ const String& s,
-    /* [out] */ Flags** f)
+    /* [in] */ const String& s)
 {
     mF = nullptr;
     FAIL_RETURN(Flags::Parse(s, &mF));
     if (mF->Contains(Flags::GetPREVIOUS())) {
         mIndex = -1;
     }
-    *f = mF;
-    REFCOUNT_ADD(*f);
     return NOERROR;
 }
 
 ECode Formatter::FormatSpecifier::Width(
-    /* [in] */ const String& s,
-    /* [out] */ Integer* w)
+    /* [in] */ const String& s)
 {
     mWidth = -1;
     if (!s.IsNull()) {
@@ -742,13 +738,11 @@ ECode Formatter::FormatSpecifier::Width(
             return E_ILLEGAL_FORMAT_WIDTH_EXCEPTION;
         }
     }
-    *w = mWidth;
     return NOERROR;
 }
 
 ECode Formatter::FormatSpecifier::Precision(
-    /* [in] */ const String& s,
-    /* [out] */ Integer* p)
+    /* [in] */ const String& s)
 {
     mPrecision = -1;
     if (!s.IsNull()) {
@@ -758,13 +752,11 @@ ECode Formatter::FormatSpecifier::Precision(
             return E_ILLEGAL_FORMAT_PRECISION_EXCEPTION;
         }
     }
-    *p = mPrecision;
     return NOERROR;
 }
 
 ECode Formatter::FormatSpecifier::Conversion(
-    /* [in] */ const String& s,
-    /* [out] */ Char* c)
+    /* [in] */ const String& s)
 {
     mC = s.GetChar(0);
     if (!mDt) {
@@ -779,7 +771,6 @@ ECode Formatter::FormatSpecifier::Conversion(
             mIndex = -2;
         }
     }
-    *c = mC;
     return NOERROR;
 }
 
@@ -916,13 +907,13 @@ ECode Formatter::FormatSpecifier::PrintCharacter(
     if (IChar::Probe(arg) != nullptr) {
         Char c;
         IChar::Probe(arg)->GetValue(&c);
-        s = String::ValueOfChar(c);
+        s = String::ValueOf(c);
     }
     else if (IByte::Probe(arg) != nullptr) {
         Byte i;
         IByte::Probe(arg)->ByteValue(&i);
         if (Character::IsValidCodePoint(i)) {
-            s = String::ValueOfChar((Char)i);
+            s = String::ValueOf((Char)i);
         }
         else {
             return E_ILLEGAL_FORMAT_CODE_POINT_EXCEPTION;
@@ -932,7 +923,7 @@ ECode Formatter::FormatSpecifier::PrintCharacter(
         Short i;
         IShort::Probe(arg)->ShortValue(&i);
         if (Character::IsValidCodePoint(i)) {
-            s = String::ValueOfChar((Char)i);
+            s = String::ValueOf((Char)i);
         }
         else {
             return E_ILLEGAL_FORMAT_CODE_POINT_EXCEPTION;
@@ -942,7 +933,7 @@ ECode Formatter::FormatSpecifier::PrintCharacter(
         Integer i;
         IInteger::Probe(arg)->IntegerValue(&i);
         if (Character::IsValidCodePoint(i)) {
-            s = String::ValueOfChar((Char)i);
+            s = String::ValueOf((Char)i);
         }
         else {
             return E_ILLEGAL_FORMAT_CODE_POINT_EXCEPTION;

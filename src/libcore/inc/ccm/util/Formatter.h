@@ -226,20 +226,16 @@ private:
             /* [in] */ const String& s);
 
         ECode ToFlags(
-            /* [in] */ const String& s,
-            /* [out] */ Flags** f = nullptr);
+            /* [in] */ const String& s);
 
         ECode Width(
-            /* [in] */ const String& s,
-            /* [out] */ Integer* w = nullptr);
+            /* [in] */ const String& s);
 
         ECode Precision(
-            /* [in] */ const String& s,
-            /* [out] */ Integer* p = nullptr);
+            /* [in] */ const String& s);
 
         ECode Conversion(
-            /* [in] */ const String& s,
-            /* [out] */ Char* c = nullptr);
+            /* [in] */ const String& s);
 
         inline Char Conversion()
         {

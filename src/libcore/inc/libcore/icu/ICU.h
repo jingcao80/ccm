@@ -18,8 +18,10 @@
 #define __LIBCORE_ICU_ICU_H__
 
 #include "ccm.util.ILocale.h"
+#include "libcore/icu/LocaleData.h"
 
 using ccm::util::ILocale;
+using libcore::icu::LocaleData;
 
 namespace libcore {
 namespace icu {
@@ -137,6 +139,20 @@ public:
         /* [in] */ const String& currencyCode)
     {
         return -1;
+    }
+
+    static Boolean InitLocaleData(
+        /* [in] */ const String& languageTag,
+        /* [in] */ LocaleData* result)
+    {
+        return false;
+    }
+
+    static String GetBestDateTimePattern(
+        /* [in] */ const String& skeleton,
+        /* [in] */ ILocale* locale)
+    {
+        return String();
     }
 
 private:

@@ -19,6 +19,7 @@
 
 #include "ccm/core/SyncObject.h"
 #include "ccm/text/AttributedCharacterIteratorAttribute.h"
+#include "ccm.core.IBoolean.h"
 #include "ccm.core.ICloneable.h"
 #include "ccm.core.IStringBuffer.h"
 #include "ccm.io.ISerializable.h"
@@ -35,6 +36,7 @@
 #include "ccm.util.ILocale.h"
 #include "ccm.util.ITimeZone.h"
 
+using ccm::core::IBoolean;
 using ccm::core::ICloneable;
 using ccm::core::IStringBuffer;
 using ccm::core::SyncObject;
@@ -190,7 +192,7 @@ public:
         /* [out] */ IDateFormat** instance);
 
     static ECode Set24HourTimePref(
-        /* [in] */ Boolean is24Hour);
+        /* [in] */ IBoolean* is24Hour);
 
     static ECode GetAvailableLocales(
         /* [out, callee] */ Array<ILocale*>* locales);
@@ -239,7 +241,7 @@ private:
         /* [out] */ IDateFormat** instance);
 
 public:
-    static Boolean sIs24Hour;
+    static AutoPtr<IBoolean> sIs24Hour;
 
 protected:
     AutoPtr<ICalendar> mCalendar;
