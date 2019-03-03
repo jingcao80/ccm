@@ -29,6 +29,13 @@ namespace icu {
 class ICU
 {
 public:
+    static Boolean InitLocaleData(
+        /* [in] */ const String& languageTag,
+        /* [in] */ LocaleData* result);
+
+
+
+
     static Array<String> GetISOLanguages()
     {
         return Array<String>::Null();
@@ -139,13 +146,6 @@ public:
         /* [in] */ const String& currencyCode)
     {
         return -1;
-    }
-
-    static Boolean InitLocaleData(
-        /* [in] */ const String& languageTag,
-        /* [in] */ LocaleData* result)
-    {
-        return false;
     }
 
     static String GetBestDateTimePattern(
