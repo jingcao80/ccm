@@ -14,6 +14,8 @@
 // limitations under the License.
 //=========================================================================
 
+interface ccm::util::ICurrency;
+
 namespace ccm {
 namespace text {
 
@@ -27,17 +29,101 @@ namespace text {
 ]
 interface IDecimalFormatSymbols
 {
+    GetCurrency(
+        [out] ICurrency** currency);
+
+    GetCurrencySymbol(
+        [out] String* currency);
+
     GetDecimalSeparator(
-        [out] Char* decSep);
+        [out] Char* decimalSeparator);
+
+    GetDigit(
+        [out] Char* digit);
+
+    GetExponentSeparator(
+        [out] String* exponentSeparator);
 
     GetGroupingSeparator(
-        [out] Char* grpSep);
+        [out] Char* groupingSeparator);
+
+    GetInfinity(
+        [out] String* infinity);
+
+    GetInternationalCurrencySymbol(
+        [out] String* currency);
 
     GetMinusSign(
         [out] Char* minusSign);
 
+    GetMinusSignString(
+        [out] String* minusSignStr);
+
+    GetMonetaryDecimalSeparator(
+        [out] Char* monetarySeparator);
+
+    GetNaN(
+        [out] String* naN);
+
+    GetPatternSeparator(
+        [out] Char* patternSeparator);
+
+    GetPercent(
+        [out] Char* percent);
+
+    GetPercentString(
+        [out] String* percentStr);
+
+    GetPerMill(
+        [out] Char* perMill);
+
     GetZeroDigit(
         [out] Char* zeroDigit);
+
+    SetCurrency(
+        [in] ICurrency* currency);
+
+    SetCurrencySymbol(
+        [in] String currency);
+
+    SetDecimalSeparator(
+        [in] Char decimalSeparator);
+
+    SetDigit(
+        [in] Char digit);
+
+    SetExponentSeparator(
+        [in] String exp);
+
+    SetGroupingSeparator(
+        [in] Char groupingSeparator);
+
+    SetInfinity(
+        [in] String infinity);
+
+    SetInternationalCurrencySymbol(
+        [in] String currency);
+
+    SetMinusSign(
+        [in] Char minusSign);
+
+    SetMonetaryDecimalSeparator(
+        [in] Char sep);
+
+    SetNaN(
+        [in] String naN);
+
+    SetPatternSeparator(
+        [in] Char patternSeparator);
+
+    SetPercent(
+        [in] Char percent);
+
+    SetPerMill(
+        [in] Char perMill);
+
+    SetZeroDigit(
+        [in] Char zeroDigit);
 }
 
 }

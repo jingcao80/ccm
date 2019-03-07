@@ -21,12 +21,16 @@
 #include "ccm.core.ICloneable.h"
 #include "ccm.io.ISerializable.h"
 #include "ccm.text.IDecimalFormatSymbols.h"
+#include "ccm.util.ICurrency.h"
 #include "ccm.util.ILocale.h"
+#include "ccm.util.concurrent.IConcurrentHashMap.h"
 
 using ccm::core::ICloneable;
 using ccm::core::SyncObject;
 using ccm::io::ISerializable;
+using ccm::util::ICurrency;
 using ccm::util::ILocale;
+using ccm::util::concurrent::IConcurrentHashMap;
 
 namespace ccm {
 namespace text {
@@ -38,11 +42,181 @@ class DecimalFormatSymbols
     , public ISerializable
 {
 public:
+    CCM_INTERFACE_DECL();
+
+    ECode Constructor();
+
+    ECode Constructor(
+        /* [in] */ ILocale* locale);
+
+    static Array<ILocale*> GetAvailableLocales();
+
+    static AutoPtr<IDecimalFormatSymbols> GetInstance();
+
     static AutoPtr<IDecimalFormatSymbols> GetInstance(
-        /* [in] */ ILocale* locale)
-    {
-        return nullptr;
-    }
+        /* [in] */ ILocale* locale);
+
+    ECode GetZeroDigit(
+        /* [out] */ Char* zeroDigit) override;
+
+    ECode SetZeroDigit(
+        /* [in] */ Char zeroDigit) override;
+
+    ECode GetGroupingSeparator(
+        /* [out] */ Char* groupingSeparator) override;
+
+    ECode SetGroupingSeparator(
+        /* [in] */ Char groupingSeparator) override;
+
+    ECode GetDecimalSeparator(
+        /* [out] */ Char* decimalSeparator) override;
+
+    ECode SetDecimalSeparator(
+        /* [in] */ Char decimalSeparator) override;
+
+    ECode GetPerMill(
+        /* [out] */ Char* perMill) override;
+
+    ECode SetPerMill(
+        /* [in] */ Char perMill) override;
+
+    ECode GetPercent(
+        /* [out] */ Char* percent) override;
+
+    ECode GetPercentString(
+        /* [out] */ String* percentStr) override;
+
+    ECode SetPercent(
+        /* [in] */ Char percent) override;
+
+    ECode GetDigit(
+        /* [out] */ Char* digit) override;
+
+    ECode SetDigit(
+        /* [in] */ Char digit) override;
+
+    ECode GetPatternSeparator(
+        /* [out] */ Char* patternSeparator) override;
+
+    ECode SetPatternSeparator(
+        /* [in] */ Char patternSeparator) override;
+
+    ECode GetInfinity(
+        /* [out] */ String* infinity) override;
+
+    ECode SetInfinity(
+        /* [in] */ const String& infinity) override;
+
+    ECode GetNaN(
+        /* [out] */ String* naN) override;
+
+    ECode SetNaN(
+        /* [in] */ const String& naN) override;
+
+    ECode GetMinusSign(
+        /* [out] */ Char* minusSign) override;
+
+    ECode GetMinusSignString(
+        /* [out] */ String* minusSignStr) override;
+
+    ECode SetMinusSign(
+        /* [in] */ Char minusSign) override;
+
+    ECode GetCurrencySymbol(
+        /* [out] */ String* currency) override;
+
+    ECode SetCurrencySymbol(
+        /* [in] */ const String& currency) override;
+
+    ECode GetInternationalCurrencySymbol(
+        /* [out] */ String* currency) override;
+
+    ECode SetInternationalCurrencySymbol(
+        /* [in] */ const String& currency) override;
+
+    ECode GetCurrency(
+        /* [out] */ ICurrency** currency) override;
+
+    ECode SetCurrency(
+        /* [in] */ ICurrency* currency) override;
+
+    ECode GetMonetaryDecimalSeparator(
+        /* [out] */ Char* monetarySeparator) override;
+
+    ECode SetMonetaryDecimalSeparator(
+        /* [in] */ Char sep) override;
+
+    virtual Char GetExponentialSymbol();
+
+    ECode GetExponentSeparator(
+        /* [out] */ String* exponentSeparator) override;
+
+    virtual void SetExponentialSymbol(
+        /* [in] */ Char exp);
+
+    ECode SetExponentSeparator(
+        /* [in] */ const String& exp) override;
+
+    ECode Equals(
+        /* [in] */ IInterface* obj,
+        /* [out] */ Boolean* same) override;
+
+    ECode GetHashCode(
+        /* [out] */ Integer* hash) override;
+
+
+    static Char MaybeStripMarkers(
+        /* [in] */ const String& symbol,
+        /* [in] */ Char fallback);
+
+protected:
+    ECode CloneImpl(
+        /* [in] */ IDecimalFormatSymbols* newObj);
+
+
+
+private:
+
+
+    void Initialize(
+        /* [in] */ ILocale* locale);
+
+    static AutoPtr<IConcurrentHashMap> GetCachedLocaleData();
+
+private:
+    Char mZeroDigit;
+
+    Char mGroupingSeparator;
+
+    Char mDecimalSeparator;
+
+    Char mPerMill;
+
+    Char mPercent;
+
+    Char mDigit;
+
+    Char mPatternSeparator;
+
+    String mInfinity;
+
+    String mNaN;
+
+    Char mMinusSign;
+
+    String mCurrencySymbol;
+
+    String mIntlCurrencySymbol;
+
+    Char mMonetarySeparator;
+
+    Char mExponential;
+
+    String mExponentialSeparator;
+
+    AutoPtr<ILocale> mLocale;
+
+    AutoPtr<ICurrency> mCurrency;
 };
 
 }

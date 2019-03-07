@@ -77,6 +77,8 @@ coclass CAttributedString
         [in] Integer beginIndex,
         [in] Integer endIndex,
         [in] Array<IAttributedCharacterIteratorAttribute*> attributes);
+
+    interface IAttributedString;
 }
 
 [
@@ -90,6 +92,22 @@ coclass CDateFormatField
     interface IDateFormatField;
     interface IFormatField;
     interface IAttributedCharacterIteratorAttribute;
+    interface ISerializable;
+}
+
+[
+    uuid(81e790a2-a790-4776-b726-8502d7271000),
+    version(0.1.0)
+]
+coclass CDecimalFormatSymbols
+{
+    Constructor();
+
+    Constructor(
+        [in] ILocale* locale);
+
+    interface IDecimalFormatSymbols;
+    interface ICloneable;
     interface ISerializable;
 }
 

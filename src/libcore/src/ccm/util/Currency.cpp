@@ -41,6 +41,7 @@ using libcore::icu::LocaleData;
 namespace ccm {
 namespace util {
 
+AutoPtr<IHashSet> Currency::sAvailable;
 SyncObject Currency::sLock;
 
 static AutoPtr<IConcurrentMap> CreateConcurrentHashMap()
