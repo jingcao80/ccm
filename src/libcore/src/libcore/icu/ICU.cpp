@@ -30,7 +30,6 @@
 #include <unicode/utypes.h>
 #include <unicode/udata.h>
 
-
 using ccm::core::CInteger;
 using ccm::core::IID_IInteger;
 using ccm::core::IInteger;
@@ -195,24 +194,24 @@ static String GetStringField(
 {
     UErrorCode status = U_ZERO_ERROR;
     int charCount;
-    const char* chars;
+    const UChar* chars;
     UResourceBundle* currentBundle = ures_getByIndex(bundle, index, nullptr, &status);
     switch (ures_getType(currentBundle)) {
         case URES_STRING:
-            chars = ures_getUTF8String(currentBundle, nullptr, &charCount, FALSE, &status);
+            chars = ures_getString(currentBundle, &charCount, &status);
             break;
         case URES_ARRAY:
             // In case there is an array, ccm currently only cares about the
             // first string of that array, the rest of the array is used by ICU
             // for additional data ignored by ccm.
-            chars = ures_getUTF8StringByIndex(currentBundle, 0, nullptr, &charCount, FALSE, &status);
+            chars = ures_getStringByIndex(currentBundle, 0, &charCount, &status);
             break;
       default:
             status = U_INVALID_FORMAT_ERROR;
     }
     ures_close(currentBundle);
     if (U_SUCCESS(status)) {
-        return String(chars, charCount);
+        return ToUTF8String(::icu::UnicodeString(chars, charCount));
     }
     else {
         Logger::E("ICU", "Error setting String field %s from ICU resource (index %d): %s",
@@ -439,6 +438,7 @@ Boolean ICU::InitLocaleData(
         return false;
     }
 
+#ifdef __aarch64__
     // Get the narrow "AM" and "PM" strings.
     Boolean foundAmPmMarkersNarrow = false;
     for (LocaleNameIterator it(icuLocale.getBaseName(), status); it.HasNext(); it.Up()) {
@@ -451,6 +451,7 @@ Boolean ICU::InitLocaleData(
         Logger::E("ICU", "Couldn't find ICU AmPmMarkersNarrow for %s", languageTag.string());
         return false;
     }
+#endif
 
     status = U_ZERO_ERROR;
     std::unique_ptr<::icu::Calendar> cal(::icu::Calendar::createInstance(icuLocale, status));

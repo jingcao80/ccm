@@ -18,6 +18,7 @@
 #define __CCM_UTIL_COLLECTIONS_H__
 
 #include "ccm/core/SyncObject.h"
+#include "ccm/util/AbstractList.h"
 #include "ccm.core.ISynchronize.h"
 #include "ccm.io.ISerializable.h"
 #include "ccm.util.ICollection.h"
@@ -25,6 +26,7 @@
 #include "ccm.util.IIterator.h"
 #include "ccm.util.IList.h"
 #include "ccm.util.IMap.h"
+#include "ccm.util.IRandomAccess.h"
 #include "ccm.util.ISet.h"
 #include <ccmautoptr.h>
 #include <ccmrefbase.h>
@@ -212,6 +214,42 @@ private:
         static AutoPtr<IIterator> Get_EMPTY_ITERATOR();
     };
 
+    class EmptyListIterator
+        : public EmptyIterator
+        , public IListIterator
+    {
+    public:
+        CCM_INTERFACE_DECL();
+
+        ECode HasPrevious(
+            /* [out] */ Boolean* result) override;
+
+        ECode Previous(
+            /* [out] */ IInterface** object = nullptr) override;
+
+        ECode GetNextIndex(
+            /* [out] */ Integer* index) override;
+
+        ECode GetPreviousIndex(
+            /* [out] */ Integer* index) override;
+
+        ECode Set(
+            /* [in] */ IInterface* object) override;
+
+        ECode Add(
+            /* [in] */ IInterface* object) override;
+
+        ECode Next(
+            /* [out] */ IInterface** object = nullptr) override;
+
+        ECode HasNext(
+            /* [out] */ Boolean* result) override;
+
+        ECode Remove() override;
+
+        static AutoPtr<IListIterator> Get_EMPTY_ITERATOR();
+    };
+
     class EmptyEnumeration
         : public LightRefBase
         , public IEnumeration
@@ -226,6 +264,57 @@ private:
             /* [out] */ IInterface** object = nullptr) override;
 
         static AutoPtr<IEnumeration> Get_EMPTY_ENUMERATION();
+    };
+
+    class EmptyList
+        : public AbstractList
+        , public IRandomAccess
+        , public ISerializable
+    {
+    public:
+        CCM_INTERFACE_DECL();
+
+        ECode GetIterator(
+            /* [out] */ IIterator** it) override;
+
+        ECode GetListIterator(
+            /* [out] */ IListIterator** it) override;
+
+        ECode GetSize(
+            /* [out] */ Integer* size) override;
+
+        ECode IsEmpty(
+            /* [out] */ Boolean* empty) override;
+
+        ECode Contains(
+            /* [in] */ IInterface* obj,
+            /* [out] */ Boolean* result) override;
+
+        ECode ContainsAll(
+            /* [in] */ ICollection* c,
+            /* [out] */ Boolean* result) override;
+
+        ECode ToArray(
+            /* [out, callee] */ Array<IInterface*>* objs) override;
+
+        ECode ToArray(
+            /* [in] */ const InterfaceID& iid,
+            /* [out, callee] */ Array<IInterface*>* objs) override;
+
+        ECode Get(
+            /* [in] */ Integer index,
+            /* [out] */ IInterface** obj) override;
+
+        ECode Equals(
+            /* [in] */ IInterface* obj,
+            /* [out] */ Boolean* result) override;
+
+        ECode GetHashCode(
+            /* [out] */ Integer* hash) override;
+
+        ECode AddAll(
+            /* [in] */ ICollection* c,
+            /* [out] */ Boolean* result = nullptr) override;
     };
 
 public:
@@ -266,10 +355,7 @@ public:
         return nullptr;
     }
 
-    static AutoPtr<IList> GetEmptyList()
-    {
-        return nullptr;
-    }
+    static AutoPtr<IList> GetEmptyList();
 
     static AutoPtr<IMap> GetEmptyMap()
     {
@@ -282,6 +368,8 @@ public:
     {
         return nullptr;
     }
+
+    static AutoPtr<IList> Get_EMPTY_LIST();
 
 private:
     static constexpr Integer REVERSE_THRESHOLD = 18;

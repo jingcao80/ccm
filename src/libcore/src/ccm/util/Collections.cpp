@@ -20,6 +20,8 @@
 #include "ccm.util.IRandomAccess.h"
 
 using ccm::core::AutoLock;
+using ccm::core::E_ILLEGAL_STATE_EXCEPTION;
+using ccm::core::E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
 using ccm::io::IID_ISerializable;
 
 namespace ccm {
@@ -82,6 +84,17 @@ AutoPtr<IIterator> Collections::GetEmptyIterator()
 AutoPtr<IEnumeration> Collections::GetEmptyEnumeration()
 {
     return EmptyEnumeration::Get_EMPTY_ENUMERATION();
+}
+
+AutoPtr<IList> Collections::GetEmptyList()
+{
+    return Get_EMPTY_LIST();
+}
+
+AutoPtr<IList> Collections::Get_EMPTY_LIST()
+{
+    static AutoPtr<IList> EMPTY_LIST = new EmptyList();
+    return EMPTY_LIST;
 }
 
 //----------------------------------------------------------------
@@ -365,7 +378,7 @@ ECode Collections::EmptyIterator::Next(
 
 ECode Collections::EmptyIterator::Remove()
 {
-    return ccm::core::E_ILLEGAL_STATE_EXCEPTION;
+    return E_ILLEGAL_STATE_EXCEPTION;
 }
 
 AutoPtr<IIterator> Collections::EmptyIterator::Get_EMPTY_ITERATOR()
@@ -397,6 +410,193 @@ AutoPtr<IEnumeration> Collections::EmptyEnumeration::Get_EMPTY_ENUMERATION()
 {
     static AutoPtr<IEnumeration> EMPTY_ENUMERATION = new EmptyEnumeration();
     return EMPTY_ENUMERATION;
+}
+
+//----------------------------------------------------------------
+
+CCM_INTERFACE_IMPL_1(Collections::EmptyListIterator, EmptyIterator, IListIterator);
+
+ECode Collections::EmptyListIterator::HasPrevious(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    *result = false;
+    return NOERROR;
+}
+
+ECode Collections::EmptyListIterator::Previous(
+    /* [out] */ IInterface** object)
+{
+    return E_NO_SUCH_ELEMENT_EXCEPTION;
+}
+
+ECode Collections::EmptyListIterator::GetNextIndex(
+    /* [out] */ Integer* index)
+{
+    VALIDATE_NOT_NULL(index);
+
+    *index = 0;
+    return NOERROR;
+}
+
+ECode Collections::EmptyListIterator::GetPreviousIndex(
+    /* [out] */ Integer* index)
+{
+    VALIDATE_NOT_NULL(index);
+
+    *index = -1;
+    return NOERROR;
+}
+
+ECode Collections::EmptyListIterator::Set(
+    /* [in] */ IInterface* object)
+{
+    return E_ILLEGAL_STATE_EXCEPTION;
+}
+
+ECode Collections::EmptyListIterator::Add(
+    /* [in] */ IInterface* object)
+{
+    return E_UNSUPPORTED_OPERATION_EXCEPTION;
+}
+
+ECode Collections::EmptyListIterator::Next(
+    /* [out] */ IInterface** object)
+{
+    return EmptyIterator::Next(object);
+}
+
+ECode Collections::EmptyListIterator::HasNext(
+    /* [out] */ Boolean* result)
+{
+    return EmptyIterator::HasNext(result);
+}
+
+ECode Collections::EmptyListIterator::Remove()
+{
+    return EmptyIterator::Remove();
+}
+
+AutoPtr<IListIterator> Collections::EmptyListIterator::Get_EMPTY_ITERATOR()
+{
+    static AutoPtr<IListIterator> EMPTY_ITERATOR = new EmptyListIterator();
+    return EMPTY_ITERATOR;
+}
+
+//----------------------------------------------------------------
+
+CCM_INTERFACE_IMPL_2(Collections::EmptyList, AbstractList, IRandomAccess, ISerializable);
+
+ECode Collections::EmptyList::GetIterator(
+    /* [out] */ IIterator** it)
+{
+    VALIDATE_NOT_NULL(it);
+
+    *it = new EmptyIterator();
+    REFCOUNT_ADD(*it);
+    return NOERROR;
+}
+
+ECode Collections::EmptyList::GetListIterator(
+    /* [out] */ IListIterator** it)
+{
+    VALIDATE_NOT_NULL(it);
+
+    *it = new EmptyListIterator();
+    REFCOUNT_ADD(*it);
+    return NOERROR;
+}
+
+ECode Collections::EmptyList::GetSize(
+    /* [out] */ Integer* size)
+{
+    VALIDATE_NOT_NULL(size);
+
+    *size = 0;
+    return NOERROR;
+}
+
+ECode Collections::EmptyList::IsEmpty(
+    /* [out] */ Boolean* empty)
+{
+    VALIDATE_NOT_NULL(empty);
+
+    *empty = true;
+    return NOERROR;
+}
+
+ECode Collections::EmptyList::Contains(
+    /* [in] */ IInterface* obj,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    *result = false;
+    return NOERROR;
+}
+
+ECode Collections::EmptyList::ContainsAll(
+    /* [in] */ ICollection* c,
+    /* [out] */ Boolean* result)
+{
+    return c->IsEmpty(result);
+}
+
+ECode Collections::EmptyList::ToArray(
+    /* [out, callee] */ Array<IInterface*>* objs)
+{
+    VALIDATE_NOT_NULL(objs);
+
+    *objs = Array<IInterface*>(0);
+    return NOERROR;
+}
+
+ECode Collections::EmptyList::ToArray(
+    /* [in] */ const InterfaceID& iid,
+    /* [out, callee] */ Array<IInterface*>* objs)
+{
+    VALIDATE_NOT_NULL(objs);
+
+    *objs = Array<IInterface*>(0);
+    return NOERROR;
+}
+
+ECode Collections::EmptyList::Get(
+    /* [in] */ Integer index,
+    /* [out] */ IInterface** obj)
+{
+    return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+}
+
+ECode Collections::EmptyList::Equals(
+    /* [in] */ IInterface* obj,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    IList* other = IList::Probe(obj);
+    if (other == nullptr) {
+        *result = false;
+        return NOERROR;
+    }
+    return other->IsEmpty(result);
+}
+
+ECode Collections::EmptyList::GetHashCode(
+    /* [out] */ Integer* hash)
+{
+    VALIDATE_NOT_NULL(hash);
+
+    *hash = 1;
+    return NOERROR;
+}
+
+ECode Collections::EmptyList::AddAll(
+    /* [in] */ ICollection* c,
+    /* [out] */ Boolean* result)
+{
+    return AbstractCollection::AddAll(c, result);
 }
 
 }
