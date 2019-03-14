@@ -508,7 +508,9 @@ String CodeGenerator::GenType(
             builder.Append("ECode");
             break;
         case CcmTypeKind::Enum:
-            builder.Append(mc->mEnumerations[mt->mIndex]->mName);
+            builder.AppendFormat("%s%s",
+                    mc->mEnumerations[mt->mIndex]->mNamespace,
+                    mc->mEnumerations[mt->mIndex]->mName);
             break;
         case CcmTypeKind::Array:
             if ((attr & Parameter::ATTR_MASK) == Parameter::IN) {
