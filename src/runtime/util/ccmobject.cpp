@@ -58,6 +58,7 @@ ECode Object::GetInterfaceID(
         *iid = IID_IWeakReferenceSource;
     }
     else {
+        *iid = InterfaceID::Null;
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     return NOERROR;
@@ -75,6 +76,9 @@ ECode Object::AttachMetadata(
 ECode Object::GetCoclassID(
     /* [out] */ CoclassID* cid)
 {
+    VALIDATE_NOT_NULL(cid);
+
+    *cid = CoclassID::Null;
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
@@ -158,6 +162,20 @@ void Object::OnLastWeakRef(
 {
     if (UNLIKELY(mRefObserver != nullptr)) {
         mRefObserver->OnLastWeakRef(this);
+    }
+}
+
+ECode Object::GetCoclassID(
+    /* [in] */ IInterface* obj,
+    /* [out] */ CoclassID* cid)
+{
+    IObject* o = IObject::Probe(obj);
+    if (o != nullptr) {
+        return o->GetCoclassID(cid);
+    }
+    else {
+        *cid = CoclassID::Null;
+        return NOERROR;
     }
 }
 

@@ -63,6 +63,10 @@ public:
     void OnLastWeakRef(
         /* [in] */ const void* id) override;
 
+    static ECode GetCoclassID(
+        /* [in] */ IInterface* obj,
+        /* [out] */ CoclassID* cid);
+
     static AutoPtr<IMetaCoclass> GetCoclass(
         /* [in] */ IInterface* obj);
 
