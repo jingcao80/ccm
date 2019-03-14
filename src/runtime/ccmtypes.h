@@ -40,6 +40,8 @@ struct CoclassID
 {
     Uuid                mUuid;
     const ComponentID*  mCid;
+
+    static const CoclassID Null;
 };
 
 inline bool operator==(
@@ -60,6 +62,8 @@ struct InterfaceID
 {
     Uuid                mUuid;
     const ComponentID*  mCid;
+
+    static const InterfaceID Null;
 };
 
 inline bool operator==(
