@@ -58,6 +58,9 @@ public:
         /* [in] */ Integer style,
         /* [out] */ String* timeFormat) override;
 
+    ECode GetCurrencyPattern(
+        /* [out] */ String* pattern) override;
+
     ECode GetCurrencySymbol(
         /* [out] */ String* currencySymbol) override;
 
@@ -76,6 +79,9 @@ public:
     ECode GetInfinity(
         /* [out] */ String* infinity) override;
 
+    ECode GetIntegerPattern(
+        /* [out] */ String* pattern) override;
+
     ECode GetInternationalCurrencySymbol(
         /* [out] */ String* intlCurrencySymbol) override;
 
@@ -88,11 +94,17 @@ public:
     ECode GetNaN(
         /* [out] */ String* nan) override;
 
+    ECode GetNumberPattern(
+        /* [out] */ String* pattern) override;
+
     ECode GetPatternSeparator(
         /* [out] */ Char* patSeparator) override;
 
     ECode GetPercent(
         /* [out] */ String* percent) override;
+
+    ECode GetPercentPattern(
+        /* [out] */ String* pattern) override;
 
     ECode GetPerMill(
         /* [out] */ Char* perMill) override;

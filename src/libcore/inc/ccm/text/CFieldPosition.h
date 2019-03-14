@@ -14,41 +14,23 @@
 // limitations under the License.
 //=========================================================================
 
-interface ccm::text::IDecimalFormatSymbols;
+#ifndef __CCM_TEXT_CFIELDPOSITION_H__
+#define __CCM_TEXT_CFIELDPOSITION_H__
+
+#include "ccm/text/FieldPosition.h"
+#include "_ccm_text_CFieldPosition.h"
 
 namespace ccm {
 namespace text {
 
-/*
- * @Involve interface ccm::text::INumberFormat;
- * @Involve interface ccm::text::IFormat;
- * @Involve interface ccm::io::ISerializable;
- * @Involve interface ccm::core::ICloneable;
- */
-[
-    uuid(b1615f6c-db57-44fd-aa14-fd68dcc56992),
-    version(0.1.0)
-]
-interface IDecimalFormat
+Coclass(CFieldPosition)
+    , public FieldPosition
 {
-    GetDecimalFormatSymbols(
-        [out] IDecimalFormatSymbols** symbols);
-
-    GetGroupingSize(
-        [out] Integer* size);
-
-    IsGroupingUsed(
-        [out] Boolean* used);
-
-    SetDecimalSeparatorAlwaysShown(
-        [in] Boolean newValue);
-
-    SetParseIntegerOnly(
-        [in] Boolean value);
-
-    ToPattern(
-        [out] String* pattern);
-}
+public:
+    CCM_OBJECT_DECL();
+};
 
 }
 }
+
+#endif // __CCM_TEXT_CFIELDPOSITION_H__

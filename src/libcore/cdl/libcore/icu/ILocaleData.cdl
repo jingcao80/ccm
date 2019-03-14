@@ -25,6 +25,9 @@ namespace icu {
 ]
 interface ILocaleData
 {
+    GetCurrencyPattern(
+        [out] String* pattern);
+
     GetCurrencySymbol(
         [out] String* currencySymbol);
 
@@ -47,6 +50,9 @@ interface ILocaleData
     GetInfinity(
         [out] String* infinity);
 
+    GetIntegerPattern(
+        [out] String* pattern);
+
     GetInternationalCurrencySymbol(
         [out] String* intlCurrencySymbol);
 
@@ -59,11 +65,17 @@ interface ILocaleData
     GetNaN(
         [out] String* nan);
 
+    GetNumberPattern(
+        [out] String* pattern);
+
     GetPatternSeparator(
         [out] Char* patSeparator);
 
     GetPercent(
         [out] String* percent);
+
+    GetPercentPattern(
+        [out] String* pattern);
 
     GetPerMill(
         [out] Char* perMill);

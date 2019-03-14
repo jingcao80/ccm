@@ -96,6 +96,28 @@ coclass CDateFormatField
 }
 
 [
+    uuid(5eade1e5-5963-4f1b-bfc1-9f1f9ae4b52f),
+    version(0.1.0)
+]
+coclass CDecimalFormat
+{
+    Constructor();
+
+    Constructor(
+        [in] String pattern);
+
+    Constructor(
+        [in] String pattern,
+        [in] IDecimalFormatSymbols* symbols);
+
+    interface ccm::text::IDecimalFormat;
+    interface ccm::text::INumberFormat;
+    interface ccm::text::IFormat;
+    interface ccm::io::ISerializable;
+    interface ccm::core::ICloneable;
+}
+
+[
     uuid(81e790a2-a790-4776-b726-8502d7271000),
     version(0.1.0)
 ]
@@ -109,6 +131,25 @@ coclass CDecimalFormatSymbols
     interface IDecimalFormatSymbols;
     interface ICloneable;
     interface ISerializable;
+}
+
+[
+    uuid(6081b56d-7a1b-4676-8122-f28f2e319c49),
+    version(0.1.0)
+]
+coclass CFieldPosition
+{
+    Constructor(
+        [in] Integer field);
+
+    Constructor(
+        [in] IFormatField* attribute);
+
+    Constructor(
+        [in] IFormatField* attribute,
+        [in] Integer field);
+
+    interface IFieldPosition;
 }
 
 [

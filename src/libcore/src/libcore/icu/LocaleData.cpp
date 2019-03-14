@@ -459,6 +459,15 @@ ECode LocaleData::InitLocaleData(
     return NOERROR;
 }
 
+ECode LocaleData::GetCurrencyPattern(
+    /* [out] */ String* pattern)
+{
+    VALIDATE_NOT_NULL(pattern);
+
+    *pattern = mCurrencyPattern;
+    return NOERROR;
+}
+
 ECode LocaleData::GetCurrencySymbol(
     /* [out] */ String* currencySymbol)
 {
@@ -514,6 +523,15 @@ ECode LocaleData::GetInfinity(
     return NOERROR;
 }
 
+ECode LocaleData::GetIntegerPattern(
+    /* [out] */ String* pattern)
+{
+    VALIDATE_NOT_NULL(pattern);
+
+    *pattern = mIntegerPattern;
+    return NOERROR;
+}
+
 ECode LocaleData::GetInternationalCurrencySymbol(
     /* [out] */ String* intlCurrencySymbol)
 {
@@ -551,6 +569,15 @@ ECode LocaleData::GetNaN(
     return NOERROR;
 }
 
+ECode LocaleData::GetNumberPattern(
+    /* [out] */ String* pattern)
+{
+    VALIDATE_NOT_NULL(pattern);
+
+    *pattern = mNumberPattern;
+    return NOERROR;
+}
+
 ECode LocaleData::GetPatternSeparator(
     /* [out] */ Char* patSeparator)
 {
@@ -566,6 +593,15 @@ ECode LocaleData::GetPercent(
     VALIDATE_NOT_NULL(percent);
 
     *percent = mPercent;
+    return NOERROR;
+}
+
+ECode LocaleData::GetPercentPattern(
+    /* [out] */ String* pattern)
+{
+    VALIDATE_NOT_NULL(pattern);
+
+    *pattern = mPercentPattern;
     return NOERROR;
 }
 

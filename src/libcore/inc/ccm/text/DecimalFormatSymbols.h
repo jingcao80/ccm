@@ -164,7 +164,6 @@ public:
     ECode GetHashCode(
         /* [out] */ Integer* hash) override;
 
-
     static Char MaybeStripMarkers(
         /* [in] */ const String& symbol,
         /* [in] */ Char fallback);
@@ -173,11 +172,7 @@ protected:
     ECode CloneImpl(
         /* [in] */ IDecimalFormatSymbols* newObj);
 
-
-
 private:
-
-
     void Initialize(
         /* [in] */ ILocale* locale);
 

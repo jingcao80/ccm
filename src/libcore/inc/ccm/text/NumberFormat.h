@@ -18,26 +18,235 @@
 #define __CCM_TEXT_NUMBERFORMAT_H__
 
 #include "ccm/core/SyncObject.h"
+#include "ccm/text/Format.h"
+#include "ccm.core.INumber.h"
+#include "ccm.core.IStringBuffer.h"
 #include "ccm.text.INumberFormat.h"
+#include "ccm.util.ICurrency.h"
+#include "ccm.util.IHashtable.h"
 #include "ccm.util.ILocale.h"
 
+using ccm::core::INumber;
+using ccm::core::IStringBuffer;
 using ccm::core::SyncObject;
+using ccm::math::RoundingMode;
+using ccm::util::ICurrency;
+using ccm::util::IHashtable;
 using ccm::util::ILocale;
 
 namespace ccm {
 namespace text {
 
 class NumberFormat
-    : public SyncObject
+    : public BaseFormat
+    , public INumberFormat
 {
 public:
+    CCM_INTERFACE_DECL();
+
+    ECode Format(
+        /* [in] */ IInterface* number,
+        /* [in, out] */ IStringBuffer* toAppendTo,
+        /* [in] */ IFieldPosition* pos) override;
+
+    ECode ParseObject(
+        /* [in] */ const String& source,
+        /* [in] */ IParsePosition* pos,
+        /* [out] */ IInterface** object) override;
+
+    ECode Format(
+        /* [in] */ Double number,
+        /* [out] */ String* str) override;
+
+    ECode Format(
+        /* [in] */ Long number,
+        /* [out] */ String* str) override;
+
+    ECode Parse(
+        /* [in] */ const String& source,
+        /* [out] */ INumber** number) override;
+
+    ECode IsParseIntegerOnly(
+        /* [out] */ Boolean* value) override;
+
+    ECode SetParseIntegerOnly(
+        /* [in] */ Boolean value) override;
+
+    static ECode GetInstance(
+        /* [out] */ INumberFormat** instance);
+
+    static ECode GetInstance(
+        /* [in] */ ILocale* locale,
+        /* [out] */ INumberFormat** instance);
+
+    static ECode GetNumberInstance(
+        /* [out] */ INumberFormat** instance);
+
+    static ECode GetNumberInstance(
+        /* [in] */ ILocale* locale,
+        /* [out] */ INumberFormat** instance);
+
+    static ECode GetIntegerInstance(
+        /* [out] */ INumberFormat** instance);
+
     static ECode GetIntegerInstance(
         /* [in] */ ILocale* locale,
-        /* [out] */ INumberFormat** instance)
-    {
-        return NOERROR;
-    }
+        /* [out] */ INumberFormat** instance);
+
+    static ECode GetCurrencyInstance(
+        /* [out] */ INumberFormat** instance);
+
+    static ECode GetCurrencyInstance(
+        /* [in] */ ILocale* locale,
+        /* [out] */ INumberFormat** instance);
+
+    static ECode GetPercentInstance(
+        /* [out] */ INumberFormat** instance);
+
+    static ECode GetPercentInstance(
+        /* [in] */ ILocale* locale,
+        /* [out] */ INumberFormat** instance);
+
+    static Array<ILocale*> GetAvailableLocales();
+
+    ECode GetHashCode(
+        /* [out] */ Integer* hash) override;
+
+    ECode Equals(
+        /* [in] */ IInterface* obj,
+        /* [out] */ Boolean* same) override;
+
+    ECode IsGroupingUsed(
+        /* [out] */ Boolean* value) override;
+
+    ECode SetGroupingUsed(
+        /* [in] */ Boolean value) override;
+
+    ECode GetMaximumIntegerDigits(
+        /* [out] */ Integer* value) override;
+
+    ECode SetMaximumIntegerDigits(
+        /* [in] */ Integer newValue) override;
+
+    ECode GetMinimumIntegerDigits(
+        /* [out] */ Integer* value) override;
+
+    ECode SetMinimumIntegerDigits(
+        /* [in] */ Integer newValue) override;
+
+    ECode GetMaximumFractionDigits(
+        /* [out] */ Integer* value) override;
+
+    ECode SetMaximumFractionDigits(
+        /* [in] */ Integer newValue) override;
+
+    ECode GetMinimumFractionDigits(
+        /* [out] */ Integer* value) override;
+
+    ECode SetMinimumFractionDigits(
+        /* [in] */ Integer newValue) override;
+
+    ECode GetCurrency(
+        /* [out] */ ICurrency** currency) override;
+
+    ECode SetCurrency(
+        /* [in] */ ICurrency* currency) override;
+
+    ECode GetRoundingMode(
+        /* [out] */ RoundingMode* mode) override;
+
+    ECode SetRoundingMode(
+        /* [in] */ RoundingMode mode) override;
+
+
+    using INumberFormat::Format;
+
+    using INumberFormat::Parse;
+
+protected:
+    NumberFormat();
+
+    ECode CloneImpl(
+        /* [in] */ INumberFormat* newObj);
+
+private:
+    static ECode GetInstance(
+        /* [in] */ ILocale* desiredLocale,
+        /* [in] */ Integer choice,
+        /* [out] */ INumberFormat** instance);
+
+    static AutoPtr<IHashtable> GetCachedLocaleData();
+
+private:
+    // Constants used by factory methods to specify a style of format.
+    static constexpr Integer NUMBERSTYLE = 0;
+    static constexpr Integer CURRENCYSTYLE = 1;
+    static constexpr Integer PERCENTSTYLE = 2;
+    static constexpr Integer INTEGERSTYLE = 3;
+
+    /**
+     * True if the grouping (i.e. thousands) separator is used when
+     * formatting and parsing numbers.
+     */
+    Boolean mGroupingUsed = true;
+
+    /**
+     * The maximum number of digits allowed in the integer portion of a
+     * number.
+     */
+    Byte mMaxIntegerDigits = 40;
+
+    /**
+     * The minimum number of digits allowed in the integer portion of a
+     * number.
+     */
+    Byte mMinIntegerDigits = 1;
+
+    /**
+     * The maximum number of digits allowed in the fractional portion of a
+     * number.
+     */
+    Byte mMaxFractionDigits = 3;
+
+    /**
+     * The minimum number of digits allowed in the fractional portion of a
+     * number.
+     */
+    Byte mMinFractionDigits = 0;
+
+    /**
+     * True if this format will parse numbers as integers only.
+     */
+    Boolean mParseIntegerOnly = false;
+
+    /**
+     * The maximum number of digits allowed in the integer portion of a
+     * number.
+     */
+    Integer mMaximumIntegerDigits = 40;
+
+    /**
+     * The minimum number of digits allowed in the integer portion of a
+     * number.
+     */
+    Integer mMinimumIntegerDigits = 1;
+
+    /**
+     * The maximum number of digits allowed in the fractional portion of a
+     * number.
+     */
+    Integer mMaximumFractionDigits = 3;
+
+    /**
+     * The minimum number of digits allowed in the fractional portion of a
+     * number.
+     */
+    Integer mMinimumFractionDigits = 0;
+
 };
+
+inline NumberFormat::NumberFormat()
+{}
 
 }
 }

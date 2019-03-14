@@ -33,6 +33,7 @@ set(SOURCES
     DecimalFormatSymbols.cpp
     DontCareFieldPosition.cpp
     FieldPosition.cpp
+    Format.cpp
     MessageFormat.cpp
     NumberFormat.cpp
     ParsePosition.cpp

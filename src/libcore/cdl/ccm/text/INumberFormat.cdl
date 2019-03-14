@@ -18,6 +18,8 @@ interface ccm::core::INumber;
 interface ccm::core::IStringBuffer;
 interface ccm::text::IFieldPosition;
 interface ccm::text::IParsePosition;
+interface ccm::util::ICurrency;
+enum ccm::math::RoundingMode;
 
 namespace ccm {
 namespace text {
@@ -35,6 +37,14 @@ interface INumberFormat
 {
     Format(
         [in] Long number,
+        [out] String* str);
+
+    Format(
+        [in] Double number,
+        [out] String* str);
+
+    Format(
+        [in] Long number,
         [in, out] IStringBuffer* toAppendTo,
         [in] IFieldPosition* pos);
 
@@ -42,6 +52,30 @@ interface INumberFormat
         [in] Double number,
         [in, out] IStringBuffer* toAppendTo,
         [in] IFieldPosition* pos);
+
+    GetCurrency(
+        [out] ICurrency** currency);
+
+    GetMaximumFractionDigits(
+        [out] Integer* value);
+
+    GetMinimumFractionDigits(
+        [out] Integer* value);
+
+    GetMaximumIntegerDigits(
+        [out] Integer* value);
+
+    GetMinimumIntegerDigits(
+        [out] Integer* value);
+
+    GetRoundingMode(
+        [out] RoundingMode* mode);
+
+    IsGroupingUsed(
+        [out] Boolean* value);
+
+    IsParseIntegerOnly(
+        [out] Boolean* value);
 
     Parse(
         [in] String source,
@@ -52,14 +86,29 @@ interface INumberFormat
         [in] IParsePosition* parsePosition,
         [out] INumber** number);
 
+    SetCurrency(
+        [in] ICurrency* currency);
+
     SetGroupingUsed(
-        [in] Boolean value);
+        [in] Boolean newValue);
+
+    SetMaximumFractionDigits(
+        [in] Integer newValue);
+
+    SetMinimumFractionDigits(
+        [in] Integer newValue);
 
     SetMaximumIntegerDigits(
         [in] Integer newValue);
 
     SetMinimumIntegerDigits(
         [in] Integer newValue);
+
+    SetRoundingMode(
+        [in] RoundingMode mode);
+
+    SetParseIntegerOnly(
+        [in] Boolean newValue);
 }
 
 }

@@ -17,6 +17,7 @@
 #include "ccm/core/CoreUtils.h"
 #include "ccm/text/CDecimalFormatSymbols.h"
 #include "ccm/text/DecimalFormatSymbols.h"
+#include "ccm/text/StringArrayWrapper.h"
 #include "ccm/util/Currency.h"
 #include "ccm/util/CLocale.h"
 #include "ccm/util/concurrent/CConcurrentHashMap.h"
@@ -41,54 +42,6 @@ using libcore::icu::LocaleData;
 
 namespace ccm {
 namespace text {
-
-class StringArrayWrapper
-    : public LightRefBase
-    , public IInterface
-{
-public:
-    StringArrayWrapper(
-        /* [in] */ const Array<String>& values)
-        : mValues(values)
-    {}
-
-    Integer AddRef(
-        /* [in] */ HANDLE id)
-    {
-        return LightRefBase::AddRef(id);
-    }
-
-    Integer Release(
-        /* [in] */ HANDLE id)
-    {
-        return LightRefBase::Release(id);
-    }
-
-    IInterface* Probe(
-        /* [in] */ const InterfaceID& iid)
-    {
-        if (iid == IID_IInterface) {
-            return (IInterface*)this;
-        }
-        return nullptr;
-    }
-
-    ECode GetInterfaceID(
-        /* [in] */ IInterface* object,
-        /* [out] */ InterfaceID* iid)
-    {
-        VALIDATE_NOT_NULL(iid);
-
-        if (object == (IInterface*)this) {
-            *iid = IID_IInterface;
-            return NOERROR;
-        }
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-
-public:
-    Array<String> mValues;
-};
 
 AutoPtr<IConcurrentHashMap> CreateConcurrentHashMap()
 {
