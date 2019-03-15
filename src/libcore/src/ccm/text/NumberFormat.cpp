@@ -462,6 +462,90 @@ ECode NumberFormat::GetInstance(
     return NOERROR;
 }
 
+//---------------------------------------------------------------------------
+
+AutoPtr<INumberFormatField> NumberFormat::Field::GetINTEGER()
+{
+    static const AutoPtr<INumberFormatField> INTEGER = Create(String("integer"));
+    return INTEGER;
+}
+
+AutoPtr<INumberFormatField> NumberFormat::Field::GetFRACTION()
+{
+    static const AutoPtr<INumberFormatField> FRACTION = Create(String("fraction"));
+    return FRACTION;
+}
+
+AutoPtr<INumberFormatField> NumberFormat::Field::GetEXPONENT()
+{
+    static const AutoPtr<INumberFormatField> EXPONENT = Create(String("exponent"));
+    return EXPONENT;
+}
+
+AutoPtr<INumberFormatField> NumberFormat::Field::GetDECIMAL_SEPARATOR()
+{
+    static const AutoPtr<INumberFormatField> DECIMAL_SEPARATOR = Create(String("decimal separator"));
+    return DECIMAL_SEPARATOR;
+}
+
+AutoPtr<INumberFormatField> NumberFormat::Field::GetSIGN()
+{
+    static const AutoPtr<INumberFormatField> SIGN = Create(String("sign"));
+    return SIGN;
+}
+
+AutoPtr<INumberFormatField> NumberFormat::Field::GetGROUPING_SEPARATOR()
+{
+    static const AutoPtr<INumberFormatField> GROUPING_SEPARATOR = Create(String("grouping separato"));
+    return GROUPING_SEPARATOR;
+}
+
+AutoPtr<INumberFormatField> NumberFormat::Field::GetEXPONENT_SYMBOL()
+{
+    static const AutoPtr<INumberFormatField> EXPONENT_SYMBOL = Create(String("exponent symbol"));
+    return EXPONENT_SYMBOL;
+}
+
+AutoPtr<INumberFormatField> NumberFormat::Field::GetPERCENT()
+{
+    static const AutoPtr<INumberFormatField> PERCENT = Create(String("percent"));
+    return PERCENT;
+}
+
+AutoPtr<INumberFormatField> NumberFormat::Field::GetPERMILLE()
+{
+    static const AutoPtr<INumberFormatField> PERMILLE = Create(String("per mille"));
+    return PERMILLE;
+}
+
+AutoPtr<INumberFormatField> NumberFormat::Field::GetCURRENCY()
+{
+    static const AutoPtr<INumberFormatField> CURRENCY = Create(String("currency"));
+    return CURRENCY;
+}
+
+AutoPtr<INumberFormatField> NumberFormat::Field::GetEXPONENT_SIGN()
+{
+    static const AutoPtr<INumberFormatField> EXPONENT_SIGN = Create(String("exponent sign"));
+    return EXPONENT_SIGN;
+}
+
+CCM_INTERFACE_IMPL_1(NumberFormat::Field, BaseFormat::Field, INumberFormatField);
+
+ECode NumberFormat::Field::Constructor(
+    /* [in] */ const String& name)
+{
+    return BaseFormat::Field::Constructor(name);
+}
+
+AutoPtr<INumberFormatField> NumberFormat::Field::Create(
+    /* [in] */ const String& name)
+{
+    AutoPtr<NumberFormat::Field> field = new NumberFormat::Field();
+    field->Constructor(name);
+    return (INumberFormatField*)field.Get();
+}
+
 }
 }
 

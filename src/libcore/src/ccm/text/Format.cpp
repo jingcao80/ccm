@@ -116,5 +116,15 @@ ECode BaseFormat::CreateAttributedCharacterIterator(
     return as->GetIterator(it);
 }
 
+//-----------------------------------------------------------------------------
+
+CCM_INTERFACE_IMPL_1(BaseFormat::Field, AttributedCharacterIteratorAttribute, IFormatField);
+
+ECode BaseFormat::Field::Constructor(
+    /* [in] */ const String& fieldName)
+{
+    return AttributedCharacterIteratorAttribute::Constructor(fieldName);
+}
+
 }
 }

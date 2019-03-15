@@ -18,9 +18,11 @@
 #define __CCM_TEXT_BASEFORMAT_H__
 
 #include "ccm/core/SyncObject.h"
+#include "ccm/text/AttributedCharacterIteratorAttribute.h"
 #include "ccm.core.ICloneable.h"
 #include "ccm.io.ISerializable.h"
 #include "ccm.text.IFormat.h"
+#include "ccm.text.IFormatField.h"
 
 using ccm::core::ICloneable;
 using ccm::core::SyncObject;
@@ -35,6 +37,18 @@ class BaseFormat
     , public ISerializable
     , public ICloneable
 {
+public:
+    class Field
+        : public AttributedCharacterIteratorAttribute
+        , public IFormatField
+    {
+    protected:
+        CCM_INTERFACE_DECL();
+
+        ECode Constructor(
+            /* [in] */ const String& fieldName);
+    };
+
 public:
     CCM_INTERFACE_DECL();
 

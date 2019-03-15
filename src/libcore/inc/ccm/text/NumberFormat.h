@@ -22,6 +22,7 @@
 #include "ccm.core.INumber.h"
 #include "ccm.core.IStringBuffer.h"
 #include "ccm.text.INumberFormat.h"
+#include "ccm.text.INumberFormatField.h"
 #include "ccm.util.ICurrency.h"
 #include "ccm.util.IHashtable.h"
 #include "ccm.util.ILocale.h"
@@ -41,6 +42,45 @@ class NumberFormat
     : public BaseFormat
     , public INumberFormat
 {
+public:
+    class Field
+        : public BaseFormat::Field
+        , public INumberFormatField
+    {
+    public:
+        CCM_INTERFACE_DECL();
+
+        static AutoPtr<INumberFormatField> GetINTEGER();
+
+        static AutoPtr<INumberFormatField> GetFRACTION();
+
+        static AutoPtr<INumberFormatField> GetEXPONENT();
+
+        static AutoPtr<INumberFormatField> GetDECIMAL_SEPARATOR();
+
+        static AutoPtr<INumberFormatField> GetSIGN();
+
+        static AutoPtr<INumberFormatField> GetGROUPING_SEPARATOR();
+
+        static AutoPtr<INumberFormatField> GetEXPONENT_SYMBOL();
+
+        static AutoPtr<INumberFormatField> GetPERCENT();
+
+        static AutoPtr<INumberFormatField> GetPERMILLE();
+
+        static AutoPtr<INumberFormatField> GetCURRENCY();
+
+        static AutoPtr<INumberFormatField> GetEXPONENT_SIGN();
+
+    protected:
+        ECode Constructor(
+            /* [in] */ const String& name);
+
+    private:
+        static AutoPtr<INumberFormatField> Create(
+            /* [in] */ const String& name);
+    };
+
 public:
     CCM_INTERFACE_DECL();
 

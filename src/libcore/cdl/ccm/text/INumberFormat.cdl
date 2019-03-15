@@ -25,6 +25,17 @@ namespace ccm {
 namespace text {
 
 /*
+ * @Involve interface ccm::text::IFormatField;
+ * @Involve interface ccm::text::IAttributedCharacterIteratorAttribute;
+ */
+[
+    uuid(ac155c23-610f-4673-9597-e1f18f85288c),
+    version(0.1.0)
+]
+interface INumberFormatField
+{}
+
+/*
  * @Involve interface ccm::text::IFormat;
  * @Involve interface ccm::io::ISerializable;
  * @Involve interface ccm::core::ICloneable;
