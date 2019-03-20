@@ -175,6 +175,13 @@ public:
     inline Integer Release(
         /* [in] */ HANDLE id = 0) const;
 
+    inline IInterface* Probe(
+        /* [in] */ const InterfaceID& iid) const;
+
+    inline ECode GetInterfaceID(
+        /* [in] */ IInterface* object,
+        /* [out] */ InterfaceID* iid) const;
+
     inline Integer GetStrongCount() const;
 
 protected:
@@ -207,6 +214,19 @@ Integer LightRefBase::Release(
         delete this;
     }
     return c - 1;
+}
+
+IInterface* LightRefBase::Probe(
+    /* [in] */ const InterfaceID& iid) const
+{
+    return nullptr;
+}
+
+ECode LightRefBase::GetInterfaceID(
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid) const
+{
+    return E_ILLEGAL_ARGUMENT_EXCEPTION;
 }
 
 Integer LightRefBase::GetStrongCount() const

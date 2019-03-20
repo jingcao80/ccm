@@ -705,7 +705,7 @@ ECode ConcurrentLinkedQueue::RetainAll(
 
 //-------------------------------------------------------------------------
 
-CCM_INTERFACE_IMPL_LIGHT_1(ConcurrentLinkedQueue::Itr, IIterator);
+CCM_INTERFACE_IMPL_LIGHT_1(ConcurrentLinkedQueue::Itr, LightRefBase, IIterator);
 
 ConcurrentLinkedQueue::Itr::Itr(
     /* [in] */ ConcurrentLinkedQueue* owner)

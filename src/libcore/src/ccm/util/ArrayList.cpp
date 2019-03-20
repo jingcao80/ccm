@@ -586,7 +586,7 @@ ECode ArrayList::GetHashCode(
 
 //---------------------------------------------------------------------------------
 
-CCM_INTERFACE_IMPL_LIGHT_1(ArrayList::Itr, IIterator);
+CCM_INTERFACE_IMPL_LIGHT_1(ArrayList::Itr, LightRefBase, IIterator);
 
 ECode ArrayList::Itr::HasNext(
     /* [out] */ Boolean* result)
@@ -641,7 +641,7 @@ ECode ArrayList::Itr::Remove()
 
 //---------------------------------------------------------------------------------
 
-CCM_INTERFACE_IMPL_1(ArrayList::ListItr, Itr, IListIterator);
+CCM_INTERFACE_IMPL_LIGHT_1(ArrayList::ListItr, Itr, IListIterator);
 
 ECode ArrayList::ListItr::HasPrevious(
     /* [out] */ Boolean* result)

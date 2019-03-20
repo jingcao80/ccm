@@ -438,7 +438,7 @@ ECode AbstractList::ToArray(
 
 //-------------------------------------------------------------------------
 
-CCM_INTERFACE_IMPL_LIGHT_1(AbstractList::Itr, IIterator);
+CCM_INTERFACE_IMPL_LIGHT_1(AbstractList::Itr, LightRefBase, IIterator);
 
 ECode AbstractList::Itr::HasNext(
     /* [out] */ Boolean* result)
@@ -499,7 +499,7 @@ ECode AbstractList::Itr::CheckForComodification()
 
 //-------------------------------------------------------------------------
 
-CCM_INTERFACE_IMPL_1(AbstractList::ListItr, Itr, IListIterator);
+CCM_INTERFACE_IMPL_LIGHT_1(AbstractList::ListItr, Itr, IListIterator);
 
 ECode AbstractList::ListItr::HasPrevious(
     /* [out] */ Boolean* result)

@@ -146,7 +146,7 @@ void ExpiringCache::Cleanup()
 
 //-------------------------------------------------------------------------
 
-CCM_INTERFACE_IMPL_LIGHT_1(ExpiringCache::Entry, IInterface);
+CCM_INTERFACE_IMPL_LIGHT_1(ExpiringCache::Entry, LightRefBase, IInterface);
 
 }
 }

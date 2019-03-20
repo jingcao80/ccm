@@ -459,7 +459,7 @@ ECode LinkedHashMap::LinkedEntrySet::Remove(
 
 //--------------------------------------------------------------------------
 
-CCM_INTERFACE_IMPL_LIGHT_1(LinkedHashMap::LinkedHashIterator, IIterator);
+CCM_INTERFACE_IMPL_LIGHT_1(LinkedHashMap::LinkedHashIterator, LightRefBase, IIterator);
 
 ECode LinkedHashMap::LinkedHashIterator::HasNext(
     /* [out] */ Boolean* result)

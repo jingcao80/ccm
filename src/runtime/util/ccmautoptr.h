@@ -187,8 +187,10 @@ template<class T>
 void AutoPtr<T>::MoveTo(
     /* [out] */ T** other)
 {
-    *other = mPtr;
-    mPtr = nullptr;
+    if (other != nullptr) {
+        *other = mPtr;
+        mPtr = nullptr;
+    }
 }
 
 template<class T>

@@ -2114,7 +2114,7 @@ ECode ConcurrentHashMap::BaseIterator::Remove()
 
 //-------------------------------------------------------------------------
 
-CCM_INTERFACE_IMPL_LIGHT_2(ConcurrentHashMap::KeyIterator, IIterator, IEnumeration);
+CCM_INTERFACE_IMPL_LIGHT_2(ConcurrentHashMap::KeyIterator, LightRefBase, IIterator, IEnumeration);
 
 ECode ConcurrentHashMap::KeyIterator::Next(
     /* [out] */ IInterface** object)
@@ -2157,7 +2157,7 @@ ECode ConcurrentHashMap::KeyIterator::HasMoreElements(
 
 //-------------------------------------------------------------------------
 
-CCM_INTERFACE_IMPL_LIGHT_2(ConcurrentHashMap::ValueIterator, IIterator, IEnumeration);
+CCM_INTERFACE_IMPL_LIGHT_2(ConcurrentHashMap::ValueIterator, LightRefBase, IIterator, IEnumeration);
 
 ECode ConcurrentHashMap::ValueIterator::Next(
     /* [out] */ IInterface** object)
@@ -2200,7 +2200,7 @@ ECode ConcurrentHashMap::ValueIterator::HasMoreElements(
 
 //-------------------------------------------------------------------------
 
-CCM_INTERFACE_IMPL_LIGHT_1(ConcurrentHashMap::EntryIterator, IIterator);
+CCM_INTERFACE_IMPL_LIGHT_1(ConcurrentHashMap::EntryIterator, LightRefBase, IIterator);
 
 ECode ConcurrentHashMap::EntryIterator::Next(
     /* [out] */ IInterface** object)

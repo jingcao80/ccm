@@ -765,7 +765,7 @@ ECode Hashtable::ValueCollection::Clear()
 
 //-------------------------------------------------------------------------
 
-CCM_INTERFACE_IMPL_LIGHT_1(Hashtable::HashtableEntry, IMapEntry);
+CCM_INTERFACE_IMPL_LIGHT_1(Hashtable::HashtableEntry, LightRefBase, IMapEntry);
 
 AutoPtr<Hashtable::HashtableEntry> Hashtable::HashtableEntry::Clone()
 {
@@ -845,7 +845,7 @@ String Hashtable::HashtableEntry::ToString()
 
 //-------------------------------------------------------------------------
 
-CCM_INTERFACE_IMPL_LIGHT_2(Hashtable::Enumerator, IEnumeration, IIterator);
+CCM_INTERFACE_IMPL_LIGHT_2(Hashtable::Enumerator, LightRefBase, IEnumeration, IIterator);
 
 ECode Hashtable::Enumerator::HasMoreElements(
     /* [out] */ Boolean* result)

@@ -19,7 +19,7 @@
 
 namespace ccm {
 
-CCM_INTERFACE_IMPL_LIGHT_1(CMetaEnumerator, IMetaEnumerator)
+CCM_INTERFACE_IMPL_LIGHT_1(CMetaEnumerator, LightRefBase, IMetaEnumerator)
 
 CMetaEnumerator::CMetaEnumerator(
     /* [in] */ CMetaEnumeration* menObj,

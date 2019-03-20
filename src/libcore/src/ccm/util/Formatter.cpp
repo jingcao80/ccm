@@ -613,7 +613,7 @@ String Formatter::Flags::ToString()
 extern const InterfaceID Formatter::IID_IFormatString =
     {{0xd6dc3cb6,0x3ca2,0x4066,0xa773,{0xe,0x8,0x9,0xe,0x6,0x9,0xb,0x0,0x0,0xa,0x6,0xd}}, &CID_libcore};
 
-CCM_INTERFACE_IMPL_LIGHT_1(Formatter::FixedString, IFormatString);
+CCM_INTERFACE_IMPL_LIGHT_1(Formatter::FixedString, LightRefBase, IFormatString);
 
 ECode Formatter::FixedString::GetIndex(
     /* [out] */ Integer* idx)
@@ -643,7 +643,7 @@ ECode Formatter::FixedString::ToString(
 
 //-------------------------------------------------------------------------
 
-CCM_INTERFACE_IMPL_LIGHT_1(Formatter::FormatSpecifier, IFormatString);
+CCM_INTERFACE_IMPL_LIGHT_1(Formatter::FormatSpecifier, LightRefBase, IFormatString);
 
 ECode Formatter::FormatSpecifier::Constructor(
     /* [in] */ Formatter* owner,

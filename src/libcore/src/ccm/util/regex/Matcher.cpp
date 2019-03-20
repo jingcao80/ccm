@@ -842,7 +842,7 @@ void Matcher::UseTransparentBoundsImpl(
 }
 
 //-------------------------------------------------------------------
-CCM_INTERFACE_IMPL_LIGHT_1(Matcher::OffsetBasedMatchResult, IMatchResult);
+CCM_INTERFACE_IMPL_LIGHT_1(Matcher::OffsetBasedMatchResult, LightRefBase, IMatchResult);
 
 Matcher::OffsetBasedMatchResult::OffsetBasedMatchResult(
     /* [in] */ const String& input,

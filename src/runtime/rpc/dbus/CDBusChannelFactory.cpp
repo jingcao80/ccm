@@ -26,7 +26,7 @@
 
 namespace ccm {
 
-CCM_INTERFACE_IMPL_LIGHT_1(CDBusChannelFactory, IRPCChannelFactory);
+CCM_INTERFACE_IMPL_LIGHT_1(CDBusChannelFactory, LightRefBase, IRPCChannelFactory);
 
 CDBusChannelFactory::CDBusChannelFactory(
     /* [in] */ RPCType type)

@@ -869,7 +869,7 @@ ECode HashMap::EntrySet::Remove(
 
 //----------------------------------------------------------------------
 
-CCM_INTERFACE_IMPL_LIGHT_1(HashMap::HashIterator, IIterator);
+CCM_INTERFACE_IMPL_LIGHT_1(HashMap::HashIterator, LightRefBase, IIterator);
 
 HashMap::HashIterator::HashIterator(
     /* [in] */ HashMap* owner)

@@ -20,7 +20,7 @@
 
 namespace ccm {
 
-CCM_INTERFACE_IMPL_LIGHT_1(CMetaEnumeration, IMetaEnumeration);
+CCM_INTERFACE_IMPL_LIGHT_1(CMetaEnumeration, LightRefBase, IMetaEnumeration);
 
 CMetaEnumeration::CMetaEnumeration(
     /* [in] */ CMetaComponent* mcObj,

@@ -117,7 +117,7 @@ AutoPtr<IInterface> LocaleObjectCache::NormalizeKey(
 
 //-------------------------------------------------------------------------
 
-CCM_INTERFACE_IMPL_LIGHT_1(LocaleObjectCache::CacheEntry, IReferenceObserver);
+CCM_INTERFACE_IMPL_LIGHT_1(LocaleObjectCache::CacheEntry, LightRefBase, IReferenceObserver);
 
 LocaleObjectCache::CacheEntry::CacheEntry(
     /* [in] */ IInterface* key,

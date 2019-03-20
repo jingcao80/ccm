@@ -1309,7 +1309,7 @@ ECode Locale::LocaleKey::GetHashCode(
 
 //-------------------------------------------------------------------------
 
-CCM_INTERFACE_IMPL_LIGHT_1(Locale::Category, ILocaleCategory);
+CCM_INTERFACE_IMPL_LIGHT_1(Locale::Category, LightRefBase, ILocaleCategory);
 
 AutoPtr<ILocaleCategory> Locale::Category::GetDISPLAY()
 {

@@ -32,7 +32,7 @@ EXTERN_C ECode invoke(
     /* [in] */ Long* stkData,
     /* [in] */ Integer stkDataSize);
 
-CCM_INTERFACE_IMPL_LIGHT_1(CMetaMethod, IMetaMethod);
+CCM_INTERFACE_IMPL_LIGHT_1(CMetaMethod, LightRefBase, IMetaMethod);
 
 CMetaMethod::CMetaMethod()
     : mMetadata(nullptr)

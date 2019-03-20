@@ -19,7 +19,7 @@
 
 namespace ccm {
 
-CCM_INTERFACE_IMPL_LIGHT_1(CMetaParameter, IMetaParameter)
+CCM_INTERFACE_IMPL_LIGHT_1(CMetaParameter, LightRefBase, IMetaParameter)
 
 CMetaParameter::CMetaParameter()
     : mMetadata(nullptr)

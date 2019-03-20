@@ -32,7 +32,7 @@ static void ReleaseComponentID(
 const InterfaceID IID_IDBusInterfacePack =
         {{0x6447561d,0x49aa,0x48b3,0x9faa,{0xe,0xf,0x7,0x2,0xe,0xd,0x7,0x6,0xf,0x8,0xe,0x2}}, &CID_CCMRuntime};
 
-CCM_INTERFACE_IMPL_LIGHT_2(InterfacePack, IInterfacePack, IDBusInterfacePack);
+CCM_INTERFACE_IMPL_LIGHT_2(InterfacePack, LightRefBase, IInterfacePack, IDBusInterfacePack);
 
 InterfacePack::~InterfacePack()
 {

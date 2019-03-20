@@ -359,7 +359,7 @@ ECode Collections::SynchronizedSet::ToArray(
 
 //----------------------------------------------------------------
 
-CCM_INTERFACE_IMPL_LIGHT_1(Collections::EmptyIterator, IIterator);
+CCM_INTERFACE_IMPL_LIGHT_1(Collections::EmptyIterator, LightRefBase, IIterator);
 
 ECode Collections::EmptyIterator::HasNext(
     /* [out] */ Boolean* result)
@@ -389,7 +389,7 @@ AutoPtr<IIterator> Collections::EmptyIterator::Get_EMPTY_ITERATOR()
 
 //-----------------------------------------------------------------
 
-CCM_INTERFACE_IMPL_LIGHT_1(Collections::EmptyEnumeration, IEnumeration);
+CCM_INTERFACE_IMPL_LIGHT_1(Collections::EmptyEnumeration, LightRefBase, IEnumeration);
 
 ECode Collections::EmptyEnumeration::HasMoreElements(
     /* [out] */ Boolean* result)
@@ -414,7 +414,7 @@ AutoPtr<IEnumeration> Collections::EmptyEnumeration::Get_EMPTY_ENUMERATION()
 
 //----------------------------------------------------------------
 
-CCM_INTERFACE_IMPL_1(Collections::EmptyListIterator, EmptyIterator, IListIterator);
+CCM_INTERFACE_IMPL_LIGHT_1(Collections::EmptyListIterator, EmptyIterator, IListIterator);
 
 ECode Collections::EmptyListIterator::HasPrevious(
     /* [out] */ Boolean* result)
