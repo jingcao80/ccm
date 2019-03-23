@@ -31,11 +31,11 @@
 #include <unicode/udata.h>
 
 using ccm::core::CInteger;
+using ccm::core::E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
 using ccm::core::IID_IInteger;
 using ccm::core::IInteger;
 
 U_CDECL_BEGIN
-
 
 #define U_ICUDATA_LANG U_ICUDATA_NAME U_TREE_SEPARATOR_STRING "lang"
 #define U_ICUDATA_REGION U_ICUDATA_NAME U_TREE_SEPARATOR_STRING "region"
@@ -48,13 +48,38 @@ U_CDECL_END
 namespace libcore {
 namespace icu {
 
+ECode MaybeThrowIcuException(
+    /* [in] */ const char* provider,
+    /* [in] */ UErrorCode errorCode)
+{
+    if (U_SUCCESS(errorCode)) {
+        return NOERROR;
+    }
+
+    switch (errorCode) {
+        case U_ILLEGAL_ARGUMENT_ERROR:
+            Logger::E("ICU", "icu error: %s E_ILLEGAL_ARGUMENT_EXCEPTION", provider);
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        case U_INDEX_OUTOFBOUNDS_ERROR:
+        case U_BUFFER_OVERFLOW_ERROR:
+            Logger::E("ICU", "icu error: %s E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION", provider);
+            return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+        case U_UNSUPPORTED_ERROR:
+            Logger::E("ICU", "icu error: %s E_UNSUPPORTED_OPERATION_EXCEPTION", provider);
+            return E_UNSUPPORTED_OPERATION_EXCEPTION;
+        default:
+            Logger::E("ICU", "icu error: %s E_RUNTIME_EXCEPTION", provider);
+            return E_RUNTIME_EXCEPTION;
+    }
+}
+
 inline static Char ToChar(
     /* [in] */ const ::icu::UnicodeString& value)
 {
     return value.length() == 0 ? 0 : (Char)value.charAt(0);
 }
 
-inline static String ToUTF8String(
+inline String ToUTF8String(
     /* [in] */ const ::icu::UnicodeString& value)
 {
     StringByteSink sink;

@@ -30,6 +30,7 @@ set(SOURCES
     CharacterIteratorFieldDelegate.cpp
     DateFormat.cpp
     DateFormatSymbols.cpp
+    DecimalFormat.cpp
     DecimalFormatSymbols.cpp
     DontCareFieldPosition.cpp
     FieldPosition.cpp

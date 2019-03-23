@@ -40,9 +40,6 @@ class Currency
 public:
     CCM_INTERFACE_DECL();
 
-    ECode Constructor(
-        /* [in] */ const String& currencyCode);
-
     static AutoPtr<ICurrency> GetInstance(
         /* [in] */ const String& currencyCode);
 
@@ -78,6 +75,9 @@ public:
         /* [out] */ String* desc) override;
 
 private:
+    ECode Constructor(
+        /* [in] */ const String& currencyCode);
+
     static AutoPtr<IConcurrentMap> GetInstances();
 
 private:

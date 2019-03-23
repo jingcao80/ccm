@@ -18,6 +18,7 @@
 #define __CCM_TEXT_CDECIMALFORMAT_H__
 
 #include "ccm/core/SyncObject.h"
+#include "ccm/text/DecimalFormat.h"
 #include "_ccm_text_CDecimalFormat.h"
 #include "ccm.text.IDecimalFormat.h"
 #include "ccm.text.IDecimalFormatSymbols.h"
@@ -28,37 +29,14 @@ namespace ccm {
 namespace text {
 
 Coclass(CDecimalFormat)
-    , public SyncObject
+    , public DecimalFormat
 {
 public:
-    // CCM_OBJECT_DECL();
+    CCM_OBJECT_DECL();
 
-    ECode Constructor()
-    {
-        return NOERROR;
-    }
-
-    ECode Constructor(
-        /* [in] */ const String& pattern)
-    {
-        return NOERROR;
-    }
-
-    ECode Constructor(
-        /* [in] */ const String& pattern,
-        /* [in] */ IDecimalFormatSymbols* symbols)
-    {
-        return NOERROR;
-    }
-
-    void AdjustForCurrencyDefaultFractionDigits()
-    {}
-
-    static CDecimalFormat* From(
-        /* [in] */ IDecimalFormat* obj)
-    {
-        return nullptr;
-    }
+    ECode Clone(
+        /* [in] */ const InterfaceID& iid,
+        /* [out] */ IInterface** obj) override;
 };
 
 }

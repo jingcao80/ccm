@@ -913,6 +913,20 @@ String String::ValueOf(
     return String(buf);
 }
 
+String String::ValueOf(
+    /* [in] */ const Array<Char>& charArray)
+{
+    return String(charArray);
+}
+
+String String::ValueOf(
+    /* [in] */ const Array<Char>& charArray,
+    /* [in] */ Integer start,
+    /* [in] */ Integer length)
+{
+    return String(charArray, start, length);
+}
+
 Integer String::UTF8SequenceLengthNonASCII(
     /* [in] */ char b0)
 {

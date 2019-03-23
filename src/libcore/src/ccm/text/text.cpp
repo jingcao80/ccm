@@ -17,6 +17,7 @@
 #include "ccm/text/CAttributedCharacterIteratorAttribute.h"
 #include "ccm/text/CAttributedString.h"
 #include "ccm/text/CDateFormatField.h"
+#include "ccm/text/CDecimalFormat.h"
 #include "ccm/text/CDecimalFormatSymbols.h"
 #include "ccm/text/CFieldPosition.h"
 #include "ccm/text/CSimpleDateFormat.h"
@@ -81,6 +82,34 @@ ECode CDateFormatField::New(
     _obj->AttachMetadata(comp, String("ccm::text::CDateFormatField"));
     *object = _obj->Probe(iid);
     REFCOUNT_ADD(*object);
+    return NOERROR;
+}
+
+CCM_OBJECT_IMPL(CDecimalFormat);
+ECode CDecimalFormat::Clone(
+    /* [in] */ const InterfaceID& iid,
+    /* [out] */ IInterface** obj)
+{
+    VALIDATE_NOT_NULL(obj);
+
+    AutoPtr<IClassObject> clsObject;
+    ECode ec = CoAcquireClassFactory(CID_CDecimalFormat, nullptr, &clsObject);
+    if (FAILED(ec)) return ec;
+
+    void* addr = calloc(sizeof(CDecimalFormat), 1);
+    if (addr == nullptr) return E_OUT_OF_MEMORY_ERROR;
+
+    CDecimalFormat* dfObj = new(addr) CDecimalFormat();
+    ec = DecimalFormat::CloneImpl(dfObj);
+    if (FAILED(ec)) {
+        free(addr);
+        return ec;
+    }
+    AutoPtr<IMetaComponent> comp;
+    clsObject->GetMetadate(&comp);
+    dfObj->AttachMetadata(comp, String("ccm::text::CDecimalFormat"));
+    *obj = dfObj->Probe(iid);
+    REFCOUNT_ADD(*obj);
     return NOERROR;
 }
 

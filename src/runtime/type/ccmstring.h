@@ -265,6 +265,14 @@ public:
     static String ValueOf(
         /* [in] */ Char c);
 
+    static String ValueOf(
+        /* [in] */ const Array<Char>& charArray);
+
+    static String ValueOf(
+        /* [in] */ const Array<Char>& charArray,
+        /* [in] */ Integer start,
+        /* [in] */ Integer length);
+
     inline static Boolean IsASCII(
         /* [in] */ char c);
 

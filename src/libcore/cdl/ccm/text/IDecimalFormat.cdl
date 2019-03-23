@@ -15,6 +15,7 @@
 //=========================================================================
 
 interface ccm::text::IDecimalFormatSymbols;
+interface ccm::text::IFieldPosition;
 
 namespace ccm {
 namespace text {
@@ -31,20 +32,80 @@ namespace text {
 ]
 interface IDecimalFormat
 {
+    ApplyLocalizedPattern(
+        [in] String pattern);
+
+    ApplyPattern(
+        [in] String pattern);
+
     GetDecimalFormatSymbols(
         [out] IDecimalFormatSymbols** symbols);
 
     GetGroupingSize(
         [out] Integer* size);
 
+    GetMultiplier(
+        [out] Integer* multiplier);
+
+    GetNegativePrefix(
+        [out] String* prefix);
+
+    GetNegativeSuffix(
+        [out] String* suffix);
+
+    GetPositivePrefix(
+        [out] String* prefix);
+
+    GetPositiveSuffix(
+        [out] String* suffix);
+
+    IsDecimalSeparatorAlwaysShown(
+        [in] Boolean* shown);
+
     IsGroupingUsed(
         [out] Boolean* used);
 
+    IsParseBigDecimal(
+        [out] Boolean* value);
+
+    IsParseIntegerOnly(
+        [out] Boolean* value);
+
+    SetDecimalFormatSymbols(
+        [in] IDecimalFormatSymbols* symbols);
+
     SetDecimalSeparatorAlwaysShown(
-        [in] Boolean newValue);
+        [in] Boolean shown);
+
+    SetGroupingSize(
+        [in] Integer size);
+
+    SetGroupingUsed(
+        [in] Boolean used);
+
+    SetMultiplier(
+        [in] Integer multiplier);
+
+    SetNegativePrefix(
+        [in] String prefix);
+
+    SetNegativeSuffix(
+        [in] String suffix);
+
+    SetParseBigDecimal(
+        [in] Boolean value);
 
     SetParseIntegerOnly(
         [in] Boolean value);
+
+    SetPositivePrefix(
+        [in] String prefix);
+
+    SetPositiveSuffix(
+        [in] String suffix);
+
+    ToLocalizedPattern(
+        [out] String* pattern);
 
     ToPattern(
         [out] String* pattern);

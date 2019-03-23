@@ -198,7 +198,6 @@ public:
     ECode SetRoundingMode(
         /* [in] */ RoundingMode mode) override;
 
-
     using INumberFormat::Format;
 
     using INumberFormat::Parse;
