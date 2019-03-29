@@ -27,6 +27,7 @@ include_directories(
     ../inc/ccm/core
     ../inc/ccm/io
     ../inc/ccm/math
+    ../inc/ccm/misc
     ../inc/ccm/security
     ../inc/ccm/security/action
     ../inc/ccm/text
@@ -73,6 +74,7 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_math_CBigInteger.cpp
     ${OBJ_DIR}/_ccm_math_CBigIntegerFactory.cpp
     ${OBJ_DIR}/_ccm_math_CMathContext.cpp
+    ${OBJ_DIR}/_ccm_misc_CFDBigInteger.cpp
     ${OBJ_DIR}/_ccm_security_CPermissions.cpp
     ${OBJ_DIR}/_ccm_security_CSecureRandom.cpp
     ${OBJ_DIR}/_ccm_security_action_CGetPropertyAction.cpp

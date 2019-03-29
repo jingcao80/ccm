@@ -57,6 +57,12 @@ public:
     static constexpr Integer MIN_EXPONENT = -1022;
 
     /**
+     * The exponent the smallest positive <code>double</code>
+     * subnormal value would have if it could be normalized.
+     */
+    static constexpr Integer MIN_SUB_EXPONENT = MIN_EXPONENT - (SIGNIFICAND_WIDTH - 1);
+
+    /**
      * Bias used in representing a <code>double</code> exponent.
      */
     static constexpr Integer EXP_BIAS = 1023;

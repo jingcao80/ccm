@@ -51,5 +51,18 @@ interface IFloatingDecimalBinaryToASCIIConverter
         [out] String* str);
 }
 
+[
+    uuid(691e4ffb-5b88-40de-ae6e-12072672fbbc),
+    version(0.1.0)
+]
+interface IFloatingDecimalASCIIToBinaryConverter
+{
+    DoubleValue(
+        [out] Double* value);
+
+    FloatValue(
+        [out] Float* value);
+}
+
 }
 }

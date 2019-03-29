@@ -14,27 +14,15 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/misc/IFDBigInteger.cdl"
-#include "ccm/misc/IFloatingDecimal.cdl"
-#include "ccm/misc/IFormattedFloatingDecimal.cdl"
+#include "ccm/misc/FDBigInteger.h"
 
 namespace ccm {
 namespace misc {
 
-[
-    uuid(e8cd20cc-761f-4006-9741-fe8cf701c009),
-    version(0.1.0)
-]
-coclass CFDBigInteger
-{
-    Constructor(
-        [in] Long lValue,
-        [in] Array<Char> digits,
-        [in] Integer kDigits,
-        [in] Integer nDigits);
+constexpr Integer FDBigInteger::SMALL_5_POW[];
+constexpr Long FDBigInteger::LONG_5_POW[];
 
-    interface IFDBigInteger;
-}
+CCM_INTERFACE_IMPL_1(FDBigInteger, SyncObject, IFDBigInteger);
 
 }
 }

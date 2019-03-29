@@ -25,7 +25,11 @@ include_directories(
 
 set(SOURCES
     DoubleConsts.cpp
-    FormattedFloatingDecimal.cpp)
+    FDBigInteger.cpp
+    FloatConsts.cpp
+    FloatingDecimal.cpp
+    FormattedFloatingDecimal.cpp
+    misc.cpp)
 
 add_library(ccm_misc STATIC
     ${SOURCES})
