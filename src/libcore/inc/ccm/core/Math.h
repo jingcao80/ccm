@@ -64,9 +64,33 @@ public:
         /* [in] */ Integer a,
         /* [in] */ Integer b);
 
+    static Long Max(
+        /* [in] */ Long a,
+        /* [in] */ Long b);
+
+    COM_PUBLIC static Float Max(
+        /* [in] */ Float a,
+        /* [in] */ Float b);
+
+    COM_PUBLIC static Double Max(
+        /* [in] */ Double a,
+        /* [in] */ Double b);
+
     static Integer Min(
         /* [in] */ Integer a,
         /* [in] */ Integer b);
+
+    static Long Min(
+        /* [in] */ Long a,
+        /* [in] */ Long b);
+
+    COM_PUBLIC static Float Min(
+        /* [in] */ Float a,
+        /* [in] */ Float b);
+
+    COM_PUBLIC static Double Min(
+        /* [in] */ Double a,
+        /* [in] */ Double b);
 
     static Integer Signum(
         /* [in] */ Integer i);
@@ -141,6 +165,10 @@ private:
 
 public:
     COM_PUBLIC static const Long LONG_POWERS_OF_TEN[];
+
+private:
+    static Long sNegativeZeroFloatBits;
+    static Long sNegativeZeroDoubleBits;
 };
 
 inline Double Math::Log(
@@ -199,9 +227,23 @@ inline Integer Math::Max(
     return (a >= b) ? a : b;
 }
 
+inline Long Math::Max(
+    /* [in] */ Long a,
+    /* [in] */ Long b)
+{
+    return (a >= b) ? a : b;
+}
+
 inline Integer Math::Min(
     /* [in] */ Integer a,
     /* [in] */ Integer b)
+{
+    return (a <= b) ? a : b;
+}
+
+inline Long Math::Min(
+    /* [in] */ Long a,
+    /* [in] */ Long b)
 {
     return (a <= b) ? a : b;
 }

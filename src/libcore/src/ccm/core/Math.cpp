@@ -50,6 +50,9 @@ const Long Math::LONG_POWERS_OF_TEN[] = {
     1000000000000000000ll,
 };
 
+Long Math::sNegativeZeroFloatBits = FloatToRawIntBits(-0.0f);
+Long Math::sNegativeZeroDoubleBits = DoubleToRawLongBits(-0.0);
+
 static AutoPtr<IRandom> CreateRandom()
 {
     AutoPtr<IRandom> random;
@@ -100,6 +103,74 @@ Long Math::RandomLongInternal()
     Long rv;
     GetRandomNumberGenerator()->NextLong(&rv);
     return rv;
+}
+
+Float Math::Max(
+    /* [in] */ Float a,
+    /* [in] */ Float b)
+{
+    if (a != a) {
+        // a is NaN
+        return a;
+    }
+    if ((a == 0.0f) &&
+        (b == 0.0f) &&
+        (FloatToRawIntBits(a) == sNegativeZeroFloatBits)) {
+        // Raw conversion ok since NaN can't map to -0.0.
+        return b;
+    }
+    return (a >= b) ? a : b;
+}
+
+Double Math::Max(
+    /* [in] */ Double a,
+    /* [in] */ Double b)
+{
+    if (a != a) {
+        // a is NaN
+        return a;
+    }
+    if ((a == 0.0) &&
+        (b == 0.0) &&
+        (DoubleToRawLongBits(a) == sNegativeZeroDoubleBits)) {
+        // Raw conversion ok since NaN can't map to -0.0.
+        return b;
+    }
+    return (a >= b) ? a : b;
+}
+
+Float Math::Min(
+    /* [in] */ Float a,
+    /* [in] */ Float b)
+{
+    if (a != a) {
+        // a is NaN
+        return a;
+    }
+    if ((a == 0.0f) &&
+        (b == 0.0f) &&
+        (FloatToRawIntBits(b) == sNegativeZeroFloatBits)) {
+        // Raw conversion ok since NaN can't map to -0.0.
+        return b;
+    }
+    return (a <= b) ? a : b;
+}
+
+Double Math::Min(
+    /* [in] */ Double a,
+    /* [in] */ Double b)
+{
+    if (a != a) {
+        // a is NaN
+        return a;
+    }
+    if ((a == 0.0) &&
+        (b == 0.0) &&
+        (DoubleToRawLongBits(b) == sNegativeZeroDoubleBits)) {
+        // Raw conversion ok since NaN can't map to -0.0.
+        return b;
+    }
+    return (a <= b) ? a : b;
 }
 
 Double Math::CopySign(

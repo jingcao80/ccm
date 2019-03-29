@@ -218,7 +218,7 @@ void Hashtable::Rehash()
     Array<HashtableEntry*> newMap = Array<HashtableEntry*>(newCapacity);
 
     mModCount++;
-    mThreshold = (Integer)Math::Min(newCapacity * mLoadFactor, MAX_ARRAY_SIZE + 1);
+    mThreshold = (Integer)Math::Min(newCapacity * mLoadFactor, (Float)MAX_ARRAY_SIZE + 1);
     mTable = newMap;
 
     for (Integer i = oldCapacity - 1; i > 0; i--) {

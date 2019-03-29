@@ -1292,7 +1292,7 @@ ECode BigDecimal::DivideToIntegralValue(
         GetUnscaledValue()->Divide(bi1, &bi2);
         quotAndRem.Set(0, bi2);
         // To chose  10^newScale  to get a quotient with at least 'mc.precision()' digits
-        newScale = Math::Min(diffScale, Math::Max(mcPrecision - quotPrecision + 1, 0));
+        newScale = Math::Min(diffScale, Math::Max(mcPrecision - quotPrecision + 1, 0LL));
         // To calculate: (u1 / (u2 * 10^(s1-s2)) * 10^newScale
         bi1 = nullptr;
         quotAndRem[0]->Multiply(Multiplication::PowerOf10(newScale), &bi1);
@@ -1301,7 +1301,7 @@ ECode BigDecimal::DivideToIntegralValue(
     else {
         /* To calculate the minimum power of ten, such that the quotient
          *   (u1 * 10^exp) / u2   has at least 'mc.precision()' digits. */
-        Long exp = Math::Min(-diffScale, Math::Max((Long)mcPrecision - diffPrecision, 0));
+        Long exp = Math::Min(-diffScale, Math::Max((Long)mcPrecision - diffPrecision, 0LL));
         Long compRemDiv;
         // Let be:   (u1 * 10^exp) / u2 = [q,r]
         AutoPtr<IBigInteger> bi1, bi2;
@@ -1761,7 +1761,7 @@ ECode BigDecimal::MovePoint(
     /* [out] */ IBigDecimal** value)
 {
     if (IsZero()) {
-        return ZeroScaledBy(Math::Max(newScale, 0), value);
+        return ZeroScaledBy(Math::Max(newScale, 0LL), value);
     }
     /*
      * When: 'n'== Integer.MIN_VALUE isn't possible to call to

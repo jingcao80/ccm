@@ -131,7 +131,7 @@ ECode Arrays::CopyOf(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     Array<String> copy = Array<String>(newLength);
-    Integer N = Math::Min(original.GetLength(), newLength);
+    Integer N = Math::Min((Integer)original.GetLength(), newLength);
     for (Integer i = 0; i < N; i++) {
         copy[i] = original[i];
     }
@@ -150,7 +150,7 @@ ECode Arrays::CopyOf(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     Array<IInterface*> copy = Array<IInterface*>(newLength);
-    Integer N = Math::Min(original.GetLength(), newLength);
+    Integer N = Math::Min((Integer)original.GetLength(), newLength);
     for (Integer i = 0; i < N; i++) {
         copy.Set(i, original[i]);
     }
