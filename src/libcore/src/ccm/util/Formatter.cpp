@@ -2560,7 +2560,10 @@ ECode Formatter::FormatSpecifierParser::Advance(
         Logger::E("Formatter", "End of String");
         return E_UNKNOWN_FORMAT_CONVERSION_EXCEPTION;
     }
-    *c = mFormat.GetChar(mCursor++);
+    Char ch = mFormat.GetChar(mCursor++);
+    if (c != nullptr) {
+        *c = ch;
+    }
     return NOERROR;
 }
 

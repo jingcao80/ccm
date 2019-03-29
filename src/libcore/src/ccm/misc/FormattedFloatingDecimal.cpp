@@ -16,6 +16,7 @@
 
 #include "ccm/core/Math.h"
 #include "ccm/core/ThreadLocal.h"
+#include "ccm/misc/FloatingDecimal.h"
 #include "ccm/misc/FormattedFloatingDecimal.h"
 #include "ccm/util/Arrays.h"
 
@@ -49,16 +50,10 @@ protected:
     }
 };
 
-AutoPtr<IThreadLocal> CreateThreadLocalCharBuffer()
-{
-    AutoPtr<IThreadLocal> tl = new ThreadLocalCharBuffer();
-    return tl;
-}
-
 AutoPtr<IThreadLocal> FormattedFloatingDecimal::GetThreadLocalCharBuffer()
 {
     static const AutoPtr<IThreadLocal> sThreadLocalCharBuffer =
-            CreateThreadLocalCharBuffer();
+            new ThreadLocalCharBuffer();
     return sThreadLocalCharBuffer;
 }
 
@@ -72,7 +67,8 @@ ECode FormattedFloatingDecimal::ValueOf(
 {
     VALIDATE_NOT_NULL(fd);
 
-    AutoPtr<IFloatingDecimalBinaryToASCIIConverter> fdConverter;
+    AutoPtr<IFloatingDecimalBinaryToASCIIConverter> fdConverter =
+            FloatingDecimal::GetBinaryToASCIIConverter(d, form == FormattedFloatingDecimalForm::COMPATIBLE);
     AutoPtr<FormattedFloatingDecimal> fdObj = new FormattedFloatingDecimal();
     fdObj->Constructor(precision, form, fdConverter);
     *fd = fdObj.Get();
