@@ -108,12 +108,12 @@ public:
 
     COM_PUBLIC static String ToHexString(
         /* [in] */ Integer i,
-        /* [in] */ Boolean upperCase = true,
+        /* [in] */ Boolean upperCase = false,
         /* [in] */ Integer minWidth = 0);
 
     COM_PUBLIC static String ToHexString(
         /* [in] */ Long i,
-        /* [in] */ Boolean upperCase = true);
+        /* [in] */ Boolean upperCase = false);
 
     COM_PUBLIC static String ToHexString(
         /* [in] */ Double d);
