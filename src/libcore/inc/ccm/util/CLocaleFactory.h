@@ -34,8 +34,74 @@ public:
 
     CCM_OBJECT_DECL();
 
+    ECode GetCANADA(
+        /* [out] */  ILocale** l) override;
+
+    ECode GetCANADA_FRENCH(
+        /* [out] */  ILocale** l) override;
+
+    ECode GetCHINA(
+        /* [out] */  ILocale** l) override;
+
+    ECode GetCHINESE(
+        /* [out] */  ILocale** l) override;
+
     ECode GetDefault(
-        /* [out] */ ILocale** l) override;
+        /* [out] */  ILocale** l) override;
+
+    ECode GetENGLISH(
+        /* [out] */  ILocale** l) override;
+
+    ECode GetFRANCE(
+        /* [out] */  ILocale** l) override;
+
+    ECode GetFRENCH(
+        /* [out] */  ILocale** l) override;
+
+    ECode GetGERMAN(
+        /* [out] */  ILocale** l) override;
+
+    ECode GetGERMANY(
+        /* [out] */  ILocale** l) override;
+
+    ECode GetITALIAN(
+        /* [out] */  ILocale** l) override;
+
+    ECode GetITALY(
+        /* [out] */  ILocale** l) override;
+
+    ECode GetJAPAN(
+        /* [out] */  ILocale** l) override;
+
+    ECode GetJAPANESE(
+        /* [out] */  ILocale** l) override;
+
+    ECode GetKOREA(
+        /* [out] */  ILocale** l) override;
+
+    ECode GetKOREAN(
+        /* [out] */  ILocale** l) override;
+
+    ECode GetPRC(
+        /* [out] */  ILocale** l) override;
+
+    ECode GetROOT(
+        /* [out] */  ILocale** l) override;
+
+    ECode GetSIMPLIFIED_CHINESE(
+        /* [out] */  ILocale** l) override;
+
+    ECode GetTAIWAN(
+        /* [out] */  ILocale** l) override;
+
+    ECode GetTRADITIONAL_CHINESE(
+        /* [out] */  ILocale** l) override;
+
+    ECode GetUK(
+        /* [out] */  ILocale** l) override;
+
+    ECode GetUS(
+        /* [out] */  ILocale** l) override;
 };
 
 }

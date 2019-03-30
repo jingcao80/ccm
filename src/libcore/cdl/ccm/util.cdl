@@ -89,6 +89,15 @@ namespace ccm {
 namespace util {
 
 [
+    uuid(8eea98fd-b8ab-4bdb-9d46-49c86ce7f584),
+    version(0.1.0)
+]
+coclass CCalendarFactory
+{
+    interface ICalendarFactory;
+}
+
+[
     uuid(7dbd4e0a-4bf2-4ccb-a4e9-bfe232b40ba4),
     version(0.1.0)
 ]
@@ -564,6 +573,15 @@ coclass CStringTokenizer
 
     interface IStringTokenizer;
     interface IEnumeration;
+}
+
+[
+    uuid(2e668d38-5031-4085-889e-7184f3f36a30),
+    version(0.1.0)
+]
+coclass CTimeZoneFactory
+{
+    interface ITimeZoneFactory;
 }
 
 [
