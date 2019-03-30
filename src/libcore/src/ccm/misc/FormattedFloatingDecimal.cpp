@@ -105,25 +105,25 @@ ECode FormattedFloatingDecimal::Constructor(
     Boolean isNegative;
     fdConverter->IsNegative(&isNegative);
     switch (form) {
-        COMPATIBLE:
+        case FormattedFloatingDecimalForm::COMPATIBLE:
             exp = decExp;
             mDecExponentRounded = exp;
             FillCompatible(precision, digits, nDigits, exp, isNegative);
             break;
 
-        DECIMAL_FLOAT:
+        case FormattedFloatingDecimalForm::DECIMAL_FLOAT:
             exp = ApplyPrecision(decExp, digits, nDigits, decExp + precision);
             FillDecimal(precision, digits, nDigits, exp, isNegative);
             mDecExponentRounded = exp;
             break;
 
-        SCIENTIFIC:
+        case FormattedFloatingDecimalForm::SCIENTIFIC:
             exp = ApplyPrecision(decExp, digits, nDigits, precision + 1);
             FillScientific(precision, digits, nDigits, exp, isNegative);
             mDecExponentRounded = exp;
             break;
 
-        GENERAL:
+        case FormattedFloatingDecimalForm::GENERAL:
             exp = ApplyPrecision(decExp, digits, nDigits, precision);
             // adjust precision to be the number of digits to right of decimal
             // the real exponent to be output is actually exp - 1, not exp

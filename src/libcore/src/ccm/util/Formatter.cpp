@@ -1548,8 +1548,8 @@ ECode Formatter::FormatSpecifier::Print(
         Integer newW = mWidth;
         if (mWidth != -1) {
             newW = AdjustWidth(mWidth - exp.GetLength() - 1, f, neg);
-            LocalizedMagnitude(sb, mant, f, newW, l);
         }
+        LocalizedMagnitude(sb, mant, f, newW, l);
 
         AutoPtr<ILocale> separatorLocale = (l != nullptr) ? l : Locale::GetDefault().Get();
         AutoPtr<ILocaleData> localeData;
