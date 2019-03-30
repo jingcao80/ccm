@@ -86,6 +86,7 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_text_CFieldPosition.cpp
     ${OBJ_DIR}/_ccm_text_CSimpleDateFormat.cpp
     ${OBJ_DIR}/_ccm_text_CParsePosition.cpp
+    ${OBJ_DIR}/_ccm_util_CCalendarFactory.cpp
     ${OBJ_DIR}/_ccm_util_CArrayList.cpp
     ${OBJ_DIR}/_ccm_util_CDate.cpp
     ${OBJ_DIR}/_ccm_util_CFormatter.cpp
@@ -103,6 +104,7 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_util_CRandom.cpp
     ${OBJ_DIR}/_ccm_util_CSimpleTimeZone.cpp
     ${OBJ_DIR}/_ccm_util_CStringTokenizer.cpp
+    ${OBJ_DIR}/_ccm_util_CTimeZoneFactory.cpp
     ${OBJ_DIR}/_ccm_util_CTreeMap.cpp
     ${OBJ_DIR}/_ccm_util_CTreeSet.cpp
     ${OBJ_DIR}/_ccm_util_calendar_CCalendarSystemFactory.cpp

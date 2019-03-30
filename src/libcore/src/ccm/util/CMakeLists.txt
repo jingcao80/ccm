@@ -37,8 +37,10 @@ set(SOURCES
     ArrayList.cpp
     Arrays.cpp
     Calendar.cpp
+    CCalendarFactory.cpp
     CLocaleFactory.cpp
     Collections.cpp
+    CTimeZoneFactory.cpp
     Currency.cpp
     Date.cpp
     EmptyArray.cpp
