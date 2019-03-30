@@ -46,5 +46,3 @@ add_subdirectory(rpc)
 add_subdirectory(string)
 add_subdirectory(stringtokenizer)
 add_subdirectory(thread)
-
-add_subdirectory(zproj)
