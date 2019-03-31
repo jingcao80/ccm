@@ -371,6 +371,7 @@ TEST(FormatterTest, Test42936)
 
 TEST(FormatterTest, TestGroupingSizeZero)
 {
+#ifdef __aarch64__
     AutoPtr<ILocale> localeWithoutGrouping;
     CLocale::New(String("en"), String("US"), String("POSIX"), IID_ILocale, (IInterface**)&localeWithoutGrouping);
     AutoPtr<INumberFormatFactory> factory;
@@ -392,6 +393,7 @@ TEST(FormatterTest, TestGroupingSizeZero)
     Char separator;
     symbols->GetGroupingSeparator(&separator);
     EXPECT_TRUE(separator != U'\0');
+#endif
 }
 
 

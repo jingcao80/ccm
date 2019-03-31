@@ -41,6 +41,202 @@ namespace util {
 class Collections
 {
 private:
+    class UnmodifiableCollection
+        : public SyncObject
+        , public ICollection
+        , public ISerializable
+    {
+    public:
+        UnmodifiableCollection(
+            /* [in] */ ICollection* c)
+            : mC(c)
+        {}
+
+        CCM_INTERFACE_DECL();
+
+        ECode GetSize(
+            /* [out] */ Integer* size) override;
+
+        ECode IsEmpty(
+            /* [out] */ Boolean* empty) override;
+
+        ECode Contains(
+            /* [in] */ IInterface* obj,
+            /* [out] */ Boolean* result) override;
+
+        ECode ToArray(
+            /* [out, callee] */ Array<IInterface*>* objs) override;
+
+        ECode ToArray(
+            /* [in] */ const InterfaceID& iid,
+            /* [out, callee] */ Array<IInterface*>* objs) override;
+
+        ECode ToString(
+            /* [out] */ String* desc) override;
+
+        ECode GetIterator(
+            /* [out] */ IIterator** it) override;
+
+        ECode Add(
+            /* [in] */ IInterface* obj,
+            /* [out] */ Boolean* changed = nullptr) override;
+
+        ECode Remove(
+            /* [in] */ IInterface* obj,
+            /* [out] */ Boolean* changed = nullptr) override;
+
+        ECode ContainsAll(
+            /* [in] */ ICollection* c,
+            /* [out] */ Boolean* result) override;
+
+        ECode AddAll(
+            /* [in] */ ICollection* c,
+            /* [out] */ Boolean* changed = nullptr) override;
+
+        ECode RemoveAll(
+            /* [in] */ ICollection* c,
+            /* [out] */ Boolean* changed = nullptr) override;
+
+        ECode RetainAll(
+            /* [in] */ ICollection* c,
+            /* [out] */ Boolean* changed = nullptr) override;
+
+        ECode Clear() override;
+
+    protected:
+        AutoPtr<ICollection> mC;
+    };
+
+    class UnmodifiableList
+        : public UnmodifiableCollection
+        , public IList
+    {
+    public:
+        UnmodifiableList(
+            /* [in] */ IList* list)
+            : UnmodifiableCollection(ICollection::Probe(list))
+            , mList(list)
+        {}
+
+        CCM_INTERFACE_DECL();
+
+        ECode Equals(
+            /* [in] */ IInterface* obj,
+            /* [out] */ Boolean* result) override;
+
+        ECode GetHashCode(
+            /* [out] */ Integer* hash) override;
+
+        ECode Get(
+            /* [in] */ Integer index,
+            /* [out] */ IInterface** obj) override;
+
+        ECode Set(
+            /* [in] */ Integer index,
+            /* [in] */ IInterface* obj,
+            /* [out] */ IInterface** prevObj = nullptr) override;
+
+        ECode Add(
+            /* [in] */ Integer index,
+            /* [in] */ IInterface* obj) override;
+
+        ECode Remove(
+            /* [in] */ Integer index,
+            /* [out] */ IInterface** obj = nullptr) override;
+
+        ECode IndexOf(
+            /* [in] */ IInterface* obj,
+            /* [out] */ Integer* index) override;
+
+        ECode LastIndexOf(
+            /* [in] */ IInterface* obj,
+            /* [out] */ Integer* index) override;
+
+        ECode AddAll(
+            /* [in] */ Integer index,
+            /* [in] */ ICollection* c,
+            /* [out] */ Boolean* result = nullptr) override;
+
+        ECode GetListIterator(
+            /* [out] */ IListIterator** it) override;
+
+        ECode GetListIterator(
+            /* [in] */ Integer index,
+            /* [out] */ IListIterator** it) override;
+
+        ECode SubList(
+            /* [in] */ Integer fromIndex,
+            /* [in] */ Integer toIndex,
+            /* [out] */ IList** subList) override;
+
+        ECode Add(
+            /* [in] */ IInterface* obj,
+            /* [out] */ Boolean* changed = nullptr) override;
+
+        ECode AddAll(
+            /* [in] */ ICollection* c,
+            /* [out] */ Boolean* changed = nullptr) override;
+
+        ECode Clear() override;
+
+        ECode Contains(
+            /* [in] */ IInterface* obj,
+            /* [out] */ Boolean* result) override;
+
+        ECode ContainsAll(
+            /* [in] */ ICollection* c,
+            /* [out] */ Boolean* result) override;
+
+        ECode GetIterator(
+            /* [out] */ IIterator** it) override;
+
+        ECode GetSize(
+            /* [out] */ Integer* size) override;
+
+        ECode IsEmpty(
+            /* [out] */ Boolean* empty) override;
+
+        ECode Remove(
+            /* [in] */ IInterface* obj,
+            /* [out] */ Boolean* changed = nullptr) override;
+
+        ECode RemoveAll(
+            /* [in] */ ICollection* c,
+            /* [out] */ Boolean* changed = nullptr) override;
+
+        ECode RetainAll(
+            /* [in] */ ICollection* c,
+            /* [out] */ Boolean* changed = nullptr) override;
+
+        ECode ToArray(
+            /* [out, callee] */ Array<IInterface*>* objs) override;
+
+        ECode ToArray(
+            /* [in] */ const InterfaceID& iid,
+            /* [out, callee] */ Array<IInterface*>* objs) override;
+
+    protected:
+        AutoPtr<IList> mList;
+    };
+
+    class UnmodifiableRandomAccessList
+        : public UnmodifiableList
+        , public IRandomAccess
+    {
+    public:
+        UnmodifiableRandomAccessList(
+            /* [in] */ IList* list)
+            : UnmodifiableList(list)
+        {}
+
+        CCM_INTERFACE_DECL();
+
+        ECode SubList(
+            /* [in] */ Integer fromIndex,
+            /* [in] */ Integer toIndex,
+            /* [out] */ IList** subList) override;
+    };
+
     class SynchronizedCollection
         : public SyncObject
         , public ICollection
@@ -333,10 +529,7 @@ public:
     }
 
     static AutoPtr<IList> CreateUnmodifiableList(
-        /* [in] */ IList* list)
-    {
-        return nullptr;
-    }
+        /* [in] */ IList* list);
 
     static AutoPtr<ICollection> CreateSynchronizedCollection(
         /* [in] */ ICollection* c,

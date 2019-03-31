@@ -326,9 +326,9 @@ ECode DecimalFormat::GetDecimalFormatSymbols(
 {
     VALIDATE_NOT_NULL(symbols);
 
-    *symbols = (IDecimalFormatSymbols*)CoreUtils::Clone(
+    AutoPtr<IDecimalFormatSymbols> sym = (IDecimalFormatSymbols*)CoreUtils::Clone(
             mSymbols, IID_IDecimalFormatSymbols).Get();
-    REFCOUNT_ADD(*symbols);
+    sym.MoveTo(symbols);
     return NOERROR;
 }
 

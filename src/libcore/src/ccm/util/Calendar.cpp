@@ -14,10 +14,12 @@
 // limitations under the License.
 //=========================================================================
 
+#include "ccm/core/AutoLock.h"
 #include "ccm/core/CArray.h"
 #include "ccm/core/CoreUtils.h"
 #include "ccm/core/CStringBuilder.h"
 #include "ccm/core/Math.h"
+#include "ccm/text/DateFormat.h"
 #include "ccm/text/DateFormatSymbols.h"
 #include "ccm/util/Calendar.h"
 #include "ccm/util/CGregorianCalendar.h"
@@ -33,6 +35,7 @@
 #include "ccm.core.IInteger.h"
 #include <ccmautoptr.h>
 
+using ccm::core::AutoLock;
 using ccm::core::CArray;
 using ccm::core::CoreUtils;
 using ccm::core::CStringBuilder;
@@ -45,6 +48,7 @@ using ccm::core::IID_IStringBuilder;
 using ccm::core::IInteger;
 using ccm::core::Math;
 using ccm::io::IID_ISerializable;
+using ccm::text::DateFormat;
 using ccm::text::DateFormatSymbols;
 using ccm::util::CHashMap;
 using ccm::util::IID_IMap;
@@ -135,7 +139,11 @@ AutoPtr<ICalendar> Calendar::CreateCalendar(
 
 Array<ILocale*> Calendar::GetAvailableLocales()
 {
-    return Array<ILocale*>::Null();
+    AutoLock lock(GetClassLock());
+
+    Array<ILocale*> locales;
+    DateFormat::GetAvailableLocales(&locales);
+    return locales;
 }
 
 ECode Calendar::GetTime(
@@ -1250,6 +1258,12 @@ void Calendar::InvalidateWeekFields()
             mFields[WEEK_OF_YEAR] = weekOfYear;
         }
     }
+}
+
+SyncObject& Calendar::GetClassLock()
+{
+    static SyncObject sLock;
+    return sLock;
 }
 
 }

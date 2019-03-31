@@ -328,6 +328,8 @@ private:
 
     void InvalidateWeekFields();
 
+    static SyncObject& GetClassLock();
+
 public:
     static constexpr Integer ALL_FIELDS = (1 << FIELD_COUNT) - 1;
 

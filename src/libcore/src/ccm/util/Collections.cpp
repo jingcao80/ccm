@@ -62,6 +62,14 @@ void Collections::Swap(
     list->Set(i, e2);
 }
 
+AutoPtr<IList> Collections::CreateUnmodifiableList(
+    /* [in] */ IList* list)
+{
+    return (IRandomAccess::Probe(list) != nullptr) ?
+            new UnmodifiableRandomAccessList(list) :
+            new UnmodifiableList(list);
+}
+
 AutoPtr<ICollection> Collections::CreateSynchronizedCollection(
     /* [in] */ ICollection* c,
     /* [in] */ ISynchronize* mutex)
@@ -95,6 +103,497 @@ AutoPtr<IList> Collections::Get_EMPTY_LIST()
 {
     static AutoPtr<IList> EMPTY_LIST = new EmptyList();
     return EMPTY_LIST;
+}
+
+//----------------------------------------------------------------
+
+CCM_INTERFACE_IMPL_2(Collections::UnmodifiableCollection, Object, ICollection, ISerializable);
+
+ECode Collections::UnmodifiableCollection::GetSize(
+    /* [out] */ Integer* size)
+{
+    return mC->GetSize(size);
+}
+
+ECode Collections::UnmodifiableCollection::IsEmpty(
+    /* [out] */ Boolean* empty)
+{
+    return mC->IsEmpty(empty);
+}
+
+ECode Collections::UnmodifiableCollection::Contains(
+    /* [in] */ IInterface* obj,
+    /* [out] */ Boolean* result)
+{
+    return mC->Contains(obj, result);
+}
+
+ECode Collections::UnmodifiableCollection::ToArray(
+    /* [out, callee] */ Array<IInterface*>* objs)
+{
+    return mC->ToArray(objs);
+}
+
+ECode Collections::UnmodifiableCollection::ToArray(
+    /* [in] */ const InterfaceID& iid,
+    /* [out, callee] */ Array<IInterface*>* objs)
+{
+    return mC->ToArray(iid, objs);
+}
+
+ECode Collections::UnmodifiableCollection::ToString(
+    /* [out] */ String* desc)
+{
+    return IObject::Probe(mC)->ToString(desc);
+}
+
+ECode Collections::UnmodifiableCollection::GetIterator(
+    /* [out] */ IIterator** it)
+{
+    VALIDATE_NOT_NULL(it);
+
+    class _Iterator
+        : public LightRefBase
+        , public IIterator
+    {
+    public:
+        _Iterator(
+            /* [in] */ IIterator* it)
+            : mI(it)
+        {}
+
+        Integer AddRef(
+            /* [in] */ HANDLE id = 0) override
+        {
+            return LightRefBase::AddRef(id);
+        }
+
+        Integer Release(
+            /* [in] */ HANDLE id = 0) override
+        {
+            return LightRefBase::Release(id);
+        }
+
+        IInterface* Probe(
+            /* [in] */ const InterfaceID& iid) override
+        {
+            if (iid == IID_IInterface) {
+                return (IInterface*)(IIterator*)this;
+            }
+            else if (iid == IID_IIterator) {
+                return (IIterator*)this;
+            }
+            return nullptr;
+        }
+
+        ECode GetInterfaceID(
+            /* [in] */ IInterface* object,
+            /* [out] */ InterfaceID* iid) override
+        {
+            VALIDATE_NOT_NULL(iid);
+
+            if (object == (IInterface*)(IIterator*)this) {
+                *iid = IID_IIterator;
+                return NOERROR;
+            }
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+
+        ECode HasNext(
+            /* [out] */ Boolean* result) override
+        {
+            return mI->HasNext(result);
+        }
+
+        ECode Next(
+            /* [out] */ IInterface** object = nullptr) override
+        {
+            return mI->Next(object);
+        }
+
+        ECode Remove() override
+        {
+            return E_UNSUPPORTED_OPERATION_EXCEPTION;
+        }
+
+    private:
+        AutoPtr<IIterator> mI;
+    };
+
+    AutoPtr<IIterator> i;
+    mC->GetIterator(&i);
+    *it = new _Iterator(i);
+    REFCOUNT_ADD(*it);
+    return NOERROR;
+}
+
+ECode Collections::UnmodifiableCollection::Add(
+    /* [in] */ IInterface* obj,
+    /* [out] */ Boolean* changed)
+{
+    return E_UNSUPPORTED_OPERATION_EXCEPTION;
+}
+
+ECode Collections::UnmodifiableCollection::Remove(
+    /* [in] */ IInterface* obj,
+    /* [out] */ Boolean* changed)
+{
+    return E_UNSUPPORTED_OPERATION_EXCEPTION;
+}
+
+ECode Collections::UnmodifiableCollection::ContainsAll(
+    /* [in] */ ICollection* c,
+    /* [out] */ Boolean* result)
+{
+    return mC->ContainsAll(c, result);
+}
+
+ECode Collections::UnmodifiableCollection::AddAll(
+    /* [in] */ ICollection* c,
+    /* [out] */ Boolean* changed)
+{
+    return E_UNSUPPORTED_OPERATION_EXCEPTION;
+}
+
+ECode Collections::UnmodifiableCollection::RemoveAll(
+    /* [in] */ ICollection* c,
+    /* [out] */ Boolean* changed)
+{
+    return E_UNSUPPORTED_OPERATION_EXCEPTION;
+}
+
+ECode Collections::UnmodifiableCollection::RetainAll(
+    /* [in] */ ICollection* c,
+    /* [out] */ Boolean* changed)
+{
+    return E_UNSUPPORTED_OPERATION_EXCEPTION;
+}
+
+ECode Collections::UnmodifiableCollection::Clear()
+{
+    return E_UNSUPPORTED_OPERATION_EXCEPTION;
+}
+
+//----------------------------------------------------------------
+
+CCM_INTERFACE_IMPL_1(Collections::UnmodifiableList, UnmodifiableCollection, IList);
+
+ECode Collections::UnmodifiableList::Equals(
+    /* [in] */ IInterface* obj,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    if ((IList*)this == IList::Probe(obj)) {
+        *result = true;
+        return NOERROR;
+    }
+    return IObject::Probe(mList)->Equals(obj, result);
+}
+
+ECode Collections::UnmodifiableList::GetHashCode(
+    /* [out] */ Integer* hash)
+{
+    return IObject::Probe(mList)->GetHashCode(hash);
+}
+
+ECode Collections::UnmodifiableList::Get(
+    /* [in] */ Integer index,
+    /* [out] */ IInterface** obj)
+{
+    return mList->Get(index, obj);
+}
+
+ECode Collections::UnmodifiableList::Set(
+    /* [in] */ Integer index,
+    /* [in] */ IInterface* obj,
+    /* [out] */ IInterface** prevObj)
+{
+    return E_UNSUPPORTED_OPERATION_EXCEPTION;
+}
+
+ECode Collections::UnmodifiableList::Add(
+    /* [in] */ Integer index,
+    /* [in] */ IInterface* obj)
+{
+    return E_UNSUPPORTED_OPERATION_EXCEPTION;
+}
+
+ECode Collections::UnmodifiableList::Remove(
+    /* [in] */ Integer index,
+    /* [out] */ IInterface** obj)
+{
+    return E_UNSUPPORTED_OPERATION_EXCEPTION;
+}
+
+ECode Collections::UnmodifiableList::IndexOf(
+    /* [in] */ IInterface* obj,
+    /* [out] */ Integer* index)
+{
+    return mList->IndexOf(obj, index);
+}
+
+ECode Collections::UnmodifiableList::LastIndexOf(
+    /* [in] */ IInterface* obj,
+    /* [out] */ Integer* index)
+{
+    return mList->LastIndexOf(obj, index);
+}
+
+ECode Collections::UnmodifiableList::AddAll(
+    /* [in] */ Integer index,
+    /* [in] */ ICollection* c,
+    /* [out] */ Boolean* result)
+{
+    return E_UNSUPPORTED_OPERATION_EXCEPTION;
+}
+
+ECode Collections::UnmodifiableList::GetListIterator(
+    /* [out] */ IListIterator** it)
+{
+    return GetListIterator(0, it);
+}
+
+ECode Collections::UnmodifiableList::GetListIterator(
+    /* [in] */ Integer index,
+    /* [out] */ IListIterator** it)
+{
+    VALIDATE_NOT_NULL(it);
+
+    class _ListIterator
+        : public LightRefBase
+        , public IListIterator
+        , public IIterator
+    {
+    public:
+        _ListIterator(
+            /* [in] */ IListIterator* it)
+            : mI(it)
+        {}
+
+        Integer AddRef(
+            /* [in] */ HANDLE id = 0) override
+        {
+            return LightRefBase::AddRef(id);
+        }
+
+        Integer Release(
+            /* [in] */ HANDLE id = 0) override
+        {
+            return LightRefBase::Release(id);
+        }
+
+        IInterface* Probe(
+            /* [in] */ const InterfaceID& iid) override
+        {
+            if (iid == IID_IInterface) {
+                return (IInterface*)(IIterator*)this;
+            }
+            else if (iid == IID_IListIterator) {
+                return (IListIterator*)this;
+            }
+            else if (iid == IID_IIterator) {
+                return (IIterator*)this;
+            }
+            return nullptr;
+        }
+
+        ECode GetInterfaceID(
+            /* [in] */ IInterface* object,
+            /* [out] */ InterfaceID* iid) override
+        {
+            VALIDATE_NOT_NULL(iid);
+
+            if (object == (IInterface*)(IListIterator*)this) {
+                *iid = IID_IListIterator;
+                return NOERROR;
+            }
+            else if (object == (IInterface*)(IIterator*)this) {
+                *iid = IID_IIterator;
+                return NOERROR;
+            }
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+
+        ECode HasNext(
+            /* [out] */ Boolean* result) override
+        {
+            return mI->HasNext(result);
+        }
+
+        ECode Next(
+            /* [out] */ IInterface** object = nullptr) override
+        {
+            return mI->Next(object);
+        }
+
+        ECode HasPrevious(
+            /* [out] */ Boolean* result) override
+        {
+            return mI->HasPrevious(result);
+        }
+
+        ECode Previous(
+            /* [out] */ IInterface** object = nullptr) override
+        {
+            return mI->Previous(object);
+        }
+
+        ECode GetNextIndex(
+            /* [out] */ Integer* index) override
+        {
+            return mI->GetNextIndex(index);
+        }
+
+        ECode GetPreviousIndex(
+            /* [out] */ Integer* index) override
+        {
+            return mI->GetPreviousIndex(index);
+        }
+
+        ECode Remove() override
+        {
+            return E_UNSUPPORTED_OPERATION_EXCEPTION;
+        }
+
+        ECode Set(
+            /* [in] */ IInterface* object) override
+        {
+            return E_UNSUPPORTED_OPERATION_EXCEPTION;
+        }
+
+        ECode Add(
+            /* [in] */ IInterface* object) override
+        {
+            return E_UNSUPPORTED_OPERATION_EXCEPTION;
+        }
+
+    private:
+        AutoPtr<IListIterator> mI;
+    };
+
+    AutoPtr<IListIterator> i;
+    mList->GetListIterator(index, &i);
+    *it = new _ListIterator(i);
+    REFCOUNT_ADD(*it);
+    return NOERROR;
+}
+
+ECode Collections::UnmodifiableList::SubList(
+    /* [in] */ Integer fromIndex,
+    /* [in] */ Integer toIndex,
+    /* [out] */ IList** subList)
+{
+    VALIDATE_NOT_NULL(subList);
+
+    AutoPtr<IList> sub;
+    mList->SubList(fromIndex, toIndex, &sub);
+    *subList = new UnmodifiableList(sub);
+    REFCOUNT_ADD(*subList);
+    return NOERROR;
+}
+
+ECode Collections::UnmodifiableList::Add(
+    /* [in] */ IInterface* obj,
+    /* [out] */ Boolean* changed)
+{
+    return UnmodifiableCollection::Add(obj, changed);
+}
+
+ECode Collections::UnmodifiableList::AddAll(
+    /* [in] */ ICollection* c,
+    /* [out] */ Boolean* changed)
+{
+    return UnmodifiableCollection::AddAll(c, changed);
+}
+
+ECode Collections::UnmodifiableList::Clear()
+{
+    return UnmodifiableCollection::Clear();
+}
+
+ECode Collections::UnmodifiableList::Contains(
+    /* [in] */ IInterface* obj,
+    /* [out] */ Boolean* result)
+{
+    return UnmodifiableCollection::Contains(obj, result);
+}
+
+ECode Collections::UnmodifiableList::ContainsAll(
+    /* [in] */ ICollection* c,
+    /* [out] */ Boolean* result)
+{
+    return UnmodifiableCollection::ContainsAll(c, result);
+}
+
+ECode Collections::UnmodifiableList::GetIterator(
+    /* [out] */ IIterator** it)
+{
+    return UnmodifiableCollection::GetIterator(it);
+}
+
+ECode Collections::UnmodifiableList::GetSize(
+    /* [out] */ Integer* size)
+{
+    return UnmodifiableCollection::GetSize(size);
+}
+
+ECode Collections::UnmodifiableList::IsEmpty(
+    /* [out] */ Boolean* empty)
+{
+    return UnmodifiableCollection::IsEmpty(empty);
+}
+
+ECode Collections::UnmodifiableList::Remove(
+    /* [in] */ IInterface* obj,
+    /* [out] */ Boolean* changed)
+{
+    return UnmodifiableCollection::Remove(obj, changed);
+}
+
+ECode Collections::UnmodifiableList::RemoveAll(
+    /* [in] */ ICollection* c,
+    /* [out] */ Boolean* changed)
+{
+    return UnmodifiableCollection::RemoveAll(c, changed);
+}
+
+ECode Collections::UnmodifiableList::RetainAll(
+    /* [in] */ ICollection* c,
+    /* [out] */ Boolean* changed)
+{
+    return UnmodifiableCollection::RetainAll(c, changed);
+}
+
+ECode Collections::UnmodifiableList::ToArray(
+    /* [out, callee] */ Array<IInterface*>* objs)
+{
+    return UnmodifiableCollection::ToArray(objs);
+}
+
+ECode Collections::UnmodifiableList::ToArray(
+    /* [in] */ const InterfaceID& iid,
+    /* [out, callee] */ Array<IInterface*>* objs)
+{
+    return UnmodifiableCollection::ToArray(iid, objs);
+}
+
+//----------------------------------------------------------------
+
+CCM_INTERFACE_IMPL_1(Collections::UnmodifiableRandomAccessList, UnmodifiableList, IRandomAccess);
+
+ECode Collections::UnmodifiableRandomAccessList::SubList(
+    /* [in] */ Integer fromIndex,
+    /* [in] */ Integer toIndex,
+    /* [out] */ IList** subList)
+{
+    VALIDATE_NOT_NULL(subList);
+
+    AutoPtr<IList> sub;
+    mList->SubList(fromIndex, toIndex, &sub);
+    *subList = new UnmodifiableRandomAccessList(sub);
+    REFCOUNT_ADD(*subList);
+    return NOERROR;
 }
 
 //----------------------------------------------------------------
