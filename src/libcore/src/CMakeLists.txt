@@ -84,8 +84,9 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_text_CDecimalFormat.cpp
     ${OBJ_DIR}/_ccm_text_CDecimalFormatSymbols.cpp
     ${OBJ_DIR}/_ccm_text_CFieldPosition.cpp
-    ${OBJ_DIR}/_ccm_text_CSimpleDateFormat.cpp
+    ${OBJ_DIR}/_ccm_text_CNumberFormatFactory.cpp
     ${OBJ_DIR}/_ccm_text_CParsePosition.cpp
+    ${OBJ_DIR}/_ccm_text_CSimpleDateFormat.cpp
     ${OBJ_DIR}/_ccm_util_CCalendarFactory.cpp
     ${OBJ_DIR}/_ccm_util_CArrayList.cpp
     ${OBJ_DIR}/_ccm_util_CDate.cpp

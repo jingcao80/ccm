@@ -1853,13 +1853,14 @@ ECode Formatter::FormatSpecifier::Print(
 
 ECode Formatter::FormatSpecifier::Print(
     /* [in] */ IStringBuilder* sb,
-    /* [in] */ IBigDecimal* value,
+    /* [in] */ IBigDecimal* _value,
     /* [in] */ ILocale* l,
     /* [in] */ Flags* f,
     /* [in] */ Char c,
     /* [in] */ Integer precision,
     /* [in] */ Boolean neg)
 {
+    AutoPtr<IBigDecimal> value = _value;
     if (c == Conversion::SCIENTIFIC) {
         // Create a new BigDecimal with the desired precision.
         Integer prec = (precision == -1 ? 6 : precision);
@@ -1938,7 +1939,7 @@ ECode Formatter::FormatSpecifier::Print(
                 // case of 0.xxxxxx
                 AutoPtr<IBigDecimal> tempBD;
                 value->SetScale(prec, RoundingMode::HALF_UP, &tempBD);
-                tempBD = std::move(value);
+                value = std::move(tempBD);
             }
             else {
                 compPrec -= (scale - prec);

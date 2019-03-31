@@ -148,7 +148,7 @@ ECode AbstractStringBuilder::GetCharAt(
     const char* end = mValue + mByteCount;
     while (*p && p < end) {
         Char unicode = GetCharInternal(p, &byteSize);
-        if (byteSize == 0 || p + byteSize >= end) {
+        if (byteSize == 0 || p + byteSize > end) {
             *c = String::INVALID_CHAR;
             return E_STRING_INDEX_OUT_OF_BOUNDS_EXCEPTION;
         }
@@ -206,7 +206,7 @@ ECode AbstractStringBuilder::GetChars(
     const char* end = mValue + mByteCount;
     while (*p && p < end) {
         Char unicode = GetCharInternal(p, &byteSize);
-        if (byteSize == 0 || p + byteSize >= end) {
+        if (byteSize == 0 || p + byteSize > end) {
             return E_STRING_INDEX_OUT_OF_BOUNDS_EXCEPTION;
         }
         if (i >= srcStart && i <= srcEnd - 1) {
@@ -235,7 +235,7 @@ ECode AbstractStringBuilder::SetCharAt(
     const char* end = mValue + mByteCount;
     while (*p && p < end) {
         byteSize = String::UTF8SequenceLength(*p);
-        if (byteSize == 0 || p + byteSize >= end) {
+        if (byteSize == 0 || p + byteSize > end) {
             return E_STRING_INDEX_OUT_OF_BOUNDS_EXCEPTION;
         }
         if (index == 0) {
@@ -442,20 +442,20 @@ ECode AbstractStringBuilder::Delete(
         const char* pend = mValue + mByteCount;
         while (*p && p < pend) {
             Char unicode = GetCharInternal(p, &byteSize);
-            if (byteSize == 0 || p + byteSize >= pend) {
+            if (byteSize == 0 || p + byteSize > pend) {
                 return E_STRING_INDEX_OUT_OF_BOUNDS_EXCEPTION;
             }
             if (i == start) {
                 charStart = const_cast<char*>(p);
             }
-            if (i == end) {
+            if (i == end - 1) {
                 charEnd = const_cast<char*>(p);
                 break;
             }
             p += byteSize;
             i++;
         }
-        memmove(const_cast<char*>(charStart), charEnd, mByteCount - (charEnd - mValue));
+        memmove(charStart, charEnd, mByteCount - (charEnd - mValue));
         mCount -= len;
         mByteCount -= charEnd - charStart;
     }
@@ -474,7 +474,7 @@ ECode AbstractStringBuilder::DeleteCharAt(
     const char* end = mValue + mByteCount;
     while (*p && p < end) {
         byteSize = String::UTF8SequenceLength(*p);
-        if (byteSize == 0 || p + byteSize >= end) {
+        if (byteSize == 0 || p + byteSize > end) {
             return E_STRING_INDEX_OUT_OF_BOUNDS_EXCEPTION;
         }
         if (index == 0) {
@@ -507,13 +507,13 @@ ECode AbstractStringBuilder::Replace(
     const char* pend = mValue + mByteCount;
     while (*p && p < pend) {
         Char unicode = GetCharInternal(p, &byteSize);
-        if (byteSize == 0 || p + byteSize >= pend) {
+        if (byteSize == 0 || p + byteSize > pend) {
             return E_STRING_INDEX_OUT_OF_BOUNDS_EXCEPTION;
         }
         if (i == start) {
             byteStart = p - mValue;
         }
-        if (i == end) {
+        if (i == end - 1) {
             byteEnd = p - mValue;
             break;
         }
@@ -565,13 +565,13 @@ ECode AbstractStringBuilder::Substring(
     const char* pend = mValue + mByteCount;
     while (*p && p < pend) {
         Char unicode = GetCharInternal(p, &byteSize);
-        if (byteSize == 0 || p + byteSize >= pend) {
+        if (byteSize == 0 || p + byteSize > pend) {
             return E_STRING_INDEX_OUT_OF_BOUNDS_EXCEPTION;
         }
         if (i == start) {
             byteStart = p - mValue;
         }
-        if (i == end) {
+        if (i == end - 1) {
             byteEnd = p - mValue;
             break;
         }
@@ -607,7 +607,7 @@ ECode AbstractStringBuilder::Insert(
     const char* end = mValue + mByteCount;
     while (*p && p < end) {
         byteSize = String::UTF8SequenceLength(*p);
-        if (byteSize == 0 || p + byteSize >= end) {
+        if (byteSize == 0 || p + byteSize > end) {
             return E_STRING_INDEX_OUT_OF_BOUNDS_EXCEPTION;
         }
         if (index == 0) {
@@ -655,7 +655,7 @@ ECode AbstractStringBuilder::Insert(
     const char* end = mValue + mByteCount;
     while (*p && p < end) {
         byteSize = String::UTF8SequenceLength(*p);
-        if (byteSize == 0 || p + byteSize >= end) {
+        if (byteSize == 0 || p + byteSize > end) {
             return E_STRING_INDEX_OUT_OF_BOUNDS_EXCEPTION;
         }
         if (offset == 0) {
@@ -729,7 +729,7 @@ ECode AbstractStringBuilder::Insert(
     const char* end = mValue + mByteCount;
     while (*p && p < end) {
         byteSize = String::UTF8SequenceLength(*p);
-        if (byteSize == 0 || p + byteSize >= end) {
+        if (byteSize == 0 || p + byteSize > end) {
             return E_STRING_INDEX_OUT_OF_BOUNDS_EXCEPTION;
         }
         if (offset == 0) {
@@ -795,7 +795,7 @@ ECode AbstractStringBuilder::IndexOf(
     const char* psub = nullptr;
     while (*p && p < end) {
         byteSize = String::UTF8SequenceLength(*p);
-        if (byteSize == 0 || p + byteSize >= end) {
+        if (byteSize == 0 || p + byteSize > end) {
             return E_STRING_INDEX_OUT_OF_BOUNDS_EXCEPTION;
         }
         if (i >= fromIndex && psub == nullptr) {

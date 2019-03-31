@@ -16,6 +16,13 @@
 
 #include "core/CoreUtils.h"
 #include "core/StringUtils.h"
+#include "ccm.math.CBigDecimal.h"
+#include "ccm.math.IBigDecimal.h"
+#include "ccm.text.CNumberFormatFactory.h"
+#include "ccm.text.IDecimalFormat.h"
+#include "ccm.text.IDecimalFormatSymbols.h"
+#include "ccm.text.INumberFormat.h"
+#include "ccm.text.INumberFormatFactory.h"
 #include "ccm.util.CCalendarFactory.h"
 #include "ccm.util.CLocale.h"
 #include "ccm.util.CLocaleFactory.h"
@@ -32,6 +39,15 @@
 using namespace ccm;
 using ccm::core::CoreUtils;
 using ccm::core::StringUtils;
+using ccm::math::CBigDecimal;
+using ccm::math::IBigDecimal;
+using ccm::math::IID_IBigDecimal;
+using ccm::text::CNumberFormatFactory;
+using ccm::text::IDecimalFormat;
+using ccm::text::IDecimalFormatSymbols;
+using ccm::text::IID_INumberFormatFactory;
+using ccm::text::INumberFormat;
+using ccm::text::INumberFormatFactory;
 using ccm::util::CCalendarFactory;
 using ccm::util::CLocale;
 using ccm::util::CLocaleFactory;
@@ -300,6 +316,85 @@ TEST(FormatterTest, TestFormatNull)
     usStr = StringUtils::Format(us, String("%%"), nullptr);
     EXPECT_STREQ(usStr.string(), "%");
 }
+
+TEST(FormatterTest, TestBigDecimalFormatting)
+{
+    AutoPtr<IBigDecimal> bd;
+    CBigDecimal::New(String("20.00000"), IID_IBigDecimal, (IInterface**)&bd);
+    Array<IInterface*> args{ bd };
+    String result = StringUtils::Format(String("%.2f"), &args);
+    EXPECT_STREQ(result.string(), "20.00");
+
+    bd = nullptr;
+    CBigDecimal::New(String("20.000000"), IID_IBigDecimal, (IInterface**)&bd);
+    args = { bd };
+    result = StringUtils::Format(String("%.2f"), &args);
+    EXPECT_STREQ(result.string(), "20.00");
+
+    bd = nullptr;
+    CBigDecimal::New(String(".2"), IID_IBigDecimal, (IInterface**)&bd);
+    args = { bd };
+    result = StringUtils::Format(String("%.2f"), &args);
+    EXPECT_STREQ(result.string(), "0.20");
+
+    bd = nullptr;
+    CBigDecimal::New(String("2"), IID_IBigDecimal, (IInterface**)&bd);
+    args = { bd };
+    result = StringUtils::Format(String("%.2f"), &args);
+    EXPECT_STREQ(result.string(), "2.00");
+
+    bd = nullptr;
+    CBigDecimal::New(String("-2"), IID_IBigDecimal, (IInterface**)&bd);
+    args = { bd };
+    result = StringUtils::Format(String("%.2f"), &args);
+    EXPECT_STREQ(result.string(), "-2.00");
+
+    bd = nullptr;
+    CBigDecimal::New(String("200000000000000000000000"), IID_IBigDecimal, (IInterface**)&bd);
+    args = { bd };
+    result = StringUtils::Format(String("%.2f"), &args);
+    EXPECT_STREQ(result.string(), "200000000000000000000000.00");
+
+    bd = nullptr;
+    CBigDecimal::New(String("2000000000000000000000000000000000000000000000000"), IID_IBigDecimal, (IInterface**)&bd);
+    args = { bd };
+    result = StringUtils::Format(String("%.2f"), &args);
+    EXPECT_STREQ(result.string(), "2000000000000000000000000000000000000000000000000.00");
+}
+
+TEST(FormatterTest, Test42936)
+{
+    Array<IInterface*> args{ CoreUtils::Box(0.0) };
+    String result = StringUtils::Format(String("%.15g"), &args);
+    EXPECT_STREQ(result.string(), "0.00000000000000");
+}
+
+TEST(FormatterTest, TestGroupingSizeZero)
+{
+    AutoPtr<ILocale> localeWithoutGrouping;
+    CLocale::New(String("en"), String("US"), String("POSIX"), IID_ILocale, (IInterface**)&localeWithoutGrouping);
+    AutoPtr<INumberFormatFactory> factory;
+    CNumberFormatFactory::New(IID_INumberFormatFactory, (IInterface**)&factory);
+    AutoPtr<INumberFormat> nf;
+    factory->GetInstance(localeWithoutGrouping, &nf);
+    IDecimalFormat* decimalFormat = IDecimalFormat::Probe(nf);
+
+    // Confirm the locale is still a good example: it has a group separator, but no grouping in
+    // the default decimal format.
+    Integer groupingSize;
+    decimalFormat->GetGroupingSize(&groupingSize);
+    EXPECT_EQ(0, groupingSize);
+    Boolean groupingUsed;
+    decimalFormat->IsGroupingUsed(&groupingUsed);
+    EXPECT_FALSE(groupingUsed);
+    AutoPtr<IDecimalFormatSymbols> symbols;
+    decimalFormat->GetDecimalFormatSymbols(&symbols);
+    Char separator;
+    symbols->GetGroupingSeparator(&separator);
+    EXPECT_TRUE(separator != U'\0');
+}
+
+
 
 int main(int argc, char **argv)
 {
