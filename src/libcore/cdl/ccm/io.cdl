@@ -17,6 +17,7 @@
 include "ccm/io/Exceptions.cdl"
 include "ccm/io/IBufferedWriter.cdl"
 include "ccm/io/IByteBuffer.cdl"
+include "ccm/io/IByteOrder.cdl"
 include "ccm/io/ICloseable.cdl"
 include "ccm/io/IFile.cdl"
 include "ccm/io/IFileDescriptor.cdl"

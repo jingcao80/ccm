@@ -30,9 +30,15 @@ public:
     static const Integer AF_INET_;
     static const Integer AF_INET6_;
     static const Integer EINVAL_;
+    static const Integer MAP_PRIVATE_;
+    static const Integer MAP_SHARED_;
     static const Integer MS_SYNC_;
     static const Integer O_ACCMODE_;
     static const Integer O_RDONLY_;
+    static const Integer PROT_EXEC_;
+    static const Integer PROT_NONE_;
+    static const Integer PROT_READ_;
+    static const Integer PROT_WRITE_;
     static const Integer SOL_SOCKET_;
     static const Integer SO_DOMAIN_;
     static const Integer SO_LINGER_;

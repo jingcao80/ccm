@@ -23,19 +23,19 @@ namespace core {
 ]
 interface IArray
 {
-    GetLength(
-        [out] Long* size);
-
     Get(
         [in] Long index,
         [out] IInterface** element);
 
-    Set(
-        [in] Long index,
-        [in] IInterface* element);
+    GetLength(
+        [out] Long* size);
 
     GetTypeId(
         [out] InterfaceID* id);
+
+    Set(
+        [in] Long index,
+        [in] IInterface* element);
 }
 
 }

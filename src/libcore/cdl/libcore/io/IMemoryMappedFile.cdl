@@ -14,29 +14,31 @@
 // limitations under the License.
 //=========================================================================
 
-include "libcore/io/IBufferIterator.cdl"
-include "libcore/io/IIoBridge.cdl"
-include "libcore/io/ILibcore.cdl"
-include "libcore/io/IMemoryMappedFile.cdl"
-include "libcore/io/IOs.cdl"
-
-interface ccm::core::IAutoCloseable;
+interface libcore::io::IBufferIterator;
 
 namespace libcore {
 namespace io {
 
+/*
+ * @Involve interface ccm::core::IAutoCloseable;
+ */
 [
-    uuid(4fd4ee55-6fc3-4dd2-af89-e1a560cf707c),
+    uuid(c3142383-5fa7-4fe7-a98e-c5e5bf321c58),
     version(0.1.0)
 ]
-coclass CMemoryMappedFile
+interface IMemoryMappedFile
 {
-    Constructor(
-        [in] HANDLE address,
-        [in] Long size);
+    BigEndianIterator(
+        [out] IBufferIterator** it);
 
-    interface IMemoryMappedFile;
-    interface IAutoCloseable;
+    IsClosed(
+        [out] Boolean* closed);
+
+    LittleEndianIterator(
+        [out] IBufferIterator** it);
+
+    GetSize(
+        [out] Integer* size);
 }
 
 }

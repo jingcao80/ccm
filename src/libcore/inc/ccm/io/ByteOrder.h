@@ -14,30 +14,47 @@
 // limitations under the License.
 //=========================================================================
 
-include "libcore/io/IBufferIterator.cdl"
-include "libcore/io/IIoBridge.cdl"
-include "libcore/io/ILibcore.cdl"
-include "libcore/io/IMemoryMappedFile.cdl"
-include "libcore/io/IOs.cdl"
+#ifndef __CCM_IO_BYTEORDER_H__
+#define __CCM_IO_BYTEORDER_H__
 
-interface ccm::core::IAutoCloseable;
+#include "ccm/core/SyncObject.h"
+#include "ccm.io.IByteOrder.h"
 
-namespace libcore {
+using ccm::core::SyncObject;
+
+namespace ccm {
 namespace io {
 
-[
-    uuid(4fd4ee55-6fc3-4dd2-af89-e1a560cf707c),
-    version(0.1.0)
-]
-coclass CMemoryMappedFile
+class ByteOrder
+    : public SyncObject
+    , public IByteOrder
 {
-    Constructor(
-        [in] HANDLE address,
-        [in] Long size);
+public:
+    CCM_INTERFACE_DECL();
 
-    interface IMemoryMappedFile;
-    interface IAutoCloseable;
-}
+    static AutoPtr<IByteOrder> Order();
+
+    ECode ToString(
+        /* [out] */ String* desc) override;
+
+    static AutoPtr<IByteOrder> GetBIG_ENDIAN();
+
+    static AutoPtr<IByteOrder> GetLITTLE_ENDIAN();
+
+private:
+    ByteOrder(
+        /* [in] */ const String& name);
+
+private:
+    String mName;
+};
+
+inline ByteOrder::ByteOrder(
+    /* [in] */ const String& name)
+    : mName(name)
+{}
 
 }
 }
+
+#endif // __CCM_IO_BYTEORDER_H__

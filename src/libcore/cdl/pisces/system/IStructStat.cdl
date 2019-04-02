@@ -22,7 +22,68 @@ namespace system {
     version(0.1.0)
 ]
 interface IStructStat
-{}
+{
+    /** Time of last access. */
+    GetAtime(
+        [out] Long* atime);
+
+    /**
+     * A file system-specific preferred I/O block size for this object.
+     * For some file system types, this may vary from file to file.
+     */
+    GetBlksize(
+        [out] Long* blksize);
+
+    /** Number of blocks allocated for this object. */
+    GetBlocks(
+        [out] Long* blocks);
+
+    /** Time of last status change. */
+    GetCtime(
+        [out] Long* ctime);
+
+    /** Device ID of device containing file. */
+    GetDev(
+        [out] Long* dev);
+
+    /** Group ID of file. */
+    GetGid(
+        [out] Integer* gid);
+
+    /** File serial number (inode). */
+    GetIno(
+        [out] Long* ino);
+
+    /** Mode (permissions) of file. */
+    GetMode(
+        [out] Integer* mode);
+
+    /** Time of last data modification. */
+    GetMtime(
+        [out] Long* mtime);
+
+    /** Number of hard links to the file. */
+    GetNlink(
+        [out] Long* nlink);
+
+    /** Device ID (if file is character or block special). */
+    GetRdev(
+        [out] Long* rdev);
+
+    /**
+     * For regular files, the file size in bytes.
+     * For symbolic links, the length in bytes of the pathname contained in the symbolic link.
+     * For a shared memory object, the length in bytes.
+     * For a typed memory object, the length in bytes.
+     * For other file types, the use of this field is unspecified.
+     */
+    GetSize(
+        [out] Long* size);
+
+    /** User ID of file. */
+    GetUid(
+        [out] Integer* uid);
+}
 
 }
 }

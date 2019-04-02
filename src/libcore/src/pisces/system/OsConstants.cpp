@@ -27,9 +27,15 @@ namespace system {
 const Integer OsConstants::AF_INET_ = AF_INET;
 const Integer OsConstants::AF_INET6_ = AF_INET6;
 const Integer OsConstants::EINVAL_ = EINVAL;
+const Integer OsConstants::MAP_PRIVATE_ = MAP_PRIVATE;
+const Integer OsConstants::MAP_SHARED_ = MAP_SHARED;
 const Integer OsConstants::MS_SYNC_ = MS_SYNC;
 const Integer OsConstants::O_ACCMODE_ = O_ACCMODE;
 const Integer OsConstants::O_RDONLY_ = O_RDONLY;
+const Integer OsConstants::PROT_EXEC_ = PROT_EXEC;
+const Integer OsConstants::PROT_NONE_ = PROT_NONE;
+const Integer OsConstants::PROT_READ_ = PROT_READ;
+const Integer OsConstants::PROT_WRITE_ = PROT_WRITE;
 const Integer OsConstants::SOL_SOCKET_ = SOL_SOCKET;
 const Integer OsConstants::SO_DOMAIN_ = SO_DOMAIN;
 const Integer OsConstants::SO_LINGER_ = SO_LINGER;

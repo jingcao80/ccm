@@ -14,30 +14,30 @@
 // limitations under the License.
 //=========================================================================
 
-include "libcore/io/IBufferIterator.cdl"
-include "libcore/io/IIoBridge.cdl"
-include "libcore/io/ILibcore.cdl"
-include "libcore/io/IMemoryMappedFile.cdl"
-include "libcore/io/IOs.cdl"
+#ifndef __CCM_IO_BITS_H__
+#define __CCM_IO_BITS_H__
 
-interface ccm::core::IAutoCloseable;
+#include "ccm.io.IByteOrder.h"
+#include <ccmautoptr.h>
 
-namespace libcore {
+namespace ccm {
 namespace io {
 
-[
-    uuid(4fd4ee55-6fc3-4dd2-af89-e1a560cf707c),
-    version(0.1.0)
-]
-coclass CMemoryMappedFile
+class Bits
 {
-    Constructor(
-        [in] HANDLE address,
-        [in] Long size);
+public:
+    static AutoPtr<IByteOrder> ByteOrder()
+    {
+        return nullptr;
+    }
 
-    interface IMemoryMappedFile;
-    interface IAutoCloseable;
-}
+private:
+    Bits();
+
+    static AutoPtr<IByteOrder> GetByteOrder();
+};
 
 }
 }
+
+#endif // __CCM_IO_BITS_H__

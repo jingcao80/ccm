@@ -14,29 +14,38 @@
 // limitations under the License.
 //=========================================================================
 
-include "libcore/io/IBufferIterator.cdl"
-include "libcore/io/IIoBridge.cdl"
-include "libcore/io/ILibcore.cdl"
-include "libcore/io/IMemoryMappedFile.cdl"
-include "libcore/io/IOs.cdl"
+#include "ccm/io/Bits.h"
+#include "ccm/io/ByteOrder.h"
 
-interface ccm::core::IAutoCloseable;
-
-namespace libcore {
+namespace ccm {
 namespace io {
 
-[
-    uuid(4fd4ee55-6fc3-4dd2-af89-e1a560cf707c),
-    version(0.1.0)
-]
-coclass CMemoryMappedFile
-{
-    Constructor(
-        [in] HANDLE address,
-        [in] Long size);
+CCM_INTERFACE_IMPL_1(ByteOrder, SyncObject, IByteOrder);
 
-    interface IMemoryMappedFile;
-    interface IAutoCloseable;
+AutoPtr<IByteOrder> ByteOrder::Order()
+{
+    return Bits::ByteOrder();
+}
+
+ECode ByteOrder::ToString(
+    /* [out] */ String* desc)
+{
+    VALIDATE_NOT_NULL(desc);
+
+    *desc = mName;
+    return NOERROR;
+}
+
+AutoPtr<IByteOrder> ByteOrder::GetBIG_ENDIAN()
+{
+    static AutoPtr<IByteOrder> BIG_ENDIAN_ = new ByteOrder(String("BIG_ENDIAN"));
+    return BIG_ENDIAN_;
+}
+
+AutoPtr<IByteOrder> ByteOrder::GetLITTLE_ENDIAN()
+{
+    static AutoPtr<IByteOrder> LITTLE_ENDIAN_ = new ByteOrder(String("LITTLE_ENDIAN"));
+    return LITTLE_ENDIAN_;
 }
 
 }

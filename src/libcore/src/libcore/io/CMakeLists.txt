@@ -30,7 +30,11 @@ set(SOURCES
     IoBridge.cpp
     IoTracker.cpp
     Libcore.cpp
-    Linux.cpp)
+    Linux.cpp
+    Memory.cpp
+    MemoryMappedFile.cpp
+    NioBufferIterator.cpp
+    io.cpp)
 
 add_library(libcore_io STATIC
     ${SOURCES})

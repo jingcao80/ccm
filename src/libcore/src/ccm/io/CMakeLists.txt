@@ -27,7 +27,9 @@ include_directories(
     ${OBJ_DIR})
 
 set(SOURCES
+    Bits.cpp
     BufferedWriter.cpp
+    ByteOrder.cpp
     DeleteOnExitHook.cpp
     ExpiringCache.cpp
     File.cpp
