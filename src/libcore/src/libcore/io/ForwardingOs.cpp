@@ -487,7 +487,7 @@ ECode ForwardingOs::Lstat(
 }
 
 ECode ForwardingOs::Mincore(
-    /* [in] */ Long address,
+    /* [in] */ HANDLE address,
     /* [in] */ Long byteCount,
     /* [in] */ const Array<Byte>& vector)
 {
@@ -509,26 +509,26 @@ ECode ForwardingOs::Mkfifo(
 }
 
 ECode ForwardingOs::Mlock(
-    /* [in] */ Long address,
+    /* [in] */ HANDLE address,
     /* [in] */ Long byteCount)
 {
     return mOs->Mlock(address, byteCount);
 }
 
 ECode ForwardingOs::Mmap(
-    /* [in] */ Long address,
+    /* [in] */ HANDLE address,
     /* [in] */ Long byteCount,
     /* [in] */ Integer prot,
     /* [in] */ Integer flags,
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Long offset,
-    /* [out] */ Long* result)
+    /* [out] */ HANDLE* result)
 {
     return mOs->Mmap(address, byteCount, prot, flags, fd, offset, result);
 }
 
 ECode ForwardingOs::Msync(
-    /* [in] */ Long address,
+    /* [in] */ HANDLE address,
     /* [in] */ Long byteCount,
     /* [in] */ Integer flags)
 {
@@ -536,14 +536,14 @@ ECode ForwardingOs::Msync(
 }
 
 ECode ForwardingOs::Munlock(
-    /* [in] */ Long address,
+    /* [in] */ HANDLE address,
     /* [in] */ Long byteCount)
 {
     return mOs->Munlock(address, byteCount);
 }
 
 ECode ForwardingOs::Munmap(
-    /* [in] */ Long address,
+    /* [in] */ HANDLE address,
     /* [in] */ Long byteCount)
 {
     return mOs->Munmap(address, byteCount);

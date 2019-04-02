@@ -351,7 +351,7 @@ public:
         /* [out] */ IStructStat** stat) override;
 
     ECode Mincore(
-        /* [in] */ Long address,
+        /* [in] */ HANDLE address,
         /* [in] */ Long byteCount,
         /* [in] */ const Array<Byte>& vector) override;
 
@@ -364,29 +364,29 @@ public:
         /* [in] */ Integer mode) override;
 
     ECode Mlock(
-        /* [in] */ Long address,
+        /* [in] */ HANDLE address,
         /* [in] */ Long byteCount) override;
 
     ECode Mmap(
-        /* [in] */ Long address,
+        /* [in] */ HANDLE address,
         /* [in] */ Long byteCount,
         /* [in] */ Integer prot,
         /* [in] */ Integer flags,
         /* [in] */ IFileDescriptor* fd,
         /* [in] */ Long offset,
-        /* [out] */ Long* result) override;
+        /* [out] */ HANDLE* result) override;
 
     ECode Msync(
-        /* [in] */ Long address,
+        /* [in] */ HANDLE address,
         /* [in] */ Long byteCount,
         /* [in] */ Integer flags) override;
 
     ECode Munlock(
-        /* [in] */ Long address,
+        /* [in] */ HANDLE address,
         /* [in] */ Long byteCount) override;
 
     ECode Munmap(
-        /* [in] */ Long address,
+        /* [in] */ HANDLE address,
         /* [in] */ Long byteCount) override;
 
     ECode Open(

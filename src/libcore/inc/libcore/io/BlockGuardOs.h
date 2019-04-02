@@ -129,7 +129,7 @@ public:
         /* [in] */ Integer mode) override;
 
     ECode Msync(
-        /* [in] */ Long address,
+        /* [in] */ HANDLE address,
         /* [in] */ Long byteCount,
         /* [in] */ Integer flags) override;
 

@@ -347,7 +347,7 @@ ECode BlockGuardOs::Mkfifo(
 }
 
 ECode BlockGuardOs::Msync(
-    /* [in] */ Long address,
+    /* [in] */ HANDLE address,
     /* [in] */ Long byteCount,
     /* [in] */ Integer flags)
 {

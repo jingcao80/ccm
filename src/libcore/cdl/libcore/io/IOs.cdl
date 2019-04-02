@@ -322,7 +322,7 @@ interface IOs
         [out] IStructStat** stat);
 
     Mincore(
-        [in] Long address,
+        [in] HANDLE address,
         [in] Long byteCount,
         [in] Array<Byte> vector);
 
@@ -335,29 +335,29 @@ interface IOs
         [in] Integer mode);
 
     Mlock(
-        [in] Long address,
+        [in] HANDLE address,
         [in] Long byteCount);
 
     Mmap(
-        [in] Long address,
+        [in] HANDLE address,
         [in] Long byteCount,
         [in] Integer prot,
         [in] Integer flags,
         [in] IFileDescriptor* fd,
         [in] Long offset,
-        [out] Long* result);
+        [out] HANDLE* result);
 
     Msync(
-        [in] Long address,
+        [in] HANDLE address,
         [in] Long byteCount,
         [in] Integer flags);
 
     Munlock(
-        [in] Long address,
+        [in] HANDLE address,
         [in] Long byteCount);
 
     Munmap(
-        [in] Long address,
+        [in] HANDLE address,
         [in] Long byteCount);
 
     Open(

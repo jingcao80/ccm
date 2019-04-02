@@ -536,7 +536,7 @@ ECode Linux::Lstat(
 }
 
 ECode Linux::Mincore(
-    /* [in] */ Long address,
+    /* [in] */ HANDLE address,
     /* [in] */ Long byteCount,
     /* [in] */ const Array<Byte>& vector)
 {
@@ -558,26 +558,26 @@ ECode Linux::Mkfifo(
 }
 
 ECode Linux::Mlock(
-    /* [in] */ Long address,
+    /* [in] */ HANDLE address,
     /* [in] */ Long byteCount)
 {
     return NOERROR;
 }
 
 ECode Linux::Mmap(
-    /* [in] */ Long address,
+    /* [in] */ HANDLE address,
     /* [in] */ Long byteCount,
     /* [in] */ Integer prot,
     /* [in] */ Integer flags,
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Long offset,
-    /* [out] */ Long* result)
+    /* [out] */ HANDLE* result)
 {
     return NOERROR;
 }
 
 ECode Linux::Msync(
-    /* [in] */ Long address,
+    /* [in] */ HANDLE address,
     /* [in] */ Long byteCount,
     /* [in] */ Integer flags)
 {
@@ -585,14 +585,14 @@ ECode Linux::Msync(
 }
 
 ECode Linux::Munlock(
-    /* [in] */ Long address,
+    /* [in] */ HANDLE address,
     /* [in] */ Long byteCount)
 {
     return NOERROR;
 }
 
 ECode Linux::Munmap(
-    /* [in] */ Long address,
+    /* [in] */ HANDLE address,
     /* [in] */ Long byteCount)
 {
     return NOERROR;
