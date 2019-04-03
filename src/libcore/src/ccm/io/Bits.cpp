@@ -13,3 +13,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //=========================================================================
+
+#include "ccm/io/Bits.h"
+#include "ccm/io/ByteOrder.h"
+
+namespace ccm {
+namespace io {
+
+AutoPtr<IByteOrder> Bits::GetByteOrder()
+{
+    static const AutoPtr<IByteOrder> sByteOrder = ByteOrder::GetLITTLE_ENDIAN();
+    return sByteOrder;
+}
+
+AutoPtr<IByteOrder> Bits::ByteOrder()
+{
+    return GetByteOrder();
+}
+
+}
+}

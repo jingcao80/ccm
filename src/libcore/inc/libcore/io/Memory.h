@@ -28,43 +28,28 @@ class Memory
 {
 public:
     static Byte PeekByte(
-        /* [in] */ HANDLE address)
-    {
-        return 0;
-    }
+        /* [in] */ HANDLE address);
 
     static Integer PeekInteger(
         /* [in] */ HANDLE address,
-        /* [in] */ Boolean swap)
-    {
-        return 0;
-    }
+        /* [in] */ Boolean swap);
 
     static Short PeekShort(
         /* [in] */ HANDLE address,
-        /* [in] */ Boolean swap)
-    {
-        return 0;
-    }
+        /* [in] */ Boolean swap);
 
     static ECode PeekByteArray(
         /* [in] */ HANDLE address,
         /* [out] */ Array<Byte>& dst,
         /* [in] */ Integer dstOffset,
-        /* [in] */ Integer byteCount)
-    {
-        return NOERROR;
-    }
+        /* [in] */ Integer byteCount);
 
     static ECode PeekIntegerArray(
         /* [in] */ HANDLE address,
         /* [out] */ Array<Integer>& dst,
         /* [in] */ Integer dstOffset,
         /* [in] */ Integer intCount,
-        /* [in] */ Boolean swap)
-    {
-        return NOERROR;
-    }
+        /* [in] */ Boolean swap);
 
 private:
     Memory();

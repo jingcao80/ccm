@@ -98,6 +98,12 @@ public:
     static Integer Signum(
         /* [in] */ Long i);
 
+    static Short ReverseBytes(
+        /* [in] */ Short i);
+
+    static Integer ReverseBytes(
+        /* [in] */ Integer i);
+
     COM_PUBLIC static Double CopySign(
         /* [in] */ Double magnitude,
         /* [in] */ Double sign);
@@ -258,6 +264,21 @@ inline Integer Math::Signum(
     /* [in] */ Long i)
 {
     return (Integer) ((i >> 63) | (((unsigned Long)-i) >> 63));
+}
+
+inline Short Math::ReverseBytes(
+    /* [in] */ Short i)
+{
+    return (Short) (((i & 0xFF00) >> 8) | (i << 8));
+}
+
+inline Integer Math::ReverseBytes(
+    /* [in] */ Integer i)
+{
+    return ((((unsigned Integer)i) >> 24)) |
+           ((i >> 8) & 0xFF00) |
+           ((i << 8) & 0xFF0000) |
+           ((i << 24));
 }
 
 inline Boolean Math::IsNaN(

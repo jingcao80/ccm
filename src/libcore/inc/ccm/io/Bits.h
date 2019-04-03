@@ -26,10 +26,7 @@ namespace io {
 class Bits
 {
 public:
-    static AutoPtr<IByteOrder> ByteOrder()
-    {
-        return nullptr;
-    }
+    static AutoPtr<IByteOrder> ByteOrder();
 
 private:
     Bits();
