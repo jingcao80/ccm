@@ -144,6 +144,18 @@ String::String(
     WriteCharArray(charArray, start, length);
 }
 
+String::String(
+    /* [in] */ const Array<Byte>& bytes,
+    /* [in] */ Integer start,
+    /* [in] */ Integer length)
+    : mString(nullptr)
+    , mCharCount(0)
+{
+    if (start > 0 && length > 0 && (start + length < bytes.GetLength())) {
+        mString = AllocFromUTF8(bytes.GetPayload() + start, length);
+    }
+}
+
 String::~String()
 {
     if (mString != nullptr) {

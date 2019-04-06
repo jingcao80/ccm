@@ -34,6 +34,10 @@ public:
         /* [in] */ const Array<Long>& a,
         /* [in] */ Long key);
 
+    static Integer BinarySearch(
+        /* [in] */ const Array<String>& a,
+        /* [in] */ const String& key);
+
     static ECode Fill(
         /* [out] */ Array<Char>& a,
         /* [in] */ Char value);
@@ -79,6 +83,12 @@ private:
         /* [in] */ Integer fromIndex,
         /* [in] */ Integer toIndex,
         /* [in] */ Long key);
+
+    static Integer BinarySearch0(
+        /* [in] */ const Array<String>& a,
+        /* [in] */ Integer fromIndex,
+        /* [in] */ Integer toIndex,
+        /* [in] */ String key);
 };
 
 }

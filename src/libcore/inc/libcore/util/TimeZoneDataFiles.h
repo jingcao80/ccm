@@ -14,6 +14,30 @@
 // limitations under the License.
 //=========================================================================
 
-include "libcore/util/IBasicLruCache.cdl"
-include "libcore/util/IZoneInfo.cdl"
-include "libcore/util/IZoneInfoDB.cdl"
+#ifndef __LIBCORE_UTIL_TIMEZONEDATAFILES_H__
+#define __LIBCORE_UTIL_TIMEZONEDATAFILES_H__
+
+#include <ccmtypes.h>
+
+using namespace ccm;
+
+namespace libcore {
+namespace util {
+
+class TimeZoneDataFiles
+{
+public:
+    static Array<String> GetTimeZoneFilePaths(
+        /* [in] */ const String& fileName)
+    {
+        return Array<String>::Null();
+    }
+
+private:
+    TimeZoneDataFiles();
+};
+
+}
+}
+
+#endif //__LIBCORE_UTIL_TIMEZONEDATAFILES_H__

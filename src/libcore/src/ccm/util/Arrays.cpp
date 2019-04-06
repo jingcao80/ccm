@@ -61,6 +61,13 @@ Integer Arrays::BinarySearch(
     return BinarySearch0(a, 0, a.GetLength(), key);
 }
 
+Integer Arrays::BinarySearch(
+    /* [in] */ const Array<String>& a,
+    /* [in] */ const String& key)
+{
+    return BinarySearch0(a, 0, a.GetLength(), key);
+}
+
 Integer Arrays::BinarySearch0(
     /* [in] */ const Array<Long>& a,
     /* [in] */ Integer fromIndex,
@@ -71,13 +78,39 @@ Integer Arrays::BinarySearch0(
     Integer high = toIndex - 1;
 
     while (low <= high) {
-        Integer mid = (low + high) >> 1;
+        Integer mid = ((unsigned Integer)(low + high)) >> 1;
         Long midVal = a[mid];
 
         if (midVal < key) {
             low = mid + 1;
         }
         else if (midVal > key) {
+            high = mid - 1;
+        }
+        else {
+            return mid; // key found
+        }
+    }
+    return -(low + 1);  // key not found.
+}
+
+Integer Arrays::BinarySearch0(
+    /* [in] */ const Array<String>& a,
+    /* [in] */ Integer fromIndex,
+    /* [in] */ Integer toIndex,
+    /* [in] */ String key)
+{
+    Integer low = fromIndex;
+    Integer high = toIndex - 1;
+
+    while (low <= high) {
+        Integer mid = ((unsigned Integer)(low + high)) >> 1;
+        Integer cmp = a[mid].Compare(key);
+
+        if (cmp < 0) {
+            low = mid + 1;
+        }
+        else if (cmp > 0) {
             high = mid - 1;
         }
         else {

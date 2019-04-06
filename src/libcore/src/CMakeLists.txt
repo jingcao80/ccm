@@ -148,6 +148,7 @@ set(LIBCORE_LINK_LIBS
     libcore_icu
     libcore_io
     libcore_math
+    libcore_util
     pisces_system
     -Wl,--no-whole-archive)
 

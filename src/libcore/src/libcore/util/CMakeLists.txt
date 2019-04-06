@@ -14,9 +14,19 @@
 # limitations under the License.
 #=========================================================================
 
-set(LIBCORE_LIBCORE_SRC_DIR ${LIBCORE_DIR}/src/libcore)
+set(UTIL_DIR ${LIBCORE_LIBCORE_SRC_DIR}/util)
 
-add_subdirectory(icu)
-add_subdirectory(io)
-add_subdirectory(math)
-add_subdirectory(util)
+include_directories(
+    ./
+    ../
+    ../../../inc
+    ${INC_DIR}
+    ${OBJ_DIR})
+
+set(SOURCES
+    BasicLruCache.cpp
+    ZoneInfoDB.cpp)
+
+add_library(libcore_util STATIC
+    ${SOURCES})
+add_dependencies(libcore_util build_libcore)

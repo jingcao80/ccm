@@ -117,7 +117,11 @@ public:
 
     T* begin();
 
+    const T* begin() const;
+
     T* end();
+
+    const T* end() const;
 
     void Clear();
 
@@ -523,7 +527,19 @@ T* Array<T>::begin()
 }
 
 template<class T>
+const T* Array<T>::begin() const
+{
+    return static_cast<T*>(mData);
+}
+
+template<class T>
 T* Array<T>::end()
+{
+    return static_cast<T*>(mData) + mSize;
+}
+
+template<class T>
+const T* Array<T>::end() const
 {
     return static_cast<T*>(mData) + mSize;
 }

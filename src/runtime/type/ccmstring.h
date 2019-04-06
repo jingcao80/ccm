@@ -66,6 +66,11 @@ public:
         /* [in] */ Integer start,
         /* [in] */ Integer length);
 
+    explicit String(
+        /* [in] */ const Array<Byte>& bytes,
+        /* [in] */ Integer start,
+        /* [in] */ Integer length);
+
     ~String();
 
     inline Boolean IsNull() const;

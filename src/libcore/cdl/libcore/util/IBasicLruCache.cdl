@@ -14,55 +14,31 @@
 // limitations under the License.
 //=========================================================================
 
-interface libcore::io::IBufferIterator;
-interface libcore::util::IZoneInfo;
+interface ccm::IInterface;
+interface ccm::util::IMap;
 
 namespace libcore {
 namespace util {
 
 [
-    uuid(c2f5daa8-9f22-480b-8c63-fb9e79b7719b),
+    uuid(d37e56e3-e7c2-43f8-bbc1-aefb351ba869),
     version(0.1.0)
 ]
-interface IZoneInfoDB
+interface IBasicLruCache
 {
-    const String TZDATA_FILE = "tzdata";
-}
+    EvictAll();
 
-[
-    uuid(0ab77469-0ac6-4ced-bbc2-2c7eb0478a0e),
-    version(0.1.0)
-]
-interface IZoneInfoDBTzData
-{
-    Close();
+    Get(
+        [in] IInterface* key,
+        [out] IInterface** value);
 
-    GetAvailableIDs(
-        [out, callee] Array<String>* ids);
+    Put(
+        [in] IInterface* key,
+        [in] IInterface* value,
+        [out] IInterface** prevValue = nullptr);
 
-    GetAvailableIDs(
-        [in] Integer rawUtcOffset,
-        [out, callee] Array<String>* ids);
-
-    GetBufferIterator(
-        [in] String id,
-        [out] IBufferIterator** it);
-
-    GetVersion(
-        [out] String* ver);
-
-    GetZoneTab(
-        [out] String* zoneTab);
-
-    HasTimeZone(
-        [in] String id,
-        [out] Boolean* result);
-
-    MakeTimeZone(
-        [in] String id,
-        [out] IZoneInfo** zone);
-
-    Validate();
+    Snapshot(
+        [out] IMap** snapshot);
 }
 
 }

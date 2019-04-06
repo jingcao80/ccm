@@ -14,6 +14,30 @@
 // limitations under the License.
 //=========================================================================
 
-include "libcore/util/IBasicLruCache.cdl"
-include "libcore/util/IZoneInfo.cdl"
-include "libcore/util/IZoneInfoDB.cdl"
+#ifndef __LIBCORE_UTIL_ZONEINFO_H__
+#define __LIBCORE_UTIL_ZONEINFO_H__
+
+#include "libcore.io.IBufferIterator.h"
+
+using libcore::io::IBufferIterator;
+
+namespace libcore {
+namespace util {
+
+class ZoneInfo
+{
+public:
+    static ECode ReadTimeZone(
+        /* [in] */ const String& id,
+        /* [in] */ IBufferIterator* it,
+        /* [in] */ Long currentTimeMillis,
+        /* [out] */ IZoneInfo** zoneInfo)
+    {
+        return NOERROR;
+    }
+};
+
+}
+}
+
+#endif // __LIBCORE_UTIL_ZONEINFO_H__
