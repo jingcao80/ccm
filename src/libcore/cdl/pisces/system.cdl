@@ -30,3 +30,33 @@ include "pisces/system/IStructStatVfs.cdl"
 include "pisces/system/IStructTimeval.cdl"
 include "pisces/system/IStructUcred.cdl"
 include "pisces/system/IStructUtsname.cdl"
+
+namespace pisces {
+namespace system {
+
+[
+    uuid(37213cfe-2bfc-4572-b06e-e2fba3837c36),
+    version(0.1.0)
+]
+coclass CStructStat
+{
+    Constructor(
+        [in] Long st_dev,
+        [in] Long st_ino,
+        [in] Integer st_mode,
+        [in] Long st_nlink,
+        [in] Integer st_uid,
+        [in] Integer st_gid,
+        [in] Long st_rdev,
+        [in] Long st_size,
+        [in] Long st_atime,
+        [in] Long st_mtime,
+        [in] Long st_ctime,
+        [in] Long st_blksize,
+        [in] Long st_blocks);
+
+    interface IStructStat;
+}
+
+}
+}

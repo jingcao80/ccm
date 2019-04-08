@@ -14,39 +14,33 @@
 // limitations under the License.
 //=========================================================================
 
-include "libcore/io/IBufferIterator.cdl"
-include "libcore/io/IIoBridge.cdl"
-include "libcore/io/ILibcore.cdl"
-include "libcore/io/IMemoryMappedFile.cdl"
-include "libcore/io/IOs.cdl"
+#ifndef __LIBCORE_IO_CLIBCORE_H__
+#define __LIBCORE_IO_CLIBCORE_H__
 
-interface ccm::core::IAutoCloseable;
+#include "libcore.io.ILibcore.h"
+#include "_libcore_io_CLibcore.h"
+#include <ccmobject.h>
 
 namespace libcore {
 namespace io {
 
-[
-    uuid(cfaed610-0e3c-4e2a-a533-2fccc50ae541),
-    version(0.1.0)
-]
-coclass CLibcore
+Coclass(CLibcore)
+    , public Object
+    , public ILibcore
 {
-    interface ILibcore;
-}
+public:
+    CCM_INTERFACE_DECL();
 
-[
-    uuid(4fd4ee55-6fc3-4dd2-af89-e1a560cf707c),
-    version(0.1.0)
-]
-coclass CMemoryMappedFile
-{
-    Constructor(
-        [in] HANDLE address,
-        [in] Long size);
+    CCM_OBJECT_DECL();
 
-    interface IMemoryMappedFile;
-    interface IAutoCloseable;
-}
+    ECode GetRawOs(
+        /* [out] */ IOs** os) override;
+
+    ECode GetOs(
+        /* [out] */ IOs** os) override;
+};
 
 }
 }
+
+#endif // __LIBCORE_IO_CLIBCORE_H__

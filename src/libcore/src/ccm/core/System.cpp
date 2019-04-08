@@ -24,6 +24,7 @@
 #include "ccm.io.IPrintWriter.h"
 #include "ccm.io.IStringWriter.h"
 #include "ccm.util.IHashtable.h"
+#include "libcore/io/Libcore.h"
 #include <ccmlogger.h>
 #include <time.h>
 #include <sys/time.h>
@@ -39,6 +40,7 @@ using ccm::util::CProperties;
 using ccm::util::IID_IProperties;
 using ccm::util::IHashtable;
 using ccm::util::IID_IHashtable;
+using libcore::io::Libcore;
 
 namespace ccm {
 namespace core {
@@ -213,6 +215,20 @@ ECode System::CheckKey(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     return NOERROR;
+}
+
+ECode System::GetEnv(
+    /* [in] */ const String& name,
+    /* [out] */ String* value)
+{
+    VALIDATE_NOT_NULL(value);
+
+    if (name.IsNull()) {
+        Logger::E("System", "name == null");
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    return Libcore::GetOs()->Getenv(name, value);
 }
 
 ECode System::Log(

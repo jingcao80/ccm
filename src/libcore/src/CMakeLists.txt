@@ -37,6 +37,7 @@ include_directories(
     ../inc/ccm/util/concurrent/atomic
     ../inc/ccm/util/regex
     ../inc/libcore/io
+    ../inc/pisces/system
     ../inc/ccmrt/system
     ${INC_DIR}
     ${OBJ_DIR})
@@ -119,7 +120,9 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_util_concurrent_atomic_CAtomicInteger.cpp
     ${OBJ_DIR}/_ccm_util_concurrent_atomic_CAtomicLong.cpp
     ${OBJ_DIR}/_ccm_util_regex_CPatternFactory.cpp
+    ${OBJ_DIR}/_libcore_io_CLibcore.cpp
     ${OBJ_DIR}/_libcore_io_CMemoryMappedFile.cpp
+    ${OBJ_DIR}/_pisces_system_CStructStat.cpp
     ${OBJ_DIR}/_ccmrt_system_CPathClassLoader.cpp
     ${OBJ_DIR}/libcorePub.cpp
     ${OBJ_DIR}/MetadataWrapper.cpp)

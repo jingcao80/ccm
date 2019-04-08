@@ -14,11 +14,23 @@
 // limitations under the License.
 //=========================================================================
 
+#include "ccm/io/CFileDescriptor.h"
 #include "libcore/io/AsynchronousCloseMonitor.h"
 #include "libcore/io/Linux.h"
+#include "pisces/system/CStructStat.h"
 #include <ccmlogger.h>
 #include <errno.h>
+#include <fcntl.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
 #include <unistd.h>
+
+using ccm::io::CFileDescriptor;
+using ccm::io::E_INTERRUPTED_IO_EXCEPTION;
+using ccm::io::IID_IFileDescriptor;
+using pisces::system::CStructStat;
+using pisces::system::E_ERRNO_EXCEPTION;
+using pisces::system::IID_IStructStat;
 
 namespace libcore {
 namespace io {
@@ -48,20 +60,20 @@ namespace io {
         } \
         if (_wasSignaled) { \
             Logger::E("Linux", #syscall_name " interrupted"); \
-            *outEc = ccm::io::E_INTERRUPTED_IO_EXCEPTION; \
+            *outEc = E_INTERRUPTED_IO_EXCEPTION; \
             _rc = -1; \
             break; \
         } \
         if (_rc == -1 && _syscallErrno != EINTR) { \
             /* TODO: with a format string we could show the arguments too, like strace(1). */ \
-            *outEc = pisces::system::E_ERRNO_EXCEPTION | (errno & 0x000000ff); \
+            *outEc = E_ERRNO_EXCEPTION | (errno & 0x000000ff); \
             break; \
         } \
     } while (_rc == -1); /* && _syscallErrno == EINTR && !_wasSignaled */ \
     if (_rc == -1) { \
         /* If the syscall failed, re-set errno: throwing an exception might have modified it. */ \
         errno = _syscallErrno; \
-        *outEc = pisces::system::E_ERRNO_EXCEPTION | (errno & 0x000000ff); \
+        *outEc = E_ERRNO_EXCEPTION | (errno & 0x000000ff); \
     } \
     else { \
         *outEc = NOERROR; \
@@ -238,7 +250,22 @@ ECode Linux::Fstat(
     /* [in] */ IFileDescriptor* fd,
     /* [out] */ IStructStat** stat)
 {
-    return NOERROR;
+    VALIDATE_NOT_NULL(stat);
+
+    Integer nfd;
+    fd->GetInt(&nfd);
+    struct stat64 sb;
+    int rc = TEMP_FAILURE_RETRY(fstat64(nfd, &sb));
+    if (rc == -1) {
+        Logger::E("Linux", "fstat failed, reason is \"%s\".", strerror(errno));
+        *stat = nullptr;
+        return E_ERRNO_EXCEPTION;
+    }
+    return CStructStat::New(sb.st_dev, sb.st_ino,
+            sb.st_mode, sb.st_nlink, sb.st_uid, sb.st_gid,
+            sb.st_rdev, sb.st_size, sb.st_atime, sb.st_mtime,
+            sb.st_ctime, sb.st_blksize, sb.st_blocks,
+            IID_IStructStat, (IInterface**)stat);
 }
 
 ECode Linux::Fstatvfs(
@@ -290,6 +317,13 @@ ECode Linux::Getenv(
     /* [in] */ const String& name,
     /* [out] */ String* value)
 {
+    VALIDATE_NOT_NULL(value);
+
+    if (name.IsNull()) {
+        *value = nullptr;
+        return NOERROR;
+    }
+    *value = getenv(name.string());
     return NOERROR;
 }
 
@@ -561,6 +595,12 @@ ECode Linux::Mlock(
     /* [in] */ HANDLE address,
     /* [in] */ Long byteCount)
 {
+    void* ptr = reinterpret_cast<void*>(address);
+    long rc = TEMP_FAILURE_RETRY(mlock(ptr, byteCount));
+    if (rc == -1) {
+        Logger::E("Linux", "mlock failed, reason is \"%s\".", strerror(errno));
+        return E_ERRNO_EXCEPTION;
+    }
     return NOERROR;
 }
 
@@ -573,6 +613,16 @@ ECode Linux::Mmap(
     /* [in] */ Long offset,
     /* [out] */ HANDLE* result)
 {
+    Integer nfd;
+    fd->GetInt(&nfd);
+    void* suggestedPtr = reinterpret_cast<void*>(address);
+    void* ptr = mmap64(suggestedPtr, byteCount, prot, flags, nfd, offset);
+    if (ptr == MAP_FAILED) {
+        Logger::E("Linux", "mmap64 failed, reason is \"%s\".", strerror(errno));
+        *result = 0;
+        return E_ERRNO_EXCEPTION;
+    }
+    *result = reinterpret_cast<HANDLE>(ptr);
     return NOERROR;
 }
 
@@ -581,6 +631,12 @@ ECode Linux::Msync(
     /* [in] */ Long byteCount,
     /* [in] */ Integer flags)
 {
+    void* ptr = reinterpret_cast<void*>(address);
+    long rc = TEMP_FAILURE_RETRY(msync(ptr, byteCount, flags));
+    if (rc == -1) {
+        Logger::E("Linux", "msync failed, reason is \"%s\".", strerror(errno));
+        return E_ERRNO_EXCEPTION;
+    }
     return NOERROR;
 }
 
@@ -588,6 +644,12 @@ ECode Linux::Munlock(
     /* [in] */ HANDLE address,
     /* [in] */ Long byteCount)
 {
+    void* ptr = reinterpret_cast<void*>(address);
+    long rc = TEMP_FAILURE_RETRY(munlock(ptr, byteCount));
+    if (rc == -1) {
+        Logger::E("Linux", "munlock failed, reason is \"%s\".", strerror(errno));
+        return E_ERRNO_EXCEPTION;
+    }
     return NOERROR;
 }
 
@@ -595,6 +657,12 @@ ECode Linux::Munmap(
     /* [in] */ HANDLE address,
     /* [in] */ Long byteCount)
 {
+    void* ptr = reinterpret_cast<void*>(address);
+    long rc = TEMP_FAILURE_RETRY(munmap(ptr, byteCount));
+    if (rc == -1) {
+        Logger::E("Linux", "munmap failed, reason is \"%s\".", strerror(errno));
+        return E_ERRNO_EXCEPTION;
+    }
     return NOERROR;
 }
 
@@ -604,7 +672,19 @@ ECode Linux::Open(
     /* [in] */ Integer mode,
     /* [out] */ IFileDescriptor** fd)
 {
-    return NOERROR;
+    VALIDATE_NOT_NULL(fd);
+
+    if (path.IsNull()) {
+        *fd = nullptr;
+        return NOERROR;
+    }
+
+    int nfd = TEMP_FAILURE_RETRY(open(path.string(), flags, mode));
+    if (nfd == -1) {
+        Logger::E("Linux", "open failed, reason is \"%s\".", strerror(errno));
+        return E_ERRNO_EXCEPTION;
+    }
+    return CFileDescriptor::New(nfd, IID_IFileDescriptor, (IInterface**)fd);
 }
 
 ECode Linux::Pipe2(
@@ -835,6 +915,17 @@ ECode Linux::Setenv(
     /* [in] */ const String& value,
     /* [in] */ Boolean overwrite)
 {
+    if (name.IsNull()) {
+        return NOERROR;
+    }
+    if (value.IsNull()) {
+        return NOERROR;
+    }
+    int rc = setenv(name.string(), value.string(), overwrite);
+    if (rc == -1) {
+        Logger::E("Linux", "setenv failed, reason is \"%s\".", strerror(errno));
+        return E_ERRNO_EXCEPTION;
+    }
     return NOERROR;
 }
 

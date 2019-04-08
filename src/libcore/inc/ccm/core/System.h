@@ -76,6 +76,10 @@ public:
         /* [in] */ const String& def,
         /* [out] */ String* value);
 
+    static ECode GetEnv(
+        /* [in] */ const String& name,
+        /* [out] */ String* value);
+
     static ECode LogE(
         /* [in] */ const String& message);
 

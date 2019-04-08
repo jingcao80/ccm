@@ -24,6 +24,7 @@ include_directories(
     ${OBJ_DIR})
 
 set(SOURCES
+    CStructStat.cpp
     OsConstants.cpp)
 
 add_library(pisces_system STATIC

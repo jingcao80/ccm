@@ -28,13 +28,26 @@ class TimeZoneDataFiles
 {
 public:
     static Array<String> GetTimeZoneFilePaths(
-        /* [in] */ const String& fileName)
-    {
-        return Array<String>::Null();
-    }
+        /* [in] */ const String& fileName);
+
+    static String GenerateIcuDataPath();
 
 private:
     TimeZoneDataFiles();
+
+    static String GetDataTimeZoneFile(
+        /* [in] */ const String& fileName);
+
+    static String GetSystemTimeZoneFile(
+        /* [in] */ const String& fileName);
+
+    static String GetEnvironmentPath(
+        /* [in] */ const String& environmentVariable,
+        /* [in] */ const String& path);
+
+private:
+    static const String CCM_ROOT_ENV;
+    static const String CCM_DATA_ENV;
 };
 
 }

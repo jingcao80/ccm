@@ -26,6 +26,7 @@ include_directories(
 set(SOURCES
     AsynchronousCloseMonitor.cpp
     BlockGuardOs.cpp
+    CLibcore.cpp
     ForwardingOs.cpp
     IoBridge.cpp
     IoTracker.cpp
