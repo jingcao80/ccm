@@ -18,6 +18,7 @@
 #define __CCM_UTIL_TIMEZONE_H__
 
 #include "ccm/core/SyncObject.h"
+#include "ccm/core/volatile.h"
 #include "ccm.core.ICloneable.h"
 #include "ccm.core.IStringBuilder.h"
 #include "ccm.io.ISerializable.h"
@@ -138,6 +139,7 @@ public:
 
 private:
     String mID;
+    static VOLATILE AutoPtr<ITimeZone> sDefaultTimeZone;
 };
 
 inline ECode TimeZone::Constructor()

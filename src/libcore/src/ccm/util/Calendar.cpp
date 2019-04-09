@@ -1158,6 +1158,8 @@ void Calendar::SetWeekCountData(
         AutoPtr<IInteger> day, days;
         localeData->GetFirstDayOfWeek(&day);
         localeData->GetMinimalDaysInFirstWeek(&days);
+        data->Set(0, day);
+        data->Set(1, days);
         mCachedLocaleData->PutIfAbsent(desiredLocale, data);
     }
     AutoPtr<IInteger> v0, v1;

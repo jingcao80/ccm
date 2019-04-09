@@ -60,10 +60,14 @@ ZoneInfoDB::TzData::TzData()
         : public BasicLruCache
     {
     public:
-        _BasicLruCache(
+        ECode Constructor(
+            /* [in] */ Integer maxSize,
             /* [in] */ TzData* owner)
-            : mOwner(owner)
-        {}
+        {
+            FAIL_RETURN(BasicLruCache::Constructor(maxSize));
+            mOwner = owner;
+            return NOERROR;
+        }
 
     protected:
         ECode Create(
@@ -78,7 +82,9 @@ ZoneInfoDB::TzData::TzData()
         TzData* mOwner;
     };
 
-    mCache = new _BasicLruCache(this);
+    AutoPtr<_BasicLruCache> cache = new _BasicLruCache();
+    cache->Constructor(CACHE_SIZE, this);
+    mCache = (IBasicLruCache*)cache;
 }
 
 ZoneInfoDB::TzData::~TzData()

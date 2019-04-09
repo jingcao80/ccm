@@ -22,10 +22,12 @@
 #include "ccm/util/CSimpleTimeZone.h"
 #include "ccm/util/Locale.h"
 #include "ccm/util/TimeZone.h"
+#include "ccm/util/TimeZoneGetter.h"
 #include "ccm/util/regex/Pattern.h"
 #include "ccm.core.ICloneable.h"
 #include "ccm.util.regex.IMatcher.h"
 #include "libcore/icu/TimeZoneNames.h"
+#include "libcore/io/IoUtils.h"
 #include "libcore/util/ZoneInfoDB.h"
 #include "libcore.util.IZoneInfo.h"
 #include <ccmlogger.h>
@@ -44,11 +46,14 @@ using ccm::io::IID_ISerializable;
 using ccm::util::regex::IMatcher;
 using ccm::util::regex::Pattern;
 using libcore::icu::TimeZoneNames;
+using libcore::io::IoUtils;
 using libcore::util::IZoneInfo;
 using libcore::util::ZoneInfoDB;
 
 namespace ccm {
 namespace util {
+
+VOLATILE AutoPtr<ITimeZone> TimeZone::sDefaultTimeZone;
 
 CCM_INTERFACE_IMPL_3(TimeZone, SyncObject, ITimeZone, ISerializable, ICloneable);
 
@@ -404,7 +409,26 @@ AutoPtr<ITimeZone> TimeZone::GetDefault()
 
 AutoPtr<ITimeZone> TimeZone::GetDefaultRef()
 {
-    return nullptr;
+    VOLATILE_GET(AutoPtr<ITimeZone> tz, sDefaultTimeZone);
+    if (tz == nullptr) {
+        AutoPtr<ITimeZoneGetter> tzGetter = TimeZoneGetter::GetInstance();
+        String zoneName;
+        if (tzGetter != nullptr) {
+            tzGetter->GetId(&zoneName);
+        }
+        if (!zoneName.IsNull()) {
+            zoneName = zoneName.Trim();
+        }
+        if (zoneName.IsNullOrEmpty()) {
+            ECode ec = IoUtils::ReadFileAsString(String("/etc/timezone"), &zoneName);
+            if (FAILED(ec)) {
+                zoneName = "GMT";
+            }
+        }
+        TimeZone::GetTimeZone(zoneName, (ITimeZone**)&tz);
+        VOLATILE_SET(sDefaultTimeZone, tz);
+    }
+    return tz;
 }
 
 ECode TimeZone::SetDefault(

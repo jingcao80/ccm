@@ -69,7 +69,7 @@ ECode BasicLruCache::Get(
     FAIL_RETURN(Create(key, &result));
 
     {
-        AutoLock lock(lock);
+        AutoLock lock(this);
         // NOTE: Another thread might have already inserted a value for |key| into the map.
         // This shouldn't be an observable change as long as create creates equal values for
         // equal keys. We will however attempt to trim the map twice, but that shouldn't be

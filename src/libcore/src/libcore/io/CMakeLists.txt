@@ -30,6 +30,7 @@ set(SOURCES
     ForwardingOs.cpp
     IoBridge.cpp
     IoTracker.cpp
+    IoUtils.cpp
     Libcore.cpp
     Linux.cpp
     Memory.cpp
