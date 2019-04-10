@@ -50,8 +50,6 @@ class Calendar
     , public IComparable
 {
 public:
-    Calendar();
-
     CCM_INTERFACE_DECL();
 
     ECode Constructor();
@@ -328,6 +326,8 @@ private:
 
     void InvalidateWeekFields();
 
+    static AutoPtr<IConcurrentMap> GetCachedLocaleData();
+
     static SyncObject& GetClassLock();
 
 public:
@@ -377,8 +377,6 @@ private:
     Integer mFirstDayOfWeek = 0;
 
     Integer mMinimalDaysInFirstWeek = 0;
-
-    AutoPtr<IConcurrentMap> mCachedLocaleData;
 
     static constexpr Integer UNSET = 0;
 

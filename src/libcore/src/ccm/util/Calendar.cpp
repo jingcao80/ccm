@@ -61,9 +61,18 @@ using libcore::icu::LocaleData;
 namespace ccm {
 namespace util {
 
-Calendar::Calendar()
+static AutoPtr<IConcurrentMap> CreateConcurrentHashMap(
+    /* [in] */ Integer initialCapacity)
 {
-    CConcurrentHashMap::New(3, IID_IConcurrentMap, (IInterface**)&mCachedLocaleData);
+    AutoPtr<IConcurrentMap> map;
+    CConcurrentHashMap::New(initialCapacity, IID_IConcurrentMap, (IInterface**)&map);
+    return map;
+}
+
+AutoPtr<IConcurrentMap> Calendar::GetCachedLocaleData()
+{
+    static AutoPtr<IConcurrentMap> sCachedLocaleData = CreateConcurrentHashMap(3);
+    return sCachedLocaleData;
 }
 
 CCM_INTERFACE_IMPL_4(Calendar, SyncObject, ICalendar, ISerializable, ICloneable, IComparable);
@@ -1050,6 +1059,16 @@ ECode Calendar::CloneImpl(
 {
     Calendar* other = (Calendar*)newObj;
 
+    other->mTime = mTime;
+    other->mIsTimeSet = mIsTimeSet;
+    other->mAreFieldsSet = mAreFieldsSet;
+    other->mAreAllFieldsSet = mAreAllFieldsSet;
+    other->mLenient = mLenient;
+    other->mSharedZone = mSharedZone;
+    other->mFirstDayOfWeek = mFirstDayOfWeek;
+    other->mMinimalDaysInFirstWeek = mMinimalDaysInFirstWeek;
+    other->mNextStamp = mNextStamp;
+
     other->mFields = Array<Integer>(FIELD_COUNT);
     other->mIsSet = Array<Boolean>(FIELD_COUNT);
     other->mStamp = Array<Integer>(FIELD_COUNT);
@@ -1150,7 +1169,7 @@ void Calendar::SetWeekCountData(
 {
     /* try to get the Locale data from the cache */
     AutoPtr<IArray> data;
-    IMap::Probe(mCachedLocaleData)->Get(desiredLocale, (IInterface**)&data);
+    IMap::Probe(GetCachedLocaleData())->Get(desiredLocale, (IInterface**)&data);
     if (data == nullptr) {
         CArray::New(IID_IInteger, 2, IID_IArray, (IInterface**)&data);
         AutoPtr<ILocaleData> localeData;
@@ -1160,7 +1179,7 @@ void Calendar::SetWeekCountData(
         localeData->GetMinimalDaysInFirstWeek(&days);
         data->Set(0, day);
         data->Set(1, days);
-        mCachedLocaleData->PutIfAbsent(desiredLocale, data);
+        GetCachedLocaleData()->PutIfAbsent(desiredLocale, data);
     }
     AutoPtr<IInteger> v0, v1;
     data->Get(0, (IInterface**)&v0);

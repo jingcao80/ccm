@@ -111,23 +111,23 @@ TEST(FormatterTest, TestNumberLocalization)
     EXPECT_STREQ(arabicStr.string(), String(arabicChars).string());
     // And date/time formatting (we assume that all time/date number formatting is done by the
     // same code, so this is representative):
-    // AutoPtr<ITimeZoneFactory> tzFactory;
-    // CTimeZoneFactory::New(IID_ITimeZoneFactory, (IInterface**)&tzFactory);
-    // AutoPtr<ITimeZone> tz;
-    // tzFactory->GetTimeZone(String("GMT-08:00"), &tz);
-    // AutoPtr<ICalendarFactory> calFactory;
-    // CCalendarFactory::New(IID_ICalendarFactory, (IInterface**)&calFactory);
-    // AutoPtr<ICalendar> c;
-    // calFactory->GetInstance(tz, &c);
-    // c->SetTimeInMillis(0);
-    // args = { c };
-    // arabicStr = StringUtils::Format(arabic, String("12 %tT 34"), &args);
-    // arabicChars = {
-    //     U'1', U'2', U' ',
-    //     0x0661, 0x0666, U':', 0x0660, 0x0660, U':', 0x0660, 0x0660,
-    //     U' ', U'3', U'4'
-    // };
-    // EXPECT_STREQ(arabicStr.string(), String(arabicChars).string());
+    AutoPtr<ITimeZoneFactory> tzFactory;
+    CTimeZoneFactory::New(IID_ITimeZoneFactory, (IInterface**)&tzFactory);
+    AutoPtr<ITimeZone> tz;
+    tzFactory->GetTimeZone(String("GMT-08:00"), &tz);
+    AutoPtr<ICalendarFactory> calFactory;
+    CCalendarFactory::New(IID_ICalendarFactory, (IInterface**)&calFactory);
+    AutoPtr<ICalendar> c;
+    calFactory->GetInstance(tz, &c);
+    c->SetTimeInMillis(0);
+    args = { c };
+    arabicStr = StringUtils::Format(arabic, String("12 %tT 34"), &args);
+    arabicChars = {
+        U'1', U'2', U' ',
+        0x0661, 0x0666, U':', 0x0660, 0x0660, U':', 0x0660, 0x0660,
+        U' ', U'3', U'4'
+    };
+    EXPECT_STREQ(arabicStr.string(), String(arabicChars).string());
     // These shouldn't get localized:
     arabicStr = StringUtils::Format(arabic, String("1234"), nullptr);
     EXPECT_STREQ(arabicStr.string(), "1234");
@@ -395,8 +395,6 @@ TEST(FormatterTest, TestGroupingSizeZero)
     EXPECT_TRUE(separator != U'\0');
 #endif
 }
-
-
 
 int main(int argc, char **argv)
 {

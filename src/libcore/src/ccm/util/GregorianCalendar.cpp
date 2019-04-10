@@ -1434,6 +1434,16 @@ ECode GregorianCalendar::CloneImpl(
     /* [in] */ IGregorianCalendar* newObj)
 {
     GregorianCalendar* other = (GregorianCalendar*)newObj;
+    Calendar::CloneImpl(other);
+
+    other->mGregorianCutover = mGregorianCutover;
+    other->mGregorianCutoverDate = mGregorianCutoverDate;
+    other->mGregorianCutoverYear = mGregorianCutoverYear;
+    other->mGregorianCutoverYearJulian = mGregorianCutoverYearJulian;
+    other->mCalsys = mCalsys;
+    other->mZoneOffsets = mZoneOffsets;
+    other->mOriginalFields = mOriginalFields;
+    other->mCachedFixedDate = mCachedFixedDate;
 
     other->mGdate = (IBaseCalendarDate*)CoreUtils::Clone(mGdate, IID_IBaseCalendarDate).Get();
     if (mCdate != nullptr) {

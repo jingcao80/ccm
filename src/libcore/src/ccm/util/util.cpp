@@ -86,10 +86,23 @@ ECode CGregorianCalendar::Clone(
 {
     VALIDATE_NOT_NULL(obj);
 
-    AutoPtr<IGregorianCalendar> gcal;
-    CGregorianCalendar::New(IID_IGregorianCalendar, (IInterface**)&gcal);
-    FAIL_RETURN(GregorianCalendar::CloneImpl(gcal));
-    *obj = gcal->Probe(iid);
+    AutoPtr<IClassObject> clsObject;
+    ECode ec = CoAcquireClassFactory(CID_CGregorianCalendar, nullptr, &clsObject);
+    if (FAILED(ec)) return ec;
+
+    void* addr = calloc(sizeof(CGregorianCalendar), 1);
+    if (addr == nullptr) return E_OUT_OF_MEMORY_ERROR;
+
+    CGregorianCalendar* newObj = new(addr) CGregorianCalendar();
+    AutoPtr<IMetaComponent> comp;
+    clsObject->GetMetadate(&comp);
+    newObj->AttachMetadata(comp, String("ccm::util::CGregorianCalendar"));
+    ec = GregorianCalendar::CloneImpl(newObj);
+    if (FAILED(ec)) {
+        free(addr);
+        return ec;
+    }
+    *obj = newObj->Probe(iid);
     REFCOUNT_ADD(*obj);
     return NOERROR;
 }
