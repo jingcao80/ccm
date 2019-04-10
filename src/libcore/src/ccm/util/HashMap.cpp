@@ -559,6 +559,7 @@ ECode HashMap::CloneImpl(
     /* [in] */ IHashMap* newObj)
 {
     HashMap* clone = (HashMap*)newObj;
+    clone->mLoadFactor = mLoadFactor;
     clone->Reinitialize();
     clone->PutMapEntries(this, false);
     return NOERROR;

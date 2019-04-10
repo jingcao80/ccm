@@ -54,10 +54,23 @@ ECode CArrayList::Clone(
 {
     VALIDATE_NOT_NULL(obj);
 
-    AutoPtr<IArrayList> list;
-    CArrayList::New(IID_IArrayList, (IInterface**)&list);
-    FAIL_RETURN(ArrayList::CloneImpl(list));
-    *obj = list->Probe(iid);
+    AutoPtr<IClassObject> clsObject;
+    ECode ec = CoAcquireClassFactory(CID_CArrayList, nullptr, &clsObject);
+    if (FAILED(ec)) return ec;
+
+    void* addr = calloc(sizeof(CArrayList), 1);
+    if (addr == nullptr) return E_OUT_OF_MEMORY_ERROR;
+
+    CArrayList* newObj = new(addr) CArrayList();
+    ec = ArrayList::CloneImpl(newObj);
+    if (FAILED(ec)) {
+        free(addr);
+        return ec;
+    }
+    AutoPtr<IMetaComponent> comp;
+    clsObject->GetMetadate(&comp);
+    newObj->AttachMetadata(comp, String("ccm::util::CArrayList"));
+    *obj = newObj->Probe(iid);
     REFCOUNT_ADD(*obj);
     return NOERROR;
 }
@@ -69,10 +82,23 @@ ECode CDate::Clone(
 {
     VALIDATE_NOT_NULL(obj);
 
-    AutoPtr<IDate> date;
-    CDate::New(IID_IDate, (IInterface**)&date);
-    FAIL_RETURN(Date::CloneImpl(date));
-    *obj = date->Probe(iid);
+    AutoPtr<IClassObject> clsObject;
+    ECode ec = CoAcquireClassFactory(CID_CDate, nullptr, &clsObject);
+    if (FAILED(ec)) return ec;
+
+    void* addr = calloc(sizeof(CDate), 1);
+    if (addr == nullptr) return E_OUT_OF_MEMORY_ERROR;
+
+    CDate* newObj = new(addr) CDate();
+    ec = Date::CloneImpl(newObj);
+    if (FAILED(ec)) {
+        free(addr);
+        return ec;
+    }
+    AutoPtr<IMetaComponent> comp;
+    clsObject->GetMetadate(&comp);
+    newObj->AttachMetadata(comp, String("ccm::util::CDate"));
+    *obj = newObj->Probe(iid);
     REFCOUNT_ADD(*obj);
     return NOERROR;
 }
@@ -94,14 +120,14 @@ ECode CGregorianCalendar::Clone(
     if (addr == nullptr) return E_OUT_OF_MEMORY_ERROR;
 
     CGregorianCalendar* newObj = new(addr) CGregorianCalendar();
-    AutoPtr<IMetaComponent> comp;
-    clsObject->GetMetadate(&comp);
-    newObj->AttachMetadata(comp, String("ccm::util::CGregorianCalendar"));
     ec = GregorianCalendar::CloneImpl(newObj);
     if (FAILED(ec)) {
         free(addr);
         return ec;
     }
+    AutoPtr<IMetaComponent> comp;
+    clsObject->GetMetadate(&comp);
+    newObj->AttachMetadata(comp, String("ccm::util::CGregorianCalendar"));
     *obj = newObj->Probe(iid);
     REFCOUNT_ADD(*obj);
     return NOERROR;
@@ -118,6 +144,8 @@ ECode CGregorianCalendar::New(
     /* [in] */ const InterfaceID& iid,
     /* [out] */ ccm::IInterface** object)
 {
+    VALIDATE_NOT_NULL(object);
+
     AutoPtr<IClassObject> clsObject;
     ECode ec = CoAcquireClassFactory(CID_CGregorianCalendar, nullptr, &clsObject);
     if (FAILED(ec)) return ec;
@@ -146,6 +174,8 @@ ECode CGregorianCalendar::New(
     /* [in] */ const InterfaceID& iid,
     /* [out] */ ccm::IInterface** object)
 {
+    VALIDATE_NOT_NULL(object);
+
     AutoPtr<IClassObject> clsObject;
     ECode ec = CoAcquireClassFactory(CID_CGregorianCalendar, nullptr, &clsObject);
     if (FAILED(ec)) return ec;
@@ -172,6 +202,8 @@ ECode CGregorianCalendar::New(
     /* [in] */ const InterfaceID& iid,
     /* [out] */ ccm::IInterface** object)
 {
+    VALIDATE_NOT_NULL(object);
+
     AutoPtr<IClassObject> clsObject;
     ECode ec = CoAcquireClassFactory(CID_CGregorianCalendar, nullptr, &clsObject);
     if (FAILED(ec)) return ec;
@@ -200,10 +232,23 @@ ECode CHashMap::Clone(
 {
     VALIDATE_NOT_NULL(obj);
 
-    AutoPtr<IHashMap> map;
-    CHashMap::New(IID_IHashMap, (IInterface**)&map);
-    FAIL_RETURN(HashMap::CloneImpl(map));
-    *obj = map->Probe(iid);
+    AutoPtr<IClassObject> clsObject;
+    ECode ec = CoAcquireClassFactory(CID_CHashMap, nullptr, &clsObject);
+    if (FAILED(ec)) return ec;
+
+    void* addr = calloc(sizeof(CHashMap), 1);
+    if (addr == nullptr) return E_OUT_OF_MEMORY_ERROR;
+
+    CHashMap* newObj = new(addr) CHashMap();
+    ec = HashMap::CloneImpl(newObj);
+    if (FAILED(ec)) {
+        free(addr);
+        return ec;
+    }
+    AutoPtr<IMetaComponent> comp;
+    clsObject->GetMetadate(&comp);
+    newObj->AttachMetadata(comp, String("ccm::util::CHashMap"));
+    *obj = newObj->Probe(iid);
     REFCOUNT_ADD(*obj);
     return NOERROR;
 }
@@ -215,10 +260,23 @@ ECode CHashSet::Clone(
 {
     VALIDATE_NOT_NULL(obj);
 
-    AutoPtr<IHashSet> set;
-    CHashSet::New(IID_IHashSet, (IInterface**)&set);
-    FAIL_RETURN(HashSet::CloneImpl(set));
-    *obj = set->Probe(iid);
+    AutoPtr<IClassObject> clsObject;
+    ECode ec = CoAcquireClassFactory(CID_CHashSet, nullptr, &clsObject);
+    if (FAILED(ec)) return ec;
+
+    void* addr = calloc(sizeof(CHashSet), 1);
+    if (addr == nullptr) return E_OUT_OF_MEMORY_ERROR;
+
+    CHashSet* newObj = new(addr) CHashSet();
+    ec = HashSet::CloneImpl(newObj);
+    if (FAILED(ec)) {
+        free(addr);
+        return ec;
+    }
+    AutoPtr<IMetaComponent> comp;
+    clsObject->GetMetadate(&comp);
+    newObj->AttachMetadata(comp, String("ccm::util::CHashSet"));
+    *obj = newObj->Probe(iid);
     REFCOUNT_ADD(*obj);
     return NOERROR;
 }
@@ -230,10 +288,23 @@ ECode CHashtable::Clone(
 {
     VALIDATE_NOT_NULL(obj);
 
-    AutoPtr<IHashtable> ht;
-    CHashtable::New(IID_IHashtable, (IInterface**)&ht);
-    FAIL_RETURN(Hashtable::CloneImpl(ht));
-    *obj = ht->Probe(iid);
+    AutoPtr<IClassObject> clsObject;
+    ECode ec = CoAcquireClassFactory(CID_CHashtable, nullptr, &clsObject);
+    if (FAILED(ec)) return ec;
+
+    void* addr = calloc(sizeof(CHashtable), 1);
+    if (addr == nullptr) return E_OUT_OF_MEMORY_ERROR;
+
+    CHashtable* newObj = new(addr) CHashtable();
+    ec = Hashtable::CloneImpl(newObj);
+    if (FAILED(ec)) {
+        free(addr);
+        return ec;
+    }
+    AutoPtr<IMetaComponent> comp;
+    clsObject->GetMetadate(&comp);
+    newObj->AttachMetadata(comp, String("ccm::util::CHashtable"));
+    *obj = newObj->Probe(iid);
     REFCOUNT_ADD(*obj);
     return NOERROR;
 }
@@ -245,10 +316,23 @@ ECode CLinkedHashMap::Clone(
 {
     VALIDATE_NOT_NULL(obj);
 
-    AutoPtr<ILinkedHashMap> map;
-    CLinkedHashMap::New(IID_ILinkedHashMap, (IInterface**)&map);
-    FAIL_RETURN(LinkedHashMap::CloneImpl(map));
-    *obj = map->Probe(iid);
+    AutoPtr<IClassObject> clsObject;
+    ECode ec = CoAcquireClassFactory(CID_CLinkedHashMap, nullptr, &clsObject);
+    if (FAILED(ec)) return ec;
+
+    void* addr = calloc(sizeof(CLinkedHashMap), 1);
+    if (addr == nullptr) return E_OUT_OF_MEMORY_ERROR;
+
+    CLinkedHashMap* newObj = new(addr) CLinkedHashMap();
+    ec = LinkedHashMap::CloneImpl(newObj);
+    if (FAILED(ec)) {
+        free(addr);
+        return ec;
+    }
+    AutoPtr<IMetaComponent> comp;
+    clsObject->GetMetadate(&comp);
+    newObj->AttachMetadata(comp, String("ccm::util::CLinkedHashMap"));
+    *obj = newObj->Probe(iid);
     REFCOUNT_ADD(*obj);
     return NOERROR;
 }
@@ -260,10 +344,23 @@ ECode CLinkedHashSet::Clone(
 {
     VALIDATE_NOT_NULL(obj);
 
-    AutoPtr<IHashSet> set;
-    CLinkedHashSet::New(IID_IHashSet, (IInterface**)&set);
-    FAIL_RETURN(LinkedHashSet::CloneImpl(set));
-    *obj = set->Probe(iid);
+    AutoPtr<IClassObject> clsObject;
+    ECode ec = CoAcquireClassFactory(CID_CLinkedHashSet, nullptr, &clsObject);
+    if (FAILED(ec)) return ec;
+
+    void* addr = calloc(sizeof(CLinkedHashSet), 1);
+    if (addr == nullptr) return E_OUT_OF_MEMORY_ERROR;
+
+    CLinkedHashSet* newObj = new(addr) CLinkedHashSet();
+    ec = LinkedHashSet::CloneImpl(newObj);
+    if (FAILED(ec)) {
+        free(addr);
+        return ec;
+    }
+    AutoPtr<IMetaComponent> comp;
+    clsObject->GetMetadate(&comp);
+    newObj->AttachMetadata(comp, String("ccm::util::CLinkedHashSet"));
+    *obj = newObj->Probe(iid);
     REFCOUNT_ADD(*obj);
     return NOERROR;
 }
@@ -275,10 +372,23 @@ ECode CLocale::Clone(
 {
     VALIDATE_NOT_NULL(obj);
 
-    AutoPtr<ILocale> locale;
-    CLocale::New(IID_ILocale, (IInterface**)&locale);
-    FAIL_RETURN(Locale::CloneImpl(locale));
-    *obj = locale->Probe(iid);
+    AutoPtr<IClassObject> clsObject;
+    ECode ec = CoAcquireClassFactory(CID_CLocale, nullptr, &clsObject);
+    if (FAILED(ec)) return ec;
+
+    void* addr = calloc(sizeof(CLocale), 1);
+    if (addr == nullptr) return E_OUT_OF_MEMORY_ERROR;
+
+    CLocale* newObj = new(addr) CLocale();
+    ec = Locale::CloneImpl(newObj);
+    if (FAILED(ec)) {
+        free(addr);
+        return ec;
+    }
+    AutoPtr<IMetaComponent> comp;
+    clsObject->GetMetadate(&comp);
+    newObj->AttachMetadata(comp, String("ccm::util::CLocale"));
+    *obj = newObj->Probe(iid);
     REFCOUNT_ADD(*obj);
     return NOERROR;
 }
@@ -340,10 +450,23 @@ ECode CProperties::Clone(
 {
     VALIDATE_NOT_NULL(obj);
 
-    AutoPtr<IProperties> prop;
-    CProperties::New(IID_IProperties, (IInterface**)&prop);
-    FAIL_RETURN(Properties::CloneImpl(IHashtable::Probe(prop)));
-    *obj = prop->Probe(iid);
+    AutoPtr<IClassObject> clsObject;
+    ECode ec = CoAcquireClassFactory(CID_CProperties, nullptr, &clsObject);
+    if (FAILED(ec)) return ec;
+
+    void* addr = calloc(sizeof(CProperties), 1);
+    if (addr == nullptr) return E_OUT_OF_MEMORY_ERROR;
+
+    CProperties* newObj = new(addr) CProperties();
+    ec = Properties::CloneImpl(newObj);
+    if (FAILED(ec)) {
+        free(addr);
+        return ec;
+    }
+    AutoPtr<IMetaComponent> comp;
+    clsObject->GetMetadate(&comp);
+    newObj->AttachMetadata(comp, String("ccm::util::CProperties"));
+    *obj = newObj->Probe(iid);
     REFCOUNT_ADD(*obj);
     return NOERROR;
 }
@@ -358,10 +481,23 @@ ECode CSimpleTimeZone::Clone(
 {
     VALIDATE_NOT_NULL(obj);
 
-    AutoPtr<ISimpleTimeZone> zone;
-    CSimpleTimeZone::New(IID_ISimpleTimeZone, (IInterface**)&zone);
-    FAIL_RETURN(SimpleTimeZone::CloneImpl(zone));
-    *obj = zone->Probe(iid);
+    AutoPtr<IClassObject> clsObject;
+    ECode ec = CoAcquireClassFactory(CID_CSimpleTimeZone, nullptr, &clsObject);
+    if (FAILED(ec)) return ec;
+
+    void* addr = calloc(sizeof(CSimpleTimeZone), 1);
+    if (addr == nullptr) return E_OUT_OF_MEMORY_ERROR;
+
+    CSimpleTimeZone* newObj = new(addr) CSimpleTimeZone();
+    ec = SimpleTimeZone::CloneImpl(newObj);
+    if (FAILED(ec)) {
+        free(addr);
+        return ec;
+    }
+    AutoPtr<IMetaComponent> comp;
+    clsObject->GetMetadate(&comp);
+    newObj->AttachMetadata(comp, String("ccm::util::CSimpleTimeZone"));
+    *obj = newObj->Probe(iid);
     REFCOUNT_ADD(*obj);
     return NOERROR;
 }

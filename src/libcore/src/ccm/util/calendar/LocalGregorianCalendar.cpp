@@ -580,9 +580,8 @@ ECode LocalGregorianCalendar::Date::Clone(
     VALIDATE_NOT_NULL(obj);
 
     AutoPtr<LocalGregorianCalendar::Date> date = new LocalGregorianCalendar::Date();
-    ECode ec = date->Constructor();
-    if (FAILED(ec)) return ec;
     FAIL_RETURN(CloneImpl(date.Get()));
+    date->mGregorianYear = mGregorianYear;
     *obj = date->Probe(iid);
     REFCOUNT_ADD(*obj);
     return NOERROR;

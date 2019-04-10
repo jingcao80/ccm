@@ -326,8 +326,8 @@ ECode ImmutableGregorianDate::Clone(
     VALIDATE_NOT_NULL(obj);
 
     AutoPtr<ImmutableGregorianDate> date = new ImmutableGregorianDate();
-    date->mDate = mDate;
     BaseCalendar::Date::CloneImpl(date.Get());
+    date->mDate = mDate;
     *obj = date->Probe(iid);
     REFCOUNT_ADD(*obj);
     return NOERROR;

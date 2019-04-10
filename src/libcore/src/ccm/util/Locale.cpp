@@ -1130,7 +1130,10 @@ ECode Locale::CloneImpl(
 
     l->mBaseLocale = mBaseLocale;
     l->mLocaleExtensions = mLocaleExtensions;
-    l->mLanguageTag = mLanguageTag;
+    VOLATILE_GET(Integer hc, mHashCodeValue);
+    VOLATILE_SET(l->mHashCodeValue, hc);
+    VOLATILE_GET(String tag, mLanguageTag);
+    VOLATILE_SET(l->mLanguageTag, tag);
     return NOERROR;
 }
 

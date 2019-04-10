@@ -537,6 +537,12 @@ ECode DecimalFormat::CloneImpl(
     NativeDecimalFormat* ndf = reinterpret_cast<NativeDecimalFormat*>(mNativeDF);
 
     DecimalFormat* df = (DecimalFormat*)newObj;
+
+    df->mMaximumIntegerDigits = mMaximumIntegerDigits;
+    df->mMinimumIntegerDigits = mMinimumIntegerDigits;
+    df->mMaximumFractionDigits = mMaximumFractionDigits;
+    df->mMinimumFractionDigits = mMinimumFractionDigits;
+
     df->mRoundingMode = mRoundingMode;
     df->mSymbols = (IDecimalFormatSymbols*)CoreUtils::Clone(
             mSymbols, IID_IDecimalFormatSymbols).Get();

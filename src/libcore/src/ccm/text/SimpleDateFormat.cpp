@@ -2074,6 +2074,20 @@ ECode SimpleDateFormat::CloneImpl(
     /* [in] */ SimpleDateFormat* newObj)
 {
     DateFormat::CloneImpl(newObj);
+
+    newObj->mUseDateFormatSymbols = mUseDateFormatSymbols;
+    newObj->mPattern = mPattern;
+    newObj->mOriginalNumberFormat = mOriginalNumberFormat;
+    newObj->mOriginalNumberPattern = mOriginalNumberPattern;
+    newObj->mMinusSign = mMinusSign;
+    newObj->mHasFollowingMinusSign = mHasFollowingMinusSign;
+    newObj->mCompiledPattern = mCompiledPattern;
+    newObj->mZeroDigit = mZeroDigit;
+    newObj->mDefaultCenturyStart = mDefaultCenturyStart;
+    newObj->mDefaultCenturyStartYear = mDefaultCenturyStartYear;
+    newObj->mLocale = mLocale;
+    newObj->mTimeZoneNames = mTimeZoneNames;
+
     newObj->mFormatData = (IDateFormatSymbols*)CoreUtils::Clone(
             mFormatData, IID_IDateFormatSymbols).Get();
     return NOERROR;

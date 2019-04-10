@@ -367,8 +367,6 @@ ECode JulianCalendar::Date::Clone(
     VALIDATE_NOT_NULL(obj);
 
     AutoPtr<JulianCalendar::Date> date = new JulianCalendar::Date();
-    ECode ec = date->Constructor();
-    if (FAILED(ec)) return ec;
     FAIL_RETURN(CloneImpl(date.Get()));
     *obj = date->Probe(iid);
     REFCOUNT_ADD(*obj);

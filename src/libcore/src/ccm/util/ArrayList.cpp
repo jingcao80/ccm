@@ -226,6 +226,7 @@ ECode ArrayList::CloneImpl(
     /* [in] */ IArrayList* newObj)
 {
     ArrayList* v = (ArrayList*)newObj;
+    v->mSize = mSize;
     Arrays::CopyOf(mElementData, mSize, &v->mElementData);
     v->mModCount = 0;
     return NOERROR;

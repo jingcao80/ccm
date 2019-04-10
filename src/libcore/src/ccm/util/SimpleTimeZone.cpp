@@ -575,6 +575,8 @@ ECode SimpleTimeZone::CloneImpl(
     VALIDATE_NOT_NULL(newObj);
 
     SimpleTimeZone* clone = (SimpleTimeZone*)newObj;
+    TimeZone::CloneImpl(clone);
+
     clone->mStartMonth = mStartMonth;
     clone->mStartDay = mStartDay;
     clone->mStartDayOfWeek = mStartDayOfWeek;

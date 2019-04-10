@@ -135,8 +135,6 @@ ECode Gregorian::Date::Clone(
     VALIDATE_NOT_NULL(obj);
 
     AutoPtr<Gregorian::Date> date = new Gregorian::Date();
-    ECode ec = date->Constructor();
-    if (FAILED(ec)) return ec;
     FAIL_RETURN(CloneImpl(date.Get()));
     *obj = date->Probe(iid);
     REFCOUNT_ADD(*obj);

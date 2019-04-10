@@ -350,6 +350,11 @@ ECode Hashtable::CloneImpl(
 {
     AutoLock lock(this);
     Hashtable* t = (Hashtable*)newObj;
+
+    t->mCount = mCount;
+    t->mThreshold = mThreshold;
+    t->mLoadFactor = mLoadFactor;
+
     t->mTable = Array<HashtableEntry*>(mTable.GetLength());
     for (Integer i = mTable.GetLength() - 1; i >=0; i--) {
         if (mTable[i] != nullptr) {
