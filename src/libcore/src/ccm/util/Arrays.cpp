@@ -17,6 +17,7 @@
 #include "ccm/core/Math.h"
 #include "ccm/util/Arrays.h"
 #include "libcore.h"
+#include <ccmobject.h>
 #include <ccmlogger.h>
 
 using ccm::core::E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
@@ -120,6 +121,131 @@ Integer Arrays::BinarySearch0(
     return -(low + 1);  // key not found.
 }
 
+Boolean Arrays::Equals(
+    /* [in] */ const Array<Long>& a,
+    /* [in] */ const Array<Long>& a2)
+{
+    if (a == a2) {
+        return true;
+    }
+    if (a.IsNull() || a2.IsNull()) {
+        return false;
+    }
+
+    Integer length = a.GetLength();
+    if (a2.GetLength() != length) {
+        return false;
+    }
+
+    for (Integer i = 0; i < length; i++) {
+        if (a[i] != a2[i]) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+Boolean Arrays::Equals(
+    /* [in] */ const Array<Integer>& a,
+    /* [in] */ const Array<Integer>& a2)
+{
+    if (a == a2) {
+        return true;
+    }
+    if (a.IsNull() || a2.IsNull()) {
+        return false;
+    }
+
+    Integer length = a.GetLength();
+    if (a2.GetLength() != length) {
+        return false;
+    }
+
+    for (Integer i = 0; i < length; i++) {
+        if (a[i] != a2[i]) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+Boolean Arrays::Equals(
+    /* [in] */ const Array<Short>& a,
+    /* [in] */ const Array<Short>& a2)
+{
+    if (a == a2) {
+        return true;
+    }
+    if (a.IsNull() || a2.IsNull()) {
+        return false;
+    }
+
+    Integer length = a.GetLength();
+    if (a2.GetLength() != length) {
+        return false;
+    }
+
+    for (Integer i = 0; i < length; i++) {
+        if (a[i] != a2[i]) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+Boolean Arrays::Equals(
+    /* [in] */ const Array<Char>& a,
+    /* [in] */ const Array<Char>& a2)
+{
+    if (a == a2) {
+        return true;
+    }
+    if (a.IsNull() || a2.IsNull()) {
+        return false;
+    }
+
+    Integer length = a.GetLength();
+    if (a2.GetLength() != length) {
+        return false;
+    }
+
+    for (Integer i = 0; i < length; i++) {
+        if (a[i] != a2[i]) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+Boolean Arrays::Equals(
+    /* [in] */ const Array<Byte>& a,
+    /* [in] */ const Array<Byte>& a2)
+{
+    if (a == a2) {
+        return true;
+    }
+    if (a.IsNull() || a2.IsNull()) {
+        return false;
+    }
+
+    Integer length = a.GetLength();
+    if (a2.GetLength() != length) {
+        return false;
+    }
+
+    for (Integer i = 0; i < length; i++) {
+        if (a[i] != a2[i]) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 ECode Arrays::Fill(
     /* [in] */ Array<Char>& a,
     /* [in] */ Char value)
@@ -189,6 +315,144 @@ ECode Arrays::CopyOf(
     }
     *newArray = copy;
     return NOERROR;
+}
+
+Integer Arrays::GetHashCode(
+    /* [in] */ const Array<Long>& a)
+{
+    if (a.IsNull()) {
+        return 0;
+    }
+
+    Integer result = 1;
+    for (Long element : a) {
+        Integer elementHash = (Integer)(element ^ (((unsigned Long)element) >> 32));
+        result = 31 * result + elementHash;
+    }
+
+    return result;
+}
+
+Integer Arrays::GetHashCode(
+    /* [in] */ const Array<Integer>& a)
+{
+    if (a.IsNull()) {
+        return 0;
+    }
+
+    Integer result = 1;
+    for (Integer element : a) {
+        result = 31 * result + element;
+    }
+
+    return result;
+}
+
+Integer Arrays::GetHashCode(
+    /* [in] */ const Array<Short>& a)
+{
+    if (a.IsNull()) {
+        return 0;
+    }
+
+    Integer result = 1;
+    for (Short element : a) {
+        result = 31 * result + element;
+    }
+
+    return result;
+}
+
+Integer Arrays::GetHashCode(
+    /* [in] */ const Array<Char>& a)
+{
+    if (a.IsNull()) {
+        return 0;
+    }
+
+    Integer result = 1;
+    for (Char element : a) {
+        result = 31 * result + element;
+    }
+
+    return result;
+}
+
+Integer Arrays::GetHashCode(
+    /* [in] */ const Array<Byte>& a)
+{
+    if (a.IsNull()) {
+        return 0;
+    }
+
+    Integer result = 1;
+    for (Byte element : a) {
+        result = 31 * result + element;
+    }
+
+    return result;
+}
+
+Integer Arrays::GetHashCode(
+    /* [in] */ const Array<Boolean>& a)
+{
+    if (a.IsNull()) {
+        return 0;
+    }
+
+    Integer result = 1;
+    for (Boolean element : a) {
+        result = 31 * result + (element ? 1231 : 1237);
+    }
+
+    return result;
+}
+
+Integer Arrays::GetHashCode(
+    /* [in] */ const Array<Float>& a)
+{
+    if (a.IsNull()) {
+        return 0;
+    }
+
+    Integer result = 1;
+    for (Float element : a) {
+        result = 31 * result + Math::FloatToIntBits(element);
+    }
+
+    return result;
+}
+
+Integer Arrays::GetHashCode(
+    /* [in] */ const Array<Double>& a)
+{
+    if (a.IsNull()) {
+        return 0;
+    }
+
+    Integer result = 1;
+    for (Double element : a) {
+        Long bits = Math::DoubleToLongBits(element);
+        result = 31 * result + (Integer)(bits ^ (((unsigned Long)bits) >> 32));
+    }
+
+    return result;
+}
+
+Integer Arrays::GetHashCode(
+    /* [in] */ const Array<IInterface*>& a)
+{
+    if (a.IsNull()) {
+        return 0;
+    }
+
+    Integer result = 1;
+    for (IInterface* element : a) {
+        result = 31 * result + (element == nullptr ?
+                0 : Object::GetHashCode(element));
+    }
+
+    return result;
 }
 
 }

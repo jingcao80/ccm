@@ -274,8 +274,8 @@ ECode ZoneInfoDB::TzData::ReadIndex(
                 return E_IO_EXCEPTION;
             }
         }
-        return NOERROR;
     }
+    return NOERROR;
 }
 
 ECode ZoneInfoDB::TzData::ValidateOffset(

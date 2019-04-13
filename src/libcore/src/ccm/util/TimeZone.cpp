@@ -18,13 +18,16 @@
 #include "ccm/core/CoreUtils.h"
 #include "ccm/core/CStringBuilder.h"
 #include "ccm/core/StringUtils.h"
+#include "ccm/core/System.h"
 #include "ccm/util/CDate.h"
+#include "ccm/util/CPropertyPermission.h"
 #include "ccm/util/CSimpleTimeZone.h"
 #include "ccm/util/Locale.h"
 #include "ccm/util/TimeZone.h"
 #include "ccm/util/TimeZoneGetter.h"
 #include "ccm/util/regex/Pattern.h"
 #include "ccm.core.ICloneable.h"
+#include "ccm.security.IPermission.h"
 #include "ccm.util.regex.IMatcher.h"
 #include "libcore/icu/TimeZoneNames.h"
 #include "libcore/io/IoUtils.h"
@@ -38,11 +41,15 @@ using ccm::core::CStringBuilder;
 using ccm::core::E_ASSERTION_ERROR;
 using ccm::core::E_NUMBER_FORMAT_EXCEPTION;
 using ccm::core::ICloneable;
+using ccm::core::ISecurityManager;
 using ccm::core::IStringBuilder;
 using ccm::core::IID_ICloneable;
 using ccm::core::IID_IStringBuilder;
 using ccm::core::StringUtils;
+using ccm::core::System;
 using ccm::io::IID_ISerializable;
+using ccm::security::IID_IPermission;
+using ccm::security::IPermission;
 using ccm::util::regex::IMatcher;
 using ccm::util::regex::Pattern;
 using libcore::icu::TimeZoneNames;
@@ -392,12 +399,20 @@ ECode TimeZone::GetCustomTimeZone(
 Array<String> TimeZone::GetAvailableIDs(
     /* [in] */ Integer rawOffset)
 {
-    return Array<String>::Null();
+    AutoLock lock(GetClassLock());
+
+    Array<String> ids;
+    ZoneInfoDB::GetInstance()->GetAvailableIDs(rawOffset, &ids);
+    return ids;
 }
 
 Array<String> TimeZone::GetAvailableIDs()
 {
-    return Array<String>::Null();
+    AutoLock lock(GetClassLock());
+
+    Array<String> ids;
+    ZoneInfoDB::GetInstance()->GetAvailableIDs(&ids);
+    return ids;
 }
 
 AutoPtr<ITimeZone> TimeZone::GetDefault()
@@ -434,6 +449,18 @@ AutoPtr<ITimeZone> TimeZone::GetDefaultRef()
 ECode TimeZone::SetDefault(
     /* [in] */ ITimeZone* timeZone)
 {
+    AutoLock lock(GetClassLock());
+
+    AutoPtr<ISecurityManager> sm = System::GetSecurityManager();
+    if (sm != nullptr) {
+        AutoPtr<IPermission> perm;
+        CPropertyPermission::New(String("user.timeZone"), String("write"),
+                IID_IPermission, (IInterface**)&perm);
+        FAIL_RETURN(sm->CheckPermission(perm));
+    }
+
+    sDefaultTimeZone = timeZone != nullptr ?
+            (ITimeZone*)CoreUtils::Clone(timeZone, IID_ITimeZone).Get() : nullptr;
     return NOERROR;
 }
 

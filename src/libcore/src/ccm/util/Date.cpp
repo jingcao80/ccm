@@ -18,6 +18,7 @@
 #include "ccm/core/Character.h"
 #include "ccm/core/CStringBuilder.h"
 #include "ccm/core/System.h"
+#include "ccm/text/DateFormat.h"
 #include "ccm/util/CDate.h"
 #include "ccm/util/Date.h"
 #include "ccm/util/CGregorianCalendar.h"
@@ -41,6 +42,8 @@ using ccm::core::IInteger;
 using ccm::core::IStringBuilder;
 using ccm::core::System;
 using ccm::io::IID_ISerializable;
+using ccm::text::DateFormat;
+using ccm::text::IDateFormat;
 using ccm::util::ITimeZone;
 using ccm::util::calendar::CalendarSystem;
 using ccm::util::calendar::CalendarUtils;
@@ -729,7 +732,9 @@ void Date::ConvertToAbbr(
 ECode Date::ToLocaleString(
     /* [out] */ String* str)
 {
-    return NOERROR;
+    AutoPtr<IDateFormat> formatter;
+    DateFormat::GetDateTimeInstance(&formatter);
+    return formatter->Format(this, str);
 }
 
 ECode Date::ToGMTString(

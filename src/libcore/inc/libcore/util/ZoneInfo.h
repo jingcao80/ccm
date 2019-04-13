@@ -17,25 +17,203 @@
 #ifndef __LIBCORE_UTIL_ZONEINFO_H__
 #define __LIBCORE_UTIL_ZONEINFO_H__
 
+#include "ccm/util/TimeZone.h"
+#include "ccm.util.IDate.h"
 #include "libcore.io.IBufferIterator.h"
+#include "libcore.util.IZoneInfo.h"
 
+using ccm::util::IDate;
+using ccm::util::TimeZone;
 using libcore::io::IBufferIterator;
 
 namespace libcore {
 namespace util {
 
-class ZoneInfo
+class ZoneInfo final
+    : public TimeZone
+    , public IZoneInfo
 {
 public:
+    CCM_INTERFACE_DECL();
+
     static ECode ReadTimeZone(
         /* [in] */ const String& id,
         /* [in] */ IBufferIterator* it,
         /* [in] */ Long currentTimeMillis,
-        /* [out] */ IZoneInfo** zoneInfo)
-    {
-        return NOERROR;
-    }
+        /* [out] */ IZoneInfo** zoneInfo);
+
+    ECode GetOffset(
+        /* [in] */ Integer era,
+        /* [in] */ Integer year,
+        /* [in] */ Integer month,
+        /* [in] */ Integer day,
+        /* [in] */ Integer dayOfWeek,
+        /* [in] */ Integer millis,
+        /* [out] */ Integer* offset) override;
+
+    ECode FindTransitionIndex(
+        /* [in] */ Long seconds,
+        /* [out] */ Integer* index) override;
+
+    ECode GetOffsetsByUtcTime(
+        /* [in] */ Long utcTimeInMillis,
+        /* [out] */ Array<Integer>& offsets,
+        /* [out] */ Integer* total = nullptr) override;
+
+    ECode GetOffset(
+        /* [in] */ Long date,
+        /* [out] */ Integer* offset) override;
+
+    ECode InDaylightTime(
+        /* [in] */ IDate* time,
+        /* [out] */ Boolean* daylight) override;
+
+    ECode GetRawOffset(
+        /* [out] */ Integer* rawOffset) override;
+
+    ECode SetRawOffset(
+        /* [in] */ Integer rawOffset) override;
+
+    ECode GetDSTSavings(
+        /* [out] */ Integer* savingTime) override;
+
+    ECode UseDaylightTime(
+        /* [out] */ Boolean* daylight) override;
+
+    ECode HasSameRules(
+        /* [in] */ ITimeZone* other,
+        /* [out] */ Boolean* result) override;
+
+    ECode Equals(
+        /* [in] */ IInterface* obj,
+        /* [out] */ Boolean* same) override;
+
+    ECode GetHashCode(
+        /* [out] */ Integer* hash) override;
+
+    ECode ToString(
+        /* [out] */ String* desc) override;
+
+    ECode Clone(
+        /* [in] */ const InterfaceID& iid,
+        /* [out] */ IInterface** obj) override;
+
+private:
+    ZoneInfo();
+
+    ECode Constructor(
+        /* [in] */ const String& name,
+        /* [in] */ const Array<Long>& transitions,
+        /* [in] */ const Array<Byte>& types,
+        /* [in] */ const Array<Integer>& gmtOffsets,
+        /* [in] */ const Array<Byte>& isDsts,
+        /* [in] */ Long currentTimeMillis);
+
+    Integer FindOffsetIndexForTimeInSeconds(
+        /* [in] */ Long seconds);
+
+    Integer FindOffsetIndexForTimeInMilliseconds(
+        /* [in] */ Long millis);
+
+    static Long RoundDownMillisToSeconds(
+        /* [in] */ Long millis);
+
+    static Long RoundUpMillisToSeconds(
+        /* [in] */ Long millis);
+
+
+private:
+    static constexpr Long MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
+    static constexpr Long MILLISECONDS_PER_400_YEARS =
+            MILLISECONDS_PER_DAY * (400 * 365 + 100 - 3);
+
+    static constexpr Long UNIX_OFFSET = 62167219200000LL;
+
+    static const Array<Integer> NORMAL;
+
+    static const Array<Integer> LEAP;
+
+    Integer mRawOffset;
+    Integer mEarliestRawOffset;
+
+    /**
+     * <p>True if the transition active at the time this instance was created, or future
+     * transitions support DST. It is possible that caching this value at construction time and
+     * using it for the lifetime of the instance does not match the contract of the
+     * {@link TimeZone#useDaylightTime()} method but it appears to be what the RI does and that
+     * method is not particularly useful when it comes to historical or future times as it does not
+     * allow the time to be specified.
+     *
+     * <p>When this is false then {@link #mDstSavings} will be 0.
+     */
+    Boolean mUseDst;
+
+    /**
+     * <p>This should be final but is not because it may need to be fixed up by
+     * {@link #readObject(ObjectInputStream)} to correct an inconsistency in the previous version
+     * of the code whereby this was set to a non-zero value even though DST was not actually used.
+     */
+    Integer mDstSavings;
+
+    /**
+     * The times (in seconds) at which the offsets changes for any reason, whether that is a change
+     * in the offset from UTC or a change in the DST.
+     *
+     * <p>These times are pre-calculated externally from a set of rules (both historical and
+     * future) and stored in a file from which {@link ZoneInfo#readTimeZone(String, BufferIterator,
+     * long)} reads the data. That is quite different to {@link java.util.SimpleTimeZone}, which has
+     * essentially human readable rules (e.g. DST starts at 01:00 on the first Sunday in March and
+     * ends at 01:00 on the last Sunday in October) that can be used to determine the DST transition
+     * times across a number of years
+     *
+     * <p>In terms of {@link ZoneInfo tzfile} structure this array is of length {@code tzh_timecnt}
+     * and contains the times in seconds converted to long to make them safer to use.
+     *
+     * <p>They are stored in order from earliest (lowest) time to latest (highest). A transition is
+     * identified by its index within this array. A transition {@code T} is active at a specific
+     * time {@code X} if {@code T} is the highest transition whose time is less than or equal to
+     * {@code X}.
+     */
+    Array<Long> mTransitions;
+
+    /**
+     * The type of the transition, where type is a pair consisting of the offset and whether the
+     * offset includes DST or not.
+     *
+     * <p>Each transition in {@link #mTransitions} has an associated type in this array at the same
+     * index. The type is an index into the arrays {@link #mOffsets} and {@link #mIsDsts} that each
+     * contain one part of the pair.
+     *
+     * <p>In the {@link ZoneInfo tzfile} structure the type array only contains unique instances of
+     * the {@code struct ttinfo} to save space and each type may be referenced by multiple
+     * transitions. However, the type pairs stored in this class are not guaranteed unique because
+     * they do not include the {@code tt_abbrind}, which is the abbreviated identifier to use for
+     * the time zone after the transition.
+     */
+    Array<Byte> mTypes;
+
+    /**
+     * The offset parts of the transition types, in seconds.
+     *
+     * <p>These are actually a delta to the {@link #mRawOffset}. So, if the offset is say +7200
+     * seconds and {@link #mRawOffset} is say +3600 then this will have a value of +3600.
+     *
+     * <p>The offset in milliseconds can be computed using:
+     * {@code mRawOffset + mOffsets[type] * 1000}
+     */
+    Array<Integer> mOffsets;
+
+    /**
+     * Specifies whether an associated offset includes DST or not.
+     *
+     * <p>Each entry in here is 1 if the offset at the same index in {@link #mOffsets} includes DST
+     * and 0 otherwise.
+     */
+    Array<Byte> mIsDsts;
 };
+
+inline ZoneInfo::ZoneInfo()
+{}
 
 }
 }

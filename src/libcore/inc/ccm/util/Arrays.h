@@ -38,6 +38,26 @@ public:
         /* [in] */ const Array<String>& a,
         /* [in] */ const String& key);
 
+    static Boolean Equals(
+        /* [in] */ const Array<Long>& a,
+        /* [in] */ const Array<Long>& a2);
+
+    static Boolean Equals(
+        /* [in] */ const Array<Integer>& a,
+        /* [in] */ const Array<Integer>& a2);
+
+    static Boolean Equals(
+        /* [in] */ const Array<Short>& a,
+        /* [in] */ const Array<Short>& a2);
+
+    static Boolean Equals(
+        /* [in] */ const Array<Char>& a,
+        /* [in] */ const Array<Char>& a2);
+
+    static Boolean Equals(
+        /* [in] */ const Array<Byte>& a,
+        /* [in] */ const Array<Byte>& a2);
+
     static ECode Fill(
         /* [out] */ Array<Char>& a,
         /* [in] */ Char value);
@@ -68,6 +88,33 @@ public:
     {
         return NOERROR;
     }
+
+    static Integer GetHashCode(
+        /* [in] */ const Array<Long>& a);
+
+    static Integer GetHashCode(
+        /* [in] */ const Array<Integer>& a);
+
+    static Integer GetHashCode(
+        /* [in] */ const Array<Short>& a);
+
+    static Integer GetHashCode(
+        /* [in] */ const Array<Char>& a);
+
+    static Integer GetHashCode(
+        /* [in] */ const Array<Byte>& a);
+
+    static Integer GetHashCode(
+        /* [in] */ const Array<Boolean>& a);
+
+    static Integer GetHashCode(
+        /* [in] */ const Array<Float>& a);
+
+    static Integer GetHashCode(
+        /* [in] */ const Array<Double>& a);
+
+    static Integer GetHashCode(
+        /* [in] */ const Array<IInterface*>& a);
 
 private:
     Arrays()

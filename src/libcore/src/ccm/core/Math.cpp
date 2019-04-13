@@ -16,11 +16,13 @@
 
 #include "ccm/core/Math.h"
 #include "ccm/misc/DoubleConsts.h"
+#include "ccm/misc/FloatConsts.h"
 #include "ccm/util/CRandom.h"
 #include "ccm.core.IDouble.h"
 #include "ccm.util.IRandom.h"
 
 using ccm::misc::DoubleConsts;
+using ccm::misc::FloatConsts;
 using ccm::util::CRandom;
 using ccm::util::IRandom;
 using ccm::util::IID_IRandom;
@@ -301,6 +303,19 @@ union FloatInteger
     unsigned int bits;
     Float f;
 };
+
+Integer Math::FloatToIntBits(
+    /* [in] */ Float value)
+{
+    Integer result = FloatToRawIntBits(value);
+    // Check for NaN based on values of bit fields, maximum
+    // exponent and nonzero significand.
+    if ((result & FloatConsts::EXP_BIT_MASK) == FloatConsts::EXP_BIT_MASK &&
+            (result & FloatConsts::SIGNIF_BIT_MASK) != 0) {
+        result = 0x7fc00000;
+    }
+    return result;
+}
 
 Integer Math::FloatToRawIntBits(
     /* [in] */ Float value)

@@ -127,6 +127,9 @@ public:
     COM_PUBLIC static Boolean IsFinite(
         /* [in] */ Double d);
 
+    COM_PUBLIC static Integer FloatToIntBits(
+        /* [in] */ Float value);
+
     COM_PUBLIC static Integer FloatToRawIntBits(
         /* [in] */ Float value);
 

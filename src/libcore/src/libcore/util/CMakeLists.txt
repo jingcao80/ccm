@@ -26,6 +26,7 @@ include_directories(
 set(SOURCES
     BasicLruCache.cpp
     TimeZoneDataFiles.cpp
+    ZoneInfo.cpp
     ZoneInfoDB.cpp)
 
 add_library(libcore_util STATIC

@@ -28,6 +28,10 @@ namespace util {
 ]
 interface IZoneInfo
 {
+    FindTransitionIndex(
+        [in] Long seconds,
+        [out] Integer* index);
+
     GetOffsetsByUtcTime(
         [in] Long utcTimeInMillis,
         [out] Array<Integer> offsets,
