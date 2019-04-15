@@ -38,5 +38,80 @@ interface IZoneInfo
         [out] Integer* total = nullptr);
 }
 
+[
+    uuid(0b21624c-3400-44e0-84bc-d44dea940c9b),
+    version(0.1.0)
+]
+interface IZoneInfoWallTime
+{
+    GetGmtOffset(
+        [out] Integer* gmtoff);
+
+    GetHour(
+        [out] Integer* hour);
+
+    GetIsDst(
+        [out] Integer* isDst);
+
+    GetMinute(
+        [out] Integer* minute);
+
+    GetMonth(
+        [out] Integer* month);
+
+    GetMonthDay(
+        [out] Integer* monthDay);
+
+    GetSecond(
+        [out] Integer* second);
+
+    GetWeekDay(
+        [out] Integer* weekDay);
+
+    GetYear(
+        [out] Integer* year);
+
+    GetYearDay(
+        [out] Integer* yearDay);
+
+    Localtime(
+        [in] Integer timeSeconds,
+        [in] IZoneInfo* zoneInfo);
+
+    Mktime(
+        [in] IZoneInfo* zoneInfo,
+        [out] Integer* time);
+
+    SetGmtOffset(
+        [in] Integer gmtoff);
+
+    SetHour(
+        [in] Integer hour);
+
+    SetIsDst(
+        [in] Integer isDst);
+
+    SetMinute(
+        [in] Integer minute);
+
+    SetMonth(
+        [in] Integer month);
+
+    SetMonthDay(
+        [in] Integer monthDay);
+
+    SetSecond(
+        [in] Integer second);
+
+    SetWeekDay(
+        [in] Integer weekDay);
+
+    SetYear(
+        [in] Integer year);
+
+    SetYearDay(
+        [in] Integer yearDay);
+}
+
 }
 }

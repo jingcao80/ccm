@@ -17,11 +17,18 @@
 #ifndef __LIBCORE_UTIL_ZONEINFO_H__
 #define __LIBCORE_UTIL_ZONEINFO_H__
 
+#include "ccm/core/SyncObject.h"
 #include "ccm/util/TimeZone.h"
+#include "ccm.core.IInteger.h"
+#include "ccm.util.ICalendar.h"
 #include "ccm.util.IDate.h"
 #include "libcore.io.IBufferIterator.h"
 #include "libcore.util.IZoneInfo.h"
+#include "libcore.util.IZoneInfoWallTime.h"
 
+using ccm::core::IInteger;
+using ccm::core::SyncObject;
+using ccm::util::ICalendar;
 using ccm::util::IDate;
 using ccm::util::TimeZone;
 using libcore::io::IBufferIterator;
@@ -33,6 +40,183 @@ class ZoneInfo final
     : public TimeZone
     , public IZoneInfo
 {
+private:
+    class OffsetInterval;
+
+public:
+    class WallTime
+        : public SyncObject
+        , public IZoneInfoWallTime
+    {
+    public:
+        CCM_INTERFACE_DECL();
+
+        ECode Constructor();
+
+        ECode Localtime(
+            /* [in] */ Integer timeSeconds,
+            /* [in] */ IZoneInfo* zoneInfo) override;
+
+        ECode Mktime(
+            /* [in] */ IZoneInfo* zoneInfo,
+            /* [out] */ Integer* time) override;
+
+        ECode SetYear(
+            /* [in] */ Integer year) override;
+
+        ECode SetMonth(
+            /* [in] */ Integer month) override;
+
+        ECode SetMonthDay(
+            /* [in] */ Integer monthDay) override;
+
+        ECode SetHour(
+            /* [in] */ Integer hour) override;
+
+        ECode SetMinute(
+            /* [in] */ Integer minute) override;
+
+        ECode SetSecond(
+            /* [in] */ Integer second) override;
+
+        ECode SetWeekDay(
+            /* [in] */ Integer weekDay) override;
+
+        ECode SetYearDay(
+            /* [in] */ Integer yearDay) override;
+
+        ECode SetIsDst(
+            /* [in] */ Integer isDst) override;
+
+        ECode SetGmtOffset(
+            /* [in] */ Integer gmtoff) override;
+
+        ECode GetYear(
+            /* [out] */ Integer* year) override;
+
+        ECode GetMonth(
+            /* [out] */ Integer* month) override;
+
+        ECode GetMonthDay(
+            /* [out] */ Integer* monthDay) override;
+
+        ECode GetHour(
+            /* [out] */ Integer* hour) override;
+
+        ECode GetMinute(
+            /* [out] */ Integer* minute) override;
+
+        ECode GetSecond(
+            /* [out] */ Integer* second) override;
+
+        ECode GetWeekDay(
+            /* [out] */ Integer* weekDay) override;
+
+        ECode GetYearDay(
+            /* [out] */ Integer* yearDay) override;
+
+        ECode GetGmtOffset(
+            /* [out] */ Integer* gmtoff) override;
+
+        ECode GetIsDst(
+            /* [out] */ Integer* isDst) override;
+
+    private:
+        ECode TryOffsetAdjustments(
+            /* [in] */ ZoneInfo* zoneInfo,
+            /* [in] */ Integer oldWallTimeSeconds,
+            /* [in] */ OffsetInterval* targetInterval,
+            /* [in] */ Integer transitionIndex,
+            /* [in] */ Integer isDstToFind,
+            /* [out] */ IInteger** time);
+
+        static Array<Integer> GetOffsetsOfType(
+            /* [in] */ ZoneInfo* zoneInfo,
+            /* [in] */ Integer startIndex,
+            /* [in] */ Integer isDst);
+
+        ECode DoWallTimeSearch(
+            /* [in] */ ZoneInfo* zoneInfo,
+            /* [in] */ Integer initialTransitionIndex,
+            /* [in] */ Integer wallTimeSeconds,
+            /* [in] */ Boolean mustMatchDst,
+            /* [out] */ IInteger** time);
+
+        void CopyFieldsToCalendar();
+
+        void CopyFieldsFromCalendar();
+
+    private:
+        AutoPtr<ICalendar> mCalendar;
+
+        Integer mYear = 0;
+        Integer mMonth = 0;
+        Integer mMonthDay = 0;
+        Integer mHour = 0;
+        Integer mMinute = 0;
+        Integer mSecond = 0;
+        Integer mWeekDay = 0;
+        Integer mYearDay = 0;
+        Integer mIsDst = 0;
+        Integer mGmtOffsetSeconds = 0;
+    };
+
+private:
+    class OffsetInterval
+        : public Object
+    {
+    public:
+        static ECode Create(
+            /* [in] */ ZoneInfo* timeZone,
+            /* [in] */ Integer transitionIndex,
+            /* [out] */ OffsetInterval** offsetInterval);
+
+        inline Boolean ContainsWallTime(
+            /* [in] */ Long wallTimeSeconds)
+        {
+            return wallTimeSeconds >= mStartWallTimeSeconds &&
+                    wallTimeSeconds < mEndWallTimeSeconds;
+        }
+
+        inline Integer GetIsDst()
+        {
+            return mIsDst;
+        }
+
+        inline Integer GetTotalOffsetSeconds()
+        {
+            return mTotalOffsetSeconds;
+        }
+
+        inline Long GetEndWallTimeSeconds()
+        {
+            return mEndWallTimeSeconds;
+        }
+
+        inline Long GetStartWallTimeSeconds()
+        {
+            return mStartWallTimeSeconds;
+        }
+
+    private:
+        inline OffsetInterval(
+            /* [in] */ Integer startWallTimeSeconds,
+            /* [in] */ Integer endWallTimeSeconds,
+            /* [in] */ Integer isDst,
+            /* [in] */ Integer totalOffsetSeconds)
+            : mStartWallTimeSeconds(startWallTimeSeconds)
+            , mEndWallTimeSeconds(endWallTimeSeconds)
+            , mIsDst(isDst)
+            , mTotalOffsetSeconds(totalOffsetSeconds)
+        {}
+
+    private:
+        Integer mStartWallTimeSeconds;
+        Integer mEndWallTimeSeconds;
+        Integer mIsDst;
+        Integer mTotalOffsetSeconds;
+    };
+
 public:
     CCM_INTERFACE_DECL();
 
@@ -121,6 +305,15 @@ private:
     static Long RoundUpMillisToSeconds(
         /* [in] */ Long millis);
 
+    static ECode CheckedAdd(
+        /* [in] */ Long a,
+        /* [in] */ Integer b,
+        /* [out] */ Integer* result);
+
+    static ECode CheckedSubtract(
+        /* [in] */ Integer a,
+        /* [in] */ Integer b,
+        /* [out] */ Integer* result);
 
 private:
     static constexpr Long MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
@@ -210,6 +403,8 @@ private:
      * and 0 otherwise.
      */
     Array<Byte> mIsDsts;
+
+    static constexpr Integer E_CHECKED_ARITHMETIC_EXCEPTION = 0x80011af0;
 };
 
 inline ZoneInfo::ZoneInfo()

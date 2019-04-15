@@ -14,15 +14,21 @@
 // limitations under the License.
 //=========================================================================
 
+#include "ccm/core/CInteger.h"
 #include "ccm/core/Math.h"
 #include "ccm/util/Arrays.h"
+#include "ccm/util/CGregorianCalendar.h"
 #include "libcore/util/ZoneInfo.h"
 #include <ccmlogger.h>
 
+using ccm::core::CInteger;
 using ccm::core::E_ILLEGAL_STATE_EXCEPTION;
+using ccm::core::IID_IInteger;
 using ccm::core::Math;
 using ccm::io::E_IO_EXCEPTION;
 using ccm::util::Arrays;
+using ccm::util::CGregorianCalendar;
+using ccm::util::IID_ICalendar;
 
 namespace libcore {
 namespace util {
@@ -597,6 +603,610 @@ ECode ZoneInfo::Clone(
 
     *obj = (IZoneInfo*)zone.Get();
     REFCOUNT_ADD(*obj);
+    return NOERROR;
+}
+
+ECode ZoneInfo::CheckedAdd(
+    /* [in] */ Long a,
+    /* [in] */ Integer b,
+    /* [out] */ Integer* result)
+{
+    Long lresult = a + b;
+    if (lresult != (Integer)lresult) {
+        return E_CHECKED_ARITHMETIC_EXCEPTION;
+    }
+    *result = (Integer)lresult;
+    return NOERROR;
+}
+
+ECode ZoneInfo::CheckedSubtract(
+    /* [in] */ Integer a,
+    /* [in] */ Integer b,
+    /* [out] */ Integer* result)
+{
+    Long lresult = (Long)a - b;
+    if (lresult != (Integer)lresult) {
+        return E_CHECKED_ARITHMETIC_EXCEPTION;
+    }
+    *result = (Integer)lresult;
+    return NOERROR;
+}
+
+//-----------------------------------------------------------------------
+
+CCM_INTERFACE_IMPL_1(ZoneInfo::WallTime, SyncObject, IZoneInfoWallTime);
+
+ECode ZoneInfo::WallTime::Constructor()
+{
+    CGregorianCalendar::New(0, 0, 0, 0, 0, 0, IID_ICalendar, (IInterface**)&mCalendar);
+    AutoPtr<ITimeZone> tz;
+    TimeZone::GetTimeZone(String("UTC"), &tz);
+    mCalendar->SetTimeZone(tz);
+    return NOERROR;
+}
+
+ECode ZoneInfo::WallTime::Localtime(
+    /* [in] */ Integer timeSeconds,
+    /* [in] */ IZoneInfo* zoneInfo)
+{
+    ZoneInfo* zoneInfoObj = (ZoneInfo*)zoneInfo;
+
+    Integer offsetSeconds = zoneInfoObj->mRawOffset / 1000;
+
+    // Find out the timezone DST state and adjustment.
+    Byte isDst;
+    if (zoneInfoObj->mTransitions.GetLength() == 0) {
+        isDst = 0;
+    }
+    else {
+        // offsetIndex can be in the range -1..zoneInfo.mOffsets.length - 1
+        Integer offsetInex = zoneInfoObj->FindOffsetIndexForTimeInSeconds(timeSeconds);
+        if (offsetInex == -1) {
+            // -1 means timeSeconds is "before the first recorded transition". The first
+            // recorded transition is treated as a transition from non-DST and the raw
+            // offset.
+            isDst = 0;
+        }
+        else {
+            offsetSeconds += zoneInfoObj->mOffsets[offsetInex];
+            isDst = zoneInfoObj->mIsDsts[offsetInex];
+        }
+    }
+
+    // Perform arithmetic that might underflow before setting fields.
+    Integer wallTimeSeconds;
+    FAIL_RETURN(CheckedAdd(timeSeconds, offsetSeconds, &wallTimeSeconds));
+
+    // Set fields.
+    mCalendar->SetTimeInMillis(wallTimeSeconds * 1000LL);
+    CopyFieldsFromCalendar();
+    mIsDst = isDst;
+    mGmtOffsetSeconds = offsetSeconds;
+    return NOERROR;
+}
+
+ECode ZoneInfo::WallTime::Mktime(
+    /* [in] */ IZoneInfo* zoneInfo,
+    /* [out] */ Integer* time)
+{
+    VALIDATE_NOT_NULL(time);
+
+    ZoneInfo* zoneInfoObj = (ZoneInfo*)zoneInfo;
+
+    // Normalize isDst to -1, 0 or 1 to simplify isDst equality checks below.
+    mIsDst = mIsDst > 0 ? mIsDst = 1 : mIsDst < 0 ? mIsDst = -1 : 0;
+
+    CopyFieldsToCalendar();
+    Long timeInMillies;
+    mCalendar->GetTimeInMillis(&timeInMillies);
+    Long longWallTimeSeconds = timeInMillies / 1000;
+    if (IInteger::MIN_VALUE > longWallTimeSeconds
+            || longWallTimeSeconds > IInteger::MAX_VALUE) {
+        // For compatibility with the old native 32-bit implementation we must treat
+        // this as an error. Note: -1 could be confused with a real time.
+        *time = -1;
+        return NOERROR;
+    }
+
+    Integer wallTimeSeconds = longWallTimeSeconds;
+    Integer rawOffsetSeconds = zoneInfoObj->mRawOffset / 1000;
+    Integer rawTimeSeconds;
+    ECode ec = CheckedSubtract(wallTimeSeconds, rawOffsetSeconds, &rawTimeSeconds);
+    if (FAILED(ec)) {
+        *time = -1;
+        return NOERROR;
+    }
+
+    if (zoneInfoObj->mTransitions.GetLength() == 0) {
+        // There is no transition information. There is just a raw offset for all time.
+        if (mIsDst > 0) {
+            // Caller has asserted DST, but there is no DST information available.
+            *time = -1;
+            return NOERROR;
+        }
+        CopyFieldsFromCalendar();
+        mIsDst = 0;
+        mGmtOffsetSeconds = rawOffsetSeconds;
+        *time = rawTimeSeconds;
+        return NOERROR;
+    }
+
+    // We cannot know for sure what instant the wall time will map to. Unfortunately, in
+    // order to know for sure we need the timezone information, but to get the timezone
+    // information we need an instant. To resolve this we use the raw offset to find an
+    // OffsetInterval; this will get us the OffsetInterval we need or very close.
+
+    // The initialTransition can be between -1 and (zoneInfo.mTransitions - 1). -1
+    // indicates the rawTime is before the first transition and is handled gracefully by
+    // createOffsetInterval().
+    Integer initialTransitionIndex;
+    zoneInfoObj->FindTransitionIndex(rawTimeSeconds, &initialTransitionIndex);
+
+    if (mIsDst < 0) {
+        // This is treated as a special case to get it out of the way:
+        // When a caller has set isDst == -1 it means we can return the first match for
+        // the wall time we find. If the caller has specified a wall time that cannot
+        // exist this always returns -1.
+
+        AutoPtr<IInteger> result;
+        ec = DoWallTimeSearch(zoneInfoObj, initialTransitionIndex,
+                wallTimeSeconds, true, &result);
+        if (FAILED(ec) || result == nullptr) {
+            *time = -1;
+            return NOERROR;
+        }
+        return result->GetValue(time);
+    }
+
+    // If the wall time asserts a DST (isDst == 0 or 1) the search is performed twice:
+    // 1) The first attempts to find a DST offset that matches isDst exactly.
+    // 2) If it fails, isDst is assumed to be incorrect and adjustments are made to see
+    // if a valid wall time can be created. The result can be somewhat arbitrary.
+
+    AutoPtr<IInteger> result;
+    ec = DoWallTimeSearch(zoneInfoObj, initialTransitionIndex,
+            wallTimeSeconds, true, &result);
+    if (FAILED(ec)) {
+        *time = -1;
+        return NOERROR;
+    }
+    if (result == nullptr) {
+        ec = DoWallTimeSearch(zoneInfoObj, initialTransitionIndex,
+                wallTimeSeconds, false, &result);
+    }
+    if (FAILED(ec) || result == nullptr) {
+        *time = -1;
+        return NOERROR;
+    }
+    return result->GetValue(time);
+}
+
+ECode ZoneInfo::WallTime::TryOffsetAdjustments(
+    /* [in] */ ZoneInfo* zoneInfo,
+    /* [in] */ Integer oldWallTimeSeconds,
+    /* [in] */ OffsetInterval* targetInterval,
+    /* [in] */ Integer transitionIndex,
+    /* [in] */ Integer isDstToFind,
+    /* [out] */ IInteger** time)
+{
+    Array<Integer> offsetsToTry = GetOffsetsOfType(zoneInfo, transitionIndex, isDstToFind);
+    for (Integer j = 0; j < offsetsToTry.GetLength(); j++) {
+        Integer rawOffsetSeconds = zoneInfo->mRawOffset / 1000;
+        Integer jOffsetSeconds = rawOffsetSeconds + offsetsToTry[j];
+        Integer targetIntervalOffsetSeconds = targetInterval->GetTotalOffsetSeconds();
+        Integer adjustmentSeconds = targetIntervalOffsetSeconds - jOffsetSeconds;
+        Integer adjustedWallTimeSeconds;
+        FAIL_RETURN(CheckedAdd(oldWallTimeSeconds, adjustmentSeconds, &adjustedWallTimeSeconds));
+        if (targetInterval->ContainsWallTime(adjustedWallTimeSeconds)) {
+            // Perform any arithmetic that might overflow.
+            Integer returnValue;
+            FAIL_RETURN(CheckedSubtract(adjustedWallTimeSeconds,
+                    targetIntervalOffsetSeconds, &returnValue));
+
+            // Modify field state and return the result.
+            mCalendar->SetTimeInMillis(adjustedWallTimeSeconds * 1000LL);
+            CopyFieldsFromCalendar();
+            mIsDst = targetInterval->GetIsDst();
+            mGmtOffsetSeconds = targetIntervalOffsetSeconds;
+            return CInteger::New(returnValue, IID_IInteger, (IInterface**)time);
+        }
+    }
+    *time = nullptr;
+    return NOERROR;
+}
+
+Array<Integer> ZoneInfo::WallTime::GetOffsetsOfType(
+    /* [in] */ ZoneInfo* zoneInfo,
+    /* [in] */ Integer startIndex,
+    /* [in] */ Integer isDst)
+{
+    // +1 to account for the synthetic transition we invent before the first recorded one.
+    Array<Integer> offsets(zoneInfo->mOffsets.GetLength() + 1);
+    Array<Boolean> seen(zoneInfo->mOffsets.GetLength());
+    Integer numFound = 0;
+
+    Integer delta = 0;
+    Boolean clampTop = false;
+    Boolean clampBottom = false;
+    do {
+        // delta = { 1, -1, 2, -2, 3, -3...}
+        delta *= -1;
+        if (delta >= 0) {
+            delta++;
+        }
+
+        Integer transitionIndex = startIndex + delta;
+        if (delta < 0 && transitionIndex < -1) {
+            clampBottom = true;
+            continue;
+        }
+        else if (delta > 0 && transitionIndex >= zoneInfo->mTypes.GetLength()) {
+            clampTop = true;
+            continue;
+        }
+
+        if (transitionIndex == -1) {
+            if (isDst == 0) {
+                // Synthesize a non-DST transition before the first transition we have
+                // data for.
+                offsets[numFound++] = 0; // offset of 0 from raw offset
+            }
+            continue;
+        }
+        Integer type = zoneInfo->mTypes[transitionIndex] & 0xff;
+        if (!seen[type]) {
+            if (zoneInfo->mIsDsts[type] == isDst) {
+                offsets[numFound++] = zoneInfo->mOffsets[type];
+            }
+            seen[type] = true;
+        }
+    } while (!(clampTop && clampBottom));
+
+    Array<Integer> toReturn(numFound);
+    toReturn.Copy(0, offsets, 0, numFound);
+    return toReturn;
+}
+
+ECode ZoneInfo::WallTime::DoWallTimeSearch(
+    /* [in] */ ZoneInfo* zoneInfo,
+    /* [in] */ Integer initialTransitionIndex,
+    /* [in] */ Integer wallTimeSeconds,
+    /* [in] */ Boolean mustMatchDst,
+    /* [out] */ IInteger** time)
+{
+    // The loop below starts at the initialTransitionIndex and radiates out from that point
+    // up to 24 hours in either direction by applying transitionIndexDelta to inspect
+    // adjacent transitions (0, -1, +1, -2, +2). 24 hours is used because we assume that no
+    // total offset from UTC is ever > 24 hours. clampTop and clampBottom are used to
+    // indicate whether the search has either searched > 24 hours or exhausted the
+    // transition data in that direction. The search stops when a match is found or if
+    // clampTop and clampBottom are both true.
+    // The match logic employed is determined by the mustMatchDst parameter.
+    constexpr Integer MAX_SEARCH_SECONDS = 24 * 60 * 60;
+    Boolean clampTop = false;
+    Boolean clampBottom = false;
+    Integer loop = 0;
+    do {
+        // transitionIndexDelta = { 0, -1, 1, -2, 2,..}
+        Integer transitionIndexDelta = (loop + 1) / 2;
+        if (loop % 2 == 1) {
+            transitionIndexDelta *= -1;
+        }
+        loop++;
+
+        // Only do any work in this iteration if we need to.
+        if ((transitionIndexDelta > 0 && clampTop) ||
+                (transitionIndexDelta < 0 && clampBottom)) {
+            continue;
+        }
+
+        // Obtain the OffsetInterval to use.
+        Integer currentTransitionIndex = initialTransitionIndex + transitionIndexDelta;
+        AutoPtr<OffsetInterval> offsetInterval;
+        FAIL_RETURN(OffsetInterval::Create(zoneInfo, currentTransitionIndex, &offsetInterval));
+        if (offsetInterval == nullptr) {
+            // No transition exists with the index we tried: Stop searching in the
+            // current direction.
+            clampTop |= (transitionIndexDelta > 0);
+            clampBottom |= (transitionIndexDelta < 0);
+            continue;
+        }
+
+        // Match the wallTimeSeconds against the OffsetInterval.
+        if (mustMatchDst) {
+            // Work out if the interval contains the wall time the caller specified and
+            // matches their isDst value.
+            if (offsetInterval->ContainsWallTime(wallTimeSeconds)) {
+                if (mIsDst == -1 || offsetInterval->GetIsDst() == mIsDst) {
+                    // This always returns the first OffsetInterval it finds that matches
+                    // the wall time and isDst requirements. If this.isDst == -1 this means
+                    // the result might be a DST or a non-DST answer for wall times that can
+                    // exist in two OffsetIntervals.
+                    Integer totalOffsetSeconds = offsetInterval->GetTotalOffsetSeconds();
+                    Integer returnValue;
+                    FAIL_RETURN(CheckedSubtract(wallTimeSeconds, totalOffsetSeconds, &returnValue));
+
+                    CopyFieldsFromCalendar();
+                    mIsDst = offsetInterval->GetIsDst();
+                    mGmtOffsetSeconds = totalOffsetSeconds;
+                    return CInteger::New(returnValue, IID_IInteger, (IInterface**)time);
+                }
+            }
+        }
+        else {
+            // To retain similar behavior to the old native implementation: if the caller is
+            // asserting the same isDst value as the OffsetInterval we are looking at we do
+            // not try to find an adjustment from another OffsetInterval of the same isDst
+            // type. If you remove this you get different results in situations like a
+            // DST -> DST transition or STD -> STD transition that results in an interval of
+            // "skipped" wall time. For example: if 01:30 (DST) is invalid and between two
+            // DST intervals, and the caller has passed isDst == 1, this results in a -1
+            // being returned.
+            if (mIsDst != offsetInterval->GetIsDst()) {
+                const Integer isDstToFind = mIsDst;
+                AutoPtr<IInteger> returnValue;
+                FAIL_RETURN(TryOffsetAdjustments(zoneInfo, wallTimeSeconds, offsetInterval,
+                        currentTransitionIndex, isDstToFind, &returnValue));
+                if (returnValue != nullptr) {
+                    returnValue.MoveTo(time);
+                    return NOERROR;
+                }
+            }
+        }
+
+        // See if we can avoid another loop in the current direction.
+        if (transitionIndexDelta > 0) {
+            // If we are searching forward and the OffsetInterval we have ends
+            // > MAX_SEARCH_SECONDS after the wall time, we don't need to look any further
+            // forward.
+            Boolean endSearch = offsetInterval->GetEndWallTimeSeconds() - wallTimeSeconds
+                    > MAX_SEARCH_SECONDS;
+            if (endSearch) {
+                clampTop = true;
+            }
+        }
+        else if (transitionIndexDelta < 0) {
+            Boolean endSearch = wallTimeSeconds - offsetInterval->GetStartWallTimeSeconds()
+                    >= MAX_SEARCH_SECONDS;
+            if (endSearch) {
+                // If we are searching backward and the OffsetInterval starts
+                // > MAX_SEARCH_SECONDS before the wall time, we don't need to look any
+                // further backwards.
+                clampBottom = true;
+            }
+        }
+
+    } while (!(clampTop && clampBottom));
+    *time = nullptr;
+    return NOERROR;
+}
+
+ECode ZoneInfo::WallTime::SetYear(
+    /* [in] */ Integer year)
+{
+    mYear = year;
+    return NOERROR;
+}
+
+ECode ZoneInfo::WallTime::SetMonth(
+    /* [in] */ Integer month)
+{
+    mMonth = month;
+    return NOERROR;
+}
+
+ECode ZoneInfo::WallTime::SetMonthDay(
+    /* [in] */ Integer monthDay)
+{
+    mMonthDay = monthDay;
+    return NOERROR;
+}
+
+ECode ZoneInfo::WallTime::SetHour(
+    /* [in] */ Integer hour)
+{
+    mHour = hour;
+    return NOERROR;
+}
+
+ECode ZoneInfo::WallTime::SetMinute(
+    /* [in] */ Integer minute)
+{
+    mMinute = minute;
+    return NOERROR;
+}
+
+ECode ZoneInfo::WallTime::SetSecond(
+    /* [in] */ Integer second)
+{
+    mSecond = second;
+    return NOERROR;
+}
+
+ECode ZoneInfo::WallTime::SetWeekDay(
+    /* [in] */ Integer weekDay)
+{
+    mWeekDay = weekDay;
+    return NOERROR;
+}
+
+ECode ZoneInfo::WallTime::SetYearDay(
+    /* [in] */ Integer yearDay)
+{
+    mYearDay = yearDay;
+    return NOERROR;
+}
+
+ECode ZoneInfo::WallTime::SetIsDst(
+    /* [in] */ Integer isDst)
+{
+    mIsDst = isDst;
+    return NOERROR;
+}
+
+ECode ZoneInfo::WallTime::SetGmtOffset(
+    /* [in] */ Integer gmtoff)
+{
+    mGmtOffsetSeconds = gmtoff;
+    return NOERROR;
+}
+
+ECode ZoneInfo::WallTime::GetYear(
+    /* [out] */ Integer* year)
+{
+    VALIDATE_NOT_NULL(year);
+
+    *year = mYear;
+    return NOERROR;
+}
+
+ECode ZoneInfo::WallTime::GetMonth(
+    /* [out] */ Integer* month)
+{
+    VALIDATE_NOT_NULL(month);
+
+    *month = mMonth;
+    return NOERROR;
+}
+
+ECode ZoneInfo::WallTime::GetMonthDay(
+    /* [out] */ Integer* monthDay)
+{
+    VALIDATE_NOT_NULL(monthDay);
+
+    *monthDay = mMonthDay;
+    return NOERROR;
+}
+
+ECode ZoneInfo::WallTime::GetHour(
+    /* [out] */ Integer* hour)
+{
+    VALIDATE_NOT_NULL(hour);
+
+    *hour = mHour;
+    return NOERROR;
+}
+
+ECode ZoneInfo::WallTime::GetMinute(
+    /* [out] */ Integer* minute)
+{
+    VALIDATE_NOT_NULL(minute);
+
+    *minute = mMinute;
+    return NOERROR;
+}
+
+ECode ZoneInfo::WallTime::GetSecond(
+    /* [out] */ Integer* second)
+{
+    VALIDATE_NOT_NULL(second);
+
+    *second = mSecond;
+    return NOERROR;
+}
+
+ECode ZoneInfo::WallTime::GetWeekDay(
+    /* [out] */ Integer* weekDay)
+{
+    VALIDATE_NOT_NULL(weekDay);
+
+    *weekDay = mWeekDay;
+    return NOERROR;
+}
+
+ECode ZoneInfo::WallTime::GetYearDay(
+    /* [out] */ Integer* yearDay)
+{
+    VALIDATE_NOT_NULL(yearDay);
+
+    *yearDay = mYearDay;
+    return NOERROR;
+}
+
+ECode ZoneInfo::WallTime::GetGmtOffset(
+    /* [out] */ Integer* gmtoff)
+{
+    VALIDATE_NOT_NULL(gmtoff);
+
+    *gmtoff = mGmtOffsetSeconds;
+    return NOERROR;
+}
+
+ECode ZoneInfo::WallTime::GetIsDst(
+    /* [out] */ Integer* isDst)
+{
+    VALIDATE_NOT_NULL(isDst);
+
+    *isDst = mIsDst;
+    return NOERROR;
+}
+
+void ZoneInfo::WallTime::CopyFieldsToCalendar()
+{
+    mCalendar->Set(ICalendar::YEAR, mYear);
+    mCalendar->Set(ICalendar::MONTH, mMonth);
+    mCalendar->Set(ICalendar::DAY_OF_MONTH, mMonthDay);
+    mCalendar->Set(ICalendar::HOUR_OF_DAY, mHour);
+    mCalendar->Set(ICalendar::MINUTE, mMinute);
+    mCalendar->Set(ICalendar::SECOND, mSecond);
+    mCalendar->Set(ICalendar::MILLISECOND, 0);
+}
+
+void ZoneInfo::WallTime::CopyFieldsFromCalendar()
+{
+    mCalendar->Get(ICalendar::YEAR, &mYear);
+    mCalendar->Get(ICalendar::MONTH, &mMonth);
+    mCalendar->Get(ICalendar::DAY_OF_MONTH, &mMonthDay);
+    mCalendar->Get(ICalendar::HOUR_OF_DAY, &mHour);
+    mCalendar->Get(ICalendar::MINUTE, &mMinute);
+    mCalendar->Get(ICalendar::SECOND, &mSecond);
+
+    // Calendar uses Sunday == 1, CCM Time uses Sunday = 0.
+    mCalendar->Get(ICalendar::DAY_OF_WEEK, &mWeekDay);
+    mWeekDay -= 1;
+    // Calendar enumerates from 1, CCM Time enumerates from 0.
+    mCalendar->Get(ICalendar::DAY_OF_YEAR, &mYearDay);
+    mYearDay -= 1;
+}
+
+//-------------------------------------------------------------------------
+
+ECode ZoneInfo::OffsetInterval::Create(
+    /* [in] */ ZoneInfo* timeZone,
+    /* [in] */ Integer transitionIndex,
+    /* [out] */ OffsetInterval** offsetInterval)
+{
+    if (transitionIndex < -1 || transitionIndex >= timeZone->mTransitions.GetLength()) {
+        *offsetInterval = nullptr;
+        return NOERROR;
+    }
+
+    Integer rawOffsetSeconds = timeZone->mRawOffset / 1000;
+    if (transitionIndex == -1) {
+        Integer endWallTimeSeconds;
+        FAIL_RETURN(CheckedAdd(timeZone->mTransitions[0], rawOffsetSeconds, &endWallTimeSeconds))
+        *offsetInterval = new OffsetInterval(IInteger::MIN_VALUE, endWallTimeSeconds, 0, rawOffsetSeconds);
+        REFCOUNT_ADD(*offsetInterval);
+        return NOERROR;
+    }
+
+    Integer type = timeZone->mTypes[transitionIndex] & 0xff;
+    Integer totalOffsetSeconds = timeZone->mOffsets[type] + rawOffsetSeconds;
+    Integer endWallTimeSeconds;
+    if (transitionIndex == timeZone->mTransitions.GetLength() - 1) {
+        // If this is the last transition, make up the end time.
+        endWallTimeSeconds = IInteger::MAX_VALUE;
+    }
+    else {
+        FAIL_RETURN(CheckedAdd(timeZone->mTransitions[transitionIndex + 1],
+                totalOffsetSeconds, &endWallTimeSeconds));
+    }
+    Integer isDst = timeZone->mIsDsts[type];
+    Integer startWallTimeSeconds;
+    FAIL_RETURN(CheckedAdd(timeZone->mTransitions[transitionIndex],
+            totalOffsetSeconds, &startWallTimeSeconds));
+    *offsetInterval = new OffsetInterval(startWallTimeSeconds, endWallTimeSeconds, isDst, totalOffsetSeconds);
+    REFCOUNT_ADD(*offsetInterval);
     return NOERROR;
 }
 
