@@ -17,16 +17,58 @@
 namespace ccm {
 namespace io {
 
-const Integer E_IO_EXCEPTION = 0x80010200;
-const Integer E_IO_SYNC_FAILED_EXCEPTION = 0x80010201;
-const Integer E_FILE_NOT_FOUND_EXCEPTION = 0x80010202;
-const Integer E_USE_MANUAL_SKIP_EXCEPTION = 0x80010203;
-const Integer E_INTERRUPTED_IO_EXCEPTION = 0x80010204;
-const Integer E_UNSUPPORTED_ENCODING_EXCEPTION = 0x80010205;
-const Integer E_INVALID_OBJECT_EXCEPTION = 0x80010206;
-const Integer E_INVALID_MARK_EXCEPTION = 0x80010207;
-const Integer E_BUFFER_UNDERFLOW_EXCEPTION = 0x80010208;
-const Integer E_BUFFER_OVERFLOW_EXCEPTION = 0x80010209;
+[
+    uuid(73dcfab7-ea7a-4bab-af32-4c3d0ad6b986),
+    version(0.1.0)
+]
+interface IBuffer
+{
+    Clear();
+
+    Flip();
+
+    GetArray(
+        [out, callee] Array<IInterface*>* array);
+
+    GetArrayOffset(
+        [out] Integer* offset);
+
+    GetCapacity(
+        [out] Integer* capacity);
+
+    GetLimit(
+        [out] Integer* limit);
+
+    GetPosition(
+        [out] Integer* position);
+
+    HasArray(
+        [out] Boolean* result);
+
+    HasRemaining(
+        [out] Boolean* result);
+
+    IsDirect(
+        [out] Boolean* direct);
+
+    IsReadOnly(
+        [out] Boolean* readOnly);
+
+    Mark();
+
+    Remaining(
+        [out] Integer* remaining);
+
+    Reset();
+
+    Rewind();
+
+    SetLimit(
+        [in] Integer newLimit);
+
+    SetPosition(
+        [in] Integer newPosition);
+}
 
 }
 }

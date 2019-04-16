@@ -28,6 +28,7 @@ include_directories(
 
 set(SOURCES
     Bits.cpp
+    Buffer.cpp
     BufferedWriter.cpp
     ByteOrder.cpp
     DeleteOnExitHook.cpp

@@ -15,6 +15,7 @@
 //=========================================================================
 
 include "ccm/io/Exceptions.cdl"
+include "ccm/io/IBuffer.cdl"
 include "ccm/io/IBufferedWriter.cdl"
 include "ccm/io/IByteBuffer.cdl"
 include "ccm/io/IByteOrder.cdl"
