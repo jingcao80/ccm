@@ -14,20 +14,29 @@
 // limitations under the License.
 //=========================================================================
 
+#ifndef __CCM_IO_HEAPBYTEBUFFER_H__
+#define __CCM_IO_HEAPBYTEBUFFER_H__
+
+#include "ccm/io/ByteBuffer.h"
+
 namespace ccm {
 namespace io {
 
-const Integer E_IO_EXCEPTION = 0x80010200;
-const Integer E_IO_SYNC_FAILED_EXCEPTION = 0x80010201;
-const Integer E_FILE_NOT_FOUND_EXCEPTION = 0x80010202;
-const Integer E_USE_MANUAL_SKIP_EXCEPTION = 0x80010203;
-const Integer E_INTERRUPTED_IO_EXCEPTION = 0x80010204;
-const Integer E_UNSUPPORTED_ENCODING_EXCEPTION = 0x80010205;
-const Integer E_INVALID_OBJECT_EXCEPTION = 0x80010206;
-const Integer E_INVALID_MARK_EXCEPTION = 0x80010207;
-const Integer E_BUFFER_UNDERFLOW_EXCEPTION = 0x80010208;
-const Integer E_BUFFER_OVERFLOW_EXCEPTION = 0x80010209;
-const Integer E_READ_ONLY_BUFFER_EXCEPTION = 0x8001020a;
+class HeapByteBuffer
+    : public ByteBuffer
+{
+public:
+    ECode Constructor(
+        /* [in] */ Integer cap,
+        /* [in] */ Integer lim);
+
+    ECode Constructor(
+        /* [in] */ Array<Byte>& buf,
+        /* [in] */ Integer off,
+        /* [in] */ Integer len);
+};
 
 }
 }
+
+#endif // __CCM_IO_HEAPBYTEBUFFER_H__

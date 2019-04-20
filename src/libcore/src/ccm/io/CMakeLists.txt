@@ -30,8 +30,10 @@ set(SOURCES
     Bits.cpp
     Buffer.cpp
     BufferedWriter.cpp
+    ByteBuffer.cpp
     ByteOrder.cpp
     DeleteOnExitHook.cpp
+    DirectByteBuffer.cpp
     ExpiringCache.cpp
     File.cpp
     FileDescriptor.cpp

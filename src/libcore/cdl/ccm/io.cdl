@@ -19,22 +19,28 @@ include "ccm/io/IBuffer.cdl"
 include "ccm/io/IBufferedWriter.cdl"
 include "ccm/io/IByteBuffer.cdl"
 include "ccm/io/IByteOrder.cdl"
+include "ccm/io/ICharBuffer.cdl"
 include "ccm/io/ICloseable.cdl"
+include "ccm/io/IDoubleBuffer.cdl"
 include "ccm/io/IFile.cdl"
 include "ccm/io/IFileDescriptor.cdl"
 include "ccm/io/IFileFilter.cdl"
 include "ccm/io/IFileInputStream.cdl"
 include "ccm/io/IFileOutputStream.cdl"
 include "ccm/io/IFilenameFilter.cdl"
+include "ccm/io/IFloatBuffer.cdl"
 include "ccm/io/IFlushable.cdl"
 include "ccm/io/IInputStream.cdl"
+include "ccm/io/IIntegerBuffer.cdl"
 include "ccm/io/IInterruptible.cdl"
+include "ccm/io/ILongBuffer.cdl"
 include "ccm/io/IOutputStream.cdl"
 include "ccm/io/IOutputStreamWriter.cdl"
 include "ccm/io/IPrintStream.cdl"
 include "ccm/io/IPrintWriter.cdl"
 include "ccm/io/IReader.cdl"
 include "ccm/io/ISerializable.cdl"
+include "ccm/io/IShortBuffer.cdl"
 include "ccm/io/IStringWriter.cdl"
 include "ccm/io/IWriter.cdl"
 include "ccm/io/channels/IFileChannel.cdl"
@@ -70,6 +76,15 @@ coclass CBufferedWriter
     interface ICloseable;
     interface IFlushable;
     interface IAutoCloseable;
+}
+
+[
+    uuid(160997fd-1165-46dd-a47a-8a000bcd1916),
+    version(0.1.0)
+]
+coclass CDirectByteBuffer
+{
+
 }
 
 [

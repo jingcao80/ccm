@@ -14,15 +14,193 @@
 // limitations under the License.
 //=========================================================================
 
+interface ccm::io::IByteOrder;
+interface ccm::io::ICharBuffer;
+interface ccm::io::IDoubleBuffer;
+interface ccm::io::IFloatBuffer;
+interface ccm::io::IIntegerBuffer;
+interface ccm::io::ILongBuffer;
+interface ccm::io::IShortBuffer;
+
 namespace ccm {
 namespace io {
 
+/*
+ * @Involve interface ccm::io::IBuffer;
+ * @Involve interface ccm::core::IComparable;
+ */
 [
     uuid(0a78992f-b55e-40bc-933b-f35b1046cc45),
     version(0.1.0)
 ]
 interface IByteBuffer
 {
+    AsCharBuffer(
+        [out] ICharBuffer** buffer);
+
+    AsDoubleBuffer(
+        [out] IDoubleBuffer** buffer);
+
+    AsFloatBuffer(
+        [out] IFloatBuffer** buffer);
+
+    AsIntegerBuffer(
+        [out] IIntegerBuffer** buffer);
+
+    AsLongBuffer(
+        [out] ILongBuffer** buffer);
+
+    AsReadOnlyBuffer(
+        [out] IByteBuffer** buffer);
+
+    AsShortBuffer(
+        [out] IShortBuffer** buffer);
+
+    Compact();
+
+    Duplicate(
+        [out] IByteBuffer** buffer);
+
+    Get(
+        [out] Byte* b);
+
+    Get(
+        [in] Integer index,
+        [out] Byte* b);
+
+    Get(
+        [out] Array<Byte> dst);
+
+    Get(
+        [out] Array<Byte> dst,
+        [in] Integer offset,
+        [in] Integer length);
+
+    GetArray(
+        [out, callee] Array<Byte>* array);
+
+    GetArrayOffset(
+        [out] Integer* offset);
+
+    GetChar(
+        [out] Char* c);
+
+    GetChar(
+        [in] Integer index,
+        [out] Char* c);
+
+    GetDouble(
+        [out] Double* d);
+
+    GetDouble(
+        [in] Integer index,
+        [out] Double* d);
+
+    GetFloat(
+        [out] Float* f);
+
+    GetFloat(
+        [in] Integer index,
+        [out] Float* f);
+
+    GetInteger(
+        [out] Integer* i);
+
+    GetInteger(
+        [in] Integer index,
+        [out] Integer* i);
+
+    GetLong(
+        [out] Long* l);
+
+    GetLong(
+        [in] Integer index,
+        [out] Long* l);
+
+    GetOrder(
+        [out] IByteOrder** bo);
+
+    GetShort(
+        [out] Short* s);
+
+    GetShort(
+        [in] Integer index,
+        [out] Short* s);
+
+    HasArray(
+        [out] Boolean* result);
+
+    IsAccessible(
+        [out] Boolean* accessible);
+
+    Put(
+        [in] Byte b);
+
+    Put(
+        [in] Integer index,
+        [in] Byte b);
+
+    Put(
+        [in] IByteBuffer* src);
+
+    Put(
+        [in] Array<Byte> src);
+
+    Put(
+        [in] Array<Byte> src,
+        [in] Integer offset,
+        [in] Integer length);
+
+    PutChar(
+        [in] Char value);
+
+    PutChar(
+        [in] Integer index,
+        [in] Char value);
+
+    PutDouble(
+        [in] Double value);
+
+    PutDouble(
+        [in] Integer index,
+        [in] Double value);
+
+    PutFloat(
+        [in] Float value);
+
+    PutFloat(
+        [in] Integer index,
+        [in] Float value);
+
+    PutInteger(
+        [in] Integer value);
+
+    PutInteger(
+        [in] Integer index,
+        [in] Integer value);
+
+    PutLong(
+        [in] Long value);
+
+    PutLong(
+        [in] Integer index,
+        [in] Long value);
+
+    PutShort(
+        [in] Short value);
+
+    PutShort(
+        [in] Integer index,
+        [in] Short value);
+
+    SetAccessible(
+        [in] Boolean value);
+
+    SetOrder(
+        [in] IByteOrder* bo);
+
+    Slice(
+        [out] IByteBuffer** buffer);
 }
 
 }
