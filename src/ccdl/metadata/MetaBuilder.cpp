@@ -833,6 +833,9 @@ CcmTypeKind MetaBuilder::Type2CcdlType(
     else if (type->IsCoclassType()) {
         return CcmTypeKind::Coclass;
     }
+    else if (type->IsTripleType()) {
+        return CcmTypeKind::Triple;
+    }
     return CcmTypeKind::Unknown;
 }
 

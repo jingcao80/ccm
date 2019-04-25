@@ -57,6 +57,8 @@ World::World()
     mComponentIDType->SetNamespace(ccm);
     mInterfaceIDType = new InterfaceIDType();
     mInterfaceIDType->SetNamespace(ccm);
+    mTripleType = new TripleType();
+    mTripleType->SetNamespace(ccm);
 
     mTypes.Put(String("ccm::Byte"), mByteType);
     mTypes.Put(String("ccm::Short"), mShortType);
@@ -72,6 +74,7 @@ World::World()
     mTypes.Put(String("ccm::CoclassID"), mCoclassIDType);
     mTypes.Put(String("ccm::ComponentID"), mComponentIDType);
     mTypes.Put(String("ccm::InterfaceID"), mInterfaceIDType);
+    mTypes.Put(String("ccm::Triple"), mTripleType);
 }
 
 World::~World()
@@ -90,6 +93,7 @@ World::~World()
     delete mCoclassIDType;
     delete mComponentIDType;
     delete mInterfaceIDType;
+    delete mTripleType;
 }
 
 Namespace* World::GetGlobalNamespace()

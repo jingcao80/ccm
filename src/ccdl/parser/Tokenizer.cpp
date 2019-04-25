@@ -24,7 +24,7 @@ struct KV
     String mKey;
     Tokenizer::Token mValue;
 }
-sKeywords[34] =
+sKeywords[35] =
 {
     { String("Array"), Tokenizer::Token::ARRAY },
     { String("Boolean"), Tokenizer::Token::BOOLEAN },
@@ -56,6 +56,7 @@ sKeywords[34] =
     { String("out"), Tokenizer::Token::OUT },
     { String("Short"), Tokenizer::Token::SHORT },
     { String("String"), Tokenizer::Token::STRING },
+    { String("Triple"), Tokenizer::Token::TRIPLE },
     { String("true"), Tokenizer::Token::TRUE },
     { String("url"), Tokenizer::Token::URL },
     { String("uuid"), Tokenizer::Token::UUID },
@@ -913,6 +914,8 @@ const char* Tokenizer::DumpToken(
             return "String";
         case Token::STRING_LITERAL:
             return mString.string();
+        case Token::TRIPLE:
+            return "Triple";
         case Token::TRUE:
             return "true";
         case Token::URL:

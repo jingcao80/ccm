@@ -36,6 +36,7 @@
 #include "Pool.h"
 #include "ShortType.h"
 #include "StringType.h"
+#include "TripleType.h"
 #include "Type.h"
 #include "../util/StringMap.h"
 #include "../../runtime/metadata/Component.h"
@@ -94,6 +95,7 @@ private:
     CoclassIDType* mCoclassIDType;
     ComponentIDType* mComponentIDType;
     InterfaceIDType* mInterfaceIDType;
+    TripleType* mTripleType;
 
     MetaComponent* mMetaComponent;
 };

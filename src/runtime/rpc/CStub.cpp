@@ -152,6 +152,7 @@ ECode InterfaceStub::UnmarshalArguments(
                 case CcmTypeKind::ComponentID:
                 case CcmTypeKind::InterfaceID:
                 case CcmTypeKind::HANDLE:
+                case CcmTypeKind::Triple:
                 default:
                     Logger::E("CStub", "Invalid [in] type(%d), param index: %d.\n", kind, i);
                     return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -255,6 +256,7 @@ ECode InterfaceStub::UnmarshalArguments(
                 case CcmTypeKind::ComponentID:
                 case CcmTypeKind::InterfaceID:
                 case CcmTypeKind::HANDLE:
+                case CcmTypeKind::Triple:
                 default:
                     Logger::E("CStub", "Invalid [in, out] or [out] type(%d), param index: %d.\n", kind, i);
                     return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -282,6 +284,7 @@ ECode InterfaceStub::UnmarshalArguments(
                 case CcmTypeKind::CoclassID:
                 case CcmTypeKind::ComponentID:
                 case CcmTypeKind::InterfaceID:
+                case CcmTypeKind::Triple:
                 default:
                     Logger::E("CStub", "Invalid [out, callee] type(%d), param index: %d.\n", kind, i);
                     return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -353,6 +356,7 @@ ECode InterfaceStub::MarshalResults(
                 case CcmTypeKind::ComponentID:
                 case CcmTypeKind::InterfaceID:
                 case CcmTypeKind::HANDLE:
+                case CcmTypeKind::Triple:
                 default:
                     Logger::E("CStub", "Invalid [in] type(%d), param index: %d.\n", kind, i);
                     return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -468,6 +472,7 @@ ECode InterfaceStub::MarshalResults(
                 case CcmTypeKind::ComponentID:
                 case CcmTypeKind::InterfaceID:
                 case CcmTypeKind::HANDLE:
+                case CcmTypeKind::Triple:
                 default:
                     Logger::E("CStub", "Invalid [in, out] or [out] type(%d), param index: %d.\n", kind, i);
                     return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -498,6 +503,7 @@ ECode InterfaceStub::MarshalResults(
                 case CcmTypeKind::CoclassID:
                 case CcmTypeKind::ComponentID:
                 case CcmTypeKind::InterfaceID:
+                case CcmTypeKind::Triple:
                 default:
                     Logger::E("CStub", "Invalid [out, callee] type(%d), param index: %d.\n", kind, i);
                     return E_ILLEGAL_ARGUMENT_EXCEPTION;

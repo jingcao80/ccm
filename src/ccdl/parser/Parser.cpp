@@ -852,6 +852,9 @@ Type* Parser::ParseType()
     else if (token == Tokenizer::Token::ARRAY) {
         type = ParseArrayType();
     }
+    else if (token == Tokenizer::Token::TRIPLE) {
+        type = mPool->FindType(String("ccm::Triple"));
+    }
 
     if (type == nullptr) {
         String message = String::Format("Type \"%s\" was not declared in this scope.",

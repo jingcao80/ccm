@@ -288,6 +288,7 @@ ECode InterfaceProxy::MarshalArguments(
                 case CcmTypeKind::ComponentID:
                 case CcmTypeKind::InterfaceID:
                 case CcmTypeKind::HANDLE:
+                case CcmTypeKind::Triple:
                 default:
                     Logger::E("CProxy", "Invalid [in] type(%d), param index: %d.\n", kind, i);
                     return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -381,6 +382,7 @@ ECode InterfaceProxy::MarshalArguments(
                 case CcmTypeKind::ComponentID:
                 case CcmTypeKind::InterfaceID:
                 case CcmTypeKind::HANDLE:
+                case CcmTypeKind::Triple:
                 default:
                     Logger::E("CProxy", "Invalid [in, out] type(%d), param index: %d.\n", kind, i);
                     return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -427,6 +429,7 @@ ECode InterfaceProxy::MarshalArguments(
                 case CcmTypeKind::ComponentID:
                 case CcmTypeKind::InterfaceID:
                 case CcmTypeKind::HANDLE:
+                case CcmTypeKind::Triple:
                 default:
                     Logger::E("CProxy", "Invalid [out] type(%d), param index: %d.\n", kind, i);
                     return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -471,6 +474,7 @@ ECode InterfaceProxy::MarshalArguments(
                 case CcmTypeKind::ComponentID:
                 case CcmTypeKind::InterfaceID:
                 case CcmTypeKind::HANDLE:
+                case CcmTypeKind::Triple:
                 default:
                     Logger::E("CProxy", "Invalid [out, callee] type(%d), param index: %d.\n", kind, i);
                     return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -521,6 +525,7 @@ ECode InterfaceProxy::UnmarshalResults(
                 case CcmTypeKind::ComponentID:
                 case CcmTypeKind::InterfaceID:
                 case CcmTypeKind::HANDLE:
+                case CcmTypeKind::Triple:
                 default:
                     Logger::E("CProxy", "Invalid [in] type(%d), param index: %d.\n", kind, i);
                     return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -610,6 +615,7 @@ ECode InterfaceProxy::UnmarshalResults(
                 case CcmTypeKind::ComponentID:
                 case CcmTypeKind::InterfaceID:
                 case CcmTypeKind::HANDLE:
+                case CcmTypeKind::Triple:
                 default:
                     Logger::E("CProxy", "Invalid [in, out] or [out] type(%d), param index: %d.\n", kind, i);
                     return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -638,6 +644,7 @@ ECode InterfaceProxy::UnmarshalResults(
                 case CcmTypeKind::CoclassID:
                 case CcmTypeKind::ComponentID:
                 case CcmTypeKind::InterfaceID:
+                case CcmTypeKind::Triple:
                 default:
                     Logger::E("CProxy", "Invalid [out, callee] type(%d), param index: %d.\n", kind, i);
                     return E_ILLEGAL_ARGUMENT_EXCEPTION;

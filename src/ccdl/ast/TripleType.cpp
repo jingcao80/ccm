@@ -14,35 +14,25 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CCMTYPEKIND_H__
-#define __CCM_CCMTYPEKIND_H__
+#include "TripleType.h"
 
-namespace ccm {
+namespace ccdl {
+namespace ast {
 
-enum class CcmTypeKind
+TripleType::TripleType()
 {
-    Unknown,
-    Char = 1,
-    Byte,
-    Short,
-    Integer,
-    Long,
-    Float,
-    Double,
-    Boolean,
-    String,
-    CoclassID,
-    ComponentID,
-    InterfaceID,
-    HANDLE,
-    ECode,
-    Enum,
-    Array,
-    Interface,
-    Coclass,
-    Triple,
-};
-
+    SetName(String("Triple"));
 }
 
-#endif // __CCM_CCMTYPEKIND_H__
+bool TripleType::IsTripleType()
+{
+    return true;
+}
+
+String TripleType::Signature()
+{
+    return String("R");
+}
+
+}
+}

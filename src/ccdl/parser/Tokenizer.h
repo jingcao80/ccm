@@ -44,66 +44,67 @@ public:
         LONG,                   // 12)
         SHORT,                  // 13)
         STRING,                 // 14)
+        TRIPLE,                 // 15)
         // other keyword
-        ARRAY,                  // 15)
-        CALLEE,                 // 16)
-        COCLASS,                // 17)
-        CONST,                  // 18)
-        CONSTRUCTOR,            // 19)
-        DELETE,                 // 20)
-        DESCRIPTION,            // 21)
-        ENUM,                   // 22)
-        FALSE,                  // 23)
-        IN,                     // 24)
-        INCLUDE,                // 25)
-        INTERFACE,              // 26)
-        MODULE,                 // 27)
-        NAMESPACE,              // 28)
-        NULLPTR,                // 29)
-        OUT,                    // 30)
-        TRUE,                   // 31)
-        URL,                    // 32)
-        UUID,                   // 33)
-        VERSION,                // 34)
+        ARRAY,                  // 16)
+        CALLEE,                 // 17)
+        COCLASS,                // 18)
+        CONST,                  // 19)
+        CONSTRUCTOR,            // 20)
+        DELETE,                 // 21)
+        DESCRIPTION,            // 22)
+        ENUM,                   // 23)
+        FALSE,                  // 24)
+        IN,                     // 25)
+        INCLUDE,                // 26)
+        INTERFACE,              // 27)
+        MODULE,                 // 28)
+        NAMESPACE,              // 29)
+        NULLPTR,                // 30)
+        OUT,                    // 31)
+        TRUE,                   // 32)
+        URL,                    // 33)
+        UUID,                   // 34)
+        VERSION,                // 35)
         // symbol
-        AND,                    // 35)  '&'
-        ANGLE_BRACKETS_OPEN,    // 36)  '<'
-        ANGLE_BRACKETS_CLOSE,   // 37)  '>'
-        ASSIGNMENT,             // 38)  '='
-        ASTERISK,               // 39)  '*'
-        BRACES_OPEN,            // 40)  '{'
-        BRACES_CLOSE,           // 41)  '}'
-        BRACKETS_OPEN,          // 42)  '['
-        BRACKETS_CLOSE,         // 43)  ']'
-        COLON,                  // 44)  ':'
-        COMMA,                  // 45)  ','
-        COMPLIMENT,             // 46)  '~'
-        DIVIDE,                 // 47)  '/'
-        END_OF_LINE,            // 48)  '\n'
-        EXCLUSIVE_OR,           // 49)  '^'
-        INCLUSIVE_OR,           // 50)  '|'
-        MINUS,                  // 51)  '-'
-        MODULO,                 // 52)  '%'
-        NOT,                    // 53)  '!'
-        PARENTHESES_OPEN,       // 54)  '('
-        PARENTHESES_CLOSE,      // 55)  ')'
-        PERIOD,                 // 56)  '.'
-        PLUS,                   // 57)  '+'
-        SEMICOLON,              // 58)  ';'
+        AND,                    // 36)  '&'
+        ANGLE_BRACKETS_OPEN,    // 37)  '<'
+        ANGLE_BRACKETS_CLOSE,   // 38)  '>'
+        ASSIGNMENT,             // 39)  '='
+        ASTERISK,               // 40)  '*'
+        BRACES_OPEN,            // 41)  '{'
+        BRACES_CLOSE,           // 42)  '}'
+        BRACKETS_OPEN,          // 43)  '['
+        BRACKETS_CLOSE,         // 44)  ']'
+        COLON,                  // 45)  ':'
+        COMMA,                  // 46)  ','
+        COMPLIMENT,             // 47)  '~'
+        DIVIDE,                 // 48)  '/'
+        END_OF_LINE,            // 49)  '\n'
+        EXCLUSIVE_OR,           // 50)  '^'
+        INCLUSIVE_OR,           // 51)  '|'
+        MINUS,                  // 52)  '-'
+        MODULO,                 // 53)  '%'
+        NOT,                    // 54)  '!'
+        PARENTHESES_OPEN,       // 55)  '('
+        PARENTHESES_CLOSE,      // 56)  ')'
+        PERIOD,                 // 57)  '.'
+        PLUS,                   // 58)  '+'
+        SEMICOLON,              // 59)  ';'
         // other
-        CHARACTER,              // 59)
-        COMMENT_BLOCK,          // 60)
-        COMMENT_LINE,           // 61)
-        END_OF_FILE,            // 62)
-        IDENTIFIER,             // 63)
-        NUMBER_INTEGRAL,        // 64)
-        NUMBER_FLOATINGPOINT,   // 65)
-        SHIFT_LEFT,             // 66)  "<<"
-        SHIFT_RIGHT,            // 67)  ">>"
-        SHIFT_RIGHT_UNSIGNED,   // 68)  ">>>"
-        STRING_LITERAL,         // 69)
-        UUID_NUMBER,            // 70)
-        VERSION_NUMBER,         // 71)
+        CHARACTER,              // 60)
+        COMMENT_BLOCK,          // 61)
+        COMMENT_LINE,           // 62)
+        END_OF_FILE,            // 63)
+        IDENTIFIER,             // 64)
+        NUMBER_INTEGRAL,        // 65)
+        NUMBER_FLOATINGPOINT,   // 66)
+        SHIFT_LEFT,             // 67)  "<<"
+        SHIFT_RIGHT,            // 68)  ">>"
+        SHIFT_RIGHT_UNSIGNED,   // 69)  ">>>"
+        STRING_LITERAL,         // 70)
+        UUID_NUMBER,            // 71)
+        VERSION_NUMBER,         // 72)
     };
 
 private:

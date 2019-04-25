@@ -149,6 +149,10 @@ String CMetaType::BuildName(
         case CcmTypeKind::Interface:
             typeStr = mc->mInterfaces[mt->mIndex]->mName;
             break;
+        case CcmTypeKind::Triple:
+            typeStr = mt->mPointerNumber == 0 ?
+                    "const Triple&" : "Triple";
+            break;
     }
 
     for (Integer i = 0; i < mt->mPointerNumber; i++) {

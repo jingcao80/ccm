@@ -964,7 +964,8 @@ void CArgumentList::CalculateDataSize(
             case CcmTypeKind::ECode:
             case CcmTypeKind::Enum:
             case CcmTypeKind::Array:
-            case CcmTypeKind::Interface: {
+            case CcmTypeKind::Interface:
+            case CcmTypeKind::Triple: {
                 if (*intDataNum < 6) {
                     mArgumentIndicators[i] = (INT_DATA << DATA_SHIFT) | *intDataNum;
                     (*intDataNum)++;

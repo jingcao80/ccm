@@ -379,6 +379,9 @@ String MetaDumper::DumpMetaType(
         case CcmTypeKind::Interface:
             builder.Append(mMetaComponet->mInterfaces[mt->mIndex]->mName);
             break;
+        case CcmTypeKind::Triple:
+            builder.Append("Triple");
+            break;
         default:
             break;
     }

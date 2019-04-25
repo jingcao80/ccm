@@ -537,6 +537,14 @@ String CodeGenerator::GenType(
                     mc->mInterfaces[mt->mIndex]->mNamespace,
                     mc->mInterfaces[mt->mIndex]->mName);
             break;
+        case CcmTypeKind::Triple:
+            if ((attr & Parameter::ATTR_MASK) == Parameter::IN && !inArray) {
+                builder.Append("const Triple&");
+            }
+            else {
+                builder.Append("Triple");
+            }
+            break;
         default:
             break;
     }
@@ -627,6 +635,7 @@ String CodeGenerator::GenValue(
         case CcmTypeKind::ComponentID:
         case CcmTypeKind::InterfaceID:
         case CcmTypeKind::Interface:
+        case CcmTypeKind::Triple:
         default:
             break;
     }

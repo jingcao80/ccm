@@ -36,6 +36,7 @@
 #include "../ast/Pool.h"
 #include "../ast/ShortType.h"
 #include "../ast/StringType.h"
+#include "../ast/TripleType.h"
 #include "../ast/Type.h"
 #include "../util/ArrayList.h"
 #include "../util/StringMap.h"
@@ -61,6 +62,7 @@ using ccdl::ast::Namespace;
 using ccdl::ast::Pool;
 using ccdl::ast::ShortType;
 using ccdl::ast::StringType;
+using ccdl::ast::TripleType;
 using ccdl::ast::Type;
 
 namespace ccdl {
@@ -112,6 +114,7 @@ private:
     CoclassIDType* mCoclassIDType;
     ComponentIDType* mComponentIDType;
     InterfaceIDType* mInterfaceIDType;
+    TripleType* mTripleType;
 };
 
 void World::SetRootFile(

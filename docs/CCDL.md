@@ -239,6 +239,7 @@ There are two ways to add comments. One is using syntax "/* <*comment_literal*> 
 | CoclassID   |     K     |
 | ComponentID |     M     |
 | InterfaceID |     U     |
+| Triple      |     R     |
 | Array       |     [     |
 | Pointer     |     *     |
 | Enum        | Lxx/xx;   |

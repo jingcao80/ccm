@@ -114,6 +114,8 @@ public:
 
     virtual bool IsInterfaceType();
 
+    virtual bool IsTripleType();
+
     virtual bool IsPointerType();
 
     virtual String Signature() = 0;

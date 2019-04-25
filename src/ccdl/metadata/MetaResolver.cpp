@@ -257,6 +257,9 @@ Type* MetaResolver::BuildType(
             typeStr = String::Format("%s%s", mi->mNamespace, mi->mName);
             break;
         }
+        case CcmTypeKind::Triple:
+            typeStr = "ccm::Triple";
+            break;
     }
 
     Type* type = mResolvingTypename.Equals(typeStr) ? mResolvingType : mPool->FindType(typeStr);

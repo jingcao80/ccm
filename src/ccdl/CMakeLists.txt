@@ -51,6 +51,7 @@ set(SOURCES
     ast/ShiftExpression.cpp
     ast/ShortType.cpp
     ast/StringType.cpp
+    ast/TripleType.cpp
     ast/Type.cpp
     ast/UnaryExpression.cpp
     codegen/CodeGenerator.cpp

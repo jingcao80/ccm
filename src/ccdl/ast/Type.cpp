@@ -160,6 +160,11 @@ bool Type::IsInterfaceType()
     return false;
 }
 
+bool Type::IsTripleType()
+{
+    return false;
+}
+
 bool Type::IsPointerType()
 {
     return false;
