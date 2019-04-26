@@ -1138,7 +1138,7 @@ ECode StringToReal::ParseFloat(
         return NOERROR;
     }
     Float result = ParseFltImpl(info.mS, (Integer)info.mE);
-    if (Math::FloatToRawIntBits(result) == 0xffffffff) {
+    if (Math::FloatToRawIntegerBits(result) == 0xffffffff) {
         Logger::E("StringToReal", "Invalid Float: \"%s\"", ss.string());
         return E_NUMBER_FORMAT_EXCEPTION;
     }

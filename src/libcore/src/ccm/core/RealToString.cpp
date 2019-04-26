@@ -49,7 +49,7 @@ String RealToString::ConvertFloat(
     /* [in] */ IStringBuilder* sb,
     /* [in] */ Float inputNumber)
 {
-    Integer inputNumberBits = Math::FloatToRawIntBits(inputNumber);
+    Integer inputNumberBits = Math::FloatToRawIntegerBits(inputNumber);
     Boolean positive = (inputNumberBits & FLOAT_SIGN_MASK) == 0;
     Integer e = (inputNumberBits & FLOAT_EXPONENT_MASK) >> FLOAT_MANTISSA_BITS;
     Integer f = inputNumberBits & FLOAT_MANTISSA_MASK;

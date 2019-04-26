@@ -1391,7 +1391,7 @@ ECode FloatingDecimal::ASCIIToBinaryBuffer::FloatValue(
     CFDBigInteger::New(iValue, mDigits, kDigits, mNDigits, IID_IFDBigInteger, (IInterface**)&bigD0);
     exp = mDecExponent - mNDigits;
 
-    Integer ieeeBits = Math::FloatToRawIntBits(fValue); // IEEE-754 bits of float candidate
+    Integer ieeeBits = Math::FloatToRawIntegerBits(fValue); // IEEE-754 bits of float candidate
     const Integer B5 = Math::Max(0, -exp); // powers of 5 in bigB, value is not modified inside correctionLoop
     const Integer D5 = Math::Max(0, exp); // powers of 5 in bigD, value is not modified inside correctionLoop
     AutoPtr<IFDBigInteger> tempVal;
@@ -1540,7 +1540,7 @@ ECode FloatingDecimal::ASCIIToBinaryBuffer::FloatValue(
     if (mIsNegative) {
         ieeeBits |= FloatConsts::SIGN_BIT_MASK;
     }
-    *value = Math::IntBitsToFloat(ieeeBits);
+    *value = Math::IntegerBitsToFloat(ieeeBits);
     return NOERROR;
 }
 
@@ -1765,7 +1765,7 @@ AutoPtr<IFloatingDecimalBinaryToASCIIConverter> FloatingDecimal::GetBinaryToASCI
 AutoPtr<IFloatingDecimalBinaryToASCIIConverter> FloatingDecimal::GetBinaryToASCIIConverter(
     /* [in] */ Float f)
 {
-    Integer fBits = Math::FloatToRawIntBits(f);
+    Integer fBits = Math::FloatToRawIntegerBits(f);
     Boolean isNegative = (fBits & FloatConsts::SIGN_BIT_MASK) != 0;
     Integer fractBits = fBits & FloatConsts::SIGNIF_BIT_MASK;
     Integer binExp = (fBits & FloatConsts::EXP_BIT_MASK) >> SINGLE_EXP_SHIFT;
@@ -2408,7 +2408,7 @@ ECode FloatingDecimal::ParseHexString(
                 floatBits |= iValue >> 1;
             }
         }
-        Float fValue = Math::IntBitsToFloat(floatBits);
+        Float fValue = Math::IntegerBitsToFloat(floatBits);
 
         // Check for overflow and update exponent accordingly.
         if (exponent > DoubleConsts::MAX_EXPONENT) {         // Infinite result

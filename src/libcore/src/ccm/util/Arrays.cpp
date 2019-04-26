@@ -417,7 +417,7 @@ Integer Arrays::GetHashCode(
 
     Integer result = 1;
     for (Float element : a) {
-        result = 31 * result + Math::FloatToIntBits(element);
+        result = 31 * result + Math::FloatToIntegerBits(element);
     }
 
     return result;

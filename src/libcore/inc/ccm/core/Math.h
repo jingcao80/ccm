@@ -127,13 +127,13 @@ public:
     COM_PUBLIC static Boolean IsFinite(
         /* [in] */ Double d);
 
-    COM_PUBLIC static Integer FloatToIntBits(
+    COM_PUBLIC static Integer FloatToIntegerBits(
         /* [in] */ Float value);
 
-    COM_PUBLIC static Integer FloatToRawIntBits(
+    COM_PUBLIC static Integer FloatToRawIntegerBits(
         /* [in] */ Float value);
 
-    COM_PUBLIC static Float IntBitsToFloat(
+    COM_PUBLIC static Float IntegerBitsToFloat(
         /* [in] */ Integer value);
 
     COM_PUBLIC static Long DoubleToLongBits(

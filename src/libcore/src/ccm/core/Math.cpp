@@ -52,7 +52,7 @@ const Long Math::LONG_POWERS_OF_TEN[] = {
     1000000000000000000ll,
 };
 
-Long Math::sNegativeZeroFloatBits = FloatToRawIntBits(-0.0f);
+Long Math::sNegativeZeroFloatBits = FloatToRawIntegerBits(-0.0f);
 Long Math::sNegativeZeroDoubleBits = DoubleToRawLongBits(-0.0);
 
 static AutoPtr<IRandom> CreateRandom()
@@ -117,7 +117,7 @@ Float Math::Max(
     }
     if ((a == 0.0f) &&
         (b == 0.0f) &&
-        (FloatToRawIntBits(a) == sNegativeZeroFloatBits)) {
+        (FloatToRawIntegerBits(a) == sNegativeZeroFloatBits)) {
         // Raw conversion ok since NaN can't map to -0.0.
         return b;
     }
@@ -151,7 +151,7 @@ Float Math::Min(
     }
     if ((a == 0.0f) &&
         (b == 0.0f) &&
-        (FloatToRawIntBits(b) == sNegativeZeroFloatBits)) {
+        (FloatToRawIntegerBits(b) == sNegativeZeroFloatBits)) {
         // Raw conversion ok since NaN can't map to -0.0.
         return b;
     }
@@ -304,10 +304,10 @@ union FloatInteger
     Float f;
 };
 
-Integer Math::FloatToIntBits(
+Integer Math::FloatToIntegerBits(
     /* [in] */ Float value)
 {
-    Integer result = FloatToRawIntBits(value);
+    Integer result = FloatToRawIntegerBits(value);
     // Check for NaN based on values of bit fields, maximum
     // exponent and nonzero significand.
     if ((result & FloatConsts::EXP_BIT_MASK) == FloatConsts::EXP_BIT_MASK &&
@@ -317,7 +317,7 @@ Integer Math::FloatToIntBits(
     return result;
 }
 
-Integer Math::FloatToRawIntBits(
+Integer Math::FloatToRawIntegerBits(
     /* [in] */ Float value)
 {
     FloatInteger f;
@@ -325,7 +325,7 @@ Integer Math::FloatToRawIntBits(
     return f.bits;
 }
 
-Float Math::IntBitsToFloat(
+Float Math::IntegerBitsToFloat(
     /* [in] */ Integer value)
 {
     FloatInteger f;

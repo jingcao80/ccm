@@ -52,7 +52,7 @@ ECode HexStringParser::ParseFloat(
     HexStringParser parser(FLOAT_EXPONENT_WIDTH, FLOAT_MANTISSA_WIDTH);
     Long result;
     FAIL_RETURN(parser.Parse(s, false, &result));
-    *value = Math::IntBitsToFloat(result);
+    *value = Math::IntegerBitsToFloat(result);
     return NOERROR;
 }
 
