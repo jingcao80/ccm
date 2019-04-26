@@ -18,6 +18,21 @@
 
 namespace ccm {
 
+Triple::Triple(
+    /* [in] */ const Triple& other)
+    : mData(other.mData)
+    , mSize(other.mSize)
+{
+    if (other.mData != nullptr) {
+        SharedBuffer::GetBufferFromData(other.mData)->AddRef();
+    }
+}
+
+Triple::~Triple()
+{
+    FreeData();
+}
+
 void Triple::AllocData(
     /* [in] */ Long dataSize)
 {

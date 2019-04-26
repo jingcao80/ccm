@@ -26,6 +26,7 @@ include_directories(
 
 set(SOURCES
     AbstractStringBuilder.cpp
+    ArrayHolder.cpp
     CArray.cpp
     CBoolean.cpp
     CByte.cpp

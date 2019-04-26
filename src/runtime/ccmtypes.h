@@ -160,6 +160,17 @@ namespace ccm {
 
 struct Triple
 {
+    Triple()
+        : mData(nullptr)
+        , mSize(0)
+        , mType(CcmTypeKind::Unknown)
+    {}
+
+    Triple(
+        /* [in] */ const Triple& other);
+
+    ~Triple();
+
     void AllocData(
         /* [in] */ Long dataSize);
 
