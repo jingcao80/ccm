@@ -14,6 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
+#include "ccm/core/ArrayHolder.h"
 #include "ccm/core/CStringBuffer.h"
 #include "ccm/core/Math.h"
 #include "ccm/io/Bits.h"
@@ -23,8 +24,10 @@
 #include "ccm/io/HeapByteBuffer.h"
 #include <ccmlogger.h>
 
+using ccm::core::ArrayHolder;
 using ccm::core::CStringBuffer;
 using ccm::core::E_ILLEGAL_STATE_EXCEPTION;
+using ccm::core::IArrayHolder;
 using ccm::core::IID_IComparable;
 using ccm::core::IID_IStringBuffer;
 using ccm::core::IStringBuffer;
@@ -85,9 +88,9 @@ ECode ByteBuffer::Allocate(
 {
     VALIDATE_NOT_NULL(buffer);
 
-    // if (capacity < 0) {
-    //     return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    // }
+    if (capacity < 0) {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
 
     // AutoPtr<HeapByteBuffer> hbb = new HeapByteBuffer();
     // FAIL_RETURN(hbb->Constructor(capacity, capacity));
@@ -247,7 +250,7 @@ ECode ByteBuffer::HasArray(
 }
 
 ECode ByteBuffer::GetArray(
-    /* [out, callee] */ Array<Byte>* array)
+    /* [out] */ IInterface** array)
 {
     VALIDATE_NOT_NULL(array);
 
@@ -257,7 +260,8 @@ ECode ByteBuffer::GetArray(
     if (mIsReadOnly) {
         return E_READ_ONLY_BUFFER_EXCEPTION;
     }
-    *array = mHb;
+    *array = (IArrayHolder*)new ArrayHolder(mHb);
+    REFCOUNT_ADD(*array);
     return NOERROR;
 }
 
@@ -414,198 +418,6 @@ ECode ByteBuffer::SetOrder(
     mNativeByteOrder = (mBigEndian ==
             (Bits::ByteOrder() == ByteOrder::GetBIG_ENDIAN()));
     return NOERROR;
-}
-
-ECode ByteBuffer::GetCharUnchecked(
-    /* [in] */ Integer index,
-    /* [out] */ Char* c)
-{
-    return E_UNSUPPORTED_OPERATION_EXCEPTION;
-}
-
-ECode ByteBuffer::GetUnchecked(
-    /* [in] */ Integer pos,
-    /* [out] */ Array<Char>& dst,
-    /* [in] */ Integer dstOffset,
-    /* [in] */ Integer length)
-{
-    return E_UNSUPPORTED_OPERATION_EXCEPTION;
-}
-
-ECode ByteBuffer::PutCharUnchecked(
-    /* [in] */ Integer index,
-    /* [in] */ Char value)
-{
-    return E_UNSUPPORTED_OPERATION_EXCEPTION;
-}
-
-ECode ByteBuffer::PutUnchecked(
-    /* [in] */ Integer pos,
-    /* [in] */ const Array<Char>& src,
-    /* [in] */ Integer srcOffset,
-    /* [in] */ Integer length)
-{
-    return E_UNSUPPORTED_OPERATION_EXCEPTION;
-}
-
-ECode ByteBuffer::GetShortUnchecked(
-    /* [in] */ Integer index,
-    /* [out] */ Short* s)
-{
-    return E_UNSUPPORTED_OPERATION_EXCEPTION;
-}
-
-ECode ByteBuffer::GetUnchecked(
-    /* [in] */ Integer pos,
-    /* [out] */ Array<Short>& dst,
-    /* [in] */ Integer dstOffset,
-    /* [in] */ Integer length)
-{
-    return E_UNSUPPORTED_OPERATION_EXCEPTION;
-}
-
-ECode ByteBuffer::PutShortUnchecked(
-    /* [in] */ Integer index,
-    /* [in] */ Short value)
-{
-    return E_UNSUPPORTED_OPERATION_EXCEPTION;
-}
-
-ECode ByteBuffer::PutUnchecked(
-    /* [in] */ Integer pos,
-    /* [in] */ const Array<Short>& src,
-    /* [in] */ Integer srcOffset,
-    /* [in] */ Integer length)
-{
-    return E_UNSUPPORTED_OPERATION_EXCEPTION;
-}
-
-ECode ByteBuffer::GetIntegerUnchecked(
-    /* [in] */ Integer index,
-    /* [out] */ Integer* i)
-{
-    return E_UNSUPPORTED_OPERATION_EXCEPTION;
-}
-
-ECode ByteBuffer::GetUnchecked(
-    /* [in] */ Integer pos,
-    /* [out] */ Array<Integer>& dst,
-    /* [in] */ Integer dstOffset,
-    /* [in] */ Integer length)
-{
-    return E_UNSUPPORTED_OPERATION_EXCEPTION;
-}
-
-ECode ByteBuffer::PutIntegerUnchecked(
-    /* [in] */ Integer index,
-    /* [in] */ Integer value)
-{
-    return E_UNSUPPORTED_OPERATION_EXCEPTION;
-}
-
-ECode ByteBuffer::PutUnchecked(
-    /* [in] */ Integer pos,
-    /* [in] */ const Array<Integer>& src,
-    /* [in] */ Integer srcOffset,
-    /* [in] */ Integer length)
-{
-    return E_UNSUPPORTED_OPERATION_EXCEPTION;
-}
-
-ECode ByteBuffer::GetLongUnchecked(
-    /* [in] */ Integer index,
-    /* [out] */ Long* l)
-{
-    return E_UNSUPPORTED_OPERATION_EXCEPTION;
-}
-
-ECode ByteBuffer::GetUnchecked(
-    /* [in] */ Integer pos,
-    /* [out] */ Array<Long>& dst,
-    /* [in] */ Integer dstOffset,
-    /* [in] */ Integer length)
-{
-    return E_UNSUPPORTED_OPERATION_EXCEPTION;
-}
-
-ECode ByteBuffer::PutLongUnchecked(
-    /* [in] */ Integer index,
-    /* [in] */ Long value)
-{
-    return E_UNSUPPORTED_OPERATION_EXCEPTION;
-}
-
-ECode ByteBuffer::PutUnchecked(
-    /* [in] */ Integer pos,
-    /* [in] */ const Array<Long>& src,
-    /* [in] */ Integer srcOffset,
-    /* [in] */ Integer length)
-{
-    return E_UNSUPPORTED_OPERATION_EXCEPTION;
-}
-
-ECode ByteBuffer::GetFloatUnchecked(
-    /* [in] */ Integer index,
-    /* [out] */ Float* f)
-{
-    return E_UNSUPPORTED_OPERATION_EXCEPTION;
-}
-
-ECode ByteBuffer::GetUnchecked(
-    /* [in] */ Integer pos,
-    /* [out] */ Array<Float>& dst,
-    /* [in] */ Integer dstOffset,
-    /* [in] */ Integer length)
-{
-    return E_UNSUPPORTED_OPERATION_EXCEPTION;
-}
-
-ECode ByteBuffer::PutFloatUnchecked(
-    /* [in] */ Integer index,
-    /* [in] */ Float value)
-{
-    return E_UNSUPPORTED_OPERATION_EXCEPTION;
-}
-
-ECode ByteBuffer::PutUnchecked(
-    /* [in] */ Integer pos,
-    /* [in] */ const Array<Float>& src,
-    /* [in] */ Integer srcOffset,
-    /* [in] */ Integer length)
-{
-    return E_UNSUPPORTED_OPERATION_EXCEPTION;
-}
-
-ECode ByteBuffer::GetDoubleUnchecked(
-    /* [in] */ Integer index,
-    /* [out] */ Double* d)
-{
-    return E_UNSUPPORTED_OPERATION_EXCEPTION;
-}
-
-ECode ByteBuffer::GetUnchecked(
-    /* [in] */ Integer pos,
-    /* [out] */ Array<Double>& dst,
-    /* [in] */ Integer dstOffset,
-    /* [in] */ Integer length)
-{
-    return E_UNSUPPORTED_OPERATION_EXCEPTION;
-}
-
-ECode ByteBuffer::PutDoubleUnchecked(
-    /* [in] */ Integer index,
-    /* [in] */ Double value)
-{
-    return E_UNSUPPORTED_OPERATION_EXCEPTION;
-}
-
-ECode ByteBuffer::PutUnchecked(
-    /* [in] */ Integer pos,
-    /* [in] */ const Array<Double>& dst,
-    /* [in] */ Integer srcOffset,
-    /* [in] */ Integer length)
-{
-    return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
 ECode ByteBuffer::IsAccessible(

@@ -76,12 +76,6 @@ interface IByteBuffer
         [in] Integer offset,
         [in] Integer length);
 
-    GetArray(
-        [out, callee] Array<Byte>* array);
-
-    GetArrayOffset(
-        [out] Integer* offset);
-
     GetChar(
         [out] Char* c);
 

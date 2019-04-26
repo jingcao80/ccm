@@ -28,7 +28,7 @@ interface IBuffer
     Flip();
 
     GetArray(
-        [out, callee] Array<IInterface*>* array);
+        [out] IInterface** array);
 
     GetArrayOffset(
         [out] Integer* offset);

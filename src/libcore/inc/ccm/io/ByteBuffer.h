@@ -93,7 +93,7 @@ public:
         /* [out] */ Boolean* result) override final;
 
     ECode GetArray(
-        /* [out, callee] */ Array<Byte>* array) override final;
+        /* [out] */ IInterface** array) override final;
 
     ECode GetArrayOffset(
         /* [out] */ Integer* offset) override final;
@@ -118,6 +118,13 @@ public:
     ECode SetOrder(
         /* [in] */ IByteOrder* bo) override final;
 
+    virtual Byte _Get(
+        /* [in] */ Integer i) = 0;
+
+    virtual ECode _Put(
+        /* [in] */ Integer i,
+        /* [in] */ Byte b) = 0;
+
     ECode IsAccessible(
         /* [out] */ Boolean* accessible) override;
 
@@ -125,125 +132,119 @@ public:
         /* [in] */ Boolean value) override;
 
 protected:
-    virtual ECode GetCharUnchecked(
-        /* [in] */ Integer index,
-        /* [out] */ Char* c);
+    virtual Char GetCharUnchecked(
+        /* [in] */ Integer index) = 0;
 
-    virtual ECode GetUnchecked(
+    virtual void GetUnchecked(
         /* [in] */ Integer pos,
         /* [out] */ Array<Char>& dst,
         /* [in] */ Integer dstOffset,
-        /* [in] */ Integer length);
+        /* [in] */ Integer length) = 0;
 
-    virtual ECode PutCharUnchecked(
+    virtual void PutCharUnchecked(
         /* [in] */ Integer index,
-        /* [in] */ Char value);
+        /* [in] */ Char value) = 0;
 
-    virtual ECode PutUnchecked(
+    virtual void PutUnchecked(
         /* [in] */ Integer pos,
         /* [in] */ const Array<Char>& src,
         /* [in] */ Integer srcOffset,
-        /* [in] */ Integer length);
+        /* [in] */ Integer length) = 0;
 
-    virtual ECode GetShortUnchecked(
-        /* [in] */ Integer index,
-        /* [out] */ Short* s);
+    virtual Short GetShortUnchecked(
+        /* [in] */ Integer index) = 0;
 
-    virtual ECode GetUnchecked(
+    virtual void GetUnchecked(
         /* [in] */ Integer pos,
         /* [out] */ Array<Short>& dst,
         /* [in] */ Integer dstOffset,
-        /* [in] */ Integer length);
+        /* [in] */ Integer length) = 0;
 
-    virtual ECode PutShortUnchecked(
+    virtual void PutShortUnchecked(
         /* [in] */ Integer index,
-        /* [in] */ Short value);
+        /* [in] */ Short value) = 0;
 
-    virtual ECode PutUnchecked(
+    virtual void PutUnchecked(
         /* [in] */ Integer pos,
         /* [in] */ const Array<Short>& src,
         /* [in] */ Integer srcOffset,
-        /* [in] */ Integer length);
+        /* [in] */ Integer length) = 0;
 
-    virtual ECode GetIntegerUnchecked(
-        /* [in] */ Integer index,
-        /* [out] */ Integer* i);
+    virtual Integer GetIntegerUnchecked(
+        /* [in] */ Integer index) = 0;
 
-    virtual ECode GetUnchecked(
+    virtual void GetUnchecked(
         /* [in] */ Integer pos,
         /* [out] */ Array<Integer>& dst,
         /* [in] */ Integer dstOffset,
-        /* [in] */ Integer length);
+        /* [in] */ Integer length) = 0;
 
-    virtual ECode PutIntegerUnchecked(
+    virtual void PutIntegerUnchecked(
         /* [in] */ Integer index,
-        /* [in] */ Integer value);
+        /* [in] */ Integer value) = 0;
 
-    virtual ECode PutUnchecked(
+    virtual void PutUnchecked(
         /* [in] */ Integer pos,
         /* [in] */ const Array<Integer>& src,
         /* [in] */ Integer srcOffset,
-        /* [in] */ Integer length);
+        /* [in] */ Integer length) = 0;
 
-    virtual ECode GetLongUnchecked(
-        /* [in] */ Integer index,
-        /* [out] */ Long* l);
+    virtual Long GetLongUnchecked(
+        /* [in] */ Integer index) = 0;
 
-    virtual ECode GetUnchecked(
+    virtual void GetUnchecked(
         /* [in] */ Integer pos,
         /* [out] */ Array<Long>& dst,
         /* [in] */ Integer dstOffset,
-        /* [in] */ Integer length);
+        /* [in] */ Integer length) = 0;
 
-    virtual ECode PutLongUnchecked(
+    virtual void PutLongUnchecked(
         /* [in] */ Integer index,
-        /* [in] */ Long value);
+        /* [in] */ Long value) = 0;
 
-    virtual ECode PutUnchecked(
+    virtual void PutUnchecked(
         /* [in] */ Integer pos,
         /* [in] */ const Array<Long>& src,
         /* [in] */ Integer srcOffset,
-        /* [in] */ Integer length);
+        /* [in] */ Integer length) = 0;
 
-    virtual ECode GetFloatUnchecked(
-        /* [in] */ Integer index,
-        /* [out] */ Float* f);
+    virtual Float GetFloatUnchecked(
+        /* [in] */ Integer index) = 0;
 
-    virtual ECode GetUnchecked(
+    virtual void GetUnchecked(
         /* [in] */ Integer pos,
         /* [out] */ Array<Float>& dst,
         /* [in] */ Integer dstOffset,
-        /* [in] */ Integer length);
+        /* [in] */ Integer length) = 0;
 
-    virtual ECode PutFloatUnchecked(
+    virtual void PutFloatUnchecked(
         /* [in] */ Integer index,
-        /* [in] */ Float value);
+        /* [in] */ Float value) = 0;
 
-    virtual ECode PutUnchecked(
+    virtual void PutUnchecked(
         /* [in] */ Integer pos,
         /* [in] */ const Array<Float>& src,
         /* [in] */ Integer srcOffset,
-        /* [in] */ Integer length);
+        /* [in] */ Integer length) = 0;
 
-    virtual ECode GetDoubleUnchecked(
-        /* [in] */ Integer index,
-        /* [out] */ Double* d);
+    virtual Double GetDoubleUnchecked(
+        /* [in] */ Integer index) = 0;
 
-    virtual ECode GetUnchecked(
+    virtual void GetUnchecked(
         /* [in] */ Integer pos,
         /* [out] */ Array<Double>& dst,
         /* [in] */ Integer dstOffset,
-        /* [in] */ Integer length);
+        /* [in] */ Integer length) = 0;
 
-    virtual ECode PutDoubleUnchecked(
+    virtual void PutDoubleUnchecked(
         /* [in] */ Integer index,
-        /* [in] */ Double value);
+        /* [in] */ Double value) = 0;
 
-    virtual ECode PutUnchecked(
+    virtual void PutUnchecked(
         /* [in] */ Integer pos,
-        /* [in] */ const Array<Double>& dst,
+        /* [in] */ const Array<Double>& src,
         /* [in] */ Integer srcOffset,
-        /* [in] */ Integer length);
+        /* [in] */ Integer length) = 0;
 
 protected:
     Array<Byte> mHb;
