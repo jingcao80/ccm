@@ -33,7 +33,10 @@ public:
         /* [in] */ Integer capacity,
         /* [in] */ MemoryRef* memoryRef,
         /* [in] */ const InterfaceID& iid,
-        /* [out] */ ccm::IInterface** object);
+        /* [out] */ ccm::IInterface** object)
+    {
+        return NOERROR;
+    }
 
     // using _CLocale::New;
 };

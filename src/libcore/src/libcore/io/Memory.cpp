@@ -40,12 +40,300 @@ template <typename T> static inline void PutUnaligned(T* address, T v)
     p->v = v;
 }
 
-static inline void SwapIntegers(Integer* dstInts, const Integer* srcInts, size_t count)
+static Integer bswap_2x16(Integer v)
+{
+    // v is initially ABCD
+    v = bswap_32(v);                        // v=DCBA
+    v = (v << 16) | ((v >> 16) & 0xffff);   // v=BADC
+    return v;
+}
+
+static void SwapShorts(
+    /* [in] */ Short* dstShorts,
+    /* [in] */ const Short* srcShorts,
+    /* [in] */ size_t count)
+{
+    Integer* dst = reinterpret_cast<Integer*>(dstShorts);
+    const Integer* src = reinterpret_cast<const Integer*>(srcShorts);
+    for (size_t i = 0; i < count / 2; ++i) {
+        Integer v = GetUnaligned<Integer>(src++);
+        PutUnaligned<Integer>(dst++, bswap_2x16(v));
+    }
+    if ((count % 2) != 0) {
+        Short v = GetUnaligned<Short>(reinterpret_cast<const Short*>(src));
+        PutUnaligned<Short>(reinterpret_cast<Short*>(dst), bswap_16(v));
+    }
+}
+
+static void SwapIntegers(
+    /* [in] */ Integer* dstInts,
+    /* [in] */ const Integer* srcInts,
+    /* [in] */ size_t count)
 {
     for (size_t i = 0; i < count; ++i) {
         Integer v = GetUnaligned<Integer>(srcInts++);
         PutUnaligned<Integer>(dstInts++, bswap_32(v));
     }
+}
+
+static void SwapLongs(
+    /* [in] */ Long* dstLongs,
+    /* [in] */ const Long* srcLongs,
+    /* [in] */ size_t count)
+{
+    Integer* dst = reinterpret_cast<Integer*>(dstLongs);
+    const Integer* src = reinterpret_cast<const Integer*>(srcLongs);
+    for (size_t i = 0; i < count; ++i) {
+        Integer v1 = GetUnaligned<Integer>(src++);
+        Integer v2 = GetUnaligned<Integer>(src++);
+        PutUnaligned<Integer>(dst++, bswap_32(v2));
+        PutUnaligned<Integer>(dst++, bswap_32(v1));
+    }
+}
+
+static void UnsafeBulkCopy(
+    /* [in] */ Byte* dst,
+    /* [in] */ const Byte* src,
+    /* [in] */ Integer byteCount,
+    /* [in] */ Integer sizeofElement,
+    /* [in] */ Boolean swap)
+{
+    if (!swap) {
+        memcpy(dst, src, byteCount);
+        return;
+    }
+
+    if (sizeofElement == 2) {
+        Short* dstShorts = reinterpret_cast<Short*>(dst);
+        const Short* srcShorts = reinterpret_cast<const Short*>(src);
+        SwapShorts(dstShorts, srcShorts, byteCount / 2);
+    }
+    else if (sizeofElement == 4) {
+        Integer* dstInts = reinterpret_cast<Integer*>(dst);
+        const Integer* srcInts = reinterpret_cast<const Integer*>(src);
+        SwapIntegers(dstInts, srcInts, byteCount / 4);
+    }
+    else if (sizeofElement == 8) {
+        Long* dstLongs = reinterpret_cast<Long*>(dst);
+        const Long* srcLongs = reinterpret_cast<const Long*>(src);
+        SwapLongs(dstLongs, srcLongs, byteCount / 8);
+    }
+}
+
+void Memory::UnsafeBulkGet(
+    /* [out] */ Array<Char>& dstArray,
+    /* [in] */ Integer dstOffset,
+    /* [in] */ Integer byteCount,
+    /* [in] */ const Array<Byte>& srcArray,
+    /* [in] */ Integer srcOffset,
+    /* [in] */ Integer sizeofElement,
+    /* [in] */ Boolean swap)
+{
+    if (srcArray.IsNull() || dstArray.IsNull()) {
+        return;
+    }
+    Byte* dstBytes = reinterpret_cast<Byte*>(dstArray.GetPayload());
+    Byte* dst = dstBytes + dstOffset * sizeofElement;
+    const Byte* src = srcArray.GetPayload() + srcOffset;
+    UnsafeBulkCopy(dst, src, byteCount, sizeofElement, swap);
+}
+
+void Memory::UnsafeBulkGet(
+    /* [out] */ Array<Short>& dstArray,
+    /* [in] */ Integer dstOffset,
+    /* [in] */ Integer byteCount,
+    /* [in] */ const Array<Byte>& srcArray,
+    /* [in] */ Integer srcOffset,
+    /* [in] */ Integer sizeofElement,
+    /* [in] */ Boolean swap)
+{
+    if (srcArray.IsNull() || dstArray.IsNull()) {
+        return;
+    }
+    Byte* dstBytes = reinterpret_cast<Byte*>(dstArray.GetPayload());
+    Byte* dst = dstBytes + dstOffset * sizeofElement;
+    const Byte* src = srcArray.GetPayload() + srcOffset;
+    UnsafeBulkCopy(dst, src, byteCount, sizeofElement, swap);
+}
+
+void Memory::UnsafeBulkGet(
+    /* [out] */ Array<Integer>& dstArray,
+    /* [in] */ Integer dstOffset,
+    /* [in] */ Integer byteCount,
+    /* [in] */ const Array<Byte>& srcArray,
+    /* [in] */ Integer srcOffset,
+    /* [in] */ Integer sizeofElement,
+    /* [in] */ Boolean swap)
+{
+    if (srcArray.IsNull() || dstArray.IsNull()) {
+        return;
+    }
+    Byte* dstBytes = reinterpret_cast<Byte*>(dstArray.GetPayload());
+    Byte* dst = dstBytes + dstOffset * sizeofElement;
+    const Byte* src = srcArray.GetPayload() + srcOffset;
+    UnsafeBulkCopy(dst, src, byteCount, sizeofElement, swap);
+}
+
+void Memory::UnsafeBulkGet(
+    /* [out] */ Array<Long>& dstArray,
+    /* [in] */ Integer dstOffset,
+    /* [in] */ Integer byteCount,
+    /* [in] */ const Array<Byte>& srcArray,
+    /* [in] */ Integer srcOffset,
+    /* [in] */ Integer sizeofElement,
+    /* [in] */ Boolean swap)
+{
+    if (srcArray.IsNull() || dstArray.IsNull()) {
+        return;
+    }
+    Byte* dstBytes = reinterpret_cast<Byte*>(dstArray.GetPayload());
+    Byte* dst = dstBytes + dstOffset * sizeofElement;
+    const Byte* src = srcArray.GetPayload() + srcOffset;
+    UnsafeBulkCopy(dst, src, byteCount, sizeofElement, swap);
+}
+
+void Memory::UnsafeBulkGet(
+    /* [out] */ Array<Float>& dstArray,
+    /* [in] */ Integer dstOffset,
+    /* [in] */ Integer byteCount,
+    /* [in] */ const Array<Byte>& srcArray,
+    /* [in] */ Integer srcOffset,
+    /* [in] */ Integer sizeofElement,
+    /* [in] */ Boolean swap)
+{
+    if (srcArray.IsNull() || dstArray.IsNull()) {
+        return;
+    }
+    Byte* dstBytes = reinterpret_cast<Byte*>(dstArray.GetPayload());
+    Byte* dst = dstBytes + dstOffset * sizeofElement;
+    const Byte* src = srcArray.GetPayload() + srcOffset;
+    UnsafeBulkCopy(dst, src, byteCount, sizeofElement, swap);
+}
+
+void Memory::UnsafeBulkGet(
+    /* [out] */ Array<Double>& dstArray,
+    /* [in] */ Integer dstOffset,
+    /* [in] */ Integer byteCount,
+    /* [in] */ const Array<Byte>& srcArray,
+    /* [in] */ Integer srcOffset,
+    /* [in] */ Integer sizeofElement,
+    /* [in] */ Boolean swap)
+{
+    if (srcArray.IsNull() || dstArray.IsNull()) {
+        return;
+    }
+    Byte* dstBytes = reinterpret_cast<Byte*>(dstArray.GetPayload());
+    Byte* dst = dstBytes + dstOffset * sizeofElement;
+    const Byte* src = srcArray.GetPayload() + srcOffset;
+    UnsafeBulkCopy(dst, src, byteCount, sizeofElement, swap);
+}
+
+void Memory::UnsafeBulkPut(
+    /* [out] */ Array<Byte>& dstArray,
+    /* [in] */ Integer dstOffset,
+    /* [in] */ Integer byteCount,
+    /* [in] */ const Array<Char>& srcArray,
+    /* [in] */ Integer srcOffset,
+    /* [in] */ Integer sizeofElement,
+    /* [in] */ Boolean swap)
+{
+    if (dstArray.IsNull() || srcArray.IsNull()) {
+        return;
+    }
+    Byte* srcBytes = reinterpret_cast<Byte*>(srcArray.GetPayload());
+    const Byte* src = srcBytes + srcOffset * sizeofElement;
+    Byte* dst = dstArray.GetPayload() + dstOffset;
+    UnsafeBulkCopy(dst, src, byteCount, sizeofElement, swap);
+}
+
+void Memory::UnsafeBulkPut(
+    /* [out] */ Array<Byte>& dstArray,
+    /* [in] */ Integer dstOffset,
+    /* [in] */ Integer byteCount,
+    /* [in] */ const Array<Short>& srcArray,
+    /* [in] */ Integer srcOffset,
+    /* [in] */ Integer sizeofElement,
+    /* [in] */ Boolean swap)
+{
+    if (dstArray.IsNull() || srcArray.IsNull()) {
+        return;
+    }
+    Byte* srcBytes = reinterpret_cast<Byte*>(srcArray.GetPayload());
+    const Byte* src = srcBytes + srcOffset * sizeofElement;
+    Byte* dst = dstArray.GetPayload() + dstOffset;
+    UnsafeBulkCopy(dst, src, byteCount, sizeofElement, swap);
+}
+
+void Memory::UnsafeBulkPut(
+    /* [out] */ Array<Byte>& dstArray,
+    /* [in] */ Integer dstOffset,
+    /* [in] */ Integer byteCount,
+    /* [in] */ const Array<Integer>& srcArray,
+    /* [in] */ Integer srcOffset,
+    /* [in] */ Integer sizeofElement,
+    /* [in] */ Boolean swap)
+{
+    if (dstArray.IsNull() || srcArray.IsNull()) {
+        return;
+    }
+    Byte* srcBytes = reinterpret_cast<Byte*>(srcArray.GetPayload());
+    const Byte* src = srcBytes + srcOffset * sizeofElement;
+    Byte* dst = dstArray.GetPayload() + dstOffset;
+    UnsafeBulkCopy(dst, src, byteCount, sizeofElement, swap);
+}
+
+void Memory::UnsafeBulkPut(
+    /* [out] */ Array<Byte>& dstArray,
+    /* [in] */ Integer dstOffset,
+    /* [in] */ Integer byteCount,
+    /* [in] */ const Array<Long>& srcArray,
+    /* [in] */ Integer srcOffset,
+    /* [in] */ Integer sizeofElement,
+    /* [in] */ Boolean swap)
+{
+    if (dstArray.IsNull() || srcArray.IsNull()) {
+        return;
+    }
+    Byte* srcBytes = reinterpret_cast<Byte*>(srcArray.GetPayload());
+    const Byte* src = srcBytes + srcOffset * sizeofElement;
+    Byte* dst = dstArray.GetPayload() + dstOffset;
+    UnsafeBulkCopy(dst, src, byteCount, sizeofElement, swap);
+}
+
+void Memory::UnsafeBulkPut(
+    /* [out] */ Array<Byte>& dstArray,
+    /* [in] */ Integer dstOffset,
+    /* [in] */ Integer byteCount,
+    /* [in] */ const Array<Float>& srcArray,
+    /* [in] */ Integer srcOffset,
+    /* [in] */ Integer sizeofElement,
+    /* [in] */ Boolean swap)
+{
+    if (dstArray.IsNull() || srcArray.IsNull()) {
+        return;
+    }
+    Byte* srcBytes = reinterpret_cast<Byte*>(srcArray.GetPayload());
+    const Byte* src = srcBytes + srcOffset * sizeofElement;
+    Byte* dst = dstArray.GetPayload() + dstOffset;
+    UnsafeBulkCopy(dst, src, byteCount, sizeofElement, swap);
+}
+
+void Memory::UnsafeBulkPut(
+    /* [out] */ Array<Byte>& dstArray,
+    /* [in] */ Integer dstOffset,
+    /* [in] */ Integer byteCount,
+    /* [in] */ const Array<Double>& srcArray,
+    /* [in] */ Integer srcOffset,
+    /* [in] */ Integer sizeofElement,
+    /* [in] */ Boolean swap)
+{
+    if (dstArray.IsNull() || srcArray.IsNull()) {
+        return;
+    }
+    Byte* srcBytes = reinterpret_cast<Byte*>(srcArray.GetPayload());
+    const Byte* src = srcBytes + srcOffset * sizeofElement;
+    Byte* dst = dstArray.GetPayload() + dstOffset;
+    UnsafeBulkCopy(dst, src, byteCount, sizeofElement, swap);
 }
 
 Byte Memory::PeekByte(

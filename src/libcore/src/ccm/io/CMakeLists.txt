@@ -40,6 +40,7 @@ set(SOURCES
     FileInputStream.cpp
     FileOutputStream.cpp
     FileSystem.cpp
+    HeapByteBuffer.cpp
     InputStream.cpp
     OutputStream.cpp
     OutputStreamWriter.cpp

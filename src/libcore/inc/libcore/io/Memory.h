@@ -27,6 +27,114 @@ namespace io {
 class Memory
 {
 public:
+    static void UnsafeBulkGet(
+        /* [out] */ Array<Char>& dst,
+        /* [in] */ Integer dstOffset,
+        /* [in] */ Integer byteCount,
+        /* [in] */ const Array<Byte>& src,
+        /* [in] */ Integer srcOffset,
+        /* [in] */ Integer sizeofElement,
+        /* [in] */ Boolean swap);
+
+    static void UnsafeBulkGet(
+        /* [out] */ Array<Short>& dst,
+        /* [in] */ Integer dstOffset,
+        /* [in] */ Integer byteCount,
+        /* [in] */ const Array<Byte>& src,
+        /* [in] */ Integer srcOffset,
+        /* [in] */ Integer sizeofElement,
+        /* [in] */ Boolean swap);
+
+    static void UnsafeBulkGet(
+        /* [out] */ Array<Integer>& dst,
+        /* [in] */ Integer dstOffset,
+        /* [in] */ Integer byteCount,
+        /* [in] */ const Array<Byte>& src,
+        /* [in] */ Integer srcOffset,
+        /* [in] */ Integer sizeofElement,
+        /* [in] */ Boolean swap);
+
+    static void UnsafeBulkGet(
+        /* [out] */ Array<Long>& dst,
+        /* [in] */ Integer dstOffset,
+        /* [in] */ Integer byteCount,
+        /* [in] */ const Array<Byte>& src,
+        /* [in] */ Integer srcOffset,
+        /* [in] */ Integer sizeofElement,
+        /* [in] */ Boolean swap);
+
+    static void UnsafeBulkGet(
+        /* [out] */ Array<Float>& dst,
+        /* [in] */ Integer dstOffset,
+        /* [in] */ Integer byteCount,
+        /* [in] */ const Array<Byte>& src,
+        /* [in] */ Integer srcOffset,
+        /* [in] */ Integer sizeofElement,
+        /* [in] */ Boolean swap);
+
+    static void UnsafeBulkGet(
+        /* [out] */ Array<Double>& dst,
+        /* [in] */ Integer dstOffset,
+        /* [in] */ Integer byteCount,
+        /* [in] */ const Array<Byte>& src,
+        /* [in] */ Integer srcOffset,
+        /* [in] */ Integer sizeofElement,
+        /* [in] */ Boolean swap);
+
+    static void UnsafeBulkPut(
+        /* [out] */ Array<Byte>& dst,
+        /* [in] */ Integer dstOffset,
+        /* [in] */ Integer byteCount,
+        /* [in] */ const Array<Char>& src,
+        /* [in] */ Integer srcOffset,
+        /* [in] */ Integer sizeofElement,
+        /* [in] */ Boolean swap);
+
+    static void UnsafeBulkPut(
+        /* [out] */ Array<Byte>& dst,
+        /* [in] */ Integer dstOffset,
+        /* [in] */ Integer byteCount,
+        /* [in] */ const Array<Short>& src,
+        /* [in] */ Integer srcOffset,
+        /* [in] */ Integer sizeofElement,
+        /* [in] */ Boolean swap);
+
+    static void UnsafeBulkPut(
+        /* [out] */ Array<Byte>& dst,
+        /* [in] */ Integer dstOffset,
+        /* [in] */ Integer byteCount,
+        /* [in] */ const Array<Integer>& src,
+        /* [in] */ Integer srcOffset,
+        /* [in] */ Integer sizeofElement,
+        /* [in] */ Boolean swap);
+
+    static void UnsafeBulkPut(
+        /* [out] */ Array<Byte>& dst,
+        /* [in] */ Integer dstOffset,
+        /* [in] */ Integer byteCount,
+        /* [in] */ const Array<Long>& src,
+        /* [in] */ Integer srcOffset,
+        /* [in] */ Integer sizeofElement,
+        /* [in] */ Boolean swap);
+
+    static void UnsafeBulkPut(
+        /* [out] */ Array<Byte>& dst,
+        /* [in] */ Integer dstOffset,
+        /* [in] */ Integer byteCount,
+        /* [in] */ const Array<Float>& src,
+        /* [in] */ Integer srcOffset,
+        /* [in] */ Integer sizeofElement,
+        /* [in] */ Boolean swap);
+
+    static void UnsafeBulkPut(
+        /* [out] */ Array<Byte>& dst,
+        /* [in] */ Integer dstOffset,
+        /* [in] */ Integer byteCount,
+        /* [in] */ const Array<Double>& src,
+        /* [in] */ Integer srcOffset,
+        /* [in] */ Integer sizeofElement,
+        /* [in] */ Boolean swap);
+
     static Byte PeekByte(
         /* [in] */ HANDLE address);
 

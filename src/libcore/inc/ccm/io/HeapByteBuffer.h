@@ -34,7 +34,319 @@ public:
         /* [in] */ Array<Byte>& buf,
         /* [in] */ Integer off,
         /* [in] */ Integer len);
+
+    ECode Slice(
+        /* [out] */ IByteBuffer** buffer) override;
+
+    ECode Duplicate(
+        /* [out] */ IByteBuffer** buffer) override;
+
+    ECode AsReadOnlyBuffer(
+        /* [out] */ IByteBuffer** buffer) override;
+
+    ECode Get(
+        /* [out] */ Byte* b) override;
+
+    ECode Get(
+        /* [in] */ Integer index,
+        /* [out] */ Byte* b) override;
+
+    ECode Get(
+        /* [out] */ Array<Byte>& dst,
+        /* [in] */ Integer offset,
+        /* [in] */ Integer length) override;
+
+    ECode IsDirect(
+        /* [out] */ Boolean* direct) override;
+
+    ECode IsReadOnly(
+        /* [out] */ Boolean* readOnly) override;
+
+    ECode Put(
+        /* [in] */ Byte b) override;
+
+    ECode Put(
+        /* [in] */ Integer index,
+        /* [in] */ Byte b) override;
+
+    ECode Put(
+        /* [in] */ const Array<Byte>& src,
+        /* [in] */ Integer offset,
+        /* [in] */ Integer length) override;
+
+    ECode Compact() override;
+
+    Byte _Get(
+        /* [in] */ Integer i) override;
+
+    ECode _Put(
+        /* [in] */ Integer i,
+        /* [in] */ Byte b) override;
+
+    ECode GetChar(
+        /* [out] */ Char* c) override;
+
+    ECode GetChar(
+        /* [in] */ Integer index,
+        /* [out] */ Char* c) override;
+
+    Char GetCharUnchecked(
+        /* [in] */ Integer index) override;
+
+    void GetUnchecked(
+        /* [in] */ Integer pos,
+        /* [out] */ Array<Char>& dst,
+        /* [in] */ Integer dstOffset,
+        /* [in] */ Integer length) override;
+
+    ECode PutChar(
+        /* [in] */ Char value) override;
+
+    ECode PutChar(
+        /* [in] */ Integer index,
+        /* [in] */ Char value) override;
+
+    void PutCharUnchecked(
+        /* [in] */ Integer index,
+        /* [in] */ Char value) override;
+
+    void PutUnchecked(
+        /* [in] */ Integer pos,
+        /* [in] */ const Array<Char>& src,
+        /* [in] */ Integer srcOffset,
+        /* [in] */ Integer length) override;
+
+    ECode AsCharBuffer(
+        /* [out] */ ICharBuffer** buffer) override
+    {
+        return NOERROR;
+    }
+
+    ECode GetShort(
+        /* [out] */ Short* s) override;
+
+    ECode GetShort(
+        /* [in] */ Integer index,
+        /* [out] */ Short* s) override;
+
+    Short GetShortUnchecked(
+        /* [in] */ Integer index) override;
+
+    void GetUnchecked(
+        /* [in] */ Integer pos,
+        /* [out] */ Array<Short>& dst,
+        /* [in] */ Integer dstOffset,
+        /* [in] */ Integer length) override;
+
+    ECode PutShort(
+        /* [in] */ Short value) override;
+
+    ECode PutShort(
+        /* [in] */ Integer index,
+        /* [in] */ Short value) override;
+
+    void PutShortUnchecked(
+        /* [in] */ Integer index,
+        /* [in] */ Short value) override;
+
+    void PutUnchecked(
+        /* [in] */ Integer pos,
+        /* [in] */ const Array<Short>& src,
+        /* [in] */ Integer srcOffset,
+        /* [in] */ Integer length) override;
+
+    ECode AsShortBuffer(
+        /* [out] */ IShortBuffer** buffer) override
+    {
+        return NOERROR;
+    }
+
+    ECode GetInteger(
+        /* [out] */ Integer* i) override;
+
+    ECode GetInteger(
+        /* [in] */ Integer index,
+        /* [out] */ Integer* i) override;
+
+    Integer GetIntegerUnchecked(
+        /* [in] */ Integer index) override;
+
+    void GetUnchecked(
+        /* [in] */ Integer pos,
+        /* [out] */ Array<Integer>& dst,
+        /* [in] */ Integer dstOffset,
+        /* [in] */ Integer length) override;
+
+    ECode PutInteger(
+        /* [in] */ Integer value) override;
+
+    ECode PutInteger(
+        /* [in] */ Integer index,
+        /* [in] */ Integer value) override;
+
+    void PutIntegerUnchecked(
+        /* [in] */ Integer index,
+        /* [in] */ Integer value) override;
+
+    void PutUnchecked(
+        /* [in] */ Integer pos,
+        /* [in] */ const Array<Integer>& src,
+        /* [in] */ Integer srcOffset,
+        /* [in] */ Integer length) override;
+
+    ECode AsIntegerBuffer(
+        /* [out] */ IIntegerBuffer** buffer) override
+    {
+        return NOERROR;
+    }
+
+    ECode GetLong(
+        /* [out] */ Long* l) override;
+
+    ECode GetLong(
+        /* [in] */ Integer index,
+        /* [out] */ Long* l) override;
+
+    Long GetLongUnchecked(
+        /* [in] */ Integer index) override;
+
+    void GetUnchecked(
+        /* [in] */ Integer pos,
+        /* [out] */ Array<Long>& dst,
+        /* [in] */ Integer dstOffset,
+        /* [in] */ Integer length) override;
+
+    ECode PutLong(
+        /* [in] */ Long value) override;
+
+    ECode PutLong(
+        /* [in] */ Integer index,
+        /* [in] */ Long value) override;
+
+    void PutLongUnchecked(
+        /* [in] */ Integer index,
+        /* [in] */ Long value) override;
+
+    void PutUnchecked(
+        /* [in] */ Integer pos,
+        /* [in] */ const Array<Long>& src,
+        /* [in] */ Integer srcOffset,
+        /* [in] */ Integer length) override;
+
+    ECode AsLongBuffer(
+        /* [out] */ ILongBuffer** buffer) override
+    {
+        return NOERROR;
+    }
+
+    ECode GetFloat(
+        /* [out] */ Float* f) override;
+
+    ECode GetFloat(
+        /* [in] */ Integer index,
+        /* [out] */ Float* f) override;
+
+    Float GetFloatUnchecked(
+        /* [in] */ Integer index) override;
+
+    void GetUnchecked(
+        /* [in] */ Integer pos,
+        /* [out] */ Array<Float>& dst,
+        /* [in] */ Integer dstOffset,
+        /* [in] */ Integer length) override;
+
+    ECode PutFloat(
+        /* [in] */ Float value) override;
+
+    ECode PutFloat(
+        /* [in] */ Integer index,
+        /* [in] */ Float value) override;
+
+    void PutFloatUnchecked(
+        /* [in] */ Integer index,
+        /* [in] */ Float value) override;
+
+    void PutUnchecked(
+        /* [in] */ Integer pos,
+        /* [in] */ const Array<Float>& src,
+        /* [in] */ Integer srcOffset,
+        /* [in] */ Integer length) override;
+
+    ECode AsFloatBuffer(
+        /* [out] */ IFloatBuffer** buffer) override
+    {
+        return NOERROR;
+    }
+
+    ECode GetDouble(
+        /* [out] */ Double* d) override;
+
+    ECode GetDouble(
+        /* [in] */ Integer index,
+        /* [out] */ Double* d) override;
+
+    Double GetDoubleUnchecked(
+        /* [in] */ Integer index) override;
+
+    void GetUnchecked(
+        /* [in] */ Integer pos,
+        /* [out] */ Array<Double>& dst,
+        /* [in] */ Integer dstOffset,
+        /* [in] */ Integer length) override;
+
+    ECode PutDouble(
+        /* [in] */ Double value) override;
+
+    ECode PutDouble(
+        /* [in] */ Integer index,
+        /* [in] */ Double value) override;
+
+    void PutDoubleUnchecked(
+        /* [in] */ Integer index,
+        /* [in] */ Double value) override;
+
+    void PutUnchecked(
+        /* [in] */ Integer pos,
+        /* [in] */ const Array<Double>& src,
+        /* [in] */ Integer srcOffset,
+        /* [in] */ Integer length) override;
+
+    ECode AsDoubleBuffer(
+        /* [out] */ IDoubleBuffer** buffer) override
+    {
+        return NOERROR;
+    }
+
+private:
+    ECode Constructor(
+        /* [in] */ Integer cap,
+        /* [in] */ Integer lim,
+        /* [in] */ Boolean isReadOnly);
+
+    ECode Constructor(
+        /* [in] */ Array<Byte>& buf,
+        /* [in] */ Integer off,
+        /* [in] */ Integer len,
+        /* [in] */ Boolean isReadOnly);
+
+    ECode Constructor(
+        /* [in] */ Array<Byte>& buf,
+        /* [in] */ Integer mark,
+        /* [in] */ Integer pos,
+        /* [in] */ Integer lim,
+        /* [in] */ Integer cap,
+        /* [in] */ Integer off,
+        /* [in] */ Boolean isReadOnly);
+
+    Integer Ix(
+        /* [in] */ Integer i);
 };
+
+inline Integer HeapByteBuffer::Ix(
+    /* [in] */ Integer i)
+{
+    return i + mOffset;
+}
 
 }
 }

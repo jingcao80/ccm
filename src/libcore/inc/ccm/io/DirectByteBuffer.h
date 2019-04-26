@@ -32,11 +32,15 @@ public:
     {
     public:
         MemoryRef(
-            /* [in] */ Integer capacity);
+            /* [in] */ Integer capacity)
+        {}
     };
 
     ECode GetAddress(
-        /* [out] */ HANDLE* addr);
+        /* [out] */ HANDLE* addr)
+    {
+        return NOERROR;
+    }
 };
 
 }
