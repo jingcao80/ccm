@@ -169,8 +169,6 @@ struct Triple
     Triple(
         /* [in] */ const Triple& other);
 
-    ~Triple();
-
     void AllocData(
         /* [in] */ Long dataSize);
 
@@ -178,6 +176,9 @@ struct Triple
 
     Triple& operator=(
         /* [in] */ const Triple& other);
+
+    Triple& operator=(
+        /* [in] */ Triple&& other);
 
     void* mData;
     Long mSize;

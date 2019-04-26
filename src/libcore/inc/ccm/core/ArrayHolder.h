@@ -31,6 +31,8 @@ public:
     ArrayHolder(
         /* [in] */ const Triple& array);
 
+    ~ArrayHolder();
+
     CCM_INTERFACE_DECL();
 
     ECode GetArray(
@@ -42,11 +44,6 @@ public:
 private:
     Triple mArray;
 };
-
-inline ArrayHolder::ArrayHolder(
-    /* [in] */ const Triple& array)
-    : mArray(array)
-{}
 
 }
 }

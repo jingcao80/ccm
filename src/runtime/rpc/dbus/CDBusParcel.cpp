@@ -484,7 +484,7 @@ ECode CDBusParcel::ReadArray(
                 ec = Read(tt.mData, sizeof(Char) * size);
             }
             else ec = E_OUT_OF_MEMORY_ERROR;
-            *t = tt;
+            *t = std::move(tt);
             break;
         }
         case CcmTypeKind::Byte: {
@@ -496,7 +496,7 @@ ECode CDBusParcel::ReadArray(
                 ec = Read(tt.mData, sizeof(Byte) * size);
             }
             else ec = E_OUT_OF_MEMORY_ERROR;
-            *t = tt;
+            *t = std::move(tt);
             break;
         }
         case CcmTypeKind::Short: {
@@ -508,7 +508,7 @@ ECode CDBusParcel::ReadArray(
                 ec = Read(tt.mData, sizeof(Short) * size);
             }
             else ec = E_OUT_OF_MEMORY_ERROR;
-            *t = tt;
+            *t = std::move(tt);
             break;
         }
         case CcmTypeKind::Integer: {
@@ -520,7 +520,7 @@ ECode CDBusParcel::ReadArray(
                 ec = Read(tt.mData, sizeof(Integer) * size);
             }
             else ec = E_OUT_OF_MEMORY_ERROR;
-            *t = tt;
+            *t = std::move(tt);
             break;
         }
         case CcmTypeKind::Long: {
@@ -532,7 +532,7 @@ ECode CDBusParcel::ReadArray(
                 ec = Read(tt.mData, sizeof(Long) * size);
             }
             else ec = E_OUT_OF_MEMORY_ERROR;
-            *t = tt;
+            *t = std::move(tt);
             break;
         }
         case CcmTypeKind::Float: {
@@ -544,7 +544,7 @@ ECode CDBusParcel::ReadArray(
                 ec = Read(tt.mData, sizeof(Float) * size);
             }
             else ec = E_OUT_OF_MEMORY_ERROR;
-            *t = tt;
+            *t = std::move(tt);
             break;
         }
         case CcmTypeKind::Double: {
@@ -556,7 +556,7 @@ ECode CDBusParcel::ReadArray(
                 ec = Read(tt.mData, sizeof(Double) * size);
             }
             else ec = E_OUT_OF_MEMORY_ERROR;
-            *t = tt;
+            *t = std::move(tt);
             break;
         }
         case CcmTypeKind::Boolean: {
@@ -568,7 +568,7 @@ ECode CDBusParcel::ReadArray(
                 ec = Read(tt.mData, sizeof(Boolean) * size);
             }
             else ec = E_OUT_OF_MEMORY_ERROR;
-            *t = tt;
+            *t = std::move(tt);
             break;
         }
         case CcmTypeKind::String: {
@@ -641,7 +641,7 @@ ECode CDBusParcel::ReadArray(
                 ec = Read(tt.mData, sizeof(ECode) * size);
             }
             else ec = E_OUT_OF_MEMORY_ERROR;
-            *t = tt;
+            *t = std::move(tt);
             break;
         }
         case CcmTypeKind::Enum: {
@@ -653,7 +653,7 @@ ECode CDBusParcel::ReadArray(
                 ec = Read(tt.mData, sizeof(Integer) * size);
             }
             else ec = E_OUT_OF_MEMORY_ERROR;
-            *t = tt;
+            *t = std::move(tt);
             break;
         }
         case CcmTypeKind::Array: {
@@ -667,7 +667,7 @@ ECode CDBusParcel::ReadArray(
                     t->mType = kind;
                     return ec;
                 }
-                triArray[i] = tt;
+                triArray[i] = std::move(tt);
             }
             *t = triArray;
             break;

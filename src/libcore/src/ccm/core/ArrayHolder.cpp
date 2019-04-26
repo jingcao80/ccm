@@ -21,6 +21,16 @@ namespace core {
 
 CCM_INTERFACE_IMPL_1(ArrayHolder, Object, IArrayHolder)
 
+ArrayHolder::ArrayHolder(
+    /* [in] */ const Triple& array)
+    : mArray(array)
+{}
+
+ArrayHolder::~ArrayHolder()
+{
+    mArray.FreeData();
+}
+
 ECode ArrayHolder::GetArray(
     /* [out] */ Triple* array)
 {

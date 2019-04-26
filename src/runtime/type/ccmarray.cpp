@@ -28,11 +28,6 @@ Triple::Triple(
     }
 }
 
-Triple::~Triple()
-{
-    FreeData();
-}
-
 void Triple::AllocData(
     /* [in] */ Long dataSize)
 {
@@ -67,6 +62,17 @@ Triple& Triple::operator=(
     if (other.mData != nullptr) {
         SharedBuffer::GetBufferFromData(other.mData)->AddRef();
     }
+    if (mData != nullptr) {
+        SharedBuffer::GetBufferFromData(mData)->Release();
+    }
+    mData = other.mData;
+    mSize = other.mSize;
+    return *this;
+}
+
+Triple& Triple::operator=(
+    /* [in] */ Triple&& other)
+{
     if (mData != nullptr) {
         SharedBuffer::GetBufferFromData(mData)->Release();
     }
