@@ -203,6 +203,11 @@ public:
 
     static AutoPtr<IByteOrder> ByteOrder();
 
+    static Integer PageSize();
+
+    static Integer PageCount(
+        /* [in] */ Long size);
+
 private:
     Bits();
 
@@ -287,6 +292,9 @@ private:
         /* [in] */ Long x);
 
     static AutoPtr<IByteOrder> GetByteOrder();
+
+private:
+    static Integer sPageSize;
 };
 
 inline Char Bits::MakeChar(
@@ -446,6 +454,12 @@ inline Byte Bits::Long0(
     /* [in] */ Long x)
 {
     return (Byte)(x);
+}
+
+inline Integer Bits::PageCount(
+    /* [in] */ Long size)
+{
+    return (Integer)(size + (Long)PageSize() - 1LL) / PageSize();
 }
 
 }

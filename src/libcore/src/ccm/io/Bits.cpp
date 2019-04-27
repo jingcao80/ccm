@@ -17,11 +17,14 @@
 #include "ccm/core/Math.h"
 #include "ccm/io/Bits.h"
 #include "ccm/io/ByteOrder.h"
+#include <unistd.h>
 
 using ccm::core::Math;
 
 namespace ccm {
 namespace io {
+
+Integer Bits::sPageSize = -1;
 
 Char Bits::GetCharL(
     /* [in] */ ByteBuffer* bb,
@@ -430,6 +433,14 @@ AutoPtr<IByteOrder> Bits::GetByteOrder()
 AutoPtr<IByteOrder> Bits::ByteOrder()
 {
     return GetByteOrder();
+}
+
+Integer Bits::PageSize()
+{
+    if (sPageSize == -1) {
+        sPageSize = sysconf(_SC_PAGESIZE);
+    }
+    return sPageSize;
 }
 
 }

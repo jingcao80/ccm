@@ -42,6 +42,7 @@ set(SOURCES
     FileSystem.cpp
     HeapByteBuffer.cpp
     InputStream.cpp
+    MappedByteBuffer.cpp
     OutputStream.cpp
     OutputStreamWriter.cpp
     PrintWriter.cpp
