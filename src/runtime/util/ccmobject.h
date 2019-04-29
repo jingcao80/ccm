@@ -86,6 +86,14 @@ public:
     static AutoPtr<IWeakReference> GetWeakReference(
         /* [in] */ IInterface* obj);
 
+    static Boolean InstanceOf(
+        /* [in] */ IInterface* obj,
+        /* [in] */ const CoclassID& cid);
+
+    static Boolean InstanceOf(
+        /* [in] */ Object* obj,
+        /* [in] */ const CoclassID& cid);
+
 private:
     IMetaComponent* mComponent;
     String mCoclassName;

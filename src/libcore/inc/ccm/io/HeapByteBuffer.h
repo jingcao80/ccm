@@ -90,10 +90,11 @@ public:
         /* [in] */ Integer index,
         /* [out] */ Char* c) override;
 
-    Char GetCharUnchecked(
-        /* [in] */ Integer index) override;
+    ECode GetCharUnchecked(
+        /* [in] */ Integer index,
+        /* [out] */ Char* c) override;
 
-    void GetUnchecked(
+    ECode GetUnchecked(
         /* [in] */ Integer pos,
         /* [out] */ Array<Char>& dst,
         /* [in] */ Integer dstOffset,
@@ -106,11 +107,11 @@ public:
         /* [in] */ Integer index,
         /* [in] */ Char value) override;
 
-    void PutCharUnchecked(
+    ECode PutCharUnchecked(
         /* [in] */ Integer index,
         /* [in] */ Char value) override;
 
-    void PutUnchecked(
+    ECode PutUnchecked(
         /* [in] */ Integer pos,
         /* [in] */ const Array<Char>& src,
         /* [in] */ Integer srcOffset,
@@ -129,10 +130,11 @@ public:
         /* [in] */ Integer index,
         /* [out] */ Short* s) override;
 
-    Short GetShortUnchecked(
-        /* [in] */ Integer index) override;
+    ECode GetShortUnchecked(
+        /* [in] */ Integer index,
+        /* [in] */ Short* value) override;
 
-    void GetUnchecked(
+    ECode GetUnchecked(
         /* [in] */ Integer pos,
         /* [out] */ Array<Short>& dst,
         /* [in] */ Integer dstOffset,
@@ -145,11 +147,11 @@ public:
         /* [in] */ Integer index,
         /* [in] */ Short value) override;
 
-    void PutShortUnchecked(
+    ECode PutShortUnchecked(
         /* [in] */ Integer index,
         /* [in] */ Short value) override;
 
-    void PutUnchecked(
+    ECode PutUnchecked(
         /* [in] */ Integer pos,
         /* [in] */ const Array<Short>& src,
         /* [in] */ Integer srcOffset,
@@ -168,10 +170,11 @@ public:
         /* [in] */ Integer index,
         /* [out] */ Integer* i) override;
 
-    Integer GetIntegerUnchecked(
-        /* [in] */ Integer index) override;
+    ECode GetIntegerUnchecked(
+        /* [in] */ Integer index,
+        /* [out] */ Integer* value) override;
 
-    void GetUnchecked(
+    ECode GetUnchecked(
         /* [in] */ Integer pos,
         /* [out] */ Array<Integer>& dst,
         /* [in] */ Integer dstOffset,
@@ -184,11 +187,11 @@ public:
         /* [in] */ Integer index,
         /* [in] */ Integer value) override;
 
-    void PutIntegerUnchecked(
+    ECode PutIntegerUnchecked(
         /* [in] */ Integer index,
         /* [in] */ Integer value) override;
 
-    void PutUnchecked(
+    ECode PutUnchecked(
         /* [in] */ Integer pos,
         /* [in] */ const Array<Integer>& src,
         /* [in] */ Integer srcOffset,
@@ -207,10 +210,11 @@ public:
         /* [in] */ Integer index,
         /* [out] */ Long* l) override;
 
-    Long GetLongUnchecked(
-        /* [in] */ Integer index) override;
+    ECode GetLongUnchecked(
+        /* [in] */ Integer index,
+        /* [out] */ Long* value) override;
 
-    void GetUnchecked(
+    ECode GetUnchecked(
         /* [in] */ Integer pos,
         /* [out] */ Array<Long>& dst,
         /* [in] */ Integer dstOffset,
@@ -223,11 +227,11 @@ public:
         /* [in] */ Integer index,
         /* [in] */ Long value) override;
 
-    void PutLongUnchecked(
+    ECode PutLongUnchecked(
         /* [in] */ Integer index,
         /* [in] */ Long value) override;
 
-    void PutUnchecked(
+    ECode PutUnchecked(
         /* [in] */ Integer pos,
         /* [in] */ const Array<Long>& src,
         /* [in] */ Integer srcOffset,
@@ -246,10 +250,11 @@ public:
         /* [in] */ Integer index,
         /* [out] */ Float* f) override;
 
-    Float GetFloatUnchecked(
-        /* [in] */ Integer index) override;
+    ECode GetFloatUnchecked(
+        /* [in] */ Integer index,
+        /* [out] */ Float* value) override;
 
-    void GetUnchecked(
+    ECode GetUnchecked(
         /* [in] */ Integer pos,
         /* [out] */ Array<Float>& dst,
         /* [in] */ Integer dstOffset,
@@ -262,11 +267,11 @@ public:
         /* [in] */ Integer index,
         /* [in] */ Float value) override;
 
-    void PutFloatUnchecked(
+    ECode PutFloatUnchecked(
         /* [in] */ Integer index,
         /* [in] */ Float value) override;
 
-    void PutUnchecked(
+    ECode PutUnchecked(
         /* [in] */ Integer pos,
         /* [in] */ const Array<Float>& src,
         /* [in] */ Integer srcOffset,
@@ -285,10 +290,11 @@ public:
         /* [in] */ Integer index,
         /* [out] */ Double* d) override;
 
-    Double GetDoubleUnchecked(
-        /* [in] */ Integer index) override;
+    ECode GetDoubleUnchecked(
+        /* [in] */ Integer index,
+        /* [out] */ Double* value) override;
 
-    void GetUnchecked(
+    ECode GetUnchecked(
         /* [in] */ Integer pos,
         /* [out] */ Array<Double>& dst,
         /* [in] */ Integer dstOffset,
@@ -301,11 +307,11 @@ public:
         /* [in] */ Integer index,
         /* [in] */ Double value) override;
 
-    void PutDoubleUnchecked(
+    ECode PutDoubleUnchecked(
         /* [in] */ Integer index,
         /* [in] */ Double value) override;
 
-    void PutUnchecked(
+    ECode PutUnchecked(
         /* [in] */ Integer pos,
         /* [in] */ const Array<Double>& src,
         /* [in] */ Integer srcOffset,

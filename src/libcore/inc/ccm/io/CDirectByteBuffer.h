@@ -33,12 +33,36 @@ public:
         /* [in] */ Integer capacity,
         /* [in] */ MemoryRef* memoryRef,
         /* [in] */ const InterfaceID& iid,
-        /* [out] */ ccm::IInterface** object)
-    {
-        return NOERROR;
-    }
+        /* [out] */ ccm::IInterface** object);
 
-    // using _CLocale::New;
+    static ECode New(
+        /* [in] */ HANDLE addr,
+        /* [in] */ Integer cap,
+        /* [in] */ const InterfaceID& iid,
+        /* [out] */ ccm::IInterface** object);
+
+    static ECode New(
+        /* [in] */ MemoryRef* memoryRef,
+        /* [in] */ Integer mark,
+        /* [in] */ Integer pos,
+        /* [in] */ Integer lim,
+        /* [in] */ Integer cap,
+        /* [in] */ Integer off,
+        /* [in] */ const InterfaceID& iid,
+        /* [out] */ ccm::IInterface** object);
+
+    static ECode New(
+        /* [in] */ MemoryRef* memoryRef,
+        /* [in] */ Integer mark,
+        /* [in] */ Integer pos,
+        /* [in] */ Integer lim,
+        /* [in] */ Integer cap,
+        /* [in] */ Integer off,
+        /* [in] */ Boolean isReadOnly,
+        /* [in] */ const InterfaceID& iid,
+        /* [out] */ ccm::IInterface** object);
+
+    using _CDirectByteBuffer::New;
 };
 
 }

@@ -281,19 +281,22 @@ ECode HeapByteBuffer::GetChar(
     return NOERROR;
 }
 
-Char HeapByteBuffer::GetCharUnchecked(
-    /* [in] */ Integer index)
+ECode HeapByteBuffer::GetCharUnchecked(
+    /* [in] */ Integer index,
+    /* [out] */ Char* c)
 {
-    return Bits::GetChar(this, Ix(index), mBigEndian);
+    *c = Bits::GetChar(this, Ix(index), mBigEndian);
+    return NOERROR;
 }
 
-void HeapByteBuffer::GetUnchecked(
+ECode HeapByteBuffer::GetUnchecked(
     /* [in] */ Integer pos,
     /* [out] */ Array<Char>& dst,
     /* [in] */ Integer dstOffset,
     /* [in] */ Integer length)
 {
     Memory::UnsafeBulkGet(dst, dstOffset, length * 4, mHb, Ix(pos), 4, !mNativeByteOrder);
+    return NOERROR;
 }
 
 ECode HeapByteBuffer::PutChar(
@@ -320,20 +323,22 @@ ECode HeapByteBuffer::PutChar(
     return NOERROR;
 }
 
-void HeapByteBuffer::PutCharUnchecked(
+ECode HeapByteBuffer::PutCharUnchecked(
     /* [in] */ Integer index,
     /* [in] */ Char value)
 {
     Bits::PutChar(this, Ix(index), value, mBigEndian);
+    return NOERROR;
 }
 
-void HeapByteBuffer::PutUnchecked(
+ECode HeapByteBuffer::PutUnchecked(
     /* [in] */ Integer pos,
     /* [in] */ const Array<Char>& src,
     /* [in] */ Integer srcOffset,
     /* [in] */ Integer length)
 {
     Memory::UnsafeBulkPut(mHb, Ix(pos), length * 4, src, srcOffset, 4, !mNativeByteOrder);
+    return NOERROR;
 }
 
 ECode HeapByteBuffer::GetShort(
@@ -358,19 +363,22 @@ ECode HeapByteBuffer::GetShort(
     return NOERROR;
 }
 
-Short HeapByteBuffer::GetShortUnchecked(
-    /* [in] */ Integer index)
+ECode HeapByteBuffer::GetShortUnchecked(
+    /* [in] */ Integer index,
+    /* [in] */ Short* value)
 {
-    return Bits::GetShort(this, Ix(index), mBigEndian);
+    *value = Bits::GetShort(this, Ix(index), mBigEndian);
+    return NOERROR;
 }
 
-void HeapByteBuffer::GetUnchecked(
+ECode HeapByteBuffer::GetUnchecked(
     /* [in] */ Integer pos,
     /* [out] */ Array<Short>& dst,
     /* [in] */ Integer dstOffset,
     /* [in] */ Integer length)
 {
     Memory::UnsafeBulkGet(dst, dstOffset, length * 2, mHb, Ix(pos), 2, !mNativeByteOrder);
+    return NOERROR;
 }
 
 ECode HeapByteBuffer::PutShort(
@@ -397,20 +405,22 @@ ECode HeapByteBuffer::PutShort(
     return NOERROR;
 }
 
-void HeapByteBuffer::PutShortUnchecked(
+ECode HeapByteBuffer::PutShortUnchecked(
     /* [in] */ Integer index,
     /* [in] */ Short value)
 {
     Bits::PutShort(this, Ix(index), value, mBigEndian);
+    return NOERROR;
 }
 
-void HeapByteBuffer::PutUnchecked(
+ECode HeapByteBuffer::PutUnchecked(
     /* [in] */ Integer pos,
     /* [in] */ const Array<Short>& src,
     /* [in] */ Integer srcOffset,
     /* [in] */ Integer length)
 {
     Memory::UnsafeBulkPut(mHb, Ix(pos), length * 2, src, srcOffset, 2, !mNativeByteOrder);
+    return NOERROR;
 }
 
 ECode HeapByteBuffer::GetInteger(
@@ -435,19 +445,22 @@ ECode HeapByteBuffer::GetInteger(
     return NOERROR;
 }
 
-Integer HeapByteBuffer::GetIntegerUnchecked(
-    /* [in] */ Integer index)
+ECode HeapByteBuffer::GetIntegerUnchecked(
+    /* [in] */ Integer index,
+    /* [out] */ Integer* value)
 {
-    return Bits::GetInteger(this, Ix(index), mBigEndian);
+    *value = Bits::GetInteger(this, Ix(index), mBigEndian);
+    return NOERROR;
 }
 
-void HeapByteBuffer::GetUnchecked(
+ECode HeapByteBuffer::GetUnchecked(
     /* [in] */ Integer pos,
     /* [out] */ Array<Integer>& dst,
     /* [in] */ Integer dstOffset,
     /* [in] */ Integer length)
 {
     Memory::UnsafeBulkGet(dst, dstOffset, length * 4, mHb, Ix(pos), 4, !mNativeByteOrder);
+    return NOERROR;
 }
 
 ECode HeapByteBuffer::PutInteger(
@@ -474,20 +487,22 @@ ECode HeapByteBuffer::PutInteger(
     return NOERROR;
 }
 
-void HeapByteBuffer::PutIntegerUnchecked(
+ECode HeapByteBuffer::PutIntegerUnchecked(
     /* [in] */ Integer index,
     /* [in] */ Integer value)
 {
     Bits::PutInteger(this, Ix(index), value, mBigEndian);
+    return NOERROR;
 }
 
-void HeapByteBuffer::PutUnchecked(
+ECode HeapByteBuffer::PutUnchecked(
     /* [in] */ Integer pos,
     /* [in] */ const Array<Integer>& src,
     /* [in] */ Integer srcOffset,
     /* [in] */ Integer length)
 {
     Memory::UnsafeBulkPut(mHb, Ix(pos), length * 4, src, srcOffset, 4, !mNativeByteOrder);
+    return NOERROR;
 }
 
 ECode HeapByteBuffer::GetLong(
@@ -512,19 +527,22 @@ ECode HeapByteBuffer::GetLong(
     return NOERROR;
 }
 
-Long HeapByteBuffer::GetLongUnchecked(
-    /* [in] */ Integer index)
+ECode HeapByteBuffer::GetLongUnchecked(
+    /* [in] */ Integer index,
+    /* [out] */ Long* value)
 {
-    return Bits::GetLong(this, Ix(index), mBigEndian);
+    *value = Bits::GetLong(this, Ix(index), mBigEndian);
+    return NOERROR;
 }
 
-void HeapByteBuffer::GetUnchecked(
+ECode HeapByteBuffer::GetUnchecked(
     /* [in] */ Integer pos,
     /* [out] */ Array<Long>& dst,
     /* [in] */ Integer dstOffset,
     /* [in] */ Integer length)
 {
     Memory::UnsafeBulkGet(dst, dstOffset, length * 8, mHb, Ix(pos), 8, !mNativeByteOrder);
+    return NOERROR;
 }
 
 ECode HeapByteBuffer::PutLong(
@@ -551,20 +569,22 @@ ECode HeapByteBuffer::PutLong(
     return NOERROR;
 }
 
-void HeapByteBuffer::PutLongUnchecked(
+ECode HeapByteBuffer::PutLongUnchecked(
     /* [in] */ Integer index,
     /* [in] */ Long value)
 {
     Bits::PutLong(this, Ix(index), value, mBigEndian);
+    return NOERROR;
 }
 
-void HeapByteBuffer::PutUnchecked(
+ECode HeapByteBuffer::PutUnchecked(
     /* [in] */ Integer pos,
     /* [in] */ const Array<Long>& src,
     /* [in] */ Integer srcOffset,
     /* [in] */ Integer length)
 {
     Memory::UnsafeBulkPut(mHb, Ix(pos), length * 8, src, srcOffset, 8, !mNativeByteOrder);
+    return NOERROR;
 }
 
 ECode HeapByteBuffer::GetFloat(
@@ -589,19 +609,22 @@ ECode HeapByteBuffer::GetFloat(
     return NOERROR;
 }
 
-Float HeapByteBuffer::GetFloatUnchecked(
-    /* [in] */ Integer index)
+ECode HeapByteBuffer::GetFloatUnchecked(
+    /* [in] */ Integer index,
+    /* [out] */ Float* f)
 {
-    return Bits::GetFloat(this, Ix(index), mBigEndian);
+    *f = Bits::GetFloat(this, Ix(index), mBigEndian);
+    return NOERROR;
 }
 
-void HeapByteBuffer::GetUnchecked(
+ECode HeapByteBuffer::GetUnchecked(
     /* [in] */ Integer pos,
     /* [out] */ Array<Float>& dst,
     /* [in] */ Integer dstOffset,
     /* [in] */ Integer length)
 {
     Memory::UnsafeBulkGet(dst, dstOffset, length * 4, mHb, Ix(pos), 4, !mNativeByteOrder);
+    return NOERROR;
 }
 
 ECode HeapByteBuffer::PutFloat(
@@ -628,20 +651,22 @@ ECode HeapByteBuffer::PutFloat(
     return NOERROR;
 }
 
-void HeapByteBuffer::PutFloatUnchecked(
+ECode HeapByteBuffer::PutFloatUnchecked(
     /* [in] */ Integer index,
     /* [in] */ Float value)
 {
     Bits::PutFloat(this, Ix(index), value, mBigEndian);
+    return NOERROR;
 }
 
-void HeapByteBuffer::PutUnchecked(
+ECode HeapByteBuffer::PutUnchecked(
     /* [in] */ Integer pos,
     /* [in] */ const Array<Float>& src,
     /* [in] */ Integer srcOffset,
     /* [in] */ Integer length)
 {
     Memory::UnsafeBulkPut(mHb, Ix(pos), length * 4, src, srcOffset, 4, !mNativeByteOrder);
+    return NOERROR;
 }
 
 ECode HeapByteBuffer::GetDouble(
@@ -666,19 +691,22 @@ ECode HeapByteBuffer::GetDouble(
     return NOERROR;
 }
 
-Double HeapByteBuffer::GetDoubleUnchecked(
-    /* [in] */ Integer index)
+ECode HeapByteBuffer::GetDoubleUnchecked(
+    /* [in] */ Integer index,
+    /* [out] */ Double* value)
 {
-    return Bits::GetDouble(this, Ix(index), mBigEndian);
+    *value = Bits::GetDouble(this, Ix(index), mBigEndian);
+    return NOERROR;
 }
 
-void HeapByteBuffer::GetUnchecked(
+ECode HeapByteBuffer::GetUnchecked(
     /* [in] */ Integer pos,
     /* [out] */ Array<Double>& dst,
     /* [in] */ Integer dstOffset,
     /* [in] */ Integer length)
 {
     Memory::UnsafeBulkGet(dst, dstOffset, length * 8, mHb, Ix(pos), 8, !mNativeByteOrder);
+    return NOERROR;
 }
 
 ECode HeapByteBuffer::PutDouble(
@@ -705,20 +733,22 @@ ECode HeapByteBuffer::PutDouble(
     return NOERROR;
 }
 
-void HeapByteBuffer::PutDoubleUnchecked(
+ECode HeapByteBuffer::PutDoubleUnchecked(
     /* [in] */ Integer index,
     /* [in] */ Double value)
 {
     Bits::PutDouble(this, Ix(index), value, mBigEndian);
+    return NOERROR;
 }
 
-void HeapByteBuffer::PutUnchecked(
+ECode HeapByteBuffer::PutUnchecked(
     /* [in] */ Integer pos,
     /* [in] */ const Array<Double>& src,
     /* [in] */ Integer srcOffset,
     /* [in] */ Integer length)
 {
     Memory::UnsafeBulkPut(mHb, Ix(pos), length * 8, src, srcOffset, 8, !mNativeByteOrder);
+    return NOERROR;
 }
 
 }

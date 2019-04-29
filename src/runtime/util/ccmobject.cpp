@@ -266,4 +266,24 @@ AutoPtr<IWeakReference> Object::GetWeakReference(
     return wr;
 }
 
+Boolean Object::InstanceOf(
+    /* [in] */ IInterface* obj,
+    /* [in] */ const CoclassID& cid)
+{
+    Object* o = (Object*)IObject::Probe(obj);
+    if (o == nullptr) {
+        return false;
+    }
+    return InstanceOf(o, cid);
+}
+
+Boolean Object::InstanceOf(
+    /* [in] */ Object* obj,
+    /* [in] */ const CoclassID& cid)
+{
+    CoclassID ocid;
+    obj->GetCoclassID(&ocid);
+    return ocid == cid;
+}
+
 }

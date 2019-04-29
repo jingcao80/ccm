@@ -21,6 +21,10 @@
 namespace ccm {
 namespace io {
 
+Byte MappedByteBuffer::sUnused = -1;
+
+CCM_INTERFACE_IMPL_1(MappedByteBuffer, ByteBuffer, IMappedByteBuffer);
+
 ECode MappedByteBuffer::Constructor(
     /* [in] */ Integer mark,
     /* [in] */ Integer pos,
@@ -63,21 +67,21 @@ ECode MappedByteBuffer::CheckMapped()
     return NOERROR;
 }
 
-Long MappedByteBuffer::MappingOffset()
+HANDLE MappedByteBuffer::MappingOffset()
 {
     Integer ps = Bits::PageSize();
-    Long offset = mAddress % ps;
+    HANDLE offset = mAddress % ps;
     return (offset >= 0) ? offset : (ps + offset);
 }
 
-Long MappedByteBuffer::MappingAddress(
-    /* [in] */ Long mappingOffset)
+HANDLE MappedByteBuffer::MappingAddress(
+    /* [in] */ HANDLE mappingOffset)
 {
     return mAddress - mappingOffset;
 }
 
 Long MappedByteBuffer::MappingLength(
-    /* [in] */ Long mappingOffset)
+    /* [in] */ HANDLE mappingOffset)
 {
     Integer cap;
     GetCapacity(&cap);
@@ -100,7 +104,7 @@ ECode MappedByteBuffer::IsLoaded(
         *loaded = true;
         return NOERROR;
     }
-    Long offset = MappingOffset();
+    HANDLE offset = MappingOffset();
     Long length = MappingLength(offset);
     return IsLoaded0(MappingAddress(offset), length, Bits::PageCount(length), loaded);
 }
@@ -116,7 +120,7 @@ ECode MappedByteBuffer::Load()
     if (cap == 0) {
         return NOERROR;
     }
-    Long offset = MappingOffset();
+    HANDLE offset = MappingOffset();
     Long length = MappingLength(offset);
     FAIL_RETURN(Load0(MappingAddress(offset), length));
 
@@ -125,7 +129,7 @@ ECode MappedByteBuffer::Load()
     // considering the loop as dead code.
     Integer ps = Bits::PageSize();
     Integer count = Bits::PageCount(length);
-    Long a = MappingAddress(offset);
+    HANDLE a = MappingAddress(offset);
     Byte x = 0;
     for (Integer i = 0; i < count; i++) {
         x ^= *reinterpret_cast<Byte*>(a);
@@ -146,12 +150,12 @@ ECode MappedByteBuffer::Force()
     if (cap == 0) {
         return NOERROR;
     }
-    Long offset = MappingOffset();
+    HANDLE offset = MappingOffset();
     return Force0(mFd, MappingAddress(offset), MappingLength(offset));
 }
 
 ECode MappedByteBuffer::IsLoaded0(
-    /* [in] */ Long address,
+    /* [in] */ HANDLE address,
     /* [in] */ Long length,
     /* [in] */ Integer pageCount,
     /* [out] */ Boolean* loaded)
@@ -182,7 +186,7 @@ ECode MappedByteBuffer::IsLoaded0(
 }
 
 ECode MappedByteBuffer::Load0(
-    /* [in] */ Long address,
+    /* [in] */ HANDLE address,
     /* [in] */ Long length)
 {
     char* a = reinterpret_cast<char*>(address);
@@ -196,7 +200,7 @@ ECode MappedByteBuffer::Load0(
 
 ECode MappedByteBuffer::Force0(
     /* [in] */ IFileDescriptor* fd,
-    /* [in] */ Long address,
+    /* [in] */ HANDLE address,
     /* [in] */ Long length)
 {
     int result = msync(reinterpret_cast<void*>(address), (size_t)length, MS_SYNC);

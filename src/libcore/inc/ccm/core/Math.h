@@ -96,13 +96,16 @@ public:
         /* [in] */ Integer i);
 
     static Integer Signum(
-        /* [in] */ Long i);
+        /* [in] */ Long l);
 
     static Short ReverseBytes(
-        /* [in] */ Short i);
+        /* [in] */ Short s);
 
     static Integer ReverseBytes(
         /* [in] */ Integer i);
+
+    static Long ReverseBytes(
+        /* [in] */ Long l);
 
     COM_PUBLIC static Double CopySign(
         /* [in] */ Double magnitude,
@@ -264,15 +267,15 @@ inline Integer Math::Signum(
 }
 
 inline Integer Math::Signum(
-    /* [in] */ Long i)
+    /* [in] */ Long l)
 {
-    return (Integer) ((i >> 63) | (((unsigned Long)-i) >> 63));
+    return (Integer) ((l >> 63) | (((unsigned Long)-l) >> 63));
 }
 
 inline Short Math::ReverseBytes(
-    /* [in] */ Short i)
+    /* [in] */ Short s)
 {
-    return (Short) (((i & 0xFF00) >> 8) | (i << 8));
+    return (Short) (((s & 0xFF00) >> 8) | (s << 8));
 }
 
 inline Integer Math::ReverseBytes(
@@ -282,6 +285,14 @@ inline Integer Math::ReverseBytes(
            ((i >> 8) & 0xFF00) |
            ((i << 8) & 0xFF0000) |
            ((i << 24));
+}
+
+inline Long Math::ReverseBytes(
+    /* [in] */ Long l)
+{
+    l = (l & 0x00ff00ff00ff00ffLL) << 8 | (((unsigned Long)l) >> 8) & 0x00ff00ff00ff00ffLL;
+    return (l << 48) | ((l & 0xffff0000LL) << 16) |
+            ((((unsigned Long)l) >> 16) & 0xffff0000LL) | (((unsigned Long)l) >> 48);
 }
 
 inline Boolean Math::IsNaN(

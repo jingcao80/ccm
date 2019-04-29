@@ -29,6 +29,8 @@ class MappedByteBuffer
     , public IMappedByteBuffer
 {
 public:
+    CCM_INTERFACE_DECL();
+
     ECode Constructor(
         /* [in] */ Integer mark,
         /* [in] */ Integer pos,
@@ -60,27 +62,27 @@ public:
 private:
     ECode CheckMapped();
 
-    Long MappingOffset();
+    HANDLE MappingOffset();
 
-    Long MappingAddress(
-        /* [in] */ Long mappingOffset);
+    HANDLE MappingAddress(
+        /* [in] */ HANDLE mappingOffset);
 
     Long MappingLength(
-        /* [in] */ Long mappingOffset);
+        /* [in] */ HANDLE mappingOffset);
 
     ECode IsLoaded0(
-        /* [in] */ Long address,
+        /* [in] */ HANDLE address,
         /* [in] */ Long length,
         /* [in] */ Integer pageCount,
         /* [out] */ Boolean* loaded);
 
     ECode Load0(
-        /* [in] */ Long address,
+        /* [in] */ HANDLE address,
         /* [in] */ Long length);
 
     ECode Force0(
         /* [in] */ IFileDescriptor* fd,
-        /* [in] */ Long address,
+        /* [in] */ HANDLE address,
         /* [in] */ Long length);
 
 private:

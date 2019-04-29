@@ -44,6 +44,7 @@ include "ccm/io/ISerializable.cdl"
 include "ccm/io/IShortBuffer.cdl"
 include "ccm/io/IStringWriter.cdl"
 include "ccm/io/IWriter.cdl"
+include "ccm/io/channels/IDirectBuffer.cdl"
 include "ccm/io/channels/IFileChannel.cdl"
 include "ccm/io/charset/ICharset.cdl"
 include "ccm/io/charset/ICharsetEncoder.cdl"
@@ -51,6 +52,8 @@ include "ccm/io/charset/IStreamEncoder.cdl"
 
 interface ccm::core::IAppendable;
 interface ccm::core::IAutoCloseable;
+interface ccm::core::IComparable;
+interface ccm::io::channels::IDirectBuffer;
 interface ccm::io::charset::ICharset;
 interface ccm::io::charset::ICharsetEncoder;
 interface ccm::net::IURI;
@@ -85,7 +88,17 @@ coclass CBufferedWriter
 ]
 coclass CDirectByteBuffer
 {
+    Constructor(
+        [in] Integer cap,
+        [in] HANDLE address,
+        [in] IFileDescriptor* fd,
+        [in] Boolean isReadOnly);
 
+    interface IDirectBuffer;
+    interface IMappedByteBuffer;
+    interface IByteBuffer;
+    interface IBuffer;
+    interface IComparable;
 }
 
 [

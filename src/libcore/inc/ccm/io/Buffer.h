@@ -104,7 +104,7 @@ public:
 
 protected:
     Integer mPosition = 0;
-    Long mAddress = 0;
+    HANDLE mAddress = 0;
     Integer mElementSizeShift = 0;
 
 private:

@@ -23,6 +23,8 @@
 #include "ccm/io/COutputStreamWriter.h"
 #include "ccm/io/CPrintWriter.h"
 #include "ccm/io/CStringWriter.h"
+#include <ccmapi.h>
+#include <new>
 
 namespace ccm {
 namespace io {
@@ -30,6 +32,130 @@ namespace io {
 CCM_OBJECT_IMPL(CBufferedWriter);
 
 CCM_OBJECT_IMPL(CDirectByteBuffer);
+ECode CDirectByteBuffer::New(
+    /* [in] */ Integer capacity,
+    /* [in] */ MemoryRef* memoryRef,
+    /* [in] */ const InterfaceID& iid,
+    /* [out] */ ccm::IInterface** object)
+{
+    VALIDATE_NOT_NULL(object);
+
+    AutoPtr<IClassObject> clsObject;
+    ECode ec = CoAcquireClassFactory(CID_CDirectByteBuffer, nullptr, &clsObject);
+    if (FAILED(ec)) return ec;
+
+    void* addr = calloc(sizeof(CDirectByteBuffer), 1);
+    if (addr == nullptr) return E_OUT_OF_MEMORY_ERROR;
+
+    CDirectByteBuffer* _obj = new(addr) CDirectByteBuffer();
+    ec = _obj->Constructor(capacity, memoryRef);
+    if (FAILED(ec)) {
+        free(addr);
+        return ec;
+    }
+    AutoPtr<IMetaComponent> comp;
+    clsObject->GetMetadate(&comp);
+    _obj->AttachMetadata(comp, String("ccm::io::CDirectByteBuffer"));
+    *object = _obj->Probe(iid);
+    REFCOUNT_ADD(*object);
+    return NOERROR;
+}
+
+ECode CDirectByteBuffer::New(
+    /* [in] */ HANDLE address,
+    /* [in] */ Integer cap,
+    /* [in] */ const InterfaceID& iid,
+    /* [out] */ ccm::IInterface** object)
+{
+    VALIDATE_NOT_NULL(object);
+
+    AutoPtr<IClassObject> clsObject;
+    ECode ec = CoAcquireClassFactory(CID_CDirectByteBuffer, nullptr, &clsObject);
+    if (FAILED(ec)) return ec;
+
+    void* addr = calloc(sizeof(CDirectByteBuffer), 1);
+    if (addr == nullptr) return E_OUT_OF_MEMORY_ERROR;
+
+    CDirectByteBuffer* _obj = new(addr) CDirectByteBuffer();
+    ec = _obj->Constructor(address, cap);
+    if (FAILED(ec)) {
+        free(addr);
+        return ec;
+    }
+    AutoPtr<IMetaComponent> comp;
+    clsObject->GetMetadate(&comp);
+    _obj->AttachMetadata(comp, String("ccm::io::CDirectByteBuffer"));
+    *object = _obj->Probe(iid);
+    REFCOUNT_ADD(*object);
+    return NOERROR;
+}
+
+ECode CDirectByteBuffer::New(
+    /* [in] */ MemoryRef* memoryRef,
+    /* [in] */ Integer mark,
+    /* [in] */ Integer pos,
+    /* [in] */ Integer lim,
+    /* [in] */ Integer cap,
+    /* [in] */ Integer off,
+    /* [in] */ const InterfaceID& iid,
+    /* [out] */ ccm::IInterface** object)
+{
+    VALIDATE_NOT_NULL(object);
+
+    AutoPtr<IClassObject> clsObject;
+    ECode ec = CoAcquireClassFactory(CID_CDirectByteBuffer, nullptr, &clsObject);
+    if (FAILED(ec)) return ec;
+
+    void* addr = calloc(sizeof(CDirectByteBuffer), 1);
+    if (addr == nullptr) return E_OUT_OF_MEMORY_ERROR;
+
+    CDirectByteBuffer* _obj = new(addr) CDirectByteBuffer();
+    ec = _obj->Constructor(memoryRef, mark, pos, lim, cap, off);
+    if (FAILED(ec)) {
+        free(addr);
+        return ec;
+    }
+    AutoPtr<IMetaComponent> comp;
+    clsObject->GetMetadate(&comp);
+    _obj->AttachMetadata(comp, String("ccm::io::CDirectByteBuffer"));
+    *object = _obj->Probe(iid);
+    REFCOUNT_ADD(*object);
+    return NOERROR;
+}
+
+ECode CDirectByteBuffer::New(
+    /* [in] */ MemoryRef* memoryRef,
+    /* [in] */ Integer mark,
+    /* [in] */ Integer pos,
+    /* [in] */ Integer lim,
+    /* [in] */ Integer cap,
+    /* [in] */ Integer off,
+    /* [in] */ Boolean isReadOnly,
+    /* [in] */ const InterfaceID& iid,
+    /* [out] */ ccm::IInterface** object)
+{
+    VALIDATE_NOT_NULL(object);
+
+    AutoPtr<IClassObject> clsObject;
+    ECode ec = CoAcquireClassFactory(CID_CDirectByteBuffer, nullptr, &clsObject);
+    if (FAILED(ec)) return ec;
+
+    void* addr = calloc(sizeof(CDirectByteBuffer), 1);
+    if (addr == nullptr) return E_OUT_OF_MEMORY_ERROR;
+
+    CDirectByteBuffer* _obj = new(addr) CDirectByteBuffer();
+    ec = _obj->Constructor(memoryRef, mark, pos, lim, cap, off, isReadOnly);
+    if (FAILED(ec)) {
+        free(addr);
+        return ec;
+    }
+    AutoPtr<IMetaComponent> comp;
+    clsObject->GetMetadate(&comp);
+    _obj->AttachMetadata(comp, String("ccm::io::CDirectByteBuffer"));
+    *object = _obj->Probe(iid);
+    REFCOUNT_ADD(*object);
+    return NOERROR;
+}
 
 CCM_OBJECT_IMPL(CFile);
 CCM_OBJECT_IMPL(CFileDescriptor);

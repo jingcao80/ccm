@@ -158,7 +158,7 @@ interface IInterface
 
 namespace ccm {
 
-struct Triple
+struct COM_PUBLIC Triple
 {
     Triple()
         : mData(nullptr)

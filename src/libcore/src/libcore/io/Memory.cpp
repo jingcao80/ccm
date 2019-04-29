@@ -353,6 +353,17 @@ Integer Memory::PeekInteger(
     return result;
 }
 
+Long Memory::PeekLong(
+    /* [in] */ HANDLE address,
+    /* [in] */ Boolean swap)
+{
+    Long result = GetUnaligned<Long>(reinterpret_cast<Long*>(address));
+    if (swap) {
+        result = Math::ReverseBytes(result);
+    }
+    return result;
+}
+
 Short Memory::PeekShort(
     /* [in] */ HANDLE address,
     /* [in] */ Boolean swap)
@@ -374,6 +385,57 @@ ECode Memory::PeekByteArray(
     return NOERROR;
 }
 
+ECode Memory::PeekCharArray(
+    /* [in] */ HANDLE address,
+    /* [out] */ Array<Char>& dst,
+    /* [in] */ Integer dstOffset,
+    /* [in] */ Integer charCount,
+    /* [in] */ Boolean swap)
+{
+    if (swap) {
+        SwapIntegers(reinterpret_cast<Integer*>(dst.GetPayload()) + dstOffset,
+                reinterpret_cast<Integer*>(address), charCount);
+    }
+    else {
+        dst.Copy(dstOffset, reinterpret_cast<Char*>(address), charCount);
+    }
+    return NOERROR;
+}
+
+ECode Memory::PeekDoubleArray(
+    /* [in] */ HANDLE address,
+    /* [out] */ Array<Double>& dst,
+    /* [in] */ Integer dstOffset,
+    /* [in] */ Integer doubleCount,
+    /* [in] */ Boolean swap)
+{
+    if (swap) {
+        SwapLongs(reinterpret_cast<Long*>(dst.GetPayload()) + dstOffset,
+                reinterpret_cast<Long*>(address), doubleCount);
+    }
+    else {
+        dst.Copy(dstOffset, reinterpret_cast<Double*>(address), doubleCount);
+    }
+    return NOERROR;
+}
+
+ECode Memory::PeekFloatArray(
+    /* [in] */ HANDLE address,
+    /* [out] */ Array<Float>& dst,
+    /* [in] */ Integer dstOffset,
+    /* [in] */ Integer floatCount,
+    /* [in] */ Boolean swap)
+{
+    if (swap) {
+        SwapIntegers(reinterpret_cast<Integer*>(dst.GetPayload()) + dstOffset,
+                reinterpret_cast<Integer*>(address), floatCount);
+    }
+    else {
+        dst.Copy(dstOffset, reinterpret_cast<Float*>(address), floatCount);
+    }
+    return NOERROR;
+}
+
 ECode Memory::PeekIntegerArray(
     /* [in] */ HANDLE address,
     /* [out] */ Array<Integer>& dst,
@@ -386,6 +448,200 @@ ECode Memory::PeekIntegerArray(
     }
     else {
         dst.Copy(dstOffset, reinterpret_cast<Integer*>(address), intCount);
+    }
+    return NOERROR;
+}
+
+ECode Memory::PeekLongArray(
+    /* [in] */ HANDLE address,
+    /* [out] */ Array<Long>& dst,
+    /* [in] */ Integer dstOffset,
+    /* [in] */ Integer longCount,
+    /* [in] */ Boolean swap)
+{
+    if (swap) {
+        SwapLongs(dst.GetPayload() + dstOffset, reinterpret_cast<Long*>(address), longCount);
+    }
+    else {
+        dst.Copy(dstOffset, reinterpret_cast<Long*>(address), longCount);
+    }
+    return NOERROR;
+}
+
+ECode Memory::PeekShortArray(
+    /* [in] */ HANDLE address,
+    /* [out] */ Array<Short>& dst,
+    /* [in] */ Integer dstOffset,
+    /* [in] */ Integer shortCount,
+    /* [in] */ Boolean swap)
+{
+    if (swap) {
+        SwapShorts(dst.GetPayload() + dstOffset, reinterpret_cast<Short*>(address), shortCount);
+    }
+    else {
+        dst.Copy(dstOffset, reinterpret_cast<Short*>(address), shortCount);
+    }
+    return NOERROR;
+}
+
+ECode Memory::PokeByte(
+    /* [in] */ HANDLE address,
+    /* [in] */ Byte value)
+{
+    *reinterpret_cast<Byte*>(address) = value;
+    return NOERROR;
+}
+
+ECode Memory::PokeInteger(
+    /* [in] */ HANDLE address,
+    /* [in] */ Integer value,
+    /* [in] */ Boolean swap)
+{
+    if (swap) {
+        value = Math::ReverseBytes(value);
+    }
+    PutUnaligned<Integer>(reinterpret_cast<Integer*>(address), value);
+    return NOERROR;
+}
+
+ECode Memory::PokeLong(
+    /* [in] */ HANDLE address,
+    /* [in] */ Long value,
+    /* [in] */ Boolean swap)
+{
+    if (swap) {
+        value = Math::ReverseBytes(value);
+    }
+    PutUnaligned<Long>(reinterpret_cast<Long*>(address), value);
+    return NOERROR;
+}
+
+ECode Memory::PokeShort(
+    /* [in] */ HANDLE address,
+    /* [in] */ Short value,
+    /* [in] */ Boolean swap)
+{
+    if (swap) {
+        value = Math::ReverseBytes(value);
+    }
+    PutUnaligned<Short>(reinterpret_cast<Short*>(address), value);
+    return NOERROR;
+}
+
+ECode Memory::PokeByteArray(
+    /* [in] */ HANDLE address,
+    /* [in] */ const Array<Byte>& src,
+    /* [in] */ Integer offset,
+    /* [in] */ Integer count)
+{
+    memcpy(reinterpret_cast<Byte*>(address), (src.GetPayload() + offset), count);
+    return NOERROR;
+}
+
+ECode Memory::PokeCharArray(
+    /* [in] */ HANDLE address,
+    /* [in] */ const Array<Char>& src,
+    /* [in] */ Integer offset,
+    /* [in] */ Integer count,
+    /* [in] */ Boolean swap)
+{
+    if (swap) {
+        SwapIntegers(reinterpret_cast<Integer*>(address),
+                reinterpret_cast<Integer*>(src.GetPayload() + offset), count);
+    }
+    else {
+        memcpy(reinterpret_cast<Integer*>(address),
+                reinterpret_cast<Integer*>(src.GetPayload() + offset), count * sizeof(Integer));
+    }
+    return NOERROR;
+}
+
+ECode Memory::PokeDoubleArray(
+    /* [in] */ HANDLE address,
+    /* [in] */ const Array<Double>& src,
+    /* [in] */ Integer offset,
+    /* [in] */ Integer count,
+    /* [in] */ Boolean swap)
+{
+    if (swap) {
+        SwapLongs(reinterpret_cast<Long*>(address),
+                reinterpret_cast<Long*>(src.GetPayload() + offset), count);
+    }
+    else {
+        memcpy(reinterpret_cast<Long*>(address),
+                reinterpret_cast<Long*>(src.GetPayload() + offset), count * sizeof(Long));
+    }
+    return NOERROR;
+}
+
+ECode Memory::PokeFloatArray(
+    /* [in] */ HANDLE address,
+    /* [in] */ const Array<Float>& src,
+    /* [in] */ Integer offset,
+    /* [in] */ Integer count,
+    /* [in] */ Boolean swap)
+{
+    if (swap) {
+        SwapIntegers(reinterpret_cast<Integer*>(address),
+                reinterpret_cast<Integer*>(src.GetPayload() + offset), count);
+    }
+    else {
+        memcpy(reinterpret_cast<Integer*>(address),
+                reinterpret_cast<Integer*>(src.GetPayload() + offset), count * sizeof(Integer));
+    }
+    return NOERROR;
+}
+
+ECode Memory::PokeIntegerArray(
+    /* [in] */ HANDLE address,
+    /* [in] */ const Array<Integer>& src,
+    /* [in] */ Integer offset,
+    /* [in] */ Integer count,
+    /* [in] */ Boolean swap)
+{
+    if (swap) {
+        SwapIntegers(reinterpret_cast<Integer*>(address),
+                reinterpret_cast<Integer*>(src.GetPayload() + offset), count);
+    }
+    else {
+        memcpy(reinterpret_cast<Integer*>(address),
+                reinterpret_cast<Integer*>(src.GetPayload() + offset), count * sizeof(Integer));
+    }
+    return NOERROR;
+}
+
+ECode Memory::PokeLongArray(
+    /* [in] */ HANDLE address,
+    /* [in] */ const Array<Long>& src,
+    /* [in] */ Integer offset,
+    /* [in] */ Integer count,
+    /* [in] */ Boolean swap)
+{
+    if (swap) {
+        SwapLongs(reinterpret_cast<Long*>(address),
+                reinterpret_cast<Long*>(src.GetPayload() + offset), count);
+    }
+    else {
+        memcpy(reinterpret_cast<Long*>(address),
+                reinterpret_cast<Long*>(src.GetPayload() + offset), count * sizeof(Long));
+    }
+    return NOERROR;
+}
+
+ECode Memory::PokeShortArray(
+    /* [in] */ HANDLE address,
+    /* [in] */ const Array<Short>& src,
+    /* [in] */ Integer offset,
+    /* [in] */ Integer count,
+    /* [in] */ Boolean swap)
+{
+    if (swap) {
+        SwapShorts(reinterpret_cast<Short*>(address),
+                reinterpret_cast<Short*>(src.GetPayload() + offset), count);
+    }
+    else {
+        memcpy(reinterpret_cast<Short*>(address),
+                reinterpret_cast<Short*>(src.GetPayload() + offset), count * sizeof(Short));
     }
     return NOERROR;
 }

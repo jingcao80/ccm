@@ -127,6 +127,9 @@ public:
 
     Array Clone() const;
 
+    static Array Allocate(
+        /* [in] */ Long size);
+
     static Array Null();
 
     Array<IInterface*> ToInterfaces();
@@ -578,6 +581,13 @@ Array<T> Array<T>::Clone() const
     }
 
     return newArray;
+}
+
+template<class T>
+Array<T> Array<T>::Allocate(
+    /* [in] */ Long size)
+{
+    return Array<T>(size);
 }
 
 template<class T>
