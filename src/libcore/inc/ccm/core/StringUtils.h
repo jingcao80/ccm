@@ -118,6 +118,14 @@ public:
     COM_PUBLIC static String ToHexString(
         /* [in] */ Double d);
 
+    COM_PUBLIC static ECode ToString(
+        /* [in] */ const String& str,
+        /* [in] */ const String& charsetName,
+        /* [out] */ String* decodedStr)
+    {
+        return NOERROR;
+    }
+
     COM_PUBLIC static ECode ReplaceFirst(
         /* [in] */ const String& input,
         /* [in] */ const String& regex,

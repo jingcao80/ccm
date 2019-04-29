@@ -280,7 +280,26 @@ ECode Arrays::Fill(
 }
 
 ECode Arrays::CopyOf(
-    /* [in] */ const Array<String> & original,
+    /* [in] */ const Array<Byte>& original,
+    /* [in] */ Integer newLength,
+    /* [out, callee] */ Array<Byte>* newArray)
+{
+    VALIDATE_NOT_NULL(newArray);
+
+    if (newLength < 0) {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    Array<Byte> copy(newLength);
+    Integer N = Math::Min((Integer)original.GetLength(), newLength);
+    for (Integer i = 0; i < N; i++) {
+        copy[i] = original[i];
+    }
+    *newArray = copy;
+    return NOERROR;
+}
+
+ECode Arrays::CopyOf(
+    /* [in] */ const Array<String>& original,
     /* [in] */ Integer newLength,
     /* [out, callee] */ Array<String>* newArray)
 {
@@ -289,7 +308,7 @@ ECode Arrays::CopyOf(
     if (newLength < 0) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    Array<String> copy = Array<String>(newLength);
+    Array<String> copy(newLength);
     Integer N = Math::Min((Integer)original.GetLength(), newLength);
     for (Integer i = 0; i < N; i++) {
         copy[i] = original[i];
@@ -308,7 +327,7 @@ ECode Arrays::CopyOf(
     if (newLength < 0) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    Array<IInterface*> copy = Array<IInterface*>(newLength);
+    Array<IInterface*> copy(newLength);
     Integer N = Math::Min((Integer)original.GetLength(), newLength);
     for (Integer i = 0; i < N; i++) {
         copy.Set(i, original[i]);

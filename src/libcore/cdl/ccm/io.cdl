@@ -17,6 +17,7 @@
 include "ccm/io/Exceptions.cdl"
 include "ccm/io/IBuffer.cdl"
 include "ccm/io/IBufferedWriter.cdl"
+include "ccm/io/IByteArrayOutputStream.cdl"
 include "ccm/io/IByteBuffer.cdl"
 include "ccm/io/IByteOrder.cdl"
 include "ccm/io/ICharBuffer.cdl"
@@ -79,6 +80,24 @@ coclass CBufferedWriter
     interface IAppendable;
     interface ICloseable;
     interface IFlushable;
+    interface IAutoCloseable;
+}
+
+[
+    uuid(69455e4d-56b1-43b1-98b1-e4907e332a4f),
+    version(0.1.0)
+]
+coclass CByteArrayOutputStream
+{
+    Constructor();
+
+    Constructor(
+        [in] Integer size);
+
+    interface IByteArrayOutputStream;
+    interface IOutputStream;
+    interface IFlushable;
+    interface ICloseable;
     interface IAutoCloseable;
 }
 

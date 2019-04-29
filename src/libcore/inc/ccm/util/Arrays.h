@@ -73,7 +73,12 @@ public:
         /* [in] */ Boolean value);
 
     static ECode CopyOf(
-        /* [in] */ const Array<String> & original,
+        /* [in] */ const Array<Byte>& original,
+        /* [in] */ Integer newLength,
+        /* [out, callee] */ Array<Byte>* newArray);
+
+    static ECode CopyOf(
+        /* [in] */ const Array<String>& original,
         /* [in] */ Integer newLength,
         /* [out, callee] */ Array<String>* newArray);
 

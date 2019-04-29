@@ -30,6 +30,7 @@ set(SOURCES
     Bits.cpp
     Buffer.cpp
     BufferedWriter.cpp
+    ByteArrayOutputStream.cpp
     ByteBuffer.cpp
     ByteOrder.cpp
     DeleteOnExitHook.cpp

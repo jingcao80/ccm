@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "ccm/io/CBufferedWriter.h"
+#include "ccm/io/CByteArrayOutputStream.h"
 #include "ccm/io/CDirectByteBuffer.h"
 #include "ccm/io/CFile.h"
 #include "ccm/io/CFileDescriptor.h"
@@ -30,6 +31,7 @@ namespace ccm {
 namespace io {
 
 CCM_OBJECT_IMPL(CBufferedWriter);
+CCM_OBJECT_IMPL(CByteArrayOutputStream);
 
 CCM_OBJECT_IMPL(CDirectByteBuffer);
 ECode CDirectByteBuffer::New(
