@@ -14,6 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
+#include "ccm/core/CArrayHolder.h"
 #include "ccm/core/CRuntimePermission.h"
 #include "ccm/core/CStackTrace.h"
 #include "ccm/core/CStackTraceElement.h"
@@ -24,6 +25,7 @@
 namespace ccm {
 namespace core {
 
+CCM_OBJECT_IMPL(CArrayHolder);
 CCM_OBJECT_IMPL(CRuntimePermission);
 CCM_OBJECT_IMPL(CStackTrace);
 CCM_OBJECT_IMPL(CStackTraceElement);

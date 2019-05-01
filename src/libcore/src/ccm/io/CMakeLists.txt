@@ -32,7 +32,9 @@ set(SOURCES
     BufferedWriter.cpp
     ByteArrayOutputStream.cpp
     ByteBuffer.cpp
+    ByteBufferAsIntegerBuffer.cpp
     ByteOrder.cpp
+    CByteBufferFactory.cpp
     DeleteOnExitHook.cpp
     DirectByteBuffer.cpp
     ExpiringCache.cpp
@@ -42,7 +44,9 @@ set(SOURCES
     FileOutputStream.cpp
     FileSystem.cpp
     HeapByteBuffer.cpp
+    HeapIntegerBuffer.cpp
     InputStream.cpp
+    IntegerBuffer.cpp
     MappedByteBuffer.cpp
     OutputStream.cpp
     OutputStreamWriter.cpp

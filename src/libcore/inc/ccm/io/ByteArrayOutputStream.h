@@ -54,7 +54,7 @@ public:
     ECode ToByteArray(
         /* [out, callee] */ Array<Byte>* array) override;
 
-    ECode Size(
+    ECode GetSize(
         /* [out] */ Integer* size) override;
 
     ECode ToString(

@@ -125,7 +125,7 @@ ECode ByteArrayOutputStream::ToByteArray(
     return Arrays::CopyOf(mBuf, mCount, array);
 }
 
-ECode ByteArrayOutputStream::Size(
+ECode ByteArrayOutputStream::GetSize(
     /* [out] */ Integer* size)
 {
     VALIDATE_NOT_NULL(size);

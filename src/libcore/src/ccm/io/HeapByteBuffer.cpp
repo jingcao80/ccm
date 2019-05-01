@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "ccm/io/Bits.h"
+#include "ccm/io/ByteBufferAsIntegerBuffer.h"
 #include "ccm/io/HeapByteBuffer.h"
 #include "libcore/io/Memory.h"
 
@@ -42,7 +43,7 @@ ECode HeapByteBuffer::Constructor(
 }
 
 ECode HeapByteBuffer::Constructor(
-    /* [in] */ Array<Byte>& buf,
+    /* [in] */ const Array<Byte>& buf,
     /* [in] */ Integer off,
     /* [in] */ Integer len)
 {
@@ -50,7 +51,7 @@ ECode HeapByteBuffer::Constructor(
 }
 
 ECode HeapByteBuffer::Constructor(
-    /* [in] */ Array<Byte>& buf,
+    /* [in] */ const Array<Byte>& buf,
     /* [in] */ Integer off,
     /* [in] */ Integer len,
     /* [in] */ Boolean isReadOnly)
@@ -61,7 +62,7 @@ ECode HeapByteBuffer::Constructor(
 }
 
 ECode HeapByteBuffer::Constructor(
-    /* [in] */ Array<Byte>& buf,
+    /* [in] */ const Array<Byte>& buf,
     /* [in] */ Integer mark,
     /* [in] */ Integer pos,
     /* [in] */ Integer lim,
@@ -502,6 +503,25 @@ ECode HeapByteBuffer::PutUnchecked(
     /* [in] */ Integer length)
 {
     Memory::UnsafeBulkPut(mHb, Ix(pos), length * 4, src, srcOffset, 4, !mNativeByteOrder);
+    return NOERROR;
+}
+
+ECode HeapByteBuffer::AsIntegerBuffer(
+    /* [out] */ IIntegerBuffer** buffer)
+{
+    VALIDATE_NOT_NULL(buffer);
+
+    Integer remaining, off;
+    Remaining(&remaining);
+    Integer size = remaining >> 2;
+    GetPosition(&off);
+    AutoPtr<IByteOrder> order;
+    GetOrder(&order);
+
+    AutoPtr<ByteBufferAsIntegerBuffer> bb = new ByteBufferAsIntegerBuffer();
+    FAIL_RETURN(bb->Constructor(this, -1, 0, size, size, off, order));
+    *buffer = (IIntegerBuffer*)bb.Get();
+    REFCOUNT_ADD(*buffer);
     return NOERROR;
 }
 

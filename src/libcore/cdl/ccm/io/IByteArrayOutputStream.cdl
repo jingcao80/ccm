@@ -33,7 +33,7 @@ interface IByteArrayOutputStream
 {
     Reset();
 
-    Size(
+    GetSize(
         [out] Integer* size);
 
     ToByteArray(

@@ -14,38 +14,45 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CORE_ARRAYHOLDER_H__
-#define __CCM_CORE_ARRAYHOLDER_H__
+#ifndef __CCM_IO_CBYTEBUFFERFACTORY_H__
+#define __CCM_IO_CBYTEBUFFERFACTORY_H__
 
-#include "ccm.core.IArrayHolder.h"
+#include "ccm.io.IByteBufferFactory.h"
+#include "_ccm_io_CByteBufferFactory.h"
 #include <ccmobject.h>
 
 namespace ccm {
-namespace core {
+namespace io {
 
-class ArrayHolder
+class CByteBufferFactory
     : public Object
-    , public IArrayHolder
+    , public IByteBufferFactory
 {
 public:
-    ~ArrayHolder();
-
     CCM_INTERFACE_DECL();
 
-    ECode Constructor(
-        /* [in] */ const Triple& array);
+    CCM_OBJECT_DECL();
 
-    ECode GetArray(
-        /* [out] */ Triple* array) override;
+    ECode AllocateDirect(
+        /* [in] */ Integer capacity,
+        /* [out] */ IByteBuffer** buffer);
 
-    ECode GetArrayType(
-        /* [out] */ Integer* type) override;
+    ECode Allocate(
+        /* [in] */ Integer capacity,
+        /* [out] */ IByteBuffer** buffer);
 
-private:
-    Triple mArray;
+    ECode Wrap(
+        /* [in] */ const Array<Byte>& array,
+        /* [in] */ Integer offset,
+        /* [in] */ Integer length,
+        /* [out] */ IByteBuffer** buffer);
+
+    ECode Wrap(
+        /* [in] */ const Array<Byte>& array,
+        /* [out] */ IByteBuffer** buffer);
 };
 
 }
 }
 
-#endif // __CCM_CORE_ARRAYHOLDER_H__
+#endif // __CCM_IO_CBYTEBUFFERFACTORY_H__

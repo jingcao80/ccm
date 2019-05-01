@@ -44,6 +44,7 @@ include_directories(
 
 set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_core_CArray.cpp
+    ${OBJ_DIR}/_ccm_core_CArrayHolder.cpp
     ${OBJ_DIR}/_ccm_core_CBoolean.cpp
     ${OBJ_DIR}/_ccm_core_CByte.cpp
     ${OBJ_DIR}/_ccm_core_CChar.cpp
@@ -65,6 +66,7 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_core_CThreadLocal.cpp
     ${OBJ_DIR}/_ccm_io_CBufferedWriter.cpp
     ${OBJ_DIR}/_ccm_io_CByteArrayOutputStream.cpp
+    ${OBJ_DIR}/_ccm_io_CByteBufferFactory.cpp
     ${OBJ_DIR}/_ccm_io_CDirectByteBuffer.cpp
     ${OBJ_DIR}/_ccm_io_CFile.cpp
     ${OBJ_DIR}/_ccm_io_CFileDescriptor.cpp

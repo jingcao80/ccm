@@ -73,8 +73,14 @@ public:
     static String GetCoclassName(
         /* [in] */ IInterface* obj);
 
+    static String GetCoclassName(
+        /* [in] */ Object* obj);
+
     static Integer GetHashCode(
         /* [in] */ IInterface* obj);
+
+    static Integer GetHashCode(
+        /* [in] */ Object* obj);
 
     static Boolean Equals(
         /* [in] */ IInterface* obj1,

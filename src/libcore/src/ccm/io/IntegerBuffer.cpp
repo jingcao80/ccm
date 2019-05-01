@@ -17,75 +17,49 @@
 #include "ccm/core/CArrayHolder.h"
 #include "ccm/core/CStringBuffer.h"
 #include "ccm/core/Math.h"
-#include "ccm/io/Bits.h"
-#include "ccm/io/ByteBuffer.h"
-#include "ccm/io/ByteOrder.h"
-#include "ccm/io/CDirectByteBuffer.h"
-#include "ccm/io/HeapByteBuffer.h"
-#include <ccmlogger.h>
+#include "ccm/io/HeapIntegerBuffer.h"
+#include "ccm/io/IntegerBuffer.h"
 
 using ccm::core::CArrayHolder;
 using ccm::core::CStringBuffer;
-using ccm::core::E_ILLEGAL_STATE_EXCEPTION;
-using ccm::core::IArrayHolder;
+using ccm::core::Math;
 using ccm::core::IID_IArrayHolder;
 using ccm::core::IID_IComparable;
 using ccm::core::IID_IStringBuffer;
 using ccm::core::IStringBuffer;
-using ccm::core::Math;
 
 namespace ccm {
 namespace io {
 
-CCM_INTERFACE_IMPL_2(ByteBuffer, Buffer, IByteBuffer, IComparable);
+CCM_INTERFACE_IMPL_2(IntegerBuffer, Buffer, IIntegerBuffer, IComparable);
 
-ByteBuffer::ByteBuffer()
-{
-    mNativeByteOrder = (Bits::ByteOrder() == ByteOrder::GetBIG_ENDIAN());
-}
-
-ECode ByteBuffer::Constructor(
+ECode IntegerBuffer::Constructor(
     /* [in] */ Integer mark,
     /* [in] */ Integer pos,
     /* [in] */ Integer lim,
     /* [in] */ Integer cap,
-    /* [in] */ const Array<Byte>& hb,
+    /* [in] */ const Array<Integer>& hb,
     /* [in] */ Integer offset)
 {
-    FAIL_RETURN(Buffer::Constructor(mark, pos, lim, cap, 0));
+    FAIL_RETURN(Buffer::Constructor(mark, pos, lim, cap, 2));
     mHb = hb;
     mOffset = offset;
     return NOERROR;
 }
 
-ECode ByteBuffer::Constructor(
+ECode IntegerBuffer::Constructor(
     /* [in] */ Integer mark,
     /* [in] */ Integer pos,
     /* [in] */ Integer lim,
     /* [in] */ Integer cap)
 {
-    Array<Byte> hb = Array<Byte>::Null();
-    return Constructor(mark, pos, lim, cap, hb, 0);
+    Array<Integer> nullArray;
+    return Constructor(mark, pos, lim, cap, nullArray, 0);
 }
 
-ECode ByteBuffer::AllocateDirect(
+ECode IntegerBuffer::Allocate(
     /* [in] */ Integer capacity,
-    /* [out] */ IByteBuffer** buffer)
-{
-    VALIDATE_NOT_NULL(buffer);
-
-    if (capacity < 0) {
-        Logger::E("ByteBuffer", "capacity < 0: %d", capacity);
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-
-    AutoPtr<DirectByteBuffer::MemoryRef> memoryRef = new DirectByteBuffer::MemoryRef(capacity);
-    return CDirectByteBuffer::New(capacity, memoryRef, IID_IByteBuffer, (IInterface**)buffer);
-}
-
-ECode ByteBuffer::Allocate(
-    /* [in] */ Integer capacity,
-    /* [out] */ IByteBuffer** buffer)
+    /* [out] */ IIntegerBuffer** buffer)
 {
     VALIDATE_NOT_NULL(buffer);
 
@@ -93,43 +67,44 @@ ECode ByteBuffer::Allocate(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    AutoPtr<HeapByteBuffer> hbb = new HeapByteBuffer();
-    FAIL_RETURN(hbb->Constructor(capacity, capacity));
-    *buffer = hbb;
+    AutoPtr<HeapIntegerBuffer> hib = new HeapIntegerBuffer();
+    FAIL_RETURN(hib->Constructor(capacity, capacity));
+    *buffer = hib;
     REFCOUNT_ADD(*buffer);
     return NOERROR;
 }
 
-ECode ByteBuffer::Wrap(
-    /* [in] */ const Array<Byte>& array,
+ECode IntegerBuffer::Wrap(
+    /* [in] */ const Array<Integer>& array,
     /* [in] */ Integer offset,
     /* [in] */ Integer length,
-    /* [out] */ IByteBuffer** buffer)
+    /* [out] */ IIntegerBuffer** buffer)
 {
     VALIDATE_NOT_NULL(buffer);
 
-    AutoPtr<HeapByteBuffer> hbb = new HeapByteBuffer();
-    FAIL_RETURN(hbb->Constructor(array, offset, length));
-    *buffer = hbb;
+    AutoPtr<HeapIntegerBuffer> hib = new HeapIntegerBuffer();
+    FAIL_RETURN(hib->Constructor(array, offset, length));
+    *buffer = hib;
     REFCOUNT_ADD(*buffer);
     return NOERROR;
 }
 
-ECode ByteBuffer::Wrap(
-    /* [in] */ const Array<Byte>& array,
-    /* [out] */ IByteBuffer** buffer)
+ECode IntegerBuffer::Wrap(
+    /* [in] */ const Array<Integer>& array,
+    /* [out] */ IIntegerBuffer** buffer)
 {
     return Wrap(array, 0, array.GetLength(), buffer);
 }
 
-ECode ByteBuffer::Get(
-    /* [out] */ Array<Byte>& dst,
+ECode IntegerBuffer::Get(
+    /* [out] */ Array<Integer>& dst,
     /* [in] */ Integer offset,
     /* [in] */ Integer length)
 {
     FAIL_RETURN(CheckBounds(offset, length, dst.GetLength()));
     Integer remaining;
-    if (Remaining(&remaining), length > remaining) {
+    Remaining(&remaining);
+    if (length > remaining) {
         return E_BUFFER_UNDERFLOW_EXCEPTION;
     }
     Integer end = offset + length;
@@ -139,80 +114,36 @@ ECode ByteBuffer::Get(
     return NOERROR;
 }
 
-ECode ByteBuffer::Get(
-    /* [out] */ Array<Byte>& dst)
+ECode IntegerBuffer::Get(
+    /* [out] */ Array<Integer>& dst)
 {
     return Get(dst, 0, dst.GetLength());
 }
 
-ECode ByteBuffer::Put(
-    /* [in] */ IByteBuffer* src)
+ECode IntegerBuffer::Put(
+    /* [in] */ IIntegerBuffer* src)
 {
-    Boolean accessible;
-    if (IsAccessible(&accessible), !accessible) {
-        Logger::E("ByteBuffer", "buffer is inaccessible");
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-    if (src == (IByteBuffer*)this) {
+    if (src == (IIntegerBuffer*)this) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    if (mIsReadOnly) {
-        return E_READ_ONLY_BUFFER_EXCEPTION;
-    }
 
-    ByteBuffer* srcObj = (ByteBuffer*)src;
+    IntegerBuffer* srcObject = (IntegerBuffer*)src;
 
     Integer n, remaining;
-    srcObj->Remaining(&n);
+    srcObject->Remaining(&n);
     if (Remaining(&remaining), n > remaining) {
         return E_BUFFER_OVERFLOW_EXCEPTION;
     }
-
-    if (!mHb.IsNull() && !srcObj->mHb.IsNull()) {
-        Integer srcPos, thisPos;
-        srcObj->GetPosition(&srcPos);
-        GetPosition(&thisPos);
-        mHb.Copy(thisPos + mOffset, srcObj->mHb, srcPos + srcObj->mOffset, n);
+    for (Integer i = 0; i < n; i++) {
+        Integer iv;
+        srcObject->Get(&iv);
+        Put(iv);
     }
-    else {
-        HANDLE srcAddr, dstAddr;
-        Boolean direct;
-        if (srcObj->IsDirect(&direct), direct) {
-            ((DirectByteBuffer*)srcObj)->GetAddress(&srcAddr);
-        }
-        else {
-            srcAddr = reinterpret_cast<HANDLE>(srcObj->mHb.GetPayload());
-        }
-        Integer srcOffset;
-        srcObj->GetPosition(&srcOffset);
-        if (!direct) {
-            srcOffset += srcObj->mOffset;
-        }
-
-        if (IsDirect(&direct), direct) {
-            ((DirectByteBuffer*)this)->GetAddress(&dstAddr);
-        }
-        else {
-            dstAddr = reinterpret_cast<HANDLE>(mHb.GetPayload());
-        }
-        Integer dstOffset;
-        GetPosition(&dstOffset);
-        if (!direct) {
-            dstOffset += mOffset;
-        }
-        memmove(reinterpret_cast<void*>(dstAddr + dstOffset), reinterpret_cast<void*>(srcAddr + srcOffset), n);
-    }
-    Integer limit;
-    srcObj->GetLimit(&limit);
-    srcObj->SetPosition(limit);
-    Integer pos;
-    GetPosition(&pos);
-    SetPosition(pos + n);
     return NOERROR;
 }
 
-ECode ByteBuffer::Put(
-    /* [in] */ const Array<Byte>& src,
+ECode IntegerBuffer::Put(
+    /* [in] */ const Array<Integer>& src,
     /* [in] */ Integer offset,
     /* [in] */ Integer length)
 {
@@ -228,29 +159,22 @@ ECode ByteBuffer::Put(
     return NOERROR;
 }
 
-ECode ByteBuffer::Put(
-    /* [in] */ const Array<Byte>& src)
+ECode IntegerBuffer::Put(
+    /* [in] */ const Array<Integer>& src)
 {
     return Put(src, 0, src.GetLength());
 }
 
-ECode ByteBuffer::HasArray(
+ECode IntegerBuffer::HasArray(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
 
-    if (mHb.IsNull()) {
-        *result = false;
-        return NOERROR;
-    }
-
-    Boolean readOnly;
-    IsReadOnly(&readOnly);
-    *result = !readOnly;
+    *result = (!mHb.IsNull() && !mIsReadOnly);
     return NOERROR;
 }
 
-ECode ByteBuffer::GetArray(
+ECode IntegerBuffer::GetArray(
     /* [out] */ IInterface** array)
 {
     VALIDATE_NOT_NULL(array);
@@ -264,7 +188,7 @@ ECode ByteBuffer::GetArray(
     return CArrayHolder::New(mHb, IID_IArrayHolder, array);
 }
 
-ECode ByteBuffer::GetArrayOffset(
+ECode IntegerBuffer::GetArrayOffset(
     /* [out] */ Integer* offset)
 {
     VALIDATE_NOT_NULL(offset);
@@ -279,7 +203,7 @@ ECode ByteBuffer::GetArrayOffset(
     return NOERROR;
 }
 
-ECode ByteBuffer::ToString(
+ECode IntegerBuffer::ToString(
     /* [out] */ String* desc)
 {
     VALIDATE_NOT_NULL(desc);
@@ -301,7 +225,7 @@ ECode ByteBuffer::ToString(
     return sb->ToString(desc);
 }
 
-ECode ByteBuffer::GetHashCode(
+ECode IntegerBuffer::GetHashCode(
     /* [out] */ Integer* hash)
 {
     VALIDATE_NOT_NULL(hash);
@@ -312,21 +236,21 @@ ECode ByteBuffer::GetHashCode(
     Integer i;
     GetLimit(&i);
     for (i = i - 1; i >= p; i--) {
-        Byte b;
-        Get(i, &b);
-        h = 31 * h + b;
+        Integer iv;
+        Get(i, &iv);
+        h = 31 * h + iv;
     }
     *hash = h;
     return NOERROR;
 }
 
-ECode ByteBuffer::Equals(
+ECode IntegerBuffer::Equals(
     /* [in] */ IInterface* obj,
     /* [out] */ Boolean* same)
 {
     VALIDATE_NOT_NULL(same);
 
-    ByteBuffer* other = (ByteBuffer*)IByteBuffer::Probe(obj);
+    IntegerBuffer* other = (IntegerBuffer*)IIntegerBuffer::Probe(obj);
     if (other == nullptr) {
         *same = false;
         return NOERROR;
@@ -348,10 +272,10 @@ ECode ByteBuffer::Equals(
     GetLimit(&i);
     other->GetLimit(&j);
     for (i = i - 1, j = j - 1; i >= p; i--, j--) {
-        Byte thisb, otherb;
-        Get(i, &thisb);
-        other->Get(j, &otherb);
-        if (thisb != otherb) {
+        Integer thisiv, otheriv;
+        Get(i, &thisiv);
+        other->Get(j, &otheriv);
+        if (thisiv != otheriv) {
             *same = false;
             return NOERROR;
         }
@@ -360,30 +284,30 @@ ECode ByteBuffer::Equals(
     return NOERROR;
 }
 
-ECode ByteBuffer::CompareTo(
+ECode IntegerBuffer::CompareTo(
     /* [in] */ IInterface* other,
     /* [out] */ Integer* result)
 {
     VALIDATE_NOT_NULL(result);
 
-    ByteBuffer* otherBB = (ByteBuffer*)IByteBuffer::Probe(other);
-    if (otherBB == nullptr) {
+    IntegerBuffer* otherIB = (IntegerBuffer*)IIntegerBuffer::Probe(other);
+    if (otherIB == nullptr) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     Integer thisRemaining, otherRemaining;
     Remaining(&thisRemaining);
-    otherBB->Remaining(&otherRemaining);
+    otherIB->Remaining(&otherRemaining);
     Integer thisPos, otherPos;
     GetPosition(&thisPos);
-    otherBB->GetPosition(&otherPos);
+    otherIB->GetPosition(&otherPos);
 
     Integer n = thisPos + Math::Min(thisRemaining, otherRemaining);
     for (Integer i = thisPos, j = otherPos; i < n; i++, j++) {
-        Byte thisb, otherb;
-        Get(i, &thisb);
-        otherBB->Get(j, &otherb);
-        Integer cmp = thisb - otherb;
+        Integer thisiv, otheriv;
+        Get(i, &thisiv);
+        otherIB->Get(j, &otheriv);
+        Integer cmp = thisiv - otheriv;
         if (cmp != 0) {
             *result = cmp;
             return NOERROR;
@@ -391,47 +315,6 @@ ECode ByteBuffer::CompareTo(
     }
     *result = thisRemaining - otherRemaining;
     return NOERROR;
-}
-
-ECode ByteBuffer::GetOrder(
-    /* [out] */ IByteOrder** bo)
-{
-    VALIDATE_NOT_NULL(bo);
-
-    if (mBigEndian) {
-        *bo = ByteOrder::GetBIG_ENDIAN();
-        REFCOUNT_ADD(*bo);
-        return NOERROR;
-    }
-    else {
-        *bo = ByteOrder::GetLITTLE_ENDIAN();
-        REFCOUNT_ADD(*bo);
-        return NOERROR;
-    }
-}
-
-ECode ByteBuffer::SetOrder(
-    /* [in] */ IByteOrder* bo)
-{
-    mBigEndian = (bo == ByteOrder::GetBIG_ENDIAN());
-    mNativeByteOrder = (mBigEndian ==
-            (Bits::ByteOrder() == ByteOrder::GetBIG_ENDIAN()));
-    return NOERROR;
-}
-
-ECode ByteBuffer::IsAccessible(
-    /* [out] */ Boolean* accessible)
-{
-    VALIDATE_NOT_NULL(accessible);
-
-    *accessible = true;
-    return NOERROR;
-}
-
-ECode ByteBuffer::SetAccessible(
-    /* [in] */ Boolean value)
-{
-    return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
 }

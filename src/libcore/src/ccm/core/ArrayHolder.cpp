@@ -19,16 +19,18 @@
 namespace ccm {
 namespace core {
 
-CCM_INTERFACE_IMPL_1(ArrayHolder, Object, IArrayHolder)
-
-ArrayHolder::ArrayHolder(
-    /* [in] */ const Triple& array)
-    : mArray(array)
-{}
-
 ArrayHolder::~ArrayHolder()
 {
     mArray.FreeData();
+}
+
+CCM_INTERFACE_IMPL_1(ArrayHolder, Object, IArrayHolder)
+
+ECode ArrayHolder::Constructor(
+    /* [in] */ const Triple& array)
+{
+    mArray = array;
+    return NOERROR;
 }
 
 ECode ArrayHolder::GetArray(

@@ -41,7 +41,7 @@ public:
         /* [in] */ Integer pos,
         /* [in] */ Integer lim,
         /* [in] */ Integer cap,
-        /* [in] */ Array<Byte>& hb,
+        /* [in] */ const Array<Byte>& hb,
         /* [in] */ Integer offset);
 
     ECode Constructor(
@@ -59,13 +59,13 @@ public:
         /* [out] */ IByteBuffer** buffer);
 
     static ECode Wrap(
-        /* [in] */ Array<Byte>& array,
+        /* [in] */ const Array<Byte>& array,
         /* [in] */ Integer offset,
         /* [in] */ Integer length,
         /* [out] */ IByteBuffer** buffer);
 
     static ECode Wrap(
-        /* [in] */ Array<Byte>& array,
+        /* [in] */ const Array<Byte>& array,
         /* [out] */ IByteBuffer** buffer);
 
     ECode Get(
@@ -125,13 +125,6 @@ public:
         /* [in] */ Integer i,
         /* [in] */ Byte b) = 0;
 
-    ECode IsAccessible(
-        /* [out] */ Boolean* accessible) override;
-
-    ECode SetAccessible(
-        /* [in] */ Boolean value) override;
-
-protected:
     virtual ECode GetCharUnchecked(
         /* [in] */ Integer index,
         /* [out] */ Char* value) = 0;
@@ -251,6 +244,12 @@ protected:
         /* [in] */ const Array<Double>& src,
         /* [in] */ Integer srcOffset,
         /* [in] */ Integer length) = 0;
+
+    ECode IsAccessible(
+        /* [out] */ Boolean* accessible) override;
+
+    ECode SetAccessible(
+        /* [in] */ Boolean value) override;
 
 protected:
     Array<Byte> mHb;

@@ -64,6 +64,18 @@ coclass CArray
 }
 
 [
+    uuid(f608b0cd-d0af-4adb-a2a4-6f241136b992),
+    version(0.1.0)
+]
+coclass CArrayHolder
+{
+    Constructor(
+        [in] Triple array);
+
+    interface IArrayHolder;
+}
+
+[
     uuid(21fcb33c-cdb4-41da-9a63-fd97f8c18afe),
     version(0.1.0)
 ]

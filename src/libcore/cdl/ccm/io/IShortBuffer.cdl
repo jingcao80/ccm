@@ -17,13 +17,18 @@
 namespace ccm {
 namespace io {
 
+/*
+ * @Involve interface ccm::io::IBuffer;
+ * @Involve interface ccm::core::IComparable;
+ */
 [
     uuid(0a781618-7e19-4a2c-8ec1-cf28db24247b),
     version(0.1.0)
 ]
 interface IShortBuffer
 {
-
+    Get(
+        [out] Short* s);
 }
 
 }

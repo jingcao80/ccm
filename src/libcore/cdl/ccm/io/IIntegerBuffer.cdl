@@ -17,12 +17,66 @@
 namespace ccm {
 namespace io {
 
+/*
+ * @Involve interface ccm::io::IBuffer;
+ * @Involve interface ccm::core::IComparable;
+ */
 [
     uuid(017a5ce6-c447-4245-b1da-fc0d41c4e256),
     version(0.1.0)
 ]
 interface IIntegerBuffer
-{}
+{
+    AsReadOnlyBuffer(
+        [out] IIntegerBuffer** buffer);
+
+    Compact();
+
+    Duplicate(
+        [out] IIntegerBuffer** buffer);
+
+    Get(
+        [out] Integer* i);
+
+    Get(
+        [in] Integer index,
+        [out] Integer* i);
+
+    Get(
+        [out] Array<Integer> dst);
+
+    Get(
+        [out] Array<Integer> dst,
+        [in] Integer offset,
+        [in] Integer length);
+
+    GetOrder(
+        [out] IByteOrder** bo);
+
+    HasArray(
+        [out] Boolean* result);
+
+    Put(
+        [in] Integer i);
+
+    Put(
+        [in] Integer index,
+        [in] Integer i);
+
+    Put(
+        [in] Array<Integer> src);
+
+    Put(
+        [in] Array<Integer> src,
+        [in] Integer offset,
+        [in] Integer length);
+
+    Put(
+        [in] IIntegerBuffer* src);
+
+    Slice(
+        [out] IIntegerBuffer** buffer);
+}
 
 }
 }

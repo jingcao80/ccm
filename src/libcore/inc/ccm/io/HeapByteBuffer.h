@@ -31,7 +31,7 @@ public:
         /* [in] */ Integer lim);
 
     ECode Constructor(
-        /* [in] */ Array<Byte>& buf,
+        /* [in] */ const Array<Byte>& buf,
         /* [in] */ Integer off,
         /* [in] */ Integer len);
 
@@ -198,10 +198,7 @@ public:
         /* [in] */ Integer length) override;
 
     ECode AsIntegerBuffer(
-        /* [out] */ IIntegerBuffer** buffer) override
-    {
-        return NOERROR;
-    }
+        /* [out] */ IIntegerBuffer** buffer) override;
 
     ECode GetLong(
         /* [out] */ Long* l) override;
@@ -330,13 +327,13 @@ private:
         /* [in] */ Boolean isReadOnly);
 
     ECode Constructor(
-        /* [in] */ Array<Byte>& buf,
+        /* [in] */ const Array<Byte>& buf,
         /* [in] */ Integer off,
         /* [in] */ Integer len,
         /* [in] */ Boolean isReadOnly);
 
     ECode Constructor(
-        /* [in] */ Array<Byte>& buf,
+        /* [in] */ const Array<Byte>& buf,
         /* [in] */ Integer mark,
         /* [in] */ Integer pos,
         /* [in] */ Integer lim,

@@ -14,38 +14,18 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CORE_ARRAYHOLDER_H__
-#define __CCM_CORE_ARRAYHOLDER_H__
-
-#include "ccm.core.IArrayHolder.h"
-#include <ccmobject.h>
+#include "ccm/core/ArrayHolder.h"
+#include "_ccm_core_CArrayHolder.h"
 
 namespace ccm {
 namespace core {
 
-class ArrayHolder
-    : public Object
-    , public IArrayHolder
+Coclass(CArrayHolder)
+    , public ArrayHolder
 {
 public:
-    ~ArrayHolder();
-
-    CCM_INTERFACE_DECL();
-
-    ECode Constructor(
-        /* [in] */ const Triple& array);
-
-    ECode GetArray(
-        /* [out] */ Triple* array) override;
-
-    ECode GetArrayType(
-        /* [out] */ Integer* type) override;
-
-private:
-    Triple mArray;
+    CCM_OBJECT_DECL();
 };
 
 }
 }
-
-#endif // __CCM_CORE_ARRAYHOLDER_H__

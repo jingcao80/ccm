@@ -102,7 +102,7 @@ public:
         /* [in] */ Integer len,
         /* [in] */ Integer size);
 
-protected:
+public:
     Integer mPosition = 0;
     HANDLE mAddress = 0;
     Integer mElementSizeShift = 0;

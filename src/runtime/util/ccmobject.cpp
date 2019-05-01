@@ -194,14 +194,21 @@ AutoPtr<IMetaCoclass> Object::GetCoclass(
 String Object::GetCoclassName(
     /* [in] */ IInterface* obj)
 {
+    Object* o = (Object*)IObject::Probe(obj);
+    if (o == nullptr) {
+        return String(nullptr);
+    }
+    return GetCoclassName(o);
+}
+
+String Object::GetCoclassName(
+    /* [in] */ Object* obj)
+{
     String name;
-    IObject* o = IObject::Probe(obj);
-    if (o != nullptr) {
-        AutoPtr<IMetaCoclass> mc;
-        o->GetCoclass(&mc);
-        if (mc != nullptr) {
-            mc->GetName(&name);
-        }
+    AutoPtr<IMetaCoclass> mc;
+    obj->GetCoclass(&mc);
+    if (mc != nullptr) {
+        mc->GetName(&name);
     }
     return name;
 }
@@ -209,13 +216,19 @@ String Object::GetCoclassName(
 Integer Object::GetHashCode(
     /* [in] */ IInterface* obj)
 {
-    IObject* o = IObject::Probe(obj);
-    if (o != nullptr) {
-        Integer hash;
-        o->GetHashCode(&hash);
-        return hash;
+    Object* o = (Object*)IObject::Probe(obj);
+    if (o == nullptr) {
+        return reinterpret_cast<uintptr_t>(IInterface::Probe(obj));
     }
-    return reinterpret_cast<uintptr_t>(IInterface::Probe(obj));
+    return GetHashCode(o);
+}
+
+Integer Object::GetHashCode(
+    /* [in] */ Object* obj)
+{
+    Integer hash;
+    obj->GetHashCode(&hash);
+    return hash;
 }
 
 Boolean Object::Equals(
