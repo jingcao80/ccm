@@ -25,9 +25,12 @@ include_directories(
 
 set(SOURCES
     BasicLruCache.cpp
+    CZoneInfoFactory.cpp
+    CZoneInfoDBFactory.cpp
     TimeZoneDataFiles.cpp
     ZoneInfo.cpp
-    ZoneInfoDB.cpp)
+    ZoneInfoDB.cpp
+    util.cpp)
 
 add_library(libcore_util STATIC
     ${SOURCES})

@@ -73,6 +73,7 @@ ECode HeapByteBuffer::Constructor(
 {
     FAIL_RETURN(ByteBuffer::Constructor(mark, pos, lim, cap, buf, off));
     mIsReadOnly = isReadOnly;
+    return NOERROR;
 }
 
 ECode HeapByteBuffer::Slice(

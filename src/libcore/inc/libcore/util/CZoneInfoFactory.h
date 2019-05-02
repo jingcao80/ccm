@@ -14,41 +14,36 @@
 // limitations under the License.
 //=========================================================================
 
-include "libcore/util/IBasicLruCache.cdl"
-include "libcore/util/IZoneInfo.cdl"
-include "libcore/util/IZoneInfoDB.cdl"
+#ifndef __LIBCORE_UTIL_CZONEINFOFACTORY_H__
+#define __LIBCORE_UTIL_CZONEINFOFACTORY_H__
+
+#include "libcore.io.IBufferIterator.h"
+#include "libcore.util.IZoneInfo.h"
+#include "libcore.util.IZoneInfoFactory.h"
+#include "_libcore_util_CZoneInfoFactory.h"
+#include <ccmobject.h>
+
+using libcore::io::IBufferIterator;
 
 namespace libcore {
 namespace util {
 
-[
-    uuid(b9bc96e1-babc-46c0-86f4-79c914e06ef9),
-    version(0.1.0)
-]
-coclass CZoneInfoWallTime
+class CZoneInfoFactory
+    : public Object
+    , public IZoneInfoFactory
 {
-    Constructor();
+public:
+    CCM_INTERFACE_DECL();
+    CCM_OBJECT_DECL();
 
-    interface IZoneInfoWallTime;
-}
-
-[
-    uuid(9671719d-2ec7-48e5-bcf4-d2dabd848ffb),
-    version(0.1.0)
-]
-coclass CZoneInfoFactory
-{
-    interface IZoneInfoFactory;
-}
-
-[
-    uuid(fddfe9b3-7e71-47a2-8cca-70c7e64146ff),
-    version(0.1.0)
-]
-coclass CZoneInfoDBFactory
-{
-    interface IZoneInfoDBFactory;
-}
+    ECode ReadTimeZone(
+        /* [in] */ const String& id,
+        /* [in] */ IBufferIterator* it,
+        /* [in] */ Long currentTimeMillis,
+        /* [out] */ IZoneInfo** zoneInfo) override;
+};
 
 }
 }
+
+#endif // __LIBCORE_UTIL_CZONEINFOFACTORY_H__

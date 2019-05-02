@@ -14,41 +14,12 @@
 // limitations under the License.
 //=========================================================================
 
-include "libcore/util/IBasicLruCache.cdl"
-include "libcore/util/IZoneInfo.cdl"
-include "libcore/util/IZoneInfoDB.cdl"
+#include "libcore/util/CZoneInfoWallTime.h"
 
 namespace libcore {
 namespace util {
 
-[
-    uuid(b9bc96e1-babc-46c0-86f4-79c914e06ef9),
-    version(0.1.0)
-]
-coclass CZoneInfoWallTime
-{
-    Constructor();
-
-    interface IZoneInfoWallTime;
-}
-
-[
-    uuid(9671719d-2ec7-48e5-bcf4-d2dabd848ffb),
-    version(0.1.0)
-]
-coclass CZoneInfoFactory
-{
-    interface IZoneInfoFactory;
-}
-
-[
-    uuid(fddfe9b3-7e71-47a2-8cca-70c7e64146ff),
-    version(0.1.0)
-]
-coclass CZoneInfoDBFactory
-{
-    interface IZoneInfoDBFactory;
-}
+CCM_OBJECT_IMPL(CZoneInfoWallTime);
 
 }
 }

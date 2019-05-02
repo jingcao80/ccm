@@ -126,7 +126,7 @@ ECode ByteBufferAsIntegerBuffer::Get(
     /* [in] */ Integer offset,
     /* [in] */ Integer length)
 {
-    FAIL_RETURN(CheckBounds(mOffset, length, dst.GetLength()));
+    FAIL_RETURN(CheckBounds(offset, length, dst.GetLength()));
     Integer remaining;
     Remaining(&remaining);
     if (length > remaining){
