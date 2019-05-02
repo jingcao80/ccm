@@ -17,49 +17,49 @@
 #include "ccm/core/CArrayHolder.h"
 #include "ccm/core/CStringBuffer.h"
 #include "ccm/core/Math.h"
-#include "ccm/io/HeapIntegerBuffer.h"
-#include "ccm/io/IntegerBuffer.h"
+#include "ccm/io/HeapShortBuffer.h"
+#include "ccm/io/ShortBuffer.h"
 
 using ccm::core::CArrayHolder;
 using ccm::core::CStringBuffer;
-using ccm::core::Math;
 using ccm::core::IID_IArrayHolder;
 using ccm::core::IID_IComparable;
 using ccm::core::IID_IStringBuffer;
 using ccm::core::IStringBuffer;
+using ccm::core::Math;
 
 namespace ccm {
 namespace io {
 
-CCM_INTERFACE_IMPL_2(IntegerBuffer, Buffer, IIntegerBuffer, IComparable);
+CCM_INTERFACE_IMPL_2(ShortBuffer, Buffer, IShortBuffer, IComparable)
 
-ECode IntegerBuffer::Constructor(
+ECode ShortBuffer::Constructor(
     /* [in] */ Integer mark,
     /* [in] */ Integer pos,
     /* [in] */ Integer lim,
     /* [in] */ Integer cap,
-    /* [in] */ const Array<Integer>& hb,
+    /* [in] */ const Array<Short>& hb,
     /* [in] */ Integer offset)
 {
-    FAIL_RETURN(Buffer::Constructor(mark, pos, lim, cap, 2));
+    FAIL_RETURN(Buffer::Constructor(mark, pos, lim, cap, 1));
     mHb = hb;
     mOffset = offset;
     return NOERROR;
 }
 
-ECode IntegerBuffer::Constructor(
+ECode ShortBuffer::Constructor(
     /* [in] */ Integer mark,
     /* [in] */ Integer pos,
     /* [in] */ Integer lim,
     /* [in] */ Integer cap)
 {
-    Array<Integer> nullHb;
+    Array<Short> nullHb;
     return Constructor(mark, pos, lim, cap, nullHb, 0);
 }
 
-ECode IntegerBuffer::Allocate(
+ECode ShortBuffer::Allocate(
     /* [in] */ Integer capacity,
-    /* [out] */ IIntegerBuffer** buffer)
+    /* [out] */ IShortBuffer** buffer)
 {
     VALIDATE_NOT_NULL(buffer);
 
@@ -67,37 +67,37 @@ ECode IntegerBuffer::Allocate(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    AutoPtr<HeapIntegerBuffer> hib = new HeapIntegerBuffer();
-    FAIL_RETURN(hib->Constructor(capacity, capacity));
-    *buffer = hib;
+    AutoPtr<HeapShortBuffer> hsb = new HeapShortBuffer();
+    FAIL_RETURN(hsb->Constructor(capacity, capacity));
+    *buffer = hsb;
     REFCOUNT_ADD(*buffer);
     return NOERROR;
 }
 
-ECode IntegerBuffer::Wrap(
-    /* [in] */ const Array<Integer>& array,
+ECode ShortBuffer::Wrap(
+    /* [in] */ const Array<Short>& array,
     /* [in] */ Integer offset,
     /* [in] */ Integer length,
-    /* [out] */ IIntegerBuffer** buffer)
+    /* [out] */ IShortBuffer** buffer)
 {
     VALIDATE_NOT_NULL(buffer);
 
-    AutoPtr<HeapIntegerBuffer> hib = new HeapIntegerBuffer();
-    FAIL_RETURN(hib->Constructor(array, offset, length));
-    *buffer = hib;
+    AutoPtr<HeapShortBuffer> hsb = new HeapShortBuffer();
+    FAIL_RETURN(hsb->Constructor(array, offset, length));
+    *buffer = hsb;
     REFCOUNT_ADD(*buffer);
     return NOERROR;
 }
 
-ECode IntegerBuffer::Wrap(
-    /* [in] */ const Array<Integer>& array,
-    /* [out] */ IIntegerBuffer** buffer)
+ECode ShortBuffer::Wrap(
+    /* [in] */ const Array<Short>& array,
+    /* [out] */ IShortBuffer** buffer)
 {
     return Wrap(array, 0, array.GetLength(), buffer);
 }
 
-ECode IntegerBuffer::Get(
-    /* [out] */ Array<Integer>& dst,
+ECode ShortBuffer::Get(
+    /* [out] */ Array<Short>& dst,
     /* [in] */ Integer offset,
     /* [in] */ Integer length)
 {
@@ -114,20 +114,20 @@ ECode IntegerBuffer::Get(
     return NOERROR;
 }
 
-ECode IntegerBuffer::Get(
-    /* [out] */ Array<Integer>& dst)
+ECode ShortBuffer::Get(
+    /* [out] */ Array<Short>& dst)
 {
     return Get(dst, 0, dst.GetLength());
 }
 
-ECode IntegerBuffer::Put(
-    /* [in] */ IIntegerBuffer* src)
+ECode ShortBuffer::Put(
+    /* [in] */ IShortBuffer* src)
 {
-    if (src == (IIntegerBuffer*)this) {
+    if (src == (IShortBuffer*)this) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    IntegerBuffer* srcObject = (IntegerBuffer*)src;
+    ShortBuffer* srcObject = (ShortBuffer*)src;
 
     Integer n, remaining;
     srcObject->Remaining(&n);
@@ -135,15 +135,15 @@ ECode IntegerBuffer::Put(
         return E_BUFFER_OVERFLOW_EXCEPTION;
     }
     for (Integer i = 0; i < n; i++) {
-        Integer iv;
-        srcObject->Get(&iv);
-        Put(iv);
+        Short s;
+        srcObject->Get(&s);
+        Put(s);
     }
     return NOERROR;
 }
 
-ECode IntegerBuffer::Put(
-    /* [in] */ const Array<Integer>& src,
+ECode ShortBuffer::Put(
+    /* [in] */ const Array<Short>& src,
     /* [in] */ Integer offset,
     /* [in] */ Integer length)
 {
@@ -159,13 +159,13 @@ ECode IntegerBuffer::Put(
     return NOERROR;
 }
 
-ECode IntegerBuffer::Put(
-    /* [in] */ const Array<Integer>& src)
+ECode ShortBuffer::Put(
+    /* [in] */ const Array<Short>& src)
 {
     return Put(src, 0, src.GetLength());
 }
 
-ECode IntegerBuffer::HasArray(
+ECode ShortBuffer::HasArray(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
@@ -174,7 +174,7 @@ ECode IntegerBuffer::HasArray(
     return NOERROR;
 }
 
-ECode IntegerBuffer::GetArray(
+ECode ShortBuffer::GetArray(
     /* [out] */ IInterface** array)
 {
     VALIDATE_NOT_NULL(array);
@@ -188,7 +188,7 @@ ECode IntegerBuffer::GetArray(
     return CArrayHolder::New(mHb, IID_IArrayHolder, array);
 }
 
-ECode IntegerBuffer::GetArrayOffset(
+ECode ShortBuffer::GetArrayOffset(
     /* [out] */ Integer* offset)
 {
     VALIDATE_NOT_NULL(offset);
@@ -203,7 +203,7 @@ ECode IntegerBuffer::GetArrayOffset(
     return NOERROR;
 }
 
-ECode IntegerBuffer::ToString(
+ECode ShortBuffer::ToString(
     /* [out] */ String* desc)
 {
     VALIDATE_NOT_NULL(desc);
@@ -225,7 +225,7 @@ ECode IntegerBuffer::ToString(
     return sb->ToString(desc);
 }
 
-ECode IntegerBuffer::GetHashCode(
+ECode ShortBuffer::GetHashCode(
     /* [out] */ Integer* hash)
 {
     VALIDATE_NOT_NULL(hash);
@@ -236,21 +236,21 @@ ECode IntegerBuffer::GetHashCode(
     Integer i;
     GetLimit(&i);
     for (i = i - 1; i >= p; i--) {
-        Integer iv;
-        Get(i, &iv);
-        h = 31 * h + iv;
+        Short s;
+        Get(i, &s);
+        h = 31 * h + s;
     }
     *hash = h;
     return NOERROR;
 }
 
-ECode IntegerBuffer::Equals(
+ECode ShortBuffer::Equals(
     /* [in] */ IInterface* obj,
     /* [out] */ Boolean* same)
 {
     VALIDATE_NOT_NULL(same);
 
-    IntegerBuffer* other = (IntegerBuffer*)IIntegerBuffer::Probe(obj);
+    ShortBuffer* other = (ShortBuffer*)IShortBuffer::Probe(obj);
     if (other == nullptr) {
         *same = false;
         return NOERROR;
@@ -272,10 +272,10 @@ ECode IntegerBuffer::Equals(
     GetLimit(&i);
     other->GetLimit(&j);
     for (i = i - 1, j = j - 1; i >= p; i--, j--) {
-        Integer thisiv, otheriv;
-        Get(i, &thisiv);
-        other->Get(j, &otheriv);
-        if (thisiv != otheriv) {
+        Short thiss, others;
+        Get(i, &thiss);
+        other->Get(j, &others);
+        if (thiss != others) {
             *same = false;
             return NOERROR;
         }
@@ -284,30 +284,30 @@ ECode IntegerBuffer::Equals(
     return NOERROR;
 }
 
-ECode IntegerBuffer::CompareTo(
+ECode ShortBuffer::CompareTo(
     /* [in] */ IInterface* other,
     /* [out] */ Integer* result)
 {
     VALIDATE_NOT_NULL(result);
 
-    IntegerBuffer* otherIB = (IntegerBuffer*)IIntegerBuffer::Probe(other);
-    if (otherIB == nullptr) {
+    ShortBuffer* otherSB = (ShortBuffer*)IShortBuffer::Probe(other);
+    if (otherSB == nullptr) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     Integer thisRemaining, otherRemaining;
     Remaining(&thisRemaining);
-    otherIB->Remaining(&otherRemaining);
+    otherSB->Remaining(&otherRemaining);
     Integer thisPos, otherPos;
     GetPosition(&thisPos);
-    otherIB->GetPosition(&otherPos);
+    otherSB->GetPosition(&otherPos);
 
     Integer n = thisPos + Math::Min(thisRemaining, otherRemaining);
     for (Integer i = thisPos, j = otherPos; i < n; i++, j++) {
-        Integer thisiv, otheriv;
-        Get(i, &thisiv);
-        otherIB->Get(j, &otheriv);
-        Integer cmp = thisiv - otheriv;
+        Short thiss, others;
+        Get(i, &thiss);
+        otherSB->Get(j, &others);
+        Integer cmp = thiss - others;
         if (cmp != 0) {
             *result = cmp;
             return NOERROR;
@@ -316,6 +316,7 @@ ECode IntegerBuffer::CompareTo(
     *result = thisRemaining - otherRemaining;
     return NOERROR;
 }
+
 
 }
 }

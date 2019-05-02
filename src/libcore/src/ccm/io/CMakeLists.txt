@@ -33,6 +33,7 @@ set(SOURCES
     ByteArrayOutputStream.cpp
     ByteBuffer.cpp
     ByteBufferAsIntegerBuffer.cpp
+    ByteBufferAsShortBuffer.cpp
     ByteOrder.cpp
     CByteBufferFactory.cpp
     DeleteOnExitHook.cpp
@@ -45,12 +46,14 @@ set(SOURCES
     FileSystem.cpp
     HeapByteBuffer.cpp
     HeapIntegerBuffer.cpp
+    HeapShortBuffer.cpp
     InputStream.cpp
     IntegerBuffer.cpp
     MappedByteBuffer.cpp
     OutputStream.cpp
     OutputStreamWriter.cpp
     PrintWriter.cpp
+    ShortBuffer.cpp
     StringWriter.cpp
     UnixFileSystem.cpp
     Writer.cpp

@@ -158,10 +158,7 @@ public:
         /* [in] */ Integer length) override;
 
     ECode AsShortBuffer(
-        /* [out] */ IShortBuffer** buffer) override
-    {
-        return NOERROR;
-    }
+        /* [out] */ IShortBuffer** buffer) override;
 
     ECode GetInteger(
         /* [out] */ Integer* i) override;
