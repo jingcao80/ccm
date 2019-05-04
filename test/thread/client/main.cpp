@@ -14,21 +14,56 @@
 // limitations under the License.
 //=========================================================================
 
+#include "ccm/core/Math.h"
+#include "ccm/core/Thread.h"
+#include "ccm.core.CSystem.h"
 #include "ccm.core.CThread.h"
+#include "ccm.core.ISystem.h"
 #include "ccm.core.IThread.h"
 #include "ccm.io.IInterruptible.h"
 #include <ccmautoptr.h>
-#include <stdio.h>
+#include <gtest/gtest.h>
 
+using ccm::core::CSystem;
 using ccm::core::CThread;
+using ccm::core::ISystem;
 using ccm::core::IThread;
+using ccm::core::IID_ISystem;
 using ccm::core::IID_IThread;
+using ccm::core::Math;
+using ccm::core::Thread;
 
-int main(int argv, char** argc)
+TEST(ThreadTest, TestThreadSleep)
 {
-    AutoPtr<IThread> t;
-    CThread::New(IID_IThread, (IInterface**)&t);
-    printf("==== Create thread %p ====\n", t.Get());
+    Integer millis = 1000;
+    AutoPtr<ISystem> system;
+    CSystem::New(IID_ISystem, (IInterface**)&system);
+    Long start;
+    system->GetCurrentTimeMillis(&start);
 
-    return 0;
+    Thread::Sleep(millis);
+
+    Long end;
+    system->GetCurrentTimeMillis(&end);
+    Long elapsed = end - start;
+    Long offBy = Math::Abs(elapsed - millis);
+    EXPECT_TRUE(offBy <= 250);
+}
+
+TEST(ThreadTest, TestThreadSleepIllegalArguments)
+{
+    ECode ec = Thread::Sleep(-1);
+    EXPECT_NE(ec, NOERROR);
+
+    ec = Thread::Sleep(0, -1);
+    EXPECT_NE(ec, NOERROR);
+
+    ec = Thread::Sleep(0, 1000000);
+    EXPECT_NE(ec, NOERROR);
+}
+
+int main(int argc, char **argv)
+{
+    testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }

@@ -14,7 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
-#include "core/CoreUtils.h"
+#include "ccm/core/CoreUtils.h"
 #include "ccm.util.CArrayList.h"
 #include "ccm.util.IArrayList.h"
 #include <ccmautoptr.h>

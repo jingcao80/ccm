@@ -14,8 +14,8 @@
 // limitations under the License.
 //=========================================================================
 
-#include <core/Math.h>
-#include <core/StringUtils.h>
+#include <ccm/core/Math.h>
+#include <ccm/core/StringUtils.h>
 #include "ccm.core.IComparable.h"
 #include "ccm.core.IInteger.h"
 #include "ccm.core.ILong.h"

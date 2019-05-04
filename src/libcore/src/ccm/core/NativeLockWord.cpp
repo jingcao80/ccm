@@ -24,7 +24,7 @@ namespace core {
 
 NativeLockWord::NativeLockWord(
     /* [in] */ NativeMonitor* mon)
-    : mValue(mon->GetMonitorId())
+    : mValue(mon->GetMonitorId() | (kStateFat << kStateShift))
 {
     CHECK(FatLockMonitor() == mon);
     CHECK(mon->GetMonitorId() <= static_cast<uint32_t>(kMaxMonitorId));

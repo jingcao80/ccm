@@ -16,7 +16,7 @@
 #include "ccm.core.ICharSequence.h"
 #include "ccm.util.CHashMap.h"
 #include "ccm.util.IHashMap.h"
-#include <core/CoreUtils.h>
+#include <ccm/core/CoreUtils.h>
 #include <ccmautoptr.h>
 #include <gtest/gtest.h>
 

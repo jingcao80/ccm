@@ -121,7 +121,7 @@ void NativeMonitor::RemoveFromWaitSet(
     }
 }
 
-ECode NativeMonitor::TryLockLocked(
+Boolean NativeMonitor::TryLockLocked(
     /* [in] */ NativeThread* self)
 {
     if (mOwner == nullptr) {
@@ -132,9 +132,9 @@ ECode NativeMonitor::TryLockLocked(
         mLockCount++;
     }
     else {
-        return E_FAILED_EXCEPTION;
+        return false;
     }
-    return NOERROR;
+    return true;
 }
 
 ECode NativeMonitor::TryLock(

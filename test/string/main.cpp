@@ -14,7 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
-#include <core/StringUtils.h>
+#include <ccm/core/StringUtils.h>
 #include <gtest/gtest.h>
 
 using namespace ccm;

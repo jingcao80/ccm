@@ -14,7 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
-#include <core/CoreUtils.h>
+#include <ccm/core/CoreUtils.h>
 #include "ccm.core.ICharSequence.h"
 #include "ccm.util.concurrent.CConcurrentHashMap.h"
 #include "ccm.util.concurrent.IConcurrentHashMap.h"

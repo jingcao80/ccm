@@ -17,7 +17,7 @@
 #ifndef __ZONEINFOTESTHELPER_H__
 #define __ZONEINFOTESTHELPER_H__
 
-#include "core/CoreUtils.h"
+#include "ccm/core/CoreUtils.h"
 #include "ccm.core.IInteger.h"
 #include "ccm.io.IByteArrayOutputStream.h"
 #include "ccm.io.IOutputStream.h"

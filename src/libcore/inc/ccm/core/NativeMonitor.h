@@ -120,7 +120,7 @@ private:
         /* [in] */ NativeThread* self);
 
     // Variant for already holding the monitor lock.
-    ECode TryLockLocked(
+    Boolean TryLockLocked(
         /* [in] */ NativeThread* self);
 
     ECode Lock(

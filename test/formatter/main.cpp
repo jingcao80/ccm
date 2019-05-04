@@ -14,8 +14,8 @@
 // limitations under the License.
 //=========================================================================
 
-#include "core/CoreUtils.h"
-#include "core/StringUtils.h"
+#include "ccm/core/CoreUtils.h"
+#include "ccm/core/StringUtils.h"
 #include "ccm.math.CBigDecimal.h"
 #include "ccm.math.IBigDecimal.h"
 #include "ccm.text.CNumberFormatFactory.h"

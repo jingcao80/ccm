@@ -16,7 +16,7 @@
 
 #include "ccmobject.h"
 #include "ccm.core.ICharSequence.h"
-#include <core/CoreUtils.h>
+#include <ccm/core/CoreUtils.h>
 #include <gtest/gtest.h>
 
 using namespace ccm;

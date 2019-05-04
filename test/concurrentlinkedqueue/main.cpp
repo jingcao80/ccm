@@ -14,7 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
-#include <core/CoreUtils.h>
+#include <ccm/core/CoreUtils.h>
 #include "ccm.util.concurrent.CConcurrentLinkedQueue.h"
 #include "ccm.util.concurrent.IConcurrentLinkedQueue.h"
 #include <ccmautoptr.h>

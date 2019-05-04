@@ -17,7 +17,7 @@
 #include "ccm.core.ICharSequence.h"
 #include "ccm.util.CHashtable.h"
 #include "ccm.util.IHashtable.h"
-#include <core/CoreUtils.h>
+#include <ccm/core/CoreUtils.h>
 #include <ccmautoptr.h>
 #include <gtest/gtest.h>
 
