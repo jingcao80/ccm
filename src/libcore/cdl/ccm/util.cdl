@@ -63,6 +63,7 @@ include "ccm/util/concurrent/IConcurrentHashMap.cdl"
 include "ccm/util/concurrent/IConcurrentLinkedQueue.cdl"
 include "ccm/util/concurrent/IConcurrentMap.cdl"
 include "ccm/util/concurrent/IThreadLocalRandom.cdl"
+include "ccm/util/concurrent/atomic/IAtomicBoolean.cdl"
 include "ccm/util/concurrent/atomic/IAtomicInteger.cdl"
 include "ccm/util/concurrent/atomic/IAtomicLong.cdl"
 include "ccm/util/locale/ILanguageTag.cdl"
@@ -761,6 +762,21 @@ coclass CConcurrentHashMap
 }
 
 namespace atomic {
+
+[
+    uuid(c3571f5c-0aa7-4a5c-9347-d6446c175271),
+    version(0.1.0)
+]
+coclass CAtomicBoolean
+{
+    Constructor();
+
+    Constructor(
+        [in] Boolean initialValue);
+
+    interface IAtomicBoolean;
+    interface ISerializable;
+}
 
 [
     uuid(37e94445-0ee6-460f-9105-4afed59d6586),

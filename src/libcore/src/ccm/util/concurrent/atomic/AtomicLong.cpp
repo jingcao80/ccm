@@ -82,10 +82,11 @@ ECode AtomicLong::CompareAndSet(
     /* [in] */ Long update,
     /* [out] */ Boolean* succeeded)
 {
-    VALIDATE_NOT_NULL(succeeded);
-
-    *succeeded = mValue.CompareExchangeStrongSequentiallyConsistent(
+    Boolean result = mValue.CompareExchangeStrongSequentiallyConsistent(
             expect, update);
+    if (succeeded != nullptr) {
+        *succeeded = result;
+    }
     return NOERROR;
 }
 
@@ -94,10 +95,11 @@ ECode AtomicLong::WeakCompareAndSet(
     /* [in] */ Long update,
     /* [out] */ Boolean* succeeded)
 {
-    VALIDATE_NOT_NULL(succeeded);
-
-    *succeeded = mValue.CompareExchangeStrongSequentiallyConsistent(
+    Boolean result = mValue.CompareExchangeStrongSequentiallyConsistent(
             expect, update);
+    if (succeeded != nullptr) {
+        *succeeded = result;
+    }
     return NOERROR;
 }
 
@@ -186,7 +188,7 @@ ECode AtomicLong::ToString(
 {
     VALIDATE_NOT_NULL(desc);
 
-    *desc = StringUtils::ToString((Long)mValue.LoadRelaxed());
+    *desc = StringUtils::ToString((Long)mValue.LoadAcquire());
     return NOERROR;
 }
 

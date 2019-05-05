@@ -28,6 +28,7 @@ set(SOURCES
     ConcurrentHashMap.cpp
     Helpers.cpp
     ThreadLocalRandom.cpp
+    atomic/AtomicBoolean.cpp
     atomic/AtomicInteger.cpp
     atomic/AtomicLong.cpp
     locks/LockSupport)

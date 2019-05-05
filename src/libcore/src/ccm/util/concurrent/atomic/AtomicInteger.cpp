@@ -82,10 +82,11 @@ ECode AtomicInteger::CompareAndSet(
     /* [in] */ Integer update,
     /* [out] */ Boolean* succeeded)
 {
-    VALIDATE_NOT_NULL(succeeded);
-
-    *succeeded = mValue.CompareExchangeStrongSequentiallyConsistent(
+    Boolean result = mValue.CompareExchangeStrongSequentiallyConsistent(
             expect, update);
+    if (succeeded != nullptr) {
+        *succeeded = result;
+    }
     return NOERROR;
 }
 
@@ -94,10 +95,11 @@ ECode AtomicInteger::WeakCompareAndSet(
     /* [in] */ Integer update,
     /* [out] */ Boolean* succeeded)
 {
-    VALIDATE_NOT_NULL(succeeded);
-
-    *succeeded = mValue.CompareExchangeStrongSequentiallyConsistent(
+    Boolean result = mValue.CompareExchangeStrongSequentiallyConsistent(
             expect, update);
+    if (succeeded != nullptr) {
+        *succeeded = result;
+    }
     return NOERROR;
 }
 
@@ -186,7 +188,7 @@ ECode AtomicInteger::ToString(
 {
     VALIDATE_NOT_NULL(desc);
 
-    *desc = StringUtils::ToString(mValue.LoadRelaxed());
+    *desc = StringUtils::ToString(mValue.LoadAcquire());
     return NOERROR;
 }
 

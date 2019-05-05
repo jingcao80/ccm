@@ -122,6 +122,7 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_util_calendar_CLocalGregorianCalendar.cpp
     ${OBJ_DIR}/_ccm_util_concurrent_CConcurrentLinkedQueue.cpp
     ${OBJ_DIR}/_ccm_util_concurrent_CConcurrentHashMap.cpp
+    ${OBJ_DIR}/_ccm_util_concurrent_atomic_CAtomicBoolean.cpp
     ${OBJ_DIR}/_ccm_util_concurrent_atomic_CAtomicInteger.cpp
     ${OBJ_DIR}/_ccm_util_concurrent_atomic_CAtomicLong.cpp
     ${OBJ_DIR}/_ccm_util_regex_CPatternFactory.cpp

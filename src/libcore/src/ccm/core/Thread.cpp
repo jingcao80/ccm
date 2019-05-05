@@ -156,7 +156,7 @@ ECode Thread::Init(
     }
 
     gg->AddUnstarted();
-    mGroup = g;
+    mGroup = gg;
 
     mTarget = target;
     parent->GetPriority(&mPriority);
