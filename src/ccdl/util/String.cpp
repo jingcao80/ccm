@@ -78,7 +78,7 @@ int SharedBuffer::AddRef(
             reinterpret_cast<struct SharedBuffer*>(handle) - 1;
     int before = __sync_fetch_and_add(&buffer->mRefCount, (int)1);
     if (before < 0) {
-        Logger::E(TAG, "The refCount %d of %p is error in AddRef.", before);
+        Logger::E(TAG, "The refCount %d of %p is error in AddRef.", before, buffer);
     }
     return before + 1;
 }
@@ -95,7 +95,7 @@ int SharedBuffer::Release(
         free(buffer);
     }
     else if (before < 1) {
-        Logger::E(TAG, "The refCount %d of %p is error in AddRef.", before);
+        Logger::E(TAG, "The refCount %d of %p is error in Release.", before, buffer);
     }
     return before - 1;
 }

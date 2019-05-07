@@ -36,6 +36,7 @@ set(SOURCES
     ByteBufferAsShortBuffer.cpp
     ByteOrder.cpp
     CByteBufferFactory.cpp
+    CharBuffer.cpp
     DeleteOnExitHook.cpp
     DirectByteBuffer.cpp
     ExpiringCache.cpp
@@ -45,6 +46,7 @@ set(SOURCES
     FileOutputStream.cpp
     FileSystem.cpp
     HeapByteBuffer.cpp
+    HeapCharBuffer.cpp
     HeapIntegerBuffer.cpp
     HeapShortBuffer.cpp
     InputStream.cpp
@@ -54,6 +56,7 @@ set(SOURCES
     OutputStreamWriter.cpp
     PrintWriter.cpp
     ShortBuffer.cpp
+    StringCharBuffer.cpp
     StringWriter.cpp
     UnixFileSystem.cpp
     Writer.cpp
