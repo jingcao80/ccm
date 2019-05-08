@@ -32,6 +32,7 @@ set(SOURCES
     BufferedWriter.cpp
     ByteArrayOutputStream.cpp
     ByteBuffer.cpp
+    ByteBufferAsCharBuffer.cpp
     ByteBufferAsIntegerBuffer.cpp
     ByteBufferAsShortBuffer.cpp
     ByteOrder.cpp

@@ -118,10 +118,7 @@ public:
         /* [in] */ Integer length) override;
 
     ECode AsCharBuffer(
-        /* [out] */ ICharBuffer** buffer) override
-    {
-        return NOERROR;
-    }
+        /* [out] */ ICharBuffer** buffer) override;
 
     ECode GetShort(
         /* [out] */ Short* s) override;

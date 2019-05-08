@@ -38,12 +38,12 @@ StringBuilder::~StringBuilder()
 StringBuilder& StringBuilder::Append(
     /* [in] */ char c)
 {
-    if (mPosition >= MAX_SIZE) {
+    if (mPosition + 1 > MAX_SIZE) {
         Logger::E(TAG, "The StringBuilder is full and it can't be enlarged.");
         return *this;
     }
 
-    if (mPosition >= mCapacity) {
+    if (mPosition + 1 >= mCapacity) {
         if (!Enlarge(2)) return *this;
     }
 
@@ -127,7 +127,7 @@ bool StringBuilder::Enlarge(
     newSize = newSize > size ? newSize : size;
     char* newBuffer = (char*)calloc(mCapacity + newSize, 1);
     if (newBuffer == nullptr) {
-        Logger::E(TAG, "Fail to malloc % byte memory.", mCapacity + newSize);
+        Logger::E(TAG, "Fail to malloc %d byte memory.", mCapacity + newSize);
         return false;
     }
 
