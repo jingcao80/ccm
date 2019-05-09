@@ -17,6 +17,7 @@
 #include "ccm/io/Bits.h"
 #include "ccm/io/ByteBufferAsCharBuffer.h"
 #include "ccm/io/ByteBufferAsIntegerBuffer.h"
+#include "ccm/io/ByteBufferAsLongBuffer.h"
 #include "ccm/io/ByteBufferAsShortBuffer.h"
 #include "ccm/io/HeapByteBuffer.h"
 #include "libcore/io/Memory.h"
@@ -646,6 +647,25 @@ ECode HeapByteBuffer::PutUnchecked(
     /* [in] */ Integer length)
 {
     Memory::UnsafeBulkPut(mHb, Ix(pos), length * 8, src, srcOffset, 8, !mNativeByteOrder);
+    return NOERROR;
+}
+
+ECode HeapByteBuffer::AsLongBuffer(
+    /* [out] */ ILongBuffer** buffer)
+{
+    VALIDATE_NOT_NULL(buffer);
+
+    Integer remaining, off;
+    Remaining(&remaining);
+    Integer size = remaining >> 3;
+    GetPosition(&off);
+    AutoPtr<IByteOrder> order;
+    GetOrder(&order);
+
+    AutoPtr<ByteBufferAsLongBuffer> bb = new ByteBufferAsLongBuffer();
+    FAIL_RETURN(bb->Constructor(this, -1, 0, size, size, off, order));
+    *buffer = (ILongBuffer*)bb.Get();
+    REFCOUNT_ADD(*buffer);
     return NOERROR;
 }
 

@@ -34,6 +34,7 @@ set(SOURCES
     ByteBuffer.cpp
     ByteBufferAsCharBuffer.cpp
     ByteBufferAsIntegerBuffer.cpp
+    ByteBufferAsLongBuffer.cpp
     ByteBufferAsShortBuffer.cpp
     ByteOrder.cpp
     CByteBufferFactory.cpp
@@ -49,9 +50,11 @@ set(SOURCES
     HeapByteBuffer.cpp
     HeapCharBuffer.cpp
     HeapIntegerBuffer.cpp
+    HeapLongBuffer.cpp
     HeapShortBuffer.cpp
     InputStream.cpp
     IntegerBuffer.cpp
+    LongBuffer.cpp
     MappedByteBuffer.cpp
     OutputStream.cpp
     OutputStreamWriter.cpp

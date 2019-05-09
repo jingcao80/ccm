@@ -14,16 +14,16 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_IO_HEAPCHARBUFFER_H__
-#define __CCM_IO_HEAPCHARBUFFER_H__
+#ifndef __CCM_IO_HEAPLONGBUFFER_H__
+#define __CCM_IO_HEAPLONGBUFFER_H__
 
-#include "ccm/io/CharBuffer.h"
+#include "ccm/io/LongBuffer.h"
 
 namespace ccm {
 namespace io {
 
-class HeapCharBuffer
-    : public CharBuffer
+class HeapLongBuffer
+    : public LongBuffer
 {
 public:
     ECode Constructor(
@@ -36,38 +36,34 @@ public:
         /* [in] */ Boolean isReadOnly);
 
     ECode Constructor(
-        /* [in] */ const Array<Char>& buf,
+        /* [in] */ const Array<Long>& buf,
         /* [in] */ Integer off,
         /* [in] */ Integer len);
 
     ECode Constructor(
-        /* [in] */ const Array<Char>& buf,
+        /* [in] */ const Array<Long>& buf,
         /* [in] */ Integer off,
         /* [in] */ Integer len,
         /* [in] */ Boolean isReadOnly);
 
     ECode Slice(
-        /* [out] */ ICharBuffer** buffer) override;
+        /* [out] */ ILongBuffer** buffer) override;
 
     ECode Duplicate(
-        /* [out] */ ICharBuffer** buffer) override;
+        /* [out] */ ILongBuffer** buffer) override;
 
     ECode AsReadOnlyBuffer(
-        /* [out] */ ICharBuffer** buffer) override;
+        /* [out] */ ILongBuffer** buffer) override;
 
     ECode Get(
-        /* [out] */ Char* c) override;
+        /* [out] */ Long* l) override;
 
     ECode Get(
         /* [in] */ Integer index,
-        /* [out] */ Char* c) override;
-
-    ECode GetUnchecked(
-        /* [in] */ Integer index,
-        /* [out] */ Char* c) override;
+        /* [out] */ Long* l) override;
 
     ECode Get(
-        /* [out] */ Array<Char>& dst,
+        /* [out] */ Array<Long>& dst,
         /* [in] */ Integer offset,
         /* [in] */ Integer length) override;
 
@@ -78,31 +74,21 @@ public:
         /* [out] */ Boolean* readOnly) override;
 
     ECode Put(
-        /* [in] */ Char c) override;
+        /* [in] */ Long l) override;
 
     ECode Put(
         /* [in] */ Integer index,
-        /* [in] */ Char c) override;
+        /* [in] */ Long l) override;
 
     ECode Put(
-        /* [in] */ const Array<Char>& src,
+        /* [in] */ const Array<Long>& src,
         /* [in] */ Integer offset,
         /* [in] */ Integer length) override;
 
     ECode Put(
-        /* [in] */ ICharBuffer* src) override;
+        /* [in] */ ILongBuffer* src) override;
 
     ECode Compact() override;
-
-    ECode ToString(
-        /* [in] */ Integer start,
-        /* [in] */ Integer end,
-        /* [out] */ String* desc) override;
-
-    ECode SubSequence(
-        /* [in] */ Integer start,
-        /* [in] */ Integer end,
-        /* [out] */ ICharSequence** subcsq) override;
 
     ECode GetOrder(
         /* [out] */ IByteOrder** bo) override;
@@ -112,7 +98,7 @@ public:
 
 protected:
     ECode Constructor(
-        /* [in] */ const Array<Char>& buf,
+        /* [in] */ const Array<Long>& buf,
         /* [in] */ Integer mark,
         /* [in] */ Integer pos,
         /* [in] */ Integer lim,
@@ -120,7 +106,7 @@ protected:
         /* [in] */ Integer off);
 
     ECode Constructor(
-        /* [in] */ const Array<Char>& buf,
+        /* [in] */ const Array<Long>& buf,
         /* [in] */ Integer mark,
         /* [in] */ Integer pos,
         /* [in] */ Integer lim,
@@ -132,7 +118,7 @@ protected:
         /* [in] */ Integer i);
 };
 
-inline Integer HeapCharBuffer::Ix(
+inline Integer HeapLongBuffer::Ix(
     /* [in] */ Integer i)
 {
     return i + mOffset;
@@ -141,6 +127,4 @@ inline Integer HeapCharBuffer::Ix(
 }
 }
 
-
-
-#endif // __CCM_IO_HEAPCHARBUFFER_H__
+#endif // __CCM_IO_HEAPLONGBUFFER_H__

@@ -229,10 +229,7 @@ public:
         /* [in] */ Integer length) override;
 
     ECode AsLongBuffer(
-        /* [out] */ ILongBuffer** buffer) override
-    {
-        return NOERROR;
-    }
+        /* [out] */ ILongBuffer** buffer) override;
 
     ECode GetFloat(
         /* [out] */ Float* f) override;

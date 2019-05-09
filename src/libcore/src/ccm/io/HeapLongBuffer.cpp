@@ -15,55 +15,53 @@
 //=========================================================================
 
 #include "ccm/io/ByteOrder.h"
-#include "ccm/io/HeapCharBuffer.h"
-
-using ccm::core::E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+#include "ccm/io/HeapLongBuffer.h"
 
 namespace ccm {
 namespace io {
 
-extern const CoclassID CID_HeapCharBuffer =
-        {{0xcc2cd1e7,0x7c8b,0x4374,0xac26,{0xe,0x0,0x7,0x8,0x6,0x9,0x1,0x2,0x0,0xb,0xf,0xd}}, &CID_libcore};
+extern const CoclassID CID_HeapLongBuffer =
+        {{0x2bceaadf,0x64fd,0x445e,0xb537,{0xc,0x3,0xa,0x8,0x4,0x0,0x3,0x5,0x6,0x4,0x4,0xf}}, &CID_libcore};
 
-ECode HeapCharBuffer::Constructor(
+ECode HeapLongBuffer::Constructor(
     /* [in] */ Integer cap,
     /* [in] */ Integer lim)
 {
     return Constructor(cap, lim, false);
 }
 
-ECode HeapCharBuffer::Constructor(
+ECode HeapLongBuffer::Constructor(
     /* [in] */ Integer cap,
     /* [in] */ Integer lim,
     /* [in] */ Boolean isReadOnly)
 {
-    Array<Char> hb(cap);
-    FAIL_RETURN(CharBuffer::Constructor(-1, 0, lim, cap, hb, 0));
+    Array<Long> hb(cap);
+    FAIL_RETURN(LongBuffer::Constructor(-1, 0, lim, cap, hb, 0));
     mIsReadOnly = isReadOnly;
     return NOERROR;
 }
 
-ECode HeapCharBuffer::Constructor(
-    /* [in] */ const Array<Char>& buf,
+ECode HeapLongBuffer::Constructor(
+    /* [in] */ const Array<Long>& buf,
     /* [in] */ Integer off,
     /* [in] */ Integer len)
 {
-    return Constructor(buf, off, len, false);
+    return Constructor(buf, off, len ,false);
 }
 
-ECode HeapCharBuffer::Constructor(
-    /* [in] */ const Array<Char>& buf,
+ECode HeapLongBuffer::Constructor(
+    /* [in] */ const Array<Long>& buf,
     /* [in] */ Integer off,
     /* [in] */ Integer len,
     /* [in] */ Boolean isReadOnly)
 {
-    FAIL_RETURN(CharBuffer::Constructor(-1, off, off + len, buf.GetLength(), buf, 0));
+    FAIL_RETURN(LongBuffer::Constructor(-1, off, off + len, buf.GetLength(), buf, 0));
     mIsReadOnly = isReadOnly;
     return NOERROR;
 }
 
-ECode HeapCharBuffer::Constructor(
-    /* [in] */ const Array<Char>& buf,
+ECode HeapLongBuffer::Constructor(
+    /* [in] */ const Array<Long>& buf,
     /* [in] */ Integer mark,
     /* [in] */ Integer pos,
     /* [in] */ Integer lim,
@@ -73,8 +71,8 @@ ECode HeapCharBuffer::Constructor(
     return Constructor(buf, mark, pos, lim, cap, off, false);
 }
 
-ECode HeapCharBuffer::Constructor(
-    /* [in] */ const Array<Char>& buf,
+ECode HeapLongBuffer::Constructor(
+    /* [in] */ const Array<Long>& buf,
     /* [in] */ Integer mark,
     /* [in] */ Integer pos,
     /* [in] */ Integer lim,
@@ -82,29 +80,29 @@ ECode HeapCharBuffer::Constructor(
     /* [in] */ Integer off,
     /* [in] */ Boolean isReadOnly)
 {
-    FAIL_RETURN(CharBuffer::Constructor(mark, pos, lim, cap, buf, off));
+    FAIL_RETURN(LongBuffer::Constructor(mark, pos, lim, cap, buf, off));
     mIsReadOnly = isReadOnly;
     return NOERROR;
 }
 
-ECode HeapCharBuffer::Slice(
-    /* [out] */ ICharBuffer** buffer)
+ECode HeapLongBuffer::Slice(
+    /* [out] */ ILongBuffer** buffer)
 {
     VALIDATE_NOT_NULL(buffer);
 
     Integer remaining, pos;
     Remaining(&remaining);
     GetPosition(&pos);
-    AutoPtr<HeapCharBuffer> hcb = new HeapCharBuffer();
-    FAIL_RETURN(hcb->Constructor(
+    AutoPtr<HeapLongBuffer> hlb = new HeapLongBuffer();
+    FAIL_RETURN(hlb->Constructor(
             mHb, -1, 0, remaining, remaining, pos + mOffset, mIsReadOnly));
-    *buffer = (ICharBuffer*)hcb.Get();
+    *buffer = (ILongBuffer*)hlb.Get();
     REFCOUNT_ADD(*buffer);
     return NOERROR;
 }
 
-ECode HeapCharBuffer::Duplicate(
-    /* [out] */ ICharBuffer** buffer)
+ECode HeapLongBuffer::Duplicate(
+    /* [out] */ ILongBuffer** buffer)
 {
     VALIDATE_NOT_NULL(buffer);
 
@@ -112,16 +110,16 @@ ECode HeapCharBuffer::Duplicate(
     GetPosition(&pos);
     GetLimit(&lim);
     GetCapacity(&cap);
-    AutoPtr<HeapCharBuffer> hcb = new HeapCharBuffer();
-    FAIL_RETURN(hcb->Constructor(
+    AutoPtr<HeapLongBuffer> hlb = new HeapLongBuffer();
+    FAIL_RETURN(hlb->Constructor(
             mHb, MarkValue(), pos, lim, cap, mOffset, mIsReadOnly));
-    *buffer = (ICharBuffer*)hcb.Get();
+    *buffer = (ILongBuffer*)hlb.Get();
     REFCOUNT_ADD(*buffer);
     return NOERROR;
 }
 
-ECode HeapCharBuffer::AsReadOnlyBuffer(
-    /* [out] */ ICharBuffer** buffer)
+ECode HeapLongBuffer::AsReadOnlyBuffer(
+    /* [out] */ ILongBuffer** buffer)
 {
     VALIDATE_NOT_NULL(buffer);
 
@@ -129,52 +127,42 @@ ECode HeapCharBuffer::AsReadOnlyBuffer(
     GetPosition(&pos);
     GetLimit(&lim);
     GetCapacity(&cap);
-    AutoPtr<HeapCharBuffer> hcb = new HeapCharBuffer();
-    FAIL_RETURN(hcb->Constructor(
+    AutoPtr<HeapLongBuffer> hlb = new HeapLongBuffer();
+    FAIL_RETURN(hlb->Constructor(
             mHb, MarkValue(), pos, lim, cap, mOffset, true));
-    *buffer = (ICharBuffer*)hcb.Get();
+    *buffer = (ILongBuffer*)hlb.Get();
     REFCOUNT_ADD(*buffer);
     return NOERROR;
 }
 
-ECode HeapCharBuffer::Get(
-    /* [out] */ Char* c)
+ECode HeapLongBuffer::Get(
+    /* [out] */ Long* l)
 {
-    VALIDATE_NOT_NULL(c);
+    VALIDATE_NOT_NULL(l);
 
     Integer index;
     NextGetIndex(&index);
-    *c = mHb[Ix(index)];
+    *l = mHb[Ix(index)];
     return NOERROR;
 }
 
-ECode HeapCharBuffer::Get(
+ECode HeapLongBuffer::Get(
     /* [in] */ Integer index,
-    /* [out] */ Char* c)
+    /* [out] */ Long* l)
 {
-    VALIDATE_NOT_NULL(c);
+    VALIDATE_NOT_NULL(l);
 
     FAIL_RETURN(CheckIndex(index));
-    *c = mHb[Ix(index)];
+    *l = mHb[Ix(index)];
     return NOERROR;
 }
 
-ECode HeapCharBuffer::GetUnchecked(
-    /* [in] */ Integer index,
-    /* [out] */ Char* c)
-{
-    VALIDATE_NOT_NULL(c);
-
-    *c = mHb[Ix(index)];
-    return NOERROR;
-}
-
-ECode HeapCharBuffer::Get(
-    /* [out] */ Array<Char>& dst,
+ECode HeapLongBuffer::Get(
+    /* [out] */ Array<Long>& dst,
     /* [in] */ Integer offset,
     /* [in] */ Integer length)
 {
-    FAIL_RETURN(CheckBounds(offset, length, dst.GetLength()));
+    FAIL_RETURN(CheckBounds(mOffset, length, dst.GetLength()));
     Integer remaining;
     Remaining(&remaining);
     if (length > remaining){
@@ -187,7 +175,7 @@ ECode HeapCharBuffer::Get(
     return NOERROR;
 }
 
-ECode HeapCharBuffer::IsDirect(
+ECode HeapLongBuffer::IsDirect(
     /* [out] */ Boolean* direct)
 {
     VALIDATE_NOT_NULL(direct);
@@ -196,7 +184,7 @@ ECode HeapCharBuffer::IsDirect(
     return NOERROR;
 }
 
-ECode HeapCharBuffer::IsReadOnly(
+ECode HeapLongBuffer::IsReadOnly(
     /* [out] */ Boolean* readOnly)
 {
     VALIDATE_NOT_NULL(readOnly);
@@ -205,32 +193,32 @@ ECode HeapCharBuffer::IsReadOnly(
     return NOERROR;
 }
 
-ECode HeapCharBuffer::Put(
-    /* [in] */ Char c)
+ECode HeapLongBuffer::Put(
+    /* [in] */ Long l)
 {
     if (mIsReadOnly) {
         return E_READ_ONLY_BUFFER_EXCEPTION;
     }
     Integer index;
     NextPutIndex(&index);
-    mHb[Ix(index)] = c;
+    mHb[Ix(index)] = l;
     return NOERROR;
 }
 
-ECode HeapCharBuffer::Put(
+ECode HeapLongBuffer::Put(
     /* [in] */ Integer index,
-    /* [in] */ Char c)
+    /* [in] */ Long l)
 {
     if (mIsReadOnly) {
         return E_READ_ONLY_BUFFER_EXCEPTION;
     }
     FAIL_RETURN(CheckIndex(index));
-    mHb[Ix(index)] = c;
+    mHb[Ix(index)] = l;
     return NOERROR;
 }
 
-ECode HeapCharBuffer::Put(
-    /* [in] */ const Array<Char>& src,
+ECode HeapLongBuffer::Put(
+    /* [in] */ const Array<Long>& src,
     /* [in] */ Integer offset,
     /* [in] */ Integer length)
 {
@@ -250,28 +238,28 @@ ECode HeapCharBuffer::Put(
     return NOERROR;
 }
 
-ECode HeapCharBuffer::Put(
-    /* [in] */ ICharBuffer* src)
+ECode HeapLongBuffer::Put(
+    /* [in] */ ILongBuffer* src)
 {
-    if (src == (ICharBuffer*)this) {
+    if (src == (ILongBuffer*)this) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     if (mIsReadOnly) {
         return E_READ_ONLY_BUFFER_EXCEPTION;
     }
     Boolean direct;
-    if (Object::InstanceOf(src, CID_HeapCharBuffer)) {
-        HeapCharBuffer* hcb = (HeapCharBuffer*)src;
+    if (Object::InstanceOf(src, CID_HeapLongBuffer)) {
+        HeapLongBuffer* hlb = (HeapLongBuffer*)src;
         Integer n, remaining;
-        hcb->Remaining(&n);
+        hlb->Remaining(&n);
         if (Remaining(&remaining), n > remaining) {
             return E_BUFFER_OVERFLOW_EXCEPTION;
         }
-        Integer thisPos, hcbPos;
+        Integer thisPos, hlbPos;
         GetPosition(&thisPos);
-        hcb->GetPosition(&hcbPos);
-        mHb.Copy(Ix(thisPos), hcb->mHb, hcb->Ix(hcbPos), n);
-        hcb->SetPosition(hcbPos + n);
+        hlb->GetPosition(&hlbPos);
+        mHb.Copy(Ix(thisPos), hlb->mHb, hlb->Ix(hlbPos), n);
+        hlb->SetPosition(hlbPos + n);
         SetPosition(thisPos + n);
         return NOERROR;
     }
@@ -288,11 +276,11 @@ ECode HeapCharBuffer::Put(
         return NOERROR;
     }
     else {
-        return CharBuffer::Put(src);
+        return LongBuffer::Put(src);
     }
 }
 
-ECode HeapCharBuffer::Compact()
+ECode HeapLongBuffer::Compact()
 {
     if (mIsReadOnly) {
         return E_READ_ONLY_BUFFER_EXCEPTION;
@@ -308,42 +296,7 @@ ECode HeapCharBuffer::Compact()
     return NOERROR;
 }
 
-ECode HeapCharBuffer::ToString(
-    /* [in] */ Integer start,
-    /* [in] */ Integer end,
-    /* [out] */ String* desc)
-{
-    VALIDATE_NOT_NULL(desc);
-
-    *desc = String(mHb, start + mOffset, end - start);
-    return NOERROR;
-}
-
-ECode HeapCharBuffer::SubSequence(
-    /* [in] */ Integer start,
-    /* [in] */ Integer end,
-    /* [out] */ ICharSequence** subcsq)
-{
-    VALIDATE_NOT_NULL(subcsq);
-
-    Integer len;
-    if ((start < 0) ||
-            (GetLength(&len), end > len) ||
-            (start > end)) {
-        return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-    }
-    Integer pos, cap;
-    GetPosition(&pos);
-    GetCapacity(&cap);
-    AutoPtr<HeapCharBuffer> hcb = new HeapCharBuffer();
-    FAIL_RETURN(hcb->Constructor(
-            mHb, -1, pos + start, pos + end, cap, mOffset, mIsReadOnly));
-    *subcsq = (ICharSequence*)hcb.Get();
-    REFCOUNT_ADD(*subcsq);
-    return NOERROR;
-}
-
-ECode HeapCharBuffer::GetOrder(
+ECode HeapLongBuffer::GetOrder(
     /* [out] */ IByteOrder** bo)
 {
     VALIDATE_NOT_NULL(bo);
@@ -353,15 +306,14 @@ ECode HeapCharBuffer::GetOrder(
     return NOERROR;
 }
 
-ECode HeapCharBuffer::GetCoclassID(
+ECode HeapLongBuffer::GetCoclassID(
     /* [out] */ CoclassID* cid)
 {
     VALIDATE_NOT_NULL(cid);
 
-    *cid = CID_HeapCharBuffer;
+    *cid = CID_HeapLongBuffer;
     return NOERROR;
 }
 
 }
 }
-
