@@ -22,7 +22,57 @@ namespace io {
     version(0.1.0)
 ]
 interface IFloatBuffer
-{}
+{
+    AsReadOnlyBuffer(
+        [out] IFloatBuffer** buffer);
+
+    Compact();
+
+    Duplicate(
+        [out] IFloatBuffer** buffer);
+
+    Get(
+        [out] Float* f);
+
+    Get(
+        [in] Integer index,
+        [out] Float* f);
+
+    Get(
+        [out] Array<Float> dst);
+
+    Get(
+        [out] Array<Float> dst,
+        [in] Integer offset,
+        [in] Integer length);
+
+    GetOrder(
+        [out] IByteOrder** bo);
+
+    HasArray(
+        [out] Boolean* result);
+
+    Put(
+        [in] Float f);
+
+    Put(
+        [in] Integer index,
+        [in] Float f);
+
+    Put(
+        [in] Array<Float> src);
+
+    Put(
+        [in] Array<Float> src,
+        [in] Integer offset,
+        [in] Integer length);
+
+    Put(
+        [in] IFloatBuffer* src);
+
+    Slice(
+        [out] IFloatBuffer** buffer);
+}
 
 }
 }

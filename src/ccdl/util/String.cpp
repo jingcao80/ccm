@@ -620,7 +620,7 @@ String& String::operator+=(
 }
 
 String String::Format(
-    /* [in] */ const char* format ...)
+    /* [in] */ const char* format, ...)
 {
     va_list args, args1;
 

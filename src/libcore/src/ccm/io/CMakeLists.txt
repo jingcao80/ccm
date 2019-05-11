@@ -33,6 +33,7 @@ set(SOURCES
     ByteArrayOutputStream.cpp
     ByteBuffer.cpp
     ByteBufferAsCharBuffer.cpp
+    ByteBufferAsFloatBuffer.cpp
     ByteBufferAsIntegerBuffer.cpp
     ByteBufferAsLongBuffer.cpp
     ByteBufferAsShortBuffer.cpp
@@ -47,8 +48,10 @@ set(SOURCES
     FileInputStream.cpp
     FileOutputStream.cpp
     FileSystem.cpp
+    FloatBuffer.cpp
     HeapByteBuffer.cpp
     HeapCharBuffer.cpp
+    HeapFloatBuffer.cpp
     HeapIntegerBuffer.cpp
     HeapLongBuffer.cpp
     HeapShortBuffer.cpp

@@ -266,10 +266,7 @@ public:
         /* [in] */ Integer length) override;
 
     ECode AsFloatBuffer(
-        /* [out] */ IFloatBuffer** buffer) override
-    {
-        return NOERROR;
-    }
+        /* [out] */ IFloatBuffer** buffer) override;
 
     ECode GetDouble(
         /* [out] */ Double* d) override;

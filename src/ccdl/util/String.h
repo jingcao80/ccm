@@ -166,7 +166,7 @@ public:
         /* [in] */ const String& other);
 
     static String Format(
-        /* [in] */ const char* format ...);
+        /* [in] */ const char* format, ...);
 
 private:
     String(
