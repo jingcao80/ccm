@@ -22,7 +22,57 @@ namespace io {
     version(0.1.0)
 ]
 interface IDoubleBuffer
-{}
+{
+    AsReadOnlyBuffer(
+        [out] IDoubleBuffer** buffer);
+
+    Compact();
+
+    Duplicate(
+        [out] IDoubleBuffer** buffer);
+
+    Get(
+        [out] Double* d);
+
+    Get(
+        [in] Integer index,
+        [out] Double* d);
+
+    Get(
+        [out] Array<Double> dst);
+
+    Get(
+        [out] Array<Double> dst,
+        [in] Integer offset,
+        [in] Integer length);
+
+    GetOrder(
+        [out] IByteOrder** bo);
+
+    HasArray(
+        [out] Boolean* result);
+
+    Put(
+        [in] Double d);
+
+    Put(
+        [in] Integer index,
+        [in] Double d);
+
+    Put(
+        [in] Array<Double> src);
+
+    Put(
+        [in] Array<Double> src,
+        [in] Integer offset,
+        [in] Integer length);
+
+    Put(
+        [in] IDoubleBuffer* src);
+
+    Slice(
+        [out] IDoubleBuffer** buffer);
+}
 
 }
 }

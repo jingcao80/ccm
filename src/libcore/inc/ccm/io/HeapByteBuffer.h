@@ -303,10 +303,7 @@ public:
         /* [in] */ Integer length) override;
 
     ECode AsDoubleBuffer(
-        /* [out] */ IDoubleBuffer** buffer) override
-    {
-        return NOERROR;
-    }
+        /* [out] */ IDoubleBuffer** buffer) override;
 
 private:
     ECode Constructor(

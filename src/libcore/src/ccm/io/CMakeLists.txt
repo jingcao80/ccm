@@ -33,6 +33,7 @@ set(SOURCES
     ByteArrayOutputStream.cpp
     ByteBuffer.cpp
     ByteBufferAsCharBuffer.cpp
+    ByteBufferAsDoubleBuffer.cpp
     ByteBufferAsFloatBuffer.cpp
     ByteBufferAsIntegerBuffer.cpp
     ByteBufferAsLongBuffer.cpp
@@ -42,6 +43,7 @@ set(SOURCES
     CharBuffer.cpp
     DeleteOnExitHook.cpp
     DirectByteBuffer.cpp
+    DoubleBuffer.cpp
     ExpiringCache.cpp
     File.cpp
     FileDescriptor.cpp
@@ -51,6 +53,7 @@ set(SOURCES
     FloatBuffer.cpp
     HeapByteBuffer.cpp
     HeapCharBuffer.cpp
+    HeapDoubleBuffer.cpp
     HeapFloatBuffer.cpp
     HeapIntegerBuffer.cpp
     HeapLongBuffer.cpp
