@@ -169,10 +169,7 @@ public:
         /* [in] */ Integer length) override final;
 
     ECode AsCharBuffer(
-        /* [out] */ ICharBuffer** buffer) override final
-    {
-        return NOERROR;
-    }
+        /* [out] */ ICharBuffer** buffer) override final;
 
     ECode GetShort(
         /* [out] */ Short* s) override final;
@@ -209,10 +206,7 @@ public:
         /* [in] */ Integer length) override final;
 
     ECode AsShortBuffer(
-        /* [out] */ IShortBuffer** buffer) override final
-    {
-        return NOERROR;
-    }
+        /* [out] */ IShortBuffer** buffer) override final;
 
     ECode GetInteger(
         /* [out] */ Integer* i) override final;
@@ -249,10 +243,7 @@ public:
         /* [in] */ Integer length) override final;
 
     ECode AsIntegerBuffer(
-        /* [out] */ IIntegerBuffer** buffer) override final
-    {
-        return NOERROR;
-    }
+        /* [out] */ IIntegerBuffer** buffer) override final;
 
     ECode GetLong(
         /* [out] */ Long* l) override final;
@@ -289,10 +280,7 @@ public:
         /* [in] */ Integer length) override final;
 
     ECode AsLongBuffer(
-        /* [out] */ ILongBuffer** buffer) override final
-    {
-        return NOERROR;
-    }
+        /* [out] */ ILongBuffer** buffer) override final;
 
     ECode GetFloat(
         /* [out] */ Float* f) override final;
@@ -329,10 +317,7 @@ public:
         /* [in] */ Integer length) override final;
 
     ECode AsFloatBuffer(
-        /* [out] */ IFloatBuffer** buffer) override final
-    {
-        return NOERROR;
-    }
+        /* [out] */ IFloatBuffer** buffer) override final;
 
     ECode GetDouble(
         /* [out] */ Double* d) override final;
@@ -369,10 +354,7 @@ public:
         /* [in] */ Integer length) override final;
 
     ECode AsDoubleBuffer(
-        /* [out] */ IDoubleBuffer** buffer) override final
-    {
-        return NOERROR;
-    }
+        /* [out] */ IDoubleBuffer** buffer) override final;
 
     ECode IsAccessible(
         /* [out] */ Boolean* accessible) override final;

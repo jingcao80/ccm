@@ -15,6 +15,12 @@
 //=========================================================================
 
 #include "ccm/core/Math.h"
+#include "ccm/io/ByteBufferAsCharBuffer.h"
+#include "ccm/io/ByteBufferAsDoubleBuffer.h"
+#include "ccm/io/ByteBufferAsFloatBuffer.h"
+#include "ccm/io/ByteBufferAsIntegerBuffer.h"
+#include "ccm/io/ByteBufferAsLongBuffer.h"
+#include "ccm/io/ByteBufferAsShortBuffer.h"
 #include "ccm/io/CDirectByteBuffer.h"
 #include "libcore/io/Memory.h"
 #include <ccmlogger.h>
@@ -510,6 +516,31 @@ ECode DirectByteBuffer::PutUnchecked(
     return NOERROR;
 }
 
+ECode DirectByteBuffer::AsCharBuffer(
+    /* [out] */ ICharBuffer** buffer)
+{
+    VALIDATE_NOT_NULL(buffer);
+
+    if (mMemoryRef->mIsFreed) {
+        Logger::E("DirectByteBuffer", "buffer has been freed");
+        return E_ILLEGAL_STATE_EXCEPTION;
+    }
+    Integer off, lim;
+    GetPosition(&off);
+    GetLimit(&lim);
+    CHECK(off <= lim);
+    Integer rem = (off <= lim ? lim - off : 0);
+    Integer size = rem >> 2;
+    AutoPtr<IByteOrder> order;
+    GetOrder(&order);
+
+    AutoPtr<ByteBufferAsCharBuffer> bb = new ByteBufferAsCharBuffer();
+    FAIL_RETURN(bb->Constructor(this, -1, 0, size, size, off, order));
+    *buffer = (ICharBuffer*)bb.Get();
+    REFCOUNT_ADD(*buffer);
+    return NOERROR;
+}
+
 Short DirectByteBuffer::GetShort(
     /* [in] */ HANDLE addr)
 {
@@ -634,6 +665,31 @@ ECode DirectByteBuffer::PutUnchecked(
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     Memory::PokeShortArray(Ix(pos), src, srcOffset, length, !mNativeByteOrder);
+    return NOERROR;
+}
+
+ECode DirectByteBuffer::AsShortBuffer(
+    /* [out] */ IShortBuffer** buffer)
+{
+    VALIDATE_NOT_NULL(buffer);
+
+    if (mMemoryRef->mIsFreed) {
+        Logger::E("DirectByteBuffer", "buffer has been freed");
+        return E_ILLEGAL_STATE_EXCEPTION;
+    }
+    Integer off, lim;
+    GetPosition(&off);
+    GetLimit(&lim);
+    CHECK(off <= lim);
+    Integer rem = (off <= lim ? lim - off : 0);
+    Integer size = rem >> 1;
+    AutoPtr<IByteOrder> order;
+    GetOrder(&order);
+
+    AutoPtr<ByteBufferAsShortBuffer> bb = new ByteBufferAsShortBuffer();
+    FAIL_RETURN(bb->Constructor(this, -1, 0, size, size, off, order));
+    *buffer = (IShortBuffer*)bb.Get();
+    REFCOUNT_ADD(*buffer);
     return NOERROR;
 }
 
@@ -764,6 +820,31 @@ ECode DirectByteBuffer::PutUnchecked(
     return NOERROR;
 }
 
+ECode DirectByteBuffer::AsIntegerBuffer(
+    /* [out] */ IIntegerBuffer** buffer)
+{
+    VALIDATE_NOT_NULL(buffer);
+
+    if (mMemoryRef->mIsFreed) {
+        Logger::E("DirectByteBuffer", "buffer has been freed");
+        return E_ILLEGAL_STATE_EXCEPTION;
+    }
+    Integer off, lim;
+    GetPosition(&off);
+    GetLimit(&lim);
+    CHECK(off <= lim);
+    Integer rem = (off <= lim ? lim - off : 0);
+    Integer size = rem >> 2;
+    AutoPtr<IByteOrder> order;
+    GetOrder(&order);
+
+    AutoPtr<ByteBufferAsIntegerBuffer> bb = new ByteBufferAsIntegerBuffer();
+    FAIL_RETURN(bb->Constructor(this, -1, 0, size, size, off, order));
+    *buffer = (IIntegerBuffer*)bb.Get();
+    REFCOUNT_ADD(*buffer);
+    return NOERROR;
+}
+
 Long DirectByteBuffer::GetLong(
     /* [in] */ HANDLE addr)
 {
@@ -888,6 +969,31 @@ ECode DirectByteBuffer::PutUnchecked(
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     Memory::PokeLongArray(Ix(pos), src, srcOffset, length, !mNativeByteOrder);
+    return NOERROR;
+}
+
+ECode DirectByteBuffer::AsLongBuffer(
+    /* [out] */ ILongBuffer** buffer)
+{
+    VALIDATE_NOT_NULL(buffer);
+
+    if (mMemoryRef->mIsFreed) {
+        Logger::E("DirectByteBuffer", "buffer has been freed");
+        return E_ILLEGAL_STATE_EXCEPTION;
+    }
+    Integer off, lim;
+    GetPosition(&off);
+    GetLimit(&lim);
+    CHECK(off <= lim);
+    Integer rem = (off <= lim ? lim - off : 0);
+    Integer size = rem >> 3;
+    AutoPtr<IByteOrder> order;
+    GetOrder(&order);
+
+    AutoPtr<ByteBufferAsLongBuffer> bb = new ByteBufferAsLongBuffer();
+    FAIL_RETURN(bb->Constructor(this, -1, 0, size, size, off, order));
+    *buffer = (ILongBuffer*)bb.Get();
+    REFCOUNT_ADD(*buffer);
     return NOERROR;
 }
 
@@ -1020,6 +1126,31 @@ ECode DirectByteBuffer::PutUnchecked(
     return NOERROR;
 }
 
+ECode DirectByteBuffer::AsFloatBuffer(
+    /* [out] */ IFloatBuffer** buffer)
+{
+    VALIDATE_NOT_NULL(buffer);
+
+    if (mMemoryRef->mIsFreed) {
+        Logger::E("DirectByteBuffer", "buffer has been freed");
+        return E_ILLEGAL_STATE_EXCEPTION;
+    }
+    Integer off, lim;
+    GetPosition(&off);
+    GetLimit(&lim);
+    CHECK(off <= lim);
+    Integer rem = (off <= lim ? lim - off : 0);
+    Integer size = rem >> 2;
+    AutoPtr<IByteOrder> order;
+    GetOrder(&order);
+
+    AutoPtr<ByteBufferAsFloatBuffer> bb = new ByteBufferAsFloatBuffer();
+    FAIL_RETURN(bb->Constructor(this, -1, 0, size, size, off, order));
+    *buffer = (IFloatBuffer*)bb.Get();
+    REFCOUNT_ADD(*buffer);
+    return NOERROR;
+}
+
 Double DirectByteBuffer::GetDouble(
     /* [in] */ HANDLE addr)
 {
@@ -1146,6 +1277,31 @@ ECode DirectByteBuffer::PutUnchecked(
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     Memory::PokeDoubleArray(Ix(pos), src, srcOffset, length, !mNativeByteOrder);
+    return NOERROR;
+}
+
+ECode DirectByteBuffer::AsDoubleBuffer(
+    /* [out] */ IDoubleBuffer** buffer)
+{
+    VALIDATE_NOT_NULL(buffer);
+
+    if (mMemoryRef->mIsFreed) {
+        Logger::E("DirectByteBuffer", "buffer has been freed");
+        return E_ILLEGAL_STATE_EXCEPTION;
+    }
+    Integer off, lim;
+    GetPosition(&off);
+    GetLimit(&lim);
+    CHECK(off <= lim);
+    Integer rem = (off <= lim ? lim - off : 0);
+    Integer size = rem >> 3;
+    AutoPtr<IByteOrder> order;
+    GetOrder(&order);
+
+    AutoPtr<ByteBufferAsDoubleBuffer> bb = new ByteBufferAsDoubleBuffer();
+    FAIL_RETURN(bb->Constructor(this, -1, 0, size, size, off, order));
+    *buffer = (IDoubleBuffer*)bb.Get();
+    REFCOUNT_ADD(*buffer);
     return NOERROR;
 }
 
