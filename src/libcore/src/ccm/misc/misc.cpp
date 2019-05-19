@@ -15,11 +15,41 @@
 //=========================================================================
 
 #include "ccm/misc/CFDBigInteger.h"
+#include <ccmapi.h>
+#include <new>
 
 namespace ccm {
 namespace misc {
 
 CCM_OBJECT_IMPL(CFDBigInteger);
+ECode CFDBigInteger::New(
+    /* [in] */ const Array<Integer>& data,
+    /* [in] */ Integer offset,
+    /* [in] */ const InterfaceID& iid,
+    /* [out] */ ccm::IInterface** object)
+{
+    VALIDATE_NOT_NULL(object);
+
+    AutoPtr<IClassObject> clsObject;
+    ECode ec = CoAcquireClassFactory(CID_CFDBigInteger, nullptr, &clsObject);
+    if (FAILED(ec)) return ec;
+
+    void* addr = calloc(sizeof(CFDBigInteger), 1);
+    if (addr == nullptr) return E_OUT_OF_MEMORY_ERROR;
+
+    CFDBigInteger* _obj = new(addr) CFDBigInteger();
+    ec = _obj->Constructor(data, offset);
+    if (FAILED(ec)) {
+        free(addr);
+        return ec;
+    }
+    AutoPtr<IMetaComponent> comp;
+    clsObject->GetMetadate(&comp);
+    _obj->AttachMetadata(comp, String("ccm::misc::CFDBigInteger"));
+    *object = _obj->Probe(iid);
+    REFCOUNT_ADD(*object);
+    return NOERROR;
+}
 
 }
 }

@@ -59,6 +59,12 @@ public:
         /* [in] */ const Array<Byte>& a2);
 
     static ECode Fill(
+        /* [out] */ Array<Integer>& a,
+        /* [in] */ Integer fromIndex,
+        /* [in] */ Integer toIndex,
+        /* [in] */ Integer val);
+
+    static ECode Fill(
         /* [out] */ Array<Char>& a,
         /* [in] */ Char value);
 
@@ -76,6 +82,11 @@ public:
         /* [in] */ const Array<Byte>& original,
         /* [in] */ Integer newLength,
         /* [out, callee] */ Array<Byte>* newArray);
+
+    static ECode CopyOf(
+        /* [in] */ const Array<Integer>& original,
+        /* [in] */ Integer newLength,
+        /* [out, callee] */ Array<Integer>* newArray);
 
     static ECode CopyOf(
         /* [in] */ const Array<String>& original,

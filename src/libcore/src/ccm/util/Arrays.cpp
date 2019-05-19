@@ -247,6 +247,19 @@ Boolean Arrays::Equals(
 }
 
 ECode Arrays::Fill(
+    /* [out] */ Array<Integer>& a,
+    /* [in] */ Integer fromIndex,
+    /* [in] */ Integer toIndex,
+    /* [in] */ Integer val)
+{
+    FAIL_RETURN(RangeCheck(a.GetLength(), fromIndex, toIndex));
+    for (Integer i = fromIndex; i < toIndex; i++) {
+        a[i] = val;
+    }
+    return NOERROR;
+}
+
+ECode Arrays::Fill(
     /* [in] */ Array<Char>& a,
     /* [in] */ Char value)
 {
@@ -290,6 +303,25 @@ ECode Arrays::CopyOf(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     Array<Byte> copy(newLength);
+    Integer N = Math::Min((Integer)original.GetLength(), newLength);
+    for (Integer i = 0; i < N; i++) {
+        copy[i] = original[i];
+    }
+    *newArray = copy;
+    return NOERROR;
+}
+
+ECode Arrays::CopyOf(
+    /* [in] */ const Array<Integer>& original,
+    /* [in] */ Integer newLength,
+    /* [out, callee] */ Array<Integer>* newArray)
+{
+    VALIDATE_NOT_NULL(newArray);
+
+    if (newLength < 0) {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    Array<Integer> copy(newLength);
     Integer N = Math::Min((Integer)original.GetLength(), newLength);
     for (Integer i = 0; i < N; i++) {
         copy[i] = original[i];

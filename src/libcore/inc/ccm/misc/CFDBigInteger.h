@@ -14,6 +14,9 @@
 // limitations under the License.
 //=========================================================================
 
+#ifndef __CCM_MISC_CFDBIGINTEGER_H__
+#define __CCM_MISC_CFDBIGINTEGER_H__
+
 #include "ccm/misc/FDBigInteger.h"
 #include "_ccm_misc_CFDBigInteger.h"
 
@@ -25,7 +28,17 @@ Coclass(CFDBigInteger)
 {
 public:
     CCM_OBJECT_DECL();
+
+    static ECode New(
+        /* [in] */ const Array<Integer>& data,
+        /* [in] */ Integer offset,
+        /* [in] */ const InterfaceID& iid,
+        /* [out] */ ccm::IInterface** object);
+
+    using _CFDBigInteger::New;
 };
 
 }
 }
+
+#endif // __CCM_MISC_CFDBIGINTEGER_H__

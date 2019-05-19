@@ -14,13 +14,21 @@
 // limitations under the License.
 //=========================================================================
 
+#ifndef __CCM_MISC_FDBIGINTEGER_H__
+#define __CCM_MISC_FDBIGINTEGER_H__
+
 #include "ccm/core/SyncObject.h"
+#include "ccm.math.IBigInteger.h"
 #include "ccm.misc.IFDBigInteger.h"
 
 using ccm::core::SyncObject;
+using ccm::math::IBigInteger;
 
 namespace ccm {
 namespace misc {
+
+static Array<IFDBigInteger*>
+CreatePOW_5_CACHE(Integer max_five_pow, const Integer[], Integer);
 
 class FDBigInteger
     : public SyncObject
@@ -33,109 +41,148 @@ public:
         /* [in] */ Long lValue,
         /* [in] */ const Array<Char>& digits,
         /* [in] */ Integer kDigits,
-        /* [in] */ Integer nDigits)
-    {
-        return NOERROR;
-    }
-
-
-    ECode AddAndCmp(
-        /* [in] */ IFDBigInteger* x,
-        /* [in] */ IFDBigInteger* y,
-        /* [out] */ Integer* result) override
-    {
-        return NOERROR;
-    }
-
-    ECode Cmp(
-        /* [in] */ IFDBigInteger* other,
-        /* [out] */ Integer* result) override
-    {
-        return NOERROR;
-    }
-
-    ECode CmpPow52(
-        /* [in] */ Integer p5,
-        /* [in] */ Integer p2,
-        /* [out] */ Integer* result) override
-    {
-        return NOERROR;
-    }
-
-    ECode GetNormalizationBias(
-        /* [out] */ Integer* bias) override
-    {
-        return NOERROR;
-    }
-
-    ECode LeftShift(
-        /* [in] */ Integer shift,
-        /* [out] */ IFDBigInteger** value) override
-    {
-        return NOERROR;
-    }
-
-    ECode LeftInplaceSub(
-        /* [in] */ IFDBigInteger* subtrahend,
-        /* [out] */ IFDBigInteger** value) override
-    {
-        return NOERROR;
-    }
-
-    ECode MakeImmutable() override
-    {
-        return NOERROR;
-    }
-
-    ECode MultBy10(
-        /* [out] */ IFDBigInteger** value) override
-    {
-        return NOERROR;
-    }
-
-    ECode MultByPow52(
-        /* [in] */ Integer p5,
-        /* [in] */ Integer p2,
-        /* [out] */ IFDBigInteger** value) override
-    {
-        return NOERROR;
-    }
-
-    ECode QuoRemIteration(
-        /* [in] */ IFDBigInteger* s,
-        /* [out] */ Integer* q) override
-    {
-        return NOERROR;
-    }
-
-    ECode RightInplaceSub(
-        /* [in] */ IFDBigInteger* subtrahend,
-        /* [out] */ IFDBigInteger** value) override
-    {
-        return NOERROR;
-    }
-
-
+        /* [in] */ Integer nDigits);
 
     static AutoPtr<IFDBigInteger> ValueOfPow52(
         /* [in] */ Integer p5,
-        /* [in] */ Integer p2)
-    {
-        return nullptr;
-    }
+        /* [in] */ Integer p2);
 
     static AutoPtr<IFDBigInteger> ValueOfMulPow52(
         /* [in] */ Long value,
         /* [in] */ Integer p5,
-        /* [in] */ Integer p2)
-    {
-        return nullptr;
-    }
+        /* [in] */ Integer p2);
 
-    static const AutoPtr<IFDBigInteger> GetZERO()
-    {
-        return nullptr;
-    }
+    ECode GetNormalizationBias(
+        /* [out] */ Integer* bias) override;
+
+    ECode LeftShift(
+        /* [in] */ Integer shift,
+        /* [out] */ IFDBigInteger** value) override;
+
+    ECode QuoRemIteration(
+        /* [in] */ IFDBigInteger* s,
+        /* [out] */ Integer* q) override;
+
+    ECode MultBy10(
+        /* [out] */ IFDBigInteger** value) override;
+
+    ECode MultByPow52(
+        /* [in] */ Integer p5,
+        /* [in] */ Integer p2,
+        /* [out] */ IFDBigInteger** value) override;
+
+    ECode LeftInplaceSub(
+        /* [in] */ IFDBigInteger* subtrahend,
+        /* [out] */ IFDBigInteger** value) override;
+
+    ECode RightInplaceSub(
+        /* [in] */ IFDBigInteger* subtrahend,
+        /* [out] */ IFDBigInteger** value) override;
+
+    ECode Cmp(
+        /* [in] */ IFDBigInteger* other,
+        /* [out] */ Integer* result) override;
+
+    ECode CmpPow52(
+        /* [in] */ Integer p5,
+        /* [in] */ Integer p2,
+        /* [out] */ Integer* result) override;
+
+    ECode AddAndCmp(
+        /* [in] */ IFDBigInteger* x,
+        /* [in] */ IFDBigInteger* y,
+        /* [out] */ Integer* result) override;
+
+    ECode MakeImmutable() override;
+
+    ECode ToHexString(
+        /* [out] */ String* str) override;
+
+    ECode ToBigInteger(
+        /* [out] */ IBigInteger** value) override;
+
+    ECode ToString(
+        /* [out] */ String* str) override;
+
+    static const AutoPtr<IFDBigInteger> GetZERO();
+
+protected:
+    ECode Constructor(
+        /* [in] */ const Array<Integer>& data,
+        /* [in] */ Integer offset);
+
+private:
+    static AutoPtr<IFDBigInteger> ValueOfPow2(
+        /* [in] */ Integer p2);
+
+    void TrimLeadingZeros();
+
+    static void LeftShift(
+        /* [in] */ const Array<Integer>& src,
+        /* [in] */ Integer idx,
+        /* [out] */ Array<Integer>& result,
+        /* [in] */ Integer bitcount,
+        /* [in] */ Integer anticount,
+        /* [in] */ Integer prev);
+
+    Integer Size();
+
+    static void Mult(
+        /* [in] */ const Array<Integer>& s1,
+        /* [in] */ Integer s1Len,
+        /* [in] */ const Array<Integer>& s2,
+        /* [in] */ Integer s2Len,
+        /* [out] */ Array<Integer>& dst);
+
+    static Integer CheckZeroTail(
+        /* [in] */ const Array<Integer>& a,
+        /* [in] */ Integer from);
+
+    AutoPtr<IFDBigInteger> Mult(
+        /* [in] */ Integer i);
+
+    AutoPtr<IFDBigInteger> Mult(
+        /* [in] */ IFDBigInteger* other);
+
+    AutoPtr<IFDBigInteger> Add(
+        /* [in] */ IFDBigInteger* other);
+
+    void MultAddMe(
+        /* [in] */ Integer iv,
+        /* [in] */ Integer addend);
+
+    Long MultDiffMe(
+        /* [in] */ Long q,
+        /* [in] */ FDBigInteger* s);
+
+    Integer MultAndCarryBy10(
+        /* [in] */ const Array<Integer>& src,
+        /* [in] */ Integer srcLen,
+        /* [out] */ Array<Integer>& dst);
+
+    static void Mult(
+        /* [in] */ const Array<Integer>& src,
+        /* [in] */ Integer srcLen,
+        /* [in] */ Integer value,
+        /* [out] */ Array<Integer>& dst);
+
+    static void Mult(
+        /* [in] */ const Array<Integer>& src,
+        /* [in] */ Integer srcLen,
+        /* [in] */ Integer v0,
+        /* [in] */ Integer v1,
+        /* [out] */ Array<Integer>& dst);
+
+    static AutoPtr<IFDBigInteger> Big5pow(
+        /* [in] */ Integer p);
+
+    static AutoPtr<IFDBigInteger> Big5powRec(
+        /* [in] */ Integer p);
+
+    static const Array<IFDBigInteger*>& GetPOW_5_CACHE();
+
+    static FDBigInteger* From(
+        /* [in] */ IFDBigInteger* obj);
 
 public:
     static constexpr Integer SMALL_5_POW[] = {
@@ -184,7 +231,35 @@ public:
             5LL * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5,
             5LL * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5,
     };
+
+private:
+    friend Array<IFDBigInteger*> CreatePOW_5_CACHE(
+            Integer max_five_pow, const Integer[], Integer);
+
+    // Maximum size of cache of powers of 5 as FDBigIntegers.
+    static constexpr Integer MAX_FIVE_POW = 340;
+;
+    // Constant for casting an int to a long via bitwise AND.
+    static constexpr Long LONG_MASK = 0xffffffffLL;
+
+    Array<Integer> mData;
+    Integer mOffset;
+    Integer mNWords;
+    Boolean mIsImmutable = false;
 };
+
+inline Integer FDBigInteger::Size()
+{
+    return mNWords + mOffset;
+}
+
+inline FDBigInteger* FDBigInteger::From(
+    /* [in] */ IFDBigInteger* obj)
+{
+    return (FDBigInteger*)obj;
+}
 
 }
 }
+
+#endif // __CCM_MISC_FDBIGINTEGER_H__
