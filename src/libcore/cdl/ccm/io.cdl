@@ -48,6 +48,7 @@ include "ccm/io/IWriter.cdl"
 include "ccm/io/channels/IDirectBuffer.cdl"
 include "ccm/io/channels/IFileChannel.cdl"
 include "ccm/io/charset/ICharset.cdl"
+include "ccm/io/charset/ICharsetDecoder.cdl"
 include "ccm/io/charset/ICharsetEncoder.cdl"
 include "ccm/io/charset/IStreamEncoder.cdl"
 

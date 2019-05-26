@@ -645,6 +645,14 @@ String StringUtils::ToHexString(
     }
 }
 
+ECode StringUtils::ToString(
+    /* [in] */ const String& str,
+    /* [in] */ const String& charsetName,
+    /* [out] */ String* decodedStr)
+{
+    return E_UNSUPPORTED_OPERATION_EXCEPTION;
+}
+
 ECode StringUtils::ReplaceFirst(
     /* [in] */ const String& input,
     /* [in] */ const String& regex,

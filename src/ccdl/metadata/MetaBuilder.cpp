@@ -76,12 +76,14 @@ std::shared_ptr<MetaComponent> MetaBuilder::Build()
     if (!IsValid()) {
         Logger::E(TAG, "The module which used to generate"
                 " metadata is not validate.");
+        return nullptr;
     }
 
     mSize = (int)CalculateMetadataSize();
     void* metadata = calloc(mSize, 1);
     if (metadata == nullptr) {
         Logger::E(TAG, "Out of memory.");
+        return nullptr;
     }
 
     mMetaComponet.reset(

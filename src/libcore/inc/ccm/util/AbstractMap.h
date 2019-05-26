@@ -18,12 +18,15 @@
 #define __CCM_UTIL_ABSTRACTMAP_H__
 
 #include "ccm/core/SyncObject.h"
+#include "ccm.io.ISerializable.h"
 #include "ccm.util.ICollection.h"
 #include "ccm.util.IMap.h"
+#include "ccm.util.IMapEntry.h"
 #include "ccm.util.ISet.h"
 #include <ccmautoptr.h>
 
 using ccm::core::SyncObject;
+using ccm::io::ISerializable;
 
 namespace ccm {
 namespace util {
@@ -32,6 +35,87 @@ class AbstractMap
     : public SyncObject
     , public IMap
 {
+public:
+    class SimpleEntry
+        : public Object
+        , public IMapEntry
+        , public ISerializable
+    {
+    public:
+        CCM_INTERFACE_DECL()
+
+        ECode Constructor(
+            /* [in] */ IInterface* key,
+            /* [in] */ IInterface* value);
+
+        ECode Constructor(
+            /* [in] */ IMapEntry* entry);
+
+        ECode GetKey(
+            /* [out] */ IInterface** key);
+
+        ECode GetValue(
+            /* [out] */ IInterface** value);
+
+        ECode SetValue(
+            /* [in] */ IInterface* value,
+            /* [out] */ IInterface** prevValue = nullptr);
+
+        ECode Equals(
+            /* [in] */ IInterface* object,
+            /* [out] */ Boolean* result);
+
+        ECode GetHashCode(
+            /* [out] */ Integer* hashCode);
+
+        ECode ToString(
+            /* [out] */ String* str);
+
+    private:
+        AutoPtr<IInterface> mKey;
+        AutoPtr<IInterface> mValue;
+    };
+
+    class SimpleImmutableEntry
+        : public Object
+        , public IMapEntry
+        , public ISerializable
+    {
+    public:
+        CCM_INTERFACE_DECL()
+
+        ECode Constructor(
+            /* [in] */ IInterface* key,
+            /* [in] */ IInterface* value);
+
+        ECode Constructor(
+            /* [in] */ IMapEntry* entry);
+
+        ECode GetKey(
+            /* [out] */ IInterface** key);
+
+        ECode GetValue(
+            /* [out] */ IInterface** value);
+
+        ECode SetValue(
+            /* [in] */ IInterface* value,
+            /* [out] */ IInterface** prevValue = nullptr);
+
+        ECode Equals(
+            /* [in] */ IInterface* object,
+            /* [out] */ Boolean* result);
+
+        ECode GetHashCode(
+            /* [out] */ Integer* hashCode);
+
+        ECode ToString(
+            /* [out] */ String* str);
+
+    private:
+        AutoPtr<IInterface> mKey;
+        AutoPtr<IInterface> mValue;
+    };
+
 public:
     CCM_INTERFACE_DECL();
 

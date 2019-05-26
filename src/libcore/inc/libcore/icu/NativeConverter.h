@@ -14,22 +14,28 @@
 // limitations under the License.
 //=========================================================================
 
-namespace ccm {
-namespace io {
+#ifndef __LIBCORE_ICU_NATIVECONVERTER_H__
+#define __LIBCORE_ICU_NATIVECONVERTER_H__
 
-const Integer E_IO_EXCEPTION = 0x80010200;
-const Integer E_IO_SYNC_FAILED_EXCEPTION = 0x80010201;
-const Integer E_FILE_NOT_FOUND_EXCEPTION = 0x80010202;
-const Integer E_USE_MANUAL_SKIP_EXCEPTION = 0x80010203;
-const Integer E_INTERRUPTED_IO_EXCEPTION = 0x80010204;
-const Integer E_UNSUPPORTED_ENCODING_EXCEPTION = 0x80010205;
-const Integer E_INVALID_OBJECT_EXCEPTION = 0x80010206;
-const Integer E_INVALID_MARK_EXCEPTION = 0x80010207;
-const Integer E_BUFFER_UNDERFLOW_EXCEPTION = 0x80010208;
-const Integer E_BUFFER_OVERFLOW_EXCEPTION = 0x80010209;
-const Integer E_READ_ONLY_BUFFER_EXCEPTION = 0x8001020a;
-const Integer E_UNSUPPORTED_CHARSET_EXCEPTION = 0x8001020b;
-const Integer E_ILLEGAL_CHARSET_NAME_EXCEPTION = 0x8001020c;
+#include "ccm.io.charset.ICharset.h"
+
+using ccm::io::charset::ICharset;
+
+namespace libcore {
+namespace icu {
+
+class NativeConverter
+{
+public:
+    static ECode CharsetForName(
+        /* [in] */ const String& charsetName,
+        /* [out] */ ICharset** cs)
+    {
+        return NOERROR;
+    }
+};
 
 }
 }
+
+#endif // __LIBCORE_ICU_NATIVECONVERTER_H__

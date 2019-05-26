@@ -110,6 +110,8 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_util_CProperties.cpp
     ${OBJ_DIR}/_ccm_util_CPropertyPermission.cpp
     ${OBJ_DIR}/_ccm_util_CRandom.cpp
+    ${OBJ_DIR}/_ccm_util_CSimpleEntry.cpp
+    ${OBJ_DIR}/_ccm_util_CSimpleImmutableEntry.cpp
     ${OBJ_DIR}/_ccm_util_CSimpleTimeZone.cpp
     ${OBJ_DIR}/_ccm_util_CStringTokenizer.cpp
     ${OBJ_DIR}/_ccm_util_CTimeZoneFactory.cpp

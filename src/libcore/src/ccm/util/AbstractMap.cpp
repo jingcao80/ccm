@@ -26,6 +26,7 @@
 using ccm::core::CStringBuilder;
 using ccm::core::IStringBuilder;
 using ccm::core::IID_IStringBuilder;
+using ccm::io::IID_ISerializable;
 
 namespace ccm {
 namespace util {
@@ -656,6 +657,183 @@ ECode AbstractMap::ToString(
         sb->Append(U',');
         sb->Append(U' ');
     }
+}
+
+//----------------------------------------------------------------------------
+
+CCM_INTERFACE_IMPL_2(AbstractMap::SimpleEntry, Object, IMapEntry, ISerializable)
+
+ECode AbstractMap::SimpleEntry::Constructor(
+    /* [in] */ IInterface* key,
+    /* [in] */ IInterface* value)
+{
+    mKey = key;
+    mValue = value;
+    return NOERROR;
+}
+
+ECode AbstractMap::SimpleEntry::Constructor(
+    /* [in] */ IMapEntry* entry)
+{
+    entry->GetKey(&mKey);
+    entry->GetValue(&mValue);
+    return NOERROR;
+}
+
+ECode AbstractMap::SimpleEntry::GetKey(
+    /* [out] */ IInterface** key)
+{
+    VALIDATE_NOT_NULL(key)
+
+    *key = mKey;
+    REFCOUNT_ADD(*key)
+    return NOERROR;
+}
+
+ECode AbstractMap::SimpleEntry::GetValue(
+    /* [out] */ IInterface** value)
+{
+    VALIDATE_NOT_NULL(value)
+
+    *value = mValue;
+    REFCOUNT_ADD(*value)
+    return NOERROR;
+}
+
+ECode AbstractMap::SimpleEntry::SetValue(
+    /* [in] */ IInterface* value,
+    /* [out] */ IInterface** prevValue)
+{
+    VALIDATE_NOT_NULL(value)
+
+    AutoPtr<IInterface> oldValue = mValue;
+    mValue = value;
+    if (prevValue != nullptr) {
+        oldValue.MoveTo(prevValue);
+    }
+    return NOERROR;
+}
+
+ECode AbstractMap::SimpleEntry::Equals(
+    /* [in] */ IInterface* object,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+
+    IMapEntry* e = IMapEntry::Probe(object);
+    if (e == nullptr) {
+        *result = false;
+        return NOERROR;
+    }
+    AutoPtr<IInterface> key, value;
+    e->GetKey(&key);
+    e->GetValue(&value);
+    *result = Object::Equals(mKey, key) && Object::Equals(mValue, value);
+    return NOERROR;
+}
+
+ECode AbstractMap::SimpleEntry::GetHashCode(
+    /* [out] */ Integer* hashCode)
+{
+    VALIDATE_NOT_NULL(hashCode)
+
+    *hashCode = (mKey == NULL ? 0 : Object::GetHashCode(mKey)) ^
+            (mValue == NULL ? 0 : Object::GetHashCode(mValue));
+    return NOERROR;
+}
+
+ECode AbstractMap::SimpleEntry::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+
+    *str = Object::ToString(mKey) + "=" + Object::ToString(mValue);
+    return NOERROR;
+}
+
+//---------------------------------------------------------------------------------
+
+CCM_INTERFACE_IMPL_2(AbstractMap::SimpleImmutableEntry, Object, IMapEntry, ISerializable)
+
+ECode AbstractMap::SimpleImmutableEntry::Constructor(
+    /* [in] */ IInterface* key,
+    /* [in] */ IInterface* value)
+{
+    mKey = key;
+    mValue = value;
+    return NOERROR;
+}
+
+ECode AbstractMap::SimpleImmutableEntry::Constructor(
+    /* [in] */ IMapEntry* entry)
+{
+    entry->GetKey(&mKey);
+    entry->GetValue(&mValue);
+    return NOERROR;
+}
+
+ECode AbstractMap::SimpleImmutableEntry::GetKey(
+    /* [out] */ IInterface** key)
+{
+    VALIDATE_NOT_NULL(key)
+
+    *key = mKey;
+    REFCOUNT_ADD(*key)
+    return NOERROR;
+}
+
+ECode AbstractMap::SimpleImmutableEntry::GetValue(
+    /* [out] */ IInterface** value)
+{
+    VALIDATE_NOT_NULL(value)
+
+    *value = mValue;
+    REFCOUNT_ADD(*value)
+    return NOERROR;
+}
+
+ECode AbstractMap::SimpleImmutableEntry::SetValue(
+    /* [in] */ IInterface* value,
+    /* [out] */ IInterface** prevValue)
+{
+    return E_UNSUPPORTED_OPERATION_EXCEPTION;
+}
+
+ECode AbstractMap::SimpleImmutableEntry::Equals(
+    /* [in] */ IInterface* object,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+
+    IMapEntry* e = IMapEntry::Probe(object);
+    if (e == nullptr) {
+        *result = false;
+        return NOERROR;
+    }
+    AutoPtr<IInterface> key, value;
+    e->GetKey(&key);
+    e->GetValue(&value);
+    *result = Object::Equals(mKey, key) && Object::Equals(mValue, value);
+    return NOERROR;
+}
+
+ECode AbstractMap::SimpleImmutableEntry::GetHashCode(
+    /* [out] */ Integer* hashCode)
+{
+    VALIDATE_NOT_NULL(hashCode)
+
+    *hashCode = (mKey == NULL ? 0 : Object::GetHashCode(mKey)) ^
+            (mValue == NULL ? 0 : Object::GetHashCode(mValue));
+    return NOERROR;
+}
+
+ECode AbstractMap::SimpleImmutableEntry::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+
+    *str = Object::ToString(mKey) + "=" + Object::ToString(mValue);
+    return NOERROR;
 }
 
 }

@@ -14,22 +14,24 @@
 // limitations under the License.
 //=========================================================================
 
+#ifndef __CCM_UTIL_CSIMPLEIMMUTABLEENTRY_H__
+#define __CCM_UTIL_CSIMPLEIMMUTABLEENTRY_H__
+
+#include "ccm/util/AbstractMap.h"
+#include "_ccm_util_CSimpleImmutableEntry.h"
+
 namespace ccm {
-namespace io {
+namespace util {
 
-const Integer E_IO_EXCEPTION = 0x80010200;
-const Integer E_IO_SYNC_FAILED_EXCEPTION = 0x80010201;
-const Integer E_FILE_NOT_FOUND_EXCEPTION = 0x80010202;
-const Integer E_USE_MANUAL_SKIP_EXCEPTION = 0x80010203;
-const Integer E_INTERRUPTED_IO_EXCEPTION = 0x80010204;
-const Integer E_UNSUPPORTED_ENCODING_EXCEPTION = 0x80010205;
-const Integer E_INVALID_OBJECT_EXCEPTION = 0x80010206;
-const Integer E_INVALID_MARK_EXCEPTION = 0x80010207;
-const Integer E_BUFFER_UNDERFLOW_EXCEPTION = 0x80010208;
-const Integer E_BUFFER_OVERFLOW_EXCEPTION = 0x80010209;
-const Integer E_READ_ONLY_BUFFER_EXCEPTION = 0x8001020a;
-const Integer E_UNSUPPORTED_CHARSET_EXCEPTION = 0x8001020b;
-const Integer E_ILLEGAL_CHARSET_NAME_EXCEPTION = 0x8001020c;
+Coclass(CSimpleImmutableEntry)
+    , public AbstractMap::SimpleImmutableEntry
+{
+public:
+    CCM_OBJECT_DECL();
+};
 
 }
 }
+
+
+#endif // __CCM_UTIL_CSIMPLEIMMUTABLEENTRY_H__

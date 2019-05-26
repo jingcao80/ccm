@@ -14,6 +14,13 @@
 // limitations under the License.
 //=========================================================================
 
+interface ccm::io::IByteBuffer;
+interface ccm::io::ICharBuffer;
+interface ccm::io::charset::ICharsetDecoder;
+interface ccm::io::charset::ICharsetEncoder;
+interface ccm::util::ILocale;
+interface ccm::util::ISet;
+
 namespace ccm {
 namespace io {
 namespace charset {
@@ -28,7 +35,46 @@ namespace charset {
 ]
 interface ICharset
 {
+    CanEncode(
+        [out] Boolean* supported);
 
+    Contains(
+        [in] ICharset* cs,
+        [out] Boolean* contains);
+
+    Decode(
+        [in] IByteBuffer* bb,
+        [out] ICharBuffer** cb);
+
+    Encode(
+        [in] String str,
+        [out] IByteBuffer** bb);
+
+    Encode(
+        [in] ICharBuffer* cb,
+        [out] IByteBuffer** bb);
+
+    GetAliases(
+        [out] ISet** aliases);
+
+    GetDisplayName(
+        [out] String* name);
+
+    GetDisplayName(
+        [in] ILocale* locale,
+        [out] String* name);
+
+    GetName(
+        [out] String* name);
+
+    IsRegistered(
+        [out] Boolean* registered);
+
+    NewDecoder(
+        [out] ICharsetDecoder** decoder);
+
+    NewEncoder(
+        [out] ICharsetEncoder** encoder);
 }
 
 }

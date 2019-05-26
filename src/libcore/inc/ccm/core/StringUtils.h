@@ -121,10 +121,7 @@ public:
     COM_PUBLIC static ECode ToString(
         /* [in] */ const String& str,
         /* [in] */ const String& charsetName,
-        /* [out] */ String* decodedStr)
-    {
-        return NOERROR;
-    }
+        /* [out] */ String* decodedStr);
 
     COM_PUBLIC static ECode ReplaceFirst(
         /* [in] */ const String& input,

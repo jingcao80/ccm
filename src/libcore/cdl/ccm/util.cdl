@@ -500,6 +500,40 @@ coclass CRandom
 }
 
 [
+    uuid(4a6bdbee-a9dc-4269-b4dc-b18df80fd8a2),
+    version(0.1.0)
+]
+coclass CSimpleEntry
+{
+    Constructor(
+        [in] IInterface* key,
+        [in] IInterface* value);
+
+    Constructor(
+        [in] IMapEntry* entry);
+
+    interface IMapEntry;
+    interface ISerializable;
+}
+
+[
+    uuid(0546ef75-6292-4d8d-a227-5e53f11419ae),
+    version(0.1.0)
+]
+coclass CSimpleImmutableEntry
+{
+    Constructor(
+        [in] IInterface* key,
+        [in] IInterface* value);
+
+    Constructor(
+        [in] IMapEntry* entry);
+
+    interface IMapEntry;
+    interface ISerializable;
+}
+
+[
     uuid(23da10ba-6998-4274-9e3e-f44bfbeaf27b),
     version(0.1.0)
 ]

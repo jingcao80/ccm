@@ -28,6 +28,8 @@
 #include "ccm/util/CProperties.h"
 #include "ccm/util/CPropertyPermission.h"
 #include "ccm/util/CRandom.h"
+#include "ccm/util/CSimpleEntry.h"
+#include "ccm/util/CSimpleImmutableEntry.h"
 #include "ccm/util/CSimpleTimeZone.h"
 #include "ccm/util/CStringTokenizer.h"
 #include "ccm/util/CTreeMap.h"
@@ -474,6 +476,8 @@ ECode CProperties::Clone(
 
 CCM_OBJECT_IMPL(CPropertyPermission);
 CCM_OBJECT_IMPL(CRandom);
+CCM_OBJECT_IMPL(CSimpleEntry);
+CCM_OBJECT_IMPL(CSimpleImmutableEntry);
 
 CCM_OBJECT_IMPL(CSimpleTimeZone);
 ECode CSimpleTimeZone::Clone(
