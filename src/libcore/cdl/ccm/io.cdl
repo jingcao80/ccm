@@ -50,7 +50,9 @@ include "ccm/io/channels/IFileChannel.cdl"
 include "ccm/io/charset/ICharset.cdl"
 include "ccm/io/charset/ICharsetDecoder.cdl"
 include "ccm/io/charset/ICharsetEncoder.cdl"
+include "ccm/io/charset/ICodingErrorAction.cdl"
 include "ccm/io/charset/IStreamEncoder.cdl"
+include "ccm/io/charset/spi/ICharsetProvider.cdl"
 
 interface ccm::core::IAppendable;
 interface ccm::core::IAutoCloseable;

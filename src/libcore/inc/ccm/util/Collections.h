@@ -28,6 +28,7 @@
 #include "ccm.util.IMap.h"
 #include "ccm.util.IRandomAccess.h"
 #include "ccm.util.ISet.h"
+#include "ccm.util.ISortedMap.h"
 #include <ccmautoptr.h>
 #include <ccmrefbase.h>
 
@@ -530,6 +531,12 @@ public:
 
     static AutoPtr<IList> CreateUnmodifiableList(
         /* [in] */ IList* list);
+
+    static AutoPtr<ISortedMap> CreateUnmodifiableSortedMap(
+        /* [in] */ ISortedMap* m)
+    {
+        return nullptr;
+    }
 
     static AutoPtr<ICollection> CreateSynchronizedCollection(
         /* [in] */ ICollection* c,

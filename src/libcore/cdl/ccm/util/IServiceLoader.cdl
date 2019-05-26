@@ -14,33 +14,15 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __LIBCORE_ICU_NATIVECONVERTER_H__
-#define __LIBCORE_ICU_NATIVECONVERTER_H__
+namespace ccm {
+namespace util {
 
-#include "ccm.io.charset.ICharset.h"
-
-using ccm::io::charset::ICharset;
-
-namespace libcore {
-namespace icu {
-
-class NativeConverter
-{
-public:
-    static Array<String> GetAvailableCharsetNames()
-    {
-        return Array<String>::Null();
-    }
-
-    static ECode CharsetForName(
-        /* [in] */ const String& charsetName,
-        /* [out] */ ICharset** cs)
-    {
-        return NOERROR;
-    }
-};
+[
+    uuid(37267664-24c7-460b-9a4f-4beb7ea72276),
+    version(0.1.0)
+]
+interface IServiceLoader
+{}
 
 }
 }
-
-#endif // __LIBCORE_ICU_NATIVECONVERTER_H__

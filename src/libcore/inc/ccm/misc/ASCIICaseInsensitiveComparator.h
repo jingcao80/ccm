@@ -14,33 +14,26 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __LIBCORE_ICU_NATIVECONVERTER_H__
-#define __LIBCORE_ICU_NATIVECONVERTER_H__
+#ifndef __CCM_MISC_ASCIICASEINSENSITIVECOMPARATOR_H__
+#define __CCM_MISC_ASCIICASEINSENSITIVECOMPARATOR_H__
 
-#include "ccm.io.charset.ICharset.h"
+#include "ccm.util.IComparator.h"
 
-using ccm::io::charset::ICharset;
+using ccm::util::IComparator;
 
-namespace libcore {
-namespace icu {
+namespace ccm {
+namespace misc {
 
-class NativeConverter
+class ASCIICaseInsensitiveComparator
 {
 public:
-    static Array<String> GetAvailableCharsetNames()
+    static AutoPtr<IComparator> GetCASE_INSENSITIVE_ORDER()
     {
-        return Array<String>::Null();
-    }
-
-    static ECode CharsetForName(
-        /* [in] */ const String& charsetName,
-        /* [out] */ ICharset** cs)
-    {
-        return NOERROR;
+        return nullptr;
     }
 };
 
 }
 }
 
-#endif // __LIBCORE_ICU_NATIVECONVERTER_H__
+#endif // __CCM_MISC_ASCIICASEINSENSITIVECOMPARATOR_H__

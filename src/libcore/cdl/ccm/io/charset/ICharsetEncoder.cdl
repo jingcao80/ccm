@@ -14,6 +14,10 @@
 // limitations under the License.
 //=========================================================================
 
+interface ccm::io::IByteBuffer;
+interface ccm::io::ICharBuffer;
+interface ccm::io::charset::ICodingErrorAction;
+
 namespace ccm {
 namespace io {
 namespace charset {
@@ -24,7 +28,15 @@ namespace charset {
 ]
 interface ICharsetEncoder
 {
+    Encode(
+        [in] ICharBuffer* cb,
+        [out] IByteBuffer** bb);
 
+    OnMalformedInput(
+        [in] ICodingErrorAction* newAction);
+
+    OnUnmappableCharacter(
+        [in] ICodingErrorAction* newAction);
 }
 
 }

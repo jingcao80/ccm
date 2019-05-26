@@ -14,33 +14,25 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __LIBCORE_ICU_NATIVECONVERTER_H__
-#define __LIBCORE_ICU_NATIVECONVERTER_H__
+#ifndef __CCM_UTIL_SERVICELOADER_H__
+#define __CCM_UTIL_SERVICELOADER_H__
 
-#include "ccm.io.charset.ICharset.h"
+#include "ccm.util.IServiceLoader.h"
 
-using ccm::io::charset::ICharset;
+namespace ccm {
+namespace util {
 
-namespace libcore {
-namespace icu {
-
-class NativeConverter
+class ServiceLoader
 {
 public:
-    static Array<String> GetAvailableCharsetNames()
+    static AutoPtr<IServiceLoader> Load(
+        /* [in] */ const InterfaceID& iid)
     {
-        return Array<String>::Null();
-    }
-
-    static ECode CharsetForName(
-        /* [in] */ const String& charsetName,
-        /* [out] */ ICharset** cs)
-    {
-        return NOERROR;
+        return nullptr;
     }
 };
 
 }
 }
 
-#endif // __LIBCORE_ICU_NATIVECONVERTER_H__
+#endif // __CCM_UTIL_SERVICELOADER_H__

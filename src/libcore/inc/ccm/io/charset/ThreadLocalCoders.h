@@ -14,33 +14,34 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __LIBCORE_ICU_NATIVECONVERTER_H__
-#define __LIBCORE_ICU_NATIVECONVERTER_H__
+#ifndef __CCM_IO_CHARSET_THREADLOCALCODERS_H__
+#define __CCM_IO_CHARSET_THREADLOCALCODERS_H__
 
-#include "ccm.io.charset.ICharset.h"
+#include "ccm.io.charset.ICharsetDecoder.h"
+#include "ccm.io.charset.ICharsetEncoder.h"
 
-using ccm::io::charset::ICharset;
+namespace ccm {
+namespace io {
+namespace charset {
 
-namespace libcore {
-namespace icu {
-
-class NativeConverter
+class ThreadLocalCoders
 {
 public:
-    static Array<String> GetAvailableCharsetNames()
+    static AutoPtr<ICharsetDecoder> DecoderFor(
+        /* [in] */ IInterface* name)
     {
-        return Array<String>::Null();
+        return nullptr;
     }
 
-    static ECode CharsetForName(
-        /* [in] */ const String& charsetName,
-        /* [out] */ ICharset** cs)
+    static AutoPtr<ICharsetEncoder> EncoderFor(
+        /* [in] */ IInterface* name)
     {
-        return NOERROR;
+        return nullptr;
     }
 };
 
 }
 }
+}
 
-#endif // __LIBCORE_ICU_NATIVECONVERTER_H__
+#endif // __CCM_IO_CHARSET_THREADLOCALCODERS_H__
