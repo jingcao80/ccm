@@ -26,8 +26,10 @@ include_directories(
 set(SOURCES
     ICU.cpp
     LocaleData.cpp
+    NativeConverter.cpp
     NativeDecimalFormat.cpp
-    TimeZoneNames.cpp)
+    TimeZoneNames.cpp
+    UStringEnumeration.cpp)
 
 add_library(libcore_icu STATIC
     ${SOURCES})

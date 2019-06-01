@@ -25,6 +25,9 @@ include_directories(
 
 set(SOURCES
     Charset.cpp
+    CharsetDecoder.cpp
+    CharsetEncoder.cpp
+    CharsetICU.cpp
     StreamEncoder.cpp)
 
 add_library(ccm_io_charset STATIC

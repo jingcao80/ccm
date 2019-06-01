@@ -16,7 +16,9 @@
 
 interface ccm::io::IByteBuffer;
 interface ccm::io::ICharBuffer;
+interface ccm::io::charset::ICharset;
 interface ccm::io::charset::ICodingErrorAction;
+interface ccm::io::charset::ICoderResult;
 
 namespace ccm {
 namespace io {
@@ -32,11 +34,53 @@ interface ICharsetDecoder
         [in] IByteBuffer* bb,
         [out] ICharBuffer** cb);
 
+    Decode(
+        [in] IByteBuffer* bb,
+        [out] ICharBuffer* cb,
+        [in] Boolean endOfInput,
+        [out] ICoderResult** result);
+
+    Flush(
+        [out] ICharBuffer* cb,
+        [out] ICoderResult** result);
+
+    GetAverageCharsPerByte(
+        [out] Float* averageCharsPerByte);
+
+    GetCharset(
+        [out] ICharset** cs);
+
+    GetDetectedCharset(
+        [out] ICharset** cs);
+
+    GetMalformedInputAction(
+        [out] ICodingErrorAction** action);
+
+    GetMaxCharsPerByte(
+        [out] Float* maxCharsPerByte);
+
+    GetReplacement(
+        [out] String* replacement);
+
+    GetUnmappableCharacterAction(
+        [out] ICodingErrorAction** action);
+
+    IsAutoDetecting(
+        [out] Boolean* autoDetecting);
+
+    IsCharsetDetected(
+        [out] Boolean* charsetDetected);
+
     OnMalformedInput(
         [in] ICodingErrorAction* newAction);
 
     OnUnmappableCharacter(
         [in] ICodingErrorAction* newAction);
+
+    ReplaceWith(
+        [in] String newReplacement);
+
+    Reset();
 }
 
 }

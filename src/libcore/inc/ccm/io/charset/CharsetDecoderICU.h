@@ -14,31 +14,30 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __LIBCORE_ICU_NATIVECONVERTER_H__
-#define __LIBCORE_ICU_NATIVECONVERTER_H__
+#ifndef __CCM_IO_CHARSET_CHARSETDECODERICU_H__
+#define __CCM_IO_CHARSET_CHARSETDECODERICU_H__
 
 #include "ccm.io.charset.ICharset.h"
+#include "ccm.io.charset.ICharsetDecoder.h"
 
-using ccm::io::charset::ICharset;
+namespace ccm {
+namespace io {
+namespace charset {
 
-namespace libcore {
-namespace icu {
-
-class NativeConverter
+class CharsetDecoderICU
+    : public ICharsetDecoder
 {
 public:
-    static Boolean Contains(
-        /* [in] */ const String& converterName1,
-        /* [in] */ const String& converterName2);
-
-    static Array<String> GetAvailableCharsetNames();
-
-    static ECode CharsetForName(
-        /* [in] */ const String& charsetName,
-        /* [out] */ ICharset** cs);
+    static AutoPtr<CharsetDecoderICU> NewInstance(
+        /* [in] */ ICharset* cs,
+        /* [in] */ const String& icuCanonicalName)
+    {
+        return nullptr;
+    }
 };
 
 }
 }
+}
 
-#endif // __LIBCORE_ICU_NATIVECONVERTER_H__
+#endif // __CCM_IO_CHARSET_CHARSETDECODERICU_H__

@@ -14,31 +14,28 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __LIBCORE_ICU_NATIVECONVERTER_H__
-#define __LIBCORE_ICU_NATIVECONVERTER_H__
+#ifndef __CCM_IO_CHARSET_CODERRESULT_H__
+#define __CCM_IO_CHARSET_CODERRESULT_H__
 
-#include "ccm.io.charset.ICharset.h"
+#include "ccm.io.charset.ICoderResult.h"
 
-using ccm::io::charset::ICharset;
+namespace ccm {
+namespace io {
+namespace charset {
 
-namespace libcore {
-namespace icu {
-
-class NativeConverter
+class CoderResult
 {
 public:
-    static Boolean Contains(
-        /* [in] */ const String& converterName1,
-        /* [in] */ const String& converterName2);
+    static AutoPtr<ICoderResult> MalformedForLength(
+        /* [in] */ Integer length);
 
-    static Array<String> GetAvailableCharsetNames();
+    static AutoPtr<ICoderResult> GetUNDERFLOW();
 
-    static ECode CharsetForName(
-        /* [in] */ const String& charsetName,
-        /* [out] */ ICharset** cs);
+    static AutoPtr<ICoderResult> GetOVERFLOW();
 };
 
 }
 }
+}
 
-#endif // __LIBCORE_ICU_NATIVECONVERTER_H__
+#endif // __CCM_IO_CHARSET_CODERRESULT_H__

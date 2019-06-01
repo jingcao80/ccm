@@ -14,9 +14,11 @@
 // limitations under the License.
 //=========================================================================
 
+interface ccm::core::ICharSequence;
 interface ccm::io::IByteBuffer;
 interface ccm::io::ICharBuffer;
 interface ccm::io::charset::ICodingErrorAction;
+interface ccm::io::charset::ICoderResult;
 
 namespace ccm {
 namespace io {
@@ -28,15 +30,60 @@ namespace charset {
 ]
 interface ICharsetEncoder
 {
+    CanEncode(
+        [in] Char c,
+        [out] Boolean* result);
+
+    CanEncode(
+        [in] ICharSequence* cs,
+        [out] Boolean* result);
+
     Encode(
         [in] ICharBuffer* cb,
         [out] IByteBuffer** bb);
+
+    Encode(
+        [in] ICharBuffer* cb,
+        [out] IByteBuffer* bb,
+        [in] Boolean endOfInput,
+        [out] ICoderResult** result);
+
+    Flush(
+        [out] IByteBuffer* bb,
+        [out] ICoderResult** result);
+
+    GetAverageBytesPerChar(
+        [out] Float* averageBytesPerChar);
+
+    GetCharset(
+        [out] ICharset** cs);
+
+    GetMalformedInputAction(
+        [out] ICodingErrorAction** action);
+
+    GetMaxBytesPerChar(
+        [out] Float* maxBytesPerChar);
+
+    GetReplacement(
+        [out, callee] Array<Byte>* replacement);
+
+    GetUnmappableCharacterAction(
+        [out] ICodingErrorAction** action);
+
+    IsLegalReplacement(
+        [in] Array<Byte> repl,
+        [out] Boolean* isLegal);
 
     OnMalformedInput(
         [in] ICodingErrorAction* newAction);
 
     OnUnmappableCharacter(
         [in] ICodingErrorAction* newAction);
+
+    ReplaceWith(
+        [in] Array<Byte> newReplacement);
+
+    Reset();
 }
 
 }

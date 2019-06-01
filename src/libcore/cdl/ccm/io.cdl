@@ -14,6 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
+include "ccm/io/Errors.cdl"
 include "ccm/io/Exceptions.cdl"
 include "ccm/io/IBuffer.cdl"
 include "ccm/io/IBufferedWriter.cdl"
@@ -51,6 +52,7 @@ include "ccm/io/charset/ICharset.cdl"
 include "ccm/io/charset/ICharsetDecoder.cdl"
 include "ccm/io/charset/ICharsetEncoder.cdl"
 include "ccm/io/charset/ICodingErrorAction.cdl"
+include "ccm/io/charset/ICoderResult.cdl"
 include "ccm/io/charset/IStreamEncoder.cdl"
 include "ccm/io/charset/spi/ICharsetProvider.cdl"
 

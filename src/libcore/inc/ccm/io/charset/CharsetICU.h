@@ -14,22 +14,42 @@
 // limitations under the License.
 //=========================================================================
 
+#ifndef __CCM_IO_CHARSET_CHARSETICU_H__
+#define __CCM_IO_CHARSET_CHARSETICU_H__
+
+#include "ccm/io/charset/Charset.h"
+#include "ccm.io.charset.ICharsetDecoder.h"
+#include "ccm.io.charset.ICharsetEncoder.h"
+
 namespace ccm {
 namespace io {
+namespace charset {
 
-const Integer E_IO_EXCEPTION = 0x80010300;
-const Integer E_IO_SYNC_FAILED_EXCEPTION = 0x80010301;
-const Integer E_FILE_NOT_FOUND_EXCEPTION = 0x80010302;
-const Integer E_USE_MANUAL_SKIP_EXCEPTION = 0x80010303;
-const Integer E_INTERRUPTED_IO_EXCEPTION = 0x80010304;
-const Integer E_UNSUPPORTED_ENCODING_EXCEPTION = 0x80010305;
-const Integer E_INVALID_OBJECT_EXCEPTION = 0x80010306;
-const Integer E_INVALID_MARK_EXCEPTION = 0x80010307;
-const Integer E_BUFFER_UNDERFLOW_EXCEPTION = 0x80010308;
-const Integer E_BUFFER_OVERFLOW_EXCEPTION = 0x80010309;
-const Integer E_READ_ONLY_BUFFER_EXCEPTION = 0x8001030a;
-const Integer E_UNSUPPORTED_CHARSET_EXCEPTION = 0x8001030b;
-const Integer E_ILLEGAL_CHARSET_NAME_EXCEPTION = 0x8001030c;
+class CharsetICU
+    : public Charset
+{
+public:
+    ECode Constructor(
+        /* [in] */ const String& canonicalName,
+        /* [in] */ const String& icuCanonName,
+        /* [in] */ const Array<String>& aliases);
+
+    ECode NewDecoder(
+        /* [out] */ ICharsetDecoder** decoder) override;
+
+    ECode NewEncoder(
+        /* [out] */ ICharsetEncoder** encoder) override;
+
+    ECode Contains(
+        /* [in] */ ICharset* cs,
+        /* [out] */ Boolean* contains) override;
+
+private:
+    String mIcuCanonicalName;
+};
 
 }
 }
+}
+
+#endif // __CCM_IO_CHARSET_CHARSETICU_H__

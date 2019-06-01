@@ -26,7 +26,17 @@ namespace charset {
 class CodingErrorAction
 {
 public:
+    static AutoPtr<ICodingErrorAction> GetIGNORE()
+    {
+        return nullptr;
+    }
+
     static AutoPtr<ICodingErrorAction> GetREPLACE()
+    {
+        return nullptr;
+    }
+
+    static AutoPtr<ICodingErrorAction> GetREPORT()
     {
         return nullptr;
     }
