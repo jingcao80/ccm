@@ -192,6 +192,38 @@ Array<IInterface*> CoreUtils::Unbox(
     return objArray;
 }
 
+Array<Short> CoreUtils::ToUTF16Chars(
+    /* [in] */ const Array<Char>& chars)
+{
+    Array<Short> utf16chars;
+    if (chars.IsNull()) {
+        return utf16chars;
+    }
+
+    Long size = chars.GetLength();
+    utf16chars = Array<Short>(size);
+    for (Long i = 0; i < size; i++) {
+        utf16chars[i] = chars[i];
+    }
+    return utf16chars;
+}
+
+ECode CoreUtils::ToChars(
+    /* [in] */ const Array<Short>& utf16chars,
+    /* [out] */ Array<Char>& chars)
+{
+    if (utf16chars.IsNull() || chars.IsNull()) {
+        return NOERROR;
+    }
+
+    Long size = chars.GetLength() <= utf16chars.GetLength() ?
+            chars.GetLength() : utf16chars.GetLength();
+    for (Long i = 0; i < size; i++) {
+        chars[i] = utf16chars[i];
+    }
+    return NOERROR;
+}
+
 Boolean CoreUtils::GetBoolean(
     /* [in] */ const String& name)
 {

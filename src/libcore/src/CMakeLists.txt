@@ -26,6 +26,7 @@ include_directories(
     ../inc
     ../inc/ccm/core
     ../inc/ccm/io
+    ../inc/ccm/io/charset
     ../inc/ccm/math
     ../inc/ccm/misc
     ../inc/ccm/security
@@ -76,6 +77,7 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_io_COutputStreamWriter.cpp
     ${OBJ_DIR}/_ccm_io_CPrintWriter.cpp
     ${OBJ_DIR}/_ccm_io_CStringWriter.cpp
+    ${OBJ_DIR}/_ccm_io_charset_CCharsetFactory.cpp
     ${OBJ_DIR}/_ccm_math_CBigDecimal.cpp
     ${OBJ_DIR}/_ccm_math_CBigDecimalFactory.cpp
     ${OBJ_DIR}/_ccm_math_CBigInteger.cpp

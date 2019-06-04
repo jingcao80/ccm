@@ -24,10 +24,14 @@ include_directories(
     ${OBJ_DIR})
 
 set(SOURCES
+    CCharsetFactory.cpp
     Charset.cpp
     CharsetDecoder.cpp
+    CharsetDecoderICU.cpp
     CharsetEncoder.cpp
+    CharsetEncoderICU.cpp
     CharsetICU.cpp
+    CoderResult.cpp
     StreamEncoder.cpp)
 
 add_library(ccm_io_charset STATIC

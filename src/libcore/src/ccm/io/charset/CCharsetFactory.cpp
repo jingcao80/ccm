@@ -14,23 +14,31 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_UTIL_EMPTYARRAY_H__
-#define __CCM_UTIL_EMPTYARRAY_H__
+#include "ccm/io/charset/Charset.h"
+#include "ccm/io/charset/CCharsetFactory.h"
 
-#include "ccmtypes.h"
+namespace ccm {
+namespace io {
+namespace charset {
 
-namespace ccm  {
-namespace util {
+CCM_INTERFACE_IMPL_1(CCharsetFactory, Object, ICharsetFactory);
 
-class EmptyArray
+CCM_OBJECT_IMPL(CCharsetFactory);
+
+ECode CCharsetFactory::ForName(
+    /* [in] */ const String& charsetName,
+    /* [out] */ ICharset** cs)
 {
-public:
-    COM_PUBLIC static const Array<Byte> BYTE;
-    COM_PUBLIC static const Array<Char> CHAR;
-    COM_PUBLIC static const Array<String> STRING;
-};
+    return Charset::ForName(charsetName, cs);
+}
+
+ECode CCharsetFactory::ForNameUEE(
+    /* [in] */ const String& charsetName,
+    /* [out] */ ICharset** cs)
+{
+    return Charset::ForNameUEE(charsetName, cs);
+}
 
 }
 }
-
-#endif // __CCM_UTIL_EMPTYARRAY_H__
+}

@@ -108,6 +108,72 @@ private:
         AutoPtr<ICollection> mC;
     };
 
+    class UnmodifiableSet
+        : public UnmodifiableCollection
+        , public ISet
+    {
+    public:
+        UnmodifiableSet(
+            /* [in] */ ISet* set)
+            : UnmodifiableCollection(ICollection::Probe(set))
+        {}
+
+        CCM_INTERFACE_DECL();
+
+        ECode Equals(
+            /* [in] */ IInterface* obj,
+            /* [out] */ Boolean* result) override;
+
+        ECode GetHashCode(
+            /* [out] */ Integer* hash) override;
+
+        ECode Add(
+            /* [in] */ IInterface* obj,
+            /* [out] */ Boolean* modified = nullptr) override;
+
+        ECode AddAll(
+            /* [in] */ ICollection* c,
+            /* [out] */ Boolean* changed = nullptr) override;
+
+        ECode Clear() override;
+
+        ECode Contains(
+            /* [in] */ IInterface* obj,
+            /* [out] */ Boolean* result) override;
+
+        ECode ContainsAll(
+            /* [in] */ ICollection* c,
+            /* [out] */ Boolean* result) override;
+
+        ECode GetIterator(
+            /* [out] */ IIterator** it) override;
+
+        ECode GetSize(
+            /* [out] */ Integer* size) override;
+
+        ECode IsEmpty(
+            /* [out] */ Boolean* result) override;
+
+        ECode Remove(
+            /* [in] */ IInterface* obj,
+            /* [out] */ Boolean* contained = nullptr) override;
+
+        ECode RemoveAll(
+            /* [in] */ ICollection* c,
+            /* [out] */ Boolean* changed = nullptr) override;
+
+        ECode RetainAll(
+            /* [in] */ ICollection* c,
+            /* [out] */ Boolean* changed = nullptr) override;
+
+        ECode ToArray(
+            /* [out, callee] */ Array<IInterface*>* objs) override;
+
+        ECode ToArray(
+            /* [in] */ const InterfaceID& iid,
+            /* [out, callee] */ Array<IInterface*>* objs) override;
+    };
+
     class UnmodifiableList
         : public UnmodifiableCollection
         , public IList
@@ -524,10 +590,7 @@ public:
         /* [in] */ Integer j);
 
     static AutoPtr<ISet> CreateUnmodifiableSet(
-        /* [in] */ ISet* set)
-    {
-        return nullptr;
-    }
+        /* [in] */ ISet* set);
 
     static AutoPtr<IList> CreateUnmodifiableList(
         /* [in] */ IList* list);

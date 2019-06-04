@@ -77,6 +77,21 @@ interface ICharset
         [out] ICharsetEncoder** encoder);
 }
 
+[
+    uuid(317cae1e-cb95-4223-a69e-9e39bfc308de),
+    version(0.1.0)
+]
+interface ICharsetFactory
+{
+    ForName(
+        [in] String charsetName,
+        [out] ICharset** cs);
+
+    ForNameUEE(
+        [in] String charsetName,
+        [out] ICharset** cs);
+}
+
 }
 }
 }

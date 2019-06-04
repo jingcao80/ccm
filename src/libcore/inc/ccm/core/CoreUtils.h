@@ -78,6 +78,13 @@ public:
     COM_PUBLIC static Array<IInterface*> Unbox(
         /* [in] */ IArray* arrObj);
 
+    COM_PUBLIC static Array<Short> ToUTF16Chars(
+        /* [in] */ const Array<Char>& chars);
+
+    COM_PUBLIC static ECode ToChars(
+        /* [in] */ const Array<Short>& utf16chars,
+        /* [out] */ Array<Char>& chars);
+
     COM_PUBLIC static Boolean GetBoolean(
         /* [in] */ const String& name);
 

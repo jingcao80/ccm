@@ -40,11 +40,8 @@ ECode CharsetICU::NewDecoder(
 {
     VALIDATE_NOT_NULL(decoder);
 
-    AutoPtr<CharsetDecoderICU> decoderICU = CharsetDecoderICU::NewInstance(
-            this, mIcuCanonicalName);
-    *decoder = (ICharsetDecoder*)decoderICU.Get();
-    REFCOUNT_ADD(*decoder);
-    return NOERROR;
+    return CharsetDecoderICU::NewInstance(
+            this, mIcuCanonicalName, decoder);
 }
 
 ECode CharsetICU::NewEncoder(
@@ -52,11 +49,8 @@ ECode CharsetICU::NewEncoder(
 {
     VALIDATE_NOT_NULL(encoder);
 
-    AutoPtr<CharsetEncoderICU> encoderICU = CharsetEncoderICU::NewInstance(
-            this, mIcuCanonicalName);
-    *encoder = (ICharsetEncoder*)encoderICU.Get();
-    REFCOUNT_ADD(*encoder);
-    return NOERROR;
+    return CharsetEncoderICU::NewInstance(
+            this, mIcuCanonicalName, encoder);
 }
 
 ECode CharsetICU::Contains(

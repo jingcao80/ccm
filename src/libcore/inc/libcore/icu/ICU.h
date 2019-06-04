@@ -51,6 +51,9 @@ public:
         return Array<ILocale*>::Null();
     }
 
+    inline static Boolean U_FAILURE(
+        /* [in] */ Integer error);
+
     static String GetISO3Country(
         /* [in] */ const String& languageTag)
     {
@@ -157,7 +160,21 @@ public:
 
 private:
     ICU();
+
+public:
+    // Just the subset of error codes needed by CharsetDecoderICU/CharsetEncoderICU.
+    static constexpr Integer U_ZERO_ERROR_ = 0;
+    static constexpr Integer U_INVALID_CHAR_FOUND_ = 10;
+    static constexpr Integer U_TRUNCATED_CHAR_FOUND_ = 11;
+    static constexpr Integer U_ILLEGAL_CHAR_FOUND_ = 12;
+    static constexpr Integer U_BUFFER_OVERFLOW_ERROR_ = 15;
 };
+
+Boolean ICU::U_FAILURE(
+    /* [in] */ Integer error)
+{
+    return error > U_ZERO_ERROR_;
+}
 
 }
 }

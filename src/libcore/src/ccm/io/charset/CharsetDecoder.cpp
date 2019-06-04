@@ -26,6 +26,8 @@ namespace ccm {
 namespace io {
 namespace charset {
 
+CCM_INTERFACE_IMPL_1(CharsetDecoder, SyncObject, ICharsetDecoder);
+
 ECode CharsetDecoder::Constructor(
     /* [in] */ ICharset* cs,
     /* [in] */ Float averageCharsPerByte,
@@ -251,7 +253,8 @@ ECode CharsetDecoder::Flush(
     VALIDATE_NOT_NULL(result);
 
     if (mState == ST_END) {
-        AutoPtr<ICoderResult> cr = ImplFlush(cb);
+        AutoPtr<ICoderResult> cr;
+        FAIL_RETURN(ImplFlush(cb, &cr));
         Boolean underflow;
         if (cr->IsUnderflow(&underflow), underflow) {
             mState = ST_FLUSHED;
@@ -269,10 +272,12 @@ ECode CharsetDecoder::Flush(
     return NOERROR;
 }
 
-AutoPtr<ICoderResult> CharsetDecoder::ImplFlush(
-    /* [out] */ ICharBuffer* cb)
+ECode CharsetDecoder::ImplFlush(
+    /* [out] */ ICharBuffer* cb,
+    /* [out] */ ICoderResult** result)
 {
-    return CoderResult::GetUNDERFLOW();
+    CoderResult::GetUNDERFLOW().MoveTo(result);
+    return NOERROR;
 }
 
 ECode CharsetDecoder::Reset()

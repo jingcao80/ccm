@@ -36,6 +36,8 @@ class CharsetEncoder
     , public ICharsetEncoder
 {
 public:
+    CCM_INTERFACE_DECL();
+
     ECode GetCharset(
         /* [out] */ ICharset** cs) override;
 
@@ -101,6 +103,13 @@ protected:
     ECode Constructor(
         /* [in] */ ICharset* cs,
         /* [in] */ Float averageBytesPerChar,
+        /* [in] */ Float maxBytesPerChar,
+        /* [in] */ const Array<Byte>& replacement,
+        /* [in] */ Boolean trusted);
+
+    ECode Constructor(
+        /* [in] */ ICharset* cs,
+        /* [in] */ Float averageBytesPerChar,
         /* [in] */ Float maxBytesPerChar);
 
     virtual void ImplReplaceWith(
@@ -115,8 +124,9 @@ protected:
         /* [in] */ ICodingErrorAction* newAction)
     {}
 
-    virtual AutoPtr<ICoderResult> ImplFlush(
-        /* [out] */ IByteBuffer* bb);
+    virtual ECode ImplFlush(
+        /* [out] */ IByteBuffer* bb,
+        /* [out] */ ICoderResult** cr);
 
     virtual void ImplReset()
     {}
@@ -127,13 +137,6 @@ protected:
         /* [out] */ ICoderResult** result) = 0;
 
 private:
-    ECode Constructor(
-        /* [in] */ ICharset* cs,
-        /* [in] */ Float averageBytesPerChar,
-        /* [in] */ Float maxBytesPerChar,
-        /* [in] */ const Array<Byte>& replacement,
-        /* [in] */ Boolean trusted);
-
     Boolean CanEncode(
         /* [in] */ ICharBuffer* cb);
 

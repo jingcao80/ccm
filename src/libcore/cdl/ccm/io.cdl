@@ -325,5 +325,18 @@ coclass CStringWriter
     interface IAutoCloseable;
 }
 
+namespace charset {
+
+[
+    uuid(45cd0dfe-950d-4617-b137-7b39ed3f219c),
+    version(0.1.0)
+]
+coclass CCharsetFactory
+{
+    interface ICharsetFactory;
+}
+
+}
+
 }
 }

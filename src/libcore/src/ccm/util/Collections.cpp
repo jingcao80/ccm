@@ -62,6 +62,12 @@ void Collections::Swap(
     list->Set(i, e2);
 }
 
+AutoPtr<ISet> Collections::CreateUnmodifiableSet(
+    /* [in] */ ISet* set)
+{
+    return new UnmodifiableSet(set);
+}
+
 AutoPtr<IList> Collections::CreateUnmodifiableList(
     /* [in] */ IList* list)
 {
@@ -272,6 +278,114 @@ ECode Collections::UnmodifiableCollection::RetainAll(
 ECode Collections::UnmodifiableCollection::Clear()
 {
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
+}
+
+//----------------------------------------------------------------
+
+CCM_INTERFACE_IMPL_1(Collections::UnmodifiableSet, UnmodifiableCollection, ISet);
+
+ECode Collections::UnmodifiableSet::Equals(
+    /* [in] */ IInterface* obj,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    if ((ISet*)this == ISet::Probe(obj)) {
+        *result = true;
+        return NOERROR;
+    }
+    return IObject::Probe(mC)->Equals(obj, result);
+}
+
+ECode Collections::UnmodifiableSet::GetHashCode(
+    /* [out] */ Integer* hash)
+{
+    return IObject::Probe(mC)->GetHashCode(hash);
+}
+
+ECode Collections::UnmodifiableSet::Add(
+    /* [in] */ IInterface* obj,
+    /* [out] */ Boolean* modified)
+{
+    return UnmodifiableCollection::Add(obj, modified);
+}
+
+ECode Collections::UnmodifiableSet::AddAll(
+    /* [in] */ ICollection* c,
+    /* [out] */ Boolean* changed)
+{
+    return UnmodifiableCollection::AddAll(c, changed);
+}
+
+ECode Collections::UnmodifiableSet::Clear()
+{
+    return UnmodifiableCollection::Clear();
+}
+
+ECode Collections::UnmodifiableSet::Contains(
+    /* [in] */ IInterface* obj,
+    /* [out] */ Boolean* result)
+{
+    return UnmodifiableCollection::Contains(obj, result);
+}
+
+ECode Collections::UnmodifiableSet::ContainsAll(
+    /* [in] */ ICollection* c,
+    /* [out] */ Boolean* result)
+{
+    return UnmodifiableCollection::ContainsAll(c, result);
+}
+
+ECode Collections::UnmodifiableSet::GetIterator(
+    /* [out] */ IIterator** it)
+{
+    return UnmodifiableCollection::GetIterator(it);
+}
+
+ECode Collections::UnmodifiableSet::GetSize(
+    /* [out] */ Integer* size)
+{
+    return UnmodifiableCollection::GetSize(size);
+}
+
+ECode Collections::UnmodifiableSet::IsEmpty(
+    /* [out] */ Boolean* result)
+{
+    return UnmodifiableCollection::IsEmpty(result);
+}
+
+ECode Collections::UnmodifiableSet::Remove(
+    /* [in] */ IInterface* obj,
+    /* [out] */ Boolean* contained)
+{
+    return UnmodifiableCollection::Remove(obj, contained);
+}
+
+ECode Collections::UnmodifiableSet::RemoveAll(
+    /* [in] */ ICollection* c,
+    /* [out] */ Boolean* changed)
+{
+    return UnmodifiableCollection::RemoveAll(c, changed);
+}
+
+ECode Collections::UnmodifiableSet::RetainAll(
+    /* [in] */ ICollection* c,
+    /* [out] */ Boolean* changed)
+{
+    return UnmodifiableCollection::RetainAll(c, changed);
+}
+
+ECode Collections::UnmodifiableSet::ToArray(
+    /* [out, callee] */ Array<IInterface*>* objs)
+{
+    return UnmodifiableCollection::ToArray(objs);
+}
+
+ECode Collections::UnmodifiableSet::ToArray(
+    /* [in] */ const InterfaceID& iid,
+    /* [out, callee] */ Array<IInterface*>* objs)
+{
+    return UnmodifiableCollection::ToArray(iid, objs);
 }
 
 //----------------------------------------------------------------

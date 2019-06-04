@@ -505,7 +505,7 @@ ECode HashMap::ContainsValue(
 ECode HashMap::GetKeySet(
     /* [out] */ ISet** keys)
 {
-    VALIDATE_NOT_NULL(*keys);
+    VALIDATE_NOT_NULL(keys);
 
     AutoPtr<ISet> ks = mKeySet;
     if (ks == nullptr) {

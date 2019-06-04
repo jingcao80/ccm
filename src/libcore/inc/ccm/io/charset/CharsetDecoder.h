@@ -37,6 +37,8 @@ class CharsetDecoder
     , public ICharsetDecoder
 {
 public:
+    CCM_INTERFACE_DECL();
+
     ECode GetCharset(
         /* [out] */ ICharset** cs) override;
 
@@ -107,8 +109,9 @@ protected:
         /* [in] */ ICodingErrorAction* newAction)
     {}
 
-    virtual AutoPtr<ICoderResult> ImplFlush(
-        /* [out] */ ICharBuffer* cb);
+    virtual ECode ImplFlush(
+        /* [out] */ ICharBuffer* cb,
+        /* [out] */ ICoderResult** result);
 
     virtual void ImplReset()
     {}
@@ -116,7 +119,7 @@ protected:
     virtual ECode DecodeLoop(
         /* [in] */ IByteBuffer* bb,
         /* [out] */ ICharBuffer* cb,
-        /* [out] */ ICoderResult** cr) = 0;
+        /* [out] */ ICoderResult** result) = 0;
 
 private:
     ECode Constructor(
