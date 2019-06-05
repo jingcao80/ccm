@@ -14,14 +14,30 @@
 // limitations under the License.
 //=========================================================================
 
+#include "ccm/core/AutoLock.h"
 #include "ccm/core/CInteger.h"
+#include "ccm/core/CoreUtils.h"
+#include "ccm/core/StringUtils.h"
+#include "ccm/util/CHashMap.h"
+#include "ccm/util/CLinkedHashSet.h"
+#include "ccm/util/CLocaleBuilder.h"
+#include "ccm/util/Collections.h"
+#include "ccm.core.IChar.h"
+#include "ccm.core.ICharSequence.h"
+#include "ccm.util.IIterator.h"
+#include "ccm.util.IMap.h"
+#include "ccm.util.IMapEntry.h"
+#include "ccm.util.ISet.h"
 #include "libcore/icu/ICU.h"
 #include "libcore/icu/StringByteSink.h"
+#include "libcore/icu/UStringEnumeration.h"
+#include <coredef.h>
 #include <memory>
 #include <unicode/brkiter.h>
 #include <unicode/calendar.h>
-#include <unicode/dtfmtsym.h>
 #include <unicode/decimfmt.h>
+#include <unicode/dtfmtsym.h>
+#include <unicode/dtptngen.h>
 #include <unicode/locid.h>
 #include <unicode/ucurr.h>
 #include <unicode/uloc.h>
@@ -30,10 +46,28 @@
 #include <unicode/utypes.h>
 #include <unicode/udata.h>
 
+using ccm::core::AutoLock;
 using ccm::core::CInteger;
+using ccm::core::CoreUtils;
 using ccm::core::E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+using ccm::core::IChar;
+using ccm::core::ICharSequence;
 using ccm::core::IID_IInteger;
 using ccm::core::IInteger;
+using ccm::core::StringUtils;
+using ccm::util::CHashMap;
+using ccm::util::CLinkedHashSet;
+using ccm::util::CLocaleBuilder;
+using ccm::util::Collections;
+using ccm::util::IID_ILocale;
+using ccm::util::IID_ILocaleBuilder;
+using ccm::util::IID_IMap;
+using ccm::util::IID_ISet;
+using ccm::util::IIterator;
+using ccm::util::ILocaleBuilder;
+using ccm::util::IMap;
+using ccm::util::IMapEntry;
+using ccm::util::ISet;
 
 U_CDECL_BEGIN
 
@@ -47,6 +81,32 @@ U_CDECL_END
 
 namespace libcore {
 namespace icu {
+
+static Array<String> ToStringArray(
+    /* [in] */ const char* const* strings)
+{
+    size_t count = 0;
+    while (strings[count] != nullptr) {
+        count++;
+    }
+
+    Array<String> strArray(count);
+    for (size_t i = 0; i < count; i++) {
+        strArray[i] = strings[i];
+    }
+    return strArray;
+}
+
+template <typename Counter, typename Getter>
+static Array<String> ToStringArray(Counter* counter, Getter* getter)
+{
+    size_t count = (*counter)();
+    Array<String> strArray(count);
+    for (size_t i = 0; i < count; ++i) {
+        strArray[i] = (*getter)(i);
+    }
+    return strArray;
+}
 
 ECode MaybeThrowIcuException(
     /* [in] */ const char* provider,
@@ -85,6 +145,32 @@ inline String ToUTF8String(
     StringByteSink sink;
     value.toUTF8(sink);
     return sink.ToString();
+}
+
+Array<String> FromStringEnumeration(
+    /* [in] */ UErrorCode& status,
+    /* [in] */ const char* provider,
+    /* [in] */ ::icu::StringEnumeration* se)
+{
+    Array<String> result;
+    if (FAILED(MaybeThrowIcuException(provider, status))) {
+        return result;
+    }
+
+    int32_t count = se->count(status);
+    if (FAILED(MaybeThrowIcuException("StringEnumeration::count", status))) {
+        return result;
+    }
+
+    result = Array<String>(count);
+    for (int32_t i = 0; i < count; ++i) {
+        const ::icu::UnicodeString* string = se->snext(status);
+        if (FAILED(MaybeThrowIcuException("StringEnumeration::snext", status))) {
+            return Array<String>::Null();
+        }
+        result[i] = ToUTF8String(*string);
+    }
+    return result;
 }
 
 class ScopedResourceBundle
@@ -188,13 +274,6 @@ static String GetCurrencyName(
         }
     }
     return (charCount == 0) ? String() : ToUTF8String(::icu::UnicodeString(chars, charCount));
-}
-
-static String ICU_getCurrencySymbol(
-    /* [in] */ const String& languageTag,
-    /* [in] */ const String& currencyCode)
-{
-    return GetCurrencyName(languageTag, currencyCode, UCURR_SYMBOL_NAME);
 }
 
 static Array<String> GetStringArrayField(
@@ -420,6 +499,574 @@ static Boolean GetYesterdayTodayAndTomorrow(
     return true;
 }
 
+Array<ILocale*> ICU::sAvailableLocalesCache;
+Array<String> ICU::sIsoCountries;
+Array<String> ICU::sIsoLanguages;
+
+static AutoPtr<BasicLruCache> CreateBasicLruCache(
+    /* [in] */ Integer maxSize)
+{
+    AutoPtr<BasicLruCache> blc = new BasicLruCache();
+    blc->Constructor(maxSize);
+    return blc;
+}
+
+AutoPtr<BasicLruCache> ICU::GetCACHED_PATTERNS()
+{
+    static AutoPtr<BasicLruCache> CACHED_PATTERNS = CreateBasicLruCache(8);
+    return CACHED_PATTERNS;
+}
+
+Array<String> ICU::GetISOLanguages()
+{
+    if (sIsoLanguages.IsNull()) {
+        sIsoLanguages = ToStringArray(::icu::Locale::getISOLanguages());
+    }
+    return sIsoLanguages.Clone();
+}
+
+Array<String> ICU::GetISOCountries()
+{
+    if (sIsoCountries.IsNull()) {
+        sIsoCountries = ToStringArray(::icu::Locale::getISOCountries());
+    }
+    return sIsoCountries.Clone();
+}
+
+void ICU::ParseLangScriptRegionAndVariants(
+    /* [in] */ const String& string,
+    /* [out] */ Array<String>& outputArray)
+{
+    Integer first = string.IndexOf('_');
+    Integer second = string.IndexOf('_', first + 1);
+    Integer third = string.IndexOf('_', second + 1);
+
+    if (first == -1) {
+        outputArray[IDX_LANGUAGE] = string;
+    }
+    else if (second == -1) {
+        // Language and country ("ja_JP") OR
+        // Language and script ("en_Latn") OR
+        // Language and variant ("en_POSIX").
+        outputArray[IDX_LANGUAGE] = string.Substring(0, first);
+        String secondString = string.Substring(first + 1);
+
+        if (secondString.GetLength() == 4) {
+            // 4 Letter ISO script code.
+            outputArray[IDX_SCRIPT] = secondString;
+        }
+        else if (secondString.GetLength() == 2 || secondString.GetLength() == 3) {
+            // 2 or 3 Letter region code.
+            outputArray[IDX_REGION] = secondString;
+        }
+        else {
+            // If we're here, the length of the second half is either 1 or greater
+            // than 5. Assume that ICU won't hand us malformed tags, and therefore
+            // assume the rest of the string is a series of variant tags.
+            outputArray[IDX_VARIANT] = secondString;
+        }
+    }
+    else if (third == -1) {
+        // Language and country and variant ("ja_JP_TRADITIONAL") OR
+        // Language and script and variant ("en_Latn_POSIX") OR
+        // Language and script and region ("en_Latn_US"). OR
+        // Language and variant with multiple subtags ("en_POSIX_XISOP")
+        outputArray[IDX_LANGUAGE] = string.Substring(0, first);
+        String secondString = string.Substring(first + 1, second);
+        String thirdString = string.Substring(second + 1);
+
+        if (secondString.GetLength() == 4) {
+            // The second subtag is a script.
+            outputArray[IDX_SCRIPT] = secondString;
+
+            // The third subtag can be either a region or a variant, depending
+            // on its length.
+            if (thirdString.GetLength() == 2 || thirdString.GetLength() == 3 ||
+                    thirdString.IsEmpty()) {
+                outputArray[IDX_REGION] = thirdString;
+            }
+            else {
+                outputArray[IDX_VARIANT] = thirdString;
+            }
+        }
+        else if (secondString.IsEmpty() || secondString.GetLength() == 2 ||
+                secondString.GetLength() == 3) {
+            // The second string is a region, and the third a variant.
+            outputArray[IDX_REGION] = secondString;
+            outputArray[IDX_VARIANT] = thirdString;
+        }
+        else {
+            // Variant with multiple subtags.
+            outputArray[IDX_VARIANT] = string.Substring(first + 1);
+        }
+    }
+    else {
+        // Language, script, region and variant with 1 or more subtags
+        // ("en_Latn_US_POSIX") OR
+        // Language, region and variant with 2 or more subtags
+        // (en_US_POSIX_VARIANT).
+        outputArray[IDX_LANGUAGE] = string.Substring(0, first);
+        String secondString = string.Substring(first + 1, second);
+        if (secondString.GetLength() == 4) {
+            outputArray[IDX_SCRIPT] = secondString;
+            outputArray[IDX_REGION] = string.Substring(second + 1, third);
+            outputArray[IDX_VARIANT] = string.Substring(third + 1);
+        }
+        else {
+            outputArray[IDX_REGION] = secondString;
+            outputArray[IDX_VARIANT] = string.Substring(second + 1);
+        }
+    }
+}
+
+AutoPtr<ILocale> ICU::LocaleFromIcuLocaleId(
+    /* [in] */ const String& localeId)
+{
+    Integer extensionsIndex = localeId.IndexOf('@');
+
+    AutoPtr<IMap> extensionsMap;
+    AutoPtr<IMap> unicodeKeywordsMap;
+    AutoPtr<ISet> unicodeAttributeSet;
+
+    if (extensionsIndex != -1) {
+        CHashMap::New(IID_IMap, (IInterface**)&extensionsMap);
+        CHashMap::New(IID_IMap, (IInterface**)&unicodeKeywordsMap);
+        CHashMap::New(IID_IMap, (IInterface**)&unicodeAttributeSet);
+
+        // ICU sends us a semi-colon (ULOC_KEYWORD_ITEM_SEPARATOR) delimited string
+        // containing all "keywords" it could parse. An ICU keyword is a key-value pair
+        // separated by an "=" (ULOC_KEYWORD_ASSIGN).
+        //
+        // Each keyword item can be one of three things :
+        // - A unicode extension attribute list: In this case the item key is "attribute"
+        //   and the value is a hyphen separated list of unicode attributes.
+        // - A unicode extension keyword: In this case, the item key will be larger than
+        //   1 char in length, and the value will be the unicode extension value.
+        // - A BCP-47 extension subtag: In this case, the item key will be exactly one
+        //   char in length, and the value will be a sequence of unparsed subtags that
+        //   represent the extension.
+        //
+        // Note that this implies that unicode extension keywords are "promoted" to
+        // to the same namespace as the top level extension subtags and their values.
+        // There can't be any collisions in practice because the BCP-47 spec imposes
+        // restrictions on their lengths.
+        String extensionsString = localeId.Substring(extensionsIndex + 1);
+        Array<String> extensions = StringUtils::Split(extensionsString, String(";"));
+        for (String extension : extensions) {
+            // This is the special key for the unicode attributes
+            if (extension.StartsWith("attribute=")) {
+                String unicodeAttributeValues = extension.Substring(strlen("attribute="));
+                for (String unicodeAttribute : StringUtils::Split(unicodeAttributeValues, String("-"))) {
+                    unicodeAttributeSet->Add(CoreUtils::Box(unicodeAttribute));
+                }
+            }
+            else {
+                Integer separatorIndex = extension.IndexOf('=');
+
+                if (separatorIndex == 1) {
+                    // This is a BCP-47 extension subtag.
+                    String value = extension.Substring(2);
+                    Char extensionId = extension.GetChar(0);
+
+                    extensionsMap->Put(CoreUtils::Box(extensionId), CoreUtils::Box(value));
+                }
+                else {
+                    unicodeKeywordsMap->Put(CoreUtils::Box(extension.Substring(0, separatorIndex)),
+                                CoreUtils::Box(extension.Substring(separatorIndex + 1)));
+                }
+            }
+        }
+    }
+    else {
+        extensionsMap = Collections::GetEMPTY_MAP();
+        unicodeKeywordsMap = Collections::GetEMPTY_MAP();
+        unicodeAttributeSet = Collections::GetEMPTY_SET();
+    }
+
+    Array<String> outputArray{ String(""), String(""), String(""), String("") };
+    if (extensionsIndex == -1) {
+        ParseLangScriptRegionAndVariants(localeId, outputArray);
+    }
+    else {
+        ParseLangScriptRegionAndVariants(localeId.Substring(0, extensionsIndex), outputArray);
+    }
+    AutoPtr<ILocaleBuilder> builder;
+    CLocaleBuilder::New(IID_ILocaleBuilder, (IInterface**)&builder);
+    builder->SetLanguage(outputArray[IDX_LANGUAGE]);
+    builder->SetRegion(outputArray[IDX_REGION]);
+    builder->SetVariant(outputArray[IDX_VARIANT]);
+    builder->SetScript(outputArray[IDX_SCRIPT]);
+    FOR_EACH(ICharSequence*, attribute, ICharSequence::Probe, unicodeAttributeSet) {
+        builder->AddUnicodeLocaleAttribute(CoreUtils::Unbox(attribute));
+    } END_FOR_EACH();
+    AutoPtr<ISet> entries;
+    unicodeKeywordsMap->GetEntrySet(&entries);
+    FOR_EACH(IMapEntry*, keyword, IMapEntry::Probe, entries) {
+        AutoPtr<ICharSequence> key, value;
+        keyword->GetKey((IInterface**)&key);
+        keyword->GetValue((IInterface**)&value);
+        builder->SetUnicodeLocaleKeyword(CoreUtils::Unbox(key), CoreUtils::Unbox(value));
+    } END_FOR_EACH();
+
+    entries = nullptr;
+    extensionsMap->GetEntrySet(&entries);
+    FOR_EACH(IMapEntry*, extension, IMapEntry::Probe, entries) {
+        AutoPtr<IChar> key;
+        AutoPtr<ICharSequence> value;
+        extension->GetKey((IInterface**)&key);
+        extension->GetValue((IInterface**)&value);
+        builder->SetExtension(CoreUtils::Unbox(key), CoreUtils::Unbox(value));
+    } END_FOR_EACH();
+
+    AutoPtr<ILocale> locale;
+    builder->Build(&locale);
+    return locale;
+}
+
+Array<ILocale*> ICU::LocalesFromStrings(
+    /* [in] */ const Array<String>& localeNames)
+{
+    AutoPtr<ISet> set;
+    CLinkedHashSet::New(IID_ISet, (IInterface**)&set);
+    for (String localeName : localeNames) {
+        set->Add(LocaleFromIcuLocaleId(localeName));
+    }
+    Array<ILocale*> locales;
+    set->ToArray(IID_ILocale, (Array<IInterface*>*)&locales);
+    return locales;
+}
+
+Array<ILocale*> ICU::GetAvailableLocales()
+{
+    if (sAvailableLocalesCache.IsNull()) {
+        sAvailableLocalesCache = LocalesFromStrings(ToStringArray(uloc_countAvailable, uloc_getAvailable));
+    }
+    return sAvailableLocalesCache.Clone();
+}
+
+String ICU::GetBestDateTimePattern(
+    /* [in] */ const String& skeleton,
+    /* [in] */ ILocale* locale)
+{
+    String languageTag;
+    locale->ToLanguageTag(&languageTag);
+    String key = skeleton + "\t" + languageTag;
+    AutoPtr<BasicLruCache> cache = GetCACHED_PATTERNS();
+    {
+        AutoLock lock(cache);
+
+        AutoPtr<ICharSequence> pattern;
+        cache->Get(CoreUtils::Box(key), (IInterface**)&pattern);
+        if (pattern == nullptr) {
+            pattern = CoreUtils::Box(GetBestDateTimePattern(skeleton, languageTag));
+            cache->Put(CoreUtils::Box(key), pattern);
+        }
+        return CoreUtils::Unbox(pattern);
+    }
+}
+
+String ICU::GetBestDateTimePattern(
+    /* [in] */ const String& skeleton,
+    /* [in] */ const String& languageTag)
+{
+    if (languageTag.IsNull() || skeleton.IsNull()) {
+        return String();
+    }
+
+    ::icu::Locale icuLocale;
+    icuLocale.setToBogus();
+
+    icuLocale = ::icu::Locale::createFromName(languageTag.string());
+    if (icuLocale.isBogus()) {
+        return String();
+    }
+
+    UErrorCode status = U_ZERO_ERROR;
+    std::unique_ptr<::icu::DateTimePatternGenerator> generator(::icu::DateTimePatternGenerator::createInstance(icuLocale, status));
+    if (FAILED(MaybeThrowIcuException("DateTimePatternGenerator::createInstance", status))) {
+        return String();
+    }
+
+    ::icu::UnicodeString skeletonHolder(skeleton.string(), skeleton.GetByteLength());
+    ::icu::UnicodeString result(generator->getBestPattern(skeletonHolder, status));
+    if (FAILED(MaybeThrowIcuException("DateTimePatternGenerator::getBestPattern", status))) {
+        return String();
+    }
+
+    return ToUTF8String(result);
+}
+
+Array<String> ICU::GetAvailableCurrencyCodes()
+{
+    UErrorCode status = U_ZERO_ERROR;
+    UStringEnumeration e(ucurr_openISOCurrencies(UCURR_COMMON|UCURR_NON_DEPRECATED, &status));
+    return FromStringEnumeration(status, "ucurr_openISOCurrencies", &e);
+}
+
+String ICU::GetCurrencyCode(
+    /* [in] */ const String& countryCode)
+{
+    UErrorCode status = U_ZERO_ERROR;
+    ScopedResourceBundle supplData(ures_openDirect(U_ICUDATA_CURR, "supplementalData", &status));
+    if (U_FAILURE(status)) {
+        return String();
+    }
+
+    ScopedResourceBundle currencyMap(ures_getByKey(supplData.get(), "CurrencyMap", nullptr, &status));
+    if (U_FAILURE(status)) {
+        return String();
+    }
+
+    ScopedResourceBundle currency(ures_getByKey(currencyMap.get(), countryCode.string(), nullptr, &status));
+    if (U_FAILURE(status)) {
+        return String();
+    }
+
+    ScopedResourceBundle currencyElem(ures_getByIndex(currency.get(), 0, nullptr, &status));
+    if (U_FAILURE(status)) {
+        return String("XXX");
+    }
+
+    // Check if there's a 'to' date. If there is, the currency isn't used anymore.
+    ScopedResourceBundle currencyTo(ures_getByKey(currencyElem.get(), "to", nullptr, &status));
+    if (!U_FAILURE(status)) {
+        return String();
+    }
+    // Ignore the failure to find a 'to' date.
+    status = U_ZERO_ERROR;
+
+    ScopedResourceBundle currencyId(ures_getByKey(currencyElem.get(), "id", nullptr, &status));
+    if (U_FAILURE(status)) {
+        // No id defined for this country
+        return String("XXX");
+    }
+
+    int32_t charCount;
+    const UChar* chars = ures_getString(currencyId.get(), &charCount, &status);
+    return (charCount == 0) ? String("XXX") : ToUTF8String(::icu::UnicodeString(chars, charCount));
+}
+
+String ICU::GetCurrencyDisplayName(
+    /* [in] */ ILocale* locale,
+    /* [in] */ const String& currencyCode)
+{
+    String languageTag;
+    locale->ToLanguageTag(&languageTag);
+    return GetCurrencyDisplayName(languageTag, currencyCode);
+}
+
+String ICU::GetCurrencyDisplayName(
+    /* [in] */ const String& languageTag,
+    /* [in] */ const String& currencyCode)
+{
+    return GetCurrencyName(languageTag, currencyCode, UCURR_LONG_NAME);
+}
+
+Integer ICU::GetCurrencyFractionDigits(
+    /* [in] */ const String& currencyCode)
+{
+    if (currencyCode.IsNull()) {
+        return 0;
+    }
+    ::icu::UnicodeString icuCurrencyCode(currencyCode.string(), currencyCode.GetByteLength());
+    UErrorCode status = U_ZERO_ERROR;
+    return ucurr_getDefaultFractionDigits(icuCurrencyCode.getTerminatedBuffer(), &status);
+}
+
+Integer ICU::GetCurrencyNumericCode(
+    /* [in] */ const String& currencyCode)
+{
+    if (currencyCode.IsNull()) {
+        return 0;
+    }
+    ::icu::UnicodeString icuCurrencyCode(currencyCode.string(), currencyCode.GetByteLength());
+    return ucurr_getNumericCode(icuCurrencyCode.getTerminatedBuffer());
+}
+
+String ICU::GetCurrencySymbol(
+    /* [in] */ ILocale* locale,
+    /* [in] */ const String& currencyCode)
+{
+    String languageTag;
+    locale->ToLanguageTag(&languageTag);
+    return GetCurrencySymbol(languageTag, currencyCode);
+}
+
+String ICU::GetCurrencySymbol(
+    /* [in] */ const String& languageTag,
+    /* [in] */ const String& currencyCode)
+{
+    return GetCurrencyName(languageTag, currencyCode, UCURR_SYMBOL_NAME);
+}
+
+String ICU::GetDisplayCountry(
+    /* [in] */ ILocale* targetLocale,
+    /* [in] */ ILocale* locale)
+{
+    String targetLanguageTag, languageTag;
+    targetLocale->ToLanguageTag(&targetLanguageTag);
+    locale->ToLanguageTag(&languageTag);
+
+    if (languageTag.IsNull()) {
+        return String();
+    }
+
+    ::icu::Locale icuLocale;
+    icuLocale.setToBogus();
+
+    icuLocale = ::icu::Locale::createFromName(languageTag.string());
+    if (icuLocale.isBogus()) {
+        return String();
+    }
+
+    ::icu::Locale icuTargetLocale;
+    icuTargetLocale.setToBogus();
+
+    icuTargetLocale = ::icu::Locale::createFromName(targetLanguageTag.string());
+    if (icuTargetLocale.isBogus()) {
+        return String();
+    }
+
+    ::icu::UnicodeString str;
+    icuTargetLocale.getDisplayCountry(icuLocale, str);
+    return ToUTF8String(str);
+}
+
+String ICU::GetDisplayLanguage(
+    /* [in] */ ILocale* targetLocale,
+    /* [in] */ ILocale* locale)
+{
+    String targetLanguageTag, languageTag;
+    targetLocale->ToLanguageTag(&targetLanguageTag);
+    locale->ToLanguageTag(&languageTag);
+
+    if (languageTag.IsNull()) {
+        return String();
+    }
+
+    ::icu::Locale icuLocale;
+    icuLocale.setToBogus();
+
+    icuLocale = ::icu::Locale::createFromName(languageTag.string());
+    if (icuLocale.isBogus()) {
+        return String();
+    }
+
+    ::icu::Locale icuTargetLocale;
+    icuTargetLocale.setToBogus();
+
+    icuTargetLocale = ::icu::Locale::createFromName(targetLanguageTag.string());
+    if (icuTargetLocale.isBogus()) {
+        return String();
+    }
+
+    ::icu::UnicodeString str;
+    icuTargetLocale.getDisplayLanguage(icuLocale, str);
+    return ToUTF8String(str);
+}
+
+String ICU::GetDisplayVariant(
+    /* [in] */ ILocale* targetLocale,
+    /* [in] */ ILocale* locale)
+{
+    String targetLanguageTag, languageTag;
+    targetLocale->ToLanguageTag(&targetLanguageTag);
+    locale->ToLanguageTag(&languageTag);
+
+    if (languageTag.IsNull()) {
+        return String();
+    }
+
+    ::icu::Locale icuLocale;
+    icuLocale.setToBogus();
+
+    icuLocale = ::icu::Locale::createFromName(languageTag.string());
+    if (icuLocale.isBogus()) {
+        return String();
+    }
+
+    ::icu::Locale icuTargetLocale;
+    icuTargetLocale.setToBogus();
+
+    icuTargetLocale = ::icu::Locale::createFromName(targetLanguageTag.string());
+    if (icuTargetLocale.isBogus()) {
+        return String();
+    }
+
+    ::icu::UnicodeString str;
+    icuTargetLocale.getDisplayVariant(icuLocale, str);
+    return ToUTF8String(str);
+}
+
+String ICU::GetDisplayScript(
+    /* [in] */ ILocale* targetLocale,
+    /* [in] */ ILocale* locale)
+{
+    String targetLanguageTag, languageTag;
+    targetLocale->ToLanguageTag(&targetLanguageTag);
+    locale->ToLanguageTag(&languageTag);
+
+    if (languageTag.IsNull()) {
+        return String();
+    }
+
+    ::icu::Locale icuLocale;
+    icuLocale.setToBogus();
+
+    icuLocale = ::icu::Locale::createFromName(languageTag.string());
+    if (icuLocale.isBogus()) {
+        return String();
+    }
+
+    ::icu::Locale icuTargetLocale;
+    icuTargetLocale.setToBogus();
+
+    icuTargetLocale = ::icu::Locale::createFromName(targetLanguageTag.string());
+    if (icuTargetLocale.isBogus()) {
+        return String();
+    }
+
+    ::icu::UnicodeString str;
+    icuTargetLocale.getDisplayScript(icuLocale, str);
+    return ToUTF8String(str);
+}
+
+String ICU::GetISO3Country(
+    /* [in] */ const String& languageTag)
+{
+    if (languageTag.IsNull()) {
+        return String();
+    }
+
+    ::icu::Locale locale;
+    locale.setToBogus();
+
+    locale = ::icu::Locale::createFromName(languageTag.string());
+    if (locale.isBogus()) {
+        return String();
+    }
+
+    return String(locale.getISO3Country());
+}
+
+String ICU::GetISO3Language(
+    /* [in] */ const String& languageTag)
+{
+    if (languageTag.IsNull()) {
+        return String();
+    }
+
+    ::icu::Locale locale;
+    locale.setToBogus();
+
+    locale = ::icu::Locale::createFromName(languageTag.string());
+    if (locale.isBogus()) {
+        return String();
+    }
+
+    return String(locale.getISO3Language());
+}
+
 Boolean ICU::InitLocaleData(
     /* [in] */ const String& languageTag,
     /* [in] */ LocaleData* result)
@@ -523,7 +1170,6 @@ Boolean ICU::InitLocaleData(
             dateFormatSym.getWeekdays(count, ::icu::DateFormatSymbols::FORMAT, ::icu::DateFormatSymbols::NARROW);
     result->mTinyWeekdayNames = GetStringArrayField("tinyWeekdayNames", tinyWeekdayNames, count);
 
-
     const ::icu::UnicodeString* longStandAloneMonthNames =
             dateFormatSym.getMonths(count, ::icu::DateFormatSymbols::STANDALONE, ::icu::DateFormatSymbols::WIDE);
     result->mLongStandAloneMonthNames = GetStringArrayField("longStandAloneMonthNames", longStandAloneMonthNames, count);
@@ -554,7 +1200,7 @@ Boolean ICU::InitLocaleData(
 
     String currencySymbol;
     if (!internationalCurrencySymbol.IsNull()){
-        currencySymbol = ICU_getCurrencySymbol(languageTag, internationalCurrencySymbol);
+        currencySymbol = GetCurrencySymbol(languageTag, internationalCurrencySymbol);
     }
     else {
         internationalCurrencySymbol = "XXX";
@@ -567,6 +1213,26 @@ Boolean ICU::InitLocaleData(
     result->mInternationalCurrencySymbol = internationalCurrencySymbol;
 
     return true;
+}
+
+ECode ICU::SetDefaultLocale(
+    /* [in] */ const String& languageTag)
+{
+    if (languageTag.IsNull()) {
+        return NOERROR;
+    }
+
+    ::icu::Locale locale;
+    locale.setToBogus();
+
+    locale = ::icu::Locale::createFromName(languageTag.string());
+    if (locale.isBogus()) {
+        return NOERROR;
+    }
+
+    UErrorCode status = U_ZERO_ERROR;
+    ::icu::Locale::setDefault(locale, status);
+    return MaybeThrowIcuException("ICU::SetDefaultLocale", status);
 }
 
 }

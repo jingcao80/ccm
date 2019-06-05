@@ -53,6 +53,10 @@ public:
     void MoveTo(
         /* [out] */ T** other);
 
+    template<class U>
+    void MoveTo(
+        /* [out] */ U** other);
+
     inline operator T*() const;
 
     inline T** operator&();
@@ -190,6 +194,19 @@ void AutoPtr<T>::MoveTo(
     if (other != nullptr) {
         *other = mPtr;
         mPtr = nullptr;
+    }
+}
+
+template<class T> template<class U>
+void AutoPtr<T>::MoveTo(
+    /* [out] */ U** other)
+{
+    if (other != nullptr) {
+        U* uObj = U::Probe(mPtr);
+        if (uObj != nullptr) {
+            *other = uObj;
+            mPtr = nullptr;
+        }
     }
 }
 

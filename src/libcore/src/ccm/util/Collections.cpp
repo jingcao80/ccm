@@ -100,15 +100,27 @@ AutoPtr<IEnumeration> Collections::GetEmptyEnumeration()
     return EmptyEnumeration::Get_EMPTY_ENUMERATION();
 }
 
-AutoPtr<IList> Collections::GetEmptyList()
+AutoPtr<ISet> Collections::GetEMPTY_SET()
 {
-    return Get_EMPTY_LIST();
+    static AutoPtr<ISet> EMPTY_SET = new EmptySet();
+    return EMPTY_SET;
 }
 
-AutoPtr<IList> Collections::Get_EMPTY_LIST()
+AutoPtr<IList> Collections::GetEmptyList()
+{
+    return GetEMPTY_LIST();
+}
+
+AutoPtr<IList> Collections::GetEMPTY_LIST()
 {
     static AutoPtr<IList> EMPTY_LIST = new EmptyList();
     return EMPTY_LIST;
+}
+
+AutoPtr<IMap> Collections::GetEMPTY_MAP()
+{
+    static AutoPtr<IMap> EMPTY_MAP = new EmptyMap();
+    return EMPTY_MAP;
 }
 
 //----------------------------------------------------------------
@@ -1099,6 +1111,76 @@ AutoPtr<IListIterator> Collections::EmptyListIterator::Get_EMPTY_ITERATOR()
 
 //----------------------------------------------------------------
 
+CCM_INTERFACE_IMPL_1(Collections::EmptySet, AbstractSet, ISerializable);
+
+ECode Collections::EmptySet::GetIterator(
+    /* [out] */ IIterator** it)
+{
+    VALIDATE_NOT_NULL(it);
+
+    AutoPtr<IIterator> iterator = GetEmptyIterator();
+    iterator.MoveTo(it);
+    return NOERROR;
+}
+
+ECode Collections::EmptySet::GetSize(
+    /* [out] */ Integer* size)
+{
+    VALIDATE_NOT_NULL(size);
+
+    *size = 0;
+    return NOERROR;
+}
+
+ECode Collections::EmptySet::IsEmpty(
+    /* [out] */ Boolean* empty)
+{
+    VALIDATE_NOT_NULL(empty);
+
+    *empty = true;
+    return NOERROR;
+}
+
+ECode Collections::EmptySet::Contains(
+    /* [in] */ IInterface* obj,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    *result= false;
+    return NOERROR;
+}
+
+ECode Collections::EmptySet::ContainsAll(
+    /* [in] */ ICollection* c,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    return c->IsEmpty(result);
+}
+
+ECode Collections::EmptySet::ToArray(
+    /* [out, callee] */ Array<IInterface*>* objs)
+{
+    VALIDATE_NOT_NULL(objs);
+
+    *objs = Array<IInterface*>(0);
+    return NOERROR;
+}
+
+ECode Collections::EmptySet::ToArray(
+    /* [in] */ const InterfaceID& iid,
+    /* [out, callee] */ Array<IInterface*>* objs)
+{
+    VALIDATE_NOT_NULL(objs);
+
+    *objs = Array<IInterface*>(0);
+    return NOERROR;
+}
+
+//----------------------------------------------------------------
+
 CCM_INTERFACE_IMPL_2(Collections::EmptyList, AbstractList, IRandomAccess, ISerializable);
 
 ECode Collections::EmptyList::GetIterator(
@@ -1210,6 +1292,119 @@ ECode Collections::EmptyList::AddAll(
     /* [out] */ Boolean* result)
 {
     return AbstractCollection::AddAll(c, result);
+}
+
+//----------------------------------------------------------------
+
+CCM_INTERFACE_IMPL_1(Collections::EmptyMap, AbstractMap, ISerializable);
+
+ECode Collections::EmptyMap::GetSize(
+    /* [out] */ Integer* size)
+{
+    VALIDATE_NOT_NULL(size);
+
+    *size = 0;
+    return NOERROR;
+}
+
+ECode Collections::EmptyMap::IsEmpty(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    *result = true;
+    return NOERROR;
+}
+
+ECode Collections::EmptyMap::ContainsKey(
+    /* [in] */ IInterface* key,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    *result = false;
+    return NOERROR;
+}
+
+ECode Collections::EmptyMap::ContainsValue(
+    /* [in] */ IInterface* value,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    *result = false;
+    return NOERROR;
+}
+
+ECode Collections::EmptyMap::Get(
+    /* [in] */ IInterface* key,
+    /* [out] */ IInterface** value)
+{
+    VALIDATE_NOT_NULL(value);
+
+    *value = nullptr;
+    return NOERROR;
+}
+
+ECode Collections::EmptyMap::GetKeySet(
+    /* [out] */ ISet** keys)
+{
+    VALIDATE_NOT_NULL(keys);
+
+    AutoPtr<ISet> emptySet = GetEmptySet();
+    emptySet.MoveTo(keys);
+    return NOERROR;
+}
+
+ECode Collections::EmptyMap::GetValues(
+    /* [out] */ ICollection** values)
+{
+    VALIDATE_NOT_NULL(values);
+
+    AutoPtr<ISet> emptySet = GetEmptySet();
+    emptySet.MoveTo(values);
+    return NOERROR;
+}
+
+ECode Collections::EmptyMap::GetEntrySet(
+    /* [out] */ ISet** entries)
+{
+    VALIDATE_NOT_NULL(entries);
+
+    AutoPtr<ISet> emptySet = GetEmptySet();
+    emptySet.MoveTo(entries);
+    return NOERROR;
+}
+
+ECode Collections::EmptyMap::Equals(
+    /* [in] */ IInterface* obj,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    IMap* other = IMap::Probe(obj);
+    if (other == nullptr) {
+        *result = false;
+        return NOERROR;
+    }
+    return other->IsEmpty(result);
+}
+
+ECode Collections::EmptyMap::GetHashCode(
+    /* [out] */ Integer* hash)
+{
+    VALIDATE_NOT_NULL(hash);
+
+    *hash = 0;
+    return NOERROR;
+}
+
+ECode Collections::EmptyMap::PutIfAbsent(
+    /* [in] */ IInterface* key,
+    /* [in] */ IInterface* value,
+    /* [out] */ IInterface** prevValue)
+{
+    return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
 }

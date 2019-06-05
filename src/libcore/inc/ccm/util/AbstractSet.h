@@ -49,6 +49,8 @@ public:
         /* [in] */ ICollection* c,
         /* [out] */ Boolean* changed = nullptr) override;
 
+    ECode Clear() override;
+
     ECode ContainsAll(
         /* [in] */ ICollection* c,
         /* [out] */ Boolean* result) override;

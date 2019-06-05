@@ -119,6 +119,11 @@ ECode AbstractSet::AddAll(
     return AbstractCollection::Add(c, changed);
 }
 
+ECode AbstractSet::Clear()
+{
+    return AbstractCollection::Clear();
+}
+
 ECode AbstractSet::ContainsAll(
     /* [in] */ ICollection* c,
     /* [out] */ Boolean* result)

@@ -19,9 +19,11 @@
 
 #include "ccm.util.ILocale.h"
 #include "libcore/icu/LocaleData.h"
+#include "libcore/util/BasicLruCache.h"
 
 using ccm::util::ILocale;
 using libcore::icu::LocaleData;
+using libcore::util::BasicLruCache;
 
 namespace libcore {
 namespace icu {
@@ -29,137 +31,93 @@ namespace icu {
 class ICU
 {
 public:
-    static Boolean InitLocaleData(
-        /* [in] */ const String& languageTag,
-        /* [in] */ LocaleData* result);
+    static Array<String> GetISOLanguages();
 
+    static Array<String> GetISOCountries();
 
+    static AutoPtr<ILocale> LocaleFromIcuLocaleId(
+        /* [in] */ const String& localeId);
 
+    static Array<ILocale*> LocalesFromStrings(
+        /* [in] */ const Array<String>& localeNames);
 
-    static Array<String> GetISOLanguages()
-    {
-        return Array<String>::Null();
-    }
+    static Array<ILocale*> GetAvailableLocales();
 
-    static Array<String> GetISOCountries()
-    {
-        return Array<String>::Null();
-    }
+    static String GetBestDateTimePattern(
+        /* [in] */ const String& skeleton,
+        /* [in] */ ILocale* locale);
 
-    static Array<ILocale*> GetAvailableLocales()
-    {
-        return Array<ILocale*>::Null();
-    }
+    static String GetBestDateTimePattern(
+        /* [in] */ const String& skeleton,
+        /* [in] */ const String& languageTag);
 
     inline static Boolean U_FAILURE(
         /* [in] */ Integer error);
 
-    static String GetISO3Country(
-        /* [in] */ const String& languageTag)
-    {
-        return String();
-    }
+    static Array<String> GetAvailableCurrencyCodes();
 
-    static String GetISO3Language(
-        /* [in] */ const String& languageTag)
-    {
-        return String();
-    }
+    static String GetCurrencyCode(
+        /* [in] */ const String& countryCode);
 
-    static ECode SetDefaultLocale(
-        /* [in] */ const String& languageTag)
-    {
-        return NOERROR;
-    }
+    static String GetCurrencyDisplayName(
+        /* [in] */ ILocale* locale,
+        /* [in] */ const String& currencyCode);
+
+    static String GetCurrencyDisplayName(
+        /* [in] */ const String& languageTag,
+        /* [in] */ const String& currencyCode);
+
+    static Integer GetCurrencyFractionDigits(
+        /* [in] */ const String& currencyCode);
+
+    static Integer GetCurrencyNumericCode(
+        /* [in] */ const String& currencyCode);
+
+    static String GetCurrencySymbol(
+        /* [in] */ ILocale* locale,
+        /* [in] */ const String& currencyCode);
+
+    static String GetCurrencySymbol(
+        /* [in] */ const String& languageTag,
+        /* [in] */ const String& currencyCode);
 
     static String GetDisplayCountry(
         /* [in] */ ILocale* targetLocale,
-        /* [in] */ ILocale* locale)
-    {
-        return String();
-    }
+        /* [in] */ ILocale* locale);
 
     static String GetDisplayLanguage(
         /* [in] */ ILocale* targetLocale,
-        /* [in] */ ILocale* locale)
-    {
-        return String();
-    }
+        /* [in] */ ILocale* locale);
 
     static String GetDisplayVariant(
         /* [in] */ ILocale* targetLocale,
-        /* [in] */ ILocale* locale)
-    {
-        return String();
-    }
+        /* [in] */ ILocale* locale);
 
     static String GetDisplayScript(
         /* [in] */ ILocale* targetLocale,
-        /* [in] */ ILocale* locale)
-    {
-        return String();
-    }
+        /* [in] */ ILocale* locale);
 
-    static String GetCurrencyCode(
-        /* [in] */ const String& countryCode)
-    {
-        return String();
-    }
+    static String GetISO3Country(
+        /* [in] */ const String& languageTag);
 
-    static Array<String> GetAvailableCurrencyCodes()
-    {
-        return Array<String>::Null();
-    }
+    static String GetISO3Language(
+        /* [in] */ const String& languageTag);
 
-    static String GetCurrencyDisplayName(
-        /* [in] */ ILocale* locale,
-        /* [in] */ const String& currencyCode)
-    {
-        return String();
-    }
-
-    static String GetCurrencyDisplayName(
+    static Boolean InitLocaleData(
         /* [in] */ const String& languageTag,
-        /* [in] */ const String& currencyCode)
-    {
-        return String();
-    }
+        /* [in] */ LocaleData* result);
 
-    static String GetCurrencySymbol(
-        /* [in] */ ILocale* locale,
-        /* [in] */ const String& currencyCode)
-    {
-        return String();
-    }
-
-    static String GetCurrencySymbol(
-        /* [in] */ const String& languageTag,
-        /* [in] */ const String& currencyCode)
-    {
-        return String();
-    }
-
-    static Integer GetCurrencyFractionDigits(
-        /* [in] */ const String& currencyCode)
-    {
-        return -1;
-    }
-
-    static Integer GetCurrencyNumericCode(
-        /* [in] */ const String& currencyCode)
-    {
-        return -1;
-    }
-
-    static String GetBestDateTimePattern(
-        /* [in] */ const String& skeleton,
-        /* [in] */ ILocale* locale)
-    {
-        return String();
-    }
+    static ECode SetDefaultLocale(
+        /* [in] */ const String& languageTag);
 
 private:
     ICU();
+
+    static void ParseLangScriptRegionAndVariants(
+        /* [in] */ const String& string,
+        /* [out] */ Array<String>& outputArray);
+
+    static AutoPtr<BasicLruCache> GetCACHED_PATTERNS();
 
 public:
     // Just the subset of error codes needed by CharsetDecoderICU/CharsetEncoderICU.
@@ -168,6 +126,16 @@ public:
     static constexpr Integer U_TRUNCATED_CHAR_FOUND_ = 11;
     static constexpr Integer U_ILLEGAL_CHAR_FOUND_ = 12;
     static constexpr Integer U_BUFFER_OVERFLOW_ERROR_ = 15;
+
+private:
+    static Array<ILocale*> sAvailableLocalesCache;
+    static Array<String> sIsoCountries;
+    static Array<String> sIsoLanguages;
+
+    static constexpr Integer IDX_LANGUAGE = 0;
+    static constexpr Integer IDX_SCRIPT = 1;
+    static constexpr Integer IDX_REGION = 2;
+    static constexpr Integer IDX_VARIANT = 3;
 };
 
 Boolean ICU::U_FAILURE(
