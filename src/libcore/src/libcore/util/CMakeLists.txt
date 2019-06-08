@@ -25,6 +25,7 @@ include_directories(
 
 set(SOURCES
     BasicLruCache.cpp
+    CharsetUtils.cpp
     CZoneInfoFactory.cpp
     CZoneInfoDBFactory.cpp
     TimeZoneDataFiles.cpp

@@ -32,6 +32,7 @@ set(SOURCES
     CharsetEncoderICU.cpp
     CharsetICU.cpp
     CoderResult.cpp
+    StandardCharsets.cpp
     StreamEncoder.cpp)
 
 add_library(ccm_io_charset STATIC

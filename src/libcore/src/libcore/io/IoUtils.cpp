@@ -13,3 +13,131 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //=========================================================================
+
+#include "ccm/core/StringFactory.h"
+#include "ccm/io/charset/StandardCharsets.h"
+#include "libcore/io/IoBridge.h"
+#include "libcore/io/IoUtils.h"
+#include "libcore/io/Libcore.h"
+#include "pisces/system/OsConstants.h"
+#include "pisces.system.IStructStat.h"
+
+using ccm::core::StringFactory;
+using ccm::io::E_IO_EXCEPTION;
+using ccm::io::charset::StandardCharsets;
+using pisces::system::IStructStat;
+using pisces::system::OsConstants;
+
+namespace libcore {
+namespace io {
+
+ECode IoUtils::Close(
+    /* [in] */ IFileDescriptor* fd)
+{
+    ECode ec = NOERROR;
+    Boolean valid;
+    if (fd != nullptr && (fd->Valid(&valid), valid)) {
+        ec = Libcore::GetOs()->Close(fd);
+    }
+    return SUCCEEDED(ec) ? ec : E_IO_EXCEPTION;
+}
+
+void IoUtils::CloseQuietly(
+    /* [in] */ IFileDescriptor* fd)
+{
+    IoUtils::Close(fd);
+}
+
+ECode IoUtils::ReadFileAsString(
+    /* [in] */ const String& absolutePath,
+    /* [out] */ String* content)
+{
+    VALIDATE_NOT_NULL(content);
+
+    AutoPtr<FileReader> fr = new FileReader();
+    FAIL_RETURN(fr->Constructor(absolutePath));
+    fr->ReadFully();
+    *content = fr->ToString(StandardCharsets::GetUTF_8());
+    return NOERROR;
+}
+
+//--------------------------------------------------------------------------
+
+ECode IoUtils::FileReader::Constructor(
+    /* [in] */ const String& absolutePath)
+{
+    FAIL_RETURN(IoBridge::Open(absolutePath, OsConstants::O_RDONLY_, &mFd));
+
+    AutoPtr<IStructStat> stat;
+    ECode ec = Libcore::GetOs()->Fstat(mFd, &stat);
+    if (FAILED(ec)) {
+        CloseQuietly(mFd);
+        return E_IO_EXCEPTION;
+    }
+
+    Long capacity;
+    stat->GetSize(&capacity);
+    if (capacity == 0) {
+        mUnknownLength = true;
+        capacity = 8192;
+    }
+
+    mBytes = Array<Byte>(capacity);
+    return NOERROR;
+}
+
+ECode IoUtils::FileReader::ReadFully()
+{
+    Integer read;
+    Integer capacity = mBytes.GetLength();
+    ECode ec = Libcore::GetOs()->Read(mFd, mBytes, mCount, capacity - mCount, &read);
+    if (FAILED(ec)) {
+        CloseQuietly(mFd);
+        return E_IO_EXCEPTION;
+    }
+
+    while (read != 0) {
+        mCount += read;
+        if (mCount == capacity) {
+            if (mUnknownLength) {
+                Integer newCapacity = capacity * 2;
+                Array<Byte> newBytes(newCapacity);
+                newBytes.Copy(0, mBytes, 0, capacity);
+                mBytes = newBytes;
+                capacity = newCapacity;
+            }
+            else {
+                break;
+            }
+        }
+        ec = Libcore::GetOs()->Read(mFd, mBytes, mCount, capacity - mCount, &read);
+        if (FAILED(ec)) {
+            CloseQuietly(mFd);
+            return E_IO_EXCEPTION;
+        }
+    }
+
+    CloseQuietly(mFd);
+    return NOERROR;
+}
+
+Array<Byte> IoUtils::FileReader::ToByteArray()
+{
+    if (mCount == mBytes.GetLength()) {
+        return mBytes;
+    }
+    Array<Byte> result(mCount);
+    result.Copy(0, mBytes, 0, mCount);
+    return result;
+}
+
+String IoUtils::FileReader::ToString(
+    /* [in] */ ICharset* cs)
+{
+    String str;
+    StringFactory::NewStringFromBytes(mBytes, 0, mCount, cs, &str);
+    return str;
+}
+
+}
+}

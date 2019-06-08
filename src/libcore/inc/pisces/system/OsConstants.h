@@ -27,6 +27,10 @@ namespace system {
 class OsConstants final
 {
 public:
+    static Boolean S_ISDIR(
+        /* [in] */ Integer mode);
+
+public:
     static const Integer AF_INET_;
     static const Integer AF_INET6_;
     static const Integer EINVAL_;
@@ -42,11 +46,19 @@ public:
     static const Integer SOL_SOCKET_;
     static const Integer SO_DOMAIN_;
     static const Integer SO_LINGER_;
+    static const Integer S_IFDIR_;
+    static const Integer S_IFMT_;
     static const Integer _SC_NPROCESSORS_CONF_;
 
 private:
     OsConstants();
 };
+
+inline Boolean OsConstants::S_ISDIR(
+    /* [in] */ Integer mode)
+{
+    return (mode & S_IFMT_) == S_IFDIR_;
+}
 
 }
 }

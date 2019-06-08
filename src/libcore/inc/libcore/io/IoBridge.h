@@ -30,6 +30,11 @@ public:
     static ECode CloseAndSignalBlockedThreads(
         /* [in] */ IFileDescriptor* fd);
 
+    static ECode Open(
+        /* [in] */ const String& path,
+        /* [in] */ Integer flags,
+        /* [out] */ IFileDescriptor** fd);
+
     static ECode Read(
         /* [in] */ IFileDescriptor* fd,
         /* [out] */ Array<Byte>& bytes,

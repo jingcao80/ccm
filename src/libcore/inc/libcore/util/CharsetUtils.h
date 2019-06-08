@@ -14,24 +14,36 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_IO_CHARSET_STANDARDCHARSETS_H__
-#define __CCM_IO_CHARSET_STANDARDCHARSETS_H__
+#ifndef __LIBCORE_UTIL_CHARSETUTILS_H__
+#define __LIBCORE_UTIL_CHARSETUTILS_H__
 
-#include "ccm.io.charset.ICharset.h"
-#include <ccmautoptr.h>
+#include <ccmtypes.h>
 
-namespace ccm {
-namespace io {
-namespace charset {
+using namespace ccm;
 
-class StandardCharsets
+namespace libcore {
+namespace util {
+
+class CharsetUtils
 {
 public:
-    static AutoPtr<ICharset> GetUTF_8();
+    static ECode AsciiBytesToChars(
+        /* [in] */ const Array<Byte>& bytes,
+        /* [in] */ Integer offset,
+        /* [in] */ Integer length,
+        /* [out] */ Array<Char>& chars);
+
+    static ECode IsoLatin1BytesToChars(
+        /* [in] */ const Array<Byte>& bytes,
+        /* [in] */ Integer offset,
+        /* [in] */ Integer length,
+        /* [out] */ Array<Char>& chars);
+
+private:
+    CharsetUtils();
 };
 
 }
 }
-}
 
-#endif // __CCM_IO_CHARSET_STANDARDCHARSETS_H__
+#endif // __LIBCORE_UTIL_CHARSETUTILS_H__

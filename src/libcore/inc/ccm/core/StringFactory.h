@@ -14,24 +14,34 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_IO_CHARSET_STANDARDCHARSETS_H__
-#define __CCM_IO_CHARSET_STANDARDCHARSETS_H__
+#ifndef __CCM_CORE_STRINGFACTORY_H__
+#define __CCM_CORE_STRINGFACTORY_H__
 
 #include "ccm.io.charset.ICharset.h"
-#include <ccmautoptr.h>
+
+using ccm::io::charset::ICharset;
 
 namespace ccm {
-namespace io {
-namespace charset {
+namespace core {
 
-class StandardCharsets
+class StringFactory
 {
 public:
-    static AutoPtr<ICharset> GetUTF_8();
+    static ECode NewStringFromBytes(
+        /* [in] */ const Array<Byte>& data,
+        /* [in] */ Integer offset,
+        /* [in] */ Integer byteCount,
+        /* [in] */ ICharset* cs,
+        /* [out] */ String* str);
+
+private:
+    StringFactory();
+
+private:
+    static constexpr Char REPLACEMENT_CHAR = 0xfffd;
 };
 
 }
 }
-}
 
-#endif // __CCM_IO_CHARSET_STANDARDCHARSETS_H__
+#endif // __CCM_CORE_STRINGFACTORY_H__

@@ -39,6 +39,8 @@ const Integer OsConstants::PROT_WRITE_ = PROT_WRITE;
 const Integer OsConstants::SOL_SOCKET_ = SOL_SOCKET;
 const Integer OsConstants::SO_DOMAIN_ = SO_DOMAIN;
 const Integer OsConstants::SO_LINGER_ = SO_LINGER;
+const Integer OsConstants::S_IFDIR_ = S_IFDIR;
+const Integer OsConstants::S_IFMT_ = S_IFMT;
 const Integer OsConstants::_SC_NPROCESSORS_CONF_ = _SC_NPROCESSORS_CONF;
 
 }

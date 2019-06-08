@@ -67,6 +67,7 @@ set(SOURCES
     StackTrace.cpp
     StackTraceElement.cpp
     StrictMath.cpp
+    StringFactory.cpp
     StringToReal.cpp
     StringUtils.cpp
     SyncObject.cpp

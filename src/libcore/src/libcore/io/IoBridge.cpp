@@ -16,9 +16,15 @@
 
 #include "ccm/util/Arrays.h"
 #include "libcore/io/IoBridge.h"
+#include "libcore/io/IoUtils.h"
 #include "libcore/io/Libcore.h"
+#include "pisces/system/OsConstants.h"
+#include "pisces.system.IStructStat.h"
 
+using ccm::io::E_FILE_NOT_FOUND_EXCEPTION;
 using ccm::util::Arrays;
+using pisces::system::IStructStat;
+using pisces::system::OsConstants;
 
 namespace libcore {
 namespace io {
@@ -26,6 +32,32 @@ namespace io {
 ECode IoBridge::CloseAndSignalBlockedThreads(
     /* [in] */ IFileDescriptor* fd)
 {
+    return NOERROR;
+}
+
+ECode IoBridge::Open(
+    /* [in] */ const String& path,
+    /* [in] */ Integer flags,
+    /* [out] */ IFileDescriptor** fd)
+{
+    VALIDATE_NOT_NULL(fd);
+
+    *fd = nullptr;
+    Integer mode = ((flags & OsConstants::O_ACCMODE_) == OsConstants::O_RDONLY_) ? 0 : 0600;
+    ECode ec = Libcore::GetOs()->Open(path, flags, mode, fd);
+    if (FAILED(ec)) {
+        return E_FILE_NOT_FOUND_EXCEPTION;
+    }
+    AutoPtr<IStructStat> stat;
+    ec = Libcore::GetOs()->Fstat(*fd, &stat);
+    if (FAILED(ec)) {
+        IoUtils::Close(*fd);
+        return E_FILE_NOT_FOUND_EXCEPTION;
+    }
+    stat->GetMode(&mode);
+    if (OsConstants::S_ISDIR(mode)) {
+        return E_FILE_NOT_FOUND_EXCEPTION;
+    }
     return NOERROR;
 }
 

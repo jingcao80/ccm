@@ -14,24 +14,20 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_IO_CHARSET_STANDARDCHARSETS_H__
-#define __CCM_IO_CHARSET_STANDARDCHARSETS_H__
-
-#include "ccm.io.charset.ICharset.h"
-#include <ccmautoptr.h>
+#include "ccm/io/charset/Charset.h"
+#include "ccm/io/charset/StandardCharsets.h"
 
 namespace ccm {
 namespace io {
 namespace charset {
 
-class StandardCharsets
+AutoPtr<ICharset> StandardCharsets::GetUTF_8()
 {
-public:
-    static AutoPtr<ICharset> GetUTF_8();
-};
-
-}
-}
+    AutoPtr<ICharset> cs;
+    Charset::ForName(String("UTF-8"), &cs);
+    return cs;
 }
 
-#endif // __CCM_IO_CHARSET_STANDARDCHARSETS_H__
+}
+}
+}
