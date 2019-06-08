@@ -32,7 +32,7 @@ interface ITimeZone
 {
     const Integer SHORT = 0;
 
-    const Integer LONG  = 1;
+    const Integer LONG = 1;
 
     GetID(
         [out] String* id);

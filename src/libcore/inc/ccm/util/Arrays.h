@@ -17,6 +17,7 @@
 #ifndef __CCM_UTIL_ARRAYS_H__
 #define __CCM_UTIL_ARRAYS_H__
 
+#include "ccm.util.IComparator.h"
 #include "ccm.util.IList.h"
 
 namespace ccm {
@@ -37,6 +38,11 @@ public:
     static Integer BinarySearch(
         /* [in] */ const Array<String>& a,
         /* [in] */ const String& key);
+
+    static Integer BinarySearch(
+        /* [in] */ const Array<IInterface*>& a,
+        /* [in] */ IInterface* key,
+        /* [in] */ IComparator* c);
 
     static Boolean Equals(
         /* [in] */ const Array<Long>& a,
@@ -152,6 +158,19 @@ private:
         /* [in] */ Integer fromIndex,
         /* [in] */ Integer toIndex,
         /* [in] */ String key);
+
+    static Integer BinarySearch0(
+        /* [in] */ const Array<IInterface*>& a,
+        /* [in] */ Integer fromIndex,
+        /* [in] */ Integer toIndex,
+        /* [in] */ IInterface* key);
+
+    static Integer BinarySearch0(
+        /* [in] */ const Array<IInterface*>& a,
+        /* [in] */ Integer fromIndex,
+        /* [in] */ Integer toIndex,
+        /* [in] */ IInterface* key,
+        /* [in] */ IComparator* c);
 };
 
 }

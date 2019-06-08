@@ -16,11 +16,12 @@
 
 #include "ccm/core/Math.h"
 #include "ccm/util/Arrays.h"
-#include "libcore.h"
+#include "ccm.core.IComparable.h"
 #include <ccmobject.h>
 #include <ccmlogger.h>
 
 using ccm::core::E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+using ccm::core::IComparable;
 using ccm::core::Math;
 
 namespace ccm {
@@ -62,13 +63,6 @@ Integer Arrays::BinarySearch(
     return BinarySearch0(a, 0, a.GetLength(), key);
 }
 
-Integer Arrays::BinarySearch(
-    /* [in] */ const Array<String>& a,
-    /* [in] */ const String& key)
-{
-    return BinarySearch0(a, 0, a.GetLength(), key);
-}
-
 Integer Arrays::BinarySearch0(
     /* [in] */ const Array<Long>& a,
     /* [in] */ Integer fromIndex,
@@ -95,6 +89,13 @@ Integer Arrays::BinarySearch0(
     return -(low + 1);  // key not found.
 }
 
+Integer Arrays::BinarySearch(
+    /* [in] */ const Array<String>& a,
+    /* [in] */ const String& key)
+{
+    return BinarySearch0(a, 0, a.GetLength(), key);
+}
+
 Integer Arrays::BinarySearch0(
     /* [in] */ const Array<String>& a,
     /* [in] */ Integer fromIndex,
@@ -119,6 +120,73 @@ Integer Arrays::BinarySearch0(
         }
     }
     return -(low + 1);  // key not found.
+}
+
+Integer Arrays::BinarySearch(
+    /* [in] */ const Array<IInterface*>& a,
+    /* [in] */ IInterface* key,
+    /* [in] */ IComparator* c)
+{
+    return BinarySearch0(a, 0, a.GetLength(), key, c);
+}
+
+Integer Arrays::BinarySearch0(
+    /* [in] */ const Array<IInterface*>& a,
+    /* [in] */ Integer fromIndex,
+    /* [in] */ Integer toIndex,
+    /* [in] */ IInterface* key)
+{
+    Integer low = fromIndex;
+    Integer high = toIndex - 1;
+
+    while (low <= high) {
+        Integer mid = ((unsigned Integer)(low + high)) >> 1;
+        IComparable* midVal = IComparable::Probe(a[mid]);
+        CHECK(midVal != nullptr);
+        Integer cmp;
+        midVal->CompareTo(key, &cmp);
+        if (cmp < 0) {
+            low = mid + 1;
+        }
+        else if (cmp > 0) {
+            high = mid - 1;
+        }
+        else {
+            return mid; // key found;
+        }
+    }
+    return -(low + 1); // key not found;
+}
+
+Integer Arrays::BinarySearch0(
+    /* [in] */ const Array<IInterface*>& a,
+    /* [in] */ Integer fromIndex,
+    /* [in] */ Integer toIndex,
+    /* [in] */ IInterface* key,
+    /* [in] */ IComparator* c)
+{
+    if (c == nullptr) {
+        return BinarySearch0(a, fromIndex, toIndex, key);
+    }
+    Integer low = fromIndex;
+    Integer high = toIndex - 1;
+
+    while (low <= high) {
+        Integer mid = ((unsigned Integer)(low + high)) >> 1;
+        IInterface* midVal = a[mid];
+        Integer cmp;
+        c->Compare(midVal, key, &cmp);
+        if (cmp < 0) {
+            low = mid + 1;
+        }
+        else if (cmp > 0) {
+            high = mid - 1;
+        }
+        else {
+            return mid; // key found;
+        }
+    }
+    return -(low + 1); // key not found;
 }
 
 Boolean Arrays::Equals(

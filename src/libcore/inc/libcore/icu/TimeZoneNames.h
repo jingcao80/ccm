@@ -17,9 +17,14 @@
 #ifndef __LIBCORE_ICU_TIMEZONENAMES_H__
 #define __LIBCORE_ICU_TIMEZONENAMES_H__
 
+#include "ccm.util.IComparator.h"
 #include "ccm.util.ILocale.h"
+#include "libcore/util/BasicLruCache.h"
+#include <ccmautoptr.h>
 
+using ccm::util::IComparator;
 using ccm::util::ILocale;
+using libcore::util::BasicLruCache;
 
 namespace libcore {
 namespace icu {
@@ -27,15 +32,28 @@ namespace icu {
 class TimeZoneNames
 {
 public:
+    class ZoneStringsCache
+        : public BasicLruCache
+    {
+    public:
+        inline ECode Constructor()
+        {
+            return BasicLruCache::Constructor(5);
+        }
+
+    protected:
+        ECode Create(
+            /* [in] */ IInterface* key,
+            /* [out] */ IInterface** value) override;
+    };
+
+public:
     static ECode GetDisplayName(
         /* [in] */ const Array<Array<String>>& zoneStrings,
         /* [in] */ const String& id,
         /* [in] */ Boolean daylight,
         /* [in] */ Integer style,
-        /* [out] */ String* name)
-    {
-        return NOERROR;
-    }
+        /* [out] */ String* name);
 
     static ECode GetZoneStrings(
         /* [in] */ ILocale* locale,
@@ -43,6 +61,24 @@ public:
 
 private:
     TimeZoneNames();
+
+    static void FillZoneStrings(
+        /* [in] */ const String& languageTag,
+        /* [out] */ Array<Array<String>>& result);
+
+    static Array<String> GetAvailableTimeZoneIds();
+
+    static AutoPtr<ZoneStringsCache> GetCachedZoneStrings();
+
+    static AutoPtr<IComparator> GetZONE_STRINGS_COMPARATOR();
+
+public:
+    static constexpr Integer OLSON_NAME = 0;
+    static constexpr Integer LONG_NAME = 1;
+    static constexpr Integer SHORT_NAME = 2;
+    static constexpr Integer LONG_NAME_DST = 3;
+    static constexpr Integer SHORT_NAME_DST = 4;
+    static constexpr Integer NAME_COUNT = 5;
 };
 
 }
