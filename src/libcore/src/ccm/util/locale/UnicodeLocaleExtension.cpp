@@ -33,6 +33,9 @@ namespace ccm {
 namespace util {
 namespace locale {
 
+extern const CoclassID CID_UnicodeLocaleExtension =
+        {{0x94c64925,0x5b95,0x400c,0xac19,{0x4,0xd,0x2,0x5,0x6,0x8,0x3,0x4,0x0,0xa,0x4,0x7}}, &CID_libcore};
+
 AutoPtr<UnicodeLocaleExtension> UnicodeLocaleExtension::GetCA_JAPANESE()
 {
     static AutoPtr<UnicodeLocaleExtension> CA_JAPANESE =
@@ -155,6 +158,15 @@ Boolean UnicodeLocaleExtension::IsTypeSubtag(
     // 3*8alphanum
     Integer len = s.GetByteLength();
     return (len >= 3) && (len <= 8) && LocaleUtils::IsAlphaNumericString(s);
+}
+
+ECode UnicodeLocaleExtension::GetCoclassID(
+    /* [out] */ CoclassID* cid)
+{
+    VALIDATE_NOT_NULL(cid);
+
+    *cid = CID_UnicodeLocaleExtension;
+    return NOERROR;
 }
 
 }

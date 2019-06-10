@@ -29,6 +29,9 @@ namespace ccm {
 namespace util {
 namespace locale {
 
+extern const CoclassID CID_UnicodeLocaleExtension;
+
+COCLASS_ID(94c64925-5b95-400c-ac19-4d2568340a47)
 class UnicodeLocaleExtension
     : public Extension
 {
@@ -55,6 +58,9 @@ public:
 
     static Boolean IsTypeSubtag(
         /* [in] */ const String& s);
+
+    ECode GetCoclassID(
+        /* [out] */ CoclassID* cid);
 
 private:
     UnicodeLocaleExtension(

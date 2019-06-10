@@ -28,7 +28,7 @@ class StringTokenIterator
     : public LightRefBase
 {
 public:
-    StringTokenIterator(
+    ECode Constructor(
         /* [in] */ const String& text,
         /* [in] */ const String& dlms);
 
@@ -59,11 +59,11 @@ private:
 private:
     String mText;
     String mDlms;
-    Char mDelimiterChar;
+    Char mDelimiterChar = 0;
     String mToken;
-    Integer mStart;
-    Integer mEnd;
-    Boolean mDone;
+    Integer mStart = 0;
+    Integer mEnd = 0;
+    Boolean mDone = false;
 };
 
 inline String StringTokenIterator::First()

@@ -20,9 +20,12 @@
 #include "ccm/core/SyncObject.h"
 #include "ccm/util/locale/BaseLocale.h"
 #include "ccm/util/locale/LocaleExtensions.h"
+#include "ccm.util.IList.h"
+#include "ccm.util.ISet.h"
 #include "ccm.util.locale.ILanguageTag.h"
 
 using ccm::core::SyncObject;
+using ccm::util::IList;
 
 namespace ccm {
 namespace util {
@@ -51,6 +54,9 @@ public:
             /* [in] */ IInterface* obj,
             /* [out] */ Boolean* same) override;
 
+        ECode GetCoclassID(
+            /* [out] */ CoclassID* cid) override;
+
     private:
         String mStr;
         String mLowerStr;
@@ -60,6 +66,9 @@ public:
         : public Object
     {
     public:
+        CaseInsensitiveChar(
+            /* [in] */ const String& s);
+
         CaseInsensitiveChar(
             /* [in] */ Char c);
 
@@ -75,105 +84,91 @@ public:
             /* [in] */ IInterface* obj,
             /* [out] */ Boolean* same) override;
 
+        ECode GetCoclassID(
+            /* [out] */ CoclassID* cid) override;
+
     private:
         Char mCh;
         Char mLowerCh;
     };
 
 public:
+    InternalLocaleBuilder();
+
     ECode SetLanguage(
-        /* [in] */ const String& language)
-    {
-        return NOERROR;
-    }
+        /* [in] */ const String& language);
 
     ECode SetScript(
-        /* [in] */ const String& script)
-    {
-        return NOERROR;
-    }
+        /* [in] */ const String& script);
 
     ECode SetRegion(
-        /* [in] */ const String& region)
-    {
-        return NOERROR;
-    }
+        /* [in] */ const String& region);
 
     ECode SetVariant(
-        /* [in] */ const String& variant)
-    {
-        return NOERROR;
-    }
-
-    ECode SetExtension(
-        /* [in] */ Char singleton,
-        /* [in] */ const String& value)
-    {
-        return NOERROR;
-    }
-
-    ECode SetLanguageTag(
-        /* [in] */ ILanguageTag* langtag)
-    {
-        return NOERROR;
-    }
-
-    ECode Clear()
-    {
-        return NOERROR;
-    }
-
-    ECode ClearExtensions()
-    {
-        return NOERROR;
-    }
-
-    AutoPtr<BaseLocale> GetBaseLocale()
-    {
-        return nullptr;
-    }
-
-    AutoPtr<LocaleExtensions> GetLocaleExtensions()
-    {
-        return nullptr;
-    }
-
-    static String RemovePrivateuseVariant(
-        /* [in] */ const String& privuseVal)
-    {
-        return String();
-    }
-
-    ECode SetLocale(
-        /* [in] */ BaseLocale* base,
-        /* [in] */ LocaleExtensions* localeExtensions)
-    {
-        return NOERROR;
-    }
+        /* [in] */ const String& variant);
 
     ECode AddUnicodeLocaleAttribute(
-        /* [in] */ const String& attribute)
-    {
-        return NOERROR;
-    }
+        /* [in] */ const String& attribute);
 
     ECode RemoveUnicodeLocaleAttribute(
-        /* [in] */ const String& attribute)
-    {
-        return NOERROR;
-    }
+        /* [in] */ const String& attribute);
 
     ECode SetUnicodeLocaleKeyword(
         /* [in] */ const String& key,
-        /* [in] */ const String& type)
-    {
-        return NOERROR;
-    }
+        /* [in] */ const String& type);
+
+    ECode SetExtension(
+        /* [in] */ Char singleton,
+        /* [in] */ const String& value);
+
+    ECode SetExtensions(
+        /* [in] */ const String& subtags);
+
+    ECode SetLanguageTag(
+        /* [in] */ ILanguageTag* langtag);
+
+    ECode SetLocale(
+        /* [in] */ BaseLocale* base,
+        /* [in] */ LocaleExtensions* localeExtensions);
+
+    ECode Clear();
+
+    ECode ClearExtensions();
+
+    AutoPtr<BaseLocale> GetBaseLocale();
+
+    AutoPtr<LocaleExtensions> GetLocaleExtensions();
+
+    static String RemovePrivateuseVariant(
+        /* [in] */ const String& privuseVal);
+
+private:
+    ECode SetExtensions(
+        /* [in] */ IList* bcpExtensions,
+        /* [in] */ const String& privateuse);
+
+    Integer CheckVariants(
+        /* [in] */ const String& variants,
+        /* [in] */ const String& sep);
+
+    void SetUnicodeLocaleExtension(
+        /* [in] */ const String& subtags);
+
+    static AutoPtr<CaseInsensitiveChar> GetPRIVATEUSE_KEY();
+
+private:
+    String mLanguage;
+    String mScript;
+    String mRegion;
+    String mVariant;
+
+    AutoPtr<IMap> mExtensions;
+    AutoPtr<ISet> mUattributes;
+    AutoPtr<IMap> mUkeywords;
 };
 
 }
 }
 }
-
 
 #endif // __CCM_UTIL_LOCALE_INTERNALLOCALEBUILDER_H__

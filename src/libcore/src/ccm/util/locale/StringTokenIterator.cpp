@@ -21,7 +21,7 @@ namespace ccm {
 namespace util {
 namespace locale {
 
-StringTokenIterator::StringTokenIterator(
+ECode StringTokenIterator::Constructor(
     /* [in] */ const String& text,
     /* [in] */ const String& dlms)
 {
@@ -33,6 +33,7 @@ StringTokenIterator::StringTokenIterator(
         mDlms = dlms;
     }
     SetStart(0);
+    return NOERROR;
 }
 
 String StringTokenIterator::Next()

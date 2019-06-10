@@ -114,10 +114,12 @@ AutoPtr<ILanguageTag> LanguageTag::Parse(
     if (gfmap != nullptr) {
         AutoPtr<ICharSequence> text;
         gfmap->Get(1, (IInterface**)&text);
-        itr = new StringTokenIterator(CoreUtils::Unbox(text), SEP);
+        itr = new StringTokenIterator();
+        itr->Constructor(CoreUtils::Unbox(text), SEP);
     }
     else {
-        itr = new StringTokenIterator(languageTag, SEP);
+        itr = new StringTokenIterator();
+        itr->Constructor(languageTag, SEP);
     }
 
     AutoPtr<LanguageTag> tag = new LanguageTag();
@@ -417,7 +419,8 @@ AutoPtr<ILanguageTag> LanguageTag::ParseLocale(
 
     if (variant.GetByteLength() > 0) {
         AutoPtr<IList> variants;
-        AutoPtr<StringTokenIterator> varitr = new StringTokenIterator(variant, BaseLocale::SEP);
+        AutoPtr<StringTokenIterator> varitr = new StringTokenIterator();
+        varitr->Constructor(variant, BaseLocale::SEP);
         while (!varitr->IsDone()) {
             String var = varitr->Current();
             if (!IsVariant(var)) {
