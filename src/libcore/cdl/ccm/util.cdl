@@ -658,9 +658,6 @@ coclass CTreeSet
         [in] IComparator* comparator);
 
     Constructor(
-        [in] INavigableMap* m);
-
-    Constructor(
         [in] ICollection* c);
 
     Constructor(

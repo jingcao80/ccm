@@ -13,35 +13,3 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //=========================================================================
-
-#ifndef __CCM_UTIL_CTREESET_H__
-#define __CCM_UTIL_CTREESET_H__
-
-#include "ccm/util/TreeSet.h"
-#include "_ccm_util_CTreeSet.h"
-
-namespace ccm {
-namespace util {
-
-Coclass(CTreeSet)
-    , public TreeSet
-{
-public:
-    CCM_OBJECT_DECL();
-
-    ECode Clone(
-        /* [in] */ const InterfaceID& iid,
-        /* [out] */ IInterface** obj) override;
-
-    static ECode New(
-        /* [in] */ INavigableMap* m,
-        /* [in] */ const InterfaceID& iid,
-        /* [out] */ ccm::IInterface** object);
-
-    using _CTreeSet::New;
-};
-
-}
-}
-
-#endif // __CCM_UTIL_CTREESET_H__

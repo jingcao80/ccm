@@ -59,7 +59,9 @@ set(SOURCES
     StringTokenizer.cpp
     TimeZone.cpp
     TimeZoneGetter.cpp
+    TreeMap.cpp
     TreeNode.cpp
+    TreeSet.cpp
     XMLUtils.cpp
     util.cpp)
 

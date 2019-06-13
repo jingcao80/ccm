@@ -14,34 +14,35 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_UTIL_CTREESET_H__
-#define __CCM_UTIL_CTREESET_H__
+#ifndef __CCM_UTIL_TREEMAP_H__
+#define __CCM_UTIL_TREEMAP_H__
 
-#include "ccm/util/TreeSet.h"
-#include "_ccm_util_CTreeSet.h"
+#include "ccm.util.IComparator.h"
+#include "ccm.util.ISortedSet.h"
+#include "ccm.util.ITreeMap.h"
 
 namespace ccm {
 namespace util {
 
-Coclass(CTreeSet)
-    , public TreeSet
+class TreeMap
+    : public ITreeMap
 {
 public:
-    CCM_OBJECT_DECL();
+    ECode Comparator(
+        /* [out] */ IComparator** comparator)
+    {
+        return NOERROR;
+    }
 
-    ECode Clone(
-        /* [in] */ const InterfaceID& iid,
-        /* [out] */ IInterface** obj) override;
-
-    static ECode New(
-        /* [in] */ INavigableMap* m,
-        /* [in] */ const InterfaceID& iid,
-        /* [out] */ ccm::IInterface** object);
-
-    using _CTreeSet::New;
+    ECode AddAllForTreeSet(
+        /* [in] */ ISortedSet* set,
+        /* [in] */ IInterface* defaultVal)
+    {
+        return NOERROR;
+    }
 };
 
 }
 }
 
-#endif // __CCM_UTIL_CTREESET_H__
+#endif // __CCM_UTIL_TREEMAP_H__

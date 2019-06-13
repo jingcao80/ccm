@@ -531,8 +531,60 @@ ECode CSimpleTimeZone::New(
 CCM_OBJECT_IMPL(CStringTokenizer);
 CCM_OBJECT_IMPL(CTreeMap);
 CCM_INTERFACE_IMPL_1(CTreeMap, SyncObject, ITreeMap);
+
 CCM_OBJECT_IMPL(CTreeSet);
-CCM_INTERFACE_IMPL_1(CTreeSet, SyncObject, ITreeSet);
+ECode CTreeSet::Clone(
+    /* [in] */ const InterfaceID& iid,
+    /* [out] */ IInterface** obj)
+{
+    VALIDATE_NOT_NULL(obj);
+
+    AutoPtr<IClassObject> clsObject;
+    ECode ec = CoAcquireClassFactory(CID_CTreeSet, nullptr, &clsObject);
+    if (FAILED(ec)) return ec;
+
+    void* addr = calloc(sizeof(CTreeSet), 1);
+    if (addr == nullptr) return E_OUT_OF_MEMORY_ERROR;
+
+    CTreeSet* newObj = new(addr) CTreeSet();
+    ec = TreeSet::CloneImpl(newObj);
+    if (FAILED(ec)) {
+        free(addr);
+        return ec;
+    }
+    AutoPtr<IMetaComponent> comp;
+    clsObject->GetMetadate(&comp);
+    newObj->AttachMetadata(comp, String("ccm::util::CTreeSet"));
+    *obj = newObj->Probe(iid);
+    REFCOUNT_ADD(*obj);
+    return NOERROR;
+}
+
+ECode CTreeSet::New(
+    /* [in] */ INavigableMap* m,
+    /* [in] */ const InterfaceID& iid,
+    /* [out] */ ccm::IInterface** object)
+{
+    AutoPtr<IClassObject> clsObject;
+    ECode ec = CoAcquireClassFactory(CID_CTreeSet, nullptr, &clsObject);
+    if (FAILED(ec)) return ec;
+
+    void* addr = calloc(sizeof(CTreeSet), 1);
+    if (addr == nullptr) return E_OUT_OF_MEMORY_ERROR;
+
+    CTreeSet* _obj = new(addr) CTreeSet();
+    ec = _obj->Constructor(m);
+    if (FAILED(ec)) {
+        free(addr);
+        return ec;
+    }
+    AutoPtr<IMetaComponent> comp;
+    clsObject->GetMetadate(&comp);
+    _obj->AttachMetadata(comp, String("ccm::util::CTreeSet"));
+    *object = _obj->Probe(iid);
+    REFCOUNT_ADD(*object);
+    return NOERROR;
+}
 
 namespace calendar {
 
