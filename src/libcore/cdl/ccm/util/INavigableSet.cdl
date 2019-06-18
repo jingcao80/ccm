@@ -36,7 +36,7 @@ interface INavigableSet
         [in] IInterface* e,
         [out] IInterface** ceilingE);
 
-    DescendingIterator(
+    GetDescendingIterator(
         [out] IIterator** it);
 
     DescendingSet(

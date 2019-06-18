@@ -82,7 +82,7 @@ ECode TreeSet::GetIterator(
     return s->GetIterator(it);
 }
 
-ECode TreeSet::DescendingIterator(
+ECode TreeSet::GetDescendingIterator(
     /* [out] */ IIterator** it)
 {
     VALIDATE_NOT_NULL(it);

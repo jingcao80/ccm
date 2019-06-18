@@ -60,7 +60,7 @@ public:
     ECode GetIterator(
         /* [out] */ IIterator** it) override;
 
-    ECode DescendingIterator(
+    ECode GetDescendingIterator(
         /* [out] */ IIterator** it) override;
 
     ECode DescendingSet(

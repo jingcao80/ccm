@@ -14,43 +14,16 @@
 // limitations under the License.
 //=========================================================================
 
-interface ccm::util::ICollection;
-interface ccm::util::IComparator;
-interface ccm::util::ISet;
-
 namespace ccm {
-namespace util {
+namespace io {
 
-/*
- * @Involve interface ccm::util::IMap
- */
 [
-    uuid(d29b6732-8fdc-45ed-93c1-3fe8207030e1),
+    uuid(7feae7f1-d729-413f-a0ce-fb212beb2010),
     version(0.1.0)
 ]
-interface ISortedMap
+interface IDataInput
 {
-    Comparator(
-        [out] IComparator** comparator);
 
-    FirstKey(
-        [out] IInterface** key);
-
-    HeadMap(
-        [in] IInterface* toKey,
-        [out] ISortedMap** headmap);
-
-    LastKey(
-        [out] IInterface** key);
-
-    SubMap(
-        [in] IInterface* fromKey,
-        [in] IInterface* toKey,
-        [out] ISortedMap** submap);
-
-    TailMap(
-        [in] IInterface* fromKey,
-        [out] ISortedMap** tailmap);
 }
 
 }
