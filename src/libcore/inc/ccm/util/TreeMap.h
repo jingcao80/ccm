@@ -221,7 +221,8 @@ private:
     {
     public:
         PrivateEntryIterator(
-            /* [in] */ TreeMapEntry* first);
+            /* [in] */ TreeMapEntry* first,
+            /* [in] */ TreeMap* owner);
 
         CCM_INTERFACE_DECL();
 
@@ -229,6 +230,19 @@ private:
             /* [out] */ Boolean* result) override;
 
         ECode Remove() override;
+
+    protected:
+        ECode NextEntry(
+            /* [out] */ TreeMapEntry** entry);
+
+        ECode PrevEntry(
+            /* [out] */ TreeMapEntry** entry);
+
+    protected:
+        AutoPtr<TreeMapEntry> mNext;
+        AutoPtr<TreeMapEntry> mLastReturned;
+        Integer mExpectedModCount = 0;
+        AutoPtr<TreeMap> mOwner;
     };
 
     class EntryIterator
@@ -236,7 +250,10 @@ private:
     {
     public:
         EntryIterator(
-            /* [in] */ TreeMapEntry* first);
+            /* [in] */ TreeMapEntry* first,
+            /* [in] */ TreeMap* owner)
+            : PrivateEntryIterator(first, owner)
+        {}
 
         ECode Next(
             /* [out] */ IInterface** object = nullptr) override;
@@ -247,7 +264,10 @@ private:
     {
     public:
         ValueIterator(
-            /* [in] */ TreeMapEntry* first);
+            /* [in] */ TreeMapEntry* first,
+            /* [in] */ TreeMap* owner)
+            : PrivateEntryIterator(first, owner)
+        {}
 
         ECode Next(
             /* [out] */ IInterface** object = nullptr) override;
@@ -258,7 +278,10 @@ private:
     {
     public:
         KeyIterator(
-            /* [in] */ TreeMapEntry* first);
+            /* [in] */ TreeMapEntry* first,
+            /* [in] */ TreeMap* owner)
+            : PrivateEntryIterator(first, owner)
+        {}
 
         ECode Next(
             /* [out] */ IInterface** object = nullptr) override;
@@ -269,7 +292,10 @@ private:
     {
     public:
         DescendingKeyIterator(
-            /* [in] */ TreeMapEntry* first);
+            /* [in] */ TreeMapEntry* first,
+            /* [in] */ TreeMap* owner)
+            : PrivateEntryIterator(first, owner)
+        {}
 
         ECode Next(
             /* [out] */ IInterface** object = nullptr) override;
@@ -283,8 +309,207 @@ private:
         , public ISortedMap
         , public ISerializable
     {
+    protected:
+        class EntrySetView
+            : public AbstractSet
+        {
+        public:
+            EntrySetView(
+                /* [in] */ NavigableSubMap* owner)
+                : mOwner(owner)
+            {}
+
+            ECode GetSize(
+                /* [out] */ Integer* size) override;
+
+            ECode IsEmpty(
+                /* [out] */ Boolean* result) override;
+
+            ECode Contains(
+                /* [in] */ IInterface* obj,
+                /* [out] */ Boolean* result) override;
+
+            ECode Remove(
+                /* [in] */ IInterface* obj,
+                /* [out]　*/ Boolean* contained = nullptr) override;
+
+        protected:
+            NavigableSubMap* mOwner;
+
+        private:
+            Integer mSize = -1;
+            Integer mSizeModCount = 0;
+        };
+
+        class SubMapIterator
+            : public Object
+            , public IIterator
+        {
+        public:
+            SubMapIterator(
+                /* [in] */ TreeMapEntry* first,
+                /* [in] */ TreeMapEntry* fence,
+                /* [in] */ NavigableSubMap* owner);
+
+            CCM_INTERFACE_DECL();
+
+            ECode HasNext(
+                /* [out] */ Boolean* result) override;
+
+        protected:
+            ECode NextEntry(
+                /* [out] */ TreeMapEntry** entry);
+
+            ECode PrevEntry(
+                /* [out] */ TreeMapEntry** entry);
+
+            ECode RemoveAscending();
+
+            ECode RemoveDescending();
+
+        protected:
+            AutoPtr<TreeMapEntry> mLastReturned;
+            AutoPtr<TreeMapEntry> mNext;
+            AutoPtr<IInterface> mFenceKey;
+            Integer mExpectedModCount;
+
+            AutoPtr<NavigableSubMap> mOwner;
+        };
+
+        class SubMapEntryIterator
+            : public SubMapIterator
+        {
+        public:
+            SubMapEntryIterator(
+                /* [in] */ TreeMapEntry* first,
+                /* [in] */ TreeMapEntry* fence,
+                /* [in] */ NavigableSubMap* owner)
+                : SubMapIterator(first, fence, owner)
+            {}
+
+            ECode Next(
+                /* [out] */ IInterface** object = nullptr) override;
+
+            ECode Remove() override;
+        };
+
+        class DescendingSubMapEntryIterator
+            : public SubMapIterator
+        {
+        public:
+            DescendingSubMapEntryIterator(
+                /* [in] */ TreeMapEntry* first,
+                /* [in] */ TreeMapEntry* fence,
+                /* [in] */ NavigableSubMap* owner)
+                : SubMapIterator(first, fence, owner)
+            {}
+
+            ECode Next(
+                /* [out] */ IInterface** object = nullptr) override;
+
+            ECode Remove() override;
+        };
+
+        class SubMapKeyIterator
+            : public SubMapIterator
+        {
+        public:
+            SubMapKeyIterator(
+                /* [in] */ TreeMapEntry* first,
+                /* [in] */ TreeMapEntry* fence,
+                /* [in] */ NavigableSubMap* owner)
+                : SubMapIterator(first, fence, owner)
+            {}
+
+            ECode Next(
+                /* [out] */ IInterface** object = nullptr) override;
+
+            ECode Remove() override;
+        };
+
+        class DescendingSubMapKeyIterator
+            : public SubMapIterator
+        {
+        public:
+            DescendingSubMapKeyIterator(
+                /* [in] */ TreeMapEntry* first,
+                /* [in] */ TreeMapEntry* fence,
+                /* [in] */ NavigableSubMap* owner)
+                : SubMapIterator(first, fence, owner)
+            {}
+
+            ECode Next(
+                /* [out] */ IInterface** object = nullptr) override;
+
+            ECode Remove() override;
+        };
+
     public:
+        ~NavigableSubMap();
+
         CCM_INTERFACE_DECL();
+
+        ECode Constructor(
+            /* [in] */ TreeMap* m,
+            /* [in] */ Boolean fromStart,
+            /* [in] */ IInterface* lo,
+            /* [in] */ Boolean loInclusive,
+            /* [in] */ Boolean toEnd,
+            /* [in] */ IInterface* hi,
+            /* [in] */ Boolean hiInclusive,
+            /* [in] */ Boolean holdRef);
+
+        Boolean TooLow(
+            /* [in] */ IInterface* key);
+
+        Boolean TooHigh(
+            /* [in] */ IInterface* key);
+
+        Boolean InRange(
+            /* [in] */ IInterface* key);
+
+        Boolean InClosedRange(
+            /* [in] */ IInterface* key);
+
+        Boolean InRange(
+            /* [in] */ IInterface* key,
+            /* [in] */ Boolean inclusive);
+
+        AutoPtr<TreeMapEntry> AbsLowest();
+
+        AutoPtr<TreeMapEntry> AbsHighest();
+
+        AutoPtr<TreeMapEntry> AbsCeiling(
+            /* [in] */ IInterface* key);
+
+        AutoPtr<TreeMapEntry> AbsHigher(
+            /* [in] */ IInterface* key);
+
+        AutoPtr<TreeMapEntry> AbsFloor(
+            /* [in] */ IInterface* key);
+
+        AutoPtr<TreeMapEntry> AbsLower(
+            /* [in] */ IInterface* key);
+
+        AutoPtr<TreeMapEntry> AbsHighFence();
+
+        AutoPtr<TreeMapEntry> AbsLowFence();
+
+        virtual AutoPtr<TreeMapEntry> SubLowest() = 0;
+
+        virtual AutoPtr<TreeMapEntry> SubHighest() = 0;
+
+        virtual AutoPtr<TreeMapEntry> SubCeiling(
+            /* [in] */ IInterface* key) = 0;
+
+        virtual AutoPtr<TreeMapEntry> SubHigher(
+            /* [in] */ IInterface* key) = 0;
+
+        virtual AutoPtr<TreeMapEntry> SubFloor(
+            /* [in] */ IInterface* key) = 0;
+
+        virtual AutoPtr<TreeMapEntry> SubLower(
+            /* [in] */ IInterface* key) = 0;
 
         virtual AutoPtr<IIterator> GetKeyIterator() = 0;
 
@@ -377,6 +602,220 @@ private:
             /* [in] */ IInterface* toKey,
             /* [out] */ ISortedMap** submap) override;
 
+        using INavigableMap::SubMap;
+
+        ECode HeadMap(
+            /* [in] */ IInterface* toKey,
+            /* [out] */ ISortedMap** headmap) override;
+
+        using INavigableMap::HeadMap;
+
+        ECode TailMap(
+            /* [in] */ IInterface* fromKey,
+            /* [out] */ ISortedMap** tailmap) override;
+
+        using INavigableMap::TailMap;
+
+    protected:
+        TreeMap* mMap;
+
+        /**
+         * Endpoints are represented as triples (fromStart, lo,
+         * loInclusive) and (toEnd, hi, hiInclusive). If fromStart is
+         * true, then the low (absolute) bound is the start of the
+         * backing map, and the other values are ignored. Otherwise,
+         * if loInclusive is true, lo is the inclusive bound, else lo
+         * is the exclusive bound. Similarly for the upper bound.
+         */
+        AutoPtr<IInterface> mLo;
+        AutoPtr<IInterface> mHi;
+        Boolean mFromStart;
+        Boolean mToEnd;
+        Boolean mLoInclusive;
+        Boolean mHiInclusive;
+
+        AutoPtr<INavigableMap> mDescendingMapView;
+        AutoPtr<EntrySetView> mEntrySetView;
+        AutoPtr<KeySet> mNavigableKeySetView;
+
+        Boolean mHoldRef;
+    };
+
+    class AscendingSubMap final
+        : public NavigableSubMap
+    {
+    public:
+        class AscendingEntrySetView
+            : public EntrySetView
+        {
+        public:
+            AscendingEntrySetView(
+                /* [in] */ NavigableSubMap* owner)
+                : EntrySetView(owner)
+            {}
+
+            ECode GetIterator(
+                /* [out] */ IIterator** it) override;
+        };
+
+    public:
+        ECode Constructor(
+            /* [in] */ TreeMap* m,
+            /* [in] */ Boolean fromStart,
+            /* [in] */ IInterface* lo,
+            /* [in] */ Boolean loInclusive,
+            /* [in] */ Boolean toEnd,
+            /* [in] */ IInterface* hi,
+            /* [in] */ Boolean hiInclusive,
+            /* [in] */ Boolean holdRef);
+
+        ECode Comparator(
+            /* [out] */ IComparator** comparator) override;
+
+        ECode SubMap(
+            /* [in] */ IInterface* fromKey,
+            /* [in] */ Boolean fromInclusive,
+            /* [in] */ IInterface* toKey,
+            /* [in] */ Boolean toInclusive,
+            /* [out] */ INavigableMap** submap) override;
+
+        ECode HeadMap(
+            /* [in] */ IInterface* key,
+            /* [in] */ Boolean inclusive,
+            /* [out] */ INavigableMap** headmap) override;
+
+        ECode TailMap(
+            /* [in] */ IInterface* fromKey,
+            /* [in] */ Boolean inclusive,
+            /* [out] */ INavigableMap** tailmap) override;
+
+        ECode DescendingMap(
+            /* [out] */ INavigableMap** map) override;
+
+        AutoPtr<IIterator> GetKeyIterator() override;
+
+        AutoPtr<IIterator> GetDescendingKeyIterator() override;
+
+        ECode GetEntrySet(
+            /* [out] */ ISet** entries) override;
+
+        AutoPtr<TreeMapEntry> SubLowest() override;
+
+        AutoPtr<TreeMapEntry> SubHighest() override;
+
+        AutoPtr<TreeMapEntry> SubCeiling(
+            /* [in] */ IInterface* key) override;
+
+        AutoPtr<TreeMapEntry> SubHigher(
+            /* [in] */ IInterface* key) override;
+
+        AutoPtr<TreeMapEntry> SubFloor(
+            /* [in] */ IInterface* key) override;
+
+        AutoPtr<TreeMapEntry> SubLower(
+            /* [in] */ IInterface* key) override;
+    };
+
+    class DescendingSubMap
+        : public NavigableSubMap
+    {
+    public:
+        class DescendingEntrySetView
+            : public EntrySetView
+        {
+        public:
+            DescendingEntrySetView(
+                /* [in] */ NavigableSubMap* owner)
+                : EntrySetView(owner)
+            {}
+
+            ECode GetIterator(
+                /* [out] */ IIterator** it) override;
+        };
+
+    public:
+        ECode Constructor(
+            /* [in] */ TreeMap* m,
+            /* [in] */ Boolean fromStart,
+            /* [in] */ IInterface* lo,
+            /* [in] */ Boolean loInclusive,
+            /* [in] */ Boolean toEnd,
+            /* [in] */ IInterface* hi,
+            /* [in] */ Boolean hiInclusive,
+            /* [in] */ Boolean holdRef);
+
+        ECode Comparator(
+            /* [out] */ IComparator** comparator) override;
+
+        ECode SubMap(
+            /* [in] */ IInterface* fromKey,
+            /* [in] */ Boolean fromInclusive,
+            /* [in] */ IInterface* toKey,
+            /* [in] */ Boolean toInclusive,
+            /* [out] */ INavigableMap** submap) override;
+
+        ECode HeadMap(
+            /* [in] */ IInterface* key,
+            /* [in] */ Boolean inclusive,
+            /* [out] */ INavigableMap** headmap) override;
+
+        ECode TailMap(
+            /* [in] */ IInterface* fromKey,
+            /* [in] */ Boolean inclusive,
+            /* [out] */ INavigableMap** tailmap) override;
+
+        ECode DescendingMap(
+            /* [out] */ INavigableMap** map) override;
+
+        AutoPtr<IIterator> GetKeyIterator() override;
+
+        AutoPtr<IIterator> GetDescendingKeyIterator() override;
+
+        ECode GetEntrySet(
+            /* [out] */ ISet** entries) override;
+
+        AutoPtr<TreeMapEntry> SubLowest() override;
+
+        AutoPtr<TreeMapEntry> SubHighest() override;
+
+        AutoPtr<TreeMapEntry> SubCeiling(
+            /* [in] */ IInterface* key) override;
+
+        AutoPtr<TreeMapEntry> SubHigher(
+            /* [in] */ IInterface* key) override;
+
+        AutoPtr<TreeMapEntry> SubFloor(
+            /* [in] */ IInterface* key) override;
+
+        AutoPtr<TreeMapEntry> SubLower(
+            /* [in] */ IInterface* key) override;
+
+    private:
+        AutoPtr<IComparator> mReverseComparator;
+    };
+
+    class SubMapInternal
+        : public AbstractMap
+        , public ISortedMap
+        , public ISerializable
+    {
+    public:
+        CCM_INTERFACE_DECL();
+
+        ECode GetEntrySet(
+            /* [out] */ ISet** entries) override;
+
+        ECode LastKey(
+            /* [out] */ IInterface** key) override;
+
+        ECode FirstKey(
+            /* [out] */ IInterface** key) override;
+
+        ECode SubMap(
+            /* [in] */ IInterface* fromKey,
+            /* [in] */ IInterface* toKey,
+            /* [out] */ ISortedMap** submap) override;
+
         ECode HeadMap(
             /* [in] */ IInterface* toKey,
             /* [out] */ ISortedMap** headmap) override;
@@ -384,94 +823,9 @@ private:
         ECode TailMap(
             /* [in] */ IInterface* fromKey,
             /* [out] */ ISortedMap** tailmap) override;
-    };
-
-    class AscendingSubMap
-        : public NavigableSubMap
-    {
-    public:
-        ECode Constructor(
-            /* [in] */ TreeMap* m,
-            /* [in] */ Boolean fromStart,
-            /* [in] */ IInterface* lo,
-            /* [in] */ Boolean loInclusive,
-            /* [in] */ Boolean toEnd,
-            /* [in] */ IInterface* hi,
-            /* [in] */ Boolean hiInclusive);
 
         ECode Comparator(
             /* [out] */ IComparator** comparator) override;
-
-        ECode SubMap(
-            /* [in] */ IInterface* fromKey,
-            /* [in] */ Boolean fromInclusive,
-            /* [in] */ IInterface* toKey,
-            /* [in] */ Boolean toInclusive,
-            /* [out] */ INavigableMap** submap) override;
-
-        ECode HeadMap(
-            /* [in] */ IInterface* key,
-            /* [in] */ Boolean inclusive,
-            /* [out] */ INavigableMap** headmap) override;
-
-        ECode TailMap(
-            /* [in] */ IInterface* fromKey,
-            /* [in] */ Boolean inclusive,
-            /* [out] */ INavigableMap** tailmap) override;
-
-        ECode DescendingMap(
-            /* [out] */ INavigableMap** map) override;
-
-        AutoPtr<IIterator> GetKeyIterator() override;
-
-        AutoPtr<IIterator> GetDescendingKeyIterator() override;
-
-        ECode GetEntrySet(
-            /* [out] */ ISet** entries) override;
-    };
-
-    class DescendingSubMap
-        : public NavigableSubMap
-    {
-    public:
-        ECode Constructor(
-            /* [in] */ TreeMap* m,
-            /* [in] */ Boolean fromStart,
-            /* [in] */ IInterface* lo,
-            /* [in] */ Boolean loInclusive,
-            /* [in] */ Boolean toEnd,
-            /* [in] */ IInterface* hi,
-            /* [in] */ Boolean hiInclusive);
-
-        ECode Comparator(
-            /* [out] */ IComparator** comparator) override;
-
-        ECode SubMap(
-            /* [in] */ IInterface* fromKey,
-            /* [in] */ Boolean fromInclusive,
-            /* [in] */ IInterface* toKey,
-            /* [in] */ Boolean toInclusive,
-            /* [out] */ INavigableMap** submap) override;
-
-        ECode HeadMap(
-            /* [in] */ IInterface* key,
-            /* [in] */ Boolean inclusive,
-            /* [out] */ INavigableMap** headmap) override;
-
-        ECode TailMap(
-            /* [in] */ IInterface* fromKey,
-            /* [in] */ Boolean inclusive,
-            /* [out] */ INavigableMap** tailmap) override;
-
-        ECode DescendingMap(
-            /* [out] */ INavigableMap** map) override;
-
-        AutoPtr<IIterator> GetKeyIterator() override;
-
-        AutoPtr<IIterator> GetDescendingKeyIterator() override;
-
-        ECode GetEntrySet(
-            /* [out] */ ISet** entries) override;
     };
 
     class TreeMapEntry
@@ -707,28 +1061,16 @@ private:
 
     AutoPtr<IIterator> GetDescendingKeyIterator();
 
-
-
-
-    static AutoPtr<IMapEntry> ExportEntry(
-        /* [in] */ TreeMapEntry* e);
-
     Integer Compare(
         /* [in] */ IInterface* k1,
         /* [in] */ IInterface* k2);
 
-    void DeleteEntry(
-        /* [in] */ TreeMapEntry* p);
-
-    void FixAfterInsertion(
-        /* [in] */ TreeMapEntry* x);
-
-
-
-
     static Boolean ValEquals(
         /* [in] */ IInterface* o1,
         /* [in] */ IInterface* o2);
+
+    static AutoPtr<IMapEntry> ExportEntry(
+        /* [in] */ TreeMapEntry* e);
 
     AutoPtr<TreeMapEntry> GetFirstEntry();
 
@@ -739,6 +1081,43 @@ private:
 
     static AutoPtr<TreeMapEntry> Predecessor(
         /* [in] */ TreeMapEntry* t);
+
+    static Boolean ColorOf(
+        /* [in] */ TreeMapEntry* p);
+
+    static AutoPtr<TreeMapEntry> ParentOf(
+        /* [in] */ TreeMapEntry* p);
+
+    static void SetColor(
+        /* [in] */ TreeMapEntry* p,
+        /* [in] */ Boolean c);
+
+    static AutoPtr<TreeMapEntry> LeftOf(
+        /* [in] */ TreeMapEntry* p);
+
+    static AutoPtr<TreeMapEntry> RightOf(
+        /* [in] */ TreeMapEntry* p);
+
+    void RotateLeft(
+        /* [in] */ TreeMapEntry* p);
+
+    void RotateRight(
+        /* [in] */ TreeMapEntry* p);
+
+    void FixAfterInsertion(
+        /* [in] */ TreeMapEntry* x);
+
+    void DeleteEntry(
+        /* [in] */ TreeMapEntry* p);
+
+
+
+
+
+
+
+
+
 
     ECode BuildFromSorted(
         /* [in] */ Integer size,
@@ -759,6 +1138,8 @@ private:
 
     static Integer ComputeRedLevel(
         /* [in] */ Integer sz);
+
+    static AutoPtr<IInterface> GetUNBOUNDED();
 
 private:
     AutoPtr<IComparator> mComparator;

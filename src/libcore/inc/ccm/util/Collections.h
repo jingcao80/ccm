@@ -24,6 +24,7 @@
 #include "ccm.core.ISynchronize.h"
 #include "ccm.io.ISerializable.h"
 #include "ccm.util.ICollection.h"
+#include "ccm.util.IComparator.h"
 #include "ccm.util.IEnumeration.h"
 #include "ccm.util.IIterator.h"
 #include "ccm.util.IList.h"
@@ -718,6 +719,9 @@ public:
     static AutoPtr<IList> GetEMPTY_LIST();
 
     static AutoPtr<IMap> GetEMPTY_MAP();
+
+    static AutoPtr<IComparator> ReverseOrder(
+        /* [in] */ IComparator* cmp);
 
 private:
     static constexpr Integer REVERSE_THRESHOLD = 18;
