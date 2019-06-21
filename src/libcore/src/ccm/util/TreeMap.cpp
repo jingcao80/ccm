@@ -121,7 +121,8 @@ ECode TreeMap::Get(
         *value = nullptr;
     }
     else {
-        entry->mValue.MoveTo(value);
+        *value = entry->mValue;
+        REFCOUNT_ADD(*value);
     }
     return NOERROR;
 }
@@ -443,8 +444,8 @@ ECode TreeMap::Put(
         mModCount++;
         if (prevValue != nullptr) {
             *prevValue = nullptr;
-            return NOERROR;
         }
+        return NOERROR;
     }
     Integer cmp;
     TreeMapEntry* parent;
@@ -494,7 +495,9 @@ ECode TreeMap::Put(
     FixAfterInsertion(e);
     mSize++;
     mModCount++;
-    *prevValue = nullptr;
+    if (prevValue != nullptr) {
+        *prevValue = nullptr;
+    }
     return NOERROR;
 }
 
@@ -1049,17 +1052,190 @@ void TreeMap::RotateRight(
 }
 
 void TreeMap::FixAfterInsertion(
-    /* [in] */ TreeMapEntry* x)
+    /* [in] */ AutoPtr<TreeMapEntry> x)
 {
+    x->mColor = RED;
 
+    while (x != nullptr && x != mRoot && x->mParent->mColor == RED) {
+        if (ParentOf(x) == LeftOf(ParentOf(ParentOf(x)))) {
+            AutoPtr<TreeMapEntry> y = RightOf(ParentOf(ParentOf(x)));
+            if (ColorOf(y) == RED) {
+                SetColor(ParentOf(x), BLACK);
+                SetColor(y, BLACK);
+                SetColor(ParentOf(ParentOf(x)), RED);
+                x = ParentOf(ParentOf(x));
+            }
+            else {
+                if (x == RightOf(ParentOf(x))) {
+                    x = ParentOf(x);
+                    RotateLeft(x);
+                }
+                SetColor(ParentOf(x), BLACK);
+                SetColor(ParentOf(ParentOf(x)), RED);
+                RotateRight(ParentOf(ParentOf(x)));
+            }
+        }
+        else {
+            AutoPtr<TreeMapEntry> y = LeftOf(ParentOf(ParentOf(x)));
+            if (ColorOf(y) == RED) {
+                SetColor(ParentOf(x), BLACK);
+                SetColor(y, BLACK);
+                SetColor(ParentOf(ParentOf(x)), RED);
+                x = ParentOf(ParentOf(x));
+            }
+            else {
+                if (x == LeftOf(ParentOf(x))) {
+                    x = ParentOf(x);
+                    RotateRight(x);
+                }
+                SetColor(ParentOf(x), BLACK);
+                SetColor(ParentOf(ParentOf(x)), RED);
+                RotateLeft(ParentOf(ParentOf(x)));
+            }
+        }
+    }
+    mRoot->mColor = BLACK;
 }
 
 void TreeMap::DeleteEntry(
-    /* [in] */ TreeMapEntry* p)
+    /* [in] */ AutoPtr<TreeMapEntry> p)
 {
+    mModCount++;
+    mSize--;
 
+    // If strictly internal, copy successor's element to p and then make p
+    // point to successor.
+    if (p->mLeft != nullptr && p->mRight != nullptr) {
+        AutoPtr<TreeMapEntry> s = Successor(p);
+        p->mKey = s->mKey;
+        p->mValue = s->mValue;
+        p = std::move(s);
+    }
+
+    // Start fixup at replacement node, if it exists.
+    AutoPtr<TreeMapEntry> replacement = (p->mLeft != nullptr ? p->mLeft : p->mRight);
+
+    if (replacement != nullptr) {
+        // Link replacement to parent
+        replacement->mParent = p->mParent;
+        if (p->mParent == nullptr) {
+            mRoot = replacement;
+        }
+        else if (p == p->mParent->mLeft) {
+            p->mParent->mLeft = replacement;
+        }
+        else {
+            p->mParent->mRight = replacement;
+        }
+
+        // Null out links so they are OK to use by fixAfterDeletion.
+        p->mLeft = p->mRight = p->mParent = nullptr;
+
+        // Fix replacement
+        if (p->mColor == BLACK) {
+            FixAfterDeletion(replacement);
+        }
+    }
+    else if (p->mParent == nullptr) {
+        // return if we are the only node.
+        mRoot = nullptr;
+    }
+    else {
+        //  No children. Use self as phantom replacement and unlink.
+        if (p->mColor == BLACK) {
+            FixAfterDeletion(p);
+        }
+
+        if (p->mParent != nullptr) {
+            if (p == p->mParent->mLeft){
+                p->mParent->mLeft = nullptr;
+            }
+            else if (p == p->mParent->mRight) {
+                p->mParent->mRight = nullptr;
+            }
+            p->mParent = nullptr;
+        }
+    }
 }
 
+void TreeMap::FixAfterDeletion(
+    /* [in] */ AutoPtr<TreeMapEntry> x)
+{
+    while (x != mRoot && ColorOf(x) == BLACK) {
+        if (x == LeftOf(ParentOf(x))) {
+            AutoPtr<TreeMapEntry> sib = RightOf(ParentOf(x));
+
+            if (ColorOf(sib) == RED) {
+                SetColor(sib, BLACK);
+                SetColor(ParentOf(x), RED);
+                RotateLeft(ParentOf(x));
+                sib = RightOf(ParentOf(x));
+            }
+
+            if (ColorOf(LeftOf(sib)) == BLACK &&
+                ColorOf(RightOf(sib)) == BLACK) {
+                SetColor(sib, RED);
+                x = ParentOf(x);
+            }
+            else {
+                if (ColorOf(RightOf(sib)) == BLACK) {
+                    SetColor(LeftOf(sib), BLACK);
+                    SetColor(sib, RED);
+                    RotateRight(sib);
+                    sib = RightOf(ParentOf(x));
+                }
+                SetColor(sib, ColorOf(ParentOf(x)));
+                SetColor(ParentOf(x), BLACK);
+                SetColor(RightOf(sib), BLACK);
+                RotateLeft(ParentOf(x));
+                x = mRoot;
+            }
+        }
+        else {
+            AutoPtr<TreeMapEntry> sib = LeftOf(ParentOf(x));
+
+            if (ColorOf(sib) == RED) {
+                SetColor(sib, BLACK);
+                SetColor(ParentOf(x), RED);
+                RotateRight(ParentOf(x));
+                sib = LeftOf(ParentOf(x));
+            }
+
+            if (ColorOf(RightOf(sib)) == BLACK &&
+                    ColorOf(LeftOf(sib)) == BLACK) {
+                SetColor(sib, RED);
+                x = ParentOf(x);
+            }
+            else {
+                if (ColorOf(LeftOf(sib)) == BLACK) {
+                    SetColor(RightOf(sib), BLACK);
+                    SetColor(sib, RED);
+                    RotateLeft(sib);
+                    sib = LeftOf(ParentOf(x));
+                }
+                SetColor(sib, ColorOf(ParentOf(x)));
+                SetColor(ParentOf(x), BLACK);
+                SetColor(LeftOf(sib), BLACK);
+                RotateRight(ParentOf(x));
+                x = mRoot;
+            }
+        }
+    }
+
+    SetColor(x, BLACK);
+}
+
+ECode TreeMap::AddAllForTreeSet(
+    /* [in] */ ISortedSet* set,
+    /* [in] */ IInterface* defaultVal)
+{
+    Integer size;
+    ISet::Probe(set)->GetSize(&size);
+    AutoPtr<IIterator> it;
+    ISet::Probe(set)->GetIterator(&it);
+    BuildFromSorted(size, it, nullptr, defaultVal);
+    return NOERROR;
+}
 
 ECode TreeMap::BuildFromSorted(
     /* [in] */ Integer size,
@@ -1874,11 +2050,11 @@ AutoPtr<TreeMap::TreeMapEntry> TreeMap::NavigableSubMap::AbsHighFence()
         return e;
     }
     else if (mHiInclusive) {
-        mMap->GetHigherEntry(mLo, &e);
+        mMap->GetHigherEntry(mHi, &e);
         return e;
     }
     else {
-        mMap->GetCeilingEntry(mLo, &e);
+        mMap->GetCeilingEntry(mHi, &e);
         return e;
     }
 }
@@ -1935,6 +2111,10 @@ ECode TreeMap::NavigableSubMap::ContainsKey(
 {
     VALIDATE_NOT_NULL(result);
 
+    if (key == nullptr) {
+        Logger::E("TreeMap::NavigableSubMap", "key == nullptr");
+        return E_NULL_POINTER_EXCEPTION;
+    }
     if (!InRange(key)) {
         *result = false;
         return NOERROR;
@@ -1947,6 +2127,10 @@ ECode TreeMap::NavigableSubMap::Put(
     /* [in] */ IInterface* value,
     /* [out] */ IInterface** prevValue)
 {
+    if (key == nullptr) {
+        Logger::E("TreeMap::NavigableSubMap", "key == nullptr");
+        return E_NULL_POINTER_EXCEPTION;
+    }
     if (!InRange(key)) {
         Logger::E("TreeMap::NavigableSubMap", "key out of range");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -1960,6 +2144,10 @@ ECode TreeMap::NavigableSubMap::Get(
 {
     VALIDATE_NOT_NULL(value);
 
+    if (key == nullptr) {
+        Logger::E("TreeMap::NavigableSubMap", "key == nullptr");
+        return E_NULL_POINTER_EXCEPTION;
+    }
     if (!InRange(key)) {
         *value = nullptr;
         return NOERROR;
@@ -1971,6 +2159,10 @@ ECode TreeMap::NavigableSubMap::Remove(
     /* [in] */ IInterface* key,
     /* [out] */ IInterface** prevValue)
 {
+    if (key == nullptr) {
+        Logger::E("TreeMap::NavigableSubMap", "key == nullptr");
+        return E_NULL_POINTER_EXCEPTION;
+    }
     if (!InRange(key)) {
         if (prevValue != nullptr) {
             *prevValue = nullptr;
@@ -2259,6 +2451,10 @@ ECode TreeMap::NavigableSubMap::EntrySetView::Contains(
     }
     AutoPtr<IInterface> key;
     entry->GetKey(&key);
+    if (key == nullptr) {
+        Logger::E("TreeMap::NavigableSubMap::EntrySetView", "key == nullptr");
+        return E_NULL_POINTER_EXCEPTION;
+    }
     if (!mOwner->InRange(key)) {
         *result = false;
         return NOERROR;
@@ -2289,6 +2485,10 @@ ECode TreeMap::NavigableSubMap::EntrySetView::Remove(
     }
     AutoPtr<IInterface> key;
     entry->GetKey(&key);
+    if (key == nullptr) {
+        Logger::E("TreeMap::NavigableSubMap::EntrySetView", "key == nullptr");
+        return E_NULL_POINTER_EXCEPTION;
+    }
     if (!mOwner->InRange(key)) {
         if (contained != nullptr) {
             *contained = false;
@@ -2504,6 +2704,14 @@ ECode TreeMap::AscendingSubMap::SubMap(
 {
     VALIDATE_NOT_NULL(submap);
 
+    if (fromKey == nullptr) {
+        Logger::E("TreeMap::AscendingSubMap", "fromKey == nullptr");
+        return E_NULL_POINTER_EXCEPTION;
+    }
+    if (toKey == nullptr) {
+        Logger::E("TreeMap::AscendingSubMap", "toKey == nullptr");
+        return E_NULL_POINTER_EXCEPTION;
+    }
     if (!InRange(fromKey, fromInclusive)) {
         Logger::E("TreeMap::AscendingSubMap", "fromKey out of range");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -2527,6 +2735,10 @@ ECode TreeMap::AscendingSubMap::HeadMap(
 {
     VALIDATE_NOT_NULL(headmap);
 
+    if (toKey == nullptr) {
+        Logger::E("TreeMap::AscendingSubMap", "toKey == nullptr");
+        return E_NULL_POINTER_EXCEPTION;
+    }
     if (!InRange(toKey) && !(!mToEnd && (mMap->Compare(toKey, mHi) == 0) &&
             !mHiInclusive && !inclusive)) {
         Logger::E("TreeMap::AscendingSubMap", "toKey out of range");
@@ -2547,6 +2759,10 @@ ECode TreeMap::AscendingSubMap::TailMap(
 {
     VALIDATE_NOT_NULL(tailmap);
 
+    if (fromKey == nullptr) {
+        Logger::E("TreeMap::AscendingSubMap", "fromKey == nullptr");
+        return E_NULL_POINTER_EXCEPTION;
+    }
     if (!InRange(fromKey) && !(!mFromStart && (mMap->Compare(fromKey, mLo) == 0) &&
             !mLoInclusive && !inclusive)) {
         Logger::E("TreeMap::AscendingSubMap", "fromKey out of range");
@@ -2682,6 +2898,14 @@ ECode TreeMap::DescendingSubMap::SubMap(
 {
     VALIDATE_NOT_NULL(submap);
 
+    if (fromKey == nullptr) {
+        Logger::E("TreeMap::DescendingSubMap", "fromKey == nullptr");
+        return E_NULL_POINTER_EXCEPTION;
+    }
+    if (toKey == nullptr) {
+        Logger::E("TreeMap::DescendingSubMap", "toKey == nullptr");
+        return E_NULL_POINTER_EXCEPTION;
+    }
     if (!InRange(fromKey, fromInclusive)) {
         Logger::E("TreeMap::DescendingSubMap", "fromKey out of range");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -2705,6 +2929,10 @@ ECode TreeMap::DescendingSubMap::HeadMap(
 {
     VALIDATE_NOT_NULL(headmap);
 
+    if (toKey == nullptr) {
+        Logger::E("TreeMap::DescendingSubMap", "toKey == nullptr");
+        return E_NULL_POINTER_EXCEPTION;
+    }
     if (!InRange(toKey) && !(!mFromStart && mMap->Compare(toKey, mLo) == 0 &&
             !mLoInclusive && !inclusive)) {
         Logger::E("TreeMap::DescendingSubMap", "toKey out of range");
@@ -2725,6 +2953,10 @@ ECode TreeMap::DescendingSubMap::TailMap(
 {
     VALIDATE_NOT_NULL(tailmap);
 
+    if (fromKey == nullptr) {
+        Logger::E("TreeMap::DescendingSubMap", "fromKey == nullptr");
+        return E_NULL_POINTER_EXCEPTION;
+    }
     if (!InRange(fromKey) && !(!mToEnd && mMap->Compare(fromKey, mHi) == 0 &&
             !mHiInclusive && !inclusive)) {
         Logger::E("TreeMap::DescendingSubMap", "fromKey out of range");

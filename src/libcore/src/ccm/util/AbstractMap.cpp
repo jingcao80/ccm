@@ -244,7 +244,7 @@ ECode AbstractMap::PutAll(
         AutoPtr<IInterface> k, v;
         IMapEntry::Probe(e)->GetKey(&k);
         IMapEntry::Probe(e)->GetValue(&v);
-        Put(k, v);
+        FAIL_RETURN(Put(k, v));
     }
     return NOERROR;
 }
@@ -257,7 +257,7 @@ ECode AbstractMap::PutIfAbsent(
     AutoPtr<IInterface> v;
     Get(key, &v);
     if (v == nullptr) {
-        Put(key, value, &v);
+        FAIL_RETURN(Put(key, value, &v));
     }
 
     if (prevValue != nullptr) {

@@ -35,6 +35,7 @@
 using ccm::misc::DoubleConsts;
 using ccm::util::CFormatter;
 using ccm::util::IFormatter;
+using ccm::util::IID_IComparator;
 using ccm::util::IID_IFormatter;
 using ccm::util::regex::IMatcher;
 using ccm::util::regex::IPattern;
@@ -720,6 +721,75 @@ String StringUtils::Format(
     CFormatter::New(l, IID_IFormatter, (IInterface**)&formatter);
     formatter->Format(format, args);
     return Object::ToString(formatter);
+}
+
+class CaseInsensitiveComparator
+    : public Object
+    , public IComparator
+{
+public:
+    CCM_INTERFACE_DECL();
+
+    ECode Compare(
+        /* [in] */ IInterface* c1,
+        /* [in] */ IInterface* c2,
+        /* [out] */ Integer* cmp) override;
+
+    ECode Equals(
+        /* [in] */ IInterface* obj,
+        /* [out] */ Boolean* isEqual) override;
+};
+
+CCM_INTERFACE_IMPL_1(CaseInsensitiveComparator, Object, IComparator);
+
+ECode CaseInsensitiveComparator::Compare(
+    /* [in] */ IInterface* c1,
+    /* [in] */ IInterface* c2,
+    /* [out] */ Integer* cmp)
+{
+    VALIDATE_NOT_NULL(cmp);
+
+    String s1, s2;
+    ICharSequence::Probe(c1)->ToString(&s1);
+    ICharSequence::Probe(c2)->ToString(&s2);
+
+    Integer n1 = s1.GetLength();
+    Integer n2 = s2.GetLength();
+    Integer min = Math::Min(n1, n2);
+    for (Integer i = 0; i < min; i++) {
+        Char c1 = s1.GetChar(i);
+        Char c2 = s2.GetChar(i);
+        if (c1 != c2) {
+            c1 = Character::ToUpperCase(c1);
+            c2 = Character::ToUpperCase(c2);
+            if (c1 != c2) {
+                c1 = Character::ToLowerCase(c1);
+                c2 = Character::ToLowerCase(c2);
+                if (c1 != c2) {
+                    *cmp = c1 - c2;
+                    return NOERROR;
+                }
+            }
+        }
+    }
+    *cmp = n1 - n2;
+    return NOERROR;
+}
+
+ECode CaseInsensitiveComparator::Equals(
+    /* [in] */ IInterface* obj,
+    /* [out] */ Boolean* isEqual)
+{
+    VALIDATE_NOT_NULL(isEqual);
+
+    *isEqual = IComparator::Probe(obj) == (IComparator*)this;
+    return NOERROR;
+}
+
+AutoPtr<IComparator> StringUtils::GetStringCASE_INSENSITIVE_ORDER()
+{
+    static AutoPtr<IComparator> CASE_INSENSITIVE_ORDER = new CaseInsensitiveComparator();
+    return CASE_INSENSITIVE_ORDER;
 }
 
 }

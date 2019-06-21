@@ -18,54 +18,21 @@
 #define __CCM_UTIL_CTREEMAP_H__
 
 #include "ccm/core/SyncObject.h"
-#include "ccm.core.ICloneable.h"
-#include "ccm.io.ISerializable.h"
-#include "ccm.util.IComparator.h"
-#include "ccm.util.IMapEntry.h"
-#include "ccm.util.IMap.h"
-#include "ccm.util.INavigableMap.h"
-#include "ccm.util.ISortedMap.h"
-#include "ccm.util.ITreeMap.h"
+#include "ccm/util/TreeMap.h"
 #include "_ccm_util_CTreeMap.h"
-
-using ccm::core::ICloneable;
-using ccm::core::SyncObject;
-using ccm::io::ISerializable;
 
 namespace ccm {
 namespace util {
 
 Coclass(CTreeMap)
-    , public SyncObject
-    , public ITreeMap
+    , public TreeMap
 {
 public:
-    CCM_INTERFACE_DECL();
-
     CCM_OBJECT_DECL();
 
-    ECode Constructor()
-    {
-        return NOERROR;
-    }
-
-    ECode Constructor(
-        /* [in] */ IComparator* comparator)
-    {
-        return NOERROR;
-    }
-
-    ECode Constructor(
-        /* [in] */ IMap* m)
-    {
-        return NOERROR;
-    }
-
-    ECode Constructor(
-        /* [in] */ ISortedMap* m)
-    {
-        return NOERROR;
-    }
+    ECode Clone(
+        /* [in] */ const InterfaceID& iid,
+        /* [out] */ IInterface** obj) override;
 };
 
 }

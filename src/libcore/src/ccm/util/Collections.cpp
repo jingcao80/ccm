@@ -27,6 +27,9 @@ using ccm::io::IID_ISerializable;
 namespace ccm {
 namespace util {
 
+static const InterfaceID IID_ReverseComparator2 =
+        {{0xe78c4caa,0x878f,0x42e1,0x8394,{0x2,0xa,0x9,0x1,0x4,0xd,0x6,0xd,0x5,0x3,0xb,0x5}}, &CID_libcore};
+
 void Collections::Reverse(
     /* [in] */ IList* list)
 {
@@ -121,6 +124,25 @@ AutoPtr<IMap> Collections::GetEMPTY_MAP()
 {
     static AutoPtr<IMap> EMPTY_MAP = new EmptyMap();
     return EMPTY_MAP;
+}
+
+AutoPtr<IComparator> Collections::ReverseOrder()
+{
+    return (IComparator*)ReverseComparator::GetREVERSE_ORDER().Get();
+}
+
+AutoPtr<IComparator> Collections::ReverseOrder(
+    /* [in] */ IComparator* cmp)
+{
+    if (cmp == nullptr) {
+        return ReverseOrder();
+    }
+
+    if (cmp->Probe(IID_ReverseComparator2) != nullptr) {
+        return ((ReverseComparator2*)cmp)->mCmp;
+    }
+
+    return new ReverseComparator2(cmp);
 }
 
 //----------------------------------------------------------------
@@ -1405,6 +1427,74 @@ ECode Collections::EmptyMap::PutIfAbsent(
     /* [out] */ IInterface** prevValue)
 {
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
+}
+
+//----------------------------------------------------------------
+
+CCM_INTERFACE_IMPL_1(Collections::ReverseComparator, Object, IComparator);
+
+ECode Collections::ReverseComparator::Compare(
+    /* [in] */ IInterface* c1,
+    /* [in] */ IInterface* c2,
+    /* [out] */ Integer* cmp)
+{
+    return IComparable::Probe(c2)->CompareTo(c1, cmp);
+}
+
+ECode Collections::ReverseComparator::Equals(
+    /* [in] */ IInterface* obj,
+    /* [out] */ Boolean* isEqual)
+{
+    VALIDATE_NOT_NULL(isEqual);
+
+    *isEqual = (IComparator*)this == IComparator::Probe(obj);
+    return NOERROR;
+}
+
+AutoPtr<Collections::ReverseComparator> Collections::ReverseComparator::GetREVERSE_ORDER()
+{
+    static const AutoPtr<ReverseComparator> REVERSE_ORDER = new ReverseComparator();
+    return REVERSE_ORDER;
+}
+
+//----------------------------------------------------------------
+
+CCM_INTERFACE_IMPL_1(Collections::ReverseComparator2, Object, IComparator);
+
+ECode Collections::ReverseComparator2::Compare(
+    /* [in] */ IInterface* c1,
+    /* [in] */ IInterface* c2,
+    /* [out] */ Integer* cmp)
+{
+    return mCmp->Compare(c2, c1, cmp);
+}
+
+ECode Collections::ReverseComparator2::Equals(
+    /* [in] */ IInterface* obj,
+    /* [out] */ Boolean* isEqual)
+{
+    VALIDATE_NOT_NULL(isEqual);
+
+    if (obj->Probe(IID_ReverseComparator2) == nullptr) {
+        *isEqual = false;
+        return NOERROR;
+    }
+    ReverseComparator2* other = (ReverseComparator2*)IComparator::Probe(obj);
+    if (other != this) {
+        *isEqual = false;
+        return NOERROR;
+    }
+    *isEqual = Object::Equals(mCmp, other->mCmp);
+    return NOERROR;
+}
+
+ECode Collections::ReverseComparator2::GetHashCode(
+    /* [out] */ Integer* hash)
+{
+    VALIDATE_NOT_NULL(hash);
+
+    *hash = Object::GetHashCode(mCmp) ^ IInteger::MIN_VALUE;
+    return NOERROR;
 }
 
 }

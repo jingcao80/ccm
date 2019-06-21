@@ -17,8 +17,11 @@
 #ifndef __CCM_CORE_STRINGUTILS_H__
 #define __CCM_CORE_STRINGUTILS_H__
 
+#include "ccm.util.IComparator.h"
 #include "ccm.util.ILocale.h"
+#include <ccmautoptr.h>
 
+using ccm::util::IComparator;
 using ccm::util::ILocale;
 
 namespace ccm {
@@ -152,6 +155,8 @@ public:
         /* [in] */ ILocale* l,
         /* [in] */ const String& format,
         /* [in] */ const Array<IInterface*>* args);
+
+    COM_PUBLIC static AutoPtr<IComparator> GetStringCASE_INSENSITIVE_ORDER();
 
 private:
     StringUtils();

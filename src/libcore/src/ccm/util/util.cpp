@@ -529,8 +529,34 @@ ECode CSimpleTimeZone::New(
 };
 
 CCM_OBJECT_IMPL(CStringTokenizer);
+
 CCM_OBJECT_IMPL(CTreeMap);
-CCM_INTERFACE_IMPL_1(CTreeMap, SyncObject, ITreeMap);
+ECode CTreeMap::Clone(
+    /* [in] */ const InterfaceID& iid,
+    /* [out] */ IInterface** obj)
+{
+    VALIDATE_NOT_NULL(obj);
+
+    AutoPtr<IClassObject> clsObject;
+    ECode ec = CoAcquireClassFactory(CID_CTreeMap, nullptr, &clsObject);
+    if (FAILED(ec)) return ec;
+
+    void* addr = calloc(sizeof(CTreeMap), 1);
+    if (addr == nullptr) return E_OUT_OF_MEMORY_ERROR;
+
+    CTreeMap* newObj = new(addr) CTreeMap();
+    ec = CTreeMap::CloneImpl(newObj);
+    if (FAILED(ec)) {
+        free(addr);
+        return ec;
+    }
+    AutoPtr<IMetaComponent> comp;
+    clsObject->GetMetadate(&comp);
+    newObj->AttachMetadata(comp, String("ccm::util::CTreeMap"));
+    *obj = newObj->Probe(iid);
+    REFCOUNT_ADD(*obj);
+    return NOERROR;
+}
 
 CCM_OBJECT_IMPL(CTreeSet);
 ECode CTreeSet::Clone(

@@ -1017,17 +1017,9 @@ public:
         /* [in] */ IInterface* fromKey,
         /* [out] */ ISortedMap** tailmap) override;
 
-
-
-
-
-
     ECode AddAllForTreeSet(
         /* [in] */ ISortedSet* set,
-        /* [in] */ IInterface* defaultVal)
-    {
-        return NOERROR;
-    }
+        /* [in] */ IInterface* defaultVal);
 
 protected:
     ECode CloneImpl(
@@ -1105,19 +1097,13 @@ private:
         /* [in] */ TreeMapEntry* p);
 
     void FixAfterInsertion(
-        /* [in] */ TreeMapEntry* x);
+        /* [in] */ AutoPtr<TreeMapEntry> x);
 
     void DeleteEntry(
-        /* [in] */ TreeMapEntry* p);
+        /* [in] */ AutoPtr<TreeMapEntry> p);
 
-
-
-
-
-
-
-
-
+    void FixAfterDeletion(
+        /* [in] */ AutoPtr<TreeMapEntry> x);
 
     ECode BuildFromSorted(
         /* [in] */ Integer size,

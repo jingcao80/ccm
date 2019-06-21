@@ -21,6 +21,7 @@
 #include "ccm/util/AbstractList.h"
 #include "ccm/util/AbstractMap.h"
 #include "ccm/util/AbstractSet.h"
+#include "ccm.core.IComparable.h"
 #include "ccm.core.ISynchronize.h"
 #include "ccm.io.ISerializable.h"
 #include "ccm.util.ICollection.h"
@@ -35,6 +36,7 @@
 #include <ccmautoptr.h>
 #include <ccmrefbase.h>
 
+using ccm::core::IComparable;
 using ccm::core::ISynchronize;
 using ccm::core::SyncObject;
 using ccm::io::ISerializable;
@@ -662,6 +664,53 @@ private:
             /* [out] */ IInterface** prevValue = nullptr) override;
     };
 
+    class ReverseComparator
+        : public Object
+        , public IComparator
+    {
+    public:
+        CCM_INTERFACE_DECL();
+
+        ECode Compare(
+            /* [in] */ IInterface* c1,
+            /* [in] */ IInterface* c2,
+            /* [out] */ Integer* cmp) override;
+
+        ECode Equals(
+            /* [in] */ IInterface* obj,
+            /* [out] */ Boolean* isEqual) override;
+
+        static AutoPtr<ReverseComparator> GetREVERSE_ORDER();
+    };
+
+    class ReverseComparator2
+        : public Object
+        , public IComparator
+    {
+    public:
+        ReverseComparator2(
+            /* [in] */ IComparator* cmp)
+            : mCmp(cmp)
+        {}
+
+        CCM_INTERFACE_DECL();
+
+        ECode Compare(
+            /* [in] */ IInterface* c1,
+            /* [in] */ IInterface* c2,
+            /* [out] */ Integer* cmp) override;
+
+        ECode Equals(
+            /* [in] */ IInterface* obj,
+            /* [out] */ Boolean* isEqual) override;
+
+        ECode GetHashCode(
+            /* [out] */ Integer* hash) override;
+
+    public:
+        AutoPtr<IComparator> mCmp;
+    };
+
 public:
     static void Reverse(
         /* [in] */ IList* list);
@@ -719,6 +768,8 @@ public:
     static AutoPtr<IList> GetEMPTY_LIST();
 
     static AutoPtr<IMap> GetEMPTY_MAP();
+
+    static AutoPtr<IComparator> ReverseOrder();
 
     static AutoPtr<IComparator> ReverseOrder(
         /* [in] */ IComparator* cmp);
