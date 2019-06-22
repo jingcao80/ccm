@@ -335,6 +335,128 @@ TEST(TreeMapTest, TestNullsWithNaturalOrder)
     }
 }
 
+TEST(TreeMapTest, TestClassCastExceptions)
+{
+    AutoPtr<IMap> map;
+    CTreeMap::New(IID_IMap, (IInterface**)&map);
+    map->Put(CoreUtils::Box(String("A")), CoreUtils::Box(String("a")));
+    {
+        AutoPtr<IInterface> value;
+        ECode ec = map->Get(CoreUtils::Box(5), &value);
+        EXPECT_EQ(ec, NOERROR);
+        EXPECT_EQ(nullptr, value.Get());
+    }
+    {
+        Boolean contained;
+        ECode ec = map->ContainsKey(CoreUtils::Box(5), &contained);
+        EXPECT_EQ(ec, NOERROR);
+        EXPECT_FALSE(contained);
+    }
+    {
+        ECode ec = map->Remove(CoreUtils::Box(5));
+        EXPECT_EQ(ec, NOERROR);
+    }
+}
+
+TEST(TreeMapTest, TestClone)
+{
+    AutoPtr<IMap> map;
+    CTreeMap::New(IID_IMap, (IInterface**)&map);
+    map->Put(CoreUtils::Box(String("A")), CoreUtils::Box(String("a")));
+    map->Put(CoreUtils::Box(String("B")), CoreUtils::Box(String("b")));
+
+    AutoPtr<IMap> clone = (IMap*)CoreUtils::Clone(map, IID_IMap).Get();
+    AutoPtr<IInterface> value;
+    clone->Get(CoreUtils::Box(String("A")), &value);
+    EXPECT_STREQ("a", CoreUtils::Unbox(ICharSequence::Probe(value)));
+    value = nullptr;
+    clone->Get(CoreUtils::Box(String("B")), &value);
+    EXPECT_STREQ("b", CoreUtils::Unbox(ICharSequence::Probe(value)));
+}
+
+static Boolean IsBoundInclusive(
+    /* [in] */ Char bound)
+{
+    return bound == '[' || bound == ']';
+}
+
+static Boolean IsLowerBound(
+    /* [in] */ Char bound)
+{
+    return bound == '[' || bound == '(';
+}
+
+static ECode ApplyBound(
+    /* [in] */ Char bound,
+    /* [in] */ INavigableMap* m,
+    /* [out] */ INavigableMap** submap)
+{
+    Integer boundValue = 0;
+    if (IsLowerBound(bound)) {
+        return m->TailMap(CoreUtils::Box(boundValue), IsBoundInclusive(bound), submap);
+    }
+    else {
+        return m->HeadMap(CoreUtils::Box(boundValue), IsBoundInclusive(bound), submap);
+    }
+}
+
+static Boolean IsWithinBounds(
+    /* [in] */ Char submapBound,
+    /* [in] */ Char mapBound)
+{
+    AutoPtr<INavigableMap> source;
+    CTreeMap::New(IID_INavigableMap, (IInterface**)&source);
+    AutoPtr<INavigableMap> m, submap;
+    ApplyBound(mapBound, source, &m);
+    ECode ec = ApplyBound(submapBound, m, &submap);
+    return SUCCEEDED(ec);
+}
+
+TEST(TreeMapTest, TestBoundsOpenSubrangeOfOpenRange)
+{
+    EXPECT_TRUE(IsWithinBounds(U')', U')'));
+    EXPECT_TRUE(IsWithinBounds(U'(', U'('));
+
+    EXPECT_FALSE(IsWithinBounds(U')', U'('));
+    EXPECT_FALSE(IsWithinBounds(U'(', U')'));
+}
+
+TEST(TreeMapTest, TestBoundsClosedSubrangeOfOpenRange)
+{
+    EXPECT_FALSE(IsWithinBounds(U']', U'('));
+    EXPECT_FALSE(IsWithinBounds(U'[', U')'));
+    EXPECT_FALSE(IsWithinBounds(U']', U')'));
+    EXPECT_FALSE(IsWithinBounds(U'[', U'('));
+}
+
+TEST(TreeMapTest, TestBoundsClosedSubrangeOfClosedRange)
+{
+    EXPECT_TRUE(IsWithinBounds(U']', U'['));
+    EXPECT_TRUE(IsWithinBounds(U'[', U']'));
+    EXPECT_TRUE(IsWithinBounds(U']', U']'));
+    EXPECT_TRUE(IsWithinBounds(U'[', U'['));
+}
+
+TEST(TreeMapTest, TestBoundsOpenSubrangeOfClosedRange)
+{
+    EXPECT_TRUE(IsWithinBounds(U')', U'['));
+    EXPECT_TRUE(IsWithinBounds(U'(', U']'));
+    EXPECT_TRUE(IsWithinBounds(U'(', U'['));
+    EXPECT_TRUE(IsWithinBounds(U')', U']'));
+
+    AutoPtr<INavigableMap> m, tm, hm;
+    CTreeMap::New(IID_INavigableMap, (IInterface**)&m);
+    ECode ec = m->TailMap(CoreUtils::Box(0), true, &tm);
+    ec = tm->HeadMap(CoreUtils::Box(0), false, &hm);
+    EXPECT_EQ(ec, NOERROR);
+
+    m = tm = hm = nullptr;
+    CTreeMap::New(IID_INavigableMap, (IInterface**)&m);
+    ec = m->TailMap(CoreUtils::Box(0), false, &tm);
+    ec = tm->HeadMap(CoreUtils::Box(0), true, &hm);
+    EXPECT_EQ(ec, E_ILLEGAL_ARGUMENT_EXCEPTION);
+}
+
 int main(int argc, char **argv)
 {
     testing::InitGoogleTest(&argc, argv);
