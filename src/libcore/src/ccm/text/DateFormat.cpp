@@ -48,7 +48,7 @@ namespace text {
 
 AutoPtr<IBoolean> DateFormat::sIs24Hour;
 
-CCM_INTERFACE_IMPL_4(DateFormat, SyncObject, IDateFormat, IFormat, ISerializable, ICloneable);
+CCM_INTERFACE_IMPL_1(DateFormat, BaseFormat, IDateFormat);
 
 ECode DateFormat::Format(
     /* [in] */ IInterface* obj,

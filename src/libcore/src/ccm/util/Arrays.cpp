@@ -15,14 +15,21 @@
 //=========================================================================
 
 #include "ccm/core/Math.h"
+#include "ccm/util/AbstractList.h"
 #include "ccm/util/Arrays.h"
 #include "ccm.core.IComparable.h"
+#include "ccm.io.ISerializable.h"
+#include "ccm.util.IRandomAccess.h"
 #include <ccmobject.h>
 #include <ccmlogger.h>
 
 using ccm::core::E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
 using ccm::core::IComparable;
 using ccm::core::Math;
+using ccm::io::IID_ISerializable;
+using ccm::io::ISerializable;
+using ccm::util::IID_IRandomAccess;
+using ccm::util::IRandomAccess;
 
 namespace ccm {
 namespace util {
@@ -433,6 +440,152 @@ ECode Arrays::CopyOf(
         copy.Set(i, original[i]);
     }
     *newArray = copy;
+    return NOERROR;
+}
+
+class ArraysArrayList
+    : public AbstractList
+    , public IRandomAccess
+    , public ISerializable
+{
+public:
+    ArraysArrayList(
+        /* [in] */ const Array<IInterface*>& array)
+        : mA(array)
+    {}
+
+    CCM_INTERFACE_DECL();
+
+    ECode GetSize(
+        /* [in] */ Integer* size) override;
+
+    ECode ToArray(
+        /* [out, callee] */ Array<IInterface*>* objs) override;
+
+    ECode ToArray(
+        /* [in] */ const InterfaceID& iid,
+        /* [out, callee] */ Array<IInterface*>* objs) override;
+
+    ECode Get(
+        /* [in] */ Integer index,
+        /* [out] */ IInterface** obj) override;
+
+    ECode Set(
+        /* [in] */ Integer index,
+        /* [in] */ IInterface* obj,
+        /* [out] */ IInterface** prevObj = nullptr) override;
+
+    ECode IndexOf(
+        /* [in] */ IInterface* obj,
+        /* [out] */ Integer* index) override;
+
+    ECode Contains(
+        /* [in] */ IInterface* obj,
+        /* [out] */ Boolean* result) override;
+
+private:
+    Array<IInterface*> mA;
+};
+
+CCM_INTERFACE_IMPL_2(ArraysArrayList, AbstractList, IRandomAccess, ISerializable);
+
+ECode ArraysArrayList::GetSize(
+    /* [in] */ Integer* size)
+{
+    VALIDATE_NOT_NULL(size);
+
+    *size = mA.GetLength();
+    return NOERROR;
+}
+
+ECode ArraysArrayList::ToArray(
+    /* [out, callee] */ Array<IInterface*>* objs)
+{
+    VALIDATE_NOT_NULL(objs);
+
+    *objs = mA.Clone();
+    return NOERROR;
+}
+
+ECode ArraysArrayList::ToArray(
+    /* [in] */ const InterfaceID& iid,
+    /* [out, callee] */ Array<IInterface*>* objs)
+{
+    VALIDATE_NOT_NULL(objs);
+
+    Array<IInterface*> ret(mA.GetLength());
+    for (Long i = 0; i < mA.GetLength(); i++) {
+        ret.Set(0, mA[i]->Probe(iid));
+    }
+    *objs = ret;
+    return NOERROR;
+}
+
+ECode ArraysArrayList::Get(
+    /* [in] */ Integer index,
+    /* [out] */ IInterface** obj)
+{
+    VALIDATE_NOT_NULL(obj);
+
+    *obj = mA[index];
+    return NOERROR;
+}
+
+ECode ArraysArrayList::Set(
+    /* [in] */ Integer index,
+    /* [in] */ IInterface* obj,
+    /* [out] */ IInterface** prevObj)
+{
+    if (prevObj != nullptr) {
+        *prevObj = mA[index];
+        REFCOUNT_ADD(*prevObj);
+    }
+    mA.Set(index, obj);
+    return NOERROR;
+}
+
+ECode ArraysArrayList::IndexOf(
+    /* [in] */ IInterface* obj,
+    /* [out] */ Integer* index)
+{
+    VALIDATE_NOT_NULL(index);
+
+    for (Long i = 0; i < mA.GetLength(); i++) {
+        if (obj == nullptr) {
+            if (mA[i] == nullptr) {
+                *index = i;
+                return NOERROR;
+            }
+        }
+        else {
+            if (Object::Equals(obj, mA[i])) {
+                *index = i;
+                return NOERROR;
+            }
+        }
+    }
+}
+
+ECode ArraysArrayList::Contains(
+    /* [in] */ IInterface* obj,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    Integer index;
+    IndexOf(obj, &index);
+    *result = index != -1;
+    return NOERROR;
+}
+
+ECode Arrays::AsList(
+    /* [in] */ const Array<IInterface*>& a,
+    /* [out] */ IList** list)
+{
+    VALIDATE_NOT_NULL(list);
+
+    *list = new ArraysArrayList(a);
+    REFCOUNT_ADD(*list);
     return NOERROR;
 }
 

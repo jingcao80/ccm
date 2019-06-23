@@ -382,6 +382,13 @@ String AbstractList::OutOfBoundsMsg(
     return String::Format("Index: %d, Size: %d", index, size);
 }
 
+ECode AbstractList::AddAll(
+    /* [in] */ ICollection* c,
+    /* [out] */ Boolean* result)
+{
+    return AbstractCollection::AddAll(c, result);
+}
+
 ECode AbstractList::Contains(
     /* [in] */ IInterface* obj,
     /* [out] */ Boolean* result)

@@ -181,6 +181,10 @@ public:
         /* [in] */ Integer fromIndex,
         /* [in] */ Integer toIndex);
 
+    ECode AddAll(
+        /* [in] */ ICollection* c,
+        /* [out] */ Boolean* result = nullptr) override;
+
     ECode Contains(
         /* [in] */ IInterface* obj,
         /* [out] */ Boolean* result) override;

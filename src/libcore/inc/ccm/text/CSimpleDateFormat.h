@@ -17,40 +17,30 @@
 #ifndef __CCM_TEXT_CSIMPLEDATEFORMAT_H__
 #define __CCM_TEXT_CSIMPLEDATEFORMAT_H__
 
-#include "ccm/core/SyncObject.h"
-#include "ccm.util.ILocale.h"
+#include "ccm/text/SimpleDateFormat.h"
 #include "_ccm_text_CSimpleDateFormat.h"
-
-using ccm::core::SyncObject;
-using ccm::util::ILocale;
 
 namespace ccm {
 namespace text {
 
 Coclass(CSimpleDateFormat)
-    , public SyncObject
+    , public SimpleDateFormat
 {
 public:
     CCM_OBJECT_DECL();
 
-    ECode Constructor()
-    {
-        return NOERROR;
-    }
+    ECode Clone(
+        /* [in] */ const InterfaceID& iid,
+        /* [out] */ IInterface** obj) override;
 
-    ECode Constructor(
-        /* [in] */ const String& pattern)
-    {
-        return NOERROR;
-    }
-
-    ECode Constructor(
+    static ECode New(
         /* [in] */ Integer timeStyle,
         /* [in] */ Integer dateStyle,
-        /* [in] */ ILocale* loc)
-    {
-        return NOERROR;
-    }
+        /* [in] */ ILocale* loc,
+        /* [in] */ const InterfaceID& iid,
+        /* [out] */ ccm::IInterface** object);
+
+    using _CSimpleDateFormat::New;
 };
 
 }

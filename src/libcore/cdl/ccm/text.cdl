@@ -185,9 +185,12 @@ coclass CSimpleDateFormat
         [in] String pattern);
 
     Constructor(
-        [in] Integer timeStyle,
-        [in] Integer dateStyle,
-        [in] ILocale* loc);
+        [in] String pattern,
+        [in] ILocale* locale);
+
+    Constructor(
+        [in] String pattern,
+        [in] IDateFormatSymbols* formatSymbols);
 
     interface ISimpleDateFormat;
     interface IDateFormat;

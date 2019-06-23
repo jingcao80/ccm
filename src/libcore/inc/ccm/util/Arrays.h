@@ -106,10 +106,7 @@ public:
 
     static ECode AsList(
         /* [in] */ const Array<IInterface*>& a,
-        /* [out] */ IList** list)
-    {
-        return NOERROR;
-    }
+        /* [out] */ IList** list);
 
     static Integer GetHashCode(
         /* [in] */ const Array<Long>& a);

@@ -142,7 +142,65 @@ ECode CDecimalFormatSymbols::Clone(
 }
 
 CCM_OBJECT_IMPL(CFieldPosition);
+
 CCM_OBJECT_IMPL(CSimpleDateFormat);
+ECode CSimpleDateFormat::New(
+    /* [in] */ Integer timeStyle,
+    /* [in] */ Integer dateStyle,
+    /* [in] */ ILocale* loc,
+    /* [in] */ const InterfaceID& iid,
+    /* [out] */ ccm::IInterface** object)
+{
+    VALIDATE_NOT_NULL(object);
+
+    AutoPtr<IClassObject> clsObject;
+    ECode ec = CoAcquireClassFactory(CID_CSimpleDateFormat, nullptr, &clsObject);
+    if (FAILED(ec)) return ec;
+
+    void* addr = calloc(sizeof(CSimpleDateFormat), 1);
+    if (addr == nullptr) return E_OUT_OF_MEMORY_ERROR;
+
+    CSimpleDateFormat* sdfObj = new(addr) CSimpleDateFormat();
+    ec = sdfObj->Constructor(timeStyle, dateStyle, loc);
+    if (FAILED(ec)) {
+        free(addr);
+        return ec;
+    }
+    AutoPtr<IMetaComponent> comp;
+    clsObject->GetMetadate(&comp);
+    sdfObj->AttachMetadata(comp, String("ccm::text::CSimpleDateFormat"));
+    *object = sdfObj->Probe(iid);
+    REFCOUNT_ADD(*object);
+    return NOERROR;
+}
+
+ECode CSimpleDateFormat::Clone(
+    /* [in] */ const InterfaceID& iid,
+    /* [out] */ IInterface** obj)
+{
+    VALIDATE_NOT_NULL(obj);
+
+    AutoPtr<IClassObject> clsObject;
+    ECode ec = CoAcquireClassFactory(CID_CSimpleDateFormat, nullptr, &clsObject);
+    if (FAILED(ec)) return ec;
+
+    void* addr = calloc(sizeof(CSimpleDateFormat), 1);
+    if (addr == nullptr) return E_OUT_OF_MEMORY_ERROR;
+
+    CSimpleDateFormat* sdfObj = new(addr) CSimpleDateFormat();
+    ec = CSimpleDateFormat::CloneImpl(sdfObj);
+    if (FAILED(ec)) {
+        free(addr);
+        return ec;
+    }
+    AutoPtr<IMetaComponent> comp;
+    clsObject->GetMetadate(&comp);
+    sdfObj->AttachMetadata(comp, String("ccm::text::CSimpleDateFormat"));
+    *obj = sdfObj->Probe(iid);
+    REFCOUNT_ADD(*obj);
+    return NOERROR;
+}
+
 CCM_OBJECT_IMPL(CParsePosition);
 
 }

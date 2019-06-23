@@ -19,6 +19,7 @@
 
 #include "ccm/core/SyncObject.h"
 #include "ccm/text/AttributedCharacterIteratorAttribute.h"
+#include "ccm/text/Format.h"
 #include "ccm.core.IBoolean.h"
 #include "ccm.core.ICloneable.h"
 #include "ccm.core.IStringBuffer.h"
@@ -50,11 +51,8 @@ namespace ccm {
 namespace text {
 
 class DateFormat
-    : public SyncObject
+    : public BaseFormat
     , public IDateFormat
-    , public IFormat
-    , public ISerializable
-    , public ICloneable
 {
 public:
     class Field

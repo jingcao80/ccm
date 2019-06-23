@@ -21,6 +21,7 @@
 #include "ccm/text/DateFormat.h"
 #include "ccm.core.IStringBuilder.h"
 #include "ccm.core.IStringBuffer.h"
+#include "ccm.text.IDateFormatSymbols.h"
 #include "ccm.text.IFieldPosition.h"
 #include "ccm.text.IFormatFieldDelegate.h"
 #include "ccm.text.INumberFormat.h"
