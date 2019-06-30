@@ -195,7 +195,7 @@ TEST(ArrayTest, TestICharSequenceArrayToInterfaceArray)
     EXPECT_STREQ(str1.string(), "world");
     EXPECT_STREQ(str2.string(), "helloworld");
 
-    Array<IInterface*> itfArray = seqArray.ToInterfaces();
+    Array<IInterface*> itfArray = seqArray;
     ICharSequence::Probe(seqArray[0])->ToString(&str0);
     ICharSequence::Probe(seqArray[1])->ToString(&str1);
     ICharSequence::Probe(seqArray[2])->ToString(&str2);

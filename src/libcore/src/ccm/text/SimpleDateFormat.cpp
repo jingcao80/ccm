@@ -115,7 +115,7 @@ static AutoPtr<ISet> CreateSet()
     zones[6] = "Universal";
     zones[7] = "Zulu";
     AutoPtr<IList> c;
-    Arrays::AsList(CoreUtils::Box(zones).ToInterfaces(), &c);
+    Arrays::AsList(CoreUtils::Box(zones), &c);
     AutoPtr<ISet> s;
     CHashSet::New(ICollection::Probe(c), IID_ISet, (IInterface**)&s);
     return Collections::CreateUnmodifiableSet(s);
@@ -229,7 +229,7 @@ ECode SimpleDateFormat::Constructor(
         Array<IInterface*> dateTimeArgs(2);
         dateTimeArgs[0] = CoreUtils::Box(df);
         dateTimeArgs[1] = CoreUtils::Box(tf);
-        MessageFormat::Format(String("{0} {1}"), dateTimeArgs, &mPattern);
+        MessageFormat::Format(String("{0} {1}"), &dateTimeArgs, &mPattern);
     }
     else if (timeStyle >= 0) {
         localeData->GetTimeFormat(timeStyle, &mPattern);

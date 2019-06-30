@@ -132,7 +132,7 @@ public:
 
     static Array Null();
 
-    Array<IInterface*> ToInterfaces();
+    operator Array<IInterface*>();
 
 private:
     Boolean Alloc(
@@ -596,16 +596,32 @@ Array<T> Array<T>::Null()
     return Array<T>();
 }
 
-template<class T>
-Array<IInterface*> Array<T>::ToInterfaces()
+template<class T, Boolean isIInterfaceSubclass>
+struct ConvertImpl
 {
-    if (TypeTraits<T>::isPointer) {
-        typedef typename TypeTraits<T>::BareType BareType;
-        if (SUPERSUBCLASS(IInterface, BareType)) {
-            return *reinterpret_cast<Array<IInterface*>*>(this);
-        }
+    Array<IInterface*> operator()(
+        /* [in] */ Array<T>* lvalue)
+    {
+        return Array<IInterface*>::Null();
     }
-    return Array<IInterface*>::Null();
+};
+
+template<class T>
+struct ConvertImpl<T, true>
+{
+    Array<IInterface*> operator()(
+        /* [in] */ Array<T>* lvalue)
+    {
+        return *reinterpret_cast<Array<IInterface*>*>(lvalue);
+    }
+};
+
+template<class T>
+Array<T>::operator Array<IInterface*>()
+{
+    typedef typename TypeTraits<T>::BareType BareType;
+    ConvertImpl<T, SUPERSUBCLASS(IInterface, BareType)> impl;
+    return impl(this);
 }
 
 }

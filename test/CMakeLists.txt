@@ -38,6 +38,7 @@ add_subdirectory(hashmap)
 add_subdirectory(hashtable)
 add_subdirectory(locale)
 add_subdirectory(localstaticvariable)
+add_subdirectory(macro)
 # testMutex tests mutex in ccmrt, so running testMutex needs export
 # mutex.h and related methods from ccmrt.so
 #add_subdirectory(mutex)

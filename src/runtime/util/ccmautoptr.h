@@ -50,6 +50,10 @@ public:
     AutoPtr& operator=(
         /* [in] */ AutoPtr<T>&& other);
 
+    template<class U>
+    AutoPtr& operator=(
+        /* [in] */ AutoPtr<U>&& other);
+
     void MoveTo(
         /* [out] */ T** other);
 
@@ -104,7 +108,44 @@ public:
         /* [in] */ const AutoPtr<T>& other) const;
 
 private:
+    template<class U, class Y, Boolean isSuperSubclass> friend struct MoveAssignImpl;
+
     T* mPtr;
+};
+
+template<class U, class Y, Boolean isSuperSubclass>
+struct MoveAssignImpl
+{
+    AutoPtr<U>& operator()(
+        /* [in] */ AutoPtr<U>* lvalue,
+        /* [in] */ AutoPtr<Y>&& rvalue)
+    {
+        U* uObj = U::Probe(rvalue.mPtr);
+        if (uObj != nullptr) {
+            if (lvalue->mPtr != nullptr) {
+                lvalue->mPtr->Release(reinterpret_cast<HANDLE>(this));
+            }
+            lvalue->mPtr = uObj;
+            rvalue.mPtr = nullptr;
+        }
+        return *lvalue;
+    }
+};
+
+template<class U, class Y>
+struct MoveAssignImpl<U, Y, true>
+{
+    AutoPtr<U>& operator()(
+        /* [in] */ AutoPtr<U>* lvalue,
+        /* [in] */ AutoPtr<Y>&& rvalue)
+    {
+        if (lvalue->mPtr != nullptr) {
+            lvalue->mPtr->Release(reinterpret_cast<HANDLE>(this));
+        }
+        lvalue->mPtr = (U*)rvalue.mPtr;
+        rvalue.mPtr = nullptr;
+        return *lvalue;
+    }
 };
 
 template<class T>
@@ -185,6 +226,14 @@ AutoPtr<T>& AutoPtr<T>::operator=(
     mPtr = other.mPtr;
     other.mPtr = nullptr;
     return *this;
+}
+
+template<class T> template<class U>
+AutoPtr<T>& AutoPtr<T>::operator=(
+    /* [in] */ AutoPtr<U>&& other)
+{
+    MoveAssignImpl<T, U, SUPERSUBCLASS(T, U)> impl;
+    return impl(this, std::move(other));
 }
 
 template<class T>

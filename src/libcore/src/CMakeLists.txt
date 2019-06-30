@@ -89,10 +89,12 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_security_action_CGetPropertyAction.cpp
     ${OBJ_DIR}/_ccm_text_CAttributedCharacterIteratorAttribute.cpp
     ${OBJ_DIR}/_ccm_text_CAttributedString.cpp
+    ${OBJ_DIR}/_ccm_text_CChoiceFormat.cpp
     ${OBJ_DIR}/_ccm_text_CDateFormatField.cpp
     ${OBJ_DIR}/_ccm_text_CDecimalFormat.cpp
     ${OBJ_DIR}/_ccm_text_CDecimalFormatSymbols.cpp
     ${OBJ_DIR}/_ccm_text_CFieldPosition.cpp
+    ${OBJ_DIR}/_ccm_text_CMessageFormat.cpp
     ${OBJ_DIR}/_ccm_text_CNumberFormatFactory.cpp
     ${OBJ_DIR}/_ccm_text_CParsePosition.cpp
     ${OBJ_DIR}/_ccm_text_CSimpleDateFormat.cpp

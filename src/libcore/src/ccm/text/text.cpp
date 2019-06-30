@@ -20,6 +20,7 @@
 #include "ccm/text/CDecimalFormat.h"
 #include "ccm/text/CDecimalFormatSymbols.h"
 #include "ccm/text/CFieldPosition.h"
+#include "ccm/text/CMessageFormat.h"
 #include "ccm/text/CSimpleDateFormat.h"
 #include "ccm/text/CParsePosition.h"
 #include <ccmapi.h>
@@ -142,6 +143,8 @@ ECode CDecimalFormatSymbols::Clone(
 }
 
 CCM_OBJECT_IMPL(CFieldPosition);
+
+CCM_OBJECT_IMPL(CMessageFormat);
 
 CCM_OBJECT_IMPL(CSimpleDateFormat);
 ECode CSimpleDateFormat::New(

@@ -64,6 +64,13 @@ public:
         /* [in] */ const Array<Byte>& a,
         /* [in] */ const Array<Byte>& a2);
 
+    static Boolean Equals(
+        /* [in] */ const Array<IInterface*>& a,
+        /* [in] */ const Array<IInterface*>& a2)
+    {
+        return false;
+    }
+
     static ECode Fill(
         /* [out] */ Array<Integer>& a,
         /* [in] */ Integer fromIndex,
