@@ -65,11 +65,12 @@ public:
         /* [in] */ const Array<Byte>& a2);
 
     static Boolean Equals(
+        /* [in] */ const Array<Double>& a,
+        /* [in] */ const Array<Double>& a2);
+
+    static Boolean Equals(
         /* [in] */ const Array<IInterface*>& a,
-        /* [in] */ const Array<IInterface*>& a2)
-    {
-        return false;
-    }
+        /* [in] */ const Array<IInterface*>& a2);
 
     static ECode Fill(
         /* [out] */ Array<Integer>& a,
@@ -100,6 +101,11 @@ public:
         /* [in] */ const Array<Integer>& original,
         /* [in] */ Integer newLength,
         /* [out, callee] */ Array<Integer>* newArray);
+
+    static ECode CopyOf(
+        /* [in] */ const Array<Double>& original,
+        /* [in] */ Integer newLength,
+        /* [out, callee] */ Array<Double>* newArray);
 
     static ECode CopyOf(
         /* [in] */ const Array<String>& original,

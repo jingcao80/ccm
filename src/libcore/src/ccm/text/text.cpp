@@ -16,6 +16,7 @@
 
 #include "ccm/text/CAttributedCharacterIteratorAttribute.h"
 #include "ccm/text/CAttributedString.h"
+#include "ccm/text/CChoiceFormat.h"
 #include "ccm/text/CDateFormatField.h"
 #include "ccm/text/CDecimalFormat.h"
 #include "ccm/text/CDecimalFormatSymbols.h"
@@ -57,6 +58,34 @@ ECode CAttributedCharacterIteratorAttribute::New(
 };
 
 CCM_OBJECT_IMPL(CAttributedString);
+
+CCM_OBJECT_IMPL(CChoiceFormat);
+ECode CChoiceFormat::Clone(
+    /* [in] */ const InterfaceID& iid,
+    /* [out] */ IInterface** obj)
+{
+    VALIDATE_NOT_NULL(obj);
+
+    AutoPtr<IClassObject> clsObject;
+    ECode ec = CoAcquireClassFactory(CID_CChoiceFormat, nullptr, &clsObject);
+    if (FAILED(ec)) return ec;
+
+    void* addr = calloc(sizeof(CChoiceFormat), 1);
+    if (addr == nullptr) return E_OUT_OF_MEMORY_ERROR;
+
+    CChoiceFormat* cfObj = new(addr) CChoiceFormat();
+    ec = ChoiceFormat::CloneImpl(cfObj);
+    if (FAILED(ec)) {
+        free(addr);
+        return ec;
+    }
+    AutoPtr<IMetaComponent> comp;
+    clsObject->GetMetadate(&comp);
+    cfObj->AttachMetadata(comp, String("ccm::text::CChoiceFormat"));
+    *obj = cfObj->Probe(iid);
+    REFCOUNT_ADD(*obj);
+    return NOERROR;
+}
 
 CCM_OBJECT_IMPL(CDateFormatField);
 ECode CDateFormatField::New(
@@ -145,6 +174,32 @@ ECode CDecimalFormatSymbols::Clone(
 CCM_OBJECT_IMPL(CFieldPosition);
 
 CCM_OBJECT_IMPL(CMessageFormat);
+ECode CMessageFormat::Clone(
+    /* [in] */ const InterfaceID& iid,
+    /* [out] */ IInterface** obj)
+{
+    VALIDATE_NOT_NULL(obj);
+
+    AutoPtr<IClassObject> clsObject;
+    ECode ec = CoAcquireClassFactory(CID_CMessageFormat, nullptr, &clsObject);
+    if (FAILED(ec)) return ec;
+
+    void* addr = calloc(sizeof(CMessageFormat), 1);
+    if (addr == nullptr) return E_OUT_OF_MEMORY_ERROR;
+
+    CMessageFormat* mfObj = new(addr) CMessageFormat();
+    ec = MessageFormat::CloneImpl(mfObj);
+    if (FAILED(ec)) {
+        free(addr);
+        return ec;
+    }
+    AutoPtr<IMetaComponent> comp;
+    clsObject->GetMetadate(&comp);
+    mfObj->AttachMetadata(comp, String("ccm::text::CMessageFormat"));
+    *obj = mfObj->Probe(iid);
+    REFCOUNT_ADD(*obj);
+    return NOERROR;
+}
 
 CCM_OBJECT_IMPL(CSimpleDateFormat);
 ECode CSimpleDateFormat::New(

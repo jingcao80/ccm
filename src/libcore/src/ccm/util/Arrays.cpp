@@ -321,6 +321,59 @@ Boolean Arrays::Equals(
     return true;
 }
 
+Boolean Arrays::Equals(
+    /* [in] */ const Array<Double>& a,
+    /* [in] */ const Array<Double>& a2)
+{
+    if (a == a2) {
+        return true;
+    }
+    if (a.IsNull() || a2.IsNull()) {
+        return false;
+    }
+
+    Integer length = a.GetLength();
+    if (a2.GetLength() != length) {
+        return false;
+    }
+
+    for (Integer i = 0; i < length; i++) {
+        if (Math::DoubleToLongBits(a[i]) != Math::DoubleToLongBits(a2[i])) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+Boolean Arrays::Equals(
+    /* [in] */ const Array<IInterface*>& a,
+    /* [in] */ const Array<IInterface*>& a2)
+{
+    if (a == a2) {
+        return true;
+    }
+    if (a.IsNull() || a2.IsNull()) {
+        return false;
+    }
+
+    Integer length = a.GetLength();
+    if (a2.GetLength() != length) {
+        return false;
+    }
+
+    for (Integer i = 0; i < length; i++) {
+        IInterface* o1 = a[i];
+        IInterface* o2 = a2[i];
+        if (!(o1 == nullptr ? o2 == nullptr : Object::Equals(o1, o2))) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+
 ECode Arrays::Fill(
     /* [out] */ Array<Integer>& a,
     /* [in] */ Integer fromIndex,
@@ -397,6 +450,25 @@ ECode Arrays::CopyOf(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     Array<Integer> copy(newLength);
+    Integer N = Math::Min((Integer)original.GetLength(), newLength);
+    for (Integer i = 0; i < N; i++) {
+        copy[i] = original[i];
+    }
+    *newArray = copy;
+    return NOERROR;
+}
+
+ECode Arrays::CopyOf(
+    /* [in] */ const Array<Double>& original,
+    /* [in] */ Integer newLength,
+    /* [out, callee] */ Array<Double>* newArray)
+{
+    VALIDATE_NOT_NULL(newArray);
+
+    if (newLength < 0) {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    Array<Double> copy(newLength);
     Integer N = Math::Min((Integer)original.GetLength(), newLength);
     for (Integer i = 0; i < N; i++) {
         copy[i] = original[i];

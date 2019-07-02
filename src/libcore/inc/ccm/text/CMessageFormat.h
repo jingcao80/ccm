@@ -13,33 +13,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //=========================================================================
-#include "ccm.util.ILocale.h"
+
+#include "ccm/text/MessageFormat.h"
 #include "_ccm_text_CMessageFormat.h"
 #include <ccmobject.h>
-
-using ccm::util::ILocale;
 
 namespace ccm {
 namespace text {
 
 Coclass(CMessageFormat)
-    , public Object
+    , public MessageFormat
 {
 public:
     CCM_OBJECT_DECL();
 
-    ECode Constructor(
-        /* [in] */ const String& pattern)
-    {
-        return NOERROR;
-    }
-
-    ECode Constructor(
-        /* [in] */ const String& pattern,
-        /* [in] */ ILocale* locale)
-    {
-        return NOERROR;
-    }
+    ECode Clone(
+        /* [in] */ const InterfaceID& iid,
+        /* [out] */ IInterface** obj) override;
 };
 
 }

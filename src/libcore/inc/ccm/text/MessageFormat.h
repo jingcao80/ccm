@@ -18,6 +18,7 @@
 #define __CCM_TEXT_MESSAGEFORMAT_H__
 
 #include "ccm/text/Format.h"
+#include "ccm.core.IStringBuffer.h"
 #include "ccm.core.IStringBuilder.h"
 #include "ccm.text.IAttributedCharacterIterator.h"
 #include "ccm.text.ICharacterIterator.h"
@@ -28,6 +29,7 @@
 #include "ccm.util.IList.h"
 #include "ccm.util.ILocale.h"
 
+using ccm::core::IStringBuffer;
 using ccm::core::IStringBuilder;
 using ccm::util::IList;
 using ccm::util::ILocale;

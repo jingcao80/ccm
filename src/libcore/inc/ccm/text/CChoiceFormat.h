@@ -17,21 +17,21 @@
 #ifndef __CCM_TEXT_CCHOICEFORMAT_H__
 #define __CCM_TEXT_CCHOICEFORMAT_H__
 
+#include "ccm/text/ChoiceFormat.h"
 #include "_ccm_text_CChoiceFormat.h"
-#include <ccmobject.h>
 
 namespace ccm {
 namespace text {
 
 Coclass(CChoiceFormat)
-    , public Object
+    , public ChoiceFormat
 {
 public:
-    ECode Constructor(
-        /* [in]　*/ const String& newPattern)
-    {
-        return NOERROR;
-    }
+    CCM_OBJECT_DECL();
+
+    ECode Clone(
+        /* [in] */ const InterfaceID& iid,
+        /* [out] */ IInterface** obj) override;
 };
 
 }

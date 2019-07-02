@@ -14,6 +14,9 @@
 // limitations under the License.
 //=========================================================================
 
+interface ccm::core::IStringBuffer;
+interface ccm::text::IFieldPosition;
+
 namespace ccm {
 namespace text {
 
@@ -29,6 +32,29 @@ namespace text {
 ]
 interface IChoiceFormat
 {
+    ApplyPattern(
+        [in] String newPattern);
+
+    Format(
+        [in] Long number,
+        [out] IStringBuffer* toAppendTo,
+        [in] IFieldPosition* status);
+
+    Format(
+        [in] Double number,
+        [out] IStringBuffer* toAppendTo,
+        [in] IFieldPosition* status);
+
+    GetFormats(
+        [out, callee] Array<String>* formats);
+
+    GetLimits(
+        [out, callee] Array<Double>* limits);
+
+    SetChoices(
+        [in] Array<Double> limits,
+        [in] Array<String> formats);
+
     ToPattern(
         [out] String* pattern);
 }

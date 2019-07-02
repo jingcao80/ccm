@@ -92,6 +92,10 @@ coclass CChoiceFormat
     Constructor(
         [in] String newPattern);
 
+    Constructor(
+        [in] Array<Double> limits,
+        [in] Array<String> formats);
+
     interface IChoiceFormat;
     interface INumberFormat;
     interface IFormat;

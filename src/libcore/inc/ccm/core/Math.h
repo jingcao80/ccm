@@ -35,6 +35,10 @@ public:
     static Double Sqrt(
         /* [in] */ Double a);
 
+    static Double IEEEremainder(
+        /* [in] */ Double f1,
+        /* [in] */ Double f2);
+
     static Double Ceil(
         /* [in] */ Double a);
 
@@ -199,6 +203,13 @@ inline Double Math::Sqrt(
     /* [in] */ Double a)
 {
     return sqrt(a);
+}
+
+inline Double Math::IEEEremainder(
+    /* [in] */ Double f1,
+    /* [in] */ Double f2)
+{
+    return remainder(f1, f2);
 }
 
 inline Double Math::Ceil(

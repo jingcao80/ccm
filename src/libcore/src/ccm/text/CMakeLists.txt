@@ -28,6 +28,7 @@ set(SOURCES
     AttributedString.cpp
     CalendarBuilder.cpp
     CharacterIteratorFieldDelegate.cpp
+    ChoiceFormat.cpp
     CNumberFormatFactory.cpp
     DateFormat.cpp
     DateFormatSymbols.cpp
