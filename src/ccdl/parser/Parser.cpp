@@ -864,7 +864,7 @@ Type* Parser::ParseType()
     }
 
     int ptrNumber = 0;
-    while ((token = mTokenizer.PeekToken()) == Tokenizer::Token::ASTERISK) {
+    while ((token = mTokenizer.PeekToken('>')) == Tokenizer::Token::ASTERISK) {
         mTokenizer.GetToken();
         ptrNumber++;
     }
@@ -903,7 +903,7 @@ Type* Parser::ParseArrayType()
 
     token = mTokenizer.GetToken();
     if (token != Tokenizer::Token::ANGLE_BRACKETS_CLOSE) {
-        LogError(token, String("\">\" is expected."));
+        LogError(token, String::Format("\">\" is expected. %s", mTokenizer.DumpToken(token)));
         return nullptr;
     }
 

@@ -130,9 +130,11 @@ public:
 
     void PopInputFileAndRemove();
 
-    Token PeekToken();
+    Token PeekToken(
+        /* [in] */ int separatorChar = -1);
 
-    Token GetToken();
+    Token GetToken(
+        /* [in]*/ int separatorChar = -1);
 
     Token GetUuidNumberToken();
 
@@ -176,7 +178,8 @@ public:
 private:
     void InitializeKeyword();
 
-    Token ReadToken();
+    Token ReadToken(
+        /* [in] */ int separatorChar);
 
     Token ReadUuidNumberToken();
 

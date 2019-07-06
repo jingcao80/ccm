@@ -514,18 +514,30 @@ String CodeGenerator::GenType(
             break;
         case CcmTypeKind::Array:
             if ((attr & Parameter::ATTR_MASK) == Parameter::IN) {
-                if (mt->mPointerNumber == 0) {
-                    builder.AppendFormat("const Array<%s>&",
-                        GenType(mc->mTypes[mt->mNestedTypeIndex], attr, true).string());
+                if (!inArray) {
+                    if (mt->mPointerNumber == 0) {
+                        builder.AppendFormat("const Array<%s>&",
+                            GenType(mc->mTypes[mt->mNestedTypeIndex], attr, true).string());
+                    }
+                    else if (mt->mPointerNumber == 1) {
+                        builder.AppendFormat("const Array<%s>",
+                            GenType(mc->mTypes[mt->mNestedTypeIndex], attr, true).string());
+                    }
                 }
-                else if (mt->mPointerNumber == 1) {
-                    builder.AppendFormat("const Array<%s>",
-                        GenType(mc->mTypes[mt->mNestedTypeIndex], attr, true).string());
+                else {
+                    builder.AppendFormat("Array<%s>",
+                            GenType(mc->mTypes[mt->mNestedTypeIndex], attr, true).string());
                 }
             }
             else if ((attr & Parameter::ATTR_MASK) == Parameter::OUT) {
-                builder.AppendFormat("Array<%s>&",
-                    GenType(mc->mTypes[mt->mNestedTypeIndex], attr, true).string());
+                if (!inArray) {
+                    builder.AppendFormat("Array<%s>&",
+                        GenType(mc->mTypes[mt->mNestedTypeIndex], attr, true).string());
+                }
+                else {
+                    builder.AppendFormat("Array<%s>",
+                        GenType(mc->mTypes[mt->mNestedTypeIndex], attr, true).string());
+                }
             }
             else if ((attr & Parameter::ATTR_MASK) == (Parameter::OUT | Parameter::CALLEE)) {
                 builder.AppendFormat("Array<%s>",

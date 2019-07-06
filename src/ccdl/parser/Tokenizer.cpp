@@ -147,22 +147,24 @@ void Tokenizer::InitializeKeyword()
     }
 }
 
-Tokenizer::Token Tokenizer::PeekToken()
+Tokenizer::Token Tokenizer::PeekToken(
+    /* [in] */ int separatorChar)
 {
     if (mHasAPeek) return mCurrToken;
 
-    mCurrToken = ReadToken();
+    mCurrToken = ReadToken(separatorChar);
     mHasAPeek = true;
     return mCurrToken;
 }
 
-Tokenizer::Token Tokenizer::GetToken()
+Tokenizer::Token Tokenizer::GetToken(
+    /* [in] */ int separatorChar)
 {
     if (mHasAPeek) {
         mHasAPeek = false;
         return mCurrToken;
     }
-    return ReadToken();
+    return ReadToken(separatorChar);
 }
 
 Tokenizer::Token Tokenizer::GetUuidNumberToken()
@@ -191,7 +193,8 @@ void Tokenizer::SkipCurrentLine()
     }
 }
 
-Tokenizer::Token Tokenizer::ReadToken()
+Tokenizer::Token Tokenizer::ReadToken(
+    /* [in] */ int separatorChar)
 {
     int c;
     while ((c = mFile->Read()) != -1) {
@@ -208,14 +211,14 @@ Tokenizer::Token Tokenizer::ReadToken()
         }
         switch (c) {
             case '<': {
-                if (mFile->Peek() == '<') {
+                if (c != separatorChar && mFile->Peek() == '<') {
                     mFile->Read();
                     return Token::SHIFT_LEFT;
                 }
                 return Token::ANGLE_BRACKETS_OPEN;
             }
             case '>': {
-                if (mFile->Peek() == '>') {
+                if (c != separatorChar && mFile->Peek() == '>') {
                     mFile->Read();
                     if (mFile->Peek() == '>') {
                         mFile->Read();
