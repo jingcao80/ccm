@@ -373,6 +373,30 @@ Boolean Arrays::Equals(
     return true;
 }
 
+Boolean Arrays::Equals(
+    /* [in] */ const Array<String>& a,
+    /* [in] */ const Array<String>& a2)
+{
+    if (a == a2) {
+        return true;
+    }
+    if (a.IsNull() || a2.IsNull()) {
+        return false;
+    }
+
+    Integer length = a.GetLength();
+    if (a2.GetLength() != length) {
+        return false;
+    }
+
+    for (Integer i = 0; i < length; i++) {
+        if (!a[i].Equals(a2[2])) {
+            return false;
+        }
+    }
+
+    return true;
+}
 
 ECode Arrays::Fill(
     /* [out] */ Array<Integer>& a,
@@ -797,6 +821,30 @@ Integer Arrays::GetHashCode(
     }
 
     return result;
+}
+
+Boolean Arrays::DeepEquals(
+    /* [in] */ const Array<Array<String>>& a,
+    /* [in] */ const Array<Array<String>>& a2)
+{
+    if (a == a2) {
+        return true;
+    }
+    if (a.IsNull() || a2.IsNull()) {
+        return false;
+    }
+    Integer length = a.GetLength();
+    if (a2.GetLength() != length) {
+        return false;
+    }
+
+    for (Integer i = 0; i < length; i++) {
+        if (!Equals(a[i], a2[i])) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 }

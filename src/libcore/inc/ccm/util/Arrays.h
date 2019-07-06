@@ -72,6 +72,10 @@ public:
         /* [in] */ const Array<IInterface*>& a,
         /* [in] */ const Array<IInterface*>& a2);
 
+    static Boolean Equals(
+        /* [in] */ const Array<String>& a,
+        /* [in] */ const Array<String>& a2);
+
     static ECode Fill(
         /* [out] */ Array<Integer>& a,
         /* [in] */ Integer fromIndex,
@@ -147,6 +151,10 @@ public:
 
     static Integer GetHashCode(
         /* [in] */ const Array<IInterface*>& a);
+
+    static Boolean DeepEquals(
+        /* [in] */ const Array<Array<String>>& a,
+        /* [in] */ const Array<Array<String>>& a2);
 
 private:
     Arrays()

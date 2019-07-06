@@ -58,6 +58,9 @@ public:
         /* [in] */ Integer style,
         /* [out] */ String* timeFormat) override;
 
+    ECode GetAmPm(
+        /* [out, callee] */ Array<String>* ampm) override;
+
     ECode GetCurrencyPattern(
         /* [out] */ String* pattern) override;
 
@@ -66,6 +69,9 @@ public:
 
     ECode GetDecimalSeparator(
         /* [out] */ Char* decSeparator) override;
+
+    ECode GetEras(
+        /* [out, callee] */ Array<String>* eras) override;
 
     ECode GetExponentSeparator(
         /* [out] */ String* expSeparator) override;
@@ -84,6 +90,18 @@ public:
 
     ECode GetInternationalCurrencySymbol(
         /* [out] */ String* intlCurrencySymbol) override;
+
+    ECode GetLongMonthNames(
+        /* [out, callee] */ Array<String>* longMonthNames) override;
+
+    ECode GetLongStandAloneMonthNames(
+        /* [out, callee] */ Array<String>* longStandAloneMonthNames) override;
+
+    ECode GetLongStandAloneWeekdayNames(
+        /* [out, callee] */ Array<String>* longStandAloneWeekdayNames) override;
+
+    ECode GetLongWeekdayNames(
+        /* [out, callee] */ Array<String>* longWeekdayNames) override;
 
     ECode GetMinimalDaysInFirstWeek(
         /* [out] */ IInteger** days) override;
@@ -108,6 +126,30 @@ public:
 
     ECode GetPerMill(
         /* [out] */ Char* perMill) override;
+
+    ECode GetShortMonthNames(
+        /* [out, callee] */ Array<String>* shortMonthNames) override;
+
+    ECode GetShortStandAloneMonthNames(
+        /* [out, callee] */ Array<String>* shortStandAloneMonthNames) override;
+
+    ECode GetShortStandAloneWeekdayNames(
+        /* [out, callee] */ Array<String>* shortStandAloneWeekdayNames) override;
+
+    ECode GetShortWeekdayNames(
+        /* [out, callee] */ Array<String>* shortWeekdayNames) override;
+
+    ECode GetTinyMonthNames(
+        /* [out, callee] */ Array<String>* tinyMonthNames) override;
+
+    ECode GetTinyStandAloneMonthNames(
+        /* [out, callee] */ Array<String>* tinyStandAloneMonthNames) override;
+
+    ECode GetTinyStandAloneWeekdayNames(
+        /* [out, callee] */ Array<String>* tinyStandAloneWeekdayNames) override;
+
+    ECode GetTinyWeekdayNames(
+        /* [out, callee] */ Array<String>* tinyWeekdayNames) override;
 
     ECode GetZeroDigit(
         /* [out] */ Char* zeroDigit) override;

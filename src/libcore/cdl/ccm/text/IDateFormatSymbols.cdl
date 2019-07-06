@@ -47,6 +47,33 @@ interface IDateFormatSymbols
 
     GetWeekdays(
         [out, callee] Array<String>* weekdays);
+
+    GetZoneStrings(
+        [out, callee] Array<Array<String>>* zoneStrings);
+
+    SetAmPmStrings(
+        [in] Array<String> newAmpms);
+
+    SetEras(
+        [in] Array<String> newEras);
+
+    SetLocalPatternChars(
+        [in] String newLocalPatternChars);
+
+    SetMonths(
+        [in] Array<String> newMonths);
+
+    SetShortMonths(
+        [in] Array<String> newShortMonths);
+
+    SetShortWeekdays(
+        [in] Array<String> newShortWeekdays);
+
+    SetWeekdays(
+        [in] Array<String> newWeekdays);
+
+    SetZoneStrings(
+        [in] Array<Array<String>> newZoneStrings);
 }
 
 }

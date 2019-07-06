@@ -459,6 +459,15 @@ ECode LocaleData::InitLocaleData(
     return NOERROR;
 }
 
+ECode LocaleData::GetAmPm(
+    /* [out, callee] */ Array<String>* ampm)
+{
+    VALIDATE_NOT_NULL(ampm);
+
+    *ampm = mAmPm;
+    return NOERROR;
+}
+
 ECode LocaleData::GetCurrencyPattern(
     /* [out] */ String* pattern)
 {
@@ -483,6 +492,15 @@ ECode LocaleData::GetDecimalSeparator(
     VALIDATE_NOT_NULL(decSeparator);
 
     *decSeparator = mDecimalSeparator;
+    return NOERROR;
+}
+
+ECode LocaleData::GetEras(
+    /* [out, callee] */ Array<String>* eras)
+{
+    VALIDATE_NOT_NULL(eras);
+
+    *eras = mEras;
     return NOERROR;
 }
 
@@ -538,6 +556,42 @@ ECode LocaleData::GetInternationalCurrencySymbol(
     VALIDATE_NOT_NULL(intlCurrencySymbol);
 
     *intlCurrencySymbol = mInternationalCurrencySymbol;
+    return NOERROR;
+}
+
+ECode LocaleData::GetLongMonthNames(
+    /* [out, callee] */ Array<String>* longMonthNames)
+{
+    VALIDATE_NOT_NULL(longMonthNames);
+
+    *longMonthNames = mLongMonthNames;
+    return NOERROR;
+}
+
+ECode LocaleData::GetLongStandAloneMonthNames(
+    /* [out, callee] */ Array<String>* longStandAloneMonthNames)
+{
+    VALIDATE_NOT_NULL(longStandAloneMonthNames);
+
+    *longStandAloneMonthNames = mLongStandAloneMonthNames;
+    return NOERROR;
+}
+
+ECode LocaleData::GetLongStandAloneWeekdayNames(
+    /* [out, callee] */ Array<String>* longStandAloneWeekdayNames)
+{
+    VALIDATE_NOT_NULL(longStandAloneWeekdayNames);
+
+    *longStandAloneWeekdayNames = mLongStandAloneWeekdayNames;
+    return NOERROR;
+}
+
+ECode LocaleData::GetLongWeekdayNames(
+    /* [out, callee] */ Array<String>* longWeekdayNames)
+{
+    VALIDATE_NOT_NULL(longWeekdayNames);
+
+    *longWeekdayNames = mLongWeekdayNames;
     return NOERROR;
 }
 
@@ -611,6 +665,78 @@ ECode LocaleData::GetPerMill(
     VALIDATE_NOT_NULL(perMill);
 
     *perMill = mPerMill;
+    return NOERROR;
+}
+
+ECode LocaleData::GetShortMonthNames(
+    /* [out, callee] */ Array<String>* shortMonthNames)
+{
+    VALIDATE_NOT_NULL(shortMonthNames);
+
+    *shortMonthNames = mShortMonthNames;
+    return NOERROR;
+}
+
+ECode LocaleData::GetShortStandAloneMonthNames(
+    /* [out, callee] */ Array<String>* shortStandAloneMonthNames)
+{
+    VALIDATE_NOT_NULL(shortStandAloneMonthNames);
+
+    *shortStandAloneMonthNames = mShortStandAloneMonthNames;
+    return NOERROR;
+}
+
+ECode LocaleData::GetShortStandAloneWeekdayNames(
+    /* [out, callee] */ Array<String>* shortStandAloneWeekdayNames)
+{
+    VALIDATE_NOT_NULL(shortStandAloneWeekdayNames);
+
+    *shortStandAloneWeekdayNames = mShortStandAloneWeekdayNames;
+    return NOERROR;
+}
+
+ECode LocaleData::GetShortWeekdayNames(
+    /* [out, callee] */ Array<String>* shortWeekdayNames)
+{
+    VALIDATE_NOT_NULL(shortWeekdayNames);
+
+    *shortWeekdayNames = mShortWeekdayNames;
+    return NOERROR;
+}
+
+ECode LocaleData::GetTinyMonthNames(
+    /* [out, callee] */ Array<String>* tinyMonthNames)
+{
+    VALIDATE_NOT_NULL(tinyMonthNames);
+
+    *tinyMonthNames = mTinyMonthNames;
+    return NOERROR;
+}
+
+ECode LocaleData::GetTinyStandAloneMonthNames(
+    /* [out, callee] */ Array<String>* tinyStandAloneMonthNames)
+{
+    VALIDATE_NOT_NULL(tinyStandAloneMonthNames);
+
+    *tinyStandAloneMonthNames = mTinyStandAloneMonthNames;
+    return NOERROR;
+}
+
+ECode LocaleData::GetTinyStandAloneWeekdayNames(
+    /* [out, callee] */ Array<String>* tinyStandAloneWeekdayNames)
+{
+    VALIDATE_NOT_NULL(tinyStandAloneWeekdayNames);
+
+    *tinyStandAloneWeekdayNames = mTinyStandAloneWeekdayNames;
+    return NOERROR;
+}
+
+ECode LocaleData::GetTinyWeekdayNames(
+    /* [out, callee] */ Array<String>* tinyWeekdayNames)
+{
+    VALIDATE_NOT_NULL(tinyWeekdayNames);
+
+    *tinyWeekdayNames = mTinyWeekdayNames;
     return NOERROR;
 }
 

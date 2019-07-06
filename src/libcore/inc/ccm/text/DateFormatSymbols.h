@@ -18,16 +18,21 @@
 #define __CCM_TEXT_DATEFORMATSYMBOLS_H__
 
 #include "ccm/core/SyncObject.h"
+#include "ccm/core/volatile.h"
 #include "ccm.core.ICloneable.h"
 #include "ccm.io.ISerializable.h"
 #include "ccm.text.IDateFormatSymbols.h"
 #include "ccm.util.ILocale.h"
+#include "ccm.util.concurrent.IConcurrentMap.h"
+#include "libcore.icu.ILocaleData.h"
 #include <ccmautoptr.h>
 
 using ccm::core::SyncObject;
 using ccm::core::ICloneable;
 using ccm::io::ISerializable;
 using ccm::util::ILocale;
+using ccm::util::concurrent::IConcurrentMap;
+using libcore::icu::ILocaleData;
 
 namespace ccm {
 namespace text {
@@ -41,73 +46,161 @@ class DateFormatSymbols
 public:
     CCM_INTERFACE_DECL();
 
+    ECode Constructor();
+
+    ECode Constructor(
+        /* [in] */ ILocale* locale);
+
+    static Array<ILocale*> GetAvailableLocales();
+
+    static AutoPtr<IDateFormatSymbols> GetInstance();
+
     static AutoPtr<IDateFormatSymbols> GetInstance(
-        /* [in] */ ILocale* locale)
-    {
-        return nullptr;
-    }
+        /* [in] */ ILocale* locale);
 
     static AutoPtr<IDateFormatSymbols> GetInstanceRef(
-        /* [in] */ ILocale* locale)
-    {
-        return nullptr;
-    }
+        /* [in] */ ILocale* locale);
 
-    Array<String> GetTinyMonths()
-    {
-        return Array<String>::Null();
-    }
+    ECode GetEras(
+        /* [out, callee] */ Array<String>* eras) override;
 
-    Array<String> GetStandAloneMonths()
-    {
-        return Array<String>::Null();
-    }
+    ECode SetEras(
+        /* [in] */ const Array<String>& newEras) override;
 
-    Array<String> GetShortStandAloneMonths()
-    {
-        return Array<String>::Null();
-    }
+    ECode GetMonths(
+        /* [out, callee] */ Array<String>* months) override;
 
-    Array<String> GetTinyStandAloneMonths()
-    {
-        return Array<String>::Null();
-    }
+    ECode SetMonths(
+        /* [in] */ const Array<String>& newMonths) override;
 
-    Array<String> GetTinyWeekdays()
-    {
-        return Array<String>::Null();
-    }
+    ECode GetShortMonths(
+        /* [out, callee] */ Array<String>* months) override;
 
-    Array<String> GetStandAloneWeekdays()
-    {
-        return Array<String>::Null();
-    }
+    ECode SetShortMonths(
+        /* [in] */ const Array<String>& newShortMonths) override;
 
-    Array<String> GetShortStandAloneWeekdays()
-    {
-        return Array<String>::Null();
-    }
+    ECode GetWeekdays(
+        /* [out, callee] */ Array<String>* weekdays) override;
 
-    Array<String> GetTinyStandAloneWeekdays()
-    {
-        return Array<String>::Null();
-    }
+    ECode SetWeekdays(
+        /* [in] */ const Array<String>& newWeekdays) override;
+
+    ECode GetShortWeekdays(
+        /* [out, callee] */ Array<String>* weekdays) override;
+
+    ECode SetShortWeekdays(
+        /* [in] */ const Array<String>& newShortWeekdays) override;
+
+    ECode GetAmPmStrings(
+        /* [out, callee] */ Array<String>* ampm) override;
+
+    ECode SetAmPmStrings(
+        /* [in] */ const Array<String>& newAmpms) override;
+
+    ECode GetZoneStrings(
+        /* [out, callee] */ Array<Array<String>>* zoneStrings) override;
+
+    ECode SetZoneStrings(
+        /* [in] */ const Array<Array<String>>& newZoneStrings) override;
+
+    ECode GetLocalPatternChars(
+        /* [out] */ String* localPatternChars) override;
+
+    ECode SetLocalPatternChars(
+        /* [in] */ const String& newLocalPatternChars) override;
+
+    Array<String> GetTinyMonths();
+
+    Array<String> GetStandAloneMonths();
+
+    Array<String> GetShortStandAloneMonths();
+
+    Array<String> GetTinyStandAloneMonths();
+
+    Array<String> GetTinyWeekdays();
+
+    Array<String> GetStandAloneWeekdays();
+
+    Array<String> GetShortStandAloneWeekdays();
+
+    Array<String> GetTinyStandAloneWeekdays();
+
+    ECode GetHashCode(
+        /* [out] */ Integer* hash) override;
+
+    ECode Equals(
+        /* [in] */ IInterface* obj,
+        /* [out] */ Boolean* same) override;
 
     Integer GetZoneIndex(
-        /* [in] */ const String& ID)
-    {
-        return -1;
-    }
+        /* [in] */ const String& ID);
 
-    Array<Array<String>> GetZoneStringsWrapper()
-    {
-        return Array<Array<String>>::Null();
-    }
+    Array<Array<String>> GetZoneStringsWrapper();
 
     static DateFormatSymbols* From(
         /* [in] */ IDateFormatSymbols* obj);
 
+protected:
+    ECode CloneImpl(
+        /* [in] */ IDateFormatSymbols* newObj);
+
+private:
+    static AutoPtr<IDateFormatSymbols> GetCachedInstance(
+        /* [in] */ ILocale* locale);
+
+    void InitializeData(
+        /* [in] */ ILocale* desiredLocale);
+
+    void InitializeSupplementaryData(
+        /* [in] */ ILocaleData* localeData);
+
+    Array<Array<String>> InternalZoneStrings();
+
+    Array<Array<String>> GetZoneStringsImpl(
+        /* [in] */ Boolean needsCopy);
+
+    void CopyMembers(
+        /* [in] */ DateFormatSymbols* src,
+        /* [in] */ DateFormatSymbols* dst);
+
+    static AutoPtr<IConcurrentMap> GetCachedInstances();
+
 public:
+    /**
+     * Era strings. For example: "AD" and "BC".
+     */
+    Array<String> mEras;
+
+    /**
+     * Month strings. For example: "January", "February", etc.
+     */
+    Array<String> mMonths;
+
+    /**
+     * Short month strings. For example: "Jan", "Feb", etc.
+     */
+    Array<String> mShortMonths;
+
+    /**
+     * Weekday strings. For example: "Sunday", "Monday", etc.
+     */
+    Array<String> mWeekdays;
+
+    /**
+     * Short weekday strings. For example: "Sun", "Mon", etc.
+     */
+    Array<String> mShortWeekdays;
+
+    /**
+     * AM and PM strings. For example: "AM" and "PM".
+     */
+    Array<String> mAmpms;
+
+    /**
+     * Localized names of time zones in this locale.
+     */
+    Array<Array<String>> mZoneStrings;
+
     /**
      * Indicates that zoneStrings is set externally with setZoneStrings() method.
      */
@@ -146,6 +239,58 @@ public:
     static const Integer PATTERN_ISO_ZONE = 21; // X
     static const Integer PATTERN_MONTH_STANDALONE = 22; // L
     static const Integer PATTERN_STANDALONE_DAY_OF_WEEK = 23; // c
+
+    /**
+     * Localized date-time pattern characters.
+     */
+    String mLocalPatternChars;
+
+    AutoPtr<ILocale> mLocale;
+
+private:
+    /**
+     * Tiny month strings; "J", "F", "M" etc.
+     */
+    Array<String> mTinyMonths;
+
+    /**
+     * Tiny weekday strings: "M", "F", "W" etc.
+     */
+    Array<String> mTinyWeekdays;
+
+    /**
+     * Standalone month strings; "January", "February", "March" etc.
+     */
+    Array<String> mStandAloneMonths;
+
+    /**
+     * Short standalone month strings: "Jan", "Feb", "Mar" etc.
+     */
+    Array<String> mShortStandAloneMonths;
+
+    /**
+     * Tiny standalone month strings: "J", "F", "M" etc.
+     */
+    Array<String> mTinyStandAloneMonths;
+
+    /**
+     * Standalone weekday strings; "Monday", "Tuesday", "Wednesday" etc.
+     */
+    Array<String> mStandAloneWeekdays;
+
+    /**
+     * Short standalone weekday strings; "Mon", "Tue", "Wed" etc.
+     */
+    Array<String> mShortStandAloneWeekdays;
+
+    /**
+     * Tiny standalone weekday strings; "M", "T", "W" etc.
+     */
+    Array<String> mTinyStandAloneWeekdays;
+
+    Integer mLastZoneIndex = 0;
+
+    VOLATILE Integer mCachedHashCode = 0;
 };
 
 inline DateFormatSymbols* DateFormatSymbols::From(

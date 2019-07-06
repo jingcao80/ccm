@@ -91,6 +91,7 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_text_CAttributedString.cpp
     ${OBJ_DIR}/_ccm_text_CChoiceFormat.cpp
     ${OBJ_DIR}/_ccm_text_CDateFormatField.cpp
+    ${OBJ_DIR}/_ccm_text_CDateFormatSymbols.cpp
     ${OBJ_DIR}/_ccm_text_CDecimalFormat.cpp
     ${OBJ_DIR}/_ccm_text_CDecimalFormatSymbols.cpp
     ${OBJ_DIR}/_ccm_text_CFieldPosition.cpp

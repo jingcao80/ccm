@@ -118,6 +118,22 @@ coclass CDateFormatField
 }
 
 [
+    uuid(352faae6-83f5-4544-81fc-8c7d44ba3038),
+    version(0.1.0)
+]
+coclass CDateFormatSymbols
+{
+    Constructor();
+
+    Constructor(
+        [in] ILocale* locale);
+
+    interface IDateFormatSymbols;
+    interface ISerializable;
+    interface ICloneable;
+}
+
+[
     uuid(5eade1e5-5963-4f1b-bfc1-9f1f9ae4b52f),
     version(0.1.0)
 ]

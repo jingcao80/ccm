@@ -25,6 +25,9 @@ namespace icu {
 ]
 interface ILocaleData
 {
+    GetAmPm(
+        [out, callee] Array<String>* ampm);
+
     GetCurrencyPattern(
         [out] String* pattern);
 
@@ -37,6 +40,9 @@ interface ILocaleData
 
     GetDecimalSeparator(
         [out] Char* decSeparator);
+
+    GetEras(
+        [out, callee] Array<String>* eras);
 
     GetExponentSeparator(
         [out] String* expSeparator);
@@ -55,6 +61,18 @@ interface ILocaleData
 
     GetInternationalCurrencySymbol(
         [out] String* intlCurrencySymbol);
+
+    GetLongMonthNames(
+        [out, callee] Array<String>* longMonthNames);
+
+    GetLongStandAloneMonthNames(
+        [out, callee] Array<String>* longStandAloneMonthNames);
+
+    GetLongStandAloneWeekdayNames(
+        [out, callee] Array<String>* longStandAloneWeekdayNames);
+
+    GetLongWeekdayNames(
+        [out, callee] Array<String>* longWeekdayNames);
 
     GetMinimalDaysInFirstWeek(
         [out] IInteger** days);
@@ -80,9 +98,33 @@ interface ILocaleData
     GetPerMill(
         [out] Char* perMill);
 
+    GetShortMonthNames(
+        [out, callee] Array<String>* shortMonthNames);
+
+    GetShortStandAloneMonthNames(
+        [out, callee] Array<String>* shortStandAloneMonthNames);
+
+    GetShortStandAloneWeekdayNames(
+        [out, callee] Array<String>* shortStandAloneWeekdayNames);
+
+    GetShortWeekdayNames(
+        [out, callee] Array<String>* shortWeekdayNames);
+
     GetTimeFormat(
         [in] Integer style,
         [out] String* timeFormat);
+
+    GetTinyMonthNames(
+        [out, callee] Array<String>* tinyMonthNames);
+
+    GetTinyStandAloneMonthNames(
+        [out, callee] Array<String>* tinyStandAloneMonthNames);
+
+    GetTinyStandAloneWeekdayNames(
+        [out, callee] Array<String>* tinyStandAloneWeekdayNames);
+
+    GetTinyWeekdayNames(
+        [out, callee] Array<String>* tinyWeekdayNames);
 
     GetZeroDigit(
         [out] Char* zeroDigit);
