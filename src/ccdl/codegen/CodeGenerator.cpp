@@ -358,6 +358,11 @@ String CodeGenerator::GenInterfaceDeclaration(
                          "        return (%s*)object->Probe(IID_%s);\n"
                          "    }\n", mi->mName, mi->mName, mi->mName);
     builder.Append("\n");
+    builder.AppendFormat("    inline static const InterfaceID& GetInterfaceID()\n"
+                         "    {\n"
+                         "        return IID_%s;\n"
+                         "    }\n", mi->mName);
+    builder.Append("\n");
     for (int i = 0; i < mi->mConstantNumber; i++) {
         builder.Append(GenInterfaceConstant(mi->mConstants[i]));
     }

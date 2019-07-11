@@ -251,7 +251,7 @@ void AutoPtr<T>::MoveTo(
     /* [out] */ U** other)
 {
     if (other != nullptr) {
-        U* uObj = U::Probe(mPtr);
+        U* uObj = (U*)mPtr->Probe(U::GetInterfaceID());
         if (uObj != nullptr) {
             *other = uObj;
             mPtr = nullptr;
