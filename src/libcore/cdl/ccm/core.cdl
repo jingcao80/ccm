@@ -16,6 +16,7 @@
 
 include "ccm/core/Errors.cdl"
 include "ccm/core/Exceptions.cdl"
+include "ccm/core/IAnnotation.cdl"
 include "ccm/core/IAppendable.cdl"
 include "ccm/core/IArray.cdl"
 include "ccm/core/IArrayHolder.cdl"

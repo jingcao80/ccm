@@ -15,51 +15,51 @@
 //=========================================================================
 
 namespace ccm {
-namespace text {
+namespace util {
 
-/*
+/**
+ * @Involve interface ccm::util::IList
+ * @Involve interface ccm::util::ICollection
+ * @Involve interface ccm::util::IRandomAccess
+ * @Involve interface ccm::core::IIterable
  * @Involve interface ccm::core::ICloneable
+ * @Involve interface ccm::io::ISerializable
  */
 [
-    uuid(42437f78-3feb-49cb-94e4-fa4dd4c7ee67),
+    uuid(496d3da5-9000-439e-bd01-3cf04a043f44),
     version(0.1.0)
 ]
-interface ICharacterIterator
+interface IVector
 {
-    /**
-     * Constant that is returned when the iterator has reached either the end
-     * or the beginning of the text. The value is '\\uFFFF', the "not a
-     * character" value which should not occur in any valid Unicode string.
-     */
-    const Char DONE = 0xffffffff;
+    Add(
+        [in] IInterface* e,
+        [out] Boolean* changed = nullptr);
 
-    Current(
-        [out] Char* currChar);
+    AddElement(
+        [in] IInterface* e);
 
-    First(
-        [out] Char* firstChar);
+    ElementAt(
+        [in] Integer index,
+        [out] IInterface** obj);
 
-    GetBeginIndex(
-        [out] Integer* beginIndex);
+    Get(
+        [in] Integer index,
+        [out] IInterface** obj);
 
-    GetEndIndex(
-        [out] Integer* endIndex);
+    GetSize(
+        [out] Integer* size);
 
-    GetIndex(
-        [out] Integer* currIndex);
+    IndexOf(
+        [in] IInterface* obj,
+        [out] Integer* index);
 
-    Last(
-        [out] Char* lastChar);
+    Set(
+        [in] Integer index,
+        [in] IInterface* obj,
+        [out] IInterface** prevObj = nullptr);
 
-    Next(
-        [out] Char* nextChar);
-
-    Previous(
-        [out] Char* prevChar);
-
-    SetIndex(
-        [in] Integer position,
-        [out] Char* currChar = nullptr);
+    SetSize(
+        [in] Integer newSize);
 }
 
 }

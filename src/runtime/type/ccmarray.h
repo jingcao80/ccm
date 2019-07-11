@@ -250,7 +250,7 @@ T* Array<T>::GetPayload() const
 template<class T>
 Boolean Array<T>::IsNull() const
 {
-    return mSize == 0;
+    return mData == nullptr;
 }
 
 template<class T>

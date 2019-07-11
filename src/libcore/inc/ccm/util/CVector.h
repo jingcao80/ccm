@@ -14,30 +14,48 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_TEXT_CATTRIBUTEDSTRING_H__
-#define __CCM_TEXT_CATTRIBUTEDSTRING_H__
+#ifndef __CCM_UTIL_CVECTOR_H__
+#define __CCM_UTIL_CVECTOR_H__
 
-#include "ccm/text/AttributedString.h"
-#include "_ccm_text_CAttributedString.h"
+#include "ccm/core/SyncObject.h"
+#include "_ccm_util_CVector.h"
+#include "ccm.util.ICollection.h"
+
+using ccm::core::SyncObject;
 
 namespace ccm {
-namespace text {
+namespace util {
 
-Coclass(CAttributedString)
-    , public AttributedString
+Coclass(CVector)
+    , public SyncObject
 {
 public:
-    CCM_OBJECT_DECL();
+    ECode Constructor()
+    {
+        return NOERROR;
+    }
 
-    static ECode New(
-        /* [in] */ const Array<IAttributedCharacterIterator*>& iterators,
-        /* [in] */ const InterfaceID& iid,
-        /* [out] */ ccm::IInterface** object);
+    ECode Constructor(
+        /* [in] */ Integer initialCapacity)
+    {
+        return NOERROR;
+    }
 
-    using _CAttributedString::New;
+    ECode Constructor(
+        /* [in] */ Integer initialCapacity,
+        /* [in] */ Integer capacityIncrement)
+    {
+        return NOERROR;
+    }
+
+    ECode Constructor(
+        /* [in] */ ICollection* c)
+    {
+        return NOERROR;
+    }
 };
 
 }
 }
 
-#endif // __CCM_TEXT_CATTRIBUTEDSTRING_H__
+#endif // __CCM_UTIL_CVECTOR_H__

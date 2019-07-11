@@ -14,30 +14,16 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_TEXT_CATTRIBUTEDSTRING_H__
-#define __CCM_TEXT_CATTRIBUTEDSTRING_H__
-
-#include "ccm/text/AttributedString.h"
-#include "_ccm_text_CAttributedString.h"
-
 namespace ccm {
-namespace text {
+namespace core {
 
-Coclass(CAttributedString)
-    , public AttributedString
-{
-public:
-    CCM_OBJECT_DECL();
-
-    static ECode New(
-        /* [in] */ const Array<IAttributedCharacterIterator*>& iterators,
-        /* [in] */ const InterfaceID& iid,
-        /* [out] */ ccm::IInterface** object);
-
-    using _CAttributedString::New;
-};
+[
+    uuid(d9b99d63-23d3-4c79-85bd-2828a633ae74),
+    version(0.1.0)
+]
+interface IAnnotation
+{}
 
 }
 }
 
-#endif // __CCM_TEXT_CATTRIBUTEDSTRING_H__

@@ -59,6 +59,33 @@ ECode CAttributedCharacterIteratorAttribute::New(
 };
 
 CCM_OBJECT_IMPL(CAttributedString);
+ECode CAttributedString::New(
+    /* [in] */ const Array<IAttributedCharacterIterator*>& iterators,
+    /* [in] */ const InterfaceID& iid,
+    /* [out] */ ccm::IInterface** object)
+{
+    VALIDATE_NOT_NULL(object);
+
+    AutoPtr<IClassObject> clsObject;
+    ECode ec = CoAcquireClassFactory(CID_CAttributedString, nullptr, &clsObject);
+    if (FAILED(ec)) return ec;
+
+    void* addr = calloc(sizeof(CAttributedString), 1);
+    if (addr == nullptr) return E_OUT_OF_MEMORY_ERROR;
+
+    CAttributedString* _obj = new(addr) CAttributedString();
+    ec = _obj->Constructor(iterators);
+    if (FAILED(ec)) {
+        free(addr);
+        return ec;
+    }
+    AutoPtr<IMetaComponent> comp;
+    clsObject->GetMetadate(&comp);
+    _obj->AttachMetadata(comp, String("ccm::text::CAttributedString"));
+    *object = _obj->Probe(iid);
+    REFCOUNT_ADD(*object);
+    return NOERROR;
+}
 
 CCM_OBJECT_IMPL(CChoiceFormat);
 ECode CChoiceFormat::Clone(

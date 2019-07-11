@@ -122,6 +122,7 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_util_CTimeZoneFactory.cpp
     ${OBJ_DIR}/_ccm_util_CTreeMap.cpp
     ${OBJ_DIR}/_ccm_util_CTreeSet.cpp
+    ${OBJ_DIR}/_ccm_util_CVector.cpp
     ${OBJ_DIR}/_ccm_util_calendar_CCalendarSystemFactory.cpp
     ${OBJ_DIR}/_ccm_util_calendar_CEra.cpp
     ${OBJ_DIR}/_ccm_util_calendar_CGregorian.cpp

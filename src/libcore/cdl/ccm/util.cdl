@@ -53,6 +53,7 @@ include "ccm/util/ITimeZone.cdl"
 include "ccm/util/ITimeZoneGetter.cdl"
 include "ccm/util/ITreeMap.cdl"
 include "ccm/util/ITreeSet.cdl"
+include "ccm/util/IVector.cdl"
 include "ccm/util/calendar/IBaseCalendar.cdl"
 include "ccm/util/calendar/ICalendarDate.cdl"
 include "ccm/util/calendar/ICalendarSystem.cdl"
@@ -668,6 +669,33 @@ coclass CTreeSet
     interface ISortedSet;
     interface ISet;
     interface ICollection;
+    interface IIterable;
+    interface ICloneable;
+    interface ISerializable;
+}
+
+[
+    uuid(a2ff11fd-ca23-4c88-b8c9-3802ab8935de),
+    version(0.1.0)
+]
+coclass CVector
+{
+    Constructor();
+
+    Constructor(
+        [in] Integer initialCapacity);
+
+    Constructor(
+        [in] Integer initialCapacity,
+        [in] Integer capacityIncrement);
+
+    Constructor(
+        [in] ICollection* c);
+
+    interface IVector;
+    interface IList;
+    interface ICollection;
+    interface IRandomAccess;
     interface IIterable;
     interface ICloneable;
     interface ISerializable;

@@ -57,9 +57,6 @@ coclass CAttributedCharacterIteratorAttribute
 coclass CAttributedString
 {
     Constructor(
-        [in] Array<IAttributedCharacterIterator*> iterators);
-
-    Constructor(
         [in] String text);
 
     Constructor(
