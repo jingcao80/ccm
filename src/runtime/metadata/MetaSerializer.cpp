@@ -125,6 +125,7 @@ void MetaSerializer::SerializeMetaInterface(
 {
     mi->mName = (char*)SerializeAdjust(mi->mName);
     mi->mNamespace = (char*)SerializeAdjust(mi->mNamespace);
+    mi->mNestedInterfaceIndexes = (int*)SerializeAdjust(mi->mNestedInterfaceIndexes);
 
     for (int i = 0; i < mi->mConstantNumber; i++) {
         MetaConstant* mc = mi->mConstants[i];
@@ -276,6 +277,7 @@ void MetaSerializer::DeserializeMetaInterface(
 {
     mi->mName = (char*)DeserializeAdjust(mi->mName);
     mi->mNamespace = (char*)DeserializeAdjust(mi->mNamespace);
+    mi->mNestedInterfaceIndexes =(int*)DeserializeAdjust(mi->mNestedInterfaceIndexes);
 
     mi->mConstants = (MetaConstant**)DeserializeAdjust(mi->mConstants);
     for (int i = 0; i < mi->mConstantNumber; i++) {

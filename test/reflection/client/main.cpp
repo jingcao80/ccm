@@ -99,7 +99,7 @@ int main(int argv, char** argc)
         String tname;
         type->GetName(&tname);
         printf("==== [%d] parameter name: %s, index: %d, attr: %d, type: %s ====\n",
-                i, pname.string(), pidx, attr, tname.string());
+                i, pname.string(), pidx, (Integer)attr, tname.string());
     }
     printf("\n");
 

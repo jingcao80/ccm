@@ -23,11 +23,27 @@ Namespace::Namespace(
     /* [in] */ const String& nsStr)
     : mName(nsStr)
     , mOuterNamespace(nullptr)
+    , mIsWrapper(false)
+    , mInterfaceWrapped(nullptr)
     , mNamespaces(5, false)
     , mCoclasses(20, false)
     , mConstants(10, false)
     , mEnumerations(10, false)
     , mInterfaces(20, false)
+    , mResolved(true)
+{}
+
+Namespace::Namespace(
+    /* [in] */ Interface* itfWrapped)
+    : mName(itfWrapped->GetName())
+    , mOuterNamespace(nullptr)
+    , mIsWrapper(true)
+    , mInterfaceWrapped(itfWrapped)
+    , mNamespaces(5, false)
+    , mCoclasses(0, false)
+    , mConstants(0, false)
+    , mEnumerations(0, false)
+    , mInterfaces(5, false)
     , mResolved(true)
 {}
 

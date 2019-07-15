@@ -136,9 +136,13 @@ private:
         /* [out] */ Attribute& attr);
 
     bool ParseInterface(
-        /* [in] */ Attribute* attr);
+        /* [in] */ Attribute* attr,
+        /* [in] */ Interface* outer);
 
     bool ParseInterfaceBody(
+        /* [in] */ Interface* interface);
+
+    bool ParseNestedInterface(
         /* [in] */ Interface* interface);
 
     bool ParseMethod(

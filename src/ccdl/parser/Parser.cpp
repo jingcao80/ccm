@@ -148,6 +148,11 @@ bool Parser::Parse(
 
     ret = ParseFile();
 
+    if (mWorld.GetWorkingModule() == nullptr) {
+        LogError(Tokenizer::Token::MODULE, String("Module is missing."));
+        ret = false;
+    }
+
     PostParse();
 
     if (!ret || mErrorHeader != nullptr) {
@@ -216,7 +221,7 @@ bool Parser::ParseFile()
                 parseResult = ParseInclude() && parseResult;
                 continue;
             case Tokenizer::Token::INTERFACE:
-                parseResult = ParseInterface(nullptr) && parseResult;
+                parseResult = ParseInterface(nullptr, nullptr) && parseResult;
                 continue;
             case Tokenizer::Token::NAMESPACE:
                 parseResult = ParseNamespace() && parseResult;
@@ -258,7 +263,7 @@ bool Parser::ParseDeclarationWithAttribute()
             break;
         }
         case Tokenizer::Token::INTERFACE: {
-            parseResult = ParseInterface(&attr) && parseResult;
+            parseResult = ParseInterface(&attr, nullptr) && parseResult;
             break;
         }
         case Tokenizer::Token::MODULE: {
@@ -292,7 +297,7 @@ bool Parser::ParseDeclarationWithAttributeExceptModule()
             break;
         }
         case Tokenizer::Token::INTERFACE: {
-            parseResult = ParseInterface(&attr) && parseResult;
+            parseResult = ParseInterface(&attr, nullptr) && parseResult;
             break;
         }
         default: {
@@ -483,7 +488,8 @@ bool Parser::ParseUrl(
 }
 
 bool Parser::ParseInterface(
-    /* [in] */ Attribute* attr)
+    /* [in] */ Attribute* attr,
+    /* [out] */ Interface* outer)
 {
     bool parseResult = true;
     Tokenizer::Token token;
@@ -622,6 +628,10 @@ bool Parser::ParseInterface(
         }
         interface->ClearTemporaryTypes(false);
         mPool->AddInterface(interface);
+        if (outer != nullptr) {
+            outer->AddNestedInterface(interface);
+            interface->SetOuterInterface(outer);
+        }
     }
     else {
         if (newAdded) delete interface;
@@ -661,13 +671,49 @@ bool Parser::ParseInterfaceBody(
         else if (token == Tokenizer::Token::IDENTIFIER) {
             parseResult = ParseMethod(interface) && parseResult;
         }
+        else if (token == Tokenizer::Token::BRACKETS_OPEN) {
+            parseResult = ParseNestedInterface(interface) && parseResult;
+        }
         else {
-            token = mTokenizer.GetToken();
+            LogError(token, String("method name or constant is expected."));
+            mTokenizer.SkipCurrentLine();
+            parseResult = false;
         }
         token = mTokenizer.PeekToken();
     }
     // read '}'
     mTokenizer.GetToken();
+
+    return parseResult;
+}
+
+bool Parser::ParseNestedInterface(
+    /* [in] */ Interface* outer)
+{
+    Attribute attr;
+    bool parseResult = ParseAttribute(attr);
+
+    Tokenizer::Token token = mTokenizer.PeekToken();
+    switch (token) {
+        case Tokenizer::Token::INTERFACE: {
+            Namespace* ns = mCurrNamespace->FindNamespace(outer->GetName());
+            if (ns == nullptr) {
+                ns = new Namespace(outer);
+                mCurrNamespace->AddNamespace(ns);
+                mPool->AddNamespace(ns);
+            }
+            mCurrNamespace = ns;
+            parseResult = ParseInterface(&attr, outer) && parseResult;
+            mCurrNamespace = mCurrNamespace->GetOuterNamespace();
+            break;
+        }
+        default: {
+            String message = String::Format("%s is not expected.", mTokenizer.DumpToken(token));
+            LogError(token, message);
+            parseResult = false;
+            break;
+        }
+    }
 
     return parseResult;
 }
@@ -1758,7 +1804,7 @@ bool Parser::ParseCoclassInterface(
     String itfName = mTokenizer.GetIdentifier();
     Interface* interface = FindInterface(itfName);
     if (interface == nullptr) {
-        String message = String::Format("Interace \"%s\" is not declared.", itfName.string());
+        String message = String::Format("Interface \"%s\" is not declared.", itfName.string());
         LogError(token, message);
         // jump to next line
         mTokenizer.SkipCurrentLine();
@@ -2046,7 +2092,7 @@ bool Parser::ParseModule(
                 parseResult = ParseInclude() && parseResult;
                 break;
             case Tokenizer::Token::INTERFACE:
-                parseResult = ParseInterface(nullptr) && parseResult;
+                parseResult = ParseInterface(nullptr, nullptr) && parseResult;
                 break;
             case Tokenizer::Token::NAMESPACE:
                 parseResult = ParseNamespace() && parseResult;
@@ -2129,7 +2175,7 @@ bool Parser::ParseNamespace()
                 parseResult = ParseInclude() && parseResult;
                 break;
             case Tokenizer::Token::INTERFACE:
-                parseResult = ParseInterface(nullptr) && parseResult;
+                parseResult = ParseInterface(nullptr, nullptr) && parseResult;
                 break;
             case Tokenizer::Token::NAMESPACE:
                 parseResult = ParseNamespace() && parseResult;
@@ -2192,7 +2238,9 @@ Type* Parser::FindType(
 {
     String fullName = typeName;
     if (!fullName.Contains("::")) {
-        fullName = mCurrContext->FindPredeclaration(typeName);
+        if (mCurrContext != nullptr) {
+            fullName = mCurrContext->FindPredeclaration(typeName);
+        }
         if (fullName.IsNullOrEmpty()) {
             Namespace* ns = mCurrNamespace;
             while (ns != nullptr) {
@@ -2219,6 +2267,42 @@ Type* Parser::FindType(
                 ns = ns->GetOuterNamespace();
             }
             return nullptr;
+        }
+    }
+    else {
+        String ns1Str = fullName.Substring(0, fullName.IndexOf("::") - 1);
+        Type* ns1Type = FindType(ns1Str);
+        if (ns1Type != nullptr && ns1Type->IsInterfaceType()) {
+            if (mCurrContext != nullptr) {
+                fullName = mCurrContext->FindPredeclaration(typeName);
+            }
+            if (fullName.IsNullOrEmpty()) {
+                Namespace* ns = mCurrNamespace;
+                while (ns != nullptr) {
+                    fullName = ns->ToString() + typeName;
+
+                    Type* type = mPool->FindType(fullName);
+                    if (type != nullptr) {
+                        return type;
+                    }
+
+                    if (mPool != &mWorld) {
+                        type = mWorld.FindType(fullName);
+                        if (type != nullptr) {
+                            type = mPool->DeepCopyType(type);
+                            return type;
+                        }
+                    }
+
+                    type = mWorld.FindTypeInExternalModules(fullName);
+                    if (type != nullptr) {
+                        type = mPool->ShallowCopyType(type);
+                        return type;
+                    }
+                    ns = ns->GetOuterNamespace();
+                }
+                return nullptr;
+            }
         }
     }
 

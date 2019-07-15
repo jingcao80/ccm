@@ -92,13 +92,16 @@ private:
         /* [in] */ MetaNamespace* mn);
 
     String GenInterfaceDeclaration(
-        /* [in] */ MetaInterface* mi);
+        /* [in] */ MetaInterface* mi,
+        /* [in] */ const String& prefix);
 
     String GenInterfaceConstant(
-        /* [in] */ MetaConstant* mc);
+        /* [in] */ MetaConstant* mc,
+        /* [in] */ const String& prefix);
 
     String GenInterfaceMethod(
-        /* [in] */ MetaMethod* mm);
+        /* [in] */ MetaMethod* mm,
+        /* [in] */ const String& prefix);
 
     String GenParameter(
         /* [in] */ MetaParameter* mp);
@@ -194,6 +197,7 @@ private:
 
 private:
     static const String TAG;
+    static const String TAB;
     String mDirectory;
     MetaComponent* mMetaComponent;
     String mLicense;

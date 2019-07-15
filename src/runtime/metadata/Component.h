@@ -63,6 +63,7 @@ struct MetaComponent
 struct MetaNamespace
 {
     char*               mName;
+    int                 mInterfaceWrappedIndex;
     int                 mConstantNumber;
     int                 mCoclassNumber;
     int                 mEnumerationNumber;
@@ -107,8 +108,11 @@ struct MetaInterface
     char*               mName;
     char*               mNamespace;
     int                 mBaseInterfaceIndex;
+    int                 mOuterInterfaceIndex;
+    int                 mNestedInterfaceNumber;
     int                 mConstantNumber;
     int                 mMethodNumber;
+    int*                mNestedInterfaceIndexes;
     MetaConstant**      mConstants;
     MetaMethod**        mMethods;
     bool                mExternal;

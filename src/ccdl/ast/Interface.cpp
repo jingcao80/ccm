@@ -24,6 +24,8 @@ namespace ast {
 
 Interface::Interface()
     : mBaseInterface(nullptr)
+    , mOuterInterface(nullptr)
+    , mInterfaces(5, false)
     , mConstants(10)
     , mMethods(20)
 {}
@@ -64,6 +66,22 @@ void Interface::SetAttribute(
     mUuid.Parse(attr.mUuid);
     mVersion = attr.mVersion;
     mDescription = attr.mDescription;
+}
+
+void Interface::SetOuterInterface(
+    /* [in] */ Interface* outer)
+{
+    if (outer == nullptr) return;
+
+    mOuterInterface = outer;
+}
+
+bool Interface::AddNestedInterface(
+    /* [in] */ Interface* interface)
+{
+    if (interface == nullptr) return true;
+
+    return mInterfaces.Add(interface);
 }
 
 bool Interface::AddConstant(
@@ -191,7 +209,14 @@ String Interface::Dump(
     if (!mDescription.IsNullOrEmpty()) {
         builder.Append(", description:").Append(mDescription);
     }
+    if (mOuterInterface != nullptr) {
+        builder.Append(", outer:").Append(mOuterInterface->GetName());
+    }
     builder.Append("]\n");
+    for (int i = 0; i < mInterfaces.GetSize(); i++) {
+        String interfaceStr = String::Format("interface %s\n", mInterfaces.Get(i)->GetName().string());
+        builder.Append(prefix).Append("  ").Append(interfaceStr);
+    }
     for (int i = 0; i < mConstants.GetSize(); i++) {
         String constantStr = mConstants.Get(i)->Dump(String("  "));
         builder.Append(prefix).Append(constantStr);

@@ -42,6 +42,7 @@ add_subdirectory(macro)
 # testMutex tests mutex in ccmrt, so running testMutex needs export
 # mutex.h and related methods from ccmrt.so
 #add_subdirectory(mutex)
+add_subdirectory(nestedinterface)
 add_subdirectory(random)
 add_subdirectory(reflection)
 add_subdirectory(rpc)

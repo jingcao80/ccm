@@ -203,9 +203,15 @@ String MetaDumper::DumpMetaInterface(
     builder.Append(prefix).Append("{\n");
     builder.Append(prefix).Append("    mName:").Append(mi->mName).Append("\n");
     builder.Append(prefix).Append("    mNamespace:").Append(mi->mNamespace).Append("\n");
+    builder.Append(prefix).AppendFormat("    mNestedInterfaceNumber:%d\n", mi->mNestedInterfaceNumber);
     builder.Append(prefix).AppendFormat("    mConstantNumber:%d\n", mi->mConstantNumber);
     builder.Append(prefix).AppendFormat("    mMethodNumber:%d\n", mi->mMethodNumber);
     builder.Append(prefix).Append("}\n");
+
+    for (int i = 0; i < mi->mNestedInterfaceNumber; i++) {
+        builder.Append(prefix).AppendFormat("        %s\n",
+                mMetaComponet->mInterfaces[mi->mNestedInterfaceIndexes[i]]->mName);
+    }
 
     for (int i = 0; i < mi->mConstantNumber; i++) {
         String dumpConst = DumpMetaConstant(mi->mConstants[i], prefix + "  ");

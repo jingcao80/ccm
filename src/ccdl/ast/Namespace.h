@@ -34,6 +34,9 @@ public:
     Namespace(
         /* [in] */ const String& nsStr);
 
+    Namespace(
+        /* [in] */ Interface* itfWrapped);
+
     ~Namespace();
 
     inline String GetName();
@@ -42,6 +45,10 @@ public:
 
     inline void SetOuterNamespace(
         /* [in] */ Namespace* outerNS);
+
+    inline bool IsInterfaceWrapper();
+
+    inline Interface* GetInterfaceWrapped();
 
     bool AddNamespace(
         /* [in] */ Namespace* innerNS);
@@ -108,6 +115,8 @@ public:
 private:
     String mName;
     Namespace* mOuterNamespace;
+    bool mIsWrapper;
+    Interface* mInterfaceWrapped;
     ArrayList<Namespace*> mNamespaces;
     ArrayList<Coclass*> mCoclasses;
     ArrayList<Constant*> mConstants;
@@ -130,6 +139,16 @@ void Namespace::SetOuterNamespace(
     /* [in] */ Namespace* outerNS)
 {
     mOuterNamespace = outerNS;
+}
+
+bool Namespace::IsInterfaceWrapper()
+{
+    return mIsWrapper;
+}
+
+Interface* Namespace::GetInterfaceWrapped()
+{
+    return mInterfaceWrapped;
 }
 
 int Namespace::GetNamespaceNumber()

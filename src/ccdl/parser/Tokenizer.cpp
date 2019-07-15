@@ -191,6 +191,7 @@ void Tokenizer::SkipCurrentLine()
     while (c != -1 && c != '\n') {
         c = mFile->Read();
     }
+    mHasAPeek = false;
 }
 
 Tokenizer::Token Tokenizer::ReadToken(

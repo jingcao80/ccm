@@ -109,6 +109,7 @@ public:
 
 private:
     template<class U, class Y, Boolean isSuperSubclass> friend struct MoveAssignImpl;
+    template<class U, class Y, Boolean isSuperSubclass> friend struct MoveToImpl;
 
     T* mPtr;
 };
@@ -145,6 +146,37 @@ struct MoveAssignImpl<U, Y, true>
         lvalue->mPtr = (U*)rvalue.mPtr;
         rvalue.mPtr = nullptr;
         return *lvalue;
+    }
+};
+
+template<class U, class Y, Boolean isSubSuperclass>
+struct MoveToImpl
+{
+    void operator()(
+        /* [in] */ AutoPtr<U>* uObj,
+        /* [in] */ Y** other)
+    {
+        if (other != nullptr) {
+            Y* yObj = Y::Probe(uObj->mPtr);
+            if (yObj != nullptr) {
+                *other = yObj;
+                uObj->mPtr = nullptr;
+            }
+        }
+    }
+};
+
+template<class U, class Y>
+struct  MoveToImpl<U, Y, true>
+{
+    void operator()(
+        /* [in] */ AutoPtr<U>* uObj,
+        /* [in] */ Y** other)
+    {
+        if (other != nullptr) {
+            *other = (Y*)uObj->mPtr;
+            uObj->mPtr = nullptr;
+        }
     }
 };
 
@@ -250,13 +282,8 @@ template<class T> template<class U>
 void AutoPtr<T>::MoveTo(
     /* [out] */ U** other)
 {
-    if (other != nullptr) {
-        U* uObj = (U*)mPtr->Probe(U::GetInterfaceID());
-        if (uObj != nullptr) {
-            *other = uObj;
-            mPtr = nullptr;
-        }
-    }
+    MoveToImpl<T, U, SUPERSUBCLASS(U, T)> impl;
+    return impl(this, other);
 }
 
 template<class T>

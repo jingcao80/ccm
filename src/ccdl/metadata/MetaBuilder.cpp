@@ -213,6 +213,7 @@ void MetaBuilder::CalculateMetaEnumerator(
 void MetaBuilder::CalculateMetaInterface(
     /* [in] */ Interface* itf)
 {
+    int NEST_ITF_NUM = itf->GetNestedInterfaceNumber();
     int CONST_NUM = itf->GetConstantNumber();
     int MTH_NUM = itf->GetMethodNumber();
 
@@ -222,8 +223,10 @@ void MetaBuilder::CalculateMetaInterface(
     mStringPool.Add(itf->GetName());
     // add mNamespace to StringPool
     mStringPool.Add(itf->GetNamespace()->ToString());
-    // mConstants's address
+    // mNestedInterfaces's address
     mBasePtr = ALIGN(mBasePtr + sizeof(MetaInterface));
+    // mConstants's address
+    mBasePtr = ALIGN(mBasePtr + sizeof(int) * NEST_ITF_NUM);
     // mMethods's address
     mBasePtr = ALIGN(mBasePtr + sizeof(MetaConstant*) * CONST_NUM);
     // end address
@@ -553,6 +556,7 @@ MetaEnumerator* MetaBuilder::WriteMetaEnumerator(
 MetaInterface* MetaBuilder::WriteMetaInterface(
     /* [in] */ Interface* itf)
 {
+    int NEST_ITF_NUM = itf->GetNestedInterfaceNumber();
     int CONST_NUM = itf->GetConstantNumber();
     int MTH_NUM = itf->GetMethodNumber();
 
@@ -565,17 +569,27 @@ MetaInterface* MetaBuilder::WriteMetaInterface(
     Interface* baseItf = itf->GetBaseInterface();
     mi->mBaseInterfaceIndex = baseItf != nullptr ?
             mModule->IndexOf(baseItf) : -1;
+    Interface* outerItf = itf->GetOuterInterface();
+    mi->mOuterInterfaceIndex = outerItf != nullptr ?
+            mModule->IndexOf(outerItf) : -1;
+    mi->mNestedInterfaceNumber = NEST_ITF_NUM;
     mi->mConstantNumber = CONST_NUM;
     mi->mMethodNumber = MTH_NUM;
     mi->mExternal = itf->IsExternal();
-    // mConstants's address
+    // mNestedInterfaceIndexes's address
     mBasePtr = ALIGN(mBasePtr + sizeof(MetaInterface));
+    mi->mNestedInterfaceIndexes = reinterpret_cast<int*>(mBasePtr);
+    // mConstants's address
+    mBasePtr = ALIGN(mBasePtr + sizeof(int) * NEST_ITF_NUM);
     mi->mConstants = reinterpret_cast<MetaConstant**>(mBasePtr);
     // mMethods's address
     mBasePtr = ALIGN(mBasePtr + sizeof(MetaConstant*) * CONST_NUM);
     mi->mMethods = reinterpret_cast<MetaMethod**>(mBasePtr);
     // end address
     mBasePtr = mBasePtr + sizeof(MetaMethod*) * MTH_NUM;
+    for (int i = 0; i < NEST_ITF_NUM; i++) {
+        mi->mNestedInterfaceIndexes[i] = mModule->IndexOf(itf->GetNestedInterface(i));
+    }
 
     for (int i = 0; i < CONST_NUM; i++) {
         mi->mConstants[i] = WriteMetaConstant(itf->GetConstant(i));
@@ -626,6 +640,7 @@ MetaNamespace* MetaBuilder::WriteMetaNamespace(
     mBasePtr = ALIGN(mBasePtr);
     MetaNamespace* mn = reinterpret_cast<MetaNamespace*>(mBasePtr);
     mn->mName = WriteString(ns->ToString());
+    mn->mInterfaceWrappedIndex = ns->IsInterfaceWrapper() ? mModule->IndexOf(ns->GetInterfaceWrapped()) : -1;
     mn->mConstantNumber = CONST_NUM;
     mn->mCoclassNumber = CLS_NUM;
     mn->mEnumerationNumber = ENUMN_NUM;

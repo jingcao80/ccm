@@ -55,6 +55,19 @@ public:
     void SetAttribute(
         /* [in] */ const Attribute& attr);
 
+    void SetOuterInterface(
+        /* [in] */ Interface* outer);
+
+    inline Interface* GetOuterInterface();
+
+    bool AddNestedInterface(
+        /* [in] */ Interface* interface);
+
+    inline int GetNestedInterfaceNumber();
+
+    inline Interface* GetNestedInterface(
+        /* [in] */ int index);
+
     bool AddConstant(
         /* [in] */ Constant* constant);
 
@@ -106,6 +119,8 @@ private:
     Uuid mUuid;
     String mVersion;
     String mDescription;
+    Interface* mOuterInterface;
+    ArrayList<Interface*> mInterfaces;
     ArrayList<Constant*> mConstants;
     ArrayList<Method*> mMethods;
 };
@@ -118,6 +133,22 @@ Interface* Interface::GetBaseInterface()
 Uuid& Interface::GetUuid()
 {
     return mUuid;
+}
+
+Interface* Interface::GetOuterInterface()
+{
+    return mOuterInterface;
+}
+
+int Interface::GetNestedInterfaceNumber()
+{
+    return mInterfaces.GetSize();
+}
+
+Interface* Interface::GetNestedInterface(
+    /* [in] */ int index)
+{
+    return mInterfaces.Get(index);
 }
 
 int Interface::GetConstantNumber()

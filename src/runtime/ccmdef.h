@@ -669,6 +669,87 @@ inline int ArrayLength(const T (&)[N])
     }
 #endif
 
+#ifndef CCM_INTERFACE_REFCOUNT
+#define CCM_INTERFACE_REFCOUNT(ClassName)                       \
+    Integer ClassName::AddRef(                                  \
+        /* [in] */ HANDLE id)                                   \
+    {                                                           \
+        return Object::AddRef(id);                              \
+    }                                                           \
+                                                                \
+    Integer ClassName::Release(                                 \
+        /* [in] */ HANDLE id)                                   \
+    {                                                           \
+        return Object::Release(id);                             \
+    }
+#endif
+
+#ifndef CCM_INTERFACE_PROBE_BEGIN
+#define CCM_INTERFACE_PROBE_BEGIN(ClassName)                    \
+    IInterface* ClassName::Probe(                               \
+        /* [in] */ const InterfaceID& iid)                      \
+    {                                                           \
+        if (iid == IID_IInterface) {                            \
+            return (IInterface*)(IObject*)this;                 \
+        }
+#endif
+
+#ifndef CCM_INTERFACE_PROBE_INTERFACE
+#define CCM_INTERFACE_PROBE_INTERFACE(InterfaceName)            \
+    else if (iid == IID_##InterfaceName) {                      \
+        return (InterfaceName*)this;                            \
+    }
+#endif
+
+#ifndef CCM_INTERFACE_PROBE_NESTEDINTERFACE
+#define CCM_INTERFACE_PROBE_NESTEDINTERFACE(OuterInterfaceName, InterfaceName)  \
+    else if (iid == OuterInterfaceName::IID_##InterfaceName) {  \
+        return (OuterInterfaceName::InterfaceName*)this;        \
+    }
+#endif
+
+#ifndef CCM_INTERFACE_PROBE_END
+#define CCM_INTERFACE_PROBE_END(SuperClassName)                 \
+        return SuperClassName::Probe(iid);                      \
+    }
+#endif
+
+#ifndef CCM_INTERFACE_GETINTERFACEID_BEGIN
+#define CCM_INTERFACE_GETINTERFACEID_BEGIN(ClassName)           \
+    ECode ClassName::GetInterfaceID(                            \
+        /* [in] */ IInterface* object,                          \
+        /* [out] */ InterfaceID* iid)                           \
+    {                                                           \
+        VALIDATE_NOT_NULL(iid);                                 \
+                                                                \
+        if (object == (IInterface*)(IObject*)this) {            \
+            *iid = IID_##IObject;                               \
+            return NOERROR;                                     \
+        }
+#endif
+
+#ifndef CCM_INTERFACE_GETINTERFACEID_INTERFACE
+#define CCM_INTERFACE_GETINTERFACEID_INTERFACE(InterfaceName)   \
+    else if (object == (IInterface*)(InterfaceName*)this) {     \
+        *iid = IID_##InterfaceName;                             \
+        return NOERROR;                                         \
+    }
+#endif
+
+#ifndef CCM_INTERFACE_GETINTERFACEID_NESTEDINTERFACE
+#define CCM_INTERFACE_GETINTERFACEID_NESTEDINTERFACE(OuterInterfaceName, InterfaceName) \
+    else if (object == (IInterface*)(OuterInterfaceName::InterfaceName*)this) {         \
+        *iid = OuterInterfaceName::IID_##InterfaceName;         \
+        return NOERROR;                                         \
+    }
+#endif
+
+#ifndef CCM_INTERFACE_GETINTERFACEID_END
+#define CCM_INTERFACE_GETINTERFACEID_END(SuperClassName)        \
+        return SuperClassName::GetInterfaceID(object, iid);     \
+    }
+#endif
+
 #ifndef CCM_OBJECT_DECL
 #define CCM_OBJECT_DECL()                                  \
     ECode GetCoclassID(                                    \
