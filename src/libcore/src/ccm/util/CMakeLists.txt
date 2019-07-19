@@ -62,6 +62,7 @@ set(SOURCES
     TreeMap.cpp
     TreeNode.cpp
     TreeSet.cpp
+    Vector.cpp
     XMLUtils.cpp
     util.cpp)
 

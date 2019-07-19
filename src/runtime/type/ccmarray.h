@@ -107,6 +107,9 @@ public:
         /* [in] */ const Array<T>& other);
 
     Array& operator=(
+        /* [in] */ Array<T>&& other);
+
+    Array& operator=(
         /* [in] */ std::initializer_list<T> list);
 
     inline T& operator[](
@@ -476,6 +479,26 @@ Array<T>& Array<T>::operator=(
         sb->Release();
     }
     mData = other.mData;
+    mSize = other.mSize;
+    return *this;
+}
+
+template<class T>
+Array<T>& Array<T>::operator=(
+    /* [in] */ Array<T>&& other)
+{
+    if (mData != nullptr) {
+        SharedBuffer* sb = SharedBuffer::GetBufferFromData(mData);
+        if (sb->OnlyOwner()) {
+            DeleteFunc<T> deleteF;
+            for (Long i = 0; i < mSize; i++) {
+                deleteF(&static_cast<T*>(mData)[i], this);
+            }
+        }
+        sb->Release();
+    }
+    mData = other.mData;
+    other.mData = nullptr;
     mSize = other.mSize;
     return *this;
 }

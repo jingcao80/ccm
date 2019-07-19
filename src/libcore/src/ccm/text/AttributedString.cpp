@@ -690,7 +690,7 @@ AutoPtr<IInterface> AttributedString::GetAttribute(
     currentRunAttributes->IndexOf(attribute, &attributeIndex);
     if (attributeIndex != -1) {
         AutoPtr<IInterface> value;
-        currentRunAttributeValues->ElementAt(attributeIndex, &value);
+        currentRunAttributeValues->GetElementAt(attributeIndex, &value);
         return value;
     }
     else {

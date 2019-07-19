@@ -34,6 +34,7 @@
 #include "ccm/util/CStringTokenizer.h"
 #include "ccm/util/CTreeMap.h"
 #include "ccm/util/CTreeSet.h"
+#include "ccm/util/CVector.h"
 #include "ccm/util/calendar/CEra.h"
 #include "ccm/util/calendar/CGregorian.h"
 #include "ccm/util/calendar/CJulianCalendar.h"
@@ -573,7 +574,7 @@ ECode CTreeSet::Clone(
     if (addr == nullptr) return E_OUT_OF_MEMORY_ERROR;
 
     CTreeSet* newObj = new(addr) CTreeSet();
-    ec = TreeSet::CloneImpl(newObj);
+    ec = CTreeSet::CloneImpl(newObj);
     if (FAILED(ec)) {
         free(addr);
         return ec;
@@ -609,6 +610,34 @@ ECode CTreeSet::New(
     _obj->AttachMetadata(comp, String("ccm::util::CTreeSet"));
     *object = _obj->Probe(iid);
     REFCOUNT_ADD(*object);
+    return NOERROR;
+}
+
+CCM_OBJECT_IMPL(CVector);
+ECode CVector::Clone(
+    /* [in] */ const InterfaceID& iid,
+    /* [out] */ IInterface** obj)
+{
+    VALIDATE_NOT_NULL(obj);
+
+    AutoPtr<IClassObject> clsObject;
+    ECode ec = CoAcquireClassFactory(CID_CVector, nullptr, &clsObject);
+    if (FAILED(ec)) return ec;
+
+    void* addr = calloc(sizeof(CVector), 1);
+    if (addr == nullptr) return E_OUT_OF_MEMORY_ERROR;
+
+    CVector* newObj = new(addr) CVector();
+    ec = CVector::CloneImpl(newObj);
+    if (FAILED(ec)) {
+        free(addr);
+        return ec;
+    }
+    AutoPtr<IMetaComponent> comp;
+    clsObject->GetMetadate(&comp);
+    newObj->AttachMetadata(comp, String("ccm::util::CVector"));
+    *obj = newObj->Probe(iid);
+    REFCOUNT_ADD(*obj);
     return NOERROR;
 }
 

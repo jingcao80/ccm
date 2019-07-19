@@ -464,6 +464,8 @@ private:
             /* [out, callee] */ Array<IInterface*>* objs) override;
     };
 
+
+
     class EmptyIterator
         : public LightRefBase
         , public IIterator
@@ -739,6 +741,13 @@ public:
     static AutoPtr<ISet> CreateSynchronizedSet(
         /* [in] */ ISet* s,
         /* [in] */ ISynchronize* mutex);
+
+    static AutoPtr<IList> CreateSynchronizedList(
+        /* [in] */ IList* l,
+        /* [in] */ ISynchronize* mutex)
+    {
+        return nullptr;
+    }
 
     static AutoPtr<IIterator> GetEmptyIterator();
 

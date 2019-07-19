@@ -17,42 +17,21 @@
 #ifndef __CCM_UTIL_CVECTOR_H__
 #define __CCM_UTIL_CVECTOR_H__
 
-#include "ccm/core/SyncObject.h"
+#include "ccm/util/Vector.h"
 #include "_ccm_util_CVector.h"
-#include "ccm.util.ICollection.h"
-
-using ccm::core::SyncObject;
 
 namespace ccm {
 namespace util {
 
 Coclass(CVector)
-    , public SyncObject
+    , public Vector
 {
 public:
-    ECode Constructor()
-    {
-        return NOERROR;
-    }
+    CCM_OBJECT_DECL();
 
-    ECode Constructor(
-        /* [in] */ Integer initialCapacity)
-    {
-        return NOERROR;
-    }
-
-    ECode Constructor(
-        /* [in] */ Integer initialCapacity,
-        /* [in] */ Integer capacityIncrement)
-    {
-        return NOERROR;
-    }
-
-    ECode Constructor(
-        /* [in] */ ICollection* c)
-    {
-        return NOERROR;
-    }
+    ECode Clone(
+        /* [in] */ const InterfaceID& iid,
+        /* [out] */ IInterface** obj) override;
 };
 
 }
