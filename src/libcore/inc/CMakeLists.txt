@@ -19,7 +19,7 @@ add_dependencies(deploy_libcore_headers
     deploy_libcore_core_headers
     deploy_libcore_util_headers)
 
-if (NOT EXISTS "${INC_DIR}")
+if (NOT EXISTS "${INC_DIR}/coredef.h")
 COPY(deploy_libcore_headers ${LIBCORE_DIR}/inc/coredef.h ${INC_DIR})
 endif()
 
