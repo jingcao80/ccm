@@ -9,7 +9,7 @@
 
 <*include_or_type_declarations*> ::= <*include_or_type_declaration*> | <*include_or_type_declarations*> <*include_or_type_declaration*>
 
-<*include_or_type_declaration*> ::= <*include_declaration*> | <*type_declaration*> 
+<*include_or_type_declaration*> ::= <*include_declaration*> | <*type_declaration*>
 
 <*include_declaration*> ::= include <*string_literal*>
 
@@ -35,7 +35,7 @@
 
 <*interface_member_declarations*> ::= <*interface_member_declaration*> | <*interface_member_declarations*> <*interface_member_declaration*>
 
-<*interface_member_declaration*> ::= <*constant_declaration*> | <*abstract_method_declaration*>
+<*interface_member_declaration*> ::= <*interface_declaration*> | <*constant_declaration*> | <*abstract_method_declaration*>
 
 <*constant_declaration*> ::= const <*type*> <*identifier*> = <*expression*> ;
 
