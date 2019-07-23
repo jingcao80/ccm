@@ -16,10 +16,10 @@
 
 #include "ccm/core/CoreUtils.h"
 #include "ccm/core/SyncObject.h"
+#include "ccm/text/AttributedCharacterIteratorAttributeFactory.h"
 #include "ccm.core.CStringBuffer.h"
 #include "ccm.core.ICloneable.h"
 #include "ccm.core.IStringBuffer.h"
-#include "ccm.text.CAttributedCharacterIteratorAttributeFactory.h"
 #include "ccm.text.CAttributedString.h"
 #include "ccm.text.IAttributedString.h"
 #include "ccm.text.IAttributedCharacterIterator.h"
@@ -37,7 +37,7 @@ using ccm::core::IID_IStringBuffer;
 using ccm::core::ICloneable;
 using ccm::core::IStringBuffer;
 using ccm::core::SyncObject;
-using ccm::text::CAttributedCharacterIteratorAttributeFactory;
+using ccm::text::AttributedCharacterIteratorAttributeFactory;
 using ccm::text::CAttributedString;
 using ccm::text::IAttributedCharacterIterator;
 using ccm::text::IAttributedString;
@@ -339,10 +339,8 @@ TEST(AttributedStringTest, TestConstructorWithIAttributedCharacterIteratorII)
 
 TEST(AttributedStringTest, TestAddAttributeWithIAttributedCharacterIteratorIInterfaceII)
 {
-    AutoPtr<IAttributedCharacterIterator::IAttributeFactory> factory;
-    CAttributedCharacterIteratorAttributeFactory::New(IAttributedCharacterIterator::IID_IAttributeFactory, (IInterface**)&factory);
     AutoPtr<IAttributedCharacterIterator::IAttribute> language;
-    factory->GetLANGUAGE(&language);
+    AttributedCharacterIteratorAttributeFactory::GetLANGUAGE(&language);
     AutoPtr<IAttributedString> as;
     CAttributedString::New(String("test"), IID_IAttributedString, (IInterface**)&as);
     as->AddAttribute(language, CoreUtils::Box(String("a")), 2, 3);

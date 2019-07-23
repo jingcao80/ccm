@@ -40,22 +40,6 @@ interface IAttributedCharacterIterator
     interface IAttribute
     {}
 
-    [
-        uuid(e6c069d4-f178-42cc-ae28-21de3b1d0ed9),
-        version(0.1.0)
-    ]
-    interface IAttributeFactory
-    {
-        GetLANGUAGE(
-            [out] IAttribute** attribute);
-
-        GetREADING(
-            [out] IAttribute** attribute);
-
-        GetINPUT_METHOD_SEGMENT(
-            [out] IAttribute** attribute);
-    }
-
     GetAllAttributeKeys(
         [out] ISet** keys);
 

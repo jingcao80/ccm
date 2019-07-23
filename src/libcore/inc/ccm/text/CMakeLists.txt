@@ -14,36 +14,9 @@
 # limitations under the License.
 #=========================================================================
 
-set(TEXT_DIR ${LIBCORE_CCM_SRC_DIR}/text)
+add_custom_target(deploy_libcore_text_headers)
+add_dependencies(deploy_libcore_text_headers ccmrt)
 
-include_directories(
-    ./
-    ../
-    ../../../inc
-    ${INC_DIR}
-    ${OBJ_DIR})
+MKDIR(deploy_libcore_text_headers ${INC_DIR}/ccm/text)
 
-set(SOURCES
-    AttributedCharacterIteratorAttribute.cpp
-    AttributedCharacterIteratorAttributeFactory.cpp
-    AttributedString.cpp
-    CalendarBuilder.cpp
-    CharacterIteratorFieldDelegate.cpp
-    ChoiceFormat.cpp
-    CNumberFormatFactory.cpp
-    DateFormat.cpp
-    DateFormatSymbols.cpp
-    DecimalFormat.cpp
-    DecimalFormatSymbols.cpp
-    DontCareFieldPosition.cpp
-    FieldPosition.cpp
-    Format.cpp
-    MessageFormat.cpp
-    NumberFormat.cpp
-    ParsePosition.cpp
-    SimpleDateFormat.cpp
-    text.cpp)
-
-add_library(ccm_text STATIC
-    ${SOURCES})
-add_dependencies(ccm_text build_libcore)
+COPY(deploy_libcore_text_headers ${LIBCORE_CCM_INC_DIR}/text/AttributedCharacterIteratorAttributeFactory.h ${INC_DIR}/ccm/text)

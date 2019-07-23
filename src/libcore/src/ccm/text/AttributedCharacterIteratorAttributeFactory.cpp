@@ -14,31 +14,29 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm.text.IAttributedCharacterIterator.h"
-#include "_ccm_text_CAttributedCharacterIteratorAttributeFactory.h"
-#include <ccmobject.h>
+#include "ccm/text/AttributedCharacterIteratorAttributeFactory.h"
+#include "ccm/text/CAttributedCharacterIteratorAttribute.h"
 
 namespace ccm {
 namespace text {
 
-Coclass(CAttributedCharacterIteratorAttributeFactory)
-    , public Object
-    , public IAttributedCharacterIterator::IAttributeFactory
+ECode AttributedCharacterIteratorAttributeFactory::GetLANGUAGE(
+    /* [out] */ IAttributedCharacterIterator::IAttribute** attribute)
 {
-public:
-    CCM_INTERFACE_DECL();
+    return CAttributedCharacterIteratorAttribute::GetLANGUAGE(attribute);
+}
 
-    CCM_OBJECT_DECL();
+ECode AttributedCharacterIteratorAttributeFactory::GetREADING(
+    /* [out] */ IAttributedCharacterIterator::IAttribute** attribute)
+{
+    return CAttributedCharacterIteratorAttribute::GetREADING(attribute);
+}
 
-    ECode GetLANGUAGE(
-        /* [out] */ IAttributedCharacterIterator::IAttribute** attribute) override;
-
-    ECode GetREADING(
-        /* [out] */ IAttributedCharacterIterator::IAttribute** attribute) override;
-
-    ECode GetINPUT_METHOD_SEGMENT(
-        /* [out] */ IAttributedCharacterIterator::IAttribute** attribute) override;
-};
+ECode AttributedCharacterIteratorAttributeFactory::GetINPUT_METHOD_SEGMENT(
+    /* [out] */ IAttributedCharacterIterator::IAttribute** attribute)
+{
+    return CAttributedCharacterIteratorAttribute::GetINPUT_METHOD_SEGMENT(attribute);
+}
 
 }
 }

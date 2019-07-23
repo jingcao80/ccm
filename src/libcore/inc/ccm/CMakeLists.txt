@@ -18,5 +18,6 @@ set(LIBCORE_CCM_INC_DIR ${LIBCORE_DIR}/inc/ccm)
 
 add_subdirectory(core)
 #add_subdirectory(io)
+add_subdirectory(text)
 add_subdirectory(util)
 
