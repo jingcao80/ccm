@@ -5,7 +5,7 @@ macro(COPY target file dest)
         POST_BUILD
         COMMAND
             "${CMAKE_COMMAND}"
-            -E copy ${file} ${dest})
+            -E copy_if_different ${file} ${dest})
 endmacro()
 
 macro(MKDIR target dir)
