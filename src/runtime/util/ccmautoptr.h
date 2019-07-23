@@ -39,6 +39,10 @@ public:
     AutoPtr(
         /* [in] */ AutoPtr<T>&& other);
 
+    template<class U>
+    AutoPtr(
+        /* [in] */ AutoPtr<U>&& other);
+
     ~AutoPtr();
 
     AutoPtr& operator=(
@@ -108,10 +112,38 @@ public:
         /* [in] */ const AutoPtr<T>& other) const;
 
 private:
+    template<class U, class Y, Boolean isSuperSubclass> friend struct CopyConstructorImpl;
     template<class U, class Y, Boolean isSuperSubclass> friend struct MoveAssignImpl;
     template<class U, class Y, Boolean isSuperSubclass> friend struct MoveToImpl;
 
     T* mPtr;
+};
+
+template<class U, class Y, Boolean isSuperSubclass>
+struct CopyConstructorImpl
+{
+    void operator()(
+        /* [in] */ AutoPtr<U>* lvalue,
+        /* [in] */ AutoPtr<Y>&& rvalue)
+    {
+        U* uObj = U::Probe(rvalue.mPtr);
+        if (uObj != nullptr) {
+            lvalue->mPtr = uObj;
+            rvalue.mPtr = nullptr;
+        }
+    }
+};
+
+template<class U, class Y>
+struct CopyConstructorImpl<U, Y, true>
+{
+    void operator()(
+        /* [in] */ AutoPtr<U>* lvalue,
+        /* [in] */ AutoPtr<Y>&& rvalue)
+    {
+        lvalue->mPtr = (U*)rvalue.mPtr;
+        rvalue.mPtr = nullptr;
+    }
 };
 
 template<class U, class Y, Boolean isSuperSubclass>
@@ -206,6 +238,14 @@ AutoPtr<T>::AutoPtr(
     : mPtr(other.mPtr)
 {
     other.mPtr = nullptr;
+}
+
+template<class T> template<class U>
+AutoPtr<T>::AutoPtr(
+    /* [in] */ AutoPtr<U>&& other)
+{
+    CopyConstructorImpl<T, U, SUPERSUBCLASS(T, U)> impl;
+    impl(this, std::move(other));
 }
 
 template<class T>

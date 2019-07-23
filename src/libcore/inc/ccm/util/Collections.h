@@ -465,6 +465,148 @@ private:
     };
 
 
+    class SynchronizedList
+        : public SynchronizedCollection
+        , public IList
+    {
+    public:
+        SynchronizedList(
+            /* [in] */ IList* list)
+            : SynchronizedCollection(ICollection::Probe(list))
+            , mList(list)
+        {}
+
+        SynchronizedList(
+            /* [in] */ IList* list,
+            /* [in] */ ISynchronize* mutex)
+            : SynchronizedCollection(ICollection::Probe(list), mutex)
+            , mList(list)
+        {}
+
+        CCM_INTERFACE_DECL();
+
+        ECode Equals(
+            /* [in] */ IInterface* obj,
+            /* [out] */ Boolean* result) override;
+
+        ECode GetHashCode(
+            /* [out] */ Integer* hash) override;
+
+        ECode Get(
+            /* [in] */ Integer index,
+            /* [out] */ IInterface** obj) override;
+
+        ECode Set(
+            /* [in] */ Integer index,
+            /* [in] */ IInterface* obj,
+            /* [out] */ IInterface** prevObj = nullptr) override;
+
+        ECode Add(
+            /* [in] */ Integer index,
+            /* [in] */ IInterface* obj) override;
+
+        ECode Remove(
+            /* [in] */ Integer index,
+            /* [out] */ IInterface** obj = nullptr) override;
+
+        ECode IndexOf(
+            /* [in] */ IInterface* obj,
+            /* [out] */ Integer* index) override;
+
+        ECode LastIndexOf(
+            /* [in] */ IInterface* obj,
+            /* [out] */ Integer* index) override;
+
+        ECode AddAll(
+            /* [in] */ Integer index,
+            /* [in] */ ICollection* c,
+            /* [out] */ Boolean* result = nullptr) override;
+
+        ECode GetListIterator(
+            /* [out] */ IListIterator** it) override;
+
+        ECode GetListIterator(
+            /* [in] */ Integer index,
+            /* [out] */ IListIterator** it) override;
+
+        ECode SubList(
+            /* [in] */ Integer fromIndex,
+            /* [in] */ Integer toIndex,
+            /* [out] */ IList** subList) override;
+
+        ECode Add(
+            /* [in] */ IInterface* obj,
+            /* [out] */ Boolean* changed = nullptr) override;
+
+        ECode AddAll(
+            /* [in] */ ICollection* c,
+            /* [out] */ Boolean* changed = nullptr) override;
+
+        ECode Clear() override;
+
+        ECode Contains(
+            /* [in] */ IInterface* obj,
+            /* [out] */ Boolean* result) override;
+
+        ECode ContainsAll(
+            /* [in] */ ICollection* c,
+            /* [out] */ Boolean* result) override;
+
+        ECode GetIterator(
+            /* [out] */ IIterator** it) override;
+
+        ECode GetSize(
+            /* [out] */ Integer* size) override;
+
+        ECode IsEmpty(
+            /* [out] */ Boolean* empty) override;
+
+        ECode Remove(
+            /* [in] */ IInterface* obj,
+            /* [out] */ Boolean* changed = nullptr) override;
+
+        ECode RemoveAll(
+            /* [in] */ ICollection* c,
+            /* [out] */ Boolean* changed = nullptr) override;
+
+        ECode RetainAll(
+            /* [in] */ ICollection* c,
+            /* [out] */ Boolean* changed = nullptr) override;
+
+        ECode ToArray(
+            /* [out, callee] */ Array<IInterface*>* objs) override;
+
+        ECode ToArray(
+            /* [in] */ const InterfaceID& iid,
+            /* [out, callee] */ Array<IInterface*>* objs) override;
+
+    public:
+        AutoPtr<IList> mList;
+    };
+
+    class SynchronizedRandomAccessList
+        : public SynchronizedList
+        , public IRandomAccess
+    {
+    public:
+        SynchronizedRandomAccessList(
+            /* [in] */ IList* list)
+            : SynchronizedList(list)
+        {}
+
+        SynchronizedRandomAccessList(
+            /* [in] */ IList* list,
+            /* [in] */ ISynchronize* mutex)
+            : SynchronizedList(list, mutex)
+        {}
+
+        CCM_INTERFACE_DECL();
+
+        ECode SubList(
+            /* [in] */ Integer fromIndex,
+            /* [in] */ Integer toIndex,
+            /* [out] */ IList** subList) override;
+    };
 
     class EmptyIterator
         : public LightRefBase
@@ -744,10 +886,7 @@ public:
 
     static AutoPtr<IList> CreateSynchronizedList(
         /* [in] */ IList* l,
-        /* [in] */ ISynchronize* mutex)
-    {
-        return nullptr;
-    }
+        /* [in] */ ISynchronize* mutex);
 
     static AutoPtr<IIterator> GetEmptyIterator();
 

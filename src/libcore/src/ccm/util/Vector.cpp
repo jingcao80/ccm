@@ -751,7 +751,7 @@ ECode Vector::SubList(
     AutoLock lock(this);
 
     AutoPtr<IList> list;
-    AbstractList::SubList(fromIndex, toIndex, &list);
+    FAIL_RETURN(AbstractList::SubList(fromIndex, toIndex, &list));
     Collections::CreateSynchronizedList(list, this).MoveTo(subList);
     return NOERROR;
 }

@@ -1253,9 +1253,9 @@ void AttributedString::AttributedStringIterator::UpdateRunInfo()
             if (mCurrentRunLimit > mEndIndex) {
                 mCurrentRunLimit = mEndIndex;
             }
-            else {
-                mCurrentRunLimit = mEndIndex;
-            }
+        }
+        else {
+            mCurrentRunLimit = mEndIndex;
         }
     }
 }

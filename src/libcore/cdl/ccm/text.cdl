@@ -51,6 +51,15 @@ coclass CAttributedCharacterIteratorAttribute
 }
 
 [
+    uuid(f42720d8-7341-4872-8b1b-78bc506132ff),
+    version(0.1.0)
+]
+coclass CAttributedCharacterIteratorAttributeFactory
+{
+    interface IAttributedCharacterIteratorAttributeFactory;
+}
+
+[
     uuid(d90f0463-63bb-43dd-8ae6-69152b0fcbd1),
     version(0.1.0)
 ]

@@ -93,6 +93,18 @@ AutoPtr<ISet> Collections::CreateSynchronizedSet(
     return new SynchronizedSet(s, mutex);
 }
 
+AutoPtr<IList> Collections::CreateSynchronizedList(
+    /* [in] */ IList* l,
+    /* [in] */ ISynchronize* mutex)
+{
+    if (IRandomAccess::Probe(l) != nullptr) {
+        return new SynchronizedRandomAccessList(l, mutex);
+    }
+    else {
+        return new SynchronizedList(l, mutex);
+    }
+}
+
 AutoPtr<IIterator> Collections::GetEmptyIterator()
 {
     return EmptyIterator::Get_EMPTY_ITERATOR();
@@ -1002,6 +1014,235 @@ ECode Collections::SynchronizedSet::ToArray(
     /* [out, callee] */ Array<IInterface*>* objs)
 {
     return SynchronizedCollection::ToArray(iid, objs);
+}
+
+//----------------------------------------------------------------
+
+CCM_INTERFACE_IMPL_1(Collections::SynchronizedList, Collections::SynchronizedCollection, IList);
+
+ECode Collections::SynchronizedList::Equals(
+    /* [in] */ IInterface* obj,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    if ((IList*)this == IList::Probe(obj)) {
+        *result = true;
+        return NOERROR;
+    }
+    AutoLock lock(mMutex);
+    *result = Object::Equals(mList, obj);
+    return NOERROR;
+}
+
+ECode Collections::SynchronizedList::GetHashCode(
+    /* [out] */ Integer* hash)
+{
+    VALIDATE_NOT_NULL(hash);
+
+    AutoLock lock(mMutex);
+    *hash = Object::GetHashCode(mList);
+    return NOERROR;
+}
+
+ECode Collections::SynchronizedList::Get(
+    /* [in] */ Integer index,
+    /* [out] */ IInterface** obj)
+{
+    VALIDATE_NOT_NULL(obj);
+
+    AutoLock lock(mMutex);
+    return mList->Get(index, obj);
+}
+
+ECode Collections::SynchronizedList::Set(
+    /* [in] */ Integer index,
+    /* [in] */ IInterface* obj,
+    /* [out] */ IInterface** prevObj)
+{
+    AutoLock lock(mMutex);
+    return mList->Set(index, obj, prevObj);
+}
+
+ECode Collections::SynchronizedList::Add(
+    /* [in] */ Integer index,
+    /* [in] */ IInterface* obj)
+{
+    AutoLock lock(mMutex);
+    return mList->Add(index, obj);
+}
+
+ECode Collections::SynchronizedList::Remove(
+    /* [in] */ Integer index,
+    /* [out] */ IInterface** obj)
+{
+    AutoLock lock(mMutex);
+    return mList->Remove(index, obj);
+}
+
+ECode Collections::SynchronizedList::IndexOf(
+    /* [in] */ IInterface* obj,
+    /* [out] */ Integer* index)
+{
+    VALIDATE_NOT_NULL(index);
+
+    AutoLock lock(mMutex);
+    return mList->IndexOf(obj, index);
+}
+
+ECode Collections::SynchronizedList::LastIndexOf(
+    /* [in] */ IInterface* obj,
+    /* [out] */ Integer* index)
+{
+    VALIDATE_NOT_NULL(index);
+
+    AutoLock lock(mMutex);
+    return mList->LastIndexOf(obj, index);
+}
+
+ECode Collections::SynchronizedList::AddAll(
+    /* [in] */ Integer index,
+    /* [in] */ ICollection* c,
+    /* [out] */ Boolean* result)
+{
+    AutoLock lock(mMutex);
+    return mList->AddAll(index, c, result);
+}
+
+ECode Collections::SynchronizedList::GetListIterator(
+    /* [out] */ IListIterator** it)
+{
+    // Must be manually synched by user
+    return mList->GetListIterator(it);
+}
+
+ECode Collections::SynchronizedList::GetListIterator(
+    /* [in] */ Integer index,
+    /* [out] */ IListIterator** it)
+{
+    // Must be manually synched by user
+    return mList->GetListIterator(index, it);
+}
+
+ECode Collections::SynchronizedList::SubList(
+    /* [in] */ Integer fromIndex,
+    /* [in] */ Integer toIndex,
+    /* [out] */ IList** subList)
+{
+    VALIDATE_NOT_NULL(subList);
+
+    AutoLock lock(this);
+
+    AutoPtr<IList> list;
+    FAIL_RETURN(mList->SubList(fromIndex, toIndex, &list));
+    *subList = new SynchronizedList(list, mMutex);
+    REFCOUNT_ADD(*subList);
+    return NOERROR;
+}
+
+ECode Collections::SynchronizedList::Add(
+    /* [in] */ IInterface* obj,
+    /* [out] */ Boolean* changed)
+{
+    return SynchronizedCollection::Add(obj, changed);
+}
+
+ECode Collections::SynchronizedList::AddAll(
+    /* [in] */ ICollection* c,
+    /* [out] */ Boolean* changed)
+{
+    return SynchronizedCollection::AddAll(c, changed);
+}
+
+ECode Collections::SynchronizedList::Clear()
+{
+    return SynchronizedCollection::Clear();
+}
+
+ECode Collections::SynchronizedList::Contains(
+    /* [in] */ IInterface* obj,
+    /* [out] */ Boolean* result)
+{
+    return SynchronizedCollection::Contains(obj, result);
+}
+
+ECode Collections::SynchronizedList::ContainsAll(
+    /* [in] */ ICollection* c,
+    /* [out] */ Boolean* result)
+{
+    return SynchronizedCollection::ContainsAll(c, result);
+}
+
+ECode Collections::SynchronizedList::GetIterator(
+    /* [out] */ IIterator** it)
+{
+    return SynchronizedCollection::GetIterator(it);
+}
+
+ECode Collections::SynchronizedList::GetSize(
+    /* [out] */ Integer* size)
+{
+    return SynchronizedCollection::GetSize(size);
+}
+
+ECode Collections::SynchronizedList::IsEmpty(
+    /* [out] */ Boolean* empty)
+{
+    return SynchronizedCollection::IsEmpty(empty);
+}
+
+ECode Collections::SynchronizedList::Remove(
+    /* [in] */ IInterface* obj,
+    /* [out] */ Boolean* changed)
+{
+    return SynchronizedCollection::Remove(obj, changed);
+}
+
+ECode Collections::SynchronizedList::RemoveAll(
+    /* [in] */ ICollection* c,
+    /* [out] */ Boolean* changed)
+{
+    return SynchronizedCollection::RemoveAll(c, changed);
+}
+
+ECode Collections::SynchronizedList::RetainAll(
+    /* [in] */ ICollection* c,
+    /* [out] */ Boolean* changed)
+{
+    return SynchronizedCollection::RetainAll(c, changed);
+}
+
+ECode Collections::SynchronizedList::ToArray(
+    /* [out, callee] */ Array<IInterface*>* objs)
+{
+    return SynchronizedCollection::ToArray(objs);
+}
+
+ECode Collections::SynchronizedList::ToArray(
+    /* [in] */ const InterfaceID& iid,
+    /* [out, callee] */ Array<IInterface*>* objs)
+{
+    return SynchronizedCollection::ToArray(iid, objs);
+}
+
+//----------------------------------------------------------------
+
+CCM_INTERFACE_IMPL_1(Collections::SynchronizedRandomAccessList, Collections::SynchronizedList, IRandomAccess);
+
+ECode Collections::SynchronizedRandomAccessList::SubList(
+    /* [in] */ Integer fromIndex,
+    /* [in] */ Integer toIndex,
+    /* [out] */ IList** subList)
+{
+    VALIDATE_NOT_NULL(subList);
+
+    AutoLock lock(this);
+
+    AutoPtr<IList> list;
+    FAIL_RETURN(mList->SubList(fromIndex, toIndex, &list));
+    *subList = new SynchronizedRandomAccessList(list, mMutex);
+    REFCOUNT_ADD(*subList);
+    return NOERROR;
 }
 
 //----------------------------------------------------------------

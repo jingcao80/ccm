@@ -27,6 +27,7 @@ set(SOURCES
     AttributedCharacterIteratorAttribute.cpp
     AttributedString.cpp
     CalendarBuilder.cpp
+    CAttributedCharacterIteratorAttributeFactory.cpp
     CharacterIteratorFieldDelegate.cpp
     ChoiceFormat.cpp
     CNumberFormatFactory.cpp

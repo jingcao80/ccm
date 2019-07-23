@@ -30,6 +30,22 @@ namespace text {
 interface IAttributedCharacterIteratorAttribute
 {}
 
+[
+    uuid(e6c069d4-f178-42cc-ae28-21de3b1d0ed9),
+    version(0.1.0)
+]
+interface IAttributedCharacterIteratorAttributeFactory
+{
+    GetLANGUAGE(
+        [out] IAttributedCharacterIteratorAttribute** attribute);
+
+    GetREADING(
+        [out] IAttributedCharacterIteratorAttribute** attribute);
+
+    GetINPUT_METHOD_SEGMENT(
+        [out] IAttributedCharacterIteratorAttribute** attribute);
+}
+
 /*
  * @Involve interface ccm::text::ICharacterIterator;
  * @Involve interface ccm::core::ICloneable
