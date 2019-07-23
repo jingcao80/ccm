@@ -1,4 +1,4 @@
-dist: trusty
+dist: xenial
 install:
   - sudo apt-get -qq update
   - sudo apt-get install -y libdbus-1-dev
