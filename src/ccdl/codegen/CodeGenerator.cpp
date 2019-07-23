@@ -1760,6 +1760,14 @@ void CodeGenerator::GenComponentCppOnUserMode()
     builder.Append("\n");
     for (int i = 0; i < mc->mNamespaceNumber; i++) {
         MetaNamespace* mn = mc->mNamespaces[i];
+        if (mn->mInterfaceWrappedIndex != -1) {
+            String ns(mn->mName);
+            ns = ns.Substring(0, ns.LastIndexOf("::") - 1);
+            builder.Append(GenNamespaceBegin(ns));
+            builder.Append(GenInterfaceIDsInCpp(mn));
+            builder.Append(GenNamespaceEnd(ns));
+            continue;
+        }
         if (mn->mInterfaceWrappedIndex != -1 || mn->mConstantNumber +
                 (mn->mInterfaceNumber - mn->mExternalInterfaceNumber) +
                 mn->mCoclassNumber == 0) {
