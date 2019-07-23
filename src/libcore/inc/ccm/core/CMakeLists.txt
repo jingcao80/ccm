@@ -17,6 +17,7 @@
 add_custom_target(deploy_libcore_core_headers)
 add_dependencies(deploy_libcore_core_headers ccmrt)
 
+if (NOT EXISTS "${INC_DIR}/ccm/core")
 MKDIR(deploy_libcore_core_headers ${INC_DIR}/ccm/core)
 
 COPY(deploy_libcore_core_headers ${LIBCORE_CCM_INC_DIR}/core/AutoLock.h ${INC_DIR}/ccm/core)
@@ -31,3 +32,4 @@ COPY(deploy_libcore_core_headers ${LIBCORE_CCM_INC_DIR}/core/SyncObject.h ${INC_
 COPY(deploy_libcore_core_headers ${LIBCORE_CCM_INC_DIR}/core/volatile.h ${INC_DIR}/ccm/core)
 COPY(deploy_libcore_core_headers ${LIBCORE_CCM_INC_DIR}/core/Thread.h ${INC_DIR}/ccm/core)
 COPY(deploy_libcore_core_headers ${LIBCORE_CCM_INC_DIR}/core/ThreadLocal.h ${INC_DIR}/ccm/core)
+endif()

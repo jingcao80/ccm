@@ -14,10 +14,38 @@
 # limitations under the License.
 #=========================================================================
 
-set(BORINGSSL_DIR ${EXTERNAL_DIR}/boringssl)
+project(MacroTest CXX)
 
-add_custom_target(deploy_boringssl_libraries)
+set(MACRO_DIR ${UNIT_TEST_SRC_DIR}/macro)
+set(OBJ_DIR ${UNIT_TEST_OBJ_DIR}/macro)
 
-if (NOT EXISTS "${BIN_DIR}/libcrypto.so")
-COPY(deploy_boringssl_libraries ${BORINGSSL_DIR}/lib/libcrypto.so ${BIN_DIR})
-endif()
+include_directories(
+    ./
+    ${INC_DIR}
+    ${OBJ_DIR})
+
+set(SOURCES
+    main.cpp)
+
+IMPORT_LIBRARY(ccmrt.so)
+IMPORT_GTEST()
+
+add_executable(testMacro
+    ${SOURCES})
+target_link_libraries(testMacro ccmrt.so ${GTEST_LIBS})
+add_dependencies(testMacro libtest)
+
+COPY(testMacro ${OBJ_DIR}/testMacro ${BIN_DIR})
+
+install(FILES
+    ${OBJ_DIR}/testMacro
+    DESTINATION ${BIN_DIR}
+    PERMISSIONS
+        OWNER_READ
+        OWNER_WRITE
+        OWNER_EXECUTE
+        GROUP_READ
+        GROUP_WRITE
+        GROUP_EXECUTE
+        WORLD_READ
+        WORLD_EXECUTE)

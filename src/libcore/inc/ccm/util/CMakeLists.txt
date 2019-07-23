@@ -17,9 +17,11 @@
 add_custom_target(deploy_libcore_util_headers)
 add_dependencies(deploy_libcore_util_headers ccmrt)
 
+if (NOT EXISTS "${INC_DIR}/ccm/util")
 MKDIR(deploy_libcore_util_headers ${INC_DIR}/ccm/util)
 MKDIR(deploy_libcore_util_headers ${INC_DIR}/ccm/util/calendar)
 
 COPY(deploy_libcore_util_headers ${LIBCORE_CCM_INC_DIR}/util/Arrays.h ${INC_DIR}/ccm/util)
 COPY(deploy_libcore_util_headers ${LIBCORE_CCM_INC_DIR}/util/EmptyArray.h ${INC_DIR}/ccm/util)
 COPY(deploy_libcore_util_headers ${LIBCORE_CCM_INC_DIR}/util/calendar/CalendarUtils.h ${INC_DIR}/ccm/util/calendar)
+endif()

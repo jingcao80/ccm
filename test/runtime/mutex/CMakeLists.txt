@@ -14,10 +14,37 @@
 # limitations under the License.
 #=========================================================================
 
-set(BORINGSSL_DIR ${EXTERNAL_DIR}/boringssl)
+project(MutexTest CXX)
 
-add_custom_target(deploy_boringssl_libraries)
+set(MUTEX_DIR ${UNIT_TEST_SRC_DIR}/mutex)
+set(OBJ_DIR ${UNIT_TEST_OBJ_DIR}/mutex)
 
-if (NOT EXISTS "${BIN_DIR}/libcrypto.so")
-COPY(deploy_boringssl_libraries ${BORINGSSL_DIR}/lib/libcrypto.so ${BIN_DIR})
-endif()
+include_directories(
+    ./
+    ${INC_DIR}
+    ${OBJ_DIR})
+
+set(SOURCES
+    main.cpp)
+
+IMPORT_LIBRARY(ccmrt.so)
+
+add_executable(testMutex
+    ${SOURCES})
+target_link_libraries(testMutex ccmrt.so pthread)
+add_dependencies(testMutex libtest)
+
+COPY(testMutex ${OBJ_DIR}/testMutex ${BIN_DIR})
+
+install(FILES
+    ${OBJ_DIR}/testMutex
+    DESTINATION ${BIN_DIR}
+    PERMISSIONS
+        OWNER_READ
+        OWNER_WRITE
+        OWNER_EXECUTE
+        GROUP_READ
+        GROUP_WRITE
+        GROUP_EXECUTE
+        WORLD_READ
+        WORLD_EXECUTE)

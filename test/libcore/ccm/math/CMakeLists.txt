@@ -14,10 +14,8 @@
 # limitations under the License.
 #=========================================================================
 
-set(BORINGSSL_DIR ${EXTERNAL_DIR}/boringssl)
+set(UNIT_TEST_SRC_DIR ${TEST_DIR}/libcore/ccm/math)
+set(UNIT_TEST_OBJ_DIR ${CMAKE_BINARY_DIR}/test/libcore/ccm/math)
 
-add_custom_target(deploy_boringssl_libraries)
-
-if (NOT EXISTS "${BIN_DIR}/libcrypto.so")
-COPY(deploy_boringssl_libraries ${BORINGSSL_DIR}/lib/libcrypto.so ${BIN_DIR})
-endif()
+add_subdirectory(bigdecimal)
+add_subdirectory(biginteger)

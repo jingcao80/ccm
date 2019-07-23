@@ -16,9 +16,11 @@
 
 cmake_minimum_required(VERSION 2.8)
 
+if (NOT EXISTS "${CMAKE_SOURCE_DIR}/bin/inc")
 file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/inc)
+endif()
 
-#set(CMAKE_VERBOSE_MAKEFILE on)
+set(CMAKE_VERBOSE_MAKEFILE off)
 set(PROJECT_DIR ${CMAKE_BINARY_DIR}/../)
 set(BIN_DIR ${PROJECT_DIR}/bin)
 set(EXTERNAL_DIR ${PROJECT_DIR}/external)

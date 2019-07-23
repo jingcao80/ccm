@@ -14,10 +14,9 @@
 # limitations under the License.
 #=========================================================================
 
-set(BORINGSSL_DIR ${EXTERNAL_DIR}/boringssl)
+project(test-reflection CXX)
 
-add_custom_target(deploy_boringssl_libraries)
+set(REFLECTION_DIR ${UNIT_TEST_SRC_DIR}/reflection)
 
-if (NOT EXISTS "${BIN_DIR}/libcrypto.so")
-COPY(deploy_boringssl_libraries ${BORINGSSL_DIR}/lib/libcrypto.so ${BIN_DIR})
-endif()
+add_subdirectory(component)
+add_subdirectory(client)

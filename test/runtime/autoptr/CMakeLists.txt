@@ -14,10 +14,38 @@
 # limitations under the License.
 #=========================================================================
 
-set(BORINGSSL_DIR ${EXTERNAL_DIR}/boringssl)
+project(AutoPtrTest CXX)
 
-add_custom_target(deploy_boringssl_libraries)
+set(AUTOPTR_DIR ${UNIT_TEST_SRC_DIR}/autoptr)
+set(OBJ_DIR ${UNIT_TEST_OBJ_DIR}/autoptr)
 
-if (NOT EXISTS "${BIN_DIR}/libcrypto.so")
-COPY(deploy_boringssl_libraries ${BORINGSSL_DIR}/lib/libcrypto.so ${BIN_DIR})
-endif()
+include_directories(
+    ./
+    ${INC_DIR}
+    ${OBJ_DIR})
+
+set(SOURCES
+    main.cpp)
+
+IMPORT_LIBRARY(ccmrt.so)
+IMPORT_GTEST()
+
+add_executable(testAutoPtr
+    ${SOURCES})
+target_link_libraries(testAutoPtr ccmrt.so ${GTEST_LIBS})
+add_dependencies(testAutoPtr libtest)
+
+COPY(testAutoPtr ${OBJ_DIR}/testAutoPtr ${BIN_DIR})
+
+install(FILES
+    ${OBJ_DIR}/testAutoPtr
+    DESTINATION ${BIN_DIR}
+    PERMISSIONS
+        OWNER_READ
+        OWNER_WRITE
+        OWNER_EXECUTE
+        GROUP_READ
+        GROUP_WRITE
+        GROUP_EXECUTE
+        WORLD_READ
+        WORLD_EXECUTE)
