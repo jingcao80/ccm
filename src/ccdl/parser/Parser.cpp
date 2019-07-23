@@ -637,6 +637,8 @@ bool Parser::ParseInterface(
         if (newAdded) delete interface;
     }
 
+    mParsingType = outer;
+
     return parseResult;
 }
 
@@ -1663,6 +1665,8 @@ bool Parser::ParseCoclass(
         delete klass;
     }
 
+    mParsingType = nullptr;
+
     return parseResult;
 }
 
@@ -2265,6 +2269,13 @@ Type* Parser::FindType(
                     return type;
                 }
                 ns = ns->GetOuterNamespace();
+            }
+            if (mParsingType != nullptr) {
+                fullName = mParsingType->ToString() + "::" + typeName;
+                Type* type = mPool->FindType(fullName);
+                if (type != nullptr) {
+                    return type;
+                }
             }
             return nullptr;
         }

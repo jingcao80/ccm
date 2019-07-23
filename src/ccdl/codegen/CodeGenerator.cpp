@@ -352,6 +352,11 @@ String CodeGenerator::GenInterfaceDeclaration(
     builder.Append(
             mMetaComponent->mInterfaces[mi->mBaseInterfaceIndex]->mName).Append("\n");
     builder.Append(prefix).Append("{\n");
+    for (int i = 0; i < mi->mNestedInterfaceNumber; i++) {
+        MetaInterface* nmi = mMetaComponent->mInterfaces[mi->mNestedInterfaceIndexes[i]];
+        builder.Append(prefix + TAB).AppendFormat("static const InterfaceID IID_%s;\n\n", nmi->mName);
+        builder.Append(GenInterfaceDeclaration(nmi, prefix + TAB));
+    }
     builder.Append(prefix).Append("    using IInterface::Probe;\n\n");
     builder.Append(prefix).AppendFormat("    inline static %s* Probe(\n", mi->mName);
     builder.Append(prefix).Append("        /* [in] */ IInterface* object)\n");
@@ -372,12 +377,6 @@ String CodeGenerator::GenInterfaceDeclaration(
     for (int i = 0; i < mi->mMethodNumber; i++) {
         builder.Append(GenInterfaceMethod(mi->mMethods[i], prefix + TAB));
         if (i != mi->mMethodNumber - 1) builder.Append("\n");
-    }
-    if ((mi->mConstantNumber > 0 || mi->mMethodNumber > 0) && mi->mNestedInterfaceNumber > 0) builder.Append("\n");
-    for (int i = 0; i < mi->mNestedInterfaceNumber; i++) {
-        MetaInterface* nmi = mMetaComponent->mInterfaces[mi->mNestedInterfaceIndexes[i]];
-        builder.Append(prefix + TAB).AppendFormat("static const InterfaceID IID_%s;\n\n", nmi->mName);
-        builder.Append(GenInterfaceDeclaration(nmi, prefix + TAB));
     }
     builder.Append(prefix).Append("};\n\n");
 
@@ -942,6 +941,10 @@ void CodeGenerator::GenCoclassHeader(
             String(mk->mNamespace).Replace("::", "_").string(), mk->mName);
     File file(filePath, File::WRITE);
 
+    MetaInterface* mi = mMetaComponent->mInterfaces[mk->mInterfaceIndexes[mk->mInterfaceNumber - 1]];
+    bool isIClassObject = String("IClassObject").Equals(mi->mName);
+    int start = isIClassObject ? 2 : 0;
+
     StringBuilder builder;
 
     builder.Append(mLicense);
@@ -951,7 +954,28 @@ void CodeGenerator::GenCoclassHeader(
             String::Format("%s%s_H_GEN", mk->mNamespace, mk->mName));
     builder.AppendFormat("#ifndef %s\n", defMacro.string());
     builder.AppendFormat("#define %s\n\n", defMacro.string());
-    builder.AppendFormat("#include \"%s.h\"\n\n", mMetaComponent->mName);
+    builder.AppendFormat("#include \"%s.h\"\n", mMetaComponent->mName);
+
+    for (int i = start; i < mi->mMethodNumber; i++) {
+        MetaMethod* mm = mi->mMethods[i];
+        if (mm->mDeleted || (!mk->mConstructorDefault && mk->mConstructorDeleted)) continue;
+        for (int j = 0; j < mm->mParameterNumber; j++) {
+            MetaParameter* mp = mm->mParameters[j];
+            MetaType* mt = mMetaComponent->mTypes[mp->mTypeIndex];
+            while (mt->mKind == CcmTypeKind::Array) {
+                mt = mMetaComponent->mTypes[mt->mNestedTypeIndex];
+            }
+            if (mt->mKind == CcmTypeKind::Interface) {
+                MetaInterface* mmi = mMetaComponent->mInterfaces[mt->mIndex];
+                if (mmi->mOuterInterfaceIndex != -1) {
+                    mmi = mMetaComponent->mInterfaces[mmi->mOuterInterfaceIndex];
+                    builder.AppendFormat("#include \"%s%s.h\"\n", String(mmi->mNamespace).Replace("::", ".").string(), mmi->mName);
+                }
+            }
+        }
+    }
+
+    builder.Append("\n");
     builder.Append("using namespace ccm;\n\n");
 
     builder.Append(GenNamespaceBegin(String(mk->mNamespace)));
@@ -962,9 +986,7 @@ void CodeGenerator::GenCoclassHeader(
                          "public:\n"
                          "    _%s();\n\n"
                          "    virtual ~_%s();\n\n", mk->mName, mk->mName);
-    MetaInterface* mi = mMetaComponent->mInterfaces[mk->mInterfaceIndexes[mk->mInterfaceNumber - 1]];
-    bool isIClassObject = String("IClassObject").Equals(mi->mName);
-    int start = isIClassObject ? 2 : 0;
+
     for (int i = start; i < mi->mMethodNumber; i++) {
         MetaMethod* mm = mi->mMethods[i];
         if (mm->mDeleted || (!mk->mConstructorDefault && mk->mConstructorDeleted)) continue;
@@ -1637,6 +1659,10 @@ void CodeGenerator::GenCoclassDeclarationSparselyOnUserMode(
             String(mc->mNamespace).Replace("::", ".").string(), mc->mName);
     File file(filePath, File::WRITE);
 
+    MetaInterface* mi = mMetaComponent->mInterfaces[mc->mInterfaceIndexes[mc->mInterfaceNumber - 1]];
+    bool isIClassObject = String("IClassObject").Equals(mi->mName);
+    int start = isIClassObject ? 2 : 0;
+
     StringBuilder builder;
 
     builder.Append(mLicense);
@@ -1646,8 +1672,28 @@ void CodeGenerator::GenCoclassDeclarationSparselyOnUserMode(
             String::Format("%s%s_H_GEN", mc->mNamespace, mc->mName));
     builder.AppendFormat("#ifndef %s\n", defMacro.string());
     builder.AppendFormat("#define %s\n\n", defMacro.string());
-    builder.AppendFormat("#include \"%s.h\"\n\n", mMetaComponent->mName);
+    builder.AppendFormat("#include \"%s.h\"\n", mMetaComponent->mName);
 
+    for (int i = start; i < mi->mMethodNumber; i++) {
+        MetaMethod* mm = mi->mMethods[i];
+        if (mm->mDeleted || (!mc->mConstructorDefault && mc->mConstructorDeleted)) continue;
+        for (int j = 0; j < mm->mParameterNumber; j++) {
+            MetaParameter* mp = mm->mParameters[j];
+            MetaType* mt = mMetaComponent->mTypes[mp->mTypeIndex];
+            while (mt->mKind == CcmTypeKind::Array) {
+                mt = mMetaComponent->mTypes[mt->mNestedTypeIndex];
+            }
+            if (mt->mKind == CcmTypeKind::Interface) {
+                MetaInterface* mmi = mMetaComponent->mInterfaces[mt->mIndex];
+                if (mmi->mOuterInterfaceIndex != -1) {
+                    mmi = mMetaComponent->mInterfaces[mmi->mOuterInterfaceIndex];
+                    builder.AppendFormat("#include \"%s%s.h\"\n", String(mmi->mNamespace).Replace("::", ".").string(), mmi->mName);
+                }
+            }
+        }
+    }
+
+    builder.Append("\n");
     builder.Append("using namespace ccm;\n\n");
 
     builder.Append(GenNamespaceBegin(String(mc->mNamespace)));
