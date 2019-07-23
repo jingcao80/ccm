@@ -23,8 +23,6 @@
 #include "ccm.text.CAttributedString.h"
 #include "ccm.text.IAttributedString.h"
 #include "ccm.text.IAttributedCharacterIterator.h"
-#include "ccm.text.IAttributedCharacterIteratorAttribute.h"
-#include "ccm.text.IAttributedCharacterIteratorAttributeFactory.h"
 #include "ccm.text.ICharacterIterator.h"
 #include "ccm.util.IMap.h"
 #include "ccm.util.ISet.h"
@@ -42,12 +40,9 @@ using ccm::core::SyncObject;
 using ccm::text::CAttributedCharacterIteratorAttributeFactory;
 using ccm::text::CAttributedString;
 using ccm::text::IAttributedCharacterIterator;
-using ccm::text::IAttributedCharacterIteratorAttribute;
-using ccm::text::IAttributedCharacterIteratorAttributeFactory;
 using ccm::text::IAttributedString;
 using ccm::text::ICharacterIterator;
 using ccm::text::IID_IAttributedCharacterIterator;
-using ccm::text::IID_IAttributedCharacterIteratorAttributeFactory;
 using ccm::text::IID_IAttributedString;
 using ccm::text::IID_ICharacterIterator;
 using ccm::util::IMap;
@@ -66,7 +61,7 @@ public:
         /* [out] */ ISet** keys) override;
 
     ECode GetAttribute(
-        /* [in] */ IAttributedCharacterIteratorAttribute* attribute,
+        /* [in] */ IAttributedCharacterIterator::IAttribute* attribute,
         /* [out] */ IInterface** value) override;
 
     ECode GetAttributes(
@@ -76,7 +71,7 @@ public:
         /* [out] */ Integer* index) override;
 
     ECode GetRunLimit(
-        /* [in] */ IAttributedCharacterIteratorAttribute* attribute,
+        /* [in] */ IAttributedCharacterIterator::IAttribute* attribute,
         /* [out] */ Integer* index) override;
 
     ECode GetRunLimit(
@@ -87,7 +82,7 @@ public:
         /* [out] */ Integer* index) override;
 
     ECode GetRunStart(
-        /* [in] */ IAttributedCharacterIteratorAttribute* attribute,
+        /* [in] */ IAttributedCharacterIterator::IAttribute* attribute,
         /* [out] */ Integer* index) override;
 
     ECode GetRunStart(
@@ -139,7 +134,7 @@ ECode TestAttributedCharacterIterator::GetAllAttributeKeys(
 }
 
 ECode TestAttributedCharacterIterator::GetAttribute(
-    /* [in] */ IAttributedCharacterIteratorAttribute* attribute,
+    /* [in] */ IAttributedCharacterIterator::IAttribute* attribute,
     /* [out] */ IInterface** value)
 {
     VALIDATE_NOT_NULL(value);
@@ -167,7 +162,7 @@ ECode TestAttributedCharacterIterator::GetRunLimit(
 }
 
 ECode TestAttributedCharacterIterator::GetRunLimit(
-    /* [in] */ IAttributedCharacterIteratorAttribute* attribute,
+    /* [in] */ IAttributedCharacterIterator::IAttribute* attribute,
     /* [out] */ Integer* index)
 {
     VALIDATE_NOT_NULL(index);
@@ -196,7 +191,7 @@ ECode TestAttributedCharacterIterator::GetRunStart(
 }
 
 ECode TestAttributedCharacterIterator::GetRunStart(
-    /* [in] */ IAttributedCharacterIteratorAttribute* attribute,
+    /* [in] */ IAttributedCharacterIterator::IAttribute* attribute,
     /* [out] */ Integer* index)
 {
     VALIDATE_NOT_NULL(index);
@@ -344,9 +339,9 @@ TEST(AttributedStringTest, TestConstructorWithIAttributedCharacterIteratorII)
 
 TEST(AttributedStringTest, TestAddAttributeWithIAttributedCharacterIteratorIInterfaceII)
 {
-    AutoPtr<IAttributedCharacterIteratorAttributeFactory> factory;
-    CAttributedCharacterIteratorAttributeFactory::New(IID_IAttributedCharacterIteratorAttributeFactory, (IInterface**)&factory);
-    AutoPtr<IAttributedCharacterIteratorAttribute> language;
+    AutoPtr<IAttributedCharacterIterator::IAttributeFactory> factory;
+    CAttributedCharacterIteratorAttributeFactory::New(IAttributedCharacterIterator::IID_IAttributeFactory, (IInterface**)&factory);
+    AutoPtr<IAttributedCharacterIterator::IAttribute> language;
     factory->GetLANGUAGE(&language);
     AutoPtr<IAttributedString> as;
     CAttributedString::New(String("test"), IID_IAttributedString, (IInterface**)&as);

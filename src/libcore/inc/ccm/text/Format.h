@@ -74,13 +74,13 @@ public:
 
     ECode CreateAttributedCharacterIterator(
         /* [in] */ const String& string,
-        /* [in] */ IAttributedCharacterIteratorAttribute* key,
+        /* [in] */ IAttributedCharacterIterator::IAttribute* key,
         /* [in] */ IInterface* value,
         /* [out] */ IAttributedCharacterIterator** it);
 
     ECode CreateAttributedCharacterIterator(
         /* [in] */ IAttributedCharacterIterator* iterator,
-        /* [in] */ IAttributedCharacterIteratorAttribute* key,
+        /* [in] */ IAttributedCharacterIterator::IAttribute* key,
         /* [in] */ IInterface* value,
         /* [out] */ IAttributedCharacterIterator** it);
 

@@ -18,7 +18,7 @@
 #include "ccm/core/Math.h"
 #include "ccm/text/CAttributedString.h"
 #include "ccm/util/CArrayList.h"
-#include "ccm.text.IAttributedCharacterIteratorAttribute.h"
+#include "ccm.text.IAttributedCharacterIterator.h"
 #include "ccm.text.IAttributedString.h"
 
 using ccm::core::Math;
@@ -55,7 +55,7 @@ ECode CharacterIteratorFieldDelegate::Formatted(
                 Integer newIndex = index - CAttributedString::From(as)->GetLength();
                 Integer aStart = Math::Max(0, start - newIndex);
 
-                FAIL_RETURN(as->AddAttribute(IAttributedCharacterIteratorAttribute::Probe(attr), value, aStart, Math::Min(
+                FAIL_RETURN(as->AddAttribute(IAttributedCharacterIterator::IAttribute::Probe(attr), value, aStart, Math::Min(
                         end - start, CAttributedString::From(as)->GetLength() - aStart) + aStart));
                 index = newIndex;
             }
@@ -74,7 +74,7 @@ ECode CharacterIteratorFieldDelegate::Formatted(
             buffer->Substring(aStart, end, &text);
             AutoPtr<IAttributedString> as;
             FAIL_RETURN(CAttributedString::New(text, IID_IAttributedString, (IInterface**)&as));
-            FAIL_RETURN(as->AddAttribute(IAttributedCharacterIteratorAttribute::Probe(attr), value));
+            FAIL_RETURN(as->AddAttribute(IAttributedCharacterIterator::IAttribute::Probe(attr), value));
             mAttributedStrings->Add(as);
             mSize = end;
         }

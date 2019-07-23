@@ -23,7 +23,7 @@ namespace ccm {
 namespace text {
 
 /*
- * @Involve interface ccm::text::IAttributedCharacterIteratorAttribute;
+ * @Involve interface ccm::text::IAttributedCharacterIterator::IAttribute;
  */
 [
     uuid(e895ef85-dd19-4c51-849a-f94b0c21ae4b),

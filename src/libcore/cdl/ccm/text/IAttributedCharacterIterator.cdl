@@ -21,32 +21,6 @@ namespace ccm {
 namespace text {
 
 /*
- * @Involve interface ccm::io::ISerializable
- */
-[
-    uuid(09d5b6df-58ba-4836-aea3-c6b95c44649f),
-    version(0.1.0)
-]
-interface IAttributedCharacterIteratorAttribute
-{}
-
-[
-    uuid(e6c069d4-f178-42cc-ae28-21de3b1d0ed9),
-    version(0.1.0)
-]
-interface IAttributedCharacterIteratorAttributeFactory
-{
-    GetLANGUAGE(
-        [out] IAttributedCharacterIteratorAttribute** attribute);
-
-    GetREADING(
-        [out] IAttributedCharacterIteratorAttribute** attribute);
-
-    GetINPUT_METHOD_SEGMENT(
-        [out] IAttributedCharacterIteratorAttribute** attribute);
-}
-
-/*
  * @Involve interface ccm::text::ICharacterIterator;
  * @Involve interface ccm::core::ICloneable
  */
@@ -56,11 +30,37 @@ interface IAttributedCharacterIteratorAttributeFactory
 ]
 interface IAttributedCharacterIterator
 {
+    /*
+     * @Involve interface ccm::io::ISerializable
+     */
+    [
+        uuid(09d5b6df-58ba-4836-aea3-c6b95c44649f),
+        version(0.1.0)
+    ]
+    interface IAttribute
+    {}
+
+    [
+        uuid(e6c069d4-f178-42cc-ae28-21de3b1d0ed9),
+        version(0.1.0)
+    ]
+    interface IAttributeFactory
+    {
+        GetLANGUAGE(
+            [out] IAttribute** attribute);
+
+        GetREADING(
+            [out] IAttribute** attribute);
+
+        GetINPUT_METHOD_SEGMENT(
+            [out] IAttribute** attribute);
+    }
+
     GetAllAttributeKeys(
         [out] ISet** keys);
 
     GetAttribute(
-        [in] IAttributedCharacterIteratorAttribute* attribute,
+        [in] IAttribute* attribute,
         [out] IInterface** value);
 
     GetAttributes(
@@ -70,7 +70,7 @@ interface IAttributedCharacterIterator
         [out] Integer* index);
 
     GetRunLimit(
-        [in] IAttributedCharacterIteratorAttribute* attribute,
+        [in] IAttribute* attribute,
         [out] Integer* index);
 
     GetRunLimit(
@@ -81,7 +81,7 @@ interface IAttributedCharacterIterator
         [out] Integer* index);
 
     GetRunStart(
-        [in] IAttributedCharacterIteratorAttribute* attribute,
+        [in] IAttribute* attribute,
         [out] Integer* index);
 
     GetRunStart(

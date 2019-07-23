@@ -22,7 +22,6 @@
 #include "ccm.math.IBigDecimal.h"
 #include "ccm.math.IBigInteger.h"
 #include "ccm.text.IAttributedCharacterIterator.h"
-#include "ccm.text.IAttributedCharacterIteratorAttribute.h"
 #include "ccm.text.IDecimalFormatSymbols.h"
 #include "ccm.text.IFieldPosition.h"
 #include "ccm.text.INumberFormatField.h"
@@ -34,7 +33,6 @@ using ccm::math::IBigDecimal;
 using ccm::math::IBigInteger;
 using ccm::math::RoundingMode;
 using ccm::text::IAttributedCharacterIterator;
-using ccm::text::IAttributedCharacterIteratorAttribute;
 using ccm::text::IDecimalFormatSymbols;
 using ccm::text::IFieldPosition;
 using ccm::text::INumberFormatField;
@@ -59,7 +57,7 @@ public:
 
         Integer FieldId();
 
-        AutoPtr<IAttributedCharacterIteratorAttribute> Field();
+        AutoPtr<IAttributedCharacterIterator::IAttribute> Field();
 
         Integer Start();
 

@@ -15,7 +15,7 @@
 //=========================================================================
 
 interface ccm::text::IAttributedCharacterIterator;
-interface ccm::text::IAttributedCharacterIteratorAttribute;
+interface ccm::text::IAttributedCharacterIterator::IAttribute;
 interface ccm::util::IMap;
 
 namespace ccm {
@@ -28,11 +28,11 @@ namespace text {
 interface IAttributedString
 {
     AddAttribute(
-        [in] IAttributedCharacterIteratorAttribute* attribute,
+        [in] IAttributedCharacterIterator::IAttribute* attribute,
         [in] IInterface* value);
 
     AddAttribute(
-        [in] IAttributedCharacterIteratorAttribute* attribute,
+        [in] IAttributedCharacterIterator::IAttribute* attribute,
         [in] IInterface* value,
         [in] Integer beginIndex,
         [in] Integer endIndex);
@@ -46,11 +46,11 @@ interface IAttributedString
         [out] IAttributedCharacterIterator** it);
 
     GetIterator(
-        [in] Array<IAttributedCharacterIteratorAttribute*> attributes,
+        [in] Array<IAttributedCharacterIterator::IAttribute*> attributes,
         [out] IAttributedCharacterIterator** it);
 
     GetIterator(
-        [in] Array<IAttributedCharacterIteratorAttribute*> attributes,
+        [in] Array<IAttributedCharacterIterator::IAttribute*> attributes,
         [in] Integer beginIndex,
         [in] Integer endIndex,
         [out] IAttributedCharacterIterator** it);

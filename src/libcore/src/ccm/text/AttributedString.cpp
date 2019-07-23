@@ -60,7 +60,7 @@ class AttributeEntry
 {
 public:
     AttributeEntry(
-        /* [in] */ IAttributedCharacterIteratorAttribute* key,
+        /* [in] */ IAttributedCharacterIterator::IAttribute* key,
         /* [in] */ IInterface* value)
         : mKey(key)
         , mValue(value)
@@ -92,7 +92,7 @@ public:
         /* [out] */ CoclassID* cid) override;
 
 private:
-    AutoPtr<IAttributedCharacterIteratorAttribute> mKey;
+    AutoPtr<IAttributedCharacterIterator::IAttribute> mKey;
     AutoPtr<IInterface> mValue;
 };
 
@@ -286,7 +286,7 @@ ECode AttributedString::Constructor(
     Integer beginIndex, endIndex;
     ICharacterIterator::Probe(text)->GetBeginIndex(&beginIndex);
     ICharacterIterator::Probe(text)->GetEndIndex(&endIndex);
-    Array<IAttributedCharacterIteratorAttribute*> attributes;
+    Array<IAttributedCharacterIterator::IAttribute*> attributes;
     return Constructor(text, beginIndex, endIndex, attributes);
 }
 
@@ -295,7 +295,7 @@ ECode AttributedString::Constructor(
     /* [in] */ Integer beginIndex,
     /* [in] */ Integer endIndex)
 {
-    Array<IAttributedCharacterIteratorAttribute*> attributes;
+    Array<IAttributedCharacterIterator::IAttribute*> attributes;
     return Constructor(text, beginIndex, endIndex, attributes);
 }
 
@@ -303,7 +303,7 @@ ECode AttributedString::Constructor(
     /* [in] */ IAttributedCharacterIterator* text,
     /* [in] */ Integer beginIndex,
     /* [in] */ Integer endIndex,
-    /* [in] */ const Array<IAttributedCharacterIteratorAttribute*>& attributes)
+    /* [in] */ const Array<IAttributedCharacterIterator::IAttribute*>& attributes)
 {
     if (text == nullptr) {
         return E_NULL_POINTER_EXCEPTION;
@@ -361,7 +361,7 @@ ECode AttributedString::Constructor(
     keys->GetIterator(&itr);
     Boolean hasNext;
     while (itr->HasNext(&hasNext), hasNext) {
-        AutoPtr<IAttributedCharacterIteratorAttribute> attributeKey;
+        AutoPtr<IAttributedCharacterIterator::IAttribute> attributeKey;
         itr->Next((IInterface**)&attributeKey);
         textAlias->SetIndex(textBeginIndex);
         while (textAlias->GetIndex(&textIndex), textIndex < endIndex) {
@@ -409,7 +409,7 @@ ECode AttributedString::Constructor(
 }
 
 ECode AttributedString::AddAttribute(
-    /* [in] */ IAttributedCharacterIteratorAttribute* attribute,
+    /* [in] */ IAttributedCharacterIterator::IAttribute* attribute,
     /* [in] */ IInterface* value)
 {
     if (attribute == nullptr) {
@@ -427,7 +427,7 @@ ECode AttributedString::AddAttribute(
 }
 
 ECode AttributedString::AddAttribute(
-    /* [in] */ IAttributedCharacterIteratorAttribute* attribute,
+    /* [in] */ IAttributedCharacterIterator::IAttribute* attribute,
     /* [in] */ IInterface* value,
     /* [in] */ Integer beginIndex,
     /* [in] */ Integer endIndex)
@@ -487,13 +487,13 @@ ECode AttributedString::AddAttributes(
         AutoPtr<IInterface> key, value;
         entry->GetKey(&key);
         entry->GetValue(&value);
-        AddAttributeRunData(IAttributedCharacterIteratorAttribute::Probe(key), value, beginRunIndex, endRunIndex);
+        AddAttributeRunData(IAttributedCharacterIterator::IAttribute::Probe(key), value, beginRunIndex, endRunIndex);
     }
     return NOERROR;
 }
 
 void AttributedString::AddAttributeImpl(
-    /* [in] */ IAttributedCharacterIteratorAttribute* attribute,
+    /* [in] */ IAttributedCharacterIterator::IAttribute* attribute,
     /* [in] */ IInterface* value,
     /* [in] */ Integer beginIndex,
     /* [in] */ Integer endIndex)
@@ -602,7 +602,7 @@ Integer AttributedString::EnsureRunBreak(
 }
 
 void AttributedString::AddAttributeRunData(
-    /* [in] */ IAttributedCharacterIteratorAttribute* attribute,
+    /* [in] */ IAttributedCharacterIterator::IAttribute* attribute,
     /* [in] */ IInterface* value,
     /* [in] */ Integer beginRunIndex,
     /* [in] */ Integer endRunIndex)
@@ -639,19 +639,19 @@ void AttributedString::AddAttributeRunData(
 ECode AttributedString::GetIterator(
     /* [out] */ IAttributedCharacterIterator** it)
 {
-    Array<IAttributedCharacterIteratorAttribute*> attributes;
+    Array<IAttributedCharacterIterator::IAttribute*> attributes;
     return GetIterator(attributes, 0, GetLength(), it);
 }
 
 ECode AttributedString::GetIterator(
-    /* [in] */ const Array<IAttributedCharacterIteratorAttribute*>& attributes,
+    /* [in] */ const Array<IAttributedCharacterIterator::IAttribute*>& attributes,
     /* [out] */ IAttributedCharacterIterator** it)
 {
     return GetIterator(attributes, 0, GetLength(), it);
 }
 
 ECode AttributedString::GetIterator(
-    /* [in] */ const Array<IAttributedCharacterIteratorAttribute*>& attributes,
+    /* [in] */ const Array<IAttributedCharacterIterator::IAttribute*>& attributes,
     /* [in] */ Integer beginIndex,
     /* [in] */ Integer endIndex,
     /* [out] */ IAttributedCharacterIterator** it)
@@ -676,7 +676,7 @@ Char AttributedString::CharAt(
 }
 
 AutoPtr<IInterface> AttributedString::GetAttribute(
-    /* [in] */ IAttributedCharacterIteratorAttribute* attribute,
+    /* [in] */ IAttributedCharacterIterator::IAttribute* attribute,
     /* [in] */ Integer runIndex)
 {
     AutoLock lock(this);
@@ -699,7 +699,7 @@ AutoPtr<IInterface> AttributedString::GetAttribute(
 }
 
 AutoPtr<IInterface> AttributedString::GetAttributeCheckRange(
-    /* [in] */ IAttributedCharacterIteratorAttribute* attribute,
+    /* [in] */ IAttributedCharacterIterator::IAttribute* attribute,
     /* [in] */ Integer runIndex,
     /* [in] */ Integer beginIndex,
     /* [in] */ Integer endIndex)
@@ -744,7 +744,7 @@ Boolean AttributedString::AttributeValuesMatch(
     attributes->GetIterator(&it);
     Boolean hasNext;
     while (it->HasNext(&hasNext), hasNext) {
-        AutoPtr<IAttributedCharacterIteratorAttribute> key;
+        AutoPtr<IAttributedCharacterIterator::IAttribute> key;
         it->Next((IInterface**)&key);
         if (!ValuesMatch(GetAttribute(key, runIndex1), GetAttribute(key, runIndex2))) {
             return false;
@@ -831,7 +831,7 @@ CCM_INTERFACE_IMPL_3(AttributedString::AttributedStringIterator, SyncObject,
 
 ECode AttributedString::AttributedStringIterator::Constructor(
     /* [in] */ AttributedString* owner,
-    /* [in] */ const Array<IAttributedCharacterIteratorAttribute*>& attributes,
+    /* [in] */ const Array<IAttributedCharacterIterator::IAttribute*>& attributes,
     /* [in] */ Integer beginIndex,
     /* [in] */ Integer endIndex)
 {
@@ -1027,7 +1027,7 @@ ECode AttributedString::AttributedStringIterator::GetRunStart(
 }
 
 ECode AttributedString::AttributedStringIterator::GetRunStart(
-    /* [in] */ IAttributedCharacterIteratorAttribute* attribute,
+    /* [in] */ IAttributedCharacterIterator::IAttribute* attribute,
     /* [out] */ Integer* index)
 {
     VALIDATE_NOT_NULL(index);
@@ -1090,7 +1090,7 @@ ECode AttributedString::AttributedStringIterator::GetRunLimit(
 }
 
 ECode AttributedString::AttributedStringIterator::GetRunLimit(
-    /* [in] */ IAttributedCharacterIteratorAttribute* attribute,
+    /* [in] */ IAttributedCharacterIterator::IAttribute* attribute,
     /* [out] */ Integer* index)
 {
     VALIDATE_NOT_NULL(index);
@@ -1191,7 +1191,7 @@ ECode AttributedString::AttributedStringIterator::GetAllAttributeKeys(
 }
 
 ECode AttributedString::AttributedStringIterator::GetAttribute(
-    /* [in] */ IAttributedCharacterIteratorAttribute* attribute,
+    /* [in] */ IAttributedCharacterIterator::IAttribute* attribute,
     /* [out] */ IInterface** value)
 {
     VALIDATE_NOT_NULL(value);
@@ -1275,7 +1275,7 @@ ECode AttributedString::AttributeMap::GetEntrySet(
         Integer size;
         mOwner->mRunAttributes[mRunIndex]->GetSize(&size);
         for (Integer i = 0; i < size; i++) {
-            AutoPtr<IAttributedCharacterIteratorAttribute> key;
+            AutoPtr<IAttributedCharacterIterator::IAttribute> key;
             AutoPtr<IInterface> value;
             mOwner->mRunAttributes[mRunIndex]->Get(i, (IInterface**)&key);
             mOwner->mRunAttributeValues[mRunIndex]->Get(i, &value);
@@ -1299,7 +1299,7 @@ ECode AttributedString::AttributeMap::Get(
 {
     VALIDATE_NOT_NULL(value);
 
-    mOwner->GetAttributeCheckRange((IAttributedCharacterIteratorAttribute*)key, mRunIndex, mBeginIndex, mEndIndex).MoveTo(value);
+    mOwner->GetAttributeCheckRange((IAttributedCharacterIterator::IAttribute*)key, mRunIndex, mBeginIndex, mEndIndex).MoveTo(value);
     return NOERROR;
 }
 

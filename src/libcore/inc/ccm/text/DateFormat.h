@@ -24,7 +24,6 @@
 #include "ccm.core.ICloneable.h"
 #include "ccm.core.IStringBuffer.h"
 #include "ccm.io.ISerializable.h"
-#include "ccm.text.IAttributedCharacterIteratorAttribute.h"
 #include "ccm.text.IDateFormat.h"
 #include "ccm.text.IDateFormatField.h"
 #include "ccm.text.IFieldPosition.h"

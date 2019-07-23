@@ -18,7 +18,7 @@
 #define __CCM_TEXT_ATTRIBUTEDCHARACTERITERATORATTRIBUTE_H__
 
 #include "ccm/core/SyncObject.h"
-#include "ccm.text.IAttributedCharacterIteratorAttribute.h"
+#include "ccm.text.IAttributedCharacterIterator.h"
 #include "ccm.util.IMap.h"
 
 using ccm::core::SyncObject;
@@ -29,7 +29,7 @@ namespace text {
 
 class AttributedCharacterIteratorAttribute
     : public SyncObject
-    , public IAttributedCharacterIteratorAttribute
+    , public IAttributedCharacterIterator::IAttribute
 {
 public:
     CCM_INTERFACE_DECL();
@@ -41,13 +41,13 @@ public:
         /* [out] */ String* str) override;
 
     static ECode GetLANGUAGE(
-        /* [out] */ IAttributedCharacterIteratorAttribute** attribute);
+        /* [out] */ IAttributedCharacterIterator::IAttribute** attribute);
 
     static ECode GetREADING(
-        /* [out] */ IAttributedCharacterIteratorAttribute** attribute);
+        /* [out] */ IAttributedCharacterIterator::IAttribute** attribute);
 
     static ECode GetINPUT_METHOD_SEGMENT(
-        /* [out] */ IAttributedCharacterIteratorAttribute** attribute);
+        /* [out] */ IAttributedCharacterIterator::IAttribute** attribute);
 
 protected:
     virtual String GetName();

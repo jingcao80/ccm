@@ -14,7 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm.text.IAttributedCharacterIteratorAttributeFactory.h"
+#include "ccm.text.IAttributedCharacterIterator.h"
 #include "_ccm_text_CAttributedCharacterIteratorAttributeFactory.h"
 #include <ccmobject.h>
 
@@ -23,7 +23,7 @@ namespace text {
 
 Coclass(CAttributedCharacterIteratorAttributeFactory)
     , public Object
-    , public IAttributedCharacterIteratorAttributeFactory
+    , public IAttributedCharacterIterator::IAttributeFactory
 {
 public:
     CCM_INTERFACE_DECL();
@@ -31,13 +31,13 @@ public:
     CCM_OBJECT_DECL();
 
     ECode GetLANGUAGE(
-        /* [out] */ IAttributedCharacterIteratorAttribute** attribute) override;
+        /* [out] */ IAttributedCharacterIterator::IAttribute** attribute) override;
 
     ECode GetREADING(
-        /* [out] */ IAttributedCharacterIteratorAttribute** attribute) override;
+        /* [out] */ IAttributedCharacterIterator::IAttribute** attribute) override;
 
     ECode GetINPUT_METHOD_SEGMENT(
-        /* [out] */ IAttributedCharacterIteratorAttribute** attribute) override;
+        /* [out] */ IAttributedCharacterIterator::IAttribute** attribute) override;
 };
 
 }

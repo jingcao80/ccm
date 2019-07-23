@@ -27,7 +27,7 @@ namespace text {
 
 /*
  * @Involve interface ccm::text::IFormatField;
- * @Involve interface ccm::text::IAttributedCharacterIteratorAttribute;
+ * @Involve interface ccm::text::IAttributedCharacterIterator::IAttribute;
  */
 [
     uuid(ac155c23-610f-4673-9597-e1f18f85288c),

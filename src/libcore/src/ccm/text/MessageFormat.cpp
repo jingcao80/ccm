@@ -732,7 +732,7 @@ ECode MessageFormat::Subformat(
                 if (last != length) {
                     AutoPtr<IAttributedCharacterIterator> acit;
                     CreateAttributedCharacterIterator(subIterator,
-                            IAttributedCharacterIteratorAttribute::Probe(Field::GetARGUMENT()),
+                            IAttributedCharacterIterator::IAttribute::Probe(Field::GetARGUMENT()),
                             CoreUtils::Box(argumentNumber), &acit);
                     characterIterators->Add(acit);
                     result->GetLength(&last);
@@ -743,7 +743,7 @@ ECode MessageFormat::Subformat(
                 result->Append(arg);
                 AutoPtr<IAttributedCharacterIterator> acit;
                 CreateAttributedCharacterIterator(arg,
-                        IAttributedCharacterIteratorAttribute::Probe(Field::GetARGUMENT()),
+                        IAttributedCharacterIterator::IAttribute::Probe(Field::GetARGUMENT()),
                         CoreUtils::Box(argumentNumber), &acit);
                 characterIterators->Add(acit);
                 result->GetLength(&last);

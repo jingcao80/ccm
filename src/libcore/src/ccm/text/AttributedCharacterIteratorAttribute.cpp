@@ -28,7 +28,15 @@ using ccm::util::IID_IMap;
 namespace ccm {
 namespace text {
 
-CCM_INTERFACE_IMPL_1(AttributedCharacterIteratorAttribute, SyncObject, IAttributedCharacterIteratorAttribute);
+CCM_INTERFACE_REFCOUNT(AttributedCharacterIteratorAttribute)
+
+CCM_INTERFACE_PROBE_BEGIN(AttributedCharacterIteratorAttribute)
+CCM_INTERFACE_PROBE_NESTEDINTERFACE(IAttributedCharacterIterator, IAttribute)
+CCM_INTERFACE_PROBE_END(SyncObject)
+
+CCM_INTERFACE_GETINTERFACEID_BEGIN(AttributedCharacterIteratorAttribute)
+CCM_INTERFACE_GETINTERFACEID_NESTEDINTERFACE(IAttributedCharacterIterator, IAttribute)
+CCM_INTERFACE_GETINTERFACEID_END(SyncObject)
 
 static AutoPtr<IMap> CreateHashMap()
 {
@@ -50,7 +58,7 @@ ECode AttributedCharacterIteratorAttribute::Constructor(
     CoclassID cid;
     GetCoclassID(&cid);
     if (cid == CID_CAttributedCharacterIteratorAttribute) {
-        GetInstanceMap()->Put(CoreUtils::Box(name), (IAttributedCharacterIteratorAttribute*)this);
+        GetInstanceMap()->Put(CoreUtils::Box(name), (IAttributedCharacterIterator::IAttribute*)this);
     }
     return NOERROR;
 }
@@ -61,7 +69,7 @@ ECode AttributedCharacterIteratorAttribute::ToString(
     VALIDATE_NOT_NULL(str);
 
     *str = String::Format("%s(%s)",
-            Object::GetCoclassName((IAttributedCharacterIteratorAttribute*)this).string(), mName.string());
+            Object::GetCoclassName((IAttributedCharacterIterator::IAttribute*)this).string(), mName.string());
     return NOERROR;
 }
 
@@ -90,20 +98,20 @@ ECode AttributedCharacterIteratorAttribute::ReadResolve(
     return NOERROR;
 }
 
-static AutoPtr<IAttributedCharacterIteratorAttribute> CreateAttributedCharacterIteratorAttribute(
+static AutoPtr<IAttributedCharacterIterator::IAttribute> CreateAttributedCharacterIteratorAttribute(
     /* [in] */ const String& name)
 {
-    AutoPtr<IAttributedCharacterIteratorAttribute> attribute;
-    CAttributedCharacterIteratorAttribute::New(name, IID_IAttributedCharacterIteratorAttribute, (IInterface**)&attribute);
+    AutoPtr<IAttributedCharacterIterator::IAttribute> attribute;
+    CAttributedCharacterIteratorAttribute::New(name, IAttributedCharacterIterator::IID_IAttribute, (IInterface**)&attribute);
     return attribute;
 }
 
 ECode AttributedCharacterIteratorAttribute::GetLANGUAGE(
-    /* [out] */ IAttributedCharacterIteratorAttribute** attribute)
+    /* [out] */ IAttributedCharacterIterator::IAttribute** attribute)
 {
     VALIDATE_NOT_NULL(attribute);
 
-    static const AutoPtr<IAttributedCharacterIteratorAttribute> sLANGUAGE =
+    static const AutoPtr<IAttributedCharacterIterator::IAttribute> sLANGUAGE =
             CreateAttributedCharacterIteratorAttribute(String("language"));
 
     *attribute = sLANGUAGE;
@@ -112,11 +120,11 @@ ECode AttributedCharacterIteratorAttribute::GetLANGUAGE(
 }
 
 ECode AttributedCharacterIteratorAttribute::GetREADING(
-    /* [out] */ IAttributedCharacterIteratorAttribute** attribute)
+    /* [out] */ IAttributedCharacterIterator::IAttribute** attribute)
 {
     VALIDATE_NOT_NULL(attribute);
 
-    static const AutoPtr<IAttributedCharacterIteratorAttribute> sREADING =
+    static const AutoPtr<IAttributedCharacterIterator::IAttribute> sREADING =
             CreateAttributedCharacterIteratorAttribute(String("reading"));
 
     *attribute = sREADING;
@@ -125,11 +133,11 @@ ECode AttributedCharacterIteratorAttribute::GetREADING(
 }
 
 ECode AttributedCharacterIteratorAttribute::GetINPUT_METHOD_SEGMENT(
-    /* [out] */ IAttributedCharacterIteratorAttribute** attribute)
+    /* [out] */ IAttributedCharacterIterator::IAttribute** attribute)
 {
     VALIDATE_NOT_NULL(attribute);
 
-    static const AutoPtr<IAttributedCharacterIteratorAttribute> sINPUT_METHOD_SEGMENT =
+    static const AutoPtr<IAttributedCharacterIterator::IAttribute> sINPUT_METHOD_SEGMENT =
             CreateAttributedCharacterIteratorAttribute(String("input_method_segment"));
 
     *attribute = sINPUT_METHOD_SEGMENT;

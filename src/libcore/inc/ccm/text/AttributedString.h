@@ -22,7 +22,6 @@
 #include "ccm.core.ICloneable.h"
 #include "ccm.core.IStringBuffer.h"
 #include "ccm.text.IAttributedCharacterIterator.h"
-#include "ccm.text.IAttributedCharacterIteratorAttribute.h"
 #include "ccm.text.IAttributedString.h"
 #include "ccm.text.ICharacterIterator.h"
 #include "ccm.util.IMap.h"
@@ -56,7 +55,7 @@ private:
 
         ECode Constructor(
             /* [in] */ AttributedString* owner,
-            /* [in] */ const Array<IAttributedCharacterIteratorAttribute*>& attributes,
+            /* [in] */ const Array<IAttributedCharacterIterator::IAttribute*>& attributes,
             /* [in] */ Integer beginIndex,
             /* [in] */ Integer endIndex);
 
@@ -103,7 +102,7 @@ private:
             /* [out] */ Integer* index) override;
 
         ECode GetRunStart(
-            /* [in] */ IAttributedCharacterIteratorAttribute* attribute,
+            /* [in] */ IAttributedCharacterIterator::IAttribute* attribute,
             /* [out] */ Integer* index) override;
 
         ECode GetRunStart(
@@ -114,7 +113,7 @@ private:
             /* [out] */ Integer* index) override;
 
         ECode GetRunLimit(
-            /* [in] */ IAttributedCharacterIteratorAttribute* attribute,
+            /* [in] */ IAttributedCharacterIterator::IAttribute* attribute,
             /* [out] */ Integer* index) override;
 
         ECode GetRunLimit(
@@ -128,7 +127,7 @@ private:
             /* [out] */ ISet** keys) override;
 
         ECode GetAttribute(
-            /* [in] */ IAttributedCharacterIteratorAttribute* attribute,
+            /* [in] */ IAttributedCharacterIterator::IAttribute* attribute,
             /* [out] */ IInterface** value) override;
 
     private:
@@ -143,7 +142,7 @@ private:
         Integer mBeginIndex = 0;
         Integer mEndIndex = 0;
 
-        Array<IAttributedCharacterIteratorAttribute*> mRelevantAttributes;
+        Array<IAttributedCharacterIterator::IAttribute*> mRelevantAttributes;
 
         Integer mCurrentIndex = 0;
 
@@ -209,14 +208,14 @@ public:
         /* [in] */ IAttributedCharacterIterator* text,
         /* [in] */ Integer beginIndex,
         /* [in] */ Integer endIndex,
-        /* [in] */ const Array<IAttributedCharacterIteratorAttribute*>& attributes);
+        /* [in] */ const Array<IAttributedCharacterIterator::IAttribute*>& attributes);
 
     ECode AddAttribute(
-        /* [in] */ IAttributedCharacterIteratorAttribute* attribute,
+        /* [in] */ IAttributedCharacterIterator::IAttribute* attribute,
         /* [in] */ IInterface* value) override;
 
     ECode AddAttribute(
-        /* [in] */ IAttributedCharacterIteratorAttribute* attribute,
+        /* [in] */ IAttributedCharacterIterator::IAttribute* attribute,
         /* [in] */ IInterface* value,
         /* [in] */ Integer beginIndex,
         /* [in] */ Integer endIndex) override;
@@ -230,11 +229,11 @@ public:
         /* [out] */ IAttributedCharacterIterator** it) override;
 
     ECode GetIterator(
-        /* [in] */ const Array<IAttributedCharacterIteratorAttribute*>& attributes,
+        /* [in] */ const Array<IAttributedCharacterIterator::IAttribute*>& attributes,
         /* [out] */ IAttributedCharacterIterator** it) override;
 
     ECode GetIterator(
-        /* [in] */ const Array<IAttributedCharacterIteratorAttribute*>& attributes,
+        /* [in] */ const Array<IAttributedCharacterIterator::IAttribute*>& attributes,
         /* [in] */ Integer beginIndex,
         /* [in] */ Integer endIndex,
         /* [out] */ IAttributedCharacterIterator** it) override;
@@ -246,7 +245,7 @@ public:
 
 private:
     void AddAttributeImpl(
-        /* [in] */ IAttributedCharacterIteratorAttribute* attribute,
+        /* [in] */ IAttributedCharacterIterator::IAttribute* attribute,
         /* [in] */ IInterface* value,
         /* [in] */ Integer beginIndex,
         /* [in] */ Integer endIndex);
@@ -261,7 +260,7 @@ private:
         /* [in] */ Boolean copyAttrs);
 
     void AddAttributeRunData(
-        /* [in] */ IAttributedCharacterIteratorAttribute* attribute,
+        /* [in] */ IAttributedCharacterIterator::IAttribute* attribute,
         /* [in] */ IInterface* value,
         /* [in] */ Integer beginRunIndex,
         /* [in] */ Integer endRunIndex);
@@ -270,11 +269,11 @@ private:
         /* [in] */ Integer index);
 
     AutoPtr<IInterface> GetAttribute(
-        /* [in] */ IAttributedCharacterIteratorAttribute* attribute,
+        /* [in] */ IAttributedCharacterIterator::IAttribute* attribute,
         /* [in] */ Integer runIndex);
 
     AutoPtr<IInterface> GetAttributeCheckRange(
-        /* [in] */ IAttributedCharacterIteratorAttribute* attribute,
+        /* [in] */ IAttributedCharacterIterator::IAttribute* attribute,
         /* [in] */ Integer runIndex,
         /* [in] */ Integer beginIndex,
         /* [in] */ Integer endIndex);

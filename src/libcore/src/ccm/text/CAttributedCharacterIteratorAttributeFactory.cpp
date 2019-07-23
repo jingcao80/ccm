@@ -20,24 +20,32 @@
 namespace ccm {
 namespace text {
 
-CCM_INTERFACE_IMPL_1(CAttributedCharacterIteratorAttributeFactory, Object, IAttributedCharacterIteratorAttributeFactory);
+CCM_INTERFACE_REFCOUNT(CAttributedCharacterIteratorAttributeFactory)
+
+CCM_INTERFACE_PROBE_BEGIN(CAttributedCharacterIteratorAttributeFactory)
+CCM_INTERFACE_PROBE_NESTEDINTERFACE(IAttributedCharacterIterator, IAttributeFactory)
+CCM_INTERFACE_PROBE_END(Object)
+
+CCM_INTERFACE_GETINTERFACEID_BEGIN(CAttributedCharacterIteratorAttributeFactory)
+CCM_INTERFACE_GETINTERFACEID_NESTEDINTERFACE(IAttributedCharacterIterator, IAttributeFactory)
+CCM_INTERFACE_GETINTERFACEID_END(Object)
 
 CCM_OBJECT_IMPL(CAttributedCharacterIteratorAttributeFactory);
 
 ECode CAttributedCharacterIteratorAttributeFactory::GetLANGUAGE(
-    /* [out] */ IAttributedCharacterIteratorAttribute** attribute)
+    /* [out] */ IAttributedCharacterIterator::IAttribute** attribute)
 {
     return CAttributedCharacterIteratorAttribute::GetLANGUAGE(attribute);
 }
 
 ECode CAttributedCharacterIteratorAttributeFactory::GetREADING(
-    /* [out] */ IAttributedCharacterIteratorAttribute** attribute)
+    /* [out] */ IAttributedCharacterIterator::IAttribute** attribute)
 {
     return CAttributedCharacterIteratorAttribute::GetREADING(attribute);
 }
 
 ECode CAttributedCharacterIteratorAttributeFactory::GetINPUT_METHOD_SEGMENT(
-    /* [out] */ IAttributedCharacterIteratorAttribute** attribute)
+    /* [out] */ IAttributedCharacterIterator::IAttribute** attribute)
 {
     return CAttributedCharacterIteratorAttribute::GetINPUT_METHOD_SEGMENT(attribute);
 }

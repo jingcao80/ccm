@@ -94,7 +94,7 @@ ECode BaseFormat::CreateAttributedCharacterIterator(
 
 ECode BaseFormat::CreateAttributedCharacterIterator(
     /* [in] */ const String& string,
-    /* [in] */ IAttributedCharacterIteratorAttribute* key,
+    /* [in] */ IAttributedCharacterIterator::IAttribute* key,
     /* [in] */ IInterface* value,
     /* [out] */ IAttributedCharacterIterator** it)
 {
@@ -106,7 +106,7 @@ ECode BaseFormat::CreateAttributedCharacterIterator(
 
 ECode BaseFormat::CreateAttributedCharacterIterator(
     /* [in] */ IAttributedCharacterIterator* iterator,
-    /* [in] */ IAttributedCharacterIteratorAttribute* key,
+    /* [in] */ IAttributedCharacterIterator::IAttribute* key,
     /* [in] */ IInterface* value,
     /* [out] */ IAttributedCharacterIterator** it)
 {

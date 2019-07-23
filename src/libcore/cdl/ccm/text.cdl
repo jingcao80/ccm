@@ -46,7 +46,7 @@ coclass CAttributedCharacterIteratorAttribute
 {
     Constructor() = delete;
 
-    interface IAttributedCharacterIteratorAttribute;
+    interface IAttributedCharacterIterator::IAttribute;
     interface ISerializable;
 }
 
@@ -56,7 +56,7 @@ coclass CAttributedCharacterIteratorAttribute
 ]
 coclass CAttributedCharacterIteratorAttributeFactory
 {
-    interface IAttributedCharacterIteratorAttributeFactory;
+    interface IAttributedCharacterIterator::IAttributeFactory;
 }
 
 [
@@ -84,7 +84,7 @@ coclass CAttributedString
         [in] IAttributedCharacterIterator* text,
         [in] Integer beginIndex,
         [in] Integer endIndex,
-        [in] Array<IAttributedCharacterIteratorAttribute*> attributes);
+        [in] Array<IAttributedCharacterIterator::IAttribute*> attributes);
 
     interface IAttributedString;
 }
@@ -119,7 +119,7 @@ coclass CDateFormatField
 
     interface IDateFormatField;
     interface IFormatField;
-    interface IAttributedCharacterIteratorAttribute;
+    interface IAttributedCharacterIterator::IAttribute;
     interface ISerializable;
 }
 

@@ -70,9 +70,9 @@ Integer NativeDecimalFormat::FieldPositionIterator::FieldId()
     return mData[mPos];
 }
 
-AutoPtr<IAttributedCharacterIteratorAttribute> NativeDecimalFormat::FieldPositionIterator::Field()
+AutoPtr<IAttributedCharacterIterator::IAttribute> NativeDecimalFormat::FieldPositionIterator::Field()
 {
-    return IAttributedCharacterIteratorAttribute::Probe(Get_ICU4C_FIELD_IDS()[mData[mPos]]);
+    return IAttributedCharacterIterator::IAttribute::Probe(Get_ICU4C_FIELD_IDS()[mData[mPos]]);
 }
 
 Integer NativeDecimalFormat::FieldPositionIterator::Start()
@@ -359,7 +359,7 @@ ECode NativeDecimalFormat::FormatToCharacterIterator(
     CAttributedString::New(text, IID_IAttributedString, (IInterface**)&as);
 
     while (fpIter->Next()) {
-        AutoPtr<IAttributedCharacterIteratorAttribute> field = fpIter->Field();
+        AutoPtr<IAttributedCharacterIterator::IAttribute> field = fpIter->Field();
         as->AddAttribute(field, field, fpIter->Start(), fpIter->Limit());
     }
 
