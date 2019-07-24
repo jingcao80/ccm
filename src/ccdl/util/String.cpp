@@ -153,6 +153,49 @@ int String::GetLength() const
     return buffer->mLength;
 }
 
+int String::GetHashCode() const
+{
+    // BKDR Hash Function
+    unsigned int seed = 31; // 31 131 1313 13131 131313 etc..
+    unsigned int hash = 0;
+
+    const char* string = mString;
+    if (string) {
+        for ( ; *string; ++string) {
+            hash = hash * seed + (*string);
+        }
+    }
+    return (hash & 0x7FFFFFFF);
+}
+
+int String::Compare(
+    /* [in] */ const String& other) const
+{
+    if (mString == other.mString) return 0;
+    if (mString == nullptr) return -1;
+    if (other.mString == nullptr) return 1;
+
+    if (mString[0] == '\0' && other.mString[0] == '\0') {
+        return 0;
+    }
+
+    return strcmp(mString, other.mString);
+}
+
+int String::Compare(
+    /* [in] */ const char* string) const
+{
+    if (mString == string) return 0;
+    if (mString == nullptr) return -1;
+    if (string == nullptr) return 1;
+
+    if (mString[0] == '\0' && string[0] == '\0') {
+        return 0;
+    }
+
+    return strcmp(mString, string);
+}
+
 bool String::Equals(
     /* [in] */ const String& other) const
 {

@@ -88,6 +88,9 @@ private:
     void GenInterfaceDeclarationSparsely(
         /* [in] */ MetaInterface* mi);
 
+    String GenIncludeForUsingNestedInterface(
+        /* [in] */ MetaInterface* mi);
+
     String GenInterfaceDeclarations(
         /* [in] */ MetaNamespace* mn);
 

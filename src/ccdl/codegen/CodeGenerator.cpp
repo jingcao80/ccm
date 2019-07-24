@@ -22,6 +22,7 @@
 #include "../util/Uuid.h"
 #include "../../runtime/metadata/MetaSerializer.h"
 
+#include <set>
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/stat.h>
@@ -35,6 +36,16 @@ using ccm::metadata::MetaSerializer;
 
 namespace ccdl {
 namespace codegen {
+
+struct CompareFunc
+{
+    bool operator()(
+        /* [in] */ const String& lvalue,
+        /* [in] */ const String& rvalue) const
+    {
+        return lvalue.Compare(rvalue) == -1;
+    }
+};
 
 const String CodeGenerator::TAG("CodeGenerator");
 const String CodeGenerator::TAB("    ");
@@ -897,13 +908,12 @@ void CodeGenerator::GenInterfaceDeclarationSparsely(
     if (!String("IInterface").Equals(bmi->mName)) {
         String bfilePath = String::Format("%s%s.h",
                 String(bmi->mNamespace).Replace("::", ".").string(), bmi->mName);
-        builder.AppendFormat("#include \"%s\"\n\n", bfilePath.string());
-    }
-    else {
-        builder.Append("\n");
+        builder.AppendFormat("#include \"%s\"\n", bfilePath.string());
     }
 
-    builder.Append("using namespace ccm;\n\n");
+    builder.Append(GenIncludeForUsingNestedInterface(mi));
+
+    builder.Append("\nusing namespace ccm;\n\n");
 
     builder.Append(GenNamespaceBegin(String(mi->mNamespace)));
     builder.AppendFormat("extern const InterfaceID IID_%s;\n\n", mi->mName);
@@ -916,6 +926,47 @@ void CodeGenerator::GenInterfaceDeclarationSparsely(
     file.Write(data.string(), data.GetLength());
     file.Flush();
     file.Close();
+}
+
+String CodeGenerator::GenIncludeForUsingNestedInterface(
+    /* [in] */ MetaInterface* mi)
+{
+    std::set<String, CompareFunc> includes;
+
+    for (int i = 0; i < mi->mNestedInterfaceNumber; i++) {
+        MetaInterface* nmi = mMetaComponent->mInterfaces[mi->mNestedInterfaceIndexes[i]];
+        includes.insert(GenIncludeForUsingNestedInterface(nmi));
+    }
+
+    for (int i = 0; i < mi->mMethodNumber; i++) {
+        MetaMethod* mm = mi->mMethods[i];
+        for (int j = 0; j < mm->mParameterNumber; j++) {
+            MetaParameter* mp =  mm->mParameters[j];
+            MetaType* mt = mMetaComponent->mTypes[mp->mTypeIndex];
+            while (mt->mKind == CcmTypeKind::Array) {
+                mt = mMetaComponent->mTypes[mt->mNestedTypeIndex];
+            }
+            if (mt->mKind == CcmTypeKind::Interface) {
+                MetaInterface* mmi = mMetaComponent->mInterfaces[mt->mIndex];
+                if (mmi->mOuterInterfaceIndex != -1) {
+                    while (mmi->mOuterInterfaceIndex != -1) {
+                        mmi = mMetaComponent->mInterfaces[mmi->mOuterInterfaceIndex];
+                    }
+                    String include = String::Format("#include \"%s%s.h\"\n",
+                            String(mmi->mNamespace).Replace("::", ".").string(), mmi->mName);
+                    includes.insert(include);
+                }
+            }
+        }
+    }
+
+    StringBuilder builder;
+
+    for (String include : includes) {
+        builder.Append(include);
+    }
+
+    return builder.ToString();
 }
 
 void CodeGenerator::GenCoclasses()
@@ -956,6 +1007,8 @@ void CodeGenerator::GenCoclassHeader(
     builder.AppendFormat("#define %s\n\n", defMacro.string());
     builder.AppendFormat("#include \"%s.h\"\n", mMetaComponent->mName);
 
+    std::set<String, CompareFunc> includes;
+
     for (int i = start; i < mi->mMethodNumber; i++) {
         MetaMethod* mm = mi->mMethods[i];
         if (mm->mDeleted || (!mk->mConstructorDefault && mk->mConstructorDeleted)) continue;
@@ -968,11 +1021,18 @@ void CodeGenerator::GenCoclassHeader(
             if (mt->mKind == CcmTypeKind::Interface) {
                 MetaInterface* mmi = mMetaComponent->mInterfaces[mt->mIndex];
                 if (mmi->mOuterInterfaceIndex != -1) {
-                    mmi = mMetaComponent->mInterfaces[mmi->mOuterInterfaceIndex];
-                    builder.AppendFormat("#include \"%s%s.h\"\n", String(mmi->mNamespace).Replace("::", ".").string(), mmi->mName);
+                    while (mmi->mOuterInterfaceIndex != -1) {
+                        mmi = mMetaComponent->mInterfaces[mmi->mOuterInterfaceIndex];
+                    }
+                    String include = String::Format("#include \"%s%s.h\"\n",
+                            String(mmi->mNamespace).Replace("::", ".").string(), mmi->mName);
+                    includes.insert(include);
                 }
             }
         }
+    }
+    for (String include : includes) {
+        builder.Append(include);
     }
 
     builder.Append("\n");
@@ -1674,6 +1734,8 @@ void CodeGenerator::GenCoclassDeclarationSparselyOnUserMode(
     builder.AppendFormat("#define %s\n\n", defMacro.string());
     builder.AppendFormat("#include \"%s.h\"\n", mMetaComponent->mName);
 
+    std::set<String, CompareFunc> includes;
+
     for (int i = start; i < mi->mMethodNumber; i++) {
         MetaMethod* mm = mi->mMethods[i];
         if (mm->mDeleted || (!mc->mConstructorDefault && mc->mConstructorDeleted)) continue;
@@ -1686,11 +1748,18 @@ void CodeGenerator::GenCoclassDeclarationSparselyOnUserMode(
             if (mt->mKind == CcmTypeKind::Interface) {
                 MetaInterface* mmi = mMetaComponent->mInterfaces[mt->mIndex];
                 if (mmi->mOuterInterfaceIndex != -1) {
-                    mmi = mMetaComponent->mInterfaces[mmi->mOuterInterfaceIndex];
-                    builder.AppendFormat("#include \"%s%s.h\"\n", String(mmi->mNamespace).Replace("::", ".").string(), mmi->mName);
+                    while (mmi->mOuterInterfaceIndex != -1) {
+                        mmi = mMetaComponent->mInterfaces[mmi->mOuterInterfaceIndex];
+                    }
+                    String include = String::Format("#include \"%s%s.h\"\n",
+                            String(mmi->mNamespace).Replace("::", ".").string(), mmi->mName);
+                    includes.insert(include);
                 }
             }
         }
+    }
+    for (String include : includes) {
+        builder.Append(include);
     }
 
     builder.Append("\n");

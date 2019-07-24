@@ -48,6 +48,14 @@ public:
 
     int GetLength() const;
 
+    int GetHashCode() const;
+
+    int Compare(
+        /* [in] */ const String& other) const;
+
+    int Compare(
+        /* [in] */ const char* string) const;
+
     bool Equals(
         /* [in] */ const String& other) const;
 
