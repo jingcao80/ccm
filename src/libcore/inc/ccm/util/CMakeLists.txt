@@ -19,7 +19,10 @@ add_dependencies(deploy_libcore_util_headers ccmrt)
 
 MKDIR(deploy_libcore_util_headers ${INC_DIR}/ccm/util)
 MKDIR(deploy_libcore_util_headers ${INC_DIR}/ccm/util/calendar)
+MKDIR(deploy_libcore_util_headers ${INC_DIR}/ccm/util/regex)
 
 COPY(deploy_libcore_util_headers ${LIBCORE_CCM_INC_DIR}/util/Arrays.h ${INC_DIR}/ccm/util)
 COPY(deploy_libcore_util_headers ${LIBCORE_CCM_INC_DIR}/util/EmptyArray.h ${INC_DIR}/ccm/util)
+COPY(deploy_libcore_util_headers ${LIBCORE_CCM_INC_DIR}/util/TimeZoneFactory.h ${INC_DIR}/ccm/util)
 COPY(deploy_libcore_util_headers ${LIBCORE_CCM_INC_DIR}/util/calendar/CalendarUtils.h ${INC_DIR}/ccm/util/calendar)
+COPY(deploy_libcore_util_headers ${LIBCORE_CCM_INC_DIR}/util/regex/PatternFactory.h ${INC_DIR}/ccm/util/regex)

@@ -14,25 +14,21 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/util/regex/CPatternFactory.h"
 #include "ccm/util/regex/Pattern.h"
+#include "ccm/util/regex/PatternFactory.h"
 
 namespace ccm {
 namespace util {
 namespace regex {
 
-CCM_INTERFACE_IMPL_1(CPatternFactory, Object, IPatternFactory);
-
-CCM_OBJECT_IMPL(CPatternFactory);
-
-ECode CPatternFactory::Compile(
+ECode PatternFactory::Compile(
     /* [in] */ const String& regex,
     /* [out] */ IPattern** pattern)
 {
     return Pattern::Compile(regex, pattern);
 }
 
-ECode CPatternFactory::Compile(
+ECode PatternFactory::Compile(
     /* [in] */ const String& regex,
     /* [in] */ Integer flags,
     /* [out] */ IPattern** pattern)
@@ -40,7 +36,7 @@ ECode CPatternFactory::Compile(
     return Pattern::Compile(regex, flags, pattern);
 }
 
-ECode CPatternFactory::FastSplit(
+ECode PatternFactory::FastSplit(
     /* [in] */ const String& re,
     /* [in] */ const String& input,
     /* [in] */ Integer limit,
@@ -49,7 +45,7 @@ ECode CPatternFactory::FastSplit(
     return Pattern::FastSplit(re, input, limit, strArray);
 }
 
-ECode CPatternFactory::Matches(
+ECode PatternFactory::Matches(
     /* [in] */ const String& regex,
     /* [in] */ ICharSequence* input,
     /* [out] */ Boolean* matched)
@@ -57,7 +53,7 @@ ECode CPatternFactory::Matches(
     return Pattern::Matches(regex, input, matched);
 }
 
-ECode CPatternFactory::Quote(
+ECode PatternFactory::Quote(
     /* [in] */ const String& s,
     /* [out] */ String* pattStr)
 {

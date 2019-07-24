@@ -65,15 +65,5 @@ interface IZoneInfoDBTzData
     Validate();
 }
 
-[
-    uuid(ce905904-39fd-46ce-a429-b2f9ce957812),
-    version(0.1.0)
-]
-interface IZoneInfoDBFactory
-{
-    GetInstance(
-        [out] IZoneInfoDBTzData** instance);
-}
-
 }
 }

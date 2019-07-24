@@ -14,22 +14,26 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/util/CTimeZoneFactory.h"
-#include "ccm/util/TimeZone.h"
+#ifndef __CCM_UTIL_TIMEZONEFACTORY_H__
+#define __CCM_UTIL_TIMEZONEFACTORY_H__
+
+#include "ccm.util.ITimeZone.h"
 
 namespace ccm {
 namespace util {
 
-CCM_INTERFACE_IMPL_1(CTimeZoneFactory, Object, ITimeZoneFactory);
-
-CCM_OBJECT_IMPL(CTimeZoneFactory);
-
-ECode CTimeZoneFactory::GetTimeZone(
-    /* [in] */ const String& id,
-    /* [out] */ ITimeZone** zone)
+class COM_PUBLIC TimeZoneFactory
 {
-    return TimeZone::GetTimeZone(id, zone);
-}
+public:
+    static ECode GetTimeZone(
+        /* [in] */ const String& id,
+        /* [out] */ ITimeZone** zone);
+
+private:
+    TimeZoneFactory();
+};
 
 }
 }
+
+#endif // __CCM_UTIL_TIMEZONEFACTORY_H__

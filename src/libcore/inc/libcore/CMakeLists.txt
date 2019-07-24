@@ -14,14 +14,6 @@
 # limitations under the License.
 #=========================================================================
 
-add_custom_target(deploy_libcore_headers)
-add_dependencies(deploy_libcore_headers
-    deploy_libcore_core_headers
-    deploy_libcore_text_headers
-    deploy_libcore_util_headers
-    deploy_libcore_libcore_util_headers)
+set(LIBCORE_LIBCORE_INC_DIR ${LIBCORE_DIR}/inc/libcore)
 
-COPY(deploy_libcore_headers ${LIBCORE_DIR}/inc/coredef.h ${INC_DIR})
-
-add_subdirectory(ccm)
-add_subdirectory(libcore)
+add_subdirectory(util)

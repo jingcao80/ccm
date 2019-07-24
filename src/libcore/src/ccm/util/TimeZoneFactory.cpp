@@ -14,36 +14,18 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __LIBCORE_UTIL_CZONEINFOFACTORY_H__
-#define __LIBCORE_UTIL_CZONEINFOFACTORY_H__
+#include "ccm/util/TimeZone.h"
+#include "ccm/util/TimeZoneFactory.h"
 
-#include "libcore.io.IBufferIterator.h"
-#include "libcore.util.IZoneInfo.h"
-#include "libcore.util.IZoneInfoFactory.h"
-#include "_libcore_util_CZoneInfoFactory.h"
-#include <ccmobject.h>
-
-using libcore::io::IBufferIterator;
-
-namespace libcore {
+namespace ccm {
 namespace util {
 
-class CZoneInfoFactory
-    : public Object
-    , public IZoneInfoFactory
+ECode TimeZoneFactory::GetTimeZone(
+    /* [in] */ const String& id,
+    /* [out] */ ITimeZone** zone)
 {
-public:
-    CCM_INTERFACE_DECL();
-    CCM_OBJECT_DECL();
-
-    ECode ReadTimeZone(
-        /* [in] */ const String& id,
-        /* [in] */ IBufferIterator* it,
-        /* [in] */ Long currentTimeMillis,
-        /* [out] */ IZoneInfo** zoneInfo) override;
-};
+    return TimeZone::GetTimeZone(id, zone);
+}
 
 }
 }
-
-#endif // __LIBCORE_UTIL_CZONEINFOFACTORY_H__

@@ -95,16 +95,5 @@ interface ITimeZone
         [out] Boolean* result);
 }
 
-[
-    uuid(e97915ba-ec7d-4974-aa76-b09b83e9cc36),
-    version(0.1.0)
-]
-interface ITimeZoneFactory
-{
-    GetTimeZone(
-        [in] String id,
-        [out] ITimeZone** zone);
-}
-
 }
 }

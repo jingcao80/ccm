@@ -14,14 +14,10 @@
 # limitations under the License.
 #=========================================================================
 
-add_custom_target(deploy_libcore_headers)
-add_dependencies(deploy_libcore_headers
-    deploy_libcore_core_headers
-    deploy_libcore_text_headers
-    deploy_libcore_util_headers
-    deploy_libcore_libcore_util_headers)
+add_custom_target(deploy_libcore_libcore_util_headers)
+add_dependencies(deploy_libcore_libcore_util_headers ccmrt)
 
-COPY(deploy_libcore_headers ${LIBCORE_DIR}/inc/coredef.h ${INC_DIR})
+MKDIR(deploy_libcore_libcore_util_headers ${INC_DIR}/libcore/util)
 
-add_subdirectory(ccm)
-add_subdirectory(libcore)
+COPY(deploy_libcore_libcore_util_headers ${LIBCORE_LIBCORE_INC_DIR}/util/ZoneInfoDBFactory.h ${INC_DIR}/libcore/util)
+COPY(deploy_libcore_libcore_util_headers ${LIBCORE_LIBCORE_INC_DIR}/util/ZoneInfoFactory.h ${INC_DIR}/libcore/util)

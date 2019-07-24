@@ -24,9 +24,9 @@ include_directories(
     ${OBJ_DIR})
 
 set(SOURCES
-    CPatternFactory.cpp
     Matcher.cpp
-    Pattern.cpp)
+    Pattern.cpp
+    PatternFactory.cpp)
 
 add_library(ccm_util_regex STATIC
     ${SOURCES})

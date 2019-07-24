@@ -14,16 +14,13 @@
 // limitations under the License.
 //=========================================================================
 
-#include "libcore/util/CZoneInfoFactory.h"
+#include "libcore/util/ZoneInfoFactory.h"
 #include "libcore/util/ZoneInfo.h"
 
 namespace libcore {
 namespace util {
 
-CCM_INTERFACE_IMPL_1(CZoneInfoFactory, Object, IZoneInfoFactory);
-CCM_OBJECT_IMPL(CZoneInfoFactory);
-
-ECode CZoneInfoFactory::ReadTimeZone(
+ECode ZoneInfoFactory::ReadTimeZone(
     /* [in] */ const String& id,
     /* [in] */ IBufferIterator* it,
     /* [in] */ Long currentTimeMillis,

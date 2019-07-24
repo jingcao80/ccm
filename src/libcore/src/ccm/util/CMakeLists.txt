@@ -40,7 +40,6 @@ set(SOURCES
     CCalendarFactory.cpp
     CLocaleFactory.cpp
     Collections.cpp
-    CTimeZoneFactory.cpp
     Currency.cpp
     Date.cpp
     EmptyArray.cpp
@@ -58,6 +57,7 @@ set(SOURCES
     SimpleTimeZone.cpp
     StringTokenizer.cpp
     TimeZone.cpp
+    TimeZoneFactory.cpp
     TimeZoneGetter.cpp
     TreeMap.cpp
     TreeNode.cpp

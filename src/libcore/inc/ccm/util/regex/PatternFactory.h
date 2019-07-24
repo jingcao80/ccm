@@ -14,14 +14,10 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_UTIL_REGEX_CPATTERNFACTORY_H__
-#define __CCM_UTIL_REGEX_CPATTERNFACTORY_H__
+#ifndef __CCM_UTIL_REGEX_PATTERNFACTORY_H__
+#define __CCM_UTIL_REGEX_PATTERNFACTORY_H__
 
 #include "ccm.core.ICharSequence.h"
-#include "ccm.util.regex.IPatternFactory.h"
-#include "_ccm_util_regex_CPatternFactory.h"
-#include <ccmobject.h>
-#include <ccmdef.h>
 
 using ccm::core::ICharSequence;
 
@@ -29,42 +25,39 @@ namespace ccm {
 namespace util {
 namespace regex {
 
-Coclass(CPatternFactory)
-    , public Object
-    , public IPatternFactory
+class COM_PUBLIC PatternFactory
 {
 public:
-    CCM_INTERFACE_DECL();
-
-    CCM_OBJECT_DECL();
-
-    ECode Compile(
+    static ECode Compile(
         /* [in] */ const String& regex,
         /* [out] */ IPattern** pattern);
 
-    ECode Compile(
+    static ECode Compile(
         /* [in] */ const String& regex,
         /* [in] */ Integer flags,
         /* [out] */ IPattern** pattern);
 
-    ECode FastSplit(
+    static ECode FastSplit(
         /* [in] */ const String& re,
         /* [in] */ const String& input,
         /* [in] */ Integer limit,
         /* [out, callee] */ Array<String>* strArray);
 
-    ECode Matches(
+    static ECode Matches(
         /* [in] */ const String& regex,
         /* [in] */ ICharSequence* input,
         /* [out] */ Boolean* matched);
 
-    ECode Quote(
+    static ECode Quote(
         /* [in] */ const String& s,
         /* [out] */ String* pattStr);
+
+private:
+    PatternFactory();
 };
 
 }
 }
 }
 
-#endif // __CCM_UTIL_REGEX_CPATTERNFACTORY_H__
+#endif // __CCM_UTIL_REGEX_PATTERNFACTORY_H__

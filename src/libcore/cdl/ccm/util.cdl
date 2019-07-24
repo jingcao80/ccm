@@ -614,15 +614,6 @@ coclass CStringTokenizer
 }
 
 [
-    uuid(2e668d38-5031-4085-889e-7184f3f36a30),
-    version(0.1.0)
-]
-coclass CTimeZoneFactory
-{
-    interface ITimeZoneFactory;
-}
-
-[
     uuid(3ef0ae4d-d83b-453f-aeee-646d84b7538b),
     version(0.1.0)
 ]
@@ -874,17 +865,5 @@ coclass CAtomicLong
 
 }
 
-namespace regex {
-
-[
-    uuid(698f1b9a-dd5e-4ae4-924c-c1addd038571),
-    version(0.1.0)
-]
-coclass CPatternFactory
-{
-    interface IPatternFactory;
-}
-
-}
 }
 }

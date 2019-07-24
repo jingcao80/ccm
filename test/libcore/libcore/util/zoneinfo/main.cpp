@@ -14,6 +14,8 @@
 // limitations under the License.
 //=========================================================================
 #include "ZoneInfoTestHelper.h"
+#include "libcore/util/ZoneInfoDBFactory.h"
+#include "libcore/util/ZoneInfoFactory.h"
 #include "ccm.core.CSystem.h"
 #include "ccm.core.ILong.h"
 #include "ccm.core.ISystem.h"
@@ -27,12 +29,8 @@
 #include "ccm.util.IDate.h"
 #include "ccm.util.ITimeZone.h"
 #include "libcore.io.IBufferIterator.h"
-#include "libcore.util.CZoneInfoFactory.h"
-#include "libcore.util.CZoneInfoDBFactory.h"
 #include "libcore.util.CZoneInfoWallTime.h"
 #include "libcore.util.IZoneInfo.h"
-#include "libcore.util.IZoneInfoFactory.h"
-#include "libcore.util.IZoneInfoDBFactory.h"
 #include "libcore.util.IZoneInfoDBTzData.h"
 #include "libcore.util.IZoneInfoWallTime.h"
 #include <ccmobject.h>
@@ -55,17 +53,13 @@ using ccm::util::IID_IDate;
 using ccm::util::ITimeZone;
 using libcore::io::IBufferIterator;
 using libcore::io::IID_IBufferIterator;
-using libcore::util::CZoneInfoFactory;
-using libcore::util::CZoneInfoDBFactory;
 using libcore::util::CZoneInfoWallTime;
-using libcore::util::IID_IZoneInfoFactory;
-using libcore::util::IID_IZoneInfoDBFactory;
 using libcore::util::IID_IZoneInfoWallTime;
 using libcore::util::IZoneInfo;
-using libcore::util::IZoneInfoFactory;
-using libcore::util::IZoneInfoDBFactory;
 using libcore::util::IZoneInfoDBTzData;
 using libcore::util::IZoneInfoWallTime;
+using libcore::util::ZoneInfoDBFactory;
+using libcore::util::ZoneInfoFactory;
 
 class ByteBufferIterator
     : public Object
@@ -171,10 +165,8 @@ AutoPtr<IZoneInfo> CreateZoneInfo(
     AutoPtr<IByteBuffer> bb;
     factory->Wrap(bytes, &bb);
     AutoPtr<ByteBufferIterator> bufferIterator = new ByteBufferIterator(bb);
-    AutoPtr<IZoneInfoFactory> ziFactory;
-    CZoneInfoFactory::New(IID_IZoneInfoFactory, (IInterface**)&ziFactory);
     AutoPtr<IZoneInfo> zoneInfo;
-    ziFactory->ReadTimeZone(
+    ZoneInfoFactory::ReadTimeZone(
             String::Format("TimeZone for '%s'", name.string()),
             bufferIterator, currentTimeMillis, &zoneInfo);
     return zoneInfo;
@@ -502,20 +494,16 @@ TEST(ZoneInfoTest, TestReadTimeZoneLotsOfTypes)
 
 TEST(ZoneInfoTest, TestReadTimeZoneAll)
 {
-    AutoPtr<IZoneInfoDBFactory> factory;
-    CZoneInfoDBFactory::New(IID_IZoneInfoDBFactory, (IInterface**)&factory);
     AutoPtr<IZoneInfoDBTzData> instance;
-    factory->GetInstance(&instance);
+    ZoneInfoDBFactory::GetInstance(&instance);
     Array<String> availableIDs;
     instance->GetAvailableIDs(&availableIDs);
-    AutoPtr<IZoneInfoFactory> ziFactory;
-    CZoneInfoFactory::New(IID_IZoneInfoFactory, (IInterface**)&ziFactory);
     for (String id : availableIDs) {
         AutoPtr<IBufferIterator> bufferIterator;
         instance->GetBufferIterator(id, &bufferIterator);
 
         AutoPtr<IZoneInfo> zoneInfo;
-        ziFactory->ReadTimeZone(id, bufferIterator, ILong::MIN_VALUE, &zoneInfo);
+        ZoneInfoFactory::ReadTimeZone(id, bufferIterator, ILong::MIN_VALUE, &zoneInfo);
         EXPECT_NE(zoneInfo, nullptr);
         String zID;
         ITimeZone::Probe(zoneInfo)->GetID(&zID);

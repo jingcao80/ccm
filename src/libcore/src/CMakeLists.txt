@@ -119,7 +119,6 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_util_CSimpleImmutableEntry.cpp
     ${OBJ_DIR}/_ccm_util_CSimpleTimeZone.cpp
     ${OBJ_DIR}/_ccm_util_CStringTokenizer.cpp
-    ${OBJ_DIR}/_ccm_util_CTimeZoneFactory.cpp
     ${OBJ_DIR}/_ccm_util_CTreeMap.cpp
     ${OBJ_DIR}/_ccm_util_CTreeSet.cpp
     ${OBJ_DIR}/_ccm_util_CVector.cpp
@@ -133,11 +132,8 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_util_concurrent_atomic_CAtomicBoolean.cpp
     ${OBJ_DIR}/_ccm_util_concurrent_atomic_CAtomicInteger.cpp
     ${OBJ_DIR}/_ccm_util_concurrent_atomic_CAtomicLong.cpp
-    ${OBJ_DIR}/_ccm_util_regex_CPatternFactory.cpp
     ${OBJ_DIR}/_libcore_io_CLibcore.cpp
     ${OBJ_DIR}/_libcore_io_CMemoryMappedFile.cpp
-    ${OBJ_DIR}/_libcore_util_CZoneInfoFactory.cpp
-    ${OBJ_DIR}/_libcore_util_CZoneInfoDBFactory.cpp
     ${OBJ_DIR}/_libcore_util_CZoneInfoWallTime.cpp
     ${OBJ_DIR}/_pisces_system_CStructStat.cpp
     ${OBJ_DIR}/_ccmrt_system_CPathClassLoader.cpp

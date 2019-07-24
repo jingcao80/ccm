@@ -137,17 +137,6 @@ interface IMatcher
         [in] Boolean value);
 }
 
-[
-    uuid(393528c5-7d0a-4304-bd78-c229ebd64a34),
-    version(0.1.0)
-]
-interface IMatcherFactory
-{
-    QuoteReplacement(
-        [in] String s,
-        [out] String* str);
-}
-
 }
 }
 }

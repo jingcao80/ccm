@@ -115,18 +115,5 @@ interface IZoneInfoWallTime
         [in] Integer yearDay);
 }
 
-[
-    uuid(0592baaf-0bb8-4915-a2d1-70674daaee88),
-    version(0.1.0)
-]
-interface IZoneInfoFactory
-{
-    ReadTimeZone(
-        [in] String id,
-        [in] IBufferIterator* it,
-        [in] Long currentTimeMillis,
-        [out] IZoneInfo** zoneInfo);
-}
-
 }
 }

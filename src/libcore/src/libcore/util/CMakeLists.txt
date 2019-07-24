@@ -26,11 +26,11 @@ include_directories(
 set(SOURCES
     BasicLruCache.cpp
     CharsetUtils.cpp
-    CZoneInfoFactory.cpp
-    CZoneInfoDBFactory.cpp
     TimeZoneDataFiles.cpp
     ZoneInfo.cpp
     ZoneInfoDB.cpp
+    ZoneInfoDBFactory.cpp
+    ZoneInfoFactory.cpp
     util.cpp)
 
 add_library(libcore_util STATIC

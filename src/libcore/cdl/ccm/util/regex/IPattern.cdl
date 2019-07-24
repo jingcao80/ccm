@@ -67,37 +67,6 @@ interface IPattern
         [out] String* pattStr);
 }
 
-[
-    uuid(9974f44c-cd70-4739-b946-9e773a674591),
-    version(0.1.0)
-]
-interface IPatternFactory
-{
-    Compile(
-        [in] String regex,
-        [out] IPattern** pattern);
-
-    Compile(
-        [in] String regex,
-        [in] Integer flags,
-        [out] IPattern** pattern);
-
-    FastSplit(
-        [in] String re,
-        [in] String input,
-        [in] Integer limit,
-        [out, callee] Array<String>* strArray);
-
-    Matches(
-        [in] String regex,
-        [in] ICharSequence* input,
-        [out] Boolean* matched);
-
-    Quote(
-        [in] String s,
-        [out] String* pattStr);
-}
-
 }
 }
 }

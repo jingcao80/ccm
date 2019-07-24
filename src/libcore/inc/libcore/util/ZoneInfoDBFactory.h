@@ -14,24 +14,25 @@
 // limitations under the License.
 //=========================================================================
 
-#include "libcore/util/CZoneInfoDBFactory.h"
-#include "libcore/util/ZoneInfoDB.h"
+#ifndef __LIBCORE_UTIL_ZONEINFODBFACTORY_H__
+#define __LIBCORE_UTIL_ZONEINFODBFACTORY_H__
+
+#include "libcore.util.IZoneInfoDBTzData.h"
 
 namespace libcore {
 namespace util {
 
-CCM_INTERFACE_IMPL_1(CZoneInfoDBFactory, Object, IZoneInfoDBFactory);
-CCM_OBJECT_IMPL(CZoneInfoDBFactory);
-
-ECode CZoneInfoDBFactory::GetInstance(
-    /* [out] */ IZoneInfoDBTzData** instance)
+class COM_PUBLIC ZoneInfoDBFactory
 {
-    VALIDATE_NOT_NULL(instance);
+public:
+    static ECode GetInstance(
+        /* [out] */ IZoneInfoDBTzData** instance);
 
-    AutoPtr<IZoneInfoDBTzData> tzdata = ZoneInfoDB::GetInstance();
-    tzdata.MoveTo(instance);
-    return NOERROR;
-}
+private:
+    ZoneInfoDBFactory();
+};
 
 }
 }
+
+#endif // __LIBCORE_UTIL_ZONEINFODBFACTORY_H__
