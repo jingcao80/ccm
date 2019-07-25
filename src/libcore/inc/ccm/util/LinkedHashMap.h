@@ -39,13 +39,11 @@ public:
             /* [in] */ IInterface* value,
             /* [in] */ Node* next)
             : HashMap::Node(hash, key, value, next)
-            , mBefore(nullptr)
-            , mAfter(nullptr)
         {}
 
     public:
-        LinkedHashMapEntry* mBefore;
-        LinkedHashMapEntry* mAfter;
+        LinkedHashMapEntry* mBefore = nullptr;
+        LinkedHashMapEntry* mAfter = nullptr;
     };
 
     class LinkedKeySet

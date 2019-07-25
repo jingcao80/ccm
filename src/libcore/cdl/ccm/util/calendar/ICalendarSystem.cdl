@@ -105,23 +105,6 @@ interface ICalendarSystem
         [out] Boolean* result);
 }
 
-[
-    uuid(1f9bdb0e-560f-4250-98cd-70ed9303203c),
-    version(0.1.0)
-]
-interface ICalendarSystemFactory
-{
-    ForName(
-        [in] String calendarName,
-        [out] ICalendarSystem** system);
-
-    GetCalendarProperties(
-        [out] IProperties** prop);
-
-    GetGregorianCalendar(
-        [out] IGregorian** gcal);
-}
-
 }
 }
 }

@@ -14,45 +14,40 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_IO_CBYTEBUFFERFACTORY_H__
-#define __CCM_IO_CBYTEBUFFERFACTORY_H__
+#ifndef __CCM_IO_BYTEBUFFERFACTORY_H__
+#define __CCM_IO_BYTEBUFFERFACTORY_H__
 
-#include "ccm.io.IByteBufferFactory.h"
-#include "_ccm_io_CByteBufferFactory.h"
-#include <ccmobject.h>
+#include "ccm.io.IByteBuffer.h"
 
 namespace ccm {
 namespace io {
 
-class CByteBufferFactory
-    : public Object
-    , public IByteBufferFactory
+class COM_PUBLIC ByteBufferFactory
 {
 public:
-    CCM_INTERFACE_DECL();
-
-    CCM_OBJECT_DECL();
-
-    ECode AllocateDirect(
+    static ECode AllocateDirect(
         /* [in] */ Integer capacity,
         /* [out] */ IByteBuffer** buffer);
 
-    ECode Allocate(
+    static ECode Allocate(
         /* [in] */ Integer capacity,
         /* [out] */ IByteBuffer** buffer);
 
-    ECode Wrap(
+    static ECode Wrap(
         /* [in] */ const Array<Byte>& array,
         /* [in] */ Integer offset,
         /* [in] */ Integer length,
         /* [out] */ IByteBuffer** buffer);
 
-    ECode Wrap(
+    static ECode Wrap(
         /* [in] */ const Array<Byte>& array,
         /* [out] */ IByteBuffer** buffer);
+
+private:
+    ByteBufferFactory();
 };
 
 }
 }
 
-#endif // __CCM_IO_CBYTEBUFFERFACTORY_H__
+#endif // __CCM_IO_BYTEBUFFERFACTORY_H__

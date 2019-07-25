@@ -102,15 +102,6 @@ coclass CBigDecimal
 }
 
 [
-    uuid(5c82b383-d9de-4b34-a397-a3bc218adf4e),
-    version(0.1.0)
-]
-coclass CBigDecimalFactory
-{
-    interface IBigDecimalFactory;
-}
-
-[
     uuid(7a1ab981-ac06-4343-9746-db146876d3ac),
     version(0.1.0)
 ]
@@ -143,15 +134,6 @@ coclass CBigInteger
     interface INumber;
     interface IComparable;
     interface ISerializable;
-}
-
-[
-    uuid(3d32adb7-698c-4d2e-8421-fa2df3e0211c),
-    version(0.1.0)
-]
-coclass CBigIntegerFactory
-{
-    interface IBigIntegerFactory;
 }
 
 [

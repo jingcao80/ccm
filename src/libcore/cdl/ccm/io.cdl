@@ -110,15 +110,6 @@ coclass CByteArrayOutputStream
 }
 
 [
-    uuid(a03130bc-f3b1-4922-8fb3-04e2f4709060),
-    version(0.1.0)
-]
-coclass CByteBufferFactory
-{
-    interface IByteBufferFactory;
-}
-
-[
     uuid(160997fd-1165-46dd-a47a-8a000bcd1916),
     version(0.1.0)
 ]
@@ -326,19 +317,6 @@ coclass CStringWriter
     interface ICloseable;
     interface IFlushable;
     interface IAutoCloseable;
-}
-
-namespace charset {
-
-[
-    uuid(45cd0dfe-950d-4617-b137-7b39ed3f219c),
-    version(0.1.0)
-]
-coclass CCharsetFactory
-{
-    interface ICharsetFactory;
-}
-
 }
 
 }

@@ -123,50 +123,5 @@ interface INumberFormat
         [in] Boolean newValue);
 }
 
-[
-    uuid(e266ebf3-ed91-4659-a842-f2640316b276),
-    version(0.1.0)
-]
-interface INumberFormatFactory
-{
-    GetAvailableLocales(
-        [out, callee] Array<ILocale*>* locales);
-
-    GetCurrencyInstance(
-        [out] INumberFormat** instance);
-
-    GetCurrencyInstance(
-        [in] ILocale* locale,
-        [out] INumberFormat** instance);
-
-    GetInstance(
-        [out] INumberFormat** instance);
-
-    GetInstance(
-        [in] ILocale* locale,
-        [out] INumberFormat** instance);
-
-    GetIntegerInstance(
-        [out] INumberFormat** instance);
-
-    GetIntegerInstance(
-        [in] ILocale* locale,
-        [out] INumberFormat** instance);
-
-    GetNumberInstance(
-        [out] INumberFormat** instance);
-
-    GetNumberInstance(
-        [in] ILocale* locale,
-        [out] INumberFormat** instance);
-
-    GetPercentInstance(
-        [out] INumberFormat** instance);
-
-    GetPercentInstance(
-        [in] ILocale* locale,
-        [out] INumberFormat** instance);
-}
-
 }
 }

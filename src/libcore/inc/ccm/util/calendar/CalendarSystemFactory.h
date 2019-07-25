@@ -14,31 +14,36 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CORE_CRuntimeFactory_H__
-#define __CCM_CORE_CRuntimeFactory_H__
+#ifndef __CCM_UTIL_CALENDAR_CALENDARSYSTEMFACTORY_H__
+#define __CCM_UTIL_CALENDAR_CALENDARSYSTEMFACTORY_H__
 
-#include "ccm.core.IRuntime.h"
-#include "ccm.core.IRuntimeFactory.h"
-#include "_ccm_core_CRuntimeFactory.h"
-#include <ccmobject.h>
+#include "ccm.util.IProperties.h"
+#include "ccm.util.calendar.ICalendarSystem.h"
+#include "ccm.util.calendar.IGregorian.h"
 
 namespace ccm {
-namespace core {
+namespace util {
+namespace calendar {
 
-Coclass(CRuntimeFactory)
-    , public Object
-    , public IRuntimeFactory
+class COM_PUBLIC CalendarSystemFactory
 {
 public:
-    CCM_INTERFACE_DECL();
+    static ECode ForName(
+        /* [in] */ const String& calendarName,
+        /* [out] */ ICalendarSystem** system);
 
-    CCM_OBJECT_DECL();
+    static ECode GetCalendarProperties(
+        /* [out] */ IProperties** prop);
 
-    ECode GetRuntime(
-        /* [out] */ IRuntime** runtime) override;
+    static ECode GetGregorianCalendar(
+        /* [out] */ IGregorian** gcal);
+
+private:
+    CalendarSystemFactory();
 };
 
 }
 }
+}
 
-#endif // __CCM_CORE_CRuntimeFactory_H__
+#endif // __CCM_UTIL_CALENDAR_CALENDARSYSTEMFACTORY_H__

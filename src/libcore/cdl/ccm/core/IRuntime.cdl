@@ -35,15 +35,5 @@ interface IRuntime
         [in] Integer status);
 }
 
-[
-    uuid(70d502ac-f307-4b5b-9b36-afe7ee687b7b),
-    version(0.1.0)
-]
-interface IRuntimeFactory
-{
-    GetRuntime(
-        [out] IRuntime** runtime);
-}
-
 }
 }

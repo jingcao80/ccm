@@ -14,30 +14,25 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm.io.charset.CCharsetFactory.h"
+#include "ccm/io/charset/CharsetFactory.h"
 #include "ccm.io.charset.ICharset.h"
-#include "ccm.io.charset.ICharsetFactory.h"
 #include <ccmautoptr.h>
 #include <gtest/gtest.h>
 
-using ccm::io::charset::CCharsetFactory;
+using ccm::io::charset::CharsetFactory;
 using ccm::io::charset::ICharset;
-using ccm::io::charset::ICharsetFactory;
-using ccm::io::charset::IID_ICharsetFactory;
 
 TEST(CharsetTest, TestNonstandardCharsetName)
 {
-    AutoPtr<ICharsetFactory> factory;
-    CCharsetFactory::New(IID_ICharsetFactory, (IInterface**)&factory);
     AutoPtr<ICharset> cs;
-    factory->ForName(String("UTF8"), &cs);
+    CharsetFactory::ForName(String("UTF8"), &cs);
     EXPECT_TRUE(cs != nullptr);
     String name;
     cs->GetName(&name);
     EXPECT_STREQ("UTF-8", name.string());
 
     AutoPtr<ICharset> cs2;
-    factory->ForName(String("UTF8"), &cs2);
+    CharsetFactory::ForName(String("UTF8"), &cs2);
     EXPECT_TRUE(cs2 != nullptr);
 }
 

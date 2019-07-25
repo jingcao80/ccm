@@ -14,16 +14,13 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm.core.CRuntimeFactory.h"
+#include "ccm/core/RuntimeFactory.h"
 #include "ccm.core.IRuntime.h"
-#include "ccm.core.IRuntimeFactory.h"
 #include <ccmautoptr.h>
 
 using namespace ccm;
-using ccm::core::CRuntimeFactory;
+using ccm::core::RuntimeFactory;
 using ccm::core::IRuntime;
-using ccm::core::IRuntimeFactory;
-using ccm::core::IID_IRuntimeFactory;
 
 extern ECode Main(Array<String>& args);
 
@@ -35,10 +32,8 @@ int main(int argv, char** argc)
         args[i] = argc[i];
     }
 
-    AutoPtr<IRuntimeFactory> rtFactory;
-    CRuntimeFactory::New(IID_IRuntimeFactory, (IInterface**)&rtFactory);
     AutoPtr<IRuntime> runtime;
-    rtFactory->GetRuntime(&runtime);
+    RuntimeFactory::GetRuntime(&runtime);
 
     ECode ec = Main(args);
 

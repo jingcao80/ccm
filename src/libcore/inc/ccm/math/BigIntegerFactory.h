@@ -14,39 +14,26 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_UTIL_CALENDAR_CCALENDARSYSTEMFACTORY_H__
-#define __CCM_UTIL_CALENDAR_CCALENDARSYSTEMFACTORY_H__
+#ifndef __CCM_MATH_BIGINTEGERFACTORY_H__
+#define __CCM_MATH_BIGINTEGERFACTORY_H__
 
-#include "ccm.util.calendar.ICalendarSystemFactory.h"
-#include "_ccm_util_calendar_CCalendarSystemFactory.h"
-#include <ccmobject.h>
+#include "ccm.math.IBigInteger.h"
 
 namespace ccm {
-namespace util {
-namespace calendar {
+namespace math {
 
-Coclass(CCalendarSystemFactory)
-    , public Object
-    , public ICalendarSystemFactory
+class COM_PUBLIC BigIntegerFactory
 {
 public:
-    CCM_INTERFACE_DECL();
+    static ECode ValueOf(
+        /* [in] */ Long value,
+        /* [out] */ IBigInteger** result);
 
-    CCM_OBJECT_DECL();
-
-    ECode ForName(
-        /* [in] */ const String& calendarName,
-        /* [out] */ ICalendarSystem** system) override;
-
-    ECode GetCalendarProperties(
-        /* [out] */ IProperties** prop) override;
-
-    ECode GetGregorianCalendar(
-        /* [out] */ IGregorian** gcal) override;
+private:
+    BigIntegerFactory();
 };
 
 }
 }
-}
 
-#endif // __CCM_UTIL_CALENDAR_CCALENDARSYSTEMFACTORY_H__
+#endif // __CCM_MATH_BIGINTEGERFACTORY_H__

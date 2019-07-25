@@ -28,8 +28,8 @@ set(SOURCES
     BaseCalendar.cpp
     CalendarDate.cpp
     CalendarSystem.cpp
+    CalendarSystemFactory.cpp
     CalendarUtils.cpp
-    CCalendarSystemFactory.cpp
     Era.cpp
     Gregorian.cpp
     ImmutableGregorianDate.cpp

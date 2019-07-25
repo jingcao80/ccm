@@ -30,7 +30,6 @@ set(SOURCES
     CalendarBuilder.cpp
     CharacterIteratorFieldDelegate.cpp
     ChoiceFormat.cpp
-    CNumberFormatFactory.cpp
     DateFormat.cpp
     DateFormatSymbols.cpp
     DecimalFormat.cpp
@@ -40,6 +39,7 @@ set(SOURCES
     Format.cpp
     MessageFormat.cpp
     NumberFormat.cpp
+    NumberFormatFactory.cpp
     ParsePosition.cpp
     SimpleDateFormat.cpp
     text.cpp)

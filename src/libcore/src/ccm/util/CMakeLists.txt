@@ -37,8 +37,7 @@ set(SOURCES
     ArrayList.cpp
     Arrays.cpp
     Calendar.cpp
-    CCalendarFactory.cpp
-    CLocaleFactory.cpp
+    CalendarFactory.cpp
     Collections.cpp
     Currency.cpp
     Date.cpp
@@ -52,6 +51,7 @@ set(SOURCES
     LinkedHashMap.cpp
     LinkedHashSet.cpp
     Locale.cpp
+    LocaleFactory.cpp
     Properties.cpp
     Random.cpp
     SimpleTimeZone.cpp

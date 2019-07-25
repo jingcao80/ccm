@@ -38,7 +38,6 @@ set(SOURCES
     ClassLoader.cpp
     CLong.cpp
     CoreUtils.cpp
-    CRuntimeFactory.cpp
     CShort.cpp
     CString.cpp
     CStringBuffer.cpp
@@ -64,6 +63,7 @@ set(SOURCES
     RealToString.cpp
     Runnable.cpp
     Runtime.cpp
+    RuntimeFactory.cpp
     StackTrace.cpp
     StackTraceElement.cpp
     StrictMath.cpp

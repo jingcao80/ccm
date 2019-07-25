@@ -14,20 +14,16 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/math/CBigIntegerFactory.h"
+#include "ccm/core/Runtime.h"
+#include "ccm/core/RuntimeFactory.h"
 
 namespace ccm {
-namespace math {
+namespace core {
 
-CCM_INTERFACE_IMPL_1(CBigIntegerFactory, Object, IBigIntegerFactory);
-
-CCM_OBJECT_IMPL(CBigIntegerFactory);
-
-ECode CBigIntegerFactory::ValueOf(
-    /* [in] */ Long value,
-    /* [out] */ IBigInteger** result)
+ECode RuntimeFactory::GetRuntime(
+    /* [out] */ IRuntime** runtime)
 {
-    return CBigInteger::ValueOf(value, result);
+    return Runtime::GetRuntime(runtime);
 }
 
 }

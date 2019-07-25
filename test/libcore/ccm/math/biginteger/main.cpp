@@ -16,24 +16,21 @@
 
 #include <ccmautoptr.h>
 #include <ccmobject.h>
+#include "ccm/math/BigIntegerFactory.h"
 #include "ccm.core.ILong.h"
 #include "ccm.core.INumber.h"
 #include "ccm.math.CBigInteger.h"
-#include "ccm.math.CBigIntegerFactory.h"
 #include "ccm.math.IBigInteger.h"
-#include "ccm.math.IBigIntegerFactory.h"
 #include "ccm.util.CRandom.h"
 #include "ccm.util.IRandom.h"
 #include <gtest/gtest.h>
 
 using ccm::core::ILong;
 using ccm::core::INumber;
+using ccm::math::BigIntegerFactory;
 using ccm::math::CBigInteger;
-using ccm::math::CBigIntegerFactory;
 using ccm::math::IBigInteger;
-using ccm::math::IBigIntegerFactory;
 using ccm::math::IID_IBigInteger;
-using ccm::math::IID_IBigIntegerFactory;
 using ccm::util::CRandom;
 using ccm::util::IRandom;
 using ccm::util::IID_IRandom;
@@ -48,20 +45,16 @@ TEST(BigIntegerTest, HashCodeTest)
     firstBig->Add(secondBig, &andedBigs);
     Long lv;
     INumber::Probe(andedBigs)->LongValue(&lv);
-    AutoPtr<IBigIntegerFactory> factory;
-    CBigIntegerFactory::New(IID_IBigIntegerFactory, (IInterface**)&factory);
     AutoPtr<IBigInteger> toCompareBig;
-    factory->ValueOf(lv, &toCompareBig);
+    BigIntegerFactory::ValueOf(lv, &toCompareBig);
     EXPECT_TRUE(Object::Equals(andedBigs, toCompareBig));
 }
 
 TEST(BigIntegerTest, ValueOfTest)
 {
-    AutoPtr<IBigIntegerFactory> factory;
-    CBigIntegerFactory::New(IID_IBigIntegerFactory, (IInterface**)&factory);
     for (Integer i = -1024; i <= 1024; ++i) {
         AutoPtr<IBigInteger> bi;
-        factory->ValueOf(i, &bi);
+        BigIntegerFactory::ValueOf(i, &bi);
         Integer iv;
         INumber::Probe(bi)->IntegerValue(&iv);
         EXPECT_EQ(i, iv);
@@ -184,12 +177,10 @@ TEST(BigIntegerTest, PositiveValuesSuperfluousZerosTest)
 
 TEST(BigIntegerTest, DivideTest)
 {
-    AutoPtr<IBigIntegerFactory> factory;
-    CBigIntegerFactory::New(IID_IBigIntegerFactory, (IInterface**)&factory);
     AutoPtr<IBigInteger> negV;
-    factory->ValueOf(ILong::MIN_VALUE, &negV);
+    BigIntegerFactory::ValueOf(ILong::MIN_VALUE, &negV);
     AutoPtr<IBigInteger> divisor;
-    factory->ValueOf(-1, &divisor);
+    BigIntegerFactory::ValueOf(-1, &divisor);
     AutoPtr<IBigInteger> posV;
     negV->Divide(divisor, &posV);
     EXPECT_STREQ("-9223372036854775808", Object::ToString(negV).string());

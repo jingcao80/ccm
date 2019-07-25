@@ -24,8 +24,8 @@ include_directories(
     ${OBJ_DIR})
 
 set(SOURCES
-    CCharsetFactory.cpp
     Charset.cpp
+    CharsetFactory.cpp
     CharsetDecoder.cpp
     CharsetDecoderICU.cpp
     CharsetEncoder.cpp

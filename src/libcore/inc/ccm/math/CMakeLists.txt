@@ -14,10 +14,10 @@
 # limitations under the License.
 #=========================================================================
 
-add_custom_target(deploy_libcore_text_headers)
-add_dependencies(deploy_libcore_text_headers ccmrt)
+add_custom_target(deploy_libcore_math_headers)
+add_dependencies(deploy_libcore_math_headers ccmrt)
 
-MKDIR(deploy_libcore_text_headers ${INC_DIR}/ccm/text)
+MKDIR(deploy_libcore_math_headers ${INC_DIR}/ccm/math)
 
-COPY(deploy_libcore_text_headers ${LIBCORE_CCM_INC_DIR}/text/AttributedCharacterIteratorAttributeFactory.h ${INC_DIR}/ccm/text)
-COPY(deploy_libcore_text_headers ${LIBCORE_CCM_INC_DIR}/text/NumberFormatFactory.h ${INC_DIR}/ccm/text)
+COPY(deploy_libcore_math_headers ${LIBCORE_CCM_INC_DIR}/math/BigDecimalFactory.h ${INC_DIR}/ccm/math)
+COPY(deploy_libcore_math_headers ${LIBCORE_CCM_INC_DIR}/math/BigIntegerFactory.h ${INC_DIR}/ccm/math)

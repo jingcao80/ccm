@@ -15,13 +15,12 @@
 //=========================================================================
 
 #include "ZoneInfoTestHelper.h"
+#include "ccm/io/ByteBufferFactory.h"
 #include "ccm.core.CInteger.h"
 #include "ccm.core.IArrayHolder.h"
 #include "ccm.io.CByteArrayOutputStream.h"
-#include "ccm.io.CByteBufferFactory.h"
 #include "ccm.io.IBuffer.h"
 #include "ccm.io.IByteBuffer.h"
-#include "ccm.io.IByteBufferFactory.h"
 #include "ccm.util.CArrayList.h"
 #include "ccm.util.CHashMap.h"
 #include "ccm.util.IIterator.h"
@@ -30,13 +29,11 @@
 
 using ccm::core::CInteger;
 using ccm::core::IArrayHolder;
+using ccm::io::ByteBufferFactory;
 using ccm::io::CByteArrayOutputStream;
-using ccm::io::CByteBufferFactory;
 using ccm::io::IBuffer;
 using ccm::io::IByteBuffer;
-using ccm::io::IByteBufferFactory;
 using ccm::io::IID_IByteArrayOutputStream;
-using ccm::io::IID_IByteBufferFactory;
 using ccm::util::CArrayList;
 using ccm::util::CHashMap;
 using ccm::util::IID_IList;
@@ -186,10 +183,8 @@ void ZoneInfoTestHelper::WriteInteger(
     /* [in] */ IByteArrayOutputStream* os,
     /* [in] */ Integer value)
 {
-    AutoPtr<IByteBufferFactory> factory;
-    CByteBufferFactory::New(IID_IByteBufferFactory, (IInterface**)&factory);
     AutoPtr<IByteBuffer> bb;
-    factory->Allocate(4, &bb);
+    ByteBufferFactory::Allocate(4, &bb);
     bb->PutInteger(value);
     AutoPtr<IArrayHolder> holder;
     IBuffer::Probe(bb)->GetArray((IInterface**)&holder);

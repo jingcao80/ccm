@@ -14,62 +14,59 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/math/CBigDecimalFactory.h"
+#include "ccm/math/BigDecimal.h"
+#include "ccm/math/BigDecimalFactory.h"
 
 namespace ccm {
 namespace math {
 
-CCM_INTERFACE_IMPL_1(CBigDecimalFactory, Object, IBigDecimalFactory);
-
-CCM_OBJECT_IMPL(CBigDecimalFactory);
-
-ECode CBigDecimalFactory::GetONE(
+ECode BigDecimalFactory::GetONE(
     /* [out] */ IBigDecimal** value)
 {
     VALIDATE_NOT_NULL(value);
 
-    CBigDecimal::GetONE().MoveTo(value);
+    BigDecimal::GetONE().MoveTo(value);
     return NOERROR;
 }
 
-ECode CBigDecimalFactory::GetTEN(
+ECode BigDecimalFactory::GetTEN(
     /* [out] */ IBigDecimal** value)
 {
     VALIDATE_NOT_NULL(value);
 
-    CBigDecimal::GetTEN().MoveTo(value);
+    BigDecimal::GetTEN().MoveTo(value);
     return NOERROR;
 }
 
-ECode CBigDecimalFactory::GetZERO(
+ECode BigDecimalFactory::GetZERO(
     /* [out] */ IBigDecimal** value)
 {
     VALIDATE_NOT_NULL(value);
 
-    CBigDecimal::GetZERO().MoveTo(value);
+    BigDecimal::GetZERO().MoveTo(value);
     return NOERROR;
 }
 
-ECode CBigDecimalFactory::ValueOf(
+ECode BigDecimalFactory::ValueOf(
     /* [in] */ Long unscaledValue,
     /* [out] */ IBigDecimal** result)
 {
-    return CBigDecimal::ValueOf(unscaledValue, result);
+    return BigDecimal::ValueOf(unscaledValue, result);
 }
 
-ECode CBigDecimalFactory::ValueOf(
+ECode BigDecimalFactory::ValueOf(
     /* [in] */ Long unscaledValue,
     /* [in] */ Integer scale,
     /* [out] */ IBigDecimal** result)
 {
-    return CBigDecimal::ValueOf(unscaledValue, scale, result);
+    return BigDecimal::ValueOf(unscaledValue, scale, result);
 }
 
-ECode CBigDecimalFactory::ValueOf(
+ECode BigDecimalFactory::ValueOf(
     /* [in] */ Double value,
     /* [out] */ IBigDecimal** result)
 {
-    return CBigDecimal::ValueOf(value, result);
+    return BigDecimal::ValueOf(value, result);
 }
 
 }

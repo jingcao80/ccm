@@ -38,8 +38,8 @@ set(SOURCES
     ByteBufferAsIntegerBuffer.cpp
     ByteBufferAsLongBuffer.cpp
     ByteBufferAsShortBuffer.cpp
+    ByteBufferFactory.cpp
     ByteOrder.cpp
-    CByteBufferFactory.cpp
     CharBuffer.cpp
     DeleteOnExitHook.cpp
     DirectByteBuffer.cpp

@@ -14,21 +14,25 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/core/CRuntimeFactory.h"
-#include "ccm/core/Runtime.h"
+#ifndef __CCM_CORE_RuntimeFactory_H__
+#define __CCM_CORE_RuntimeFactory_H__
+
+#include "ccm.core.IRuntime.h"
 
 namespace ccm {
 namespace core {
 
-CCM_INTERFACE_IMPL_1(CRuntimeFactory, Object, IRuntimeFactory);
-
-CCM_OBJECT_IMPL(CRuntimeFactory);
-
-ECode CRuntimeFactory::GetRuntime(
-    /* [out] */ IRuntime** runtime)
+class COM_PUBLIC RuntimeFactory
 {
-    return Runtime::GetRuntime(runtime);
-}
+public:
+    static ECode GetRuntime(
+        /* [out] */ IRuntime** runtime);
+
+private:
+    RuntimeFactory();
+};
 
 }
 }
+
+#endif // __CCM_CORE_RuntimeFactory_H__

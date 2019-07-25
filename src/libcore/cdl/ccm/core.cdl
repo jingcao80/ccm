@@ -78,15 +78,6 @@ coclass CArrayHolder
 }
 
 [
-    uuid(21fcb33c-cdb4-41da-9a63-fd97f8c18afe),
-    version(0.1.0)
-]
-coclass CRuntimeFactory
-{
-    interface IRuntimeFactory;
-}
-
-[
     uuid(6cdec0e6-ee66-4ba3-b167-e8d45e029fbd),
     version(0.1.0)
 ]

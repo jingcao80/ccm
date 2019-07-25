@@ -14,20 +14,17 @@
 // limitations under the License.
 //=========================================================================
 
+#include "ccm/util/LocaleFactory.h"
 #include "ccm.util.CLocale.h"
-#include "ccm.util.CLocaleFactory.h"
 #include "ccm.util.ILocale.h"
-#include "ccm.util.ILocaleFactory.h"
 #include <ccmautoptr.h>
 #include <gtest/gtest.h>
 
 using namespace ccm;
 using ccm::util::CLocale;
-using ccm::util::CLocaleFactory;
 using ccm::util::ILocale;
-using ccm::util::ILocaleFactory;
 using ccm::util::IID_ILocale;
-using ccm::util::IID_ILocaleFactory;
+using ccm::util::LocaleFactory;
 
 TEST(LocaleTest, NewTest)
 {
@@ -42,10 +39,8 @@ TEST(LocaleTest, NewTest)
 
 TEST(LocaleTest, GetDefaultTest)
 {
-    AutoPtr<ILocaleFactory> lf;
-    CLocaleFactory::New(IID_ILocaleFactory, (IInterface**)&lf);
     AutoPtr<ILocale> locale;
-    lf->GetDefault(&locale);
+    LocaleFactory::GetDefault(&locale);
     EXPECT_TRUE(locale != nullptr);
     String language, country;
     locale->GetLanguage(&language);

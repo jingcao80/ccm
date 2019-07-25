@@ -14,29 +14,33 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/io/charset/Charset.h"
-#include "ccm/io/charset/CCharsetFactory.h"
+#include "ccm/util/calendar/CalendarSystem.h"
+#include "ccm/util/calendar/CalendarSystemFactory.h"
 
 namespace ccm {
-namespace io {
-namespace charset {
+namespace util {
+namespace calendar {
 
-CCM_INTERFACE_IMPL_1(CCharsetFactory, Object, ICharsetFactory);
-
-CCM_OBJECT_IMPL(CCharsetFactory);
-
-ECode CCharsetFactory::ForName(
-    /* [in] */ const String& charsetName,
-    /* [out] */ ICharset** cs)
+ECode CalendarSystemFactory::ForName(
+    /* [in] */ const String& calendarName,
+    /* [out] */ ICalendarSystem** system)
 {
-    return Charset::ForName(charsetName, cs);
+    return CalendarSystem::ForName(calendarName, system);
 }
 
-ECode CCharsetFactory::ForNameUEE(
-    /* [in] */ const String& charsetName,
-    /* [out] */ ICharset** cs)
+ECode CalendarSystemFactory::GetCalendarProperties(
+    /* [out] */ IProperties** prop)
 {
-    return Charset::ForNameUEE(charsetName, cs);
+    return CalendarSystem::GetCalendarProperties(prop);
+}
+
+ECode CalendarSystemFactory::GetGregorianCalendar(
+    /* [out] */ IGregorian** gcal)
+{
+    VALIDATE_NOT_NULL(gcal);
+
+    CalendarSystem::GetGregorianCalendar().MoveTo(gcal);
+    return NOERROR;
 }
 
 }

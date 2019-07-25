@@ -26,6 +26,7 @@ COPY(deploy_libcore_core_headers ${LIBCORE_CCM_INC_DIR}/core/CoreUtils.h ${INC_D
 COPY(deploy_libcore_core_headers ${LIBCORE_CCM_INC_DIR}/core/Math.h ${INC_DIR}/ccm/core)
 COPY(deploy_libcore_core_headers ${LIBCORE_CCM_INC_DIR}/core/NativeAtomic.h ${INC_DIR}/ccm/core)
 COPY(deploy_libcore_core_headers ${LIBCORE_CCM_INC_DIR}/core/Runnable.h ${INC_DIR}/ccm/core)
+COPY(deploy_libcore_core_headers ${LIBCORE_CCM_INC_DIR}/core/RuntimeFactory.h ${INC_DIR}/ccm/core)
 COPY(deploy_libcore_core_headers ${LIBCORE_CCM_INC_DIR}/core/StringUtils.h ${INC_DIR}/ccm/core)
 COPY(deploy_libcore_core_headers ${LIBCORE_CCM_INC_DIR}/core/SyncObject.h ${INC_DIR}/ccm/core)
 COPY(deploy_libcore_core_headers ${LIBCORE_CCM_INC_DIR}/core/volatile.h ${INC_DIR}/ccm/core)

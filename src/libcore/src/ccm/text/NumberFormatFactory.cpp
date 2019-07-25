@@ -14,17 +14,13 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/text/CNumberFormatFactory.h"
 #include "ccm/text/NumberFormat.h"
+#include "ccm/text/NumberFormatFactory.h"
 
 namespace ccm {
 namespace text {
 
-CCM_INTERFACE_IMPL_1(CNumberFormatFactory, Object, INumberFormatFactory);
-
-CCM_OBJECT_IMPL(CNumberFormatFactory);
-
-ECode CNumberFormatFactory::GetAvailableLocales(
+ECode NumberFormatFactory::GetAvailableLocales(
     /* [out, callee] */ Array<ILocale*>* locales)
 {
     VALIDATE_NOT_NULL(locales);
@@ -33,65 +29,65 @@ ECode CNumberFormatFactory::GetAvailableLocales(
     return NOERROR;
 }
 
-ECode CNumberFormatFactory::GetCurrencyInstance(
+ECode NumberFormatFactory::GetCurrencyInstance(
     /* [out] */ INumberFormat** instance)
 {
     return NumberFormat::GetCurrencyInstance(instance);
 }
 
-ECode CNumberFormatFactory::GetCurrencyInstance(
+ECode NumberFormatFactory::GetCurrencyInstance(
     /* [in] */ ILocale* locale,
     /* [out] */ INumberFormat** instance)
 {
     return NumberFormat::GetCurrencyInstance(locale, instance);
 }
 
-ECode CNumberFormatFactory::GetInstance(
+ECode NumberFormatFactory::GetInstance(
     /* [out] */ INumberFormat** instance)
 {
     return NumberFormat::GetInstance(instance);
 }
 
-ECode CNumberFormatFactory::GetInstance(
+ECode NumberFormatFactory::GetInstance(
     /* [in] */ ILocale* locale,
     /* [out] */ INumberFormat** instance)
 {
     return NumberFormat::GetInstance(locale, instance);
 }
 
-ECode CNumberFormatFactory::GetIntegerInstance(
+ECode NumberFormatFactory::GetIntegerInstance(
     /* [out] */ INumberFormat** instance)
 {
     return NumberFormat::GetIntegerInstance(instance);
 }
 
-ECode CNumberFormatFactory::GetIntegerInstance(
+ECode NumberFormatFactory::GetIntegerInstance(
     /* [in] */ ILocale* locale,
     /* [out] */ INumberFormat** instance)
 {
     return NumberFormat::GetIntegerInstance(locale, instance);
 }
 
-ECode CNumberFormatFactory::GetNumberInstance(
+ECode NumberFormatFactory::GetNumberInstance(
     /* [out] */ INumberFormat** instance)
 {
     return NumberFormat::GetNumberInstance(instance);
 }
 
-ECode CNumberFormatFactory::GetNumberInstance(
+ECode NumberFormatFactory::GetNumberInstance(
     /* [in] */ ILocale* locale,
     /* [out] */ INumberFormat** instance)
 {
     return NumberFormat::GetNumberInstance(locale, instance);
 }
 
-ECode CNumberFormatFactory::GetPercentInstance(
+ECode NumberFormatFactory::GetPercentInstance(
     /* [out] */ INumberFormat** instance)
 {
     return NumberFormat::GetPercentInstance(instance);
 }
 
-ECode CNumberFormatFactory::GetPercentInstance(
+ECode NumberFormatFactory::GetPercentInstance(
     /* [in] */ ILocale* locale,
     /* [out] */ INumberFormat** instance)
 {

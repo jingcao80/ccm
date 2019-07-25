@@ -197,30 +197,5 @@ interface IByteBuffer
         [out] IByteBuffer** buffer);
 }
 
-[
-    uuid(48ce68bd-cca8-4eb5-b595-ec682c3bbd7a),
-    version(0.1.0)
-]
-interface IByteBufferFactory
-{
-    AllocateDirect(
-        [in] Integer capacity,
-        [out] IByteBuffer** buffer);
-
-    Allocate(
-        [in] Integer capacity,
-        [out] IByteBuffer** buffer);
-
-    Wrap(
-        [in] Array<Byte> array,
-        [in] Integer offset,
-        [in] Integer length,
-        [out] IByteBuffer** buffer);
-
-    Wrap(
-        [in] Array<Byte> array,
-        [out] IByteBuffer** buffer);
-}
-
 }
 }

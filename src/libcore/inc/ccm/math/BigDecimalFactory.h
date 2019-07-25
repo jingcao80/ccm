@@ -14,49 +14,44 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_MATH_CBIGDECIMALFACTORY_H__
-#define __CCM_MATH_CBIGDECIMALFACTORY_H__
+#ifndef __CCM_MATH_BIGDECIMALFACTORY_H__
+#define __CCM_MATH_BIGDECIMALFACTORY_H__
 
-#include "ccm/math/CBigDecimal.h"
-#include "ccm.math.IBigDecimalFactory.h"
-#include "_ccm_math_CBigDecimalFactory.h"
+#include "ccm.math.IBigDecimal.h"
 
 namespace ccm {
 namespace math {
 
-class CBigDecimalFactory
-    : public Object
-    , public IBigDecimalFactory
+class COM_PUBLIC BigDecimalFactory
 {
 public:
-    CCM_INTERFACE_DECL();
+    static ECode GetONE(
+        /* [out] */ IBigDecimal** value);
 
-    CCM_OBJECT_DECL();
+    static ECode GetTEN(
+        /* [out] */ IBigDecimal** value);
 
-    ECode GetONE(
-        /* [out] */ IBigDecimal** value) override;
+    static ECode GetZERO(
+        /* [out] */ IBigDecimal** value);
 
-    ECode GetTEN(
-        /* [out] */ IBigDecimal** value) override;
-
-    ECode GetZERO(
-        /* [out] */ IBigDecimal** value) override;
-
-    ECode ValueOf(
+    static ECode ValueOf(
         /* [in] */ Long unscaledValue,
-        /* [out] */ IBigDecimal** result) override;
+        /* [out] */ IBigDecimal** result);
 
-    ECode ValueOf(
+    static ECode ValueOf(
         /* [in] */ Long unscaledValue,
         /* [in] */ Integer scale,
-        /* [out] */ IBigDecimal** result) override;
+        /* [out] */ IBigDecimal** result);
 
-    ECode ValueOf(
+    static ECode ValueOf(
         /* [in] */ Double value,
-        /* [out] */ IBigDecimal** result) override;
+        /* [out] */ IBigDecimal** result);
+
+private:
+    BigDecimalFactory();
 };
 
 }
 }
 
-#endif // __CCM_MATH_CBIGDECIMALFACTORY_H__
+#endif // __CCM_MATH_BIGDECIMALFACTORY_H__

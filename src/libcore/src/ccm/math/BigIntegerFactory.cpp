@@ -14,31 +14,18 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_MATH_CBIGINTEGERFACTORY_H__
-#define __CCM_MATH_CBIGINTEGERFACTORY_H__
-
-#include "ccm/math/CBigInteger.h"
-#include "ccm.math.IBigIntegerFactory.h"
-#include "_ccm_math_CBigIntegerFactory.h"
+#include "ccm/math/BigInteger.h"
+#include "ccm/math/BigIntegerFactory.h"
 
 namespace ccm {
 namespace math {
 
-class CBigIntegerFactory
-    : public Object
-    , public IBigIntegerFactory
+ECode BigIntegerFactory::ValueOf(
+    /* [in] */ Long value,
+    /* [out] */ IBigInteger** result)
 {
-public:
-    CCM_INTERFACE_DECL();
-
-    CCM_OBJECT_DECL();
-
-    ECode ValueOf(
-        /* [in] */ Long value,
-        /* [out] */ IBigInteger** result);
-};
+    return BigInteger::ValueOf(value, result);
+}
 
 }
 }
-
-#endif // __CCM_MATH_CBIGINTEGERFACTORY_H__

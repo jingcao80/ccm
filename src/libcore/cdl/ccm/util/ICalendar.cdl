@@ -274,33 +274,5 @@ interface ICalendar
         [in] Integer dayOfWeek);
 }
 
-[
-    uuid(5d5edfde-fe0b-4bd6-91e2-96e4b8d8742b),
-    version(0.1.0)
-]
-interface ICalendarFactory
-{
-    GetInstance(
-        [out] ICalendar** cal);
-
-    GetInstance(
-        [in] ITimeZone* zone,
-        [out] ICalendar** cal);
-
-    GetInstance(
-        [in] ILocale* aLocale,
-        [out] ICalendar** cal);
-
-    GetInstance(
-        [in] ITimeZone* zone,
-        [in] ILocale* aLocale,
-        [out] ICalendar** cal);
-
-    GetJapaneseImperialInstance(
-        [in] ITimeZone* zone,
-        [in] ILocale* aLocale,
-        [out] ICalendar** cal);
-}
-
 }
 }

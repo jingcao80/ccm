@@ -223,59 +223,5 @@ interface IDateFormat
         [in] ITimeZone* timezone);
 }
 
-[
-    uuid(70d5b2d6-8ac6-461a-bf2b-dd12826584fc),
-    version(0.1.0)
-]
-interface IDateFormatFactory
-{
-    GetAvailableLocales(
-        [out, callee] Array<ILocale*>* locales);
-
-    GetDateInstance(
-        [out] IDateFormat** instance);
-
-    GetDateInstance(
-        [in] Integer style,
-        [out] IDateFormat** instance);
-
-    GetDateInstance(
-        [in] Integer style,
-        [in] ILocale* locale,
-        [out] IDateFormat** instance);
-
-    GetDateTimeInstance(
-        [out] IDateFormat** instance);
-
-    GetDateTimeInstance(
-        [in] Integer dateStyle,
-        [in] Integer timeStyle,
-        [out] IDateFormat** instance);
-
-    GetDateTimeInstance(
-        [in] Integer dateStyle,
-        [in] Integer timeStyle,
-        [in] ILocale* locale,
-        [out] IDateFormat** instance);
-
-    GetInstance(
-        [out] IDateFormat** instance);
-
-    GetTimeInstance(
-        [out] IDateFormat** instance);
-
-    GetTimeInstance(
-        [in] Integer style,
-        [out] IDateFormat** instance);
-
-    GetTimeInstance(
-        [in] Integer style,
-        [in] ILocale* locale,
-        [out] IDateFormat** instance);
-
-    Set24HourTimePref(
-        [in] IBoolean* is24Hour);
-}
-
 }
 }

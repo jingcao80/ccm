@@ -239,34 +239,5 @@ interface IBigDecimal
         [out] IBigInteger** value);
 }
 
-[
-    uuid(a04be87d-543c-4592-b9e7-bff8c4dfbbaa),
-    version(0.1.0)
-]
-interface IBigDecimalFactory
-{
-    GetONE(
-        [out] IBigDecimal** value);
-
-    GetTEN(
-        [out] IBigDecimal** value);
-
-    GetZERO(
-        [out] IBigDecimal** value);
-
-    ValueOf(
-        [in] Long unscaledValue,
-        [out] IBigDecimal** result);
-
-    ValueOf(
-        [in] Long unscaledValue,
-        [in] Integer scale,
-        [out] IBigDecimal** result);
-
-    ValueOf(
-        [in] Double value,
-        [out] IBigDecimal** result);
-}
-
 }
 }

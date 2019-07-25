@@ -16,21 +16,18 @@
 
 #include "ccm/core/CoreUtils.h"
 #include "ccm/core/StringUtils.h"
+#include "ccm/text/NumberFormatFactory.h"
+#include "ccm/util/CalendarFactory.h"
+#include "ccm/util/LocaleFactory.h"
 #include "ccm/util/TimeZoneFactory.h"
 #include "ccm.math.CBigDecimal.h"
 #include "ccm.math.IBigDecimal.h"
-#include "ccm.text.CNumberFormatFactory.h"
 #include "ccm.text.IDecimalFormat.h"
 #include "ccm.text.IDecimalFormatSymbols.h"
 #include "ccm.text.INumberFormat.h"
-#include "ccm.text.INumberFormatFactory.h"
-#include "ccm.util.CCalendarFactory.h"
 #include "ccm.util.CLocale.h"
-#include "ccm.util.CLocaleFactory.h"
 #include "ccm.util.ICalendar.h"
-#include "ccm.util.ICalendarFactory.h"
 #include "ccm.util.ILocale.h"
-#include "ccm.util.ILocaleFactory.h"
 #include "ccm.util.ITimeZone.h"
 #include <ccmautoptr.h>
 #include <gtest/gtest.h>
@@ -41,22 +38,16 @@ using ccm::core::StringUtils;
 using ccm::math::CBigDecimal;
 using ccm::math::IBigDecimal;
 using ccm::math::IID_IBigDecimal;
-using ccm::text::CNumberFormatFactory;
 using ccm::text::IDecimalFormat;
 using ccm::text::IDecimalFormatSymbols;
-using ccm::text::IID_INumberFormatFactory;
 using ccm::text::INumberFormat;
-using ccm::text::INumberFormatFactory;
-using ccm::util::CCalendarFactory;
+using ccm::text::NumberFormatFactory;
+using ccm::util::CalendarFactory;
 using ccm::util::CLocale;
-using ccm::util::CLocaleFactory;
-using ccm::util::IID_ICalendarFactory;
 using ccm::util::IID_ILocale;
-using ccm::util::IID_ILocaleFactory;
 using ccm::util::ICalendar;
-using ccm::util::ICalendarFactory;
 using ccm::util::ILocale;
-using ccm::util::ILocaleFactory;
+using ccm::util::LocaleFactory;
 using ccm::util::ITimeZone;
 using ccm::util::TimeZoneFactory;
 
@@ -110,10 +101,8 @@ TEST(FormatterTest, TestNumberLocalization)
     // same code, so this is representative):
     AutoPtr<ITimeZone> tz;
     TimeZoneFactory::GetTimeZone(String("GMT-08:00"), &tz);
-    AutoPtr<ICalendarFactory> calFactory;
-    CCalendarFactory::New(IID_ICalendarFactory, (IInterface**)&calFactory);
     AutoPtr<ICalendar> c;
-    calFactory->GetInstance(tz, &c);
+    CalendarFactory::GetInstance(tz, &c);
     c->SetTimeInMillis(0);
     args = { c };
     arabicStr = StringUtils::Format(arabic, String("12 %tT 34"), &args);
@@ -145,10 +134,8 @@ TEST(FormatterTest, TestNumberLocalization)
 
 TEST(FormatterTest, TestInternationalizedExponent)
 {
-    AutoPtr<ILocaleFactory> factory;
-    CLocaleFactory::New(IID_ILocaleFactory, (IInterface**)&factory);
     AutoPtr<ILocale> eng;
-    factory->GetENGLISH(&eng);
+    LocaleFactory::GetENGLISH(&eng);
 
     Array<IInterface*> args{ CoreUtils::Box(100.0) };
     String engStr = StringUtils::Format(eng, String("%.0E"), &args);
@@ -190,10 +177,8 @@ TEST(FormatterTest, TestInternationalizedExponent)
 
 TEST(FormatterTest, TestUppercaseConversiont)
 {
-    AutoPtr<ILocaleFactory> factory;
-    CLocaleFactory::New(IID_ILocaleFactory, (IInterface**)&factory);
     AutoPtr<ILocale> us;
-    factory->GetENGLISH(&us);
+    LocaleFactory::GetENGLISH(&us);
 
     Array<IInterface*> args{ CoreUtils::Box(String("jakob arjouni")) };
     String usStr = StringUtils::Format(us, String("%S"), &args);
@@ -297,10 +282,8 @@ TEST(FormatterTest, TestFormatNull)
 {
     // We fast-path %s and %d (with no configuration) but need to make sure we handle the
     // special case of the null argument...
-    AutoPtr<ILocaleFactory> factory;
-    CLocaleFactory::New(IID_ILocaleFactory, (IInterface**)&factory);
     AutoPtr<ILocale> us;
-    factory->GetENGLISH(&us);
+    LocaleFactory::GetENGLISH(&us);
 
     String usStr = StringUtils::Format(us, String("%s"), nullptr);
     EXPECT_STREQ(usStr.string(), "null");
@@ -369,10 +352,8 @@ TEST(FormatterTest, TestGroupingSizeZero)
 #ifdef __aarch64__
     AutoPtr<ILocale> localeWithoutGrouping;
     CLocale::New(String("en"), String("US"), String("POSIX"), IID_ILocale, (IInterface**)&localeWithoutGrouping);
-    AutoPtr<INumberFormatFactory> factory;
-    CNumberFormatFactory::New(IID_INumberFormatFactory, (IInterface**)&factory);
     AutoPtr<INumberFormat> nf;
-    factory->GetInstance(localeWithoutGrouping, &nf);
+    NumberFormatFactory::GetInstance(localeWithoutGrouping, &nf);
     IDecimalFormat* decimalFormat = IDecimalFormat::Probe(nf);
 
     // Confirm the locale is still a good example: it has a group separator, but no grouping in

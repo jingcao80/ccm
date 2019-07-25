@@ -13,3 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #=========================================================================
+
+add_custom_target(deploy_libcore_io_headers)
+add_dependencies(deploy_libcore_io_headers ccmrt)
+
+MKDIR(deploy_libcore_io_headers ${INC_DIR}/ccm/io)
+MKDIR(deploy_libcore_io_headers ${INC_DIR}/ccm/io/charset)
+
+COPY(deploy_libcore_io_headers ${LIBCORE_CCM_INC_DIR}/io/ByteBufferFactory.h ${INC_DIR}/ccm/io)
+COPY(deploy_libcore_io_headers ${LIBCORE_CCM_INC_DIR}/io/charset/CharsetFactory.h ${INC_DIR}/ccm/io/charset)

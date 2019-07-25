@@ -26,11 +26,11 @@ include_directories(
 
 set(SOURCES
     BigDecimal.cpp
+    BigDecimalFactory.cpp
     BigInt.cpp
     BigInteger.cpp
+    BigIntegerFactory.cpp
     BitLevel.cpp
-    CBigDecimalFactory.cpp
-    CBigIntegerFactory.cpp
     Conversion.cpp
     Division.cpp
     Logical.cpp

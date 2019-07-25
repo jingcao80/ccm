@@ -93,15 +93,6 @@ namespace ccm {
 namespace util {
 
 [
-    uuid(8eea98fd-b8ab-4bdb-9d46-49c86ce7f584),
-    version(0.1.0)
-]
-coclass CCalendarFactory
-{
-    interface ICalendarFactory;
-}
-
-[
     uuid(7dbd4e0a-4bf2-4ccb-a4e9-bfe232b40ba4),
     version(0.1.0)
 ]
@@ -444,15 +435,6 @@ coclass CLocaleBuilder
 }
 
 [
-    uuid(92cb7faf-8a8a-4fdd-b6ec-d43a2b55349f),
-    version(0.1.0)
-]
-coclass CLocaleFactory
-{
-    interface ILocaleFactory;
-}
-
-[
     uuid(2f6a7390-6aed-4f7d-863e-3f007635ba14),
     version(0.1.0)
 ]
@@ -693,15 +675,6 @@ coclass CVector
 }
 
 namespace calendar {
-
-[
-    uuid(d8b9fb39-2e68-4209-8cd3-9a2f0235f9e2),
-    version(0.1.0)
-]
-coclass CCalendarSystemFactory
-{
-    interface ICalendarSystemFactory;
-}
 
 [
     uuid(40eab8b9-84da-4399-a171-ce260a17204a),

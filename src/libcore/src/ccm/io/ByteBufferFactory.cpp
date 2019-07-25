@@ -15,29 +15,26 @@
 //=========================================================================
 
 #include "ccm/io/ByteBuffer.h"
-#include "ccm/io/CByteBufferFactory.h"
+#include "ccm/io/ByteBufferFactory.h"
 
 namespace ccm {
 namespace io {
 
-CCM_INTERFACE_IMPL_1(CByteBufferFactory, Object, IByteBufferFactory);
-CCM_OBJECT_IMPL(CByteBufferFactory);
-
-ECode CByteBufferFactory::AllocateDirect(
+ECode ByteBufferFactory::AllocateDirect(
     /* [in] */ Integer capacity,
     /* [out] */ IByteBuffer** buffer)
 {
     return ByteBuffer::AllocateDirect(capacity, buffer);
 }
 
-ECode CByteBufferFactory::Allocate(
+ECode ByteBufferFactory::Allocate(
     /* [in] */ Integer capacity,
     /* [out] */ IByteBuffer** buffer)
 {
     return ByteBuffer::Allocate(capacity, buffer);
 }
 
-ECode CByteBufferFactory::Wrap(
+ECode ByteBufferFactory::Wrap(
     /* [in] */ const Array<Byte>& array,
     /* [in] */ Integer offset,
     /* [in] */ Integer length,
@@ -46,7 +43,7 @@ ECode CByteBufferFactory::Wrap(
     return ByteBuffer::Wrap(array, offset, length, buffer);
 }
 
-ECode CByteBufferFactory::Wrap(
+ECode ByteBufferFactory::Wrap(
     /* [in] */ const Array<Byte>& array,
     /* [out] */ IByteBuffer** buffer)
 {

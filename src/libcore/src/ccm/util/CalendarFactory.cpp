@@ -15,16 +15,12 @@
 //=========================================================================
 
 #include "ccm/util/Calendar.h"
-#include "ccm/util/CCalendarFactory.h"
+#include "ccm/util/CalendarFactory.h"
 
 namespace ccm {
 namespace util {
 
-CCM_INTERFACE_IMPL_1(CCalendarFactory, Object, ICalendarFactory);
-
-CCM_OBJECT_IMPL(CCalendarFactory);
-
-ECode CCalendarFactory::GetInstance(
+ECode CalendarFactory::GetInstance(
     /* [out] */ ICalendar** cal)
 {
     VALIDATE_NOT_NULL(cal);
@@ -34,7 +30,7 @@ ECode CCalendarFactory::GetInstance(
     return NOERROR;
 }
 
-ECode CCalendarFactory::GetInstance(
+ECode CalendarFactory::GetInstance(
     /* [in] */ ITimeZone* zone,
     /* [out] */ ICalendar** cal)
 {
@@ -45,7 +41,7 @@ ECode CCalendarFactory::GetInstance(
     return NOERROR;
 }
 
-ECode CCalendarFactory::GetInstance(
+ECode CalendarFactory::GetInstance(
     /* [in] */ ILocale* aLocale,
     /* [out] */ ICalendar** cal)
 {
@@ -56,7 +52,7 @@ ECode CCalendarFactory::GetInstance(
     return NOERROR;
 }
 
-ECode CCalendarFactory::GetInstance(
+ECode CalendarFactory::GetInstance(
     /* [in] */ ITimeZone* zone,
     /* [in] */ ILocale* aLocale,
     /* [out] */ ICalendar** cal)
@@ -68,7 +64,7 @@ ECode CCalendarFactory::GetInstance(
     return NOERROR;
 }
 
-ECode CCalendarFactory::GetJapaneseImperialInstance(
+ECode CalendarFactory::GetJapaneseImperialInstance(
     /* [in] */ ITimeZone* zone,
     /* [in] */ ILocale* aLocale,
     /* [out] */ ICalendar** cal)

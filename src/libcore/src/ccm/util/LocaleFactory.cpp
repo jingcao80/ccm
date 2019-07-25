@@ -14,18 +14,14 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/util/CLocaleFactory.h"
 #include "ccm/util/Locale.h"
+#include "ccm/util/LocaleFactory.h"
 
 namespace ccm {
 namespace util {
 
-CCM_INTERFACE_IMPL_1(CLocaleFactory, Object, ILocaleFactory);
-
-CCM_OBJECT_IMPL(CLocaleFactory);
-
-ECode CLocaleFactory::GetCANADA(
-    /* [out] */  ILocale** l)
+ECode LocaleFactory::GetCANADA(
+    /* [out] */ ILocale** l)
 {
     VALIDATE_NOT_NULL(l);
 
@@ -33,8 +29,8 @@ ECode CLocaleFactory::GetCANADA(
     return NOERROR;
 }
 
-ECode CLocaleFactory::GetCANADA_FRENCH(
-    /* [out] */  ILocale** l)
+ECode LocaleFactory::GetCANADA_FRENCH(
+    /* [out] */ ILocale** l)
 {
     VALIDATE_NOT_NULL(l);
 
@@ -42,8 +38,8 @@ ECode CLocaleFactory::GetCANADA_FRENCH(
     return NOERROR;
 }
 
-ECode CLocaleFactory::GetCHINA(
-    /* [out] */  ILocale** l)
+ECode LocaleFactory::GetCHINA(
+    /* [out] */ ILocale** l)
 {
     VALIDATE_NOT_NULL(l);
 
@@ -51,8 +47,8 @@ ECode CLocaleFactory::GetCHINA(
     return NOERROR;
 }
 
-ECode CLocaleFactory::GetCHINESE(
-    /* [out] */  ILocale** l)
+ECode LocaleFactory::GetCHINESE(
+    /* [out] */ ILocale** l)
 {
     VALIDATE_NOT_NULL(l);
 
@@ -60,8 +56,8 @@ ECode CLocaleFactory::GetCHINESE(
     return NOERROR;
 }
 
-ECode CLocaleFactory::GetDefault(
-    /* [out] */  ILocale** l)
+ECode LocaleFactory::GetDefault(
+    /* [out] */ ILocale** l)
 {
     VALIDATE_NOT_NULL(l);
 
@@ -69,8 +65,8 @@ ECode CLocaleFactory::GetDefault(
     return NOERROR;
 }
 
-ECode CLocaleFactory::GetENGLISH(
-    /* [out] */  ILocale** l)
+ECode LocaleFactory::GetENGLISH(
+    /* [out] */ ILocale** l)
 {
     VALIDATE_NOT_NULL(l);
 
@@ -78,8 +74,8 @@ ECode CLocaleFactory::GetENGLISH(
     return NOERROR;
 }
 
-ECode CLocaleFactory::GetFRANCE(
-    /* [out] */  ILocale** l)
+ECode LocaleFactory::GetFRANCE(
+    /* [out] */ ILocale** l)
 {
     VALIDATE_NOT_NULL(l);
 
@@ -87,8 +83,8 @@ ECode CLocaleFactory::GetFRANCE(
     return NOERROR;
 }
 
-ECode CLocaleFactory::GetFRENCH(
-    /* [out] */  ILocale** l)
+ECode LocaleFactory::GetFRENCH(
+    /* [out] */ ILocale** l)
 {
     VALIDATE_NOT_NULL(l);
 
@@ -96,8 +92,8 @@ ECode CLocaleFactory::GetFRENCH(
     return NOERROR;
 }
 
-ECode CLocaleFactory::GetGERMAN(
-    /* [out] */  ILocale** l)
+ECode LocaleFactory::GetGERMAN(
+    /* [out] */ ILocale** l)
 {
     VALIDATE_NOT_NULL(l);
 
@@ -105,8 +101,8 @@ ECode CLocaleFactory::GetGERMAN(
     return NOERROR;
 }
 
-ECode CLocaleFactory::GetGERMANY(
-    /* [out] */  ILocale** l)
+ECode LocaleFactory::GetGERMANY(
+    /* [out] */ ILocale** l)
 {
     VALIDATE_NOT_NULL(l);
 
@@ -114,8 +110,8 @@ ECode CLocaleFactory::GetGERMANY(
     return NOERROR;
 }
 
-ECode CLocaleFactory::GetITALIAN(
-    /* [out] */  ILocale** l)
+ECode LocaleFactory::GetITALIAN(
+    /* [out] */ ILocale** l)
 {
     VALIDATE_NOT_NULL(l);
 
@@ -123,8 +119,8 @@ ECode CLocaleFactory::GetITALIAN(
     return NOERROR;
 }
 
-ECode CLocaleFactory::GetITALY(
-    /* [out] */  ILocale** l)
+ECode LocaleFactory::GetITALY(
+    /* [out] */ ILocale** l)
 {
     VALIDATE_NOT_NULL(l);
 
@@ -132,8 +128,8 @@ ECode CLocaleFactory::GetITALY(
     return NOERROR;
 }
 
-ECode CLocaleFactory::GetJAPAN(
-    /* [out] */  ILocale** l)
+ECode LocaleFactory::GetJAPAN(
+    /* [out] */ ILocale** l)
 {
     VALIDATE_NOT_NULL(l);
 
@@ -141,8 +137,8 @@ ECode CLocaleFactory::GetJAPAN(
     return NOERROR;
 }
 
-ECode CLocaleFactory::GetJAPANESE(
-    /* [out] */  ILocale** l)
+ECode LocaleFactory::GetJAPANESE(
+    /* [out] */ ILocale** l)
 {
     VALIDATE_NOT_NULL(l);
 
@@ -150,8 +146,8 @@ ECode CLocaleFactory::GetJAPANESE(
     return NOERROR;
 }
 
-ECode CLocaleFactory::GetKOREA(
-    /* [out] */  ILocale** l)
+ECode LocaleFactory::GetKOREA(
+    /* [out] */ ILocale** l)
 {
     VALIDATE_NOT_NULL(l);
 
@@ -159,8 +155,8 @@ ECode CLocaleFactory::GetKOREA(
     return NOERROR;
 }
 
-ECode CLocaleFactory::GetKOREAN(
-    /* [out] */  ILocale** l)
+ECode LocaleFactory::GetKOREAN(
+    /* [out] */ ILocale** l)
 {
     VALIDATE_NOT_NULL(l);
 
@@ -168,8 +164,8 @@ ECode CLocaleFactory::GetKOREAN(
     return NOERROR;
 }
 
-ECode CLocaleFactory::GetPRC(
-    /* [out] */  ILocale** l)
+ECode LocaleFactory::GetPRC(
+    /* [out] */ ILocale** l)
 {
     VALIDATE_NOT_NULL(l);
 
@@ -177,8 +173,8 @@ ECode CLocaleFactory::GetPRC(
     return NOERROR;
 }
 
-ECode CLocaleFactory::GetROOT(
-    /* [out] */  ILocale** l)
+ECode LocaleFactory::GetROOT(
+    /* [out] */ ILocale** l)
 {
     VALIDATE_NOT_NULL(l);
 
@@ -186,8 +182,8 @@ ECode CLocaleFactory::GetROOT(
     return NOERROR;
 }
 
-ECode CLocaleFactory::GetSIMPLIFIED_CHINESE(
-    /* [out] */  ILocale** l)
+ECode LocaleFactory::GetSIMPLIFIED_CHINESE(
+    /* [out] */ ILocale** l)
 {
     VALIDATE_NOT_NULL(l);
 
@@ -195,8 +191,8 @@ ECode CLocaleFactory::GetSIMPLIFIED_CHINESE(
     return NOERROR;
 }
 
-ECode CLocaleFactory::GetTAIWAN(
-    /* [out] */  ILocale** l)
+ECode LocaleFactory::GetTAIWAN(
+    /* [out] */ ILocale** l)
 {
     VALIDATE_NOT_NULL(l);
 
@@ -204,8 +200,8 @@ ECode CLocaleFactory::GetTAIWAN(
     return NOERROR;
 }
 
-ECode CLocaleFactory::GetTRADITIONAL_CHINESE(
-    /* [out] */  ILocale** l)
+ECode LocaleFactory::GetTRADITIONAL_CHINESE(
+    /* [out] */ ILocale** l)
 {
     VALIDATE_NOT_NULL(l);
 
@@ -213,8 +209,8 @@ ECode CLocaleFactory::GetTRADITIONAL_CHINESE(
     return NOERROR;
 }
 
-ECode CLocaleFactory::GetUK(
-    /* [out] */  ILocale** l)
+ECode LocaleFactory::GetUK(
+    /* [out] */ ILocale** l)
 {
     VALIDATE_NOT_NULL(l);
 
@@ -222,8 +218,8 @@ ECode CLocaleFactory::GetUK(
     return NOERROR;
 }
 
-ECode CLocaleFactory::GetUS(
-    /* [out] */  ILocale** l)
+ECode LocaleFactory::GetUS(
+    /* [out] */ ILocale** l)
 {
     VALIDATE_NOT_NULL(l);
 

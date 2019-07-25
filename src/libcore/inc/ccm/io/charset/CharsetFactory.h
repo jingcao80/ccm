@@ -14,38 +14,32 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_IO_CHARSET_CCHARSETFACTORY_H__
-#define __CCM_IO_CHARSET_CCHARSETFACTORY_H__
+#ifndef __CCM_IO_CHARSET_CHARSETFACTORY_H__
+#define __CCM_IO_CHARSET_CHARSETFACTORY_H__
 
 #include "ccm.io.charset.ICharset.h"
-#include "ccm.io.charset.ICharsetFactory.h"
-#include "_ccm_io_charset_CCharsetFactory.h"
-#include <ccmobject.h>
 
 namespace ccm {
 namespace io {
 namespace charset {
 
-class CCharsetFactory
-    : public Object
-    , public ICharsetFactory
+class COM_PUBLIC CharsetFactory
 {
 public:
-    CCM_INTERFACE_DECL();
-
-    CCM_OBJECT_DECL();
-
-    ECode ForName(
+    static ECode ForName(
         /* [in] */ const String& charsetName,
         /* [out] */ ICharset** cs);
 
-    ECode ForNameUEE(
+    static ECode ForNameUEE(
         /* [in] */ const String& charsetName,
         /* [out] */ ICharset** cs);
+
+private:
+    CharsetFactory();
 };
 
 }
 }
 }
 
-#endif // __CCM_IO_CHARSET_CCHARSETFACTORY_H__
+#endif // __CCM_IO_CHARSET_CHARSETFACTORY_H__

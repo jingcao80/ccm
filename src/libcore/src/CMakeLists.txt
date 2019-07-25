@@ -54,7 +54,6 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_core_CFloat.cpp
     ${OBJ_DIR}/_ccm_core_CInteger.cpp
     ${OBJ_DIR}/_ccm_core_CLong.cpp
-    ${OBJ_DIR}/_ccm_core_CRuntimeFactory.cpp
     ${OBJ_DIR}/_ccm_core_CRuntimePermission.cpp
     ${OBJ_DIR}/_ccm_core_CShort.cpp
     ${OBJ_DIR}/_ccm_core_CStackTrace.cpp
@@ -68,7 +67,6 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_core_CThreadLocal.cpp
     ${OBJ_DIR}/_ccm_io_CBufferedWriter.cpp
     ${OBJ_DIR}/_ccm_io_CByteArrayOutputStream.cpp
-    ${OBJ_DIR}/_ccm_io_CByteBufferFactory.cpp
     ${OBJ_DIR}/_ccm_io_CDirectByteBuffer.cpp
     ${OBJ_DIR}/_ccm_io_CFile.cpp
     ${OBJ_DIR}/_ccm_io_CFileDescriptor.cpp
@@ -77,11 +75,8 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_io_COutputStreamWriter.cpp
     ${OBJ_DIR}/_ccm_io_CPrintWriter.cpp
     ${OBJ_DIR}/_ccm_io_CStringWriter.cpp
-    ${OBJ_DIR}/_ccm_io_charset_CCharsetFactory.cpp
     ${OBJ_DIR}/_ccm_math_CBigDecimal.cpp
-    ${OBJ_DIR}/_ccm_math_CBigDecimalFactory.cpp
     ${OBJ_DIR}/_ccm_math_CBigInteger.cpp
-    ${OBJ_DIR}/_ccm_math_CBigIntegerFactory.cpp
     ${OBJ_DIR}/_ccm_math_CMathContext.cpp
     ${OBJ_DIR}/_ccm_misc_CFDBigInteger.cpp
     ${OBJ_DIR}/_ccm_security_CPermissions.cpp
@@ -96,10 +91,8 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_text_CDecimalFormatSymbols.cpp
     ${OBJ_DIR}/_ccm_text_CFieldPosition.cpp
     ${OBJ_DIR}/_ccm_text_CMessageFormat.cpp
-    ${OBJ_DIR}/_ccm_text_CNumberFormatFactory.cpp
     ${OBJ_DIR}/_ccm_text_CParsePosition.cpp
     ${OBJ_DIR}/_ccm_text_CSimpleDateFormat.cpp
-    ${OBJ_DIR}/_ccm_util_CCalendarFactory.cpp
     ${OBJ_DIR}/_ccm_util_CArrayList.cpp
     ${OBJ_DIR}/_ccm_util_CDate.cpp
     ${OBJ_DIR}/_ccm_util_CFormatter.cpp
@@ -111,7 +104,6 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_util_CLinkedHashSet.cpp
     ${OBJ_DIR}/_ccm_util_CLocale.cpp
     ${OBJ_DIR}/_ccm_util_CLocaleBuilder.cpp
-    ${OBJ_DIR}/_ccm_util_CLocaleFactory.cpp
     ${OBJ_DIR}/_ccm_util_CProperties.cpp
     ${OBJ_DIR}/_ccm_util_CPropertyPermission.cpp
     ${OBJ_DIR}/_ccm_util_CRandom.cpp
@@ -122,7 +114,6 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_util_CTreeMap.cpp
     ${OBJ_DIR}/_ccm_util_CTreeSet.cpp
     ${OBJ_DIR}/_ccm_util_CVector.cpp
-    ${OBJ_DIR}/_ccm_util_calendar_CCalendarSystemFactory.cpp
     ${OBJ_DIR}/_ccm_util_calendar_CEra.cpp
     ${OBJ_DIR}/_ccm_util_calendar_CGregorian.cpp
     ${OBJ_DIR}/_ccm_util_calendar_CJulianCalendar.cpp

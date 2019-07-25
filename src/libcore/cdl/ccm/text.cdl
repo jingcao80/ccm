@@ -207,15 +207,6 @@ coclass CMessageFormat
 }
 
 [
-    uuid(cc8abe8d-754f-4020-8c93-fbcb73887861),
-    version(0.1.0)
-]
-coclass CNumberFormatFactory
-{
-    interface INumberFormatFactory;
-}
-
-[
     uuid(5dd60879-0252-4319-a926-70517a5484e1),
     version(0.1.0)
 ]

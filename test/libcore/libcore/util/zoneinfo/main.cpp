@@ -14,15 +14,14 @@
 // limitations under the License.
 //=========================================================================
 #include "ZoneInfoTestHelper.h"
+#include "ccm/io/ByteBufferFactory.h"
 #include "libcore/util/ZoneInfoDBFactory.h"
 #include "libcore/util/ZoneInfoFactory.h"
 #include "ccm.core.CSystem.h"
 #include "ccm.core.ILong.h"
 #include "ccm.core.ISystem.h"
-#include "ccm.io.CByteBufferFactory.h"
 #include "ccm.io.IBuffer.h"
 #include "ccm.io.IByteBuffer.h"
-#include "ccm.io.IByteBufferFactory.h"
 #include "ccm.io.IIntegerBuffer.h"
 #include "ccm.io.IShortBuffer.h"
 #include "ccm.util.CDate.h"
@@ -40,11 +39,9 @@ using ccm::core::CSystem;
 using ccm::core::IID_ISystem;
 using ccm::core::ILong;
 using ccm::core::ISystem;
-using ccm::io::CByteBufferFactory;
+using ccm::io::ByteBufferFactory;
 using ccm::io::IBuffer;
 using ccm::io::IByteBuffer;
-using ccm::io::IByteBufferFactory;
-using ccm::io::IID_IByteBufferFactory;
 using ccm::io::IIntegerBuffer;
 using ccm::io::IShortBuffer;
 using ccm::util::CDate;
@@ -160,10 +157,8 @@ AutoPtr<IZoneInfo> CreateZoneInfo(
     /* [in] */ Long currentTimeMillis,
     /* [in] */ Array<Byte>& bytes)
 {
-    AutoPtr<IByteBufferFactory> factory;
-    CByteBufferFactory::New(IID_IByteBufferFactory, (IInterface**)&factory);
     AutoPtr<IByteBuffer> bb;
-    factory->Wrap(bytes, &bb);
+    ByteBufferFactory::Wrap(bytes, &bb);
     AutoPtr<ByteBufferIterator> bufferIterator = new ByteBufferIterator(bb);
     AutoPtr<IZoneInfo> zoneInfo;
     ZoneInfoFactory::ReadTimeZone(

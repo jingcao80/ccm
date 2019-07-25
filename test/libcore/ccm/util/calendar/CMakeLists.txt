@@ -31,11 +31,12 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/libcore.cpp)
 
 IMPORT_LIBRARY(ccmrt.so)
+IMPORT_LIBRARY(libcore.so)
 
 add_executable(testCalendar
     ${SOURCES}
     ${GENERATED_SOURCES})
-target_link_libraries(testCalendar ccmrt.so)
+target_link_libraries(testCalendar ccmrt.so libcore.so)
 add_dependencies(testCalendar libtest)
 
 add_custom_command(

@@ -14,50 +14,45 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_UTIL_CCALENDARFACTORY_H__
-#define __CCM_UTIL_CCALENDARFACTORY_H__
+#ifndef __CCM_UTIL_CALENDARFACTORY_H__
+#define __CCM_UTIL_CALENDARFACTORY_H__
 
-#include "ccm.util.ICalendarFactory.h"
+#include "ccm.util.ICalendar.h"
 #include "ccm.util.ILocale.h"
 #include "ccm.util.ITimeZone.h"
-#include "_ccm_util_CCalendarFactory.h"
-#include <ccmobject.h>
 
 namespace ccm {
 namespace util {
 
-class CCalendarFactory
-    : public Object
-    , public ICalendarFactory
+class COM_PUBLIC CalendarFactory
 {
 public:
-    CCM_INTERFACE_DECL();
-
-    CCM_OBJECT_DECL();
-
-    ECode GetInstance(
+    static ECode GetInstance(
         /* [out] */ ICalendar** cal);
 
-    ECode GetInstance(
+    static ECode GetInstance(
         /* [in] */ ITimeZone* zone,
         /* [out] */ ICalendar** cal);
 
-    ECode GetInstance(
+    static ECode GetInstance(
         /* [in] */ ILocale* aLocale,
         /* [out] */ ICalendar** cal);
 
-    ECode GetInstance(
+    static ECode GetInstance(
         /* [in] */ ITimeZone* zone,
         /* [in] */ ILocale* aLocale,
         /* [out] */ ICalendar** cal);
 
-    ECode GetJapaneseImperialInstance(
+    static ECode GetJapaneseImperialInstance(
         /* [in] */ ITimeZone* zone,
         /* [in] */ ILocale* aLocale,
         /* [out] */ ICalendar** cal);
+
+private:
+    CalendarFactory();
 };
 
 }
 }
 
-#endif // __CCM_UTIL_CCALENDARFACTORY_H__
+#endif // __CCM_UTIL_CALENDARFACTORY_H__

@@ -14,12 +14,11 @@
 // limitations under the License.
 //=========================================================================
 
+#include "ccm/util/calendar/CalendarSystemFactory.h"
 #include "ccm.core.CSystem.h"
 #include "ccm.core.ISystem.h"
-#include "ccm.util.calendar.CCalendarSystemFactory.h"
 #include "ccm.util.calendar.ICalendarDate.h"
 #include "ccm.util.calendar.ICalendarSystem.h"
-#include "ccm.util.calendar.ICalendarSystemFactory.h"
 #include <ccmautoptr.h>
 #include <ccmobject.h>
 
@@ -29,19 +28,15 @@ using namespace ccm;
 using ccm::core::CSystem;
 using ccm::core::ISystem;
 using ccm::core::IID_ISystem;
-using ccm::util::calendar::CCalendarSystemFactory;
+using ccm::util::calendar::CalendarSystemFactory;
 using ccm::util::calendar::ICalendarDate;
 using ccm::util::calendar::ICalendarSystem;
-using ccm::util::calendar::ICalendarSystemFactory;
 using ccm::util::calendar::IID_ICalendarSystem;
-using ccm::util::calendar::IID_ICalendarSystemFactory;
 
 void TestCGregorian()
 {
-    AutoPtr<ICalendarSystemFactory> factory;
-    CCalendarSystemFactory::New(IID_ICalendarSystemFactory, (IInterface**)&factory);
     AutoPtr<ICalendarSystem> gcal;
-    factory->ForName(String("gregorian"), &gcal);
+    CalendarSystemFactory::ForName(String("gregorian"), &gcal);
 
     AutoPtr<ISystem> sys;
     CSystem::New(IID_ISystem, (IInterface**)&sys);
