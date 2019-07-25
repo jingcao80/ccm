@@ -16,6 +16,7 @@
 
 #include "ccm/core/CoreUtils.h"
 #include "ccm/core/StringUtils.h"
+#include "ccm/util/TimeZoneFactory.h"
 #include "ccm.math.CBigDecimal.h"
 #include "ccm.math.IBigDecimal.h"
 #include "ccm.text.CNumberFormatFactory.h"
@@ -26,13 +27,11 @@
 #include "ccm.util.CCalendarFactory.h"
 #include "ccm.util.CLocale.h"
 #include "ccm.util.CLocaleFactory.h"
-#include "ccm.util.CTimeZoneFactory.h"
 #include "ccm.util.ICalendar.h"
 #include "ccm.util.ICalendarFactory.h"
 #include "ccm.util.ILocale.h"
 #include "ccm.util.ILocaleFactory.h"
 #include "ccm.util.ITimeZone.h"
-#include "ccm.util.ITimeZoneFactory.h"
 #include <ccmautoptr.h>
 #include <gtest/gtest.h>
 
@@ -51,17 +50,15 @@ using ccm::text::INumberFormatFactory;
 using ccm::util::CCalendarFactory;
 using ccm::util::CLocale;
 using ccm::util::CLocaleFactory;
-using ccm::util::CTimeZoneFactory;
 using ccm::util::IID_ICalendarFactory;
 using ccm::util::IID_ILocale;
 using ccm::util::IID_ILocaleFactory;
-using ccm::util::IID_ITimeZoneFactory;
 using ccm::util::ICalendar;
 using ccm::util::ICalendarFactory;
 using ccm::util::ILocale;
 using ccm::util::ILocaleFactory;
 using ccm::util::ITimeZone;
-using ccm::util::ITimeZoneFactory;
+using ccm::util::TimeZoneFactory;
 
 TEST(FormatterTest, TestNumberLocalization)
 {
@@ -111,10 +108,8 @@ TEST(FormatterTest, TestNumberLocalization)
     EXPECT_STREQ(arabicStr.string(), String(arabicChars).string());
     // And date/time formatting (we assume that all time/date number formatting is done by the
     // same code, so this is representative):
-    AutoPtr<ITimeZoneFactory> tzFactory;
-    CTimeZoneFactory::New(IID_ITimeZoneFactory, (IInterface**)&tzFactory);
     AutoPtr<ITimeZone> tz;
-    tzFactory->GetTimeZone(String("GMT-08:00"), &tz);
+    TimeZoneFactory::GetTimeZone(String("GMT-08:00"), &tz);
     AutoPtr<ICalendarFactory> calFactory;
     CCalendarFactory::New(IID_ICalendarFactory, (IInterface**)&calFactory);
     AutoPtr<ICalendar> c;

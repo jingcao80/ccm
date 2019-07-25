@@ -108,7 +108,7 @@ void BasicLruCache::TrimToSize(
     /* [in] */ Integer maxSize)
 {
     Integer size;
-    while (mMap->GetSize(&size), size > mMaxSize) {
+    while (mMap->GetSize(&size), size > maxSize) {
         AutoPtr<IMapEntry> toEvict;
         ILinkedHashMap::Probe(mMap)->GetEldest(&toEvict);
 
