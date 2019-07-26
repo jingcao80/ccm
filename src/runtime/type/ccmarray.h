@@ -270,6 +270,9 @@ Long Array<T>::Copy(
     if (srcData == nullptr) return 0;
 
     Long N = MIN(mSize, length);
+    if (mData == srcData) {
+        return N;
+    }
     T* array = static_cast<T*>(mData);
     for (Long i = 0; i < N; i++) {
         AssignFunc<T> assignF;
@@ -287,10 +290,21 @@ Long Array<T>::Copy(
     if (srcData == nullptr) return 0;
 
     Long N = MIN(mSize - thisPos, length);
+    if (mData == srcData && thisPos == 0) {
+        return N;
+    }
     T* array = static_cast<T*>(mData) + thisPos;
-    for (Long i = 0; i < N; i++) {
-        AssignFunc<T> assignF;
-        assignF(&array[i], srcData[i], mData);
+    if (mData != srcData) {
+        for (Long i = 0; i < N; i++) {
+            AssignFunc<T> assignF;
+            assignF(&array[i], srcData[i], mData);
+        }
+    }
+    else {
+        for (Long i = N - 1; i >= 0; i--) {
+            AssignFunc<T> assignF;
+            assignF(&array[i], srcData[i], mData);
+        }
     }
     return N;
 }
@@ -305,11 +319,22 @@ Long Array<T>::Copy(
     if (srcData == nullptr) return 0;
 
     Long N = MIN(mSize - thisPos, length);
+    if (mData == srcData && thisPos == srcPos) {
+        return N;
+    }
     T* array = static_cast<T*>(mData) + thisPos;
     srcData += srcPos;
-    for (Long i = 0; i < N; i++) {
-        AssignFunc<T> assignF;
-        assignF(&array[i], srcData[i], mData);
+    if (mData != srcData || thisPos < srcPos) {
+        for (Long i = 0; i < N; i++) {
+            AssignFunc<T> assignF;
+            assignF(&array[i], srcData[i], mData);
+        }
+    }
+    else {
+        for (Long i = N - 1; i >= 0; i--) {
+            AssignFunc<T> assignF;
+            assignF(&array[i], srcData[i], mData);
+        }
     }
     return N;
 }
@@ -324,6 +349,9 @@ Long Array<T>::Copy(
     }
 
     Long N = MIN(mSize, srcArray.mSize);
+    if (mData == srcArray.mData) {
+        return N;
+    }
     T* array = static_cast<T*>(mData);
     for (Long i = 0; i < N; i++) {
         AssignFunc<T> assignF;
@@ -343,6 +371,9 @@ Long Array<T>::Copy(
     }
 
     Long N = MIN(mSize, MIN(srcArray.mSize, length));
+    if (mData == srcArray.mData) {
+        return N;
+    }
     T* array = static_cast<T*>(mData);
     for (Long i = 0; i < N; i++) {
         AssignFunc<T> assignF;
@@ -363,6 +394,9 @@ Long Array<T>::Copy(
     }
 
     Long N = MIN(mSize, MIN(srcArray.mSize - srcPos, length));
+    if (mData == srcArray.mData && srcPos == 0) {
+        return N;
+    }
     T* array = static_cast<T*>(mData);
     for (Long i = 0; i < N; i++) {
         AssignFunc<T> assignF;
@@ -382,10 +416,21 @@ Long Array<T>::Copy(
     }
 
     Long N = MIN(mSize - thisPos, srcArray.mSize);
+    if (mData == srcArray.mData && thisPos == 0) {
+        return N;
+    }
     T* array = static_cast<T*>(mData) + thisPos;
-    for (Long i = 0; i < N; i++) {
-        AssignFunc<T> assignF;
-        assignF(&array[i], srcArray[i], mData);
+    if (mData != srcArray.mData) {
+        for (Long i = 0; i < N; i++) {
+            AssignFunc<T> assignF;
+            assignF(&array[i], srcArray[i], mData);
+        }
+    }
+    else {
+        for (Long i = N - 1; i >= 0; i--) {
+            AssignFunc<T> assignF;
+            assignF(&array[i], srcArray[i], mData);
+        }
     }
     return N;
 }
@@ -402,10 +447,21 @@ Long Array<T>::Copy(
     }
 
     Long N = MIN(mSize - thisPos, MIN(srcArray.mSize, length));
+    if (mData == srcArray.mData && thisPos == 0) {
+        return N;
+    }
     T* array = static_cast<T*>(mData) + thisPos;
-    for (Long i = 0; i < N; i++) {
-        AssignFunc<T> assignF;
-        assignF(&array[i], srcArray[i], mData);
+    if (mData != srcArray.mData) {
+        for (Long i = 0; i < N; i++) {
+            AssignFunc<T> assignF;
+            assignF(&array[i], srcArray[i], mData);
+        }
+    }
+    else {
+        for (Long i = N - 1; i >= 0; i--) {
+            AssignFunc<T> assignF;
+            assignF(&array[i], srcArray[i], mData);
+        }
     }
     return N;
 }
@@ -423,10 +479,21 @@ Long Array<T>::Copy(
     }
 
     Long N = MIN(mSize - thisPos, MIN(srcArray.mSize - srcPos, length));
+    if (mData == srcArray.mData && thisPos == srcPos) {
+        return N;
+    }
     T* array = static_cast<T*>(mData) + thisPos;
-    for (Long i = 0; i < N; i++) {
-        AssignFunc<T> assignF;
-        assignF(&array[i], srcArray[srcPos + i], mData);
+    if (mData != srcArray.mData || thisPos < srcPos) {
+        for (Long i = 0; i < N; i++) {
+            AssignFunc<T> assignF;
+            assignF(&array[i], srcArray[srcPos + i], mData);
+        }
+    }
+    else {
+        for (Long i = N - 1; i >= 0; i--) {
+            AssignFunc<T> assignF;
+            assignF(&array[i], srcArray[srcPos + i], mData);
+        }
     }
     return N;
 }
