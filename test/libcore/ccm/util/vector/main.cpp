@@ -14,6 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
+#include "test/support/Support_ListTest.h"
 #include "ccm.core.CInteger.h"
 #include "ccm.core.IInteger.h"
 #include "ccm.util.CVector.h"
@@ -25,6 +26,7 @@ using namespace ccm;
 using ccm::core::CInteger;
 using ccm::core::IID_IInteger;
 using ccm::core::IInteger;
+using ccm::test::Support_ListTest;
 using ccm::util::CVector;
 using ccm::util::IID_IVector;
 using ccm::util::IVector;
@@ -38,6 +40,29 @@ TEST(VectorTest, TestConstructor)
         CInteger::New(i, IID_IInteger, (IInterface**)&intObj);
         tv->AddElement(intObj);
     }
+    AutoPtr<Support_ListTest> support = new Support_ListTest(IList::Probe(tv));
+    support->RunTest();
+
+    tv = nullptr;
+    CVector::New(200, IID_IVector, (IInterface**)&tv);
+    for (Integer i = -50; i < 150; i++) {
+        AutoPtr<IInteger> intObj;
+        CInteger::New(i, IID_IInteger, (IInterface**)&intObj);
+        tv->AddElement(intObj);
+    }
+    AutoPtr<IList> subList;
+    tv->SubList(50, 150, &subList);
+    support = new Support_ListTest(subList);
+    support->RunTest();
+
+    tv = nullptr;
+    CVector::New(IID_IVector, (IInterface**)&tv);
+    Integer size;
+    tv->GetSize(&size);
+    EXPECT_EQ(0, size);
+    Integer capacity;
+    tv->GetCapacity(&capacity);
+    EXPECT_EQ(10, capacity);
 }
 
 int main(int argc, char **argv)

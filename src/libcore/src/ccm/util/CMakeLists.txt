@@ -33,6 +33,7 @@ set(SOURCES
     AbstractList.cpp
     AbstractMap.cpp
     AbstractQueue.cpp
+    AbstractSequentialList.cpp
     AbstractSet.cpp
     ArrayList.cpp
     Arrays.cpp
@@ -50,6 +51,7 @@ set(SOURCES
     JapaneseImperialCalendar.cpp
     LinkedHashMap.cpp
     LinkedHashSet.cpp
+    LinkedList.cpp
     Locale.cpp
     LocaleFactory.cpp
     Properties.cpp

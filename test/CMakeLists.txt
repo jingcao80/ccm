@@ -18,5 +18,6 @@ set(TEST_DIR ${PROJECT_DIR}/test)
 
 add_subdirectory(libtest)
 add_subdirectory(appentry)
+add_subdirectory(support)
 add_subdirectory(runtime)
 add_subdirectory(libcore)

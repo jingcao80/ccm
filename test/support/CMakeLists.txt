@@ -14,10 +14,10 @@
 # limitations under the License.
 #=========================================================================
 
-project(VectorTest CXX)
+project(support CXX)
 
-set(vector_DIR ${UNIT_TEST_SRC_DIR}/vector)
-set(OBJ_DIR ${UNIT_TEST_OBJ_DIR}/vector)
+set(support_DIR ${TEST_DIR}/support)
+set(OBJ_DIR ${CMAKE_BINARY_DIR}/test/support)
 
 include_directories(
     ./
@@ -25,21 +25,22 @@ include_directories(
     ${OBJ_DIR})
 
 set(SOURCES
-    main.cpp)
+    Support_CollectionTest.cpp
+    Support_ListTest.cpp)
 
 set(GENERATED_SOURCES
-    ${OBJ_DIR}/libcore.cpp)
+    ${OBJ_DIR}/ccm.util.IList.h)
 
 IMPORT_LIBRARY(ccmrt.so)
 IMPORT_LIBRARY(libcore.so)
-IMPORT_LIBRARY(libsupport.a)
 IMPORT_GTEST()
 
-add_executable(testVector
+add_library(libsupport
+    STATIC
     ${SOURCES}
     ${GENERATED_SOURCES})
-target_link_libraries(testVector libsupport.a ccmrt.so libcore.so ${GTEST_LIBS})
-add_dependencies(testVector libsupport)
+target_link_libraries(libsupport ccmrt.so libcore.so ${GTEST_LIBS})
+add_dependencies(libsupport libtest)
 
 add_custom_command(
     OUTPUT
@@ -53,10 +54,13 @@ add_custom_command(
         -d ${OBJ_DIR}
         "${BIN_DIR}/libcore.so")
 
-COPY(testVector ${OBJ_DIR}/testVector ${BIN_DIR})
+MKDIR(libsupport ${INC_DIR}/test/support)
+
+COPY(libsupport ${support_DIR}/Support_ListTest.h ${INC_DIR}/test/support)
+COPY(libsupport ${OBJ_DIR}/libsupport.a ${BIN_DIR})
 
 install(FILES
-    ${OBJ_DIR}/testVector
+    ${OBJ_DIR}/libsupport.a
     DESTINATION ${BIN_DIR}
     PERMISSIONS
         OWNER_READ

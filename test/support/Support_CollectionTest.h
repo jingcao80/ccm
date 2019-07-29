@@ -14,44 +14,36 @@
 // limitations under the License.
 //=========================================================================
 
+#ifndef __CCM_TEST_SUPPORT_COLLECTIONTEST_H__
+#define __CCM_TEST_SUPPORT_COLLECTIONTEST_H__
+
+#include "ccm.util.ICollection.h"
+#include <ccmobject.h>
+
+using ccm::util::ICollection;
+
 namespace ccm {
-namespace util {
+namespace test {
 
-/*
- * @Involve interface ccm::util::IIterator
- */
-[
-    uuid(e8665718-bf0d-4054-850c-a30098de04b8),
-    version(0.1.0)
-]
-interface IListIterator
+class Support_CollectionTest
+    : public Object
 {
-    Add(
-        [in] IInterface* object);
+public:
+    Support_CollectionTest()
+    {}
 
-    GetNextIndex(
-        [out] Integer* index);
+    Support_CollectionTest(
+        /* [in] */ ICollection* c)
+        : mCol(c)
+    {}
 
-    GetPreviousIndex(
-        [out] Integer* index);
+    ECode RunTest();
 
-    HasNext(
-        [out] Boolean* result);
-
-    HasPrevious(
-        [out] Boolean* result);
-
-    Next(
-        [out] IInterface** object = nullptr);
-
-    Previous(
-        [out] IInterface** object = nullptr);
-
-    Remove();
-
-    Set(
-        [in] IInterface* object);
-}
+public:
+    AutoPtr<ICollection> mCol;
+};
 
 }
 }
+
+#endif // __CCM_TEST_SUPPORT_COLLECTIONTEST_H__

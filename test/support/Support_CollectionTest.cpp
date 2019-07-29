@@ -14,43 +14,17 @@
 // limitations under the License.
 //=========================================================================
 
+#include "Support_CollectionTest.h"
+
 namespace ccm {
-namespace util {
+namespace test {
 
-/*
- * @Involve interface ccm::util::IIterator
- */
-[
-    uuid(e8665718-bf0d-4054-850c-a30098de04b8),
-    version(0.1.0)
-]
-interface IListIterator
+ECode Support_CollectionTest::RunTest()
 {
-    Add(
-        [in] IInterface* object);
+    // new Support_UnmodifiableCollectionTest("", col).runTest();
 
-    GetNextIndex(
-        [out] Integer* index);
 
-    GetPreviousIndex(
-        [out] Integer* index);
-
-    HasNext(
-        [out] Boolean* result);
-
-    HasPrevious(
-        [out] Boolean* result);
-
-    Next(
-        [out] IInterface** object = nullptr);
-
-    Previous(
-        [out] IInterface** object = nullptr);
-
-    Remove();
-
-    Set(
-        [in] IInterface* object);
+    return NOERROR;
 }
 
 }

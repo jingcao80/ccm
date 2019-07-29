@@ -21,6 +21,7 @@ include "ccm/util/ICollection.cdl"
 include "ccm/util/IComparator.cdl"
 include "ccm/util/ICurrency.cdl"
 include "ccm/util/IDate.cdl"
+include "ccm/util/IDeque.cdl"
 include "ccm/util/IDictionary.cdl"
 include "ccm/util/IEnumeration.cdl"
 include "ccm/util/IFormattable.cdl"
@@ -33,6 +34,7 @@ include "ccm/util/IIterator.cdl"
 include "ccm/util/IJapaneseImperialCalendar.cdl"
 include "ccm/util/ILinkedHashMap.cdl"
 include "ccm/util/ILinkedHashSet.cdl"
+include "ccm/util/ILinkedList.cdl"
 include "ccm/util/IList.cdl"
 include "ccm/util/IListIterator.cdl"
 include "ccm/util/ILocale.cdl"
@@ -398,6 +400,25 @@ coclass CLinkedHashSet
     interface IIterable;
     interface ISerializable;
     interface ICloneable;
+}
+
+[
+    uuid(60934bce-6b73-44c8-bff3-50916275db23),
+    version(0.1.0)
+]
+coclass CLinkedList
+{
+    Constructor();
+
+    Constructor(
+        [in] ICollection* c);
+
+    interface ILinkedList;
+    interface IList;
+    interface ICollection;
+    interface IDeque;
+    interface IQueue;
+    interface IIterable;
 }
 
 [

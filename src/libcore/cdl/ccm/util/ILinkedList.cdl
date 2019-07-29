@@ -14,26 +14,27 @@
 // limitations under the License.
 //=========================================================================
 
+interface ccm::util::ICollection;
+
 namespace ccm {
 namespace util {
 
-interface ICollection;
-interface IIterator;
-interface IListIterator;
-
 /*
+ * @Involve interface ccm::util::IList;
  * @Involve interface ccm::util::ICollection;
  * @Involve interface ccm::core::IIterable;
+ * @Involve interface ccm::util::IDeque;
+ * @Involve interface ccm::util::IQueue;
  */
 [
-    uuid(1e687607-efae-42a7-8ce2-24e51c81a616),
+    uuid(116514aa-3d9b-480a-a3f1-77b8cfab8ae2),
     version(0.1.0)
 ]
-interface IList
+interface ILinkedList
 {
     Add(
-        [in] IInterface* obj,
-        [out] Boolean* result = nullptr);
+        [in] IInterface* e,
+        [out] Boolean* changed = nullptr);
 
     Add(
         [in] Integer index,
@@ -41,12 +42,18 @@ interface IList
 
     AddAll(
         [in] ICollection* c,
-        [out] Boolean* result = nullptr);
+        [out] Boolean* changed = nullptr);
 
     AddAll(
         [in] Integer index,
         [in] ICollection* c,
         [out] Boolean* result = nullptr);
+
+    AddFirst(
+        [in] IInterface* e);
+
+    AddLast(
+        [in] IInterface* e);
 
     Clear();
 
@@ -54,26 +61,21 @@ interface IList
         [in] IInterface* obj,
         [out] Boolean* result);
 
-    ContainsAll(
-        [in] ICollection* c,
-        [out] Boolean* result);
-
-    Equals(
-        [in] IInterface* obj,
-        [out] Boolean* result);
+    Element(
+        [out] IInterface** e);
 
     Get(
         [in] Integer index,
         [out] IInterface** obj);
 
-    GetHashCode(
-        [out] Integer* hash);
+    GetFirst(
+        [out] IInterface** e);
 
     GetIterator(
         [out] IIterator** it);
 
-    GetListIterator(
-        [out] IListIterator** it);
+    GetLast(
+        [out] IInterface** e);
 
     GetListIterator(
         [in] Integer index,
@@ -86,12 +88,48 @@ interface IList
         [in] IInterface* obj,
         [out] Integer* index);
 
-    IsEmpty(
-        [out] Boolean* empty);
-
     LastIndexOf(
         [in] IInterface* obj,
         [out] Integer* index);
+
+    Offer(
+        [in] IInterface* e,
+        [out] Boolean* changed = nullptr);
+
+    OfferFirst(
+        [in] IInterface* e,
+        [out] Boolean* changed = nullptr);
+
+    OfferLast(
+        [in] IInterface* e,
+        [out] Boolean* changed = nullptr);
+
+    Peek(
+        [out] IInterface** e);
+
+    PeekFirst(
+        [out] IInterface** e);
+
+    PeekLast(
+        [out] IInterface** e);
+
+    Poll(
+        [out] IInterface** e);
+
+    PollFirst(
+        [out] IInterface** e);
+
+    PollLast(
+        [out] IInterface** e);
+
+    Pop(
+        [out] IInterface** e);
+
+    Push(
+        [in] IInterface* e);
+
+    Remove(
+        [out] IInterface** e = nullptr);
 
     Remove(
         [in] IInterface* obj,
@@ -101,30 +139,24 @@ interface IList
         [in] Integer index,
         [out] IInterface** obj = nullptr);
 
-    RemoveAll(
-        [in] ICollection* c,
-        [out] Boolean* result = nullptr);
+    RemoveFirst(
+        [out] IInterface** e = nullptr);
 
-    RetainAll(
-        [in] ICollection* c,
-        [out] Boolean* result = nullptr);
+    RemoveFirstOccurrence(
+        [in] IInterface* e,
+        [out] Boolean* changed = nullptr);
+
+    RemoveLast(
+        [out] IInterface** e = nullptr);
+
+    RemoveLastOccurrence(
+        [in] IInterface* e,
+        [out] Boolean* changed = nullptr);
 
     Set(
         [in] Integer index,
         [in] IInterface* obj,
         [out] IInterface** prevObj = nullptr);
-
-    SubList(
-        [in] Integer fromIndex,
-        [in] Integer toIndex,
-        [out] IList** subList);
-
-    ToArray(
-        [out, callee] Array<IInterface*>* objs);
-
-    ToArray(
-        [in] InterfaceID iid,
-        [out, callee] Array<IInterface*>* objs);
 }
 
 }

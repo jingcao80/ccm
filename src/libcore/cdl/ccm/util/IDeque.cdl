@@ -1,0 +1,120 @@
+//=========================================================================
+// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//=========================================================================
+
+interface ccm::util::IIterator;
+
+namespace ccm {
+namespace util {
+
+/*
+ * @Involve interface ccm::util::IQueue;
+ * @Involve interface ccm::util::ICollection;
+ * @Involve interface ccm::core::IIterable;
+ */
+[
+    uuid(1e4c819a-2017-4394-b0f4-75bbdd19e58a),
+    version(0.1.0)
+]
+interface IDeque
+{
+    Add(
+        [in] IInterface* e,
+        [out] Boolean* changed = nullptr);
+
+    AddFirst(
+        [in] IInterface* e);
+
+    AddLast(
+        [in] IInterface* e);
+
+    Contains(
+        [in] IInterface* obj,
+        [out] Boolean* result);
+
+    Element(
+        [out] IInterface** e);
+
+    GetDescendingIterator(
+        [out] IIterator** it);
+
+    GetFirst(
+        [out] IInterface** e);
+
+    GetIterator(
+        [out] IIterator** it);
+
+    GetLast(
+        [out] IInterface** e);
+
+    GetSize(
+        [out] Integer* size);
+
+    Offer(
+        [in] IInterface* e,
+        [out] Boolean* changed = nullptr);
+
+    OfferFirst(
+        [in] IInterface* e,
+        [out] Boolean* changed = nullptr);
+
+    OfferLast(
+        [in] IInterface* e,
+        [out] Boolean* changed = nullptr);
+
+    Peek(
+        [out] IInterface** e);
+
+    PeekFirst(
+        [out] IInterface** e);
+
+    PeekLast(
+        [out] IInterface** e);
+
+    Poll(
+        [out] IInterface** e);
+
+    PollFirst(
+        [out] IInterface** e);
+
+    PollLast(
+        [out] IInterface** e);
+
+    Pop(
+        [out] IInterface** e);
+
+    Push(
+        [in] IInterface* e);
+
+    Remove(
+        [out] IInterface** e = nullptr);
+
+    RemoveFirst(
+        [out] IInterface** e = nullptr);
+
+    RemoveFirstOccurrence(
+        [in] IInterface* e,
+        [out] Boolean* changed = nullptr);
+
+    RemoveLast(
+        [out] IInterface** e = nullptr);
+
+    RemoveLastOccurrence(
+        [in] IInterface* e,
+        [out] Boolean* changed = nullptr);
+}
+
+}
+}

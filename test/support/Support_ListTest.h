@@ -14,44 +14,39 @@
 // limitations under the License.
 //=========================================================================
 
+#ifndef __CCM_TEST_SUPPORT_LISTTEST_H__
+#define __CCM_TEST_SUPPORT_LISTTEST_H__
+
+#include "ccm.util.IList.h"
+#include <ccmobject.h>
+
+using ccm::util::IList;
+
 namespace ccm {
-namespace util {
+namespace test {
 
-/*
- * @Involve interface ccm::util::IIterator
- */
-[
-    uuid(e8665718-bf0d-4054-850c-a30098de04b8),
-    version(0.1.0)
-]
-interface IListIterator
+class Support_ListTest
+    : public Object
 {
-    Add(
-        [in] IInterface* object);
+public:
+    Support_ListTest()
+    {}
 
-    GetNextIndex(
-        [out] Integer* index);
+    Support_ListTest(
+        /* [in] */ IList* l)
+        : mList(l)
+    {}
 
-    GetPreviousIndex(
-        [out] Integer* index);
+    ECode RunTest();
 
-    HasNext(
-        [out] Boolean* result);
+    ECode TestListIterator(
+        /* [in] */ IList* list);
 
-    HasPrevious(
-        [out] Boolean* result);
-
-    Next(
-        [out] IInterface** object = nullptr);
-
-    Previous(
-        [out] IInterface** object = nullptr);
-
-    Remove();
-
-    Set(
-        [in] IInterface* object);
-}
+public:
+    AutoPtr<IList> mList;
+};
 
 }
 }
+
+#endif // __CCM_TEST_SUPPORT_LISTTEST_H__

@@ -102,6 +102,7 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/_ccm_util_CHashtable.cpp
     ${OBJ_DIR}/_ccm_util_CLinkedHashMap.cpp
     ${OBJ_DIR}/_ccm_util_CLinkedHashSet.cpp
+    ${OBJ_DIR}/_ccm_util_CLinkedList.cpp
     ${OBJ_DIR}/_ccm_util_CLocale.cpp
     ${OBJ_DIR}/_ccm_util_CLocaleBuilder.cpp
     ${OBJ_DIR}/_ccm_util_CProperties.cpp

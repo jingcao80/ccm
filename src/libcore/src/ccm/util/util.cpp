@@ -23,6 +23,7 @@
 #include "ccm/util/CHashtable.h"
 #include "ccm/util/CLinkedHashMap.h"
 #include "ccm/util/CLinkedHashSet.h"
+#include "ccm/util/CLinkedList.h"
 #include "ccm/util/CLocale.h"
 #include "ccm/util/CLocaleBuilder.h"
 #include "ccm/util/CProperties.h"
@@ -364,6 +365,34 @@ ECode CLinkedHashSet::Clone(
     AutoPtr<IMetaComponent> comp;
     clsObject->GetMetadate(&comp);
     newObj->AttachMetadata(comp, String("ccm::util::CLinkedHashSet"));
+    *obj = newObj->Probe(iid);
+    REFCOUNT_ADD(*obj);
+    return NOERROR;
+}
+
+CCM_OBJECT_IMPL(CLinkedList);
+ECode CLinkedList::Clone(
+    /* [in] */ const InterfaceID& iid,
+    /* [out] */ IInterface** obj)
+{
+    VALIDATE_NOT_NULL(obj);
+
+    AutoPtr<IClassObject> clsObject;
+    ECode ec = CoAcquireClassFactory(CID_CLinkedList, nullptr, &clsObject);
+    if (FAILED(ec)) return ec;
+
+    void* addr = calloc(sizeof(CLinkedList), 1);
+    if (addr == nullptr) return E_OUT_OF_MEMORY_ERROR;
+
+    CLinkedList* newObj = new(addr) CLinkedList();
+    ec = LinkedList::CloneImpl(newObj);
+    if (FAILED(ec)) {
+        free(addr);
+        return ec;
+    }
+    AutoPtr<IMetaComponent> comp;
+    clsObject->GetMetadate(&comp);
+    newObj->AttachMetadata(comp, String("ccm::util::CLinkedList"));
     *obj = newObj->Probe(iid);
     REFCOUNT_ADD(*obj);
     return NOERROR;

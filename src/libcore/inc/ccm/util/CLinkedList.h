@@ -14,44 +14,27 @@
 // limitations under the License.
 //=========================================================================
 
+#ifndef __CCM_UTIL_CLINKEDLIST_H__
+#define __CCM_UTIL_CLINKEDLIST_H__
+
+#include "ccm/util/LinkedList.h"
+#include "_ccm_util_CLinkedList.h"
+
 namespace ccm {
 namespace util {
 
-/*
- * @Involve interface ccm::util::IIterator
- */
-[
-    uuid(e8665718-bf0d-4054-850c-a30098de04b8),
-    version(0.1.0)
-]
-interface IListIterator
+Coclass(CLinkedList)
+    , public LinkedList
 {
-    Add(
-        [in] IInterface* object);
+public:
+    CCM_OBJECT_DECL();
 
-    GetNextIndex(
-        [out] Integer* index);
-
-    GetPreviousIndex(
-        [out] Integer* index);
-
-    HasNext(
-        [out] Boolean* result);
-
-    HasPrevious(
-        [out] Boolean* result);
-
-    Next(
-        [out] IInterface** object = nullptr);
-
-    Previous(
-        [out] IInterface** object = nullptr);
-
-    Remove();
-
-    Set(
-        [in] IInterface* object);
-}
+    ECode Clone(
+        /* [in] */ const InterfaceID& iid,
+        /* [out] */ IInterface** obj) override;
+};
 
 }
 }
+
+#endif // __CCM_UTIL_CLINKEDLIST_H__
