@@ -1741,6 +1741,13 @@ ECode TreeMap::KeySet::DescendingSet(
     return NOERROR;
 }
 
+ECode TreeMap::KeySet::Add(
+    /* [in] */ IInterface* obj,
+    /* [out] */ Boolean* modified)
+{
+    return AbstractSet::Add(obj, modified);
+}
+
 //--------------------------------------------------------------------------
 
 CCM_INTERFACE_IMPL_1(TreeMap::PrivateEntryIterator, Object, IIterator);

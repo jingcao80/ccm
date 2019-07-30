@@ -26,7 +26,8 @@ include_directories(
 
 set(SOURCES
     Support_CollectionTest.cpp
-    Support_ListTest.cpp)
+    Support_ListTest.cpp
+    Support_UnmodifiableCollectionTest.cpp)
 
 set(GENERATED_SOURCES
     ${OBJ_DIR}/ccm.util.IList.h)

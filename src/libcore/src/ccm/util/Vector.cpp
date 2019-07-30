@@ -678,7 +678,7 @@ ECode Vector::RetainAll(
 {
     AutoLock lock(this);
 
-    return AbstractList::RetainAll(c);
+    return AbstractList::RetainAll(c, changed);
 }
 
 ECode Vector::AddAll(

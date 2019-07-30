@@ -819,8 +819,6 @@ ECode Collections::SynchronizedCollection::Add(
     /* [in] */ IInterface* obj,
     /* [out] */ Boolean* changed)
 {
-    VALIDATE_NOT_NULL(changed);
-
     AutoLock lock(mMutex);
     return mC->Add(obj, changed);
 }
@@ -829,8 +827,6 @@ ECode Collections::SynchronizedCollection::Remove(
     /* [in] */ IInterface* obj,
     /* [out] */ Boolean* changed)
 {
-    VALIDATE_NOT_NULL(changed);
-
     AutoLock lock(mMutex);
     return mC->Remove(obj, changed);
 }
@@ -849,8 +845,6 @@ ECode Collections::SynchronizedCollection::AddAll(
     /* [in] */ ICollection* c,
     /* [out] */ Boolean* changed)
 {
-    VALIDATE_NOT_NULL(changed);
-
     AutoLock lock(mMutex);
     return mC->AddAll(c, changed);
 }
@@ -859,8 +853,6 @@ ECode Collections::SynchronizedCollection::RemoveAll(
     /* [in] */ ICollection* c,
     /* [out] */ Boolean* changed)
 {
-    VALIDATE_NOT_NULL(changed);
-
     AutoLock lock(mMutex);
     return mC->RemoveAll(c, changed);
 }
@@ -869,8 +861,6 @@ ECode Collections::SynchronizedCollection::RetainAll(
     /* [in] */ ICollection* c,
     /* [out] */ Boolean* changed)
 {
-    VALIDATE_NOT_NULL(changed);
-
     AutoLock lock(mMutex);
     return mC->RetainAll(c, changed);
 }

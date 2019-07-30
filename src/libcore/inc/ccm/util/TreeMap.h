@@ -208,6 +208,10 @@ private:
         ECode DescendingSet(
             /* [out] */ INavigableSet** set) override;
 
+        ECode Add(
+            /* [in] */ IInterface* obj,
+            /* [out] */ Boolean* modified = nullptr) override;
+
     private:
         INavigableMap* mMap;
         Boolean mHoldRef;
