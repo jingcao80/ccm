@@ -127,6 +127,14 @@ interface ICalendar
 
     const Integer NARROW_STANDALONE = NARROW_FORMAT | STANDALONE_MASK;
 
+    const Integer SHORT_FORMAT = 1;
+
+    const Integer LONG_FORMAT = 2;
+
+    const Integer SHORT_STANDALONE = SHORT | STANDALONE_MASK;
+
+    const Integer LONG_STANDALONE = LONG | STANDALONE_MASK;
+
     Add(
         [in] Integer field,
         [in] Integer amount);
