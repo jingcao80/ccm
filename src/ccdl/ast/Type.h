@@ -118,6 +118,8 @@ public:
 
     virtual bool IsPointerType();
 
+    virtual bool IsReferenceType();
+
     virtual String Signature() = 0;
 
     virtual void Specialize();

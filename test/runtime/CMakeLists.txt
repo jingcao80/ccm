@@ -26,5 +26,6 @@ add_subdirectory(macro)
 # mutex.h and related methods from ccmrt.so
 #add_subdirectory(mutex)
 add_subdirectory(nestedinterface)
+add_subdirectory(outreferencetype)
 add_subdirectory(reflection)
 add_subdirectory(rpc)

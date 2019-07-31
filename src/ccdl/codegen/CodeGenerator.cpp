@@ -571,9 +571,16 @@ String CodeGenerator::GenType(
             }
             break;
         case CcmTypeKind::Interface:
-            builder.AppendFormat("%s%s",
-                    mc->mInterfaces[mt->mIndex]->mNamespace,
-                    mc->mInterfaces[mt->mIndex]->mName);
+            if (!mt->mReference) {
+                builder.AppendFormat("%s%s",
+                        mc->mInterfaces[mt->mIndex]->mNamespace,
+                        mc->mInterfaces[mt->mIndex]->mName);
+            }
+            else {
+                builder.AppendFormat("AutoPtr<%s%s>",
+                        mc->mInterfaces[mt->mIndex]->mNamespace,
+                        mc->mInterfaces[mt->mIndex]->mName);
+            }
             break;
         case CcmTypeKind::Triple:
             if ((attr & Parameter::ATTR_MASK) == Parameter::IN && !inArray) {
@@ -587,8 +594,14 @@ String CodeGenerator::GenType(
             break;
     }
 
-    for (int i = 0; i < mt->mPointerNumber; i++) {
-        builder.Append("*");
+    if (mt->mReference) {
+        builder.Append("&");
+    }
+
+    if (!(mt->mKind == CcmTypeKind::Interface && mt->mReference)) {
+        for (int i = 0; i < mt->mPointerNumber; i++) {
+            builder.Append("*");
+        }
     }
 
     return builder.ToString();
@@ -912,6 +925,7 @@ void CodeGenerator::GenInterfaceDeclarationSparsely(
     }
 
     builder.Append(GenIncludeForUsingNestedInterface(mi));
+    builder.Append(GenIncludeAutoPtr(mi));
 
     builder.Append("\nusing namespace ccm;\n\n");
 
@@ -967,6 +981,23 @@ String CodeGenerator::GenIncludeForUsingNestedInterface(
     }
 
     return builder.ToString();
+}
+
+String CodeGenerator::GenIncludeAutoPtr(
+    /* [in] */ MetaInterface* mi)
+{
+    for (int i = 0; i < mi->mMethodNumber; i++) {
+        MetaMethod* mm = mi->mMethods[i];
+        for (int j = 0; j < mm->mParameterNumber; j++) {
+            MetaParameter* mp =  mm->mParameters[j];
+            MetaType* mt = mMetaComponent->mTypes[mp->mTypeIndex];
+            if (mt->mKind == CcmTypeKind::Interface && mt->mReference) {
+                return String("#include <ccmautoptr.h>\n");
+            }
+        }
+    }
+
+    return String(nullptr);
 }
 
 void CodeGenerator::GenCoclasses()
@@ -1028,6 +1059,18 @@ void CodeGenerator::GenCoclassHeader(
                             String(mmi->mNamespace).Replace("::", ".").string(), mmi->mName);
                     includes.insert(include);
                 }
+            }
+        }
+    }
+    for (int i = start; i < mi->mMethodNumber; i++) {
+        MetaMethod* mm = mi->mMethods[i];
+        if (mm->mDeleted || (!mk->mConstructorDefault && mk->mConstructorDeleted)) continue;
+        for (int j = 0; j < mm->mParameterNumber; j++) {
+            MetaParameter* mp =  mm->mParameters[j];
+            MetaType* mt = mMetaComponent->mTypes[mp->mTypeIndex];
+            if (mt->mKind == CcmTypeKind::Interface && mt->mReference) {
+                String include("#include <ccmautoptr.h>\n");
+                includes.insert(include);
             }
         }
     }
@@ -1180,41 +1223,78 @@ String CodeGenerator::GenCoclassObject(
     }
     for (int i = start; i < mi->mMethodNumber; i++) {
         MetaMethod* mm = mi->mMethods[i];
-        builder.AppendFormat("ECode %sClassObject::%s(\n", mk->mName, mm->mName);
-        for (int j = 0; j < mm->mParameterNumber; j++) {
-            builder.AppendFormat("    %s", GenParameter(mm->mParameters[j]).string());
-            if (j != mm->mParameterNumber - 1) builder.Append(",\n");
-        }
-        builder.Append(")\n"
-                       "{\n");
-        builder.Append("    VALIDATE_NOT_NULL(object);\n\n");
-        if (mm->mDeleted || (!mk->mConstructorDefault && mk->mConstructorDeleted)) {
-            builder.Append("    *object = nullptr;\n");
+        if (!mm->mReference) {
+            builder.AppendFormat("ECode %sClassObject::%s(\n", mk->mName, mm->mName);
+            for (int j = 0; j < mm->mParameterNumber; j++) {
+                builder.AppendFormat("    %s", GenParameter(mm->mParameters[j]).string());
+                if (j != mm->mParameterNumber - 1) builder.Append(",\n");
+            }
+            builder.Append(")\n"
+                           "{\n");
+            builder.Append("    VALIDATE_NOT_NULL(object);\n\n");
+            if (mm->mDeleted || (!mk->mConstructorDefault && mk->mConstructorDeleted)) {
+                builder.Append("    *object = nullptr;\n");
+            }
+            else {
+                builder.AppendFormat("    void* addr = calloc(sizeof(%s), 1);\n", mk->mName);
+                builder.Append("    if (addr == nullptr) return E_OUT_OF_MEMORY_ERROR;\n\n");
+                builder.AppendFormat("    %s* _obj = new(addr) %s();\n", mk->mName, mk->mName);
+                if (mm->mParameterNumber != 2 || !mk->mConstructorDefault) {
+                    builder.Append("    ECode ec = _obj->Constructor(");
+                    for (int i = 0; i < mm->mParameterNumber - 2; i++) {
+                        builder.Append(mm->mParameters[i]->mName);
+                        if (i != mm->mParameterNumber - 3) builder.Append(", ");
+                    }
+                    builder.Append(");\n");
+                    builder.Append("    if (FAILED(ec)) {\n"
+                                   "        free(addr);\n"
+                                   "        return ec;\n"
+                                   "    }\n");
+                }
+                builder.AppendFormat("    _obj->AttachMetadata(mComponent, String(\"%s%s\"));\n",
+                        mk->mNamespace, mk->mName);
+                builder.AppendFormat("    *object = _obj->Probe(%s);\n"
+                                     "    REFCOUNT_ADD(*object);\n",
+                                     mm->mParameters[mm->mParameterNumber - 2]->mName);
+            }
+            builder.Append("    return NOERROR;\n");
+            builder.Append("}\n\n");
         }
         else {
-            builder.AppendFormat("    void* addr = calloc(sizeof(%s), 1);\n", mk->mName);
-            builder.Append("    if (addr == nullptr) return E_OUT_OF_MEMORY_ERROR;\n\n");
-            builder.AppendFormat("    %s* _obj = new(addr) %s();\n", mk->mName, mk->mName);
-            if (mm->mParameterNumber != 2 || !mk->mConstructorDefault) {
-                builder.Append("    ECode ec = _obj->Constructor(");
-                for (int i = 0; i < mm->mParameterNumber - 2; i++) {
-                    builder.Append(mm->mParameters[i]->mName);
-                    if (i != mm->mParameterNumber - 3) builder.Append(", ");
-                }
-                builder.Append(");\n");
-                builder.Append("    if (FAILED(ec)) {\n"
-                               "        free(addr);\n"
-                               "        return ec;\n"
-                               "    }\n");
+            builder.AppendFormat("ECode %sClassObject::%s(\n", mk->mName, mm->mName);
+            for (int j = 0; j < mm->mParameterNumber; j++) {
+                builder.AppendFormat("    %s", GenParameter(mm->mParameters[j]).string());
+                if (j != mm->mParameterNumber - 1) builder.Append(",\n");
             }
-            builder.AppendFormat("    _obj->AttachMetadata(mComponent, String(\"%s%s\"));\n",
-                    mk->mNamespace, mk->mName);
-            builder.AppendFormat("    *object = _obj->Probe(%s);\n"
-                                 "    REFCOUNT_ADD(*object);\n",
-                                 mm->mParameters[mm->mParameterNumber - 2]->mName);
+            builder.Append(")\n"
+                           "{\n");
+            if (mm->mDeleted || (!mk->mConstructorDefault && mk->mConstructorDeleted)) {
+                builder.Append("    object = nullptr;\n");
+            }
+            else {
+                builder.AppendFormat("    void* addr = calloc(sizeof(%s), 1);\n", mk->mName);
+                builder.Append("    if (addr == nullptr) return E_OUT_OF_MEMORY_ERROR;\n\n");
+                builder.AppendFormat("    %s* _obj = new(addr) %s();\n", mk->mName, mk->mName);
+                if (mm->mParameterNumber != 2 || !mk->mConstructorDefault) {
+                    builder.Append("    ECode ec = _obj->Constructor(");
+                    for (int i = 0; i < mm->mParameterNumber - 2; i++) {
+                        builder.Append(mm->mParameters[i]->mName);
+                        if (i != mm->mParameterNumber - 3) builder.Append(", ");
+                    }
+                    builder.Append(");\n");
+                    builder.Append("    if (FAILED(ec)) {\n"
+                                   "        free(addr);\n"
+                                   "        return ec;\n"
+                                   "    }\n");
+                }
+                builder.AppendFormat("    _obj->AttachMetadata(mComponent, String(\"%s%s\"));\n",
+                        mk->mNamespace, mk->mName);
+                builder.AppendFormat("    object = _obj->Probe(%s);\n",
+                                     mm->mParameters[mm->mParameterNumber - 2]->mName);
+            }
+            builder.Append("    return NOERROR;\n");
+            builder.Append("}\n\n");
         }
-        builder.Append("    return NOERROR;\n");
-        builder.Append("}\n\n");
     }
 
     builder.AppendFormat("ECode Get%sClassObject(IClassObject** classObject)\n"
@@ -1755,6 +1835,18 @@ void CodeGenerator::GenCoclassDeclarationSparselyOnUserMode(
                             String(mmi->mNamespace).Replace("::", ".").string(), mmi->mName);
                     includes.insert(include);
                 }
+            }
+        }
+    }
+    for (int i = start; i < mi->mMethodNumber; i++) {
+        MetaMethod* mm = mi->mMethods[i];
+        if (mm->mDeleted || (!mc->mConstructorDefault && mc->mConstructorDeleted)) continue;
+        for (int j = 0; j < mm->mParameterNumber; j++) {
+            MetaParameter* mp =  mm->mParameters[j];
+            MetaType* mt = mMetaComponent->mTypes[mp->mTypeIndex];
+            if (mt->mKind == CcmTypeKind::Interface && mt->mReference) {
+                String include("#include <ccmautoptr.h>\n");
+                includes.insert(include);
             }
         }
     }

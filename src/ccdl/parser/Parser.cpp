@@ -17,6 +17,7 @@
 #include "Parser.h"
 #include "../ast/ArrayType.h"
 #include "../ast/PointerType.h"
+#include "../ast/ReferenceType.h"
 #include "../metadata/MetaResolver.h"
 #include "../util/Logger.h"
 #include "../util/MetadataUtils.h"
@@ -29,6 +30,7 @@
 
 using ccdl::ast::ArrayType;
 using ccdl::ast::PointerType;
+using ccdl::ast::ReferenceType;
 using ccdl::metadata::MetaResolver;
 
 using ccm::metadata::MetaSerializer;
@@ -912,9 +914,20 @@ Type* Parser::ParseType()
     }
 
     int ptrNumber = 0;
-    while ((token = mTokenizer.PeekToken('>')) == Tokenizer::Token::ASTERISK) {
+    int refNumber = 0;
+    token = mTokenizer.PeekToken('>');
+    if (token == Tokenizer::Token::ASTERISK) {
         mTokenizer.GetToken();
         ptrNumber++;
+        while ((token = mTokenizer.PeekToken('>')) == Tokenizer::Token::ASTERISK) {
+            mTokenizer.GetToken();
+            ptrNumber++;
+        }
+    }
+
+    if (token == Tokenizer::Token::AMPERSAND) {
+        mTokenizer.GetToken();
+        refNumber++;
     }
 
     if (ptrNumber != 0) {
@@ -933,6 +946,21 @@ Type* Parser::ParseType()
             mParsingType->AddTemporaryType(ptrType);
         }
         type = ptrType;
+    }
+
+    if (refNumber != 0) {
+        String refTypeStr = type->ToString();
+        refTypeStr = refTypeStr + "&";
+        ReferenceType* refType = (ReferenceType*)mPool->FindType(refTypeStr);
+        if (refType == nullptr) {
+            refType = (ReferenceType*)mParsingType->FindTemporaryType(refTypeStr);
+        }
+        if (refType == nullptr) {
+            refType = new ReferenceType();
+            refType->SetBaseType(type);
+            mParsingType->AddTemporaryType(refType);
+        }
+        type = refType;
     }
 
     return type;
@@ -1138,7 +1166,7 @@ AndExpression* Parser::ParseAndExpression(
     andExpr->SetRadix(rightExpr->GetRadix());
     andExpr->SetScientificNotation(rightExpr->IsScientificNotation());
 
-    while (mTokenizer.PeekToken() == Tokenizer::Token::AND) {
+    while (mTokenizer.PeekToken() == Tokenizer::Token::AMPERSAND) {
         mTokenizer.GetToken();
 
         rightExpr = ParseShiftExpression(exprType);
@@ -1760,6 +1788,11 @@ bool Parser::ParseCoclassConstructor(
             mTokenizer.GetToken();
             method->SetDeleted(true);
         }
+        token = mTokenizer.GetToken();
+    }
+
+    if (token == Tokenizer::Token::AMPERSAND) {
+        method->SetReference(true);
         token = mTokenizer.GetToken();
     }
 
@@ -2455,13 +2488,32 @@ void Parser::GenerateCoclassObject(
             m->AddParameter(param);
             param = new Parameter();
             param->SetName(String("object"));
-            Type* t = mPool->FindType(String("ccm::IInterface**"));
-            if (t == nullptr) {
-                PointerType* ptrType = new PointerType();
-                ptrType->SetBaseType(mPool->FindType(String("ccm::IInterface")));
-                ptrType->SetPointerNumber(2);
-                mPool->AddTemporaryType(ptrType);
-                t = ptrType;
+            Type* t;
+            if (m->IsReference()) {
+                t = mPool->FindType(String("ccm::IInterface*&"));
+                if (t == nullptr) {
+                    PointerType* ptrType = (PointerType*)mPool->FindType(String("ccm::IInterface*"));
+                    if (ptrType == nullptr) {
+                        ptrType = new PointerType();
+                        ptrType->SetBaseType(mPool->FindType(String("ccm::IInterface")));
+                        ptrType->SetPointerNumber(1);
+                        mPool->AddTemporaryType(ptrType);
+                    }
+                    ReferenceType* refType = new ReferenceType();
+                    refType->SetBaseType(ptrType);
+                    mPool->AddTemporaryType(refType);
+                    t = refType;
+                }
+            }
+            else {
+                t = mPool->FindType(String("ccm::IInterface**"));
+                if (t == nullptr) {
+                    PointerType* ptrType = new PointerType();
+                    ptrType->SetBaseType(mPool->FindType(String("ccm::IInterface")));
+                    ptrType->SetPointerNumber(2);
+                    mPool->AddTemporaryType(ptrType);
+                    t = ptrType;
+                }
             }
             param->SetType(t);
             param->SetAttribute(Parameter::OUT);

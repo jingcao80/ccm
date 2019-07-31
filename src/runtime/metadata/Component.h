@@ -153,6 +153,7 @@ struct MetaMethod
     int                 mParameterNumber;
     MetaParameter**     mParameters;
     bool                mDeleted;
+    bool                mReference;
 };
 
 struct MetaParameter
@@ -170,6 +171,7 @@ struct MetaType
     int                 mIndex;
     int                 mNestedTypeIndex;
     unsigned char       mPointerNumber;
+    bool                mReference;
 };
 
 }

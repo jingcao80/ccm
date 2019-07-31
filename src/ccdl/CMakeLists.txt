@@ -48,6 +48,7 @@ set(SOURCES
     ast/PointerType.cpp
     ast/PostfixExpression.cpp
     ast/Pool.cpp
+    ast/ReferenceType.cpp
     ast/ShiftExpression.cpp
     ast/ShortType.cpp
     ast/StringType.cpp

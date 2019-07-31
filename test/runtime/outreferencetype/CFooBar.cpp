@@ -14,41 +14,41 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_TEST_CFOOBAR_H__
-#define __CCM_TEST_CFOOBAR_H__
-
-#include <ccmapi.h>
-#include <ccmobject.h>
-#include "ccm.test.IFooBar.h"
-#include "_ccm_test_CFooBar.h"
+#include "CFooBar.h"
 
 namespace ccm {
 namespace test {
 
-Coclass(CFooBar)
-    , public Object
-    , public IFooBar::IFoo
-    , public IFooBar::IBar
+CCM_INTERFACE_IMPL_3(CFooBar, Object, IFoo, IBar, IFooBar);
+
+CCM_OBJECT_IMPL(CFooBar);
+
+ECode CFooBar::Constructor(
+    /* [in] */ Integer initValue)
 {
-public:
-    CCM_INTERFACE_DECL();
+    return NOERROR;
+}
 
-    CCM_OBJECT_DECL();
+ECode CFooBar::Foo(
+    /* [in] */ Integer value,
+    /* [out] */ Integer& result)
+{
+    return NOERROR;
+}
 
-    ECode Constructor(
-        /* [in] */ IFooBar::IFoo* foo);
+ECode CFooBar::Bar(
+    /* [in] */ const String& name,
+    /* [out] */ String& id)
+{
+    return NOERROR;
+}
 
-    ECode Foo1() override;
-
-    ECode Foo2() override;
-
-    ECode Bar1() override;
-
-    ECode Bar2(
-        /* [in] */ IFoo* foo);
-};
+ECode CFooBar::FooBar(
+    /* [in] */ IFoo* foo,
+    /* [out] */ AutoPtr<IBar>& bar)
+{
+    return NOERROR;
+}
 
 }
 }
-
-#endif // __CCM_TEST_CFOOBAR_H__

@@ -67,7 +67,7 @@ public:
         UUID,                   // 34)
         VERSION,                // 35)
         // symbol
-        AND,                    // 36)  '&'
+        AMPERSAND,              // 36)  '&'
         ANGLE_BRACKETS_OPEN,    // 37)  '<'
         ANGLE_BRACKETS_CLOSE,   // 38)  '>'
         ASSIGNMENT,             // 39)  '='

@@ -17,18 +17,21 @@
 #ifndef __CCM_TEST_CFOOBAR_H__
 #define __CCM_TEST_CFOOBAR_H__
 
-#include <ccmapi.h>
-#include <ccmobject.h>
+#include "ccm.test.IBar.h"
+#include "ccm.test.IFoo.h"
 #include "ccm.test.IFooBar.h"
 #include "_ccm_test_CFooBar.h"
+#include <ccmapi.h>
+#include <ccmobject.h>
 
 namespace ccm {
 namespace test {
 
 Coclass(CFooBar)
     , public Object
-    , public IFooBar::IFoo
-    , public IFooBar::IBar
+    , public IFoo
+    , public IBar
+    , public IFooBar
 {
 public:
     CCM_INTERFACE_DECL();
@@ -36,16 +39,19 @@ public:
     CCM_OBJECT_DECL();
 
     ECode Constructor(
-        /* [in] */ IFooBar::IFoo* foo);
+        /* [in] */ Integer initValue);
 
-    ECode Foo1() override;
+    ECode Foo(
+        /* [in] */ Integer value,
+        /* [out] */ Integer& result) override;
 
-    ECode Foo2() override;
+    ECode Bar(
+        /* [in] */ const String& name,
+        /* [out] */ String& id) override;
 
-    ECode Bar1() override;
-
-    ECode Bar2(
-        /* [in] */ IFoo* foo);
+    ECode FooBar(
+        /* [in] */ IFoo* foo,
+        /* [out] */ AutoPtr<IBar>& bar) override;
 };
 
 }

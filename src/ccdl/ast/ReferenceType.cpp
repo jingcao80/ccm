@@ -14,41 +14,33 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_TEST_CFOOBAR_H__
-#define __CCM_TEST_CFOOBAR_H__
+#include "ReferenceType.h"
 
-#include <ccmapi.h>
-#include <ccmobject.h>
-#include "ccm.test.IFooBar.h"
-#include "_ccm_test_CFooBar.h"
+namespace ccdl {
+namespace ast {
 
-namespace ccm {
-namespace test {
+ReferenceType::ReferenceType()
+    : mBaseType(nullptr)
+{}
 
-Coclass(CFooBar)
-    , public Object
-    , public IFooBar::IFoo
-    , public IFooBar::IBar
+bool ReferenceType::IsReferenceType()
 {
-public:
-    CCM_INTERFACE_DECL();
+    return true;
+}
 
-    CCM_OBJECT_DECL();
+String ReferenceType::Signature()
+{
+    String typeSig = mBaseType->Signature();
+    typeSig += "&";
+    return typeSig;
+}
 
-    ECode Constructor(
-        /* [in] */ IFooBar::IFoo* foo);
-
-    ECode Foo1() override;
-
-    ECode Foo2() override;
-
-    ECode Bar1() override;
-
-    ECode Bar2(
-        /* [in] */ IFoo* foo);
-};
+String ReferenceType::ToString()
+{
+    String typeSig = mBaseType->Signature();
+    typeSig += "&";
+    return typeSig;
+}
 
 }
 }
-
-#endif // __CCM_TEST_CFOOBAR_H__

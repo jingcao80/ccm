@@ -66,7 +66,8 @@ interface IFooBar
 ]
 coclass CFooBar
 {
-    Constructor();
+    Constructor(
+        [in] IFooBar::IFoo* foo);
 
     interface IFooBar::IFoo;
     interface IFooBar::IBar;

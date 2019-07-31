@@ -24,6 +24,7 @@ namespace ast {
 Method::Method()
     : mReturnType(nullptr)
     , mDeleted(false)
+    , mReference(false)
 {}
 
 String Method::GetSignature()

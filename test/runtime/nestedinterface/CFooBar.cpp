@@ -33,7 +33,8 @@ CCM_INTERFACE_GETINTERFACEID_END(Object)
 
 CCM_OBJECT_IMPL(CFooBar);
 
-ECode CFooBar::Constructor()
+ECode CFooBar::Constructor(
+    /* [in] */ IFooBar::IFoo* foo)
 {
     return NOERROR;
 }

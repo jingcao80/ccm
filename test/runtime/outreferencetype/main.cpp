@@ -14,41 +14,17 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_TEST_CFOOBAR_H__
-#define __CCM_TEST_CFOOBAR_H__
+#include "CFooBar.h"
+#include "ccm.test.IFoo.h"
 
-#include <ccmapi.h>
-#include <ccmobject.h>
-#include "ccm.test.IFooBar.h"
-#include "_ccm_test_CFooBar.h"
+using ccm::test::CFooBar;
+using ccm::test::IFoo;
+using ccm::test::IID_IFoo;
 
-namespace ccm {
-namespace test {
-
-Coclass(CFooBar)
-    , public Object
-    , public IFooBar::IFoo
-    , public IFooBar::IBar
+int main(int argc, char** argv)
 {
-public:
-    CCM_INTERFACE_DECL();
+    AutoPtr<ccm::IInterface> foo;
+    CFooBar::New(1, IID_IFoo, foo);
 
-    CCM_OBJECT_DECL();
-
-    ECode Constructor(
-        /* [in] */ IFooBar::IFoo* foo);
-
-    ECode Foo1() override;
-
-    ECode Foo2() override;
-
-    ECode Bar1() override;
-
-    ECode Bar2(
-        /* [in] */ IFoo* foo);
-};
-
+    return 0;
 }
-}
-
-#endif // __CCM_TEST_CFOOBAR_H__

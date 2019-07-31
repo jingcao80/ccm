@@ -91,6 +91,9 @@ private:
     String GenIncludeForUsingNestedInterface(
         /* [in] */ MetaInterface* mi);
 
+    String GenIncludeAutoPtr(
+        /* [in] */ MetaInterface* mi);
+
     String GenInterfaceDeclarations(
         /* [in] */ MetaNamespace* mn);
 

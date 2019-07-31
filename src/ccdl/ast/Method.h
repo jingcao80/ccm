@@ -58,6 +58,11 @@ public:
 
     inline bool IsDeleted();
 
+    inline void SetReference(
+        /* [in] */ bool reference);
+
+    inline bool IsReference();
+
     void DeepCopy(
         /* [in] */ Method* source,
         /* [in] */ Pool* pool);
@@ -76,6 +81,7 @@ private:
     Type* mReturnType;
     ArrayList<Parameter*> mParameters;
     bool mDeleted;
+    bool mReference;
 };
 
 String Method::GetName()
@@ -120,6 +126,17 @@ void Method::SetDeleted(
 bool Method::IsDeleted()
 {
     return mDeleted;
+}
+
+void Method::SetReference(
+    /* [in] */ bool reference)
+{
+    mReference = reference;
+}
+
+bool Method::IsReference()
+{
+    return mReference;
 }
 
 }

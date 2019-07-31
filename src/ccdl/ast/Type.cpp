@@ -170,6 +170,11 @@ bool Type::IsPointerType()
     return false;
 }
 
+bool Type::IsReferenceType()
+{
+    return false;
+}
+
 void Type::Specialize()
 {}
 

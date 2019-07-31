@@ -270,7 +270,7 @@ Tokenizer::Token Tokenizer::ReadToken(
             case ';':
                 return Token::SEMICOLON;
             case '&':
-                return Token::AND;
+                return Token::AMPERSAND;
             case '~':
                 return Token::COMPLIMENT;
             case '^':
@@ -790,7 +790,7 @@ const char* Tokenizer::DumpToken(
     /* [in] */ Token token)
 {
     switch (token) {
-        case Token::AND:
+        case Token::AMPERSAND:
             return "&";
         case Token::ANGLE_BRACKETS_OPEN:
             return "<";

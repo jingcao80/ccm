@@ -18,6 +18,7 @@
 #include "../ast/ArrayType.h"
 #include "../ast/Interface.h"
 #include "../ast/PointerType.h"
+#include "../ast/ReferenceType.h"
 #include "../util/Logger.h"
 #include "../util/StringBuilder.h"
 
@@ -25,6 +26,7 @@ using ccdl::Logger;
 using ccdl::ast::ArrayType;
 using ccdl::ast::Interface;
 using ccdl::ast::PointerType;
+using ccdl::ast::ReferenceType;
 
 #define ALIGN4(v) (((v) + 3) & ~3)
 #define ALIGN8(v) (((v) + 7) & ~7)
@@ -618,6 +620,7 @@ MetaMethod* MetaBuilder::WriteMetaMethod(
     mBasePtr = ALIGN(mBasePtr + sizeof(MetaMethod));
     mm->mParameters = reinterpret_cast<MetaParameter**>(mBasePtr);
     mm->mDeleted = method->IsDeleted();
+    mm->mReference = method->IsReference();
     // end address
     mBasePtr = mBasePtr + sizeof(MetaParameter*) * PARAM_NUM;
 
@@ -759,6 +762,11 @@ MetaType* MetaBuilder::WriteMetaType(
     mBasePtr = ALIGN(mBasePtr);
     MetaType* mt = reinterpret_cast<MetaType*>(mBasePtr);
     mt->mPointerNumber = 0;
+    mt->mReference = false;
+    if (type->IsReferenceType()) {
+        mt->mReference = true;
+        type = ((ReferenceType*)type)->GetBaseType();
+    }
     if (type->IsPointerType()) {
         mt->mPointerNumber = ((PointerType*)type)->GetPointerNumber();
         type = ((PointerType*)type)->GetBaseType();
