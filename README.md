@@ -1,10 +1,10 @@
-# ccm [![Build Status](https://travis-ci.org/jingcao80/ccm.svg?branch=master)](https://travis-ci.org/jingcao80/ccm)
+# COMO [![Build Status](https://travis-ci.org/jingcao80/ccm.svg?branch=master)](https://travis-ci.org/jingcao80/ccm)
 
-CCM stands for C++ Component Model. It can:
+COMO is a C++ Component Model. It can:
 1. support interface-oriented programming;
 2. support C++ runtime reflection;
 
-**ccdl** is the .cdl compiler.
+**cdlc** is the .cdl compiler.
 
 **runtime** is the component driver.
 
