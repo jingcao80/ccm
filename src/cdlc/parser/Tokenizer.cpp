@@ -53,157 +53,297 @@ void Tokenizer::SetupKeywords()
     mKeywords["String"] = Token::STRING;
     mKeywords["Triple"] = Token::TRIPLE;
     mKeywords["true"] = Token::TRUE;
-    mKeywords["url"] = Token::URL;
+    mKeywords["uri"] = Token::URI;
     mKeywords["uuid"] = Token::UUID;
     mKeywords["version"] = Token::VERSION;
 }
 
-Token Tokenizer::PeekToken(
+TokenInfo Tokenizer::PeekToken(
     /* [in] */ Token expectedToken)
 {
     mReader->Mark();
-    Token token = ReadToken(expectedToken);
+    TokenInfo tokenInfo = ReadToken(expectedToken);
     mReader->Reset();
-    return token;
+    return tokenInfo;
 }
 
-Token Tokenizer::GetToken(
+TokenInfo Tokenizer::GetToken(
     /* [in] */ Token expectedToken)
 {
     return ReadToken(expectedToken);
 }
 
-Token Tokenizer::ReadToken(
+TokenInfo Tokenizer::ReadToken(
     /* [in] */ Token expectedToken)
 {
+    while (!mReader->IsEof() && IsSpace(mReader->PeekChar())) {
+        mReader->GetChar();
+    }
+
+    int lineNo = mReader->GetCurrentLineNumber();
+    int columnNo = mReader->GetCurrentColumnNumber();
+
     while (!mReader->IsEof()) {
-        int lineNo = mReader->GetCurrentLineNumber();
-        int columnNo = mReader->GetCurrentColumnNumber();
         char c = mReader->GetChar();
         if (c == Token2Char(expectedToken)) {
-            mTokenLineNo = lineNo;
-            mTokenColumnNo = columnNo;
-            return expectedToken;
+            TokenInfo tokenInfo(expectedToken,
+                                mReader->GetCurrentFilePath(),
+                                lineNo, columnNo);
+            mCurrentTokenInfo = std::move(tokenInfo);
+            return mCurrentTokenInfo;
         }
-        if (IsSpace(c)) {
+        else if (IsSpace(c)) {
             continue;
         }
         else if (c == '_' || IsAlphabet(c)) {
-            return ReadIdentifier(c);
+            TokenInfo tokenInfo = ReadIdentifier(c);
+            tokenInfo.mTokenFilePath = mReader->GetCurrentFilePath();
+            tokenInfo.mTokenLineNo = lineNo;
+            tokenInfo.mTokenColumnNo = columnNo;
+            mCurrentTokenInfo = std::move(tokenInfo);
+            return mCurrentTokenInfo;
         }
         else if (IsDecimalDigital(c)) {
-            return ReadNumber(c);
+            TokenInfo tokenInfo = ReadNumber(c);
+            tokenInfo.mTokenFilePath = mReader->GetCurrentFilePath();
+            tokenInfo.mTokenLineNo = lineNo;
+            tokenInfo.mTokenColumnNo = columnNo;
+            mCurrentTokenInfo = std::move(tokenInfo);
+            return mCurrentTokenInfo;
         }
         switch (c) {
             case '<': {
                 if (mReader->PeekChar() == '<') {
                     mReader->GetChar();
-                    mCurrentToken = Token::SHIFT_LEFT;
-                    return mCurrentToken;
+                    TokenInfo tokenInfo(Token::SHIFT_LEFT,
+                                        mReader->GetCurrentFilePath(),
+                                        lineNo, columnNo);
+                    mCurrentTokenInfo = std::move(tokenInfo);
+                    return mCurrentTokenInfo;
                 }
-                mCurrentToken = Token::ANGLE_BRACKETS_OPEN;
-                return mCurrentToken;
+                TokenInfo tokenInfo(Token::ANGLE_BRACKETS_OPEN,
+                                    mReader->GetCurrentFilePath(),
+                                    lineNo, columnNo);
+                mCurrentTokenInfo = std::move(tokenInfo);
+                return mCurrentTokenInfo;
             }
             case '>': {
                 if (mReader->PeekChar() == '>') {
                     mReader->GetChar();
                     if (mReader->PeekChar() == '>') {
                         mReader->GetChar();
-                        mCurrentToken = Token::SHIFT_RIGHT_UNSIGNED;
-                        return mCurrentToken;
+                        TokenInfo tokenInfo(Token::SHIFT_RIGHT_UNSIGNED,
+                                            mReader->GetCurrentFilePath(),
+                                            lineNo, columnNo);
+                        mCurrentTokenInfo = std::move(tokenInfo);
+                        return mCurrentTokenInfo;
                     }
-                    mCurrentToken = Token::SHIFT_RIGHT;
-                    return mCurrentToken;
+                    TokenInfo tokenInfo(Token::SHIFT_RIGHT,
+                                        mReader->GetCurrentFilePath(),
+                                        lineNo, columnNo);
+                    mCurrentTokenInfo = std::move(tokenInfo);
+                    return mCurrentTokenInfo;
                 }
-                mCurrentToken = Token::ANGLE_BRACKETS_CLOSE;
-                return mCurrentToken;
+                TokenInfo tokenInfo(Token::ANGLE_BRACKETS_CLOSE,
+                                    mReader->GetCurrentFilePath(),
+                                    lineNo, columnNo);
+                mCurrentTokenInfo = std::move(tokenInfo);
+                return mCurrentTokenInfo;
             }
-            case '=':
-                mCurrentToken = Token::ASSIGNMENT;
-                return mCurrentToken;
-            case '*':
-                mCurrentToken = Token::ASTERISK;
-                return mCurrentToken;
-            case '{':
-                mCurrentToken = Token::BRACES_OPEN;
-                return mCurrentToken;
-            case '}':
-                mCurrentToken = Token::BRACES_CLOSE;
-                return mCurrentToken;
-            case '[':
-                mCurrentToken = Token::BRACKETS_OPEN;
-                return mCurrentToken;
-            case ']':
-                mCurrentToken = Token::BRACKETS_CLOSE;
-                return mCurrentToken;
-            case ':':
-                mCurrentToken = Token::COLON;
-                return mCurrentToken;
-            case ',':
-                mCurrentToken = Token::COMMA;
-                return mCurrentToken;
+            case '=': {
+                TokenInfo tokenInfo(Token::ASSIGNMENT,
+                                    mReader->GetCurrentFilePath(),
+                                    lineNo, columnNo);
+                mCurrentTokenInfo = std::move(tokenInfo);
+                return mCurrentTokenInfo;
+            }
+            case '*': {
+                TokenInfo tokenInfo(Token::ASTERISK,
+                                    mReader->GetCurrentFilePath(),
+                                    lineNo, columnNo);
+                mCurrentTokenInfo = std::move(tokenInfo);
+                return mCurrentTokenInfo;
+            }
+            case '{': {
+                TokenInfo tokenInfo(Token::BRACES_OPEN,
+                                    mReader->GetCurrentFilePath(),
+                                    lineNo, columnNo);
+                mCurrentTokenInfo = std::move(tokenInfo);
+                return mCurrentTokenInfo;
+            }
+            case '}': {
+                TokenInfo tokenInfo(Token::BRACES_CLOSE,
+                                    mReader->GetCurrentFilePath(),
+                                    lineNo, columnNo);
+                mCurrentTokenInfo = std::move(tokenInfo);
+                return mCurrentTokenInfo;
+            }
+            case '[': {
+                TokenInfo tokenInfo(Token::BRACKETS_OPEN,
+                                    mReader->GetCurrentFilePath(),
+                                    lineNo, columnNo);
+                mCurrentTokenInfo = std::move(tokenInfo);
+                return mCurrentTokenInfo;
+            }
+            case ']': {
+                TokenInfo tokenInfo(Token::BRACKETS_CLOSE,
+                                    mReader->GetCurrentFilePath(),
+                                    lineNo, columnNo);
+                mCurrentTokenInfo = std::move(tokenInfo);
+                return mCurrentTokenInfo;
+            }
+            case ':': {
+                TokenInfo tokenInfo(Token::COLON,
+                                    mReader->GetCurrentFilePath(),
+                                    lineNo, columnNo);
+                mCurrentTokenInfo = std::move(tokenInfo);
+                return mCurrentTokenInfo;
+            }
+            case ',': {
+                TokenInfo tokenInfo(Token::COMMA,
+                                    mReader->GetCurrentFilePath(),
+                                    lineNo, columnNo);
+                mCurrentTokenInfo = std::move(tokenInfo);
+                return mCurrentTokenInfo;
+            }
             case '/': {
                 if (mReader->PeekChar() == '/') {
-                    ReadLineComment(c);
+                    TokenInfo tokenInfo = ReadLineComment(c);
+                    tokenInfo.mTokenFilePath = mReader->GetCurrentFilePath();
+                    tokenInfo.mTokenLineNo = lineNo;
+                    tokenInfo.mTokenColumnNo = columnNo;
+                    mCurrentTokenInfo = std::move(tokenInfo);
                     continue;
                 }
                 else if (mReader->PeekChar() == '*') {
-                    ReadBlockComment(c);
+                    TokenInfo tokenInfo = ReadBlockComment(c);
+                    tokenInfo.mTokenFilePath = mReader->GetCurrentFilePath();
+                    tokenInfo.mTokenLineNo = lineNo;
+                    tokenInfo.mTokenColumnNo = columnNo;
+                    mCurrentTokenInfo = std::move(tokenInfo);
                     continue;
                 }
-                mCurrentToken = Token::DIVIDE;
-                return mCurrentToken;
+                TokenInfo tokenInfo(Token::DIVIDE,
+                                    mReader->GetCurrentFilePath(),
+                                    lineNo, columnNo);
+                mCurrentTokenInfo = std::move(tokenInfo);
+                return mCurrentTokenInfo;
             }
-            case '"':
-                return ReadStringLiteral(c);
-            case '-':
-                mCurrentToken = Token::MINUS;
-                return mCurrentToken;
-            case '(':
-                mCurrentToken = Token::PARENTHESES_OPEN;
-                return mCurrentToken;
-            case ')':
-                mCurrentToken = Token::PARENTHESES_CLOSE;
-                return mCurrentToken;
-            case '.':
-                mCurrentToken = Token::PERIOD;
-                return mCurrentToken;
-            case '\'':
-                return ReadCharacter(c);
-            case ';':
-                mCurrentToken = Token::SEMICOLON;
-                return mCurrentToken;
-            case '&':
-                mCurrentToken = Token::AMPERSAND;
-                return mCurrentToken;
-            case '~':
-                mCurrentToken = Token::COMPLIMENT;
-                return mCurrentToken;
-            case '^':
-                mCurrentToken = Token::EXCLUSIVE_OR;
-                return mCurrentToken;
-            case '|':
-                mCurrentToken = Token::INCLUSIVE_OR;
-                return mCurrentToken;
-            case '%':
-                mCurrentToken = Token::MODULO;
-                return mCurrentToken;
-            case '!':
-                mCurrentToken = Token::NOT;
-                return mCurrentToken;
-            case '+':
-                mCurrentToken = Token::PLUS;
-                return mCurrentToken;
-            default:
-                mCurrentToken = Token::UNKNOW;
-                return mCurrentToken;
+            case '"': {
+                TokenInfo tokenInfo = ReadStringLiteral(c);
+                tokenInfo.mTokenFilePath = mReader->GetCurrentFilePath();
+                tokenInfo.mTokenLineNo = lineNo;
+                tokenInfo.mTokenColumnNo = columnNo;
+                mCurrentTokenInfo = std::move(tokenInfo);
+                return mCurrentTokenInfo;
+            }
+            case '-': {
+                TokenInfo tokenInfo(Token::MINUS,
+                                    mReader->GetCurrentFilePath(),
+                                    lineNo, columnNo);
+                mCurrentTokenInfo = std::move(tokenInfo);
+                return mCurrentTokenInfo;
+            }
+            case '(': {
+                TokenInfo tokenInfo(Token::PARENTHESES_OPEN,
+                                    mReader->GetCurrentFilePath(),
+                                    lineNo, columnNo);
+                mCurrentTokenInfo = std::move(tokenInfo);
+                return mCurrentTokenInfo;
+            }
+            case ')': {
+                TokenInfo tokenInfo(Token::PARENTHESES_CLOSE,
+                                    mReader->GetCurrentFilePath(),
+                                    lineNo, columnNo);
+                mCurrentTokenInfo = std::move(tokenInfo);
+                return mCurrentTokenInfo;
+            }
+            case '.': {
+                TokenInfo tokenInfo(Token::PERIOD,
+                                    mReader->GetCurrentFilePath(),
+                                    lineNo, columnNo);
+                mCurrentTokenInfo = std::move(tokenInfo);
+                return mCurrentTokenInfo;
+            }
+            case '\'': {
+                TokenInfo tokenInfo = ReadCharacter(c);
+                tokenInfo.mTokenFilePath = mReader->GetCurrentFilePath();
+                tokenInfo.mTokenLineNo = lineNo;
+                tokenInfo.mTokenColumnNo = columnNo;
+            }
+            case ';': {
+                TokenInfo tokenInfo(Token::SEMICOLON,
+                                    mReader->GetCurrentFilePath(),
+                                    lineNo, columnNo);
+                mCurrentTokenInfo = std::move(tokenInfo);
+                return mCurrentTokenInfo;
+            }
+            case '&': {
+                TokenInfo tokenInfo(Token::AMPERSAND,
+                                    mReader->GetCurrentFilePath(),
+                                    lineNo, columnNo);
+                mCurrentTokenInfo = std::move(tokenInfo);
+                return mCurrentTokenInfo;
+            }
+            case '~': {
+                TokenInfo tokenInfo(Token::COMPLIMENT,
+                                    mReader->GetCurrentFilePath(),
+                                    lineNo, columnNo);
+                mCurrentTokenInfo = std::move(tokenInfo);
+                return mCurrentTokenInfo;
+            }
+            case '^': {
+                TokenInfo tokenInfo(Token::EXCLUSIVE_OR,
+                                    mReader->GetCurrentFilePath(),
+                                    lineNo, columnNo);
+                mCurrentTokenInfo = std::move(tokenInfo);
+                return mCurrentTokenInfo;
+            }
+            case '|': {
+                TokenInfo tokenInfo(Token::INCLUSIVE_OR,
+                                    mReader->GetCurrentFilePath(),
+                                    lineNo, columnNo);
+                mCurrentTokenInfo = std::move(tokenInfo);
+                return mCurrentTokenInfo;
+            }
+            case '%': {
+                TokenInfo tokenInfo(Token::MODULO,
+                                    mReader->GetCurrentFilePath(),
+                                    lineNo, columnNo);
+                mCurrentTokenInfo = std::move(tokenInfo);
+                return mCurrentTokenInfo;
+            }
+            case '!': {
+                TokenInfo tokenInfo(Token::NOT,
+                                    mReader->GetCurrentFilePath(),
+                                    lineNo, columnNo);
+                mCurrentTokenInfo = std::move(tokenInfo);
+                return mCurrentTokenInfo;
+            }
+            case '+': {
+                TokenInfo tokenInfo(Token::PLUS,
+                                    mReader->GetCurrentFilePath(),
+                                    lineNo, columnNo);
+                mCurrentTokenInfo = std::move(tokenInfo);
+                return mCurrentTokenInfo;
+            }
+            default: {
+                TokenInfo tokenInfo(Token::UNKNOWN,
+                                    mReader->GetCurrentFilePath(),
+                                    lineNo, columnNo);
+                mCurrentTokenInfo = std::move(tokenInfo);
+                return mCurrentTokenInfo;
+            }
         }
     }
-    mCurrentToken = Token::END_OF_FILE;
-    return mCurrentToken;
+    TokenInfo tokenInfo(Token::END_OF_FILE,
+                        mReader->GetCurrentFilePath(),
+                        lineNo, columnNo);
+    mCurrentTokenInfo = std::move(tokenInfo);
+    return mCurrentTokenInfo;
 }
 
-Token Tokenizer::ReadUuidNumberToken()
+TokenInfo Tokenizer::ReadUuidNumberToken()
 {
     static constexpr int SEGMENT_1 = 0;
     static constexpr int SEGMENT_2 = 1;
@@ -217,8 +357,8 @@ Token Tokenizer::ReadUuidNumberToken()
         mReader->GetChar();
     }
 
-    mTokenLineNo = mReader->GetCurrentLineNumber();
-    mTokenColumnNo = mReader->GetCurrentColumnNumber();
+    int lineNo = mReader->GetCurrentLineNumber();
+    int columnNo = mReader->GetCurrentColumnNumber();
 
     int state = SEGMENT_1;
     int index = 0;
@@ -234,8 +374,11 @@ Token Tokenizer::ReadUuidNumberToken()
                     index = 0;
                     continue;
                 }
-                mCurrentToken = Token::UNKNOW;
-                return mCurrentToken;
+                TokenInfo tokenInfo(Token::UNKNOWN,
+                                    mReader->GetCurrentFilePath(),
+                                    lineNo, columnNo);
+                mCurrentTokenInfo = std::move(tokenInfo);
+                return mCurrentTokenInfo;
             }
             else if (IsHexDigital(c)) {
                 if (index <= 8) {
@@ -243,12 +386,18 @@ Token Tokenizer::ReadUuidNumberToken()
                     builder.Append(c);
                     continue;
                 }
-                mCurrentToken = Token::UNKNOW;
-                return mCurrentToken;
+                TokenInfo tokenInfo(Token::UNKNOWN,
+                                    mReader->GetCurrentFilePath(),
+                                    lineNo, columnNo);
+                mCurrentTokenInfo = std::move(tokenInfo);
+                return mCurrentTokenInfo;
             }
             else {
-                mCurrentToken = Token::UNKNOW;
-                return mCurrentToken;
+                TokenInfo tokenInfo(Token::UNKNOWN,
+                                    mReader->GetCurrentFilePath(),
+                                    lineNo, columnNo);
+                mCurrentTokenInfo = std::move(tokenInfo);
+                return mCurrentTokenInfo;
             }
         }
         else if (state == SEGMENT_2) {
@@ -260,8 +409,11 @@ Token Tokenizer::ReadUuidNumberToken()
                     index = 0;
                     continue;
                 }
-                mCurrentToken = Token::UNKNOW;
-                return mCurrentToken;
+                TokenInfo tokenInfo(Token::UNKNOWN,
+                                    mReader->GetCurrentFilePath(),
+                                    lineNo, columnNo);
+                mCurrentTokenInfo = std::move(tokenInfo);
+                return mCurrentTokenInfo;
             }
             else if (IsHexDigital(c)) {
                 if (index <= 4) {
@@ -269,12 +421,18 @@ Token Tokenizer::ReadUuidNumberToken()
                     builder.Append(c);
                     continue;
                 }
-                mCurrentToken = Token::UNKNOW;
-                return mCurrentToken;
+                TokenInfo tokenInfo(Token::UNKNOWN,
+                                    mReader->GetCurrentFilePath(),
+                                    lineNo, columnNo);
+                mCurrentTokenInfo = std::move(tokenInfo);
+                return mCurrentTokenInfo;
             }
             else {
-                mCurrentToken = Token::UNKNOW;
-                return mCurrentToken;
+                TokenInfo tokenInfo(Token::UNKNOWN,
+                                    mReader->GetCurrentFilePath(),
+                                    lineNo, columnNo);
+                mCurrentTokenInfo = std::move(tokenInfo);
+                return mCurrentTokenInfo;
             }
         }
         else if (state == SEGMENT_3) {
@@ -286,8 +444,11 @@ Token Tokenizer::ReadUuidNumberToken()
                     index = 0;
                     continue;
                 }
-                mCurrentToken = Token::UNKNOW;
-                return mCurrentToken;
+                TokenInfo tokenInfo(Token::UNKNOWN,
+                                    mReader->GetCurrentFilePath(),
+                                    lineNo, columnNo);
+                mCurrentTokenInfo = std::move(tokenInfo);
+                return mCurrentTokenInfo;
             }
             else if (IsHexDigital(c)) {
                 if (index <= 4) {
@@ -295,12 +456,18 @@ Token Tokenizer::ReadUuidNumberToken()
                     builder.Append(c);
                     continue;
                 }
-                mCurrentToken = Token::UNKNOW;
-                return mCurrentToken;
+                TokenInfo tokenInfo(Token::UNKNOWN,
+                                    mReader->GetCurrentFilePath(),
+                                    lineNo, columnNo);
+                mCurrentTokenInfo = std::move(tokenInfo);
+                return mCurrentTokenInfo;
             }
             else {
-                mCurrentToken = Token::UNKNOW;
-                return mCurrentToken;
+                TokenInfo tokenInfo(Token::UNKNOWN,
+                                    mReader->GetCurrentFilePath(),
+                                    lineNo, columnNo);
+                mCurrentTokenInfo = std::move(tokenInfo);
+                return mCurrentTokenInfo;
             }
         }
         else if (state == SEGMENT_4) {
@@ -312,8 +479,11 @@ Token Tokenizer::ReadUuidNumberToken()
                     index = 0;
                     continue;
                 }
-                mCurrentToken = Token::UNKNOW;
-                return mCurrentToken;
+                TokenInfo tokenInfo(Token::UNKNOWN,
+                                    mReader->GetCurrentFilePath(),
+                                    lineNo, columnNo);
+                mCurrentTokenInfo = std::move(tokenInfo);
+                return mCurrentTokenInfo;
             }
             else if (IsHexDigital(c)) {
                 if (index <= 4) {
@@ -321,12 +491,18 @@ Token Tokenizer::ReadUuidNumberToken()
                     builder.Append(c);
                     continue;
                 }
-                mCurrentToken = Token::UNKNOW;
-                return mCurrentToken;
+                TokenInfo tokenInfo(Token::UNKNOWN,
+                                    mReader->GetCurrentFilePath(),
+                                    lineNo, columnNo);
+                mCurrentTokenInfo = std::move(tokenInfo);
+                return mCurrentTokenInfo;
             }
             else {
-                mCurrentToken = Token::UNKNOW;
-                return mCurrentToken;
+                TokenInfo tokenInfo(Token::UNKNOWN,
+                                    mReader->GetCurrentFilePath(),
+                                    lineNo, columnNo);
+                mCurrentTokenInfo = std::move(tokenInfo);
+                return mCurrentTokenInfo;
             }
         }
         else if (state == SEGMENT_5) {
@@ -336,25 +512,37 @@ Token Tokenizer::ReadUuidNumberToken()
                     builder.Append(c);
                     continue;
                 }
-                mCurrentToken = Token::UNKNOW;
-                return mCurrentToken;
+                TokenInfo tokenInfo(Token::UNKNOWN,
+                                    mReader->GetCurrentFilePath(),
+                                    lineNo, columnNo);
+                mCurrentTokenInfo = std::move(tokenInfo);
+                return mCurrentTokenInfo;
             }
             else {
                 if (index >= 13) {
-                    mString = builder.ToString();
-                    mCurrentToken = Token::UUID_NUMBER;
-                    return mCurrentToken;
+                    TokenInfo tokenInfo(Token::UUID_NUMBER,
+                                        mReader->GetCurrentFilePath(),
+                                        lineNo, columnNo);
+                    tokenInfo.mStringValue = builder.ToString();
+                    mCurrentTokenInfo = std::move(tokenInfo);
+                    return mCurrentTokenInfo;
                 }
-                mCurrentToken = Token::UNKNOW;
-                return mCurrentToken;
+                TokenInfo tokenInfo(Token::UNKNOWN,
+                                    mReader->GetCurrentFilePath(),
+                                    lineNo, columnNo);
+                mCurrentTokenInfo = std::move(tokenInfo);
+                return mCurrentTokenInfo;
             }
         }
     }
-    mCurrentToken = Token::END_OF_FILE;
-    return mCurrentToken;
+    TokenInfo tokenInfo(Token::END_OF_FILE,
+                        mReader->GetCurrentFilePath(),
+                        lineNo, columnNo);
+    mCurrentTokenInfo = std::move(tokenInfo);
+    return mCurrentTokenInfo;
 }
 
-Token Tokenizer::ReadVersionNumberToken()
+TokenInfo Tokenizer::ReadVersionNumberToken()
 {
     static constexpr int SEGMENT_1 = 0;
     static constexpr int SEGMENT_2 = 1;
@@ -368,8 +556,8 @@ Token Tokenizer::ReadVersionNumberToken()
         mReader->GetChar();
     }
 
-    mTokenLineNo = mReader->GetCurrentLineNumber();
-    mTokenColumnNo = mReader->GetCurrentColumnNumber();
+    int lineNo = mReader->GetCurrentLineNumber();
+    int columnNo = mReader->GetCurrentColumnNumber();
 
     int state = SEGMENT_1;
     while (!mReader->IsEof()) {
@@ -387,8 +575,11 @@ Token Tokenizer::ReadVersionNumberToken()
                 continue;
             }
             else {
-                mCurrentToken = Token::UNKNOW;
-                return mCurrentToken;
+                TokenInfo tokenInfo(Token::UNKNOWN,
+                                    mReader->GetCurrentFilePath(),
+                                    lineNo, columnNo);
+                mCurrentTokenInfo = std::move(tokenInfo);
+                return mCurrentTokenInfo;
             }
         }
         else if (state == SEGMENT_2) {
@@ -404,8 +595,11 @@ Token Tokenizer::ReadVersionNumberToken()
                 continue;
             }
             else {
-                mCurrentToken = Token::UNKNOW;
-                return mCurrentToken;
+                TokenInfo tokenInfo(Token::UNKNOWN,
+                                    mReader->GetCurrentFilePath(),
+                                    lineNo, columnNo);
+                mCurrentTokenInfo = std::move(tokenInfo);
+                return mCurrentTokenInfo;
             }
         }
         else if (state == SEGMENT_3) {
@@ -415,17 +609,23 @@ Token Tokenizer::ReadVersionNumberToken()
                 continue;
             }
             else {
-                mString = builder.ToString();
-                mCurrentToken = Token::VERSION_NUMBER;
-                return mCurrentToken;
+                TokenInfo tokenInfo(Token::VERSION_NUMBER,
+                                    mReader->GetCurrentFilePath(),
+                                    lineNo, columnNo);
+                tokenInfo.mStringValue = builder.ToString();
+                mCurrentTokenInfo = std::move(tokenInfo);
+                return mCurrentTokenInfo;
             }
         }
     }
-    mCurrentToken = Token::END_OF_FILE;
-    return mCurrentToken;
+    TokenInfo tokenInfo(Token::END_OF_FILE,
+                        mReader->GetCurrentFilePath(),
+                        lineNo, columnNo);
+    mCurrentTokenInfo = std::move(tokenInfo);
+    return mCurrentTokenInfo;
 }
 
-Token Tokenizer::ReadIdentifier(
+TokenInfo Tokenizer::ReadIdentifier(
     /* [in] */ char c)
 {
     StringBuilder builder;
@@ -452,15 +652,19 @@ Token Tokenizer::ReadIdentifier(
         break;
     }
     String id = builder.ToString();
-    mCurrentToken = mKeywords[id];
-    if (mCurrentToken == Token::UNKNOW) {
-        mIdentifier = id;
-        mCurrentToken = Token::IDENTIFIER;
+    Token token = mKeywords[id];
+    if (token == Token::UNKNOWN) {
+        TokenInfo tokenInfo(Token::IDENTIFIER,
+                            mReader->GetCurrentFilePath());
+        tokenInfo.mStringValue = id;
+        return tokenInfo;
     }
-    return mCurrentToken;
+    TokenInfo tokenInfo(token,
+                        mReader->GetCurrentFilePath());
+    return tokenInfo;
 }
 
-Token Tokenizer::ReadNumber(
+TokenInfo Tokenizer::ReadNumber(
     /* [in] */ char c)
 {
     static constexpr int NUMBER_INT = 0;
@@ -471,9 +675,9 @@ Token Tokenizer::ReadNumber(
     StringBuilder builder;
 
     builder.Append(c);
-    mBit = 32;
-    mRadix = c == '0' ? 8 : 10;
-    mScientificNotation = false;
+    int bit = 32;
+    int radix = c == '0' ? 8 : 10;
+    bool scientificNotation = false;
     int state = c == '0' ? NUMBER_INT_0 : NUMBER_INT;
     while (!mReader->IsEof()) {
         c = mReader->PeekChar();
@@ -481,7 +685,7 @@ Token Tokenizer::ReadNumber(
             if (c == 'x' || c =='X') {
                 mReader->GetChar();
                 builder.Append(c);
-                mRadix = 16;
+                radix = 16;
                 state = NUMBER_INT;
                 continue;
             }
@@ -500,12 +704,12 @@ Token Tokenizer::ReadNumber(
             break;
         }
         else if (state == NUMBER_INT) {
-            if (mRadix == 10 && IsDecimalDigital(c)) {
+            if (radix == 10 && IsDecimalDigital(c)) {
                 mReader->GetChar();
                 builder.Append(c);
                 continue;
             }
-            else if (mRadix == 16 && IsHexDigital(c)) {
+            else if (radix == 16 && IsHexDigital(c)) {
                 mReader->GetChar();
                 builder.Append(c);
                 continue;
@@ -520,7 +724,7 @@ Token Tokenizer::ReadNumber(
                 mReader->GetChar();
                 if (mReader->PeekChar() == 'l') {
                     mReader->GetChar();
-                    mBit = 64;
+                    bit = 64;
                 }
                 break;
             }
@@ -528,7 +732,7 @@ Token Tokenizer::ReadNumber(
                 mReader->GetChar();
                 if (mReader->PeekChar() == 'L') {
                     mReader->GetChar();
-                    mBit = 64;
+                    bit = 64;
                 }
                 break;
             }
@@ -536,7 +740,7 @@ Token Tokenizer::ReadNumber(
                 mReader->GetChar();
                 builder.Append(c);
                 state = NUMBER_FP_EXP;
-                mScientificNotation = true;
+                scientificNotation = true;
                 continue;
             }
             break;
@@ -551,7 +755,7 @@ Token Tokenizer::ReadNumber(
                 mReader->GetChar();
                 builder.Append(c);
                 state = NUMBER_FP_EXP;
-                mScientificNotation = true;
+                scientificNotation = true;
                 continue;
             }
             else if (c == 'f' || c == 'F') {
@@ -560,7 +764,7 @@ Token Tokenizer::ReadNumber(
             }
             else if (c == 'd' || c == 'D') {
                 mReader->GetChar();
-                mBit = 64;
+                bit = 64;
                 break;
             }
             break;
@@ -582,52 +786,62 @@ Token Tokenizer::ReadNumber(
             }
             else if (c == 'd' || c == 'D') {
                 mReader->GetChar();
-                mBit = 64;
+                bit = 64;
                 break;
             }
             break;
         }
     }
-    mNumberString = builder.ToString();
+    String number = builder.ToString();
     if (state == NUMBER_INT_0 || state == NUMBER_INT) {
-        if (mNumberString.Equals("0x8000000000000000")) {
-            mNumberString = String("-") + mNumberString;
+        if (number.Equals("0x8000000000000000")) {
+            number = String("-") + number;
         }
-        mIntegralValue = strtoll(mNumberString.string(), nullptr, mRadix);
-        mCurrentToken = Token::NUMBER_INTEGRAL;
-        return mCurrentToken;
+        TokenInfo tokenInfo(Token::NUMBER_INTEGRAL,
+                            mReader->GetCurrentFilePath());
+        tokenInfo.mStringValue = number;
+        tokenInfo.mIntegralValue = strtoll(number.string(), nullptr, radix);
+        tokenInfo.mBit = bit;
+        tokenInfo.mRadix = radix;
+        return tokenInfo;
     }
     else {
-        mFloatingPointValue = atof(mNumberString.string());
-        mCurrentToken = Token::NUMBER_FLOATINGPOINT;
-        return mCurrentToken;
+        TokenInfo tokenInfo(Token::NUMBER_FLOATINGPOINT,
+                            mReader->GetCurrentFilePath());
+        tokenInfo.mStringValue = number;
+        tokenInfo.mIntegralValue = atof(number.string());
+        tokenInfo.mScientificNotation = scientificNotation;
+        return tokenInfo;
     }
 }
 
-Token Tokenizer::ReadCharacter(
+TokenInfo Tokenizer::ReadCharacter(
     /* [in] */ char c)
 {
     c = mReader->GetChar();
     if (c == '\'') {
-        mCharacter = 0;
-        mString = "";
-        mCurrentToken = Token::CHARACTER;
-        return mCurrentToken;
+        TokenInfo tokenInfo(Token::CHARACTER,
+                            mReader->GetCurrentFilePath());
+        tokenInfo.mCharValue = 0;
+        tokenInfo.mStringValue = "";
+        return tokenInfo;
     }
 
     if (mReader->PeekChar() != '\'') {
-        mCurrentToken = Token::UNKNOW;
-        return mCurrentToken;
+        TokenInfo tokenInfo(Token::UNKNOWN,
+                            mReader->GetCurrentFilePath());
+        return tokenInfo;
     }
 
-    mCharacter = c;
     mReader->GetChar();
-    mString = String::Format("%c", mCharacter);
-    mCurrentToken = Token::CHARACTER;
-    return mCurrentToken;
+    TokenInfo tokenInfo(Token::CHARACTER,
+                        mReader->GetCurrentFilePath());
+    tokenInfo.mCharValue = c;
+    tokenInfo.mStringValue = String::Format("%c", c);
+    return tokenInfo;
 }
 
-Token Tokenizer::ReadStringLiteral(
+TokenInfo Tokenizer::ReadStringLiteral(
     /* [in] */ char c)
 {
     StringBuilder builder;
@@ -638,16 +852,18 @@ Token Tokenizer::ReadStringLiteral(
             builder.Append(c);
         }
         else {
-            mString = builder.ToString();
-            mCurrentToken = Token::STRING_LITERAL;
-            return mCurrentToken;
+            TokenInfo tokenInfo(Token::STRING_LITERAL,
+                                mReader->GetCurrentFilePath());
+            tokenInfo.mStringValue = builder.ToString();
+            return tokenInfo;
         }
     }
-    mCurrentToken = Token::END_OF_FILE;
-    return mCurrentToken;
+    TokenInfo tokenInfo(Token::END_OF_FILE,
+                        mReader->GetCurrentFilePath());
+    return tokenInfo;
 }
 
-Token Tokenizer::ReadLineComment(
+TokenInfo Tokenizer::ReadLineComment(
     /* [in] */ char c)
 {
     StringBuilder builder;
@@ -660,12 +876,13 @@ Token Tokenizer::ReadLineComment(
         }
         builder.Append(c);
     }
-    mComment = builder.ToString();
-    mCurrentToken = Token::COMMENT_LINE;
-    return mCurrentToken;
+    TokenInfo tokenInfo(Token::COMMENT_LINE,
+                        mReader->GetCurrentFilePath());
+    tokenInfo.mStringValue = builder.ToString();
+    return tokenInfo;
 }
 
-Token Tokenizer::ReadBlockComment(
+TokenInfo Tokenizer::ReadBlockComment(
     /* [in] */ char c)
 {
     StringBuilder builder;
@@ -680,156 +897,9 @@ Token Tokenizer::ReadBlockComment(
         }
         builder.Append(c);
     }
-    mComment = builder.ToString();
-    return Token::COMMENT_BLOCK;
-}
-
-String Tokenizer::DumpCurrentToken()
-{
-    switch (mCurrentToken) {
-        case Token::AMPERSAND:
-            return "&";
-        case Token::ANGLE_BRACKETS_OPEN:
-            return "<";
-        case Token::ANGLE_BRACKETS_CLOSE:
-            return ">";
-        case Token::ARRAY:
-            return "Array";
-        case Token::ASSIGNMENT:
-            return "=";
-        case Token::ASTERISK:
-            return "*";
-        case Token::BOOLEAN:
-            return "Boolean";
-        case Token::BRACES_OPEN:
-            return "{";
-        case Token::BRACES_CLOSE:
-            return "}";
-        case Token::BRACKETS_OPEN:
-            return "[";
-        case Token::BRACKETS_CLOSE:
-            return "]";
-        case Token::BYTE:
-            return "Byte";
-        case Token::CALLEE:
-            return "callee";
-        case Token::CHAR:
-            return "Char";
-        case Token::CHARACTER:
-            return mString;
-        case Token::COCLASS:
-            return "coclass";
-        case Token::COCLASSID:
-            return "CoclassID";
-        case Token::COLON:
-            return ":";
-        case Token::COMMA:
-            return ",";
-        case Token::COMMENT_BLOCK:
-        case Token::COMMENT_LINE:
-            return mComment;
-        case Token::COMPLIMENT:
-            return "~";
-        case Token::COMPONENTID:
-            return "ComponentID";
-        case Token::CONST:
-            return "const";
-        case Token::CONSTRUCTOR:
-            return "Constructor";
-        case Token::DELETE:
-            return "Delete";
-        case Token::DESCRIPTION:
-            return "description";
-        case Token::DIVIDE:
-            return "/";
-        case Token::DOUBLE:
-            return "Double";
-        case Token::ECODE:
-            return "ECode";
-        case Token::END_OF_LINE:
-            return "\n";
-        case Token::ENUM:
-            return "enum";
-        case Token::EXCLUSIVE_OR:
-            return "^";
-        case Token::FALSE:
-            return "false";
-        case Token::FLOAT:
-            return "Float";
-        case Token::HANDLE:
-            return "HANDLE";
-        case Token::IDENTIFIER:
-            return mIdentifier;
-        case Token::IN:
-            return "in";
-        case Token::INCLUDE:
-            return "include";
-        case Token::INCLUSIVE_OR:
-            return "|";
-        case Token::INTEGER:
-            return "Integer";
-        case Token::INTERFACE:
-            return "interface";
-        case Token::INTERFACEID:
-            return "InterfaceID";
-        case Token::LONG:
-            return "Long";
-        case Token::MINUS:
-            return "-";
-        case Token::MODULE:
-            return "module";
-        case Token::MODULO:
-            return "%";
-        case Token::NAMESPACE:
-            return "namespace";
-        case Token::NOT:
-            return "!";
-        case Token::NULLPTR:
-            return "nullptr";
-        case Token::NUMBER_INTEGRAL:
-        case Token::NUMBER_FLOATINGPOINT:
-            return mNumberString;
-        case Token::OUT:
-            return "out";
-        case Token::PARENTHESES_OPEN:
-            return "(";
-        case Token::PARENTHESES_CLOSE:
-            return ")";
-        case Token::PERIOD:
-            return ".";
-        case Token::PLUS:
-            return "+";
-        case Token::SEMICOLON:
-            return ";";
-        case Token::SHIFT_LEFT:
-            return "<<";
-        case Token::SHIFT_RIGHT:
-            return ">>";
-        case Token::SHIFT_RIGHT_UNSIGNED:
-            return ">>>";
-        case Token::SHORT:
-            return "Short";
-        case Token::STRING:
-            return "String";
-        case Token::STRING_LITERAL:
-            return mString;
-        case Token::TRIPLE:
-            return "Triple";
-        case Token::TRUE:
-            return "true";
-        case Token::URL:
-            return "url";
-        case Token::UUID:
-            return "uuid";
-        case Token::UUID_NUMBER:
-            return mString;
-        case Token::VERSION:
-            return "version";
-        case Token::VERSION_NUMBER:
-            return mString;
-        default:
-            return "";
-    }
+    TokenInfo tokenInfo(Token::COMMENT_BLOCK,
+                        mReader->GetCurrentFilePath());
+    tokenInfo.mStringValue = builder.ToString();
 }
 
 }

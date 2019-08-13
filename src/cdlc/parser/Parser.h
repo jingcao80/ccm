@@ -45,7 +45,7 @@ private:
         {}
 
     public:
-        Token mToken = Token::UNKNOW;
+        Token mToken = Token::UNKNOWN;
         String mFile;
         int mLineNo = 0;
         int mColumnNo = 0;
@@ -60,7 +60,11 @@ private:
     bool ParseFile(
         /* [in] */ const String& filePath);
 
-    bool ParseDeclarationWithAttributes();
+    bool ParseFile(
+        /* [in] */ TokenInfo tokenInfo);
+
+    bool ParseDeclarationWithAttributes(
+        /* [in] */ bool excludeModule);
 
     bool ParseAttributes(
         /* [out] */ Attributes& attrs);
@@ -71,14 +75,47 @@ private:
     bool ParseVersion(
         /* [out] */ Attributes& attrs);
 
+    bool ParseDescription(
+        /* [out] */ Attributes& attrs);
 
+    bool ParseUri(
+        /* [out] */ Attributes& attrs);
 
-    bool ParseModule();
+    bool ParseModule(
+        /* [in] */ Attributes& attrs);
 
+    bool ParseNamespace();
+
+    bool ParseInterface(
+        /* [in] */ Attributes& attrs);
+
+    bool ParseInterfaceBody();
+
+    bool ParseMethod();
+
+    bool ParseParameter();
+
+    void ParseType();
+
+    void ParseArray();
+
+    bool ParseNestedInterface();
+
+    bool ParseCoclass(
+        /* [in] */ Attributes& attrs);
+
+    bool ParseCoclassBody();
+
+    bool ParseConstructor();
+
+    bool ParseInterface(
+        /* [in] */ void*);
+
+    bool ParseInclude();
 
 
     void LogError(
-        /* [in] */ Token token,
+        /* [in] */ TokenInfo& tokenInfo,
         /* [in] */ const String& message);
 
     void ShowErrors();

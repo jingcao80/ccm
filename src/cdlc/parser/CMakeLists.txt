@@ -22,6 +22,7 @@ include_directories(
 set(SOURCES
     Parser.cpp
     Token.cpp
+    TokenInfo.cpp
     Tokenizer.cpp)
 
 add_library(parser STATIC

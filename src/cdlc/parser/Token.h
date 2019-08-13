@@ -21,7 +21,7 @@ namespace cdlc {
 
 enum class Token
 {
-    UNKNOW = 0,             // 0)
+    UNKNOWN = 0,            // 0)
     // types
     ARRAY,                  // 1)
     BOOLEAN,                // 2)
@@ -56,7 +56,7 @@ enum class Token
     NULLPTR,                // 30)
     OUT,                    // 31)
     TRUE,                   // 32)
-    URL,                    // 33)
+    URI,                    // 33)
     UUID,                   // 34)
     VERSION,                // 35)
     // symbols

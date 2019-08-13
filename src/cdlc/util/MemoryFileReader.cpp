@@ -112,20 +112,20 @@ void MemoryFileReader::UnGetChar()
     }
 }
 
-int MemoryFileReader::GetCurrentLineNumber()
-{
-    if (mCurrentPosition != mDataPosition) {
-        ResolveCurrentPosition();
-    }
-    return mCurrentLineNo;
-}
-
 String MemoryFileReader::GetCurrentFilePath()
 {
     if (mCurrentPosition != mDataPosition) {
         ResolveCurrentPosition();
     }
     return mCurrentFilePath;
+}
+
+int MemoryFileReader::GetCurrentLineNumber()
+{
+    if (mCurrentPosition != mDataPosition) {
+        ResolveCurrentPosition();
+    }
+    return mCurrentLineNo;
 }
 
 int MemoryFileReader::GetCurrentColumnNumber()
@@ -140,14 +140,16 @@ void MemoryFileReader::ResolveCurrentPosition()
 {
     size_t begin = 0;
     size_t end = mFileInfos.size();
-    while (begin < end) {
-        size_t half = (begin + end) / 2;
+    size_t half = (begin + end) / 2;
+    while (begin < half && half < end) {
         FileInfo info = mFileInfos[half];
         if (mDataPosition < info.mBeginPos) {
             end = half;
+            half = (begin + end) / 2;
         }
-        else if (mDataPosition > info.mEndPos) {
+        else if (mDataPosition >= info.mEndPos) {
             begin = half;
+            half = (begin + end) / 2;
         }
         else {
             mCurrentFilePath = info.mFilePath;
@@ -157,6 +159,12 @@ void MemoryFileReader::ResolveCurrentPosition()
             return;
         }
     }
+
+    FileInfo info = mFileInfos[end];
+    mCurrentFilePath = info.mFilePath;
+    mCurrentLineNo = info.mLineNo;
+    mCurrentColumnNo = mDataPosition - info.mBeginPos + 1;
+    mCurrentPosition = mDataPosition;
 }
 
 void MemoryFileReader::Mark()

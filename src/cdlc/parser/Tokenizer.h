@@ -17,7 +17,7 @@
 #ifndef __CDLC_TOKENIZER_H__
 #define __CDLC_TOKENIZER_H__
 
-#include "parser/Token.h"
+#include "parser/TokenInfo.h"
 #include "util/AutoPtr.h"
 #include "util/Reader.h"
 #include "util/String.h"
@@ -34,54 +34,42 @@ public:
     inline void SetReader(
         /* [in] */ Reader* reader);
 
-    Token PeekToken(
-        /* [in] */ Token expectedToken = Token::UNKNOW);
+    TokenInfo PeekToken(
+        /* [in] */ Token expectedToken = Token::UNKNOWN);
 
-    Token GetToken(
-        /* [in] */ Token expectedToken = Token::UNKNOW);
+    TokenInfo GetToken(
+        /* [in] */ Token expectedToken = Token::UNKNOWN);
 
-    inline Token GetUuidNumberToken();
+    inline TokenInfo GetUuidNumberToken();
 
-    inline Token GetVersionNumberToken();
-
-    inline String GetUuid();
-
-    inline String GetVersionNumber();
-
-    inline String GetTokenFilePath();
-
-    inline int GetTokenLineNo();
-
-    inline int GetTokenColumnNo();
-
-    String DumpCurrentToken();
+    inline TokenInfo GetVersionNumberToken();
 
 private:
     void SetupKeywords();
 
-    Token ReadToken(
+    TokenInfo ReadToken(
         /* [in] */ Token expectedToken);
 
-    Token ReadUuidNumberToken();
+    TokenInfo ReadUuidNumberToken();
 
-    Token ReadVersionNumberToken();
+    TokenInfo ReadVersionNumberToken();
 
-    Token ReadIdentifier(
+    TokenInfo ReadIdentifier(
         /* [in] */ char c);
 
-    Token ReadNumber(
+    TokenInfo ReadNumber(
         /* [in] */ char c);
 
-    Token ReadCharacter(
+    TokenInfo ReadCharacter(
         /* [in] */ char c);
 
-    Token ReadStringLiteral(
+    TokenInfo ReadStringLiteral(
         /* [in] */ char c);
 
-    Token ReadLineComment(
+    TokenInfo ReadLineComment(
         /* [in] */ char c);
 
-    Token ReadBlockComment(
+    TokenInfo ReadBlockComment(
         /* [in] */ char c);
 
     inline static bool IsAlphabet(
@@ -102,19 +90,7 @@ private:
 private:
     AutoPtr<Reader> mReader;
     std::unordered_map<String, Token, StringHashFunc, StringEqualsFunc> mKeywords;
-    Token mCurrentToken;
-    int mTokenLineNo = 0;
-    int mTokenColumnNo = 0;
-    String mIdentifier;
-    String mNumberString;
-    int mCharacter = 0;
-    String mString;
-    String mComment;
-    long long int mIntegralValue = 0;
-    double mFloatingPointValue = 0;
-    int mBit = 0;
-    int mRadix = 0;
-    bool mScientificNotation = false;
+    TokenInfo mCurrentTokenInfo;
 };
 
 Tokenizer::Tokenizer()
@@ -128,39 +104,14 @@ void Tokenizer::SetReader(
     mReader = reader;
 }
 
-Token Tokenizer::GetUuidNumberToken()
+TokenInfo Tokenizer::GetUuidNumberToken()
 {
     return ReadUuidNumberToken();
 }
 
-Token Tokenizer::GetVersionNumberToken()
+TokenInfo Tokenizer::GetVersionNumberToken()
 {
     return ReadVersionNumberToken();
-}
-
-String Tokenizer::GetUuid()
-{
-    return mString;
-}
-
-String Tokenizer::GetVersionNumber()
-{
-    return mString;
-}
-
-String Tokenizer::GetTokenFilePath()
-{
-    return mReader->GetCurrentFilePath();
-}
-
-int Tokenizer::GetTokenLineNo()
-{
-    return mTokenLineNo;
-}
-
-int Tokenizer::GetTokenColumnNo()
-{
-    return mTokenColumnNo;
 }
 
 bool Tokenizer::IsAlphabet(
