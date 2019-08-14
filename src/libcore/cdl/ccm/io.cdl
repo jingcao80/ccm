@@ -146,7 +146,7 @@ coclass CFile
         [in] String child);
 
     Constructor(
-        [in] IURI* uri);
+        [in] IURI* urii);
 
     // @hide
     Constructor(

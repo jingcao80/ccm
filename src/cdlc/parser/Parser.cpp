@@ -65,11 +65,29 @@ bool Parser::ParseFile(
     mTokenizer.SetReader(reader);
 
     bool result = true;
-    while (tokenInfo = mTokenizer.PeekToken(), tokenInfo.mToken != Token::END_OF_FILE) {
+    tokenInfo = mTokenizer.PeekToken();
+    while (tokenInfo.mToken != Token::END_OF_FILE) {
         switch (tokenInfo.mToken) {
             case Token::BRACKETS_OPEN: {
                 result = ParseDeclarationWithAttributes(false) && result;
-                continue;
+                break;
+            }
+            case Token::ENUM: {
+                result = ParseEnumeration() && result;
+                break;
+            }
+            case Token::INCLUDE: {
+                result = ParseInclude() && result;
+                break;
+            }
+            case Token::INTERFACE: {
+                Attributes attrs;
+                result = ParseInterface(attrs) && result;
+                break;
+            }
+            case Token::NAMESPACE: {
+                result = ParseNamespace() && result;
+                break;
             }
             default: {
                 String message = String::Format("%s is not expected.",
@@ -77,9 +95,10 @@ bool Parser::ParseFile(
                 LogError(tokenInfo, message);
                 mTokenizer.GetToken();
                 result = false;
-                continue;
+                break;
             }
         }
+        tokenInfo = mTokenizer.PeekToken();
     }
 
     return result;
@@ -388,6 +407,19 @@ bool Parser::ParseNamespace()
                 result = ParseDeclarationWithAttributes(true) && result;
                 break;
             }
+            case Token::CONST: {
+                ParseConstant();
+                break;
+            }
+            case Token::ENUM: {
+                result = ParseEnumeration() && result;
+                break;
+            }
+            case Token::INTERFACE: {
+                Attributes attrs;
+                result = ParseInterface(attrs) && result;
+                break;
+            }
             case Token::NAMESPACE: {
                 result = ParseNamespace() && result;
                 break;
@@ -476,6 +508,10 @@ bool Parser::ParseInterfaceBody()
                 result = ParseNestedInterface() && result;
                 break;
             }
+            case Token::CONST: {
+                ParseConstant();
+                break;
+            }
             case Token::IDENTIFIER: {
                 result = ParseMethod() && result;
                 break;
@@ -497,6 +533,221 @@ bool Parser::ParseInterfaceBody()
     mTokenizer.GetToken();
 
     return result;
+}
+
+void Parser::ParseConstant()
+{
+    // read "const"
+    mTokenizer.GetToken();
+    TokenInfo tokenInfo = mTokenizer.PeekToken();
+    if (tokenInfo.IsBuildinType()) {
+        mTokenizer.GetToken();
+    }
+    else {
+        //
+        mTokenizer.GetToken();
+    }
+
+    tokenInfo = mTokenizer.GetToken();
+    if (tokenInfo.mToken != Token::IDENTIFIER) {
+        LogError(tokenInfo, "A constant name is expected.");
+        mTokenizer.SkipCurrentLine();
+        return;
+    }
+
+    String constantName = tokenInfo.mStringValue;
+
+    tokenInfo = mTokenizer.GetToken();
+    if (tokenInfo.mToken != Token::ASSIGNMENT) {
+        LogError(tokenInfo, "\"=\" is expected.");
+        mTokenizer.SkipCurrentLine();
+        return;
+    }
+
+    ParseExpression();
+
+    tokenInfo = mTokenizer.GetToken();
+    if (tokenInfo.mToken != Token::SEMICOLON) {
+        LogError(tokenInfo, "\";\" is expected.");
+        mTokenizer.SkipCurrentLine();
+        return;
+    }
+}
+
+void Parser::ParseExpression()
+{
+    ParseInclusiveOrExpression();
+}
+
+void Parser::ParseInclusiveOrExpression()
+{
+    ParseExclusiveOrExpression();
+
+    TokenInfo tokenInfo = mTokenizer.PeekToken();
+    while (tokenInfo.mToken == Token::INCLUSIVE_OR) {
+        mTokenizer.GetToken();
+
+        ParseExclusiveOrExpression();
+
+        tokenInfo = mTokenizer.PeekToken();
+    }
+}
+
+void Parser::ParseExclusiveOrExpression()
+{
+    ParseAndExpression();
+
+    TokenInfo tokenInfo = mTokenizer.PeekToken();
+    while (tokenInfo.mToken == Token::EXCLUSIVE_OR) {
+        mTokenizer.GetToken();
+
+        ParseAndExpression();
+
+        tokenInfo = mTokenizer.PeekToken();
+    }
+}
+
+void Parser::ParseAndExpression()
+{
+    ParseShiftExpression();
+
+    TokenInfo tokenInfo = mTokenizer.PeekToken();
+    while (tokenInfo.mToken == Token::AMPERSAND) {
+        mTokenizer.GetToken();
+
+        ParseShiftExpression();
+
+        tokenInfo = mTokenizer.PeekToken();
+    }
+}
+
+void Parser::ParseShiftExpression()
+{
+    ParseAdditiveExpression();
+
+    TokenInfo tokenInfo = mTokenizer.PeekToken();
+    while (tokenInfo.mToken == Token::SHIFT_LEFT ||
+            tokenInfo.mToken == Token::SHIFT_RIGHT ||
+            tokenInfo.mToken == Token::SHIFT_RIGHT_UNSIGNED) {
+        mTokenizer.GetToken();
+
+        ParseAdditiveExpression();
+
+        tokenInfo = mTokenizer.PeekToken();
+    }
+}
+
+void Parser::ParseAdditiveExpression()
+{
+    ParseMultiplicativeExpression();
+
+    TokenInfo tokenInfo = mTokenizer.PeekToken();
+    while (tokenInfo.mToken == Token::PLUS ||
+            tokenInfo.mToken == Token::MINUS) {
+        mTokenizer.GetToken();
+
+        ParseMultiplicativeExpression();
+
+        tokenInfo = mTokenizer.PeekToken();
+    }
+}
+
+void Parser::ParseMultiplicativeExpression()
+{
+    ParseUnaryExpression();
+
+    TokenInfo tokenInfo = mTokenizer.PeekToken();
+    while (tokenInfo.mToken == Token::ASTERISK ||
+            tokenInfo.mToken == Token::DIVIDE ||
+            tokenInfo.mToken == Token::MODULO) {
+        mTokenizer.GetToken();
+
+        ParseUnaryExpression();
+
+        tokenInfo = mTokenizer.PeekToken();
+    }
+}
+
+void Parser::ParseUnaryExpression()
+{
+    TokenInfo tokenInfo = mTokenizer.PeekToken();
+    if (tokenInfo.mToken == Token::PLUS ||
+            tokenInfo.mToken == Token::MINUS ||
+            tokenInfo.mToken == Token::COMPLIMENT ||
+            tokenInfo.mToken == Token::NOT) {
+        mTokenizer.GetToken();
+
+        ParseUnaryExpression();
+    }
+    else {
+        ParsePostfixExpression();
+    }
+}
+
+void Parser::ParsePostfixExpression()
+{
+    TokenInfo tokenInfo = mTokenizer.PeekToken();
+    switch (tokenInfo.mToken) {
+        case Token::TRUE:
+        case Token::FALSE: {
+            ParseBooleanLiteral();
+            return;
+        }
+        case Token::CHARACTER: {
+            ParseCharacter();
+            return;
+        }
+        case Token::NUMBER_INTEGRAL: {
+            ParseIntegralNumber();
+            return;
+        }
+        case Token::NUMBER_FLOATINGPOINT: {
+            ParseFloatingPointNumber();
+            return;
+        }
+        case Token::STRING_LITERAL: {
+            ParseStringLiteral();
+            return;
+        }
+        case Token::IDENTIFIER: {
+            ParseIdentifier();
+            return;
+        }
+        case Token::NULLPTR: {
+            mTokenizer.GetToken();
+            return;
+        }
+    }
+}
+
+void Parser::ParseBooleanLiteral()
+{
+    TokenInfo tokenInfo = mTokenizer.GetToken();
+}
+
+void Parser::ParseCharacter()
+{
+    TokenInfo tokenInfo = mTokenizer.GetToken();
+}
+
+void Parser::ParseFloatingPointNumber()
+{
+    TokenInfo tokenInfo = mTokenizer.GetToken();
+}
+
+void Parser::ParseIntegralNumber()
+{
+    TokenInfo tokenInfo = mTokenizer.GetToken();
+}
+
+void Parser::ParseStringLiteral()
+{
+    TokenInfo tokenInfo = mTokenizer.GetToken();
+}
+
+void Parser::ParseIdentifier()
+{
+    TokenInfo tokenInfo = mTokenizer.GetToken();
 }
 
 bool Parser::ParseMethod()
@@ -613,6 +864,8 @@ bool Parser::ParseParameter()
 
     if (mTokenizer.PeekToken().mToken == Token::ASSIGNMENT) {
         mTokenizer.GetToken();
+
+        ParseExpression();
     }
 
     return result;
@@ -661,7 +914,7 @@ void Parser::ParseArray()
         LogError(tokenInfo, "\">\" is expected.");
         return;
     }
-    mTokenizer.GetToken();
+    mTokenizer.GetToken(Token::ANGLE_BRACKETS_CLOSE);
 }
 
 bool Parser::ParseNestedInterface()
@@ -847,6 +1100,84 @@ bool Parser::ParseInterface(
     return result;
 }
 
+bool Parser::ParseEnumeration()
+{
+    bool result = true;
+    String enumName;
+
+    // read "enum"
+    mTokenizer.GetToken();
+    TokenInfo tokenInfo = mTokenizer.PeekToken();
+    if (tokenInfo.mToken == Token::IDENTIFIER) {
+        mTokenizer.GetToken();
+        enumName = tokenInfo.mStringValue;
+
+    }
+    else {
+        LogError(tokenInfo, "An enumeration name is expected.");
+        result = false;
+    }
+
+    if (mTokenizer.PeekToken().mToken == Token::SEMICOLON) {
+        mTokenizer.GetToken();
+
+        return result;
+    }
+
+    result = ParseEnumerationBody() && result;
+
+    return result;
+}
+
+bool Parser::ParseEnumerationBody()
+{
+    bool result = true;
+
+    TokenInfo tokenInfo = mTokenizer.PeekToken();
+    if (tokenInfo.mToken != Token::BRACES_OPEN) {
+        LogError(tokenInfo, "\" { \" is expected.");
+        result = false;
+    }
+    mTokenizer.GetToken();
+
+    tokenInfo = mTokenizer.PeekToken();
+    while (tokenInfo.mToken != Token::BRACES_CLOSE &&
+            tokenInfo.mToken != Token::END_OF_FILE) {
+        String enumeratorName;
+        if (tokenInfo.mToken == Token::IDENTIFIER) {
+            mTokenizer.GetToken();
+            enumeratorName = tokenInfo.mStringValue;
+        }
+        else {
+            LogError(tokenInfo, "An enumerator name is expected.");
+            result = false;
+        }
+
+        tokenInfo = mTokenizer.PeekToken();
+        if (tokenInfo.mToken == Token::ASSIGNMENT) {
+            mTokenizer.GetToken();
+            ParseExpression();
+            tokenInfo = mTokenizer.PeekToken();
+        }
+        if (tokenInfo.mToken == Token::COMMA) {
+            mTokenizer.GetToken();
+            tokenInfo = mTokenizer.PeekToken();
+        }
+        else if (tokenInfo.mToken != Token::BRACES_CLOSE) {
+            LogError(tokenInfo, "\"}\" is expected.");
+            return false;
+        }
+    }
+    if (tokenInfo.mToken == Token::END_OF_FILE) {
+        LogError(tokenInfo, "\"}\" is expected.");
+        return false;
+    }
+    // read '}'
+    mTokenizer.GetToken();
+
+    return result;
+}
+
 bool Parser::ParseInclude()
 {
     // read "include"
@@ -858,7 +1189,9 @@ bool Parser::ParseInclude()
     }
     mTokenizer.GetToken();
 
+    AutoPtr<Reader> prevReader = mTokenizer.GetReader();
     bool ret = ParseFile(tokenInfo);
+    mTokenizer.SetReader(prevReader);
 
     return ret;
 }

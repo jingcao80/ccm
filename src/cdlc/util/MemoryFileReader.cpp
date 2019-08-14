@@ -139,7 +139,7 @@ int MemoryFileReader::GetCurrentColumnNumber()
 void MemoryFileReader::ResolveCurrentPosition()
 {
     size_t begin = 0;
-    size_t end = mFileInfos.size();
+    size_t end = mFileInfos.size() - 1;
     size_t half = (begin + end) / 2;
     while (begin < half && half < end) {
         FileInfo info = mFileInfos[half];

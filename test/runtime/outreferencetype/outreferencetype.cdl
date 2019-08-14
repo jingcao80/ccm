@@ -16,7 +16,7 @@
 
 [
     uuid(f0a35bbc-25aa-4156-99f1-fa6e01bd8255),
-    url("http://ccm.org/component/test/ReferenceTypeTest.so")
+    uri("http://ccm.org/component/test/ReferenceTypeTest.so")
 ]
 module ReferenceTypeTest
 {

@@ -84,6 +84,8 @@ TokenInfo Tokenizer::ReadToken(
     int columnNo = mReader->GetCurrentColumnNumber();
 
     while (!mReader->IsEof()) {
+        lineNo = mReader->GetCurrentLineNumber();
+        columnNo = mReader->GetCurrentColumnNumber();
         char c = mReader->GetChar();
         if (c == Token2Char(expectedToken)) {
             TokenInfo tokenInfo(expectedToken,
@@ -900,6 +902,16 @@ TokenInfo Tokenizer::ReadBlockComment(
     TokenInfo tokenInfo(Token::COMMENT_BLOCK,
                         mReader->GetCurrentFilePath());
     tokenInfo.mStringValue = builder.ToString();
+    return tokenInfo;
+}
+
+void Tokenizer::SkipCurrentLine()
+{
+    while (!mReader->IsEof()) {
+        if (mReader->GetChar() == '\n') {
+            return;
+        }
+    }
 }
 
 }

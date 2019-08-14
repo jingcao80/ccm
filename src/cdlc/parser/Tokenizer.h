@@ -31,6 +31,8 @@ class Tokenizer
 public:
     inline Tokenizer();
 
+    inline AutoPtr<Reader> GetReader();
+
     inline void SetReader(
         /* [in] */ Reader* reader);
 
@@ -39,6 +41,8 @@ public:
 
     TokenInfo GetToken(
         /* [in] */ Token expectedToken = Token::UNKNOWN);
+
+    void SkipCurrentLine();
 
     inline TokenInfo GetUuidNumberToken();
 
@@ -96,6 +100,11 @@ private:
 Tokenizer::Tokenizer()
 {
     SetupKeywords();
+}
+
+AutoPtr<Reader> Tokenizer::GetReader()
+{
+    return mReader;
 }
 
 void Tokenizer::SetReader(

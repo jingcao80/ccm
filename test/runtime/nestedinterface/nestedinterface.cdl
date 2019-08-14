@@ -16,7 +16,7 @@
 
 [
     uuid(3a58f162-2708-4f66-bd21-faaef914063b),
-    url("http://ccm.org/component/test/NestedInterfaceTest.so")
+    uri("http://ccm.org/component/test/NestedInterfaceTest.so")
 ]
 module NestedInterfaceTest
 {

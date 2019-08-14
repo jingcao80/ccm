@@ -68,7 +68,7 @@ coclass CGetPropertyAction
         [in] String theProp);
 
     Constructor(
-        [in] String theProp
+        [in] String theProp,
         [in] String defaultVal);
 
     interface IPrivilegedAction;

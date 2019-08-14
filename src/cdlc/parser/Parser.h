@@ -91,6 +91,38 @@ private:
 
     bool ParseInterfaceBody();
 
+    void ParseConstant();
+
+    void ParseExpression();
+
+    void ParseInclusiveOrExpression();
+
+    void ParseExclusiveOrExpression();
+
+    void ParseAndExpression();
+
+    void ParseShiftExpression();
+
+    void ParseAdditiveExpression();
+
+    void ParseMultiplicativeExpression();
+
+    void ParseUnaryExpression();
+
+    void ParsePostfixExpression();
+
+    void ParseBooleanLiteral();
+
+    void ParseCharacter();
+
+    void ParseIntegralNumber();
+
+    void ParseFloatingPointNumber();
+
+    void ParseStringLiteral();
+
+    void ParseIdentifier();
+
     bool ParseMethod();
 
     bool ParseParameter();
@@ -110,6 +142,10 @@ private:
 
     bool ParseInterface(
         /* [in] */ void*);
+
+    bool ParseEnumeration();
+
+    bool ParseEnumerationBody();
 
     bool ParseInclude();
 

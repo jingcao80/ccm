@@ -50,7 +50,7 @@ interface INavigableSet
         [out] IIterator** it);
 
     HeadSet(
-        [in] IInterface* toElement
+        [in] IInterface* toElement,
         [out] ISortedSet** headset);
 
     HeadSet(

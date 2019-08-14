@@ -16,7 +16,7 @@
 
 [
     uuid(3657416d-4638-4843-a0b9-eb7ef1794495),
-    url("http://ccm.org/component/library/libcore.so")
+    uri("http://ccm.org/component/library/libcore.so")
 ]
 module libcore
 {

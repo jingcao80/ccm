@@ -80,7 +80,7 @@ interface ICharBuffer
     Put(
         [in] String src,
         [in] Integer start,
-        [in]　Integer end);
+        [in] Integer end);
 
     Put(
         [in] ICharBuffer* src);
