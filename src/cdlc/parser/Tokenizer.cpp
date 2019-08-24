@@ -61,15 +61,30 @@ void Tokenizer::SetupKeywords()
 TokenInfo Tokenizer::PeekToken(
     /* [in] */ Token expectedToken)
 {
+    if (mPeeked) {
+        if (mExpectedToken == expectedToken) {
+            return mCurrentTokenInfo;
+        }
+        mReader->Reset();
+    }
+
     mReader->Mark();
-    TokenInfo tokenInfo = ReadToken(expectedToken);
-    mReader->Reset();
-    return tokenInfo;
+    mPeeked = true;
+    mExpectedToken = expectedToken;
+    return ReadToken(expectedToken);
 }
 
 TokenInfo Tokenizer::GetToken(
     /* [in] */ Token expectedToken)
 {
+    if (mPeeked) {
+        mPeeked = false;
+        if (mExpectedToken == expectedToken) {
+            return mCurrentTokenInfo;
+        }
+        mReader->Reset();
+    }
+
     return ReadToken(expectedToken);
 }
 

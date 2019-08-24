@@ -16,6 +16,7 @@
 
 #include "parser/Parser.h"
 #include "parser/TokenInfo.h"
+#include "phase/BuildinTypeBuilder.h"
 #include "util/AutoPtr.h"
 #include "util/Logger.h"
 #include "util/MemoryFileReader.h"
@@ -27,6 +28,19 @@ namespace cdlc {
 
 const char* Parser::TAG = "Parser";
 
+Parser::Parser()
+{
+    mBeforePhases.push_back(new BuildinTypeBuilder(mWorld));
+}
+
+void Parser::AddPhase(
+    /* [in] */ Phase* phase)
+{
+    if (phase != nullptr) {
+        mAfterPhases.push_back(phase);
+    }
+}
+
 bool Parser::Parse(
     /* [in] */ const String& filePath)
 {
@@ -34,12 +48,21 @@ bool Parser::Parse(
     Properties::Get().AddSearchPath(cwd);
     free(cwd);
 
+    Prepare();
+
     bool ret = ParseFile(filePath);
     if (!ret) {
         ShowErrors();
     }
 
     return ret;
+}
+
+void Parser::Prepare()
+{
+    for (AutoPtr<Phase> phase : mBeforePhases) {
+        phase->Process();
+    }
 }
 
 bool Parser::ParseFile(
@@ -72,6 +95,15 @@ bool Parser::ParseFile(
                 result = ParseDeclarationWithAttributes(false) && result;
                 break;
             }
+            case Token::COCLASS: {
+                Attributes attrs;
+                result = ParseCoclass(attrs) && result;
+                break;
+            }
+            case Token::CONST: {
+                ParseConstant();
+                break;
+            }
             case Token::ENUM: {
                 result = ParseEnumeration() && result;
                 break;
@@ -100,6 +132,7 @@ bool Parser::ParseFile(
         }
         tokenInfo = mTokenizer.PeekToken();
     }
+    mTokenizer.GetToken();
 
     return result;
 }
@@ -129,6 +162,13 @@ bool Parser::ParseDeclarationWithAttributes(
                 break;
             }
             result = ParseModule(attrs) && result;
+            break;
+        }
+        default: {
+            String message = String::Format("%s is not expected.",
+                    TokenInfo::Dump(tokenInfo).string());
+            LogError(tokenInfo, message);
+            result = false;
             break;
         }
     }
@@ -173,6 +213,15 @@ bool Parser::ParseAttributes(
                     break;
                 }
             }
+            if (!result) {
+                // jump to ',' or ']'
+                while (tokenInfo.mToken != Token::COMMA &&
+                        tokenInfo.mToken != Token::BRACKETS_CLOSE &&
+                        tokenInfo.mToken != Token::END_OF_FILE) {
+                    mTokenizer.GetToken();
+                    tokenInfo = mTokenizer.PeekToken();
+                }
+            }
             tokenInfo = mTokenizer.PeekToken();
             if (tokenInfo.mToken == Token::COMMA) {
                 mTokenizer.GetToken();
@@ -185,6 +234,7 @@ bool Parser::ParseAttributes(
         }
         if (tokenInfo.mToken == Token::END_OF_FILE) {
             LogError(tokenInfo, "\"]\" is expected.");
+            mTokenizer.GetToken();
             return false;
         }
         // read ']'
@@ -344,8 +394,26 @@ bool Parser::ParseModule(
                 result = ParseDeclarationWithAttributes(true) && result;
                 break;
             }
+            case Token::COCLASS: {
+                Attributes attrs;
+                result = ParseCoclass(attrs) && result;
+                break;
+            }
+            case Token::CONST: {
+                ParseConstant();
+                break;
+            }
+            case Token::ENUM: {
+                result = ParseEnumeration() && result;
+                break;
+            }
             case Token::INCLUDE: {
                 result = ParseInclude() && result;
+                break;
+            }
+            case Token::INTERFACE: {
+                Attributes attrs;
+                result = ParseInterface(attrs) && result;
                 break;
             }
             case Token::NAMESPACE: {
@@ -365,6 +433,7 @@ bool Parser::ParseModule(
     }
     if (tokenInfo.mToken == Token::END_OF_FILE) {
         LogError(tokenInfo, "\"}\" is expected.");
+        mTokenizer.GetToken();
         return false;
     }
     // read '}'
@@ -407,12 +476,21 @@ bool Parser::ParseNamespace()
                 result = ParseDeclarationWithAttributes(true) && result;
                 break;
             }
+            case Token::COCLASS: {
+                Attributes attrs;
+                result = ParseCoclass(attrs) && result;
+                break;
+            }
             case Token::CONST: {
                 ParseConstant();
                 break;
             }
             case Token::ENUM: {
                 result = ParseEnumeration() && result;
+                break;
+            }
+            case Token::INCLUDE: {
+                result = ParseInclude() && result;
                 break;
             }
             case Token::INTERFACE: {
@@ -437,6 +515,7 @@ bool Parser::ParseNamespace()
     }
     if (tokenInfo.mToken == Token::END_OF_FILE) {
         LogError(tokenInfo, "\"}\" is expected.");
+        mTokenizer.GetToken();
         return false;
     }
     // read '}'
@@ -527,6 +606,7 @@ bool Parser::ParseInterfaceBody()
     }
     if (tokenInfo.mToken == Token::END_OF_FILE) {
         LogError(tokenInfo, "\"}\" is expected.");
+        mTokenizer.GetToken();
         return false;
     }
     // read '}'
@@ -717,6 +797,24 @@ void Parser::ParsePostfixExpression()
             mTokenizer.GetToken();
             return;
         }
+        case Token::PARENTHESES_OPEN: {
+            ParseExpression();
+
+            tokenInfo = mTokenizer.PeekToken();
+            if (tokenInfo.mToken != Token::PARENTHESES_CLOSE) {
+                LogError(tokenInfo, "\")\" is expected.");
+                return;
+            }
+            mTokenizer.GetToken();
+
+            return;
+        }
+        default: {
+            String message = String::Format("%s is not expected.",
+                    TokenInfo::Dump(tokenInfo).string());
+            LogError(tokenInfo, message);
+            return;
+        }
     }
 }
 
@@ -769,9 +867,6 @@ bool Parser::ParseMethod()
     while (tokenInfo.mToken != Token::PARENTHESES_CLOSE &&
             tokenInfo.mToken != Token::END_OF_FILE) {
         result = ParseParameter() && result;
-        if (!result) {
-            break;
-        }
         tokenInfo = mTokenizer.PeekToken();
         if (tokenInfo.mToken == Token::COMMA) {
             mTokenizer.GetToken();
@@ -779,7 +874,16 @@ bool Parser::ParseMethod()
         }
         else if (tokenInfo.mToken != Token::PARENTHESES_CLOSE) {
             LogError(tokenInfo, "\",\" or \")\" is expected.");
-            break;
+            result = false;
+        }
+        if (!result) {
+            // jump to ',' or ')'
+            while (tokenInfo.mToken != Token::COMMA &&
+                    tokenInfo.mToken != Token::PARENTHESES_CLOSE &&
+                    tokenInfo.mToken != Token::END_OF_FILE) {
+                mTokenizer.GetToken();
+                tokenInfo = mTokenizer.PeekToken();
+            }
         }
     }
     if (tokenInfo.mToken == Token::END_OF_FILE) {
@@ -841,11 +945,21 @@ bool Parser::ParseParameter()
         }
         else if (tokenInfo.mToken != Token::BRACKETS_CLOSE) {
             LogError(tokenInfo, "\",\" or \"]\" is expected.");
-            break;
+            result = false;
+        }
+        if (!result) {
+            // jump to ',' or ']'
+            while (tokenInfo.mToken != Token::COMMA &&
+                    tokenInfo.mToken != Token::BRACKETS_CLOSE &&
+                    tokenInfo.mToken != Token::END_OF_FILE) {
+                mTokenizer.GetToken();
+                tokenInfo = mTokenizer.PeekToken();
+            }
         }
     }
     if (tokenInfo.mToken == Token::END_OF_FILE) {
         LogError(tokenInfo, "\"]\" is expected.");
+        mTokenizer.GetToken();
         return false;
     }
     // read ']'
@@ -856,7 +970,14 @@ bool Parser::ParseParameter()
     tokenInfo = mTokenizer.PeekToken();
     if (tokenInfo.mToken != Token::IDENTIFIER) {
         LogError(tokenInfo, "Parameter name is expected.");
-        result = false;
+        // jump to ',' or ';'
+        while (tokenInfo.mToken != Token::COMMA &&
+                tokenInfo.mToken != Token::PARENTHESES_CLOSE &&
+                tokenInfo.mToken != Token::END_OF_FILE) {
+            mTokenizer.GetToken();
+            tokenInfo = mTokenizer.PeekToken();
+        }
+        return false;
     }
     mTokenizer.GetToken();
 
@@ -997,6 +1118,7 @@ bool Parser::ParseCoclassBody()
     }
     if (tokenInfo.mToken == Token::END_OF_FILE) {
         LogError(tokenInfo, "\"}\" is expected.");
+        mTokenizer.GetToken();
         return false;
     }
     // read '}'
@@ -1022,9 +1144,6 @@ bool Parser::ParseConstructor()
     while (tokenInfo.mToken != Token::PARENTHESES_CLOSE &&
             tokenInfo.mToken != Token::END_OF_FILE) {
         result = ParseParameter() && result;
-        if (!result) {
-            break;
-        }
         tokenInfo = mTokenizer.PeekToken();
         if (tokenInfo.mToken == Token::COMMA) {
             mTokenizer.GetToken();
@@ -1032,7 +1151,16 @@ bool Parser::ParseConstructor()
         }
         else if (tokenInfo.mToken != Token::PARENTHESES_CLOSE) {
             LogError(tokenInfo, "\",\" or \")\" is expected.");
-            break;
+            result = false;
+        }
+        if (!result) {
+            // jump to ',' or ')'
+            while (tokenInfo.mToken != Token::COMMA &&
+                    tokenInfo.mToken != Token::PARENTHESES_CLOSE &&
+                    tokenInfo.mToken != Token::END_OF_FILE) {
+                mTokenizer.GetToken();
+                tokenInfo = mTokenizer.PeekToken();
+            }
         }
     }
     if (tokenInfo.mToken == Token::END_OF_FILE) {
@@ -1165,11 +1293,21 @@ bool Parser::ParseEnumerationBody()
         }
         else if (tokenInfo.mToken != Token::BRACES_CLOSE) {
             LogError(tokenInfo, "\"}\" is expected.");
-            return false;
+            result = false;
+        }
+        if (!result) {
+            // jump to ',' or '}'
+            while (tokenInfo.mToken != Token::COMMA &&
+                    tokenInfo.mToken != Token::BRACES_CLOSE &&
+                    tokenInfo.mToken != Token::END_OF_FILE) {
+                mTokenizer.GetToken();
+                tokenInfo = mTokenizer.PeekToken();
+            }
         }
     }
     if (tokenInfo.mToken == Token::END_OF_FILE) {
         LogError(tokenInfo, "\"}\" is expected.");
+        mTokenizer.GetToken();
         return false;
     }
     // read '}'

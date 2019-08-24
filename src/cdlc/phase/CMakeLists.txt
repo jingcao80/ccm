@@ -14,32 +14,13 @@
 # limitations under the License.
 #=========================================================================
 
-set(AST_DIR ${CDLC_DIR}/ast)
+set(PHASE_DIR ${CDLC_DIR}/phase)
 
 include_directories(
     ${CDLC_DIR})
 
 set(SOURCES
-    BooleanType.cpp
-    ByteType.cpp
-    CharType.cpp
-    CoclassIDType.cpp
-    ComponentIDType.cpp
-    DoubleType.cpp
-    ECodeType.cpp
-    FloatType.cpp
-    HANDLEType.cpp
-    IntegerType.cpp
-    InterfaceIDType.cpp
-    InterfaceType.cpp
-    LongType.cpp
-    Module.cpp
-    Namespace.cpp
-    Node.cpp
-    ShortType.cpp
-    StringType.cpp
-    TripleType.cpp
-    Type.cpp)
+    BuildinTypeBuilder.cpp)
 
-add_library(ast STATIC
+add_library(phase STATIC
     ${SOURCES})

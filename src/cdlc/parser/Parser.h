@@ -18,7 +18,9 @@
 #define __CDLC_PARSER_H__
 
 #include "ast/Attributes.h"
+#include "parser/Phase.h"
 #include "parser/Tokenizer.h"
+#include "parser/World.h"
 #include "util/AutoPtr.h"
 #include "util/File.h"
 #include "util/LightRefBase.h"
@@ -53,10 +55,17 @@ private:
     };
 
 public:
+    Parser();
+
+    void AddPhase(
+        /* [in] */ Phase* phase);
+
     bool Parse(
         /* [in] */ const String& filePath);
 
 private:
+    void Prepare();
+
     bool ParseFile(
         /* [in] */ const String& filePath);
 
@@ -158,6 +167,11 @@ private:
 
 private:
     static const char* TAG;
+
+    World mWorld;
+
+    std::vector<AutoPtr<Phase>> mBeforePhases;
+    std::vector<AutoPtr<Phase>> mAfterPhases;
 
     Tokenizer mTokenizer;
     std::vector<Error> mErrors;

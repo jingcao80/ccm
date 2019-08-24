@@ -19,8 +19,9 @@ project(cdlc CXX)
 set(CDLC_DIR ${SRC_DIR}/cdlc)
 set(OBJ_DIR ${CMAKE_BINARY_DIR}/src/cdlc)
 
-#add_subdirectory(ast)
+add_subdirectory(ast)
 add_subdirectory(parser)
+add_subdirectory(phase)
 add_subdirectory(util)
 
 include_directories(
@@ -31,7 +32,9 @@ set(SOURCES
 
 set(CDLC_LINK_LIBS
     -Wl,--whole-archive
+    ast
     parser
+    phase
     util
     -Wl,--no-whole-archive)
 

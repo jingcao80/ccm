@@ -95,6 +95,8 @@ private:
     AutoPtr<Reader> mReader;
     std::unordered_map<String, Token, StringHashFunc, StringEqualsFunc> mKeywords;
     TokenInfo mCurrentTokenInfo;
+    bool mPeeked = false;
+    Token mExpectedToken = Token::UNKNOWN;
 };
 
 Tokenizer::Tokenizer()
@@ -111,6 +113,7 @@ void Tokenizer::SetReader(
     /* [in] */ Reader* reader)
 {
     mReader = reader;
+    mPeeked = false;
 }
 
 TokenInfo Tokenizer::GetUuidNumberToken()

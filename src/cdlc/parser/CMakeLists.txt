@@ -23,7 +23,8 @@ set(SOURCES
     Parser.cpp
     Token.cpp
     TokenInfo.cpp
-    Tokenizer.cpp)
+    Tokenizer.cpp
+    World.cpp)
 
 add_library(parser STATIC
     ${SOURCES})

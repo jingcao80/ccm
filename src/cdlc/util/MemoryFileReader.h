@@ -68,6 +68,8 @@ public:
 
     bool IsEof() override;
 
+    inline AutoPtr<File> GetFile();
+
     void Dump(
         /* [in] */ FILE* stream);
 
@@ -102,6 +104,11 @@ MemoryFileReader::MemoryFileReader(
     /* [in] */ File* file)
     : mFile(file)
 {}
+
+AutoPtr<File> MemoryFileReader::GetFile()
+{
+    return mFile;
+}
 
 }
 
