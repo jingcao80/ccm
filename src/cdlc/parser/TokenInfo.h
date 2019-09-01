@@ -43,6 +43,8 @@ public:
     TokenInfo& operator=(
         /* [in] */ TokenInfo&& other);
 
+    inline bool Is64Bit();
+
     inline bool IsBuildinType();
 
     static String Dump(
@@ -75,6 +77,11 @@ TokenInfo::TokenInfo(
     , mTokenLineNo(lineNo)
     , mTokenColumnNo(columnNo)
 {}
+
+bool TokenInfo::Is64Bit()
+{
+    return mBit == 64;
+}
 
 bool TokenInfo::IsBuildinType()
 {

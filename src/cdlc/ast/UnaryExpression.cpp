@@ -13,3 +13,114 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //=========================================================================
+
+#include "ast/UnaryExpression.h"
+#include "ast/Namespace.h"
+
+namespace cdlc {
+
+int UnaryExpression::IntegerValue()
+{
+    if (mLeftOperand != nullptr) {
+        return mLeftOperand->IntegerValue();
+    }
+    else if (mRightOperand != nullptr) {
+        switch (mOperator) {
+            case OPERATOR_POSITIVE: {
+                return mRightOperand->IntegerValue();
+            }
+            case OPERATOR_NEGATIVE: {
+                return -mRightOperand->IntegerValue();
+            }
+            case OPERATOR_COMPLIMENT: {
+                return ~mRightOperand->IntegerValue();
+            }
+            case OPERATOR_NOT: {
+                return !mRightOperand->IntegerValue();
+            }
+            default: {
+                return 0;
+            }
+        }
+    }
+    return 0;
+}
+
+long long int UnaryExpression::LongValue()
+{
+    if (mLeftOperand != nullptr) {
+        return mLeftOperand->LongValue();
+    }
+    else if (mRightOperand != nullptr) {
+        switch (mOperator) {
+            case OPERATOR_POSITIVE: {
+                return mRightOperand->LongValue();
+            }
+            case OPERATOR_NEGATIVE: {
+                return -mRightOperand->IntegerValue();
+            }
+            case OPERATOR_COMPLIMENT: {
+                return ~mRightOperand->IntegerValue();
+            }
+            case OPERATOR_NOT: {
+                return !mRightOperand->IntegerValue();
+            }
+            default: {
+                return 0;
+            }
+        }
+    }
+    return 0;
+}
+
+float UnaryExpression::FloatValue()
+{
+    if (mLeftOperand != nullptr) {
+        return mLeftOperand->FloatValue();
+    }
+    else if (mRightOperand != nullptr) {
+        switch (mOperator) {
+            case OPERATOR_POSITIVE: {
+                return mRightOperand->FloatValue();
+            }
+            case OPERATOR_NEGATIVE: {
+                return -mRightOperand->FloatValue();
+            }
+            case OPERATOR_NOT: {
+                return !mRightOperand->FloatValue();
+            }
+            case OPERATOR_COMPLIMENT:
+            default: {
+                return 0;
+            }
+        }
+    }
+    return 0;
+}
+
+double UnaryExpression::DoubleValue()
+{
+    if (mLeftOperand != nullptr) {
+        return mLeftOperand->DoubleValue();
+    }
+    else if (mRightOperand != nullptr) {
+        switch (mOperator) {
+            case OPERATOR_POSITIVE: {
+                return mRightOperand->DoubleValue();
+            }
+            case OPERATOR_NEGATIVE: {
+                return -mRightOperand->DoubleValue();
+            }
+            case OPERATOR_NOT: {
+                return !mRightOperand->DoubleValue();
+            }
+            case OPERATOR_COMPLIMENT:
+            default: {
+                return 0;
+            }
+        }
+    }
+    return 0;
+}
+
+}

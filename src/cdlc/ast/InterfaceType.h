@@ -18,6 +18,7 @@
 #define __CDLC_INTERFACETYPE_H__
 
 #include "ast/Attributes.h"
+#include "ast/Constant.h"
 #include "ast/Method.h"
 #include "ast/Type.h"
 #include "util/AutoPtr.h"
@@ -37,6 +38,9 @@ public:
     void SetAttributes(
         /* [in] */ const Attributes& attrs);
 
+    AutoPtr<Constant> FindConstant(
+        /* [in] */ const String& name);
+
     inline void AddMethod(
         /* [in] */ Method* method);
 
@@ -45,10 +49,14 @@ public:
     String Dump(
         /* [in] */ const String& prefix) override;
 
+    inline static InterfaceType* CastFrom(
+        /* [in] */ Type* type);
+
 private:
     AutoPtr<UUID> mUuid;
     String mVersion;
     String mDescription;
+    std::vector<AutoPtr<Constant>> mConstants;
     std::vector<AutoPtr<Method>> mMethods;
 };
 
@@ -64,6 +72,12 @@ void InterfaceType::AddMethod(
     if (method != nullptr) {
         mMethods.push_back(method);
     }
+}
+
+InterfaceType* InterfaceType::CastFrom(
+    /* [in] */ Type* type)
+{
+    return static_cast<InterfaceType*>(type);
 }
 
 }

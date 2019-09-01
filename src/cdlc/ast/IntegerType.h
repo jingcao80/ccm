@@ -27,6 +27,8 @@ class IntegerType
 public:
     inline IntegerType();
 
+    bool IsIntegerType() override;
+
     bool IsIntegralType() override;
 };
 

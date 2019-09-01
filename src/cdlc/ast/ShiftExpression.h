@@ -25,9 +25,13 @@ class ShiftExpression
     : public Expression
 {
 public:
-    static constexpr int LEFT_SHIFT = 0;
-    static constexpr int RIGHT_SHIFT = 1;
-    static constexpr int UNSIGNED_RIGHT_SHIFT = 2;
+    int IntegerValue() override;
+
+    long long int LongValue() override;
+
+    float FloatValue() override;
+
+    double DoubleValue() override;
 };
 
 }

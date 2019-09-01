@@ -19,6 +19,17 @@
 
 namespace cdlc {
 
+bool EnumerationType::Contains(
+    /* [in] */ const String& name)
+{
+    for (AutoPtr<Enumerator> enumerator : mEnumerators) {
+        if (enumerator->mName.Equals(name)) {
+            return true;
+        }
+    }
+    return false;
+}
+
 bool EnumerationType::IsEnumerationType()
 {
     return true;

@@ -40,6 +40,17 @@ public:
     inline void SetStringValue(
         /* [in] */ const String& value);
 
+    inline void SetEnumeratorName(
+        /* [in] */ const String& name);
+
+    int IntegerValue() override;
+
+    long long int LongValue() override;
+
+    float FloatValue() override;
+
+    double DoubleValue() override;
+
 private:
     AutoPtr<Expression> mNestedExpression;
     bool mBooleanValue = false;
@@ -76,6 +87,12 @@ void PostfixExpression::SetStringValue(
     /* [in] */ const String& value)
 {
     mStringValue = value;
+}
+
+void PostfixExpression::SetEnumeratorName(
+    /* [in] */ const String& name)
+{
+    mStringValue = name;
 }
 
 }

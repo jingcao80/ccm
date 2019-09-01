@@ -13,3 +13,45 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //=========================================================================
+
+#include "ast/ExclusiveOrExpression.h"
+#include "ast/Namespace.h"
+
+namespace cdlc {
+
+int ExclusiveOrExpression::IntegerValue()
+{
+    if (mLeftOperand != nullptr) {
+        return mLeftOperand->IntegerValue()
+                ^ mRightOperand->IntegerValue();
+    }
+    else {
+        return mRightOperand->IntegerValue();
+    }
+}
+
+long long int ExclusiveOrExpression::LongValue()
+{
+    if (mLeftOperand != nullptr) {
+        long long int leftValue = mLeftOperand->GetType()->IsIntegerType()
+                ? mLeftOperand->IntegerValue() : mLeftOperand->LongValue();
+        long long int rightValue = mRightOperand->GetType()->IsIntegerType()
+                ? mRightOperand->IntegerValue() : mRightOperand->LongValue();
+        return leftValue ^ rightValue;
+    }
+    else {
+        return mRightOperand->LongValue();
+    }
+}
+
+float ExclusiveOrExpression::FloatValue()
+{
+    return mRightOperand->FloatValue();
+}
+
+double ExclusiveOrExpression::DoubleValue()
+{
+    return mRightOperand->DoubleValue();
+}
+
+}

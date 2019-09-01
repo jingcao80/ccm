@@ -24,8 +24,22 @@ namespace cdlc {
 class InclusiveOrExpression
     : public Expression
 {
+public:
+    inline InclusiveOrExpression();
 
+    int IntegerValue() override;
+
+    long long int LongValue() override;
+
+    float FloatValue() override;
+
+    double DoubleValue() override;
 };
+
+InclusiveOrExpression::InclusiveOrExpression()
+{
+    mOperator = OPERATOR_BITWISE_OR;
+}
 
 }
 

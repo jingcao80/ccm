@@ -13,3 +13,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //=========================================================================
+
+
+#include "ast/PostfixExpression.h"
+#include "ast/Namespace.h"
+
+namespace cdlc {
+
+int PostfixExpression::IntegerValue()
+{
+    return mIntegralValue;
+}
+
+long long int PostfixExpression::LongValue()
+{
+    return mIntegralValue;
+}
+
+float PostfixExpression::FloatValue()
+{
+    return mFloatingPointValue;
+}
+
+double PostfixExpression::DoubleValue()
+{
+    return mFloatingPointValue;
+}
+
+}

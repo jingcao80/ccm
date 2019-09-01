@@ -24,7 +24,14 @@ namespace cdlc {
 class MultiplicativeExpression
     : public Expression
 {
+public:
+    int IntegerValue() override;
 
+    long long int LongValue() override;
+
+    float FloatValue() override;
+
+    double DoubleValue() override;
 };
 
 }

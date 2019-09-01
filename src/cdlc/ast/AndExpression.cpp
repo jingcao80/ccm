@@ -13,3 +13,45 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //=========================================================================
+
+#include "ast/AndExpression.h"
+#include "ast/Namespace.h"
+
+namespace cdlc {
+
+int AndExpression::IntegerValue()
+{
+    if (mLeftOperand != nullptr) {
+        return mLeftOperand->IntegerValue()
+                & mRightOperand->IntegerValue();
+    }
+    else {
+        return mRightOperand->IntegerValue();
+    }
+}
+
+long long int AndExpression::LongValue()
+{
+    if (mLeftOperand != nullptr) {
+        long long int leftValue = mLeftOperand->GetType()->IsIntegerType()
+                ? mLeftOperand->IntegerValue() : mLeftOperand->LongValue();
+        long long int rightValue = mRightOperand->GetType()->IsIntegerType()
+                ? mRightOperand->IntegerValue() : mRightOperand->LongValue();
+        return leftValue & rightValue;
+    }
+    else {
+        return mRightOperand->LongValue();
+    }
+}
+
+float AndExpression::FloatValue()
+{
+    return mRightOperand->FloatValue();
+}
+
+double AndExpression::DoubleValue()
+{
+    return mRightOperand->DoubleValue();
+}
+
+}

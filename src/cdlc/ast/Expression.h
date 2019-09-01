@@ -51,6 +51,14 @@ public:
     inline void SetScientificNotation(
         /* [in] */ bool scientificNotation);
 
+    virtual int IntegerValue() = 0;
+
+    virtual long long int LongValue() = 0;
+
+    virtual float FloatValue() = 0;
+
+    virtual double DoubleValue() = 0;
+
 public:
     static const int OPERATOR_NONE = 0;
     static const int OPERATOR_POSITIVE = 1;
@@ -65,6 +73,9 @@ public:
     static const int OPERATOR_LEFT_SHIFT = 10;
     static const int OPERATOR_RIGHT_SHIFT = 11;
     static const int OPERATOR_UNSIGNED_RIGHT_SHIFT = 12;
+    static const int OPERATOR_BITWISE_AND = 13;
+    static const int OPERATOR_BITWISE_XOR = 14;
+    static const int OPERATOR_BITWISE_OR = 15;
 
 protected:
     AutoPtr<Type> mType;

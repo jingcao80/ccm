@@ -24,8 +24,22 @@ namespace cdlc {
 class AndExpression
     : public Expression
 {
+public:
+    inline AndExpression();
 
+    int IntegerValue() override;
+
+    long long int LongValue() override;
+
+    float FloatValue() override;
+
+    double DoubleValue() override;
 };
+
+AndExpression::AndExpression()
+{
+    mOperator = OPERATOR_BITWISE_AND;
+}
 
 }
 

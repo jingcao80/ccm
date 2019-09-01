@@ -24,8 +24,22 @@ namespace cdlc {
 class ExclusiveOrExpression
     : public Expression
 {
+public:
+    inline ExclusiveOrExpression();
 
+    int IntegerValue() override;
+
+    long long int LongValue() override;
+
+    float FloatValue() override;
+
+    double DoubleValue() override;
 };
+
+ExclusiveOrExpression::ExclusiveOrExpression()
+{
+    mOperator = OPERATOR_BITWISE_XOR;
+}
 
 }
 

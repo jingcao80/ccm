@@ -19,6 +19,11 @@
 
 namespace cdlc {
 
+bool IntegerType::IsIntegerType()
+{
+    return true;
+}
+
 bool IntegerType::IsIntegralType()
 {
     return true;

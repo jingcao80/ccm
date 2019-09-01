@@ -737,7 +737,7 @@ AutoPtr<InclusiveOrExpression> Parser::ParseInclusiveOrExpression(
         expr = new InclusiveOrExpression();
         expr->SetLeftOperand(leftOperand);
         expr->SetRightOperand(rightOperand);
-        expr->SetType(ChooseType(leftOperand->GetType(), rightOperand->GetType()));
+        expr->SetType(Type::Choose(leftOperand->GetType(), rightOperand->GetType()));
 
         tokenInfo = mTokenizer.PeekToken();
     }
@@ -780,7 +780,7 @@ AutoPtr<ExclusiveOrExpression> Parser::ParseExclusiveOrExpression(
         expr = new ExclusiveOrExpression();
         expr->SetLeftOperand(leftOperand);
         expr->SetRightOperand(rightOperand);
-        expr->SetType(ChooseType(leftOperand->GetType(), rightOperand->GetType()));
+        expr->SetType(Type::Choose(leftOperand->GetType(), rightOperand->GetType()));
 
         tokenInfo = mTokenizer.PeekToken();
     }
@@ -823,7 +823,7 @@ AutoPtr<AndExpression> Parser::ParseAndExpression(
         expr = new AndExpression();
         expr->SetLeftOperand(leftOperand);
         expr->SetRightOperand(rightOperand);
-        expr->SetType(ChooseType(leftOperand->GetType(), rightOperand->GetType()));
+        expr->SetType(Type::Choose(leftOperand->GetType(), rightOperand->GetType()));
 
         tokenInfo = mTokenizer.PeekToken();
     }
@@ -873,7 +873,7 @@ AutoPtr<ShiftExpression> Parser::ParseShiftExpression(
                 : tokenInfo.mToken == Token::SHIFT_RIGHT
                     ? Expression::OPERATOR_RIGHT_SHIFT
                     : Expression::OPERATOR_UNSIGNED_RIGHT_SHIFT);
-        expr->SetType(ChooseType(leftOperand->GetType(), rightOperand->GetType()));
+        expr->SetType(Type::Choose(leftOperand->GetType(), rightOperand->GetType()));
 
         tokenInfo = mTokenizer.PeekToken();
     }
@@ -920,7 +920,7 @@ AutoPtr<AdditiveExpression> Parser::ParseAdditiveExpression(
         expr->SetOperator(tokenInfo.mToken == Token::PLUS
                 ? Expression::OPERATOR_PLUS
                 : Expression::OPERATOR_MINUS);
-        expr->SetType(ChooseType(leftOperand->GetType(), rightOperand->GetType()));
+        expr->SetType(Type::Choose(leftOperand->GetType(), rightOperand->GetType()));
 
         tokenInfo = mTokenizer.PeekToken();
     }
@@ -970,7 +970,7 @@ AutoPtr<MultiplicativeExpression> Parser::ParseMultiplicativeExpression(
                 : tokenInfo.mToken == Token::DIVIDE
                     ? Expression::OPERATOR_DIVIDE
                     : Expression::OPERATOR_MODULO);
-        expr->SetType(ChooseType(leftOperand->GetType(), rightOperand->GetType()));
+        expr->SetType(Type::Choose(leftOperand->GetType(), rightOperand->GetType()));
 
         tokenInfo = mTokenizer.PeekToken();
     }
@@ -1121,7 +1121,8 @@ AutoPtr<PostfixExpression> Parser::ParseCharacter(
     TokenInfo tokenInfo = mTokenizer.GetToken();
     if (type->IsNumericType()) {
         AutoPtr<PostfixExpression> expr = new PostfixExpression();
-        expr->SetType(type);
+        AutoPtr<Type> charType = mWorld.FindType("como::Char");
+        expr->SetType(charType);
         expr->SetIntegralValue(tokenInfo.mCharValue);
         return expr;
     }
@@ -1136,16 +1137,12 @@ AutoPtr<PostfixExpression> Parser::ParseIntegralNumber(
     TokenInfo tokenInfo = mTokenizer.GetToken();
     if (type->IsNumericType() || type->IsEnumerationType() || type->IsHANDLEType()) {
         AutoPtr<PostfixExpression> expr = new PostfixExpression();
-        expr->SetType(type);
-        if (type->IsFloatingPointType()) {
-            expr->SetFloatingPointValue(tokenInfo.mFloatingPointValue);
-        }
-        else {
-            expr->SetIntegralValue(tokenInfo.mIntegralValue);
-            if (type->IsIntegralType()) {
-                expr->SetRadix(tokenInfo.mRadix);
-            }
-        }
+        AutoPtr<Type> integralType = tokenInfo.Is64Bit()
+                ? mWorld.FindType("como::Long")
+                : mWorld.FindType("como::Integer");
+        expr->SetType(integralType);
+        expr->SetIntegralValue(tokenInfo.mIntegralValue);
+        expr->SetRadix(tokenInfo.mRadix);
         return expr;
     }
 
@@ -1161,14 +1158,12 @@ AutoPtr<PostfixExpression> Parser::ParseFloatingPointNumber(
     TokenInfo tokenInfo = mTokenizer.GetToken();
     if (type->IsNumericType()) {
         AutoPtr<PostfixExpression> expr = new PostfixExpression();
-        expr->SetType(type);
-        if (type->IsFloatingPointType()) {
-            expr->SetFloatingPointValue(tokenInfo.mFloatingPointValue);
-            expr->SetScientificNotation(tokenInfo.mScientificNotation);
-        }
-        else {
-            expr->SetIntegralValue(tokenInfo.mIntegralValue);
-        }
+        AutoPtr<Type> fpType = tokenInfo.Is64Bit()
+                ? mWorld.FindType("como::Double")
+                : mWorld.FindType("como::Float");
+        expr->SetType(fpType);
+        expr->SetFloatingPointValue(tokenInfo.mFloatingPointValue);
+        expr->SetScientificNotation(tokenInfo.mScientificNotation);
         return expr;
     }
 
@@ -1200,16 +1195,79 @@ AutoPtr<PostfixExpression> Parser::ParseIdentifier(
 {
     TokenInfo tokenInfo = mTokenizer.GetToken();
     if (type->IsNumericType()) {
-        String constStr;
+        String constName;
+        AutoPtr<Type> idType;
         String id = tokenInfo.mStringValue;
         int idx = id.IndexOf("::");
         if (idx > 0) {
-            String typeStr = id.Substring(0, idx);
-            constStr = id.Substring(idx + 2);
+            String typeName = id.Substring(0, idx);
+            idType = FindType(typeName);
+            if (idType == nullptr) {
+                String message = String::Format("Type \"%s\" is not found", typeName.string());
+                LogError(tokenInfo, message);
+                return nullptr;
+            }
+            constName = id.Substring(idx + 2);
+        }
+        else {
+            constName = id;
+            idType = mCurrentType;
+        }
+        if (!idType->IsInterfaceType()) {
+            String message = String::Format("Type \"%s\" is not interface", idType->ToString().string());
+            LogError(tokenInfo, message);
+            return nullptr;
+        }
+        AutoPtr<Constant> constant = InterfaceType::CastFrom(type)->FindConstant(constName);
+        if (constant == nullptr) {
+            String message = String::Format("\"%s\" is not a constant of %s",
+                    constName.string(), id.string());
+            LogError(tokenInfo, message);
+            return nullptr;
+        }
+        if (!constant->GetType()->IsNumericType()) {
+            String message = String::Format("\"%s\" is not a numeric constant.",
+                    id.string());
+            LogError(tokenInfo, message);
+            return nullptr;
+        }
+        AutoPtr<PostfixExpression> expr = new PostfixExpression();
+        expr->SetType(type);
+        if (constant->GetType()->IsIntegerType()) {
+            expr->SetIntegralValue(constant->GetValue()->IntegerValue());
+            expr->SetRadix(constant->GetValue()->GetRadix());
+        }
+        else if (constant->GetType()->IsLongType()) {
+            expr->SetIntegralValue(constant->GetValue()->LongValue());
+            expr->SetRadix(constant->GetValue()->GetRadix());
+        }
+        else if (constant->GetType()->IsFloatType()) {
+            expr->SetIntegralValue(constant->GetValue()->FloatValue());
+        }
+        else {
+            // isDoubleType
+            expr->SetIntegralValue(constant->GetValue()->DoubleValue());
         }
     }
     else if (type->IsEnumerationType()) {
-
+        String id = tokenInfo.mStringValue;
+        if (EnumerationType::CastFrom(type)->Contains(id)) {
+            AutoPtr<PostfixExpression> expr = new PostfixExpression();
+            expr->SetType(type);
+            expr->SetEnumeratorName(id);
+            return expr;
+        }
+        else {
+            int idx = id.LastIndexOf("::");
+            if (idx > 0) {
+                // TODO:
+                abort();
+            }
+            String message = String::Format("\"%s\" is not a valid enumerator of %s",
+                    id.string(), type->GetName().string());
+            LogError(tokenInfo, message);
+            return nullptr;
+        }
     }
 
     String message = String::Format("\"%s\" can not be assigned to \"%s\" type.",
@@ -1704,20 +1762,29 @@ bool Parser::ParseInclude()
     return ret;
 }
 
-AutoPtr<Type> Parser::ChooseType(
-    /* [in] */ Type* type1,
-    /* [in] */ Type* type2)
+void Parser::EnterBlockContext()
 {
-    if (type1->IsDoubleType()) {
-        return type1;
+    AutoPtr<BlockContext> context = new BlockContext();
+    if (mCurrentContext == nullptr) {
+        mCurrentContext = std::move(context);
     }
-    else if (type1->IsFloatType()) {
-        return type2->IsDoubleType() ? type2 : type1;
+    else {
+        context->mNext = std::move(mCurrentContext);
+        mCurrentContext = std::move(context);
     }
-    else if (type1->IsLongType()) {
-        return type2->IsFloatingPointType() ? type2 : type1;
-    }
-    return type2;
+}
+
+void Parser::LeaveBlockContext()
+{
+    AutoPtr<BlockContext> context = mCurrentContext->mNext;
+    mCurrentContext = std::move(context);
+}
+
+AutoPtr<Type> Parser::FindType(
+    /* [in] */ const String& typeName)
+{
+    // TODO:
+    return nullptr;
 }
 
 void Parser::LogError(

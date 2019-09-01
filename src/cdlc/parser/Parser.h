@@ -24,6 +24,7 @@
 #include "ast/ExclusiveOrExpression.h"
 #include "ast/Expression.h"
 #include "ast/InclusiveOrExpression.h"
+#include "ast/InterfaceType.h"
 #include "ast/MultiplicativeExpression.h"
 #include "ast/Namespace.h"
 #include "ast/PostfixExpression.h"
@@ -36,6 +37,7 @@
 #include "util/File.h"
 #include "util/LightRefBase.h"
 #include "util/String.h"
+#include <unordered_map>
 #include <vector>
 
 namespace cdlc {
@@ -43,6 +45,34 @@ namespace cdlc {
 class Parser
 {
 private:
+    class BlockContext
+        : public LightRefBase
+    {
+    public:
+        inline void AddTypeForwardDeclaration(
+            /* [in] */ const String& typeName,
+            /* [in] */ const String& fullTypeName)
+        {
+            mTypeForwardDeclarations[typeName] = fullTypeName;
+        }
+
+        inline String FindTypeForwardDeclaration(
+            /* [in] */ const String& typeName)
+        {
+            auto it = mTypeForwardDeclarations.find(typeName);
+            if (it != mTypeForwardDeclarations.end()) {
+                return it->second;
+            }
+            return nullptr;
+        }
+
+    public:
+        std::unordered_map<String, String, StringHashFunc, StringEqualsFunc>
+        mTypeForwardDeclarations;
+
+        AutoPtr<BlockContext> mNext;
+    };
+
     class Error
     {
     public:
@@ -184,9 +214,12 @@ private:
 
     bool ParseInclude();
 
-    AutoPtr<Type> ChooseType(
-        /* [in] */ Type* type1,
-        /* [in] */ Type* type2);
+    void EnterBlockContext();
+
+    void LeaveBlockContext();
+
+    AutoPtr<Type> FindType(
+        /* [in] */ const String& typeName);
 
     void LogError(
         /* [in] */ TokenInfo& tokenInfo,
@@ -200,6 +233,8 @@ private:
     World mWorld;
     AutoPtr<Module> mModule;
     AutoPtr<Namespace> mCurrentNamespace;
+    AutoPtr<BlockContext> mCurrentContext;
+    AutoPtr<Type> mCurrentType;
 
     std::vector<AutoPtr<Phase>> mBeforePhases;
     std::vector<AutoPtr<Phase>> mAfterPhases;

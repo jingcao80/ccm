@@ -27,6 +27,17 @@ void InterfaceType::SetAttributes(
     mDescription = attrs.mDescription;
 }
 
+AutoPtr<Constant> InterfaceType::FindConstant(
+    /* [in] */ const String& name)
+{
+    for (AutoPtr<Constant> constant : mConstants) {
+        if (constant->GetName().Equals(name)) {
+            return constant;
+        }
+    }
+    return nullptr;
+}
+
 bool InterfaceType::IsInterfaceType()
 {
     return true;

@@ -42,6 +42,8 @@ public:
 
     virtual bool IsBooleanType();
 
+    virtual bool IsIntegerType();
+
     virtual bool IsLongType();
 
     virtual bool IsFloatType();
@@ -68,6 +70,10 @@ public:
 
     String Dump(
         /* [in] */ const String& prefix) override;
+
+    static AutoPtr<Type> Choose(
+        /* [in] */ Type* type1,
+        /* [in] */ Type* type2);
 
 protected:
     String mName;

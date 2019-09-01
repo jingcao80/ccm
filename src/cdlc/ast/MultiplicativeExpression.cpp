@@ -13,3 +13,149 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //=========================================================================
+
+#include "ast/MultiplicativeExpression.h"
+#include "ast/Namespace.h"
+
+namespace cdlc {
+
+int MultiplicativeExpression::IntegerValue()
+{
+    if (mLeftOperand != nullptr) {
+        switch (mOperator) {
+            case OPERATOR_MULTIPLE: {
+                return mLeftOperand->IntegerValue()
+                        * mRightOperand->IntegerValue();
+            }
+            case OPERATOR_DIVIDE: {
+                long long int divisor = mRightOperand->IntegerValue();
+                return divisor != 0 ? mLeftOperand->IntegerValue() / divisor : 0;
+            }
+            case OPERATOR_MODULO: {
+                long long int divisor = mRightOperand->IntegerValue();
+                return divisor != 0 ? mLeftOperand->IntegerValue() % divisor : 0;
+            }
+            default: {
+                return 0;
+            }
+        }
+    }
+    else {
+        return mRightOperand->IntegerValue();
+    }
+}
+
+long long int MultiplicativeExpression::LongValue()
+{
+    if (mLeftOperand != nullptr) {
+        long long int leftValue = mLeftOperand->GetType()->IsIntegerType()
+                ? mLeftOperand->IntegerValue() : mLeftOperand->LongValue();
+        long long int rightValue = mRightOperand->GetType()->IsIntegerType()
+                ? mRightOperand->IntegerValue() : mRightOperand->LongValue();
+        switch (mOperator) {
+            case OPERATOR_MULTIPLE: {
+                return leftValue * rightValue;
+            }
+            case OPERATOR_DIVIDE: {
+                return rightValue != 0 ? leftValue / rightValue : 0;
+            }
+            case OPERATOR_MODULO: {
+                return rightValue != 0 ? leftValue % rightValue : 0;
+            }
+            default: {
+                return 0;
+            }
+        }
+    }
+    else {
+        return mRightOperand->LongValue();
+    }
+}
+
+float MultiplicativeExpression::FloatValue()
+{
+    if (mLeftOperand != nullptr) {
+        float leftValue, rightValue;
+        if (mLeftOperand->GetType()->IsIntegerType()) {
+            leftValue = mLeftOperand->IntegerValue();
+        }
+        else if (mLeftOperand->GetType()->IsLongType()) {
+            leftValue = mLeftOperand->LongValue();
+        }
+        else {
+            leftValue = mLeftOperand->FloatValue();
+        }
+        if (mRightOperand->GetType()->IsIntegerType()) {
+            rightValue = mRightOperand->IntegerValue();
+        }
+        else if (mRightOperand->GetType()->IsLongType()) {
+            rightValue = mRightOperand->LongValue();
+        }
+        else {
+            rightValue = mRightOperand->FloatValue();
+        }
+        switch (mOperator) {
+            case OPERATOR_MULTIPLE: {
+                return leftValue * rightValue;
+            }
+            case OPERATOR_DIVIDE: {
+                return rightValue != 0 ? leftValue / rightValue : 0;
+            }
+            case OPERATOR_MODULO:
+            default: {
+                return 0;
+            }
+        }
+    }
+    else {
+        return mRightOperand->FloatValue();
+    }
+}
+
+double MultiplicativeExpression::DoubleValue()
+{
+    if (mLeftOperand != nullptr) {
+        double leftValue, rightValue;
+        if (mLeftOperand->GetType()->IsIntegerType()) {
+            leftValue = mLeftOperand->IntegerValue();
+        }
+        else if (mLeftOperand->GetType()->IsLongType()) {
+            leftValue = mLeftOperand->LongValue();
+        }
+        else if (mLeftOperand->GetType()->IsFloatType()) {
+            leftValue = mLeftOperand->FloatValue();
+        }
+        else {
+            leftValue = mLeftOperand->DoubleValue();
+        }
+        if (mRightOperand->GetType()->IsIntegerType()) {
+            rightValue = mRightOperand->IntegerValue();
+        }
+        else if (mRightOperand->GetType()->IsLongType()) {
+            rightValue = mRightOperand->LongValue();
+        }
+        else if (mRightOperand->GetType()->IsFloatType()) {
+            rightValue = mRightOperand->FloatValue();
+        }
+        else {
+            rightValue = mRightOperand->DoubleValue();
+        }
+        switch (mOperator) {
+            case OPERATOR_MULTIPLE: {
+                return leftValue * rightValue;
+            }
+            case OPERATOR_DIVIDE: {
+                return rightValue != 0 ? leftValue / rightValue : 0;
+            }
+            case OPERATOR_MODULO:
+            default: {
+                return 0;
+            }
+        }
+    }
+    else {
+        return mRightOperand->DoubleValue();
+    }
+}
+
+}

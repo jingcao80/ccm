@@ -29,11 +29,17 @@ class Constant
     : public Node
 {
 public:
+    inline String GetName();
+
     inline void SetName(
         /* [in] */ const String& name);
 
+    inline AutoPtr<Type> GetType();
+
     inline void SetType(
         /* [in] */ Type* type);
+
+    inline AutoPtr<Expression> GetValue();
 
     inline void SetValue(
         /* [in] */ Expression* value);
@@ -45,16 +51,31 @@ private:
     Namespace* mNamespace = nullptr;
 };
 
+String Constant::GetName()
+{
+    return mName;
+}
+
 void Constant::SetName(
     /* [in] */ const String& name)
 {
     mName = name;
 }
 
+AutoPtr<Type> Constant::GetType()
+{
+    return mType;
+}
+
 void Constant::SetType(
     /* [in] */ Type* type)
 {
     mType = type;
+}
+
+AutoPtr<Expression> Constant::GetValue()
+{
+    return mValue;
 }
 
 void Constant::SetValue(

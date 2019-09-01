@@ -39,6 +39,11 @@ bool Type::IsBooleanType()
     return false;
 }
 
+bool Type::IsIntegerType()
+{
+    return false;
+}
+
 bool Type::IsLongType()
 {
     return false;
@@ -108,6 +113,22 @@ String Type::Dump(
     /* [in] */ const String& prefix)
 {
     return prefix + ToString();
+}
+
+AutoPtr<Type> Type::Choose(
+    /* [in] */ Type* type1,
+    /* [in] */ Type* type2)
+{
+    if (type1->IsDoubleType()) {
+        return type1;
+    }
+    else if (type1->IsFloatType()) {
+        return type2->IsDoubleType() ? type2 : type1;
+    }
+    else if (type1->IsLongType()) {
+        return type2->IsFloatingPointType() ? type2 : type1;
+    }
+    return type2;
 }
 
 }
