@@ -27,7 +27,8 @@ set(SOURCES
     Options.cpp
     Properties.cpp
     String.cpp
-    StringBuilder.cpp)
+    StringBuilder.cpp
+    UUID.cpp)
 
 add_library(util STATIC
     ${SOURCES})

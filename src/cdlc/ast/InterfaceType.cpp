@@ -19,6 +19,19 @@
 
 namespace cdlc {
 
+void InterfaceType::SetAttributes(
+    /* [in] */ const Attributes& attrs)
+{
+    mUuid = UUID::Parse(attrs.mUuid);
+    mVersion = attrs.mVersion;
+    mDescription = attrs.mDescription;
+}
+
+bool InterfaceType::IsInterfaceType()
+{
+    return true;
+}
+
 String InterfaceType::Dump(
     /* [in] */ const String& prefix)
 {

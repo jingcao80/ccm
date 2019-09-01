@@ -13,3 +13,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //=========================================================================
+
+#include "ast/DoubleType.h"
+#include "ast/Namespace.h"
+
+namespace cdlc {
+
+bool DoubleType::IsDoubleType()
+{
+    return true;
+}
+
+bool DoubleType::IsFloatingPointType()
+{
+    return true;
+}
+
+}

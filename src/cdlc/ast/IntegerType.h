@@ -26,6 +26,8 @@ class IntegerType
 {
 public:
     inline IntegerType();
+
+    bool IsIntegralType() override;
 };
 
 IntegerType::IntegerType()

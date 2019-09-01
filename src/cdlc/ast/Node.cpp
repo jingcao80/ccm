@@ -18,4 +18,15 @@
 
 namespace cdlc {
 
+String Node::ToString()
+{
+    return "";
+}
+
+String Node::Dump(
+    /* [in] */ const String& prefix)
+{
+    return prefix + ToString();
+}
+
 }

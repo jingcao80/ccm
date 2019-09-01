@@ -26,6 +26,8 @@ class ByteType
 {
 public:
     inline ByteType();
+
+    bool IsIntegralType() override;
 };
 
 ByteType::ByteType()

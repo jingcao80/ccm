@@ -24,7 +24,7 @@ const String Namespace::GLOBAL_NAME("__global__");
 void Namespace::AddNamespace(
     /* [in] */ Namespace* ns)
 {
-    if (ns = nullptr) {
+    if (ns != nullptr) {
         mChildren.push_back(ns);
         ns->SetParent(this);
     }
@@ -56,6 +56,7 @@ void Namespace::AddType(
     if (type != nullptr) {
         mTypes.push_back(type);
         mModule->mAllTypeMap[type->ToString()] = type;
+        type->SetModule(mModule);
     }
 }
 

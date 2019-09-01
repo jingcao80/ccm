@@ -26,6 +26,8 @@ class ShortType
 {
 public:
     inline ShortType();
+
+    bool IsIntegralType() override;
 };
 
 ShortType::ShortType()

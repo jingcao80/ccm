@@ -13,3 +13,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //=========================================================================
+
+#include "ast/ByteType.h"
+#include "ast/Namespace.h"
+
+namespace cdlc {
+
+bool ByteType::IsIntegralType()
+{
+    return true;
+}
+
+}

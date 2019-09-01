@@ -15,12 +15,14 @@
 //=========================================================================
 
 #include "parser/Parser.h"
+#include "ast/EnumerationType.h"
 #include "parser/TokenInfo.h"
 #include "phase/BuildinTypeBuilder.h"
 #include "util/AutoPtr.h"
 #include "util/Logger.h"
 #include "util/MemoryFileReader.h"
 #include "util/Properties.h"
+#include "util/UUID.h"
 #include <cstdlib>
 #include <unistd.h>
 
@@ -250,6 +252,8 @@ bool Parser::ParseAttributes(
 bool Parser::ParseUuid(
     /* [out] */ Attributes& attrs)
 {
+    bool result = true;
+
     // read "uuid"
     mTokenizer.GetToken();
     TokenInfo tokenInfo = mTokenizer.PeekToken();
@@ -264,13 +268,17 @@ bool Parser::ParseUuid(
         return false;
     }
     attrs.mUuid = tokenInfo.mStringValue;
+    if (!UUID::IsValid(attrs.mUuid)) {
+        LogError(tokenInfo, "uuid number is not valid.");
+        result = false;
+    }
     tokenInfo = mTokenizer.PeekToken();
     if (tokenInfo.mToken != Token::PARENTHESES_CLOSE) {
         LogError(tokenInfo, "\")\" is expected.");
         return false;
     }
     mTokenizer.GetToken();
-    return true;
+    return result;
 }
 
 bool Parser::ParseVersion(
@@ -382,6 +390,10 @@ bool Parser::ParseModule(
         LogError(tokenInfo, "\"{\" is expected.");
         return false;
     }
+
+    mModule = mWorld.GetWorkingModule();
+    mModule->SetName(moduleName);
+    mCurrentNamespace = mModule->FindNamespace(Namespace::GLOBAL_NAME);
 
     // read '{'
     mTokenizer.GetToken();
@@ -615,95 +627,223 @@ bool Parser::ParseInterfaceBody()
     return result;
 }
 
-void Parser::ParseConstant()
+AutoPtr<Constant> Parser::ParseConstant()
 {
+    AutoPtr<Type> type;
+
     // read "const"
     mTokenizer.GetToken();
     TokenInfo tokenInfo = mTokenizer.PeekToken();
     if (tokenInfo.IsBuildinType()) {
         mTokenizer.GetToken();
+        type = mWorld.FindType(String::Format("como::%s", TokenInfo::Dump(tokenInfo).string()));
     }
     else {
-        //
+        // enumeration
         mTokenizer.GetToken();
+        AutoPtr<EnumerationType> enumeration;
+        String typeName = tokenInfo.mStringValue;
+        AutoPtr<Namespace> ns = mCurrentNamespace;
+        while (ns != nullptr) {
+            String fullTypeName = ns->ToString() + "::" + typeName;
+            enumeration = mWorld.FindEnumeration(fullTypeName);
+            if (enumeration != nullptr) {
+                type = (Type*)enumeration.Get();
+                break;
+            }
+            ns = ns->GetParent();
+        }
+        if (enumeration == nullptr) {
+            String message = String::Format("Type \"%s\" is not declared.", typeName.string());
+            LogError(tokenInfo, message);
+            mTokenizer.SkipCurrentLine();
+            return nullptr;
+        }
     }
+
+    AutoPtr<Constant> constant = new Constant();
+    constant->SetType(type);
 
     tokenInfo = mTokenizer.GetToken();
     if (tokenInfo.mToken != Token::IDENTIFIER) {
         LogError(tokenInfo, "A constant name is expected.");
         mTokenizer.SkipCurrentLine();
-        return;
+        return nullptr;
     }
 
-    String constantName = tokenInfo.mStringValue;
+    constant->SetName(tokenInfo.mStringValue);
 
     tokenInfo = mTokenizer.GetToken();
     if (tokenInfo.mToken != Token::ASSIGNMENT) {
         LogError(tokenInfo, "\"=\" is expected.");
         mTokenizer.SkipCurrentLine();
-        return;
+        return nullptr;
     }
 
-    ParseExpression();
+    AutoPtr<Expression> expr = ParseExpression(type);
+    if (expr == nullptr) {
+        return nullptr;
+    }
+    constant->SetValue(expr);
 
     tokenInfo = mTokenizer.GetToken();
     if (tokenInfo.mToken != Token::SEMICOLON) {
         LogError(tokenInfo, "\";\" is expected.");
         mTokenizer.SkipCurrentLine();
-        return;
+        return nullptr;
     }
+
+    return constant;
 }
 
-void Parser::ParseExpression()
+AutoPtr<Expression> Parser::ParseExpression(
+    /* [in] */ Type* type)
 {
-    ParseInclusiveOrExpression();
+    return ParseInclusiveOrExpression(type);
 }
 
-void Parser::ParseInclusiveOrExpression()
+AutoPtr<InclusiveOrExpression> Parser::ParseInclusiveOrExpression(
+    /* [in] */ Type* type)
 {
-    ParseExclusiveOrExpression();
+    AutoPtr<ExclusiveOrExpression> rightOperand = ParseExclusiveOrExpression(type);
+    if (rightOperand == nullptr) {
+        return nullptr;
+    }
+
+    AutoPtr<InclusiveOrExpression> expr = new InclusiveOrExpression();
+    expr->SetRightOperand(rightOperand);
+    expr->SetType(rightOperand->GetType());
+    expr->SetRadix(rightOperand->GetRadix());
+    expr->SetScientificNotation(rightOperand->IsScientificNotation());
 
     TokenInfo tokenInfo = mTokenizer.PeekToken();
     while (tokenInfo.mToken == Token::INCLUSIVE_OR) {
         mTokenizer.GetToken();
 
-        ParseExclusiveOrExpression();
+        rightOperand = ParseExclusiveOrExpression(type);
+        if (rightOperand == nullptr) {
+            return nullptr;
+        }
+
+        AutoPtr<InclusiveOrExpression> leftOperand = expr;
+
+        if (!leftOperand->GetType()->IsIntegralType() ||
+                !rightOperand->GetType()->IsIntegralType()) {
+            LogError(tokenInfo, "Inclusive or operation can not be applied "
+                    "to non-integral type.");
+            return nullptr;
+        }
+
+        expr = new InclusiveOrExpression();
+        expr->SetLeftOperand(leftOperand);
+        expr->SetRightOperand(rightOperand);
+        expr->SetType(ChooseType(leftOperand->GetType(), rightOperand->GetType()));
 
         tokenInfo = mTokenizer.PeekToken();
     }
+
+    return expr;
 }
 
-void Parser::ParseExclusiveOrExpression()
+AutoPtr<ExclusiveOrExpression> Parser::ParseExclusiveOrExpression(
+    /* [in] */ Type* type)
 {
-    ParseAndExpression();
+    AutoPtr<AndExpression> rightOperand = ParseAndExpression(type);
+    if (rightOperand == nullptr) {
+        return nullptr;
+    }
+
+    AutoPtr<ExclusiveOrExpression> expr = new ExclusiveOrExpression();
+    expr->SetRightOperand(rightOperand);
+    expr->SetType(rightOperand->GetType());
+    expr->SetRadix(rightOperand->GetRadix());
+    expr->SetScientificNotation(rightOperand->IsScientificNotation());
 
     TokenInfo tokenInfo = mTokenizer.PeekToken();
     while (tokenInfo.mToken == Token::EXCLUSIVE_OR) {
         mTokenizer.GetToken();
 
-        ParseAndExpression();
+        rightOperand = ParseAndExpression(type);
+        if (rightOperand == nullptr) {
+            return nullptr;
+        }
+
+        AutoPtr<ExclusiveOrExpression> leftOperand = expr;
+
+        if (!leftOperand->GetType()->IsIntegralType() ||
+                !rightOperand->GetType()->IsIntegralType()) {
+            LogError(tokenInfo, "Exclusive or operation can not be applied "
+                    "to non-integral type.");
+            return nullptr;
+        }
+
+        expr = new ExclusiveOrExpression();
+        expr->SetLeftOperand(leftOperand);
+        expr->SetRightOperand(rightOperand);
+        expr->SetType(ChooseType(leftOperand->GetType(), rightOperand->GetType()));
 
         tokenInfo = mTokenizer.PeekToken();
     }
+
+    return expr;
 }
 
-void Parser::ParseAndExpression()
+AutoPtr<AndExpression> Parser::ParseAndExpression(
+    /* [in] */ Type* type)
 {
-    ParseShiftExpression();
+    AutoPtr<ShiftExpression> rightOperand = ParseShiftExpression(type);
+    if (rightOperand == nullptr) {
+        return nullptr;
+    }
+
+    AutoPtr<AndExpression> expr = new AndExpression();
+    expr->SetRightOperand(rightOperand);
+    expr->SetType(rightOperand->GetType());
+    expr->SetRadix(rightOperand->GetRadix());
+    expr->SetScientificNotation(rightOperand->IsScientificNotation());
 
     TokenInfo tokenInfo = mTokenizer.PeekToken();
     while (tokenInfo.mToken == Token::AMPERSAND) {
         mTokenizer.GetToken();
 
-        ParseShiftExpression();
+        rightOperand = ParseShiftExpression(type);
+        if (rightOperand == nullptr) {
+            return nullptr;
+        }
+
+        AutoPtr<AndExpression> leftOperand = expr;
+
+        if (!leftOperand->GetType()->IsIntegralType() ||
+                !rightOperand->GetType()->IsIntegralType()) {
+            LogError(tokenInfo, "And operation can not be applied "
+                    "to non-integral type.");
+            return nullptr;
+        }
+
+        expr = new AndExpression();
+        expr->SetLeftOperand(leftOperand);
+        expr->SetRightOperand(rightOperand);
+        expr->SetType(ChooseType(leftOperand->GetType(), rightOperand->GetType()));
 
         tokenInfo = mTokenizer.PeekToken();
     }
+
+    return expr;
 }
 
-void Parser::ParseShiftExpression()
+AutoPtr<ShiftExpression> Parser::ParseShiftExpression(
+    /* [in] */ Type* type)
 {
-    ParseAdditiveExpression();
+    AutoPtr<AdditiveExpression> rightOperand = ParseAdditiveExpression(type);
+    if (rightOperand == nullptr) {
+        return nullptr;
+    }
+
+    AutoPtr<ShiftExpression> expr = new ShiftExpression();
+    expr->SetRightOperand(rightOperand);
+    expr->SetType(rightOperand->GetType());
+    expr->SetRadix(rightOperand->GetRadix());
+    expr->SetScientificNotation(rightOperand->IsScientificNotation());
 
     TokenInfo tokenInfo = mTokenizer.PeekToken();
     while (tokenInfo.mToken == Token::SHIFT_LEFT ||
@@ -711,30 +851,96 @@ void Parser::ParseShiftExpression()
             tokenInfo.mToken == Token::SHIFT_RIGHT_UNSIGNED) {
         mTokenizer.GetToken();
 
-        ParseAdditiveExpression();
+        rightOperand = ParseAdditiveExpression(type);
+        if (rightOperand == nullptr) {
+            return nullptr;
+        }
+
+        AutoPtr<ShiftExpression> leftOperand = expr;
+
+        if (!leftOperand->GetType()->IsIntegralType() ||
+                !rightOperand->GetType()->IsIntegralType()) {
+            LogError(tokenInfo, "Shift operation can not be applied "
+                    "to non-integral type.");
+            return nullptr;
+        }
+
+        expr = new ShiftExpression();
+        expr->SetLeftOperand(leftOperand);
+        expr->SetRightOperand(rightOperand);
+        expr->SetOperator(tokenInfo.mToken == Token::SHIFT_LEFT
+                ? Expression::OPERATOR_LEFT_SHIFT
+                : tokenInfo.mToken == Token::SHIFT_RIGHT
+                    ? Expression::OPERATOR_RIGHT_SHIFT
+                    : Expression::OPERATOR_UNSIGNED_RIGHT_SHIFT);
+        expr->SetType(ChooseType(leftOperand->GetType(), rightOperand->GetType()));
 
         tokenInfo = mTokenizer.PeekToken();
     }
+
+    return expr;
 }
 
-void Parser::ParseAdditiveExpression()
+AutoPtr<AdditiveExpression> Parser::ParseAdditiveExpression(
+    /* [in] */ Type* type)
 {
-    ParseMultiplicativeExpression();
+    AutoPtr<MultiplicativeExpression> rightOperand = ParseMultiplicativeExpression(type);
+    if (rightOperand == nullptr) {
+        return nullptr;
+    }
+
+    AutoPtr<AdditiveExpression> expr = new AdditiveExpression();
+    expr->SetRightOperand(rightOperand);
+    expr->SetType(rightOperand->GetType());
+    expr->SetRadix(rightOperand->GetRadix());
+    expr->SetScientificNotation(rightOperand->IsScientificNotation());
 
     TokenInfo tokenInfo = mTokenizer.PeekToken();
     while (tokenInfo.mToken == Token::PLUS ||
             tokenInfo.mToken == Token::MINUS) {
         mTokenizer.GetToken();
 
-        ParseMultiplicativeExpression();
+        rightOperand = ParseMultiplicativeExpression(type);
+        if (rightOperand == nullptr) {
+            return nullptr;
+        }
+
+        AutoPtr<AdditiveExpression> leftOperand = expr;
+
+        if (!leftOperand->GetType()->IsNumericType() ||
+                !rightOperand->GetType()->IsNumericType()) {
+            LogError(tokenInfo, "Additive operation can not be applied "
+                    "to non-numeric type.");
+            return nullptr;
+        }
+
+        expr = new AdditiveExpression();
+        expr->SetLeftOperand(leftOperand);
+        expr->SetRightOperand(rightOperand);
+        expr->SetOperator(tokenInfo.mToken == Token::PLUS
+                ? Expression::OPERATOR_PLUS
+                : Expression::OPERATOR_MINUS);
+        expr->SetType(ChooseType(leftOperand->GetType(), rightOperand->GetType()));
 
         tokenInfo = mTokenizer.PeekToken();
     }
+
+    return expr;
 }
 
-void Parser::ParseMultiplicativeExpression()
+AutoPtr<MultiplicativeExpression> Parser::ParseMultiplicativeExpression(
+    /* [in] */ Type* type)
 {
-    ParseUnaryExpression();
+    AutoPtr<UnaryExpression> rightOperand = ParseUnaryExpression(type);
+    if (rightOperand == nullptr) {
+        return nullptr;
+    }
+
+    AutoPtr<MultiplicativeExpression> expr = new MultiplicativeExpression();
+    expr->SetRightOperand(rightOperand);
+    expr->SetType(rightOperand->GetType());
+    expr->SetRadix(rightOperand->GetRadix());
+    expr->SetScientificNotation(rightOperand->IsScientificNotation());
 
     TokenInfo tokenInfo = mTokenizer.PeekToken();
     while (tokenInfo.mToken == Token::ASTERISK ||
@@ -742,13 +948,38 @@ void Parser::ParseMultiplicativeExpression()
             tokenInfo.mToken == Token::MODULO) {
         mTokenizer.GetToken();
 
-        ParseUnaryExpression();
+        rightOperand = ParseUnaryExpression(type);
+        if (rightOperand == nullptr) {
+            return nullptr;
+        }
+
+        AutoPtr<MultiplicativeExpression> leftOperand = expr;
+
+        if (!leftOperand->GetType()->IsNumericType() ||
+                !rightOperand->GetType()->IsNumericType()) {
+            LogError(tokenInfo, "Multiplicative operation can not be applied "
+                    "to non-numeric type.");
+            return nullptr;
+        }
+
+        expr = new MultiplicativeExpression();
+        expr->SetLeftOperand(leftOperand);
+        expr->SetRightOperand(rightOperand);
+        expr->SetOperator(tokenInfo.mToken == Token::ASTERISK
+                ? Expression::OPERATOR_MULTIPLE
+                : tokenInfo.mToken == Token::DIVIDE
+                    ? Expression::OPERATOR_DIVIDE
+                    : Expression::OPERATOR_MODULO);
+        expr->SetType(ChooseType(leftOperand->GetType(), rightOperand->GetType()));
 
         tokenInfo = mTokenizer.PeekToken();
     }
+
+    return expr;
 }
 
-void Parser::ParseUnaryExpression()
+AutoPtr<UnaryExpression> Parser::ParseUnaryExpression(
+    /* [in] */ Type* type)
 {
     TokenInfo tokenInfo = mTokenizer.PeekToken();
     if (tokenInfo.mToken == Token::PLUS ||
@@ -757,95 +988,234 @@ void Parser::ParseUnaryExpression()
             tokenInfo.mToken == Token::NOT) {
         mTokenizer.GetToken();
 
-        ParseUnaryExpression();
+        AutoPtr<UnaryExpression> rightOperand = ParseUnaryExpression(type);
+        if (rightOperand == nullptr) {
+            return nullptr;
+        }
+
+        if ((tokenInfo.mToken == Token::PLUS || tokenInfo.mToken == Token::MINUS ||
+                tokenInfo.mToken == Token::NOT) && (!rightOperand->GetType()->IsNumericType())) {
+            LogError(tokenInfo, "Plus, minus and not operation can not be applied to"
+                    "non-numeric type.");
+            return nullptr;
+        }
+        else if (tokenInfo.mToken == Token::COMPLIMENT && !rightOperand->GetType()->IsIntegralType()) {
+            LogError(tokenInfo, "Compliment operation can not be applied to"
+                    "non-integral type.");
+            return nullptr;
+        }
+
+        AutoPtr<UnaryExpression> expr = new UnaryExpression();
+        expr->SetRightOperand(rightOperand);
+        expr->SetOperator(tokenInfo.mToken == Token::PLUS
+                ? Expression::OPERATOR_POSITIVE
+                : tokenInfo.mToken == Token::MINUS
+                    ? Expression::OPERATOR_NEGATIVE
+                    : tokenInfo.mToken == Token::COMPLIMENT
+                        ? Expression::OPERATOR_COMPLIMENT
+                        : Expression::OPERATOR_NOT);
+        expr->SetType(rightOperand->GetType());
+
+        return expr;
     }
     else {
-        ParsePostfixExpression();
+        AutoPtr<PostfixExpression> leftOperand = ParsePostfixExpression(type);
+        if (leftOperand == nullptr) {
+            return nullptr;
+        }
+
+        AutoPtr<UnaryExpression> expr = new UnaryExpression();
+        expr->SetLeftOperand(leftOperand);
+        expr->SetType(leftOperand->GetType());
+        expr->SetRadix(leftOperand->GetRadix());
+        expr->SetScientificNotation(leftOperand->IsScientificNotation());
+
+        return expr;
     }
 }
 
-void Parser::ParsePostfixExpression()
+AutoPtr<PostfixExpression> Parser::ParsePostfixExpression(
+    /* [in] */ Type* type)
 {
     TokenInfo tokenInfo = mTokenizer.PeekToken();
     switch (tokenInfo.mToken) {
         case Token::TRUE:
         case Token::FALSE: {
-            ParseBooleanLiteral();
-            return;
+            return ParseBooleanLiteral(type);
         }
         case Token::CHARACTER: {
-            ParseCharacter();
-            return;
+            return ParseCharacter(type);
         }
         case Token::NUMBER_INTEGRAL: {
-            ParseIntegralNumber();
-            return;
+            return ParseIntegralNumber(type);
         }
         case Token::NUMBER_FLOATINGPOINT: {
-            ParseFloatingPointNumber();
-            return;
+            return ParseFloatingPointNumber(type);
         }
         case Token::STRING_LITERAL: {
-            ParseStringLiteral();
-            return;
+            return ParseStringLiteral(type);
         }
         case Token::IDENTIFIER: {
-            ParseIdentifier();
-            return;
+            return ParseIdentifier(type);
         }
         case Token::NULLPTR: {
             mTokenizer.GetToken();
-            return;
+            if (type->IsPointerType()) {
+                AutoPtr<PostfixExpression> expr = new PostfixExpression();
+                expr->SetType(type);
+                expr->SetIntegralValue(0);
+                expr->SetRadix(16);
+                return expr;
+            }
+
+            String message = String::Format("\"nullptr\" can not be assigned to \"%s\" type.",
+                    type->GetName().string());
+            LogError(tokenInfo, message);
+            return nullptr;
         }
         case Token::PARENTHESES_OPEN: {
-            ParseExpression();
+            AutoPtr<Expression> nestedExpr = ParseExpression(type);
 
             tokenInfo = mTokenizer.PeekToken();
             if (tokenInfo.mToken != Token::PARENTHESES_CLOSE) {
                 LogError(tokenInfo, "\")\" is expected.");
-                return;
+                return nullptr;
             }
             mTokenizer.GetToken();
 
-            return;
+            AutoPtr<PostfixExpression> expr = new PostfixExpression();
+            expr->SetType(type);
+            expr->SetExpression(nestedExpr);
+            return expr;
         }
         default: {
             String message = String::Format("%s is not expected.",
                     TokenInfo::Dump(tokenInfo).string());
             LogError(tokenInfo, message);
-            return;
+            return nullptr;
         }
     }
 }
 
-void Parser::ParseBooleanLiteral()
+AutoPtr<PostfixExpression> Parser::ParseBooleanLiteral(
+    /* [in] */ Type* type)
 {
     TokenInfo tokenInfo = mTokenizer.GetToken();
+    if (type->IsBooleanType()) {
+        AutoPtr<PostfixExpression> expr = new PostfixExpression();
+        expr->SetType(type);
+        expr->SetBooleanValue(tokenInfo.mToken == Token::TRUE
+                ? true : false);
+        return expr;
+    }
+
+    String message = String::Format("\"%s\" can not be assigned to \"%s\" type.",
+            TokenInfo::Dump(tokenInfo).string(), type->GetName().string());
+    LogError(tokenInfo, message);
+    return nullptr;
 }
 
-void Parser::ParseCharacter()
+AutoPtr<PostfixExpression> Parser::ParseCharacter(
+    /* [in] */ Type* type)
 {
     TokenInfo tokenInfo = mTokenizer.GetToken();
+    if (type->IsNumericType()) {
+        AutoPtr<PostfixExpression> expr = new PostfixExpression();
+        expr->SetType(type);
+        expr->SetIntegralValue(tokenInfo.mCharValue);
+        return expr;
+    }
+
+    LogError(tokenInfo, "Character can not be assigned to non-numeric type.");
+    return nullptr;
 }
 
-void Parser::ParseFloatingPointNumber()
+AutoPtr<PostfixExpression> Parser::ParseIntegralNumber(
+    /* [in] */ Type* type)
 {
     TokenInfo tokenInfo = mTokenizer.GetToken();
+    if (type->IsNumericType() || type->IsEnumerationType() || type->IsHANDLEType()) {
+        AutoPtr<PostfixExpression> expr = new PostfixExpression();
+        expr->SetType(type);
+        if (type->IsFloatingPointType()) {
+            expr->SetFloatingPointValue(tokenInfo.mFloatingPointValue);
+        }
+        else {
+            expr->SetIntegralValue(tokenInfo.mIntegralValue);
+            if (type->IsIntegralType()) {
+                expr->SetRadix(tokenInfo.mRadix);
+            }
+        }
+        return expr;
+    }
+
+    String message = String::Format("Integral values can not be assigned to \"%s\" type.",
+            type->GetName().string());
+    LogError(tokenInfo, message);
+    return nullptr;
 }
 
-void Parser::ParseIntegralNumber()
+AutoPtr<PostfixExpression> Parser::ParseFloatingPointNumber(
+    /* [in] */ Type* type)
 {
     TokenInfo tokenInfo = mTokenizer.GetToken();
+    if (type->IsNumericType()) {
+        AutoPtr<PostfixExpression> expr = new PostfixExpression();
+        expr->SetType(type);
+        if (type->IsFloatingPointType()) {
+            expr->SetFloatingPointValue(tokenInfo.mFloatingPointValue);
+            expr->SetScientificNotation(tokenInfo.mScientificNotation);
+        }
+        else {
+            expr->SetIntegralValue(tokenInfo.mIntegralValue);
+        }
+        return expr;
+    }
+
+    String message = String::Format("FloatingPoint values can not be assigned to \"%s\" type.",
+            type->GetName().string());
+    LogError(tokenInfo, message);
+    return nullptr;
 }
 
-void Parser::ParseStringLiteral()
+AutoPtr<PostfixExpression> Parser::ParseStringLiteral(
+    /* [in] */ Type* type)
 {
     TokenInfo tokenInfo = mTokenizer.GetToken();
+    if (type->IsStringType()) {
+        AutoPtr<PostfixExpression> expr = new PostfixExpression();
+        expr->SetType(type);
+        expr->SetStringValue(tokenInfo.mStringValue);
+        return expr;
+    }
+
+    String message = String::Format("\"%s\" can not be assigned to \"%s\" type.",
+            tokenInfo.mStringValue.string(), type->GetName().string());
+    LogError(tokenInfo, message);
+    return nullptr;
 }
 
-void Parser::ParseIdentifier()
+AutoPtr<PostfixExpression> Parser::ParseIdentifier(
+    /* [in] */ Type* type)
 {
     TokenInfo tokenInfo = mTokenizer.GetToken();
+    if (type->IsNumericType()) {
+        String constStr;
+        String id = tokenInfo.mStringValue;
+        int idx = id.IndexOf("::");
+        if (idx > 0) {
+            String typeStr = id.Substring(0, idx);
+            constStr = id.Substring(idx + 2);
+        }
+    }
+    else if (type->IsEnumerationType()) {
+
+    }
+
+    String message = String::Format("\"%s\" can not be assigned to \"%s\" type.",
+            tokenInfo.mStringValue.string(), type->GetName().string());
+    LogError(tokenInfo, message);
+    return nullptr;
 }
 
 bool Parser::ParseMethod()
@@ -986,7 +1356,7 @@ bool Parser::ParseParameter()
     if (mTokenizer.PeekToken().mToken == Token::ASSIGNMENT) {
         mTokenizer.GetToken();
 
-        ParseExpression();
+        ParseExpression(nullptr);
     }
 
     return result;
@@ -1284,7 +1654,7 @@ bool Parser::ParseEnumerationBody()
         tokenInfo = mTokenizer.PeekToken();
         if (tokenInfo.mToken == Token::ASSIGNMENT) {
             mTokenizer.GetToken();
-            ParseExpression();
+            ParseExpression(nullptr);
             tokenInfo = mTokenizer.PeekToken();
         }
         if (tokenInfo.mToken == Token::COMMA) {
@@ -1332,6 +1702,22 @@ bool Parser::ParseInclude()
     mTokenizer.SetReader(prevReader);
 
     return ret;
+}
+
+AutoPtr<Type> Parser::ChooseType(
+    /* [in] */ Type* type1,
+    /* [in] */ Type* type2)
+{
+    if (type1->IsDoubleType()) {
+        return type1;
+    }
+    else if (type1->IsFloatType()) {
+        return type2->IsDoubleType() ? type2 : type1;
+    }
+    else if (type1->IsLongType()) {
+        return type2->IsFloatingPointType() ? type2 : type1;
+    }
+    return type2;
 }
 
 void Parser::LogError(

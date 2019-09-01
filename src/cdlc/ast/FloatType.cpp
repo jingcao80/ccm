@@ -13,3 +13,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //=========================================================================
+
+#include "ast/FloatType.h"
+#include "ast/Namespace.h"
+
+namespace cdlc {
+
+bool FloatType::IsFloatType()
+{
+    return true;
+}
+
+bool FloatType::IsFloatingPointType()
+{
+    return true;
+}
+
+}

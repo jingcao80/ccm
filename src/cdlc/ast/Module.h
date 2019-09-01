@@ -17,6 +17,7 @@
 #ifndef __CDLC_MODULE_H__
 #define __CDLC_MODULE_H__
 
+#include "ast/EnumerationType.h"
 #include "ast/Namespace.h"
 #include "ast/Node.h"
 #include "ast/Type.h"
@@ -32,6 +33,9 @@ class Module
 public:
     inline Module();
 
+    inline void SetName(
+        /* [in] */ const String& name);
+
     inline void AddNamespace(
         /* [in] */ Namespace* ns);
 
@@ -41,6 +45,15 @@ public:
     inline AutoPtr<Namespace> FindNamespace(
         /* [in] */ const String& nsString);
 
+    void AddTemporaryType(
+        /* [in] */ Type* type);
+
+    AutoPtr<EnumerationType> FindEnumeration(
+        /* [in] */ const String& fullName);
+
+    AutoPtr<Type> FindType(
+        /* [in] */ const String& fullName);
+
     String ToString() override;
 
     String Dump(
@@ -49,25 +62,37 @@ public:
 private:
     friend class Namespace;
 
-    Namespace mGlobalNamespace;
+    String mName;
+    AutoPtr<Namespace> mGlobalNamespace;
 
     std::unordered_map<String, AutoPtr<Type>, StringHashFunc, StringEqualsFunc> mAllTypeMap;
 };
 
 Module::Module()
-    : mGlobalNamespace(Namespace::GLOBAL_NAME, this)
+    : mGlobalNamespace(new Namespace(Namespace::GLOBAL_NAME, this))
 {}
+
+void Module::SetName(
+    /* [in] */ const String& name)
+{
+    mName = name;
+}
 
 void Module::AddNamespace(
     /* [in] */ Namespace* ns)
 {
-    mGlobalNamespace.AddNamespace(ns);
+    mGlobalNamespace->AddNamespace(ns);
 }
 
 AutoPtr<Namespace> Module::FindNamespace(
     /* [in] */ const String& nsString)
 {
-    return mGlobalNamespace.FindNamespace(nsString);
+    if (nsString.Equals(Namespace::GLOBAL_NAME)) {
+        return mGlobalNamespace;
+    }
+    else {
+        return mGlobalNamespace->FindNamespace(nsString);
+    }
 }
 
 }

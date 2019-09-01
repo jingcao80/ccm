@@ -26,6 +26,10 @@ class LongType
 {
 public:
     inline LongType();
+
+    bool IsLongType() override;
+
+    bool IsIntegralType() override;
 };
 
 LongType::LongType()

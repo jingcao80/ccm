@@ -18,4 +18,33 @@
 
 namespace cdlc {
 
+AutoPtr<Module> World::GetWorkingModule()
+{
+    if (mWorkingModule == nullptr) {
+        mWorkingModule = new Module();
+    }
+    return mWorkingModule;
+}
+
+AutoPtr<EnumerationType> World::FindEnumeration(
+    /* [in] */ const String& fullName)
+{
+    AutoPtr<Type> type = FindType(fullName);
+    if (type != nullptr && type->IsEnumerationType()) {
+        return (EnumerationType*)type.Get();
+    }
+    return nullptr;
+}
+
+AutoPtr<Type> World::FindType(
+    /* [in] */ const String& name)
+{
+    AutoPtr<Type> type = mWorkingModule->FindType(name);
+    if (type == nullptr) {
+        type = mCompilerRTModule->FindType(name);
+    }
+
+    return type;
+}
+
 }

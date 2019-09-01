@@ -51,6 +51,39 @@ AutoPtr<Namespace> Module::ParseNamespace(
     return targetNs;
 }
 
+void Module::AddTemporaryType(
+    /* [in] */ Type* type)
+{
+    if (type != nullptr) {
+        mAllTypeMap[type->ToString()] = type;
+    }
+}
+
+AutoPtr<EnumerationType> Module::FindEnumeration(
+    /* [in] */ const String& fullName)
+{
+    AutoPtr<Type> type = FindType(fullName);
+    if (type != nullptr && type->IsEnumerationType()) {
+        return (EnumerationType*)type.Get();
+    }
+    return nullptr;
+}
+
+AutoPtr<Type> Module::FindType(
+    /* [in] */ const String& fullName)
+{
+    if (fullName.IsEmpty()) {
+        return nullptr;
+    }
+
+    auto it = mAllTypeMap.find(fullName);
+    if (it != mAllTypeMap.end()) {
+        return it->second;
+    }
+
+    return nullptr;
+}
+
 String Module::ToString()
 {
     return "Module";

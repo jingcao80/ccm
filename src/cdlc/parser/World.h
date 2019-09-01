@@ -17,8 +17,12 @@
 #ifndef __CDLC_WORLD_H__
 #define __CDLC_WORLD_H__
 
+#include "util/AutoPtr.h"
 #include "util/LightRefBase.h"
+#include "util/String.h"
+#include "ast/EnumerationType.h"
 #include "ast/Module.h"
+#include "ast/Type.h"
 
 namespace cdlc {
 
@@ -30,9 +34,17 @@ public:
 
     inline AutoPtr<Module> GetCompilerRTModule();
 
+    AutoPtr<Module> GetWorkingModule();
+
+    AutoPtr<EnumerationType> FindEnumeration(
+        /* [in] */ const String& fullName);
+
+    AutoPtr<Type> FindType(
+        /* [in] */ const String& name);
 
 private:
     AutoPtr<Module> mCompilerRTModule;
+    AutoPtr<Module> mWorkingModule;
 };
 
 World::World()

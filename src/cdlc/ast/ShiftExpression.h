@@ -1,0 +1,35 @@
+//=========================================================================
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//=========================================================================
+
+#ifndef __CDLC_SHIFTEXPRESSION_H__
+#define __CDLC_SHIFTEXPRESSION_H__
+
+#include "ast/Expression.h"
+
+namespace cdlc {
+
+class ShiftExpression
+    : public Expression
+{
+public:
+    static constexpr int LEFT_SHIFT = 0;
+    static constexpr int RIGHT_SHIFT = 1;
+    static constexpr int UNSIGNED_RIGHT_SHIFT = 2;
+};
+
+}
+
+#endif // __CDLC_SHIFTEXPRESSION_H__

@@ -13,3 +13,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //=========================================================================
+
+#include "ast/IntegerType.h"
+#include "ast/Namespace.h"
+
+namespace cdlc {
+
+bool IntegerType::IsIntegralType()
+{
+    return true;
+}
+
+}

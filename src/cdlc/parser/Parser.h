@@ -17,7 +17,18 @@
 #ifndef __CDLC_PARSER_H__
 #define __CDLC_PARSER_H__
 
+#include "ast/AdditiveExpression.h"
+#include "ast/AndExpression.h"
 #include "ast/Attributes.h"
+#include "ast/Constant.h"
+#include "ast/ExclusiveOrExpression.h"
+#include "ast/Expression.h"
+#include "ast/InclusiveOrExpression.h"
+#include "ast/MultiplicativeExpression.h"
+#include "ast/Namespace.h"
+#include "ast/PostfixExpression.h"
+#include "ast/ShiftExpression.h"
+#include "ast/UnaryExpression.h"
 #include "parser/Phase.h"
 #include "parser/Tokenizer.h"
 #include "parser/World.h"
@@ -100,37 +111,52 @@ private:
 
     bool ParseInterfaceBody();
 
-    void ParseConstant();
+    AutoPtr<Constant> ParseConstant();
 
-    void ParseExpression();
+    AutoPtr<Expression> ParseExpression(
+        /* [in] */ Type* type);
 
-    void ParseInclusiveOrExpression();
+    AutoPtr<InclusiveOrExpression> ParseInclusiveOrExpression(
+        /* [in] */ Type* type);
 
-    void ParseExclusiveOrExpression();
+    AutoPtr<ExclusiveOrExpression> ParseExclusiveOrExpression(
+        /* [in] */ Type* type);
 
-    void ParseAndExpression();
+    AutoPtr<AndExpression> ParseAndExpression(
+        /* [in] */ Type* type);
 
-    void ParseShiftExpression();
+    AutoPtr<ShiftExpression> ParseShiftExpression(
+        /* [in] */ Type* type);
 
-    void ParseAdditiveExpression();
+    AutoPtr<AdditiveExpression> ParseAdditiveExpression(
+        /* [in] */ Type* type);
 
-    void ParseMultiplicativeExpression();
+    AutoPtr<MultiplicativeExpression> ParseMultiplicativeExpression(
+        /* [in] */ Type* type);
 
-    void ParseUnaryExpression();
+    AutoPtr<UnaryExpression> ParseUnaryExpression(
+        /* [in] */ Type* type);
 
-    void ParsePostfixExpression();
+    AutoPtr<PostfixExpression> ParsePostfixExpression(
+        /* [in] */ Type* type);
 
-    void ParseBooleanLiteral();
+    AutoPtr<PostfixExpression> ParseBooleanLiteral(
+        /* [in] */ Type* type);
 
-    void ParseCharacter();
+    AutoPtr<PostfixExpression> ParseCharacter(
+        /* [in] */ Type* type);
 
-    void ParseIntegralNumber();
+    AutoPtr<PostfixExpression> ParseIntegralNumber(
+        /* [in] */ Type* type);
 
-    void ParseFloatingPointNumber();
+    AutoPtr<PostfixExpression> ParseFloatingPointNumber(
+        /* [in] */ Type* type);
 
-    void ParseStringLiteral();
+    AutoPtr<PostfixExpression> ParseStringLiteral(
+        /* [in] */ Type* type);
 
-    void ParseIdentifier();
+    AutoPtr<PostfixExpression> ParseIdentifier(
+        /* [in] */ Type* type);
 
     bool ParseMethod();
 
@@ -158,6 +184,9 @@ private:
 
     bool ParseInclude();
 
+    AutoPtr<Type> ChooseType(
+        /* [in] */ Type* type1,
+        /* [in] */ Type* type2);
 
     void LogError(
         /* [in] */ TokenInfo& tokenInfo,
@@ -169,6 +198,8 @@ private:
     static const char* TAG;
 
     World mWorld;
+    AutoPtr<Module> mModule;
+    AutoPtr<Namespace> mCurrentNamespace;
 
     std::vector<AutoPtr<Phase>> mBeforePhases;
     std::vector<AutoPtr<Phase>> mAfterPhases;

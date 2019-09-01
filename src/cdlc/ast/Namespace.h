@@ -35,6 +35,8 @@ public:
         /* [in] */ const String& name,
         /* [in] */ Module* module);
 
+    inline AutoPtr<Namespace> GetParent();
+
     inline void SetParent(
         /* [in] */ Namespace* parent);
 
@@ -75,6 +77,11 @@ Namespace::Namespace(
     : mName(name)
     , mModule(module)
 {}
+
+AutoPtr<Namespace> Namespace::GetParent()
+{
+    return mParent;
+}
 
 void Namespace::SetParent(
     /* [in] */ Namespace* parent)

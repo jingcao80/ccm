@@ -23,16 +23,46 @@
 
 namespace cdlc {
 
+class Module;
 class Namespace;
 
 class Type
     : public Node
 {
 public:
+    void SetModule(
+        /* [in] */ Module* module);
+
+    inline String GetName();
+
     inline AutoPtr<Namespace> GetNamespace();
 
-    virtual void SetNamespace(
+    void SetNamespace(
         /* [in] */ Namespace* ns);
+
+    virtual bool IsBooleanType();
+
+    virtual bool IsLongType();
+
+    virtual bool IsFloatType();
+
+    virtual bool IsDoubleType();
+
+    virtual bool IsIntegralType();
+
+    virtual bool IsFloatingPointType();
+
+    virtual bool IsNumericType();
+
+    virtual bool IsHANDLEType();
+
+    virtual bool IsStringType();
+
+    virtual bool IsEnumerationType();
+
+    virtual bool IsInterfaceType();
+
+    virtual bool IsPointerType();
 
     String ToString() override;
 
@@ -41,8 +71,15 @@ public:
 
 protected:
     String mName;
-    Namespace* mNamespace;
+    Namespace* mNamespace = nullptr;
+
+    Module* mModule = nullptr;
 };
+
+String Type::GetName()
+{
+    return mName;
+}
 
 AutoPtr<Namespace> Type::GetNamespace()
 {

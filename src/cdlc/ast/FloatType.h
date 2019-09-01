@@ -26,6 +26,10 @@ class FloatType
 {
 public:
     inline FloatType();
+
+    bool IsFloatType() override;
+
+    bool IsFloatingPointType() override;
 };
 
 FloatType::FloatType()

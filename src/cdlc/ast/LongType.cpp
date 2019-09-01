@@ -16,3 +16,17 @@
 
 #include "ast/LongType.h"
 #include "ast/Namespace.h"
+
+namespace cdlc {
+
+bool LongType::IsLongType()
+{
+    return true;
+}
+
+bool LongType::IsIntegralType()
+{
+    return true;
+}
+
+}

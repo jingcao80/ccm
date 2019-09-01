@@ -15,9 +15,16 @@
 //=========================================================================
 
 #include "ast/Type.h"
+#include "ast/Module.h"
 #include "ast/Namespace.h"
 
 namespace cdlc {
+
+void Type::SetModule(
+    /* [in] */ Module* module)
+{
+    mModule = module;
+}
 
 void Type::SetNamespace(
     /* [in] */ Namespace* ns)
@@ -27,10 +34,70 @@ void Type::SetNamespace(
     }
 }
 
+bool Type::IsBooleanType()
+{
+    return false;
+}
+
+bool Type::IsLongType()
+{
+    return false;
+}
+
+bool Type::IsFloatType()
+{
+    return false;
+}
+
+bool Type::IsDoubleType()
+{
+    return false;
+}
+
+bool Type::IsIntegralType()
+{
+    return false;
+}
+
+bool Type::IsFloatingPointType()
+{
+    return false;
+}
+
+bool Type::IsNumericType()
+{
+    return IsInterfaceType() || IsFloatingPointType();
+}
+
+bool Type::IsHANDLEType()
+{
+    return false;
+}
+
+bool Type::IsStringType()
+{
+    return false;
+}
+
+bool Type::IsEnumerationType()
+{
+    return false;
+}
+
+bool Type::IsInterfaceType()
+{
+    return false;
+}
+
+bool Type::IsPointerType()
+{
+    return false;
+}
+
 String Type::ToString()
 {
     if (mNamespace != nullptr) {
-        return mNamespace->ToString() + mName;
+        return mNamespace->ToString() + "::" + mName;
     }
     else {
         return mName;

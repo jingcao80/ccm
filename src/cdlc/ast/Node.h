@@ -26,10 +26,10 @@ class Node
     : public LightRefBase
 {
 public:
-    virtual String ToString() = 0;
+    virtual String ToString();
 
     virtual String Dump(
-        /* [in] */ const String& prefix) = 0;
+        /* [in] */ const String& prefix);
 };
 
 }

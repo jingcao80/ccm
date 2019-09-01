@@ -26,6 +26,10 @@ class DoubleType
 {
 public:
     inline DoubleType();
+
+    bool IsDoubleType() override;
+
+    bool IsFloatingPointType() override;
 };
 
 DoubleType::DoubleType()

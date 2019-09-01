@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "phase/BuildinTypeBuilder.h"
+#include "ast/Attributes.h"
 #include "ast/BooleanType.h"
 #include "ast/ByteType.h"
 #include "ast/CharType.h"
@@ -28,6 +29,11 @@
 #include "ast/InterfaceIDType.h"
 #include "ast/InterfaceType.h"
 #include "ast/LongType.h"
+#include "ast/Method.h"
+#include "ast/Parameter.h"
+#include "ast/PointerType.h"
+#include "ast/PostfixExpression.h"
+#include "ast/ReferenceType.h"
 #include "ast/ShortType.h"
 #include "ast/StringType.h"
 #include "ast/TripleType.h"
@@ -47,62 +53,77 @@ void BuildinTypeBuilder::BuildPrimitiveType()
     AutoPtr<Type> type;
 
     ns = mModule->FindNamespace("como");
+
     // add BooleanType
     type = new BooleanType();
     type->SetNamespace(ns);
     ns->AddType(type);
+
     // add CharType
     type = new CharType();
     type->SetNamespace(ns);
     ns->AddType(type);
+
     // add ByteType
     type = new ByteType();
     type->SetNamespace(ns);
     ns->AddType(type);
+
     // add ShortType
     type = new ShortType();
     type->SetNamespace(ns);
     ns->AddType(type);
+
     // add IntegerType
     type = new IntegerType();
     type->SetNamespace(ns);
     ns->AddType(type);
+
     // add LongType
     type = new LongType();
     type->SetNamespace(ns);
     ns->AddType(type);
+
     // add FloatType
     type = new FloatType();
     type->SetNamespace(ns);
     ns->AddType(type);
+
     // add DoubleType
     type = new DoubleType();
     type->SetNamespace(ns);
     ns->AddType(type);
+
     // add StringType
     type = new StringType();
     type->SetNamespace(ns);
     ns->AddType(type);
+
     // add TripleType
     type = new TripleType();
     type->SetNamespace(ns);
     ns->AddType(type);
+
     // add HANDLEType
     type = new HANDLEType();
     type->SetNamespace(ns);
     ns->AddType(type);
+
     // add CoclassIDType
     type = new CoclassIDType();
     type->SetNamespace(ns);
     ns->AddType(type);
+
     // add ComponentIDType
     type = new ComponentIDType();
     type->SetNamespace(ns);
     ns->AddType(type);
+
     // add InterfaceIDType
     type = new InterfaceIDType();
     type->SetNamespace(ns);
     ns->AddType(type);
+
     // add ECodeType
     type = new ECodeType();
     type->SetNamespace(ns);
@@ -111,8 +132,71 @@ void BuildinTypeBuilder::BuildPrimitiveType()
 
 void BuildinTypeBuilder::BuildIInterface()
 {
+    AutoPtr<Namespace> ns = mModule->FindNamespace("como");
+
+    // add IInterface
     AutoPtr<InterfaceType> iinterface = new InterfaceType("IInterface");
-    iinterface->SetNamespace(mModule->FindNamespace("como"));
+    iinterface->SetNamespace(ns);
+    Attributes attrs;
+    attrs.mUuid = "00000000-0000-0000-0000-000000000000";
+    attrs.mVersion = "0.1.0";
+    iinterface->SetAttributes(attrs);
+    ns->AddType(iinterface);
+
+    // add Probe method
+    AutoPtr<Method> method = new Method();
+    method->SetName("Probe");
+    AutoPtr<PointerType> retType = new PointerType();
+    retType->SetBaseType(mModule->FindType("como::IInterface"));
+    retType->SetPointerNumber(1);
+    mModule->AddTemporaryType(retType);
+    method->SetReturnType(retType);
+    AutoPtr<Parameter> param = new Parameter();
+    param->SetName("iid");
+    param->SetType(mModule->FindType("como::InterfaceID"));
+    param->SetAttributes(Parameter::IN);
+    method->AddParameter(param);
+    iinterface->AddMethod(method);
+
+    // add AddRef method
+    method = new Method();
+    method->SetName("AddRef");
+    method->SetReturnType(mModule->FindType("como::Integer"));
+    param = new Parameter();
+    param->SetName("id");
+    param->SetType(mModule->FindType("como::HANDLE"));
+    AutoPtr<PostfixExpression> expr = new PostfixExpression();
+    expr->SetIntegralValue(0);
+    param->SetDefaultValue(expr);
+    param->SetAttributes(Parameter::IN);
+    method->AddParameter(param);
+    iinterface->AddMethod(method);
+
+    // add Release method
+    method = new Method();
+    method->SetName("Release");
+    method->SetReturnType(mModule->FindType("como::Integer"));
+    method->AddParameter(param);
+    iinterface->AddMethod(method);
+
+    // add GetInterfaceID method
+    method = new Method();
+    method->SetName("GetInterfaceID");
+    method->SetReturnType(mModule->FindType("como::ECode"));
+    param = new Parameter();
+    param->SetName("object");
+    param->SetType(mModule->FindType("como::IInterface*"));
+    param->SetAttributes(Parameter::IN);
+    method->AddParameter(param);
+    param = new Parameter();
+    param->SetName("iid");
+    AutoPtr<ReferenceType> refType = new ReferenceType();
+    refType->SetBaseType(mModule->FindType("como::InterfaceID"));
+    mModule->AddTemporaryType(refType);
+    param->SetType(refType);
+    param->SetAttributes(Parameter::OUT);
+    method->AddParameter(param);
+    iinterface->AddMethod(method);
 }
 
 }

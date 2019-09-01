@@ -17,8 +17,13 @@
 #ifndef __CDLC_INTERFACETYPE_H__
 #define __CDLC_INTERFACETYPE_H__
 
+#include "ast/Attributes.h"
+#include "ast/Method.h"
 #include "ast/Type.h"
+#include "util/AutoPtr.h"
 #include "util/String.h"
+#include "util/UUID.h"
+#include <vector>
 
 namespace cdlc {
 
@@ -29,14 +34,36 @@ public:
     inline InterfaceType(
         /* [in] */ const String& name);
 
+    void SetAttributes(
+        /* [in] */ const Attributes& attrs);
+
+    inline void AddMethod(
+        /* [in] */ Method* method);
+
+    bool IsInterfaceType() override;
+
     String Dump(
         /* [in] */ const String& prefix) override;
+
+private:
+    AutoPtr<UUID> mUuid;
+    String mVersion;
+    String mDescription;
+    std::vector<AutoPtr<Method>> mMethods;
 };
 
 InterfaceType::InterfaceType(
     /* [in] */ const String& name)
 {
     mName = name;
+}
+
+void InterfaceType::AddMethod(
+    /* [in] */ Method* method)
+{
+    if (method != nullptr) {
+        mMethods.push_back(method);
+    }
 }
 
 }

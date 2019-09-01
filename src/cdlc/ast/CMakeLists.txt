@@ -20,26 +20,40 @@ include_directories(
     ${CDLC_DIR})
 
 set(SOURCES
+    AdditiveExpression.cpp
+    AndExpression.cpp
     BooleanType.cpp
     ByteType.cpp
     CharType.cpp
     CoclassIDType.cpp
     ComponentIDType.cpp
+    Constant.cpp
     DoubleType.cpp
     ECodeType.cpp
+    EnumerationType.cpp
+    Expression.cpp
     FloatType.cpp
     HANDLEType.cpp
+    InclusiveOrExpression.cpp
     IntegerType.cpp
     InterfaceIDType.cpp
     InterfaceType.cpp
     LongType.cpp
+    Method.cpp
     Module.cpp
+    MultiplicativeExpression.cpp
     Namespace.cpp
     Node.cpp
+    Parameter.cpp
+    PointerType.cpp
+    PostfixExpression.cpp
+    ReferenceType.cpp
+    ShiftExpression.cpp
     ShortType.cpp
     StringType.cpp
     TripleType.cpp
-    Type.cpp)
+    Type.cpp
+    UnaryExpression.cpp)
 
 add_library(ast STATIC
     ${SOURCES})

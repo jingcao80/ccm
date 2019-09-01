@@ -26,6 +26,8 @@ class CharType
 {
 public:
     inline CharType();
+
+    bool IsIntegralType() override;
 };
 
 CharType::CharType()

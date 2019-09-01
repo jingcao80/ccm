@@ -90,6 +90,8 @@ public:
         /* [in] */ const AutoPtr<U>& other) const;
 
 private:
+    template<class U> friend class AutoPtr;
+
     T* mPtr = nullptr;
 };
 
