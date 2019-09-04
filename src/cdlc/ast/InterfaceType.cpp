@@ -16,6 +16,7 @@
 
 #include "ast/InterfaceType.h"
 #include "ast/Namespace.h"
+#include "util/StringBuilder.h"
 
 namespace cdlc {
 
@@ -38,9 +39,36 @@ AutoPtr<Constant> InterfaceType::FindConstant(
     return nullptr;
 }
 
+AutoPtr<Method> InterfaceType::FindMethod(
+    /* [in] */ const String& name,
+    /* [in] */ const String& signature)
+{
+    for (AutoPtr<Method> method : mMethods) {
+        if (method->GetName().Equals(name) &&
+                method->GetSignature().Equals(signature)) {
+            return method;
+        }
+    }
+    return nullptr;
+}
+
 bool InterfaceType::IsInterfaceType()
 {
     return true;
+}
+
+String InterfaceType::GetSignature()
+{
+    StringBuilder builder;
+
+    builder.Append("L");
+    if (!mNamespace->IsGlobal()) {
+        builder.Append(mNamespace->ToString().Replace("::", "/"));
+    }
+    builder.Append("/");
+    builder.Append(mName);
+    builder.Append(";");
+    return builder.ToString();
 }
 
 String InterfaceType::Dump(

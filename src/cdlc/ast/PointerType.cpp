@@ -24,6 +24,15 @@ bool PointerType::IsPointerType()
     return true;
 }
 
+String PointerType::GetSignature()
+{
+    String signature = mBaseType->GetSignature();
+    for (int i = 0; i < mPointerNumber; i++) {
+        signature += "*";
+    }
+    return signature;
+}
+
 String PointerType::ToString()
 {
     String typeStr = mBaseType->ToString();

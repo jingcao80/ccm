@@ -30,15 +30,23 @@ class Type
     : public Node
 {
 public:
-    void SetModule(
+    inline void SetModule(
         /* [in] */ Module* module);
 
     inline String GetName();
+
+    inline void SetName(
+        /* [in] */ const String& name);
 
     inline AutoPtr<Namespace> GetNamespace();
 
     void SetNamespace(
         /* [in] */ Namespace* ns);
+
+    inline bool IsForwardDeclared();
+
+    inline void SetForwardDeclared(
+        /* [in] */ bool forwardDeclared);
 
     virtual bool IsBooleanType();
 
@@ -66,6 +74,8 @@ public:
 
     virtual bool IsPointerType();
 
+    virtual String GetSignature() = 0;
+
     String ToString() override;
 
     String Dump(
@@ -76,20 +86,44 @@ public:
         /* [in] */ Type* type2);
 
 protected:
+    Module* mModule = nullptr;
+
     String mName;
     Namespace* mNamespace = nullptr;
-
-    Module* mModule = nullptr;
+    bool mForwardDeclared = false;
 };
+
+void Type::SetModule(
+    /* [in] */ Module* module)
+{
+    mModule = module;
+}
 
 String Type::GetName()
 {
     return mName;
 }
 
+void Type::SetName(
+    /* [in] */ const String& name)
+{
+    mName = name;
+}
+
 AutoPtr<Namespace> Type::GetNamespace()
 {
     return mNamespace;
+}
+
+bool Type::IsForwardDeclared()
+{
+    return mForwardDeclared;
+}
+
+void Type::SetForwardDeclared(
+    /* [in] */ bool forwardDeclared)
+{
+    mForwardDeclared = forwardDeclared;
 }
 
 }

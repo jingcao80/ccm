@@ -19,6 +19,11 @@
 
 namespace cdlc {
 
+String ReferenceType::GetSignature()
+{
+    return mBaseType->GetSignature() + "&";
+}
+
 String ReferenceType::ToString()
 {
     return mBaseType->ToString() + "&";

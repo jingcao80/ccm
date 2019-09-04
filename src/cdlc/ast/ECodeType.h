@@ -26,6 +26,8 @@ class ECodeType
 {
 public:
     inline ECodeType();
+
+    String GetSignature() override;
 };
 
 ECodeType::ECodeType()

@@ -18,17 +18,21 @@
 #define __CDLC_CONSTANT_H__
 
 #include "ast/Expression.h"
-#include "ast/Namespace.h"
 #include "ast/Node.h"
 #include "ast/Type.h"
 #include "util/String.h"
 
 namespace cdlc {
 
+class Namespace;
+
 class Constant
     : public Node
 {
 public:
+    inline void SetModule(
+        /* [in] */ Module* module);
+
     inline String GetName();
 
     inline void SetName(
@@ -44,12 +48,23 @@ public:
     inline void SetValue(
         /* [in] */ Expression* value);
 
+    inline void SetNamespace(
+        /* [in] */ Namespace* ns);
+
 private:
+    Module* mModule = nullptr;
+
     String mName;
     AutoPtr<Type> mType;
     AutoPtr<Expression> mValue;
     Namespace* mNamespace = nullptr;
 };
+
+void Constant::SetModule(
+    /* [in] */ Module* module)
+{
+    mModule = module;
+}
 
 String Constant::GetName()
 {
@@ -82,6 +97,12 @@ void Constant::SetValue(
     /* [in] */ Expression* value)
 {
     mValue = value;
+}
+
+void Constant::SetNamespace(
+    /* [in] */ Namespace* ns)
+{
+    mNamespace = ns;
 }
 
 }

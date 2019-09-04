@@ -30,9 +30,12 @@ class Method
     : public Node
 {
 public:
+    inline String GetName();
 
     inline void SetName(
         /* [in] */ const String& name);
+
+    inline String GetSignature();
 
     inline void SetReturnType(
         /* [in] */ Type* type);
@@ -46,16 +49,32 @@ public:
         /* [in] */ const String& prefix) override;
 
 private:
+    void BuildSignature();
+
+private:
     String mName;
     String mSignature;
     AutoPtr<Type> mReturnType;
     std::vector<AutoPtr<Parameter>> mParameters;
 };
 
+String Method::GetName()
+{
+    return mName;
+}
+
 void Method::SetName(
     /* [in] */ const String& name)
 {
     mName = name;
+}
+
+String Method::GetSignature()
+{
+    if (mSignature.IsEmpty()) {
+        BuildSignature();
+    }
+    return mSignature;
 }
 
 void Method::SetReturnType(

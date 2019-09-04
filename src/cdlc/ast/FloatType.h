@@ -30,6 +30,8 @@ public:
     bool IsFloatType() override;
 
     bool IsFloatingPointType() override;
+
+    String GetSignature() override;
 };
 
 FloatType::FloatType()

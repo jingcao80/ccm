@@ -13,3 +13,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //=========================================================================
+
+#include "ast/InterfaceIDType.h"
+#include "ast/Namespace.h"
+
+namespace cdlc {
+
+String InterfaceIDType::GetSignature()
+{
+    return "U";
+}
+
+}

@@ -21,10 +21,12 @@
 #include "ast/AndExpression.h"
 #include "ast/Attributes.h"
 #include "ast/Constant.h"
+#include "ast/EnumerationType.h"
 #include "ast/ExclusiveOrExpression.h"
 #include "ast/Expression.h"
 #include "ast/InclusiveOrExpression.h"
 #include "ast/InterfaceType.h"
+#include "ast/Method.h"
 #include "ast/MultiplicativeExpression.h"
 #include "ast/Namespace.h"
 #include "ast/PostfixExpression.h"
@@ -137,9 +139,11 @@ private:
     bool ParseNamespace();
 
     bool ParseInterface(
-        /* [in] */ Attributes& attrs);
+        /* [in] */ Attributes& attrs,
+        /* [in] */ InterfaceType* outerInterface = nullptr);
 
-    bool ParseInterfaceBody();
+    bool ParseInterfaceBody(
+        /* [in] */ InterfaceType* interface);
 
     AutoPtr<Constant> ParseConstant();
 
@@ -188,15 +192,18 @@ private:
     AutoPtr<PostfixExpression> ParseIdentifier(
         /* [in] */ Type* type);
 
-    bool ParseMethod();
+    bool ParseMethod(
+        /* [in] */ InterfaceType* interface);
 
-    bool ParseParameter();
+    bool ParseParameter(
+        /* [in] */ Method* method);
 
-    void ParseType();
+    AutoPtr<Type> ParseType();
 
-    void ParseArray();
+    AutoPtr<Type> ParseArray();
 
-    bool ParseNestedInterface();
+    bool ParseNestedInterface(
+        /* [in] */ InterfaceType* outerInterface);
 
     bool ParseCoclass(
         /* [in] */ Attributes& attrs);
@@ -210,13 +217,17 @@ private:
 
     bool ParseEnumeration();
 
-    bool ParseEnumerationBody();
+    bool ParseEnumerationBody(
+        /* [in] */ EnumerationType* enumeration);
 
     bool ParseInclude();
 
     void EnterBlockContext();
 
     void LeaveBlockContext();
+
+    AutoPtr<InterfaceType> FindInterface(
+        /* [in] */ const String& interfaceName);
 
     AutoPtr<Type> FindType(
         /* [in] */ const String& typeName);

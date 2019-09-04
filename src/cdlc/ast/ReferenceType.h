@@ -29,7 +29,12 @@ public:
     inline void SetBaseType(
         /* [in] */ Type* type);
 
+    String GetSignature() override;
+
     String ToString() override;
+
+    inline static AutoPtr<ReferenceType> CastFrom(
+        /* [in] */ Type* type);
 
 private:
     AutoPtr<Type> mBaseType;
@@ -39,6 +44,12 @@ void ReferenceType::SetBaseType(
     /* [in] */ Type* type)
 {
     mBaseType = type;
+}
+
+AutoPtr<ReferenceType> ReferenceType::CastFrom(
+    /* [in] */ Type* type)
+{
+    return static_cast<ReferenceType*>(type);
 }
 
 }

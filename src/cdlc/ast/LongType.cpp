@@ -29,4 +29,9 @@ bool LongType::IsIntegralType()
     return true;
 }
 
+String LongType::GetSignature()
+{
+    return "L";
+}
+
 }

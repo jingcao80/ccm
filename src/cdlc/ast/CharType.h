@@ -28,6 +28,8 @@ public:
     inline CharType();
 
     bool IsIntegralType() override;
+
+    String GetSignature() override;
 };
 
 CharType::CharType()

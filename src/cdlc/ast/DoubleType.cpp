@@ -29,4 +29,9 @@ bool DoubleType::IsFloatingPointType()
     return true;
 }
 
+String DoubleType::GetSignature()
+{
+    return "D";
+}
+
 }

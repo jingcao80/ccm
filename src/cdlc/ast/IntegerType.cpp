@@ -29,4 +29,9 @@ bool IntegerType::IsIntegralType()
     return true;
 }
 
+String IntegerType::GetSignature()
+{
+    return "I";
+}
+
 }

@@ -15,7 +15,9 @@
 //=========================================================================
 
 #include "parser/Parser.h"
-#include "ast/EnumerationType.h"
+#include "ast/ArrayType.h"
+#include "ast/PointerType.h"
+#include "ast/ReferenceType.h"
 #include "parser/TokenInfo.h"
 #include "phase/BuildinTypeBuilder.h"
 #include "util/AutoPtr.h"
@@ -103,7 +105,13 @@ bool Parser::ParseFile(
                 break;
             }
             case Token::CONST: {
-                ParseConstant();
+                AutoPtr<Constant> constant = ParseConstant();
+                if (constant != nullptr) {
+                    mCurrentNamespace->AddConstant(constant);
+                }
+                else {
+                    result = false;
+                }
                 break;
             }
             case Token::ENUM: {
@@ -412,7 +420,13 @@ bool Parser::ParseModule(
                 break;
             }
             case Token::CONST: {
-                ParseConstant();
+                AutoPtr<Constant> constant = ParseConstant();
+                if (constant != nullptr) {
+                    mCurrentNamespace->AddConstant(constant);
+                }
+                else {
+                    result = false;
+                }
                 break;
             }
             case Token::ENUM: {
@@ -494,7 +508,13 @@ bool Parser::ParseNamespace()
                 break;
             }
             case Token::CONST: {
-                ParseConstant();
+                AutoPtr<Constant> constant = ParseConstant();
+                if (constant != nullptr) {
+                    mCurrentNamespace->AddConstant(constant);
+                }
+                else {
+                    result = false;
+                }
                 break;
             }
             case Token::ENUM: {
@@ -537,7 +557,8 @@ bool Parser::ParseNamespace()
 }
 
 bool Parser::ParseInterface(
-    /* [in] */ Attributes& attrs)
+    /* [in] */ Attributes& attrs,
+    /* [in] */ InterfaceType* outerInterface)
 {
     bool result = true;
     String interfaceName;
@@ -557,8 +578,57 @@ bool Parser::ParseInterface(
     if (mTokenizer.PeekToken().mToken == Token::SEMICOLON) {
         // interface forward declaration
         mTokenizer.GetToken();
+        String fullTypeName = interfaceName;
+        if (!fullTypeName.Contains("::") && !mCurrentNamespace->IsGlobal()) {
+            fullTypeName = mCurrentNamespace->ToString() + fullTypeName;
+        }
+        AutoPtr<Type> type = mWorld.FindType(fullTypeName);
+        if (type != nullptr) {
+            if (type->IsInterfaceType()) {
+                interfaceName = fullTypeName.Substring(fullTypeName.LastIndexOf("::") + 2);
+                mCurrentContext->AddTypeForwardDeclaration(interfaceName, fullTypeName);
+            }
+            else {
+                String message = String::Format("Interface %s is name conflict with %s.",
+                        interfaceName.string(), type->ToString().string());
+                LogError(tokenInfo, message);
+                result = false;
+            }
+            return result;
+        }
 
+        int idx = fullTypeName.LastIndexOf("::");
+        AutoPtr<Namespace> ns = mModule->ParseNamespace(fullTypeName.Substring(0, idx));
+        interfaceName = fullTypeName.Substring(idx + 2);
+
+        AutoPtr<InterfaceType> interface = new InterfaceType();
+        interface->SetName(interfaceName);
+        interface->SetForwardDeclared(true);
+        ns->AddInterfaceType(interface);
+        mCurrentContext->AddTypeForwardDeclaration(interfaceName, fullTypeName);
         return result;
+    }
+
+    AutoPtr<InterfaceType> interface;
+
+    AutoPtr<Type> type = mModule->FindType(mCurrentNamespace->IsGlobal()
+            ? interfaceName : mCurrentNamespace->ToString() + "::" + interfaceName);
+    if (type != nullptr) {
+        if (type->IsInterfaceType() && type->IsForwardDeclared()) {
+            interface = InterfaceType::CastFrom(type);
+        }
+        else {
+            String message = type->IsInterfaceType()
+                    ? String::Format("Interface %s has already been declared.", interfaceName.string())
+                    : String::Format("Interface %s is name conflict.", interfaceName.string());
+            LogError(tokenInfo, message);
+            result = false;
+        }
+    }
+
+    if (interface == nullptr) {
+        interface = new InterfaceType();
+        interface->SetName(interfaceName);
     }
 
     // interface definition
@@ -570,17 +640,58 @@ bool Parser::ParseInterface(
 
     if (mTokenizer.PeekToken().mToken == Token::COLON) {
         // parent interface
+        mTokenizer.GetToken();
+        tokenInfo = mTokenizer.PeekToken();
+        if (tokenInfo.mToken == Token::IDENTIFIER) {
+            mTokenizer.GetToken();
+            AutoPtr<InterfaceType> baseInterface = FindInterface(tokenInfo.mStringValue);
+            if (baseInterface != nullptr && !baseInterface->IsForwardDeclared()) {
+                interface->SetBaseInterface(baseInterface);
+            }
+            else {
+                String message = String::Format("Base interface \"%s\" is not found or not declared.",
+                        tokenInfo.mStringValue.string());
+                LogError(tokenInfo, message);
+                result = false;
+            }
+        }
+        else {
+            LogError(tokenInfo, "Base interface name is expected.");
+            // jump over '{'
+            while (tokenInfo.mToken != Token::BRACES_OPEN &&
+                    tokenInfo.mToken != Token::END_OF_FILE) {
+                mTokenizer.GetToken();
+                tokenInfo = mTokenizer.PeekToken();
+            }
+            result = false;
+        }
     }
     else {
-
+        interface->SetBaseInterface(FindInterface("como::IInterface"));
     }
 
-    result = ParseInterfaceBody() && result;
+    AutoPtr<Type> prevType = std::move(mCurrentType);
+    mCurrentType = (Type*)interface.Get();
+
+    result = ParseInterfaceBody(interface) && result;
+
+    if (result) {
+        interface->SetForwardDeclared(false);
+        interface->SetAttributes(attrs);
+        if (outerInterface != nullptr) {
+            interface->SetOuterInterface(outerInterface);
+            outerInterface->AddNestedInterface(interface);
+        }
+        mCurrentNamespace->AddInterfaceType(interface);
+    }
+
+    mCurrentType = std::move(prevType);
 
     return result;
 }
 
-bool Parser::ParseInterfaceBody()
+bool Parser::ParseInterfaceBody(
+    /* [in] */ InterfaceType* interface)
 {
     bool result = true;
 
@@ -596,15 +707,21 @@ bool Parser::ParseInterfaceBody()
             tokenInfo.mToken != Token::END_OF_FILE) {
         switch (tokenInfo.mToken) {
             case Token::BRACKETS_OPEN: {
-                result = ParseNestedInterface() && result;
+                result = ParseNestedInterface(interface) && result;
                 break;
             }
             case Token::CONST: {
-                ParseConstant();
+                AutoPtr<Constant> constant = ParseConstant();
+                if (constant != nullptr) {
+                    interface->AddConstant(constant);
+                }
+                else {
+                    result = false;
+                }
                 break;
             }
             case Token::IDENTIFIER: {
-                result = ParseMethod() && result;
+                result = ParseMethod(interface) && result;
                 break;
             }
             default: {
@@ -1276,13 +1393,16 @@ AutoPtr<PostfixExpression> Parser::ParseIdentifier(
     return nullptr;
 }
 
-bool Parser::ParseMethod()
+bool Parser::ParseMethod(
+    /* [in] */ InterfaceType* interface)
 {
     bool result = true;
 
     TokenInfo tokenInfo = mTokenizer.GetToken();
 
-    String methodName = tokenInfo.mStringValue;
+    AutoPtr<Method> method = new Method();
+    method->SetName(tokenInfo.mStringValue);
+    method->SetReturnType(mWorld.FindType("como::ECode"));
 
     tokenInfo = mTokenizer.PeekToken();
     if (tokenInfo.mToken != Token::PARENTHESES_OPEN) {
@@ -1294,7 +1414,7 @@ bool Parser::ParseMethod()
     tokenInfo = mTokenizer.PeekToken();
     while (tokenInfo.mToken != Token::PARENTHESES_CLOSE &&
             tokenInfo.mToken != Token::END_OF_FILE) {
-        result = ParseParameter() && result;
+        result = ParseParameter(method) && result;
         tokenInfo = mTokenizer.PeekToken();
         if (tokenInfo.mToken == Token::COMMA) {
             mTokenizer.GetToken();
@@ -1328,10 +1448,27 @@ bool Parser::ParseMethod()
     }
     mTokenizer.GetToken();
 
+    if (result) {
+        if (interface->FindMethod(method->GetName(), method->GetSignature()) != nullptr) {
+            String message = String::Format("The method \"%s\" is redeclared.",
+                    method->ToString().string());
+            LogError(tokenInfo, message);
+            return false;
+        }
+        interface->AddMethod(method);
+        if (interface->GetMethodNumber() >= InterfaceType::METHOD_MAX_NUMBER) {
+            String message = String::Format("The Interface \"%s\" has too many methods.",
+                    interface->ToString().string());
+            LogError(tokenInfo, message);
+            return false;
+        }
+    }
+
     return result;
 }
 
-bool Parser::ParseParameter()
+bool Parser::ParseParameter(
+    /* [in] */ Method* method)
 {
     bool result = true;
 
@@ -1342,20 +1479,25 @@ bool Parser::ParseParameter()
     }
     mTokenizer.GetToken();
 
+    AutoPtr<Parameter> parameter = new Parameter();
+
     tokenInfo = mTokenizer.PeekToken();
     while (tokenInfo.mToken != Token::BRACKETS_CLOSE &&
             tokenInfo.mToken != Token::END_OF_FILE) {
         switch (tokenInfo.mToken) {
             case Token::IN: {
                 mTokenizer.GetToken();
+                parameter->SetAttributes(Parameter::IN);
                 break;
             }
             case Token::OUT: {
                 mTokenizer.GetToken();
+                parameter->SetAttributes(Parameter::OUT);
                 break;
             }
             case Token::CALLEE: {
                 mTokenizer.GetToken();
+                parameter->SetAttributes(Parameter::CALLEE);
                 break;
             }
             default: {
@@ -1393,7 +1535,20 @@ bool Parser::ParseParameter()
     // read ']'
     mTokenizer.GetToken();
 
-    ParseType();
+    AutoPtr<Type> type = ParseType();
+    if (type != nullptr) {
+        parameter->SetType(type);
+    }
+    else {
+        // jump to ',' or ';'
+        while (tokenInfo.mToken != Token::COMMA &&
+                tokenInfo.mToken != Token::PARENTHESES_CLOSE &&
+                tokenInfo.mToken != Token::END_OF_FILE) {
+            mTokenizer.GetToken();
+            tokenInfo = mTokenizer.PeekToken();
+        }
+        return false;
+    }
 
     tokenInfo = mTokenizer.PeekToken();
     if (tokenInfo.mToken != Token::IDENTIFIER) {
@@ -1409,42 +1564,90 @@ bool Parser::ParseParameter()
     }
     mTokenizer.GetToken();
 
-    String parameterName = tokenInfo.mStringValue;
+    parameter->SetName(tokenInfo.mStringValue);
 
     if (mTokenizer.PeekToken().mToken == Token::ASSIGNMENT) {
         mTokenizer.GetToken();
 
-        ParseExpression(nullptr);
+        AutoPtr<Expression> expr = ParseExpression(type);
+        parameter->SetDefaultValue(expr);
     }
 
+    method->AddParameter(parameter);
     return result;
 }
 
-void Parser::ParseType()
+AutoPtr<Type> Parser::ParseType()
 {
+    AutoPtr<Type> type;
+
     TokenInfo tokenInfo = mTokenizer.PeekToken();
     if (tokenInfo.IsBuildinType()) {
         mTokenizer.GetToken();
+        type = mWorld.FindType(String::Format("como::%s", TokenInfo::Dump(tokenInfo).string()));
     }
     else if (tokenInfo.mToken == Token::IDENTIFIER) {
         mTokenizer.GetToken();
+        type = FindType(tokenInfo.mStringValue);
+        if (type == nullptr && mCurrentType != nullptr &&
+                mCurrentType->GetName().Equals(tokenInfo.mStringValue)) {
+            type = mCurrentType;
+        }
     }
     else if (tokenInfo.mToken == Token::ARRAY) {
-        ParseArray();
+        type = ParseArray();
     }
 
+    if (type == nullptr) {
+        String message = String::Format("Type \"%s\" was not declared in this scope.",
+                TokenInfo::Dump(tokenInfo).string());
+        LogError(tokenInfo, message);
+        return nullptr;
+    }
+
+    int ptrNumber = 0, refNumber = 0;
     tokenInfo = mTokenizer.PeekToken();
     while (tokenInfo.mToken == Token::ASTERISK) {
         mTokenizer.GetToken();
+        ptrNumber++;
         tokenInfo = mTokenizer.PeekToken();
     }
 
     if (tokenInfo.mToken == Token::AMPERSAND) {
         mTokenizer.GetToken();
+        refNumber++;
     }
+
+    if (ptrNumber != 0) {
+        String ptrTypeName = type->ToString();
+        for (int i = 0; i < ptrNumber; i++) {
+            ptrTypeName = ptrNumber + "*";
+        }
+        AutoPtr<PointerType> pointer = PointerType::CastFrom(mModule->FindType(ptrTypeName));
+        if (pointer == nullptr) {
+            pointer = new PointerType();
+            pointer->SetBaseType(type);
+            pointer->SetPointerNumber(ptrNumber);
+            mModule->AddTemporaryType(pointer);
+        }
+        type = (Type*)pointer.Get();
+    }
+
+    if (refNumber != 0) {
+        String refTypeName = type->ToString() + "&";
+        AutoPtr<ReferenceType> reference = ReferenceType::CastFrom(mModule->FindType(refTypeName));
+        if (reference == nullptr) {
+            reference = new ReferenceType();
+            reference->SetBaseType(type);
+            mModule->AddTemporaryType(reference);
+        }
+        type = (Type*)reference.Get();
+    }
+
+    return type;
 }
 
-void Parser::ParseArray()
+AutoPtr<Type> Parser::ParseArray()
 {
     // read "Array"
     mTokenizer.GetToken();
@@ -1452,21 +1655,35 @@ void Parser::ParseArray()
     TokenInfo tokenInfo = mTokenizer.PeekToken();
     if (tokenInfo.mToken != Token::ANGLE_BRACKETS_OPEN) {
         LogError(tokenInfo, "\"<\" is expected.");
-        return;
+        return nullptr;
     }
     mTokenizer.GetToken();
 
-    ParseType();
+    AutoPtr<Type> elementType = ParseType();
+    if (elementType == nullptr) {
+        return nullptr;
+    }
 
     tokenInfo = mTokenizer.PeekToken(Token::ANGLE_BRACKETS_CLOSE);
     if (tokenInfo.mToken != Token::ANGLE_BRACKETS_CLOSE) {
         LogError(tokenInfo, "\">\" is expected.");
-        return;
+        return nullptr;
     }
     mTokenizer.GetToken(Token::ANGLE_BRACKETS_CLOSE);
+
+    String arrayTypeName = "Array<" + elementType->ToString() + ">";
+    AutoPtr<ArrayType> array = ArrayType::CastFrom(mModule->FindType(arrayTypeName));
+    if (array == nullptr) {
+        array = new ArrayType();
+        array->SetElementType(elementType);
+        mModule->AddTemporaryType(array);
+    }
+
+    return array;
 }
 
-bool Parser::ParseNestedInterface()
+bool Parser::ParseNestedInterface(
+    /* [in] */ InterfaceType* outerInterface)
 {
     Attributes attrs;
     bool result = ParseAttributes(attrs);
@@ -1478,7 +1695,16 @@ bool Parser::ParseNestedInterface()
         result = false;
     }
 
-    result = ParseInterface(attrs) && result;
+    AutoPtr<Namespace> ns = mCurrentNamespace->FindNamespace(outerInterface->GetName());
+    if (ns == nullptr) {
+        ns = new Namespace(outerInterface, mModule);
+        mCurrentNamespace->AddNamespace(ns);
+    }
+    mCurrentNamespace = ns;
+
+    result = ParseInterface(attrs, outerInterface) && result;
+
+    mCurrentNamespace = mCurrentNamespace->GetParent();
 
     return result;
 }
@@ -1571,7 +1797,7 @@ bool Parser::ParseConstructor()
     tokenInfo = mTokenizer.PeekToken();
     while (tokenInfo.mToken != Token::PARENTHESES_CLOSE &&
             tokenInfo.mToken != Token::END_OF_FILE) {
-        result = ParseParameter() && result;
+        result = ParseParameter(nullptr) && result;
         tokenInfo = mTokenizer.PeekToken();
         if (tokenInfo.mToken == Token::COMMA) {
             mTokenizer.GetToken();
@@ -1676,16 +1902,71 @@ bool Parser::ParseEnumeration()
 
     if (mTokenizer.PeekToken().mToken == Token::SEMICOLON) {
         mTokenizer.GetToken();
+        String fullTypeName = enumName;
+        if (!fullTypeName.Contains("::") && !mCurrentNamespace->IsGlobal()) {
+            fullTypeName = mCurrentNamespace->ToString() + "::" + fullTypeName;
+        }
+        AutoPtr<Type> type = mWorld.FindType(fullTypeName);
+        if (type != nullptr) {
+            if (type->IsEnumerationType()) {
+                enumName = fullTypeName.Substring(fullTypeName.LastIndexOf("::") + 2);
+                mCurrentContext->AddTypeForwardDeclaration(enumName, fullTypeName);
+            }
+            else {
+                String message = String::Format("Enumeration %s is name conflict with %s.",
+                        enumName.string(), type->ToString().string());
+                LogError(tokenInfo, message);
+                result = false;
+            }
+            return result;
+        }
 
+        int idx = fullTypeName.LastIndexOf("::");
+        AutoPtr<Namespace> ns = mModule->ParseNamespace(fullTypeName.Substring(0, idx));
+        enumName = fullTypeName.Substring(idx + 2);
+
+        AutoPtr<EnumerationType> enumeration = new EnumerationType();
+        enumeration->SetName(enumName);
+        enumeration->SetForwardDeclared(true);
+        ns->AddEnumerationType(enumeration);
+        mCurrentContext->AddTypeForwardDeclaration(enumName, fullTypeName);
         return result;
     }
 
-    result = ParseEnumerationBody() && result;
+    AutoPtr<EnumerationType> enumeration;
+
+    AutoPtr<Type> type = mModule->FindType(mCurrentNamespace->IsGlobal()
+            ? enumName : mCurrentNamespace->ToString() + "::" + enumName);
+    if (type != nullptr) {
+        if (type->IsEnumerationType() && type->IsForwardDeclared()) {
+            enumeration = EnumerationType::CastFrom(type);
+        }
+        else {
+            String message = type->IsEnumerationType()
+                    ? String::Format("Enumeration %s has already been declared.", enumName.string())
+                    : String::Format("Enumeration %s is name conflict.", enumName.string());
+            LogError(tokenInfo, message);
+            result = false;
+        }
+    }
+
+    if (enumeration == nullptr) {
+        enumeration = new EnumerationType();
+        enumeration->SetName(enumName);
+    }
+
+    result = ParseEnumerationBody(enumeration) && result;
+
+    if (result) {
+        enumeration->SetForwardDeclared(false);
+        mCurrentNamespace->AddEnumerationType(enumeration);
+    }
 
     return result;
 }
 
-bool Parser::ParseEnumerationBody()
+bool Parser::ParseEnumerationBody(
+    /* [in] */ EnumerationType* enumeration)
 {
     bool result = true;
 
@@ -1709,10 +1990,17 @@ bool Parser::ParseEnumerationBody()
             result = false;
         }
 
+        int enumeratorValue = 0;
         tokenInfo = mTokenizer.PeekToken();
         if (tokenInfo.mToken == Token::ASSIGNMENT) {
             mTokenizer.GetToken();
-            ParseExpression(nullptr);
+            AutoPtr<Expression> expr = ParseExpression(enumeration);
+            if (expr != nullptr) {
+                enumeratorValue = expr->IntegerValue();
+            }
+            else {
+                result = false;
+            }
             tokenInfo = mTokenizer.PeekToken();
         }
         if (tokenInfo.mToken == Token::COMMA) {
@@ -1723,7 +2011,10 @@ bool Parser::ParseEnumerationBody()
             LogError(tokenInfo, "\"}\" is expected.");
             result = false;
         }
-        if (!result) {
+        if (result) {
+            enumeration->AddEnumerator(enumeratorName, enumeratorValue++);
+        }
+        else {
             // jump to ',' or '}'
             while (tokenInfo.mToken != Token::COMMA &&
                     tokenInfo.mToken != Token::BRACES_CLOSE &&
@@ -1778,6 +2069,16 @@ void Parser::LeaveBlockContext()
 {
     AutoPtr<BlockContext> context = mCurrentContext->mNext;
     mCurrentContext = std::move(context);
+}
+
+AutoPtr<InterfaceType> Parser::FindInterface(
+    /* [in] */ const String& interfaceName)
+{
+    AutoPtr<Type> type = FindType(interfaceName);
+    if (type != nullptr && type->IsInterfaceType()) {
+        return InterfaceType::CastFrom(type);
+    }
+    return nullptr;
 }
 
 AutoPtr<Type> Parser::FindType(

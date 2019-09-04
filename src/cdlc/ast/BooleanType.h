@@ -26,6 +26,8 @@ class BooleanType
 {
 public:
     inline BooleanType();
+
+    String GetSignature() override;
 };
 
 BooleanType::BooleanType()

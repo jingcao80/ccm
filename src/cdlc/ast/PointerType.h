@@ -35,7 +35,12 @@ public:
 
     bool IsPointerType() override;
 
+    String GetSignature() override;
+
     String ToString() override;
+
+    inline static AutoPtr<PointerType> CastFrom(
+        /* [in] */ Type* type);
 
 private:
     AutoPtr<Type> mBaseType;
@@ -52,6 +57,12 @@ void PointerType::SetPointerNumber(
     /* [in] */ int number)
 {
     mPointerNumber = number;
+}
+
+AutoPtr<PointerType> PointerType::CastFrom(
+    /* [in] */ Type* type)
+{
+    return static_cast<PointerType*>(type);
 }
 
 }

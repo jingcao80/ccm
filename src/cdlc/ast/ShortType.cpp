@@ -24,4 +24,9 @@ bool ShortType::IsIntegralType()
     return true;
 }
 
+String ShortType::GetSignature()
+{
+    return "S";
+}
+
 }

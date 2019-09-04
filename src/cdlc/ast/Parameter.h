@@ -31,6 +31,8 @@ public:
     inline void SetName(
         /* [in] */ const String& name);
 
+    inline AutoPtr<Type> GetType();
+
     inline void SetType(
         /* [in] */ Type* type);
 
@@ -61,6 +63,11 @@ void Parameter::SetName(
     /* [in] */ const String& name)
 {
     mName = name;
+}
+
+AutoPtr<Type> Parameter::GetType()
+{
+    return mType;
 }
 
 void Parameter::SetType(

@@ -26,6 +26,8 @@ class TripleType
 {
 public:
     inline TripleType();
+
+    String GetSignature() override;
 };
 
 TripleType::TripleType()

@@ -32,11 +32,20 @@ class InterfaceType
     : public Type
 {
 public:
-    inline InterfaceType(
-        /* [in] */ const String& name);
+    inline void SetBaseInterface(
+        /* [in] */ InterfaceType* interface);
+
+    inline void SetOuterInterface(
+        /* [in] */ InterfaceType* interface);
 
     void SetAttributes(
         /* [in] */ const Attributes& attrs);
+
+    inline void AddNestedInterface(
+        /* [in] */ InterfaceType* interface);
+
+    inline void AddConstant(
+        /* [in] */ Constant* constant);
 
     AutoPtr<Constant> FindConstant(
         /* [in] */ const String& name);
@@ -44,26 +53,62 @@ public:
     inline void AddMethod(
         /* [in] */ Method* method);
 
+    AutoPtr<Method> FindMethod(
+        /* [in] */ const String& name,
+        /* [in] */ const String& signature);
+
+    inline int GetMethodNumber();
+
     bool IsInterfaceType() override;
+
+    String GetSignature() override;
 
     String Dump(
         /* [in] */ const String& prefix) override;
 
-    inline static InterfaceType* CastFrom(
+    inline static AutoPtr<InterfaceType> CastFrom(
         /* [in] */ Type* type);
 
+public:
+    static constexpr int METHOD_MAX_NUMBER = 240 + 4;
+
 private:
+    InterfaceType* mBaseInterface = nullptr;
+    InterfaceType* mOuterInterface = nullptr;
     AutoPtr<UUID> mUuid;
     String mVersion;
     String mDescription;
+    std::vector<AutoPtr<InterfaceType>> mNestedInterfaces;
     std::vector<AutoPtr<Constant>> mConstants;
     std::vector<AutoPtr<Method>> mMethods;
 };
 
-InterfaceType::InterfaceType(
-    /* [in] */ const String& name)
+void InterfaceType::SetBaseInterface(
+    /* [in] */ InterfaceType* interface)
 {
-    mName = name;
+    mBaseInterface = interface;
+}
+
+void InterfaceType::SetOuterInterface(
+    /* [in] */ InterfaceType* interface)
+{
+    mOuterInterface = interface;
+}
+
+void InterfaceType::AddNestedInterface(
+    /* [in] */ InterfaceType* interface)
+{
+    if (interface != nullptr) {
+        mNestedInterfaces.push_back(interface);
+    }
+}
+
+void InterfaceType::AddConstant(
+    /* [in] */ Constant* constant)
+{
+    if (constant != nullptr) {
+        mConstants.push_back(constant);
+    }
 }
 
 void InterfaceType::AddMethod(
@@ -74,7 +119,12 @@ void InterfaceType::AddMethod(
     }
 }
 
-InterfaceType* InterfaceType::CastFrom(
+int InterfaceType::GetMethodNumber()
+{
+    return mMethods.size();
+}
+
+AutoPtr<InterfaceType> InterfaceType::CastFrom(
     /* [in] */ Type* type)
 {
     return static_cast<InterfaceType*>(type);

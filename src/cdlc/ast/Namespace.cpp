@@ -50,13 +50,43 @@ AutoPtr<Namespace> Namespace::FindNamespace(
     return nullptr;
 }
 
+void Namespace::AddConstant(
+    /* [in] */ Constant* constant)
+{
+    if (constant != nullptr) {
+        mConstants.push_back(constant);
+        mModule->AddConstant(constant);
+        constant->SetNamespace(this);
+    }
+}
+
+void Namespace::AddEnumerationType(
+    /* [in] */ EnumerationType* enumeration)
+{
+    if (enumeration != nullptr) {
+        mTypes.push_back(enumeration);
+        mModule->AddEnumerationType(enumeration);
+        enumeration->SetNamespace(this);
+    }
+}
+
+void Namespace::AddInterfaceType(
+    /* [in] */ InterfaceType* interface)
+{
+    if (interface != nullptr) {
+        mTypes.push_back(interface);
+        mModule->AddInterfaceType(interface);
+        interface->SetNamespace(this);
+    }
+}
+
 void Namespace::AddType(
     /* [in] */ Type* type)
 {
     if (type != nullptr) {
         mTypes.push_back(type);
-        mModule->mAllTypeMap[type->ToString()] = type;
-        type->SetModule(mModule);
+        mModule->AddType(type);
+        type->SetNamespace(this);
     }
 }
 

@@ -13,3 +13,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //=========================================================================
+
+#include "ast/HANDLEType.h"
+#include "ast/Namespace.h"
+
+namespace cdlc {
+
+String HANDLEType::GetSignature()
+{
+    return "H";
+}
+
+}

@@ -30,6 +30,8 @@ public:
     bool IsLongType() override;
 
     bool IsIntegralType() override;
+
+    String GetSignature() override;
 };
 
 LongType::LongType()

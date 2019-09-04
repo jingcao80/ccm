@@ -14,14 +14,14 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ast/ComponentIDType.h"
+#include "ast/ArrayType.h"
 #include "ast/Namespace.h"
 
 namespace cdlc {
 
-String ComponentIDType::GetSignature()
+String ArrayType::GetSignature()
 {
-    return "M";
+    return "[" + mElementType->GetSignature();
 }
 
 }

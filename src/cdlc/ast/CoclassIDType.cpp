@@ -14,3 +14,14 @@
 // limitations under the License.
 //=========================================================================
 
+#include "ast/CoclassIDType.h"
+#include "ast/Namespace.h"
+
+namespace cdlc {
+
+String CoclassIDType::GetSignature()
+{
+    return "K";
+}
+
+}

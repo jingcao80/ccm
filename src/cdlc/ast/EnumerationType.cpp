@@ -16,8 +16,18 @@
 
 #include "ast/EnumerationType.h"
 #include "ast/Namespace.h"
+#include "util/StringBuilder.h"
 
 namespace cdlc {
+
+void EnumerationType::AddEnumerator(
+    /* [in] */ const String& name,
+    /* [in] */ int value)
+{
+    if (!name.IsEmpty()) {
+        mEnumerators.push_back(new Enumerator(name, value));
+    }
+}
 
 bool EnumerationType::Contains(
     /* [in] */ const String& name)
@@ -33,6 +43,20 @@ bool EnumerationType::Contains(
 bool EnumerationType::IsEnumerationType()
 {
     return true;
+}
+
+String EnumerationType::GetSignature()
+{
+    StringBuilder builder;
+
+    builder.Append("L");
+    if (!mNamespace->IsGlobal()) {
+        builder.Append(mNamespace->ToString().Replace("::", "/"));
+    }
+    builder.Append("/");
+    builder.Append(mName);
+    builder.Append(";");
+    return builder.ToString();
 }
 
 }

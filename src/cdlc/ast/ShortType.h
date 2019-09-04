@@ -28,6 +28,8 @@ public:
     inline ShortType();
 
     bool IsIntegralType() override;
+
+    String GetSignature() override;
 };
 
 ShortType::ShortType()

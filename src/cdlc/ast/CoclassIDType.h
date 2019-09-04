@@ -26,6 +26,8 @@ class CoclassIDType
 {
 public:
     inline CoclassIDType();
+
+    String GetSignature() override;
 };
 
 CoclassIDType::CoclassIDType()

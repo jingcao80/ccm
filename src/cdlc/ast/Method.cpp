@@ -16,8 +16,22 @@
 
 #include "ast/Method.h"
 #include "ast/Namespace.h"
+#include "util/StringBuilder.h"
 
 namespace cdlc {
+
+void Method::BuildSignature()
+{
+    StringBuilder builder;
+
+    builder.Append("(");
+    for (AutoPtr<Parameter> param : mParameters) {
+        builder.Append(param->GetType()->GetSignature());
+    }
+    builder.Append(")");
+    builder.Append(mReturnType != nullptr ? mReturnType->GetSignature() : "E");
+    mSignature = builder.ToString();
+}
 
 String Method::ToString()
 {

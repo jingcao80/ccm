@@ -14,14 +14,41 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ast/ComponentIDType.h"
-#include "ast/Namespace.h"
+#ifndef __CDLC_ARRAYTYPE_H__
+#define __CDLC_ARRAYTYPE_H__
+
+#include "ast/Type.h"
 
 namespace cdlc {
 
-String ComponentIDType::GetSignature()
+class ArrayType
+    : public Type
 {
-    return "M";
+public:
+    inline void SetElementType(
+        /* [in] */ Type* elementType);
+
+    String GetSignature() override;
+
+    inline static AutoPtr<ArrayType> CastFrom(
+        /* [in] */ Type* type);
+
+private:
+    AutoPtr<Type> mElementType;
+};
+
+void ArrayType::SetElementType(
+    /* [in] */ Type* elementType)
+{
+    mElementType = elementType;
+}
+
+AutoPtr<ArrayType> ArrayType::CastFrom(
+    /* [in] */ Type* type)
+{
+    return static_cast<ArrayType*>(type);
 }
 
 }
+
+#endif // __CDLC_ARRAYTYPE_H__

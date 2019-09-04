@@ -24,4 +24,9 @@ bool ByteType::IsIntegralType()
     return true;
 }
 
+String ByteType::GetSignature()
+{
+    return "B";
+}
+
 }

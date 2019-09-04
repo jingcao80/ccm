@@ -28,6 +28,8 @@ public:
     inline ByteType();
 
     bool IsIntegralType() override;
+
+    String GetSignature() override;
 };
 
 ByteType::ByteType()

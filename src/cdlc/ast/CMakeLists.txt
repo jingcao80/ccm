@@ -22,6 +22,7 @@ include_directories(
 set(SOURCES
     AdditiveExpression.cpp
     AndExpression.cpp
+    ArrayType.cpp
     BooleanType.cpp
     ByteType.cpp
     CharType.cpp

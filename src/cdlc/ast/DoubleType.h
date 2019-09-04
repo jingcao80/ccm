@@ -30,6 +30,8 @@ public:
     bool IsDoubleType() override;
 
     bool IsFloatingPointType() override;
+
+    String GetSignature() override;
 };
 
 DoubleType::DoubleType()

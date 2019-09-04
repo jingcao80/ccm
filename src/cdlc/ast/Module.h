@@ -17,6 +17,7 @@
 #ifndef __CDLC_MODULE_H__
 #define __CDLC_MODULE_H__
 
+#include "ast/Constant.h"
 #include "ast/EnumerationType.h"
 #include "ast/Namespace.h"
 #include "ast/Node.h"
@@ -30,6 +31,8 @@ namespace cdlc {
 class Module
     : public Node
 {
+    friend class Namespace;
+
 public:
     inline Module();
 
@@ -60,11 +63,25 @@ public:
         /* [in] */ const String& prefix) override;
 
 private:
-    friend class Namespace;
+    inline void AddConstant(
+        /* [in] */ Constant* constant);
 
+    inline void AddEnumerationType(
+        /* [in] */ EnumerationType* enumeration);
+
+    inline void AddInterfaceType(
+        /* [in] */ InterfaceType* interface);
+
+    void AddType(
+        /* [in] */ Type* type);
+
+private:
     String mName;
     AutoPtr<Namespace> mGlobalNamespace;
 
+    std::vector<AutoPtr<Constant>> mConstants;
+    std::vector<AutoPtr<EnumerationType>> mEnumerations;
+    std::vector<AutoPtr<InterfaceType>> mInterfaces;
     std::unordered_map<String, AutoPtr<Type>, StringHashFunc, StringEqualsFunc> mAllTypeMap;
 };
 
@@ -93,6 +110,27 @@ AutoPtr<Namespace> Module::FindNamespace(
     else {
         return mGlobalNamespace->FindNamespace(nsString);
     }
+}
+
+void Module::AddConstant(
+    /* [in] */ Constant* constant)
+{
+    mConstants.push_back(constant);
+    constant->SetModule(this);
+}
+
+void Module::AddEnumerationType(
+    /* [in] */ EnumerationType* enumeration)
+{
+    mEnumerations.push_back(enumeration);
+    AddType(enumeration);
+}
+
+void Module::AddInterfaceType(
+    /* [in] */ InterfaceType* interface)
+{
+    mInterfaces.push_back(interface);
+    AddType(interface);
 }
 
 }

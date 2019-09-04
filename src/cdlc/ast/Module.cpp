@@ -51,6 +51,13 @@ AutoPtr<Namespace> Module::ParseNamespace(
     return targetNs;
 }
 
+void Module::AddType(
+    /* [in] */ Type* type)
+{
+    mAllTypeMap[type->ToString()] = type;
+    type->SetModule(this);
+}
+
 void Module::AddTemporaryType(
     /* [in] */ Type* type)
 {

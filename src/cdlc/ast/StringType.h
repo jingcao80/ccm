@@ -26,6 +26,8 @@ class StringType
 {
 public:
     inline StringType();
+
+    String GetSignature() override;
 };
 
 StringType::StringType()

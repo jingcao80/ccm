@@ -17,6 +17,9 @@
 #ifndef __CDLC_NAMESPACE_H__
 #define __CDLC_NAMESPACE_H__
 
+#include "ast/Constant.h"
+#include "ast/EnumerationType.h"
+#include "ast/InterfaceType.h"
 #include "ast/Node.h"
 #include "ast/Type.h"
 #include "util/AutoPtr.h"
@@ -35,6 +38,10 @@ public:
         /* [in] */ const String& name,
         /* [in] */ Module* module);
 
+    inline Namespace(
+        /* [in] */ InterfaceType* interfaceWrapped,
+        /* [in] */ Module* module);
+
     inline AutoPtr<Namespace> GetParent();
 
     inline void SetParent(
@@ -45,6 +52,15 @@ public:
 
     AutoPtr<Namespace> FindNamespace(
         /* [in] */ const String& nsString);
+
+    void AddConstant(
+        /* [in] */ Constant* constant);
+
+    void AddEnumerationType(
+        /* [in] */ EnumerationType* enumeration);
+
+    void AddInterfaceType(
+        /* [in] */ InterfaceType* interface);
 
     void AddType(
         /* [in] */ Type* type);
@@ -66,7 +82,10 @@ private:
     String mName;
     Namespace* mParent = nullptr;
     std::vector<AutoPtr<Namespace>> mChildren;
+    std::vector<AutoPtr<Constant>> mConstants;
     std::vector<AutoPtr<Type>> mTypes;
+    bool mIsWrapper = false;
+    InterfaceType* mInterfaceWrapped = nullptr;
 
     Module* mModule = nullptr;
 };
@@ -75,6 +94,15 @@ Namespace::Namespace(
     /* [in] */ const String& name,
     /* [in] */ Module* module)
     : mName(name)
+    , mModule(module)
+{}
+
+Namespace::Namespace(
+    /* [in] */ InterfaceType* interfaceWrapped,
+    /* [in] */ Module* module)
+    : mName(interfaceWrapped->GetName())
+    , mIsWrapper(true)
+    , mInterfaceWrapped(interfaceWrapped)
     , mModule(module)
 {}
 

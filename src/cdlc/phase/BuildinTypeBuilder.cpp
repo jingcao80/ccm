@@ -56,77 +56,62 @@ void BuildinTypeBuilder::BuildPrimitiveType()
 
     // add BooleanType
     type = new BooleanType();
-    type->SetNamespace(ns);
     ns->AddType(type);
 
     // add CharType
     type = new CharType();
-    type->SetNamespace(ns);
     ns->AddType(type);
 
     // add ByteType
     type = new ByteType();
-    type->SetNamespace(ns);
     ns->AddType(type);
 
     // add ShortType
     type = new ShortType();
-    type->SetNamespace(ns);
     ns->AddType(type);
 
     // add IntegerType
     type = new IntegerType();
-    type->SetNamespace(ns);
     ns->AddType(type);
 
     // add LongType
     type = new LongType();
-    type->SetNamespace(ns);
     ns->AddType(type);
 
     // add FloatType
     type = new FloatType();
-    type->SetNamespace(ns);
     ns->AddType(type);
 
     // add DoubleType
     type = new DoubleType();
-    type->SetNamespace(ns);
     ns->AddType(type);
 
     // add StringType
     type = new StringType();
-    type->SetNamespace(ns);
     ns->AddType(type);
 
     // add TripleType
     type = new TripleType();
-    type->SetNamespace(ns);
     ns->AddType(type);
 
     // add HANDLEType
     type = new HANDLEType();
-    type->SetNamespace(ns);
     ns->AddType(type);
 
     // add CoclassIDType
     type = new CoclassIDType();
-    type->SetNamespace(ns);
     ns->AddType(type);
 
     // add ComponentIDType
     type = new ComponentIDType();
-    type->SetNamespace(ns);
     ns->AddType(type);
 
     // add InterfaceIDType
     type = new InterfaceIDType();
-    type->SetNamespace(ns);
     ns->AddType(type);
 
     // add ECodeType
     type = new ECodeType();
-    type->SetNamespace(ns);
     ns->AddType(type);
 }
 
@@ -135,7 +120,8 @@ void BuildinTypeBuilder::BuildIInterface()
     AutoPtr<Namespace> ns = mModule->FindNamespace("como");
 
     // add IInterface
-    AutoPtr<InterfaceType> iinterface = new InterfaceType("IInterface");
+    AutoPtr<InterfaceType> iinterface = new InterfaceType();
+    iinterface->SetName("IInterface");
     iinterface->SetNamespace(ns);
     Attributes attrs;
     attrs.mUuid = "00000000-0000-0000-0000-000000000000";

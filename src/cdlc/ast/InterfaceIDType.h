@@ -26,6 +26,8 @@ class InterfaceIDType
 {
 public:
     inline InterfaceIDType();
+
+    String GetSignature() override;
 };
 
 InterfaceIDType::InterfaceIDType()

@@ -13,3 +13,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //=========================================================================
+
+#include "ast/BooleanType.h"
+#include "ast/Namespace.h"
+
+namespace cdlc {
+
+String BooleanType::GetSignature()
+{
+    return "Z";
+}
+
+}

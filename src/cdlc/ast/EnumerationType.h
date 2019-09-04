@@ -43,19 +43,25 @@ public:
     };
 
 public:
+    void AddEnumerator(
+        /* [in] */ const String& name,
+        /* [in] */ int value);
+
     bool Contains(
         /* [in] */ const String& name);
 
     bool IsEnumerationType() override;
 
-    inline static EnumerationType* CastFrom(
+    String GetSignature() override;
+
+    inline static AutoPtr<EnumerationType> CastFrom(
         /* [in] */ Type* type);
 
 private:
     std::vector<AutoPtr<Enumerator>> mEnumerators;
 };
 
-EnumerationType* EnumerationType::CastFrom(
+AutoPtr<EnumerationType> EnumerationType::CastFrom(
     /* [in] */ Type* type)
 {
     return static_cast<EnumerationType*>(type);

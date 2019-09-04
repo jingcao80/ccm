@@ -30,6 +30,8 @@ public:
     bool IsIntegerType() override;
 
     bool IsIntegralType() override;
+
+    String GetSignature() override;
 };
 
 IntegerType::IntegerType()

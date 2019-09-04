@@ -20,12 +20,6 @@
 
 namespace cdlc {
 
-void Type::SetModule(
-    /* [in] */ Module* module)
-{
-    mModule = module;
-}
-
 void Type::SetNamespace(
     /* [in] */ Namespace* ns)
 {
