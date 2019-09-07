@@ -43,6 +43,8 @@ public:
     inline void SetEnumeratorName(
         /* [in] */ const String& name);
 
+    bool BooleanValue() override;
+
     int IntegerValue() override;
 
     long long int LongValue() override;

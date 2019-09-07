@@ -1,0 +1,142 @@
+//=========================================================================
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//=========================================================================
+
+include "como/core/Errors.cdl"
+include "como/core/Exceptions.cdl"
+include "como/core/IAnnotation.cdl"
+include "como/core/IAppendable.cdl"
+include "como/core/IArray.cdl"
+include "como/core/IArrayHolder.cdl"
+include "como/core/IAutoCloseable.cdl"
+include "como/core/IBoolean.cdl"
+include "como/core/IByte.cdl"
+include "como/core/IChar.cdl"
+include "como/core/ICharSequence.cdl"
+include "como/core/ICloneable.cdl"
+include "como/core/IComparable.cdl"
+include "como/core/IDouble.cdl"
+include "como/core/IFloat.cdl"
+include "como/core/IInteger.cdl"
+include "como/core/IIterable.cdl"
+include "como/core/ILong.cdl"
+include "como/core/INumber.cdl"
+include "como/core/IReadable.cdl"
+include "como/core/IRunnable.cdl"
+include "como/core/IRuntime.cdl"
+include "como/core/ISecurityManager.cdl"
+include "como/core/IShort.cdl"
+include "como/core/IStackTrace.cdl"
+include "como/core/IStackTraceElement.cdl"
+include "como/core/IString.cdl"
+include "como/core/IStringBuffer.cdl"
+include "como/core/IStringBuilder.cdl"
+include "como/core/ISynchronize.cdl"
+include "como/core/ISystem.cdl"
+include "como/core/IThread.cdl"
+include "como/core/IThreadGroup.cdl"
+include "como/core/IThreadLocal.cdl"
+
+namespace como {
+namespace core {
+
+[
+    uuid(bc5be123-34ab-4373-ab98-31c3e3c68b1b),
+    version(0.1.0)
+]
+coclass CArray
+{
+    Constructor(
+        [in] InterfaceID elemId,
+        [in] Long size);
+
+    interface IArray;
+}
+
+[
+    uuid(f608b0cd-d0af-4adb-a2a4-6f241136b992),
+    version(0.1.0)
+]
+coclass CArrayHolder
+{
+    Constructor(
+        [in] Triple array);
+
+    interface IArrayHolder;
+}
+
+[
+    uuid(6cdec0e6-ee66-4ba3-b167-e8d45e029fbd),
+    version(0.1.0)
+]
+coclass CSystem
+{
+    interface ISystem;
+}
+
+[
+    uuid(339a8069-7448-4d12-9c50-d45497fb245b),
+    version(0.1.0)
+]
+coclass CThread
+{
+    Constructor();
+
+    Constructor(
+        [in] IThreadGroup* group,
+        [in] String name,
+        [in] Integer priority,
+        [in] Boolean daemon);
+
+    // @hide
+    Constructor(
+        [in] HANDLE peer);
+
+    interface IRunnable;
+    interface IThread;
+}
+
+[
+    uuid(730c7375-05c3-4b86-933c-ab2808164280),
+    version(0.1.0)
+]
+coclass CThreadGroup
+{
+    // @hide
+    Constructor();
+
+    Constructor(
+        [in] String name);
+
+    Constructor(
+        [in] IThreadGroup* parent,
+        [in] String name);
+
+    interface IThreadGroup;
+}
+
+[
+    uuid(dce1a0c3-b23d-4b89-bdaf-8a1bf581ee44),
+    version(0.1.0)
+]
+coclass CThreadLocal
+{
+    Constructor();
+
+    interface IThreadLocal;
+}
+
+}
+}

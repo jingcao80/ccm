@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,11 +14,11 @@
 // limitations under the License.
 //=========================================================================
 
-interface ccm::io::IFileDescriptor;
-interface ccm::net::IDatagramSocket;
-interface ccm::net::ISocket;
+interface como::io::IFileDescriptor;
+interface como::net::IDatagramSocket;
+interface como::net::ISocket;
 
-namespace ccmrt {
+namespace comort {
 namespace system {
 
 [

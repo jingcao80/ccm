@@ -1,0 +1,79 @@
+//=========================================================================
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//=========================================================================
+
+namespace como {
+namespace util {
+namespace concurrent {
+namespace atomic {
+
+/*
+ * @Involve interface como:core::INumber
+ * @Involve interface como::io::ISerializable
+ */
+[
+    uuid(5c214cc0-991c-45a8-936b-fe940b668d5e),
+    version(0.1.0)
+]
+interface IAtomicInteger
+{
+    AddAndGet(
+        [in] Integer delta,
+        [out] Integer* value);
+
+    CompareAndSet(
+        [in] Integer expect,
+        [in] Integer update,
+        [out] Boolean* succeeded = nullptr);
+
+    DecrementAndGet(
+        [out] Integer* value);
+
+    Get(
+        [out] Integer* value);
+
+    GetAndAdd(
+        [in] Integer delta,
+        [out] Integer* prevValue);
+
+    GetAndDecrement(
+        [out] Integer* prevValue);
+
+    GetAndIncrement(
+        [out] Integer* prevValue);
+
+    GetAndSet(
+        [in] Integer newValue,
+        [out] Integer* prevValue);
+
+    IncrementAndGet(
+        [out] Integer* value);
+
+    LzaySet(
+        [in] Integer value);
+
+    Set(
+        [in] Integer value);
+
+    WeakCompareAndSet(
+        [in] Integer expect,
+        [in] Integer update,
+        [out] Boolean* succeeded = nullptr);
+}
+
+}
+}
+}
+}

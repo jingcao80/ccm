@@ -20,6 +20,11 @@
 
 namespace cdlc {
 
+bool PostfixExpression::BooleanValue()
+{
+    return mBooleanValue;
+}
+
 int PostfixExpression::IntegerValue()
 {
     return mIntegralValue;

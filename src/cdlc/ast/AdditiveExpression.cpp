@@ -19,6 +19,11 @@
 
 namespace cdlc {
 
+bool AdditiveExpression::BooleanValue()
+{
+    return mRightOperand->BooleanValue();
+}
+
 int AdditiveExpression::IntegerValue()
 {
     if (mLeftOperand != nullptr) {

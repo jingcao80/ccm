@@ -17,9 +17,6 @@
 #ifndef __CDLC_NAMESPACE_H__
 #define __CDLC_NAMESPACE_H__
 
-#include "ast/Constant.h"
-#include "ast/EnumerationType.h"
-#include "ast/InterfaceType.h"
 #include "ast/Node.h"
 #include "ast/Type.h"
 #include "util/AutoPtr.h"
@@ -28,17 +25,21 @@
 
 namespace cdlc {
 
+class CoclassType;
+class Constant;
+class EnumerationType;
+class InterfaceType;
 class Module;
 
 class Namespace
     : public Node
 {
 public:
-    inline Namespace(
+    Namespace(
         /* [in] */ const String& name,
         /* [in] */ Module* module);
 
-    inline Namespace(
+    Namespace(
         /* [in] */ InterfaceType* interfaceWrapped,
         /* [in] */ Module* module);
 
@@ -61,6 +62,9 @@ public:
 
     void AddInterfaceType(
         /* [in] */ InterfaceType* interface);
+
+    void AddCoclassType(
+        /* [in] */ CoclassType* klass);
 
     void AddType(
         /* [in] */ Type* type);
@@ -89,22 +93,6 @@ private:
 
     Module* mModule = nullptr;
 };
-
-Namespace::Namespace(
-    /* [in] */ const String& name,
-    /* [in] */ Module* module)
-    : mName(name)
-    , mModule(module)
-{}
-
-Namespace::Namespace(
-    /* [in] */ InterfaceType* interfaceWrapped,
-    /* [in] */ Module* module)
-    : mName(interfaceWrapped->GetName())
-    , mIsWrapper(true)
-    , mInterfaceWrapped(interfaceWrapped)
-    , mModule(module)
-{}
 
 AutoPtr<Namespace> Namespace::GetParent()
 {

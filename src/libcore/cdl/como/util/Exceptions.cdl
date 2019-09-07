@@ -1,0 +1,39 @@
+//=========================================================================
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//=========================================================================
+
+namespace como {
+namespace util {
+
+const Integer E_NO_SUCH_ELEMENT_EXCEPTION = 0x80010900;
+const Integer E_CONCURRENT_MODIFICATION_EXCEPTION = 0x80010901;
+const Integer E_FORMATTER_CLOSED_EXCEPTION = 0x80010902;
+const Integer E_MISSING_FORMAT_ARGUMENT_EXCEPTION = 0x80010903;
+const Integer E_ILLEGAL_FORMAT_PRECISION_EXCEPTION = 0x80010904;
+const Integer E_UNKNOWN_FORMAT_CONVERSION_EXCEPTION = 0x80010905;
+const Integer E_ILLEGAL_FORMAT_WIDTH_EXCEPTION = 0x80010906;
+const Integer E_ILLEGAL_FORMAT_CODE_POINT_EXCEPTION = 0x80010907;
+const Integer E_MISSING_FORMAT_WIDTH_EXCEPTION = 0x80010908;
+const Integer E_ILLEGAL_FORMAT_FLAGS_EXCEPTION = 0x80010909;
+const Integer E_FORMAT_FLAGS_CONVERSION_MISMATCH_EXCEPTION = 0x8001090a;
+const Integer E_ILLEGAL_FORMAT_CONVERSION_EXCEPTION = 0x8001090b;
+const Integer E_DUPLICATE_FORMAT_FLAGS_EXCEPTION = 0x8001090c;
+const Integer E_UNKNOWN_FORMAT_FLAGS_EXCEPTION = 0x8001090d;
+const Integer E_MISSING_RESOURCE_EXCEPTION = 0x8001090e;
+const Integer E_ILLFORMED_LOCALE_EXCEPTION = 0x8001090f;
+const Integer E_LOCALE_SYNTAX_EXCEPTION = 0x80010910;
+
+}
+}

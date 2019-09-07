@@ -19,6 +19,11 @@
 
 namespace cdlc {
 
+bool ExclusiveOrExpression::BooleanValue()
+{
+    return mRightOperand->BooleanValue();
+}
+
 int ExclusiveOrExpression::IntegerValue()
 {
     if (mLeftOperand != nullptr) {

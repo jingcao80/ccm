@@ -17,8 +17,10 @@
 #ifndef __CDLC_MODULE_H__
 #define __CDLC_MODULE_H__
 
+#include "ast/CoclassType.h"
 #include "ast/Constant.h"
 #include "ast/EnumerationType.h"
+#include "ast/InterfaceType.h"
 #include "ast/Namespace.h"
 #include "ast/Node.h"
 #include "ast/Type.h"
@@ -36,11 +38,11 @@ class Module
 public:
     inline Module();
 
+    void SetAttributes(
+        /* [in] */ const Attributes& attrs);
+
     inline void SetName(
         /* [in] */ const String& name);
-
-    inline void AddNamespace(
-        /* [in] */ Namespace* ns);
 
     AutoPtr<Namespace> ParseNamespace(
         /* [in] */ const String& nsString);
@@ -63,6 +65,9 @@ public:
         /* [in] */ const String& prefix) override;
 
 private:
+    inline void AddNamespace(
+        /* [in] */ Namespace* ns);
+
     inline void AddConstant(
         /* [in] */ Constant* constant);
 
@@ -72,16 +77,24 @@ private:
     inline void AddInterfaceType(
         /* [in] */ InterfaceType* interface);
 
+    inline void AddCoclassType(
+        /* [in] */ CoclassType* klass);
+
     void AddType(
         /* [in] */ Type* type);
 
 private:
+    AutoPtr<UUID> mUuid;
+    String mVersion;
+    String mDescription;
+    String mUri;
     String mName;
     AutoPtr<Namespace> mGlobalNamespace;
 
     std::vector<AutoPtr<Constant>> mConstants;
     std::vector<AutoPtr<EnumerationType>> mEnumerations;
     std::vector<AutoPtr<InterfaceType>> mInterfaces;
+    std::vector<AutoPtr<CoclassType>> mKlasses;
     std::unordered_map<String, AutoPtr<Type>, StringHashFunc, StringEqualsFunc> mAllTypeMap;
 };
 
@@ -131,6 +144,13 @@ void Module::AddInterfaceType(
 {
     mInterfaces.push_back(interface);
     AddType(interface);
+}
+
+void Module::AddCoclassType(
+    /* [in] */ CoclassType* klass)
+{
+    mKlasses.push_back(klass);
+    AddType(klass);
 }
 
 }

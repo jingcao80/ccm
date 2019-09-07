@@ -1,0 +1,54 @@
+//=========================================================================
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//=========================================================================
+
+interface como::util::ISet;
+
+namespace como {
+namespace security {
+
+[
+    uuid(598540a9-9845-4be4-ab0e-36f817026101),
+    version(0.1.0)
+]
+interface IProviderService
+{
+    GetAlgorithm(
+        [out] String* algorithm);
+
+    GetType(
+        [out] String* type);
+}
+
+/*
+ * @Involve interface como::util::IProperties;
+ * @Involve interface como::util::IHashtable;
+ * @Involve interface como::util::IDictionary;
+ * @Involve interface como::util::IMap;
+ * @Involve interface como::core::ICloneable;
+ * @Involve interface como::io::ISerializable;
+ */
+[
+    uuid(5175ea7f-5a2b-480e-b8c5-37bef4036c6a),
+    version(0.1.0)
+]
+interface IProvider
+{
+    GetServices(
+        [out] ISet** services);
+}
+
+}
+}

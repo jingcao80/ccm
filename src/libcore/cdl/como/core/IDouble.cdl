@@ -1,0 +1,116 @@
+//=========================================================================
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//=========================================================================
+
+namespace como {
+namespace core {
+
+/*
+ * @Involve interface como::core::INumber
+ * @Involve interface como::core::IComparable
+ * @Involve interface como::io::ISerializable
+ */
+[
+    uuid(6aeffb3e-f757-44b6-a71f-2ddc607f11c8),
+    version(0.1.0)
+]
+interface IDouble
+{
+    /**
+     * A constant holding the positive infinity of type
+     * {@code double}.
+     */
+    const Double POSITIVE_INFINITY = 1.0d / 0.0d;
+
+    /**
+     * A constant holding the negative infinity of type
+     * {@code double}.
+     */
+    const Double NEGATIVE_INFINITY = -1.0d / 0.0d;
+
+    /**
+     * A constant holding a Not-a-Number (NaN) value of type
+     * {@code double}.
+     */
+    const Double NaN = 0.0d / 0.0d;
+
+    /**
+     * A constant holding the largest positive finite value of type
+     * {@code double}.
+     */
+    const Double MAX_VALUE = 1.7976931348623157e+308;
+
+    /**
+     * A constant holding the smallest positive normal value of type
+     * {@code double}.
+     */
+    const Double MIN_NORMAL = 2.2250738585072014E-308;
+
+    /**
+     * A constant holding the smallest positive nonzero value of type
+     * {@code double}.
+     */
+    const Double MIN_VALUE = 4.9e-324;
+
+    /**
+     * Maximum exponent a finite {@code double} variable may have.
+     */
+    const Integer MAX_EXPONENT = 1023;
+
+    /**
+     * Minimum exponent a normalized {@code double} variable may
+     * have.
+     */
+    const Integer MIN_EXPONENT = -1022;
+
+    /**
+     * The number of bits used to represent a {@code double} value.
+     */
+    const Integer SIZE = 64;
+
+    ByteValue(
+        [out] Byte* value);
+
+    CompareTo(
+        [in] IInterface* other,
+        [out] Integer* result);
+
+    DoubleValue(
+        [out] Double* value);
+
+    FloatValue(
+        [out] Float* value);
+
+    GetValue(
+        [out] Double* value);
+
+    IntegerValue(
+        [out] Integer* value);
+
+    IsInfinite(
+        [out] Boolean* result);
+
+    IsNaN(
+        [out] Boolean* result);
+
+    LongValue(
+        [out] Long* value);
+
+    ShortValue(
+        [out] Short* value);
+}
+
+}
+}

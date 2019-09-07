@@ -1,0 +1,57 @@
+//=========================================================================
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//=========================================================================
+
+interface como::util::ICollection;
+interface como::util::IComparator;
+interface como::util::ISet;
+
+namespace como {
+namespace util {
+
+/*
+ * @Involve interface como::util::IMap
+ */
+[
+    uuid(d29b6732-8fdc-45ed-93c1-3fe8207030e1),
+    version(0.1.0)
+]
+interface ISortedMap
+{
+    Comparator(
+        [out] IComparator** comparator);
+
+    FirstKey(
+        [out] IInterface** key);
+
+    HeadMap(
+        [in] IInterface* toKey,
+        [out] ISortedMap** headmap);
+
+    LastKey(
+        [out] IInterface** key);
+
+    SubMap(
+        [in] IInterface* fromKey,
+        [in] IInterface* toKey,
+        [out] ISortedMap** submap);
+
+    TailMap(
+        [in] IInterface* fromKey,
+        [out] ISortedMap** tailmap);
+}
+
+}
+}

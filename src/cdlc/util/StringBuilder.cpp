@@ -16,6 +16,7 @@
 
 #include "util/StringBuilder.h"
 #include "util/Logger.h"
+#include <cstdarg>
 #include <cstdlib>
 #include <cstring>
 
@@ -104,6 +105,27 @@ StringBuilder& StringBuilder::Append(
     }
 
     mBuffer[mPosition++] = c;
+    return *this;
+}
+
+StringBuilder& StringBuilder::AppendFormat(
+    /* [in] */ const char* format ...)
+{
+    va_list args, argss;
+
+    va_start(args, format);
+    va_copy(argss, args);
+    int len = vsnprintf(nullptr, 0, format, args);
+    va_end(args);
+
+    if (!Enlarge(len)) {
+        return *this;
+    }
+
+    vsnprintf(mBuffer + mPosition, len + 1, format, argss);
+    mPosition += len;
+    va_end(argss);
+
     return *this;
 }
 

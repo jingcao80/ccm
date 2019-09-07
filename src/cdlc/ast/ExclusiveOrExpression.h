@@ -27,6 +27,8 @@ class ExclusiveOrExpression
 public:
     inline ExclusiveOrExpression();
 
+    bool BooleanValue() override;
+
     int IntegerValue() override;
 
     long long int LongValue() override;

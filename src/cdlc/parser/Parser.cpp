@@ -91,6 +91,8 @@ bool Parser::ParseFile(
 
     mTokenizer.SetReader(reader);
 
+    EnterBlockContext();
+
     bool result = true;
     tokenInfo = mTokenizer.PeekToken();
     while (tokenInfo.mToken != Token::END_OF_FILE) {
@@ -143,6 +145,8 @@ bool Parser::ParseFile(
         tokenInfo = mTokenizer.PeekToken();
     }
     mTokenizer.GetToken();
+
+    LeaveBlockContext();
 
     return result;
 }
@@ -401,6 +405,7 @@ bool Parser::ParseModule(
 
     mModule = mWorld.GetWorkingModule();
     mModule->SetName(moduleName);
+    mModule->SetAttributes(attrs);
     mCurrentNamespace = mModule->FindNamespace(Namespace::GLOBAL_NAME);
 
     // read '{'
@@ -494,6 +499,13 @@ bool Parser::ParseNamespace()
     // read '{'
     mTokenizer.GetToken();
 
+    AutoPtr<Namespace> ns = mCurrentNamespace->FindNamespace(namespaceName);
+    if (ns == nullptr) {
+        ns = new Namespace(namespaceName, mModule);
+        mCurrentNamespace->AddNamespace(ns);
+    }
+    mCurrentNamespace = ns;
+
     tokenInfo = mTokenizer.PeekToken();
     while (tokenInfo.mToken != Token::BRACES_CLOSE &&
             tokenInfo.mToken != Token::END_OF_FILE) {
@@ -553,6 +565,8 @@ bool Parser::ParseNamespace()
     // read '}'
     mTokenizer.GetToken();
 
+    mCurrentNamespace = mCurrentNamespace->GetParent();
+
     return result;
 }
 
@@ -580,7 +594,7 @@ bool Parser::ParseInterface(
         mTokenizer.GetToken();
         String fullTypeName = interfaceName;
         if (!fullTypeName.Contains("::") && !mCurrentNamespace->IsGlobal()) {
-            fullTypeName = mCurrentNamespace->ToString() + fullTypeName;
+            fullTypeName = mCurrentNamespace->ToString() + "::" + fullTypeName;
         }
         AutoPtr<Type> type = mWorld.FindType(fullTypeName);
         if (type != nullptr) {
@@ -629,6 +643,7 @@ bool Parser::ParseInterface(
     if (interface == nullptr) {
         interface = new InterfaceType();
         interface->SetName(interfaceName);
+        interface->SetNamespace(mCurrentNamespace);
     }
 
     // interface definition
@@ -1335,7 +1350,7 @@ AutoPtr<PostfixExpression> Parser::ParseIdentifier(
             LogError(tokenInfo, message);
             return nullptr;
         }
-        AutoPtr<Constant> constant = InterfaceType::CastFrom(type)->FindConstant(constName);
+        AutoPtr<Constant> constant = InterfaceType::CastFrom(idType)->FindConstant(constName);
         if (constant == nullptr) {
             String message = String::Format("\"%s\" is not a constant of %s",
                     constName.string(), id.string());
@@ -1377,8 +1392,37 @@ AutoPtr<PostfixExpression> Parser::ParseIdentifier(
         else {
             int idx = id.LastIndexOf("::");
             if (idx > 0) {
-                // TODO:
-                abort();
+                String typeName = id.Substring(0, idx);
+                String constName = id.Substring(idx + 2);
+                AutoPtr<Type> type = FindType(typeName);
+                if (type == nullptr) {
+                    String message = String::Format("Type \"%s\" is not found", typeName.string());
+                    LogError(tokenInfo, message);
+                    return nullptr;
+                }
+                if (!type->IsInterfaceType()) {
+                    String message = String::Format("Type \"%s\" is not interface", type->ToString().string());
+                    LogError(tokenInfo, message);
+                    return nullptr;
+                }
+                AutoPtr<Constant> constant = InterfaceType::CastFrom(type)->FindConstant(constName);
+                if (constant == nullptr) {
+                    String message = String::Format("\"%s\" is not a constant of %s",
+                            constName.string(), typeName.string());
+                    LogError(tokenInfo, message);
+                    return nullptr;
+                }
+                if (!constant->GetValue()->GetType()->IsIntegralType()) {
+                    String message = String::Format("Constant \"%s\" is not an integral constant",
+                            id.string());
+                    LogError(tokenInfo, message);
+                    return nullptr;
+                }
+                AutoPtr<PostfixExpression> expr = new PostfixExpression();
+                expr->SetType(type);
+                expr->SetIntegralValue(constant->GetValue()->IntegerValue());
+                expr->SetRadix(constant->GetValue()->GetRadix());
+                return expr;
             }
             String message = String::Format("\"%s\" is not a valid enumerator of %s",
                     id.string(), type->GetName().string());
@@ -1733,12 +1777,27 @@ bool Parser::ParseCoclass(
         result = false;
     }
 
-    result = ParseCoclassBody() && result;
+    AutoPtr<CoclassType> klass = new CoclassType();
+    klass->SetName(className);
+    klass->SetNamespace(mCurrentNamespace);
+
+    AutoPtr<Type> prevType = std::move(mCurrentType);
+    mCurrentType = (Type*)klass.Get();
+
+    result = ParseCoclassBody(klass) && result;
+
+    mCurrentType = std::move(prevType);
+
+    if (result) {
+        klass->SetAttributes(attrs);
+        mCurrentNamespace->AddCoclassType(klass);
+    }
 
     return result;
 }
 
-bool Parser::ParseCoclassBody()
+bool Parser::ParseCoclassBody(
+    /* [in] */ CoclassType* klass)
 {
     bool result = true;
 
@@ -1754,11 +1813,11 @@ bool Parser::ParseCoclassBody()
             tokenInfo.mToken != Token::END_OF_FILE) {
         switch (tokenInfo.mToken) {
             case Token::CONSTRUCTOR: {
-                result = ParseConstructor() && result;
+                result = ParseConstructor(klass) && result;
                 break;
             }
             case Token::INTERFACE: {
-                result = ParseInterface(nullptr) && result;
+                result = ParseInterface(klass) && result;
                 break;
             }
             default: {
@@ -1781,7 +1840,8 @@ bool Parser::ParseCoclassBody()
     return result;
 }
 
-bool Parser::ParseConstructor()
+bool Parser::ParseConstructor(
+    /* [in] */ CoclassType* klass)
 {
     bool result = true;
 
@@ -1794,10 +1854,13 @@ bool Parser::ParseConstructor()
     }
     mTokenizer.GetToken();
 
+    AutoPtr<Method> method = new Method();
+    method->SetName("Constructor");
+
     tokenInfo = mTokenizer.PeekToken();
     while (tokenInfo.mToken != Token::PARENTHESES_CLOSE &&
             tokenInfo.mToken != Token::END_OF_FILE) {
-        result = ParseParameter(nullptr) && result;
+        result = ParseParameter(method) && result;
         tokenInfo = mTokenizer.PeekToken();
         if (tokenInfo.mToken == Token::COMMA) {
             mTokenizer.GetToken();
@@ -1830,6 +1893,7 @@ bool Parser::ParseConstructor()
         tokenInfo = mTokenizer.PeekToken();
         if (tokenInfo.mToken == Token::DELETE) {
             mTokenizer.GetToken();
+            method->SetDeleted(true);
 
             tokenInfo = mTokenizer.PeekToken();
         }
@@ -1843,6 +1907,7 @@ bool Parser::ParseConstructor()
 
     if (tokenInfo.mToken == Token::AMPERSAND) {
         mTokenizer.GetToken();
+        method->SetReference(true);
 
         tokenInfo = mTokenizer.PeekToken();
     }
@@ -1853,11 +1918,21 @@ bool Parser::ParseConstructor()
     }
     mTokenizer.GetToken();
 
+    if (result) {
+        if (klass->FindConstructor(method->GetName(), method->GetSignature()) != nullptr) {
+            String message = String::Format("The Constructor \"%s\" is redeclared.",
+                    method->ToString().string());
+            LogError(tokenInfo, message);
+            return false;
+        }
+        klass->AddConstructor(method);
+    }
+
     return result;
 }
 
 bool Parser::ParseInterface(
-    /* [in] */ void* arg)
+    /* [in] */ CoclassType* klass)
 {
     bool result = true;
 
@@ -1871,6 +1946,12 @@ bool Parser::ParseInterface(
     mTokenizer.GetToken();
 
     String interfaceName = tokenInfo.mStringValue;
+    AutoPtr<InterfaceType> interface = FindInterface(interfaceName);
+    if (interface == nullptr) {
+        String message = String::Format("Interface \"%s\" is not declared.", interfaceName.string());
+        LogError(tokenInfo, message);
+        result = false;
+    }
 
     tokenInfo = mTokenizer.PeekToken();
     if (tokenInfo.mToken != Token::SEMICOLON) {
@@ -1878,6 +1959,10 @@ bool Parser::ParseInterface(
         result = false;
     }
     mTokenizer.GetToken();
+
+    if (result) {
+        klass->AddInterface(interface);
+    }
 
     return result;
 }
@@ -1953,6 +2038,7 @@ bool Parser::ParseEnumeration()
     if (enumeration == nullptr) {
         enumeration = new EnumerationType();
         enumeration->SetName(enumName);
+        enumeration->SetNamespace(mCurrentNamespace);
     }
 
     result = ParseEnumerationBody(enumeration) && result;
@@ -1977,6 +2063,7 @@ bool Parser::ParseEnumerationBody(
     }
     mTokenizer.GetToken();
 
+    int enumeratorValue = 0;
     tokenInfo = mTokenizer.PeekToken();
     while (tokenInfo.mToken != Token::BRACES_CLOSE &&
             tokenInfo.mToken != Token::END_OF_FILE) {
@@ -1990,7 +2077,6 @@ bool Parser::ParseEnumerationBody(
             result = false;
         }
 
-        int enumeratorValue = 0;
         tokenInfo = mTokenizer.PeekToken();
         if (tokenInfo.mToken == Token::ASSIGNMENT) {
             mTokenizer.GetToken();
@@ -2084,8 +2170,108 @@ AutoPtr<InterfaceType> Parser::FindInterface(
 AutoPtr<Type> Parser::FindType(
     /* [in] */ const String& typeName)
 {
-    // TODO:
-    return nullptr;
+    String fullTypeName = typeName;
+    if (!fullTypeName.Contains("::")) {
+        if (mCurrentContext != nullptr) {
+            fullTypeName = mCurrentContext->FindTypeForwardDeclaration(typeName);
+        }
+        if (fullTypeName.IsEmpty()) {
+            AutoPtr<Namespace> ns = mCurrentNamespace;
+            while (ns != nullptr) {
+                fullTypeName = ns->ToString() + "::" + typeName;
+                AutoPtr<Type> type = mModule->FindType(fullTypeName);
+                if (type != nullptr) {
+                    return type;
+                }
+                type = mWorld.FindType(fullTypeName);
+                if (type != nullptr) {
+                    // type = mPool->DeepCopyType(type);
+                    return type;
+                }
+
+                // type = mWorld.FindTypeInExternalModules(fullName);
+                // if (type != nullptr) {
+                //     type = mPool->ShallowCopyType(type);
+                //     return type;
+                // }
+                ns = ns->GetParent();
+            }
+            if (mCurrentType != nullptr) {
+                fullTypeName = mCurrentType->ToString() + "::" + typeName;
+                AutoPtr<Type> type = mModule->FindType(fullTypeName);
+                if (type != nullptr) {
+                    return type;
+                }
+            }
+            return nullptr;
+        }
+        else {
+            AutoPtr<Type> type = mModule->FindType(fullTypeName);
+            if (type != nullptr) {
+                return type;
+            }
+            type = mWorld.FindType(fullTypeName);
+            if (type != nullptr) {
+                // type = mPool->DeepCopyType(type);
+                return type;
+            }
+
+            // type = mWorld.FindTypeInExternalModules(fullName);
+            // if (type != nullptr) {
+            //     type = mPool->ShallowCopyType(type);
+            // }
+            return type;
+        }
+    }
+    else {
+        String nsStr = fullTypeName.Substring(0, fullTypeName.IndexOf("::"));
+        AutoPtr<Type> nsWrappedType = FindType(nsStr);
+        if (nsWrappedType != nullptr && nsWrappedType->IsInterfaceType()) {
+            if (mCurrentContext != nullptr) {
+                fullTypeName = mCurrentContext->FindTypeForwardDeclaration(typeName);
+            }
+            if (fullTypeName.IsEmpty()) {
+                AutoPtr<Namespace> ns = mCurrentNamespace;
+                while (ns != nullptr) {
+                    fullTypeName = ns->ToString() + "::" + typeName;
+                    AutoPtr<Type> type = mModule->FindType(fullTypeName);
+                    if (type != nullptr) {
+                        return type;
+                    }
+                    type = mWorld.FindType(fullTypeName);
+                    if (type != nullptr) {
+                        // type = mPool->DeepCopyType(type);
+                        return type;
+                    }
+
+                    // type = mWorld.FindTypeInExternalModules(fullName);
+                    // if (type != nullptr) {
+                    //     type = mPool->ShallowCopyType(type);
+                    //     return type;
+                    // }
+                    ns = ns->GetParent();
+                }
+                return nullptr;
+            }
+        }
+        else {
+            AutoPtr<Type> type = mModule->FindType(fullTypeName);
+            if (type != nullptr) {
+                return type;
+            }
+            type = mWorld.FindType(fullTypeName);
+            if (type != nullptr) {
+                // type = mPool->DeepCopyType(type);
+                return type;
+            }
+
+            // type = mWorld.FindTypeInExternalModules(fullName);
+            // if (type != nullptr) {
+            //     type = mPool->ShallowCopyType(type);
+            // }
+            return type;
+        }
+    }
 }
 
 void Parser::LogError(

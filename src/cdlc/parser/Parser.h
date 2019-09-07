@@ -20,6 +20,7 @@
 #include "ast/AdditiveExpression.h"
 #include "ast/AndExpression.h"
 #include "ast/Attributes.h"
+#include "ast/CoclassType.h"
 #include "ast/Constant.h"
 #include "ast/EnumerationType.h"
 #include "ast/ExclusiveOrExpression.h"
@@ -105,6 +106,8 @@ public:
 
     bool Parse(
         /* [in] */ const String& filePath);
+
+    inline AutoPtr<Module> GetCompiledModule();
 
 private:
     void Prepare();
@@ -208,12 +211,14 @@ private:
     bool ParseCoclass(
         /* [in] */ Attributes& attrs);
 
-    bool ParseCoclassBody();
+    bool ParseCoclassBody(
+        /* [in] */ CoclassType* klass);
 
-    bool ParseConstructor();
+    bool ParseConstructor(
+        /* [in] */ CoclassType* klass);
 
     bool ParseInterface(
-        /* [in] */ void*);
+        /* [in] */ CoclassType* klass);
 
     bool ParseEnumeration();
 
@@ -253,6 +258,11 @@ private:
     Tokenizer mTokenizer;
     std::vector<Error> mErrors;
 };
+
+AutoPtr<Module> Parser::GetCompiledModule()
+{
+    return mModule;
+}
 
 }
 

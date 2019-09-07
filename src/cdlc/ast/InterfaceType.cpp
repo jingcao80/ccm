@@ -16,6 +16,7 @@
 
 #include "ast/InterfaceType.h"
 #include "ast/Namespace.h"
+#include "util/Properties.h"
 #include "util/StringBuilder.h"
 
 namespace cdlc {
@@ -71,10 +72,44 @@ String InterfaceType::GetSignature()
     return builder.ToString();
 }
 
+String InterfaceType::ToString()
+{
+    return mNamespace->ToString() + "::" + mName;
+}
+
 String InterfaceType::Dump(
     /* [in] */ const String& prefix)
 {
-    return prefix + ToString();
+    StringBuilder builder;
+
+    builder.Append(prefix).Append("Interface[");
+    builder.AppendFormat("name:%s, ", mName.string());
+    builder.AppendFormat("namespace:%s, ", mNamespace->ToString().string());
+    builder.AppendFormat("base:%s, ", mBaseInterface->ToString().string());
+    if (mOuterInterface != nullptr) {
+        builder.AppendFormat("outer:%s, ", mOuterInterface->ToString().string());
+    }
+    builder.AppendFormat("uuid:%s, ", mUuid->ToString().string());
+    builder.AppendFormat("version:%s", mVersion.string());
+    if (!mDescription.IsEmpty()) {
+        builder.AppendFormat(", description:%s", mDescription.string());
+    }
+    builder.Append("]\n");
+
+    for (AutoPtr<InterfaceType> interface : mNestedInterfaces) {
+        String interfaceInfo = String::Format("Interface[name:%s]\n", interface->GetName().string());
+        builder.Append(prefix + Properties::INDENT).Append(interfaceInfo);
+    }
+    for (AutoPtr<Constant> constant : mConstants) {
+        String constantInfo = constant->Dump(prefix + Properties::INDENT);
+        builder.AppendFormat("%s\n", constantInfo.string());
+    }
+    for (AutoPtr<Method> method : mMethods) {
+        String methodInfo = method->Dump(prefix + Properties::INDENT);
+        builder.AppendFormat("%s\n", methodInfo.string());
+    }
+
+    return builder.ToString();
 }
 
 }

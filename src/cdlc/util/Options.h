@@ -32,6 +32,8 @@ public:
 
     inline bool DoCompile() const;
 
+    inline bool DoDumpAST() const;
+
     inline bool HasErrors() const;
 
     inline bool DoShowUsage() const;
@@ -51,6 +53,7 @@ private:
     String mIllegalOptions;
 
     bool mDoCompile = false;
+    bool mDoDumpAST = false;
     bool mShowUsage = false;
     bool mShowVersion = false;
 };
@@ -70,6 +73,11 @@ String Options::GetSourceFile() const
 bool Options::DoCompile() const
 {
     return mDoCompile;
+}
+
+bool Options::DoDumpAST() const
+{
+    return mDoDumpAST;
 }
 
 bool Options::HasErrors() const

@@ -16,6 +16,7 @@
 
 #include "ast/Method.h"
 #include "ast/Namespace.h"
+#include "util/Properties.h"
 #include "util/StringBuilder.h"
 
 namespace cdlc {
@@ -41,7 +42,20 @@ String Method::ToString()
 String Method::Dump(
     /* [in] */ const String& prefix)
 {
-    return prefix + ToString();
+    StringBuilder builder;
+
+    builder.Append(prefix).Append("Method[");
+    builder.AppendFormat("name:%s, ", mName.string());
+    builder.AppendFormat("signature:%s", mSignature.string());
+    builder.Append("]\n");
+    builder.Append(prefix + Properties::INDENT).Append("Return[");
+    builder.AppendFormat("type:%s]\n", mReturnType->ToString().string());
+    for (AutoPtr<Parameter> parameter : mParameters) {
+        String parameterInfo = parameter->Dump(prefix + Properties::INDENT);
+        builder.AppendFormat("%s\n", parameterInfo.string());
+    }
+
+    return builder.ToString();
 }
 
 }

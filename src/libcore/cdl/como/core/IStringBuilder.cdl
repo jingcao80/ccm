@@ -1,0 +1,202 @@
+//=========================================================================
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//=========================================================================
+
+namespace como {
+namespace core {
+
+interface IStringBuffer;
+
+[
+    uuid(29904f3a-9219-4613-b6b2-1fc42ac75eb9),
+    version(0.1.0)
+]
+interface IStringBuilder
+{
+    Append(
+        [in] IInterface* obj);
+
+    Append(
+        [in] String str);
+
+    Append(
+        [in] IStringBuffer* sb);
+
+    Append(
+        [in] ICharSequence* s);
+
+    Append(
+        [in] ICharSequence* s,
+        [in] Integer start,
+        [in] Integer end);
+
+    Append(
+        [in] Array<Char> str);
+
+    Append(
+        [in] Array<Char> str,
+        [in] Integer offset,
+        [in] Integer len);
+
+    Append(
+        [in] Boolean b);
+
+    Append(
+        [in] Integer i);
+
+    Append(
+        [in] Long l);
+
+    Append(
+        [in] Float f);
+
+    Append(
+        [in] Double d);
+
+    Append(
+        [in] Char c);
+
+    Delete(
+        [in] Integer start,
+        [in] Integer end);
+
+    DeleteCharAt(
+        [in] Integer index);
+
+    EnsureCapacity(
+        [in] Integer minimumCapacity);
+
+    GetCapacity(
+        [out] Integer* capacity);
+
+    GetCharAt(
+        [in] Integer index,
+        [out] Char* c);
+
+    GetChars(
+        [in] Integer start,
+        [in] Integer end,
+        [out] Array<Char> dst,
+        [in] Integer dstStart);
+
+    GetLength(
+        [out] Integer* number);
+
+    Replace(
+        [in] Integer start,
+        [in] Integer end,
+        [in] String str);
+
+    Insert(
+        [in] Integer index,
+        [in] Array<Char> str,
+        [in] Integer offset,
+        [in] Integer len);
+
+    Insert(
+        [in] Integer offset,
+        [in] IInterface* obj);
+
+    Insert(
+        [in] Integer offset,
+        [in] String str);
+
+    Insert(
+        [in] Integer offset,
+        [in] Array<Char> str);
+
+    Insert(
+        [in] Integer dstOffset,
+        [in] ICharSequence* s);
+
+    Insert(
+        [in] Integer dstOffset,
+        [in] ICharSequence* s,
+        [in] Integer start,
+        [in] Integer end);
+
+    Insert(
+        [in] Integer offset,
+        [in] Boolean b);
+
+    Insert(
+        [in] Integer offset,
+        [in] Char c);
+
+    Insert(
+        [in] Integer offset,
+        [in] Integer i);
+
+    Insert(
+        [in] Integer offset,
+        [in] Long l);
+
+    Insert(
+        [in] Integer offset,
+        [in] Float f);
+
+    Insert(
+        [in] Integer offset,
+        [in] Double d);
+
+    IndexOf(
+        [in] String str,
+        [out] Integer* idx);
+
+    IndexOf(
+        [in] String str,
+        [in] Integer fromIndex,
+        [out] Integer* idx);
+
+    LastIndexOf(
+        [in] String str,
+        [out] Integer* idx);
+
+    LastIndexOf(
+        [in] String str,
+        [in] Integer fromIndex,
+        [out] Integer* idx);
+
+    Reverse();
+
+    SetCharAt(
+        [in] Integer index,
+        [in] Char ch);
+
+    SetLength(
+        [in] Integer newLength);
+
+    SubSequence(
+        [in] Integer start,
+        [in] Integer end,
+        [out] ICharSequence** subcsq);
+
+    Substring(
+        [in] Integer start,
+        [out] String* str);
+
+    Substring(
+        [in] Integer start,
+        [in] Integer end,
+        [out] String* str);
+
+    ToString(
+        [out] String* str);
+
+    TrimToSize();
+}
+
+}
+}

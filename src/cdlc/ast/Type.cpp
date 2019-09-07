@@ -20,14 +20,6 @@
 
 namespace cdlc {
 
-void Type::SetNamespace(
-    /* [in] */ Namespace* ns)
-{
-    if (ns != nullptr) {
-        mNamespace = ns;
-    }
-}
-
 bool Type::IsBooleanType()
 {
     return false;
@@ -65,7 +57,7 @@ bool Type::IsFloatingPointType()
 
 bool Type::IsNumericType()
 {
-    return IsInterfaceType() || IsFloatingPointType();
+    return IsIntegralType() || IsFloatingPointType();
 }
 
 bool Type::IsHANDLEType()

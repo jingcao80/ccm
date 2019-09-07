@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ namespace libcore {
 namespace io {
 
 /*
- * @Involve interface ccm::core::IAutoCloseable;
+ * @Involve interface como::core::IAutoCloseable;
  */
 [
     uuid(c3142383-5fa7-4fe7-a98e-c5e5bf321c58),

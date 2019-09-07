@@ -1,0 +1,101 @@
+//=========================================================================
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//=========================================================================
+
+namespace como {
+namespace io {
+
+/*
+ * @Involve interface como::io::IBuffer;
+ * @Involve interface como::core::IComparable;
+ * @Involve interface como::core::IAppendable;
+ * @Involve interface como::core::ICharSequence;
+ * @Involve interface como::core::IReadable;
+ */
+[
+    uuid(c1f712ff-c3af-4ac8-9ffa-1439d81831c8),
+    version(0.1.0)
+]
+interface ICharBuffer
+{
+    AsReadOnlyBuffer(
+        [out] ICharBuffer** buffer);
+
+    Compact();
+
+    Duplicate(
+        [out] ICharBuffer** buffer);
+
+    Get(
+        [out] Char* c);
+
+    Get(
+        [in] Integer index,
+        [out] Char* c);
+
+    Get(
+        [out] Array<Char> dst);
+
+    Get(
+        [out] Array<Char> dst,
+        [in] Integer offset,
+        [in] Integer length);
+
+    GetOrder(
+        [out] IByteOrder** bo);
+
+    HasArray(
+        [out] Boolean* result);
+
+    Put(
+        [in] Char c);
+
+    Put(
+        [in] Integer index,
+        [in] Char c);
+
+    Put(
+        [in] Array<Char> src);
+
+    Put(
+        [in] Array<Char> src,
+        [in] Integer offset,
+        [in] Integer length);
+
+    Put(
+        [in] String src);
+
+    Put(
+        [in] String src,
+        [in] Integer start,
+        [in] Integer end);
+
+    Put(
+        [in] ICharBuffer* src);
+
+    Slice(
+        [out] ICharBuffer** buffer);
+
+    ToString(
+        [out] String* desc);
+
+    ToString(
+        [in] Integer start,
+        [in] Integer end,
+        [out] String* desc);
+}
+
+}
+}

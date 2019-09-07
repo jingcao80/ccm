@@ -27,6 +27,7 @@ set(SOURCES
     ByteType.cpp
     CharType.cpp
     CoclassIDType.cpp
+    CoclassType.cpp
     ComponentIDType.cpp
     Constant.cpp
     DoubleType.cpp

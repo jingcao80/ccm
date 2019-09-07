@@ -1,0 +1,161 @@
+//=========================================================================
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//=========================================================================
+
+namespace como {
+namespace math {
+
+/*
+ * @Involve interface como::core::INumber
+ * @Involve interface como::core::IComparable
+ * @Involve interface como::io::ISerializable
+ */
+[
+    uuid(9860031d-a5ad-446b-a7ef-24b75fe6daa1),
+    version(0.1.0)
+]
+interface IBigInteger
+{
+    Abs(
+        [out] IBigInteger** value);
+
+    Add(
+        [in] IBigInteger* value,
+        [out] IBigInteger** result);
+
+    And(
+        [in] IBigInteger* value,
+        [out] IBigInteger** result);
+
+    AndNot(
+        [in] IBigInteger* value,
+        [out] IBigInteger** result);
+
+    BitCount(
+        [out] Integer* count);
+
+    BitLength(
+        [out] Integer* length);
+
+    ClearBit(
+        [in] Integer n,
+        [out] IBigInteger** value);
+
+    Divide(
+        [in] IBigInteger* divisor,
+        [out] IBigInteger** result);
+
+    DivideAndRemainder(
+        [in] IBigInteger* divisor,
+        [out, callee] Array<IBigInteger*>* result);
+
+    FlipBit(
+        [in] Integer n,
+        [out] IBigInteger** value);
+
+    Gcd(
+        [in] IBigInteger* value,
+        [out] IBigInteger** result);
+
+    GetLowestSetBit(
+        [out] Integer* setBit);
+
+    IsProbablePrime(
+        [in] Integer certainty,
+        [out] Boolean* prime);
+
+    Max(
+        [in] IBigInteger* value,
+        [out] IBigInteger** result);
+
+    Min(
+        [in] IBigInteger* value,
+        [out] IBigInteger** result);
+
+    Mod(
+        [in] IBigInteger* m,
+        [out] IBigInteger** result);
+
+    ModInverse(
+        [in] IBigInteger* m,
+        [out] IBigInteger** result);
+
+    ModPow(
+        [in] IBigInteger* exponent,
+        [in] IBigInteger* modulus,
+        [out] IBigInteger** result);
+
+    Multiply(
+        [in] IBigInteger* value,
+        [out] IBigInteger** result);
+
+    Negate(
+        [out] IBigInteger** value);
+
+    NextProbablePrime(
+        [out] IBigInteger** value);
+
+    Not(
+        [out] IBigInteger** value);
+
+    Or(
+        [in] IBigInteger* value,
+        [out] IBigInteger** result);
+
+    Pow(
+        [in] Integer exp,
+        [out] IBigInteger** value);
+
+    Remainder(
+        [in] IBigInteger* divisor,
+        [out] IBigInteger** result);
+
+    SetBit(
+        [in] Integer n,
+        [out] IBigInteger** value);
+
+    ShiftLeft(
+        [in] Integer n,
+        [out] IBigInteger** value);
+
+    ShiftRight(
+        [in] Integer n,
+        [out] IBigInteger** value);
+
+    Signum(
+        [out] Integer* sign);
+
+    Subtract(
+        [in] IBigInteger* value,
+        [out] IBigInteger** result);
+
+    TestBit(
+        [in] Integer n,
+        [out] Boolean* set);
+
+    ToByteArray(
+        [out, callee] Array<Byte>* array);
+
+    ToString(
+        [in] Integer radix,
+        [out] String* value);
+
+    Xor(
+        [in] IBigInteger* value,
+        [out] IBigInteger** result);
+}
+
+}
+}

@@ -40,7 +40,7 @@ public:
 
     inline AutoPtr<Namespace> GetNamespace();
 
-    void SetNamespace(
+    inline void SetNamespace(
         /* [in] */ Namespace* ns);
 
     inline bool IsForwardDeclared();
@@ -113,6 +113,14 @@ void Type::SetName(
 AutoPtr<Namespace> Type::GetNamespace()
 {
     return mNamespace;
+}
+
+void Type::SetNamespace(
+    /* [in] */ Namespace* ns)
+{
+    if (ns != nullptr) {
+        mNamespace = ns;
+    }
 }
 
 bool Type::IsForwardDeclared()

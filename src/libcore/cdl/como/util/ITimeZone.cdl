@@ -1,0 +1,99 @@
+//=========================================================================
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//=========================================================================
+
+interface como::util::IDate;
+interface como::util::ILocale;
+
+namespace como {
+namespace util {
+
+/*
+ * @Involve interface como::io::ISerializable
+ * @Involve interface como::core::ICloneable
+ */
+[
+    uuid(d1094f3a-c45b-4188-a973-266a5ad2e84a),
+    version(0.1.0)
+]
+interface ITimeZone
+{
+    const Integer SHORT = 0;
+
+    const Integer LONG = 1;
+
+    GetID(
+        [out] String* id);
+
+    GetDisplayName(
+        [out] String* name);
+
+    GetDisplayName(
+        [in] ILocale* locale,
+        [out] String* name);
+
+    GetDisplayName(
+        [in] Boolean daylight,
+        [in] Integer style,
+        [out] String* name);
+
+    GetDisplayName(
+        [in] Boolean daylightTime,
+        [in] Integer style,
+        [in] ILocale* locale,
+        [out] String* name);
+
+    GetDSTSavings(
+        [out] Integer* savingTime);
+
+    GetOffset(
+        [in] Long date,
+        [out] Integer* offset);
+
+    GetOffset(
+        [in] Integer era,
+        [in] Integer year,
+        [in] Integer month,
+        [in] Integer day,
+        [in] Integer dayOfWeek,
+        [in] Integer milliseconds,
+        [out] Integer* offset);
+
+    GetRawOffset(
+        [out] Integer* offset);
+
+    HasSameRules(
+        [in] ITimeZone* other,
+        [out] Boolean* result);
+
+    InDaylightTime(
+        [in] IDate* date,
+        [out] Boolean* result);
+
+    ObservesDaylightTime(
+        [out] Boolean* result);
+
+    SetID(
+        [in] String ID);
+
+    SetRawOffset(
+        [in] Integer offsetMillis);
+
+    UseDaylightTime(
+        [out] Boolean* result);
+}
+
+}
+}

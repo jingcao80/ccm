@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,9 +20,9 @@ namespace libcore {
 namespace util {
 
 /*
- * @Involve interface ccm::util::ITimeZone
- * @Involve interface ccm::io::ISerializable
- * @Involve interface ccm::core::ICloneable
+ * @Involve interface como::util::ITimeZone
+ * @Involve interface como::io::ISerializable
+ * @Involve interface como::core::ICloneable
  */
 [
     uuid(b06cc99d-8828-4e83-bb05-3ab04ac4b77b),

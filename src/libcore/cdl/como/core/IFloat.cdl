@@ -1,0 +1,100 @@
+//=========================================================================
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//=========================================================================
+
+namespace como {
+namespace core {
+
+/*
+ * @Involve interface como::core::INumber
+ * @Involve interface como::core::IComparable
+ * @Involve interface como::io::ISerializable
+ */
+[
+    uuid(b39e1aff-9fc5-45b2-850b-a0c070167916),
+    version(0.1.0)
+]
+interface IFloat
+{
+    /**
+     * A constant holding the positive infinity of type
+     * {@code float}.
+     */
+    const Float POSITIVE_INFINITY = 1.0f / 0.0f;
+
+    /**
+     * A constant holding the negative infinity of type
+     * {@code float}.
+     */
+    const Float NEGATIVE_INFINITY = -1.0f / 0.0f;
+
+    /**
+     * A constant holding a Not-a-Number (NaN) value of type
+     * {@code float}.
+     */
+    const Float NaN = 0.0f / 0.0f;
+
+    /**
+     * A constant holding the largest positive finite value of type
+     * {@code float}, (2-2<sup>-23</sup>)&middot;2<sup>127</sup>.
+     */
+    const Float MAX_VALUE = 3.4028235e+38f;
+
+    /**
+     * A constant holding the smallest positive normal value of type
+     * {@code float}, 2<sup>-126</sup>.
+     */
+    const Float MIN_NORMAL = 1.17549435E-38f;
+
+    /**
+     * A constant holding the smallest positive nonzero value of type
+     * {@code float}, 2<sup>-149</sup>.
+     */
+    const Float MIN_VALUE = 1.4e-45f;
+
+    ByteValue(
+        [out] Byte* value);
+
+    CompareTo(
+        [in] IInterface* other,
+        [out] Integer* result);
+
+    DoubleValue(
+        [out] Double* value);
+
+    FloatValue(
+        [out] Float* value);
+
+    GetValue(
+        [out] Float* value);
+
+    IntegerValue(
+        [out] Integer* value);
+
+    IsInfinite(
+        [out] Boolean* infinite);
+
+    IsNaN(
+        [out] Boolean* nan);
+
+    LongValue(
+        [out] Long* value);
+
+    ShortValue(
+        [out] Short* value);
+}
+
+}
+}

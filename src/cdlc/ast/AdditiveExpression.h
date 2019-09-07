@@ -25,6 +25,8 @@ class AdditiveExpression
     : public Expression
 {
 public:
+    bool BooleanValue() override;
+
     int IntegerValue() override;
 
     long long int LongValue() override;

@@ -1,0 +1,863 @@
+//=========================================================================
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//=========================================================================
+
+include "como/util/Exceptions.cdl"
+include "como/util/IArrayList.cdl"
+include "como/util/ICalendar.cdl"
+include "como/util/ICollection.cdl"
+include "como/util/IComparator.cdl"
+include "como/util/ICurrency.cdl"
+include "como/util/IDate.cdl"
+include "como/util/IDeque.cdl"
+include "como/util/IDictionary.cdl"
+include "como/util/IEnumeration.cdl"
+include "como/util/IFormattable.cdl"
+include "como/util/IFormatter.cdl"
+include "como/util/IGregorianCalendar.cdl"
+include "como/util/IHashtable.cdl"
+include "como/util/IHashMap.cdl"
+include "como/util/IHashSet.cdl"
+include "como/util/IIterator.cdl"
+include "como/util/IJapaneseImperialCalendar.cdl"
+include "como/util/ILinkedHashMap.cdl"
+include "como/util/ILinkedHashSet.cdl"
+include "como/util/ILinkedList.cdl"
+include "como/util/IList.cdl"
+include "como/util/IListIterator.cdl"
+include "como/util/ILocale.cdl"
+include "como/util/IMap.cdl"
+include "como/util/INavigableMap.cdl"
+include "como/util/INavigableSet.cdl"
+include "como/util/IProperties.cdl"
+include "como/util/IQueue.cdl"
+include "como/util/IRandom.cdl"
+include "como/util/IRandomAccess.cdl"
+include "como/util/IServiceLoader.cdl"
+include "como/util/ISet.cdl"
+include "como/util/ISimpleTimeZone.cdl"
+include "como/util/ISortedMap.cdl"
+include "como/util/ISortedSet.cdl"
+include "como/util/IStringTokenizer.cdl"
+include "como/util/ITimeZone.cdl"
+include "como/util/ITimeZoneGetter.cdl"
+include "como/util/ITreeMap.cdl"
+include "como/util/ITreeSet.cdl"
+include "como/util/IVector.cdl"
+include "como/util/calendar/IBaseCalendar.cdl"
+include "como/util/calendar/ICalendarDate.cdl"
+include "como/util/calendar/ICalendarSystem.cdl"
+include "como/util/calendar/IEra.cdl"
+include "como/util/calendar/IGregorian.cdl"
+include "como/util/calendar/IJulianCalendar.cdl"
+include "como/util/calendar/ILocalGregorianCalendar.cdl"
+include "como/util/concurrent/IConcurrentHashMap.cdl"
+include "como/util/concurrent/IConcurrentLinkedQueue.cdl"
+include "como/util/concurrent/IConcurrentMap.cdl"
+include "como/util/concurrent/IThreadLocalRandom.cdl"
+include "como/util/concurrent/atomic/IAtomicBoolean.cdl"
+include "como/util/concurrent/atomic/IAtomicInteger.cdl"
+include "como/util/concurrent/atomic/IAtomicLong.cdl"
+include "como/util/locale/ILanguageTag.cdl"
+include "como/util/regex/Exceptions.cdl"
+include "como/util/regex/IMatcher.cdl"
+include "como/util/regex/IMatchResult.cdl"
+include "como/util/regex/IPattern.cdl"
+
+interface como::core::IAppendable;
+interface como::core::IAutoCloseable;
+interface como::core::ICloneable;
+interface como::core::IComparable;
+interface como::core::IIterable;
+interface como::core::INumber;
+interface como::io::ICloseable;
+interface como::io::IFile;
+interface como::io::IFlushable;
+interface como::io::IOutputStream;
+interface como::io::IPrintStream;
+interface como::io::ISerializable;
+interface como::security::IGuard;
+interface como::security::IPermission;
+
+namespace como {
+namespace util {
+
+[
+    uuid(7dbd4e0a-4bf2-4ccb-a4e9-bfe232b40ba4),
+    version(0.1.0)
+]
+coclass CArrayList
+{
+    Constructor();
+
+    Constructor(
+        [in] Integer initialCapacity);
+
+    Constructor(
+        [in] ICollection* c);
+
+    interface IArrayList;
+    interface IList;
+    interface ICollection;
+    interface IRandomAccess;
+    interface IIterable;
+    interface ICloneable;
+    interface ISerializable;
+}
+
+[
+    uuid(57b9bd7b-d0d5-42c5-9784-202614517a4f),
+    version(0.1.0)
+]
+coclass CDate
+{
+    Constructor();
+
+    Constructor(
+        [in] Long date);
+
+    Constructor(
+        [in] Integer year,
+        [in] Integer month,
+        [in] Integer date);
+
+    Constructor(
+        [in] Integer year,
+        [in] Integer month,
+        [in] Integer date,
+        [in] Integer hrs,
+        [in] Integer min);
+
+    Constructor(
+        [in] Integer year,
+        [in] Integer month,
+        [in] Integer date,
+        [in] Integer hrs,
+        [in] Integer min,
+        [in] Integer sec);
+
+    Constructor(
+        [in] String s);
+
+    interface IDate;
+    interface ICloneable;
+    interface IComparable;
+    interface ISerializable;
+}
+
+[
+    uuid(ca21100d-664d-4cf1-af77-48c252def9a2),
+    version(0.1.0)
+]
+coclass CFormatter
+{
+    Constructor();
+
+    Constructor(
+        [in] IAppendable* a);
+
+    Constructor(
+        [in] ILocale* l);
+
+    Constructor(
+        [in] IAppendable* a,
+        [in] ILocale* l);
+
+    Constructor(
+        [in] String fileName);
+
+    Constructor(
+        [in] String fileName,
+        [in] String csn);
+
+    Constructor(
+        [in] String fileName,
+        [in] String csn,
+        [in] ILocale* l);
+
+    Constructor(
+        [in] IFile* file);
+
+    Constructor(
+        [in] IFile* file,
+        [in] String csn);
+
+    Constructor(
+        [in] IFile* file,
+        [in] String csn,
+        [in] ILocale* l);
+
+    Constructor(
+        [in] IPrintStream* ps);
+
+    Constructor(
+        [in] IOutputStream* os);
+
+    Constructor(
+        [in] IOutputStream* os,
+        [in] String csn);
+
+    Constructor(
+        [in] IOutputStream* os,
+        [in] String csn,
+        [in] ILocale* l);
+
+    interface IFormatter;
+    interface ICloseable;
+    interface IFlushable;
+    interface IAutoCloseable;
+}
+
+[
+    uuid(e3a4ed7a-c706-4a8a-9116-2c9fcfe97a25),
+    version(0.1.0)
+]
+coclass CGregorianCalendar
+{
+    Constructor();
+
+    Constructor(
+        [in] ITimeZone* zone);
+
+    Constructor(
+        [in] ILocale* locale);
+
+    Constructor(
+        [in] ITimeZone* zone,
+        [in] ILocale* locale);
+
+    Constructor(
+        [in] Integer year,
+        [in] Integer month,
+        [in] Integer dayOfMonth);
+
+    Constructor(
+        [in] Integer year,
+        [in] Integer month,
+        [in] Integer dayOfMonth,
+        [in] Integer hourOfDay,
+        [in] Integer minute);
+
+    Constructor(
+        [in] Integer year,
+        [in] Integer month,
+        [in] Integer dayOfMonth,
+        [in] Integer hourOfDay,
+        [in] Integer minute,
+        [in] Integer second);
+
+    interface IGregorianCalendar;
+    interface ICalendar;
+    interface ISerializable;
+    interface ICloneable;
+    interface IComparable;
+}
+
+[
+    uuid(afe87a5a-0e0b-4c33-975e-2ec5caa60afc),
+    version(0.1.0)
+]
+coclass CHashMap
+{
+    Constructor();
+
+    Constructor(
+        [in] Integer initialCapacity);
+
+    Constructor(
+        [in] IMap* m);
+
+    Constructor(
+        [in] Integer initialCapacity,
+        [in] Float loadFactor);
+
+    interface IHashMap;
+    interface IMap;
+    interface ICloneable;
+    interface ISerializable;
+}
+
+[
+    uuid(3b1f6a9d-3d2b-43ab-b61f-caa766e84303),
+    version(0.1.0)
+]
+coclass CHashSet
+{
+    Constructor();
+
+    Constructor(
+        [in] ICollection* c);
+
+    Constructor(
+        [in] Integer initialCapacity);
+
+    Constructor(
+        [in] Integer initialCapacity,
+        [in] Float loadFactor);
+
+    Constructor(
+        [in] Integer initialCapacity,
+        [in] Float loadFactor,
+        [in] Boolean dummy);
+
+    interface IHashSet;
+    interface ISet;
+    interface ICollection;
+    interface IIterable;
+    interface ISerializable;
+    interface ICloneable;
+}
+
+[
+    uuid(10c87f0c-91e6-4fa1-905e-8ce9f513318f),
+    version(0.1.0)
+]
+coclass CHashtable
+{
+    Constructor();
+
+    Constructor(
+        [in] Integer initialCapacity);
+
+    Constructor(
+        [in] Integer initialCapacity,
+        [in] Float loadFactor);
+
+    Constructor(
+        [in] IMap* t);
+
+    interface IHashtable;
+    interface IDictionary;
+    interface IMap;
+    interface ICloneable;
+    interface ISerializable;
+}
+
+[
+    uuid(737c1ff9-c4b3-4d55-a67f-160a411d289b),
+    version(0.1.0)
+]
+coclass CLinkedHashMap
+{
+    Constructor();
+
+    Constructor(
+        [in] Integer initialCapacity);
+
+    Constructor(
+        [in] Integer initialCapacity,
+        [in] Float loadFactor);
+
+    Constructor(
+        [in] Integer initialCapacity,
+        [in] Float loadFactor,
+        [in] Boolean accessOrder);
+
+    Constructor(
+        [in] IMap* m);
+
+    interface ILinkedHashMap;
+    interface IHashMap;
+    interface IMap;
+    interface ICloneable;
+    interface ISerializable;
+}
+
+[
+    uuid(2a5b0a37-7877-4ee5-9b3a-439538f70354),
+    version(0.1.0)
+]
+coclass CLinkedHashSet
+{
+    Constructor();
+
+    Constructor(
+        [in] ICollection* c);
+
+    Constructor(
+        [in] Integer initialCapacity);
+
+    Constructor(
+        [in] Integer initialCapacity,
+        [in] Float loadFactor);
+
+    interface ILinkedHashSet;
+    interface IHashSet;
+    interface ISet;
+    interface ICollection;
+    interface IIterable;
+    interface ISerializable;
+    interface ICloneable;
+}
+
+[
+    uuid(60934bce-6b73-44c8-bff3-50916275db23),
+    version(0.1.0)
+]
+coclass CLinkedList
+{
+    Constructor();
+
+    Constructor(
+        [in] ICollection* c);
+
+    interface ILinkedList;
+    interface IList;
+    interface ICollection;
+    interface IDeque;
+    interface IQueue;
+    interface IIterable;
+}
+
+[
+    uuid(d64e331d-41f4-40b1-b71b-7492ffc7f5b2),
+    version(0.1.0)
+]
+coclass CLocale
+{
+    Constructor(
+        [in] String language,
+        [in] String country,
+        [in] String variant);
+
+    Constructor(
+        [in] String language,
+        [in] String country);
+
+    Constructor(
+        [in] String language);
+
+    interface ILocale;
+    interface ISerializable;
+    interface ICloneable;
+}
+
+[
+    uuid(755282d7-1444-44e3-be80-6260508875d3),
+    version(0.1.0)
+]
+coclass CLocaleBuilder
+{
+    Constructor();
+
+    interface ILocaleBuilder;
+}
+
+[
+    uuid(2f6a7390-6aed-4f7d-863e-3f007635ba14),
+    version(0.1.0)
+]
+coclass CProperties
+{
+    Constructor();
+
+    Constructor(
+        [in] IProperties* defaults);
+
+    interface IProperties;
+    interface IHashtable;
+    interface IDictionary;
+    interface IMap;
+    interface ICloneable;
+    interface ISerializable;
+}
+
+[
+    uuid(0ce2245f-c9d7-4a24-8fda-56ab5d38ea18),
+    version(0.1.0)
+]
+coclass CPropertyPermission
+{
+    Constructor(
+        [in] String name,
+        [in] String actioins);
+
+    interface IPermission;
+    interface IGuard;
+    interface ISerializable;
+}
+
+[
+    uuid(1d590d6f-70ee-497a-b8a9-e99212e04f53),
+    version(0.1.0)
+]
+coclass CRandom
+{
+    Constructor();
+
+    Constructor(
+        [in] Long seed);
+
+    interface IRandom;
+    interface ISerializable;
+}
+
+[
+    uuid(4a6bdbee-a9dc-4269-b4dc-b18df80fd8a2),
+    version(0.1.0)
+]
+coclass CSimpleEntry
+{
+    Constructor(
+        [in] IInterface* key,
+        [in] IInterface* value);
+
+    Constructor(
+        [in] IMapEntry* entry);
+
+    interface IMapEntry;
+    interface ISerializable;
+}
+
+[
+    uuid(0546ef75-6292-4d8d-a227-5e53f11419ae),
+    version(0.1.0)
+]
+coclass CSimpleImmutableEntry
+{
+    Constructor(
+        [in] IInterface* key,
+        [in] IInterface* value);
+
+    Constructor(
+        [in] IMapEntry* entry);
+
+    interface IMapEntry;
+    interface ISerializable;
+}
+
+[
+    uuid(23da10ba-6998-4274-9e3e-f44bfbeaf27b),
+    version(0.1.0)
+]
+coclass CSimpleTimeZone
+{
+    Constructor(
+        [in] Integer rawOffset,
+        [in] String id);
+
+    Constructor(
+        [in] Integer rawOffset,
+        [in] String id,
+        [in] Integer startMonth,
+        [in] Integer startDay,
+        [in] Integer startDayOfWeek,
+        [in] Integer startTime,
+        [in] Integer endMonth,
+        [in] Integer endDay,
+        [in] Integer endDayOfWeek,
+        [in] Integer endTime);
+
+    Constructor(
+        [in] Integer rawOffset,
+        [in] String id,
+        [in] Integer startMonth,
+        [in] Integer startDay,
+        [in] Integer startDayOfWeek,
+        [in] Integer startTime,
+        [in] Integer endMonth,
+        [in] Integer endDay,
+        [in] Integer endDayOfWeek,
+        [in] Integer endTime,
+        [in] Integer dstSavings);
+
+    Constructor(
+        [in] Integer rawOffset,
+        [in] String id,
+        [in] Integer startMonth,
+        [in] Integer startDay,
+        [in] Integer startDayOfWeek,
+        [in] Integer startTime,
+        [in] Integer startTimeMode,
+        [in] Integer endMonth,
+        [in] Integer endDay,
+        [in] Integer endDayOfWeek,
+        [in] Integer endTime,
+        [in] Integer endTimeMode,
+        [in] Integer dstSavings);
+
+    interface ISimpleTimeZone;
+    interface ITimeZone;
+    interface ISerializable;
+    interface ICloneable;
+}
+
+[
+    uuid(6858c0ba-e3a0-48fd-8f22-bbdc4503d83d),
+    version(0.1.0)
+]
+coclass CStringTokenizer
+{
+    Constructor(
+        [in] String str,
+        [in] String delim,
+        [in] Boolean returnDelims);
+
+    Constructor(
+        [in] String str,
+        [in] String delim);
+
+    Constructor(
+        [in] String str);
+
+    interface IStringTokenizer;
+    interface IEnumeration;
+}
+
+[
+    uuid(3ef0ae4d-d83b-453f-aeee-646d84b7538b),
+    version(0.1.0)
+]
+coclass CTreeMap
+{
+    Constructor();
+
+    Constructor(
+        [in] IComparator* comparator);
+
+    Constructor(
+        [in] IMap* m);
+
+    Constructor(
+        [in] ISortedMap* m);
+
+    interface ITreeMap;
+    interface INavigableMap;
+    interface ISortedMap;
+    interface IMap;
+    interface ICloneable;
+    interface ISerializable;
+}
+
+[
+    uuid(22c0eedd-c096-4a9e-be93-0b9e6261fd39),
+    version(0.1.0)
+]
+coclass CTreeSet
+{
+    Constructor();
+
+    Constructor(
+        [in] IComparator* comparator);
+
+    Constructor(
+        [in] ICollection* c);
+
+    Constructor(
+        [in] ISortedSet* s);
+
+    interface ITreeSet;
+    interface INavigableSet;
+    interface ISortedSet;
+    interface ISet;
+    interface ICollection;
+    interface IIterable;
+    interface ICloneable;
+    interface ISerializable;
+}
+
+[
+    uuid(a2ff11fd-ca23-4c88-b8c9-3802ab8935de),
+    version(0.1.0)
+]
+coclass CVector
+{
+    Constructor();
+
+    Constructor(
+        [in] Integer initialCapacity);
+
+    Constructor(
+        [in] Integer initialCapacity,
+        [in] Integer capacityIncrement);
+
+    Constructor(
+        [in] ICollection* c);
+
+    interface IVector;
+    interface IList;
+    interface ICollection;
+    interface IRandomAccess;
+    interface IIterable;
+    interface ICloneable;
+    interface ISerializable;
+}
+
+namespace calendar {
+
+[
+    uuid(40eab8b9-84da-4399-a171-ce260a17204a),
+    version(0.1.0)
+]
+coclass CEra
+{
+    Constructor(
+        [in] String name,
+        [in] String abbr,
+        [in] Long since,
+        [in] Boolean localTime);
+
+    interface IEra;
+}
+
+[
+    uuid(f726de31-d4f4-440b-b8a5-dfb25fea88d2),
+    version(0.1.0)
+]
+coclass CGregorian
+{
+    // @hide
+    Constructor();
+
+    interface IGregorian;
+    interface IBaseCalendar;
+    interface ICalendarSystem;
+}
+
+[
+    uuid(d6038b88-1454-4a8a-a17d-dbf16151a36b),
+    version(0.1.0)
+]
+coclass CJulianCalendar
+{
+    // @hide
+    Constructor();
+
+    interface IJulianCalendar;
+    interface IBaseCalendar;
+    interface ICalendarSystem;
+}
+
+[
+    uuid(4b4a5802-2e14-45cf-9894-2c9645972a5c),
+    version(0.1.0)
+]
+coclass CLocalGregorianCalendar
+{
+    // @hide
+    Constructor(
+        [in] String name,
+        [in] Array<IEra*> eras);
+
+    interface ILocalGregorianCalendar;
+    interface IBaseCalendar;
+    interface ICalendarSystem;
+}
+
+}
+
+namespace concurrent {
+
+[
+    uuid(eb235f4e-904f-4534-97a8-e5a70cee8846),
+    version(0.1.0)
+]
+coclass CConcurrentLinkedQueue
+{
+    Constructor();
+
+    Constructor(
+        [in] ICollection* c);
+
+    interface IConcurrentLinkedQueue;
+    interface IQueue;
+    interface ICollection;
+    interface IIterable;
+}
+
+[
+    uuid(37a99b95-311c-45b0-8033-c6e0aca4c502),
+    version(0.1.0)
+]
+coclass CConcurrentHashMap
+{
+    Constructor();
+
+    Constructor(
+        [in] Integer initialCapacity);
+
+    Constructor(
+        [in] Integer initialCapacity,
+        [in] Float loadFactor);
+
+    Constructor(
+        [in] Integer initialCapacity,
+        [in] Float loadFactor,
+        [in] Integer concurrencyLevel);
+
+    Constructor(
+        [in] IMap* m);
+
+    interface IConcurrentHashMap;
+    interface IConcurrentMap;
+    interface IMap;
+    interface ISerializable;
+}
+
+namespace atomic {
+
+[
+    uuid(c3571f5c-0aa7-4a5c-9347-d6446c175271),
+    version(0.1.0)
+]
+coclass CAtomicBoolean
+{
+    Constructor();
+
+    Constructor(
+        [in] Boolean initialValue);
+
+    interface IAtomicBoolean;
+    interface ISerializable;
+}
+
+[
+    uuid(37e94445-0ee6-460f-9105-4afed59d6586),
+    version(0.1.0)
+]
+coclass CAtomicInteger
+{
+    Constructor();
+
+    Constructor(
+        [in] Integer initialValue);
+
+    interface IAtomicInteger;
+    interface INumber;
+    interface ISerializable;
+}
+
+[
+    uuid(067d7bcc-d79c-43be-ada6-459adf04619e),
+    version(0.1.0)
+]
+coclass CAtomicLong
+{
+    Constructor();
+
+    Constructor(
+        [in] Long initialValue);
+
+    interface IAtomicLong;
+    interface INumber;
+    interface ISerializable;
+}
+
+}
+
+}
+
+}
+}

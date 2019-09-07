@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,13 +14,13 @@
 // limitations under the License.
 //=========================================================================
 
-include "ccmrt/system/IBlockGuard.cdl"
-include "ccmrt/system/ICloseGuard.cdl"
-include "ccmrt/system/ISocketTagger.cdl"
+include "comort/system/IBlockGuard.cdl"
+include "comort/system/ICloseGuard.cdl"
+include "comort/system/ISocketTagger.cdl"
 
-interface ccm::IClassLoader;
+interface como::IClassLoader;
 
-namespace ccmrt {
+namespace comort {
 namespace system {
 
 [

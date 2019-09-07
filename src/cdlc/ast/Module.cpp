@@ -15,8 +15,19 @@
 //=========================================================================
 
 #include "ast/Module.h"
+#include "util/Properties.h"
+#include "util/StringBuilder.h"
 
 namespace cdlc {
+
+void Module::SetAttributes(
+    /* [in] */ const Attributes& attrs)
+{
+    mUuid = UUID::Parse(attrs.mUuid);
+    mVersion = attrs.mVersion;
+    mDescription = attrs.mDescription;
+    mUri = attrs.mUri;
+}
 
 AutoPtr<Namespace> Module::ParseNamespace(
     /* [in] */ const String& nsString)
@@ -93,13 +104,54 @@ AutoPtr<Type> Module::FindType(
 
 String Module::ToString()
 {
-    return "Module";
+    StringBuilder builder;
+
+    builder.Append("Module[");
+    builder.AppendFormat("name:%s, ", mName.string());
+    builder.AppendFormat("uuid:%s, ", mUuid->ToString().string());
+    builder.AppendFormat("uri:%s", mUri.string());
+    builder.Append("]\n");
+    return builder.ToString();
 }
 
 String Module::Dump(
     /* [in] */ const String& prefix)
 {
-    return prefix + ToString();
+    StringBuilder builder;
+
+    builder.Append(prefix).Append("Module[");
+    builder.AppendFormat("name:%s, ", mName.string());
+    builder.AppendFormat("uuid:%s, ", mUuid->ToString().string());
+    builder.AppendFormat("uri:%s", mUri.string());
+    if (!mDescription.IsEmpty()) {
+        builder.AppendFormat(", description:%s", mDescription.string());
+    }
+    builder.Append("]\n");
+
+    for (AutoPtr<Constant> constant : mConstants) {
+        String constantInfo = constant->Dump(prefix + Properties::INDENT);
+        builder.AppendFormat("%s\n", constantInfo.string());
+    }
+    for (AutoPtr<EnumerationType> enumeration : mEnumerations) {
+        if (enumeration->IsForwardDeclared()) {
+            continue;
+        }
+        String enumerationInfo = enumeration->Dump(prefix + Properties::INDENT);
+        builder.AppendFormat("%s\n", enumerationInfo.string());
+    }
+    for (AutoPtr<InterfaceType> interface : mInterfaces) {
+        if (interface->IsForwardDeclared()) {
+            continue;
+        }
+        String interfaceInfo = interface->Dump(prefix + Properties::INDENT);
+        builder.AppendFormat("%s\n", interfaceInfo.string());
+    }
+    for (AutoPtr<CoclassType> klass : mKlasses) {
+        String klassInfo = klass->Dump(prefix + Properties::INDENT);
+        builder.AppendFormat("%s\n", klassInfo.string());
+    }
+
+    return builder.ToString();
 }
 
 }

@@ -1,0 +1,79 @@
+//=========================================================================
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//=========================================================================
+
+interface como::math::IBigInteger;
+
+namespace como {
+namespace misc {
+
+[
+    uuid(c73b8a00-75d5-4c5b-a2e1-cd34e8c0fb35),
+    version(0.1.0)
+]
+interface IFDBigInteger
+{
+    AddAndCmp(
+        [in] IFDBigInteger* x,
+        [in] IFDBigInteger* y,
+        [out] Integer* result);
+
+    Cmp(
+        [in] IFDBigInteger* other,
+        [out] Integer* result);
+
+    CmpPow52(
+        [in] Integer p5,
+        [in] Integer p2,
+        [out] Integer* result);
+
+    GetNormalizationBias(
+        [out] Integer* bias);
+
+    LeftInplaceSub(
+        [in] IFDBigInteger* subtrahend,
+        [out] IFDBigInteger** value);
+
+    LeftShift(
+        [in] Integer shift,
+        [out] IFDBigInteger** value);
+
+    MakeImmutable();
+
+    MultBy10(
+        [out] IFDBigInteger** value);
+
+    MultByPow52(
+        [in] Integer p5,
+        [in] Integer p2,
+        [out] IFDBigInteger** value);
+
+    QuoRemIteration(
+        [in] IFDBigInteger* s,
+        [out] Integer* q);
+
+    RightInplaceSub(
+        [in] IFDBigInteger* subtrahend,
+        [out] IFDBigInteger** value);
+
+    ToBigInteger(
+        [out] IBigInteger** value);
+
+    ToHexString(
+        [out] String* str);
+}
+
+}
+}

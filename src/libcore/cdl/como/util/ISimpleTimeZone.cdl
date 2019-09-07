@@ -1,0 +1,93 @@
+//=========================================================================
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//=========================================================================
+
+namespace como {
+namespace util {
+
+/*
+ * @Involve interface como::util::ITimeZone
+ * @Involve interface como::io::ISerializable
+ * @Involve interface como::core::ICloneable
+ */
+[
+    uuid(2a48ddd4-009a-4f55-86bd-825b421ead3c),
+    version(0.1.0)
+]
+interface ISimpleTimeZone
+{
+    /**
+     * Constant for a mode of start or end time specified as wall clock
+     * time.  Wall clock time is standard time for the onset rule, and
+     * daylight time for the end rule.
+     */
+    const Integer WALL_TIME = 0; // Zero for backward compatibility
+
+    /**
+     * Constant for a mode of start or end time specified as standard time.
+     */
+    const Integer STANDARD_TIME = 1;
+
+    /**
+     * Constant for a mode of start or end time specified as UTC. European
+     * Union rules are specified as UTC time, for example.
+     */
+    const Integer UTC_TIME = 2;
+
+    SetDSTSavings(
+        [in] Integer millisSavedDuringDST);
+
+    SetEndRule(
+        [in] Integer endMonth,
+        [in] Integer endDay,
+        [in] Integer endTime);
+
+    SetEndRule(
+        [in] Integer endMonth,
+        [in] Integer endDay,
+        [in] Integer endDayOfWeek,
+        [in] Integer endTime);
+
+    SetEndRule(
+        [in] Integer endMonth,
+        [in] Integer endDay,
+        [in] Integer endDayOfWeek,
+        [in] Integer endTime,
+        [in] Boolean after);
+
+    SetStartRule(
+        [in] Integer startMonth,
+        [in] Integer startDay,
+        [in] Integer startTime);
+
+    SetStartRule(
+        [in] Integer startMonth,
+        [in] Integer startDay,
+        [in] Integer startDayOfWeek,
+        [in] Integer startTime);
+
+    SetStartRule(
+        [in] Integer startMonth,
+        [in] Integer startDay,
+        [in] Integer startDayOfWeek,
+        [in] Integer startTime,
+        [in] Boolean after);
+
+    SetStartYear(
+        [in] Integer year);
+}
+
+}
+}

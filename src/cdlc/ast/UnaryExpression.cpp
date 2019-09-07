@@ -19,6 +19,25 @@
 
 namespace cdlc {
 
+bool UnaryExpression::BooleanValue()
+{
+    if (mLeftOperand != nullptr) {
+        return mLeftOperand->BooleanValue();
+    }
+    else if (mRightOperand != nullptr) {
+        switch (mOperator) {
+            case OPERATOR_NOT:
+                return ! mRightOperand->BooleanValue();
+            case OPERATOR_POSITIVE:
+            case OPERATOR_NEGATIVE:
+            case OPERATOR_COMPLIMENT:
+            default:
+                return false;
+        }
+    }
+    return false;
+}
+
 int UnaryExpression::IntegerValue()
 {
     if (mLeftOperand != nullptr) {

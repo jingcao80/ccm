@@ -1,0 +1,286 @@
+//=========================================================================
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//=========================================================================
+
+interface como::util::IDate;
+interface como::util::ILocale;
+interface como::util::IMap;
+interface como::util::ITimeZone;
+
+namespace como {
+namespace util {
+
+/*
+ * @Involve interface como::io::ISerializable
+ * @Involve interface como::core::ICloneable
+ * @Involve interface como::core::IComparable
+ */
+[
+    uuid(837f48fc-ccf7-4098-90cb-d02a3b83ef2f),
+    version(0.1.0)
+]
+interface ICalendar
+{
+    const Integer ERA = 0;
+
+    const Integer YEAR = 1;
+
+    const Integer MONTH = 2;
+
+    const Integer WEEK_OF_YEAR = 3;
+
+    const Integer WEEK_OF_MONTH = 4;
+
+    const Integer DATE = 5;
+
+    const Integer DAY_OF_MONTH = 5;
+
+    const Integer DAY_OF_YEAR = 6;
+
+    const Integer DAY_OF_WEEK = 7;
+
+    const Integer DAY_OF_WEEK_IN_MONTH = 8;
+
+    const Integer AM_PM = 9;
+
+    const Integer HOUR = 10;
+
+    const Integer HOUR_OF_DAY = 11;
+
+    const Integer MINUTE = 12;
+
+    const Integer SECOND = 13;
+
+    const Integer MILLISECOND = 14;
+
+    const Integer ZONE_OFFSET = 15;
+
+    const Integer DST_OFFSET = 16;
+
+    const Integer FIELD_COUNT = 17;
+
+    const Integer SUNDAY = 1;
+
+    const Integer MONDAY = 2;
+
+    const Integer TUESDAY = 3;
+
+    const Integer WEDNESDAY = 4;
+
+    const Integer THURSDAY = 5;
+
+    const Integer FRIDAY = 6;
+
+    const Integer SATURDAY = 7;
+
+    const Integer JANUARY = 0;
+
+    const Integer FEBRUARY = 1;
+
+    const Integer MARCH = 2;
+
+    const Integer APRIL = 3;
+
+    const Integer MAY = 4;
+
+    const Integer JUNE = 5;
+
+    const Integer JULY = 6;
+
+    const Integer AUGUST = 7;
+
+    const Integer SEPTEMBER = 8;
+
+    const Integer OCTOBER = 9;
+
+    const Integer NOVEMBER = 10;
+
+    const Integer DECEMBER = 11;
+
+    const Integer UNDECIMBER = 12;
+
+    const Integer AM = 0;
+
+    const Integer PM = 1;
+
+    const Integer ALL_STYLES = 0;
+
+    const Integer STANDALONE_MASK = 0x8000;
+
+    const Integer SHORT = 1;
+
+    const Integer LONG = 2;
+
+    const Integer NARROW_FORMAT = 4;
+
+    const Integer NARROW_STANDALONE = NARROW_FORMAT | STANDALONE_MASK;
+
+    const Integer SHORT_FORMAT = 1;
+
+    const Integer LONG_FORMAT = 2;
+
+    const Integer SHORT_STANDALONE = SHORT | STANDALONE_MASK;
+
+    const Integer LONG_STANDALONE = LONG | STANDALONE_MASK;
+
+    Add(
+        [in] Integer field,
+        [in] Integer amount);
+
+    After(
+        [in] IInterface* when,
+        [out] Boolean* after);
+
+    Before(
+        [in] IInterface* when,
+        [out] Boolean* before);
+
+    Clear();
+
+    Clear(
+        [in] Integer field);
+
+    Get(
+        [in] Integer field,
+        [out] Integer* value);
+
+    GetActualMaximum(
+        [in] Integer field,
+        [out] Integer* value);
+
+    GetActualMinimum(
+        [in] Integer field,
+        [out] Integer* value);
+
+    GetCalendarType(
+        [out] String* type);
+
+    GetDisplayName(
+        [in] Integer field,
+        [in] Integer style,
+        [in] ILocale* locale,
+        [out] String* name);
+
+    GetDisplayNames(
+        [in] Integer field,
+        [in] Integer style,
+        [in] ILocale* locale,
+        [out] IMap** names);
+
+    GetFirstDayOfWeek(
+        [out] Integer* value);
+
+    GetGreatestMinimum(
+        [in] Integer field,
+        [out] Integer* value);
+
+    GetLeastMaximum(
+        [in] Integer field,
+        [out] Integer* value);
+
+    GetMaximum(
+        [in] Integer field,
+        [out] Integer* value);
+
+    GetMinimalDaysInFirstWeek(
+        [out] Integer* value);
+
+    GetMinimum(
+        [in] Integer field,
+        [out] Integer* value);
+
+    GetTime(
+        [out] IDate** date);
+
+    GetTimeInMillis(
+        [out] Long* time);
+
+    GetTimeZone(
+        [out] ITimeZone** zone);
+
+    GetWeeksInWeekYear(
+        [out] Integer* weeks);
+
+    GetWeekYear(
+        [out] Integer* weekYear);
+
+    IsLenient(
+        [out] Boolean* lenient);
+
+    IsSet(
+        [in] Integer field,
+        [out] Boolean* result);
+
+    IsWeekDateSupported(
+        [out] Boolean* supported);
+
+    Roll(
+        [in] Integer field,
+        [in] Boolean up);
+
+    Roll(
+        [in] Integer field,
+        [in] Integer amount);
+
+    Set(
+        [in] Integer field,
+        [in] Integer value);
+
+    Set(
+        [in] Integer year,
+        [in] Integer month,
+        [in] Integer date);
+
+    Set(
+        [in] Integer year,
+        [in] Integer month,
+        [in] Integer date,
+        [in] Integer hourOfDay,
+        [in] Integer minute);
+
+    Set(
+        [in] Integer year,
+        [in] Integer month,
+        [in] Integer date,
+        [in] Integer hourOfDay,
+        [in] Integer minute,
+        [in] Integer second);
+
+    SetFirstDayOfWeek(
+        [in] Integer value);
+
+    SetLenient(
+        [in] Boolean lenient);
+
+    SetMinimalDaysInFirstWeek(
+        [in] Integer value);
+
+    SetTime(
+        [in] IDate* date);
+
+    SetTimeInMillis(
+        [in] Long millis);
+
+    SetTimeZone(
+        [in] ITimeZone* zone);
+
+    SetWeekDate(
+        [in] Integer weekYear,
+        [in] Integer weekOfYear,
+        [in] Integer dayOfWeek);
+}
+
+}
+}

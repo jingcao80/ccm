@@ -33,6 +33,10 @@ public:
     static AutoPtr<UUID> Parse(
         /* [in] */ const String& uuidStr);
 
+    String ToString();
+
+    String Dump();
+
 private:
     inline UUID();
 

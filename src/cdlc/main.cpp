@@ -14,6 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
+#include "ast/Module.h"
 #include "parser/Parser.h"
 #include "util/Logger.h"
 #include "util/Options.h"
@@ -26,6 +27,11 @@ int main(int argc, char** argv)
 {
     Options options(argc, argv);
 
+    if (options.DoShowUsage()) {
+        options.ShowUsage();
+        return 0;
+    }
+
     if (options.HasErrors()) {
         options.ShowErrors();
         return 0;
@@ -36,6 +42,11 @@ int main(int argc, char** argv)
         if (!parser.Parse(options.GetSourceFile())) {
             Logger::E(TAG, "Parsing failed.");
             return -1;
+        }
+
+        if (options.DoDumpAST()) {
+            AutoPtr<Module> module = parser.GetCompiledModule();
+            printf("%s", module->Dump("").string());
         }
     }
 

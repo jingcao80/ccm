@@ -31,7 +31,10 @@ void Options::Parse(
     int i = 1;
     while (i < argc) {
         String option(argv[i++]);
-        if (option.Equals("--help")) {
+        if (option.Equals("-dump-ast")) {
+            mDoDumpAST = true;
+        }
+        else if (option.Equals("--help")) {
             mShowUsage = true;
         }
         else if (option.Equals("--version")) {
@@ -75,8 +78,9 @@ void Options::ShowUsage() const
             "Options:\n"
             "  --help           Display command line options\n"
             "  --version        Display version information\n"
+            "  -dump-ast        Display the AST of the .cdl file\n"
             "  -c               Compile the .cdl file\n"
-            "  -i <directory>   Add <directory> to the .cdl files search paths.\n"
+            "  -i <directory>   Add <directory> to the .cdl files search paths\n"
             "  -o <file>        Save the metadata into <file>\n");
 }
 

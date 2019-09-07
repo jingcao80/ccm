@@ -16,3 +16,27 @@
 
 #include "ast/Constant.h"
 #include "ast/Namespace.h"
+#include "util/StringBuilder.h"
+
+namespace cdlc {
+
+String Constant::ToString()
+{
+    return mNamespace->ToString() + "::" + mName;
+}
+
+String Constant::Dump(
+    /* [in] */ const String& prefix)
+{
+    StringBuilder builder;
+
+    builder.Append(prefix).Append("Constant[");
+    builder.AppendFormat("name:%s, ", mName.string());
+    builder.AppendFormat("namespace:%s, ", mNamespace->ToString().string());
+    builder.AppendFormat("type:%s, ", mType->ToString().string());
+    builder.AppendFormat("value:%s", mValue->ToString().string());
+    builder.Append("]\n");
+    return builder.ToString();
+}
+
+}

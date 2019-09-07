@@ -15,11 +15,31 @@
 //=========================================================================
 
 #include "ast/Namespace.h"
+#include "ast/CoclassType.h"
+#include "ast/Constant.h"
+#include "ast/EnumerationType.h"
+#include "ast/InterfaceType.h"
 #include "ast/Module.h"
 
 namespace cdlc {
 
 const String Namespace::GLOBAL_NAME("__global__");
+
+Namespace::Namespace(
+    /* [in] */ const String& name,
+    /* [in] */ Module* module)
+    : mName(name)
+    , mModule(module)
+{}
+
+Namespace::Namespace(
+    /* [in] */ InterfaceType* interfaceWrapped,
+    /* [in] */ Module* module)
+    : mName(interfaceWrapped->GetName())
+    , mIsWrapper(true)
+    , mInterfaceWrapped(interfaceWrapped)
+    , mModule(module)
+{}
 
 void Namespace::AddNamespace(
     /* [in] */ Namespace* ns)
@@ -55,8 +75,8 @@ void Namespace::AddConstant(
 {
     if (constant != nullptr) {
         mConstants.push_back(constant);
-        mModule->AddConstant(constant);
         constant->SetNamespace(this);
+        mModule->AddConstant(constant);
     }
 }
 
@@ -65,8 +85,8 @@ void Namespace::AddEnumerationType(
 {
     if (enumeration != nullptr) {
         mTypes.push_back(enumeration);
-        mModule->AddEnumerationType(enumeration);
         enumeration->SetNamespace(this);
+        mModule->AddEnumerationType(enumeration);
     }
 }
 
@@ -75,8 +95,18 @@ void Namespace::AddInterfaceType(
 {
     if (interface != nullptr) {
         mTypes.push_back(interface);
-        mModule->AddInterfaceType(interface);
         interface->SetNamespace(this);
+        mModule->AddInterfaceType(interface);
+    }
+}
+
+void Namespace::AddCoclassType(
+    /* [in] */ CoclassType* klass)
+{
+    if (klass != nullptr) {
+        mTypes.push_back(klass);
+        klass->SetNamespace(this);
+        mModule->AddCoclassType(klass);
     }
 }
 
@@ -85,8 +115,8 @@ void Namespace::AddType(
 {
     if (type != nullptr) {
         mTypes.push_back(type);
-        mModule->AddType(type);
         type->SetNamespace(this);
+        mModule->AddType(type);
     }
 }
 

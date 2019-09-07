@@ -19,6 +19,11 @@
 
 namespace cdlc {
 
+bool MultiplicativeExpression::BooleanValue()
+{
+    return mRightOperand->BooleanValue();
+}
+
 int MultiplicativeExpression::IntegerValue()
 {
     if (mLeftOperand != nullptr) {

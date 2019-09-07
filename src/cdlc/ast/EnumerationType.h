@@ -54,6 +54,11 @@ public:
 
     String GetSignature() override;
 
+    String ToString() override;
+
+    String Dump(
+        /* [in] */ const String& prefix) override;
+
     inline static AutoPtr<EnumerationType> CastFrom(
         /* [in] */ Type* type);
 

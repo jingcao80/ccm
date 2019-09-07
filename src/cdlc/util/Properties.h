@@ -35,6 +35,9 @@ public:
 private:
     Properties() {}
 
+public:
+    static const String INDENT;
+
 private:
     std::set<String, StringCompareFunc> mSearchPaths;
 };

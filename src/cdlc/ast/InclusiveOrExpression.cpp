@@ -19,6 +19,11 @@
 
 namespace cdlc {
 
+bool InclusiveOrExpression::BooleanValue()
+{
+    return mRightOperand->BooleanValue();
+}
+
 int InclusiveOrExpression::IntegerValue()
 {
     if (mLeftOperand != nullptr) {

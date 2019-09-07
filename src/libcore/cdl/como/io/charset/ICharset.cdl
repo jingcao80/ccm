@@ -1,0 +1,82 @@
+//=========================================================================
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//=========================================================================
+
+interface como::io::IByteBuffer;
+interface como::io::ICharBuffer;
+interface como::io::charset::ICharsetDecoder;
+interface como::io::charset::ICharsetEncoder;
+interface como::util::ILocale;
+interface como::util::ISet;
+
+namespace como {
+namespace io {
+namespace charset {
+
+/*
+ * @Involve
+ * interface como::core::IComparable
+ */
+[
+    uuid(8f4224e5-badb-44aa-828b-f92bd0ad6740),
+    version(0.1.0)
+]
+interface ICharset
+{
+    CanEncode(
+        [out] Boolean* supported);
+
+    Contains(
+        [in] ICharset* cs,
+        [out] Boolean* contains);
+
+    Decode(
+        [in] IByteBuffer* bb,
+        [out] ICharBuffer** cb);
+
+    Encode(
+        [in] String str,
+        [out] IByteBuffer** bb);
+
+    Encode(
+        [in] ICharBuffer* cb,
+        [out] IByteBuffer** bb);
+
+    GetAliases(
+        [out] ISet** aliases);
+
+    GetDisplayName(
+        [out] String* name);
+
+    GetDisplayName(
+        [in] ILocale* locale,
+        [out] String* name);
+
+    GetName(
+        [out] String* name);
+
+    IsRegistered(
+        [out] Boolean* registered);
+
+    NewDecoder(
+        [out] ICharsetDecoder** decoder);
+
+    NewEncoder(
+        [out] ICharsetEncoder** encoder);
+}
+
+}
+}
+}

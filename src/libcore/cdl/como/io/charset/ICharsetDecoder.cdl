@@ -1,0 +1,88 @@
+//=========================================================================
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//=========================================================================
+
+interface como::io::IByteBuffer;
+interface como::io::ICharBuffer;
+interface como::io::charset::ICharset;
+interface como::io::charset::ICodingErrorAction;
+interface como::io::charset::ICoderResult;
+
+namespace como {
+namespace io {
+namespace charset {
+
+[
+    uuid(47bf0779-f294-46c6-b8cd-bcd6de278171),
+    version(0.1.0)
+]
+interface ICharsetDecoder
+{
+    Decode(
+        [in] IByteBuffer* bb,
+        [out] ICharBuffer** cb);
+
+    Decode(
+        [in] IByteBuffer* bb,
+        [out] ICharBuffer* cb,
+        [in] Boolean endOfInput,
+        [out] ICoderResult** result);
+
+    Flush(
+        [out] ICharBuffer* cb,
+        [out] ICoderResult** result);
+
+    GetAverageCharsPerByte(
+        [out] Float* averageCharsPerByte);
+
+    GetCharset(
+        [out] ICharset** cs);
+
+    GetDetectedCharset(
+        [out] ICharset** cs);
+
+    GetMalformedInputAction(
+        [out] ICodingErrorAction** action);
+
+    GetMaxCharsPerByte(
+        [out] Float* maxCharsPerByte);
+
+    GetReplacement(
+        [out] String* replacement);
+
+    GetUnmappableCharacterAction(
+        [out] ICodingErrorAction** action);
+
+    IsAutoDetecting(
+        [out] Boolean* autoDetecting);
+
+    IsCharsetDetected(
+        [out] Boolean* charsetDetected);
+
+    OnMalformedInput(
+        [in] ICodingErrorAction* newAction);
+
+    OnUnmappableCharacter(
+        [in] ICodingErrorAction* newAction);
+
+    ReplaceWith(
+        [in] String newReplacement);
+
+    Reset();
+}
+
+}
+}
+}

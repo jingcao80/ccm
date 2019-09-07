@@ -162,6 +162,7 @@ String::String(
 String::String(
     /* [in] */ const String& other)
     : mString(other.mString)
+    , mHashCode(other.mHashCode)
 {
     SharedBuffer::AddRef(mString);
 }
@@ -169,6 +170,7 @@ String::String(
 String::String(
     /* [in] */ String&& other)
     : mString(other.mString)
+    , mHashCode(other.mHashCode)
 {
     other.mString = nullptr;
 }
@@ -201,6 +203,7 @@ String& String::operator=(
             strcpy(mString, string);
         }
     }
+    mHashCode = -1;
     return *this;
 }
 
@@ -213,6 +216,7 @@ String& String::operator=(
 
     SharedBuffer::Release(mString);
     mString = other.mString;
+    mHashCode = other.mHashCode;
     SharedBuffer::AddRef(mString);
     return *this;
 }
@@ -222,6 +226,7 @@ String& String::operator=(
 {
     SharedBuffer::Release(mString);
     mString = other.mString;
+    mHashCode = other.mHashCode;
     other.mString = nullptr;
     return *this;
 }
@@ -244,6 +249,7 @@ String& String::operator+=(
     strcpy(newString + oldLen, string);
     SharedBuffer::Release(mString);
     mString = newString;
+    mHashCode = -1;
     return *this;
 }
 
@@ -265,6 +271,7 @@ String& String::operator+=(
     strcpy(newString + oldLen, other.mString);
     SharedBuffer::Release(mString);
     mString = newString;
+    mHashCode = -1;
     return *this;
 }
 

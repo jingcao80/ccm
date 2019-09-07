@@ -32,14 +32,14 @@ class InterfaceType
     : public Type
 {
 public:
+    void SetAttributes(
+        /* [in] */ const Attributes& attrs);
+
     inline void SetBaseInterface(
         /* [in] */ InterfaceType* interface);
 
     inline void SetOuterInterface(
         /* [in] */ InterfaceType* interface);
-
-    void SetAttributes(
-        /* [in] */ const Attributes& attrs);
 
     inline void AddNestedInterface(
         /* [in] */ InterfaceType* interface);
@@ -63,6 +63,8 @@ public:
 
     String GetSignature() override;
 
+    String ToString() override;
+
     String Dump(
         /* [in] */ const String& prefix) override;
 
@@ -73,11 +75,11 @@ public:
     static constexpr int METHOD_MAX_NUMBER = 240 + 4;
 
 private:
-    InterfaceType* mBaseInterface = nullptr;
-    InterfaceType* mOuterInterface = nullptr;
     AutoPtr<UUID> mUuid;
     String mVersion;
     String mDescription;
+    InterfaceType* mBaseInterface = nullptr;
+    InterfaceType* mOuterInterface = nullptr;
     std::vector<AutoPtr<InterfaceType>> mNestedInterfaces;
     std::vector<AutoPtr<Constant>> mConstants;
     std::vector<AutoPtr<Method>> mMethods;

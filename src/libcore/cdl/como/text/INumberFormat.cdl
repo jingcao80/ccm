@@ -1,0 +1,127 @@
+//=========================================================================
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//=========================================================================
+
+interface como::core::INumber;
+interface como::core::IStringBuffer;
+interface como::text::IFieldPosition;
+interface como::text::IParsePosition;
+interface como::util::ICurrency;
+interface como::util::ILocale;
+enum como::math::RoundingMode;
+
+namespace como {
+namespace text {
+
+/*
+ * @Involve interface como::text::IFormatField;
+ * @Involve interface como::text::IAttributedCharacterIterator::IAttribute;
+ */
+[
+    uuid(ac155c23-610f-4673-9597-e1f18f85288c),
+    version(0.1.0)
+]
+interface INumberFormatField
+{}
+
+/*
+ * @Involve interface como::text::IFormat;
+ * @Involve interface como::io::ISerializable;
+ * @Involve interface como::core::ICloneable;
+ */
+[
+    uuid(69ff7998-7fb1-4f1b-940d-30ad8d233113),
+    version(0.1.0)
+]
+interface INumberFormat
+{
+    Format(
+        [in] Long number,
+        [out] String* str);
+
+    Format(
+        [in] Double number,
+        [out] String* str);
+
+    Format(
+        [in] Long number,
+        [in, out] IStringBuffer* toAppendTo,
+        [in] IFieldPosition* pos);
+
+    Format(
+        [in] Double number,
+        [in, out] IStringBuffer* toAppendTo,
+        [in] IFieldPosition* pos);
+
+    GetCurrency(
+        [out] ICurrency** currency);
+
+    GetMaximumFractionDigits(
+        [out] Integer* value);
+
+    GetMinimumFractionDigits(
+        [out] Integer* value);
+
+    GetMaximumIntegerDigits(
+        [out] Integer* value);
+
+    GetMinimumIntegerDigits(
+        [out] Integer* value);
+
+    GetRoundingMode(
+        [out] RoundingMode* mode);
+
+    IsGroupingUsed(
+        [out] Boolean* value);
+
+    IsParseIntegerOnly(
+        [out] Boolean* value);
+
+    Parse(
+        [in] String source,
+        [out] INumber** number);
+
+    Parse(
+        [in] String source,
+        [in] IParsePosition* parsePosition,
+        [out] INumber** number);
+
+    SetCurrency(
+        [in] ICurrency* currency);
+
+    SetGroupingUsed(
+        [in] Boolean newValue);
+
+    SetMaximumFractionDigits(
+        [in] Integer newValue);
+
+    SetMinimumFractionDigits(
+        [in] Integer newValue);
+
+    SetMaximumIntegerDigits(
+        [in] Integer newValue);
+
+    SetMinimumIntegerDigits(
+        [in] Integer newValue);
+
+    SetRoundingMode(
+        [in] RoundingMode mode);
+
+    SetParseIntegerOnly(
+        [in] Boolean newValue);
+}
+
+}
+}

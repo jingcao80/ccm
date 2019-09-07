@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,12 +14,12 @@
 // limitations under the License.
 //=========================================================================
 
-interface ccm::IInterface;
-interface ccm::io::IByteBuffer;
-interface ccm::io::IFileDescriptor;
-interface ccm::net::IDatagramPacket;
-interface ccm::net::IInetAddress;
-interface ccm::net::IInetSocketAddress;
+interface como::IInterface;
+interface como::io::IByteBuffer;
+interface como::io::IFileDescriptor;
+interface como::net::IDatagramPacket;
+interface como::net::IInetAddress;
+interface como::net::IInetSocketAddress;
 interface libcore::io::IOs;
 
 namespace libcore {

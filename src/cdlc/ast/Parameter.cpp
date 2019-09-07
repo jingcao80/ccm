@@ -16,6 +16,7 @@
 
 #include "ast/Parameter.h"
 #include "ast/Namespace.h"
+#include "util/StringBuilder.h"
 
 namespace cdlc {
 
@@ -27,7 +28,39 @@ String Parameter::ToString()
 String Parameter::Dump(
     /* [in] */ const String& prefix)
 {
-    return prefix + ToString();
+    StringBuilder builder;
+
+    builder.Append(prefix).Append("Parameter[");
+    builder.AppendFormat("name:%s, ", mName.string());
+    builder.AppendFormat("type:%s, ", mType->ToString().string());
+    if (mDefaultValue != nullptr) {
+        if (mType->IsBooleanType()) {
+            builder.AppendFormat("default:%s, ", mDefaultValue->BooleanValue() ? "true" : "false");
+        }
+        else if (mType->IsIntegerType()) {
+            builder.AppendFormat("default:%d, ", mDefaultValue->IntegerValue());
+        }
+        else if (mType->IsLongType()) {
+            builder.AppendFormat("default:%lld, ", mDefaultValue->LongValue());
+        }
+
+    }
+    builder.Append("attribute:");
+    String separator = "";
+    if (mAttributes & IN) {
+        builder.Append("in");
+        separator = "|";
+    }
+    if (mAttributes & OUT) {
+        builder.Append(separator).Append("OUT");
+        separator = "|";
+    }
+    if (mAttributes & CALLEE) {
+        builder.Append(separator).Append("CALLEE");
+    }
+    builder.Append("]");
+
+    return builder.ToString();
 }
 
 }

@@ -27,6 +27,8 @@ class AndExpression
 public:
     inline AndExpression();
 
+    bool BooleanValue() override;
+
     int IntegerValue() override;
 
     long long int LongValue() override;

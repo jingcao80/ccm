@@ -16,6 +16,7 @@
 
 #include "ast/EnumerationType.h"
 #include "ast/Namespace.h"
+#include "util/Properties.h"
 #include "util/StringBuilder.h"
 
 namespace cdlc {
@@ -56,6 +57,29 @@ String EnumerationType::GetSignature()
     builder.Append("/");
     builder.Append(mName);
     builder.Append(";");
+    return builder.ToString();
+}
+
+String EnumerationType::ToString()
+{
+    return mNamespace->ToString() + "::" + mName;
+}
+
+String EnumerationType::Dump(
+    /* [in] */ const String& prefix)
+{
+    StringBuilder builder;
+
+    builder.Append(prefix).Append("Enumeration[");
+    builder.AppendFormat("name:%s, ", mName.string());
+    builder.AppendFormat("namespace:%s", mNamespace->ToString().string());
+    for (AutoPtr<Enumerator> enumerator : mEnumerators) {
+        builder.Append("\n");
+        builder.Append(prefix + Properties::INDENT).Append("Enumerator[");
+        builder.AppendFormat("name:%s, ", enumerator->mName.string());
+        builder.AppendFormat("value:%d]", enumerator->mValue);
+    }
+    builder.Append("]\n");
     return builder.ToString();
 }
 

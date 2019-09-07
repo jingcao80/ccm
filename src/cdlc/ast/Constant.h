@@ -51,6 +51,11 @@ public:
     inline void SetNamespace(
         /* [in] */ Namespace* ns);
 
+    String ToString() override;
+
+    String Dump(
+        /* [in] */ const String& prefix) override;
+
 private:
     Module* mModule = nullptr;
 

@@ -43,6 +43,16 @@ public:
     inline void AddParameter(
         /* [in] */ Parameter* param);
 
+    inline void SetDeleted(
+        /* [in] */ bool deleted);
+
+    inline bool IsDeleted();
+
+    inline void SetReference(
+        /* [in] */ bool reference);
+
+    inline bool IsReference();
+
     String ToString() override;
 
     String Dump(
@@ -56,6 +66,8 @@ private:
     String mSignature;
     AutoPtr<Type> mReturnType;
     std::vector<AutoPtr<Parameter>> mParameters;
+    bool mDeleted = false;
+    bool mReference = false;
 };
 
 String Method::GetName()
@@ -89,6 +101,28 @@ void Method::AddParameter(
     if (param != nullptr) {
         mParameters.push_back(param);
     }
+}
+
+void Method::SetDeleted(
+    /* [in] */ bool deleted)
+{
+    mDeleted = deleted;
+}
+
+bool Method::IsDeleted()
+{
+    return mDeleted;
+}
+
+void Method::SetReference(
+    /* [in] */ bool reference)
+{
+    mReference = reference;
+}
+
+bool Method::IsReference()
+{
+    return mReference;
 }
 
 }

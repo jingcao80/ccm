@@ -18,6 +18,8 @@
 
 namespace cdlc {
 
+const String Properties::INDENT("    ");
+
 Properties& Properties::Get()
 {
     static Properties sProperties;

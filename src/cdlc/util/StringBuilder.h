@@ -53,6 +53,9 @@ public:
     StringBuilder& Append(
         /* [in] */ char c);
 
+    StringBuilder& AppendFormat(
+        /* [in] */ const char* format ...);
+
     inline String ToString();
 
 private:

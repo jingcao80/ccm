@@ -51,6 +51,8 @@ public:
     inline void SetScientificNotation(
         /* [in] */ bool scientificNotation);
 
+    virtual bool BooleanValue() = 0;
+
     virtual int IntegerValue() = 0;
 
     virtual long long int LongValue() = 0;

@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ include "libcore/io/ILibcore.cdl"
 include "libcore/io/IMemoryMappedFile.cdl"
 include "libcore/io/IOs.cdl"
 
-interface ccm::core::IAutoCloseable;
+interface como::core::IAutoCloseable;
 
 namespace libcore {
 namespace io {
