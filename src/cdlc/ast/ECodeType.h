@@ -27,6 +27,8 @@ class ECodeType
 public:
     inline ECodeType();
 
+    bool IsECodeType() override;
+
     String GetSignature() override;
 };
 

@@ -20,7 +20,27 @@
 
 namespace cdlc {
 
+bool Type::IsECodeType()
+{
+    return false;
+}
+
 bool Type::IsBooleanType()
+{
+    return false;
+}
+
+bool Type::IsCharType()
+{
+    return false;
+}
+
+bool Type::IsByteType()
+{
+    return false;
+}
+
+bool Type::IsShortType()
 {
     return false;
 }
@@ -80,7 +100,42 @@ bool Type::IsInterfaceType()
     return false;
 }
 
+bool Type::IsCoclassType()
+{
+    return false;
+}
+
+bool Type::IsCoclassIDType()
+{
+    return false;
+}
+
+bool Type::IsComponentIDType()
+{
+    return false;
+}
+
+bool Type::IsInterfaceIDType()
+{
+    return false;
+}
+
+bool Type::IsTripleType()
+{
+    return false;
+}
+
+bool Type::IsArrayType()
+{
+    return false;
+}
+
 bool Type::IsPointerType()
+{
+    return false;
+}
+
+bool Type::IsReferenceType()
 {
     return false;
 }

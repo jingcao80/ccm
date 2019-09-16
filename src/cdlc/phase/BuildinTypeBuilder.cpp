@@ -127,7 +127,7 @@ void BuildinTypeBuilder::BuildIInterface()
     attrs.mUuid = "00000000-0000-0000-0000-000000000000";
     attrs.mVersion = "0.1.0";
     iinterface->SetAttributes(attrs);
-    ns->AddType(iinterface);
+    ns->AddInterfaceType(iinterface);
 
     // add Probe method
     AutoPtr<Method> method = new Method();

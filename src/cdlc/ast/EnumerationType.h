@@ -50,6 +50,11 @@ public:
     bool Contains(
         /* [in] */ const String& name);
 
+    AutoPtr<Enumerator> GetEnumerator(
+        /* [in] */ int i);
+
+    inline int GetEnumeratorNumber();
+
     bool IsEnumerationType() override;
 
     String GetSignature() override;
@@ -65,6 +70,11 @@ public:
 private:
     std::vector<AutoPtr<Enumerator>> mEnumerators;
 };
+
+int EnumerationType::GetEnumeratorNumber()
+{
+    return mEnumerators.size();
+}
 
 AutoPtr<EnumerationType> EnumerationType::CastFrom(
     /* [in] */ Type* type)

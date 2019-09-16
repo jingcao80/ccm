@@ -27,6 +27,8 @@ class ByteType
 public:
     inline ByteType();
 
+    bool IsByteType() override;
+
     bool IsIntegralType() override;
 
     String GetSignature() override;

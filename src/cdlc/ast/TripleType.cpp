@@ -19,6 +19,11 @@
 
 namespace cdlc {
 
+bool TripleType::IsTripleType()
+{
+    return true;
+}
+
 String TripleType::GetSignature()
 {
     return "R";

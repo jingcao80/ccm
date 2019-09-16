@@ -35,8 +35,14 @@ public:
     void SetAttributes(
         /* [in] */ const Attributes& attrs);
 
+    inline AutoPtr<UUID> GetUUID();
+
+    inline AutoPtr<InterfaceType> GetBaseInterface();
+
     inline void SetBaseInterface(
         /* [in] */ InterfaceType* interface);
+
+    inline AutoPtr<InterfaceType> GetOuterInterface();
 
     inline void SetOuterInterface(
         /* [in] */ InterfaceType* interface);
@@ -44,11 +50,21 @@ public:
     inline void AddNestedInterface(
         /* [in] */ InterfaceType* interface);
 
+    AutoPtr<InterfaceType> GetNestedInterface(
+        /* [in] */ int i);
+
+    inline int GetNestedInterfaceNumber();
+
     inline void AddConstant(
         /* [in] */ Constant* constant);
 
     AutoPtr<Constant> FindConstant(
         /* [in] */ const String& name);
+
+    AutoPtr<Constant> GetConstant(
+        /* [in] */ int i);
+
+    inline int GetConstantNumber();
 
     inline void AddMethod(
         /* [in] */ Method* method);
@@ -56,6 +72,9 @@ public:
     AutoPtr<Method> FindMethod(
         /* [in] */ const String& name,
         /* [in] */ const String& signature);
+
+    AutoPtr<Method> GetMethod(
+        /* [in] */ int i);
 
     inline int GetMethodNumber();
 
@@ -85,10 +104,25 @@ private:
     std::vector<AutoPtr<Method>> mMethods;
 };
 
+AutoPtr<UUID> InterfaceType::GetUUID()
+{
+    return mUuid;
+}
+
+AutoPtr<InterfaceType> InterfaceType::GetBaseInterface()
+{
+    return mBaseInterface;
+}
+
 void InterfaceType::SetBaseInterface(
     /* [in] */ InterfaceType* interface)
 {
     mBaseInterface = interface;
+}
+
+AutoPtr<InterfaceType> InterfaceType::GetOuterInterface()
+{
+    return mOuterInterface;
 }
 
 void InterfaceType::SetOuterInterface(
@@ -105,12 +139,22 @@ void InterfaceType::AddNestedInterface(
     }
 }
 
+int InterfaceType::GetNestedInterfaceNumber()
+{
+    return mNestedInterfaces.size();
+}
+
 void InterfaceType::AddConstant(
     /* [in] */ Constant* constant)
 {
     if (constant != nullptr) {
         mConstants.push_back(constant);
     }
+}
+
+int InterfaceType::GetConstantNumber()
+{
+    return mConstants.size();
 }
 
 void InterfaceType::AddMethod(

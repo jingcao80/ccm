@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,8 +31,8 @@ namespace ccm {
  * S - Severity - indicates success/fail
  *   0 - Success
  *   1 - Failure
- * C - Customer. This bit specifies if the value is customer-defined or CCM-defined.
- *   0 - CCM-defined
+ * C - Customer. This bit specifies if the value is customer-defined or COMO-defined.
+ *   0 - COMO-defined
  *   1 - Customer-defined
  * Facility - indicates the module that is responsible for the error.
  * Namespace - indicates the namespace that is under the facility.

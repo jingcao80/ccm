@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "ast/Module.h"
+#include "metadata/MetadataBuilder.h"
 #include "parser/Parser.h"
 #include "util/Logger.h"
 #include "util/Options.h"
@@ -37,6 +38,8 @@ int main(int argc, char** argv)
         return 0;
     }
 
+    std::shared_ptr<como::MetaComponent> component;
+
     if (options.DoCompile()) {
         Parser parser;
         if (!parser.Parse(options.GetSourceFile())) {
@@ -47,6 +50,13 @@ int main(int argc, char** argv)
         if (options.DoDumpAST()) {
             AutoPtr<Module> module = parser.GetCompiledModule();
             printf("%s", module->Dump("").string());
+        }
+
+        MetadataBuilder builder(parser.GetCompiledModule());
+        component = builder.Build();
+        if (component == nullptr) {
+            Logger::E(TAG, "Generate metadata failed.");
+            return -1;
         }
     }
 

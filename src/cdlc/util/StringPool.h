@@ -14,53 +14,61 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CDLC_REFERENCETYPE_H__
-#define __CDLC_REFERENCETYPE_H__
+#ifndef __CDLC_STRINGPOOL_H__
+#define __CDLC_STRINGPOOL_H__
 
-#include "ast/Type.h"
 #include "util/AutoPtr.h"
+#include "util/String.h"
+#include <unordered_map>
 
 namespace cdlc {
 
-class ReferenceType
-    : public Type
+class StringPool
 {
 public:
-    bool IsReferenceType() override;
+    StringPool();
 
-    inline AutoPtr<Type> GetBaseType();
+    ~StringPool();
 
-    inline void SetBaseType(
-        /* [in] */ Type* type);
+    void Add(
+        /* [in] */ const String& string);
 
-    String GetSignature() override;
+    char* FindAddress(
+        /* [in] */ const String& string);
 
-    String ToString() override;
+    ptrdiff_t FindOffset(
+        /* [in] */ const String& string);
 
-    inline static AutoPtr<ReferenceType> CastFrom(
-        /* [in] */ Type* type);
+    inline size_t GetSize();
+
+    inline char* GetData();
+
+    void Dump();
 
 private:
-    AutoPtr<Type> mBaseType;
+    ptrdiff_t AddInternal(
+        /* [in] */ const String& string);
+
+    bool Enlarge(
+        /* [in] */ int expand);
+
+private:
+    char* mData = nullptr;
+    size_t mCapacity = 256;
+    ptrdiff_t mOffset = 0;
+    std::unordered_map<String, ptrdiff_t, StringHashFunc, StringEqualsFunc> mStringOffsets;
 };
 
-AutoPtr<Type> ReferenceType::GetBaseType()
+size_t StringPool::GetSize()
 {
-    return mBaseType;
+    return mOffset;
 }
 
-void ReferenceType::SetBaseType(
-    /* [in] */ Type* type)
+char* StringPool::GetData()
 {
-    mBaseType = type;
-}
-
-AutoPtr<ReferenceType> ReferenceType::CastFrom(
-    /* [in] */ Type* type)
-{
-    return static_cast<ReferenceType*>(type);
+    return mData;
 }
 
 }
 
-#endif // __CDLC_REFERENCETYPE_H__
+#endif // __CDLC_STRINGPOOL_H__

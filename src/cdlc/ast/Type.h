@@ -48,7 +48,15 @@ public:
     inline void SetForwardDeclared(
         /* [in] */ bool forwardDeclared);
 
+    virtual bool IsECodeType();
+
     virtual bool IsBooleanType();
+
+    virtual bool IsCharType();
+
+    virtual bool IsByteType();
+
+    virtual bool IsShortType();
 
     virtual bool IsIntegerType();
 
@@ -72,7 +80,21 @@ public:
 
     virtual bool IsInterfaceType();
 
+    virtual bool IsCoclassType();
+
+    virtual bool IsCoclassIDType();
+
+    virtual bool IsComponentIDType();
+
+    virtual bool IsInterfaceIDType();
+
+    virtual bool IsTripleType();
+
+    virtual bool IsArrayType();
+
     virtual bool IsPointerType();
+
+    virtual bool IsReferenceType();
 
     virtual String GetSignature() = 0;
 

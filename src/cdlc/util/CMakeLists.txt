@@ -28,6 +28,7 @@ set(SOURCES
     Properties.cpp
     String.cpp
     StringBuilder.cpp
+    StringPool.cpp
     UUID.cpp)
 
 add_library(util STATIC

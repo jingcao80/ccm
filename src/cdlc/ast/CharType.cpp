@@ -19,6 +19,11 @@
 
 namespace cdlc {
 
+bool CharType::IsCharType()
+{
+    return true;
+}
+
 bool CharType::IsIntegralType()
 {
     return true;

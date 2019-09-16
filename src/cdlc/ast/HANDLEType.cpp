@@ -19,6 +19,11 @@
 
 namespace cdlc {
 
+bool HANDLEType::IsHANDLEType()
+{
+    return true;
+}
+
 String HANDLEType::GetSignature()
 {
     return "H";

@@ -19,6 +19,11 @@
 
 namespace cdlc {
 
+bool CoclassIDType::IsCoclassIDType()
+{
+    return true;
+}
+
 String CoclassIDType::GetSignature()
 {
     return "K";

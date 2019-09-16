@@ -19,6 +19,11 @@
 
 namespace cdlc {
 
+bool InterfaceIDType::IsInterfaceIDType()
+{
+    return true;
+}
+
 String InterfaceIDType::GetSignature()
 {
     return "U";

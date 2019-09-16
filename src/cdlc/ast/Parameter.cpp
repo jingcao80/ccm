@@ -33,17 +33,25 @@ String Parameter::Dump(
     builder.Append(prefix).Append("Parameter[");
     builder.AppendFormat("name:%s, ", mName.string());
     builder.AppendFormat("type:%s, ", mType->ToString().string());
-    if (mDefaultValue != nullptr) {
+    if (mValue != nullptr) {
         if (mType->IsBooleanType()) {
-            builder.AppendFormat("default:%s, ", mDefaultValue->BooleanValue() ? "true" : "false");
+            builder.AppendFormat("default:%s, ", mValue->BooleanValue() ? "true" : "false");
+        }
+        else if (mType->IsCharType()) {
+            builder.AppendFormat("default:%c, ", mValue->CharacterValue());
         }
         else if (mType->IsIntegerType()) {
-            builder.AppendFormat("default:%d, ", mDefaultValue->IntegerValue());
+            builder.AppendFormat("default:%d, ", mValue->IntegerValue());
         }
-        else if (mType->IsLongType()) {
-            builder.AppendFormat("default:%lld, ", mDefaultValue->LongValue());
+        else if (mType->IsLongType() || mType->IsHANDLEType()) {
+            builder.AppendFormat("default:%lld, ", mValue->LongValue());
         }
-
+        else if (mType->IsFloatType()) {
+            builder.AppendFormat("default:%f, ", mValue->FloatValue());
+        }
+        else if (mType->IsDoubleType()) {
+            builder.AppendFormat("default:%f, ", mValue->DoubleValue());
+        }
     }
     builder.Append("attribute:");
     String separator = "";

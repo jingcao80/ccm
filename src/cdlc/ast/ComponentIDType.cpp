@@ -19,6 +19,11 @@
 
 namespace cdlc {
 
+bool ComponentIDType::IsComponentIDType()
+{
+    return true;
+}
+
 String ComponentIDType::GetSignature()
 {
     return "M";

@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,14 +14,14 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_UUID_H__
-#define __CCM_UUID_H__
+#ifndef __COMO_UUID_H__
+#define __COMO_UUID_H__
 
 #include <string.h>
 
-namespace ccm {
+namespace como {
 
-struct Uuid
+struct UUID
 {
     unsigned int        mData1;
     unsigned short      mData2;
@@ -31,14 +31,14 @@ struct Uuid
 };
 
 inline bool operator==(
-    /* [in] */ const Uuid& id1,
-    /* [in] */ const Uuid& id2)
+    /* [in] */ const UUID& id1,
+    /* [in] */ const UUID& id2)
 {
-    return !memcmp(&id1, &id2, sizeof(Uuid));
+    return !memcmp(&id1, &id2, sizeof(UUID));
 }
 
-extern const Uuid UUID_ZERO;
+extern const UUID UUID_ZERO;
 
 }
 
-#endif // __CCM_UUID_H__
+#endif // __COMO_UUID_H__

@@ -27,6 +27,8 @@ class TripleType
 public:
     inline TripleType();
 
+    bool IsTripleType() override;
+
     String GetSignature() override;
 };
 

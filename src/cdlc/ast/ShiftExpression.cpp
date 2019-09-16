@@ -24,6 +24,11 @@ bool ShiftExpression::BooleanValue()
     return mRightOperand->BooleanValue();
 }
 
+char ShiftExpression::CharacterValue()
+{
+    return mRightOperand->CharacterValue();
+}
+
 int ShiftExpression::IntegerValue()
 {
     if (mLeftOperand != nullptr) {
@@ -85,6 +90,40 @@ float ShiftExpression::FloatValue()
 double ShiftExpression::DoubleValue()
 {
     return mRightOperand->DoubleValue();
+}
+
+String ShiftExpression::StringValue()
+{
+    return mRightOperand->StringValue();
+}
+
+String ShiftExpression::EnumeratorValue()
+{
+    return mRightOperand->EnumeratorValue();
+}
+
+bool ShiftExpression::IsPositiveInfinity()
+{
+    if (mLeftOperand != nullptr || mRightOperand == nullptr) {
+        return false;
+    }
+    return mRightOperand->IsPositiveInfinity();
+}
+
+bool ShiftExpression::IsNegativeInfinity()
+{
+    if (mLeftOperand != nullptr || mRightOperand == nullptr) {
+        return false;
+    }
+    return mRightOperand->IsNegativeInfinity();
+}
+
+bool ShiftExpression::IsNaN()
+{
+    if (mLeftOperand != nullptr || mRightOperand == nullptr) {
+        return false;
+    }
+    return mRightOperand->IsNaN();
 }
 
 }

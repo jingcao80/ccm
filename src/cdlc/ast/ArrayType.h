@@ -25,6 +25,10 @@ class ArrayType
     : public Type
 {
 public:
+    bool IsArrayType() override;
+
+    inline AutoPtr<Type> GetElementType();
+
     inline void SetElementType(
         /* [in] */ Type* elementType);
 
@@ -36,6 +40,11 @@ public:
 private:
     AutoPtr<Type> mElementType;
 };
+
+AutoPtr<Type> ArrayType::GetElementType()
+{
+    return mElementType;
+}
 
 void ArrayType::SetElementType(
     /* [in] */ Type* elementType)

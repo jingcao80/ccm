@@ -53,6 +53,8 @@ public:
 
     virtual bool BooleanValue() = 0;
 
+    virtual char CharacterValue() = 0;
+
     virtual int IntegerValue() = 0;
 
     virtual long long int LongValue() = 0;
@@ -60,6 +62,16 @@ public:
     virtual float FloatValue() = 0;
 
     virtual double DoubleValue() = 0;
+
+    virtual String StringValue() = 0;
+
+    virtual String EnumeratorValue() = 0;
+
+    virtual bool IsPositiveInfinity() = 0;
+
+    virtual bool IsNegativeInfinity() = 0;
+
+    virtual bool IsNaN() = 0;
 
 public:
     static const int OPERATOR_NONE = 0;

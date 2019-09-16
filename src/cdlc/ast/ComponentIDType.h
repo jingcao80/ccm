@@ -27,6 +27,8 @@ class ComponentIDType
 public:
     inline ComponentIDType();
 
+    bool IsComponentIDType() override;
+
     String GetSignature() override;
 };
 

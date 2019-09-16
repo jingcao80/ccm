@@ -19,6 +19,11 @@
 
 namespace cdlc {
 
+bool ByteType::IsByteType()
+{
+    return true;
+}
+
 bool ByteType::IsIntegralType()
 {
     return true;

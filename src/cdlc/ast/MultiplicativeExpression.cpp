@@ -24,6 +24,11 @@ bool MultiplicativeExpression::BooleanValue()
     return mRightOperand->BooleanValue();
 }
 
+char MultiplicativeExpression::CharacterValue()
+{
+    return mRightOperand->CharacterValue();
+}
+
 int MultiplicativeExpression::IntegerValue()
 {
     if (mLeftOperand != nullptr) {
@@ -161,6 +166,46 @@ double MultiplicativeExpression::DoubleValue()
     else {
         return mRightOperand->DoubleValue();
     }
+}
+
+String MultiplicativeExpression::StringValue()
+{
+    return mRightOperand->StringValue();
+}
+
+String MultiplicativeExpression::EnumeratorValue()
+{
+    return mRightOperand->EnumeratorValue();
+}
+
+bool MultiplicativeExpression::IsPositiveInfinity()
+{
+    if (mLeftOperand == nullptr || mRightOperand == nullptr) {
+        return false;
+    }
+    return (mLeftOperand->DoubleValue() == 1.0) &&
+           (mRightOperand->DoubleValue() == 0.0) &&
+           (mOperator == OPERATOR_DIVIDE);
+}
+
+bool MultiplicativeExpression::IsNegativeInfinity()
+{
+    if (mLeftOperand == nullptr || mRightOperand == nullptr) {
+        return false;
+    }
+    return (mLeftOperand->DoubleValue() == -1.0) &&
+           (mRightOperand->DoubleValue() == 0.0) &&
+           (mOperator == OPERATOR_DIVIDE);
+}
+
+bool MultiplicativeExpression::IsNaN()
+{
+    if (mLeftOperand == nullptr || mRightOperand == nullptr) {
+        return false;
+    }
+    return (mLeftOperand->DoubleValue() == 0.0) &&
+           (mRightOperand->DoubleValue() == 0.0) &&
+           (mOperator == OPERATOR_DIVIDE);
 }
 
 }

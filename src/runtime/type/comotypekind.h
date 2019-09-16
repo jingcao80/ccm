@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,12 +14,12 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CCMTYPEKIND_H__
-#define __CCM_CCMTYPEKIND_H__
+#ifndef __COMO_TYPEKIND_H__
+#define __COMO_TYPEKIND_H__
 
-namespace ccm {
+namespace como {
 
-enum class CcmTypeKind
+enum class TypeKind
 {
     Unknown,
     Char = 1,
@@ -45,4 +45,4 @@ enum class CcmTypeKind
 
 }
 
-#endif // __CCM_CCMTYPEKIND_H__
+#endif // __COMO_TYPEKIND_H__

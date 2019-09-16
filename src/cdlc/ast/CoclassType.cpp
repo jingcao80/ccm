@@ -20,6 +20,11 @@
 
 namespace cdlc {
 
+bool CoclassType::IsCoclassType()
+{
+    return true;
+}
+
 void CoclassType::SetAttributes(
     /* [in] */ const Attributes& attrs)
 {
@@ -37,6 +42,15 @@ AutoPtr<Method> CoclassType::FindConstructor(
                 constructor->GetSignature().Equals(signature)) {
             return constructor;
         }
+    }
+    return nullptr;
+}
+
+AutoPtr<InterfaceType> CoclassType::GetInterface(
+    /* [in] */ int i)
+{
+    if (i >= 0 && i < mInterfaces.size()) {
+        return mInterfaces[i];
     }
     return nullptr;
 }

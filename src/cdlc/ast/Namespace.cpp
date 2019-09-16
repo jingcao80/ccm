@@ -50,6 +50,15 @@ void Namespace::AddNamespace(
     }
 }
 
+AutoPtr<Namespace> Namespace::GetNamespace(
+    /* [in] */ int i)
+{
+    if (i >= 0 && i < mChildren.size()) {
+        return mChildren[i];
+    }
+    return nullptr;
+}
+
 AutoPtr<Namespace> Namespace::FindNamespace(
     /* [in] */ const String& nsString)
 {
@@ -80,34 +89,73 @@ void Namespace::AddConstant(
     }
 }
 
+AutoPtr<Constant> Namespace::GetConstant(
+    /* [in] */ int i)
+{
+    if (i >= 0 && i < mConstants.size()) {
+        return mConstants[i];
+    }
+    return nullptr;
+}
+
 void Namespace::AddEnumerationType(
     /* [in] */ EnumerationType* enumeration)
 {
     if (enumeration != nullptr) {
+        mEnumerations.push_back(enumeration);
         mTypes.push_back(enumeration);
         enumeration->SetNamespace(this);
         mModule->AddEnumerationType(enumeration);
     }
 }
 
+AutoPtr<EnumerationType> Namespace::GetEnumeration(
+    /* [in] */ int i)
+{
+    if (i >= 0 && i < mEnumerations.size()) {
+        return mEnumerations[i];
+    }
+    return nullptr;
+}
+
 void Namespace::AddInterfaceType(
     /* [in] */ InterfaceType* interface)
 {
     if (interface != nullptr) {
+        mInterfaces.push_back(interface);
         mTypes.push_back(interface);
         interface->SetNamespace(this);
         mModule->AddInterfaceType(interface);
     }
 }
 
+AutoPtr<InterfaceType> Namespace::GetInterface(
+    /* [in] */ int i)
+{
+    if (i >= 0 && i < mInterfaces.size()) {
+        return mInterfaces[i];
+    }
+    return nullptr;
+}
+
 void Namespace::AddCoclassType(
     /* [in] */ CoclassType* klass)
 {
     if (klass != nullptr) {
+        mKlasses.push_back(klass);
         mTypes.push_back(klass);
         klass->SetNamespace(this);
         mModule->AddCoclassType(klass);
     }
+}
+
+AutoPtr<CoclassType> Namespace::GetCoclass(
+    /* [in] */ int i)
+{
+    if (i >= 0 && i < mInterfaces.size()) {
+        return mInterfaces[i];
+    }
+    return nullptr;
 }
 
 void Namespace::AddType(
@@ -118,6 +166,11 @@ void Namespace::AddType(
         type->SetNamespace(this);
         mModule->AddType(type);
     }
+}
+
+AutoPtr<InterfaceType> Namespace::GetInterfaceWrapped()
+{
+    return mInterfaceWrapped;
 }
 
 String Namespace::ToString()

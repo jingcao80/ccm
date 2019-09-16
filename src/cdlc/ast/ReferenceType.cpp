@@ -19,6 +19,11 @@
 
 namespace cdlc {
 
+bool ReferenceType::IsReferenceType()
+{
+    return true;
+}
+
 String ReferenceType::GetSignature()
 {
     return mBaseType->GetSignature() + "&";

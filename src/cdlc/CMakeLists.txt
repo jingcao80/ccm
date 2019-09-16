@@ -20,12 +20,14 @@ set(CDLC_DIR ${SRC_DIR}/cdlc)
 set(OBJ_DIR ${CMAKE_BINARY_DIR}/src/cdlc)
 
 add_subdirectory(ast)
+add_subdirectory(metadata)
 add_subdirectory(parser)
 add_subdirectory(phase)
 add_subdirectory(util)
 
 include_directories(
-    ${CDLC_DIR})
+    ${CDLC_DIR}
+    ${SRC_DIR})
 
 set(SOURCES
     main.cpp)
@@ -33,6 +35,7 @@ set(SOURCES
 set(CDLC_LINK_LIBS
     -Wl,--whole-archive
     ast
+    metadata
     parser
     phase
     util

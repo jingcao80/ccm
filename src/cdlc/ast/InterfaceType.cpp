@@ -29,6 +29,15 @@ void InterfaceType::SetAttributes(
     mDescription = attrs.mDescription;
 }
 
+AutoPtr<InterfaceType> InterfaceType::GetNestedInterface(
+    /* [in] */ int i)
+{
+    if (i >= 0 && i < mNestedInterfaces.size()) {
+        return mNestedInterfaces[i];
+    }
+    return nullptr;
+}
+
 AutoPtr<Constant> InterfaceType::FindConstant(
     /* [in] */ const String& name)
 {
@@ -36,6 +45,15 @@ AutoPtr<Constant> InterfaceType::FindConstant(
         if (constant->GetName().Equals(name)) {
             return constant;
         }
+    }
+    return nullptr;
+}
+
+AutoPtr<Constant> InterfaceType::GetConstant(
+    /* [in] */ int i)
+{
+    if (i >= 0 && i < mConstants.size()) {
+        return mConstants[i];
     }
     return nullptr;
 }
@@ -49,6 +67,15 @@ AutoPtr<Method> InterfaceType::FindMethod(
                 method->GetSignature().Equals(signature)) {
             return method;
         }
+    }
+    return nullptr;
+}
+
+AutoPtr<Method> InterfaceType::GetMethod(
+    /* [in] */ int i)
+{
+    if (i >= 0 && i < mMethods.size()) {
+        return mMethods[i];
     }
     return nullptr;
 }

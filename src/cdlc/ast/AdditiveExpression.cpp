@@ -24,6 +24,11 @@ bool AdditiveExpression::BooleanValue()
     return mRightOperand->BooleanValue();
 }
 
+char AdditiveExpression::CharacterValue()
+{
+    return mRightOperand->CharacterValue();
+}
+
 int AdditiveExpression::IntegerValue()
 {
     if (mLeftOperand != nullptr) {
@@ -152,6 +157,40 @@ double AdditiveExpression::DoubleValue()
     else {
         return mRightOperand->DoubleValue();
     }
+}
+
+String AdditiveExpression::StringValue()
+{
+    return mRightOperand->StringValue();
+}
+
+String AdditiveExpression::EnumeratorValue()
+{
+    return mRightOperand->EnumeratorValue();
+}
+
+bool AdditiveExpression::IsPositiveInfinity()
+{
+    if (mLeftOperand != nullptr || mRightOperand == nullptr) {
+        return false;
+    }
+    return mRightOperand->IsPositiveInfinity();
+}
+
+bool AdditiveExpression::IsNegativeInfinity()
+{
+    if (mLeftOperand != nullptr || mRightOperand == nullptr) {
+        return false;
+    }
+    return mRightOperand->IsNegativeInfinity();
+}
+
+bool AdditiveExpression::IsNaN()
+{
+    if (mLeftOperand != nullptr || mRightOperand == nullptr) {
+        return false;
+    }
+    return mRightOperand->IsNaN();
 }
 
 }

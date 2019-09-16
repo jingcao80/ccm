@@ -25,6 +25,11 @@ bool PostfixExpression::BooleanValue()
     return mBooleanValue;
 }
 
+char PostfixExpression::CharacterValue()
+{
+    return mIntegralValue;
+}
+
 int PostfixExpression::IntegerValue()
 {
     return mIntegralValue;
@@ -43,6 +48,31 @@ float PostfixExpression::FloatValue()
 double PostfixExpression::DoubleValue()
 {
     return mFloatingPointValue;
+}
+
+String PostfixExpression::StringValue()
+{
+    return mStringValue;
+}
+
+String PostfixExpression::EnumeratorValue()
+{
+    return mStringValue;
+}
+
+bool PostfixExpression::IsPositiveInfinity()
+{
+    return false;
+}
+
+bool PostfixExpression::IsNegativeInfinity()
+{
+    return false;
+}
+
+bool PostfixExpression::IsNaN()
+{
+    return false;
 }
 
 }

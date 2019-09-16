@@ -38,6 +38,28 @@ bool UnaryExpression::BooleanValue()
     return false;
 }
 
+char UnaryExpression::CharacterValue()
+{
+    if (mLeftOperand != nullptr) {
+        return mLeftOperand->CharacterValue();
+    }
+    else if (mRightOperand != nullptr) {
+        switch (mOperator) {
+            case OPERATOR_POSITIVE:
+                return + mRightOperand->CharacterValue();
+            case OPERATOR_NEGATIVE:
+                return - mRightOperand->CharacterValue();
+            case OPERATOR_COMPLIMENT:
+                return ~ mRightOperand->CharacterValue();
+            case OPERATOR_NOT:
+                return ! mRightOperand->CharacterValue();
+            default:
+                return 0;
+        }
+    }
+    return 0;
+}
+
 int UnaryExpression::IntegerValue()
 {
     if (mLeftOperand != nullptr) {
@@ -140,6 +162,37 @@ double UnaryExpression::DoubleValue()
         }
     }
     return 0;
+}
+
+String UnaryExpression::StringValue()
+{
+    if (mLeftOperand != nullptr) {
+        return mLeftOperand->StringValue();
+    }
+    return nullptr;
+}
+
+String UnaryExpression::EnumeratorValue()
+{
+    if (mLeftOperand != nullptr) {
+        return mLeftOperand->EnumeratorValue();
+    }
+    return nullptr;
+}
+
+bool UnaryExpression::IsPositiveInfinity()
+{
+    return false;
+}
+
+bool UnaryExpression::IsNegativeInfinity()
+{
+    return false;
+}
+
+bool UnaryExpression::IsNaN()
+{
+    return false;
 }
 
 }

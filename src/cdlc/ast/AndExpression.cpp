@@ -24,6 +24,11 @@ bool AndExpression::BooleanValue()
     return mRightOperand->BooleanValue();
 }
 
+char AndExpression::CharacterValue()
+{
+    return mRightOperand->CharacterValue();
+}
+
 int AndExpression::IntegerValue()
 {
     if (mLeftOperand != nullptr) {
@@ -57,6 +62,40 @@ float AndExpression::FloatValue()
 double AndExpression::DoubleValue()
 {
     return mRightOperand->DoubleValue();
+}
+
+String AndExpression::StringValue()
+{
+    return mRightOperand->StringValue();
+}
+
+String AndExpression::EnumeratorValue()
+{
+    return mRightOperand->EnumeratorValue();
+}
+
+bool AndExpression::IsPositiveInfinity()
+{
+    if (mLeftOperand != nullptr || mRightOperand == nullptr) {
+        return false;
+    }
+    return mRightOperand->IsPositiveInfinity();
+}
+
+bool AndExpression::IsNegativeInfinity()
+{
+    if (mLeftOperand != nullptr || mRightOperand == nullptr) {
+        return false;
+    }
+    return mRightOperand->IsNegativeInfinity();
+}
+
+bool AndExpression::IsNaN()
+{
+    if (mLeftOperand != nullptr || mRightOperand == nullptr) {
+        return false;
+    }
+    return mRightOperand->IsNaN();
 }
 
 }

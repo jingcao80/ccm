@@ -19,6 +19,11 @@
 
 namespace cdlc {
 
+bool ShortType::IsShortType()
+{
+    return true;
+}
+
 bool ShortType::IsIntegralType()
 {
     return true;

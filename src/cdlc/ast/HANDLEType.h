@@ -27,6 +27,8 @@ class HANDLEType
 public:
     inline HANDLEType();
 
+    bool IsHANDLEType() override;
+
     String GetSignature() override;
 };
 

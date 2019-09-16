@@ -19,6 +19,11 @@
 
 namespace cdlc {
 
+bool ArrayType::IsArrayType()
+{
+    return true;
+}
+
 String ArrayType::GetSignature()
 {
     return "[" + mElementType->GetSignature();

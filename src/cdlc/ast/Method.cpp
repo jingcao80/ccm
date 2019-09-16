@@ -21,6 +21,15 @@
 
 namespace cdlc {
 
+AutoPtr<Parameter> Method::GetParameter(
+    /* [in] */ int i)
+{
+    if (i >= 0 && i < mParameters.size()) {
+        return mParameters[i];
+    }
+    return nullptr;
+}
+
 void Method::BuildSignature()
 {
     StringBuilder builder;

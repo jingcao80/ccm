@@ -51,25 +51,54 @@ public:
     void AddNamespace(
         /* [in] */ Namespace* ns);
 
+    AutoPtr<Namespace> GetNamespace(
+        /* [in] */ int i);
+
     AutoPtr<Namespace> FindNamespace(
         /* [in] */ const String& nsString);
+
+    inline int GetNamespaceNumber();
 
     void AddConstant(
         /* [in] */ Constant* constant);
 
+    AutoPtr<Constant> GetConstant(
+        /* [in] */ int i);
+
+    inline int GetConstantNumber();
+
     void AddEnumerationType(
         /* [in] */ EnumerationType* enumeration);
+
+    AutoPtr<EnumerationType> GetEnumeration(
+        /* [in] */ int i);
+
+    inline int GetEnumerationNumber();
 
     void AddInterfaceType(
         /* [in] */ InterfaceType* interface);
 
+    AutoPtr<InterfaceType> GetInterface(
+        /* [in] */ int i);
+
+    inline int GetInterfaceNumber();
+
     void AddCoclassType(
         /* [in] */ CoclassType* klass);
+
+    AutoPtr<CoclassType> GetCoclass(
+        /* [in] */ int i);
+
+    inline int GetCoclassNumber();
 
     void AddType(
         /* [in] */ Type* type);
 
     inline bool IsGlobal();
+
+    inline bool IsInterfaceWrapper();
+
+    AutoPtr<InterfaceType> GetInterfaceWrapped();
 
     inline String ToShortString();
 
@@ -87,6 +116,9 @@ private:
     Namespace* mParent = nullptr;
     std::vector<AutoPtr<Namespace>> mChildren;
     std::vector<AutoPtr<Constant>> mConstants;
+    std::vector<AutoPtr<EnumerationType>> mEnumerations;
+    std::vector<AutoPtr<InterfaceType>> mInterfaces;
+    std::vector<AutoPtr<CoclassType>> mKlasses;
     std::vector<AutoPtr<Type>> mTypes;
     bool mIsWrapper = false;
     InterfaceType* mInterfaceWrapped = nullptr;
@@ -105,9 +137,39 @@ void Namespace::SetParent(
     mParent = parent;
 }
 
+int Namespace::GetNamespaceNumber()
+{
+    return mChildren.size();
+}
+
+int Namespace::GetConstantNumber()
+{
+    return mConstants.size();
+}
+
+int Namespace::GetEnumerationNumber()
+{
+    return mEnumerations.size();
+}
+
+int Namespace::GetInterfaceNumber()
+{
+    return mInterfaces.size();
+}
+
+int Namespace::GetCoclassNumber()
+{
+    return mKlasses.size();
+}
+
 bool Namespace::IsGlobal()
 {
     return mName.Equals(GLOBAL_NAME);
+}
+
+bool Namespace::IsInterfaceWrapper()
+{
+    return mIsWrapper;
 }
 
 String Namespace::ToShortString()

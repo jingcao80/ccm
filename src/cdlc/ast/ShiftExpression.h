@@ -27,6 +27,8 @@ class ShiftExpression
 public:
     bool BooleanValue() override;
 
+    char CharacterValue() override;
+
     int IntegerValue() override;
 
     long long int LongValue() override;
@@ -34,6 +36,16 @@ public:
     float FloatValue() override;
 
     double DoubleValue() override;
+
+    String StringValue() override;
+
+    String EnumeratorValue() override;
+
+    bool IsPositiveInfinity() override;
+
+    bool IsNegativeInfinity() override;
+
+    bool IsNaN() override;
 };
 
 }

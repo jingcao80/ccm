@@ -27,6 +27,8 @@ class CoclassIDType
 public:
     inline CoclassIDType();
 
+    bool IsCoclassIDType() override;
+
     String GetSignature() override;
 };
 

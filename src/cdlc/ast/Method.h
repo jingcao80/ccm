@@ -37,11 +37,18 @@ public:
 
     inline String GetSignature();
 
+    inline AutoPtr<Type> GetReturnType();
+
     inline void SetReturnType(
         /* [in] */ Type* type);
 
     inline void AddParameter(
         /* [in] */ Parameter* param);
+
+    AutoPtr<Parameter> GetParameter(
+        /* [in] */ int i);
+
+    inline int GetParameterNumber();
 
     inline void SetDeleted(
         /* [in] */ bool deleted);
@@ -89,6 +96,11 @@ String Method::GetSignature()
     return mSignature;
 }
 
+AutoPtr<Type> Method::GetReturnType()
+{
+    return mReturnType;
+}
+
 void Method::SetReturnType(
     /* [in] */ Type* type)
 {
@@ -101,6 +113,11 @@ void Method::AddParameter(
     if (param != nullptr) {
         mParameters.push_back(param);
     }
+}
+
+int Method::GetParameterNumber()
+{
+    return mParameters.size();
 }
 
 void Method::SetDeleted(

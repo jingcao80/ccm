@@ -14,32 +14,14 @@
 # limitations under the License.
 #=========================================================================
 
-set(RPC_DIR ${RUNTIME_DIR}/rpc)
-
-add_subdirectory(dbus)
+set(METADATA_DIR ${CDLC_DIR}/metadata)
 
 include_directories(
-    ./
-    ../
-    ../type
-    ../util
-    ${INC_DIR})
+    ${CDLC_DIR}
+    ${SRC_DIR})
 
 set(SOURCES
-    CProxy.cpp
-    CStub.cpp
-    ccmrpc.cpp
-    registry.cpp)
+    MetadataBuilder.cpp)
 
-add_library(rpc STATIC
+add_library(metadata STATIC
     ${SOURCES})
-add_dependencies(rpc cdl)
-
-COPY(rpc ${RPC_DIR}/ccmrpc.h ${INC_DIR})
-
-set(DEPLOY_HEADERS
-    ${RPC_DIR}/ccmrpc.h)
-
-install(FILES
-    ${DEPLOY_HEADERS}
-    DESTINATION ${INC_DIR})

@@ -41,6 +41,12 @@ public:
     void SetAttributes(
         /* [in] */ const Attributes& attrs);
 
+    inline AutoPtr<UUID> GetUUID();
+
+    inline String GetUri();
+
+    inline String GetName();
+
     inline void SetName(
         /* [in] */ const String& name);
 
@@ -50,14 +56,59 @@ public:
     inline AutoPtr<Namespace> FindNamespace(
         /* [in] */ const String& nsString);
 
-    void AddTemporaryType(
-        /* [in] */ Type* type);
+    inline AutoPtr<Namespace> GetNamespace(
+        /* [in] */ int i);
+
+    inline int GetNamespaceNumber();
+
+    AutoPtr<Constant> GetConstant(
+        /* [in] */ int i);
+
+    inline int GetConstantNumber();
+
+    int IndexOf(
+        /* [in] */ Constant* constant);
 
     AutoPtr<EnumerationType> FindEnumeration(
         /* [in] */ const String& fullName);
 
+    AutoPtr<EnumerationType> GetEnumeration(
+        /* [in] */ int i);
+
+    inline int GetEnumerationNumber();
+
+    int IndexOf(
+        /* [in] */ EnumerationType* enumeration);
+
+    AutoPtr<InterfaceType> GetInterface(
+        /* [in] */ int i);
+
+    inline int GetInterfaceNumber();
+
+    int IndexOf(
+        /* [in] */ InterfaceType* interface);
+
+    AutoPtr<CoclassType> GetCoclass(
+        /* [in] */ int i);
+
+    inline int GetCoclassNumber();
+
+    int IndexOf(
+        /* [in] */ CoclassType* klass);
+
+    void AddTemporaryType(
+        /* [in] */ Type* type);
+
     AutoPtr<Type> FindType(
         /* [in] */ const String& fullName);
+
+    inline const std::unordered_map<String, AutoPtr<Type>, StringHashFunc, StringEqualsFunc>&
+    GetTypes();
+
+    int IndexOf(
+        /* [in] */ Type* type);
+
+    inline int GetTypeNumber();
 
     String ToString() override;
 
@@ -102,6 +153,21 @@ Module::Module()
     : mGlobalNamespace(new Namespace(Namespace::GLOBAL_NAME, this))
 {}
 
+AutoPtr<UUID> Module::GetUUID()
+{
+    return mUuid;
+}
+
+String Module::GetUri()
+{
+    return mUri;
+}
+
+String Module::GetName()
+{
+    return mName;
+}
+
 void Module::SetName(
     /* [in] */ const String& name)
 {
@@ -125,11 +191,42 @@ AutoPtr<Namespace> Module::FindNamespace(
     }
 }
 
+AutoPtr<Namespace> Module::GetNamespace(
+    /* [in] */ int i)
+{
+    return mGlobalNamespace->GetNamespace(i);
+}
+
+int Module::GetNamespaceNumber()
+{
+    return mGlobalNamespace->GetNamespaceNumber();
+}
+
 void Module::AddConstant(
     /* [in] */ Constant* constant)
 {
     mConstants.push_back(constant);
     constant->SetModule(this);
+}
+
+int Module::GetConstantNumber()
+{
+    return mConstants.size();
+}
+
+int Module::GetEnumerationNumber()
+{
+    return mEnumerations.size();
+}
+
+int Module::GetInterfaceNumber()
+{
+    return mInterfaces.size();
+}
+
+int Module::GetCoclassNumber()
+{
+    return mKlasses.size();
 }
 
 void Module::AddEnumerationType(
@@ -151,6 +248,17 @@ void Module::AddCoclassType(
 {
     mKlasses.push_back(klass);
     AddType(klass);
+}
+
+const std::unordered_map<String, AutoPtr<Type>, StringHashFunc, StringEqualsFunc>&
+Module::GetTypes()
+{
+    return mAllTypeMap;
+}
+
+int Module::GetTypeNumber()
+{
+    return mAllTypeMap.size();
 }
 
 }

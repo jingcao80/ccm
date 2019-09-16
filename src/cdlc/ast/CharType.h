@@ -27,6 +27,8 @@ class CharType
 public:
     inline CharType();
 
+    bool IsCharType() override;
+
     bool IsIntegralType() override;
 
     String GetSignature() override;

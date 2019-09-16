@@ -27,8 +27,12 @@ class PointerType
     : public Type
 {
 public:
+    inline AutoPtr<Type> GetBaseType();
+
     inline void SetBaseType(
         /* [in] */ Type* type);
+
+    inline int GetPointerNumber();
 
     inline void SetPointerNumber(
         /* [in] */ int number);
@@ -47,10 +51,20 @@ private:
     int mPointerNumber = 0;
 };
 
+AutoPtr<Type> PointerType::GetBaseType()
+{
+    return mBaseType;
+}
+
 void PointerType::SetBaseType(
     /* [in] */ Type* type)
 {
     mBaseType = type;
+}
+
+int PointerType::GetPointerNumber()
+{
+    return mPointerNumber;
 }
 
 void PointerType::SetPointerNumber(

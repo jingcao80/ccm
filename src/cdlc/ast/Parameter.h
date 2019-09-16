@@ -28,6 +28,8 @@ class Parameter
     : public Node
 {
 public:
+    inline String GetName();
+
     inline void SetName(
         /* [in] */ const String& name);
 
@@ -36,8 +38,18 @@ public:
     inline void SetType(
         /* [in] */ Type* type);
 
+    inline AutoPtr<Expression> GetDefaultValue();
+
+    inline bool HasDefaultValue();
+
     inline void SetDefaultValue(
         /* [in] */ Expression* expr);
+
+    inline bool IsCallee();
+
+    inline bool IsIn();
+
+    inline bool IsOut();
 
     inline void SetAttributes(
         /* [in] */ int attrs);
@@ -48,16 +60,21 @@ public:
         /* [in] */ const String& prefix) override;
 
 public:
-    static constexpr int IN = 0x1;
-    static constexpr int OUT = 0x2;
-    static constexpr int CALLEE = 0x4;
+    static constexpr int IN = 0x01;
+    static constexpr int OUT = 0x02;
+    static constexpr int CALLEE = 0x04;
 
 private:
     String mName;
     AutoPtr<Type> mType;
-    AutoPtr<Expression> mDefaultValue;
+    AutoPtr<Expression> mValue;
     int mAttributes = 0;
 };
+
+String Parameter::GetName()
+{
+    return mName;
+}
 
 void Parameter::SetName(
     /* [in] */ const String& name)
@@ -76,10 +93,35 @@ void Parameter::SetType(
     mType = type;
 }
 
+AutoPtr<Expression> Parameter::GetDefaultValue()
+{
+    return mValue;
+}
+
+bool Parameter::HasDefaultValue()
+{
+    return mValue != nullptr;
+}
+
 void Parameter::SetDefaultValue(
     /* [in] */ Expression* expr)
 {
-    mDefaultValue = expr;
+    mValue = expr;
+}
+
+bool Parameter::IsCallee()
+{
+    return mAttributes & CALLEE == CALLEE;
+}
+
+bool Parameter::IsIn()
+{
+    return mAttributes & IN == IN;
+}
+
+bool Parameter::IsOut()
+{
+    return mAttributes & OUT == OUT;
 }
 
 void Parameter::SetAttributes(

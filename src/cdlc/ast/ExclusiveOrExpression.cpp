@@ -24,6 +24,11 @@ bool ExclusiveOrExpression::BooleanValue()
     return mRightOperand->BooleanValue();
 }
 
+char ExclusiveOrExpression::CharacterValue()
+{
+    return mRightOperand->CharacterValue();
+}
+
 int ExclusiveOrExpression::IntegerValue()
 {
     if (mLeftOperand != nullptr) {
@@ -57,6 +62,40 @@ float ExclusiveOrExpression::FloatValue()
 double ExclusiveOrExpression::DoubleValue()
 {
     return mRightOperand->DoubleValue();
+}
+
+String ExclusiveOrExpression::StringValue()
+{
+    return mRightOperand->StringValue();
+}
+
+String ExclusiveOrExpression::EnumeratorValue()
+{
+    return mRightOperand->EnumeratorValue();
+}
+
+bool ExclusiveOrExpression::IsPositiveInfinity()
+{
+    if (mLeftOperand != nullptr || mRightOperand == nullptr) {
+        return false;
+    }
+    return mRightOperand->IsPositiveInfinity();
+}
+
+bool ExclusiveOrExpression::IsNegativeInfinity()
+{
+    if (mLeftOperand != nullptr || mRightOperand == nullptr) {
+        return false;
+    }
+    return mRightOperand->IsNegativeInfinity();
+}
+
+bool ExclusiveOrExpression::IsNaN()
+{
+    if (mLeftOperand != nullptr || mRightOperand == nullptr) {
+        return false;
+    }
+    return mRightOperand->IsNaN();
 }
 
 }

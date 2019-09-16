@@ -31,8 +31,12 @@ class CoclassType
     : public Type
 {
 public:
+    bool IsCoclassType() override;
+
     void SetAttributes(
         /* [in] */ const Attributes& attrs);
+
+    inline AutoPtr<UUID> GetUUID();
 
     inline void AddConstructor(
         /* [in] */ Method* constructor);
@@ -41,18 +45,37 @@ public:
         /* [in] */ const String& name,
         /* [in] */ const String& signature);
 
+    inline bool HasDefaultConstructor();
+
+    inline bool IsConstructorDeleted();
+
     inline void AddInterface(
         /* [in] */ InterfaceType* interface);
 
+    AutoPtr<InterfaceType> GetInterface(
+        /* [in] */ int i);
+
+    inline int GetInterfaceNumber();
+
     String GetSignature() override;
+
+    inline static AutoPtr<CoclassType> CastFrom(
+        /* [in] */ Type* type);
 
 private:
     AutoPtr<UUID> mUuid;
     String mVersion;
     String mDescription;
+    bool mConstructorDefault = false;
+    bool mConstructorDeleted = false;
     std::vector<AutoPtr<Method>> mConstructors;
     std::vector<AutoPtr<InterfaceType>> mInterfaces;
 };
+
+AutoPtr<UUID> CoclassType::GetUUID()
+{
+    return mUuid;
+}
 
 void CoclassType::AddConstructor(
     /* [in] */ Method* constructor)
@@ -62,12 +85,33 @@ void CoclassType::AddConstructor(
     }
 }
 
+bool CoclassType::HasDefaultConstructor()
+{
+    return mConstructorDefault;
+}
+
+bool CoclassType::IsConstructorDeleted()
+{
+    return mConstructorDeleted;
+}
+
 void CoclassType::AddInterface(
     /* [in] */ InterfaceType* interface)
 {
     if (interface != nullptr) {
         mInterfaces.push_back(interface);
     }
+}
+
+int CoclassType::GetInterfaceNumber()
+{
+    return mInterfaces.size();
+}
+
+AutoPtr<CoclassType> CoclassType::CastFrom(
+    /* [in] */ Type* type)
+{
+    return static_cast<CoclassType*>(type);
 }
 
 }

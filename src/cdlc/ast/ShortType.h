@@ -27,6 +27,8 @@ class ShortType
 public:
     inline ShortType();
 
+    bool IsShortType() override;
+
     bool IsIntegralType() override;
 
     String GetSignature() override;

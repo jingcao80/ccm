@@ -19,6 +19,11 @@
 
 namespace cdlc {
 
+bool ECodeType::IsECodeType()
+{
+    return true;
+}
+
 String ECodeType::GetSignature()
 {
     return "E";

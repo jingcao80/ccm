@@ -41,6 +41,15 @@ bool EnumerationType::Contains(
     return false;
 }
 
+AutoPtr<EnumerationType::Enumerator> EnumerationType::GetEnumerator(
+    /* [in] */ int i)
+{
+    if (i >= 0 && i < mEnumerators.size()) {
+        return mEnumerators[i];
+    }
+    return nullptr;
+}
+
 bool EnumerationType::IsEnumerationType()
 {
     return true;
