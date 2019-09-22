@@ -14,32 +14,19 @@
 // limitations under the License.
 //=========================================================================
 
-#include "parser/World.h"
+#ifndef __CDLC_METADATA_H__
+#define __CDLC_METADATA_H__
 
-namespace cdlc {
+#include "runtime/metadata/Component.h"
 
-AutoPtr<Module> World::GetWorkingModule()
-{
-    if (mWorkingModule == nullptr) {
-        mWorkingModule = new Module();
-    }
-    return mWorkingModule;
-}
+#define ALIGN4(v) (((v) + 3) & ~3)
+#define ALIGN8(v) (((v) + 7) & ~7)
 
-AutoPtr<EnumerationType> World::FindEnumeration(
-    /* [in] */ const String& fullName)
-{
-    AutoPtr<Type> type = FindType(fullName);
-    if (type != nullptr && type->IsEnumerationType()) {
-        return (EnumerationType*)type.Get();
-    }
-    return nullptr;
-}
+#if defined(__i386__) || defined(__arm__)
+#define ALIGN(v) ALIGN4(v)
+#elif defined(__x86_64__) || defined(__aarch64__)
+#define ALIGN(v) ALIGN8(v)
+#endif
 
-AutoPtr<Type> World::FindType(
-    /* [in] */ const String& name)
-{
-    return mCompilerRTModule->FindType(name);
-}
 
-}
+#endif // __CDLC_METADATA_H__

@@ -27,6 +27,10 @@ class BooleanType
 public:
     inline BooleanType();
 
+    bool IsBooleanType() override;
+
+    bool IsBuildinType() override;
+
     String GetSignature() override;
 };
 

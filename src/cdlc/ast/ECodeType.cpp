@@ -24,6 +24,11 @@ bool ECodeType::IsECodeType()
     return true;
 }
 
+bool ECodeType::IsBuildinType()
+{
+    return true;
+}
+
 String ECodeType::GetSignature()
 {
     return "E";

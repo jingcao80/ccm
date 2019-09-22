@@ -20,6 +20,11 @@
 
 namespace cdlc {
 
+AutoPtr<Module> Type::GetModule()
+{
+    return mModule;
+}
+
 bool Type::IsECodeType()
 {
     return false;
@@ -136,6 +141,11 @@ bool Type::IsPointerType()
 }
 
 bool Type::IsReferenceType()
+{
+    return false;
+}
+
+bool Type::IsBuildinType()
 {
     return false;
 }

@@ -161,6 +161,17 @@ void Module::AddTemporaryType(
 {
     if (type != nullptr) {
         mAllTypeMap[type->ToString()] = type;
+        type->SetModule(this);
+    }
+}
+
+void Module::CopyType(
+    /* [in] */ Type* source)
+{
+    if (source != nullptr) {
+        if (source->IsBuildinType()) {
+            mAllTypeMap[source->ToString()] = source;
+        }
     }
 }
 

@@ -29,6 +29,8 @@ public:
 
     bool IsECodeType() override;
 
+    bool IsBuildinType() override;
+
     String GetSignature() override;
 };
 

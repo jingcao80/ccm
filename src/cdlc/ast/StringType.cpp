@@ -19,6 +19,16 @@
 
 namespace cdlc {
 
+bool StringType::IsStringType()
+{
+    return true;
+}
+
+bool StringType::IsBuildinType()
+{
+    return true;
+}
+
 String StringType::GetSignature()
 {
     return "T";

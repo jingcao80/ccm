@@ -29,6 +29,8 @@ public:
 
     bool IsComponentIDType() override;
 
+    bool IsBuildinType() override;
+
     String GetSignature() override;
 };
 

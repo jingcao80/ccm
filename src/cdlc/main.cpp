@@ -16,6 +16,7 @@
 
 #include "ast/Module.h"
 #include "metadata/MetadataBuilder.h"
+#include "metadata/MetadataDumper.h"
 #include "parser/Parser.h"
 #include "util/Logger.h"
 #include "util/Options.h"
@@ -57,6 +58,11 @@ int main(int argc, char** argv)
         if (component == nullptr) {
             Logger::E(TAG, "Generate metadata failed.");
             return -1;
+        }
+
+        if (options.DoDumpMetadata()) {
+            MetadataDumper dumper(component.get());
+            printf("%s", dumper.Dump("").string());
         }
     }
 

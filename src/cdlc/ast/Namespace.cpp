@@ -162,10 +162,27 @@ void Namespace::AddType(
     /* [in] */ Type* type)
 {
     if (type != nullptr) {
-        mTypes.push_back(type);
-        type->SetNamespace(this);
-        mModule->AddType(type);
+        if (type->IsEnumerationType()) {
+            AddEnumerationType(EnumerationType::CastFrom(type));
+        }
+        else if (type->IsInterfaceType()) {
+            AddInterfaceType(InterfaceType::CastFrom(type));
+        }
+        else if (type->IsCoclassType()) {
+            AddCoclassType(CoclassType::CastFrom(type));
+        }
+        else {
+            AddTypeInternal(type);
+        }
     }
+}
+
+void Namespace::AddTypeInternal(
+    /* [in] */ Type* type)
+{
+    mTypes.push_back(type);
+    type->SetNamespace(this);
+    mModule->AddType(type);
 }
 
 AutoPtr<InterfaceType> Namespace::GetInterfaceWrapped()

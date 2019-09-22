@@ -101,8 +101,8 @@ struct MetaConstant
     MetaValue           mValue;
 };
 
-#define COCLASS_CONSTRUCTOR_DEFAULT 0x01;
-#define COCLASS_CONSTRUCTOR_DELETED 0x02;
+#define COCLASS_CONSTRUCTOR_DEFAULT 0x01
+#define COCLASS_CONSTRUCTOR_DELETED 0x02
 
 struct MetaCoclass
 {
@@ -145,8 +145,8 @@ struct MetaInterface
     // bool                mExternal;
 };
 
-#define METHOD_DELETED              0x01;
-#define METHOD_RETURN_REFERENCE     0x02;
+#define METHOD_DELETED              0x01
+#define METHOD_RETURN_REFERENCE     0x02
 
 struct MetaMethod
 {
@@ -167,7 +167,7 @@ struct MetaMethod
 #define PARAMETER_VALUE_DEFAULT     0x08
 
 /*
- * if the parameter has default value, then it's MetaParameter
+ * If the parameter has default value, then it's MetaParameter
  * will be followed by a MetaValue.
  */
 struct MetaParameter
@@ -182,7 +182,12 @@ struct MetaParameter
 #define TYPE_POINTER                0x01
 #define TYPE_REFERENCE              0x02
 #define TYPE_POINTER_NUMBER_MASK    0x0c
+#define TYPE_EXTERNAL               0x10
 
+/*
+ * If the type is in other module, then it's MetaType will
+ * be followed by the name of the module.
+ */
 struct MetaType
 {
     TypeKind            mKind;

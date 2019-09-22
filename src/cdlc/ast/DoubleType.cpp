@@ -29,6 +29,11 @@ bool DoubleType::IsFloatingPointType()
     return true;
 }
 
+bool DoubleType::IsBuildinType()
+{
+    return true;
+}
+
 String DoubleType::GetSignature()
 {
     return "D";

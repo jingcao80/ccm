@@ -34,6 +34,8 @@ public:
 
     inline bool DoDumpAST() const;
 
+    inline bool DoDumpMetadata() const;
+
     inline bool HasErrors() const;
 
     inline bool DoShowUsage() const;
@@ -54,6 +56,7 @@ private:
 
     bool mDoCompile = false;
     bool mDoDumpAST = false;
+    bool mDoDumpMetadata = false;
     bool mShowUsage = false;
     bool mShowVersion = false;
 };
@@ -78,6 +81,11 @@ bool Options::DoCompile() const
 bool Options::DoDumpAST() const
 {
     return mDoDumpAST;
+}
+
+bool Options::DoDumpMetadata() const
+{
+    return mDoDumpMetadata;
 }
 
 bool Options::HasErrors() const

@@ -30,6 +30,8 @@ class Type
     : public Node
 {
 public:
+    AutoPtr<Module> GetModule();
+
     inline void SetModule(
         /* [in] */ Module* module);
 
@@ -95,6 +97,8 @@ public:
     virtual bool IsPointerType();
 
     virtual bool IsReferenceType();
+
+    virtual bool IsBuildinType();
 
     virtual String GetSignature() = 0;
 

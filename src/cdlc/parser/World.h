@@ -50,6 +50,7 @@ private:
 World::World()
 {
     mCompilerRTModule = new Module();
+    mCompilerRTModule->SetName("compiler-rt");
 }
 
 AutoPtr<Module> World::GetCompilerRTModule()

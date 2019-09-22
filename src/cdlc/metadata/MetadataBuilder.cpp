@@ -20,15 +20,6 @@
 #include "ast/ReferenceType.h"
 #include "util/Logger.h"
 
-#define ALIGN4(v) (((v) + 3) & ~3)
-#define ALIGN8(v) (((v) + 7) & ~7)
-
-#if defined(__i386__) || defined(__arm__)
-#define ALIGN(v) ALIGN4(v)
-#elif defined(__x86_64__) || defined(__aarch64__)
-#define ALIGN(v) ALIGN8(v)
-#endif
-
 namespace cdlc {
 
 const char* MetadataBuilder::TAG = "MetadataBuilder";
@@ -306,6 +297,13 @@ void MetadataBuilder::CalculateMetaType(
     mBasePtr = ALIGN(mBasePtr);
     // end address
     mBasePtr = mBasePtr + sizeof(como::MetaType);
+
+    if (type->GetModule() != mModule) {
+        mBasePtr = ALIGN(mBasePtr);
+        // add the name of external module to StringPool
+        mPool.Add(type->GetModule()->GetName());
+        mBasePtr = mBasePtr + sizeof(char**);
+    }
 }
 
 void MetadataBuilder::CalculateStringPool()
@@ -730,6 +728,8 @@ como::MetaValue* MetadataBuilder::WriteMetaValue(
 como::MetaType* MetadataBuilder::WriteMetaType(
     /* [in] */ Type* type)
 {
+    Type* self = type;
+
     // begin address
     mBasePtr = ALIGN(mBasePtr);
     como::MetaType* mt = reinterpret_cast<como::MetaType*>(mBasePtr);
@@ -742,6 +742,7 @@ como::MetaType* MetadataBuilder::WriteMetaType(
         mt->mProperties |= TYPE_POINTER;
         mt->mProperties |= ((PointerType::CastFrom(type)->GetPointerNumber() << 4)
                 & TYPE_POINTER_NUMBER_MASK);
+        type = PointerType::CastFrom(type)->GetBaseType();
     }
     mt->mKind = ToTypeKind(type);
     mt->mIndex = 0;
@@ -759,6 +760,13 @@ como::MetaType* MetadataBuilder::WriteMetaType(
     }
     // end address
     mBasePtr = mBasePtr + sizeof(como::MetaType);
+
+    if (self->GetModule() != mModule) {
+        mt->mProperties |= TYPE_EXTERNAL;
+        mBasePtr = ALIGN(mBasePtr);
+        *(char**)mBasePtr = WriteString(self->GetModule()->GetName());
+        mBasePtr = mBasePtr + sizeof(char**);
+    }
 
     return mt;
 }

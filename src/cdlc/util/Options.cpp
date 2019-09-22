@@ -34,6 +34,9 @@ void Options::Parse(
         if (option.Equals("-dump-ast")) {
             mDoDumpAST = true;
         }
+        else if (option.Equals("-dump-metadata")) {
+            mDoDumpMetadata = true;
+        }
         else if (option.Equals("--help")) {
             mShowUsage = true;
         }
@@ -79,6 +82,7 @@ void Options::ShowUsage() const
             "  --help           Display command line options\n"
             "  --version        Display version information\n"
             "  -dump-ast        Display the AST of the .cdl file\n"
+            "  -dump-metadata   Display the metadata generated from the .cdl file\n"
             "  -c               Compile the .cdl file\n"
             "  -i <directory>   Add <directory> to the .cdl files search paths\n"
             "  -o <file>        Save the metadata into <file>\n");

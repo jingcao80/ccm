@@ -31,6 +31,8 @@ public:
 
     bool IsIntegralType() override;
 
+    bool IsBuildinType() override;
+
     String GetSignature() override;
 };
 

@@ -29,6 +29,11 @@ bool IntegerType::IsIntegralType()
     return true;
 }
 
+bool IntegerType::IsBuildinType()
+{
+    return true;
+}
+
 String IntegerType::GetSignature()
 {
     return "I";

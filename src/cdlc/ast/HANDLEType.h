@@ -29,6 +29,8 @@ public:
 
     bool IsHANDLEType() override;
 
+    bool IsBuildinType() override;
+
     String GetSignature() override;
 };
 

@@ -99,6 +99,9 @@ public:
     void AddTemporaryType(
         /* [in] */ Type* type);
 
+    void CopyType(
+        /* [in] */ Type* source);
+
     AutoPtr<Type> FindType(
         /* [in] */ const String& fullName);
 

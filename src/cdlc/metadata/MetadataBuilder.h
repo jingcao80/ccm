@@ -27,9 +27,9 @@
 #include "ast/Namespace.h"
 #include "ast/Parameter.h"
 #include "ast/Type.h"
+#include "metadata/Metadata.h"
 #include "util/AutoPtr.h"
 #include "util/StringPool.h"
-#include "runtime/metadata/Component.h"
 #include <memory>
 
 namespace cdlc {

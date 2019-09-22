@@ -24,6 +24,11 @@ bool HANDLEType::IsHANDLEType()
     return true;
 }
 
+bool HANDLEType::IsBuildinType()
+{
+    return true;
+}
+
 String HANDLEType::GetSignature()
 {
     return "H";

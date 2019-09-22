@@ -29,6 +29,11 @@ bool FloatType::IsFloatingPointType()
     return true;
 }
 
+bool FloatType::IsBuildinType()
+{
+    return true;
+}
+
 String FloatType::GetSignature()
 {
     return "F";

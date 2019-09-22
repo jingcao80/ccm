@@ -19,6 +19,16 @@
 
 namespace cdlc {
 
+bool BooleanType::IsBooleanType()
+{
+    return true;
+}
+
+bool BooleanType::IsBuildinType()
+{
+    return true;
+}
+
 String BooleanType::GetSignature()
 {
     return "Z";

@@ -29,4 +29,9 @@ String ArrayType::GetSignature()
     return "[" + mElementType->GetSignature();
 }
 
+String ArrayType::ToString()
+{
+    return String::Format("Array<%s>", mElementType->ToString().string());
+}
+
 }

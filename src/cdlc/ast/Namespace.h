@@ -107,6 +107,10 @@ public:
     String Dump(
         /* [in] */ const String& prefix) override;
 
+private:
+    void AddTypeInternal(
+        /* [in] */ Type* type);
+
 public:
     static const String GLOBAL_NAME;
 

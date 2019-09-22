@@ -29,6 +29,8 @@ public:
 
     bool IsCoclassIDType() override;
 
+    bool IsBuildinType() override;
+
     String GetSignature() override;
 };
 

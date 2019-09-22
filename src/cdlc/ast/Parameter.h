@@ -111,17 +111,17 @@ void Parameter::SetDefaultValue(
 
 bool Parameter::IsCallee()
 {
-    return mAttributes & CALLEE == CALLEE;
+    return (mAttributes & CALLEE) == CALLEE;
 }
 
 bool Parameter::IsIn()
 {
-    return mAttributes & IN == IN;
+    return (mAttributes & IN) == IN;
 }
 
 bool Parameter::IsOut()
 {
-    return mAttributes & OUT == OUT;
+    return (mAttributes & OUT) == OUT;
 }
 
 void Parameter::SetAttributes(

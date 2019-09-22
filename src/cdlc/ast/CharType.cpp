@@ -29,6 +29,11 @@ bool CharType::IsIntegralType()
     return true;
 }
 
+bool CharType::IsBuildinType()
+{
+    return true;
+}
+
 String CharType::GetSignature()
 {
     return "C";

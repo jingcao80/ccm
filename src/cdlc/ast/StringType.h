@@ -27,6 +27,10 @@ class StringType
 public:
     inline StringType();
 
+    bool IsStringType() override;
+
+    bool IsBuildinType() override;
+
     String GetSignature() override;
 };
 

@@ -34,6 +34,8 @@ public:
 
     String GetSignature() override;
 
+    String ToString() override;
+
     inline static AutoPtr<ArrayType> CastFrom(
         /* [in] */ Type* type);
 

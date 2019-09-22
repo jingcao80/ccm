@@ -24,6 +24,11 @@ bool InterfaceIDType::IsInterfaceIDType()
     return true;
 }
 
+bool InterfaceIDType::IsBuildinType()
+{
+    return true;
+}
+
 String InterfaceIDType::GetSignature()
 {
     return "U";

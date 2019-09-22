@@ -29,6 +29,8 @@ public:
 
     bool IsInterfaceIDType() override;
 
+    bool IsBuildinType() override;
+
     String GetSignature() override;
 };
 

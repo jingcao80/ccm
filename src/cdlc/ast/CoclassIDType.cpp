@@ -24,6 +24,11 @@ bool CoclassIDType::IsCoclassIDType()
     return true;
 }
 
+bool CoclassIDType::IsBuildinType()
+{
+    return true;
+}
+
 String CoclassIDType::GetSignature()
 {
     return "K";

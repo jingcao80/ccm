@@ -31,6 +31,8 @@ public:
 
     bool IsFloatingPointType() override;
 
+    bool IsBuildinType() override;
+
     String GetSignature() override;
 };
 

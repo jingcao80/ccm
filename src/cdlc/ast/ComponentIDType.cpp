@@ -24,6 +24,11 @@ bool ComponentIDType::IsComponentIDType()
     return true;
 }
 
+bool ComponentIDType::IsBuildinType()
+{
+    return true;
+}
+
 String ComponentIDType::GetSignature()
 {
     return "M";
