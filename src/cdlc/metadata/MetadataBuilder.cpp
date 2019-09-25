@@ -286,6 +286,9 @@ void MetadataBuilder::CalculateMetaValue(
     else if (parameter->GetType()->IsEnumerationType()) {
         mPool.Add(parameter->GetDefaultValue()->EnumeratorValue());
     }
+    else if (parameter->GetType()->IsPointerType()) {
+        mPool.Add(parameter->GetDefaultValue()->StringValue());
+    }
     // end address
     mBasePtr = mBasePtr + sizeof(como::MetaValue);
 }
@@ -718,6 +721,9 @@ como::MetaValue* MetadataBuilder::WriteMetaValue(
     else if (type->IsEnumerationType()) {
         mv->mStringValue = WriteString(value->EnumeratorValue());
     }
+    else if (type->IsPointerType()) {
+        mv->mStringValue = WriteString(value->StringValue());
+    }
 
     // end address
     mBasePtr = mBasePtr + sizeof(como::MetaValue);
@@ -740,7 +746,7 @@ como::MetaType* MetadataBuilder::WriteMetaType(
     }
     if (type->IsPointerType()) {
         mt->mProperties |= TYPE_POINTER;
-        mt->mProperties |= ((PointerType::CastFrom(type)->GetPointerNumber() << 4)
+        mt->mProperties |= ((PointerType::CastFrom(type)->GetPointerNumber() << 2)
                 & TYPE_POINTER_NUMBER_MASK);
         type = PointerType::CastFrom(type)->GetBaseType();
     }

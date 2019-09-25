@@ -1195,8 +1195,7 @@ AutoPtr<PostfixExpression> Parser::ParsePostfixExpression(
             if (type->IsPointerType()) {
                 AutoPtr<PostfixExpression> expr = new PostfixExpression();
                 expr->SetType(type);
-                expr->SetIntegralValue(0);
-                expr->SetRadix(16);
+                expr->SetStringValue("nullptr");
                 return expr;
             }
 
