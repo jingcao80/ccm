@@ -15,9 +15,11 @@
 //=========================================================================
 
 #include "ast/Module.h"
+#include "metadata/Metadata.h"
 #include "metadata/MetadataBuilder.h"
 #include "metadata/MetadataDumper.h"
 #include "parser/Parser.h"
+#include "util/File.h"
 #include "util/Logger.h"
 #include "util/Options.h"
 
@@ -62,6 +64,23 @@ int main(int argc, char** argv)
 
         if (options.DoDumpMetadata()) {
             MetadataDumper dumper(component.get());
+            printf("%s", dumper.Dump("").string());
+        }
+
+        if (options.DoSaveMetadata()) {
+            File file(options.GetMetadataFile(), File::WRITE);
+            if (!file.IsValid()) {
+                Logger::E("cdlc", "Create metadata file \"%s\" failed.", file.GetPath().string());
+                return -1;
+            }
+
+            como::metadata::MetadataSerializer serializer(component.get());
+            serializer.Serialize();
+            size_t metadataSize = serializer.GetSize();
+            uintptr_t metadata = serializer.GetSerializedMetadata();
+
+            serializer.Deserialize(metadata);
+            MetadataDumper dumper(reinterpret_cast<como::MetaComponent*>(metadata));
             printf("%s", dumper.Dump("").string());
         }
     }

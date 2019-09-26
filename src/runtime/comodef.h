@@ -14,8 +14,8 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CCMDEF_H__
-#define __CCM_CCMDEF_H__
+#ifndef __COMO_CCMDEF_H__
+#define __COMO_CCMDEF_H__
 
 #if defined(_DEBUG)
 #include <assert.h>
@@ -23,7 +23,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-namespace ccm {
+namespace como {
 
 #define COCLASS_ID(x)
 #define INTERFACE_ID(x)
@@ -768,6 +768,6 @@ inline int ArrayLength(const T (&)[N])
     }
 #endif
 
-} // namespace ccm
+} // namespace como
 
-#endif // __CCM_CCMDEF_H__
+#endif // __COMO_CCMDEF_H__

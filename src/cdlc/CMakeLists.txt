@@ -35,7 +35,7 @@ set(SOURCES
 set(CDLC_LINK_LIBS
     -Wl,--whole-archive
     ast
-    metadata
+    metadata2
     parser
     phase
     util
@@ -44,9 +44,10 @@ set(CDLC_LINK_LIBS
 add_executable(cdlc
     ${SOURCES})
 target_link_libraries(cdlc
-    ${CDLC_LINK_LIBS})
+    ${CDLC_LINK_LIBS}
+    metadata)
 add_dependencies(cdlc
-    util)
+    metadata)
 
 COPY(cdlc ${CMAKE_BINARY_DIR}/src/cdlc/cdlc ${BIN_DIR})
 

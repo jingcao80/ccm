@@ -46,8 +46,18 @@ void Options::Parse(
         else if (option.Equals("-c")) {
             mDoCompile = true;
         }
+        else if (option.Equals("-d")) {
+            mGeneratedDir = argv[i++];
+        }
+        else if (option.Equals("-g")) {
+            mDoGenerate = true;
+        }
         else if (option.Equals("-i")) {
             Properties::Get().AddSearchPath(argv[i++]);
+        }
+        else if (option.Equals("-save-metadata")) {
+            mDoSaveMetadata = true;
+            mMetadataFile = argv[i++];
         }
         else if (!option.StartsWith("-")) {
             mSourceFile = option;
@@ -79,13 +89,15 @@ void Options::ShowUsage() const
     printf("Compile a .cdl file and generate metadata, or generate C++ codes from the metadata.\n"
             "Usage: cdlc [options] file\n"
             "Options:\n"
-            "  --help           Display command line options\n"
-            "  --version        Display version information\n"
-            "  -dump-ast        Display the AST of the .cdl file\n"
-            "  -dump-metadata   Display the metadata generated from the .cdl file\n"
-            "  -c               Compile the .cdl file\n"
-            "  -i <directory>   Add <directory> to the .cdl files search paths\n"
-            "  -o <file>        Save the metadata into <file>\n");
+            "  --help                   Display command line options\n"
+            "  --version                Display version information\n"
+            "  -dump-ast                Display the AST of the .cdl file\n"
+            "  -dump-metadata           Display the metadata generated from the .cdl file\n"
+            "  -c                       Compile the .cdl file\n"
+            "  -d <directory>           Place generated C++ files into <directory>\n"
+            "  -g                       Generate C++ files\n"
+            "  -i <directory>           Add <directory> to the .cdl files search paths\n"
+            "  -save-metadata <file>    Save the metadata into <file>\n");
 }
 
 }

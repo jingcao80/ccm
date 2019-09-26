@@ -30,11 +30,15 @@ public:
 
     inline String GetSourceFile() const;
 
+    inline String GetMetadataFile() const;
+
     inline bool DoCompile() const;
 
     inline bool DoDumpAST() const;
 
     inline bool DoDumpMetadata() const;
+
+    inline bool DoSaveMetadata() const;
 
     inline bool HasErrors() const;
 
@@ -51,12 +55,16 @@ private:
 
 private:
     String mProgram;
+    String mGeneratedDir;
+    String mMetadataFile;
     String mSourceFile;
     String mIllegalOptions;
 
     bool mDoCompile = false;
     bool mDoDumpAST = false;
     bool mDoDumpMetadata = false;
+    bool mDoGenerate = false;
+    bool mDoSaveMetadata = false;
     bool mShowUsage = false;
     bool mShowVersion = false;
 };
@@ -73,6 +81,11 @@ String Options::GetSourceFile() const
     return mSourceFile;
 }
 
+String Options::GetMetadataFile() const
+{
+    return mMetadataFile;
+}
+
 bool Options::DoCompile() const
 {
     return mDoCompile;
@@ -86,6 +99,11 @@ bool Options::DoDumpAST() const
 bool Options::DoDumpMetadata() const
 {
     return mDoDumpMetadata;
+}
+
+bool Options::DoSaveMetadata() const
+{
+    return mDoSaveMetadata;
 }
 
 bool Options::HasErrors() const

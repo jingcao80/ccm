@@ -18,6 +18,7 @@
 #define __CDLC_METADATA_H__
 
 #include "runtime/metadata/Component.h"
+#include "runtime/metadata/MetadataSerializer.h"
 
 #define ALIGN4(v) (((v) + 3) & ~3)
 #define ALIGN8(v) (((v) + 7) & ~7)

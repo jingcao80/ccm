@@ -16,8 +16,11 @@
 
 project(libmetadata CXX)
 
+include_directories(
+    ../)
+
 set(LIBMETADATA_SOURCES
-    MetaSerializer.cpp)
+    MetadataSerializer.cpp)
 
 add_library(metadata STATIC
     ${LIBMETADATA_SOURCES})

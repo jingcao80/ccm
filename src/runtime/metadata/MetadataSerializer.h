@@ -14,41 +14,42 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_METADATA_METASERIALIZER_H__
-#define __CCM_METADATA_METASERIALIZER_H__
+#ifndef __CCM_METADATA_METADATASERIALIZER_H__
+#define __CCM_METADATA_METADATASERIALIZER_H__
 
 #include "Component.h"
 #include <stddef.h>
 #include <stdint.h>
 
-namespace ccm {
+namespace como {
 namespace metadata {
 
-class MetaSerializer
+class MetadataSerializer
 {
 public:
-    MetaSerializer();
+    MetadataSerializer() = default;
 
-    MetaSerializer(
+    MetadataSerializer(
         /* [in] */ MetaComponent* mc);
 
     void Serialize();
 
-    inline uintptr_t GetData()
-    { return mBasePtr; }
-
-    inline int GetDataSize()
-    { return mDataSize; }
-
     void Deserialize(
         /* [in] */ uintptr_t basePtr);
 
+    inline uintptr_t GetSerializedMetadata();
+
+    inline size_t GetSize();
+
 private:
-    void SerializeMetaCoclass(
-        /* [in] */ MetaCoclass* mc);
+    void SerializeMetaNamespace(
+        /* [in] */ MetaNamespace* mn);
 
     void SerializeMetaConstant(
         /* [in] */ MetaConstant* mc);
+
+    void SerializeMetaCoclass(
+        /* [in] */ MetaCoclass* mc);
 
     void SerializeMetaEnumeration(
         /* [in] */ MetaEnumeration* me);
@@ -62,11 +63,12 @@ private:
     void SerializeMetaMethod(
         /* [in] */ MetaMethod* mm);
 
-    void SerializeMetaNamespace(
-        /* [in] */ MetaNamespace* mn);
-
     void SerializeMetaParameter(
         /* [in] */ MetaParameter* mp);
+
+    void SerializeMetaValue(
+        /* [in] */ MetaType* mt,
+        /* [in] */ MetaValue* mv);
 
     void SerializeMetaType(
         /* [in] */ MetaType* mt);
@@ -74,11 +76,14 @@ private:
     ptrdiff_t SerializeAdjust(
         /* [in] */ void* addr);
 
-    void DeserializeMetaCoclass(
-        /* [in] */ MetaCoclass* mc);
+    void DeserializeMetaNamespace(
+        /* [in] */ MetaNamespace* mn);
 
     void DeserializeMetaConstant(
         /* [in] */ MetaConstant* mc);
+
+    void DeserializeMetaCoclass(
+        /* [in] */ MetaCoclass* mc);
 
     void DeserializeMetaEnumeration(
         /* [in] */ MetaEnumeration* me);
@@ -92,11 +97,12 @@ private:
     void DeserializeMetaMethod(
         /* [in] */ MetaMethod* mm);
 
-    void DeserializeMetaNamespace(
-        /* [in] */ MetaNamespace* mn);
-
     void DeserializeMetaParameter(
         /* [in] */ MetaParameter* mp);
+
+    void DeserializeMetaValue(
+        /* [in] */ MetaType* mt,
+        /* [in] */ MetaValue* mv);
 
     void DeserializeMetaType(
         /* [in] */ MetaType* mt);
@@ -105,12 +111,22 @@ private:
         /* [in] */ void* addr);
 
 private:
-    MetaComponent* mMetaComponent;
-    uintptr_t mBasePtr;
-    int mDataSize;
+    MetaComponent* mComponent = nullptr;
+    uintptr_t mBasePtr = 0;
+    size_t mMetadataSize = 0;
 };
 
-}
+uintptr_t MetadataSerializer::GetSerializedMetadata()
+{
+    return mBasePtr;
 }
 
-#endif // __CCM_METADATA_METASERIALIZER_H__
+size_t MetadataSerializer::GetSize()
+{
+    return mMetadataSize;
+}
+
+} // metadata
+} // como
+
+#endif // __CCM_METADATA_METADATASERIALIZER_H__

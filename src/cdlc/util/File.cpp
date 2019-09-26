@@ -29,22 +29,47 @@ File::File(
     if (path.IsEmpty()) {
         return;
     }
-    if (!path.StartsWith("/")) {
-        for (String searchPath : Properties::Get().GetSearchPaths()) {
-            String absolutePath = searchPath + "/" + path;
+    if (mMode != WRITE) {
+        if (path.StartsWith("/")) {
+            if (access(path.string(), F_OK) == 0) {
+                char* canonicalPath = realpath(path.string(), nullptr);
+                mPath = canonicalPath;
+                free(canonicalPath);
+            }
+        }
+        else if (path.StartsWith(".") || path.StartsWith("..")) {
+            char* cwd = getcwd(nullptr, 0);
+            String absolutePath = String(cwd) + "/" + path;
             if (access(absolutePath.string(), F_OK) == 0) {
                 char* canonicalPath = realpath(absolutePath.string(), nullptr);
                 mPath = canonicalPath;
                 free(canonicalPath);
-                break;
+            }
+            free(cwd);
+        }
+        else {
+            for (String searchPath : Properties::Get().GetSearchPaths()) {
+                String absolutePath = searchPath + "/" + path;
+                if (access(absolutePath.string(), F_OK) == 0) {
+                    char* canonicalPath = realpath(absolutePath.string(), nullptr);
+                    mPath = canonicalPath;
+                    free(canonicalPath);
+                    break;
+                }
             }
         }
     }
     else {
-        char* canonicalPath = realpath(path.string(), nullptr);
-        mPath = canonicalPath;
-        free(canonicalPath);
+        if (path.StartsWith("/")) {
+            mPath = path;
+        }
+        else {
+            char* cwd = getcwd(nullptr, 0);
+            mPath = String(cwd) + "/" + path;
+            free(cwd);
+        }
     }
+
 
     OpenFile();
 }
@@ -66,6 +91,11 @@ void File::OpenFile()
     }
     else if (mMode & WRITE) {
         mFd = fopen(mPath, "w+");
+        if (mFd != nullptr) {
+            char* canonicalPath = realpath(mPath.string(), nullptr);
+            mPath = canonicalPath;
+            free(canonicalPath);
+        }
     }
     else {
         mFd = fopen(mPath, "r");
