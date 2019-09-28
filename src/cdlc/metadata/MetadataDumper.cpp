@@ -455,7 +455,12 @@ String MetadataDumper::DumpMetaValue(
     StringBuilder builder;
 
     if (mt->mProperties & TYPE_POINTER) {
-        builder.Append(mv->mStringValue);
+        if (mv->mIntegralValue == 0) {
+            builder.Append("nullptr");
+        }
+        else {
+            builder.AppendFormat("0x%16x", mv->mIntegralValue);
+        }
         return builder.ToString();
     }
 

@@ -192,7 +192,12 @@ void MetadataSerializer::SerializeMetaValue(
 
 void MetadataSerializer::SerializeMetaType(
     /* [in] */ MetaType* mt)
-{}
+{
+    if (mt->mProperties & TYPE_EXTERNAL) {
+        char** externalPtr = reinterpret_cast<char**>(ALIGN((uintptr_t)mt + sizeof(como::MetaType)));
+        *externalPtr = reinterpret_cast<char*>(SerializeAdjust(*externalPtr));
+    }
+}
 
 ptrdiff_t MetadataSerializer::SerializeAdjust(
     /* [in] */ void* addr)
@@ -358,7 +363,12 @@ void MetadataSerializer::DeserializeMetaValue(
 
 void MetadataSerializer::DeserializeMetaType(
     /* [in] */ MetaType* mt)
-{}
+{
+    if (mt->mProperties & TYPE_EXTERNAL) {
+        char** externalPtr = reinterpret_cast<char**>(ALIGN((uintptr_t)mt + sizeof(como::MetaType)));
+        *externalPtr = reinterpret_cast<char*>(DeserializeAdjust(*externalPtr));
+    }
+}
 
 uintptr_t MetadataSerializer::DeserializeAdjust(
     /* [in] */ void* addr)

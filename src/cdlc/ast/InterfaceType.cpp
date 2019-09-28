@@ -85,6 +85,11 @@ bool InterfaceType::IsInterfaceType()
     return true;
 }
 
+bool InterfaceType::IsBuildinType()
+{
+    return mName.Equals("IInterface");
+}
+
 String InterfaceType::GetSignature()
 {
     StringBuilder builder;

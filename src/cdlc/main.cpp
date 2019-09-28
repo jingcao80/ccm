@@ -18,6 +18,7 @@
 #include "metadata/Metadata.h"
 #include "metadata/MetadataBuilder.h"
 #include "metadata/MetadataDumper.h"
+#include "metadata/MetadataUtils.h"
 #include "parser/Parser.h"
 #include "util/File.h"
 #include "util/Logger.h"
@@ -68,7 +69,7 @@ int main(int argc, char** argv)
         }
 
         if (options.DoSaveMetadata()) {
-            File file(options.GetMetadataFile(), File::WRITE);
+            File file(options.GetSaveFile(), File::WRITE);
             if (!file.IsValid()) {
                 Logger::E("cdlc", "Create metadata file \"%s\" failed.", file.GetPath().string());
                 return -1;
@@ -79,8 +80,30 @@ int main(int argc, char** argv)
             size_t metadataSize = serializer.GetSize();
             uintptr_t metadata = serializer.GetSerializedMetadata();
 
-            serializer.Deserialize(metadata);
-            MetadataDumper dumper(reinterpret_cast<como::MetaComponent*>(metadata));
+            if (!file.Write(reinterpret_cast<void*>(metadata), metadataSize)) {
+                Logger::E("cdlc", "Write metadata file \"%s\" failed.", file.GetPath().string());
+                return -1;
+            }
+            file.Flush();
+            file.Close();
+        }
+    }
+
+    if (options.DoGenerateCode()) {
+        if (component == nullptr) {
+            void* metadata = MetadataUtils::ReadMetadata(
+                    options.GetMetadataFile(), options.GetMetadataFileType());
+            if (metadata == nullptr) {
+                Logger::E("ccdl", "Read metadata from \"%s\" failed.",
+                        options.GetMetadataFile().string());
+                return -1;
+            }
+
+            como::metadata::MetadataSerializer serializer;
+            serializer.Deserialize(reinterpret_cast<uintptr_t>(metadata));
+            component.reset(reinterpret_cast<como::MetaComponent*>(metadata));
+
+            MetadataDumper dumper(component.get());
             printf("%s", dumper.Dump("").string());
         }
     }

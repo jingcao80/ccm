@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "util/Options.h"
+#include "metadata/MetadataUtils.h"
 #include "util/Properties.h"
 #include "util/StringBuilder.h"
 #include <cstdio>
@@ -49,15 +50,23 @@ void Options::Parse(
         else if (option.Equals("-d")) {
             mGeneratedDir = argv[i++];
         }
-        else if (option.Equals("-g")) {
-            mDoGenerate = true;
+        else if (option.Equals("-gen")) {
+            mDoGenerateCode = true;
         }
         else if (option.Equals("-i")) {
             Properties::Get().AddSearchPath(argv[i++]);
         }
+        else if (option.Equals("-metadata-file")) {
+            mMetadataFile = argv[i++];
+            mMetadataFileType = MetadataUtils::TYPE_METADATA;
+        }
+        else if (option.Equals("-metadata-so")){
+            mMetadataFile = argv[i++];
+            mMetadataFileType = MetadataUtils::TYPE_SO;
+        }
         else if (option.Equals("-save-metadata")) {
             mDoSaveMetadata = true;
-            mMetadataFile = argv[i++];
+            mSaveFile = argv[i++];
         }
         else if (!option.StartsWith("-")) {
             mSourceFile = option;
@@ -95,8 +104,10 @@ void Options::ShowUsage() const
             "  -dump-metadata           Display the metadata generated from the .cdl file\n"
             "  -c                       Compile the .cdl file\n"
             "  -d <directory>           Place generated C++ files into <directory>\n"
-            "  -g                       Generate C++ files\n"
+            "  -gen                     Generate C++ files\n"
             "  -i <directory>           Add <directory> to the .cdl files search paths\n"
+            "  -metadata-file <file>    Set <file> as the metadata source file\n"
+            "  -metadata-so <.so file>  Set <.so file> as the metadata source file\n"
             "  -save-metadata <file>    Save the metadata into <file>\n");
 }
 

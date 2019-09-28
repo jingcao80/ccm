@@ -28,15 +28,21 @@ public:
         /* [in] */ int argc,
         /* [in] */ char** argv);
 
-    inline String GetSourceFile() const;
-
     inline String GetMetadataFile() const;
+
+    inline int GetMetadataFileType() const;
+
+    inline String GetSaveFile() const;
+
+    inline String GetSourceFile() const;
 
     inline bool DoCompile() const;
 
     inline bool DoDumpAST() const;
 
     inline bool DoDumpMetadata() const;
+
+    inline bool DoGenerateCode() const;
 
     inline bool DoSaveMetadata() const;
 
@@ -57,13 +63,15 @@ private:
     String mProgram;
     String mGeneratedDir;
     String mMetadataFile;
+    int mMetadataFileType;
+    String mSaveFile;
     String mSourceFile;
     String mIllegalOptions;
 
     bool mDoCompile = false;
     bool mDoDumpAST = false;
     bool mDoDumpMetadata = false;
-    bool mDoGenerate = false;
+    bool mDoGenerateCode = false;
     bool mDoSaveMetadata = false;
     bool mShowUsage = false;
     bool mShowVersion = false;
@@ -76,14 +84,24 @@ Options::Options(
     Parse(argc, argv);
 }
 
-String Options::GetSourceFile() const
-{
-    return mSourceFile;
-}
-
 String Options::GetMetadataFile() const
 {
     return mMetadataFile;
+}
+
+int Options::GetMetadataFileType() const
+{
+    return mMetadataFileType;
+}
+
+String Options::GetSaveFile() const
+{
+    return mSaveFile;
+}
+
+String Options::GetSourceFile() const
+{
+    return mSourceFile;
 }
 
 bool Options::DoCompile() const
@@ -99,6 +117,11 @@ bool Options::DoDumpAST() const
 bool Options::DoDumpMetadata() const
 {
     return mDoDumpMetadata;
+}
+
+bool Options::DoGenerateCode() const
+{
+    return mDoGenerateCode;
 }
 
 bool Options::DoSaveMetadata() const

@@ -80,6 +80,8 @@ public:
 
     bool IsInterfaceType() override;
 
+    bool IsBuildinType() override;
+
     String GetSignature() override;
 
     String ToString() override;

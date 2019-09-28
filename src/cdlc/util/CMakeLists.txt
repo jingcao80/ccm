@@ -17,7 +17,8 @@
 set(UTIL_DIR ${CDLC_DIR}/util)
 
 include_directories(
-    ${CDLC_DIR})
+    ${CDLC_DIR}
+    ${SRC_DIR})
 
 set(SOURCES
     File.cpp

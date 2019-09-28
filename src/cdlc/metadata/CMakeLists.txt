@@ -22,7 +22,8 @@ include_directories(
 
 set(SOURCES
     MetadataBuilder.cpp
-    MetadataDumper.cpp)
+    MetadataDumper.cpp
+    MetadataUtils.cpp)
 
 add_library(metadata2 STATIC
     ${SOURCES})

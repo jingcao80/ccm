@@ -722,7 +722,7 @@ como::MetaValue* MetadataBuilder::WriteMetaValue(
         mv->mStringValue = WriteString(value->EnumeratorValue());
     }
     else if (type->IsPointerType()) {
-        mv->mStringValue = WriteString(value->StringValue());
+        mv->mIntegralValue = value->LongValue();
     }
 
     // end address

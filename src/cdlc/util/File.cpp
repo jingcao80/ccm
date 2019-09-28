@@ -76,9 +76,7 @@ File::File(
 
 File::~File()
 {
-    if (mFd != nullptr) {
-        fclose(mFd);
-    }
+    Close();
     if (mLine != nullptr) {
         free(mLine);
     }
@@ -116,6 +114,80 @@ String File::RawGetLine()
             mError = ferror(mFd) != 0;
         }
         return nullptr;
+    }
+}
+
+size_t File::Read(
+    /* [out] */ void* data,
+    /* [in] */ size_t size)
+{
+    if (data == nullptr || size == 0) {
+        return 0;
+    }
+
+    if (!IsValid()) {
+        return 0;
+    }
+
+    return fread(data, 1, size, mFd);
+}
+
+bool File::Write(
+    /* [in] */ const void* data,
+    /* [in] */ size_t size)
+{
+    if (data == nullptr || size == 0) {
+        return true;
+    }
+
+    if (!IsValid()) {
+        return false;
+    }
+
+    if (mMode & (WRITE | APPEND)) {
+        return fwrite(data, 1, size, mFd) == size;
+    }
+    return true;
+}
+
+bool File::Flush()
+{
+    if (!IsValid()) {
+        return false;
+    }
+
+    if (mMode & (WRITE | APPEND)) {
+        return fflush(mFd) == 0;
+    }
+    return true;
+}
+
+bool File::Seek(
+    /* [in] */ long pos,
+    /* [in] */ int whence)
+{
+    if (!IsValid()) {
+        return false;
+    }
+
+    switch (whence) {
+        case SEEK_FROM_BEGIN:
+            return fseek(mFd, pos, SEEK_SET) == 0;
+        case SEEK_FROM_END:
+            return fseek(mFd, pos, SEEK_END) == 0;
+        case SEEK_FROM_CURRENT:
+            return fseek(mFd, pos, SEEK_CUR) == 0;
+        default:
+            break;
+    }
+    return false;
+}
+
+void File::Close()
+{
+    if (mFd != nullptr) {
+        fclose(mFd);
+        mFd = nullptr;
     }
 }
 

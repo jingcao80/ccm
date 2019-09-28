@@ -39,6 +39,22 @@ public:
 
     String RawGetLine();
 
+    size_t Read(
+        /* [out] */ void* data,
+        /* [in] */ size_t size);
+
+    bool Write(
+        /* [in] */ const void* data,
+        /* [in] */ size_t size);
+
+    bool Flush();
+
+    bool Seek(
+        /* [in] */ long pos,
+        /* [in] */ int whence);
+
+    void Close();
+
     inline bool IsEof() const;
 
 private:
@@ -48,6 +64,10 @@ public:
     static constexpr int READ = 0x1;
     static constexpr int WRITE = 0x2;
     static constexpr int APPEND = 0x4;
+
+    static constexpr int SEEK_FROM_BEGIN = 0x1;
+    static constexpr int SEEK_FROM_CURRENT = 0x2;
+    static constexpr int SEEK_FROM_END = 0x4;
 
 private:
     String mPath;

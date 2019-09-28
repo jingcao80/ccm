@@ -33,13 +33,13 @@
 //
 //===----------------------------------------------------------------------===//
 
-#ifndef __CCM_ELF_H__
-#define __CCM_ELF_H__
+#ifndef __COMO_ELF_H__
+#define __COMO_ELF_H__
 
-#include <stdint.h>
-#include <string.h>
+#include <cstdint>
+#include <cstring>
 
-namespace ccm {
+namespace como {
 
 typedef uint64_t Elf64_Addr;
 typedef uint64_t Elf64_Off;
@@ -105,4 +105,4 @@ struct Elf64_Shdr
 
 } // namespace ccm;
 
-#endif // __CCM_ELF_H__
+#endif // __COMO_ELF_H__
