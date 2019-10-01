@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "ast/InterfaceType.h"
+#include "ast/Module.h"
 #include "ast/Namespace.h"
 #include "util/Properties.h"
 #include "util/StringBuilder.h"
@@ -142,6 +143,59 @@ String InterfaceType::Dump(
     }
 
     return builder.ToString();
+}
+
+AutoPtr<Node> InterfaceType::Clone(
+    /* [in] */ Module* module,
+    /* [in] */ bool deepCopy)
+{
+    AutoPtr<InterfaceType> clone = new InterfaceType();
+    CloneBase(clone, module);
+    clone->mDeepCopied = deepCopy;
+    clone->mUuid = mUuid;
+    clone->mVersion = mVersion;
+    clone->mDescription = mDescription;
+
+    if (!deepCopy) {
+        clone->mBaseInterface = mBaseInterface;
+        clone->mOuterInterface = mOuterInterface;
+        clone->mNestedInterfaces = mNestedInterfaces;
+        clone->mConstants = mConstants;
+        clone->mMethods = mMethods;
+    }
+    else {
+        if (mBaseInterface != nullptr) {
+            AutoPtr<Type> baseInterface = module->FindType(mBaseInterface->ToString());
+            if (baseInterface == nullptr) {
+                baseInterface = mBaseInterface->Clone(module, false);
+            }
+            clone->mBaseInterface = InterfaceType::CastFrom(baseInterface);
+        }
+        if (mOuterInterface != nullptr) {
+            AutoPtr<Type> outerInterface = module->FindType(mOuterInterface->ToString());
+            if (outerInterface == nullptr) {
+                outerInterface = mOuterInterface->Clone(module, false);
+            }
+            clone->mOuterInterface = InterfaceType::CastFrom(outerInterface);
+        }
+        for (int i = 0; i < mNestedInterfaces.size(); i++) {
+            AutoPtr<Type> nestedInterface = module->FindType(mNestedInterfaces[i]->ToString());
+            if (nestedInterface == nullptr) {
+                nestedInterface = mNestedInterfaces[i]->Clone(module, false);
+            }
+            clone->AddNestedInterface(InterfaceType::CastFrom(nestedInterface));
+        }
+        for (int i = 0; i < mConstants.size(); i++) {
+            AutoPtr<Constant> constant = mConstants[i]->Clone(module, true);
+            clone->AddConstant(constant);
+        }
+        for (int i = 0; i < mMethods.size(); i++) {
+            AutoPtr<Method> method = mMethods[i]->Clone(module, true);
+            clone->AddMethod(method);
+        }
+    }
+
+    return clone;
 }
 
 }

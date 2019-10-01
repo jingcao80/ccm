@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "ast/TripleType.h"
+#include "ast/Module.h"
 #include "ast/Namespace.h"
 
 namespace cdlc {
@@ -27,6 +28,15 @@ bool TripleType::IsTripleType()
 String TripleType::GetSignature()
 {
     return "R";
+}
+
+AutoPtr<Node> TripleType::Clone(
+    /* [in] */ Module* module,
+    /* [in] */ bool deepCopy)
+{
+    AutoPtr<TripleType> clone = new TripleType();
+    CloneBase(clone, module);
+    return clone;
 }
 
 }

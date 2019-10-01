@@ -30,9 +30,6 @@ class Constant
     : public Node
 {
 public:
-    inline void SetModule(
-        /* [in] */ Module* module);
-
     inline String GetName();
 
     inline void SetName(
@@ -56,20 +53,16 @@ public:
     String Dump(
         /* [in] */ const String& prefix) override;
 
-private:
-    Module* mModule = nullptr;
+    AutoPtr<Node> Clone(
+        /* [in] */ Module* module,
+        /* [in] */ bool deepCopy) override;
 
+private:
     String mName;
     AutoPtr<Type> mType;
     AutoPtr<Expression> mValue;
     Namespace* mNamespace = nullptr;
 };
-
-void Constant::SetModule(
-    /* [in] */ Module* module)
-{
-    mModule = module;
-}
 
 String Constant::GetName()
 {

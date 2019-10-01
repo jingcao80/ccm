@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "ast/CoclassIDType.h"
+#include "ast/Module.h"
 #include "ast/Namespace.h"
 
 namespace cdlc {
@@ -32,6 +33,15 @@ bool CoclassIDType::IsBuildinType()
 String CoclassIDType::GetSignature()
 {
     return "K";
+}
+
+AutoPtr<Node> CoclassIDType::Clone(
+    /* [in] */ Module* module,
+    /* [in] */ bool deepCopy)
+{
+    AutoPtr<CoclassIDType> clone = new CoclassIDType();
+    CloneBase(clone, module);
+    return clone;
 }
 
 }

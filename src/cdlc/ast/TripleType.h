@@ -30,6 +30,10 @@ public:
     bool IsTripleType() override;
 
     String GetSignature() override;
+
+    AutoPtr<Node> Clone(
+        /* [in] */ Module* module,
+        /* [in] */ bool deepCopy) override;
 };
 
 TripleType::TripleType()

@@ -235,7 +235,8 @@ private:
         /* [in] */ const String& interfaceName);
 
     AutoPtr<Type> FindType(
-        /* [in] */ const String& typeName);
+        /* [in] */ const String& typeName,
+        /* [in] */ bool deepCopyIfNeed);
 
     void LogError(
         /* [in] */ TokenInfo& tokenInfo,

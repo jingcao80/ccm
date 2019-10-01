@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "ast/DoubleType.h"
+#include "ast/Module.h"
 #include "ast/Namespace.h"
 
 namespace cdlc {
@@ -37,6 +38,15 @@ bool DoubleType::IsBuildinType()
 String DoubleType::GetSignature()
 {
     return "D";
+}
+
+AutoPtr<Node> DoubleType::Clone(
+    /* [in] */ Module* module,
+    /* [in] */ bool deepCopy)
+{
+    AutoPtr<DoubleType> clone = new DoubleType();
+    CloneBase(clone, module);
+    return clone;
 }
 
 }

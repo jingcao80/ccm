@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "ast/CharType.h"
+#include "ast/Module.h"
 #include "ast/Namespace.h"
 
 namespace cdlc {
@@ -37,6 +38,15 @@ bool CharType::IsBuildinType()
 String CharType::GetSignature()
 {
     return "C";
+}
+
+AutoPtr<Node> CharType::Clone(
+    /* [in] */ Module* module,
+    /* [in] */ bool deepCopy)
+{
+    AutoPtr<CharType> clone = new CharType();
+    CloneBase(clone, module);
+    return clone;
 }
 
 }

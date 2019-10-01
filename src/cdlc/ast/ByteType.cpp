@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "ast/ByteType.h"
+#include "ast/Module.h"
 #include "ast/Namespace.h"
 
 namespace cdlc {
@@ -37,6 +38,15 @@ bool ByteType::IsBuildinType()
 String ByteType::GetSignature()
 {
     return "B";
+}
+
+AutoPtr<Node> ByteType::Clone(
+    /* [in] */ Module* module,
+    /* [in] */ bool deepCopy)
+{
+    AutoPtr<ByteType> clone = new ByteType();
+    CloneBase(clone, module);
+    return clone;
 }
 
 }

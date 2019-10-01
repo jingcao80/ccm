@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "ast/ShortType.h"
+#include "ast/Module.h"
 #include "ast/Namespace.h"
 
 namespace cdlc {
@@ -37,6 +38,15 @@ bool ShortType::IsBuildinType()
 String ShortType::GetSignature()
 {
     return "S";
+}
+
+AutoPtr<Node> ShortType::Clone(
+    /* [in] */ Module* module,
+    /* [in] */ bool deepCopy)
+{
+    AutoPtr<ShortType> clone = new ShortType();
+    CloneBase(clone, module);
+    return clone;
 }
 
 }

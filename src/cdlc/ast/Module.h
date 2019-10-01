@@ -99,9 +99,6 @@ public:
     void AddTemporaryType(
         /* [in] */ Type* type);
 
-    void CopyType(
-        /* [in] */ Type* source);
-
     AutoPtr<Type> FindType(
         /* [in] */ const String& fullName);
 
@@ -150,6 +147,8 @@ private:
     std::vector<AutoPtr<InterfaceType>> mInterfaces;
     std::vector<AutoPtr<CoclassType>> mKlasses;
     std::unordered_map<String, AutoPtr<Type>, StringHashFunc, StringEqualsFunc> mAllTypeMap;
+
+    std::vector<AutoPtr<Module>> mDependencies;
 };
 
 Module::Module()
@@ -209,7 +208,6 @@ void Module::AddConstant(
     /* [in] */ Constant* constant)
 {
     mConstants.push_back(constant);
-    constant->SetModule(this);
 }
 
 int Module::GetConstantNumber()

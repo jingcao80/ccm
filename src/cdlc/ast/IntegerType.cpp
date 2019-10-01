@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "ast/IntegerType.h"
+#include "ast/Module.h"
 #include "ast/Namespace.h"
 
 namespace cdlc {
@@ -37,6 +38,15 @@ bool IntegerType::IsBuildinType()
 String IntegerType::GetSignature()
 {
     return "I";
+}
+
+AutoPtr<Node> IntegerType::Clone(
+    /* [in] */ Module* module,
+    /* [in] */ bool deepCopy)
+{
+    AutoPtr<IntegerType> clone = new IntegerType();
+    CloneBase(clone, module);
+    return clone;
 }
 
 }

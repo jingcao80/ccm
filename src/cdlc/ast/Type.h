@@ -50,6 +50,11 @@ public:
     inline void SetForwardDeclared(
         /* [in] */ bool forwardDeclared);
 
+    AutoPtr<Module> GetExternalModule();
+
+    inline void SetExternalModule(
+        /* [in] */ Module* module);
+
     virtual bool IsECodeType();
 
     virtual bool IsBooleanType();
@@ -112,11 +117,18 @@ public:
         /* [in] */ Type* type2);
 
 protected:
-    Module* mModule = nullptr;
+    void CloneBase(
+        /* [in] */ Type* clone,
+        /* [in] */ Module* module);
 
+protected:
+    Module* mModule = nullptr;
     String mName;
     Namespace* mNamespace = nullptr;
     bool mForwardDeclared = false;
+    Module* mExternalModule = nullptr;
+    bool mDeepCopied = false;
+
 };
 
 void Type::SetModule(
@@ -158,6 +170,12 @@ void Type::SetForwardDeclared(
     /* [in] */ bool forwardDeclared)
 {
     mForwardDeclared = forwardDeclared;
+}
+
+void Type::SetExternalModule(
+    /* [in] */ Module* module)
+{
+    mExternalModule = module;
 }
 
 }

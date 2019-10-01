@@ -59,6 +59,10 @@ public:
     String Dump(
         /* [in] */ const String& prefix) override;
 
+    AutoPtr<Node> Clone(
+        /* [in] */ Module* module,
+        /* [in] */ bool deepCopy) override;
+
 public:
     static constexpr int IN = 0x01;
     static constexpr int OUT = 0x02;

@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "ast/EnumerationType.h"
+#include "ast/Module.h"
 #include "ast/Namespace.h"
 #include "util/Properties.h"
 #include "util/StringBuilder.h"
@@ -90,6 +91,18 @@ String EnumerationType::Dump(
     }
     builder.Append("]\n");
     return builder.ToString();
+}
+
+AutoPtr<Node> EnumerationType::Clone(
+    /* [in] */ Module* module,
+    /* [in] */ bool deepCopy)
+{
+    AutoPtr<EnumerationType> clone = new EnumerationType();
+    CloneBase(clone, module);
+    for (int i = 0; i < mEnumerators.size(); i++) {
+        clone->AddEnumerator(mEnumerators[i]->mName, mEnumerators[i]->mValue);
+    }
+    return clone;
 }
 
 }

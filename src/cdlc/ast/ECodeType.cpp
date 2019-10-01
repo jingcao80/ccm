@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "ast/ECodeType.h"
+#include "ast/Module.h"
 #include "ast/Namespace.h"
 
 namespace cdlc {
@@ -32,6 +33,15 @@ bool ECodeType::IsBuildinType()
 String ECodeType::GetSignature()
 {
     return "E";
+}
+
+AutoPtr<Node> ECodeType::Clone(
+    /* [in] */ Module* module,
+    /* [in] */ bool deepCopy)
+{
+    AutoPtr<ECodeType> clone = new ECodeType();
+    CloneBase(clone, module);
+    return clone;
 }
 
 }

@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "ast/StringType.h"
+#include "ast/Module.h"
 #include "ast/Namespace.h"
 
 namespace cdlc {
@@ -32,6 +33,15 @@ bool StringType::IsBuildinType()
 String StringType::GetSignature()
 {
     return "T";
+}
+
+AutoPtr<Node> StringType::Clone(
+    /* [in] */ Module* module,
+    /* [in] */ bool deepCopy)
+{
+    AutoPtr<StringType> clone = new StringType();
+    CloneBase(clone, module);
+    return clone;
 }
 
 }

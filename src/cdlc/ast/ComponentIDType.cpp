@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "ast/ComponentIDType.h"
+#include "ast/Module.h"
 #include "ast/Namespace.h"
 
 namespace cdlc {
@@ -32,6 +33,15 @@ bool ComponentIDType::IsBuildinType()
 String ComponentIDType::GetSignature()
 {
     return "M";
+}
+
+AutoPtr<Node> ComponentIDType::Clone(
+    /* [in] */ Module* module,
+    /* [in] */ bool deepCopy)
+{
+    AutoPtr<ComponentIDType> clone = new ComponentIDType();
+    CloneBase(clone, module);
+    return clone;
 }
 
 }

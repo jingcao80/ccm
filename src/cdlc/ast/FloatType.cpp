@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "ast/FloatType.h"
+#include "ast/Module.h"
 #include "ast/Namespace.h"
 
 namespace cdlc {
@@ -37,6 +38,15 @@ bool FloatType::IsBuildinType()
 String FloatType::GetSignature()
 {
     return "F";
+}
+
+AutoPtr<Node> FloatType::Clone(
+    /* [in] */ Module* module,
+    /* [in] */ bool deepCopy)
+{
+    AutoPtr<FloatType> clone = new FloatType();
+    CloneBase(clone, module);
+    return clone;
 }
 
 }

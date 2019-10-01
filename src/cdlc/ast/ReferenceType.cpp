@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "ast/ReferenceType.h"
+#include "ast/Module.h"
 #include "ast/Namespace.h"
 
 namespace cdlc {
@@ -32,6 +33,21 @@ String ReferenceType::GetSignature()
 String ReferenceType::ToString()
 {
     return mBaseType->ToString() + "&";
+}
+
+AutoPtr<Node> ReferenceType::Clone(
+    /* [in] */ Module* module,
+    /* [in] */ bool deepCopy)
+{
+    AutoPtr<ReferenceType> clone = new ReferenceType();
+    CloneBase(clone, module);
+    AutoPtr<Type> baseType = module->FindType(mBaseType->ToString());
+    if (baseType == nullptr) {
+        baseType = mBaseType->Clone(module, deepCopy);
+    }
+    clone->mBaseType = baseType;
+    module->AddTemporaryType(clone);
+    return clone;
 }
 
 }

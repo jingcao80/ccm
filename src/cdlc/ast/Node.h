@@ -17,10 +17,13 @@
 #ifndef __CDLC_NODE_H__
 #define __CDLC_NODE_H__
 
+#include "util/AutoPtr.h"
 #include "util/LightRefBase.h"
 #include "util/String.h"
 
 namespace cdlc {
+
+class Module;
 
 class Node
     : public LightRefBase
@@ -30,6 +33,10 @@ public:
 
     virtual String Dump(
         /* [in] */ const String& prefix);
+
+    virtual AutoPtr<Node> Clone(
+        /* [in] */ Module* module,
+        /* [in] */ bool deepCopy);
 };
 
 }

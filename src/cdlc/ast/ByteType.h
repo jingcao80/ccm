@@ -34,6 +34,10 @@ public:
     bool IsBuildinType() override;
 
     String GetSignature() override;
+
+    AutoPtr<Node> Clone(
+        /* [in] */ Module* module,
+        /* [in] */ bool deepCopy) override;
 };
 
 ByteType::ByteType()

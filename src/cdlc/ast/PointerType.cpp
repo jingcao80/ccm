@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "ast/PointerType.h"
+#include "ast/Module.h"
 #include "ast/Namespace.h"
 
 namespace cdlc {
@@ -40,6 +41,22 @@ String PointerType::ToString()
         typeStr += "*";
     }
     return typeStr;
+}
+
+AutoPtr<Node> PointerType::Clone(
+    /* [in] */ Module* module,
+    /* [in] */ bool deepCopy)
+{
+    AutoPtr<PointerType> clone = new PointerType();
+    CloneBase(clone, module);
+    AutoPtr<Type> baseType = module->FindType(mBaseType->ToString());
+    if (baseType == nullptr) {
+        baseType = mBaseType->Clone(module, deepCopy);
+    }
+    clone->mBaseType = baseType;
+    clone->mPointerNumber = mPointerNumber;
+    module->AddTemporaryType(clone);
+    return clone;
 }
 
 }

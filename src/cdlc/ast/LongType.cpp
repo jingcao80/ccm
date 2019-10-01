@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "ast/LongType.h"
+#include "ast/Module.h"
 #include "ast/Namespace.h"
 
 namespace cdlc {
@@ -37,6 +38,15 @@ bool LongType::IsBuildinType()
 String LongType::GetSignature()
 {
     return "L";
+}
+
+AutoPtr<Node> LongType::Clone(
+    /* [in] */ Module* module,
+    /* [in] */ bool deepCopy)
+{
+    AutoPtr<LongType> clone = new LongType();
+    CloneBase(clone, module);
+    return clone;
 }
 
 }

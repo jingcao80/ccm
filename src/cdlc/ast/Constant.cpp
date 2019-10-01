@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "ast/Constant.h"
+#include "ast/Module.h"
 #include "ast/Namespace.h"
 #include "util/StringBuilder.h"
 
@@ -37,6 +38,27 @@ String Constant::Dump(
     builder.AppendFormat("value:%s", mValue->ToString().string());
     builder.Append("]\n");
     return builder.ToString();
+}
+
+AutoPtr<Node> Constant::Clone(
+    /* [in] */ Module* module,
+    /* [in] */ bool deepCopy)
+{
+    AutoPtr<Constant> clone = new Constant();
+    clone->mName = mName;
+    if (!deepCopy) {
+        clone->mType = mType;
+    }
+    else {
+        AutoPtr<Type> type = module->FindType(mType->ToString());
+        if (type == nullptr) {
+            type = mType->Clone(module, false);;
+        }
+        clone->mType = type;
+    }
+    clone->mValue = mValue;
+    clone->mNamespace = mNamespace;
+    return clone;
 }
 
 }

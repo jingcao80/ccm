@@ -165,16 +165,6 @@ void Module::AddTemporaryType(
     }
 }
 
-void Module::CopyType(
-    /* [in] */ Type* source)
-{
-    if (source != nullptr) {
-        if (source->IsBuildinType()) {
-            mAllTypeMap[source->ToString()] = source;
-        }
-    }
-}
-
 AutoPtr<Type> Module::FindType(
     /* [in] */ const String& fullName)
 {

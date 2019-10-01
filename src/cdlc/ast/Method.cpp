@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "ast/Method.h"
+#include "ast/Module.h"
 #include "ast/Namespace.h"
 #include "util/Properties.h"
 #include "util/StringBuilder.h"
@@ -65,6 +66,33 @@ String Method::Dump(
     }
 
     return builder.ToString();
+}
+
+AutoPtr<Node> Method::Clone(
+    /* [in] */ Module* module,
+    /* [in] */ bool deepCopy)
+{
+    AutoPtr<Method> clone = new Method();
+    clone->mName = mName;
+    clone->mSignature = mSignature;
+    if (!deepCopy) {
+        clone->mReturnType = mReturnType;
+        clone->mParameters = mParameters;
+    }
+    else {
+        AutoPtr<Type> returnType = module->FindType(mReturnType->ToString());
+        if (returnType == nullptr) {
+            returnType = mReturnType->Clone(module, false);
+        }
+        clone->mReturnType = returnType;
+        for (int i = 0; i < mParameters.size(); i++) {
+            AutoPtr<Parameter> parameter = mParameters[i]->Clone(module, true);
+            clone->AddParameter(parameter);
+        }
+    }
+    clone->mDeleted = mDeleted;
+    clone->mReference = mReference;
+    return clone;
 }
 
 }

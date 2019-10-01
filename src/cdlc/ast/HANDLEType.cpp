@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "ast/HANDLEType.h"
+#include "ast/Module.h"
 #include "ast/Namespace.h"
 
 namespace cdlc {
@@ -32,6 +33,15 @@ bool HANDLEType::IsBuildinType()
 String HANDLEType::GetSignature()
 {
     return "H";
+}
+
+AutoPtr<Node> HANDLEType::Clone(
+    /* [in] */ Module* module,
+    /* [in] */ bool deepCopy)
+{
+    AutoPtr<HANDLEType> clone = new HANDLEType();
+    CloneBase(clone, module);
+    return clone;
 }
 
 }

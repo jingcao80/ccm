@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "ast/Parameter.h"
+#include "ast/Module.h"
 #include "ast/Namespace.h"
 #include "util/StringBuilder.h"
 
@@ -69,6 +70,27 @@ String Parameter::Dump(
     builder.Append("]");
 
     return builder.ToString();
+}
+
+AutoPtr<Node> Parameter::Clone(
+    /* [in] */ Module* module,
+    /* [in] */ bool deepCopy)
+{
+    AutoPtr<Parameter> clone = new Parameter();
+    clone->mName = mName;
+    if (!deepCopy) {
+        clone->mType = mType;
+    }
+    else {
+        AutoPtr<Type> type = module->FindType(mType->ToString());
+        if (type == nullptr) {
+            type = mType->Clone(module, false);
+        }
+        clone->mType = type;
+    }
+    clone->mValue = mValue;
+    clone->mAttributes = mAttributes;
+    return clone;
 }
 
 }

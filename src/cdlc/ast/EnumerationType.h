@@ -64,6 +64,10 @@ public:
     String Dump(
         /* [in] */ const String& prefix) override;
 
+    AutoPtr<Node> Clone(
+        /* [in] */ Module* module,
+        /* [in] */ bool deepCopy) override;
+
     inline static AutoPtr<EnumerationType> CastFrom(
         /* [in] */ Type* type);
 

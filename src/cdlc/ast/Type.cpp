@@ -25,6 +25,11 @@ AutoPtr<Module> Type::GetModule()
     return mModule;
 }
 
+AutoPtr<Module> Type::GetExternalModule()
+{
+    return mExternalModule;
+}
+
 bool Type::IsECodeType()
 {
     return false;
@@ -164,6 +169,19 @@ String Type::Dump(
     /* [in] */ const String& prefix)
 {
     return prefix + ToString();
+}
+
+void Type::CloneBase(
+    /* [in] */ Type* clone,
+    /* [in] */ Module* module)
+{
+    clone->mName = mName;
+    clone->mExternalModule = mExternalModule == nullptr ? mModule : mExternalModule;
+    clone->mDeepCopied = true;
+    if (mNamespace != nullptr) {
+        AutoPtr<Namespace> ns = module->ParseNamespace(mNamespace->ToString());
+        ns->AddType(clone);
+    }
 }
 
 AutoPtr<Type> Type::Choose(

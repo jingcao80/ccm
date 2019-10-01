@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "ast/BooleanType.h"
+#include "ast/Module.h"
 #include "ast/Namespace.h"
 
 namespace cdlc {
@@ -32,6 +33,15 @@ bool BooleanType::IsBuildinType()
 String BooleanType::GetSignature()
 {
     return "Z";
+}
+
+AutoPtr<Node> BooleanType::Clone(
+    /* [in] */ Module* module,
+    /* [in] */ bool deepCopy)
+{
+    AutoPtr<BooleanType> clone = new BooleanType();
+    CloneBase(clone, module);
+    return clone;
 }
 
 }

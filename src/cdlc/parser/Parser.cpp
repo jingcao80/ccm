@@ -596,7 +596,7 @@ bool Parser::ParseInterface(
         if (!fullTypeName.Contains("::") && !mCurrentNamespace->IsGlobal()) {
             fullTypeName = mCurrentNamespace->ToString() + "::" + fullTypeName;
         }
-        AutoPtr<Type> type = FindType(fullTypeName);
+        AutoPtr<Type> type = FindType(fullTypeName, false);
         if (type != nullptr) {
             if (type->IsInterfaceType()) {
                 interfaceName = fullTypeName.Substring(fullTypeName.LastIndexOf("::") + 2);
@@ -768,7 +768,7 @@ AutoPtr<Constant> Parser::ParseConstant()
     TokenInfo tokenInfo = mTokenizer.PeekToken();
     if (tokenInfo.IsBuildinType()) {
         mTokenizer.GetToken();
-        type = FindType(String::Format("como::%s", TokenInfo::Dump(tokenInfo).string()));
+        type = FindType(String::Format("como::%s", TokenInfo::Dump(tokenInfo).string()), false);
     }
     else {
         // enumeration
@@ -1252,7 +1252,7 @@ AutoPtr<PostfixExpression> Parser::ParseCharacter(
     TokenInfo tokenInfo = mTokenizer.GetToken();
     if (type->IsNumericType()) {
         AutoPtr<PostfixExpression> expr = new PostfixExpression();
-        AutoPtr<Type> charType = FindType("como::Char");
+        AutoPtr<Type> charType = FindType("como::Char", false);
         expr->SetType(charType);
         expr->SetIntegralValue(tokenInfo.mCharValue);
         return expr;
@@ -1269,7 +1269,7 @@ AutoPtr<PostfixExpression> Parser::ParseIntegralNumber(
     if (type->IsNumericType() || type->IsEnumerationType() || type->IsHANDLEType()) {
         AutoPtr<PostfixExpression> expr = new PostfixExpression();
         AutoPtr<Type> integralType = tokenInfo.Is64Bit()
-                ? FindType("como::Long") : FindType("como::Integer");
+                ? FindType("como::Long", false) : FindType("como::Integer", false);
         expr->SetType(integralType);
         expr->SetIntegralValue(tokenInfo.mIntegralValue);
         expr->SetRadix(tokenInfo.mRadix);
@@ -1289,7 +1289,7 @@ AutoPtr<PostfixExpression> Parser::ParseFloatingPointNumber(
     if (type->IsNumericType()) {
         AutoPtr<PostfixExpression> expr = new PostfixExpression();
         AutoPtr<Type> fpType = tokenInfo.Is64Bit()
-                ? FindType("como::Double") : FindType("como::Float");
+                ? FindType("como::Double", false) : FindType("como::Float", false);
         expr->SetType(fpType);
         expr->SetFloatingPointValue(tokenInfo.mFloatingPointValue);
         expr->SetScientificNotation(tokenInfo.mScientificNotation);
@@ -1330,7 +1330,7 @@ AutoPtr<PostfixExpression> Parser::ParseIdentifier(
         int idx = id.IndexOf("::");
         if (idx > 0) {
             String typeName = id.Substring(0, idx);
-            idType = FindType(typeName);
+            idType = FindType(typeName, true);
             if (idType == nullptr) {
                 String message = String::Format("Type \"%s\" is not found", typeName.string());
                 LogError(tokenInfo, message);
@@ -1391,7 +1391,7 @@ AutoPtr<PostfixExpression> Parser::ParseIdentifier(
             if (idx > 0) {
                 String typeName = id.Substring(0, idx);
                 String constName = id.Substring(idx + 2);
-                AutoPtr<Type> type = FindType(typeName);
+                AutoPtr<Type> type = FindType(typeName, true);
                 if (type == nullptr) {
                     String message = String::Format("Type \"%s\" is not found", typeName.string());
                     LogError(tokenInfo, message);
@@ -1443,7 +1443,7 @@ bool Parser::ParseMethod(
 
     AutoPtr<Method> method = new Method();
     method->SetName(tokenInfo.mStringValue);
-    method->SetReturnType(FindType("como::ECode"));
+    method->SetReturnType(FindType("como::ECode", false));
 
     tokenInfo = mTokenizer.PeekToken();
     if (tokenInfo.mToken != Token::PARENTHESES_OPEN) {
@@ -1625,11 +1625,11 @@ AutoPtr<Type> Parser::ParseType()
     TokenInfo tokenInfo = mTokenizer.PeekToken();
     if (tokenInfo.IsBuildinType()) {
         mTokenizer.GetToken();
-        type = FindType(String::Format("como::%s", TokenInfo::Dump(tokenInfo).string()));
+        type = FindType(String::Format("como::%s", TokenInfo::Dump(tokenInfo).string()), false);
     }
     else if (tokenInfo.mToken == Token::IDENTIFIER) {
         mTokenizer.GetToken();
-        type = FindType(tokenInfo.mStringValue);
+        type = FindType(tokenInfo.mStringValue, false);
         if (type == nullptr && mCurrentType != nullptr &&
                 mCurrentType->GetName().Equals(tokenInfo.mStringValue)) {
             type = mCurrentType;
@@ -1988,7 +1988,7 @@ bool Parser::ParseEnumeration()
         if (!fullTypeName.Contains("::") && !mCurrentNamespace->IsGlobal()) {
             fullTypeName = mCurrentNamespace->ToString() + "::" + fullTypeName;
         }
-        AutoPtr<Type> type = FindType(fullTypeName);
+        AutoPtr<Type> type = FindType(fullTypeName, false);
         if (type != nullptr) {
             if (type->IsEnumerationType()) {
                 enumName = fullTypeName.Substring(fullTypeName.LastIndexOf("::") + 2);
@@ -2157,7 +2157,7 @@ void Parser::LeaveBlockContext()
 AutoPtr<InterfaceType> Parser::FindInterface(
     /* [in] */ const String& interfaceName)
 {
-    AutoPtr<Type> type = FindType(interfaceName);
+    AutoPtr<Type> type = FindType(interfaceName, true);
     if (type != nullptr && type->IsInterfaceType()) {
         return InterfaceType::CastFrom(type);
     }
@@ -2165,7 +2165,8 @@ AutoPtr<InterfaceType> Parser::FindInterface(
 }
 
 AutoPtr<Type> Parser::FindType(
-    /* [in] */ const String& typeName)
+    /* [in] */ const String& typeName,
+    /* [in] */ bool deepCopyIfNeed)
 {
     String fullTypeName = typeName;
     if (!fullTypeName.Contains("::")) {
@@ -2183,8 +2184,7 @@ AutoPtr<Type> Parser::FindType(
                 type = mWorld.FindType(fullTypeName);
                 if (type != nullptr) {
                     // type = mPool->DeepCopyType(type);
-                    mModule->CopyType(type);
-                    return type;
+                    return type->Clone(mModule, deepCopyIfNeed);
                 }
 
                 // type = mWorld.FindTypeInExternalModules(fullName);
@@ -2211,8 +2211,7 @@ AutoPtr<Type> Parser::FindType(
             type = mWorld.FindType(fullTypeName);
             if (type != nullptr) {
                 // type = mPool->DeepCopyType(type);
-                mModule->CopyType(type);
-                return type;
+                return type->Clone(mModule, deepCopyIfNeed);
             }
 
             // type = mWorld.FindTypeInExternalModules(fullName);
@@ -2224,7 +2223,7 @@ AutoPtr<Type> Parser::FindType(
     }
     else {
         String nsStr = fullTypeName.Substring(0, fullTypeName.IndexOf("::"));
-        AutoPtr<Type> nsWrappedType = FindType(nsStr);
+        AutoPtr<Type> nsWrappedType = FindType(nsStr, false);
         if (nsWrappedType != nullptr && nsWrappedType->IsInterfaceType()) {
             if (mCurrentContext != nullptr) {
                 fullTypeName = mCurrentContext->FindTypeForwardDeclaration(typeName);
@@ -2240,8 +2239,7 @@ AutoPtr<Type> Parser::FindType(
                     type = mWorld.FindType(fullTypeName);
                     if (type != nullptr) {
                         // type = mPool->DeepCopyType(type);
-                        mModule->CopyType(type);
-                        return type;
+                        return type->Clone(mModule, deepCopyIfNeed);
                     }
 
                     // type = mWorld.FindTypeInExternalModules(fullName);
@@ -2262,8 +2260,7 @@ AutoPtr<Type> Parser::FindType(
             type = mWorld.FindType(fullTypeName);
             if (type != nullptr) {
                 // type = mPool->DeepCopyType(type);
-                mModule->CopyType(type);
-                return type;
+                return type->Clone(mModule, deepCopyIfNeed);
             }
 
             // type = mWorld.FindTypeInExternalModules(fullName);

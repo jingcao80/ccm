@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "ast/InterfaceIDType.h"
+#include "ast/Module.h"
 #include "ast/Namespace.h"
 
 namespace cdlc {
@@ -32,6 +33,15 @@ bool InterfaceIDType::IsBuildinType()
 String InterfaceIDType::GetSignature()
 {
     return "U";
+}
+
+AutoPtr<Node> InterfaceIDType::Clone(
+    /* [in] */ Module* module,
+    /* [in] */ bool deepCopy)
+{
+    AutoPtr<InterfaceIDType> clone = new InterfaceIDType();
+    CloneBase(clone, module);
+    return clone;
 }
 
 }

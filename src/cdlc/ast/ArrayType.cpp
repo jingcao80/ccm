@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "ast/ArrayType.h"
+#include "ast/Module.h"
 #include "ast/Namespace.h"
 
 namespace cdlc {
@@ -32,6 +33,20 @@ String ArrayType::GetSignature()
 String ArrayType::ToString()
 {
     return String::Format("Array<%s>", mElementType->ToString().string());
+}
+
+AutoPtr<Node> ArrayType::Clone(
+    /* [in] */ Module* module,
+    /* [in] */ bool deepCopy)
+{
+    AutoPtr<ArrayType> clone = new ArrayType();
+    CloneBase(clone, module);
+    AutoPtr<Type> elementType = module->FindType(mElementType->ToString());
+    if (elementType == nullptr) {
+        elementType = mElementType->Clone(module, deepCopy);
+    }
+    clone->mElementType = elementType;
+    return clone;
 }
 
 }

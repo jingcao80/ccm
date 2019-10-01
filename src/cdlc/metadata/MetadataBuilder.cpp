@@ -301,10 +301,10 @@ void MetadataBuilder::CalculateMetaType(
     // end address
     mBasePtr = mBasePtr + sizeof(como::MetaType);
 
-    if (type->GetModule() != mModule) {
+    if (type->GetExternalModule() != nullptr) {
         mBasePtr = ALIGN(mBasePtr);
         // add the name of external module to StringPool
-        mPool.Add(type->GetModule()->GetName());
+        mPool.Add(type->GetExternalModule()->GetName());
         mBasePtr = mBasePtr + sizeof(char**);
     }
 }
@@ -767,10 +767,10 @@ como::MetaType* MetadataBuilder::WriteMetaType(
     // end address
     mBasePtr = mBasePtr + sizeof(como::MetaType);
 
-    if (self->GetModule() != mModule) {
+    if (self->GetExternalModule() != nullptr) {
         mt->mProperties |= TYPE_EXTERNAL;
         mBasePtr = ALIGN(mBasePtr);
-        *(char**)mBasePtr = WriteString(self->GetModule()->GetName());
+        *(char**)mBasePtr = WriteString(self->GetExternalModule()->GetName());
         mBasePtr = mBasePtr + sizeof(char**);
     }
 
