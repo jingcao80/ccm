@@ -20,6 +20,7 @@
 #include "ast/ReferenceType.h"
 #include "parser/TokenInfo.h"
 #include "phase/BuildinTypeBuilder.h"
+#include "phase/InterfaceIntegrityChecker.h"
 #include "util/AutoPtr.h"
 #include "util/Logger.h"
 #include "util/MemoryFileReader.h"
@@ -35,6 +36,7 @@ const char* Parser::TAG = "Parser";
 Parser::Parser()
 {
     mBeforePhases.push_back(new BuildinTypeBuilder(mWorld));
+    AddPhase(new InterfaceIntegrityChecker(mWorld));
 }
 
 void Parser::AddPhase(
@@ -59,6 +61,8 @@ bool Parser::Parse(
         ShowErrors();
     }
 
+    ret = RunPhases();
+
     return ret;
 }
 
@@ -67,6 +71,15 @@ void Parser::Prepare()
     for (AutoPtr<Phase> phase : mBeforePhases) {
         phase->Process();
     }
+}
+
+bool Parser::RunPhases()
+{
+    bool ret = true;
+    for (AutoPtr<Phase> phase : mAfterPhases) {
+        ret = phase->Process() && ret;
+    }
+    return ret;
 }
 
 bool Parser::ParseFile(
@@ -691,13 +704,17 @@ bool Parser::ParseInterface(
     result = ParseInterfaceBody(interface) && result;
 
     if (result) {
-        interface->SetForwardDeclared(false);
+        if (interface->IsForwardDeclared()) {
+            interface->SetForwardDeclared(false);
+        }
+        else {
+            mCurrentNamespace->AddInterfaceType(interface);
+        }
         interface->SetAttributes(attrs);
         if (outerInterface != nullptr) {
             interface->SetOuterInterface(outerInterface);
             outerInterface->AddNestedInterface(interface);
         }
-        mCurrentNamespace->AddInterfaceType(interface);
     }
 
     mCurrentType = std::move(prevType);

@@ -70,6 +70,21 @@ AutoPtr<UUID> UUID::Parse(
     return uuid;
 }
 
+AutoPtr<UUID> UUID::Parse(
+    /* [in] */ const como::UUID& source)
+{
+    AutoPtr<UUID> uuid = new UUID();
+    memcpy(&uuid->mData1, &source, sizeof(como::UUID));
+    return uuid;
+}
+
+como::UUID UUID::ToComoUUID()
+{
+    como::UUID uuid;
+    memcpy(&uuid, &mData1, sizeof(como::UUID));
+    return uuid;
+}
+
 String UUID::ToString()
 {
     String uuidStr = String::Format("{0x%08x,0x%04x,0x%04x,0x%04x,"

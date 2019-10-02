@@ -17,7 +17,8 @@
 set(PARSER_DIR ${CDLC_DIR}/parser)
 
 include_directories(
-    ${CDLC_DIR})
+    ${CDLC_DIR}
+    ${SRC_DIR})
 
 set(SOURCES
     Parser.cpp

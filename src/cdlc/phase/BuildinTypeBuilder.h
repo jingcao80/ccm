@@ -29,7 +29,7 @@ public:
     inline BuildinTypeBuilder(
         /* [in] */ World& world);
 
-    void Process() override;
+    bool Process() override;
 
 private:
     void BuildPrimitiveType();

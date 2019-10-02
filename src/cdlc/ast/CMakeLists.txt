@@ -17,7 +17,8 @@
 set(AST_DIR ${CDLC_DIR}/ast)
 
 include_directories(
-    ${CDLC_DIR})
+    ${CDLC_DIR}
+    ${SRC_DIR})
 
 set(SOURCES
     AdditiveExpression.cpp

@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "util/Options.h"
+#include "codegen/CodeGenerator.h"
 #include "metadata/MetadataUtils.h"
 #include "util/Properties.h"
 #include "util/StringBuilder.h"
@@ -48,7 +49,7 @@ void Options::Parse(
             mDoCompile = true;
         }
         else if (option.Equals("-d")) {
-            mGeneratedDir = argv[i++];
+            mCodegenDir = argv[i++];
         }
         else if (option.Equals("-gen")) {
             mDoGenerateCode = true;
@@ -64,9 +65,24 @@ void Options::Parse(
             mMetadataFile = argv[i++];
             mMetadataFileType = MetadataUtils::TYPE_SO;
         }
+        else if (option.Equals("-mode-client")) {
+            mCodegenMode &= ~CodeGenerator::MODE_MASK;
+            mCodegenMode |= CodeGenerator::MODE_CLIENT;
+        }
+        else if (option.Equals("-mode-component")) {
+            mCodegenMode &= ~CodeGenerator::MODE_MASK;
+            mCodegenMode |= CodeGenerator::MODE_COMPONENT;
+        }
+        else if (option.Equals("-mode-runtime")) {
+            mCodegenMode &= ~CodeGenerator::MODE_MASK;
+            mCodegenMode |= CodeGenerator::MODE_RUNTIME;
+        }
         else if (option.Equals("-save-metadata")) {
             mDoSaveMetadata = true;
             mSaveFile = argv[i++];
+        }
+        else if (option.Equals("-split-interface")) {
+            mCodegenMode |= CodeGenerator::INTERFACE_SPLIT;
         }
         else if (!option.StartsWith("-")) {
             mSourceFile = option;
@@ -108,7 +124,15 @@ void Options::ShowUsage() const
             "  -i <directory>           Add <directory> to the .cdl files search paths\n"
             "  -metadata-file <file>    Set <file> as the metadata source file\n"
             "  -metadata-so <.so file>  Set <.so file> as the metadata source file\n"
-            "  -save-metadata <file>    Save the metadata into <file>\n");
+            "  -mode-client             Set the \"client\" mode which is used to generate\n"
+            "                           C++ files for components caller\n"
+            "  -mode-component          Set the \"component\" mode which is used to compile\n"
+            "                           .cdl files of components\n"
+            "  -mode-runtime            Set the \"runtime\" mode which is used to compile\n"
+            "                           .cdl files of comort\n"
+            "  -save-metadata <file>    Save the metadata into <file>\n"
+            "  -split-interface         Generate interface declarations into seperate files when\n"
+            "                           in the \"component\" mode or the \"client\" mode\n");
 }
 
 }

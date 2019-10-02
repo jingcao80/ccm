@@ -14,32 +14,41 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CDLC_PHASE_H__
-#define __CDLC_PHASE_H__
+#ifndef __CDLC_INTERFACEINTEGRITYCHECKER_H__
+#define __CDLC_INTERFACEINTEGRITYCHECKER_H__
 
-#include "parser/World.h"
-#include "util/LightRefBase.h"
+#include "ast/InterfaceType.h"
+#include "ast/Module.h"
+#include "parser/Phase.h"
 
 namespace cdlc {
 
-class Phase
-    : public LightRefBase
+class InterfaceIntegrityChecker
+    : public Phase
 {
 public:
-    inline Phase(
+    inline InterfaceIntegrityChecker(
         /* [in] */ World& world);
 
-    virtual bool Process() = 0;
+    bool Process() override;
 
-protected:
-    World& mWorld;
+private:
+    bool CheckInterfaceIntegrity(
+        /* [in] */ InterfaceType* interface);
+
+    bool CheckTypeIntegrity(
+        /* [in] */ Type* type);
+
+private:
+    Module* mModule = nullptr;
 };
 
-Phase::Phase(
+InterfaceIntegrityChecker::InterfaceIntegrityChecker(
     /* [in] */ World& world)
-    : mWorld(world)
+    : Phase(world)
+    , mModule(world.GetWorkingModule())
 {}
 
 }
 
-#endif // __CDLC_PHASE_H__
+#endif // __CDLC_INTERFACEINTEGRITYCHECKER_H__

@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "ast/Module.h"
+#include "codegen/CodeGenerator.h"
 #include "metadata/Metadata.h"
 #include "metadata/MetadataBuilder.h"
 #include "metadata/MetadataDumper.h"
@@ -86,13 +87,20 @@ int main(int argc, char** argv)
             }
             file.Flush();
             file.Close();
+
+            component = nullptr;
         }
     }
 
     if (options.DoGenerateCode()) {
         if (component == nullptr) {
             void* metadata = MetadataUtils::ReadMetadata(
-                    options.GetMetadataFile(), options.GetMetadataFileType());
+                    options.DoSaveMetadata()
+                        ? options.GetSaveFile()
+                        : options.GetMetadataFile(),
+                    options.DoSaveMetadata()
+                        ? MetadataUtils::TYPE_METADATA
+                        : options.GetMetadataFileType());
             if (metadata == nullptr) {
                 Logger::E("ccdl", "Read metadata from \"%s\" failed.",
                         options.GetMetadataFile().string());
@@ -101,11 +109,16 @@ int main(int argc, char** argv)
 
             como::metadata::MetadataSerializer serializer;
             serializer.Deserialize(reinterpret_cast<uintptr_t>(metadata));
-            component.reset(reinterpret_cast<como::MetaComponent*>(metadata));
-
-            MetadataDumper dumper(component.get());
-            printf("%s", dumper.Dump("").string());
+            component.reset(
+                    reinterpret_cast<como::MetaComponent*>(metadata),
+                    [](como::MetaComponent* p){ free(p); });
         }
+
+        CodeGenerator generator;
+        generator.SetDirectory(options.GetCodegenDirectory());
+        generator.SetMetadata(component.get());
+        generator.SetMode(options.GetCodegenMode());
+        generator.Generate();
     }
 
     return 0;

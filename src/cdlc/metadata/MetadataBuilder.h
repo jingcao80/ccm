@@ -119,10 +119,6 @@ private:
     char* WriteString(
         /* [in] */ const String& string);
 
-    static void AssignFrom(
-        /* [out]*/ como::UUID& target,
-        /* [in] */ cdlc::UUID* src);
-
     static como::TypeKind ToTypeKind(
         /* [in] */ Type* type);
 

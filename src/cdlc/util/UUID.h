@@ -17,6 +17,7 @@
 #ifndef __CDLC_UUID_H__
 #define __CDLC_UUID_H__
 
+#include "metadata/Metadata.h"
 #include "util/AutoPtr.h"
 #include "util/LightRefBase.h"
 #include "util/String.h"
@@ -32,6 +33,11 @@ public:
 
     static AutoPtr<UUID> Parse(
         /* [in] */ const String& uuidStr);
+
+    static AutoPtr<UUID> Parse(
+        /* [in] */ const como::UUID& source);
+
+    como::UUID ToComoUUID();
 
     String ToString();
 

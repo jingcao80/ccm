@@ -14,15 +14,14 @@
 # limitations under the License.
 #=========================================================================
 
-set(PHASE_DIR ${CDLC_DIR}/phase)
+set(METADATA_DIR ${CDLC_DIR}/codegen)
 
 include_directories(
     ${CDLC_DIR}
     ${SRC_DIR})
 
 set(SOURCES
-    BuildinTypeBuilder.cpp
-    InterfaceIntegrityChecker.cpp)
+    CodeGenerator.cpp)
 
-add_library(phase STATIC
+add_library(codegen STATIC
     ${SOURCES})

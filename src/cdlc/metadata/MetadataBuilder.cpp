@@ -339,7 +339,7 @@ void MetadataBuilder::WriteMetaComponent(
     como::MetaComponent* mc = reinterpret_cast<como::MetaComponent*>(mBasePtr);
     mc->mMagic = COMO_MAGIC;
     mc->mSize = mSize;
-    AssignFrom(mc->mUuid, module->GetUUID());
+    mc->mUuid = module->GetUUID()->ToComoUUID();
     mc->mNamespaceNumber = NN;
     mc->mConstantNumber = CN;
     mc->mCoclassNumber = KN;
@@ -514,7 +514,7 @@ como::MetaCoclass* MetadataBuilder::WriteMetaCoclass(
     // begin address
     mBasePtr = ALIGN(mBasePtr);
     como::MetaCoclass* mc = reinterpret_cast<como::MetaCoclass*>(mBasePtr);
-    AssignFrom(mc->mUuid, klass->GetUUID());
+    mc->mUuid = klass->GetUUID()->ToComoUUID();
     mc->mName = WriteString(klass->GetName());
     mc->mNamespace = WriteString(klass->GetNamespace()->ToString());
     mc->mInterfaceNumber = IN;
@@ -586,7 +586,7 @@ como::MetaInterface* MetadataBuilder::WriteMetaInterface(
     // begin address
     mBasePtr = ALIGN(mBasePtr);
     como::MetaInterface* mi = reinterpret_cast<como::MetaInterface*>(mBasePtr);
-    AssignFrom(mi->mUuid, interface->GetUUID());
+    mi->mUuid = interface->GetUUID()->ToComoUUID();
     mi->mName = WriteString(interface->GetName());
     mi->mNamespace = WriteString(interface->GetNamespace()->ToString());
     mi->mBaseInterfaceIndex = mModule->IndexOf(interface->GetBaseInterface());
@@ -603,6 +603,7 @@ como::MetaInterface* MetadataBuilder::WriteMetaInterface(
     // mMethods address
     mBasePtr = ALIGN(mBasePtr + sizeof(como::MetaConstant*) * CN);
     mi->mMethods = MN > 0 ? reinterpret_cast<como::MetaMethod**>(mBasePtr) : nullptr;
+    mi->mProperties = interface->GetExternalModule() != nullptr ? TYPE_EXTERNAL : 0;
     // end address
     mBasePtr = mBasePtr + sizeof(como::MetaMethod*) * MN;
 
@@ -781,17 +782,6 @@ char* MetadataBuilder::WriteString(
     /* [in] */ const String& string)
 {
     return mMetaComponent->mStringPool + mPool.FindOffset(string);
-}
-
-void MetadataBuilder::AssignFrom(
-    /* [out]*/ como::UUID& target,
-    /* [in] */ cdlc::UUID* src)
-{
-    target.mData1 = src->mData1;
-    target.mData2 = src->mData2;
-    target.mData3 = src->mData3;
-    target.mData4 = src->mData4;
-    memcpy(target.mData5, src->mData5, 12);
 }
 
 como::TypeKind MetadataBuilder::ToTypeKind(

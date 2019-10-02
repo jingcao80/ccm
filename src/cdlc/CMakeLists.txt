@@ -20,6 +20,7 @@ set(CDLC_DIR ${SRC_DIR}/cdlc)
 set(OBJ_DIR ${CMAKE_BINARY_DIR}/src/cdlc)
 
 add_subdirectory(ast)
+add_subdirectory(codegen)
 add_subdirectory(metadata)
 add_subdirectory(parser)
 add_subdirectory(phase)
@@ -35,6 +36,7 @@ set(SOURCES
 set(CDLC_LINK_LIBS
     -Wl,--whole-archive
     ast
+    codegen
     metadata2
     parser
     phase

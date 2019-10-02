@@ -40,11 +40,12 @@
 
 namespace cdlc {
 
-void BuildinTypeBuilder::Process()
+bool BuildinTypeBuilder::Process()
 {
     mModule->ParseNamespace("como");
     BuildPrimitiveType();
     BuildIInterface();
+    return true;
 }
 
 void BuildinTypeBuilder::BuildPrimitiveType()

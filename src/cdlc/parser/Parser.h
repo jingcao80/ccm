@@ -112,6 +112,8 @@ public:
 private:
     void Prepare();
 
+    bool RunPhases();
+
     bool ParseFile(
         /* [in] */ const String& filePath);
 

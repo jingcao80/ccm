@@ -143,6 +143,7 @@ struct MetaInterface
     MetaConstant**      mConstants;
     MetaMethod**        mMethods;
     // bool                mExternal;
+    unsigned char       mProperties;
 };
 
 #define METHOD_DELETED              0x01

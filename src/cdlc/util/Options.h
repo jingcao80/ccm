@@ -28,6 +28,10 @@ public:
         /* [in] */ int argc,
         /* [in] */ char** argv);
 
+    inline String GetCodegenDirectory() const;
+
+    inline int GetCodegenMode() const;
+
     inline String GetMetadataFile() const;
 
     inline int GetMetadataFileType() const;
@@ -61,9 +65,10 @@ private:
 
 private:
     String mProgram;
-    String mGeneratedDir;
+    String mCodegenDir;
+    int mCodegenMode = 0;
     String mMetadataFile;
-    int mMetadataFileType;
+    int mMetadataFileType = 0;
     String mSaveFile;
     String mSourceFile;
     String mIllegalOptions;
@@ -82,6 +87,16 @@ Options::Options(
     /* [in] */ char** argv)
 {
     Parse(argc, argv);
+}
+
+int Options::GetCodegenMode() const
+{
+    return mCodegenMode;
+}
+
+String Options::GetCodegenDirectory() const
+{
+    return mCodegenDir;
 }
 
 String Options::GetMetadataFile() const
