@@ -606,6 +606,8 @@ String CodeGenerator::Emitter::EmitType(
     /* [in] */ como::MetaType* mt,
     /* [in] */ int mode)
 {
+    unsigned char properties = mt->mProperties;
+
     StringBuilder builder;
 
     switch (mt->mKind) {
@@ -684,7 +686,7 @@ String CodeGenerator::Emitter::EmitType(
             }
             else if (mode == (MODE_PARAMETER_IN | MODE_PARAMETER_OUT) ||
                      mode == MODE_PARAMETER_OUT) {
-                builder.AppendFormat("Array<%s>&",
+                builder.AppendFormat("Array<%s>",
                         EmitType(emt, MODE_VARIABLE).string());
             }
             else if (mode == (MODE_PARAMETER_OUT | PARAMETER_CALLEE)) {
@@ -699,8 +701,11 @@ String CodeGenerator::Emitter::EmitType(
         }
         case como::TypeKind::Interface: {
             como::MetaInterface* mi = mComponent->mInterfaces[mt->mIndex];
-            if (mt->mProperties & TYPE_REFERENCE) {
+            int N = properties & TYPE_NUMBER_MASK;
+            if ((properties >> (N * 2)) & TYPE_REFERENCE) {
                 builder.AppendFormat("AutoPtr<%s::%s>", mi->mNamespace, mi->mName);
+                properties &= ~((TYPE_REFERENCE) << (N * 2));
+                properties -= 1;
             }
             else {
                 builder.AppendFormat("%s::%s", mi->mNamespace, mi->mName);
@@ -719,13 +724,16 @@ String CodeGenerator::Emitter::EmitType(
             break;
     }
 
-    if (mt->mProperties & TYPE_REFERENCE) {
-        builder.Append("&");
-    }
-
-    int N = (mt->mProperties & TYPE_POINTER_NUMBER_MASK) >> 2;
-    for (int i = 0; i < N; i++) {
-        builder.Append("*");
+    if ((properties & TYPE_NUMBER_MASK) > 0) {
+        int N = properties & TYPE_NUMBER_MASK;
+        for (int i = N; i >= 1; i--) {
+            if ((properties >> (i * 2)) & TYPE_POINTER) {
+                builder.Append("*");
+            }
+            else {
+                builder.Append("&");
+            }
+        }
     }
 
     return builder.ToString();
@@ -735,8 +743,8 @@ String CodeGenerator::Emitter::EmitValue(
     /* [in] */ como::MetaType* mt,
     /* [in] */ como::MetaValue* mv)
 {
-    int N = (mt->mProperties & TYPE_POINTER_NUMBER_MASK) >> 2;
-    if (N > 0) {
+    int N = mt->mProperties & TYPE_NUMBER_MASK;
+    if (N > 0 && (mt->mProperties & (TYPE_POINTER << 2))) {
         return mv->mIntegralValue == 0
                 ? "nullptr"
                 : String::Format("0x%16x", mv->mIntegralValue);

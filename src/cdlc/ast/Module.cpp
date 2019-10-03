@@ -233,6 +233,9 @@ String Module::Dump(
         if (interface->IsForwardDeclared()) {
             continue;
         }
+        if (interface->GetExternalModule() != nullptr) {
+            continue;
+        }
         String interfaceInfo = interface->Dump(prefix + Properties::INDENT);
         builder.AppendFormat("%s\n", interfaceInfo.string());
     }

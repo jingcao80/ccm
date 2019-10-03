@@ -33,6 +33,11 @@ public:
     inline void SetBaseType(
         /* [in] */ Type* type);
 
+    inline int GetReferenceNumber();
+
+    inline void SetReferenceNumber(
+        /* [in] */ int number);
+
     String GetSignature() override;
 
     String ToString() override;
@@ -46,6 +51,7 @@ public:
 
 private:
     AutoPtr<Type> mBaseType;
+    int mReferenceNumber = 0;
 };
 
 AutoPtr<Type> ReferenceType::GetBaseType()
@@ -57,6 +63,17 @@ void ReferenceType::SetBaseType(
     /* [in] */ Type* type)
 {
     mBaseType = type;
+}
+
+int ReferenceType::GetReferenceNumber()
+{
+    return mReferenceNumber;
+}
+
+void ReferenceType::SetReferenceNumber(
+    /* [in] */ int number)
+{
+    mReferenceNumber = number;
 }
 
 AutoPtr<ReferenceType> ReferenceType::CastFrom(

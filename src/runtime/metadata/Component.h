@@ -180,10 +180,10 @@ struct MetaParameter
     // MetaValue*          mDefaultValue;
 };
 
+#define TYPE_NUMBER_MASK            0x03
 #define TYPE_POINTER                0x01
 #define TYPE_REFERENCE              0x02
-#define TYPE_POINTER_NUMBER_MASK    0x0c
-#define TYPE_EXTERNAL               0x10
+#define TYPE_EXTERNAL               0x80
 
 /*
  * If the type is in other module, then it's MetaType will

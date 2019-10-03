@@ -630,8 +630,9 @@ bool Parser::ParseInterface(
 
         AutoPtr<InterfaceType> interface = new InterfaceType();
         interface->SetName(interfaceName);
+        interface->SetNamespace(ns);
         interface->SetForwardDeclared(true);
-        ns->AddInterfaceType(interface);
+        mModule->AddTemporaryType(interface);
         mCurrentContext->AddTypeForwardDeclaration(interfaceName, fullTypeName);
         return result;
     }
@@ -704,17 +705,13 @@ bool Parser::ParseInterface(
     result = ParseInterfaceBody(interface) && result;
 
     if (result) {
-        if (interface->IsForwardDeclared()) {
-            interface->SetForwardDeclared(false);
-        }
-        else {
-            mCurrentNamespace->AddInterfaceType(interface);
-        }
+        interface->SetForwardDeclared(false);
         interface->SetAttributes(attrs);
         if (outerInterface != nullptr) {
             interface->SetOuterInterface(outerInterface);
             outerInterface->AddNestedInterface(interface);
         }
+        mCurrentNamespace->AddInterfaceType(interface);
     }
 
     mCurrentType = std::move(prevType);
@@ -1217,7 +1214,7 @@ AutoPtr<PostfixExpression> Parser::ParsePostfixExpression(
             }
 
             String message = String::Format("\"nullptr\" can not be assigned to \"%s\" type.",
-                    type->GetName().string());
+                    type->ToString().string());
             LogError(tokenInfo, message);
             return nullptr;
         }
@@ -1626,12 +1623,14 @@ bool Parser::ParseParameter(
 
     if (mTokenizer.PeekToken().mToken == Token::ASSIGNMENT) {
         mTokenizer.GetToken();
-
         AutoPtr<Expression> expr = ParseExpression(type);
         parameter->SetDefaultValue(expr);
+        result = expr != nullptr;
     }
 
-    method->AddParameter(parameter);
+    if (result) {
+        method->AddParameter(parameter);
+    }
     return result;
 }
 
@@ -1663,43 +1662,58 @@ AutoPtr<Type> Parser::ParseType()
         return nullptr;
     }
 
-    int ptrNumber = 0, refNumber = 0;
+    int totalNumber = 0;
     tokenInfo = mTokenizer.PeekToken();
-    while (tokenInfo.mToken == Token::ASTERISK) {
-        mTokenizer.GetToken();
-        ptrNumber++;
-        tokenInfo = mTokenizer.PeekToken();
+    while (tokenInfo.mToken == Token::ASTERISK ||
+            tokenInfo.mToken == Token::AMPERSAND) {
+        if (tokenInfo.mToken == Token::ASTERISK) {
+            int ptrNumber = 0;
+            while (tokenInfo.mToken == Token::ASTERISK) {
+                mTokenizer.GetToken();
+                ptrNumber++;
+                tokenInfo = mTokenizer.PeekToken();
+            }
+            String ptrTypeName = type->ToString();
+            for (int i = 0; i < ptrNumber; i++) {
+                ptrTypeName = ptrTypeName + "*";
+            }
+            AutoPtr<PointerType> pointer = PointerType::CastFrom(mModule->FindType(ptrTypeName));
+            if (pointer == nullptr) {
+                pointer = new PointerType();
+                pointer->SetBaseType(type);
+                pointer->SetPointerNumber(ptrNumber);
+            }
+            type = (Type*)pointer.Get();
+            totalNumber += ptrNumber;
+        }
+        else {
+            int refNumber = 0;
+            while (tokenInfo.mToken == Token::AMPERSAND) {
+                mTokenizer.GetToken();
+                refNumber++;
+                tokenInfo = mTokenizer.PeekToken();
+            }
+            String refTypeName = type->ToString();
+            for (int i = 0; i < refNumber; i++) {
+                refTypeName = refTypeName + "&";
+            }
+            AutoPtr<ReferenceType> reference = ReferenceType::CastFrom(mModule->FindType(refTypeName));
+            if (reference == nullptr) {
+                reference = new ReferenceType();
+                reference->SetBaseType(type);
+                reference->SetReferenceNumber(refNumber);
+            }
+            type = (Type*)reference.Get();
+            totalNumber += refNumber;
+        }
     }
 
-    if (tokenInfo.mToken == Token::AMPERSAND) {
-        mTokenizer.GetToken();
-        refNumber++;
-    }
-
-    if (ptrNumber != 0) {
-        String ptrTypeName = type->ToString();
-        for (int i = 0; i < ptrNumber; i++) {
-            ptrTypeName = ptrTypeName + "*";
+    if (totalNumber > 0) {
+        if (totalNumber > 2) {
+            LogError(tokenInfo, "Too more '*' or '&'.");
+            return nullptr;
         }
-        AutoPtr<PointerType> pointer = PointerType::CastFrom(mModule->FindType(ptrTypeName));
-        if (pointer == nullptr) {
-            pointer = new PointerType();
-            pointer->SetBaseType(type);
-            pointer->SetPointerNumber(ptrNumber);
-            mModule->AddTemporaryType(pointer);
-        }
-        type = (Type*)pointer.Get();
-    }
-
-    if (refNumber != 0) {
-        String refTypeName = type->ToString() + "&";
-        AutoPtr<ReferenceType> reference = ReferenceType::CastFrom(mModule->FindType(refTypeName));
-        if (reference == nullptr) {
-            reference = new ReferenceType();
-            reference->SetBaseType(type);
-            mModule->AddTemporaryType(reference);
-        }
-        type = (Type*)reference.Get();
+        mModule->AddTemporaryType(type);
     }
 
     return type;

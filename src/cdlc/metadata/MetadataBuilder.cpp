@@ -741,16 +741,26 @@ como::MetaType* MetadataBuilder::WriteMetaType(
     mBasePtr = ALIGN(mBasePtr);
     como::MetaType* mt = reinterpret_cast<como::MetaType*>(mBasePtr);
     mt->mProperties = 0;
-    if (type->IsReferenceType()) {
-        mt->mProperties |= TYPE_REFERENCE;
-        type = ReferenceType::CastFrom(type)->GetBaseType();
+
+    int shift = 1;
+    while (type->IsPointerType() || type->IsReferenceType()) {
+        if (type->IsPointerType()) {
+            int N = PointerType::CastFrom(type)->GetPointerNumber();
+            for (int i = 0; i < N; i++) {
+                mt->mProperties |= ((unsigned char)TYPE_POINTER) << (shift++ * 2);
+            }
+            type = PointerType::CastFrom(type)->GetBaseType();
+        }
+        else {
+            int N = ReferenceType::CastFrom(type)->GetReferenceNumber();
+            for (int i = 0; i < N; i++) {
+                mt->mProperties |= ((unsigned char)TYPE_REFERENCE) << (shift++ * 2);
+            }
+            type = ReferenceType::CastFrom(type)->GetBaseType();
+        }
     }
-    if (type->IsPointerType()) {
-        mt->mProperties |= TYPE_POINTER;
-        mt->mProperties |= ((PointerType::CastFrom(type)->GetPointerNumber() << 2)
-                & TYPE_POINTER_NUMBER_MASK);
-        type = PointerType::CastFrom(type)->GetBaseType();
-    }
+    mt->mProperties |= (shift - 1);
+
     mt->mKind = ToTypeKind(type);
     mt->mIndex = 0;
     if (type->IsEnumerationType()) {

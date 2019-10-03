@@ -429,15 +429,16 @@ String MetadataDumper::DumpMetaType(
             break;
     }
 
-    if (mt->mProperties & TYPE_POINTER) {
-        int N = (mt->mProperties & TYPE_POINTER_NUMBER_MASK) >> 2;
-        for (int i = 0; i < N; i++) {
-            builder.Append("*");
+    if ((mt->mProperties & TYPE_NUMBER_MASK) > 0) {
+        int N = mt->mProperties & TYPE_NUMBER_MASK;
+        for (int i = N; i >= 1; i--) {
+            if ((mt->mProperties >> (i * 2)) & TYPE_POINTER) {
+                builder.Append("*");
+            }
+            else {
+                builder.Append("&");
+            }
         }
-    }
-
-    if (mt->mProperties & TYPE_REFERENCE) {
-        builder.Append("&");
     }
 
     if (mt->mProperties & TYPE_EXTERNAL) {

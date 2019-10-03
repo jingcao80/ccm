@@ -45,51 +45,51 @@ enum IOAttribute
 interface IMetaComponent
 {
     GetName(
-        [out] String* name);
+        [out] String& name);
 
     GetComponentID(
-        [out] ComponentID* cid);
+        [out] ComponentID& cid);
 
     GetCoclassNumber(
-        [out] Integer* number);
+        [out] Integer& number);
 
     GetAllCoclasses(
-        [out] Array<IMetaCoclass*> klasses);
+        [out] Array<IMetaCoclass*>& klasses);
 
     GetCoclass(
         [in] String fullName,
-        [out] IMetaCoclass** klass);
+        [out] IMetaCoclass&& klass);
 
     GetCoclass(
         [in] CoclassID cid,
-        [out] IMetaCoclass** klass);
+        [out] IMetaCoclass&& klass);
 
     GetInterfaceNumber(
-        [out] Integer* number);
+        [out] Integer& number);
 
     GetAllInterfaces(
-        [out] Array<IMetaInterface*> intfs);
+        [out] Array<IMetaInterface*>& intfs);
 
     GetInterface(
         [in] String fullName,
-        [out] IMetaInterface** intf);
+        [out] IMetaInterface&& intf);
 
     GetInterface(
         [in] InterfaceID iid,
-        [out] IMetaInterface** intf);
+        [out] IMetaInterface&& intf);
 
     GetEnumerationNumber(
-        [out] Integer* number);
+        [out] Integer& number);
 
     GetAllEnumerations(
-        [out] Array<IMetaEnumeration*> enumns);
+        [out] Array<IMetaEnumeration*>& enumns);
 
     GetEnumeration(
         [in] String fullName,
-        [out] IMetaEnumeration** enumn);
+        [out] IMetaEnumeration&& enumn);
 
     CanUnload(
-        [out] Boolean* unload);
+        [out] Boolean& unload);
 
     Unload();
 }
@@ -101,58 +101,58 @@ interface IMetaComponent
 interface IMetaCoclass
 {
     GetComponent(
-        [out] IMetaComponent** comp);
+        [out] IMetaComponent&& comp);
 
     GetName(
-        [out] String* name);
+        [out] String& name);
 
     GetNamespace(
-        [out] String* ns);
+        [out] String& ns);
 
     GetCoclassID(
-        [out] CoclassID* cid);
+        [out] CoclassID& cid);
 
     GetClassLoader(
-        [out] IClassLoader** loader);
+        [out] IClassLoader&& loader);
 
     GetConstructorNumber(
-        [out] Integer* number);
+        [out] Integer& number);
 
     GetAllConstructors(
-        [out] Array<IMetaConstructor*> constrs);
+        [out] Array<IMetaConstructor*>& constrs);
 
     GetConstructor(
         [in] String signature,
-        [out] IMetaConstructor** constr);
+        [out] IMetaConstructor&& constr);
 
     GetInterfaceNumber(
-        [out] Integer* number);
+        [out] Integer& number);
 
     GetAllInterfaces(
-        [out] Array<IMetaInterface*> intfs);
+        [out] Array<IMetaInterface*>& intfs);
 
     GetInterface(
         [in] String fullName,
-        [out] IMetaInterface** intf);
+        [out] IMetaInterface&& intf);
 
     ContainsInterface(
         [in] String fullName,
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     GetMethodNumber(
-        [out] Integer* number);
+        [out] Integer& number);
 
     GetAllMethods(
-        [out] Array<IMetaMethod*> methods);
+        [out] Array<IMetaMethod*>& methods);
 
     GetMethod(
         [in] String name,
         [in] String signature,
-        [out] IMetaMethod** method);
+        [out] IMetaMethod&& method);
 
     CreateObject(
         [in] InterfaceID iid,
-        [out] IInterface** object);
+        [out] IInterface&& object);
 }
 
 [
@@ -162,23 +162,23 @@ interface IMetaCoclass
 interface IMetaEnumeration
 {
     GetComponent(
-        [out] IMetaComponent** comp);
+        [out] IMetaComponent&& comp);
 
     GetName(
-        [out] String* name);
+        [out] String& name);
 
     GetNamespace(
-        [out] String* ns);
+        [out] String& ns);
 
     GetEnumeratorNumber(
-        [out] Integer* number);
+        [out] Integer& number);
 
     GetAllEnumerators(
-        [out] Array<IMetaEnumerator*> enumrs);
+        [out] Array<IMetaEnumerator*>& enumrs);
 
     GetEnumerator(
         [in] String name,
-        [out] IMetaEnumerator** enumr);
+        [out] IMetaEnumerator&& enumr);
 }
 
 [
@@ -188,13 +188,13 @@ interface IMetaEnumeration
 interface IMetaEnumerator
 {
     GetEnumeration(
-        [out] IMetaEnumeration** enumn);
+        [out] IMetaEnumeration&& enumn);
 
     GetName(
-        [out] String* name);
+        [out] String& name);
 
     GetValue(
-        [out] Integer* value);
+        [out] Integer& value);
 }
 
 [
@@ -204,48 +204,48 @@ interface IMetaEnumerator
 interface IMetaInterface
 {
     GetComponent(
-        [out] IMetaComponent** comp);
+        [out] IMetaComponent&& comp);
 
     GetName(
-        [out] String* name);
+        [out] String& name);
 
     GetNamespace(
-        [out] String* ns);
+        [out] String& ns);
 
     GetInterfaceID(
-        [out] InterfaceID* iid);
+        [out] InterfaceID& iid);
 
     GetBaseInterface(
-        [out] IMetaInterface** baseIntf);
+        [out] IMetaInterface&& baseIntf);
 
     GetConstantNumber(
-        [out] Integer* number);
+        [out] Integer& number);
 
     GetAllConstants(
-        [out] Array<IMetaConstant*> consts);
+        [out] Array<IMetaConstant*>& consts);
 
     GetConstant(
         [in] String name,
-        [out] IMetaConstant** constt);
+        [out] IMetaConstant&& constt);
 
     GetConstant(
         [in] Integer index,
-        [out] IMetaConstant** constt);
+        [out] IMetaConstant&& constt);
 
     GetMethodNumber(
-        [out] Integer* number);
+        [out] Integer& number);
 
     GetAllMethods(
-        [out] Array<IMetaMethod*> methods);
+        [out] Array<IMetaMethod*>& methods);
 
     GetMethod(
         [in] String name,
         [in] String signature,
-        [out] IMetaMethod** method);
+        [out] IMetaMethod&& method);
 
     GetMethod(
         [in] Integer index,
-        [out] IMetaMethod** method);
+        [out] IMetaMethod&& method);
 }
 
 [
@@ -255,13 +255,13 @@ interface IMetaInterface
 interface IMetaConstant
 {
     GetName(
-        [out] String* name);
+        [out] String& name);
 
     GetType(
-        [out] IMetaType** type);
+        [out] IMetaType&& type);
 
     GetValue(
-        [out] IMetaValue** value);
+        [out] IMetaValue&& value);
 }
 
 [
@@ -271,33 +271,33 @@ interface IMetaConstant
 interface IMetaMethod
 {
     GetInterface(
-        [out] IMetaInterface** intf);
+        [out] IMetaInterface&& intf);
 
     GetName(
-        [out] String* name);
+        [out] String& name);
 
     GetSignature(
-        [out] String* signature);
+        [out] String& signature);
 
     GetParameterNumber(
-        [out] Integer* number);
+        [out] Integer& number);
 
     GetAllParameters(
-        [out] Array<IMetaParameter*> params);
+        [out] Array<IMetaParameter*>& params);
 
     GetParameter(
         [in] Integer index,
-        [out] IMetaParameter** param);
+        [out] IMetaParameter&& param);
 
     GetParameter(
         [in] String name,
-        [out] IMetaParameter** param);
+        [out] IMetaParameter&& param);
 
     HasOutArguments(
-        [out] Boolean* outArgs);
+        [out] Boolean& outArgs);
 
     CreateArgumentList(
-        [out] IArgumentList** argList);
+        [out] IArgumentList&& argList);
 
     Invoke(
         [in] IInterface* thisObject,
@@ -311,14 +311,14 @@ interface IMetaMethod
 interface IMetaConstructor : IMetaMethod
 {
     GetCoclass(
-        [out] IMetaCoclass** klass);
+        [out] IMetaCoclass&& klass);
 
     IsDefault(
-        [out] Boolean* isDefault);
+        [out] Boolean& isDefault);
 
     CreateObject(
         [in] IArgumentList* argList,
-        [out] IInterface** object);
+        [out] IInterface&& object);
 }
 
 [
@@ -328,19 +328,19 @@ interface IMetaConstructor : IMetaMethod
 interface IMetaParameter
 {
     GetMethod(
-        [out] IMetaMethod** method);
+        [out] IMetaMethod&& method);
 
     GetName(
-        [out] String* name);
+        [out] String& name);
 
     GetIndex(
-        [out] Integer* index);
+        [out] Integer& index);
 
     GetIOAttribute(
-        [out] IOAttribute* attr);
+        [out] IOAttribute& attr);
 
     GetType(
-        [out] IMetaType** type);
+        [out] IMetaType&& type);
 }
 
 [
@@ -350,16 +350,16 @@ interface IMetaParameter
 interface IMetaType
 {
     GetName(
-        [out] String* name);
+        [out] String& name);
 
     GetTypeKind(
-        [out] Integer* kind);
+        [out] Integer& kind);
 
     GetElementType(
-        [out] IMetaType** elemType);
+        [out] IMetaType&& elemType);
 
     GetPointerNumber(
-        [out] Integer* number);
+        [out] Integer& number);
 }
 
 [
@@ -369,37 +369,37 @@ interface IMetaType
 interface IMetaValue
 {
     GetType(
-        [out] IMetaType** type);
+        [out] IMetaType&& type);
 
     GetBooleanValue(
-        [out] Boolean* value);
+        [out] Boolean& value);
 
     GetCharValue(
-        [out] Char* value);
+        [out] Char& value);
 
     GetByteValue(
-        [out] Byte* value);
+        [out] Byte& value);
 
     GetShortValue(
-        [out] Short* value);
+        [out] Short& value);
 
     GetIntegerValue(
-        [out] Integer* value);
+        [out] Integer& value);
 
     GetLongValue(
-        [out] Long* value);
+        [out] Long& value);
 
     GetFloatValue(
-        [out] Float* value);
+        [out] Float& value);
 
     GetDoubleValue(
-        [out] Double* value);
+        [out] Double& value);
 
     GetStringValue(
-        [out] String* value);
+        [out] String& value);
 
     GetRadix(
-        [out] Integer* radix);
+        [out] Integer& radix);
 }
 
 [
@@ -410,7 +410,7 @@ interface IArgumentList
 {
     GetInputArgumentOfByte(
         [in] Integer index,
-        [out] Byte* value);
+        [out] Byte& value);
 
     SetInputArgumentOfByte(
         [in] Integer index,
@@ -418,7 +418,7 @@ interface IArgumentList
 
     GetInputArgumentOfShort(
         [in] Integer index,
-        [out] Short* value);
+        [out] Short& value);
 
     SetInputArgumentOfShort(
         [in] Integer index,
@@ -426,7 +426,7 @@ interface IArgumentList
 
     GetInputArgumentOfInteger(
         [in] Integer index,
-        [out] Integer* value);
+        [out] Integer& value);
 
     SetInputArgumentOfInteger(
         [in] Integer index,
@@ -434,7 +434,7 @@ interface IArgumentList
 
     GetInputArgumentOfLong(
         [in] Integer index,
-        [out] Long* value);
+        [out] Long& value);
 
     SetInputArgumentOfLong(
         [in] Integer index,
@@ -442,15 +442,15 @@ interface IArgumentList
 
     GetInputArgumentOfFloat(
         [in] Integer index,
-        [out] Float* value);
+        [out] Float& value);
 
     SetInputArgumentOfFloat(
         [in] Integer index,
-        [out] Float value);
+        [in] Float value);
 
     GetInputArgumentOfDouble(
         [in] Integer index,
-        [out] Double* value);
+        [out] Double& value);
 
     SetInputArgumentOfDouble(
         [in] Integer index,
@@ -458,7 +458,7 @@ interface IArgumentList
 
     GetInputArgumentOfChar(
         [in] Integer index,
-        [out] Char* value);
+        [out] Char& value);
 
     SetInputArgumentOfChar(
         [in] Integer index,
@@ -466,7 +466,7 @@ interface IArgumentList
 
     GetInputArgumentOfBoolean(
         [in] Integer index,
-        [out] Boolean* value);
+        [out] Boolean& value);
 
     SetInputArgumentOfBoolean(
         [in] Integer index,
@@ -474,7 +474,7 @@ interface IArgumentList
 
     GetInputArgumentOfString(
         [in] Integer index,
-        [out] String* value);
+        [out] String& value);
 
     SetInputArgumentOfString(
         [in] Integer index,
@@ -482,7 +482,7 @@ interface IArgumentList
 
     GetInputArgumentOfHANDLE(
         [in] Integer index,
-        [out] HANDLE* value);
+        [out] HANDLE& value);
 
     SetInputArgumentOfHANDLE(
         [in] Integer index,
@@ -490,7 +490,7 @@ interface IArgumentList
 
     GetInputArgumentOfECode(
         [in] Integer index,
-        [out] ECode* value);
+        [out] ECode& value);
 
     SetInputArgumentOfECode(
         [in] Integer index,
@@ -498,7 +498,7 @@ interface IArgumentList
 
     GetInputArgumentOfCoclassID(
         [in] Integer index,
-        [out] CoclassID* value);
+        [out] CoclassID& value);
 
     SetInputArgumentOfCoclassID(
         [in] Integer index,
@@ -506,7 +506,7 @@ interface IArgumentList
 
     GetInputArgumentOfComponentID(
         [in] Integer index,
-        [out] ComponentID* value);
+        [out] ComponentID& value);
 
     SetInputArgumentOfComponentID(
         [in] Integer index,
@@ -514,7 +514,7 @@ interface IArgumentList
 
     GetInputArgumentOfInterfaceID(
         [in] Integer index,
-        [out] InterfaceID* value);
+        [out] InterfaceID& value);
 
     SetInputArgumentOfInterfaceID(
         [in] Integer index,
@@ -522,7 +522,7 @@ interface IArgumentList
 
     GetInputArgumentOfArray(
         [in] Integer index,
-        [out] HANDLE* value);
+        [out] HANDLE& value);
 
     SetInputArgumentOfArray(
         [in] Integer index,
@@ -530,7 +530,7 @@ interface IArgumentList
 
     GetInputArgumentOfEnumeration(
         [in] Integer index,
-        [out] Integer* value);
+        [out] Integer& value);
 
     SetInputArgumentOfEnumeration(
         [in] Integer index,
@@ -538,7 +538,7 @@ interface IArgumentList
 
     GetInputArgumentOfInterface(
         [in] Integer index,
-        [out] IInterface** value);
+        [out] IInterface&& value);
 
     SetInputArgumentOfInterface(
         [in] Integer index,
@@ -682,7 +682,7 @@ interface IArgumentList
 
     GetArgumentAddress(
         [in] Integer index,
-        [out] HANDLE* addr);
+        [out] HANDLE& addr);
 }
 
 }

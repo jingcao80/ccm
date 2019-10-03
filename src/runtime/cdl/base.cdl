@@ -30,11 +30,11 @@ interface IClassObject
         [in] IMetaComponent* component);
 
     GetMetadate(
-        [out] IMetaComponent** component);
+        [out] IMetaComponent&& component);
 
     CreateObject(
         [in] InterfaceID iid,
-        [out] IInterface** object);
+        [out] IInterface&& object);
 }
 
 interface IReferenceObserver;
@@ -50,23 +50,23 @@ interface IObject
         [in] String coclassName);
 
     GetCoclassID(
-        [out] CoclassID* cid);
+        [out] CoclassID& cid);
 
     GetCoclass(
-        [out] IMetaCoclass** klass);
+        [out] IMetaCoclass&& klass);
 
     GetHashCode(
-        [out] Integer* hash);
+        [out] Integer& hash);
 
     Equals(
         [in] IInterface* obj,
-        [out] Boolean* same);
+        [out] Boolean& same);
 
     SetReferenceObserver(
         [in] IReferenceObserver* observer);
 
     ToString(
-        [out] String* desc);
+        [out] String& desc);
 }
 
 [
@@ -77,25 +77,25 @@ interface IClassLoader
 {
     LoadComponent(
         [in] String path,
-        [out] IMetaComponent** component);
+        [out] IMetaComponent&& component);
 
     LoadComponent(
         [in] ComponentID compId,
-        [out] IMetaComponent** component);
+        [out] IMetaComponent&& component);
 
     UnloadComponent(
         [in] ComponentID compId);
 
     LoadCoclass(
         [in] String fullName,
-        [out] IMetaCoclass** klass);
+        [out] IMetaCoclass&& klass);
 
     LoadInterface(
         [in] String fullName,
-        [out] IMetaInterface** intf);
+        [out] IMetaInterface&& intf);
 
     GetParent(
-        [out] IClassLoader** parent);
+        [out] IClassLoader&& parent);
 }
 
 [
@@ -106,7 +106,7 @@ interface IWeakReference
 {
     Resolve(
         [in] InterfaceID iid,
-        [out] IInterface** object);
+        [out] IInterface&& object);
 }
 
 [
@@ -116,7 +116,7 @@ interface IWeakReference
 interface IWeakReferenceSource
 {
     GetWeakReference(
-        [out] IWeakReference** wr);
+        [out] IWeakReference&& wr);
 }
 
 [

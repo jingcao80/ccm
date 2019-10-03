@@ -35,85 +35,85 @@ enum RPCPeer
 interface IParcel
 {
     ReadChar(
-        [out] Char* value);
+        [out] Char& value);
 
     WriteChar(
         [in] Char value);
 
     ReadByte(
-        [out] Byte* value);
+        [out] Byte& value);
 
     WriteByte(
         [in] Byte value);
 
     ReadShort(
-        [out] Short* value);
+        [out] Short& value);
 
     WriteShort(
         [in] Short value);
 
     ReadInteger(
-        [out] Integer* value);
+        [out] Integer& value);
 
     WriteInteger(
         [in] Integer value);
 
     ReadLong(
-        [out] Long* value);
+        [out] Long& value);
 
     WriteLong(
         [in] Long value);
 
     ReadFloat(
-        [out] Float* value);
+        [out] Float& value);
 
     WriteFloat(
         [in] Float value);
 
     ReadDouble(
-        [out] Double* value);
+        [out] Double& value);
 
     WriteDouble(
         [in] Double value);
 
     ReadBoolean(
-        [out] Boolean* value);
+        [out] Boolean& value);
 
     WriteBoolean(
         [in] Boolean value);
 
     ReadString(
-        [out] String* value);
+        [out] String& value);
 
     WriteString(
         [in] String value);
 
     ReadCoclassID(
-        [out] CoclassID* value);
+        [out] CoclassID& value);
 
     WriteCoclassID(
         [in] CoclassID value);
 
     ReadComponentID(
-        [out] ComponentID* value);
+        [out] ComponentID& value);
 
     WriteComponentID(
         [in] ComponentID value);
 
     ReadInterfaceID(
-        [out] InterfaceID* value);
+        [out] InterfaceID& value);
 
     WriteInterfaceID(
         [in] InterfaceID value);
 
     ReadECode(
-        [out] ECode* value);
+        [out] ECode& value);
 
     WriteECode(
         [in] ECode value);
 
     ReadEnumeration(
-        [out] Integer* value);
+        [out] Integer& value);
 
     WriteEnumeration(
         [in] Integer value);
@@ -125,16 +125,16 @@ interface IParcel
         [in] HANDLE array);
 
     ReadInterface(
-        [out] IInterface** value);
+        [out] IInterface&& value);
 
     WriteInterface(
         [in] IInterface* value);
 
     GetData(
-        [out] HANDLE* data);
+        [out] HANDLE& data);
 
     GetDataSize(
-        [out] Long* size);
+        [out] Long& size);
 
     SetData(
         [in] Byte* data,
@@ -151,13 +151,13 @@ interface IParcel
 interface IInterfacePack
 {
     GetCoclassID(
-        [out] CoclassID* cid);
+        [out] CoclassID& cid);
 
     GetInterfaceID(
-        [out] InterfaceID* iid);
+        [out] InterfaceID& iid);
 
     GetHashCode(
-        [out] Integer* hash);
+        [out] Integer& hash);
 
     ReadFromParcel(
         [in] IParcel* source);
@@ -179,10 +179,10 @@ interface IStub;
 interface IRPCChannel
 {
     GetRPCType(
-        [out] RPCType* type);
+        [out] RPCType& type);
 
     IsPeerAlive(
-        [out] Boolean* alive);
+        [out] Boolean& alive);
 
     LinkToDeath(
         [in] IDeathRecipient* recipient,
@@ -193,20 +193,20 @@ interface IRPCChannel
         [in] IDeathRecipient* recipient,
         [in] HANDLE cookie = 0,
         [in] Integer flags = 0,
-        [out] IDeathRecipient** outRecipient = nullptr);
+        [out] IDeathRecipient&* outRecipient = nullptr);
 
     Invoke(
         [in] IProxy* proxy,
         [in] IMetaMethod* method,
         [in] IParcel* argParcel,
-        [out] IParcel** resParcel);
+        [out] IParcel&& resParcel);
 
     StartListening(
         [in] IStub* stub);
 
     Match(
         [in] IInterfacePack* ipack,
-        [out] Boolean* matched);
+        [out] Boolean& matched);
 }
 
 [
@@ -216,22 +216,22 @@ interface IRPCChannel
 interface IRPCChannelFactory
 {
     CreateInterfacePack(
-        [out] IInterfacePack** ipack);
+        [out] IInterfacePack&& ipack);
 
     CreateParcel(
-        [out] IParcel** parcel);
+        [out] IParcel&& parcel);
 
     CreateChannel(
         [in] RPCPeer peer,
-        [out] IRPCChannel** channel);
+        [out] IRPCChannel&& channel);
 
     MarshalInterface(
         [in] IInterface* object,
-        [out] IInterfacePack** ipack);
+        [out] IInterfacePack&& ipack);
 
     UnmarshalInterface(
         [in] IInterfacePack* data,
-        [out] IInterface** object);
+        [out] IInterface&& object);
 }
 
 [
@@ -241,10 +241,10 @@ interface IRPCChannelFactory
 interface IProxy
 {
     GetTargetCoclass(
-        [out] IMetaCoclass** target);
+        [out] IMetaCoclass&& target);
 
     IsStubAlive(
-        [out] Boolean* alive);
+        [out] Boolean& alive);
 
     LinkToDeath(
         [in] IDeathRecipient* recipient,
@@ -255,7 +255,7 @@ interface IProxy
         [in] IDeathRecipient* recipient,
         [in] HANDLE cookie = 0,
         [in] Integer flags = 0,
-        [out] IDeathRecipient** outRecipient = nullptr);
+        [out] IDeathRecipient&* outRecipient = nullptr);
 }
 
 [
@@ -265,7 +265,7 @@ interface IProxy
 interface IDeathRecipient
 {
     ProxyDied(
-        [out] IProxy** who);
+        [out] IProxy&& who);
 }
 
 [
@@ -276,11 +276,11 @@ interface IStub
 {
     Match(
         [in] IInterfacePack* ipack,
-        [out] Boolean* matched);
+        [out] Boolean& matched);
 
     Invoke(
         [in] IParcel* argParcel,
-        [out] IParcel** resParcel);
+        [out] IParcel&& resParcel);
 }
 
 }

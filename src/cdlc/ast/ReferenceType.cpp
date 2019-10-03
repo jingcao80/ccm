@@ -27,12 +27,20 @@ bool ReferenceType::IsReferenceType()
 
 String ReferenceType::GetSignature()
 {
-    return mBaseType->GetSignature() + "&";
+    String signature = mBaseType->GetSignature();
+    for (int i = 0; i < mReferenceNumber; i++) {
+        signature += "&";
+    }
+    return signature;
 }
 
 String ReferenceType::ToString()
 {
-    return mBaseType->ToString() + "&";
+    String typeStr = mBaseType->ToString();
+    for (int i = 0; i < mReferenceNumber; i++) {
+        typeStr += "&";
+    }
+    return typeStr;
 }
 
 AutoPtr<Node> ReferenceType::Clone(
