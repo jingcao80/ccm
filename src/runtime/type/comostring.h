@@ -30,12 +30,12 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_STRING_H__
-#define __CCM_STRING_H__
+#ifndef __COMO_STRING_H__
+#define __COMO_STRING_H__
 
-#include "ccmdef.h"
+#include "comodef.h"
 
-namespace ccm {
+namespace como {
 
 template<class T> class Array;
 
@@ -44,10 +44,10 @@ class COM_PUBLIC String
 public:
     inline String();
 
-    explicit String(
+    String(
         /* [in] */ const char* string);
 
-    explicit String(
+    String(
         /* [in] */ const char* string,
         /* [in] */ Integer byteSize);
 
@@ -57,16 +57,16 @@ public:
     String(
         /* [in] */ String&& other);
 
-    explicit String(
+    String(
         /* [in] */ const Array<Char>& charArray,
         /* [in] */ Integer start = 0);
 
-    explicit String(
+    String(
         /* [in] */ const Array<Char>& charArray,
         /* [in] */ Integer start,
         /* [in] */ Integer length);
 
-    explicit String(
+    String(
         /* [in] */ const Array<Byte>& bytes,
         /* [in] */ Integer start,
         /* [in] */ Integer length);
@@ -76,8 +76,6 @@ public:
     inline Boolean IsNull() const;
 
     inline Boolean IsEmpty() const;
-
-    inline Boolean IsNullOrEmpty() const;
 
     Integer GetLength() const;
 
@@ -355,11 +353,6 @@ Boolean String::IsNull() const
 
 Boolean String::IsEmpty() const
 {
-    return mString[0] == '\0';
-}
-
-Boolean String::IsNullOrEmpty() const
-{
     return mString == nullptr || mString[0] == '\0';
 }
 
@@ -525,6 +518,6 @@ inline String operator+(
     return String::Format("%s%c", string1.string(), c);
 }
 
-}
+} // namespace como
 
-#endif //__CCM_STRING_H__
+#endif //__COMO_STRING_H__

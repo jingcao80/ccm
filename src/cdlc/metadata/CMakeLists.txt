@@ -25,5 +25,5 @@ set(SOURCES
     MetadataDumper.cpp
     MetadataUtils.cpp)
 
-add_library(metadata2 STATIC
+add_library(cdlc_metadata STATIC
     ${SOURCES})

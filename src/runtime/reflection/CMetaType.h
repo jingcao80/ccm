@@ -39,7 +39,7 @@ public:
 
     ~CMetaType();
 
-    CCM_INTERFACE_DECL();
+    COMO_INTERFACE_DECL();
 
     ECode GetName(
         /* [out] */ String* name);

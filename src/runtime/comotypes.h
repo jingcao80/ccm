@@ -14,14 +14,14 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CCMTYPE_H__
-#define __CCM_CCMTYPE_H__
+#ifndef __COMO_COMOTYPE_H__
+#define __COMO_COMOTYPE_H__
 
-#include "ccmdef.h"
-#include "ccmuuid.h"
-#include <stdlib.h>
+#include "comodef.h"
+#include "comouuid.h"
+#include <cstdlib>
 
-namespace ccm {
+namespace como {
 
 typedef char            Byte;
 typedef short           Short;
@@ -38,7 +38,7 @@ struct ComponentID;
 
 struct CoclassID
 {
-    Uuid                mUuid;
+    UUID                mUuid;
     const ComponentID*  mCid;
 
     static const CoclassID Null;
@@ -48,19 +48,19 @@ inline bool operator==(
     /* [in] */ const CoclassID& cid1,
     /* [in] */ const CoclassID& cid2)
 {
-    return !memcmp(&cid1.mUuid, &cid2.mUuid, sizeof(Uuid));
+    return !memcmp(&cid1.mUuid, &cid2.mUuid, sizeof(UUID));
 }
 
 inline bool operator!=(
     /* [in] */ const CoclassID& cid1,
     /* [in] */ const CoclassID& cid2)
 {
-    return memcmp(&cid1.mUuid, &cid2.mUuid, sizeof(Uuid));
+    return memcmp(&cid1.mUuid, &cid2.mUuid, sizeof(UUID));
 }
 
 struct InterfaceID
 {
-    Uuid                mUuid;
+    UUID                mUuid;
     const ComponentID*  mCid;
 
     static const InterfaceID Null;
@@ -70,50 +70,50 @@ inline bool operator==(
     /* [in] */ const InterfaceID& iid1,
     /* [in] */ const InterfaceID& iid2)
 {
-    return !memcmp(&iid1.mUuid, &iid2.mUuid, sizeof(Uuid));
+    return !memcmp(&iid1.mUuid, &iid2.mUuid, sizeof(UUID));
 }
 
 inline bool operator!=(
     /* [in] */ const InterfaceID& iid1,
     /* [in] */ const InterfaceID& iid2)
 {
-    return memcmp(&iid1.mUuid, &iid2.mUuid, sizeof(Uuid));
+    return memcmp(&iid1.mUuid, &iid2.mUuid, sizeof(UUID));
 }
 
 struct ComponentID
 {
-    Uuid                mUuid;
-    const char*         mUrl;
+    UUID                mUuid;
+    const char*         mUri;
 };
 
 inline bool operator==(
     /* [in] */ const ComponentID& cid1,
     /* [in] */ const ComponentID& cid2)
 {
-    return !memcmp(&cid1.mUuid, &cid2.mUuid, sizeof(Uuid));
+    return !memcmp(&cid1.mUuid, &cid2.mUuid, sizeof(UUID));
 }
 
 inline bool operator!=(
     /* [in] */ const ComponentID& cid1,
     /* [in] */ const ComponentID& cid2)
 {
-    return memcmp(&cid1.mUuid, &cid2.mUuid, sizeof(Uuid));
+    return memcmp(&cid1.mUuid, &cid2.mUuid, sizeof(UUID));
 }
 
-}
+} // namespace como
 
-#include "ccmerror.h"
-#include "ccmstring.h"
+#include "comoerror.h"
+#include "comostring.h"
 
-namespace ccm {
+namespace como {
 
 extern String DumpUuid(
-    /* [in] */ const Uuid& id);
+    /* [in] */ const UUID& id);
 
 extern Integer HashUuid(
-    /* [in] */ const Uuid& key);
+    /* [in] */ const UUID& key);
 
-extern const ComponentID CID_CCMRuntime;
+extern const ComponentID CID_COMORuntime;
 extern const InterfaceID IID_IInterface;
 
 INTERFACE_ID(00000000-0000-0000-0000-000000000001)
@@ -137,7 +137,7 @@ interface IInterface
 
     virtual ECode GetInterfaceID(
         /* [in] */ IInterface* object,
-        /* [out] */ InterfaceID* iid) = 0;
+        /* [out] */ InterfaceID& iid) = 0;
 
     inline static Boolean Equals(
         /* [in] */ IInterface* object1,
@@ -150,24 +150,26 @@ interface IInterface
     }
 };
 
-}
+} // namespace como
 
-#include "ccmintfs.h"
-#include "ccmsharedbuffer.h"
-#include "ccmtypekind.h"
+#include "comosharedbuffer.h"
+#include "comotypekind.h"
 
-namespace ccm {
+namespace como {
 
 struct COM_PUBLIC Triple
 {
     Triple()
         : mData(nullptr)
         , mSize(0)
-        , mType(CcmTypeKind::Unknown)
+        , mType(TypeKind::Unknown)
     {}
 
     Triple(
         /* [in] */ const Triple& other);
+
+    Triple(
+        /* [in] */ Triple&& other);
 
     void AllocData(
         /* [in] */ Long dataSize);
@@ -182,15 +184,15 @@ struct COM_PUBLIC Triple
 
     void* mData;
     Long mSize;
-    CcmTypeKind mType;
+    TypeKind mType;
 };
 
 template<class T>
 struct Type2Kind
 {
-    static CcmTypeKind Kind()
+    static TypeKind Kind()
     {
-        return CcmTypeKind::Unknown;
+        return TypeKind::Unknown;
     }
 
     enum { isPrimitiveType = false };
@@ -201,29 +203,29 @@ struct Type2Kind
         template<>                              \
         struct Type2Kind<type>                  \
         {                                       \
-            inline static CcmTypeKind Kind()    \
+            inline static TypeKind Kind()    \
             {                                   \
                 return kind;                    \
             }                                   \
             enum { isPrimitiveType = value };   \
-            enum { isStringType = (kind == CcmTypeKind::String) };  \
+            enum { isStringType = (kind == TypeKind::String) };  \
         };
 
-TYPE2KIND_SPEC(Byte, CcmTypeKind::Byte, true);
-TYPE2KIND_SPEC(Short, CcmTypeKind::Short, true);
-TYPE2KIND_SPEC(Integer, CcmTypeKind::Integer, true);
-TYPE2KIND_SPEC(Long, CcmTypeKind::Long, true);
-TYPE2KIND_SPEC(Float, CcmTypeKind::Float, true);
-TYPE2KIND_SPEC(Double, CcmTypeKind::Double, true);
-TYPE2KIND_SPEC(Char, CcmTypeKind::Char, true);
-TYPE2KIND_SPEC(Boolean, CcmTypeKind::Boolean, true);
-TYPE2KIND_SPEC(String, CcmTypeKind::String, true);
-TYPE2KIND_SPEC(HANDLE, CcmTypeKind::HANDLE, true);
-TYPE2KIND_SPEC(CoclassID, CcmTypeKind::CoclassID, true);
-TYPE2KIND_SPEC(ComponentID, CcmTypeKind::ComponentID, true);
-TYPE2KIND_SPEC(InterfaceID, CcmTypeKind::InterfaceID, true);
-TYPE2KIND_SPEC(IInterface*, CcmTypeKind::Interface, false);
-TYPE2KIND_SPEC(Uuid, CcmTypeKind::Unknown, true);
+TYPE2KIND_SPEC(Byte, TypeKind::Byte, true);
+TYPE2KIND_SPEC(Short, TypeKind::Short, true);
+TYPE2KIND_SPEC(Integer, TypeKind::Integer, true);
+TYPE2KIND_SPEC(Long, TypeKind::Long, true);
+TYPE2KIND_SPEC(Float, TypeKind::Float, true);
+TYPE2KIND_SPEC(Double, TypeKind::Double, true);
+TYPE2KIND_SPEC(Char, TypeKind::Char, true);
+TYPE2KIND_SPEC(Boolean, TypeKind::Boolean, true);
+TYPE2KIND_SPEC(String, TypeKind::String, true);
+TYPE2KIND_SPEC(HANDLE, TypeKind::HANDLE, true);
+TYPE2KIND_SPEC(CoclassID, TypeKind::CoclassID, true);
+TYPE2KIND_SPEC(ComponentID, TypeKind::ComponentID, true);
+TYPE2KIND_SPEC(InterfaceID, TypeKind::InterfaceID, true);
+TYPE2KIND_SPEC(IInterface*, TypeKind::Interface, false);
+TYPE2KIND_SPEC(UUID, TypeKind::Unknown, true);
 
 template<class T, class U>
 class Conversion
@@ -331,13 +333,13 @@ struct InitFunc<T, true>
 };
 
 template<>
-struct InitFunc<Uuid, true>
+struct InitFunc<UUID, true>
 {
     inline void operator()(
-        /* [in] */ Uuid* data,
+        /* [in] */ UUID* data,
         /* [in] */ void* id)
     {
-        memset(data, 0, sizeof(Uuid));
+        memset(data, 0, sizeof(UUID));
     }
 };
 
@@ -526,11 +528,11 @@ struct CompareFunc<String>
 };
 
 template<>
-struct CompareFunc<Uuid>
+struct CompareFunc<UUID>
 {
     inline Integer operator()(
-        /* [in] */ const Uuid& lvalue,
-        /* [in] */ const Uuid& rvalue)
+        /* [in] */ const UUID& lvalue,
+        /* [in] */ const UUID& rvalue)
     {
         return lvalue == rvalue ? 0 : -1;
     }
@@ -559,17 +561,19 @@ struct HashFunc<String>
 };
 
 template<>
-struct HashFunc<Uuid>
+struct HashFunc<UUID>
 {
     inline Integer operator()(
-        /* [in] */ const Uuid& data)
+        /* [in] */ const UUID& data)
     {
         return HashUuid(data);
     }
 };
 
-}
+} // namespace como
 
-#include "ccmarray.h"
+#include "comoarray.h"
+#include "comoautoptr.h"
+#include "comointfs.h"
 
-#endif // __CCM_CCMTYPE_H__
+#endif // __COMO_COMOTYPE_H__

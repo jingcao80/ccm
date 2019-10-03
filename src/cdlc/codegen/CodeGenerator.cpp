@@ -129,8 +129,6 @@ void CodeGenerator::RuntimeModeEmitter::EmitConstantsAndTypes()
     builder.Append("#ifndef __COMO_COMORUNTIMEINTERFACES_H_GEN__\n"
                    "#define __COMO_COMORUNTIMEINTERFACES_H_GEN__\n"
                    "\n"
-                   "#include <comotypes.h>\n"
-                   "\n"
                    "namespace como {\n"
                    "\n");
 

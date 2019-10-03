@@ -14,9 +14,9 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccmspinlock.h"
+#include "comospinlock.h"
 
-namespace ccm {
+namespace como {
 
 void Spinlock::Lock()
 {
@@ -40,4 +40,4 @@ void Spinlock::Unlock()
     mLocked.store(false, std::memory_order_release);
 }
 
-}
+} // namespace como

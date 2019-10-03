@@ -61,9 +61,9 @@ public:
         /* [in] */ RPCType type,
         /* [in] */ RPCPeer peer);
 
-    CCM_INTERFACE_DECL();
+    COMO_INTERFACE_DECL();
 
-    CCM_OBJECT_DECL();
+    COMO_OBJECT_DECL();
 
     ECode GetRPCType(
         /* [out] */ RPCType* type) override;

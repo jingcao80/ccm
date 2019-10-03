@@ -41,7 +41,7 @@ public:
 
     ~CMetaInterface();
 
-    CCM_INTERFACE_DECL();
+    COMO_INTERFACE_DECL();
 
     ECode GetComponent(
         /* [out] */ IMetaComponent** metaComp) override;

@@ -35,7 +35,7 @@ EXTERN_C ECode invoke(
     /* [in] */ Long* stkData,
     /* [in] */ Integer stkDataSize);
 
-CCM_INTERFACE_IMPL_LIGHT_1(CMetaConstructor, LightRefBase, IMetaConstructor);
+COMO_INTERFACE_IMPL_LIGHT_1(CMetaConstructor, LightRefBase, IMetaConstructor);
 
 CMetaConstructor::CMetaConstructor(
     /* [in] */ CMetaCoclass* mcObj,

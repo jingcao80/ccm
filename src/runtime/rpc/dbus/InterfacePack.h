@@ -45,7 +45,7 @@ class InterfacePack
 public:
     ~InterfacePack();
 
-    CCM_INTERFACE_DECL();
+    COMO_INTERFACE_DECL();
 
     ECode GetCoclassID(
         /* [out] */ CoclassID* cid);

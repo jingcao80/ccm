@@ -14,14 +14,14 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_HASHMAP_H__
-#define __CCM_HASHMAP_H__
+#ifndef __COMO_HASHMAP_H__
+#define __COMO_HASHMAP_H__
 
-#include "type/ccmarray.h"
-#include <stdlib.h>
-#include <string.h>
+#include "type/comoarray.h"
+#include <cstdlib>
+#include <cstring>
 
-namespace ccm {
+namespace como {
 
 static const int prime_list[11] =
 {
@@ -325,6 +325,6 @@ private:
     Bucket** mBuckets;
 };
 
-} // namespace ccm
+} // namespace como
 
-#endif // __CCM_HASHMAP_H__
+#endif // __COMO_HASHMAP_H__

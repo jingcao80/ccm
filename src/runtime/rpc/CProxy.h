@@ -139,9 +139,9 @@ class CProxy
 public:
     ~CProxy();
 
-    CCM_OBJECT_DECL();
+    COMO_OBJECT_DECL();
 
-    CCM_INTERFACE_DECL();
+    COMO_INTERFACE_DECL();
 
     ECode GetTargetCoclass(
         /* [out] */ IMetaCoclass** target);

@@ -18,9 +18,7 @@ set(SRC_DIR ${PROJECT_DIR}/src)
 
 add_subdirectory(runtime/metadata)
 add_subdirectory(cdlc)
-
-# add_subdirectory(ccdl)
-# add_subdirectory(runtime)
+add_subdirectory(runtime)
 # add_subdirectory(libcore)
 # add_subdirectory(appentry)
 # add_subdirectory(servicemanager)

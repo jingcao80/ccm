@@ -43,6 +43,6 @@ enum class TypeKind
     Triple,
 };
 
-}
+} // namespace como
 
 #endif // __COMO_TYPEKIND_H__

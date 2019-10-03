@@ -20,7 +20,7 @@
 
 namespace ccm {
 
-CCM_INTERFACE_IMPL_LIGHT_1(CMetaConstant, LightRefBase, IMetaConstant)
+COMO_INTERFACE_IMPL_LIGHT_1(CMetaConstant, LightRefBase, IMetaConstant)
 
 CMetaConstant::CMetaConstant(
     /* [in] */ MetaComponent* mc,

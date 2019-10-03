@@ -30,8 +30,8 @@
  * limitations under the License.
  */
 
-#include "ccmlogger.h"
-#include "ccmrefbase.h"
+#include "comologger.h"
+#include "comorefbase.h"
 #include "mutex.h"
 
 #include <assert.h>
@@ -41,7 +41,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
-namespace ccm {
+namespace como {
 
 // compile with refcounting debugging enabled
 #define DEBUG_REFS                      0
@@ -885,10 +885,10 @@ IInterface* WeakReferenceImpl::Probe(
 
 ECode WeakReferenceImpl::GetInterfaceID(
     /* [in] */ IInterface* object,
-    /* [in] */ InterfaceID* iid)
+    /* [in] */ InterfaceID& iid)
 {
     if (object == (IInterface*)(IWeakReference*)this) {
-        *iid = IID_IWeakReference;
+        iid = IID_IWeakReference;
     }
     else {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -898,20 +898,18 @@ ECode WeakReferenceImpl::GetInterfaceID(
 
 ECode WeakReferenceImpl::Resolve(
     /* [in] */ const InterfaceID& iid,
-    /* [out] */ IInterface** object)
+    /* [out] */ AutoPtr<IInterface>& object)
 {
-    VALIDATE_NOT_NULL(object);
-
-    if (mObject && mRef->AttemptIncStrong(object)) {
-        *object = mObject->Probe(iid);
-        if (*object == nullptr) {
+    if (mObject && mRef->AttemptIncStrong(&object)) {
+        *reinterpret_cast<IInterface**>(&object) = mObject->Probe(iid);
+        if (object == nullptr) {
             mObject->Release();
         }
     }
     else {
-        *object = nullptr;
+        object = nullptr;
     }
     return NOERROR;
 }
 
-}
+} // namespace como

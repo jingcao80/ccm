@@ -23,5 +23,5 @@ include_directories(
 set(SOURCES
     CodeGenerator.cpp)
 
-add_library(codegen STATIC
+add_library(cdlc_codegen STATIC
     ${SOURCES})

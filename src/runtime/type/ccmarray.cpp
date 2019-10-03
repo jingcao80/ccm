@@ -28,6 +28,15 @@ Triple::Triple(
     }
 }
 
+Triple::Triple(
+    /* [in] */ Triple&& other)
+{
+    mData = other.mData;
+    mSize = other.mSize;
+    other.mData = nullptr;
+    other.mSize = 0;
+}
+
 void Triple::AllocData(
     /* [in] */ Long dataSize)
 {

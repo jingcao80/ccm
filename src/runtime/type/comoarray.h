@@ -14,14 +14,14 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_ARRAY_H__
-#define __CCM_ARRAY_H__
+#ifndef __COMO_ARRAY_H__
+#define __COMO_ARRAY_H__
 
-#include "ccmsharedbuffer.h"
-#include "ccmlogger.h"
+#include "comosharedbuffer.h"
+#include "comologger.h"
 #include <initializer_list>
 
-namespace ccm {
+namespace como {
 
 template<class T>
 class Array : public Triple
@@ -716,4 +716,4 @@ Array<T>::operator Array<IInterface*>()
 
 }
 
-#endif //__CCM_ARRAY_H__
+#endif //__COMO_ARRAY_H__

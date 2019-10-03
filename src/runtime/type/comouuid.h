@@ -17,7 +17,7 @@
 #ifndef __COMO_UUID_H__
 #define __COMO_UUID_H__
 
-#include <string.h>
+#include <cstring>
 
 namespace como {
 

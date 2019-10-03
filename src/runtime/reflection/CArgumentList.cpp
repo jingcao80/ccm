@@ -21,7 +21,7 @@ using ccm::metadata::MetaType;
 
 namespace ccm {
 
-CCM_INTERFACE_IMPL_LIGHT_1(CArgumentList, LightRefBase, IArgumentList)
+COMO_INTERFACE_IMPL_LIGHT_1(CArgumentList, LightRefBase, IArgumentList)
 
 CArgumentList::CArgumentList(
     /* [in] */ MetaComponent* mc,

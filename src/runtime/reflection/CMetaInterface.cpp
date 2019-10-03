@@ -21,7 +21,7 @@
 
 namespace ccm {
 
-CCM_INTERFACE_IMPL_LIGHT_1(CMetaInterface, LightRefBase, IMetaInterface);
+COMO_INTERFACE_IMPL_LIGHT_1(CMetaInterface, LightRefBase, IMetaInterface);
 
 CMetaInterface::CMetaInterface()
     : mMetadata(nullptr)

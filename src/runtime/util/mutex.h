@@ -30,13 +30,13 @@
  * limitations under the License.
  */
 
-#ifndef __CCM_MUTEX_H__
-#define __CCM_MUTEX_H__
+#ifndef __COMO_MUTEX_H__
+#define __COMO_MUTEX_H__
 
-#include "ccmtypes.h"
+#include "comotypes.h"
 #include <atomic>
 
-namespace ccm {
+namespace como {
 
 class Mutex
 {
@@ -141,6 +141,6 @@ inline Condition::Condition(
     , mNumWaiters(0)
 {}
 
-}
+} // namespace como
 
-#endif // __CCM_MUTEX_H__BAK
+#endif // __COMO_MUTEX_H__

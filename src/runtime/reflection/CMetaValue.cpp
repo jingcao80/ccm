@@ -18,7 +18,7 @@
 
 namespace ccm {
 
-CCM_INTERFACE_IMPL_LIGHT_1(CMetaValue, LightRefBase, IMetaValue);
+COMO_INTERFACE_IMPL_LIGHT_1(CMetaValue, LightRefBase, IMetaValue);
 
 ECode CMetaValue::GetType(
     /* [out] */ IMetaType** type)

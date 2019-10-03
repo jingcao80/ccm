@@ -24,5 +24,5 @@ set(SOURCES
     BuildinTypeBuilder.cpp
     InterfaceIntegrityChecker.cpp)
 
-add_library(phase STATIC
+add_library(cdlc_phase STATIC
     ${SOURCES})

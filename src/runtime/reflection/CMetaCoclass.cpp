@@ -24,7 +24,7 @@ using ccm::metadata::MetaMethod;
 
 namespace ccm {
 
-CCM_INTERFACE_IMPL_LIGHT_1(CMetaCoclass, LightRefBase, IMetaCoclass);
+COMO_INTERFACE_IMPL_LIGHT_1(CMetaCoclass, LightRefBase, IMetaCoclass);
 
 CMetaCoclass::CMetaCoclass(
     /* [in] */ CMetaComponent* mcObj,

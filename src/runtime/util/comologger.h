@@ -14,12 +14,12 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_LOGGER_H__
-#define __CCM_LOGGER_H__
+#ifndef __COMO_LOGGER_H__
+#define __COMO_LOGGER_H__
 
-#include "ccmdef.h"
+#include "comodef.h"
 
-namespace ccm {
+namespace como {
 
 class COM_PUBLIC Logger
 {
@@ -58,6 +58,6 @@ private:
     COM_LOCAL static int sLevel;
 };
 
-}
+} // namespace como
 
-#endif // __CCM_LOGGER_H__
+#endif // __COMO_LOGGER_H__

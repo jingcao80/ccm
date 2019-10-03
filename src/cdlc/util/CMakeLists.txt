@@ -32,5 +32,5 @@ set(SOURCES
     StringPool.cpp
     UUID.cpp)
 
-add_library(util STATIC
+add_library(cdlc_util STATIC
     ${SOURCES})

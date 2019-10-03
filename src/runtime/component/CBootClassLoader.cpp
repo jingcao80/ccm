@@ -30,13 +30,13 @@ using ccm::metadata::MetaComponent;
 namespace ccm {
 
 const CoclassID CID_CBootClassLoader =
-        {{0x861efebf,0x54c8,0x4939,0xa2ab,{0x4,0xb,0xa,0xc,0xf,0x2,0xc,0xa,0xf,0xa,0x1,0xe}}, &CID_CCMRuntime};
+        {{0x861efebf,0x54c8,0x4939,0xa2ab,{0x4,0xb,0xa,0xc,0xf,0x2,0xc,0xa,0xf,0xa,0x1,0xe}}, &CID_COMORuntime};
 
 AutoPtr<IClassLoader> CBootClassLoader::sInstance = new CBootClassLoader();
 const String CBootClassLoader::TAG("CBootClassLoader");
 
-CCM_OBJECT_IMPL(CBootClassLoader);
-CCM_INTERFACE_IMPL_1(CBootClassLoader, Object, IClassLoader);
+COMO_OBJECT_IMPL(CBootClassLoader);
+COMO_INTERFACE_IMPL_1(CBootClassLoader, Object, IClassLoader);
 
 CBootClassLoader::CBootClassLoader()
     : mDebug(false)

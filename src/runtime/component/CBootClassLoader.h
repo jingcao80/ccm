@@ -35,9 +35,9 @@ class CBootClassLoader
 public:
     static AutoPtr<IClassLoader> GetInstance();
 
-    CCM_OBJECT_DECL();
+    COMO_OBJECT_DECL();
 
-    CCM_INTERFACE_DECL();
+    COMO_INTERFACE_DECL();
 
     ECode LoadComponent(
         /* [in] */ const String& path,

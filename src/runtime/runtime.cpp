@@ -14,10 +14,9 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccmapi.h"
-#include "util/ccmautoptr.h"
+#include "comoapi.h"
 
-namespace ccm {
+namespace como {
 
 extern void Init_EMPTY_STRING();
 extern void Uninit_EMPTY_STRING();
@@ -38,4 +37,4 @@ void RTUninitialize()
     Uninit_Proxy_Entry();
 }
 
-}
+} // namespace como

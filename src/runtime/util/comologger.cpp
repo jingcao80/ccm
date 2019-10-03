@@ -14,11 +14,11 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccmlogger.h"
-#include <stdarg.h>
-#include <stdio.h>
+#include "comologger.h"
+#include <cstdarg>
+#include <cstdio>
 
-namespace ccm {
+namespace como {
 
 int Logger::sLevel = DEBUG;
 
@@ -104,4 +104,4 @@ void Logger::SetLevel(
     sLevel = level;
 }
 
-}
+} // namespace como

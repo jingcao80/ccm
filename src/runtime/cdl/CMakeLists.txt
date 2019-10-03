@@ -23,23 +23,23 @@ include_directories(
     ${INC_DIR})
 
 set(GENERATED_SOURCES
-    ${OBJ_DIR}/ccmids.cpp
+    ${OBJ_DIR}/comouuids.cpp
     ${OBJ_DIR}/MetadataWrapper.cpp)
 
 add_library(cdl STATIC
     ${GENERATED_SOURCES})
-add_dependencies(cdl ccdl)
+add_dependencies(cdl cdlc)
 
 add_custom_command(
     OUTPUT
         ${GENERATED_SOURCES}
     COMMAND
-        "${BIN_DIR}/ccdl"
-        -c
-        -g
-        -r
+        "${BIN_DIR}/cdlc"
+        -gen
+        -mode-runtime
         -d "${OBJ_DIR}"
-        "${PROJECT_DIR}/src/runtime/cdl/ccmrt.cdl"
+        -i "${PROJECT_DIR}/src/runtime/cdl"
+        -c "${PROJECT_DIR}/src/runtime/cdl/comort.cdl"
     COMMAND
         "${CMAKE_COMMAND}"
-        -E copy ${OBJ_DIR}/ccmintfs.h ${INC_DIR})
+        -E copy ${OBJ_DIR}/comointfs.h ${INC_DIR})

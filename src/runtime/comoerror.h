@@ -14,10 +14,10 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_ERROR_H__
-#define __CCM_ERROR_H__
+#ifndef __COMO_COMOERROR_H__
+#define __COMO_COMOERROR_H__
 
-namespace ccm {
+namespace como {
 
 /**
  * ECode layout
@@ -44,9 +44,9 @@ namespace ccm {
 #define MAKE_SUCCESS(C, F, N, K) \
         ((C << 30) | (F << 16) | K | 0x7fffffff)
 
-#define Facility_CCMRT      0x0
+#define Facility_COMORT     0x0
 #define MAKE_CCMRT_ECODE(N, K) \
-        MAKE_ECODE(0, Facility_CCMRT, N, K)
+        MAKE_ECODE(0, Facility_COMORT, N, K)
 
 constexpr ECode NOERROR = 0x00000000;
 
@@ -67,6 +67,6 @@ constexpr ECode E_CLASS_NOT_FOUND_EXCEPTION = MAKE_CCMRT_ECODE(0, 0x0b);
 
 constexpr ECode E_OUT_OF_MEMORY_ERROR = MAKE_CCMRT_ECODE(0, 0x10);
 
-}
+} // namespace como
 
-#endif // __CCM_ERROR_H__
+#endif // __COMO_COMOERROR_H__

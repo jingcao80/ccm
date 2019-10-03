@@ -59,5 +59,5 @@ set(SOURCES
     Type.cpp
     UnaryExpression.cpp)
 
-add_library(ast STATIC
+add_library(cdlc_ast STATIC
     ${SOURCES})

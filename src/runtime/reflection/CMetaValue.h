@@ -28,7 +28,7 @@ class CMetaValue
     , public IMetaValue
 {
 public:
-    CCM_INTERFACE_DECL();
+    COMO_INTERFACE_DECL();
 
     ECode GetType(
         /* [out] */ IMetaType** type);

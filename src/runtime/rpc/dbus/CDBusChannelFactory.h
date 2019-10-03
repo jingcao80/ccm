@@ -29,7 +29,7 @@ public:
     CDBusChannelFactory(
         /* [in] */ RPCType type);
 
-    CCM_INTERFACE_DECL();
+    COMO_INTERFACE_DECL();
 
     ECode CreateInterfacePack(
         /* [out] */ IInterfacePack** ipack) override;

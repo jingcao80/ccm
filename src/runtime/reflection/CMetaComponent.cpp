@@ -29,7 +29,7 @@ using ccm::metadata::MetaInterface;
 
 namespace ccm {
 
-CCM_INTERFACE_IMPL_LIGHT_1(CMetaComponent, LightRefBase, IMetaComponent);
+COMO_INTERFACE_IMPL_LIGHT_1(CMetaComponent, LightRefBase, IMetaComponent);
 
 CMetaComponent::CMetaComponent(
     /* [in] */ IClassLoader* loader,

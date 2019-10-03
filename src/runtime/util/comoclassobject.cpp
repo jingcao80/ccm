@@ -14,32 +14,30 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CLASSOBJECT_H__
-#define __CCM_CLASSOBJECT_H__
+#include "comoclassobject.h"
 
-#include "ccmobject.h"
+namespace como {
 
-namespace ccm {
+COMO_INTERFACE_IMPL_1(ClassObject, Object, IClassObject);
 
-class COM_PUBLIC ClassObject
-    : public Object
-    , public IClassObject
+ClassObject::ClassObject()
+    : mComponent(nullptr)
+{}
+
+ECode ClassObject::AttachMetadata(
+    /* [in] */ IMetaComponent* component)
 {
-public:
-    ClassObject();
-
-    CCM_INTERFACE_DECL();
-
-    ECode AttachMetadata(
-        /* [in] */ IMetaComponent* component) override;
-
-    ECode GetMetadate(
-        /* [out] */ IMetaComponent** component) override;
-
-protected:
-    IMetaComponent* mComponent;
-};
-
+    if (mComponent != component) {
+        mComponent = component;
+    }
+    return NOERROR;
 }
 
-#endif //__CCM_CLASSOBJECT_H__
+ECode ClassObject::GetMetadate(
+    /* [out] */ AutoPtr<IMetaComponent>& component)
+{
+    component = mComponent;
+    return NOERROR;
+}
+
+} // namespace como

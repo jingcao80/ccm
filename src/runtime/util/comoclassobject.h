@@ -14,15 +14,32 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CCMAPI_H__
-#define __CCM_CCMAPI_H__
+#ifndef __COMO_CLASSOBJECT_H__
+#define __COMO_CLASSOBJECT_H__
 
-#include "ccmdef.h"
-#include "ccmtypes.h"
-#include "ccmobjectapi.h"
-#include "ccmreflectionapi.h"
-#include "ccmrpc.h"
+#include "comoobject.h"
 
-using namespace ccm;
+namespace como {
 
-#endif // __CCM_CCMAPI_H__
+class COM_PUBLIC ClassObject
+    : public Object
+    , public IClassObject
+{
+public:
+    ClassObject();
+
+    COMO_INTERFACE_DECL();
+
+    ECode AttachMetadata(
+        /* [in] */ IMetaComponent* component) override;
+
+    ECode GetMetadate(
+        /* [out] */ AutoPtr<IMetaComponent>& component) override;
+
+protected:
+    IMetaComponent* mComponent;
+};
+
+} // namespace como
+
+#endif //__COMO_CLASSOBJECT_H__

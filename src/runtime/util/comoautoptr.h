@@ -14,13 +14,12 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_AUTOPTR_H__
-#define __CCM_AUTOPTR_H__
+#ifndef __COMO_AUTOPTR_H__
+#define __COMO_AUTOPTR_H__
 
-#include "ccmtypes.h"
 #include <utility>
 
-namespace ccm {
+namespace como {
 
 template<class T>
 class AutoPtr
@@ -199,7 +198,7 @@ struct MoveToImpl
 };
 
 template<class U, class Y>
-struct  MoveToImpl<U, Y, true>
+struct MoveToImpl<U, Y, true>
 {
     void operator()(
         /* [in] */ AutoPtr<U>* uObj,
@@ -440,6 +439,6 @@ Boolean AutoPtr<T>::operator>=(
     return mPtr >= other.mPtr;
 }
 
-}
+} // namespace como
 
-#endif //__CCM_AUTOPTR_H__
+#endif //__COMO_AUTOPTR_H__

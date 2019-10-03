@@ -36,7 +36,7 @@ public:
 
     ~CArgumentList();
 
-    CCM_INTERFACE_DECL();
+    COMO_INTERFACE_DECL();
 
     ECode GetInputArgumentOfByte(
         /* [in] */ Integer index,

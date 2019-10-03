@@ -27,5 +27,5 @@ set(SOURCES
     Tokenizer.cpp
     World.cpp)
 
-add_library(parser STATIC
+add_library(cdlc_parser STATIC
     ${SOURCES})

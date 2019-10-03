@@ -176,11 +176,11 @@ DBusHandlerResult CDBusChannel::ServiceRunnable::HandleMessage(
 //-------------------------------------------------------------------------------
 
 const CoclassID CID_CDBusChannel =
-        {{0x8efc6167,0xe82e,0x4c7d,0x89aa,{0x6,0x6,0x8,0xf,0x3,0x9,0x7,0xb,0x2,0x3,0xc,0xc}}, &CID_CCMRuntime};
+        {{0x8efc6167,0xe82e,0x4c7d,0x89aa,{0x6,0x6,0x8,0xf,0x3,0x9,0x7,0xb,0x2,0x3,0xc,0xc}}, &CID_COMORuntime};
 
-CCM_INTERFACE_IMPL_1(CDBusChannel, Object, IRPCChannel);
+COMO_INTERFACE_IMPL_1(CDBusChannel, Object, IRPCChannel);
 
-CCM_OBJECT_IMPL(CDBusChannel);
+COMO_OBJECT_IMPL(CDBusChannel);
 
 CDBusChannel::CDBusChannel(
     /* [in] */ RPCType type,

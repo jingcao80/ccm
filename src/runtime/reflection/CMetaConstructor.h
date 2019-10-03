@@ -40,7 +40,7 @@ public:
 
     ~CMetaConstructor();
 
-    CCM_INTERFACE_DECL();
+    COMO_INTERFACE_DECL();
 
     ECode GetInterface(
         /* [out] */ IMetaInterface** intf);

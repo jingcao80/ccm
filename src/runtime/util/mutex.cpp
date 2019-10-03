@@ -31,7 +31,7 @@
  */
 
 #include "mutex.h"
-#include "ccmlogger.h"
+#include "comologger.h"
 #include <limits>
 #include <errno.h>
 #include <time.h>
@@ -39,9 +39,9 @@
 #include <linux/futex.h>
 #include <sys/syscall.h>
 
-#include <stdio.h>
+#include <cstdio>
 
-namespace ccm {
+namespace como {
 
 pid_t GetTid()
 {
@@ -252,4 +252,4 @@ void Condition::SignalAll()
     }
 }
 
-}
+} // namespace como

@@ -20,8 +20,8 @@
 #if defined(_DEBUG)
 #include <assert.h>
 #endif
-#include <stddef.h>
-#include <stdint.h>
+#include <cstddef>
+#include <cstdint>
 
 namespace como {
 
@@ -148,8 +148,8 @@ inline int ArrayLength(const T (&)[N])
 #define UNLIKELY(x)     (x)
 #endif
 
-#ifndef CCM_INTERFACE_DECL
-#define CCM_INTERFACE_DECL()                            \
+#ifndef COMO_INTERFACE_DECL
+#define COMO_INTERFACE_DECL()                           \
     Integer AddRef(                                     \
         /* [in] */ HANDLE id = 0) override;             \
                                                         \
@@ -161,11 +161,11 @@ inline int ArrayLength(const T (&)[N])
                                                         \
     ECode GetInterfaceID(                               \
         /* [in] */ IInterface* object,                  \
-        /* [out] */ InterfaceID* iid) override;
+        /* [out] */ InterfaceID& iid) override;
 #endif
 
-#ifndef CCM_INTERFACE_IMPL_1
-#define CCM_INTERFACE_IMPL_1(ClassName, SuperClassName, InterfaceName)       \
+#ifndef COMO_INTERFACE_IMPL_1
+#define COMO_INTERFACE_IMPL_1(ClassName, SuperClassName, InterfaceName)       \
     Integer ClassName::AddRef(                             \
         /* [in] */ HANDLE id)                              \
     {                                                      \
@@ -192,20 +192,18 @@ inline int ArrayLength(const T (&)[N])
                                                            \
     ECode ClassName::GetInterfaceID(                       \
         /* [in] */ IInterface* object,                     \
-        /* [out] */ InterfaceID* iid)                      \
+        /* [out] */ InterfaceID& iid)                      \
     {                                                      \
-        VALIDATE_NOT_NULL(iid);                            \
-                                                           \
         if (object == (IInterface*)(InterfaceName*)this) { \
-            *iid = IID_##InterfaceName;                    \
+            iid = IID_##InterfaceName;                     \
             return NOERROR;                                \
         }                                                  \
         return SuperClassName::GetInterfaceID(object, iid); \
     }
 #endif
 
-#ifndef CCM_INTERFACE_IMPL_2
-#define CCM_INTERFACE_IMPL_2(ClassName, SuperClassName, Interface1, Interface2) \
+#ifndef COMO_INTERFACE_IMPL_2
+#define COMO_INTERFACE_IMPL_2(ClassName, SuperClassName, Interface1, Interface2) \
     Integer ClassName::AddRef(                                  \
         /* [in] */ HANDLE id)                                   \
     {                                                           \
@@ -235,15 +233,13 @@ inline int ArrayLength(const T (&)[N])
                                                                 \
     ECode ClassName::GetInterfaceID(                            \
         /* [in] */ IInterface* object,                          \
-        /* [out] */ InterfaceID* iid)                           \
+        /* [out] */ InterfaceID& iid)                           \
     {                                                           \
-        VALIDATE_NOT_NULL(iid);                                 \
-                                                                \
         if (object == (IInterface*)(Interface1*)this) {         \
-            *iid = IID_##Interface1;                            \
+            iid = IID_##Interface1;                             \
         }                                                       \
         else if (object == (IInterface*)(Interface2*)this) {    \
-            *iid = IID_##Interface2;                            \
+            iid = IID_##Interface2;                             \
         }                                                       \
         else {                                                  \
             return SuperClassName::GetInterfaceID(object, iid); \
@@ -252,8 +248,8 @@ inline int ArrayLength(const T (&)[N])
     }
 #endif
 
-#ifndef CCM_INTERFACE_IMPL_3
-#define CCM_INTERFACE_IMPL_3(ClassName, SuperClassName, Interface1, Interface2, Interface3) \
+#ifndef COMO_INTERFACE_IMPL_3
+#define COMO_INTERFACE_IMPL_3(ClassName, SuperClassName, Interface1, Interface2, Interface3) \
     Integer ClassName::AddRef(                                  \
         /* [in] */ HANDLE id)                                   \
     {                                                           \
@@ -286,18 +282,16 @@ inline int ArrayLength(const T (&)[N])
                                                                 \
     ECode ClassName::GetInterfaceID(                            \
         /* [in] */ IInterface* object,                          \
-        /* [out] */ InterfaceID* iid)                           \
+        /* [out] */ InterfaceID& iid)                           \
     {                                                           \
-        VALIDATE_NOT_NULL(iid);                                 \
-                                                                \
         if (object == (IInterface*)(Interface1*)this) {         \
-            *iid = IID_##Interface1;                            \
+            iid = IID_##Interface1;                             \
         }                                                       \
         else if (object == (IInterface*)(Interface2*)this) {    \
-            *iid = IID_##Interface2;                            \
+            iid = IID_##Interface2;                             \
         }                                                       \
         else if (object == (IInterface*)(Interface3*)this) {    \
-            *iid = IID_##Interface3;                            \
+            iid = IID_##Interface3;                             \
         }                                                       \
         else {                                                  \
             return SuperClassName::GetInterfaceID(object, iid); \
@@ -306,8 +300,8 @@ inline int ArrayLength(const T (&)[N])
     }
 #endif
 
-#ifndef CCM_INTERFACE_IMPL_4
-#define CCM_INTERFACE_IMPL_4(ClassName, SuperClassName, Interface1, Interface2, Interface3, Interface4) \
+#ifndef COMO_INTERFACE_IMPL_4
+#define COMO_INTERFACE_IMPL_4(ClassName, SuperClassName, Interface1, Interface2, Interface3, Interface4) \
     Integer ClassName::AddRef(                                  \
         /* [in] */ HANDLE id)                                   \
     {                                                           \
@@ -343,21 +337,19 @@ inline int ArrayLength(const T (&)[N])
                                                                 \
     ECode ClassName::GetInterfaceID(                            \
         /* [in] */ IInterface* object,                          \
-        /* [out] */ InterfaceID* iid)                           \
+        /* [out] */ InterfaceID& iid)                           \
     {                                                           \
-        VALIDATE_NOT_NULL(iid);                                 \
-                                                                \
         if (object == (IInterface*)(Interface1*)this) {         \
-            *iid = IID_##Interface1;                            \
+            iid = IID_##Interface1;                             \
         }                                                       \
         else if (object == (IInterface*)(Interface2*)this) {    \
-            *iid = IID_##Interface2;                            \
+            iid = IID_##Interface2;                             \
         }                                                       \
         else if (object == (IInterface*)(Interface3*)this) {    \
-            *iid = IID_##Interface3;                            \
+            iid = IID_##Interface3;                             \
         }                                                       \
         else if (object == (IInterface*)(Interface4*)this) {    \
-            *iid = IID_##Interface4;                            \
+            iid = IID_##Interface4;                             \
         }                                                       \
         else {                                                  \
             return SuperClassName::GetInterfaceID(object, iid); \
@@ -366,8 +358,8 @@ inline int ArrayLength(const T (&)[N])
     }
 #endif
 
-#ifndef CCM_INTERFACE_IMPL_5
-#define CCM_INTERFACE_IMPL_5(ClassName, SuperClassName, Interface1, Interface2, Interface3, Interface4, Interface5) \
+#ifndef COMO_INTERFACE_IMPL_5
+#define COMO_INTERFACE_IMPL_5(ClassName, SuperClassName, Interface1, Interface2, Interface3, Interface4, Interface5) \
     Integer ClassName::AddRef(                                  \
         /* [in] */ HANDLE id)                                   \
     {                                                           \
@@ -406,24 +398,22 @@ inline int ArrayLength(const T (&)[N])
                                                                 \
     ECode ClassName::GetInterfaceID(                            \
         /* [in] */ IInterface* object,                          \
-        /* [out] */ InterfaceID* iid)                           \
+        /* [out] */ InterfaceID& iid)                           \
     {                                                           \
-        VALIDATE_NOT_NULL(iid);                                 \
-                                                                \
         if (object == (IInterface*)(Interface1*)this) {         \
-            *iid = IID_##Interface1;                            \
+            iid = IID_##Interface1;                             \
         }                                                       \
         else if (object == (IInterface*)(Interface2*)this) {    \
-            *iid = IID_##Interface2;                            \
+            iid = IID_##Interface2;                             \
         }                                                       \
         else if (object == (IInterface*)(Interface3*)this) {    \
-            *iid = IID_##Interface3;                            \
+            iid = IID_##Interface3;                             \
         }                                                       \
         else if (object == (IInterface*)(Interface4*)this) {    \
-            *iid = IID_##Interface4;                            \
+            iid = IID_##Interface4;                             \
         }                                                       \
         else if (object == (IInterface*)(Interface5*)this) {    \
-            *iid = IID_##Interface5;                            \
+            iid = IID_##Interface5;                             \
         }                                                       \
         else {                                                  \
             return SuperClassName::GetInterfaceID(object, iid); \
@@ -432,8 +422,8 @@ inline int ArrayLength(const T (&)[N])
     }
 #endif
 
-#ifndef CCM_INTERFACE_IMPL_6
-#define CCM_INTERFACE_IMPL_6(ClassName, SuperClassName, Interface1, Interface2, Interface3, Interface4, Interface5, Interface6) \
+#ifndef COMO_INTERFACE_IMPL_6
+#define COMO_INTERFACE_IMPL_6(ClassName, SuperClassName, Interface1, Interface2, Interface3, Interface4, Interface5, Interface6) \
     Integer ClassName::AddRef(                                  \
         /* [in] */ HANDLE id)                                   \
     {                                                           \
@@ -475,27 +465,25 @@ inline int ArrayLength(const T (&)[N])
                                                                 \
     ECode ClassName::GetInterfaceID(                            \
         /* [in] */ IInterface* object,                          \
-        /* [out] */ InterfaceID* iid)                           \
+        /* [out] */ InterfaceID& iid)                           \
     {                                                           \
-        VALIDATE_NOT_NULL(iid);                                 \
-                                                                \
         if (object == (IInterface*)(Interface1*)this) {         \
-            *iid = IID_##Interface1;                            \
+            iid = IID_##Interface1;                             \
         }                                                       \
         else if (object == (IInterface*)(Interface2*)this) {    \
-            *iid = IID_##Interface2;                            \
+            iid = IID_##Interface2;                             \
         }                                                       \
         else if (object == (IInterface*)(Interface3*)this) {    \
-            *iid = IID_##Interface3;                            \
+            iid = IID_##Interface3;                             \
         }                                                       \
         else if (object == (IInterface*)(Interface4*)this) {    \
-            *iid = IID_##Interface4;                            \
+            iid = IID_##Interface4;                             \
         }                                                       \
         else if (object == (IInterface*)(Interface5*)this) {    \
-            *iid = IID_##Interface5;                            \
+            iid = IID_##Interface5;                             \
         }                                                       \
         else if (object == (IInterface*)(Interface6*)this) {    \
-            *iid = IID_##Interface6;                            \
+            iid = IID_##Interface6;                             \
         }                                                       \
         else {                                                  \
             return SuperClassName::GetInterfaceID(object, iid); \
@@ -504,8 +492,8 @@ inline int ArrayLength(const T (&)[N])
     }
 #endif
 
-#ifndef CCM_INTERFACE_IMPL_7
-#define CCM_INTERFACE_IMPL_7(ClassName, SuperClassName, Interface1, Interface2, Interface3, Interface4, Interface5, Interface6, Interface7) \
+#ifndef COMO_INTERFACE_IMPL_7
+#define COMO_INTERFACE_IMPL_7(ClassName, SuperClassName, Interface1, Interface2, Interface3, Interface4, Interface5, Interface6, Interface7) \
     Integer ClassName::AddRef(                                  \
         /* [in] */ HANDLE id)                                   \
     {                                                           \
@@ -550,30 +538,28 @@ inline int ArrayLength(const T (&)[N])
                                                                 \
     ECode ClassName::GetInterfaceID(                            \
         /* [in] */ IInterface* object,                          \
-        /* [out] */ InterfaceID* iid)                           \
+        /* [out] */ InterfaceID& iid)                           \
     {                                                           \
-        VALIDATE_NOT_NULL(iid);                                 \
-                                                                \
         if (object == (IInterface*)(Interface1*)this) {         \
-            *iid = IID_##Interface1;                            \
+            iid = IID_##Interface1;                             \
         }                                                       \
         else if (object == (IInterface*)(Interface2*)this) {    \
-            *iid = IID_##Interface2;                            \
+            iid = IID_##Interface2;                             \
         }                                                       \
         else if (object == (IInterface*)(Interface3*)this) {    \
-            *iid = IID_##Interface3;                            \
+            iid = IID_##Interface3;                             \
         }                                                       \
         else if (object == (IInterface*)(Interface4*)this) {    \
-            *iid = IID_##Interface4;                            \
+            iid = IID_##Interface4;                             \
         }                                                       \
         else if (object == (IInterface*)(Interface5*)this) {    \
-            *iid = IID_##Interface5;                            \
+            iid = IID_##Interface5;                             \
         }                                                       \
         else if (object == (IInterface*)(Interface6*)this) {    \
-            *iid = IID_##Interface6;                            \
+            iid = IID_##Interface6;                             \
         }                                                       \
         else if (object == (IInterface*)(Interface7*)this) {    \
-            *iid = IID_##Interface7;                            \
+            iid = IID_##Interface7;                             \
         }                                                       \
         else {                                                  \
             return SuperClassName::GetInterfaceID(object, iid); \
@@ -582,8 +568,8 @@ inline int ArrayLength(const T (&)[N])
     }
 #endif
 
-#ifndef CCM_INTERFACE_IMPL_LIGHT_1
-#define CCM_INTERFACE_IMPL_LIGHT_1(ClassName, SuperClassName, InterfaceName) \
+#ifndef COMO_INTERFACE_IMPL_LIGHT_1
+#define COMO_INTERFACE_IMPL_LIGHT_1(ClassName, SuperClassName, InterfaceName) \
     Integer ClassName::AddRef(                             \
         /* [in] */ HANDLE id)                              \
     {                                                      \
@@ -610,20 +596,18 @@ inline int ArrayLength(const T (&)[N])
                                                            \
     ECode ClassName::GetInterfaceID(                       \
         /* [in] */ IInterface* object,                     \
-        /* [out] */ InterfaceID* iid)                      \
+        /* [out] */ InterfaceID& iid)                      \
     {                                                      \
-        VALIDATE_NOT_NULL(iid);                            \
-                                                           \
         if (object == (IInterface*)(InterfaceName*)this) { \
-            *iid = IID_##InterfaceName;                    \
+            iid = IID_##InterfaceName;                     \
             return NOERROR;                                \
         }                                                  \
         return SuperClassName::GetInterfaceID(object, iid); \
     }
 #endif
 
-#ifndef CCM_INTERFACE_IMPL_LIGHT_2
-#define CCM_INTERFACE_IMPL_LIGHT_2(ClassName, SuperClassName, InterfaceName1, InterfaceName2) \
+#ifndef COMO_INTERFACE_IMPL_LIGHT_2
+#define COMO_INTERFACE_IMPL_LIGHT_2(ClassName, SuperClassName, InterfaceName1, InterfaceName2) \
     Integer ClassName::AddRef(                              \
         /* [in] */ HANDLE id)                               \
     {                                                       \
@@ -653,24 +637,22 @@ inline int ArrayLength(const T (&)[N])
                                                             \
     ECode ClassName::GetInterfaceID(                        \
         /* [in] */ IInterface* object,                      \
-        /* [out] */ InterfaceID* iid)                       \
+        /* [out] */ InterfaceID& iid)                       \
     {                                                       \
-        VALIDATE_NOT_NULL(iid);                             \
-                                                            \
         if (object == (IInterface*)(InterfaceName1*)this) { \
-            *iid = IID_##InterfaceName1;                    \
+            iid = IID_##InterfaceName1;                     \
             return NOERROR;                                 \
         }                                                   \
         else if (object == (IInterface*)(InterfaceName2*)this) {    \
-            *iid = IID_##InterfaceName2;                    \
+            iid = IID_##InterfaceName2;                     \
             return NOERROR;                                 \
         }                                                   \
         return SuperClassName::GetInterfaceID(object, iid); \
     }
 #endif
 
-#ifndef CCM_INTERFACE_REFCOUNT
-#define CCM_INTERFACE_REFCOUNT(ClassName)                       \
+#ifndef COMO_INTERFACE_REFCOUNT
+#define COMO_INTERFACE_REFCOUNT(ClassName)                      \
     Integer ClassName::AddRef(                                  \
         /* [in] */ HANDLE id)                                   \
     {                                                           \
@@ -684,8 +666,8 @@ inline int ArrayLength(const T (&)[N])
     }
 #endif
 
-#ifndef CCM_INTERFACE_PROBE_BEGIN
-#define CCM_INTERFACE_PROBE_BEGIN(ClassName)                    \
+#ifndef COMO_INTERFACE_PROBE_BEGIN
+#define COMO_INTERFACE_PROBE_BEGIN(ClassName)                   \
     IInterface* ClassName::Probe(                               \
         /* [in] */ const InterfaceID& iid)                      \
     {                                                           \
@@ -694,76 +676,72 @@ inline int ArrayLength(const T (&)[N])
         }
 #endif
 
-#ifndef CCM_INTERFACE_PROBE_INTERFACE
-#define CCM_INTERFACE_PROBE_INTERFACE(InterfaceName)            \
+#ifndef COMO_INTERFACE_PROBE_INTERFACE
+#define COMO_INTERFACE_PROBE_INTERFACE(InterfaceName)           \
     else if (iid == IID_##InterfaceName) {                      \
         return (InterfaceName*)this;                            \
     }
 #endif
 
-#ifndef CCM_INTERFACE_PROBE_NESTEDINTERFACE
-#define CCM_INTERFACE_PROBE_NESTEDINTERFACE(OuterInterfaceName, InterfaceName)  \
+#ifndef COMO_INTERFACE_PROBE_NESTEDINTERFACE
+#define COMO_INTERFACE_PROBE_NESTEDINTERFACE(OuterInterfaceName, InterfaceName)  \
     else if (iid == OuterInterfaceName::IID_##InterfaceName) {  \
         return (OuterInterfaceName::InterfaceName*)this;        \
     }
 #endif
 
-#ifndef CCM_INTERFACE_PROBE_END
-#define CCM_INTERFACE_PROBE_END(SuperClassName)                 \
+#ifndef COMO_INTERFACE_PROBE_END
+#define COMO_INTERFACE_PROBE_END(SuperClassName)                \
         return SuperClassName::Probe(iid);                      \
     }
 #endif
 
-#ifndef CCM_INTERFACE_GETINTERFACEID_BEGIN
-#define CCM_INTERFACE_GETINTERFACEID_BEGIN(ClassName)           \
+#ifndef COMO_INTERFACE_GETINTERFACEID_BEGIN
+#define COMO_INTERFACE_GETINTERFACEID_BEGIN(ClassName)          \
     ECode ClassName::GetInterfaceID(                            \
         /* [in] */ IInterface* object,                          \
-        /* [out] */ InterfaceID* iid)                           \
+        /* [out] */ InterfaceID& iid)                           \
     {                                                           \
-        VALIDATE_NOT_NULL(iid);                                 \
-                                                                \
         if (object == (IInterface*)(IObject*)this) {            \
-            *iid = IID_##IObject;                               \
+            iid = IID_##IObject;                                \
             return NOERROR;                                     \
         }
 #endif
 
-#ifndef CCM_INTERFACE_GETINTERFACEID_INTERFACE
-#define CCM_INTERFACE_GETINTERFACEID_INTERFACE(InterfaceName)   \
+#ifndef COMO_INTERFACE_GETINTERFACEID_INTERFACE
+#define COMO_INTERFACE_GETINTERFACEID_INTERFACE(InterfaceName)  \
     else if (object == (IInterface*)(InterfaceName*)this) {     \
-        *iid = IID_##InterfaceName;                             \
+        iid = IID_##InterfaceName;                              \
         return NOERROR;                                         \
     }
 #endif
 
-#ifndef CCM_INTERFACE_GETINTERFACEID_NESTEDINTERFACE
-#define CCM_INTERFACE_GETINTERFACEID_NESTEDINTERFACE(OuterInterfaceName, InterfaceName) \
-    else if (object == (IInterface*)(OuterInterfaceName::InterfaceName*)this) {         \
-        *iid = OuterInterfaceName::IID_##InterfaceName;         \
+#ifndef COMO_INTERFACE_GETINTERFACEID_NESTEDINTERFACE
+#define COMO_INTERFACE_GETINTERFACEID_NESTEDINTERFACE(OuterInterfaceName, InterfaceName) \
+    else if (object == (IInterface*)(OuterInterfaceName::InterfaceName*)this) {          \
+        iid = OuterInterfaceName::IID_##InterfaceName;          \
         return NOERROR;                                         \
     }
 #endif
 
-#ifndef CCM_INTERFACE_GETINTERFACEID_END
-#define CCM_INTERFACE_GETINTERFACEID_END(SuperClassName)        \
+#ifndef COMO_INTERFACE_GETINTERFACEID_END
+#define COMO_INTERFACE_GETINTERFACEID_END(SuperClassName)       \
         return SuperClassName::GetInterfaceID(object, iid);     \
     }
 #endif
 
-#ifndef CCM_OBJECT_DECL
-#define CCM_OBJECT_DECL()                                  \
+#ifndef COMO_OBJECT_DECL
+#define COMO_OBJECT_DECL()                                 \
     ECode GetCoclassID(                                    \
-        /* [out] */ CoclassID* cid) override;
+        /* [out] */ CoclassID& cid) override;
 #endif
 
-#ifndef CCM_OBJECT_IMPL
-#define CCM_OBJECT_IMPL(ClassName)                         \
+#ifndef COMO_OBJECT_IMPL
+#define COMO_OBJECT_IMPL(ClassName)                        \
     ECode ClassName::GetCoclassID(                         \
-        /* [out] */ CoclassID* cid)                        \
+        /* [out] */ CoclassID& cid)                        \
     {                                                      \
-        VALIDATE_NOT_NULL(cid);                            \
-                                                           \
-        *cid = CID_##ClassName;                            \
+        cid = CID_##ClassName;                             \
         return NOERROR;                                    \
     }
 #endif

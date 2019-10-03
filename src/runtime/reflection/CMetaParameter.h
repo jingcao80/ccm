@@ -42,7 +42,7 @@ public:
 
     ~CMetaParameter();
 
-    CCM_INTERFACE_DECL();
+    COMO_INTERFACE_DECL();
 
     ECode GetMethod(
         /* [out] */ IMetaMethod** method);

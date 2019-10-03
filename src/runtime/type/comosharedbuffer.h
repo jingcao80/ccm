@@ -30,14 +30,14 @@
  * limitations under the License.
  */
 
-#ifndef __CCM_SHAREDBUFFER_H__
-#define __CCM_SHAREDBUFFER_H__
+#ifndef __COMO_SHAREDBUFFER_H__
+#define __COMO_SHAREDBUFFER_H__
 
-#include "ccmdef.h"
+#include "comodef.h"
 #include <atomic>
-#include <stddef.h>
+#include <cstddef>
 
-namespace ccm {
+namespace como {
 
 class COM_PUBLIC SharedBuffer
 {
@@ -134,6 +134,6 @@ bool SharedBuffer::OnlyOwner() const
     return (mRefs.load(std::memory_order_acquire) == 1);
 }
 
-}
+} // namespace como
 
-#endif // __CCM_SHAREDBUFFER_H__
+#endif // __COMO_SHAREDBUFFER_H__

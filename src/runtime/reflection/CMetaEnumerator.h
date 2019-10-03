@@ -37,7 +37,7 @@ public:
 
     ~CMetaEnumerator();
 
-    CCM_INTERFACE_DECL();
+    COMO_INTERFACE_DECL();
 
     ECode GetEnumeration(
         /* [out] */ IMetaEnumeration** metaEnumn) override;

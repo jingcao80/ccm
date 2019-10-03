@@ -14,9 +14,9 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccmobject.h"
+#include "comoobject.h"
 
-namespace ccm {
+namespace como {
 
 Integer Object::AddRef(
     /* [in] */ HANDLE id)
@@ -47,18 +47,16 @@ IInterface* Object::Probe(
 
 ECode Object::GetInterfaceID(
     /* [in] */ IInterface* object,
-    /* [out] */ InterfaceID* iid)
+    /* [out] */ InterfaceID& iid)
 {
-    VALIDATE_NOT_NULL(iid);
-
     if (object == (IInterface*)(IObject*)this) {
-        *iid = IID_IObject;
+        iid = IID_IObject;
     }
     else if (object == (IWeakReferenceSource*)this) {
-        *iid = IID_IWeakReferenceSource;
+        iid = IID_IWeakReferenceSource;
     }
     else {
-        *iid = InterfaceID::Null;
+        iid = InterfaceID::Null;
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     return NOERROR;
@@ -74,44 +72,36 @@ ECode Object::AttachMetadata(
 }
 
 ECode Object::GetCoclassID(
-    /* [out] */ CoclassID* cid)
+    /* [out] */ CoclassID& cid)
 {
-    VALIDATE_NOT_NULL(cid);
-
-    *cid = CoclassID::Null;
+    cid = CoclassID::Null;
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
 ECode Object::GetCoclass(
-    /* [out] */ IMetaCoclass** klass)
+    /* [out] */ AutoPtr<IMetaCoclass>& klass)
 {
-    VALIDATE_NOT_NULL(klass);
-
     if (mComponent != nullptr) {
         return mComponent->GetCoclass(mCoclassName, klass);
     }
     else {
-        *klass = nullptr;
+        klass = nullptr;
         return E_UNSUPPORTED_OPERATION_EXCEPTION;
     }
 }
 
 ECode Object::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
-    *hash = (Integer)reinterpret_cast<HANDLE>(this);
+    hash = (Integer)reinterpret_cast<HANDLE>(this);
     return NOERROR;
 }
 
 ECode Object::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* same)
+    /* [out] */ Boolean& same)
 {
-    VALIDATE_NOT_NULL(same);
-
-    *same = IObject::Probe(obj) == (IObject*)this;
+    same = IObject::Probe(obj) == (IObject*)this;
     return NOERROR;
 }
 
@@ -123,29 +113,24 @@ ECode Object::SetReferenceObserver(
 }
 
 ECode Object::ToString(
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
-    VALIDATE_NOT_NULL(desc);
-
     AutoPtr<IMetaCoclass> mc;
-    GetCoclass(&mc);
+    GetCoclass(mc);
     String ns, name;
     if (mc != nullptr) {
-        mc->GetNamespace(&ns);
-        mc->GetName(&name);
+        mc->GetNamespace(ns);
+        mc->GetName(name);
     }
-    *desc = String::Format("Object[0x%x], Class[%s%s]",
+    desc = String::Format("Object[0x%x], Class[%s%s]",
             this, ns.string(), name.string());
     return NOERROR;
 }
 
 ECode Object::GetWeakReference(
-    /* [out] */ IWeakReference** wr)
+    /* [out] */ AutoPtr<IWeakReference>& wr)
 {
-    VALIDATE_NOT_NULL(wr);
-
-    *wr = new WeakReferenceImpl((IObject*)this, CreateWeak(this));
-    REFCOUNT_ADD(*wr)
+    wr = new WeakReferenceImpl((IObject*)this, CreateWeak(this));
     return NOERROR;
 }
 
@@ -167,14 +152,14 @@ void Object::OnLastWeakRef(
 
 ECode Object::GetCoclassID(
     /* [in] */ IInterface* obj,
-    /* [out] */ CoclassID* cid)
+    /* [out] */ CoclassID& cid)
 {
     IObject* o = IObject::Probe(obj);
     if (o != nullptr) {
         return o->GetCoclassID(cid);
     }
     else {
-        *cid = CoclassID::Null;
+        cid = CoclassID::Null;
         return NOERROR;
     }
 }
@@ -185,7 +170,7 @@ AutoPtr<IMetaCoclass> Object::GetCoclass(
     IObject* o = IObject::Probe(obj);
     if (o != nullptr) {
         AutoPtr<IMetaCoclass> mc;
-        o->GetCoclass(&mc);
+        o->GetCoclass(mc);
         return mc;
     }
     return nullptr;
@@ -196,7 +181,7 @@ String Object::GetCoclassName(
 {
     Object* o = (Object*)IObject::Probe(obj);
     if (o == nullptr) {
-        return String(nullptr);
+        return nullptr;
     }
     return GetCoclassName(o);
 }
@@ -206,9 +191,9 @@ String Object::GetCoclassName(
 {
     String name;
     AutoPtr<IMetaCoclass> mc;
-    obj->GetCoclass(&mc);
+    obj->GetCoclass(mc);
     if (mc != nullptr) {
-        mc->GetName(&name);
+        mc->GetName(name);
     }
     return name;
 }
@@ -227,7 +212,7 @@ Integer Object::GetHashCode(
     /* [in] */ Object* obj)
 {
     Integer hash;
-    obj->GetHashCode(&hash);
+    obj->GetHashCode(hash);
     return hash;
 }
 
@@ -244,7 +229,7 @@ Boolean Object::Equals(
         return false;
     }
     Boolean result;
-    o1->Equals(obj2, &result);
+    o1->Equals(obj2, result);
     return result;
 }
 
@@ -252,17 +237,17 @@ String Object::ToString(
     /* [in] */ IInterface* obj)
 {
     if (obj == nullptr) {
-        return String("null");
+        return "null";
     }
     else {
         IObject* o = IObject::Probe(obj);
         if (o != nullptr) {
             String info;
-            o->ToString(&info);
+            o->ToString(info);
             return info;
         }
         else {
-            return String("not a coclass object.");
+            return "not a coclass object.";
         }
     }
 }
@@ -275,7 +260,7 @@ AutoPtr<IWeakReference> Object::GetWeakReference(
         return nullptr;
     }
     AutoPtr<IWeakReference> wr;
-    wrSource->GetWeakReference(&wr);
+    wrSource->GetWeakReference(wr);
     return wr;
 }
 
@@ -295,7 +280,7 @@ Boolean Object::InstanceOf(
     /* [in] */ const CoclassID& cid)
 {
     CoclassID ocid;
-    obj->GetCoclassID(&ocid);
+    obj->GetCoclassID(ocid);
     return ocid == cid;
 }
 

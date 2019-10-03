@@ -83,9 +83,9 @@ class CStub
     , public IStub
 {
 public:
-    CCM_INTERFACE_DECL();
+    COMO_INTERFACE_DECL();
 
-    CCM_OBJECT_DECL();
+    COMO_OBJECT_DECL();
 
     void OnLastStrongRef(
         /* [in] */ const void* id) override;

@@ -35,12 +35,12 @@ set(SOURCES
 
 set(CDLC_LINK_LIBS
     -Wl,--whole-archive
-    ast
-    codegen
-    metadata2
-    parser
-    phase
-    util
+    cdlc_ast
+    cdlc_codegen
+    cdlc_metadata
+    cdlc_parser
+    cdlc_phase
+    cdlc_util
     -Wl,--no-whole-archive)
 
 add_executable(cdlc

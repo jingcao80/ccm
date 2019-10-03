@@ -14,14 +14,14 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_ARRAYLIST_H__
-#define __CCM_ARRAYLIST_H__
+#ifndef __COMO_ARRAYLIST_H__
+#define __COMO_ARRAYLIST_H__
 
-#include "ccmtypes.h"
-#include "ccmlogger.h"
-#include <stdlib.h>
+#include "comotypes.h"
+#include "comologger.h"
+#include <cstdlib>
 
-namespace ccm {
+namespace como {
 
 template<class T>
 class ArrayList
@@ -143,6 +143,6 @@ Boolean ArrayList<T>::EnsureCapacity()
     return true;
 }
 
-}
+} // namespace como
 
-#endif // __CCM_ARRAYLIST_H__
+#endif // __COMO_ARRAYLIST_H__

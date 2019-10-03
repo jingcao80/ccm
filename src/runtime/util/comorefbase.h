@@ -30,13 +30,13 @@
  * limitations under the License.
  */
 
-#ifndef __CCM_REFBASE_H__
-#define __CCM_REFBASE_H__
+#ifndef __COMO_REFBASE_H__
+#define __COMO_REFBASE_H__
 
-#include "ccmtypes.h"
+#include "comotypes.h"
 #include <atomic>
 
-namespace ccm {
+namespace como {
 
 class COM_PUBLIC RefBase
 {
@@ -180,7 +180,7 @@ public:
 
     inline ECode GetInterfaceID(
         /* [in] */ IInterface* object,
-        /* [out] */ InterfaceID* iid) const;
+        /* [out] */ InterfaceID& iid) const;
 
     inline Integer GetStrongCount() const;
 
@@ -224,7 +224,7 @@ IInterface* LightRefBase::Probe(
 
 ECode LightRefBase::GetInterfaceID(
     /* [in] */ IInterface* object,
-    /* [out] */ InterfaceID* iid) const
+    /* [out] */ InterfaceID& iid) const
 {
     return E_ILLEGAL_ARGUMENT_EXCEPTION;
 }
@@ -246,17 +246,17 @@ public:
 
     ~WeakReferenceImpl();
 
-    CCM_INTERFACE_DECL();
+    COMO_INTERFACE_DECL();
 
     ECode Resolve(
         /* [in] */ const InterfaceID& iid,
-        /* [out] */ IInterface** object);
+        /* [out] */ AutoPtr<IInterface>& object);
 
 private:
     IInterface* mObject;
     RefBase::WeakRef* mRef;
 };
 
-}
+} // namespace como
 
-#endif // __CCM_REFBASE_H__
+#endif // __COMO_REFBASE_H__

@@ -14,33 +14,15 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccmclassobject.h"
+#ifndef __COMO_COMOAPI_H__
+#define __COMO_COMOAPI_H__
 
-namespace ccm {
+#include "comodef.h"
+#include "comotypes.h"
+#include "comoobjectapi.h"
+#include "comoreflectionapi.h"
+#include "comorpc.h"
 
-CCM_INTERFACE_IMPL_1(ClassObject, Object, IClassObject);
+using namespace como;
 
-ClassObject::ClassObject()
-    : mComponent(nullptr)
-{}
-
-ECode ClassObject::AttachMetadata(
-    /* [in] */ IMetaComponent* component)
-{
-    if (mComponent != component) {
-        mComponent = component;
-    }
-    return NOERROR;
-}
-
-ECode ClassObject::GetMetadate(
-    /* [out] */ IMetaComponent** component)
-{
-    VALIDATE_NOT_NULL(component);
-
-    *component = mComponent;
-    REFCOUNT_ADD(*component);
-    return NOERROR;
-}
-
-}
+#endif // __COMO_COMOAPI_H__
