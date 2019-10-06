@@ -63,14 +63,14 @@ target_link_libraries(ccmrt
 COPY(ccmrt ${RUNTIME_DIR}/ccmapi.h ${INC_DIR})
 COPY(ccmrt ${RUNTIME_DIR}/ccmdef.h ${INC_DIR})
 COPY(ccmrt ${RUNTIME_DIR}/ccmerror.h ${INC_DIR})
-COPY(ccmrt ${RUNTIME_DIR}/ccmtypes.h ${INC_DIR})
+COPY(ccmrt ${RUNTIME_DIR}/comotypes.h ${INC_DIR})
 COPY(ccmrt ${OBJ_DIR}/ccmrt.so ${BIN_DIR})
 
 set(DEPLOY_HEADERS
     ${RUNTIME_DIR}/ccmapi.h
     ${RUNTIME_DIR}/ccmdef.h
     ${RUNTIME_DIR}/ccmerror.h
-    ${RUNTIME_DIR}/ccmtypes.h)
+    ${RUNTIME_DIR}/comotypes.h)
 
 set(DEPLOY_LIBS
     ${OBJ_DIR}/ccmrt.so)

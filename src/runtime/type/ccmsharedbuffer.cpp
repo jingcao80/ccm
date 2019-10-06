@@ -31,7 +31,7 @@
  */
 
 #include "ccmsharedbuffer.h"
-#include "util/ccmlogger.h"
+#include "util/comolog.h"
 #include <stdlib.h>
 #include <string.h>
 

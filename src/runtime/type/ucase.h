@@ -28,7 +28,7 @@
 #ifndef __UCASE_H__
 #define __UCASE_H__
 
-#include "ccmtypes.h"
+#include "comotypes.h"
 
 ccm::Char u_tolower(
     /* [in] */ ccm::Char c);

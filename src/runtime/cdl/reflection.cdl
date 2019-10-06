@@ -38,6 +38,17 @@ enum IOAttribute
     OUT_CALLEE
 }
 
+enum TypeMode
+{
+    NORMAL,
+    POINTER,
+    REFERENCE,
+    POINTER_POINTER,
+    POINTER_REFERENCE,
+    REFERENCE_REFERENCE,
+    REFERENCE_POINTER
+}
+
 [
     uuid(35b4d7ca-b66c-44d3-b4a6-007852953085),
     version(0.1.0)
@@ -353,13 +364,13 @@ interface IMetaType
         [out] String& name);
 
     GetTypeKind(
-        [out] Integer& kind);
+        [out] TypeKind& kind);
 
     GetElementType(
         [out] IMetaType&& elemType);
 
-    GetPointerNumber(
-        [out] Integer& number);
+    GetTypeMode(
+        [out] TypeMode& mode);
 }
 
 [

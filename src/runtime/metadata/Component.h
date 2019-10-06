@@ -63,9 +63,9 @@ struct MetaComponent
     int                 mConstantNumber;
     int                 mCoclassNumber;
     int                 mEnumerationNumber;
-    // int                 mExternalEnumerationNumber;
+    int                 mExternalEnumerationNumber;
     int                 mInterfaceNumber;
-    // int                 mExternalInterfaceNumber;
+    int                 mExternalInterfaceNumber;
     int                 mTypeNumber;
     MetaNamespace**     mNamespaces;
     MetaConstant**      mConstants;
@@ -84,9 +84,9 @@ struct MetaNamespace
     int                 mConstantNumber;
     int                 mCoclassNumber;
     int                 mEnumerationNumber;
-    // int                 mExternalEnumerationNumber;
+    int                 mExternalEnumerationNumber;
     int                 mInterfaceNumber;
-    // int                 mExternalInterfaceNumber;
+    int                 mExternalInterfaceNumber;
     MetaNamespace**     mNamespaces;
     int*                mConstantIndexes;
     int*                mCoclassIndexes;
@@ -121,6 +121,7 @@ struct MetaEnumeration
     int                 mEnumeratorNumber;
     MetaEnumerator**    mEnumerators;
     // bool                mExternal;
+    unsigned char       mProperties;
 };
 
 struct MetaEnumerator

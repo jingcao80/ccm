@@ -14,16 +14,13 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CMETACOCLASS_H__
-#define __CCM_CMETACOCLASS_H__
+#ifndef __COMO_CMETACOCLASS_H__
+#define __COMO_CMETACOCLASS_H__
 
-#include "ccmrefbase.h"
+#include "comoref.h"
 #include "Component.h"
 
-using ccm::metadata::MetaCoclass;
-using ccm::metadata::MetaComponent;
-
-namespace ccm {
+namespace como {
 
 class CMetaComponent;
 
@@ -42,46 +39,46 @@ public:
     COMO_INTERFACE_DECL();
 
     ECode GetComponent(
-        /* [out] */ IMetaComponent** metaComp) override;
+        /* [out] */ AutoPtr<IMetaComponent>& metaComp) override;
 
     ECode GetName(
-        /* [out] */ String* name) override;
+        /* [out] */ String& name) override;
 
     ECode GetNamespace(
-        /* [out] */ String* ns) override;
+        /* [out] */ String& ns) override;
 
     ECode GetCoclassID(
-        /* [out] */ CoclassID* cid) override;
+        /* [out] */ CoclassID& cid) override;
 
     ECode GetClassLoader(
-        /* [out] */ IClassLoader** loader) override;
+        /* [out] */ AutoPtr<IClassLoader>& loader) override;
 
     ECode GetConstructorNumber(
-        /* [out] */ Integer* number) override;
+        /* [out] */ Integer& number) override;
 
     ECode GetAllConstructors(
         /* [out] */ Array<IMetaConstructor*>& constrs) override;
 
     ECode GetConstructor(
         /* [in] */ const String& paramNumber,
-        /* [out] */ IMetaConstructor** constr) override;
+        /* [out] */ AutoPtr<IMetaConstructor>& constr) override;
 
     ECode GetInterfaceNumber(
-        /* [out] */ Integer* number) override;
+        /* [out] */ Integer& number) override;
 
     ECode GetAllInterfaces(
         /* [out] */ Array<IMetaInterface*>& intfs) override;
 
     ECode GetInterface(
         /* [in] */ const String& fullName,
-        /* [out] */ IMetaInterface** intf) override;
+        /* [out] */ AutoPtr<IMetaInterface>& intf) override;
 
     ECode ContainsInterface(
         /* [in] */ const String& fullName,
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode GetMethodNumber(
-        /* [out] */ Integer* number) override;
+        /* [out] */ Integer& number) override;
 
     ECode GetAllMethods(
         /* [out] */ Array<IMetaMethod*>& methods) override;
@@ -89,11 +86,11 @@ public:
     ECode GetMethod(
         /* [in] */ const String& name,
         /* [in] */ const String& signature,
-        /* [out] */ IMetaMethod** method) override;
+        /* [out] */ AutoPtr<IMetaMethod>& method) override;
 
     ECode CreateObject(
         /* [in] */ const InterfaceID& iid,
-        /* [out] */ IInterface** object) override;
+        /* [out] */ AutoPtr<IInterface>& object) override;
 
 private:
     void BuildAllConstructors();
@@ -104,7 +101,7 @@ private:
 
     void BuildInterfaceMethod(
         /* [in] */ IMetaInterface* miObj,
-        /* [in, out] */ Integer* index);
+        /* [in, out] */ Integer& index);
 
 public:
     MetaCoclass* mMetadata;
@@ -117,6 +114,6 @@ public:
     Array<IMetaInterface*> mMetaInterfaces;
 };
 
-}
+} // namespace como
 
-#endif // __CCM_CMETACOCLASS_H__
+#endif // __COMO_CMETACOCLASS_H__

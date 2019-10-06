@@ -242,6 +242,7 @@ There are two ways to add comments. One is using syntax "/* <*comment_literal*> 
 | Triple      |     R     |
 | Array       |     [     |
 | Pointer     |     *     |
+| Reference   |     &     |
 | Enum        | Lxx/xx;   |
 | Interface   | Lxx/xx;   |
 

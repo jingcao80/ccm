@@ -14,18 +14,14 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CMETAPARAMETER_H__
-#define __CCM_CMETAPARAMETER_H__
+#ifndef __COMO_CMETAPARAMETER_H__
+#define __COMO_CMETAPARAMETER_H__
 
-#include "ccmautoptr.h"
-#include "ccmrefbase.h"
+#include "comotypes.h"
+#include "comoref.h"
 #include "Component.h"
 
-using ccm::metadata::MetaComponent;
-using ccm::metadata::MetaParameter;
-using ccm::metadata::MetaType;
-
-namespace ccm {
+namespace como {
 
 class CMetaParameter
     : public LightRefBase
@@ -45,23 +41,23 @@ public:
     COMO_INTERFACE_DECL();
 
     ECode GetMethod(
-        /* [out] */ IMetaMethod** method);
+        /* [out] */ AutoPtr<IMetaMethod>& method);
 
     ECode GetName(
-        /* [out] */ String* name);
+        /* [out] */ String& name);
 
     ECode GetIndex(
-        /* [out] */ Integer* index);
+        /* [out] */ Integer& index);
 
     ECode GetIOAttribute(
-        /* [out] */ IOAttribute* attr);
+        /* [out] */ IOAttribute& attr);
 
     ECode GetType(
-        /* [out] */ IMetaType** type);
+        /* [out] */ AutoPtr<IMetaType>& type);
 
 private:
     IOAttribute BuildIOAttribute(
-        /* [in] */ Integer attr);
+        /* [in] */ unsigned char properties);
 
 private:
     static constexpr int IN = 0x1;
@@ -77,6 +73,6 @@ public:
     AutoPtr<IMetaType> mType;
 };
 
-}
+} // namespace como
 
-#endif // __CCM_CMETAPARAMETER_H__
+#endif // __COMO_CMETAPARAMETER_H__

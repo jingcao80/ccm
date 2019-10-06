@@ -23,31 +23,31 @@ include_directories(
     ${INC_DIR})
 
 set(SOURCES
-    comoclassobject.cpp
-    comologger.cpp
-    comoobject.cpp
-    comorefbase.cpp
-    comospinlock.cpp
+    comoclsobj.cpp
+    comolog.cpp
+    comoobj.cpp
+    comoref.cpp
+    comoref.cpp
     mutex.cpp)
 
 add_library(util STATIC
     ${SOURCES})
 add_dependencies(util cdl)
 
-COPY(util ${UTIL_DIR}/comoautoptr.h ${INC_DIR})
-COPY(util ${UTIL_DIR}/comoclassobject.h ${INC_DIR})
-COPY(util ${UTIL_DIR}/comologger.h ${INC_DIR})
-COPY(util ${UTIL_DIR}/comoobject.h ${INC_DIR})
-COPY(util ${UTIL_DIR}/comorefbase.h ${INC_DIR})
-COPY(util ${UTIL_DIR}/comospinlock.h ${INC_DIR})
+COPY(util ${UTIL_DIR}/comoptr.h ${INC_DIR})
+COPY(util ${UTIL_DIR}/comoclsobj.h ${INC_DIR})
+COPY(util ${UTIL_DIR}/comolog.h ${INC_DIR})
+COPY(util ${UTIL_DIR}/comoobj.h ${INC_DIR})
+COPY(util ${UTIL_DIR}/comoref.h ${INC_DIR})
+COPY(util ${UTIL_DIR}/comolock.h ${INC_DIR})
 
 set(DEPLOY_HEADERS
-    ${UTIL_DIR}/comoautoptr.h
-    ${UTIL_DIR}/comoclassobject.h
-    ${UTIL_DIR}/comologger.h
-    ${UTIL_DIR}/comoobject.h
-    ${UTIL_DIR}/comorefbase.h
-    ${UTIL_DIR}/comospinlock.h)
+    ${UTIL_DIR}/comoptr.h
+    ${UTIL_DIR}/comoclsobj.h
+    ${UTIL_DIR}/comolog.h
+    ${UTIL_DIR}/comoobj.h
+    ${UTIL_DIR}/comoref.h
+    ${UTIL_DIR}/comolock.h)
 
 install(FILES
     ${DEPLOY_HEADERS}

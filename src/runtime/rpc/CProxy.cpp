@@ -32,7 +32,7 @@
 
 #include "ccmrpc.h"
 #include "CProxy.h"
-#include "util/ccmlogger.h"
+#include "util/comolog.h"
 #include <sys/mman.h>
 
 namespace ccm {
@@ -196,81 +196,81 @@ ECode InterfaceProxy::MarshalArguments(
         method->GetParameter(i, &param);
         AutoPtr<IMetaType> type;
         param->GetType(&type);
-        CcmTypeKind kind;
+        TypeKind kind;
         type->GetTypeKind((Integer*)&kind);
         IOAttribute ioAttr;
         param->GetIOAttribute(&ioAttr);
         if (ioAttr == IOAttribute::IN) {
             switch (kind) {
-                case CcmTypeKind::Char: {
+                case TypeKind::Char: {
                     Char value = (Char)GetLongValue(regs, intNum++, fpNum);
                     argParcel->WriteChar(value);
                     break;
                 }
-                case CcmTypeKind::Byte: {
+                case TypeKind::Byte: {
                     Byte value = (Byte)GetLongValue(regs, intNum++, fpNum);
                     argParcel->WriteByte(value);
                     break;
                 }
-                case CcmTypeKind::Short: {
+                case TypeKind::Short: {
                     Short value = (Short)GetLongValue(regs, intNum++, fpNum);
                     argParcel->WriteShort(value);
                     break;
                 }
-                case CcmTypeKind::Integer: {
+                case TypeKind::Integer: {
                     Integer value = (Integer)GetLongValue(regs, intNum++, fpNum);
                     argParcel->WriteInteger(value);
                     break;
                 }
-                case CcmTypeKind::Long: {
+                case TypeKind::Long: {
                     Long value = GetLongValue(regs, intNum++, fpNum);
                     argParcel->WriteLong(value);
                     break;
                 }
-                case CcmTypeKind::Float: {
+                case TypeKind::Float: {
                     Float value = (Float)GetDoubleValue(regs, intNum, fpNum++);
                     argParcel->WriteFloat(value);
                     break;
                 }
-                case CcmTypeKind::Double: {
+                case TypeKind::Double: {
                     Double value = GetDoubleValue(regs, intNum, fpNum++);
                     argParcel->WriteDouble(value);
                     break;
                 }
-                case CcmTypeKind::Boolean: {
+                case TypeKind::Boolean: {
                     Boolean value = (Boolean)GetLongValue(regs, intNum++, fpNum);
                     argParcel->WriteBoolean(value);
                     break;
                 }
-                case CcmTypeKind::String: {
+                case TypeKind::String: {
                     String value = *reinterpret_cast<String*>(GetLongValue(regs, intNum++, fpNum));
                     argParcel->WriteString(value);
                     break;
                 }
-                case CcmTypeKind::ECode: {
+                case TypeKind::ECode: {
                     ECode value = (ECode)GetLongValue(regs, intNum++, fpNum);
                     argParcel->WriteECode(value);
                     break;
                 }
-                case CcmTypeKind::Enum: {
+                case TypeKind::Enum: {
                     Integer value = (Integer)GetLongValue(regs, intNum++, fpNum);
                     argParcel->WriteEnumeration(value);
                     break;
                 }
-                case CcmTypeKind::Array: {
+                case TypeKind::Array: {
                     AutoPtr<IMetaType> aType, eType;
                     eType = type;
-                    CcmTypeKind eKind = kind;
-                    while (eKind == CcmTypeKind::Array) {
+                    TypeKind eKind = kind;
+                    while (eKind == TypeKind::Array) {
                         aType = eType;
                         eType = nullptr;
                         aType->GetElementType(&eType);
                         eType->GetTypeKind((Integer*)&eKind);
                     }
-                    if (eKind == CcmTypeKind::CoclassID ||
-                            eKind == CcmTypeKind::ComponentID ||
-                            eKind == CcmTypeKind::InterfaceID ||
-                            eKind == CcmTypeKind::HANDLE) {
+                    if (eKind == TypeKind::CoclassID ||
+                            eKind == TypeKind::ComponentID ||
+                            eKind == TypeKind::InterfaceID ||
+                            eKind == TypeKind::HANDLE) {
                         Logger::E("CProxy", "Invalid [in] Array(%d), param index: %d.\n", eKind, i);
                         return E_ILLEGAL_ARGUMENT_EXCEPTION;
                     }
@@ -279,16 +279,16 @@ ECode InterfaceProxy::MarshalArguments(
                     argParcel->WriteArray(value);
                     break;
                 }
-                case CcmTypeKind::Interface: {
+                case TypeKind::Interface: {
                     IInterface* value = reinterpret_cast<IInterface*>(GetLongValue(regs, intNum++, fpNum));
                     argParcel->WriteInterface(value);
                     break;
                 }
-                case CcmTypeKind::CoclassID:
-                case CcmTypeKind::ComponentID:
-                case CcmTypeKind::InterfaceID:
-                case CcmTypeKind::HANDLE:
-                case CcmTypeKind::Triple:
+                case TypeKind::CoclassID:
+                case TypeKind::ComponentID:
+                case TypeKind::InterfaceID:
+                case TypeKind::HANDLE:
+                case TypeKind::Triple:
                 default:
                     Logger::E("CProxy", "Invalid [in] type(%d), param index: %d.\n", kind, i);
                     return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -296,75 +296,75 @@ ECode InterfaceProxy::MarshalArguments(
         }
         else if (ioAttr == IOAttribute::IN_OUT) {
             switch (kind) {
-                case CcmTypeKind::Char: {
+                case TypeKind::Char: {
                     Char* value = reinterpret_cast<Char*>(GetLongValue(regs, intNum++, fpNum));
                     argParcel->WriteChar(*value);
                     break;
                 }
-                case CcmTypeKind::Byte: {
+                case TypeKind::Byte: {
                     Byte* value = reinterpret_cast<Byte*>(GetLongValue(regs, intNum++, fpNum));
                     argParcel->WriteByte(*value);
                     break;
                 }
-                case CcmTypeKind::Short: {
+                case TypeKind::Short: {
                     Short* value = reinterpret_cast<Short*>(GetLongValue(regs, intNum++, fpNum));
                     argParcel->WriteShort(*value);
                     break;
                 }
-                case CcmTypeKind::Integer: {
+                case TypeKind::Integer: {
                     Integer* value = reinterpret_cast<Integer*>(GetLongValue(regs, intNum++, fpNum));
                     argParcel->WriteInteger(*value);
                     break;
                 }
-                case CcmTypeKind::Long: {
+                case TypeKind::Long: {
                     Long* value = reinterpret_cast<Long*>(GetLongValue(regs, intNum++, fpNum));
                     argParcel->WriteLong(*value);
                     break;
                 }
-                case CcmTypeKind::Float: {
+                case TypeKind::Float: {
                     Float* value = reinterpret_cast<Float*>(GetLongValue(regs, intNum++, fpNum));
                     argParcel->WriteFloat(*value);
                     break;
                 }
-                case CcmTypeKind::Double: {
+                case TypeKind::Double: {
                     Double* value = reinterpret_cast<Double*>(GetLongValue(regs, intNum++, fpNum));
                     argParcel->WriteDouble(*value);
                     break;
                 }
-                case CcmTypeKind::Boolean: {
+                case TypeKind::Boolean: {
                     Boolean* value = reinterpret_cast<Boolean*>(GetLongValue(regs, intNum++, fpNum));
                     argParcel->WriteBoolean(*value);
                     break;
                 }
-                case CcmTypeKind::String: {
+                case TypeKind::String: {
                     String* value = reinterpret_cast<String*>(GetLongValue(regs, intNum++, fpNum));
                     argParcel->WriteString(*value);
                     break;
                 }
-                case CcmTypeKind::ECode: {
+                case TypeKind::ECode: {
                     ECode* value = reinterpret_cast<ECode*>(GetLongValue(regs, intNum++, fpNum));
                     argParcel->WriteECode(*value);
                     break;
                 }
-                case CcmTypeKind::Enum: {
+                case TypeKind::Enum: {
                     Integer* value = reinterpret_cast<Integer*>(GetLongValue(regs, intNum++, fpNum));
                     argParcel->WriteInteger(*value);
                     break;
                 }
-                case CcmTypeKind::Array: {
+                case TypeKind::Array: {
                     AutoPtr<IMetaType> aType, eType;
                     eType = type;
-                    CcmTypeKind eKind = kind;
-                    while (eKind == CcmTypeKind::Array) {
+                    TypeKind eKind = kind;
+                    while (eKind == TypeKind::Array) {
                         aType = eType;
                         eType = nullptr;
                         aType->GetElementType(&eType);
                         eType->GetTypeKind((Integer*)&eKind);
                     }
-                    if (eKind == CcmTypeKind::CoclassID ||
-                            eKind == CcmTypeKind::ComponentID ||
-                            eKind == CcmTypeKind::InterfaceID ||
-                            eKind == CcmTypeKind::HANDLE) {
+                    if (eKind == TypeKind::CoclassID ||
+                            eKind == TypeKind::ComponentID ||
+                            eKind == TypeKind::InterfaceID ||
+                            eKind == TypeKind::HANDLE) {
                         Logger::E("CProxy", "Invalid [in, out] Array(%d), param index: %d.\n", eKind, i);
                         return E_ILLEGAL_ARGUMENT_EXCEPTION;
                     }
@@ -373,16 +373,16 @@ ECode InterfaceProxy::MarshalArguments(
                     argParcel->WriteArray(value);
                     break;
                 }
-                case CcmTypeKind::Interface: {
+                case TypeKind::Interface: {
                     IInterface** value = reinterpret_cast<IInterface**>(GetLongValue(regs, intNum++, fpNum));
                     argParcel->WriteInterface(*value);
                     break;
                 }
-                case CcmTypeKind::CoclassID:
-                case CcmTypeKind::ComponentID:
-                case CcmTypeKind::InterfaceID:
-                case CcmTypeKind::HANDLE:
-                case CcmTypeKind::Triple:
+                case TypeKind::CoclassID:
+                case TypeKind::ComponentID:
+                case TypeKind::InterfaceID:
+                case TypeKind::HANDLE:
+                case TypeKind::Triple:
                 default:
                     Logger::E("CProxy", "Invalid [in, out] type(%d), param index: %d.\n", kind, i);
                     return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -390,34 +390,34 @@ ECode InterfaceProxy::MarshalArguments(
         }
         else if (ioAttr == IOAttribute::OUT) {
             switch (kind) {
-                case CcmTypeKind::Char:
-                case CcmTypeKind::Byte:
-                case CcmTypeKind::Short:
-                case CcmTypeKind::Integer:
-                case CcmTypeKind::Long:
-                case CcmTypeKind::Float:
-                case CcmTypeKind::Double:
-                case CcmTypeKind::Boolean:
-                case CcmTypeKind::String:
-                case CcmTypeKind::ECode:
-                case CcmTypeKind::Enum:
-                case CcmTypeKind::Interface:
+                case TypeKind::Char:
+                case TypeKind::Byte:
+                case TypeKind::Short:
+                case TypeKind::Integer:
+                case TypeKind::Long:
+                case TypeKind::Float:
+                case TypeKind::Double:
+                case TypeKind::Boolean:
+                case TypeKind::String:
+                case TypeKind::ECode:
+                case TypeKind::Enum:
+                case TypeKind::Interface:
                     intNum++;
                     break;
-                case CcmTypeKind::Array: {
+                case TypeKind::Array: {
                     AutoPtr<IMetaType> aType, eType;
                     eType = type;
-                    CcmTypeKind eKind = kind;
-                    while (eKind == CcmTypeKind::Array) {
+                    TypeKind eKind = kind;
+                    while (eKind == TypeKind::Array) {
                         aType = eType;
                         eType = nullptr;
                         aType->GetElementType(&eType);
                         eType->GetTypeKind((Integer*)&eKind);
                     }
-                    if (eKind == CcmTypeKind::CoclassID ||
-                            eKind == CcmTypeKind::ComponentID ||
-                            eKind == CcmTypeKind::InterfaceID ||
-                            eKind == CcmTypeKind::HANDLE) {
+                    if (eKind == TypeKind::CoclassID ||
+                            eKind == TypeKind::ComponentID ||
+                            eKind == TypeKind::InterfaceID ||
+                            eKind == TypeKind::HANDLE) {
                         Logger::E("CProxy", "Invalid [out] Array(%d), param index: %d.\n", eKind, i);
                         return E_ILLEGAL_ARGUMENT_EXCEPTION;
                     }
@@ -425,11 +425,11 @@ ECode InterfaceProxy::MarshalArguments(
                     intNum++;
                     break;
                 }
-                case CcmTypeKind::CoclassID:
-                case CcmTypeKind::ComponentID:
-                case CcmTypeKind::InterfaceID:
-                case CcmTypeKind::HANDLE:
-                case CcmTypeKind::Triple:
+                case TypeKind::CoclassID:
+                case TypeKind::ComponentID:
+                case TypeKind::InterfaceID:
+                case TypeKind::HANDLE:
+                case TypeKind::Triple:
                 default:
                     Logger::E("CProxy", "Invalid [out] type(%d), param index: %d.\n", kind, i);
                     return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -437,20 +437,20 @@ ECode InterfaceProxy::MarshalArguments(
         }
         else if (ioAttr == IOAttribute::OUT_CALLEE) {
             switch (kind) {
-                case CcmTypeKind::Array: {
+                case TypeKind::Array: {
                     AutoPtr<IMetaType> aType, eType;
                     eType = type;
-                    CcmTypeKind eKind = kind;
-                    while (eKind == CcmTypeKind::Array) {
+                    TypeKind eKind = kind;
+                    while (eKind == TypeKind::Array) {
                         aType = eType;
                         eType = nullptr;
                         aType->GetElementType(&eType);
                         eType->GetTypeKind((Integer*)&eKind);
                     }
-                    if (eKind == CcmTypeKind::CoclassID ||
-                            eKind == CcmTypeKind::ComponentID ||
-                            eKind == CcmTypeKind::InterfaceID ||
-                            eKind == CcmTypeKind::HANDLE) {
+                    if (eKind == TypeKind::CoclassID ||
+                            eKind == TypeKind::ComponentID ||
+                            eKind == TypeKind::InterfaceID ||
+                            eKind == TypeKind::HANDLE) {
                         Logger::E("CProxy", "Invalid [out, callee] Array(%d), param index: %d.\n", eKind, i);
                         return E_ILLEGAL_ARGUMENT_EXCEPTION;
                     }
@@ -458,23 +458,23 @@ ECode InterfaceProxy::MarshalArguments(
                     intNum++;
                     break;
                 }
-                case CcmTypeKind::Char:
-                case CcmTypeKind::Byte:
-                case CcmTypeKind::Short:
-                case CcmTypeKind::Integer:
-                case CcmTypeKind::Long:
-                case CcmTypeKind::Float:
-                case CcmTypeKind::Double:
-                case CcmTypeKind::Boolean:
-                case CcmTypeKind::String:
-                case CcmTypeKind::ECode:
-                case CcmTypeKind::Enum:
-                case CcmTypeKind::Interface:
-                case CcmTypeKind::CoclassID:
-                case CcmTypeKind::ComponentID:
-                case CcmTypeKind::InterfaceID:
-                case CcmTypeKind::HANDLE:
-                case CcmTypeKind::Triple:
+                case TypeKind::Char:
+                case TypeKind::Byte:
+                case TypeKind::Short:
+                case TypeKind::Integer:
+                case TypeKind::Long:
+                case TypeKind::Float:
+                case TypeKind::Double:
+                case TypeKind::Boolean:
+                case TypeKind::String:
+                case TypeKind::ECode:
+                case TypeKind::Enum:
+                case TypeKind::Interface:
+                case TypeKind::CoclassID:
+                case TypeKind::ComponentID:
+                case TypeKind::InterfaceID:
+                case TypeKind::HANDLE:
+                case TypeKind::Triple:
                 default:
                     Logger::E("CProxy", "Invalid [out, callee] type(%d), param index: %d.\n", kind, i);
                     return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -498,34 +498,34 @@ ECode InterfaceProxy::UnmarshalResults(
         method->GetParameter(i, &param);
         AutoPtr<IMetaType> type;
         param->GetType(&type);
-        CcmTypeKind kind;
+        TypeKind kind;
         type->GetTypeKind((Integer*)&kind);
         IOAttribute ioAttr;
         param->GetIOAttribute(&ioAttr);
         if (ioAttr == IOAttribute::IN) {
             switch (kind) {
-                case CcmTypeKind::Char:
-                case CcmTypeKind::Byte:
-                case CcmTypeKind::Short:
-                case CcmTypeKind::Integer:
-                case CcmTypeKind::Long:
-                case CcmTypeKind::Boolean:
-                case CcmTypeKind::String:
-                case CcmTypeKind::ECode:
-                case CcmTypeKind::Enum:
-                case CcmTypeKind::Array:
-                case CcmTypeKind::Interface:
+                case TypeKind::Char:
+                case TypeKind::Byte:
+                case TypeKind::Short:
+                case TypeKind::Integer:
+                case TypeKind::Long:
+                case TypeKind::Boolean:
+                case TypeKind::String:
+                case TypeKind::ECode:
+                case TypeKind::Enum:
+                case TypeKind::Array:
+                case TypeKind::Interface:
                     intNum++;
                     break;
-                case CcmTypeKind::Float:
-                case CcmTypeKind::Double:
+                case TypeKind::Float:
+                case TypeKind::Double:
                     fpNum++;
                     break;
-                case CcmTypeKind::CoclassID:
-                case CcmTypeKind::ComponentID:
-                case CcmTypeKind::InterfaceID:
-                case CcmTypeKind::HANDLE:
-                case CcmTypeKind::Triple:
+                case TypeKind::CoclassID:
+                case TypeKind::ComponentID:
+                case TypeKind::InterfaceID:
+                case TypeKind::HANDLE:
+                case TypeKind::Triple:
                 default:
                     Logger::E("CProxy", "Invalid [in] type(%d), param index: %d.\n", kind, i);
                     return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -533,89 +533,89 @@ ECode InterfaceProxy::UnmarshalResults(
         }
         else if (ioAttr == IOAttribute::OUT || ioAttr == IOAttribute::IN_OUT) {
             switch (kind) {
-                case CcmTypeKind::Char: {
+                case TypeKind::Char: {
                     Char* addr = reinterpret_cast<Char*>(
                             GetValueAddress(regs, intNum++, fpNum));
                     resParcel->ReadChar(addr);
                     break;
                 }
-                case CcmTypeKind::Byte: {
+                case TypeKind::Byte: {
                     Byte* addr = reinterpret_cast<Byte*>(
                             GetValueAddress(regs, intNum++, fpNum));
                     resParcel->ReadByte(addr);
                     break;
                 }
-                case CcmTypeKind::Short: {
+                case TypeKind::Short: {
                     Short* addr = reinterpret_cast<Short*>(
                             GetValueAddress(regs, intNum++, fpNum));
                     resParcel->ReadShort(addr);
                     break;
                 }
-                case CcmTypeKind::Integer: {
+                case TypeKind::Integer: {
                     Integer* addr = reinterpret_cast<Integer*>(
                             GetValueAddress(regs, intNum++, fpNum));
                     resParcel->ReadInteger(addr);
                     break;
                 }
-                case CcmTypeKind::Long: {
+                case TypeKind::Long: {
                     Long* addr = reinterpret_cast<Long*>(
                             GetValueAddress(regs, intNum++, fpNum));
                     resParcel->ReadLong(addr);
                     break;
                 }
-                case CcmTypeKind::Float: {
+                case TypeKind::Float: {
                     Float* addr = reinterpret_cast<Float*>(
                             GetValueAddress(regs, intNum++, fpNum));
                     resParcel->ReadFloat(addr);
                     break;
                 }
-                case CcmTypeKind::Double: {
+                case TypeKind::Double: {
                     Double* addr = reinterpret_cast<Double*>(
                             GetValueAddress(regs, intNum++, fpNum));
                     resParcel->ReadDouble(addr);
                     break;
                 }
-                case CcmTypeKind::Boolean: {
+                case TypeKind::Boolean: {
                     Boolean* addr = reinterpret_cast<Boolean*>(
                             GetValueAddress(regs, intNum++, fpNum));
                     resParcel->ReadBoolean(addr);
                     break;
                 }
-                case CcmTypeKind::String: {
+                case TypeKind::String: {
                     String* addr = reinterpret_cast<String*>(
                             GetValueAddress(regs, intNum++, fpNum));
                     resParcel->ReadString(addr);
                     break;
                 }
-                case CcmTypeKind::ECode: {
+                case TypeKind::ECode: {
                     ECode* addr = reinterpret_cast<ECode*>(
                             GetValueAddress(regs, intNum++, fpNum));
                     resParcel->ReadECode(addr);
                     break;
                 }
-                case CcmTypeKind::Enum: {
+                case TypeKind::Enum: {
                     Integer* addr = reinterpret_cast<Integer*>(
                             GetValueAddress(regs, intNum++, fpNum));
                     resParcel->ReadEnumeration(addr);
                     break;
                 }
-                case CcmTypeKind::Array: {
+                case TypeKind::Array: {
                     Triple* t = reinterpret_cast<Triple*>(
                             GetValueAddress(regs, intNum++, fpNum));
                     resParcel->ReadArray(reinterpret_cast<HANDLE>(t));
                     break;
                 }
-                case CcmTypeKind::Interface: {
+                case TypeKind::Interface: {
                     IInterface** intf = reinterpret_cast<IInterface**>(
                             GetValueAddress(regs, intNum++, fpNum));
                     resParcel->ReadInterface(intf);
                     break;
                 }
-                case CcmTypeKind::CoclassID:
-                case CcmTypeKind::ComponentID:
-                case CcmTypeKind::InterfaceID:
-                case CcmTypeKind::HANDLE:
-                case CcmTypeKind::Triple:
+                case TypeKind::CoclassID:
+                case TypeKind::ComponentID:
+                case TypeKind::InterfaceID:
+                case TypeKind::HANDLE:
+                case TypeKind::Triple:
                 default:
                     Logger::E("CProxy", "Invalid [in, out] or [out] type(%d), param index: %d.\n", kind, i);
                     return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -623,28 +623,28 @@ ECode InterfaceProxy::UnmarshalResults(
         }
         else if (ioAttr == IOAttribute::OUT_CALLEE) {
             switch (kind) {
-                case CcmTypeKind::Array: {
+                case TypeKind::Array: {
                     Triple* t = reinterpret_cast<Triple*>(
                             GetValueAddress(regs, intNum++, fpNum));
                     resParcel->ReadArray(reinterpret_cast<HANDLE>(t));
                     break;
                 }
-                case CcmTypeKind::Char:
-                case CcmTypeKind::Byte:
-                case CcmTypeKind::Short:
-                case CcmTypeKind::Integer:
-                case CcmTypeKind::Long:
-                case CcmTypeKind::Float:
-                case CcmTypeKind::Double:
-                case CcmTypeKind::Boolean:
-                case CcmTypeKind::String:
-                case CcmTypeKind::ECode:
-                case CcmTypeKind::Enum:
-                case CcmTypeKind::Interface:
-                case CcmTypeKind::CoclassID:
-                case CcmTypeKind::ComponentID:
-                case CcmTypeKind::InterfaceID:
-                case CcmTypeKind::Triple:
+                case TypeKind::Char:
+                case TypeKind::Byte:
+                case TypeKind::Short:
+                case TypeKind::Integer:
+                case TypeKind::Long:
+                case TypeKind::Float:
+                case TypeKind::Double:
+                case TypeKind::Boolean:
+                case TypeKind::String:
+                case TypeKind::ECode:
+                case TypeKind::Enum:
+                case TypeKind::Interface:
+                case TypeKind::CoclassID:
+                case TypeKind::ComponentID:
+                case TypeKind::InterfaceID:
+                case TypeKind::Triple:
                 default:
                     Logger::E("CProxy", "Invalid [out, callee] type(%d), param index: %d.\n", kind, i);
                     return E_ILLEGAL_ARGUMENT_EXCEPTION;

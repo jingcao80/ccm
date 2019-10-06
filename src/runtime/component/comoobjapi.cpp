@@ -14,30 +14,28 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccmcomponent.h"
-#include "ccmobjectapi.h"
+#include "comocomp.h"
+#include "comoobjapi.h"
 #include "CBootClassLoader.h"
 #include "reflection/CMetaComponent.h"
-#include "util/ccmautoptr.h"
+#include "util/comoptr.h"
 
-namespace ccm {
+namespace como {
 
 ECode CoCreateObjectInstance(
     /* [in] */ const CoclassID& cid,
     /* [in] */ const InterfaceID& iid,
     /* [in] */ IClassLoader* loader,
-    /* [out] */ IInterface** object)
+    /* [out] */ AutoPtr<IInterface>& object)
 {
-    VALIDATE_NOT_NULL(object);
-
     if (loader == nullptr) {
         loader = CBootClassLoader::GetInstance();
     }
 
     AutoPtr<IClassObject> factory;
-    ECode ec = CoAcquireClassFactory(cid, loader, &factory);
+    ECode ec = CoAcquireClassFactory(cid, loader, factory);
     if (FAILED(ec)) {
-        *object = nullptr;
+        object = nullptr;
         return ec;
     }
 
@@ -47,25 +45,23 @@ ECode CoCreateObjectInstance(
 ECode CoAcquireClassFactory(
     /* [in] */ const CoclassID& cid,
     /* [in] */ IClassLoader* loader,
-    /* [out] */ IClassObject** object)
+    /* [out] */ AutoPtr<IClassObject>& object)
 {
-    VALIDATE_NOT_NULL(object);
-
     if (loader == nullptr) {
         loader = CBootClassLoader::GetInstance();
     }
 
     AutoPtr<IMetaComponent> component;
-    ECode ec = loader->LoadComponent(*cid.mCid, &component);
+    ECode ec = loader->LoadComponent(*cid.mCid, component);
     if (FAILED(ec)) {
-        *object = nullptr;
+        object = nullptr;
         return ec;
     }
 
     CMetaComponent* mcObj = (CMetaComponent*)component.Get();
     ec = mcObj->GetClassObject(cid, object);
     if (SUCCEEDED(ec)) {
-        (*object)->AttachMetadata(component);
+        object->AttachMetadata(component);
     }
     return ec;
 }
@@ -75,4 +71,4 @@ AutoPtr<IClassLoader> CoGetBootClassLoader()
     return CBootClassLoader::GetInstance();
 }
 
-}
+} // namespace como

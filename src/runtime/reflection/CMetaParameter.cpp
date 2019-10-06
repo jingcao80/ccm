@@ -17,7 +17,7 @@
 #include "CMetaParameter.h"
 #include "CMetaType.h"
 
-namespace ccm {
+namespace como {
 
 COMO_INTERFACE_IMPL_LIGHT_1(CMetaParameter, LightRefBase, IMetaParameter)
 
@@ -38,7 +38,7 @@ CMetaParameter::CMetaParameter(
     , mName(mp->mName)
     , mIndex(index)
 {
-    mIOAttr = BuildIOAttribute(mp->mAttribute);
+    mIOAttr = BuildIOAttribute(mp->mProperties);
     mType = new CMetaType(mc, mc->mTypes[mp->mTypeIndex]);
 }
 
@@ -49,68 +49,60 @@ CMetaParameter::~CMetaParameter()
 }
 
 ECode CMetaParameter::GetMethod(
-    /* [out] */ IMetaMethod** method)
+    /* [out] */ AutoPtr<IMetaMethod>& method)
 {
-    VALIDATE_NOT_NULL(method);
-
-    *method = mOwner;
-    REFCOUNT_ADD(*method);
+    method = mOwner;
     return NOERROR;
 }
 
 ECode CMetaParameter::GetName(
-    /* [out] */ String* name)
+    /* [out] */ String& name)
 {
-    VALIDATE_NOT_NULL(name);
-
-    *name = mName;
+    name = mName;
     return NOERROR;
 }
 
 ECode CMetaParameter::GetIndex(
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
-    VALIDATE_NOT_NULL(index);
-
-    *index = mIndex;
+    index = mIndex;
     return NOERROR;
 }
 
 ECode CMetaParameter::GetIOAttribute(
-    /* [out] */ IOAttribute* attr)
+    /* [out] */ IOAttribute& attr)
 {
-    VALIDATE_NOT_NULL(attr);
-
-    *attr = mIOAttr;
+    attr = mIOAttr;
     return NOERROR;
 }
 
 ECode CMetaParameter::GetType(
-    /* [out] */ IMetaType** type)
+    /* [out] */ AutoPtr<IMetaType>& type)
 {
-    VALIDATE_NOT_NULL(type);
-
-    *type = mType;
-    REFCOUNT_ADD(*type);
+    type = mType;
     return NOERROR;
 }
 
 IOAttribute CMetaParameter::BuildIOAttribute(
-    /* [in] */ Integer attr)
+    /* [in] */ unsigned char properties)
 {
-    if (attr == IN) {
-        return IOAttribute::IN;
+    if (properties & PARAMETER_IN) {
+        if (properties & PARAMETER_OUT) {
+            return IOAttribute::IN_OUT;
+        }
+        else {
+            return IOAttribute::IN;
+        }
     }
-    else if (attr == OUT) {
-        return IOAttribute::OUT;
-    }
-    else if (attr == IN | OUT) {
-        return IOAttribute::IN_OUT;
-    }
-    else if (attr == OUT | CALLEE) {
-        return IOAttribute::OUT_CALLEE;
+    else if (properties & PARAMETER_OUT) {
+        if (properties & PARAMETER_CALLEE) {
+            return IOAttribute::OUT_CALLEE;
+        }
+        else {
+            return IOAttribute::OUT;
+        }
     }
     return IOAttribute::UNKNOWN;
 }
 
-}
+} // namespace como

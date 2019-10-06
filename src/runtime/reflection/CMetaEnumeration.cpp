@@ -18,7 +18,7 @@
 #include "CMetaEnumeration.h"
 #include "CMetaEnumerator.h"
 
-namespace ccm {
+namespace como {
 
 COMO_INTERFACE_IMPL_LIGHT_1(CMetaEnumeration, LightRefBase, IMetaEnumeration);
 
@@ -40,39 +40,30 @@ CMetaEnumeration::~CMetaEnumeration()
 }
 
 ECode CMetaEnumeration::GetComponent(
-    /* [out] */ IMetaComponent** metaComp)
+    /* [out] */ AutoPtr<IMetaComponent>& metaComp)
 {
-    VALIDATE_NOT_NULL(metaComp);
-
-    *metaComp = mOwner;
-    REFCOUNT_ADD(*metaComp);
+    metaComp = mOwner;
     return NOERROR;
 }
 
 ECode CMetaEnumeration::GetName(
-    /* [out] */ String* name)
+    /* [out] */ String& name)
 {
-    VALIDATE_NOT_NULL(name);
-
-    *name = mName;
+    name = mName;
     return NOERROR;
 }
 
 ECode CMetaEnumeration::GetNamespace(
-    /* [out] */ String* ns)
+    /* [out] */ String& ns)
 {
-    VALIDATE_NOT_NULL(ns);
-
-    *ns = mNamespace;
+    ns = mNamespace;
     return NOERROR;
 }
 
 ECode CMetaEnumeration::GetEnumeratorNumber(
-    /* [out] */ Integer* number)
+    /* [out] */ Integer& number)
 {
-    VALIDATE_NOT_NULL(number);
-
-    *number = mMetadata->mEnumeratorNumber;
+    number = mMetadata->mEnumeratorNumber;
     return NOERROR;
 }
 
@@ -94,26 +85,23 @@ ECode CMetaEnumeration::GetAllEnumerators(
 
 ECode CMetaEnumeration::GetEnumerator(
     /* [in] */ const String& name,
-    /* [out] */ IMetaEnumerator** metaEnumr)
+    /* [out] */ AutoPtr<IMetaEnumerator>& metaEnumr)
 {
-    VALIDATE_NOT_NULL(metaEnumr);
-
-    if (name.IsNullOrEmpty() || mMetaEnumerators.IsEmpty()) {
-        *metaEnumr = nullptr;
+    if (name.IsEmpty() || mMetaEnumerators.IsEmpty()) {
+        metaEnumr = nullptr;
         return NOERROR;
     }
 
     for (Integer i = 0; i < mMetaEnumerators.GetLength(); i++) {
         String enumrName;
-        mMetaEnumerators[i]->GetName(&enumrName);
+        mMetaEnumerators[i]->GetName(enumrName);
         if (enumrName.Equals(name)) {
-            *metaEnumr = mMetaEnumerators[i];
-            REFCOUNT_ADD(*metaEnumr);
+            metaEnumr = mMetaEnumerators[i];
             return NOERROR;
         }
     }
 
-    *metaEnumr = nullptr;
+    metaEnumr = nullptr;
     return NOERROR;
 }
 
@@ -132,4 +120,4 @@ void CMetaEnumeration::BuildAllEnumerators()
     }
 }
 
-}
+} // namespace como

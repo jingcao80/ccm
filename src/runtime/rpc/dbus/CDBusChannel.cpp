@@ -18,7 +18,7 @@
 #include "CDBusChannel.h"
 #include "CDBusParcel.h"
 #include "InterfacePack.h"
-#include "util/ccmlogger.h"
+#include "util/comolog.h"
 
 namespace ccm {
 

@@ -17,7 +17,7 @@
 #include "CMetaEnumeration.h"
 #include "CMetaEnumerator.h"
 
-namespace ccm {
+namespace como {
 
 COMO_INTERFACE_IMPL_LIGHT_1(CMetaEnumerator, LightRefBase, IMetaEnumerator)
 
@@ -37,31 +37,24 @@ CMetaEnumerator::~CMetaEnumerator()
 }
 
 ECode CMetaEnumerator::GetEnumeration(
-    /* [out] */ IMetaEnumeration** metaEnumn)
+    /* [out] */ AutoPtr<IMetaEnumeration>& metaEnumn)
 {
-    VALIDATE_NOT_NULL(metaEnumn);
-
-    *metaEnumn = (IMetaEnumeration*)mOwner;
-    REFCOUNT_ADD(*metaEnumn);
+    metaEnumn = (IMetaEnumeration*)mOwner;
     return NOERROR;
 }
 
 ECode CMetaEnumerator::GetName(
-    /* [out] */ String* name)
+    /* [out] */ String& name)
 {
-    VALIDATE_NOT_NULL(name);
-
-    *name = mName;
+    name = mName;
     return NOERROR;
 }
 
 ECode CMetaEnumerator::GetValue(
-    /* [out] */ Integer* value)
+    /* [out] */ Integer& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = mValue;
+    value = mValue;
     return NOERROR;
 }
 
-}
+} // namespace como

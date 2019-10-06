@@ -15,25 +15,23 @@
 //=========================================================================
 
 #include "CBootClassLoader.h"
-#include "reflection/ccmreflectionapi.h"
-#include "reflection/CMetaComponent.h"
 #include "metadata/Component.h"
-#include "util/ccmlogger.h"
+#include "reflection/comoreflapi.h"
+#include "reflection/CMetaComponent.h"
+#include "util/comolog.h"
 #include "util/elf.h"
+#include <cerrno>
+#include <cstdio>
 #include <dlfcn.h>
-#include <errno.h>
-#include <stdio.h>
 #include <unistd.h>
 
-using ccm::metadata::MetaComponent;
-
-namespace ccm {
+namespace como {
 
 const CoclassID CID_CBootClassLoader =
         {{0x861efebf,0x54c8,0x4939,0xa2ab,{0x4,0xb,0xa,0xc,0xf,0x2,0xc,0xa,0xf,0xa,0x1,0xe}}, &CID_COMORuntime};
 
-AutoPtr<IClassLoader> CBootClassLoader::sInstance = new CBootClassLoader();
 const String CBootClassLoader::TAG("CBootClassLoader");
+AutoPtr<IClassLoader> CBootClassLoader::sInstance = new CBootClassLoader();
 
 COMO_OBJECT_IMPL(CBootClassLoader);
 COMO_INTERFACE_IMPL_1(CBootClassLoader, Object, IClassLoader);
@@ -51,17 +49,13 @@ AutoPtr<IClassLoader> CBootClassLoader::GetInstance()
 
 ECode CBootClassLoader::LoadComponent(
     /* [in] */ const String& path,
-    /* [out] */ IMetaComponent** component)
+    /* [out] */ AutoPtr<IMetaComponent>& component)
 {
-    VALIDATE_NOT_NULL(component);
-    *component = nullptr;
-
     {
         Mutex::AutoLock lock(mComponentsLock);
         IMetaComponent* mc = mComponentPathMap.Get(path);
         if (mc != nullptr) {
-            *component = mc;
-            REFCOUNT_ADD(*component);
+            component = mc;
             return NOERROR;
         }
     }
@@ -70,6 +64,7 @@ ECode CBootClassLoader::LoadComponent(
     if (handle == nullptr) {
         Logger::E(TAG, "Dlopen \"%s\" failed. The reason is %s.",
                 path.string(), strerror(errno));
+        component = nullptr;
         return E_COMPONENT_IO_EXCEPTION;
     }
 
@@ -79,8 +74,7 @@ ECode CBootClassLoader::LoadComponent(
         Mutex::AutoLock lock(mComponentsLock);
         IMetaComponent* mc = mComponentPathMap.Get(path);
         if (mc != nullptr) {
-            *component = mc;
-            REFCOUNT_ADD(*component);
+            component = mc;
             return NOERROR;
         }
     }
@@ -89,16 +83,17 @@ ECode CBootClassLoader::LoadComponent(
             reinterpret_cast<HANDLE>(handle), this, component);
     if (FAILED(ec)) {
         dlclose(handle);
+        component = nullptr;
         return ec;
     }
 
     ComponentID compId;
-    (*component)->GetComponentID(&compId);
+    component->GetComponentID(compId);
 
     {
         Mutex::AutoLock lock(mComponentsLock);
-        mComponents.Put(compId.mUuid, *component);
-        mComponentPathMap.Put(path, *component);
+        mComponents.Put(compId.mUuid, component);
+        mComponentPathMap.Put(path, component);
     }
 
     return NOERROR;
@@ -106,24 +101,21 @@ ECode CBootClassLoader::LoadComponent(
 
 ECode CBootClassLoader::LoadComponent(
     /* [in] */ const ComponentID& compId,
-    /* [out] */ IMetaComponent** component)
+    /* [out] */ AutoPtr<IMetaComponent>& component)
 {
-    VALIDATE_NOT_NULL(component);
-    *component = nullptr;
-
     {
         Mutex::AutoLock lock(mComponentsLock);
         IMetaComponent* mc = mComponents.Get(compId.mUuid);
         if (mc != nullptr) {
-            *component = mc;
-            REFCOUNT_ADD(*component);
+            component = mc;
             return NOERROR;
         }
     }
 
     String compPath;
-    ECode ec = FindComponent(compId, &compPath);
+    ECode ec = FindComponent(compId, compPath);
     if (FAILED(ec)) {
+        component = nullptr;
         return ec;
     }
 
@@ -131,6 +123,7 @@ ECode CBootClassLoader::LoadComponent(
     if (handle == nullptr) {
         Logger::E(TAG, "Dlopen \"%s\" failed. The reason is %s.",
                 compPath.string(), strerror(errno));
+        component = nullptr;
         return E_COMPONENT_IO_EXCEPTION;
     }
 
@@ -140,8 +133,7 @@ ECode CBootClassLoader::LoadComponent(
         Mutex::AutoLock lock(mComponentsLock);
         IMetaComponent* mc = mComponents.Get(compId.mUuid);
         if (mc != nullptr) {
-            *component = mc;
-            REFCOUNT_ADD(*component);
+            component = mc;
             return NOERROR;
         }
     }
@@ -150,13 +142,14 @@ ECode CBootClassLoader::LoadComponent(
             reinterpret_cast<HANDLE>(handle), this, component);
     if (FAILED(ec)) {
         dlclose(handle);
+        component = nullptr;
         return ec;
     }
 
     {
         Mutex::AutoLock lock(mComponentsLock);
-        mComponents.Put(compId.mUuid, *component);
-        mComponentPathMap.Put(compPath, *component);
+        mComponents.Put(compId.mUuid, component);
+        mComponentPathMap.Put(compPath, component);
     }
 
     return NOERROR;
@@ -164,21 +157,19 @@ ECode CBootClassLoader::LoadComponent(
 
 ECode CBootClassLoader::FindComponent(
     /* [in] */ const ComponentID& compId,
-    /* [out] */ String* compPath)
+    /* [out] */ String& compPath)
 {
-    VALIDATE_NOT_NULL(compPath);
-
-    String url(compId.mUrl);
-    *compPath = nullptr;
+    String uri(compId.mUri);
     if (mDebug) {
-        Logger::D(TAG, "The url of the component which will be loaded is \"%s\".",
-                url.string());
+        Logger::D(TAG, "The uri of the component which will be loaded is \"%s\".",
+                uri.string());
     }
 
-    Integer index = url.LastIndexOf("/");
-    String compFile = index != -1 ? url.Substring(index + 1) : url;
-    if (compFile.IsNullOrEmpty()) {
+    Integer index = uri.LastIndexOf("/");
+    String compFile = index != -1 ? uri.Substring(index + 1) : uri;
+    if (compFile.IsEmpty()) {
         Logger::E(TAG, "The name of component is null or empty.");
+        compPath = nullptr;
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
@@ -191,20 +182,20 @@ ECode CBootClassLoader::FindComponent(
                 Logger::D(TAG, "Find \"%\" component in directory \"%s\".",
                         compFile.string(), mComponentPath.Get(i).string());
             }
-            *compPath = filePath;
+            compPath = filePath;
             break;
         }
     }
     if (fd == nullptr) {
         Logger::E(TAG, "Cannot find \"%s\" component.", compFile.string());
-        *compPath = nullptr;
+        compPath = nullptr;
         return E_COMPONENT_NOT_FOUND_EXCEPTION;
     }
 
     if (fseek(fd, 0, SEEK_SET) == -1) {
         Logger::E(TAG, "Seek \"%s\" file failed.", compFile.string());
         fclose(fd);
-        *compPath = nullptr;
+        compPath = nullptr;
         return E_COMPONENT_IO_EXCEPTION;
     }
 
@@ -213,14 +204,14 @@ ECode CBootClassLoader::FindComponent(
     if (fread((void *)&ehdr, sizeof(Elf64_Ehdr), 1, fd) < 1) {
         Logger::E(TAG, "Read \"%s\" file failed.", compFile.string());
         fclose(fd);
-        *compPath = nullptr;
+        compPath = nullptr;
         return E_COMPONENT_IO_EXCEPTION;
     }
 
     if (fseek(fd, ehdr.e_shoff, SEEK_SET) == -1) {
         Logger::E(TAG, "Seek \"%s\" file failed.", compFile.string());
         fclose(fd);
-        *compPath = nullptr;
+        compPath = nullptr;
         return E_COMPONENT_IO_EXCEPTION;
     }
 
@@ -228,7 +219,7 @@ ECode CBootClassLoader::FindComponent(
     if (shdrs == nullptr) {
         Logger::E(TAG, "Malloc Elf64_Shdr failed.");
         fclose(fd);
-        *compPath = nullptr;
+        compPath = nullptr;
         return E_COMPONENT_IO_EXCEPTION;
     }
 
@@ -236,7 +227,7 @@ ECode CBootClassLoader::FindComponent(
         Logger::E(TAG, "Read \"%s\" file failed.", compFile.string());
         free(shdrs);
         fclose(fd);
-        *compPath = nullptr;
+        compPath = nullptr;
         return E_COMPONENT_IO_EXCEPTION;
     }
 
@@ -246,7 +237,7 @@ ECode CBootClassLoader::FindComponent(
         Logger::E(TAG, "Malloc string table failed.");
         free(shdrs);
         fclose(fd);
-        *compPath = nullptr;
+        compPath = nullptr;
         return E_OUT_OF_MEMORY_ERROR;
     }
 
@@ -255,7 +246,7 @@ ECode CBootClassLoader::FindComponent(
         free(shdrs);
         free(strTable);
         fclose(fd);
-        *compPath = nullptr;
+        compPath = nullptr;
         return E_COMPONENT_IO_EXCEPTION;
     }
 
@@ -264,7 +255,7 @@ ECode CBootClassLoader::FindComponent(
         free(shdrs);
         free(strTable);
         fclose(fd);
-        *compPath = nullptr;
+        compPath = nullptr;
         return E_COMPONENT_IO_EXCEPTION;
     }
 
@@ -282,7 +273,7 @@ ECode CBootClassLoader::FindComponent(
         free(shdrs);
         free(strTable);
         fclose(fd);
-        *compPath = nullptr;
+        compPath = nullptr;
         return E_COMPONENT_IO_EXCEPTION;
     }
 
@@ -291,7 +282,7 @@ ECode CBootClassLoader::FindComponent(
         free(shdrs);
         free(strTable);
         fclose(fd);
-        *compPath = nullptr;
+        compPath = nullptr;
         return E_COMPONENT_IO_EXCEPTION;
     }
 
@@ -303,19 +294,18 @@ ECode CBootClassLoader::FindComponent(
     if (fread((void*)&metadata, sizeof(MetaComponent), 1, fd) < 1) {
         Logger::E(TAG, "Read \"%s\" file failed.", compFile.string());
         fclose(fd);
-        *compPath = nullptr;
+        compPath = nullptr;
         return E_COMPONENT_IO_EXCEPTION;
     }
 
     fclose(fd);
 
-    if (memcmp(&metadata.mUuid, &compId.mUuid, sizeof(Uuid)) == 0) {
-        return NOERROR;
-    }
-    else {
-        *compPath = nullptr;
+    if (memcmp(&metadata.mUuid, &compId.mUuid, sizeof(UUID)) != 0) {
+        compPath = nullptr;
         return E_COMPONENT_NOT_FOUND_EXCEPTION;
     }
+
+    return NOERROR;
 }
 
 ECode CBootClassLoader::UnloadComponent(
@@ -323,14 +313,16 @@ ECode CBootClassLoader::UnloadComponent(
 {
     Mutex::AutoLock lock(mComponentsLock);
     CMetaComponent* mcObj = (CMetaComponent*)mComponents.Get(compId.mUuid);
-    if (mcObj == nullptr) return E_COMPONENT_NOT_FOUND_EXCEPTION;
+    if (mcObj == nullptr) {
+        return E_COMPONENT_NOT_FOUND_EXCEPTION;
+    }
     Boolean canUnload;
-    mcObj->CanUnload(&canUnload);
+    mcObj->CanUnload(canUnload);
     if (canUnload) {
         int ret = dlclose(mcObj->mComponent->mSoHandle);
         if (ret == 0) {
             mComponents.Remove(compId.mUuid);
-            mComponentPathMap.Remove(mcObj->mUrl);
+            mComponentPathMap.Remove(mcObj->mUri);
             return NOERROR;
         }
     }
@@ -339,10 +331,8 @@ ECode CBootClassLoader::UnloadComponent(
 
 ECode CBootClassLoader::LoadCoclass(
     /* [in] */ const String& fullName,
-    /* [out] */ IMetaCoclass** klass)
+    /* [out] */ AutoPtr<IMetaCoclass>& klass)
 {
-    VALIDATE_NOT_NULL(klass);
-
     Array<IMetaComponent*> components;
     {
         Mutex::AutoLock lock(mComponentsLock);
@@ -350,18 +340,18 @@ ECode CBootClassLoader::LoadCoclass(
     }
     for (Integer i = 0; i < components.GetLength(); i++) {
         components[i]->GetCoclass(fullName, klass);
-        if (*klass != nullptr) return NOERROR;
+        if (klass != nullptr) {
+            return NOERROR;
+        }
     }
-    *klass = nullptr;
+    klass = nullptr;
     return E_CLASS_NOT_FOUND_EXCEPTION;
 }
 
 ECode CBootClassLoader::LoadInterface(
     /* [in] */ const String& fullName,
-    /* [out] */ IMetaInterface** intf)
+    /* [out] */ AutoPtr<IMetaInterface>& intf)
 {
-    VALIDATE_NOT_NULL(intf);
-
     Array<IMetaComponent*> components;
     {
         Mutex::AutoLock lock(mComponentsLock);
@@ -369,32 +359,34 @@ ECode CBootClassLoader::LoadInterface(
     }
     for (Integer i = 0; i < components.GetLength(); i++) {
         components[i]->GetInterface(fullName, intf);
-        if (*intf != nullptr) return NOERROR;
+        if (intf != nullptr) {
+            return NOERROR;
+        }
     }
-    *intf = nullptr;
+    intf = nullptr;
     return E_INTERFACE_NOT_FOUND_EXCEPTION;
 }
 
 ECode CBootClassLoader::GetParent(
-    /* [out] */ IClassLoader** parent)
+    /* [out] */ AutoPtr<IClassLoader>& parent)
 {
-    VALIDATE_NOT_NULL(parent);
-
-    *parent = nullptr;
+    parent = nullptr;
     return NOERROR;
 }
 
 void CBootClassLoader::InitComponentPath()
 {
     String cpath(getenv("COMPONENT_PATH"));
-    if (!cpath.IsNullOrEmpty()) {
+    if (!cpath.IsEmpty()) {
         Integer index = cpath.IndexOf(":");
         while (index != -1) {
             mComponentPath.Add(cpath.Substring(0, index - 1));
             cpath = cpath.Substring(index + 1);
             index = cpath.IndexOf(":");
         }
-        if (!cpath.IsNullOrEmpty()) mComponentPath.Add(cpath);
+        if (!cpath.IsEmpty()) {
+            mComponentPath.Add(cpath);
+        }
     }
     else {
         char* cwd = getcwd(nullptr, 0);
@@ -403,4 +395,4 @@ void CBootClassLoader::InitComponentPath()
     }
 }
 
-}
+} // namespace como

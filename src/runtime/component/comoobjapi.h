@@ -14,30 +14,27 @@
 // limitations under the License.
 //=========================================================================
 
-#include "comoclassobject.h"
+#ifndef __COMO_COMOOBJECTAPI_H__
+#define __COMO_COMOOBJECTAPI_H__
+
+#include "comotypes.h"
+#include "comoptr.h"
 
 namespace como {
 
-COMO_INTERFACE_IMPL_1(ClassObject, Object, IClassObject);
+EXTERN_C COM_PUBLIC ECode CoCreateObjectInstance(
+    /* [in] */ const CoclassID& cid,
+    /* [in] */ const InterfaceID& iid,
+    /* [in] */ IClassLoader* loader,
+    /* [out] */ AutoPtr<IInterface>& object);
 
-ClassObject::ClassObject()
-    : mComponent(nullptr)
-{}
+EXTERN_C COM_PUBLIC ECode CoAcquireClassFactory(
+    /* [in] */ const CoclassID& cid,
+    /* [in] */ IClassLoader* loader,
+    /* [out] */ AutoPtr<IClassObject>& object);
 
-ECode ClassObject::AttachMetadata(
-    /* [in] */ IMetaComponent* component)
-{
-    if (mComponent != component) {
-        mComponent = component;
-    }
-    return NOERROR;
-}
-
-ECode ClassObject::GetMetadate(
-    /* [out] */ AutoPtr<IMetaComponent>& component)
-{
-    component = mComponent;
-    return NOERROR;
-}
+EXTERN_C COM_PUBLIC AutoPtr<IClassLoader> CoGetBootClassLoader();
 
 } // namespace como
+
+#endif // __COMO_COMOOBJECTAPI_H__

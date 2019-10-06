@@ -33,10 +33,10 @@
 #ifndef __CCM_CPROXY_H__
 #define __CCM_CPROXY_H__
 
-#include "reflection/ccmreflectionapi.h"
+#include "reflection/comoreflapi.h"
 #include "type/ccmarray.h"
-#include "util/ccmautoptr.h"
-#include "util/ccmobject.h"
+#include "util/comoptr.h"
+#include "util/comoobj.h"
 
 namespace ccm {
 

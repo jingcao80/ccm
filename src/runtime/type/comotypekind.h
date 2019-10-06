@@ -41,6 +41,7 @@ enum class TypeKind
     Interface,
     Coclass,
     Triple,
+    TypeKind,
 };
 
 } // namespace como

@@ -14,27 +14,30 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CCMOBJECTAPI_H__
-#define __CCM_CCMOBJECTAPI_H__
+#include "comolock.h"
 
-#include "ccmtypes.h"
-#include "ccmautoptr.h"
+namespace como {
 
-namespace ccm {
+void Spinlock::Lock()
+{
+    if (mLocked.exchange(true, std::memory_order_acquire)) {
+        // Lock was contended.  Fall back to an out-of-line spin loop.
+        while (mLocked.exchange(true, std::memory_order_acquire)) {
+        }
+    }
+}
 
-EXTERN_C COM_PUBLIC ECode CoCreateObjectInstance(
-    /* [in] */ const CoclassID& cid,
-    /* [in] */ const InterfaceID& iid,
-    /* [in] */ IClassLoader* loader,
-    /* [out] */ IInterface** object);
+Boolean Spinlock::TryLock()
+{
+    if (mLocked.exchange(true, std::memory_order_acquire)) {
+        return false;
+    }
+    return true;
+}
 
-EXTERN_C COM_PUBLIC ECode CoAcquireClassFactory(
-    /* [in] */ const CoclassID& cid,
-    /* [in] */ IClassLoader* loader,
-    /* [out] */ IClassObject** object);
+void Spinlock::Unlock()
+{
+    mLocked.store(false, std::memory_order_release);
+}
 
-EXTERN_C COM_PUBLIC AutoPtr<IClassLoader> CoGetBootClassLoader();
-
-} // namespace ccm
-
-#endif // __CCM_CCMOBJECTAPI_H__
+} // namespace como

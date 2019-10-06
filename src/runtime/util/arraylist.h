@@ -18,7 +18,7 @@
 #define __COMO_ARRAYLIST_H__
 
 #include "comotypes.h"
-#include "comologger.h"
+#include "comolog.h"
 #include <cstdlib>
 
 namespace como {

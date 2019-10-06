@@ -30,8 +30,8 @@
  * limitations under the License.
  */
 
-#include "comologger.h"
-#include "comorefbase.h"
+#include "comolog.h"
+#include "comoref.h"
 #include "mutex.h"
 
 #include <assert.h>

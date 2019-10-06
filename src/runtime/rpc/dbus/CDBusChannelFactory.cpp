@@ -22,7 +22,7 @@
 #include "CStub.h"
 #include "InterfacePack.h"
 #include "registry.h"
-#include "util/ccmautoptr.h"
+#include "util/comoptr.h"
 
 namespace ccm {
 

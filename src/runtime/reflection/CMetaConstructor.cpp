@@ -20,11 +20,9 @@
 #include "CMetaConstructor.h"
 #include "CMetaInterface.h"
 #include "CMetaParameter.h"
-#include "ccmobjectapi.h"
+#include "comoobjapi.h"
 
-using ccm::metadata::MetaParameter;
-
-namespace ccm {
+namespace como {
 
 EXTERN_C ECode invoke(
     /* [in] */ HANDLE func,
@@ -48,7 +46,7 @@ CMetaConstructor::CMetaConstructor(
     , mIndex(index)
     , mName("Constructor")
     , mSignature(mm->mSignature)
-    , mIsDefault(mcObj->mMetadata->mConstructorDefault)
+    , mIsDefault(mcObj->mMetadata->mProperties & COCLASS_CONSTRUCTOR_DEFAULT)
     , mParameters(mm->mParameterNumber)
 {}
 
@@ -59,38 +57,30 @@ CMetaConstructor::~CMetaConstructor()
 }
 
 ECode CMetaConstructor::GetInterface(
-    /* [out] */ IMetaInterface** intf)
+    /* [out] */ AutoPtr<IMetaInterface>& intf)
 {
-    VALIDATE_NOT_NULL(intf);
-
-    *intf = nullptr;
+    intf = nullptr;
     return NOERROR;
 }
 
 ECode CMetaConstructor::GetName(
-    /* [out] */ String* name)
+    /* [out] */ String& name)
 {
-    VALIDATE_NOT_NULL(name);
-
-    *name = mName;
+    name = mName;
     return NOERROR;
 }
 
 ECode CMetaConstructor::GetSignature(
-    /* [out] */ String* signature)
+    /* [out] */ String& signature)
 {
-    VALIDATE_NOT_NULL(signature);
-
-    *signature = mSignature;
+    signature = mSignature;
     return NOERROR;
 }
 
 ECode CMetaConstructor::GetParameterNumber(
-    /* [out] */ Integer* number)
+    /* [out] */ Integer& number)
 {
-    VALIDATE_NOT_NULL(number);
-
-    *number = mMetadata->mParameterNumber;
+    number = mMetadata->mParameterNumber;
     return NOERROR;
 }
 
@@ -108,61 +98,50 @@ ECode CMetaConstructor::GetAllParameters(
 
 ECode CMetaConstructor::GetParameter(
     /* [in] */ Integer index,
-    /* [out] */ IMetaParameter** param)
+    /* [out] */ AutoPtr<IMetaParameter>& param)
 {
-    VALIDATE_NOT_NULL(param);
-
     if (index < 0 || index > mParameters.GetLength()) {
-        *param = nullptr;
+        param = nullptr;
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    *param = mParameters[index];
-    REFCOUNT_ADD(*param);
+    param = mParameters[index];
     return NOERROR;
 }
 
 ECode CMetaConstructor::GetParameter(
     /* [in] */ const String& name,
-    /* [out] */ IMetaParameter** param)
+    /* [out] */ AutoPtr<IMetaParameter>& param)
 {
-    VALIDATE_NOT_NULL(param);
-
-    if (name.IsNullOrEmpty()) {
-        *param = nullptr;
+    if (name.IsEmpty()) {
+        param = nullptr;
         return NOERROR;
     }
 
     for (Integer i = 0; i < mParameters.GetLength(); i++) {
         String mpName;
-        mParameters[i]->GetName(&mpName);
+        mParameters[i]->GetName(mpName);
         if (mpName.Equals(name)) {
-            *param = mParameters[i];
-            REFCOUNT_ADD(*param);
+            param = mParameters[i];
             return NOERROR;
         }
     }
-    *param = nullptr;
+    param = nullptr;
     return NOERROR;
 }
 
 ECode CMetaConstructor::HasOutArguments(
-    /* [out] */ Boolean* outArgs)
+    /* [out] */ Boolean& outArgs)
 {
-    VALIDATE_NOT_NULL(outArgs);
-
-    *outArgs = false;
+    outArgs = false;
     return NOERROR;
 }
 
 ECode CMetaConstructor::CreateArgumentList(
-    /* [out] */ IArgumentList** argList)
+    /* [out] */ AutoPtr<IArgumentList>& argList)
 {
-    VALIDATE_NOT_NULL(argList);
-
-    AutoPtr<IArgumentList> args = new CArgumentList(
+    argList = new CArgumentList(
             mOwner->mOwner->mMetadata, mMetadata);
-    args.MoveTo(argList);
     return NOERROR;
 }
 
@@ -182,9 +161,9 @@ ECode CMetaConstructor::Invoke(
 
     CArgumentList* args = (CArgumentList*)argList;
     Integer intDataNum, fpDataNum, stkDataNum;
-    Long* intData = args->GetIntegerData(&intDataNum);
-    Double* fpData = args->GetFPData(&fpDataNum);
-    Long* stkData =  args->GetStackData(&stkDataNum);
+    Long* intData = args->GetIntegerData(intDataNum);
+    Double* fpData = args->GetFPData(fpDataNum);
+    Long* stkData =  args->GetStackData(stkDataNum);
     VObject* vobj = reinterpret_cast<VObject*>(thisObject->Probe(
             *reinterpret_cast<InterfaceID*>(&mClassObjectInterface->mUuid)));
     intData[0] = reinterpret_cast<Long>(vobj);
@@ -193,39 +172,34 @@ ECode CMetaConstructor::Invoke(
 }
 
 ECode CMetaConstructor::GetCoclass(
-    /* [out] */ IMetaCoclass** klass)
+    /* [out] */ AutoPtr<IMetaCoclass>& klass)
 {
-    VALIDATE_NOT_NULL(klass);
-
-    *klass = (IMetaCoclass*)mOwner;
-    REFCOUNT_ADD(*klass);
+    klass = (IMetaCoclass*)mOwner;
     return NOERROR;
 }
 
 ECode CMetaConstructor::IsDefault(
-    /* [out] */ Boolean* isDefault)
+    /* [out] */ Boolean& isDefault)
 {
-    VALIDATE_NOT_NULL(isDefault);
-
-    *isDefault = mIsDefault;
+    isDefault = mIsDefault;
     return NOERROR;
 }
 
 ECode CMetaConstructor::CreateObject(
     /* [in] */ IArgumentList* argList,
-    /* [out] */ IInterface** object)
+    /* [out] */ AutoPtr<IInterface>& object)
 {
-    VALIDATE_NOT_NULL(object);
-    *object = nullptr;
-
     AutoPtr<IClassObject> clsObj;
     ECode ec = CoAcquireClassFactory(mOwner->mCid,
-            mOwner->mOwner->mLoader, &clsObj);
-    if (FAILED(ec)) return ec;
+            mOwner->mOwner->mLoader, clsObj);
+    if (FAILED(ec)) {
+        object = nullptr;
+        return ec;
+    }
     argList->SetInputArgumentOfInterfaceID(
             mParameters.GetLength(), IID_IInterface);
     argList->SetOutputArgumentOfInterface(
-            mParameters.GetLength() + 1, reinterpret_cast<HANDLE>(object));
+            mParameters.GetLength() + 1, reinterpret_cast<HANDLE>(&object));
     return Invoke(clsObj, argList);
 }
 
@@ -241,4 +215,4 @@ void CMetaConstructor::BuildAllParameters()
     }
 }
 
-}
+} // namespace como

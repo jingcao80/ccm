@@ -31,7 +31,7 @@
  */
 
 #include "mutex.h"
-#include "comologger.h"
+#include "comolog.h"
 #include <limits>
 #include <errno.h>
 #include <time.h>

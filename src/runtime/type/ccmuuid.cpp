@@ -15,15 +15,15 @@
 //=========================================================================
 
 #include "ccmuuid.h"
-#include "ccmtypes.h"
+#include "comotypes.h"
 
 namespace ccm {
 
-COM_PUBLIC extern const Uuid UUID_ZERO =
+COM_PUBLIC extern const UUID UUID_ZERO =
         {0x00000000,0x0000,0x0000,0x0000,{0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0}};
 
 String DumpUuid(
-    /* [in] */ const Uuid& id)
+    /* [in] */ const UUID& id)
 {
     String uuidStr = String::Format("%08x-%04x-%04x-%04x-%x%x%x%x%x%x%x%x%x%x%x%x",
             id.mData1, id.mData2, id.mData3, id.mData4,
@@ -34,14 +34,14 @@ String DumpUuid(
 }
 
 Integer HashUuid(
-    /* [in] */ const Uuid& key)
+    /* [in] */ const UUID& key)
 {
     // BKDR Hash Function
     int seed = 31; // 31 131 1313 13131 131313 etc..
     unsigned int hash = 0;
 
     const char* string = reinterpret_cast<const char*>(&key);
-    for (int i = 0; i < sizeof(Uuid); i++) {
+    for (int i = 0; i < sizeof(UUID); i++) {
         hash = hash * seed + string[i];
     }
     return (hash & 0x7FFFFFFF);

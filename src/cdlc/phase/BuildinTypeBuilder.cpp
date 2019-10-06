@@ -23,6 +23,7 @@
 #include "ast/ComponentIDType.h"
 #include "ast/DoubleType.h"
 #include "ast/ECodeType.h"
+#include "ast/EnumerationType.h"
 #include "ast/FloatType.h"
 #include "ast/HANDLEType.h"
 #include "ast/IntegerType.h"
@@ -114,6 +115,32 @@ void BuildinTypeBuilder::BuildPrimitiveType()
     // add ECodeType
     type = new ECodeType();
     ns->AddType(type);
+
+    // add TypeKind
+    AutoPtr<EnumerationType> typeKindType = new EnumerationType();
+    typeKindType->SetName("TypeKind");
+    typeKindType->AddEnumerator("Unknown", 0);
+    typeKindType->AddEnumerator("Char", 1);
+    typeKindType->AddEnumerator("Byte", 2);
+    typeKindType->AddEnumerator("Short", 3);
+    typeKindType->AddEnumerator("Integer", 4);
+    typeKindType->AddEnumerator("Long", 5);
+    typeKindType->AddEnumerator("Float", 6);
+    typeKindType->AddEnumerator("Double", 7);
+    typeKindType->AddEnumerator("Boolean", 8);
+    typeKindType->AddEnumerator("String", 9);
+    typeKindType->AddEnumerator("CoclassID", 10);
+    typeKindType->AddEnumerator("ComponentID", 11);
+    typeKindType->AddEnumerator("InterfaceID", 12);
+    typeKindType->AddEnumerator("HANDLE", 13);
+    typeKindType->AddEnumerator("ECode", 14);
+    typeKindType->AddEnumerator("Enum", 15);
+    typeKindType->AddEnumerator("Array", 16);
+    typeKindType->AddEnumerator("Interface", 17);
+    typeKindType->AddEnumerator("Coclass", 18);
+    typeKindType->AddEnumerator("Triple", 19);
+    typeKindType->AddEnumerator("TypeKind", 20);
+    ns->AddType(typeKindType);
 }
 
 void BuildinTypeBuilder::BuildIInterface()

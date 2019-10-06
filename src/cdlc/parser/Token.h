@@ -39,65 +39,66 @@ enum class Token
     SHORT,                  // 14)
     STRING,                 // 15)
     TRIPLE,                 // 16)
+    TYPEKIND,               // 17)
     // keywords
-    CALLEE,                 // 17)
-    COCLASS,                // 18)
-    CONST,                  // 19)
-    CONSTRUCTOR,            // 20)
-    DELETE,                 // 21)
-    DESCRIPTION,            // 22)
-    ENUM,                   // 23)
-    FALSE,                  // 24)
-    IN,                     // 25)
-    INCLUDE,                // 26)
-    INTERFACE,              // 27)
-    MODULE,                 // 28)
-    NAMESPACE,              // 29)
-    NULLPTR,                // 30)
-    OUT,                    // 31)
-    TRUE,                   // 32)
-    URI,                    // 33)
-    UUID,                   // 34)
-    VERSION,                // 35)
+    CALLEE,                 // 18)
+    COCLASS,                // 19)
+    CONST,                  // 20)
+    CONSTRUCTOR,            // 21)
+    DELETE,                 // 22)
+    DESCRIPTION,            // 23)
+    ENUM,                   // 24)
+    FALSE,                  // 25)
+    IN,                     // 26)
+    INCLUDE,                // 27)
+    INTERFACE,              // 28)
+    MODULE,                 // 29)
+    NAMESPACE,              // 30)
+    NULLPTR,                // 31)
+    OUT,                    // 32)
+    TRUE,                   // 33)
+    URI,                    // 34)
+    UUID,                   // 35)
+    VERSION,                // 36)
     // symbols
-    AMPERSAND,              // 36)  '&'
-    ANGLE_BRACKETS_OPEN,    // 37)  '<'
-    ANGLE_BRACKETS_CLOSE,   // 38)  '>'
-    ASSIGNMENT,             // 39)  '='
-    ASTERISK,               // 40)  '*'
-    BRACES_OPEN,            // 41)  '{'
-    BRACES_CLOSE,           // 42)  '}'
-    BRACKETS_OPEN,          // 43)  '['
-    BRACKETS_CLOSE,         // 44)  ']'
-    COLON,                  // 45)  ':'
-    COMMA,                  // 46)  ','
-    COMPLIMENT,             // 47)  '~'
-    DIVIDE,                 // 48)  '/'
-    END_OF_LINE,            // 49)  '\n'
-    EXCLUSIVE_OR,           // 50)  '^'
-    INCLUSIVE_OR,           // 51)  '|'
-    MINUS,                  // 52)  '-'
-    MODULO,                 // 53)  '%'
-    NOT,                    // 54)  '!'
-    PARENTHESES_OPEN,       // 55)  '('
-    PARENTHESES_CLOSE,      // 56)  ')'
-    PERIOD,                 // 57)  '.'
-    PLUS,                   // 58)  '+'
-    SEMICOLON,              // 59)  ';'
+    AMPERSAND,              // 37)  '&'
+    ANGLE_BRACKETS_OPEN,    // 38)  '<'
+    ANGLE_BRACKETS_CLOSE,   // 39)  '>'
+    ASSIGNMENT,             // 40)  '='
+    ASTERISK,               // 41)  '*'
+    BRACES_OPEN,            // 42)  '{'
+    BRACES_CLOSE,           // 43)  '}'
+    BRACKETS_OPEN,          // 44)  '['
+    BRACKETS_CLOSE,         // 45)  ']'
+    COLON,                  // 46)  ':'
+    COMMA,                  // 47)  ','
+    COMPLIMENT,             // 48)  '~'
+    DIVIDE,                 // 49)  '/'
+    END_OF_LINE,            // 50)  '\n'
+    EXCLUSIVE_OR,           // 51)  '^'
+    INCLUSIVE_OR,           // 52)  '|'
+    MINUS,                  // 53)  '-'
+    MODULO,                 // 54)  '%'
+    NOT,                    // 55)  '!'
+    PARENTHESES_OPEN,       // 56)  '('
+    PARENTHESES_CLOSE,      // 57)  ')'
+    PERIOD,                 // 58)  '.'
+    PLUS,                   // 59)  '+'
+    SEMICOLON,              // 60)  ';'
     // others
-    CHARACTER,              // 60)
-    COMMENT_BLOCK,          // 61)
-    COMMENT_LINE,           // 62)
-    END_OF_FILE,            // 63)
-    IDENTIFIER,             // 64)
-    NUMBER_INTEGRAL,        // 65)
-    NUMBER_FLOATINGPOINT,   // 66)
-    SHIFT_LEFT,             // 67)  "<<"
-    SHIFT_RIGHT,            // 68)  ">>"
-    SHIFT_RIGHT_UNSIGNED,   // 69)  ">>>"
-    STRING_LITERAL,         // 70)
-    UUID_NUMBER,            // 71)
-    VERSION_NUMBER,         // 72)
+    CHARACTER,              // 61)
+    COMMENT_BLOCK,          // 62)
+    COMMENT_LINE,           // 63)
+    END_OF_FILE,            // 64)
+    IDENTIFIER,             // 65)
+    NUMBER_INTEGRAL,        // 66)
+    NUMBER_FLOATINGPOINT,   // 67)
+    SHIFT_LEFT,             // 68)  "<<"
+    SHIFT_RIGHT,            // 69)  ">>"
+    SHIFT_RIGHT_UNSIGNED,   // 70)  ">>>"
+    STRING_LITERAL,         // 71)
+    UUID_NUMBER,            // 72)
+    VERSION_NUMBER,         // 73)
 };
 
 char Token2Char(

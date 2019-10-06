@@ -88,7 +88,7 @@ bool InterfaceType::IsInterfaceType()
 
 bool InterfaceType::IsBuildinType()
 {
-    return mName.Equals("IInterface");
+    return ToString().Equals("como::IInterface");
 }
 
 String InterfaceType::GetSignature()

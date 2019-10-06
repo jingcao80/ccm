@@ -45,10 +45,10 @@ add_library(reflection STATIC
     ${SOURCES})
 add_dependencies(reflection cdl)
 
-COPY(reflection ${REFLECTION_DIR}/ccmreflectionapi.h ${INC_DIR})
+COPY(reflection ${REFLECTION_DIR}/comoreflapi.h ${INC_DIR})
 
 set(DEPLOY_HEADERS
-    ${REFLECTION_DIR}/ccmreflectionapi.h)
+    ${REFLECTION_DIR}/comoreflapi.h)
 
 install(FILES
     ${DEPLOY_HEADERS}

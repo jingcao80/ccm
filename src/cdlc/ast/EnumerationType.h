@@ -57,6 +57,8 @@ public:
 
     bool IsEnumerationType() override;
 
+    bool IsBuildinType() override;
+
     String GetSignature() override;
 
     String ToString() override;

@@ -14,16 +14,16 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CSYSTEMCLASSLOADER_H__
-#define __CCM_CSYSTEMCLASSLOADER_H__
+#ifndef __COMO_CSYSTEMCLASSLOADER_H__
+#define __COMO_CSYSTEMCLASSLOADER_H__
 
 #include "arraylist.h"
-#include "ccmautoptr.h"
-#include "ccmobject.h"
+#include "comoptr.h"
+#include "comoobj.h"
 #include "util/hashmap.h"
 #include "util/mutex.h"
 
-namespace ccm {
+namespace como {
 
 extern const CoclassID CID_CSystemClassLoader;
 
@@ -41,25 +41,25 @@ public:
 
     ECode LoadComponent(
         /* [in] */ const String& path,
-        /* [out] */ IMetaComponent** component) override;
+        /* [out] */ AutoPtr<IMetaComponent>& component) override;
 
     ECode LoadComponent(
         /* [in] */ const ComponentID& compId,
-        /* [out] */ IMetaComponent** component) override;
+        /* [out] */ AutoPtr<IMetaComponent>& component) override;
 
     ECode UnloadComponent(
         /* [in] */ const ComponentID& compId) override;
 
     ECode LoadCoclass(
         /* [in] */ const String& fullName,
-        /* [out] */ IMetaCoclass** klass) override;
+        /* [out] */ AutoPtr<IMetaCoclass>& klass) override;
 
     ECode LoadInterface(
         /* [in] */ const String& fullName,
-        /* [out] */ IMetaInterface** intf) override;
+        /* [out] */ AutoPtr<IMetaInterface>& intf) override;
 
     ECode GetParent(
-        /* [out] */ IClassLoader** parent) override;
+        /* [out] */ AutoPtr<IClassLoader>& parent) override;
 
 private:
     CBootClassLoader();
@@ -68,18 +68,19 @@ private:
 
     ECode FindComponent(
         /* [in] */ const ComponentID& compId,
-        /* [out] */ String* compPath);
+        /* [out] */ String& compPath);
 
 private:
-    static AutoPtr<IClassLoader> sInstance;
     static const String TAG;
+    static AutoPtr<IClassLoader> sInstance;
+
     Boolean mDebug;
     ArrayList<String> mComponentPath;
-    HashMap<Uuid, IMetaComponent*> mComponents;
+    HashMap<UUID, IMetaComponent*> mComponents;
     HashMap<String, IMetaComponent*> mComponentPathMap;
     Mutex mComponentsLock;
 };
 
-}
+} // namespace como
 
-#endif // __CCM_CSYSTEMCLASSLOADER_H__
+#endif // __COMO_CSYSTEMCLASSLOADER_H__

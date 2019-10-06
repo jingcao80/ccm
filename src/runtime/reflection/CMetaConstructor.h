@@ -14,16 +14,13 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CMETACONSTRUCTOR_H__
-#define __CCM_CMETACONSTRUCTOR_H__
+#ifndef __COMO_CMETACONSTRUCTOR_H__
+#define __COMO_CMETACONSTRUCTOR_H__
 
-#include "ccmrefbase.h"
+#include "comoref.h"
 #include "Component.h"
 
-using ccm::metadata::MetaInterface;
-using ccm::metadata::MetaMethod;
-
-namespace ccm {
+namespace como {
 
 class CMetaCoclass;
 
@@ -43,47 +40,47 @@ public:
     COMO_INTERFACE_DECL();
 
     ECode GetInterface(
-        /* [out] */ IMetaInterface** intf);
+        /* [out] */ AutoPtr<IMetaInterface>& intf);
 
     ECode GetName(
-        /* [out] */ String* name);
+        /* [out] */ String& name);
 
     ECode GetSignature(
-        /* [out] */ String* signature);
+        /* [out] */ String& signature);
 
     ECode GetParameterNumber(
-        /* [out] */ Integer* number);
+        /* [out] */ Integer& number);
 
     ECode GetAllParameters(
         /* [out] */ Array<IMetaParameter*>& params);
 
     ECode GetParameter(
         /* [in] */ Integer index,
-        /* [out] */ IMetaParameter** param);
+        /* [out] */ AutoPtr<IMetaParameter>& param);
 
     ECode GetParameter(
         /* [in] */ const String& name,
-        /* [out] */ IMetaParameter** param);
+        /* [out] */ AutoPtr<IMetaParameter>& param);
 
     ECode HasOutArguments(
-        /* [out] */ Boolean* outArgs);
+        /* [out] */ Boolean& outArgs);
 
     ECode CreateArgumentList(
-        /* [out] */ IArgumentList** argList);
+        /* [out] */ AutoPtr<IArgumentList>& argList);
 
     ECode Invoke(
         /* [in] */ IInterface* thisObject,
         /* [in] */ IArgumentList* argList);
 
     ECode GetCoclass(
-        /* [out] */ IMetaCoclass** klass);
+        /* [out] */ AutoPtr<IMetaCoclass>& klass);
 
     ECode IsDefault(
-        /* [out] */ Boolean* isDefault);
+        /* [out] */ Boolean& isDefault);
 
     ECode CreateObject(
         /* [in] */ IArgumentList* argList,
-        /* [out] */ IInterface** object);
+        /* [out] */ AutoPtr<IInterface>& object);
 
 private:
     void BuildAllParameters();
@@ -99,6 +96,6 @@ public:
     Array<IMetaParameter*> mParameters;
 };
 
-}
+} // namespace como
 
-#endif // __CCM_CMETACONSTRUCTOR_H__
+#endif // __COMO_CMETACONSTRUCTOR_H__

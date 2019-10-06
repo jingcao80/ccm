@@ -573,7 +573,7 @@ struct HashFunc<UUID>
 } // namespace como
 
 #include "comoarray.h"
-#include "comoautoptr.h"
+#include "comoptr.h"
 #include "comointfs.h"
 
 #endif // __COMO_COMOTYPE_H__

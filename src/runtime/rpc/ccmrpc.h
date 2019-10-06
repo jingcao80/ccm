@@ -17,7 +17,7 @@
 #ifndef __CCM_CCMTYPES_H__
 #define __CCM_CCMTYPES_H__
 
-#include "ccmtypes.h"
+#include "comotypes.h"
 
 namespace ccm {
 

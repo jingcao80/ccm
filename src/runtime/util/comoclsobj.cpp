@@ -14,40 +14,30 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_COMPONENT_H__
-#define __CCM_COMPONENT_H__
+#include "comoclsobj.h"
 
-#include "ccmtypes.h"
+namespace como {
 
-namespace ccm {
+COMO_INTERFACE_IMPL_1(ClassObject, Object, IClassObject);
 
-typedef ECode (*GetterPtr)(IClassObject**);
+ClassObject::ClassObject()
+    : mComponent(nullptr)
+{}
 
-struct ClassObjectGetter
+ECode ClassObject::AttachMetadata(
+    /* [in] */ IMetaComponent* component)
 {
-    CoclassID   mCid;
-    GetterPtr   mGetter;
-};
+    if (mComponent != component) {
+        mComponent = component;
+    }
+    return NOERROR;
+}
 
-typedef ECode (*GetClassObjectPtr)(const CoclassID&, IClassObject**);
-typedef ClassObjectGetter* (*GetAllClassObjectsPtr)(int* size);
-typedef Boolean (*CanUnloadPtr)();
-
-struct MetadataWrapper
+ECode ClassObject::GetMetadate(
+    /* [out] */ AutoPtr<IMetaComponent>& component)
 {
-    int             mSize;
-    unsigned char   mMetadata[0];
-};
+    component = mComponent;
+    return NOERROR;
+}
 
-struct CcmComponent
-{
-    void*                   mSoHandle;
-    GetClassObjectPtr       mSoGetClassObject;
-    GetAllClassObjectsPtr   mSoGetAllClassObjects;
-    CanUnloadPtr            mSoCanUnload;
-    MetadataWrapper*        mMetadataWrapper;
-};
-
-} // namespace ccm
-
-#endif // __CCM_COMPONENT_H__
+} // namespace como

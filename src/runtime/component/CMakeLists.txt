@@ -24,19 +24,19 @@ include_directories(
     ${INC_DIR})
 
 set(SOURCES
-    ccmobjectapi.cpp
+    comoobjapi.cpp
     CBootClassLoader.cpp)
 
 add_library(component STATIC
     ${SOURCES})
 add_dependencies(component cdl)
 
-COPY(component ${COMPONENT_DIR}/ccmcomponent.h ${INC_DIR})
-COPY(component ${COMPONENT_DIR}/ccmobjectapi.h ${INC_DIR})
+COPY(component ${COMPONENT_DIR}/comocomp.h ${INC_DIR})
+COPY(component ${COMPONENT_DIR}/comoobjapi.h ${INC_DIR})
 
 set(DEPLOY_HEADERS
-    ${COMPONENT_DIR}/ccmcomponent.h
-    ${COMPONENT_DIR}/ccmobjectapi.h)
+    ${COMPONENT_DIR}/comocomp.h
+    ${COMPONENT_DIR}/comoobjapi.h)
 
 install(FILES
     ${DEPLOY_HEADERS}

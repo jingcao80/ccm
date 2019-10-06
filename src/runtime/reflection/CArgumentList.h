@@ -14,16 +14,13 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CARGUMENTLIST_H__
-#define __CCM_CARGUMENTLIST_H__
+#ifndef __COMO_CARGUMENTLIST_H__
+#define __COMO_CARGUMENTLIST_H__
 
-#include "ccmrefbase.h"
+#include "comoref.h"
 #include "Component.h"
 
-using ccm::metadata::MetaComponent;
-using ccm::metadata::MetaMethod;
-
-namespace ccm {
+namespace como {
 
 class CArgumentList
     : public LightRefBase
@@ -40,7 +37,7 @@ public:
 
     ECode GetInputArgumentOfByte(
         /* [in] */ Integer index,
-        /* [out] */ Byte* value);
+        /* [out] */ Byte& value);
 
     ECode SetInputArgumentOfByte(
         /* [in] */ Integer index,
@@ -48,7 +45,7 @@ public:
 
     ECode GetInputArgumentOfShort(
         /* [in] */ Integer index,
-        /* [out] */ Short* value);
+        /* [out] */ Short& value);
 
     ECode SetInputArgumentOfShort(
         /* [in] */ Integer index,
@@ -56,7 +53,7 @@ public:
 
     ECode GetInputArgumentOfInteger(
         /* [in] */ Integer index,
-        /* [out] */ Integer* value);
+        /* [out] */ Integer& value);
 
     ECode SetInputArgumentOfInteger(
         /* [in] */ Integer index,
@@ -64,7 +61,7 @@ public:
 
     ECode GetInputArgumentOfLong(
         /* [in] */ Integer index,
-        /* [out] */ Long* value);
+        /* [out] */ Long& value);
 
     ECode SetInputArgumentOfLong(
         /* [in] */ Integer index,
@@ -72,7 +69,7 @@ public:
 
     ECode GetInputArgumentOfFloat(
         /* [in] */ Integer index,
-        /* [out] */ Float* value);
+        /* [out] */ Float& value);
 
     ECode SetInputArgumentOfFloat(
         /* [in] */ Integer index,
@@ -80,7 +77,7 @@ public:
 
     ECode GetInputArgumentOfDouble(
         /* [in] */ Integer index,
-        /* [out] */ Double* value);
+        /* [out] */ Double& value);
 
     ECode SetInputArgumentOfDouble(
         /* [in] */ Integer index,
@@ -88,7 +85,7 @@ public:
 
     ECode GetInputArgumentOfChar(
         /* [in] */ Integer index,
-        /* [out] */ Char* value);
+        /* [out] */ Char& value);
 
     ECode SetInputArgumentOfChar(
         /* [in] */ Integer index,
@@ -96,7 +93,7 @@ public:
 
     ECode GetInputArgumentOfBoolean(
         /* [in] */ Integer index,
-        /* [out] */ Boolean* value);
+        /* [out] */ Boolean& value);
 
     ECode SetInputArgumentOfBoolean(
         /* [in] */ Integer index,
@@ -104,7 +101,7 @@ public:
 
     ECode GetInputArgumentOfString(
         /* [in] */ Integer index,
-        /* [out] */ String* value);
+        /* [out] */ String& value);
 
     ECode SetInputArgumentOfString(
         /* [in] */ Integer index,
@@ -112,7 +109,7 @@ public:
 
     ECode GetInputArgumentOfHANDLE(
         /* [in] */ Integer index,
-        /* [out] */ HANDLE* value);
+        /* [out] */ HANDLE& value);
 
     ECode SetInputArgumentOfHANDLE(
         /* [in] */ Integer index,
@@ -120,7 +117,7 @@ public:
 
     ECode GetInputArgumentOfECode(
         /* [in] */ Integer index,
-        /* [out] */ ECode* value);
+        /* [out] */ ECode& value);
 
     ECode SetInputArgumentOfECode(
         /* [in] */ Integer index,
@@ -128,7 +125,7 @@ public:
 
     ECode GetInputArgumentOfCoclassID(
         /* [in] */ Integer index,
-        /* [out] */ CoclassID* value);
+        /* [out] */ CoclassID& value);
 
     ECode SetInputArgumentOfCoclassID(
         /* [in] */ Integer index,
@@ -136,7 +133,7 @@ public:
 
     ECode GetInputArgumentOfComponentID(
         /* [in] */ Integer index,
-        /* [out] */ ComponentID* value);
+        /* [out] */ ComponentID& value);
 
     ECode SetInputArgumentOfComponentID(
         /* [in] */ Integer index,
@@ -144,7 +141,7 @@ public:
 
     ECode GetInputArgumentOfInterfaceID(
         /* [in] */ Integer index,
-        /* [out] */ InterfaceID* value);
+        /* [out] */ InterfaceID& value);
 
     ECode SetInputArgumentOfInterfaceID(
         /* [in] */ Integer index,
@@ -152,7 +149,7 @@ public:
 
     ECode GetInputArgumentOfArray(
         /* [in] */ Integer index,
-        /* [out] */ HANDLE* value);
+        /* [out] */ HANDLE& value);
 
     ECode SetInputArgumentOfArray(
         /* [in] */ Integer index,
@@ -160,7 +157,7 @@ public:
 
     ECode GetInputArgumentOfEnumeration(
         /* [in] */ Integer index,
-        /* [out] */ Integer* value);
+        /* [out] */ Integer& value);
 
     ECode SetInputArgumentOfEnumeration(
         /* [in] */ Integer index,
@@ -168,7 +165,7 @@ public:
 
     ECode GetInputArgumentOfInterface(
         /* [in] */ Integer index,
-        /* [out] */ IInterface** value);
+        /* [out] */ AutoPtr<IInterface>& value);
 
     ECode SetInputArgumentOfInterface(
         /* [in] */ Integer index,
@@ -312,7 +309,7 @@ public:
 
     ECode GetArgumentAddress(
         /* [in] */ Integer index,
-        /* [out] */ HANDLE* addr);
+        /* [out] */ HANDLE& addr);
 
 private:
     friend class CMetaConstructor;
@@ -321,9 +318,9 @@ private:
     void CalculateDataSize(
         /* [in] */ MetaComponent* mc,
         /* [in] */ MetaMethod* mm,
-        /* [out] */ Integer* intDataNum,
-        /* [out] */ Integer* fpDataNum,
-        /* [out] */ Integer* stDataNum);
+        /* [out] */ Integer& intDataNum,
+        /* [out] */ Integer& fpDataNum,
+        /* [out] */ Integer& stDataNum);
 
     void* GetDataBuffer(
         /* [in] */ Integer index);
@@ -336,13 +333,13 @@ private:
         /* [in] */ HANDLE addr);
 
     Long* GetIntegerData(
-        /* [out] */ Integer* number);
+        /* [out] */ Integer& number);
 
     Double* GetFPData(
-        /* [out] */ Integer* number);
+        /* [out] */ Integer& number);
 
     Long* GetStackData(
-        /* [out] */ Integer* number);
+        /* [out] */ Integer& number);
 
 public:
     Integer mArgumentNumber;
@@ -362,6 +359,6 @@ private:
     static constexpr Byte STK_DATA = 0x02;
 };
 
-}
+} // namespace como
 
-#endif // __CCM_CARGUMENTLIST_H__
+#endif // __COMO_CARGUMENTLIST_H__

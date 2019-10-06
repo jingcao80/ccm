@@ -14,18 +14,14 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CMETACONSTANT_H__
-#define __CCM_CMETACONSTANT_H__
+#ifndef __COMO_CMETACONSTANT_H__
+#define __COMO_CMETACONSTANT_H__
 
-#include "ccmautoptr.h"
-#include "ccmrefbase.h"
+#include "comotypes.h"
+#include "comoref.h"
 #include "Component.h"
 
-using ccm::metadata::MetaComponent;
-using ccm::metadata::MetaConstant;
-using ccm::metadata::MetaType;
-
-namespace ccm {
+namespace como {
 
 class CMetaConstant
     : public LightRefBase
@@ -41,13 +37,13 @@ public:
     COMO_INTERFACE_DECL();
 
     ECode GetName(
-        /* [out] */ String* name);
+        /* [out] */ String& name);
 
     ECode GetType(
-        /* [out] */ IMetaType** type);
+        /* [out] */ AutoPtr<IMetaType>& type);
 
     ECode GetValue(
-        /* [out] */ IMetaValue** value);
+        /* [out] */ AutoPtr<IMetaValue>& value);
 
 private:
     AutoPtr<IMetaValue> BuildValue(
@@ -60,6 +56,6 @@ public:
     AutoPtr<IMetaValue> mValue;
 };
 
-}
+} // namespace como
 
-#endif // __CCM_CMETACONSTANT_H__
+#endif // __COMO_CMETACONSTANT_H__

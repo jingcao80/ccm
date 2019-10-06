@@ -16,108 +16,85 @@
 
 #include "CMetaValue.h"
 
-namespace ccm {
+namespace como {
 
 COMO_INTERFACE_IMPL_LIGHT_1(CMetaValue, LightRefBase, IMetaValue);
 
 ECode CMetaValue::GetType(
-    /* [out] */ IMetaType** type)
+    /* [out] */ AutoPtr<IMetaType>& type)
 {
-    VALIDATE_NOT_NULL(type);
-
-    *type = mType;
-    REFCOUNT_ADD(*type);
+    type = mType;
     return NOERROR;
 }
 
 ECode CMetaValue::GetBooleanValue(
-    /* [out] */ Boolean* value)
+    /* [out] */ Boolean& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = mBooleanValue;
+    value = mBooleanValue;
     return NOERROR;
 }
 
 ECode CMetaValue::GetCharValue(
-    /* [out] */ Char* value)
+    /* [out] */ Char& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = (Char)mIntegerValue;
+    value = (Char)mIntegerValue;
     return NOERROR;
 }
 
 ECode CMetaValue::GetByteValue(
-    /* [out] */ Byte* value)
+    /* [out] */ Byte& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = (Byte)mIntegerValue;
+    value = (Byte)mIntegerValue;
     return NOERROR;
 }
 
 ECode CMetaValue::GetShortValue(
-    /* [out] */ Short* value)
+    /* [out] */ Short& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = (Short)mIntegerValue;
+    value = (Short)mIntegerValue;
     return NOERROR;
 }
 
 ECode CMetaValue::GetIntegerValue(
-    /* [out] */ Integer* value)
+    /* [out] */ Integer& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = mIntegerValue;
+    value = mIntegerValue;
     return NOERROR;
 }
 
 ECode CMetaValue::GetLongValue(
-    /* [out] */ Long* value)
+    /* [out] */ Long& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = mLongValue;
+    value = mLongValue;
     return NOERROR;
 }
 
 ECode CMetaValue::GetFloatValue(
-    /* [out] */ Float* value)
+    /* [out] */ Float& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = mFloatValue;
+    value = mFloatValue;
     return NOERROR;
 }
 
 ECode CMetaValue::GetDoubleValue(
-    /* [out] */ Double* value)
+    /* [out] */ Double& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = mDoubleValue;
+    value = mDoubleValue;
     return NOERROR;
 }
 
 ECode CMetaValue::GetStringValue(
-    /* [out] */ String* value)
+    /* [out] */ String& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = mStringValue;
+    value = mStringValue;
     return NOERROR;
 }
 
 ECode CMetaValue::GetRadix(
-    /* [out] */ Integer* radix)
+    /* [out] */ Integer& radix)
 {
-    VALIDATE_NOT_NULL(radix);
-
-    *radix = mRadix;
+    radix = mRadix;
     return NOERROR;
 }
 
-}
+} // namespace como

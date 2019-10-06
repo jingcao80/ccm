@@ -31,9 +31,9 @@
 //=========================================================================
 
 #include "ccmsharedbuffer.h"
-#include "ccmtypes.h"
+#include "comotypes.h"
 #include "ucase.h"
-#include "util/ccmlogger.h"
+#include "util/comolog.h"
 
 #include <ctype.h>
 #include <limits.h>
@@ -167,7 +167,7 @@ String::~String()
 
 Integer String::GetLength() const
 {
-    if (IsNullOrEmpty()) return 0;
+    if (IsEmpty()) return 0;
     if (IsCounted()) return GetCharCount();
 
     Integer charCount = 0;
@@ -188,7 +188,7 @@ Integer String::GetLength() const
 Integer String::GetUTF16Length(
     /* [in] */ Integer start) const
 {
-    if (IsNullOrEmpty()) return 0;
+    if (IsEmpty()) return 0;
 
     Integer utf16Count = 0, charCount = 0;
     Integer byteSize;
@@ -232,7 +232,7 @@ Integer String::GetHashCode() const
 Char String::GetChar(
     /* [in] */ Integer index) const
 {
-    if (IsNullOrEmpty() || index < 0) return INVALID_CHAR;
+    if (IsEmpty() || index < 0) return INVALID_CHAR;
 
     Integer byteSize;
     const char* p = mString;
@@ -645,7 +645,7 @@ String& String::operator=(
 String& String::operator+=(
     /* [in] */ const String& other)
 {
-    if (other.IsNullOrEmpty()) {
+    if (other.IsEmpty()) {
         return *this;
     }
 

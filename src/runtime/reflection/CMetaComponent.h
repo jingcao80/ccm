@@ -14,18 +14,16 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CMETACOMPONENT_H__
-#define __CCM_CMETACOMPONENT_H__
+#ifndef __COMO_CMETACOMPONENT_H__
+#define __COMO_CMETACOMPONENT_H__
 
-#include "ccmautoptr.h"
-#include "ccmrefbase.h"
+#include "comotypes.h"
+#include "comoref.h"
 #include "hashmap.h"
-#include "component/ccmcomponent.h"
+#include "component/comocomp.h"
 #include "metadata/Component.h"
 
-using ccm::metadata::MetaComponent;
-
-namespace ccm {
+namespace como {
 
 class CMetaComponent
     : public LightRefBase
@@ -34,7 +32,7 @@ class CMetaComponent
 public:
     CMetaComponent(
         /* [in] */ IClassLoader* loader,
-        /* [in] */ CcmComponent* component,
+        /* [in] */ ComoComponent* component,
         /* [in] */ MetaComponent* metadata);
 
     ~CMetaComponent();
@@ -42,57 +40,57 @@ public:
     COMO_INTERFACE_DECL();
 
     ECode GetName(
-        /* [ou] */ String* name) override;
+        /* [ou] */ String& name) override;
 
     ECode GetComponentID(
-        /* [out] */ ComponentID* cid) override;
+        /* [out] */ ComponentID& cid) override;
 
     ECode GetCoclassNumber(
-        /* [out] */ Integer* number) override;
+        /* [out] */ Integer& number) override;
 
     ECode GetAllCoclasses(
         /* [out] */ Array<IMetaCoclass*>& klasses) override;
 
     ECode GetCoclass(
         /* [in] */ const String& fullName,
-        /* [out] */ IMetaCoclass** metaKls) override;
+        /* [out] */ AutoPtr<IMetaCoclass>& metaKls) override;
 
     ECode GetCoclass(
         /* [in] */ const CoclassID& cid,
-        /* [out] */ IMetaCoclass** metaKls) override;
+        /* [out] */ AutoPtr<IMetaCoclass>& metaKls) override;
 
     ECode GetEnumerationNumber(
-        /* [out] */ Integer* number) override;
+        /* [out] */ Integer& number) override;
 
     ECode GetAllEnumerations(
         /* [out] */ Array<IMetaEnumeration*>& enumns) override;
 
     ECode GetEnumeration(
         /* [in] */ const String& fullName,
-        /* [out] */ IMetaEnumeration** enumn) override;
+        /* [out] */ AutoPtr<IMetaEnumeration>& enumn) override;
 
     ECode GetInterfaceNumber(
-        /* [out] */ Integer* number) override;
+        /* [out] */ Integer& number) override;
 
     ECode GetAllInterfaces(
         /* [out] */ Array<IMetaInterface*>& intfs) override;
 
     ECode GetInterface(
         /* [in] */ const String& fullName,
-        /* [out] */ IMetaInterface** metaIntf) override;
+        /* [out] */ AutoPtr<IMetaInterface>& metaIntf) override;
 
     ECode GetInterface(
         /* [in] */ const InterfaceID& iid,
-        /* [out] */ IMetaInterface** metaIntf) override;
+        /* [out] */ AutoPtr<IMetaInterface>& metaIntf) override;
 
     ECode CanUnload(
-        /* [out] */ Boolean* unload);
+        /* [out] */ Boolean& unload);
 
     ECode Unload();
 
     ECode GetClassObject(
         /* [in] */ const CoclassID& cid,
-        /* [out] */ IClassObject** object);
+        /* [out] */ AutoPtr<IClassObject>& object);
 
     void BuildAllCoclasses();
 
@@ -118,26 +116,26 @@ private:
 
 public:
     IClassLoader* mLoader;
-    CcmComponent* mComponent;
+    ComoComponent* mComponent;
     MetaComponent* mMetadata;
     ComponentID mCid;
     String mName;
-    String mUrl;
+    String mUri;
     Array<IMetaCoclass*> mMetaCoclasses;
     HashMap<String, IMetaCoclass*> mMetaCoclassNameMap;
-    HashMap<Uuid, IMetaCoclass*> mMetaCoclassIdMap;
+    HashMap<UUID, IMetaCoclass*> mMetaCoclassIdMap;
     Boolean mMetaCoclassesAllBuilt;
     Array<IMetaEnumeration*> mMetaEnumerations;
     HashMap<String, IMetaEnumeration*> mMetaEnumerationMap;
     Boolean mMetaEnumerationsAllBuilt;
     Array<IMetaInterface*> mMetaInterfaces;
     HashMap<String, IMetaInterface*> mMetaInterfaceNameMap;
-    HashMap<Uuid, IMetaInterface*> mMetaInterfaceIdMap;
+    HashMap<UUID, IMetaInterface*> mMetaInterfaceIdMap;
     Boolean mMetaInterfacesAllBuilt;
     AutoPtr<IMetaInterface> mIInterface;
-    HashMap<Uuid, ClassObjectGetter*> mClassObjects;
+    HashMap<UUID, ClassObjectGetter*> mClassObjects;
 };
 
-}
+} // namespace como
 
-#endif // __CCM_CMETACOMPONENT_H__
+#endif // __COMO_CMETACOMPONENT_H__

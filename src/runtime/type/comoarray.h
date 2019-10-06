@@ -18,7 +18,7 @@
 #define __COMO_ARRAY_H__
 
 #include "comosharedbuffer.h"
-#include "comologger.h"
+#include "comolog.h"
 #include <initializer_list>
 
 namespace como {

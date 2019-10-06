@@ -14,16 +14,13 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CMETAINTERFACE_H__
-#define __CCM_CMETAINTERFACE_H__
+#ifndef __COMO_CMETAINTERFACE_H__
+#define __COMO_CMETAINTERFACE_H__
 
-#include "ccmrefbase.h"
+#include "comoref.h"
 #include "Component.h"
 
-using ccm::metadata::MetaComponent;
-using ccm::metadata::MetaInterface;
-
-namespace ccm {
+namespace como {
 
 class CMetaComponent;
 
@@ -44,36 +41,36 @@ public:
     COMO_INTERFACE_DECL();
 
     ECode GetComponent(
-        /* [out] */ IMetaComponent** metaComp) override;
+        /* [out] */ AutoPtr<IMetaComponent>& metaComp) override;
 
     ECode GetName(
-        /* [out] */ String* name) override;
+        /* [out] */ String& name) override;
 
     ECode GetNamespace(
-        /* [out] */ String* ns) override;
+        /* [out] */ String& ns) override;
 
     ECode GetInterfaceID(
-        /* [out] */ InterfaceID* iid) override;
+        /* [out] */ InterfaceID& iid) override;
 
     ECode GetBaseInterface(
-        /* [out] */ IMetaInterface** baseIntf) override;
+        /* [out] */ AutoPtr<IMetaInterface>& baseIntf) override;
 
     ECode GetConstantNumber(
-        /* [out] */ Integer* number) override;
+        /* [out] */ Integer& number) override;
 
     ECode GetAllConstants(
         /* [out] */ Array<IMetaConstant*>& consts) override;
 
     ECode GetConstant(
         /* [in] */ const String& name,
-        /* [out] */ IMetaConstant** constt) override;
+        /* [out] */ AutoPtr<IMetaConstant>& constt) override;
 
     ECode GetConstant(
         /* [in] */ Integer index,
-        /* [out] */ IMetaConstant** constt) override;
+        /* [out] */ AutoPtr<IMetaConstant>& constt) override;
 
     ECode GetMethodNumber(
-        /* [out] */ Integer* number) override;
+        /* [out] */ Integer& number) override;
 
     ECode GetAllMethods(
         /* [out] */ Array<IMetaMethod*>& methods) override;
@@ -81,11 +78,11 @@ public:
     ECode GetMethod(
         /* [in] */ const String& name,
         /* [in] */ const String& signature,
-        /* [out] */ IMetaMethod** method) override;
+        /* [out] */ AutoPtr<IMetaMethod>& method) override;
 
     ECode GetMethod(
         /* [in] */ Integer index,
-        /* [out] */ IMetaMethod** method) override;
+        /* [out] */ AutoPtr<IMetaMethod>& method) override;
 
 private:
     Integer CalculateMethodNumber();
@@ -110,6 +107,6 @@ public:
     Array<IMetaMethod*> mMetaMethods;
 };
 
-}
+} // namespace como
 
-#endif // __CCM_CMETAINTERFACE_H__
+#endif // __COMO_CMETAINTERFACE_H__

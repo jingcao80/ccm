@@ -14,17 +14,14 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CMETAMETHOD_H__
-#define __CCM_CMETAMETHOD_H__
+#ifndef __COMO_CMETAMETHOD_H__
+#define __COMO_CMETAMETHOD_H__
 
-#include "ccmautoptr.h"
-#include "ccmrefbase.h"
+#include "comotypes.h"
+#include "comoref.h"
 #include "Component.h"
 
-using ccm::metadata::MetaComponent;
-using ccm::metadata::MetaMethod;
-
-namespace ccm {
+namespace como {
 
 class CMetaInterface;
 
@@ -46,33 +43,33 @@ public:
     COMO_INTERFACE_DECL();
 
     ECode GetInterface(
-        /* [out] */ IMetaInterface** intf);
+        /* [out] */ AutoPtr<IMetaInterface>& intf);
 
     ECode GetName(
-        /* [out] */ String* name);
+        /* [out] */ String& name);
 
     ECode GetSignature(
-        /* [out] */ String* signature);
+        /* [out] */ String& signature);
 
     ECode GetParameterNumber(
-        /* [out] */ Integer* number);
+        /* [out] */ Integer& number);
 
     ECode GetAllParameters(
         /* [out] */ Array<IMetaParameter*>& params);
 
     ECode GetParameter(
         /* [in] */ Integer index,
-        /* [out] */ IMetaParameter** param);
+        /* [out] */ AutoPtr<IMetaParameter>& param);
 
     ECode GetParameter(
         /* [in] */ const String& name,
-        /* [out] */ IMetaParameter** param);
+        /* [out] */ AutoPtr<IMetaParameter>& param);
 
     ECode HasOutArguments(
-        /* [out] */ Boolean* outArgs);
+        /* [out] */ Boolean& outArgs);
 
     ECode CreateArgumentList(
-        /* [out] */ IArgumentList** argList);
+        /* [out] */ AutoPtr<IArgumentList>& argList);
 
     ECode Invoke(
         /* [in] */ IInterface* thisObject,
@@ -92,6 +89,6 @@ public:
     AutoPtr<IMetaType> mReturnType;
 };
 
-}
+} // namespace como
 
-#endif // __CCM_CMETAMETHOD_H__
+#endif // __COMO_CMETAMETHOD_H__

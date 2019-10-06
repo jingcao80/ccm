@@ -14,16 +14,13 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CMETAENUMERATION_H__
-#define __CCM_CMETAENUMERATION_H__
+#ifndef __COMO_CMETAENUMERATION_H__
+#define __COMO_CMETAENUMERATION_H__
 
-#include "ccmrefbase.h"
+#include "comoref.h"
 #include "Component.h"
 
-using ccm::metadata::MetaComponent;
-using ccm::metadata::MetaEnumeration;
-
-namespace ccm {
+namespace como {
 
 class CMetaComponent;
 
@@ -42,23 +39,23 @@ public:
     COMO_INTERFACE_DECL();
 
     ECode GetComponent(
-        /* [out] */ IMetaComponent** metaComp) override;
+        /* [out] */ AutoPtr<IMetaComponent>& metaComp) override;
 
     ECode GetName(
-        /* [out] */ String* name) override;
+        /* [out] */ String& name) override;
 
     ECode GetNamespace(
-        /* [out] */ String* ns) override;
+        /* [out] */ String& ns) override;
 
     ECode GetEnumeratorNumber(
-        /* [out] */ Integer* number) override;
+        /* [out] */ Integer& number) override;
 
     ECode GetAllEnumerators(
         /* [out] */ Array<IMetaEnumerator*>& enumrs) override;
 
     ECode GetEnumerator(
         /* [in] */ const String& name,
-        /* [out] */ IMetaEnumerator** metaEnumr) override;
+        /* [out] */ AutoPtr<IMetaEnumerator>& metaEnumr) override;
 
     void BuildAllEnumerators();
 
@@ -70,6 +67,6 @@ public:
     Array<IMetaEnumerator*> mMetaEnumerators;
 };
 
-}
+} // namespace como
 
-#endif // __CCM_CMETAENUMERATION_H__
+#endif // __COMO_CMETAENUMERATION_H__

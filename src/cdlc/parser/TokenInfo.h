@@ -85,7 +85,7 @@ bool TokenInfo::Is64Bit()
 
 bool TokenInfo::IsBuildinType()
 {
-    return Token::BOOLEAN <= mToken && mToken <= Token::TRIPLE;
+    return Token::BOOLEAN <= mToken && mToken <= Token::TYPEKIND;
 }
 
 }

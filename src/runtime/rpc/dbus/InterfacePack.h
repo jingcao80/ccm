@@ -18,7 +18,7 @@
 #define __CCM_INTERFACEPACK_H__
 
 #include "registry.h"
-#include "util/ccmrefbase.h"
+#include "util/comoref.h"
 
 namespace ccm {
 

@@ -14,7 +14,6 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccmautoptr.h"
 #include "CMetaComponent.h"
 #include "CMetaCoclass.h"
 #include "CMetaEnumeration.h"
@@ -22,24 +21,21 @@
 #include "CMetaMethod.h"
 #include "CMetaParameter.h"
 #include "CMetaType.h"
-#include <stdlib.h>
+#include <cstdlib>
 
-using ccm::metadata::MetaCoclass;
-using ccm::metadata::MetaInterface;
-
-namespace ccm {
+namespace como {
 
 COMO_INTERFACE_IMPL_LIGHT_1(CMetaComponent, LightRefBase, IMetaComponent);
 
 CMetaComponent::CMetaComponent(
     /* [in] */ IClassLoader* loader,
-    /* [in] */ CcmComponent* component,
+    /* [in] */ ComoComponent* component,
     /* [in] */ MetaComponent* metadata)
     : mLoader(loader)
     , mComponent(component)
     , mMetadata(metadata)
     , mName(metadata->mName)
-    , mUrl(metadata->mUrl)
+    , mUri(metadata->mUri)
     , mMetaCoclasses(mMetadata->mCoclassNumber)
     , mMetaCoclassNameMap(mMetadata->mCoclassNumber)
     , mMetaCoclassIdMap(mMetadata->mCoclassNumber)
@@ -58,7 +54,7 @@ CMetaComponent::CMetaComponent(
     , mMetaInterfacesAllBuilt(false)
 {
     mCid.mUuid = metadata->mUuid;
-    mCid.mUrl = mUrl.string();
+    mCid.mUri = mUri.string();
 
     LoadAllClassObjectGetters();
     BuildIInterface();
@@ -70,29 +66,23 @@ CMetaComponent::~CMetaComponent()
 }
 
 ECode CMetaComponent::GetName(
-    /* [ou] */ String* name)
+    /* [ou] */ String& name)
 {
-    VALIDATE_NOT_NULL(name);
-
-    *name = mName;
+    name = mName;
     return NOERROR;
 }
 
 ECode CMetaComponent::GetComponentID(
-    /* [out] */ ComponentID* cid)
+    /* [out] */ ComponentID& cid)
 {
-    VALIDATE_NOT_NULL(cid);
-
-    *cid = mCid;
+    cid = mCid;
     return NOERROR;
 }
 
 ECode CMetaComponent::GetCoclassNumber(
-    /* [out] */ Integer* number)
+    /* [out] */ Integer& number)
 {
-    VALIDATE_NOT_NULL(number);
-
-    *number = mMetaCoclasses.GetLength();
+    number = mMetaCoclasses.GetLength();
     return NOERROR;
 }
 
@@ -115,41 +105,33 @@ ECode CMetaComponent::GetAllCoclasses(
 
 ECode CMetaComponent::GetCoclass(
     /* [in] */ const String& fullName,
-    /* [out] */ IMetaCoclass** metaKls)
+    /* [out] */ AutoPtr<IMetaCoclass>& metaKls)
 {
-    VALIDATE_NOT_NULL(metaKls);
-
-    if (fullName.IsNullOrEmpty() || mMetaCoclasses.IsEmpty()) {
-        *metaKls = nullptr;
+    if (fullName.IsEmpty() || mMetaCoclasses.IsEmpty()) {
+        metaKls = nullptr;
         return NOERROR;
     }
 
     BuildAllCoclasses();
 
-    *metaKls = mMetaCoclassNameMap.Get(fullName);
-    REFCOUNT_ADD(*metaKls);
+    metaKls = mMetaCoclassNameMap.Get(fullName);
     return NOERROR;
 }
 
 ECode CMetaComponent::GetCoclass(
     /* [in] */ const CoclassID& cid,
-    /* [out] */ IMetaCoclass** metaKls)
+    /* [out] */ AutoPtr<IMetaCoclass>& metaKls)
 {
-    VALIDATE_NOT_NULL(metaKls);
-
     BuildAllCoclasses();
 
-    *metaKls = mMetaCoclassIdMap.Get(cid.mUuid);
-    REFCOUNT_ADD(*metaKls);
+    metaKls = mMetaCoclassIdMap.Get(cid.mUuid);
     return NOERROR;
 }
 
 ECode CMetaComponent::GetEnumerationNumber(
-    /* [out] */ Integer* number)
+    /* [out] */ Integer& number)
 {
-    VALIDATE_NOT_NULL(number);
-
-    *number = mMetaEnumerations.GetLength();
+    number = mMetaEnumerations.GetLength();
     return NOERROR;
 }
 
@@ -172,28 +154,23 @@ ECode CMetaComponent::GetAllEnumerations(
 
 ECode CMetaComponent::GetEnumeration(
     /* [in] */ const String& fullName,
-    /* [out] */ IMetaEnumeration** enumn)
+    /* [out] */ AutoPtr<IMetaEnumeration>& enumn)
 {
-    VALIDATE_NOT_NULL(enumn);
-
-    if (fullName.IsNullOrEmpty() || mMetaEnumerations.IsEmpty()) {
-        *enumn = nullptr;
+    if (fullName.IsEmpty() || mMetaEnumerations.IsEmpty()) {
+        enumn = nullptr;
         return NOERROR;
     }
 
     BuildAllEnumerations();
 
-    *enumn = mMetaEnumerationMap.Get(fullName);
-    REFCOUNT_ADD(*enumn);
+    enumn = mMetaEnumerationMap.Get(fullName);
     return NOERROR;
 }
 
 ECode CMetaComponent::GetInterfaceNumber(
-    /* [out] */ Integer* number)
+    /* [out] */ Integer& number)
 {
-    VALIDATE_NOT_NULL(number);
-
-    *number = mMetaInterfaces.GetLength();
+    number = mMetaInterfaces.GetLength();
     return NOERROR;
 }
 
@@ -216,40 +193,32 @@ ECode CMetaComponent::GetAllInterfaces(
 
 ECode CMetaComponent::GetInterface(
     /* [in] */ const String& fullName,
-    /* [out] */ IMetaInterface** metaIntf)
+    /* [out] */ AutoPtr<IMetaInterface>& metaIntf)
 {
-    VALIDATE_NOT_NULL(metaIntf);
-
-    if (fullName.IsNullOrEmpty() || mMetaInterfaces.IsEmpty()) {
-        *metaIntf = nullptr;
+    if (fullName.IsEmpty() || mMetaInterfaces.IsEmpty()) {
+        metaIntf = nullptr;
         return NOERROR;
     }
 
     BuildAllInterfaces();
 
-    *metaIntf = mMetaInterfaceNameMap.Get(fullName);
-    REFCOUNT_ADD(*metaIntf);
+    metaIntf = mMetaInterfaceNameMap.Get(fullName);
     return NOERROR;
 }
 
 ECode CMetaComponent::GetInterface(
     /* [in] */ const InterfaceID& iid,
-    /* [out] */ IMetaInterface** metaIntf)
+    /* [out] */ AutoPtr<IMetaInterface>& metaIntf)
 {
-    VALIDATE_NOT_NULL(metaIntf);
-
     BuildAllInterfaces();
-    *metaIntf = mMetaInterfaceIdMap.Get(iid.mUuid);
-    REFCOUNT_ADD(*metaIntf);
+    metaIntf = mMetaInterfaceIdMap.Get(iid.mUuid);
     return NOERROR;
 }
 
 ECode CMetaComponent::CanUnload(
-    /* [out] */ Boolean* unload)
+    /* [out] */ Boolean& unload)
 {
-    VALIDATE_NOT_NULL(unload);
-
-    *unload = mComponent->mSoCanUnload();
+    unload = mComponent->mSoCanUnload();
     return NOERROR;
 }
 
@@ -264,10 +233,8 @@ ECode CMetaComponent::Unload()
 
 ECode CMetaComponent::GetClassObject(
     /* [in] */ const CoclassID& cid,
-    /* [out] */ IClassObject** object)
+    /* [out] */ AutoPtr<IClassObject>& object)
 {
-    VALIDATE_NOT_NULL(object);
-
     ClassObjectGetter* getter = mClassObjects.Get(cid.mUuid);
     if (getter != nullptr) {
         return getter->mGetter(object);
@@ -332,7 +299,9 @@ void CMetaComponent::BuildAllEnumerations()
     Integer index = 0;
     for (Integer i = 0; i < mMetadata->mEnumerationNumber; i++) {
         MetaEnumeration* me = mMetadata->mEnumerations[i];
-        if (me->mExternal) continue;
+        if (me->mProperties & TYPE_EXTERNAL) {
+            continue;
+        }
         String fullName = String::Format("%s%s",
                 me->mNamespace, me->mName);
         if (!mMetaEnumerationMap.ContainsKey(fullName)) {
@@ -355,7 +324,9 @@ AutoPtr<IMetaEnumeration> CMetaComponent::BuildEnumeration(
     }
 
     MetaEnumeration* me = mMetadata->mEnumerations[index];
-    if (me->mExternal) return ret;
+    if (me->mProperties & TYPE_EXTERNAL) {
+        return ret;
+    }
     String fullName = String::Format("%s%s",
             me->mNamespace, me->mName);
     if (!mMetaEnumerationMap.ContainsKey(fullName)) {
@@ -363,7 +334,7 @@ AutoPtr<IMetaEnumeration> CMetaComponent::BuildEnumeration(
                 this, mMetadata, me);
         Integer realIndex = index;
         for (Integer i = 0; i <= index; i++) {
-            if (mMetadata->mEnumerations[i]->mExternal) {
+            if (mMetadata->mEnumerations[i]->mProperties & TYPE_EXTERNAL) {
                 realIndex--;
             }
         }
@@ -387,7 +358,9 @@ void CMetaComponent::BuildAllInterfaces()
     Integer index = 0;
     for (Integer i = 0; i < mMetadata->mInterfaceNumber; i++) {
         MetaInterface* mi = mMetadata->mInterfaces[i];
-        if (mi->mExternal) continue;
+        if (mi->mProperties & TYPE_EXTERNAL) {
+            continue;
+        }
         String fullName = String::Format("%s%s",
                 mi->mNamespace, mi->mName);
         if (!mMetaInterfaceNameMap.ContainsKey(fullName)) {
@@ -418,11 +391,11 @@ AutoPtr<IMetaInterface> CMetaComponent::BuildInterface(
                 this, mMetadata, mi);
         Integer realIndex = index;
         for (Integer i = 0; i <= index; i++) {
-            if (mMetadata->mInterfaces[i]->mExternal) {
+            if (mMetadata->mInterfaces[i]->mProperties & TYPE_EXTERNAL) {
                 realIndex--;
             }
         }
-        if (!mi->mExternal) {
+        if (!(mi->mProperties & TYPE_EXTERNAL)) {
             mMetaInterfaces.Set(realIndex, miObj);
         }
         mMetaInterfaceNameMap.Put(fullName, miObj);
@@ -438,7 +411,7 @@ AutoPtr<IMetaInterface> CMetaComponent::BuildInterface(
 void CMetaComponent::LoadAllClassObjectGetters()
 {
     Integer N;
-    ClassObjectGetter* getters = mComponent->mSoGetAllClassObjects(&N);
+    ClassObjectGetter* getters = mComponent->mSoGetAllClassObjects(N);
     for (Integer i = 0; i < N; i++) {
         const CoclassID& cid = getters[i].mCid;
         mClassObjects.Put(cid.mUuid, &getters[i]);
@@ -451,7 +424,7 @@ void CMetaComponent::BuildIInterface()
     miObj->mOwner = this;
     miObj->mIid = IID_IInterface;
     miObj->mName = "IInterface";
-    miObj->mNamespace = "ccm::";
+    miObj->mNamespace = "como::";
     miObj->mMetaMethods = Array<IMetaMethod*>(4);
 
     // AddRef
@@ -467,12 +440,12 @@ void CMetaComponent::BuildIInterface()
     mpObj->mIndex = 0;
     mpObj->mIOAttr = IOAttribute::IN;
     CMetaType* mtObj = new CMetaType();
-    mtObj->mKind = CcmTypeKind::HANDLE;
+    mtObj->mKind = TypeKind::HANDLE;
     mtObj->mName = "HANDLE";
     mpObj->mType = mtObj;
     mmObj->mParameters.Set(0, mpObj);
     mtObj = new CMetaType();
-    mtObj->mKind = CcmTypeKind::Integer;
+    mtObj->mKind = TypeKind::Integer;
     mtObj->mName = "Integer";
     mmObj->mReturnType = mtObj;
     miObj->mMetaMethods.Set(0, mmObj);
@@ -490,12 +463,12 @@ void CMetaComponent::BuildIInterface()
     mpObj->mIndex = 0;
     mpObj->mIOAttr = IOAttribute::IN;
     mtObj = new CMetaType();
-    mtObj->mKind = CcmTypeKind::HANDLE;
+    mtObj->mKind = TypeKind::HANDLE;
     mtObj->mName = "HANDLE";
     mpObj->mType = mtObj;
     mmObj->mParameters.Set(0, mpObj);
     mtObj = new CMetaType();
-    mtObj->mKind = CcmTypeKind::Integer;
+    mtObj->mKind = TypeKind::Integer;
     mtObj->mName = "Integer";
     mmObj->mReturnType = mtObj;
     miObj->mMetaMethods.Set(1, mmObj);
@@ -505,7 +478,7 @@ void CMetaComponent::BuildIInterface()
     mmObj->mOwner = miObj;
     mmObj->mIndex = 2;
     mmObj->mName = "Probe";
-    mmObj->mSignature = "(U)Lccm/IInterface*";
+    mmObj->mSignature = "(U)Lcomo/IInterface*";
     mmObj->mParameters = Array<IMetaParameter*>(1);
     mpObj = new CMetaParameter();
     mpObj->mOwner = mmObj;
@@ -513,14 +486,14 @@ void CMetaComponent::BuildIInterface()
     mpObj->mIndex = 0;
     mpObj->mIOAttr = IOAttribute::IN;
     mtObj = new CMetaType();
-    mtObj->mKind = CcmTypeKind::InterfaceID;
+    mtObj->mKind = TypeKind::InterfaceID;
     mtObj->mName = "InterfaceID";
     mpObj->mType = mtObj;
     mmObj->mParameters.Set(0, mpObj);
     mtObj = new CMetaType();
-    mtObj->mKind = CcmTypeKind::Interface;
+    mtObj->mKind = TypeKind::Interface;
     mtObj->mName = "IInterface";
-    mtObj->mPointerNumber = 1;
+    mtObj->mMode = TypeMode::POINTER;
     mmObj->mReturnType = mtObj;
     miObj->mMetaMethods.Set(2, mmObj);
 
@@ -529,7 +502,7 @@ void CMetaComponent::BuildIInterface()
     mmObj->mOwner = miObj;
     mmObj->mIndex = 3;
     mmObj->mName = "GetInterfaceID";
-    mmObj->mSignature = "(Lccm/IInterface*U*)E";
+    mmObj->mSignature = "(Lcomo/IInterface*U&)E";
     mmObj->mParameters = Array<IMetaParameter*>(2);
     mpObj = new CMetaParameter();
     mpObj->mOwner = mmObj;
@@ -537,9 +510,9 @@ void CMetaComponent::BuildIInterface()
     mpObj->mIndex = 0;
     mpObj->mIOAttr = IOAttribute::IN;
     mtObj = new CMetaType();
-    mtObj->mKind = CcmTypeKind::Interface;
+    mtObj->mKind = TypeKind::Interface;
     mtObj->mName = "IInterface";
-    mtObj->mPointerNumber = 1;
+    mtObj->mMode = TypeMode::POINTER;
     mpObj->mType = mtObj;
     mmObj->mParameters.Set(0, mpObj);
     mpObj = new CMetaParameter();
@@ -548,13 +521,13 @@ void CMetaComponent::BuildIInterface()
     mpObj->mIndex = 1;
     mpObj->mIOAttr = IOAttribute::OUT;
     mtObj = new CMetaType();
-    mtObj->mKind = CcmTypeKind::InterfaceID;
+    mtObj->mKind = TypeKind::InterfaceID;
     mtObj->mName = "InterfaceID";
-    mtObj->mPointerNumber = 1;
+    mtObj->mMode = TypeMode::REFERENCE;
     mpObj->mType = mtObj;
     mmObj->mParameters.Set(1, mpObj);
     mtObj = new CMetaType();
-    mtObj->mKind = CcmTypeKind::ECode;
+    mtObj->mKind = TypeKind::ECode;
     mtObj->mName = "ECode";
     mmObj->mReturnType = mtObj;
     miObj->mMetaMethods.Set(3, mmObj);
@@ -574,9 +547,9 @@ void CMetaComponent::ReleaseResources()
         mMetadata = nullptr;
     }
     mCid.mUuid = UUID_ZERO;
-    mCid.mUrl = nullptr;
+    mCid.mUri = nullptr;
     mName = nullptr;
-    mUrl = nullptr;
+    mUri = nullptr;
     mMetaCoclasses.Clear();
     mMetaCoclassNameMap.Clear();
     mMetaCoclassIdMap.Clear();
@@ -590,4 +563,4 @@ void CMetaComponent::ReleaseResources()
     mMetaInterfacesAllBuilt = false;
 }
 
-}
+} // namespace como

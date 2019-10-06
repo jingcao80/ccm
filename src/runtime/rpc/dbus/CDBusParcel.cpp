@@ -31,8 +31,8 @@
  */
 
 #include "CDBusParcel.h"
-#include "util/ccmautoptr.h"
-#include "util/ccmlogger.h"
+#include "util/comoptr.h"
+#include "util/comolog.h"
 #include <stdlib.h>
 
 namespace ccm {
@@ -463,7 +463,7 @@ ECode CDBusParcel::ReadArray(
     ECode ec = ReadInteger(&value);
     if (FAILED(ec)) return ec;
 
-    CcmTypeKind kind = (CcmTypeKind)value;
+    TypeKind kind = (TypeKind)value;
     Long size;
     ec = ReadLong(&size);
     if (size <= 0 || FAILED(ec)) {
@@ -475,10 +475,10 @@ ECode CDBusParcel::ReadArray(
     }
 
     switch (kind) {
-        case CcmTypeKind::Char: {
+        case TypeKind::Char: {
             Triple tt;
             tt.mSize = size;
-            tt.mType = CcmTypeKind::Char;
+            tt.mType = TypeKind::Char;
             tt.AllocData(sizeof(Char) * size);
             if (tt.mData != nullptr) {
                 ec = Read(tt.mData, sizeof(Char) * size);
@@ -487,10 +487,10 @@ ECode CDBusParcel::ReadArray(
             *t = std::move(tt);
             break;
         }
-        case CcmTypeKind::Byte: {
+        case TypeKind::Byte: {
             Triple tt;
             tt.mSize = size;
-            tt.mType = CcmTypeKind::Byte;
+            tt.mType = TypeKind::Byte;
             tt.AllocData(sizeof(Byte) * size);
             if (tt.mData != nullptr) {
                 ec = Read(tt.mData, sizeof(Byte) * size);
@@ -499,10 +499,10 @@ ECode CDBusParcel::ReadArray(
             *t = std::move(tt);
             break;
         }
-        case CcmTypeKind::Short: {
+        case TypeKind::Short: {
             Triple tt;
             tt.mSize = size;
-            tt.mType = CcmTypeKind::Short;
+            tt.mType = TypeKind::Short;
             tt.AllocData(sizeof(Short) * size);
             if (tt.mData != nullptr) {
                 ec = Read(tt.mData, sizeof(Short) * size);
@@ -511,10 +511,10 @@ ECode CDBusParcel::ReadArray(
             *t = std::move(tt);
             break;
         }
-        case CcmTypeKind::Integer: {
+        case TypeKind::Integer: {
             Triple tt;
             tt.mSize = size;
-            tt.mType = CcmTypeKind::Integer;
+            tt.mType = TypeKind::Integer;
             tt.AllocData(sizeof(Integer) * size);
             if (tt.mData != nullptr) {
                 ec = Read(tt.mData, sizeof(Integer) * size);
@@ -523,10 +523,10 @@ ECode CDBusParcel::ReadArray(
             *t = std::move(tt);
             break;
         }
-        case CcmTypeKind::Long: {
+        case TypeKind::Long: {
             Triple tt;
             tt.mSize = size;
-            tt.mType = CcmTypeKind::Long;
+            tt.mType = TypeKind::Long;
             tt.AllocData(sizeof(Long) * size);
             if (tt.mData != nullptr) {
                 ec = Read(tt.mData, sizeof(Long) * size);
@@ -535,10 +535,10 @@ ECode CDBusParcel::ReadArray(
             *t = std::move(tt);
             break;
         }
-        case CcmTypeKind::Float: {
+        case TypeKind::Float: {
             Triple tt;
             tt.mSize = size;
-            tt.mType = CcmTypeKind::Float;
+            tt.mType = TypeKind::Float;
             tt.AllocData(sizeof(Float) * size);
             if (tt.mData != nullptr) {
                 ec = Read(tt.mData, sizeof(Float) * size);
@@ -547,10 +547,10 @@ ECode CDBusParcel::ReadArray(
             *t = std::move(tt);
             break;
         }
-        case CcmTypeKind::Double: {
+        case TypeKind::Double: {
             Triple tt;
             tt.mSize = size;
-            tt.mType = CcmTypeKind::Double;
+            tt.mType = TypeKind::Double;
             tt.AllocData(sizeof(Double) * size);
             if (tt.mData != nullptr) {
                 ec = Read(tt.mData, sizeof(Double) * size);
@@ -559,10 +559,10 @@ ECode CDBusParcel::ReadArray(
             *t = std::move(tt);
             break;
         }
-        case CcmTypeKind::Boolean: {
+        case TypeKind::Boolean: {
             Triple tt;
             tt.mSize = size;
-            tt.mType = CcmTypeKind::Boolean;
+            tt.mType = TypeKind::Boolean;
             tt.AllocData(sizeof(Boolean) * size);
             if (tt.mData != nullptr) {
                 ec = Read(tt.mData, sizeof(Boolean) * size);
@@ -571,7 +571,7 @@ ECode CDBusParcel::ReadArray(
             *t = std::move(tt);
             break;
         }
-        case CcmTypeKind::String: {
+        case TypeKind::String: {
             Array<String> strArray(size);
             for (Long i = 0; i < size; i++) {
                 String str;
@@ -587,7 +587,7 @@ ECode CDBusParcel::ReadArray(
             *t = strArray;
             break;
         }
-        case CcmTypeKind::CoclassID: {
+        case TypeKind::CoclassID: {
             Array<CoclassID> cidArray(size);
             for (Long i = 0; i < size; i++) {
                 CoclassID& cid = cidArray[i];
@@ -602,7 +602,7 @@ ECode CDBusParcel::ReadArray(
             *t = cidArray;
             break;
         }
-        case CcmTypeKind::ComponentID: {
+        case TypeKind::ComponentID: {
             Array<ComponentID> cidArray(size);
             for (Long i = 0; i < size; i++) {
                 ComponentID& cid = cidArray[i];
@@ -617,7 +617,7 @@ ECode CDBusParcel::ReadArray(
             *t = cidArray;
             break;
         }
-        case CcmTypeKind::InterfaceID: {
+        case TypeKind::InterfaceID: {
             Array<InterfaceID> iidArray(size);
             for (Long i = 0; i < size; i++) {
                 InterfaceID& iid = iidArray[i];
@@ -632,10 +632,10 @@ ECode CDBusParcel::ReadArray(
             *t = iidArray;
             break;
         }
-        case CcmTypeKind::ECode: {
+        case TypeKind::ECode: {
             Triple tt;
             tt.mSize = size;
-            tt.mType = CcmTypeKind::ECode;
+            tt.mType = TypeKind::ECode;
             tt.AllocData(sizeof(ECode) * size);
             if (tt.mData != nullptr) {
                 ec = Read(tt.mData, sizeof(ECode) * size);
@@ -644,10 +644,10 @@ ECode CDBusParcel::ReadArray(
             *t = std::move(tt);
             break;
         }
-        case CcmTypeKind::Enum: {
+        case TypeKind::Enum: {
             Triple tt;
             tt.mSize = size;
-            tt.mType = CcmTypeKind::Enum;
+            tt.mType = TypeKind::Enum;
             tt.AllocData(sizeof(Integer) * size);
             if (tt.mData != nullptr) {
                 ec = Read(tt.mData, sizeof(Integer) * size);
@@ -656,7 +656,7 @@ ECode CDBusParcel::ReadArray(
             *t = std::move(tt);
             break;
         }
-        case CcmTypeKind::Array: {
+        case TypeKind::Array: {
             Array<Triple> triArray(size);
             for (Long i = 0; i < size; i++) {
                 Triple tt;
@@ -672,7 +672,7 @@ ECode CDBusParcel::ReadArray(
             *t = triArray;
             break;
         }
-        case CcmTypeKind::Interface: {
+        case TypeKind::Interface: {
             Array<IInterface*> intfArray(size);
             for (Long i = 0; i < size; i++) {
                 AutoPtr<IInterface> obj;
@@ -709,31 +709,31 @@ ECode CDBusParcel::WriteArray(
     if (t->mSize == 0 || FAILED(ec)) return ec;
 
     switch (t->mType) {
-        case CcmTypeKind::Char:
+        case TypeKind::Char:
             ec = Write(t->mData, sizeof(Char) * t->mSize);
             break;
-        case CcmTypeKind::Byte:
+        case TypeKind::Byte:
             ec = Write(t->mData, sizeof(Byte) * t->mSize);
             break;
-        case CcmTypeKind::Short:
+        case TypeKind::Short:
             ec = Write(t->mData, sizeof(Short) * t->mSize);
             break;
-        case CcmTypeKind::Integer:
+        case TypeKind::Integer:
             ec = Write(t->mData, sizeof(Integer) * t->mSize);
             break;
-        case CcmTypeKind::Long:
+        case TypeKind::Long:
             ec = Write(t->mData, sizeof(Long) * t->mSize);
             break;
-        case CcmTypeKind::Float:
+        case TypeKind::Float:
             ec = Write(t->mData, sizeof(Float) * t->mSize);
             break;
-        case CcmTypeKind::Double:
+        case TypeKind::Double:
             ec = Write(t->mData, sizeof(Double) * t->mSize);
             break;
-        case CcmTypeKind::Boolean:
+        case TypeKind::Boolean:
             ec = Write(t->mData, sizeof(Boolean) * t->mSize);
             break;
-        case CcmTypeKind::String: {
+        case TypeKind::String: {
             for (Long i = 0; i < t->mSize; i++) {
                 const String& str = reinterpret_cast<String*>(t->mData)[i];
                 ec = WriteString(str);
@@ -741,7 +741,7 @@ ECode CDBusParcel::WriteArray(
             }
             break;
         }
-        case CcmTypeKind::CoclassID: {
+        case TypeKind::CoclassID: {
             for (Long i = 0; i < t->mSize; i++) {
                 const CoclassID& cid = reinterpret_cast<CoclassID*>(t->mData)[i];
                 ec = WriteCoclassID(cid);
@@ -749,7 +749,7 @@ ECode CDBusParcel::WriteArray(
             }
             break;
         }
-        case CcmTypeKind::ComponentID: {
+        case TypeKind::ComponentID: {
             for (Long i = 0; i < t->mSize; i++) {
                 const ComponentID& cid = reinterpret_cast<ComponentID*>(t->mData)[i];
                 ec = WriteComponentID(cid);
@@ -757,7 +757,7 @@ ECode CDBusParcel::WriteArray(
             }
             break;
         }
-        case CcmTypeKind::InterfaceID: {
+        case TypeKind::InterfaceID: {
             for (Long i = 0; i < t->mSize; i++) {
                 const InterfaceID& iid = reinterpret_cast<InterfaceID*>(t->mData)[i];
                 ec = WriteInterfaceID(iid);
@@ -765,13 +765,13 @@ ECode CDBusParcel::WriteArray(
             }
             break;
         }
-        case CcmTypeKind::ECode:
+        case TypeKind::ECode:
             ec = Write(t->mData, sizeof(ECode) * t->mSize);
             break;
-        case CcmTypeKind::Enum:
+        case TypeKind::Enum:
             ec = Write(t->mData, sizeof(Integer) * t->mSize);
             break;
-        case CcmTypeKind::Array: {
+        case TypeKind::Array: {
             for (Long i = 0; i < t->mSize; i++) {
                 const Triple& tt = reinterpret_cast<Triple*>(t->mData)[i];
                 ec = WriteArray(reinterpret_cast<HANDLE>(&tt));
@@ -779,7 +779,7 @@ ECode CDBusParcel::WriteArray(
             }
             break;
         }
-        case CcmTypeKind::Interface: {
+        case TypeKind::Interface: {
             for (Long i = 0; i < t->mSize; i++) {
                 IInterface* intf = reinterpret_cast<IInterface**>(t->mData)[i];
                 ec = WriteInterface(intf);

@@ -198,6 +198,8 @@ String TokenInfo::Dump(
             return "Triple";
         case Token::TRUE:
             return "true";
+        case Token::TYPEKIND:
+            return "TypeKind";
         case Token::URI:
             return "uri";
         case Token::UUID:

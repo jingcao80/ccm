@@ -17,7 +17,7 @@
 #ifndef __COMO_OBJECT_H__
 #define __COMO_OBJECT_H__
 
-#include "comorefbase.h"
+#include "comoref.h"
 #include "comotypes.h"
 
 namespace como {

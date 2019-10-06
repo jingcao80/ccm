@@ -17,7 +17,7 @@
 #ifndef __CCM_CDBUSCHANNELFACTORY_H__
 #define __CCM_CDBUSCHANNELFACTORY_H__
 
-#include "ccmrefbase.h"
+#include "comoref.h"
 
 namespace ccm {
 

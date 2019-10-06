@@ -18,7 +18,7 @@
 #include "CMetaType.h"
 #include "CMetaValue.h"
 
-namespace ccm {
+namespace como {
 
 COMO_INTERFACE_IMPL_LIGHT_1(CMetaConstant, LightRefBase, IMetaConstant)
 
@@ -36,31 +36,23 @@ CMetaConstant::~CMetaConstant()
 {}
 
 ECode CMetaConstant::GetName(
-    /* [out] */ String* name)
+    /* [out] */ String& name)
 {
-    VALIDATE_NOT_NULL(name);
-
-    *name = mName;
+    name = mName;
     return NOERROR;
 }
 
 ECode CMetaConstant::GetType(
-    /* [out] */ IMetaType** type)
+    /* [out] */ AutoPtr<IMetaType>& type)
 {
-    VALIDATE_NOT_NULL(type);
-
-    *type = mType;
-    REFCOUNT_ADD(*type);
+    type = mType;
     return NOERROR;
 }
 
 ECode CMetaConstant::GetValue(
-    /* [out] */ IMetaValue** value)
+    /* [out] */ AutoPtr<IMetaValue>& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = mValue;
-    REFCOUNT_ADD(*value);
+    value = mValue;
     return NOERROR;
 }
 
@@ -69,32 +61,32 @@ AutoPtr<IMetaValue> CMetaConstant::BuildValue(
 {
     CMetaValue* mvObj = new CMetaValue();
     mvObj->mType = type;
-    CcmTypeKind kind;
-    type->GetTypeKind((Integer*)&kind);
+    TypeKind kind;
+    type->GetTypeKind(kind);
     switch(kind) {
-        case CcmTypeKind::Boolean:
-            mvObj->mBooleanValue = mMetadata->mValue.mBoolean;
+        case TypeKind::Boolean:
+            mvObj->mBooleanValue = mMetadata->mValue.mBooleanValue;
             break;
-        case CcmTypeKind::Char:
-        case CcmTypeKind::Byte:
-        case CcmTypeKind::Short:
-        case CcmTypeKind::Integer:
-            mvObj->mIntegerValue = mMetadata->mValue.mInteger;
+        case TypeKind::Char:
+        case TypeKind::Byte:
+        case TypeKind::Short:
+        case TypeKind::Integer:
+            mvObj->mIntegerValue = mMetadata->mValue.mIntegralValue;
             break;
-        case CcmTypeKind::Long:
-            mvObj->mLongValue = mMetadata->mValue.mLong;
+        case TypeKind::Long:
+            mvObj->mLongValue = mMetadata->mValue.mIntegralValue;
             break;
-        case CcmTypeKind::Float:
-            mvObj->mFloatValue = mMetadata->mValue.mFloat;
+        case TypeKind::Float:
+            mvObj->mFloatValue = mMetadata->mValue.mFloatingPointValue;
             break;
-        case CcmTypeKind::Double:
-            mvObj->mDoubleValue = mMetadata->mValue.mDouble;
+        case TypeKind::Double:
+            mvObj->mDoubleValue = mMetadata->mValue.mFloatingPointValue;
             break;
-        case CcmTypeKind::String:
-            mvObj->mStringValue = mMetadata->mValue.mString;
+        case TypeKind::String:
+            mvObj->mStringValue = mMetadata->mValue.mStringValue;
             break;
     }
     return mvObj;
 }
 
-}
+} // namespace como

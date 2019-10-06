@@ -14,7 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccmtypes.h"
+#include "comotypes.h"
 
 namespace ccm {
 

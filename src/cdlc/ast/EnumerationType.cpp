@@ -56,6 +56,11 @@ bool EnumerationType::IsEnumerationType()
     return true;
 }
 
+bool EnumerationType::IsBuildinType()
+{
+    return ToString().Equals("como::TypeKind");
+}
+
 String EnumerationType::GetSignature()
 {
     StringBuilder builder;

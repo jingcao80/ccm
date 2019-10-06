@@ -33,8 +33,8 @@
 #ifndef __THREADPOOLEXECUTOR_H__
 #define __THREADPOOLEXECUTOR_H__
 
-#include "ccmautoptr.h"
-#include "ccmrefbase.h"
+#include "comoptr.h"
+#include "comoref.h"
 #include "util/arraylist.h"
 #include "util/mutex.h"
 

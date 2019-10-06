@@ -33,7 +33,7 @@
 #ifndef __CCM_CDBUSPARCEL_H__
 #define __CCM_CDBUSPARCEL_H__
 
-#include "util/ccmobject.h"
+#include "util/comoobj.h"
 
 namespace ccm {
 

@@ -14,29 +14,32 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CCMREFLECTIONAPI_H__
-#define __CCM_CCMREFLECTIONAPI_H__
+#ifndef __COMO_CLASSOBJECT_H__
+#define __COMO_CLASSOBJECT_H__
 
-#include "ccmdef.h"
-#include "ccmtypes.h"
+#include "comoobj.h"
 
-namespace ccm {
+namespace como {
 
-EXTERN_C COM_PUBLIC ECode CoGetComponentMetadata(
-    /* [in] */ const ComponentID& cid,
-    /* [in] */ IClassLoader* loader,
-    /* [out] */ IMetaComponent** mc);
+class COM_PUBLIC ClassObject
+    : public Object
+    , public IClassObject
+{
+public:
+    ClassObject();
 
-EXTERN_C COM_PUBLIC ECode CoGetComponentMetadataFromFile(
-    /* [in] */ HANDLE fd,
-    /* [in] */ IClassLoader* loader,
-    /* [out] */ IMetaComponent** mc);
+    COMO_INTERFACE_DECL();
 
-EXTERN_C COM_PUBLIC ECode CoGetCoclassMetadata(
-    /* [in] */ const CoclassID& cid,
-    /* [in] */ IClassLoader* loader,
-    /* [in] */ IMetaCoclass** mc);
+    ECode AttachMetadata(
+        /* [in] */ IMetaComponent* component) override;
 
-}
+    ECode GetMetadate(
+        /* [out] */ AutoPtr<IMetaComponent>& component) override;
 
-#endif // __CCM_CCMREFLECTIONAPI_H__
+protected:
+    IMetaComponent* mComponent;
+};
+
+} // namespace como
+
+#endif //__COMO_CLASSOBJECT_H__

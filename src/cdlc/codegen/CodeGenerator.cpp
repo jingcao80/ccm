@@ -321,6 +321,9 @@ String CodeGenerator::Emitter::EmitEnumerationForwardDeclarations(
 
     for (int i = 0; i < mn->mEnumerationNumber; i++) {
         como::MetaEnumeration* me = mComponent->mEnumerations[mn->mEnumerationIndexes[i]];
+        if (me->mProperties & TYPE_EXTERNAL) {
+            continue;
+        }
         builder.AppendFormat("enum class %s;\n", me->mName);
     }
 
@@ -334,6 +337,9 @@ String CodeGenerator::Emitter::EmitEnumerationDeclarations(
 
     for (int i = 0; i < mn->mEnumerationNumber; i++) {
         como::MetaEnumeration* me = mComponent->mEnumerations[mn->mEnumerationIndexes[i]];
+        if (me->mProperties & TYPE_EXTERNAL) {
+            continue;
+        }
         builder.Append(EmitEnumerationDeclaration(me));
         builder.Append("\n");
     }

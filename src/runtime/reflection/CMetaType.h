@@ -14,17 +14,14 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CMETATYPE_H__
-#define __CCM_CMETATYPE_H__
+#ifndef __COMO_CMETATYPE_H__
+#define __COMO_CMETATYPE_H__
 
-#include "ccmautoptr.h"
-#include "ccmrefbase.h"
+#include "comotypes.h"
+#include "comoref.h"
 #include "Component.h"
 
-using ccm::metadata::MetaComponent;
-using ccm::metadata::MetaType;
-
-namespace ccm {
+namespace como {
 
 class CMetaType
     : public LightRefBase
@@ -42,30 +39,30 @@ public:
     COMO_INTERFACE_DECL();
 
     ECode GetName(
-        /* [out] */ String* name);
+        /* [out] */ String& name);
 
     ECode GetTypeKind(
-        /* [out] */ Integer* kind);
+        /* [out] */ TypeKind& kind);
 
     ECode GetElementType(
-        /* [out] */ IMetaType** elemType);
+        /* [out] */ AutoPtr<IMetaType>& elemType);
 
-    ECode GetPointerNumber(
-        /* [out] */ Integer* number);
+    ECode GetTypeMode(
+        /* [out] */ TypeMode& mode);
 
 private:
-    static String BuildName(
+    String BuildName(
         /* [in] */ MetaComponent* mc,
         /* [in] */ MetaType* mt);
 
 public:
     MetaType* mMetadata;
-    CcmTypeKind mKind;
+    TypeKind mKind;
     String mName;
     AutoPtr<IMetaType> mElementType;
-    Integer mPointerNumber;
+    TypeMode mMode;
 };
 
-}
+} // namespace como
 
-#endif // __CCM_CMETATYPE_H__
+#endif // __COMO_CMETATYPE_H__

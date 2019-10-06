@@ -14,14 +14,14 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CMETAVALUE_H__
-#define __CCM_CMETAVALUE_H__
+#ifndef __COMO_CMETAVALUE_H__
+#define __COMO_CMETAVALUE_H__
 
-#include "ccmautoptr.h"
-#include "ccmrefbase.h"
+#include "comotypes.h"
+#include "comoref.h"
 #include "Component.h"
 
-namespace ccm {
+namespace como {
 
 class CMetaValue
     : public LightRefBase
@@ -31,37 +31,37 @@ public:
     COMO_INTERFACE_DECL();
 
     ECode GetType(
-        /* [out] */ IMetaType** type);
+        /* [out] */ AutoPtr<IMetaType>& type);
 
     ECode GetBooleanValue(
-        /* [out] */ Boolean* value);
+        /* [out] */ Boolean& value);
 
     ECode GetCharValue(
-        /* [out] */ Char* value);
+        /* [out] */ Char& value);
 
     ECode GetByteValue(
-        /* [out] */ Byte* value);
+        /* [out] */ Byte& value);
 
     ECode GetShortValue(
-        /* [out] */ Short* value);
+        /* [out] */ Short& value);
 
     ECode GetIntegerValue(
-        /* [out] */ Integer* value);
+        /* [out] */ Integer& value);
 
     ECode GetLongValue(
-        /* [out] */ Long* value);
+        /* [out] */ Long& value);
 
     ECode GetFloatValue(
-        /* [out] */ Float* value);
+        /* [out] */ Float& value);
 
     ECode GetDoubleValue(
-        /* [out] */ Double* value);
+        /* [out] */ Double& value);
 
     ECode GetStringValue(
-        /* [out] */ String* value);
+        /* [out] */ String& value);
 
     ECode GetRadix(
-        /* [out] */ Integer* radix);
+        /* [out] */ Integer& radix);
 
 public:
     AutoPtr<IMetaType> mType;
@@ -74,6 +74,6 @@ public:
     Integer mRadix;
 };
 
-}
+} // namespace como
 
-#endif // __CCM_CMETAVALUE_H__
+#endif // __COMO_CMETAVALUE_H__

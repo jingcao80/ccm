@@ -14,28 +14,25 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccmcomponent.h"
-#include "ccmlogger.h"
-#include "ccmreflectionapi.h"
+#include "comocomp.h"
+#include "comolog.h"
+#include "comoreflapi.h"
 #include "CMetaComponent.h"
 #include "Component.h"
 #include "CBootClassLoader.h"
-#include "MetaSerializer.h"
+#include "MetadataSerializer.h"
 #include <dlfcn.h>
-#include <errno.h>
+#include <cerrno>
 
-using ccm::metadata::MetaComponent;
-using ccm::metadata::MetaSerializer;
+using como::metadata::MetadataSerializer;
 
-namespace ccm {
+namespace como {
 
 ECode CoGetComponentMetadata(
     /* [in] */ const ComponentID& cid,
     /* [in] */ IClassLoader* loader,
-    /* [out] */ IMetaComponent** mc)
+    /* [out] */ AutoPtr<IMetaComponent>& mc)
 {
-    VALIDATE_NOT_NULL(mc);
-
     if (loader == nullptr) {
         loader = CBootClassLoader::GetInstance();
     }
@@ -46,13 +43,14 @@ ECode CoGetComponentMetadata(
 ECode CoGetComponentMetadataFromFile(
     /* [in] */ HANDLE fd,
     /* [in] */ IClassLoader* loader,
-    /* [out] */ IMetaComponent** mc)
+    /* [out] */ AutoPtr<IMetaComponent>& mc)
 {
-    VALIDATE_NOT_NULL(mc);
-    *mc = nullptr;
+    mc = nullptr;
 
     void* handle = reinterpret_cast<void*>(fd);
-    if (handle == nullptr) return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    if (handle == nullptr) {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
 
     GetClassObjectPtr getFunc = (GetClassObjectPtr)dlsym(handle, "soGetClassObject");
     if (getFunc == nullptr) {
@@ -82,9 +80,9 @@ ECode CoGetComponentMetadataFromFile(
         return E_COMPONENT_IO_EXCEPTION;
     }
 
-    CcmComponent* ccmComp = (CcmComponent*)malloc(sizeof(CcmComponent));
+    ComoComponent* ccmComp = (ComoComponent*)malloc(sizeof(ComoComponent));
     if (ccmComp == nullptr) {
-        Logger::E("CCMRT", "Malloc CcmComponent failed.");
+        Logger::E("CCMRT", "Malloc ComoComponent failed.");
         return E_OUT_OF_MEMORY_ERROR;
     }
     ccmComp->mSoHandle = handle;
@@ -100,36 +98,32 @@ ECode CoGetComponentMetadataFromFile(
     if (data == nullptr) {
         Logger::E("CCMRT", "Malloc %d size metadata failed.", mmc->mSize);
         free(ccmComp);
-        *mc = nullptr;
         return E_OUT_OF_MEMORY_ERROR;
     }
     memcpy(data, mmc, mmc->mSize);
 
-    MetaSerializer serializer;
+    MetadataSerializer serializer;
     serializer.Deserialize(reinterpret_cast<uintptr_t>(data));
-    *mc = new CMetaComponent(loader, ccmComp, (MetaComponent*)data);
-    REFCOUNT_ADD(*mc);
+    mc = new CMetaComponent(loader, ccmComp, (MetaComponent*)data);
     return NOERROR;
 }
 
 ECode CoGetCoclassMetadata(
     /* [in] */ const CoclassID& cid,
     /* [in] */ IClassLoader* loader,
-    /* [in] */ IMetaCoclass** mc)
+    /* [out] */ AutoPtr<IMetaCoclass>& mc)
 {
-    VALIDATE_NOT_NULL(mc);
-
     if (loader == nullptr) {
         loader = CBootClassLoader::GetInstance();
     }
 
     AutoPtr<IMetaComponent> component;
-    ECode ec = loader->LoadComponent(*cid.mCid, &component);
+    ECode ec = loader->LoadComponent(*cid.mCid, component);
     if (FAILED(ec)) {
-        *mc = nullptr;
+        mc = nullptr;
         return ec;
     }
     return component->GetCoclass(cid, mc);
 }
 
-}
+} // namespace como

@@ -53,6 +53,7 @@ void Tokenizer::SetupKeywords()
     mKeywords["String"] = Token::STRING;
     mKeywords["Triple"] = Token::TRIPLE;
     mKeywords["true"] = Token::TRUE;
+    mKeywords["TypeKind"] = Token::TYPEKIND;
     mKeywords["uri"] = Token::URI;
     mKeywords["uuid"] = Token::UUID;
     mKeywords["version"] = Token::VERSION;

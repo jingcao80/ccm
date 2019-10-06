@@ -15,11 +15,9 @@
 //=========================================================================
 
 #include "CArgumentList.h"
-#include <stdlib.h>
+#include <cstdlib>
 
-using ccm::metadata::MetaType;
-
-namespace ccm {
+namespace como {
 
 COMO_INTERFACE_IMPL_LIGHT_1(CArgumentList, LightRefBase, IArgumentList)
 
@@ -33,7 +31,7 @@ CArgumentList::CArgumentList(
     , mStackData(nullptr)
 {
     CalculateDataSize(mc, mm,
-            &mIntegerDataNumber, &mFPDataNumber, &mStackDataNumber);
+            mIntegerDataNumber, mFPDataNumber, mStackDataNumber);
     if (mIntegerDataNumber > 0) {
         mIntegerData = (Long*)malloc(sizeof(Long) * mIntegerDataNumber);
     }
@@ -67,18 +65,15 @@ CArgumentList::~CArgumentList()
 
 ECode CArgumentList::GetInputArgumentOfByte(
     /* [in] */ Integer index,
-    /* [out] */ Byte* value)
+    /* [out] */ Byte& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     if (index < 0 || index >= mArgumentNumber) {
-        *value = 0;
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     Integer pos = GetPos(index);
     Long* data = (Long*)GetDataBuffer(index);
-    *value = (Byte)data[pos];
+    value = (Byte)data[pos];
     return NOERROR;
 }
 
@@ -98,18 +93,15 @@ ECode CArgumentList::SetInputArgumentOfByte(
 
 ECode CArgumentList::GetInputArgumentOfShort(
     /* [in] */ Integer index,
-    /* [out] */ Short* value)
+    /* [out] */ Short& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     if (index < 0 || index >= mArgumentNumber) {
-        *value = 0;
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     Integer pos = GetPos(index);
     Long* data = (Long*)GetDataBuffer(index);
-    *value = (Short)data[pos];
+    value = (Short)data[pos];
     return NOERROR;
 }
 
@@ -129,17 +121,15 @@ ECode CArgumentList::SetInputArgumentOfShort(
 
 ECode CArgumentList::GetInputArgumentOfInteger(
     /* [in] */ Integer index,
-    /* [out] */ Integer* value)
+    /* [out] */ Integer& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     if (index < 0 || index >= mArgumentNumber) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     Integer pos = GetPos(index);
     Long* data = (Long*)GetDataBuffer(index);
-    *value = (Integer)data[pos];
+    value = (Integer)data[pos];
     return NOERROR;
 }
 
@@ -159,17 +149,15 @@ ECode CArgumentList::SetInputArgumentOfInteger(
 
 ECode CArgumentList::GetInputArgumentOfLong(
     /* [in] */ Integer index,
-    /* [out] */ Long* value)
+    /* [out] */ Long& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     if (index < 0 || index >= mArgumentNumber) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     Integer pos = GetPos(index);
     Long* data = (Long*)GetDataBuffer(index);
-    *value = data[pos];
+    value = data[pos];
     return NOERROR;
 }
 
@@ -189,17 +177,15 @@ ECode CArgumentList::SetInputArgumentOfLong(
 
 ECode CArgumentList::GetInputArgumentOfFloat(
     /* [in] */ Integer index,
-    /* [out] */ Float* value)
+    /* [out] */ Float& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     if (index < 0 || index >= mArgumentNumber) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     Integer pos = GetPos(index);
     Double* data = (Double*)GetDataBuffer(index);
-    *value = (Float)data[pos];
+    value = (Float)data[pos];
     return NOERROR;
 }
 
@@ -219,17 +205,15 @@ ECode CArgumentList::SetInputArgumentOfFloat(
 
 ECode CArgumentList::GetInputArgumentOfDouble(
     /* [in] */ Integer index,
-    /* [out] */ Double* value)
+    /* [out] */ Double& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     if (index < 0 || index >= mArgumentNumber) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     Integer pos = GetPos(index);
     Double* data = (Double*)GetDataBuffer(index);
-    *value = data[pos];
+    value = data[pos];
     return NOERROR;
 }
 
@@ -249,17 +233,15 @@ ECode CArgumentList::SetInputArgumentOfDouble(
 
 ECode CArgumentList::GetInputArgumentOfChar(
     /* [in] */ Integer index,
-    /* [out] */ Char* value)
+    /* [out] */ Char& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     if (index < 0 || index >= mArgumentNumber) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     Integer pos = GetPos(index);
     Long* data = (Long*)GetDataBuffer(index);
-    *value = (Char)data[pos];
+    value = (Char)data[pos];
     return NOERROR;
 }
 
@@ -279,17 +261,15 @@ ECode CArgumentList::SetInputArgumentOfChar(
 
 ECode CArgumentList::GetInputArgumentOfBoolean(
     /* [in] */ Integer index,
-    /* [out] */ Boolean* value)
+    /* [out] */ Boolean& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     if (index < 0 || index >= mArgumentNumber) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     Integer pos = GetPos(index);
     Long* data = (Long*)GetDataBuffer(index);
-    *value = (Boolean)data[pos];
+    value = (Boolean)data[pos];
     return NOERROR;
 }
 
@@ -309,17 +289,15 @@ ECode CArgumentList::SetInputArgumentOfBoolean(
 
 ECode CArgumentList::GetInputArgumentOfString(
     /* [in] */ Integer index,
-    /* [out] */ String* value)
+    /* [out] */ String& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     if (index < 0 || index >= mArgumentNumber) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     Integer pos = GetPos(index);
     Long* data = (Long*)GetDataBuffer(index);
-    *value = *reinterpret_cast<String*>(data[pos]);
+    value = *reinterpret_cast<String*>(data[pos]);
     return NOERROR;
 }
 
@@ -339,17 +317,15 @@ ECode CArgumentList::SetInputArgumentOfString(
 
 ECode CArgumentList::GetInputArgumentOfHANDLE(
     /* [in] */ Integer index,
-    /* [out] */ HANDLE* value)
+    /* [out] */ HANDLE& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     if (index < 0 || index >= mArgumentNumber) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     Integer pos = GetPos(index);
     Long* data = (Long*)GetDataBuffer(index);
-    *value = (HANDLE)data[pos];
+    value = (HANDLE)data[pos];
     return NOERROR;
 }
 
@@ -369,17 +345,15 @@ ECode CArgumentList::SetInputArgumentOfHANDLE(
 
 ECode CArgumentList::GetInputArgumentOfECode(
     /* [in] */ Integer index,
-    /* [out] */ ECode* value)
+    /* [out] */ ECode& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     if (index < 0 || index >= mArgumentNumber) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     Integer pos = GetPos(index);
     Long* data = (Long*)GetDataBuffer(index);
-    *value = (ECode)data[pos];
+    value = (ECode)data[pos];
     return NOERROR;
 }
 
@@ -399,17 +373,15 @@ ECode CArgumentList::SetInputArgumentOfECode(
 
 ECode CArgumentList::GetInputArgumentOfCoclassID(
     /* [in] */ Integer index,
-    /* [out] */ CoclassID* value)
+    /* [out] */ CoclassID& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     if (index < 0 || index >= mArgumentNumber) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     Integer pos = GetPos(index);
     Long* data = (Long*)GetDataBuffer(index);
-    *value = *reinterpret_cast<CoclassID*>(data[pos]);
+    value = *reinterpret_cast<CoclassID*>(data[pos]);
     return NOERROR;
 }
 
@@ -429,17 +401,15 @@ ECode CArgumentList::SetInputArgumentOfCoclassID(
 
 ECode CArgumentList::GetInputArgumentOfComponentID(
     /* [in] */ Integer index,
-    /* [out] */ ComponentID* value)
+    /* [out] */ ComponentID& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     if (index < 0 || index >= mArgumentNumber) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     Integer pos = GetPos(index);
     Long* data = (Long*)GetDataBuffer(index);
-    *value = *reinterpret_cast<ComponentID*>(data[pos]);
+    value = *reinterpret_cast<ComponentID*>(data[pos]);
     return NOERROR;
 }
 
@@ -459,17 +429,15 @@ ECode CArgumentList::SetInputArgumentOfComponentID(
 
 ECode CArgumentList::GetInputArgumentOfInterfaceID(
     /* [in] */ Integer index,
-    /* [out] */ InterfaceID* value)
+    /* [out] */ InterfaceID& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     if (index < 0 || index >= mArgumentNumber) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     Integer pos = GetPos(index);
     Long* data = (Long*)GetDataBuffer(index);
-    *value = *reinterpret_cast<InterfaceID*>(data[pos]);
+    value = *reinterpret_cast<InterfaceID*>(data[pos]);
     return NOERROR;
 }
 
@@ -489,17 +457,15 @@ ECode CArgumentList::SetInputArgumentOfInterfaceID(
 
 ECode CArgumentList::GetInputArgumentOfArray(
     /* [in] */ Integer index,
-    /* [out] */ HANDLE* value)
+    /* [out] */ HANDLE& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     if (index < 0 || index >= mArgumentNumber) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     Integer pos = GetPos(index);
     Long* data = (Long*)GetDataBuffer(index);
-    *value = (HANDLE)data[pos];
+    value = (HANDLE)data[pos];
     return NOERROR;
 }
 
@@ -519,7 +485,7 @@ ECode CArgumentList::SetInputArgumentOfArray(
 
 ECode CArgumentList::GetInputArgumentOfEnumeration(
     /* [in] */ Integer index,
-    /* [out] */ Integer* value)
+    /* [out] */ Integer& value)
 {
     return GetInputArgumentOfInteger(index, value);
 }
@@ -533,18 +499,15 @@ ECode CArgumentList::SetInputArgumentOfEnumeration(
 
 ECode CArgumentList::GetInputArgumentOfInterface(
     /* [in] */ Integer index,
-    /* [out] */ IInterface** value)
+    /* [out] */ AutoPtr<IInterface>& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     if (index < 0 || index >= mArgumentNumber) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     Integer pos = GetPos(index);
     Long* data = (Long*)GetDataBuffer(index);
-    *value = reinterpret_cast<IInterface*>(data[pos]);
-    REFCOUNT_ADD(*value);
+    value = reinterpret_cast<IInterface*>(data[pos]);
     return NOERROR;
 }
 
@@ -923,68 +886,66 @@ ECode CArgumentList::SetOutputArgumentOfInterface(
 
 ECode CArgumentList::GetArgumentAddress(
     /* [in] */ Integer index,
-    /* [out] */ HANDLE* addr)
+    /* [out] */ HANDLE& addr)
 {
-    VALIDATE_NOT_NULL(addr);
-
     Integer pos = GetPos(index);
     Long* data = (Long*)GetDataBuffer(index);
-    *addr = static_cast<HANDLE>(data[pos]);
+    addr = static_cast<HANDLE>(data[pos]);
     return NOERROR;
 }
 
 void CArgumentList::CalculateDataSize(
     /* [in] */ MetaComponent* mc,
     /* [in] */ MetaMethod* mm,
-    /* [out] */ Integer* intDataNum,
-    /* [out] */ Integer* fpDataNum,
-    /* [out] */ Integer* stDataNum)
+    /* [out] */ Integer& intDataNum,
+    /* [out] */ Integer& fpDataNum,
+    /* [out] */ Integer& stDataNum)
 {
     if (mArgumentNumber > 0) {
         mArgumentIndicators =
                 (Short*)malloc(sizeof(Short) * mArgumentNumber);
     }
-    *intDataNum = 1;
-    *fpDataNum = 0;
-    *stDataNum = 0;
+    intDataNum = 1;
+    fpDataNum = 0;
+    stDataNum = 0;
     for (Integer i = 0; i < mArgumentNumber; i++) {
         MetaType* mt = mc->mTypes[mm->mParameters[i]->mTypeIndex];
         switch (mt->mKind) {
-            case CcmTypeKind::Char:
-            case CcmTypeKind::Byte:
-            case CcmTypeKind::Short:
-            case CcmTypeKind::Integer:
-            case CcmTypeKind::Long:
-            case CcmTypeKind::Boolean:
-            case CcmTypeKind::String:
-            case CcmTypeKind::CoclassID:
-            case CcmTypeKind::ComponentID:
-            case CcmTypeKind::InterfaceID:
-            case CcmTypeKind::HANDLE:
-            case CcmTypeKind::ECode:
-            case CcmTypeKind::Enum:
-            case CcmTypeKind::Array:
-            case CcmTypeKind::Interface:
-            case CcmTypeKind::Triple: {
-                if (*intDataNum < 6) {
-                    mArgumentIndicators[i] = (INT_DATA << DATA_SHIFT) | *intDataNum;
-                    (*intDataNum)++;
+            case TypeKind::Char:
+            case TypeKind::Byte:
+            case TypeKind::Short:
+            case TypeKind::Integer:
+            case TypeKind::Long:
+            case TypeKind::Boolean:
+            case TypeKind::String:
+            case TypeKind::CoclassID:
+            case TypeKind::ComponentID:
+            case TypeKind::InterfaceID:
+            case TypeKind::HANDLE:
+            case TypeKind::ECode:
+            case TypeKind::Enum:
+            case TypeKind::Array:
+            case TypeKind::Interface:
+            case TypeKind::Triple: {
+                if (intDataNum < 6) {
+                    mArgumentIndicators[i] = (INT_DATA << DATA_SHIFT) | intDataNum;
+                    (intDataNum)++;
                 }
                 else {
-                    mArgumentIndicators[i] = (STK_DATA << DATA_SHIFT) | *stDataNum;
-                    (*stDataNum)++;
+                    mArgumentIndicators[i] = (STK_DATA << DATA_SHIFT) | stDataNum;
+                    (stDataNum)++;
                 }
                 break;
             }
-            case CcmTypeKind::Float:
-            case CcmTypeKind::Double: {
-                if (*fpDataNum < 8) {
-                    mArgumentIndicators[i] = (FP_DATA << DATA_SHIFT) | *fpDataNum;
-                    (*fpDataNum)++;
+            case TypeKind::Float:
+            case TypeKind::Double: {
+                if (fpDataNum < 8) {
+                    mArgumentIndicators[i] = (FP_DATA << DATA_SHIFT) | fpDataNum;
+                    (fpDataNum)++;
                 }
                 else {
-                    mArgumentIndicators[i] = (STK_DATA << DATA_SHIFT) | *stDataNum;
-                    (*stDataNum)++;
+                    mArgumentIndicators[i] = (STK_DATA << DATA_SHIFT) | stDataNum;
+                    (stDataNum)++;
                 }
                 break;
             }
@@ -996,9 +957,15 @@ void* CArgumentList::GetDataBuffer(
     /* [in] */ Integer index)
 {
     Byte tag = ((unsigned short)(mArgumentIndicators[index] & DATA_MASK)) >> DATA_SHIFT;
-    if (tag == INT_DATA) return mIntegerData;
-    else if (tag == FP_DATA) return mFPData;
-    else return mStackData;
+    if (tag == INT_DATA) {
+        return mIntegerData;
+    }
+    else if (tag == FP_DATA) {
+        return mFPData;
+    }
+    else {
+        return mStackData;
+    }
 }
 
 Integer CArgumentList::GetPos(
@@ -1022,24 +989,24 @@ ECode CArgumentList::SetOutputArgumentAddr(
 }
 
 Long* CArgumentList::GetIntegerData(
-    /* [out] */ Integer* number)
+    /* [out] */ Integer& number)
 {
-    *number = mIntegerDataNumber;
+    number = mIntegerDataNumber;
     return mIntegerData;
 }
 
 Double* CArgumentList::GetFPData(
-    /* [out] */ Integer* number)
+    /* [out] */ Integer& number)
 {
-    *number = mFPDataNumber;
+    number = mFPDataNumber;
     return mFPData;
 }
 
 Long* CArgumentList::GetStackData(
-    /* [out] */ Integer* number)
+    /* [out] */ Integer& number)
 {
-    *number = mStackDataNumber;
+    number = mStackDataNumber;
     return mStackData;
 }
 
-}
+} // namespace como

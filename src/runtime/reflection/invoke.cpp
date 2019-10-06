@@ -14,9 +14,9 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccmtypes.h"
+#include "comotypes.h"
 
-namespace ccm {
+namespace como {
 
 EXTERN_C ECode invoke(
     /* [in] */ HANDLE func,
@@ -132,4 +132,4 @@ EXTERN_C ECode invoke(
     return ret;
 }
 
-}
+} // namespace como

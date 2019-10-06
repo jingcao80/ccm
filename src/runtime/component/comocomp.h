@@ -14,32 +14,40 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __COMO_CLASSOBJECT_H__
-#define __COMO_CLASSOBJECT_H__
+#ifndef __COMO_COMPONENT_H__
+#define __COMO_COMPONENT_H__
 
-#include "comoobject.h"
+#include "comotypes.h"
 
 namespace como {
 
-class COM_PUBLIC ClassObject
-    : public Object
-    , public IClassObject
+typedef ECode (*GetterPtr)(AutoPtr<IClassObject>&);
+
+struct ClassObjectGetter
 {
-public:
-    ClassObject();
+    CoclassID   mCid;
+    GetterPtr   mGetter;
+};
 
-    COMO_INTERFACE_DECL();
+typedef ECode (*GetClassObjectPtr)(const CoclassID&, AutoPtr<IClassObject>&);
+typedef ClassObjectGetter* (*GetAllClassObjectsPtr)(int& size);
+typedef Boolean (*CanUnloadPtr)();
 
-    ECode AttachMetadata(
-        /* [in] */ IMetaComponent* component) override;
+struct MetadataWrapper
+{
+    int             mSize;
+    unsigned char   mMetadata[0];
+};
 
-    ECode GetMetadate(
-        /* [out] */ AutoPtr<IMetaComponent>& component) override;
-
-protected:
-    IMetaComponent* mComponent;
+struct ComoComponent
+{
+    void*                   mSoHandle;
+    GetClassObjectPtr       mSoGetClassObject;
+    GetAllClassObjectsPtr   mSoGetAllClassObjects;
+    CanUnloadPtr            mSoCanUnload;
+    MetadataWrapper*        mMetadataWrapper;
 };
 
 } // namespace como
 
-#endif //__COMO_CLASSOBJECT_H__
+#endif // __COMO_COMPONENT_H__

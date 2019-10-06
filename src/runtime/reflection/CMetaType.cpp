@@ -16,14 +16,14 @@
 
 #include "CMetaType.h"
 
-namespace ccm {
+namespace como {
 
 COMO_INTERFACE_IMPL_LIGHT_1(CMetaType, LightRefBase, IMetaType)
 
 CMetaType::CMetaType()
     : mMetadata(nullptr)
-    , mKind(CcmTypeKind::Unknown)
-    , mPointerNumber(0)
+    , mKind(TypeKind::Unknown)
+    , mMode(TypeMode::NORMAL)
 {}
 
 CMetaType::CMetaType(
@@ -31,12 +31,27 @@ CMetaType::CMetaType(
     /* [in] */ MetaType* mt)
     : mMetadata(mt)
     , mKind(mt->mKind)
-    , mPointerNumber(mt->mPointerNumber)
+    , mMode(TypeMode::NORMAL)
 {
+    int N = mt->mProperties & TYPE_NUMBER_MASK;
+    if (N == 1) {
+        mMode = ((mt->mProperties >> 2) & TYPE_POINTER)
+                ? TypeMode::POINTER : TypeMode::REFERENCE;
+    }
+    else if (N == 2) {
+        if ((mt->mProperties >> 2) & TYPE_POINTER) {
+            mMode = ((mt->mProperties >> 4) & TYPE_POINTER)
+                ? TypeMode::POINTER_POINTER : TypeMode::POINTER_REFERENCE;
+        }
+        else {
+            mMode = ((mt->mProperties >> 4) & TYPE_POINTER)
+                ? TypeMode::REFERENCE_POINTER : TypeMode::REFERENCE_REFERENCE;
+        }
+    }
     mName = BuildName(mc, mt);
-    if (mt->mNestedTypeIndex != -1) {
+    if (mt->mIndex != -1) {
         mElementType = new CMetaType(mc,
-                mc->mTypes[mt->mNestedTypeIndex]);
+                mc->mTypes[mt->mIndex]);
     }
 }
 
@@ -46,39 +61,30 @@ CMetaType::~CMetaType()
 }
 
 ECode CMetaType::GetName(
-    /* [out] */ String* name)
+    /* [out] */ String& name)
 {
-    VALIDATE_NOT_NULL(name);
-
-    *name = mName;
+    name = mName;
     return NOERROR;
 }
 
 ECode CMetaType::GetTypeKind(
-    /* [out] */ Integer* kind)
+    /* [out] */ TypeKind& kind)
 {
-    VALIDATE_NOT_NULL(kind);
-
-    *kind = (Integer)mKind;
+    kind = mKind;
     return NOERROR;
 }
 
 ECode CMetaType::GetElementType(
-    /* [out] */ IMetaType** elemType)
+    /* [out] */ AutoPtr<IMetaType>& elemType)
 {
-    VALIDATE_NOT_NULL(elemType);
-
-    *elemType = mElementType;
-    REFCOUNT_ADD(*elemType);
+    elemType = mElementType;
     return NOERROR;
 }
 
-ECode CMetaType::GetPointerNumber(
-    /* [out] */ Integer* number)
+ECode CMetaType::GetTypeMode(
+    /* [out] */ TypeMode& mode)
 {
-    VALIDATE_NOT_NULL(number);
-
-    *number = mPointerNumber;
+    mode = mMode;
     return NOERROR;
 }
 
@@ -89,77 +95,99 @@ String CMetaType::BuildName(
     String typeStr;
 
     switch(mt->mKind) {
-        case CcmTypeKind::Unknown:
+        case TypeKind::Unknown:
             return String("Unknown");
-        case CcmTypeKind::Char:
+        case TypeKind::Char:
             typeStr = "Char";
             break;
-        case CcmTypeKind::Byte:
+        case TypeKind::Byte:
             typeStr = "Byte";
             break;
-        case CcmTypeKind::Short:
+        case TypeKind::Short:
             typeStr = "Short";
             break;
-        case CcmTypeKind::Integer:
+        case TypeKind::Integer:
             typeStr = "Integer";
             break;
-        case CcmTypeKind::Long:
+        case TypeKind::Long:
             typeStr = "Long";
             break;
-        case CcmTypeKind::Float:
+        case TypeKind::Float:
             typeStr = "Float";
             break;
-        case CcmTypeKind::Double:
+        case TypeKind::Double:
             typeStr = "Double";
             break;
-        case CcmTypeKind::Boolean:
+        case TypeKind::Boolean:
             typeStr = "Boolean";
             break;
-        case CcmTypeKind::String:
-            typeStr = mt->mPointerNumber == 0 ?
+        case TypeKind::String:
+            typeStr = mMode == TypeMode::NORMAL ?
                     "const String&" : "String";
             break;
-        case CcmTypeKind::CoclassID:
-            typeStr = mt->mPointerNumber == 0 ?
+        case TypeKind::CoclassID:
+            typeStr = mMode == TypeMode::NORMAL ?
                     "const CoclassID&" : "CoclassID";
             break;
-        case CcmTypeKind::ComponentID:
-            typeStr = mt->mPointerNumber == 0 ?
+        case TypeKind::ComponentID:
+            typeStr = mMode == TypeMode::NORMAL ?
                     "const ComponentID&" : "ComponentID";
             break;
-        case CcmTypeKind::InterfaceID:
-            typeStr = mt->mPointerNumber == 0 ?
+        case TypeKind::InterfaceID:
+            typeStr = mMode == TypeMode::NORMAL ?
                     "const InterfaceID&" : "InterfaceID";
             break;
-        case CcmTypeKind::HANDLE:
+        case TypeKind::HANDLE:
             typeStr = "HANDLE";
             break;
-        case CcmTypeKind::ECode:
+        case TypeKind::ECode:
             typeStr = "ECode";
             break;
-        case CcmTypeKind::Enum:
+        case TypeKind::Enum:
             typeStr = mc->mEnumerations[mt->mIndex]->mName;
             break;
-        case CcmTypeKind::Array: {
-            MetaType* elem = mc->mTypes[mt->mNestedTypeIndex];
+        case TypeKind::Array: {
+            MetaType* elem = mc->mTypes[mt->mIndex];
             typeStr = String::Format("Array<%s>",
                     BuildName(mc, elem).string());
             break;
         }
-        case CcmTypeKind::Interface:
+        case TypeKind::Interface:
             typeStr = mc->mInterfaces[mt->mIndex]->mName;
             break;
-        case CcmTypeKind::Triple:
-            typeStr = mt->mPointerNumber == 0 ?
+        case TypeKind::Triple:
+            typeStr = mMode == TypeMode::NORMAL ?
                     "const Triple&" : "Triple";
+            break;
+        case TypeKind::TypeKind:
+            typeStr = "TypeKind";
             break;
     }
 
-    for (Integer i = 0; i < mt->mPointerNumber; i++) {
-        typeStr += "*";
+    switch (mMode) {
+        case TypeMode::POINTER:
+            typeStr += "*";
+            break;
+        case TypeMode::REFERENCE:
+            typeStr += "&";
+            break;
+        case TypeMode::POINTER_POINTER:
+            typeStr += "**";
+            break;
+        case TypeMode::POINTER_REFERENCE:
+            typeStr += "*&";
+            break;
+        case TypeMode::REFERENCE_REFERENCE:
+            typeStr += "&&";
+            break;
+        case TypeMode::REFERENCE_POINTER:
+            typeStr += "&*";
+            break;
+        default:
+            break;
     }
 
     return typeStr;
 }
 
-}
+} // namespace como

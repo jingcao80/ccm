@@ -14,15 +14,13 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CMETAENUMERATOR_H__
-#define __CCM_CMETAENUMERATOR_H__
+#ifndef __COMO_CMETAENUMERATOR_H__
+#define __COMO_CMETAENUMERATOR_H__
 
-#include "ccmrefbase.h"
+#include "comoref.h"
 #include "Component.h"
 
-using ccm::metadata::MetaEnumerator;
-
-namespace ccm {
+namespace como {
 
 class CMetaEnumeration;
 
@@ -40,13 +38,13 @@ public:
     COMO_INTERFACE_DECL();
 
     ECode GetEnumeration(
-        /* [out] */ IMetaEnumeration** metaEnumn) override;
+        /* [out] */ AutoPtr<IMetaEnumeration>& metaEnumn) override;
 
     ECode GetName(
-        /* [out] */ String* name) override;
+        /* [out] */ String& name) override;
 
     ECode GetValue(
-        /* [out] */ Integer* value) override;
+        /* [out] */ Integer& value) override;
 
 public:
     MetaEnumerator* mMetadata;
@@ -55,6 +53,6 @@ public:
     Integer mValue;
 };
 
-}
+} // namespace como
 
-#endif // __CCM_CMETAENUMERATOR_H__
+#endif // __COMO_CMETAENUMERATOR_H__

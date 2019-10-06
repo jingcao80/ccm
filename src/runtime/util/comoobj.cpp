@@ -14,7 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
-#include "comoobject.h"
+#include "comoobj.h"
 
 namespace como {
 

@@ -14,30 +14,29 @@
 // limitations under the License.
 //=========================================================================
 
-#include "comospinlock.h"
+#ifndef __COMO_COMOREFLECTIONAPI_H__
+#define __COMO_COMOREFLECTIONAPI_H__
+
+#include "comodef.h"
+#include "comotypes.h"
 
 namespace como {
 
-void Spinlock::Lock()
-{
-    if (mLocked.exchange(true, std::memory_order_acquire)) {
-        // Lock was contended.  Fall back to an out-of-line spin loop.
-        while (mLocked.exchange(true, std::memory_order_acquire)) {
-        }
-    }
-}
+EXTERN_C COM_PUBLIC ECode CoGetComponentMetadata(
+    /* [in] */ const ComponentID& cid,
+    /* [in] */ IClassLoader* loader,
+    /* [out] */ AutoPtr<IMetaComponent>& mc);
 
-Boolean Spinlock::TryLock()
-{
-    if (mLocked.exchange(true, std::memory_order_acquire)) {
-        return false;
-    }
-    return true;
-}
+EXTERN_C COM_PUBLIC ECode CoGetComponentMetadataFromFile(
+    /* [in] */ HANDLE fd,
+    /* [in] */ IClassLoader* loader,
+    /* [out] */ AutoPtr<IMetaComponent>& mc);
 
-void Spinlock::Unlock()
-{
-    mLocked.store(false, std::memory_order_release);
-}
+EXTERN_C COM_PUBLIC ECode CoGetCoclassMetadata(
+    /* [in] */ const CoclassID& cid,
+    /* [in] */ IClassLoader* loader,
+    /* [out] */ AutoPtr<IMetaCoclass>& mc);
 
 } // namespace como
+
+#endif // __COMO_COMOREFLECTIONAPI_H__

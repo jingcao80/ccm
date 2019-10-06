@@ -14,7 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
-#include "comologger.h"
+#include "comolog.h"
 #include <cstdarg>
 #include <cstdio>
 

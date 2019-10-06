@@ -19,7 +19,7 @@
 #include "CMetaInterface.h"
 #include "CMetaMethod.h"
 
-namespace ccm {
+namespace como {
 
 COMO_INTERFACE_IMPL_LIGHT_1(CMetaInterface, LightRefBase, IMetaInterface);
 
@@ -52,58 +52,44 @@ CMetaInterface::~CMetaInterface()
 }
 
 ECode CMetaInterface::GetComponent(
-    /* [out] */ IMetaComponent** metaComp)
+    /* [out] */ AutoPtr<IMetaComponent>& metaComp)
 {
-    VALIDATE_NOT_NULL(metaComp);
-
-    *metaComp = (IMetaComponent*)mOwner;
-    REFCOUNT_ADD(*metaComp);
+    metaComp = (IMetaComponent*)mOwner;
     return NOERROR;
 }
 
 ECode CMetaInterface::GetName(
-    /* [out] */ String* name)
+    /* [out] */ String& name)
 {
-    VALIDATE_NOT_NULL(name);
-
-    *name = mName;
+    name = mName;
     return NOERROR;
 }
 
 ECode CMetaInterface::GetNamespace(
-    /* [out] */ String* ns)
+    /* [out] */ String& ns)
 {
-    VALIDATE_NOT_NULL(ns);
-
-    *ns = mNamespace;
+    ns = mNamespace;
     return NOERROR;
 }
 
 ECode CMetaInterface::GetInterfaceID(
-    /* [out] */ InterfaceID* iid)
+    /* [out] */ InterfaceID& iid)
 {
-    VALIDATE_NOT_NULL(iid);
-
-    *iid = mIid;
+    iid = mIid;
     return NOERROR;
 }
 
 ECode CMetaInterface::GetBaseInterface(
-    /* [out] */ IMetaInterface** baseIntf)
+    /* [out] */ AutoPtr<IMetaInterface>& baseIntf)
 {
-    VALIDATE_NOT_NULL(baseIntf);
-
-    *baseIntf = mBaseInterface;
-    REFCOUNT_ADD(*baseIntf);
+    baseIntf = mBaseInterface;
     return NOERROR;
 }
 
 ECode CMetaInterface::GetConstantNumber(
-    /* [out] */ Integer* number)
+    /* [out] */ Integer& number)
 {
-    VALIDATE_NOT_NULL(number);
-
-    *number = mMetaConstants.GetLength();
+    number = mMetaConstants.GetLength();
     return NOERROR;
 }
 
@@ -121,54 +107,46 @@ ECode CMetaInterface::GetAllConstants(
 
 ECode CMetaInterface::GetConstant(
     /* [in] */ const String& name,
-    /* [out] */ IMetaConstant** constt)
+    /* [out] */ AutoPtr<IMetaConstant>& constt)
 {
-    VALIDATE_NOT_NULL(constt);
-
     BuildAllConstants();
 
-    if (name.IsNullOrEmpty()) {
-        *constt = nullptr;
+    if (name.IsEmpty()) {
+        constt = nullptr;
         return NOERROR;
     }
 
     for (Integer i = 0; i < mMetaConstants.GetLength(); i++) {
         String mcName;
-        mMetaConstants[i]->GetName(&mcName);
+        mMetaConstants[i]->GetName(mcName);
         if (mcName.Equals(name)) {
-            *constt = mMetaConstants[i];
-            REFCOUNT_ADD(*constt);
+            constt = mMetaConstants[i];
             return NOERROR;
         }
     }
-    *constt = nullptr;
+    constt = nullptr;
     return NOERROR;
 }
 
 ECode CMetaInterface::GetConstant(
     /* [in] */ Integer index,
-    /* [out] */ IMetaConstant** constt)
+    /* [out] */ AutoPtr<IMetaConstant>& constt)
 {
-    VALIDATE_NOT_NULL(constt);
-
     if (index < 0 || index >= mMetaConstants.GetLength()) {
-        *constt = nullptr;
+        constt = nullptr;
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     BuildAllConstants();
 
-    *constt = mMetaConstants[index];
-    REFCOUNT_ADD(*constt);
+    constt = mMetaConstants[index];
     return NOERROR;
 }
 
 ECode CMetaInterface::GetMethodNumber(
-    /* [out] */ Integer* number)
+    /* [out] */ Integer& number)
 {
-    VALIDATE_NOT_NULL(number);
-
-    *number = mMetaMethods.GetLength();
+    number = mMetaMethods.GetLength();
     return NOERROR;
 }
 
@@ -187,12 +165,10 @@ ECode CMetaInterface::GetAllMethods(
 ECode CMetaInterface::GetMethod(
     /* [in] */ const String& name,
     /* [in] */ const String& signature,
-    /* [out] */ IMetaMethod** method)
+    /* [out] */ AutoPtr<IMetaMethod>& method)
 {
-    VALIDATE_NOT_NULL(method);
-
-    if (name.IsNullOrEmpty()) {
-        *method = nullptr;
+    if (name.IsEmpty()) {
+        method = nullptr;
         return NOERROR;
     }
 
@@ -201,33 +177,29 @@ ECode CMetaInterface::GetMethod(
     for (Integer i = 0; i < mMetaMethods.GetLength(); i++) {
         IMetaMethod* mmObj = mMetaMethods[i];
         String mmName, mmSignature;
-        mmObj->GetName(&mmName);
-        mmObj->GetSignature(&mmSignature);
+        mmObj->GetName(mmName);
+        mmObj->GetSignature(mmSignature);
         if (mmName.Equals(name) && mmSignature.Equals(signature)) {
-            *method = mmObj;
-            REFCOUNT_ADD(*method);
+            method = mmObj;
             return NOERROR;
         }
     }
-    *method = nullptr;
+    method = nullptr;
     return NOERROR;
 }
 
 ECode CMetaInterface::GetMethod(
     /* [in] */ Integer index,
-    /* [out] */ IMetaMethod** method)
+    /* [out] */ AutoPtr<IMetaMethod>& method)
 {
-    VALIDATE_NOT_NULL(method);
-
     if (index < 0 || index >= mMetaMethods.GetLength()) {
-        *method = nullptr;
+        method = nullptr;
         return NOERROR;
     }
 
     BuildAllMethods();
 
-    *method = mMetaMethods[index];
-    REFCOUNT_ADD(*method);
+    method = mMetaMethods[index];
     return NOERROR;
 }
 
@@ -292,4 +264,4 @@ Integer CMetaInterface::BuildInterfaceMethod(
     return startIndex + mi->mMethodNumber;
 }
 
-}
+} // namespace como
