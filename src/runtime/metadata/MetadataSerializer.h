@@ -22,7 +22,6 @@
 #include <stdint.h>
 
 namespace como {
-namespace metadata {
 
 class MetadataSerializer
 {
@@ -126,7 +125,6 @@ size_t MetadataSerializer::GetSize()
     return mMetadataSize;
 }
 
-} // metadata
 } // como
 
 #endif // __CCM_METADATA_METADATASERIALIZER_H__

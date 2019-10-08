@@ -19,8 +19,8 @@
 
 #include "comodef.h"
 #include "comotypes.h"
-#include "comoobjectapi.h"
-#include "comoreflectionapi.h"
+#include "comoobjapi.h"
+#include "comoreflapi.h"
 #include "comorpc.h"
 
 using namespace como;

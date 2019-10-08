@@ -30,13 +30,13 @@
 
 #include "comotypes.h"
 
-ccm::Char u_tolower(
-    /* [in] */ ccm::Char c);
+como::Char u_tolower(
+    /* [in] */ como::Char c);
 
-ccm::Char u_toupper(
-    /* [in] */ ccm::Char c);
+como::Char u_toupper(
+    /* [in] */ como::Char c);
 
-ccm::Char u_totitle(
-    /* [in] */ ccm::Char c);
+como::Char u_totitle(
+    /* [in] */ como::Char c);
 
 #endif // __UCASE_H__

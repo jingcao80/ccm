@@ -23,28 +23,28 @@ include_directories(
     ${INC_DIR})
 
 set(SOURCES
-    ccmarray.cpp
-    ccmsharedbuffer.cpp
-    ccmstring.cpp
-    ccmuuid.cpp
+    comoarray.cpp
+    comosharedbuffer.cpp
+    comostring.cpp
+    comouuid.cpp
     ucase.cpp)
 
 add_library(type STATIC
     ${SOURCES})
 add_dependencies(type cdl)
 
-COPY(type ${TYPE_DIR}/ccmarray.h ${INC_DIR})
-COPY(type ${TYPE_DIR}/ccmsharedbuffer.h ${INC_DIR})
-COPY(type ${TYPE_DIR}/ccmstring.h ${INC_DIR})
-COPY(type ${TYPE_DIR}/ccmtypekind.h ${INC_DIR})
-COPY(type ${TYPE_DIR}/ccmuuid.h ${INC_DIR})
+COPY(type ${TYPE_DIR}/comoarray.h ${INC_DIR})
+COPY(type ${TYPE_DIR}/comosharedbuffer.h ${INC_DIR})
+COPY(type ${TYPE_DIR}/comostring.h ${INC_DIR})
+COPY(type ${TYPE_DIR}/comotypekind.h ${INC_DIR})
+COPY(type ${TYPE_DIR}/comouuid.h ${INC_DIR})
 
 set(DEPLOY_HEADERS
-    ${TYPE_DIR}/ccmarray.h
-    ${TYPE_DIR}/ccmsharedbuffer.h
-    ${TYPE_DIR}/ccmstring.h
-    ${TYPE_DIR}/ccmtypekind.h
-    ${TYPE_DIR}/ccmuuid.h)
+    ${TYPE_DIR}/comoarray.h
+    ${TYPE_DIR}/comosharedbuffer.h
+    ${TYPE_DIR}/comostring.h
+    ${TYPE_DIR}/comotypekind.h
+    ${TYPE_DIR}/comouuid.h)
 
 install(FILES
     ${DEPLOY_HEADERS}

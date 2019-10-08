@@ -30,12 +30,12 @@
  * limitations under the License.
  */
 
-#ifndef __CCM_CDBUSPARCEL_H__
-#define __CCM_CDBUSPARCEL_H__
+#ifndef __COMO_CDBUSPARCEL_H__
+#define __COMO_CDBUSPARCEL_H__
 
 #include "util/comoobj.h"
 
-namespace ccm {
+namespace como {
 
 extern const CoclassID CID_CDbusParcel;
 
@@ -54,85 +54,85 @@ public:
     COMO_OBJECT_DECL();
 
     ECode ReadChar(
-        /* [out] */ Char* value);
+        /* [out] */ Char& value);
 
     ECode WriteChar(
         /* [in] */ Char value);
 
     ECode ReadByte(
-        /* [out] */ Byte* value);
+        /* [out] */ Byte& value);
 
     ECode WriteByte(
         /* [in] */ Byte value);
 
     ECode ReadShort(
-        /* [out] */ Short* value);
+        /* [out] */ Short& value);
 
     ECode WriteShort(
         /* [in] */ Short value);
 
     ECode ReadInteger(
-        /* [out] */ Integer* value);
+        /* [out] */ Integer& value);
 
     ECode WriteInteger(
         /* [in] */ Integer value);
 
     ECode ReadLong(
-        /* [out] */ Long* value);
+        /* [out] */ Long& value);
 
     ECode WriteLong(
         /* [in] */ Long value);
 
     ECode ReadFloat(
-        /* [out] */ Float* value);
+        /* [out] */ Float& value);
 
     ECode WriteFloat(
         /* [in] */ Float value);
 
     ECode ReadDouble(
-        /* [out] */ Double* value);
+        /* [out] */ Double& value);
 
     ECode WriteDouble(
         /* [in] */ Double value);
 
     ECode ReadBoolean(
-        /* [out] */ Boolean* value);
+        /* [out] */ Boolean& value);
 
     ECode WriteBoolean(
         /* [in] */ Boolean value);
 
     ECode ReadString(
-        /* [out] */ String* value);
+        /* [out] */ String& value);
 
     ECode WriteString(
         /* [in] */ const String& value);
 
     ECode ReadCoclassID(
-        /* [out] */ CoclassID* value);
+        /* [out] */ CoclassID& value);
 
     ECode WriteCoclassID(
         /* [in] */ const CoclassID& value);
 
     ECode ReadComponentID(
-        /* [out] */ ComponentID* value);
+        /* [out] */ ComponentID& value);
 
     ECode WriteComponentID(
         /* [in] */ const ComponentID& value);
 
     ECode ReadInterfaceID(
-        /* [out] */ InterfaceID* value);
+        /* [out] */ InterfaceID& value);
 
     ECode WriteInterfaceID(
         /* [in] */ const InterfaceID& value);
 
     ECode ReadECode(
-        /* [out] */ ECode* value);
+        /* [out] */ ECode& value);
 
     ECode WriteECode(
         /* [in] */ ECode value);
 
     ECode ReadEnumeration(
-        /* [out] */ Integer* value);
+        /* [out] */ Integer& value);
 
     ECode WriteEnumeration(
         /* [in] */ Integer value);
@@ -144,16 +144,16 @@ public:
         /* [in] */ HANDLE array);
 
     ECode ReadInterface(
-        /* [out] */ IInterface** value);
+        /* [out] */ AutoPtr<IInterface>& value);
 
     ECode WriteInterface(
         /* [in] */ IInterface* value);
 
     ECode GetData(
-        /* [out] */ HANDLE* data);
+        /* [out] */ HANDLE& data);
 
     ECode GetDataSize(
-        /* [out] */ Long* size);
+        /* [out] */ Long& size);
 
     ECode SetData(
         /* [in] */ Byte* data,
@@ -163,7 +163,7 @@ public:
         /* [in] */ Long pos);
 
     static ECode CreateObject(
-        /* [out] */ IParcel** parcel);
+        /* [out] */ AutoPtr<IParcel>& parcel);
 
 private:
     ECode Read(
@@ -211,6 +211,6 @@ private:
     mutable Long mDataPos;
 };
 
-}
+} // namespace como
 
-#endif //__CCM_CDBUSPARCEL_H__
+#endif //__COMO_CDBUSPARCEL_H__

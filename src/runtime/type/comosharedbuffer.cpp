@@ -30,12 +30,12 @@
  * limitations under the License.
  */
 
-#include "ccmsharedbuffer.h"
+#include "comosharedbuffer.h"
 #include "util/comolog.h"
-#include <stdlib.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstring>
 
-namespace ccm {
+namespace como {
 
 SharedBuffer* SharedBuffer::Alloc(
     /* [in] */ size_t size)
@@ -154,4 +154,4 @@ int32_t SharedBuffer::Release(
     return prevRefCount - 1;
 }
 
-}
+} // namespace como

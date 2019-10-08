@@ -33,11 +33,11 @@
 #include "threadpoolexecutor.h"
 #include "util/comolog.h"
 #include <assert.h>
-#include <errno.h>
+#include <cerrno>
+#include <csignal>
 #include <pthread.h>
-#include <signal.h>
 
-namespace ccm {
+namespace como {
 
 //-------------------------------------------------------------------------
 
@@ -138,4 +138,4 @@ void* ThreadPoolExecutor::ThreadEntry(void* arg)
     return reinterpret_cast<void*>(ec);
 }
 
-}
+} // namespace como

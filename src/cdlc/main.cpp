@@ -76,7 +76,7 @@ int main(int argc, char** argv)
                 return -1;
             }
 
-            como::metadata::MetadataSerializer serializer(component.get());
+            como::MetadataSerializer serializer(component.get());
             serializer.Serialize();
             size_t metadataSize = serializer.GetSize();
             uintptr_t metadata = serializer.GetSerializedMetadata();
@@ -107,7 +107,7 @@ int main(int argc, char** argv)
                 return -1;
             }
 
-            como::metadata::MetadataSerializer serializer;
+            como::MetadataSerializer serializer;
             serializer.Deserialize(reinterpret_cast<uintptr_t>(metadata));
             component.reset(
                     reinterpret_cast<como::MetaComponent*>(metadata),

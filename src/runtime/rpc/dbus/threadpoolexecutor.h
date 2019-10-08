@@ -30,15 +30,15 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __THREADPOOLEXECUTOR_H__
-#define __THREADPOOLEXECUTOR_H__
+#ifndef __COMO_THREADPOOLEXECUTOR_H__
+#define __COMO_THREADPOOLEXECUTOR_H__
 
-#include "comoptr.h"
+#include "comotypes.h"
 #include "comoref.h"
 #include "util/arraylist.h"
 #include "util/mutex.h"
 
-namespace ccm {
+namespace como {
 
 class ThreadPoolExecutor
     : public LightRefBase
@@ -89,6 +89,6 @@ private:
     ArrayList<Worker*> mWorkers;
 };
 
-}
+} // namespace como
 
-#endif // __THREADPOOLEXECUTOR_H__
+#endif // __COMO_THREADPOOLEXECUTOR_H__

@@ -14,12 +14,12 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CDBUSCHANNELFACTORY_H__
-#define __CCM_CDBUSCHANNELFACTORY_H__
+#ifndef __COMO_CDBUSCHANNELFACTORY_H__
+#define __COMO_CDBUSCHANNELFACTORY_H__
 
 #include "comoref.h"
 
-namespace ccm {
+namespace como {
 
 class CDBusChannelFactory
     : public LightRefBase
@@ -32,27 +32,27 @@ public:
     COMO_INTERFACE_DECL();
 
     ECode CreateInterfacePack(
-        /* [out] */ IInterfacePack** ipack) override;
+        /* [out] */ AutoPtr<IInterfacePack>& ipack) override;
 
     ECode CreateParcel(
-        /* [out] */ IParcel** parcel) override;
+        /* [out] */ AutoPtr<IParcel>& parcel) override;
 
     ECode CreateChannel(
         /* [in] */ RPCPeer peer,
-        /* [out] */ IRPCChannel** channel);
+        /* [out] */ AutoPtr<IRPCChannel>& channel);
 
     ECode MarshalInterface(
         /* [in] */ IInterface* object,
-        /* [out] */ IInterfacePack** ipack) override;
+        /* [out] */ AutoPtr<IInterfacePack>& ipack) override;
 
     ECode UnmarshalInterface(
         /* [in] */ IInterfacePack* ipack,
-        /* [out] */ IInterface** object) override;
+        /* [out] */ AutoPtr<IInterface>& object) override;
 
 private:
     RPCType mType;
 };
 
-}
+} // namespace como
 
-#endif // __CCM_CDBUSCHANNELFACTORY_H__
+#endif // __COMO_CDBUSCHANNELFACTORY_H__

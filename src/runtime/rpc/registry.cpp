@@ -18,7 +18,7 @@
 #include "util/hashmap.h"
 #include "util/mutex.h"
 
-namespace ccm {
+namespace como {
 
 template<>
 struct HashFunc<IObject*>
@@ -27,7 +27,7 @@ struct HashFunc<IObject*>
         /* [in] */ IObject* data)
     {
         Integer hash;
-        data->GetHashCode(&hash);
+        data->GetHashCode(hash);
         return hash;
     }
 };
@@ -39,7 +39,7 @@ struct HashFunc<IInterfacePack*>
         /* [in] */ IInterfacePack* data)
     {
         Integer hash;
-        data->GetHashCode(&hash);
+        data->GetHashCode(hash);
         return hash;
     }
 };
@@ -97,12 +97,10 @@ ECode UnregisterExportObject(
 ECode FindExportObject(
     /* [in] */ RPCType type,
     /* [in] */ IObject* object,
-    /* [out] */ IStub** stub)
+    /* [out] */ AutoPtr<IStub>& stub)
 {
-    VALIDATE_NOT_NULL(stub);
-
     if (object == nullptr) {
-        *stub = nullptr;
+        stub = nullptr;
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
@@ -113,23 +111,20 @@ ECode FindExportObject(
 
     Mutex::AutoLock lock(registryLock);
     if (registry.ContainsKey(object)) {
-        *stub = registry.Get(object);
-        REFCOUNT_ADD(*stub);
+        stub = registry.Get(object);
         return NOERROR;
     }
-    *stub = nullptr;
+    stub = nullptr;
     return E_NOT_FOUND_EXCEPTION;
 }
 
 ECode FindExportObject(
     /* [in] */ RPCType type,
     /* [in] */ IInterfacePack* ipack,
-    /* [out] */ IStub** stub)
+    /* [out] */ AutoPtr<IStub>& stub)
 {
-    VALIDATE_NOT_NULL(stub);
-
     if (ipack == nullptr) {
-        *stub = nullptr;
+        stub = nullptr;
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
@@ -143,14 +138,13 @@ ECode FindExportObject(
     for (Long i = 0; i < stubs.GetLength(); i++) {
         IStub* stubObj = stubs[i];
         Boolean matched;
-        stubObj->Match(ipack, &matched);
+        stubObj->Match(ipack, matched);
         if (matched) {
-            *stub = stubObj;
-            REFCOUNT_ADD(*stub);
+            stub = stubObj;
             return NOERROR;
         }
     }
-    *stub = nullptr;
+    stub = nullptr;
     return E_NOT_FOUND_EXCEPTION;
 }
 
@@ -197,12 +191,10 @@ ECode UnregisterImportObject(
 ECode FindImportObject(
     /* [in] */ RPCType type,
     /* [in] */ IInterfacePack* ipack,
-    /* [out] */ IObject** object)
+    /* [out] */ AutoPtr<IObject>& object)
 {
-    VALIDATE_NOT_NULL(object);
-
     if (ipack == nullptr) {
-        *object = nullptr;
+        object = nullptr;
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
@@ -213,12 +205,11 @@ ECode FindImportObject(
 
     Mutex::AutoLock lock(registryLock);
     if (registry.ContainsKey(ipack)) {
-        *object = registry.Get(ipack);
-        REFCOUNT_ADD(*object);
+        object = registry.Get(ipack);
         return NOERROR;
     }
-    *object = nullptr;
+    object = nullptr;
     return E_NOT_FOUND_EXCEPTION;
 }
 
-}
+} // namespace como

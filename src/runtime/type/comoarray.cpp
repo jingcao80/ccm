@@ -16,7 +16,7 @@
 
 #include "comotypes.h"
 
-namespace ccm {
+namespace como {
 
 Triple::Triple(
     /* [in] */ const Triple& other)
@@ -90,4 +90,4 @@ Triple& Triple::operator=(
     return *this;
 }
 
-}
+} // namespace como

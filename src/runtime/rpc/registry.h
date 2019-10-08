@@ -14,12 +14,12 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_REGISTRY_H__
-#define __CCM_REGISTRY_H__
+#ifndef __COMO_REGISTRY_H__
+#define __COMO_REGISTRY_H__
 
 #include "comotypes.h"
 
-namespace ccm {
+namespace como {
 
 extern ECode RegisterExportObject(
     /* [in] */ RPCType type,
@@ -33,12 +33,12 @@ extern ECode UnregisterExportObject(
 extern ECode FindExportObject(
     /* [in] */ RPCType type,
     /* [in] */ IObject* object,
-    /* [out] */ IStub** stub);
+    /* [out] */ AutoPtr<IStub>& stub);
 
 extern ECode FindExportObject(
     /* [in] */ RPCType type,
     /* [in] */ IInterfacePack* ipack,
-    /* [out] */ IStub** stub);
+    /* [out] */ AutoPtr<IStub>& stub);
 
 extern ECode RegisterImportObject(
     /* [in] */ RPCType type,
@@ -52,8 +52,8 @@ extern ECode UnregisterImportObject(
 extern ECode FindImportObject(
     /* [in] */ RPCType type,
     /* [in] */ IInterfacePack* ipack,
-    /* [out] */ IObject** object);
+    /* [out] */ AutoPtr<IObject>& object);
 
-}
+} // namespace como
 
-#endif // __CCM_REGISTRY_H__
+#endif // __COMO_REGISTRY_H__

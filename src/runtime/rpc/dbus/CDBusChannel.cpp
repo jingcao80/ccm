@@ -14,13 +14,13 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccmrpc.h"
+#include "comorpc.h"
 #include "CDBusChannel.h"
 #include "CDBusParcel.h"
 #include "InterfacePack.h"
 #include "util/comolog.h"
 
-namespace ccm {
+namespace como {
 
 CDBusChannel::ServiceRunnable::ServiceRunnable(
     /* [in] */ CDBusChannel* owner,
@@ -129,7 +129,7 @@ DBusHandlerResult CDBusChannel::ServiceRunnable::HandleMessage(
         AutoPtr<IParcel> argParcel = new CDBusParcel();
         argParcel->SetData(static_cast<Byte*>(data), size);
         AutoPtr<IParcel> resParcel;
-        ECode ec = thisObj->mTarget->Invoke(argParcel, &resParcel);
+        ECode ec = thisObj->mTarget->Invoke(argParcel, resParcel);
 
         DBusMessage* reply = dbus_message_new_method_return(msg);
 
@@ -139,8 +139,8 @@ DBusHandlerResult CDBusChannel::ServiceRunnable::HandleMessage(
         Long resSize;
         dbus_message_iter_open_container(&args,
                 DBUS_TYPE_ARRAY, DBUS_TYPE_BYTE_AS_STRING, &subArg);
-        resParcel->GetData(&resData);
-        resParcel->GetDataSize(&resSize);
+        resParcel->GetData(resData);
+        resParcel->GetDataSize(resSize);
         dbus_message_iter_append_fixed_array(&subArg,
                 DBUS_TYPE_BYTE, &resData, resSize);
         dbus_message_iter_close_container(&args, &subArg);
@@ -192,16 +192,14 @@ CDBusChannel::CDBusChannel(
 {}
 
 ECode CDBusChannel::GetRPCType(
-    /* [out] */ RPCType* type)
+    /* [out] */ RPCType& type)
 {
-    VALIDATE_NOT_NULL(type);
-
-    *type = mType;
+    type = mType;
     return NOERROR;
 }
 
 ECode CDBusChannel::IsPeerAlive(
-    /* [out] */ Boolean* alive)
+    /* [out] */ Boolean& alive)
 {
     return NOERROR;
 }
@@ -218,7 +216,7 @@ ECode CDBusChannel::UnlinkToDeath(
     /* [in] */ IDeathRecipient* recipient,
     /* [in] */ HANDLE cookie,
     /* [in] */ Integer flags,
-    /* [out] */ IDeathRecipient** outRecipient)
+    /* [out] */ AutoPtr<IDeathRecipient>* outRecipient)
 {
     return NOERROR;
 }
@@ -236,7 +234,7 @@ ECode CDBusChannel::Invoke(
     /* [in] */ IProxy* proxy,
     /* [in] */ IMetaMethod* method,
     /* [in] */ IParcel* argParcel,
-    /* [out] */ IParcel** resParcel)
+    /* [out] */ AutoPtr<IParcel>& resParcel)
 {
     ECode ec = NOERROR;
     DBusError err;
@@ -269,8 +267,8 @@ ECode CDBusChannel::Invoke(
     dbus_message_iter_init_append(msg, &args);
     dbus_message_iter_open_container(&args,
             DBUS_TYPE_ARRAY, DBUS_TYPE_BYTE_AS_STRING, &subArg);
-    argParcel->GetData(&data);
-    argParcel->GetDataSize(&size);
+    argParcel->GetData(data);
+    argParcel->GetDataSize(size);
     dbus_message_iter_append_fixed_array(&subArg,
             DBUS_TYPE_BYTE, &data, size);
     dbus_message_iter_close_container(&args, &subArg);
@@ -302,7 +300,7 @@ ECode CDBusChannel::Invoke(
 
     if (SUCCEEDED(ec)) {
         Boolean hasOutArgs;
-        method->HasOutArguments(&hasOutArgs);
+        method->HasOutArguments(hasOutArgs);
         if (hasOutArgs) {
             if (!dbus_message_iter_next(&args)) {
                 Logger::E("CDBusChannel", "Reply has no out arguments.");
@@ -322,9 +320,8 @@ ECode CDBusChannel::Invoke(
             dbus_message_iter_get_fixed_array(&subArg,
                     &replyData, &replySize);
             if (replyData != nullptr) {
-                *resParcel = new CDBusParcel();
-                REFCOUNT_ADD(*resParcel);
-                ec = UnmarshalArguments(replyData, replySize, method, *resParcel);
+                resParcel = new CDBusParcel();
+                ec = UnmarshalArguments(replyData, replySize, method, resParcel);
             }
         }
     }
@@ -371,20 +368,18 @@ ECode CDBusChannel::StartListening(
 
 ECode CDBusChannel::Match(
     /* [in] */ IInterfacePack* ipack,
-    /* [out] */ Boolean* matched)
+    /* [out] */ Boolean& matched)
 {
-    VALIDATE_NOT_NULL(matched);
-
     IDBusInterfacePack* idpack = IDBusInterfacePack::Probe(ipack);
     if (idpack != nullptr) {
         InterfacePack* pack = (InterfacePack*)idpack;
         if (pack->GetDBusName().Equals(mName)) {
-            *matched = true;
+            matched = true;
             return NOERROR;
         }
     }
-    *matched = false;
+    matched = false;
     return NOERROR;
 }
 
-}
+} // namespace como

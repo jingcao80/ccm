@@ -30,15 +30,15 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CPROXY_H__
-#define __CCM_CPROXY_H__
+#ifndef __COMO_CPROXY_H__
+#define __COMO_CPROXY_H__
 
 #include "reflection/comoreflapi.h"
-#include "type/ccmarray.h"
+#include "type/comoarray.h"
 #include "util/comoptr.h"
 #include "util/comoobj.h"
 
-namespace ccm {
+namespace como {
 
 class CProxy;
 
@@ -86,7 +86,7 @@ public:
     static ECode S_GetInterfaceID(
         /* [in] */ InterfaceProxy* thisObj,
         /* [in] */ IInterface* object,
-        /* [out] */ InterfaceID* iid);
+        /* [out] */ InterfaceID& iid);
 
     static ECode ProxyEntry(
         /* [in] */ HANDLE args);
@@ -144,10 +144,10 @@ public:
     COMO_INTERFACE_DECL();
 
     ECode GetTargetCoclass(
-        /* [out] */ IMetaCoclass** target);
+        /* [out] */ AutoPtr<IMetaCoclass>& target);
 
     ECode IsStubAlive(
-        /* [out] */ Boolean* alive) override;
+        /* [out] */ Boolean& alive) override;
 
     ECode LinkToDeath(
         /* [in] */ IDeathRecipient* recipient,
@@ -158,7 +158,7 @@ public:
         /* [in] */ IDeathRecipient* recipient,
         /* [in] */ HANDLE cookie = 0,
         /* [in] */ Integer flags = 0,
-        /* [out] */ IDeathRecipient** outRecipient = nullptr) override;
+        /* [out] */ AutoPtr<IDeathRecipient>* outRecipient = nullptr) override;
 
     AutoPtr<IRPCChannel> GetChannel();
 
@@ -167,7 +167,7 @@ public:
     static ECode CreateObject(
         /* [in] */ const CoclassID& cid,
         /* [in] */ IRPCChannel* channel,
-        /* [in] */ IProxy** proxy);
+        /* [out] */ AutoPtr<IProxy>& proxy);
 
 private:
     friend class InterfaceProxy;
@@ -178,6 +178,6 @@ private:
     AutoPtr<IRPCChannel> mChannel;
 };
 
-}
+} // namespace como
 
-#endif // __CCM_CPROXY_H__
+#endif // __COMO_CPROXY_H__

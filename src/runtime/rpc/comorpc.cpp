@@ -14,22 +14,20 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccmrpc.h"
+#include "comorpc.h"
 #include "CProxy.h"
 #include "CStub.h"
 #include "dbus/CDBusChannelFactory.h"
 
-namespace ccm {
+namespace como {
 
 static AutoPtr<IRPCChannelFactory> sLocalFactory = new CDBusChannelFactory(RPCType::Local);
 static AutoPtr<IRPCChannelFactory> sRemoteFactory;
 
 ECode CoCreateParcel(
     /* [in] */ RPCType type,
-    /* [out] */ IParcel** parcel)
+    /* [out] */ AutoPtr<IParcel>& parcel)
 {
-    VALIDATE_NOT_NULL(parcel);
-
     AutoPtr<IRPCChannelFactory> factory =
             type == RPCType::Local ? sLocalFactory : sRemoteFactory;
     return factory->CreateParcel(parcel);
@@ -37,10 +35,8 @@ ECode CoCreateParcel(
 
 ECode CoCreateInterfacePack(
     /* [in] */ RPCType type,
-    /* [out] */ IInterfacePack** ipack)
+    /* [out] */ AutoPtr<IInterfacePack>& ipack)
 {
-    VALIDATE_NOT_NULL(ipack);
-
     AutoPtr<IRPCChannelFactory> factory =
             type == RPCType::Local ? sLocalFactory : sRemoteFactory;
     return factory->CreateInterfacePack(ipack);
@@ -49,16 +45,14 @@ ECode CoCreateInterfacePack(
 ECode CoCreateProxy(
     /* [in] */ const CoclassID& cid,
     /* [in] */ RPCType type,
-    /* [out] */ IProxy** proxy)
+    /* [out] */ AutoPtr<IProxy>& proxy)
 {
-    VALIDATE_NOT_NULL(proxy);
-
     AutoPtr<IRPCChannelFactory> factory =
             type == RPCType::Local ? sLocalFactory : sRemoteFactory;
     AutoPtr<IRPCChannel> channel;
-    ECode ec = factory->CreateChannel(RPCPeer::Proxy, &channel);
+    ECode ec = factory->CreateChannel(RPCPeer::Proxy, channel);
     if (FAILED(ec)) {
-        *proxy = nullptr;
+        proxy = nullptr;
         return ec;
     }
     return CProxy::CreateObject(cid, channel, proxy);
@@ -67,16 +61,14 @@ ECode CoCreateProxy(
 ECode CoCreateStub(
     /* [in] */ IInterface* object,
     /* [in] */ RPCType type,
-    /* [out] */ IStub** stub)
+    /* [out] */ AutoPtr<IStub>& stub)
 {
-    VALIDATE_NOT_NULL(stub);
-
     AutoPtr<IRPCChannelFactory> factory =
             type == RPCType::Local ? sLocalFactory : sRemoteFactory;
     AutoPtr<IRPCChannel> channel;
-    ECode ec = factory->CreateChannel(RPCPeer::Stub, &channel);
+    ECode ec = factory->CreateChannel(RPCPeer::Stub, channel);
     if (FAILED(ec)) {
-        *stub = nullptr;
+        stub = nullptr;
         return ec;
     }
     return CStub::CreateObject(object, channel, stub);
@@ -85,12 +77,10 @@ ECode CoCreateStub(
 ECode CoMarshalInterface(
     /* [in] */ IInterface* object,
     /* [in] */ RPCType type,
-    /* [out] */ IInterfacePack** ipack)
+    /* [out] */ AutoPtr<IInterfacePack>& ipack)
 {
-    VALIDATE_NOT_NULL(ipack);
-
     if (object == nullptr) {
-        *ipack = nullptr;
+        ipack = nullptr;
         return NOERROR;
     }
 
@@ -102,12 +92,10 @@ ECode CoMarshalInterface(
 ECode CoUnmarshalInterface(
     /* [in] */ RPCType type,
     /* [in] */ IInterfacePack* data,
-    /* [out] */ IInterface** object)
+    /* [out] */ AutoPtr<IInterface>& object)
 {
-    VALIDATE_NOT_NULL(object);
-
     if (data == nullptr) {
-        *object = nullptr;
+        object = nullptr;
         return NOERROR;
     }
 
@@ -116,4 +104,4 @@ ECode CoUnmarshalInterface(
     return factory->UnmarshalInterface(data, object);
 }
 
-}
+} // namespace como

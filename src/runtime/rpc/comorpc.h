@@ -14,43 +14,43 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CCMTYPES_H__
-#define __CCM_CCMTYPES_H__
+#ifndef __COMO_CCMTYPES_H__
+#define __COMO_CCMTYPES_H__
 
 #include "comotypes.h"
 
-namespace ccm {
+namespace como {
 
 constexpr Integer RPC_MAGIC_NUMBER = 0x7a79636f;
 
 EXTERN_C COM_PUBLIC ECode CoCreateParcel(
     /* [in] */ RPCType type,
-    /* [out] */ IParcel** parcel);
+    /* [out] */ AutoPtr<IParcel>& parcel);
 
 EXTERN_C COM_PUBLIC ECode CoCreateInterfacePack(
     /* [in] */ RPCType type,
-    /* [out] */ IInterfacePack** ipack);
+    /* [out] */ AutoPtr<IInterfacePack>& ipack);
 
 EXTERN_C COM_PUBLIC ECode CoCreateProxy(
     /* [in] */ const CoclassID& cid,
     /* [in] */ RPCType type,
-    /* [out] */ IProxy** proxy);
+    /* [out] */ AutoPtr<IProxy>& proxy);
 
 EXTERN_C COM_PUBLIC ECode CoCreateStub(
     /* [in] */ IInterface* object,
     /* [in] */ RPCType type,
-    /* [out] */ IStub** stub);
+    /* [out] */ AutoPtr<IStub>& stub);
 
 EXTERN_C COM_PUBLIC ECode CoMarshalInterface(
     /* [in] */ IInterface* object,
     /* [in] */ RPCType type,
-    /* [out] */ IInterfacePack** ipack);
+    /* [out] */ AutoPtr<IInterfacePack>& ipack);
 
 EXTERN_C COM_PUBLIC ECode CoUnmarshalInterface(
     /* [in] */ RPCType type,
     /* [in] */ IInterfacePack* ipack,
-    /* [out] */ IInterface** object);
+    /* [out] */ AutoPtr<IInterface>& object);
 
-}
+} // namespace como
 
-#endif // __CCM_CCMTYPES_H__
+#endif // __COMO_CCMTYPES_H__

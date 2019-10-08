@@ -14,8 +14,8 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef CCM_CDBUSCHANNEL_H__
-#define CCM_CDBUSCHANNEL_H__
+#ifndef __COMO_CDBUSCHANNEL_H__
+#define __COMO_CDBUSCHANNEL_H__
 
 #include "CProxy.h"
 #include "CStub.h"
@@ -24,7 +24,7 @@
 #include "util/mutex.h"
 #include <dbus/dbus.h>
 
-namespace ccm {
+namespace como {
 
 extern const CoclassID CID_CDBusChannel;
 
@@ -66,10 +66,10 @@ public:
     COMO_OBJECT_DECL();
 
     ECode GetRPCType(
-        /* [out] */ RPCType* type) override;
+        /* [out] */ RPCType& type) override;
 
     ECode IsPeerAlive(
-        /* [out] */ Boolean* alive) override;
+        /* [out] */ Boolean& alive) override;
 
     ECode LinkToDeath(
         /* [in] */ IDeathRecipient* recipient,
@@ -80,20 +80,20 @@ public:
         /* [in] */ IDeathRecipient* recipient,
         /* [in] */ HANDLE cookie = 0,
         /* [in] */ Integer flags = 0,
-        /* [out] */ IDeathRecipient** outRecipient = nullptr) override;
+        /* [out] */ AutoPtr<IDeathRecipient>* outRecipient = nullptr) override;
 
     ECode Invoke(
         /* [in] */ IProxy* proxy,
         /* [in] */ IMetaMethod* method,
         /* [in] */ IParcel* argParcel,
-        /* [out] */ IParcel** resParcel) override;
+        /* [out] */ AutoPtr<IParcel>& resParcel) override;
 
     ECode StartListening(
         /* [in] */ IStub* stub) override;
 
     ECode Match(
         /* [in] */ IInterfacePack* ipack,
-        /* [out] */ Boolean* matched) override;
+        /* [out] */ Boolean& matched) override;
 
     static CDBusChannel* GetProxyChannel(
         /* [in] */ IProxy* proxy);
@@ -112,8 +112,8 @@ private:
     friend class CDBusChannelFactory;
 
     static constexpr Boolean DEBUG = false;
-    static constexpr const char* STUB_OBJECT_PATH = "/ccm/rpc/CStub";
-    static constexpr const char* STUB_INTERFACE_PATH = "ccm.rpc.IStub";
+    static constexpr const char* STUB_OBJECT_PATH = "/como/rpc/CStub";
+    static constexpr const char* STUB_INTERFACE_PATH = "como.rpc.IStub";
 
     RPCType mType;
     RPCPeer mPeer;
@@ -135,6 +135,6 @@ inline CDBusChannel* CDBusChannel::GetStubChannel(
     return (CDBusChannel*)((CStub*)stub)->GetChannel().Get();
 }
 
-}
+} // namespace como
 
-#endif // CCM_CDBUSCHANNEL_H__
+#endif // __COMO_CDBUSCHANNEL_H__

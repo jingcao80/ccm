@@ -30,12 +30,12 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccmrpc.h"
+#include "comorpc.h"
 #include "CProxy.h"
 #include "util/comolog.h"
 #include <sys/mman.h>
 
-namespace ccm {
+namespace como {
 
 #ifndef PAGE_SIZE
 #define PAGE_SIZE (1u << 12)
@@ -178,7 +178,7 @@ IInterface* InterfaceProxy::S_Probe(
 ECode InterfaceProxy::S_GetInterfaceID(
     /* [in] */ InterfaceProxy* thisObj,
     /* [in] */ IInterface* object,
-    /* [out] */ InterfaceID* iid)
+    /* [out] */ InterfaceID& iid)
 {
     return thisObj->mOwner->GetInterfaceID(object, iid);
 }
@@ -189,17 +189,17 @@ ECode InterfaceProxy::MarshalArguments(
     /* [in] */ IParcel* argParcel)
 {
     Integer N;
-    method->GetParameterNumber(&N);
+    method->GetParameterNumber(N);
     Integer intNum = 1, fpNum = 0;
     for (Integer i = 0; i < N; i++) {
         AutoPtr<IMetaParameter> param;
-        method->GetParameter(i, &param);
+        method->GetParameter(i, param);
         AutoPtr<IMetaType> type;
-        param->GetType(&type);
+        param->GetType(type);
         TypeKind kind;
-        type->GetTypeKind((Integer*)&kind);
+        type->GetTypeKind(kind);
         IOAttribute ioAttr;
-        param->GetIOAttribute(&ioAttr);
+        param->GetIOAttribute(ioAttr);
         if (ioAttr == IOAttribute::IN) {
             switch (kind) {
                 case TypeKind::Char: {
@@ -263,9 +263,8 @@ ECode InterfaceProxy::MarshalArguments(
                     TypeKind eKind = kind;
                     while (eKind == TypeKind::Array) {
                         aType = eType;
-                        eType = nullptr;
-                        aType->GetElementType(&eType);
-                        eType->GetTypeKind((Integer*)&eKind);
+                        aType->GetElementType(eType);
+                        eType->GetTypeKind(eKind);
                     }
                     if (eKind == TypeKind::CoclassID ||
                             eKind == TypeKind::ComponentID ||
@@ -357,9 +356,8 @@ ECode InterfaceProxy::MarshalArguments(
                     TypeKind eKind = kind;
                     while (eKind == TypeKind::Array) {
                         aType = eType;
-                        eType = nullptr;
-                        aType->GetElementType(&eType);
-                        eType->GetTypeKind((Integer*)&eKind);
+                        aType->GetElementType(eType);
+                        eType->GetTypeKind(eKind);
                     }
                     if (eKind == TypeKind::CoclassID ||
                             eKind == TypeKind::ComponentID ||
@@ -410,9 +408,8 @@ ECode InterfaceProxy::MarshalArguments(
                     TypeKind eKind = kind;
                     while (eKind == TypeKind::Array) {
                         aType = eType;
-                        eType = nullptr;
-                        aType->GetElementType(&eType);
-                        eType->GetTypeKind((Integer*)&eKind);
+                        aType->GetElementType(eType);
+                        eType->GetTypeKind(eKind);
                     }
                     if (eKind == TypeKind::CoclassID ||
                             eKind == TypeKind::ComponentID ||
@@ -443,9 +440,8 @@ ECode InterfaceProxy::MarshalArguments(
                     TypeKind eKind = kind;
                     while (eKind == TypeKind::Array) {
                         aType = eType;
-                        eType = nullptr;
-                        aType->GetElementType(&eType);
-                        eType->GetTypeKind((Integer*)&eKind);
+                        aType->GetElementType(eType);
+                        eType->GetTypeKind(eKind);
                     }
                     if (eKind == TypeKind::CoclassID ||
                             eKind == TypeKind::ComponentID ||
@@ -491,17 +487,17 @@ ECode InterfaceProxy::UnmarshalResults(
         /* [in] */ IParcel* resParcel)
 {
     Integer N;
-    method->GetParameterNumber(&N);
+    method->GetParameterNumber(N);
     Integer intNum = 1, fpNum = 0;
     for (Integer i = 0; i < N; i++) {
         AutoPtr<IMetaParameter> param;
-        method->GetParameter(i, &param);
+        method->GetParameter(i, param);
         AutoPtr<IMetaType> type;
-        param->GetType(&type);
+        param->GetType(type);
         TypeKind kind;
-        type->GetTypeKind((Integer*)&kind);
+        type->GetTypeKind(kind);
         IOAttribute ioAttr;
-        param->GetIOAttribute(&ioAttr);
+        param->GetIOAttribute(ioAttr);
         if (ioAttr == IOAttribute::IN) {
             switch (kind) {
                 case TypeKind::Char:
@@ -536,67 +532,67 @@ ECode InterfaceProxy::UnmarshalResults(
                 case TypeKind::Char: {
                     Char* addr = reinterpret_cast<Char*>(
                             GetValueAddress(regs, intNum++, fpNum));
-                    resParcel->ReadChar(addr);
+                    resParcel->ReadChar(*addr);
                     break;
                 }
                 case TypeKind::Byte: {
                     Byte* addr = reinterpret_cast<Byte*>(
                             GetValueAddress(regs, intNum++, fpNum));
-                    resParcel->ReadByte(addr);
+                    resParcel->ReadByte(*addr);
                     break;
                 }
                 case TypeKind::Short: {
                     Short* addr = reinterpret_cast<Short*>(
                             GetValueAddress(regs, intNum++, fpNum));
-                    resParcel->ReadShort(addr);
+                    resParcel->ReadShort(*addr);
                     break;
                 }
                 case TypeKind::Integer: {
                     Integer* addr = reinterpret_cast<Integer*>(
                             GetValueAddress(regs, intNum++, fpNum));
-                    resParcel->ReadInteger(addr);
+                    resParcel->ReadInteger(*addr);
                     break;
                 }
                 case TypeKind::Long: {
                     Long* addr = reinterpret_cast<Long*>(
                             GetValueAddress(regs, intNum++, fpNum));
-                    resParcel->ReadLong(addr);
+                    resParcel->ReadLong(*addr);
                     break;
                 }
                 case TypeKind::Float: {
                     Float* addr = reinterpret_cast<Float*>(
                             GetValueAddress(regs, intNum++, fpNum));
-                    resParcel->ReadFloat(addr);
+                    resParcel->ReadFloat(*addr);
                     break;
                 }
                 case TypeKind::Double: {
                     Double* addr = reinterpret_cast<Double*>(
                             GetValueAddress(regs, intNum++, fpNum));
-                    resParcel->ReadDouble(addr);
+                    resParcel->ReadDouble(*addr);
                     break;
                 }
                 case TypeKind::Boolean: {
                     Boolean* addr = reinterpret_cast<Boolean*>(
                             GetValueAddress(regs, intNum++, fpNum));
-                    resParcel->ReadBoolean(addr);
+                    resParcel->ReadBoolean(*addr);
                     break;
                 }
                 case TypeKind::String: {
                     String* addr = reinterpret_cast<String*>(
                             GetValueAddress(regs, intNum++, fpNum));
-                    resParcel->ReadString(addr);
+                    resParcel->ReadString(*addr);
                     break;
                 }
                 case TypeKind::ECode: {
                     ECode* addr = reinterpret_cast<ECode*>(
                             GetValueAddress(regs, intNum++, fpNum));
-                    resParcel->ReadECode(addr);
+                    resParcel->ReadECode(*addr);
                     break;
                 }
                 case TypeKind::Enum: {
                     Integer* addr = reinterpret_cast<Integer*>(
                             GetValueAddress(regs, intNum++, fpNum));
-                    resParcel->ReadEnumeration(addr);
+                    resParcel->ReadEnumeration(*addr);
                     break;
                 }
                 case TypeKind::Array: {
@@ -606,9 +602,9 @@ ECode InterfaceProxy::UnmarshalResults(
                     break;
                 }
                 case TypeKind::Interface: {
-                    IInterface** intf = reinterpret_cast<IInterface**>(
+                    AutoPtr<IInterface>* intf = reinterpret_cast<AutoPtr<IInterface>*>(
                             GetValueAddress(regs, intNum++, fpNum));
-                    resParcel->ReadInterface(intf);
+                    resParcel->ReadInterface(*intf);
                     break;
                 }
                 case TypeKind::CoclassID:
@@ -772,27 +768,27 @@ ECode InterfaceProxy::ProxyEntry(
 
     if (DEBUG) {
         String name, ns;
-        thisObj->mTargetMetadata->GetName(&name);
-        thisObj->mTargetMetadata->GetNamespace(&ns);
+        thisObj->mTargetMetadata->GetName(name);
+        thisObj->mTargetMetadata->GetNamespace(ns);
         Logger::D("CProxy", "Call ProxyEntry with interface \"%s%s\"",
                 ns.string(), name.string());
     }
 
     AutoPtr<IMetaMethod> method;
-    thisObj->mTargetMetadata->GetMethod(methodIndex + 4, &method);
+    thisObj->mTargetMetadata->GetMethod(methodIndex + 4, method);
 
     if (DEBUG) {
         String name, signature;
-        method->GetName(&name);
-        method->GetSignature(&signature);
+        method->GetName(name);
+        method->GetSignature(signature);
         Logger::D("CProxy", "Call ProxyEntry with method \"%s(%s)\"",
                 name.string(), signature.string());
     }
 
     RPCType type;
-    thisObj->mOwner->mChannel->GetRPCType(&type);
+    thisObj->mOwner->mChannel->GetRPCType(type);
     AutoPtr<IParcel> inParcel, outParcel;
-    CoCreateParcel(type, &inParcel);
+    CoCreateParcel(type, inParcel);
     inParcel->WriteInteger(RPC_MAGIC_NUMBER);
     inParcel->WriteInteger(thisObj->mIndex);
     inParcel->WriteInteger(methodIndex + 4);
@@ -800,7 +796,7 @@ ECode InterfaceProxy::ProxyEntry(
     if (FAILED(ec)) goto ProxyExit;
 
     ec = thisObj->mOwner->mChannel->Invoke(
-            thisObj->mOwner, method, inParcel, &outParcel);
+            thisObj->mOwner, method, inParcel, outParcel);
     if (FAILED(ec)) goto ProxyExit;
 
     ec = thisObj->UnmarshalResults(regs, method, outParcel);
@@ -864,18 +860,16 @@ IInterface* CProxy::Probe(
 
 ECode CProxy::GetInterfaceID(
     /* [in] */ IInterface* object,
-    /* [out] */ InterfaceID* iid)
+    /* [out] */ InterfaceID& iid)
 {
-    VALIDATE_NOT_NULL(iid);
-
     if (object == (IObject*)this) {
-        *iid = IID_IObject;
+        iid = IID_IObject;
         return NOERROR;
     }
     for (Integer i = 0; i < mInterfaces.GetLength(); i++) {
         InterfaceProxy* iproxy = mInterfaces[i];
         if ((IInterface*)iproxy == object) {
-            *iid = iproxy->mIid;
+            iid = iproxy->mIid;
             return NOERROR;
         }
     }
@@ -883,17 +877,14 @@ ECode CProxy::GetInterfaceID(
 }
 
 ECode CProxy::GetTargetCoclass(
-    /* [out] */ IMetaCoclass** target)
+    /* [out] */ AutoPtr<IMetaCoclass>& target)
 {
-    VALIDATE_NOT_NULL(target);
-
-    *target = mTargetMetadata;
-    REFCOUNT_ADD(*target);
+    target = mTargetMetadata;
     return NOERROR;
 }
 
 ECode CProxy::IsStubAlive(
-    /* [out] */ Boolean* alive)
+    /* [out] */ Boolean& alive)
 {
     return mChannel->IsPeerAlive(alive);
 }
@@ -910,7 +901,7 @@ ECode CProxy::UnlinkToDeath(
     /* [in] */ IDeathRecipient* recipient,
     /* [in] */ HANDLE cookie,
     /* [in] */ Integer flags,
-    /* [out] */ IDeathRecipient** outRecipient)
+    /* [out] */ AutoPtr<IDeathRecipient>* outRecipient)
 {
     return mChannel->UnlinkToDeath(recipient, cookie, flags, outRecipient);
 }
@@ -928,21 +919,20 @@ CoclassID CProxy::GetTargetCoclassID()
 ECode CProxy::CreateObject(
     /* [in] */ const CoclassID& cid,
     /* [in] */ IRPCChannel* channel,
-    /* [in] */ IProxy** proxy)
+    /* [out] */ AutoPtr<IProxy>& proxy)
 {
-    VALIDATE_NOT_NULL(proxy);
-    *proxy = nullptr;
+    proxy = nullptr;
 
     AutoPtr<IMetaCoclass> mc;
-    CoGetCoclassMetadata(cid, nullptr, &mc);
+    CoGetCoclassMetadata(cid, nullptr, mc);
 
     AutoPtr<CProxy> proxyObj = new CProxy();
-    mc->GetCoclassID(&proxyObj->mCid);
+    mc->GetCoclassID(proxyObj->mCid);
     proxyObj->mTargetMetadata = mc;
     proxyObj->mChannel = channel;
 
     Integer interfaceNumber;
-    mc->GetInterfaceNumber(&interfaceNumber);
+    mc->GetInterfaceNumber(interfaceNumber);
     Array<IMetaInterface*> interfaces(interfaceNumber);
     mc->GetAllInterfaces(interfaces);
     proxyObj->mInterfaces = Array<InterfaceProxy*>(interfaceNumber);
@@ -951,15 +941,14 @@ ECode CProxy::CreateObject(
         iproxy->mIndex = i;
         iproxy->mOwner = proxyObj;
         iproxy->mTargetMetadata = interfaces[i];
-        iproxy->mTargetMetadata->GetInterfaceID(&iproxy->mIid);
+        iproxy->mTargetMetadata->GetInterfaceID(iproxy->mIid);
         iproxy->mVtable = sProxyVtable;
         iproxy->mProxyEntry = reinterpret_cast<HANDLE>(&InterfaceProxy::ProxyEntry);
         proxyObj->mInterfaces[i] = iproxy;
     }
 
-    *proxy = proxyObj;
-    REFCOUNT_ADD(*proxy);
+    proxy = proxyObj;
     return NOERROR;
 }
 
-}
+} // namespace como

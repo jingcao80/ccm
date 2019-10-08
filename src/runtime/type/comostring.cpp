@@ -30,18 +30,18 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccmsharedbuffer.h"
+#include "comosharedbuffer.h"
 #include "comotypes.h"
 #include "ucase.h"
 #include "util/comolog.h"
 
-#include <ctype.h>
-#include <limits.h>
-#include <stdarg.h>
-#include <string.h>
-#include <stdio.h>
+#include <cctype>
+#include <climits>
+#include <cstdarg>
+#include <cstring>
+#include <cstdio>
 
-namespace ccm {
+namespace como {
 
 char* EMPTY_STRING = nullptr;
 
@@ -1188,4 +1188,4 @@ void String::WriteUTF8Bytes(
     }
 }
 
-}
+} // namespace como

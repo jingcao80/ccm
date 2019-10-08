@@ -220,20 +220,20 @@ UChar32 ucase_totitle(const UCaseProps *csp, UChar32 c)
     return c;
 }
 
-ccm::Char u_tolower(
-    /* [in] */ ccm::Char c)
+como::Char u_tolower(
+    /* [in] */ como::Char c)
 {
-    return (ccm::Char)ucase_tolower(&ucase_props_singleton, (UChar32)c);
+    return (como::Char)ucase_tolower(&ucase_props_singleton, (UChar32)c);
 }
 
-ccm::Char u_toupper(
-    /* [in] */ ccm::Char c)
+como::Char u_toupper(
+    /* [in] */ como::Char c)
 {
-    return (ccm::Char)ucase_toupper(&ucase_props_singleton, (UChar32)c);
+    return (como::Char)ucase_toupper(&ucase_props_singleton, (UChar32)c);
 }
 
-ccm::Char u_totitle(
-    /* [in] */ ccm::Char c)
+como::Char u_totitle(
+    /* [in] */ como::Char c)
 {
-    return (ccm::Char)ucase_totitle(&ucase_props_singleton, (UChar32)c);
+    return (como::Char)ucase_totitle(&ucase_props_singleton, (UChar32)c);
 }

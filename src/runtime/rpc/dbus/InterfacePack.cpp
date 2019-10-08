@@ -16,14 +16,14 @@
 
 #include "InterfacePack.h"
 
-namespace ccm {
+namespace como {
 
 static void ReleaseComponentID(
     /* [in] */ const ComponentID* cid)
 {
     if (cid != nullptr) {
-        if (cid->mUrl != nullptr) {
-            free(const_cast<char*>(cid->mUrl));
+        if (cid->mUri != nullptr) {
+            free(const_cast<char*>(cid->mUri));
         }
         free(const_cast<ComponentID*>(cid));
     }
@@ -41,38 +41,32 @@ InterfacePack::~InterfacePack()
 }
 
 ECode InterfacePack:: GetCoclassID(
-    /* [out] */ CoclassID* cid)
+    /* [out] */ CoclassID& cid)
 {
-    VALIDATE_NOT_NULL(cid);
-
-    *cid = mCid;
+    cid = mCid;
     return NOERROR;
 }
 
 ECode InterfacePack::GetInterfaceID(
-    /* [out] */ InterfaceID* iid)
+    /* [out] */ InterfaceID& iid)
 {
-    VALIDATE_NOT_NULL(iid);
-
-    *iid = mIid;
+    iid = mIid;
     return NOERROR;
 }
 
 ECode InterfacePack::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
-    *hash = mDBusName.GetHashCode();
+    hash = mDBusName.GetHashCode();
     return NOERROR;
 }
 
 ECode InterfacePack::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
-    source->ReadString(&mDBusName);
-    source->ReadCoclassID(&mCid);
-    source->ReadInterfaceID(&mIid);
+    source->ReadString(mDBusName);
+    source->ReadCoclassID(mCid);
+    source->ReadInterfaceID(mIid);
     return NOERROR;
 }
 
@@ -104,12 +98,12 @@ void InterfacePack::SetCoclassID(
         ComponentID* comid = (ComponentID*)malloc(sizeof(ComponentID));
         if (comid != nullptr) {
             *comid = *cid.mCid;
-            if (cid.mCid->mUrl != nullptr) {
-                char* url = (char*)malloc(strlen(cid.mCid->mUrl) + 1);
-                if (url != nullptr) {
-                    strcpy(url, cid.mCid->mUrl);
+            if (cid.mCid->mUri != nullptr) {
+                char* uri = (char*)malloc(strlen(cid.mCid->mUri) + 1);
+                if (uri != nullptr) {
+                    strcpy(uri, cid.mCid->mUri);
                 }
-                comid->mUrl = url;
+                comid->mUri = uri;
             }
         }
         mCid.mCid = comid;
@@ -124,16 +118,16 @@ void InterfacePack::SetInterfaceID(
         ComponentID* comid = (ComponentID*)malloc(sizeof(ComponentID));
         if (comid != nullptr) {
             *comid = *iid.mCid;
-            if (iid.mCid->mUrl != nullptr) {
-                char* url = (char*)malloc(strlen(iid.mCid->mUrl) + 1);
-                if (url != nullptr) {
-                    strcpy(url, iid.mCid->mUrl);
+            if (iid.mCid->mUri != nullptr) {
+                char* uri = (char*)malloc(strlen(iid.mCid->mUri) + 1);
+                if (uri != nullptr) {
+                    strcpy(uri, iid.mCid->mUri);
                 }
-                comid->mUrl = url;
+                comid->mUri = uri;
             }
         }
         mIid.mCid = comid;
     }
 }
 
-}
+} // namespace como

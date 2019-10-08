@@ -36,7 +36,7 @@ include_directories(
     ${INC_DIR})
 
 set(SOURCES
-    ccmids.cpp
+    comoids.cpp
     runtime.cpp)
 
 set(CCMRT_LINK_LIBS
@@ -51,29 +51,29 @@ set(CCMRT_LINK_LIBS
     util
     -Wl,--no-whole-archive)
 
-add_library(ccmrt
+add_library(comort
     SHARED
     ${SOURCES})
-target_link_libraries(ccmrt
+target_link_libraries(comort
     ${CCMRT_LINK_LIBS}
     dl
     pthread
     dbus-1)
 
-COPY(ccmrt ${RUNTIME_DIR}/ccmapi.h ${INC_DIR})
-COPY(ccmrt ${RUNTIME_DIR}/ccmdef.h ${INC_DIR})
-COPY(ccmrt ${RUNTIME_DIR}/ccmerror.h ${INC_DIR})
-COPY(ccmrt ${RUNTIME_DIR}/comotypes.h ${INC_DIR})
-COPY(ccmrt ${OBJ_DIR}/ccmrt.so ${BIN_DIR})
+COPY(comort ${RUNTIME_DIR}/comoapi.h ${INC_DIR})
+COPY(comort ${RUNTIME_DIR}/comodef.h ${INC_DIR})
+COPY(comort ${RUNTIME_DIR}/comoerror.h ${INC_DIR})
+COPY(comort ${RUNTIME_DIR}/comotypes.h ${INC_DIR})
+COPY(comort ${OBJ_DIR}/comort.so ${BIN_DIR})
 
 set(DEPLOY_HEADERS
-    ${RUNTIME_DIR}/ccmapi.h
-    ${RUNTIME_DIR}/ccmdef.h
-    ${RUNTIME_DIR}/ccmerror.h
+    ${RUNTIME_DIR}/comoapi.h
+    ${RUNTIME_DIR}/comodef.h
+    ${RUNTIME_DIR}/comoerror.h
     ${RUNTIME_DIR}/comotypes.h)
 
 set(DEPLOY_LIBS
-    ${OBJ_DIR}/ccmrt.so)
+    ${OBJ_DIR}/comort.so)
 
 install(FILES
     ${DEPLOY_HEADERS}

@@ -14,13 +14,13 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_INTERFACEPACK_H__
-#define __CCM_INTERFACEPACK_H__
+#ifndef __COMO_INTERFACEPACK_H__
+#define __COMO_INTERFACEPACK_H__
 
 #include "registry.h"
 #include "util/comoref.h"
 
-namespace ccm {
+namespace como {
 
 extern const InterfaceID IID_IDBusInterfacePack;
 
@@ -48,13 +48,13 @@ public:
     COMO_INTERFACE_DECL();
 
     ECode GetCoclassID(
-        /* [out] */ CoclassID* cid);
+        /* [out] */ CoclassID& cid);
 
     ECode GetInterfaceID(
-        /* [out] */ InterfaceID* iid) override;
+        /* [out] */ InterfaceID& iid) override;
 
     ECode GetHashCode(
-        /* [out] */ Integer* hash) override;
+        /* [out] */ Integer& hash) override;
 
     ECode ReadFromParcel(
         /* [in] */ IParcel* source) override;
@@ -79,6 +79,6 @@ private:
     InterfaceID mIid;
 };
 
-}
+} // namespace como
 
-#endif // __CCM_INTERFACEPACK_H__
+#endif // __COMO_INTERFACEPACK_H__

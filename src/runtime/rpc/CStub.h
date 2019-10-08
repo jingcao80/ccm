@@ -30,15 +30,14 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CSTUB_H__
-#define __CCM_CSTUB_H__
+#ifndef __COMO_CSTUB_H__
+#define __COMO_CSTUB_H__
 
 #include "reflection/comoreflapi.h"
-#include "type/ccmarray.h"
-#include "util/comoptr.h"
+#include "type/comoarray.h"
 #include "util/comoobj.h"
 
-namespace ccm {
+namespace como {
 
 class CStub;
 
@@ -53,18 +52,18 @@ public:
 
     ECode Invoke(
         /* [in] */ IParcel* argParcel,
-        /* [out] */ IParcel** resParcel);
+        /* [out] */ AutoPtr<IParcel>& resParcel);
 
 private:
     ECode UnmarshalArguments(
         /* [in] */ IMetaMethod* method,
         /* [in] */ IParcel* argParcel,
-        /* [out] */ IArgumentList** argList);
+        /* [out] */ AutoPtr<IArgumentList>& argList);
 
     ECode MarshalResults(
         /* [in] */ IMetaMethod* method,
         /* [in] */ IArgumentList* argList,
-        /* [out] */ IParcel** resParcel);
+        /* [out] */ AutoPtr<IParcel>& resParcel);
 
 private:
     friend class CStub;
@@ -92,11 +91,11 @@ public:
 
     ECode Match(
         /* [in] */ IInterfacePack* ipack,
-        /* [out] */ Boolean* matched);
+        /* [out] */ Boolean& matched);
 
     ECode Invoke(
         /* [in] */ IParcel* argParcel,
-        /* [out] */ IParcel** resParcel);
+        /* [out] */ AutoPtr<IParcel>& resParcel);
 
     AutoPtr<IObject> GetTarget();
 
@@ -107,7 +106,7 @@ public:
     static ECode CreateObject(
         /* [in] */ IInterface* object,
         /* [in] */ IRPCChannel* channel,
-        /* [in] */ IStub** stub);
+        /* [out] */ AutoPtr<IStub>& stub);
 
 private:
     friend class InterfaceStub;
@@ -121,6 +120,6 @@ private:
     AutoPtr<IRPCChannel> mChannel;
 };
 
-}
+} // namespace como
 
-#endif // __CCM_CSTUB_H__
+#endif // __COMO_CSTUB_H__

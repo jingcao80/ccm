@@ -28,17 +28,17 @@ include_directories(
 set(SOURCES
     CProxy.cpp
     CStub.cpp
-    ccmrpc.cpp
+    comorpc.cpp
     registry.cpp)
 
 add_library(rpc STATIC
     ${SOURCES})
 add_dependencies(rpc cdl)
 
-COPY(rpc ${RPC_DIR}/ccmrpc.h ${INC_DIR})
+COPY(rpc ${RPC_DIR}/comorpc.h ${INC_DIR})
 
 set(DEPLOY_HEADERS
-    ${RPC_DIR}/ccmrpc.h)
+    ${RPC_DIR}/comorpc.h)
 
 install(FILES
     ${DEPLOY_HEADERS}

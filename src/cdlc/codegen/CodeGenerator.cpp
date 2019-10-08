@@ -236,7 +236,7 @@ void CodeGenerator::RuntimeModeEmitter::EmitMetadataWrapper()
     builder.Append(mOwner->mLicense);
     builder.Append("\n");
 
-    como::metadata::MetadataSerializer serializer(mComponent);
+    como::MetadataSerializer serializer(mComponent);
     serializer.Serialize();
     size_t metadataSize = serializer.GetSize();
     uintptr_t metadata = serializer.GetSerializedMetadata();

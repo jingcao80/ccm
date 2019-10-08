@@ -24,8 +24,6 @@
 #include <dlfcn.h>
 #include <cerrno>
 
-using como::metadata::MetadataSerializer;
-
 namespace como {
 
 ECode CoGetComponentMetadata(

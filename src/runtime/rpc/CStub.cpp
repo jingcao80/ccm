@@ -30,11 +30,11 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccmrpc.h"
+#include "comorpc.h"
 #include "CStub.h"
 #include "registry.h"
 
-namespace ccm {
+namespace como {
 
 Integer InterfaceStub::AddRef(
     /* [in] */ HANDLE id)
@@ -51,100 +51,99 @@ Integer InterfaceStub::Release(
 ECode InterfaceStub::UnmarshalArguments(
     /* [in] */ IMetaMethod* method,
     /* [in] */ IParcel* argParcel,
-    /* [out] */ IArgumentList** argList)
+    /* [out] */ AutoPtr<IArgumentList>& argList)
 {
-    AutoPtr<IArgumentList> args;
-    method->CreateArgumentList(&args);
+    method->CreateArgumentList(argList);
 
     Integer N;
-    method->GetParameterNumber(&N);
+    method->GetParameterNumber(N);
     for (Integer i = 0; i < N; i++) {
         AutoPtr<IMetaParameter> param;
-        method->GetParameter(i, &param);
+        method->GetParameter(i, param);
         AutoPtr<IMetaType> type;
-        param->GetType(&type);
+        param->GetType(type);
         TypeKind kind;
-        type->GetTypeKind((Integer*)&kind);
+        type->GetTypeKind(kind);
         IOAttribute ioAttr;
-        param->GetIOAttribute(&ioAttr);
+        param->GetIOAttribute(ioAttr);
         if (ioAttr == IOAttribute::IN) {
             switch (kind) {
                 case TypeKind::Char: {
                     Char value;
-                    argParcel->ReadChar(&value);
-                    args->SetInputArgumentOfChar(i, value);
+                    argParcel->ReadChar(value);
+                    argList->SetInputArgumentOfChar(i, value);
                     break;
                 }
                 case TypeKind::Byte: {
                     Byte value;
-                    argParcel->ReadByte(&value);
-                    args->SetInputArgumentOfByte(i, value);
+                    argParcel->ReadByte(value);
+                    argList->SetInputArgumentOfByte(i, value);
                     break;
                 }
                 case TypeKind::Short: {
                     Short value;
-                    argParcel->ReadShort(&value);
-                    args->SetInputArgumentOfShort(i, value);
+                    argParcel->ReadShort(value);
+                    argList->SetInputArgumentOfShort(i, value);
                     break;
                 }
                 case TypeKind::Integer: {
                     Integer value;
-                    argParcel->ReadInteger(&value);
-                    args->SetInputArgumentOfInteger(i, value);
+                    argParcel->ReadInteger(value);
+                    argList->SetInputArgumentOfInteger(i, value);
                     break;
                 }
                 case TypeKind::Long: {
                     Long value;
-                    argParcel->ReadLong(&value);
-                    args->SetInputArgumentOfLong(i, value);
+                    argParcel->ReadLong(value);
+                    argList->SetInputArgumentOfLong(i, value);
                     break;
                 }
                 case TypeKind::Float: {
                     Float value;
-                    argParcel->ReadFloat(&value);
-                    args->SetInputArgumentOfFloat(i, value);
+                    argParcel->ReadFloat(value);
+                    argList->SetInputArgumentOfFloat(i, value);
                     break;
                 }
                 case TypeKind::Double: {
                     Double value;
-                    argParcel->ReadDouble(&value);
-                    args->SetInputArgumentOfDouble(i, value);
+                    argParcel->ReadDouble(value);
+                    argList->SetInputArgumentOfDouble(i, value);
                     break;
                 }
                 case TypeKind::Boolean: {
                     Boolean value;
-                    argParcel->ReadBoolean(&value);
-                    args->SetInputArgumentOfBoolean(i, value);
+                    argParcel->ReadBoolean(value);
+                    argList->SetInputArgumentOfBoolean(i, value);
                     break;
                 }
                 case TypeKind::String: {
                     String* value = new String();
-                    argParcel->ReadString(value);
-                    args->SetInputArgumentOfString(i, *value);
+                    argParcel->ReadString(*value);
+                    argList->SetInputArgumentOfString(i, *value);
                     break;
                 }
                 case TypeKind::ECode: {
                     ECode value;
-                    argParcel->ReadECode(&value);
-                    args->SetInputArgumentOfECode(i, value);
+                    argParcel->ReadECode(value);
+                    argList->SetInputArgumentOfECode(i, value);
                     break;
                 }
                 case TypeKind::Enum: {
                     Integer value;
-                    argParcel->ReadEnumeration(&value);
-                    args->SetInputArgumentOfEnumeration(i, value);
+                    argParcel->ReadEnumeration(value);
+                    argList->SetInputArgumentOfEnumeration(i, value);
                     break;
                 }
                 case TypeKind::Array: {
                     Triple* t = new Triple();
                     argParcel->ReadArray(reinterpret_cast<HANDLE>(t));
-                    args->SetInputArgumentOfArray(i, reinterpret_cast<HANDLE>(t));
+                    argList->SetInputArgumentOfArray(i, reinterpret_cast<HANDLE>(t));
                     break;
                 }
                 case TypeKind::Interface: {
                     AutoPtr<IInterface> value;
-                    argParcel->ReadInterface(&value);
-                    args->SetInputArgumentOfInterface(i, value);
+                    argParcel->ReadInterface(value);
+                    argList->SetInputArgumentOfInterface(i, value);
                     REFCOUNT_ADD(value);
                     break;
                 }
@@ -163,94 +162,94 @@ ECode InterfaceStub::UnmarshalArguments(
                 case TypeKind::Char: {
                     Char* value = new Char;
                     if (ioAttr == IOAttribute::IN_OUT) {
-                        argParcel->ReadChar(value);
+                        argParcel->ReadChar(*value);
                     }
-                    args->SetOutputArgumentOfChar(i, reinterpret_cast<HANDLE>(value));
+                    argList->SetOutputArgumentOfChar(i, reinterpret_cast<HANDLE>(value));
                     break;
                 }
                 case TypeKind::Byte: {
                     Byte* value = new Byte;
                     if (ioAttr == IOAttribute::IN_OUT) {
-                        argParcel->ReadByte(value);
+                        argParcel->ReadByte(*value);
                     }
-                    args->SetOutputArgumentOfByte(i, reinterpret_cast<HANDLE>(value));
+                    argList->SetOutputArgumentOfByte(i, reinterpret_cast<HANDLE>(value));
                 }
                 case TypeKind::Short: {
                     Short* value = new Short;
                     if (ioAttr == IOAttribute::IN_OUT) {
-                        argParcel->ReadShort(value);
+                        argParcel->ReadShort(*value);
                     }
-                    args->SetOutputArgumentOfShort(i, reinterpret_cast<HANDLE>(value));
+                    argList->SetOutputArgumentOfShort(i, reinterpret_cast<HANDLE>(value));
                 }
                 case TypeKind::Integer: {
                     Integer* value = new Integer;
                     if (ioAttr == IOAttribute::IN_OUT) {
-                        argParcel->ReadInteger(value);
+                        argParcel->ReadInteger(*value);
                     }
-                    args->SetOutputArgumentOfInteger(i, reinterpret_cast<HANDLE>(value));
+                    argList->SetOutputArgumentOfInteger(i, reinterpret_cast<HANDLE>(value));
                 }
                 case TypeKind::Long: {
                     Long* value = new Long;
                     if (ioAttr == IOAttribute::IN_OUT) {
-                        argParcel->ReadLong(value);
+                        argParcel->ReadLong(*value);
                     }
-                    args->SetOutputArgumentOfLong(i, reinterpret_cast<HANDLE>(value));
+                    argList->SetOutputArgumentOfLong(i, reinterpret_cast<HANDLE>(value));
                 }
                 case TypeKind::Float: {
                     Float* value = new Float;
                     if (ioAttr == IOAttribute::IN_OUT) {
-                        argParcel->ReadFloat(value);
+                        argParcel->ReadFloat(*value);
                     }
-                    args->SetOutputArgumentOfFloat(i, reinterpret_cast<HANDLE>(value));
+                    argList->SetOutputArgumentOfFloat(i, reinterpret_cast<HANDLE>(value));
                 }
                 case TypeKind::Double: {
                     Double* value = new Double;
                     if (ioAttr == IOAttribute::IN_OUT) {
-                        argParcel->ReadDouble(value);
+                        argParcel->ReadDouble(*value);
                     }
-                    args->SetOutputArgumentOfDouble(i, reinterpret_cast<HANDLE>(value));
+                    argList->SetOutputArgumentOfDouble(i, reinterpret_cast<HANDLE>(value));
                 }
                 case TypeKind::Boolean: {
                     Boolean* value = new Boolean;
                     if (ioAttr == IOAttribute::IN_OUT) {
-                        argParcel->ReadBoolean(value);
+                        argParcel->ReadBoolean(*value);
                     }
-                    args->SetOutputArgumentOfBoolean(i, reinterpret_cast<HANDLE>(value));
+                    argList->SetOutputArgumentOfBoolean(i, reinterpret_cast<HANDLE>(value));
                 }
                 case TypeKind::String: {
                     String* value = new String();
                     if (ioAttr == IOAttribute::IN_OUT) {
-                        argParcel->ReadString(value);
+                        argParcel->ReadString(*value);
                     }
-                    args->SetOutputArgumentOfString(i, reinterpret_cast<HANDLE>(value));
+                    argList->SetOutputArgumentOfString(i, reinterpret_cast<HANDLE>(value));
                 }
                 case TypeKind::ECode: {
                     ECode* value = new ECode;
                     if (ioAttr == IOAttribute::IN_OUT) {
-                        argParcel->ReadECode(value);
+                        argParcel->ReadECode(*value);
                     }
-                    args->SetOutputArgumentOfECode(i, reinterpret_cast<HANDLE>(value));
+                    argList->SetOutputArgumentOfECode(i, reinterpret_cast<HANDLE>(value));
                 }
                 case TypeKind::Enum: {
                     Integer* value = new Integer;
                     if (ioAttr == IOAttribute::IN_OUT) {
-                        argParcel->ReadEnumeration(value);
+                        argParcel->ReadEnumeration(*value);
                     }
-                    args->SetOutputArgumentOfEnumeration(i, reinterpret_cast<HANDLE>(value));
+                    argList->SetOutputArgumentOfEnumeration(i, reinterpret_cast<HANDLE>(value));
                 }
                 case TypeKind::Array: {
                     Triple* t = new Triple();
                     if (ioAttr == IOAttribute::IN_OUT) {
                         argParcel->ReadArray(reinterpret_cast<HANDLE>(t));
                     }
-                    args->SetOutputArgumentOfArray(i, reinterpret_cast<HANDLE>(t));
+                    argList->SetOutputArgumentOfArray(i, reinterpret_cast<HANDLE>(t));
                 }
                 case TypeKind::Interface: {
                     IInterface** intf = new IInterface*;
                     if (ioAttr == IOAttribute::IN_OUT) {
-                        argParcel->ReadInterface(intf);
+                        argParcel->ReadInterface(*reinterpret_cast<AutoPtr<IInterface>*>(intf));
                     }
-                    args->SetOutputArgumentOfInterface(i, reinterpret_cast<HANDLE>(intf));
+                    argList->SetOutputArgumentOfInterface(i, reinterpret_cast<HANDLE>(intf));
                 }
                 case TypeKind::CoclassID:
                 case TypeKind::ComponentID:
@@ -266,7 +265,7 @@ ECode InterfaceStub::UnmarshalArguments(
             switch (kind) {
                 case TypeKind::Array: {
                     Triple* t = new Triple();
-                    args->SetOutputArgumentOfArray(i, reinterpret_cast<HANDLE>(t));
+                    argList->SetOutputArgumentOfArray(i, reinterpret_cast<HANDLE>(t));
                     break;
                 }
                 case TypeKind::Char:
@@ -292,31 +291,29 @@ ECode InterfaceStub::UnmarshalArguments(
         }
     }
 
-    args.MoveTo(argList);
     return NOERROR;
 }
 
 ECode InterfaceStub::MarshalResults(
     /* [in] */ IMetaMethod* method,
     /* [in] */ IArgumentList* argList,
-    /* [out] */ IParcel** resParcel)
+    /* [out] */ AutoPtr<IParcel>& resParcel)
 {
     RPCType type;
-    mOwner->mChannel->GetRPCType(&type);
-    AutoPtr<IParcel> outParcel;
-    CoCreateParcel(type, &outParcel);
+    mOwner->mChannel->GetRPCType(type);
+    CoCreateParcel(type, resParcel);
 
     Integer N;
-    method->GetParameterNumber(&N);
+    method->GetParameterNumber(N);
     for (Integer i = 0; i < N; i++) {
         AutoPtr<IMetaParameter> param;
-        method->GetParameter(i, &param);
+        method->GetParameter(i, param);
         AutoPtr<IMetaType> type;
-        param->GetType(&type);
+        param->GetType(type);
         TypeKind kind;
-        type->GetTypeKind((Integer*)&kind);
+        type->GetTypeKind(kind);
         IOAttribute ioAttr;
-        param->GetIOAttribute(&ioAttr);
+        param->GetIOAttribute(ioAttr);
         if (ioAttr == IOAttribute::IN) {
             switch (kind) {
                 case TypeKind::Char:
@@ -332,14 +329,14 @@ ECode InterfaceStub::MarshalResults(
                     break;
                 case TypeKind::String: {
                     HANDLE addr;
-                    argList->GetArgumentAddress(i, &addr);
+                    argList->GetArgumentAddress(i, addr);
                     String* value = reinterpret_cast<String*>(addr);
                     delete value;
                     break;
                 }
                 case TypeKind::Array: {
                     HANDLE addr;
-                    argList->GetArgumentAddress(i, &addr);
+                    argList->GetArgumentAddress(i, addr);
                     Triple* t = reinterpret_cast<Triple*>(addr);
                     t->FreeData();
                     delete t;
@@ -347,7 +344,7 @@ ECode InterfaceStub::MarshalResults(
                 }
                 case TypeKind::Interface: {
                     HANDLE addr;
-                    argList->GetArgumentAddress(i, &addr);
+                    argList->GetArgumentAddress(i, addr);
                     IInterface* intf = reinterpret_cast<IInterface*>(addr);
                     REFCOUNT_RELEASE(intf);
                     break;
@@ -366,103 +363,103 @@ ECode InterfaceStub::MarshalResults(
             switch (kind) {
                 case TypeKind::Char: {
                     HANDLE addr;
-                    argList->GetArgumentAddress(i, &addr);
+                    argList->GetArgumentAddress(i, addr);
                     Char* value = reinterpret_cast<Char*>(addr);
-                    outParcel->WriteChar(*value);
+                    resParcel->WriteChar(*value);
                     delete value;
                     break;
                 }
                 case TypeKind::Byte: {
                     HANDLE addr;
-                    argList->GetArgumentAddress(i, &addr);
+                    argList->GetArgumentAddress(i, addr);
                     Byte* value = reinterpret_cast<Byte*>(addr);
-                    outParcel->WriteByte(*value);
+                    resParcel->WriteByte(*value);
                     delete value;
                     break;
                 }
                 case TypeKind::Short: {
                     HANDLE addr;
-                    argList->GetArgumentAddress(i, &addr);
+                    argList->GetArgumentAddress(i, addr);
                     Short* value = reinterpret_cast<Short*>(addr);
-                    outParcel->WriteShort(*value);
+                    resParcel->WriteShort(*value);
                     delete value;
                     break;
                 }
                 case TypeKind::Integer: {
                     HANDLE addr;
-                    argList->GetArgumentAddress(i, &addr);
+                    argList->GetArgumentAddress(i, addr);
                     Integer* value = reinterpret_cast<Integer*>(addr);
-                    outParcel->WriteInteger(*value);
+                    resParcel->WriteInteger(*value);
                     delete value;
                     break;
                 }
                 case TypeKind::Long: {
                     HANDLE addr;
-                    argList->GetArgumentAddress(i, &addr);
+                    argList->GetArgumentAddress(i, addr);
                     Long* value = reinterpret_cast<Long*>(addr);
-                    outParcel->WriteLong(*value);
+                    resParcel->WriteLong(*value);
                     delete value;
                     break;
                 }
                 case TypeKind::Float: {
                     HANDLE addr;
-                    argList->GetArgumentAddress(i, &addr);
+                    argList->GetArgumentAddress(i, addr);
                     Float* value = reinterpret_cast<Float*>(addr);
-                    outParcel->WriteFloat(*value);
+                    resParcel->WriteFloat(*value);
                     delete value;
                     break;
                 }
                 case TypeKind::Double: {
                     HANDLE addr;
-                    argList->GetArgumentAddress(i, &addr);
+                    argList->GetArgumentAddress(i, addr);
                     Double* value = reinterpret_cast<Double*>(addr);
-                    outParcel->WriteDouble(*value);
+                    resParcel->WriteDouble(*value);
                     delete value;
                     break;
                 }
                 case TypeKind::Boolean: {
                     HANDLE addr;
-                    argList->GetArgumentAddress(i, &addr);
+                    argList->GetArgumentAddress(i, addr);
                     Boolean* value = reinterpret_cast<Boolean*>(addr);
-                    outParcel->WriteBoolean(*value);
+                    resParcel->WriteBoolean(*value);
                     delete value;
                     break;
                 }
                 case TypeKind::String: {
                     HANDLE addr;
-                    argList->GetArgumentAddress(i, &addr);
+                    argList->GetArgumentAddress(i, addr);
                     String* value = reinterpret_cast<String*>(addr);
-                    outParcel->WriteString(*value);
+                    resParcel->WriteString(*value);
                     delete value;
                     break;
                 }
                 case TypeKind::ECode: {
                     HANDLE addr;
-                    argList->GetArgumentAddress(i, &addr);
+                    argList->GetArgumentAddress(i, addr);
                     ECode* value = reinterpret_cast<ECode*>(addr);
-                    outParcel->WriteECode(*value);
+                    resParcel->WriteECode(*value);
                     delete value;
                     break;
                 }
                 case TypeKind::Enum: {
                     HANDLE addr;
-                    argList->GetArgumentAddress(i, &addr);
+                    argList->GetArgumentAddress(i, addr);
                     Integer* value = reinterpret_cast<Integer*>(addr);
-                    outParcel->WriteEnumeration(*value);
+                    resParcel->WriteEnumeration(*value);
                     delete value;
                     break;
                 }
                 case TypeKind::Array: {
                     HANDLE addr;
-                    argList->GetArgumentAddress(i, &addr);
+                    argList->GetArgumentAddress(i, addr);
                     Triple* t = reinterpret_cast<Triple*>(addr);
-                    outParcel->WriteArray(reinterpret_cast<HANDLE>(t));
+                    resParcel->WriteArray(reinterpret_cast<HANDLE>(t));
                     delete t;
                     break;
                 }
                 case TypeKind::Interface: {
                     HANDLE addr;
-                    argList->GetArgumentAddress(i, &addr);
+                    argList->GetArgumentAddress(i, addr);
                     IInterface** intf = reinterpret_cast<IInterface**>(addr);
                     REFCOUNT_RELEASE(*intf);
                     delete intf;
@@ -482,9 +479,9 @@ ECode InterfaceStub::MarshalResults(
             switch (kind) {
                 case TypeKind::Array: {
                     HANDLE addr;
-                    argList->GetArgumentAddress(i, &addr);
+                    argList->GetArgumentAddress(i, addr);
                     Triple* t = reinterpret_cast<Triple*>(addr);
-                    outParcel->WriteArray(reinterpret_cast<HANDLE>(t));
+                    resParcel->WriteArray(reinterpret_cast<HANDLE>(t));
                     delete t;
                     break;
                 }
@@ -511,25 +508,24 @@ ECode InterfaceStub::MarshalResults(
         }
     }
 
-    outParcel.MoveTo(resParcel);
     return NOERROR;
 }
 
 ECode InterfaceStub::Invoke(
     /* [in] */ IParcel* argParcel,
-    /* [out] */ IParcel** resParcel)
+    /* [out] */ AutoPtr<IParcel>& resParcel)
 {
     Integer methodIndex, methodNum;
-    argParcel->ReadInteger(&methodIndex);
-    mTargetMetadata->GetMethodNumber(&methodNum);
+    argParcel->ReadInteger(methodIndex);
+    mTargetMetadata->GetMethodNumber(methodNum);
     if (methodIndex < 0 || methodIndex >= methodNum) {
         Logger::E("CStub", "MethodIndex %d is invalid.", methodIndex);
         return E_RUNTIME_EXCEPTION;
     }
     AutoPtr<IMetaMethod> mm;
-    mTargetMetadata->GetMethod(methodIndex, &mm);
+    mTargetMetadata->GetMethod(methodIndex, mm);
     AutoPtr<IArgumentList> argList;
-    ECode ec = UnmarshalArguments(mm, argParcel, &argList);
+    ECode ec = UnmarshalArguments(mm, argParcel, argList);
     if (FAILED(ec)) {
         Logger::E("CStub", "UnmarshalArguments failed with ec is 0x%x.", ec);
         return ec;
@@ -577,12 +573,10 @@ IInterface* CStub::Probe(
 
 ECode CStub::GetInterfaceID(
     /* [in] */ IInterface* object,
-    /* [out] */ InterfaceID* iid)
+    /* [out] */ InterfaceID& iid)
 {
-    VALIDATE_NOT_NULL(iid);
-
     if (object == (IInterface*)(IStub*)this) {
-        *iid = IID_IStub;
+        iid = IID_IStub;
         return NOERROR;
     }
     return Object::GetInterfaceID(object, iid);
@@ -597,26 +591,24 @@ void CStub::OnLastStrongRef(
 
 ECode CStub::Match(
     /* [in] */ IInterfacePack* ipack,
-    /* [out] */ Boolean* matched)
+    /* [out] */ Boolean& matched)
 {
     return mChannel->Match(ipack, matched);
 }
 
 ECode CStub::Invoke(
     /* [in] */ IParcel* argParcel,
-    /* [out] */ IParcel** resParcel)
+    /* [out] */ AutoPtr<IParcel>& resParcel)
 {
-    VALIDATE_NOT_NULL(resParcel);
-
     Integer magic;
-    argParcel->ReadInteger(&magic);
+    argParcel->ReadInteger(magic);
     if (magic != RPC_MAGIC_NUMBER) {
         Logger::E("CStub", "Magic number 0x%x is invalid.", magic);
         return E_RUNTIME_EXCEPTION;
     }
 
     Integer interfaceIndex, methodIndex;
-    argParcel->ReadInteger(&interfaceIndex);
+    argParcel->ReadInteger(interfaceIndex);
     if (interfaceIndex < 0 || interfaceIndex >= mInterfaces.GetLength()) {
         Logger::E("CStub", "InterfaceIndex %d is invalid.", interfaceIndex);
         return E_RUNTIME_EXCEPTION;
@@ -643,10 +635,9 @@ CoclassID CStub::GetTargetCoclassID()
 ECode CStub::CreateObject(
     /* [in] */ IInterface* object,
     /* [in] */ IRPCChannel* channel,
-    /* [in] */ IStub** stub)
+    /* [out] */ AutoPtr<IStub>& stub)
 {
-    VALIDATE_NOT_NULL(stub);
-    *stub = nullptr;
+    stub = nullptr;
 
     IObject* obj = IObject::Probe(object);
     if (obj == nullptr) {
@@ -655,14 +646,14 @@ ECode CStub::CreateObject(
     }
 
     AutoPtr<IMetaCoclass> mc;
-    obj->GetCoclass(&mc);
+    obj->GetCoclass(mc);
     if (mc == nullptr) {
         Logger::E("CStub", "Fail to get object's Coclass.");
         return E_NOT_FOUND_EXCEPTION;
     }
 
     CoclassID cid;
-    mc->GetCoclassID(&cid);
+    mc->GetCoclassID(cid);
 
     if (DEBUG) {
         Logger::D("CStub", "Object's CoclassID is %s",
@@ -676,7 +667,7 @@ ECode CStub::CreateObject(
     stubObj->mChannel = channel;
 
     Integer interfaceNumber;
-    mc->GetInterfaceNumber(&interfaceNumber);
+    mc->GetInterfaceNumber(interfaceNumber);
     Array<IMetaInterface*> interfaces(interfaceNumber);
     mc->GetAllInterfaces(interfaces);
     stubObj->mInterfaces = Array<InterfaceStub*>(interfaceNumber);
@@ -684,12 +675,12 @@ ECode CStub::CreateObject(
         InterfaceStub* istub = new InterfaceStub();
         istub->mOwner = stubObj;
         istub->mTargetMetadata = interfaces[i];
-        istub->mTargetMetadata->GetInterfaceID(&istub->mIid);
+        istub->mTargetMetadata->GetInterfaceID(istub->mIid);
         istub->mObject = object->Probe(istub->mIid);
         if (istub->mObject == nullptr) {
             String name, ns;
-            interfaces[i]->GetNamespace(&ns);
-            interfaces[i]->GetName(&name);
+            interfaces[i]->GetNamespace(ns);
+            interfaces[i]->GetName(name);
             Logger::E("CStub", "Object does not have \"%s%s\" interface.",
                     ns.string(), name.string());
             delete stubObj;
@@ -705,9 +696,8 @@ ECode CStub::CreateObject(
         return ec;
     }
 
-    *stub = stubObj;
-    REFCOUNT_ADD(*stub);
+    stub = stubObj;
     return NOERROR;
 }
 
-}
+} // namespace como

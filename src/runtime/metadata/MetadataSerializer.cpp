@@ -18,7 +18,6 @@
 #include "comodef.h"
 
 namespace como {
-namespace metadata {
 
 MetadataSerializer::MetadataSerializer(
     /* [in] */ MetaComponent* mc)
@@ -376,5 +375,4 @@ uintptr_t MetadataSerializer::DeserializeAdjust(
     return reinterpret_cast<ptrdiff_t>(addr) + mBasePtr;
 }
 
-}
 }

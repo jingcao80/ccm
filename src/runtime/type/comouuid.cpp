@@ -14,10 +14,10 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccmuuid.h"
+#include "comouuid.h"
 #include "comotypes.h"
 
-namespace ccm {
+namespace como {
 
 COM_PUBLIC extern const UUID UUID_ZERO =
         {0x00000000,0x0000,0x0000,0x0000,{0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0}};
@@ -47,4 +47,4 @@ Integer HashUuid(
     return (hash & 0x7FFFFFFF);
 }
 
-}
+} // namespace como

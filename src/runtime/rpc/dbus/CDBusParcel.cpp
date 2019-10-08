@@ -35,7 +35,7 @@
 #include "util/comolog.h"
 #include <stdlib.h>
 
-namespace ccm {
+namespace como {
 
 const CoclassID CID_CDBusParcel =
         {{0x28208469,0x8814,0x49af,0x80f7,{0x8,0xb,0x1,0x4,0x7,0x3,0x9,0x1,0xf,0xb,0x9,0x4}}, &CID_COMORuntime};
@@ -60,13 +60,11 @@ CDBusParcel::~CDBusParcel()
 }
 
 ECode CDBusParcel::ReadChar(
-    /* [out] */ Char* value)
+    /* [out] */ Char& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     Integer i;
-    ECode ec = ReadInteger(&i);
-    *value = (Char)i;
+    ECode ec = ReadInteger(i);
+    value = (Char)i;
     return ec;
 }
 
@@ -77,13 +75,11 @@ ECode CDBusParcel::WriteChar(
 }
 
 ECode CDBusParcel::ReadByte(
-    /* [out] */ Byte* value)
+    /* [out] */ Byte& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     Integer i;
-    ECode ec = ReadInteger(&i);
-    *value = (Byte)i;
+    ECode ec = ReadInteger(i);
+    value = (Byte)i;
     return ec;
 }
 
@@ -94,13 +90,11 @@ ECode CDBusParcel::WriteByte(
 }
 
 ECode CDBusParcel::ReadShort(
-    /* [out] */ Short* value)
+    /* [out] */ Short& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     Integer i;
-    ECode ec = ReadInteger(&i);
-    *value = (Short)i;
+    ECode ec = ReadInteger(i);
+    value = (Short)i;
     return ec;
 }
 
@@ -111,11 +105,9 @@ ECode CDBusParcel::WriteShort(
 }
 
 ECode CDBusParcel::ReadInteger(
-    /* [out] */ Integer* value)
+    /* [out] */ Integer& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    return ReadAligned<Integer>(value);
+    return ReadAligned<Integer>(&value);
 }
 
 ECode CDBusParcel::WriteInteger(
@@ -125,11 +117,9 @@ ECode CDBusParcel::WriteInteger(
 }
 
 ECode CDBusParcel::ReadLong(
-    /* [out] */ Long* value)
+    /* [out] */ Long& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    return ReadAligned<Long>(value);
+    return ReadAligned<Long>(&value);
 }
 
 ECode CDBusParcel::WriteLong(
@@ -139,11 +129,9 @@ ECode CDBusParcel::WriteLong(
 }
 
 ECode CDBusParcel::ReadFloat(
-    /* [out] */ Float* value)
+    /* [out] */ Float& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    return ReadAligned<Float>(value);
+    return ReadAligned<Float>(&value);
 }
 
 ECode CDBusParcel::WriteFloat(
@@ -153,11 +141,9 @@ ECode CDBusParcel::WriteFloat(
 }
 
 ECode CDBusParcel::ReadDouble(
-    /* [out] */ Double* value)
+    /* [out] */ Double& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    return ReadAligned<Double>(value);
+    return ReadAligned<Double>(&value);
 }
 
 ECode CDBusParcel::WriteDouble(
@@ -167,13 +153,11 @@ ECode CDBusParcel::WriteDouble(
 }
 
 ECode CDBusParcel::ReadBoolean(
-    /* [out] */ Boolean* value)
+    /* [out] */ Boolean& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     Integer i;
-    ECode ec = ReadInteger(&i);
-    *value = (Boolean)i;
+    ECode ec = ReadInteger(i);
+    value = (Boolean)i;
     return ec;
 }
 
@@ -184,13 +168,12 @@ ECode CDBusParcel::WriteBoolean(
 }
 
 ECode CDBusParcel::ReadString(
-    /* [out] */ String* value)
+    /* [out] */ String& value)
 {
-    VALIDATE_NOT_NULL(value);
-    *value = nullptr;
+    value = nullptr;
 
     Integer size;
-    ECode ec = ReadInteger(&size);
+    ECode ec = ReadInteger(size);
     if (FAILED(ec)) {
         return ec;
     }
@@ -200,14 +183,13 @@ ECode CDBusParcel::ReadString(
     }
 
     if (size == 0) {
-        *value = String();
         return NOERROR;
     }
     const char* str = (const char*)ReadInplace(size + 1);
     if (str == nullptr) {
         return E_RUNTIME_EXCEPTION;
     }
-    *value = str;
+    value = str;
     return NOERROR;
 }
 
@@ -222,23 +204,21 @@ ECode CDBusParcel::WriteString(
 }
 
 ECode CDBusParcel::ReadCoclassID(
-    /* [out] */ CoclassID* value)
+    /* [out] */ CoclassID& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    ECode ec = Read((void*)value, sizeof(CoclassID));
+    ECode ec = Read((void*)&value, sizeof(CoclassID));
     if (FAILED(ec)) {
         return ec;
     }
 
     Integer tag;
-    ec = ReadInteger(&tag);
+    ec = ReadInteger(tag);
     if (FAILED(ec)) {
         return ec;
     }
 
     if (tag == TAG_NULL) {
-        value->mCid = nullptr;
+        value.mCid = nullptr;
         return NOERROR;
     }
 
@@ -253,7 +233,7 @@ ECode CDBusParcel::ReadCoclassID(
     }
 
     Integer size;
-    ec = ReadInteger(&size);
+    ec = ReadInteger(size);
     if (FAILED(ec)) {
         return ec;
     }
@@ -263,20 +243,20 @@ ECode CDBusParcel::ReadCoclassID(
     }
 
     if (size == 0) {
-        cid->mUrl = nullptr;
+        cid->mUri = nullptr;
     }
     else {
         const char* str = (const char*)ReadInplace(size + 1);
         if (str == nullptr) {
             return E_RUNTIME_EXCEPTION;
         }
-        cid->mUrl = (const char*)malloc(size + 1);
-        if (cid->mUrl == nullptr) {
+        cid->mUri = (const char*)malloc(size + 1);
+        if (cid->mUri == nullptr) {
             return E_OUT_OF_MEMORY_ERROR;
         }
-        memcpy(const_cast<char*>(cid->mUrl), str, size + 1);
+        memcpy(const_cast<char*>(cid->mUri), str, size + 1);
     }
-    value->mCid = cid;
+    value.mCid = cid;
     return NOERROR;
 }
 
@@ -300,17 +280,15 @@ ECode CDBusParcel::WriteCoclassID(
 }
 
 ECode CDBusParcel::ReadComponentID(
-    /* [out] */ ComponentID* value)
+    /* [out] */ ComponentID& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    ECode ec = Read((void*)value, sizeof(ComponentID));
+    ECode ec = Read((void*)&value, sizeof(ComponentID));
     if (FAILED(ec)) {
         return ec;
     }
 
     Integer size;
-    ec = ReadInteger(&size);
+    ec = ReadInteger(size);
     if (FAILED(ec)) {
         return ec;
     }
@@ -320,18 +298,18 @@ ECode CDBusParcel::ReadComponentID(
     }
 
     if (size == 0) {
-        value->mUrl = nullptr;
+        value.mUri = nullptr;
         return NOERROR;
     }
     const char* str = (const char*)ReadInplace(size + 1);
     if (str == nullptr) {
         return E_RUNTIME_EXCEPTION;
     }
-    value->mUrl = (const char*)malloc(size + 1);
-    if (value->mUrl == nullptr) {
+    value.mUri = (const char*)malloc(size + 1);
+    if (value.mUri == nullptr) {
         return E_OUT_OF_MEMORY_ERROR;
     }
-    memcpy(const_cast<char*>(value->mUrl), str, size + 1);
+    memcpy(const_cast<char*>(value.mUri), str, size + 1);
     return NOERROR;
 }
 
@@ -343,32 +321,30 @@ ECode CDBusParcel::WriteComponentID(
         return ec;
     }
 
-    Integer size = value.mUrl == nullptr ? 0 : strlen(value.mUrl);
+    Integer size = value.mUri == nullptr ? 0 : strlen(value.mUri);
     ec = WriteInteger(size);
     if (size > 0 && SUCCEEDED(ec)) {
-        ec = Write(value.mUrl, size + 1);
+        ec = Write(value.mUri, size + 1);
     }
     return ec;
 }
 
 ECode CDBusParcel::ReadInterfaceID(
-    /* [out] */ InterfaceID* value)
+    /* [out] */ InterfaceID& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    ECode ec = Read((void*)value, sizeof(InterfaceID));
+    ECode ec = Read((void*)&value, sizeof(InterfaceID));
     if (FAILED(ec)) {
         return ec;
     }
 
     Integer tag;
-    ec = ReadInteger(&tag);
+    ec = ReadInteger(tag);
     if (FAILED(ec)) {
         return ec;
     }
 
     if (tag == TAG_NULL) {
-        value->mCid = nullptr;
+        value.mCid = nullptr;
         return NOERROR;
     }
 
@@ -383,7 +359,7 @@ ECode CDBusParcel::ReadInterfaceID(
     }
 
     Integer size;
-    ec = ReadInteger(&size);
+    ec = ReadInteger(size);
     if (FAILED(ec)) {
         return ec;
     }
@@ -393,20 +369,20 @@ ECode CDBusParcel::ReadInterfaceID(
     }
 
     if (size == 0) {
-        cid->mUrl = nullptr;
+        cid->mUri = nullptr;
     }
     else {
         const char* str = (const char*)ReadInplace(size + 1);
         if (str == nullptr) {
             return E_RUNTIME_EXCEPTION;
         }
-        cid->mUrl = (const char*)malloc(size + 1);
-        if (cid->mUrl == nullptr) {
+        cid->mUri = (const char*)malloc(size + 1);
+        if (cid->mUri == nullptr) {
             return E_OUT_OF_MEMORY_ERROR;
         }
-        memcpy(const_cast<char*>(cid->mUrl), str, size + 1);
+        memcpy(const_cast<char*>(cid->mUri), str, size + 1);
     }
-    value->mCid = cid;
+    value.mCid = cid;
     return NOERROR;
 }
 
@@ -430,7 +406,7 @@ ECode CDBusParcel::WriteInterfaceID(
 }
 
 ECode CDBusParcel::ReadECode(
-    /* [out] */ ECode* value)
+    /* [out] */ ECode& value)
 {
     return ReadInteger(value);
 }
@@ -442,7 +418,7 @@ ECode CDBusParcel::WriteECode(
 }
 
 ECode CDBusParcel::ReadEnumeration(
-    /* [out] */ Integer* value)
+    /* [out] */ Integer& value)
 {
     return ReadInteger(value);
 }
@@ -460,12 +436,12 @@ ECode CDBusParcel::ReadArray(
     VALIDATE_NOT_NULL(t);
 
     Integer value;
-    ECode ec = ReadInteger(&value);
+    ECode ec = ReadInteger(value);
     if (FAILED(ec)) return ec;
 
     TypeKind kind = (TypeKind)value;
     Long size;
-    ec = ReadLong(&size);
+    ec = ReadLong(size);
     if (size <= 0 || FAILED(ec)) {
         t->mData = nullptr;
         t->mSize = 0;
@@ -575,7 +551,7 @@ ECode CDBusParcel::ReadArray(
             Array<String> strArray(size);
             for (Long i = 0; i < size; i++) {
                 String str;
-                ec = ReadString(&str);
+                ec = ReadString(str);
                 if (FAILED(ec)) {
                     t->mData = nullptr;
                     t->mSize = 0;
@@ -591,7 +567,7 @@ ECode CDBusParcel::ReadArray(
             Array<CoclassID> cidArray(size);
             for (Long i = 0; i < size; i++) {
                 CoclassID& cid = cidArray[i];
-                ec = ReadCoclassID(&cid);
+                ec = ReadCoclassID(cid);
                 if (FAILED(ec)) {
                     t->mData = nullptr;
                     t->mSize = 0;
@@ -606,7 +582,7 @@ ECode CDBusParcel::ReadArray(
             Array<ComponentID> cidArray(size);
             for (Long i = 0; i < size; i++) {
                 ComponentID& cid = cidArray[i];
-                ec = ReadComponentID(&cid);
+                ec = ReadComponentID(cid);
                 if (FAILED(ec)) {
                     t->mData = nullptr;
                     t->mSize = 0;
@@ -621,7 +597,7 @@ ECode CDBusParcel::ReadArray(
             Array<InterfaceID> iidArray(size);
             for (Long i = 0; i < size; i++) {
                 InterfaceID& iid = iidArray[i];
-                ec = ReadInterfaceID(&iid);
+                ec = ReadInterfaceID(iid);
                 if (FAILED(ec)) {
                     t->mData = nullptr;
                     t->mSize = 0;
@@ -676,7 +652,7 @@ ECode CDBusParcel::ReadArray(
             Array<IInterface*> intfArray(size);
             for (Long i = 0; i < size; i++) {
                 AutoPtr<IInterface> obj;
-                ec = ReadInterface(&obj);
+                ec = ReadInterface(obj);
                 if (FAILED(ec)) {
                     t->mData = nullptr;
                     t->mSize = 0;
@@ -796,9 +772,8 @@ ECode CDBusParcel::WriteArray(
 }
 
 ECode CDBusParcel::ReadInterface(
-    /* [out] */ IInterface** value)
+    /* [out] */ AutoPtr<IInterface>& value)
 {
-    VALIDATE_NOT_NULL(value);
     return NOERROR;
 }
 
@@ -809,11 +784,9 @@ ECode CDBusParcel::WriteInterface(
 }
 
 ECode CDBusParcel::GetData(
-    /* [out] */ HANDLE* data)
+    /* [out] */ HANDLE& data)
 {
-    VALIDATE_NOT_NULL(data);
-
-    *data = reinterpret_cast<HANDLE>(mData);
+    data = reinterpret_cast<HANDLE>(mData);
     return NOERROR;
 }
 
@@ -834,11 +807,9 @@ ECode CDBusParcel::SetData(
 }
 
 ECode CDBusParcel::GetDataSize(
-    /* [out] */ Long* size)
+    /* [out] */ Long& size)
 {
-    VALIDATE_NOT_NULL(size);
-
-    *size = mDataSize;
+    size = mDataSize;
     return NOERROR;
 }
 
@@ -1074,13 +1045,10 @@ restart_write:
 }
 
 ECode CDBusParcel::CreateObject(
-    /* [out] */ IParcel** parcel)
+    /* [out] */ AutoPtr<IParcel>& parcel)
 {
-    VALIDATE_NOT_NULL(parcel);
-
-    *parcel = new CDBusParcel();
-    REFCOUNT_ADD(*parcel);
+    parcel = new CDBusParcel();
     return NOERROR;
 }
 
-}
+} // namespace como
