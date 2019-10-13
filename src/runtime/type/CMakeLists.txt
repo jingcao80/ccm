@@ -24,7 +24,7 @@ include_directories(
 
 set(SOURCES
     comoarray.cpp
-    comosharedbuffer.cpp
+    comoshbuf.cpp
     comostring.cpp
     comouuid.cpp
     ucase.cpp)
@@ -34,14 +34,16 @@ add_library(type STATIC
 add_dependencies(type cdl)
 
 COPY(type ${TYPE_DIR}/comoarray.h ${INC_DIR})
-COPY(type ${TYPE_DIR}/comosharedbuffer.h ${INC_DIR})
+COPY(type ${TYPE_DIR}/comointfs.h ${INC_DIR})
+COPY(type ${TYPE_DIR}/comoshbuf.h ${INC_DIR})
 COPY(type ${TYPE_DIR}/comostring.h ${INC_DIR})
 COPY(type ${TYPE_DIR}/comotypekind.h ${INC_DIR})
 COPY(type ${TYPE_DIR}/comouuid.h ${INC_DIR})
 
 set(DEPLOY_HEADERS
     ${TYPE_DIR}/comoarray.h
-    ${TYPE_DIR}/comosharedbuffer.h
+    ${TYPE_DIR}/comointfs.h
+    ${TYPE_DIR}/comoshbuf.h
     ${TYPE_DIR}/comostring.h
     ${TYPE_DIR}/comotypekind.h
     ${TYPE_DIR}/comouuid.h)

@@ -45,6 +45,16 @@ public:
     ECode GetComponentID(
         /* [out] */ ComponentID& cid) override;
 
+    ECode GetConstantNumber(
+        /* [out] */ Integer& number) override;
+
+    ECode GetAllConstants(
+        /* [out] */ Array<IMetaConstant*>& consts) override;
+
+    ECode GetConstant(
+        /* [in] */ const String& name,
+        /* [out] */ AutoPtr<IMetaConstant>& constt) override;
+
     ECode GetCoclassNumber(
         /* [out] */ Integer& number) override;
 
@@ -53,11 +63,11 @@ public:
 
     ECode GetCoclass(
         /* [in] */ const String& fullName,
-        /* [out] */ AutoPtr<IMetaCoclass>& metaKls) override;
+        /* [out] */ AutoPtr<IMetaCoclass>& klass) override;
 
     ECode GetCoclass(
         /* [in] */ const CoclassID& cid,
-        /* [out] */ AutoPtr<IMetaCoclass>& metaKls) override;
+        /* [out] */ AutoPtr<IMetaCoclass>& klass) override;
 
     ECode GetEnumerationNumber(
         /* [out] */ Integer& number) override;
@@ -92,6 +102,8 @@ public:
         /* [in] */ const CoclassID& cid,
         /* [out] */ AutoPtr<IClassObject>& object);
 
+    void BuildAllConstants();
+
     void BuildAllCoclasses();
 
     AutoPtr<IMetaCoclass> BuildCoclass(
@@ -121,6 +133,9 @@ public:
     ComponentID mCid;
     String mName;
     String mUri;
+    Array<IMetaConstant*> mMetaConstants;
+    HashMap<String, IMetaConstant*> mMetaConstantNameMap;
+    Boolean mMetaConstantsAllBuilt;
     Array<IMetaCoclass*> mMetaCoclasses;
     HashMap<String, IMetaCoclass*> mMetaCoclassNameMap;
     HashMap<UUID, IMetaCoclass*> mMetaCoclassIdMap;

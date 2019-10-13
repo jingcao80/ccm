@@ -16,6 +16,7 @@
 
 #include "CMetaComponent.h"
 #include "CMetaCoclass.h"
+#include "CMetaConstant.h"
 #include "CMetaEnumeration.h"
 #include "CMetaInterface.h"
 #include "CMetaMethod.h"
@@ -36,6 +37,9 @@ CMetaComponent::CMetaComponent(
     , mMetadata(metadata)
     , mName(metadata->mName)
     , mUri(metadata->mUri)
+    , mMetaConstants(mMetadata->mConstantNumber)
+    , mMetaConstantNameMap(mMetadata->mConstantNumber)
+    , mMetaConstantsAllBuilt(false)
     , mMetaCoclasses(mMetadata->mCoclassNumber)
     , mMetaCoclassNameMap(mMetadata->mCoclassNumber)
     , mMetaCoclassIdMap(mMetadata->mCoclassNumber)
@@ -79,6 +83,45 @@ ECode CMetaComponent::GetComponentID(
     return NOERROR;
 }
 
+ECode CMetaComponent::GetConstantNumber(
+    /* [out] */ Integer& number)
+{
+    number = mMetaConstants.GetLength();
+    return NOERROR;
+}
+
+ECode CMetaComponent::GetAllConstants(
+    /* [out] */ Array<IMetaConstant*>& consts)
+{
+    if (mMetaConstants.IsEmpty()) {
+        return NOERROR;
+    }
+
+    BuildAllConstants();
+
+    Integer N = MIN(mMetaConstants.GetLength(), consts.GetLength());
+    for (Integer i = 0; i < N; i++) {
+        consts.Set(i, mMetaConstants[i]);
+    }
+
+    return NOERROR;
+}
+
+ECode CMetaComponent::GetConstant(
+    /* [in] */ const String& name,
+    /* [out] */ AutoPtr<IMetaConstant>& constt)
+{
+    if (name.IsEmpty() || mMetaConstants.IsEmpty()) {
+        constt = nullptr;
+        return NOERROR;
+    }
+
+    BuildAllConstants();
+
+    constt = mMetaConstantNameMap.Get(name);
+    return NOERROR;
+}
+
 ECode CMetaComponent::GetCoclassNumber(
     /* [out] */ Integer& number)
 {
@@ -105,26 +148,26 @@ ECode CMetaComponent::GetAllCoclasses(
 
 ECode CMetaComponent::GetCoclass(
     /* [in] */ const String& fullName,
-    /* [out] */ AutoPtr<IMetaCoclass>& metaKls)
+    /* [out] */ AutoPtr<IMetaCoclass>& klass)
 {
     if (fullName.IsEmpty() || mMetaCoclasses.IsEmpty()) {
-        metaKls = nullptr;
+        klass = nullptr;
         return NOERROR;
     }
 
     BuildAllCoclasses();
 
-    metaKls = mMetaCoclassNameMap.Get(fullName);
+    klass = mMetaCoclassNameMap.Get(fullName);
     return NOERROR;
 }
 
 ECode CMetaComponent::GetCoclass(
     /* [in] */ const CoclassID& cid,
-    /* [out] */ AutoPtr<IMetaCoclass>& metaKls)
+    /* [out] */ AutoPtr<IMetaCoclass>& klass)
 {
     BuildAllCoclasses();
 
-    metaKls = mMetaCoclassIdMap.Get(cid.mUuid);
+    klass = mMetaCoclassIdMap.Get(cid.mUuid);
     return NOERROR;
 }
 
@@ -242,10 +285,27 @@ ECode CMetaComponent::GetClassObject(
     return mComponent->mSoGetClassObject(cid, object);
 }
 
+void CMetaComponent::BuildAllConstants()
+{
+    if (mMetadata->mConstantNumber == 0 || mMetaConstantsAllBuilt) {
+        return;
+    }
+
+    for (Integer i = 0; i < mMetadata->mConstantNumber; i++) {
+        MetaConstant* mc = mMetadata->mConstants[i];
+        if (!mMetaConstantNameMap.ContainsKey(mc->mName)) {
+            AutoPtr<CMetaConstant> mcObj = new CMetaConstant(
+                    mMetadata, mc);
+            mMetaConstants.Set(i, mcObj);
+            mMetaConstantNameMap.Put(mc->mName, mcObj);
+        }
+    }
+    mMetaConstantsAllBuilt = true;
+}
+
 void CMetaComponent::BuildAllCoclasses()
 {
-    if (mMetadata->mCoclassNumber == 0 ||
-            mMetaCoclassesAllBuilt) {
+    if (mMetadata->mCoclassNumber == 0 || mMetaCoclassesAllBuilt) {
         return;
     }
 
@@ -254,7 +314,7 @@ void CMetaComponent::BuildAllCoclasses()
         String fullName = String::Format("%s%s",
                 mc->mNamespace, mc->mName);
         if (!mMetaCoclassNameMap.ContainsKey(fullName)) {
-            CMetaCoclass* mcObj = new CMetaCoclass(
+            AutoPtr<CMetaCoclass> mcObj = new CMetaCoclass(
                     this, mMetadata, mc);
             mMetaCoclasses.Set(i, mcObj);
             mMetaCoclassNameMap.Put(fullName, mcObj);
@@ -276,7 +336,7 @@ AutoPtr<IMetaCoclass> CMetaComponent::BuildCoclass(
     String fullName = String::Format("%s%s",
                 mc->mNamespace, mc->mName);
     if (!mMetaCoclassNameMap.ContainsKey(fullName)) {
-        CMetaCoclass* mcObj = new CMetaCoclass(
+        AutoPtr<CMetaCoclass> mcObj = new CMetaCoclass(
                 this, mMetadata, mc);
         mMetaCoclasses.Set(index, mcObj);
         mMetaCoclassNameMap.Put(fullName, mcObj);
@@ -291,8 +351,7 @@ AutoPtr<IMetaCoclass> CMetaComponent::BuildCoclass(
 
 void CMetaComponent::BuildAllEnumerations()
 {
-    if (mMetadata->mEnumerationNumber == 0 ||
-            mMetaEnumerationsAllBuilt) {
+    if (mMetadata->mEnumerationNumber == 0 || mMetaEnumerationsAllBuilt) {
         return;
     }
 
@@ -305,7 +364,7 @@ void CMetaComponent::BuildAllEnumerations()
         String fullName = String::Format("%s%s",
                 me->mNamespace, me->mName);
         if (!mMetaEnumerationMap.ContainsKey(fullName)) {
-            IMetaEnumeration* meObj = new CMetaEnumeration(
+            AutoPtr<CMetaEnumeration> meObj = new CMetaEnumeration(
                     this, mMetadata, me);
             mMetaEnumerations.Set(index, meObj);
             mMetaEnumerationMap.Put(fullName, meObj);
@@ -330,7 +389,7 @@ AutoPtr<IMetaEnumeration> CMetaComponent::BuildEnumeration(
     String fullName = String::Format("%s%s",
             me->mNamespace, me->mName);
     if (!mMetaEnumerationMap.ContainsKey(fullName)) {
-        IMetaEnumeration* meObj = new CMetaEnumeration(
+        AutoPtr<CMetaEnumeration> meObj = new CMetaEnumeration(
                 this, mMetadata, me);
         Integer realIndex = index;
         for (Integer i = 0; i <= index; i++) {
@@ -350,8 +409,7 @@ AutoPtr<IMetaEnumeration> CMetaComponent::BuildEnumeration(
 
 void CMetaComponent::BuildAllInterfaces()
 {
-    if (mMetadata->mInterfaceNumber == 0 ||
-            mMetaInterfacesAllBuilt) {
+    if (mMetadata->mInterfaceNumber == 0 || mMetaInterfacesAllBuilt) {
         return;
     }
 
@@ -364,7 +422,7 @@ void CMetaComponent::BuildAllInterfaces()
         String fullName = String::Format("%s%s",
                 mi->mNamespace, mi->mName);
         if (!mMetaInterfaceNameMap.ContainsKey(fullName)) {
-            CMetaInterface* miObj = new CMetaInterface(
+            AutoPtr<CMetaInterface> miObj = new CMetaInterface(
                     this, mMetadata, mi);
             mMetaInterfaces.Set(index, miObj);
             mMetaInterfaceNameMap.Put(fullName, miObj);
@@ -387,7 +445,7 @@ AutoPtr<IMetaInterface> CMetaComponent::BuildInterface(
     String fullName = String::Format("%s%s",
             mi->mNamespace, mi->mName);
     if (!mMetaInterfaceNameMap.ContainsKey(fullName)) {
-        CMetaInterface* miObj = new CMetaInterface(
+        AutoPtr<CMetaInterface> miObj = new CMetaInterface(
                 this, mMetadata, mi);
         Integer realIndex = index;
         for (Integer i = 0; i <= index; i++) {
@@ -493,7 +551,7 @@ void CMetaComponent::BuildIInterface()
     mtObj = new CMetaType();
     mtObj->mKind = TypeKind::Interface;
     mtObj->mName = "IInterface";
-    mtObj->mMode = TypeMode::POINTER;
+    mtObj->mMode = TypeModification::POINTER;
     mmObj->mReturnType = mtObj;
     miObj->mMetaMethods.Set(2, mmObj);
 
@@ -512,7 +570,7 @@ void CMetaComponent::BuildIInterface()
     mtObj = new CMetaType();
     mtObj->mKind = TypeKind::Interface;
     mtObj->mName = "IInterface";
-    mtObj->mMode = TypeMode::POINTER;
+    mtObj->mMode = TypeModification::POINTER;
     mpObj->mType = mtObj;
     mmObj->mParameters.Set(0, mpObj);
     mpObj = new CMetaParameter();
@@ -523,7 +581,7 @@ void CMetaComponent::BuildIInterface()
     mtObj = new CMetaType();
     mtObj->mKind = TypeKind::InterfaceID;
     mtObj->mName = "InterfaceID";
-    mtObj->mMode = TypeMode::REFERENCE;
+    mtObj->mMode = TypeModification::REFERENCE;
     mpObj->mType = mtObj;
     mmObj->mParameters.Set(1, mpObj);
     mtObj = new CMetaType();
@@ -550,6 +608,9 @@ void CMetaComponent::ReleaseResources()
     mCid.mUri = nullptr;
     mName = nullptr;
     mUri = nullptr;
+    mMetaConstants.Clear();
+    mMetaConstantNameMap.Clear();
+    mMetaConstantsAllBuilt = false;
     mMetaCoclasses.Clear();
     mMetaCoclassNameMap.Clear();
     mMetaCoclassIdMap.Clear();

@@ -36,8 +36,6 @@ public:
         /* [in] */ MetaParameter* mp,
         /* [in] */ Integer index);
 
-    ~CMetaParameter();
-
     COMO_INTERFACE_DECL();
 
     ECode GetMethod(

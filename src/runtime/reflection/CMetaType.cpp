@@ -23,7 +23,7 @@ COMO_INTERFACE_IMPL_LIGHT_1(CMetaType, LightRefBase, IMetaType)
 CMetaType::CMetaType()
     : mMetadata(nullptr)
     , mKind(TypeKind::Unknown)
-    , mMode(TypeMode::NORMAL)
+    , mMode(TypeModification::NAKED)
 {}
 
 CMetaType::CMetaType(
@@ -31,21 +31,21 @@ CMetaType::CMetaType(
     /* [in] */ MetaType* mt)
     : mMetadata(mt)
     , mKind(mt->mKind)
-    , mMode(TypeMode::NORMAL)
+    , mMode(TypeModification::NAKED)
 {
     int N = mt->mProperties & TYPE_NUMBER_MASK;
     if (N == 1) {
         mMode = ((mt->mProperties >> 2) & TYPE_POINTER)
-                ? TypeMode::POINTER : TypeMode::REFERENCE;
+                ? TypeModification::POINTER : TypeModification::REFERENCE;
     }
     else if (N == 2) {
         if ((mt->mProperties >> 2) & TYPE_POINTER) {
             mMode = ((mt->mProperties >> 4) & TYPE_POINTER)
-                ? TypeMode::POINTER_POINTER : TypeMode::POINTER_REFERENCE;
+                ? TypeModification::POINTER_POINTER : TypeModification::POINTER_REFERENCE;
         }
         else {
             mMode = ((mt->mProperties >> 4) & TYPE_POINTER)
-                ? TypeMode::REFERENCE_POINTER : TypeMode::REFERENCE_REFERENCE;
+                ? TypeModification::REFERENCE_POINTER : TypeModification::REFERENCE_REFERENCE;
         }
     }
     mName = BuildName(mc, mt);
@@ -53,11 +53,6 @@ CMetaType::CMetaType(
         mElementType = new CMetaType(mc,
                 mc->mTypes[mt->mIndex]);
     }
-}
-
-CMetaType::~CMetaType()
-{
-    mMetadata = nullptr;
 }
 
 ECode CMetaType::GetName(
@@ -81,8 +76,8 @@ ECode CMetaType::GetElementType(
     return NOERROR;
 }
 
-ECode CMetaType::GetTypeMode(
-    /* [out] */ TypeMode& mode)
+ECode CMetaType::GetTypeModification(
+    /* [out] */ TypeModification& mode)
 {
     mode = mMode;
     return NOERROR;
@@ -96,7 +91,7 @@ String CMetaType::BuildName(
 
     switch(mt->mKind) {
         case TypeKind::Unknown:
-            return String("Unknown");
+            return "Unknown";
         case TypeKind::Char:
             typeStr = "Char";
             break;
@@ -122,19 +117,19 @@ String CMetaType::BuildName(
             typeStr = "Boolean";
             break;
         case TypeKind::String:
-            typeStr = mMode == TypeMode::NORMAL ?
+            typeStr = mMode == TypeModification::NAKED ?
                     "const String&" : "String";
             break;
         case TypeKind::CoclassID:
-            typeStr = mMode == TypeMode::NORMAL ?
+            typeStr = mMode == TypeModification::NAKED ?
                     "const CoclassID&" : "CoclassID";
             break;
         case TypeKind::ComponentID:
-            typeStr = mMode == TypeMode::NORMAL ?
+            typeStr = mMode == TypeModification::NAKED ?
                     "const ComponentID&" : "ComponentID";
             break;
         case TypeKind::InterfaceID:
-            typeStr = mMode == TypeMode::NORMAL ?
+            typeStr = mMode == TypeModification::NAKED ?
                     "const InterfaceID&" : "InterfaceID";
             break;
         case TypeKind::HANDLE:
@@ -156,7 +151,7 @@ String CMetaType::BuildName(
             typeStr = mc->mInterfaces[mt->mIndex]->mName;
             break;
         case TypeKind::Triple:
-            typeStr = mMode == TypeMode::NORMAL ?
+            typeStr = mMode == TypeModification::NAKED ?
                     "const Triple&" : "Triple";
             break;
         case TypeKind::TypeKind:
@@ -165,22 +160,22 @@ String CMetaType::BuildName(
     }
 
     switch (mMode) {
-        case TypeMode::POINTER:
+        case TypeModification::POINTER:
             typeStr += "*";
             break;
-        case TypeMode::REFERENCE:
+        case TypeModification::REFERENCE:
             typeStr += "&";
             break;
-        case TypeMode::POINTER_POINTER:
+        case TypeModification::POINTER_POINTER:
             typeStr += "**";
             break;
-        case TypeMode::POINTER_REFERENCE:
+        case TypeModification::POINTER_REFERENCE:
             typeStr += "*&";
             break;
-        case TypeMode::REFERENCE_REFERENCE:
+        case TypeModification::REFERENCE_REFERENCE:
             typeStr += "&&";
             break;
-        case TypeMode::REFERENCE_POINTER:
+        case TypeModification::REFERENCE_POINTER:
             typeStr += "&*";
             break;
         default:

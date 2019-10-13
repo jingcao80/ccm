@@ -19,6 +19,7 @@
 
 #include "comodef.h"
 #include "comotypes.h"
+#include "comointfs.h"
 #include "comoobjapi.h"
 #include "comoreflapi.h"
 #include "comorpc.h"

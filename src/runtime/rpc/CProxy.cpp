@@ -793,11 +793,15 @@ ECode InterfaceProxy::ProxyEntry(
     inParcel->WriteInteger(thisObj->mIndex);
     inParcel->WriteInteger(methodIndex + 4);
     ECode ec = thisObj->MarshalArguments(regs, method, inParcel);
-    if (FAILED(ec)) goto ProxyExit;
+    if (FAILED(ec)) {
+        goto ProxyExit;
+    }
 
     ec = thisObj->mOwner->mChannel->Invoke(
             thisObj->mOwner, method, inParcel, outParcel);
-    if (FAILED(ec)) goto ProxyExit;
+    if (FAILED(ec)) {
+        goto ProxyExit;
+    }
 
     ec = thisObj->UnmarshalResults(regs, method, outParcel);
 
@@ -937,7 +941,7 @@ ECode CProxy::CreateObject(
     mc->GetAllInterfaces(interfaces);
     proxyObj->mInterfaces = Array<InterfaceProxy*>(interfaceNumber);
     for (Integer i = 0; i < interfaceNumber; i++) {
-        InterfaceProxy* iproxy = new InterfaceProxy();
+        AutoPtr<InterfaceProxy> iproxy = new InterfaceProxy();
         iproxy->mIndex = i;
         iproxy->mOwner = proxyObj;
         iproxy->mTargetMetadata = interfaces[i];

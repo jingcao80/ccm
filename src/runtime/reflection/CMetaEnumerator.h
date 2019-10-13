@@ -33,8 +33,6 @@ public:
         /* [in] */ CMetaEnumeration* menObj,
         /* [in] */ MetaEnumerator* me);
 
-    ~CMetaEnumerator();
-
     COMO_INTERFACE_DECL();
 
     ECode GetEnumeration(

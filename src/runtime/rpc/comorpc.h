@@ -14,10 +14,10 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __COMO_CCMTYPES_H__
-#define __COMO_CCMTYPES_H__
+#ifndef __COMO_COMORPC_H__
+#define __COMO_COMORPC_H__
 
-#include "comotypes.h"
+#include "comointfs.h"
 
 namespace como {
 
@@ -53,4 +53,4 @@ EXTERN_C COM_PUBLIC ECode CoUnmarshalInterface(
 
 } // namespace como
 
-#endif // __COMO_CCMTYPES_H__
+#endif // __COMO_COMORPC_H__

@@ -73,7 +73,6 @@ ArrayList<T>::~ArrayList()
         deleteF(&mData[i], this);
     }
     free(mData);
-    mData = nullptr;
 }
 
 template<class T>
@@ -95,7 +94,7 @@ T ArrayList<T>::Get(
     /* [in] */ Long index)
 {
     if (index < 0 || index >= mIndex) {
-        return T(nullptr);
+        return nullptr;
     }
     return mData[index];
 }

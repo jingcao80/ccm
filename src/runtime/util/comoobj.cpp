@@ -81,19 +81,17 @@ ECode Object::GetCoclassID(
 ECode Object::GetCoclass(
     /* [out] */ AutoPtr<IMetaCoclass>& klass)
 {
-    if (mComponent != nullptr) {
-        return mComponent->GetCoclass(mCoclassName, klass);
-    }
-    else {
+    if (mComponent == nullptr) {
         klass = nullptr;
         return E_UNSUPPORTED_OPERATION_EXCEPTION;
     }
+    return mComponent->GetCoclass(mCoclassName, klass);
 }
 
 ECode Object::GetHashCode(
     /* [out] */ Integer& hash)
 {
-    hash = (Integer)reinterpret_cast<HANDLE>(this);
+    hash = reinterpret_cast<HANDLE>(this);
     return NOERROR;
 }
 
@@ -105,10 +103,10 @@ ECode Object::Equals(
     return NOERROR;
 }
 
-ECode Object::SetReferenceObserver(
-    /* [in] */ IReferenceObserver* observer)
+ECode Object::SetObjectObserver(
+    /* [in] */ IObjectObserver* observer)
 {
-    mRefObserver = observer;
+    mObserver = observer;
     return NOERROR;
 }
 
@@ -137,16 +135,16 @@ ECode Object::GetWeakReference(
 void Object::OnLastStrongRef(
     /* [in] */ const void* id)
 {
-    if (UNLIKELY(mRefObserver != nullptr)) {
-        mRefObserver->OnLastStrongRef(this);
+    if (UNLIKELY(mObserver != nullptr)) {
+        mObserver->OnLastStrongRef(this);
     }
 }
 
 void Object::OnLastWeakRef(
     /* [in] */ const void* id)
 {
-    if (UNLIKELY(mRefObserver != nullptr)) {
-        mRefObserver->OnLastWeakRef(this);
+    if (UNLIKELY(mObserver != nullptr)) {
+        mObserver->OnLastWeakRef(this);
     }
 }
 
@@ -155,13 +153,11 @@ ECode Object::GetCoclassID(
     /* [out] */ CoclassID& cid)
 {
     IObject* o = IObject::Probe(obj);
-    if (o != nullptr) {
-        return o->GetCoclassID(cid);
-    }
-    else {
+    if (o == nullptr) {
         cid = CoclassID::Null;
         return NOERROR;
     }
+    return o->GetCoclassID(cid);
 }
 
 AutoPtr<IMetaCoclass> Object::GetCoclass(
@@ -179,7 +175,7 @@ AutoPtr<IMetaCoclass> Object::GetCoclass(
 String Object::GetCoclassName(
     /* [in] */ IInterface* obj)
 {
-    Object* o = (Object*)IObject::Probe(obj);
+    Object* o = static_cast<Object*>(IObject::Probe(obj));
     if (o == nullptr) {
         return nullptr;
     }
@@ -246,9 +242,7 @@ String Object::ToString(
             o->ToString(info);
             return info;
         }
-        else {
-            return "not a coclass object.";
-        }
+        return "not a coclass object.";
     }
 }
 
@@ -268,7 +262,7 @@ Boolean Object::InstanceOf(
     /* [in] */ IInterface* obj,
     /* [in] */ const CoclassID& cid)
 {
-    Object* o = (Object*)IObject::Probe(obj);
+    Object* o = static_cast<Object*>(IObject::Probe(obj));
     if (o == nullptr) {
         return false;
     }

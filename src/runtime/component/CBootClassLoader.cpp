@@ -37,7 +37,6 @@ COMO_OBJECT_IMPL(CBootClassLoader);
 COMO_INTERFACE_IMPL_1(CBootClassLoader, Object, IClassLoader);
 
 CBootClassLoader::CBootClassLoader()
-    : mDebug(false)
 {
     InitComponentPath();
 }
@@ -53,7 +52,7 @@ ECode CBootClassLoader::LoadComponent(
 {
     {
         Mutex::AutoLock lock(mComponentsLock);
-        IMetaComponent* mc = mComponentPathMap.Get(path);
+        IMetaComponent* mc = mComponentPaths.Get(path);
         if (mc != nullptr) {
             component = mc;
             return NOERROR;
@@ -72,7 +71,7 @@ ECode CBootClassLoader::LoadComponent(
         // Dlopening a component maybe cause to run its initialization which
         // running nested LoadComponent about itself, so we check mComponents again.
         Mutex::AutoLock lock(mComponentsLock);
-        IMetaComponent* mc = mComponentPathMap.Get(path);
+        IMetaComponent* mc = mComponentPaths.Get(path);
         if (mc != nullptr) {
             component = mc;
             return NOERROR;
@@ -93,7 +92,7 @@ ECode CBootClassLoader::LoadComponent(
     {
         Mutex::AutoLock lock(mComponentsLock);
         mComponents.Put(compId.mUuid, component);
-        mComponentPathMap.Put(path, component);
+        mComponentPaths.Put(path, component);
     }
 
     return NOERROR;
@@ -149,7 +148,7 @@ ECode CBootClassLoader::LoadComponent(
     {
         Mutex::AutoLock lock(mComponentsLock);
         mComponents.Put(compId.mUuid, component);
-        mComponentPathMap.Put(compPath, component);
+        mComponentPaths.Put(compPath, component);
     }
 
     return NOERROR;
@@ -312,7 +311,7 @@ ECode CBootClassLoader::UnloadComponent(
     /* [in] */ const ComponentID& compId)
 {
     Mutex::AutoLock lock(mComponentsLock);
-    CMetaComponent* mcObj = (CMetaComponent*)mComponents.Get(compId.mUuid);
+    CMetaComponent* mcObj = static_cast<CMetaComponent*>(mComponents.Get(compId.mUuid));
     if (mcObj == nullptr) {
         return E_COMPONENT_NOT_FOUND_EXCEPTION;
     }
@@ -322,7 +321,7 @@ ECode CBootClassLoader::UnloadComponent(
         int ret = dlclose(mcObj->mComponent->mSoHandle);
         if (ret == 0) {
             mComponents.Remove(compId.mUuid);
-            mComponentPathMap.Remove(mcObj->mUri);
+            mComponentPaths.Remove(mcObj->mUri);
             return NOERROR;
         }
     }
@@ -390,7 +389,7 @@ void CBootClassLoader::InitComponentPath()
     }
     else {
         char* cwd = getcwd(nullptr, 0);
-        mComponentPath.Add(String(cwd));
+        mComponentPath.Add(cwd);
         free(cwd);
     }
 }

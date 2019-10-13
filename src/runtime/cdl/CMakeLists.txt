@@ -42,4 +42,4 @@ add_custom_command(
         -c "${PROJECT_DIR}/src/runtime/cdl/comort.cdl"
     COMMAND
         "${CMAKE_COMMAND}"
-        -E copy ${OBJ_DIR}/comointfs.h ${INC_DIR})
+        -E copy ${OBJ_DIR}/_comointfs.h ${INC_DIR})

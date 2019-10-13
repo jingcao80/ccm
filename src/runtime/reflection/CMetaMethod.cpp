@@ -58,12 +58,6 @@ CMetaMethod::CMetaMethod(
             mc->mTypes[mm->mReturnTypeIndex]);
 }
 
-CMetaMethod::~CMetaMethod()
-{
-    mMetadata = nullptr;
-    mOwner = nullptr;
-}
-
 ECode CMetaMethod::GetInterface(
     /* [out] */ AutoPtr<IMetaInterface>& intf)
 {
@@ -187,7 +181,7 @@ void CMetaMethod::BuildAllParameters()
 {
     if (mParameters[0] == nullptr) {
         for (Integer i = 0; i < mMetadata->mParameterNumber; i++) {
-            CMetaParameter* mpObj = new CMetaParameter(
+            AutoPtr<CMetaParameter> mpObj = new CMetaParameter(
                     mOwner->mOwner->mMetadata, this,
                     mMetadata->mParameters[i], i);
             mParameters.Set(i, mpObj);

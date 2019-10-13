@@ -37,12 +37,6 @@ CMetaCoclass::CMetaCoclass(
     mCid.mCid = &mcObj->mCid;
 }
 
-CMetaCoclass::~CMetaCoclass()
-{
-    mMetadata = nullptr;
-    mOwner = nullptr;
-}
-
 ECode CMetaCoclass::GetComponent(
     /* [out] */ AutoPtr<IMetaComponent>& metaComp)
 {
@@ -276,7 +270,7 @@ void CMetaCoclass::BuildAllConstructors()
         mMetaConstructors = Array<IMetaConstructor*>(mi->mMethodNumber);
         for (Integer i = 0; i < mi->mMethodNumber; i++) {
             MetaMethod* mm = mi->mMethods[i];
-            IMetaConstructor* mcObj = new CMetaConstructor(
+            AutoPtr<IMetaConstructor> mcObj = new CMetaConstructor(
                     this, mi, i, mm);
             mMetaConstructors.Set(i, mcObj);
         }
@@ -308,7 +302,9 @@ void CMetaCoclass::BuildAllMethod()
             String name, ns;
             miObj->GetName(name);
             miObj->GetNamespace(ns);
-            if (String("como::IInterface").Equals(ns + name)) continue;
+            if (String("como::IInterface").Equals(ns + name)) {
+                continue;
+            }
             BuildInterfaceMethod(miObj, index);
         }
     }

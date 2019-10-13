@@ -26,6 +26,9 @@ class CArgumentList
     : public LightRefBase
     , public IArgumentList
 {
+    friend class CMetaConstructor;
+    friend class CMetaMethod;
+
 public:
     CArgumentList(
         /* [in] */ MetaComponent* mc,
@@ -312,9 +315,6 @@ public:
         /* [out] */ HANDLE& addr);
 
 private:
-    friend class CMetaConstructor;
-    friend class CMetaMethod;
-
     void CalculateDataSize(
         /* [in] */ MetaComponent* mc,
         /* [in] */ MetaMethod* mm,

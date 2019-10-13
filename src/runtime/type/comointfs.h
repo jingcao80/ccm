@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
+// Copyright (C) 2019 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,24 +14,4 @@
 // limitations under the License.
 //=========================================================================
 
-#include "comoclsobj.h"
-
-namespace como {
-
-COMO_INTERFACE_IMPL_1(ClassObject, Object, IClassObject);
-
-ECode ClassObject::AttachMetadata(
-    /* [in] */ IMetaComponent* component)
-{
-    mComponent = component;
-    return NOERROR;
-}
-
-ECode ClassObject::GetMetadate(
-    /* [out] */ AutoPtr<IMetaComponent>& component)
-{
-    component = mComponent;
-    return NOERROR;
-}
-
-} // namespace como
+#include "_comointfs.h"

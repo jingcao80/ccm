@@ -18,7 +18,7 @@
 #define __COMO_CSYSTEMCLASSLOADER_H__
 
 #include "arraylist.h"
-#include "comoptr.h"
+#include "comosp.h"
 #include "comoobj.h"
 #include "util/hashmap.h"
 #include "util/mutex.h"
@@ -74,10 +74,10 @@ private:
     static const String TAG;
     static AutoPtr<IClassLoader> sInstance;
 
-    Boolean mDebug;
+    Boolean mDebug = false;
     ArrayList<String> mComponentPath;
     HashMap<UUID, IMetaComponent*> mComponents;
-    HashMap<String, IMetaComponent*> mComponentPathMap;
+    HashMap<String, IMetaComponent*> mComponentPaths;
     Mutex mComponentsLock;
 };
 

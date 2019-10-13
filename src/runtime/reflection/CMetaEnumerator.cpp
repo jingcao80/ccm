@@ -30,12 +30,6 @@ CMetaEnumerator::CMetaEnumerator(
     , mValue(me->mValue)
 {}
 
-CMetaEnumerator::~CMetaEnumerator()
-{
-    mMetadata = nullptr;
-    mOwner = nullptr;
-}
-
 ECode CMetaEnumerator::GetEnumeration(
     /* [out] */ AutoPtr<IMetaEnumeration>& metaEnumn)
 {

@@ -22,7 +22,7 @@ namespace como {
 COM_PUBLIC extern const UUID UUID_ZERO =
         {0x00000000,0x0000,0x0000,0x0000,{0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0}};
 
-String DumpUuid(
+String DumpUUID(
     /* [in] */ const UUID& id)
 {
     String uuidStr = String::Format("%08x-%04x-%04x-%04x-%x%x%x%x%x%x%x%x%x%x%x%x",
@@ -33,7 +33,7 @@ String DumpUuid(
     return uuidStr;
 }
 
-Integer HashUuid(
+Integer HashUUID(
     /* [in] */ const UUID& key)
 {
     // BKDR Hash Function

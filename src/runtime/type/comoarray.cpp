@@ -30,9 +30,9 @@ Triple::Triple(
 
 Triple::Triple(
     /* [in] */ Triple&& other)
+    : mData(other.mData)
+    , mSize(other.mSize)
 {
-    mData = other.mData;
-    mSize = other.mSize;
     other.mData = nullptr;
     other.mSize = 0;
 }
@@ -87,6 +87,8 @@ Triple& Triple::operator=(
     }
     mData = other.mData;
     mSize = other.mSize;
+    other.mData = nullptr;
+    other.mSize = 0;
     return *this;
 }
 

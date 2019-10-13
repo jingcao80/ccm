@@ -119,7 +119,7 @@ void CodeGenerator::RuntimeModeEmitter::Emit()
 
 void CodeGenerator::RuntimeModeEmitter::EmitConstantsAndTypes()
 {
-    String path = String::Format("%s/comointfs.h", mOwner->mDirectory.string());
+    String path = String::Format("%s/_comointfs.h", mOwner->mDirectory.string());
     File file(path, File::WRITE);
 
     StringBuilder builder;
@@ -128,6 +128,8 @@ void CodeGenerator::RuntimeModeEmitter::EmitConstantsAndTypes()
     builder.Append("\n");
     builder.Append("#ifndef __COMO_COMORUNTIMEINTERFACES_H_GEN__\n"
                    "#define __COMO_COMORUNTIMEINTERFACES_H_GEN__\n"
+                   "\n"
+                   "#include \"comosp.h\"\n"
                    "\n"
                    "namespace como {\n"
                    "\n");

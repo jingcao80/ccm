@@ -30,7 +30,7 @@
  * limitations under the License.
  */
 
-#include "comosharedbuffer.h"
+#include "comoshbuf.h"
 #include "util/comolog.h"
 #include <cstdlib>
 #include <cstring>

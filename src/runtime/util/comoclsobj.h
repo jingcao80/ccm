@@ -26,8 +26,6 @@ class COM_PUBLIC ClassObject
     , public IClassObject
 {
 public:
-    ClassObject();
-
     COMO_INTERFACE_DECL();
 
     ECode AttachMetadata(
@@ -37,7 +35,7 @@ public:
         /* [out] */ AutoPtr<IMetaComponent>& component) override;
 
 protected:
-    IMetaComponent* mComponent;
+    IMetaComponent* mComponent = nullptr;
 };
 
 } // namespace como

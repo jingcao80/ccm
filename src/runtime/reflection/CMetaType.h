@@ -34,8 +34,6 @@ public:
         /* [in] */ MetaComponent* mc,
         /* [in] */ MetaType* mt);
 
-    ~CMetaType();
-
     COMO_INTERFACE_DECL();
 
     ECode GetName(
@@ -47,8 +45,8 @@ public:
     ECode GetElementType(
         /* [out] */ AutoPtr<IMetaType>& elemType);
 
-    ECode GetTypeMode(
-        /* [out] */ TypeMode& mode);
+    ECode GetTypeModification(
+        /* [out] */ TypeModification& mode);
 
 private:
     String BuildName(
@@ -60,7 +58,7 @@ public:
     TypeKind mKind;
     String mName;
     AutoPtr<IMetaType> mElementType;
-    TypeMode mMode;
+    TypeModification mMode;
 };
 
 } // namespace como

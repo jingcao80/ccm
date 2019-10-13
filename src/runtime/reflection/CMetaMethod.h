@@ -38,8 +38,6 @@ public:
         /* [in] */ Integer index,
         /* [in] */ MetaMethod* mm);
 
-    ~CMetaMethod();
-
     COMO_INTERFACE_DECL();
 
     ECode GetInterface(

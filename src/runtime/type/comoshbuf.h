@@ -88,7 +88,7 @@ private:
     inline SharedBuffer() {}
     inline ~SharedBuffer() {}
     SharedBuffer(const SharedBuffer&);
-    SharedBuffer& operator = (const SharedBuffer&);
+    SharedBuffer& operator= (const SharedBuffer&);
 
 private:
     mutable std::atomic<int32_t> mRefs;

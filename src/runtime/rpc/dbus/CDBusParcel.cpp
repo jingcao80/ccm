@@ -31,7 +31,7 @@
  */
 
 #include "CDBusParcel.h"
-#include "util/comoptr.h"
+#include "util/comosp.h"
 #include "util/comolog.h"
 #include <stdlib.h>
 

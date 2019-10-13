@@ -38,15 +38,15 @@ enum IOAttribute
     OUT_CALLEE
 }
 
-enum TypeMode
+enum TypeModification
 {
-    NORMAL,
+    NAKED,
     POINTER,
-    REFERENCE,
     POINTER_POINTER,
     POINTER_REFERENCE,
-    REFERENCE_REFERENCE,
-    REFERENCE_POINTER
+    REFERENCE,
+    REFERENCE_POINTER,
+    REFERENCE_REFERENCE
 }
 
 [
@@ -61,19 +61,25 @@ interface IMetaComponent
     GetComponentID(
         [out] ComponentID& cid);
 
-    GetCoclassNumber(
+    GetConstantNumber(
         [out] Integer& number);
 
-    GetAllCoclasses(
-        [out] Array<IMetaCoclass*>& klasses);
+    GetAllConstants(
+        [out] Array<IMetaConstant*>& consts);
 
-    GetCoclass(
+    GetConstant(
+        [in] String name,
+        [out] IMetaConstant&& constt);
+
+    GetEnumerationNumber(
+        [out] Integer& number);
+
+    GetAllEnumerations(
+        [out] Array<IMetaEnumeration*>& enumns);
+
+    GetEnumeration(
         [in] String fullName,
-        [out] IMetaCoclass&& klass);
-
-    GetCoclass(
-        [in] CoclassID cid,
-        [out] IMetaCoclass&& klass);
+        [out] IMetaEnumeration&& enumn);
 
     GetInterfaceNumber(
         [out] Integer& number);
@@ -89,15 +95,19 @@ interface IMetaComponent
         [in] InterfaceID iid,
         [out] IMetaInterface&& intf);
 
-    GetEnumerationNumber(
+    GetCoclassNumber(
         [out] Integer& number);
 
-    GetAllEnumerations(
-        [out] Array<IMetaEnumeration*>& enumns);
+    GetAllCoclasses(
+        [out] Array<IMetaCoclass*>& klasses);
 
-    GetEnumeration(
+    GetCoclass(
         [in] String fullName,
-        [out] IMetaEnumeration&& enumn);
+        [out] IMetaCoclass&& klass);
+
+    GetCoclass(
+        [in] CoclassID cid,
+        [out] IMetaCoclass&& klass);
 
     CanUnload(
         [out] Boolean& unload);
@@ -297,11 +307,11 @@ interface IMetaMethod
         [out] Array<IMetaParameter*>& params);
 
     GetParameter(
-        [in] Integer index,
+        [in] String name,
         [out] IMetaParameter&& param);
 
     GetParameter(
-        [in] String name,
+        [in] Integer index,
         [out] IMetaParameter&& param);
 
     HasOutArguments(
@@ -369,8 +379,8 @@ interface IMetaType
     GetElementType(
         [out] IMetaType&& elemType);
 
-    GetTypeMode(
-        [out] TypeMode& mode);
+    GetTypeModification(
+        [out] TypeModification& typeMod);
 }
 
 [

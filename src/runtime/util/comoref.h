@@ -34,6 +34,7 @@
 #define __COMO_REFBASE_H__
 
 #include "comotypes.h"
+#include "comointfs.h"
 #include <atomic>
 
 namespace como {

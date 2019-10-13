@@ -17,8 +17,7 @@
 #ifndef __COMO_COMOOBJECTAPI_H__
 #define __COMO_COMOOBJECTAPI_H__
 
-#include "comotypes.h"
-#include "comoptr.h"
+#include "comointfs.h"
 
 namespace como {
 

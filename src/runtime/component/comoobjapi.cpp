@@ -18,7 +18,7 @@
 #include "comoobjapi.h"
 #include "CBootClassLoader.h"
 #include "reflection/CMetaComponent.h"
-#include "util/comoptr.h"
+#include "util/comosp.h"
 
 namespace como {
 
@@ -58,7 +58,7 @@ ECode CoAcquireClassFactory(
         return ec;
     }
 
-    CMetaComponent* mcObj = (CMetaComponent*)component.Get();
+    CMetaComponent* mcObj = static_cast<CMetaComponent*>(component.Get());
     ec = mcObj->GetClassObject(cid, object);
     if (SUCCEEDED(ec)) {
         object->AttachMetadata(component);

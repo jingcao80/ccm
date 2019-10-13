@@ -854,7 +854,6 @@ WeakReferenceImpl::~WeakReferenceImpl()
 {
     if (mRef != nullptr) {
         mRef->DecWeak(this);
-        mRef = nullptr;
     }
 }
 

@@ -17,7 +17,7 @@
 #ifndef __COMO_COMPONENT_H__
 #define __COMO_COMPONENT_H__
 
-#include "comotypes.h"
+#include "comointfs.h"
 
 namespace como {
 

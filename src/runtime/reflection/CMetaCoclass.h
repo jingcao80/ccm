@@ -34,8 +34,6 @@ public:
         /* [in] */ MetaComponent* mc,
         /* [in] */ MetaCoclass* mk);
 
-    ~CMetaCoclass();
-
     COMO_INTERFACE_DECL();
 
     ECode GetComponent(

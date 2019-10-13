@@ -264,7 +264,7 @@ interface IProxy
 ]
 interface IDeathRecipient
 {
-    ProxyDied(
+    StubDied(
         [out] IProxy&& who);
 }
 

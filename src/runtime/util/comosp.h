@@ -17,6 +17,7 @@
 #ifndef __COMO_AUTOPTR_H__
 #define __COMO_AUTOPTR_H__
 
+#include "comotypes.h"
 #include <utility>
 
 namespace como {

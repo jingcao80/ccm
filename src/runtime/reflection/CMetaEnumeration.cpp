@@ -33,12 +33,6 @@ CMetaEnumeration::CMetaEnumeration(
     , mMetaEnumerators(me->mEnumeratorNumber)
 {}
 
-CMetaEnumeration::~CMetaEnumeration()
-{
-    mMetadata = nullptr;
-    mOwner = nullptr;
-}
-
 ECode CMetaEnumeration::GetComponent(
     /* [out] */ AutoPtr<IMetaComponent>& metaComp)
 {
@@ -114,7 +108,7 @@ void CMetaEnumeration::BuildAllEnumerators()
     if (mMetaEnumerators[0] == nullptr) {
         for (Integer i = 0; i < mMetadata->mEnumeratorNumber; i++) {
             MetaEnumerator* me = mMetadata->mEnumerators[i];
-            IMetaEnumerator* meObj = new CMetaEnumerator(this, me);
+            AutoPtr<IMetaEnumerator> meObj = new CMetaEnumerator(this, me);
             mMetaEnumerators.Set(i, meObj);
         }
     }

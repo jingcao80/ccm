@@ -45,12 +45,6 @@ CMetaInterface::CMetaInterface(
     mMetaMethods = Array<IMetaMethod*>(CalculateMethodNumber());
 }
 
-CMetaInterface::~CMetaInterface()
-{
-    mMetadata = nullptr;
-    mOwner = nullptr;
-}
-
 ECode CMetaInterface::GetComponent(
     /* [out] */ AutoPtr<IMetaComponent>& metaComp)
 {
@@ -233,7 +227,7 @@ void CMetaInterface::BuildAllConstants()
 {
     if (mMetaConstants[0] == nullptr) {
         for (Integer i = 0; i < mMetadata->mConstantNumber; i++) {
-            CMetaConstant* mcObj = new CMetaConstant(
+            AutoPtr<CMetaConstant> mcObj = new CMetaConstant(
                     mOwner->mMetadata, mMetadata->mConstants[i]);
             mMetaConstants.Set(i, mcObj);
         }
@@ -257,7 +251,7 @@ Integer CMetaInterface::BuildInterfaceMethod(
     }
 
     for (Integer i = 0; i < mi->mMethodNumber; i++) {
-        CMetaMethod* mmObj = new CMetaMethod(mOwner->mMetadata,
+        AutoPtr<CMetaMethod> mmObj = new CMetaMethod(mOwner->mMetadata,
                 this, startIndex + i, mi->mMethods[i]);
         mMetaMethods.Set(startIndex + i, mmObj);
     }

@@ -17,8 +17,8 @@
 #ifndef __COMO_OBJECT_H__
 #define __COMO_OBJECT_H__
 
-#include "comoref.h"
 #include "comotypes.h"
+#include "comoref.h"
 
 namespace como {
 
@@ -47,8 +47,8 @@ public:
         /* [in] */ IInterface* obj,
         /* [out] */ Boolean& same) override;
 
-    ECode SetReferenceObserver(
-        /* [in] */ IReferenceObserver* observer) override;
+    ECode SetObjectObserver(
+        /* [in] */ IObjectObserver* observer) override;
 
     ECode ToString(
         /* [out] */ String& desc) override;
@@ -102,7 +102,7 @@ public:
 private:
     IMetaComponent* mComponent;
     String mCoclassName;
-    AutoPtr<IReferenceObserver> mRefObserver;
+    AutoPtr<IObjectObserver> mObserver;
 };
 
 } // namespace como

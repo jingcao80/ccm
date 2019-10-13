@@ -30,7 +30,7 @@
 // limitations under the License.
 //=========================================================================
 
-#include "comosharedbuffer.h"
+#include "comoshbuf.h"
 #include "comotypes.h"
 #include "ucase.h"
 #include "util/comolog.h"

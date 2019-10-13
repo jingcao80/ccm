@@ -42,12 +42,6 @@ CMetaParameter::CMetaParameter(
     mType = new CMetaType(mc, mc->mTypes[mp->mTypeIndex]);
 }
 
-CMetaParameter::~CMetaParameter()
-{
-    mMetadata = nullptr;
-    mOwner = nullptr;
-}
-
 ECode CMetaParameter::GetMethod(
     /* [out] */ AutoPtr<IMetaMethod>& method)
 {

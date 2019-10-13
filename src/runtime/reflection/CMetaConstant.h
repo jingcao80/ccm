@@ -32,8 +32,6 @@ public:
         /* [in] */ MetaComponent* mc,
         /* [in] */ MetaConstant* mk);
 
-    ~CMetaConstant();
-
     COMO_INTERFACE_DECL();
 
     ECode GetName(

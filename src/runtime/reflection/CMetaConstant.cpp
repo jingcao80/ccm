@@ -32,9 +32,6 @@ CMetaConstant::CMetaConstant(
     mValue = BuildValue(mType);
 }
 
-CMetaConstant::~CMetaConstant()
-{}
-
 ECode CMetaConstant::GetName(
     /* [out] */ String& name)
 {
@@ -59,7 +56,7 @@ ECode CMetaConstant::GetValue(
 AutoPtr<IMetaValue> CMetaConstant::BuildValue(
     /* [in] */ IMetaType* type)
 {
-    CMetaValue* mvObj = new CMetaValue();
+    AutoPtr<CMetaValue> mvObj = new CMetaValue();
     mvObj->mType = type;
     TypeKind kind;
     type->GetTypeKind(kind);
@@ -86,7 +83,7 @@ AutoPtr<IMetaValue> CMetaConstant::BuildValue(
             mvObj->mStringValue = mMetadata->mValue.mStringValue;
             break;
     }
-    return mvObj;
+    return (IMetaValue*)mvObj.Get();
 }
 
 } // namespace como

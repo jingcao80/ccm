@@ -154,13 +154,14 @@ static const uint8_t flagsOffset[256]={
  * @param value (out) int32_t or uint32_t output if hasSlot, otherwise not modified
  */
 #define GET_SLOT_VALUE(excWord, idx, pExc16, value) \
-    if(((excWord)&UCASE_EXC_DOUBLE_SLOTS)==0) { \
-        (pExc16)+=SLOT_OFFSET(excWord, idx); \
-        (value)=*pExc16; \
-    } else { \
-        (pExc16)+=2*SLOT_OFFSET(excWord, idx); \
-        (value)=*pExc16++; \
-        (value)=((value)<<16)|*pExc16; \
+    if(((excWord)&UCASE_EXC_DOUBLE_SLOTS)==0) {     \
+        (pExc16)+=SLOT_OFFSET(excWord, idx);        \
+        (value)=*pExc16;                            \
+    }                                               \
+    else {                                          \
+        (pExc16)+=2*SLOT_OFFSET(excWord, idx);      \
+        (value)=*pExc16++;                          \
+        (value)=((value)<<16)|*pExc16;              \
     }
 
 UChar32 ucase_tolower(const UCaseProps *csp, UChar32 c)
@@ -170,7 +171,8 @@ UChar32 ucase_tolower(const UCaseProps *csp, UChar32 c)
         if(UCASE_GET_TYPE(props)>=UCASE_UPPER) {
             c+=UCASE_GET_DELTA(props);
         }
-    } else {
+    }
+    else {
         const uint16_t *pe=GET_EXCEPTIONS(csp, props);
         uint16_t excWord=*pe++;
         if(HAS_SLOT(excWord, UCASE_EXC_LOWER)) {
@@ -187,7 +189,8 @@ UChar32 ucase_toupper(const UCaseProps *csp, UChar32 c)
         if(UCASE_GET_TYPE(props)==UCASE_LOWER) {
             c+=UCASE_GET_DELTA(props);
         }
-    } else {
+    }
+    else {
         const uint16_t *pe=GET_EXCEPTIONS(csp, props);
         uint16_t excWord=*pe++;
         if(HAS_SLOT(excWord, UCASE_EXC_UPPER)) {
@@ -204,15 +207,18 @@ UChar32 ucase_totitle(const UCaseProps *csp, UChar32 c)
         if(UCASE_GET_TYPE(props)==UCASE_LOWER) {
             c+=UCASE_GET_DELTA(props);
         }
-    } else {
+    }
+    else {
         const uint16_t *pe=GET_EXCEPTIONS(csp, props);
         uint16_t excWord=*pe++;
         int32_t idx;
         if(HAS_SLOT(excWord, UCASE_EXC_TITLE)) {
             idx=UCASE_EXC_TITLE;
-        } else if(HAS_SLOT(excWord, UCASE_EXC_UPPER)) {
+        }
+        else if(HAS_SLOT(excWord, UCASE_EXC_UPPER)) {
             idx=UCASE_EXC_UPPER;
-        } else {
+        }
+        else {
             return c;
         }
         GET_SLOT_VALUE(excWord, idx, pe, c);

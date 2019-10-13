@@ -50,12 +50,6 @@ CMetaConstructor::CMetaConstructor(
     , mParameters(mm->mParameterNumber)
 {}
 
-CMetaConstructor::~CMetaConstructor()
-{
-    mMetadata = nullptr;
-    mOwner = nullptr;
-}
-
 ECode CMetaConstructor::GetInterface(
     /* [out] */ AutoPtr<IMetaInterface>& intf)
 {
@@ -208,7 +202,7 @@ void CMetaConstructor::BuildAllParameters()
     if (mParameters[0] == nullptr) {
         for (Integer i = 0; i < mMetadata->mParameterNumber; i++) {
             MetaParameter* mp = mMetadata->mParameters[i];
-            CMetaParameter* mpObj = new CMetaParameter(
+            AutoPtr<CMetaParameter> mpObj = new CMetaParameter(
                     mOwner->mOwner->mMetadata, this, mp, i);
             mParameters.Set(i, mpObj);
         }

@@ -22,7 +22,7 @@
 #include "CStub.h"
 #include "InterfacePack.h"
 #include "registry.h"
-#include "util/comoptr.h"
+#include "util/comosp.h"
 
 namespace como {
 

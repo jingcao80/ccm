@@ -30,7 +30,7 @@ namespace como {
 
 #define interface       struct
 
-#define Coclass(name)      class name : public _##name
+#define Coclass(name)   class name : public _##name
 
 #ifndef EXTERN_C
 #define EXTERN_C        extern "C"
@@ -39,38 +39,38 @@ namespace como {
 #define COM_PUBLIC      __attribute__ ((visibility ("default")))
 #define COM_LOCAL       __attribute__ ((visibility ("hidden")))
 
-#define INIT_PROI_1 __attribute__ ((init_priority (500)))
-#define INIT_PROI_2 __attribute__ ((init_priority (1000)))
-#define INIT_PROI_3 __attribute__ ((init_priority (1500)))
-#define INIT_PROI_4 __attribute__ ((init_priority (2000)))
-#define INIT_PROI_5 __attribute__ ((init_priority (2500)))
-#define INIT_PROI_6 __attribute__ ((init_priority (3000)))
-#define INIT_PROI_7 __attribute__ ((init_priority (3500)))
-#define INIT_PROI_8 __attribute__ ((init_priority (4000)))
-#define INIT_PROI_9 __attribute__ ((init_priority (4500)))
-#define INIT_PROI_10 __attribute__ ((init_priority (5000)))
+#define INIT_PROI_1     __attribute__ ((init_priority (500)))
+#define INIT_PROI_2     __attribute__ ((init_priority (1000)))
+#define INIT_PROI_3     __attribute__ ((init_priority (1500)))
+#define INIT_PROI_4     __attribute__ ((init_priority (2000)))
+#define INIT_PROI_5     __attribute__ ((init_priority (2500)))
+#define INIT_PROI_6     __attribute__ ((init_priority (3000)))
+#define INIT_PROI_7     __attribute__ ((init_priority (3500)))
+#define INIT_PROI_8     __attribute__ ((init_priority (4000)))
+#define INIT_PROI_9     __attribute__ ((init_priority (4500)))
+#define INIT_PROI_10    __attribute__ ((init_priority (5000)))
 
-#define CONS_PROI_1 __attribute__ ((constructor (500)))
-#define CONS_PROI_2 __attribute__ ((constructor (1000)))
-#define CONS_PROI_3 __attribute__ ((constructor (1500)))
-#define CONS_PROI_4 __attribute__ ((constructor (2000)))
-#define CONS_PROI_5 __attribute__ ((constructor (2500)))
-#define CONS_PROI_6 __attribute__ ((constructor (3000)))
-#define CONS_PROI_7 __attribute__ ((constructor (3500)))
-#define CONS_PROI_8 __attribute__ ((constructor (4000)))
-#define CONS_PROI_9 __attribute__ ((constructor (4500)))
-#define CONS_PROI_10 __attribute__ ((constructor (5000)))
+#define CONS_PROI_1     __attribute__ ((constructor (500)))
+#define CONS_PROI_2     __attribute__ ((constructor (1000)))
+#define CONS_PROI_3     __attribute__ ((constructor (1500)))
+#define CONS_PROI_4     __attribute__ ((constructor (2000)))
+#define CONS_PROI_5     __attribute__ ((constructor (2500)))
+#define CONS_PROI_6     __attribute__ ((constructor (3000)))
+#define CONS_PROI_7     __attribute__ ((constructor (3500)))
+#define CONS_PROI_8     __attribute__ ((constructor (4000)))
+#define CONS_PROI_9     __attribute__ ((constructor (4500)))
+#define CONS_PROI_10    __attribute__ ((constructor (5000)))
 
-#define DEST_PROI_1 __attribute__ ((destructor (500)))
-#define DEST_PROI_2 __attribute__ ((destructor (1000)))
-#define DEST_PROI_3 __attribute__ ((destructor (1500)))
-#define DEST_PROI_4 __attribute__ ((destructor (2000)))
-#define DEST_PROI_5 __attribute__ ((destructor (2500)))
-#define DEST_PROI_6 __attribute__ ((destructor (3000)))
-#define DEST_PROI_7 __attribute__ ((destructor (3500)))
-#define DEST_PROI_8 __attribute__ ((destructor (4000)))
-#define DEST_PROI_9 __attribute__ ((destructor (4500)))
-#define DEST_PROI_10 __attribute__ ((destructor (5000)))
+#define DEST_PROI_1     __attribute__ ((destructor (500)))
+#define DEST_PROI_2     __attribute__ ((destructor (1000)))
+#define DEST_PROI_3     __attribute__ ((destructor (1500)))
+#define DEST_PROI_4     __attribute__ ((destructor (2000)))
+#define DEST_PROI_5     __attribute__ ((destructor (2500)))
+#define DEST_PROI_6     __attribute__ ((destructor (3000)))
+#define DEST_PROI_7     __attribute__ ((destructor (3500)))
+#define DEST_PROI_8     __attribute__ ((destructor (4000)))
+#define DEST_PROI_9     __attribute__ ((destructor (4500)))
+#define DEST_PROI_10    __attribute__ ((destructor (5000)))
 
 #define REFCOUNT_ADD(i)     if (i) { (i)->AddRef(); }
 #define REFCOUNT_RELEASE(i) if (i) { (i)->Release(); }
@@ -93,13 +93,13 @@ namespace como {
 #define MIN(a, b)       (((a) < (b)) ? (a) : (b))
 #endif
 
-#define ALIGN4(v) (((v) + 3) & ~3)
-#define ALIGN8(v) (((v) + 7) & ~7)
+#define ALIGN4(v)       (((v) + 3) & ~3)
+#define ALIGN8(v)       (((v) + 7) & ~7)
 
-#if defined(__i386__)
-#define ALIGN(v) ALIGN4(v)
-#elif defined(__x86_64__)
-#define ALIGN(v) ALIGN8(v)
+#if defined(__i386__) || defined(__arm__)
+#define ALIGN(v)        ALIGN4(v)
+#elif defined(__x86_64__) || defined(__aarch64__)
+#define ALIGN(v)        ALIGN8(v)
 #endif
 
 template<typename T>
@@ -137,7 +137,7 @@ inline int ArrayLength(const T (&)[N])
 #endif
 
 #ifndef PACKED
-#define PACKED(x) __attribute__ ((__aligned__(x), __packed__))
+#define PACKED(x)       __attribute__ ((__aligned__(x), __packed__))
 #endif
 
 #ifdef __GNUC__
@@ -165,7 +165,7 @@ inline int ArrayLength(const T (&)[N])
 #endif
 
 #ifndef COMO_INTERFACE_IMPL_1
-#define COMO_INTERFACE_IMPL_1(ClassName, SuperClassName, InterfaceName)       \
+#define COMO_INTERFACE_IMPL_1(ClassName, SuperclassName, InterfaceName)       \
     Integer ClassName::AddRef(                             \
         /* [in] */ HANDLE id)                              \
     {                                                      \
@@ -187,7 +187,7 @@ inline int ArrayLength(const T (&)[N])
         else if (iid == IID_##InterfaceName) {             \
             return (InterfaceName*)this;                   \
         }                                                  \
-        return SuperClassName::Probe(iid);                 \
+        return SuperclassName::Probe(iid);                 \
     }                                                      \
                                                            \
     ECode ClassName::GetInterfaceID(                       \
@@ -198,12 +198,12 @@ inline int ArrayLength(const T (&)[N])
             iid = IID_##InterfaceName;                     \
             return NOERROR;                                \
         }                                                  \
-        return SuperClassName::GetInterfaceID(object, iid); \
+        return SuperclassName::GetInterfaceID(object, iid); \
     }
 #endif
 
 #ifndef COMO_INTERFACE_IMPL_2
-#define COMO_INTERFACE_IMPL_2(ClassName, SuperClassName, Interface1, Interface2) \
+#define COMO_INTERFACE_IMPL_2(ClassName, SuperclassName, Interface1, Interface2) \
     Integer ClassName::AddRef(                                  \
         /* [in] */ HANDLE id)                                   \
     {                                                           \
@@ -228,7 +228,7 @@ inline int ArrayLength(const T (&)[N])
         else if (iid == IID_##Interface2) {                     \
             return (Interface2*)this;                           \
         }                                                       \
-        return SuperClassName::Probe(iid);                      \
+        return SuperclassName::Probe(iid);                      \
     }                                                           \
                                                                 \
     ECode ClassName::GetInterfaceID(                            \
@@ -242,14 +242,14 @@ inline int ArrayLength(const T (&)[N])
             iid = IID_##Interface2;                             \
         }                                                       \
         else {                                                  \
-            return SuperClassName::GetInterfaceID(object, iid); \
+            return SuperclassName::GetInterfaceID(object, iid); \
         }                                                       \
         return NOERROR;                                         \
     }
 #endif
 
 #ifndef COMO_INTERFACE_IMPL_3
-#define COMO_INTERFACE_IMPL_3(ClassName, SuperClassName, Interface1, Interface2, Interface3) \
+#define COMO_INTERFACE_IMPL_3(ClassName, SuperclassName, Interface1, Interface2, Interface3) \
     Integer ClassName::AddRef(                                  \
         /* [in] */ HANDLE id)                                   \
     {                                                           \
@@ -277,7 +277,7 @@ inline int ArrayLength(const T (&)[N])
         else if (iid == IID_##Interface3) {                     \
             return (Interface3*)this;                           \
         }                                                       \
-        return SuperClassName::Probe(iid);                      \
+        return SuperclassName::Probe(iid);                      \
     }                                                           \
                                                                 \
     ECode ClassName::GetInterfaceID(                            \
@@ -294,14 +294,14 @@ inline int ArrayLength(const T (&)[N])
             iid = IID_##Interface3;                             \
         }                                                       \
         else {                                                  \
-            return SuperClassName::GetInterfaceID(object, iid); \
+            return SuperclassName::GetInterfaceID(object, iid); \
         }                                                       \
         return NOERROR;                                         \
     }
 #endif
 
 #ifndef COMO_INTERFACE_IMPL_4
-#define COMO_INTERFACE_IMPL_4(ClassName, SuperClassName, Interface1, Interface2, Interface3, Interface4) \
+#define COMO_INTERFACE_IMPL_4(ClassName, SuperclassName, Interface1, Interface2, Interface3, Interface4) \
     Integer ClassName::AddRef(                                  \
         /* [in] */ HANDLE id)                                   \
     {                                                           \
@@ -332,7 +332,7 @@ inline int ArrayLength(const T (&)[N])
         else if (iid == IID_##Interface4) {                     \
             return (Interface4*)this;                           \
         }                                                       \
-        return SuperClassName::Probe(iid);                      \
+        return SuperclassName::Probe(iid);                      \
     }                                                           \
                                                                 \
     ECode ClassName::GetInterfaceID(                            \
@@ -352,14 +352,14 @@ inline int ArrayLength(const T (&)[N])
             iid = IID_##Interface4;                             \
         }                                                       \
         else {                                                  \
-            return SuperClassName::GetInterfaceID(object, iid); \
+            return SuperclassName::GetInterfaceID(object, iid); \
         }                                                       \
         return NOERROR;                                         \
     }
 #endif
 
 #ifndef COMO_INTERFACE_IMPL_5
-#define COMO_INTERFACE_IMPL_5(ClassName, SuperClassName, Interface1, Interface2, Interface3, Interface4, Interface5) \
+#define COMO_INTERFACE_IMPL_5(ClassName, SuperclassName, Interface1, Interface2, Interface3, Interface4, Interface5) \
     Integer ClassName::AddRef(                                  \
         /* [in] */ HANDLE id)                                   \
     {                                                           \
@@ -393,7 +393,7 @@ inline int ArrayLength(const T (&)[N])
         else if (iid == IID_##Interface5) {                     \
             return (Interface5*)this;                           \
         }                                                       \
-        return SuperClassName::Probe(iid);                      \
+        return SuperclassName::Probe(iid);                      \
     }                                                           \
                                                                 \
     ECode ClassName::GetInterfaceID(                            \
@@ -416,14 +416,14 @@ inline int ArrayLength(const T (&)[N])
             iid = IID_##Interface5;                             \
         }                                                       \
         else {                                                  \
-            return SuperClassName::GetInterfaceID(object, iid); \
+            return SuperclassName::GetInterfaceID(object, iid); \
         }                                                       \
         return NOERROR;                                         \
     }
 #endif
 
 #ifndef COMO_INTERFACE_IMPL_6
-#define COMO_INTERFACE_IMPL_6(ClassName, SuperClassName, Interface1, Interface2, Interface3, Interface4, Interface5, Interface6) \
+#define COMO_INTERFACE_IMPL_6(ClassName, SuperclassName, Interface1, Interface2, Interface3, Interface4, Interface5, Interface6) \
     Integer ClassName::AddRef(                                  \
         /* [in] */ HANDLE id)                                   \
     {                                                           \
@@ -460,7 +460,7 @@ inline int ArrayLength(const T (&)[N])
         else if (iid == IID_##Interface6) {                     \
             return (Interface6*)this;                           \
         }                                                       \
-        return SuperClassName::Probe(iid);                      \
+        return SuperclassName::Probe(iid);                      \
     }                                                           \
                                                                 \
     ECode ClassName::GetInterfaceID(                            \
@@ -486,14 +486,14 @@ inline int ArrayLength(const T (&)[N])
             iid = IID_##Interface6;                             \
         }                                                       \
         else {                                                  \
-            return SuperClassName::GetInterfaceID(object, iid); \
+            return SuperclassName::GetInterfaceID(object, iid); \
         }                                                       \
         return NOERROR;                                         \
     }
 #endif
 
 #ifndef COMO_INTERFACE_IMPL_7
-#define COMO_INTERFACE_IMPL_7(ClassName, SuperClassName, Interface1, Interface2, Interface3, Interface4, Interface5, Interface6, Interface7) \
+#define COMO_INTERFACE_IMPL_7(ClassName, SuperclassName, Interface1, Interface2, Interface3, Interface4, Interface5, Interface6, Interface7) \
     Integer ClassName::AddRef(                                  \
         /* [in] */ HANDLE id)                                   \
     {                                                           \
@@ -533,7 +533,7 @@ inline int ArrayLength(const T (&)[N])
         else if (iid == IID_##Interface7) {                     \
             return (Interface7*)this;                           \
         }                                                       \
-        return SuperClassName::Probe(iid);                      \
+        return SuperclassName::Probe(iid);                      \
     }                                                           \
                                                                 \
     ECode ClassName::GetInterfaceID(                            \
@@ -562,14 +562,14 @@ inline int ArrayLength(const T (&)[N])
             iid = IID_##Interface7;                             \
         }                                                       \
         else {                                                  \
-            return SuperClassName::GetInterfaceID(object, iid); \
+            return SuperclassName::GetInterfaceID(object, iid); \
         }                                                       \
         return NOERROR;                                         \
     }
 #endif
 
 #ifndef COMO_INTERFACE_IMPL_LIGHT_1
-#define COMO_INTERFACE_IMPL_LIGHT_1(ClassName, SuperClassName, InterfaceName) \
+#define COMO_INTERFACE_IMPL_LIGHT_1(ClassName, SuperclassName, InterfaceName) \
     Integer ClassName::AddRef(                             \
         /* [in] */ HANDLE id)                              \
     {                                                      \
@@ -591,7 +591,7 @@ inline int ArrayLength(const T (&)[N])
         else if (iid == IID_##InterfaceName) {             \
             return (InterfaceName*)this;                   \
         }                                                  \
-        return SuperClassName::Probe(iid);                 \
+        return SuperclassName::Probe(iid);                 \
     }                                                      \
                                                            \
     ECode ClassName::GetInterfaceID(                       \
@@ -602,12 +602,12 @@ inline int ArrayLength(const T (&)[N])
             iid = IID_##InterfaceName;                     \
             return NOERROR;                                \
         }                                                  \
-        return SuperClassName::GetInterfaceID(object, iid); \
+        return SuperclassName::GetInterfaceID(object, iid); \
     }
 #endif
 
 #ifndef COMO_INTERFACE_IMPL_LIGHT_2
-#define COMO_INTERFACE_IMPL_LIGHT_2(ClassName, SuperClassName, InterfaceName1, InterfaceName2) \
+#define COMO_INTERFACE_IMPL_LIGHT_2(ClassName, SuperclassName, InterfaceName1, InterfaceName2) \
     Integer ClassName::AddRef(                              \
         /* [in] */ HANDLE id)                               \
     {                                                       \
@@ -632,7 +632,7 @@ inline int ArrayLength(const T (&)[N])
         else if (iid == IID_##InterfaceName2) {             \
             return (InterfaceName2*)this;                   \
         }                                                   \
-        return SuperClassName::Probe(iid);                  \
+        return SuperclassName::Probe(iid);                  \
     }                                                       \
                                                             \
     ECode ClassName::GetInterfaceID(                        \
@@ -647,7 +647,7 @@ inline int ArrayLength(const T (&)[N])
             iid = IID_##InterfaceName2;                     \
             return NOERROR;                                 \
         }                                                   \
-        return SuperClassName::GetInterfaceID(object, iid); \
+        return SuperclassName::GetInterfaceID(object, iid); \
     }
 #endif
 
@@ -691,8 +691,8 @@ inline int ArrayLength(const T (&)[N])
 #endif
 
 #ifndef COMO_INTERFACE_PROBE_END
-#define COMO_INTERFACE_PROBE_END(SuperClassName)                \
-        return SuperClassName::Probe(iid);                      \
+#define COMO_INTERFACE_PROBE_END(SuperclassName)                \
+        return SuperclassName::Probe(iid);                      \
     }
 #endif
 
@@ -725,8 +725,8 @@ inline int ArrayLength(const T (&)[N])
 #endif
 
 #ifndef COMO_INTERFACE_GETINTERFACEID_END
-#define COMO_INTERFACE_GETINTERFACEID_END(SuperClassName)       \
-        return SuperClassName::GetInterfaceID(object, iid);     \
+#define COMO_INTERFACE_GETINTERFACEID_END(SuperclassName)       \
+        return SuperclassName::GetInterfaceID(object, iid);     \
     }
 #endif
 

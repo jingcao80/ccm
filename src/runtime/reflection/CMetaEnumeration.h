@@ -34,8 +34,6 @@ public:
         /* [in] */ MetaComponent* mc,
         /* [in] */ MetaEnumeration* me);
 
-    ~CMetaEnumeration();
-
     COMO_INTERFACE_DECL();
 
     ECode GetComponent(

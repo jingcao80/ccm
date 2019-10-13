@@ -36,8 +36,6 @@ public:
         /* [in] */ MetaComponent* mc,
         /* [in] */ MetaInterface* mi);
 
-    ~CMetaInterface();
-
     COMO_INTERFACE_DECL();
 
     ECode GetComponent(

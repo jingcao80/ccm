@@ -26,7 +26,7 @@ set(SOURCES
     comoclsobj.cpp
     comolog.cpp
     comoobj.cpp
-    comoref.cpp
+    comolock.cpp
     comoref.cpp
     mutex.cpp)
 
@@ -34,7 +34,7 @@ add_library(util STATIC
     ${SOURCES})
 add_dependencies(util cdl)
 
-COPY(util ${UTIL_DIR}/comoptr.h ${INC_DIR})
+COPY(util ${UTIL_DIR}/comosp.h ${INC_DIR})
 COPY(util ${UTIL_DIR}/comoclsobj.h ${INC_DIR})
 COPY(util ${UTIL_DIR}/comolog.h ${INC_DIR})
 COPY(util ${UTIL_DIR}/comoobj.h ${INC_DIR})
@@ -42,7 +42,7 @@ COPY(util ${UTIL_DIR}/comoref.h ${INC_DIR})
 COPY(util ${UTIL_DIR}/comolock.h ${INC_DIR})
 
 set(DEPLOY_HEADERS
-    ${UTIL_DIR}/comoptr.h
+    ${UTIL_DIR}/comosp.h
     ${UTIL_DIR}/comoclsobj.h
     ${UTIL_DIR}/comolog.h
     ${UTIL_DIR}/comoobj.h

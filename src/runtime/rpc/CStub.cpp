@@ -657,7 +657,7 @@ ECode CStub::CreateObject(
 
     if (DEBUG) {
         Logger::D("CStub", "Object's CoclassID is %s",
-                DumpUuid(cid.mUuid).string());
+                DumpUUID(cid.mUuid).string());
     }
 
     AutoPtr<CStub> stubObj = new CStub();
@@ -672,7 +672,7 @@ ECode CStub::CreateObject(
     mc->GetAllInterfaces(interfaces);
     stubObj->mInterfaces = Array<InterfaceStub*>(interfaceNumber);
     for (Integer i = 0; i < interfaceNumber; i++) {
-        InterfaceStub* istub = new InterfaceStub();
+        AutoPtr<InterfaceStub> istub = new InterfaceStub();
         istub->mOwner = stubObj;
         istub->mTargetMetadata = interfaces[i];
         istub->mTargetMetadata->GetInterfaceID(istub->mIid);
@@ -683,7 +683,6 @@ ECode CStub::CreateObject(
             interfaces[i]->GetName(name);
             Logger::E("CStub", "Object does not have \"%s%s\" interface.",
                     ns.string(), name.string());
-            delete stubObj;
             return E_INTERFACE_NOT_FOUND_EXCEPTION;
         }
         stubObj->mInterfaces[i] = istub;
@@ -692,7 +691,6 @@ ECode CStub::CreateObject(
     ECode ec = channel->StartListening(stubObj);
     if (FAILED(ec)) {
         Logger::E("CStub", "Channel start listening failed with ec is 0x%x", ec);
-        delete stubObj;
         return ec;
     }
 

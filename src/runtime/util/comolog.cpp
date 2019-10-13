@@ -26,7 +26,9 @@ void Logger::D(
     /* [in] */ const char* tag,
     /* [in] */ const char* format, ...)
 {
-    if (DEBUG < sLevel) return;
+    if (DEBUG < sLevel) {
+        return;
+    }
 
     va_list argList;
 
@@ -41,7 +43,9 @@ void Logger::E(
     /* [in] */ const char* tag,
     /* [in] */ const char* format, ...)
 {
-    if (ERROR < sLevel) return;
+    if (ERROR < sLevel) {
+        return;
+    }
 
     va_list argList;
 
@@ -56,7 +60,9 @@ void Logger::V(
     /* [in] */ const char* tag,
     /* [in] */ const char* format, ...)
 {
-    if (VERBOSE < sLevel) return;
+    if (VERBOSE < sLevel) {
+        return;
+    }
 
     va_list argList;
 
@@ -71,7 +77,9 @@ void Logger::W(
     /* [in] */ const char* tag,
     /* [in] */ const char* format, ...)
 {
-    if (WARNING < sLevel) return;
+    if (WARNING < sLevel) {
+        return;
+    }
 
     va_list argList;
 
@@ -87,7 +95,9 @@ void Logger::Log(
     /* [in] */ const char* tag,
     /* [in] */ const char* format, ...)
 {
-    if (level < sLevel) return;
+    if (level < sLevel) {
+        return;
+    }
 
     va_list argList;
 

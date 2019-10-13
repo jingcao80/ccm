@@ -17,7 +17,7 @@
 #ifndef __COMO_ARRAY_H__
 #define __COMO_ARRAY_H__
 
-#include "comosharedbuffer.h"
+#include "comoshbuf.h"
 #include "comolog.h"
 #include <initializer_list>
 
@@ -565,8 +565,9 @@ Array<T>& Array<T>::operator=(
         sb->Release();
     }
     mData = other.mData;
-    other.mData = nullptr;
     mSize = other.mSize;
+    other.mData = nullptr;
+    other.mSize = 0;
     return *this;
 }
 

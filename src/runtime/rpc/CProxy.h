@@ -35,7 +35,7 @@
 
 #include "reflection/comoreflapi.h"
 #include "type/comoarray.h"
-#include "util/comoptr.h"
+#include "util/comosp.h"
 #include "util/comoobj.h"
 
 namespace como {

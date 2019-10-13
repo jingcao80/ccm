@@ -107,10 +107,10 @@ inline bool operator!=(
 
 namespace como {
 
-extern String DumpUuid(
+extern String DumpUUID(
     /* [in] */ const UUID& id);
 
-extern Integer HashUuid(
+extern Integer HashUUID(
     /* [in] */ const UUID& key);
 
 extern const ComponentID CID_COMORuntime;
@@ -122,7 +122,9 @@ interface IInterface
     inline static IInterface* Probe(
         /* [in] */ IInterface* object)
     {
-        if (object == nullptr) return nullptr;
+        if (object == nullptr) {
+            return nullptr;
+        }
         return object->Probe(IID_IInterface);
     }
 
@@ -143,6 +145,9 @@ interface IInterface
         /* [in] */ IInterface* object1,
         /* [in] */ IInterface* object2)
     {
+        if (object1 == object2) {
+            return true;
+        }
         if (object1 == nullptr || object2 == nullptr) {
             return false;
         }
@@ -152,7 +157,7 @@ interface IInterface
 
 } // namespace como
 
-#include "comosharedbuffer.h"
+#include "comoshbuf.h"
 #include "comotypekind.h"
 
 namespace como {
@@ -203,7 +208,7 @@ struct Type2Kind
         template<>                              \
         struct Type2Kind<type>                  \
         {                                       \
-            inline static TypeKind Kind()    \
+            inline static TypeKind Kind()       \
             {                                   \
                 return kind;                    \
             }                                   \
@@ -566,14 +571,12 @@ struct HashFunc<UUID>
     inline Integer operator()(
         /* [in] */ const UUID& data)
     {
-        return HashUuid(data);
+        return HashUUID(data);
     }
 };
 
 } // namespace como
 
 #include "comoarray.h"
-#include "comoptr.h"
-#include "comointfs.h"
 
 #endif // __COMO_COMOTYPE_H__

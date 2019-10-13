@@ -37,7 +37,7 @@ interface IClassObject
         [out] IInterface&& object);
 }
 
-interface IReferenceObserver;
+interface IObjectObserver;
 
 [
     uuid(00000000-0000-0000-0000-000000000003),
@@ -62,8 +62,8 @@ interface IObject
         [in] IInterface* obj,
         [out] Boolean& same);
 
-    SetReferenceObserver(
-        [in] IReferenceObserver* observer);
+    SetObjectObserver(
+        [in] IObjectObserver* observer);
 
     ToString(
         [out] String& desc);
@@ -123,7 +123,7 @@ interface IWeakReferenceSource
     uuid(00000000-0000-0000-0000-000000000007),
     version(0.1.0)
 ]
-interface IReferenceObserver
+interface IObjectObserver
 {
     OnLastStrongRef(
         [in] IObject* obj);

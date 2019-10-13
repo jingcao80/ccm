@@ -47,19 +47,15 @@ CArgumentList::~CArgumentList()
 {
     if (mArgumentIndicators != nullptr) {
         free(mArgumentIndicators);
-        mArgumentIndicators = nullptr;
     }
     if (mIntegerData != nullptr) {
         free(mIntegerData);
-        mIntegerData = nullptr;
     }
     if (mFPData != nullptr) {
         free(mFPData);
-        mFPData = nullptr;
     }
     if (mStackData != nullptr) {
         free(mStackData);
-        mStackData = nullptr;
     }
 }
 
@@ -926,7 +922,8 @@ void CArgumentList::CalculateDataSize(
             case TypeKind::Enum:
             case TypeKind::Array:
             case TypeKind::Interface:
-            case TypeKind::Triple: {
+            case TypeKind::Triple:
+            case TypeKind::TypeKind: {
                 if (intDataNum < 6) {
                     mArgumentIndicators[i] = (INT_DATA << DATA_SHIFT) | intDataNum;
                     (intDataNum)++;
