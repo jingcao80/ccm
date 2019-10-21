@@ -39,6 +39,15 @@ private:
         virtual void Emit() = 0;
 
     protected:
+        String EmitIncludeForUsingNestedInterface(
+            /* [in] */ como::MetaInterface* mi);
+
+        String EmitNamespaceBegin(
+            /* [in] */ const String& nsStr);
+
+        String EmitNamespaceEnd(
+            /* [in] */ const String& nsStr);
+
         String EmitConstantsInHeader(
             /* [in] */ como::MetaNamespace* mn);
 
@@ -57,22 +66,21 @@ private:
         String EmitInterfaceDeclarations(
             /* [in] */ como::MetaNamespace* mn);
 
+        String EmitInterfaceDeclaration(
+            /* [in] */ como::MetaInterface* mi,
+            /* [in] */ const String& prefix);
+
         String EmitConstantsInCpp(
             /* [in] */ como::MetaNamespace* mn);
 
         String EmitInterfaceIDsInCpp(
             /* [in] */ como::MetaNamespace* mn);
 
-    private:
         String EmitConstantForHeader(
             /* [in] */ como::MetaConstant* mc);
 
         String EmitEnumerationDeclaration(
             /* [in] */ como::MetaEnumeration* me);
-
-        String EmitInterfaceDeclaration(
-            /* [in] */ como::MetaInterface* mi,
-            /* [in] */ const String& prefix);
 
         String EmitInterfaceConstant(
             /* [in] */ como::MetaConstant* mc,
@@ -92,6 +100,9 @@ private:
         String EmitValue(
             /* [in] */ como::MetaType* mt,
             /* [in] */ como::MetaValue* mv);
+
+        String EmitDefineMacro(
+            /* [in] */ const String& fullName);
 
     protected:
         static constexpr int MODE_VARIABLE = 0;
@@ -113,6 +124,37 @@ private:
         {}
 
         void Emit() override;
+
+    private:
+        void EmitConstantsAndTypes();
+
+        String EmitConstantsAndTypeForwardDeclarationsRecursively(
+            /* [in] */ como::MetaNamespace* mn);
+
+        String EmitConstantsAndTypeDeclarationsRecursively(
+            /* [in] */ como::MetaNamespace* mn);
+
+        void EmitInterfaceDeclarationsSplitly();
+
+        void EmitInterfaceDeclarationSplitly(
+            /* [in] */ como::MetaInterface* mi);
+
+        void EmitCoclasses();
+
+        void EmitCoclass(
+            /* [in] */ como::MetaCoclass* mk);
+
+        void EmitCoclassHeader(
+            /* [in] */ como::MetaCoclass* mk);
+
+        void EmitCoclassCpp(
+            /* [in] */ como::MetaCoclass* mk);
+
+        String EmitCoclassObject(
+            /* [in] */ como::MetaCoclass* mk);
+
+        String EmitCoclassMethods(
+            /* [in] */ como::MetaCoclass* mk);
     };
 
     class ClientModeEmitter
@@ -162,13 +204,6 @@ public:
 
 private:
     bool CheckDirectory();
-
-public:
-    static constexpr int MODE_MASK = 0x07;
-    static constexpr int MODE_CLIENT = 0x01;
-    static constexpr int MODE_COMPONENT = 0x02;
-    static constexpr int MODE_RUNTIME = 0x04;
-    static constexpr int INTERFACE_SPLIT = 0x10;
 
 private:
     static const char* TAG;

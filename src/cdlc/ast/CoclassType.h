@@ -45,6 +45,11 @@ public:
         /* [in] */ const String& name,
         /* [in] */ const String& signature);
 
+    AutoPtr<Method> GetConstructor(
+        /* [in] */ int i);
+
+    inline int GetConstructorNumber();
+
     inline bool HasDefaultConstructor();
 
     inline bool IsConstructorDeleted();
@@ -66,8 +71,6 @@ private:
     AutoPtr<UUID> mUuid;
     String mVersion;
     String mDescription;
-    bool mConstructorDefault = false;
-    bool mConstructorDeleted = false;
     std::vector<AutoPtr<Method>> mConstructors;
     std::vector<AutoPtr<InterfaceType>> mInterfaces;
 };
@@ -85,14 +88,22 @@ void CoclassType::AddConstructor(
     }
 }
 
+int CoclassType::GetConstructorNumber()
+{
+    return mConstructors.size();
+}
+
 bool CoclassType::HasDefaultConstructor()
 {
-    return mConstructorDefault;
+    return GetConstructorNumber() == 0;
 }
 
 bool CoclassType::IsConstructorDeleted()
 {
-    return mConstructorDeleted;
+    if (GetConstructorNumber() > 0) {
+        return GetConstructor(0)->IsDeleted();
+    }
+    return false;
 }
 
 void CoclassType::AddInterface(

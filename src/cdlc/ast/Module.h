@@ -115,6 +115,9 @@ public:
     String Dump(
         /* [in] */ const String& prefix) override;
 
+    static AutoPtr<Module> Resolve(
+        /* [in] */ void* metadata);
+
 private:
     inline void AddNamespace(
         /* [in] */ Namespace* ns);

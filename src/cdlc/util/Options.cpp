@@ -66,23 +66,23 @@ void Options::Parse(
             mMetadataFileType = MetadataUtils::TYPE_SO;
         }
         else if (option.Equals("-mode-client")) {
-            mCodegenMode &= ~CodeGenerator::MODE_MASK;
-            mCodegenMode |= CodeGenerator::MODE_CLIENT;
+            Properties::Get().ClearMode(Properties::BUILD_MODE_MASK);
+            Properties::Get().AddMode(Properties::BUILD_MODE_CLIENT);
         }
         else if (option.Equals("-mode-component")) {
-            mCodegenMode &= ~CodeGenerator::MODE_MASK;
-            mCodegenMode |= CodeGenerator::MODE_COMPONENT;
+            Properties::Get().ClearMode(Properties::BUILD_MODE_MASK);
+            Properties::Get().AddMode(Properties::BUILD_MODE_COMPONENT);
         }
         else if (option.Equals("-mode-runtime")) {
-            mCodegenMode &= ~CodeGenerator::MODE_MASK;
-            mCodegenMode |= CodeGenerator::MODE_RUNTIME;
+            Properties::Get().ClearMode(Properties::BUILD_MODE_MASK);
+            Properties::Get().AddMode(Properties::BUILD_MODE_RUNTIME);
         }
         else if (option.Equals("-save-metadata")) {
             mDoSaveMetadata = true;
             mSaveFile = argv[i++];
         }
         else if (option.Equals("-split-interface")) {
-            mCodegenMode |= CodeGenerator::INTERFACE_SPLIT;
+            Properties::Get().AddMode(Properties::CODEGEN_INTERFACE_SPLIT);
         }
         else if (!option.StartsWith("-")) {
             mSourceFile = option;

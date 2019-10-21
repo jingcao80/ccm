@@ -120,6 +120,13 @@ void* MetadataUtils::ReadMetadataFromElf64(
         return nullptr;
     }
 
+    if (!file.Seek(mdSec->sh_offset + sizeof(size_t), File::SEEK_FROM_BEGIN)) {
+        Logger::E("MetadataUtils", "Seek \"%s\" file failed.", filePath.string());
+        free(shdrs);
+        free(strTable);
+        return nullptr;
+    }
+
     free(strTable);
 
     como::MetaComponent component;

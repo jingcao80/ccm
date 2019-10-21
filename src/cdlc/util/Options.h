@@ -30,8 +30,6 @@ public:
 
     inline String GetCodegenDirectory() const;
 
-    inline int GetCodegenMode() const;
-
     inline String GetMetadataFile() const;
 
     inline int GetMetadataFileType() const;
@@ -66,7 +64,6 @@ private:
 private:
     String mProgram;
     String mCodegenDir;
-    int mCodegenMode = 0;
     String mMetadataFile;
     int mMetadataFileType = 0;
     String mSaveFile;
@@ -87,11 +84,6 @@ Options::Options(
     /* [in] */ char** argv)
 {
     Parse(argc, argv);
-}
-
-int Options::GetCodegenMode() const
-{
-    return mCodegenMode;
 }
 
 String Options::GetCodegenDirectory() const

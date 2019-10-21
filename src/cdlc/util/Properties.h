@@ -32,19 +32,52 @@ public:
     void AddSearchPath(
         /* [in] */ const String& path);
 
+    inline void AddMode(
+        /* [in] */ int mode);
+
+    inline void ClearMode(
+        /* [in] */ int mode);
+
+    inline int GetMode();
+
 private:
     Properties() {}
 
 public:
     static const String INDENT;
 
+    static constexpr int BUILD_MODE_MASK = 0x0f;
+    static constexpr int BUILD_MODE_CLIENT = 0x01;
+    static constexpr int BUILD_MODE_COMPONENT = 0x02;
+    static constexpr int BUILD_MODE_RUNTIME = 0x04;
+
+    static constexpr int CODEGEN_INTERFACE_SPLIT = 0x10;
+
 private:
     std::set<String, StringCompareFunc> mSearchPaths;
+    int mMode = 0;
 };
 
 const std::set<String, StringCompareFunc>& Properties::GetSearchPaths() const
 {
     return mSearchPaths;
+}
+
+void Properties::AddMode(
+    /* [in] */ int mode)
+{
+    mMode |= mode;
+}
+
+void Properties::ClearMode(
+    /* [in] */ int mode)
+{
+    mMode &= ~mode;
+}
+
+int Properties::GetMode()
+{
+    return mMode;
 }
 
 }

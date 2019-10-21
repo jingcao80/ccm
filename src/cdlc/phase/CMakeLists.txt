@@ -22,6 +22,8 @@ include_directories(
 
 set(SOURCES
     BuildinTypeBuilder.cpp
+    ClassObjectInterfaceBuilder.cpp
+    ComoRTMetadataLoader.cpp
     InterfaceIntegrityChecker.cpp)
 
 add_library(cdlc_phase STATIC

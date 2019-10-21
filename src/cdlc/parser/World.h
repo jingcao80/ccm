@@ -23,6 +23,7 @@
 #include "ast/EnumerationType.h"
 #include "ast/Module.h"
 #include "ast/Type.h"
+#include <vector>
 
 namespace cdlc {
 
@@ -31,6 +32,9 @@ class World
 {
 public:
     inline World();
+
+    inline void AddDependentModule(
+        /* [in] */ Module* module);
 
     inline AutoPtr<Module> GetCompilerRTModule();
 
@@ -45,12 +49,19 @@ public:
 private:
     AutoPtr<Module> mCompilerRTModule;
     AutoPtr<Module> mWorkingModule;
+    std::vector<AutoPtr<Module>> mDependentModules;
 };
 
 World::World()
 {
     mCompilerRTModule = new Module();
     mCompilerRTModule->SetName("compiler-rt");
+}
+
+void World::AddDependentModule(
+    /* [in] */ Module* module)
+{
+    mDependentModules.push_back(module);
 }
 
 AutoPtr<Module> World::GetCompilerRTModule()

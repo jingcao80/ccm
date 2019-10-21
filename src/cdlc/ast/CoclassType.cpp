@@ -46,6 +46,15 @@ AutoPtr<Method> CoclassType::FindConstructor(
     return nullptr;
 }
 
+AutoPtr<Method> CoclassType::GetConstructor(
+    /* [in] */ int i)
+{
+    if (i >= 0 && i < mConstructors.size()) {
+        return mConstructors[i];
+    }
+    return nullptr;
+}
+
 AutoPtr<InterfaceType> CoclassType::GetInterface(
     /* [in] */ int i)
 {

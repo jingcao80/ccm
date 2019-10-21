@@ -24,6 +24,7 @@
 #include "util/File.h"
 #include "util/Logger.h"
 #include "util/Options.h"
+#include "util/Properties.h"
 
 using namespace cdlc;
 
@@ -117,7 +118,7 @@ int main(int argc, char** argv)
         CodeGenerator generator;
         generator.SetDirectory(options.GetCodegenDirectory());
         generator.SetMetadata(component.get());
-        generator.SetMode(options.GetCodegenMode());
+        generator.SetMode(Properties::Get().GetMode());
         generator.Generate();
     }
 

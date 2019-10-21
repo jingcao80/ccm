@@ -20,6 +20,8 @@
 #include "ast/ReferenceType.h"
 #include "parser/TokenInfo.h"
 #include "phase/BuildinTypeBuilder.h"
+#include "phase/ClassObjectInterfaceBuilder.h"
+#include "phase/ComoRTMetadataLoader.h"
 #include "phase/InterfaceIntegrityChecker.h"
 #include "util/AutoPtr.h"
 #include "util/Logger.h"
@@ -36,6 +38,10 @@ const char* Parser::TAG = "Parser";
 Parser::Parser()
 {
     mBeforePhases.push_back(new BuildinTypeBuilder(mWorld));
+    if (Properties::Get().GetMode() & Properties::BUILD_MODE_COMPONENT) {
+        mBeforePhases.push_back(new ComoRTMetadataLoader(mWorld));
+    }
+    AddPhase(new ClassObjectInterfaceBuilder(mWorld));
     AddPhase(new InterfaceIntegrityChecker(mWorld));
 }
 

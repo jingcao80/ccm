@@ -247,4 +247,10 @@ String Module::Dump(
     return builder.ToString();
 }
 
+AutoPtr<Module> Module::Resolve(
+    /* [in] */ void* metadata)
+{
+    return nullptr;
+}
+
 }
