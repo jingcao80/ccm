@@ -46,12 +46,15 @@ public:
 private:
     inline UUID();
 
+    static char ToDigit(
+        /* [in] */ char c);
+
 public:
     unsigned int mData1;
     unsigned short mData2;
     unsigned short mData3;
     unsigned short mData4;
-    unsigned char mData5[12];
+    unsigned char mData5[6];
 };
 
 UUID::UUID()

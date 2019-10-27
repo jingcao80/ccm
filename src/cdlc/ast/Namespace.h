@@ -19,6 +19,7 @@
 
 #include "ast/Node.h"
 #include "ast/Type.h"
+#include "metadata/Metadata.h"
 #include "util/AutoPtr.h"
 #include "util/String.h"
 #include <vector>
@@ -34,6 +35,8 @@ class Module;
 class Namespace
     : public Node
 {
+    friend class Module;
+
 public:
     Namespace(
         /* [in] */ const String& name,
@@ -102,6 +105,11 @@ public:
 
     inline String ToShortString();
 
+    inline bool IsResolved();
+
+    inline void SetMetadata(
+        /* [in] */ como::MetaNamespace* metadata);
+
     String ToString() override;
 
     String Dump(
@@ -128,6 +136,8 @@ private:
     InterfaceType* mInterfaceWrapped = nullptr;
 
     Module* mModule = nullptr;
+    bool mResolved = true;
+    como::MetaNamespace* mMetadata = nullptr;
 };
 
 AutoPtr<Namespace> Namespace::GetParent()
@@ -179,6 +189,17 @@ bool Namespace::IsInterfaceWrapper()
 String Namespace::ToShortString()
 {
     return mName;
+}
+
+bool Namespace::IsResolved()
+{
+    return mMetadata == nullptr;
+}
+
+void Namespace::SetMetadata(
+    /* [in] */ como::MetaNamespace* metadata)
+{
+    mMetadata = metadata;
 }
 
 }

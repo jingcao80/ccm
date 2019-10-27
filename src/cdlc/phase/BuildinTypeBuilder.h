@@ -26,8 +26,7 @@ class BuildinTypeBuilder
     : public Phase
 {
 public:
-    inline BuildinTypeBuilder(
-        /* [in] */ World& world);
+    inline BuildinTypeBuilder();
 
     bool Process() override;
 
@@ -40,11 +39,9 @@ private:
     AutoPtr<Module> mModule;
 };
 
-BuildinTypeBuilder::BuildinTypeBuilder(
-    /* [in] */ World& world)
-    : Phase(world)
+BuildinTypeBuilder::BuildinTypeBuilder()
 {
-    mModule = mWorld.GetCompilerRTModule();
+    mModule = mWorld->GetCompilerRTModule();
 }
 
 }

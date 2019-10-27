@@ -31,14 +31,15 @@ class World
     : public LightRefBase
 {
 public:
-    inline World();
-
     inline void AddDependentModule(
         /* [in] */ Module* module);
 
     inline AutoPtr<Module> GetCompilerRTModule();
 
     AutoPtr<Module> GetWorkingModule();
+
+    AutoPtr<Module> FindModule(
+        /* [in] */ const String& moduleName);
 
     AutoPtr<EnumerationType> FindEnumeration(
         /* [in] */ const String& fullName);
@@ -47,9 +48,16 @@ public:
         /* [in] */ const String& name);
 
 private:
+    inline World();
+
+public:
+    static AutoPtr<World> GetInstance();
+
+private:
+    static World* INSTANCE;
     AutoPtr<Module> mCompilerRTModule;
-    AutoPtr<Module> mWorkingModule;
     std::vector<AutoPtr<Module>> mDependentModules;
+    AutoPtr<Module> mWorkingModule;
 };
 
 World::World()

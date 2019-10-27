@@ -25,19 +25,13 @@ class ComoRTMetadataLoader
     : public Phase
 {
 public:
-    inline ComoRTMetadataLoader(
-        /* [in] */ World& world);
+    inline ComoRTMetadataLoader() = default;
 
     bool Process() override;
 
 private:
     static const char* TAG;
 };
-
-ComoRTMetadataLoader::ComoRTMetadataLoader(
-    /* [in] */ World& world)
-    : Phase(world)
-{}
 
 }
 

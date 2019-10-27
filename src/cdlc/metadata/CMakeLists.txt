@@ -23,6 +23,7 @@ include_directories(
 set(SOURCES
     MetadataBuilder.cpp
     MetadataDumper.cpp
+    MetadataResolver.cpp
     MetadataUtils.cpp)
 
 add_library(cdlc_metadata STATIC

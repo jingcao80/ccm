@@ -42,6 +42,12 @@ private:
         String EmitIncludeForUsingNestedInterface(
             /* [in] */ como::MetaInterface* mi);
 
+        String EmitConstantsAndTypeForwardDeclarationsRecursively(
+            /* [in] */ como::MetaNamespace* mn);
+
+        String EmitConstantsAndTypeDeclarationsRecursively(
+            /* [in] */ como::MetaNamespace* mn);
+
         String EmitNamespaceBegin(
             /* [in] */ const String& nsStr);
 
@@ -69,6 +75,9 @@ private:
         String EmitInterfaceDeclaration(
             /* [in] */ como::MetaInterface* mi,
             /* [in] */ const String& prefix);
+
+        String EmitConstantsAndTypesRecursivelyInCpp(
+            /* [in] */ como::MetaNamespace* mn);
 
         String EmitConstantsInCpp(
             /* [in] */ como::MetaNamespace* mn);
@@ -127,12 +136,6 @@ private:
 
     private:
         void EmitConstantsAndTypes();
-
-        String EmitConstantsAndTypeForwardDeclarationsRecursively(
-            /* [in] */ como::MetaNamespace* mn);
-
-        String EmitConstantsAndTypeDeclarationsRecursively(
-            /* [in] */ como::MetaNamespace* mn);
 
         void EmitInterfaceDeclarationsSplitly();
 

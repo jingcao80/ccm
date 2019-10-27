@@ -249,7 +249,7 @@ private:
 private:
     static const char* TAG;
 
-    World mWorld;
+    AutoPtr<World> mWorld = World::GetInstance();
     AutoPtr<Module> mModule;
     AutoPtr<Namespace> mCurrentNamespace;
     AutoPtr<BlockContext> mCurrentContext;

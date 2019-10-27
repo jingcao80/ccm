@@ -40,12 +40,12 @@ bool ClassObjectInterfaceBuilder::Process()
     }
     mIClassObjectType = mModule->FindType("como::IClassObject");
     if (mIClassObjectType == nullptr) {
-        mIClassObjectType = mWorld.FindType("como::IClassObject");
+        mIClassObjectType = mWorld->FindType("como::IClassObject");
         if (mIClassObjectType == nullptr) {
             Logger::E(TAG, "Type \"como::IClassObject\" not found.");
             return false;
         }
-        mIClassObjectType->Clone(mModule, true);
+        mIClassObjectType = mIClassObjectType->Clone(mModule, true);
     }
 
     for (int i = 0; i < mModule->GetCoclassNumber(); i++) {

@@ -127,14 +127,11 @@ void CodeGenerator::ComponentModeEmitter::EmitConstantsAndTypes()
     builder.Append("\n");
     builder.AppendFormat("extern const ComponentID CID_%s;\n", mc->mName);
     builder.Append("\n");
-    for (int i = 0; i < mc->mNamespaceNumber; i++) {
-        como::MetaNamespace* mn = mc->mNamespaces[i];
-        builder.Append(EmitConstantsAndTypeForwardDeclarationsRecursively(mn));
-    }
-    for (int i = 0; i < mc->mNamespaceNumber; i++) {
-        como::MetaNamespace* mn = mc->mNamespaces[i];
-        builder.Append(EmitConstantsAndTypeDeclarationsRecursively(mn));
-    }
+
+    builder.Append(EmitConstantsAndTypeForwardDeclarationsRecursively(mc->mGlobalNamespace));
+
+    builder.Append(EmitConstantsAndTypeDeclarationsRecursively(mc->mGlobalNamespace));
+
     builder.Append("extern void AddComponentRefCount();\n");
     builder.Append("extern void ReleaseComponentRefCount();\n");
     builder.Append("\n");
@@ -144,130 +141,6 @@ void CodeGenerator::ComponentModeEmitter::EmitConstantsAndTypes()
     file.Write(data.string(), data.GetLength());
     file.Flush();
     file.Close();
-}
-
-String CodeGenerator::ComponentModeEmitter::EmitConstantsAndTypeForwardDeclarationsRecursively(
-    /* [in] */ como::MetaNamespace* mn)
-{
-    StringBuilder builder;
-
-    if (!(mOwner->mMode & Properties::CODEGEN_INTERFACE_SPLIT)) {
-        if (!(mn->mInterfaceWrappedIndex != -1 || mn->mConstantNumber +
-            (mn->mEnumerationNumber - mn->mExternalEnumerationNumber) +
-            (mn->mInterfaceNumber - mn->mExternalInterfaceNumber) == 0)) {
-            builder.Append(EmitNamespaceBegin(mn->mName));
-
-            String infos = EmitConstantsInHeader(mn);
-            if (!infos.IsEmpty()) {
-                builder.Append(infos);
-                builder.Append("\n");
-            }
-
-            infos = EmitEnumerationForwardDeclarations(mn);
-            if (!infos.IsEmpty()) {
-                builder.Append(infos);
-                builder.Append("\n");
-            }
-
-            infos = EmitInterfaceIDForwardDeclarations(mn);
-            if (!infos.IsEmpty()) {
-                builder.Append(infos);
-                builder.Append("\n");
-            }
-
-            infos = EmitInterfaceForwardDeclarations(mn);
-            if (!infos.IsEmpty()) {
-                builder.Append(infos);
-                builder.Append("\n");
-            }
-
-            builder.Append(EmitNamespaceEnd(mn->mName));
-            builder.Append("\n");
-        }
-    }
-    else {
-        if (!(mn->mInterfaceWrappedIndex != -1 || mn->mConstantNumber +
-            (mn->mEnumerationNumber - mn->mExternalEnumerationNumber) +
-            (mn->mInterfaceNumber - mn->mExternalInterfaceNumber) == 0)) {
-            builder.Append(EmitNamespaceBegin(mn->mName));
-
-            String infos = EmitConstantsInHeader(mn);
-            if (!infos.IsEmpty()) {
-                builder.Append(infos);
-                builder.Append("\n");
-            }
-
-            infos = EmitEnumerationForwardDeclarations(mn);
-            if (!infos.IsEmpty()) {
-                builder.Append(infos);
-                builder.Append("\n");
-            }
-
-            infos = EmitInterfaceForwardDeclarations(mn);
-            if (!infos.IsEmpty()) {
-                builder.Append(infos);
-                builder.Append("\n");
-            }
-
-            builder.Append(EmitNamespaceEnd(mn->mName));
-            builder.Append("\n");
-        }
-    }
-
-    for (int i = 0; i < mn->mNamespaceNumber; i++) {
-        como::MetaNamespace* nmn = mn->mNamespaces[i];
-        builder.Append(EmitConstantsAndTypeForwardDeclarationsRecursively(nmn));
-    }
-
-    return builder.ToString();
-}
-
-String CodeGenerator::ComponentModeEmitter::EmitConstantsAndTypeDeclarationsRecursively(
-    /* [in] */ como::MetaNamespace* mn)
-{
-    StringBuilder builder;
-
-    if (!(mOwner->mMode & Properties::CODEGEN_INTERFACE_SPLIT)) {
-        if (!(mn->mInterfaceWrappedIndex != -1 || mn->mConstantNumber +
-            (mn->mEnumerationNumber - mn->mExternalEnumerationNumber) +
-            (mn->mInterfaceNumber - mn->mExternalInterfaceNumber) == 0)) {
-            builder.Append(EmitNamespaceBegin(mn->mName));
-
-            String infos = EmitEnumerationDeclarations(mn);
-            if (!infos.IsEmpty()) {
-                builder.Append(infos);
-            }
-
-            infos = EmitInterfaceDeclarations(mn);
-            if (!infos.IsEmpty()) {
-                builder.Append(infos);
-            }
-
-            builder.Append(EmitNamespaceEnd(mn->mName));
-            builder.Append("\n");
-        }
-    }
-    else {
-        if (!(mn->mInterfaceWrappedIndex != -1 || mn->mConstantNumber +
-            (mn->mEnumerationNumber - mn->mExternalEnumerationNumber) == 0)) {
-            builder.Append(EmitNamespaceBegin(mn->mName));
-
-            String infos = EmitEnumerationDeclarations(mn);
-            if (!infos.IsEmpty()) {
-                builder.Append(infos);
-            }
-
-            builder.Append(EmitNamespaceEnd(mn->mName));
-            builder.Append("\n");
-        }
-    }
-
-    for (int i = 0; i < mn->mNamespaceNumber; i++) {
-        como::MetaNamespace* nmn = mn->mNamespaces[i];
-        builder.Append(EmitConstantsAndTypeDeclarationsRecursively(nmn));
-    }
-
-    return builder.ToString();
 }
 
 void CodeGenerator::ComponentModeEmitter::EmitInterfaceDeclarationsSplitly()
@@ -504,6 +377,8 @@ String CodeGenerator::ComponentModeEmitter::EmitCoclassObject(
         builder.Append(Properties::INDENT).Append("COMO_INTERFACE_DECL();\n");
         builder.Append("\n");
     }
+
+    return builder.ToString();
 }
 
 String CodeGenerator::ComponentModeEmitter::EmitCoclassMethods(
@@ -537,66 +412,26 @@ void CodeGenerator::RuntimeModeEmitter::EmitConstantsAndTypes()
 
     builder.Append(mOwner->mLicense);
     builder.Append("\n");
-    builder.Append("#ifndef __COMO_COMORUNTIMEINTERFACES_H_GEN__\n"
-                   "#define __COMO_COMORUNTIMEINTERFACES_H_GEN__\n"
-                   "\n"
-                   "#include \"comosp.h\"\n"
-                   "\n"
-                   "namespace como {\n"
-                   "\n");
+    builder.Append("#ifndef __COMO_COMORUNTIMEINTERFACES_H_GEN__\n");
+    builder.Append("#define __COMO_COMORUNTIMEINTERFACES_H_GEN__\n");
+    builder.Append("\n");
+    builder.Append("#include \"comosp.h\"\n");
+    builder.Append("\n");
 
     como::MetaComponent* mc = mComponent;
-    builder.AppendFormat("COM_PUBLIC extern const ComponentID CID_%s;\n\n", mc->mName);
-    for (int i = 0; i < mc->mNamespaceNumber; i++) {
-        como::MetaNamespace* mn = mc->mNamespaces[i];
-        String constantInfos = EmitConstantsInHeader(mn);
-        if (!constantInfos.IsEmpty()) {
-            builder.Append(constantInfos);
-            builder.Append("\n");
-        }
-    }
-    for (int i = 0; i < mc->mNamespaceNumber; i++) {
-        como::MetaNamespace* mn = mc->mNamespaces[i];
-        String enumerationInfos = EmitEnumerationForwardDeclarations(mn);
-        if (!enumerationInfos.IsEmpty()) {
-            builder.Append(enumerationInfos);
-            builder.Append("\n");
-        }
-    }
-    for (int i = 0; i < mc->mNamespaceNumber; i++) {
-        como::MetaNamespace* mn = mc->mNamespaces[i];
-        String enumerationInfos = EmitEnumerationDeclarations(mn);
-        if (!enumerationInfos.IsEmpty()) {
-            builder.Append(enumerationInfos);
-        }
-    }
-    for (int i = 0; i < mc->mNamespaceNumber; i++) {
-        como::MetaNamespace* mn = mc->mNamespaces[i];
-        String interfaceIDInfos = EmitInterfaceIDForwardDeclarations(mn);
-        if (!interfaceIDInfos.IsEmpty()) {
-            builder.Append(interfaceIDInfos);
-            builder.Append("\n");
-        }
-    }
-    for (int i = 0; i < mc->mNamespaceNumber; i++) {
-        como::MetaNamespace* mn = mc->mNamespaces[i];
-        String interfaceInfos = EmitInterfaceForwardDeclarations(mn);
-        if (!interfaceInfos.IsEmpty()) {
-            builder.Append(interfaceInfos);
-            builder.Append("\n");
-        }
-    }
-    for (int i = 0; i < mc->mNamespaceNumber; i++) {
-        como::MetaNamespace* mn = mc->mNamespaces[i];
-        String interfaceInfos = EmitInterfaceDeclarations(mn);
-        if (!interfaceInfos.IsEmpty()) {
-            builder.Append(interfaceInfos);
-        }
-    }
 
-    builder.Append("} // namespace como\n"
-                   "\n"
-                   "#endif // __COMO_COMORUNTIMEINTERFACES_H_GEN__\n");
+    builder.Append("namespace como {\n");
+    builder.Append("\n");
+    builder.AppendFormat("COM_PUBLIC extern const ComponentID CID_%s;\n", mc->mName);
+    builder.Append("\n");
+    builder.Append("} // namespace como\n");
+    builder.Append("\n");
+
+    builder.Append(EmitConstantsAndTypeForwardDeclarationsRecursively(mc->mGlobalNamespace));
+
+    builder.Append(EmitConstantsAndTypeDeclarationsRecursively(mc->mGlobalNamespace));
+
+    builder.Append("#endif // __COMO_COMORUNTIMEINTERFACES_H_GEN__\n");
 
     String data = builder.ToString();
     file.Write(data.string(), data.GetLength());
@@ -619,17 +454,8 @@ void CodeGenerator::RuntimeModeEmitter::EmitUUIDs()
                    "\n");
 
     como::MetaComponent* mc = mComponent;
-    for (int i = 0; i < mc->mNamespaceNumber; i++) {
-        como::MetaNamespace* mn = mc->mNamespaces[i];
-        String constantInfos = EmitConstantsInCpp(mn);
-        if (!constantInfos.IsEmpty()) {
-            builder.Append(constantInfos);
-        }
-        String interfaceIDInfos = EmitInterfaceIDsInCpp(mn);
-        if (!interfaceIDInfos.IsEmpty()) {
-            builder.Append(interfaceIDInfos);
-        }
-    }
+
+    builder.Append(EmitConstantsAndTypesRecursivelyInCpp(mc->mGlobalNamespace));
 
     builder.Append("} // namespace como\n");
 
@@ -727,6 +553,130 @@ String CodeGenerator::Emitter::EmitIncludeForUsingNestedInterface(
 
     for (String include : includes) {
         builder.Append(include);
+    }
+
+    return builder.ToString();
+}
+
+String CodeGenerator::Emitter::EmitConstantsAndTypeForwardDeclarationsRecursively(
+    /* [in] */ como::MetaNamespace* mn)
+{
+    StringBuilder builder;
+
+    if (!(mOwner->mMode & Properties::CODEGEN_INTERFACE_SPLIT)) {
+        if (!(mn->mInterfaceWrappedIndex != -1 || mn->mConstantNumber +
+            (mn->mEnumerationNumber - mn->mExternalEnumerationNumber) +
+            (mn->mInterfaceNumber - mn->mExternalInterfaceNumber) == 0)) {
+            builder.Append(EmitNamespaceBegin(mn->mName));
+
+            String infos = EmitConstantsInHeader(mn);
+            if (!infos.IsEmpty()) {
+                builder.Append(infos);
+                builder.Append("\n");
+            }
+
+            infos = EmitEnumerationForwardDeclarations(mn);
+            if (!infos.IsEmpty()) {
+                builder.Append(infos);
+                builder.Append("\n");
+            }
+
+            infos = EmitInterfaceIDForwardDeclarations(mn);
+            if (!infos.IsEmpty()) {
+                builder.Append(infos);
+                builder.Append("\n");
+            }
+
+            infos = EmitInterfaceForwardDeclarations(mn);
+            if (!infos.IsEmpty()) {
+                builder.Append(infos);
+                builder.Append("\n");
+            }
+
+            builder.Append(EmitNamespaceEnd(mn->mName));
+            builder.Append("\n");
+        }
+    }
+    else {
+        if (!(mn->mInterfaceWrappedIndex != -1 || mn->mConstantNumber +
+            (mn->mEnumerationNumber - mn->mExternalEnumerationNumber) +
+            (mn->mInterfaceNumber - mn->mExternalInterfaceNumber) == 0)) {
+            builder.Append(EmitNamespaceBegin(mn->mName));
+
+            String infos = EmitConstantsInHeader(mn);
+            if (!infos.IsEmpty()) {
+                builder.Append(infos);
+                builder.Append("\n");
+            }
+
+            infos = EmitEnumerationForwardDeclarations(mn);
+            if (!infos.IsEmpty()) {
+                builder.Append(infos);
+                builder.Append("\n");
+            }
+
+            infos = EmitInterfaceForwardDeclarations(mn);
+            if (!infos.IsEmpty()) {
+                builder.Append(infos);
+                builder.Append("\n");
+            }
+
+            builder.Append(EmitNamespaceEnd(mn->mName));
+            builder.Append("\n");
+        }
+    }
+
+    for (int i = 0; i < mn->mNamespaceNumber; i++) {
+        como::MetaNamespace* nmn = mn->mNamespaces[i];
+        builder.Append(EmitConstantsAndTypeForwardDeclarationsRecursively(nmn));
+    }
+
+    return builder.ToString();
+}
+
+String CodeGenerator::Emitter::EmitConstantsAndTypeDeclarationsRecursively(
+    /* [in] */ como::MetaNamespace* mn)
+{
+    StringBuilder builder;
+
+    if (!(mOwner->mMode & Properties::CODEGEN_INTERFACE_SPLIT)) {
+        if (!(mn->mInterfaceWrappedIndex != -1 || mn->mConstantNumber +
+            (mn->mEnumerationNumber - mn->mExternalEnumerationNumber) +
+            (mn->mInterfaceNumber - mn->mExternalInterfaceNumber) == 0)) {
+            builder.Append(EmitNamespaceBegin(mn->mName));
+
+            String infos = EmitEnumerationDeclarations(mn);
+            if (!infos.IsEmpty()) {
+                builder.Append(infos);
+            }
+
+            infos = EmitInterfaceDeclarations(mn);
+            if (!infos.IsEmpty()) {
+                builder.Append(infos);
+            }
+
+            builder.Append(EmitNamespaceEnd(mn->mName));
+            builder.Append("\n");
+        }
+    }
+    else {
+        if (!(mn->mInterfaceWrappedIndex != -1 || mn->mConstantNumber +
+            (mn->mEnumerationNumber - mn->mExternalEnumerationNumber) == 0)) {
+            builder.Append(EmitNamespaceBegin(mn->mName));
+
+            String infos = EmitEnumerationDeclarations(mn);
+            if (!infos.IsEmpty()) {
+                builder.Append(infos);
+            }
+
+            builder.Append(EmitNamespaceEnd(mn->mName));
+            builder.Append("\n");
+        }
+    }
+
+    for (int i = 0; i < mn->mNamespaceNumber; i++) {
+        como::MetaNamespace* nmn = mn->mNamespaces[i];
+        builder.Append(EmitConstantsAndTypeDeclarationsRecursively(nmn));
     }
 
     return builder.ToString();
@@ -1004,6 +954,28 @@ String CodeGenerator::Emitter::EmitInterfaceMethod(
         }
     }
     builder.Append(") = 0;\n");
+
+    return builder.ToString();
+}
+
+String CodeGenerator::Emitter::EmitConstantsAndTypesRecursivelyInCpp(
+    /* [in] */ como::MetaNamespace* mn)
+{
+    StringBuilder builder;
+
+    String constantInfos = EmitConstantsInCpp(mn);
+    if (!constantInfos.IsEmpty()) {
+        builder.Append(constantInfos);
+    }
+    String interfaceIDInfos = EmitInterfaceIDsInCpp(mn);
+    if (!interfaceIDInfos.IsEmpty()) {
+        builder.Append(interfaceIDInfos);
+    }
+
+    for (int i = 0; i < mn->mNamespaceNumber; i++) {
+        como::MetaNamespace* mnn = mn->mNamespaces[i];
+        builder.Append(EmitConstantsAndTypesRecursivelyInCpp(mnn));
+    }
 
     return builder.ToString();
 }

@@ -18,12 +18,42 @@
 
 namespace cdlc {
 
+World* World::INSTANCE = nullptr;
+
+AutoPtr<World> World::GetInstance()
+{
+    if (INSTANCE == nullptr) {
+        INSTANCE = new World();
+    }
+    return INSTANCE;
+}
+
 AutoPtr<Module> World::GetWorkingModule()
 {
     if (mWorkingModule == nullptr) {
         mWorkingModule = new Module();
     }
     return mWorkingModule;
+}
+
+AutoPtr<Module> World::FindModule(
+    /* [in] */ const String& moduleName)
+{
+    if (moduleName.IsEmpty()) {
+        return nullptr;
+    }
+
+    if (mCompilerRTModule->GetName().Equals(moduleName)) {
+        return mCompilerRTModule;
+    }
+
+    for (AutoPtr<Module> module : mDependentModules) {
+        if (module->GetName().Equals(moduleName)) {
+            return module;
+        }
+    }
+
+    return nullptr;
 }
 
 AutoPtr<EnumerationType> World::FindEnumeration(
@@ -39,7 +69,17 @@ AutoPtr<EnumerationType> World::FindEnumeration(
 AutoPtr<Type> World::FindType(
     /* [in] */ const String& name)
 {
-    return mCompilerRTModule->FindType(name);
+    AutoPtr<Type> type = mCompilerRTModule->FindType(name);
+    if (type != nullptr) {
+        return type;
+    }
+    for (AutoPtr<Module> module : mDependentModules) {
+        type = module->FindType(name);
+        if (type != nullptr) {
+            return type;
+        }
+    }
+    return nullptr;
 }
 
 }

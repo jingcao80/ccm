@@ -27,8 +27,7 @@ class InterfaceIntegrityChecker
     : public Phase
 {
 public:
-    inline InterfaceIntegrityChecker(
-        /* [in] */ World& world);
+    inline InterfaceIntegrityChecker();
 
     bool Process() override;
 
@@ -43,11 +42,10 @@ private:
     Module* mModule = nullptr;
 };
 
-InterfaceIntegrityChecker::InterfaceIntegrityChecker(
-    /* [in] */ World& world)
-    : Phase(world)
-    , mModule(world.GetWorkingModule())
-{}
+InterfaceIntegrityChecker::InterfaceIntegrityChecker()
+{
+    mModule = mWorld->GetWorkingModule();
+}
 
 }
 

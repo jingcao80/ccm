@@ -57,7 +57,6 @@ void MetadataBuilder::CalculateMetaComponent(
     int IN = module->GetInterfaceNumber();
     int KN = module->GetCoclassNumber();
     int TN = module->GetTypeNumber();
-    int NN = module->GetNamespaceNumber();
 
     // begin address
     mBasePtr = ALIGN(mBasePtr);
@@ -68,7 +67,7 @@ void MetadataBuilder::CalculateMetaComponent(
     // mNamespaces address
     mBasePtr = ALIGN(mBasePtr + sizeof(como::MetaComponent));
     // mConstants address
-    mBasePtr = ALIGN(mBasePtr + sizeof(como::MetaNamespace*) * NN);
+    mBasePtr = ALIGN(mBasePtr + sizeof(como::MetaNamespace*));
     // mCoclasses address
     mBasePtr = ALIGN(mBasePtr + sizeof(como::MetaConstant*) * CN);
     // mEnumerations address
@@ -80,9 +79,7 @@ void MetadataBuilder::CalculateMetaComponent(
     // mStringPool address
     mBasePtr = mBasePtr + sizeof(como::MetaType*) * TN;
 
-    for (int i = 0; i < NN; i++) {
-        CalculateMetaNamespace(module->GetNamespace(i));
-    }
+    CalculateMetaNamespace(module->GetGlobalNamespace());
 
     for (int i = 0; i < CN; i++) {
         CalculateMetaConstant(module->GetConstant(i));
@@ -186,8 +183,15 @@ void MetadataBuilder::CalculateMetaEnumeration(
     mPool.Add(enumeration->GetName());
     // add mNamespace to StringPool
     mPool.Add(enumeration->GetNamespace()->ToString());
-    // mEnumerators address
+    // mExternalModuleName address if needed
     mBasePtr = ALIGN(mBasePtr + sizeof(como::MetaEnumeration));
+    if (!enumeration->GetExternalModuleName().IsEmpty()) {
+        // add the name of external module to StringPool
+        mPool.Add(enumeration->GetExternalModuleName());
+        mBasePtr = mBasePtr + sizeof(char**);
+    }
+    // mEnumerators address
+    mBasePtr = ALIGN(mBasePtr);
     // end address
     mBasePtr = mBasePtr + sizeof(como::MetaEnumerator*) * EN;
 
@@ -220,8 +224,15 @@ void MetadataBuilder::CalculateMetaInterface(
     mPool.Add(interface->GetName());
     // add mNamespace to StringPool
     mPool.Add(interface->GetNamespace()->ToString());
-    // mNestedInterfaceIndexes address
+    // mExternalModuleName address if needed
     mBasePtr = ALIGN(mBasePtr + sizeof(como::MetaInterface));
+    if (!interface->GetExternalModuleName().IsEmpty()) {
+        // add the name of external module to StringPool
+        mPool.Add(interface->GetExternalModuleName());
+        mBasePtr = mBasePtr + sizeof(char**);
+    }
+    // mNestedInterfaceIndexes address
+    mBasePtr = ALIGN(mBasePtr);
     // mConstants address
     mBasePtr = ALIGN(mBasePtr + sizeof(int) * IN);
     // mMethods address
@@ -301,10 +312,10 @@ void MetadataBuilder::CalculateMetaType(
     // end address
     mBasePtr = mBasePtr + sizeof(como::MetaType);
 
-    if (type->GetExternalModule() != nullptr) {
+    if (!type->GetExternalModuleName().IsEmpty()) {
         mBasePtr = ALIGN(mBasePtr);
         // add the name of external module to StringPool
-        mPool.Add(type->GetExternalModule()->GetName());
+        mPool.Add(type->GetExternalModuleName());
         mBasePtr = mBasePtr + sizeof(char**);
     }
 }
@@ -350,9 +361,9 @@ void MetadataBuilder::WriteMetaComponent(
     mc->mTypeNumber = TN;
     // mNamespaces address
     mBasePtr = ALIGN(mBasePtr + sizeof(como::MetaComponent));
-    mc->mNamespaces = NN > 0 ? reinterpret_cast<como::MetaNamespace**>(mBasePtr) : nullptr;
+    mc->mGlobalNamespace = reinterpret_cast<como::MetaNamespace*>(mBasePtr);
     // mConstants address
-    mBasePtr = ALIGN(mBasePtr + sizeof(como::MetaNamespace*) * NN);
+    mBasePtr = ALIGN(mBasePtr + sizeof(como::MetaNamespace*));
     mc->mConstants = CN > 0 ? reinterpret_cast<como::MetaConstant**>(mBasePtr) : nullptr;
     // mCoclasses address
     mBasePtr = ALIGN(mBasePtr + sizeof(como::MetaConstant*) * CN);
@@ -377,9 +388,7 @@ void MetadataBuilder::WriteMetaComponent(
     mc->mName = WriteString(module->GetName());
     mc->mUri = WriteString(module->GetUri());
 
-    for (int i = 0; i < NN; i++) {
-        mc->mNamespaces[i] = WriteMetaNamespace(module->GetNamespace(i));
-    }
+    mc->mGlobalNamespace = WriteMetaNamespace(module->GetGlobalNamespace());
 
     for (int i = 0; i < CN; i++) {
         mc->mConstants[i] = WriteMetaConstant(module->GetConstant(i));
@@ -553,10 +562,16 @@ como::MetaEnumeration* MetadataBuilder::WriteMetaEnumeration(
     me->mName = WriteString(enumeration->GetName());
     me->mNamespace = WriteString(enumeration->GetNamespace()->ToString());
     me->mEnumeratorNumber = EN;
-    // mEnumerators address
+    me->mProperties = !enumeration->GetExternalModuleName().IsEmpty() ? TYPE_EXTERNAL : 0;
+    // mExternalModuleName address if needed
     mBasePtr = ALIGN(mBasePtr + sizeof(como::MetaEnumeration));
+    if (me->mProperties & TYPE_EXTERNAL) {
+        *(char**)mBasePtr = WriteString(enumeration->GetExternalModuleName());
+        mBasePtr = mBasePtr + sizeof(char**);
+    }
+    // mEnumerators address
+    mBasePtr = ALIGN(mBasePtr);
     me->mEnumerators = EN > 0 ? reinterpret_cast<como::MetaEnumerator**>(mBasePtr) : nullptr;
-    me->mProperties = enumeration->GetExternalModule() != nullptr ? TYPE_EXTERNAL : 0;
     // end address
     mBasePtr = mBasePtr + sizeof(como::MetaEnumerator*) * EN;
 
@@ -599,8 +614,16 @@ como::MetaInterface* MetadataBuilder::WriteMetaInterface(
     mi->mNestedInterfaceNumber = IN;
     mi->mConstantNumber = CN;
     mi->mMethodNumber = MN;
-    // mNestedInterfaceIndexes address
+    mi->mProperties = !interface->GetExternalModuleName().IsEmpty() ? TYPE_EXTERNAL : 0;
+    // mExternalModuleName address if needed
     mBasePtr = ALIGN(mBasePtr + sizeof(como::MetaInterface));
+    if (mi->mProperties & TYPE_EXTERNAL) {
+        mBasePtr = ALIGN(mBasePtr);
+        *(char**)mBasePtr = WriteString(interface->GetExternalModuleName());
+        mBasePtr = mBasePtr + sizeof(char**);
+    }
+    // mNestedInterfaceIndexes address
+    mBasePtr = ALIGN(mBasePtr);
     mi->mNestedInterfaceIndexes = IN > 0 ? reinterpret_cast<int*>(mBasePtr) : nullptr;
     // mConstants address
     mBasePtr = ALIGN(mBasePtr + sizeof(int) * IN);
@@ -608,7 +631,6 @@ como::MetaInterface* MetadataBuilder::WriteMetaInterface(
     // mMethods address
     mBasePtr = ALIGN(mBasePtr + sizeof(como::MetaConstant*) * CN);
     mi->mMethods = MN > 0 ? reinterpret_cast<como::MetaMethod**>(mBasePtr) : nullptr;
-    mi->mProperties = interface->GetExternalModule() != nullptr ? TYPE_EXTERNAL : 0;
     // end address
     mBasePtr = mBasePtr + sizeof(como::MetaMethod*) * MN;
 
@@ -783,10 +805,10 @@ como::MetaType* MetadataBuilder::WriteMetaType(
     // end address
     mBasePtr = mBasePtr + sizeof(como::MetaType);
 
-    if (self->GetExternalModule() != nullptr) {
+    if (!self->GetExternalModuleName().IsEmpty()) {
         mt->mProperties |= TYPE_EXTERNAL;
         mBasePtr = ALIGN(mBasePtr);
-        *(char**)mBasePtr = WriteString(self->GetExternalModule()->GetName());
+        *(char**)mBasePtr = WriteString(self->GetExternalModuleName());
         mBasePtr = mBasePtr + sizeof(char**);
     }
 

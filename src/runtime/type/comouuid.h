@@ -27,7 +27,7 @@ struct UUID
     unsigned short      mData2;
     unsigned short      mData3;
     unsigned short      mData4;
-    unsigned char       mData5[12];
+    unsigned char       mData5[6];
 };
 
 inline bool operator==(

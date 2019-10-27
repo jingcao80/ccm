@@ -54,17 +54,9 @@ AutoPtr<UUID> UUID::Parse(
     uuid->mData2 = strtol(uuidStr.Substring(9, 13).string(), nullptr, 16);
     uuid->mData3 = strtol(uuidStr.Substring(14, 18).string(), nullptr, 16);
     uuid->mData4 = strtol(uuidStr.Substring(19, 23).string(), nullptr, 16);
-    for (int i = 0; i < 12; i++) {
-        char c = uuidStr.GetChar(i + 24);
-        if (isdigit(c)) {
-            uuid->mData5[i] = c - '0';
-        }
-        else if (islower(c)) {
-            uuid->mData5[i] = c - 'a' + 10;
-        }
-        else {
-            uuid->mData5[i] = c - 'A' + 10;
-        }
+    for (int i = 0; i < 6; i++) {
+        uuid->mData5[i] = (ToDigit(uuidStr.GetChar(24 + 2 * i)) << 4) |
+                           ToDigit(uuidStr.GetChar(24 + 2 * i + 1));
     }
 
     return uuid;
@@ -88,18 +80,32 @@ como::UUID UUID::ToComoUUID()
 String UUID::ToString()
 {
     String uuidStr = String::Format("{0x%08x,0x%04x,0x%04x,0x%04x,"
-            "{0x%x,0x%x,0x%x,0x%x,0x%x,0x%x,0x%x,0x%x,0x%x,0x%x,0x%x,0x%x}}",
-            mData1, mData2, mData3, mData4, mData5[0], mData5[1], mData5[2], mData5[3],
-            mData5[4], mData5[5], mData5[6], mData5[7], mData5[8], mData5[9], mData5[10], mData5[11]);
+            "{0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x}}",
+            mData1, mData2, mData3, mData4,
+            mData5[0], mData5[1], mData5[2], mData5[3], mData5[4], mData5[5]);
     return uuidStr;
 }
 
 String UUID::Dump()
 {
-    String uuidStr = String::Format("%08x-%04x-%04x-%04x-%x%x%x%x%x%x%x%x%x%x%x%x",
-            mData1, mData2, mData3, mData4, mData5[0], mData5[1], mData5[2], mData5[3],
-            mData5[4], mData5[5], mData5[6], mData5[7], mData5[8], mData5[9], mData5[10], mData5[11]);
+    String uuidStr = String::Format("%08x-%04x-%04x-%04x-%02x%02x%02x%02x%02x%02x",
+            mData1, mData2, mData3, mData4,
+            mData5[0], mData5[1], mData5[2], mData5[3], mData5[4], mData5[5]);
     return uuidStr;
+}
+
+char UUID::ToDigit(
+    /* [in] */ char c)
+{
+    if (isdigit(c)) {
+        return c - '0';
+    }
+    else if (islower(c)) {
+        return c - 'a' + 10;
+    }
+    else {
+        return c - 'A' + 10;
+    }
 }
 
 }

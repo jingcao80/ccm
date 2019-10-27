@@ -27,8 +27,7 @@ class ClassObjectInterfaceBuilder
     : public Phase
 {
 public:
-    inline ClassObjectInterfaceBuilder(
-        /* [in] */ World& world);
+    inline ClassObjectInterfaceBuilder();
 
     bool Process() override;
 
@@ -45,11 +44,10 @@ private:
     AutoPtr<Type> mIClassObjectType;
 };
 
-ClassObjectInterfaceBuilder::ClassObjectInterfaceBuilder(
-    /* [in] */ World& world)
-    : Phase(world)
-    , mModule(world.GetWorkingModule())
-{}
+ClassObjectInterfaceBuilder::ClassObjectInterfaceBuilder()
+{
+    mModule = mWorld->GetWorkingModule();
+}
 
 }
 

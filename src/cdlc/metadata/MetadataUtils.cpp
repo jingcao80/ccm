@@ -144,7 +144,7 @@ void* MetadataUtils::ReadMetadataFromElf64(
         return nullptr;
     }
 
-    if (!file.Seek(mdSec->sh_offset + sizeof(int), File::SEEK_FROM_BEGIN)) {
+    if (!file.Seek(mdSec->sh_offset + sizeof(size_t), File::SEEK_FROM_BEGIN)) {
         Logger::E("MetadataUtils", "Seek \"%s\" file failed.", filePath.string());
         free(shdrs);
         return nullptr;

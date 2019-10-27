@@ -67,7 +67,7 @@ struct MetaComponent
     int                 mInterfaceNumber;
     int                 mExternalInterfaceNumber;
     int                 mTypeNumber;
-    MetaNamespace**     mNamespaces;
+    MetaNamespace*      mGlobalNamespace;
     MetaConstant**      mConstants;
     MetaCoclass**       mCoclasses;
     MetaEnumeration**   mEnumerations;

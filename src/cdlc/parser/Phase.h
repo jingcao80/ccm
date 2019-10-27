@@ -26,19 +26,18 @@ class Phase
     : public LightRefBase
 {
 public:
-    inline Phase(
-        /* [in] */ World& world);
+    inline Phase();
 
     virtual bool Process() = 0;
 
 protected:
-    World& mWorld;
+    AutoPtr<World> mWorld;
 };
 
-Phase::Phase(
-    /* [in] */ World& world)
-    : mWorld(world)
-{}
+Phase::Phase()
+{
+    mWorld = World::GetInstance();
+}
 
 }
 

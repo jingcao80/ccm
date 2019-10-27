@@ -20,16 +20,14 @@
 namespace como {
 
 COM_PUBLIC extern const UUID UUID_ZERO =
-        {0x00000000,0x0000,0x0000,0x0000,{0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0}};
+        {0x00000000,0x0000,0x0000,0x0000,{0x00,0x00,0x00,0x00,0x00,0x00}};
 
 String DumpUUID(
     /* [in] */ const UUID& id)
 {
-    String uuidStr = String::Format("%08x-%04x-%04x-%04x-%x%x%x%x%x%x%x%x%x%x%x%x",
+    String uuidStr = String::Format("%08x-%04x-%04x-%04x-%02x%02x%02x%02x%02x%02x",
             id.mData1, id.mData2, id.mData3, id.mData4,
-            id.mData5[0], id.mData5[1], id.mData5[2], id.mData5[3],
-            id.mData5[4], id.mData5[5], id.mData5[6], id.mData5[7],
-            id.mData5[8], id.mData5[9], id.mData5[10], id.mData5[11]);
+            id.mData5[0], id.mData5[1], id.mData5[2], id.mData5[3], id.mData5[4], id.mData5[5]);
     return uuidStr;
 }
 

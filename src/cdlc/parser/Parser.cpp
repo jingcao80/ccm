@@ -37,12 +37,12 @@ const char* Parser::TAG = "Parser";
 
 Parser::Parser()
 {
-    mBeforePhases.push_back(new BuildinTypeBuilder(mWorld));
+    mBeforePhases.push_back(new BuildinTypeBuilder());
     if (Properties::Get().GetMode() & Properties::BUILD_MODE_COMPONENT) {
-        mBeforePhases.push_back(new ComoRTMetadataLoader(mWorld));
+        mBeforePhases.push_back(new ComoRTMetadataLoader());
     }
-    AddPhase(new ClassObjectInterfaceBuilder(mWorld));
-    AddPhase(new InterfaceIntegrityChecker(mWorld));
+    AddPhase(new ClassObjectInterfaceBuilder());
+    AddPhase(new InterfaceIntegrityChecker());
 }
 
 void Parser::AddPhase(
@@ -422,7 +422,7 @@ bool Parser::ParseModule(
         return false;
     }
 
-    mModule = mWorld.GetWorkingModule();
+    mModule = mWorld->GetWorkingModule();
     mModule->SetName(moduleName);
     mModule->SetAttributes(attrs);
     mCurrentNamespace = mModule->FindNamespace(Namespace::GLOBAL_NAME);
@@ -798,7 +798,7 @@ AutoPtr<Constant> Parser::ParseConstant()
         AutoPtr<Namespace> ns = mCurrentNamespace;
         while (ns != nullptr) {
             String fullTypeName = ns->ToString() + "::" + typeName;
-            enumeration = mWorld.FindEnumeration(fullTypeName);
+            enumeration = mWorld->FindEnumeration(fullTypeName);
             if (enumeration != nullptr) {
                 type = (Type*)enumeration.Get();
                 break;
@@ -1687,7 +1687,9 @@ AutoPtr<Type> Parser::ParseType()
             if (pointer == nullptr) {
                 pointer = new PointerType();
                 pointer->SetBaseType(type);
+                pointer->SetExternalModuleName(type->GetExternalModuleName());
                 pointer->SetPointerNumber(ptrNumber);
+                mModule->AddTemporaryType(pointer);
             }
             type = (Type*)pointer.Get();
             totalNumber += ptrNumber;
@@ -1707,7 +1709,9 @@ AutoPtr<Type> Parser::ParseType()
             if (reference == nullptr) {
                 reference = new ReferenceType();
                 reference->SetBaseType(type);
+                reference->SetExternalModuleName(type->GetExternalModuleName());
                 reference->SetReferenceNumber(refNumber);
+                mModule->AddTemporaryType(reference);
             }
             type = (Type*)reference.Get();
             totalNumber += refNumber;
@@ -2218,7 +2222,7 @@ AutoPtr<Type> Parser::FindType(
                 if (type != nullptr) {
                     return type;
                 }
-                type = mWorld.FindType(fullTypeName);
+                type = mWorld->FindType(fullTypeName);
                 if (type != nullptr) {
                     // type = mPool->DeepCopyType(type);
                     return type->Clone(mModule, deepCopyIfNeed);
@@ -2245,7 +2249,7 @@ AutoPtr<Type> Parser::FindType(
             if (type != nullptr) {
                 return type;
             }
-            type = mWorld.FindType(fullTypeName);
+            type = mWorld->FindType(fullTypeName);
             if (type != nullptr) {
                 // type = mPool->DeepCopyType(type);
                 return type->Clone(mModule, deepCopyIfNeed);
@@ -2273,7 +2277,7 @@ AutoPtr<Type> Parser::FindType(
                     if (type != nullptr) {
                         return type;
                     }
-                    type = mWorld.FindType(fullTypeName);
+                    type = mWorld->FindType(fullTypeName);
                     if (type != nullptr) {
                         // type = mPool->DeepCopyType(type);
                         return type->Clone(mModule, deepCopyIfNeed);
@@ -2294,7 +2298,7 @@ AutoPtr<Type> Parser::FindType(
             if (type != nullptr) {
                 return type;
             }
-            type = mWorld.FindType(fullTypeName);
+            type = mWorld->FindType(fullTypeName);
             if (type != nullptr) {
                 // type = mPool->DeepCopyType(type);
                 return type->Clone(mModule, deepCopyIfNeed);

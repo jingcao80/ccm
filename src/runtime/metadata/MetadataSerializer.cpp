@@ -33,12 +33,8 @@ void MetadataSerializer::Serialize()
     mc->mName = reinterpret_cast<char*>(SerializeAdjust(mc->mName));
     mc->mUri = reinterpret_cast<char*>(SerializeAdjust(mc->mUri));
 
-    for (int i = 0; i < mc->mNamespaceNumber; i++) {
-        MetaNamespace* mn = mc->mNamespaces[i];
-        SerializeMetaNamespace(mn);
-        mc->mNamespaces[i] = reinterpret_cast<MetaNamespace*>(SerializeAdjust(mn));
-    }
-    mc->mNamespaces = reinterpret_cast<MetaNamespace**>(SerializeAdjust(mc->mNamespaces));
+    SerializeMetaNamespace(mc->mGlobalNamespace);
+    mc->mGlobalNamespace = reinterpret_cast<MetaNamespace*>(SerializeAdjust(mc->mGlobalNamespace));
 
     for (int i = 0; i < mc->mConstantNumber; i++) {
         MetaConstant* mk = mc->mConstants[i];
@@ -125,6 +121,11 @@ void MetadataSerializer::SerializeMetaEnumeration(
         me->mEnumerators[i] = reinterpret_cast<MetaEnumerator*>(SerializeAdjust(mr));
     }
     me->mEnumerators = reinterpret_cast<MetaEnumerator**>(SerializeAdjust(me->mEnumerators));
+
+    if (me->mProperties & TYPE_EXTERNAL) {
+        char** externalPtr = reinterpret_cast<char**>(ALIGN((uintptr_t)me + sizeof(como::MetaEnumeration)));
+        *externalPtr = reinterpret_cast<char*>(SerializeAdjust(*externalPtr));
+    }
 }
 
 void MetadataSerializer::SerializeMetaEnumerator(
@@ -153,6 +154,11 @@ void MetadataSerializer::SerializeMetaInterface(
         mi->mMethods[i] = reinterpret_cast<MetaMethod*>(SerializeAdjust(mm));
     }
     mi->mMethods = reinterpret_cast<MetaMethod**>(SerializeAdjust(mi->mMethods));
+
+    if (mi->mProperties & TYPE_EXTERNAL) {
+        char** externalPtr = reinterpret_cast<char**>(ALIGN((uintptr_t)mi + sizeof(como::MetaInterface)));
+        *externalPtr = reinterpret_cast<char*>(SerializeAdjust(*externalPtr));
+    }
 }
 
 void MetadataSerializer::SerializeMetaMethod(
@@ -201,7 +207,7 @@ void MetadataSerializer::SerializeMetaType(
 ptrdiff_t MetadataSerializer::SerializeAdjust(
     /* [in] */ void* addr)
 {
-    return reinterpret_cast<uintptr_t>(addr) - mBasePtr;
+    return addr != nullptr ? reinterpret_cast<uintptr_t>(addr) - mBasePtr : 0;
 }
 
 void MetadataSerializer::Deserialize(
@@ -220,11 +226,8 @@ void MetadataSerializer::Deserialize(
         DeserializeMetaType(mc->mTypes[i]);
     }
 
-    mc->mNamespaces = reinterpret_cast<MetaNamespace**>(DeserializeAdjust(mc->mNamespaces));
-    for (int i = 0; i < mc->mNamespaceNumber; i++) {
-        mc->mNamespaces[i] = reinterpret_cast<MetaNamespace*>(DeserializeAdjust(mc->mNamespaces[i]));
-        DeserializeMetaNamespace(mc->mNamespaces[i]);
-    }
+    mc->mGlobalNamespace = reinterpret_cast<MetaNamespace*>(DeserializeAdjust(mc->mGlobalNamespace));
+    DeserializeMetaNamespace(mc->mGlobalNamespace);
 
     mc->mConstants = reinterpret_cast<MetaConstant**>(DeserializeAdjust(mc->mConstants));
     for (int i = 0; i < mc->mConstantNumber; i++) {
@@ -299,6 +302,11 @@ void MetadataSerializer::DeserializeMetaEnumeration(
         me->mEnumerators[i] = reinterpret_cast<MetaEnumerator*>(DeserializeAdjust(me->mEnumerators[i]));
         DeserializeMetaEnumerator(me->mEnumerators[i]);
     }
+
+    if (me->mProperties & TYPE_EXTERNAL) {
+        char** externalPtr = reinterpret_cast<char**>(ALIGN((uintptr_t)me + sizeof(como::MetaEnumeration)));
+        *externalPtr = reinterpret_cast<char*>(DeserializeAdjust(*externalPtr));
+    }
 }
 
 void MetadataSerializer::DeserializeMetaEnumerator(
@@ -324,6 +332,11 @@ void MetadataSerializer::DeserializeMetaInterface(
     for (int i = 0; i < mi->mMethodNumber; i++) {
         mi->mMethods[i] = reinterpret_cast<MetaMethod*>(DeserializeAdjust(mi->mMethods[i]));
         DeserializeMetaMethod(mi->mMethods[i]);
+    }
+
+    if (mi->mProperties & TYPE_EXTERNAL) {
+        char** externalPtr = reinterpret_cast<char**>(ALIGN((uintptr_t)mi + sizeof(como::MetaInterface)));
+        *externalPtr = reinterpret_cast<char*>(DeserializeAdjust(*externalPtr));
     }
 }
 
@@ -372,7 +385,7 @@ void MetadataSerializer::DeserializeMetaType(
 uintptr_t MetadataSerializer::DeserializeAdjust(
     /* [in] */ void* addr)
 {
-    return reinterpret_cast<ptrdiff_t>(addr) + mBasePtr;
+    return addr != nullptr ? reinterpret_cast<ptrdiff_t>(addr) + mBasePtr : 0;
 }
 
 }

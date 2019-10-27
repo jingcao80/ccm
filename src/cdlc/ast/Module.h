@@ -24,6 +24,7 @@
 #include "ast/Namespace.h"
 #include "ast/Node.h"
 #include "ast/Type.h"
+#include "metadata/Metadata.h"
 #include "util/AutoPtr.h"
 #include <unordered_map>
 #include <vector>
@@ -56,8 +57,7 @@ public:
     inline AutoPtr<Namespace> FindNamespace(
         /* [in] */ const String& nsString);
 
-    inline AutoPtr<Namespace> GetNamespace(
-        /* [in] */ int i);
+    inline AutoPtr<Namespace> GetGlobalNamespace();
 
     inline int GetNamespaceNumber();
 
@@ -119,6 +119,9 @@ public:
         /* [in] */ void* metadata);
 
 private:
+    Module(
+        /* [in] */ como::MetaComponent* component);
+
     inline void AddNamespace(
         /* [in] */ Namespace* ns);
 
@@ -137,6 +140,13 @@ private:
     void AddType(
         /* [in] */ Type* type);
 
+    void ResolveNamespace(
+        /*[in] */ como::MetaNamespace* mn);
+
+    AutoPtr<Type> ResolveType(
+        /* [in] */ Namespace* ns,
+        /* [in] */ const String& typeName);
+
 private:
     AutoPtr<UUID> mUuid;
     String mVersion;
@@ -152,6 +162,8 @@ private:
     std::unordered_map<String, AutoPtr<Type>, StringHashFunc, StringEqualsFunc> mAllTypeMap;
 
     std::vector<AutoPtr<Module>> mDependencies;
+
+    como::MetaComponent* mComponent = nullptr;
 };
 
 Module::Module()
@@ -196,10 +208,9 @@ AutoPtr<Namespace> Module::FindNamespace(
     }
 }
 
-AutoPtr<Namespace> Module::GetNamespace(
-    /* [in] */ int i)
+AutoPtr<Namespace> Module::GetGlobalNamespace()
 {
-    return mGlobalNamespace->GetNamespace(i);
+    return mGlobalNamespace;
 }
 
 int Module::GetNamespaceNumber()

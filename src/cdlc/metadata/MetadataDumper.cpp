@@ -52,14 +52,11 @@ String MetadataDumper::DumpMetaComponent(
 
     if (mc->mNamespaceNumber > 0) {
         builder.Append(",\n");
-        builder.Append(prefix + Properties::INDENT).AppendFormat("\"mNamespaces\":[\n");
-        for (int i = 0; i < mc->mNamespaceNumber; i++) {
-            String namespaceInfo = DumpMetaNamespace(mc->mNamespaces[i],
-                    prefix + Properties::INDENT + Properties::INDENT);
-            builder.Append(namespaceInfo);
-            builder.AppendFormat("%s", i < mc->mNamespaceNumber - 1 ? ",\n" : "\n");
-        }
-        builder.Append(prefix + Properties::INDENT).Append("]");
+        builder.Append(prefix + Properties::INDENT).AppendFormat("\"mGlobalNamespace\":{\n");
+        String namespaceInfo = DumpMetaNamespace(mc->mGlobalNamespace,
+                prefix + Properties::INDENT + Properties::INDENT);
+        builder.Append(namespaceInfo);
+        builder.Append(prefix + Properties::INDENT).Append("}");
     }
     builder.Append("\n");
     builder.Append(prefix).Append("}\n");
@@ -174,7 +171,15 @@ String MetadataDumper::DumpMetaEnumeration(
         builder.AppendFormat("{ \"%s\":\"%d\" }", me->mEnumerators[i]->mName, me->mEnumerators[i]->mValue);
         builder.AppendFormat("%s", i < me->mEnumeratorNumber - 1 ? ",\n" : "\n");
     }
-    builder.Append(prefix + Properties::INDENT).Append("]\n");
+    builder.Append(prefix + Properties::INDENT).Append("]");
+    if (me->mProperties & TYPE_EXTERNAL) {
+        builder.Append(",\n");
+        char** externalPtr = reinterpret_cast<char**>(ALIGN((uintptr_t)me + sizeof(como::MetaEnumeration)));
+        builder.AppendFormat("\"mExternalModule\":\"%s\"\n", *externalPtr);
+    }
+    else {
+        builder.Append("\n");
+    }
     builder.Append(prefix).Append("}");
 
     return builder.ToString();
@@ -276,7 +281,14 @@ String MetadataDumper::DumpMetaInterface(
         }
         builder.Append(prefix + Properties::INDENT).Append("]");
     }
-    builder.Append("\n");
+    if (mi->mProperties & TYPE_EXTERNAL) {
+        builder.Append(",\n");
+        char** externalPtr = reinterpret_cast<char**>(ALIGN((uintptr_t)mi + sizeof(como::MetaInterface)));
+        builder.AppendFormat("\"mExternalModule\":\"%s\"\n", *externalPtr);
+    }
+    else {
+        builder.Append("\n");
+    }
     builder.Append(prefix).Append("}");
 
     return builder.ToString();

@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "ast/Module.h"
+#include "metadata/MetadataResolver.h"
 #include "util/Properties.h"
 #include "util/StringBuilder.h"
 #include <algorithm>
@@ -177,6 +178,15 @@ AutoPtr<Type> Module::FindType(
         return it->second;
     }
 
+    int index = fullName.LastIndexOf("::");
+    AutoPtr<Namespace> ns = index == -1
+            ? mGlobalNamespace
+            : FindNamespace(fullName.Substring(0, index));
+    if (ns != nullptr && !ns->IsResolved()) {
+        return ResolveType(ns, index == -1
+                ? fullName
+                : fullName.Substring(index + 2));
+    }
     return nullptr;
 }
 
@@ -233,7 +243,7 @@ String Module::Dump(
         if (interface->IsForwardDeclared()) {
             continue;
         }
-        if (interface->GetExternalModule() != nullptr) {
+        if (!interface->GetExternalModuleName().IsEmpty()) {
             continue;
         }
         String interfaceInfo = interface->Dump(prefix + Properties::INDENT);
@@ -247,10 +257,44 @@ String Module::Dump(
     return builder.ToString();
 }
 
+Module::Module(
+    /* [in] */ como::MetaComponent* component)
+    : mGlobalNamespace(new Namespace(Namespace::GLOBAL_NAME, this))
+    , mComponent(component)
+{
+    ResolveNamespace(mComponent->mGlobalNamespace);
+}
+
+void Module::ResolveNamespace(
+    /*[in] */ como::MetaNamespace* mn)
+{
+    AutoPtr<Namespace> ns = ParseNamespace(mn->mName);
+    ns->SetMetadata(mn);
+
+    for (int i = 0; i < mn->mNamespaceNumber; i++) {
+        como::MetaNamespace* mnn = mn->mNamespaces[i];
+        ResolveNamespace(mnn);
+    }
+}
+
+AutoPtr<Type> Module::ResolveType(
+    /* [in] */ Namespace* ns,
+    /* [in] */ const String& typeName)
+{
+    if (ns->mMetadata == nullptr) {
+        return nullptr;
+    }
+
+    MetadataResolver resolver(this, mComponent);
+    return resolver.ResolveType(typeName, ns, ns->mMetadata);
+}
+
 AutoPtr<Module> Module::Resolve(
     /* [in] */ void* metadata)
 {
-    return nullptr;
+    AutoPtr<Module> module = new Module(
+            reinterpret_cast<como::MetaComponent*>(metadata));
+    return module;
 }
 
 }
