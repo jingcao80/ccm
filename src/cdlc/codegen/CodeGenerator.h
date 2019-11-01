@@ -39,6 +39,11 @@ private:
         virtual void Emit() = 0;
 
     protected:
+        void EmitInterfaceDeclarationsSplitly();
+
+        void EmitInterfaceDeclarationSplitly(
+            /* [in] */ como::MetaInterface* mi);
+
         String EmitIncludeForUsingNestedInterface(
             /* [in] */ como::MetaInterface* mi);
 
@@ -57,11 +62,17 @@ private:
         String EmitConstantsInHeader(
             /* [in] */ como::MetaNamespace* mn);
 
+        String EmitConstantForHeader(
+            /* [in] */ como::MetaConstant* mc);
+
         String EmitEnumerationForwardDeclarations(
             /* [in] */ como::MetaNamespace* mn);
 
         String EmitEnumerationDeclarations(
             /* [in] */ como::MetaNamespace* mn);
+
+        String EmitEnumerationDeclaration(
+            /* [in] */ como::MetaEnumeration* me);
 
         String EmitInterfaceIDForwardDeclarations(
             /* [in] */ como::MetaNamespace* mn);
@@ -75,21 +86,6 @@ private:
         String EmitInterfaceDeclaration(
             /* [in] */ como::MetaInterface* mi,
             /* [in] */ const String& prefix);
-
-        String EmitConstantsAndTypesRecursivelyInCpp(
-            /* [in] */ como::MetaNamespace* mn);
-
-        String EmitConstantsInCpp(
-            /* [in] */ como::MetaNamespace* mn);
-
-        String EmitInterfaceIDsInCpp(
-            /* [in] */ como::MetaNamespace* mn);
-
-        String EmitConstantForHeader(
-            /* [in] */ como::MetaConstant* mc);
-
-        String EmitEnumerationDeclaration(
-            /* [in] */ como::MetaEnumeration* me);
 
         String EmitInterfaceConstant(
             /* [in] */ como::MetaConstant* mc,
@@ -110,8 +106,27 @@ private:
             /* [in] */ como::MetaType* mt,
             /* [in] */ como::MetaValue* mv);
 
+        String EmitConstantsAndTypesRecursivelyInCpp(
+            /* [in] */ como::MetaNamespace* mn);
+
+        String EmitConstantsInCpp(
+            /* [in] */ como::MetaNamespace* mn);
+
+        String EmitInterfaceIDsInCpp(
+            /* [in] */ como::MetaNamespace* mn);
+
+        String EmitInterfaceConstantsInCpp(
+            /* [in] */ como::MetaNamespace* mn);
+
+        String EmitCoclassIDsInCpp(
+            /* [in] */ como::MetaNamespace*  mn);
+
+        String EmitComponentID();
+
         String EmitDefineMacro(
             /* [in] */ const String& fullName);
+
+        void EmitMetadataWrapper();
 
     protected:
         static constexpr int MODE_VARIABLE = 0;
@@ -137,11 +152,6 @@ private:
     private:
         void EmitConstantsAndTypes();
 
-        void EmitInterfaceDeclarationsSplitly();
-
-        void EmitInterfaceDeclarationSplitly(
-            /* [in] */ como::MetaInterface* mi);
-
         void EmitCoclasses();
 
         void EmitCoclass(
@@ -158,6 +168,19 @@ private:
 
         String EmitCoclassMethods(
             /* [in] */ como::MetaCoclass* mk);
+
+        void EmitComponentCpp();
+
+        String EmitClassObjectGetterArray();
+
+        String EmitGetClassObjectFuncRecursively(
+            /* [in] */ como::MetaNamespace* mn);
+
+        String EmitSoGetAllClassObjects();
+
+        String EmitSoGetClassObject();
+
+        String EmitComponentObject();
     };
 
     class ClientModeEmitter
@@ -170,6 +193,37 @@ private:
         {}
 
         void Emit() override;
+
+    private:
+        void EmitConstantsAndTypes();
+
+        String EmitConstantsAndTypeForwardDeclarationsRecursively(
+            /* [in] */ como::MetaNamespace* mn);
+
+        String EmitConstantsAndTypeDeclarationsRecursively(
+            /* [in] */ como::MetaNamespace* mn);
+
+        String EmitCoclassDeclarations(
+            /* [in] */ como::MetaNamespace* mn);
+
+        String EmitCoclassDeclaration(
+            /* [in] */ como::MetaCoclass* mk);
+
+        void EmitCoclassDeclarationsSplitly();
+
+        void EmitCoclassDeclarationSplitly(
+            /* [in] */ como::MetaCoclass* mk);
+
+        void EmitComponentCpp();
+
+        String EmitConstantsAndTypesRecursivelyInCpp(
+            /* [in] */ como::MetaNamespace* mn);
+
+        String EmitCoclasses(
+            /* [in] */ como::MetaNamespace* mn);
+
+        String EmitCoclass(
+            /* [in] */ como::MetaCoclass* mk);
     };
 
     class RuntimeModeEmitter
@@ -187,8 +241,6 @@ private:
         void EmitConstantsAndTypes();
 
         void EmitUUIDs();
-
-        void EmitMetadataWrapper();
     };
 
 public:

@@ -234,17 +234,23 @@ AutoPtr<Type> MetadataResolver::BuildType(
                     ALIGN((uintptr_t)mt + sizeof(como::MetaType)));
             AutoPtr<Module> module = World::GetInstance()->FindModule(*moduleNamePP);
             if (module != nullptr) {
-                AutoPtr<Type> type = module->FindType(typeStr);
-                return type;
+                type = module->FindType(typeStr);
             }
-            return nullptr;
+        }
+        else {
+            type = typeStr.Equals(mResolvingTypename)
+                ? mResolvingType : mModule->FindType(typeStr);
         }
 
-        type = typeStr.Equals(mResolvingTypename)
-                ? mResolvingType : mModule->FindType(typeStr);
+        if (type == nullptr) {
+            return nullptr;
+        }
     }
     else {
         AutoPtr<Type> elementType = BuildType(mComponent->mTypes[mt->mIndex]);
+        if (elementType == nullptr) {
+            return nullptr;
+        }
         typeStr = String::Format("Array<%s>", elementType->ToString().string());
 
         AutoPtr<ArrayType> array = ArrayType::CastFrom(mModule->FindType(typeStr));

@@ -96,6 +96,23 @@ void Options::Parse(
     mIllegalOptions = errors.ToString();
 }
 
+bool Options::HasErrors() const
+{
+    if (!mIllegalOptions.IsEmpty()) {
+        return true;
+    }
+
+    if (mDoCompile && !mSourceFile.IsEmpty()) {
+        return false;
+    }
+
+    if (!mMetadataFile.IsEmpty()) {
+        return false;
+    }
+
+    return true;
+}
+
 void Options::ShowErrors() const
 {
     if (!mIllegalOptions.IsEmpty()) {

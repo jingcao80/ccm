@@ -48,9 +48,9 @@ public:
 
     inline bool DoSaveMetadata() const;
 
-    inline bool HasErrors() const;
-
     inline bool DoShowUsage() const;
+
+    bool HasErrors() const;
 
     void ShowErrors() const;
 
@@ -134,11 +134,6 @@ bool Options::DoGenerateCode() const
 bool Options::DoSaveMetadata() const
 {
     return mDoSaveMetadata;
-}
-
-bool Options::HasErrors() const
-{
-    return !mIllegalOptions.IsEmpty() || mSourceFile.IsEmpty();
 }
 
 bool Options::DoShowUsage() const

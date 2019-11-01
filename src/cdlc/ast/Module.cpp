@@ -182,7 +182,7 @@ AutoPtr<Type> Module::FindType(
     AutoPtr<Namespace> ns = index == -1
             ? mGlobalNamespace
             : FindNamespace(fullName.Substring(0, index));
-    if (ns != nullptr && !ns->IsResolved()) {
+    if (ns != nullptr && ns->NeedResolve()) {
         return ResolveType(ns, index == -1
                 ? fullName
                 : fullName.Substring(index + 2));
@@ -262,6 +262,9 @@ Module::Module(
     : mGlobalNamespace(new Namespace(Namespace::GLOBAL_NAME, this))
     , mComponent(component)
 {
+    mUuid = UUID::Parse(mComponent->mUuid);
+    mName = mComponent->mName;
+    mUri = mComponent->mUri;
     ResolveNamespace(mComponent->mGlobalNamespace);
 }
 

@@ -105,7 +105,7 @@ public:
 
     inline String ToShortString();
 
-    inline bool IsResolved();
+    inline bool NeedResolve();
 
     inline void SetMetadata(
         /* [in] */ como::MetaNamespace* metadata);
@@ -191,9 +191,9 @@ String Namespace::ToShortString()
     return mName;
 }
 
-bool Namespace::IsResolved()
+bool Namespace::NeedResolve()
 {
-    return mMetadata == nullptr;
+    return mMetadata != nullptr;
 }
 
 void Namespace::SetMetadata(

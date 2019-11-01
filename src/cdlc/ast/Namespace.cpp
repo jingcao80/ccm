@@ -152,8 +152,8 @@ void Namespace::AddCoclassType(
 AutoPtr<CoclassType> Namespace::GetCoclass(
     /* [in] */ int i)
 {
-    if (i >= 0 && i < mInterfaces.size()) {
-        return mInterfaces[i];
+    if (i >= 0 && i < mKlasses.size()) {
+        return mKlasses[i];
     }
     return nullptr;
 }

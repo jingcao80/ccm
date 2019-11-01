@@ -54,6 +54,7 @@ AutoPtr<Node> ReferenceType::Clone(
         baseType = mBaseType->Clone(module, deepCopy);
     }
     clone->mBaseType = baseType;
+    clone->mReferenceNumber = mReferenceNumber;
     module->AddTemporaryType(clone);
     return clone;
 }
