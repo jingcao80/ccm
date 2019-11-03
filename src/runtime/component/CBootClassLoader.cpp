@@ -276,7 +276,7 @@ ECode CBootClassLoader::FindComponent(
         return E_COMPONENT_IO_EXCEPTION;
     }
 
-    if (fseek(fd, mdSec->sh_offset + sizeof(int), SEEK_SET) < 0) {
+    if (fseek(fd, mdSec->sh_offset + sizeof(size_t), SEEK_SET) < 0) {
         Logger::E(TAG, "Seek \"%s\" file failed.", compFile.string());
         free(shdrs);
         free(strTable);

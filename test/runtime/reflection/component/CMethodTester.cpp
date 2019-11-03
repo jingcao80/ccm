@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,14 +16,14 @@
 
 #include "CMethodTester.h"
 
-#include <stdio.h>
+#include <cstdio>
 
-namespace ccm {
+namespace como {
 namespace test {
 namespace reflection {
 
-CCM_INTERFACE_IMPL_1(CMethodTester, Object, IMethodTest);
-CCM_OBJECT_IMPL(CMethodTester);
+COMO_INTERFACE_IMPL_1(CMethodTester, Object, IMethodTest);
+COMO_OBJECT_IMPL(CMethodTester);
 
 CMethodTester::CMethodTester()
 {

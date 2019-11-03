@@ -112,6 +112,17 @@ int Module::IndexOf(
     return -1;
 }
 
+int Module::GetExternalEnumerationNumber()
+{
+    int i = 0;
+    for (AutoPtr<EnumerationType> enumeration : mEnumerations) {
+        if (!enumeration->GetExternalModuleName().IsEmpty()) {
+            i++;
+        }
+    }
+    return i;
+}
+
 AutoPtr<InterfaceType> Module::GetInterface(
     /* [in] */ int i)
 {
@@ -129,6 +140,17 @@ int Module::IndexOf(
         return std::distance(mInterfaces.begin(), it);
     }
     return -1;
+}
+
+int Module::GetExternalInterfaceNumber()
+{
+    int i = 0;
+    for (AutoPtr<InterfaceType> interface : mInterfaces) {
+        if (!interface->GetExternalModuleName().IsEmpty()) {
+            i++;
+        }
+    }
+    return i;
 }
 
 AutoPtr<CoclassType> Module::GetCoclass(

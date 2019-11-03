@@ -1,5 +1,5 @@
 #=========================================================================
-# Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+# Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -30,24 +30,23 @@ set(SOURCES
 set(GENERATED_SOURCES
     ${OBJ_DIR}/ReflectionTestUnit.cpp)
 
-IMPORT_LIBRARY(ccmrt.so)
+IMPORT_LIBRARY(comort.so)
 
 add_executable(testReflection
     ${SOURCES}
     ${GENERATED_SOURCES})
-target_link_libraries(testReflection ccmrt.so)
+target_link_libraries(testReflection comort.so)
 add_dependencies(testReflection ReflectionTestUnit)
 
 add_custom_command(
     OUTPUT
         ${GENERATED_SOURCES}
     COMMAND
-        "${BIN_DIR}/ccdl"
-        -g
-        -u
-        -s
+        "${BIN_DIR}/cdlc"
+        -gen
+        -mode-client
         -d ${OBJ_DIR}
-        "${BIN_DIR}/ReflectionTestUnit.so")
+        -metadata-so "${BIN_DIR}/ReflectionTestUnit.so")
 
 COPY(testReflection ${OBJ_DIR}/testReflection ${BIN_DIR})
 

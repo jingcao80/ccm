@@ -49,9 +49,8 @@ CMetaType::CMetaType(
         }
     }
     mName = BuildName(mc, mt);
-    if (mt->mIndex != -1) {
-        mElementType = new CMetaType(mc,
-                mc->mTypes[mt->mIndex]);
+    if (mKind == TypeKind::Array && mt->mIndex != 0) {
+        mElementType = new CMetaType(mc, mc->mTypes[mt->mIndex]);
     }
 }
 

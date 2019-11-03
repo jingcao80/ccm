@@ -153,7 +153,7 @@ ECode CMetaCoclass::GetInterface(
         String name, ns;
         miObj->GetName(name);
         miObj->GetNamespace(ns);
-        if (fullName.Equals(ns + name)) {
+        if (fullName.Equals(ns + "::" + name)) {
             intf = miObj;
             return NOERROR;
         }
@@ -178,7 +178,7 @@ ECode CMetaCoclass::ContainsInterface(
         String name, ns;
         miObj->GetName(name);
         miObj->GetNamespace(ns);
-        if (fullName.Equals(ns + name)) {
+        if (fullName.Equals(ns + "::" + name)) {
             result = true;
             return NOERROR;
         }
@@ -195,7 +195,7 @@ ECode CMetaCoclass::GetMethodNumber(
         for (Integer i = 0; i < mMetadata->mInterfaceNumber - 1; i++) {
             MetaInterface* mi = mOwner->mMetadata->mInterfaces[
                     mMetadata->mInterfaceIndexes[i]];
-            String fullName = String::Format("%s%s", mi->mNamespace,
+            String fullName = String::Format("%s::%s", mi->mNamespace,
                     mi->mName);
             if (fullName.Equals("como::IInterface")) {
                 continue;
@@ -302,7 +302,7 @@ void CMetaCoclass::BuildAllMethod()
             String name, ns;
             miObj->GetName(name);
             miObj->GetNamespace(ns);
-            if (String("como::IInterface").Equals(ns + name)) {
+            if (String("como::IInterface").Equals(ns + "::" + name)) {
                 continue;
             }
             BuildInterfaceMethod(miObj, index);

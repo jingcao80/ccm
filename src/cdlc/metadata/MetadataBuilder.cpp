@@ -355,9 +355,9 @@ void MetadataBuilder::WriteMetaComponent(
     mc->mConstantNumber = CN;
     mc->mCoclassNumber = KN;
     mc->mEnumerationNumber = EN;
-    mc->mExternalEnumerationNumber = 0;
+    mc->mExternalEnumerationNumber = module->GetExternalEnumerationNumber();
     mc->mInterfaceNumber = IN;
-    mc->mExternalInterfaceNumber = 0;
+    mc->mExternalInterfaceNumber = module->GetExternalInterfaceNumber();
     mc->mTypeNumber = TN;
     // mNamespaces address
     mBasePtr = ALIGN(mBasePtr + sizeof(como::MetaComponent));
@@ -431,9 +431,9 @@ como::MetaNamespace* MetadataBuilder::WriteMetaNamespace(
     mn->mConstantNumber = CN;
     mn->mCoclassNumber = KN;
     mn->mEnumerationNumber = EN;
-    mn->mExternalEnumerationNumber = 0;
+    mn->mExternalEnumerationNumber = ns->GetExternalEnumerationNumber();
     mn->mInterfaceNumber = IN;
-    mn->mExternalInterfaceNumber = 0;
+    mn->mExternalInterfaceNumber = ns->GetExternalInterfaceNumber();
     // mNamespaces address
     mBasePtr = ALIGN(mBasePtr + sizeof(como::MetaNamespace));
     mn->mNamespaces = NN > 0 ? reinterpret_cast<como::MetaNamespace**>(mBasePtr) : nullptr;

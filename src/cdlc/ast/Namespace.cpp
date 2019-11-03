@@ -118,6 +118,17 @@ AutoPtr<EnumerationType> Namespace::GetEnumeration(
     return nullptr;
 }
 
+int Namespace::GetExternalEnumerationNumber()
+{
+    int i = 0;
+    for (AutoPtr<EnumerationType> enumeration : mEnumerations) {
+        if (!enumeration->GetExternalModuleName().IsEmpty()) {
+            i++;
+        }
+    }
+    return i;
+}
+
 void Namespace::AddInterfaceType(
     /* [in] */ InterfaceType* interface)
 {
@@ -136,6 +147,17 @@ AutoPtr<InterfaceType> Namespace::GetInterface(
         return mInterfaces[i];
     }
     return nullptr;
+}
+
+int Namespace::GetExternalInterfaceNumber()
+{
+    int i = 0;
+    for (AutoPtr<InterfaceType> interface : mInterfaces) {
+        if (!interface->GetExternalModuleName().IsEmpty()) {
+            i++;
+        }
+    }
+    return i;
 }
 
 void Namespace::AddCoclassType(

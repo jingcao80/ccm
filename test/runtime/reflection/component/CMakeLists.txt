@@ -1,5 +1,5 @@
 #=========================================================================
-# Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+# Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -28,29 +28,29 @@ set(SOURCES
     CMethodTester.cpp)
 
 set(GENERATED_SOURCES
-    ${OBJ_DIR}/_ccm_test_reflection_CMethodTester.cpp
+    ${OBJ_DIR}/_como_test_reflection_CMethodTester.cpp
     ${OBJ_DIR}/ReflectionTestUnitPub.cpp
     ${OBJ_DIR}/MetadataWrapper.cpp)
 
-IMPORT_LIBRARY(ccmrt.so)
+IMPORT_LIBRARY(comort.so)
 
 add_library(ReflectionTestUnit
     SHARED
     ${SOURCES}
     ${GENERATED_SOURCES})
-target_link_libraries(ReflectionTestUnit ccmrt.so)
+target_link_libraries(ReflectionTestUnit comort.so)
 add_dependencies(ReflectionTestUnit libtest)
 
 add_custom_command(
     OUTPUT
         ${GENERATED_SOURCES}
     COMMAND
-        "${BIN_DIR}/ccdl"
-        -c
-        -g
-        -k
+        "${BIN_DIR}/cdlc"
+        -gen
+        -mode-component
+        -i "${COMPONENT_DIR}"
         -d ${OBJ_DIR}
-        "${COMPONENT_DIR}/ReflectionTestUnit.cdl")
+        -c "${COMPONENT_DIR}/ReflectionTestUnit.cdl")
 
 COPY(ReflectionTestUnit ${OBJ_DIR}/ReflectionTestUnit.so ${BIN_DIR})
 

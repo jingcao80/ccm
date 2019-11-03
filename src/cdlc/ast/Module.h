@@ -80,6 +80,8 @@ public:
     int IndexOf(
         /* [in] */ EnumerationType* enumeration);
 
+    int GetExternalEnumerationNumber();
+
     AutoPtr<InterfaceType> GetInterface(
         /* [in] */ int i);
 
@@ -87,6 +89,8 @@ public:
 
     int IndexOf(
         /* [in] */ InterfaceType* interface);
+
+    int GetExternalInterfaceNumber();
 
     AutoPtr<CoclassType> GetCoclass(
         /* [in] */ int i);

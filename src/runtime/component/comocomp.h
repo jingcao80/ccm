@@ -35,7 +35,7 @@ typedef Boolean (*CanUnloadPtr)();
 
 struct MetadataWrapper
 {
-    int             mSize;
+    size_t          mSize;
     unsigned char   mMetadata[0];
 };
 

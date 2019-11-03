@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 [
     uuid(42197c0a-0de1-4c11-8a35-4ed719e72695),
-    url("http://ccm.org/component/test/reflection/ReflectionTestUnit.so")
+    uri("http://como.org/component/test/reflection/ReflectionTestUnit.so")
 ]
 module ReflectionTestUnit
 {

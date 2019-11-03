@@ -78,6 +78,8 @@ public:
 
     inline int GetEnumerationNumber();
 
+    int GetExternalEnumerationNumber();
+
     void AddInterfaceType(
         /* [in] */ InterfaceType* interface);
 
@@ -85,6 +87,8 @@ public:
         /* [in] */ int i);
 
     inline int GetInterfaceNumber();
+
+    int GetExternalInterfaceNumber();
 
     void AddCoclassType(
         /* [in] */ CoclassType* klass);

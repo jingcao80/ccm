@@ -311,7 +311,7 @@ void CMetaComponent::BuildAllCoclasses()
 
     for (Integer i = 0; i < mMetadata->mCoclassNumber; i++) {
         MetaCoclass* mc = mMetadata->mCoclasses[i];
-        String fullName = String::Format("%s%s",
+        String fullName = String::Format("%s::%s",
                 mc->mNamespace, mc->mName);
         if (!mMetaCoclassNameMap.ContainsKey(fullName)) {
             AutoPtr<CMetaCoclass> mcObj = new CMetaCoclass(
@@ -333,7 +333,7 @@ AutoPtr<IMetaCoclass> CMetaComponent::BuildCoclass(
     }
 
     MetaCoclass* mc = mMetadata->mCoclasses[index];
-    String fullName = String::Format("%s%s",
+    String fullName = String::Format("%s::%s",
                 mc->mNamespace, mc->mName);
     if (!mMetaCoclassNameMap.ContainsKey(fullName)) {
         AutoPtr<CMetaCoclass> mcObj = new CMetaCoclass(
@@ -361,7 +361,7 @@ void CMetaComponent::BuildAllEnumerations()
         if (me->mProperties & TYPE_EXTERNAL) {
             continue;
         }
-        String fullName = String::Format("%s%s",
+        String fullName = String::Format("%s::%s",
                 me->mNamespace, me->mName);
         if (!mMetaEnumerationMap.ContainsKey(fullName)) {
             AutoPtr<CMetaEnumeration> meObj = new CMetaEnumeration(
@@ -386,7 +386,7 @@ AutoPtr<IMetaEnumeration> CMetaComponent::BuildEnumeration(
     if (me->mProperties & TYPE_EXTERNAL) {
         return ret;
     }
-    String fullName = String::Format("%s%s",
+    String fullName = String::Format("%s::%s",
             me->mNamespace, me->mName);
     if (!mMetaEnumerationMap.ContainsKey(fullName)) {
         AutoPtr<CMetaEnumeration> meObj = new CMetaEnumeration(
@@ -419,7 +419,7 @@ void CMetaComponent::BuildAllInterfaces()
         if (mi->mProperties & TYPE_EXTERNAL) {
             continue;
         }
-        String fullName = String::Format("%s%s",
+        String fullName = String::Format("%s::%s",
                 mi->mNamespace, mi->mName);
         if (!mMetaInterfaceNameMap.ContainsKey(fullName)) {
             AutoPtr<CMetaInterface> miObj = new CMetaInterface(
@@ -442,7 +442,7 @@ AutoPtr<IMetaInterface> CMetaComponent::BuildInterface(
     }
 
     MetaInterface* mi = mMetadata->mInterfaces[index];
-    String fullName = String::Format("%s%s",
+    String fullName = String::Format("%s::%s",
             mi->mNamespace, mi->mName);
     if (!mMetaInterfaceNameMap.ContainsKey(fullName)) {
         AutoPtr<CMetaInterface> miObj = new CMetaInterface(
