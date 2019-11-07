@@ -1947,13 +1947,6 @@ bool Parser::ParseConstructor(
         }
     }
 
-    if (tokenInfo.mToken == Token::AMPERSAND) {
-        mTokenizer.GetToken();
-        method->SetReference(true);
-
-        tokenInfo = mTokenizer.PeekToken();
-    }
-
     if (tokenInfo.mToken != Token::SEMICOLON) {
         LogError(tokenInfo, "\";\" is expected.");
         return false;

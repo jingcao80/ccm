@@ -14,26 +14,55 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __COMO_COMOOBJECTAPI_H__
-#define __COMO_COMOOBJECTAPI_H__
+#include "CFooBar.h"
 
-#include "comointfs.h"
+namespace Namespace1 {
+namespace Namespace2 {
+namespace Namespace3 {
 
-namespace como {
+COMO_INTERFACE_IMPL_2(CFooBar, Object, IFoo3, IFooBar);
+COMO_OBJECT_IMPL(CFooBar);
 
-EXTERN_C COM_PUBLIC ECode CoCreateObjectInstance(
-    /* [in] */ const CoclassID& cid,
-    /* [in] */ const InterfaceID& iid,
-    /* [in] */ IClassLoader* loader,
-    /* [out] */ IInterface** object);
+ECode CFooBar::Constructor()
+{
+    return NOERROR;
+}
 
-EXTERN_C COM_PUBLIC ECode CoAcquireClassFactory(
-    /* [in] */ const CoclassID& cid,
-    /* [in] */ IClassLoader* loader,
-    /* [out] */ AutoPtr<IClassObject>& object);
+ECode CFooBar::Constructor(
+    /* [in] */ const String& name)
+{
+    return NOERROR;
+}
 
-EXTERN_C COM_PUBLIC AutoPtr<IClassLoader> CoGetBootClassLoader();
+ECode CFooBar::Foo(
+    /* [in] */ const Array<Byte>& value)
+{
+    return NOERROR;
+}
 
-} // namespace como
+ECode CFooBar::Foo(
+    /* [in] */ const Array<Array<Integer>*>& value)
+{
+    return NOERROR;
+}
 
-#endif // __COMO_COMOOBJECTAPI_H__
+ECode CFooBar::Foo()
+{
+    return NOERROR;
+}
+
+ECode CFooBar::Bar(
+    /* [in] */ Integer value)
+{
+    return NOERROR;
+}
+
+ECode CFooBar::FooBar(
+    /* [in] */ const String& value)
+{
+    return NOERROR;
+}
+
+} // Namespace3
+} // Namespace2
+} // Namespace1

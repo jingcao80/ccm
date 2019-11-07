@@ -249,12 +249,14 @@ ECode CMetaCoclass::GetMethod(
 
 ECode CMetaCoclass::CreateObject(
     /* [in] */ const InterfaceID& iid,
-    /* [out] */ AutoPtr<IInterface>& object)
+    /* [out] */ IInterface** object)
 {
+    VALIDATE_NOT_NULL(object);
+
     AutoPtr<IClassObject> factory;
     ECode ec = mOwner->GetClassObject(mCid, factory);
     if (FAILED(ec)) {
-        object = nullptr;
+        *object = nullptr;
         return ec;
     }
 

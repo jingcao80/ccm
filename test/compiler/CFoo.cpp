@@ -14,26 +14,12 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __COMO_COMOOBJECTAPI_H__
-#define __COMO_COMOOBJECTAPI_H__
+#include "CFoo.h"
 
-#include "comointfs.h"
+COMO_INTERFACE_IMPL_1(CFoo, Object, IFoo);
+COMO_OBJECT_IMPL(CFoo);
 
-namespace como {
-
-EXTERN_C COM_PUBLIC ECode CoCreateObjectInstance(
-    /* [in] */ const CoclassID& cid,
-    /* [in] */ const InterfaceID& iid,
-    /* [in] */ IClassLoader* loader,
-    /* [out] */ IInterface** object);
-
-EXTERN_C COM_PUBLIC ECode CoAcquireClassFactory(
-    /* [in] */ const CoclassID& cid,
-    /* [in] */ IClassLoader* loader,
-    /* [out] */ AutoPtr<IClassObject>& object);
-
-EXTERN_C COM_PUBLIC AutoPtr<IClassLoader> CoGetBootClassLoader();
-
-} // namespace como
-
-#endif // __COMO_COMOOBJECTAPI_H__
+ECode CFoo::Foo()
+{
+    return NOERROR;
+}

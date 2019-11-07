@@ -148,7 +148,7 @@ struct MetaInterface
 };
 
 #define METHOD_DELETED              0x01
-#define METHOD_RETURN_REFERENCE     0x02
+// #define METHOD_RETURN_REFERENCE     0x02
 
 struct MetaMethod
 {

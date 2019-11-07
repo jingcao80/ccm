@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,26 +14,13 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __COMO_COMOOBJECTAPI_H__
-#define __COMO_COMOOBJECTAPI_H__
+/**
+ * Test parsing a interface with constant data members.
+ */
 
-#include "comointfs.h"
-
-namespace como {
-
-EXTERN_C COM_PUBLIC ECode CoCreateObjectInstance(
-    /* [in] */ const CoclassID& cid,
-    /* [in] */ const InterfaceID& iid,
-    /* [in] */ IClassLoader* loader,
-    /* [out] */ IInterface** object);
-
-EXTERN_C COM_PUBLIC ECode CoAcquireClassFactory(
-    /* [in] */ const CoclassID& cid,
-    /* [in] */ IClassLoader* loader,
-    /* [out] */ AutoPtr<IClassObject>& object);
-
-EXTERN_C COM_PUBLIC AutoPtr<IClassLoader> CoGetBootClassLoader();
-
-} // namespace como
-
-#endif // __COMO_COMOOBJECTAPI_H__
+enum Size
+{
+    Small,
+    Middle,
+    Large
+}

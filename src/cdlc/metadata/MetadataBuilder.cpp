@@ -669,9 +669,6 @@ como::MetaMethod* MetadataBuilder::WriteMetaMethod(
     if (method->IsDeleted()) {
         mm->mProperties |= METHOD_DELETED;
     }
-    if (method->IsReference()) {
-        mm->mProperties |= METHOD_RETURN_REFERENCE;
-    }
     // end address
     mBasePtr = mBasePtr + sizeof(como::MetaParameter*) * PN;
 

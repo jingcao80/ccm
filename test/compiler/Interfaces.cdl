@@ -1,0 +1,200 @@
+//=========================================================================
+// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//=========================================================================
+
+/**
+ * a blank interface.
+ */
+[
+    uuid(600fc554-de96-4be2-9c6a-d97bc43ea66f),
+    version(0.1.0),
+    description("This is the definition of IBlank.")
+]
+interface IBlank
+{}
+
+[
+    uuid(8b2a143c-e778-49aa-a2df-9177ae099e84),
+    version(0.1.0)
+]
+interface IFoo
+{
+	Foo();
+}
+
+[
+    uuid(5ecb4dc1-0915-48b3-bb6c-e9c4c5a7ab6f),
+    version(0.1.0)
+]
+interface IFoo1
+{
+    const Boolean BOOL_VAL = true;
+    const Byte B8_VAL = 255;
+    const Short S16_VAL = 65535;
+    const Integer I32_VAL = 0xffffffff;
+    const Long I64_VAL = 0xfffffffffffffff0;
+    const String STR_VAL = "The interface name is IFoo2.";
+    const Size SZ_VAL = Size::Middle;
+}
+
+[
+    uuid(fd81a35c-0463-482c-89a4-e5416223c836),
+    version(0.1.0)
+]
+interface IFoo2
+{
+    Foo(
+        [in] Short value);
+
+    Foo(
+        [out] Short* value);
+
+    Foo(
+        [in] Integer value);
+
+    Foo(
+        [out] Integer& value);
+
+    Foo(
+        [in] Long value);
+
+    Foo(
+        [in, out] Long* value);
+
+    Foo(
+        [in] Float value);
+
+    Foo(
+        [in, out] Float* value);
+
+    Foo(
+        [in] String value);
+
+    Foo(
+        [out] String* value);
+
+    Foo(
+        [out] String& value);
+
+    Foo(
+        [in] IFoo* value);
+
+    Foo(
+        [out] IFoo** value);
+
+    Foo(
+        [out] IFoo*& value);
+
+    Foo(
+        [out] IFoo&& value);
+
+    Foo(
+        [out] IFoo&* value);
+}
+
+[
+    uuid(1a82ac88-f714-4682-8d4a-d475b0eed467),
+    version(0.1.0)
+]
+interface IFoo3
+{
+    Foo(
+        [in] Array<Byte> value);
+
+    Foo(
+        [in] Array<Array<Integer>*> value);
+}
+
+[
+    uuid(4fc5dfa2-830b-4302-8be8-5452075bf5f8),
+    version(0.1.0)
+]
+interface IFoo4
+{
+    Foo(
+        [out] Array<Byte> value);
+
+    Foo(
+        [out, callee] Array<Byte>* value);
+
+    Foo(
+        [out] Array<Array<Integer>&> value);
+
+    Foo(
+        [out, callee] Array<Array<Integer>*>* value);
+}
+
+[
+    uuid(1aab4f82-7a75-426d-970b-5a591e726c6c),
+    version(0.1.0)
+]
+interface IFoo5
+{
+    Foo(
+        [in, out] Array<Byte> value);
+
+    Foo(
+        [in, out] Array<Array<Integer>*>* value);
+}
+
+/**
+ * Test parsing namespace and interface inheritance.
+ */
+
+namespace Namespace1 {
+
+[
+    uuid(1ec89d1d-6ad8-4252-b72f-1d532e388823),
+    version(0.1.0)
+]
+interface IFoo6 : IFoo
+{
+    Foo(
+        [in] Boolean value);
+}
+
+namespace Namespace2 {
+
+[
+    uuid(2004b2d8-2dcc-4194-bbb3-62707c5a1d9d),
+    version(0.1.0)
+]
+interface IBar : IFoo
+{
+    Bar(
+        [in] Integer value);
+}
+
+} // namespace Namespace2
+
+} // namespace Namespace1
+
+namespace Namespace1 {
+namespace Namespace2 {
+namespace Namespace3 {
+
+[
+    uuid(43333135-3922-4466-9585-372313d37b92),
+    version(0.1.0)
+]
+interface IFooBar : IBar
+{
+    FooBar(
+        [in] String value);
+}
+
+} // namespace Namespace3
+} // namespace Namespace2
+} // namespace Namespace1

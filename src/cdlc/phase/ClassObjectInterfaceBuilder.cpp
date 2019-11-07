@@ -87,26 +87,13 @@ void ClassObjectInterfaceBuilder::BuildCoclassObjectInterface(
             m->AddParameter(p);
             p = new Parameter();
             p->SetName("object");
-            AutoPtr<Type> t;
-            if (m->IsReference()) {
-                t = mModule->FindType("como::IInterface&&");
-                if (t == nullptr) {
-                    AutoPtr<ReferenceType> reference = new ReferenceType();
-                    reference->SetBaseType(mIInterfaceType);
-                    reference->SetReferenceNumber(2);
-                    mModule->AddTemporaryType(reference);
-                    t = reference;
-                }
-            }
-            else {
-                t = mModule->FindType("como::IInterface**");
-                if (t == nullptr) {
-                    AutoPtr<PointerType> pointer = new PointerType();
-                    pointer->SetBaseType(mIInterfaceType);
-                    pointer->SetPointerNumber(2);
-                    mModule->AddTemporaryType(pointer);
-                    t = pointer;
-                }
+            AutoPtr<Type> t = mModule->FindType("como::IInterface**");
+            if (t == nullptr) {
+                AutoPtr<PointerType> pointer = new PointerType();
+                pointer->SetBaseType(mIInterfaceType);
+                pointer->SetPointerNumber(2);
+                mModule->AddTemporaryType(pointer);
+                t = pointer;
             }
             p->SetType(t);
             p->SetAttributes(Parameter::OUT);

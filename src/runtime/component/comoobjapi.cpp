@@ -26,8 +26,10 @@ ECode CoCreateObjectInstance(
     /* [in] */ const CoclassID& cid,
     /* [in] */ const InterfaceID& iid,
     /* [in] */ IClassLoader* loader,
-    /* [out] */ AutoPtr<IInterface>& object)
+    /* [out] */ IInterface** object)
 {
+    VALIDATE_NOT_NULL(object);
+
     if (loader == nullptr) {
         loader = CBootClassLoader::GetInstance();
     }
@@ -35,7 +37,7 @@ ECode CoCreateObjectInstance(
     AutoPtr<IClassObject> factory;
     ECode ec = CoAcquireClassFactory(cid, loader, factory);
     if (FAILED(ec)) {
-        object = nullptr;
+        *object = nullptr;
         return ec;
     }
 

@@ -15,18 +15,41 @@
 //=========================================================================
 
 /**
- * Test parsing module.
+ * Test parsing coclass.
  */
 
 [
-    uuid(6c69c8bc-b62d-4dad-811b-26f73cd2aaa7),
-    url("http://ccm.org/components/test/test_module.so"),
-    description("This is the definition of module TestModule.")
+    uuid(930e32e1-99ff-41b2-9cc8-d8cf7927904e),
+    version(0.1.0),
+    description("This is the definition of CFoo.")
 ]
-module TestModule
+coclass CFoo
 {
-
-include "interfaceTests.cdl"
-include "coclassTests.cdl"
-
+    interface IFoo;
 }
+
+interface Namespace1::IFoo3;
+interface Namespace1::Namespace2::Namespace3::IFooBar;
+
+namespace Namespace1 {
+namespace Namespace2 {
+namespace Namespace3 {
+
+[
+    uuid(c34d8d16-4683-484f-90a3-8fe390285033),
+    version(0.1.0)
+]
+coclass CFooBar
+{
+    Constructor();
+
+    Constructor(
+        [in] String name);
+
+    interface IFoo3;
+    interface IFooBar;
+}
+
+} // namespace Namespace3
+} // namespace Namespace2
+} // namespace Namespace1

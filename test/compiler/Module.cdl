@@ -14,44 +14,16 @@
 // limitations under the License.
 //=========================================================================
 
-/**
- * Test parsing coclass.
- */
-
-include "interfaceTests.cdl"
-
 [
-    uuid(930e32e1-99ff-41b2-9cc8-d8cf7927904e),
-    version(0.1.0),
-    description("This is the definition of CFoo.")
+    uuid(6c69c8bc-b62d-4dad-811b-26f73cd2aaa7),
+    uri("http://como.org/components/test/compiler_test.so"),
+    description("This is the definition of TestModule.")
 ]
-coclass CFoo
+module TestModule
 {
-    interface IFoo;
+
+include "Enumerations.cdl"
+include "Interfaces.cdl"
+include "Coclasses.cdl"
+
 }
-
-interface TopNS::IFoo3;
-interface TopNS::SecondeNS::ThirdNS::IFooBar;
-
-namespace TopNS {
-namespace SecondNS {
-namespace ThirdNS {
-
-[
-    uuid(c34d8d16-4683-484f-90a3-8fe390285033),
-    version(0.1.0)
-]
-coclass CFooBar
-{
-    constructor();
-
-    constructor(
-        [in] String name);
-
-    interface IFoo3;
-    interface IFooBar;
-}
-
-} // namespace ThirdNS
-} // namespace SecondNS
-} // namespace TopNS

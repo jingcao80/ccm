@@ -173,7 +173,7 @@ interface IMetaCoclass
 
     CreateObject(
         [in] InterfaceID iid,
-        [out] IInterface&& object);
+        [out] IInterface** object);
 }
 
 [

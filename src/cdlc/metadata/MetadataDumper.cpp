@@ -306,15 +306,10 @@ String MetadataDumper::DumpMetaMethod(
     como::MetaType* type = mComponent->mTypes[mm->mReturnTypeIndex];
     builder.Append(prefix + Properties::INDENT).AppendFormat("\"ReturnType\":\"%s\",\n", DumpMetaType(type).string());
     builder.Append(prefix + Properties::INDENT).AppendFormat("\"mParameterNumber\":\"%d\"", mm->mParameterNumber);
-    if (mm->mProperties & (METHOD_DELETED | METHOD_RETURN_REFERENCE)) {
+    if (mm->mProperties & METHOD_DELETED) {
         builder.Append(",\n");
         builder.Append(prefix + Properties::INDENT).Append("\"mProperties\":");
-        if (mm->mProperties & METHOD_DELETED) {
-            builder.Append(prefix + Properties::INDENT).AppendFormat("\"METHOD_DELETED\"");
-        }
-        if (mm->mProperties & METHOD_RETURN_REFERENCE) {
-            builder.Append(prefix + Properties::INDENT).AppendFormat("\"METHOD_RETURN_REFERENCE\"");
-        }
+        builder.Append(prefix + Properties::INDENT).AppendFormat("\"METHOD_DELETED\"");
     }
 
     if (mm->mParameterNumber > 0) {

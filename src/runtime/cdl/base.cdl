@@ -34,7 +34,7 @@ interface IClassObject
 
     CreateObject(
         [in] InterfaceID iid,
-        [out] IInterface&& object);
+        [out] IInterface** object);
 }
 
 interface IObjectObserver;

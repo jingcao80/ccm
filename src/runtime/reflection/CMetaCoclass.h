@@ -88,7 +88,7 @@ public:
 
     ECode CreateObject(
         /* [in] */ const InterfaceID& iid,
-        /* [out] */ AutoPtr<IInterface>& object) override;
+        /* [out] */ IInterface** object) override;
 
 private:
     void BuildAllConstructors();

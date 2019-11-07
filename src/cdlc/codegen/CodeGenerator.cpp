@@ -404,21 +404,12 @@ String CodeGenerator::ComponentModeEmitter::EmitCoclassObject(
         }
         builder.Append(")\n");
         builder.Append("{\n");
-        como::MetaType* lastParamType = mComponent->mTypes[
-                mm->mParameters[mm->mParameterNumber - 1]->mTypeIndex];
-        if (lastParamType->mProperties & (TYPE_POINTER << 2)) {
-            builder.Append(Properties::INDENT).Append("VALIDATE_NOT_NULL(object);\n");
-            builder.Append("\n");
-        }
+        builder.Append(Properties::INDENT).Append("VALIDATE_NOT_NULL(object);\n");
+        builder.Append("\n");
         if ((mm->mProperties & METHOD_DELETED) ||
                 (!(mk->mProperties & COCLASS_CONSTRUCTOR_DEFAULT) &&
                   (mk->mProperties & COCLASS_CONSTRUCTOR_DELETED))) {
-            if (lastParamType->mProperties & (TYPE_REFERENCE << 2)) {
-                builder.Append(Properties::INDENT).Append("object = nullptr;\n");
-            }
-            else {
-                builder.Append(Properties::INDENT).Append("*object = nullptr;\n");
-            }
+            builder.Append(Properties::INDENT).Append("*object = nullptr;\n");
         }
         else {
             builder.Append(Properties::INDENT).AppendFormat("void* addr = calloc(sizeof(%s), 1);\n", mk->mName);
@@ -443,15 +434,9 @@ String CodeGenerator::ComponentModeEmitter::EmitCoclassObject(
             builder.Append(Properties::INDENT).AppendFormat("_obj->AttachMetadata(mComponent, \"%s%s\");\n",
                     ConcatString(CanonicalizeNamespace(mk->mNamespace), "::").string(),
                     mk->mName);
-            if (lastParamType->mProperties & (TYPE_REFERENCE << 2)) {
-                builder.Append(Properties::INDENT).AppendFormat("object = _obj->Probe(%s);\n",
-                        mm->mParameters[mm->mParameterNumber - 2]->mName);
-            }
-            else {
-                builder.Append(Properties::INDENT).AppendFormat("*object = _obj->Probe(%s);\n",
-                        mm->mParameters[mm->mParameterNumber - 2]->mName);
-                builder.Append(Properties::INDENT).Append("REFCOUNT_ADD(*object);\n");
-            }
+            builder.Append(Properties::INDENT).AppendFormat("*object = _obj->Probe(%s);\n",
+                    mm->mParameters[mm->mParameterNumber - 2]->mName);
+            builder.Append(Properties::INDENT).Append("REFCOUNT_ADD(*object);\n");
         }
         builder.Append(Properties::INDENT).Append("return NOERROR;\n");
         builder.Append("}\n");

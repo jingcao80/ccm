@@ -14,26 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __COMO_COMOOBJECTAPI_H__
-#define __COMO_COMOOBJECTAPI_H__
-
-#include "comointfs.h"
-
-namespace como {
-
-EXTERN_C COM_PUBLIC ECode CoCreateObjectInstance(
-    /* [in] */ const CoclassID& cid,
-    /* [in] */ const InterfaceID& iid,
-    /* [in] */ IClassLoader* loader,
-    /* [out] */ IInterface** object);
-
-EXTERN_C COM_PUBLIC ECode CoAcquireClassFactory(
-    /* [in] */ const CoclassID& cid,
-    /* [in] */ IClassLoader* loader,
-    /* [out] */ AutoPtr<IClassObject>& object);
-
-EXTERN_C COM_PUBLIC AutoPtr<IClassLoader> CoGetBootClassLoader();
-
-} // namespace como
-
-#endif // __COMO_COMOOBJECTAPI_H__
+int main(int argv, char** argc)
+{
+    return 0;
+}

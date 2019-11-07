@@ -91,7 +91,6 @@ AutoPtr<Node> Method::Clone(
         }
     }
     clone->mDeleted = mDeleted;
-    clone->mReference = mReference;
     return clone;
 }
 
