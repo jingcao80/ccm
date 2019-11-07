@@ -15,6 +15,7 @@
 //=========================================================================
 
 #include "codegen/CodeGenerator.h"
+#include "ast/Namespace.h"
 #include "util/AutoPtr.h"
 #include "util/File.h"
 #include "util/Logger.h"
@@ -124,6 +125,7 @@ void CodeGenerator::ComponentModeEmitter::EmitConstantsAndTypes()
     builder.AppendFormat("#define %s\n", defMacro.string());
     builder.Append("\n");
     builder.Append("#include <comotypes.h>\n");
+    builder.Append("#include <comosp.h>\n");
     builder.Append("\n");
     builder.Append("using namespace como;\n");
     builder.Append("\n");
@@ -163,16 +165,18 @@ void CodeGenerator::ComponentModeEmitter::EmitCoclass(
 void CodeGenerator::ComponentModeEmitter::EmitCoclassHeader(
     /* [in] */ como::MetaCoclass* mk)
 {
-    String path = String::Format("%s/_%s_%s.h", mOwner->mDirectory.string(),
-            String(mk->mNamespace).Replace("::", "_").string(), mk->mName);
+    String path = String::Format("%s/%s_%s.h", mOwner->mDirectory.string(),
+            ConcatString("_", CanonicalizeNamespace(mk->mNamespace)).Replace("::","_").string(),
+            mk->mName);
     File file(path, File::WRITE);
 
     StringBuilder builder;
 
     builder.Append(mOwner->mLicense);
     builder.Append("\n");
-    String defMacro = EmitDefineMacro(
-            String::Format("%s::%s_H_GEN", mk->mNamespace, mk->mName));
+    String defMacro = EmitDefineMacro(String::Format("%s%s_H_GEN",
+            ConcatString(CanonicalizeNamespace(mk->mNamespace), "::").string(),
+            mk->mName));
     builder.AppendFormat("#ifndef %s\n", defMacro.string());
     builder.AppendFormat("#define %s\n", defMacro.string());
     builder.Append("\n");
@@ -202,8 +206,9 @@ void CodeGenerator::ComponentModeEmitter::EmitCoclassHeader(
                     while (mmi->mOuterInterfaceIndex != -1) {
                         mmi = mComponent->mInterfaces[mmi->mOuterInterfaceIndex];
                     }
-                    String include = String::Format("#include \"%s.%s.h\"\n",
-                            String(mmi->mNamespace).Replace("::", ".").string(), mmi->mName);
+                    String include = String::Format("#include \"%s%s.h\"\n",
+                            ConcatString(CanonicalizeNamespace(mmi->mNamespace), ".").Replace("::", ".").string(),
+                            mmi->mName);
                     includes.insert(include);
                 }
             }
@@ -264,8 +269,9 @@ void CodeGenerator::ComponentModeEmitter::EmitCoclassHeader(
 void CodeGenerator::ComponentModeEmitter::EmitCoclassCpp(
     /* [in] */ como::MetaCoclass* mk)
 {
-    String path = String::Format("%s/_%s_%s.cpp", mOwner->mDirectory.string(),
-            String(mk->mNamespace).Replace("::", "_").string(), mk->mName);
+    String path = String::Format("%s/%s_%s.cpp", mOwner->mDirectory.string(),
+            ConcatString("_", CanonicalizeNamespace(mk->mNamespace)).Replace("::", "_").string(),
+            mk->mName);
     File file(path, File::WRITE);
 
     StringBuilder builder;
@@ -274,9 +280,10 @@ void CodeGenerator::ComponentModeEmitter::EmitCoclassCpp(
     builder.Append("\n");
     builder.AppendFormat("#include \"%s.h\"\n", mk->mName);
     como::MetaInterface* mi = mComponent->mInterfaces[mk->mInterfaceIndexes[mk->mInterfaceNumber - 1]];
-    if (!String(mi->mName).Equals("IClassObject")) {
-        String classObjectInterfaceHeader = String::Format("%s.%s.h",
-                String(mi->mNamespace).Replace("::", ".").string(), mi->mName);
+    if (!String(mi->mName).Equals("IClassObject") && (mOwner->mMode & Properties::CODEGEN_INTERFACE_SPLIT)) {
+        String classObjectInterfaceHeader = String::Format("%s%s.h",
+                ConcatString(CanonicalizeNamespace(mi->mNamespace), ".").Replace("::", ".").string(),
+                mi->mName);
         builder.AppendFormat("#include \"%s\"\n", classObjectInterfaceHeader.string());
     }
     builder.Append("#include <comoapi.h>\n");
@@ -399,14 +406,14 @@ String CodeGenerator::ComponentModeEmitter::EmitCoclassObject(
         builder.Append("{\n");
         como::MetaType* lastParamType = mComponent->mTypes[
                 mm->mParameters[mm->mParameterNumber - 1]->mTypeIndex];
-        if (lastParamType->mProperties & TYPE_POINTER) {
+        if (lastParamType->mProperties & (TYPE_POINTER << 2)) {
             builder.Append(Properties::INDENT).Append("VALIDATE_NOT_NULL(object);\n");
             builder.Append("\n");
         }
         if ((mm->mProperties & METHOD_DELETED) ||
                 (!(mk->mProperties & COCLASS_CONSTRUCTOR_DEFAULT) &&
                   (mk->mProperties & COCLASS_CONSTRUCTOR_DELETED))) {
-            if (lastParamType->mProperties & TYPE_REFERENCE) {
+            if (lastParamType->mProperties & (TYPE_REFERENCE << 2)) {
                 builder.Append(Properties::INDENT).Append("object = nullptr;\n");
             }
             else {
@@ -433,9 +440,10 @@ String CodeGenerator::ComponentModeEmitter::EmitCoclassObject(
                 builder.Append(Properties::INDENT + Properties::INDENT).Append("return ec;\n");
                 builder.Append(Properties::INDENT).Append("}\n");
             }
-            builder.Append(Properties::INDENT).AppendFormat("_obj->AttachMetadata(mComponent, \"%s::%s\");\n",
-                    mk->mNamespace, mk->mName);
-            if (lastParamType->mProperties & TYPE_REFERENCE) {
+            builder.Append(Properties::INDENT).AppendFormat("_obj->AttachMetadata(mComponent, \"%s%s\");\n",
+                    ConcatString(CanonicalizeNamespace(mk->mNamespace), "::").string(),
+                    mk->mName);
+            if (lastParamType->mProperties & (TYPE_REFERENCE << 2)) {
                 builder.Append(Properties::INDENT).AppendFormat("object = _obj->Probe(%s);\n",
                         mm->mParameters[mm->mParameterNumber - 2]->mName);
             }
@@ -512,7 +520,7 @@ String CodeGenerator::ComponentModeEmitter::EmitCoclassMethods(
         if (mm->mParameterNumber > 2) {
             builder.Append(Properties::INDENT).Append("AutoPtr<IClassObject> clsObject;\n");
             builder.Append(Properties::INDENT).AppendFormat(
-                    "ECode ec = CoAcquireClassFactory(CID_%s, nullptr, &clsObject);\n", mk->mName);
+                    "ECode ec = CoAcquireClassFactory(CID_%s, nullptr, clsObject);\n", mk->mName);
             builder.Append(Properties::INDENT).Append("if (FAILED(ec)) {\n");
             builder.Append(Properties::INDENT + Properties::INDENT).Append("return ec;\n");
             builder.Append(Properties::INDENT).Append("}\n");
@@ -556,13 +564,15 @@ void CodeGenerator::ComponentModeEmitter::EmitComponentCpp()
                         (mt->mKind == como::TypeKind::Float) ||
                         (mt->mKind == como::TypeKind::Double)) {
                     builder.AppendFormat("#include \"%s%s.h\"\n",
-                            String(mi->mNamespace).Replace("::", ".").string(), mi->mName);
+                            ConcatString(CanonicalizeNamespace(mi->mNamespace), ".").Replace("::", ".").string(),
+                            mi->mName);
                     break;
                 }
             }
             if (mi->mNestedInterfaceNumber > 0) {
                 builder.AppendFormat("#include \"%s%s.h\"\n",
-                        String(mi->mNamespace).Replace("::", ".").string(), mi->mName);
+                        ConcatString(CanonicalizeNamespace(mi->mNamespace), ".").Replace("::", ".").string(),
+                        mi->mName);
             }
         }
     }
@@ -603,8 +613,10 @@ String CodeGenerator::ComponentModeEmitter::EmitClassObjectGetterArray()
     builder.AppendFormat("static ClassObjectGetter co%sGetters[%d] = {\n", mc->mName, mc->mCoclassNumber);
     for (int i = 0; i < mc->mCoclassNumber; i++) {
         como::MetaCoclass* mk = mc->mCoclasses[i];
-        builder.Append(Properties::INDENT + Properties::INDENT).AppendFormat("{%s, %s::Get%sClassObject}",
-                UUID::Parse(mk->mUuid)->ToString().string(), mk->mNamespace, mk->mName);
+        builder.Append(Properties::INDENT + Properties::INDENT).AppendFormat("{%s, %sGet%sClassObject}",
+                UUID::Parse(mk->mUuid)->ToString().string(),
+                ConcatString(CanonicalizeNamespace(mk->mNamespace), "::").string(),
+                mk->mName);
         if (i != mc->mCoclassNumber - 1) {
             builder.Append(",\n");
         }
@@ -662,10 +674,13 @@ String CodeGenerator::ComponentModeEmitter::EmitSoGetClassObject()
     builder.Append("{\n");
     for (int i = 0; i < mc->mCoclassNumber; i++) {
         como::MetaCoclass* mk = mc->mCoclasses[i];
-        builder.Append(Properties::INDENT).AppendFormat("%sif (%s::CID_%s == cid) {\n",
-                i == 0 ? "" : "else ", mk->mNamespace, mk->mName);
-        builder.Append(Properties::INDENT + Properties::INDENT).AppendFormat("return %s::Get%sClassObject(object);\n",
-                mk->mNamespace, mk->mName);
+        builder.Append(Properties::INDENT).AppendFormat("%sif (%sCID_%s == cid) {\n",
+                i == 0 ? "" : "else ",
+                ConcatString(CanonicalizeNamespace(mk->mNamespace), "::").string(),
+                mk->mName);
+        builder.Append(Properties::INDENT + Properties::INDENT).AppendFormat("return %sGet%sClassObject(object);\n",
+                ConcatString(CanonicalizeNamespace(mk->mNamespace), "::").string(),
+                mk->mName);
         builder.Append(Properties::INDENT).Append("}\n");
     }
     builder.Append("\n");
@@ -741,6 +756,7 @@ void CodeGenerator::ClientModeEmitter::EmitConstantsAndTypes()
     builder.AppendFormat("#ifndef %s\n", defMacro.string());
     builder.AppendFormat("#define %s\n", defMacro.string());
     builder.Append("\n");
+    builder.Append("#include <comotypes.h>\n");
     builder.Append("#include <comosp.h>\n");
     builder.Append("\n");
     builder.Append("using namespace como;\n");
@@ -972,16 +988,18 @@ void CodeGenerator::ClientModeEmitter::EmitCoclassDeclarationsSplitly()
 void CodeGenerator::ClientModeEmitter::EmitCoclassDeclarationSplitly(
     /* [in] */ como::MetaCoclass* mk)
 {
-    String path = String::Format("%s/%s.%s.h", mOwner->mDirectory.string(),
-            String(mk->mNamespace).Replace("::", ".").string(), mk->mName);
+    String path = String::Format("%s/%s%s.h", mOwner->mDirectory.string(),
+            ConcatString(CanonicalizeNamespace(mk->mNamespace), ".").Replace("::", ".").string(),
+            mk->mName);
     File file(path, File::WRITE);
 
     StringBuilder builder;
 
     builder.Append(mOwner->mLicense);
     builder.Append("\n");
-    String defMacro = EmitDefineMacro(
-            String::Format("%s::%s_H_GEN", mk->mNamespace, mk->mName));
+    String defMacro = EmitDefineMacro(String::Format("%s%s_H_GEN",
+            ConcatString(CanonicalizeNamespace(mk->mNamespace), "::").string(),
+            mk->mName));
     builder.AppendFormat("#ifndef %s\n", defMacro.string());
     builder.AppendFormat("#define %s\n", defMacro.string());
     builder.Append("\n");
@@ -1011,8 +1029,9 @@ void CodeGenerator::ClientModeEmitter::EmitCoclassDeclarationSplitly(
                     while (mmi->mOuterInterfaceIndex != -1) {
                         mmi = mComponent->mInterfaces[mmi->mOuterInterfaceIndex];
                     }
-                    String include = String::Format("#include \"%s.%s.h\"\n",
-                            String(mmi->mNamespace).Replace("::", ".").string(), mmi->mName);
+                    String include = String::Format("#include \"%s%s.h\"\n",
+                            ConcatString(CanonicalizeNamespace(mmi->mNamespace), ".").Replace("::", ".").string(),
+                            mmi->mName);
                     includes.insert(include);
                 }
             }
@@ -1055,8 +1074,9 @@ void CodeGenerator::ClientModeEmitter::EmitComponentCpp()
     if (mOwner->mMode & Properties::CODEGEN_INTERFACE_SPLIT) {
         for (int i = 0; i < mc->mCoclassNumber; i++) {
             como::MetaCoclass* mk = mc->mCoclasses[i];
-            String header = String::Format("%s.%s.h",
-                    String(mk->mNamespace).Replace("::", ".").string(), mk->mName);
+            String header = String::Format("%s%s.h",
+                    ConcatString(CanonicalizeNamespace(mk->mNamespace), ".").Replace("::", ".").string(),
+                    mk->mName);
             builder.AppendFormat("#include \"%s\"\n", header.string());
         }
         for (int i = 0; i < mc->mInterfaceNumber; i++) {
@@ -1070,16 +1090,18 @@ void CodeGenerator::ClientModeEmitter::EmitComponentCpp()
                     como::MetaType* mt = mComponent->mTypes[ms->mTypeIndex];
                     if (mt->mKind == como::TypeKind::String || mt->mKind == como::TypeKind::Float ||
                             mt->mKind == como::TypeKind::Double) {
-                        String header = String::Format("%s.%s.h",
-                                String(mi->mNamespace).Replace("::", ".").string(), mi->mName);
+                        String header = String::Format("%s%s.h",
+                                ConcatString(CanonicalizeNamespace(mi->mNamespace), ".").Replace("::", ".").string(),
+                                mi->mName);
                         builder.AppendFormat("#include \"%s\"\n", header.string());
                         break;
                     }
                 }
             }
             else {
-                String header = String::Format("%s.%s.h",
-                        String(mi->mNamespace).Replace("::", ".").string(), mi->mName);
+                String header = String::Format("%s%s.h",
+                        ConcatString(CanonicalizeNamespace(mi->mNamespace), ".").Replace("::", ".").string(),
+                        mi->mName);
                 builder.AppendFormat("#include \"%s\"\n", header.string());
             }
         }
@@ -1313,24 +1335,27 @@ void CodeGenerator::Emitter::EmitInterfaceDeclarationsSplitly()
 void CodeGenerator::Emitter::EmitInterfaceDeclarationSplitly(
     /* [in] */ como::MetaInterface* mi)
 {
-    String path = String::Format("%s/%s.%s.h", mOwner->mDirectory.string(),
-            String(mi->mNamespace).Replace("::", ".").string(), mi->mName);
+    String path = String::Format("%s/%s%s.h", mOwner->mDirectory.string(),
+            ConcatString(CanonicalizeNamespace(mi->mNamespace), ".").Replace("::", ".").string(),
+            mi->mName);
     File file(path, File::WRITE);
 
     StringBuilder builder;
 
     builder.Append(mOwner->mLicense);
     builder.Append("\n");
-    String defMacro = EmitDefineMacro(
-            String::Format("%s::%s_H_GEN", mi->mNamespace, mi->mName));
+    String defMacro = EmitDefineMacro(String::Format("%s%s_H_GEN",
+            ConcatString(CanonicalizeNamespace(mi->mNamespace), "::").string(),
+            mi->mName));
     builder.AppendFormat("#ifndef %s\n", defMacro.string());
     builder.AppendFormat("#define %s\n", defMacro.string());
     builder.Append("\n");
     builder.AppendFormat("#include \"%s.h\"\n", mComponent->mName);
     como::MetaInterface* base = mComponent->mInterfaces[mi->mBaseInterfaceIndex];
     if (!String(base->mName).Equals("IInterface")) {
-        String baseFile = String::Format("%s.%s.h",
-                String(base->mNamespace).Replace("::", ".").string(), base->mName);
+        String baseFile = String::Format("%s%s.h",
+                ConcatString(CanonicalizeNamespace(base->mNamespace), ".").Replace("::", ".").string(),
+                base->mName);
         builder.AppendFormat("#include \"%s\"\n", baseFile.string());
     }
 
@@ -1378,8 +1403,9 @@ String CodeGenerator::Emitter::EmitIncludeForUsingNestedInterface(
                     while (mmi->mOuterInterfaceIndex != -1) {
                         mmi = mComponent->mInterfaces[mmi->mOuterInterfaceIndex];
                     }
-                    String include = String::Format("#include \"%s.%s.h\"\n",
-                            String(mmi->mNamespace).Replace("::", ".").string(), mmi->mName);
+                    String include = String::Format("#include \"%s%s.h\"\n",
+                            ConcatString(CanonicalizeNamespace(mmi->mNamespace), ".").Replace("::", ".").string(),
+                            mmi->mName);
                     includes.insert(include);
                 }
             }
@@ -1544,6 +1570,10 @@ String CodeGenerator::Emitter::EmitNamespaceBegin(
 {
     String ns = nsStr;
 
+    if (ns.StartsWith(Namespace::GLOBAL_NAME)) {
+        ns = ns.Substring(Namespace::GLOBAL_NAME.GetLength());
+    }
+
     if (ns.IsEmpty()) {
         return nullptr;
     }
@@ -1567,6 +1597,10 @@ String CodeGenerator::Emitter::EmitNamespaceEnd(
     /* [in] */ const String& nsStr)
 {
     String ns = nsStr;
+
+    if (ns.StartsWith(Namespace::GLOBAL_NAME)) {
+        ns = ns.Substring(Namespace::GLOBAL_NAME.GetLength());
+    }
 
     if (ns.IsEmpty()) {
         return nullptr;
@@ -1917,11 +1951,13 @@ String CodeGenerator::Emitter::EmitType(
         case como::TypeKind::ECode:
             builder.Append("ECode");
             break;
-        case como::TypeKind::Enum:
-            builder.AppendFormat("%s::%s",
-                    mComponent->mEnumerations[mt->mIndex]->mNamespace,
+        case como::TypeKind::Enum: {
+            builder.AppendFormat("%s%s",
+                    ConcatString(CanonicalizeNamespace(
+                            mComponent->mEnumerations[mt->mIndex]->mNamespace), "::").string(),
                     mComponent->mEnumerations[mt->mIndex]->mName);
             break;
+        }
         case como::TypeKind::Array: {
             como::MetaType* emt = mComponent->mTypes[mt->mIndex];
             if (mode == MODE_PARAMETER_IN) {
@@ -1947,12 +1983,16 @@ String CodeGenerator::Emitter::EmitType(
             como::MetaInterface* mi = mComponent->mInterfaces[mt->mIndex];
             int N = properties & TYPE_NUMBER_MASK;
             if ((properties >> (N * 2)) & TYPE_REFERENCE) {
-                builder.AppendFormat("AutoPtr<%s::%s>", mi->mNamespace, mi->mName);
+                builder.AppendFormat("AutoPtr<%s%s>",
+                        ConcatString(CanonicalizeNamespace(mi->mNamespace), "::").string(),
+                        mi->mName);
                 properties &= ~((TYPE_REFERENCE) << (N * 2));
                 properties -= 1;
             }
             else {
-                builder.AppendFormat("%s::%s", mi->mNamespace, mi->mName);
+                builder.AppendFormat("%s%s",
+                        ConcatString(CanonicalizeNamespace(mi->mNamespace), "::").string(),
+                        mi->mName);
             }
             break;
         }
@@ -2275,6 +2315,27 @@ String CodeGenerator::Emitter::EmitDefineMacro(
     builder.Append("__");
 
     return builder.ToString();
+}
+
+String CodeGenerator::Emitter::CanonicalizeNamespace(
+    /* [in] */ const String& ns)
+{
+    String canonicalizedNs = ns;
+    if (canonicalizedNs.StartsWith(Namespace::GLOBAL_NAME)) {
+        canonicalizedNs = canonicalizedNs.Substring(Namespace::GLOBAL_NAME.GetLength());
+    }
+    return canonicalizedNs.IsEmpty() ? "" : canonicalizedNs;
+}
+
+String CodeGenerator::Emitter::ConcatString(
+    /* [in] */ const String& string1,
+    /* [in] */ const String& string2)
+{
+    if (string1.IsEmpty() || string2.IsEmpty()) {
+        return "";
+    }
+
+    return string1 + string2;
 }
 
 void CodeGenerator::Emitter::EmitMetadataWrapper()

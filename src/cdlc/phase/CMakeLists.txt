@@ -24,7 +24,8 @@ set(SOURCES
     BuildinTypeBuilder.cpp
     ClassObjectInterfaceBuilder.cpp
     ComoRTMetadataLoader.cpp
-    InterfaceIntegrityChecker.cpp)
+    InterfaceIntegrityChecker.cpp
+    ParameterTypeChecker.cpp)
 
 add_library(cdlc_phase STATIC
     ${SOURCES})

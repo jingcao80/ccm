@@ -69,6 +69,10 @@ void ClassObjectInterfaceBuilder::BuildCoclassObjectInterface(
 
     if (hasConstructorWithArguments) {
         AutoPtr<InterfaceType> clsObjIntf = new InterfaceType();
+        Attributes attr;
+        attr.mUuid = klass->GetUUID()->Dump();
+        attr.mVersion = klass->GetVersion();
+        clsObjIntf->SetAttributes(attr);
         clsObjIntf->SetName(String::Format("I%sClassObject", klass->GetName().string()));
         clsObjIntf->SetBaseInterface(InterfaceType::CastFrom(mIInterfaceType));
         klass->GetNamespace()->AddInterfaceType(clsObjIntf);

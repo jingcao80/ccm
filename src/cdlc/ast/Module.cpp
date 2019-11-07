@@ -116,7 +116,7 @@ int Module::GetExternalEnumerationNumber()
 {
     int i = 0;
     for (AutoPtr<EnumerationType> enumeration : mEnumerations) {
-        if (!enumeration->GetExternalModuleName().IsEmpty()) {
+        if (enumeration->IsExternal()) {
             i++;
         }
     }
@@ -146,7 +146,7 @@ int Module::GetExternalInterfaceNumber()
 {
     int i = 0;
     for (AutoPtr<InterfaceType> interface : mInterfaces) {
-        if (!interface->GetExternalModuleName().IsEmpty()) {
+        if (interface->IsExternal()) {
             i++;
         }
     }
@@ -258,6 +258,9 @@ String Module::Dump(
         if (enumeration->IsForwardDeclared()) {
             continue;
         }
+        if (enumeration->IsExternal()) {
+            continue;
+        }
         String enumerationInfo = enumeration->Dump(prefix + Properties::INDENT);
         builder.AppendFormat("%s\n", enumerationInfo.string());
     }
@@ -265,7 +268,7 @@ String Module::Dump(
         if (interface->IsForwardDeclared()) {
             continue;
         }
-        if (!interface->GetExternalModuleName().IsEmpty()) {
+        if (interface->IsExternal()) {
             continue;
         }
         String interfaceInfo = interface->Dump(prefix + Properties::INDENT);
@@ -287,7 +290,11 @@ Module::Module(
     mUuid = UUID::Parse(mComponent->mUuid);
     mName = mComponent->mName;
     mUri = mComponent->mUri;
-    ResolveNamespace(mComponent->mGlobalNamespace);
+    como::MetaNamespace* global = mComponent->mGlobalNamespace;
+    for (int i = 0; i < global->mNamespaceNumber; i++) {
+        como::MetaNamespace* mn = global->mNamespaces[i];
+        ResolveNamespace(mn);
+    }
 }
 
 void Module::ResolveNamespace(

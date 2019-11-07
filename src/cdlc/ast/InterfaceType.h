@@ -37,6 +37,8 @@ public:
 
     inline AutoPtr<UUID> GetUUID();
 
+    inline String GetVersion();
+
     inline AutoPtr<InterfaceType> GetBaseInterface();
 
     inline void SetBaseInterface(
@@ -113,6 +115,11 @@ private:
 AutoPtr<UUID> InterfaceType::GetUUID()
 {
     return mUuid;
+}
+
+String InterfaceType::GetVersion()
+{
+    return mVersion;
 }
 
 AutoPtr<InterfaceType> InterfaceType::GetBaseInterface()

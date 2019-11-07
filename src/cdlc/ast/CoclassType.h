@@ -38,6 +38,8 @@ public:
 
     inline AutoPtr<UUID> GetUUID();
 
+    inline String GetVersion();
+
     inline void AddConstructor(
         /* [in] */ Method* constructor);
 
@@ -78,6 +80,11 @@ private:
 AutoPtr<UUID> CoclassType::GetUUID()
 {
     return mUuid;
+}
+
+String CoclassType::GetVersion()
+{
+    return mVersion;
 }
 
 void CoclassType::AddConstructor(

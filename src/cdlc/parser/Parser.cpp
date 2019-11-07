@@ -23,6 +23,7 @@
 #include "phase/ClassObjectInterfaceBuilder.h"
 #include "phase/ComoRTMetadataLoader.h"
 #include "phase/InterfaceIntegrityChecker.h"
+#include "phase/ParameterTypeChecker.h"
 #include "util/AutoPtr.h"
 #include "util/Logger.h"
 #include "util/MemoryFileReader.h"
@@ -43,6 +44,7 @@ Parser::Parser()
     }
     AddPhase(new ClassObjectInterfaceBuilder());
     AddPhase(new InterfaceIntegrityChecker());
+    AddPhase(new ParameterTypeChecker());
 }
 
 void Parser::AddPhase(
@@ -63,11 +65,13 @@ bool Parser::Parse(
     Prepare();
 
     bool ret = ParseFile(filePath);
+    if (ret) {
+        ret = RunPhases();
+    }
+
     if (!ret) {
         ShowErrors();
     }
-
-    ret = RunPhases();
 
     return ret;
 }
@@ -612,7 +616,7 @@ bool Parser::ParseInterface(
         // interface forward declaration
         mTokenizer.GetToken();
         String fullTypeName = interfaceName;
-        if (!fullTypeName.Contains("::") && !mCurrentNamespace->IsGlobal()) {
+        if (!fullTypeName.Contains("::")) {
             fullTypeName = mCurrentNamespace->ToString() + "::" + fullTypeName;
         }
         AutoPtr<Type> type = FindType(fullTypeName, false);
@@ -645,8 +649,7 @@ bool Parser::ParseInterface(
 
     AutoPtr<InterfaceType> interface;
 
-    AutoPtr<Type> type = mModule->FindType(mCurrentNamespace->IsGlobal()
-            ? interfaceName : mCurrentNamespace->ToString() + "::" + interfaceName);
+    AutoPtr<Type> type = mModule->FindType(mCurrentNamespace->ToString() + "::" + interfaceName);
     if (type != nullptr) {
         if (type->IsInterfaceType() && type->IsForwardDeclared()) {
             interface = InterfaceType::CastFrom(type);
@@ -798,9 +801,9 @@ AutoPtr<Constant> Parser::ParseConstant()
         AutoPtr<Namespace> ns = mCurrentNamespace;
         while (ns != nullptr) {
             String fullTypeName = ns->ToString() + "::" + typeName;
-            enumeration = mWorld->FindEnumeration(fullTypeName);
-            if (enumeration != nullptr) {
-                type = (Type*)enumeration.Get();
+            type = FindType(fullTypeName, true);
+            if (type != nullptr && type->IsEnumerationType()) {
+                enumeration = EnumerationType::CastFrom(type);
                 break;
             }
             ns = ns->GetParent();
@@ -1400,51 +1403,51 @@ AutoPtr<PostfixExpression> Parser::ParseIdentifier(
     }
     else if (type->IsEnumerationType()) {
         String id = tokenInfo.mStringValue;
-        if (EnumerationType::CastFrom(type)->Contains(id)) {
-            AutoPtr<PostfixExpression> expr = new PostfixExpression();
-            expr->SetType(type);
-            expr->SetEnumeratorName(id);
-            return expr;
-        }
-        else {
-            int idx = id.LastIndexOf("::");
-            if (idx > 0) {
-                String typeName = id.Substring(0, idx);
-                String constName = id.Substring(idx + 2);
-                AutoPtr<Type> type = FindType(typeName, true);
-                if (type == nullptr) {
-                    String message = String::Format("Type \"%s\" is not found", typeName.string());
-                    LogError(tokenInfo, message);
-                    return nullptr;
-                }
-                if (!type->IsInterfaceType()) {
-                    String message = String::Format("Type \"%s\" is not interface", type->ToString().string());
-                    LogError(tokenInfo, message);
-                    return nullptr;
-                }
-                AutoPtr<Constant> constant = InterfaceType::CastFrom(type)->FindConstant(constName);
-                if (constant == nullptr) {
-                    String message = String::Format("\"%s\" is not a constant of %s",
-                            constName.string(), typeName.string());
-                    LogError(tokenInfo, message);
-                    return nullptr;
-                }
-                if (!constant->GetValue()->GetType()->IsIntegralType()) {
-                    String message = String::Format("Constant \"%s\" is not an integral constant",
-                            id.string());
-                    LogError(tokenInfo, message);
-                    return nullptr;
-                }
-                AutoPtr<PostfixExpression> expr = new PostfixExpression();
-                expr->SetType(type);
-                expr->SetIntegralValue(constant->GetValue()->IntegerValue());
-                expr->SetRadix(constant->GetValue()->GetRadix());
-                return expr;
-            }
+        int idx = id.LastIndexOf("::");
+        if (idx == -1) {
             String message = String::Format("\"%s\" is not a valid enumerator of %s",
                     id.string(), type->GetName().string());
             LogError(tokenInfo, message);
             return nullptr;
+        }
+        String typeName = id.Substring(0, idx);
+        String constName = id.Substring(idx + 2);
+        if (type->GetName().Equals(typeName) && EnumerationType::CastFrom(type)->Contains(constName)) {
+            AutoPtr<PostfixExpression> expr = new PostfixExpression();
+            expr->SetType(type);
+            expr->SetEnumeratorName(constName);
+            return expr;
+        }
+        else {
+            AutoPtr<Type> type = FindType(typeName, true);
+            if (type == nullptr) {
+                String message = String::Format("Type \"%s\" is not found", typeName.string());
+                LogError(tokenInfo, message);
+                return nullptr;
+            }
+            if (!type->IsInterfaceType()) {
+                String message = String::Format("Type \"%s\" is not interface", type->ToString().string());
+                LogError(tokenInfo, message);
+                return nullptr;
+            }
+            AutoPtr<Constant> constant = InterfaceType::CastFrom(type)->FindConstant(constName);
+            if (constant == nullptr) {
+                String message = String::Format("\"%s\" is not a constant of %s",
+                        constName.string(), typeName.string());
+                LogError(tokenInfo, message);
+                return nullptr;
+            }
+            if (!constant->GetValue()->GetType()->IsIntegralType()) {
+                String message = String::Format("Constant \"%s\" is not an integral constant",
+                        id.string());
+                LogError(tokenInfo, message);
+                return nullptr;
+            }
+            AutoPtr<PostfixExpression> expr = new PostfixExpression();
+            expr->SetType(type);
+            expr->SetIntegralValue(constant->GetValue()->IntegerValue());
+            expr->SetRadix(constant->GetValue()->GetRadix());
+            return expr;
         }
     }
 
@@ -1894,6 +1897,7 @@ bool Parser::ParseConstructor(
 
     AutoPtr<Method> method = new Method();
     method->SetName("Constructor");
+    method->SetReturnType(FindType("como::ECode", false));
 
     tokenInfo = mTokenizer.PeekToken();
     while (tokenInfo.mToken != Token::PARENTHESES_CLOSE &&
@@ -2026,7 +2030,7 @@ bool Parser::ParseEnumeration()
     if (mTokenizer.PeekToken().mToken == Token::SEMICOLON) {
         mTokenizer.GetToken();
         String fullTypeName = enumName;
-        if (!fullTypeName.Contains("::") && !mCurrentNamespace->IsGlobal()) {
+        if (!fullTypeName.Contains("::")) {
             fullTypeName = mCurrentNamespace->ToString() + "::" + fullTypeName;
         }
         AutoPtr<Type> type = FindType(fullTypeName, false);
@@ -2058,8 +2062,7 @@ bool Parser::ParseEnumeration()
 
     AutoPtr<EnumerationType> enumeration;
 
-    AutoPtr<Type> type = mModule->FindType(mCurrentNamespace->IsGlobal()
-            ? enumName : mCurrentNamespace->ToString() + "::" + enumName);
+    AutoPtr<Type> type = mModule->FindType(mCurrentNamespace->ToString() + "::" + enumName);
     if (type != nullptr) {
         if (type->IsEnumerationType() && type->IsForwardDeclared()) {
             enumeration = EnumerationType::CastFrom(type);

@@ -122,7 +122,7 @@ int Namespace::GetExternalEnumerationNumber()
 {
     int i = 0;
     for (AutoPtr<EnumerationType> enumeration : mEnumerations) {
-        if (!enumeration->GetExternalModuleName().IsEmpty()) {
+        if (enumeration->IsExternal()) {
             i++;
         }
     }
@@ -153,7 +153,7 @@ int Namespace::GetExternalInterfaceNumber()
 {
     int i = 0;
     for (AutoPtr<InterfaceType> interface : mInterfaces) {
-        if (!interface->GetExternalModuleName().IsEmpty()) {
+        if (interface->IsExternal()) {
             i++;
         }
     }

@@ -40,7 +40,7 @@ bool InterfaceIntegrityChecker::CheckInterfaceIntegrity(
         for (int j = 0; j < method->GetParameterNumber(); j++) {
             AutoPtr<Parameter> param = method->GetParameter(j);
             if (param->GetType() == nullptr) {
-                Logger::E("Parser", "The type of the parameter \"%s\" is nullptr which method is \"%s\"",
+                Logger::E("InterfaceIntegrityChecker", "The type of the parameter \"%s\" is nullptr which method is \"%s\"",
                         param->ToString().string(), method->ToString().string());
                 ret = false;
                 continue;
@@ -48,7 +48,7 @@ bool InterfaceIntegrityChecker::CheckInterfaceIntegrity(
             ret = CheckTypeIntegrity(param->GetType()) && ret;
         }
         if (method->GetReturnType() == nullptr) {
-            Logger::E("Parser", "The type of the method \"%s\" is nullptr",
+            Logger::E("InterfaceIntegrityChecker", "The return type of the method \"%s\" is nullptr",
                     method->ToString().string());
             ret = false;
             continue;

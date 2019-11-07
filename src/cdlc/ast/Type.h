@@ -55,6 +55,8 @@ public:
     inline void SetExternalModuleName(
         /* [in] */ const String& moduleName);
 
+    inline bool IsExternal();
+
     virtual bool IsECodeType();
 
     virtual bool IsBooleanType();
@@ -180,6 +182,11 @@ void Type::SetExternalModuleName(
     /* [in] */ const String& moduleName)
 {
     mExternalModuleName = moduleName;
+}
+
+bool Type::IsExternal()
+{
+    return !mExternalModuleName.IsEmpty();
 }
 
 }

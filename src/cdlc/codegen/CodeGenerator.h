@@ -126,6 +126,13 @@ private:
         String EmitDefineMacro(
             /* [in] */ const String& fullName);
 
+        String CanonicalizeNamespace(
+            /* [in] */ const String& ns);
+
+        String ConcatString(
+            /* [in] */ const String& string1,
+            /* [in] */ const String& string2);
+
         void EmitMetadataWrapper();
 
     protected:
