@@ -35,13 +35,16 @@ public:
     COMO_INTERFACE_DECL();
 
     ECode GetName(
-        /* [out] */ String& name);
+        /* [out] */ String& name) override;
+
+    ECode GetNamespace(
+        /* [in] */ String& ns) override;
 
     ECode GetType(
-        /* [out] */ AutoPtr<IMetaType>& type);
+        /* [out] */ AutoPtr<IMetaType>& type) override;
 
     ECode GetValue(
-        /* [out] */ AutoPtr<IMetaValue>& value);
+        /* [out] */ AutoPtr<IMetaValue>& value) override;
 
 private:
     AutoPtr<IMetaValue> BuildValue(
@@ -50,6 +53,7 @@ private:
 public:
     MetaConstant* mMetadata;
     String mName;
+    String mNamespace;
     AutoPtr<IMetaType> mType;
     AutoPtr<IMetaValue> mValue;
 };

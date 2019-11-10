@@ -144,6 +144,11 @@ void MetadataBuilder::CalculateMetaConstant(
     mBasePtr = ALIGN(mBasePtr);
     // add mName to StringPool
     mPool.Add(constant->GetName());
+    // add mNamespace to StringPool
+    AutoPtr<Namespace> ns = constant->GetNamespace();
+    if (ns != nullptr) {
+        mPool.Add(ns->ToString());
+    }
     // add value to StringPool when constant is String or Enumerator
     if (constant->GetType()->IsStringType()) {
         mPool.Add(constant->GetValue()->StringValue());
@@ -482,6 +487,8 @@ como::MetaConstant* MetadataBuilder::WriteMetaConstant(
     mBasePtr = ALIGN(mBasePtr);
     como::MetaConstant* mc = reinterpret_cast<como::MetaConstant*>(mBasePtr);
     mc->mName = WriteString(constant->GetName());
+    AutoPtr<Namespace> ns = constant->GetNamespace();
+    mc->mNamespace = ns != nullptr ? WriteString(ns->ToString()) : nullptr;
     AutoPtr<Type> type = constant->GetType();
     mc->mTypeIndex = mModule->IndexOf(type);
     mc->mValue.mProperties = 0;

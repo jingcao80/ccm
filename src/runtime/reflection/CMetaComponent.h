@@ -22,6 +22,7 @@
 #include "hashmap.h"
 #include "component/comocomp.h"
 #include "metadata/Component.h"
+#include "util/mutex.h"
 
 namespace como {
 
@@ -93,6 +94,8 @@ public:
         /* [in] */ const InterfaceID& iid,
         /* [out] */ AutoPtr<IMetaInterface>& metaIntf) override;
 
+    ECode Resolve() override;
+
     ECode CanUnload(
         /* [out] */ Boolean& unload);
 
@@ -106,13 +109,7 @@ public:
 
     void BuildAllCoclasses();
 
-    AutoPtr<IMetaCoclass> BuildCoclass(
-        /* [in] */ Integer index);
-
     void BuildAllEnumerations();
-
-    AutoPtr<IMetaEnumeration> BuildEnumeration(
-        /* [in] */ Integer index);
 
     void BuildAllInterfaces();
 
@@ -133,20 +130,25 @@ public:
     ComponentID mCid;
     String mName;
     String mUri;
-    Array<IMetaConstant*> mMetaConstants;
-    HashMap<String, IMetaConstant*> mMetaConstantNameMap;
-    Boolean mMetaConstantsAllBuilt;
-    Array<IMetaCoclass*> mMetaCoclasses;
-    HashMap<String, IMetaCoclass*> mMetaCoclassNameMap;
-    HashMap<UUID, IMetaCoclass*> mMetaCoclassIdMap;
-    Boolean mMetaCoclassesAllBuilt;
-    Array<IMetaEnumeration*> mMetaEnumerations;
-    HashMap<String, IMetaEnumeration*> mMetaEnumerationMap;
-    Boolean mMetaEnumerationsAllBuilt;
-    Array<IMetaInterface*> mMetaInterfaces;
-    HashMap<String, IMetaInterface*> mMetaInterfaceNameMap;
-    HashMap<UUID, IMetaInterface*> mMetaInterfaceIdMap;
-    Boolean mMetaInterfacesAllBuilt;
+    Array<IMetaConstant*> mConstants;
+    HashMap<String, IMetaConstant*> mConstantNameMap;
+    Boolean mConstantsAlreadyBuilt;
+    Mutex mConstantsLock { true };
+    Array<IMetaCoclass*> mCoclasses;
+    HashMap<String, IMetaCoclass*> mCoclassNameMap;
+    HashMap<UUID, IMetaCoclass*> mCoclassIdMap;
+    Boolean mCoclassesAlreadyBuilt;
+    Mutex mCoclassesLock { true };
+    Array<IMetaEnumeration*> mEnumerations;
+    HashMap<String, IMetaEnumeration*> mEnumerationNameMap;
+    Boolean mEnumerationsAlreadyBuilt;
+    Mutex mEnumerationsLock { true };
+    Array<IMetaInterface*> mInterfaces;
+    HashMap<String, IMetaInterface*> mInterfaceNameMap;
+    HashMap<UUID, IMetaInterface*> mInterfaceIdMap;
+    Boolean mInterfacesAlreadyBuilt;
+    Mutex mInterfacesLock { true };
+
     AutoPtr<IMetaInterface> mIInterface;
     HashMap<UUID, ClassObjectGetter*> mClassObjects;
 };

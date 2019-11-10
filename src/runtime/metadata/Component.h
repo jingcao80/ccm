@@ -97,6 +97,7 @@ struct MetaNamespace
 struct MetaConstant
 {
     char*               mName;
+    char*               mNamespace;
     int                 mTypeIndex;
     MetaValue           mValue;
 };

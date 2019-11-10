@@ -791,7 +791,7 @@ ECode CDBusParcel::GetData(
 }
 
 ECode CDBusParcel::SetData(
-    /* [in] */ Byte* data,
+    /* [in] */ HANDLE data,
     /* [in] */ Long size)
 {
     if (size <= 0) {
@@ -800,7 +800,7 @@ ECode CDBusParcel::SetData(
 
     ECode ec = RestartWrite(size);
     if (SUCCEEDED(ec)) {
-        memcpy(mData, data, size);
+        memcpy(mData, reinterpret_cast<Byte*>(data), size);
         mDataSize = size;
     }
     return ec;

@@ -16,7 +16,12 @@
 
 namespace como {
 namespace test {
+
+const Integer TYPE = 0;
+
 namespace reflection {
+
+const Integer TYPE = 1;
 
 [
     uuid(6611bd57-14c2-4b5f-b971-9d47b122fc21),
@@ -25,7 +30,8 @@ namespace reflection {
 interface IMethodTest
 {
     TestMethod1(
-        [in] Integer arg1);
+        [in] Integer arg,
+        [out] Integer& result);
 }
 
 [

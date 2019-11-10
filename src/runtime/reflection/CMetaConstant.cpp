@@ -27,6 +27,7 @@ CMetaConstant::CMetaConstant(
     /* [in] */ MetaConstant* mk)
     : mMetadata(mk)
     , mName(mk->mName)
+    , mNamespace(mk->mNamespace)
 {
     mType = new CMetaType(mc, mc->mTypes[mk->mTypeIndex]);
     mValue = BuildValue(mType);
@@ -36,6 +37,13 @@ ECode CMetaConstant::GetName(
     /* [out] */ String& name)
 {
     name = mName;
+    return NOERROR;
+}
+
+ECode CMetaConstant::GetNamespace(
+    /* [in] */ String& ns)
+{
+    ns = mNamespace;
     return NOERROR;
 }
 

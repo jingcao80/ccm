@@ -146,6 +146,9 @@ String MetadataDumper::DumpMetaConstant(
 
     builder.Append(prefix).Append("{ ");
     builder.AppendFormat("\"mName\":\"%s\", ", mc->mName);
+    if (mc->mNamespace != nullptr) {
+        builder.AppendFormat("\"mNamespace\":\"%s\", ", mc->mNamespace);
+    }
     builder.AppendFormat("\"mType\":\"%s\", ",
             DumpMetaType(mComponent->mTypes[mc->mTypeIndex]).string());
     builder.AppendFormat("\"mValue\":\"%s\"",

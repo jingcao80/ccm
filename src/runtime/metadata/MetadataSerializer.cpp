@@ -96,6 +96,7 @@ void MetadataSerializer::SerializeMetaConstant(
     /* [in] */ MetaConstant* mc)
 {
     mc->mName = reinterpret_cast<char*>(SerializeAdjust(mc->mName));
+    mc->mNamespace = reinterpret_cast<char*>(SerializeAdjust(mc->mNamespace));
     TypeKind kind = mComponent->mTypes[mc->mTypeIndex]->mKind;
     if (kind == TypeKind::String || kind == TypeKind::Enum) {
         mc->mValue.mStringValue = reinterpret_cast<char*>(SerializeAdjust(mc->mValue.mStringValue));
@@ -277,6 +278,7 @@ void MetadataSerializer::DeserializeMetaConstant(
     /* [in] */ MetaConstant* mc)
 {
     mc->mName = reinterpret_cast<char*>(DeserializeAdjust(mc->mName));
+    mc->mNamespace = reinterpret_cast<char*>(DeserializeAdjust(mc->mNamespace));
     TypeKind kind = mComponent->mTypes[mc->mTypeIndex]->mKind;
     if (kind == TypeKind::String || kind == TypeKind::Enum) {
         mc->mValue.mStringValue = reinterpret_cast<char*>(DeserializeAdjust(mc->mValue.mStringValue));

@@ -156,7 +156,7 @@ public:
         /* [out] */ Long& size);
 
     ECode SetData(
-        /* [in] */ Byte* data,
+        /* [in] */ HANDLE data,
         /* [in] */ Long size);
 
     ECode SetDataPosition(

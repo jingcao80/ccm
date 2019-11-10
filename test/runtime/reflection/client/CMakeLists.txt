@@ -31,11 +31,12 @@ set(GENERATED_SOURCES
     ${OBJ_DIR}/ReflectionTestUnit.cpp)
 
 IMPORT_LIBRARY(comort.so)
+IMPORT_GTEST()
 
 add_executable(testReflection
     ${SOURCES}
     ${GENERATED_SOURCES})
-target_link_libraries(testReflection comort.so)
+target_link_libraries(testReflection comort.so ${GTEST_LIBS})
 add_dependencies(testReflection ReflectionTestUnit)
 
 add_custom_command(

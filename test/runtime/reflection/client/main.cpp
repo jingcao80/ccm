@@ -16,112 +16,229 @@
 
 #include "ReflectionTestUnit.h"
 #include <comoapi.h>
+#include <gtest/gtest.h>
 
-#include <cstdio>
-
-int main(int argv, char** argc)
+TEST(ReflectionTest, TestComponentGetName)
 {
     AutoPtr<IMetaComponent> mc;
     CoGetComponentMetadata(CID_ReflectionTestUnit, nullptr, mc);
     String name;
     mc->GetName(name);
-    printf("==== component name: %s ====\n\n", name.string());
+    EXPECT_STREQ("ReflectionTestUnit", name.string());
+}
 
-    Integer clsNumber;
-    mc->GetCoclassNumber(clsNumber);
-    printf("==== component class number: %d ====\n", clsNumber);
-    Array<IMetaCoclass*> klasses(clsNumber);
+TEST(ReflectionTest, TestComponentGetConstants)
+{
+    AutoPtr<IMetaComponent> mc;
+    CoGetComponentMetadata(CID_ReflectionTestUnit, nullptr, mc);
+    Integer constantNumber;
+    mc->GetConstantNumber(constantNumber);
+    EXPECT_EQ(2, constantNumber);
+    Array<IMetaConstant*> constants(constantNumber);
+    mc->GetAllConstants(constants);
+    for (Integer i = 0; i < constants.GetLength(); i++) {
+        String name, ns;
+        constants[i]->GetName(name);
+        constants[i]->GetNamespace(ns);
+        if (i == 0) {
+            EXPECT_STREQ("como::test", ns.string());
+            EXPECT_STREQ("TYPE", name.string());
+        }
+        else if (i == 1) {
+            EXPECT_STREQ("como::test::reflection", ns.string());
+            EXPECT_STREQ("TYPE", name.string());
+        }
+    }
+}
+
+TEST(ReflectionTest, TestComponentGetCoclasses)
+{
+    AutoPtr<IMetaComponent> mc;
+    CoGetComponentMetadata(CID_ReflectionTestUnit, nullptr, mc);
+    Integer klassNumber;
+    mc->GetCoclassNumber(klassNumber);
+    EXPECT_EQ(1, klassNumber);
+    Array<IMetaCoclass*> klasses(klassNumber);
     mc->GetAllCoclasses(klasses);
     for (Integer i = 0; i < klasses.GetLength(); i++) {
-        String clsName, clsNs;
-        klasses[i]->GetName(clsName);
-        klasses[i]->GetNamespace(clsNs);
-        printf("==== [%d] class name: %s, namespace: %s ====\n",
-                i, clsName.string(), clsNs.string());
+        String name, ns;
+        klasses[i]->GetName(name);
+        klasses[i]->GetNamespace(ns);
+        if (i == 0) {
+            EXPECT_STREQ("como::test::reflection", ns.string());
+            EXPECT_STREQ("CMethodTester", name.string());
+        }
     }
-    printf("\n");
+}
 
-    Integer intfNumber;
-    mc->GetInterfaceNumber(intfNumber);
-    printf("==== component interface number: %d ====\n", intfNumber);
-    Array<IMetaInterface*> intfs(intfNumber);
-    mc->GetAllInterfaces(intfs);
-    for (Integer i = 0; i < intfs.GetLength(); i++) {
-        String intfName, intfNs;
-        intfs[i]->GetName(intfName);
-        intfs[i]->GetNamespace(intfNs);
-        Integer methodNumber;
-        intfs[i]->GetMethodNumber(methodNumber);
-        printf("==== [%d] interface name: %s, namespace: %s, %d methods ====\n",
-                i, intfName.string(), intfNs.string(), methodNumber);
+TEST(ReflectionTest, TestComponentGetInterfaces)
+{
+    AutoPtr<IMetaComponent> mc;
+    CoGetComponentMetadata(CID_ReflectionTestUnit, nullptr, mc);
+    Integer interfaceNumber;
+    mc->GetInterfaceNumber(interfaceNumber);
+    EXPECT_EQ(1, interfaceNumber);
+    Array<IMetaInterface*> interfaces(interfaceNumber);
+    mc->GetAllInterfaces(interfaces);
+    for (Integer i = 0; i < interfaces.GetLength(); i++) {
+        String name, ns;
+        int methodNumber;
+        interfaces[i]->GetName(name);
+        interfaces[i]->GetNamespace(ns);
+        interfaces[i]->GetMethodNumber(methodNumber);
+        if (i == 0) {
+            EXPECT_STREQ("como::test::reflection", ns.string());
+            EXPECT_STREQ("IMethodTest", name.string());
+            EXPECT_EQ(5, methodNumber);
+        }
     }
-    printf("\n");
+}
 
+TEST(ReflectionTest, TestCoclassCreateObject)
+{
+    AutoPtr<IMetaComponent> mc;
+    CoGetComponentMetadata(CID_ReflectionTestUnit, nullptr, mc);
+    AutoPtr<IMetaCoclass> klass;
+    mc->GetCoclass("como::test::reflection::CMethodTester", klass);
     AutoPtr<IInterface> obj;
-    klasses[0]->CreateObject(IID_IInterface, obj);
+    klass->CreateObject(IID_IInterface, &obj);
+    EXPECT_TRUE(obj != nullptr);
+}
 
-    AutoPtr<IMetaCoclass> klass = klasses[0];
-    String clsName, clsNs;
-    klass->GetName(clsName);
-    klass->GetNamespace(clsNs);
+TEST(ReflectionTest, TestCoclassGetMethods)
+{
+    AutoPtr<IMetaComponent> mc;
+    CoGetComponentMetadata(CID_ReflectionTestUnit, nullptr, mc);
+    AutoPtr<IMetaCoclass> klass;
+    mc->GetCoclass("como::test::reflection::CMethodTester", klass);
     Integer methodNumber;
     klass->GetMethodNumber(methodNumber);
-    printf("==== class %s::%s has %d methods ====\n", clsNs.string(), clsName.string(), methodNumber);
+    EXPECT_EQ(5, methodNumber);
     Array<IMetaMethod*> methods(methodNumber);
     klass->GetAllMethods(methods);
     for (Integer i = 0; i < methodNumber; i++) {
         IMetaMethod* method = methods[i];
-        String mthName, mthSig;
-        method->GetName(mthName);
-        method->GetSignature(mthSig);
-        printf("==== [%d] method name: %s, signature: %s ====\n", i, mthName.string(), mthSig.string());
+        String name, sig;
+        method->GetName(name);
+        method->GetSignature(sig);
+        switch (i) {
+            case 0:
+                EXPECT_STREQ("AddRef", name.string());
+                EXPECT_STREQ("(H)I", sig.string());
+                break;
+            case 1:
+                EXPECT_STREQ("Release", name.string());
+                EXPECT_STREQ("(H)I", sig.string());
+                break;
+            case 2:
+                EXPECT_STREQ("Probe", name.string());
+                EXPECT_STREQ("(U)Lcomo/IInterface*", sig.string());
+                break;
+            case 3:
+                EXPECT_STREQ("GetInterfaceID", name.string());
+                EXPECT_STREQ("(Lcomo/IInterface*U&)E", sig.string());
+                break;
+            case 4:
+                EXPECT_STREQ("TestMethod1", name.string());
+                EXPECT_STREQ("(II&)E", sig.string());
+                break;
+            default:
+                break;
+        }
     }
-    printf("\n");
+}
 
+TEST(ReflectionTest, TestMethodGetParameters)
+{
+    AutoPtr<IMetaComponent> mc;
+    CoGetComponentMetadata(CID_ReflectionTestUnit, nullptr, mc);
+    AutoPtr<IMetaCoclass> klass;
+    mc->GetCoclass("como::test::reflection::CMethodTester", klass);
     AutoPtr<IMetaMethod> method;
-    klass->GetMethod(String("TestMethod1"), String("(I)E"), method);
+    klass->GetMethod("TestMethod1", "(II&)E", method);
     Integer paramNumber;
     method->GetParameterNumber(paramNumber);
-    printf("==== method TestMethod1 has %d parameters ====\n", paramNumber);
+    EXPECT_EQ(2, paramNumber);
     Array<IMetaParameter*> params(paramNumber);
     method->GetAllParameters(params);
     for (Integer i = 0; i < paramNumber; i++) {
         IMetaParameter* param = params[i];
-        String pname;
-        param->GetName(pname);
-        Integer pidx;
-        param->GetIndex(pidx);
+        String name;
+        param->GetName(name);
+        Integer index;
+        param->GetIndex(index);
         IOAttribute attr;
         param->GetIOAttribute(attr);
         AutoPtr<IMetaType> type;
         param->GetType(type);
         String tname;
         type->GetName(tname);
-        printf("==== [%d] parameter name: %s, index: %d, attr: %d, type: %s ====\n",
-                i, pname.string(), pidx, (Integer)attr, tname.string());
+        switch (i) {
+            case 0:
+                EXPECT_STREQ("arg", name.string());
+                EXPECT_EQ(0, index);
+                EXPECT_TRUE(attr == IOAttribute::IN);
+                EXPECT_STREQ("Integer", tname.string());
+                break;
+            case 1:
+                EXPECT_STREQ("result", name.string());
+                EXPECT_EQ(1, index);
+                EXPECT_TRUE(attr == IOAttribute::OUT);
+                EXPECT_STREQ("Integer&", tname.string());
+                break;
+            default:
+                break;
+        }
     }
-    printf("\n");
+}
 
+TEST(ReflectionTest, TestMethodInvoke)
+{
+    AutoPtr<IMetaComponent> mc;
+    CoGetComponentMetadata(CID_ReflectionTestUnit, nullptr, mc);
+    AutoPtr<IMetaCoclass> klass;
+    mc->GetCoclass("como::test::reflection::CMethodTester", klass);
+    AutoPtr<IInterface> obj;
+    klass->CreateObject(IID_IInterface, &obj);
+    AutoPtr<IMetaMethod> method;
+    klass->GetMethod("TestMethod1", "(II&)E", method);
     AutoPtr<IArgumentList> args;
     method->CreateArgumentList(args);
-    args->SetInputArgumentOfInteger(0, 9);
+    Integer arg = 9, result;
+    args->SetInputArgumentOfInteger(0, arg);
+    args->SetOutputArgumentOfInteger(1, reinterpret_cast<HANDLE>(&result));
     method->Invoke(obj, args);
-
     IObject::Probe(obj)->GetCoclass(klass);
-    klass->GetName(clsName);
-    klass->GetNamespace(clsNs);
-    printf("==== object class name: %s, namespace: %s ====\n",
-            clsName.string(), clsNs.string());
+    EXPECT_EQ(arg, result);
+    String name, ns;
+    klass->GetName(name);
+    klass->GetNamespace(ns);
+    EXPECT_STREQ("como::test::reflection", ns.string());
+    EXPECT_STREQ("CMethodTester", name.string());
+}
 
-    obj = nullptr;
+TEST(ReflectionTest, TestModuleUnload)
+{
+    AutoPtr<IMetaComponent> mc;
+    CoGetComponentMetadata(CID_ReflectionTestUnit, nullptr, mc);
     Boolean canUnload;
     mc->CanUnload(canUnload);
-    if (canUnload) {
-        ECode ec = mc->Unload();
-        printf("==== Unload component %s ====\n", SUCCEEDED(ec) ? "succeeded." : "fail.");
-    }
-    else {
-        printf("==== Cannot unload component ====\n");
-    }
-    return 0;
+    EXPECT_TRUE(canUnload);
+    AutoPtr<IMetaCoclass> klass;
+    mc->GetCoclass("como::test::reflection::CMethodTester", klass);
+    AutoPtr<IInterface> obj;
+    klass->CreateObject(IID_IInterface, &obj);
+    mc->CanUnload(canUnload);
+    EXPECT_FALSE(canUnload);
+    obj = nullptr;
+    mc->CanUnload(canUnload);
+    EXPECT_TRUE(canUnload);
+    ECode ec = mc->Unload();
+    EXPECT_TRUE(SUCCEEDED(ec));
+}
+
+int main(int argc, char **argv)
+{
+    testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }

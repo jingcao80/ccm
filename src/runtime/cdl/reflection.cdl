@@ -109,6 +109,8 @@ interface IMetaComponent
         [in] CoclassID cid,
         [out] IMetaCoclass&& klass);
 
+    Resolve();
+
     CanUnload(
         [out] Boolean& unload);
 
@@ -277,6 +279,9 @@ interface IMetaConstant
 {
     GetName(
         [out] String& name);
+
+    GetNamespace(
+        [out] String& ns);
 
     GetType(
         [out] IMetaType&& type);

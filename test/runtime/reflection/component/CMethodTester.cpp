@@ -36,9 +36,11 @@ CMethodTester::~CMethodTester()
 }
 
 ECode CMethodTester::TestMethod1(
-    /* [in] */ Integer arg1)
+    /* [in] */ Integer arg,
+    /* [out] */ Integer& result)
 {
-    printf("==== call TestMethod1(arg1:%d) ====\n", arg1);
+    printf("==== call TestMethod1(arg:%d) ====\n", arg);
+    result = arg;
     return NOERROR;
 }
 

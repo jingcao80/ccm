@@ -68,13 +68,13 @@ private:
     friend class Condition;
 
     // 0 is unheld, 1 is held.
-    std::atomic<int32_t> mState;
+    std::atomic<int32_t> mState { 0 };
     // Exclusive owner.
-    volatile uint64_t mExclusiveOwner;
+    volatile uint64_t mExclusiveOwner = 0;
     // Number of waiting contenders.
-    std::atomic<int32_t> mNumContenders;
+    std::atomic<int32_t> mNumContenders { 0 };
     const Boolean mRecursive;
-    unsigned int mRecursionCount;
+    unsigned int mRecursionCount = 0;
 };
 
 inline Mutex::AutoLock::AutoLock(
@@ -98,9 +98,7 @@ inline Mutex::AutoLock::~AutoLock()
 
 inline Mutex::Mutex(
     /* [in] */ Boolean recursive)
-    : mExclusiveOwner(0)
-    , mRecursive(recursive)
-    , mRecursionCount(0)
+    : mRecursive(recursive)
 {}
 
 //----------------------------------------------------------

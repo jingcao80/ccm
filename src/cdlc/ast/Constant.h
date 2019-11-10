@@ -45,6 +45,8 @@ public:
     inline void SetValue(
         /* [in] */ Expression* value);
 
+    inline AutoPtr<Namespace> GetNamespace();
+
     inline void SetNamespace(
         /* [in] */ Namespace* ns);
 
@@ -95,6 +97,11 @@ void Constant::SetValue(
     /* [in] */ Expression* value)
 {
     mValue = value;
+}
+
+AutoPtr<Namespace> Constant::GetNamespace()
+{
+    return mNamespace;
 }
 
 void Constant::SetNamespace(

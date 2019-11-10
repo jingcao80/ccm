@@ -14,17 +14,19 @@
 // limitations under the License.
 //=========================================================================
 
-[
-    uuid(6c69c8bc-b62d-4dad-811b-26f73cd2aaa7),
-    uri("http://como.org/components/test/compiler_test.so"),
-    description("This is the definition of TestModule.")
-]
-module TestModule
-{
+const Integer TYPE1 = 1;
+const Integer TYPE2 = 2;
 
-include "Constants.cdl"
-include "Enumerations.cdl"
-include "Interfaces.cdl"
-include "Coclasses.cdl"
+namespace Namespace1 {
+
+const Integer TYPE2 = 2;
+const Integer TYPE3 = 3;
+
+namespace Namespace2 {
+
+const Integer TYPE3 = 3;
+const Integer TYPE4 = 4;
+
+}
 
 }

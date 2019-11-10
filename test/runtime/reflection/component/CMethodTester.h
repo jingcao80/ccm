@@ -39,7 +39,8 @@ public:
     COMO_OBJECT_DECL();
 
     ECode TestMethod1(
-        /* [in] */ Integer arg1);
+        /* [in] */ Integer arg,
+        /* [out] */ Integer& result);
 };
 
 }
