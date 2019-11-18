@@ -17,8 +17,9 @@
 #ifndef __COMO_CMETACONSTRUCTOR_H__
 #define __COMO_CMETACONSTRUCTOR_H__
 
-#include "comoref.h"
-#include "Component.h"
+#include "metadata/Component.h"
+#include "util/comoref.h"
+#include "util/mutex.h"
 
 namespace como {
 
@@ -92,6 +93,7 @@ public:
     String mSignature;
     Boolean mIsDefault;
     Array<IMetaParameter*> mParameters;
+    Mutex mParametersLock;
 };
 
 } // namespace como

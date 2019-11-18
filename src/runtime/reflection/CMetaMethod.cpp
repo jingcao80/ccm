@@ -14,12 +14,12 @@
 // limitations under the License.
 //=========================================================================
 
-#include "CArgumentList.h"
-#include "CMetaComponent.h"
-#include "CMetaInterface.h"
-#include "CMetaMethod.h"
-#include "CMetaParameter.h"
-#include "CMetaType.h"
+#include "reflection/CArgumentList.h"
+#include "reflection/CMetaComponent.h"
+#include "reflection/CMetaInterface.h"
+#include "reflection/CMetaMethod.h"
+#include "reflection/CMetaParameter.h"
+#include "reflection/CMetaType.h"
 
 namespace como {
 
@@ -61,7 +61,7 @@ CMetaMethod::CMetaMethod(
 ECode CMetaMethod::GetInterface(
     /* [out] */ AutoPtr<IMetaInterface>& intf)
 {
-    intf = (IMetaInterface*)mOwner;
+    intf = mOwner;
     return NOERROR;
 }
 
@@ -117,10 +117,12 @@ ECode CMetaMethod::GetParameter(
     /* [in] */ const String& name,
     /* [out] */ AutoPtr<IMetaParameter>& param)
 {
-    if (name.IsEmpty()) {
+    if (name.IsEmpty() || mParameters.IsEmpty()) {
         param = nullptr;
         return NOERROR;
     }
+
+    BuildAllParameters();
 
     for (Integer i = 0; i < mParameters.GetLength(); i++) {
         IMetaParameter* mpObj = mParameters[i];
@@ -180,14 +182,17 @@ ECode CMetaMethod::Invoke(
 void CMetaMethod::BuildAllParameters()
 {
     if (mParameters[0] == nullptr) {
-        for (Integer i = 0; i < mMetadata->mParameterNumber; i++) {
-            AutoPtr<CMetaParameter> mpObj = new CMetaParameter(
-                    mOwner->mOwner->mMetadata, this,
-                    mMetadata->mParameters[i], i);
-            mParameters.Set(i, mpObj);
-            if (!mHasOutArguments && (mpObj->mIOAttr == IOAttribute::OUT ||
-                    mpObj->mIOAttr == IOAttribute::IN_OUT)) {
-                mHasOutArguments = true;
+        Mutex::AutoLock lock(mParametersLock);
+        if (mParameters[0] == nullptr) {
+            for (Integer i = 0; i < mMetadata->mParameterNumber; i++) {
+                AutoPtr<CMetaParameter> mpObj = new CMetaParameter(
+                        mOwner->mOwner->mMetadata, this,
+                        mMetadata->mParameters[i], i);
+                mParameters.Set(i, mpObj);
+                if (!mHasOutArguments && (mpObj->mIOAttr == IOAttribute::OUT ||
+                        mpObj->mIOAttr == IOAttribute::IN_OUT)) {
+                    mHasOutArguments = true;
+                }
             }
         }
     }

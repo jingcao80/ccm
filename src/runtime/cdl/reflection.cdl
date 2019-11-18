@@ -109,7 +109,7 @@ interface IMetaComponent
         [in] CoclassID cid,
         [out] IMetaCoclass&& klass);
 
-    Resolve();
+    Preload();
 
     CanUnload(
         [out] Boolean& unload);
@@ -259,6 +259,12 @@ interface IMetaInterface
         [out] Integer& number);
 
     GetAllMethods(
+        [out] Array<IMetaMethod*>& methods);
+
+    GetDeclaredMethodNumber(
+        [out] Integer& number);
+
+    GetDeclaredMethods(
         [out] Array<IMetaMethod*>& methods);
 
     GetMethod(

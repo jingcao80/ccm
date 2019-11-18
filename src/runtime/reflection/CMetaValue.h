@@ -18,8 +18,8 @@
 #define __COMO_CMETAVALUE_H__
 
 #include "comotypes.h"
-#include "comoref.h"
-#include "Component.h"
+#include "metadata/Component.h"
+#include "util/comoref.h"
 
 namespace como {
 

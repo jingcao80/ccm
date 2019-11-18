@@ -14,8 +14,8 @@
 // limitations under the License.
 //=========================================================================
 
-#include "CMetaEnumeration.h"
-#include "CMetaEnumerator.h"
+#include "reflection/CMetaEnumeration.h"
+#include "reflection/CMetaEnumerator.h"
 
 namespace como {
 
@@ -33,7 +33,7 @@ CMetaEnumerator::CMetaEnumerator(
 ECode CMetaEnumerator::GetEnumeration(
     /* [out] */ AutoPtr<IMetaEnumeration>& metaEnumn)
 {
-    metaEnumn = (IMetaEnumeration*)mOwner;
+    metaEnumn = mOwner;
     return NOERROR;
 }
 

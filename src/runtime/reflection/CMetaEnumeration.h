@@ -17,8 +17,9 @@
 #ifndef __COMO_CMETAENUMERATION_H__
 #define __COMO_CMETAENUMERATION_H__
 
-#include "comoref.h"
-#include "Component.h"
+#include "metadata/Component.h"
+#include "util/comoref.h"
+#include "util/mutex.h"
 
 namespace como {
 
@@ -37,7 +38,7 @@ public:
     COMO_INTERFACE_DECL();
 
     ECode GetComponent(
-        /* [out] */ AutoPtr<IMetaComponent>& metaComp) override;
+        /* [out] */ AutoPtr<IMetaComponent>& comp) override;
 
     ECode GetName(
         /* [out] */ String& name) override;
@@ -53,7 +54,7 @@ public:
 
     ECode GetEnumerator(
         /* [in] */ const String& name,
-        /* [out] */ AutoPtr<IMetaEnumerator>& metaEnumr) override;
+        /* [out] */ AutoPtr<IMetaEnumerator>& enumr) override;
 
     void BuildAllEnumerators();
 
@@ -62,7 +63,8 @@ public:
     CMetaComponent* mOwner;
     String mName;
     String mNamespace;
-    Array<IMetaEnumerator*> mMetaEnumerators;
+    Array<IMetaEnumerator*> mEnumerators;
+    Mutex mEnumeratorsLock;
 };
 
 } // namespace como

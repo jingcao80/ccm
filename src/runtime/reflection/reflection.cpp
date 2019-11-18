@@ -14,17 +14,20 @@
 // limitations under the License.
 //=========================================================================
 
-#include "comocomp.h"
-#include "comolog.h"
-#include "comoreflapi.h"
-#include "CMetaComponent.h"
-#include "Component.h"
-#include "CBootClassLoader.h"
-#include "MetadataSerializer.h"
+#include "component/comocomp.h"
+#include "component/CBootClassLoader.h"
+#include "metadata/Component.h"
+#include "metadata/MetadataSerializer.h"
+#include "util/comolog.h"
+#include "reflection/comoreflapi.h"
+#include "reflection/CMetaComponent.h"
+#include "reflection/reflection.h"
 #include <dlfcn.h>
 #include <cerrno>
 
 namespace como {
+
+const char* NAMESPACE_GLOBAL = "__global__";
 
 ECode CoGetComponentMetadata(
     /* [in] */ const ComponentID& cid,

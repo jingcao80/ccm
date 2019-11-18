@@ -18,8 +18,9 @@
 #define __COMO_CMETAMETHOD_H__
 
 #include "comotypes.h"
-#include "comoref.h"
-#include "Component.h"
+#include "metadata/Component.h"
+#include "util/comoref.h"
+#include "util/mutex.h"
 
 namespace como {
 
@@ -83,6 +84,7 @@ public:
     String mName;
     String mSignature;
     Array<IMetaParameter*> mParameters;
+    Mutex mParametersLock;
     Boolean mHasOutArguments;
     AutoPtr<IMetaType> mReturnType;
 };

@@ -17,8 +17,9 @@
 #ifndef __COMO_CMETACOCLASS_H__
 #define __COMO_CMETACOCLASS_H__
 
-#include "comoref.h"
-#include "Component.h"
+#include "metadata/Component.h"
+#include "util/comoref.h"
+#include "util/mutex.h"
 
 namespace como {
 
@@ -37,7 +38,7 @@ public:
     COMO_INTERFACE_DECL();
 
     ECode GetComponent(
-        /* [out] */ AutoPtr<IMetaComponent>& metaComp) override;
+        /* [out] */ AutoPtr<IMetaComponent>& comp) override;
 
     ECode GetName(
         /* [out] */ String& name) override;
@@ -95,9 +96,9 @@ private:
 
     void BuildAllInterfaces();
 
-    void BuildAllMethod();
+    void BuildAllMethods();
 
-    void BuildInterfaceMethod(
+    void BuildInterfaceMethodLocked(
         /* [in] */ IMetaInterface* miObj,
         /* [in, out] */ Integer& index);
 
@@ -107,9 +108,12 @@ public:
     CoclassID mCid;
     String mName;
     String mNamespace;
-    Array<IMetaConstructor*> mMetaConstructors;
-    Array<IMetaMethod*> mMetaMethods;
-    Array<IMetaInterface*> mMetaInterfaces;
+    Array<IMetaConstructor*> mConstructors;
+    Mutex mConstructorsLock;
+    Array<IMetaMethod*> mMethods;
+    Mutex mMethodsLock { true };
+    Array<IMetaInterface*> mInterfaces;
+    Mutex mInterfacesLock;
 };
 
 } // namespace como

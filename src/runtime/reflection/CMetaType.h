@@ -18,8 +18,8 @@
 #define __COMO_CMETATYPE_H__
 
 #include "comotypes.h"
-#include "comoref.h"
-#include "Component.h"
+#include "metadata/Component.h"
+#include "util/comoref.h"
 
 namespace como {
 
@@ -28,7 +28,7 @@ class CMetaType
     , public IMetaType
 {
 public:
-    CMetaType();
+    CMetaType() = default;
 
     CMetaType(
         /* [in] */ MetaComponent* mc,
@@ -54,11 +54,14 @@ private:
         /* [in] */ MetaType* mt);
 
 public:
-    MetaType* mMetadata;
-    TypeKind mKind;
+    MetaType* mMetadata = nullptr;
+    TypeKind mKind = TypeKind::Unknown;
     String mName;
     AutoPtr<IMetaType> mElementType;
-    TypeModification mMode;
+    TypeModification mMode = TypeModification::NAKED;
+
+private:
+    static const char* TAG;
 };
 
 } // namespace como

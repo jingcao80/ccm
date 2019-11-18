@@ -98,6 +98,17 @@ AutoPtr<Constant> Namespace::GetConstant(
     return nullptr;
 }
 
+AutoPtr<Constant> Namespace::FindConstant(
+    /* [in] */ const String& constantName)
+{
+    for (AutoPtr<Constant> constant : mConstants) {
+        if (constant->GetName().Equals(constantName)) {
+            return constant;
+        }
+    }
+    return nullptr;
+}
+
 void Namespace::AddEnumerationType(
     /* [in] */ EnumerationType* enumeration)
 {

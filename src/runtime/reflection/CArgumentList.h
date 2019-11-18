@@ -17,8 +17,8 @@
 #ifndef __COMO_CARGUMENTLIST_H__
 #define __COMO_CARGUMENTLIST_H__
 
-#include "comoref.h"
-#include "Component.h"
+#include "metadata/Component.h"
+#include "util/comoref.h"
 
 namespace como {
 
@@ -341,7 +341,13 @@ private:
     Long* GetStackData(
         /* [out] */ Integer& number);
 
-public:
+private:
+    static constexpr Byte DATA_SHIFT = 14;
+    static constexpr Short DATA_MASK = 0xc000;
+    static constexpr Byte INT_DATA = 0x00;
+    static constexpr Byte FP_DATA = 0x01;
+    static constexpr Byte STK_DATA = 0x02;
+
     Integer mArgumentNumber;
     Short* mArgumentIndicators;
     Long* mIntegerData;
@@ -350,13 +356,6 @@ public:
     Integer mFPDataNumber;
     Long* mStackData;
     Integer mStackDataNumber;
-
-private:
-    static constexpr Byte DATA_SHIFT = 14;
-    static constexpr Short DATA_MASK = 0xc000;
-    static constexpr Byte INT_DATA = 0x00;
-    static constexpr Byte FP_DATA = 0x01;
-    static constexpr Byte STK_DATA = 0x02;
 };
 
 } // namespace como

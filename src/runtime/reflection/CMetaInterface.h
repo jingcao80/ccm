@@ -17,8 +17,9 @@
 #ifndef __COMO_CMETAINTERFACE_H__
 #define __COMO_CMETAINTERFACE_H__
 
-#include "comoref.h"
-#include "Component.h"
+#include "metadata/Component.h"
+#include "util/comoref.h"
+#include "util/mutex.h"
 
 namespace como {
 
@@ -29,7 +30,7 @@ class CMetaInterface
     , public IMetaInterface
 {
 public:
-    CMetaInterface();
+    CMetaInterface() = default;
 
     CMetaInterface(
         /* [in] */ CMetaComponent* mcObj,
@@ -73,6 +74,12 @@ public:
     ECode GetAllMethods(
         /* [out] */ Array<IMetaMethod*>& methods) override;
 
+    ECode GetDeclaredMethodNumber(
+        /* [out] */ Integer& number) override;
+
+    ECode GetDeclaredMethods(
+        /* [out] */ Array<IMetaMethod*>& methods) override;
+
     ECode GetMethod(
         /* [in] */ const String& name,
         /* [in] */ const String& signature,
@@ -95,14 +102,16 @@ private:
         /* [in] */ MetaInterface* mi);
 
 public:
-    MetaInterface* mMetadata;
-    CMetaComponent* mOwner;
+    MetaInterface* mMetadata = nullptr;
+    CMetaComponent* mOwner = nullptr;
     InterfaceID mIid;
     String mName;
     String mNamespace;
     CMetaInterface* mBaseInterface;
-    Array<IMetaConstant*> mMetaConstants;
-    Array<IMetaMethod*> mMetaMethods;
+    Array<IMetaConstant*> mConstants;
+    Mutex mConstantsLock;
+    Array<IMetaMethod*> mMethods;
+    Mutex mMethodsLock;
 };
 
 } // namespace como

@@ -14,11 +14,15 @@
 // limitations under the License.
 //=========================================================================
 
-#include "CMetaConstant.h"
-#include "CMetaType.h"
-#include "CMetaValue.h"
+#include "reflection/CMetaConstant.h"
+#include "reflection/CMetaType.h"
+#include "reflection/CMetaValue.h"
+#include "reflection/reflection.h"
+#include "util/comolog.h"
 
 namespace como {
+
+const char* CMetaConstant::TAG = "CMetaConstant";
 
 COMO_INTERFACE_IMPL_LIGHT_1(CMetaConstant, LightRefBase, IMetaConstant)
 
@@ -43,7 +47,7 @@ ECode CMetaConstant::GetName(
 ECode CMetaConstant::GetNamespace(
     /* [in] */ String& ns)
 {
-    ns = mNamespace;
+    ns = mNamespace.Equals(NAMESPACE_GLOBAL) ? "" : mNamespace;
     return NOERROR;
 }
 
@@ -64,34 +68,38 @@ ECode CMetaConstant::GetValue(
 AutoPtr<IMetaValue> CMetaConstant::BuildValue(
     /* [in] */ IMetaType* type)
 {
-    AutoPtr<CMetaValue> mvObj = new CMetaValue();
-    mvObj->mType = type;
+    AutoPtr<CMetaValue> value = new CMetaValue();
+    value->mType = type;
     TypeKind kind;
     type->GetTypeKind(kind);
     switch(kind) {
         case TypeKind::Boolean:
-            mvObj->mBooleanValue = mMetadata->mValue.mBooleanValue;
+            value->mBooleanValue = mMetadata->mValue.mBooleanValue;
             break;
         case TypeKind::Char:
         case TypeKind::Byte:
         case TypeKind::Short:
         case TypeKind::Integer:
-            mvObj->mIntegerValue = mMetadata->mValue.mIntegralValue;
+        case TypeKind::Enum:
+            value->mIntegerValue = mMetadata->mValue.mIntegralValue;
             break;
         case TypeKind::Long:
-            mvObj->mLongValue = mMetadata->mValue.mIntegralValue;
+            value->mLongValue = mMetadata->mValue.mIntegralValue;
             break;
         case TypeKind::Float:
-            mvObj->mFloatValue = mMetadata->mValue.mFloatingPointValue;
+            value->mFloatValue = mMetadata->mValue.mFloatingPointValue;
             break;
         case TypeKind::Double:
-            mvObj->mDoubleValue = mMetadata->mValue.mFloatingPointValue;
+            value->mDoubleValue = mMetadata->mValue.mFloatingPointValue;
             break;
         case TypeKind::String:
-            mvObj->mStringValue = mMetadata->mValue.mStringValue;
+            value->mStringValue = mMetadata->mValue.mStringValue;
+            break;
+        default:
+            Logger::E(TAG, "The type of the constant is not supported.");
             break;
     }
-    return (IMetaValue*)mvObj.Get();
+    return value;
 }
 
 } // namespace como

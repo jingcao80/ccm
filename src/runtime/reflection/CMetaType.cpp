@@ -14,17 +14,13 @@
 // limitations under the License.
 //=========================================================================
 
-#include "CMetaType.h"
+#include "reflection/CMetaType.h"
 
 namespace como {
 
-COMO_INTERFACE_IMPL_LIGHT_1(CMetaType, LightRefBase, IMetaType)
+const char* CMetaType::TAG = "CMetaType";
 
-CMetaType::CMetaType()
-    : mMetadata(nullptr)
-    , mKind(TypeKind::Unknown)
-    , mMode(TypeModification::NAKED)
-{}
+COMO_INTERFACE_IMPL_LIGHT_1(CMetaType, LightRefBase, IMetaType)
 
 CMetaType::CMetaType(
     /* [in] */ MetaComponent* mc,
@@ -47,6 +43,9 @@ CMetaType::CMetaType(
             mMode = ((mt->mProperties >> 4) & TYPE_POINTER)
                 ? TypeModification::REFERENCE_POINTER : TypeModification::REFERENCE_REFERENCE;
         }
+    }
+    else if (N > 2) {
+        Logger::E(TAG, "The pointer number or reference number is large then two.");
     }
     mName = BuildName(mc, mt);
     if (mKind == TypeKind::Array && mt->mIndex != 0) {
@@ -142,8 +141,7 @@ String CMetaType::BuildName(
             break;
         case TypeKind::Array: {
             MetaType* elem = mc->mTypes[mt->mIndex];
-            typeStr = String::Format("Array<%s>",
-                    BuildName(mc, elem).string());
+            typeStr = String::Format("Array<%s>", BuildName(mc, elem).string());
             break;
         }
         case TypeKind::Interface:
@@ -155,6 +153,9 @@ String CMetaType::BuildName(
             break;
         case TypeKind::TypeKind:
             typeStr = "TypeKind";
+            break;
+        default:
+            Logger::E(TAG, "The type is not supported in BuildName.");
             break;
     }
 

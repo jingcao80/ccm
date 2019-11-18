@@ -35,7 +35,6 @@ set(SOURCES
     ECodeType.cpp
     EnumerationType.cpp
     ExclusiveOrExpression.cpp
-    Expression.cpp
     FloatType.cpp
     HANDLEType.cpp
     InclusiveOrExpression.cpp

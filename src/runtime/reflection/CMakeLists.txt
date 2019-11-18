@@ -17,12 +17,9 @@
 set(REFLECTION_DIR ${RUNTIME_DIR}/reflection)
 
 include_directories(
-    ./
-    ../
-    ../component
-    ../metadata
-    ../type
-    ../util
+    ${RUNTIME_DIR}
+    ${RUNTIME_DIR}/type
+    ${RUNTIME_DIR}/util
     ${INC_DIR})
 
 set(SOURCES

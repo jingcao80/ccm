@@ -18,8 +18,8 @@
 #define __COMO_CMETACONSTANT_H__
 
 #include "comotypes.h"
-#include "comoref.h"
-#include "Component.h"
+#include "metadata/Component.h"
+#include "util/comoref.h"
 
 namespace como {
 
@@ -56,6 +56,9 @@ public:
     String mNamespace;
     AutoPtr<IMetaType> mType;
     AutoPtr<IMetaValue> mValue;
+
+private:
+    static const char* TAG;
 };
 
 } // namespace como

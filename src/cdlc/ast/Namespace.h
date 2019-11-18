@@ -68,6 +68,9 @@ public:
     AutoPtr<Constant> GetConstant(
         /* [in] */ int i);
 
+    AutoPtr<Constant> FindConstant(
+        /* [in] */ const String& constantName);
+
     inline int GetConstantNumber();
 
     void AddEnumerationType(

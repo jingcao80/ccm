@@ -1347,35 +1347,55 @@ AutoPtr<PostfixExpression> Parser::ParseIdentifier(
 {
     TokenInfo tokenInfo = mTokenizer.GetToken();
     if (type->IsNumericType()) {
-        String constName;
-        AutoPtr<Type> idType;
+        AutoPtr<Constant> constant;
         String id = tokenInfo.mStringValue;
-        int idx = id.IndexOf("::");
+        int idx = id.LastIndexOf("::");
         if (idx > 0) {
-            String typeName = id.Substring(0, idx);
-            idType = FindType(typeName, true);
-            if (idType == nullptr) {
-                String message = String::Format("Type \"%s\" is not found", typeName.string());
+            String nsOrTypeName = id.Substring(0, idx);
+            String constName = id.Substring(idx + 2);
+            AutoPtr<Namespace> targetNs = mModule->FindNamespace(nsOrTypeName);
+            if (targetNs != nullptr) {
+                constant = targetNs->FindConstant(constName);
+            }
+            if (constant == nullptr) {
+                AutoPtr<Type> idType = FindType(nsOrTypeName, true);
+                if (idType == nullptr) {
+                    String message = String::Format("Type \"%s\" is not found", nsOrTypeName.string());
+                    LogError(tokenInfo, message);
+                    return nullptr;
+                }
+                if (!idType->IsInterfaceType()) {
+                    String message = String::Format("Type \"%s\" is not interface", idType->ToString().string());
+                    LogError(tokenInfo, message);
+                    return nullptr;
+                }
+                constant = InterfaceType::CastFrom(idType)->FindConstant(constName);
+            }
+            if (constant == nullptr) {
+                String message = String::Format("\"%s\" is not a constant of %s",
+                        constName.string(), id.string());
                 LogError(tokenInfo, message);
                 return nullptr;
             }
-            constName = id.Substring(idx + 2);
         }
         else {
-            constName = id;
-            idType = mCurrentType;
-        }
-        if (!idType->IsInterfaceType()) {
-            String message = String::Format("Type \"%s\" is not interface", idType->ToString().string());
-            LogError(tokenInfo, message);
-            return nullptr;
-        }
-        AutoPtr<Constant> constant = InterfaceType::CastFrom(idType)->FindConstant(constName);
-        if (constant == nullptr) {
-            String message = String::Format("\"%s\" is not a constant of %s",
-                    constName.string(), id.string());
-            LogError(tokenInfo, message);
-            return nullptr;
+            String constName = id;
+            constant = mCurrentNamespace->FindConstant(constName);
+            if (constant == nullptr) {
+                AutoPtr<Type> idType = mCurrentType;
+                if (!idType->IsInterfaceType()) {
+                    String message = String::Format("Type \"%s\" is not interface", idType->ToString().string());
+                    LogError(tokenInfo, message);
+                    return nullptr;
+                }
+                constant = InterfaceType::CastFrom(idType)->FindConstant(constName);
+            }
+            if (constant == nullptr) {
+                String message = String::Format("\"%s\" is not a constant of %s",
+                        constName.string(), id.string());
+                LogError(tokenInfo, message);
+                return nullptr;
+            }
         }
         if (!constant->GetType()->IsNumericType()) {
             String message = String::Format("\"%s\" is not a numeric constant.",
@@ -1385,21 +1405,49 @@ AutoPtr<PostfixExpression> Parser::ParseIdentifier(
         }
         AutoPtr<PostfixExpression> expr = new PostfixExpression();
         expr->SetType(type);
-        if (constant->GetType()->IsIntegerType()) {
-            expr->SetIntegralValue(constant->GetValue()->IntegerValue());
-            expr->SetRadix(constant->GetValue()->GetRadix());
+        if (constant->GetType()->IsCharType() ||
+                constant->GetType()->IsByteType() ||
+                constant->GetType()->IsShortType() ||
+                constant->GetType()->IsIntegerType()) {
+            if (type->IsIntegralType()) {
+                expr->SetIntegralValue(constant->GetValue()->IntegerValue());
+                expr->SetRadix(constant->GetValue()->GetRadix());
+            }
+            else {
+                // IsFloatingPointType
+                expr->SetFloatingPointValue(constant->GetValue()->IntegerValue());
+            }
         }
         else if (constant->GetType()->IsLongType()) {
-            expr->SetIntegralValue(constant->GetValue()->LongValue());
-            expr->SetRadix(constant->GetValue()->GetRadix());
+            if (type->IsIntegralType()) {
+                expr->SetIntegralValue(constant->GetValue()->LongValue());
+                expr->SetRadix(constant->GetValue()->GetRadix());
+            }
+            else {
+                // IsFloatingPointType
+                expr->SetFloatingPointValue(constant->GetValue()->LongValue());
+            }
         }
         else if (constant->GetType()->IsFloatType()) {
-            expr->SetIntegralValue(constant->GetValue()->FloatValue());
+            if (type->IsIntegralType()) {
+                expr->SetIntegralValue(constant->GetValue()->FloatValue());
+            }
+            else {
+                // IsFloatingPointType
+                expr->SetFloatingPointValue(constant->GetValue()->FloatValue());
+            }
         }
         else {
             // isDoubleType
-            expr->SetIntegralValue(constant->GetValue()->DoubleValue());
+            if (type->IsIntegralType()) {
+                expr->SetIntegralValue(constant->GetValue()->DoubleValue());
+            }
+            else {
+                // IsFloatingPointType
+                expr->SetFloatingPointValue(constant->GetValue()->DoubleValue());
+            }
         }
+        return expr;
     }
     else if (type->IsEnumerationType()) {
         String id = tokenInfo.mStringValue;

@@ -18,10 +18,10 @@
 #define __COMO_CMETACOMPONENT_H__
 
 #include "comotypes.h"
-#include "comoref.h"
-#include "hashmap.h"
 #include "component/comocomp.h"
 #include "metadata/Component.h"
+#include "util/comoref.h"
+#include "util/hashmap.h"
 #include "util/mutex.h"
 
 namespace como {
@@ -94,7 +94,7 @@ public:
         /* [in] */ const InterfaceID& iid,
         /* [out] */ AutoPtr<IMetaInterface>& metaIntf) override;
 
-    ECode Resolve() override;
+    ECode Preload() override;
 
     ECode CanUnload(
         /* [out] */ Boolean& unload);

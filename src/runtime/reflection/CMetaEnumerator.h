@@ -17,8 +17,8 @@
 #ifndef __COMO_CMETAENUMERATOR_H__
 #define __COMO_CMETAENUMERATOR_H__
 
-#include "comoref.h"
-#include "Component.h"
+#include "metadata/Component.h"
+#include "util/comoref.h"
 
 namespace como {
 

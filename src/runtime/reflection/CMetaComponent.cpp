@@ -14,14 +14,14 @@
 // limitations under the License.
 //=========================================================================
 
-#include "CMetaComponent.h"
-#include "CMetaCoclass.h"
-#include "CMetaConstant.h"
-#include "CMetaEnumeration.h"
-#include "CMetaInterface.h"
-#include "CMetaMethod.h"
-#include "CMetaParameter.h"
-#include "CMetaType.h"
+#include "reflection/CMetaComponent.h"
+#include "reflection/CMetaCoclass.h"
+#include "reflection/CMetaConstant.h"
+#include "reflection/CMetaEnumeration.h"
+#include "reflection/CMetaInterface.h"
+#include "reflection/CMetaMethod.h"
+#include "reflection/CMetaParameter.h"
+#include "reflection/CMetaType.h"
 #include <cstdlib>
 
 namespace como {
@@ -258,7 +258,7 @@ ECode CMetaComponent::GetInterface(
     return NOERROR;
 }
 
-ECode CMetaComponent::Resolve()
+ECode CMetaComponent::Preload()
 {
     BuildAllConstants();
     BuildAllEnumerations();
@@ -427,30 +427,30 @@ AutoPtr<IMetaInterface> CMetaComponent::BuildInterface(
         return nullptr;
     }
 
-    Mutex::AutoLock lock(mInterfacesLock);
-
     MetaInterface* mi = mMetadata->mInterfaces[index];
     String fullName = String::Format("%s::%s",
             mi->mNamespace, mi->mName);
+
     if (!mInterfaceNameMap.ContainsKey(fullName)) {
-        AutoPtr<CMetaInterface> miObj = new CMetaInterface(
-                this, mMetadata, mi);
-        Integer realIndex = index;
-        for (Integer i = 0; i <= index; i++) {
-            if (mMetadata->mInterfaces[i]->mProperties & TYPE_EXTERNAL) {
-                realIndex--;
+        Mutex::AutoLock lock(mInterfacesLock);
+        if (!mInterfaceNameMap.ContainsKey(fullName)) {
+            AutoPtr<CMetaInterface> miObj = new CMetaInterface(
+                    this, mMetadata, mi);
+            Integer realIndex = index;
+            for (Integer i = 0; i <= index; i++) {
+                if (mMetadata->mInterfaces[i]->mProperties & TYPE_EXTERNAL) {
+                    realIndex--;
+                }
             }
+            if (!(mi->mProperties & TYPE_EXTERNAL)) {
+                mInterfaces.Set(realIndex, miObj);
+            }
+            mInterfaceNameMap.Put(fullName, miObj);
+            mInterfaceIdMap.Put(miObj->mIid.mUuid, miObj);
+            return miObj;
         }
-        if (!(mi->mProperties & TYPE_EXTERNAL)) {
-            mInterfaces.Set(realIndex, miObj);
-        }
-        mInterfaceNameMap.Put(fullName, miObj);
-        mInterfaceIdMap.Put(miObj->mIid.mUuid, miObj);
-        return miObj;
     }
-    else {
-        return mInterfaceNameMap.Get(fullName);
-    }
+    return mInterfaceNameMap.Get(fullName);
 }
 
 void CMetaComponent::LoadAllClassObjectGetters()
@@ -470,7 +470,7 @@ void CMetaComponent::BuildIInterface()
     miObj->mIid = IID_IInterface;
     miObj->mName = "IInterface";
     miObj->mNamespace = "como::";
-    miObj->mMetaMethods = Array<IMetaMethod*>(4);
+    miObj->mMethods = Array<IMetaMethod*>(4);
 
     // AddRef
     CMetaMethod* mmObj = new CMetaMethod();
@@ -493,7 +493,7 @@ void CMetaComponent::BuildIInterface()
     mtObj->mKind = TypeKind::Integer;
     mtObj->mName = "Integer";
     mmObj->mReturnType = mtObj;
-    miObj->mMetaMethods.Set(0, mmObj);
+    miObj->mMethods.Set(0, mmObj);
 
     // Release
     mmObj = new CMetaMethod();
@@ -516,7 +516,7 @@ void CMetaComponent::BuildIInterface()
     mtObj->mKind = TypeKind::Integer;
     mtObj->mName = "Integer";
     mmObj->mReturnType = mtObj;
-    miObj->mMetaMethods.Set(1, mmObj);
+    miObj->mMethods.Set(1, mmObj);
 
     // Probe
     mmObj = new CMetaMethod();
@@ -540,7 +540,7 @@ void CMetaComponent::BuildIInterface()
     mtObj->mName = "IInterface";
     mtObj->mMode = TypeModification::POINTER;
     mmObj->mReturnType = mtObj;
-    miObj->mMetaMethods.Set(2, mmObj);
+    miObj->mMethods.Set(2, mmObj);
 
     // GetInterfaceID
     mmObj = new CMetaMethod();
@@ -575,7 +575,7 @@ void CMetaComponent::BuildIInterface()
     mtObj->mKind = TypeKind::ECode;
     mtObj->mName = "ECode";
     mmObj->mReturnType = mtObj;
-    miObj->mMetaMethods.Set(3, mmObj);
+    miObj->mMethods.Set(3, mmObj);
 
     mIInterface = miObj;
 }

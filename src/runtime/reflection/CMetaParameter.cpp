@@ -14,8 +14,8 @@
 // limitations under the License.
 //=========================================================================
 
-#include "CMetaParameter.h"
-#include "CMetaType.h"
+#include "reflection/CMetaParameter.h"
+#include "reflection/CMetaType.h"
 
 namespace como {
 

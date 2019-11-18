@@ -74,7 +74,7 @@ ECode CMetaConstructor::GetSignature(
 ECode CMetaConstructor::GetParameterNumber(
     /* [out] */ Integer& number)
 {
-    number = mMetadata->mParameterNumber;
+    number = mParameters.GetLength();
     return NOERROR;
 }
 
@@ -99,6 +99,8 @@ ECode CMetaConstructor::GetParameter(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
+    BuildAllParameters();
+
     param = mParameters[index];
     return NOERROR;
 }
@@ -111,6 +113,8 @@ ECode CMetaConstructor::GetParameter(
         param = nullptr;
         return NOERROR;
     }
+
+    BuildAllParameters();
 
     for (Integer i = 0; i < mParameters.GetLength(); i++) {
         String mpName;
@@ -200,11 +204,14 @@ ECode CMetaConstructor::CreateObject(
 void CMetaConstructor::BuildAllParameters()
 {
     if (mParameters[0] == nullptr) {
-        for (Integer i = 0; i < mMetadata->mParameterNumber; i++) {
-            MetaParameter* mp = mMetadata->mParameters[i];
-            AutoPtr<CMetaParameter> mpObj = new CMetaParameter(
-                    mOwner->mOwner->mMetadata, this, mp, i);
-            mParameters.Set(i, mpObj);
+        Mutex::AutoLock lock(mParametersLock);
+        if (mParameters[0] == nullptr) {
+            for (Integer i = 0; i < mMetadata->mParameterNumber; i++) {
+                MetaParameter* mp = mMetadata->mParameters[i];
+                AutoPtr<CMetaParameter> mpObj = new CMetaParameter(
+                        mOwner->mOwner->mMetadata, this, mp, i);
+                mParameters.Set(i, mpObj);
+            }
         }
     }
 }

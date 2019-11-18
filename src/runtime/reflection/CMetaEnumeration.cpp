@@ -14,9 +14,10 @@
 // limitations under the License.
 //=========================================================================
 
-#include "CMetaComponent.h"
-#include "CMetaEnumeration.h"
-#include "CMetaEnumerator.h"
+#include "reflection/CMetaComponent.h"
+#include "reflection/CMetaEnumeration.h"
+#include "reflection/CMetaEnumerator.h"
+#include "reflection/reflection.h"
 
 namespace como {
 
@@ -30,13 +31,13 @@ CMetaEnumeration::CMetaEnumeration(
     , mOwner(mcObj)
     , mName(me->mName)
     , mNamespace(me->mNamespace)
-    , mMetaEnumerators(me->mEnumeratorNumber)
+    , mEnumerators(me->mEnumeratorNumber)
 {}
 
 ECode CMetaEnumeration::GetComponent(
-    /* [out] */ AutoPtr<IMetaComponent>& metaComp)
+    /* [out] */ AutoPtr<IMetaComponent>& comp)
 {
-    metaComp = mOwner;
+    comp = mOwner;
     return NOERROR;
 }
 
@@ -50,7 +51,7 @@ ECode CMetaEnumeration::GetName(
 ECode CMetaEnumeration::GetNamespace(
     /* [out] */ String& ns)
 {
-    ns = mNamespace;
+    ns = mNamespace.Equals(NAMESPACE_GLOBAL) ? "" : mNamespace;
     return NOERROR;
 }
 
@@ -64,14 +65,14 @@ ECode CMetaEnumeration::GetEnumeratorNumber(
 ECode CMetaEnumeration::GetAllEnumerators(
     /* [out] */ Array<IMetaEnumerator*>& enumrs)
 {
-    if (mMetaEnumerators.IsEmpty()) {
+    if (mEnumerators.IsEmpty()) {
         return NOERROR;
     }
 
     BuildAllEnumerators();
 
-    for (Integer i = 0; i < mMetaEnumerators.GetLength(); i++) {
-        enumrs.Set(i, mMetaEnumerators[i]);
+    for (Integer i = 0; i < mEnumerators.GetLength(); i++) {
+        enumrs.Set(i, mEnumerators[i]);
     }
 
     return NOERROR;
@@ -79,37 +80,38 @@ ECode CMetaEnumeration::GetAllEnumerators(
 
 ECode CMetaEnumeration::GetEnumerator(
     /* [in] */ const String& name,
-    /* [out] */ AutoPtr<IMetaEnumerator>& metaEnumr)
+    /* [out] */ AutoPtr<IMetaEnumerator>& enumr)
 {
-    if (name.IsEmpty() || mMetaEnumerators.IsEmpty()) {
-        metaEnumr = nullptr;
+    if (name.IsEmpty() || mEnumerators.IsEmpty()) {
+        enumr = nullptr;
         return NOERROR;
     }
 
-    for (Integer i = 0; i < mMetaEnumerators.GetLength(); i++) {
+    BuildAllEnumerators();
+
+    for (Integer i = 0; i < mEnumerators.GetLength(); i++) {
         String enumrName;
-        mMetaEnumerators[i]->GetName(enumrName);
+        mEnumerators[i]->GetName(enumrName);
         if (enumrName.Equals(name)) {
-            metaEnumr = mMetaEnumerators[i];
+            enumr = mEnumerators[i];
             return NOERROR;
         }
     }
 
-    metaEnumr = nullptr;
+    enumr = nullptr;
     return NOERROR;
 }
 
 void CMetaEnumeration::BuildAllEnumerators()
 {
-    if (mMetadata->mEnumeratorNumber == 0) {
-        return;
-    }
-
-    if (mMetaEnumerators[0] == nullptr) {
-        for (Integer i = 0; i < mMetadata->mEnumeratorNumber; i++) {
-            MetaEnumerator* me = mMetadata->mEnumerators[i];
-            AutoPtr<IMetaEnumerator> meObj = new CMetaEnumerator(this, me);
-            mMetaEnumerators.Set(i, meObj);
+    if (mEnumerators[0] == nullptr) {
+        Mutex::AutoLock lock(mEnumeratorsLock);
+        if (mEnumerators[0] == nullptr) {
+            for (Integer i = 0; i < mMetadata->mEnumeratorNumber; i++) {
+                MetaEnumerator* me = mMetadata->mEnumerators[i];
+                AutoPtr<IMetaEnumerator> meObj = new CMetaEnumerator(this, me);
+                mEnumerators.Set(i, meObj);
+            }
         }
     }
 }
