@@ -16,7 +16,8 @@
 
 project(test-reflection CXX)
 
-set(REFLECTION_DIR ${UNIT_TEST_SRC_DIR}/reflection)
+set(REFLECTION_SRC_DIR ${RUNTIME_SRC_DIR}/reflection)
+set(REFLECTION_OBJ_DIR ${RUNTIME_OBJ_DIR}/reflection)
 
 add_subdirectory(component)
 add_subdirectory(client)

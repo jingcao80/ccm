@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,15 +15,14 @@
 //=========================================================================
 
 #include "CService.h"
+#include <cstdio>
 
-#include <stdio.h>
-
-namespace ccm {
+namespace como {
 namespace test {
 namespace rpc {
 
-CCM_INTERFACE_IMPL_1(CService, Object, IService);
-CCM_OBJECT_IMPL(CService);
+COMO_INTERFACE_IMPL_1(CService, Object, IService);
+COMO_OBJECT_IMPL(CService);
 
 CService::CService()
 {}

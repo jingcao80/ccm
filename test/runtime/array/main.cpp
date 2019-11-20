@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,14 +14,144 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccmobject.h"
-#include "ccm.core.ICharSequence.h"
-#include <ccm/core/CoreUtils.h>
+#include <comoobj.h>
 #include <gtest/gtest.h>
 
-using namespace ccm;
-using ccm::core::CoreUtils;
-using ccm::core::ICharSequence;
+using namespace como;
+
+static const InterfaceID IID_ICharSequence =
+        {{0x9c006766,0xd20c,0x4b8a,0xb3cc,{0x96,0x29,0x9a,0x3e,0xf7,0xd0}}, nullptr};
+
+interface ICharSequence
+    : public IInterface
+{
+    using IInterface::Probe;
+
+    inline static ICharSequence* Probe(
+        /* [in] */ IInterface* object)
+    {
+        if (object == nullptr) {
+            return nullptr;
+        }
+        return (ICharSequence*)object->Probe(IID_ICharSequence);
+    }
+
+    inline static const InterfaceID& GetInterfaceID()
+    {
+        return IID_ICharSequence;
+    }
+
+    virtual ECode GetCharAt(
+        /* [in] */ Integer index,
+        /* [out] */ Char& c) = 0;
+
+    virtual ECode GetLength(
+        /* [out] */ Integer& number) = 0;
+
+    virtual ECode SubSequence(
+        /* [in] */ Integer start,
+        /* [in] */ Integer end,
+        /* [out] */ AutoPtr<ICharSequence>& subcsq) = 0;
+
+    virtual ECode ToString(
+        /* [out] */ String& str) = 0;
+};
+
+class CString
+    : public Object
+    , public ICharSequence
+{
+public:
+    CString(
+        /* [in] */ const String& str)
+        : mString(str)
+    {}
+
+    Integer AddRef(
+        /* [in] */ HANDLE id)
+    {
+        return Object::AddRef(id);
+    }
+
+    Integer Release(
+        /* [in] */ HANDLE id)
+    {
+        return Object::Release(id);
+    }
+
+    IInterface* Probe(
+        /* [in] */ const InterfaceID& iid)
+    {
+        if (iid == IID_IInterface) {
+            return (IInterface*)(ICharSequence*)this;
+        }
+        else if (iid == IID_ICharSequence) {
+            return (ICharSequence*)this;
+        }
+        return Object::Probe(iid);
+    }
+
+    ECode GetInterfaceID(
+        /* [in] */ IInterface* object,
+        /* [out] */ InterfaceID& iid)
+    {
+        if (object == (IInterface*)(ICharSequence*)this) {
+            iid = IID_ICharSequence;
+            return NOERROR;
+        }
+        return Object::GetInterfaceID(object, iid);
+    }
+
+    ECode GetCharAt(
+        /* [in] */ Integer index,
+        /* [out] */ Char& c) override
+    {
+        c = mString.GetChar(index);
+        return NOERROR;
+    }
+
+    ECode GetLength(
+        /* [out] */ Integer& number) override
+    {
+        number = mString.GetLength();
+        return NOERROR;
+    }
+
+    ECode SubSequence(
+        /* [in] */ Integer start,
+        /* [in] */ Integer end,
+        /* [out] */ AutoPtr<ICharSequence>& subcsq) override
+    {
+        subcsq = new CString(mString.Substring(start, end));
+        return NOERROR;
+    }
+
+    ECode ToString(
+        /* [out] */ String& str) override
+    {
+        str = mString;
+        return NOERROR;
+    }
+
+private:
+    String mString;
+};
+
+static Array<ICharSequence*> Box(
+    /* [in] */ const Array<String>& strArray)
+{
+    if (strArray.IsEmpty()) {
+        return Array<ICharSequence*>::Null();
+    }
+
+    Long size = strArray.GetLength();
+    Array<ICharSequence*> seqArray(size);
+    for (Long i = 0; i < size; i++) {
+        AutoPtr<ICharSequence> cs = new CString(strArray[i]);
+        seqArray.Set(i, cs);
+    }
+    return seqArray;
+}
 
 class CA
     : public Object
@@ -186,19 +316,19 @@ TEST(ArrayTest, TestICharSequenceArrayToInterfaceArray)
     strArray[0] = "hello";
     strArray[1] = "world";
     strArray[2] = "helloworld";
-    Array<ICharSequence*> seqArray = CoreUtils::Box(strArray);
+    Array<ICharSequence*> seqArray = Box(strArray);
     String str0, str1, str2;
-    seqArray[0]->ToString(&str0);
-    seqArray[1]->ToString(&str1);
-    seqArray[2]->ToString(&str2);
+    seqArray[0]->ToString(str0);
+    seqArray[1]->ToString(str1);
+    seqArray[2]->ToString(str2);
     EXPECT_STREQ(str0.string(), "hello");
     EXPECT_STREQ(str1.string(), "world");
     EXPECT_STREQ(str2.string(), "helloworld");
 
     Array<IInterface*> itfArray = seqArray;
-    ICharSequence::Probe(seqArray[0])->ToString(&str0);
-    ICharSequence::Probe(seqArray[1])->ToString(&str1);
-    ICharSequence::Probe(seqArray[2])->ToString(&str2);
+    ICharSequence::Probe(seqArray[0])->ToString(str0);
+    ICharSequence::Probe(seqArray[1])->ToString(str1);
+    ICharSequence::Probe(seqArray[2])->ToString(str2);
     EXPECT_STREQ(str0.string(), "hello");
     EXPECT_STREQ(str1.string(), "world");
     EXPECT_STREQ(str2.string(), "helloworld");

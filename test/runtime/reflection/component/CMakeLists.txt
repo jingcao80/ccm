@@ -16,21 +16,21 @@
 
 project(ReflectionTestUnit CXX)
 
-set(COMPONENT_DIR ${REFLECTION_DIR}/component)
-set(OBJ_DIR ${UNIT_TEST_OBJ_DIR}/reflection/component)
+set(COMPONENT_SRC_DIR ${REFLECTION_SRC_DIR}/component)
+set(COMPONENT_OBJ_DIR ${REFLECTION_OBJ_DIR}/component)
 
 include_directories(
     ./
     ${INC_DIR}
-    ${OBJ_DIR})
+    ${COMPONENT_OBJ_DIR})
 
 set(SOURCES
     CMethodTester.cpp)
 
 set(GENERATED_SOURCES
-    ${OBJ_DIR}/_como_test_reflection_CMethodTester.cpp
-    ${OBJ_DIR}/ReflectionTestUnitPub.cpp
-    ${OBJ_DIR}/MetadataWrapper.cpp)
+    ${COMPONENT_OBJ_DIR}/_como_test_reflection_CMethodTester.cpp
+    ${COMPONENT_OBJ_DIR}/ReflectionTestUnitPub.cpp
+    ${COMPONENT_OBJ_DIR}/MetadataWrapper.cpp)
 
 IMPORT_LIBRARY(comort.so)
 
@@ -39,7 +39,6 @@ add_library(ReflectionTestUnit
     ${SOURCES}
     ${GENERATED_SOURCES})
 target_link_libraries(ReflectionTestUnit comort.so)
-add_dependencies(ReflectionTestUnit libtest)
 
 add_custom_command(
     OUTPUT
@@ -48,14 +47,14 @@ add_custom_command(
         "${BIN_DIR}/cdlc"
         -gen
         -mode-component
-        -i "${COMPONENT_DIR}"
-        -d ${OBJ_DIR}
-        -c "${COMPONENT_DIR}/ReflectionTestUnit.cdl")
+        -i "${COMPONENT_SRC_DIR}"
+        -d ${COMPONENT_OBJ_DIR}
+        -c "${COMPONENT_SRC_DIR}/ReflectionTestUnit.cdl")
 
-COPY(ReflectionTestUnit ${OBJ_DIR}/ReflectionTestUnit.so ${BIN_DIR})
+COPY(ReflectionTestUnit ${COMPONENT_OBJ_DIR}/ReflectionTestUnit.so ${BIN_DIR})
 
 install(FILES
-    ${OBJ_DIR}/ReflectionTestUnit.so
+    ${COMPONENT_OBJ_DIR}/ReflectionTestUnit.so
     DESTINATION ${BIN_DIR}
     PERMISSIONS
         OWNER_READ

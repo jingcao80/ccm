@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,16 +14,12 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm.core.CSystem.h"
-#include "ccm.core.ISystem.h"
-#include <ccmautoptr.h>
-#include <ccmobject.h>
+#include <comosp.h>
+#include <comoobj.h>
 #include <gtest/gtest.h>
+#include <sys/time.h>
 
-using namespace ccm;
-using ccm::core::CSystem;
-using ccm::core::ISystem;
-using ccm::core::IID_ISystem;
+using namespace como;
 
 static Boolean CA_CREATED = false;
 static Boolean CA_DESTROYED = false;
@@ -79,7 +75,6 @@ void Init()
 
 TEST(LocalStaticVariableTest, TestLocalStaticVariableFunction)
 {
-    Init();
     EXPECT_TRUE(CA_CREATED);
     EXPECT_FALSE(CA_DESTROYED);
     EXPECT_FALSE(CB_CREATED);
@@ -103,25 +98,34 @@ static Integer GetLocal()
     return Local;
 }
 
+static Long GetNanoTime()
+{
+    timespec now;
+    now.tv_sec = now.tv_nsec = 0;
+    clock_gettime(CLOCK_MONOTONIC, &now);
+    return static_cast<Long>(now.tv_sec) * 1000000000LL + now.tv_nsec;
+}
+
 TEST(LocalStaticVariableTest, TestLocalStaticVariablePerformance)
 {
-    AutoPtr<ISystem> system;
-    CSystem::New(IID_ISystem, (IInterface**)&system);
     Long beginTime, endTime;
-    system->GetNanoTime(&beginTime);
+    Double elapsedTimePerOnce;
+    beginTime = GetNanoTime();
     for (Long i = 0; i < N; i++) {
         Integer k = GLOBAL;
     }
-    system->GetNanoTime(&endTime);
-    printf("==== begin[%lld] end[%lld] last[%lld ns %lld ms] ====\n",
-            beginTime, endTime, endTime - beginTime, (endTime - beginTime) / 1000000);
-    system->GetNanoTime(&beginTime);
+    endTime = GetNanoTime();
+    elapsedTimePerOnce = (endTime - beginTime) / N;
+    printf("             Get global static variable elapsed time: %f ns or %f ms\n",
+            elapsedTimePerOnce, elapsedTimePerOnce / 1000000);
+    beginTime = GetNanoTime();
     for (Long i = 0; i < N; i++) {
         Integer k = GetLocal();
     }
-    system->GetNanoTime(&endTime);
-    printf("==== begin[%lld] end[%lld] last[%lld ns %lld ms] ====\n",
-            beginTime, endTime, endTime - beginTime, (endTime - beginTime) / 1000000);
+    endTime = GetNanoTime();
+    elapsedTimePerOnce = (endTime - beginTime) / N;
+    printf("             Get local static variable elapsed time: %f ns or %f ms\n",
+            elapsedTimePerOnce, elapsedTimePerOnce / 1000000);
 }
 
 int main(int argc, char **argv)

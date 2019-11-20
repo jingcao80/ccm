@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,7 +14,10 @@
 // limitations under the License.
 //=========================================================================
 
-int main(int argc, char** argv)
+#include <gtest/gtest.h>
+
+int main(int argc, char **argv)
 {
-    return 0;
+    testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }

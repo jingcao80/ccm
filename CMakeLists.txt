@@ -1,5 +1,5 @@
 #=========================================================================
-# Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+# Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,13 +21,17 @@ file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/inc)
 endif()
 
 set(CMAKE_VERBOSE_MAKEFILE off)
-set(PROJECT_DIR ${CMAKE_BINARY_DIR}/../)
-set(BIN_DIR ${PROJECT_DIR}/bin)
+set(PROJECT_DIR ${CMAKE_SOURCE_DIR})
 set(EXTERNAL_DIR ${PROJECT_DIR}/external)
+set(OBJ_DIR ${PROJECT_DIR}/out)
+set(BIN_DIR ${PROJECT_DIR}/bin)
 set(INC_DIR ${BIN_DIR}/inc)
 
 include(${PROJECT_DIR}/build/common.cmake)
 
 add_subdirectory(external)
-add_subdirectory(src)
+add_subdirectory(como)
+add_subdirectory(servicemanager)
+#add_subdirectory(src)
+add_subdirectory(samples)
 add_subdirectory(test)

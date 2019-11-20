@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,12 +16,12 @@
 
 [
     uuid(3a58f162-2708-4f66-bd21-faaef914063b),
-    uri("http://ccm.org/component/test/NestedInterfaceTest.so")
+    uri("http://como.org/component/test/NestedInterfaceTest.so")
 ]
 module NestedInterfaceTest
 {
 
-namespace ccm {
+namespace como {
 namespace test {
 
 [
@@ -73,7 +73,7 @@ coclass CFooBar
     interface IFooBar::IBar;
 }
 
-}
-}
+} // namespace test
+} // namespace como
 
 }

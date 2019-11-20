@@ -21,6 +21,7 @@
 module ReflectionTestUnit
 {
 
+include "ConstantTest.cdl"
 include "MethodTest.cdl"
 
 }

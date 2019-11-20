@@ -27,26 +27,108 @@ TEST(ReflectionTest, TestComponentGetName)
     EXPECT_STREQ("ReflectionTestUnit", name.string());
 }
 
+TEST(ReflectionTest, TestComponentGetComponentID)
+{
+    AutoPtr<IMetaComponent> mc;
+    CoGetComponentMetadata(CID_ReflectionTestUnit, nullptr, mc);
+    ComponentID cid;
+    mc->GetComponentID(cid);
+    EXPECT_STREQ("42197c0a-0de1-4c11-8a35-4ed719e72695", DumpUUID(cid.mUuid).string());
+    EXPECT_STREQ("http://como.org/component/test/reflection/ReflectionTestUnit.so", cid.mUri);
+}
+
 TEST(ReflectionTest, TestComponentGetConstants)
 {
     AutoPtr<IMetaComponent> mc;
     CoGetComponentMetadata(CID_ReflectionTestUnit, nullptr, mc);
     Integer constantNumber;
     mc->GetConstantNumber(constantNumber);
-    EXPECT_EQ(2, constantNumber);
+    EXPECT_EQ(8, constantNumber);
     Array<IMetaConstant*> constants(constantNumber);
     mc->GetAllConstants(constants);
     for (Integer i = 0; i < constants.GetLength(); i++) {
         String name, ns;
         constants[i]->GetName(name);
         constants[i]->GetNamespace(ns);
-        if (i == 0) {
-            EXPECT_STREQ("como::test", ns.string());
-            EXPECT_STREQ("TYPE", name.string());
-        }
-        else if (i == 1) {
-            EXPECT_STREQ("como::test::reflection", ns.string());
-            EXPECT_STREQ("TYPE", name.string());
+        AutoPtr<IMetaType> type;
+        constants[i]->GetType(type);
+        AutoPtr<IMetaValue> value;
+        constants[i]->GetValue(value);
+        TypeKind kind;
+        type->GetTypeKind(kind);
+        switch (i) {
+            case 0: {
+                EXPECT_STREQ("", ns.string());
+                EXPECT_STREQ("ICONST1", name.string());
+                EXPECT_EQ(TypeKind::Integer, kind);
+                Integer iv;
+                value->GetIntegerValue(iv);
+                EXPECT_EQ(1, iv);
+                break;
+            }
+            case 1: {
+                EXPECT_STREQ("como::test", ns.string());
+                EXPECT_STREQ("ICONST2", name.string());
+                EXPECT_EQ(TypeKind::Integer, kind);
+                Integer iv;
+                value->GetIntegerValue(iv);
+                EXPECT_EQ(2, iv);
+                break;
+            }
+            case 2: {
+                EXPECT_STREQ("como::test::reflection", ns.string());
+                EXPECT_STREQ("ICONST3", name.string());
+                EXPECT_EQ(TypeKind::Integer, kind);
+                Integer iv;
+                value->GetIntegerValue(iv);
+                EXPECT_EQ(3, iv);
+                break;
+            }
+            case 3: {
+                EXPECT_STREQ("como::test::reflection", ns.string());
+                EXPECT_STREQ("FCONST", name.string());
+                EXPECT_EQ(TypeKind::Float, kind);
+                Float fv;
+                value->GetFloatValue(fv);
+                EXPECT_FLOAT_EQ(3.0, fv);
+                break;
+            }
+            case 4: {
+                EXPECT_STREQ("como::test::reflection", ns.string());
+                EXPECT_STREQ("DCONST", name.string());
+                EXPECT_EQ(TypeKind::Double, kind);
+                Double dv;
+                value->GetDoubleValue(dv);
+                EXPECT_DOUBLE_EQ(3.0, dv);
+                break;
+            }
+            case 5: {
+                EXPECT_STREQ("", ns.string());
+                EXPECT_STREQ("BCONST", name.string());
+                EXPECT_EQ(TypeKind::Byte, kind);
+                Byte bv;
+                value->GetByteValue(bv);
+                EXPECT_EQ(6, bv);
+                break;
+            }
+            case 6: {
+                EXPECT_STREQ("", ns.string());
+                EXPECT_STREQ("CCONST", name.string());
+                EXPECT_EQ(TypeKind::Char, kind);
+                Char cv;
+                value->GetCharValue(cv);
+                EXPECT_EQ(6, cv);
+                break;
+            }
+            case 7: {
+                EXPECT_STREQ("", ns.string());
+                EXPECT_STREQ("SCONST", name.string());
+                EXPECT_EQ(TypeKind::Short, kind);
+                Short sv;
+                value->GetShortValue(sv);
+                EXPECT_EQ(60, sv);
+                break;
+            }
         }
     }
 }
@@ -82,14 +164,41 @@ TEST(ReflectionTest, TestComponentGetInterfaces)
     mc->GetAllInterfaces(interfaces);
     for (Integer i = 0; i < interfaces.GetLength(); i++) {
         String name, ns;
-        int methodNumber;
+        int totalNumber, declaredNumber;
         interfaces[i]->GetName(name);
         interfaces[i]->GetNamespace(ns);
-        interfaces[i]->GetMethodNumber(methodNumber);
+        interfaces[i]->GetMethodNumber(totalNumber);
+        interfaces[i]->GetDeclaredMethodNumber(declaredNumber);
         if (i == 0) {
             EXPECT_STREQ("como::test::reflection", ns.string());
             EXPECT_STREQ("IMethodTest", name.string());
-            EXPECT_EQ(5, methodNumber);
+            EXPECT_EQ(5, totalNumber);
+            EXPECT_EQ(1, declaredNumber);
+        }
+    }
+}
+
+TEST(ReflectionTest, TestInterfaceGetDeclaredMethods)
+{
+    AutoPtr<IMetaComponent> mc;
+    CoGetComponentMetadata(CID_ReflectionTestUnit, nullptr, mc);
+    AutoPtr<IMetaInterface> intf;
+    mc->GetInterface("como::test::reflection::IMethodTest", intf);
+    Integer totalNumber;
+    intf->GetMethodNumber(totalNumber);
+    EXPECT_EQ(5, totalNumber);
+    Integer declaredNumber;
+    intf->GetDeclaredMethodNumber(declaredNumber);
+    EXPECT_EQ(1, declaredNumber);
+    Array<IMetaMethod*> declaredMethods(declaredNumber);
+    intf->GetDeclaredMethods(declaredMethods);
+    for (Integer i = 0; i < declaredNumber; i++) {
+        String name, signature;
+        declaredMethods[i]->GetName(name);
+        declaredMethods[i]->GetSignature(signature);
+        if (i == 0) {
+            EXPECT_STREQ("TestMethod1", name.string());
+            EXPECT_STREQ("(II&)E", signature.string());
         }
     }
 }

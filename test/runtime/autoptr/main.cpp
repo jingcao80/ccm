@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,11 +14,10 @@
 // limitations under the License.
 //=========================================================================
 
-#include <ccmautoptr.h>
-#include <ccmobject.h>
+#include <comoobj.h>
 #include <gtest/gtest.h>
 
-using namespace ccm;
+using namespace como;
 
 static Boolean CA_CREATED = false;
 static Boolean CA_DESTROYED = false;

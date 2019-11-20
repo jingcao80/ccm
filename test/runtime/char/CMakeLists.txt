@@ -1,5 +1,5 @@
 #=========================================================================
-# Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+# Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,46 +16,28 @@
 
 project(CharTest CXX)
 
-set(CHAR_DIR ${UNIT_TEST_SRC_DIR}/char)
-set(OBJ_DIR ${UNIT_TEST_OBJ_DIR}/char)
+set(CHAR_SRC_DIR ${RUNTIME_SRC_DIR}/char)
+set(CHAR_OBJ_DIR ${RUNTIME_OBJ_DIR}/char)
 
 include_directories(
     ./
     ${INC_DIR}
-    ${OBJ_DIR})
+    ${CHAR_OBJ_DIR})
 
 set(SOURCES
     main.cpp)
 
-set(GENERATED_SOURCES
-    ${OBJ_DIR}/libcore.cpp)
-
-IMPORT_LIBRARY(ccmrt.so)
-IMPORT_LIBRARY(libcore.so)
+IMPORT_LIBRARY(comort.so)
 IMPORT_GTEST()
 
 add_executable(testChar
-    ${SOURCES}
-    ${GENERATED_SOURCES})
-target_link_libraries(testChar ccmrt.so libcore.so ${GTEST_LIBS})
-add_dependencies(testChar libtest)
+    ${SOURCES})
+target_link_libraries(testChar comort.so ${GTEST_LIBS})
 
-add_custom_command(
-    OUTPUT
-        ${GENERATED_SOURCES}
-    COMMAND
-        "${BIN_DIR}/ccdl"
-        -g
-        -u
-        -p
-        -s
-        -d ${OBJ_DIR}
-        "${BIN_DIR}/libcore.so")
-
-COPY(testChar ${OBJ_DIR}/testChar ${BIN_DIR})
+COPY(testChar ${CHAR_OBJ_DIR}/testChar ${BIN_DIR})
 
 install(FILES
-    ${OBJ_DIR}/testChar
+    ${CHAR_OBJ_DIR}/testChar
     DESTINATION ${BIN_DIR}
     PERMISSIONS
         OWNER_READ

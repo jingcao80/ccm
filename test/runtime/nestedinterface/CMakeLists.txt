@@ -1,5 +1,5 @@
 #=========================================================================
-# Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+# Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,47 +16,46 @@
 
 project(NestedInterfaceTest CXX)
 
-set(NESTEDINTERFACE_DIR ${UNIT_TEST_SRC_DIR}/nestedinterface)
-set(OBJ_DIR ${UNIT_TEST_OBJ_DIR}/nestedinterface)
+set(NESTEDINTERFACE_SRC_DIR ${RUNTIME_SRC_DIR}/nestedinterface)
+set(NESTEDINTERFACE_OBJ_DIR ${RUNTIME_OBJ_DIR}/nestedinterface)
 
 include_directories(
     ./
     ${INC_DIR}
-    ${OBJ_DIR})
+    ${NESTEDINTERFACE_OBJ_DIR})
 
 set(SOURCES
     CFooBar.cpp
     main.cpp)
 
 set(GENERATED_SOURCES
-    ${OBJ_DIR}/_ccm_test_CFooBar.cpp
-    ${OBJ_DIR}/NestedInterfaceTestPub.cpp
-    ${OBJ_DIR}/MetadataWrapper.cpp)
+    ${NESTEDINTERFACE_OBJ_DIR}/_como_test_CFooBar.cpp
+    ${NESTEDINTERFACE_OBJ_DIR}/NestedInterfaceTestPub.cpp
+    ${NESTEDINTERFACE_OBJ_DIR}/MetadataWrapper.cpp)
 
-IMPORT_LIBRARY(ccmrt.so)
+IMPORT_LIBRARY(comort.so)
+IMPORT_GTEST()
 
 add_executable(testNestedInterface
     ${SOURCES}
     ${GENERATED_SOURCES})
-target_link_libraries(testNestedInterface ccmrt.so)
-add_dependencies(testNestedInterface libtest)
+target_link_libraries(testNestedInterface comort.so ${GTEST_LIBS})
 
 add_custom_command(
     OUTPUT
         ${GENERATED_SOURCES}
     COMMAND
-        "${BIN_DIR}/ccdl"
-        -c
-        -g
-        -k
-        -p
-        -d ${OBJ_DIR}
-        "${NESTEDINTERFACE_DIR}/nestedinterface.cdl")
+        "${BIN_DIR}/cdlc"
+        -gen
+        -mode-component
+        -split
+        -d ${NESTEDINTERFACE_OBJ_DIR}
+        -c "${NESTEDINTERFACE_SRC_DIR}/nestedinterface.cdl")
 
-COPY(testNestedInterface ${OBJ_DIR}/testNestedInterface ${BIN_DIR})
+COPY(testNestedInterface ${NESTEDINTERFACE_OBJ_DIR}/testNestedInterface ${BIN_DIR})
 
 install(FILES
-    ${OBJ_DIR}/testNestedInterface
+    ${NESTEDINTERFACE_OBJ_DIR}/testNestedInterface
     DESTINATION ${BIN_DIR}
     PERMISSIONS
         OWNER_READ

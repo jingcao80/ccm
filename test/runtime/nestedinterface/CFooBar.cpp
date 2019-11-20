@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,22 +16,22 @@
 
 #include "CFooBar.h"
 
-namespace ccm {
+namespace como {
 namespace test {
 
-CCM_INTERFACE_REFCOUNT(CFooBar)
+COMO_INTERFACE_REFCOUNT(CFooBar)
 
-CCM_INTERFACE_PROBE_BEGIN(CFooBar)
-CCM_INTERFACE_PROBE_NESTEDINTERFACE(IFooBar, IFoo)
-CCM_INTERFACE_PROBE_NESTEDINTERFACE(IFooBar, IBar)
-CCM_INTERFACE_PROBE_END(Object)
+COMO_INTERFACE_PROBE_BEGIN(CFooBar)
+COMO_INTERFACE_PROBE_NESTEDINTERFACE(IFooBar, IFoo)
+COMO_INTERFACE_PROBE_NESTEDINTERFACE(IFooBar, IBar)
+COMO_INTERFACE_PROBE_END(Object)
 
-CCM_INTERFACE_GETINTERFACEID_BEGIN(CFooBar)
-CCM_INTERFACE_GETINTERFACEID_NESTEDINTERFACE(IFooBar, IFoo)
-CCM_INTERFACE_GETINTERFACEID_NESTEDINTERFACE(IFooBar, IBar)
-CCM_INTERFACE_GETINTERFACEID_END(Object)
+COMO_INTERFACE_GETINTERFACEID_BEGIN(CFooBar)
+COMO_INTERFACE_GETINTERFACEID_NESTEDINTERFACE(IFooBar, IFoo)
+COMO_INTERFACE_GETINTERFACEID_NESTEDINTERFACE(IFooBar, IBar)
+COMO_INTERFACE_GETINTERFACEID_END(Object)
 
-CCM_OBJECT_IMPL(CFooBar);
+COMO_OBJECT_IMPL(CFooBar);
 
 ECode CFooBar::Constructor(
     /* [in] */ IFooBar::IFoo* foo)

@@ -16,19 +16,19 @@
 
 project(ReflectionTest CXX)
 
-set(CLIENT_DIR ${REFLECTION_DIR}/client)
-set(OBJ_DIR ${UNIT_TEST_OBJ_DIR}/reflection/client)
+set(CLIENT_SRC_DIR ${REFLECTION_SRC_DIR}/client)
+set(CLIENT_OBJ_DIR ${REFLECTION_OBJ_DIR}/client)
 
 include_directories(
     ./
     ${INC_DIR}
-    ${OBJ_DIR})
+    ${CLIENT_OBJ_DIR})
 
 set(SOURCES
     main.cpp)
 
 set(GENERATED_SOURCES
-    ${OBJ_DIR}/ReflectionTestUnit.cpp)
+    ${CLIENT_OBJ_DIR}/ReflectionTestUnit.cpp)
 
 IMPORT_LIBRARY(comort.so)
 IMPORT_GTEST()
@@ -46,13 +46,13 @@ add_custom_command(
         "${BIN_DIR}/cdlc"
         -gen
         -mode-client
-        -d ${OBJ_DIR}
+        -d ${CLIENT_OBJ_DIR}
         -metadata-so "${BIN_DIR}/ReflectionTestUnit.so")
 
-COPY(testReflection ${OBJ_DIR}/testReflection ${BIN_DIR})
+COPY(testReflection ${CLIENT_OBJ_DIR}/testReflection ${BIN_DIR})
 
 install(FILES
-    ${OBJ_DIR}/testReflection
+    ${CLIENT_OBJ_DIR}/testReflection
     DESTINATION ${BIN_DIR}
     PERMISSIONS
         OWNER_READ

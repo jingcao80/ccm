@@ -1,5 +1,5 @@
 #=========================================================================
-# Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+# Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,7 +16,8 @@
 
 project(test-rpc CXX)
 
-set(RPC_DIR ${UNIT_TEST_SRC_DIR}/rpc)
+set(RPC_SRC_DIR ${RUNTIME_SRC_DIR}/rpc)
+set(RPC_OBJ_DIR ${RUNTIME_OBJ_DIR}/rpc)
 
 add_subdirectory(component)
 add_subdirectory(client)

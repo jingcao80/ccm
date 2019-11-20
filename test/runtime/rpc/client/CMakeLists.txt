@@ -1,5 +1,5 @@
 #=========================================================================
-# Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+# Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,44 +16,43 @@
 
 project(RPCTest CXX)
 
-set(CLIENT_DIR ${RPC_DIR}/client)
-set(OBJ_DIR ${UNIT_TEST_OBJ_DIR}/rpc/client)
+set(CLIENT_SRC_DIR ${RPC_SRC_DIR}/client)
+set(CLIENT_OBJ_DIR ${RPC_OBJ_DIR}/client)
 
 include_directories(
     ./
     ${INC_DIR}
-    ${OBJ_DIR})
+    ${CLIENT_OBJ_DIR})
 
 set(SOURCES
     main.cpp)
 
 set(GENERATED_SOURCES
-    ${OBJ_DIR}/RPCTestUnit.cpp)
+    ${CLIENT_OBJ_DIR}/RPCTestUnit.cpp)
 
-IMPORT_LIBRARY(ccmrt.so)
+IMPORT_LIBRARY(comort.so)
 IMPORT_LIBRARY(libservicemanager.so)
 
 add_executable(testRPCCli
     ${SOURCES}
     ${GENERATED_SOURCES})
-target_link_libraries(testRPCCli ccmrt.so libservicemanager.so)
+target_link_libraries(testRPCCli comort.so libservicemanager.so)
 add_dependencies(testRPCCli RPCTestUnit)
 
 add_custom_command(
     OUTPUT
         ${GENERATED_SOURCES}
     COMMAND
-        "${BIN_DIR}/ccdl"
-        -g
-        -u
-        -s
-        -d ${OBJ_DIR}
-        "${BIN_DIR}/RPCTestUnit.so")
+        "${BIN_DIR}/cdlc"
+        -gen
+        -mode-client
+        -d ${CLIENT_OBJ_DIR}
+        -metadata-so "${BIN_DIR}/RPCTestUnit.so")
 
-COPY(testRPCCli ${OBJ_DIR}/testRPCCli ${BIN_DIR})
+COPY(testRPCCli ${CLIENT_OBJ_DIR}/testRPCCli ${BIN_DIR})
 
 install(FILES
-    ${OBJ_DIR}/testRPCCli
+    ${CLIENT_OBJ_DIR}/testRPCCli
     DESTINATION ${BIN_DIR}
     PERMISSIONS
         OWNER_READ

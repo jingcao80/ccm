@@ -1,5 +1,5 @@
 #=========================================================================
-# Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+# Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,29 +16,28 @@
 
 project(AutoPtrTest CXX)
 
-set(AUTOPTR_DIR ${UNIT_TEST_SRC_DIR}/autoptr)
-set(OBJ_DIR ${UNIT_TEST_OBJ_DIR}/autoptr)
+set(AUTOPTR_SRC_DIR ${RUNTIME_SRC_DIR}/autoptr)
+set(AUTOPTR_OBJ_DIR ${RUNTIME_OBJ_DIR}/autoptr)
 
 include_directories(
     ./
     ${INC_DIR}
-    ${OBJ_DIR})
+    ${AUTOPTR_OBJ_DIR})
 
 set(SOURCES
     main.cpp)
 
-IMPORT_LIBRARY(ccmrt.so)
+IMPORT_LIBRARY(comort.so)
 IMPORT_GTEST()
 
 add_executable(testAutoPtr
     ${SOURCES})
-target_link_libraries(testAutoPtr ccmrt.so ${GTEST_LIBS})
-add_dependencies(testAutoPtr libtest)
+target_link_libraries(testAutoPtr comort.so ${GTEST_LIBS})
 
-COPY(testAutoPtr ${OBJ_DIR}/testAutoPtr ${BIN_DIR})
+COPY(testAutoPtr ${AUTOPTR_OBJ_DIR}/testAutoPtr ${BIN_DIR})
 
 install(FILES
-    ${OBJ_DIR}/testAutoPtr
+    ${AUTOPTR_OBJ_DIR}/testAutoPtr
     DESTINATION ${BIN_DIR}
     PERMISSIONS
         OWNER_READ

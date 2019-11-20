@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,30 +14,38 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm.core.CStringBuilder.h"
-#include "ccm.core.IStringBuilder.h"
-#include <ccmautoptr.h>
-#include <ccmobject.h>
+#include <comosp.h>
+#include <comoobj.h>
 #include <gtest/gtest.h>
 
-using namespace ccm;
-using ccm::core::CStringBuilder;
-using ccm::core::IID_IStringBuilder;
-using ccm::core::IStringBuilder;
+using namespace como;
 
-TEST(CharTest, TestIStringBuilderAppend)
+TEST(CharTest, TestStringConstructorCharArray)
 {
-    AutoPtr<IStringBuilder> sb;
-    CStringBuilder::New(IID_IStringBuilder, (IInterface**)&sb);
-    sb->Append(U'H');
-    EXPECT_STREQ("H", Object::ToString(sb).string());
-    sb->Append(U'e');
-    sb->Append(U'l');
-    sb->Append(U'l');
-    sb->Append(U'o');
-    EXPECT_STREQ("Hello", Object::ToString(sb).string());
-    sb->Append(String(" World."));
-    EXPECT_STREQ("Hello World.", Object::ToString(sb).string());
+    Array<Char> charArray = { U'H', U'e', U'l', U'l', U'o', U' ',
+            U'W', U'o', U'r', U'l', U'd', U'.' };
+    String str(charArray);
+    EXPECT_STREQ("Hello World.", str.string());
+}
+
+TEST(CharTest, TestStringConstructorCharArrayStartLength)
+{
+    Array<Char> charArray = { U'H', U'e', U'l', U'l', U'o', U' ',
+            U'W', U'o', U'r', U'l', U'd', U'.' };
+    String str(charArray, 2, 6);
+    EXPECT_STREQ("llo Wo", str.string());
+}
+
+TEST(CharTest, TestStringGetChar)
+{
+    String str = "Hello World.";
+    EXPECT_EQ(U'W', str.GetChar(6));
+}
+
+TEST(CharTest, TestStringValueOfChar)
+{
+    String str = String::ValueOf(U'W');
+    EXPECT_STREQ("W", str.string());
 }
 
 int main(int argc, char **argv)

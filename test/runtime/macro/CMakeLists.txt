@@ -1,5 +1,5 @@
 #=========================================================================
-# Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+# Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,29 +16,27 @@
 
 project(MacroTest CXX)
 
-set(MACRO_DIR ${UNIT_TEST_SRC_DIR}/macro)
-set(OBJ_DIR ${UNIT_TEST_OBJ_DIR}/macro)
+set(MACRO_SRC_DIR ${RUNTIME_SRC_DIR}/macro)
+set(MACRO_OBJ_DIR ${RUNTIME_OBJ_DIR}/macro)
 
 include_directories(
     ./
-    ${INC_DIR}
-    ${OBJ_DIR})
+    ${INC_DIR})
 
 set(SOURCES
     main.cpp)
 
-IMPORT_LIBRARY(ccmrt.so)
+IMPORT_LIBRARY(comort.so)
 IMPORT_GTEST()
 
 add_executable(testMacro
     ${SOURCES})
-target_link_libraries(testMacro ccmrt.so ${GTEST_LIBS})
-add_dependencies(testMacro libtest)
+target_link_libraries(testMacro comort.so ${GTEST_LIBS})
 
-COPY(testMacro ${OBJ_DIR}/testMacro ${BIN_DIR})
+COPY(testMacro ${MACRO_OBJ_DIR}/testMacro ${BIN_DIR})
 
 install(FILES
-    ${OBJ_DIR}/testMacro
+    ${MACRO_OBJ_DIR}/testMacro
     DESTINATION ${BIN_DIR}
     PERMISSIONS
         OWNER_READ

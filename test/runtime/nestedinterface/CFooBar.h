@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,15 +14,15 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_TEST_CFOOBAR_H__
-#define __CCM_TEST_CFOOBAR_H__
+#ifndef __COMO_TEST_CFOOBAR_H__
+#define __COMO_TEST_CFOOBAR_H__
 
-#include <ccmapi.h>
-#include <ccmobject.h>
-#include "ccm.test.IFooBar.h"
-#include "_ccm_test_CFooBar.h"
+#include <comoapi.h>
+#include <comoobj.h>
+#include "como.test.IFooBar.h"
+#include "_como_test_CFooBar.h"
 
-namespace ccm {
+namespace como {
 namespace test {
 
 Coclass(CFooBar)
@@ -31,9 +31,9 @@ Coclass(CFooBar)
     , public IFooBar::IBar
 {
 public:
-    CCM_INTERFACE_DECL();
+    COMO_INTERFACE_DECL();
 
-    CCM_OBJECT_DECL();
+    COMO_OBJECT_DECL();
 
     ECode Constructor(
         /* [in] */ IFooBar::IFoo* foo);
@@ -48,7 +48,7 @@ public:
         /* [in] */ IFoo* foo);
 };
 
-}
-}
+} // namespace test
+} // namespace como
 
-#endif // __CCM_TEST_CFOOBAR_H__
+#endif // __COMO_TEST_CFOOBAR_H__

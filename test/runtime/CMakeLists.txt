@@ -1,5 +1,5 @@
 #=========================================================================
-# Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+# Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,16 +14,16 @@
 # limitations under the License.
 #=========================================================================
 
-set(UNIT_TEST_SRC_DIR ${TEST_DIR}/runtime)
-set(UNIT_TEST_OBJ_DIR ${CMAKE_BINARY_DIR}/test/runtime)
+set(RUNTIME_SRC_DIR ${TEST_SRC_DIR}/runtime)
+set(RUNTIME_OBJ_DIR ${TEST_OBJ_DIR}/runtime)
 
 add_subdirectory(array)
 add_subdirectory(autoptr)
 add_subdirectory(char)
 add_subdirectory(localstaticvariable)
 add_subdirectory(macro)
-# testMutex tests mutex in ccmrt, so running testMutex needs export
-# mutex.h and related methods from ccmrt.so
+# testMutex tests mutex in comort, so running testMutex needs export
+# mutex.h and related methods from comort.so
 #add_subdirectory(mutex)
 add_subdirectory(nestedinterface)
 add_subdirectory(outreferencetype)

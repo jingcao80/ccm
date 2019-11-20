@@ -1,5 +1,5 @@
 #=========================================================================
-# Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+# Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,13 +14,13 @@
 # limitations under the License.
 #=========================================================================
 
-set(COMPILER_DIR ${TEST_DIR}/compiler)
-set(OBJ_DIR ${CMAKE_BINARY_DIR}/test/compiler)
+set(COMPILER_SRC_DIR ${TEST_SRC_DIR}/compiler)
+set(COMPILER_OBJ_DIR ${TEST_OBJ_DIR}/compiler)
 
 include_directories(
     ./
     ${INC_DIR}
-    ${OBJ_DIR})
+    ${COMPILER_OBJ_DIR})
 
 set(SOURCES
     CFoo.cpp
@@ -28,13 +28,13 @@ set(SOURCES
     main.cpp)
 
 set(GENERATED_SOURCES
-    ${OBJ_DIR}/_CFoo.h
-    ${OBJ_DIR}/_CFoo.cpp
-    ${OBJ_DIR}/_Namespace1_Namespace2_Namespace3_CFooBar.h
-    ${OBJ_DIR}/_Namespace1_Namespace2_Namespace3_CFooBar.cpp
-    ${OBJ_DIR}/TestModule.h
-    ${OBJ_DIR}/TestModulePub.cpp
-    ${OBJ_DIR}/MetadataWrapper.cpp)
+    ${COMPILER_OBJ_DIR}/_CFoo.h
+    ${COMPILER_OBJ_DIR}/_CFoo.cpp
+    ${COMPILER_OBJ_DIR}/_Namespace1_Namespace2_Namespace3_CFooBar.h
+    ${COMPILER_OBJ_DIR}/_Namespace1_Namespace2_Namespace3_CFooBar.cpp
+    ${COMPILER_OBJ_DIR}/TestModule.h
+    ${COMPILER_OBJ_DIR}/TestModulePub.cpp
+    ${COMPILER_OBJ_DIR}/MetadataWrapper.cpp)
 
 add_custom_command(
     OUTPUT
@@ -43,9 +43,9 @@ add_custom_command(
         "${BIN_DIR}/cdlc"
         -gen
         -mode-component
-        -i "${COMPILER_DIR}"
-        -d ${OBJ_DIR}
-        -c "${COMPILER_DIR}/Module.cdl")
+        -i "${COMPILER_SRC_DIR}"
+        -d ${COMPILER_OBJ_DIR}
+        -c "${COMPILER_SRC_DIR}/Module.cdl")
 
 IMPORT_LIBRARY(comort.so)
 

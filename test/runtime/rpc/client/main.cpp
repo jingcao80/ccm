@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,39 +15,27 @@
 //=========================================================================
 
 #include "RPCTestUnit.h"
-#include <ccmapi.h>
-#include <ccmautoptr.h>
+#include <comoapi.h>
+#include <comosp.h>
 #include <ServiceManager.h>
+#include <cstdio>
 
-#include <stdio.h>
-
-using ccm::test::rpc::CID_CService;
-using ccm::test::rpc::IService;
+using como::test::rpc::CID_CService;
+using como::test::rpc::IService;
 using pisces::ServiceManager;
 
 int main(int argv, char** argc)
 {
     AutoPtr<IInterface> obj;
-    ServiceManager::GetInstance()->GetService(String("rpcservice"), &obj);
-    IService* srv = IService::Probe(obj);
-    printf("==== srv: %p ====\n", srv);
+    ServiceManager::GetInstance()->GetService(String("rpcservice"), obj);
+    IService* svc = IService::Probe(obj);
+    printf("==== svc: %p ====\n", svc);
 
     printf("==== call IService::TestMethod1 ====\n");
-    srv->TestMethod1(9);
-    // printf("==== call IService::TestMethod2 ====\n");
-    // svc->TestMethod2(1, 2, 3, 4, 5, 6, 7, 8, 9.9,
-    //         10.9, 11.9, 12.9, 13.9, 14.9, 15.9, 16.9, 17.9, 18.9);
-
-    // AutoPtr<IParcel> parcel;
-    // CoCreateParcel(&parcel);
-    // parcel->WriteInteger(9);
-    // parcel->WriteLong(0xffffffffff);
-    // parcel->SetDataPosition(0);
-    // Integer iValue;
-    // parcel->ReadInteger(&iValue);
-    // Long lValue;
-    // parcel->ReadLong(&lValue);
-    // printf("==== iValue: %d, lValue: %llx ====\n", iValue, lValue);
+    svc->TestMethod1(9);
+    printf("==== call IService::TestMethod2 ====\n");
+    svc->TestMethod2(1, 2, 3, 4, 5, 6, 7, 8, 9.9,
+            10.9, 11.9, 12.9, 13.9, 14.9, 15.9, 16.9, 17.9, 18.9);
 
     printf("==== return ====\n");
     return 0;

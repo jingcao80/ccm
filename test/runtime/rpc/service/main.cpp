@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,16 +15,15 @@
 //=========================================================================
 
 #include "RPCTestUnit.h"
-#include <ccmapi.h>
-#include <ccmautoptr.h>
+#include <comoapi.h>
+#include <comosp.h>
 #include <ServiceManager.h>
-
-#include <stdio.h>
+#include <cstdio>
 #include <unistd.h>
 
-using ccm::test::rpc::CService;
-using ccm::test::rpc::IService;
-using ccm::test::rpc::IID_IService;
+using como::test::rpc::CService;
+using como::test::rpc::IService;
+using como::test::rpc::IID_IService;
 using pisces::ServiceManager;
 
 int main(int argv, char** argc)
