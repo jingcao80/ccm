@@ -107,10 +107,10 @@ inline bool operator!=(
 
 namespace como {
 
-extern String DumpUUID(
+COM_PUBLIC extern String DumpUUID(
     /* [in] */ const UUID& id);
 
-extern Integer HashUUID(
+COM_PUBLIC extern Integer HashUUID(
     /* [in] */ const UUID& key);
 
 extern const ComponentID CID_COMORuntime;
