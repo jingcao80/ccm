@@ -62,6 +62,7 @@ TokenInfo& TokenInfo::operator=(
     mTokenFilePath = std::move(other.mTokenFilePath);
     mTokenLineNo = other.mTokenLineNo;
     mTokenColumnNo = other.mTokenColumnNo;
+    return *this;
 }
 
 String TokenInfo::Dump(

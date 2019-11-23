@@ -2355,6 +2355,7 @@ AutoPtr<Type> Parser::FindType(
             return type;
         }
     }
+    return nullptr;
 }
 
 void Parser::LogError(

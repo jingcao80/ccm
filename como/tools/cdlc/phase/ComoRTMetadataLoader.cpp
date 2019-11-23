@@ -26,9 +26,9 @@ const char* ComoRTMetadataLoader::TAG = "ComoRTMetadataLoader";
 
 bool ComoRTMetadataLoader::Process()
 {
-    String rtPath(getenv("RT_PATH"));
+    String rtPath(getenv("COMORT_PATH"));
     void* metadata = MetadataUtils::ReadMetadata(
-            rtPath + "/comort.so", MetadataUtils::TYPE_SO);
+            rtPath, MetadataUtils::TYPE_SO);
     if (metadata == nullptr) {
         Logger::E(TAG, "Load metadata from comort failed.");
         return false;

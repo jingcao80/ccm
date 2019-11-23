@@ -515,10 +515,9 @@ String MetadataDumper::DumpMetaValue(
 String MetadataDumper::DumpUUID(
     /* [in] */ const como::UUID& uuid)
 {
-    String uuidStr = String::Format("%08x-%04x-%04x-%04x-%x%x%x%x%x%x%x%x%x%x%x%x",
-            uuid.mData1, uuid.mData2, uuid.mData3, uuid.mData4, uuid.mData5[0], uuid.mData5[1],
-            uuid.mData5[2], uuid.mData5[3], uuid.mData5[4], uuid.mData5[5], uuid.mData5[6],
-            uuid.mData5[7], uuid.mData5[8], uuid.mData5[9], uuid.mData5[10], uuid.mData5[11]);
+    String uuidStr = String::Format("%08x-%04x-%04x-%04x-%02x%02x%02x%02x%02x%02x",
+            uuid.mData1, uuid.mData2, uuid.mData3, uuid.mData4,
+            uuid.mData5[0], uuid.mData5[1], uuid.mData5[2], uuid.mData5[3], uuid.mData5[4], uuid.mData5[5]);
     return uuidStr;
 }
 
