@@ -14,10 +14,12 @@
 # limitations under the License.
 #=========================================================================
 
-set(TEST_DIR ${PROJECT_DIR}/test)
+set(TEST_SRC_DIR ${PROJECT_DIR}/test)
+set(TEST_OBJ_DIR ${OBJ_DIR}/test)
 
-add_subdirectory(libtest)
-add_subdirectory(appentry)
-add_subdirectory(support)
+add_subdirectory(compiler)
 add_subdirectory(runtime)
-add_subdirectory(libcore)
+#add_subdirectory(libtest)
+#add_subdirectory(appentry)
+#add_subdirectory(support)
+#add_subdirectory(libcore)

@@ -55,13 +55,11 @@ COPY(cdlc ${CDLC_OBJ_DIR}/cdlc ${BIN_DIR})
 
 install(FILES
     ${CDLC_OBJ_DIR}/cdlc
-    DESTINATION ${BIN_DIR}
+    DESTINATION ${TOOLS_DIR}
     PERMISSIONS
         OWNER_READ
-        OWNER_WRITE
         OWNER_EXECUTE
         GROUP_READ
-        GROUP_WRITE
         GROUP_EXECUTE
         WORLD_READ
         WORLD_EXECUTE)

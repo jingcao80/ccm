@@ -21,6 +21,7 @@ set(RUNTIME_OBJ_DIR ${COMO_OBJ_DIR}/runtime)
 
 add_subdirectory(cdl)
 add_subdirectory(component)
+add_subdirectory(metadata)
 add_subdirectory(reflection)
 add_subdirectory(rpc)
 add_subdirectory(type)

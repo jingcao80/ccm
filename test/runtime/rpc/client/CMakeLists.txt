@@ -43,7 +43,7 @@ add_custom_command(
     OUTPUT
         ${GENERATED_SOURCES}
     COMMAND
-        "${BIN_DIR}/cdlc"
+        "$ENV{CDLC}"
         -gen
         -mode-client
         -d ${CLIENT_OBJ_DIR}
