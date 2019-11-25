@@ -29,13 +29,12 @@ set(GENERATED_SOURCES
 
 add_library(cdl STATIC
     ${GENERATED_SOURCES})
-add_dependencies(cdl cdlc)
 
 add_custom_command(
     OUTPUT
         ${GENERATED_SOURCES}
     COMMAND
-        "${BIN_DIR}/cdlc"
+        "$ENV{CDLC}"
         -gen
         -mode-runtime
         -d "${CDL_OBJ_DIR}"

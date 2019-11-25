@@ -17,6 +17,9 @@
 set(COMO_SRC_DIR ${PROJECT_DIR}/como)
 set(COMO_OBJ_DIR ${OBJ_DIR}/como)
 
-add_subdirectory(runtime/metadata)
-add_subdirectory(tools)
-add_subdirectory(runtime)
+if($ENV{PRODUCT} STREQUAL comotools)
+    add_subdirectory(runtime/metadata)
+    add_subdirectory(tools)
+else()
+    add_subdirectory(runtime)
+endif()

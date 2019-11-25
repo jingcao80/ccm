@@ -40,7 +40,7 @@ add_custom_command(
     OUTPUT
         ${GENERATED_SOURCES}
     COMMAND
-        "${BIN_DIR}/cdlc"
+        "$ENV{CDLC}"
         -gen
         -mode-component
         -i "${COMPILER_SRC_DIR}"
