@@ -40,279 +40,279 @@ public:
 
     ECode GetInputArgumentOfByte(
         /* [in] */ Integer index,
-        /* [out] */ Byte& value);
+        /* [out] */ Byte& value) override;
 
     ECode SetInputArgumentOfByte(
         /* [in] */ Integer index,
-        /* [in] */ Byte value);
+        /* [in] */ Byte value) override;
 
     ECode GetInputArgumentOfShort(
         /* [in] */ Integer index,
-        /* [out] */ Short& value);
+        /* [out] */ Short& value) override;
 
     ECode SetInputArgumentOfShort(
         /* [in] */ Integer index,
-        /* [in] */ Short value);
+        /* [in] */ Short value) override;
 
     ECode GetInputArgumentOfInteger(
         /* [in] */ Integer index,
-        /* [out] */ Integer& value);
+        /* [out] */ Integer& value) override;
 
     ECode SetInputArgumentOfInteger(
         /* [in] */ Integer index,
-        /* [in] */ Integer value);
+        /* [in] */ Integer value) override;
 
     ECode GetInputArgumentOfLong(
         /* [in] */ Integer index,
-        /* [out] */ Long& value);
+        /* [out] */ Long& value) override;
 
     ECode SetInputArgumentOfLong(
         /* [in] */ Integer index,
-        /* [in] */ Long value);
+        /* [in] */ Long value) override;
 
     ECode GetInputArgumentOfFloat(
         /* [in] */ Integer index,
-        /* [out] */ Float& value);
+        /* [out] */ Float& value) override;
 
     ECode SetInputArgumentOfFloat(
         /* [in] */ Integer index,
-        /* [out] */ Float value);
+        /* [out] */ Float value) override;
 
     ECode GetInputArgumentOfDouble(
         /* [in] */ Integer index,
-        /* [out] */ Double& value);
+        /* [out] */ Double& value) override;
 
     ECode SetInputArgumentOfDouble(
         /* [in] */ Integer index,
-        /* [in] */ Double value);
+        /* [in] */ Double value) override;
 
     ECode GetInputArgumentOfChar(
         /* [in] */ Integer index,
-        /* [out] */ Char& value);
+        /* [out] */ Char& value) override;
 
     ECode SetInputArgumentOfChar(
         /* [in] */ Integer index,
-        /* [in] */ Char value);
+        /* [in] */ Char value) override;
 
     ECode GetInputArgumentOfBoolean(
         /* [in] */ Integer index,
-        /* [out] */ Boolean& value);
+        /* [out] */ Boolean& value) override;
 
     ECode SetInputArgumentOfBoolean(
         /* [in] */ Integer index,
-        /* [in] */ Boolean value);
+        /* [in] */ Boolean value) override;
 
     ECode GetInputArgumentOfString(
         /* [in] */ Integer index,
-        /* [out] */ String& value);
+        /* [out] */ String& value) override;
 
     ECode SetInputArgumentOfString(
         /* [in] */ Integer index,
-        /* [in] */ const String& value);
+        /* [in] */ const String& value) override;
 
     ECode GetInputArgumentOfHANDLE(
         /* [in] */ Integer index,
-        /* [out] */ HANDLE& value);
+        /* [out] */ HANDLE& value) override;
 
     ECode SetInputArgumentOfHANDLE(
         /* [in] */ Integer index,
-        /* [in] */ HANDLE value);
+        /* [in] */ HANDLE value) override;
 
     ECode GetInputArgumentOfECode(
         /* [in] */ Integer index,
-        /* [out] */ ECode& value);
+        /* [out] */ ECode& value) override;
 
     ECode SetInputArgumentOfECode(
         /* [in] */ Integer index,
-        /* [in] */ ECode value);
+        /* [in] */ ECode value) override;
 
     ECode GetInputArgumentOfCoclassID(
         /* [in] */ Integer index,
-        /* [out] */ CoclassID& value);
+        /* [out] */ CoclassID& value) override;
 
     ECode SetInputArgumentOfCoclassID(
         /* [in] */ Integer index,
-        /* [in] */ const CoclassID& value);
+        /* [in] */ const CoclassID& value) override;
 
     ECode GetInputArgumentOfComponentID(
         /* [in] */ Integer index,
-        /* [out] */ ComponentID& value);
+        /* [out] */ ComponentID& value) override;
 
     ECode SetInputArgumentOfComponentID(
         /* [in] */ Integer index,
-        /* [in] */ const ComponentID& value);
+        /* [in] */ const ComponentID& value) override;
 
     ECode GetInputArgumentOfInterfaceID(
         /* [in] */ Integer index,
-        /* [out] */ InterfaceID& value);
+        /* [out] */ InterfaceID& value) override;
 
     ECode SetInputArgumentOfInterfaceID(
         /* [in] */ Integer index,
-        /* [in] */ const InterfaceID& value);
+        /* [in] */ const InterfaceID& value) override;
 
     ECode GetInputArgumentOfArray(
         /* [in] */ Integer index,
-        /* [out] */ HANDLE& value);
+        /* [out] */ HANDLE& value) override;
 
     ECode SetInputArgumentOfArray(
         /* [in] */ Integer index,
-        /* [in] */ HANDLE value);
+        /* [in] */ HANDLE value) override;
 
     ECode GetInputArgumentOfEnumeration(
         /* [in] */ Integer index,
-        /* [out] */ Integer& value);
+        /* [out] */ Integer& value) override;
 
     ECode SetInputArgumentOfEnumeration(
         /* [in] */ Integer index,
-        /* [in] */ Integer value);
+        /* [in] */ Integer value) override;
 
     ECode GetInputArgumentOfInterface(
         /* [in] */ Integer index,
-        /* [out] */ AutoPtr<IInterface>& value);
+        /* [out] */ AutoPtr<IInterface>& value) override;
 
     ECode SetInputArgumentOfInterface(
         /* [in] */ Integer index,
-        /* [in] */ IInterface* value);
+        /* [in] */ IInterface* value) override;
 
     ECode AssignOutputArgumentOfByte(
         /* [in] */ Integer index,
-        /* [in] */ Byte value);
+        /* [in] */ Byte value) override;
 
     ECode SetOutputArgumentOfByte(
         /* [in] */ Integer index,
-        /* [in] */ HANDLE addr);
+        /* [in] */ HANDLE addr) override;
 
     ECode AssignOutputArgumentOfShort(
         /* [in] */ Integer index,
-        /* [in] */ Short value);
+        /* [in] */ Short value) override;
 
     ECode SetOutputArgumentOfShort(
         /* [in] */ Integer index,
-        /* [in] */ HANDLE addr);
+        /* [in] */ HANDLE addr) override;
 
     ECode AssignOutputArgumentOfInteger(
         /* [in] */ Integer index,
-        /* [in] */ Integer value);
+        /* [in] */ Integer value) override;
 
     ECode SetOutputArgumentOfInteger(
         /* [in] */ Integer index,
-        /* [in] */ HANDLE addr);
+        /* [in] */ HANDLE addr) override;
 
     ECode AssignOutputArgumentOfLong(
         /* [in] */ Integer index,
-        /* [in] */ Long value);
+        /* [in] */ Long value) override;
 
     ECode SetOutputArgumentOfLong(
         /* [in] */ Integer index,
-        /* [in] */ HANDLE addr);
+        /* [in] */ HANDLE addr) override;
 
     ECode AssignOutputArgumentOfFloat(
         /* [in] */ Integer index,
-        /* [in] */ Float value);
+        /* [in] */ Float value) override;
 
     ECode SetOutputArgumentOfFloat(
         /* [in] */ Integer index,
-        /* [in] */ HANDLE addr);
+        /* [in] */ HANDLE addr) override;
 
     ECode AssignOutputArgumentOfDouble(
         /* [in] */ Integer index,
-        /* [in] */ Double value);
+        /* [in] */ Double value) override;
 
     ECode SetOutputArgumentOfDouble(
         /* [in] */ Integer index,
-        /* [in] */ HANDLE addr);
+        /* [in] */ HANDLE addr) override;
 
     ECode AssignOutputArgumentOfChar(
         /* [in] */ Integer index,
-        /* [in] */ Char value);
+        /* [in] */ Char value) override;
 
     ECode SetOutputArgumentOfChar(
         /* [in] */ Integer index,
-        /* [in] */ HANDLE addr);
+        /* [in] */ HANDLE addr) override;
 
     ECode AssignOutputArgumentOfBoolean(
         /* [in] */ Integer index,
-        /* [in] */ Boolean value);
+        /* [in] */ Boolean value) override;
 
     ECode SetOutputArgumentOfBoolean(
         /* [in] */ Integer index,
-        /* [in] */ HANDLE addr);
+        /* [in] */ HANDLE addr) override;
 
     ECode AssignOutputArgumentOfString(
         /* [in] */ Integer index,
-        /* [in] */ const String& value);
+        /* [in] */ const String& value) override;
 
     ECode SetOutputArgumentOfString(
         /* [in] */ Integer index,
-        /* [in] */ HANDLE addr);
+        /* [in] */ HANDLE addr) override;
 
     ECode AssignOutputArgumentOfHANDLE(
         /* [in] */ Integer index,
-        /* [in] */ HANDLE value);
+        /* [in] */ HANDLE value) override;
 
     ECode SetOutputArgumentOfHANDLE(
         /* [in] */ Integer index,
-        /* [in] */ HANDLE addr);
+        /* [in] */ HANDLE addr) override;
 
     ECode AssignOutputArgumentOfECode(
         /* [in] */ Integer index,
-        /* [in] */ ECode value);
+        /* [in] */ ECode value) override;
 
     ECode SetOutputArgumentOfECode(
         /* [in] */ Integer index,
-        /* [in] */ HANDLE addr);
+        /* [in] */ HANDLE addr) override;
 
     ECode AssignOutputArgumentOfCoclassID(
         /* [in] */ Integer index,
-        /* [in] */ const CoclassID& value);
+        /* [in] */ const CoclassID& value) override;
 
     ECode SetOutputArgumentOfCoclassID(
         /* [in] */ Integer index,
-        /* [in] */ HANDLE addr);
+        /* [in] */ HANDLE addr) override;
 
     ECode AssignOutputArgumentOfComponentID(
         /* [in] */ Integer index,
-        /* [in] */ const ComponentID& value);
+        /* [in] */ const ComponentID& value) override;
 
     ECode SetOutputArgumentOfComponentID(
         /* [in] */ Integer index,
-        /* [in] */ HANDLE addr);
+        /* [in] */ HANDLE addr) override;
 
     ECode AssignOutputArgumentOfInterfaceID(
         /* [in] */ Integer index,
-        /* [in] */ const InterfaceID& value);
+        /* [in] */ const InterfaceID& value) override;
 
     ECode SetOutputArgumentOfInterfaceID(
         /* [in] */ Integer index,
-        /* [in] */ HANDLE addr);
+        /* [in] */ HANDLE addr) override;
 
     ECode AssignOutputArgumentOfArray(
         /* [in] */ Integer index,
-        /* [in] */ HANDLE value);
+        /* [in] */ HANDLE value) override;
 
     ECode SetOutputArgumentOfArray(
         /* [in] */ Integer index,
-        /* [in] */ HANDLE addr);
+        /* [in] */ HANDLE addr) override;
 
     ECode AssignOutputArgumentOfEnumeration(
         /* [in] */ Integer index,
-        /* [in] */ Integer value);
+        /* [in] */ Integer value) override;
 
     ECode SetOutputArgumentOfEnumeration(
         /* [in] */ Integer index,
-        /* [in] */ HANDLE addr);
+        /* [in] */ HANDLE addr) override;
 
     ECode AssignOutputArgumentOfInterface(
         /* [in] */ Integer index,
-        /* [in] */ IInterface* value);
+        /* [in] */ IInterface* value) override;
 
     ECode SetOutputArgumentOfInterface(
         /* [in] */ Integer index,
-        /* [in] */ HANDLE addr);
+        /* [in] */ HANDLE addr) override;
 
     ECode GetArgumentAddress(
         /* [in] */ Integer index,
-        /* [out] */ HANDLE& addr);
+        /* [out] */ HANDLE& addr) override;
 
 private:
     void CalculateDataSize(

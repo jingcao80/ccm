@@ -68,9 +68,11 @@ ECode CoAcquireClassFactory(
     return ec;
 }
 
-AutoPtr<IClassLoader> CoGetBootClassLoader()
+ECode CoGetBootClassLoader(
+    /* [out] */ AutoPtr<IClassObject>& object)
 {
-    return CBootClassLoader::GetInstance();
+    object = CBootClassLoader::GetInstance();
+    return NOERROR;
 }
 
 } // namespace como

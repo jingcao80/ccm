@@ -39,19 +39,19 @@ public:
     COMO_INTERFACE_DECL();
 
     ECode GetMethod(
-        /* [out] */ AutoPtr<IMetaMethod>& method);
+        /* [out] */ AutoPtr<IMetaMethod>& method) override;
 
     ECode GetName(
-        /* [out] */ String& name);
+        /* [out] */ String& name) override;
 
     ECode GetIndex(
-        /* [out] */ Integer& index);
+        /* [out] */ Integer& index) override;
 
     ECode GetIOAttribute(
-        /* [out] */ IOAttribute& attr);
+        /* [out] */ IOAttribute& attr) override;
 
     ECode GetType(
-        /* [out] */ AutoPtr<IMetaType>& type);
+        /* [out] */ AutoPtr<IMetaType>& type) override;
 
 private:
     IOAttribute BuildIOAttribute(

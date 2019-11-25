@@ -48,7 +48,7 @@ public:
     COMO_INTERFACE_DECL();
 
     ECode GetCoclassID(
-        /* [out] */ CoclassID& cid);
+        /* [out] */ CoclassID& cid) override;
 
     ECode GetInterfaceID(
         /* [out] */ InterfaceID& iid) override;

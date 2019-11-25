@@ -37,16 +37,16 @@ public:
     COMO_INTERFACE_DECL();
 
     ECode GetName(
-        /* [out] */ String& name);
+        /* [out] */ String& name) override;
 
     ECode GetTypeKind(
-        /* [out] */ TypeKind& kind);
+        /* [out] */ TypeKind& kind) override;
 
     ECode GetElementType(
-        /* [out] */ AutoPtr<IMetaType>& elemType);
+        /* [out] */ AutoPtr<IMetaType>& elemType) override;
 
     ECode GetTypeModification(
-        /* [out] */ TypeModification& mode);
+        /* [out] */ TypeModification& mode) override;
 
 private:
     String BuildName(

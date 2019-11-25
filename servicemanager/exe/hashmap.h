@@ -39,6 +39,7 @@ static int get_lower_bound(const int* first, const int* last, int n)
             return (n - l) < (r - n) ? l : r;
         }
     }
+    return *last;
 }
 
 inline int get_next_prime(int n)

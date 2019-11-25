@@ -91,11 +91,11 @@ public:
 
     ECode Match(
         /* [in] */ IInterfacePack* ipack,
-        /* [out] */ Boolean& matched);
+        /* [out] */ Boolean& matched) override;
 
     ECode Invoke(
         /* [in] */ IParcel* argParcel,
-        /* [out] */ AutoPtr<IParcel>& resParcel);
+        /* [out] */ AutoPtr<IParcel>& resParcel) override;
 
     AutoPtr<IObject> GetTarget();
 

@@ -39,7 +39,7 @@ public:
 
     ECode CreateChannel(
         /* [in] */ RPCPeer peer,
-        /* [out] */ AutoPtr<IRPCChannel>& channel);
+        /* [out] */ AutoPtr<IRPCChannel>& channel) override;
 
     ECode MarshalInterface(
         /* [in] */ IInterface* object,

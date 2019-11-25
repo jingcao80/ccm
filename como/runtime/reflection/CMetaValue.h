@@ -31,37 +31,37 @@ public:
     COMO_INTERFACE_DECL();
 
     ECode GetType(
-        /* [out] */ AutoPtr<IMetaType>& type);
+        /* [out] */ AutoPtr<IMetaType>& type) override;
 
     ECode GetBooleanValue(
-        /* [out] */ Boolean& value);
+        /* [out] */ Boolean& value) override;
 
     ECode GetCharValue(
-        /* [out] */ Char& value);
+        /* [out] */ Char& value) override;
 
     ECode GetByteValue(
-        /* [out] */ Byte& value);
+        /* [out] */ Byte& value) override;
 
     ECode GetShortValue(
-        /* [out] */ Short& value);
+        /* [out] */ Short& value) override;
 
     ECode GetIntegerValue(
-        /* [out] */ Integer& value);
+        /* [out] */ Integer& value) override;
 
     ECode GetLongValue(
-        /* [out] */ Long& value);
+        /* [out] */ Long& value) override;
 
     ECode GetFloatValue(
-        /* [out] */ Float& value);
+        /* [out] */ Float& value) override;
 
     ECode GetDoubleValue(
-        /* [out] */ Double& value);
+        /* [out] */ Double& value) override;
 
     ECode GetStringValue(
-        /* [out] */ String& value);
+        /* [out] */ String& value) override;
 
     ECode GetRadix(
-        /* [out] */ Integer& radix);
+        /* [out] */ Integer& radix) override;
 
 public:
     AutoPtr<IMetaType> mType;

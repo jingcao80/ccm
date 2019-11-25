@@ -56,7 +56,7 @@ void Triple::FreeData()
 {
     if (mData != nullptr) {
         SharedBuffer::GetBufferFromData(mData)->Release();
-        mData == nullptr;
+        mData = nullptr;
     }
     mSize = 0;
 }

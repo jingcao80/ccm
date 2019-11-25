@@ -144,7 +144,7 @@ public:
     COMO_INTERFACE_DECL();
 
     ECode GetTargetCoclass(
-        /* [out] */ AutoPtr<IMetaCoclass>& target);
+        /* [out] */ AutoPtr<IMetaCoclass>& target) override;
 
     ECode IsStubAlive(
         /* [out] */ Boolean& alive) override;

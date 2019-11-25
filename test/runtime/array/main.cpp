@@ -68,19 +68,19 @@ public:
     {}
 
     Integer AddRef(
-        /* [in] */ HANDLE id)
+        /* [in] */ HANDLE id) override
     {
         return Object::AddRef(id);
     }
 
     Integer Release(
-        /* [in] */ HANDLE id)
+        /* [in] */ HANDLE id) override
     {
         return Object::Release(id);
     }
 
     IInterface* Probe(
-        /* [in] */ const InterfaceID& iid)
+        /* [in] */ const InterfaceID& iid) override
     {
         if (iid == IID_IInterface) {
             return (IInterface*)(ICharSequence*)this;
@@ -93,7 +93,7 @@ public:
 
     ECode GetInterfaceID(
         /* [in] */ IInterface* object,
-        /* [out] */ InterfaceID& iid)
+        /* [out] */ InterfaceID& iid) override
     {
         if (object == (IInterface*)(ICharSequence*)this) {
             iid = IID_ICharSequence;

@@ -946,6 +946,9 @@ void CArgumentList::CalculateDataSize(
                 }
                 break;
             }
+            default:
+                CHECK(false);
+                break;
         }
     }
 }

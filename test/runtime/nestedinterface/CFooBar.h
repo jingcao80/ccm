@@ -45,7 +45,7 @@ public:
     ECode Bar1() override;
 
     ECode Bar2(
-        /* [in] */ IFoo* foo);
+        /* [in] */ IFoo* foo) override;
 };
 
 } // namespace test

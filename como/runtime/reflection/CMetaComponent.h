@@ -97,9 +97,9 @@ public:
     ECode Preload() override;
 
     ECode CanUnload(
-        /* [out] */ Boolean& unload);
+        /* [out] */ Boolean& unload) override;
 
-    ECode Unload();
+    ECode Unload() override;
 
     ECode GetClassObject(
         /* [in] */ const CoclassID& cid,

@@ -54,113 +54,113 @@ public:
     COMO_OBJECT_DECL();
 
     ECode ReadChar(
-        /* [out] */ Char& value);
+        /* [out] */ Char& value) override;
 
     ECode WriteChar(
-        /* [in] */ Char value);
+        /* [in] */ Char value) override;
 
     ECode ReadByte(
-        /* [out] */ Byte& value);
+        /* [out] */ Byte& value) override;
 
     ECode WriteByte(
-        /* [in] */ Byte value);
+        /* [in] */ Byte value) override;
 
     ECode ReadShort(
-        /* [out] */ Short& value);
+        /* [out] */ Short& value) override;
 
     ECode WriteShort(
-        /* [in] */ Short value);
+        /* [in] */ Short value) override;
 
     ECode ReadInteger(
-        /* [out] */ Integer& value);
+        /* [out] */ Integer& value) override;
 
     ECode WriteInteger(
-        /* [in] */ Integer value);
+        /* [in] */ Integer value) override;
 
     ECode ReadLong(
-        /* [out] */ Long& value);
+        /* [out] */ Long& value) override;
 
     ECode WriteLong(
-        /* [in] */ Long value);
+        /* [in] */ Long value) override;
 
     ECode ReadFloat(
-        /* [out] */ Float& value);
+        /* [out] */ Float& value) override;
 
     ECode WriteFloat(
-        /* [in] */ Float value);
+        /* [in] */ Float value) override;
 
     ECode ReadDouble(
-        /* [out] */ Double& value);
+        /* [out] */ Double& value) override;
 
     ECode WriteDouble(
-        /* [in] */ Double value);
+        /* [in] */ Double value) override;
 
     ECode ReadBoolean(
-        /* [out] */ Boolean& value);
+        /* [out] */ Boolean& value) override;
 
     ECode WriteBoolean(
-        /* [in] */ Boolean value);
+        /* [in] */ Boolean value) override;
 
     ECode ReadString(
-        /* [out] */ String& value);
+        /* [out] */ String& value) override;
 
     ECode WriteString(
-        /* [in] */ const String& value);
+        /* [in] */ const String& value) override;
 
     ECode ReadCoclassID(
-        /* [out] */ CoclassID& value);
+        /* [out] */ CoclassID& value) override;
 
     ECode WriteCoclassID(
-        /* [in] */ const CoclassID& value);
+        /* [in] */ const CoclassID& value) override;
 
     ECode ReadComponentID(
-        /* [out] */ ComponentID& value);
+        /* [out] */ ComponentID& value) override;
 
     ECode WriteComponentID(
-        /* [in] */ const ComponentID& value);
+        /* [in] */ const ComponentID& value) override;
 
     ECode ReadInterfaceID(
-        /* [out] */ InterfaceID& value);
+        /* [out] */ InterfaceID& value) override;
 
     ECode WriteInterfaceID(
-        /* [in] */ const InterfaceID& value);
+        /* [in] */ const InterfaceID& value) override;
 
     ECode ReadECode(
-        /* [out] */ ECode& value);
+        /* [out] */ ECode& value) override;
 
     ECode WriteECode(
-        /* [in] */ ECode value);
+        /* [in] */ ECode value) override;
 
     ECode ReadEnumeration(
-        /* [out] */ Integer& value);
+        /* [out] */ Integer& value) override;
 
     ECode WriteEnumeration(
-        /* [in] */ Integer value);
+        /* [in] */ Integer value) override;
 
     ECode ReadArray(
-        /* [out] */ HANDLE array);
+        /* [out] */ HANDLE array) override;
 
     ECode WriteArray(
-        /* [in] */ HANDLE array);
+        /* [in] */ HANDLE array) override;
 
     ECode ReadInterface(
-        /* [out] */ AutoPtr<IInterface>& value);
+        /* [out] */ AutoPtr<IInterface>& value) override;
 
     ECode WriteInterface(
-        /* [in] */ IInterface* value);
+        /* [in] */ IInterface* value) override;
 
     ECode GetData(
-        /* [out] */ HANDLE& data);
+        /* [out] */ HANDLE& data) override;
 
     ECode GetDataSize(
-        /* [out] */ Long& size);
+        /* [out] */ Long& size) override;
 
     ECode SetData(
         /* [in] */ HANDLE data,
-        /* [in] */ Long size);
+        /* [in] */ Long size) override;
 
     ECode SetDataPosition(
-        /* [in] */ Long pos);
+        /* [in] */ Long pos) override;
 
     static ECode CreateObject(
         /* [out] */ AutoPtr<IParcel>& parcel);

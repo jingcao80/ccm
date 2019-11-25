@@ -375,7 +375,7 @@ ECode CBootClassLoader::GetParent(
 
 void CBootClassLoader::InitComponentPath()
 {
-    String cpath(getenv("COMPONENT_PATH"));
+    String cpath(getenv("LIB_PATH"));
     if (!cpath.IsEmpty()) {
         Integer index = cpath.IndexOf(":");
         while (index != -1) {

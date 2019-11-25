@@ -80,7 +80,7 @@ namespace como {
 
 EXTERN_C void __entry();
 
-__asm__ __volatile__(
+__asm__(
     ".text;"
     ".align 8;"
     ".global __entry;"

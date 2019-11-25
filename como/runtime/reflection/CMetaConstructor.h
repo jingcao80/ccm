@@ -39,47 +39,47 @@ public:
     COMO_INTERFACE_DECL();
 
     ECode GetInterface(
-        /* [out] */ AutoPtr<IMetaInterface>& intf);
+        /* [out] */ AutoPtr<IMetaInterface>& intf) override;
 
     ECode GetName(
-        /* [out] */ String& name);
+        /* [out] */ String& name) override;
 
     ECode GetSignature(
-        /* [out] */ String& signature);
+        /* [out] */ String& signature) override;
 
     ECode GetParameterNumber(
-        /* [out] */ Integer& number);
+        /* [out] */ Integer& number) override;
 
     ECode GetAllParameters(
-        /* [out] */ Array<IMetaParameter*>& params);
+        /* [out] */ Array<IMetaParameter*>& params) override;
 
     ECode GetParameter(
         /* [in] */ Integer index,
-        /* [out] */ AutoPtr<IMetaParameter>& param);
+        /* [out] */ AutoPtr<IMetaParameter>& param) override;
 
     ECode GetParameter(
         /* [in] */ const String& name,
-        /* [out] */ AutoPtr<IMetaParameter>& param);
+        /* [out] */ AutoPtr<IMetaParameter>& param) override;
 
     ECode HasOutArguments(
-        /* [out] */ Boolean& outArgs);
+        /* [out] */ Boolean& outArgs) override;
 
     ECode CreateArgumentList(
-        /* [out] */ AutoPtr<IArgumentList>& argList);
+        /* [out] */ AutoPtr<IArgumentList>& argList) override;
 
     ECode Invoke(
         /* [in] */ IInterface* thisObject,
-        /* [in] */ IArgumentList* argList);
+        /* [in] */ IArgumentList* argList) override;
 
     ECode GetCoclass(
-        /* [out] */ AutoPtr<IMetaCoclass>& klass);
+        /* [out] */ AutoPtr<IMetaCoclass>& klass) override;
 
     ECode IsDefault(
-        /* [out] */ Boolean& isDefault);
+        /* [out] */ Boolean& isDefault) override;
 
     ECode CreateObject(
         /* [in] */ IArgumentList* argList,
-        /* [out] */ AutoPtr<IInterface>& object);
+        /* [out] */ AutoPtr<IInterface>& object) override;
 
 private:
     void BuildAllParameters();

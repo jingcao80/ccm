@@ -39,7 +39,7 @@ public:
     COMO_OBJECT_DECL();
 
     ECode TestMethod1(
-        /* [in] */ Integer arg1);
+        /* [in] */ Integer arg1) override;
 
     ECode TestMethod2(
         /* [in] */ Long arg1,
@@ -59,7 +59,7 @@ public:
         /* [in] */ Double arg15,
         /* [in] */ Double arg16,
         /* [in] */ Double arg17,
-        /* [in] */ Double arg18);
+        /* [in] */ Double arg18) override;
 };
 
 } // namespace rpc

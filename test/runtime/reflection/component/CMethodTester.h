@@ -40,7 +40,7 @@ public:
 
     ECode TestMethod1(
         /* [in] */ Integer arg,
-        /* [out] */ Integer& result);
+        /* [out] */ Integer& result) override;
 };
 
 }
