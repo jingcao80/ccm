@@ -47,19 +47,32 @@ set(COMORT_LINK_LIBS
     metadata
     reflection
     rpc
-    rpc-dbus
     type
     util
     -Wl,--no-whole-archive)
+
+if($ENV{PLATFORM} STREQUAL "linux")
+    set(COMORT_LINK_LIBS
+        ${COMORT_LINK_LIBS}
+        -Wl,--whole-archive
+        rpc-dbus
+        -Wl,--no-whole-archive)
+elseif($ENV{PLATFORM} STREQUAL "android")
+    set(COMORT_LINK_LIBS
+        ${COMORT_LINK_LIBS})
+endif()
 
 add_library(comort
     SHARED
     ${SOURCES})
 target_link_libraries(comort
     ${COMORT_LINK_LIBS}
-    dl
-    pthread
-    dbus-1)
+    dl)
+if($ENV{PLATFORM} STREQUAL "linux")
+    target_link_libraries(comort
+        pthread
+        dbus-1)
+endif()
 
 COPY(comort ${RUNTIME_SRC_DIR}/comoapi.h ${INC_DIR})
 COPY(comort ${RUNTIME_SRC_DIR}/comodef.h ${INC_DIR})

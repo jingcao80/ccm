@@ -16,7 +16,10 @@
 
 set(RPC_SRC_DIR ${RUNTIME_SRC_DIR}/rpc)
 
-add_subdirectory(dbus)
+if($ENV{PLATFORM} STREQUAL "linux")
+    add_subdirectory(dbus)
+elseif($ENV{PLATFORM} STREQUAL "android")
+endif()
 
 include_directories(
     ./

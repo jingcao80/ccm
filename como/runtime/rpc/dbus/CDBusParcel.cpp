@@ -891,12 +891,11 @@ restart_write:
         Byte* const data = mData + mDataPos;
 
         if (padded != len) {
-#if BYTE_ORDER == BIG_ENDIAN
+#if __BYTE_ORDER == __BIG_ENDIAN
             static const uint32_t mask[4] = {
                 0x00000000, 0xffffff00, 0xffff0000, 0xff000000
             };
-#endif
-#if BYTE_ORDER == LITTLE_ENDIAN
+#elif __BYTE_ORDER == __LITTLE_ENDIAN
             static const uint32_t mask[4] = {
                 0x00000000, 0x00ffffff, 0x0000ffff, 0x000000ff
             };

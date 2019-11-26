@@ -17,11 +17,18 @@
 #include "comorpc.h"
 #include "CProxy.h"
 #include "CStub.h"
+#if defined(__aarch64__)
+#elif defined(__x86_64__)
 #include "dbus/CDBusChannelFactory.h"
+#endif
 
 namespace como {
 
+#if defined(__aarch64__)
+static AutoPtr<IRPCChannelFactory> sLocalFactory;
+#elif defined(__x86_64__)
 static AutoPtr<IRPCChannelFactory> sLocalFactory = new CDBusChannelFactory(RPCType::Local);
+#endif
 static AutoPtr<IRPCChannelFactory> sRemoteFactory;
 
 ECode CoCreateParcel(

@@ -47,6 +47,21 @@ namespace como {
 #define PAGE_ALIGN(va) (((va) + PAGE_SIZE - 1) & PAGE_MASK)
 #endif
 
+#if defined(__aarch64__)
+
+#define GET_REG(reg, var)
+
+#define GET_XREG(reg, var)
+
+#define GET_RBP(var)
+
+#define GET_STACK(rsp, off, var)
+
+EXTERN_C void __entry()
+{}
+
+#elif defined(__x86_64__)
+
 #define GET_REG(reg, var)       \
     __asm__ __volatile__(       \
         "mov    %%"#reg", %0;"  \
@@ -92,6 +107,8 @@ __asm__(
     "leaveq;"
     "ret;"
 );
+
+#endif
 
 HANDLE PROXY_ENTRY = 0;
 

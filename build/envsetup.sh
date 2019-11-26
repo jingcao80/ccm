@@ -32,6 +32,37 @@ function check()
     return 1
 }
 
+function root()
+{
+    cd $ROOT
+}
+
+function out()
+{
+    if [ ! check ]; then
+        return
+    fi
+
+    if [ "$PRODUCT" == "comotools" ]; then
+        cd $HOST_OUT_PATH
+    elif [ "$PRODUCT" == "como" ]; then
+        cd $OUT_PATH
+    fi
+}
+
+function bin()
+{
+    if [ ! check ]; then
+        return
+    fi
+
+    if [ "$PRODUCT" == "comotools" ]; then
+        cd $HOST_BIN_PATH
+    elif [ "$PRODUCT" == "como" ]; then
+        cd $BIN_PATH
+    fi
+}
+
 function comotools()
 {
     export PRODUCT=comotools
@@ -57,7 +88,7 @@ function comotools()
         else
             BUILD_TYPE=Debug
         fi
-        cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE $ROOT
+        cmake -DCMAKE_TOOLCHAIN_FILE="$ROOT/build/comotools_linux_x64.cmake" -DCMAKE_BUILD_TYPE=$BUILD_TYPE $ROOT
     fi
 }
 

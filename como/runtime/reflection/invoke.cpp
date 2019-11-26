@@ -18,6 +18,22 @@
 
 namespace como {
 
+#if defined(__aarch64__)
+
+EXTERN_C ECode invoke(
+    /* [in] */ HANDLE func,
+    /* [in] */ Long* intData,
+    /* [in] */ Integer intDataSize,
+    /* [in] */ Double* fpData,
+    /* [in] */ Integer fpDataSize,
+    /* [in] */ Long* stkData,
+    /* [in] */ Integer stkDataSize)
+{
+    return NOERROR;
+}
+
+#elif defined(__x86_64__)
+
 EXTERN_C ECode invoke(
     /* [in] */ HANDLE func,
     /* [in] */ Long* intData,
@@ -131,5 +147,7 @@ EXTERN_C ECode invoke(
 
     return ret;
 }
+
+#endif
 
 } // namespace como
