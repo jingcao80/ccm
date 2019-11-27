@@ -16,15 +16,14 @@ set(CMAKE_STATIC_LIBRARY_PREFIX_CXX "" CACHE STRING "" FORCE)
 
 set(CMAKE_SYSROOT ${PREBUILT_DIR})
 
-set(INCLUDES "\
-    -I${PREBUILT_INC} \
-    -I${PREBUILT_INC}/libcxx \
-    -I${PREBUILT_INC}/libcxxabi \
-    -I${PREBUILT_INC}/asm-arm64 \
-    -I${PREBUILT_INC}/arch-arm64")
+include_directories(
+    ${PREBUILT_INC}
+    ${PREBUILT_INC}/libcxx
+    ${PREBUILT_INC}/libcxxabi
+    ${PREBUILT_INC}/asm-arm64
+    ${PREBUILT_INC}/arch-arm64)
 
 set(COMMON_C_FLAGS "\
-    ${INCLUDES} \
     -target aarch64-linux-android -march=armv8-a \
     -fPIC -ffunction-sections -fdata-sections -fstack-protector -fno-short-enums -fmessage-length=0 \
     -no-canonical-prefixes -Wno-nullability-completeness -Wno-extern-c-compat")
@@ -57,7 +56,7 @@ set(COMMON_SHARED_LINKER_FLAGS "\
 set(COMMON_EXE_LINKER_FLAGS "\
     -Bdynamic -pie ${COMMON_LINKER_FLAGS} \
     -Wl,--entry,_start -Wl,-z,nocopyreloc \
-    -L${PREBUILT_LIB} ${EXE_CRT}")
+    ${EXE_CRT}")
 
 if($ENV{VERSION} STREQUAL "rls")
     set(CMAKE_C_FLAGS
