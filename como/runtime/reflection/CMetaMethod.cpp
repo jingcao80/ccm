@@ -14,7 +14,11 @@
 // limitations under the License.
 //=========================================================================
 
-#include "reflection/CArgumentList.h"
+#if defined(__aarch64__)
+#include "reflection/CArgumentList_aarch64.h"
+#elif defined(__x86_64__)
+#include "reflection/CArgumentList_x64.h"
+#endif
 #include "reflection/CMetaComponent.h"
 #include "reflection/CMetaInterface.h"
 #include "reflection/CMetaMethod.h"
@@ -23,6 +27,13 @@
 
 namespace como {
 
+#if defined(__aarch64__)
+EXTERN_C ECode invoke(
+    /* [in] */ HANDLE func,
+    /* [in] */ Byte* params,
+    /* [in] */ Integer paramNum,
+    /* [in] */ struct ParameterInfo* paramInfos);
+#elif defined(__x86_64__)
 EXTERN_C ECode invoke(
     /* [in] */ HANDLE func,
     /* [in] */ Long* intData,
@@ -31,6 +42,7 @@ EXTERN_C ECode invoke(
     /* [in] */ Integer fpDataSize,
     /* [in] */ Long* stkData,
     /* [in] */ Integer stkDataSize);
+#endif
 
 COMO_INTERFACE_IMPL_LIGHT_1(CMetaMethod, LightRefBase, IMetaMethod);
 
@@ -149,8 +161,9 @@ ECode CMetaMethod::HasOutArguments(
 ECode CMetaMethod::CreateArgumentList(
     /* [out] */ AutoPtr<IArgumentList>& argList)
 {
-    argList = new CArgumentList(
-            mOwner->mOwner->mMetadata, mMetadata);
+    BuildAllParameters();
+
+    argList = new CArgumentList(mParameters);
     return NOERROR;
 }
 
@@ -169,6 +182,16 @@ ECode CMetaMethod::Invoke(
     };
 
     CArgumentList* args = (CArgumentList*)argList;
+
+#if defined(__aarch64__)
+    Byte* params = args->GetParameterBuffer();
+    Integer paramNum = args->GetParameterNumber();
+    ParameterInfo* paramInfos = args->GetParameterInfos();
+    VObject* vobj = reinterpret_cast<VObject*>(thisObject->Probe(mOwner->mIid));
+    reinterpret_cast<HANDLE*>(params)[0] = reinterpret_cast<HANDLE>(vobj);
+    HANDLE methodAddr = vobj->mVtab->mMethods[mIndex];
+    return invoke(methodAddr, params, paramNum + 1, paramInfos);
+#elif defined(__x86_64__)
     Integer intDataNum, fpDataNum, stkDataNum;
     Long* intData = args->GetIntegerData(intDataNum);
     Double* fpData = args->GetFPData(fpDataNum);
@@ -177,6 +200,7 @@ ECode CMetaMethod::Invoke(
     intData[0] = reinterpret_cast<Long>(vobj);
     HANDLE methodAddr = vobj->mVtab->mMethods[mIndex];
     return invoke(methodAddr, intData, intDataNum, fpData, fpDataNum, stkData, stkDataNum);
+#endif
 }
 
 void CMetaMethod::BuildAllParameters()

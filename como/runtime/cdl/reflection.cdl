@@ -554,11 +554,11 @@ interface IArgumentList
 
     GetInputArgumentOfArray(
         [in] Integer index,
-        [out] HANDLE& value);
+        [out] Triple& value);
 
     SetInputArgumentOfArray(
         [in] Integer index,
-        [in] HANDLE value);
+        [in] Triple value);
 
     GetInputArgumentOfEnumeration(
         [in] Integer index,
@@ -690,7 +690,7 @@ interface IArgumentList
 
     AssignOutputArgumentOfArray(
         [in] Integer index,
-        [in] HANDLE value);
+        [in] Triple value);
 
     SetOutputArgumentOfArray(
         [in] Integer index,

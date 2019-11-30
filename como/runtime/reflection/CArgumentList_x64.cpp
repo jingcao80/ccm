@@ -14,7 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
-#include "CArgumentList.h"
+#include "CArgumentList_x64.h"
 #include <cstdlib>
 
 namespace como {
@@ -22,16 +22,14 @@ namespace como {
 COMO_INTERFACE_IMPL_LIGHT_1(CArgumentList, LightRefBase, IArgumentList)
 
 CArgumentList::CArgumentList(
-    /* [in] */ MetaComponent* mc,
-    /* [in] */ MetaMethod* mm)
-    : mArgumentNumber(mm->mParameterNumber)
+    /* [in] */ const Array<IMetaParameter*>& parameters)
+    : mArgumentNumber(parameters.GetLength())
     , mArgumentIndicators(nullptr)
     , mIntegerData(nullptr)
     , mFPData(nullptr)
     , mStackData(nullptr)
 {
-    CalculateDataSize(mc, mm,
-            mIntegerDataNumber, mFPDataNumber, mStackDataNumber);
+    CalculateDataSize(parameters, mIntegerDataNumber, mFPDataNumber, mStackDataNumber);
     if (mIntegerDataNumber > 0) {
         mIntegerData = (Long*)malloc(sizeof(Long) * mIntegerDataNumber);
     }
@@ -453,7 +451,7 @@ ECode CArgumentList::SetInputArgumentOfInterfaceID(
 
 ECode CArgumentList::GetInputArgumentOfArray(
     /* [in] */ Integer index,
-    /* [out] */ HANDLE& value)
+    /* [out] */ Triple& value)
 {
     if (index < 0 || index >= mArgumentNumber) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -461,13 +459,13 @@ ECode CArgumentList::GetInputArgumentOfArray(
 
     Integer pos = GetPos(index);
     Long* data = (Long*)GetDataBuffer(index);
-    value = (HANDLE)data[pos];
+    value = *reinterpret_cast<Triple*>(data[pos]);
     return NOERROR;
 }
 
 ECode CArgumentList::SetInputArgumentOfArray(
     /* [in] */ Integer index,
-    /* [in] */ HANDLE value)
+    /* [in] */ const Triple& value)
 {
     if (index < 0 || index >= mArgumentNumber) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -475,7 +473,7 @@ ECode CArgumentList::SetInputArgumentOfArray(
 
     Integer pos = GetPos(index);
     Long* data = (Long*)GetDataBuffer(index);
-    data[pos] = value;
+    data[pos] = reinterpret_cast<Long>(&value);
     return NOERROR;
 }
 
@@ -817,7 +815,7 @@ ECode CArgumentList::SetOutputArgumentOfInterfaceID(
 
 ECode CArgumentList::AssignOutputArgumentOfArray(
     /* [in] */ Integer index,
-    /* [in] */ HANDLE value)
+    /* [in] */ const Triple& value)
 {
     if (index < 0 || index >= mArgumentNumber) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -825,7 +823,7 @@ ECode CArgumentList::AssignOutputArgumentOfArray(
 
     Integer pos = GetPos(index);
     Long* data = (Long*)GetDataBuffer(index);
-    *reinterpret_cast<Triple*>(data[pos]) = *reinterpret_cast<Triple*>(value);
+    *reinterpret_cast<Triple*>(data[pos]) = value;
     return NOERROR;
 }
 
@@ -891,8 +889,7 @@ ECode CArgumentList::GetArgumentAddress(
 }
 
 void CArgumentList::CalculateDataSize(
-    /* [in] */ MetaComponent* mc,
-    /* [in] */ MetaMethod* mm,
+    /* [in] */ const Array<IMetaParameter*>& parameters,
     /* [out] */ Integer& intDataNum,
     /* [out] */ Integer& fpDataNum,
     /* [out] */ Integer& stDataNum)
@@ -905,8 +902,11 @@ void CArgumentList::CalculateDataSize(
     fpDataNum = 0;
     stDataNum = 0;
     for (Integer i = 0; i < mArgumentNumber; i++) {
-        MetaType* mt = mc->mTypes[mm->mParameters[i]->mTypeIndex];
-        switch (mt->mKind) {
+        AutoPtr<IMetaType> type;
+        parameters[i]->GetType(type);
+        TypeKind kind;
+        type->GetTypeKind(kind);
+        switch (kind) {
             case TypeKind::Char:
             case TypeKind::Byte:
             case TypeKind::Short:

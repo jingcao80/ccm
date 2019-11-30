@@ -14,8 +14,20 @@
 // limitations under the License.
 //=========================================================================
 
+#include "comotypes.h"
+#include "comointfs.h"
+
 namespace como {
 
 extern const char* NAMESPACE_GLOBAL;
+
+struct ParameterInfo
+{
+    Integer             mSize;
+    TypeKind            mKind;
+    IOAttribute         mIOAttr;
+    TypeModification    mMode;
+    Integer             mPos;
+};
 
 }

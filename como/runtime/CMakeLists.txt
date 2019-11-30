@@ -14,7 +14,7 @@
 # limitations under the License.
 #=========================================================================
 
-project(runtime CXX)
+project(runtime CXX ASM)
 
 set(RUNTIME_SRC_DIR ${COMO_SRC_DIR}/runtime)
 set(RUNTIME_OBJ_DIR ${COMO_OBJ_DIR}/runtime)

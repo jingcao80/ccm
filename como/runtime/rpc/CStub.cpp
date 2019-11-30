@@ -137,7 +137,7 @@ ECode InterfaceStub::UnmarshalArguments(
                 case TypeKind::Array: {
                     Triple* t = new Triple();
                     argParcel->ReadArray(reinterpret_cast<HANDLE>(t));
-                    argList->SetInputArgumentOfArray(i, reinterpret_cast<HANDLE>(t));
+                    argList->SetInputArgumentOfArray(i, *t);
                     break;
                 }
                 case TypeKind::Interface: {

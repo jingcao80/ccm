@@ -18,6 +18,7 @@
 #define __COMO_CARGUMENTLIST_H__
 
 #include "metadata/Component.h"
+#include "reflection/reflection.h"
 #include "util/comoref.h"
 
 namespace como {
@@ -31,8 +32,7 @@ class CArgumentList
 
 public:
     CArgumentList(
-        /* [in] */ MetaComponent* mc,
-        /* [in] */ MetaMethod* mm);
+        /* [in] */ const Array<IMetaParameter*>& parameters);
 
     ~CArgumentList();
 
@@ -152,11 +152,11 @@ public:
 
     ECode GetInputArgumentOfArray(
         /* [in] */ Integer index,
-        /* [out] */ HANDLE& value) override;
+        /* [out] */ Triple& value) override;
 
     ECode SetInputArgumentOfArray(
         /* [in] */ Integer index,
-        /* [in] */ HANDLE value) override;
+        /* [in] */ const Triple& value) override;
 
     ECode GetInputArgumentOfEnumeration(
         /* [in] */ Integer index,
@@ -288,7 +288,7 @@ public:
 
     ECode AssignOutputArgumentOfArray(
         /* [in] */ Integer index,
-        /* [in] */ HANDLE value) override;
+        /* [in] */ const Triple& value) override;
 
     ECode SetOutputArgumentOfArray(
         /* [in] */ Integer index,
@@ -315,48 +315,40 @@ public:
         /* [out] */ HANDLE& addr) override;
 
 private:
-    void CalculateDataSize(
-        /* [in] */ MetaComponent* mc,
-        /* [in] */ MetaMethod* mm,
-        /* [out] */ Integer& intDataNum,
-        /* [out] */ Integer& fpDataNum,
-        /* [out] */ Integer& stDataNum);
+    void Init(
+        /* [in] */ const Array<IMetaParameter*>& parameters);
 
-    void* GetDataBuffer(
-        /* [in] */ Integer index);
+    void InitParameterInfo(
+        /* [in, out] */ Integer& bufferPos,
+        /* [in] */ IMetaParameter* parameter,
+        /* [out] */ ParameterInfo& paramInfo);
 
-    Integer GetPos(
-        /* [in] */ Integer index);
+    inline Integer GetParameterNumber();
 
-    ECode SetOutputArgumentAddr(
-        /* [in] */ Integer index,
-        /* [in] */ HANDLE addr);
+    inline ParameterInfo* GetParameterInfos();
 
-    Long* GetIntegerData(
-        /* [out] */ Integer& number);
-
-    Double* GetFPData(
-        /* [out] */ Integer& number);
-
-    Long* GetStackData(
-        /* [out] */ Integer& number);
+    inline Byte* GetParameterBuffer();
 
 private:
-    static constexpr Byte DATA_SHIFT = 14;
-    static constexpr Short DATA_MASK = 0xc000;
-    static constexpr Byte INT_DATA = 0x00;
-    static constexpr Byte FP_DATA = 0x01;
-    static constexpr Byte STK_DATA = 0x02;
-
-    Integer mArgumentNumber;
-    Short* mArgumentIndicators;
-    Long* mIntegerData;
-    Integer mIntegerDataNumber;
-    Double* mFPData;
-    Integer mFPDataNumber;
-    Long* mStackData;
-    Integer mStackDataNumber;
+    Integer mParameterNumber;
+    ParameterInfo* mParameterInfos = nullptr;
+    Byte* mParameterBuffer = nullptr;
 };
+
+Integer CArgumentList::GetParameterNumber()
+{
+    return mParameterNumber;
+}
+
+ParameterInfo* CArgumentList::GetParameterInfos()
+{
+    return mParameterInfos;
+}
+
+Byte* CArgumentList::GetParameterBuffer()
+{
+    return mParameterBuffer;
+}
 
 } // namespace como
 
