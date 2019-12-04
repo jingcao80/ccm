@@ -41,6 +41,48 @@ public:
     ECode TestMethod1(
         /* [in] */ Integer arg,
         /* [out] */ Integer& result) override;
+
+    ECode TestMethod2(
+        /* [in] */ Float arg,
+        /* [out] */ Float& result) override;
+
+    ECode TestMethod3(
+        /* [in] */ Integer arg1,
+        /* [in] */ Long arg2,
+        /* [in] */ Boolean arg3,
+        /* [in] */ Char arg4,
+        /* [in] */ Short arg5,
+        /* [in] */ Integer arg6) override;
+
+    ECode TestMethod4(
+        /* [in] */ Integer arg1,
+        /* [in] */ Long arg2,
+        /* [in] */ Boolean arg3,
+        /* [in] */ Char arg4,
+        /* [in] */ Short arg5,
+        /* [in] */ Double arg6,
+        /* [in] */ Float arg7,
+        /* [in] */ Integer arg8,
+        /* [out] */ Double& result) override;
+
+    ECode TestMethod5(
+        /* [in] */ Integer arg1,
+        /* [in] */ Long arg2,
+        /* [in] */ Boolean arg3,
+        /* [in] */ Char arg4,
+        /* [in] */ Short arg5,
+        /* [in] */ Double arg6,
+        /* [in] */ Float arg7,
+        /* [in] */ Integer arg8,
+        /* [in] */ Float arg9,
+        /* [in] */ Double arg10,
+        /* [in] */ Double arg11,
+        /* [in] */ Float arg12,
+        /* [in] */ Float arg13,
+        /* [in] */ Double arg14,
+        /* [in] */ Double arg15,
+        /* [in] */ Float arg16,
+        /* [out] */ Double& result) override;
 };
 
 }

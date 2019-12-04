@@ -14,7 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
-#include "reflection/CArgumentList_aarch64.h"
+#include "reflection/CArgumentList.h"
 #include "util/comolog.h"
 #include <cstdlib>
 
@@ -1503,7 +1503,6 @@ void CArgumentList::InitParameterInfo(
     parameter->GetType(type);
     parameter->GetIOAttribute(paramInfo.mIOAttr);
     type->GetTypeKind(paramInfo.mKind);
-    type->GetTypeModification(paramInfo.mMode);
     if (paramInfo.mIOAttr == IOAttribute::IN) {
         switch(paramInfo.mKind) {
             case TypeKind::Char:
@@ -1515,9 +1514,12 @@ void CArgumentList::InitParameterInfo(
             case TypeKind::ECode:
             case TypeKind::Enum:
             case TypeKind::TypeKind:
+                paramInfo.mNumberType = paramInfo.mKind != TypeKind::Float
+                        ? NUMBER_TYPE_INTEGER : NUMBER_TYPE_FLOATING_POINT;
                 paramInfo.mPos = bufferPos;
                 paramInfo.mSize = 4;
                 break;
+
             case TypeKind::Long:
             case TypeKind::Double:
             case TypeKind::String:
@@ -1528,6 +1530,8 @@ void CArgumentList::InitParameterInfo(
             case TypeKind::Array:
             case TypeKind::Interface:
             case TypeKind::Triple:
+                paramInfo.mNumberType = paramInfo.mKind != TypeKind::Double
+                        ? NUMBER_TYPE_INTEGER : NUMBER_TYPE_FLOATING_POINT;
                 paramInfo.mPos = ALIGN8(bufferPos);
                 paramInfo.mSize = 8;
                 break;
@@ -1557,6 +1561,7 @@ void CArgumentList::InitParameterInfo(
             case TypeKind::Interface:
             case TypeKind::Triple:
             case TypeKind::TypeKind:
+                paramInfo.mNumberType = NUMBER_TYPE_INTEGER;
                 paramInfo.mPos = ALIGN8(bufferPos);
                 paramInfo.mSize = 8;
                 break;
@@ -1565,7 +1570,7 @@ void CArgumentList::InitParameterInfo(
                 break;
         }
     }
-    bufferPos += paramInfo.mSize;
+    bufferPos = paramInfo.mPos + paramInfo.mSize;
 }
 
 } // namespace como

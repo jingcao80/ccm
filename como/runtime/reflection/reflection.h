@@ -21,13 +21,16 @@ namespace como {
 
 extern const char* NAMESPACE_GLOBAL;
 
+static constexpr Integer NUMBER_TYPE_INTEGER = 0;
+static constexpr Integer NUMBER_TYPE_FLOATING_POINT = 1;
+
 struct ParameterInfo
 {
     Integer             mSize;
+    Integer             mNumberType;
     TypeKind            mKind;
     IOAttribute         mIOAttr;
-    TypeModification    mMode;
     Integer             mPos;
-};
+} __attribute__ ((aligned(4)));
 
 }

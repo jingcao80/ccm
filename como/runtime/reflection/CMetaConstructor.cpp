@@ -14,11 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
-#if defined(__aarch64__)
-#include "reflection/CArgumentList_aarch64.h"
-#elif defined(__x86_64__)
-#include "reflection/CArgumentList_x64.h"
-#endif
+#include "reflection/CArgumentList.h"
 #include "reflection/CMetaCoclass.h"
 #include "reflection/CMetaComponent.h"
 #include "reflection/CMetaConstructor.h"
@@ -28,22 +24,12 @@
 
 namespace como {
 
-#if defined(__aarch64__)
 EXTERN_C ECode invoke(
     /* [in] */ HANDLE func,
     /* [in] */ Byte* params,
     /* [in] */ Integer paramNum,
+    /* [in] */ Integer stackParamNum,
     /* [in] */ struct ParameterInfo* paramInfos);
-#elif defined(__x86_64__)
-EXTERN_C ECode invoke(
-    /* [in] */ HANDLE func,
-    /* [in] */ Long* intData,
-    /* [in] */ Integer intDataSize,
-    /* [in] */ Double* fpData,
-    /* [in] */ Integer fpDataSize,
-    /* [in] */ Long* stkData,
-    /* [in] */ Integer stkDataSize);
-#endif
 
 COMO_INTERFACE_IMPL_LIGHT_1(CMetaConstructor, LightRefBase, IMetaConstructor);
 
@@ -172,26 +158,30 @@ ECode CMetaConstructor::Invoke(
 
     CArgumentList* args = (CArgumentList*)argList;
 
-#if defined(__aarch64__)
     Byte* params = args->GetParameterBuffer();
     Integer paramNum = args->GetParameterNumber();
     ParameterInfo* paramInfos = args->GetParameterInfos();
+    Integer intParamNum = 1, fpParamNum = 0;
+    for (Integer i = 0; i < paramNum; i++) {
+        if (paramInfos[i].mNumberType == NUMBER_TYPE_INTEGER) {
+            intParamNum++;
+        }
+        else {
+            fpParamNum++;
+        }
+    }
+#if defined(__aarch64__)
+    Integer stackParamNum = (intParamNum > 8 ? intParamNum - 8 : 0) +
+                            (fpParamNum > 8 ? fpParamNum - 8 : 0);
+#elif defined(__x86_64__)
+    Integer stackParamNum = (intParamNum > 6 ? intParamNum - 6 : 0) +
+                            (fpParamNum > 8 ? fpParamNum - 8 : 0);
+#endif
     VObject* vobj = reinterpret_cast<VObject*>(thisObject->Probe(
             *reinterpret_cast<InterfaceID*>(&mClassObjectInterface->mUuid)));
     reinterpret_cast<HANDLE*>(params)[0] = reinterpret_cast<HANDLE>(vobj);
     HANDLE methodAddr = vobj->mVtab->mMethods[mIndex];
-    return invoke(methodAddr, params, paramNum + 1, paramInfos);
-#elif defined(__x86_64__)
-    Integer intDataNum, fpDataNum, stkDataNum;
-    Long* intData = args->GetIntegerData(intDataNum);
-    Double* fpData = args->GetFPData(fpDataNum);
-    Long* stkData =  args->GetStackData(stkDataNum);
-    VObject* vobj = reinterpret_cast<VObject*>(thisObject->Probe(
-            *reinterpret_cast<InterfaceID*>(&mClassObjectInterface->mUuid)));
-    intData[0] = reinterpret_cast<Long>(vobj);
-    HANDLE methodAddr = vobj->mVtab->mMethods[mIndex];
-    return invoke(methodAddr, intData, intDataNum, fpData, fpDataNum, stkData, stkDataNum);
-#endif
+    return invoke(methodAddr, params, paramNum + 1, stackParamNum, paramInfos);
 }
 
 ECode CMetaConstructor::GetCoclass(

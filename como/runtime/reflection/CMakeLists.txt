@@ -23,6 +23,7 @@ include_directories(
     ${INC_DIR})
 
 set(SOURCES
+    CArgumentList.cpp
     CMetaCoclass.cpp
     CMetaComponent.cpp
     CMetaConstant.cpp
@@ -39,12 +40,11 @@ set(SOURCES
 if($ENV{PLATFORM} STREQUAL "linux")
     set(SOURCES
         ${SOURCES}
-        CArgumentList_x64.cpp
-        invoke_x64.cpp)
+        invoke_x64.s)
+    set_source_files_properties(invoke_x64.s PROPERTIES COMPILE_FLAGS ${CMAKE_C_FLAGS})
 elseif($ENV{PLATFORM} STREQUAL "android")
     set(SOURCES
         ${SOURCES}
-        CArgumentList_aarch64.cpp
         invoke_aarch64.s)
     set_source_files_properties(invoke_aarch64.s PROPERTIES COMPILE_FLAGS ${CMAKE_C_FLAGS})
 endif()
