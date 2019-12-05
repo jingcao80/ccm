@@ -134,6 +134,49 @@ ECode CMethodTester::TestMethod5(
     return NOERROR;
 }
 
+ECode CMethodTester::TestMethod6(
+    /* [in] */ Integer arg1,
+    /* [in] */ Long arg2,
+    /* [in] */ Boolean arg3,
+    /* [in] */ Char arg4,
+    /* [in] */ Short arg5,
+    /* [in] */ Double arg6,
+    /* [in] */ Float arg7,
+    /* [in] */ Integer arg8,
+    /* [in] */ Float arg9,
+    /* [in] */ Double arg10,
+    /* [in] */ Double arg11,
+    /* [in] */ Float arg12,
+    /* [in] */ Float arg13,
+    /* [in] */ Double arg14,
+    /* [in] */ Double arg15,
+    /* [in] */ Float arg16,
+    /* [out] */ Integer& result1,
+    /* [out] */ Double& result2)
+{
+    printf("==== call TestMethod5(arg1: %d\n", arg1);
+    printf("                      arg2: %lld\n", arg2);
+    printf("                      arg3: %d\n", arg3);
+    printf("                      arg4: %d\n", arg4);
+    printf("                      arg5: %d\n", arg5);
+    printf("                      arg6: %f\n", arg6);
+    printf("                      arg7: %f\n", arg7);
+    printf("                      arg8: %d\n", arg8);
+    printf("                      arg9: %f\n", arg9);
+    printf("                      arg10: %f\n", arg10);
+    printf("                      arg11: %f\n", arg11);
+    printf("                      arg12: %f\n", arg12);
+    printf("                      arg13: %f\n", arg13);
+    printf("                      arg14: %f\n", arg14);
+    printf("                      arg15: %f\n", arg15);
+    printf("                      arg16: %f\n", arg16);
+    printf("                      result1 addr: %p\n", &result1);
+    printf("                      result2 addr: %p\n", &result2);
+    result1 = arg8;
+    result2 = arg16;
+    return NOERROR;
+}
+
 }
 }
 }

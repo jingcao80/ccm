@@ -172,8 +172,8 @@ TEST(ReflectionTest, TestComponentGetInterfaces)
         if (i == 0) {
             EXPECT_STREQ("como::test::reflection", ns.string());
             EXPECT_STREQ("IMethodTest", name.string());
-            EXPECT_EQ(9, totalNumber);
-            EXPECT_EQ(5, declaredNumber);
+            EXPECT_EQ(10, totalNumber);
+            EXPECT_EQ(6, declaredNumber);
         }
     }
 }
@@ -186,10 +186,10 @@ TEST(ReflectionTest, TestInterfaceGetDeclaredMethods)
     mc->GetInterface("como::test::reflection::IMethodTest", intf);
     Integer totalNumber;
     intf->GetMethodNumber(totalNumber);
-    EXPECT_EQ(9, totalNumber);
+    EXPECT_EQ(10, totalNumber);
     Integer declaredNumber;
     intf->GetDeclaredMethodNumber(declaredNumber);
-    EXPECT_EQ(5, declaredNumber);
+    EXPECT_EQ(6, declaredNumber);
     Array<IMetaMethod*> declaredMethods(declaredNumber);
     intf->GetDeclaredMethods(declaredMethods);
     for (Integer i = 0; i < declaredNumber; i++) {
@@ -222,7 +222,7 @@ TEST(ReflectionTest, TestCoclassGetMethods)
     mc->GetCoclass("como::test::reflection::CMethodTester", klass);
     Integer methodNumber;
     klass->GetMethodNumber(methodNumber);
-    EXPECT_EQ(9, methodNumber);
+    EXPECT_EQ(10, methodNumber);
     Array<IMetaMethod*> methods(methodNumber);
     klass->GetAllMethods(methods);
     for (Integer i = 0; i < methodNumber; i++) {
@@ -266,6 +266,10 @@ TEST(ReflectionTest, TestCoclassGetMethods)
             case 8:
                 EXPECT_STREQ("TestMethod5", name.string());
                 EXPECT_STREQ("(ILZCSDFIFDDFFDDFD&)E", sig.string());
+                break;
+            case 9:
+                EXPECT_STREQ("TestMethod6", name.string());
+                EXPECT_STREQ("(ILZCSDFIFDDFFDDFI&D&)E", sig.string());
                 break;
             default:
                 break;
@@ -432,7 +436,7 @@ TEST(ReflectionTest, TestMethodInvokeTestMethod4)
     args->SetOutputArgumentOfDouble(8, reinterpret_cast<HANDLE>(&result));
     method->Invoke(obj, args);
     IObject::Probe(obj)->GetCoclass(klass);
-    EXPECT_EQ(arg2, result);
+    EXPECT_FLOAT_EQ(arg2, result);
     String name, ns;
     klass->GetName(name);
     klass->GetNamespace(ns);
@@ -488,7 +492,66 @@ TEST(ReflectionTest, TestMethodInvokeTestMethod5)
     args->SetOutputArgumentOfDouble(16, reinterpret_cast<HANDLE>(&result));
     method->Invoke(obj, args);
     IObject::Probe(obj)->GetCoclass(klass);
-    EXPECT_EQ(arg16, result);
+    EXPECT_FLOAT_EQ(arg16, result);
+    String name, ns;
+    klass->GetName(name);
+    klass->GetNamespace(ns);
+    EXPECT_STREQ("como::test::reflection", ns.string());
+    EXPECT_STREQ("CMethodTester", name.string());
+}
+
+TEST(ReflectionTest, TestMethodInvokeTestMethod6)
+{
+    AutoPtr<IMetaComponent> mc;
+    CoGetComponentMetadata(CID_ReflectionTestUnit, nullptr, mc);
+    AutoPtr<IMetaCoclass> klass;
+    mc->GetCoclass("como::test::reflection::CMethodTester", klass);
+    AutoPtr<IInterface> obj;
+    klass->CreateObject(IID_IInterface, &obj);
+    AutoPtr<IMetaMethod> method;
+    klass->GetMethod("TestMethod6", "(ILZCSDFIFDDFFDDFI&D&)E", method);
+    Integer arg1 = 9;
+    Long arg2 = 99;
+    Boolean arg3 = true;
+    Char arg4 = U'C';
+    Short arg5 = 999;
+    Double arg6 = 9.9;
+    Float arg7 = 9.99;
+    Integer arg8 = 999;
+    Float arg9 = 99.9;
+    Double arg10 = 9.009;
+    Double arg11 = 0.009;
+    Float arg12 = 9.09;
+    Float arg13 = 0.09;
+    Double arg14 = 99.009;
+    Double arg15 = -999.009;
+    Float arg16 = -0.09;
+    Integer result1;
+    Double result2;
+    AutoPtr<IArgumentList> args;
+    method->CreateArgumentList(args);
+    args->SetInputArgumentOfInteger(0, arg1);
+    args->SetInputArgumentOfLong(1, arg2);
+    args->SetInputArgumentOfBoolean(2, arg3);
+    args->SetInputArgumentOfChar(3, arg4);
+    args->SetInputArgumentOfShort(4, arg5);
+    args->SetInputArgumentOfDouble(5, arg6);
+    args->SetInputArgumentOfFloat(6, arg7);
+    args->SetInputArgumentOfInteger(7, arg8);
+    args->SetInputArgumentOfFloat(8, arg9);
+    args->SetInputArgumentOfDouble(9, arg10);
+    args->SetInputArgumentOfDouble(10, arg11);
+    args->SetInputArgumentOfFloat(11, arg12);
+    args->SetInputArgumentOfFloat(12, arg13);
+    args->SetInputArgumentOfDouble(13, arg14);
+    args->SetInputArgumentOfDouble(14, arg15);
+    args->SetInputArgumentOfFloat(15, arg16);
+    args->SetOutputArgumentOfInteger(16, reinterpret_cast<HANDLE>(&result1));
+    args->SetOutputArgumentOfDouble(17, reinterpret_cast<HANDLE>(&result2));
+    method->Invoke(obj, args);
+    IObject::Probe(obj)->GetCoclass(klass);
+    EXPECT_EQ(arg8, result1);
+    EXPECT_FLOAT_EQ(arg16, result2);
     String name, ns;
     klass->GetName(name);
     klass->GetNamespace(ns);

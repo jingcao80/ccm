@@ -83,6 +83,26 @@ public:
         /* [in] */ Double arg15,
         /* [in] */ Float arg16,
         /* [out] */ Double& result) override;
+
+    ECode TestMethod6(
+        /* [in] */ Integer arg1,
+        /* [in] */ Long arg2,
+        /* [in] */ Boolean arg3,
+        /* [in] */ Char arg4,
+        /* [in] */ Short arg5,
+        /* [in] */ Double arg6,
+        /* [in] */ Float arg7,
+        /* [in] */ Integer arg8,
+        /* [in] */ Float arg9,
+        /* [in] */ Double arg10,
+        /* [in] */ Double arg11,
+        /* [in] */ Float arg12,
+        /* [in] */ Float arg13,
+        /* [in] */ Double arg14,
+        /* [in] */ Double arg15,
+        /* [in] */ Float arg16,
+        /* [out] */ Integer& result1,
+        /* [out] */ Double& result2) override;
 };
 
 }

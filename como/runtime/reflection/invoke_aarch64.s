@@ -25,8 +25,6 @@
     .align 8;
     .global invoke;
 
-invoke:
-
 // x9:   subroutine return address
 // x10:  holds "func" value
 // x11:  holds "params" value
@@ -34,6 +32,7 @@ invoke:
 // w13:  holds "stackParamNum" value
 // x14:  holds "paramInfos" value
 
+invoke:
     sub     sp, sp, #16
     stp     fp, lr, [sp]
     mov     fp, sp

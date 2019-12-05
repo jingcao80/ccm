@@ -26,6 +26,9 @@
     .global invoke;
 
 invoke:
+    pushq   %r10;
+    pushq   %r11;
+    pushq   %r12;
     pushq   %rbx;
     pushq   %rbp;
     movq    %rsp, %rbp;
@@ -47,19 +50,19 @@ do_not_adjust:
     jmp     set_params;
 
 main:
-    subq    $56, %rsp;
-    movq    %rdi, -8(%rbp); 		// push "func" value
+    subq    $64, %rsp;
+    movq    %rdi, -8(%rbp);         // push "func" value
     movq    %rsi, -16(%rbp);        // push "params" value
     movl    %edx, -20(%rbp);        // push "paramNum" value
-    movq    %r8, -32(%rbp);
-    movl    $0, -40(%rbp);         	// integral paramNum
-    movl    $0, -44(%rbp);         	// floating point paramNum
+    movq    %r8, -32(%rbp);         // push "paramInfos" value
+    movl    $0, -40(%rbp);          // integral paramNum
+    movl    $0, -44(%rbp);          // floating point paramNum
     movl    %ecx, -48(%rbp);        // push "stackParamNum" value
 
 alloc_stack:
     cmpl    $0, %ecx;
-    jz      set_this;
-    movq    $8, %rax;
+    je      set_this;
+    movq    $16, %rax;
     mulq    %rcx;
     subq    %rax, %rsp;
     movq    %rsp, %r12;
@@ -349,4 +352,7 @@ return:
     movq    %rbp, %rsp;
     popq    %rbp;
     popq    %rbx;
+    popq    %r12;
+    popq    %r11;
+    popq    %r10;
     ret
