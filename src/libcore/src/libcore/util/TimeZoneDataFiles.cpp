@@ -26,8 +26,8 @@ using ccm::core::System;
 namespace libcore {
 namespace util {
 
-const String TimeZoneDataFiles::CCM_ROOT_ENV("CCM_ROOT");
-const String TimeZoneDataFiles::CCM_DATA_ENV("CCM_DATA");
+const String TimeZoneDataFiles::CCM_ROOT_ENV("COMO_ROOT");
+const String TimeZoneDataFiles::CCM_DATA_ENV("DATA_PATH");
 
 Array<String> TimeZoneDataFiles::GetTimeZoneFilePaths(
     /* [in] */ const String& fileName)

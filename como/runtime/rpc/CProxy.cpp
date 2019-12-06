@@ -57,8 +57,18 @@ namespace como {
 
 #define GET_STACK(rsp, off, var)
 
-EXTERN_C void __entry()
-{}
+EXTERN_C void __entry();
+
+__asm__(
+    ".text;"
+    ".align 8;"
+    ".global __entry;"
+    "__entry:"
+    "stp    lr, x1, [sp, #-16];"
+    "mov    w1, #0xff;"
+    "ldr    lr, [x0, #8];"
+    "br     lr;"
+);
 
 #elif defined(__x86_64__)
 
@@ -95,16 +105,19 @@ EXTERN_C void __entry()
 
 EXTERN_C void __entry();
 
+EXTERN_C void __end();
+
 __asm__(
     ".text;"
     ".align 8;"
     ".global __entry;"
     "__entry:"
-    "push   %rbp;"
-    "mov    %rsp, %rbp;"
-    "mov    $0xff, %ebx;"
+    "pushq  %rbp;"
+    "movq   %rsp, %rbp;"
+    "mov    $0xff, %bx;"
     "call   *8(%rdi);"
-    "leaveq;"
+    "movq   %rbp, %rsp;"
+    "popq   %rbp;"
     "ret;"
 );
 
@@ -115,7 +128,11 @@ HANDLE PROXY_ENTRY = 0;
 static constexpr Integer PROXY_ENTRY_SIZE = 16;
 static constexpr Integer PROXY_ENTRY_SHIFT = 4;
 static constexpr Integer PROXY_ENTRY_NUMBER = 240;
-static constexpr Integer PROXY_INDEX_OFFSET = 5;
+#if defined(__aarch64__)
+static constexpr Integer PROXY_INDEX_OFFSET = 8;
+#elif defined(__x86_64__)
+static constexpr Integer PROXY_INDEX_OFFSET = 6;
+#endif
 
 static constexpr Integer METHOD_MAX_NUMBER = PROXY_ENTRY_NUMBER + 4;
 
@@ -132,12 +149,21 @@ void Init_Proxy_Entry()
         return;
     }
 
+#if defined(__aarch64__)
+    Byte* p = (Byte*)PROXY_ENTRY;
+    for (Integer i = 0; i < PROXY_ENTRY_NUMBER; i++) {
+        memcpy(p, reinterpret_cast<void*>(&__entry), PROXY_ENTRY_SIZE);
+        p[8] = i;
+        p += PROXY_ENTRY_SIZE;
+    }
+#elif defined(__x86_64__)
     Byte* p = (Byte*)PROXY_ENTRY;
     for (Integer i = 0; i < PROXY_ENTRY_NUMBER; i++) {
         memcpy(p, reinterpret_cast<void*>(&__entry), PROXY_ENTRY_SIZE);
         *(Integer*)(p + PROXY_INDEX_OFFSET) = i;
         p += PROXY_ENTRY_SIZE;
     }
+#endif
 
     sProxyVtable[0] = reinterpret_cast<HANDLE>(&InterfaceProxy::S_AddRef);
     sProxyVtable[1] = reinterpret_cast<HANDLE>(&InterfaceProxy::S_Release);
@@ -765,8 +791,8 @@ ECode InterfaceProxy::ProxyEntry(
     GET_REG(ebx, methodIndex);
 
     Registers regs;
-    GET_RBP(regs.rbp);
-
+    GET_REG(rbp, regs.rbp);
+    // GET_RBP(regs.rbp);
     GET_REG(rdi, regs.rdi);
     GET_REG(rsi, regs.rsi);
     GET_REG(rdx, regs.rdx);

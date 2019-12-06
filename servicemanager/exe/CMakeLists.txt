@@ -19,6 +19,8 @@ project(servicemanager CXX)
 set(SM_EXE_SRC_DIR ${SM_SRC_DIR}/exe)
 set(SM_EXE_OBJ_DIR ${SM_OBJ_DIR}/exe)
 
+if($ENV{PLATFORM} STREQUAL "linux")
+
 include_directories(
     ./
     ${INC_DIR}
@@ -26,17 +28,37 @@ include_directories(
     /usr/include/dbus-1.0
     /usr/lib/x86_64-linux-gnu/dbus-1.0/include)
 
+elseif($ENV{PLATFORM} STREQUAL "android")
+
+include_directories(
+    ./
+    ${INC_DIR}
+    ${SM_EXE_OBJ_DIR})
+
+endif()
+
 set(SOURCES
     ServiceManager.cpp
     main.cpp)
 
 IMPORT_LIBRARY(comort.so)
 
+if($ENV{PLATFORM} STREQUAL "linux")
+
 add_executable(servicemanager
     ${SOURCES})
 target_link_libraries(servicemanager
     comort.so
     dbus-1)
+
+elseif($ENV{PLATFORM} STREQUAL "android")
+
+add_executable(servicemanager
+    ${SOURCES})
+target_link_libraries(servicemanager
+    comort.so)
+
+endif()
 
 COPY(servicemanager ${SM_EXE_OBJ_DIR}/servicemanager ${BIN_DIR})
 
