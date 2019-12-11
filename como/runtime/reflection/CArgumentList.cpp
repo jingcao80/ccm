@@ -1470,7 +1470,7 @@ ECode CArgumentList::GetArgumentAddress(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    addr = reinterpret_cast<HANDLE>(mParameterBuffer + mParameterInfos[index].mPos);
+    addr = Get<HANDLE>(mParameterBuffer, mParameterInfos[index].mPos);
     return NOERROR;
 }
 

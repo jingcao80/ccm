@@ -32,11 +32,12 @@ set(GENERATED_SOURCES
 
 IMPORT_LIBRARY(comort.so)
 IMPORT_LIBRARY(libservicemanager.so)
+IMPORT_GTEST()
 
 add_executable(testRPCCli
     ${SOURCES}
     ${GENERATED_SOURCES})
-target_link_libraries(testRPCCli comort.so libservicemanager.so)
+target_link_libraries(testRPCCli comort.so libservicemanager.so ${GTEST_LIBS})
 add_dependencies(testRPCCli RPCTestUnit)
 
 add_custom_command(

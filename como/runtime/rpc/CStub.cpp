@@ -173,6 +173,7 @@ ECode InterfaceStub::UnmarshalArguments(
                         argParcel->ReadByte(*value);
                     }
                     argList->SetOutputArgumentOfByte(i, reinterpret_cast<HANDLE>(value));
+                    break;
                 }
                 case TypeKind::Short: {
                     Short* value = new Short;
@@ -180,6 +181,7 @@ ECode InterfaceStub::UnmarshalArguments(
                         argParcel->ReadShort(*value);
                     }
                     argList->SetOutputArgumentOfShort(i, reinterpret_cast<HANDLE>(value));
+                    break;
                 }
                 case TypeKind::Integer: {
                     Integer* value = new Integer;
@@ -187,6 +189,7 @@ ECode InterfaceStub::UnmarshalArguments(
                         argParcel->ReadInteger(*value);
                     }
                     argList->SetOutputArgumentOfInteger(i, reinterpret_cast<HANDLE>(value));
+                    break;
                 }
                 case TypeKind::Long: {
                     Long* value = new Long;
@@ -194,6 +197,7 @@ ECode InterfaceStub::UnmarshalArguments(
                         argParcel->ReadLong(*value);
                     }
                     argList->SetOutputArgumentOfLong(i, reinterpret_cast<HANDLE>(value));
+                    break;
                 }
                 case TypeKind::Float: {
                     Float* value = new Float;
@@ -201,6 +205,7 @@ ECode InterfaceStub::UnmarshalArguments(
                         argParcel->ReadFloat(*value);
                     }
                     argList->SetOutputArgumentOfFloat(i, reinterpret_cast<HANDLE>(value));
+                    break;
                 }
                 case TypeKind::Double: {
                     Double* value = new Double;
@@ -208,6 +213,7 @@ ECode InterfaceStub::UnmarshalArguments(
                         argParcel->ReadDouble(*value);
                     }
                     argList->SetOutputArgumentOfDouble(i, reinterpret_cast<HANDLE>(value));
+                    break;
                 }
                 case TypeKind::Boolean: {
                     Boolean* value = new Boolean;
@@ -215,6 +221,7 @@ ECode InterfaceStub::UnmarshalArguments(
                         argParcel->ReadBoolean(*value);
                     }
                     argList->SetOutputArgumentOfBoolean(i, reinterpret_cast<HANDLE>(value));
+                    break;
                 }
                 case TypeKind::String: {
                     String* value = new String();
@@ -222,6 +229,7 @@ ECode InterfaceStub::UnmarshalArguments(
                         argParcel->ReadString(*value);
                     }
                     argList->SetOutputArgumentOfString(i, reinterpret_cast<HANDLE>(value));
+                    break;
                 }
                 case TypeKind::ECode: {
                     ECode* value = new ECode;
@@ -229,6 +237,7 @@ ECode InterfaceStub::UnmarshalArguments(
                         argParcel->ReadECode(*value);
                     }
                     argList->SetOutputArgumentOfECode(i, reinterpret_cast<HANDLE>(value));
+                    break;
                 }
                 case TypeKind::Enum: {
                     Integer* value = new Integer;
@@ -236,6 +245,7 @@ ECode InterfaceStub::UnmarshalArguments(
                         argParcel->ReadEnumeration(*value);
                     }
                     argList->SetOutputArgumentOfEnumeration(i, reinterpret_cast<HANDLE>(value));
+                    break;
                 }
                 case TypeKind::Array: {
                     Triple* t = new Triple();
@@ -243,6 +253,7 @@ ECode InterfaceStub::UnmarshalArguments(
                         argParcel->ReadArray(reinterpret_cast<HANDLE>(t));
                     }
                     argList->SetOutputArgumentOfArray(i, reinterpret_cast<HANDLE>(t));
+                    break;
                 }
                 case TypeKind::Interface: {
                     IInterface** intf = new IInterface*;
@@ -250,6 +261,7 @@ ECode InterfaceStub::UnmarshalArguments(
                         argParcel->ReadInterface(*reinterpret_cast<AutoPtr<IInterface>*>(intf));
                     }
                     argList->SetOutputArgumentOfInterface(i, reinterpret_cast<HANDLE>(intf));
+                    break;
                 }
                 case TypeKind::CoclassID:
                 case TypeKind::ComponentID:
@@ -515,10 +527,10 @@ ECode InterfaceStub::Invoke(
     /* [in] */ IParcel* argParcel,
     /* [out] */ AutoPtr<IParcel>& resParcel)
 {
-    Integer methodIndex, methodNum;
+    Integer methodIndex, methodNumber;
     argParcel->ReadInteger(methodIndex);
-    mTargetMetadata->GetMethodNumber(methodNum);
-    if (methodIndex < 0 || methodIndex >= methodNum) {
+    mTargetMetadata->GetMethodNumber(methodNumber);
+    if (methodIndex < 0 || methodIndex >= methodNumber) {
         Logger::E("CStub", "MethodIndex %d is invalid.", methodIndex);
         return E_RUNTIME_EXCEPTION;
     }
@@ -681,7 +693,7 @@ ECode CStub::CreateObject(
             String name, ns;
             interfaces[i]->GetNamespace(ns);
             interfaces[i]->GetName(name);
-            Logger::E("CStub", "Object does not have \"%s%s\" interface.",
+            Logger::E("CStub", "Object does not have \"%s::%s\" interface.",
                     ns.string(), name.string());
             return E_INTERFACE_NOT_FOUND_EXCEPTION;
         }

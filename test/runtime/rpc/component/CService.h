@@ -39,27 +39,42 @@ public:
     COMO_OBJECT_DECL();
 
     ECode TestMethod1(
-        /* [in] */ Integer arg1) override;
+        /* [in] */ Integer arg1,
+        /* [out] */ Integer& result1) override;
 
     ECode TestMethod2(
-        /* [in] */ Long arg1,
+        /* [in] */ Integer arg1,
         /* [in] */ Long arg2,
-        /* [in] */ Long arg3,
-        /* [in] */ Long arg4,
-        /* [in] */ Long arg5,
-        /* [in] */ Long arg6,
-        /* [in] */ Long arg7,
-        /* [in] */ Long arg8,
-        /* [in] */ Double arg9,
+        /* [in] */ Boolean arg3,
+        /* [in] */ Char arg4,
+        /* [in] */ Short arg5,
+        /* [in] */ Double arg6,
+        /* [in] */ Float arg7,
+        /* [in] */ Integer arg8,
+        /* [in] */ Float arg9,
         /* [in] */ Double arg10,
         /* [in] */ Double arg11,
-        /* [in] */ Double arg12,
-        /* [in] */ Double arg13,
+        /* [in] */ Float arg12,
+        /* [in] */ Float arg13,
         /* [in] */ Double arg14,
         /* [in] */ Double arg15,
-        /* [in] */ Double arg16,
-        /* [in] */ Double arg17,
-        /* [in] */ Double arg18) override;
+        /* [in] */ Float arg16,
+        /* [out] */ Integer& result1,
+        /* [out] */ Long& result2,
+        /* [out] */ Boolean& result3,
+        /* [out] */ Char& result4,
+        /* [out] */ Short& result5,
+        /* [out] */ Double& result6,
+        /* [out] */ Float& result7,
+        /* [out] */ Integer& result8,
+        /* [out] */ Float& result9,
+        /* [out] */ Double& result10,
+        /* [out] */ Double& result11,
+        /* [out] */ Float& result12,
+        /* [out] */ Float& result13,
+        /* [out] */ Double& result14,
+        /* [out] */ Double& result15,
+        /* [out] */ Float& result16) override;
 };
 
 } // namespace rpc

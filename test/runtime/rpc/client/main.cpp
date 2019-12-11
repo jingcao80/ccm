@@ -19,24 +19,78 @@
 #include <comosp.h>
 #include <ServiceManager.h>
 #include <cstdio>
+#include <gtest/gtest.h>
 
 using como::test::rpc::CID_CService;
 using como::test::rpc::IService;
 using pisces::ServiceManager;
 
-int main(int argv, char** argc)
+static AutoPtr<IService> SERVICE;
+
+TEST(RPCTest, TestGetRPCService)
 {
     AutoPtr<IInterface> obj;
-    ServiceManager::GetInstance()->GetService(String("rpcservice"), obj);
-    IService* svc = IService::Probe(obj);
-    printf("==== svc: %p ====\n", svc);
+    ServiceManager::GetInstance()->GetService("rpcservice", obj);
+    SERVICE = IService::Probe(obj);
+    EXPECT_TRUE(SERVICE != nullptr);
+}
 
-    printf("==== call IService::TestMethod1 ====\n");
-    svc->TestMethod1(9);
-    printf("==== call IService::TestMethod2 ====\n");
-    svc->TestMethod2(1, 2, 3, 4, 5, 6, 7, 8, 9.9,
-            10.9, 11.9, 12.9, 13.9, 14.9, 15.9, 16.9, 17.9, 18.9);
+TEST(RPCTest, TestCallTestMethod1)
+{
+    EXPECT_TRUE(SERVICE != nullptr);
+    ECode ec = E_REMOTE_EXCEPTION;
+    Integer result;
+    ec = SERVICE->TestMethod1(9, result);
+    EXPECT_EQ(9, result);
+    EXPECT_EQ(ec, NOERROR);
+}
 
-    printf("==== return ====\n");
-    return 0;
+TEST(RPCTest, TestCallTestMethod2)
+{
+    EXPECT_TRUE(SERVICE != nullptr);
+    Integer arg1 = 9, result1;
+    Long arg2 = 99, result2;
+    Boolean arg3 = true, result3;
+    Char arg4 = U'C', result4;
+    Short arg5 = 999, result5;
+    Double arg6 = 9.9, result6;
+    Float arg7 = 9.99, result7;
+    Integer arg8 = 999, result8;
+    Float arg9 = 99.9, result9;
+    Double arg10 = 9.009, result10;
+    Double arg11 = 0.009, result11;
+    Float arg12 = 9.09, result12;
+    Float arg13 = 0.09, result13;
+    Double arg14 = 99.009, result14;
+    Double arg15 = -999.009, result15;
+    Float arg16 = -0.09, result16;
+    ECode ec = E_REMOTE_EXCEPTION;
+    ec = SERVICE->TestMethod2(
+            arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8,
+            arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16,
+            result1, result2, result3, result4, result5, result6, result7, result8,
+            result9, result10, result11, result12, result13, result14, result15, result16);
+    EXPECT_EQ(ec, NOERROR);
+    EXPECT_EQ(arg1, result1);
+    EXPECT_EQ(arg2, result2);
+    EXPECT_EQ(arg3, result3);
+    EXPECT_EQ(arg4, result4);
+    EXPECT_EQ(arg5, result5);
+    EXPECT_DOUBLE_EQ(arg6, result6);
+    EXPECT_FLOAT_EQ(arg7, result7);
+    EXPECT_EQ(arg8, result8);
+    EXPECT_FLOAT_EQ(arg9, result9);
+    EXPECT_DOUBLE_EQ(arg10, result10);
+    EXPECT_DOUBLE_EQ(arg11, result11);
+    EXPECT_FLOAT_EQ(arg12, result12);
+    EXPECT_FLOAT_EQ(arg13, result13);
+    EXPECT_DOUBLE_EQ(arg14, result14);
+    EXPECT_DOUBLE_EQ(arg15, result15);
+    EXPECT_FLOAT_EQ(arg16, result16);
+}
+
+int main(int argc, char **argv)
+{
+    testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }

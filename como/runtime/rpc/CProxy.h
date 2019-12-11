@@ -47,21 +47,38 @@ class InterfaceProxy
 private:
     struct Registers
     {
-        Long rbp;
-        Long rdi;
-        Long rsi;
-        Long rdx;
-        Long rcx;
-        Long r8;
-        Long r9;
-        Double xmm0;
-        Double xmm1;
-        Double xmm2;
-        Double xmm3;
-        Double xmm4;
-        Double xmm5;
-        Double xmm6;
-        Double xmm7;
+        typedef Long Reg_t;
+
+        union GPReg {
+            Reg_t   reg;
+            Long    lVal;
+            Integer iVal;
+        };
+
+        union SSEReg {
+            Reg_t   reg;
+            Double  dVal;
+            Float   fVal;
+        };
+
+        GPReg rbp;
+        GPReg rdi;
+        GPReg rsi;
+        GPReg rdx;
+        GPReg rcx;
+        GPReg r8;
+        GPReg r9;
+
+        SSEReg xmm0;
+        SSEReg xmm1;
+        SSEReg xmm2;
+        SSEReg xmm3;
+        SSEReg xmm4;
+        SSEReg xmm5;
+        SSEReg xmm6;
+        SSEReg xmm7;
+
+        Integer paramStartOffset;
     };
 
 public:
@@ -102,20 +119,30 @@ private:
         /* [in] */ IMetaMethod* method,
         /* [in] */ IParcel* resParcel);
 
+    Integer GetIntegerValue(
+        /* [in] */ Registers& regs,
+        /* [in] */ Integer intParamIndex,
+        /* [in] */ Integer fpParamIndex);
+
     Long GetLongValue(
         /* [in] */ Registers& regs,
-        /* [in] */ Integer intIndex,
-        /* [in] */ Integer fpIndex);
+        /* [in] */ Integer intParamIndex,
+        /* [in] */ Integer fpParamIndex);
+
+    Float GetFloatValue(
+        /* [in] */ Registers& regs,
+        /* [in] */ Integer intParamIndex,
+        /* [in] */ Integer fpParamIndex);
 
     Double GetDoubleValue(
         /* [in] */ Registers& regs,
-        /* [in] */ Integer intIndex,
-        /* [in] */ Integer fpIndex);
+        /* [in] */ Integer intParamIndex,
+        /* [in] */ Integer fpParamIndex);
 
-    HANDLE GetValueAddress(
+    HANDLE GetHANDLEValue(
         /* [in] */ Registers& regs,
-        /* [in] */ Integer intIndex,
-        /* [in] */ Integer fpIndex);
+        /* [in] */ Integer intParamIndex,
+        /* [in] */ Integer fpParamIndex);
 
 private:
     friend class CProxy;

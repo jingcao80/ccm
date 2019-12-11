@@ -72,40 +72,62 @@ __asm__(
 
 #elif defined(__x86_64__)
 
-#define GET_REG(reg, var)       \
-    __asm__ __volatile__(       \
-        "mov    %%"#reg", %0;"  \
-        : "=m"(var)             \
-    )
-
-#define GET_XREG(reg, var)      \
-    __asm__ __volatile__(       \
-        "movsd  %%"#reg", %0;"  \
-        : "=m"(var)             \
-    )
-
-#define GET_RBP(var)                \
+#define GET_REG(reg, var)           \
     __asm__ __volatile__(           \
-        "mov    (%%rbp), %%rax;"    \
-        "mov    %%rax, %0;"         \
+        "movq   %%"#reg", %0;"      \
         : "=m"(var)                 \
-    );
+    )
 
-#define GET_STACK(rsp, off, var)        \
-    __asm__ __volatile__(               \
-        "mov    %1, %%rax;"             \
-        "mov    %2, %%ebx;"             \
-        "add    %%rbx, %%rax;"          \
-        "mov    (%%rax), %%rax;"        \
-        "mov    %%rax, %0;"             \
-        : "=m"(var)                     \
-        : "m"(rsp)                      \
-        , "m"(off)                      \
+#define GET_STACK_INTEGER(rbp, off, var)    \
+    __asm__ __volatile__(                   \
+        "movq   %1, %%rax;"                 \
+        "movl   %2, %%ebx;"                 \
+        "addq   %%rbx, %%rax;"              \
+        "movl   (%%rax), %%eax;"            \
+        "movl   %%eax, %0;"                 \
+        : "=m"(var)                         \
+        : "m"(rbp), "m"(off)                \
+        : "rax", "rbx"                      \
+    )
+
+#define GET_STACK_LONG(rbp, off, var)       \
+    __asm__ __volatile__(                   \
+        "movq   %1, %%rax;"                 \
+        "movl   %2, %%ebx;"                 \
+        "addq   %%rbx, %%rax;"              \
+        "movq   (%%rax), %%rax;"            \
+        "movq   %%rax, %0;"                 \
+        : "=m"(var)                         \
+        : "m"(rbp)                          \
+        , "m"(off)                          \
+        : "rax", "rbx"                      \
+    )
+
+#define GET_STACK_FLOAT(rbp, off, var)      \
+    __asm__ __volatile__(                   \
+        "movq   %1, %%rax;"                 \
+        "movl   %2, %%ebx;"                 \
+        "addq   %%rbx, %%rax;"              \
+        "movl   (%%rax), %%eax;"            \
+        "movl   %%eax, %0;"                 \
+        : "=m"(var)                         \
+        : "m"(rbp), "m"(off)                \
+        : "rax", "rbx"                      \
+    )
+
+#define GET_STACK_DOUBLE(rbp, off, var)     \
+    __asm__ __volatile__(                   \
+        "movq   %1, %%rax;"                 \
+        "movl   %2, %%ebx;"                 \
+        "addq   %%rbx, %%rax;"              \
+        "movq   (%%rax), %%rax;"            \
+        "movq   %%rax, %0;"                 \
+        : "=m"(var)                         \
+        : "m"(rbp), "m"(off)                \
+        : "rax", "rbx"                      \
     )
 
 EXTERN_C void __entry();
-
-EXTERN_C void __end();
 
 __asm__(
     ".text;"
@@ -113,10 +135,14 @@ __asm__(
     ".global __entry;"
     "__entry:"
     "pushq  %rbp;"
-    "movq   %rsp, %rbp;"
-    "mov    $0xff, %bx;"
-    "call   *8(%rdi);"
-    "movq   %rbp, %rsp;"
+    "pushq  %rdi;"
+    "subq   $8, %rsp;"
+    "movl    $0xff, (%rsp);"
+    "movq   %rdi, %rax;"
+    "movq   %rsp, %rdi;"
+    "call   *8(%rax);"
+    "addq   $8, %rsp;"
+    "popq   %rdi;"
     "popq   %rbp;"
     "ret;"
 );
@@ -125,13 +151,13 @@ __asm__(
 
 HANDLE PROXY_ENTRY = 0;
 
-static constexpr Integer PROXY_ENTRY_SIZE = 16;
-static constexpr Integer PROXY_ENTRY_SHIFT = 4;
+static constexpr Integer PROXY_ENTRY_SIZE = 32;
+static constexpr Integer PROXY_ENTRY_SHIFT = 5;
 static constexpr Integer PROXY_ENTRY_NUMBER = 240;
 #if defined(__aarch64__)
 static constexpr Integer PROXY_INDEX_OFFSET = 8;
 #elif defined(__x86_64__)
-static constexpr Integer PROXY_INDEX_OFFSET = 6;
+static constexpr Integer PROXY_INDEX_OFFSET = 9;
 #endif
 
 static constexpr Integer METHOD_MAX_NUMBER = PROXY_ENTRY_NUMBER + 4;
@@ -160,7 +186,7 @@ void Init_Proxy_Entry()
     Byte* p = (Byte*)PROXY_ENTRY;
     for (Integer i = 0; i < PROXY_ENTRY_NUMBER; i++) {
         memcpy(p, reinterpret_cast<void*>(&__entry), PROXY_ENTRY_SIZE);
-        *(Integer*)(p + PROXY_INDEX_OFFSET) = i;
+        p[PROXY_INDEX_OFFSET] = i;
         p += PROXY_ENTRY_SIZE;
     }
 #endif
@@ -233,7 +259,7 @@ ECode InterfaceProxy::MarshalArguments(
 {
     Integer N;
     method->GetParameterNumber(N);
-    Integer intNum = 1, fpNum = 0;
+    Integer intParamIndex = 1, fpParamIndex = 0;
     for (Integer i = 0; i < N; i++) {
         AutoPtr<IMetaParameter> param;
         method->GetParameter(i, param);
@@ -246,84 +272,98 @@ ECode InterfaceProxy::MarshalArguments(
         if (ioAttr == IOAttribute::IN) {
             switch (kind) {
                 case TypeKind::Char: {
-                    Char value = (Char)GetLongValue(regs, intNum++, fpNum);
+                    Char value = (Char)GetIntegerValue(regs, intParamIndex, fpParamIndex);
                     argParcel->WriteChar(value);
+                    intParamIndex++;
                     break;
                 }
                 case TypeKind::Byte: {
-                    Byte value = (Byte)GetLongValue(regs, intNum++, fpNum);
+                    Byte value = (Byte)GetIntegerValue(regs, intParamIndex, fpParamIndex);
                     argParcel->WriteByte(value);
+                    intParamIndex++;
                     break;
                 }
                 case TypeKind::Short: {
-                    Short value = (Short)GetLongValue(regs, intNum++, fpNum);
+                    Short value = (Short)GetIntegerValue(regs, intParamIndex, fpParamIndex);
                     argParcel->WriteShort(value);
+                    intParamIndex++;
                     break;
                 }
                 case TypeKind::Integer: {
-                    Integer value = (Integer)GetLongValue(regs, intNum++, fpNum);
+                    Integer value = GetIntegerValue(regs, intParamIndex, fpParamIndex);
                     argParcel->WriteInteger(value);
+                    intParamIndex++;
                     break;
                 }
                 case TypeKind::Long: {
-                    Long value = GetLongValue(regs, intNum++, fpNum);
+                    Long value = GetLongValue(regs, intParamIndex, fpParamIndex);
                     argParcel->WriteLong(value);
+                    intParamIndex++;
                     break;
                 }
                 case TypeKind::Float: {
-                    Float value = (Float)GetDoubleValue(regs, intNum, fpNum++);
+                    Float value = GetFloatValue(regs, intParamIndex, fpParamIndex);
                     argParcel->WriteFloat(value);
+                    fpParamIndex++;
                     break;
                 }
                 case TypeKind::Double: {
-                    Double value = GetDoubleValue(regs, intNum, fpNum++);
+                    Double value = GetDoubleValue(regs, intParamIndex, fpParamIndex);
                     argParcel->WriteDouble(value);
+                    fpParamIndex++;
                     break;
                 }
                 case TypeKind::Boolean: {
-                    Boolean value = (Boolean)GetLongValue(regs, intNum++, fpNum);
+                    Boolean value = (Boolean)GetIntegerValue(regs, intParamIndex, fpParamIndex);
                     argParcel->WriteBoolean(value);
+                    intParamIndex++;
                     break;
                 }
                 case TypeKind::String: {
-                    String value = *reinterpret_cast<String*>(GetLongValue(regs, intNum++, fpNum));
+                    String value = *reinterpret_cast<String*>(GetHANDLEValue(regs, intParamIndex, fpParamIndex));
                     argParcel->WriteString(value);
+                    intParamIndex++;
                     break;
                 }
                 case TypeKind::ECode: {
-                    ECode value = (ECode)GetLongValue(regs, intNum++, fpNum);
+                    ECode value = (ECode)GetIntegerValue(regs, intParamIndex, fpParamIndex);
                     argParcel->WriteECode(value);
+                    intParamIndex++;
                     break;
                 }
                 case TypeKind::Enum: {
-                    Integer value = (Integer)GetLongValue(regs, intNum++, fpNum);
+                    Integer value = GetIntegerValue(regs, intParamIndex, fpParamIndex);
                     argParcel->WriteEnumeration(value);
+                    intParamIndex++;
                     break;
                 }
                 case TypeKind::Array: {
-                    AutoPtr<IMetaType> aType, eType;
-                    eType = type;
-                    TypeKind eKind = kind;
-                    while (eKind == TypeKind::Array) {
-                        aType = eType;
-                        aType->GetElementType(eType);
-                        eType->GetTypeKind(eKind);
+                    AutoPtr<IMetaType> arrType, elemType;
+                    elemType = type;
+                    TypeKind elemKind = kind;
+                    while (elemKind == TypeKind::Array) {
+                        arrType = elemType;
+                        arrType->GetElementType(elemType);
+                        elemType->GetTypeKind(elemKind);
                     }
-                    if (eKind == TypeKind::CoclassID ||
-                            eKind == TypeKind::ComponentID ||
-                            eKind == TypeKind::InterfaceID ||
-                            eKind == TypeKind::HANDLE) {
-                        Logger::E("CProxy", "Invalid [in] Array(%d), param index: %d.\n", eKind, i);
+                    if (elemKind == TypeKind::CoclassID ||
+                            elemKind == TypeKind::ComponentID ||
+                            elemKind == TypeKind::InterfaceID ||
+                            elemKind == TypeKind::HANDLE) {
+                        Logger::E("CProxy", "Invalid [in] Array(%d), param index: %d.\n", elemKind, i);
                         return E_ILLEGAL_ARGUMENT_EXCEPTION;
                     }
 
-                    HANDLE value = (HANDLE)GetLongValue(regs, intNum++, fpNum);
+                    HANDLE value = GetHANDLEValue(regs, intParamIndex, fpParamIndex);
                     argParcel->WriteArray(value);
+                    intParamIndex++;
                     break;
                 }
                 case TypeKind::Interface: {
-                    IInterface* value = reinterpret_cast<IInterface*>(GetLongValue(regs, intNum++, fpNum));
+                    IInterface* value = reinterpret_cast<IInterface*>(
+                            GetHANDLEValue(regs, intParamIndex, fpParamIndex));
                     argParcel->WriteInterface(value);
+                    intParamIndex++;
                     break;
                 }
                 case TypeKind::CoclassID:
@@ -339,84 +379,109 @@ ECode InterfaceProxy::MarshalArguments(
         else if (ioAttr == IOAttribute::IN_OUT) {
             switch (kind) {
                 case TypeKind::Char: {
-                    Char* value = reinterpret_cast<Char*>(GetLongValue(regs, intNum++, fpNum));
-                    argParcel->WriteChar(*value);
+                    Char* addr = reinterpret_cast<Char*>(
+                            GetHANDLEValue(regs, intParamIndex, fpParamIndex));
+                    argParcel->WriteChar(*addr);
+                    intParamIndex++;
                     break;
                 }
                 case TypeKind::Byte: {
-                    Byte* value = reinterpret_cast<Byte*>(GetLongValue(regs, intNum++, fpNum));
-                    argParcel->WriteByte(*value);
+                    Byte* addr = reinterpret_cast<Byte*>(
+                            GetHANDLEValue(regs, intParamIndex, fpParamIndex));
+                    argParcel->WriteByte(*addr);
+                    intParamIndex++;
                     break;
                 }
                 case TypeKind::Short: {
-                    Short* value = reinterpret_cast<Short*>(GetLongValue(regs, intNum++, fpNum));
-                    argParcel->WriteShort(*value);
+                    Short* addr = reinterpret_cast<Short*>(
+                            GetHANDLEValue(regs, intParamIndex, fpParamIndex));
+                    argParcel->WriteShort(*addr);
+                    intParamIndex++;
                     break;
                 }
                 case TypeKind::Integer: {
-                    Integer* value = reinterpret_cast<Integer*>(GetLongValue(regs, intNum++, fpNum));
-                    argParcel->WriteInteger(*value);
+                    Integer* addr = reinterpret_cast<Integer*>(
+                            GetHANDLEValue(regs, intParamIndex, fpParamIndex));
+                    argParcel->WriteInteger(*addr);
+                    intParamIndex++;
                     break;
                 }
                 case TypeKind::Long: {
-                    Long* value = reinterpret_cast<Long*>(GetLongValue(regs, intNum++, fpNum));
-                    argParcel->WriteLong(*value);
+                    Long* addr = reinterpret_cast<Long*>(
+                            GetHANDLEValue(regs, intParamIndex, fpParamIndex));
+                    argParcel->WriteLong(*addr);
+                    intParamIndex++;
                     break;
                 }
                 case TypeKind::Float: {
-                    Float* value = reinterpret_cast<Float*>(GetLongValue(regs, intNum++, fpNum));
-                    argParcel->WriteFloat(*value);
+                    Float* addr = reinterpret_cast<Float*>(
+                            GetHANDLEValue(regs, intParamIndex, fpParamIndex));
+                    argParcel->WriteFloat(*addr);
+                    intParamIndex++;
                     break;
                 }
                 case TypeKind::Double: {
-                    Double* value = reinterpret_cast<Double*>(GetLongValue(regs, intNum++, fpNum));
-                    argParcel->WriteDouble(*value);
+                    Double* addr = reinterpret_cast<Double*>(
+                            GetHANDLEValue(regs, intParamIndex, fpParamIndex));
+                    argParcel->WriteDouble(*addr);
+                    intParamIndex++;
                     break;
                 }
                 case TypeKind::Boolean: {
-                    Boolean* value = reinterpret_cast<Boolean*>(GetLongValue(regs, intNum++, fpNum));
-                    argParcel->WriteBoolean(*value);
+                    Boolean* addr = reinterpret_cast<Boolean*>(
+                            GetHANDLEValue(regs, intParamIndex, fpParamIndex));
+                    argParcel->WriteBoolean(*addr);
+                    intParamIndex++;
                     break;
                 }
                 case TypeKind::String: {
-                    String* value = reinterpret_cast<String*>(GetLongValue(regs, intNum++, fpNum));
-                    argParcel->WriteString(*value);
+                    String* addr = reinterpret_cast<String*>(
+                            GetHANDLEValue(regs, intParamIndex, fpParamIndex));
+                    argParcel->WriteString(*addr);
+                    intParamIndex++;
                     break;
                 }
                 case TypeKind::ECode: {
-                    ECode* value = reinterpret_cast<ECode*>(GetLongValue(regs, intNum++, fpNum));
-                    argParcel->WriteECode(*value);
+                    ECode* addr = reinterpret_cast<ECode*>(
+                            GetHANDLEValue(regs, intParamIndex, fpParamIndex));
+                    argParcel->WriteECode(*addr);
+                    intParamIndex++;
                     break;
                 }
                 case TypeKind::Enum: {
-                    Integer* value = reinterpret_cast<Integer*>(GetLongValue(regs, intNum++, fpNum));
-                    argParcel->WriteInteger(*value);
+                    Integer* addr = reinterpret_cast<Integer*>(
+                            GetHANDLEValue(regs, intParamIndex, fpParamIndex));
+                    argParcel->WriteInteger(*addr);
+                    intParamIndex++;
                     break;
                 }
                 case TypeKind::Array: {
-                    AutoPtr<IMetaType> aType, eType;
-                    eType = type;
-                    TypeKind eKind = kind;
-                    while (eKind == TypeKind::Array) {
-                        aType = eType;
-                        aType->GetElementType(eType);
-                        eType->GetTypeKind(eKind);
+                    AutoPtr<IMetaType> arrType, elemType;
+                    elemType = type;
+                    TypeKind elemKind = kind;
+                    while (elemKind == TypeKind::Array) {
+                        arrType = elemType;
+                        arrType->GetElementType(elemType);
+                        elemType->GetTypeKind(elemKind);
                     }
-                    if (eKind == TypeKind::CoclassID ||
-                            eKind == TypeKind::ComponentID ||
-                            eKind == TypeKind::InterfaceID ||
-                            eKind == TypeKind::HANDLE) {
-                        Logger::E("CProxy", "Invalid [in, out] Array(%d), param index: %d.\n", eKind, i);
+                    if (elemKind == TypeKind::CoclassID ||
+                            elemKind == TypeKind::ComponentID ||
+                            elemKind == TypeKind::InterfaceID ||
+                            elemKind == TypeKind::HANDLE) {
+                        Logger::E("CProxy", "Invalid [in, out] Array(%d), param index: %d.\n", elemKind, i);
                         return E_ILLEGAL_ARGUMENT_EXCEPTION;
                     }
 
-                    HANDLE value = (HANDLE)GetLongValue(regs, intNum++, fpNum);
+                    HANDLE value = GetHANDLEValue(regs, intParamIndex, fpParamIndex);
                     argParcel->WriteArray(value);
+                    intParamIndex++;
                     break;
                 }
                 case TypeKind::Interface: {
-                    IInterface** value = reinterpret_cast<IInterface**>(GetLongValue(regs, intNum++, fpNum));
+                    IInterface** value = reinterpret_cast<IInterface**>(
+                            GetHANDLEValue(regs, intParamIndex, fpParamIndex));
                     argParcel->WriteInterface(*value);
+                    intParamIndex++;
                     break;
                 }
                 case TypeKind::CoclassID:
@@ -443,26 +508,25 @@ ECode InterfaceProxy::MarshalArguments(
                 case TypeKind::ECode:
                 case TypeKind::Enum:
                 case TypeKind::Interface:
-                    intNum++;
+                    intParamIndex++;
                     break;
                 case TypeKind::Array: {
-                    AutoPtr<IMetaType> aType, eType;
-                    eType = type;
-                    TypeKind eKind = kind;
-                    while (eKind == TypeKind::Array) {
-                        aType = eType;
-                        aType->GetElementType(eType);
-                        eType->GetTypeKind(eKind);
+                    AutoPtr<IMetaType> arrType, elemType;
+                    elemType = type;
+                    TypeKind elemKind = kind;
+                    while (elemKind == TypeKind::Array) {
+                        arrType = elemType;
+                        arrType->GetElementType(elemType);
+                        elemType->GetTypeKind(elemKind);
                     }
-                    if (eKind == TypeKind::CoclassID ||
-                            eKind == TypeKind::ComponentID ||
-                            eKind == TypeKind::InterfaceID ||
-                            eKind == TypeKind::HANDLE) {
-                        Logger::E("CProxy", "Invalid [out] Array(%d), param index: %d.\n", eKind, i);
+                    if (elemKind == TypeKind::CoclassID ||
+                            elemKind == TypeKind::ComponentID ||
+                            elemKind == TypeKind::InterfaceID ||
+                            elemKind == TypeKind::HANDLE) {
+                        Logger::E("CProxy", "Invalid [out] Array(%d), param index: %d.\n", elemKind, i);
                         return E_ILLEGAL_ARGUMENT_EXCEPTION;
                     }
-
-                    intNum++;
+                    intParamIndex++;
                     break;
                 }
                 case TypeKind::CoclassID:
@@ -478,23 +542,22 @@ ECode InterfaceProxy::MarshalArguments(
         else if (ioAttr == IOAttribute::OUT_CALLEE) {
             switch (kind) {
                 case TypeKind::Array: {
-                    AutoPtr<IMetaType> aType, eType;
-                    eType = type;
-                    TypeKind eKind = kind;
-                    while (eKind == TypeKind::Array) {
-                        aType = eType;
-                        aType->GetElementType(eType);
-                        eType->GetTypeKind(eKind);
+                    AutoPtr<IMetaType> arrType, elemType;
+                    elemType = type;
+                    TypeKind elemKind = kind;
+                    while (elemKind == TypeKind::Array) {
+                        arrType = elemType;
+                        arrType->GetElementType(elemType);
+                        elemType->GetTypeKind(elemKind);
                     }
-                    if (eKind == TypeKind::CoclassID ||
-                            eKind == TypeKind::ComponentID ||
-                            eKind == TypeKind::InterfaceID ||
-                            eKind == TypeKind::HANDLE) {
-                        Logger::E("CProxy", "Invalid [out, callee] Array(%d), param index: %d.\n", eKind, i);
+                    if (elemKind == TypeKind::CoclassID ||
+                            elemKind == TypeKind::ComponentID ||
+                            elemKind == TypeKind::InterfaceID ||
+                            elemKind == TypeKind::HANDLE) {
+                        Logger::E("CProxy", "Invalid [out, callee] Array(%d), param index: %d.\n", elemKind, i);
                         return E_ILLEGAL_ARGUMENT_EXCEPTION;
                     }
-
-                    intNum++;
+                    intParamIndex++;
                     break;
                 }
                 case TypeKind::Char:
@@ -531,7 +594,7 @@ ECode InterfaceProxy::UnmarshalResults(
 {
     Integer N;
     method->GetParameterNumber(N);
-    Integer intNum = 1, fpNum = 0;
+    Integer intParamIndex = 1, fpParamIndex = 0;
     for (Integer i = 0; i < N; i++) {
         AutoPtr<IMetaParameter> param;
         method->GetParameter(i, param);
@@ -554,11 +617,11 @@ ECode InterfaceProxy::UnmarshalResults(
                 case TypeKind::Enum:
                 case TypeKind::Array:
                 case TypeKind::Interface:
-                    intNum++;
+                    intParamIndex++;
                     break;
                 case TypeKind::Float:
                 case TypeKind::Double:
-                    fpNum++;
+                    fpParamIndex++;
                     break;
                 case TypeKind::CoclassID:
                 case TypeKind::ComponentID:
@@ -574,80 +637,92 @@ ECode InterfaceProxy::UnmarshalResults(
             switch (kind) {
                 case TypeKind::Char: {
                     Char* addr = reinterpret_cast<Char*>(
-                            GetValueAddress(regs, intNum++, fpNum));
+                            GetHANDLEValue(regs, intParamIndex, fpParamIndex));
                     resParcel->ReadChar(*addr);
+                    intParamIndex++;
                     break;
                 }
                 case TypeKind::Byte: {
                     Byte* addr = reinterpret_cast<Byte*>(
-                            GetValueAddress(regs, intNum++, fpNum));
+                            GetHANDLEValue(regs, intParamIndex, fpParamIndex));
                     resParcel->ReadByte(*addr);
+                    intParamIndex++;
                     break;
                 }
                 case TypeKind::Short: {
                     Short* addr = reinterpret_cast<Short*>(
-                            GetValueAddress(regs, intNum++, fpNum));
+                            GetHANDLEValue(regs, intParamIndex, fpParamIndex));
                     resParcel->ReadShort(*addr);
+                    intParamIndex++;
                     break;
                 }
                 case TypeKind::Integer: {
                     Integer* addr = reinterpret_cast<Integer*>(
-                            GetValueAddress(regs, intNum++, fpNum));
+                            GetHANDLEValue(regs, intParamIndex, fpParamIndex));
                     resParcel->ReadInteger(*addr);
+                    intParamIndex++;
                     break;
                 }
                 case TypeKind::Long: {
                     Long* addr = reinterpret_cast<Long*>(
-                            GetValueAddress(regs, intNum++, fpNum));
+                            GetHANDLEValue(regs, intParamIndex, fpParamIndex));
                     resParcel->ReadLong(*addr);
+                    intParamIndex++;
                     break;
                 }
                 case TypeKind::Float: {
                     Float* addr = reinterpret_cast<Float*>(
-                            GetValueAddress(regs, intNum++, fpNum));
+                            GetHANDLEValue(regs, intParamIndex, fpParamIndex));
                     resParcel->ReadFloat(*addr);
+                    intParamIndex++;
                     break;
                 }
                 case TypeKind::Double: {
                     Double* addr = reinterpret_cast<Double*>(
-                            GetValueAddress(regs, intNum++, fpNum));
+                            GetHANDLEValue(regs, intParamIndex, fpParamIndex));
                     resParcel->ReadDouble(*addr);
+                    intParamIndex++;
                     break;
                 }
                 case TypeKind::Boolean: {
                     Boolean* addr = reinterpret_cast<Boolean*>(
-                            GetValueAddress(regs, intNum++, fpNum));
+                            GetHANDLEValue(regs, intParamIndex, fpParamIndex));
                     resParcel->ReadBoolean(*addr);
+                    intParamIndex++;
                     break;
                 }
                 case TypeKind::String: {
                     String* addr = reinterpret_cast<String*>(
-                            GetValueAddress(regs, intNum++, fpNum));
+                            GetHANDLEValue(regs, intParamIndex, fpParamIndex));
                     resParcel->ReadString(*addr);
+                    intParamIndex++;
                     break;
                 }
                 case TypeKind::ECode: {
                     ECode* addr = reinterpret_cast<ECode*>(
-                            GetValueAddress(regs, intNum++, fpNum));
+                            GetHANDLEValue(regs, intParamIndex, fpParamIndex));
                     resParcel->ReadECode(*addr);
+                    intParamIndex++;
                     break;
                 }
                 case TypeKind::Enum: {
                     Integer* addr = reinterpret_cast<Integer*>(
-                            GetValueAddress(regs, intNum++, fpNum));
+                            GetHANDLEValue(regs, intParamIndex, fpParamIndex));
                     resParcel->ReadEnumeration(*addr);
+                    intParamIndex++;
                     break;
                 }
                 case TypeKind::Array: {
-                    Triple* t = reinterpret_cast<Triple*>(
-                            GetValueAddress(regs, intNum++, fpNum));
-                    resParcel->ReadArray(reinterpret_cast<HANDLE>(t));
+                    HANDLE addr = GetHANDLEValue(regs, intParamIndex, fpParamIndex);
+                    resParcel->ReadArray(addr);
+                    intParamIndex++;
                     break;
                 }
                 case TypeKind::Interface: {
                     AutoPtr<IInterface>* intf = reinterpret_cast<AutoPtr<IInterface>*>(
-                            GetValueAddress(regs, intNum++, fpNum));
+                            GetHANDLEValue(regs, intParamIndex, fpParamIndex));
                     resParcel->ReadInterface(*intf);
+                    intParamIndex++;
                     break;
                 }
                 case TypeKind::CoclassID:
@@ -663,9 +738,9 @@ ECode InterfaceProxy::UnmarshalResults(
         else if (ioAttr == IOAttribute::OUT_CALLEE) {
             switch (kind) {
                 case TypeKind::Array: {
-                    Triple* t = reinterpret_cast<Triple*>(
-                            GetValueAddress(regs, intNum++, fpNum));
-                    resParcel->ReadArray(reinterpret_cast<HANDLE>(t));
+                    HANDLE addr = GetHANDLEValue(regs, intParamIndex, fpParamIndex);
+                    resParcel->ReadArray(addr);
+                    intParamIndex++;
                     break;
                 }
                 case TypeKind::Char:
@@ -694,126 +769,184 @@ ECode InterfaceProxy::UnmarshalResults(
     return NOERROR;
 }
 
+Integer InterfaceProxy::GetIntegerValue(
+    /* [in] */ Registers& regs,
+    /* [in] */ Integer intParamIndex,
+    /* [in] */ Integer fpParamIndex)
+{
+    switch (intParamIndex) {
+        case 0:
+            return regs.rdi.iVal;
+        case 1:
+            return regs.rsi.iVal;
+        case 2:
+            return regs.rdx.iVal;
+        case 3:
+            return regs.rcx.iVal;
+        case 4:
+            return regs.r8.iVal;
+        case 5:
+            return regs.r9.iVal;
+        default: {
+            Integer value, offset;
+            offset = fpParamIndex <= 7
+                    ? intParamIndex - 6
+                    : intParamIndex - 6 + fpParamIndex - 8;
+            offset += regs.paramStartOffset;
+            offset *= 8;
+            GET_STACK_INTEGER(regs.rbp, offset, value);
+            return value;
+        }
+    }
+}
+
 Long InterfaceProxy::GetLongValue(
     /* [in] */ Registers& regs,
-    /* [in] */ Integer intIndex,
-    /* [in] */ Integer fpIndex)
+    /* [in] */ Integer intParamIndex,
+    /* [in] */ Integer fpParamIndex)
 {
-    switch (intIndex) {
+    switch (intParamIndex) {
         case 0:
-            return regs.rdi;
+            return regs.rdi.lVal;
         case 1:
-            return regs.rsi;
+            return regs.rsi.lVal;
         case 2:
-            return regs.rdx;
+            return regs.rdx.lVal;
         case 3:
-            return regs.rcx;
+            return regs.rcx.lVal;
         case 4:
-            return regs.r8;
+            return regs.r8.lVal;
         case 5:
-            return regs.r9;
+            return regs.r9.lVal;
         default: {
-            Long val;
-            Integer off = fpIndex <= 7 ? (intIndex - 5 + 1) * 8 :
-                    (intIndex - 5 + fpIndex - 8 + 1) * 8;
-            GET_STACK(regs.rbp, off, val);
-            return val;
+            Integer offset;
+            offset = fpParamIndex <= 7
+                    ? intParamIndex - 6
+                    : intParamIndex - 6 + fpParamIndex - 8;
+            offset += regs.paramStartOffset;
+            offset *= 8;
+            Long value;
+            GET_STACK_LONG(regs.rbp, offset, value);
+            return value;
+        }
+    }
+}
+
+Float InterfaceProxy::GetFloatValue(
+    /* [in] */ Registers& regs,
+    /* [in] */ Integer intParamIndex,
+    /* [in] */ Integer fpParamIndex)
+{
+    switch (fpParamIndex) {
+        case 0:
+            return regs.xmm0.fVal;
+        case 1:
+            return regs.xmm1.fVal;
+        case 2:
+            return regs.xmm2.fVal;
+        case 3:
+            return regs.xmm3.fVal;
+        case 4:
+            return regs.xmm4.fVal;
+        case 5:
+            return regs.xmm5.fVal;
+        case 6:
+            return regs.xmm6.fVal;
+        case 7:
+            return regs.xmm7.fVal;
+        default: {
+            Integer offset = intParamIndex <= 5
+                    ? fpParamIndex - 8
+                    : fpParamIndex - 8 + intParamIndex - 6;
+            offset += regs.paramStartOffset;
+            offset *= 8;
+            Float value;
+            GET_STACK_FLOAT(regs.rbp, offset, value);
+            return value;
         }
     }
 }
 
 Double InterfaceProxy::GetDoubleValue(
     /* [in] */ Registers& regs,
-    /* [in] */ Integer intIndex,
-    /* [in] */ Integer fpIndex)
+    /* [in] */ Integer intParamIndex,
+    /* [in] */ Integer fpParamIndex)
 {
-    switch (fpIndex) {
+    switch (fpParamIndex) {
         case 0:
-            return regs.xmm0;
+            return regs.xmm0.dVal;
         case 1:
-            return regs.xmm1;
+            return regs.xmm1.dVal;
         case 2:
-            return regs.xmm2;
+            return regs.xmm2.dVal;
         case 3:
-            return regs.xmm3;
+            return regs.xmm3.dVal;
         case 4:
-            return regs.xmm4;
+            return regs.xmm4.dVal;
         case 5:
-            return regs.xmm5;
+            return regs.xmm5.dVal;
         case 6:
-            return regs.xmm6;
+            return regs.xmm6.dVal;
         case 7:
-            return regs.xmm7;
+            return regs.xmm7.dVal;
         default: {
-            Double val;
-            Integer off = intIndex <= 5 ? (fpIndex - 7 + 1) * 8 :
-                    (fpIndex - 7 + intIndex - 6 + 1) * 8;
-            GET_STACK(regs.rbp, off, val);
-            return val;
+            Integer offset = intParamIndex <= 5
+                    ? fpParamIndex - 8
+                    : fpParamIndex - 8 + intParamIndex - 6;
+            offset += regs.paramStartOffset;
+            offset *= 8;
+            Double value;
+            GET_STACK_DOUBLE(regs.rbp, offset, value);
+            return value;
         }
     }
 }
 
-HANDLE InterfaceProxy::GetValueAddress(
+HANDLE InterfaceProxy::GetHANDLEValue(
     /* [in] */ Registers& regs,
-    /* [in] */ Integer intIndex,
-    /* [in] */ Integer fpIndex)
+    /* [in] */ Integer intParamIndex,
+    /* [in] */ Integer fpParamIndex)
 {
-    switch (intIndex) {
-        case 0:
-            return static_cast<HANDLE>(regs.rdi);
-        case 1:
-            return static_cast<HANDLE>(regs.rsi);
-        case 2:
-            return static_cast<HANDLE>(regs.rdx);
-        case 3:
-            return static_cast<HANDLE>(regs.rcx);
-        case 4:
-            return static_cast<HANDLE>(regs.r8);
-        case 5:
-            return static_cast<HANDLE>(regs.r9);
-        default: {
-            Long val;
-            Integer off = fpIndex <= 7 ? (intIndex - 5 + 1) * 8 :
-                    (intIndex - 5 + fpIndex - 8 + 1) * 8;
-            GET_STACK(regs.rbp, off, val);
-            return static_cast<HANDLE>(val);
-        }
-    }
+    return (HANDLE)GetLongValue(regs, intParamIndex, fpParamIndex);
 }
 
 ECode InterfaceProxy::ProxyEntry(
     /* [in] */ HANDLE args)
 {
-    InterfaceProxy* thisObj = reinterpret_cast<InterfaceProxy*>(args);
-
+    InterfaceProxy* thisObj;
     Integer methodIndex;
-    GET_REG(ebx, methodIndex);
+    Integer offset;
+
+    offset = 0;
+    GET_STACK_INTEGER(args, offset, methodIndex);
+
+    offset = 8;
+    GET_STACK_LONG(args, offset, thisObj);
 
     Registers regs;
-    GET_REG(rbp, regs.rbp);
-    // GET_RBP(regs.rbp);
-    GET_REG(rdi, regs.rdi);
-    GET_REG(rsi, regs.rsi);
-    GET_REG(rdx, regs.rdx);
-    GET_REG(rcx, regs.rcx);
-    GET_REG(r8, regs.r8);
-    GET_REG(r9, regs.r9);
+    regs.rbp.reg = args + 16;
+    regs.paramStartOffset = 2;
+    GET_REG(rdi, regs.rdi.reg);
+    GET_REG(rsi, regs.rsi.reg);
+    GET_REG(rdx, regs.rdx.reg);
+    GET_REG(rcx, regs.rcx.reg);
+    GET_REG(r8, regs.r8.reg);
+    GET_REG(r9, regs.r9.reg);
 
-    GET_XREG(xmm0, regs.xmm0);
-    GET_XREG(xmm1, regs.xmm1);
-    GET_XREG(xmm2, regs.xmm2);
-    GET_XREG(xmm3, regs.xmm3);
-    GET_XREG(xmm4, regs.xmm4);
-    GET_XREG(xmm5, regs.xmm5);
-    GET_XREG(xmm6, regs.xmm6);
-    GET_XREG(xmm7, regs.xmm7);
+    GET_REG(xmm0, regs.xmm0.reg);
+    GET_REG(xmm1, regs.xmm1.reg);
+    GET_REG(xmm2, regs.xmm2.reg);
+    GET_REG(xmm3, regs.xmm3.reg);
+    GET_REG(xmm4, regs.xmm4.reg);
+    GET_REG(xmm5, regs.xmm5.reg);
+    GET_REG(xmm6, regs.xmm6.reg);
+    GET_REG(xmm7, regs.xmm7.reg);
 
     if (DEBUG) {
         String name, ns;
         thisObj->mTargetMetadata->GetName(name);
         thisObj->mTargetMetadata->GetNamespace(ns);
-        Logger::D("CProxy", "Call ProxyEntry with interface \"%s%s\"",
+        Logger::D("CProxy", "Call ProxyEntry with interface \"%s::%s\"",
                 ns.string(), name.string());
     }
 

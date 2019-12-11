@@ -31,37 +31,63 @@ CService::~CService()
 {}
 
 ECode CService::TestMethod1(
-    /* [in] */ Integer arg1)
+    /* [in] */ Integer arg1,
+    /* [out] */ Integer& result1)
 {
-    printf("==== [CService::TestMethod1] arg1: %d ====\n", arg1);
+    result1 = arg1;
     return NOERROR;
 }
 
 ECode CService::TestMethod2(
-    /* [in] */ Long arg1,
+    /* [in] */ Integer arg1,
     /* [in] */ Long arg2,
-    /* [in] */ Long arg3,
-    /* [in] */ Long arg4,
-    /* [in] */ Long arg5,
-    /* [in] */ Long arg6,
-    /* [in] */ Long arg7,
-    /* [in] */ Long arg8,
-    /* [in] */ Double arg9,
+    /* [in] */ Boolean arg3,
+    /* [in] */ Char arg4,
+    /* [in] */ Short arg5,
+    /* [in] */ Double arg6,
+    /* [in] */ Float arg7,
+    /* [in] */ Integer arg8,
+    /* [in] */ Float arg9,
     /* [in] */ Double arg10,
     /* [in] */ Double arg11,
-    /* [in] */ Double arg12,
-    /* [in] */ Double arg13,
+    /* [in] */ Float arg12,
+    /* [in] */ Float arg13,
     /* [in] */ Double arg14,
     /* [in] */ Double arg15,
-    /* [in] */ Double arg16,
-    /* [in] */ Double arg17,
-    /* [in] */ Double arg18)
+    /* [in] */ Float arg16,
+    /* [out] */ Integer& result1,
+    /* [out] */ Long& result2,
+    /* [out] */ Boolean& result3,
+    /* [out] */ Char& result4,
+    /* [out] */ Short& result5,
+    /* [out] */ Double& result6,
+    /* [out] */ Float& result7,
+    /* [out] */ Integer& result8,
+    /* [out] */ Float& result9,
+    /* [out] */ Double& result10,
+    /* [out] */ Double& result11,
+    /* [out] */ Float& result12,
+    /* [out] */ Float& result13,
+    /* [out] */ Double& result14,
+    /* [out] */ Double& result15,
+    /* [out] */ Float& result16)
 {
-    printf("==== [CService::TestMethod2] arg1: %lld, arg2: %lld, arg3: %lld, arg4: %lld, "
-            "arg5: %lld, arg6: %lld, arg7: %lld, arg8: %lld, arg9: %f, arg10: %f, arg11: %f"
-            "arg12: %f, arg13: %f, arg14: %f, arg15: %f, arg16: %f, arg17: %f, arg18: %f ====\n",
-            arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9,
-            arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18);
+    result1 = arg1;
+    result2 = arg2;
+    result3 = arg3;
+    result4 = arg4;
+    result5 = arg5;
+    result6 = arg6;
+    result7 = arg7;
+    result8 = arg8;
+    result9 = arg9;
+    result10 = arg10;
+    result11 = arg11;
+    result12 = arg12;
+    result13 = arg13;
+    result14 = arg14;
+    result15 = arg15;
+    result16 = arg16;
     return NOERROR;
 }
 

@@ -179,12 +179,13 @@ DBusHandlerResult ServiceManager::HandleMessage(
             parcel->WriteInterfaceID(ipack->mIid);
             parcel->GetData(resData);
             parcel->GetDataSize(resSize);
+
+            dbus_message_iter_open_container(&args,
+                    DBUS_TYPE_ARRAY, DBUS_TYPE_BYTE_AS_STRING, &subArg);
+            dbus_message_iter_append_fixed_array(&subArg,
+                    DBUS_TYPE_BYTE, &resData, resSize);
+            dbus_message_iter_close_container(&args, &subArg);
         }
-        dbus_message_iter_open_container(&args,
-                DBUS_TYPE_ARRAY, DBUS_TYPE_BYTE_AS_STRING, &subArg);
-        dbus_message_iter_append_fixed_array(&subArg,
-                DBUS_TYPE_BYTE, &resData, resSize);
-        dbus_message_iter_close_container(&args, &subArg);
 
         dbus_uint32_t serial = 0;
         if (!dbus_connection_send(conn, reply, &serial)) {

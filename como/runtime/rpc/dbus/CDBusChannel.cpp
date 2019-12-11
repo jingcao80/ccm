@@ -221,15 +221,6 @@ ECode CDBusChannel::UnlinkToDeath(
     return NOERROR;
 }
 
-ECode CDBusChannel::UnmarshalArguments(
-    /* [in] */ void* data,
-    /* [in] */ Long size,
-    /* [in] */ IMetaMethod* method,
-    /* [in] */ IParcel* argParcel)
-{
-    return NOERROR;
-}
-
 ECode CDBusChannel::Invoke(
     /* [in] */ IProxy* proxy,
     /* [in] */ IMetaMethod* method,
@@ -299,6 +290,8 @@ ECode CDBusChannel::Invoke(
     dbus_message_iter_get_basic(&args, &ec);
 
     if (SUCCEEDED(ec)) {
+        resParcel = new CDBusParcel();
+
         Boolean hasOutArgs;
         method->HasOutArguments(hasOutArgs);
         if (hasOutArgs) {
@@ -315,13 +308,11 @@ ECode CDBusChannel::Invoke(
 
             void* replyData = nullptr;
             Integer replySize;
-
             dbus_message_iter_recurse(&args, &subArg);
             dbus_message_iter_get_fixed_array(&subArg,
                     &replyData, &replySize);
             if (replyData != nullptr) {
-                resParcel = new CDBusParcel();
-                ec = UnmarshalArguments(replyData, replySize, method, resParcel);
+                resParcel->SetData(reinterpret_cast<HANDLE>(replyData), replySize);
             }
         }
     }

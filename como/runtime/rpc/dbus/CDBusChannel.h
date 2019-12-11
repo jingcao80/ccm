@@ -102,13 +102,6 @@ public:
         /* [in] */ IStub* stub);
 
 private:
-    ECode UnmarshalArguments(
-        /* [in] */ void* data,
-        /* [in] */ Long size,
-        /* [in] */ IMetaMethod* method,
-        /* [in] */ IParcel* argParcel);
-
-private:
     friend class CDBusChannelFactory;
 
     static constexpr Boolean DEBUG = false;
