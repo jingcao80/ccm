@@ -61,6 +61,12 @@ interface IService
         [out] Double& result14,
         [out] Double& result15,
         [out] Float& result16);
+
+    TestMethod3(
+        [in] Integer arg1,
+        [in] String arg2,
+        [out] Integer& result1,
+        [out] String& result2);
 }
 
 [

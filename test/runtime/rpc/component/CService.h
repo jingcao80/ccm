@@ -75,6 +75,12 @@ public:
         /* [out] */ Double& result14,
         /* [out] */ Double& result15,
         /* [out] */ Float& result16) override;
+
+    ECode TestMethod3(
+        /* [in] */ Integer arg1,
+        /* [in] */ const String& arg2,
+        /* [out] */ Integer& result1,
+        /* [out] */ String& result2) override;
 };
 
 } // namespace rpc

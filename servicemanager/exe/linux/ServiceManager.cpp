@@ -169,17 +169,17 @@ DBusHandlerResult ServiceManager::HandleMessage(
         DBusMessage* reply = dbus_message_new_method_return(msg);
         dbus_message_iter_init_append(reply, &args);
         dbus_message_iter_append_basic(&args, DBUS_TYPE_INT32, &ec);
-        HANDLE resData = 0;
-        Long resSize = 0;
         if (ipack != nullptr) {
             AutoPtr<IParcel> parcel;
             CoCreateParcel(RPCType::Local, parcel);
             parcel->WriteString(ipack->mDBusName);
             parcel->WriteCoclassID(ipack->mCid);
             parcel->WriteInterfaceID(ipack->mIid);
+
+            HANDLE resData = 0;
+            Long resSize = 0;
             parcel->GetData(resData);
             parcel->GetDataSize(resSize);
-
             dbus_message_iter_open_container(&args,
                     DBUS_TYPE_ARRAY, DBUS_TYPE_BYTE_AS_STRING, &subArg);
             dbus_message_iter_append_fixed_array(&subArg,

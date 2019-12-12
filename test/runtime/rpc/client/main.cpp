@@ -89,6 +89,20 @@ TEST(RPCTest, TestCallTestMethod2)
     EXPECT_FLOAT_EQ(arg16, result16);
 }
 
+TEST(RPCTest, TestCallTestMethod3)
+{
+    EXPECT_TRUE(SERVICE != nullptr);
+    ECode ec = E_REMOTE_EXCEPTION;
+    Integer arg1 = 9;
+    Integer result1;
+    String arg2 = "Hello World!";
+    String result2;
+    ec = SERVICE->TestMethod3(arg1, arg2, result1, result2);
+    EXPECT_EQ(arg1, result1);
+    EXPECT_STREQ(arg2.string(), result2.string());
+    EXPECT_EQ(ec, NOERROR);
+}
+
 int main(int argc, char **argv)
 {
     testing::InitGoogleTest(&argc, argv);

@@ -91,6 +91,17 @@ ECode CService::TestMethod2(
     return NOERROR;
 }
 
+ECode CService::TestMethod3(
+    /* [in] */ Integer arg1,
+    /* [in] */ const String& arg2,
+    /* [out] */ Integer& result1,
+    /* [out] */ String& result2)
+{
+    result1 = arg1;
+    result2 = arg2;
+    return NOERROR;
+}
+
 }
 }
 }
