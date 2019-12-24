@@ -30,7 +30,7 @@
  * limitations under the License.
  */
 
-#include "CDBusParcel.h"
+#include "rpc/dbus/CDBusParcel.h"
 #include "util/comosp.h"
 #include "util/comolog.h"
 #include <stdlib.h>
@@ -207,6 +207,7 @@ ECode CDBusParcel::ReadCoclassID(
     /* [out] */ CoclassID& value)
 {
     ECode ec = Read((void*)&value, sizeof(CoclassID));
+    value.mCid = nullptr;
     if (FAILED(ec)) {
         return ec;
     }
@@ -218,23 +219,16 @@ ECode CDBusParcel::ReadCoclassID(
     }
 
     if (tag == TAG_NULL) {
-        value.mCid = nullptr;
         return NOERROR;
     }
 
-    ComponentID* cid = (ComponentID*)malloc(sizeof(ComponentID));
-    if (cid == nullptr) {
-        return E_OUT_OF_MEMORY_ERROR;
-    }
-
-    ec = Read((void*)cid, sizeof(ComponentID));
-    if (FAILED(ec)) {
-        return ec;
-    }
+    ComponentID* cid = (ComponentID*)ReadInplace(sizeof(ComponentID));
+    cid->mUri = nullptr;
+    value.mCid = cid;
 
     Integer size;
     ec = ReadInteger(size);
-    if (FAILED(ec)) {
+    if (FAILED(ec) || size == 0) {
         return ec;
     }
 
@@ -242,21 +236,7 @@ ECode CDBusParcel::ReadCoclassID(
         return E_RUNTIME_EXCEPTION;
     }
 
-    if (size == 0) {
-        cid->mUri = nullptr;
-    }
-    else {
-        const char* str = (const char*)ReadInplace(size + 1);
-        if (str == nullptr) {
-            return E_RUNTIME_EXCEPTION;
-        }
-        cid->mUri = (const char*)malloc(size + 1);
-        if (cid->mUri == nullptr) {
-            return E_OUT_OF_MEMORY_ERROR;
-        }
-        memcpy(const_cast<char*>(cid->mUri), str, size + 1);
-    }
-    value.mCid = cid;
+    cid->mUri = (const char*)ReadInplace(size + 1);
     return NOERROR;
 }
 
@@ -283,13 +263,14 @@ ECode CDBusParcel::ReadComponentID(
     /* [out] */ ComponentID& value)
 {
     ECode ec = Read((void*)&value, sizeof(ComponentID));
+    value.mUri = nullptr;
     if (FAILED(ec)) {
         return ec;
     }
 
     Integer size;
     ec = ReadInteger(size);
-    if (FAILED(ec)) {
+    if (FAILED(ec) || size == 0) {
         return ec;
     }
 
@@ -297,19 +278,7 @@ ECode CDBusParcel::ReadComponentID(
         return E_RUNTIME_EXCEPTION;
     }
 
-    if (size == 0) {
-        value.mUri = nullptr;
-        return NOERROR;
-    }
-    const char* str = (const char*)ReadInplace(size + 1);
-    if (str == nullptr) {
-        return E_RUNTIME_EXCEPTION;
-    }
-    value.mUri = (const char*)malloc(size + 1);
-    if (value.mUri == nullptr) {
-        return E_OUT_OF_MEMORY_ERROR;
-    }
-    memcpy(const_cast<char*>(value.mUri), str, size + 1);
+    value.mUri = (const char*)ReadInplace(size + 1);
     return NOERROR;
 }
 
@@ -333,6 +302,7 @@ ECode CDBusParcel::ReadInterfaceID(
     /* [out] */ InterfaceID& value)
 {
     ECode ec = Read((void*)&value, sizeof(InterfaceID));
+    value.mCid = nullptr;
     if (FAILED(ec)) {
         return ec;
     }
@@ -344,23 +314,16 @@ ECode CDBusParcel::ReadInterfaceID(
     }
 
     if (tag == TAG_NULL) {
-        value.mCid = nullptr;
         return NOERROR;
     }
 
-    ComponentID* cid = (ComponentID*)malloc(sizeof(ComponentID));
-    if (cid == nullptr) {
-        return E_OUT_OF_MEMORY_ERROR;
-    }
-
-    ec = Read((void*)cid, sizeof(ComponentID));
-    if (FAILED(ec)) {
-        return ec;
-    }
+    ComponentID* cid = (ComponentID*)ReadInplace(sizeof(ComponentID));
+    cid->mUri = nullptr;
+    value.mCid = cid;
 
     Integer size;
     ec = ReadInteger(size);
-    if (FAILED(ec)) {
+    if (FAILED(ec) || size == 0) {
         return ec;
     }
 
@@ -368,21 +331,7 @@ ECode CDBusParcel::ReadInterfaceID(
         return E_RUNTIME_EXCEPTION;
     }
 
-    if (size == 0) {
-        cid->mUri = nullptr;
-    }
-    else {
-        const char* str = (const char*)ReadInplace(size + 1);
-        if (str == nullptr) {
-            return E_RUNTIME_EXCEPTION;
-        }
-        cid->mUri = (const char*)malloc(size + 1);
-        if (cid->mUri == nullptr) {
-            return E_OUT_OF_MEMORY_ERROR;
-        }
-        memcpy(const_cast<char*>(cid->mUri), str, size + 1);
-    }
-    value.mCid = cid;
+    cid->mUri = (const char*)ReadInplace(size + 1);
     return NOERROR;
 }
 

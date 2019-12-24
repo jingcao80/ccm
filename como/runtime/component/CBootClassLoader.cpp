@@ -328,6 +328,50 @@ ECode CBootClassLoader::UnloadComponent(
     return E_COMPONENT_UNLOAD_EXCEPTION;
 }
 
+ECode CBootClassLoader::LoadMetadata(
+    /* [in] */ const Array<Byte>& metadata,
+    /* [out] */ AutoPtr<IMetaComponent>& component)
+{
+    if (metadata.IsEmpty() || metadata.GetLength() < 0) {
+        return NOERROR;
+    }
+
+    MetaComponent* mmc = reinterpret_cast<MetaComponent*>(
+            metadata.GetPayload());
+
+    if (mmc->mMagic != COMO_MAGIC) {
+        Logger::E("CBootClassLoader", "Metadata info is bad.");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    {
+        Mutex::AutoLock lock(mComponentsLock);
+        IMetaComponent* mc = mComponents.Get(mmc->mUuid);
+        if (mc != nullptr) {
+            component = mc;
+            return NOERROR;
+        }
+    }
+
+    ECode ec = CoGetComponentMetadataFromBytes(
+            metadata, this, component);
+    if (FAILED(ec)) {
+        component = nullptr;
+        return ec;
+    }
+
+    ComponentID compId;
+    component->GetComponentID(compId);
+
+    {
+        Mutex::AutoLock lock(mComponentsLock);
+        mComponents.Put(compId.mUuid, component);
+        // mComponentPaths.Put(path, component);
+    }
+
+    return NOERROR;
+}
+
 ECode CBootClassLoader::LoadCoclass(
     /* [in] */ const String& fullName,
     /* [out] */ AutoPtr<IMetaCoclass>& klass)
@@ -339,6 +383,25 @@ ECode CBootClassLoader::LoadCoclass(
     }
     for (Integer i = 0; i < components.GetLength(); i++) {
         components[i]->GetCoclass(fullName, klass);
+        if (klass != nullptr) {
+            return NOERROR;
+        }
+    }
+    klass = nullptr;
+    return E_CLASS_NOT_FOUND_EXCEPTION;
+}
+
+ECode CBootClassLoader::LoadCoclass(
+    /* [in] */ const CoclassID& cid,
+    /* [out] */ AutoPtr<IMetaCoclass>& klass)
+{
+    Array<IMetaComponent*> components;
+    {
+        Mutex::AutoLock lock(mComponentsLock);
+        components = mComponents.GetValues();
+    }
+    for (Integer i = 0; i < components.GetLength(); i++) {
+        components[i]->GetCoclass(cid, klass);
         if (klass != nullptr) {
             return NOERROR;
         }

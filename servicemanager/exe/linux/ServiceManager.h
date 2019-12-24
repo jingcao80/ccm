@@ -14,8 +14,8 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __PISCES_SERVICEMANAGER_H__
-#define __PISCES_SERVICEMANAGER_H__
+#ifndef __JING_SERVICEMANAGER_H__
+#define __JING_SERVICEMANAGER_H__
 
 #include <comoapi.h>
 #include <comosp.h>
@@ -24,7 +24,7 @@
 #include "mutex.h"
 #include <dbus/dbus.h>
 
-namespace pisces {
+namespace jing {
 
 class ServiceManager
     : public LightRefBase
@@ -62,9 +62,9 @@ private:
         /* [in] */ ServiceManager&) {}
 
 public:
-    static constexpr const char* DBUS_NAME = "pisces.servicemanager";
-    static constexpr const char* OBJECT_PATH = "/pisces/servicemanager";
-    static constexpr const char* INTERFACE_PATH = "pisces.servicemanager.IServiceManager";
+    static constexpr const char* DBUS_NAME = "jing.servicemanager";
+    static constexpr const char* OBJECT_PATH = "/jing/servicemanager";
+    static constexpr const char* INTERFACE_PATH = "jing.servicemanager.IServiceManager";
 
 private:
     static AutoPtr<ServiceManager> sInstance;
@@ -75,4 +75,4 @@ private:
 
 }
 
-#endif // __PISCES_SERVICEMANAGER_H__
+#endif // __JING_SERVICEMANAGER_H__

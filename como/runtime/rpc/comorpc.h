@@ -32,8 +32,9 @@ EXTERN_C COM_PUBLIC ECode CoCreateInterfacePack(
     /* [out] */ AutoPtr<IInterfacePack>& ipack);
 
 EXTERN_C COM_PUBLIC ECode CoCreateProxy(
-    /* [in] */ const CoclassID& cid,
+    /* [in] */ IInterfacePack* ipack,
     /* [in] */ RPCType type,
+    /* [in] */ IClassLoader* loader,
     /* [out] */ AutoPtr<IProxy>& proxy);
 
 EXTERN_C COM_PUBLIC ECode CoCreateStub(
@@ -47,8 +48,8 @@ EXTERN_C COM_PUBLIC ECode CoMarshalInterface(
     /* [out] */ AutoPtr<IInterfacePack>& ipack);
 
 EXTERN_C COM_PUBLIC ECode CoUnmarshalInterface(
-    /* [in] */ RPCType type,
     /* [in] */ IInterfacePack* ipack,
+    /* [in] */ RPCType type,
     /* [out] */ AutoPtr<IInterface>& object);
 
 } // namespace como

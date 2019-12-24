@@ -94,9 +94,63 @@ ECode CoGetComponentMetadataFromFile(
 
     MetaComponent* mmc = reinterpret_cast<MetaComponent*>(
             component->mMetadataWrapper->mMetadata);
+
+    if (mmc->mMagic != COMO_MAGIC) {
+        Logger::E("COMORT", "Metadata info is bad.");
+        free(component);
+        return E_COMPONENT_IO_EXCEPTION;
+    }
+
     void* data = malloc(mmc->mSize);
     if (data == nullptr) {
-        Logger::E("COMORT", "Malloc %d size metadata failed.", mmc->mSize);
+        Logger::E("COMORT", "Malloc %lu size metadata failed.", mmc->mSize);
+        free(component);
+        return E_OUT_OF_MEMORY_ERROR;
+    }
+    memcpy(data, mmc, mmc->mSize);
+
+    MetadataSerializer serializer;
+    serializer.Deserialize(reinterpret_cast<uintptr_t>(data));
+    mc = new CMetaComponent(loader, component, (MetaComponent*)data);
+    return NOERROR;
+}
+
+ECode CoGetComponentMetadataFromBytes(
+    /* [in] */ const Array<Byte>& bytes,
+    /* [in] */ IClassLoader* loader,
+    /* [out] */ AutoPtr<IMetaComponent>& mc)
+{
+    mc = nullptr;
+
+    if (bytes.IsEmpty() || bytes.GetLength() < 0) {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    ComoComponent* component = (ComoComponent*)malloc(
+            sizeof(ComoComponent) + sizeof(MetadataWrapper) + bytes.GetLength());
+    if (component == nullptr) {
+        Logger::E("COMORT", "Malloc ComoComponent failed.");
+        return E_OUT_OF_MEMORY_ERROR;
+    }
+    component->mSoHandle = nullptr;
+    component->mSoGetClassObject = nullptr;
+    component->mSoGetAllClassObjects = nullptr;
+    component->mSoCanUnload = nullptr;
+    component->mMetadataWrapper = reinterpret_cast<MetadataWrapper*>(component + 1);
+    component->mMetadataWrapper->mSize = bytes.GetLength();
+    memcpy(&(component->mMetadataWrapper->mMetadata), bytes.GetPayload(), bytes.GetLength());
+
+    MetaComponent* mmc = reinterpret_cast<MetaComponent*>(
+            component->mMetadataWrapper->mMetadata);
+
+    if (mmc->mMagic != COMO_MAGIC) {
+        Logger::E("COMORT", "Metadata info is bad.");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    void* data = malloc(mmc->mSize);
+    if (data == nullptr) {
+        Logger::E("COMORT", "Malloc %lu size metadata failed.", mmc->mSize);
         free(component);
         return E_OUT_OF_MEMORY_ERROR;
     }

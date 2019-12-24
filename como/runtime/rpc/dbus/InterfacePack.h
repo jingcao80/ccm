@@ -17,7 +17,8 @@
 #ifndef __COMO_INTERFACEPACK_H__
 #define __COMO_INTERFACEPACK_H__
 
-#include "registry.h"
+#include "comotypes.h"
+#include "rpc/registry.h"
 #include "util/comoref.h"
 
 namespace como {
@@ -41,6 +42,7 @@ class InterfacePack
     : public LightRefBase
     , public IInterfacePack
     , public IDBusInterfacePack
+    , public IParcelable
 {
 public:
     ~InterfacePack();
@@ -73,11 +75,20 @@ public:
     void SetInterfaceID(
         /* [in] */ const InterfaceID& iid);
 
+    inline static InterfacePack* From(
+        /* [in] */ IInterfacePack* ipack);
+
 private:
     String mDBusName;
     CoclassID mCid;
     InterfaceID mIid;
 };
+
+InterfacePack* InterfacePack::From(
+    /* [in] */ IInterfacePack* ipack)
+{
+    return (InterfacePack*)ipack;
+}
 
 } // namespace como
 

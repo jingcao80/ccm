@@ -31,6 +31,11 @@ EXTERN_C COM_PUBLIC ECode CoGetComponentMetadataFromFile(
     /* [in] */ IClassLoader* loader,
     /* [out] */ AutoPtr<IMetaComponent>& mc);
 
+EXTERN_C COM_PUBLIC ECode CoGetComponentMetadataFromBytes(
+    /* [in] */ const Array<Byte>& data,
+    /* [in] */ IClassLoader* loader,
+    /* [out] */ AutoPtr<IMetaComponent>& mc);
+
 EXTERN_C COM_PUBLIC ECode CoGetCoclassMetadata(
     /* [in] */ const CoclassID& cid,
     /* [in] */ IClassLoader* loader,

@@ -24,7 +24,7 @@
 using como::test::rpc::CService;
 using como::test::rpc::IService;
 using como::test::rpc::IID_IService;
-using pisces::ServiceManager;
+using jing::ServiceManager;
 
 int main(int argv, char** argc)
 {

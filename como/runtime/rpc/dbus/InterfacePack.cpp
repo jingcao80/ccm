@@ -18,21 +18,10 @@
 
 namespace como {
 
-static void ReleaseComponentID(
-    /* [in] */ const ComponentID* cid)
-{
-    if (cid != nullptr) {
-        if (cid->mUri != nullptr) {
-            free(const_cast<char*>(cid->mUri));
-        }
-        free(const_cast<ComponentID*>(cid));
-    }
-}
-
 const InterfaceID IID_IDBusInterfacePack =
         {{0x6447561d,0x49aa,0x48b3,0x9faa,{0xef,0x72,0xed,0x76,0xf8,0xe2}}, &CID_COMORuntime};
 
-COMO_INTERFACE_IMPL_LIGHT_2(InterfacePack, LightRefBase, IInterfacePack, IDBusInterfacePack);
+COMO_INTERFACE_IMPL_LIGHT_3(InterfacePack, LightRefBase, IInterfacePack, IDBusInterfacePack, IParcelable);
 
 InterfacePack::~InterfacePack()
 {
@@ -67,6 +56,8 @@ ECode InterfacePack::ReadFromParcel(
     source->ReadString(mDBusName);
     source->ReadCoclassID(mCid);
     source->ReadInterfaceID(mIid);
+    mCid.mCid = CloneComponentID(mCid.mCid);
+    mIid.mCid = CloneComponentID(mIid.mCid);
     return NOERROR;
 }
 

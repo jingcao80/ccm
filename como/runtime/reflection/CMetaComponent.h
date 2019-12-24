@@ -94,6 +94,12 @@ public:
         /* [in] */ const InterfaceID& iid,
         /* [out] */ AutoPtr<IMetaInterface>& metaIntf) override;
 
+    ECode GetSerializedMetadata(
+        /* [out, callee] */ Array<Byte>& metadata) override;
+
+    ECode IsOnlyMetadata(
+        /* [out] */ Boolean& onlyMetadata) override;
+
     ECode Preload() override;
 
     ECode CanUnload(

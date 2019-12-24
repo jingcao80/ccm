@@ -14,13 +14,13 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __PISCES_HASHMAP_H__
-#define __PISCES_HASHMAP_H__
+#ifndef __JING_HASHMAP_H__
+#define __JING_HASHMAP_H__
 
 #include <cstdlib>
 #include <cstring>
 
-namespace pisces {
+namespace jing {
 
 static const int prime_list[11] =
 {
@@ -232,6 +232,6 @@ private:
     Bucket** mBuckets;
 };
 
-} // namespace pisces
+} // namespace jing
 
-#endif // __PISCES_HASHMAP_H__
+#endif // __JING_HASHMAP_H__

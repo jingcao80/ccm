@@ -23,7 +23,7 @@
 
 using como::test::rpc::CID_CService;
 using como::test::rpc::IService;
-using pisces::ServiceManager;
+using jing::ServiceManager;
 
 static AutoPtr<IService> SERVICE;
 

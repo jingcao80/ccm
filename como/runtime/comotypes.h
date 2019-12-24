@@ -113,6 +113,12 @@ COM_PUBLIC extern String DumpUUID(
 COM_PUBLIC extern Integer HashUUID(
     /* [in] */ const UUID& key);
 
+COM_PUBLIC extern ComponentID* CloneComponentID(
+    /* [in] */ const ComponentID* cid);
+
+COM_PUBLIC extern void ReleaseComponentID(
+    /* [in] */ const ComponentID* cid);
+
 extern const ComponentID CID_COMORuntime;
 extern const InterfaceID IID_IInterface;
 

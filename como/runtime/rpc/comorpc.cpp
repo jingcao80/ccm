@@ -25,7 +25,7 @@
 namespace como {
 
 #if defined(__aarch64__)
-static AutoPtr<IRPCChannelFactory> sLocalFactory;
+static AutoPtr<IRPCChannelFactory> sLocalFactory;// = new CBinderChannelFactory(RPCType::Local);
 #elif defined(__x86_64__)
 static AutoPtr<IRPCChannelFactory> sLocalFactory = new CDBusChannelFactory(RPCType::Local);
 #endif
@@ -50,8 +50,9 @@ ECode CoCreateInterfacePack(
 }
 
 ECode CoCreateProxy(
-    /* [in] */ const CoclassID& cid,
+    /* [in] */ IInterfacePack* ipack,
     /* [in] */ RPCType type,
+    /* [in] */ IClassLoader* loader,
     /* [out] */ AutoPtr<IProxy>& proxy)
 {
     AutoPtr<IRPCChannelFactory> factory =
@@ -62,7 +63,11 @@ ECode CoCreateProxy(
         proxy = nullptr;
         return ec;
     }
-    return CProxy::CreateObject(cid, channel, proxy);
+    channel->Apply(ipack);
+
+    CoclassID cid;
+    ipack->GetCoclassID(cid);
+    return CProxy::CreateObject(cid, channel, loader, proxy);
 }
 
 ECode CoCreateStub(
@@ -97,8 +102,8 @@ ECode CoMarshalInterface(
 }
 
 ECode CoUnmarshalInterface(
-    /* [in] */ RPCType type,
     /* [in] */ IInterfacePack* data,
+    /* [in] */ RPCType type,
     /* [out] */ AutoPtr<IInterface>& object)
 {
     if (data == nullptr) {

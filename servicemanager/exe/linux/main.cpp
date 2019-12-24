@@ -20,7 +20,7 @@
 #include <cstdio>
 
 using como::Logger;
-using pisces::ServiceManager;
+using jing::ServiceManager;
 
 int main(int argv, char** argc)
 {

@@ -86,8 +86,16 @@ interface IClassLoader
     UnloadComponent(
         [in] ComponentID compId);
 
+    LoadMetadata(
+        [in] Array<Byte> metadata,
+        [out] IMetaComponent&& component);
+
     LoadCoclass(
         [in] String fullName,
+        [out] IMetaCoclass&& klass);
+
+    LoadCoclass(
+        [in] CoclassID cid,
         [out] IMetaCoclass&& klass);
 
     LoadInterface(

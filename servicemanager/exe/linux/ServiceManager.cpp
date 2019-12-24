@@ -16,7 +16,7 @@
 
 #include "ServiceManager.h"
 
-namespace pisces {
+namespace jing {
 
 AutoPtr<ServiceManager> ServiceManager::sInstance = new ServiceManager();
 
@@ -54,17 +54,6 @@ ECode ServiceManager::GetService(
     Mutex::AutoLock lock(mServicesLock);
     *object = mServices.Get(name);
     return NOERROR;
-}
-
-static void ReleaseComponentID(
-    /* [in] */ const ComponentID* cid)
-{
-    if (cid != nullptr) {
-        if (cid->mUri != nullptr) {
-            free(const_cast<char*>(cid->mUri));
-        }
-        free(const_cast<ComponentID*>(cid));
-    }
 }
 
 ECode ServiceManager::RemoveService(
@@ -129,6 +118,8 @@ DBusHandlerResult ServiceManager::HandleMessage(
         parcel->ReadString(ipack.mDBusName);
         parcel->ReadCoclassID(ipack.mCid);
         parcel->ReadInterfaceID(ipack.mIid);
+        ipack.mCid.mCid = CloneComponentID(ipack.mCid.mCid);
+        ipack.mIid.mCid = CloneComponentID(ipack.mIid.mCid);
         ec = ServiceManager::GetInstance()->AddService(String(str), ipack);
 
     AddServiceExit:

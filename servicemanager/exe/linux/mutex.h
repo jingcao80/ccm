@@ -30,13 +30,15 @@
  * limitations under the License.
  */
 
-#ifndef __PISCES_MUTEX_H__
-#define __PISCES_MUTEX_H__
+#ifndef __JING_MUTEX_H__
+#define __JING_MUTEX_H__
 
 #include "comotypes.h"
 #include <pthread.h>
 
-namespace pisces {
+using namespace como;
+
+namespace jing {
 
 class Mutex
 {
@@ -147,4 +149,4 @@ Integer Mutex::TryLock()
 
 }
 
-#endif // __PISCES_MUTEX_H__
+#endif // __JING_MUTEX_H__

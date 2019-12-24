@@ -50,8 +50,16 @@ public:
     ECode UnloadComponent(
         /* [in] */ const ComponentID& compId) override;
 
+    ECode LoadMetadata(
+        /* [in] */ const Array<Byte>& metadata,
+        /* [out] */ AutoPtr<IMetaComponent>& component) override;
+
     ECode LoadCoclass(
         /* [in] */ const String& fullName,
+        /* [out] */ AutoPtr<IMetaCoclass>& klass) override;
+
+    ECode LoadCoclass(
+        /* [in] */ const CoclassID& cid,
         /* [out] */ AutoPtr<IMetaCoclass>& klass) override;
 
     ECode LoadInterface(

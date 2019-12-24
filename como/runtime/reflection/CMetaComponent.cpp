@@ -14,6 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
+#include "metadata/MetadataSerializer.h"
 #include "reflection/CMetaComponent.h"
 #include "reflection/CMetaCoclass.h"
 #include "reflection/CMetaConstant.h"
@@ -258,6 +259,27 @@ ECode CMetaComponent::GetInterface(
     return NOERROR;
 }
 
+ECode CMetaComponent::GetSerializedMetadata(
+    /* [out, callee] */ Array<Byte>& metadata)
+{
+    MetaComponent* mmc = reinterpret_cast<MetaComponent*>(
+            mComponent->mMetadataWrapper->mMetadata);
+    metadata = Array<Byte>::Allocate(mmc->mSize);
+    if (metadata.IsNull()) {
+        Logger::E("CMetaComponent", "Malloc %lu size metadata failed.", mmc->mSize);
+        return E_OUT_OF_MEMORY_ERROR;
+    }
+    memcpy(metadata.GetPayload(), mmc, mmc->mSize);
+    return NOERROR;
+}
+
+ECode CMetaComponent::IsOnlyMetadata(
+    /* [out] */ Boolean& onlyMetadata)
+{
+    onlyMetadata = mComponent->mSoHandle == nullptr;
+    return NOERROR;
+}
+
 ECode CMetaComponent::Preload()
 {
     BuildAllConstants();
@@ -270,7 +292,9 @@ ECode CMetaComponent::Preload()
 ECode CMetaComponent::CanUnload(
     /* [out] */ Boolean& unload)
 {
-    unload = mComponent->mSoCanUnload();
+    unload = mComponent->mSoCanUnload != nullptr
+            ? mComponent->mSoCanUnload()
+            : false;
     return NOERROR;
 }
 
@@ -291,7 +315,13 @@ ECode CMetaComponent::GetClassObject(
     if (getter != nullptr) {
         return getter->mGetter(object);
     }
-    return mComponent->mSoGetClassObject(cid, object);
+    if (mComponent->mSoGetClassObject != nullptr) {
+        return mComponent->mSoGetClassObject(cid, object);
+    }
+    else {
+        object = nullptr;
+        return NOERROR;
+    }
 }
 
 void CMetaComponent::BuildAllConstants()
@@ -455,11 +485,13 @@ AutoPtr<IMetaInterface> CMetaComponent::BuildInterface(
 
 void CMetaComponent::LoadAllClassObjectGetters()
 {
-    Integer N;
-    ClassObjectGetter* getters = mComponent->mSoGetAllClassObjects(N);
-    for (Integer i = 0; i < N; i++) {
-        const CoclassID& cid = getters[i].mCid;
-        mClassObjects.Put(cid.mUuid, &getters[i]);
+    if (mComponent->mSoGetAllClassObjects != nullptr) {
+        Integer N;
+        ClassObjectGetter* getters = mComponent->mSoGetAllClassObjects(N);
+        for (Integer i = 0; i < N; i++) {
+            const CoclassID& cid = getters[i].mCid;
+            mClassObjects.Put(cid.mUuid, &getters[i]);
+        }
     }
 }
 

@@ -121,16 +121,13 @@ ECode CDBusChannelFactory::UnmarshalInterface(
         return NOERROR;
     }
 
-    CoclassID cid;
-    ipack->GetCoclassID(cid);
     AutoPtr<IProxy> proxy;
-    ec = CoCreateProxy(cid, mType, proxy);
+    ec = CoCreateProxy(ipack, mType, nullptr, proxy);
     if (FAILED(ec)) {
         object = nullptr;
         return ec;
     }
-    CDBusChannel* channel = CDBusChannel::GetProxyChannel(proxy);
-    channel->mName = ((InterfacePack*)ipack)->GetDBusName();
+
     RegisterImportObject(mType, ipack, IObject::Probe(proxy));
 
     object = proxy;

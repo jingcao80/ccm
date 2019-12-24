@@ -145,6 +145,19 @@ interface IParcel
 }
 
 [
+    uuid(6abf4491-874b-4e8c-855b-d74f2e20cf6b),
+    version(0.1.0)
+]
+interface IParcelable
+{
+    ReadFromParcel(
+        [in] IParcel* source);
+
+    WriteToParcel(
+        [in] IParcel* dest);
+}
+
+[
     uuid(84ee26c6-6c0a-4329-b627-54e5fc3b06a8),
     version(0.1.0)
 ]
@@ -158,12 +171,6 @@ interface IInterfacePack
 
     GetHashCode(
         [out] Integer& hash);
-
-    ReadFromParcel(
-        [in] IParcel* source);
-
-    WriteToParcel(
-        [in] IParcel* dest);
 }
 
 interface IArgumentList;
@@ -178,6 +185,9 @@ interface IStub;
 ]
 interface IRPCChannel
 {
+    Apply(
+        [in] IInterfacePack* ipack);
+
     GetRPCType(
         [out] RPCType& type);
 
@@ -194,6 +204,10 @@ interface IRPCChannel
         [in] HANDLE cookie = 0,
         [in] Integer flags = 0,
         [out] IDeathRecipient&* outRecipient = nullptr);
+
+    GetComponentMetadata(
+        [in] CoclassID cid,
+        [out, callee] Array<Byte>& metadata);
 
     Invoke(
         [in] IProxy* proxy,

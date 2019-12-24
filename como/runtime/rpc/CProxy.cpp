@@ -30,8 +30,9 @@
 // limitations under the License.
 //=========================================================================
 
-#include "comorpc.h"
-#include "CProxy.h"
+#include "component/CBootClassLoader.h"
+#include "rpc/comorpc.h"
+#include "rpc/CProxy.h"
 #include "util/comolog.h"
 #include <sys/mman.h>
 
@@ -51,11 +52,13 @@ namespace como {
 
 #define GET_REG(reg, var)
 
-#define GET_XREG(reg, var)
+#define GET_STACK_INTEGER(rbp, off, var)
 
-#define GET_RBP(var)
+#define GET_STACK_LONG(rbp, off, var)
 
-#define GET_STACK(rsp, off, var)
+#define GET_STACK_FLOAT(rbp, off, var)
+
+#define GET_STACK_DOUBLE(rbp, off, var)
 
 EXTERN_C void __entry();
 
@@ -1099,12 +1102,28 @@ CoclassID CProxy::GetTargetCoclassID()
 ECode CProxy::CreateObject(
     /* [in] */ const CoclassID& cid,
     /* [in] */ IRPCChannel* channel,
+    /* [in] */ IClassLoader* loader,
     /* [out] */ AutoPtr<IProxy>& proxy)
 {
     proxy = nullptr;
 
+    if (loader == nullptr) {
+        loader = CBootClassLoader::GetInstance();
+    }
+
     AutoPtr<IMetaCoclass> mc;
-    CoGetCoclassMetadata(cid, nullptr, mc);
+    loader->LoadCoclass(cid, mc);
+    if (mc == nullptr) {
+        Array<Byte> metadata;
+        channel->GetComponentMetadata(cid, metadata);
+        AutoPtr<IMetaComponent> component;
+        loader->LoadMetadata(metadata, component);
+        loader->LoadCoclass(cid, mc);
+        if (mc == nullptr) {
+            Logger::E("CProxy", "Get IMetaCoclass failed.");
+            return E_CLASS_NOT_FOUND_EXCEPTION;
+        }
+    }
 
     AutoPtr<CProxy> proxyObj = new CProxy();
     mc->GetCoclassID(proxyObj->mCid);

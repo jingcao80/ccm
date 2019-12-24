@@ -194,6 +194,7 @@ public:
     static ECode CreateObject(
         /* [in] */ const CoclassID& cid,
         /* [in] */ IRPCChannel* channel,
+        /* [in] */ IClassLoader* loader,
         /* [out] */ AutoPtr<IProxy>& proxy);
 
 private:

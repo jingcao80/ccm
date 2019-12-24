@@ -18,7 +18,7 @@
 #include <comolog.h>
 #include <dbus/dbus.h>
 
-namespace pisces {
+namespace jing {
 
 AutoPtr<ServiceManager> ServiceManager::sInstance = new ServiceManager();
 
@@ -41,7 +41,7 @@ ECode ServiceManager::AddService(
 
     AutoPtr<IParcel> parcel;
     CoCreateParcel(RPCType::Local, parcel);
-    ipack->WriteToParcel(parcel);
+    IParcelable::Probe(ipack)->WriteToParcel(parcel);
     HANDLE buffer;
     parcel->GetData(buffer);
     Long size;
@@ -205,8 +205,8 @@ ECode ServiceManager::GetService(
 
             AutoPtr<IInterfacePack> ipack;
             CoCreateInterfacePack(RPCType::Local, ipack);
-            ipack->ReadFromParcel(parcel);
-            ec = CoUnmarshalInterface(RPCType::Local, ipack, object);
+            IParcelable::Probe(ipack)->ReadFromParcel(parcel);
+            ec = CoUnmarshalInterface(ipack, RPCType::Local, object);
         }
     }
     else {

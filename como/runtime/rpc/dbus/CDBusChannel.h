@@ -65,6 +65,9 @@ public:
 
     COMO_OBJECT_DECL();
 
+    ECode Apply(
+        /* [in] */ IInterfacePack* ipack) override;
+
     ECode GetRPCType(
         /* [out] */ RPCType& type) override;
 
@@ -81,6 +84,10 @@ public:
         /* [in] */ HANDLE cookie = 0,
         /* [in] */ Integer flags = 0,
         /* [out] */ AutoPtr<IDeathRecipient>* outRecipient = nullptr) override;
+
+    ECode GetComponentMetadata(
+        /* [in] */ const CoclassID& cid,
+        /* [out, callee] */ Array<Byte>& metadata) override;
 
     ECode Invoke(
         /* [in] */ IProxy* proxy,

@@ -45,4 +45,37 @@ Integer HashUUID(
     return (hash & 0x7FFFFFFF);
 }
 
+ComponentID* CloneComponentID(
+    /* [in] */ const ComponentID* cid)
+{
+    if (cid == nullptr) {
+        return nullptr;
+    }
+
+    ComponentID* clone = (ComponentID*)malloc(sizeof(ComponentID));
+    if (clone != nullptr) {
+        *clone = *cid;
+        if (cid->mUri != nullptr) {
+            Integer size = strlen(cid->mUri);
+            clone->mUri = (const char*)malloc(size + 1);
+            if (clone->mUri != nullptr) {
+                memcpy(const_cast<char*>(clone->mUri), cid->mUri, size + 1);
+            }
+        }
+    }
+
+    return clone;
+}
+
+void ReleaseComponentID(
+    /* [in] */ const ComponentID* cid)
+{
+    if (cid != nullptr) {
+        if (cid->mUri != nullptr) {
+            free(const_cast<char*>(cid->mUri));
+        }
+        free(const_cast<ComponentID*>(cid));
+    }
+}
+
 } // namespace como

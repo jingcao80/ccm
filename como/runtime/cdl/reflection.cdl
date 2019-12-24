@@ -109,6 +109,12 @@ interface IMetaComponent
         [in] CoclassID cid,
         [out] IMetaCoclass&& klass);
 
+    GetSerializedMetadata(
+        [out, callee] Array<Byte>& metadata);
+
+    IsOnlyMetadata(
+        [out] Boolean& onlyMetadata);
+
     Preload();
 
     CanUnload(
