@@ -199,6 +199,30 @@ DBusHandlerResult CDBusChannel::ServiceRunnable::HandleMessage(
         dbus_message_unref(reply);
     }
     else if (dbus_message_is_method_call(msg,
+            STUB_INTERFACE_PATH, "IsPeerAlive")) {
+        if (CDBusChannel::DEBUG) {
+            Logger::D("CDBusChannel", "Handle \"IsPeerAlive\" message.");
+        }
+        DBusMessageIter args;
+
+        DBusMessage* reply = dbus_message_new_method_return(msg);
+
+        ECode ec = NOERROR;
+        dbus_bool_t val = TRUE;
+
+        dbus_message_iter_init_append(reply, &args);
+        dbus_message_iter_append_basic(&args, DBUS_TYPE_INT32, &ec);
+        dbus_message_iter_append_basic(&args, DBUS_TYPE_BOOLEAN, &val);
+
+        dbus_uint32_t serial = 0;
+        if (!dbus_connection_send(conn, reply, &serial)) {
+            Logger::E("CDBusChannel", "Send reply message failed.");
+        }
+        dbus_connection_flush(conn);
+
+        dbus_message_unref(reply);
+    }
+    else if (dbus_message_is_method_call(msg,
             STUB_INTERFACE_PATH, "Release")) {
         if (CDBusChannel::DEBUG) {
             Logger::D("CDBusChannel", "Handle \"Release\" message.");
@@ -253,7 +277,95 @@ ECode CDBusChannel::GetRPCType(
 ECode CDBusChannel::IsPeerAlive(
     /* [out] */ Boolean& alive)
 {
-    return NOERROR;
+    ECode ec = NOERROR;
+    DBusError err;
+    DBusConnection* conn = nullptr;
+    DBusMessage* msg = nullptr;
+    DBusMessage* reply = nullptr;
+    DBusMessageIter args;
+    alive = false;
+
+    dbus_error_init(&err);
+
+    conn = dbus_bus_get_private(DBUS_BUS_SESSION, &err);
+
+    if (dbus_error_is_set(&err)) {
+        Logger::E("CDBusChannel", "Connect to bus daemon failed, error is \"%s\".",
+                err.message);
+        ec = E_RUNTIME_EXCEPTION;
+        goto Exit;
+    }
+
+    msg = dbus_message_new_method_call(
+            mName, STUB_OBJECT_PATH, STUB_INTERFACE_PATH, "IsPeerAlive");
+    if (msg == nullptr) {
+        Logger::E("CDBusChannel", "Fail to create dbus message.");
+        ec = E_RUNTIME_EXCEPTION;
+        goto Exit;
+    }
+
+    if (DEBUG) {
+        Logger::D("CDBusChannel", "Send message.");
+    }
+
+    reply = dbus_connection_send_with_reply_and_block(conn, msg, -1, &err);
+    if (dbus_error_is_set(&err)) {
+        Logger::E("CDBusChannel", "Fail to send message, error is \"%s\"", err.message);
+        ec = E_REMOTE_EXCEPTION;
+        goto Exit;
+    }
+
+    if (!dbus_message_iter_init(reply, &args)) {
+        Logger::E("CDBusChannel", "Reply has no results.");
+        ec = E_REMOTE_EXCEPTION;
+        goto Exit;
+    }
+
+    if (DBUS_TYPE_INT32 != dbus_message_iter_get_arg_type(&args)) {
+        Logger::E("CDBusChannel", "The first result is not Integer.");
+        ec = E_REMOTE_EXCEPTION;
+        goto Exit;
+    }
+
+    dbus_message_iter_get_basic(&args, &ec);
+
+    if (SUCCEEDED(ec)) {
+        if (!dbus_message_iter_next(&args)) {
+            Logger::E("CDBusChannel", "Reply has no out arguments.");
+            ec = E_REMOTE_EXCEPTION;
+            goto Exit;
+        }
+        if (DBUS_TYPE_BOOLEAN != dbus_message_iter_get_arg_type(&args)) {
+            Logger::E("CDBusChannel", "Reply arguments is not array.");
+            ec = E_REMOTE_EXCEPTION;
+            goto Exit;
+        }
+
+        dbus_bool_t val;
+        dbus_message_iter_get_basic(&args, &val);
+        alive = val == TRUE ? true : false;
+    }
+    else {
+        if (DEBUG) {
+            Logger::D("CDBusChannel", "Remote call failed with ec = 0x%x.", ec);
+        }
+    }
+
+Exit:
+    if (msg != nullptr) {
+        dbus_message_unref(msg);
+    }
+    if (reply != nullptr) {
+        dbus_message_unref(reply);
+    }
+    if (conn != nullptr) {
+        dbus_connection_close(conn);
+        dbus_connection_unref(conn);
+    }
+
+    dbus_error_free(&err);
+
+    return ec;
 }
 
 ECode CDBusChannel::LinkToDeath(
@@ -261,7 +373,7 @@ ECode CDBusChannel::LinkToDeath(
     /* [in] */ HANDLE cookie,
     /* [in] */ Integer flags)
 {
-    return NOERROR;
+    return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
 ECode CDBusChannel::UnlinkToDeath(
@@ -270,7 +382,7 @@ ECode CDBusChannel::UnlinkToDeath(
     /* [in] */ Integer flags,
     /* [out] */ AutoPtr<IDeathRecipient>* outRecipient)
 {
-    return NOERROR;
+    return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
 ECode CDBusChannel::GetComponentMetadata(

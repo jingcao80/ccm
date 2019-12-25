@@ -100,6 +100,9 @@ public:
     ECode IsOnlyMetadata(
         /* [out] */ Boolean& onlyMetadata) override;
 
+    ECode LoadComponent(
+        /* [in] */ IMetaComponent* comp) override;
+
     ECode Preload() override;
 
     ECode CanUnload(
@@ -121,6 +124,9 @@ public:
 
     AutoPtr<IMetaInterface> BuildInterface(
         /* [in] */ Integer index);
+
+    inline static CMetaComponent* From(
+        /* [in] */ IMetaComponent* comp);
 
 private:
     void LoadAllClassObjectGetters();
@@ -158,6 +164,12 @@ public:
     AutoPtr<IMetaInterface> mIInterface;
     HashMap<UUID, ClassObjectGetter*> mClassObjects;
 };
+
+CMetaComponent* CMetaComponent::From(
+    /* [in] */ IMetaComponent* comp)
+{
+    return (CMetaComponent*)comp;
+}
 
 } // namespace como
 

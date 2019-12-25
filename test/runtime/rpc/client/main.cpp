@@ -103,6 +103,16 @@ TEST(RPCTest, TestCallTestMethod3)
     EXPECT_EQ(ec, NOERROR);
 }
 
+TEST(RPCTest, TestIsStubAlive)
+{
+    EXPECT_TRUE(SERVICE != nullptr);
+    IProxy* proxy = IProxy::Probe(SERVICE);
+    EXPECT_TRUE(proxy != nullptr);
+    Boolean alive;
+    proxy->IsStubAlive(alive);
+    EXPECT_TRUE(alive);
+}
+
 int main(int argc, char **argv)
 {
     testing::InitGoogleTest(&argc, argv);

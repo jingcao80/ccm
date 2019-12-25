@@ -280,6 +280,36 @@ ECode CMetaComponent::IsOnlyMetadata(
     return NOERROR;
 }
 
+ECode CMetaComponent::LoadComponent(
+    /* [in] */ IMetaComponent* comp)
+{
+    Boolean onlyMetadata;
+    IsOnlyMetadata(onlyMetadata);
+    if (onlyMetadata) {
+        if (mComponent != nullptr) {
+            free(mComponent);
+        }
+
+        mComponent = (ComoComponent*)malloc(sizeof(ComoComponent));
+        if (mComponent == nullptr) {
+            Logger::E("CMetaComponent", "Malloc ComoComponent failed.");
+            return E_OUT_OF_MEMORY_ERROR;
+        }
+
+        ComoComponent* component = CMetaComponent::From(comp)->mComponent;
+
+        mComponent->mSoHandle = component->mSoHandle;
+        mComponent->mSoGetClassObject = component->mSoGetClassObject;
+        mComponent->mSoGetAllClassObjects = component->mSoGetAllClassObjects;
+        mComponent->mSoCanUnload = component->mSoCanUnload;
+        mComponent->mMetadataWrapper = component->mMetadataWrapper;
+
+        LoadAllClassObjectGetters();
+    }
+
+    return NOERROR;
+}
+
 ECode CMetaComponent::Preload()
 {
     BuildAllConstants();

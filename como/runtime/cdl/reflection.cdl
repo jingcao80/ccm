@@ -115,6 +115,9 @@ interface IMetaComponent
     IsOnlyMetadata(
         [out] Boolean& onlyMetadata);
 
+    LoadComponent(
+        [in] IMetaComponent* comp);
+
     Preload();
 
     CanUnload(

@@ -91,8 +91,15 @@ ECode CBootClassLoader::LoadComponent(
 
     {
         Mutex::AutoLock lock(mComponentsLock);
-        mComponents.Put(compId.mUuid, component);
-        mComponentPaths.Put(path, component);
+        IMetaComponent* mc = mComponents.Get(compId.mUuid);
+        if (mc == nullptr) {
+            mComponents.Put(compId.mUuid, component);
+            mComponentPaths.Put(path, component);
+        }
+        else {
+            mc->LoadComponent(component);
+            mComponentPaths.Put(path, mc);
+        }
     }
 
     return NOERROR;
@@ -106,8 +113,12 @@ ECode CBootClassLoader::LoadComponent(
         Mutex::AutoLock lock(mComponentsLock);
         IMetaComponent* mc = mComponents.Get(compId.mUuid);
         if (mc != nullptr) {
-            component = mc;
-            return NOERROR;
+            Boolean onlyMetadata;
+            mc->IsOnlyMetadata(onlyMetadata);
+            if (!onlyMetadata) {
+                component = mc;
+                return NOERROR;
+            }
         }
     }
 
@@ -132,8 +143,12 @@ ECode CBootClassLoader::LoadComponent(
         Mutex::AutoLock lock(mComponentsLock);
         IMetaComponent* mc = mComponents.Get(compId.mUuid);
         if (mc != nullptr) {
-            component = mc;
-            return NOERROR;
+            Boolean onlyMetadata;
+            mc->IsOnlyMetadata(onlyMetadata);
+            if (!onlyMetadata) {
+                component = mc;
+                return NOERROR;
+            }
         }
     }
 
@@ -147,8 +162,15 @@ ECode CBootClassLoader::LoadComponent(
 
     {
         Mutex::AutoLock lock(mComponentsLock);
-        mComponents.Put(compId.mUuid, component);
-        mComponentPaths.Put(compPath, component);
+        IMetaComponent* mc = mComponents.Get(compId.mUuid);
+        if (mc == nullptr) {
+            mComponents.Put(compId.mUuid, component);
+            mComponentPaths.Put(compPath, component);
+        }
+        else {
+            mc->LoadComponent(component);
+            mComponentPaths.Put(compPath, mc);
+        }
     }
 
     return NOERROR;
@@ -366,7 +388,6 @@ ECode CBootClassLoader::LoadMetadata(
     {
         Mutex::AutoLock lock(mComponentsLock);
         mComponents.Put(compId.mUuid, component);
-        // mComponentPaths.Put(path, component);
     }
 
     return NOERROR;
