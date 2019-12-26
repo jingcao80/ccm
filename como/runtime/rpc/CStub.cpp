@@ -473,6 +473,7 @@ ECode InterfaceStub::MarshalResults(
                     HANDLE addr;
                     argList->GetArgumentAddress(i, addr);
                     IInterface** intf = reinterpret_cast<IInterface**>(addr);
+                    resParcel->WriteInterface(*intf);
                     REFCOUNT_RELEASE(*intf);
                     delete intf;
                     break;

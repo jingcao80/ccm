@@ -55,6 +55,9 @@ public:
     ECode GetInterfaceID(
         /* [out] */ InterfaceID& iid) override;
 
+    ECode IsParcelable(
+        /* [out] */ Boolean& parcelable) override;
+
     ECode GetHashCode(
         /* [out] */ Integer& hash) override;
 
@@ -75,6 +78,9 @@ public:
     void SetInterfaceID(
         /* [in] */ const InterfaceID& iid);
 
+    void SetParcelable(
+        /* [in] */ Boolean parcelable);
+
     inline static InterfacePack* From(
         /* [in] */ IInterfacePack* ipack);
 
@@ -82,6 +88,7 @@ private:
     String mDBusName;
     CoclassID mCid;
     InterfaceID mIid;
+    Boolean mIsParcelable { false };
 };
 
 InterfacePack* InterfacePack::From(

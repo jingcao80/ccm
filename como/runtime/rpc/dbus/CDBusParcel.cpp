@@ -30,6 +30,7 @@
  * limitations under the License.
  */
 
+#include "rpc/comorpc.h"
 #include "rpc/dbus/CDBusParcel.h"
 #include "util/comosp.h"
 #include "util/comolog.h"
@@ -723,12 +724,52 @@ ECode CDBusParcel::WriteArray(
 ECode CDBusParcel::ReadInterface(
     /* [out] */ AutoPtr<IInterface>& value)
 {
+    Integer tag;
+    ReadInteger(tag);
+    if (tag == TAG_NOT_NULL) {
+        AutoPtr<IInterfacePack> ipack;
+        CoCreateInterfacePack(RPCType::Local, ipack);
+        IParcelable::Probe(ipack)->ReadFromParcel(this);
+
+        ECode ec = CoUnmarshalInterface(ipack, RPCType::Local, value);
+        if (FAILED(ec)) {
+            Logger::E("CDBusParcel", "Unmarshal the interface in ReadInterface failed.");
+            return ec;
+        }
+
+        Boolean parcelable;
+        ipack->IsParcelable(parcelable);
+        if (parcelable) {
+            IParcelable::Probe(value)->ReadFromParcel(this);
+        }
+    }
+    else {
+        value = nullptr;
+    }
     return NOERROR;
 }
 
 ECode CDBusParcel::WriteInterface(
     /* [in] */ IInterface* value)
 {
+    WriteInteger(value != nullptr ? TAG_NOT_NULL : TAG_NULL);
+
+    if (value != nullptr) {
+        AutoPtr<IInterfacePack> ipack;
+        ECode ec = CoMarshalInterface(value, RPCType::Local, ipack);
+        if (FAILED(ec)) {
+            Logger::E("CDBusParcel", "Marshal the interface in WriteInterface failed.");
+            return ec;
+        }
+
+        IParcelable::Probe(ipack)->WriteToParcel(this);
+
+        IParcelable* p = IParcelable::Probe(value);
+        if (p != nullptr) {
+            p->WriteToParcel(this);
+        }
+    }
+
     return NOERROR;
 }
 

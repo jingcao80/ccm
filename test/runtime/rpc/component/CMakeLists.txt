@@ -25,10 +25,14 @@ include_directories(
     ${COMPONENT_OBJ_DIR})
 
 set(SOURCES
-    CService.cpp)
+    CService.cpp
+    CTestObject.cpp
+    CParcelableTestObject.cpp)
 
 set(GENERATED_SOURCES
     ${COMPONENT_OBJ_DIR}/_como_test_rpc_CService.cpp
+    ${COMPONENT_OBJ_DIR}/_como_test_rpc_CTestObject.cpp
+    ${COMPONENT_OBJ_DIR}/_como_test_rpc_CParcelableTestObject.cpp
     ${COMPONENT_OBJ_DIR}/RPCTestUnitPub.cpp
     ${COMPONENT_OBJ_DIR}/MetadataWrapper.cpp)
 

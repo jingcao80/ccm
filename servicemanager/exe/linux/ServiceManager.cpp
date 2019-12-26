@@ -37,6 +37,7 @@ ECode ServiceManager::AddService(
     ipack->mDBusName = object.mDBusName;
     ipack->mCid = object.mCid;
     ipack->mIid = object.mIid;
+    ipack->mIsParcelable = object.mIsParcelable;
 
     Mutex::AutoLock lock(mServicesLock);
     mServices.Put(name, ipack);
@@ -118,6 +119,7 @@ DBusHandlerResult ServiceManager::HandleMessage(
         parcel->ReadString(ipack.mDBusName);
         parcel->ReadCoclassID(ipack.mCid);
         parcel->ReadInterfaceID(ipack.mIid);
+        parcel->ReadBoolean(ipack.mIsParcelable);
         ipack.mCid.mCid = CloneComponentID(ipack.mCid.mCid);
         ipack.mIid.mCid = CloneComponentID(ipack.mIid.mCid);
         ec = ServiceManager::GetInstance()->AddService(String(str), ipack);
@@ -166,6 +168,7 @@ DBusHandlerResult ServiceManager::HandleMessage(
             parcel->WriteString(ipack->mDBusName);
             parcel->WriteCoclassID(ipack->mCid);
             parcel->WriteInterfaceID(ipack->mIid);
+            parcel->WriteBoolean(ipack->mIsParcelable);
 
             HANDLE resData = 0;
             Long resSize = 0;

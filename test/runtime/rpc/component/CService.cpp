@@ -15,6 +15,9 @@
 //=========================================================================
 
 #include "CService.h"
+#include "CTestObject.h"
+#include "CParcelableTestObject.h"
+
 #include <cstdio>
 
 namespace como {
@@ -100,6 +103,18 @@ ECode CService::TestMethod3(
     result1 = arg1;
     result2 = arg2;
     return NOERROR;
+}
+
+ECode CService::TestMethod4(
+    /* [out] */ AutoPtr<ITestInterface>& obj)
+{
+    return CTestObject::New(IID_ITestInterface, (IInterface**)&obj);
+}
+
+ECode CService::TestMethod5(
+    /* [out] */ AutoPtr<ITestInterface>& obj)
+{
+    return CParcelableTestObject::New(IID_ITestInterface, (IInterface**)&obj);
 }
 
 }

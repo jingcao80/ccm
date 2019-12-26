@@ -169,6 +169,9 @@ interface IInterfacePack
     GetInterfaceID(
         [out] InterfaceID& iid);
 
+    IsParcelable(
+        [out] Boolean& parcelable);
+
     GetHashCode(
         [out] Integer& hash);
 }

@@ -35,6 +35,7 @@ public:
         String mDBusName;
         CoclassID mCid;
         InterfaceID mIid;
+        Boolean mIsParcelable;
     };
 
 public:

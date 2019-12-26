@@ -43,6 +43,13 @@ ECode InterfacePack::GetInterfaceID(
     return NOERROR;
 }
 
+ECode InterfacePack::IsParcelable(
+    /* [out] */ Boolean& parcelable)
+{
+    parcelable = mIsParcelable;
+    return NOERROR;
+}
+
 ECode InterfacePack::GetHashCode(
     /* [out] */ Integer& hash)
 {
@@ -56,6 +63,7 @@ ECode InterfacePack::ReadFromParcel(
     source->ReadString(mDBusName);
     source->ReadCoclassID(mCid);
     source->ReadInterfaceID(mIid);
+    source->ReadBoolean(mIsParcelable);
     mCid.mCid = CloneComponentID(mCid.mCid);
     mIid.mCid = CloneComponentID(mIid.mCid);
     return NOERROR;
@@ -67,6 +75,7 @@ ECode InterfacePack::WriteToParcel(
     dest->WriteString(mDBusName);
     dest->WriteCoclassID(mCid);
     dest->WriteInterfaceID(mIid);
+    dest->WriteBoolean(mIsParcelable);
     return NOERROR;
 }
 
@@ -119,6 +128,12 @@ void InterfacePack::SetInterfaceID(
         }
         mIid.mCid = comid;
     }
+}
+
+void InterfacePack::SetParcelable(
+    /* [in] */ Boolean parcelable)
+{
+    mIsParcelable = parcelable;
 }
 
 } // namespace como

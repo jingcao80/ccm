@@ -23,6 +23,7 @@
 
 using como::test::rpc::CID_CService;
 using como::test::rpc::IService;
+using como::test::rpc::ITestInterface;
 using jing::ServiceManager;
 
 static AutoPtr<IService> SERVICE;
@@ -98,9 +99,60 @@ TEST(RPCTest, TestCallTestMethod3)
     String arg2 = "Hello World!";
     String result2;
     ec = SERVICE->TestMethod3(arg1, arg2, result1, result2);
+    EXPECT_EQ(ec, NOERROR);
     EXPECT_EQ(arg1, result1);
     EXPECT_STREQ(arg2.string(), result2.string());
+}
+
+TEST(RPCTest, TestCallTestMethod4)
+{
+    EXPECT_TRUE(SERVICE != nullptr);
+    ECode ec = E_REMOTE_EXCEPTION;
+    AutoPtr<ITestInterface> obj;
+    ec = SERVICE->TestMethod4(obj);
     EXPECT_EQ(ec, NOERROR);
+    EXPECT_TRUE(obj != nullptr);
+    EXPECT_TRUE(IProxy::Probe(obj) != nullptr);
+    Integer arg1 = 6;
+    Integer result1;
+    obj->TestMethod1(arg1, result1);
+    EXPECT_EQ(result1, arg1 + 3);
+    AutoPtr<IMetaCoclass> mk;
+    IProxy::Probe(obj)->GetTargetCoclass(mk);
+    EXPECT_TRUE(mk != nullptr);
+    AutoPtr<IMetaComponent> mc;
+    mk->GetComponent(mc);
+    EXPECT_TRUE(mc != nullptr);
+    Boolean onlyMetadata;
+    mc->IsOnlyMetadata(onlyMetadata);
+    EXPECT_TRUE(onlyMetadata);
+}
+
+TEST(RPCTest, TestCallTestMethod5)
+{
+    EXPECT_TRUE(SERVICE != nullptr);
+    ECode ec = E_REMOTE_EXCEPTION;
+    AutoPtr<ITestInterface> obj;
+    ec = SERVICE->TestMethod5(obj);
+    EXPECT_EQ(ec, NOERROR);
+    EXPECT_TRUE(obj != nullptr);
+    EXPECT_TRUE(IProxy::Probe(obj) == nullptr);
+    Integer arg1 = 6;
+    Integer result1;
+    obj->TestMethod1(arg1, result1);
+    EXPECT_EQ(result1, arg1 + 6);
+    Integer value;
+    obj->GetValue(value);
+    EXPECT_EQ(value, 23);
+    AutoPtr<IMetaCoclass> mk;
+    IObject::Probe(obj)->GetCoclass(mk);
+    EXPECT_TRUE(mk != nullptr);
+    AutoPtr<IMetaComponent> mc;
+    mk->GetComponent(mc);
+    EXPECT_TRUE(mc != nullptr);
+    Boolean onlyMetadata;
+    mc->IsOnlyMetadata(onlyMetadata);
+    EXPECT_FALSE(onlyMetadata);
 }
 
 TEST(RPCTest, TestIsStubAlive)

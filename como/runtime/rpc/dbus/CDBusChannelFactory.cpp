@@ -22,6 +22,7 @@
 #include "CStub.h"
 #include "InterfacePack.h"
 #include "registry.h"
+#include "component/comoobjapi.h"
 #include "util/comosp.h"
 
 namespace como {
@@ -62,35 +63,46 @@ ECode CDBusChannelFactory::MarshalInterface(
     InterfaceID iid;
     object->GetInterfaceID(object, iid);
     InterfacePack* pack = new InterfacePack();
+    pack->SetInterfaceID(iid);
 
-    AutoPtr<IStub> stub;
-    ECode ec = FindExportObject(mType, IObject::Probe(object), stub);
-    if (SUCCEEDED(ec)) {
-        CDBusChannel* channel = CDBusChannel::GetStubChannel(stub);
-        pack->SetDBusName(channel->mName);
-        pack->SetCoclassID(((CStub*)stub.Get())->GetTargetCoclassID());
-        pack->SetInterfaceID(iid);
+    if (IParcelable::Probe(object) != nullptr) {
+        if (IObject::Probe(object) == nullptr) {
+            Logger::E("CDBusChannel", "The Object is not a como object.");
+            ipack = nullptr;
+            return E_NOT_COMO_OBJECT_EXCEPTION;
+        }
+        CoclassID cid;
+        IObject::Probe(object)->GetCoclassID(cid);
+        pack->SetCoclassID(cid);
+        pack->SetParcelable(true);
     }
     else {
-        IProxy* proxy = IProxy::Probe(object);
-        if (proxy != nullptr) {
-            CDBusChannel* channel = CDBusChannel::GetProxyChannel(proxy);
-            pack->SetDBusName(channel->mName);
-            pack->SetCoclassID(((CProxy*)proxy)->GetTargetCoclassID());
-            pack->SetInterfaceID(iid);
-        }
-        else {
-            ec = CoCreateStub(object, mType, stub);
-            if (FAILED(ec)) {
-                Logger::E("CDBusChannel", "Marshal interface failed.");
-                ipack = nullptr;
-                return ec;
-            }
+        AutoPtr<IStub> stub;
+        ECode ec = FindExportObject(mType, IObject::Probe(object), stub);
+        if (SUCCEEDED(ec)) {
             CDBusChannel* channel = CDBusChannel::GetStubChannel(stub);
             pack->SetDBusName(channel->mName);
             pack->SetCoclassID(((CStub*)stub.Get())->GetTargetCoclassID());
-            pack->SetInterfaceID(iid);
-            RegisterExportObject(mType, IObject::Probe(object), stub);
+        }
+        else {
+            IProxy* proxy = IProxy::Probe(object);
+            if (proxy != nullptr) {
+                CDBusChannel* channel = CDBusChannel::GetProxyChannel(proxy);
+                pack->SetDBusName(channel->mName);
+                pack->SetCoclassID(((CProxy*)proxy)->GetTargetCoclassID());
+            }
+            else {
+                ec = CoCreateStub(object, mType, stub);
+                if (FAILED(ec)) {
+                    Logger::E("CDBusChannel", "Marshal interface failed.");
+                    ipack = nullptr;
+                    return ec;
+                }
+                CDBusChannel* channel = CDBusChannel::GetStubChannel(stub);
+                pack->SetDBusName(channel->mName);
+                pack->SetCoclassID(((CStub*)stub.Get())->GetTargetCoclassID());
+                RegisterExportObject(mType, IObject::Probe(object), stub);
+            }
         }
     }
 
@@ -102,35 +114,54 @@ ECode CDBusChannelFactory::UnmarshalInterface(
     /* [in] */ IInterfacePack* ipack,
     /* [out] */ AutoPtr<IInterface>& object)
 {
-    AutoPtr<IObject> iobject;
-    ECode ec = FindImportObject(mType, ipack, iobject);
-    if (SUCCEEDED(ec)) {
+    Boolean parcelable;
+    ipack->IsParcelable(parcelable);
+    if (parcelable) {
+        CoclassID cid;
+        ipack->GetCoclassID(cid);
         InterfaceID iid;
         ipack->GetInterfaceID(iid);
-        object = iobject->Probe(iid);
-        return NOERROR;
+        ECode ec = CoCreateObjectInstance(cid, iid, nullptr, &object);
+        if (FAILED(ec)) {
+            Logger::E("CDBusChannel", "Create the object in ReadInterface failed.");
+            return ec;
+        }
     }
+    else {
+        AutoPtr<IObject> iobject;
+        ECode ec = FindImportObject(mType, ipack, iobject);
+        if (SUCCEEDED(ec)) {
+            InterfaceID iid;
+            ipack->GetInterfaceID(iid);
+            object = iobject->Probe(iid);
+            return NOERROR;
+        }
 
-    AutoPtr<IStub> stub;
-    ec = FindExportObject(mType, ipack, stub);
-    if (SUCCEEDED(ec)) {
-        CStub* stubObj = (CStub*)stub.Get();
+        AutoPtr<IStub> stub;
+        ec = FindExportObject(mType, ipack, stub);
+        if (SUCCEEDED(ec)) {
+            CStub* stubObj = (CStub*)stub.Get();
+            InterfaceID iid;
+            ipack->GetInterfaceID(iid);
+            object = stubObj->GetTarget()->Probe(iid);
+            return NOERROR;
+        }
+
+        AutoPtr<IProxy> proxy;
+        ec = CoCreateProxy(ipack, mType, nullptr, proxy);
+        if (FAILED(ec)) {
+            Logger::E("CDBusChannel", "Unmarshal the interface in ReadInterface failed.");
+            object = nullptr;
+            return ec;
+        }
+
+        RegisterImportObject(mType, ipack, IObject::Probe(proxy));
+
         InterfaceID iid;
         ipack->GetInterfaceID(iid);
-        object = stubObj->GetTarget()->Probe(iid);
-        return NOERROR;
+        object = proxy->Probe(iid);
     }
 
-    AutoPtr<IProxy> proxy;
-    ec = CoCreateProxy(ipack, mType, nullptr, proxy);
-    if (FAILED(ec)) {
-        object = nullptr;
-        return ec;
-    }
-
-    RegisterImportObject(mType, ipack, IObject::Probe(proxy));
-
-    object = proxy;
     return NOERROR;
 }
 

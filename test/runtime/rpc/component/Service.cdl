@@ -19,6 +19,20 @@ namespace test {
 namespace rpc {
 
 [
+    uuid(74cdacd5-2834-4096-9b7f-33f0953f61a3),
+    version(0.1.0)
+]
+interface ITestInterface
+{
+    TestMethod1(
+        [in] Integer arg1,
+        [out] Integer& result1);
+
+    GetValue(
+        [out] Integer& value);
+}
+
+[
     uuid(afa187cf-8193-4786-8de7-b576c0bdb162),
     version(0.1.0)
 ]
@@ -67,6 +81,12 @@ interface IService
         [in] String arg2,
         [out] Integer& result1,
         [out] String& result2);
+
+    TestMethod4(
+        [out] ITestInterface&& obj);
+
+    TestMethod5(
+        [out] ITestInterface&& obj);
 }
 
 [
@@ -76,6 +96,25 @@ interface IService
 coclass CService
 {
     interface IService;
+}
+
+[
+    uuid(459f54ea-c347-461c-b89d-389575c12abd),
+    version(0.1.0)
+]
+coclass CTestObject
+{
+    interface ITestInterface;
+}
+
+[
+    uuid(2369bfe8-739f-4e30-8810-d53c9775436e),
+    version(0.1.0)
+]
+coclass CParcelableTestObject
+{
+    interface ITestInterface;
+    interface IParcelable;
 }
 
 }

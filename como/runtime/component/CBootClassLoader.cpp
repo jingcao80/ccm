@@ -99,6 +99,7 @@ ECode CBootClassLoader::LoadComponent(
         else {
             mc->LoadComponent(component);
             mComponentPaths.Put(path, mc);
+            component = mc;
         }
     }
 
@@ -170,6 +171,7 @@ ECode CBootClassLoader::LoadComponent(
         else {
             mc->LoadComponent(component);
             mComponentPaths.Put(compPath, mc);
+            component = mc;
         }
     }
 

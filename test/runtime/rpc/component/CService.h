@@ -81,6 +81,12 @@ public:
         /* [in] */ const String& arg2,
         /* [out] */ Integer& result1,
         /* [out] */ String& result2) override;
+
+    ECode TestMethod4(
+        /* [out] */ AutoPtr<ITestInterface>& obj) override;
+
+    ECode TestMethod5(
+        /* [out] */ AutoPtr<ITestInterface>& obj) override;
 };
 
 } // namespace rpc
