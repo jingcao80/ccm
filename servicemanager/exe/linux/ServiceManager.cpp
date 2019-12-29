@@ -122,7 +122,7 @@ DBusHandlerResult ServiceManager::HandleMessage(
         parcel->ReadBoolean(ipack.mIsParcelable);
         ipack.mCid.mCid = CloneComponentID(ipack.mCid.mCid);
         ipack.mIid.mCid = CloneComponentID(ipack.mIid.mCid);
-        ec = ServiceManager::GetInstance()->AddService(String(str), ipack);
+        ec = ServiceManager::GetInstance()->AddService(str, ipack);
 
     AddServiceExit:
         DBusMessage* reply = dbus_message_new_method_return(msg);
@@ -156,7 +156,7 @@ DBusHandlerResult ServiceManager::HandleMessage(
 
         dbus_message_iter_get_basic(&args, &str);
 
-        ec = ServiceManager::GetInstance()->GetService(String(str), &ipack);
+        ec = ServiceManager::GetInstance()->GetService(str, &ipack);
 
     GetServiceExit:
         DBusMessage* reply = dbus_message_new_method_return(msg);
@@ -206,7 +206,7 @@ DBusHandlerResult ServiceManager::HandleMessage(
 
         dbus_message_iter_get_basic(&args, &str);
 
-        ec = ServiceManager::GetInstance()->RemoveService(String(str));
+        ec = ServiceManager::GetInstance()->RemoveService(str);
 
     RemoveServiceExit:
         DBusMessage* reply = dbus_message_new_method_return(msg);

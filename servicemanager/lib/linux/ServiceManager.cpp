@@ -31,6 +31,10 @@ ECode ServiceManager::AddService(
     /* [in] */ const String& name,
     /* [in] */ IInterface* object)
 {
+    if (name.IsEmpty() || object == nullptr) {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
     AutoPtr<IInterfacePack> ipack;
     ECode ec = CoMarshalInterface(object, RPCType::Local, ipack);
     if (FAILED(ec)) {
@@ -128,6 +132,10 @@ ECode ServiceManager::GetService(
     /* [in] */ const String& name,
     /* [out] */ AutoPtr<IInterface>& object)
 {
+    if (name.IsEmpty()) {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
     object = nullptr;
 
     ECode ec = NOERROR;
@@ -233,6 +241,10 @@ Exit:
 ECode ServiceManager::RemoveService(
     /* [in] */ const String& name)
 {
+    if (name.IsEmpty()) {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
     ECode ec = NOERROR;
     DBusError err;
     DBusConnection* conn = nullptr;
