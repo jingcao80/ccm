@@ -251,7 +251,7 @@ public:
 
     ECode Resolve(
         /* [in] */ const InterfaceID& iid,
-        /* [out] */ AutoPtr<IInterface>& object) override;
+        /* [out] */ IInterface** object) override;
 
 private:
     IInterface* mObject;

@@ -380,14 +380,16 @@ ECode CDBusParcel::WriteEnumeration(
 }
 
 ECode CDBusParcel::ReadArray(
-    /* [out] */ HANDLE array)
+    /* [out] */ Triple* array)
 {
-    Triple* t = reinterpret_cast<Triple*>(array);
+    Triple* t = array;
     VALIDATE_NOT_NULL(t);
 
     Integer value;
     ECode ec = ReadInteger(value);
-    if (FAILED(ec)) return ec;
+    if (FAILED(ec)) {
+        return ec;
+    }
 
     TypeKind kind = (TypeKind)value;
     Long size;
@@ -409,7 +411,9 @@ ECode CDBusParcel::ReadArray(
             if (tt.mData != nullptr) {
                 ec = Read(tt.mData, sizeof(Char) * size);
             }
-            else ec = E_OUT_OF_MEMORY_ERROR;
+            else {
+                ec = E_OUT_OF_MEMORY_ERROR;
+            }
             *t = std::move(tt);
             break;
         }
@@ -421,7 +425,9 @@ ECode CDBusParcel::ReadArray(
             if (tt.mData != nullptr) {
                 ec = Read(tt.mData, sizeof(Byte) * size);
             }
-            else ec = E_OUT_OF_MEMORY_ERROR;
+            else {
+                ec = E_OUT_OF_MEMORY_ERROR;
+            }
             *t = std::move(tt);
             break;
         }
@@ -433,7 +439,9 @@ ECode CDBusParcel::ReadArray(
             if (tt.mData != nullptr) {
                 ec = Read(tt.mData, sizeof(Short) * size);
             }
-            else ec = E_OUT_OF_MEMORY_ERROR;
+            else {
+                ec = E_OUT_OF_MEMORY_ERROR;
+            }
             *t = std::move(tt);
             break;
         }
@@ -445,7 +453,9 @@ ECode CDBusParcel::ReadArray(
             if (tt.mData != nullptr) {
                 ec = Read(tt.mData, sizeof(Integer) * size);
             }
-            else ec = E_OUT_OF_MEMORY_ERROR;
+            else {
+                ec = E_OUT_OF_MEMORY_ERROR;
+            }
             *t = std::move(tt);
             break;
         }
@@ -457,7 +467,9 @@ ECode CDBusParcel::ReadArray(
             if (tt.mData != nullptr) {
                 ec = Read(tt.mData, sizeof(Long) * size);
             }
-            else ec = E_OUT_OF_MEMORY_ERROR;
+            else {
+                ec = E_OUT_OF_MEMORY_ERROR;
+            }
             *t = std::move(tt);
             break;
         }
@@ -469,7 +481,9 @@ ECode CDBusParcel::ReadArray(
             if (tt.mData != nullptr) {
                 ec = Read(tt.mData, sizeof(Float) * size);
             }
-            else ec = E_OUT_OF_MEMORY_ERROR;
+            else {
+                ec = E_OUT_OF_MEMORY_ERROR;
+            }
             *t = std::move(tt);
             break;
         }
@@ -481,7 +495,9 @@ ECode CDBusParcel::ReadArray(
             if (tt.mData != nullptr) {
                 ec = Read(tt.mData, sizeof(Double) * size);
             }
-            else ec = E_OUT_OF_MEMORY_ERROR;
+            else {
+                ec = E_OUT_OF_MEMORY_ERROR;
+            }
             *t = std::move(tt);
             break;
         }
@@ -493,7 +509,9 @@ ECode CDBusParcel::ReadArray(
             if (tt.mData != nullptr) {
                 ec = Read(tt.mData, sizeof(Boolean) * size);
             }
-            else ec = E_OUT_OF_MEMORY_ERROR;
+            else {
+                ec = E_OUT_OF_MEMORY_ERROR;
+            }
             *t = std::move(tt);
             break;
         }
@@ -566,7 +584,9 @@ ECode CDBusParcel::ReadArray(
             if (tt.mData != nullptr) {
                 ec = Read(tt.mData, sizeof(ECode) * size);
             }
-            else ec = E_OUT_OF_MEMORY_ERROR;
+            else {
+                ec = E_OUT_OF_MEMORY_ERROR;
+            }
             *t = std::move(tt);
             break;
         }
@@ -578,7 +598,9 @@ ECode CDBusParcel::ReadArray(
             if (tt.mData != nullptr) {
                 ec = Read(tt.mData, sizeof(Integer) * size);
             }
-            else ec = E_OUT_OF_MEMORY_ERROR;
+            else {
+                ec = E_OUT_OF_MEMORY_ERROR;
+            }
             *t = std::move(tt);
             break;
         }
@@ -586,7 +608,7 @@ ECode CDBusParcel::ReadArray(
             Array<Triple> triArray(size);
             for (Long i = 0; i < size; i++) {
                 Triple tt;
-                ec = ReadArray(reinterpret_cast<HANDLE>(&tt));
+                ec = ReadArray(&tt);
                 if (FAILED(ec)) {
                     t->mData = nullptr;
                     t->mSize = 0;
@@ -623,16 +645,20 @@ ECode CDBusParcel::ReadArray(
 }
 
 ECode CDBusParcel::WriteArray(
-    /* [in] */ HANDLE array)
+    /* [in] */ const Triple& array)
 {
-    Triple* t = reinterpret_cast<Triple*>(array);
+    const Triple* t = &array;
     VALIDATE_NOT_NULL(t);
 
     ECode ec = WriteInteger((Integer)t->mType);
-    if (FAILED(ec)) return ec;
+    if (FAILED(ec)) {
+        return ec;
+    }
 
     ec = WriteLong(t->mSize);
-    if (t->mSize == 0 || FAILED(ec)) return ec;
+    if (t->mSize == 0 || FAILED(ec)) {
+        return ec;
+    }
 
     switch (t->mType) {
         case TypeKind::Char:
@@ -663,7 +689,9 @@ ECode CDBusParcel::WriteArray(
             for (Long i = 0; i < t->mSize; i++) {
                 const String& str = reinterpret_cast<String*>(t->mData)[i];
                 ec = WriteString(str);
-                if (FAILED(ec)) break;
+                if (FAILED(ec)) {
+                    break;
+                }
             }
             break;
         }
@@ -671,7 +699,9 @@ ECode CDBusParcel::WriteArray(
             for (Long i = 0; i < t->mSize; i++) {
                 const CoclassID& cid = reinterpret_cast<CoclassID*>(t->mData)[i];
                 ec = WriteCoclassID(cid);
-                if (FAILED(ec)) break;
+                if (FAILED(ec)) {
+                    break;
+                }
             }
             break;
         }
@@ -679,7 +709,9 @@ ECode CDBusParcel::WriteArray(
             for (Long i = 0; i < t->mSize; i++) {
                 const ComponentID& cid = reinterpret_cast<ComponentID*>(t->mData)[i];
                 ec = WriteComponentID(cid);
-                if (FAILED(ec)) break;
+                if (FAILED(ec)) {
+                    break;
+                }
             }
             break;
         }
@@ -687,7 +719,9 @@ ECode CDBusParcel::WriteArray(
             for (Long i = 0; i < t->mSize; i++) {
                 const InterfaceID& iid = reinterpret_cast<InterfaceID*>(t->mData)[i];
                 ec = WriteInterfaceID(iid);
-                if (FAILED(ec)) break;
+                if (FAILED(ec)) {
+                    break;
+                }
             }
             break;
         }
@@ -700,8 +734,10 @@ ECode CDBusParcel::WriteArray(
         case TypeKind::Array: {
             for (Long i = 0; i < t->mSize; i++) {
                 const Triple& tt = reinterpret_cast<Triple*>(t->mData)[i];
-                ec = WriteArray(reinterpret_cast<HANDLE>(&tt));
-                if (FAILED(ec)) break;
+                ec = WriteArray(tt);
+                if (FAILED(ec)) {
+                    break;
+                }
             }
             break;
         }
@@ -709,7 +745,9 @@ ECode CDBusParcel::WriteArray(
             for (Long i = 0; i < t->mSize; i++) {
                 IInterface* intf = reinterpret_cast<IInterface**>(t->mData)[i];
                 ec = WriteInterface(intf);
-                if (FAILED(ec)) break;
+                if (FAILED(ec)) {
+                    break;
+                }
             }
             break;
         }

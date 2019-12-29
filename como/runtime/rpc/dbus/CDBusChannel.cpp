@@ -369,6 +369,7 @@ Exit:
 }
 
 ECode CDBusChannel::LinkToDeath(
+    /* [in] */ IProxy* proxy,
     /* [in] */ IDeathRecipient* recipient,
     /* [in] */ HANDLE cookie,
     /* [in] */ Integer flags)
@@ -377,6 +378,7 @@ ECode CDBusChannel::LinkToDeath(
 }
 
 ECode CDBusChannel::UnlinkToDeath(
+    /* [in] */ IProxy* proxy,
     /* [in] */ IDeathRecipient* recipient,
     /* [in] */ HANDLE cookie,
     /* [in] */ Integer flags,
@@ -505,7 +507,6 @@ Exit:
 }
 
 ECode CDBusChannel::Invoke(
-    /* [in] */ IProxy* proxy,
     /* [in] */ IMetaMethod* method,
     /* [in] */ IParcel* argParcel,
     /* [out] */ AutoPtr<IParcel>& resParcel)

@@ -14,50 +14,91 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __COMO_CDBUSCHANNEL_H__
-#define __COMO_CDBUSCHANNEL_H__
+#ifndef __COMO_CBINDERCHANNEL_H__
+#define __COMO_CBINDERCHANNEL_H__
 
-#include "CProxy.h"
-#include "CStub.h"
-#include "threadpoolexecutor.h"
+#include "rpc/CProxy.h"
+#include "rpc/CStub.h"
+#include "util/arraylist.h"
 #include "util/comoobj.h"
 #include "util/mutex.h"
-#include <dbus/dbus.h>
+#include <binder/Binder.h>
 
 namespace como {
 
-extern const CoclassID CID_CDBusChannel;
+class DeathRecipient;
 
-COCLASS_ID(8efc6167-e82e-4c7d-89aa-668f397b23cc)
-class CDBusChannel
+class DeathRecipientList
+    : public LightRefBase
+{
+public:
+    void Add(
+        /* [in] */ DeathRecipient* recipient);
+
+    void Remove(
+        /* [in] */ DeathRecipient* recipient);
+
+    android::sp<DeathRecipient> Find(
+        /* [in] */ IDeathRecipient* recipient);
+
+private:
+    ArrayList<android::sp<DeathRecipient>> mDeathRecipients;
+    Mutex mLock;
+};
+
+class DeathRecipient
+    : public android::IBinder::DeathRecipient
+{
+public:
+    DeathRecipient(
+        /* [in] */ IProxy* proxy,
+        /* [in] */ IDeathRecipient* recipient,
+        /* [in] */ DeathRecipientList* list);
+
+    void binderDied(
+        /* [in] */ const android::wp<android::IBinder>& who) override;
+
+    void ClearReference();
+
+    Boolean Matches(
+        /* [in] */ IDeathRecipient* recipient);
+
+private:
+    AutoPtr<IWeakReference> mProxy;
+    AutoPtr<IWeakReference> mObject;
+    DeathRecipientList* mDeathRecipients;
+};
+
+extern const CoclassID CID_CBinderChannel;
+
+COCLASS_ID(cc32c56d-2cc7-4627-9594-54b19bec8614)
+class CBinderChannel
     : public Object
     , public IRPCChannel
 {
 private:
     class ServiceRunnable
-        : public ThreadPoolExecutor::Runnable
+        : public android::BBinder
     {
     public:
         ServiceRunnable(
-            /* [in] */ CDBusChannel* owner,
+            /* [in] */ CBinderChannel* owner,
             /* [in] */ IStub* target);
 
-        ECode Run();
+    private:
+        android::status_t onTransact(
+            /* [in] */ uint32_t code,
+            /* [in] */ const android::Parcel& data,
+            /* [in] */ android::Parcel* reply,
+            /* [in] */ uint32_t flags = 0) override;
 
     private:
-        static DBusHandlerResult HandleMessage(
-            /* [in] */ DBusConnection* conn,
-            /* [in] */ DBusMessage* msg,
-            /* [in] */ void* arg);
-
-    private:
-        CDBusChannel* mOwner;
+        CBinderChannel* mOwner;
         IStub* mTarget;
-        Boolean mRequestToQuit;
     };
 
 public:
-    CDBusChannel(
+    CBinderChannel(
         /* [in] */ RPCType type,
         /* [in] */ RPCPeer peer);
 
@@ -103,39 +144,41 @@ public:
         /* [in] */ IInterfacePack* ipack,
         /* [out] */ Boolean& matched) override;
 
-    static CDBusChannel* GetProxyChannel(
+    static CBinderChannel* GetProxyChannel(
         /* [in] */ IProxy* proxy);
 
-    static CDBusChannel* GetStubChannel(
+    static CBinderChannel* GetStubChannel(
         /* [in] */ IStub* stub);
 
 private:
-    friend class CDBusChannelFactory;
+    friend class CBinderChannelFactory;
 
-    static constexpr Boolean DEBUG = false;
-    static constexpr const char* STUB_OBJECT_PATH = "/como/rpc/CStub";
-    static constexpr const char* STUB_INTERFACE_PATH = "como.rpc.IStub";
+    static constexpr Boolean DEBUG { false };
+    static constexpr Integer COMMAND_GET_COMPONENT_METADATA { android::IBinder::FIRST_CALL_TRANSACTION };
+    static constexpr Integer COMMAND_INVOKE { android::IBinder::FIRST_CALL_TRANSACTION + 1 };
+    static constexpr Integer COMMAND_RELEASE { android::IBinder::FIRST_CALL_TRANSACTION + 2 };
 
     RPCType mType;
     RPCPeer mPeer;
-    String mName;
-    Boolean mStarted;
-    Mutex mLock;
-    Condition mCond;
+    android::sp<android::IBinder> mBinder;
+    AutoPtr<DeathRecipientList> mOrgue;
+
+    static Boolean sThreadPoolStarted;
+    static Mutex sThreadPoolLock;
 };
 
-inline CDBusChannel* CDBusChannel::GetProxyChannel(
+inline CBinderChannel* CBinderChannel::GetProxyChannel(
     /* [in] */ IProxy* proxy)
 {
-    return (CDBusChannel*)((CProxy*)proxy)->GetChannel().Get();
+    return (CBinderChannel*)((CProxy*)proxy)->GetChannel().Get();
 }
 
-inline CDBusChannel* CDBusChannel::GetStubChannel(
+inline CBinderChannel* CBinderChannel::GetStubChannel(
     /* [in] */ IStub* stub)
 {
-    return (CDBusChannel*)((CStub*)stub)->GetChannel().Get();
+    return (CBinderChannel*)((CStub*)stub)->GetChannel().Get();
 }
 
-} // namespace como
+}
 
-#endif // __COMO_CDBUSCHANNEL_H__
+#endif // __COMO_CBINDERCHANNEL_H__

@@ -59,7 +59,10 @@ if($ENV{PLATFORM} STREQUAL "linux")
         -Wl,--no-whole-archive)
 elseif($ENV{PLATFORM} STREQUAL "android")
     set(COMORT_LINK_LIBS
-        ${COMORT_LINK_LIBS})
+        ${COMORT_LINK_LIBS}
+        -Wl,--whole-archive
+        rpc-binder
+        -Wl,--no-whole-archive)
 endif()
 
 add_library(comort
@@ -72,6 +75,10 @@ if($ENV{PLATFORM} STREQUAL "linux")
     target_link_libraries(comort
         pthread
         dbus-1)
+elseif($ENV{PLATFORM} STREQUAL "android")
+    target_link_libraries(comort
+        binder
+        utils)
 endif()
 
 COPY(comort ${RUNTIME_SRC_DIR}/comoapi.h ${INC_DIR})

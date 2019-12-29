@@ -136,7 +136,7 @@ ECode InterfaceStub::UnmarshalArguments(
                 }
                 case TypeKind::Array: {
                     Triple* t = new Triple();
-                    argParcel->ReadArray(reinterpret_cast<HANDLE>(t));
+                    argParcel->ReadArray(t);
                     argList->SetInputArgumentOfArray(i, *t);
                     break;
                 }
@@ -250,7 +250,7 @@ ECode InterfaceStub::UnmarshalArguments(
                 case TypeKind::Array: {
                     Triple* t = new Triple();
                     if (ioAttr == IOAttribute::IN_OUT) {
-                        argParcel->ReadArray(reinterpret_cast<HANDLE>(t));
+                        argParcel->ReadArray(t);
                     }
                     argList->SetOutputArgumentOfArray(i, reinterpret_cast<HANDLE>(t));
                     break;
@@ -465,7 +465,7 @@ ECode InterfaceStub::MarshalResults(
                     HANDLE addr;
                     argList->GetArgumentAddress(i, addr);
                     Triple* t = reinterpret_cast<Triple*>(addr);
-                    resParcel->WriteArray(reinterpret_cast<HANDLE>(t));
+                    resParcel->WriteArray(*t);
                     delete t;
                     break;
                 }
@@ -494,7 +494,7 @@ ECode InterfaceStub::MarshalResults(
                     HANDLE addr;
                     argList->GetArgumentAddress(i, addr);
                     Triple* t = reinterpret_cast<Triple*>(addr);
-                    resParcel->WriteArray(reinterpret_cast<HANDLE>(t));
+                    resParcel->WriteArray(*t);
                     delete t;
                     break;
                 }

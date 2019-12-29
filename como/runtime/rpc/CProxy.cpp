@@ -358,7 +358,7 @@ ECode InterfaceProxy::MarshalArguments(
                     }
 
                     HANDLE value = GetHANDLEValue(regs, intParamIndex, fpParamIndex);
-                    argParcel->WriteArray(value);
+                    argParcel->WriteArray(*reinterpret_cast<Triple*>(value));
                     intParamIndex++;
                     break;
                 }
@@ -476,7 +476,7 @@ ECode InterfaceProxy::MarshalArguments(
                     }
 
                     HANDLE value = GetHANDLEValue(regs, intParamIndex, fpParamIndex);
-                    argParcel->WriteArray(value);
+                    argParcel->WriteArray(*reinterpret_cast<Triple*>(value));
                     intParamIndex++;
                     break;
                 }
@@ -717,7 +717,7 @@ ECode InterfaceProxy::UnmarshalResults(
                 }
                 case TypeKind::Array: {
                     HANDLE addr = GetHANDLEValue(regs, intParamIndex, fpParamIndex);
-                    resParcel->ReadArray(addr);
+                    resParcel->ReadArray(reinterpret_cast<Triple*>(addr));
                     intParamIndex++;
                     break;
                 }
@@ -742,7 +742,7 @@ ECode InterfaceProxy::UnmarshalResults(
             switch (kind) {
                 case TypeKind::Array: {
                     HANDLE addr = GetHANDLEValue(regs, intParamIndex, fpParamIndex);
-                    resParcel->ReadArray(addr);
+                    resParcel->ReadArray(reinterpret_cast<Triple*>(addr));
                     intParamIndex++;
                     break;
                 }
@@ -976,8 +976,7 @@ ECode InterfaceProxy::ProxyEntry(
         goto ProxyExit;
     }
 
-    ec = thisObj->mOwner->mChannel->Invoke(
-            thisObj->mOwner, method, inParcel, outParcel);
+    ec = thisObj->mOwner->mChannel->Invoke(method, inParcel, outParcel);
     if (FAILED(ec)) {
         goto ProxyExit;
     }
@@ -1077,7 +1076,7 @@ ECode CProxy::LinkToDeath(
     /* [in] */ HANDLE cookie,
     /* [in] */ Integer flags)
 {
-    return mChannel->LinkToDeath(recipient, cookie, flags);
+    return mChannel->LinkToDeath(this, recipient, cookie, flags);
 }
 
 ECode CProxy::UnlinkToDeath(
@@ -1086,7 +1085,7 @@ ECode CProxy::UnlinkToDeath(
     /* [in] */ Integer flags,
     /* [out] */ AutoPtr<IDeathRecipient>* outRecipient)
 {
-    return mChannel->UnlinkToDeath(recipient, cookie, flags, outRecipient);
+    return mChannel->UnlinkToDeath(this, recipient, cookie, flags, outRecipient);
 }
 
 AutoPtr<IRPCChannel> CProxy::GetChannel()

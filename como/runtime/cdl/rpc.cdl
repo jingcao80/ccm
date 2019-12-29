@@ -119,10 +119,10 @@ interface IParcel
         [in] Integer value);
 
     ReadArray(
-        [out] HANDLE array);
+        [out] Triple* array);
 
     WriteArray(
-        [in] HANDLE array);
+        [in] Triple array);
 
     ReadInterface(
         [out] IInterface&& value);
@@ -198,11 +198,13 @@ interface IRPCChannel
         [out] Boolean& alive);
 
     LinkToDeath(
+        [in] IProxy* proxy,
         [in] IDeathRecipient* recipient,
         [in] HANDLE cookie = 0,
         [in] Integer flags = 0);
 
     UnlinkToDeath(
+        [in] IProxy* proxy,
         [in] IDeathRecipient* recipient,
         [in] HANDLE cookie = 0,
         [in] Integer flags = 0,
@@ -213,7 +215,6 @@ interface IRPCChannel
         [out, callee] Array<Byte>& metadata);
 
     Invoke(
-        [in] IProxy* proxy,
         [in] IMetaMethod* method,
         [in] IParcel* argParcel,
         [out] IParcel&& resParcel);
@@ -282,7 +283,7 @@ interface IProxy
 interface IDeathRecipient
 {
     StubDied(
-        [out] IProxy&& who);
+        [in] IProxy* who);
 }
 
 [

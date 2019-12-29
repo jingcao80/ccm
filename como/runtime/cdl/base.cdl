@@ -114,7 +114,7 @@ interface IWeakReference
 {
     Resolve(
         [in] InterfaceID iid,
-        [out] IInterface&& object);
+        [out] IInterface** object);
 }
 
 [

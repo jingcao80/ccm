@@ -897,16 +897,16 @@ ECode WeakReferenceImpl::GetInterfaceID(
 
 ECode WeakReferenceImpl::Resolve(
     /* [in] */ const InterfaceID& iid,
-    /* [out] */ AutoPtr<IInterface>& object)
+    /* [out] */ IInterface** object)
 {
-    if (mObject && mRef->AttemptIncStrong(&object)) {
-        *reinterpret_cast<IInterface**>(&object) = mObject->Probe(iid);
-        if (object == nullptr) {
+    if (mObject && mRef->AttemptIncStrong(object)) {
+        *object = mObject->Probe(iid);
+        if (*object == nullptr) {
             mObject->Release();
         }
     }
     else {
-        object = nullptr;
+        *object = nullptr;
     }
     return NOERROR;
 }

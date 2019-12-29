@@ -17,5 +17,5 @@
 if($ENV{PLATFORM} STREQUAL "linux")
     add_subdirectory(linux)
 elseif($ENV{PLATFORM} STREQUAL "android")
-
+    add_subdirectory(android)
 endif()

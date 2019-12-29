@@ -18,45 +18,43 @@
 #include "rpc/comorpc.h"
 #include "rpc/CProxy.h"
 #include "rpc/CStub.h"
-#include "rpc/registry.h"
-#include "rpc/dbus/CDBusChannel.h"
-#include "rpc/dbus/CDBusChannelFactory.h"
-#include "rpc/dbus/CDBusParcel.h"
-#include "rpc/dbus/InterfacePack.h"
-#include "util/comosp.h"
+#include "rpc/binder/CBinderChannel.h"
+#include "rpc/binder/CBinderChannelFactory.h"
+#include "rpc/binder/CBinderParcel.h"
+#include "rpc/binder/InterfacePack.h"
 
 namespace como {
 
-COMO_INTERFACE_IMPL_LIGHT_1(CDBusChannelFactory, LightRefBase, IRPCChannelFactory);
+COMO_INTERFACE_IMPL_LIGHT_1(CBinderChannelFactory, LightRefBase, IRPCChannelFactory);
 
-CDBusChannelFactory::CDBusChannelFactory(
+CBinderChannelFactory::CBinderChannelFactory(
     /* [in] */ RPCType type)
     : mType(type)
 {}
 
-ECode CDBusChannelFactory::CreateInterfacePack(
+ECode CBinderChannelFactory::CreateInterfacePack(
     /* [out] */ AutoPtr<IInterfacePack>& ipack)
 {
     ipack = new InterfacePack();
     return NOERROR;
 }
 
-ECode CDBusChannelFactory::CreateParcel(
+ECode CBinderChannelFactory::CreateParcel(
     /* [out] */ AutoPtr<IParcel>& parcel)
 {
-    parcel = new CDBusParcel();
+    parcel = new CBinderParcel();
     return NOERROR;
 }
 
-ECode CDBusChannelFactory::CreateChannel(
+ECode CBinderChannelFactory::CreateChannel(
     /* [in] */ RPCPeer peer,
     /* [out] */ AutoPtr<IRPCChannel>& channel)
 {
-    channel = (IRPCChannel*)new CDBusChannel(mType, peer);
+    channel = (IRPCChannel*)new CBinderChannel(mType, peer);
     return NOERROR;
 }
 
-ECode CDBusChannelFactory::MarshalInterface(
+ECode CBinderChannelFactory::MarshalInterface(
     /* [in] */ IInterface* object,
     /* [out] */ AutoPtr<IInterfacePack>& ipack)
 {
@@ -67,7 +65,7 @@ ECode CDBusChannelFactory::MarshalInterface(
 
     if (IParcelable::Probe(object) != nullptr) {
         if (IObject::Probe(object) == nullptr) {
-            Logger::E("CDBusChannel", "The Object is not a como object.");
+            Logger::E("CBinderChannel", "The Object is not a como object.");
             ipack = nullptr;
             return E_NOT_COMO_OBJECT_EXCEPTION;
         }
@@ -80,26 +78,26 @@ ECode CDBusChannelFactory::MarshalInterface(
         AutoPtr<IStub> stub;
         ECode ec = FindExportObject(mType, IObject::Probe(object), stub);
         if (SUCCEEDED(ec)) {
-            CDBusChannel* channel = CDBusChannel::GetStubChannel(stub);
-            pack->SetDBusName(channel->mName);
+            CBinderChannel* channel = CBinderChannel::GetStubChannel(stub);
+            pack->SetAndroidBinder(channel->mBinder);
             pack->SetCoclassID(((CStub*)stub.Get())->GetTargetCoclassID());
         }
         else {
             IProxy* proxy = IProxy::Probe(object);
             if (proxy != nullptr) {
-                CDBusChannel* channel = CDBusChannel::GetProxyChannel(proxy);
-                pack->SetDBusName(channel->mName);
+                CBinderChannel* channel = CBinderChannel::GetProxyChannel(proxy);
+                pack->SetAndroidBinder(channel->mBinder);
                 pack->SetCoclassID(((CProxy*)proxy)->GetTargetCoclassID());
             }
             else {
                 ec = CoCreateStub(object, mType, stub);
                 if (FAILED(ec)) {
-                    Logger::E("CDBusChannel", "Marshal interface failed.");
+                    Logger::E("CBinderChannel", "Marshal interface failed.");
                     ipack = nullptr;
                     return ec;
                 }
-                CDBusChannel* channel = CDBusChannel::GetStubChannel(stub);
-                pack->SetDBusName(channel->mName);
+                CBinderChannel* channel = CBinderChannel::GetStubChannel(stub);
+                pack->SetAndroidBinder(channel->mBinder);
                 pack->SetCoclassID(((CStub*)stub.Get())->GetTargetCoclassID());
                 RegisterExportObject(mType, IObject::Probe(object), stub);
             }
@@ -110,7 +108,7 @@ ECode CDBusChannelFactory::MarshalInterface(
     return NOERROR;
 }
 
-ECode CDBusChannelFactory::UnmarshalInterface(
+ECode CBinderChannelFactory::UnmarshalInterface(
     /* [in] */ IInterfacePack* ipack,
     /* [out] */ AutoPtr<IInterface>& object)
 {
@@ -123,7 +121,7 @@ ECode CDBusChannelFactory::UnmarshalInterface(
         ipack->GetInterfaceID(iid);
         ECode ec = CoCreateObjectInstance(cid, iid, nullptr, &object);
         if (FAILED(ec)) {
-            Logger::E("CDBusChannel", "Create the object in ReadInterface failed.");
+            Logger::E("CBinderChannel", "Create the object in ReadInterface failed.");
             return ec;
         }
     }
@@ -150,7 +148,7 @@ ECode CDBusChannelFactory::UnmarshalInterface(
         AutoPtr<IProxy> proxy;
         ec = CoCreateProxy(ipack, mType, nullptr, proxy);
         if (FAILED(ec)) {
-            Logger::E("CDBusChannel", "Unmarshal the interface in ReadInterface failed.");
+            Logger::E("CBinderChannel", "Unmarshal the interface in ReadInterface failed.");
             object = nullptr;
             return ec;
         }
