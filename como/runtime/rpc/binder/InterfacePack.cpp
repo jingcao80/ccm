@@ -26,8 +26,8 @@ COMO_INTERFACE_IMPL_LIGHT_3(InterfacePack, LightRefBase, IInterfacePack, IBinder
 
 InterfacePack::~InterfacePack()
 {
-    ReleaseComponentID(mCid.mCid);
-    ReleaseComponentID(mIid.mCid);
+    ReleaseCoclassID(mCid);
+    ReleaseInterfaceID(mIid);
 }
 
 ECode InterfacePack:: GetCoclassID(
@@ -62,13 +62,11 @@ ECode InterfacePack::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
     HANDLE data;
-    source->GetData(data);
+    source->GetPayload(data);
     mBinder = reinterpret_cast<android::Parcel*>(data)->readStrongBinder();
     source->ReadCoclassID(mCid);
     source->ReadInterfaceID(mIid);
     source->ReadBoolean(mIsParcelable);
-    mCid.mCid = CloneComponentID(mCid.mCid);
-    mIid.mCid = CloneComponentID(mIid.mCid);
     return NOERROR;
 }
 
@@ -76,7 +74,7 @@ ECode InterfacePack::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
     HANDLE data;
-    dest->GetData(data);
+    dest->GetPayload(data);
     reinterpret_cast<android::Parcel*>(data)->writeStrongBinder(mBinder);
     dest->WriteCoclassID(mCid);
     dest->WriteInterfaceID(mIid);
@@ -98,41 +96,13 @@ void InterfacePack::SetAndroidBinder(
 void InterfacePack::SetCoclassID(
     /* [in] */ const CoclassID& cid)
 {
-    mCid = cid;
-    if (cid.mCid != nullptr) {
-        ComponentID* comid = (ComponentID*)malloc(sizeof(ComponentID));
-        if (comid != nullptr) {
-            *comid = *cid.mCid;
-            if (cid.mCid->mUri != nullptr) {
-                char* uri = (char*)malloc(strlen(cid.mCid->mUri) + 1);
-                if (uri != nullptr) {
-                    strcpy(uri, cid.mCid->mUri);
-                }
-                comid->mUri = uri;
-            }
-        }
-        mCid.mCid = comid;
-    }
+    mCid = CloneCoclassID(cid);
 }
 
 void InterfacePack::SetInterfaceID(
     /* [in] */ const InterfaceID& iid)
 {
-    mIid = iid;
-    if (iid.mCid != nullptr) {
-        ComponentID* comid = (ComponentID*)malloc(sizeof(ComponentID));
-        if (comid != nullptr) {
-            *comid = *iid.mCid;
-            if (iid.mCid->mUri != nullptr) {
-                char* uri = (char*)malloc(strlen(iid.mCid->mUri) + 1);
-                if (uri != nullptr) {
-                    strcpy(uri, iid.mCid->mUri);
-                }
-                comid->mUri = uri;
-            }
-        }
-        mIid.mCid = comid;
-    }
+    mIid = CloneInterfaceID(iid);
 }
 
 void InterfacePack::SetParcelable(

@@ -128,6 +128,7 @@ DBusHandlerResult CDBusChannel::ServiceRunnable::HandleMessage(
         CoGetComponentMetadata(*cid.mCid, nullptr, mc);
         Array<Byte> metadata;
         ECode ec = mc->GetSerializedMetadata(metadata);
+        ReleaseCoclassID(cid);
 
         DBusMessage* reply = dbus_message_new_method_return(msg);
 

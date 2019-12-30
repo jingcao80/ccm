@@ -81,7 +81,7 @@ ECode ServiceManager::AddService(
     parcel->WriteString(name);
     IParcelable::Probe(ipack)->WriteToParcel(parcel);
     HANDLE data;
-    parcel->GetData(data);
+    parcel->GetPayload(data);
 
     android::Parcel reply;
     if (get_service_manager()->transact(ADD_SERVICE,
@@ -109,7 +109,7 @@ ECode ServiceManager::GetService(
 
     android::Parcel data, reply;
 
-    data.writeInt32(1); // TAG_NOT_NULL
+    data.writeInt32(TAG_NOT_NULL);
     data.writeCString(name.string());
     if (get_service_manager()->transact(GET_SERVICE, data, &reply) != android::NO_ERROR) {
         Logger::E("ServiceManager", "GetService failed.");
@@ -124,9 +124,7 @@ ECode ServiceManager::GetService(
 
     AutoPtr<IParcel> parcel;
     CoCreateParcel(RPCType::Local, parcel);
-    Long replySize = reply.dataAvail();
-    const void* replyData = reply.readInplace(replySize);
-    parcel->SetData(reinterpret_cast<HANDLE>(replyData), replySize);
+    parcel->SetPayload(reinterpret_cast<HANDLE>(&reply), false);
 
     AutoPtr<IInterfacePack> ipack;
     CoCreateInterfacePack(RPCType::Local, ipack);
@@ -143,7 +141,7 @@ ECode ServiceManager::RemoveService(
 
     android::Parcel data, reply;
 
-    data.writeInt32(1); // TAG_NOT_NULL
+    data.writeInt32(TAG_NOT_NULL);
     data.writeCString(name.string());
     if (get_service_manager()->transact(REMOVE_SERVICE, data, &reply) != android::NO_ERROR) {
         Logger::E("ServiceManager", "RemoveService failed.");

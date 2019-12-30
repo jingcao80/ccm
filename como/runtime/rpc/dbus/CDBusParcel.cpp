@@ -208,52 +208,39 @@ ECode CDBusParcel::ReadCoclassID(
     /* [out] */ CoclassID& value)
 {
     ECode ec = Read((void*)&value, sizeof(CoclassID));
-    value.mCid = nullptr;
     if (FAILED(ec)) {
         return ec;
     }
 
     Integer tag;
-    ec = ReadInteger(tag);
-    if (FAILED(ec)) {
-        return ec;
-    }
-
+    ReadInteger(tag);
     if (tag == TAG_NULL) {
         return NOERROR;
     }
 
-    ComponentID* cid = (ComponentID*)ReadInplace(sizeof(ComponentID));
-    cid->mUri = nullptr;
+    ComponentID* cid = (ComponentID*)malloc(sizeof(ComponentID));
+    if (cid == nullptr) {
+        return E_OUT_OF_MEMORY_ERROR;
+    }
     value.mCid = cid;
-
-    Integer size;
-    ec = ReadInteger(size);
-    if (FAILED(ec) || size == 0) {
-        return ec;
-    }
-
-    if (size < 0) {
-        return E_RUNTIME_EXCEPTION;
-    }
-
-    cid->mUri = (const char*)ReadInplace(size + 1);
-    return NOERROR;
+    return ReadComponentID(*cid);
 }
 
 ECode CDBusParcel::WriteCoclassID(
     /* [in] */ const CoclassID& value)
 {
-    ECode ec = Write((void*)&value, sizeof(CoclassID));
-    if (FAILED(ec)) {
-        return ec;
+    CoclassID* cid = (CoclassID*)WriteInplace(sizeof(CoclassID));
+    if (cid == nullptr) {
+        return E_RUNTIME_EXCEPTION;
     }
+    memcpy(cid, &value, sizeof(CoclassID));
+    cid->mCid = nullptr;
 
     if (value.mCid == nullptr) {
         return WriteInteger(TAG_NULL);
     }
 
-    ec = WriteInteger(TAG_NOT_NULL);
+    ECode ec = WriteInteger(TAG_NOT_NULL);
     if (SUCCEEDED(ec)) {
         ec = WriteComponentID(*value.mCid);
     }
@@ -264,35 +251,40 @@ ECode CDBusParcel::ReadComponentID(
     /* [out] */ ComponentID& value)
 {
     ECode ec = Read((void*)&value, sizeof(ComponentID));
-    value.mUri = nullptr;
     if (FAILED(ec)) {
         return ec;
     }
 
     Integer size;
-    ec = ReadInteger(size);
-    if (FAILED(ec) || size == 0) {
-        return ec;
+    ReadInteger(size);
+    if (size == 0) {
+        return NOERROR;
     }
 
     if (size < 0) {
         return E_RUNTIME_EXCEPTION;
     }
 
-    value.mUri = (const char*)ReadInplace(size + 1);
+    const char* uri = (const char*)ReadInplace(size + 1);
+    value.mUri = (const char*)malloc(size + 1);
+    if (value.mUri != nullptr) {
+        memcpy(const_cast<char*>(value.mUri), uri, size + 1);
+    }
     return NOERROR;
 }
 
 ECode CDBusParcel::WriteComponentID(
     /* [in] */ const ComponentID& value)
 {
-    ECode ec = Write((void*)&value, sizeof(ComponentID));
-    if (FAILED(ec)) {
-        return ec;
+    ComponentID* cid = (ComponentID*)WriteInplace(sizeof(ComponentID));
+    if (cid == nullptr) {
+        return E_RUNTIME_EXCEPTION;
     }
+    memcpy(cid, &value, sizeof(ComponentID));
+    cid->mUri = nullptr;
 
     Integer size = value.mUri == nullptr ? 0 : strlen(value.mUri);
-    ec = WriteInteger(size);
+    ECode ec = WriteInteger(size);
     if (size > 0 && SUCCEEDED(ec)) {
         ec = Write(value.mUri, size + 1);
     }
@@ -303,52 +295,39 @@ ECode CDBusParcel::ReadInterfaceID(
     /* [out] */ InterfaceID& value)
 {
     ECode ec = Read((void*)&value, sizeof(InterfaceID));
-    value.mCid = nullptr;
     if (FAILED(ec)) {
         return ec;
     }
 
     Integer tag;
-    ec = ReadInteger(tag);
-    if (FAILED(ec)) {
-        return ec;
-    }
-
+    ReadInteger(tag);
     if (tag == TAG_NULL) {
         return NOERROR;
     }
 
-    ComponentID* cid = (ComponentID*)ReadInplace(sizeof(ComponentID));
-    cid->mUri = nullptr;
+    ComponentID* cid = (ComponentID*)malloc(sizeof(ComponentID));
+    if (cid == nullptr) {
+        return E_OUT_OF_MEMORY_ERROR;
+    }
     value.mCid = cid;
-
-    Integer size;
-    ec = ReadInteger(size);
-    if (FAILED(ec) || size == 0) {
-        return ec;
-    }
-
-    if (size < 0) {
-        return E_RUNTIME_EXCEPTION;
-    }
-
-    cid->mUri = (const char*)ReadInplace(size + 1);
-    return NOERROR;
+    return ReadComponentID(*cid);
 }
 
 ECode CDBusParcel::WriteInterfaceID(
     /* [in] */ const InterfaceID& value)
 {
-    ECode ec = Write((void*)&value, sizeof(InterfaceID));
-    if (FAILED(ec)) {
-        return ec;
+    InterfaceID* iid = (InterfaceID*)WriteInplace(sizeof(InterfaceID));
+    if (iid == nullptr) {
+        return E_RUNTIME_EXCEPTION;
     }
+    memcpy(iid, &value, sizeof(InterfaceID));
+    iid->mCid = nullptr;
 
     if (value.mCid == nullptr) {
         return WriteInteger(TAG_NULL);
     }
 
-    ec = WriteInteger(TAG_NOT_NULL);
+    ECode ec = WriteInteger(TAG_NOT_NULL);
     if (SUCCEEDED(ec)) {
         ec = WriteComponentID(*value.mCid);
     }
@@ -841,6 +820,13 @@ ECode CDBusParcel::GetDataSize(
     return NOERROR;
 }
 
+ECode CDBusParcel::GetDataPosition(
+    /* [out] */ Long& pos)
+{
+    pos = mDataPos;
+    return NOERROR;
+}
+
 ECode CDBusParcel::SetDataPosition(
     /* [in] */ Long pos)
 {
@@ -849,6 +835,19 @@ ECode CDBusParcel::SetDataPosition(
     }
 
     mDataPos = pos;
+    return NOERROR;
+}
+
+ECode CDBusParcel::GetPayload(
+    /* [out] */ HANDLE& payload)
+{
+    return NOERROR;
+}
+
+ECode CDBusParcel::SetPayload(
+    /* [in] */ HANDLE payload,
+    /* [in] */ Boolean release)
+{
     return NOERROR;
 }
 

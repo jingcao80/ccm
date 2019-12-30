@@ -71,8 +71,8 @@ ECode ServiceManager::RemoveService(
         mServices.Remove(name);
     }
 
-    ReleaseComponentID(ipack->mCid.mCid);
-    ReleaseComponentID(ipack->mIid.mCid);
+    ReleaseCoclassID(ipack->mCid);
+    ReleaseInterfaceID(ipack->mIid);
     delete ipack;
     return NOERROR;
 }
@@ -120,8 +120,6 @@ DBusHandlerResult ServiceManager::HandleMessage(
         parcel->ReadCoclassID(ipack.mCid);
         parcel->ReadInterfaceID(ipack.mIid);
         parcel->ReadBoolean(ipack.mIsParcelable);
-        ipack.mCid.mCid = CloneComponentID(ipack.mCid.mCid);
-        ipack.mIid.mCid = CloneComponentID(ipack.mIid.mCid);
         ec = ServiceManager::GetInstance()->AddService(str, ipack);
 
     AddServiceExit:

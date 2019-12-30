@@ -130,6 +130,7 @@ android::status_t CBinderChannel::ServiceRunnable::onTransact(
             CoGetComponentMetadata(*cid.mCid, nullptr, mc);
             Array<Byte> metadata;
             ECode ec = mc->GetSerializedMetadata(metadata);
+            ReleaseCoclassID(cid);
 
             reply->writeInt32(NOERROR);
             reply->writeInt32(metadata.GetLength());
@@ -251,7 +252,7 @@ ECode CBinderChannel::GetComponentMetadata(
     parcel->WriteCoclassID(cid);
 
     HANDLE data;
-    parcel->GetData(data);
+    parcel->GetPayload(data);
     android::Parcel reply;
 
     if (DEBUG) {
@@ -285,7 +286,7 @@ ECode CBinderChannel::Invoke(
     /* [out] */ AutoPtr<IParcel>& resParcel)
 {
     HANDLE data;
-    argParcel->GetData(data);
+    argParcel->GetPayload(data);
     android::Parcel reply;
 
     if (DEBUG) {

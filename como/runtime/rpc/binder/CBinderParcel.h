@@ -148,15 +148,25 @@ public:
         /* [in] */ HANDLE data,
         /* [in] */ Long size) override;
 
+    ECode GetDataPosition(
+        /* [out] */ Long& pos) override;
+
     ECode SetDataPosition(
         /* [in] */ Long pos) override;
+
+    ECode GetPayload(
+        /* [out] */ HANDLE& payload) override;
+
+    ECode SetPayload(
+        /* [in] */ HANDLE payload,
+        /* [in] */ Boolean release) override;
 
     inline static CBinderParcel* From(
         /* [in] */ IParcel* parcel);
 
 private:
-    static constexpr Integer TAG_NULL = 0;
-    static constexpr Integer TAG_NOT_NULL = 1;
+    static constexpr Integer TAG_NULL { 0 };
+    static constexpr Integer TAG_NOT_NULL { 1 };
 
     android::Parcel* mData;
     Boolean mReleaseData { true };

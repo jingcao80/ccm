@@ -15,7 +15,6 @@
 //=========================================================================
 
 #include "ServiceManager.h"
-#include <comorpc.h>
 #include <binder/Parcel.h>
 
 namespace jing {
@@ -75,8 +74,8 @@ ECode ServiceManager::RemoveService(
         mServices.Remove(name);
     }
 
-    ReleaseComponentID(ipack->mCid.mCid);
-    ReleaseComponentID(ipack->mIid.mCid);
+    ReleaseCoclassID(ipack->mCid);
+    ReleaseInterfaceID(ipack->mIid);
     delete ipack;
     return NOERROR;
 }
@@ -93,16 +92,9 @@ android::status_t ServiceManager::onTransact(
             const char* str = data.readCString();
             InterfacePack ipack;
             ipack.mBinder = data.readStrongBinder();
-            AutoPtr<IParcel> parcel;
-            CoCreateParcel(RPCType::Local, parcel);
-            Long size = data.dataAvail();
-            const void* args = data.readInplace(size);
-            parcel->SetData(reinterpret_cast<HANDLE>(args), size);
-            parcel->ReadCoclassID(ipack.mCid);
-            parcel->ReadInterfaceID(ipack.mIid);
-            parcel->ReadBoolean(ipack.mIsParcelable);
-            ipack.mCid.mCid = CloneComponentID(ipack.mCid.mCid);
-            ipack.mIid.mCid = CloneComponentID(ipack.mIid.mCid);
+            ipack.mCid = ReadCoclassID(data);
+            ipack.mIid = ReadInterfaceID(data);
+            ipack.mIsParcelable = (Boolean)data.readInt32();
 
             ECode ec = ServiceManager::GetInstance()->AddService(str, ipack);
 
@@ -118,17 +110,10 @@ android::status_t ServiceManager::onTransact(
 
             reply->writeInt32(ec);
             if (SUCCEEDED(ec) && ipack != nullptr) {
-                AutoPtr<IParcel> parcel;
-                CoCreateParcel(RPCType::Local, parcel);
-                parcel->WriteCoclassID(ipack->mCid);
-                parcel->WriteInterfaceID(ipack->mIid);
-                parcel->WriteBoolean(ipack->mIsParcelable);
-                HANDLE replyData;
-                parcel->GetData(replyData);
                 reply->writeStrongBinder(ipack->mBinder);
-                size_t size = reinterpret_cast<android::Parcel*>(replyData)->dataAvail();
-                const void* result = reinterpret_cast<android::Parcel*>(replyData)->readInplace(size);
-                reply->write(result, size);
+                WriteCoclassID(ipack->mCid, reply);
+                WriteInterfaceID(ipack->mIid, reply);
+                reply->writeInt32(ipack->mIsParcelable);
             }
 
             return android::NO_ERROR;
@@ -147,6 +132,139 @@ android::status_t ServiceManager::onTransact(
     }
 
     return android::BBinder::onTransact(code, data, reply, flags);
+}
+
+CoclassID ServiceManager::ReadCoclassID(
+    /* [in] */ const android::Parcel& source)
+{
+    CoclassID value;
+    android::status_t st = source.read((void*)&value, sizeof(CoclassID));
+    if (st != android::NO_ERROR) {
+        return CoclassID::Null;
+    }
+
+    Integer tag = source.readInt32();
+    if (tag == TAG_NULL) {
+        return value;
+    }
+
+    value.mCid = (ComponentID*)malloc(sizeof(ComponentID));
+    if (value.mCid == nullptr) {
+        return value;
+    }
+    st = source.read(const_cast<ComponentID*>(value.mCid), sizeof(ComponentID));
+    if (st != android::NO_ERROR) {
+        return value;
+    }
+
+    tag = source.readInt32();
+    if (tag == TAG_NOT_NULL) {
+        const char* uri = source.readCString();
+        Integer size = strlen(uri);
+        const_cast<ComponentID*>(value.mCid)->mUri = (const char*)malloc(size + 1);
+        if (value.mCid->mUri != nullptr) {
+            memcpy(const_cast<char*>(value.mCid->mUri), uri, size + 1);
+        }
+    }
+
+    return value;
+}
+
+void ServiceManager::WriteCoclassID(
+    /* [in] */ const CoclassID& value,
+    /* [in] */ android::Parcel* dest)
+{
+    CoclassID* cid = (CoclassID*)dest->writeInplace(sizeof(CoclassID));
+    if (cid == nullptr) {
+        return;
+    }
+    memcpy(cid, &value, sizeof(CoclassID));
+    cid->mCid = nullptr;
+
+    if (value.mCid == nullptr) {
+        dest->writeInt32(TAG_NULL);
+        return;
+    }
+
+    dest->writeInt32(TAG_NOT_NULL);
+    return WriteComponentID(*value.mCid, dest);
+}
+
+InterfaceID ServiceManager::ReadInterfaceID(
+    /* [in] */ const android::Parcel& source)
+{
+    InterfaceID value;
+    android::status_t st = source.read((void*)&value, sizeof(InterfaceID));
+    value.mCid = nullptr;
+    if (st != android::NO_ERROR) {
+        return InterfaceID::Null;
+    }
+
+    Integer tag = source.readInt32();
+    if (tag == TAG_NULL) {
+        return value;
+    }
+
+    value.mCid = (ComponentID*)malloc(sizeof(ComponentID));
+    if (value.mCid == nullptr) {
+        return value;
+    }
+    st = source.read(const_cast<ComponentID*>(value.mCid), sizeof(ComponentID));
+    if (st != android::NO_ERROR) {
+        return value;
+    }
+
+    tag = source.readInt32();
+    if (tag == TAG_NOT_NULL) {
+        const char* uri = source.readCString();
+        Integer size = strlen(uri);
+        const_cast<ComponentID*>(value.mCid)->mUri = (const char*)malloc(size + 1);
+        if (value.mCid->mUri != nullptr) {
+            memcpy(const_cast<char*>(value.mCid->mUri), uri, size + 1);
+        }
+    }
+
+    return value;
+}
+
+void ServiceManager::WriteInterfaceID(
+    /* [in] */ const InterfaceID& value,
+    /* [in] */ android::Parcel* dest)
+{
+    InterfaceID* iid = (InterfaceID*)dest->writeInplace(sizeof(InterfaceID));
+    if (iid == nullptr) {
+        return;
+    }
+    memcpy(iid, &value, sizeof(InterfaceID));
+    iid->mCid = nullptr;
+
+    if (value.mCid == nullptr) {
+        dest->writeInt32(TAG_NULL);
+        return;
+    }
+
+    dest->writeInt32(TAG_NOT_NULL);
+    return WriteComponentID(*value.mCid, dest);
+}
+
+void ServiceManager::WriteComponentID(
+    /* [in] */ const ComponentID& value,
+    /* [in] */ android::Parcel* dest)
+{
+    ComponentID* cid = (ComponentID*)dest->writeInplace(sizeof(ComponentID));
+    if (cid == nullptr) {
+        return;
+    }
+    memcpy(cid, &value, sizeof(ComponentID));
+    cid->mUri = nullptr;
+
+    if (value.mUri != nullptr) {
+        dest->writeInt32(TAG_NOT_NULL);
+        dest->writeCString(value.mUri);
+    }
+    else {
+        dest->writeInt32(TAG_NULL);
+    }
 }
 
 }

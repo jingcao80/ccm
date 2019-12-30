@@ -140,8 +140,18 @@ interface IParcel
         [in] HANDLE data,
         [in] Long size);
 
+    GetDataPosition(
+        [out] Long& pos);
+
     SetDataPosition(
         [in] Long pos);
+
+    GetPayload(
+        [out] HANDLE& payload);
+
+    SetPayload(
+        [in] HANDLE payload,
+        [in] Boolean release);
 }
 
 [

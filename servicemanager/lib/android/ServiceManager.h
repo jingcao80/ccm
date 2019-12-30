@@ -55,6 +55,9 @@ private:
     static constexpr int ADD_SERVICE { android::IBinder::FIRST_CALL_TRANSACTION + 0 };
     static constexpr int GET_SERVICE { android::IBinder::FIRST_CALL_TRANSACTION + 1 };
     static constexpr int REMOVE_SERVICE { android::IBinder::FIRST_CALL_TRANSACTION + 2 };
+
+    static constexpr Integer TAG_NULL { 0 };
+    static constexpr Integer TAG_NOT_NULL { 1 };
 };
 
 }

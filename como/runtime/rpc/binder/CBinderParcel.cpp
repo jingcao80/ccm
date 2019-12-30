@@ -190,7 +190,6 @@ ECode CBinderParcel::ReadCoclassID(
     /* [out] */ CoclassID& value)
 {
     android::status_t st = mData->read((void*)&value, sizeof(CoclassID));
-    value.mCid = nullptr;
     if (st != android::NO_ERROR) {
         return E_RUNTIME_EXCEPTION;
     }
@@ -200,25 +199,23 @@ ECode CBinderParcel::ReadCoclassID(
         return NOERROR;
     }
 
-    ComponentID* cid = (ComponentID*)mData->readInplace(sizeof(ComponentID));
-    cid->mUri = nullptr;
-    value.mCid = cid;
-
-    tag = mData->readInt32();
-    if (tag == TAG_NOT_NULL) {
-        cid->mUri = mData->readCString();
+    ComponentID* cid = (ComponentID*)malloc(sizeof(ComponentID));
+    if (cid == nullptr) {
+        return E_OUT_OF_MEMORY_ERROR;
     }
-
-    return NOERROR;
+    value.mCid = cid;
+    return ReadComponentID(*cid);
 }
 
 ECode CBinderParcel::WriteCoclassID(
     /* [in] */ const CoclassID& value)
 {
-    android::status_t st = mData->write((void*)&value, sizeof(CoclassID));
-    if (st != android::NO_ERROR) {
+    CoclassID* cid = (CoclassID*)mData->writeInplace(sizeof(CoclassID));
+    if (cid == nullptr) {
         return E_RUNTIME_EXCEPTION;
     }
+    memcpy(cid, &value, sizeof(CoclassID));
+    cid->mCid = nullptr;
 
     if (value.mCid == nullptr) {
         mData->writeInt32(TAG_NULL);
@@ -233,14 +230,18 @@ ECode CBinderParcel::ReadComponentID(
     /* [out] */ ComponentID& value)
 {
     android::status_t st = mData->read((void*)&value, sizeof(ComponentID));
-    value.mUri = nullptr;
     if (st != android::NO_ERROR) {
         return E_RUNTIME_EXCEPTION;
     }
 
     Integer tag = mData->readInt32();
     if (tag == TAG_NOT_NULL) {
-        value.mUri = mData->readCString();
+        const char* uri = mData->readCString();
+        Integer size = strlen(uri);
+        value.mUri = (const char*)malloc(size + 1);
+        if (value.mUri != nullptr) {
+            memcpy(const_cast<char*>(value.mUri), uri, size + 1);
+        }
     }
     return NOERROR;
 }
@@ -248,10 +249,12 @@ ECode CBinderParcel::ReadComponentID(
 ECode CBinderParcel::WriteComponentID(
     /* [in] */ const ComponentID& value)
 {
-    android::status_t st = mData->write((void*)&value, sizeof(ComponentID));
-    if (st != android::NO_ERROR) {
+    ComponentID* cid = (ComponentID*)mData->writeInplace(sizeof(ComponentID));
+    if (cid == nullptr) {
         return E_RUNTIME_EXCEPTION;
     }
+    memcpy(cid, &value, sizeof(ComponentID));
+    cid->mUri = nullptr;
 
     if (value.mUri != nullptr) {
         mData->writeInt32(TAG_NOT_NULL);
@@ -267,7 +270,6 @@ ECode CBinderParcel::ReadInterfaceID(
     /* [out] */ InterfaceID& value)
 {
     android::status_t st = mData->read((void*)&value, sizeof(InterfaceID));
-    value.mCid = nullptr;
     if (st != android::NO_ERROR) {
         return E_RUNTIME_EXCEPTION;
     }
@@ -277,25 +279,23 @@ ECode CBinderParcel::ReadInterfaceID(
         return NOERROR;
     }
 
-    ComponentID* cid = (ComponentID*)mData->readInplace(sizeof(ComponentID));
-    cid->mUri = nullptr;
-    value.mCid = cid;
-
-    tag = mData->readInt32();
-    if (tag == TAG_NOT_NULL) {
-        cid->mUri = mData->readCString();
+    ComponentID* cid = (ComponentID*)malloc(sizeof(ComponentID));
+    if (cid == nullptr) {
+        return E_OUT_OF_MEMORY_ERROR;
     }
-
-    return NOERROR;
+    value.mCid = cid;
+    return ReadComponentID(*cid);
 }
 
 ECode CBinderParcel::WriteInterfaceID(
     /* [in] */ const InterfaceID& value)
 {
-    android::status_t st = mData->write((void*)&value, sizeof(InterfaceID));
-    if (st != android::NO_ERROR) {
+    InterfaceID* iid = (InterfaceID*)mData->writeInplace(sizeof(InterfaceID));
+    if (iid == nullptr) {
         return E_RUNTIME_EXCEPTION;
     }
+    memcpy(iid, &value, sizeof(InterfaceID));
+    iid->mCid = nullptr;
 
     if (value.mCid == nullptr) {
         mData->writeInt32(TAG_NULL);
@@ -751,7 +751,7 @@ ECode CBinderParcel::WriteInterface(
 ECode CBinderParcel::GetData(
     /* [out] */ HANDLE& data)
 {
-    data = reinterpret_cast<HANDLE>(mData);
+    data = reinterpret_cast<HANDLE>(mData->data());
     return NOERROR;
 }
 
@@ -774,6 +774,13 @@ ECode CBinderParcel::SetData(
     return NOERROR;
 }
 
+ECode CBinderParcel::GetDataPosition(
+    /* [out] */ Long& pos)
+{
+    pos = mData->dataPosition();
+    return NOERROR;
+}
+
 ECode CBinderParcel::SetDataPosition(
     /* [in] */ Long pos)
 {
@@ -782,6 +789,30 @@ ECode CBinderParcel::SetDataPosition(
     }
 
     mData->setDataPosition(pos);
+    return NOERROR;
+}
+
+ECode CBinderParcel::GetPayload(
+    /* [out] */ HANDLE& payload)
+{
+    payload = reinterpret_cast<HANDLE>(mData);
+    return NOERROR;
+}
+
+ECode CBinderParcel::SetPayload(
+    /* [in] */ HANDLE payload,
+    /* [in] */ Boolean release)
+{
+    if (payload == 0) {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    if (mReleaseData && mData != nullptr) {
+        delete mData;
+    }
+
+    mData = reinterpret_cast<android::Parcel*>(payload);
+    mReleaseData = release;
     return NOERROR;
 }
 

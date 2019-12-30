@@ -146,6 +146,7 @@ function como_android_aarch64()
     export COMORT_PATH=$BIN_PATH/comort.so
     export CLASS_PATH=$BIN_PATH/libcore.so
     export CDLC=$ROOT/tools/cdlc
+    export PATH=$PATH:$ROOT/toolchain/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/bin
 
     if [ ! -d "$ROOT/out/target" ]; then
         mkdir $ROOT/out/target

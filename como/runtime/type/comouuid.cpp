@@ -45,36 +45,87 @@ Integer HashUUID(
     return (hash & 0x7FFFFFFF);
 }
 
-ComponentID* CloneComponentID(
-    /* [in] */ const ComponentID* cid)
+CoclassID CloneCoclassID(
+    /* [in] */ const CoclassID& kid)
 {
-    if (cid == nullptr) {
-        return nullptr;
-    }
+    CoclassID value;
 
-    ComponentID* clone = (ComponentID*)malloc(sizeof(ComponentID));
-    if (clone != nullptr) {
-        *clone = *cid;
-        if (cid->mUri != nullptr) {
-            Integer size = strlen(cid->mUri);
-            clone->mUri = (const char*)malloc(size + 1);
-            if (clone->mUri != nullptr) {
-                memcpy(const_cast<char*>(clone->mUri), cid->mUri, size + 1);
-            }
+    value = kid;
+    if (kid.mCid != nullptr) {
+        value.mCid = (const ComponentID*)malloc(sizeof(ComponentID));
+        if (value.mCid != nullptr) {
+            *const_cast<ComponentID*>(value.mCid) = CloneComponentID(*kid.mCid);
         }
     }
 
-    return clone;
+    return value;
 }
 
-void ReleaseComponentID(
-    /* [in] */ const ComponentID* cid)
+InterfaceID CloneInterfaceID(
+    /* [in] */ const InterfaceID& iid)
 {
+    InterfaceID value;
+
+    value = iid;
+    if (iid.mCid != nullptr) {
+        value.mCid = (const ComponentID*)malloc(sizeof(ComponentID));
+        if (value.mCid != nullptr) {
+            *const_cast<ComponentID*>(value.mCid) = CloneComponentID(*iid.mCid);
+        }
+    }
+
+    return value;
+}
+
+ComponentID CloneComponentID(
+    /* [in] */ const ComponentID& cid)
+{
+    ComponentID value;
+
+    value = cid;
+    if (cid.mUri != nullptr) {
+        Integer size = strlen(cid.mUri);
+        value.mUri = (const char*)malloc(size + 1);
+        if (value.mUri != nullptr) {
+            memcpy(const_cast<char*>(value.mUri), cid.mUri, size + 1);
+        }
+    }
+
+    return value;
+}
+
+void ReleaseCoclassID(
+    /* [in] */ const CoclassID& kid)
+{
+    ComponentID* cid = const_cast<ComponentID*>(kid.mCid);
     if (cid != nullptr) {
         if (cid->mUri != nullptr) {
             free(const_cast<char*>(cid->mUri));
         }
         free(const_cast<ComponentID*>(cid));
+        const_cast<CoclassID*>(&kid)->mCid = nullptr;
+    }
+}
+
+void ReleaseInterfaceID(
+    /* [in] */ const InterfaceID& iid)
+{
+    ComponentID* cid = const_cast<ComponentID*>(iid.mCid);
+    if (cid != nullptr) {
+        if (cid->mUri != nullptr) {
+            free(const_cast<char*>(cid->mUri));
+        }
+        free(const_cast<ComponentID*>(cid));
+        const_cast<InterfaceID*>(&iid)->mCid = nullptr;
+    }
+}
+
+void ReleaseComponentID(
+    /* [in] */ const ComponentID& cid)
+{
+    if (cid.mUri != nullptr) {
+        free(const_cast<char*>(cid.mUri));
+        const_cast<ComponentID*>(&cid)->mUri = nullptr;
     }
 }
 

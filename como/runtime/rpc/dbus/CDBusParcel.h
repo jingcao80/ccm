@@ -159,8 +159,18 @@ public:
         /* [in] */ HANDLE data,
         /* [in] */ Long size) override;
 
+    ECode GetDataPosition(
+        /* [out] */ Long& pos) override;
+
     ECode SetDataPosition(
         /* [in] */ Long pos) override;
+
+    ECode GetPayload(
+        /* [out] */ HANDLE& payload) override;
+
+    ECode SetPayload(
+        /* [in] */ HANDLE payload,
+        /* [in] */ Boolean release) override;
 
     static ECode CreateObject(
         /* [out] */ AutoPtr<IParcel>& parcel);

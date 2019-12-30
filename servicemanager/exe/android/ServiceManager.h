@@ -52,12 +52,30 @@ public:
     ECode RemoveService(
         /* [in] */ const String& name);
 
-protected:
+private:
     android::status_t onTransact(
         /* [in] */ uint32_t code,
         /* [in] */ const android::Parcel& data,
         /* [in] */ android::Parcel* reply,
         /* [in] */ uint32_t flags = 0) override;
+
+    CoclassID ReadCoclassID(
+        /* [in] */ const android::Parcel& source);
+
+    void WriteCoclassID(
+        /* [in] */ const CoclassID& value,
+        /* [in] */ android::Parcel* dest);
+
+    InterfaceID ReadInterfaceID(
+        /* [in] */ const android::Parcel& source);
+
+    void WriteInterfaceID(
+        /* [in] */ const InterfaceID& value,
+        /* [in] */ android::Parcel* dest);
+
+    void WriteComponentID(
+        /* [in] */ const ComponentID& value,
+        /* [in] */ android::Parcel* dest);
 
 public:
     static const char* NAME;
@@ -66,6 +84,9 @@ private:
     static constexpr int ADD_SERVICE { android::IBinder::FIRST_CALL_TRANSACTION + 0 };
     static constexpr int GET_SERVICE { android::IBinder::FIRST_CALL_TRANSACTION + 1 };
     static constexpr int REMOVE_SERVICE { android::IBinder::FIRST_CALL_TRANSACTION + 2 };
+
+    static constexpr Integer TAG_NULL { 0 };
+    static constexpr Integer TAG_NOT_NULL { 1 };
 
     static AutoPtr<ServiceManager> sInstance;
 
