@@ -18,10 +18,10 @@
 
 namespace como {
 
-const CoclassID CoclassID::Null =
+COM_PUBLIC const CoclassID CoclassID::Null =
     {{0x00000000,0x0000,0x0000,0x0000,{0x00,0x00,0x00,0x00,0x00,0x00}}, nullptr};
 
-const InterfaceID InterfaceID::Null =
+COM_PUBLIC const InterfaceID InterfaceID::Null =
     {{0x00000000,0x0000,0x0000,0x0000,{0x00,0x00,0x00,0x00,0x00,0x00}}, nullptr};
 
 COM_PUBLIC extern const ComponentID CID_COMORuntime =
