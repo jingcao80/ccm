@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,10 +14,10 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CORE_NATIVEMUTEX_H__
-#define __CCM_CORE_NATIVEMUTEX_H__
+#ifndef __COMO_CORE_NATIVEMUTEX_H__
+#define __COMO_CORE_NATIVEMUTEX_H__
 
-#include "ccm/core/NativeAtomic.h"
+#include "como/core/NativeAtomic.h"
 #include <ccmtypes.h>
 #include <unistd.h>
 #include <linux/futex.h>
@@ -27,7 +27,7 @@
 #define SYS_futex __NR_futex
 #endif
 
-namespace ccm {
+namespace como {
 namespace core {
 
 // LockLevel is used to impose a lock hierarchy [1] where acquisition of a Mutex at a higher or
@@ -418,4 +418,4 @@ public:
 }
 }
 
-#endif // __CCM_CORE_NATIVEMUTEX_H__
+#endif // __COMO_CORE_NATIVEMUTEX_H__

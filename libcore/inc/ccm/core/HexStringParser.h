@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,16 +14,16 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CORE_HEXSTRINGPARSER_H__
-#define __CCM_CORE_HEXSTRINGPARSER_H__
+#ifndef __COMO_CORE_HEXSTRINGPARSER_H__
+#define __COMO_CORE_HEXSTRINGPARSER_H__
 
-#include "ccm.util.regex.IPattern.h"
+#include "como.util.regex.IPattern.h"
 #include <ccmautoptr.h>
 #include <ccmtypes.h>
 
-using ccm::util::regex::IPattern;
+using como::util::regex::IPattern;
 
-namespace ccm {
+namespace como {
 namespace core {
 
 class HexStringParser
@@ -76,11 +76,11 @@ private:
     void Round();
 
     String GetNormalizedSignificand(
-        /* [in] */ const String& strIntegerPart, 
+        /* [in] */ const String& strIntegerPart,
         /* [in] */ const String& strDecimalPart);
 
     Integer GetOffset(
-        /* [in] */ String strIntegerPart, 
+        /* [in] */ String strIntegerPart,
         /* [in] */ const String& strDecimalPart);
 
     Integer CountBitsLength(
@@ -125,4 +125,4 @@ private:
 }
 }
 
-#endif // __CCM_CORE_HEXSTRINGPARSER_H__
+#endif // __COMO_CORE_HEXSTRINGPARSER_H__

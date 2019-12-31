@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,8 +31,8 @@
  *  limitations under the License.
  */
 
-#ifndef __CCM_CORE_CBIGINT_H__
-#define __CCM_CORE_CBIGINT_H__
+#ifndef __COMO_CORE_CBIGINT_H__
+#define __COMO_CORE_CBIGINT_H__
 
 #include <sys/types.h>
 #include <sys/param.h>
@@ -118,4 +118,4 @@ uint32_t floatMantissa(float z);
 int32_t simpleAddHighPrecision(uint64_t* arg1, int32_t length, uint64_t arg2);
 int32_t floatExponent(float z);
 
-#endif // __CCM_CORE_CBIGINT_H__
+#endif // __COMO_CORE_CBIGINT_H__

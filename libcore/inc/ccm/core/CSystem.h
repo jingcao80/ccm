@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,14 +14,14 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CORE_CSYSTEM_H__
-#define __CCM_CORE_CSYSTEM_H__
+#ifndef __COMO_CORE_CSYSTEM_H__
+#define __COMO_CORE_CSYSTEM_H__
 
-#include "ccm.core.ISystem.h"
-#include "_ccm_core_CSystem.h"
+#include "como.core.ISystem.h"
+#include "_como_core_CSystem.h"
 #include <ccmobject.h>
 
-namespace ccm {
+namespace como {
 namespace core {
 
 Coclass(CSystem)
@@ -29,9 +29,9 @@ Coclass(CSystem)
     , public ISystem
 {
 public:
-    CCM_INTERFACE_DECL();
+    COMO_INTERFACE_DECL();
 
-    CCM_OBJECT_DECL();
+    COMO_OBJECT_DECL();
 
     ECode GetCurrentTimeMillis(
         /* [out] */ Long* millis) override;
@@ -43,4 +43,4 @@ public:
 }
 }
 
-#endif // __CCM_CORE_CSYSTEM_H__
+#endif // __COMO_CORE_CSYSTEM_H__

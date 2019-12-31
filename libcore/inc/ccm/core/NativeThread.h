@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,18 +14,18 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CORE_NATIVETHREAD_H__
-#define __CCM_CORE_NATIVETHREAD_H__
+#ifndef __COMO_CORE_NATIVETHREAD_H__
+#define __COMO_CORE_NATIVETHREAD_H__
 
-#include "ccm/core/nativeapi.h"
-#include "ccm/core/NativeMonitor.h"
-#include "ccm/core/NativeMutex.h"
-#include "ccm/core/NativeScopedThreadStateChange.h"
-#include "ccm/core/NativeThreadState.h"
+#include "como/core/nativeapi.h"
+#include "como/core/NativeMonitor.h"
+#include "como/core/NativeMutex.h"
+#include "como/core/NativeScopedThreadStateChange.h"
+#include "como/core/NativeThreadState.h"
 #include <ccmtypes.h>
 #include <pthread.h>
 
-namespace ccm {
+namespace como {
 namespace core {
 
 class IThreadGroup;
@@ -117,7 +117,7 @@ public:
     /*
     * Returns the thread priority for the current thread by querying the system.
     *
-    * Returns a value from 1 to 10 (compatible with ccm::core::Thread values).
+    * Returns a value from 1 to 10 (compatible with como::core::Thread values).
     */
     static Integer GetNativePriority();
 
@@ -128,7 +128,7 @@ public:
     // Returns the java.lang.Thread's name, or null if this Thread* doesn't have a peer.
     String GetThreadName();
 
-    // Sets 'name' to the ccm::core::Thread's name. This requires no transition to managed code,
+    // Sets 'name' to the como::core::Thread's name. This requires no transition to managed code,
     // allocation, or locking.
     void GetThreadName(
         /* [in] */ String* name);
@@ -547,4 +547,4 @@ public:
 }
 }
 
-#endif // __CCM_CORE_NATIVETHREAD_H__
+#endif // __COMO_CORE_NATIVETHREAD_H__

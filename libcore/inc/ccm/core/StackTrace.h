@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,24 +14,24 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CORE_STACKTRACK_H__
-#define __CCM_CORE_STACKTRACK_H__
+#ifndef __COMO_CORE_STACKTRACK_H__
+#define __COMO_CORE_STACKTRACK_H__
 
-#include "ccm/core/SyncObject.h"
-#include "ccm/core/volatile.h"
-#include "ccm.core.IStackTrace.h"
-#include "ccm.core.IStackTraceElement.h"
-#include "ccm.io.IPrintStream.h"
-#include "ccm.io.IPrintWriter.h"
-#include "ccm.io.ISerializable.h"
+#include "como/core/SyncObject.h"
+#include "como/core/volatile.h"
+#include "como.core.IStackTrace.h"
+#include "como.core.IStackTraceElement.h"
+#include "como.io.IPrintStream.h"
+#include "como.io.IPrintWriter.h"
+#include "como.io.ISerializable.h"
 #include <ccmautoptr.h>
 #include <ccmrefbase.h>
 
-using ccm::io::IPrintStream;
-using ccm::io::IPrintWriter;
-using ccm::io::ISerializable;
+using como::io::IPrintStream;
+using como::io::IPrintWriter;
+using como::io::ISerializable;
 
-namespace ccm {
+namespace como {
 namespace core {
 
 class StackTrace
@@ -99,7 +99,7 @@ private:
     };
 
 public:
-    CCM_INTERFACE_DECL();
+    COMO_INTERFACE_DECL();
 
     ECode Constructor();
 
@@ -140,4 +140,4 @@ private:
 }
 }
 
-#endif // __CCM_CORE_STACKTRACK_H__
+#endif // __COMO_CORE_STACKTRACK_H__

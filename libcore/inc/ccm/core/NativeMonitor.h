@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,17 +14,17 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CORE_NATIVEMONITOR_H__
-#define __CCM_CORE_NATIVEMONITOR_H__
+#ifndef __COMO_CORE_NATIVEMONITOR_H__
+#define __COMO_CORE_NATIVEMONITOR_H__
 
-#include "ccm/core/NativeLockWord.h"
-#include "ccm/core/NativeMutex.h"
-#include "ccm/core/NativeThreadState.h"
+#include "como/core/NativeLockWord.h"
+#include "como/core/NativeMutex.h"
+#include "como/core/NativeThreadState.h"
 #include <ccmtypes.h>
 #include <list>
 #include <memory>
 
-namespace ccm {
+namespace como {
 namespace core {
 
 typedef uint32_t MonitorId;
@@ -257,4 +257,4 @@ private:
 }
 }
 
-#endif // __CCM_CORE_NATIVEMONITOR_H__
+#endif // __COMO_CORE_NATIVEMONITOR_H__

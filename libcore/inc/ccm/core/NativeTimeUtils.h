@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,14 +14,14 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CORE_NATIVETIMEUTILS_H__
-#define __CCM_CORE_NATIVETIMEUTILS_H__
+#ifndef __COMO_CORE_NATIVETIMEUTILS_H__
+#define __COMO_CORE_NATIVETIMEUTILS_H__
 
 #include <ccmtypes.h>
 #include <stdint.h>
 #include <time.h>
 
-namespace ccm {
+namespace como {
 namespace core {
 
 // Returns the monotonic time since some unspecified starting point in nanoseconds.
@@ -57,4 +57,4 @@ void InitTimeSpec(
 }
 }
 
-#endif // __CCM_CORE_NATIVETIMEUTILS_H__
+#endif // __COMO_CORE_NATIVETIMEUTILS_H__

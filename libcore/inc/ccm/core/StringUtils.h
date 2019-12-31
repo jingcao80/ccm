@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,17 +14,17 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CORE_STRINGUTILS_H__
-#define __CCM_CORE_STRINGUTILS_H__
+#ifndef __COMO_CORE_STRINGUTILS_H__
+#define __COMO_CORE_STRINGUTILS_H__
 
-#include "ccm.util.IComparator.h"
-#include "ccm.util.ILocale.h"
+#include "como.util.IComparator.h"
+#include "como.util.ILocale.h"
 #include <ccmautoptr.h>
 
-using ccm::util::IComparator;
-using ccm::util::ILocale;
+using como::util::IComparator;
+using como::util::ILocale;
 
-namespace ccm {
+namespace como {
 namespace core {
 
 class StringUtils
@@ -220,4 +220,4 @@ inline Array<String> StringUtils::Split(
 }
 }
 
-#endif // __CCM_CORE_STRINGUTILS_H__
+#endif // __COMO_CORE_STRINGUTILS_H__

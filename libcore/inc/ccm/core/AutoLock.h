@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,13 +14,13 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CORE_AUTOLOCK_H__
-#define __CCM_CORE_AUTOLOCK_H__
+#ifndef __COMO_CORE_AUTOLOCK_H__
+#define __COMO_CORE_AUTOLOCK_H__
 
-#include "ccm/core/SyncObject.h"
-#include "ccm.core.ISynchronize.h"
+#include "como/core/SyncObject.h"
+#include "como.core.ISynchronize.h"
 
-namespace ccm {
+namespace como {
 namespace core {
 
 class AutoLock
@@ -70,4 +70,4 @@ inline AutoLock::~AutoLock()
 }
 }
 
-#endif // __CCM_CORE_AUTOLOCK_H__
+#endif // __COMO_CORE_AUTOLOCK_H__

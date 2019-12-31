@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,14 +14,14 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CORE_NATIVEAPI_H__
-#define __CCM_CORE_NATIVEAPI_H__
+#ifndef __COMO_CORE_NATIVEAPI_H__
+#define __COMO_CORE_NATIVEAPI_H__
 
-#include "ccm/core/globals.h"
+#include "como/core/globals.h"
 #include <ccmtypes.h>
 #include <unicode/utypes.h>
 
-namespace ccm {
+namespace como {
 namespace core {
 
 size_t GetStackOverflowReservedBytes(
@@ -44,7 +44,7 @@ void DumpNativeStack(
     /* [in] */ void* ucontext = nullptr);
 
 HANDLE CreateNativeObject(
-    /* [in] */ HANDLE ccmObject);
+    /* [in] */ HANDLE comoObject);
 
 void DestroyNativeObject(
     /* [in] */ HANDLE handle);
@@ -70,10 +70,10 @@ ECode NativeObjectWait(
     /* [in] */ Integer ns);
 
 Boolean MaybeCauseIcuException(
-    /* [in] */ const char* function, 
+    /* [in] */ const char* function,
     /* [in] */ UErrorCode error);
 
 }
 }
 
-#endif // __CCM_CORE_NATIVEAPI_H__
+#endif // __COMO_CORE_NATIVEAPI_H__

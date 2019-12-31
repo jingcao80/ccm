@@ -1,5 +1,5 @@
 #=========================================================================
-# Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+# Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,20 +15,20 @@
 #=========================================================================
 
 add_custom_target(deploy_libcore_core_headers)
-add_dependencies(deploy_libcore_core_headers ccmrt)
+add_dependencies(deploy_libcore_core_headers comort)
 
-MKDIR(deploy_libcore_core_headers ${INC_DIR}/ccm/core)
+MKDIR(deploy_libcore_core_headers ${INC_DIR}/como/core)
 
-COPY(deploy_libcore_core_headers ${LIBCORE_CCM_INC_DIR}/core/AutoLock.h ${INC_DIR}/ccm/core)
-COPY(deploy_libcore_core_headers ${LIBCORE_CCM_INC_DIR}/core/Character.h ${INC_DIR}/ccm/core)
-COPY(deploy_libcore_core_headers ${LIBCORE_CCM_INC_DIR}/core/ClassLoader.h ${INC_DIR}/ccm/core)
-COPY(deploy_libcore_core_headers ${LIBCORE_CCM_INC_DIR}/core/CoreUtils.h ${INC_DIR}/ccm/core)
-COPY(deploy_libcore_core_headers ${LIBCORE_CCM_INC_DIR}/core/Math.h ${INC_DIR}/ccm/core)
-COPY(deploy_libcore_core_headers ${LIBCORE_CCM_INC_DIR}/core/NativeAtomic.h ${INC_DIR}/ccm/core)
-COPY(deploy_libcore_core_headers ${LIBCORE_CCM_INC_DIR}/core/Runnable.h ${INC_DIR}/ccm/core)
-COPY(deploy_libcore_core_headers ${LIBCORE_CCM_INC_DIR}/core/RuntimeFactory.h ${INC_DIR}/ccm/core)
-COPY(deploy_libcore_core_headers ${LIBCORE_CCM_INC_DIR}/core/StringUtils.h ${INC_DIR}/ccm/core)
-COPY(deploy_libcore_core_headers ${LIBCORE_CCM_INC_DIR}/core/SyncObject.h ${INC_DIR}/ccm/core)
-COPY(deploy_libcore_core_headers ${LIBCORE_CCM_INC_DIR}/core/volatile.h ${INC_DIR}/ccm/core)
-COPY(deploy_libcore_core_headers ${LIBCORE_CCM_INC_DIR}/core/Thread.h ${INC_DIR}/ccm/core)
-COPY(deploy_libcore_core_headers ${LIBCORE_CCM_INC_DIR}/core/ThreadLocal.h ${INC_DIR}/ccm/core)
+COPY(deploy_libcore_core_headers ${LIBCORE_COMO_INC_DIR}/core/AutoLock.h ${INC_DIR}/como/core)
+COPY(deploy_libcore_core_headers ${LIBCORE_COMO_INC_DIR}/core/Character.h ${INC_DIR}/como/core)
+COPY(deploy_libcore_core_headers ${LIBCORE_COMO_INC_DIR}/core/ClassLoader.h ${INC_DIR}/como/core)
+COPY(deploy_libcore_core_headers ${LIBCORE_COMO_INC_DIR}/core/CoreUtils.h ${INC_DIR}/como/core)
+COPY(deploy_libcore_core_headers ${LIBCORE_COMO_INC_DIR}/core/Math.h ${INC_DIR}/como/core)
+COPY(deploy_libcore_core_headers ${LIBCORE_COMO_INC_DIR}/core/NativeAtomic.h ${INC_DIR}/como/core)
+COPY(deploy_libcore_core_headers ${LIBCORE_COMO_INC_DIR}/core/Runnable.h ${INC_DIR}/como/core)
+COPY(deploy_libcore_core_headers ${LIBCORE_COMO_INC_DIR}/core/RuntimeFactory.h ${INC_DIR}/como/core)
+COPY(deploy_libcore_core_headers ${LIBCORE_COMO_INC_DIR}/core/StringUtils.h ${INC_DIR}/como/core)
+COPY(deploy_libcore_core_headers ${LIBCORE_COMO_INC_DIR}/core/SyncObject.h ${INC_DIR}/como/core)
+COPY(deploy_libcore_core_headers ${LIBCORE_COMO_INC_DIR}/core/volatile.h ${INC_DIR}/como/core)
+COPY(deploy_libcore_core_headers ${LIBCORE_COMO_INC_DIR}/core/Thread.h ${INC_DIR}/como/core)
+COPY(deploy_libcore_core_headers ${LIBCORE_COMO_INC_DIR}/core/ThreadLocal.h ${INC_DIR}/como/core)

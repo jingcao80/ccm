@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,20 +14,20 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CORE_THREADLOCAL_H__
-#define __CCM_CORE_THREADLOCAL_H__
+#ifndef __COMO_CORE_THREADLOCAL_H__
+#define __COMO_CORE_THREADLOCAL_H__
 
-#include "ccm/core/SyncObject.h"
-#include "ccm.core.IThread.h"
-#include "ccm.core.IThreadLocal.h"
-#include "ccm.util.concurrent.atomic.IAtomicInteger.h"
+#include "como/core/SyncObject.h"
+#include "como.core.IThread.h"
+#include "como.core.IThreadLocal.h"
+#include "como.util.concurrent.atomic.IAtomicInteger.h"
 #include <ccmautoptr.h>
 #include <ccmobject.h>
 #include <ccmrefbase.h>
 
-using ccm::util::concurrent::atomic::IAtomicInteger;
+using como::util::concurrent::atomic::IAtomicInteger;
 
-namespace ccm {
+namespace como {
 namespace core {
 
 class ThreadLocal
@@ -117,7 +117,7 @@ protected:
     };
 
 public:
-    CCM_INTERFACE_DECL();
+    COMO_INTERFACE_DECL();
 
     ECode Constructor();
 
@@ -167,4 +167,4 @@ inline ThreadLocal* ThreadLocal::From(
 }
 }
 
-#endif // __CCM_CORE_THREADLOCAL_H__
+#endif // __COMO_CORE_THREADLOCAL_H__

@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,17 +14,17 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CORE_RUNTIME_H__
-#define __CCM_CORE_RUNTIME_H__
+#ifndef __COMO_CORE_RUNTIME_H__
+#define __COMO_CORE_RUNTIME_H__
 
-#include "ccm/core/SyncObject.h"
-#include "ccm.core.IRuntime.h"
-#include "ccm.util.IList.h"
+#include "como/core/SyncObject.h"
+#include "como.core.IRuntime.h"
+#include "como.util.IList.h"
 #include <ccmautoptr.h>
 
-using ccm::util::IList;
+using como::util::IList;
 
-namespace ccm {
+namespace como {
 namespace core {
 
 class Runtime
@@ -32,7 +32,7 @@ class Runtime
     , public IRuntime
 {
 public:
-    CCM_INTERFACE_DECL();
+    COMO_INTERFACE_DECL();
 
     static ECode GetRuntime(
         /* [out] */ IRuntime** runtime);
@@ -61,4 +61,4 @@ private:
 }
 }
 
-#endif // __CCM_CORE_RUNTIME_H__
+#endif // __COMO_CORE_RUNTIME_H__

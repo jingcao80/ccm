@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,23 +14,23 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CORE_CSTACKTRACEELEMENT_H__
-#define __CCM_CORE_CSTACKTRACEELEMENT_H__
+#ifndef __COMO_CORE_CSTACKTRACEELEMENT_H__
+#define __COMO_CORE_CSTACKTRACEELEMENT_H__
 
-#include "ccm/core/StackTraceElement.h"
-#include "_ccm_core_CStackTraceElement.h"
+#include "como/core/StackTraceElement.h"
+#include "_como_core_CStackTraceElement.h"
 
-namespace ccm {
+namespace como {
 namespace core {
 
 Coclass(CStackTraceElement)
     , public StackTraceElement
 {
 public:
-    CCM_OBJECT_DECL();
+    COMO_OBJECT_DECL();
 };
 
 }
 }
 
-#endif // __CCM_CORE_CSTACKTRACEELEMENT_H__
+#endif // __COMO_CORE_CSTACKTRACEELEMENT_H__

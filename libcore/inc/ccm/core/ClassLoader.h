@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,18 +14,18 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CORE_CLASSLOADER_H__
-#define __CCM_CORE_CLASSLOADER_H__
+#ifndef __COMO_CORE_CLASSLOADER_H__
+#define __COMO_CORE_CLASSLOADER_H__
 
-#include "ccm/core/SyncObject.h"
-#include "ccm.io.IInputStream.h"
-#include "ccm.util.IHashMap.h"
+#include "como/core/SyncObject.h"
+#include "como.io.IInputStream.h"
+#include "como.util.IHashMap.h"
 #include <ccmautoptr.h>
 
-using ccm::io::IInputStream;
-using ccm::util::IHashMap;
+using como::io::IInputStream;
+using como::util::IHashMap;
 
-namespace ccm {
+namespace como {
 namespace core {
 
 class COM_PUBLIC ClassLoader
@@ -40,7 +40,7 @@ private:
     };
 
 public:
-    CCM_INTERFACE_DECL();
+    COMO_INTERFACE_DECL();
 
     ECode LoadCoclass(
         /* [in] */ const String& fullName,
@@ -106,4 +106,4 @@ inline AutoPtr<IClassLoader> ClassLoader::GetSystemClassLoader()
 }
 }
 
-#endif // __CCM_CORE_CLASSLOADER_H__
+#endif // __COMO_CORE_CLASSLOADER_H__

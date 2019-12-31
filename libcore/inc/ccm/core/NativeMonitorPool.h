@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,17 +30,17 @@
  * limitations under the License.
  */
 
-#ifndef __CCM_CORE_NATIVEMONITORPOOL_H__
-#define __CCM_CORE_NATIVEMONITORPOOL_H__
+#ifndef __COMO_CORE_NATIVEMONITORPOOL_H__
+#define __COMO_CORE_NATIVEMONITORPOOL_H__
 
-#include "ccm/core/globals.h"
-#include "ccm/core/NativeLockWord.h"
-#include "ccm/core/NativeMonitor.h"
-#include "ccm/core/NativeMutex.h"
-#include "ccm/core/NativeRuntime.h"
+#include "como/core/globals.h"
+#include "como/core/NativeLockWord.h"
+#include "como/core/NativeMonitor.h"
+#include "como/core/NativeMutex.h"
+#include "como/core/NativeRuntime.h"
 #include <memory>
 
-namespace ccm {
+namespace como {
 namespace core {
 
 class NativeMonitorPool
@@ -216,4 +216,4 @@ inline constexpr size_t NativeMonitorPool::ChunkListCapacity(
 }
 }
 
-#endif // __CCM_CORE_NATIVEMONITORPOOL_H__
+#endif // __COMO_CORE_NATIVEMONITORPOOL_H__

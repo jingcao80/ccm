@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,16 +14,16 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CORE_ABSTRACTSTRINGBUILDER_H__
-#define __CCM_CORE_ABSTRACTSTRINGBUILDER_H__
+#ifndef __COMO_CORE_ABSTRACTSTRINGBUILDER_H__
+#define __COMO_CORE_ABSTRACTSTRINGBUILDER_H__
 
-#include "ccm.core.IAppendable.h"
-#include "ccm.core.ICharSequence.h"
-#include "ccm.core.IInteger.h"
-#include "ccm.core.IStringBuffer.h"
-#include "ccm/core/SyncObject.h"
+#include "como.core.IAppendable.h"
+#include "como.core.ICharSequence.h"
+#include "como.core.IInteger.h"
+#include "como.core.IStringBuffer.h"
+#include "como/core/SyncObject.h"
 
-namespace ccm {
+namespace como {
 namespace core {
 
 class AbstractStringBuilder
@@ -32,7 +32,7 @@ class AbstractStringBuilder
     , public ICharSequence
 {
 public:
-    CCM_INTERFACE_DECL();
+    COMO_INTERFACE_DECL();
 
     virtual ~AbstractStringBuilder();
 
@@ -243,4 +243,4 @@ Boolean AbstractStringBuilder::IsASCII(
 }
 }
 
-#endif // __CCM_CORE_ABSTRACTSTRINGBUILDER_H__
+#endif // __COMO_CORE_ABSTRACTSTRINGBUILDER_H__

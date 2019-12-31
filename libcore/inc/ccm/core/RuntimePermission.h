@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,14 +14,14 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CORE_RUNTIMEPERMISSION_H__
-#define __CCM_CORE_RUNTIMEPERMISSION_H__
+#ifndef __COMO_CORE_RUNTIMEPERMISSION_H__
+#define __COMO_CORE_RUNTIMEPERMISSION_H__
 
-#include "ccm/security/BasicPermission.h"
+#include "como/security/BasicPermission.h"
 
-using ccm::security::BasicPermission;
+using como::security::BasicPermission;
 
-namespace ccm {
+namespace como {
 namespace core {
 
 class RuntimePermission
@@ -52,4 +52,4 @@ inline ECode RuntimePermission::Constructor(
 }
 }
 
-#endif // __CCM_CORE_RUNTIMEPERMISSION_H__
+#endif // __COMO_CORE_RUNTIMEPERMISSION_H__

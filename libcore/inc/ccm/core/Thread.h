@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,21 +14,21 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CORE_THREAD_H__
-#define __CCM_CORE_THREAD_H__
+#ifndef __COMO_CORE_THREAD_H__
+#define __COMO_CORE_THREAD_H__
 
-#include "ccm/core/Runnable.h"
-#include "ccm/core/ThreadLocal.h"
-#include "ccm/core/volatile.h"
-#include "ccm.core.IStackTraceElement.h"
-#include "ccm.core.IThread.h"
-#include "ccm.core.IThreadGroup.h"
-#include "ccm.io.IInterruptible.h"
+#include "como/core/Runnable.h"
+#include "como/core/ThreadLocal.h"
+#include "como/core/volatile.h"
+#include "como.core.IStackTraceElement.h"
+#include "como.core.IThread.h"
+#include "como.core.IThreadGroup.h"
+#include "como.io.IInterruptible.h"
 #include <ccmautoptr.h>
 
-using ccm::io::IInterruptible;
+using como::io::IInterruptible;
 
-namespace ccm {
+namespace como {
 namespace core {
 
 class COM_PUBLIC Thread
@@ -51,7 +51,7 @@ private:
     };
 
 public:
-    CCM_INTERFACE_DECL();
+    COMO_INTERFACE_DECL();
 
     ECode Constructor();
 
@@ -224,14 +224,14 @@ private:
 public:
     /**
      * The argument supplied to the current call to
-     * ccm::util::concurrent::locks::LockSupport::Park.
-     * Set by ccm::util::concurrent::locks::LockSupport::SetBlocker
-     * Accessed using ccm::util::concurrent::locks::LockSupport::GetBlocker
+     * como::util::concurrent::locks::LockSupport::Park.
+     * Set by como::util::concurrent::locks::LockSupport::SetBlocker
+     * Accessed using como::util::concurrent::locks::LockSupport::GetBlocker
      */
     VOLATILE AutoPtr<IInterface> mParkBlocker;
 
     // The following three initially uninitialized fields are exclusively
-    // managed by class ccm::util::concurrent::ThreadLocalRandom. These
+    // managed by class como::util::concurrent::ThreadLocalRandom. These
     // fields are used to build the high-performance PRNGs in the
     // concurrent code, and we can not risk accidental false sharing.
     // Hence, the fields are isolated with @Contended.
@@ -301,4 +301,4 @@ inline Thread* Thread::From(
 }
 }
 
-#endif // __CCM_CORE_THREAD_H__
+#endif // __COMO_CORE_THREAD_H__

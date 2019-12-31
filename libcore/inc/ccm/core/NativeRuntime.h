@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,17 +14,17 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CORE_NATIVERUNTIME_H__
-#define __CCM_CORE_NATIVERUNTIME_H__
+#ifndef __COMO_CORE_NATIVERUNTIME_H__
+#define __COMO_CORE_NATIVERUNTIME_H__
 
-#include "ccm/core/NativeMutex.h"
-#include "ccm/core/NativeRuntimeCallbacks.h"
-#include "ccm.core.IThreadGroup.h"
+#include "como/core/NativeMutex.h"
+#include "como/core/NativeRuntimeCallbacks.h"
+#include "como.core.IThreadGroup.h"
 #include <ccmautoptr.h>
 #include <ccmtypes.h>
 #include <memory>
 
-namespace ccm {
+namespace como {
 namespace core {
 
 class NativeMonitorList;
@@ -174,4 +174,4 @@ inline Boolean NativeRuntime::ExplicitStackOverflowChecks() const
 }
 }
 
-#endif // __CCM_CORE_NATIVERUNTIME_H__
+#endif // __COMO_CORE_NATIVERUNTIME_H__

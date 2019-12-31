@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,13 +14,13 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CORE_MATH_H__
-#define __CCM_CORE_MATH_H__
+#ifndef __COMO_CORE_MATH_H__
+#define __COMO_CORE_MATH_H__
 
 #include <ccmtypes.h>
 #include <math.h>
 
-namespace ccm {
+namespace como {
 namespace core {
 
 class Math
@@ -321,4 +321,4 @@ inline Boolean Math::IsNaN(
 }
 }
 
-#endif //__CCM_CORE_MATH_H__
+#endif //__COMO_CORE_MATH_H__

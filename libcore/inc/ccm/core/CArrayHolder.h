@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,17 +14,17 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/core/ArrayHolder.h"
-#include "_ccm_core_CArrayHolder.h"
+#include "como/core/ArrayHolder.h"
+#include "_como_core_CArrayHolder.h"
 
-namespace ccm {
+namespace como {
 namespace core {
 
 Coclass(CArrayHolder)
     , public ArrayHolder
 {
 public:
-    CCM_OBJECT_DECL();
+    COMO_OBJECT_DECL();
 };
 
 }

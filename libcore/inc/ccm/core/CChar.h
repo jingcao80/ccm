@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,18 +14,18 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CORE_CCHAR_H__
-#define __CCM_CORE_CCHAR_H__
+#ifndef __COMO_CORE_CCHAR_H__
+#define __COMO_CORE_CCHAR_H__
 
-#include "ccm.core.IChar.h"
-#include "ccm.core.IComparable.h"
-#include "ccm.io.ISerializable.h"
-#include "_ccm_core_CChar.h"
-#include "ccm/core/SyncObject.h"
+#include "como.core.IChar.h"
+#include "como.core.IComparable.h"
+#include "como.io.ISerializable.h"
+#include "_como_core_CChar.h"
+#include "como/core/SyncObject.h"
 
-using ccm::io::ISerializable;
+using como::io::ISerializable;
 
-namespace ccm {
+namespace como {
 namespace core {
 
 Coclass(CChar)
@@ -35,9 +35,9 @@ Coclass(CChar)
     , public IComparable
 {
 public:
-    CCM_INTERFACE_DECL();
+    COMO_INTERFACE_DECL();
 
-    CCM_OBJECT_DECL();
+    COMO_OBJECT_DECL();
 
     ECode Constructor(
         /* [in] */ Char value);
@@ -66,4 +66,4 @@ private:
 }
 }
 
-#endif // __CCM_CORE_CCHAR_H__
+#endif // __COMO_CORE_CCHAR_H__

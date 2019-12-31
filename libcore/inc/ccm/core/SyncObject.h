@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,13 +14,13 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CORE_SYNCOBJECT_H__
-#define __CCM_CORE_SYNCOBJECT_H__
+#ifndef __COMO_CORE_SYNCOBJECT_H__
+#define __COMO_CORE_SYNCOBJECT_H__
 
-#include "ccm.core.ISynchronize.h"
+#include "como.core.ISynchronize.h"
 #include <ccmobject.h>
 
-namespace ccm {
+namespace como {
 namespace core {
 
 class COM_PUBLIC SyncObject
@@ -28,7 +28,7 @@ class COM_PUBLIC SyncObject
     , public ISynchronize
 {
 public:
-    CCM_INTERFACE_DECL();
+    COMO_INTERFACE_DECL();
 
     SyncObject();
 
@@ -69,6 +69,6 @@ inline SyncObject* SyncObject::From(
 }
 
 } // namespace core
-} // namespace ccm
+} // namespace como
 
-#endif // __CCM_CORE_SYNCOBJECT_H__
+#endif // __COMO_CORE_SYNCOBJECT_H__

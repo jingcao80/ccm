@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,22 +14,22 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CORE_SYSTEM_H__
-#define __CCM_CORE_SYSTEM_H__
+#ifndef __COMO_CORE_SYSTEM_H__
+#define __COMO_CORE_SYSTEM_H__
 
-#include "ccm/util/Properties.h"
-#include "ccm.core.ISecurityManager.h"
-#include "ccm.core.IStackTrace.h"
-#include "ccm.io.IPrintStream.h"
-#include "ccm.util.IProperties.h"
+#include "como/util/Properties.h"
+#include "como.core.ISecurityManager.h"
+#include "como.core.IStackTrace.h"
+#include "como.io.IPrintStream.h"
+#include "como.util.IProperties.h"
 #include <ccmautoptr.h>
 #include <ccmtypes.h>
 
-using ccm::io::IPrintStream;
-using ccm::util::IProperties;
-using ccm::util::Properties;
+using como::io::IPrintStream;
+using como::util::IProperties;
+using como::util::Properties;
 
-namespace ccm {
+namespace como {
 namespace core {
 
 static CONS_PROI_4 void StaticInitializeSystem();
@@ -140,4 +140,4 @@ inline ECode System::LogW(
 }
 }
 
-#endif // __CCM_CORE_SYSTEM_H__
+#endif // __COMO_CORE_SYSTEM_H__

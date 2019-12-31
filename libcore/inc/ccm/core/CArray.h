@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,15 +14,15 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CORE_CARRAY_H__
-#define __CCM_CORE_CARRAY_H__
+#ifndef __COMO_CORE_CARRAY_H__
+#define __COMO_CORE_CARRAY_H__
 
-#include "ccm.core.IArray.h"
-#include "_ccm_core_CArray.h"
-#include "ccm/core/SyncObject.h"
+#include "como.core.IArray.h"
+#include "_como_core_CArray.h"
+#include "como/core/SyncObject.h"
 #include <ccmarray.h>
 
-namespace ccm {
+namespace como {
 namespace core {
 
 Coclass(CArray)
@@ -30,9 +30,9 @@ Coclass(CArray)
     , public IArray
 {
 public:
-    CCM_INTERFACE_DECL();
+    COMO_INTERFACE_DECL();
 
-    CCM_OBJECT_DECL();
+    COMO_OBJECT_DECL();
 
     ECode Constructor(
         /* [in] */ const InterfaceID& elemId,
@@ -60,4 +60,4 @@ private:
 }
 }
 
-#endif // __CCM_CORE_CARRAY_H__
+#endif // __COMO_CORE_CARRAY_H__

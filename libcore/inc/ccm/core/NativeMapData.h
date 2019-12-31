@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -42,13 +42,13 @@
  * SUCH DAMAGE.
  */
 
-#ifndef __CCM_CORE_NATIVEMAPDATA_H__
-#define __CCM_CORE_NATIVEMAPDATA_H__
+#ifndef __COMO_CORE_NATIVEMAPDATA_H__
+#define __COMO_CORE_NATIVEMAPDATA_H__
 
-#include "ccm/core/SyncObject.h"
+#include "como/core/SyncObject.h"
 #include <set>
 
-namespace ccm {
+namespace como {
 namespace core {
 
 struct MapEntry
@@ -109,4 +109,4 @@ private:
 }
 }
 
-#endif  // __CCM_CORE_NATIVEMAPDATA_H__
+#endif  // __COMO_CORE_NATIVEMAPDATA_H__

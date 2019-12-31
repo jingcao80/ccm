@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,20 +14,20 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_CORE_CSTRING_H__
-#define __CCM_CORE_CSTRING_H__
+#ifndef __COMO_CORE_CSTRING_H__
+#define __COMO_CORE_CSTRING_H__
 
-#include "ccm/core/SyncObject.h"
-#include "ccm.core.ICharSequence.h"
-#include "ccm.core.IComparable.h"
-#include "ccm.core.IString.h"
-#include "ccm.io.ISerializable.h"
-#include "_ccm_core_CString.h"
+#include "como/core/SyncObject.h"
+#include "como.core.ICharSequence.h"
+#include "como.core.IComparable.h"
+#include "como.core.IString.h"
+#include "como.io.ISerializable.h"
+#include "_como_core_CString.h"
 #include <ccmstring.h>
 
-using ccm::io::ISerializable;
+using como::io::ISerializable;
 
-namespace ccm {
+namespace como {
 namespace core {
 
 Coclass(CString)
@@ -38,9 +38,9 @@ Coclass(CString)
     , public IString
 {
 public:
-    CCM_INTERFACE_DECL();
+    COMO_INTERFACE_DECL();
 
-    CCM_OBJECT_DECL();
+    COMO_OBJECT_DECL();
 
     ECode Constructor(
         /* [in] */ const String& str);
@@ -78,4 +78,4 @@ private:
 }
 }
 
-#endif // __CCM_CORE_CSTRING_H__
+#endif // __COMO_CORE_CSTRING_H__
