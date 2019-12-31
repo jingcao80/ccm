@@ -14,14 +14,14 @@
 // limitations under the License.
 //=========================================================================
 
-namespace pisces {
+namespace jing {
 namespace system {
 
 [
-    uuid(7cdd3d82-f1c3-4baf-aa92-05a48bbe4046),
+    uuid(b427cd6b-831b-49f2-846b-0c0bf99ed677),
     version(0.1.0)
 ]
-interface IStructIfaddrs
+interface IStructPollfd
 {}
 
 }

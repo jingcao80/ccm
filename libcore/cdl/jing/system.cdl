@@ -14,24 +14,24 @@
 // limitations under the License.
 //=========================================================================
 
-include "pisces/system/Exceptions.cdl"
-include "pisces/system/IStructAddrinfo.cdl"
-include "pisces/system/IStructCapUserData.cdl"
-include "pisces/system/IStructCapUserHeader.cdl"
-include "pisces/system/IStructFlock.cdl"
-include "pisces/system/IStructGroupReq.cdl"
-include "pisces/system/IStructGroupSourceReq.cdl"
-include "pisces/system/IStructIfaddrs.cdl"
-include "pisces/system/IStructLinger.cdl"
-include "pisces/system/IStructPasswd.cdl"
-include "pisces/system/IStructPollfd.cdl"
-include "pisces/system/IStructStat.cdl"
-include "pisces/system/IStructStatVfs.cdl"
-include "pisces/system/IStructTimeval.cdl"
-include "pisces/system/IStructUcred.cdl"
-include "pisces/system/IStructUtsname.cdl"
+include "jing/system/Exceptions.cdl"
+include "jing/system/IStructAddrinfo.cdl"
+include "jing/system/IStructCapUserData.cdl"
+include "jing/system/IStructCapUserHeader.cdl"
+include "jing/system/IStructFlock.cdl"
+include "jing/system/IStructGroupReq.cdl"
+include "jing/system/IStructGroupSourceReq.cdl"
+include "jing/system/IStructIfaddrs.cdl"
+include "jing/system/IStructLinger.cdl"
+include "jing/system/IStructPasswd.cdl"
+include "jing/system/IStructPollfd.cdl"
+include "jing/system/IStructStat.cdl"
+include "jing/system/IStructStatVfs.cdl"
+include "jing/system/IStructTimeval.cdl"
+include "jing/system/IStructUcred.cdl"
+include "jing/system/IStructUtsname.cdl"
 
-namespace pisces {
+namespace jing {
 namespace system {
 
 [

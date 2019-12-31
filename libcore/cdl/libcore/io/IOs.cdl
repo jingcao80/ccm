@@ -20,21 +20,21 @@ interface como::io::IFileDescriptor;
 interface como::net::IInetAddress;
 interface como::net::IInetSocketAddress;
 interface como::net::ISocketAddress;
-interface pisces::system::IStructAddrinfo;
-interface pisces::system::IStructCapUserData;
-interface pisces::system::IStructCapUserHeader;
-interface pisces::system::IStructFlock;
-interface pisces::system::IStructGroupReq;
-interface pisces::system::IStructGroupSourceReq;
-interface pisces::system::IStructIfaddrs;
-interface pisces::system::IStructLinger;
-interface pisces::system::IStructPasswd;
-interface pisces::system::IStructPollfd;
-interface pisces::system::IStructStat;
-interface pisces::system::IStructStatVfs;
-interface pisces::system::IStructTimeval;
-interface pisces::system::IStructUcred;
-interface pisces::system::IStructUtsname;
+interface jing::system::IStructAddrinfo;
+interface jing::system::IStructCapUserData;
+interface jing::system::IStructCapUserHeader;
+interface jing::system::IStructFlock;
+interface jing::system::IStructGroupReq;
+interface jing::system::IStructGroupSourceReq;
+interface jing::system::IStructIfaddrs;
+interface jing::system::IStructLinger;
+interface jing::system::IStructPasswd;
+interface jing::system::IStructPollfd;
+interface jing::system::IStructStat;
+interface jing::system::IStructStatVfs;
+interface jing::system::IStructTimeval;
+interface jing::system::IStructUcred;
+interface jing::system::IStructUtsname;
 
 namespace libcore {
 namespace io {
