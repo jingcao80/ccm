@@ -30,9 +30,8 @@ COMO_INTERFACE_IMPL_1(CBinderParcel, Object, IParcel);
 COMO_OBJECT_IMPL(CBinderParcel);
 
 CBinderParcel::CBinderParcel()
-{
-    mData = new android::Parcel();
-}
+    : mData(new android::Parcel())
+{}
 
 CBinderParcel::CBinderParcel(
     /* [in] */ android::Parcel* parcel,

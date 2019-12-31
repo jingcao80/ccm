@@ -18,7 +18,6 @@
 #include <comoapi.h>
 #include <comosp.h>
 #include <ServiceManager.h>
-#include <cstdio>
 #include <gtest/gtest.h>
 
 using como::test::rpc::CID_CService;

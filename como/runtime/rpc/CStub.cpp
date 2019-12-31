@@ -311,10 +311,6 @@ ECode InterfaceStub::MarshalResults(
     /* [in] */ IArgumentList* argList,
     /* [out] */ AutoPtr<IParcel>& resParcel)
 {
-    RPCType type;
-    mOwner->mChannel->GetRPCType(type);
-    CoCreateParcel(type, resParcel);
-
     Integer N;
     method->GetParameterNumber(N);
     for (Integer i = 0; i < N; i++) {

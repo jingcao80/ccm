@@ -18,8 +18,6 @@
 #include "CTestObject.h"
 #include "CParcelableTestObject.h"
 
-#include <cstdio>
-
 namespace como {
 namespace test {
 namespace rpc {

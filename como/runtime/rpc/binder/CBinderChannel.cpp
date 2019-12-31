@@ -142,9 +142,10 @@ android::status_t CBinderChannel::ServiceRunnable::onTransact(
             AutoPtr<IParcel> argParcel = new CBinderParcel(
                     const_cast<android::Parcel*>(&data), false);
             AutoPtr<IParcel> resParcel = new CBinderParcel(reply, false);
-            ECode* result = (ECode*)reply->writeInplace(sizeof(ECode));
+            resParcel->WriteInteger(E_FAILED_EXCEPTION);
             ECode ec = mTarget->Invoke(argParcel, resParcel);
-            *result = ec;
+            resParcel->SetDataPosition(0);
+            resParcel->WriteInteger(ec);
 
             return android::NO_ERROR;
         }
@@ -285,33 +286,30 @@ ECode CBinderChannel::Invoke(
     /* [in] */ IParcel* argParcel,
     /* [out] */ AutoPtr<IParcel>& resParcel)
 {
-    HANDLE data;
+    resParcel = new CBinderParcel();
+
+    HANDLE data, reply;
     argParcel->GetPayload(data);
-    android::Parcel reply;
+    resParcel->GetPayload(reply);
 
     if (DEBUG) {
         Logger::D("CBinderChannel", "Send message.");
     }
 
     if (mBinder->transact(COMMAND_INVOKE,
-            *reinterpret_cast<android::Parcel*>(data), &reply) != android::NO_ERROR) {
+            *reinterpret_cast<android::Parcel*>(data),
+            reinterpret_cast<android::Parcel*>(reply)) != android::NO_ERROR) {
         Logger::E("CBinderChannel", "Get component metadata failed.");
         return E_REMOTE_EXCEPTION;
     }
 
-    ECode ec = reply.readInt32();
+    ECode ec;
+    resParcel->ReadInteger(ec);
     if (FAILED(ec)) {
         if (DEBUG) {
             Logger::D("CBinderChannel", "Remote call failed with ec = 0x%x.", ec);
         }
         return ec;
-    }
-
-    Boolean hasOutArgs;
-    method->HasOutArguments(hasOutArgs);
-    if (hasOutArgs) {
-        Long size = reply.dataAvail();
-        resParcel->SetData(reinterpret_cast<HANDLE>(reply.readInplace(size)), size);
     }
 
     return NOERROR;

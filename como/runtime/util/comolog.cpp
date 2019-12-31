@@ -16,7 +16,11 @@
 
 #include "comolog.h"
 #include <cstdarg>
+#if defined(__aarch64__)
+#include <android/log.h>
+#elif defined(__x86_64__)
 #include <cstdio>
+#endif
 
 namespace como {
 
@@ -32,11 +36,17 @@ void Logger::D(
 
     va_list argList;
 
+#if defined(__aarch64__)
+    va_start(argList, format);
+    __android_log_vprint(ANDROID_LOG_DEBUG, tag, format, argList);
+    va_end(argList);
+#elif defined(__x86_64__)
     printf("[%s]: ", tag);
     va_start(argList, format);
     vprintf(format, argList);
     va_end(argList);
     printf("\n");
+#endif
 }
 
 void Logger::E(
@@ -49,11 +59,17 @@ void Logger::E(
 
     va_list argList;
 
+#if defined(__aarch64__)
+    va_start(argList, format);
+    __android_log_vprint(ANDROID_LOG_ERROR, tag, format, argList);
+    va_end(argList);
+#elif defined(__x86_64__)
     printf("[%s]: ", tag);
     va_start(argList, format);
     vprintf(format, argList);
     va_end(argList);
     printf("\n");
+#endif
 }
 
 void Logger::V(
@@ -66,11 +82,17 @@ void Logger::V(
 
     va_list argList;
 
+#if defined(__aarch64__)
+    va_start(argList, format);
+    __android_log_vprint(ANDROID_LOG_VERBOSE, tag, format, argList);
+    va_end(argList);
+#elif defined(__x86_64__)
     printf("[%s]: ", tag);
     va_start(argList, format);
     vprintf(format, argList);
     va_end(argList);
     printf("\n");
+#endif
 }
 
 void Logger::W(
@@ -83,12 +105,37 @@ void Logger::W(
 
     va_list argList;
 
+#if defined(__aarch64__)
+    va_start(argList, format);
+    __android_log_vprint(ANDROID_LOG_WARN, tag, format, argList);
+    va_end(argList);
+#elif defined(__x86_64__)
     printf("[%s]: ", tag);
     va_start(argList, format);
     vprintf(format, argList);
     va_end(argList);
     printf("\n");
+#endif
 }
+
+#if defined(__aarch64__)
+static int ToAndroidLogPriority(
+    /* [in] */ int level)
+{
+    switch(level) {
+        case Logger::VERBOSE:
+            return ANDROID_LOG_VERBOSE;
+        case Logger::DEBUG:
+            return ANDROID_LOG_DEBUG;
+        case Logger::WARNING:
+            return ANDROID_LOG_WARN;
+        case Logger::ERROR:
+            return ANDROID_LOG_ERROR;
+        default:
+            return ANDROID_LOG_DEFAULT;
+    }
+}
+#endif
 
 void Logger::Log(
     /* [in] */ int level,
@@ -101,11 +148,17 @@ void Logger::Log(
 
     va_list argList;
 
+#if defined(__aarch64__)
+    va_start(argList, format);
+    __android_log_vprint(ToAndroidLogPriority(level), tag, format, argList);
+    va_end(argList);
+#elif defined(__x86_64__)
     printf("[%s]: ", tag);
     va_start(argList, format);
     vprintf(format, argList);
     va_end(argList);
     printf("\n");
+#endif
 }
 
 void Logger::SetLevel(

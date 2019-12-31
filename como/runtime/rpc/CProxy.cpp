@@ -50,15 +50,55 @@ namespace como {
 
 #if defined(__aarch64__)
 
-#define GET_REG(reg, var)
+#define GET_REG(reg, var)           \
+    __asm__ __volatile__(           \
+        "str   "#reg", %0;"         \
+        : "=m"(var)                 \
+    )
 
-#define GET_STACK_INTEGER(rbp, off, var)
+#define GET_STACK_INTEGER(rbp, off, var)    \
+    __asm__ __volatile__(                   \
+        "ldr   x9, %1;"                     \
+        "ldr   w10, %2;"                    \
+        "ldr   w9, [x9, x10];"              \
+        "str   w9, %0;"                     \
+        : "=m"(var)                         \
+        : "m"(rbp), "m"(off)                \
+        : "x9", "x10"                       \
+    )
 
-#define GET_STACK_LONG(rbp, off, var)
+#define GET_STACK_LONG(rbp, off, var)       \
+    __asm__ __volatile__(                   \
+        "ldr   x9, %1;"                     \
+        "ldr   w10, %2;"                    \
+        "ldr   x9, [x9, x10];"              \
+        "str   x9, %0;"                     \
+        : "=m"(var)                         \
+        : "m"(rbp), "m"(off)                \
+        : "x9", "x10"                       \
+    )
 
-#define GET_STACK_FLOAT(rbp, off, var)
+#define GET_STACK_FLOAT(rbp, off, var)      \
+    __asm__ __volatile__(                   \
+        "ldr   x9, %1;"                     \
+        "ldr   w10, %2;"                    \
+        "ldr   w9, [x9, x10];"              \
+        "str   w9, %0;"                     \
+        : "=m"(var)                         \
+        : "m"(rbp), "m"(off)                \
+        : "x9", "x10"                       \
+    )
 
-#define GET_STACK_DOUBLE(rbp, off, var)
+#define GET_STACK_DOUBLE(rbp, off, var)     \
+    __asm__ __volatile__(                   \
+        "ldr   x9, %1;"                     \
+        "ldr   w10, %2;"                    \
+        "ldr   x9, [x9, x10];"              \
+        "str   x9, %0;"                     \
+        : "=m"(var)                         \
+        : "m"(rbp), "m"(off)                \
+        : "x9", "x10"                       \
+    )
 
 EXTERN_C void __entry();
 
@@ -67,10 +107,23 @@ __asm__(
     ".align 8;"
     ".global __entry;"
     "__entry:"
-    "stp    lr, x1, [sp, #-16];"
-    "mov    w1, #0xff;"
-    "ldr    lr, [x0, #8];"
-    "br     lr;"
+    "sub    sp, sp, #32;"
+    "stp    lr, x9, [sp, #16];"
+    "mov    x9, #0x0;"
+    "stp    x9, x0, [sp];"
+    "ldr    x9, [x0, #8];"
+    "mov    x0, sp;"
+    "adr    lr, return_from_func;"
+    "br     x9;"
+    "return_from_func:"
+    "ldp    lr, x9, [sp, #16];"
+    "add    sp, sp, #32;"
+    "ret;"
+    "nop;"
+    "nop;"
+    "nop;"
+    "nop;"
+    "nop;"
 );
 
 #elif defined(__x86_64__)
@@ -154,15 +207,16 @@ __asm__(
 
 HANDLE PROXY_ENTRY = 0;
 
+#if defined(__aarch64__)
+static constexpr Integer PROXY_ENTRY_SIZE = 64;
+static constexpr Integer PROXY_ENTRY_SHIFT = 6;
+static constexpr Integer PROXY_INDEX_OFFSET = 2;
+#elif defined(__x86_64__)
 static constexpr Integer PROXY_ENTRY_SIZE = 32;
 static constexpr Integer PROXY_ENTRY_SHIFT = 5;
-static constexpr Integer PROXY_ENTRY_NUMBER = 240;
-#if defined(__aarch64__)
-static constexpr Integer PROXY_INDEX_OFFSET = 8;
-#elif defined(__x86_64__)
 static constexpr Integer PROXY_INDEX_OFFSET = 9;
 #endif
-
+static constexpr Integer PROXY_ENTRY_NUMBER = 240;
 static constexpr Integer METHOD_MAX_NUMBER = PROXY_ENTRY_NUMBER + 4;
 
 static HANDLE sProxyVtable[METHOD_MAX_NUMBER];
@@ -182,7 +236,8 @@ void Init_Proxy_Entry()
     Byte* p = (Byte*)PROXY_ENTRY;
     for (Integer i = 0; i < PROXY_ENTRY_NUMBER; i++) {
         memcpy(p, reinterpret_cast<void*>(&__entry), PROXY_ENTRY_SIZE);
-        p[8] = i;
+        Integer* codes = reinterpret_cast<Integer*>(p);
+        codes[PROXY_INDEX_OFFSET] = codes[PROXY_INDEX_OFFSET] | (i << 5);
         p += PROXY_ENTRY_SIZE;
     }
 #elif defined(__x86_64__)
@@ -777,6 +832,39 @@ Integer InterfaceProxy::GetIntegerValue(
     /* [in] */ Integer intParamIndex,
     /* [in] */ Integer fpParamIndex)
 {
+#if defined(__aarch64__)
+
+    switch (intParamIndex) {
+        case 0:
+            return regs.x0.iVal;
+        case 1:
+            return regs.x1.iVal;
+        case 2:
+            return regs.x2.iVal;
+        case 3:
+            return regs.x3.iVal;
+        case 4:
+            return regs.x4.iVal;
+        case 5:
+            return regs.x5.iVal;
+        case 6:
+            return regs.x6.iVal;
+        case 7:
+            return regs.x7.iVal;
+        default: {
+            Integer value, offset;
+            offset = fpParamIndex <= 7
+                    ? intParamIndex - 8
+                    : intParamIndex - 8 + fpParamIndex - 8;
+            offset += regs.paramStartOffset;
+            offset *= 8;
+            GET_STACK_INTEGER(regs.sp, offset, value);
+            return value;
+        }
+    }
+
+#elif defined(__x86_64__)
+
     switch (intParamIndex) {
         case 0:
             return regs.rdi.iVal;
@@ -801,6 +889,8 @@ Integer InterfaceProxy::GetIntegerValue(
             return value;
         }
     }
+
+#endif
 }
 
 Long InterfaceProxy::GetLongValue(
@@ -808,6 +898,40 @@ Long InterfaceProxy::GetLongValue(
     /* [in] */ Integer intParamIndex,
     /* [in] */ Integer fpParamIndex)
 {
+#if defined(__aarch64__)
+
+    switch (intParamIndex) {
+        case 0:
+            return regs.x0.lVal;
+        case 1:
+            return regs.x1.lVal;
+        case 2:
+            return regs.x2.lVal;
+        case 3:
+            return regs.x3.lVal;
+        case 4:
+            return regs.x4.lVal;
+        case 5:
+            return regs.x5.lVal;
+        case 6:
+            return regs.x6.lVal;
+        case 7:
+            return regs.x7.lVal;
+        default: {
+            Integer offset;
+            offset = fpParamIndex <= 7
+                    ? intParamIndex - 8
+                    : intParamIndex - 8 + fpParamIndex - 8;
+            offset += regs.paramStartOffset;
+            offset *= 8;
+            Long value;
+            GET_STACK_LONG(regs.sp, offset, value);
+            return value;
+        }
+    }
+
+#elif defined(__x86_64__)
+
     switch (intParamIndex) {
         case 0:
             return regs.rdi.lVal;
@@ -833,6 +957,8 @@ Long InterfaceProxy::GetLongValue(
             return value;
         }
     }
+
+#endif
 }
 
 Float InterfaceProxy::GetFloatValue(
@@ -840,6 +966,39 @@ Float InterfaceProxy::GetFloatValue(
     /* [in] */ Integer intParamIndex,
     /* [in] */ Integer fpParamIndex)
 {
+#if defined(__aarch64__)
+
+    switch (fpParamIndex) {
+        case 0:
+            return regs.d0.fVal;
+        case 1:
+            return regs.d1.fVal;
+        case 2:
+            return regs.d2.fVal;
+        case 3:
+            return regs.d3.fVal;
+        case 4:
+            return regs.d4.fVal;
+        case 5:
+            return regs.d5.fVal;
+        case 6:
+            return regs.d6.fVal;
+        case 7:
+            return regs.d7.fVal;
+        default: {
+            Integer offset = intParamIndex <= 7
+                    ? fpParamIndex - 8
+                    : fpParamIndex - 8 + intParamIndex - 8;
+            offset += regs.paramStartOffset;
+            offset *= 8;
+            Float value;
+            GET_STACK_FLOAT(regs.sp, offset, value);
+            return value;
+        }
+    }
+
+#elif defined(__x86_64__)
+
     switch (fpParamIndex) {
         case 0:
             return regs.xmm0.fVal;
@@ -868,6 +1027,8 @@ Float InterfaceProxy::GetFloatValue(
             return value;
         }
     }
+
+#endif
 }
 
 Double InterfaceProxy::GetDoubleValue(
@@ -875,6 +1036,39 @@ Double InterfaceProxy::GetDoubleValue(
     /* [in] */ Integer intParamIndex,
     /* [in] */ Integer fpParamIndex)
 {
+#if defined(__aarch64__)
+
+    switch (fpParamIndex) {
+        case 0:
+            return regs.d0.dVal;
+        case 1:
+            return regs.d1.dVal;
+        case 2:
+            return regs.d2.dVal;
+        case 3:
+            return regs.d3.dVal;
+        case 4:
+            return regs.d4.dVal;
+        case 5:
+            return regs.d5.dVal;
+        case 6:
+            return regs.d6.dVal;
+        case 7:
+            return regs.d7.dVal;
+        default: {
+            Integer offset = intParamIndex <= 7
+                    ? fpParamIndex - 8
+                    : fpParamIndex - 8 + intParamIndex - 8;
+            offset += regs.paramStartOffset;
+            offset *= 8;
+            Double value;
+            GET_STACK_DOUBLE(regs.sp, offset, value);
+            return value;
+        }
+    }
+
+#elif defined(__x86_64__)
+
     switch (fpParamIndex) {
         case 0:
             return regs.xmm0.dVal;
@@ -903,6 +1097,8 @@ Double InterfaceProxy::GetDoubleValue(
             return value;
         }
     }
+
+#endif
 }
 
 HANDLE InterfaceProxy::GetHANDLEValue(
@@ -927,6 +1123,28 @@ ECode InterfaceProxy::ProxyEntry(
     GET_STACK_LONG(args, offset, thisObj);
 
     Registers regs;
+#if defined(__aarch64__)
+    regs.sp.reg = args + 32;
+    regs.paramStartOffset = 0;
+    GET_REG(x0, regs.x0.reg);
+    GET_REG(x1, regs.x1.reg);
+    GET_REG(x2, regs.x2.reg);
+    GET_REG(x3, regs.x3.reg);
+    GET_REG(x4, regs.x4.reg);
+    GET_REG(x5, regs.x5.reg);
+    GET_REG(x6, regs.x6.reg);
+    GET_REG(x7, regs.x7.reg);
+
+    GET_REG(d0, regs.d0.reg);
+    GET_REG(d1, regs.d1.reg);
+    GET_REG(d2, regs.d2.reg);
+    GET_REG(d3, regs.d3.reg);
+    GET_REG(d4, regs.d4.reg);
+    GET_REG(d5, regs.d5.reg);
+    GET_REG(d6, regs.d6.reg);
+    GET_REG(d7, regs.d7.reg);
+
+#elif defined(__x86_64__)
     regs.rbp.reg = args + 16;
     regs.paramStartOffset = 2;
     GET_REG(rdi, regs.rdi.reg);
@@ -944,6 +1162,7 @@ ECode InterfaceProxy::ProxyEntry(
     GET_REG(xmm5, regs.xmm5.reg);
     GET_REG(xmm6, regs.xmm6.reg);
     GET_REG(xmm7, regs.xmm7.reg);
+#endif
 
     if (DEBUG) {
         String name, ns;

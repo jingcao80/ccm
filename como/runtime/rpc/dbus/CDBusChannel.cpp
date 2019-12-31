@@ -174,7 +174,7 @@ DBusHandlerResult CDBusChannel::ServiceRunnable::HandleMessage(
 
         AutoPtr<IParcel> argParcel = new CDBusParcel();
         argParcel->SetData(reinterpret_cast<HANDLE>(data), size);
-        AutoPtr<IParcel> resParcel;
+        AutoPtr<IParcel> resParcel = new CDBusParcel();
         ECode ec = thisObj->mTarget->Invoke(argParcel, resParcel);
 
         DBusMessage* reply = dbus_message_new_method_return(msg);

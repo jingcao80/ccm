@@ -78,6 +78,7 @@ if($ENV{PLATFORM} STREQUAL "linux")
 elseif($ENV{PLATFORM} STREQUAL "android")
     target_link_libraries(comort
         binder
+        log
         utils)
 endif()
 
