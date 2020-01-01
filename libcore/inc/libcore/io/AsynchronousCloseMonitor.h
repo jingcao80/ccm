@@ -36,7 +36,7 @@
 #include <ccmtypes.h>
 #include <pthread.h>
 
-using namespace ccm;
+using namespace como;
 
 namespace libcore {
 namespace io {

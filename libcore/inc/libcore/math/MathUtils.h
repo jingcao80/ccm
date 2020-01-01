@@ -20,7 +20,7 @@
 #include <ccmtypes.h>
 #include <ccmarray.h>
 
-using namespace ccm;
+using namespace como;
 
 namespace libcore {
 namespace math {

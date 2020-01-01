@@ -14,14 +14,14 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __PISCES_SYSTEM_CSTRUCTSTAT_H__
-#define __PISCES_SYSTEM_CSTRUCTSTAT_H__
+#ifndef __JING_SYSTEM_CSTRUCTSTAT_H__
+#define __JING_SYSTEM_CSTRUCTSTAT_H__
 
-#include "pisces.system.IStructStat.h"
-#include "_pisces_system_CStructStat.h"
+#include "jing.system.IStructStat.h"
+#include "_jing_system_CStructStat.h"
 #include <ccmobject.h>
 
-namespace pisces {
+namespace jing {
 namespace system {
 
 Coclass(CStructStat)
@@ -29,9 +29,9 @@ Coclass(CStructStat)
     , public IStructStat
 {
 public:
-    CCM_INTERFACE_DECL();
+    COMO_INTERFACE_DECL();
 
-    CCM_OBJECT_DECL();
+    COMO_OBJECT_DECL();
 
     ECode Constructor(
         /* [in] */ Long st_dev,
@@ -141,4 +141,4 @@ private:
 }
 }
 
-#endif // __PISCES_SYSTEM_CSTRUCTSTAT_H__
+#endif // __JING_SYSTEM_CSTRUCTSTAT_H__

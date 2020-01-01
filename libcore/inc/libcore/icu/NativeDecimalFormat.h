@@ -17,26 +17,26 @@
 #ifndef __LIBCORE_ICU_NATIVEDECIMALFORMAT_H__
 #define __LIBCORE_ICU_NATIVEDECIMALFORMAT_H__
 
-#include "ccm/core/SyncObject.h"
-#include "ccm.core.INumber.h"
-#include "ccm.math.IBigDecimal.h"
-#include "ccm.math.IBigInteger.h"
-#include "ccm.text.IAttributedCharacterIterator.h"
-#include "ccm.text.IDecimalFormatSymbols.h"
-#include "ccm.text.IFieldPosition.h"
-#include "ccm.text.INumberFormatField.h"
-#include "ccm.text.IParsePosition.h"
+#include "como/core/SyncObject.h"
+#include "como.core.INumber.h"
+#include "como.math.IBigDecimal.h"
+#include "como.math.IBigInteger.h"
+#include "como.text.IAttributedCharacterIterator.h"
+#include "como.text.IDecimalFormatSymbols.h"
+#include "como.text.IFieldPosition.h"
+#include "como.text.INumberFormatField.h"
+#include "como.text.IParsePosition.h"
 
-using ccm::core::INumber;
-using ccm::core::SyncObject;
-using ccm::math::IBigDecimal;
-using ccm::math::IBigInteger;
-using ccm::math::RoundingMode;
-using ccm::text::IAttributedCharacterIterator;
-using ccm::text::IDecimalFormatSymbols;
-using ccm::text::IFieldPosition;
-using ccm::text::INumberFormatField;
-using ccm::text::IParsePosition;
+using como::core::INumber;
+using como::core::SyncObject;
+using como::math::IBigDecimal;
+using como::math::IBigInteger;
+using como::math::RoundingMode;
+using como::text::IAttributedCharacterIterator;
+using como::text::IDecimalFormatSymbols;
+using como::text::IFieldPosition;
+using como::text::INumberFormatField;
+using como::text::IParsePosition;
 
 namespace libcore {
 namespace icu {

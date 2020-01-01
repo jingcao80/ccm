@@ -14,16 +14,16 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCMRT_SYSTEM_CPATHCLASSLOADER_H__
-#define __CCMRT_SYSTEM_CPATHCLASSLOADER_H__
+#ifndef __COMORT_SYSTEM_CPATHCLASSLOADER_H__
+#define __COMORT_SYSTEM_CPATHCLASSLOADER_H__
 
-#include "ccm/core/ClassLoader.h"
-#include "_ccmrt_system_CPathClassLoader.h"
+#include "como/core/ClassLoader.h"
+#include "_comort_system_CPathClassLoader.h"
 
-using namespace ccm;
-using ccm::core::ClassLoader;
+using namespace como;
+using como::core::ClassLoader;
 
-namespace ccmrt {
+namespace comort {
 namespace system {
 
 Coclass(CPathClassLoader)
@@ -54,4 +54,4 @@ private:
 }
 }
 
-#endif // __CCMRT_SYSTEM_CPATHCLASSLOADER_H__
+#endif // __COMORT_SYSTEM_CPATHCLASSLOADER_H__

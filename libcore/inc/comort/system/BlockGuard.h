@@ -14,18 +14,18 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCMRT_SYSTEM_BLOCKGUARD_H__
-#define __CCMRT_SYSTEM_BLOCKGUARD_H__
+#ifndef __COMORT_SYSTEM_BLOCKGUARD_H__
+#define __COMORT_SYSTEM_BLOCKGUARD_H__
 
-#include "ccm.core.IThreadLocal.h"
-#include "ccmrt.system.IBlockGuardPolicy.h"
+#include "como.core.IThreadLocal.h"
+#include "comort.system.IBlockGuardPolicy.h"
 #include <ccmautoptr.h>
 #include <ccmobject.h>
 
-using namespace ccm;
-using ccm::core::IThreadLocal;
+using namespace como;
+using como::core::IThreadLocal;
 
-namespace ccmrt {
+namespace comort {
 namespace system {
 
 class BlockGuard
@@ -69,4 +69,4 @@ private:
 }
 }
 
-#endif // __CCMRT_SYSTEM_BLOCKGUARD_H__
+#endif // __COMORT_SYSTEM_BLOCKGUARD_H__

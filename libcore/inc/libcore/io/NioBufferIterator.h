@@ -17,11 +17,11 @@
 #ifndef __LIBCORE_IO_NIOBUFFERITERATOR_H__
 #define __LIBCORE_IO_NIOBUFFERITERATOR_H__
 
-#include "ccm/core/SyncObject.h"
+#include "como/core/SyncObject.h"
 #include "libcore.io.IBufferIterator.h"
 #include "libcore.io.IMemoryMappedFile.h"
 
-using ccm::core::SyncObject;
+using como::core::SyncObject;
 
 namespace libcore {
 namespace io {
@@ -31,7 +31,7 @@ class NioBufferIterator
     , public IBufferIterator
 {
 public:
-    CCM_INTERFACE_DECL();
+    COMO_INTERFACE_DECL();
 
     ECode Constructor(
         /* [in] */ IMemoryMappedFile* file,

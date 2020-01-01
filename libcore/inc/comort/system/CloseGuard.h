@@ -14,20 +14,20 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCMRT_SYSTEM_CLOSEGUARD_H__
-#define __CCMRT_SYSTEM_CLOSEGUARD_H__
+#ifndef __COMORT_SYSTEM_CLOSEGUARD_H__
+#define __COMORT_SYSTEM_CLOSEGUARD_H__
 
-#include "ccm/core/SyncObject.h"
-#include "ccm.core.IStackTrace.h"
-#include "ccmrt.system.ICloseGuard.h"
-#include "ccmrt.system.ICloseGuardReporter.h"
-#include "ccmrt.system.ICloseGuardTracker.h"
+#include "como/core/SyncObject.h"
+#include "como.core.IStackTrace.h"
+#include "comort.system.ICloseGuard.h"
+#include "comort.system.ICloseGuardReporter.h"
+#include "comort.system.ICloseGuardTracker.h"
 #include <ccmautoptr.h>
 
-using ccm::core::IStackTrace;
-using ccm::core::SyncObject;
+using como::core::IStackTrace;
+using como::core::SyncObject;
 
-namespace ccmrt {
+namespace comort {
 namespace system {
 
 class CloseGuard
@@ -133,4 +133,4 @@ inline AutoPtr<ICloseGuardTracker> CloseGuard::GetTracker()
 }
 }
 
-#endif // __CCMRT_SYSTEM_CLOSEGUARD_H__
+#endif // __COMORT_SYSTEM_CLOSEGUARD_H__

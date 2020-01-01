@@ -17,11 +17,11 @@
 #ifndef __LIBCORE_ICU_ICU_H__
 #define __LIBCORE_ICU_ICU_H__
 
-#include "ccm.util.ILocale.h"
+#include "como.util.ILocale.h"
 #include "libcore/icu/LocaleData.h"
 #include "libcore/util/BasicLruCache.h"
 
-using ccm::util::ILocale;
+using como::util::ILocale;
 using libcore::icu::LocaleData;
 using libcore::util::BasicLruCache;
 

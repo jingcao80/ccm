@@ -14,8 +14,8 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_COREDEF_H__
-#define __CCM_COREDEF_H__
+#ifndef __COMO_COREDEF_H__
+#define __COMO_COREDEF_H__
 
 #define FOR_EACH(Type, element, TypeCastFunc, container) \
     { \
@@ -39,4 +39,4 @@
 
 #define END_FOR_EACH() }}
 
-#endif // __CCM_COREDEF_H__
+#endif // __COMO_COREDEF_H__

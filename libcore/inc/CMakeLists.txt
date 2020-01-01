@@ -25,5 +25,5 @@ add_dependencies(deploy_libcore_headers
 
 COPY(deploy_libcore_headers ${LIBCORE_DIR}/inc/coredef.h ${INC_DIR})
 
-add_subdirectory(ccm)
+add_subdirectory(como)
 add_subdirectory(libcore)

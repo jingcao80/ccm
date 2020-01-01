@@ -17,14 +17,14 @@
 #ifndef __LIBCORE_IO_IOUTILS_H__
 #define __LIBCORE_IO_IOUTILS_H__
 
-#include "ccm.io.IFileDescriptor.h"
-#include "ccm.io.charset.ICharset.h"
+#include "como.io.IFileDescriptor.h"
+#include "como.io.charset.ICharset.h"
 #include <ccmobject.h>
 #include <ccmtypes.h>
 
-using namespace ccm;
-using ccm::io::IFileDescriptor;
-using ccm::io::charset::ICharset;
+using namespace como;
+using como::io::IFileDescriptor;
+using como::io::charset::ICharset;
 
 namespace libcore {
 namespace io {

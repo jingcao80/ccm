@@ -17,15 +17,15 @@
 #ifndef __LIBCORE_ICU_NATIVECONVERTER_H__
 #define __LIBCORE_ICU_NATIVECONVERTER_H__
 
-#include "ccm.io.charset.ICharset.h"
-#include "ccm.io.charset.ICharsetDecoder.h"
-#include "ccm.io.charset.ICharsetEncoder.h"
-#include "ccm.io.charset.ICodingErrorAction.h"
+#include "como.io.charset.ICharset.h"
+#include "como.io.charset.ICharsetDecoder.h"
+#include "como.io.charset.ICharsetEncoder.h"
+#include "como.io.charset.ICodingErrorAction.h"
 
-using ccm::io::charset::ICharset;
-using ccm::io::charset::ICharsetDecoder;
-using ccm::io::charset::ICharsetEncoder;
-using ccm::io::charset::ICodingErrorAction;
+using como::io::charset::ICharset;
+using como::io::charset::ICharsetDecoder;
+using como::io::charset::ICharsetEncoder;
+using como::io::charset::ICodingErrorAction;
 
 namespace libcore {
 namespace icu {

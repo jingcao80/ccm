@@ -27,7 +27,7 @@ Coclass(CMemoryMappedFile)
     , public MemoryMappedFile
 {
 public:
-    CCM_OBJECT_DECL();
+    COMO_OBJECT_DECL();
 };
 
 }

@@ -14,14 +14,14 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __PISCES_SYSTEM_OSCONSTANTS_H__
-#define __PISCES_SYSTEM_OSCONSTANTS_H__
+#ifndef __JING_SYSTEM_OSCONSTANTS_H__
+#define __JING_SYSTEM_OSCONSTANTS_H__
 
 #include <ccmtypes.h>
 
-using namespace ccm;
+using namespace como;
 
-namespace pisces {
+namespace jing {
 namespace system {
 
 class OsConstants final
@@ -63,4 +63,4 @@ inline Boolean OsConstants::S_ISDIR(
 }
 }
 
-#endif // __PISCES_SYSTEM_OSCONSTANTS_H__
+#endif // __JING_SYSTEM_OSCONSTANTS_H__

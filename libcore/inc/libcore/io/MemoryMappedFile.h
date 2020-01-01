@@ -17,12 +17,12 @@
 #ifndef __LIBCORE_IO_MEMORYMAPPEDFILE_H__
 #define __LIBCORE_IO_MEMORYMAPPEDFILE_H__
 
-#include "ccm/core/SyncObject.h"
-#include "ccm.core.IAutoCloseable.h"
+#include "como/core/SyncObject.h"
+#include "como.core.IAutoCloseable.h"
 #include "libcore.io.IMemoryMappedFile.h"
 
-using ccm::core::IAutoCloseable;
-using ccm::core::SyncObject;
+using como::core::IAutoCloseable;
+using como::core::SyncObject;
 using libcore::io::IMemoryMappedFile;
 
 namespace libcore {
@@ -34,7 +34,7 @@ class MemoryMappedFile
     , public IAutoCloseable
 {
 public:
-    CCM_INTERFACE_DECL();
+    COMO_INTERFACE_DECL();
 
     ECode Constructor(
         /* [in] */ HANDLE address,

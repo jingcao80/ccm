@@ -19,7 +19,7 @@
 
 #include <ccmtypes.h>
 
-using namespace ccm;
+using namespace como;
 
 namespace libcore {
 namespace util {
@@ -46,8 +46,8 @@ private:
         /* [in] */ const String& path);
 
 private:
-    static const String CCM_ROOT_ENV;
-    static const String CCM_DATA_ENV;
+    static const String COMO_ROOT_ENV;
+    static const String COMO_DATA_ENV;
 };
 
 }

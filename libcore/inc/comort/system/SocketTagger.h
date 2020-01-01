@@ -14,20 +14,20 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCMRT_SYSTEM_SOCKETTAGGER_H__
-#define __CCMRT_SYSTEM_SOCKETTAGGER_H__
+#ifndef __COMORT_SYSTEM_SOCKETTAGGER_H__
+#define __COMORT_SYSTEM_SOCKETTAGGER_H__
 
-#include "ccm/core/SyncObject.h"
-#include "ccm.net.IDatagramSocket.h"
-#include "ccm.net.ISocket.h"
-#include "ccmrt.system.ISocketTagger.h"
+#include "como/core/SyncObject.h"
+#include "como.net.IDatagramSocket.h"
+#include "como.net.ISocket.h"
+#include "comort.system.ISocketTagger.h"
 #include <ccmautoptr.h>
 
-using ccm::core::SyncObject;
-using ccm::net::IDatagramSocket;
-using ccm::net::ISocket;
+using como::core::SyncObject;
+using como::net::IDatagramSocket;
+using como::net::ISocket;
 
-namespace ccmrt {
+namespace comort {
 namespace system {
 
 class SocketTagger
@@ -70,4 +70,4 @@ inline AutoPtr<ISocketTagger> SocketTagger::Get()
 }
 }
 
-#endif // __CCMRT_SYSTEM_SOCKETTAGGER_H__
+#endif // __COMORT_SYSTEM_SOCKETTAGGER_H__

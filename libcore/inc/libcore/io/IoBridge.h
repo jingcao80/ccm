@@ -17,9 +17,9 @@
 #ifndef __LIBCORE_IO_IOBRIDGE_H__
 #define __LIBCORE_IO_IOBRIDGE_H__
 
-#include "ccm.io.IFileDescriptor.h"
+#include "como.io.IFileDescriptor.h"
 
-using ccm::io::IFileDescriptor;
+using como::io::IFileDescriptor;
 
 namespace libcore {
 namespace io {

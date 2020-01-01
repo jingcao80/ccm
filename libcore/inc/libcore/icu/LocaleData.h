@@ -17,17 +17,17 @@
 #ifndef __LIBCORE_ICU_LOCALEDATE_H__
 #define __LIBCORE_ICU_LOCALEDATE_H__
 
-#include "ccm/core/SyncObject.h"
-#include "ccm.core.IInteger.h"
-#include "ccm.util.IHashMap.h"
-#include "ccm.util.ILocale.h"
+#include "como/core/SyncObject.h"
+#include "como.core.IInteger.h"
+#include "como.util.IHashMap.h"
+#include "como.util.ILocale.h"
 #include "libcore.icu.ILocaleData.h"
 #include <ccmautoptr.h>
 
-using ccm::core::IInteger;
-using ccm::core::SyncObject;
-using ccm::util::IHashMap;
-using ccm::util::ILocale;
+using como::core::IInteger;
+using como::core::SyncObject;
+using como::util::IHashMap;
+using como::util::ILocale;
 using libcore::icu::ILocaleData;
 
 namespace libcore {
@@ -38,7 +38,7 @@ class LocaleData
     , public ILocaleData
 {
 public:
-    CCM_INTERFACE_DECL();
+    COMO_INTERFACE_DECL();
 
     static AutoPtr<ILocale> MapInvalidAndNullLocales(
         /* [in] */ ILocale* locale);

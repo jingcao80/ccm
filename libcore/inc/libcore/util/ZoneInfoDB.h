@@ -17,8 +17,8 @@
 #ifndef __LIBCORE_UTIL_ZONEINFODB_H__
 #define __LIBCORE_UTIL_ZONEINFODB_H__
 
-#include "ccm/core/SyncObject.h"
-#include "ccm.io.IFile.h"
+#include "como/core/SyncObject.h"
+#include "como.io.IFile.h"
 #include "libcore.io.IBufferIterator.h"
 #include "libcore.io.IMemoryMappedFile.h"
 #include "libcore.util.IBasicLruCache.h"
@@ -26,8 +26,8 @@
 #include "libcore.util.IZoneInfoDB.h"
 #include "libcore.util.IZoneInfoDBTzData.h"
 
-using ccm::core::SyncObject;
-using ccm::io::IFile;
+using como::core::SyncObject;
+using como::io::IFile;
 using libcore::io::IBufferIterator;
 using libcore::io::IMemoryMappedFile;
 
@@ -45,7 +45,7 @@ public:
     public:
         virtual ~TzData();
 
-        CCM_INTERFACE_DECL();
+        COMO_INTERFACE_DECL();
 
         static AutoPtr<IZoneInfoDBTzData> LoadTzDataWithFallback(
             /* [in] */ const Array<String>& paths);

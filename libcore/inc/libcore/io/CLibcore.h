@@ -29,9 +29,9 @@ Coclass(CLibcore)
     , public ILibcore
 {
 public:
-    CCM_INTERFACE_DECL();
+    COMO_INTERFACE_DECL();
 
-    CCM_OBJECT_DECL();
+    COMO_OBJECT_DECL();
 
     ECode GetRawOs(
         /* [out] */ IOs** os) override;

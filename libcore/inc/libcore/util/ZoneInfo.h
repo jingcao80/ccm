@@ -17,20 +17,20 @@
 #ifndef __LIBCORE_UTIL_ZONEINFO_H__
 #define __LIBCORE_UTIL_ZONEINFO_H__
 
-#include "ccm/core/SyncObject.h"
-#include "ccm/util/TimeZone.h"
-#include "ccm.core.IInteger.h"
-#include "ccm.util.ICalendar.h"
-#include "ccm.util.IDate.h"
+#include "como/core/SyncObject.h"
+#include "como/util/TimeZone.h"
+#include "como.core.IInteger.h"
+#include "como.util.ICalendar.h"
+#include "como.util.IDate.h"
 #include "libcore.io.IBufferIterator.h"
 #include "libcore.util.IZoneInfo.h"
 #include "libcore.util.IZoneInfoWallTime.h"
 
-using ccm::core::IInteger;
-using ccm::core::SyncObject;
-using ccm::util::ICalendar;
-using ccm::util::IDate;
-using ccm::util::TimeZone;
+using como::core::IInteger;
+using como::core::SyncObject;
+using como::util::ICalendar;
+using como::util::IDate;
+using como::util::TimeZone;
 using libcore::io::IBufferIterator;
 
 namespace libcore {
@@ -49,7 +49,7 @@ public:
         , public IZoneInfoWallTime
     {
     public:
-        CCM_INTERFACE_DECL();
+        COMO_INTERFACE_DECL();
 
         ECode Constructor();
 
@@ -218,7 +218,7 @@ private:
     };
 
 public:
-    CCM_INTERFACE_DECL();
+    COMO_INTERFACE_DECL();
 
     static ECode ReadTimeZone(
         /* [in] */ const String& id,

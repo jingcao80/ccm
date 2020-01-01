@@ -17,12 +17,12 @@
 #ifndef __LIBCORE_UTIL_BASICLRUCACHE_H__
 #define __LIBCORE_UTIL_BASICLRUCACHE_H__
 
-#include "ccm/core/SyncObject.h"
-#include "ccm.util.IMap.h"
+#include "como/core/SyncObject.h"
+#include "como.util.IMap.h"
 #include "libcore.util.IBasicLruCache.h"
 
-using ccm::core::SyncObject;
-using ccm::util::IMap;
+using como::core::SyncObject;
+using como::util::IMap;
 
 namespace libcore {
 namespace util {
@@ -32,7 +32,7 @@ class BasicLruCache
     , public IBasicLruCache
 {
 public:
-    CCM_INTERFACE_DECL();
+    COMO_INTERFACE_DECL();
 
     ECode Constructor(
         /* [in] */ Integer maxSize);

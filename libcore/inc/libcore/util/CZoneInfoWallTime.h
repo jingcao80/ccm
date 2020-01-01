@@ -27,7 +27,7 @@ Coclass(CZoneInfoWallTime)
     , public ZoneInfo::WallTime
 {
 public:
-    CCM_OBJECT_DECL();
+    COMO_OBJECT_DECL();
 };
 
 }

@@ -15,7 +15,7 @@
 #=========================================================================
 
 add_custom_target(deploy_libcore_libcore_util_headers)
-add_dependencies(deploy_libcore_libcore_util_headers ccmrt)
+add_dependencies(deploy_libcore_libcore_util_headers comort)
 
 MKDIR(deploy_libcore_libcore_util_headers ${INC_DIR}/libcore/util)
 

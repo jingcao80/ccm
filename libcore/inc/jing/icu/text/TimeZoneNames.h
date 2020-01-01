@@ -14,17 +14,17 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __PISCES_ICU_TEXT_H__
-#define __PISCES_ICU_TEXT_H__
+#ifndef __JING_ICU_TEXT_H__
+#define __JING_ICU_TEXT_H__
 
-#include "ccm/core/SyncObject.h"
-#include "ccm.util.ILocale.h"
-#include "pisces.icu.text.ITimeZoneNames.h"
+#include "como/core/SyncObject.h"
+#include "como.util.ILocale.h"
+#include "jing.icu.text.ITimeZoneNames.h"
 
-using ccm::core::SyncObject;
-using ccm::util::ILocale;
+using como::core::SyncObject;
+using como::util::ILocale;
 
-namespace pisces {
+namespace jing {
 namespace icu {
 namespace text {
 
@@ -44,4 +44,4 @@ public:
 }
 }
 
-#endif // __PISCES_ICU_TEXT_H__
+#endif // __JING_ICU_TEXT_H__

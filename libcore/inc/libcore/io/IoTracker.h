@@ -17,9 +17,9 @@
 #ifndef __LIBCORE_IO_IOTRACKER_H__
 #define __LIBCORE_IO_IOTRACKER_H__
 
-#include "ccm/core/SyncObject.h"
+#include "como/core/SyncObject.h"
 
-using ccm::core::SyncObject;
+using como::core::SyncObject;
 
 namespace libcore {
 namespace io {

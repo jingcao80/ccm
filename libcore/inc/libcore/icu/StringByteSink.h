@@ -17,13 +17,13 @@
 #ifndef __LIBCORE_ICU_STRINGBYTESINK_H__
 #define __LIBCORE_ICU_STRINGBYTESINK_H__
 
-#include "ccm/core/CStringBuilder.h"
+#include "como/core/CStringBuilder.h"
 #include <ccmautoptr.h>
 #include <unicode/bytestream.h>
 
-using ccm::core::CStringBuilder;
-using ccm::core::IID_IStringBuilder;
-using ccm::core::IStringBuilder;
+using como::core::CStringBuilder;
+using como::core::IID_IStringBuilder;
+using como::core::IStringBuilder;
 
 namespace libcore {
 namespace icu {

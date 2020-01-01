@@ -17,12 +17,12 @@
 #ifndef __LIBCORE_IO_FORWARDINGOS_H__
 #define __LIBCORE_IO_FORWARDINGOS_H__
 
-#include "ccm/core/SyncObject.h"
-#include "ccm.io.IByteBuffer.h"
-#include "ccm.io.IFileDescriptor.h"
-#include "ccm.net.IInetAddress.h"
-#include "ccm.net.IInetSocketAddress.h"
-#include "ccm.net.ISocketAddress.h"
+#include "como/core/SyncObject.h"
+#include "como.io.IByteBuffer.h"
+#include "como.io.IFileDescriptor.h"
+#include "como.net.IInetAddress.h"
+#include "como.net.IInetSocketAddress.h"
+#include "como.net.ISocketAddress.h"
 #include "libcore.io.IOs.h"
 #include "pisces.system.IStructAddrinfo.h"
 #include "pisces.system.IStructCapUserData.h"
@@ -41,12 +41,12 @@
 #include "pisces.system.IStructUtsname.h"
 #include <ccmautoptr.h>
 
-using ccm::core::SyncObject;
-using ccm::io::IByteBuffer;
-using ccm::io::IFileDescriptor;
-using ccm::net::IInetAddress;
-using ccm::net::IInetSocketAddress;
-using ccm::net::ISocketAddress;
+using como::core::SyncObject;
+using como::io::IByteBuffer;
+using como::io::IFileDescriptor;
+using como::net::IInetAddress;
+using como::net::IInetSocketAddress;
+using como::net::ISocketAddress;
 using pisces::system::IStructAddrinfo;
 using pisces::system::IStructCapUserData;
 using pisces::system::IStructCapUserHeader;
@@ -74,7 +74,7 @@ public:
     ForwardingOs(
         /* [in] */ IOs* os);
 
-    CCM_INTERFACE_DECL();
+    COMO_INTERFACE_DECL();
 
     ECode Accept(
         /* [in] */ IFileDescriptor* fd,

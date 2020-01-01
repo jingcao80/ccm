@@ -17,13 +17,13 @@
 #ifndef __LIBCORE_ICU_TIMEZONENAMES_H__
 #define __LIBCORE_ICU_TIMEZONENAMES_H__
 
-#include "ccm.util.IComparator.h"
-#include "ccm.util.ILocale.h"
+#include "como.util.IComparator.h"
+#include "como.util.ILocale.h"
 #include "libcore/util/BasicLruCache.h"
 #include <ccmautoptr.h>
 
-using ccm::util::IComparator;
-using ccm::util::ILocale;
+using como::util::IComparator;
+using como::util::ILocale;
 using libcore::util::BasicLruCache;
 
 namespace libcore {
