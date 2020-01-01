@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,33 +14,33 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/core/AutoLock.h"
-#include "ccm/core/CoreUtils.h"
-#include "ccm/core/CStringBuilder.h"
-#include "ccm/core/StringUtils.h"
-#include "ccm/text/DateFormat.h"
-#include "ccm/util/CHashMap.h"
-#include "ccm/util/CLocale.h"
-#include "ccm.core.ICharSequence.h"
-#include "ccm.text.IDateFormat.h"
+#include "como/core/AutoLock.h"
+#include "como/core/CoreUtils.h"
+#include "como/core/CStringBuilder.h"
+#include "como/core/StringUtils.h"
+#include "como/text/DateFormat.h"
+#include "como/util/CHashMap.h"
+#include "como/util/CLocale.h"
+#include "como.core.ICharSequence.h"
+#include "como.text.IDateFormat.h"
 #include "libcore/icu/ICU.h"
 #include "libcore/icu/LocaleData.h"
 #include <ccmlogger.h>
 
-using ccm::core::AutoLock;
-using ccm::core::CoreUtils;
-using ccm::core::CStringBuilder;
-using ccm::core::E_ASSERTION_ERROR;
-using ccm::core::E_NULL_POINTER_EXCEPTION;
-using ccm::core::ICharSequence;
-using ccm::core::IID_IStringBuilder;
-using ccm::core::IStringBuilder;
-using ccm::core::StringUtils;
-using ccm::text::DateFormat;
-using ccm::text::IDateFormat;
-using ccm::util::CHashMap;
-using ccm::util::CLocale;
-using ccm::util::IID_IHashMap;
+using como::core::AutoLock;
+using como::core::CoreUtils;
+using como::core::CStringBuilder;
+using como::core::E_ASSERTION_ERROR;
+using como::core::E_NULL_POINTER_EXCEPTION;
+using como::core::ICharSequence;
+using como::core::IID_IStringBuilder;
+using como::core::IStringBuilder;
+using como::core::StringUtils;
+using como::text::DateFormat;
+using como::text::IDateFormat;
+using como::util::CHashMap;
+using como::util::CLocale;
+using como::util::IID_IHashMap;
 
 namespace libcore {
 namespace icu {
@@ -66,7 +66,7 @@ Boolean LocaleData::StaticInitialize()
     return true;
 }
 
-CCM_INTERFACE_IMPL_1(LocaleData, SyncObject, ILocaleData);
+COMO_INTERFACE_IMPL_1(LocaleData, SyncObject, ILocaleData);
 
 AutoPtr<ILocale> LocaleData::MapInvalidAndNullLocales(
     /* [in] */ ILocale* locale)
@@ -438,7 +438,7 @@ ECode LocaleData::InitLocaleData(
 
     if (!localeDataObj->mFullTimeFormat.IsNull()) {
         // There are some full time format patterns in ICU that use the pattern character 'v'.
-        // ccm doesn't accept this, so we replace it with 'z' which has about the same result
+        // como doesn't accept this, so we replace it with 'z' which has about the same result
         // as 'v', the timezone name.
         // 'v' -> "PT", 'z' -> "PST", v is the generic timezone and z the standard tz
         // "vvvv" -> "Pacific Time", "zzzz" -> "Pacific Standard Time"

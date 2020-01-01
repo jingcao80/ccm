@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,10 +14,10 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/core/CoreUtils.h"
+#include "como/core/CoreUtils.h"
 #include "libcore/icu/NativeConverter.h"
-#include "ccm/io/charset/CharsetICU.h"
-#include "ccm/io/charset/CodingErrorAction.h"
+#include "como/io/charset/CharsetICU.h"
+#include "como/io/charset/CodingErrorAction.h"
 #include "libcore/icu/UStringEnumeration.h"
 #include <memory>
 #include <vector>
@@ -26,9 +26,9 @@
 #include <unicode/uniset.h>
 #include <unicode/ustring.h>
 
-using ccm::core::CoreUtils;
-using ccm::io::charset::CharsetICU;
-using ccm::io::charset::CodingErrorAction;
+using como::core::CoreUtils;
+using como::io::charset::CharsetICU;
+using como::io::charset::CodingErrorAction;
 
 namespace libcore {
 namespace icu {
@@ -396,7 +396,7 @@ ECode NativeConverter::CharsetForName(
         return NOERROR;
     }
 
-    String ccmCanonicalName = GetCcmCanonicalName(icuCanonicalName);
+    String comoCanonicalName = GetCcmCanonicalName(icuCanonicalName);
 
     // Check that this charset is supported.
     {
@@ -427,16 +427,16 @@ ECode NativeConverter::CharsetForName(
         *cs = nullptr;
         return NOERROR;
     }
-    Array<String> ccmAliases(aliases.size());
+    Array<String> comoAliases(aliases.size());
     for (int i = 0; i < aliases.size(); i++) {
-        ccmAliases[i] = aliases[i];
+        comoAliases[i] = aliases[i];
     }
 
     String icuCanonicalNameStr(icuCanonicalName);
 
     // Construct the CharsetICU object.
     AutoPtr<CharsetICU> charsetICU = new CharsetICU();
-    charsetICU->Constructor(ccmCanonicalName, icuCanonicalNameStr, ccmAliases);
+    charsetICU->Constructor(comoCanonicalName, icuCanonicalNameStr, comoAliases);
     *cs = (ICharset*)charsetICU.Get();
     REFCOUNT_ADD(*cs);
     return NOERROR;

@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/io/CFileDescriptor.h"
+#include "como/io/CFileDescriptor.h"
 #include "libcore/io/AsynchronousCloseMonitor.h"
 #include "libcore/io/Linux.h"
 #include "pisces/system/CStructStat.h"
@@ -25,9 +25,9 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-using ccm::io::CFileDescriptor;
-using ccm::io::E_INTERRUPTED_IO_EXCEPTION;
-using ccm::io::IID_IFileDescriptor;
+using como::io::CFileDescriptor;
+using como::io::E_INTERRUPTED_IO_EXCEPTION;
+using como::io::IID_IFileDescriptor;
 using pisces::system::CStructStat;
 using pisces::system::E_ERRNO_EXCEPTION;
 using pisces::system::IID_IStructStat;
@@ -80,7 +80,7 @@ namespace io {
     } \
     _rc; })
 
-CCM_INTERFACE_IMPL_1(Linux, SyncObject, IOs);
+COMO_INTERFACE_IMPL_1(Linux, SyncObject, IOs);
 
 ECode Linux::Accept(
     /* [in] */ IFileDescriptor* fd,

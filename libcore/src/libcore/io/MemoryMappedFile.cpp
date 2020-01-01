@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,9 +14,9 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/io/ByteOrder.h"
-#include "ccm.core.IInteger.h"
-#include "ccm.io.IFileDescriptor.h"
+#include "como/io/ByteOrder.h"
+#include "como.core.IInteger.h"
+#include "como.io.IFileDescriptor.h"
 #include "libcore/io/CMemoryMappedFile.h"
 #include "libcore/io/Libcore.h"
 #include "libcore/io/MemoryMappedFile.h"
@@ -26,18 +26,18 @@
 #include "pisces.system.IStructStat.h"
 #include <ccmlogger.h>
 
-using ccm::core::E_ILLEGAL_STATE_EXCEPTION;
-using ccm::core::IID_IAutoCloseable;
-using ccm::core::IInteger;
-using ccm::io::ByteOrder;
-using ccm::io::IFileDescriptor;
+using como::core::E_ILLEGAL_STATE_EXCEPTION;
+using como::core::IID_IAutoCloseable;
+using como::core::IInteger;
+using como::io::ByteOrder;
+using como::io::IFileDescriptor;
 using pisces::system::IStructStat;
 using pisces::system::OsConstants;
 
 namespace libcore {
 namespace io {
 
-CCM_INTERFACE_IMPL_2(MemoryMappedFile, SyncObject, IMemoryMappedFile, IAutoCloseable);
+COMO_INTERFACE_IMPL_2(MemoryMappedFile, SyncObject, IMemoryMappedFile, IAutoCloseable);
 
 ECode MemoryMappedFile::Constructor(
     /* [in] */ HANDLE address,

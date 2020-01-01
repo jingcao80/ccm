@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,16 +14,16 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccmrt/system/BlockGuard.h"
-#include "ccmrt/system/SocketTagger.h"
+#include "comort/system/BlockGuard.h"
+#include "comort/system/SocketTagger.h"
 #include "libcore/io/BlockGuardOs.h"
 #include "libcore/io/Libcore.h"
 #include "pisces/system/OsConstants.h"
-#include "ccmrt.system.IBlockGuardPolicy.h"
+#include "comort.system.IBlockGuardPolicy.h"
 
-using ccmrt::system::BlockGuard;
-using ccmrt::system::SocketTagger;
-using ccmrt::system::IBlockGuardPolicy;
+using comort::system::BlockGuard;
+using comort::system::SocketTagger;
+using comort::system::IBlockGuardPolicy;
 using pisces::system::OsConstants;
 
 namespace libcore {

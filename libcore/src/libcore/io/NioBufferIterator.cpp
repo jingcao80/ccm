@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,12 +19,12 @@
 #include "libcore/io/NioBufferIterator.h"
 #include <ccmlogger.h>
 
-using ccm::core::E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+using como::core::E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
 
 namespace libcore {
 namespace io {
 
-CCM_INTERFACE_IMPL_1(NioBufferIterator, SyncObject, IBufferIterator);
+COMO_INTERFACE_IMPL_1(NioBufferIterator, SyncObject, IBufferIterator);
 
 ECode NioBufferIterator::Constructor(
     /* [in] */ IMemoryMappedFile* file,

@@ -35,7 +35,7 @@ include "comort/system.cdl"
 include "libcore/icu.cdl"
 include "libcore/io.cdl"
 include "libcore/util.cdl"
-include "pisces/icu.cdl"
-include "pisces/system.cdl"
+include "jing/icu.cdl"
+include "jing/system.cdl"
 
 }

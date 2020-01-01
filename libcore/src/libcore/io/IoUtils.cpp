@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,17 +14,17 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/core/StringFactory.h"
-#include "ccm/io/charset/StandardCharsets.h"
+#include "como/core/StringFactory.h"
+#include "como/io/charset/StandardCharsets.h"
 #include "libcore/io/IoBridge.h"
 #include "libcore/io/IoUtils.h"
 #include "libcore/io/Libcore.h"
 #include "pisces/system/OsConstants.h"
 #include "pisces.system.IStructStat.h"
 
-using ccm::core::StringFactory;
-using ccm::io::E_IO_EXCEPTION;
-using ccm::io::charset::StandardCharsets;
+using como::core::StringFactory;
+using como::io::E_IO_EXCEPTION;
+using como::io::charset::StandardCharsets;
 using pisces::system::IStructStat;
 using pisces::system::OsConstants;
 

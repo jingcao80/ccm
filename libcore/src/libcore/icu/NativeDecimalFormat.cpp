@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,30 +14,30 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/core/AutoLock.h"
-#include "ccm/core/CDouble.h"
-#include "ccm/core/CLong.h"
-#include "ccm/math/CBigDecimal.h"
-#include "ccm/text/CAttributedString.h"
-#include "ccm/text/NumberFormat.h"
-#include "ccm.core.IFloat.h"
-#include "ccm.text.IFormatField.h"
+#include "como/core/AutoLock.h"
+#include "como/core/CDouble.h"
+#include "como/core/CLong.h"
+#include "como/math/CBigDecimal.h"
+#include "como/text/CAttributedString.h"
+#include "como/text/NumberFormat.h"
+#include "como.core.IFloat.h"
+#include "como.text.IFormatField.h"
 #include "libcore/icu/NativeDecimalFormat.h"
 #include <unicode/decimfmt.h>
 #include <vector>
 
-using ccm::core::AutoLock;
-using ccm::core::CDouble;
-using ccm::core::CLong;
-using ccm::core::E_ASSERTION_ERROR;
-using ccm::core::IDouble;
-using ccm::core::IFloat;
-using ccm::core::IID_INumber;
-using ccm::math::CBigDecimal;
-using ccm::text::CAttributedString;
-using ccm::text::IAttributedString;
-using ccm::text::IID_IAttributedString;
-using ccm::text::IFormatField;
+using como::core::AutoLock;
+using como::core::CDouble;
+using como::core::CLong;
+using como::core::E_ASSERTION_ERROR;
+using como::core::IDouble;
+using como::core::IFloat;
+using como::core::IID_INumber;
+using como::math::CBigDecimal;
+using como::text::CAttributedString;
+using como::text::IAttributedString;
+using como::text::IID_IAttributedString;
+using como::text::IFormatField;
 
 namespace libcore {
 namespace icu {
@@ -109,17 +109,17 @@ inline static UNumberFormat* ToUNumberFormat(
 static Array<INumberFormatField*> Create_ICU4C_FIELD_IDS()
 {
     Array<INumberFormatField*> IDS = {
-        ccm::text::NumberFormat::Field::GetINTEGER(),               //  0 UNUM_INTEGER_FIELD
-        ccm::text::NumberFormat::Field::GetFRACTION(),              //  1 UNUM_FRACTION_FIELD
-        ccm::text::NumberFormat::Field::GetDECIMAL_SEPARATOR(),     //  2 UNUM_DECIMAL_SEPARATOR_FIELD
-        ccm::text::NumberFormat::Field::GetEXPONENT_SYMBOL(),       //  3 UNUM_EXPONENT_SYMBOL_FIELD
-        ccm::text::NumberFormat::Field::GetEXPONENT_SIGN(),         //  4 UNUM_EXPONENT_SIGN_FIELD
-        ccm::text::NumberFormat::Field::GetEXPONENT(),              //  5 UNUM_EXPONENT_FIELD
-        ccm::text::NumberFormat::Field::GetGROUPING_SEPARATOR(),    //  6 UNUM_GROUPING_SEPARATOR_FIELD
-        ccm::text::NumberFormat::Field::GetCURRENCY(),              //  7 UNUM_CURRENCY_FIELD
-        ccm::text::NumberFormat::Field::GetPERCENT(),               //  8 UNUM_PERCENT_FIELD
-        ccm::text::NumberFormat::Field::GetPERMILLE(),              //  9 UNUM_PERMILL_FIELD
-        ccm::text::NumberFormat::Field::GetSIGN(),                  // 10 UNUM_SIGN_FIELD
+        como::text::NumberFormat::Field::GetINTEGER(),               //  0 UNUM_INTEGER_FIELD
+        como::text::NumberFormat::Field::GetFRACTION(),              //  1 UNUM_FRACTION_FIELD
+        como::text::NumberFormat::Field::GetDECIMAL_SEPARATOR(),     //  2 UNUM_DECIMAL_SEPARATOR_FIELD
+        como::text::NumberFormat::Field::GetEXPONENT_SYMBOL(),       //  3 UNUM_EXPONENT_SYMBOL_FIELD
+        como::text::NumberFormat::Field::GetEXPONENT_SIGN(),         //  4 UNUM_EXPONENT_SIGN_FIELD
+        como::text::NumberFormat::Field::GetEXPONENT(),              //  5 UNUM_EXPONENT_FIELD
+        como::text::NumberFormat::Field::GetGROUPING_SEPARATOR(),    //  6 UNUM_GROUPING_SEPARATOR_FIELD
+        como::text::NumberFormat::Field::GetCURRENCY(),              //  7 UNUM_CURRENCY_FIELD
+        como::text::NumberFormat::Field::GetPERCENT(),               //  8 UNUM_PERCENT_FIELD
+        como::text::NumberFormat::Field::GetPERMILLE(),              //  9 UNUM_PERMILL_FIELD
+        como::text::NumberFormat::Field::GetSIGN(),                  // 10 UNUM_SIGN_FIELD
     };
     return IDS;
 }
@@ -696,7 +696,7 @@ static U_ICU_NAMESPACE::DecimalFormatSymbols* MakeDecimalFormatSymbols(
     result->setSymbol(U_ICU_NAMESPACE::DecimalFormatSymbols::kPerMillSymbol,
             UnicodeString((UChar32)perMill));
 
-    // ccm.text.DecimalFormatSymbols just uses a zero digit,
+    // como.text.DecimalFormatSymbols just uses a zero digit,
     // but ICU >= 4.6 has a field for each decimal digit.
     result->setSymbol(U_ICU_NAMESPACE::DecimalFormatSymbols::kZeroDigitSymbol,
             UnicodeString((UChar32)(zeroDigit + 0)));

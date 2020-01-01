@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,14 +14,14 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/core/CArrayHolder.h"
-#include "ccm/core/System.h"
-#include "ccm/util/Arrays.h"
-#include "ccm/util/Locale.h"
-#include "ccm/util/TimeZone.h"
-#include "ccm/util/concurrent/TimeUnit.h"
-#include "ccm.core.IArrayHolder.h"
-#include "ccm.util.ITimeZone.h"
+#include "como/core/CArrayHolder.h"
+#include "como/core/System.h"
+#include "como/util/Arrays.h"
+#include "como/util/Locale.h"
+#include "como/util/TimeZone.h"
+#include "como/util/concurrent/TimeUnit.h"
+#include "como.core.IArrayHolder.h"
+#include "como.util.ITimeZone.h"
 #include "libcore/icu/StringByteSink.h"
 #include "libcore/icu/TimeZoneNames.h"
 #include <unicode/calendar.h>
@@ -29,16 +29,16 @@
 #include <unicode/tznames.h>
 #include <memory>
 
-using ccm::core::CArrayHolder;
-using ccm::core::IArrayHolder;
-using ccm::core::IID_IArrayHolder;
-using ccm::core::System;
-using ccm::util::Arrays;
-using ccm::util::IID_IComparator;
-using ccm::util::ITimeZone;
-using ccm::util::Locale;
-using ccm::util::TimeZone;
-using ccm::util::concurrent::TimeUnit;
+using como::core::CArrayHolder;
+using como::core::IArrayHolder;
+using como::core::IID_IArrayHolder;
+using como::core::System;
+using como::util::Arrays;
+using como::util::IID_IComparator;
+using como::util::ITimeZone;
+using como::util::Locale;
+using como::util::TimeZone;
+using como::util::concurrent::TimeUnit;
 
 namespace libcore {
 namespace icu {
@@ -49,7 +49,7 @@ extern ECode MaybeThrowIcuException(
 
 Array<String> TimeZoneNames::GetAvailableTimeZoneIds()
 {
-    static Array<String> sAvailableTimeZoneIds = ccm::util::TimeZone::GetAvailableIDs();
+    static Array<String> sAvailableTimeZoneIds = como::util::TimeZone::GetAvailableIDs();
     return sAvailableTimeZoneIds;
 }
 
@@ -58,11 +58,11 @@ static AutoPtr<TimeZoneNames::ZoneStringsCache> CreateCachedZoneStrings()
     AutoPtr<TimeZoneNames::ZoneStringsCache> cache = new TimeZoneNames::ZoneStringsCache();
     cache->Constructor();
     AutoPtr<IInterface> zoneStrings;
-    cache->Get(ccm::util::Locale::GetROOT(), &zoneStrings);
+    cache->Get(como::util::Locale::GetROOT(), &zoneStrings);
     zoneStrings = nullptr;
-    cache->Get(ccm::util::Locale::GetUS(), &zoneStrings);
+    cache->Get(como::util::Locale::GetUS(), &zoneStrings);
     zoneStrings = nullptr;
-    cache->Get(ccm::util::Locale::GetDefault(), &zoneStrings);
+    cache->Get(como::util::Locale::GetDefault(), &zoneStrings);
     return cache;
 }
 
@@ -192,7 +192,7 @@ ECode TimeZoneNames::GetZoneStrings(
 
     AutoPtr<ILocale> aLocale = locale;
     if (aLocale == nullptr) {
-        aLocale = ccm::util::Locale::GetDefault();
+        aLocale = como::util::Locale::GetDefault();
     }
     AutoPtr<IArrayHolder> zoneStringsHolder;
     GetCachedZoneStrings()->Get(aLocale, (IInterface**)&zoneStringsHolder);

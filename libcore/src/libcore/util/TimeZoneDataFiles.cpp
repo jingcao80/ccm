@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,20 +14,20 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/core/CStringBuilder.h"
-#include "ccm/core/System.h"
+#include "como/core/CStringBuilder.h"
+#include "como/core/System.h"
 #include "libcore/util/TimeZoneDataFiles.h"
 
-using ccm::core::CStringBuilder;
-using ccm::core::IID_IStringBuilder;
-using ccm::core::IStringBuilder;
-using ccm::core::System;
+using como::core::CStringBuilder;
+using como::core::IID_IStringBuilder;
+using como::core::IStringBuilder;
+using como::core::System;
 
 namespace libcore {
 namespace util {
 
-const String TimeZoneDataFiles::CCM_ROOT_ENV("COMO_ROOT");
-const String TimeZoneDataFiles::CCM_DATA_ENV("DATA_PATH");
+const String TimeZoneDataFiles::COMO_ROOT_ENV("COMO_ROOT");
+const String TimeZoneDataFiles::COMO_DATA_ENV("DATA_PATH");
 
 Array<String> TimeZoneDataFiles::GetTimeZoneFilePaths(
     /* [in] */ const String& fileName)
@@ -41,7 +41,7 @@ String TimeZoneDataFiles::GetDataTimeZoneFile(
     /* [in] */ const String& fileName)
 {
     String value;
-    System::GetEnv(CCM_DATA_ENV, &value);
+    System::GetEnv(COMO_DATA_ENV, &value);
     return value + "/misc/zoneinfo/current/" + fileName;
 }
 
@@ -49,7 +49,7 @@ String TimeZoneDataFiles::GetSystemTimeZoneFile(
     /* [in] */ const String& fileName)
 {
     String value;
-    System::GetEnv(CCM_ROOT_ENV, &value);
+    System::GetEnv(COMO_ROOT_ENV, &value);
     return value + "/usr/share/zoneinfo/" + fileName;
 }
 
@@ -58,12 +58,12 @@ String TimeZoneDataFiles::GenerateIcuDataPath()
     AutoPtr<IStringBuilder> icuDataPathBuilder;
     CStringBuilder::New(IID_IStringBuilder, (IInterface**)&icuDataPathBuilder);
 
-    String dataIcuDataPath = GetEnvironmentPath(CCM_DATA_ENV, String("/misc/zoneinfo/current/icu"));
+    String dataIcuDataPath = GetEnvironmentPath(COMO_DATA_ENV, String("/misc/zoneinfo/current/icu"));
     if (!dataIcuDataPath.IsNull()) {
         icuDataPathBuilder->Append(dataIcuDataPath);
     }
 
-    String systemIcuDataPath = GetEnvironmentPath(CCM_ROOT_ENV, String("/usr/icu"));
+    String systemIcuDataPath = GetEnvironmentPath(COMO_ROOT_ENV, String("/usr/icu"));
     if (!systemIcuDataPath.IsNull()) {
         Integer length;
         if (icuDataPathBuilder->GetLength(&length), length > 0) {

@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,20 +14,20 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/core/AutoLock.h"
-#include "ccm/core/CInteger.h"
-#include "ccm/core/CoreUtils.h"
-#include "ccm/core/StringUtils.h"
-#include "ccm/util/CHashMap.h"
-#include "ccm/util/CLinkedHashSet.h"
-#include "ccm/util/CLocaleBuilder.h"
-#include "ccm/util/Collections.h"
-#include "ccm.core.IChar.h"
-#include "ccm.core.ICharSequence.h"
-#include "ccm.util.IIterator.h"
-#include "ccm.util.IMap.h"
-#include "ccm.util.IMapEntry.h"
-#include "ccm.util.ISet.h"
+#include "como/core/AutoLock.h"
+#include "como/core/CInteger.h"
+#include "como/core/CoreUtils.h"
+#include "como/core/StringUtils.h"
+#include "como/util/CHashMap.h"
+#include "como/util/CLinkedHashSet.h"
+#include "como/util/CLocaleBuilder.h"
+#include "como/util/Collections.h"
+#include "como.core.IChar.h"
+#include "como.core.ICharSequence.h"
+#include "como.util.IIterator.h"
+#include "como.util.IMap.h"
+#include "como.util.IMapEntry.h"
+#include "como.util.ISet.h"
 #include "libcore/icu/ICU.h"
 #include "libcore/icu/StringByteSink.h"
 #include "libcore/icu/UStringEnumeration.h"
@@ -46,28 +46,28 @@
 #include <unicode/utypes.h>
 #include <unicode/udata.h>
 
-using ccm::core::AutoLock;
-using ccm::core::CInteger;
-using ccm::core::CoreUtils;
-using ccm::core::E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-using ccm::core::IChar;
-using ccm::core::ICharSequence;
-using ccm::core::IID_IInteger;
-using ccm::core::IInteger;
-using ccm::core::StringUtils;
-using ccm::util::CHashMap;
-using ccm::util::CLinkedHashSet;
-using ccm::util::CLocaleBuilder;
-using ccm::util::Collections;
-using ccm::util::IID_ILocale;
-using ccm::util::IID_ILocaleBuilder;
-using ccm::util::IID_IMap;
-using ccm::util::IID_ISet;
-using ccm::util::IIterator;
-using ccm::util::ILocaleBuilder;
-using ccm::util::IMap;
-using ccm::util::IMapEntry;
-using ccm::util::ISet;
+using como::core::AutoLock;
+using como::core::CInteger;
+using como::core::CoreUtils;
+using como::core::E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+using como::core::IChar;
+using como::core::ICharSequence;
+using como::core::IID_IInteger;
+using como::core::IInteger;
+using como::core::StringUtils;
+using como::util::CHashMap;
+using como::util::CLinkedHashSet;
+using como::util::CLocaleBuilder;
+using como::util::Collections;
+using como::util::IID_ILocale;
+using como::util::IID_ILocaleBuilder;
+using como::util::IID_IMap;
+using como::util::IID_ISet;
+using como::util::IIterator;
+using como::util::ILocaleBuilder;
+using como::util::IMap;
+using como::util::IMapEntry;
+using como::util::ISet;
 
 U_CDECL_BEGIN
 
@@ -305,9 +305,9 @@ static String GetStringField(
             chars = ures_getString(currentBundle, &charCount, &status);
             break;
         case URES_ARRAY:
-            // In case there is an array, ccm currently only cares about the
+            // In case there is an array, como currently only cares about the
             // first string of that array, the rest of the array is used by ICU
-            // for additional data ignored by ccm.
+            // for additional data ignored by como.
             chars = ures_getStringByIndex(currentBundle, 0, &charCount, &status);
             break;
       default:

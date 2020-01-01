@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,21 +14,21 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/core/CInteger.h"
-#include "ccm/core/Math.h"
-#include "ccm/util/Arrays.h"
-#include "ccm/util/CGregorianCalendar.h"
+#include "como/core/CInteger.h"
+#include "como/core/Math.h"
+#include "como/util/Arrays.h"
+#include "como/util/CGregorianCalendar.h"
 #include "libcore/util/ZoneInfo.h"
 #include <ccmlogger.h>
 
-using ccm::core::CInteger;
-using ccm::core::E_ILLEGAL_STATE_EXCEPTION;
-using ccm::core::IID_IInteger;
-using ccm::core::Math;
-using ccm::io::E_IO_EXCEPTION;
-using ccm::util::Arrays;
-using ccm::util::CGregorianCalendar;
-using ccm::util::IID_ICalendar;
+using como::core::CInteger;
+using como::core::E_ILLEGAL_STATE_EXCEPTION;
+using como::core::IID_IInteger;
+using como::core::Math;
+using como::io::E_IO_EXCEPTION;
+using como::util::Arrays;
+using como::util::CGregorianCalendar;
+using como::util::IID_ICalendar;
 
 namespace libcore {
 namespace util {
@@ -41,7 +41,7 @@ const Array<Integer> ZoneInfo::LEAP{
     0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335,
 };
 
-CCM_INTERFACE_IMPL_1(ZoneInfo, TimeZone, IZoneInfo);
+COMO_INTERFACE_IMPL_1(ZoneInfo, TimeZone, IZoneInfo);
 
 ECode ZoneInfo::ReadTimeZone(
     /* [in] */ const String& id,
@@ -634,7 +634,7 @@ ECode ZoneInfo::CheckedSubtract(
 
 //-----------------------------------------------------------------------
 
-CCM_INTERFACE_IMPL_1(ZoneInfo::WallTime, SyncObject, IZoneInfoWallTime);
+COMO_INTERFACE_IMPL_1(ZoneInfo::WallTime, SyncObject, IZoneInfoWallTime);
 
 ECode ZoneInfo::WallTime::Constructor()
 {
@@ -1161,10 +1161,10 @@ void ZoneInfo::WallTime::CopyFieldsFromCalendar()
     mCalendar->Get(ICalendar::MINUTE, &mMinute);
     mCalendar->Get(ICalendar::SECOND, &mSecond);
 
-    // Calendar uses Sunday == 1, CCM Time uses Sunday = 0.
+    // Calendar uses Sunday == 1, COMO Time uses Sunday = 0.
     mCalendar->Get(ICalendar::DAY_OF_WEEK, &mWeekDay);
     mWeekDay -= 1;
-    // Calendar enumerates from 1, CCM Time enumerates from 0.
+    // Calendar enumerates from 1, COMO Time enumerates from 0.
     mCalendar->Get(ICalendar::DAY_OF_YEAR, &mYearDay);
     mYearDay -= 1;
 }

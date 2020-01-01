@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,16 +14,16 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/core/AutoLock.h"
-#include "ccm/core/CoreUtils.h"
-#include "ccm/core/System.h"
-#include "ccm/io/CFileInputStream.h"
-#include "ccm/util/Arrays.h"
-#include "ccm/util/CArrayList.h"
-#include "ccm.core.IAutoCloseable.h"
-#include "ccm.core.ICharSequence.h"
-#include "ccm.util.IList.h"
-#include "ccm.util.ITimeZone.h"
+#include "como/core/AutoLock.h"
+#include "como/core/CoreUtils.h"
+#include "como/core/System.h"
+#include "como/io/CFileInputStream.h"
+#include "como/util/Arrays.h"
+#include "como/util/CArrayList.h"
+#include "como.core.IAutoCloseable.h"
+#include "como.core.ICharSequence.h"
+#include "como.util.IList.h"
+#include "como.util.ITimeZone.h"
 #include "libcore/io/MemoryMappedFile.h"
 #include "libcore/util/BasicLruCache.h"
 #include "libcore/util/TimeZoneDataFiles.h"
@@ -31,28 +31,28 @@
 #include "libcore/util/ZoneInfoDB.h"
 #include <ccmlogger.h>
 
-using ccm::core::AutoLock;
-using ccm::core::CoreUtils;
-using ccm::core::E_ILLEGAL_STATE_EXCEPTION;
-using ccm::core::IAutoCloseable;
-using ccm::core::ICharSequence;
-using ccm::core::IID_ICharSequence;
-using ccm::core::System;
-using ccm::io::CFileInputStream;
-using ccm::io::E_IO_EXCEPTION;
-using ccm::io::IInputStream;
-using ccm::io::IID_IInputStream;
-using ccm::util::Arrays;
-using ccm::util::CArrayList;
-using ccm::util::IID_IList;
-using ccm::util::IList;
-using ccm::util::ITimeZone;
+using como::core::AutoLock;
+using como::core::CoreUtils;
+using como::core::E_ILLEGAL_STATE_EXCEPTION;
+using como::core::IAutoCloseable;
+using como::core::ICharSequence;
+using como::core::IID_ICharSequence;
+using como::core::System;
+using como::io::CFileInputStream;
+using como::io::E_IO_EXCEPTION;
+using como::io::IInputStream;
+using como::io::IID_IInputStream;
+using como::util::Arrays;
+using como::util::CArrayList;
+using como::util::IID_IList;
+using como::util::IList;
+using como::util::ITimeZone;
 using libcore::io::MemoryMappedFile;
 
 namespace libcore {
 namespace util {
 
-CCM_INTERFACE_IMPL_1(ZoneInfoDB::TzData, SyncObject, IZoneInfoDBTzData);
+COMO_INTERFACE_IMPL_1(ZoneInfoDB::TzData, SyncObject, IZoneInfoDBTzData);
 
 ZoneInfoDB::TzData::TzData()
 {

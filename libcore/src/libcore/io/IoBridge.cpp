@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,15 +14,15 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/util/Arrays.h"
+#include "como/util/Arrays.h"
 #include "libcore/io/IoBridge.h"
 #include "libcore/io/IoUtils.h"
 #include "libcore/io/Libcore.h"
 #include "pisces/system/OsConstants.h"
 #include "pisces.system.IStructStat.h"
 
-using ccm::io::E_FILE_NOT_FOUND_EXCEPTION;
-using ccm::util::Arrays;
+using como::io::E_FILE_NOT_FOUND_EXCEPTION;
+using como::util::Arrays;
 using pisces::system::IStructStat;
 using pisces::system::OsConstants;
 
@@ -77,7 +77,7 @@ ECode IoBridge::Read(
     }
     Integer readCount;
     ECode ec = Libcore::GetOs()->Read(fd, bytes, byteOffset, byteCount, &readCount);
-    if (FAILED(ec)) return ccm::io::E_IO_EXCEPTION;
+    if (FAILED(ec)) return como::io::E_IO_EXCEPTION;
     if (readCount == 0) {
         *number = -1;
         return NOERROR;
@@ -99,7 +99,7 @@ ECode IoBridge::Write(
     while (byteCount > 0) {
         Integer bytesWritten;
         ECode ec = Libcore::GetOs()->Write(fd, bytes, byteOffset, byteCount, &bytesWritten);
-        if (FAILED(ec)) return ccm::io::E_IO_EXCEPTION;
+        if (FAILED(ec)) return como::io::E_IO_EXCEPTION;
         byteCount -= bytesWritten;
         byteOffset += bytesWritten;
     }

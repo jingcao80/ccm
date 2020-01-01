@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,11 +14,11 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/core/Math.h"
+#include "como/core/Math.h"
 #include "libcore/io/Memory.h"
 #include <byteswap.h>
 
-using ccm::core::Math;
+using como::core::Math;
 
 namespace libcore {
 namespace io {

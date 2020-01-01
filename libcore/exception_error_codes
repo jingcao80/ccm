@@ -15,13 +15,13 @@
 //=========================================================================
 
 ======== Libcore_Namespace ========     ======== Namespace_Code ========
-ccm.core.Errors                                     0x00
-ccm.core.Exceptions                                 0x01
-ccm.io.Errors                                       0x02
-ccm.io.Exceptions                                   0x03
-ccm.text.Exceptions                                 0x08
-ccm.util.Exceptions                                 0x09
-ccm.util.regex.Exceptions                           0x0a
-libcore.util.Exceptions                             0x1a
-pisces.system.Exceptions                            0xe0
-pisces.system.Exceptions                            0xe1
+como.core.Errors                                     0x00
+como.core.Exceptions                                 0x01
+como.io.Errors                                       0x02
+como.io.Exceptions                                   0x03
+como.text.Exceptions                                 0x08
+como.util.Exceptions                                 0x09
+como.util.regex.Exceptions                           0x0a
+libcore.util.Exceptions                              0x1a
+jing.system.Exceptions                               0xe0
+jing.system.Exceptions                               0xe1

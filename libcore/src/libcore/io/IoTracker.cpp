@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,12 +14,12 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccmrt/system/BlockGuard.h"
+#include "comort/system/BlockGuard.h"
 #include "libcore/io/IoTracker.h"
-#include "ccmrt.system.IBlockGuardPolicy.h"
+#include "comort.system.IBlockGuardPolicy.h"
 
-using ccmrt::system::BlockGuard;
-using ccmrt::system::IBlockGuardPolicy;
+using comort::system::BlockGuard;
+using comort::system::IBlockGuardPolicy;
 
 namespace libcore {
 namespace io {

@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,23 +14,23 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/core/AutoLock.h"
-#include "ccm/util/CLinkedHashMap.h"
-#include "ccm.util.IMapEntry.h"
+#include "como/core/AutoLock.h"
+#include "como/util/CLinkedHashMap.h"
+#include "como.util.IMapEntry.h"
 #include "libcore/util/BasicLruCache.h"
 #include <ccmlogger.h>
 
-using ccm::core::AutoLock;
-using ccm::core::E_NULL_POINTER_EXCEPTION;
-using ccm::util::CLinkedHashMap;
-using ccm::util::IID_IMap;
-using ccm::util::ILinkedHashMap;
-using ccm::util::IMapEntry;
+using como::core::AutoLock;
+using como::core::E_NULL_POINTER_EXCEPTION;
+using como::util::CLinkedHashMap;
+using como::util::IID_IMap;
+using como::util::ILinkedHashMap;
+using como::util::IMapEntry;
 
 namespace libcore {
 namespace util {
 
-CCM_INTERFACE_IMPL_1(BasicLruCache, SyncObject, IBasicLruCache);
+COMO_INTERFACE_IMPL_1(BasicLruCache, SyncObject, IBasicLruCache);
 
 ECode BasicLruCache::Constructor(
     /* [in] */ Integer maxSize)
