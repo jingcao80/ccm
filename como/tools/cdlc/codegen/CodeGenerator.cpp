@@ -125,6 +125,7 @@ void CodeGenerator::ComponentModeEmitter::EmitConstantsAndTypes()
     builder.AppendFormat("#define %s\n", defMacro.string());
     builder.Append("\n");
     builder.Append("#include <comotypes.h>\n");
+    builder.Append("#include <comointfs.h>\n");
     builder.Append("#include <comosp.h>\n");
     builder.Append("\n");
     builder.Append("using namespace como;\n");
@@ -737,6 +738,7 @@ void CodeGenerator::ClientModeEmitter::EmitConstantsAndTypes()
     builder.AppendFormat("#define %s\n", defMacro.string());
     builder.Append("\n");
     builder.Append("#include <comotypes.h>\n");
+    builder.Append("#include <comointfs.h>\n");
     builder.Append("#include <comosp.h>\n");
     builder.Append("\n");
     builder.Append("using namespace como;\n");
@@ -1926,8 +1928,14 @@ String CodeGenerator::Emitter::EmitType(
         case como::TypeKind::Array: {
             como::MetaType* emt = mComponent->mTypes[mt->mIndex];
             if (mode == MODE_PARAMETER_IN) {
-                builder.AppendFormat("const Array<%s>&",
-                        EmitType(emt, MODE_VARIABLE).string());
+                if ((properties & TYPE_NUMBER_MASK) == 0) {
+                    builder.AppendFormat("const Array<%s>&",
+                            EmitType(emt, MODE_VARIABLE).string());
+                }
+                else {
+                    builder.AppendFormat("const Array<%s>",
+                            EmitType(emt, MODE_VARIABLE).string());
+                }
             }
             else if (mode == (MODE_PARAMETER_IN | MODE_PARAMETER_OUT) ||
                      mode == MODE_PARAMETER_OUT) {

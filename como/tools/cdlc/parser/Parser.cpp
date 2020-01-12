@@ -2095,8 +2095,9 @@ bool Parser::ParseEnumeration()
 
         AutoPtr<EnumerationType> enumeration = new EnumerationType();
         enumeration->SetName(enumName);
+        enumeration->SetNamespace(ns);
         enumeration->SetForwardDeclared(true);
-        ns->AddEnumerationType(enumeration);
+        mModule->AddTemporaryType(enumeration);
         mCurrentContext->AddTypeForwardDeclaration(enumName, fullTypeName);
         return result;
     }
