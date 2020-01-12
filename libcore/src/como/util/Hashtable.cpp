@@ -21,7 +21,7 @@
 #include "como/util/Hashtable.h"
 #include "como.core.IStringBuilder.h"
 #include "como.util.ISet.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::AutoLock;
 using como::core::CStringBuilder;
@@ -343,6 +343,7 @@ ECode Hashtable::Clear()
         mTable.Set(index, nullptr);
     }
     mCount = 0;
+    return NOERROR;
 }
 
 ECode Hashtable::CloneImpl(
@@ -365,7 +366,7 @@ ECode Hashtable::CloneImpl(
 }
 
 ECode Hashtable::ToString(
-    /* [out] */ String* str)
+    /* [out] */ String& str)
 {
     AutoLock lock(this);
 
@@ -373,7 +374,7 @@ ECode Hashtable::ToString(
     GetSize(&max);
     max = max - 1;
     if (max == -1) {
-        *str = "{}";
+        str = "{}";
         return NOERROR;
     }
 
@@ -449,24 +450,22 @@ ECode Hashtable::GetValues(
 
 ECode Hashtable::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     AutoLock lock(this);
     if (IInterface::Equals(obj, (IHashtable*)this)) {
-        *result = true;
+        result = true;
         return NOERROR;
     }
 
     if (IMap::Probe(obj) == nullptr) {
-        *result = false;
+        result = false;
         return NOERROR;
     }
     IMap* t = IMap::Probe(obj);
     Integer othSize, thisSize;
     if (t->GetSize(&othSize), GetSize(&thisSize), othSize != thisSize) {
-        *result = false;
+        result = false;
         return NOERROR;
     }
 
@@ -487,7 +486,7 @@ ECode Hashtable::Equals(
             Boolean contains;
             if ((t->Get(key, &v1), v1 != nullptr) ||
                 (t->ContainsKey(key, &contains), !contains)) {
-                *result = false;
+                result = false;
                 return NOERROR;
             }
         }
@@ -495,21 +494,19 @@ ECode Hashtable::Equals(
             AutoPtr<IInterface> v1;
             t->Get(key, &v1);
             if (!Object::Equals(value, v1)) {
-                *result = false;
+                result = false;
                 return NOERROR;
             }
         }
     }
 
-    *result = true;
+    result = true;
     return NOERROR;
 }
 
 ECode Hashtable::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
     /*
      * This code detects the recursion caused by computing the hash code
      * of a self-referential hash table and prevents the stack overflow
@@ -521,9 +518,8 @@ ECode Hashtable::GetHashCode(
      * in progress.
      */
     AutoLock lock(this);
-    Integer h = 0;
+    hash = 0;
     if (mCount == 0 || mLoadFactor < 0) {
-        *hash = h;
         return NOERROR;
     }
 
@@ -532,15 +528,14 @@ ECode Hashtable::GetHashCode(
         HashtableEntry* entry = mTable[i];
         while (entry != nullptr) {
             Integer eh;
-            entry->GetHashCode(&eh);
-            h += eh;
+            entry->GetHashCode(eh);
+            hash += eh;
             entry = entry->mNext;
         }
     }
 
     mLoadFactor = -mLoadFactor; // Mark hashCode computation complete
 
-    *hash = h;
     return NOERROR;
 }
 
@@ -816,12 +811,10 @@ ECode Hashtable::HashtableEntry::SetValue(
 
 ECode Hashtable::HashtableEntry::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     if (IMapEntry::Probe(obj) == nullptr) {
-        *result = false;
+        result = false;
         return NOERROR;
     }
     IMapEntry* e = IMapEntry::Probe(obj);
@@ -829,17 +822,15 @@ ECode Hashtable::HashtableEntry::Equals(
     AutoPtr<IInterface> key, value;
     e->GetKey(&key);
     e->GetValue(&value);
-    *result = (mKey == nullptr ? key == nullptr : Object::Equals(mKey, key)) &&
+    result = (mKey == nullptr ? key == nullptr : Object::Equals(mKey, key)) &&
             (mValue == nullptr ? value == nullptr : Object::Equals(mValue, value));
     return NOERROR;
 }
 
 ECode Hashtable::HashtableEntry::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
-    *hash = mHash ^ Object::GetHashCode(mValue);
+    hash = mHash ^ Object::GetHashCode(mValue);
     return NOERROR;
 }
 

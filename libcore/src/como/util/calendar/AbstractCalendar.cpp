@@ -17,7 +17,7 @@
 #include "como/core/System.h"
 #include "como/util/calendar/AbstractCalendar.h"
 #include "como/util/calendar/CalendarUtils.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::System;
 

@@ -15,7 +15,7 @@
 //=========================================================================
 
 #include "como/core/NativeTimeUtils.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 #include <limits>
 
 namespace como {

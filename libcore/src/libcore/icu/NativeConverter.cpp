@@ -453,6 +453,7 @@ Integer NativeConverter::TranslateCodingErrorAction(
         return 2;
     } else {
         CHECK(false);
+        return -1;
     }
 }
 

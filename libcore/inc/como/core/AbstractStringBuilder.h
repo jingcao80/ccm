@@ -73,13 +73,13 @@ public:
     virtual ECode Append(
         /* [in] */ IStringBuffer* sb);
 
-    virtual ECode Append(
-        /* [in] */ ICharSequence* s);
+    ECode Append(
+        /* [in] */ ICharSequence* s) override;
 
-    virtual ECode Append(
+    ECode Append(
         /* [in] */ ICharSequence* s,
         /* [in] */ Integer start,
-        /* [in] */ Integer end);
+        /* [in] */ Integer end) override;
 
     virtual ECode Append(
         /* [in] */ const Array<Char>& str);
@@ -92,8 +92,8 @@ public:
     virtual ECode Append(
         /* [in] */ Boolean b);
 
-    virtual ECode Append(
-        /* [in] */ Char c);
+    ECode Append(
+        /* [in] */ Char c) override;
 
     virtual ECode Append(
         /* [in] */ Integer i);
@@ -126,7 +126,7 @@ public:
     ECode SubSequence(
         /* [in] */ Integer start,
         /* [in] */ Integer end,
-        /* [out] */ ICharSequence** subcsq);
+        /* [out] */ ICharSequence** subcsq) override;
 
     virtual ECode Substring(
         /* [in] */ Integer start,

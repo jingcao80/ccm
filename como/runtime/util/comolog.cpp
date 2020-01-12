@@ -16,9 +16,9 @@
 
 #include "comolog.h"
 #include <cstdarg>
-#if defined(__aarch64__)
+#if defined(__android__)
 #include <android/log.h>
-#elif defined(__x86_64__)
+#elif defined(__linux__)
 #include <cstdio>
 #endif
 
@@ -36,11 +36,11 @@ void Logger::D(
 
     va_list argList;
 
-#if defined(__aarch64__)
+#if defined(__android__)
     va_start(argList, format);
     __android_log_vprint(ANDROID_LOG_DEBUG, tag, format, argList);
     va_end(argList);
-#elif defined(__x86_64__)
+#elif defined(__linux__)
     printf("[%s]: ", tag);
     va_start(argList, format);
     vprintf(format, argList);
@@ -59,11 +59,11 @@ void Logger::E(
 
     va_list argList;
 
-#if defined(__aarch64__)
+#if defined(__android__)
     va_start(argList, format);
     __android_log_vprint(ANDROID_LOG_ERROR, tag, format, argList);
     va_end(argList);
-#elif defined(__x86_64__)
+#elif defined(__linux__)
     printf("[%s]: ", tag);
     va_start(argList, format);
     vprintf(format, argList);
@@ -82,11 +82,11 @@ void Logger::V(
 
     va_list argList;
 
-#if defined(__aarch64__)
+#if defined(__android__)
     va_start(argList, format);
     __android_log_vprint(ANDROID_LOG_VERBOSE, tag, format, argList);
     va_end(argList);
-#elif defined(__x86_64__)
+#elif defined(__linux__)
     printf("[%s]: ", tag);
     va_start(argList, format);
     vprintf(format, argList);
@@ -105,11 +105,11 @@ void Logger::W(
 
     va_list argList;
 
-#if defined(__aarch64__)
+#if defined(__android__)
     va_start(argList, format);
     __android_log_vprint(ANDROID_LOG_WARN, tag, format, argList);
     va_end(argList);
-#elif defined(__x86_64__)
+#elif defined(__linux__)
     printf("[%s]: ", tag);
     va_start(argList, format);
     vprintf(format, argList);
@@ -118,7 +118,7 @@ void Logger::W(
 #endif
 }
 
-#if defined(__aarch64__)
+#if defined(__android__)
 static int ToAndroidLogPriority(
     /* [in] */ int level)
 {
@@ -148,11 +148,11 @@ void Logger::Log(
 
     va_list argList;
 
-#if defined(__aarch64__)
+#if defined(__android__)
     va_start(argList, format);
     __android_log_vprint(ToAndroidLogPriority(level), tag, format, argList);
     va_end(argList);
-#elif defined(__x86_64__)
+#elif defined(__linux__)
     printf("[%s]: ", tag);
     va_start(argList, format);
     vprintf(format, argList);

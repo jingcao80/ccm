@@ -17,7 +17,7 @@
 #ifndef __COMO_MISC_FLOATCONSTS_H__
 #define __COMO_MISC_FLOATCONSTS_H__
 
-#include <ccmtypes.h>
+#include <comotypes.h>
 
 namespace como {
 namespace misc {

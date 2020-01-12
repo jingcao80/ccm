@@ -25,7 +25,7 @@
 #include "como.util.ICollection.h"
 #include "como.util.IIterator.h"
 #include "como.util.IList.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::AutoLock;
 using como::core::CoreUtils;
@@ -54,10 +54,12 @@ ECode DeleteOnExitHook::StaticInitialize()
         ECode Run() override
         {
             RunHooks();
+            return NOERROR;
         }
     };
 
     AutoPtr<IThread> hook = new _Thread();
+    return NOERROR;
 }
 
 SyncObject& DeleteOnExitHook::GetClassLock()

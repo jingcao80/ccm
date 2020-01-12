@@ -45,7 +45,7 @@
 #ifndef __COMO_CORE_NATIVEBACKTRACE_H__
 #define __COMO_CORE_NATIVEBACKTRACE_H__
 
-#include <ccmtypes.h>
+#include <comotypes.h>
 
 namespace como {
 namespace core {

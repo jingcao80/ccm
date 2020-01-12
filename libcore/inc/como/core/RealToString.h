@@ -18,7 +18,7 @@
 #define __COMO_CORE_REALTOSTRING_H__
 
 #include "como.core.IStringBuilder.h"
-#include <ccmtypes.h>
+#include <comotypes.h>
 
 namespace como {
 namespace core {

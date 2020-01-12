@@ -38,7 +38,7 @@ interface IFloatingDecimalBinaryToASCIIConverter
         [out] Integer* exponent);
 
     GetDigits(
-        [out] Array<Char> digits,
+        [out] Array<Char>& digits,
         [out] Integer* number);
 
     IsExceptional(

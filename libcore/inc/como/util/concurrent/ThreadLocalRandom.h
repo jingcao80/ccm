@@ -110,8 +110,8 @@ public:
     static Integer NextSecondarySeed();
 
 protected:
-    virtual Integer Next(
-        /* [in] */ Integer bits);
+    Integer Next(
+        /* [in] */ Integer bits) override;
 
 private:
     ThreadLocalRandom();

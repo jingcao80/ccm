@@ -35,7 +35,7 @@
 #include "como.util.concurrent.atomic.IAtomicLong.h"
 #include "libcore/icu/LocaleData.h"
 #include "libcore/icu/NativeDecimalFormat.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::CDouble;
 using como::core::CLong;
@@ -552,37 +552,33 @@ ECode DecimalFormat::CloneImpl(
 
 ECode DecimalFormat::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* same)
+    /* [out] */ Boolean& same)
 {
-    VALIDATE_NOT_NULL(same);
-
     DecimalFormat* df = (DecimalFormat*)IDecimalFormat::Probe(obj);
     if (df == nullptr) {
-        *same = false;
+        same = false;
         return NOERROR;
     }
     if (this == df) {
-        *same = true;
+        same = true;
         return NOERROR;
     }
 
     NativeDecimalFormat* thisNdf = reinterpret_cast<NativeDecimalFormat*>(mNativeDF);
     NativeDecimalFormat* thatNdf = reinterpret_cast<NativeDecimalFormat*>(df->mNativeDF);
 
-    *same = thisNdf->Equals(thatNdf) && Object::Equals(mSymbols, df->mSymbols);
+    same = thisNdf->Equals(thatNdf) && Object::Equals(mSymbols, df->mSymbols);
     return NOERROR;
 }
 
 ECode DecimalFormat::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
     String prefix;
     GetPositivePrefix(&prefix);
 
     NumberFormat::GetHashCode(hash);
-    *hash = *hash * 37 + prefix.GetHashCode();
+    hash = hash * 37 + prefix.GetHashCode();
     return NOERROR;
 }
 
@@ -811,7 +807,7 @@ void DecimalFormat::AdjustForCurrencyDefaultFractionDigits()
             // Try to adjust all of them in a reasonable way.
             Integer oldMaxDigits;
             GetMaximumFractionDigits(&oldMaxDigits);
-            if (oldMinDigits = oldMaxDigits) {
+            if (oldMinDigits == oldMaxDigits) {
                 SetMinimumFractionDigits(digits);
                 SetMaximumFractionDigits(digits);
             }

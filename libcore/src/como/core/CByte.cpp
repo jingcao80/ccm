@@ -115,37 +115,31 @@ ECode CByte::CompareTo(
 
 ECode CByte::Equals(
     /* [in] */ IInterface* other,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     IByte* b = IByte::Probe(other);
     if (b == nullptr) {
-        *result = false;
+        result = false;
         return NOERROR;
     }
 
     Byte ov;
     b->GetValue(&ov);
-    *result = mValue == ov;
+    result = mValue == ov;
     return NOERROR;
 }
 
 ECode CByte::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
-    *hash = (Integer)mValue;
+    hash = (Integer)mValue;
     return NOERROR;
 }
 
 ECode CByte::ToString(
-    /* [out] */ String* str)
+    /* [out] */ String& str)
 {
-    VALIDATE_NOT_NULL(str);
-
-    *str = String::Format("%d", mValue);
+    str = String::Format("%d", mValue);
     return NOERROR;
 }
 

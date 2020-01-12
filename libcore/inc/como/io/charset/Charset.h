@@ -111,14 +111,14 @@ public:
         /* [out] */ Integer* result) override;
 
     ECode GetHashCode(
-        /* [out] */ Integer* hash) override;
+        /* [out] */ Integer& hash) override;
 
     ECode Equals(
         /* [in] */ IInterface* obj,
-        /* [out] */ Boolean* same) override;
+        /* [out] */ Boolean& same) override;
 
     ECode ToString(
-        /* [out] */ String* desc) override;
+        /* [out] */ String& desc) override;
 
 protected:
     ECode Constructor(

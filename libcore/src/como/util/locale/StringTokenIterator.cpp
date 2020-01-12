@@ -40,7 +40,7 @@ String StringTokenIterator::Next()
 {
     if (HasNext()) {
         mStart = mEnd + 1;
-        mEnd == NextDelimiter(mStart);
+        mEnd = NextDelimiter(mStart);
         mToken = mText.Substring(mStart, mEnd);
     }
     else {

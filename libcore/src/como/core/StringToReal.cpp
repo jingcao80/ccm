@@ -38,7 +38,7 @@
 #include "como/core/StringUtils.h"
 #include "libcore.h"
 #include "como.core.IFloat.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 #include <math.h>
 
 namespace como {
@@ -945,7 +945,7 @@ ECode StringToReal::InitialParse(
 
         // Do we have a valid positive integer?
         String exponentString = s.Substring(exponentOffset, length);
-        if (exponentString.IsNullOrEmpty()) {
+        if (exponentString.IsEmpty()) {
             Logger::E("StringToReal", "Invalid Double: \"%s\"", s.string());
             return E_NUMBER_FORMAT_EXCEPTION;
         }

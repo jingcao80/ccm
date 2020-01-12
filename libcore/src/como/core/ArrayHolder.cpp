@@ -48,34 +48,34 @@ ECode ArrayHolder::GetArrayType(
     VALIDATE_NOT_NULL(type);
 
     switch(mArray.mType) {
-        case CcmTypeKind::Char:
+        case TypeKind::Char:
             *type = TYPE_CHAR_ARRAY;
             break;
-        case CcmTypeKind::Byte:
+        case TypeKind::Byte:
             *type = TYPE_BYTE_ARRAY;
             break;
-        case CcmTypeKind::Short:
+        case TypeKind::Short:
             *type = TYPE_SHORT_ARRAY;
             break;
-        case CcmTypeKind::Integer:
+        case TypeKind::Integer:
             *type = TYPE_INTEGER_ARRAY;
             break;
-        case CcmTypeKind::Long:
+        case TypeKind::Long:
             *type = TYPE_LONG_ARRAY;
             break;
-        case CcmTypeKind::Float:
+        case TypeKind::Float:
             *type = TYPE_FLOAT_ARRAY;
             break;
-        case CcmTypeKind::Double:
+        case TypeKind::Double:
             *type = TYPE_DOUBLE_ARRAY;
             break;
-        case CcmTypeKind::Boolean:
+        case TypeKind::Boolean:
             *type = TYPE_BOOLEAN_ARRAY;
             break;
-        case CcmTypeKind::String:
+        case TypeKind::String:
             *type = TYPE_STRING_ARRAY;
             break;
-        case CcmTypeKind::Interface:
+        case TypeKind::Interface:
             *type = TYPE_INTERFACE_ARRAY;
             break;
         default:

@@ -28,9 +28,9 @@
 #include "como.util.ILocale.h"
 #include "como.util.ILocaleBuilder.h"
 #include "como.util.ILocaleCategory.h"
-#include <ccmautoptr.h>
-#include <ccmobject.h>
-#include <ccmrefbase.h>
+#include <comosp.h>
+#include <comoobj.h>
+#include <comoref.h>
 
 using como::core::ICloneable;
 using como::core::SyncObject;
@@ -165,10 +165,10 @@ private:
 
         ECode Equals(
             /* [in] */ IInterface* obj,
-            /* [out] */ Boolean* same) override;
+            /* [out] */ Boolean& same) override;
 
         ECode GetHashCode(
-            /* [out] */ Integer* hash) override;
+            /* [out] */ Integer& hash) override;
 
     public:
         AutoPtr<BaseLocale> mBase;
@@ -312,7 +312,7 @@ public:
     AutoPtr<LocaleExtensions> GetLocaleExtensions();
 
     ECode ToString(
-        /* [out] */ String* desc) override;
+        /* [out] */ String& desc) override;
 
     ECode ToLanguageTag(
         /* [out] */ String* langTag) override;
@@ -362,11 +362,11 @@ public:
         /* [out] */ String* name) override;
 
     ECode GetHashCode(
-        /* [out] */ Integer* hash) override;
+        /* [out] */ Integer& hash) override;
 
     ECode Equals(
         /* [in] */ IInterface* obj,
-        /* [out] */ Boolean* same) override;
+        /* [out] */ Boolean& same) override;
 
 protected:
     ECode CloneImpl(

@@ -42,7 +42,7 @@ namespace util {
 namespace locale {
 
 static const InterfaceID IID_LocaleExtensions =
-        {{0xd0928ef6,0x5d64,0x40af,0xb577,{0xc,0x6,0x2,0xe,0xb,0xd,0x1,0xc,0xe,0x8,0x6,0xb}}, &CID_libcore};
+        {{0xd0928ef6,0x5d64,0x40af,0xb577,{0xc6,0x2e,0xbd,0x1c,0xe8,0x6b}}, &CID_libcore};
 
 AutoPtr<LocaleExtensions> LocaleExtensions::GetCALENDAR_JAPANESE()
 {
@@ -278,43 +278,37 @@ String LocaleExtensions::ToID(
         buf->Append((IObject*)privuse.Get());
     }
     String str;
-    buf->ToString(&str);
+    buf->ToString(str);
     return str;
 }
 
 ECode LocaleExtensions::ToString(
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
-    VALIDATE_NOT_NULL(desc);
-
-    *desc = mId;
+    desc = mId;
     return NOERROR;
 }
 
 ECode LocaleExtensions::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
-    *hash = mId.GetHashCode();
+    hash = mId.GetHashCode();
     return NOERROR;
 }
 
 ECode LocaleExtensions::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* same)
+    /* [out] */ Boolean& same)
 {
-    VALIDATE_NOT_NULL(same);
-
     if (IInterface::Equals((IObject*)this, obj)) {
-        *same = true;
+        same = true;
         return NOERROR;
     }
     if (obj->Probe(IID_LocaleExtensions) == nullptr) {
-        *same = false;
+        same = false;
         return NOERROR;
     }
-    *same = mId.Equals(((LocaleExtensions*)IObject::Probe(obj))->mId);
+    same = mId.Equals(((LocaleExtensions*)IObject::Probe(obj))->mId);
     return NOERROR;
 }
 

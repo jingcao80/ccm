@@ -17,7 +17,7 @@
 #include "como/security/CPermissions.h"
 #include "como/security/CSecureRandom.h"
 #include "como/security/action/CGetPropertyAction.h"
-#include <ccmapi.h>
+#include <comoapi.h>
 #include <new>
 
 namespace como {
@@ -33,7 +33,7 @@ ECode CSecureRandom::New(
     /* [out] */ IInterface** object)
 {
     AutoPtr<IClassObject> clsObject;
-    ECode ec = CoAcquireClassFactory(CID_CSecureRandom, nullptr, &clsObject);
+    ECode ec = CoAcquireClassFactory(CID_CSecureRandom, nullptr, clsObject);
     if (FAILED(ec)) return ec;
 
     void* addr = calloc(sizeof(CSecureRandom), 1);
@@ -47,7 +47,7 @@ ECode CSecureRandom::New(
     }
 
     AutoPtr<IMetaComponent> comp;
-    clsObject->GetMetadate(&comp);
+    clsObject->GetMetadate(comp);
     _obj->AttachMetadata(comp, String("como::security::CSecureRandom"));
     *object = _obj->Probe(iid);
     REFCOUNT_ADD(*object);

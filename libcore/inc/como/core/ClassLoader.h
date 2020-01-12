@@ -20,7 +20,7 @@
 #include "como/core/SyncObject.h"
 #include "como.io.IInputStream.h"
 #include "como.util.IHashMap.h"
-#include <ccmautoptr.h>
+#include <comosp.h>
 
 using como::io::IInputStream;
 using como::util::IHashMap;
@@ -44,27 +44,41 @@ public:
 
     ECode LoadCoclass(
         /* [in] */ const String& fullName,
-        /* [out] */ IMetaCoclass** klass) override;
+        /* [out] */ AutoPtr<IMetaCoclass>& klass) override;
+
+    ECode LoadCoclass(
+        /* [in] */ const CoclassID& cid,
+        /* [out] */ AutoPtr<IMetaCoclass>& klass) override
+    {
+        return NOERROR;
+    }
 
     ECode GetParent(
-        /* [out] */ IClassLoader** parent) override;
+        /* [out] */ AutoPtr<IClassLoader>& parent) override;
 
     static AutoPtr<IClassLoader> GetSystemClassLoader();
 
     ECode LoadInterface(
         /* [in] */ const String& fullName,
-        /* [out] */ IMetaInterface** intf) override;
+        /* [out] */ AutoPtr<IMetaInterface>& intf) override;
 
     ECode LoadComponent(
         /* [in] */ const String& path,
-        /* [out] */ IMetaComponent** component) override;
+        /* [out] */ AutoPtr<IMetaComponent>& component) override;
 
     ECode LoadComponent(
         /* [in] */ const ComponentID& compId,
-        /* [out] */ IMetaComponent** component) override;
+        /* [out] */ AutoPtr<IMetaComponent>& component) override;
 
     ECode UnloadComponent(
         /* [in] */ const ComponentID& compId) override;
+
+    ECode LoadMetadata(
+        /* [in] */ const Array<Byte>& metadata,
+        /* [out] */ AutoPtr<IMetaComponent>& component) override
+    {
+        return NOERROR;
+    }
 
     static AutoPtr<IInputStream> GetSystemResourceAsStream(
         /* [in] */ const String& name);
@@ -75,14 +89,14 @@ protected:
 
     virtual ECode FindCoclass(
         /* [in] */ const String& fullName,
-        /* [out] */ IMetaCoclass** klass);
+        /* [out] */ AutoPtr<IMetaCoclass>& klass);
 
     virtual AutoPtr<IMetaCoclass> FindLoadedCoclass(
         /* [in] */ const String& fullName);
 
     virtual ECode FindInterface(
         /* [in] */ const String& fullName,
-        /* [out] */ IMetaInterface** intf);
+        /* [out] */ AutoPtr<IMetaInterface>& intf);
 
     virtual AutoPtr<IMetaInterface> FindLoadedInterface(
         /* [in] */ const String& fullName);

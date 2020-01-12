@@ -19,7 +19,7 @@
 #include "como/util/Arrays.h"
 #include "como/util/CGregorianCalendar.h"
 #include "libcore/util/ZoneInfo.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::CInteger;
 using como::core::E_ILLEGAL_STATE_EXCEPTION;
@@ -532,51 +532,44 @@ ECode ZoneInfo::HasSameRules(
 
 ECode ZoneInfo::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* same)
+    /* [out] */ Boolean& same)
 {
-    VALIDATE_NOT_NULL(same);
-
     ZoneInfo* other = (ZoneInfo*)IZoneInfo::Probe(obj);
     if (other == nullptr) {
-        *same = false;
+        same = false;
         return NOERROR;
     }
     String thisID, otherID;
     GetID(&thisID);
     other->GetID(&otherID);
     Boolean result;
-    *same = thisID.Equals(otherID) && (HasSameRules(other, &result), result);
+    same = thisID.Equals(otherID) && (HasSameRules(other, &result), result);
     return NOERROR;
 }
 
 ECode ZoneInfo::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
     constexpr Integer prime = 31;
-    Integer result = 1;
+    hash = 1;
     String id;
     GetID(&id);
-    result = prime * result + id.GetHashCode();
-    result = prime * result + Arrays::GetHashCode(mOffsets);
-    result = prime * result + Arrays::GetHashCode(mIsDsts);
-    result = prime * result + mRawOffset;
-    result = prime * result + Arrays::GetHashCode(mTransitions);
-    result = prime * result + Arrays::GetHashCode(mTypes);
-    result = prime * result + (mUseDst ? 1231 : 1237);
-    *hash = result;
+    hash = prime * hash + id.GetHashCode();
+    hash = prime * hash + Arrays::GetHashCode(mOffsets);
+    hash = prime * hash + Arrays::GetHashCode(mIsDsts);
+    hash = prime * hash + mRawOffset;
+    hash = prime * hash + Arrays::GetHashCode(mTransitions);
+    hash = prime * hash + Arrays::GetHashCode(mTypes);
+    hash = prime * hash + (mUseDst ? 1231 : 1237);
     return NOERROR;
 }
 
 ECode ZoneInfo::ToString(
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
-    VALIDATE_NOT_NULL(desc);
-
     String id;
     GetID(&id);
-    *desc = String::Format("ZoneInfo[id=\"%s\",mRawOffset=%d,"
+    desc = String::Format("ZoneInfo[id=\"%s\",mRawOffset=%d,"
             "mEarliestRawOffset=%d,mUseDst=%s,mDstSavings=%d,"
             "transitions=%d]", id.string(), mRawOffset, mEarliestRawOffset,
             mUseDst ? "true" : "false", mDstSavings, mTransitions.GetLength());

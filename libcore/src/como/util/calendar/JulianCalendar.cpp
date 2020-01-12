@@ -21,7 +21,7 @@
 #include "como/util/calendar/JulianCalendar.h"
 #include "como.core.ILong.h"
 #include "como.core.IStringBuffer.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::CStringBuffer;
 using como::core::ILong;
@@ -328,12 +328,10 @@ ECode JulianCalendar::Date::SetNormalizedYear(
 }
 
 ECode JulianCalendar::Date::ToString(
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
-    VALIDATE_NOT_NULL(desc);
-
     String time;
-    BaseCalendar::Date::ToString(&time);
+    BaseCalendar::Date::ToString(time);
     time = time.Substring(time.IndexOf(U'T'));
     AutoPtr<IStringBuffer> sb;
     CStringBuffer::New(IID_IStringBuffer, (IInterface**)&sb);

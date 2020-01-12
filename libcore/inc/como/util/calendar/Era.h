@@ -20,7 +20,7 @@
 #include "como/core/SyncObject.h"
 #include "como.util.calendar.ICalendarDate.h"
 #include "como.util.calendar.IEra.h"
-#include <ccmautoptr.h>
+#include <comosp.h>
 
 using como::core::SyncObject;
 
@@ -67,13 +67,13 @@ public:
 
     ECode Equals(
         /* [in] */ IInterface* obj,
-        /* [out] */ Boolean* same) override;
+        /* [out] */ Boolean& same) override;
 
     ECode GetHashCode(
-        /* [out] */ Integer* hash) override;
+        /* [out] */ Integer& hash) override;
 
     ECode ToString(
-        /* [out] */ String* desc) override;
+        /* [out] */ String& desc) override;
 
 private:
     String mName;

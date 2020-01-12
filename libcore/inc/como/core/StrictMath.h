@@ -17,7 +17,7 @@
 #ifndef __COMO_CORE_STRICTMATH_H__
 #define __COMO_CORE_STRICTMATH_H__
 
-#include <ccmtypes.h>
+#include <comotypes.h>
 
 namespace como {
 namespace core {

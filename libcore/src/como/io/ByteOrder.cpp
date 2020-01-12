@@ -28,11 +28,9 @@ AutoPtr<IByteOrder> ByteOrder::Order()
 }
 
 ECode ByteOrder::ToString(
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
-    VALIDATE_NOT_NULL(desc);
-
-    *desc = mName;
+    desc = mName;
     return NOERROR;
 }
 

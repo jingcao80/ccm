@@ -16,7 +16,7 @@
 
 #include "comort/system/SocketTagger.h"
 #include "como.io.IFileDescriptor.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::io::IFileDescriptor;
 

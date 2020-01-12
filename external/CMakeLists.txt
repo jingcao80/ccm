@@ -16,5 +16,7 @@
 
 set(EXTERNAL_DIR ${PROJECT_DIR}/external)
 
+if($ENV{PLATFORM} STREQUAL "linux")
 add_subdirectory(boringssl)
+endif()
 add_subdirectory(googletest)

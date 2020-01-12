@@ -66,10 +66,10 @@ public:
         /* [out] */ Float* value) override;
 
     ECode IsInfinite(
-        /* [out] */ Boolean* infinite);
+        /* [out] */ Boolean* infinite) override;
 
     ECode IsNaN(
-        /* [out] */ Boolean* nan);
+        /* [out] */ Boolean* nan) override;
 
     ECode CompareTo(
         /* [in] */ IInterface* other,
@@ -77,13 +77,13 @@ public:
 
     ECode Equals(
         /* [in] */ IInterface* other,
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode GetHashCode(
-        /* [out] */ Integer* hash) override;
+        /* [out] */ Integer& hash) override;
 
     ECode ToString(
-        /* [out] */ String* str) override;
+        /* [out] */ String& str) override;
 
 private:
     Float mValue;

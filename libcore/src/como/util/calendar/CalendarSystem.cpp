@@ -24,7 +24,7 @@
 #include "como/util/calendar/LocalGregorianCalendar.h"
 #include "como.util.IMap.h"
 #include "como.util.calendar.ILocalGregorianCalendar.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::AutoLock;
 using como::core::ClassLoader;
@@ -50,11 +50,11 @@ ECode CalendarSystem::StaticInitialize()
         if (!sInitialized) {
             AutoPtr<IClassLoader> loader = ClassLoader::GetSystemClassLoader();
             AutoPtr<IMetaCoclass> gregorianClass;
-            loader->LoadCoclass(String("como::util::calendar::CGregorian"), &gregorianClass);
+            loader->LoadCoclass(String("como::util::calendar::CGregorian"), gregorianClass);
             AutoPtr<IMetaCoclass> japaneseClass;
-            loader->LoadCoclass(String("como::util::calendar::CLocalGregorianCalendar"), &japaneseClass);
+            loader->LoadCoclass(String("como::util::calendar::CLocalGregorianCalendar"), japaneseClass);
             AutoPtr<IMetaCoclass> julianClass;
-            loader->LoadCoclass(String("como::util::calendar::CJulianCalendar"), &julianClass);
+            loader->LoadCoclass(String("como::util::calendar::CJulianCalendar"), julianClass);
             CHashMap::New(IID_IMap, (IInterface**)&sNames);
             sNames->Put(CoreUtils::Box(String("gregorian")), gregorianClass);
             sNames->Put(CoreUtils::Box(String("japanese")), japaneseClass);
@@ -106,7 +106,7 @@ ECode CalendarSystem::ForName(
 
     Boolean contains;
     if (calendarClass->ContainsInterface(String("como::util::calendar::ILocalGregorianCalendar"),
-            &contains), contains) {
+            contains), contains) {
         AutoPtr<ILocalGregorianCalendar> lgCalendar;
         LocalGregorianCalendar::GetLocalGregorianCalendar(calendarName, &lgCalendar);
         cal = ICalendarSystem::Probe(lgCalendar);

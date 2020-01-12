@@ -64,7 +64,7 @@ ECode CharsetICU::Contains(
         return NOERROR;
     }
     Boolean equal;
-    Equals(cs, &equal);
+    Equals(cs, equal);
     if (equal) {
         *contains = true;
         return NOERROR;

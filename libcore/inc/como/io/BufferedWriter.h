@@ -19,7 +19,7 @@
 
 #include "como/io/Writer.h"
 #include "como.io.IBufferedWriter.h"
-#include <ccmautoptr.h>
+#include <comosp.h>
 
 namespace como {
 namespace io {

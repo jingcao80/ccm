@@ -23,8 +23,8 @@
 #include "como.util.regex.IMatchResult.h"
 #include "como.util.regex.IPattern.h"
 #include "como/core/SyncObject.h"
-#include <ccmautoptr.h>
-#include <ccmrefbase.h>
+#include <comosp.h>
+#include <comoref.h>
 
 using como::core::ICharSequence;
 using como::core::IStringBuffer;
@@ -178,7 +178,7 @@ public:
         /* [in] */ Boolean value) override;
 
     ECode ToString(
-        /* [in] */ String* str) override;
+        /* [in] */ String& str) override;
 
     ECode HitEnd(
         /* [out] */ Boolean* result) override;

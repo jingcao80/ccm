@@ -67,7 +67,7 @@ public:
         /* [out] */ Boolean* prevValue) override final;
 
     ECode ToString(
-        /* [out] */ String* desc) override;
+        /* [out] */ String& desc) override;
 
 private:
     como::core::AtomicInteger mValue;

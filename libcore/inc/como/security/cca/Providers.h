@@ -18,7 +18,7 @@
 #define __COMO_SECURITY_CCA_PROVIDERS_H__
 
 #include "como.security.cca.IProviderList.h"
-#include <ccmautoptr.h>
+#include <comosp.h>
 
 namespace como {
 namespace security {

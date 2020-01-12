@@ -31,7 +31,7 @@ ECode FieldPosition::Constructor(
 ECode FieldPosition::Constructor(
     /* [in] */ IFormatField* attribute)
 {
-    return (attribute, -1);
+    return Constructor(attribute, -1);
 }
 
 ECode FieldPosition::Constructor(
@@ -106,47 +106,41 @@ ECode FieldPosition::GetFieldDelegate(
 
 ECode FieldPosition::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* same)
+    /* [out] */ Boolean& same)
 {
-    VALIDATE_NOT_NULL(same);
-
     if (IFieldPosition::Probe(obj) == nullptr) {
-        *same = false;
+        same = false;
         return NOERROR;
     }
 
     FieldPosition* other = (FieldPosition*)IFieldPosition::Probe(obj);
     if (mAttribute == nullptr) {
         if (other->mAttribute != nullptr) {
-            *same = false;
+            same = false;
             return NOERROR;
         }
     }
     else if (!Object::Equals(mAttribute, other->mAttribute)) {
-        *same = false;
+        same = false;
         return NOERROR;
     }
-    *same = (mBeginIndex == other->mBeginIndex) &&
+    same = (mBeginIndex == other->mBeginIndex) &&
             (mEndIndex == other->mEndIndex) &&
             (mField == other->mField);
     return NOERROR;
 }
 
 ECode FieldPosition::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
-    *hash = (mField << 24) | (mBeginIndex << 16) | mEndIndex;
+    hash = (mField << 24) | (mBeginIndex << 16) | mEndIndex;
     return NOERROR;
 }
 
 ECode FieldPosition::ToString(
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
-    VALIDATE_NOT_NULL(desc);
-
-    *desc = String::Format("%s[mField=%d,mAttribute=%s,mBeginIndex=%d,mEndIndex=%d]",
+    desc = String::Format("%s[mField=%d,mAttribute=%s,mBeginIndex=%d,mEndIndex=%d]",
             Object::GetCoclassName((IFieldPosition*)this).string(), mField,
             Object::ToString(mAttribute).string(), mBeginIndex, mEndIndex);
     return NOERROR;

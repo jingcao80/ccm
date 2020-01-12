@@ -22,7 +22,7 @@
 #include "como/io/ByteOrder.h"
 #include "como/io/CDirectByteBuffer.h"
 #include "como/io/HeapByteBuffer.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::CArrayHolder;
 using como::core::CStringBuffer;
@@ -280,10 +280,8 @@ ECode ByteBuffer::GetArrayOffset(
 }
 
 ECode ByteBuffer::ToString(
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
-    VALIDATE_NOT_NULL(desc);
-
     AutoPtr<IStringBuffer> sb;
     CStringBuffer::New(IID_IStringBuffer, (IInterface**)&sb);
     sb->Append(Object::GetCoclassName(this));
@@ -302,11 +300,9 @@ ECode ByteBuffer::ToString(
 }
 
 ECode ByteBuffer::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
-    Integer h = 1;
+    hash = 1;
     Integer p;
     GetPosition(&p);
     Integer i;
@@ -314,32 +310,29 @@ ECode ByteBuffer::GetHashCode(
     for (i = i - 1; i >= p; i--) {
         Byte b;
         Get(i, &b);
-        h = 31 * h + b;
+        hash = 31 * hash + b;
     }
-    *hash = h;
     return NOERROR;
 }
 
 ECode ByteBuffer::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* same)
+    /* [out] */ Boolean& same)
 {
-    VALIDATE_NOT_NULL(same);
-
     ByteBuffer* other = (ByteBuffer*)IByteBuffer::Probe(obj);
     if (other == nullptr) {
-        *same = false;
+        same = false;
         return NOERROR;
     }
     if (this == other) {
-        *same = true;
+        same = true;
         return NOERROR;
     }
     Integer thisRemaining, otherRemaining;
     Remaining(&thisRemaining);
     other->Remaining(&otherRemaining);
     if (thisRemaining != otherRemaining) {
-        *same = false;
+        same = false;
         return NOERROR;
     }
     Integer p;
@@ -352,11 +345,11 @@ ECode ByteBuffer::Equals(
         Get(i, &thisb);
         other->Get(j, &otherb);
         if (thisb != otherb) {
-            *same = false;
+            same = false;
             return NOERROR;
         }
     }
-    *same = true;
+    same = true;
     return NOERROR;
 }
 

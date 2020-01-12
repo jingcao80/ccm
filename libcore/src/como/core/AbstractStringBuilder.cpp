@@ -17,7 +17,7 @@
 #include "como/core/AbstractStringBuilder.h"
 #include "como/core/CString.h"
 #include "como.core.ILong.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 namespace como {
 namespace core {
@@ -279,7 +279,7 @@ ECode AbstractStringBuilder::Append(
         return AppendNull();
     }
     String str;
-    sb->ToString(&str);
+    sb->ToString(str);
     return Append(str);
 }
 
@@ -324,7 +324,7 @@ ECode AbstractStringBuilder::Append(
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
     String str;
-    s->ToString(&str);
+    s->ToString(str);
     String substr = str.Substring(start, end);
     return Append(substr);
 }
@@ -685,7 +685,7 @@ ECode AbstractStringBuilder::Insert(
 {
     String str("null");
     if (s != nullptr) {
-        s->ToString(&str);
+        s->ToString(str);
     }
     return Insert(dstOffset, str);
 }
@@ -701,7 +701,7 @@ ECode AbstractStringBuilder::Insert(
     }
     String str("null");
     if (s != nullptr) {
-        s->ToString(&str);
+        s->ToString(str);
     }
     if (start < 0 || end < 0 || start > end || end > str.GetLength()) {
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;

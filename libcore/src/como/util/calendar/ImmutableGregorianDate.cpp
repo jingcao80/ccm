@@ -21,7 +21,7 @@ namespace util {
 namespace calendar {
 
 static const InterfaceID IID_ImmutableGregorianDate =
-        {{0x5501a9ff,0x1afb,0x4023,0x907e,{0xf,0xc,0x7,0xb,0xf,0xf,0x2,0xb,0x8,0x6,0xe,0xd}}, &CID_libcore};
+        {{0x5501a9ff,0x1afb,0x4023,0x907e,{0xfc,0x7b,0xff,0x2b,0x86,0xed}}, &CID_libcore};
 
 IInterface* ImmutableGregorianDate::Probe(
     /* [in] */ const InterfaceID& iid)
@@ -295,26 +295,24 @@ ECode ImmutableGregorianDate::IsSameDate(
 
 ECode ImmutableGregorianDate::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* same)
+    /* [out] */ Boolean& same)
 {
-    VALIDATE_NOT_NULL(same);
-
     if (IInterface::Equals((IBaseCalendarDate*)this, obj)) {
-        *same = true;
+        same = true;
         return NOERROR;
     }
     if (obj->Probe(IID_ImmutableGregorianDate) == nullptr) {
-        *same = false;
+        same = false;
         return NOERROR;
     }
     BaseCalendar::Date* thatDate = ((ImmutableGregorianDate*)
             IBaseCalendarDate::Probe(obj))->mDate;
-    *same = Object::Equals((IBaseCalendarDate*)mDate, (IBaseCalendarDate*)thatDate);
+    same = Object::Equals((IBaseCalendarDate*)mDate, (IBaseCalendarDate*)thatDate);
     return NOERROR;
 }
 
 ECode ImmutableGregorianDate::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
     return mDate->GetHashCode(hash);
 }
@@ -334,7 +332,7 @@ ECode ImmutableGregorianDate::Clone(
 }
 
 ECode ImmutableGregorianDate::ToString(
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
     return mDate->ToString(desc);
 }

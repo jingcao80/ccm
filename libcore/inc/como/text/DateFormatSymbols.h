@@ -25,7 +25,7 @@
 #include "como.util.ILocale.h"
 #include "como.util.concurrent.IConcurrentMap.h"
 #include "libcore.icu.ILocaleData.h"
-#include <ccmautoptr.h>
+#include <comosp.h>
 
 using como::core::SyncObject;
 using como::core::ICloneable;
@@ -126,11 +126,11 @@ public:
     Array<String> GetTinyStandAloneWeekdays();
 
     ECode GetHashCode(
-        /* [out] */ Integer* hash) override;
+        /* [out] */ Integer& hash) override;
 
     ECode Equals(
         /* [in] */ IInterface* obj,
-        /* [out] */ Boolean* same) override;
+        /* [out] */ Boolean& same) override;
 
     Integer GetZoneIndex(
         /* [in] */ const String& ID);

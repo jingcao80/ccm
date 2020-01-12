@@ -487,10 +487,8 @@ ECode ConcurrentLinkedQueue::AddAll(
 }
 
 ECode ConcurrentLinkedQueue::ToString(
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
-    VALIDATE_NOT_NULL(desc);
-
     Array<String> a;
 RESTART_FROM_HEAD:
     for (;;) {
@@ -517,11 +515,11 @@ RESTART_FROM_HEAD:
         }
 
         if (size == 0) {
-            *desc = "[]";
+            desc = "[]";
             return NOERROR;
         }
 
-        *desc = Helpers::ToString(a, size, charLength);
+        desc = Helpers::ToString(a, size, charLength);
         return NOERROR;
     }
 }
@@ -672,13 +670,13 @@ ECode ConcurrentLinkedQueue::Element(
 
 ECode ConcurrentLinkedQueue::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return AbstractQueue::Equals(obj, result);
 }
 
 ECode ConcurrentLinkedQueue::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
     return AbstractQueue::GetHashCode(hash);
 }

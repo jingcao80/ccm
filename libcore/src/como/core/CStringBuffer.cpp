@@ -48,7 +48,7 @@ ECode CStringBuffer::Constructor(
     /* [in] */ ICharSequence* seq)
 {
     String str;
-    seq->ToString(&str);
+    seq->ToString(str);
     return Constructor(str);
 }
 
@@ -398,16 +398,14 @@ ECode CStringBuffer::Reverse()
 }
 
 ECode CStringBuffer::ToString(
-    /* [out] */ String* str)
+    /* [out] */ String& str)
 {
-    VALIDATE_NOT_NULL(str);
-
     AutoLock lock(this);
     if (mCount == 0) {
-        *str = "";
+        str = "";
         return NOERROR;
     }
-    *str = String(mValue, mByteCount);
+    str = String(mValue, mByteCount);
     return NOERROR;
 }
 

@@ -17,7 +17,7 @@
 #ifndef __COMO_TEXT_STRINGARRAYWRAPPER_H__
 #define __COMO_TEXT_STRINGARRAYWRAPPER_H__
 
-#include <ccmarray.h>
+#include <comoarray.h>
 
 namespace como {
 namespace text {
@@ -55,12 +55,10 @@ public:
 
     ECode GetInterfaceID(
         /* [in] */ IInterface* object,
-        /* [out] */ InterfaceID* iid)
+        /* [out] */ InterfaceID& iid)
     {
-        VALIDATE_NOT_NULL(iid);
-
         if (object == (IInterface*)this) {
-            *iid = IID_IInterface;
+            iid = IID_IInterface;
             return NOERROR;
         }
         return E_ILLEGAL_ARGUMENT_EXCEPTION;

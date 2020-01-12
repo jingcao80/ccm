@@ -49,13 +49,13 @@ public:
 
     ECode Equals(
         /* [in] */ IInterface* obj,
-        /* [out] */ Boolean* same) override;
+        /* [out] */ Boolean& same) override;
 
     ECode GetHashCode(
-        /* [out] */ Integer* hash) override;
+        /* [out] */ Integer& hash) override;
 
     ECode ToString(
-        /* [out] */ String* desc) override;
+        /* [out] */ String& desc) override;
 
 private:
     Integer mIndex = 0;

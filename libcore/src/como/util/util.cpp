@@ -46,7 +46,7 @@
 #include "como/util/concurrent/atomic/CAtomicInteger.h"
 #include "como/util/concurrent/atomic/CAtomicLong.h"
 #include "como.util.ICLocaleClassObject.h"
-#include <ccmapi.h>
+#include <comoapi.h>
 #include <new>
 
 namespace como {
@@ -60,7 +60,7 @@ ECode CArrayList::Clone(
     VALIDATE_NOT_NULL(obj);
 
     AutoPtr<IClassObject> clsObject;
-    ECode ec = CoAcquireClassFactory(CID_CArrayList, nullptr, &clsObject);
+    ECode ec = CoAcquireClassFactory(CID_CArrayList, nullptr, clsObject);
     if (FAILED(ec)) return ec;
 
     void* addr = calloc(sizeof(CArrayList), 1);
@@ -73,7 +73,7 @@ ECode CArrayList::Clone(
         return ec;
     }
     AutoPtr<IMetaComponent> comp;
-    clsObject->GetMetadate(&comp);
+    clsObject->GetMetadate(comp);
     newObj->AttachMetadata(comp, String("como::util::CArrayList"));
     *obj = newObj->Probe(iid);
     REFCOUNT_ADD(*obj);
@@ -88,7 +88,7 @@ ECode CDate::Clone(
     VALIDATE_NOT_NULL(obj);
 
     AutoPtr<IClassObject> clsObject;
-    ECode ec = CoAcquireClassFactory(CID_CDate, nullptr, &clsObject);
+    ECode ec = CoAcquireClassFactory(CID_CDate, nullptr, clsObject);
     if (FAILED(ec)) return ec;
 
     void* addr = calloc(sizeof(CDate), 1);
@@ -101,7 +101,7 @@ ECode CDate::Clone(
         return ec;
     }
     AutoPtr<IMetaComponent> comp;
-    clsObject->GetMetadate(&comp);
+    clsObject->GetMetadate(comp);
     newObj->AttachMetadata(comp, String("como::util::CDate"));
     *obj = newObj->Probe(iid);
     REFCOUNT_ADD(*obj);
@@ -118,7 +118,7 @@ ECode CGregorianCalendar::Clone(
     VALIDATE_NOT_NULL(obj);
 
     AutoPtr<IClassObject> clsObject;
-    ECode ec = CoAcquireClassFactory(CID_CGregorianCalendar, nullptr, &clsObject);
+    ECode ec = CoAcquireClassFactory(CID_CGregorianCalendar, nullptr, clsObject);
     if (FAILED(ec)) return ec;
 
     void* addr = calloc(sizeof(CGregorianCalendar), 1);
@@ -131,7 +131,7 @@ ECode CGregorianCalendar::Clone(
         return ec;
     }
     AutoPtr<IMetaComponent> comp;
-    clsObject->GetMetadate(&comp);
+    clsObject->GetMetadate(comp);
     newObj->AttachMetadata(comp, String("como::util::CGregorianCalendar"));
     *obj = newObj->Probe(iid);
     REFCOUNT_ADD(*obj);
@@ -152,7 +152,7 @@ ECode CGregorianCalendar::New(
     VALIDATE_NOT_NULL(object);
 
     AutoPtr<IClassObject> clsObject;
-    ECode ec = CoAcquireClassFactory(CID_CGregorianCalendar, nullptr, &clsObject);
+    ECode ec = CoAcquireClassFactory(CID_CGregorianCalendar, nullptr, clsObject);
     if (FAILED(ec)) return ec;
 
     void* addr = calloc(sizeof(CGregorianCalendar), 1);
@@ -165,7 +165,7 @@ ECode CGregorianCalendar::New(
         return ec;
     }
     AutoPtr<IMetaComponent> comp;
-    clsObject->GetMetadate(&comp);
+    clsObject->GetMetadate(comp);
     _obj->AttachMetadata(comp, String("como::util::CGregorianCalendar"));
     *object = _obj->Probe(iid);
     REFCOUNT_ADD(*object);
@@ -182,7 +182,7 @@ ECode CGregorianCalendar::New(
     VALIDATE_NOT_NULL(object);
 
     AutoPtr<IClassObject> clsObject;
-    ECode ec = CoAcquireClassFactory(CID_CGregorianCalendar, nullptr, &clsObject);
+    ECode ec = CoAcquireClassFactory(CID_CGregorianCalendar, nullptr, clsObject);
     if (FAILED(ec)) return ec;
 
     void* addr = calloc(sizeof(CGregorianCalendar), 1);
@@ -195,7 +195,7 @@ ECode CGregorianCalendar::New(
         return ec;
     }
     AutoPtr<IMetaComponent> comp;
-    clsObject->GetMetadate(&comp);
+    clsObject->GetMetadate(comp);
     _obj->AttachMetadata(comp, String("como::util::CGregorianCalendar"));
     *object = _obj->Probe(iid);
     REFCOUNT_ADD(*object);
@@ -210,7 +210,7 @@ ECode CGregorianCalendar::New(
     VALIDATE_NOT_NULL(object);
 
     AutoPtr<IClassObject> clsObject;
-    ECode ec = CoAcquireClassFactory(CID_CGregorianCalendar, nullptr, &clsObject);
+    ECode ec = CoAcquireClassFactory(CID_CGregorianCalendar, nullptr, clsObject);
     if (FAILED(ec)) return ec;
 
     void* addr = calloc(sizeof(CGregorianCalendar), 1);
@@ -223,7 +223,7 @@ ECode CGregorianCalendar::New(
         return ec;
     }
     AutoPtr<IMetaComponent> comp;
-    clsObject->GetMetadate(&comp);
+    clsObject->GetMetadate(comp);
     _obj->AttachMetadata(comp, String("como::util::CGregorianCalendar"));
     *object = _obj->Probe(iid);
     REFCOUNT_ADD(*object);
@@ -238,7 +238,7 @@ ECode CHashMap::Clone(
     VALIDATE_NOT_NULL(obj);
 
     AutoPtr<IClassObject> clsObject;
-    ECode ec = CoAcquireClassFactory(CID_CHashMap, nullptr, &clsObject);
+    ECode ec = CoAcquireClassFactory(CID_CHashMap, nullptr, clsObject);
     if (FAILED(ec)) return ec;
 
     void* addr = calloc(sizeof(CHashMap), 1);
@@ -251,7 +251,7 @@ ECode CHashMap::Clone(
         return ec;
     }
     AutoPtr<IMetaComponent> comp;
-    clsObject->GetMetadate(&comp);
+    clsObject->GetMetadate(comp);
     newObj->AttachMetadata(comp, String("como::util::CHashMap"));
     *obj = newObj->Probe(iid);
     REFCOUNT_ADD(*obj);
@@ -266,7 +266,7 @@ ECode CHashSet::Clone(
     VALIDATE_NOT_NULL(obj);
 
     AutoPtr<IClassObject> clsObject;
-    ECode ec = CoAcquireClassFactory(CID_CHashSet, nullptr, &clsObject);
+    ECode ec = CoAcquireClassFactory(CID_CHashSet, nullptr, clsObject);
     if (FAILED(ec)) return ec;
 
     void* addr = calloc(sizeof(CHashSet), 1);
@@ -279,7 +279,7 @@ ECode CHashSet::Clone(
         return ec;
     }
     AutoPtr<IMetaComponent> comp;
-    clsObject->GetMetadate(&comp);
+    clsObject->GetMetadate(comp);
     newObj->AttachMetadata(comp, String("como::util::CHashSet"));
     *obj = newObj->Probe(iid);
     REFCOUNT_ADD(*obj);
@@ -294,7 +294,7 @@ ECode CHashtable::Clone(
     VALIDATE_NOT_NULL(obj);
 
     AutoPtr<IClassObject> clsObject;
-    ECode ec = CoAcquireClassFactory(CID_CHashtable, nullptr, &clsObject);
+    ECode ec = CoAcquireClassFactory(CID_CHashtable, nullptr, clsObject);
     if (FAILED(ec)) return ec;
 
     void* addr = calloc(sizeof(CHashtable), 1);
@@ -307,7 +307,7 @@ ECode CHashtable::Clone(
         return ec;
     }
     AutoPtr<IMetaComponent> comp;
-    clsObject->GetMetadate(&comp);
+    clsObject->GetMetadate(comp);
     newObj->AttachMetadata(comp, String("como::util::CHashtable"));
     *obj = newObj->Probe(iid);
     REFCOUNT_ADD(*obj);
@@ -322,7 +322,7 @@ ECode CLinkedHashMap::Clone(
     VALIDATE_NOT_NULL(obj);
 
     AutoPtr<IClassObject> clsObject;
-    ECode ec = CoAcquireClassFactory(CID_CLinkedHashMap, nullptr, &clsObject);
+    ECode ec = CoAcquireClassFactory(CID_CLinkedHashMap, nullptr, clsObject);
     if (FAILED(ec)) return ec;
 
     void* addr = calloc(sizeof(CLinkedHashMap), 1);
@@ -335,7 +335,7 @@ ECode CLinkedHashMap::Clone(
         return ec;
     }
     AutoPtr<IMetaComponent> comp;
-    clsObject->GetMetadate(&comp);
+    clsObject->GetMetadate(comp);
     newObj->AttachMetadata(comp, String("como::util::CLinkedHashMap"));
     *obj = newObj->Probe(iid);
     REFCOUNT_ADD(*obj);
@@ -350,7 +350,7 @@ ECode CLinkedHashSet::Clone(
     VALIDATE_NOT_NULL(obj);
 
     AutoPtr<IClassObject> clsObject;
-    ECode ec = CoAcquireClassFactory(CID_CLinkedHashSet, nullptr, &clsObject);
+    ECode ec = CoAcquireClassFactory(CID_CLinkedHashSet, nullptr, clsObject);
     if (FAILED(ec)) return ec;
 
     void* addr = calloc(sizeof(CLinkedHashSet), 1);
@@ -363,7 +363,7 @@ ECode CLinkedHashSet::Clone(
         return ec;
     }
     AutoPtr<IMetaComponent> comp;
-    clsObject->GetMetadate(&comp);
+    clsObject->GetMetadate(comp);
     newObj->AttachMetadata(comp, String("como::util::CLinkedHashSet"));
     *obj = newObj->Probe(iid);
     REFCOUNT_ADD(*obj);
@@ -378,7 +378,7 @@ ECode CLinkedList::Clone(
     VALIDATE_NOT_NULL(obj);
 
     AutoPtr<IClassObject> clsObject;
-    ECode ec = CoAcquireClassFactory(CID_CLinkedList, nullptr, &clsObject);
+    ECode ec = CoAcquireClassFactory(CID_CLinkedList, nullptr, clsObject);
     if (FAILED(ec)) return ec;
 
     void* addr = calloc(sizeof(CLinkedList), 1);
@@ -391,7 +391,7 @@ ECode CLinkedList::Clone(
         return ec;
     }
     AutoPtr<IMetaComponent> comp;
-    clsObject->GetMetadate(&comp);
+    clsObject->GetMetadate(comp);
     newObj->AttachMetadata(comp, String("como::util::CLinkedList"));
     *obj = newObj->Probe(iid);
     REFCOUNT_ADD(*obj);
@@ -406,7 +406,7 @@ ECode CLocale::Clone(
     VALIDATE_NOT_NULL(obj);
 
     AutoPtr<IClassObject> clsObject;
-    ECode ec = CoAcquireClassFactory(CID_CLocale, nullptr, &clsObject);
+    ECode ec = CoAcquireClassFactory(CID_CLocale, nullptr, clsObject);
     if (FAILED(ec)) return ec;
 
     void* addr = calloc(sizeof(CLocale), 1);
@@ -419,7 +419,7 @@ ECode CLocale::Clone(
         return ec;
     }
     AutoPtr<IMetaComponent> comp;
-    clsObject->GetMetadate(&comp);
+    clsObject->GetMetadate(comp);
     newObj->AttachMetadata(comp, String("como::util::CLocale"));
     *obj = newObj->Probe(iid);
     REFCOUNT_ADD(*obj);
@@ -431,7 +431,7 @@ ECode CLocale::New(
     /* [out] */ IInterface** object)
 {
     AutoPtr<IClassObject> clsObject;
-    ECode ec = CoAcquireClassFactory(CID_CLocale, nullptr, &clsObject);
+    ECode ec = CoAcquireClassFactory(CID_CLocale, nullptr, clsObject);
     if (FAILED(ec)) return ec;
 
     void* addr = calloc(sizeof(CLocale), 1);
@@ -440,7 +440,7 @@ ECode CLocale::New(
     CLocale* _obj = new(addr) CLocale();
 
     AutoPtr<IMetaComponent> comp;
-    clsObject->GetMetadate(&comp);
+    clsObject->GetMetadate(comp);
     _obj->AttachMetadata(comp, String("como::util::CLocale"));
     *object = _obj->Probe(iid);
     REFCOUNT_ADD(*object);
@@ -454,7 +454,7 @@ ECode CLocale::New(
     /* [out] */ IInterface** object)
 {
     AutoPtr<IClassObject> clsObject;
-    ECode ec = CoAcquireClassFactory(CID_CLocale, nullptr, &clsObject);
+    ECode ec = CoAcquireClassFactory(CID_CLocale, nullptr, clsObject);
     if (FAILED(ec)) return ec;
 
     void* addr = calloc(sizeof(CLocale), 1);
@@ -467,7 +467,7 @@ ECode CLocale::New(
         return ec;
     }
     AutoPtr<IMetaComponent> comp;
-    clsObject->GetMetadate(&comp);
+    clsObject->GetMetadate(comp);
     _obj->AttachMetadata(comp, String("como::util::CLocale"));
     *object = _obj->Probe(iid);
     REFCOUNT_ADD(*object);
@@ -484,7 +484,7 @@ ECode CProperties::Clone(
     VALIDATE_NOT_NULL(obj);
 
     AutoPtr<IClassObject> clsObject;
-    ECode ec = CoAcquireClassFactory(CID_CProperties, nullptr, &clsObject);
+    ECode ec = CoAcquireClassFactory(CID_CProperties, nullptr, clsObject);
     if (FAILED(ec)) return ec;
 
     void* addr = calloc(sizeof(CProperties), 1);
@@ -497,7 +497,7 @@ ECode CProperties::Clone(
         return ec;
     }
     AutoPtr<IMetaComponent> comp;
-    clsObject->GetMetadate(&comp);
+    clsObject->GetMetadate(comp);
     newObj->AttachMetadata(comp, String("como::util::CProperties"));
     *obj = newObj->Probe(iid);
     REFCOUNT_ADD(*obj);
@@ -517,7 +517,7 @@ ECode CSimpleTimeZone::Clone(
     VALIDATE_NOT_NULL(obj);
 
     AutoPtr<IClassObject> clsObject;
-    ECode ec = CoAcquireClassFactory(CID_CSimpleTimeZone, nullptr, &clsObject);
+    ECode ec = CoAcquireClassFactory(CID_CSimpleTimeZone, nullptr, clsObject);
     if (FAILED(ec)) return ec;
 
     void* addr = calloc(sizeof(CSimpleTimeZone), 1);
@@ -530,7 +530,7 @@ ECode CSimpleTimeZone::Clone(
         return ec;
     }
     AutoPtr<IMetaComponent> comp;
-    clsObject->GetMetadate(&comp);
+    clsObject->GetMetadate(comp);
     newObj->AttachMetadata(comp, String("como::util::CSimpleTimeZone"));
     *obj = newObj->Probe(iid);
     REFCOUNT_ADD(*obj);
@@ -542,7 +542,7 @@ ECode CSimpleTimeZone::New(
     /* [out] */ IInterface** object)
 {
     AutoPtr<IClassObject> clsObject;
-    ECode ec = CoAcquireClassFactory(CID_CSimpleTimeZone, nullptr, &clsObject);
+    ECode ec = CoAcquireClassFactory(CID_CSimpleTimeZone, nullptr, clsObject);
     if (FAILED(ec)) return ec;
 
     void* addr = calloc(sizeof(CSimpleTimeZone), 1);
@@ -551,7 +551,7 @@ ECode CSimpleTimeZone::New(
     CSimpleTimeZone* _obj = new(addr) CSimpleTimeZone();
 
     AutoPtr<IMetaComponent> comp;
-    clsObject->GetMetadate(&comp);
+    clsObject->GetMetadate(comp);
     _obj->AttachMetadata(comp, String("como::util::CSimpleTimeZone"));
     *object = _obj->Probe(iid);
     REFCOUNT_ADD(*object);
@@ -568,7 +568,7 @@ ECode CTreeMap::Clone(
     VALIDATE_NOT_NULL(obj);
 
     AutoPtr<IClassObject> clsObject;
-    ECode ec = CoAcquireClassFactory(CID_CTreeMap, nullptr, &clsObject);
+    ECode ec = CoAcquireClassFactory(CID_CTreeMap, nullptr, clsObject);
     if (FAILED(ec)) return ec;
 
     void* addr = calloc(sizeof(CTreeMap), 1);
@@ -581,7 +581,7 @@ ECode CTreeMap::Clone(
         return ec;
     }
     AutoPtr<IMetaComponent> comp;
-    clsObject->GetMetadate(&comp);
+    clsObject->GetMetadate(comp);
     newObj->AttachMetadata(comp, String("como::util::CTreeMap"));
     *obj = newObj->Probe(iid);
     REFCOUNT_ADD(*obj);
@@ -596,7 +596,7 @@ ECode CTreeSet::Clone(
     VALIDATE_NOT_NULL(obj);
 
     AutoPtr<IClassObject> clsObject;
-    ECode ec = CoAcquireClassFactory(CID_CTreeSet, nullptr, &clsObject);
+    ECode ec = CoAcquireClassFactory(CID_CTreeSet, nullptr, clsObject);
     if (FAILED(ec)) return ec;
 
     void* addr = calloc(sizeof(CTreeSet), 1);
@@ -609,7 +609,7 @@ ECode CTreeSet::Clone(
         return ec;
     }
     AutoPtr<IMetaComponent> comp;
-    clsObject->GetMetadate(&comp);
+    clsObject->GetMetadate(comp);
     newObj->AttachMetadata(comp, String("como::util::CTreeSet"));
     *obj = newObj->Probe(iid);
     REFCOUNT_ADD(*obj);
@@ -622,7 +622,7 @@ ECode CTreeSet::New(
     /* [out] */ IInterface** object)
 {
     AutoPtr<IClassObject> clsObject;
-    ECode ec = CoAcquireClassFactory(CID_CTreeSet, nullptr, &clsObject);
+    ECode ec = CoAcquireClassFactory(CID_CTreeSet, nullptr, clsObject);
     if (FAILED(ec)) return ec;
 
     void* addr = calloc(sizeof(CTreeSet), 1);
@@ -635,7 +635,7 @@ ECode CTreeSet::New(
         return ec;
     }
     AutoPtr<IMetaComponent> comp;
-    clsObject->GetMetadate(&comp);
+    clsObject->GetMetadate(comp);
     _obj->AttachMetadata(comp, String("como::util::CTreeSet"));
     *object = _obj->Probe(iid);
     REFCOUNT_ADD(*object);
@@ -650,7 +650,7 @@ ECode CVector::Clone(
     VALIDATE_NOT_NULL(obj);
 
     AutoPtr<IClassObject> clsObject;
-    ECode ec = CoAcquireClassFactory(CID_CVector, nullptr, &clsObject);
+    ECode ec = CoAcquireClassFactory(CID_CVector, nullptr, clsObject);
     if (FAILED(ec)) return ec;
 
     void* addr = calloc(sizeof(CVector), 1);
@@ -663,7 +663,7 @@ ECode CVector::Clone(
         return ec;
     }
     AutoPtr<IMetaComponent> comp;
-    clsObject->GetMetadate(&comp);
+    clsObject->GetMetadate(comp);
     newObj->AttachMetadata(comp, String("como::util::CVector"));
     *obj = newObj->Probe(iid);
     REFCOUNT_ADD(*obj);

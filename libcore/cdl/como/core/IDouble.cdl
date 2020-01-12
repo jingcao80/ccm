@@ -32,19 +32,19 @@ interface IDouble
      * A constant holding the positive infinity of type
      * {@code double}.
      */
-    const Double POSITIVE_INFINITY = 1.0d / 0.0d;
+    const Double POSITIVE_INFINITY = 1.0 / 0.0;
 
     /**
      * A constant holding the negative infinity of type
      * {@code double}.
      */
-    const Double NEGATIVE_INFINITY = -1.0d / 0.0d;
+    const Double NEGATIVE_INFINITY = -1.0 / 0.0;
 
     /**
      * A constant holding a Not-a-Number (NaN) value of type
      * {@code double}.
      */
-    const Double NaN = 0.0d / 0.0d;
+    const Double NaN = 0.0 / 0.0;
 
     /**
      * A constant holding the largest positive finite value of type

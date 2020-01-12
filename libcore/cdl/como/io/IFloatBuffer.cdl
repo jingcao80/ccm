@@ -39,10 +39,10 @@ interface IFloatBuffer
         [out] Float* f);
 
     Get(
-        [out] Array<Float> dst);
+        [out] Array<Float>& dst);
 
     Get(
-        [out] Array<Float> dst,
+        [out] Array<Float>& dst,
         [in] Integer offset,
         [in] Integer length);
 

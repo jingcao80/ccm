@@ -24,7 +24,7 @@ include_directories(
     ../
     ../../../inc
     ${INC_DIR}
-    ${OBJ_DIR})
+    ${LIBCORE_OBJ_DIR})
 
 set(SOURCES
     Bits.cpp

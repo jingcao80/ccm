@@ -18,7 +18,7 @@
 #include "como/core/StringUtils.h"
 #include "como/io/ByteArrayOutputStream.h"
 #include "como/util/Arrays.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::AutoLock;
 using como::core::E_INDEX_OUT_OF_BOUNDS_EXCEPTION;

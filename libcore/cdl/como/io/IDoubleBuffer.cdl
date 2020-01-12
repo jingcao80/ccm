@@ -39,10 +39,10 @@ interface IDoubleBuffer
         [out] Double* d);
 
     Get(
-        [out] Array<Double> dst);
+        [out] Array<Double>& dst);
 
     Get(
-        [out] Array<Double> dst,
+        [out] Array<Double>& dst,
         [in] Integer offset,
         [in] Integer length);
 

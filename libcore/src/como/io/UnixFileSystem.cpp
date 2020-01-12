@@ -876,13 +876,11 @@ ECode UnixFileSystem::Compare(
 
 ECode UnixFileSystem::GetHashCode(
     /* [in] */ IFile* f,
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
     String path;
     f->GetPath(&path);
-    *hash = path.GetHashCode() ^ 1234321;
+    hash = path.GetHashCode() ^ 1234321;
     return NOERROR;
 }
 

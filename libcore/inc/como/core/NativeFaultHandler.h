@@ -17,7 +17,7 @@
 #ifndef __COMO_CORE_NATIVEFAULTHANDLER_H__
 #define __COMO_CORE_NATIVEFAULTHANDLER_H__
 
-#include <ccmtypes.h>
+#include <comotypes.h>
 #include <signal.h>
 
 namespace como {

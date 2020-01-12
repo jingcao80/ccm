@@ -17,7 +17,7 @@
 #include "como/core/AutoLock.h"
 #include "como/core/System.h"
 #include "como/io/BufferedWriter.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::AutoLock;
 using como::core::System;

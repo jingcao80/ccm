@@ -24,8 +24,8 @@
 #include "como.io.IPrintStream.h"
 #include "como.io.IPrintWriter.h"
 #include "como.io.ISerializable.h"
-#include <ccmautoptr.h>
-#include <ccmrefbase.h>
+#include <comosp.h>
+#include <comoref.h>
 
 using como::io::IPrintStream;
 using como::io::IPrintWriter;

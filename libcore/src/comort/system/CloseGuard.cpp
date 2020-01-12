@@ -17,7 +17,7 @@
 #include "como/core/CStackTrace.h"
 #include "como/core/System.h"
 #include "comort/system/CloseGuard.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::CStackTrace;
 using como::core::IID_IStackTrace;

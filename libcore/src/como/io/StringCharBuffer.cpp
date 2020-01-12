@@ -157,7 +157,7 @@ ECode StringCharBuffer::ToString(
     VALIDATE_NOT_NULL(desc);
 
     String str;
-    mStr->ToString(&str);
+    mStr->ToString(str);
     *desc = str.Substring(start + mOffset, end + mOffset);
     return NOERROR;
 }

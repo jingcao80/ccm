@@ -17,7 +17,7 @@
 #ifndef __LIBCORE_IO_MEMORY_H__
 #define __LIBCORE_IO_MEMORY_H__
 
-#include <ccmtypes.h>
+#include <comotypes.h>
 
 using namespace como;
 

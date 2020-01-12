@@ -25,12 +25,12 @@
 #include "como.io.IFileDescriptor.h"
 #include "como.io.IFileOutputStream.h"
 #include "como.io.channels.IFileChannel.h"
-#include "ccmrt.system.ICloseGuard.h"
-#include <ccmautoptr.h>
+#include "comort.system.ICloseGuard.h"
+#include <comosp.h>
 
 using como::core::SyncObject;
 using como::io::channels::IFileChannel;
-using ccmrt::system::ICloseGuard;
+using comort::system::ICloseGuard;
 using libcore::io::IoTracker;
 
 namespace como {

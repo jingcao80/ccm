@@ -16,7 +16,7 @@
 
 #include "como/core/CStringBuilder.h"
 #include "como/core/StackTraceElement.h"
-#include <ccmautoptr.h>
+#include <comosp.h>
 
 using como::io::IID_ISerializable;
 
@@ -39,10 +39,8 @@ ECode StackTraceElement::Constructor(
 }
 
 ECode StackTraceElement::ToString(
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
-    VALIDATE_NOT_NULL(desc);
-
     AutoPtr<IStringBuilder> sb;
     CStringBuilder::New(IID_IStringBuilder, (IInterface**)&sb);
     sb->Append(mNo);
@@ -50,7 +48,7 @@ ECode StackTraceElement::ToString(
     sb->Append(mPC);
     sb->Append(U' ');
     sb->Append(mSoname);
-    if (!mSymbol.IsNullOrEmpty()) {
+    if (!mSymbol.IsEmpty()) {
         sb->Append(U' ');
         sb->Append(mSymbol);
     }

@@ -60,7 +60,7 @@ interface IDecimalFormat
         [out] String* suffix);
 
     IsDecimalSeparatorAlwaysShown(
-        [in] Boolean* shown);
+        [out] Boolean* shown);
 
     IsGroupingUsed(
         [out] Boolean* used);

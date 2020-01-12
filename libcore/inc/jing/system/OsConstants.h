@@ -17,7 +17,7 @@
 #ifndef __JING_SYSTEM_OSCONSTANTS_H__
 #define __JING_SYSTEM_OSCONSTANTS_H__
 
-#include <ccmtypes.h>
+#include <comotypes.h>
 
 using namespace como;
 

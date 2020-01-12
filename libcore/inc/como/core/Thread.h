@@ -24,7 +24,7 @@
 #include "como.core.IThread.h"
 #include "como.core.IThreadGroup.h"
 #include "como.io.IInterruptible.h"
-#include <ccmautoptr.h>
+#include <comosp.h>
 
 using como::io::IInterruptible;
 
@@ -65,7 +65,7 @@ public:
         /* [in] */ HANDLE peer);
 
     ECode BlockedOn(
-        /* [in] */ IInterruptible* b);
+        /* [in] */ IInterruptible* b) override;
 
     static ECode GetCurrentThread(
         /* [out] */ IThread** t);
@@ -146,7 +146,7 @@ public:
     ECode CheckAccess() override;
 
     ECode ToString(
-        /* [out] */ String* desc) override;
+        /* [out] */ String& desc) override;
 
     ECode GetContextClassLoader(
         /* [out] */ IClassLoader** loader) override;

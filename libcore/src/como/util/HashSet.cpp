@@ -161,13 +161,13 @@ ECode HashSet::ContainsAll(
 
 ECode HashSet::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return AbstractSet::Equals(obj, result);
 }
 
 ECode HashSet::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
     return AbstractSet::GetHashCode(hash);
 }

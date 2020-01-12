@@ -23,7 +23,7 @@
 #include "como.util.IMap.h"
 #include "como.util.IMapEntry.h"
 #include "como.util.ISet.h"
-#include <ccmautoptr.h>
+#include <comosp.h>
 
 using como::core::SyncObject;
 using como::io::ISerializable;
@@ -52,24 +52,24 @@ public:
             /* [in] */ IMapEntry* entry);
 
         ECode GetKey(
-            /* [out] */ IInterface** key);
+            /* [out] */ IInterface** key) override;
 
         ECode GetValue(
-            /* [out] */ IInterface** value);
+            /* [out] */ IInterface** value) override;
 
         ECode SetValue(
             /* [in] */ IInterface* value,
-            /* [out] */ IInterface** prevValue = nullptr);
+            /* [out] */ IInterface** prevValue = nullptr) override;
 
         ECode Equals(
             /* [in] */ IInterface* object,
-            /* [out] */ Boolean* result);
+            /* [out] */ Boolean& result) override;
 
         ECode GetHashCode(
-            /* [out] */ Integer* hashCode);
+            /* [out] */ Integer& hashCode) override;
 
         ECode ToString(
-            /* [out] */ String* str);
+            /* [out] */ String& str) override;
 
     private:
         AutoPtr<IInterface> mKey;
@@ -92,24 +92,24 @@ public:
             /* [in] */ IMapEntry* entry);
 
         ECode GetKey(
-            /* [out] */ IInterface** key);
+            /* [out] */ IInterface** key) override;
 
         ECode GetValue(
-            /* [out] */ IInterface** value);
+            /* [out] */ IInterface** value) override;
 
         ECode SetValue(
             /* [in] */ IInterface* value,
-            /* [out] */ IInterface** prevValue = nullptr);
+            /* [out] */ IInterface** prevValue = nullptr) override;
 
         ECode Equals(
             /* [in] */ IInterface* object,
-            /* [out] */ Boolean* result);
+            /* [out] */ Boolean& result) override;
 
         ECode GetHashCode(
-            /* [out] */ Integer* hashCode);
+            /* [out] */ Integer& hashCode) override;
 
         ECode ToString(
-            /* [out] */ String* str);
+            /* [out] */ String& str) override;
 
     private:
         AutoPtr<IInterface> mKey;
@@ -164,13 +164,13 @@ public:
 
     ECode Equals(
         /* [in] */ IInterface* obj,
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode GetHashCode(
-        /* [out] */ Integer* hash) override;
+        /* [out] */ Integer& hash) override;
 
     ECode ToString(
-        /* [out] */ String* str) override;
+        /* [out] */ String& str) override;
 
 protected:
     AutoPtr<ISet> mKeySet;

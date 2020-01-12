@@ -33,7 +33,7 @@
 #include "libcore/io/IoUtils.h"
 #include "libcore/util/ZoneInfoDB.h"
 #include "libcore.util.IZoneInfo.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::AutoLock;
 using como::core::CoreUtils;
@@ -261,7 +261,7 @@ String TimeZone::CreateGmtOffsetString(
     }
     AppendNumber(sb, 2, offsetMinutes % 60);
     String offsetStr;
-    sb->ToString(&offsetStr);
+    sb->ToString(offsetStr);
     return offsetStr;
 }
 
@@ -434,7 +434,7 @@ AutoPtr<ITimeZone> TimeZone::GetDefaultRef()
         if (!zoneName.IsNull()) {
             zoneName = zoneName.Trim();
         }
-        if (zoneName.IsNullOrEmpty()) {
+        if (zoneName.IsEmpty()) {
             ECode ec = IoUtils::ReadFileAsString(String("/etc/timezone"), &zoneName);
             if (FAILED(ec)) {
                 zoneName = "GMT";

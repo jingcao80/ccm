@@ -14,6 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
+#include "innerdef.h"
 #include "como/core/AutoLock.h"
 #include "como/core/CArray.h"
 #include "como/core/CoreUtils.h"
@@ -33,7 +34,7 @@
 #include "libcore/icu/LocaleData.h"
 #include "como.core.IArray.h"
 #include "como.core.IInteger.h"
-#include <ccmautoptr.h>
+#include <comosp.h>
 
 using como::core::AutoLock;
 using como::core::CArray;
@@ -188,7 +189,7 @@ ECode Calendar::GetTimeInMillis(
 ECode Calendar::SetTimeInMillis(
     /* [in] */ Long millis)
 {
-    if (mTime = millis && mIsTimeSet && mAreFieldsSet && mAreAllFieldsSet) {
+    if (mTime == millis && mIsTimeSet && mAreFieldsSet && mAreAllFieldsSet) {
         return NOERROR;
     }
     mTime = millis;
@@ -328,7 +329,7 @@ ECode Calendar::GetDisplayName(
 {
     VALIDATE_NOT_NULL(name);
 
-    if (style = ALL_STYLES) {
+    if (style == ALL_STYLES) {
         style = SHORT;
     }
     Boolean result;
@@ -547,7 +548,7 @@ void Calendar::SetFieldsComputed(
                     mAreAllFieldsSet = false;
                 }
             }
-            fieldMask = (unsigned Integer)fieldMask >> 1;
+            fieldMask = (UInteger)fieldMask >> 1;
         }
     }
 }
@@ -741,20 +742,18 @@ ECode Calendar::GetCalendarType(
 
 ECode Calendar::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* same)
+    /* [out] */ Boolean& same)
 {
-    VALIDATE_NOT_NULL(same);
-
     if (IInterface::Equals((IObject*)this, obj)) {
-        *same = true;
+        same = true;
         return NOERROR;
     }
     Calendar* that = (Calendar*)ICalendar::Probe(obj);
     if (that == nullptr) {
-        *same = false;
+        same = false;
         return NOERROR;
     }
-    *same = CompareTo(GetMillisOf(that)) == 0 &&
+    same = CompareTo(GetMillisOf(that)) == 0 &&
             mLenient == that->mLenient &&
             mFirstDayOfWeek == that->mFirstDayOfWeek &&
             mMinimalDaysInFirstWeek == that->mMinimalDaysInFirstWeek &&
@@ -763,16 +762,14 @@ ECode Calendar::Equals(
 }
 
 ECode Calendar::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
     Integer otheritems = (mLenient ? 1 : 0)
             | (mFirstDayOfWeek << 1)
             | (mMinimalDaysInFirstWeek << 4)
             | (Object::GetHashCode(mZone) << 7);
     Long t = GetMillisOf(this);
-    *hash = (Integer) t ^ (Integer)(t >> 32) ^ otheritems;
+    hash = (Integer) t ^ (Integer)(t >> 32) ^ otheritems;
     return NOERROR;
 }
 
@@ -1119,10 +1116,8 @@ String Calendar::GetFieldName(
 }
 
 ECode Calendar::ToString(
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
-    VALIDATE_NOT_NULL(desc);
-
     AutoPtr<IStringBuilder> buffer;
     CStringBuilder::New(800, IID_IStringBuilder, (IInterface**)&buffer);
     buffer->Append(GetCoclassName((IObject*)this));

@@ -174,19 +174,19 @@ AutoPtr<IIterator> Charset::GetProviders()
         }
 
         Integer AddRef(
-            /* [in] */ HANDLE id)
+            /* [in] */ HANDLE id) override
         {
             return LightRefBase::AddRef(id);
         }
 
         Integer Release(
-            /* [in] */ HANDLE id)
+            /* [in] */ HANDLE id) override
         {
             return LightRefBase::Release(id);
         }
 
         IInterface* Probe(
-            /* [in] */ const InterfaceID& iid)
+            /* [in] */ const InterfaceID& iid) override
         {
             if (iid == IID_IInterface) {
                 return (IInterface*)(IIterator*)this;
@@ -199,12 +199,10 @@ AutoPtr<IIterator> Charset::GetProviders()
 
         ECode GetInterfaceID(
             /* [in] */ IInterface* object,
-            /* [out] */ InterfaceID* iid)
+            /* [out] */ InterfaceID& iid) override
         {
-            VALIDATE_NOT_NULL(iid);
-
             if (object == (IInterface*)(IIterator*)this) {
-                *iid = IID_IIterator;
+                iid = IID_IIterator;
                 return NOERROR;
             }
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -310,12 +308,10 @@ ECode Charset::LookupViaProviders(
 
         ECode GetInterfaceID(
             /* [in] */ IInterface* object,
-            /* [out] */ InterfaceID* iid)
+            /* [out] */ InterfaceID& iid)
         {
-            VALIDATE_NOT_NULL(iid);
-
             if (object == (IInterface*)(IPrivilegedAction*)this) {
-                *iid = IID_IPrivilegedAction;
+                iid = IID_IPrivilegedAction;
                 return NOERROR;
             }
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -495,12 +491,10 @@ ECode Charset::AvailableCharsets(
 
         ECode GetInterfaceID(
             /* [in] */ IInterface* object,
-            /* [out] */ InterfaceID* iid)
+            /* [out] */ InterfaceID& iid)
         {
-            VALIDATE_NOT_NULL(iid);
-
             if (object == (IInterface*)(IPrivilegedAction*)this) {
-                *iid = IID_IPrivilegedAction;
+                iid = IID_IPrivilegedAction;
                 return NOERROR;
             }
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -697,42 +691,38 @@ ECode Charset::CompareTo(
 }
 
 ECode Charset::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
     String canonicalName;
     GetName(&canonicalName);
-    *hash = canonicalName.GetHashCode();
+    hash = canonicalName.GetHashCode();
     return NOERROR;
 }
 
 ECode Charset::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* same)
+    /* [out] */ Boolean& same)
 {
-    VALIDATE_NOT_NULL(same);
-
     ICharset* cs = ICharset::Probe(obj);
     if (cs == nullptr) {
-        *same = false;
+        same = false;
         return NOERROR;
     }
     if (cs == (ICharset*)this) {
-        *same = true;
+        same = true;
         return NOERROR;
     }
     String thisName, thatName;
     GetName(&thisName);
     cs->GetName(&thatName);
-    *same = thisName.Equals(thatName);
+    same = thisName.Equals(thatName);
     return NOERROR;
 }
 
 ECode Charset::ToString(
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
-    return GetName(desc);
+    return GetName(&desc);
 }
 
 }

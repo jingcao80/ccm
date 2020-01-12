@@ -14,14 +14,15 @@
 // limitations under the License.
 //=========================================================================
 
+#include "innerdef.h"
 #include "como/core/Math.h"
 #include "como/util/AbstractList.h"
 #include "como/util/Arrays.h"
 #include "como.core.IComparable.h"
 #include "como.io.ISerializable.h"
 #include "como.util.IRandomAccess.h"
-#include <ccmobject.h>
-#include <ccmlogger.h>
+#include <comoobj.h>
+#include <comolog.h>
 
 using como::core::E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
 using como::core::IComparable;
@@ -80,7 +81,7 @@ Integer Arrays::BinarySearch0(
     Integer high = toIndex - 1;
 
     while (low <= high) {
-        Integer mid = ((unsigned Integer)(low + high)) >> 1;
+        Integer mid = ((UInteger)(low + high)) >> 1;
         Long midVal = a[mid];
 
         if (midVal < key) {
@@ -113,7 +114,7 @@ Integer Arrays::BinarySearch0(
     Integer high = toIndex - 1;
 
     while (low <= high) {
-        Integer mid = ((unsigned Integer)(low + high)) >> 1;
+        Integer mid = ((UInteger)(low + high)) >> 1;
         Integer cmp = a[mid].Compare(key);
 
         if (cmp < 0) {
@@ -147,7 +148,7 @@ Integer Arrays::BinarySearch0(
     Integer high = toIndex - 1;
 
     while (low <= high) {
-        Integer mid = ((unsigned Integer)(low + high)) >> 1;
+        Integer mid = ((UInteger)(low + high)) >> 1;
         IComparable* midVal = IComparable::Probe(a[mid]);
         CHECK(midVal != nullptr);
         Integer cmp;
@@ -179,7 +180,7 @@ Integer Arrays::BinarySearch0(
     Integer high = toIndex - 1;
 
     while (low <= high) {
-        Integer mid = ((unsigned Integer)(low + high)) >> 1;
+        Integer mid = ((UInteger)(low + high)) >> 1;
         IInterface* midVal = a[mid];
         Integer cmp;
         c->Compare(midVal, key, &cmp);
@@ -660,6 +661,8 @@ ECode ArraysArrayList::IndexOf(
             }
         }
     }
+    *index = -1;
+    return NOERROR;
 }
 
 ECode ArraysArrayList::Contains(
@@ -694,7 +697,7 @@ Integer Arrays::GetHashCode(
 
     Integer result = 1;
     for (Long element : a) {
-        Integer elementHash = (Integer)(element ^ (((unsigned Long)element) >> 32));
+        Integer elementHash = (Integer)(element ^ (((ULong)element) >> 32));
         result = 31 * result + elementHash;
     }
 
@@ -801,7 +804,7 @@ Integer Arrays::GetHashCode(
     Integer result = 1;
     for (Double element : a) {
         Long bits = Math::DoubleToLongBits(element);
-        result = 31 * result + (Integer)(bits ^ (((unsigned Long)bits) >> 32));
+        result = 31 * result + (Integer)(bits ^ (((ULong)bits) >> 32));
     }
 
     return result;

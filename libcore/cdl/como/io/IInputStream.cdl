@@ -42,11 +42,11 @@ interface IInputStream
         [out] Integer* value);
 
     Read(
-        [out] Array<Byte> buffer,
+        [out] Array<Byte>& buffer,
         [out] Integer* number);
 
     Read(
-        [out] Array<Byte> buffer,
+        [out] Array<Byte>& buffer,
         [in] Integer offset,
         [in] Integer size,
         [out] Integer* number);

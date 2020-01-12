@@ -25,7 +25,7 @@
 #include "como.util.IHashMap.h"
 #include "como.util.IIterator.h"
 #include "como.util.IMapEntry.h"
-#include <ccmobject.h>
+#include <comoobj.h>
 
 using como::core::ICloneable;
 using como::io::ISerializable;
@@ -67,10 +67,10 @@ public:
             /* [out] */ IInterface** value) override;
 
         ECode ToString(
-            /* [out] */ String* str) override;
+            /* [out] */ String& str) override;
 
         ECode GetHashCode(
-            /* [out] */ Integer* hash) override;
+            /* [out] */ Integer& hash) override;
 
         ECode SetValue(
             /* [in] */ IInterface* value,
@@ -78,7 +78,7 @@ public:
 
         ECode Equals(
             /* [in] */ IInterface* obj,
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
 
     public:
         Integer mHash;
@@ -295,10 +295,10 @@ public:
 
     ECode Equals(
         /* [in] */ IInterface* obj,
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode GetHashCode(
-        /* [out] */ Integer* hash) override;
+        /* [out] */ Integer& hash) override;
 
 protected:
     static Integer Hash(

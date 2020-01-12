@@ -36,7 +36,7 @@
 #include "como.text.IDateFormat.h"
 #include "como.text.IDecimalFormat.h"
 #include "como.text.ISimpleDateFormat.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::CArrayHolder;
 using como::core::CoreUtils;
@@ -224,7 +224,7 @@ ECode MessageFormat::ApplyPattern(
         Logger::E("MessageFormat", "Unmatched braces in the pattern.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    segments[0]->ToString(&mPattern);
+    segments[0]->ToString(mPattern);
     return NOERROR;
 }
 
@@ -325,7 +325,7 @@ ECode MessageFormat::ToPattern(
         result->Append(U'}');
     }
     CopyAndFixQuotes(mPattern, lastOffset, mPattern.GetLength(), result);
-    return result->ToString(pattern);
+    return result->ToString(*pattern);
 }
 
 ECode MessageFormat::SetFormatsByArgumentIndex(
@@ -616,20 +616,18 @@ ECode MessageFormat::CloneImpl(
 
 ECode MessageFormat::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* same)
+    /* [out] */ Boolean& same)
 {
-    VALIDATE_NOT_NULL(same);
-
     MessageFormat* other = (MessageFormat*)IMessageFormat::Probe(obj);
     if (other == this) {
-        *same = true;
+        same = true;
         return NOERROR;
     }
     if (other == nullptr) {
-        *same = false;
+        same = false;
         return NOERROR;
     }
-    *same = (mMaxOffset == other->mMaxOffset &&
+    same = (mMaxOffset == other->mMaxOffset &&
             mPattern.Equals(other->mPattern) &&
             Object::Equals(mLocale, other->mLocale) &&
             Arrays::Equals(mOffsets, other->mOffsets) &&
@@ -639,11 +637,9 @@ ECode MessageFormat::Equals(
 }
 
 ECode MessageFormat::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
-    *hash = mPattern.GetHashCode();
+    hash = mPattern.GetHashCode();
     return NOERROR;
 }
 
@@ -697,7 +693,7 @@ ECode MessageFormat::Subformat(
             subFormatter = std::move(df);
         }
         else if (IString::Probe(obj) != nullptr) {
-            IString::Probe(obj)->ToString(&arg);
+            IString::Probe(obj)->ToString(arg);
         }
         else {
             arg = Object::ToString(obj);
@@ -805,7 +801,7 @@ ECode MessageFormat::MakeFormat(
     for (Integer i = 0; i < textSegments.GetLength(); i++) {
         IStringBuilder* oneseg = textSegments[i];
         if (oneseg != nullptr) {
-            oneseg->ToString(&segments[i]);
+            oneseg->ToString(segments[i]);
         }
         else {
             segments[i] = "";

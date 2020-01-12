@@ -44,7 +44,7 @@ interface IHashMap
 
     Equals(
         [in] IInterface* obj,
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     Get(
         [in] IInterface* key,
@@ -54,7 +54,7 @@ interface IHashMap
         [out] ISet** entries);
 
     GetHashCode(
-        [out] Integer* hash);
+        [out] Integer& hash);
 
     GetKeySet(
         [out] ISet** keys);

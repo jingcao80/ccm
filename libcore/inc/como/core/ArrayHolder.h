@@ -18,7 +18,7 @@
 #define __COMO_CORE_ARRAYHOLDER_H__
 
 #include "como.core.IArrayHolder.h"
-#include <ccmobject.h>
+#include <comoobj.h>
 
 namespace como {
 namespace core {

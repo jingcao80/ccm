@@ -204,10 +204,8 @@ ECode ShortBuffer::GetArrayOffset(
 }
 
 ECode ShortBuffer::ToString(
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
-    VALIDATE_NOT_NULL(desc);
-
     AutoPtr<IStringBuffer> sb;
     CStringBuffer::New(IID_IStringBuffer, (IInterface**)&sb);
     sb->Append(Object::GetCoclassName(this));
@@ -226,11 +224,9 @@ ECode ShortBuffer::ToString(
 }
 
 ECode ShortBuffer::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
-    Integer h = 1;
+    hash = 1;
     Integer p;
     GetPosition(&p);
     Integer i;
@@ -238,32 +234,29 @@ ECode ShortBuffer::GetHashCode(
     for (i = i - 1; i >= p; i--) {
         Short s;
         Get(i, &s);
-        h = 31 * h + s;
+        hash = 31 * hash + s;
     }
-    *hash = h;
     return NOERROR;
 }
 
 ECode ShortBuffer::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* same)
+    /* [out] */ Boolean& same)
 {
-    VALIDATE_NOT_NULL(same);
-
     ShortBuffer* other = (ShortBuffer*)IShortBuffer::Probe(obj);
     if (other == nullptr) {
-        *same = false;
+        same = false;
         return NOERROR;
     }
     if (this == other) {
-        *same = true;
+        same = true;
         return NOERROR;
     }
     Integer thisRemaining, otherRemaining;
     Remaining(&thisRemaining);
     other->Remaining(&otherRemaining);
     if (thisRemaining != otherRemaining) {
-        *same = false;
+        same = false;
         return NOERROR;
     }
     Integer p;
@@ -276,11 +269,11 @@ ECode ShortBuffer::Equals(
         Get(i, &thiss);
         other->Get(j, &others);
         if (thiss != others) {
-            *same = false;
+            same = false;
             return NOERROR;
         }
     }
-    *same = true;
+    same = true;
     return NOERROR;
 }
 

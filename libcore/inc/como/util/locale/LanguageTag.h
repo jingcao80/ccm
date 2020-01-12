@@ -24,7 +24,7 @@
 #include "como/util/locale/ParseStatus.h"
 #include "como/util/locale/StringTokenIterator.h"
 #include "como.util.locale.ILanguageTag.h"
-#include <ccmautoptr.h>
+#include <comosp.h>
 
 namespace como {
 namespace util {
@@ -130,7 +130,7 @@ public:
         /* [in] */ const String& s);
 
     ECode ToString(
-        /* [out] */ String* desc) override;
+        /* [out] */ String& desc) override;
 
 private:
     static AutoPtr<IMap> GetGRANDFATHERED();

@@ -37,11 +37,11 @@ public:
 private:
     ECode FindCoclass(
         /* [in] */ const String& fullName,
-        /* [out] */ IMetaCoclass** klass) override;
+        /* [out] */ AutoPtr<IMetaCoclass>& klass) override;
 
     ECode FindInterface(
         /* [in] */ const String& fullName,
-        /* [out] */ IMetaInterface** intf) override;
+        /* [out] */ AutoPtr<IMetaInterface>& intf) override;
 
     void LoadComponentsInClassPath();
 

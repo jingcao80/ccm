@@ -17,7 +17,7 @@
 #include "como/core/NativeLockWord.h"
 #include "como/core/NativeMonitor.h"
 #include "como/core/NativeMonitorPool.h"
-#include <ccmdef.h>
+#include <comodef.h>
 
 namespace como {
 namespace core {

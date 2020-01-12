@@ -76,11 +76,11 @@ public:
         /* [in] */ Double d);
 
     ECode GetHashCode(
-        /* [out] */ Integer* hash) override;
+        /* [out] */ Integer& hash) override;
 
     ECode Equals(
         /* [in] */ IInterface* obj,
-        /* [out] */ Boolean* same) override;
+        /* [out] */ Boolean& same) override;
 
     static Double NextDouble(
         /* [in] */ Double d,

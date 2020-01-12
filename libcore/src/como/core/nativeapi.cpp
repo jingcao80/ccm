@@ -17,7 +17,7 @@
 #include "como/core/nativeapi.h"
 #include "como/core/NativeObject.h"
 #include "como/core/NativeThread.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 namespace como {
 namespace core {

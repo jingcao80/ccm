@@ -25,7 +25,7 @@
 #include "como.util.IDate.h"
 #include "como.util.calendar.IBaseCalendar.h"
 #include "como.util.calendar.IBaseCalendarDate.h"
-#include <ccmautoptr.h>
+#include <comosp.h>
 
 using como::core::ICloneable;
 using como::core::IComparable;
@@ -143,7 +143,7 @@ public:
 
     ECode Equals(
         /* [in] */ IInterface* obj,
-        /* [out] */ Boolean* same) override;
+        /* [out] */ Boolean& same) override;
 
     static Long GetMillisOf(
         /* [in] */ IDate* date);
@@ -153,10 +153,10 @@ public:
         /* [out] */ Integer* result) override;
 
     ECode GetHashCode(
-        /* [out] */ Integer* hash) override;
+        /* [out] */ Integer& hash) override;
 
     ECode ToString(
-        /* [out] */ String* desc) override;
+        /* [out] */ String& desc) override;
 
     ECode ToLocaleString(
         /* [out] */ String* str) override;

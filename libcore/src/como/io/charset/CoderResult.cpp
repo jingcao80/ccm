@@ -19,7 +19,7 @@
 #include "como/core/SyncObject.h"
 #include "como/io/charset/CoderResult.h"
 #include "como/util/CHashMap.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::AutoLock;
 using como::core::CoreUtils;
@@ -103,13 +103,11 @@ ECode CoderResult::Constructor(
 }
 
 ECode CoderResult::ToString(
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
-    VALIDATE_NOT_NULL(desc);
-
     String nm = sNames[mType];
     Boolean error;
-    *desc = (IsError(&error), error) ?
+    desc = (IsError(&error), error) ?
             String::Format("%s[%d]", nm.string(), mLength) : nm;
     return NOERROR;
 }
@@ -217,8 +215,7 @@ AutoPtr<ICoderResult> CoderResult::Cache::Get(
     }
     if (e == nullptr) {
         e = Create(len);
-        w = nullptr;
-        IWeakReferenceSource::Probe(e)->GetWeakReference(&w);
+        IWeakReferenceSource::Probe(e)->GetWeakReference(w);
         mCache->Put(k, w);
     }
     return e;

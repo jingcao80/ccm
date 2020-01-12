@@ -32,8 +32,8 @@
 #include "como.util.ICalendar.h"
 #include "como.util.IFormatter.h"
 #include "como.util.ILocale.h"
-#include <ccmautoptr.h>
-#include <ccmrefbase.h>
+#include <comosp.h>
+#include <comoref.h>
 
 using como::core::IAppendable;
 using como::core::IAutoCloseable;
@@ -148,7 +148,7 @@ private:
             /* [in] */ ILocale* l) = 0;
 
         virtual ECode ToString(
-            /* [out] */ String* str) = 0;
+            /* [out] */ String& str) = 0;
     };
 
     class FixedString
@@ -173,7 +173,7 @@ private:
             /* [in] */ ILocale* l) override;
 
         ECode ToString(
-            /* [out] */ String* str) override;
+            /* [out] */ String& str) override;
 
     private:
         Formatter* mOwner;
@@ -219,7 +219,7 @@ private:
             /* [in] */ ILocale* l) override;
 
         ECode ToString(
-            /* [out] */ String* str) override;
+            /* [out] */ String& str) override;
 
     private:
         Integer Index(

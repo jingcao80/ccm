@@ -64,7 +64,7 @@ interface IVector
         [out] Boolean* result);
 
     CopyInto(
-        [out] Array<IInterface*> anArray);
+        [out] Array<IInterface*>& anArray);
 
     EnsureCapacity(
         [in] Integer minCapacity);

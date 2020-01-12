@@ -15,7 +15,7 @@
 //=========================================================================
 
 #include "como/util/LinkedList.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
 using como::core::E_ILLEGAL_STATE_EXCEPTION;
@@ -79,7 +79,7 @@ void LinkedList::LinkBefore(
     AutoPtr<Node> pred = succ->mPrev;
     AutoPtr<Node> newNode = new Node(pred, e, succ);
     succ->mPrev = newNode;
-    if (pred = nullptr) {
+    if (pred == nullptr) {
         mFirst = std::move(newNode);
     }
     else {

@@ -24,8 +24,8 @@
 #include "como.misc.IFloatingDecimalASCIIToBinaryConverter.h"
 #include "como.misc.IFloatingDecimalBinaryToASCIIConverter.h"
 #include "como.util.regex.IPattern.h"
-#include <ccmautoptr.h>
-#include <ccmobject.h>
+#include <comosp.h>
+#include <comoobj.h>
 
 using como::core::IAppendable;
 using como::core::IThreadLocal;

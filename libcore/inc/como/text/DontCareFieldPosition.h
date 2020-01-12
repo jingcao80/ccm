@@ -34,7 +34,7 @@ public:
         /* [out] */ IFormatFieldDelegate** delegate) override;
 
     ECode ToString(
-        /* [out] */ String* desc) override;
+        /* [out] */ String& desc) override;
 
 private:
     ECode Constructor();

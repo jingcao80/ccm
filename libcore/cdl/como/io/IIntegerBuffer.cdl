@@ -43,10 +43,10 @@ interface IIntegerBuffer
         [out] Integer* i);
 
     Get(
-        [out] Array<Integer> dst);
+        [out] Array<Integer>& dst);
 
     Get(
-        [out] Array<Integer> dst,
+        [out] Array<Integer>& dst,
         [in] Integer offset,
         [in] Integer length);
 

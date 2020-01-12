@@ -69,10 +69,10 @@ interface IByteBuffer
         [out] Byte* b);
 
     Get(
-        [out] Array<Byte> dst);
+        [out] Array<Byte>& dst);
 
     Get(
-        [out] Array<Byte> dst,
+        [out] Array<Byte>& dst,
         [in] Integer offset,
         [in] Integer length);
 

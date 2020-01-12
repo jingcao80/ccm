@@ -17,7 +17,7 @@
 #include "como/core/AutoLock.h"
 #include "como/core/Math.h"
 #include "como/io/InputStream.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::AutoLock;
 using como::core::IID_IAutoCloseable;
@@ -109,7 +109,9 @@ ECode InputStream::Available(
 }
 
 ECode InputStream::Close()
-{}
+{
+    return NOERROR;
+}
 
 ECode InputStream::Mark(
     /* [in] */ Integer readLimit)

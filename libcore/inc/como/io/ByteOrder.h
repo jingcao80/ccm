@@ -35,7 +35,7 @@ public:
     static AutoPtr<IByteOrder> Order();
 
     ECode ToString(
-        /* [out] */ String* desc) override;
+        /* [out] */ String& desc) override;
 
     static AutoPtr<IByteOrder> GetBIG_ENDIAN();
 

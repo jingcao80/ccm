@@ -14,6 +14,6 @@
 # limitations under the License.
 #=========================================================================
 
-set(LIBCORE_JING_SRC_DIR ${LIBCORE_DIR}/src/jing)
+set(LIBCORE_JING_SRC_DIR ${LIBCORE_SRC_DIR}/src/jing)
 
 add_subdirectory(system)

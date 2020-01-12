@@ -19,8 +19,8 @@
 #include "como/util/Arrays.h"
 #include "como.core.IStringBuilder.h"
 #include "como.util.IIterator.h"
-#include <ccmautoptr.h>
-#include <ccmlogger.h>
+#include <comosp.h>
+#include <comolog.h>
 
 using como::core::CStringBuilder;
 using como::core::IStringBuilder;
@@ -357,15 +357,13 @@ ECode AbstractCollection::Clear()
 }
 
 ECode AbstractCollection::ToString(
-    /* [out] */ String* str)
+    /* [out] */ String& str)
 {
-    VALIDATE_NOT_NULL(str);
-
     AutoPtr<IIterator> it;
     GetIterator(&it);
     Boolean hasNext;
     if (it->HasNext(&hasNext), !hasNext) {
-        *str = "[]";
+        str = "[]";
         return NOERROR;
     }
 
@@ -389,13 +387,13 @@ ECode AbstractCollection::ToString(
 
 ECode AbstractCollection::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return SyncObject::Equals(obj, result);
 }
 
 ECode AbstractCollection::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
     return SyncObject::GetHashCode(hash);
 }

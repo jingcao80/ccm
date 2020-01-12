@@ -19,7 +19,7 @@
 
 #include "como.core.ISystem.h"
 #include "_como_core_CSystem.h"
-#include <ccmobject.h>
+#include <comoobj.h>
 
 namespace como {
 namespace core {

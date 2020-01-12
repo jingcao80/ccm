@@ -21,7 +21,7 @@
 #include "como.io.ISerializable.h"
 #include "como.util.IRandom.h"
 #include "como.util.concurrent.atomic.IAtomicLong.h"
-#include <ccmautoptr.h>
+#include <comosp.h>
 
 using como::core::SyncObject;
 using como::io::ISerializable;

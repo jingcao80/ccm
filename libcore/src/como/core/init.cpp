@@ -15,8 +15,8 @@
 //=========================================================================
 
 #include "como/core/NativeRuntime.h"
-#include <ccmlogger.h>
-#include <ccmtypes.h>
+#include <comolog.h>
+#include <comotypes.h>
 
 namespace como {
 namespace core {

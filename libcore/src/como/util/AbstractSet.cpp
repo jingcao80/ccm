@@ -17,7 +17,7 @@
 #include "como/util/AbstractSet.h"
 #include "como.util.ICollection.h"
 #include "como.util.IIterator.h"
-#include <ccmautoptr.h>
+#include <comosp.h>
 
 namespace como {
 namespace util {
@@ -26,34 +26,30 @@ COMO_INTERFACE_IMPL_1(AbstractSet, AbstractCollection, ISet);
 
 ECode AbstractSet::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     if (IInterface::Equals(obj, (ISet*)this)) {
-        *result = true;
+        result = true;
         return NOERROR;
     }
 
     if (ISet::Probe(obj) == nullptr) {
-        *result = false;
+        result = false;
         return NOERROR;
     }
     ICollection* c = ICollection::Probe(obj);
     Integer othSize, thisSize;
     if (c->GetSize(&othSize), GetSize(&thisSize), othSize != thisSize) {
-        *result = false;
+        result = false;
         return NOERROR;
     }
-    return ContainsAll(c, result);
+    return ContainsAll(c, &result);
 }
 
 ECode AbstractSet::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
-    Integer h = 0;
+    hash = 0;
     AutoPtr<IIterator> it;
     GetIterator(&it);
     Boolean hasNext;
@@ -61,10 +57,9 @@ ECode AbstractSet::GetHashCode(
         AutoPtr<IInterface> obj;
         it->Next(&obj);
         if (obj != nullptr) {
-            h += Object::GetHashCode(obj);
+            hash += Object::GetHashCode(obj);
         }
     }
-    *hash = h;
     return NOERROR;
 }
 

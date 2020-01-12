@@ -21,9 +21,9 @@
 #include "como.core.IThread.h"
 #include "como.core.IThreadLocal.h"
 #include "como.util.concurrent.atomic.IAtomicInteger.h"
-#include <ccmautoptr.h>
-#include <ccmobject.h>
-#include <ccmrefbase.h>
+#include <comosp.h>
+#include <comoobj.h>
+#include <comoref.h>
 
 using como::util::concurrent::atomic::IAtomicInteger;
 

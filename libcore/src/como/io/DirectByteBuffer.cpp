@@ -23,7 +23,7 @@
 #include "como/io/ByteBufferAsShortBuffer.h"
 #include "como/io/CDirectByteBuffer.h"
 #include "libcore/io/Memory.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::E_ILLEGAL_STATE_EXCEPTION;
 using como::core::Math;

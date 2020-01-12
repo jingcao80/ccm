@@ -30,7 +30,7 @@ interface IComparator
 
     Equals(
         [in] IInterface* obj,
-        [out] Boolean* isEqual);
+        [out] Boolean& isEqual);
 }
 
 }

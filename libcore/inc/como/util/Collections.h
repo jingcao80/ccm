@@ -33,8 +33,8 @@
 #include "como.util.IRandomAccess.h"
 #include "como.util.ISet.h"
 #include "como.util.ISortedMap.h"
-#include <ccmautoptr.h>
-#include <ccmrefbase.h>
+#include <comosp.h>
+#include <comoref.h>
 
 using como::core::IComparable;
 using como::core::ISynchronize;
@@ -78,7 +78,7 @@ private:
             /* [out, callee] */ Array<IInterface*>* objs) override;
 
         ECode ToString(
-            /* [out] */ String* desc) override;
+            /* [out] */ String& desc) override;
 
         ECode GetIterator(
             /* [out] */ IIterator** it) override;
@@ -127,10 +127,10 @@ private:
 
         ECode Equals(
             /* [in] */ IInterface* obj,
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
 
         ECode GetHashCode(
-            /* [out] */ Integer* hash) override;
+            /* [out] */ Integer& hash) override;
 
         ECode Add(
             /* [in] */ IInterface* obj,
@@ -194,10 +194,10 @@ private:
 
         ECode Equals(
             /* [in] */ IInterface* obj,
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
 
         ECode GetHashCode(
-            /* [out] */ Integer* hash) override;
+            /* [out] */ Integer& hash) override;
 
         ECode Get(
             /* [in] */ Integer index,
@@ -377,14 +377,14 @@ private:
         ECode Clear() override;
 
         ECode ToString(
-            /* [out] */ String* desc) override;
+            /* [out] */ String& desc) override;
 
         ECode Equals(
             /* [in] */ IInterface* obj,
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
 
         ECode GetHashCode(
-            /* [out] */ Integer* hash) override;
+            /* [out] */ Integer& hash) override;
 
     protected:
         AutoPtr<ICollection> mC; // Backing Collection
@@ -412,10 +412,10 @@ private:
 
         ECode Equals(
             /* [in] */ IInterface* obj,
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
 
         ECode GetHashCode(
-            /* [out] */ Integer* hash) override;
+            /* [out] */ Integer& hash) override;
 
         ECode Add(
             /* [in] */ IInterface* obj,
@@ -487,10 +487,10 @@ private:
 
         ECode Equals(
             /* [in] */ IInterface* obj,
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
 
         ECode GetHashCode(
-            /* [out] */ Integer* hash) override;
+            /* [out] */ Integer& hash) override;
 
         ECode Get(
             /* [in] */ Integer index,
@@ -751,10 +751,10 @@ private:
 
         ECode Equals(
             /* [in] */ IInterface* obj,
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
 
         ECode GetHashCode(
-            /* [out] */ Integer* hash) override;
+            /* [out] */ Integer& hash) override;
 
         ECode AddAll(
             /* [in] */ ICollection* c,
@@ -797,10 +797,10 @@ private:
 
         ECode Equals(
             /* [in] */ IInterface* obj,
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
 
         ECode GetHashCode(
-            /* [out] */ Integer* hash) override;
+            /* [out] */ Integer& hash) override;
 
         ECode PutIfAbsent(
             /* [in] */ IInterface* key,
@@ -822,7 +822,7 @@ private:
 
         ECode Equals(
             /* [in] */ IInterface* obj,
-            /* [out] */ Boolean* isEqual) override;
+            /* [out] */ Boolean& isEqual) override;
 
         static AutoPtr<ReverseComparator> GetREVERSE_ORDER();
     };
@@ -846,10 +846,10 @@ private:
 
         ECode Equals(
             /* [in] */ IInterface* obj,
-            /* [out] */ Boolean* isEqual) override;
+            /* [out] */ Boolean& isEqual) override;
 
         ECode GetHashCode(
-            /* [out] */ Integer* hash) override;
+            /* [out] */ Integer& hash) override;
 
     public:
         AutoPtr<IComparator> mCmp;

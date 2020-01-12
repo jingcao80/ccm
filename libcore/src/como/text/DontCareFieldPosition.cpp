@@ -65,12 +65,10 @@ ECode DontCareFieldPosition::Constructor()
 
         ECode GetInterfaceID(
             /* [in] */ IInterface* object,
-            /* [out] */ InterfaceID* iid) override
+            /* [out] */ InterfaceID& iid) override
         {
-            VALIDATE_NOT_NULL(iid);
-
             if (object == (IInterface*)(IFormatFieldDelegate*)this) {
-                *iid = IID_IFormatFieldDelegate;
+                iid = IID_IFormatFieldDelegate;
                 return NOERROR;
             }
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -113,13 +111,11 @@ ECode DontCareFieldPosition::GetFieldDelegate(
 }
 
 ECode DontCareFieldPosition::ToString(
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
-    VALIDATE_NOT_NULL(desc);
-
     AutoPtr<IFormatField> attribute;
     GetFieldAttribute(&attribute);
-    *desc = String::Format("DontCareFieldPosition[mField=%d,mAttribute=%s,mBeginIndex=%d,mEndIndex=%d]",
+    desc = String::Format("DontCareFieldPosition[mField=%d,mAttribute=%s,mBeginIndex=%d,mEndIndex=%d]",
             mField, Object::ToString(attribute).string(), mBeginIndex, mEndIndex);
     return NOERROR;
 }

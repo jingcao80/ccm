@@ -16,7 +16,7 @@
 
 #include "como/core/ThreadLocal.h"
 #include "comort/system/BlockGuard.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::ThreadLocal;
 

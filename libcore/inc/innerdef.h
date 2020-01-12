@@ -14,34 +14,16 @@
 // limitations under the License.
 //=========================================================================
 
+#ifndef __COMO_INNERDEF_H__
+#define __COMO_INNERDEF_H__
+
+#include "coredef.h"
+
 namespace como {
-namespace core {
 
-[
-    uuid(d676d0a0-4708-49b6-9b97-a0a6be4223cd),
-    version(0.1.0)
-]
-interface IString
-{
-    CompareTo(
-        [in] IInterface* other,
-        [out] Integer* result);
-
-    GetCharAt(
-        [in] Integer index,
-        [out] Char* c);
-
-    GetLength(
-        [out] Integer* number);
-
-    SubSequence(
-        [in] Integer start,
-        [in] Integer end,
-        [out] ICharSequence** subcsq);
-
-    ToString(
-        [out] String& str);
-}
+typedef unsigned int            UInteger;
+typedef unsigned long long int  ULong;
 
 }
-}
+
+#endif // __COMO_INNERDEF_H__

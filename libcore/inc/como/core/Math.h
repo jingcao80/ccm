@@ -17,7 +17,7 @@
 #ifndef __COMO_CORE_MATH_H__
 #define __COMO_CORE_MATH_H__
 
-#include <ccmtypes.h>
+#include <comotypes.h>
 #include <math.h>
 
 namespace como {
@@ -96,19 +96,19 @@ public:
         /* [in] */ Double a,
         /* [in] */ Double b);
 
-    static Integer Signum(
+    COM_PUBLIC static Integer Signum(
         /* [in] */ Integer i);
 
-    static Integer Signum(
+    COM_PUBLIC static Integer Signum(
         /* [in] */ Long l);
 
-    static Short ReverseBytes(
+    COM_PUBLIC static Short ReverseBytes(
         /* [in] */ Short s);
 
-    static Integer ReverseBytes(
+    COM_PUBLIC static Integer ReverseBytes(
         /* [in] */ Integer i);
 
-    static Long ReverseBytes(
+    COM_PUBLIC static Long ReverseBytes(
         /* [in] */ Long l);
 
     COM_PUBLIC static Double CopySign(
@@ -269,41 +269,6 @@ inline Long Math::Min(
     /* [in] */ Long b)
 {
     return (a <= b) ? a : b;
-}
-
-inline Integer Math::Signum(
-    /* [in] */ Integer i)
-{
-    return (i >> 31) | (((unsigned Integer)-i) >> 31);
-}
-
-inline Integer Math::Signum(
-    /* [in] */ Long l)
-{
-    return (Integer) ((l >> 63) | (((unsigned Long)-l) >> 63));
-}
-
-inline Short Math::ReverseBytes(
-    /* [in] */ Short s)
-{
-    return (Short) (((s & 0xFF00) >> 8) | (s << 8));
-}
-
-inline Integer Math::ReverseBytes(
-    /* [in] */ Integer i)
-{
-    return ((((unsigned Integer)i) >> 24)) |
-           ((i >> 8) & 0xFF00) |
-           ((i << 8) & 0xFF0000) |
-           ((i << 24));
-}
-
-inline Long Math::ReverseBytes(
-    /* [in] */ Long l)
-{
-    l = (l & 0x00ff00ff00ff00ffLL) << 8 | (((unsigned Long)l) >> 8) & 0x00ff00ff00ff00ffLL;
-    return (l << 48) | ((l & 0xffff0000LL) << 16) |
-            ((((unsigned Long)l) >> 16) & 0xffff0000LL) | (((unsigned Long)l) >> 48);
 }
 
 inline Boolean Math::IsNaN(

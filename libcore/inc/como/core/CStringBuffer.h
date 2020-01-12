@@ -219,7 +219,7 @@ public:
     ECode Reverse() override;
 
     ECode ToString(
-        /* [out] */ String* str) override;
+        /* [out] */ String& str) override;
 };
 
 }

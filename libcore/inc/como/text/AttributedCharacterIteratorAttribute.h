@@ -38,7 +38,7 @@ public:
         /* [in] */ const String& name);
 
     ECode ToString(
-        /* [out] */ String* str) override;
+        /* [out] */ String& str) override;
 
     static ECode GetLANGUAGE(
         /* [out] */ IAttributedCharacterIterator::IAttribute** attribute);

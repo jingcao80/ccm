@@ -102,7 +102,7 @@ public:
         /* [out] */ IBigInteger** value) override;
 
     ECode ToString(
-        /* [out] */ String* str) override;
+        /* [out] */ String& str) override;
 
     static const AutoPtr<IFDBigInteger> GetZERO();
 

@@ -14,6 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
+#include "innerdef.h"
 #include "como/core/CStringBuilder.h"
 #include "como/core/Math.h"
 #include "como/core/StringUtils.h"
@@ -21,7 +22,7 @@
 #include "como/misc/CFDBigInteger.h"
 #include "como/misc/FDBigInteger.h"
 #include "como/util/Arrays.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::CStringBuilder;
 using como::core::IID_IStringBuilder;
@@ -76,6 +77,7 @@ static Array<IFDBigInteger*> CreatePOW_5_CACHE(
         prev->MakeImmutable();
         i++;
     }
+    return array;
 }
 
 const Array<IFDBigInteger*>& FDBigInteger::GetPOW_5_CACHE()
@@ -107,7 +109,7 @@ ECode FDBigInteger::Constructor(
     Integer n = Math::Max((nDigits + 8) / 9, 2);
     mData = Array<Integer>(n);
     mData[0] = lValue;
-    mData[1] = (((unsigned Long)lValue) >> 32);
+    mData[1] = (((ULong)lValue) >> 32);
     mOffset = 0;
     mNWords = 2;
     Integer i = kDigits;
@@ -153,7 +155,7 @@ AutoPtr<IFDBigInteger> FDBigInteger::ValueOfPow52(
                 return value;
             } else {
                 Array<Integer> data{ pow5 << bitcount,
-                        (Integer)(((unsigned Integer)pow5) >> (32 - bitcount))};
+                        (Integer)(((UInteger)pow5) >> (32 - bitcount))};
                 AutoPtr<IFDBigInteger> value;
                 CFDBigInteger::New(data, wordcount, IID_IFDBigInteger, (IInterface**)&value);
                 return value;
@@ -177,7 +179,7 @@ AutoPtr<IFDBigInteger> FDBigInteger::ValueOfMulPow52(
     CHECK(p5 >= 0);
     CHECK(P2 >= 0);
     Integer v0 = value;
-    Integer v1 = (((unsigned Long)value) >> 32);
+    Integer v1 = (((ULong)value) >> 32);
     Integer wordcount = p2 >> 5;
     Integer bitcount = p2 & 0x1f;
     if (p5 != 0) {
@@ -185,10 +187,10 @@ AutoPtr<IFDBigInteger> FDBigInteger::ValueOfMulPow52(
             Long pow5 = SMALL_5_POW[p5] & LONG_MASK;
             Long carry = (v0 & LONG_MASK) * pow5;
             v0 = carry;
-            carry = ((unsigned Long)carry) >> 32;
+            carry = ((ULong)carry) >> 32;
             carry = (v1 & LONG_MASK) * pow5 + carry;
             v1 = carry;
-            Integer v2 = (Integer)(((unsigned Long)carry) >> 32);
+            Integer v2 = (Integer)(((ULong)carry) >> 32);
             if (bitcount == 0) {
                 Array<Integer> data{ v0, v1, v2 };
                 AutoPtr<IFDBigInteger> fdValue;
@@ -198,9 +200,9 @@ AutoPtr<IFDBigInteger> FDBigInteger::ValueOfMulPow52(
             else {
                 Array<Integer> data{
                     v0 << bitcount,
-                    (v1 << bitcount) | (Integer)(((unsigned Integer)v0) >> (32 - bitcount)),
-                    (v2 << bitcount) | (Integer)(((unsigned Integer)v1) >> (32 - bitcount)),
-                    (Integer)(((unsigned Integer)v2) >> (32 - bitcount)) };
+                    (v1 << bitcount) | (Integer)(((UInteger)v0) >> (32 - bitcount)),
+                    (v2 << bitcount) | (Integer)(((UInteger)v1) >> (32 - bitcount)),
+                    (Integer)(((UInteger)v2) >> (32 - bitcount)) };
                 AutoPtr<IFDBigInteger> fdValue;
                 CFDBigInteger::New(data, wordcount, IID_IFDBigInteger, (IInterface**)&fdValue);
                 return fdValue;
@@ -233,8 +235,8 @@ AutoPtr<IFDBigInteger> FDBigInteger::ValueOfMulPow52(
         else {
             Array<Integer> data{
                 v0 << bitcount,
-                (v1 << bitcount) | (Integer)(((unsigned Integer)v0) >> (32 - bitcount)),
-                (Integer)(((unsigned Integer)v1) >> (32 - bitcount)) };
+                (v1 << bitcount) | (Integer)(((UInteger)v0) >> (32 - bitcount)),
+                (Integer)(((UInteger)v1) >> (32 - bitcount)) };
             AutoPtr<IFDBigInteger> fdValue;
             CFDBigInteger::New(data, wordcount, IID_IFDBigInteger, (IInterface**)&fdValue);
             return fdValue;
@@ -297,7 +299,7 @@ void FDBigInteger::LeftShift(
     for (; idx > 0; idx--) {
         Integer v = (prev << bitcount);
         prev = src[idx - 1];
-        v |= ((unsigned Integer)prev) >> anticount;
+        v |= ((UInteger)prev) >> anticount;
         result[idx] = v;
     }
     Integer v = prev << bitcount;
@@ -327,7 +329,7 @@ ECode FDBigInteger::LeftShift(
             Integer anticount = 32 - bitcount;
             Integer idx = mNWords - 1;
             Integer prev = mData[idx];
-            Integer hi = ((unsigned Integer)prev) >> anticount;
+            Integer hi = ((UInteger)prev) >> anticount;
             Array<Integer> result;
             if (hi != 0) {
                 result = Array<Integer>(mNWords + 1);
@@ -347,12 +349,12 @@ ECode FDBigInteger::LeftShift(
                 Integer idx = 0;
                 Integer prev = mData[idx];
                 for (; idx < mNWords - 1; idx++) {
-                    Integer v = ((unsigned Integer)prev) >> anticount;
+                    Integer v = ((UInteger)prev) >> anticount;
                     prev = mData[idx + 1];
                     v |= (prev << bitcount);
                     mData[idx] = v;
                 }
-                Integer v = ((unsigned Integer)prev) >> anticount;
+                Integer v = ((UInteger)prev) >> anticount;
                 mData[idx] = v;
                 if (v == 0) {
                     mNWords--;
@@ -362,7 +364,7 @@ ECode FDBigInteger::LeftShift(
             else {
                 Integer idx = mNWords - 1;
                 Integer prev = mData[idx];
-                Integer hi = ((unsigned Integer)prev) >> anticount;
+                Integer hi = ((UInteger)prev) >> anticount;
                 Array<Integer> result = mData;
                 Array<Integer> src = mData;
                 if (hi != 0) {
@@ -428,7 +430,7 @@ ECode FDBigInteger::QuoRemIteration(
             for (Integer sIndex = 0, tIndex = tStart; tIndex < mNWords; sIndex++, tIndex++) {
                 sum += (td[tIndex] & LONG_MASK) + (sd[sIndex] & LONG_MASK);
                 td[tIndex] = sum;
-                sum = ((unsigned Long)sum) >> 32; // Signed or unsigned, answer is 0 or 1
+                sum = ((ULong)sum) >> 32; // Signed or unsigned, answer is 0 or 1
             }
             //
             // Originally the following line read
@@ -540,7 +542,7 @@ void FDBigInteger::Mult(
         for (Integer j = 0; j < s2Len; j++) {
             p += (dst[i + j] & LONG_MASK) + v * (s2[j] & LONG_MASK);
             dst[i + j] = p;
-            p = ((unsigned Long)p) >> 32;
+            p = ((ULong)p) >> 32;
         }
         dst[i + s2Len] = p;
     }
@@ -793,8 +795,8 @@ ECode FDBigInteger::AddAndCmp(
     if (sSize == bSize) {
         top += (From(small)->mData[From(small)->mNWords - 1] & LONG_MASK);
     }
-    if ((((unsigned Long)top) >> 32) == 0) {
-        if ((((unsigned Long)(top + 1)) >> 32) == 0) {
+    if ((((ULong)top) >> 32) == 0) {
+        if ((((ULong)(top + 1)) >> 32) == 0) {
             // good case - no carry extension
             if (bSize < thSize) {
                 *result = 1;
@@ -818,7 +820,7 @@ ECode FDBigInteger::AddAndCmp(
             return NOERROR;
         }
         // here sum.nWords == this.nWords
-        top = ((unsigned Long)top) >> 32;
+        top = ((ULong)top) >> 32;
         Long v = (mData[mNWords - 1] & LONG_MASK);
         if (v < top) {
             *result = -1;
@@ -920,11 +922,11 @@ void FDBigInteger::MultAddMe(
     // unroll 0th iteration, doing addition.
     Long p = v * (mData[0] & LONG_MASK) + (addend & LONG_MASK);
     mData[0] = p;
-    p = ((unsigned Long)p) >> 32;
+    p = ((ULong)p) >> 32;
     for (Integer i = 1; i < mNWords; i++) {
         p += v * (mData[i] & LONG_MASK);
         mData[i] = p;
-        p = ((unsigned Long)p) >> 32;
+        p = ((ULong)p) >> 32;
     }
     if (p != 0) {
         mData[mNWords++] = p; // will fail noisily if illegal!
@@ -982,7 +984,7 @@ Integer FDBigInteger::MultAndCarryBy10(
     for (Integer i = 0; i < srcLen; i++) {
         Long product = (src[i] & LONG_MASK) * 10LL + carry;
         dst[i] = product;
-        carry = ((unsigned Long)product) >> 32;
+        carry = ((ULong)product) >> 32;
     }
     return carry;
 }
@@ -998,7 +1000,7 @@ void FDBigInteger::Mult(
     for (Integer i = 0; i < srcLen; i++) {
         Long product = (src[i] & LONG_MASK) * val + carry;
         dst[i] = product;
-        carry = ((unsigned Long)product) >> 32;
+        carry = ((ULong)product) >> 32;
     }
     dst[srcLen] = carry;
 }
@@ -1015,7 +1017,7 @@ void FDBigInteger::Mult(
     for (Integer j = 0; j < srcLen; j++) {
         Long product = v * (src[j] & LONG_MASK) + carry;
         dst[j] = product;
-        carry = ((unsigned Long)product) >> 32;
+        carry = ((ULong)product) >> 32;
     }
     dst[srcLen] = carry;
     v = v1 & LONG_MASK;
@@ -1023,7 +1025,7 @@ void FDBigInteger::Mult(
     for (Integer j = 0; j < srcLen; j++) {
         Long product = (dst[j + 1] & LONG_MASK) + v * (src[j] & LONG_MASK) + carry;
         dst[j + 1] = product;
-        carry = ((unsigned Long)product) >> 32;
+        carry = ((ULong)product) >> 32;
     }
     dst[srcLen + 1] = carry;
 }
@@ -1083,7 +1085,7 @@ ECode FDBigInteger::ToHexString(
     for (Integer i = mOffset; i > 0; i--) {
         sb->Append(String("00000000"));
     }
-    return sb->ToString(str);
+    return sb->ToString(*str);
 }
 
 ECode FDBigInteger::ToBigInteger(
@@ -1105,10 +1107,8 @@ ECode FDBigInteger::ToBigInteger(
 }
 
 ECode FDBigInteger::ToString(
-    /* [out] */ String* str)
+    /* [out] */ String& str)
 {
-    VALIDATE_NOT_NULL(str);
-
     AutoPtr<IBigInteger> value;
     ToBigInteger(&value);
     return IObject::Probe(value)->ToString(str);

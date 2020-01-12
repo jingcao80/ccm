@@ -22,7 +22,7 @@
 #include "como/util/regex/Matcher.h"
 #include "como/util/regex/Pattern.h"
 #include "como.core.IStringBuilder.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 #include <unicode/regex.h>
 #include <memory>
 
@@ -367,7 +367,7 @@ ECode Matcher::QuoteReplacement(
         }
         sb->Append(c);
     }
-    return sb->ToString(str);
+    return sb->ToString(*str);
 }
 
 ECode Matcher::AppendReplacement(
@@ -465,7 +465,7 @@ ECode Matcher::ReplaceAll(
         FAIL_RETURN(AppendReplacement(buffer, replacement));
     }
     AppendTail(buffer);
-    return buffer->ToString(str);
+    return buffer->ToString(*str);
 }
 
 ECode Matcher::ReplaceFirst(
@@ -483,7 +483,7 @@ ECode Matcher::ReplaceFirst(
         FAIL_RETURN(AppendReplacement(buffer, replacement));
     }
     AppendTail(buffer);
-    return buffer->ToString(str);
+    return buffer->ToString(*str);
 }
 
 ECode Matcher::Region(
@@ -548,10 +548,8 @@ ECode Matcher::UseAnchoringBounds(
 }
 
 ECode Matcher::ToString(
-    /* [in] */ String* str)
+    /* [in] */ String& str)
 {
-    VALIDATE_NOT_NULL(str);
-
     AutoPtr<IStringBuilder> sb;
     CStringBuilder::New(IID_IStringBuilder, (IInterface**)&sb);
     sb->Append(String("como::util::regex::Matcher"));
@@ -628,7 +626,7 @@ ECode Matcher::Reset(
         return como::core::E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
-    input->ToString(&mInput);
+    input->ToString(mInput);
     mRegionStart = start;
     mRegionEnd = end;
     ResetForInput();

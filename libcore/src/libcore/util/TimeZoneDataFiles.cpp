@@ -72,7 +72,7 @@ String TimeZoneDataFiles::GenerateIcuDataPath()
         icuDataPathBuilder->Append(systemIcuDataPath);
     }
     String path;
-    icuDataPathBuilder->ToString(&path);
+    icuDataPathBuilder->ToString(path);
     return path;
 }
 

@@ -682,17 +682,15 @@ void ThreadGroup::List(
 }
 
 ECode ThreadGroup::ToString(
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
-    VALIDATE_NOT_NULL(desc);
-
     AutoPtr<IMetaCoclass> klass;
-    GetCoclass(&klass);
+    GetCoclass(klass);
     String cName;
-    klass->GetName(&cName);
+    klass->GetName(cName);
     String name;
     GetName(&name);
-    *desc = String::Format("%s[name=%s,maxpri=%d]",
+    desc = String::Format("%s[name=%s,maxpri=%d]",
             cName.string(), name.string(), mMaxPriority);
     return NOERROR;
 }

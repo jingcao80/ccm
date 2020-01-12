@@ -17,7 +17,7 @@
 #include "coredef.h"
 #include "como/util/AbstractQueue.h"
 #include "como.util.IIterator.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 namespace como {
 namespace util {

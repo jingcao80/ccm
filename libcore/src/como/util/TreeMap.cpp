@@ -14,11 +14,12 @@
 // limitations under the License.
 //=========================================================================
 
+#include "innerdef.h"
 #include "como/util/Collections.h"
 #include "como/util/TreeMap.h"
 #include "como.core.IComparable.h"
 #include "como.io.IObjectInput.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::E_CLASS_CAST_EXCEPTION;
 using como::core::E_INTERNAL_ERROR;
@@ -1278,7 +1279,7 @@ ECode TreeMap::BuildFromSorted(
         return NOERROR;
     }
 
-    Integer mid = ((unsigned Integer)(lo + hi)) >> 1;
+    Integer mid = ((UInteger)(lo + hi)) >> 1;
 
     AutoPtr<TreeMapEntry> left;
     if (lo < mid) {
@@ -1471,6 +1472,7 @@ ECode TreeMap::EntrySet::Remove(
         *contained = false;
         return NOERROR;
     }
+    return NOERROR;
 }
 
 ECode TreeMap::EntrySet::GetSize(
@@ -2547,6 +2549,7 @@ ECode TreeMap::NavigableSubMap::SubMapIterator::HasNext(
     VALIDATE_NOT_NULL(result);
 
     *result = mNext != nullptr && (!IInterface::Equals(mNext->mKey, mFenceKey));
+    return NOERROR;
 }
 
 ECode TreeMap::NavigableSubMap::SubMapIterator::NextEntry(
@@ -3150,46 +3153,40 @@ ECode TreeMap::TreeMapEntry::SetValue(
 
 ECode TreeMap::TreeMapEntry::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     IMapEntry* other = IMapEntry::Probe(obj);
     if (other == nullptr) {
-        *result = false;
+        result = false;
         return NOERROR;
     }
 
     AutoPtr<IInterface> otherKey, otherValue;
     other->GetKey(&otherKey);
     other->GetValue(&otherValue);
-    *result = ValEquals(mKey, otherKey) && ValEquals(mValue, otherValue);
+    result = ValEquals(mKey, otherKey) && ValEquals(mValue, otherValue);
     return NOERROR;
 }
 
 ECode TreeMap::TreeMapEntry::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
     Integer keyHash = 0;
     Integer valueHash = 0;
     if (IObject::Probe(mKey) != nullptr) {
-        IObject::Probe(mKey)->GetHashCode(&keyHash);
+        IObject::Probe(mKey)->GetHashCode(keyHash);
     }
     if (IObject::Probe(mValue) != nullptr) {
-        IObject::Probe(mValue)->GetHashCode(&valueHash);
+        IObject::Probe(mValue)->GetHashCode(valueHash);
     }
-    *hash = keyHash ^ valueHash;
+    hash = keyHash ^ valueHash;
     return NOERROR;
 }
 
 ECode TreeMap::TreeMapEntry::ToString(
-    /* [out] */ String* str)
+    /* [out] */ String& str)
 {
-    VALIDATE_NOT_NULL(str);
-
-    *str = Object::ToString(mKey) + "=" + Object::ToString(mValue);
+    str = Object::ToString(mKey) + "=" + Object::ToString(mValue);
     return NOERROR;
 }
 

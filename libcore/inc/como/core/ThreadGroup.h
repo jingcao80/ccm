@@ -21,8 +21,8 @@
 #include "como.core.IThread.h"
 #include "como.core.IThreadGroup.h"
 #include "como.io.IPrintStream.h"
-#include <ccmarray.h>
-#include <ccmautoptr.h>
+#include <comoarray.h>
+#include <comosp.h>
 
 using como::io::IPrintStream;
 
@@ -124,7 +124,7 @@ public:
     ECode List() override;
 
     ECode ToString(
-        /* [out] */ String* desc) override;
+        /* [out] */ String& desc) override;
 
     static ThreadGroup* From(
         /* [in] */ IThreadGroup* group);

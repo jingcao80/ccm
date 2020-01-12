@@ -19,7 +19,7 @@
 #include "como/core/System.h"
 #include "como/util/CHashMap.h"
 #include "comort/system/CPathClassLoader.h"
-#include <ccmapi.h>
+#include <comoapi.h>
 
 using como::util::CHashMap;
 using como::util::IID_IHashMap;
@@ -41,21 +41,18 @@ ECode ClassLoader::Constructor(
 
 ECode ClassLoader::LoadCoclass(
     /* [in] */ const String& fullName,
-    /* [out] */ IMetaCoclass** klass)
+    /* [out] */ AutoPtr<IMetaCoclass>& klass)
 {
-    VALIDATE_NOT_NULL(klass);
-
-    AutoPtr<IMetaCoclass> c = FindLoadedCoclass(fullName);
-    if (c == nullptr) {
+    klass = FindLoadedCoclass(fullName);
+    if (klass == nullptr) {
         if (mParent != nullptr) {
-            mParent->LoadCoclass(fullName, &c);
+            mParent->LoadCoclass(fullName, klass);
         }
-        if (c == nullptr) {
-            FAIL_RETURN(FindCoclass(fullName, &c));
+        if (klass == nullptr) {
+            FAIL_RETURN(FindCoclass(fullName, klass));
         }
-        mLoadedCoclasses->Put(CoreUtils::Box(fullName), c);
+        mLoadedCoclasses->Put(CoreUtils::Box(fullName), klass);
     }
-    c.MoveTo(klass);
     return NOERROR;
 }
 
@@ -64,16 +61,16 @@ AutoPtr<IClassLoader> ClassLoader::CreateSystemClassLoader()
     String classPath;
     System::GetProperty(String("como.class.path"), String("."), &classPath);
 
-    AutoPtr<IClassLoader> cl;
-    CPathClassLoader::New(classPath, CoGetBootClassLoader(),
-            IID_IClassLoader, (IInterface**)&cl);
+    AutoPtr<IClassLoader> bcl, cl;
+    CoGetBootClassLoader(bcl);
+    CPathClassLoader::New(classPath, bcl, IID_IClassLoader, (IInterface**)&cl);
     CHECK(cl != nullptr);
     return cl;
 }
 
 ECode ClassLoader::FindCoclass(
     /* [in] */ const String& fullName,
-    /* [out] */ IMetaCoclass** klass)
+    /* [out] */ AutoPtr<IMetaCoclass>& klass)
 {
     return E_CLASS_NOT_FOUND_EXCEPTION;
 }
@@ -87,38 +84,32 @@ AutoPtr<IMetaCoclass> ClassLoader::FindLoadedCoclass(
 }
 
 ECode ClassLoader::GetParent(
-    /* [out] */ IClassLoader** parent)
+    /* [out] */ AutoPtr<IClassLoader>& parent)
 {
-    VALIDATE_NOT_NULL(parent);
-
-    *parent = mParent;
-    REFCOUNT_ADD(*parent);
+    parent = mParent;
     return NOERROR;
 }
 
 ECode ClassLoader::LoadInterface(
     /* [in] */ const String& fullName,
-    /* [out] */ IMetaInterface** intf)
+    /* [out] */ AutoPtr<IMetaInterface>& intf)
 {
-    VALIDATE_NOT_NULL(intf);
-
-    AutoPtr<IMetaInterface> i = FindLoadedInterface(fullName);
-    if (i == nullptr) {
+    intf = FindLoadedInterface(fullName);
+    if (intf == nullptr) {
         if (mParent != nullptr) {
-            mParent->LoadInterface(fullName, &i);
+            mParent->LoadInterface(fullName, intf);
         }
-        if (i == nullptr) {
-            FAIL_RETURN(FindInterface(fullName, &i));
-            mLoadedInterfaces->Put(CoreUtils::Box(fullName), i);
+        if (intf == nullptr) {
+            FAIL_RETURN(FindInterface(fullName, intf));
+            mLoadedInterfaces->Put(CoreUtils::Box(fullName), intf);
         }
     }
-    i.MoveTo(intf);
     return NOERROR;
 }
 
 ECode ClassLoader::FindInterface(
     /* [in] */ const String& fullName,
-    /* [out] */ IMetaInterface** intf)
+    /* [out] */ AutoPtr<IMetaInterface>& intf)
 {
     return E_INTERFACE_NOT_FOUND_EXCEPTION;
 }
@@ -133,10 +124,8 @@ AutoPtr<IMetaInterface> ClassLoader::FindLoadedInterface(
 
 ECode ClassLoader::LoadComponent(
     /* [in] */ const String& path,
-    /* [out] */ IMetaComponent** component)
+    /* [out] */ AutoPtr<IMetaComponent>& component)
 {
-    VALIDATE_NOT_NULL(component);
-
     if (mParent != nullptr) {
         return mParent->LoadComponent(path, component);
     }
@@ -145,10 +134,8 @@ ECode ClassLoader::LoadComponent(
 
 ECode ClassLoader::LoadComponent(
     /* [in] */ const ComponentID& compId,
-    /* [out] */ IMetaComponent** component)
+    /* [out] */ AutoPtr<IMetaComponent>& component)
 {
-    VALIDATE_NOT_NULL(component);
-
     if (mParent != nullptr) {
         return mParent->LoadComponent(compId, component);
     }

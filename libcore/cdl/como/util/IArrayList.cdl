@@ -68,14 +68,14 @@ interface IArrayList
 
     Equals(
         [in] IInterface* obj,
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     Get(
         [in] Integer index,
         [out] IInterface** obj);
 
     GetHashCode(
-        [out] Integer* hash);
+        [out] Integer& hash);
 
     GetIterator(
         [out] IIterator** it);

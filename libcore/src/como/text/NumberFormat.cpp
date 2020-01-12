@@ -87,6 +87,7 @@ ECode NumberFormat::Format(
         INumber::Probe(number)->LongValue(&value);
         return Format(value, toAppendTo, pos);
     }
+    return NOERROR;
 }
 
 ECode NumberFormat::ParseObject(
@@ -106,7 +107,7 @@ ECode NumberFormat::Format(
     AutoPtr<IStringBuffer> sb;
     CStringBuffer::New(IID_IStringBuffer, (IInterface**)&sb);
     FAIL_RETURN(Format(number, sb, DontCareFieldPosition::GetInstance()));
-    return sb->ToString(str);
+    return sb->ToString(*str);
 }
 
 ECode NumberFormat::Format(
@@ -118,7 +119,7 @@ ECode NumberFormat::Format(
     AutoPtr<IStringBuffer> sb;
     CStringBuffer::New(IID_IStringBuffer, (IInterface**)&sb);
     FAIL_RETURN(Format(number, sb, DontCareFieldPosition::GetInstance()));
-    return sb->ToString(str);
+    return sb->ToString(*str);
 }
 
 ECode NumberFormat::Parse(
@@ -243,37 +244,33 @@ Array<ILocale*> NumberFormat::GetAvailableLocales()
 }
 
 ECode NumberFormat::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
-    *hash = mMaximumIntegerDigits * 37 + mMaxFractionDigits;
+    hash = mMaximumIntegerDigits * 37 + mMaxFractionDigits;
     return NOERROR;
 }
 
 ECode NumberFormat::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* same)
+    /* [out] */ Boolean& same)
 {
-    VALIDATE_NOT_NULL(same);
-
     NumberFormat* other = (NumberFormat*)INumberFormat::Probe(obj);
     if (other == nullptr) {
-        *same = false;
+        same = false;
         return NOERROR;
     }
     if (this == other) {
-        *same = true;
+        same = true;
         return NOERROR;
     }
     CoclassID thisCID, otherCID;
-    GetCoclassID(&thisCID);
-    other->GetCoclassID(&otherCID);
+    GetCoclassID(thisCID);
+    other->GetCoclassID(otherCID);
     if (thisCID != otherCID) {
-        *same = false;
+        same = false;
         return NOERROR;
     }
-    *same = (mMaximumIntegerDigits == other->mMaximumIntegerDigits
+    same = (mMaximumIntegerDigits == other->mMaximumIntegerDigits
             && mMinimumIntegerDigits == other->mMinimumIntegerDigits
             && mMaximumFractionDigits == other->mMaximumFractionDigits
             && mMinimumFractionDigits == other->mMinimumFractionDigits

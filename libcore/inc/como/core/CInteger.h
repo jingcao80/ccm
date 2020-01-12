@@ -71,13 +71,13 @@ public:
 
     ECode Equals(
         /* [in] */ IInterface* other,
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode GetHashCode(
-        /* [out] */ Integer* hash) override;
+        /* [out] */ Integer& hash) override;
 
     ECode ToString(
-        /* [out] */ String* str) override;
+        /* [out] */ String& str) override;
 
 private:
     Integer mValue;

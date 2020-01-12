@@ -30,7 +30,7 @@ interface IRandom
         [out] Boolean* value);
 
     NextBytes(
-        [out] Array<Byte> bytes);
+        [out] Array<Byte>& bytes);
 
     NextDouble(
         [out] Double* value);

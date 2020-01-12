@@ -117,7 +117,7 @@ AutoPtr<IInterface> LocaleObjectCache::NormalizeKey(
 
 //-------------------------------------------------------------------------
 
-COMO_INTERFACE_IMPL_LIGHT_1(LocaleObjectCache::CacheEntry, LightRefBase, IReferenceObserver);
+COMO_INTERFACE_IMPL_LIGHT_1(LocaleObjectCache::CacheEntry, LightRefBase, IObjectObserver);
 
 LocaleObjectCache::CacheEntry::CacheEntry(
     /* [in] */ IInterface* key,

@@ -21,7 +21,7 @@ include_directories(
     ../
     ../../../inc
     ${INC_DIR}
-    ${OBJ_DIR})
+    ${LIBCORE_OBJ_DIR})
 
 add_subdirectory(calendar)
 add_subdirectory(concurrent)

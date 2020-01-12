@@ -17,7 +17,7 @@
 #ifndef __COMO_MATH_BIGINT_H__
 #define __COMO_MATH_BIGINT_H__
 
-#include <ccmobject.h>
+#include <comoobj.h>
 
 namespace como {
 namespace math {

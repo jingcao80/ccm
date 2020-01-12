@@ -22,9 +22,9 @@
 #include "como.io.ISerializable.h"
 #include "como.util.IIterator.h"
 #include "como.util.concurrent.IConcurrentLinkedQueue.h"
-#include <ccmautoptr.h>
-#include <ccmobject.h>
-#include <ccmrefbase.h>
+#include <comosp.h>
+#include <comoobj.h>
+#include <comoref.h>
 
 using como::io::ISerializable;
 
@@ -145,7 +145,7 @@ public:
         /* [out] */ Boolean* changed = nullptr) override;
 
     ECode ToString(
-        /* [out] */ String* desc) override;
+        /* [out] */ String& desc) override;
 
     ECode ToArray(
         /* [out, callee] */ Array<IInterface*>* objs) override;
@@ -168,10 +168,10 @@ public:
 
     ECode Equals(
         /* [in] */ IInterface* obj,
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode GetHashCode(
-        /* [out] */ Integer* hash) override;
+        /* [out] */ Integer& hash) override;
 
     ECode Remove(
         /* [out] */ IInterface** head = nullptr) override;

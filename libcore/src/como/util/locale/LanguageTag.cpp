@@ -318,7 +318,7 @@ Boolean LanguageTag::ParseExtensions(
                 CArrayList::New(4, IID_IList, (IInterface**)&mExtensions);
             }
             String str;
-            sb->ToString(&str);
+            sb->ToString(str);
             mExtensions->Add(CoreUtils::Box(str));
             found = true;
         }
@@ -364,7 +364,7 @@ Boolean LanguageTag::ParsePrivateuse(
             sts->mErrorMsg = "Incomplete privateuse";
         }
         else {
-            sb->ToString(&mPrivateuse);
+            sb->ToString(mPrivateuse);
             found = true;
         }
     }
@@ -455,7 +455,7 @@ AutoPtr<ILanguageTag> LanguageTag::ParseLocale(
             }
             Integer len;
             if (buf->GetLength(&len), len > 0) {
-                buf->ToString(&privuseVar);
+                buf->ToString(privuseVar);
             }
         }
     }
@@ -702,10 +702,8 @@ Boolean LanguageTag::IsPrivateuseSubtag(
 }
 
 ECode LanguageTag::ToString(
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
-    VALIDATE_NOT_NULL(desc);
-
     AutoPtr<IStringBuilder> sb;
     CStringBuilder::New(IID_IStringBuilder, (IInterface**)&sb);
 

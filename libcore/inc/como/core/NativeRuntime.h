@@ -20,8 +20,8 @@
 #include "como/core/NativeMutex.h"
 #include "como/core/NativeRuntimeCallbacks.h"
 #include "como.core.IThreadGroup.h"
-#include <ccmautoptr.h>
-#include <ccmtypes.h>
+#include <comosp.h>
+#include <comotypes.h>
 #include <memory>
 
 namespace como {

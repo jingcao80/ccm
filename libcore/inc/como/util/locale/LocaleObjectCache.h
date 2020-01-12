@@ -20,9 +20,9 @@
 #include "como.util.IQueue.h"
 #include "como.util.concurrent.IConcurrentLinkedQueue.h"
 #include "como.util.concurrent.IConcurrentMap.h"
-#include <ccmautoptr.h>
-#include <ccmobject.h>
-#include <ccmrefbase.h>
+#include <comosp.h>
+#include <comoobj.h>
+#include <comoref.h>
 
 using como::util::concurrent::IConcurrentLinkedQueue;
 using como::util::concurrent::IConcurrentMap;
@@ -37,7 +37,7 @@ class LocaleObjectCache
 private:
     class CacheEntry
         : public LightRefBase
-        , public IReferenceObserver
+        , public IObjectObserver
     {
     public:
         CacheEntry(

@@ -25,7 +25,7 @@
 #include "como.io.IStringWriter.h"
 #include "como.util.IHashtable.h"
 #include "libcore/io/Libcore.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 #include <time.h>
 #include <sys/time.h>
 
@@ -91,7 +91,9 @@ AutoPtr<IProperties> System::InitUnchangeableSystemProperties()
 
     Integer N = ArrayLength(HardcodedSystemProperties::STATIC_PROPERTIES);
     for (Integer i = 0; i < N; i++) {
-        String pair[2] = HardcodedSystemProperties::STATIC_PROPERTIES[i];
+        String pair[2] = {
+                HardcodedSystemProperties::STATIC_PROPERTIES[i][0],
+                HardcodedSystemProperties::STATIC_PROPERTIES[i][1] };
         Boolean contains;
         if (p->ContainsKey(CoreUtils::Box(pair[0]), &contains), contains) {
             LogE(String("Ignoring command line argument: -D") + pair[0]);
@@ -174,6 +176,7 @@ ECode System::AddLegacyLocaleSystemProperties()
             SetUnchangeableSystemProperty(String("user.region"), String("US"));
         }
     }
+    return NOERROR;
 }
 
 ECode System::GetProperty(
@@ -210,7 +213,7 @@ ECode System::GetProperty(
 ECode System::CheckKey(
     /* [in] */ const String& key)
 {
-    if (key.IsNullOrEmpty()) {
+    if (key.IsEmpty()) {
         Logger::E("System", "key can't be null or empty.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
@@ -253,7 +256,7 @@ ECode System::Log(
         CPrintWriter::New(IWriter::Probe(sw), IID_IPrintWriter, (IInterface**)&pw);
         st->PrintStackTrace(pw);
         String backtrace;
-        sw->ToString(&backtrace);
+        sw->ToString(backtrace);
         Logger::Log(level, "System", "\n%s", backtrace.string());
     }
 
@@ -287,7 +290,7 @@ ECode System::PropertiesWithNonOverrideableDefaults::Clone(
 }
 
 ECode System::PropertiesWithNonOverrideableDefaults::ToString(
-    /* [in] */ String* str)
+    /* [in] */ String& str)
 {
     return NOERROR;
 }

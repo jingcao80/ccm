@@ -14,6 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
+#include "innerdef.h"
 #include "como/core/AutoLock.h"
 #include "como/core/Math.h"
 #include "como/core/StrictMath.h"
@@ -23,7 +24,7 @@
 #include "como/util/concurrent/atomic/CAtomicLong.h"
 #include "como.core.IByte.h"
 #include "como.core.IInteger.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::AutoLock;
 using como::core::IByte;
@@ -63,7 +64,7 @@ ECode Random::Constructor(
     /* [in] */ Long seed)
 {
     CoclassID cid;
-    GetCoclassID(&cid);
+    GetCoclassID(cid);
     if (cid == CID_CRandom) {
         CAtomicLong::New(InitialScramble(seed), IID_IAtomicLong, (IInterface**)&mSeed);
     }
@@ -114,7 +115,7 @@ Integer Random::Next(
         mSeed->Get(&oldseed);
         nextseed = (oldseed * sMultiplier + sAddend) & sMask;
     } while (mSeed->CompareAndSet(oldseed, nextseed, &succeeded), !succeeded);
-    return (Integer)(((unsigned Long)nextseed) >> (48 - bits));
+    return (Integer)(((ULong)nextseed) >> (48 - bits));
 }
 
 ECode Random::NextBytes(
@@ -127,6 +128,7 @@ ECode Random::NextBytes(
             bytes[i++] = (Byte)rnd;
         }
     }
+    return NOERROR;
 }
 
 ECode Random::NextInteger(

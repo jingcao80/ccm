@@ -23,7 +23,7 @@
 #include "como.core.IString.h"
 #include "como.io.ISerializable.h"
 #include "_como_core_CString.h"
-#include <ccmstring.h>
+#include <comostring.h>
 
 using como::io::ISerializable;
 
@@ -63,13 +63,13 @@ public:
 
     ECode Equals(
         /* [in] */ IInterface* obj,
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode GetHashCode(
-        /* [out] */ Integer* hash) override;
+        /* [out] */ Integer& hash) override;
 
     ECode ToString(
-        /* [out] */ String* str) override;
+        /* [out] */ String& str) override;
 
 private:
     String mString;

@@ -139,7 +139,7 @@ inline static Char ToChar(
     return value.length() == 0 ? 0 : (Char)value.charAt(0);
 }
 
-inline String ToUTF8String(
+String ToUTF8String(
     /* [in] */ const ::icu::UnicodeString& value)
 {
     StringByteSink sink;
@@ -1110,7 +1110,7 @@ Boolean ICU::InitLocaleData(
         return false;
     }
 
-#ifdef __aarch64__
+#ifdef __android__
     // Get the narrow "AM" and "PM" strings.
     Boolean foundAmPmMarkersNarrow = false;
     for (LocaleNameIterator it(icuLocale.getBaseName(), status); it.HasNext(); it.Up()) {

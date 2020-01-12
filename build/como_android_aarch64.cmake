@@ -24,7 +24,7 @@ include_directories(
     ${PREBUILT_INC}/arch-arm64)
 
 set(COMMON_C_FLAGS "\
-    -target aarch64-linux-android -march=armv8-a \
+    -D__android__ -target aarch64-linux-android -march=armv8-a \
     -fPIC -ffunction-sections -fdata-sections -fstack-protector -fno-short-enums -fmessage-length=0 \
     -no-canonical-prefixes -Wno-nullability-completeness -Wno-extern-c-compat")
 

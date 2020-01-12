@@ -20,7 +20,7 @@
 #include "como/core/SyncObject.h"
 #include "como.core.IRuntime.h"
 #include "como.util.IList.h"
-#include <ccmautoptr.h>
+#include <comosp.h>
 
 using como::util::IList;
 

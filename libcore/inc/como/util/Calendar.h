@@ -177,10 +177,10 @@ public:
 
     ECode Equals(
         /* [in] */ IInterface* obj,
-        /* [out] */ Boolean* same) override;
+        /* [out] */ Boolean& same) override;
 
     ECode GetHashCode(
-        /* [out] */ Integer* hash) override;
+        /* [out] */ Integer& hash) override;
 
     ECode Before(
         /* [in] */ IInterface* when,
@@ -253,7 +253,7 @@ public:
         /* [in] */ Integer field);
 
     ECode ToString(
-        /* [out] */ String* desc) override;
+        /* [out] */ String& desc) override;
 
 protected:
     virtual ECode ComputeTime() = 0;

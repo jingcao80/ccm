@@ -206,7 +206,7 @@ String BigInt::ToAscii(
         result->Append(ch);
     }
     String str;
-    result->ToString(&str);
+    result->ToString(str);
     return str;
 }
 

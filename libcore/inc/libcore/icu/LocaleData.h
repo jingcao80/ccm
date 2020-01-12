@@ -22,7 +22,7 @@
 #include "como.util.IHashMap.h"
 #include "como.util.ILocale.h"
 #include "libcore.icu.ILocaleData.h"
-#include <ccmautoptr.h>
+#include <comosp.h>
 
 using como::core::IInteger;
 using como::core::SyncObject;
@@ -48,7 +48,7 @@ public:
         /* [out] */ ILocaleData** data);
 
     ECode ToString(
-        /* [out] */ String* desc) override;
+        /* [out] */ String& desc) override;
 
     ECode GetDateFormat(
         /* [in] */ Integer style,

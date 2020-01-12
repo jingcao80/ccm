@@ -23,7 +23,7 @@
 #include "como.util.IMap.h"
 #include "libcore/icu/ICU.h"
 #include "libcore/icu/LocaleData.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::AutoLock;
 using como::core::CoreUtils;
@@ -153,7 +153,7 @@ ECode Currency::GetSymbol(
 
     String country;
     locale->GetCountry(&country);
-    if (country.IsNullOrEmpty()) {
+    if (country.IsEmpty()) {
         *symbol = mCurrencyCode;
         return NOERROR;
     }
@@ -214,11 +214,9 @@ ECode Currency::GetDisplayName(
 }
 
 ECode Currency::ToString(
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
-    VALIDATE_NOT_NULL(desc);
-
-    *desc = mCurrencyCode;
+    desc = mCurrencyCode;
     return NOERROR;
 }
 

@@ -610,19 +610,17 @@ ECode Date::After(
 
 ECode Date::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* same)
+    /* [out] */ Boolean& same)
 {
-    VALIDATE_NOT_NULL(same);
-
     if (IDate::Probe(obj) == nullptr) {
-        *same = false;
+        same = false;
         return NOERROR;
     }
 
     Long thisTime, anotherTime;
     GetTime(&thisTime);
     IDate::Probe(obj)->GetTime(&anotherTime);
-    *same = thisTime == anotherTime;
+    same = thisTime == anotherTime;
     return NOERROR;
 }
 
@@ -660,21 +658,17 @@ ECode Date::CompareTo(
 }
 
 ECode Date::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
     Long ht;
     GetTime(&ht);
-    *hash = (Integer)ht ^ (Integer)(ht >> 32);
+    hash = (Integer)ht ^ (Integer)(ht >> 32);
     return NOERROR;
 }
 
 ECode Date::ToString(
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
-    VALIDATE_NOT_NULL(desc);
-
     // "EEE MMM dd HH:mm:ss zzz yyyy";
     AutoPtr<ICalendarDate> date = ICalendarDate::Probe(Normalize());
     AutoPtr<IStringBuilder> sb;
@@ -768,7 +762,7 @@ ECode Date::ToGMTString(
     sb->Append(U':'); // mm
     CalendarUtils::Sprintf0d(sb, seconds, 2); // ss
     sb->Append(String(" GMT")); // ' GMT'
-    return sb->ToString(str);
+    return sb->ToString(*str);
 }
 
 ECode Date::GetTimezoneOffset(
@@ -834,6 +828,7 @@ AutoPtr<IBaseCalendarDate> Date::Normalize()
         AutoPtr<IBaseCalendar> cal = GetCalendarSystem(mCdate);
         ICalendarSystem::Probe(cal)->GetCalendarDate(mFastTime, cdate);
     }
+    return mCdate;
 }
 
 AutoPtr<IBaseCalendarDate> Date::Normalize(

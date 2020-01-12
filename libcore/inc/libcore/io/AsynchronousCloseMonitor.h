@@ -33,7 +33,7 @@
 #ifndef __LIBCORE_IO_ASYNCHRONOUSCLOSEMONITOR_H__
 #define __LIBCORE_IO_ASYNCHRONOUSCLOSEMONITOR_H__
 
-#include <ccmtypes.h>
+#include <comotypes.h>
 #include <pthread.h>
 
 using namespace como;

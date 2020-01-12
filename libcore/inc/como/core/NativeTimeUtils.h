@@ -17,7 +17,7 @@
 #ifndef __COMO_CORE_NATIVETIMEUTILS_H__
 #define __COMO_CORE_NATIVETIMEUTILS_H__
 
-#include <ccmtypes.h>
+#include <comotypes.h>
 #include <stdint.h>
 #include <time.h>
 

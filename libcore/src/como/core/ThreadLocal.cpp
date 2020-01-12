@@ -14,6 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
+#include "innerdef.h"
 #include "como/core/Thread.h"
 #include "como/core/ThreadLocal.h"
 #include "como/util/concurrent/atomic/CAtomicInteger.h"
@@ -399,7 +400,7 @@ Boolean ThreadLocal::ThreadLocalMap::CleanSomeSlots(
             removed = true;
             i = ExpungeStaleEntry(i);
         }
-    } while ((n = ((unsigned Integer)n) >> 1) != 0);
+    } while ((n = ((UInteger)n) >> 1) != 0);
     return removed;
 }
 
@@ -468,7 +469,7 @@ ThreadLocal::ThreadLocalMap::Entry::Entry(
     /* [in] */ ThreadLocal* k,
     /* [in] */ IInterface* v)
 {
-    k->GetWeakReference(&mKey);
+    k->GetWeakReference(mKey);
     mValue = v;
 }
 

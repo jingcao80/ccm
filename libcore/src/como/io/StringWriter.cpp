@@ -16,7 +16,7 @@
 
 #include "como/core/CStringBuffer.h"
 #include "como/io/StringWriter.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::CStringBuffer;
 using como::core::IID_IStringBuffer;
@@ -83,7 +83,7 @@ ECode StringWriter::Write(
 }
 
 ECode StringWriter::ToString(
-    /* [out] */ String* str)
+    /* [out] */ String& str)
 {
     return mBuf->ToString(str);
 }

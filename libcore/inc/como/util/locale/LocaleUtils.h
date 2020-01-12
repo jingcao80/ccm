@@ -20,7 +20,7 @@
 #include "como.util.IList.h"
 #include "como.util.IMap.h"
 #include "como.util.ISet.h"
-#include <ccmtypes.h>
+#include <comotypes.h>
 
 namespace como {
 namespace util {
@@ -151,7 +151,7 @@ inline Boolean LocaleUtils::IsAlphaNumeric(
 inline Boolean LocaleUtils::IsEmpty(
     /* [in] */ const String& str)
 {
-    return str.IsNullOrEmpty();
+    return str.IsEmpty();
 }
 
 inline Boolean LocaleUtils::IsEmpty(

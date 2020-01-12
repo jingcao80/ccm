@@ -184,11 +184,9 @@ ECode AtomicLong::AddAndGet(
 }
 
 ECode AtomicLong::ToString(
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
-    VALIDATE_NOT_NULL(desc);
-
-    *desc = StringUtils::ToString((Long)mValue.LoadAcquire());
+    desc = StringUtils::ToString((Long)mValue.LoadAcquire());
     return NOERROR;
 }
 

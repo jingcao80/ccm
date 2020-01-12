@@ -43,10 +43,10 @@ interface ILongBuffer
         [out] Long* l);
 
     Get(
-        [out] Array<Long> dst);
+        [out] Array<Long>& dst);
 
     Get(
-        [out] Array<Long> dst,
+        [out] Array<Long>& dst,
         [in] Integer offset,
         [in] Integer length);
 

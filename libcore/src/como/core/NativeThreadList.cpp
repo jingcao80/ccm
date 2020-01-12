@@ -21,7 +21,7 @@
 #include "como/core/NativeScopedThreadStateChange.h"
 #include "como/core/NativeThreadList.h"
 #include "como/core/NativeTimeUtils.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 #include <algorithm>
 
 namespace como {

@@ -15,7 +15,11 @@
 //=========================================================================
 
 #include "como/core/StrictMath.h"
+#if defined(__android__)
+#include <fdlibm/fdlibm.h>
+#elif defined(__linux__)
 #include <fdlibm.h>
+#endif
 
 namespace como {
 namespace core {

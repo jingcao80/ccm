@@ -19,7 +19,7 @@
 
 #include "como.io.IFileDescriptor.h"
 #include "como.io.channels.IFileChannel.h"
-#include <ccmautoptr.h>
+#include <comosp.h>
 
 using como::io::channels::IFileChannel;
 

@@ -18,7 +18,7 @@
 #define __COMO_CORE_NATIVEAPI_H__
 
 #include "como/core/globals.h"
-#include <ccmtypes.h>
+#include <comotypes.h>
 #include <unicode/utypes.h>
 
 namespace como {

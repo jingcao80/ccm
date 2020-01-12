@@ -109,20 +109,28 @@ Array<IStackTraceElement*> StackTrace::GetOurStackTrace()
 AutoPtr<IStackTraceElement> StackTrace::ParseElement(
     /* [in] */ const String& info)
 {
-    if (info.IsNullOrEmpty()) return nullptr;
+    if (info.IsEmpty()) {
+        return nullptr;
+    }
 
     Integer fromIdx = 0;
     Integer idx = info.IndexOf("  ", fromIdx);
-    if (idx == -1) return nullptr;
+    if (idx == -1) {
+        return nullptr;
+    }
     String no = info.Substring(0, idx);
     fromIdx = idx + 5;
     idx = info.IndexOf(" ", fromIdx);
-    if (idx == -1) return nullptr;
+    if (idx == -1) {
+        return nullptr;
+    }
     String pc = info.Substring(fromIdx, idx);
     fromIdx = idx + 2;
     idx = info.IndexOf(" ", fromIdx);
     String soname = idx != -1 ? info.Substring(fromIdx, idx) : info.Substring(fromIdx);
-    if (soname.IsNullOrEmpty()) return nullptr;
+    if (soname.IsEmpty()) {
+        return nullptr;
+    }
     String symbol;
     if (idx != -1) {
         symbol = info.Substring(idx + 1);

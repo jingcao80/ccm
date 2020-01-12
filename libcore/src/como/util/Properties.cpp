@@ -29,7 +29,7 @@
 #include "como.core.IString.h"
 #include "como.core.IStringBuffer.h"
 #include "como.io.IWriter.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::AutoLock;
 using como::core::Character;
@@ -288,7 +288,7 @@ String Properties::SaveConvert(
         }
     }
     String str;
-    outBuffer->ToString(&str);
+    outBuffer->ToString(str);
     return str;
 }
 
@@ -437,7 +437,7 @@ ECode Properties::GetProperty(
     Hashtable::Get(CoreUtils::Box(key), &oval);
     String sval;
     if (IString::Probe(oval) != nullptr) {
-        ICharSequence::Probe(oval)->ToString(&sval);
+        ICharSequence::Probe(oval)->ToString(sval);
     }
     if (sval.IsNull() && mDefaults != nullptr) {
         mDefaults->GetProperty(key, &sval);

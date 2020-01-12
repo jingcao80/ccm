@@ -22,7 +22,7 @@
 #include "como/core/NativeMutex.h"
 #include "como/core/NativeScopedThreadStateChange.h"
 #include "como/core/NativeThreadState.h"
-#include <ccmtypes.h>
+#include <comotypes.h>
 #include <pthread.h>
 
 namespace como {

@@ -30,7 +30,7 @@
 #include "como.util.IMap.h"
 #include "como.util.IMapEntry.h"
 #include "como.util.IIterator.h"
-#include <ccmautoptr.h>
+#include <comosp.h>
 
 using como::core::ICloneable;
 using como::core::IInteger;
@@ -166,10 +166,10 @@ private:
 
         ECode Equals(
             /* [in] */ IInterface* obj,
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
 
         ECode GetHashCode(
-            /* [out] */ Integer* hash) override;
+            /* [out] */ Integer& hash) override;
 
         String ToString();
 
@@ -299,7 +299,7 @@ public:
     ECode Clear() override;
 
     ECode ToString(
-        /* [out] */ String* str) override;
+        /* [out] */ String& str) override;
 
     ECode GetKeySet(
         /* [out] */ ISet** keys) override;
@@ -312,10 +312,10 @@ public:
 
     ECode Equals(
         /* [in] */ IInterface* obj,
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode GetHashCode(
-        /* [out] */ Integer* hash) override;
+        /* [out] */ Integer& hash) override;
 
     ECode PutIfAbsent(
         /* [in] */ IInterface* key,

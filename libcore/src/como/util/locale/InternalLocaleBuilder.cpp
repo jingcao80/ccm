@@ -27,7 +27,7 @@
 #include "como.core.IChar.h"
 #include "como.core.ICharSequence.h"
 #include <coredef.h>
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::CoreUtils;
 using como::core::CStringBuilder;
@@ -301,7 +301,7 @@ ECode InternalLocaleBuilder::SetExtensions(
                 CArrayList::New(4, IID_IList, (IInterface**)&extensions);
             }
             String extension;
-            sb->ToString(&extension);
+            sb->ToString(extension);
             extensions->Add(CoreUtils::Box(extension));
         }
         else {
@@ -333,7 +333,7 @@ ECode InternalLocaleBuilder::SetExtensions(
                 return E_LOCALE_SYNTAX_EXCEPTION;
             }
             else {
-                sb->ToString(&privateuse);
+                sb->ToString(privateuse);
             }
         }
     }
@@ -427,7 +427,7 @@ ECode InternalLocaleBuilder::SetLanguageTag(
             var->Append(BaseLocale::SEP);
             var->Append(CoreUtils::Unbox(ICharSequence::Probe(bcpVariant)));
         }
-        var->ToString(&mVariant);
+        var->ToString(mVariant);
     }
 
     AutoPtr<IList> extensions;
@@ -510,7 +510,7 @@ ECode InternalLocaleBuilder::SetLocale(
         FOR_EACH(IChar*, key, IChar::Probe, extKeys) {
             AutoPtr<Extension> e = localeExtensions->GetExtension(CoreUtils::Unbox(key));
             CoclassID cid;
-            e->GetCoclassID(&cid);
+            e->GetCoclassID(cid);
             if (cid == CID_UnicodeLocaleExtension) {
                 UnicodeLocaleExtension* ue = (UnicodeLocaleExtension*)e.Get();
                 AutoPtr<ISet> uattributes = ue->GetUnicodeLocaleAttributes();
@@ -601,7 +601,7 @@ AutoPtr<BaseLocale> InternalLocaleBuilder::GetBaseLocale()
                     sb->Append(BaseLocale::SEP);
                 }
                 sb->Append(privuse.Substring(privVarStart).Replace(ILanguageTag::SEP, BaseLocale::SEP));
-                sb->ToString(&variant);
+                sb->ToString(variant);
             }
         }
     }
@@ -753,7 +753,7 @@ void InternalLocaleBuilder::SetUnicodeLocaleExtension(
 //-----------------------------------------------------------------------------------------
 
 extern const CoclassID CID_CaseInsensitiveString =
-        {{0xbb82f417,0xf166,0x45df,0xb91f,{0x1,0xa,0xb,0xe,0xf,0xa,0xa,0x2,0xc,0xe,0x5,0x0}}, &CID_libcore};
+        {{0xbb82f417,0xf166,0x45df,0xb91f,{0x1a,0xbe,0xfa,0xa2,0xce,0x50}}, &CID_libcore};
 
 InternalLocaleBuilder::CaseInsensitiveString::CaseInsensitiveString(
     /* [in] */ const String& s)
@@ -763,41 +763,41 @@ InternalLocaleBuilder::CaseInsensitiveString::CaseInsensitiveString(
 }
 
 ECode InternalLocaleBuilder::CaseInsensitiveString::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    *hash = mLowerStr.GetHashCode();
+    hash = mLowerStr.GetHashCode();
     return NOERROR;
 }
 
 ECode InternalLocaleBuilder::CaseInsensitiveString::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* same)
+    /* [out] */ Boolean& same)
 {
     if (!Object::InstanceOf(obj, CID_CaseInsensitiveString)) {
-        *same = false;
+        same = false;
         return NOERROR;
     }
 
     CaseInsensitiveString* other = (CaseInsensitiveString*)IObject::Probe(obj);
     if (other == this){
-        *same = true;
+        same = true;
         return NOERROR;
     }
-    *same = mLowerStr.Equals(other->mLowerStr);
+    same = mLowerStr.Equals(other->mLowerStr);
     return NOERROR;
 }
 
 ECode InternalLocaleBuilder::CaseInsensitiveString::GetCoclassID(
-    /* [out] */ CoclassID* cid)
+    /* [out] */ CoclassID& cid)
 {
-    *cid = CID_CaseInsensitiveString;
+    cid = CID_CaseInsensitiveString;
     return NOERROR;
 }
 
 //-----------------------------------------------------------------------------------------
 
 extern const CoclassID CID_CaseInsensitiveChar =
-        {{0x5b2d4ebd,0xef24,0x47d0,0x9235,{0xe,0x6,0x5,0x5,0x5,0x8,0xa,0xb,0x9,0x1,0x9,0x4}}, &CID_libcore};
+        {{0x5b2d4ebd,0xef24,0x47d0,0x9235,{0xe6,0x55,0x58,0xab,0x91,0x94}}, &CID_libcore};
 
 InternalLocaleBuilder::CaseInsensitiveChar::CaseInsensitiveChar(
     /* [in] */ const String& s)
@@ -812,34 +812,34 @@ InternalLocaleBuilder::CaseInsensitiveChar::CaseInsensitiveChar(
 }
 
 ECode InternalLocaleBuilder::CaseInsensitiveChar::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    *hash = mLowerCh;
+    hash = mLowerCh;
     return NOERROR;
 }
 
 ECode InternalLocaleBuilder::CaseInsensitiveChar::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* same)
+    /* [out] */ Boolean& same)
 {
     if (!Object::InstanceOf(obj, CID_CaseInsensitiveChar)) {
-        *same = false;
+        same = false;
         return NOERROR;
     }
 
     CaseInsensitiveChar* other = (CaseInsensitiveChar*)IObject::Probe(obj);
     if (other == this){
-        *same = true;
+        same = true;
         return NOERROR;
     }
-    *same = mLowerCh == other->mLowerCh;
+    same = mLowerCh == other->mLowerCh;
     return NOERROR;
 }
 
 ECode InternalLocaleBuilder::CaseInsensitiveChar::GetCoclassID(
-    /* [out] */ CoclassID* cid)
+    /* [out] */ CoclassID& cid)
 {
-    *cid = CID_CaseInsensitiveChar;
+    cid = CID_CaseInsensitiveChar;
     return NOERROR;
 }
 

@@ -24,7 +24,7 @@
 #include "como.io.charset.ICharset.h"
 #include "como.io.charset.ICharsetEncoder.h"
 #include "como.io.charset.IStreamEncoder.h"
-#include <ccmautoptr.h>
+#include <comosp.h>
 
 using como::io::charset::ICharset;
 using como::io::charset::ICharsetEncoder;

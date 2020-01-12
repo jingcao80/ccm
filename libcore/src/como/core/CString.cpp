@@ -83,44 +83,38 @@ ECode CString::CompareTo(
     }
 
     String str;
-    o->ToString(&str);
+    o->ToString(str);
     *result = mString.Compare(str);
     return NOERROR;
 }
 
 ECode CString::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result)
-
     ICharSequence* o = ICharSequence::Probe(obj);
     if (o == nullptr) {
-        *result = false;
+        result = false;
         return NOERROR;
     }
 
     String str;
-    o->ToString(&str);
-    *result = mString.Equals(str);
+    o->ToString(str);
+    result = mString.Equals(str);
     return NOERROR;
 }
 
 ECode CString::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash)
-
-    *hash = mString.GetHashCode();
+    hash = mString.GetHashCode();
     return NOERROR;
 }
 
 ECode CString::ToString(
-    /* [out] */ String* str)
+    /* [out] */ String& str)
 {
-    VALIDATE_NOT_NULL(str);
-
-    *str = mString;
+    str = mString;
     return NOERROR;
 }
 

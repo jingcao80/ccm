@@ -20,7 +20,7 @@
 #include "como/core/NativeLockWord.h"
 #include "como/core/NativeMutex.h"
 #include "como/core/NativeThreadState.h"
-#include <ccmtypes.h>
+#include <comotypes.h>
 #include <list>
 #include <memory>
 

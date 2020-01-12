@@ -19,7 +19,7 @@
 
 #include "libcore.io.ILibcore.h"
 #include "_libcore_io_CLibcore.h"
-#include <ccmobject.h>
+#include <comoobj.h>
 
 namespace libcore {
 namespace io {

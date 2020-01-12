@@ -18,7 +18,7 @@
 #define __COMO_IO_DEFAULTFILESYSTEM_H__
 
 #include "como/io/UnixFileSystem.h"
-#include <ccmautoptr.h>
+#include <comosp.h>
 
 namespace como {
 namespace io {

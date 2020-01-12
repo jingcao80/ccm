@@ -30,7 +30,7 @@ interface IBufferIterator
         [out] Byte* result);
 
     ReadByteArray(
-        [out] Array<Byte> dst,
+        [out] Array<Byte>& dst,
         [in] Integer dstOffset,
         [in] Integer byteCount);
 
@@ -38,7 +38,7 @@ interface IBufferIterator
         [out] Integer* result);
 
     ReadIntegerArray(
-        [out] Array<Integer> dst,
+        [out] Array<Integer>& dst,
         [in] Integer dstOffset,
         [in] Integer intCount);
 

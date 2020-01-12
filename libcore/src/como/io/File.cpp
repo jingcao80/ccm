@@ -28,7 +28,7 @@
 #include "como.core.ILong.h"
 #include "como.security.IPermission.h"
 #include "como.util.IList.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::CoreUtils;
 using como::core::CRuntimePermission;
@@ -123,7 +123,7 @@ ECode File::Constructor(
         return como::core::E_NULL_POINTER_EXCEPTION;
     }
     FileSystem* fs = GetFS();
-    if (!parent.IsNullOrEmpty()) {
+    if (!parent.IsEmpty()) {
         String normPpath, normCpath;
         fs->Normalize(parent, &normPpath);
         fs->Normalize(child, &normCpath);
@@ -987,30 +987,28 @@ ECode File::CompareTo(
 
 ECode File::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* same)
+    /* [out] */ Boolean& same)
 {
-    VALIDATE_NOT_NULL(same);
-
     if (obj != nullptr && IFile::Probe(obj) != nullptr) {
         Integer result;
         CompareTo(obj, &result);
-        *same = result == 0;
+        same = result == 0;
         return NOERROR;
     }
-    *same = false;
+    same = false;
     return NOERROR;
 }
 
 ECode File::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
     return GetFS()->GetHashCode(this, hash);
 }
 
 ECode File::ToString(
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
-    return GetPath(desc);
+    return GetPath(&desc);
 }
 
 //-------------------------------------------------------------------------

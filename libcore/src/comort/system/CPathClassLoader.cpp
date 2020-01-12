@@ -34,24 +34,32 @@ ECode CPathClassLoader::Constructor (
 
 ECode CPathClassLoader::FindCoclass(
     /* [in] */ const String& fullName,
-    /* [out] */ IMetaCoclass** klass)
+    /* [out] */ AutoPtr<IMetaCoclass>& klass)
 {
     for (Integer i = 0; i < mComponents.GetLength(); i++) {
-        if (mComponents[i] == nullptr) continue;
+        if (mComponents[i] == nullptr) {
+            continue;
+        }
         mComponents[i]->GetCoclass(fullName, klass);
-        if (*klass != nullptr) return NOERROR;
+        if (klass != nullptr) {
+            return NOERROR;
+        }
     }
     return E_CLASS_NOT_FOUND_EXCEPTION;
 }
 
 ECode CPathClassLoader::FindInterface(
     /* [in] */ const String& fullName,
-    /* [out] */ IMetaInterface** intf)
+    /* [out] */ AutoPtr<IMetaInterface>& intf)
 {
     for (Integer i = 0; i < mComponents.GetLength(); i++) {
-        if (mComponents[i] == nullptr) continue;
+        if (mComponents[i] == nullptr) {
+            continue;
+        }
         mComponents[i]->GetInterface(fullName, intf);
-        if (*intf != nullptr) return NOERROR;
+        if (intf != nullptr) {
+            return NOERROR;
+        }
     }
     return E_INTERFACE_NOT_FOUND_EXCEPTION;
 }
@@ -59,13 +67,13 @@ ECode CPathClassLoader::FindInterface(
 void CPathClassLoader::LoadComponentsInClassPath()
 {
     AutoPtr<IClassLoader> parent;
-    GetParent(&parent);
+    GetParent(parent);
     mComponents = Array<IMetaComponent*>(mClassPath.GetLength());
     for (Integer i = 0; i < mClassPath.GetLength(); i++) {
         AutoPtr<IMetaComponent> component;
         String path = mClassPath[i];
-        if (!path.IsNullOrEmpty()) {
-            parent->LoadComponent(path, &component);
+        if (!path.IsEmpty()) {
+            parent->LoadComponent(path, component);
         }
         mComponents.Set(i, component.Get());
     }

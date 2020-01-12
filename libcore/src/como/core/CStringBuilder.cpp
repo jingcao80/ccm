@@ -47,7 +47,7 @@ ECode CStringBuilder::Constructor(
     /* [in] */ ICharSequence* seq)
 {
     String str;
-    seq->ToString(&str);
+    seq->ToString(str);
     return Constructor(str);
 }
 
@@ -278,15 +278,13 @@ ECode CStringBuilder::Reverse()
 }
 
 ECode CStringBuilder::ToString(
-    /* [out] */ String* str)
+    /* [out] */ String& str)
 {
-    VALIDATE_NOT_NULL(str);
-
     if (mCount == 0) {
-        *str = "";
+        str = "";
         return NOERROR;
     }
-    *str = String(mValue, mByteCount);
+    str = String(mValue, mByteCount);
     return NOERROR;
 }
 

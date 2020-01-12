@@ -21,7 +21,7 @@ namespace como {
 namespace io {
 
 extern const CoclassID CID_HeapShortBuffer =
-        {{0x8a24eb0b,0xef94,0x4356,0x83a3,{0x3,0xe,0x0,0xc,0xb,0xd,0x8,0xf,0x5,0xe,0x5,0x0}}, &CID_libcore};
+        {{0x8a24eb0b,0xef94,0x4356,0x83a3,{0x3e,0x0c,0xbd,0x8f,0x5e,0x50}}, &CID_libcore};
 
 ECode HeapShortBuffer::Constructor(
     /* [in] */ Integer cap,
@@ -307,11 +307,9 @@ ECode HeapShortBuffer::GetOrder(
 }
 
 ECode HeapShortBuffer::GetCoclassID(
-    /* [out] */ CoclassID* cid)
+    /* [out] */ CoclassID& cid)
 {
-    VALIDATE_NOT_NULL(cid);
-
-    *cid = CID_HeapShortBuffer;
+    cid = CID_HeapShortBuffer;
     return NOERROR;
 }
 

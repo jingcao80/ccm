@@ -16,7 +16,7 @@
 
 #include "como/text/MessageFormat.h"
 #include "_como_text_CMessageFormat.h"
-#include <ccmobject.h>
+#include <comoobj.h>
 
 namespace como {
 namespace text {

@@ -19,7 +19,7 @@
 
 #include "como/core/SyncObject.h"
 #include "como.util.IHashSet.h"
-#include <ccmautoptr.h>
+#include <comosp.h>
 
 using como::core::SyncObject;
 using como::util::IHashSet;

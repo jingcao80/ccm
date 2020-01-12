@@ -24,7 +24,7 @@
 #include "como.util.IHashMap.h"
 #include "como.util.IHashSet.h"
 #include "como.util.IIterator.h"
-#include <ccmautoptr.h>
+#include <comosp.h>
 
 using como::core::ICloneable;
 using como::io::ISerializable;
@@ -91,10 +91,10 @@ public:
 
     ECode Equals(
         /* [in] */ IInterface* obj,
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode GetHashCode(
-        /* [out] */ Integer* hash) override;
+        /* [out] */ Integer& hash) override;
 
     ECode RemoveAll(
         /* [in] */ ICollection* c,

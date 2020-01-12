@@ -29,7 +29,7 @@ namespace util {
 namespace locale {
 
 static const InterfaceID IID_BaseLocale =
-        {{0xd4f5d57e,0x3ac4,0x4289,0xbda9,{0x7,0x8,0x0,0xf,0x4,0x0,0x9,0x7,0xa,0xc,0x6,0x5}}, &CID_libcore};
+        {{0xd4f5d57e,0x3ac4,0x4289,0xbda9,{0x78,0x0f,0x40,0x97,0xac,0x65}}, &CID_libcore};
 
 const String BaseLocale::SEP("_");
 
@@ -106,20 +106,18 @@ AutoPtr<BaseLocale> BaseLocale::GetInstance(
 
 ECode BaseLocale::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* same)
+    /* [out] */ Boolean& same)
 {
-    VALIDATE_NOT_NULL(same);
-
     if (IInterface::Equals((IObject*)this, obj)) {
-        *same = true;
+        same = true;
         return NOERROR;
     }
     if (obj->Probe(IID_BaseLocale) == nullptr) {
-        *same = false;
+        same = false;
         return NOERROR;
     }
     BaseLocale* oth = (BaseLocale*)IObject::Probe(obj);
-    *same = mLanguage.Equals(oth->mLanguage) &&
+    same = mLanguage.Equals(oth->mLanguage) &&
             mScript.Equals(oth->mScript) &&
             mRegion.Equals(oth->mRegion) &&
             mVariant.Equals(oth->mVariant);
@@ -127,10 +125,8 @@ ECode BaseLocale::Equals(
 }
 
 ECode BaseLocale::ToString(
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
-    VALIDATE_NOT_NULL(desc);
-
     AutoPtr<IStringBuilder> buf;
     CStringBuilder::New(IID_IStringBuilder, (IInterface**)&buf);
     if (mLanguage.GetByteLength() > 0) {
@@ -165,27 +161,24 @@ ECode BaseLocale::ToString(
 }
 
 ECode BaseLocale::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
-    VOLATILE_GET(Integer h, mHash);
-    if (h == 0) {
+    VOLATILE_GET(hash, mHash);
+    if (hash == 0) {
         // Generating a hash value from language, script, region and variant
-        h = mLanguage.GetHashCode();
-        h = 31 * h + mScript.GetHashCode();
-        h = 31 * h + mRegion.GetHashCode();
-        h = 31 * h + mVariant.GetHashCode();
-        VOLATILE_SET(mHash, h);
+        hash = mLanguage.GetHashCode();
+        hash = 31 * hash + mScript.GetHashCode();
+        hash = 31 * hash + mRegion.GetHashCode();
+        hash = 31 * hash + mVariant.GetHashCode();
+        VOLATILE_SET(mHash, hash);
     }
-    *hash = h;
     return NOERROR;
 }
 
 //-------------------------------------------------------------------------
 
 static const InterfaceID IID_BaseLocaleKey =
-        {{0x5d8edb21,0x2caf,0x425d,0x825b,{0x0,0xd,0x8,0xa,0x4,0x3,0x6,0x9,0x1,0x4,0xb,0x7}}, &CID_libcore};
+        {{0x5d8edb21,0x2caf,0x425d,0x825b,{0x0d,0x8a,0x43,0x69,0x14,0xb7}}, &CID_libcore};
 
 Integer BaseLocale::Key::AddRef(
     /* [in] */ HANDLE id)
@@ -216,12 +209,10 @@ IInterface* BaseLocale::Key::Probe(
 
 ECode BaseLocale::Key::GetInterfaceID(
     /* [in] */ IInterface* object,
-    /* [out] */ InterfaceID* iid)
+    /* [out] */ InterfaceID& iid)
 {
-    VALIDATE_NOT_NULL(iid);
-
     if (object == (IInterface*)(IComparable*)this) {
-        *iid = IID_IComparable;
+        iid = IID_IComparable;
         return NOERROR;
     }
     return Object::GetInterfaceID(object, iid);
@@ -300,18 +291,16 @@ BaseLocale::Key::Key(
 
 ECode BaseLocale::Key::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* same)
+    /* [out] */ Boolean& same)
 {
-    VALIDATE_NOT_NULL(same);
-
     if (IInterface::Equals((IComparable*)this, obj)) {
-        *same = true;
+        same = true;
         return NOERROR;
     }
 
     if (obj->Probe(IID_BaseLocaleKey) != nullptr) {
         Key* oth = (Key*)IComparable::Probe(obj);
-        *same = mHash == oth->mHash &&
+        same = mHash == oth->mHash &&
                 LocaleUtils::CaseIgnoreMatch(oth->mLang, mLang) &&
                 LocaleUtils::CaseIgnoreMatch(oth->mScrt, mScrt) &&
                 LocaleUtils::CaseIgnoreMatch(oth->mRegn, mRegn) &&
@@ -319,7 +308,7 @@ ECode BaseLocale::Key::Equals(
         return NOERROR;
     }
 
-    *same = false;
+    same = false;
     return NOERROR;
 }
 
@@ -345,11 +334,9 @@ ECode BaseLocale::Key::CompareTo(
 }
 
 ECode BaseLocale::Key::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
-    *hash = mHash;
+    hash = mHash;
     return NOERROR;
 }
 

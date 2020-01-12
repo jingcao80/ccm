@@ -20,7 +20,7 @@
 #include "como/util/SimpleTimeZone.h"
 #include "como/util/calendar/CalendarSystem.h"
 #include "como/util/calendar/CalendarUtils.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::AutoLock;
 using como::core::CStringBuilder;
@@ -600,32 +600,28 @@ ECode SimpleTimeZone::CloneImpl(
 }
 
 ECode SimpleTimeZone::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
     AutoLock lock(this);
 
-    *hash = mStartMonth ^ mStartDay ^ mStartDayOfWeek ^ mStartTime ^
+    hash = mStartMonth ^ mStartDay ^ mStartDayOfWeek ^ mStartTime ^
             mEndMonth ^ mEndDay ^ mEndDayOfWeek ^ mEndTime ^ mRawOffset;
     return NOERROR;
 }
 
 ECode SimpleTimeZone::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* same)
+    /* [out] */ Boolean& same)
 {
-    VALIDATE_NOT_NULL(same);
-
     SimpleTimeZone* that = (SimpleTimeZone*)ISimpleTimeZone::Probe(obj);
 
     if (that == nullptr) {
-        *same = false;
+        same = false;
         return NOERROR;
     }
 
     if (this == that) {
-        *same = true;
+        same = true;
         return NOERROR;
     }
 
@@ -634,11 +630,11 @@ ECode SimpleTimeZone::Equals(
     that->GetID(&thatID);
 
     if (!thisID.Equals(thatID)) {
-        *same = false;
+        same = false;
         return NOERROR;
     }
 
-    return HasSameRules(that, same);
+    return HasSameRules(that, &same);
 }
 
 ECode SimpleTimeZone::HasSameRules(
@@ -680,10 +676,8 @@ ECode SimpleTimeZone::HasSameRules(
 }
 
 ECode SimpleTimeZone::ToString(
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
-    VALIDATE_NOT_NULL(desc);
-
     AutoPtr<IStringBuilder> sb;
     CStringBuilder::New(IID_IStringBuilder, (IInterface**)&sb);
     sb->Append(GetCoclassName((ISimpleTimeZone*)this));

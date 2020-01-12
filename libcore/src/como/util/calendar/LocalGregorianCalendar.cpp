@@ -22,7 +22,7 @@
 #include "como/util/calendar/CalendarUtils.h"
 #include "como/util/calendar/CEra.h"
 #include "como/util/calendar/LocalGregorianCalendar.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::CStringBuffer;
 using como::core::IStringBuffer;
@@ -542,12 +542,10 @@ void LocalGregorianCalendar::Date::SetLocalYear(
 }
 
 ECode LocalGregorianCalendar::Date::ToString(
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
-    VALIDATE_NOT_NULL(desc);
-
     String time;
-    BaseCalendar::Date::ToString(&time);
+    BaseCalendar::Date::ToString(time);
     time = time.Substring(time.IndexOf(U'T'));
     AutoPtr<IStringBuffer> sb;
     CStringBuffer::New(IID_IStringBuffer, (IInterface**)&sb);

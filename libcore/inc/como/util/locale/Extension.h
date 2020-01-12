@@ -18,7 +18,7 @@
 #define __COMO_UTIL_LOCALE_EXTENSION_H__
 
 #include "como.util.locale.ILanguageTag.h"
-#include <ccmobject.h>
+#include <comoobj.h>
 
 namespace como {
 namespace util {
@@ -42,7 +42,7 @@ public:
     String GetID();
 
     ECode ToString(
-        /* [out] */ String* desc) override;
+        /* [out] */ String& desc) override;
 
 protected:
     void SetValue(

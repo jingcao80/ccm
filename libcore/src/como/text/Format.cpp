@@ -19,7 +19,7 @@
 #include "como/text/CFieldPosition.h"
 #include "como/text/CParsePosition.h"
 #include "como/text/Format.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::CStringBuffer;
 using como::core::IID_ICloneable;
@@ -43,7 +43,7 @@ ECode BaseFormat::Format(
     AutoPtr<IFieldPosition> fp;
     CFieldPosition::New(0, IID_IFieldPosition, (IInterface**)&fp);
     FAIL_RETURN(Format(obj, sb, fp));
-    return sb->ToString(string);
+    return sb->ToString(*string);
 }
 
 ECode BaseFormat::FormatToCharacterIterator(

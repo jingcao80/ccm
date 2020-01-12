@@ -29,7 +29,7 @@
 #include "como/util/locale/provider/CalendarDataUtility.h"
 #include "como.core.IInteger.h"
 #include "como.util.calendar.IBaseCalendar.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::AutoLock;
 using como::core::CoreUtils;
@@ -210,26 +210,22 @@ ECode JapaneseImperialCalendar::GetCalendarType(
 
 ECode JapaneseImperialCalendar::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* same)
+    /* [out] */ Boolean& same)
 {
-    VALIDATE_NOT_NULL(same);
-
     if (IJapaneseImperialCalendar::Probe(obj) == nullptr) {
-        *same = false;
+        same = false;
         return NOERROR;
     }
     return Calendar::Equals(obj, same);
 }
 
 ECode JapaneseImperialCalendar::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
     Integer chash, jhash;
-    Calendar::GetHashCode(&chash);
-    mJdate->GetHashCode(&jhash);
-    *hash = chash + jhash;
+    Calendar::GetHashCode(chash);
+    mJdate->GetHashCode(jhash);
+    hash = chash + jhash;
     return NOERROR;
 }
 

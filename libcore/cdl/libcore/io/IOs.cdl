@@ -396,7 +396,7 @@ interface IOs
 
     Pread(
         [in] IFileDescriptor* fd,
-        [out] Array<Byte> bytes,
+        [out] Array<Byte>& bytes,
         [in] Integer byteOffset,
         [in] Integer byteCount,
         [in] Long offset,
@@ -424,7 +424,7 @@ interface IOs
 
     Read(
         [in] IFileDescriptor* fd,
-        [out] Array<Byte> bytes,
+        [out] Array<Byte>& bytes,
         [in] Integer byteOffset,
         [in] Integer byteCount,
         [out] Integer* num);
@@ -444,14 +444,14 @@ interface IOs
 
     Readv(
         [in] IFileDescriptor* fd,
-        [out] Array<IInterface*> buffers,
-        [out] Array<Integer> offsets,
-        [out] Array<Integer> byteCounts,
+        [out] Array<IInterface*>& buffers,
+        [out] Array<Integer>& offsets,
+        [out] Array<Integer>& byteCounts,
         [out] Integer* num);
 
     Recvfrom(
         [in] IFileDescriptor* fd,
-        [out] Array<Byte> bytes,
+        [out] Array<Byte>& bytes,
         [in] Integer byteOffset,
         [in] Integer byteCount,
         [in] Integer flags,

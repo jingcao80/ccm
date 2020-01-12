@@ -115,37 +115,31 @@ ECode CInteger::CompareTo(
 
 ECode CInteger::Equals(
     /* [in] */ IInterface* other,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     IInteger* i = IInteger::Probe(other);
     if (i == nullptr) {
-        *result = false;
+        result = false;
         return NOERROR;
     }
 
     Integer iv;
     i->GetValue(&iv);
-    *result = mValue == iv;
+    result = mValue == iv;
     return NOERROR;
 }
 
 ECode CInteger::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
-    *hash = mValue;
+    hash = mValue;
     return NOERROR;
 }
 
 ECode CInteger::ToString(
-    /* [out] */ String* str)
+    /* [out] */ String& str)
 {
-    VALIDATE_NOT_NULL(str);
-
-    *str = String::Format("%d", mValue);
+    str = String::Format("%d", mValue);
     return NOERROR;
 }
 

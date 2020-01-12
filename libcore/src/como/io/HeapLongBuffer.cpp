@@ -21,7 +21,7 @@ namespace como {
 namespace io {
 
 extern const CoclassID CID_HeapLongBuffer =
-        {{0x2bceaadf,0x64fd,0x445e,0xb537,{0xc,0x3,0xa,0x8,0x4,0x0,0x3,0x5,0x6,0x4,0x4,0xf}}, &CID_libcore};
+        {{0x2bceaadf,0x64fd,0x445e,0xb537,{0xc3,0xa8,0x40,0x35,0x64,0x4f}}, &CID_libcore};
 
 ECode HeapLongBuffer::Constructor(
     /* [in] */ Integer cap,
@@ -307,11 +307,9 @@ ECode HeapLongBuffer::GetOrder(
 }
 
 ECode HeapLongBuffer::GetCoclassID(
-    /* [out] */ CoclassID* cid)
+    /* [out] */ CoclassID& cid)
 {
-    VALIDATE_NOT_NULL(cid);
-
-    *cid = CID_HeapLongBuffer;
+    cid = CID_HeapLongBuffer;
     return NOERROR;
 }
 

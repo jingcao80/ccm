@@ -1,5 +1,5 @@
 #=========================================================================
-# Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+# Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 project(libcore CXX)
 
-set(LIBCORE_DIR ${SRC_DIR}/libcore)
+set(LIBCORE_DIR ${PROJECT_DIR}/libcore)
 
 add_subdirectory(inc)
 add_subdirectory(src)

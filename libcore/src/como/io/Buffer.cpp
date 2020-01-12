@@ -15,7 +15,7 @@
 //=========================================================================
 
 #include "como/io/Buffer.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
 

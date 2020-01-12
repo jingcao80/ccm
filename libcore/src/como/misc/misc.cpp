@@ -15,7 +15,7 @@
 //=========================================================================
 
 #include "como/misc/CFDBigInteger.h"
-#include <ccmapi.h>
+#include <comoapi.h>
 #include <new>
 
 namespace como {
@@ -31,7 +31,7 @@ ECode CFDBigInteger::New(
     VALIDATE_NOT_NULL(object);
 
     AutoPtr<IClassObject> clsObject;
-    ECode ec = CoAcquireClassFactory(CID_CFDBigInteger, nullptr, &clsObject);
+    ECode ec = CoAcquireClassFactory(CID_CFDBigInteger, nullptr, clsObject);
     if (FAILED(ec)) return ec;
 
     void* addr = calloc(sizeof(CFDBigInteger), 1);
@@ -44,7 +44,7 @@ ECode CFDBigInteger::New(
         return ec;
     }
     AutoPtr<IMetaComponent> comp;
-    clsObject->GetMetadate(&comp);
+    clsObject->GetMetadate(comp);
     _obj->AttachMetadata(comp, String("como::misc::CFDBigInteger"));
     *object = _obj->Probe(iid);
     REFCOUNT_ADD(*object);

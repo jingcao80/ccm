@@ -25,7 +25,7 @@
 #include "como.text.IDateFormat.h"
 #include "libcore/icu/ICU.h"
 #include "libcore/icu/LocaleData.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::AutoLock;
 using como::core::CoreUtils;
@@ -138,10 +138,8 @@ ECode LocaleData::GetInner(
 }
 
 ECode LocaleData::ToString(
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
-    VALIDATE_NOT_NULL(desc);
-
     AutoPtr<IStringBuilder> sb;
     CStringBuilder::New(IID_IStringBuilder, (IInterface**)&sb);
 

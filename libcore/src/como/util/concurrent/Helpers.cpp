@@ -60,15 +60,15 @@ String Helpers::ObjectToString(
     /* [in] */ IInterface* x)
 {
     if (x == nullptr) {
-        return String("null");
+        return "null";
     }
     IObject* o = IObject::Probe(x);
     if (o == nullptr) {
-        return String("null");
+        return "null";
     }
     String s;
-    o->ToString(&s);
-    return s.IsNull() ? String("null") : s;
+    o->ToString(s);
+    return s.IsNull() ? "null" : s;
 }
 
 }

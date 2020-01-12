@@ -16,7 +16,7 @@
 
 #include "como/core/NativeObject.h"
 #include "como/core/SyncObject.h"
-#include <ccmautoptr.h>
+#include <comosp.h>
 
 namespace como {
 namespace core {
@@ -60,10 +60,10 @@ String NativeObject::PrettyTypeOf()
 {
     SyncObject* obj = reinterpret_cast<SyncObject*>(mCcmObject);
     AutoPtr<IMetaCoclass> mc;
-    obj->GetCoclass(&mc);
+    obj->GetCoclass(mc);
     String ns, name;
-    mc->GetNamespace(&ns);
-    mc->GetName(&name);
+    mc->GetNamespace(ns);
+    mc->GetName(name);
     return ns + name;
 }
 

@@ -28,13 +28,13 @@
 #include "como.text.ISimpleDateFormat.h"
 #include "como.util.ISet.h"
 #include "como.util.concurrent.IConcurrentMap.h"
-#include "pisces.icu.text.ITimeZoneNames.h"
+#include "jing.icu.text.ITimeZoneNames.h"
 
 using como::core::IStringBuilder;
 using como::core::IStringBuffer;
 using como::util::ISet;
 using como::util::concurrent::IConcurrentMap;
-using pisces::icu::text::ITimeZoneNames;
+using jing::icu::text::ITimeZoneNames;
 
 namespace como {
 namespace text {
@@ -95,11 +95,11 @@ public:
         /* [in] */ IDateFormatSymbols* newFormatSymbols) override;
 
     ECode GetHashCode(
-        /* [out] */ Integer* hash) override;
+        /* [out] */ Integer& hash) override;
 
     ECode Equals(
         /* [in] */ IInterface* obj,
-        /* [out] */ Boolean* same) override;
+        /* [out] */ Boolean& same) override;
 
 protected:
     ECode Constructor(

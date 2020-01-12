@@ -304,40 +304,35 @@ ECode DateFormatSymbols::CloneImpl(
 }
 
 ECode DateFormatSymbols::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
-    VOLATILE_GET(Integer hashCode, mCachedHashCode);
-    if (hashCode == 0) {
-        hashCode = 5;
-        hashCode = 11 * hashCode + Arrays::GetHashCode(mEras);
-        hashCode = 11 * hashCode + Arrays::GetHashCode(mMonths);
-        hashCode = 11 * hashCode + Arrays::GetHashCode(mShortMonths);
-        hashCode = 11 * hashCode + Arrays::GetHashCode(mWeekdays);
-        hashCode = 11 * hashCode + Arrays::GetHashCode(mShortWeekdays);
-        hashCode = 11 * hashCode + Arrays::GetHashCode(mAmpms);
-        hashCode = 11 * hashCode + mLocalPatternChars.GetHashCode();
-        VOLATILE_SET(mCachedHashCode, hashCode);
+    VOLATILE_GET(hash, mCachedHashCode);
+    if (hash == 0) {
+        hash = 5;
+        hash = 11 * hash + Arrays::GetHashCode(mEras);
+        hash = 11 * hash + Arrays::GetHashCode(mMonths);
+        hash = 11 * hash + Arrays::GetHashCode(mShortMonths);
+        hash = 11 * hash + Arrays::GetHashCode(mWeekdays);
+        hash = 11 * hash + Arrays::GetHashCode(mShortWeekdays);
+        hash = 11 * hash + Arrays::GetHashCode(mAmpms);
+        hash = 11 * hash + mLocalPatternChars.GetHashCode();
+        VOLATILE_SET(mCachedHashCode, hash);
     }
 
-    *hash = hashCode;
     return NOERROR;
 }
 
 ECode DateFormatSymbols::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* same)
+    /* [out] */ Boolean& same)
 {
-    VALIDATE_NOT_NULL(same);
-
     DateFormatSymbols* other = (DateFormatSymbols*)IDateFormatSymbols::Probe(obj);
     if (this == other) {
-        *same = true;
+        same = true;
         return NOERROR;
     }
     if (other == nullptr) {
-        *same = false;
+        same = false;
         return NOERROR;
     }
     if (!(Arrays::Equals(mEras, other->mEras) &&
@@ -355,14 +350,14 @@ ECode DateFormatSymbols::Equals(
             Arrays::Equals(mTinyStandAloneWeekdays, other->mTinyStandAloneWeekdays) &&
             Arrays::Equals(mAmpms, other->mAmpms) &&
             mLocalPatternChars.Equals(other->mLocalPatternChars))) {
-        *same = false;
+        same = false;
         return NOERROR;
     }
     if (!mIsZoneStringsSet && !other->mIsZoneStringsSet && Object::Equals(mLocale, other->mLocale)) {
-        *same = true;
+        same = true;
         return NOERROR;
     }
-    *same = Arrays::DeepEquals(GetZoneStringsWrapper(), other->GetZoneStringsWrapper());
+    same = Arrays::DeepEquals(GetZoneStringsWrapper(), other->GetZoneStringsWrapper());
     return NOERROR;
 }
 
@@ -432,7 +427,7 @@ Integer DateFormatSymbols::GetZoneIndex(
 Array<Array<String>> DateFormatSymbols::GetZoneStringsWrapper()
 {
     CoclassID cid;
-    GetCoclassID(&cid);
+    GetCoclassID(cid);
     if (cid != CID_CDateFormatSymbols) {
         Array<Array<String>> zoneStrings;
         GetZoneStrings(&zoneStrings);

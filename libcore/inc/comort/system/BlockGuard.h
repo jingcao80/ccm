@@ -19,8 +19,8 @@
 
 #include "como.core.IThreadLocal.h"
 #include "comort.system.IBlockGuardPolicy.h"
-#include <ccmautoptr.h>
-#include <ccmobject.h>
+#include <comosp.h>
+#include <comoobj.h>
 
 using namespace como;
 using como::core::IThreadLocal;
@@ -36,7 +36,7 @@ public:
         , public IBlockGuardPolicy
     {
     public:
-        CCM_INTERFACE_DECL();
+        COMO_INTERFACE_DECL();
 
         ECode OnWriteToDisk() override;
 

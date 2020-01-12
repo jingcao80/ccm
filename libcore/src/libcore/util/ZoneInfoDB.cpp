@@ -29,7 +29,7 @@
 #include "libcore/util/TimeZoneDataFiles.h"
 #include "libcore/util/ZoneInfo.h"
 #include "libcore/util/ZoneInfoDB.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::AutoLock;
 using como::core::CoreUtils;
@@ -441,6 +441,7 @@ ECode ZoneInfoDB::TzData::Close()
         mMappedFile = nullptr;
         mCache->EvictAll();
     }
+    return NOERROR;
 }
 
 ECode ZoneInfoDB::TzData::CheckNotClosed()

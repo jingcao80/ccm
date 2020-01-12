@@ -18,7 +18,7 @@
 #define __COMO_CORE_NATIVEMUTEX_H__
 
 #include "como/core/NativeAtomic.h"
-#include <ccmtypes.h>
+#include <comotypes.h>
 #include <unistd.h>
 #include <linux/futex.h>
 #include <sys/syscall.h>

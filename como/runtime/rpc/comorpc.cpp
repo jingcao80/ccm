@@ -17,17 +17,17 @@
 #include "comorpc.h"
 #include "CProxy.h"
 #include "CStub.h"
-#if defined(__aarch64__)
+#if defined(__android__)
 #include "binder/CBinderChannelFactory.h"
-#elif defined(__x86_64__)
+#elif defined(__linux__)
 #include "dbus/CDBusChannelFactory.h"
 #endif
 
 namespace como {
 
-#if defined(__aarch64__)
+#if defined(__android__)
 static AutoPtr<IRPCChannelFactory> sLocalFactory = new CBinderChannelFactory(RPCType::Local);
-#elif defined(__x86_64__)
+#elif defined(__linux__)
 static AutoPtr<IRPCChannelFactory> sLocalFactory = new CDBusChannelFactory(RPCType::Local);
 #endif
 static AutoPtr<IRPCChannelFactory> sRemoteFactory;

@@ -21,7 +21,7 @@
 #include "como.util.IIterator.h"
 #include "como.util.IMapEntry.h"
 #include "como.util.ISet.h"
-#include <ccmautoptr.h>
+#include <comosp.h>
 
 using como::core::CStringBuilder;
 using como::core::IStringBuilder;
@@ -331,12 +331,10 @@ ECode AbstractMap::GetKeySet(
 
                     ECode GetInterfaceID(
                         /* [in] */ IInterface* object,
-                        /* [out] */ InterfaceID* iid) override
+                        /* [out] */ InterfaceID& iid) override
                     {
-                        VALIDATE_NOT_NULL(iid);
-
                         if (object == (IInterface*)(IIterator*)this) {
-                            *iid = IID_IIterator;
+                            iid = IID_IIterator;
                             return NOERROR;
                         }
                         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -464,12 +462,10 @@ ECode AbstractMap::GetValues(
 
                     ECode GetInterfaceID(
                         /* [in] */ IInterface* object,
-                        /* [out] */ InterfaceID* iid) override
+                        /* [out] */ InterfaceID& iid) override
                     {
-                        VALIDATE_NOT_NULL(iid);
-
                         if (object == (IInterface*)(IIterator*)this) {
-                            *iid = IID_IIterator;
+                            iid = IID_IIterator;
                             return NOERROR;
                         }
                         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -542,23 +538,21 @@ ECode AbstractMap::GetValues(
 
 ECode AbstractMap::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     if (IInterface::Equals(obj, (IMap*)this)) {
-        *result = true;
+        result = true;
         return NOERROR;
     }
 
     if (IMap::Probe(obj) == nullptr) {
-        *result = false;
+        result = false;
         return NOERROR;
     }
     IMap* m = IMap::Probe(obj);
     Integer othSize, thisSize;
     if (m->GetSize(&othSize), GetSize(&thisSize), othSize != thisSize) {
-        *result = false;
+        result = false;
         return NOERROR;
     }
 
@@ -578,29 +572,27 @@ ECode AbstractMap::Equals(
             Boolean constains;
             if ((m->Get(key, &othValue), othValue != nullptr) ||
                     (m->ContainsKey(key, &constains), !constains)) {
-                *result = false;
+                result = false;
                 return NOERROR;
             }
         }
         else {
             AutoPtr<IInterface> othValue;
             if (m->Get(key, &othValue), !Object::Equals(value, othValue)) {
-                *result = false;
+                result = false;
                 return NOERROR;
             }
         }
     }
 
-    *result = true;
+    result = true;
     return NOERROR;
 }
 
 ECode AbstractMap::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
-    Integer h = 0;
+    hash = 0;
     AutoPtr<ISet> entries;
     GetEntrySet(&entries);
     AutoPtr<IIterator> it;
@@ -609,14 +601,13 @@ ECode AbstractMap::GetHashCode(
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> e;
         it->Next(&e);
-        h += Object::GetHashCode(e);
+        hash += Object::GetHashCode(e);
     }
-    *hash = h;
     return NOERROR;
 }
 
 ECode AbstractMap::ToString(
-    /* [out] */ String* str)
+    /* [out] */ String& str)
 {
     AutoPtr<ISet> entries;
     GetEntrySet(&entries);
@@ -624,7 +615,7 @@ ECode AbstractMap::ToString(
     entries->GetIterator(&it);
     Boolean hasNext;
     if (it->HasNext(&hasNext), !hasNext) {
-        *str = "{}";
+        str = "{}";
         return NOERROR;
     }
 
@@ -716,38 +707,32 @@ ECode AbstractMap::SimpleEntry::SetValue(
 
 ECode AbstractMap::SimpleEntry::Equals(
     /* [in] */ IInterface* object,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result)
-
     IMapEntry* e = IMapEntry::Probe(object);
     if (e == nullptr) {
-        *result = false;
+        result = false;
         return NOERROR;
     }
     AutoPtr<IInterface> key, value;
     e->GetKey(&key);
     e->GetValue(&value);
-    *result = Object::Equals(mKey, key) && Object::Equals(mValue, value);
+    result = Object::Equals(mKey, key) && Object::Equals(mValue, value);
     return NOERROR;
 }
 
 ECode AbstractMap::SimpleEntry::GetHashCode(
-    /* [out] */ Integer* hashCode)
+    /* [out] */ Integer& hashCode)
 {
-    VALIDATE_NOT_NULL(hashCode)
-
-    *hashCode = (mKey == NULL ? 0 : Object::GetHashCode(mKey)) ^
+    hashCode = (mKey == NULL ? 0 : Object::GetHashCode(mKey)) ^
             (mValue == NULL ? 0 : Object::GetHashCode(mValue));
     return NOERROR;
 }
 
 ECode AbstractMap::SimpleEntry::ToString(
-    /* [out] */ String* str)
+    /* [out] */ String& str)
 {
-    VALIDATE_NOT_NULL(str)
-
-    *str = Object::ToString(mKey) + "=" + Object::ToString(mValue);
+    str = Object::ToString(mKey) + "=" + Object::ToString(mValue);
     return NOERROR;
 }
 
@@ -801,38 +786,32 @@ ECode AbstractMap::SimpleImmutableEntry::SetValue(
 
 ECode AbstractMap::SimpleImmutableEntry::Equals(
     /* [in] */ IInterface* object,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result)
-
     IMapEntry* e = IMapEntry::Probe(object);
     if (e == nullptr) {
-        *result = false;
+        result = false;
         return NOERROR;
     }
     AutoPtr<IInterface> key, value;
     e->GetKey(&key);
     e->GetValue(&value);
-    *result = Object::Equals(mKey, key) && Object::Equals(mValue, value);
+    result = Object::Equals(mKey, key) && Object::Equals(mValue, value);
     return NOERROR;
 }
 
 ECode AbstractMap::SimpleImmutableEntry::GetHashCode(
-    /* [out] */ Integer* hashCode)
+    /* [out] */ Integer& hashCode)
 {
-    VALIDATE_NOT_NULL(hashCode)
-
-    *hashCode = (mKey == NULL ? 0 : Object::GetHashCode(mKey)) ^
+    hashCode = (mKey == NULL ? 0 : Object::GetHashCode(mKey)) ^
             (mValue == NULL ? 0 : Object::GetHashCode(mValue));
     return NOERROR;
 }
 
 ECode AbstractMap::SimpleImmutableEntry::ToString(
-    /* [out] */ String* str)
+    /* [out] */ String& str)
 {
-    VALIDATE_NOT_NULL(str)
-
-    *str = Object::ToString(mKey) + "=" + Object::ToString(mValue);
+    str = Object::ToString(mKey) + "=" + Object::ToString(mValue);
     return NOERROR;
 }
 

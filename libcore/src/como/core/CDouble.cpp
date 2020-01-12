@@ -133,35 +133,31 @@ ECode CDouble::CompareTo(
 
 ECode CDouble::Equals(
     /* [in] */ IInterface* other,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     IDouble* d = IDouble::Probe(other);
     if (d == nullptr) {
-        *result = false;
+        result = false;
         return NOERROR;
     }
 
     Double dv;
     d->GetValue(&dv);
-    *result = mValue == dv;
+    result = mValue == dv;
     return NOERROR;
 }
 
 ECode CDouble::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
-    *hash = (Integer)mValue;
+    hash = (Integer)mValue;
     return NOERROR;
 }
 
 ECode CDouble::ToString(
-    /* [out] */ String* str)
+    /* [out] */ String& str)
 {
-    VALIDATE_NOT_NULL(str);
+    str = String::Format("%f", mValue);
     return NOERROR;
 }
 

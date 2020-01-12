@@ -18,7 +18,7 @@
 #include "como/util/CLinkedHashMap.h"
 #include "como.util.IMapEntry.h"
 #include "libcore/util/BasicLruCache.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::AutoLock;
 using como::core::E_NULL_POINTER_EXCEPTION;

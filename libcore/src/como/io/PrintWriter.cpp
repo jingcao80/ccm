@@ -30,7 +30,7 @@
 #include "como/util/Locale.h"
 #include "como.core.IThread.h"
 #include "como.security.IPrivilegedAction.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::AutoLock;
 using como::core::CoreUtils;

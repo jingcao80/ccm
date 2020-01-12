@@ -19,7 +19,7 @@
 #include "como/core/RealToString.h"
 #include "como/core/StringUtils.h"
 #include "como/core/cbigint.h"
-#include <ccmautoptr.h>
+#include <comosp.h>
 
 namespace como {
 namespace core {
@@ -67,7 +67,7 @@ String RealToString::ConvertFloat(
     else if (e == 0 && mantissaIsZero) {
         quickResult = positive ? "0.0" : "-0.0";
     }
-    if (!quickResult.IsNullOrEmpty()) {
+    if (!quickResult.IsEmpty()) {
         return ResultOrSideEffect(sb, quickResult);
     }
 
@@ -94,7 +94,7 @@ String RealToString::ConvertFloat(
     }
 
     sFirstK = sDigitCount = 0;
-    if (-59 < pow && pow < 35 || (pow == -59 && !mantissaIsZero)) {
+    if ((-59 < pow && pow < 35) || (pow == -59 && !mantissaIsZero)) {
         LongDigitGenerator(f, pow, e == 0, mantissaIsZero, numBits);
     }
     else {
@@ -113,7 +113,7 @@ String RealToString::ConvertFloat(
     }
     String s;
     if (sb == nullptr) {
-        dst->ToString(&s);
+        dst->ToString(s);
     }
     return s;
 }
@@ -152,7 +152,7 @@ String RealToString::ConvertDouble(
             quickResult = positive ? "4.9E-324" : "-4.9E-324";
         }
     }
-    if (!quickResult.IsNullOrEmpty()) {
+    if (!quickResult.IsEmpty()) {
         return ResultOrSideEffect(sb, quickResult);
     }
 
@@ -175,7 +175,7 @@ String RealToString::ConvertDouble(
     }
 
     sFirstK = sDigitCount = 0;
-    if (-59 < pow && pow < 6 || (pow == -59 && !mantissaIsZero)) {
+    if ((-59 < pow && pow < 6) || (pow == -59 && !mantissaIsZero)) {
         LongDigitGenerator(f, pow, e == 0, mantissaIsZero, numBits);
     }
     else {
@@ -185,8 +185,8 @@ String RealToString::ConvertDouble(
     if (dst == nullptr) {
         CStringBuilder::New(26, IID_IStringBuilder, (IInterface**)&dst);
     }
-    if (inputNumber >= 1e7D || inputNumber <= -1e7D
-            || (inputNumber > -1e-3D && inputNumber < 1e-3D)) {
+    if (inputNumber >= 1e7 || inputNumber <= -1e7
+            || (inputNumber > -1e-3 && inputNumber < 1e-3)) {
         FreeFormatExponential(dst, positive);
     }
     else {
@@ -194,7 +194,7 @@ String RealToString::ConvertDouble(
     }
     String s;
     if (sb == nullptr) {
-        dst->ToString(&s);
+        dst->ToString(s);
     }
     return s;
 }

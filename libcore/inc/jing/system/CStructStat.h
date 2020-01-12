@@ -19,7 +19,7 @@
 
 #include "jing.system.IStructStat.h"
 #include "_jing_system_CStructStat.h"
-#include <ccmobject.h>
+#include <comoobj.h>
 
 namespace jing {
 namespace system {

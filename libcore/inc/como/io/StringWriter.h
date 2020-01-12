@@ -20,7 +20,7 @@
 #include "como/io/Writer.h"
 #include "como.core.IStringBuffer.h"
 #include "como.io.IStringWriter.h"
-#include <ccmautoptr.h>
+#include <comosp.h>
 
 using como::core::IStringBuffer;
 
@@ -56,7 +56,7 @@ public:
         /* [in] */ Integer len) override;
 
     ECode ToString(
-        /* [out] */ String* str) override;
+        /* [out] */ String& str) override;
 
     ECode GetBuffer(
         /* [out] */ IStringBuffer** buf) override;

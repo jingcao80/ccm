@@ -20,7 +20,7 @@
 #include "como.util.IComparator.h"
 #include "como.util.ILocale.h"
 #include "libcore/util/BasicLruCache.h"
-#include <ccmautoptr.h>
+#include <comosp.h>
 
 using como::util::IComparator;
 using como::util::ILocale;

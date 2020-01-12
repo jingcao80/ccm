@@ -18,7 +18,7 @@
 #define __COMO_IO_CHARSET_STANDARDCHARSETS_H__
 
 #include "como.io.charset.ICharset.h"
-#include <ccmautoptr.h>
+#include <comosp.h>
 
 namespace como {
 namespace io {

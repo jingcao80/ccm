@@ -137,8 +137,7 @@ ECode CharsetEncoder::IsLegalReplacement(
         cs->NewDecoder(&dec);
         dec->OnMalformedInput(CodingErrorAction::GetREPORT());
         dec->OnUnmappableCharacter(CodingErrorAction::GetREPORT());
-        mCachedDecoder = nullptr;
-        IWeakReferenceSource::Probe(dec)->GetWeakReference(&mCachedDecoder);
+        IWeakReferenceSource::Probe(dec)->GetWeakReference(mCachedDecoder);
     }
     else {
         dec->Reset();

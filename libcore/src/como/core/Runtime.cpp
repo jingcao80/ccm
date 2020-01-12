@@ -19,13 +19,13 @@
 #include "como/core/Thread.h"
 #include "como/util/CArrayList.h"
 #include "libcore/io/Libcore.h"
-#include "pisces/system/OsConstants.h"
-#include <ccmlogger.h>
+#include "jing/system/OsConstants.h"
+#include <comolog.h>
 
 using como::util::CArrayList;
 using como::util::IID_IList;
 using libcore::io::Libcore;
-using pisces::system::OsConstants;
+using jing::system::OsConstants;
 
 namespace como {
 namespace core {

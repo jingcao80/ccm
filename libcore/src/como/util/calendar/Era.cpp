@@ -125,16 +125,14 @@ ECode Era::IsLocalTime(
 
 ECode Era::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* same)
+    /* [out] */ Boolean& same)
 {
-    VALIDATE_NOT_NULL(same);
-
     if (IEra::Probe(obj) == nullptr) {
-        *same = false;
+        same = false;
         return NOERROR;
     }
     Era* that = (Era*)IEra::Probe(obj);
-    *same = mName.Equals(that->mName) &&
+    same = mName.Equals(that->mName) &&
             mAbbr.Equals(that->mAbbr) &&
             mSince == that->mSince &&
             mLocalTime == that->mLocalTime;
@@ -142,23 +140,19 @@ ECode Era::Equals(
 }
 
 ECode Era::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
     if (mHash == 0) {
         mHash = mName.GetHashCode() ^ mAbbr.GetHashCode() ^ (Integer)mSince ^ (Integer)(mSince >> 32)
                 ^ (mLocalTime ? 1 : 0);
     }
-    *hash = mHash;
+    hash = mHash;
     return NOERROR;
 }
 
 ECode Era::ToString(
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
-    VALIDATE_NOT_NULL(desc);
-
     AutoPtr<IStringBuilder> sb;
     CStringBuilder::New(IID_IStringBuilder, (IInterface**)&sb);
     sb->Append(U'[');

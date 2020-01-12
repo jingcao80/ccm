@@ -100,7 +100,7 @@ AutoPtr<IArray> CoreUtils::Box(
 
     Long size = objArray.GetLength();
     InterfaceID iid;
-    objArray[0]->GetInterfaceID(objArray[0], &iid);
+    objArray[0]->GetInterfaceID(objArray[0], iid);
     AutoPtr<IArray> arrObj;
     CArray::New(iid, size, IID_IArray, (IInterface**)&arrObj);
     for (Long i = 0; i < size; i++) {
@@ -154,7 +154,7 @@ String CoreUtils::Unbox(
 {
     String str;
     if (seq != nullptr) {
-        seq->ToString(&str);
+        seq->ToString(str);
     }
     return str;
 }

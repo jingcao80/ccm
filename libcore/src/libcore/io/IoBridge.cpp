@@ -18,13 +18,13 @@
 #include "libcore/io/IoBridge.h"
 #include "libcore/io/IoUtils.h"
 #include "libcore/io/Libcore.h"
-#include "pisces/system/OsConstants.h"
-#include "pisces.system.IStructStat.h"
+#include "jing/system/OsConstants.h"
+#include "jing.system.IStructStat.h"
 
 using como::io::E_FILE_NOT_FOUND_EXCEPTION;
 using como::util::Arrays;
-using pisces::system::IStructStat;
-using pisces::system::OsConstants;
+using jing::system::IStructStat;
+using jing::system::OsConstants;
 
 namespace libcore {
 namespace io {

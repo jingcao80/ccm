@@ -26,7 +26,7 @@
 #include "como.io.IReader.h"
 #include "como.io.IWriter.h"
 #include "como.util.IProperties.h"
-#include <ccmrefbase.h>
+#include <comoref.h>
 
 using como::io::IBufferedWriter;
 using como::io::IInputStream;

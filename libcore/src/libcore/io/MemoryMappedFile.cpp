@@ -22,17 +22,17 @@
 #include "libcore/io/MemoryMappedFile.h"
 #include "libcore/io/NioBufferIterator.h"
 #include "libcore.io.IOs.h"
-#include "pisces/system/OsConstants.h"
-#include "pisces.system.IStructStat.h"
-#include <ccmlogger.h>
+#include "jing/system/OsConstants.h"
+#include "jing.system.IStructStat.h"
+#include <comolog.h>
 
 using como::core::E_ILLEGAL_STATE_EXCEPTION;
 using como::core::IID_IAutoCloseable;
 using como::core::IInteger;
 using como::io::ByteOrder;
 using como::io::IFileDescriptor;
-using pisces::system::IStructStat;
-using pisces::system::OsConstants;
+using jing::system::IStructStat;
+using jing::system::OsConstants;
 
 namespace libcore {
 namespace io {

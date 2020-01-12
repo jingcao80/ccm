@@ -33,7 +33,7 @@
 #ifndef __COMO_CORE_NATIVEATOMIC_H__
 #define __COMO_CORE_NATIVEATOMIC_H__
 
-#include <ccmtypes.h>
+#include <comotypes.h>
 #include <atomic>
 #include <limits>
 

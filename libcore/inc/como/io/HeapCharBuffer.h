@@ -108,7 +108,7 @@ public:
         /* [out] */ IByteOrder** bo) override;
 
     ECode GetCoclassID(
-        /* [out] */ CoclassID* cid) override;
+        /* [out] */ CoclassID& cid) override;
 
 protected:
     ECode Constructor(

@@ -38,7 +38,7 @@ public:
     COMO_INTERFACE_DECL();
 
     ECode GetIterator(
-        /* [out] */ IIterator** it) = 0;
+        /* [out] */ IIterator** it) override = 0;
 
     ECode IsEmpty(
         /* [out] */ Boolean* empty) override;
@@ -81,14 +81,14 @@ public:
     ECode Clear() override;
 
     ECode ToString(
-        /* [out] */ String* str) override;
+        /* [out] */ String& str) override;
 
     ECode Equals(
         /* [in] */ IInterface* obj,
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode GetHashCode(
-        /* [out] */ Integer* hash) override;
+        /* [out] */ Integer& hash) override;
 
 private:
     static ECode FinishToArray(

@@ -31,7 +31,7 @@ ECode Logical::Not(
         return NOERROR;
     }
     Boolean same;
-    if (value->Equals(CBigInteger::GetMINUS_ONE(), &same), same) {
+    if (value->Equals(CBigInteger::GetMINUS_ONE(), same), same) {
         CBigInteger::GetZERO().MoveTo(result);
         return NOERROR;
     }
@@ -80,12 +80,12 @@ ECode Logical::And(
         return NOERROR;
     }
     Boolean same;
-    if (that->Equals(CBigInteger::GetMINUS_ONE(), &same), same) {
+    if (that->Equals(CBigInteger::GetMINUS_ONE(), same), same) {
         *result = value;
         REFCOUNT_ADD(*result);
         return NOERROR;
     }
-    if (value->Equals(CBigInteger::GetMINUS_ONE(), &same), same) {
+    if (value->Equals(CBigInteger::GetMINUS_ONE(), same), same) {
         *result = that;
         REFCOUNT_ADD(*result);
         return NOERROR;
@@ -246,10 +246,10 @@ ECode Logical::AndNot(
         return NOERROR;
     }
     Boolean same;
-    if (value->Equals(CBigInteger::GetMINUS_ONE(), &same), same) {
+    if (value->Equals(CBigInteger::GetMINUS_ONE(), same), same) {
         return that->Not(result);
     }
-    if (that->Equals(CBigInteger::GetMINUS_ONE(), &same), same) {
+    if (that->Equals(CBigInteger::GetMINUS_ONE(), same), same) {
         CBigInteger::GetZERO().MoveTo(result);
         return NOERROR;
     }
@@ -458,8 +458,8 @@ ECode Logical::Or(
     /* [out] */ IBigInteger** result)
 {
     Boolean same;
-    if ((that->Equals(CBigInteger::GetMINUS_ONE(), &same), same) ||
-            (value->Equals(CBigInteger::GetMINUS_ONE(), &same), same)) {
+    if ((that->Equals(CBigInteger::GetMINUS_ONE(), same), same) ||
+            (value->Equals(CBigInteger::GetMINUS_ONE(), same), same)) {
         CBigInteger::GetMINUS_ONE().MoveTo(result);
         return NOERROR;
     }
@@ -641,10 +641,10 @@ ECode Logical::Xor(
         return NOERROR;
     }
     Boolean same;
-    if (that->Equals(CBigInteger::GetMINUS_ONE(), &same), same) {
+    if (that->Equals(CBigInteger::GetMINUS_ONE(), same), same) {
         return value->Not(result);
     }
-    if (value->Equals(CBigInteger::GetMINUS_ONE(), &same), same) {
+    if (value->Equals(CBigInteger::GetMINUS_ONE(), same), same) {
         return that->Not(result);
     }
 

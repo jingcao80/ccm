@@ -18,7 +18,7 @@
 #include "como/core/System.h"
 #include "como/security/action/GetPropertyAction.h"
 #include "como.core.ICharSequence.h"
-#include <ccmautoptr.h>
+#include <comosp.h>
 
 using como::core::CoreUtils;
 using como::core::ICharSequence;

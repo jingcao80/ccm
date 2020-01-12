@@ -115,37 +115,31 @@ ECode CShort::CompareTo(
 
 ECode CShort::Equals(
     /* [in] */ IInterface* other,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     IShort* s = IShort::Probe(other);
     if (s == nullptr) {
-        *result = false;
+        result = false;
         return NOERROR;
     }
 
     Short sv;
     s->GetValue(&sv);
-    *result = mValue == sv;
+    result = mValue == sv;
     return NOERROR;
 }
 
 ECode CShort::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
-    *hash = (Integer)mValue;
+    hash = (Integer)mValue;
     return NOERROR;
 }
 
 ECode CShort::ToString(
-    /* [out] */ String* str)
+    /* [out] */ String& str)
 {
-    VALIDATE_NOT_NULL(str);
-
-    *str = String::Format("%d", mValue);
+    str = String::Format("%d", mValue);
     return NOERROR;
 }
 

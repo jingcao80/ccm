@@ -41,20 +41,20 @@ interface IThreadGroup
     Destroy();
 
     Enumerate(
-        [out] Array<IThread*> list,
+        [out] Array<IThread*>& list,
         [out] Integer* count);
 
     Enumerate(
-        [out] Array<IThread*> list,
+        [out] Array<IThread*>& list,
         [in] Boolean recurse,
         [out] Integer* count);
 
     Enumerate(
-        [out] Array<IThreadGroup*> list,
+        [out] Array<IThreadGroup*>& list,
         [out] Integer* count);
 
     Enumerate(
-        [out] Array<IThreadGroup*> list,
+        [out] Array<IThreadGroup*>& list,
         [in] Boolean recurse,
         [out] Integer* count);
 

@@ -17,7 +17,7 @@
 #include "como/core/StringUtils.h"
 #include "como/math/CMathContext.h"
 #include "como/math/MathContext.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::StringUtils;
 using como::io::IID_ISerializable;
@@ -141,34 +141,28 @@ ECode MathContext::GetRoundingMode(
 
 ECode MathContext::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* same)
+    /* [out] */ Boolean& same)
 {
-    VALIDATE_NOT_NULL(same);
-
     MathContext* other = (MathContext*)IMathContext::Probe(obj);
     if (other == nullptr) {
-        *same = false;
+        same = false;
         return NOERROR;
     }
-    *same = (other->mPrecision == mPrecision) && (other->mRoundingMode == mRoundingMode);
+    same = (other->mPrecision == mPrecision) && (other->mRoundingMode == mRoundingMode);
     return NOERROR;
 }
 
 ECode MathContext::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
-    *hash = ((mPrecision << 3) | static_cast<Integer>(mRoundingMode));
+    hash = ((mPrecision << 3) | static_cast<Integer>(mRoundingMode));
     return NOERROR;
 }
 
 ECode MathContext::ToString(
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
-    VALIDATE_NOT_NULL(desc);
-
-    *desc = String::Format("precision=%d roundingMode=%d",
+    desc = String::Format("precision=%d roundingMode=%d",
             mPrecision, mRoundingMode);
     return NOERROR;
 }

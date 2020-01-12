@@ -20,7 +20,7 @@
 #include "como.core.IArray.h"
 #include "_como_core_CArray.h"
 #include "como/core/SyncObject.h"
-#include <ccmarray.h>
+#include <comoarray.h>
 
 namespace como {
 namespace core {
@@ -39,18 +39,18 @@ public:
         /* [in] */ Long size);
 
     ECode GetLength(
-        /* [out] */ Long* size);
+        /* [out] */ Long* size) override;
 
     ECode Get(
         /* [in] */ Long index,
-        /* [out] */ IInterface** element);
+        /* [out] */ IInterface** element) override;
 
     ECode Set(
         /* [in] */ Long index,
-        /* [in] */ IInterface* element);
+        /* [in] */ IInterface* element) override;
 
     ECode GetTypeId(
-        /* [out] */ InterfaceID* id);
+        /* [out] */ InterfaceID* id) override;
 
 private:
     Array<IInterface*> mElements;

@@ -26,7 +26,7 @@
 #include "como.core.ISecurityManager.h"
 #include "como.io.IFile.h"
 #include "comort.system.IBlockGuardPolicy.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 #include <fcntl.h>
 
 using como::core::AutoLock;

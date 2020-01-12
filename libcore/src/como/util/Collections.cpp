@@ -28,7 +28,7 @@ namespace como {
 namespace util {
 
 static const InterfaceID IID_ReverseComparator2 =
-        {{0xe78c4caa,0x878f,0x42e1,0x8394,{0x2,0xa,0x9,0x1,0x4,0xd,0x6,0xd,0x5,0x3,0xb,0x5}}, &CID_libcore};
+        {{0xe78c4caa,0x878f,0x42e1,0x8394,{0x2a,0x91,0x4d,0x6d,0x53,0xb5}}, &CID_libcore};
 
 void Collections::Reverse(
     /* [in] */ IList* list)
@@ -194,7 +194,7 @@ ECode Collections::UnmodifiableCollection::ToArray(
 }
 
 ECode Collections::UnmodifiableCollection::ToString(
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
     return IObject::Probe(mC)->ToString(desc);
 }
@@ -240,12 +240,10 @@ ECode Collections::UnmodifiableCollection::GetIterator(
 
         ECode GetInterfaceID(
             /* [in] */ IInterface* object,
-            /* [out] */ InterfaceID* iid) override
+            /* [out] */ InterfaceID& iid) override
         {
-            VALIDATE_NOT_NULL(iid);
-
             if (object == (IInterface*)(IIterator*)this) {
-                *iid = IID_IIterator;
+                iid = IID_IIterator;
                 return NOERROR;
             }
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -332,19 +330,17 @@ COMO_INTERFACE_IMPL_1(Collections::UnmodifiableSet, UnmodifiableCollection, ISet
 
 ECode Collections::UnmodifiableSet::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     if ((ISet*)this == ISet::Probe(obj)) {
-        *result = true;
+        result = true;
         return NOERROR;
     }
     return IObject::Probe(mC)->Equals(obj, result);
 }
 
 ECode Collections::UnmodifiableSet::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
     return IObject::Probe(mC)->GetHashCode(hash);
 }
@@ -440,19 +436,17 @@ COMO_INTERFACE_IMPL_1(Collections::UnmodifiableList, UnmodifiableCollection, ILi
 
 ECode Collections::UnmodifiableList::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     if ((IList*)this == IList::Probe(obj)) {
-        *result = true;
+        result = true;
         return NOERROR;
     }
     return IObject::Probe(mList)->Equals(obj, result);
 }
 
 ECode Collections::UnmodifiableList::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
     return IObject::Probe(mList)->GetHashCode(hash);
 }
@@ -560,16 +554,14 @@ ECode Collections::UnmodifiableList::GetListIterator(
 
         ECode GetInterfaceID(
             /* [in] */ IInterface* object,
-            /* [out] */ InterfaceID* iid) override
+            /* [out] */ InterfaceID& iid) override
         {
-            VALIDATE_NOT_NULL(iid);
-
             if (object == (IInterface*)(IListIterator*)this) {
-                *iid = IID_IListIterator;
+                iid = IID_IListIterator;
                 return NOERROR;
             }
             else if (object == (IInterface*)(IIterator*)this) {
-                *iid = IID_IIterator;
+                iid = IID_IIterator;
                 return NOERROR;
             }
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -872,22 +864,22 @@ ECode Collections::SynchronizedCollection::Clear()
 }
 
 ECode Collections::SynchronizedCollection::ToString(
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
     AutoLock lock(mMutex);
-    *desc = Object::ToString(mC);
+    desc = Object::ToString(mC);
     return NOERROR;
 }
 
 ECode Collections::SynchronizedCollection::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return SyncObject::Equals(obj, result);
 }
 
 ECode Collections::SynchronizedCollection::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
     return SyncObject::GetHashCode(hash);
 }
@@ -898,26 +890,22 @@ COMO_INTERFACE_IMPL_1(Collections::SynchronizedSet, SynchronizedCollection, ISet
 
 ECode Collections::SynchronizedSet::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     if (IInterface::Equals(obj, (ISet*)this)) {
-        *result = true;
+        result = true;
         return NOERROR;
     }
     AutoLock lock(mMutex);
-    *result = Object::Equals(mC, obj);
+    result = Object::Equals(mC, obj);
     return NOERROR;
 }
 
 ECode Collections::SynchronizedSet::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
     AutoLock lock(mMutex);
-    *hash = Object::GetHashCode(mC);
+    hash = Object::GetHashCode(mC);
     return NOERROR;
 }
 
@@ -1012,26 +1000,22 @@ COMO_INTERFACE_IMPL_1(Collections::SynchronizedList, Collections::SynchronizedCo
 
 ECode Collections::SynchronizedList::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     if ((IList*)this == IList::Probe(obj)) {
-        *result = true;
+        result = true;
         return NOERROR;
     }
     AutoLock lock(mMutex);
-    *result = Object::Equals(mList, obj);
+    result = Object::Equals(mList, obj);
     return NOERROR;
 }
 
 ECode Collections::SynchronizedList::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
     AutoLock lock(mMutex);
-    *hash = Object::GetHashCode(mList);
+    hash = Object::GetHashCode(mList);
     return NOERROR;
 }
 
@@ -1519,24 +1503,20 @@ ECode Collections::EmptyList::Get(
 
 ECode Collections::EmptyList::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     IList* other = IList::Probe(obj);
     if (other == nullptr) {
-        *result = false;
+        result = false;
         return NOERROR;
     }
-    return other->IsEmpty(result);
+    return other->IsEmpty(&result);
 }
 
 ECode Collections::EmptyList::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
-    *hash = 1;
+    hash = 1;
     return NOERROR;
 }
 
@@ -1631,24 +1611,20 @@ ECode Collections::EmptyMap::GetEntrySet(
 
 ECode Collections::EmptyMap::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     IMap* other = IMap::Probe(obj);
     if (other == nullptr) {
-        *result = false;
+        result = false;
         return NOERROR;
     }
-    return other->IsEmpty(result);
+    return other->IsEmpty(&result);
 }
 
 ECode Collections::EmptyMap::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
-    *hash = 0;
+    hash = 0;
     return NOERROR;
 }
 
@@ -1674,11 +1650,9 @@ ECode Collections::ReverseComparator::Compare(
 
 ECode Collections::ReverseComparator::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* isEqual)
+    /* [out] */ Boolean& isEqual)
 {
-    VALIDATE_NOT_NULL(isEqual);
-
-    *isEqual = (IComparator*)this == IComparator::Probe(obj);
+    isEqual = (IComparator*)this == IComparator::Probe(obj);
     return NOERROR;
 }
 
@@ -1702,29 +1676,25 @@ ECode Collections::ReverseComparator2::Compare(
 
 ECode Collections::ReverseComparator2::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* isEqual)
+    /* [out] */ Boolean& isEqual)
 {
-    VALIDATE_NOT_NULL(isEqual);
-
     if (obj->Probe(IID_ReverseComparator2) == nullptr) {
-        *isEqual = false;
+        isEqual = false;
         return NOERROR;
     }
     ReverseComparator2* other = (ReverseComparator2*)IComparator::Probe(obj);
     if (other != this) {
-        *isEqual = false;
+        isEqual = false;
         return NOERROR;
     }
-    *isEqual = Object::Equals(mCmp, other->mCmp);
+    isEqual = Object::Equals(mCmp, other->mCmp);
     return NOERROR;
 }
 
 ECode Collections::ReverseComparator2::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
-    *hash = Object::GetHashCode(mCmp) ^ IInteger::MIN_VALUE;
+    hash = Object::GetHashCode(mCmp) ^ IInteger::MIN_VALUE;
     return NOERROR;
 }
 

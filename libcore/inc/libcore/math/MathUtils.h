@@ -17,8 +17,8 @@
 #ifndef __LIBCORE_MATH_MATHUTILS_H__
 #define __LIBCORE_MATH_MATHUTILS_H__
 
-#include <ccmtypes.h>
-#include <ccmarray.h>
+#include <comotypes.h>
+#include <comoarray.h>
 
 using namespace como;
 

@@ -14,6 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
+#include "innerdef.h"
 #include "como/math/Division.h"
 
 namespace como {
@@ -40,8 +41,8 @@ Integer Division::DivideArrayByInteger(
              * make the dividend positive shifting it right by 1 bit then
              * get the quotient an remainder and correct them properly
              */
-            Long aPos = ((unsigned Long)temp) >> 1;
-            Long bPos = ((unsigned Integer)divisor) >> 1;
+            Long aPos = ((ULong)temp) >> 1;
+            Long bPos = ((UInteger)divisor) >> 1;
             quot = aPos / bPos;
             rem = aPos % bPos;
             // double the remainder and add 1 if a is odd

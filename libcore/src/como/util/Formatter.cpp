@@ -54,7 +54,7 @@
 #include "como.util.IDate.h"
 #include "como.util.IFormattable.h"
 #include "libcore.icu.ILocaleData.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::Character;
 using como::core::CoreUtils;
@@ -604,14 +604,14 @@ String Formatter::Flags::ToString()
     if (Contains(GetPARENTHESES()))   sb->Append(U'(');
     if (Contains(GetPREVIOUS()))      sb->Append(U'<');
     String str;
-    sb->ToString(&str);
+    sb->ToString(str);
     return str;
 }
 
 //-------------------------------------------------------------------------
 
-extern const InterfaceID Formatter::IID_IFormatString =
-    {{0xd6dc3cb6,0x3ca2,0x4066,0xa773,{0xe,0x8,0x9,0xe,0x6,0x9,0xb,0x0,0x0,0xa,0x6,0xd}}, &CID_libcore};
+const InterfaceID Formatter::IID_IFormatString =
+    {{0xd6dc3cb6,0x3ca2,0x4066,0xa773,{0xe8,0x9e,0x69,0xb0,0x0a,0x6d}}, &CID_libcore};
 
 COMO_INTERFACE_IMPL_LIGHT_1(Formatter::FixedString, LightRefBase, IFormatString);
 
@@ -633,11 +633,9 @@ ECode Formatter::FixedString::Print(
 }
 
 ECode Formatter::FixedString::ToString(
-    /* [out] */ String* str)
+    /* [out] */ String& str)
 {
-    VALIDATE_NOT_NULL(str);
-
-    *str = mS;
+    str = mS;
     return NOERROR;
 }
 
@@ -692,6 +690,7 @@ ECode Formatter::FormatSpecifier::Constructor(
     else {
         return E_UNKNOWN_FORMAT_CONVERSION_EXCEPTION;
     }
+    return NOERROR;
 }
 
 Integer Formatter::FormatSpecifier::Index(
@@ -971,6 +970,7 @@ ECode Formatter::FormatSpecifier::PrintString(
             return Print(Object::ToString(arg));
         }
     }
+    return NOERROR;
 }
 
 ECode Formatter::FormatSpecifier::PrintBoolean(
@@ -1036,15 +1036,13 @@ String Formatter::FormatSpecifier::Justify(
         }
     }
     String str;
-    sb->ToString(&str);
+    sb->ToString(str);
     return str;
 }
 
 ECode Formatter::FormatSpecifier::ToString(
-    /* [out] */ String* str)
+    /* [out] */ String& str)
 {
-    VALIDATE_NOT_NULL(str);
-
     AutoPtr<IStringBuilder> sb;
     CStringBuilder::New(String("%"), IID_IStringBuilder, (IInterface**)&sb);
     AutoPtr<Flags> dupf = mF->Dup();
@@ -1357,7 +1355,7 @@ ECode Formatter::FormatSpecifier::Print(
 
     // justify based on width
     String str;
-    sb->ToString(&str);
+    sb->ToString(str);
     return mOwner->mA->Append(CoreUtils::Box(Justify(str)));
 }
 
@@ -1464,7 +1462,7 @@ ECode Formatter::FormatSpecifier::Print(
     TrailingSign(sb, neg);
 
     String str;
-    sb->ToString(&str);
+    sb->ToString(str);
     return mOwner->mA->Append(CoreUtils::Box(Justify(str)));
 }
 
@@ -1507,7 +1505,7 @@ ECode Formatter::FormatSpecifier::Print(
 
     // justify based on width
     String str;
-    sb->ToString(&str);
+    sb->ToString(str);
     return mOwner->mA->Append(CoreUtils::Box(Justify(str)));
 }
 
@@ -1847,7 +1845,7 @@ ECode Formatter::FormatSpecifier::Print(
 
     // justify based on width
     String str;
-    sb->ToString(&str);
+    sb->ToString(str);
     return mOwner->mA->Append(CoreUtils::Box(Justify(str)));
 }
 
@@ -2071,7 +2069,7 @@ ECode Formatter::FormatSpecifier::Print(
 
     // justify based on width
     String str;
-    sb->ToString(&str);
+    sb->ToString(str);
     String s = Justify(str);
     if (mF->Contains(Flags::GetUPPERCASE())) {
         s = s.ToUpperCase();

@@ -22,7 +22,7 @@
 #include "comort.system.ICloseGuard.h"
 #include "comort.system.ICloseGuardReporter.h"
 #include "comort.system.ICloseGuardTracker.h"
-#include <ccmautoptr.h>
+#include <comosp.h>
 
 using como::core::IStackTrace;
 using como::core::SyncObject;
@@ -40,7 +40,7 @@ private:
         , public ICloseGuardReporter
     {
     public:
-        CCM_INTERFACE_DECL();
+        COMO_INTERFACE_DECL();
 
         ECode Report(
             /* [in] */ const String& message,
@@ -52,7 +52,7 @@ private:
         , public ICloseGuardTracker
     {
     public:
-        CCM_INTERFACE_DECL();
+        COMO_INTERFACE_DECL();
 
         ECode Open(
             /* [in] */ IStackTrace* allocationSite) override;
@@ -62,7 +62,7 @@ private:
     };
 
 public:
-    CCM_INTERFACE_DECL();
+    COMO_INTERFACE_DECL();
 
     static AutoPtr<ICloseGuard> Get();
 

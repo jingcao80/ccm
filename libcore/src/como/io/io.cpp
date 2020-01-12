@@ -24,7 +24,7 @@
 #include "como/io/COutputStreamWriter.h"
 #include "como/io/CPrintWriter.h"
 #include "como/io/CStringWriter.h"
-#include <ccmapi.h>
+#include <comoapi.h>
 #include <new>
 
 namespace como {
@@ -43,7 +43,7 @@ ECode CDirectByteBuffer::New(
     VALIDATE_NOT_NULL(object);
 
     AutoPtr<IClassObject> clsObject;
-    ECode ec = CoAcquireClassFactory(CID_CDirectByteBuffer, nullptr, &clsObject);
+    ECode ec = CoAcquireClassFactory(CID_CDirectByteBuffer, nullptr, clsObject);
     if (FAILED(ec)) return ec;
 
     void* addr = calloc(sizeof(CDirectByteBuffer), 1);
@@ -56,7 +56,7 @@ ECode CDirectByteBuffer::New(
         return ec;
     }
     AutoPtr<IMetaComponent> comp;
-    clsObject->GetMetadate(&comp);
+    clsObject->GetMetadate(comp);
     _obj->AttachMetadata(comp, String("como::io::CDirectByteBuffer"));
     *object = _obj->Probe(iid);
     REFCOUNT_ADD(*object);
@@ -72,7 +72,7 @@ ECode CDirectByteBuffer::New(
     VALIDATE_NOT_NULL(object);
 
     AutoPtr<IClassObject> clsObject;
-    ECode ec = CoAcquireClassFactory(CID_CDirectByteBuffer, nullptr, &clsObject);
+    ECode ec = CoAcquireClassFactory(CID_CDirectByteBuffer, nullptr, clsObject);
     if (FAILED(ec)) return ec;
 
     void* addr = calloc(sizeof(CDirectByteBuffer), 1);
@@ -85,7 +85,7 @@ ECode CDirectByteBuffer::New(
         return ec;
     }
     AutoPtr<IMetaComponent> comp;
-    clsObject->GetMetadate(&comp);
+    clsObject->GetMetadate(comp);
     _obj->AttachMetadata(comp, String("como::io::CDirectByteBuffer"));
     *object = _obj->Probe(iid);
     REFCOUNT_ADD(*object);
@@ -105,7 +105,7 @@ ECode CDirectByteBuffer::New(
     VALIDATE_NOT_NULL(object);
 
     AutoPtr<IClassObject> clsObject;
-    ECode ec = CoAcquireClassFactory(CID_CDirectByteBuffer, nullptr, &clsObject);
+    ECode ec = CoAcquireClassFactory(CID_CDirectByteBuffer, nullptr, clsObject);
     if (FAILED(ec)) return ec;
 
     void* addr = calloc(sizeof(CDirectByteBuffer), 1);
@@ -118,7 +118,7 @@ ECode CDirectByteBuffer::New(
         return ec;
     }
     AutoPtr<IMetaComponent> comp;
-    clsObject->GetMetadate(&comp);
+    clsObject->GetMetadate(comp);
     _obj->AttachMetadata(comp, String("como::io::CDirectByteBuffer"));
     *object = _obj->Probe(iid);
     REFCOUNT_ADD(*object);
@@ -139,7 +139,7 @@ ECode CDirectByteBuffer::New(
     VALIDATE_NOT_NULL(object);
 
     AutoPtr<IClassObject> clsObject;
-    ECode ec = CoAcquireClassFactory(CID_CDirectByteBuffer, nullptr, &clsObject);
+    ECode ec = CoAcquireClassFactory(CID_CDirectByteBuffer, nullptr, clsObject);
     if (FAILED(ec)) return ec;
 
     void* addr = calloc(sizeof(CDirectByteBuffer), 1);
@@ -152,7 +152,7 @@ ECode CDirectByteBuffer::New(
         return ec;
     }
     AutoPtr<IMetaComponent> comp;
-    clsObject->GetMetadate(&comp);
+    clsObject->GetMetadate(comp);
     _obj->AttachMetadata(comp, String("como::io::CDirectByteBuffer"));
     *object = _obj->Probe(iid);
     REFCOUNT_ADD(*object);

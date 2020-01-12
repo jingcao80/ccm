@@ -18,7 +18,7 @@
 #define __COMO_CORE_SYNCOBJECT_H__
 
 #include "como.core.ISynchronize.h"
-#include <ccmobject.h>
+#include <comoobj.h>
 
 namespace como {
 namespace core {

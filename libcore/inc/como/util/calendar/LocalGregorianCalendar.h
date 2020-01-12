@@ -67,7 +67,7 @@ protected:
             /* [in] */ Integer year);
 
         ECode ToString(
-            /* [out] */ String* desc) override;
+            /* [out] */ String& desc) override;
 
         ECode Clone(
             /* [in] */ const InterfaceID& iid,

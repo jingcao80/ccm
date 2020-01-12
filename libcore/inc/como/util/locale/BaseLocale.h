@@ -20,8 +20,8 @@
 #include "como/core/volatile.h"
 #include "como/util/locale/LocaleObjectCache.h"
 #include "como.core.IComparable.h"
-#include <ccmautoptr.h>
-#include <ccmobject.h>
+#include <comosp.h>
+#include <comoobj.h>
 
 using como::core::IComparable;
 
@@ -61,14 +61,14 @@ private:
 
         ECode Equals(
             /* [in] */ IInterface* obj,
-            /* [out] */ Boolean* same) override;
+            /* [out] */ Boolean& same) override;
 
         ECode CompareTo(
             /* [in] */ IInterface* obj,
             /* [out] */ Integer* result) override;
 
         ECode GetHashCode(
-            /* [out] */ Integer* hash) override;
+            /* [out] */ Integer& hash) override;
 
         static AutoPtr<Key> Normalize(
             /* [in] */ Key* key);
@@ -117,13 +117,13 @@ public:
 
     ECode Equals(
         /* [in] */ IInterface* obj,
-        /* [out] */ Boolean* same) override;
+        /* [out] */ Boolean& same) override;
 
     ECode ToString(
-        /* [out] */ String* desc) override;
+        /* [out] */ String& desc) override;
 
     ECode GetHashCode(
-        /* [out] */ Integer* hash) override;
+        /* [out] */ Integer& hash) override;
 
 private:
     static Cache* Get_CACHE();

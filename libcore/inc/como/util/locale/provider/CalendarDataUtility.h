@@ -20,7 +20,7 @@
 #include "como.text.IDateFormatSymbols.h"
 #include "como.util.ILocale.h"
 #include "como.util.IMap.h"
-#include <ccmautoptr.h>
+#include <comosp.h>
 
 using como::text::IDateFormatSymbols;
 

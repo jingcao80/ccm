@@ -25,10 +25,10 @@ interface IMapEntry
 {
     Equals(
         [in] IInterface* obj,
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     GetHashCode(
-        [out] Integer* hash);
+        [out] Integer& hash);
 
     GetKey(
         [out] IInterface** key);
@@ -62,7 +62,7 @@ interface IMap
 
     Equals(
         [in] IInterface* obj,
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     Get(
         [in] IInterface* key,
@@ -72,7 +72,7 @@ interface IMap
         [out] ISet** entries);
 
     GetHashCode(
-        [out] Integer* hash);
+        [out] Integer& hash);
 
     GetKeySet(
         [out] ISet** keys);

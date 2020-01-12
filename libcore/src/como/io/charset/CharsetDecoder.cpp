@@ -18,7 +18,7 @@
 #include "como/io/charset/CharsetDecoder.h"
 #include "como/io/charset/CoderResult.h"
 #include "como.io.IBuffer.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::E_ILLEGAL_STATE_EXCEPTION;
 

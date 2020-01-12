@@ -61,37 +61,31 @@ ECode CChar::CompareTo(
 
 ECode CChar::Equals(
     /* [in] */ IInterface* other,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     IChar* c = IChar::Probe(other);
     if (c == nullptr) {
-        *result = false;
+        result = false;
         return NOERROR;
     }
 
     Char cv;
     c->GetValue(&cv);
-    *result = mValue == cv;
+    result = mValue == cv;
     return NOERROR;
 }
 
 ECode CChar::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
-    *hash = (Integer)mValue;
+    hash = (Integer)mValue;
     return NOERROR;
 }
 
 ECode CChar::ToString(
-    /* [out] */ String* str)
+    /* [out] */ String& str)
 {
-    VALIDATE_NOT_NULL(str);
-
-    *str = String::ValueOf(mValue);
+    str = String::ValueOf(mValue);
     return NOERROR;
 }
 

@@ -17,8 +17,8 @@
 #include "como/io/CFileDescriptor.h"
 #include "libcore/io/AsynchronousCloseMonitor.h"
 #include "libcore/io/Linux.h"
-#include "pisces/system/CStructStat.h"
-#include <ccmlogger.h>
+#include "jing/system/CStructStat.h"
+#include <comolog.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <sys/mman.h>
@@ -28,9 +28,9 @@
 using como::io::CFileDescriptor;
 using como::io::E_INTERRUPTED_IO_EXCEPTION;
 using como::io::IID_IFileDescriptor;
-using pisces::system::CStructStat;
-using pisces::system::E_ERRNO_EXCEPTION;
-using pisces::system::IID_IStructStat;
+using jing::system::CStructStat;
+using jing::system::E_ERRNO_EXCEPTION;
+using jing::system::IID_IStructStat;
 
 namespace libcore {
 namespace io {
@@ -1126,7 +1126,7 @@ ECode Linux::Sysconf(
     errno = 0;
     *result = sysconf(name);
     if (*result == -1ll && errno == EINVAL) {
-        return pisces::system::E_ERRNO_EXCEPTION;
+        return jing::system::E_ERRNO_EXCEPTION;
     }
     return NOERROR;
 }

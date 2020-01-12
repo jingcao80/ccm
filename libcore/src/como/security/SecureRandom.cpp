@@ -14,7 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
-#include "coredef.h"
+#include "innerdef.h"
 #include "como/core/AutoLock.h"
 #include "como/security/CSecureRandom.h"
 #include "como/security/SecureRandom.h"
@@ -28,8 +28,8 @@
 #include "como.util.IIterator.h"
 #include "como.util.IList.h"
 #include "como.util.ISet.h"
-#include <ccmautoptr.h>
-#include <ccmlogger.h>
+#include <comosp.h>
+#include <comolog.h>
 
 using como::core::AutoLock;
 using como::security::cca::InstanceFactory;
@@ -87,7 +87,7 @@ ECode SecureRandom::GetDefaultPRNG(
     // If we are dealing with such an implementation, do not set the
     // algorithm value as it would be inaccurate.
     CoclassID cid;
-    GetCoclassID(&cid);
+    GetCoclassID(cid);
     if (cid == CID_CSecureRandom) {
         mAlgorithm = prng;
     }
@@ -223,10 +223,10 @@ Integer SecureRandom::Next(
 
     NextBytes(b);
     for (Integer i = 0; i < numBytes; i++) {
-        next = (next << 8) + (b[i] && 0xff);
+        next = (next << 8) + (b[i] & 0xff);
     }
 
-    return (unsigned Integer)next >> (numBytes * 8 - bits);
+    return (UInteger)next >> (numBytes * 8 - bits);
 }
 
 ECode SecureRandom::GetSeed(

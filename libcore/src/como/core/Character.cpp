@@ -363,6 +363,8 @@ String Character::GetName(
     }
     // should never come here
     // return Integer.toHexString(codePoint).toUpperCase(Locale.ENGLISH);
+    CHECK(0);
+    return "";
 }
 
 String Character::GetNameImpl(

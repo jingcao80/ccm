@@ -14,7 +14,7 @@
 # limitations under the License.
 #=========================================================================
 
-set(LIBCORE_CCM_SRC_DIR ${LIBCORE_DIR}/src/como)
+set(LIBCORE_COMO_SRC_DIR ${LIBCORE_DIR}/src/como)
 
 add_subdirectory(core)
 add_subdirectory(io)

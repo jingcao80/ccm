@@ -17,7 +17,7 @@
 #ifndef __COMO_CORE_NATIVELOCKWORD_H__
 #define __COMO_CORE_NATIVELOCKWORD_H__
 
-#include "ccmdef.h"
+#include "comodef.h"
 #include <stdint.h>
 
 namespace como {

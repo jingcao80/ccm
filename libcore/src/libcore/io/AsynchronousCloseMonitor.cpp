@@ -31,7 +31,7 @@
  */
 
 #include "libcore/io/AsynchronousCloseMonitor.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 #include <mutex>
 #include <signal.h>
 

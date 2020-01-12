@@ -18,7 +18,7 @@
 #define __LIBCORE_ICU_STRINGBYTESINK_H__
 
 #include "como/core/CStringBuilder.h"
-#include <ccmautoptr.h>
+#include <comosp.h>
 #include <unicode/bytestream.h>
 
 using como::core::CStringBuilder;
@@ -73,7 +73,7 @@ inline void StringByteSink::Clear()
 inline String StringByteSink::ToString()
 {
     String str;
-    mBuilder->ToString(&str);
+    mBuilder->ToString(str);
     return str;
 }
 

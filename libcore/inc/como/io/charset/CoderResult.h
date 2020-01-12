@@ -54,7 +54,7 @@ public:
     COMO_INTERFACE_DECL();
 
     ECode ToString(
-        /* [out] */ String* desc) override;
+        /* [out] */ String& desc) override;
 
     ECode IsUnderflow(
         /* [out] */ Boolean* underflow) override;

@@ -371,7 +371,7 @@ ECode Thread::SetName(
     /* [in] */ const String& name)
 {
     FAIL_RETURN(CheckAccess());
-    if (name.IsNullOrEmpty()) {
+    if (name.IsEmpty()) {
         Logger::E("Thread", "name == null");
         return E_NULL_POINTER_EXCEPTION;
     }
@@ -545,10 +545,8 @@ ECode Thread::CheckAccess()
 }
 
 ECode Thread::ToString(
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
-    VALIDATE_NOT_NULL(desc);
-
     AutoPtr<IThreadGroup> g;
     GetThreadGroup(&g);
     if (g != nullptr) {
@@ -558,7 +556,7 @@ ECode Thread::ToString(
         GetPriority(&prio);
         String gName;
         g->GetName(&gName);
-        *desc = String::Format("Thread[%s,%d,%s]",
+        desc = String::Format("Thread[%s,%d,%s]",
                 name.string(), prio, gName.string());
         return NOERROR;
     }
@@ -567,7 +565,7 @@ ECode Thread::ToString(
         GetName(&name);
         Integer prio;
         GetPriority(&prio);
-        *desc = String::Format("Thread[%s,%d,]",
+        desc = String::Format("Thread[%s,%d,]",
                 name.string(), prio);
         return NOERROR;
     }

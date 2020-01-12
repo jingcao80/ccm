@@ -41,7 +41,7 @@ public:
         /* [in] */ const String& symbol);
 
     ECode ToString(
-        /* [out] */ String* desc) override;
+        /* [out] */ String& desc) override;
 
 private:
     String mNo;

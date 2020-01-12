@@ -16,13 +16,22 @@
 
 set(MATH_DIR ${LIBCORE_COMO_SRC_DIR}/math)
 
+if($ENV{PLATFORM} STREQUAL "linux")
 include_directories(
     ./
     ../
     ../../../inc
     ${EXTERNAL_DIR}/boringssl/inc
     ${INC_DIR}
-    ${OBJ_DIR})
+    ${LIBCORE_OBJ_DIR})
+elseif($ENV{PLATFORM} STREQUAL "android")
+include_directories(
+    ./
+    ../
+    ../../../inc
+    ${INC_DIR}
+    ${LIBCORE_OBJ_DIR})
+endif()
 
 set(SOURCES
     BigDecimal.cpp

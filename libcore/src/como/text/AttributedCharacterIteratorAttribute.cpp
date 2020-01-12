@@ -18,7 +18,7 @@
 #include "como/text/AttributedCharacterIteratorAttribute.h"
 #include "como/text/CAttributedCharacterIteratorAttribute.h"
 #include "como/util/CHashMap.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::CoreUtils;
 using como::io::E_INVALID_OBJECT_EXCEPTION;
@@ -56,7 +56,7 @@ ECode AttributedCharacterIteratorAttribute::Constructor(
 {
     mName = name;
     CoclassID cid;
-    GetCoclassID(&cid);
+    GetCoclassID(cid);
     if (cid == CID_CAttributedCharacterIteratorAttribute) {
         GetInstanceMap()->Put(CoreUtils::Box(name), (IAttributedCharacterIterator::IAttribute*)this);
     }
@@ -64,11 +64,9 @@ ECode AttributedCharacterIteratorAttribute::Constructor(
 }
 
 ECode AttributedCharacterIteratorAttribute::ToString(
-    /* [out] */ String* str)
+    /* [out] */ String& str)
 {
-    VALIDATE_NOT_NULL(str);
-
-    *str = String::Format("%s(%s)",
+    str = String::Format("%s(%s)",
             Object::GetCoclassName((IAttributedCharacterIterator::IAttribute*)this).string(), mName.string());
     return NOERROR;
 }
@@ -84,7 +82,7 @@ ECode AttributedCharacterIteratorAttribute::ReadResolve(
     VALIDATE_NOT_NULL(obj);
 
     CoclassID cid;
-    GetCoclassID(&cid);
+    GetCoclassID(cid);
     if (cid != CID_CAttributedCharacterIteratorAttribute) {
         Logger::E("AttributedCharacterIteratorAttribute", "subclass didn't correctly implement readResolve");
         return E_INVALID_OBJECT_EXCEPTION;

@@ -294,11 +294,9 @@ ECode CharBuffer::GetArrayOffset(
 }
 
 ECode CharBuffer::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
-    Integer h = 1;
+    hash = 1;
     Integer p;
     GetPosition(&p);
     Integer i;
@@ -306,32 +304,29 @@ ECode CharBuffer::GetHashCode(
     for (i = i - 1; i >= p; i--) {
         Char c;
         Get(i, &c);
-        h = 31 * h + c;
+        hash = 31 * hash + c;
     }
-    *hash = h;
     return NOERROR;
 }
 
 ECode CharBuffer::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* same)
+    /* [out] */ Boolean& same)
 {
-    VALIDATE_NOT_NULL(same);
-
     CharBuffer* other = (CharBuffer*)ICharBuffer::Probe(obj);
     if (other == nullptr) {
-        *same = false;
+        same = false;
         return NOERROR;
     }
     if (this == other) {
-        *same = true;
+        same = true;
         return NOERROR;
     }
     Integer thisRemaining, otherRemaining;
     Remaining(&thisRemaining);
     other->Remaining(&otherRemaining);
     if (thisRemaining != otherRemaining) {
-        *same = false;
+        same = false;
         return NOERROR;
     }
     Integer p;
@@ -344,11 +339,11 @@ ECode CharBuffer::Equals(
         Get(i, &thisC);
         other->Get(j, &otherC);
         if (thisC != otherC) {
-            *same = false;
+            same = false;
             return NOERROR;
         }
     }
-    *same = true;
+    same = true;
     return NOERROR;
 }
 
@@ -386,14 +381,12 @@ ECode CharBuffer::CompareTo(
 }
 
 ECode CharBuffer::ToString(
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
-    VALIDATE_NOT_NULL(desc);
-
     Integer pos, lim;
     GetPosition(&pos);
     GetLimit(&lim);
-    return ToString(pos, lim, desc);
+    return ToString(pos, lim, &desc);
 }
 
 ECode CharBuffer::GetLength(

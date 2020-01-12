@@ -395,21 +395,19 @@ ECode DecimalFormatSymbols::CloneImpl(
 
 ECode DecimalFormatSymbols::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* same)
+    /* [out] */ Boolean& same)
 {
-    VALIDATE_NOT_NULL(same);
-
     DecimalFormatSymbols* other =
         (DecimalFormatSymbols*)IDecimalFormatSymbols::Probe(obj);
     if (other == nullptr) {
-        *same = false;
+        same = false;
         return NOERROR;
     }
     if (this == other) {
-        *same = true;
+        same = true;
         return NOERROR;
     }
-    *same = (mZeroDigit == other->mZeroDigit &&
+    same = (mZeroDigit == other->mZeroDigit &&
             mGroupingSeparator == other->mGroupingSeparator &&
             mDecimalSeparator == other->mDecimalSeparator &&
             mPercent == other->mPercent &&
@@ -429,27 +427,24 @@ ECode DecimalFormatSymbols::Equals(
 }
 
 ECode DecimalFormatSymbols::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
-    Integer result = mZeroDigit;
-    result = result * 37 + mGroupingSeparator;
-    result = result * 37 + mDecimalSeparator;
-    result = result * 37 + mPercent;
-    result = result * 37 + mPerMill;
-    result = result * 37 + mDigit;
-    result = result * 37 + mMinusSign;
-    result = result * 37 + mPatternSeparator;
-    result = result * 37 + mInfinity.GetHashCode();
-    result = result * 37 + mNaN.GetHashCode();
-    result = result * 37 + mCurrencySymbol.GetHashCode();
-    result = result * 37 + mIntlCurrencySymbol.GetHashCode();
-    result = result * 37 + Object::GetHashCode(mCurrency);
-    result = result * 37 + mMonetarySeparator;
-    result = result * 37 + mExponentialSeparator.GetHashCode();
-    result = result * 37 + Object::GetHashCode(mLocale);
-    *hash = result;
+    hash = mZeroDigit;
+    hash = hash * 37 + mGroupingSeparator;
+    hash = hash * 37 + mDecimalSeparator;
+    hash = hash * 37 + mPercent;
+    hash = hash * 37 + mPerMill;
+    hash = hash * 37 + mDigit;
+    hash = hash * 37 + mMinusSign;
+    hash = hash * 37 + mPatternSeparator;
+    hash = hash * 37 + mInfinity.GetHashCode();
+    hash = hash * 37 + mNaN.GetHashCode();
+    hash = hash * 37 + mCurrencySymbol.GetHashCode();
+    hash = hash * 37 + mIntlCurrencySymbol.GetHashCode();
+    hash = hash * 37 + Object::GetHashCode(mCurrency);
+    hash = hash * 37 + mMonetarySeparator;
+    hash = hash * 37 + mExponentialSeparator.GetHashCode();
+    hash = hash * 37 + Object::GetHashCode(mLocale);
     return NOERROR;
 }
 

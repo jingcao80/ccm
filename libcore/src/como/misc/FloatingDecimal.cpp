@@ -14,6 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
+#include "innerdef.h"
 #include "como/core/Character.h"
 #include "como/core/CoreUtils.h"
 #include "como/core/Math.h"
@@ -29,7 +30,7 @@
 #include "como.core.IStringBuffer.h"
 #include "como.core.IStringBuilder.h"
 #include "como.util.regex.IMatcher.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::Character;
 using como::core::CoreUtils;
@@ -353,7 +354,7 @@ void FloatingDecimal::BinaryToASCIIBuffer::Dtoa(
                     fractBits <<= (binExp - EXP_SHIFT);
                 }
                 else {
-                    fractBits = ((unsigned Long)fractBits)>> (EXP_SHIFT - binExp);
+                    fractBits = ((ULong)fractBits)>> (EXP_SHIFT - binExp);
                 }
                 DevelopLongDigits(0, fractBits, insignificant);
                 return;
@@ -416,7 +417,7 @@ void FloatingDecimal::BinaryToASCIIBuffer::Dtoa(
     // FDBigInteger. The resulting whole number will be
     //      d * 2^(nFractBits-1-binExp).
     //
-    fractBits = ((unsigned Long)fractBits) >> tailZeros;
+    fractBits = ((ULong)fractBits) >> tailZeros;
     B2 -= nFractBits - 1;
     Integer common2factor = Math::Min(B2, S2);
     B2 -= common2factor;
@@ -915,7 +916,8 @@ ECode FloatingDecimal::ASCIIToBinaryBuffer::DoubleValue(
         // will always end up here
         //
         if (exp == 0 || dValue == 0.0) {
-            return (mIsNegative) ? -dValue : dValue; // small floating integer
+            *value = (mIsNegative) ? -dValue : dValue; // small floating integer
+            return NOERROR;
         }
         else if (exp >= 0) {
             if (exp <= MAX_SMALL_TEN) {
@@ -924,7 +926,8 @@ ECode FloatingDecimal::ASCIIToBinaryBuffer::DoubleValue(
                 // thus one roundoff.
                 //
                 Double rValue = dValue * SMALL_10_POW[exp];
-                return (mIsNegative) ? -rValue : rValue;
+                *value = (mIsNegative) ? -rValue : rValue;
+                return NOERROR;
             }
             Integer slop = MAX_DECIMAL_DIGITS - kDigits;
             if (exp <= MAX_SMALL_TEN + slop) {
@@ -936,7 +939,8 @@ ECode FloatingDecimal::ASCIIToBinaryBuffer::DoubleValue(
                 //
                 dValue *= SMALL_10_POW[slop];
                 Double rValue = dValue * SMALL_10_POW[exp - slop];
-                return (mIsNegative) ? -rValue : rValue;
+                *value = (mIsNegative) ? -rValue : rValue;
+                return NOERROR;
             }
             //
             // Else we have a hard case with a positive exp.
@@ -948,7 +952,8 @@ ECode FloatingDecimal::ASCIIToBinaryBuffer::DoubleValue(
                 // Can get the answer in one division.
                 //
                 Double rValue = dValue / SMALL_10_POW[-exp];
-                return (mIsNegative) ? -rValue : rValue;
+                *value = (mIsNegative) ? -rValue : rValue;
+                return NOERROR;
             }
             //
             // Else we have a hard case with a negative exp.
@@ -970,7 +975,8 @@ ECode FloatingDecimal::ASCIIToBinaryBuffer::DoubleValue(
             // Lets face it. This is going to be
             // Infinity. Cut to the chase.
             //
-            return (mIsNegative) ? IDouble::NEGATIVE_INFINITY : IDouble::POSITIVE_INFINITY;
+            *value = (mIsNegative) ? IDouble::NEGATIVE_INFINITY : IDouble::POSITIVE_INFINITY;
+            return NOERROR;
         }
         if ((exp & 15) != 0) {
             dValue *= SMALL_10_POW[exp & 15];
@@ -1005,7 +1011,8 @@ ECode FloatingDecimal::ASCIIToBinaryBuffer::DoubleValue(
                 t = dValue / 2.0;
                 t *= BIG_10_POW[j];
                 if (Math::IsInfinite(t)) {
-                    return (mIsNegative) ? IDouble::NEGATIVE_INFINITY : IDouble::POSITIVE_INFINITY;
+                    *value = (mIsNegative) ? IDouble::NEGATIVE_INFINITY : IDouble::POSITIVE_INFINITY;
+                    return NOERROR;
                 }
                 t = IDouble::MAX_VALUE;
             }
@@ -1019,7 +1026,8 @@ ECode FloatingDecimal::ASCIIToBinaryBuffer::DoubleValue(
             // Lets face it. This is going to be
             // zero. Cut to the chase.
             //
-            return (mIsNegative) ? -0.0 : 0.0;
+            *value = (mIsNegative) ? -0.0 : 0.0;
+            return NOERROR;
         }
         if ((exp & 15) != 0) {
             dValue /= SMALL_10_POW[exp & 15];
@@ -1054,7 +1062,8 @@ ECode FloatingDecimal::ASCIIToBinaryBuffer::DoubleValue(
                 t = dValue * 2.0;
                 t *= TINY_10_POW[j];
                 if (t == 0.0) {
-                    return (mIsNegative) ? -0.0 : 0.0;
+                    *value = (mIsNegative) ? -0.0 : 0.0;
+                    return NOERROR;
                 }
                 t = IDouble::MIN_VALUE;
             }
@@ -1089,7 +1098,7 @@ ECode FloatingDecimal::ASCIIToBinaryBuffer::DoubleValue(
 
     while (true) {
         // here ieeeBits can't be NaN, Infinity or zero
-        Integer binexp = (Integer) (((unsigned Long)ieeeBits) >> EXP_SHIFT);
+        Integer binexp = (Integer) (((ULong)ieeeBits) >> EXP_SHIFT);
         Long bigBbits = ieeeBits & DoubleConsts::SIGNIF_BIT_MASK;
         if (binexp > 0) {
             bigBbits |= FRACT_HOB;
@@ -1103,7 +1112,7 @@ ECode FloatingDecimal::ASCIIToBinaryBuffer::DoubleValue(
         }
         binexp -= DoubleConsts::EXP_BIAS;
         Integer lowOrderZeros = Math::NumberOfTrailingZeros(bigBbits);
-        bigBbits = (((unsigned Long)bigBbits) >> lowOrderZeros);
+        bigBbits = (((ULong)bigBbits) >> lowOrderZeros);
         const Integer bigIntExp = binexp - EXP_SHIFT + lowOrderZeros;
         const Integer bigIntNBits = EXP_SHIFT + 1 - lowOrderZeros;
 
@@ -1263,7 +1272,8 @@ ECode FloatingDecimal::ASCIIToBinaryBuffer::FloatValue(
         // will always end up here.
         //
         if (exp == 0 || fValue == 0.0f) {
-            return (mIsNegative) ? -fValue : fValue; // small floating integer
+            *value = (mIsNegative) ? -fValue : fValue; // small floating integer
+            return NOERROR;
         }
         else if (exp >= 0) {
             if (exp <= SINGLE_MAX_SMALL_TEN) {
@@ -1272,7 +1282,8 @@ ECode FloatingDecimal::ASCIIToBinaryBuffer::FloatValue(
                 // thus one roundoff.
                 //
                 fValue *= SINGLE_SMALL_10_POW[exp];
-                return (mIsNegative) ? -fValue : fValue;
+                *value = (mIsNegative) ? -fValue : fValue;
+                return NOERROR;
             }
             Integer slop = SINGLE_MAX_DECIMAL_DIGITS - kDigits;
             if (exp <= SINGLE_MAX_SMALL_TEN + slop) {
@@ -1284,7 +1295,8 @@ ECode FloatingDecimal::ASCIIToBinaryBuffer::FloatValue(
                 //
                 fValue *= SINGLE_SMALL_10_POW[slop];
                 fValue *= SINGLE_SMALL_10_POW[exp - slop];
-                return (mIsNegative) ? -fValue : fValue;
+                *value = (mIsNegative) ? -fValue : fValue;
+                return NOERROR;
             }
             //
             // Else we have a hard case with a positive exp.
@@ -1296,7 +1308,8 @@ ECode FloatingDecimal::ASCIIToBinaryBuffer::FloatValue(
                 // Can get the answer in one division.
                 //
                 fValue /= SINGLE_SMALL_10_POW[-exp];
-                return (mIsNegative) ? -fValue : fValue;
+                *value = (mIsNegative) ? -fValue : fValue;
+                return NOERROR;
             }
             //
             // Else we have a hard case with a negative exp.
@@ -1321,7 +1334,8 @@ ECode FloatingDecimal::ASCIIToBinaryBuffer::FloatValue(
         exp = mDecExponent - mNDigits;
         dValue *= SMALL_10_POW[exp];
         fValue = (Float)dValue;
-        return (mIsNegative) ? -fValue : fValue;
+        *value = (mIsNegative) ? -fValue : fValue;
+        return NOERROR;
     }
     //
     // Harder cases:
@@ -1339,7 +1353,8 @@ ECode FloatingDecimal::ASCIIToBinaryBuffer::FloatValue(
             // Lets face it. This is going to be
             // Infinity. Cut to the chase.
             //
-            return (mIsNegative) ? IFloat::NEGATIVE_INFINITY : IFloat::POSITIVE_INFINITY;
+            *value = (mIsNegative) ? IFloat::NEGATIVE_INFINITY : IFloat::POSITIVE_INFINITY;
+            return NOERROR;
         }
         if ((exp & 15) != 0) {
             dValue *= SMALL_10_POW[exp & 15];
@@ -1360,7 +1375,8 @@ ECode FloatingDecimal::ASCIIToBinaryBuffer::FloatValue(
             // Lets face it. This is going to be
             // zero. Cut to the chase.
             //
-            return (mIsNegative) ? -0.0f : 0.0f;
+            *value = (mIsNegative) ? -0.0f : 0.0f;
+            return NOERROR;
         }
         if ((exp & 15) != 0) {
             dValue /= SMALL_10_POW[exp & 15];
@@ -1403,7 +1419,7 @@ ECode FloatingDecimal::ASCIIToBinaryBuffer::FloatValue(
 
     while (true) {
         // here ieeeBits can't be NaN, Infinity or zero
-        Integer binexp = ((unsigned Integer)ieeeBits) >> SINGLE_EXP_SHIFT;
+        Integer binexp = ((UInteger)ieeeBits) >> SINGLE_EXP_SHIFT;
         Integer bigBbits = ieeeBits & FloatConsts::SIGNIF_BIT_MASK;
         if (binexp > 0) {
             bigBbits |= SINGLE_FRACT_HOB;
@@ -1417,7 +1433,7 @@ ECode FloatingDecimal::ASCIIToBinaryBuffer::FloatValue(
         }
         binexp -= FloatConsts::EXP_BIAS;
         Integer lowOrderZeros = Math::NumberOfTrailingZeros(bigBbits);
-        bigBbits = ((unsigned Integer)bigBbits) >> lowOrderZeros;
+        bigBbits = ((UInteger)bigBbits) >> lowOrderZeros;
         const Integer bigIntExp = binexp - SINGLE_EXP_SHIFT + lowOrderZeros;
         const Integer bigIntNBits = SINGLE_EXP_SHIFT + 1 - lowOrderZeros;
 
@@ -2384,7 +2400,7 @@ ECode FloatingDecimal::ParseHexString(
             else {
                 Integer threshShift = DoubleConsts::SIGNIFICAND_WIDTH - FloatConsts::SIGNIFICAND_WIDTH - 1;
                 Boolean floatSticky = (significand & ((1LL << threshShift) - 1)) != 0 || round || sticky;
-                Integer iValue = (Integer)(((unsigned Long)significand) >> threshShift);
+                Integer iValue = (Integer)(((ULong)significand) >> threshShift);
                 if ((iValue & 3) != 1 || floatSticky) {
                     iValue++;
                 }
@@ -2401,7 +2417,7 @@ ECode FloatingDecimal::ParseHexString(
                 CHECK(threshShift >= DoubleConsts::SIGNIFICAND_WIDTH - FloatConsts::SIGNIFICAND_WIDTH);
                 CHECK(threshShift < DoubleConsts::SIGNIFICAND_WIDTH);
                 Boolean floatSticky = (significand & ((1LL << threshShift) - 1)) != 0 || round || sticky;
-                Integer iValue = (Integer)(((unsigned Long)significand) >> threshShift);
+                Integer iValue = (Integer)(((ULong)significand) >> threshShift);
                 if ((iValue & 3) != 1 || floatSticky) {
                     iValue++;
                 }

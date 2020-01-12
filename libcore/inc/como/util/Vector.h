@@ -259,13 +259,13 @@ public:
 
     ECode Equals(
         /* [in] */ IInterface* obj,
-        /* [out] */ Boolean* same) override;
+        /* [out] */ Boolean& same) override;
 
     ECode GetHashCode(
-        /* [out] */ Integer* hash) override;
+        /* [out] */ Integer& hash) override;
 
     ECode ToString(
-        /* [out] */ String* desc) override;
+        /* [out] */ String& desc) override;
 
     ECode SubList(
         /* [in] */ Integer fromIndex,
@@ -281,7 +281,6 @@ public:
 
     ECode GetIterator(
         /* [out] */ IIterator** it) override;
-
 
 protected:
     ECode CloneImpl(

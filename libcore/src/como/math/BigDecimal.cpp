@@ -14,6 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
+#include "innerdef.h"
 #include "como/core/CStringBuilder.h"
 #include "como/core/Math.h"
 #include "como/core/StringUtils.h"
@@ -30,7 +31,7 @@
 #include "como.core.IInteger.h"
 #include "como.core.ILong.h"
 #include "libcore/math/MathUtils.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::CStringBuilder;
 using como::core::E_ARITHMETIC_EXCEPTION;
@@ -325,13 +326,13 @@ ECode BigDecimal::Constructor(
     // Parsing the unscaled value
     if (bufLength < 19) {
         String str;
-        unscaledBuffer->ToString(&str);
+        unscaledBuffer->ToString(str);
         FAIL_RETURN(StringUtils::ParseLong(str, &mSmallValue));
         mBitLength = BitLength(mSmallValue);
     }
     else {
         String str;
-        unscaledBuffer->ToString(&str);
+        unscaledBuffer->ToString(str);
         AutoPtr<IBigInteger> bi;
         FAIL_RETURN(CBigInteger::New(str, IID_IBigInteger, (IInterface**)&bi));
         SetUnscaledValue(bi);
@@ -399,7 +400,7 @@ ECode BigDecimal::Constructor(
     // To simplify all factors '2' in the mantissa
     if (mScale > 0) {
         trailingZeros = Math::Min(mScale, Math::NumberOfTrailingZeros(mantissa));
-        mantissa = ((unsigned Long)mantissa) >> trailingZeros;
+        mantissa = ((ULong)mantissa) >> trailingZeros;
         mScale -= trailingZeros;
     }
     // Calculating the new unscaled value and the new scale
@@ -1922,27 +1923,25 @@ ECode BigDecimal::CompareTo(
 
 ECode BigDecimal::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* same)
+    /* [out] */ Boolean& same)
 {
-    VALIDATE_NOT_NULL(same);
-
     BigDecimal* other = From(IBigDecimal::Probe(obj));
     if (other == nullptr) {
-        *same = false;
+        same = false;
         return NOERROR;
     }
 
     if (other == this) {
-        *same = true;
+        same = true;
         return NOERROR;
     }
 
     if (mScale != other->mScale || mBitLength != other->mBitLength) {
-        *same = false;
+        same = false;
         return NOERROR;
     }
     if (mBitLength < 64) {
-        *same = mSmallValue == other->mSmallValue;
+        same = mSmallValue == other->mSmallValue;
         return NOERROR;
     }
     else {
@@ -1989,43 +1988,39 @@ ECode BigDecimal::Max(
 }
 
 ECode BigDecimal::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
     if (mHashCode != 0) {
-        *hash = mHashCode;
+        hash = mHashCode;
         return NOERROR;
     }
     if (mBitLength < 64) {
         mHashCode = (Integer)(mSmallValue & 0xffffffff);
         mHashCode = 33 * mHashCode + (Integer)((mSmallValue >> 32) & 0xffffffff);
         mHashCode = 17 * mHashCode + mScale;
-        *hash = mHashCode;
+        hash = mHashCode;
         return NOERROR;
     }
     mHashCode = 17 * Object::GetHashCode(mIntegerValue) + mScale;
-    *hash = mHashCode;
+    hash = mHashCode;
     return NOERROR;
 }
 
 ECode BigDecimal::ToString(
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
-    VALIDATE_NOT_NULL(desc);
-
     if (!mToStringImage.IsNull()) {
-        *desc = mToStringImage;
+        desc = mToStringImage;
         return NOERROR;
     }
     if (mBitLength < 32) {
         mToStringImage = Conversion::ToDecimalScaledString(mSmallValue, mScale);
-        *desc = mToStringImage;
+        desc = mToStringImage;
         return NOERROR;
     }
     String intString = Object::ToString(GetUnscaledValue());
     if (mScale == 0) {
-        *desc = intString;
+        desc = intString;
         return NOERROR;
     }
     Integer sign;
@@ -2057,8 +2052,8 @@ ECode BigDecimal::ToString(
         }
         result->Insert(++end, StringUtils::ToString(exponent));
     }
-    result->ToString(&mToStringImage);
-    *desc = mToStringImage;
+    result->ToString(mToStringImage);
+    desc = mToStringImage;
     return NOERROR;
 }
 
@@ -2126,7 +2121,7 @@ ECode BigDecimal::ToEngineeringString(
             result->Insert(++end, StringUtils::ToString(exponent));
         }
     }
-    return result->ToString(desc);
+    return result->ToString(*desc);
 }
 
 ECode BigDecimal::ToPlainString(
@@ -2178,7 +2173,7 @@ ECode BigDecimal::ToPlainString(
         }
         result->Append(GetCH_ZEROS(), 0, -delta);
     }
-    return result->ToString(desc);
+    return result->ToString(*desc);
 }
 
 ECode BigDecimal::ToBigInteger(
@@ -2455,7 +2450,7 @@ ECode BigDecimal::DoubleValue(
         // -1076 <= exponent - bias <= -1023
         // To discard '- exponent + 1' bits
         bits = tempBits >> 1;
-        tempBits = bits & (((unsigned Long)-1LL) >> (63 + exponent));
+        tempBits = bits & (((ULong)-1LL) >> (63 + exponent));
         bits >>= (-exponent);
         // To test if after discard bits, a new carry is generated
         if (((bits & 3) == 3) || (((bits & 1) == 1) && (tempBits != 0) &&

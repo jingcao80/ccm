@@ -46,10 +46,10 @@ interface ICharBuffer
         [out] Char* c);
 
     Get(
-        [out] Array<Char> dst);
+        [out] Array<Char>& dst);
 
     Get(
-        [out] Array<Char> dst,
+        [out] Array<Char>& dst,
         [in] Integer offset,
         [in] Integer length);
 
@@ -89,7 +89,7 @@ interface ICharBuffer
         [out] ICharBuffer** buffer);
 
     ToString(
-        [out] String* desc);
+        [out] String& desc);
 
     ToString(
         [in] Integer start,

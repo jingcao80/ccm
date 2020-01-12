@@ -48,10 +48,10 @@ interface ICollection
 
     Equals(
         [in] IInterface* obj,
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     GetHashCode(
-        [out] Integer* hash);
+        [out] Integer& hash);
 
     GetIterator(
         [out] IIterator** it);

@@ -48,14 +48,14 @@ public:
         }
 
         ECode GetHashCode(
-            /* [out] */ Integer* hash) override;
+            /* [out] */ Integer& hash) override;
 
         ECode Equals(
             /* [in] */ IInterface* obj,
-            /* [out] */ Boolean* same) override;
+            /* [out] */ Boolean& same) override;
 
         ECode GetCoclassID(
-            /* [out] */ CoclassID* cid) override;
+            /* [out] */ CoclassID& cid) override;
 
     private:
         String mStr;
@@ -78,14 +78,14 @@ public:
         }
 
         ECode GetHashCode(
-            /* [out] */ Integer* hash) override;
+            /* [out] */ Integer& hash) override;
 
         ECode Equals(
             /* [in] */ IInterface* obj,
-            /* [out] */ Boolean* same) override;
+            /* [out] */ Boolean& same) override;
 
         ECode GetCoclassID(
-            /* [out] */ CoclassID* cid) override;
+            /* [out] */ CoclassID& cid) override;
 
     private:
         Char mCh;

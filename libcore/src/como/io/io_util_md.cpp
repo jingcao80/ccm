@@ -40,7 +40,7 @@
  */
 
 #include "libcore.h"
-#include <ccmtypes.h>
+#include <comotypes.h>
 #include <sys/stat.h>
 #include <errno.h>
 #include <fcntl.h>

@@ -22,8 +22,8 @@
 #include "como.core.IStackTrace.h"
 #include "como.io.IPrintStream.h"
 #include "como.util.IProperties.h"
-#include <ccmautoptr.h>
-#include <ccmtypes.h>
+#include <comosp.h>
+#include <comotypes.h>
 
 using como::io::IPrintStream;
 using como::util::IProperties;
@@ -49,7 +49,7 @@ protected:
             /* [out] */ IInterface** obj) override;
 
         ECode ToString(
-            /* [in] */ String* str) override;
+            /* [in] */ String& str) override;
     };
 
 public:

@@ -14,6 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
+#include "innerdef.h"
 #include "como/core/Character.h"
 #include "como/core/CStringBuilder.h"
 #include "como/core/Math.h"
@@ -64,7 +65,7 @@ String Conversion::BigInteger2String(
     if ((radix == 10) || (radix < Character::MIN_RADIX) ||
             (radix > Character::MAX_RADIX)) {
         String str;
-        value->ToString(&str);
+        value->ToString(str);
         return str;
     }
     Double bitsForRadixDigit = Math::Log(radix) / Math::Log(2);
@@ -165,7 +166,7 @@ String Conversion::ToDecimalScaledString(
                 }
                 result1->Append(-scale);
                 String str;
-                result1->ToString(&str);
+                result1->ToString(str);
                 return str;
             }
         }
@@ -293,7 +294,7 @@ BIG_LOOP:
     }
     result1->Append(StringUtils::ToString(exponent));
     String str;
-    result1->ToString(&str);
+    result1->ToString(str);
     return str;
 }
 
@@ -328,7 +329,7 @@ String Conversion::ToDecimalScaledString(
                 }
                 result1->Append((scale == IInteger::MIN_VALUE) ? String("2147483648") : StringUtils::ToString(-scale));
                 String str;
-                result1->ToString(&str);
+                result1->ToString(str);
                 return str;
             }
         }
@@ -402,7 +403,7 @@ String Conversion::ToDecimalScaledString(
     }
     result1->Append(StringUtils::ToString(exponent));
     String str;
-    result1->ToString(&str);
+    result1->ToString(str);
     return str;
 }
 
@@ -422,8 +423,8 @@ Long Conversion::DivideLongByBillion(
          * Make the dividend positive shifting it right by 1 bit then get
          * the quotient an remainder and correct them properly
          */
-        Long aPos = ((unsigned Long)a) >> 1;
-        Long bPos = ((unsigned Long)1000000000LL) >> 1;
+        Long aPos = ((ULong)a) >> 1;
+        Long bPos = ((ULong)1000000000LL) >> 1;
         quot = aPos / bPos;
         rem = aPos % bPos;
         // double the remainder and add 1 if 'a' is odd

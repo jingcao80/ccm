@@ -26,7 +26,7 @@
 #include "como.util.IMap.h"
 #include "como.util.IMapEntry.h"
 #include "como.util.ISet.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::AutoLock;
 using como::core::CStringBuffer;
@@ -52,7 +52,7 @@ namespace como {
 namespace text {
 
 extern const CoclassID CID_AttributeEntry =
-        {{0x0ed6801f,0xa1cc,0x42bd,0x8a58,{0xc,0xe,0x6,0x2,0x9,0x7,0x6,0xb,0x4,0xe,0xf,0x7}}, &CID_libcore};
+        {{0x0ed6801f,0xa1cc,0x42bd,0x8a58,{0xce,0x62,0x97,0x6b,0x4e,0xf7}}, &CID_libcore};
 
 class AttributeEntry
     : public SyncObject
@@ -70,7 +70,7 @@ public:
 
     ECode Equals(
         /* [in] */ IInterface* obj,
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode GetKey(
         /* [out] */ IInterface** key) override;
@@ -83,13 +83,13 @@ public:
         /* [out] */ IInterface** prevValue = nullptr) override;
 
     ECode GetHashCode(
-        /* [out] */ Integer* hash) override;
+        /* [out] */ Integer& hash) override;
 
     ECode ToString(
-        /* [out] */ String* str) override;
+        /* [out] */ String& str) override;
 
     ECode GetCoclassID(
-        /* [out] */ CoclassID* cid) override;
+        /* [out] */ CoclassID& cid) override;
 
 private:
     AutoPtr<IAttributedCharacterIterator::IAttribute> mKey;
@@ -100,16 +100,14 @@ COMO_INTERFACE_IMPL_1(AttributeEntry, SyncObject, IMapEntry);
 
 ECode AttributeEntry::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     if (!Object::InstanceOf(obj, CID_AttributeEntry)) {
-        *result = false;
+        result = false;
         return NOERROR;
     }
     AttributeEntry* other = (AttributeEntry*)IMapEntry::Probe(obj);
-    *result = Object::Equals(other->mKey, mKey) && Object::Equals(other->mValue, mValue);
+    result = Object::Equals(other->mKey, mKey) && Object::Equals(other->mValue, mValue);
     return NOERROR;
 }
 
@@ -141,29 +139,23 @@ ECode AttributeEntry::SetValue(
 }
 
 ECode AttributeEntry::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
-    *hash = Object::GetHashCode(mKey) ^ Object::GetHashCode(mValue);
+    hash = Object::GetHashCode(mKey) ^ Object::GetHashCode(mValue);
     return NOERROR;
 }
 
 ECode AttributeEntry::ToString(
-    /* [out] */ String* str)
+    /* [out] */ String& str)
 {
-    VALIDATE_NOT_NULL(str);
-
-    *str = Object::ToString(mKey) + "=" + Object::ToString(mValue);
+    str = Object::ToString(mKey) + "=" + Object::ToString(mValue);
     return NOERROR;
 }
 
 ECode AttributeEntry::GetCoclassID(
-    /* [out] */ CoclassID* cid)
+    /* [out] */ CoclassID& cid)
 {
-    VALIDATE_NOT_NULL(cid);
-
-    *cid = CID_AttributeEntry;
+    cid = CID_AttributeEntry;
     return NOERROR;
 }
 
@@ -189,7 +181,7 @@ ECode AttributedString::Constructor(
             AppendContents(buffer, ICharacterIterator::Probe(iterators[counter]));
         }
 
-        buffer->ToString(&mText);
+        buffer->ToString(mText);
 
         if (mText.GetLength() > 0) {
             // Determine the runs, creating a new run when the attributes
@@ -327,7 +319,7 @@ ECode AttributedString::Constructor(
         textAlias->Current(&c);
         textBuffer->Append(c);
     }
-    textBuffer->ToString(&mText);
+    textBuffer->ToString(mText);
 
     if (beginIndex == endIndex) {
         return NOERROR;
@@ -820,7 +812,7 @@ Boolean AttributedString::MapsDiffer(
         return (attrs != nullptr && (attrs->GetSize(&size), size > 0));
     }
     Boolean isEqual;
-    IObject::Probe(last)->Equals(attrs, &isEqual);
+    IObject::Probe(last)->Equals(attrs, isEqual);
     return !isEqual;
 }
 
@@ -853,38 +845,34 @@ ECode AttributedString::AttributedStringIterator::Constructor(
 
 ECode AttributedString::AttributedStringIterator::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* same)
+    /* [out] */ Boolean& same)
 {
-    VALIDATE_NOT_NULL(same);
-
     AttributedStringIterator* other = (AttributedStringIterator*)IAttributedCharacterIterator::Probe(obj);
     if (this == other) {
-        *same = true;
+        same = true;
         return NOERROR;
     }
     if (other == nullptr) {
-        *same = false;
+        same = false;
         return NOERROR;
     }
 
     if (mOwner != other->GetString()) {
-        *same = false;
+        same = false;
         return NOERROR;
     }
     if (mCurrentIndex != other->mCurrentIndex || mBeginIndex != other->mBeginIndex || mEndIndex != other->mEndIndex) {
-        *same = false;
+        same = false;
         return NOERROR;
     }
-    *same = true;
+    same = true;
     return NOERROR;
 }
 
 ECode AttributedString::AttributedStringIterator::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
-    *hash = mOwner->mText.GetHashCode() ^ mCurrentIndex ^ mBeginIndex ^ mEndIndex;
+    hash = mOwner->mText.GetHashCode() ^ mCurrentIndex ^ mBeginIndex ^ mEndIndex;
     return NOERROR;
 }
 

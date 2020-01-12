@@ -21,8 +21,8 @@
 #include "como/util/regex/Matcher.h"
 #include "como/util/regex/Pattern.h"
 #include "como.util.IArrayList.h"
-#include <ccmautoptr.h>
-#include <ccmlogger.h>
+#include <comosp.h>
+#include <comolog.h>
 #include <unicode/regex.h>
 #include <unicode/unistr.h>
 
@@ -158,7 +158,7 @@ ECode Pattern::Split(
     VALIDATE_NOT_NULL(strArray);
 
     String inputStr;
-    input->ToString(&inputStr);
+    input->ToString(inputStr);
     Array<String> fast;
     FastSplit(mPattern, inputStr, limit, &fast);
     if (!fast.IsEmpty()) {
@@ -197,7 +197,7 @@ ECode Pattern::Split(
     // If no match was found, return this
     if (index == 0) {
         String str;
-        input->ToString(&str);
+        input->ToString(str);
         *strArray = Array<String>(1);
         strArray->Set(0, str);
         return NOERROR;
@@ -346,7 +346,7 @@ ECode Pattern::Quote(
     }
     sb->Append(s.Substring(current, s.GetLength()));
     sb->Append(String("\\E"));
-    return sb->ToString(pattStr);
+    return sb->ToString(*pattStr);
 }
 
 ECode Pattern::Compile()

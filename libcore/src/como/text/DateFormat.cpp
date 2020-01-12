@@ -26,7 +26,7 @@
 #include "como/util/CLocale.h"
 #include "como.core.INumber.h"
 #include "libcore/icu/ICU.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::CoreUtils;
 using como::core::CStringBuffer;
@@ -80,7 +80,7 @@ ECode DateFormat::Format(
     AutoPtr<IStringBuffer> sb;
     CStringBuffer::New(IID_IStringBuffer, (IInterface**)&sb);
     FAIL_RETURN(Format(date, sb, DontCareFieldPosition::GetInstance()));
-    return sb->ToString(result);
+    return sb->ToString(*result);
 }
 
 ECode DateFormat::Parse(
@@ -276,28 +276,24 @@ ECode DateFormat::IsLenient(
 }
 
 ECode DateFormat::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
-    *hash = Object::GetHashCode(mNumberFormat);
+    hash = Object::GetHashCode(mNumberFormat);
     return NOERROR;
 }
 
 ECode DateFormat::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* same)
+    /* [out] */ Boolean& same)
 {
-    VALIDATE_NOT_NULL(same);
-
     DateFormat* other = (DateFormat*)IDateFormat::Probe(obj);
     if (other == this) {
-        *same = true;
+        same = true;
         return NOERROR;
     }
     if (obj == nullptr ||
             Object::GetCoclass((IObject*)this) != Object::GetCoclass(obj)) {
-        *same = false;
+        same = false;
         return NOERROR;
     }
 
@@ -306,7 +302,7 @@ ECode DateFormat::Equals(
     Boolean thisLenient, otherLenient;
     AutoPtr<ITimeZone> thisTz, otherTz;
 
-    *same = (mCalendar->GetFirstDayOfWeek(&thisDow), other->mCalendar->GetFirstDayOfWeek(&otherDow), thisDow == otherDow) &&
+    same = (mCalendar->GetFirstDayOfWeek(&thisDow), other->mCalendar->GetFirstDayOfWeek(&otherDow), thisDow == otherDow) &&
             (mCalendar->GetMinimalDaysInFirstWeek(&thisDfw), other->mCalendar->GetMinimalDaysInFirstWeek(&otherDfw), thisDfw == otherDfw) &&
             (mCalendar->IsLenient(&thisLenient), other->mCalendar->IsLenient(&otherLenient), thisLenient == otherLenient) &&
             (mCalendar->GetTimeZone(&thisTz), other->mCalendar->GetTimeZone(&otherTz), Object::Equals(thisTz, otherTz)) &&
@@ -383,7 +379,7 @@ ECode DateFormat::Field::Constructor(
     AttributedCharacterIteratorAttribute::Constructor(name);
     mCalendarField = calendarField;
     CoclassID cid;
-    GetCoclassID(&cid);
+    GetCoclassID(cid);
     if (cid == CID_CDateFormatField) {
         GetInstanceMap()->Put(CoreUtils::Box(name), (IDateFormatField*)this);
         if (calendarField >= 0) {
@@ -423,7 +419,7 @@ ECode DateFormat::Field::ReadResolve(
     VALIDATE_NOT_NULL(obj);
 
     CoclassID cid;
-    GetCoclassID(&cid);
+    GetCoclassID(cid);
     if (cid != CID_CDateFormatField) {
         Logger::E("DateFormat::Field", "subclass didn't correctly implement readResolve");
         return E_INVALID_OBJECT_EXCEPTION;

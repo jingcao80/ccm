@@ -21,7 +21,7 @@
 #include "como.net.IDatagramSocket.h"
 #include "como.net.ISocket.h"
 #include "comort.system.ISocketTagger.h"
-#include <ccmautoptr.h>
+#include <comosp.h>
 
 using como::core::SyncObject;
 using como::net::IDatagramSocket;
@@ -35,7 +35,7 @@ class SocketTagger
     , public ISocketTagger
 {
 public:
-    CCM_INTERFACE_DECL();
+    COMO_INTERFACE_DECL();
 
     ECode Tag(
         /* [in] */ ISocket* socket) override final;

@@ -445,32 +445,30 @@ ECode CalendarDate::IsSameDate(
 
 ECode CalendarDate::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* same)
+    /* [out] */ Boolean& same)
 {
-    VALIDATE_NOT_NULL(same);
-
     if (ICalendarDate::Probe(obj) == nullptr) {
-        *same = false;
+        same = false;
         return NOERROR;
     }
     CalendarDate* that = (CalendarDate*)ICalendarDate::Probe(obj);
     Boolean thisNorm, othNorm;
     if (IsNormalized(&thisNorm), that->IsNormalized(&othNorm), thisNorm != othNorm) {
-        *same = false;
+        same = false;
         return NOERROR;
     }
     Boolean hasZone = mZoneinfo != nullptr;
     Boolean thatHasZone = that->mZoneinfo != nullptr;
     if (hasZone != thatHasZone) {
-        *same = false;
+        same = false;
         return NOERROR;
     }
     if (hasZone && !Object::Equals(mZoneinfo, that->mZoneinfo)) {
-        *same = false;
+        same = false;
         return NOERROR;
     }
     AutoPtr<IEra> thisEra, othEra;
-    *same = (GetEra(&thisEra), that->GetEra(&othEra), thisEra == othEra) &&
+    same = (GetEra(&thisEra), that->GetEra(&othEra), thisEra == othEra) &&
             mYear == that->mYear &&
             mMonth == that->mMonth &&
             mDayOfMonth == that->mDayOfMonth &&
@@ -483,10 +481,8 @@ ECode CalendarDate::Equals(
 }
 
 ECode CalendarDate::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
     // a pseudo (local standard) time stamp value in milliseconds
     // from the Epoch, assuming Gregorian calendar fields.
     Long h = ((((((Long)mYear - 1970) * 12) + (mMonth - 1)) * 30) + mDayOfMonth) * 24;
@@ -501,7 +497,7 @@ ECode CalendarDate::GetHashCode(
         era = Object::GetHashCode(e);
     }
     Integer zone = mZoneinfo != nullptr ? Object::GetHashCode(mZoneinfo) : 0;
-    *hash = (Integer) h * (Integer)(h >> 32) ^ era ^ normalized ^ zone;
+    hash = (Integer) h * (Integer)(h >> 32) ^ era ^ normalized ^ zone;
     return NOERROR;
 }
 
@@ -530,10 +526,8 @@ ECode CalendarDate::CloneImpl(
 }
 
 ECode CalendarDate::ToString(
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
-    VALIDATE_NOT_NULL(desc);
-
     AutoPtr<IStringBuilder> sb;
     CStringBuilder::New(IID_IStringBuilder, (IInterface**)&sb);
     CalendarUtils::Sprintf0d(sb, mYear, 4);

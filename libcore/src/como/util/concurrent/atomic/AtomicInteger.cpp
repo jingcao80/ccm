@@ -184,11 +184,9 @@ ECode AtomicInteger::AddAndGet(
 }
 
 ECode AtomicInteger::ToString(
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
-    VALIDATE_NOT_NULL(desc);
-
-    *desc = StringUtils::ToString(mValue.LoadAcquire());
+    desc = StringUtils::ToString(mValue.LoadAcquire());
     return NOERROR;
 }
 

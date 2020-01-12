@@ -115,37 +115,31 @@ ECode CLong::CompareTo(
 
 ECode CLong::Equals(
     /* [in] */ IInterface* other,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     ILong* l = ILong::Probe(other);
     if (l == nullptr) {
-        *result = false;
+        result = false;
         return NOERROR;
     }
 
     Long lv;
     l->GetValue(&lv);
-    *result = mValue == lv;
+    result = mValue == lv;
     return NOERROR;
 }
 
 ECode CLong::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
-    *hash = (Integer)mValue;
+    hash = (Integer)mValue;
     return NOERROR;
 }
 
 ECode CLong::ToString(
-    /* [out] */ String* str)
+    /* [out] */ String& str)
 {
-    VALIDATE_NOT_NULL(str);
-
-    *str = String::Format("%lld", mValue);
+    str = String::Format("%lld", mValue);
     return NOERROR;
 }
 

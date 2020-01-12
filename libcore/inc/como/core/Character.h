@@ -17,9 +17,9 @@
 #ifndef __COMO_CORE_CHARACTER_H__
 #define __COMO_CORE_CHARACTER_H__
 
-#include <ccmautoptr.h>
-#include <ccmrefbase.h>
-#include <ccmtypes.h>
+#include <comosp.h>
+#include <comoref.h>
+#include <comotypes.h>
 
 namespace como {
 namespace core {

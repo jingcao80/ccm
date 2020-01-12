@@ -30,7 +30,7 @@
 #include "como.util.calendar.ICalendarDate.h"
 #include "como.util.calendar.ICalendarSystem.h"
 #include "libcore.util.IZoneInfo.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::AutoLock;
 using como::core::CoreUtils;
@@ -298,28 +298,26 @@ ECode GregorianCalendar::GetCalendarType(
 
 ECode GregorianCalendar::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* same)
+    /* [out] */ Boolean& same)
 {
-    VALIDATE_NOT_NULL(same);
-
     IGregorianCalendar* gregory = IGregorianCalendar::Probe(obj);
     if (gregory == nullptr) {
-        *same = false;
+        same = false;
         return NOERROR;
     }
     Calendar::Equals(obj, same);
-    if (!*same) return NOERROR;
-    *same = mGregorianCutover = ((GregorianCalendar*)gregory)->mGregorianCutover;
+    if (!same) {
+        return NOERROR;
+    }
+    same = mGregorianCutover == ((GregorianCalendar*)gregory)->mGregorianCutover;
     return NOERROR;
 }
 
 ECode GregorianCalendar::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
     Calendar::GetHashCode(hash);
-    *hash = *hash ^ (Integer)mGregorianCutoverDate;
+    hash = hash ^ (Integer)mGregorianCutoverDate;
     return NOERROR;
 }
 
@@ -366,7 +364,7 @@ ECode GregorianCalendar::Add(
         }
         PinDayOfMonth();
     }
-    else if (field = MONTH) {
+    else if (field == MONTH) {
         Integer month = InternalGet(MONTH) + amount;
         Integer year = InternalGet(YEAR);
         Integer y_amount;
@@ -415,7 +413,7 @@ ECode GregorianCalendar::Add(
         }
         PinDayOfMonth();
     }
-    else if (field = ERA) {
+    else if (field == ERA) {
         Integer era = InternalGet(ERA) + amount;
         if (era < 0) {
             era = 0;
@@ -513,6 +511,7 @@ ECode GregorianCalendar::Add(
         // Update the time and recompute the fields.
         SetTimeInMillis(millis);
     }
+    return NOERROR;
 }
 
 ECode GregorianCalendar::Roll(
@@ -948,6 +947,7 @@ ECode GregorianCalendar::Roll(
     }
 
     Set(field, GetRolledValue(InternalGet(field), amount, min, max));
+    return NOERROR;
 }
 
 ECode GregorianCalendar::GetMinimum(

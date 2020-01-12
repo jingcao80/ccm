@@ -43,10 +43,10 @@ interface IShortBuffer
         [out] Short* s);
 
     Get(
-        [out] Array<Short> dst);
+        [out] Array<Short>& dst);
 
     Get(
-        [out] Array<Short> dst,
+        [out] Array<Short>& dst,
         [in] Integer offset,
         [in] Integer length);
 

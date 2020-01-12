@@ -86,7 +86,7 @@ interface IStringBuffer
     GetChars(
         [in] Integer start,
         [in] Integer end,
-        [out] Array<Char> dst,
+        [out] Array<Char>& dst,
         [in] Integer dstStart);
 
     GetLength(
@@ -191,7 +191,7 @@ interface IStringBuffer
         [out] String* str);
 
     ToString(
-        [out] String* str);
+        [out] String& str);
 
     TrimToSize();
 }

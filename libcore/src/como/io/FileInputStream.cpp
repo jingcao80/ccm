@@ -27,7 +27,7 @@
 #include "como.core.IInteger.h"
 #include "como.core.ISecurityManager.h"
 #include "comort.system.IBlockGuardPolicy.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <unistd.h>

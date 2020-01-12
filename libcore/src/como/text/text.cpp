@@ -25,7 +25,7 @@
 #include "como/text/CMessageFormat.h"
 #include "como/text/CSimpleDateFormat.h"
 #include "como/text/CParsePosition.h"
-#include <ccmapi.h>
+#include <comoapi.h>
 #include <new>
 
 namespace como {
@@ -38,7 +38,7 @@ ECode CAttributedCharacterIteratorAttribute::New(
     /* [out] */ IInterface** object)
 {
     AutoPtr<IClassObject> clsObject;
-    ECode ec = CoAcquireClassFactory(CID_CAttributedCharacterIteratorAttribute, nullptr, &clsObject);
+    ECode ec = CoAcquireClassFactory(CID_CAttributedCharacterIteratorAttribute, nullptr, clsObject);
     if (FAILED(ec)) return ec;
 
     void* addr = calloc(sizeof(CAttributedCharacterIteratorAttribute), 1);
@@ -51,7 +51,7 @@ ECode CAttributedCharacterIteratorAttribute::New(
         return ec;
     }
     AutoPtr<IMetaComponent> comp;
-    clsObject->GetMetadate(&comp);
+    clsObject->GetMetadate(comp);
     _obj->AttachMetadata(comp, String("como::text::CAttributedCharacterIteratorAttribute"));
     *object = _obj->Probe(iid);
     REFCOUNT_ADD(*object);
@@ -67,7 +67,7 @@ ECode CAttributedString::New(
     VALIDATE_NOT_NULL(object);
 
     AutoPtr<IClassObject> clsObject;
-    ECode ec = CoAcquireClassFactory(CID_CAttributedString, nullptr, &clsObject);
+    ECode ec = CoAcquireClassFactory(CID_CAttributedString, nullptr, clsObject);
     if (FAILED(ec)) return ec;
 
     void* addr = calloc(sizeof(CAttributedString), 1);
@@ -80,7 +80,7 @@ ECode CAttributedString::New(
         return ec;
     }
     AutoPtr<IMetaComponent> comp;
-    clsObject->GetMetadate(&comp);
+    clsObject->GetMetadate(comp);
     _obj->AttachMetadata(comp, String("como::text::CAttributedString"));
     *object = _obj->Probe(iid);
     REFCOUNT_ADD(*object);
@@ -95,7 +95,7 @@ ECode CChoiceFormat::Clone(
     VALIDATE_NOT_NULL(obj);
 
     AutoPtr<IClassObject> clsObject;
-    ECode ec = CoAcquireClassFactory(CID_CChoiceFormat, nullptr, &clsObject);
+    ECode ec = CoAcquireClassFactory(CID_CChoiceFormat, nullptr, clsObject);
     if (FAILED(ec)) return ec;
 
     void* addr = calloc(sizeof(CChoiceFormat), 1);
@@ -108,7 +108,7 @@ ECode CChoiceFormat::Clone(
         return ec;
     }
     AutoPtr<IMetaComponent> comp;
-    clsObject->GetMetadate(&comp);
+    clsObject->GetMetadate(comp);
     cfObj->AttachMetadata(comp, String("como::text::CChoiceFormat"));
     *obj = cfObj->Probe(iid);
     REFCOUNT_ADD(*obj);
@@ -123,7 +123,7 @@ ECode CDateFormatField::New(
     /* [out] */ IInterface** object)
 {
     AutoPtr<IClassObject> clsObject;
-    ECode ec = CoAcquireClassFactory(CID_CDateFormatField, nullptr, &clsObject);
+    ECode ec = CoAcquireClassFactory(CID_CDateFormatField, nullptr, clsObject);
     if (FAILED(ec)) return ec;
 
     void* addr = calloc(sizeof(CDateFormatField), 1);
@@ -136,7 +136,7 @@ ECode CDateFormatField::New(
         return ec;
     }
     AutoPtr<IMetaComponent> comp;
-    clsObject->GetMetadate(&comp);
+    clsObject->GetMetadate(comp);
     _obj->AttachMetadata(comp, String("como::text::CDateFormatField"));
     *object = _obj->Probe(iid);
     REFCOUNT_ADD(*object);
@@ -151,7 +151,7 @@ ECode CDateFormatSymbols::Clone(
     VALIDATE_NOT_NULL(obj);
 
     AutoPtr<IClassObject> clsObject;
-    ECode ec = CoAcquireClassFactory(CID_CDateFormatSymbols, nullptr, &clsObject);
+    ECode ec = CoAcquireClassFactory(CID_CDateFormatSymbols, nullptr, clsObject);
     if (FAILED(ec)) return ec;
 
     void* addr = calloc(sizeof(CDateFormatSymbols), 1);
@@ -164,7 +164,7 @@ ECode CDateFormatSymbols::Clone(
         return ec;
     }
     AutoPtr<IMetaComponent> comp;
-    clsObject->GetMetadate(&comp);
+    clsObject->GetMetadate(comp);
     dfsObj->AttachMetadata(comp, String("como::text::CDateFormatSymbols"));
     *obj = dfsObj->Probe(iid);
     REFCOUNT_ADD(*obj);
@@ -179,7 +179,7 @@ ECode CDecimalFormat::Clone(
     VALIDATE_NOT_NULL(obj);
 
     AutoPtr<IClassObject> clsObject;
-    ECode ec = CoAcquireClassFactory(CID_CDecimalFormat, nullptr, &clsObject);
+    ECode ec = CoAcquireClassFactory(CID_CDecimalFormat, nullptr, clsObject);
     if (FAILED(ec)) return ec;
 
     void* addr = calloc(sizeof(CDecimalFormat), 1);
@@ -192,7 +192,7 @@ ECode CDecimalFormat::Clone(
         return ec;
     }
     AutoPtr<IMetaComponent> comp;
-    clsObject->GetMetadate(&comp);
+    clsObject->GetMetadate(comp);
     dfObj->AttachMetadata(comp, String("como::text::CDecimalFormat"));
     *obj = dfObj->Probe(iid);
     REFCOUNT_ADD(*obj);
@@ -207,7 +207,7 @@ ECode CDecimalFormatSymbols::Clone(
     VALIDATE_NOT_NULL(obj);
 
     AutoPtr<IClassObject> clsObject;
-    ECode ec = CoAcquireClassFactory(CID_CDecimalFormatSymbols, nullptr, &clsObject);
+    ECode ec = CoAcquireClassFactory(CID_CDecimalFormatSymbols, nullptr, clsObject);
     if (FAILED(ec)) return ec;
 
     void* addr = calloc(sizeof(CDecimalFormatSymbols), 1);
@@ -220,7 +220,7 @@ ECode CDecimalFormatSymbols::Clone(
         return ec;
     }
     AutoPtr<IMetaComponent> comp;
-    clsObject->GetMetadate(&comp);
+    clsObject->GetMetadate(comp);
     dfsObj->AttachMetadata(comp, String("como::text::CDecimalFormatSymbols"));
     *obj = dfsObj->Probe(iid);
     REFCOUNT_ADD(*obj);
@@ -237,7 +237,7 @@ ECode CMessageFormat::Clone(
     VALIDATE_NOT_NULL(obj);
 
     AutoPtr<IClassObject> clsObject;
-    ECode ec = CoAcquireClassFactory(CID_CMessageFormat, nullptr, &clsObject);
+    ECode ec = CoAcquireClassFactory(CID_CMessageFormat, nullptr, clsObject);
     if (FAILED(ec)) return ec;
 
     void* addr = calloc(sizeof(CMessageFormat), 1);
@@ -250,7 +250,7 @@ ECode CMessageFormat::Clone(
         return ec;
     }
     AutoPtr<IMetaComponent> comp;
-    clsObject->GetMetadate(&comp);
+    clsObject->GetMetadate(comp);
     mfObj->AttachMetadata(comp, String("como::text::CMessageFormat"));
     *obj = mfObj->Probe(iid);
     REFCOUNT_ADD(*obj);
@@ -268,7 +268,7 @@ ECode CSimpleDateFormat::New(
     VALIDATE_NOT_NULL(object);
 
     AutoPtr<IClassObject> clsObject;
-    ECode ec = CoAcquireClassFactory(CID_CSimpleDateFormat, nullptr, &clsObject);
+    ECode ec = CoAcquireClassFactory(CID_CSimpleDateFormat, nullptr, clsObject);
     if (FAILED(ec)) return ec;
 
     void* addr = calloc(sizeof(CSimpleDateFormat), 1);
@@ -281,7 +281,7 @@ ECode CSimpleDateFormat::New(
         return ec;
     }
     AutoPtr<IMetaComponent> comp;
-    clsObject->GetMetadate(&comp);
+    clsObject->GetMetadate(comp);
     sdfObj->AttachMetadata(comp, String("como::text::CSimpleDateFormat"));
     *object = sdfObj->Probe(iid);
     REFCOUNT_ADD(*object);
@@ -295,7 +295,7 @@ ECode CSimpleDateFormat::Clone(
     VALIDATE_NOT_NULL(obj);
 
     AutoPtr<IClassObject> clsObject;
-    ECode ec = CoAcquireClassFactory(CID_CSimpleDateFormat, nullptr, &clsObject);
+    ECode ec = CoAcquireClassFactory(CID_CSimpleDateFormat, nullptr, clsObject);
     if (FAILED(ec)) return ec;
 
     void* addr = calloc(sizeof(CSimpleDateFormat), 1);
@@ -308,7 +308,7 @@ ECode CSimpleDateFormat::Clone(
         return ec;
     }
     AutoPtr<IMetaComponent> comp;
-    clsObject->GetMetadate(&comp);
+    clsObject->GetMetadate(comp);
     sdfObj->AttachMetadata(comp, String("como::text::CSimpleDateFormat"));
     *obj = sdfObj->Probe(iid);
     REFCOUNT_ADD(*obj);

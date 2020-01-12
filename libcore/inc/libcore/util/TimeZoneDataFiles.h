@@ -17,7 +17,7 @@
 #ifndef __LIBCORE_UTIL_TIMEZONEDATAFILES_H__
 #define __LIBCORE_UTIL_TIMEZONEDATAFILES_H__
 
-#include <ccmtypes.h>
+#include <comotypes.h>
 
 using namespace como;
 

@@ -36,7 +36,7 @@ interface IStringWriter
         [out] IStringBuffer** buf);
 
     ToString(
-        [out] String* str);
+        [out] String& str);
 }
 
 }

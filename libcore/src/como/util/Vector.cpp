@@ -18,7 +18,7 @@
 #include "como/util/Arrays.h"
 #include "como/util/Collections.h"
 #include "como/util/Vector.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::AutoLock;
 using como::core::E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
@@ -193,19 +193,19 @@ ECode Vector::GetElements(
         {}
 
         Integer AddRef(
-            /* [in] */ HANDLE id)
+            /* [in] */ HANDLE id) override
         {
             return Object::AddRef(id);
         }
 
         Integer Release(
-            /* [in] */ HANDLE id)
+            /* [in] */ HANDLE id) override
         {
             return Object::Release(id);
         }
 
         IInterface* Probe(
-            /* [in] */ const InterfaceID& iid)
+            /* [in] */ const InterfaceID& iid) override
         {
             if (iid == IID_IInterface) {
                 return (IInterface*)(IEnumeration*)this;
@@ -218,12 +218,10 @@ ECode Vector::GetElements(
 
         ECode GetInterfaceID(
             /* [in] */ IInterface* object,
-            /* [out] */ InterfaceID* iid)
+            /* [out] */ InterfaceID& iid) override
         {
-            VALIDATE_NOT_NULL(iid);
-
             if (object == (IInterface*)(IEnumeration*)this) {
-                *iid = IID_IEnumeration;
+                iid = IID_IEnumeration;
                 return NOERROR;
             }
             return SyncObject::GetInterfaceID(object, iid);
@@ -712,30 +710,24 @@ ECode Vector::AddAll(
 
 ECode Vector::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* same)
+    /* [out] */ Boolean& same)
 {
-    VALIDATE_NOT_NULL(same);
-
     AutoLock lock(this);
 
     return AbstractList::Equals(obj, same);
 }
 
 ECode Vector::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
     AutoLock lock(this);
 
     return AbstractList::GetHashCode(hash);
 }
 
 ECode Vector::ToString(
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
-    VALIDATE_NOT_NULL(desc);
-
     AutoLock lock(this);
 
     return AbstractList::ToString(desc);

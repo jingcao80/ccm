@@ -19,8 +19,8 @@
 
 #include "como.io.IFileDescriptor.h"
 #include "como.io.charset.ICharset.h"
-#include <ccmobject.h>
-#include <ccmtypes.h>
+#include <comoobj.h>
+#include <comotypes.h>
 
 using namespace como;
 using como::io::IFileDescriptor;

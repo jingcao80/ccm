@@ -18,8 +18,8 @@
 #define __COMO_CORE_HEXSTRINGPARSER_H__
 
 #include "como.util.regex.IPattern.h"
-#include <ccmautoptr.h>
-#include <ccmtypes.h>
+#include <comosp.h>
+#include <comotypes.h>
 
 using como::util::regex::IPattern;
 

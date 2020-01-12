@@ -17,6 +17,7 @@
 #ifndef __COMO_UTIL_CONCURRENT_CONCURRENTHASHMAP_H__
 #define __COMO_UTIL_CONCURRENT_CONCURRENTHASHMAP_H__
 
+#include "innerdef.h"
 #include "como/core/volatile.h"
 #include "como/core/SyncObject.h"
 #include "como.core.IInteger.h"
@@ -30,7 +31,7 @@
 #include "como.util.ISet.h"
 #include "como.util.concurrent.IConcurrentMap.h"
 #include "como.util.concurrent.IConcurrentHashMap.h"
-#include <ccmrefbase.h>
+#include <comoref.h>
 
 using como::core::IInteger;
 using como::core::IThread;
@@ -75,10 +76,10 @@ public:
             /* [out] */ IInterface** value) override;
 
         ECode GetHashCode(
-            /* [out] */ Integer* hash) override;
+            /* [out] */ Integer& hash) override;
 
         ECode ToString(
-            /* [out] */ String* desc) override;
+            /* [out] */ String& desc) override;
 
         ECode SetValue(
             /* [in] */ IInterface* value,
@@ -86,7 +87,7 @@ public:
 
         ECode Equals(
             /* [in] */ IInterface* obj,
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
 
         virtual AutoPtr<Node> Find(
             /* [in] */ Integer h,
@@ -491,14 +492,14 @@ public:
             /* [out] */ IInterface** value) override;
 
         ECode GetHashCode(
-            /* [out] */ Integer* hash) override;
+            /* [out] */ Integer& hash) override;
 
         ECode ToString(
-            /* [out] */ String* desc) override;
+            /* [out] */ String& desc) override;
 
         ECode Equals(
             /* [in] */ IInterface* obj,
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
 
         ECode SetValue(
             /* [in] */ IInterface* value,
@@ -539,7 +540,7 @@ public:
             /* [out, callee] */ Array<IInterface*>* objs) override;
 
         ECode ToString(
-            /* [out] */ String* desc) override;
+            /* [out] */ String& desc) override;
 
         ECode ContainsAll(
             /* [in] */ ICollection* c,
@@ -594,11 +595,11 @@ public:
             /* [out] */ Boolean* changed = nullptr) override;
 
         ECode GetHashCode(
-            /* [out] */ Integer* hash) override;
+            /* [out] */ Integer& hash) override;
 
         ECode Equals(
             /* [in] */ IInterface* obj,
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
 
         ECode Clear() override;
 
@@ -661,10 +662,10 @@ public:
 
         ECode Equals(
             /* [in] */ IInterface* obj,
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
 
         ECode GetHashCode(
-            /* [out] */ Integer* hash) override;
+            /* [out] */ Integer& hash) override;
     };
 
     class EntrySetView
@@ -699,11 +700,11 @@ public:
             /* [out] */ Boolean* changed = nullptr) override;
 
         ECode GetHashCode(
-            /* [out] */ Integer* hash) override;
+            /* [out] */ Integer& hash) override;
 
         ECode Equals(
             /* [in] */ IInterface* obj,
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
 
         ECode Clear() override;
 
@@ -831,14 +832,14 @@ public:
         /* [out] */ ISet** entries) override;
 
     ECode GetHashCode(
-        /* [out] */ Integer* hash) override;
+        /* [out] */ Integer& hash) override;
 
     ECode ToString(
-        /* [out] */ String* desc) override;
+        /* [out] */ String& desc) override;
 
     ECode Equals(
         /* [in] */ IInterface* obj,
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode PutIfAbsent(
         /* [in] */ IInterface* key,
@@ -1044,7 +1045,7 @@ private:
 inline Integer ConcurrentHashMap::Spread(
     /* [in] */ Integer h)
 {
-    return (h ^ (((unsigned Integer)h) >> 16)) & HASH_BITS;
+    return (h ^ (((UInteger)h) >> 16)) & HASH_BITS;
 }
 
 inline ECode ConcurrentHashMap::Constructor()

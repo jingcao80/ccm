@@ -62,36 +62,30 @@ ECode ParsePosition::GetErrorIndex(
 
 ECode ParsePosition::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* same)
+    /* [out] */ Boolean& same)
 {
-    VALIDATE_NOT_NULL(same);
-
     if (IParsePosition::Probe(obj) == nullptr) {
-        *same = false;
+        same = false;
         return NOERROR;
     }
 
     ParsePosition* other = (ParsePosition*)IParsePosition::Probe(obj);
-    *same = mIndex == other->mIndex &&
+    same = mIndex == other->mIndex &&
             mErrorIndex == other->mErrorIndex;
     return NOERROR;
 }
 
 ECode ParsePosition::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
-    *hash = (mErrorIndex << 16) | mIndex;
+    hash = (mErrorIndex << 16) | mIndex;
     return NOERROR;
 }
 
 ECode ParsePosition::ToString(
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
-    VALIDATE_NOT_NULL(desc);
-
-    *desc = String::Format("%s[mIndex=%d, mErrorIndex=%d]",
+    desc = String::Format("%s[mIndex=%d, mErrorIndex=%d]",
             Object::GetCoclassName((IParsePosition*)this).string(),
             mIndex, mErrorIndex);
     return NOERROR;

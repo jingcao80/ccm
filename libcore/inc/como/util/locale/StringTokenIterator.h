@@ -17,8 +17,8 @@
 #ifndef __COMO_UTIL_LOCALE_STRINGTOKENITERATOR_H__
 #define __COMO_UTIL_LOCALE_STRINGTOKENITERATOR_H__
 
-#include <ccmrefbase.h>
-#include <ccmtypes.h>
+#include <comoref.h>
+#include <comotypes.h>
 
 namespace como {
 namespace util {

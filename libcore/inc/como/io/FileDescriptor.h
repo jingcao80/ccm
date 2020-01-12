@@ -19,7 +19,7 @@
 
 #include "como/core/SyncObject.h"
 #include "como.io.IFileDescriptor.h"
-#include <ccmautoptr.h>
+#include <comosp.h>
 
 using como::core::SyncObject;
 

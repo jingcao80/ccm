@@ -14,6 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
+#include "innerdef.h"
 #include "como/core/Math.h"
 #include "como/misc/DoubleConsts.h"
 #include "como/misc/FloatConsts.h"
@@ -175,6 +176,41 @@ Double Math::Min(
     return (a <= b) ? a : b;
 }
 
+Integer Math::Signum(
+    /* [in] */ Integer i)
+{
+    return (i >> 31) | (((UInteger)-i) >> 31);
+}
+
+Integer Math::Signum(
+    /* [in] */ Long l)
+{
+    return (Integer) ((l >> 63) | (((ULong)-l) >> 63));
+}
+
+Short Math::ReverseBytes(
+    /* [in] */ Short s)
+{
+    return (Short) (((s & 0xFF00) >> 8) | (s << 8));
+}
+
+Integer Math::ReverseBytes(
+    /* [in] */ Integer i)
+{
+    return ((((UInteger)i) >> 24)) |
+           ((i >> 8) & 0xFF00) |
+           ((i << 8) & 0xFF0000) |
+           ((i << 24));
+}
+
+Long Math::ReverseBytes(
+    /* [in] */ Long l)
+{
+    l = (l & 0x00ff00ff00ff00ffLL) << 8 | ((((ULong)l) >> 8) & 0x00ff00ff00ff00ffLL);
+    return (l << 48) | ((l & 0xffff0000LL) << 16) |
+            ((((ULong)l) >> 16) & 0xffff0000LL) | (((ULong)l) >> 48);
+}
+
 Double Math::CopySign(
     /* [in] */ Double magnitude,
     /* [in] */ Double sign)
@@ -265,7 +301,7 @@ Double Math::Scalb(
 
     // Calculate (scaleFactor % +/-512), 512 = 2^9, using
     // technique from "Hacker's Delight" section 10-2.
-    Integer t = ((unsigned Integer)(scaleFactor >> 9 - 1)) >> 32 - 9;
+    Integer t = ((UInteger)(scaleFactor >> (9 - 1))) >> (32 - 9);
     exp_adjust = ((scaleFactor + t) & (512 - 1)) - t;
 
     d *= PowerOfTwoD(exp_adjust);
@@ -377,7 +413,7 @@ Integer Math::HighestOneBit(
     i |= (i >> 4);
     i |= (i >> 8);
     i |= (i >> 16);
-    return i - (((unsigned Integer)i) >> 1);
+    return i - (((UInteger)i) >> 1);
 }
 
 Integer Math::NumberOfLeadingZeros(
@@ -388,11 +424,11 @@ Integer Math::NumberOfLeadingZeros(
     }
     Integer n = 1;
     Integer i = value;
-    if (((unsigned Integer)i) >> 16 == 0) { n += 16; i <<= 16; }
-    if (((unsigned Integer)i) >> 24 == 0) { n +=  8; i <<=  8; }
-    if (((unsigned Integer)i) >> 28 == 0) { n +=  4; i <<=  4; }
-    if (((unsigned Integer)i) >> 30 == 0) { n +=  2; i <<=  2; }
-    n -= ((unsigned Integer)i) >> 31;
+    if (((UInteger)i) >> 16 == 0) { n += 16; i <<= 16; }
+    if (((UInteger)i) >> 24 == 0) { n +=  8; i <<=  8; }
+    if (((UInteger)i) >> 28 == 0) { n +=  4; i <<=  4; }
+    if (((UInteger)i) >> 30 == 0) { n +=  2; i <<=  2; }
+    n -= ((UInteger)i) >> 31;
     return n;
 }
 
@@ -407,18 +443,18 @@ Integer Math::NumberOfTrailingZeros(
     y = i << 8; if (y != 0) { n = n - 8; i = y; }
     y = i << 4; if (y != 0) { n = n - 4; i = y; }
     y = i << 2; if (y != 0) { n = n - 2; i = y; }
-    n -= ((unsigned Integer)(i << 1)) >> 31;
+    n -= ((UInteger)(i << 1)) >> 31;
     return n;
 }
 
 Integer Math::BitCount(
     /* [in] */ Integer i)
 {
-    i = i - ((((unsigned Integer)i) >> 1) & 0x55555555);
-    i = (i & 0x33333333) + ((((unsigned Integer)i) >> 2) & 0x33333333);
-    i = (i + (((unsigned Integer)i) >> 4)) & 0x0f0f0f0f;
-    i = i + (((unsigned Integer)i) >> 8);
-    i = i + (((unsigned Integer)i) >> 16);
+    i = i - ((((UInteger)i) >> 1) & 0x55555555);
+    i = (i & 0x33333333) + ((((UInteger)i) >> 2) & 0x33333333);
+    i = (i + (((UInteger)i) >> 4)) & 0x0f0f0f0f;
+    i = i + (((UInteger)i) >> 8);
+    i = i + (((UInteger)i) >> 16);
     return i & 0x3f;
 }
 
@@ -429,13 +465,13 @@ Integer Math::NumberOfLeadingZeros(
         return 64;
     }
     Integer n = 1;
-    Integer x = (Integer)(((unsigned Long)value) >> 32);
+    Integer x = (Integer)(((ULong)value) >> 32);
     if (x == 0) { n += 32; x = (Integer)value; }
-    if (((unsigned Integer)x) >> 16 == 0) { n += 16; x <<= 16; }
-    if (((unsigned Integer)x) >> 24 == 0) { n +=  8; x <<=  8; }
-    if (((unsigned Integer)x) >> 28 == 0) { n +=  4; x <<=  4; }
-    if (((unsigned Integer)x) >> 30 == 0) { n +=  2; x <<=  2; }
-    n -= ((unsigned Integer)x) >> 31;
+    if (((UInteger)x) >> 16 == 0) { n += 16; x <<= 16; }
+    if (((UInteger)x) >> 24 == 0) { n +=  8; x <<=  8; }
+    if (((UInteger)x) >> 28 == 0) { n +=  4; x <<=  4; }
+    if (((UInteger)x) >> 30 == 0) { n +=  2; x <<=  2; }
+    n -= ((UInteger)x) >> 31;
     return n;
 }
 

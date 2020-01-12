@@ -25,9 +25,14 @@
 #include "como/core/NativeThreadList.h"
 #include "como/core/NativeTimeUtils.h"
 #include "como/core/Thread.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 #include <limits.h>
+#if defined(__android__)
+#include <cutils/sched_policy.h>
+#include <utils/threads.h>
+#elif defined(__linux__)
 #include <asm/prctl.h>
+#endif
 #include <sys/mman.h>
 #include <sys/prctl.h>
 #include <sys/resource.h>
@@ -175,6 +180,7 @@ static uint8_t* FindStackTop()
             AlignDown(__builtin_frame_address(0), kPageSize));
 }
 
+#if defined(__x86_64__)
 #define GET_REG(reg, var)       \
     __asm__ __volatile__(       \
         "mov    %%"#reg", %0;"  \
@@ -186,6 +192,7 @@ static uint8_t* FindStackTop()
         "mov    %0, %%"#reg";"  \
         :: "m"(var)             \
     )
+#endif
 
 void NativeThread::InstallImplicitProtection()
 {
@@ -232,6 +239,12 @@ void NativeThread::InstallImplicitProtection()
             static_cast<void*>(pregion));
 
     // Read every page from the high address to the low.
+#if defined(__aarch64__)
+    volatile uint8_t dontOptimizeThis;
+    for (uint8_t* p = stackTop; p >= pregion; p -= kPageSize) {
+        dontOptimizeThis = *p;
+    }
+#elif defined(__x86_64__)
     // We need to set sp register during reading in order to pass through the check statement
     // "if (unlikely(address + 65536 + 32 * sizeof(unsigned long) < regs->sp))"
     // in function __do_page_fault in linux-source/arch/x86/mm/fault.c.
@@ -244,6 +257,7 @@ void NativeThread::InstallImplicitProtection()
         dontOptimizeThis = *p;
     }
     SET_REG(rsp, oldRegSp);
+#endif
 
     Logger::V("NativeThread", "(again) installing stack protected region at %p to %p",
             static_cast<void*>(pregion), static_cast<void*>(pregion + kStackOverflowProtectedSize - 1));
@@ -357,12 +371,16 @@ Boolean NativeThread::Init(
     return true;
 }
 
+#if defined(__aarch64__)
+void NativeThread::InitCpu()
+{
+}
+#elif defined(__x86_64__)
 static void arch_prctl(int code, void* val)
 {
     syscall(__NR_arch_prctl, code, val);
 }
 
-#if defined(__x86_64__)
 void NativeThread::InitCpu()
 {
     NativeMutex::AutoLock lock(nullptr, *Locks::sModifyLdtLock);
@@ -968,8 +986,12 @@ void NativeThread::RemoveFromThreadGroup(
     }
 }
 
-#if defined(__x86_64__)
-
+#if defined(__android__)
+void NativeThread::SetUpAlternateSignalStack()
+{
+    // Bionic does this for us.
+}
+#elif defined(__linux__)
 static void SigAltStack(stack_t* newStack, stack_t* oldStack)
 {
     if (sigaltstack(newStack, oldStack) == -1) {
@@ -1000,7 +1022,6 @@ void NativeThread::SetUpAlternateSignalStack()
     Logger::V("NativeThread", "Alternate signal stack is %lu at %p",
             ss.ss_size, ss.ss_sp);
 }
-
 #endif
 
 Boolean NativeThread::Interrupted()
@@ -1050,18 +1071,75 @@ void NativeThread::SetHeldMutex(
     mTlsPtr.mHeldMutexes[level] = mutex;
 }
 
-#if defined(__x86_64__)
+#if defined(__android__)
+static const int kNiceValues[10] = {
+    ANDROID_PRIORITY_LOWEST,                // 1 (MIN_PRIORITY)
+    ANDROID_PRIORITY_BACKGROUND + 6,
+    ANDROID_PRIORITY_BACKGROUND + 3,
+    ANDROID_PRIORITY_BACKGROUND,
+    ANDROID_PRIORITY_NORMAL,                // 5 (NORM_PRIORITY)
+    ANDROID_PRIORITY_NORMAL - 2,
+    ANDROID_PRIORITY_NORMAL - 4,
+    ANDROID_PRIORITY_URGENT_DISPLAY + 3,
+    ANDROID_PRIORITY_URGENT_DISPLAY + 2,
+    ANDROID_PRIORITY_URGENT_DISPLAY         // 10 (MAX_PRIORITY)
+};
+
 void NativeThread::SetNativePriority(
     /* [in] */ int newPriority)
 {
-  // Do nothing.
+    if (newPriority < 1 || newPriority > 10) {
+        Logger::W("NativeThread", "bad priority %d", newPriority);
+        newPriority = 5;
+    }
+
+    int newNice = kNiceValues[newPriority - 1];
+    pid_t tid = GetTid();
+
+    if (newNice >= ANDROID_PRIORITY_BACKGROUND) {
+        set_sched_policy(tid, SP_BACKGROUND);
+    }
+    else if (getpriority(PRIO_PROCESS, tid) >= ANDROID_PRIORITY_BACKGROUND) {
+        set_sched_policy(tid, SP_FOREGROUND);
+    }
+
+    if (setpriority(PRIO_PROCESS, tid, newNice) != 0) {
+        Logger::W("NativeThread", "setPriority(PRIO_PROCESS, %d, %d) failed", tid, newNice);
+    }
+}
+
+int NativeThread::GetNativePriority()
+{
+    errno = 0;
+    int nativePriority = getpriority(PRIO_PROCESS, 0);
+    if (nativePriority == -1 && errno != 0) {
+        Logger::W("NativeThread", "getpriority failed");
+        return kNormThreadPriority;
+    }
+
+    int managedPriority = kMinThreadPriority;
+    for (Integer i = 0; i < ArrayLength(kNiceValues); i++) {
+        if (nativePriority >= kNiceValues[i]) {
+            break;
+        }
+        managedPriority++;
+    }
+    if (managedPriority > kMaxThreadPriority) {
+        managedPriority = kMaxThreadPriority;
+    }
+    return managedPriority;
+}
+#elif defined(__linux__)
+void NativeThread::SetNativePriority(
+    /* [in] */ int newPriority)
+{
+    // Do nothing.
 }
 
 int NativeThread::GetNativePriority()
 {
     return kNormThreadPriority;
 }
-
 #endif
 
 Boolean NativeThread::HoldsLock(

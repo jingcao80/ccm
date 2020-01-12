@@ -42,7 +42,7 @@ interface IHashtable
 
     Equals(
         [in] IInterface* obj,
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     Get(
         [in] IInterface* key,
@@ -55,7 +55,7 @@ interface IHashtable
         [out] ISet** entries);
 
     GetHashCode(
-        [out] Integer* hash);
+        [out] Integer& hash);
 
     GetKeys(
         [out] IEnumeration** keys);

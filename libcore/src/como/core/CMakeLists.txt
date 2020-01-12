@@ -16,13 +16,22 @@
 
 set(CORE_DIR ${LIBCORE_COMO_SRC_DIR}/core)
 
+if($ENV{PLATFORM} STREQUAL "linux")
 include_directories(
     ./
     ../
     ../../../inc
     ${EXTERNAL_DIR}/fdlibm53/inc
     ${INC_DIR}
-    ${OBJ_DIR})
+    ${LIBCORE_OBJ_DIR})
+elseif($ENV{PLATFORM} STREQUAL "android")
+include_directories(
+    ./
+    ../
+    ../../../inc
+    ${INC_DIR}
+    ${LIBCORE_OBJ_DIR})
+endif()
 
 set(SOURCES
     AbstractStringBuilder.cpp

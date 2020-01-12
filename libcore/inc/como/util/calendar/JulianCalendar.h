@@ -51,7 +51,7 @@ protected:
             /* [in] */ Integer normalizedYear) override;
 
         ECode ToString(
-            /* [out] */ String* desc) override;
+            /* [out] */ String& desc) override;
 
         ECode Clone(
             /* [in] */ const InterfaceID& iid,

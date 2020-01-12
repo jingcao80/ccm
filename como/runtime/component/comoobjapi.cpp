@@ -69,9 +69,9 @@ ECode CoAcquireClassFactory(
 }
 
 ECode CoGetBootClassLoader(
-    /* [out] */ AutoPtr<IClassObject>& object)
+    /* [out] */ AutoPtr<IClassLoader>& loader)
 {
-    object = CBootClassLoader::GetInstance();
+    loader = CBootClassLoader::GetInstance();
     return NOERROR;
 }
 

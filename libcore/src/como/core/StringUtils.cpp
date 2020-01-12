@@ -14,6 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
+#include "innerdef.h"
 #include "como/core/Character.h"
 #include "como/core/CoreUtils.h"
 #include "como/core/CStringBuilder.h"
@@ -30,7 +31,7 @@
 #include "como.core.IShort.h"
 #include "como.util.regex.IMatcher.h"
 #include "como.util.regex.IPattern.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::misc::DoubleConsts;
 using como::util::CFormatter;
@@ -431,7 +432,7 @@ static void GetChars(
     // Fall thru to fast mode for smaller numbers
     // assert(i2 <= 65536, i2);
     for (;;) {
-        q2 = ((unsigned Integer)(i2 * 52429)) >> (16+3);
+        q2 = ((UInteger)(i2 * 52429)) >> (16+3);
         r = i2 - ((q2 << 3) + (q2 << 1));  // r = i2-(q2*10) ...
         buf[--charPos] = digits[r];
         i2 = q2;
@@ -519,7 +520,7 @@ String StringUtils::ToOctalString(
 
     do {
         buf[--cursor] = digits[i & 7];
-    } while ((i = (((unsigned Integer)i) >> 3) ) != 0);
+    } while ((i = (((UInteger)i) >> 3) ) != 0);
 
     return String(buf + cursor, bufLen - cursor);
 }
@@ -538,7 +539,7 @@ String StringUtils::ToOctalString(
 
     do {
         buf[--cursor] = digits[((Integer)i) & 7];
-    } while ((i = (((unsigned Long)i) >> 3)) != 0);
+    } while ((i = (((ULong)i) >> 3)) != 0);
 
     return String(buf + cursor, bufLen - cursor);
 }
@@ -555,7 +556,7 @@ String StringUtils::ToHexString(
     const Char* DIGITS = upperCase ? upperCaseDigits : digits;
     do {
         buf[--cursor] = DIGITS[i & 0xf];
-    } while ((i = (((unsigned Integer)i) >> 4)) != 0 || (bufLen - cursor < minWidth));
+    } while ((i = (((UInteger)i) >> 4)) != 0 || (bufLen - cursor < minWidth));
 
     return String(buf + cursor, bufLen - cursor);
 }
@@ -576,7 +577,7 @@ String StringUtils::ToHexString(
     const Char* DIGITS = upperCase ? upperCaseDigits : digits;
     do {
         buf[--cursor] = DIGITS[((Integer)i) & 0xF];
-    } while ((i = (((unsigned Long)i) >> 4)) != 0);
+    } while ((i = (((ULong)i) >> 4)) != 0);
 
     return String(buf + cursor, bufLen - cursor);
 }
@@ -641,7 +642,7 @@ String StringUtils::ToHexString(
                     Math::GetExponent(d));
         }
         String answerStr;
-        answer->ToString(&answerStr);
+        answer->ToString(answerStr);
         return answerStr;
     }
 }
@@ -737,7 +738,7 @@ public:
 
     ECode Equals(
         /* [in] */ IInterface* obj,
-        /* [out] */ Boolean* isEqual) override;
+        /* [out] */ Boolean& isEqual) override;
 };
 
 COMO_INTERFACE_IMPL_1(CaseInsensitiveComparator, Object, IComparator);
@@ -750,8 +751,8 @@ ECode CaseInsensitiveComparator::Compare(
     VALIDATE_NOT_NULL(cmp);
 
     String s1, s2;
-    ICharSequence::Probe(c1)->ToString(&s1);
-    ICharSequence::Probe(c2)->ToString(&s2);
+    ICharSequence::Probe(c1)->ToString(s1);
+    ICharSequence::Probe(c2)->ToString(s2);
 
     Integer n1 = s1.GetLength();
     Integer n2 = s2.GetLength();
@@ -778,11 +779,9 @@ ECode CaseInsensitiveComparator::Compare(
 
 ECode CaseInsensitiveComparator::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* isEqual)
+    /* [out] */ Boolean& isEqual)
 {
-    VALIDATE_NOT_NULL(isEqual);
-
-    *isEqual = IComparator::Probe(obj) == (IComparator*)this;
+    isEqual = IComparator::Probe(obj) == (IComparator*)this;
     return NOERROR;
 }
 

@@ -21,11 +21,9 @@ namespace util {
 namespace locale {
 
 ECode Extension::ToString(
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
-    VALIDATE_NOT_NULL(desc);
-
-    *desc = GetID();
+    desc = GetID();
     return NOERROR;
 }
 

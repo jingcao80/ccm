@@ -23,7 +23,7 @@
 #include "como.util.ISet.h"
 #include "como.util.ISortedMap.h"
 #include "como.util.ISortedSet.h"
-#include <ccmautoptr.h>
+#include <comosp.h>
 
 namespace como {
 namespace util {

@@ -60,36 +60,30 @@ ECode CBoolean::CompareTo(
 
 ECode CBoolean::Equals(
     /* [in] */ IInterface* other,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     IBoolean* bo = IBoolean::Probe(other);
     if (bo == nullptr) {
-        *result = false;
+        result = false;
         return NOERROR;
     }
     Boolean ov;
     bo->GetValue(&ov);
-    *result = mValue == ov;
+    result = mValue == ov;
     return NOERROR;
 }
 
 ECode CBoolean::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
-    *hash = mValue ? 1231 : 1237;
+    hash = mValue ? 1231 : 1237;
     return NOERROR;
 }
 
 ECode CBoolean::ToString(
-    /* [out] */ String* str)
+    /* [out] */ String& str)
 {
-    VALIDATE_NOT_NULL(str);
-
-    *str = mValue ? "true" : "false";
+    str = mValue ? "true" : "false";
     return NOERROR;
 }
 

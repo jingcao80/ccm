@@ -22,7 +22,7 @@
 #include "como/util/Arrays.h"
 #include "como.core.IDouble.h"
 #include "como.core.IStringBuffer.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::CDouble;
 using como::core::CStringBuffer;
@@ -76,7 +76,7 @@ ECode ChoiceFormat::ApplyPattern(
                 return E_ILLEGAL_ARGUMENT_EXCEPTION;
             }
             String tempBuffer;
-            segments[0]->ToString(&tempBuffer);
+            segments[0]->ToString(tempBuffer);
             if (tempBuffer.Equals(String::ValueOf(0x221E))) {
                 startValue = IDouble::POSITIVE_INFINITY;
             }
@@ -105,7 +105,7 @@ ECode ChoiceFormat::ApplyPattern(
                 newChoiceFormats = DoubleArraySize(newChoiceFormats);
             }
             String tempBuffer;
-            segments[1]->ToString(&tempBuffer);
+            segments[1]->ToString(tempBuffer);
             newChoiceLimits[count] = startValue;
             newChoiceFormats[count] = tempBuffer;
             ++count;
@@ -124,7 +124,7 @@ ECode ChoiceFormat::ApplyPattern(
             newChoiceFormats = DoubleArraySize(newChoiceFormats);
         }
         String tempBuffer;
-        segments[1]->ToString(&tempBuffer);
+        segments[1]->ToString(tempBuffer);
         newChoiceLimits[count] = startValue;
         newChoiceFormats[count] = tempBuffer;
         ++count;
@@ -196,7 +196,7 @@ ECode ChoiceFormat::ToPattern(
             result->Append(U'\'');
         }
     }
-    return result->ToString(pattern);
+    return result->ToString(*pattern);
 }
 
 ECode ChoiceFormat::Constructor(
@@ -326,34 +326,29 @@ ECode ChoiceFormat::CloneImpl(
 }
 
 ECode ChoiceFormat::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
-    Integer result = mChoiceLimits.GetLength();
+    hash = mChoiceLimits.GetLength();
     if (mChoiceFormats.GetLength() > 0) {
-        result ^= mChoiceFormats[mChoiceFormats.GetLength() - 1].GetHashCode();
+        hash ^= mChoiceFormats[mChoiceFormats.GetLength() - 1].GetHashCode();
     }
-    *hash = result;
     return NOERROR;
 }
 
 ECode ChoiceFormat::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* same)
+    /* [out] */ Boolean& same)
 {
-    VALIDATE_NOT_NULL(same);
-
     ChoiceFormat* other = (ChoiceFormat*)IChoiceFormat::Probe(obj);
     if (other == nullptr) {
-        *same = false;
+        same = false;
         return NOERROR;
     }
     if (this == other) {
-        *same = true;
+        same = true;
         return NOERROR;
     }
-    *same = Arrays::Equals(mChoiceLimits, other->mChoiceLimits) &&
+    same = Arrays::Equals(mChoiceLimits, other->mChoiceLimits) &&
             Arrays::Equals(mChoiceFormats, other->mChoiceFormats);
     return NOERROR;
 }
@@ -367,7 +362,7 @@ Double ChoiceFormat::NextDouble(
     }
 
     /* zero's are also a special case */
-    if (d = 0.0) {
+    if (d == 0.0) {
         Double smallestPositiveDouble = Math::LongBitsToDouble(1LL);
         if (positive) {
             return smallestPositiveDouble;

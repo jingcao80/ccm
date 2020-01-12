@@ -80,19 +80,19 @@ AutoPtr<IComparator> TimeZoneNames::GetZONE_STRINGS_COMPARATOR()
     {
     public:
         Integer AddRef(
-            /* [in] */ HANDLE id)
+            /* [in] */ HANDLE id) override
         {
             return Object::AddRef(id);
         }
 
         Integer Release(
-            /* [in] */ HANDLE id)
+            /* [in] */ HANDLE id) override
         {
             return Object::Release(id);
         }
 
         IInterface* Probe(
-            /* [in] */ const InterfaceID& iid)
+            /* [in] */ const InterfaceID& iid) override
         {
             if (iid == IID_IInterface) {
                 return (IInterface*)(IComparator*)this;
@@ -105,12 +105,10 @@ AutoPtr<IComparator> TimeZoneNames::GetZONE_STRINGS_COMPARATOR()
 
         ECode GetInterfaceID(
             /* [in] */ IInterface* object,
-            /* [out] */ InterfaceID* iid)
+            /* [out] */ InterfaceID& iid) override
         {
-            VALIDATE_NOT_NULL(iid);
-
             if (object == (IInterface*)(IComparator*)this) {
-                *iid = IID_IComparator;
+                iid = IID_IComparator;
                 return NOERROR;
             }
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -130,7 +128,7 @@ AutoPtr<IComparator> TimeZoneNames::GetZONE_STRINGS_COMPARATOR()
 
         ECode Equals(
             /* [in] */ IInterface* obj,
-            /* [out] */ Boolean* isEqual) override
+            /* [out] */ Boolean& isEqual) override
         {
             return Object::Equals(obj, isEqual);
         }
@@ -216,13 +214,8 @@ static bool IsUtc(
             id == kUct || id == kUtc || id == kUniversal || id == kZulu;
 }
 
-inline String ToUTF8String(
-    /* [in] */ const ::icu::UnicodeString& value)
-{
-    StringByteSink sink;
-    value.toUTF8(sink);
-    return sink.ToString();
-}
+extern String ToUTF8String(
+    /* [in] */ const ::icu::UnicodeString& value);
 
 static bool SetStringArrayElement(
     /* [out] */ Array<String>& array,

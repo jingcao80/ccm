@@ -33,7 +33,7 @@
 #include "como.core.ISecurityManager.h"
 #include "como.security.IPermission.h"
 #include "como.util.locale.ILanguageTag.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::AutoLock;
 using como::core::CoreUtils;
@@ -572,10 +572,8 @@ ECode Locale::GetUnicodeLocaleKeys(
 }
 
 ECode Locale::ToString(
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
-    VALIDATE_NOT_NULL(desc);
-
     Boolean l = (mBaseLocale->GetLanguage().GetLength() != 0);
     Boolean s = (mBaseLocale->GetScript().GetLength() != 0);
     Boolean r = (mBaseLocale->GetRegion().GetLength() != 0);
@@ -677,7 +675,7 @@ ECode Locale::ToLanguageTag(
         buf->Append(subtag);
     }
 
-    buf->ToString(langTag);
+    buf->ToString(*langTag);
     {
         AutoLock lock(this);
         VOLATILE_GET(String languageTag, mLanguageTag);
@@ -724,7 +722,7 @@ ECode Locale::GetISO3Language(
     String language3 = ICU::GetISO3Language(lang);
     if (!lang.IsEmpty() && language3.IsEmpty()) {
         String str;
-        ToString(&str);
+        ToString(str);
         Logger::E("Locale", "Couldn't find 3-letter language code for %sFormatData_%sShortLanguage",
                 lang.string(), str.string());
         return E_MISSING_RESOURCE_EXCEPTION;
@@ -752,7 +750,7 @@ ECode Locale::GetISO3Country(
     String country3 = ICU::GetISO3Country(String("en-") + region);
     if (!region.IsEmpty() && country3.IsEmpty()) {
         String str;
-        ToString(&str);
+        ToString(str);
         Logger::E("Locale", "Couldn't find 3-letter country code for %sFormatData_%sShortCountry",
                 region.string(), str.string());
         return E_MISSING_RESOURCE_EXCEPTION;
@@ -808,7 +806,7 @@ ECode Locale::NormalizeAndValidateLanguage(
     /* [in] */ Boolean strict,
     /* [out] */ String* retLanguage)
 {
-    if (language.IsNullOrEmpty()) {
+    if (language.IsEmpty()) {
         *retLanguage = "";
         return NOERROR;
     }
@@ -834,9 +832,9 @@ Boolean Locale::IsAsciiAlphaNum(
 {
     for (Integer i = 0; i < string.GetByteLength(); i++) {
         char c = string.string()[i];
-        if (!(c >= U'a' && c <= U'z' ||
-                c >= U'A' && c <= U'Z' ||
-                c >= U'0' && c <= U'9')) {
+        if (!((c >= U'a' && c <= U'z') ||
+                (c >= U'A' && c <= U'Z') ||
+                (c >= U'0' && c <= U'9'))) {
             return false;
         }
     }
@@ -913,7 +911,7 @@ ECode Locale::NormalizeAndValidateRegion(
     /* [in] */ Boolean strict,
     /* [out] */ String* retRegion)
 {
-    if (region.IsNullOrEmpty()) {
+    if (region.IsEmpty()) {
         *retRegion = "";
         return NOERROR;
     }
@@ -947,8 +945,8 @@ Boolean Locale::IsValidBcp47Alpha(
 
     for (Integer i = 0; i < length; i++) {
         char c = string.string()[i];
-        if (!(c >= U'a' && c <= U'z' ||
-                c >= U'A' && c <= U'Z')) {
+        if (!((c >= U'a' && c <= U'z') ||
+                (c >= U'A' && c <= U'Z'))) {
             return false;
         }
     }
@@ -1017,7 +1015,7 @@ ECode Locale::NormalizeAndValidateVariant(
     /* [in] */ const String& variant,
     /* [out] */ String* retVariant)
 {
-    if (variant.IsNullOrEmpty()) {
+    if (variant.IsEmpty()) {
         *retVariant = "";
         return NOERROR;
     }
@@ -1120,7 +1118,7 @@ ECode Locale::GetDisplayName(
     if (count > 1) {
         buffer->Append(U')');
     }
-    return buffer->ToString(name);
+    return buffer->ToString(*name);
 }
 
 ECode Locale::CloneImpl(
@@ -1138,45 +1136,40 @@ ECode Locale::CloneImpl(
 }
 
 ECode Locale::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
-    VOLATILE_GET(Integer hc, mHashCodeValue);
-    if (hc == 0) {
-        mBaseLocale->GetHashCode(&hc);
+    VOLATILE_GET(hash, mHashCodeValue);
+    if (hash == 0) {
+        mBaseLocale->GetHashCode(hash);
         if (mLocaleExtensions != nullptr) {
             Integer lhc;
-            mLocaleExtensions->GetHashCode(&lhc);
-            hc ^= lhc;
+            mLocaleExtensions->GetHashCode(lhc);
+            hash ^= lhc;
         }
-        VOLATILE_SET(mHashCodeValue, hc);
+        VOLATILE_SET(mHashCodeValue, hash);
     }
-    *hash = hc;
     return NOERROR;
 }
 
 ECode Locale::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* same)
+    /* [out] */ Boolean& same)
 {
-    VALIDATE_NOT_NULL(same);
-
     if (IInterface::Equals((ILocale*)this, obj)) {
-        *same = true;
+        same = true;
         return NOERROR;
     }
     if (ILocale::Probe(obj) == nullptr) {
-        *same = false;
+        same = false;
         return NOERROR;
     }
     Locale* l = (Locale*)ILocale::Probe(obj);
     BaseLocale* otherBase = l->mBaseLocale;
-    if (mBaseLocale->Equals((IObject*)otherBase, same), !*same) {
+    if (mBaseLocale->Equals((IObject*)otherBase, same), !same) {
         return NOERROR;
     }
     if (mLocaleExtensions == nullptr) {
-        *same = l->mLocaleExtensions == nullptr;
+        same = l->mLocaleExtensions == nullptr;
         return NOERROR;
     }
     return mLocaleExtensions->Equals((IObject*)l->mLocaleExtensions, same);
@@ -1245,7 +1238,7 @@ AutoPtr<IInterface> Locale::Cache::CreateObject(
 //-------------------------------------------------------------------------
 
 const InterfaceID IID_LocaleKey =
-        {{0x90e49e2f,0xbd27,0x480b,0xb2a5,{0x2,0x3,0x3,0x8,0xb,0x1,0xf,0xb,0x9,0xf,0x6,0xd}}, &CID_libcore};
+        {{0x90e49e2f,0xbd27,0x480b,0xb2a5,{0x23,0x38,0xb1,0xfb,0x9f,0x6d}}, &CID_libcore};
 
 Locale::LocaleKey::LocaleKey(
     /* [in] */ BaseLocale* baseLocale,
@@ -1255,10 +1248,10 @@ Locale::LocaleKey::LocaleKey(
 {
     // Calculate the hash value here because it's always used.
     Integer h;
-    mBase->GetHashCode(&h);
+    mBase->GetHashCode(h);
     if (mExts != nullptr) {
         Integer eh;
-        mExts->GetHashCode(&eh);
+        mExts->GetHashCode(eh);
         h ^= eh;
     }
     mHash = h;
@@ -1275,38 +1268,34 @@ IInterface* Locale::LocaleKey::Probe(
 
 ECode Locale::LocaleKey::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* same)
+    /* [out] */ Boolean& same)
 {
-    VALIDATE_NOT_NULL(same);
-
     if (IInterface::Equals((IObject*)this, obj)) {
-        *same = true;
+        same = true;
         return NOERROR;
     }
     if (obj->Probe(IID_LocaleKey) == nullptr) {
-        *same = false;
+        same = false;
         return NOERROR;
     }
     LocaleKey* other = (LocaleKey*)IObject::Probe(obj);
     Boolean equals;
     if (mHash != other->mHash ||
-            (mBase->Equals((IObject*)other->mBase, &equals), !equals)) {
-        *same = false;
+            (mBase->Equals((IObject*)other->mBase, equals), !equals)) {
+        same = false;
         return NOERROR;
     }
     if (mExts == nullptr) {
-        *same = other->mExts == nullptr;
+        same = other->mExts == nullptr;
         return NOERROR;
     }
     return mExts->Equals((IObject*)other->mExts, same);
 }
 
 ECode Locale::LocaleKey::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
-    *hash = mHash;
+    hash = mHash;
     return NOERROR;
 }
 

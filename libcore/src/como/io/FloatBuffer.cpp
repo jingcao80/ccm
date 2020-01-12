@@ -204,10 +204,8 @@ ECode FloatBuffer::GetArrayOffset(
 }
 
 ECode FloatBuffer::ToString(
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
-    VALIDATE_NOT_NULL(desc);
-
     AutoPtr<IStringBuffer> sb;
     CStringBuffer::New(IID_IStringBuffer, (IInterface**)&sb);
     sb->Append(Object::GetCoclassName(this));
@@ -226,11 +224,9 @@ ECode FloatBuffer::ToString(
 }
 
 ECode FloatBuffer::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
-    Integer h = 1;
+    hash = 1;
     Integer p;
     GetPosition(&p);
     Integer i;
@@ -238,32 +234,29 @@ ECode FloatBuffer::GetHashCode(
     for (i = i - 1; i >= p; i--) {
         Float f;
         Get(i, &f);
-        h = 31 * h + (Integer)f;
+        hash = 31 * hash + (Integer)f;
     }
-    *hash = h;
     return NOERROR;
 }
 
 ECode FloatBuffer::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* same)
+    /* [out] */ Boolean& same)
 {
-    VALIDATE_NOT_NULL(same);
-
     FloatBuffer* other = (FloatBuffer*)IFloatBuffer::Probe(obj);
     if (other == nullptr) {
-        *same = false;
+        same = false;
         return NOERROR;
     }
     if (this == other) {
-        *same = true;
+        same = true;
         return NOERROR;
     }
     Integer thisRemaining, otherRemaining;
     Remaining(&thisRemaining);
     other->Remaining(&otherRemaining);
     if (thisRemaining != otherRemaining) {
-        *same = false;
+        same = false;
         return NOERROR;
     }
     Integer p;
@@ -276,11 +269,11 @@ ECode FloatBuffer::Equals(
         Get(i, &thisf);
         other->Get(j, &otherf);
         if (!Equals(thisf, otherf)) {
-            *same = false;
+            same = false;
             return NOERROR;
         }
     }
-    *same = true;
+    same = true;
     return NOERROR;
 }
 

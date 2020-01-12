@@ -21,7 +21,7 @@
 #include "como.util.IIterator.h"
 #include "como.util.IList.h"
 #include "como.util.IListIterator.h"
-#include <ccmrefbase.h>
+#include <comoref.h>
 
 namespace como {
 namespace util {
@@ -172,10 +172,10 @@ public:
 
     ECode Equals(
         /* [in] */ IInterface* obj,
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode GetHashCode(
-        /* [out] */ Integer* hash) override;
+        /* [out] */ Integer& hash) override;
 
     virtual ECode RemoveRange(
         /* [in] */ Integer fromIndex,

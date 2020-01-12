@@ -16,8 +16,8 @@
 
 #include "como/util/AbstractList.h"
 #include "como.util.IRandomAccess.h"
-#include <ccmautoptr.h>
-#include <ccmlogger.h>
+#include <comosp.h>
+#include <comolog.h>
 
 namespace como {
 namespace util {
@@ -302,16 +302,14 @@ ECode AbstractList::SubList(
 
 ECode AbstractList::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     if (IInterface::Equals(obj, (IList*)this)) {
-        *result = true;
+        result = true;
         return NOERROR;
     }
     if (IList::Probe(obj) == nullptr) {
-        *result = false;
+        result = false;
         return NOERROR;
     }
 
@@ -324,29 +322,26 @@ ECode AbstractList::Equals(
         e1->Next(&o1);
         e2->Next(&o2);
         if (!(o1 == nullptr ? o2 == nullptr : Object::Equals(o1, o2))) {
-            *result = false;
+            result = false;
             return NOERROR;
         }
     }
-    *result = (e1->HasNext(&hasNext1), e2->HasNext(&hasNext2), !(hasNext1 || hasNext2));
+    result = (e1->HasNext(&hasNext1), e2->HasNext(&hasNext2), !(hasNext1 || hasNext2));
     return NOERROR;
 }
 
 ECode AbstractList::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
-    Integer h = 1;
+    hash = 1;
     AutoPtr<IIterator> it;
     GetIterator(&it);
     Boolean hasNext;
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> e;
         it->Next(&e);
-        h = 31 * h + (e == nullptr ? 0 : Object::GetHashCode(e));
+        hash = 31 * hash + (e == nullptr ? 0 : Object::GetHashCode(e));
     }
-    *hash = h;
     return NOERROR;
 }
 
@@ -783,16 +778,14 @@ ECode Sublist::GetListIterator(
 
         ECode GetInterfaceID(
             /* [in] */ IInterface* object,
-            /* [out] */ InterfaceID* iid) override
+            /* [out] */ InterfaceID& iid) override
         {
-            VALIDATE_NOT_NULL(iid);
-
             if (object == (IInterface*)(IListIterator*)this) {
-                *iid = IID_IListIterator;
+                iid = IID_IListIterator;
                 return NOERROR;
             }
             else if (object == (IInterface*)(IIterator*)this) {
-                *iid = IID_IIterator;
+                iid = IID_IIterator;
                 return NOERROR;
             }
             return E_ILLEGAL_ARGUMENT_EXCEPTION;

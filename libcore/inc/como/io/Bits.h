@@ -19,7 +19,7 @@
 
 #include "como/io/ByteBuffer.h"
 #include "como.io.IByteOrder.h"
-#include <ccmautoptr.h>
+#include <comosp.h>
 
 namespace como {
 namespace io {

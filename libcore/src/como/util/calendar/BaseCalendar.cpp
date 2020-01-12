@@ -16,7 +16,7 @@
 
 #include "como/util/calendar/BaseCalendar.h"
 #include "como/util/calendar/CalendarUtils.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 namespace como {
 namespace util {

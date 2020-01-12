@@ -102,11 +102,9 @@ ECode AtomicBoolean::GetAndSet(
 }
 
 ECode AtomicBoolean::ToString(
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
-    VALIDATE_NOT_NULL(desc);
-
-    *desc = (mValue.LoadAcquire() != 0 ? "true" : "false");
+    desc = (mValue.LoadAcquire() != 0 ? "true" : "false");
     return NOERROR;
 }
 

@@ -14,12 +14,13 @@
 // limitations under the License.
 //=========================================================================
 
+#include "innerdef.h"
 #include "como/core/Math.h"
 #include "como/util/HashMap.h"
 #include "como/util/TreeNode.h"
 #include "como.core.IInteger.h"
 #include "como.util.IIterator.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::IInteger;
 using como::core::Math;
@@ -39,7 +40,7 @@ Integer HashMap::Hash(
         return 0;
     }
     h = Object::GetHashCode(key);
-    h = h ^ (((unsigned Integer)h) >> 16);
+    h = h ^ (((UInteger)h) >> 16);
     return h;
 }
 
@@ -59,11 +60,11 @@ Integer HashMap::TableSizeFor(
     /* [in] */ Integer cap)
 {
     Integer n = cap - 1;
-    n |= ((unsigned Integer)n) >> 1;
-    n |= ((unsigned Integer)n) >> 2;
-    n |= ((unsigned Integer)n) >> 4;
-    n |= ((unsigned Integer)n) >> 8;
-    n |= ((unsigned Integer)n) >> 16;
+    n |= ((UInteger)n) >> 1;
+    n |= ((UInteger)n) >> 2;
+    n |= ((UInteger)n) >> 4;
+    n |= ((UInteger)n) >> 8;
+    n |= ((UInteger)n) >> 16;
     return (n < 0) ? 1 : (n >= MAXIMUM_CAPACITY) ? MAXIMUM_CAPACITY : n + 1;
 }
 
@@ -639,13 +640,13 @@ ECode HashMap::AfterNodeRemoval(
 
 ECode HashMap::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return AbstractMap::Equals(obj, result);
 }
 
 ECode HashMap::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
     return AbstractMap::GetHashCode(hash);
 }
@@ -673,18 +674,16 @@ ECode HashMap::Node::GetValue(
 }
 
 ECode HashMap::Node::ToString(
-    /* [out] */ String* str)
+    /* [out] */ String& str)
 {
-    CHECK(str != nullptr);
-    *str = Object::ToString(mKey) + "=" + Object::ToString(mValue);
+    str = Object::ToString(mKey) + "=" + Object::ToString(mValue);
     return NOERROR;
 }
 
 ECode HashMap::Node::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    CHECK(hash);
-    *hash = Object::GetHashCode(mKey) ^ Object::GetHashCode(mValue);
+    hash = Object::GetHashCode(mKey) ^ Object::GetHashCode(mValue);
     return NOERROR;
 }
 
@@ -702,11 +701,10 @@ ECode HashMap::Node::SetValue(
 
 ECode HashMap::Node::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    CHECK(result);
     if (IInterface::Equals(obj, (IMapEntry*)this)) {
-        *result = true;
+        result = true;
         return NOERROR;
     }
     if (IMapEntry::Probe(obj) != nullptr) {
@@ -716,11 +714,11 @@ ECode HashMap::Node::Equals(
         e->GetValue(&value);
         if (Object::Equals(mKey, key) &&
                 Object::Equals(mValue, value)) {
-            *result = true;
+            result = true;
             return NOERROR;
         }
     }
-    *result = false;
+    result = false;
     return NOERROR;
 }
 

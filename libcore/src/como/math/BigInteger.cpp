@@ -14,6 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
+#include "innerdef.h"
 #include "como/core/AutoLock.h"
 #include "como/core/Character.h"
 #include "como/core/Math.h"
@@ -24,7 +25,7 @@
 #include "como/math/Conversion.h"
 #include "como/math/Logical.h"
 #include "como/math/Primality.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::AutoLock;
 using como::core::Character;
@@ -147,7 +148,7 @@ ECode BigInteger::Constructor(
             digits[i] = r;
         }
         // Clear any extra bits.
-        digits[numberLength - 1] = ((unsigned Integer)digits[numberLength - 1]) >> ((-numBits) & 31);
+        digits[numberLength - 1] = ((UInteger)digits[numberLength - 1]) >> ((-numBits) & 31);
         SetRepresentation(sign, numberLength, digits);
     }
     mIsValid = true;
@@ -727,7 +728,7 @@ ECode BigInteger::LongValue(
     }
     PrepareRepresentation();
     Long lv = mNumberLength > 1 ?
-            ((Long) mDigits[1]) << 32 | mDigits[0] & 0xFFFFFFFFLL :
+            ((Long) mDigits[1]) << 32 | (mDigits[0] & 0xFFFFFFFFLL) :
             mDigits[0] & 0xFFFFFFFFLL;
     *value = mSign * lv;
     return NOERROR;
@@ -796,10 +797,8 @@ ECode BigInteger::Max(
 }
 
 ECode BigInteger::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
     if (mHashCode == 0) {
         PrepareRepresentation();
         Integer h = 0;
@@ -808,37 +807,33 @@ ECode BigInteger::GetHashCode(
         }
         mHashCode = h * mSign;
     }
-    *hash = mHashCode;
+    hash = mHashCode;
     return NOERROR;
 }
 
 ECode BigInteger::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* same)
+    /* [out] */ Boolean& same)
 {
-    VALIDATE_NOT_NULL(same);
-
     BigInteger* value = (BigInteger*)IBigInteger::Probe(obj);
     if (this == value) {
-        *same = true;
+        same = true;
         return NOERROR;
     }
     if (value == nullptr) {
-        *same = false;
+        same = false;
         return NOERROR;
     }
     Integer cmp;
     CompareTo(obj, &cmp);
-    *same = (cmp == 0);
+    same = (cmp == 0);
     return NOERROR;
 }
 
 ECode BigInteger::ToString(
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
-    VALIDATE_NOT_NULL(desc);
-
-    *desc = GetBigInt()->DecString();
+    desc = GetBigInt()->DecString();
     return NOERROR;
 }
 
@@ -1114,7 +1109,7 @@ Integer BigInteger::MultiplyByInteger(
     for (Integer i = 0; i < aSize; i++) {
         carry += (a[i] & 0xFFFFFFFFLL) * (factor & 0xFFFFFFFFLL);
         res[i] = (Integer)carry;
-        carry = ((unsigned Long)carry) >> 32;
+        carry = ((ULong)carry) >> 32;
     }
     return (Integer)carry;
 }

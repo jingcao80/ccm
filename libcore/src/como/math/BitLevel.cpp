@@ -14,6 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
+#include "innerdef.h"
 #include "como/core/Math.h"
 #include "como/math/BitLevel.h"
 
@@ -95,7 +96,7 @@ void BitLevel::ShiftLeftOneBit(
     for (Integer i = 0; i < srcLen; i++) {
         Integer value = source[i];
         result[i] = (value << 1) | carry;
-        carry = ((unsigned Integer)value) >> 31;
+        carry = ((UInteger)value) >> 31;
     }
     if (carry != 0) {
         result[srcLen] = carry;
@@ -174,10 +175,10 @@ Boolean BitLevel::ShiftRight(
 
         allZero &= (source[i] << leftShiftCount) == 0;
         for (i = 0; i < resultLen - 1; i++) {
-            result[i] = (((unsigned Integer)source[i + intCount]) >> count) |
+            result[i] = (((UInteger)source[i + intCount]) >> count) |
                 (source[i + intCount + 1] << leftShiftCount);
         }
-        result[i] = (((unsigned Integer)source[i + intCount]) >> count);
+        result[i] = (((UInteger)source[i + intCount]) >> count);
         i++;
     }
 

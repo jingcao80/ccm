@@ -33,7 +33,7 @@ EXTERN_C COM_PUBLIC ECode CoAcquireClassFactory(
     /* [out] */ AutoPtr<IClassObject>& object);
 
 EXTERN_C COM_PUBLIC ECode CoGetBootClassLoader(
-    /* [out] */ AutoPtr<IClassObject>& object);
+    /* [out] */ AutoPtr<IClassLoader>& loader);
 
 } // namespace como
 

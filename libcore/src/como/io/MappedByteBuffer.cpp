@@ -71,7 +71,7 @@ HANDLE MappedByteBuffer::MappingOffset()
 {
     Integer ps = Bits::PageSize();
     HANDLE offset = mAddress % ps;
-    return (offset >= 0) ? offset : (ps + offset);
+    return offset;
 }
 
 HANDLE MappedByteBuffer::MappingAddress(

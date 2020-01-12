@@ -17,7 +17,7 @@
 #include "libcore/io/Memory.h"
 #include "libcore/io/MemoryMappedFile.h"
 #include "libcore/io/NioBufferIterator.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
 

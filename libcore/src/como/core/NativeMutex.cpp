@@ -18,7 +18,7 @@
 #include "como/core/NativeMutex.h"
 #include "como/core/NativeThread.h"
 #include "como/core/NativeTimeUtils.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 #include <errno.h>
 #include <linux/futex.h>
 

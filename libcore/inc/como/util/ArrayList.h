@@ -23,7 +23,7 @@
 #include "como.io.ISerializable.h"
 #include "como.util.IArrayList.h"
 #include "como.util.IRandomAccess.h"
-#include <ccmautoptr.h>
+#include <comosp.h>
 
 using como::core::ICloneable;
 using como::core::IInteger;
@@ -293,10 +293,10 @@ public:
 
     ECode Equals(
         /* [in] */ IInterface* obj,
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode GetHashCode(
-        /* [out] */ Integer* hash) override;
+        /* [out] */ Integer& hash) override;
 
 protected:
     ECode CloneImpl(

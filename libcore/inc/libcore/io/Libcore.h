@@ -18,7 +18,7 @@
 #define __LIBCORE_IO_LIBCORE_H__
 
 #include "libcore.io.IOs.h"
-#include <ccmautoptr.h>
+#include <comosp.h>
 
 namespace libcore {
 namespace io {

@@ -17,7 +17,7 @@
 #include "como/core/Math.h"
 #include "como/util/Arrays.h"
 #include "como/util/ArrayList.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::IID_ICloneable;
 using como::core::Math;
@@ -574,13 +574,13 @@ ECode ArrayList::ContainsAll(
 
 ECode ArrayList::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return AbstractList::Equals(obj, result);
 }
 
 ECode ArrayList::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
     return AbstractList::GetHashCode(hash);
 }
@@ -970,16 +970,14 @@ ECode ArrayList::Sublist::GetListIterator(
 
         ECode GetInterfaceID(
             /* [in] */ IInterface* object,
-            /* [out] */ InterfaceID* iid) override
+            /* [out] */ InterfaceID& iid) override
         {
-            VALIDATE_NOT_NULL(iid);
-
             if (object == (IInterface*)(IListIterator*)this) {
-                *iid = IID_IListIterator;
+                iid = IID_IListIterator;
                 return NOERROR;
             }
             else if (object == (IInterface*)(IIterator*)this) {
-                *iid = IID_IIterator;
+                iid = IID_IIterator;
                 return NOERROR;
             }
             return E_ILLEGAL_ARGUMENT_EXCEPTION;

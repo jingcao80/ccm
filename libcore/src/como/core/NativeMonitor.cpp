@@ -20,7 +20,7 @@
 #include "como/core/NativeMutex.h"
 #include "como/core/NativeObject.h"
 #include "como/core/NativeThreadList.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 #include <inttypes.h>
 
 namespace como {
@@ -634,6 +634,7 @@ ECode NativeMonitor::Notify(
             return NOERROR;
         }
     }
+    return NOERROR;
 }
 
 ECode NativeMonitor::NotifyAll(

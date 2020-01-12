@@ -24,7 +24,7 @@
 #include "como.io.charset.ICharset.h"
 #include "como.util.IFormatter.h"
 #include "como.util.ILocale.h"
-#include <ccmautoptr.h>
+#include <comosp.h>
 
 using como::io::charset::ICharset;
 using como::util::IFormatter;

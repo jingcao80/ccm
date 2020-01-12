@@ -17,7 +17,7 @@
 #include "como/math/CBigDecimal.h"
 #include "como/math/CBigInteger.h"
 #include "como/math/CMathContext.h"
-#include <ccmapi.h>
+#include <comoapi.h>
 #include <new>
 
 namespace como {
@@ -31,7 +31,7 @@ ECode CBigDecimal::New(
     /* [out] */ IInterface** object)
 {
     AutoPtr<IClassObject> clsObject;
-    ECode ec = CoAcquireClassFactory(CID_CBigDecimal, nullptr, &clsObject);
+    ECode ec = CoAcquireClassFactory(CID_CBigDecimal, nullptr, clsObject);
     if (FAILED(ec)) return ec;
 
     void* addr = calloc(sizeof(CBigDecimal), 1);
@@ -44,7 +44,7 @@ ECode CBigDecimal::New(
         return ec;
     }
     AutoPtr<IMetaComponent> comp;
-    clsObject->GetMetadate(&comp);
+    clsObject->GetMetadate(comp);
     _obj->AttachMetadata(comp, String("como::math::CBigDecimal"));
     *object = _obj->Probe(iid);
     REFCOUNT_ADD(*object);
@@ -58,7 +58,7 @@ ECode CBigDecimal::New(
     /* [out] */ IInterface** object)
 {
     AutoPtr<IClassObject> clsObject;
-    ECode ec = CoAcquireClassFactory(CID_CBigDecimal, nullptr, &clsObject);
+    ECode ec = CoAcquireClassFactory(CID_CBigDecimal, nullptr, clsObject);
     if (FAILED(ec)) return ec;
 
     void* addr = calloc(sizeof(CBigDecimal), 1);
@@ -71,7 +71,7 @@ ECode CBigDecimal::New(
         return ec;
     }
     AutoPtr<IMetaComponent> comp;
-    clsObject->GetMetadate(&comp);
+    clsObject->GetMetadate(comp);
     _obj->AttachMetadata(comp, String("como::math::CBigDecimal"));
     *object = _obj->Probe(iid);
     REFCOUNT_ADD(*object);
@@ -85,7 +85,7 @@ ECode CBigInteger::New(
     /* [out] */ IInterface** object)
 {
     AutoPtr<IClassObject> clsObject;
-    ECode ec = CoAcquireClassFactory(CID_CBigInteger, nullptr, &clsObject);
+    ECode ec = CoAcquireClassFactory(CID_CBigInteger, nullptr, clsObject);
     if (FAILED(ec)) return ec;
 
     void* addr = calloc(sizeof(CBigInteger), 1);
@@ -98,7 +98,7 @@ ECode CBigInteger::New(
         return ec;
     }
     AutoPtr<IMetaComponent> comp;
-    clsObject->GetMetadate(&comp);
+    clsObject->GetMetadate(comp);
     _obj->AttachMetadata(comp, String("como::math::CBigInteger"));
     *object = _obj->Probe(iid);
     REFCOUNT_ADD(*object);
@@ -112,7 +112,7 @@ ECode CBigInteger::New(
     /* [out] */ IInterface** object)
 {
     AutoPtr<IClassObject> clsObject;
-    ECode ec = CoAcquireClassFactory(CID_CBigInteger, nullptr, &clsObject);
+    ECode ec = CoAcquireClassFactory(CID_CBigInteger, nullptr, clsObject);
     if (FAILED(ec)) return ec;
 
     void* addr = calloc(sizeof(CBigInteger), 1);
@@ -125,7 +125,7 @@ ECode CBigInteger::New(
         return ec;
     }
     AutoPtr<IMetaComponent> comp;
-    clsObject->GetMetadate(&comp);
+    clsObject->GetMetadate(comp);
     _obj->AttachMetadata(comp, String("como::math::CBigInteger"));
     *object = _obj->Probe(iid);
     REFCOUNT_ADD(*object);
@@ -140,7 +140,7 @@ ECode CBigInteger::New(
     /* [out] */ IInterface** object)
 {
     AutoPtr<IClassObject> clsObject;
-    ECode ec = CoAcquireClassFactory(CID_CBigInteger, nullptr, &clsObject);
+    ECode ec = CoAcquireClassFactory(CID_CBigInteger, nullptr, clsObject);
     if (FAILED(ec)) return ec;
 
     void* addr = calloc(sizeof(CBigInteger), 1);
@@ -153,7 +153,7 @@ ECode CBigInteger::New(
         return ec;
     }
     AutoPtr<IMetaComponent> comp;
-    clsObject->GetMetadate(&comp);
+    clsObject->GetMetadate(comp);
     _obj->AttachMetadata(comp, String("como::math::CBigInteger"));
     *object = _obj->Probe(iid);
     REFCOUNT_ADD(*object);

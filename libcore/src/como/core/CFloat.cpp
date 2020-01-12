@@ -133,35 +133,31 @@ ECode CFloat::CompareTo(
 
 ECode CFloat::Equals(
     /* [in] */ IInterface* other,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     IFloat* f = IFloat::Probe(other);
     if (f == nullptr) {
-        *result = false;
+        result = false;
         return NOERROR;
     }
 
     Float fv;
     f->GetValue(&fv);
-    *result = mValue == fv;
+    result = mValue == fv;
     return NOERROR;
 }
 
 ECode CFloat::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
-    *hash = (Integer)mValue;
+    hash = (Integer)mValue;
     return NOERROR;
 }
 
 ECode CFloat::ToString(
-    /* [out] */ String* str)
+    /* [out] */ String& str)
 {
-    VALIDATE_NOT_NULL(str);
+    str = String::Format("%f", mValue);
     return NOERROR;
 }
 

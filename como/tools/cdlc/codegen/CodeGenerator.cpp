@@ -2045,26 +2045,26 @@ String CodeGenerator::Emitter::EmitValue(
         }
         case como::TypeKind::Float: {
             if (mv->mProperties & VALUE_POSITIVE_INFINITY) {
-                return String("1.0f / 0.0f");
+                return "1.0f / 0.0f";
             }
             else if (mv->mProperties & VALUE_NEGATIVE_INFINITY) {
-                return String("-1.0f / 0.0f");
+                return "-1.0f / 0.0f";
             }
             else if (mv->mProperties & VALUE_NAN) {
-                return String("0.0f / 0.0f");
+                return "0.0f / 0.0f";
             }
             return String::Format(mv->mProperties & VALUE_SCIENTIFIC_NOTATION
                     ? "%e" : "%f", (float)mv->mFloatingPointValue);
         }
         case como::TypeKind::Double: {
             if (mv->mProperties & VALUE_POSITIVE_INFINITY) {
-                return String("1.0d / 0.0d");
+                return "1.0 / 0.0";
             }
             else if (mv->mProperties & VALUE_NEGATIVE_INFINITY) {
-                return String("-1.0d / 0.0d");
+                return "-1.0 / 0.0";
             }
             else if (mv->mProperties & VALUE_NAN) {
-                return String("0.0d / 0.0d");
+                return "0.0 / 0.0";
             }
             return String::Format(mv->mProperties & VALUE_SCIENTIFIC_NOTATION
                     ? "%.16e" : "%f", mv->mFloatingPointValue);
@@ -2090,7 +2090,7 @@ String CodeGenerator::Emitter::EmitValue(
             break;
     }
 
-    return nullptr;
+    return "";
 }
 
 String CodeGenerator::Emitter::EmitConstantsAndTypesRecursivelyInCpp(

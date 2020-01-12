@@ -31,7 +31,7 @@
 #include "como.util.ISortedMap.h"
 #include "como.util.ISortedSet.h"
 #include "como.util.ITreeMap.h"
-#include <ccmautoptr.h>
+#include <comosp.h>
 
 using como::core::ICloneable;
 using como::core::SyncObject;
@@ -860,13 +860,13 @@ private:
 
         ECode Equals(
             /* [in] */ IInterface* obj,
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
 
         ECode GetHashCode(
-            /* [out] */ Integer* hash) override;
+            /* [out] */ Integer& hash) override;
 
         ECode ToString(
-            /* [out] */ String* str) override;
+            /* [out] */ String& str) override;
 
     public:
         AutoPtr<IInterface> mKey;

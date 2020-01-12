@@ -21,7 +21,7 @@
 #include "como/util/locale/Extension.h"
 #include "como.util.IMap.h"
 #include "como.util.ISet.h"
-#include <ccmautoptr.h>
+#include <comosp.h>
 
 using como::core::SyncObject;
 
@@ -69,16 +69,16 @@ public:
         /* [in] */ const String& ukey);
 
     ECode ToString(
-        /* [out] */ String* desc) override;
+        /* [out] */ String& desc) override;
 
     String GetID();
 
     ECode GetHashCode(
-        /* [out] */ Integer* hash) override;
+        /* [out] */ Integer& hash) override;
 
     ECode Equals(
         /* [in] */ IInterface* obj,
-        /* [out] */ Boolean* same) override;
+        /* [out] */ Boolean& same) override;
 
 private:
     LocaleExtensions(

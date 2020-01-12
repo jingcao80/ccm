@@ -17,7 +17,8 @@
 #ifndef __COMO_UTIL_CONCURRENT_HELPERS_H__
 #define __COMO_UTIL_CONCURRENT_HELPERS_H__
 
-#include <ccmtypes.h>
+#include <comotypes.h>
+#include <comointfs.h>
 
 namespace como {
 namespace util {

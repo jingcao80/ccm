@@ -136,7 +136,7 @@ public:
 
     ECode GetHashCode(
         /* [in] */ IFile* f,
-        /* [out] */ Integer* hash) override;
+        /* [out] */ Integer& hash) override;
 
 protected:
     static String ParentOrNull(

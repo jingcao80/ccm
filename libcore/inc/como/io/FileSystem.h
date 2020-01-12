@@ -138,7 +138,7 @@ public:
 
     virtual ECode GetHashCode(
         /* [in] */ IFile* f,
-        /* [out] */ Integer* hash) = 0;
+        /* [out] */ Integer& hash) = 0;
 
 private:
     static Boolean GetBooleanProperty(

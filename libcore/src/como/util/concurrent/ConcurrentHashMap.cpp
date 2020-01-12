@@ -14,7 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
-#include "coredef.h"
+#include "innerdef.h"
 #include "como/core/AutoLock.h"
 #include "como/core/CStringBuilder.h"
 #include "como/core/CThread.h"
@@ -32,7 +32,7 @@
 #include "como.core.IStringBuilder.h"
 #include "como.util.IIterator.h"
 #include "como.util.ISet.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::core::AutoLock;
 using como::core::CStringBuilder;
@@ -52,11 +52,11 @@ namespace util {
 namespace concurrent {
 
 static const InterfaceID IID_ForwardingNode =
-        {{0x60a47a03,0x2ec4,0x48ed,0x9e61,{0x7,0x3,0x7,0xd,0xc,0xe,0xe,0x3,0x1,0xb,0x0,0x2}}, &CID_libcore};
+        {{0x60a47a03,0x2ec4,0x48ed,0x9e61,{0x73,0x7d,0xce,0xe3,0x1b,0x02}}, &CID_libcore};
 static const InterfaceID IID_ReservationNode =
-        {{0xf29f2849,0xecbb,0x42c1,0x9e1e,{0xb,0xe,0x8,0xe,0xf,0xb,0xc,0x6,0xf,0x7,0x8,0xa}}, &CID_libcore};
+        {{0xf29f2849,0xecbb,0x42c1,0x9e1e,{0xbe,0x8e,0xfb,0xc6,0xf7,0x8a}}, &CID_libcore};
 static const InterfaceID IID_TreeBin =
-        {{0xd0cca191,0x9e15,0x48d4,0xb94a,{0xf,0xb,0x2,0x8,0x8,0x9,0x2,0xe,0x4,0x5,0xa,0x9}}, &CID_libcore};
+        {{0xd0cca191,0x9e15,0x48d4,0xb94a,{0xfb,0x28,0x89,0x2e,0x45,0xa9}}, &CID_libcore};
 
 COMO_INTERFACE_IMPL_4(ConcurrentHashMap, SyncObject, IConcurrentHashMap, IConcurrentMap, IMap, ISerializable);
 
@@ -79,11 +79,11 @@ Integer ConcurrentHashMap::TableSizeFor(
     /* [in] */ Integer c)
 {
     Integer n = c - 1;
-    n |= ((unsigned Integer)n) >> 1;
-    n |= ((unsigned Integer)n) >> 2;
-    n |= ((unsigned Integer)n) >> 4;
-    n |= ((unsigned Integer)n) >> 8;
-    n |= ((unsigned Integer)n) >> 16;
+    n |= ((UInteger)n) >> 1;
+    n |= ((UInteger)n) >> 2;
+    n |= ((UInteger)n) >> 4;
+    n |= ((UInteger)n) >> 8;
+    n |= ((UInteger)n) >> 16;
     return (n < 0) ? 1 : (n >= MAXIMUM_CAPACITY) ? MAXIMUM_CAPACITY : n + 1;
 }
 
@@ -133,9 +133,9 @@ ECode ConcurrentHashMap::Constructor(
     if (initialCapacity < 0) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    Integer cap = (initialCapacity >= (((unsigned Integer)MAXIMUM_CAPACITY) >> 1)) ?
+    Integer cap = (initialCapacity >= (((UInteger)MAXIMUM_CAPACITY) >> 1)) ?
             MAXIMUM_CAPACITY :
-            TableSizeFor(initialCapacity + (((unsigned Integer)initialCapacity) >> 1) + 1);
+            TableSizeFor(initialCapacity + (((UInteger)initialCapacity) >> 1) + 1);
     mSizeCtl = cap;
     return NOERROR;
 }
@@ -530,6 +530,7 @@ ECode ConcurrentHashMap::Clear()
     if (delta != 0ll) {
         AddCount(delta, -1);
     }
+    return NOERROR;
 }
 
 ECode ConcurrentHashMap::GetKeySet(
@@ -572,28 +573,23 @@ ECode ConcurrentHashMap::GetEntrySet(
 }
 
 ECode ConcurrentHashMap::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
-    Integer h = 0;
+    hash = 0;
     VOLATILE_GET(Array<Node*>t, mTable);
     if (!t.IsNull()) {
         Traverser it(t, t.GetLength(), 0, t.GetLength());
         for (AutoPtr<Node> p; (p = it.Advance()) != nullptr;) {
             VOLATILE_GET(IInterface* val, p->mVal);
-            h += Object::GetHashCode(p->mKey) ^ Object::GetHashCode(val);
+            hash += Object::GetHashCode(p->mKey) ^ Object::GetHashCode(val);
         }
     }
-    *hash = h;
     return NOERROR;
 }
 
 ECode ConcurrentHashMap::ToString(
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
-    VALIDATE_NOT_NULL(desc);
-
     VOLATILE_GET(Array<Node*> t, mTable);
     Integer f = t.IsNull() ? 0 : t.GetLength();
     Traverser it(t, f, 0, f);
@@ -623,13 +619,11 @@ ECode ConcurrentHashMap::ToString(
 
 ECode ConcurrentHashMap::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     if (IInterface::Equals(obj, (IMap*)this)) {
         if (IMap::Probe(obj) == nullptr) {
-            *result = false;
+            result = false;
             return NOERROR;
         }
         IMap* m = IMap::Probe(obj);
@@ -641,7 +635,7 @@ ECode ConcurrentHashMap::Equals(
             AutoPtr<IInterface> v;
             m->Get(p->mKey, &v);
             if (v == nullptr || (!IInterface::Equals(v, val) && !Object::Equals(v, val))) {
-                *result = false;
+                result = false;
                 return NOERROR;
             }
         }
@@ -651,22 +645,22 @@ ECode ConcurrentHashMap::Equals(
             AutoPtr<IInterface> mk, mv, v;
             e->GetKey(&mk);
             if (mk == nullptr) {
-                *result = false;
+                result = false;
                 return NOERROR;
             }
             e->GetValue(&mv);
             if (mv == nullptr) {
-                *result = false;
+                result = false;
                 return NOERROR;
             }
             Get(mk, &v);
             if (v == nullptr || (!IInterface::Equals(mv ,v) && !Object::Equals(mv, v))) {
-                *result = false;
+                result = false;
                 return NOERROR;
             }
         } END_FOR_EACH();
     }
-    *result = true;
+    result = true;
     return NOERROR;
 }
 
@@ -800,7 +794,7 @@ Array<ConcurrentHashMap::Node*> ConcurrentHashMap::InitTable()
                 Integer n = (sc > 0) ? sc : DEFAULT_CAPACITY;
                 tab = Array<Node*>(n);
                 VOLATILE_SET(mTable, tab);
-                sc = n - (((unsigned Integer)n) >> 2);
+                sc = n - (((UInteger)n) >> 2);
             }
             VOLATILE_SET(mSizeCtl, sc);
             break;
@@ -844,7 +838,7 @@ void ConcurrentHashMap::AddCount(
             Integer rs = ResizeStamp(n);
             if (sc < 0) {
                 Integer transferIndex;
-                if ((((unsigned Integer)sc) >> RESIZE_STAMP_SHIFT) != rs || sc == rs + 1 ||
+                if ((((UInteger)sc) >> RESIZE_STAMP_SHIFT) != rs || sc == rs + 1 ||
                         sc == rs + MAX_RESIZERS || (VOLATILE_GET_INLINE(nt, mNextTable), nt.IsNull()) ||
                         (VOLATILE_GET_INLINE(transferIndex, mTransferIndex), transferIndex <= 0)) {
                     break;
@@ -874,7 +868,7 @@ Array<ConcurrentHashMap::Node*> ConcurrentHashMap::HelpTransfer(
         while (VOLATILE_EQUALS(nextTab, mNextTable) && VOLATILE_EQUALS(mTable, tab) &&
                 (VOLATILE_GET_INLINE(sc, mSizeCtl), sc < 0)) {
             Integer transferIndex;
-            if ((((unsigned Integer)sc) >> RESIZE_STAMP_SHIFT) != rs || sc == rs + 1 ||
+            if ((((UInteger)sc) >> RESIZE_STAMP_SHIFT) != rs || sc == rs + 1 ||
                     sc == rs + MAX_RESIZERS ||
                     (VOLATILE_GET_INLINE(transferIndex, mTransferIndex), transferIndex <= 0)) {
                 break;
@@ -893,8 +887,8 @@ Array<ConcurrentHashMap::Node*> ConcurrentHashMap::HelpTransfer(
 void ConcurrentHashMap::TryPresize(
     /* [in] */ Integer size)
 {
-    Integer c = (size >= (((unsigned Integer)MAXIMUM_CAPACITY) >> 1)) ? MAXIMUM_CAPACITY :
-            TableSizeFor(size + (((unsigned Integer)size) >> 1) + 1);
+    Integer c = (size >= (((UInteger)MAXIMUM_CAPACITY) >> 1)) ? MAXIMUM_CAPACITY :
+            TableSizeFor(size + (((UInteger)size) >> 1) + 1);
     Integer sc;
     while (VOLATILE_GET_INLINE(sc, mSizeCtl), sc >= 0) {
         VOLATILE_GET(Array<Node*> tab, mTable);
@@ -905,7 +899,7 @@ void ConcurrentHashMap::TryPresize(
                 if (VOLATILE_EQUALS(mTable, tab)) {
                     Array<Node*> nt(n);
                     VOLATILE_SET(mTable, nt);
-                    sc =  n - (((unsigned Integer)n) >> 2);
+                    sc =  n - (((UInteger)n) >> 2);
                 }
                 VOLATILE_SET(mSizeCtl, sc);
             }
@@ -929,7 +923,7 @@ void ConcurrentHashMap::Transfer(
 {
     Integer n = tab.GetLength();
     Integer stride;
-    if ((stride = (GetNCPU() > 1) ? (((unsigned Integer)n) >> 3) / GetNCPU() : n) < MIN_TRANSFER_STRIDE) {
+    if ((stride = (GetNCPU() > 1) ? (((UInteger)n) >> 3) / GetNCPU() : n) < MIN_TRANSFER_STRIDE) {
         stride = MIN_TRANSFER_STRIDE; // subdivide range
     }
     if (nextTab == nullptr) {
@@ -967,7 +961,7 @@ void ConcurrentHashMap::Transfer(
             if (finishing) {
                 VOLATILE_SET(mNextTable, Array<Node*>::Null());
                 VOLATILE_SET(mTable, *nextTab);
-                VOLATILE_SET(mSizeCtl, (n << 1) - (((unsigned Integer)n) >> 1));
+                VOLATILE_SET(mSizeCtl, (n << 1) - (((UInteger)n) >> 1));
                 return;
             }
             if (VOLATILE_GET_INLINE(sc, mSizeCtl),
@@ -1245,17 +1239,17 @@ ECode ConcurrentHashMap::Node::GetValue(
 }
 
 ECode ConcurrentHashMap::Node::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
     VOLATILE_GET(IInterface* val, mVal);
-    *hash = Object::GetHashCode(mKey) ^ Object::GetHashCode(val);
+    hash = Object::GetHashCode(mKey) ^ Object::GetHashCode(val);
     return NOERROR;
 }
 
 ECode ConcurrentHashMap::Node::ToString(
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
-    *desc = Helpers::MapEntryToString(mKey, mVal);
+    desc = Helpers::MapEntryToString(mKey, mVal);
     return NOERROR;
 }
 
@@ -1268,27 +1262,27 @@ ECode ConcurrentHashMap::Node::SetValue(
 
 ECode ConcurrentHashMap::Node::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     IMapEntry* entry = IMapEntry::Probe(obj);
     if (entry == nullptr) {
-        *result = false;
+        result = false;
         return NOERROR;
     }
     AutoPtr<IInterface> k, v;
     entry->GetKey(&k);
     if (k == nullptr || (!IInterface::Equals(k, mKey) &&
             !Object::Equals(k, mKey))) {
-        *result = false;
+        result = false;
         return NOERROR;
     }
     entry->GetValue(&v);
     if (v == nullptr) {
-        *result = false;
+        result = false;
         return NOERROR;
     }
     VOLATILE_GET(AutoPtr<IInterface> val, mVal);
-    *result = IInterface::Equals(v, val) || Object::Equals(v, val);
+    result = IInterface::Equals(v, val) || Object::Equals(v, val);
     return NOERROR;
 }
 
@@ -1404,13 +1398,13 @@ AutoPtr<ConcurrentHashMap::TreeNode> ConcurrentHashMap::TreeNode::FindTreeNode(
                 p = pr;
             }
             else if ((pk = p->mKey, IInterface::Equals(pk, k)) ||
-                    (pk != nullptr, Object::Equals(k, pk))) {
+                    (pk != nullptr && Object::Equals(k, pk))) {
                 return p;
             }
             else if (pl == nullptr) {
                 p = pr;
             }
-            else if (pr = nullptr) {
+            else if (pr == nullptr) {
                 p = pl;
             }
             else if ((compare || IComparable::Probe(k) != nullptr) &&
@@ -2256,38 +2250,32 @@ ECode ConcurrentHashMap::MapEntry::GetValue(
 }
 
 ECode ConcurrentHashMap::MapEntry::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
-    *hash = Object::GetHashCode(mKey) ^ Object::GetHashCode(mVal);
+    hash = Object::GetHashCode(mKey) ^ Object::GetHashCode(mVal);
     return NOERROR;
 }
 
 ECode ConcurrentHashMap::MapEntry::ToString(
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
-    VALIDATE_NOT_NULL(desc);
-
-    *desc = Helpers::MapEntryToString(mKey, mVal);
+    desc = Helpers::MapEntryToString(mKey, mVal);
     return NOERROR;
 }
 
 ECode ConcurrentHashMap::MapEntry::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     IMapEntry* entry = IMapEntry::Probe(obj);
     if (entry == nullptr) {
-        *result = false;
+        result = false;
         return NOERROR;
     }
     AutoPtr<IInterface> k, v;
     entry->GetKey(&k);
     entry->GetValue(&v);
-    *result = (k != nullptr && v != nullptr &&
+    result = (k != nullptr && v != nullptr &&
             (IInterface::Equals(k, mKey) || Object::Equals(k, mKey)) &&
             (IInterface::Equals(v, mVal) || Object::Equals(v, mVal)));
     return NOERROR;
@@ -2346,11 +2334,11 @@ ECode ConcurrentHashMap::CollectionView::ToArray(
             if (n >= MAX_ARRAY_SIZE) {
                 return E_OUT_OF_MEMORY_ERROR;
             }
-            if (n >= MAX_ARRAY_SIZE - (((unsigned Integer)MAX_ARRAY_SIZE) >> 1) - 1) {
+            if (n >= MAX_ARRAY_SIZE - (((UInteger)MAX_ARRAY_SIZE) >> 1) - 1) {
                 n = MAX_ARRAY_SIZE;
             }
             else {
-                n += (((unsigned Integer)n) >> 1) + 1;
+                n += (((UInteger)n) >> 1) + 1;
             }
             Arrays::CopyOf(r, n, &r);
         }
@@ -2382,11 +2370,11 @@ ECode ConcurrentHashMap::CollectionView::ToArray(
             if (n >= MAX_ARRAY_SIZE) {
                 return E_OUT_OF_MEMORY_ERROR;
             }
-            if (n >= MAX_ARRAY_SIZE - (((unsigned Integer)MAX_ARRAY_SIZE) >> 1) - 1) {
+            if (n >= MAX_ARRAY_SIZE - (((UInteger)MAX_ARRAY_SIZE) >> 1) - 1) {
                 n = MAX_ARRAY_SIZE;
             }
             else {
-                n += (((unsigned Integer)n) >> 1) + 1;
+                n += (((UInteger)n) >> 1) + 1;
             }
             Arrays::CopyOf(r, n, &r);
         }
@@ -2402,7 +2390,7 @@ ECode ConcurrentHashMap::CollectionView::ToArray(
 }
 
 ECode ConcurrentHashMap::CollectionView::ToString(
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
     AutoPtr<IStringBuilder> sb;
     CStringBuilder::New(IID_IStringBuilder, (IInterface**)&sb);
@@ -2555,35 +2543,30 @@ ECode ConcurrentHashMap::KeySetView::AddAll(
 }
 
 ECode ConcurrentHashMap::KeySetView::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
-    Integer h = 0;
+    hash = 0;
     FOR_EACH(IInterface*, e, , this) {
-        h += Object::GetHashCode(e);
+        hash += Object::GetHashCode(e);
     } END_FOR_EACH();
-    *hash = h;
     return NOERROR;
 }
 
 ECode ConcurrentHashMap::KeySetView::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     ISet* c = ISet::Probe(obj);
     if (c == nullptr) {
-        *result = false;
+        result = false;
         return NOERROR;
     }
     if (c == (ISet*)this) {
-        *result = true;
+        result = true;
         return NOERROR;
     }
     Boolean contains;
-    *result = ((ContainsAll(ICollection::Probe(c), &contains), contains) &&
+    result = ((ContainsAll(ICollection::Probe(c), &contains), contains) &&
             (c->ContainsAll(this, &contains), contains));
     return NOERROR;
 }
@@ -2697,13 +2680,13 @@ ECode ConcurrentHashMap::ValuesView::AddAll(
 
 ECode ConcurrentHashMap::ValuesView::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return CollectionView::Equals(obj, result);
 }
 
 ECode ConcurrentHashMap::ValuesView::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
     return CollectionView::GetHashCode(hash);
 }
@@ -2814,35 +2797,30 @@ ECode ConcurrentHashMap::EntrySetView::AddAll(
 }
 
 ECode ConcurrentHashMap::EntrySetView::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
-    Integer h = 0;
+    hash = 0;
     VOLATILE_GET(Array<Node*> t, mMap->mTable);
     if (!t.IsNull()) {
         Traverser it(t, t.GetLength(), 0, t.GetLength());
         for (AutoPtr<Node>p; (p = it.Advance()) != nullptr;) {
-            h += Object::GetHashCode((IObject*)p);
+            hash += Object::GetHashCode((IObject*)p);
         }
     }
-    *hash = h;
     return NOERROR;
 }
 
 ECode ConcurrentHashMap::EntrySetView::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     ISet* c = ISet::Probe(obj);
     if (c == nullptr) {
-        *result = false;
+        result = false;
         return NOERROR;
     }
     Boolean contains;
-    *result = (c == (ISet*)this) ||
+    result = (c == (ISet*)this) ||
             ((ContainsAll(ICollection::Probe(c), &contains), contains) &&
             (c->ContainsAll(this, &contains), contains));
     return NOERROR;

@@ -22,7 +22,7 @@
 #include "como.core.ICharSequence.h"
 #include "como.core.IDouble.h"
 #include "como.core.IInteger.h"
-#include <ccmautoptr.h>
+#include <comosp.h>
 
 namespace como {
 namespace core {

@@ -15,7 +15,7 @@
 //=========================================================================
 
 #include "libcore/icu/UStringEnumeration.h"
-#include <ccmdef.h>
+#include <comodef.h>
 
 namespace libcore {
 namespace icu {

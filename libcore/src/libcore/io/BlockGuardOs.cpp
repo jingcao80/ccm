@@ -18,13 +18,13 @@
 #include "comort/system/SocketTagger.h"
 #include "libcore/io/BlockGuardOs.h"
 #include "libcore/io/Libcore.h"
-#include "pisces/system/OsConstants.h"
+#include "jing/system/OsConstants.h"
 #include "comort.system.IBlockGuardPolicy.h"
 
 using comort::system::BlockGuard;
 using comort::system::SocketTagger;
 using comort::system::IBlockGuardPolicy;
-using pisces::system::OsConstants;
+using jing::system::OsConstants;
 
 namespace libcore {
 namespace io {
@@ -37,7 +37,7 @@ ECode BlockGuardOs::TagSocket(
 
     ECode ec = SocketTagger::Get()->Tag(fd);
     if (FAILED(ec)) {
-        return pisces::system::E_ERRNO_EXCEPTION | (OsConstants::EINVAL_ & 0x000000ff);
+        return jing::system::E_ERRNO_EXCEPTION | (OsConstants::EINVAL_ & 0x000000ff);
     }
     *taggedFd = fd;
     REFCOUNT_ADD(*taggedFd);
@@ -49,7 +49,7 @@ ECode BlockGuardOs::UntagSocket(
 {
     ECode ec = SocketTagger::Get()->Untag(fd);
     if (FAILED(ec)) {
-        return pisces::system::E_ERRNO_EXCEPTION | (OsConstants::EINVAL_ & 0x000000ff);
+        return jing::system::E_ERRNO_EXCEPTION | (OsConstants::EINVAL_ & 0x000000ff);
     }
     return NOERROR;
 }

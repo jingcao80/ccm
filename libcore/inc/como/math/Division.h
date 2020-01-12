@@ -17,7 +17,7 @@
 #ifndef __COMO_MATH_DIVISION_H__
 #define __COMO_MATH_DIVISION_H__
 
-#include <ccmtypes.h>
+#include <comotypes.h>
 
 namespace como {
 namespace math {

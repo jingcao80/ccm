@@ -23,7 +23,7 @@
 #include "como.core.ILong.h"
 #include "como.util.regex.IMatcher.h"
 #include "como.util.regex.IMatchResult.h"
-#include <ccmlogger.h>
+#include <comolog.h>
 
 using como::util::regex::IMatcher;
 using como::util::regex::IMatchResult;

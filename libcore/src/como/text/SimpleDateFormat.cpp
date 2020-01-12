@@ -14,6 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
+#include "innerdef.h"
 #include "como/text/SimpleDateFormat.h"
 #include "como/core/Character.h"
 #include "como/core/CoreUtils.h"
@@ -48,8 +49,8 @@
 #include "libcore/icu/LocaleData.h"
 #include "libcore/icu/TimeZoneNames.h"
 #include "libcore.icu.ILocaleData.h"
-#include "pisces/icu/text/TimeZoneNames.h"
-#include <ccmlogger.h>
+#include "jing/icu/text/TimeZoneNames.h"
+#include <comolog.h>
 
 using como::core::Character;
 using como::core::CoreUtils;
@@ -81,8 +82,8 @@ using como::util::concurrent::CConcurrentHashMap;
 using como::util::concurrent::IID_IConcurrentMap;
 using libcore::icu::ILocaleData;
 using libcore::icu::LocaleData;
-using pisces::icu::text::TimeZoneNames;
-using pisces::icu::text::ITimeZoneNamesNameType;
+using jing::icu::text::TimeZoneNames;
+using jing::icu::text::ITimeZoneNamesNameType;
 
 namespace como {
 namespace text {
@@ -194,7 +195,7 @@ ECode SimpleDateFormat::Constructor(
     /* [in] */ const String& pattern,
     /* [in] */ IDateFormatSymbols* formatSymbols)
 {
-    if (pattern.IsNull() | formatSymbols == nullptr) {
+    if (pattern.IsNull() || formatSymbols == nullptr) {
         return E_NULL_POINTER_EXCEPTION;
     }
 
@@ -354,7 +355,7 @@ ECode SimpleDateFormat::Compile(
             tmpBuffer->Append(c);
             continue;
         }
-        if (!(c >= U'a' && c <= U'z' || c >= U'A' && c <= U'Z')) {
+        if (!((c >= U'a' && c <= U'z') || (c >= U'A' && c <= U'Z'))) {
             if (count != 0) {
                 FAIL_RETURN(Encode(lastTag, count, compiledCode));
                 lastTag = -1;
@@ -370,7 +371,7 @@ ECode SimpleDateFormat::Compile(
                 Integer j;
                 for (j = i + 1; j < length; j++) {
                     Char d = pattern.GetChar(j);
-                    if (d == U'\'' || (d >= U'a' && d <= U'z' || d >= U'A' && d <= U'Z')) {
+                    if (d == U'\'' || ((d >= U'a' && d <= U'z') || (d >= U'A' && d <= U'Z'))) {
                         break;
                     }
                 }
@@ -429,7 +430,7 @@ ECode SimpleDateFormat::Encode(
     }
     else {
         buffer->Append((Char)((tag << 8) | 0xff));
-        buffer->Append((Char)(((unsigned Integer)length) >> 16));
+        buffer->Append((Char)(((UInteger)length) >> 16));
         buffer->Append((Char)(length & 0xffff));
     }
     return NOERROR;
@@ -493,8 +494,8 @@ ECode SimpleDateFormat::Format(
     Boolean useDateFormatSymbols = UseDateFormatSymbols();
 
     for (Integer i = 0; i < mCompiledPattern.GetLength(); ) {
-        Integer tag = ((unsigned Char)mCompiledPattern[i]) >> 8;
-        Integer count = mCompiledPattern[i++] && 0xff;
+        Integer tag = mCompiledPattern[i] >> 8;
+        Integer count = mCompiledPattern[i++] & 0xff;
         if (count == 255) {
             count = mCompiledPattern[i++] << 16;
             count |= mCompiledPattern[i++];
@@ -547,7 +548,7 @@ ECode SimpleDateFormat::FormatToCharacterIterator(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     String text;
-    sb->ToString(&text);
+    sb->ToString(text);
     return delegate->GetIterator(text, it);
 }
 
@@ -1015,7 +1016,7 @@ ECode SimpleDateFormat::ParseInternal(
     AutoPtr<CalendarBuilder> calb = new CalendarBuilder();
 
     for (Integer i = 0; i < mCompiledPattern.GetLength(); ) {
-        Integer tag = ((unsigned Char)mCompiledPattern[i]) >> 8;
+        Integer tag = mCompiledPattern[i] >> 8;
         Integer count = mCompiledPattern[i++] & 0xff;
         if (count == 255) {
             count = mCompiledPattern[i++] << 16;
@@ -1069,7 +1070,7 @@ ECode SimpleDateFormat::ParseInternal(
                 Boolean useFollowingMinusSignAsDelimiter = false;
 
                 if (i < mCompiledPattern.GetLength()) {
-                    Integer nextTag = ((unsigned Char)mCompiledPattern[i]) >> 8;
+                    Integer nextTag = mCompiledPattern[i] >> 8;
                     if (!(nextTag == TAG_QUOTE_ASCII_CHAR ||
                           nextTag == TAG_QUOTE_CHARS)) {
                         obeyCount = true;
@@ -1264,6 +1265,7 @@ Integer SimpleDateFormat::SubParseZoneStringFromICU(
     // The MetaZones associated with the current time zone are needed in two places, both of
     // which are avoided in some cases, so they are computed lazily.
     AutoPtr<ISet> currentTzMetaZoneIds;
+    return -1;
 }
 
 Integer SimpleDateFormat::SubParseZoneStringFromSymbols(
@@ -2019,7 +2021,7 @@ ECode SimpleDateFormat::TranslatePattern(
         Logger::E("SimpleDateFormat", "Unfinished quote in pattern");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    return sb->ToString(result);
+    return sb->ToString(*result);
 }
 
 ECode SimpleDateFormat::ToPattern(
@@ -2094,25 +2096,21 @@ ECode SimpleDateFormat::CloneImpl(
 }
 
 ECode SimpleDateFormat::GetHashCode(
-    /* [out] */ Integer* hash)
+    /* [out] */ Integer& hash)
 {
-    VALIDATE_NOT_NULL(hash);
-
-    *hash = mPattern.GetHashCode();
+    hash = mPattern.GetHashCode();
     return NOERROR;
 }
 
 ECode SimpleDateFormat::Equals(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* same)
+    /* [out] */ Boolean& same)
 {
-    VALIDATE_NOT_NULL(same);
-
-    if (DateFormat::Equals(obj, same), !*same) {
+    if (DateFormat::Equals(obj, same), !same) {
         return NOERROR;
     }
     SimpleDateFormat* that = (SimpleDateFormat*)ISimpleDateFormat::Probe(obj);
-    *same = (mPattern.Equals(that->mPattern) && (Object::Equals(
+    same = (mPattern.Equals(that->mPattern) && (Object::Equals(
             mFormatData, that->mFormatData)));
     return NOERROR;
 }

@@ -23,7 +23,7 @@
 #include "como.util.calendar.ICalendarSystem.h"
 #include "como.util.calendar.IGregorian.h"
 #include "como.util.concurrent.IConcurrentMap.h"
-#include <ccmautoptr.h>
+#include <comosp.h>
 
 using como::core::SyncObject;
 using como::util::concurrent::IConcurrentMap;

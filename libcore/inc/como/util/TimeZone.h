@@ -24,7 +24,7 @@
 #include "como.io.ISerializable.h"
 #include "como.util.ITimeZone.h"
 #include "como.util.regex.IPattern.h"
-#include <ccmautoptr.h>
+#include <comosp.h>
 
 using como::core::ICloneable;
 using como::core::IStringBuilder;
@@ -48,17 +48,17 @@ public:
 
     ECode GetOffset(
         /* [in] */ Long date,
-        /* [out] */ Integer* offset);
+        /* [out] */ Integer* offset) override;
 
     Integer GetOffsets(
         /* [in] */ Long date,
         /* [out] */ Array<Integer>& offsets);
 
     ECode GetID(
-        /* [out] */ String* id);
+        /* [out] */ String* id) override;
 
     ECode SetID(
-        /* [in] */ const String& ID);
+        /* [in] */ const String& ID) override;
 
     ECode GetDisplayName(
         /* [out] */ String* name) override final;

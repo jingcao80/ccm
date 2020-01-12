@@ -17,7 +17,7 @@
 #ifndef __COMO_UTIL_CONCURRENT_TIMEUNIT_H__
 #define __COMO_UTIL_CONCURRENT_TIMEUNIT_H__
 
-#include <ccmtypes.h>
+#include <comotypes.h>
 
 namespace como {
 namespace util {
