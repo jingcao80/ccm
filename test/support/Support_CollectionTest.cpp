@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,18 +16,18 @@
 
 #include "Support_CollectionTest.h"
 #include "Support_UnmodifiableCollectionTest.h"
-#include "ccm.core.CInteger.h"
-#include "ccm.core.IInteger.h"
-#include "ccm.util.CTreeSet.h"
+#include "como.core.CInteger.h"
+#include "como.core.IInteger.h"
+#include "como.util.CTreeSet.h"
 #include <gtest/gtest.h>
 
-using ccm::core::CInteger;
-using ccm::core::IID_IInteger;
-using ccm::core::IInteger;
-using ccm::util::CTreeSet;
-using ccm::util::IID_ICollection;
+using como::core::CInteger;
+using como::core::IID_IInteger;
+using como::core::IInteger;
+using como::util::CTreeSet;
+using como::util::IID_ICollection;
 
-namespace ccm {
+namespace como {
 namespace test {
 
 ECode Support_CollectionTest::RunTest()

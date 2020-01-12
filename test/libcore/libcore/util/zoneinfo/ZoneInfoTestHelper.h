@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,20 +17,20 @@
 #ifndef __ZONEINFOTESTHELPER_H__
 #define __ZONEINFOTESTHELPER_H__
 
-#include "ccm/core/CoreUtils.h"
-#include "ccm.core.IInteger.h"
-#include "ccm.io.IByteArrayOutputStream.h"
-#include "ccm.io.IOutputStream.h"
-#include "ccm.util.IList.h"
+#include "como/core/CoreUtils.h"
+#include "como.core.IInteger.h"
+#include "como.io.IByteArrayOutputStream.h"
+#include "como.io.IOutputStream.h"
+#include "como.util.IList.h"
 #include <ccmautoptr.h>
 #include <ccmobject.h>
 
-using namespace ccm;
-using ccm::core::CoreUtils;
-using ccm::core::IInteger;
-using ccm::io::IByteArrayOutputStream;
-using ccm::io::IOutputStream;
-using ccm::util::IList;
+using namespace como;
+using como::core::CoreUtils;
+using como::core::IInteger;
+using como::io::IByteArrayOutputStream;
+using como::io::IOutputStream;
+using como::util::IList;
 
 class ZoneInfoTestHelper
 {

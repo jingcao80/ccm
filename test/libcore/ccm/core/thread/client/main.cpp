@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,31 +14,31 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/core/Math.h"
-#include "ccm/core/Thread.h"
-#include "ccm.core.CSystem.h"
-#include "ccm.core.CThread.h"
-#include "ccm.core.ILong.h"
-#include "ccm.core.ISystem.h"
-#include "ccm.core.IThread.h"
-#include "ccm.io.IInterruptible.h"
-#include "ccm.util.concurrent.atomic.CAtomicBoolean.h"
-#include "ccm.util.concurrent.atomic.IAtomicBoolean.h"
+#include "como/core/Math.h"
+#include "como/core/Thread.h"
+#include "como.core.CSystem.h"
+#include "como.core.CThread.h"
+#include "como.core.ILong.h"
+#include "como.core.ISystem.h"
+#include "como.core.IThread.h"
+#include "como.io.IInterruptible.h"
+#include "como.util.concurrent.atomic.CAtomicBoolean.h"
+#include "como.util.concurrent.atomic.IAtomicBoolean.h"
 #include <ccmautoptr.h>
 #include <gtest/gtest.h>
 
-using ccm::core::CSystem;
-using ccm::core::CThread;
-using ccm::core::ILong;
-using ccm::core::ISystem;
-using ccm::core::IThread;
-using ccm::core::IID_ISystem;
-using ccm::core::IID_IThread;
-using ccm::core::Math;
-using ccm::core::Thread;
-using ccm::util::concurrent::atomic::CAtomicBoolean;
-using ccm::util::concurrent::atomic::IAtomicBoolean;
-using ccm::util::concurrent::atomic::IID_IAtomicBoolean;
+using como::core::CSystem;
+using como::core::CThread;
+using como::core::ILong;
+using como::core::ISystem;
+using como::core::IThread;
+using como::core::IID_ISystem;
+using como::core::IID_IThread;
+using como::core::Math;
+using como::core::Thread;
+using como::util::concurrent::atomic::CAtomicBoolean;
+using como::util::concurrent::atomic::IAtomicBoolean;
+using como::util::concurrent::atomic::IID_IAtomicBoolean;
 
 class WakupTestThread
     : public Thread

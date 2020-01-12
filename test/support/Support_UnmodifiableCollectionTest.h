@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,15 +14,15 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_TEST_SUPPORT_UNMODIFIABLECOLLECTIONTEST_H__
-#define __CCM_TEST_SUPPORT_UNMODIFIABLECOLLECTIONTEST_H__
+#ifndef __COMO_TEST_SUPPORT_UNMODIFIABLECOLLECTIONTEST_H__
+#define __COMO_TEST_SUPPORT_UNMODIFIABLECOLLECTIONTEST_H__
 
-#include "ccm.util.ICollection.h"
-#include <ccmobject.h>
+#include "como.util.ICollection.h"
+#include <comoobj.h>
 
-using ccm::util::ICollection;
+using como::util::ICollection;
 
-namespace ccm {
+namespace como {
 namespace test {
 
 class Support_UnmodifiableCollectionTest
@@ -46,4 +46,4 @@ public:
 }
 }
 
-#endif // __CCM_TEST_SUPPORT_UNMODIFIABLECOLLECTIONTEST_H__
+#endif // __COMO_TEST_SUPPORT_UNMODIFIABLECOLLECTIONTEST_H__

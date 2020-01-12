@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,24 +16,24 @@
 
 #include <ccmautoptr.h>
 #include <ccmobject.h>
-#include "ccm/math/BigIntegerFactory.h"
-#include "ccm.core.ILong.h"
-#include "ccm.core.INumber.h"
-#include "ccm.math.CBigInteger.h"
-#include "ccm.math.IBigInteger.h"
-#include "ccm.util.CRandom.h"
-#include "ccm.util.IRandom.h"
+#include "como/math/BigIntegerFactory.h"
+#include "como.core.ILong.h"
+#include "como.core.INumber.h"
+#include "como.math.CBigInteger.h"
+#include "como.math.IBigInteger.h"
+#include "como.util.CRandom.h"
+#include "como.util.IRandom.h"
 #include <gtest/gtest.h>
 
-using ccm::core::ILong;
-using ccm::core::INumber;
-using ccm::math::BigIntegerFactory;
-using ccm::math::CBigInteger;
-using ccm::math::IBigInteger;
-using ccm::math::IID_IBigInteger;
-using ccm::util::CRandom;
-using ccm::util::IRandom;
-using ccm::util::IID_IRandom;
+using como::core::ILong;
+using como::core::INumber;
+using como::math::BigIntegerFactory;
+using como::math::CBigInteger;
+using como::math::IBigInteger;
+using como::math::IID_IBigInteger;
+using como::util::CRandom;
+using como::util::IRandom;
+using como::util::IID_IRandom;
 
 TEST(BigIntegerTest, HashCodeTest)
 {

@@ -1,5 +1,5 @@
 #=========================================================================
-# Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+# Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,21 +16,21 @@
 
 project(libtest CXX)
 
-set(libtest_DIR ${TEST_DIR}/libtest)
-set(OBJ_DIR ${CMAKE_BINARY_DIR}/test/libtest)
+set(LIBTEST_SRC_DIR ${TEST_SRC_DIR}/libtest)
+set(LIBTEST_OBJ_DIR ${TEST_OBJ_DIR}/libtest)
 
 include_directories(
     ./
     ${INC_DIR}
-    ${OBJ_DIR})
+    ${LIBTEST_OBJ_DIR})
 
 set(SOURCES
     wrapper.cpp)
 
 set(GENERATED_SOURCES
-    ${OBJ_DIR}/libcore.cpp)
+    ${LIBTEST_OBJ_DIR}/libcore.cpp)
 
-IMPORT_LIBRARY(ccmrt.so)
+IMPORT_LIBRARY(comort.so)
 IMPORT_LIBRARY(libcore.so)
 IMPORT_GTEST()
 
@@ -38,28 +38,27 @@ add_library(libtest
     STATIC
     ${SOURCES}
     ${GENERATED_SOURCES})
-target_link_libraries(libtest ccmrt.so libcore.so ${GTEST_LIBS})
+target_link_libraries(libtest comort.so libcore.so ${GTEST_LIBS})
 add_dependencies(libtest libservicemanager gtest_main)
 
 add_custom_command(
     OUTPUT
         ${GENERATED_SOURCES}
     COMMAND
-        "${BIN_DIR}/ccdl"
-        -g
-        -u
-        -p
-        -s
-        -d ${OBJ_DIR}
-        "${BIN_DIR}/libcore.so")
+        "$ENV{CDLC}"
+        -gen
+        -mode-client
+        -split
+        -d ${LIBTEST_OBJ_DIR}
+        -metadata-so "${BIN_DIR}/libcore.so")
 
 MKDIR(libtest ${INC_DIR}/test)
 
-COPY(libtest ${libtest_DIR}/gtest.h ${INC_DIR}/test)
-COPY(libtest ${OBJ_DIR}/libtest.a ${BIN_DIR})
+COPY(libtest ${LIBTEST_SRC_DIR}/gtest.h ${INC_DIR}/test)
+COPY(libtest ${LIBTEST_OBJ_DIR}/libtest.a ${BIN_DIR})
 
 install(FILES
-    ${OBJ_DIR}/libtest.a
+    ${LIBTEST_OBJ_DIR}/libtest.a
     DESTINATION ${BIN_DIR}
     PERMISSIONS
         OWNER_READ

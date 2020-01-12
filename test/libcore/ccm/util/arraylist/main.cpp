@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,17 +14,17 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/core/CoreUtils.h"
-#include "ccm.util.CArrayList.h"
-#include "ccm.util.IArrayList.h"
+#include "como/core/CoreUtils.h"
+#include "como.util.CArrayList.h"
+#include "como.util.IArrayList.h"
 #include <ccmautoptr.h>
 #include <gtest/gtest.h>
 
-using namespace ccm;
-using ccm::core::CoreUtils;
-using ccm::util::CArrayList;
-using ccm::util::IArrayList;
-using ccm::util::IID_IArrayList;
+using namespace como;
+using como::core::CoreUtils;
+using como::util::CArrayList;
+using como::util::IArrayList;
+using como::util::IID_IArrayList;
 
 TEST(ArrayListTest, ArrayListContainsTest)
 {

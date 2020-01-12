@@ -1,5 +1,5 @@
 #=========================================================================
-# Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+# Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,13 +16,13 @@
 
 project(support CXX)
 
-set(support_DIR ${TEST_DIR}/support)
-set(OBJ_DIR ${CMAKE_BINARY_DIR}/test/support)
+set(SUPPORT_SRC_DIR ${TEST_SRC_DIR}/support)
+set(SUPPORT_OBJ_DIR ${TEST_OBJ_DIR}/support)
 
 include_directories(
     ./
     ${INC_DIR}
-    ${OBJ_DIR})
+    ${SUPPORT_OBJ_DIR})
 
 set(SOURCES
     Support_CollectionTest.cpp
@@ -30,9 +30,9 @@ set(SOURCES
     Support_UnmodifiableCollectionTest.cpp)
 
 set(GENERATED_SOURCES
-    ${OBJ_DIR}/ccm.util.IList.h)
+    ${SUPPORT_OBJ_DIR}/como.util.IList.h)
 
-IMPORT_LIBRARY(ccmrt.so)
+IMPORT_LIBRARY(comort.so)
 IMPORT_LIBRARY(libcore.so)
 IMPORT_GTEST()
 
@@ -40,28 +40,27 @@ add_library(libsupport
     STATIC
     ${SOURCES}
     ${GENERATED_SOURCES})
-target_link_libraries(libsupport ccmrt.so libcore.so ${GTEST_LIBS})
+target_link_libraries(libsupport comort.so libcore.so ${GTEST_LIBS})
 add_dependencies(libsupport libtest)
 
 add_custom_command(
     OUTPUT
         ${GENERATED_SOURCES}
     COMMAND
-        "${BIN_DIR}/ccdl"
-        -g
-        -u
-        -p
-        -s
-        -d ${OBJ_DIR}
-        "${BIN_DIR}/libcore.so")
+        "$ENV{CDLC}"
+        -gen
+        -mode-client
+        -split
+        -d ${SUPPORT_OBJ_DIR}
+        -metadata-so "${BIN_DIR}/libcore.so")
 
 MKDIR(libsupport ${INC_DIR}/test/support)
 
-COPY(libsupport ${support_DIR}/Support_ListTest.h ${INC_DIR}/test/support)
-COPY(libsupport ${OBJ_DIR}/libsupport.a ${BIN_DIR})
+COPY(libsupport ${SUPPORT_SRC_DIR}/Support_ListTest.h ${INC_DIR}/test/support)
+COPY(libsupport ${SUPPORT_OBJ_DIR}/libsupport.a ${BIN_DIR})
 
 install(FILES
-    ${OBJ_DIR}/libsupport.a
+    ${SUPPORT_OBJ_DIR}/libsupport.a
     DESTINATION ${BIN_DIR}
     PERMISSIONS
         OWNER_READ

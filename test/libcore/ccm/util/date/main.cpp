@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,15 +14,15 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm.util.CDate.h"
-#include "ccm.util.IDate.h"
+#include "como.util.CDate.h"
+#include "como.util.IDate.h"
 #include <ccmautoptr.h>
 #include <gtest/gtest.h>
 
-using namespace ccm;
-using ccm::util::CDate;
-using ccm::util::IDate;
-using ccm::util::IID_IDate;
+using namespace como;
+using como::util::CDate;
+using como::util::IDate;
+using como::util::IID_IDate;
 
 TEST(DateTest, ToGMTStringTest)
 {

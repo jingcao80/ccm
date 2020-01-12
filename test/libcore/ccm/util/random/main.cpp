@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,16 +14,16 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm.util.CRandom.h"
-#include "ccm.util.IRandom.h"
+#include "como.util.CRandom.h"
+#include "como.util.IRandom.h"
 #include <ccmautoptr.h>
 #include <gtest/gtest.h>
 #include <stdio.h>
 
-using namespace ccm;
-using ccm::util::CRandom;
-using ccm::util::IRandom;
-using ccm::util::IID_IRandom;
+using namespace como;
+using como::util::CRandom;
+using como::util::IRandom;
+using como::util::IID_IRandom;
 
 TEST(RandomTest, NextIntTest)
 {

@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,39 +14,39 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/core/CoreUtils.h"
-#include "ccm/core/SyncObject.h"
-#include "ccm/text/AttributedCharacterIteratorAttributeFactory.h"
-#include "ccm.core.CStringBuffer.h"
-#include "ccm.core.ICloneable.h"
-#include "ccm.core.IStringBuffer.h"
-#include "ccm.text.CAttributedString.h"
-#include "ccm.text.IAttributedString.h"
-#include "ccm.text.IAttributedCharacterIterator.h"
-#include "ccm.text.ICharacterIterator.h"
-#include "ccm.util.IMap.h"
-#include "ccm.util.ISet.h"
+#include "como/core/CoreUtils.h"
+#include "como/core/SyncObject.h"
+#include "como/text/AttributedCharacterIteratorAttributeFactory.h"
+#include "como.core.CStringBuffer.h"
+#include "como.core.ICloneable.h"
+#include "como.core.IStringBuffer.h"
+#include "como.text.CAttributedString.h"
+#include "como.text.IAttributedString.h"
+#include "como.text.IAttributedCharacterIterator.h"
+#include "como.text.ICharacterIterator.h"
+#include "como.util.IMap.h"
+#include "como.util.ISet.h"
 #include <ccmautoptr.h>
 #include <gtest/gtest.h>
 
-using namespace ccm;
-using ccm::core::CoreUtils;
-using ccm::core::CStringBuffer;
-using ccm::core::IID_ICloneable;
-using ccm::core::IID_IStringBuffer;
-using ccm::core::ICloneable;
-using ccm::core::IStringBuffer;
-using ccm::core::SyncObject;
-using ccm::text::AttributedCharacterIteratorAttributeFactory;
-using ccm::text::CAttributedString;
-using ccm::text::IAttributedCharacterIterator;
-using ccm::text::IAttributedString;
-using ccm::text::ICharacterIterator;
-using ccm::text::IID_IAttributedCharacterIterator;
-using ccm::text::IID_IAttributedString;
-using ccm::text::IID_ICharacterIterator;
-using ccm::util::IMap;
-using ccm::util::ISet;
+using namespace como;
+using como::core::CoreUtils;
+using como::core::CStringBuffer;
+using como::core::IID_ICloneable;
+using como::core::IID_IStringBuffer;
+using como::core::ICloneable;
+using como::core::IStringBuffer;
+using como::core::SyncObject;
+using como::text::AttributedCharacterIteratorAttributeFactory;
+using como::text::CAttributedString;
+using como::text::IAttributedCharacterIterator;
+using como::text::IAttributedString;
+using como::text::ICharacterIterator;
+using como::text::IID_IAttributedCharacterIterator;
+using como::text::IID_IAttributedString;
+using como::text::IID_ICharacterIterator;
+using como::util::IMap;
+using como::util::ISet;
 
 class TestAttributedCharacterIterator
     : public SyncObject
@@ -55,7 +55,7 @@ class TestAttributedCharacterIterator
     , public ICloneable
 {
 public:
-    CCM_INTERFACE_DECL();
+    COMO_INTERFACE_DECL();
 
     ECode GetAllAttributeKeys(
         /* [out] */ ISet** keys) override;
@@ -122,7 +122,7 @@ public:
         /* [out] */ Char* currChar = nullptr) override;
 };
 
-CCM_INTERFACE_IMPL_3(TestAttributedCharacterIterator, SyncObject, IAttributedCharacterIterator, ICharacterIterator, ICloneable);
+COMO_INTERFACE_IMPL_3(TestAttributedCharacterIterator, SyncObject, IAttributedCharacterIterator, ICharacterIterator, ICloneable);
 
 ECode TestAttributedCharacterIterator::GetAllAttributeKeys(
     /* [out] */ ISet** keys)

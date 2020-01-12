@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,20 +14,20 @@
 // limitations under the License.
 //=========================================================================
 
-#include <ccm/core/CoreUtils.h>
-#include "ccm.core.ICharSequence.h"
-#include "ccm.util.concurrent.CConcurrentHashMap.h"
-#include "ccm.util.concurrent.IConcurrentHashMap.h"
+#include <como/core/CoreUtils.h>
+#include "como.core.ICharSequence.h"
+#include "como.util.concurrent.CConcurrentHashMap.h"
+#include "como.util.concurrent.IConcurrentHashMap.h"
 #include <ccmautoptr.h>
-#include <ccmtypes.h>
+#include <comotypes.h>
 #include <test/gtest.h>
 
-using namespace ccm;
-using ccm::core::CoreUtils;
-using ccm::core::ICharSequence;
-using ccm::util::concurrent::CConcurrentHashMap;
-using ccm::util::concurrent::IConcurrentHashMap;
-using ccm::util::concurrent::IID_IConcurrentHashMap;
+using namespace como;
+using como::core::CoreUtils;
+using como::core::ICharSequence;
+using como::util::concurrent::CConcurrentHashMap;
+using como::util::concurrent::IConcurrentHashMap;
+using como::util::concurrent::IID_IConcurrentHashMap;
 
 TEST(CConcurrentHashMapTest, PutTest)
 {

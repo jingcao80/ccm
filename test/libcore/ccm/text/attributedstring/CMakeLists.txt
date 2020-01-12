@@ -1,5 +1,5 @@
 #=========================================================================
-# Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+# Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -30,14 +30,14 @@ set(SOURCES
 set(GENERATED_SOURCES
     ${OBJ_DIR}/libcore.cpp)
 
-IMPORT_LIBRARY(ccmrt.so)
+IMPORT_LIBRARY(comort.so)
 IMPORT_LIBRARY(libcore.so)
 IMPORT_GTEST()
 
 add_executable(testAttributedString
     ${SOURCES}
     ${GENERATED_SOURCES})
-target_link_libraries(testAttributedString ccmrt.so libcore.so ${GTEST_LIBS})
+target_link_libraries(testAttributedString comort.so libcore.so ${GTEST_LIBS})
 add_dependencies(testAttributedString libtest)
 
 add_custom_command(

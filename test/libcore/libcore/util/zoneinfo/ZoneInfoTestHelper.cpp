@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,31 +15,31 @@
 //=========================================================================
 
 #include "ZoneInfoTestHelper.h"
-#include "ccm/io/ByteBufferFactory.h"
-#include "ccm.core.CInteger.h"
-#include "ccm.core.IArrayHolder.h"
-#include "ccm.io.CByteArrayOutputStream.h"
-#include "ccm.io.IBuffer.h"
-#include "ccm.io.IByteBuffer.h"
-#include "ccm.util.CArrayList.h"
-#include "ccm.util.CHashMap.h"
-#include "ccm.util.IIterator.h"
-#include "ccm.util.IMap.h"
+#include "como/io/ByteBufferFactory.h"
+#include "como.core.CInteger.h"
+#include "como.core.IArrayHolder.h"
+#include "como.io.CByteArrayOutputStream.h"
+#include "como.io.IBuffer.h"
+#include "como.io.IByteBuffer.h"
+#include "como.util.CArrayList.h"
+#include "como.util.CHashMap.h"
+#include "como.util.IIterator.h"
+#include "como.util.IMap.h"
 #include <coredef.h>
 
-using ccm::core::CInteger;
-using ccm::core::IArrayHolder;
-using ccm::io::ByteBufferFactory;
-using ccm::io::CByteArrayOutputStream;
-using ccm::io::IBuffer;
-using ccm::io::IByteBuffer;
-using ccm::io::IID_IByteArrayOutputStream;
-using ccm::util::CArrayList;
-using ccm::util::CHashMap;
-using ccm::util::IID_IList;
-using ccm::util::IID_IMap;
-using ccm::util::IIterator;
-using ccm::util::IMap;
+using como::core::CInteger;
+using como::core::IArrayHolder;
+using como::io::ByteBufferFactory;
+using como::io::CByteArrayOutputStream;
+using como::io::IBuffer;
+using como::io::IByteBuffer;
+using como::io::IID_IByteArrayOutputStream;
+using como::util::CArrayList;
+using como::util::CHashMap;
+using como::util::IID_IList;
+using como::util::IID_IMap;
+using como::util::IIterator;
+using como::util::IMap;
 
 void ZoneInfoTestHelper::ZicDataBuilder::SetTransitions(
     /* [in] */ const Array<Array<Integer>>& transitionPair)

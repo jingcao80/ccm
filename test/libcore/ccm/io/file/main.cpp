@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,15 +14,15 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm.io.CFile.h"
-#include "ccm.io.IFile.h"
+#include "como.io.CFile.h"
+#include "como.io.IFile.h"
 #include <ccmautoptr.h>
 #include <gtest/gtest.h>
 
-using namespace ccm;
-using ccm::io::CFile;
-using ccm::io::IFile;
-using ccm::io::IID_IFile;
+using namespace como;
+using como::io::CFile;
+using como::io::IFile;
+using como::io::IID_IFile;
 
 TEST(FileTest, CreateNewFileTest)
 {

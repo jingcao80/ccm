@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,18 +13,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //=========================================================================
-#include "ccm.core.ICharSequence.h"
-#include "ccm.util.CHashMap.h"
-#include "ccm.util.IHashMap.h"
-#include <ccm/core/CoreUtils.h>
+#include "como.core.ICharSequence.h"
+#include "como.util.CHashMap.h"
+#include "como.util.IHashMap.h"
+#include <como/core/CoreUtils.h>
 #include <ccmautoptr.h>
 #include <gtest/gtest.h>
 
-using ccm::core::CoreUtils;
-using ccm::core::ICharSequence;
-using ccm::util::CHashMap;
-using ccm::util::IHashMap;
-using ccm::util::IID_IHashMap;
+using como::core::CoreUtils;
+using como::core::ICharSequence;
+using como::util::CHashMap;
+using como::util::IHashMap;
+using como::util::IID_IHashMap;
 
 TEST(HashMapTest, HashMapGetPutTest)
 {

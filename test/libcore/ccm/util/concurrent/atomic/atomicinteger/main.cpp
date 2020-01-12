@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,15 +14,15 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm.util.concurrent.atomic.CAtomicInteger.h"
-#include "ccm.util.concurrent.atomic.IAtomicInteger.h"
+#include "como.util.concurrent.atomic.CAtomicInteger.h"
+#include "como.util.concurrent.atomic.IAtomicInteger.h"
 #include <ccmautoptr.h>
 #include <gtest/gtest.h>
 
-using namespace ccm;
-using ccm::util::concurrent::atomic::CAtomicInteger;
-using ccm::util::concurrent::atomic::IAtomicInteger;
-using ccm::util::concurrent::atomic::IID_IAtomicInteger;
+using namespace como;
+using como::util::concurrent::atomic::CAtomicInteger;
+using como::util::concurrent::atomic::IAtomicInteger;
+using como::util::concurrent::atomic::IID_IAtomicInteger;
 
 TEST(AtomicIntegerTest, AtomicIntegerGetTest)
 {

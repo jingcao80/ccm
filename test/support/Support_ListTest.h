@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,15 +14,15 @@
 // limitations under the License.
 //=========================================================================
 
-#ifndef __CCM_TEST_SUPPORT_LISTTEST_H__
-#define __CCM_TEST_SUPPORT_LISTTEST_H__
+#ifndef __COMO_TEST_SUPPORT_LISTTEST_H__
+#define __COMO_TEST_SUPPORT_LISTTEST_H__
 
-#include "ccm.util.IList.h"
-#include <ccmobject.h>
+#include "como.util.IList.h"
+#include <comoobj.h>
 
-using ccm::util::IList;
+using como::util::IList;
 
-namespace ccm {
+namespace como {
 namespace test {
 
 class Support_ListTest
@@ -49,4 +49,4 @@ public:
 }
 }
 
-#endif // __CCM_TEST_SUPPORT_LISTTEST_H__
+#endif // __COMO_TEST_SUPPORT_LISTTEST_H__

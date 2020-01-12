@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,13 +14,13 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/io/charset/CharsetFactory.h"
-#include "ccm.io.charset.ICharset.h"
+#include "como/io/charset/CharsetFactory.h"
+#include "como.io.charset.ICharset.h"
 #include <ccmautoptr.h>
 #include <gtest/gtest.h>
 
-using ccm::io::charset::CharsetFactory;
-using ccm::io::charset::ICharset;
+using como::io::charset::CharsetFactory;
+using como::io::charset::ICharset;
 
 TEST(CharsetTest, TestNonstandardCharsetName)
 {

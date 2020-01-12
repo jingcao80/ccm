@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,17 +14,17 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/util/LocaleFactory.h"
-#include "ccm.util.CLocale.h"
-#include "ccm.util.ILocale.h"
+#include "como/util/LocaleFactory.h"
+#include "como.util.CLocale.h"
+#include "como.util.ILocale.h"
 #include <ccmautoptr.h>
 #include <gtest/gtest.h>
 
-using namespace ccm;
-using ccm::util::CLocale;
-using ccm::util::ILocale;
-using ccm::util::IID_ILocale;
-using ccm::util::LocaleFactory;
+using namespace como;
+using como::util::CLocale;
+using como::util::ILocale;
+using como::util::IID_ILocale;
+using como::util::LocaleFactory;
 
 TEST(LocaleTest, NewTest)
 {

@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,18 +14,18 @@
 // limitations under the License.
 //=========================================================================
 
-#include <ccm/core/CoreUtils.h>
-#include "ccm.util.concurrent.CConcurrentLinkedQueue.h"
-#include "ccm.util.concurrent.IConcurrentLinkedQueue.h"
+#include <como/core/CoreUtils.h>
+#include "como.util.concurrent.CConcurrentLinkedQueue.h"
+#include "como.util.concurrent.IConcurrentLinkedQueue.h"
 #include <ccmautoptr.h>
-#include <ccmtypes.h>
+#include <comotypes.h>
 #include <test/gtest.h>
 
-using namespace ccm;
-using ccm::core::CoreUtils;
-using ccm::util::concurrent::CConcurrentLinkedQueue;
-using ccm::util::concurrent::IConcurrentLinkedQueue;
-using ccm::util::concurrent::IID_IConcurrentLinkedQueue;
+using namespace como;
+using como::core::CoreUtils;
+using como::util::concurrent::CConcurrentLinkedQueue;
+using como::util::concurrent::IConcurrentLinkedQueue;
+using como::util::concurrent::IID_IConcurrentLinkedQueue;
 
 TEST(CConcurrentLinkedQueueTest, AddTest)
 {

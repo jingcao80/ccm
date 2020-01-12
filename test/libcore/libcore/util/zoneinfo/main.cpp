@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,19 +14,19 @@
 // limitations under the License.
 //=========================================================================
 #include "ZoneInfoTestHelper.h"
-#include "ccm/io/ByteBufferFactory.h"
+#include "como/io/ByteBufferFactory.h"
 #include "libcore/util/ZoneInfoDBFactory.h"
 #include "libcore/util/ZoneInfoFactory.h"
-#include "ccm.core.CSystem.h"
-#include "ccm.core.ILong.h"
-#include "ccm.core.ISystem.h"
-#include "ccm.io.IBuffer.h"
-#include "ccm.io.IByteBuffer.h"
-#include "ccm.io.IIntegerBuffer.h"
-#include "ccm.io.IShortBuffer.h"
-#include "ccm.util.CDate.h"
-#include "ccm.util.IDate.h"
-#include "ccm.util.ITimeZone.h"
+#include "como.core.CSystem.h"
+#include "como.core.ILong.h"
+#include "como.core.ISystem.h"
+#include "como.io.IBuffer.h"
+#include "como.io.IByteBuffer.h"
+#include "como.io.IIntegerBuffer.h"
+#include "como.io.IShortBuffer.h"
+#include "como.util.CDate.h"
+#include "como.util.IDate.h"
+#include "como.util.ITimeZone.h"
 #include "libcore.io.IBufferIterator.h"
 #include "libcore.util.CZoneInfoWallTime.h"
 #include "libcore.util.IZoneInfo.h"
@@ -35,19 +35,19 @@
 #include <ccmobject.h>
 #include <gtest/gtest.h>
 
-using ccm::core::CSystem;
-using ccm::core::IID_ISystem;
-using ccm::core::ILong;
-using ccm::core::ISystem;
-using ccm::io::ByteBufferFactory;
-using ccm::io::IBuffer;
-using ccm::io::IByteBuffer;
-using ccm::io::IIntegerBuffer;
-using ccm::io::IShortBuffer;
-using ccm::util::CDate;
-using ccm::util::IDate;
-using ccm::util::IID_IDate;
-using ccm::util::ITimeZone;
+using como::core::CSystem;
+using como::core::IID_ISystem;
+using como::core::ILong;
+using como::core::ISystem;
+using como::io::ByteBufferFactory;
+using como::io::IBuffer;
+using como::io::IByteBuffer;
+using como::io::IIntegerBuffer;
+using como::io::IShortBuffer;
+using como::util::CDate;
+using como::util::IDate;
+using como::util::IID_IDate;
+using como::util::ITimeZone;
 using libcore::io::IBufferIterator;
 using libcore::io::IID_IBufferIterator;
 using libcore::util::CZoneInfoWallTime;
@@ -68,7 +68,7 @@ public:
         : mBuffer(buffer)
     {}
 
-    CCM_INTERFACE_DECL();
+    COMO_INTERFACE_DECL();
 
     ECode Seek(
         /* [in] */ Integer offset) override
@@ -144,7 +144,7 @@ private:
     AutoPtr<IByteBuffer> mBuffer;
 };
 
-CCM_INTERFACE_IMPL_1(ByteBufferIterator, Object, IBufferIterator);
+COMO_INTERFACE_IMPL_1(ByteBufferIterator, Object, IBufferIterator);
 
 static Integer SecondsInMillis(
     /* [in] */ Integer seconds)

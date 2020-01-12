@@ -27,11 +27,11 @@ include_directories(
 set(SOURCES
     main.cpp)
 
-IMPORT_LIBRARY(ccmrt.so)
+IMPORT_LIBRARY(comort.so)
 
 add_executable(testMutex
     ${SOURCES})
-target_link_libraries(testMutex ccmrt.so pthread)
+target_link_libraries(testMutex comort.so pthread)
 add_dependencies(testMutex libtest)
 
 COPY(testMutex ${OBJ_DIR}/testMutex ${BIN_DIR})

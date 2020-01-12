@@ -1,5 +1,5 @@
 #=========================================================================
-# Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+# Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -30,13 +30,13 @@ set(SOURCES
 set(GENERATED_SOURCES
     ${OBJ_DIR}/libcore.cpp)
 
-IMPORT_LIBRARY(ccmrt.so)
+IMPORT_LIBRARY(comort.so)
 IMPORT_LIBRARY(libcore.so)
 
 add_executable(testCalendar
     ${SOURCES}
     ${GENERATED_SOURCES})
-target_link_libraries(testCalendar ccmrt.so libcore.so)
+target_link_libraries(testCalendar comort.so libcore.so)
 add_dependencies(testCalendar libtest)
 
 add_custom_command(

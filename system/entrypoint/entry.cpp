@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,13 +14,13 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/core/RuntimeFactory.h"
-#include "ccm.core.IRuntime.h"
-#include <ccmautoptr.h>
+#include "como/core/RuntimeFactory.h"
+#include "como.core.IRuntime.h"
+#include <comosp.h>
 
-using namespace ccm;
-using ccm::core::RuntimeFactory;
-using ccm::core::IRuntime;
+using namespace como;
+using como::core::RuntimeFactory;
+using como::core::IRuntime;
 
 extern ECode Main(Array<String>& args);
 

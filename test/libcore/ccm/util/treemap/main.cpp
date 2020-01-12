@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,43 +14,43 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/core/CoreUtils.h"
-#include "ccm/core/StringUtils.h"
-#include "ccm.core.ICharSequence.h"
-#include "ccm.util.CHashMap.h"
-#include "ccm.util.CSimpleEntry.h"
-#include "ccm.util.CTreeMap.h"
-#include "ccm.util.IHashMap.h"
-#include "ccm.util.IIterator.h"
-#include "ccm.util.IMap.h"
-#include "ccm.util.IMapEntry.h"
-#include "ccm.util.INavigableMap.h"
-#include "ccm.util.ISet.h"
-#include "ccm.util.ISortedMap.h"
-#include "ccm.util.ITreeMap.h"
+#include "como/core/CoreUtils.h"
+#include "como/core/StringUtils.h"
+#include "como.core.ICharSequence.h"
+#include "como.util.CHashMap.h"
+#include "como.util.CSimpleEntry.h"
+#include "como.util.CTreeMap.h"
+#include "como.util.IHashMap.h"
+#include "como.util.IIterator.h"
+#include "como.util.IMap.h"
+#include "como.util.IMapEntry.h"
+#include "como.util.INavigableMap.h"
+#include "como.util.ISet.h"
+#include "como.util.ISortedMap.h"
+#include "como.util.ITreeMap.h"
 #include <gtest/gtest.h>
 
-using namespace ccm;
-using ccm::core::CoreUtils;
-using ccm::core::E_NULL_POINTER_EXCEPTION;
-using ccm::core::ICharSequence;
-using ccm::core::StringUtils;
-using ccm::util::CHashMap;
-using ccm::util::CSimpleEntry;
-using ccm::util::CTreeMap;
-using ccm::util::E_CONCURRENT_MODIFICATION_EXCEPTION;
-using ccm::util::IHashMap;
-using ccm::util::IID_IHashMap;
-using ccm::util::IID_IMap;
-using ccm::util::IID_IMapEntry;
-using ccm::util::IID_INavigableMap;
-using ccm::util::IIterator;
-using ccm::util::IMap;
-using ccm::util::IMapEntry;
-using ccm::util::INavigableMap;
-using ccm::util::ISet;
-using ccm::util::ISortedMap;
-using ccm::util::ITreeMap;
+using namespace como;
+using como::core::CoreUtils;
+using como::core::E_NULL_POINTER_EXCEPTION;
+using como::core::ICharSequence;
+using como::core::StringUtils;
+using como::util::CHashMap;
+using como::util::CSimpleEntry;
+using como::util::CTreeMap;
+using como::util::E_CONCURRENT_MODIFICATION_EXCEPTION;
+using como::util::IHashMap;
+using como::util::IID_IHashMap;
+using como::util::IID_IMap;
+using como::util::IID_IMapEntry;
+using como::util::IID_INavigableMap;
+using como::util::IIterator;
+using como::util::IMap;
+using como::util::IMapEntry;
+using como::util::INavigableMap;
+using como::util::ISet;
+using como::util::ISortedMap;
+using como::util::ITreeMap;
 
 TEST(TreeMapTest, TestEntrySetSetValue)
 {

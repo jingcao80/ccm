@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,23 +14,23 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm.io.CFileInputStream.h"
-#include "ccm.io.IFileInputStream.h"
-#include "ccm.io.IInputStream.h"
+#include "como.io.CFileInputStream.h"
+#include "como.io.IFileInputStream.h"
+#include "como.io.IInputStream.h"
 #include <ccmautoptr.h>
-#include <ccmtypes.h>
+#include <comotypes.h>
 #include <test/gtest.h>
 
-using namespace ccm;
-using ccm::io::CFileInputStream;
-using ccm::io::IFileInputStream;
-using ccm::io::IID_IFileInputStream;
-using ccm::io::IInputStream;
-using ccm::io::IID_IInputStream;
+using namespace como;
+using como::io::CFileInputStream;
+using como::io::IFileInputStream;
+using como::io::IID_IFileInputStream;
+using como::io::IInputStream;
+using como::io::IID_IInputStream;
 
 static const char* LICENSE[] = {
     "//=========================================================================",
-    "// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project",
+    "// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project",
     "//",
     "// Licensed under the Apache License, Version 2.0 (the \"License\");",
     "// you may not use this file except in compliance with the License.",

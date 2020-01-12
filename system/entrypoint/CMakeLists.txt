@@ -1,5 +1,5 @@
 #=========================================================================
-# Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+# Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,49 +14,49 @@
 # limitations under the License.
 #=========================================================================
 
-project(AppEntryTest CXX)
+project(libentry CXX)
 
-set(appentry_DIR ${TEST_DIR}/appentry)
-set(OBJ_DIR ${CMAKE_BINARY_DIR}/test/appentry)
+set(ENTRYPOINT_SRC_DIR ${SYSTEM_SRC_DIR}/entrypoint)
+set(ENTRYPOINT_OBJ_DIR ${SYSTEM_OBJ_DIR}/entrypoint)
 
 include_directories(
     ./
     ${INC_DIR}
-    ${OBJ_DIR})
+    ${ENTRYPOINT_OBJ_DIR})
 
 set(SOURCES
-    main.cpp)
+    entry.cpp)
 
 set(GENERATED_SOURCES
-    ${OBJ_DIR}/libcore.cpp)
+    ${ENTRYPOINT_OBJ_DIR}/libcore.cpp)
 
-IMPORT_LIBRARY(ccmrt.so)
+IMPORT_LIBRARY(comort.so)
 IMPORT_LIBRARY(libcore.so)
-IMPORT_LIBRARY(libappentry.a)
-IMPORT_GTEST()
 
-add_executable(testAppEntry
+add_library(libentry
+    STATIC
     ${SOURCES}
     ${GENERATED_SOURCES})
-target_link_libraries(testAppEntry libappentry.a ccmrt.so libcore.so ${GTEST_LIBS})
-add_dependencies(testAppEntry libtest)
+target_link_libraries(libentry
+    comort.so
+    libcore.so)
+add_dependencies(libentry libcore)
 
 add_custom_command(
     OUTPUT
         ${GENERATED_SOURCES}
     COMMAND
-        "${BIN_DIR}/ccdl"
-        -g
-        -u
-        -p
-        -s
-        -d ${OBJ_DIR}
-        "${BIN_DIR}/libcore.so")
+        "$ENV{CDLC}"
+        -gen
+        -mode-client
+        -split
+        -d ${ENTRYPOINT_OBJ_DIR}
+        -metadata-so "${BIN_DIR}/libcore.so")
 
-COPY(testAppEntry ${OBJ_DIR}/testAppEntry ${BIN_DIR})
+COPY(libentry ${ENTRYPOINT_OBJ_DIR}/libentry.a ${BIN_DIR})
 
 install(FILES
-    ${OBJ_DIR}/testAppEntry
+    ${ENTRYPOINT_OBJ_DIR}/libentry.a
     DESTINATION ${BIN_DIR}
     PERMISSIONS
         OWNER_READ

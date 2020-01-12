@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,38 +14,38 @@
 // limitations under the License.
 //=========================================================================
 
-#include <ccm/core/Math.h>
-#include <ccm/core/StringUtils.h>
-#include "ccm/math/BigDecimalFactory.h"
-#include "ccm/math/BigIntegerFactory.h"
-#include "ccm.core.IComparable.h"
-#include "ccm.core.IInteger.h"
-#include "ccm.core.ILong.h"
-#include "ccm.math.CBigDecimal.h"
-#include "ccm.math.CMathContext.h"
-#include "ccm.math.IBigDecimal.h"
-#include "ccm.math.IBigInteger.h"
-#include "ccm.math.IMathContext.h"
+#include <como/core/Math.h>
+#include <como/core/StringUtils.h>
+#include "como/math/BigDecimalFactory.h"
+#include "como/math/BigIntegerFactory.h"
+#include "como.core.IComparable.h"
+#include "como.core.IInteger.h"
+#include "como.core.ILong.h"
+#include "como.math.CBigDecimal.h"
+#include "como.math.CMathContext.h"
+#include "como.math.IBigDecimal.h"
+#include "como.math.IBigInteger.h"
+#include "como.math.IMathContext.h"
 #include <ccmautoptr.h>
 #include <ccmobject.h>
 #include <gtest/gtest.h>
 
-using ccm::Object;
-using ccm::core::IComparable;
-using ccm::core::IInteger;
-using ccm::core::ILong;
-using ccm::core::Math;
-using ccm::core::StringUtils;
-using ccm::math::BigDecimalFactory;
-using ccm::math::BigIntegerFactory;
-using ccm::math::CBigDecimal;
-using ccm::math::CMathContext;
-using ccm::math::IBigDecimal;
-using ccm::math::IBigInteger;
-using ccm::math::IID_IBigDecimal;
-using ccm::math::IID_IMathContext;
-using ccm::math::IMathContext;
-using ccm::math::RoundingMode;
+using como::Object;
+using como::core::IComparable;
+using como::core::IInteger;
+using como::core::ILong;
+using como::core::Math;
+using como::core::StringUtils;
+using como::math::BigDecimalFactory;
+using como::math::BigIntegerFactory;
+using como::math::CBigDecimal;
+using como::math::CMathContext;
+using como::math::IBigDecimal;
+using como::math::IBigInteger;
+using como::math::IID_IBigDecimal;
+using como::math::IID_IMathContext;
+using como::math::IMathContext;
+using como::math::RoundingMode;
 
 void AssertPrecision(
     /* [in] */ Integer expectedPrecision,

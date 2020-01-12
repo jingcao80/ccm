@@ -19,7 +19,7 @@
 #include <pthread.h>
 #include <unistd.h>
 
-using namespace ccm;
+using namespace como;
 
 typedef void *(*ThreadEntryFunc)(void *);
 

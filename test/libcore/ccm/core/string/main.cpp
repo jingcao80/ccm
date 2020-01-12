@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,11 +14,11 @@
 // limitations under the License.
 //=========================================================================
 
-#include <ccm/core/StringUtils.h>
+#include <como/core/StringUtils.h>
 #include <gtest/gtest.h>
 
-using namespace ccm;
-using ccm::core::StringUtils;
+using namespace como;
+using como::core::StringUtils;
 
 Byte ParseByte(const char* s, Integer radix = 10)
 {

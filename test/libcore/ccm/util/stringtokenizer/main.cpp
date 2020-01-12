@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,15 +14,15 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm.util.CStringTokenizer.h"
-#include "ccm.util.IStringTokenizer.h"
+#include "como.util.CStringTokenizer.h"
+#include "como.util.IStringTokenizer.h"
 #include <ccmautoptr.h>
 #include <gtest/gtest.h>
 
-using namespace ccm;
-using ccm::util::CStringTokenizer;
-using ccm::util::IStringTokenizer;
-using ccm::util::IID_IStringTokenizer;
+using namespace como;
+using como::util::CStringTokenizer;
+using como::util::IStringTokenizer;
+using como::util::IID_IStringTokenizer;
 
 TEST(StringTokenizerTest, StringTokenizerTest)
 {

@@ -1,5 +1,5 @@
 #=========================================================================
-# Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+# Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,12 +14,7 @@
 # limitations under the License.
 #=========================================================================
 
-set(SRC_DIR ${PROJECT_DIR}/src)
+set(SYSTEM_SRC_DIR ${PROJECT_DIR}/system)
+set(SYSTEM_OBJ_DIR ${OBJ_DIR}/system)
 
-add_subdirectory(runtime/metadata)
-add_subdirectory(cdlc)
-add_subdirectory(runtime)
-# add_subdirectory(libcore)
-# add_subdirectory(appentry)
-# add_subdirectory(servicemanager)
-# add_subdirectory(sample)
+add_subdirectory(entrypoint)

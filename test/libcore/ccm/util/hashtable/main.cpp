@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,18 +14,18 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm.core.ICharSequence.h"
-#include "ccm.util.CHashtable.h"
-#include "ccm.util.IHashtable.h"
-#include <ccm/core/CoreUtils.h>
+#include "como.core.ICharSequence.h"
+#include "como.util.CHashtable.h"
+#include "como.util.IHashtable.h"
+#include <como/core/CoreUtils.h>
 #include <ccmautoptr.h>
 #include <gtest/gtest.h>
 
-using ccm::core::CoreUtils;
-using ccm::core::ICharSequence;
-using ccm::util::CHashtable;
-using ccm::util::IHashtable;
-using ccm::util::IID_IHashtable;
+using como::core::CoreUtils;
+using como::core::ICharSequence;
+using como::util::CHashtable;
+using como::util::IHashtable;
+using como::util::IID_IHashtable;
 
 TEST(HashtableTest, HashtableContainsTest)
 {

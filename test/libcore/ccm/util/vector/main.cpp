@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,21 +15,21 @@
 //=========================================================================
 
 #include "test/support/Support_ListTest.h"
-#include "ccm.core.CInteger.h"
-#include "ccm.core.IInteger.h"
-#include "ccm.util.CVector.h"
-#include "ccm.util.IVector.h"
+#include "como.core.CInteger.h"
+#include "como.core.IInteger.h"
+#include "como.util.CVector.h"
+#include "como.util.IVector.h"
 #include <ccmautoptr.h>
 #include <gtest/gtest.h>
 
-using namespace ccm;
-using ccm::core::CInteger;
-using ccm::core::IID_IInteger;
-using ccm::core::IInteger;
-using ccm::test::Support_ListTest;
-using ccm::util::CVector;
-using ccm::util::IID_IVector;
-using ccm::util::IVector;
+using namespace como;
+using como::core::CInteger;
+using como::core::IID_IInteger;
+using como::core::IInteger;
+using como::test::Support_ListTest;
+using como::util::CVector;
+using como::util::IID_IVector;
+using como::util::IVector;
 
 TEST(VectorTest, TestConstructor)
 {

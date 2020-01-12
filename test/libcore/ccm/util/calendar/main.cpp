@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,24 +14,24 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/util/calendar/CalendarSystemFactory.h"
-#include "ccm.core.CSystem.h"
-#include "ccm.core.ISystem.h"
-#include "ccm.util.calendar.ICalendarDate.h"
-#include "ccm.util.calendar.ICalendarSystem.h"
+#include "como/util/calendar/CalendarSystemFactory.h"
+#include "como.core.CSystem.h"
+#include "como.core.ISystem.h"
+#include "como.util.calendar.ICalendarDate.h"
+#include "como.util.calendar.ICalendarSystem.h"
 #include <ccmautoptr.h>
 #include <ccmobject.h>
 
 #include <stdio.h>
 
-using namespace ccm;
-using ccm::core::CSystem;
-using ccm::core::ISystem;
-using ccm::core::IID_ISystem;
-using ccm::util::calendar::CalendarSystemFactory;
-using ccm::util::calendar::ICalendarDate;
-using ccm::util::calendar::ICalendarSystem;
-using ccm::util::calendar::IID_ICalendarSystem;
+using namespace como;
+using como::core::CSystem;
+using como::core::ISystem;
+using como::core::IID_ISystem;
+using como::util::calendar::CalendarSystemFactory;
+using como::util::calendar::ICalendarDate;
+using como::util::calendar::ICalendarSystem;
+using como::util::calendar::IID_ICalendarSystem;
 
 void TestCGregorian()
 {

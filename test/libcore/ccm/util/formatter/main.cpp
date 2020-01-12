@@ -1,5 +1,5 @@
 //=========================================================================
-// Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+// Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,42 +14,42 @@
 // limitations under the License.
 //=========================================================================
 
-#include "ccm/core/CoreUtils.h"
-#include "ccm/core/StringUtils.h"
-#include "ccm/text/NumberFormatFactory.h"
-#include "ccm/util/CalendarFactory.h"
-#include "ccm/util/LocaleFactory.h"
-#include "ccm/util/TimeZoneFactory.h"
-#include "ccm.math.CBigDecimal.h"
-#include "ccm.math.IBigDecimal.h"
-#include "ccm.text.IDecimalFormat.h"
-#include "ccm.text.IDecimalFormatSymbols.h"
-#include "ccm.text.INumberFormat.h"
-#include "ccm.util.CLocale.h"
-#include "ccm.util.ICalendar.h"
-#include "ccm.util.ILocale.h"
-#include "ccm.util.ITimeZone.h"
+#include "como/core/CoreUtils.h"
+#include "como/core/StringUtils.h"
+#include "como/text/NumberFormatFactory.h"
+#include "como/util/CalendarFactory.h"
+#include "como/util/LocaleFactory.h"
+#include "como/util/TimeZoneFactory.h"
+#include "como.math.CBigDecimal.h"
+#include "como.math.IBigDecimal.h"
+#include "como.text.IDecimalFormat.h"
+#include "como.text.IDecimalFormatSymbols.h"
+#include "como.text.INumberFormat.h"
+#include "como.util.CLocale.h"
+#include "como.util.ICalendar.h"
+#include "como.util.ILocale.h"
+#include "como.util.ITimeZone.h"
 #include <ccmautoptr.h>
 #include <gtest/gtest.h>
 
-using namespace ccm;
-using ccm::core::CoreUtils;
-using ccm::core::StringUtils;
-using ccm::math::CBigDecimal;
-using ccm::math::IBigDecimal;
-using ccm::math::IID_IBigDecimal;
-using ccm::text::IDecimalFormat;
-using ccm::text::IDecimalFormatSymbols;
-using ccm::text::INumberFormat;
-using ccm::text::NumberFormatFactory;
-using ccm::util::CalendarFactory;
-using ccm::util::CLocale;
-using ccm::util::IID_ILocale;
-using ccm::util::ICalendar;
-using ccm::util::ILocale;
-using ccm::util::LocaleFactory;
-using ccm::util::ITimeZone;
-using ccm::util::TimeZoneFactory;
+using namespace como;
+using como::core::CoreUtils;
+using como::core::StringUtils;
+using como::math::CBigDecimal;
+using como::math::IBigDecimal;
+using como::math::IID_IBigDecimal;
+using como::text::IDecimalFormat;
+using como::text::IDecimalFormatSymbols;
+using como::text::INumberFormat;
+using como::text::NumberFormatFactory;
+using como::util::CalendarFactory;
+using como::util::CLocale;
+using como::util::IID_ILocale;
+using como::util::ICalendar;
+using como::util::ILocale;
+using como::util::LocaleFactory;
+using como::util::ITimeZone;
+using como::util::TimeZoneFactory;
 
 TEST(FormatterTest, TestNumberLocalization)
 {

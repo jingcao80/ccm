@@ -1,5 +1,5 @@
 #=========================================================================
-# Copyright (C) 2018 The C++ Component Model(CCM) Open Source Project
+# Copyright (C) 2018 The C++ Component Model(COMO) Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,50 +14,48 @@
 # limitations under the License.
 #=========================================================================
 
-project(libappentry CXX)
+project(EntryPointTest CXX)
 
-set(appentry_DIR ${SRC_DIR}/appentry)
-set(OBJ_DIR ${CMAKE_BINARY_DIR}/src/appentry)
+set(ENTRYPOINT_SRC_DIR ${TEST_SRC_DIR}/entrypoint)
+set(ENTRYPOINT_OBJ_DIR ${TEST_OBJ_DIR}/entrypoint)
 
 include_directories(
     ./
     ${INC_DIR}
-    ${OBJ_DIR})
+    ${ENTRYPOINT_OBJ_DIR})
 
 set(SOURCES
-    entry.cpp)
+    main.cpp)
 
 set(GENERATED_SOURCES
-    ${OBJ_DIR}/libcore.cpp)
+    ${ENTRYPOINT_OBJ_DIR}/libcore.cpp)
 
-IMPORT_LIBRARY(ccmrt.so)
+IMPORT_LIBRARY(comort.so)
 IMPORT_LIBRARY(libcore.so)
+IMPORT_LIBRARY(libentry.a)
+IMPORT_GTEST()
 
-add_library(libappentry
-    STATIC
+add_executable(testEntryPoint
     ${SOURCES}
     ${GENERATED_SOURCES})
-target_link_libraries(libappentry
-    ccmrt.so
-    libcore.so)
-add_dependencies(libappentry libcore)
+target_link_libraries(testEntryPoint libentry.a comort.so libcore.so ${GTEST_LIBS})
+add_dependencies(testEntryPoint libtest)
 
 add_custom_command(
     OUTPUT
         ${GENERATED_SOURCES}
     COMMAND
-        "${BIN_DIR}/ccdl"
-        -g
-        -u
-        -p
-        -s
-        -d ${OBJ_DIR}
-        "${BIN_DIR}/libcore.so")
+        "$ENV{CDLC}"
+        -gen
+        -mode-client
+        -split
+        -d ${ENTRYPOINT_OBJ_DIR}
+        -metadata-so "${BIN_DIR}/libcore.so")
 
-COPY(libappentry ${OBJ_DIR}/libappentry.a ${BIN_DIR})
+COPY(testEntryPoint ${ENTRYPOINT_OBJ_DIR}/testEntryPoint ${BIN_DIR})
 
 install(FILES
-    ${OBJ_DIR}/libappentry.a
+    ${ENTRYPOINT_OBJ_DIR}/testEntryPoint
     DESTINATION ${BIN_DIR}
     PERMISSIONS
         OWNER_READ
