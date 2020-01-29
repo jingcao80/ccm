@@ -32,8 +32,6 @@ using como::util::Properties;
 namespace como {
 namespace core {
 
-static CONS_PROI_4 void StaticInitializeSystem();
-
 class System
 {
 protected:
@@ -87,6 +85,8 @@ public:
         /* [in] */ const String& message,
         /* [in] */ IStackTrace* st);
 
+    static ECode StaticInitialize();
+
 private:
     System();
 
@@ -98,8 +98,6 @@ private:
         /* [in] */ IProperties* p);
 
     static ECode AddLegacyLocaleSystemProperties();
-
-    static ECode StaticInitialize();
 
     static ECode CheckKey(
         /* [in] */ const String& key);

@@ -14,6 +14,7 @@
 // limitations under the License.
 //=========================================================================
 
+#include "como/core/ClassLoader.h"
 #include "como/core/CThreadGroup.h"
 #include "como/core/NativeMonitor.h"
 #include "como/core/NativeMonitorPool.h"
@@ -21,6 +22,8 @@
 #include "como/core/NativeRuntime.h"
 #include "como/core/NativeThread.h"
 #include "como/core/NativeThreadList.h"
+#include "como/core/System.h"
+#include <comoobjapi.h>
 
 namespace como {
 namespace core {
@@ -83,6 +86,12 @@ Boolean NativeRuntime::Start()
     InitThreadGroups(self);
 
     NativeThread::FinishStartup();
+
+    // Initialize the System class.
+    System::StaticInitialize();
+
+    AutoPtr<IClassLoader> systemClassLoader = ClassLoader::GetSystemClassLoader();
+    CoSetSystemClassLoader(systemClassLoader);
 
     Logger::V("NativeRuntime", "Start exiting");
     mFinishedStarting = true;

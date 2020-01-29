@@ -32,6 +32,7 @@ const CoclassID CID_CBootClassLoader =
 
 const String CBootClassLoader::TAG("CBootClassLoader");
 AutoPtr<IClassLoader> CBootClassLoader::sInstance = new CBootClassLoader();
+AutoPtr<IClassLoader> CBootClassLoader::sSystemClassLoader;
 
 COMO_OBJECT_IMPL(CBootClassLoader);
 COMO_INTERFACE_IMPL_1(CBootClassLoader, Object, IClassLoader);
@@ -41,9 +42,20 @@ CBootClassLoader::CBootClassLoader()
     InitComponentPath();
 }
 
+AutoPtr<IClassLoader> CBootClassLoader::GetSystemClassLoader()
+{
+    return sSystemClassLoader != nullptr ? sSystemClassLoader : GetInstance();
+}
+
 AutoPtr<IClassLoader> CBootClassLoader::GetInstance()
 {
     return sInstance;
+}
+
+void CBootClassLoader::SetSystemClassLoader(
+    /* [in] */ IClassLoader* loader)
+{
+    sSystemClassLoader = loader;
 }
 
 ECode CBootClassLoader::LoadComponent(

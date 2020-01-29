@@ -1326,7 +1326,7 @@ ECode CProxy::CreateObject(
     proxy = nullptr;
 
     if (loader == nullptr) {
-        loader = CBootClassLoader::GetInstance();
+        loader = CBootClassLoader::GetSystemClassLoader();
     }
 
     AutoPtr<IMetaCoclass> mc;

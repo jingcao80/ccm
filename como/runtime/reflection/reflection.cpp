@@ -35,7 +35,7 @@ ECode CoGetComponentMetadata(
     /* [out] */ AutoPtr<IMetaComponent>& mc)
 {
     if (loader == nullptr) {
-        loader = CBootClassLoader::GetInstance();
+        loader = CBootClassLoader::GetSystemClassLoader();
     }
 
     return loader->LoadComponent(cid, mc);
@@ -168,7 +168,7 @@ ECode CoGetCoclassMetadata(
     /* [out] */ AutoPtr<IMetaCoclass>& mc)
 {
     if (loader == nullptr) {
-        loader = CBootClassLoader::GetInstance();
+        loader = CBootClassLoader::GetSystemClassLoader();
     }
 
     AutoPtr<IMetaComponent> component;

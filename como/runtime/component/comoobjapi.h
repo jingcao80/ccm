@@ -35,6 +35,9 @@ EXTERN_C COM_PUBLIC ECode CoAcquireClassFactory(
 EXTERN_C COM_PUBLIC ECode CoGetBootClassLoader(
     /* [out] */ AutoPtr<IClassLoader>& loader);
 
+EXTERN_C COM_PUBLIC ECode CoSetSystemClassLoader(
+    /* [out] */ IClassLoader* loader);
+
 } // namespace como
 
 #endif // __COMO_COMOOBJECTAPI_H__

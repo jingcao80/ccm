@@ -101,6 +101,7 @@ function como_linux_x64()
     export OUT_PATH=$ROOT/out/target/$BUILD
     export BIN_PATH=$ROOT/bin/target/$BUILD
     export DATA_PATH=$ROOT/data
+    export LIB_PATH=$BIN_PATH
     export COMORT_PATH=$BIN_PATH/comort.so
     export CLASS_PATH=$BIN_PATH/libcore.so
     export CDLC=$ROOT/tools/cdlc

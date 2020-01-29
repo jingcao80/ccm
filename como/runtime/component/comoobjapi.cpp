@@ -31,7 +31,7 @@ ECode CoCreateObjectInstance(
     VALIDATE_NOT_NULL(object);
 
     if (loader == nullptr) {
-        loader = CBootClassLoader::GetInstance();
+        loader = CBootClassLoader::GetSystemClassLoader();
     }
 
     AutoPtr<IClassObject> factory;
@@ -50,7 +50,7 @@ ECode CoAcquireClassFactory(
     /* [out] */ AutoPtr<IClassObject>& object)
 {
     if (loader == nullptr) {
-        loader = CBootClassLoader::GetInstance();
+        loader = CBootClassLoader::GetSystemClassLoader();
     }
 
     AutoPtr<IMetaComponent> component;
@@ -72,6 +72,15 @@ ECode CoGetBootClassLoader(
     /* [out] */ AutoPtr<IClassLoader>& loader)
 {
     loader = CBootClassLoader::GetInstance();
+    return NOERROR;
+}
+
+ECode CoSetSystemClassLoader(
+    /* [out] */ IClassLoader* loader)
+{
+    if (loader != nullptr) {
+        CBootClassLoader::SetSystemClassLoader(loader);
+    }
     return NOERROR;
 }
 

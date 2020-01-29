@@ -21,7 +21,7 @@
 namespace como {
 namespace core {
 
-static CONS_PROI_1
+static CONS_PROI_2
 void CoreStartup()
 {
     if (!NativeRuntime::Create()) {

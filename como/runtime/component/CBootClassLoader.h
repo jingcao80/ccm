@@ -33,7 +33,12 @@ class CBootClassLoader
     , public IClassLoader
 {
 public:
+    static AutoPtr<IClassLoader> GetSystemClassLoader();
+
     static AutoPtr<IClassLoader> GetInstance();
+
+    static void SetSystemClassLoader(
+        /* [in] */ IClassLoader* loader);
 
     COMO_OBJECT_DECL();
 
@@ -81,6 +86,7 @@ private:
 private:
     static const String TAG;
     static AutoPtr<IClassLoader> sInstance;
+    static AutoPtr<IClassLoader> sSystemClassLoader;
 
     Boolean mDebug = false;
     ArrayList<String> mComponentPath;

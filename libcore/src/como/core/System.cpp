@@ -45,14 +45,9 @@ using libcore::io::Libcore;
 namespace como {
 namespace core {
 
-INIT_PROI_3 AutoPtr<IProperties> System::sProps;
-INIT_PROI_3 AutoPtr<IProperties> System::sUnchangeableProps;
-INIT_PROI_3 String System::sLineSeparator;
-
-static CONS_PROI_4 void StaticInitializeSystem()
-{
-    System::StaticInitialize();
-}
+INIT_PROI_1 AutoPtr<IProperties> System::sProps;
+INIT_PROI_1 AutoPtr<IProperties> System::sUnchangeableProps;
+INIT_PROI_1 String System::sLineSeparator;
 
 AutoPtr<IPrintStream> System::GetOut()
 {
