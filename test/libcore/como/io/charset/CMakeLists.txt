@@ -14,7 +14,7 @@
 # limitations under the License.
 #=========================================================================
 
-set(LIBCORE_LIBCORE_SRC_DIR ${LIBCORE_SRC_DIR}/libcore)
-set(LIBCORE_LIBCORE_OBJ_DIR ${LIBCORE_OBJ_DIR}/libcore)
+set(LIBCORE_COMO_IO_CHARSET_SRC_DIR ${LIBCORE_COMO_IO_SRC_DIR}/charset)
+set(LIBCORE_COMO_IO_CHARSET_OBJ_DIR ${LIBCORE_COMO_IO_OBJ_DIR}/charset)
 
-add_subdirectory(util)
+add_subdirectory(charset)

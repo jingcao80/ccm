@@ -14,7 +14,8 @@
 # limitations under the License.
 #=========================================================================
 
-set(LIBCORE_LIBCORE_SRC_DIR ${LIBCORE_SRC_DIR}/libcore)
-set(LIBCORE_LIBCORE_OBJ_DIR ${LIBCORE_OBJ_DIR}/libcore)
+set(LIBCORE_COMO_MATH_SRC_DIR ${LIBCORE_COMO_SRC_DIR}/math)
+set(LIBCORE_COMO_MATH_OBJ_DIR ${LIBCORE_COMO_OBJ_DIR}/math)
 
-add_subdirectory(util)
+add_subdirectory(bigdecimal)
+add_subdirectory(biginteger)

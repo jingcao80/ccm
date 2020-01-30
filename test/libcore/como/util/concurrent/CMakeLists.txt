@@ -14,7 +14,9 @@
 # limitations under the License.
 #=========================================================================
 
-set(LIBCORE_LIBCORE_SRC_DIR ${LIBCORE_SRC_DIR}/libcore)
-set(LIBCORE_LIBCORE_OBJ_DIR ${LIBCORE_OBJ_DIR}/libcore)
+set(LIBCORE_COMO_UTIL_CONCURRENT_SRC_DIR ${LIBCORE_COMO_UTIL_SRC_DIR}/concurrent)
+set(LIBCORE_COMO_UTIL_CONCURRENT_OBJ_DIR ${LIBCORE_COMO_UTIL_OBJ_DIR}/concurrent)
 
-add_subdirectory(util)
+add_subdirectory(atomic)
+add_subdirectory(concurrenthashmap)
+add_subdirectory(concurrentlinkedqueue)

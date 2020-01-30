@@ -14,7 +14,11 @@
 # limitations under the License.
 #=========================================================================
 
-set(LIBCORE_LIBCORE_SRC_DIR ${LIBCORE_SRC_DIR}/libcore)
-set(LIBCORE_LIBCORE_OBJ_DIR ${LIBCORE_OBJ_DIR}/libcore)
+set(LIBCORE_COMO_SRC_DIR ${LIBCORE_SRC_DIR}/como)
+set(LIBCORE_COMO_OBJ_DIR ${LIBCORE_OBJ_DIR}/como)
 
+add_subdirectory(core)
+add_subdirectory(io)
+add_subdirectory(math)
+add_subdirectory(text)
 add_subdirectory(util)

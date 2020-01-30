@@ -14,7 +14,7 @@
 # limitations under the License.
 #=========================================================================
 
-set(LIBCORE_LIBCORE_SRC_DIR ${LIBCORE_SRC_DIR}/libcore)
-set(LIBCORE_LIBCORE_OBJ_DIR ${LIBCORE_OBJ_DIR}/libcore)
+set(LIBCORE_COMO_CORE_THREAD_SRC_DIR ${LIBCORE_COMO_CORE_SRC_DIR}/thread)
+set(LIBCORE_COMO_CORE_THREAD_OBJ_DIR ${LIBCORE_COMO_CORE_OBJ_DIR}/thread)
 
-add_subdirectory(util)
+add_subdirectory(client)

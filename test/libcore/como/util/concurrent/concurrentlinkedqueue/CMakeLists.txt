@@ -14,32 +14,33 @@
 # limitations under the License.
 #=========================================================================
 
-project(ZoneInfoTest CXX)
+project(ConcurrentLinkedQueueTest CXX)
 
-set(LIBCORE_LIBCORE_UTIL_ZONEINFO_SRC_DIR ${LIBCORE_LIBCORE_UTIL_SRC_DIR}/zoneinfo)
-set(LIBCORE_LIBCORE_UTIL_ZONEINFO_OBJ_DIR ${LIBCORE_LIBCORE_UTIL_OBJ_DIR}/zoneinfo)
+set(LIBCORE_COMO_UTIL_CONCURRENT_CONCURRENTLINKEDQUEUE_SRC_DIR ${LIBCORE_COMO_UTIL_CONCURRENT_SRC_DIR}/concurrentlinkedqueue)
+set(LIBCORE_COMO_UTIL_CONCURRENT_CONCURRENTLINKEDQUEUE_OBJ_DIR ${LIBCORE_COMO_UTIL_CONCURRENT_OBJ_DIR}/concurrentlinkedqueue)
 
 include_directories(
     ./
     ${INC_DIR}
-    ${LIBCORE_LIBCORE_UTIL_ZONEINFO_OBJ_DIR})
+    ${LIBCORE_COMO_UTIL_CONCURRENT_CONCURRENTLINKEDQUEUE_OBJ_DIR})
 
 set(SOURCES
-    ZoneInfoTestHelper.cpp
     main.cpp)
 
 set(GENERATED_SOURCES
-    ${LIBCORE_LIBCORE_UTIL_ZONEINFO_OBJ_DIR}/libcore.cpp)
+    ${LIBCORE_COMO_UTIL_CONCURRENT_CONCURRENTLINKEDQUEUE_OBJ_DIR}/libcore.cpp)
 
 IMPORT_LIBRARY(comort.so)
 IMPORT_LIBRARY(libcore.so)
+IMPORT_LIBRARY(libentry.a)
+IMPORT_LIBRARY(libtest.a)
 IMPORT_GTEST()
 
-add_executable(testZoneInfo
+add_executable(testConcurrentLinkedQueue
     ${SOURCES}
     ${GENERATED_SOURCES})
-target_link_libraries(testZoneInfo comort.so libcore.so ${GTEST_LIBS})
-add_dependencies(testZoneInfo libtest)
+target_link_libraries(testConcurrentLinkedQueue libentry.a libtest.a comort.so libcore.so ${GTEST_LIBS})
+add_dependencies(testConcurrentLinkedQueue libtest)
 
 add_custom_command(
     OUTPUT
@@ -49,13 +50,13 @@ add_custom_command(
         -gen
         -mode-client
         -split
-        -d ${LIBCORE_LIBCORE_UTIL_ZONEINFO_OBJ_DIR}
+        -d ${LIBCORE_COMO_UTIL_CONCURRENT_CONCURRENTLINKEDQUEUE_OBJ_DIR}
         -metadata-so "${BIN_DIR}/libcore.so")
 
-COPY(testZoneInfo ${LIBCORE_LIBCORE_UTIL_ZONEINFO_OBJ_DIR}/testZoneInfo ${BIN_DIR})
+COPY(testConcurrentLinkedQueue ${LIBCORE_COMO_UTIL_CONCURRENT_CONCURRENTLINKEDQUEUE_OBJ_DIR}/testConcurrentLinkedQueue ${BIN_DIR})
 
 install(FILES
-    ${LIBCORE_LIBCORE_UTIL_ZONEINFO_OBJ_DIR}/testZoneInfo
+    ${LIBCORE_COMO_UTIL_CONCURRENT_CONCURRENTLINKEDQUEUE_OBJ_DIR}/testConcurrentLinkedQueue
     DESTINATION ${BIN_DIR}
     PERMISSIONS
         OWNER_READ

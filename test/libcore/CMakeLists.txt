@@ -14,5 +14,8 @@
 # limitations under the License.
 #=========================================================================
 
-# add_subdirectory(como)
-# add_subdirectory(libcore)
+set(LIBCORE_SRC_DIR ${TEST_SRC_DIR}/libcore)
+set(LIBCORE_OBJ_DIR ${TEST_OBJ_DIR}/libcore)
+
+add_subdirectory(como)
+add_subdirectory(libcore)

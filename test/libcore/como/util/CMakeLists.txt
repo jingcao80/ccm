@@ -14,7 +14,19 @@
 # limitations under the License.
 #=========================================================================
 
-set(LIBCORE_LIBCORE_SRC_DIR ${LIBCORE_SRC_DIR}/libcore)
-set(LIBCORE_LIBCORE_OBJ_DIR ${LIBCORE_OBJ_DIR}/libcore)
+set(LIBCORE_COMO_UTIL_SRC_DIR ${LIBCORE_COMO_SRC_DIR}/util)
+set(LIBCORE_COMO_UTIL_OBJ_DIR ${LIBCORE_COMO_OBJ_DIR}/util)
 
-add_subdirectory(util)
+add_subdirectory(arraylist)
+add_subdirectory(calendar)
+add_subdirectory(date)
+add_subdirectory(formatter)
+add_subdirectory(hashmap)
+add_subdirectory(hashtable)
+add_subdirectory(locale)
+add_subdirectory(random)
+add_subdirectory(stringtokenizer)
+add_subdirectory(treemap)
+add_subdirectory(vector)
+
+add_subdirectory(concurrent)

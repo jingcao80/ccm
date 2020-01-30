@@ -14,7 +14,7 @@
 # limitations under the License.
 #=========================================================================
 
-set(LIBCORE_LIBCORE_SRC_DIR ${LIBCORE_SRC_DIR}/libcore)
-set(LIBCORE_LIBCORE_OBJ_DIR ${LIBCORE_OBJ_DIR}/libcore)
+set(LIBCORE_COMO_UTIL_CONCURRENT_ATOMIC_SRC_DIR ${LIBCORE_COMO_UTIL_CONCURRENT_SRC_DIR}/atomic)
+set(LIBCORE_COMO_UTIL_CONCURRENT_ATOMIC_OBJ_DIR ${LIBCORE_COMO_UTIL_CONCURRENT_OBJ_DIR}/atomic)
 
-add_subdirectory(util)
+add_subdirectory(atomicinteger)

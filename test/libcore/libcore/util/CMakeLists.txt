@@ -14,7 +14,7 @@
 # limitations under the License.
 #=========================================================================
 
-set(UNIT_TEST_SRC_DIR ${TEST_DIR}/libcore/libcore/util)
-set(UNIT_TEST_OBJ_DIR ${CMAKE_BINARY_DIR}/test/libcore/libcore/util)
+set(LIBCORE_LIBCORE_UTIL_SRC_DIR ${LIBCORE_LIBCORE_SRC_DIR}/util)
+set(LIBCORE_LIBCORE_UTIL_OBJ_DIR ${LIBCORE_LIBCORE_OBJ_DIR}/util)
 
 add_subdirectory(zoneinfo)

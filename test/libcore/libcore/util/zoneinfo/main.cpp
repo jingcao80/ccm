@@ -32,7 +32,7 @@
 #include "libcore.util.IZoneInfo.h"
 #include "libcore.util.IZoneInfoDBTzData.h"
 #include "libcore.util.IZoneInfoWallTime.h"
-#include <ccmobject.h>
+#include <comoobj.h>
 #include <gtest/gtest.h>
 
 using como::core::CSystem;

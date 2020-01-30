@@ -22,8 +22,8 @@
 #include "como.io.IByteArrayOutputStream.h"
 #include "como.io.IOutputStream.h"
 #include "como.util.IList.h"
-#include <ccmautoptr.h>
-#include <ccmobject.h>
+#include <comoobj.h>
+#include <comosp.h>
 
 using namespace como;
 using como::core::CoreUtils;
