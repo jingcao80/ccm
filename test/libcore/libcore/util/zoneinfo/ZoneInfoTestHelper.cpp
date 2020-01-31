@@ -41,6 +41,8 @@ using como::util::IID_IMap;
 using como::util::IIterator;
 using como::util::IMap;
 
+typedef unsigned int    UInteger;
+
 void ZoneInfoTestHelper::ZicDataBuilder::SetTransitions(
     /* [in] */ const Array<Array<Integer>>& transitionPair)
 {
@@ -113,7 +115,7 @@ Array<Byte> ZoneInfoTestHelper::TzDataBuilder::Build()
     CByteArrayOutputStream::New(IID_IByteArrayOutputStream, (IInterface**)&baos);
 
     Array<Byte> headerMagicBytes(mHeaderMagic.GetByteLength());
-    headerMagicBytes.Copy(mHeaderMagic.string(), mHeaderMagic.GetByteLength());
+    headerMagicBytes.Copy(reinterpret_cast<const Byte*>(mHeaderMagic.string()), mHeaderMagic.GetByteLength());
     IOutputStream::Probe(baos)->Write(headerMagicBytes, 0, headerMagicBytes.GetLength());
     IOutputStream::Probe(baos)->Write(0);
 
@@ -144,7 +146,7 @@ Array<Byte> ZoneInfoTestHelper::TzDataBuilder::Build()
     FOR_EACH(ZicDatum*, zicDatum, IObject::Probe, mZicData) {
         String id = zicDatum->mId;
         Array<Byte> idBytes(id.GetByteLength());
-        idBytes.Copy(id.string(), id.GetByteLength());
+        idBytes.Copy(reinterpret_cast<const Byte*>(id.string()), id.GetByteLength());
         Array<Byte> paddedIdBytes(40);
         paddedIdBytes.Copy(0, idBytes, 0, idBytes.GetLength());
         WriteByteArray(baos, paddedIdBytes);
@@ -164,7 +166,7 @@ Array<Byte> ZoneInfoTestHelper::TzDataBuilder::Build()
     Integer zoneTabOffset;
     baos->GetSize(&zoneTabOffset);
     Array<Byte> zontTabBytes(mZoneTab.GetByteLength());
-    zontTabBytes.Copy(mZoneTab.string(), mZoneTab.GetByteLength());
+    zontTabBytes.Copy(reinterpret_cast<const Byte*>(mZoneTab.string()), mZoneTab.GetByteLength());
     WriteByteArray(baos, zontTabBytes);
 
     baos->ToByteArray(&bytes);
@@ -198,8 +200,8 @@ void ZoneInfoTestHelper::SetInteger(
     /* [in] */ Integer offset,
     /* [in] */ Integer value)
 {
-    bytes[offset] = ((unsigned Integer)value) >> 24;
-    bytes[offset + 1] = ((unsigned Integer)value) >> 16;
-    bytes[offset + 2] = ((unsigned Integer)value) >> 8;
+    bytes[offset] = ((UInteger)value) >> 24;
+    bytes[offset + 1] = ((UInteger)value) >> 16;
+    bytes[offset + 2] = ((UInteger)value) >> 8;
     bytes[offset + 3] = value;
 }

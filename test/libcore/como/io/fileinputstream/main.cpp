@@ -57,7 +57,7 @@ TEST(FileInputStreamTest, FileInputStreamReadTest)
     Array<Byte> buffer(100);
     input->Read(buffer, 0, 75, &number);
     EXPECT_EQ(number, strlen(LICENSE[0]));
-    EXPECT_STREQ(LICENSE[0], String(buffer.GetPayload(), number).string());
+    EXPECT_STREQ(LICENSE[0], String(buffer, 0, number).string());
     input->Close();
 }
 

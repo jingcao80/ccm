@@ -317,7 +317,7 @@ Array<Byte> NativeConverter::GetSubstitutionBytes(
         return Array<Byte>(0);
     }
     Array<Byte> result(len);
-    result.Copy(replacementBytes, len);
+    result.Copy(reinterpret_cast<Byte*>(replacementBytes), len);
     return result;
 }
 

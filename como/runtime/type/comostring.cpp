@@ -152,7 +152,7 @@ String::String(
     , mCharCount(0)
 {
     if (start >= 0 && length > 0 && (start + length < bytes.GetLength())) {
-        mString = AllocFromUTF8(bytes.GetPayload() + start, length);
+        mString = AllocFromUTF8(reinterpret_cast<char*>(bytes.GetPayload()) + start, length);
     }
 }
 

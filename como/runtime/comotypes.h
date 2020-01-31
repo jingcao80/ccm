@@ -23,7 +23,7 @@
 
 namespace como {
 
-typedef char            Byte;
+typedef signed char     Byte;
 typedef short           Short;
 typedef int             Integer;
 typedef long long int   Long;

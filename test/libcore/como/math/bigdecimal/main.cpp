@@ -515,7 +515,7 @@ TEST(BigDecimalTest, TestCommonOperationsHalfOfEvenLongValue)
     CheckCommonOperations(ILong::MIN_VALUE);
     CheckCommonOperations(1LL << 62LL);
     CheckCommonOperations(-(1LL << 62LL));
-    CheckCommonOperations(1LL << 62LL + 1 << 30 + 1 << 10);
+    CheckCommonOperations(1LL << (62LL + 1) << (30 + 1) << 10);
     CheckCommonOperations(ILong::MAX_VALUE - 1);
 }
 

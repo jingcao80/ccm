@@ -52,7 +52,7 @@ String LocaleUtils::ToTitleString(
         return s;
     }
 
-    Array<char> buf(len);
+    Array<Byte> buf(len);
     for (Integer i = 0; i < len; i++) {
         char c = str[i];
         if (i == 0 && idx == 0) {
@@ -65,7 +65,7 @@ String LocaleUtils::ToTitleString(
             buf[i] = (char)ToLower(c);
         }
     }
-    return String(buf.GetPayload(), len);
+    return String(buf, 0, len);
 }
 
 Boolean LocaleUtils::IsAlphaString(

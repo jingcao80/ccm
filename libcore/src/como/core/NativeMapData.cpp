@@ -53,19 +53,19 @@ namespace core {
 
 // Format of /proc/<PID>/maps:
 //   6f000000-6f01e000 rwxp 00000000 00:0c 16389419   /system/lib/libcomposer.so
-static MapEntry* ParseLine(char* line)
+static MapEntry* ParseLine(Byte* line)
 {
     uintptr_t start;
     uintptr_t end;
     uintptr_t offset;
     char permissions[5];
     int namePos;
-    if (sscanf(line, "%" PRIxPTR "-%" PRIxPTR " %4s %" PRIxPTR " %*x:%*x %*d %n", &start,
+    if (sscanf(reinterpret_cast<char*>(line), "%" PRIxPTR "-%" PRIxPTR " %4s %" PRIxPTR " %*x:%*x %*d %n", &start,
             &end, permissions, &offset, &namePos) < 2) {
         return nullptr;
     }
 
-    const char* name = line + namePos;
+    const char* name = reinterpret_cast<char*>(line) + namePos;
     size_t nameLen = strlen(name);
     if (nameLen && name[nameLen - 1] == '\n') {
         nameLen -= 1;
@@ -169,8 +169,8 @@ bool MapData::ReadMaps()
         return false;
     }
 
-    Array<char> buffer(1024);
-    while (fgets(buffer.GetPayload(), buffer.GetLength(), fp) != nullptr) {
+    Array<Byte> buffer(1024);
+    while (fgets(reinterpret_cast<char*>(buffer.GetPayload()), buffer.GetLength(), fp) != nullptr) {
         MapEntry* entry = ParseLine(buffer.GetPayload());
         if (entry == nullptr) {
             fclose(fp);

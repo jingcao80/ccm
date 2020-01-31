@@ -61,13 +61,17 @@ ECode MemoryMappedFile::MmapRO(
     AutoPtr<IOs> os = Libcore::GetOs();
 
     AutoPtr<IFileDescriptor> fd;
-    os->Open(path, OsConstants::O_RDONLY_, 0, &fd);
+    ECode ec = os->Open(path, OsConstants::O_RDONLY_, 0, &fd);
+    if (FAILED(ec)) {
+        *mappedFile = nullptr;
+        return ec;
+    }
     AutoPtr<IStructStat> stat;
     os->Fstat(fd, &stat);
     Long size;
     stat->GetSize(&size);
     HANDLE address;
-    ECode ec = os->Mmap(0, size, OsConstants::PROT_READ_, OsConstants::MAP_SHARED_, fd, 0, &address);
+    ec = os->Mmap(0, size, OsConstants::PROT_READ_, OsConstants::MAP_SHARED_, fd, 0, &address);
     if (SUCCEEDED(ec)) {
         ec = CMemoryMappedFile::New(address, size, IID_IMemoryMappedFile, (IInterface**)mappedFile);
     }
