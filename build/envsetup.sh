@@ -303,6 +303,20 @@ function rebuild()
     build
 }
 
+function drop()
+{
+    if [ "$PLATFORM" == "android" ]; then
+        $ROOT/build/$PLATFORM/drop.py $ROOT/build/$PLATFORM/mlist.json $@
+    fi
+}
+
+function clean_drop()
+{
+    if [ "$PLATFORM" == "android" ]; then
+        $ROOT/build/$PLATFORM/drop.py $ROOT/build/$PLATFORM/mlist.json clean
+    fi
+}
+
 export ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
 if [ ! -d "$ROOT/out" ]; then

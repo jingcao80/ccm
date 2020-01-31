@@ -1,0 +1,50 @@
+{
+    "modules" : {
+        "core" : [
+            { "name" : "comort.so", "dest" : "/system/lib64" },
+            { "name" : "servicemanager", "dest" : "/system/bin", "alias" : "comosm" },
+            { "name" : "libservicemanager.so", "dest" : "/system/lib64" },
+            { "name" : "libcore.so", "dest" : "/system/lib64" }
+        ],
+        "test" : [
+            { "name" : "testArray", "dest" : "/system/bin" },
+            { "name" : "testAutoPtr", "dest" : "/system/bin" },
+            { "name" : "testChar", "dest" : "/system/bin" },
+            { "name" : "testLocalStaticVariable", "dest" : "/system/bin" },
+            { "name" : "testMacro", "dest" : "/system/bin" },
+            { "name" : "testNestedInterface", "dest" : "/system/bin" },
+            { "name" : "ReferenceTypeTest.so", "dest" : "/system/lib64" },
+            { "name" : "testReferenceType", "dest" : "/system/bin" },
+            { "name" : "ReflectionTestUnit.so", "dest" : "/system/lib64" },
+            { "name" : "testReflection", "dest" : "/system/bin" },
+            { "name" : "RPCTestUnit.so", "dest" : "/system/lib64" },
+            { "name" : "testRPCCli", "dest" : "/system/bin" },
+            { "name" : "testRPCSrv", "dest" : "/system/bin" },
+            { "name" : "testEntryPoint", "dest" : "/system/bin" },
+            { "name" : "testStringUtils", "dest" : "/system/bin" },
+            { "name" : "testThreadCli", "dest" : "/system/bin" },
+            { "name" : "testCharset", "dest" : "/system/bin" },
+            { "name" : "testFile", "dest" : "/system/bin" },
+            { "name" : "testFileInputStream", "dest" : "/system/bin" },
+            { "name" : "testfile", "dest" : "/system/bin" },
+            { "name" : "testBigDecimal", "dest" : "/system/bin" },
+            { "name" : "testBigInteger", "dest" : "/system/bin" },
+            { "name" : "testAttributedString", "dest" : "/system/bin" },
+            { "name" : "testArrayList", "dest" : "/system/bin" },
+            { "name" : "testCalendar", "dest" : "/system/bin" },
+            { "name" : "testAtomicInteger", "dest" : "/system/bin" },
+            { "name" : "testConcurrentHashMap", "dest" : "/system/bin" },
+            { "name" : "testConcurrentLinkedQueue", "dest" : "/system/bin" },
+            { "name" : "testDate", "dest" : "/system/bin" },
+            { "name" : "testFormatter", "dest" : "/system/bin" },
+            { "name" : "testHashMap", "dest" : "/system/bin" },
+            { "name" : "testHashtable", "dest" : "/system/bin" },
+            { "name" : "testLocale", "dest" : "/system/bin" },
+            { "name" : "testRandom", "dest" : "/system/bin" },
+            { "name" : "testStringTokenizer", "dest" : "/system/bin" },
+            { "name" : "testTreeMap", "dest" : "/system/bin" },
+            { "name" : "testVector", "dest" : "/system/bin" },
+            { "name" : "testZoneInfo", "dest" : "/system/bin" }
+        ]
+    }
+}
