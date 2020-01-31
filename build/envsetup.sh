@@ -104,6 +104,7 @@ function como_linux_x64()
     export LIB_PATH=$BIN_PATH
     export COMORT_PATH=$BIN_PATH/comort.so
     export CLASS_PATH=$BIN_PATH/libcore.so
+    export COMO_ROOT=
     export CDLC=$ROOT/tools/cdlc
 
     if [ ! -d "$ROOT/out/target" ]; then
@@ -143,9 +144,10 @@ function como_android_aarch64()
     export BUILD=$PRODUCT.$PLATFORM.$ARCH.$VERSION
     export OUT_PATH=$ROOT/out/target/$BUILD
     export BIN_PATH=$ROOT/bin/target/$BUILD
-    export DATA_PATH=$ROOT/data
+    export DATA_PATH=
     export COMORT_PATH=$BIN_PATH/comort.so
-    export CLASS_PATH=$BIN_PATH/libcore.so
+    export CLASS_PATH=
+    export COMO_ROOT=
     export CDLC=$ROOT/tools/cdlc
     export PATH=$PATH:$ROOT/toolchain/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/bin
 
