@@ -37,6 +37,7 @@ add_executable(testReferenceType
     ${SOURCES}
     ${GENERATED_SOURCES})
 target_link_libraries(testReferenceType comort.so ${GTEST_LIBS})
+add_dependencies(testReferenceType ReferenceTypeTest gtest gtest_main)
 
 add_custom_command(
     OUTPUT

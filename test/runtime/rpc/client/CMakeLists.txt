@@ -38,7 +38,7 @@ add_executable(testRPCCli
     ${SOURCES}
     ${GENERATED_SOURCES})
 target_link_libraries(testRPCCli comort.so libservicemanager.so ${GTEST_LIBS})
-add_dependencies(testRPCCli RPCTestUnit)
+add_dependencies(testRPCCli RPCTestUnit libservicemanager gtest gtest_main)
 
 add_custom_command(
     OUTPUT

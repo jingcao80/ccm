@@ -37,7 +37,7 @@ add_executable(testReflection
     ${SOURCES}
     ${GENERATED_SOURCES})
 target_link_libraries(testReflection comort.so ${GTEST_LIBS})
-add_dependencies(testReflection ReflectionTestUnit)
+add_dependencies(testReflection ReflectionTestUnit gtest gtest_main)
 
 add_custom_command(
     OUTPUT

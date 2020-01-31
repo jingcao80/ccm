@@ -37,6 +37,7 @@ add_executable(servicemanager
 target_link_libraries(servicemanager
     comort.so
     dbus-1)
+add_dependencies(servicemanager comort)
 
 COPY(servicemanager ${SM_EXE_OBJ_DIR}/servicemanager ${BIN_DIR})
 

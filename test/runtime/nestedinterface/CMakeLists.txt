@@ -40,6 +40,7 @@ add_executable(testNestedInterface
     ${SOURCES}
     ${GENERATED_SOURCES})
 target_link_libraries(testNestedInterface comort.so ${GTEST_LIBS})
+add_dependencies(testNestedInterface comort gtest gtest_main)
 
 add_custom_command(
     OUTPUT

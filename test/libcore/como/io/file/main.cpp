@@ -24,7 +24,7 @@ using como::io::CFile;
 using como::io::IFile;
 using como::io::IID_IFile;
 
-TEST(FileTest, CreateNewFileTest)
+TEST(FileTest, TestCreateNewFile)
 {
     AutoPtr<IFile> f;
     CFile::New(String("test.txt"), IID_IFile, (IInterface**)&f);
@@ -33,13 +33,22 @@ TEST(FileTest, CreateNewFileTest)
     EXPECT_TRUE(succeeded);
 }
 
-TEST(FileTest, ExistsTest)
+TEST(FileTest, TestExists)
 {
     AutoPtr<IFile> f;
     CFile::New(String("test.txt"), IID_IFile, (IInterface**)&f);
     Boolean existed;
     f->Exists(&existed);
     EXPECT_TRUE(existed);
+}
+
+TEST(FileTest, TestDelete)
+{
+    AutoPtr<IFile> f;
+    CFile::New(String("test.txt"), IID_IFile, (IInterface**)&f);
+    Boolean deleted;
+    f->Delete(&deleted);
+    EXPECT_TRUE(deleted);
 }
 
 int main(int argc, char **argv)

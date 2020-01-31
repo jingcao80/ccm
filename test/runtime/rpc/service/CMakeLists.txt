@@ -37,7 +37,7 @@ add_executable(testRPCSrv
     ${SOURCES}
     ${GENERATED_SOURCES})
 target_link_libraries(testRPCSrv comort.so libservicemanager.so)
-add_dependencies(testRPCSrv RPCTestUnit)
+add_dependencies(testRPCSrv RPCTestUnit libservicemanager)
 
 add_custom_command(
     OUTPUT

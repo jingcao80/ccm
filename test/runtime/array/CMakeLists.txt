@@ -32,6 +32,7 @@ IMPORT_GTEST()
 add_executable(testArray
     ${SOURCES})
 target_link_libraries(testArray comort.so ${GTEST_LIBS})
+add_dependencies(testArray comort gtest gtest_main)
 
 COPY(testArray ${ARRAY_OBJ_DIR}/testArray ${BIN_DIR})
 

@@ -53,3 +53,4 @@ add_executable(testCompiler
     ${SOURCES}
     ${GENERATED_SOURCES})
 target_link_libraries(testCompiler comort.so)
+add_dependencies(testCompiler comort)

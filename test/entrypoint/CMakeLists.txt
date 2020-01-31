@@ -39,7 +39,7 @@ add_executable(testEntryPoint
     ${SOURCES}
     ${GENERATED_SOURCES})
 target_link_libraries(testEntryPoint libentry.a comort.so libcore.so ${GTEST_LIBS})
-add_dependencies(testEntryPoint libtest)
+add_dependencies(testEntryPoint libentry gtest gtest_main)
 
 add_custom_command(
     OUTPUT

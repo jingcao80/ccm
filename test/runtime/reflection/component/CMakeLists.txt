@@ -39,6 +39,7 @@ add_library(ReflectionTestUnit
     ${SOURCES}
     ${GENERATED_SOURCES})
 target_link_libraries(ReflectionTestUnit comort.so)
+add_dependencies(ReflectionTestUnit comort)
 
 add_custom_command(
     OUTPUT

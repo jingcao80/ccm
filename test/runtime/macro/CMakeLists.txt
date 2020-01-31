@@ -32,6 +32,7 @@ IMPORT_GTEST()
 add_executable(testMacro
     ${SOURCES})
 target_link_libraries(testMacro comort.so ${GTEST_LIBS})
+add_dependencies(testMacro comort gtest gtest_main)
 
 COPY(testMacro ${MACRO_OBJ_DIR}/testMacro ${BIN_DIR})
 

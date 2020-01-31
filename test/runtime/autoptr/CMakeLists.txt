@@ -33,6 +33,7 @@ IMPORT_GTEST()
 add_executable(testAutoPtr
     ${SOURCES})
 target_link_libraries(testAutoPtr comort.so ${GTEST_LIBS})
+add_dependencies(testAutoPtr comort gtest gtest_main)
 
 COPY(testAutoPtr ${AUTOPTR_OBJ_DIR}/testAutoPtr ${BIN_DIR})
 

@@ -6,7 +6,9 @@ COMO is a C++ Component Model. It can:
 
 **cdlc** is the .cdl compiler.
 
-**runtime** is the component driver.
+**comort** is the como component runtime.
+
+**libcore** is the core library.
 
 ### Install cmake
 1. <code>sudo apt-get install software-properties-common</code>
@@ -25,14 +27,18 @@ COMO is a C++ Component Model. It can:
 1. <code>sudo apt-get install libicu-dev</code>
 
 ### How to build
-1. <code>cd ccm</code>
+1. <code>cd como</code>
 2. <code>source build/envsetup.sh</code>
+3. choose build target:
+   + <code>comotools</code> to build tools
+   + <code>como_linux_x64</code> to build como for linux x64
+   + <code>como_android_aarch64</code> to build como for android aarch64
 4. <code>build</code> or <code>build -j*n*</code> for release build
 
 ### Change build type
-1. <code>release</code> for release build
-    or
-   <code>debug</code> for debug build
+1. in any build target:
+   + <code>debug</code> for debug build
+   + <code>release</code> for release build
 
 ### Rebuild
 1. <code>rebuild</code> or <code>rebuild -j*n*</code>
@@ -40,6 +46,13 @@ COMO is a C++ Component Model. It can:
 ### Clobber
 1. <code>clobber</code>
 
-### Run sample
-1. <code>cd ccm/bin</code>
-2. <code>./demo</code>
+### Copy building results
+if the build target is android aarch64, you need copy building results to the device.
++ <code>drop</code> or <code>drop all</code> to copy all modules
++ <code>drop core</code> to copy core modules
++ <code>drop test</code> to copy testcase modules
+
+### Other commands
++ <code>root</code> to change to como root directory
++ <code>out</code> to change to out directory
++ <code>bin</code> to change to bin directory

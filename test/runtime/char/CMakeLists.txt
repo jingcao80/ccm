@@ -33,6 +33,7 @@ IMPORT_GTEST()
 add_executable(testChar
     ${SOURCES})
 target_link_libraries(testChar comort.so ${GTEST_LIBS})
+add_dependencies(testChar comort gtest gtest_main)
 
 COPY(testChar ${CHAR_OBJ_DIR}/testChar ${BIN_DIR})
 

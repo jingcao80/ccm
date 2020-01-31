@@ -39,7 +39,7 @@ add_library(libtest
     ${SOURCES}
     ${GENERATED_SOURCES})
 target_link_libraries(libtest comort.so libcore.so ${GTEST_LIBS})
-add_dependencies(libtest libservicemanager gtest_main)
+add_dependencies(libtest libcore gtest gtest_main)
 
 add_custom_command(
     OUTPUT

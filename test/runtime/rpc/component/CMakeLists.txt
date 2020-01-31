@@ -43,6 +43,7 @@ add_library(RPCTestUnit
     ${SOURCES}
     ${GENERATED_SOURCES})
 target_link_libraries(RPCTestUnit comort.so)
+add_dependencies(RPCTestUnit comort)
 
 add_custom_command(
     OUTPUT

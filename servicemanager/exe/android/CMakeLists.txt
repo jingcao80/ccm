@@ -39,6 +39,7 @@ target_link_libraries(servicemanager
     binder
     log
     utils)
+add_dependencies(servicemanager comort)
 
 COPY(servicemanager ${SM_EXE_OBJ_DIR}/servicemanager ${BIN_DIR})
 

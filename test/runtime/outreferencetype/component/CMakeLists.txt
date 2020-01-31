@@ -39,6 +39,7 @@ add_library(ReferenceTypeTest
     ${SOURCES}
     ${GENERATED_SOURCES})
 target_link_libraries(ReferenceTypeTest comort.so)
+add_dependencies(ReferenceTypeTest comort)
 
 add_custom_command(
     OUTPUT

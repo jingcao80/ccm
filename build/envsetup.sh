@@ -300,7 +300,7 @@ function rebuild()
         fi
     fi
 
-    build
+    build $@
 }
 
 function drop()

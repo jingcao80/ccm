@@ -37,6 +37,7 @@ add_library(libservicemanager
 target_link_libraries(libservicemanager
     comort.so
     dbus-1)
+add_dependencies(libservicemanager comort)
 
 COPY(libservicemanager ${SM_LIB_SRC_DIR}/ServiceManager.h ${INC_DIR})
 COPY(libservicemanager ${SM_LIB_OBJ_DIR}/libservicemanager.so ${BIN_DIR})

@@ -32,7 +32,7 @@ IMPORT_LIBRARY(comort.so)
 add_executable(testMutex
     ${SOURCES})
 target_link_libraries(testMutex comort.so pthread)
-add_dependencies(testMutex libtest)
+add_dependencies(testMutex comort)
 
 COPY(testMutex ${OBJ_DIR}/testMutex ${BIN_DIR})
 

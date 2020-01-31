@@ -32,6 +32,7 @@ IMPORT_GTEST()
 add_executable(testLocalStaticVariable
     ${SOURCES})
 target_link_libraries(testLocalStaticVariable comort.so ${GTEST_LIBS})
+add_dependencies(testLocalStaticVariable comort gtest gtest_main)
 
 COPY(testLocalStaticVariable ${LOCALSTATICVARIABLE_OBJ_DIR}/testLocalStaticVariable ${BIN_DIR})
 
