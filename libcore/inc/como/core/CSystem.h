@@ -34,10 +34,10 @@ public:
     COMO_OBJECT_DECL();
 
     ECode GetCurrentTimeMillis(
-        /* [out] */ Long* millis) override;
+        /* [out] */ Long& millis) override;
 
     ECode GetNanoTime(
-        /* [out] */ Long* time) override;
+        /* [out] */ Long& time) override;
 };
 
 }

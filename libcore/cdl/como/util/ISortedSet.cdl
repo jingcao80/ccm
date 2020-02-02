@@ -41,7 +41,7 @@ interface ISortedSet
         [out] IInterface** element);
 
     GetIterator(
-        [out] IIterator** it);
+        [out] IIterator&& it);
 
     HeadSet(
         [in] IInterface* toElement,

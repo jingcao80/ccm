@@ -83,7 +83,7 @@ ECode Support_UnmodifiableCollectionTest::RunTest()
 
     // iterator
     AutoPtr<IIterator> it;
-    mCol->GetIterator(&it);
+    mCol->GetIterator(it);
     AutoPtr<ISortedSet> ss;
     CTreeSet::New(IID_ISortedSet, (IInterface**)&ss);
     Boolean hasNext;
@@ -92,8 +92,7 @@ ECode Support_UnmodifiableCollectionTest::RunTest()
         it->Next(&elem);
         ss->Add(elem);
     }
-    it = nullptr;
-    ss->GetIterator(&it);
+    ss->GetIterator(it);
     for (Integer counter = 0; it->HasNext(&hasNext), hasNext; counter++) {
         AutoPtr<IInterface> elem;
         it->Next(&elem);

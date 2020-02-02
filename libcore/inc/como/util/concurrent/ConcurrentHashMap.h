@@ -584,7 +584,7 @@ public:
             /* [out] */ Boolean* changed = nullptr) override;
 
         ECode GetIterator(
-            /* [out] */ IIterator** it) override;
+            /* [out] */ AutoPtr<IIterator>& it) override;
 
         ECode Add(
             /* [in] */ IInterface* obj,
@@ -650,7 +650,7 @@ public:
             /* [out] */ Boolean* changed = nullptr) override;
 
         ECode GetIterator(
-            /* [out] */ IIterator** it) override;
+            /* [out] */ AutoPtr<IIterator>& it) override;
 
         ECode Add(
             /* [in] */ IInterface* obj,
@@ -689,7 +689,7 @@ public:
             /* [out] */ Boolean* changed = nullptr) override;
 
         ECode GetIterator(
-            /* [out] */ IIterator** it) override;
+            /* [out] */ AutoPtr<IIterator>& it) override;
 
         ECode Add(
             /* [in] */ IInterface* obj,

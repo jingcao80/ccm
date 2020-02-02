@@ -61,7 +61,7 @@ public:
         ECode Clear() override;
 
         ECode GetIterator(
-            /* [out] */ IIterator** it) override;
+            /* [out] */ AutoPtr<IIterator>& it) override;
 
         ECode Contains(
             /* [in] */ IInterface* obj,
@@ -90,7 +90,7 @@ public:
         ECode Clear() override;
 
         ECode GetIterator(
-            /* [out] */ IIterator** it) override;
+            /* [out] */ AutoPtr<IIterator>& it) override;
 
         ECode Contains(
             /* [in] */ IInterface* obj,
@@ -115,7 +115,7 @@ public:
         ECode Clear() override;
 
         ECode GetIterator(
-            /* [out] */ IIterator** it) override;
+            /* [out] */ AutoPtr<IIterator>& it) override;
 
         ECode Contains(
             /* [in] */ IInterface* obj,

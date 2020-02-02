@@ -59,7 +59,7 @@ private:
         {}
 
         ECode GetIterator(
-            /* [out] */ IIterator** it) override;
+            /* [out] */ AutoPtr<IIterator>& it) override;
 
         ECode GetSize(
             /* [out] */ Integer* size) override;
@@ -88,7 +88,7 @@ private:
         {}
 
         ECode GetIterator(
-            /* [out] */ IIterator** it) override;
+            /* [out] */ AutoPtr<IIterator>& it) override;
 
         ECode Add(
             /* [in] */ IInterface* obj,
@@ -121,7 +121,7 @@ private:
         {}
 
         ECode GetIterator(
-            /* [out] */ IIterator** it) override;
+            /* [out] */ AutoPtr<IIterator>& it) override;
 
         ECode GetSize(
             /* [out] */ Integer* size) override;

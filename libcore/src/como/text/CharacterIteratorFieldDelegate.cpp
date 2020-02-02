@@ -62,7 +62,7 @@ ECode CharacterIteratorFieldDelegate::Formatted(
         }
         if (mSize < start) {
             String text;
-            buffer->Substring(mSize, start, &text);
+            buffer->Substring(mSize, start, text);
             AutoPtr<IAttributedString> as;
             FAIL_RETURN(CAttributedString::New(text, IID_IAttributedString, (IInterface**)&as));
             mAttributedStrings->Add(as);
@@ -71,7 +71,7 @@ ECode CharacterIteratorFieldDelegate::Formatted(
         if (mSize < end) {
             Integer aStart = Math::Max(start, mSize);
             String text;
-            buffer->Substring(aStart, end, &text);
+            buffer->Substring(aStart, end, text);
             AutoPtr<IAttributedString> as;
             FAIL_RETURN(CAttributedString::New(text, IID_IAttributedString, (IInterface**)&as));
             FAIL_RETURN(as->AddAttribute(IAttributedCharacterIterator::IAttribute::Probe(attr), value));

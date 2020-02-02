@@ -37,7 +37,7 @@ interface INavigableSet
         [out] IInterface** ceilingE);
 
     GetDescendingIterator(
-        [out] IIterator** it);
+        [out] IIterator&& it);
 
     DescendingSet(
         [out] INavigableSet** set);
@@ -47,7 +47,7 @@ interface INavigableSet
         [out] IInterface** floorE);
 
     GetIterator(
-        [out] IIterator** it);
+        [out] IIterator&& it);
 
     HeadSet(
         [in] IInterface* toElement,

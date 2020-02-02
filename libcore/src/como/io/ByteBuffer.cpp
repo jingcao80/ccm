@@ -355,10 +355,8 @@ ECode ByteBuffer::Equals(
 
 ECode ByteBuffer::CompareTo(
     /* [in] */ IInterface* other,
-    /* [out] */ Integer* result)
+    /* [out] */ Integer& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     ByteBuffer* otherBB = (ByteBuffer*)IByteBuffer::Probe(other);
     if (otherBB == nullptr) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -378,11 +376,11 @@ ECode ByteBuffer::CompareTo(
         otherBB->Get(j, &otherb);
         Integer cmp = thisb - otherb;
         if (cmp != 0) {
-            *result = cmp;
+            result = cmp;
             return NOERROR;
         }
     }
-    *result = thisRemaining - otherRemaining;
+    result = thisRemaining - otherRemaining;
     return NOERROR;
 }
 

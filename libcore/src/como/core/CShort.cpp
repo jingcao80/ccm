@@ -33,83 +33,67 @@ ECode CShort::Constructor(
 }
 
 ECode CShort::ByteValue(
-    /* [out] */ Byte* value)
+    /* [out] */ Byte& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = (Byte)mValue;
+    value = (Byte)mValue;
     return NOERROR;
 }
 
 ECode CShort::ShortValue(
-    /* [out] */ Short* value)
+    /* [out] */ Short& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = mValue;
+    value = mValue;
     return NOERROR;
 }
 
 ECode CShort::IntegerValue(
-    /* [out] */ Integer* value)
+    /* [out] */ Integer& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = (Integer)mValue;
+    value = (Integer)mValue;
     return NOERROR;
 }
 
 ECode CShort::LongValue(
-    /* [out] */ Long* value)
+    /* [out] */ Long& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = (Long)mValue;
+    value = (Long)mValue;
     return NOERROR;
 }
 
 ECode CShort::FloatValue(
-    /* [out] */ Float* value)
+    /* [out] */ Float& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = (Float)mValue;
+    value = (Float)mValue;
     return NOERROR;
 }
 
 ECode CShort::DoubleValue(
-    /* [out] */ Double* value)
+    /* [out] */ Double& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = (Double)mValue;
+    value = (Double)mValue;
     return NOERROR;
 }
 
 ECode CShort::GetValue(
-    /* [out] */ Short* value)
+    /* [out] */ Short& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = mValue;
+    value = mValue;
     return NOERROR;
 }
 
 ECode CShort::CompareTo(
     /* [in] */ IInterface* other,
-    /* [out] */ Integer* result)
+    /* [out] */ Integer& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     IShort* s = IShort::Probe(other);
     if (s == nullptr) {
-        *result = -1;
+        result = -1;
         return NOERROR;
     }
 
     Short sv;
-    s->GetValue(&sv);
-    *result = mValue == sv ? 0 : (mValue > sv ? 1 : -1);
+    s->GetValue(sv);
+    result = mValue == sv ? 0 : (mValue > sv ? 1 : -1);
     return NOERROR;
 }
 
@@ -124,7 +108,7 @@ ECode CShort::Equals(
     }
 
     Short sv;
-    s->GetValue(&sv);
+    s->GetValue(sv);
     result = mValue == sv;
     return NOERROR;
 }

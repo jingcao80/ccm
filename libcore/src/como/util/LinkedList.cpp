@@ -710,12 +710,9 @@ ECode LinkedList::GetListIterator(
 }
 
 ECode LinkedList::GetDescendingIterator(
-    /* [out] */ IIterator** it)
+    /* [out] */ AutoPtr<IIterator>& it)
 {
-    VALIDATE_NOT_NULL(it);
-
-    *it = new DescendingIterator(this);
-    REFCOUNT_ADD(*it);
+    it = new DescendingIterator(this);
     return NOERROR;
 }
 
@@ -765,7 +762,7 @@ ECode LinkedList::ToArray(
 }
 
 ECode LinkedList::GetIterator(
-    /* [out] */ IIterator** it)
+    /* [out] */ AutoPtr<IIterator>& it)
 {
     return AbstractSequentialList::GetIterator(it);
 }

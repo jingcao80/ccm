@@ -186,10 +186,10 @@ void ThreadLocalRandom::LocalInit()
 {
     static AutoPtr<IAtomicInteger> sProbeGenerator = CreateAtomicInteger();
     Integer p;
-    sProbeGenerator->AddAndGet(PROBE_INCREMENT, &p);
+    sProbeGenerator->AddAndGet(PROBE_INCREMENT, p);
     Integer probe = (p == 0) ? 1 : p; // skip 0
     Long seed;
-    GetSeeder()->GetAndAdd(SEEDER_INCREMENT, &seed);
+    GetSeeder()->GetAndAdd(SEEDER_INCREMENT, seed);
     seed = Mix64(seed);
     AutoPtr<IThread> t;
     CThread::GetCurrentThread(&t);
@@ -463,7 +463,7 @@ ECode ThreadLocalRandom::NextGaussian(
 
     // Use nextLocalGaussian instead of nextGaussian field
     AutoPtr<IInterface> d;
-    GetNextLocalGaussian()->Get(&d);
+    GetNextLocalGaussian()->Get(d);
     if (d != nullptr) {
         GetNextLocalGaussian()->Set(nullptr);
         *value = CoreUtils::Unbox(IDouble::Probe(d));
@@ -512,7 +512,7 @@ Integer ThreadLocalRandom::NextSecondarySeed()
         r ^= (UInteger)r >> 17;
         r ^= r << 5;
     }
-    else if (GetSeeder()->GetAndAdd(SEEDER_INCREMENT, &seed),
+    else if (GetSeeder()->GetAndAdd(SEEDER_INCREMENT, seed),
             (r = Mix32(seed)) == 0) {
         r = 1; // avoid zero
     }

@@ -980,9 +980,9 @@ ECode File::CreateTempFile(
 
 ECode File::CompareTo(
     /* [in] */ IInterface* other,
-    /* [out] */ Integer* result)
+    /* [out] */ Integer& result)
 {
-    return GetFS()->Compare(this, IFile::Probe(other), result);
+    return GetFS()->Compare(this, IFile::Probe(other), &result);
 }
 
 ECode File::Equals(
@@ -991,7 +991,7 @@ ECode File::Equals(
 {
     if (obj != nullptr && IFile::Probe(obj) != nullptr) {
         Integer result;
-        CompareTo(obj, &result);
+        CompareTo(obj, result);
         same = result == 0;
         return NOERROR;
     }

@@ -40,10 +40,10 @@ public:
         /* [in] */ Integer capacity);
 
     ECode GetLength(
-        /* [out] */ Integer* number) override;
+        /* [out] */ Integer& number) override;
 
     virtual ECode GetCapacity(
-        /* [out] */ Integer* capacity);
+        /* [out] */ Integer& capacity);
 
     virtual ECode EnsureCapacity(
         /* [in] */ Integer minimumCapacity);
@@ -55,7 +55,7 @@ public:
 
     ECode GetCharAt(
         /* [in] */ Integer index,
-        /* [out] */ Char* c) override;
+        /* [out] */ Char& c) override;
 
     virtual ECode GetChars(
         /* [in] */ Integer start,
@@ -121,17 +121,17 @@ public:
 
     virtual ECode Substring(
         /* [in] */ Integer start,
-        /* [out] */ String* str);
+        /* [out] */ String& str);
 
     ECode SubSequence(
         /* [in] */ Integer start,
         /* [in] */ Integer end,
-        /* [out] */ ICharSequence** subcsq) override;
+        /* [out] */ AutoPtr<ICharSequence>& subcsq) override;
 
     virtual ECode Substring(
         /* [in] */ Integer start,
         /* [in] */ Integer end,
-        /* [out] */ String* str);
+        /* [out] */ String& str);
 
     virtual ECode Insert(
         /* [in] */ Integer index,
@@ -187,21 +187,21 @@ public:
 
     virtual ECode IndexOf(
         /* [in] */ const String& str,
-        /* [out] */ Integer* idx);
+        /* [out] */ Integer& idx);
 
     virtual ECode IndexOf(
         /* [in] */ const String& str,
         /* [in] */ Integer fromIndex,
-        /* [out] */ Integer* idx);
+        /* [out] */ Integer& idx);
 
     virtual ECode LastIndexOf(
         /* [in] */ const String& str,
-        /* [out] */ Integer* idx);
+        /* [out] */ Integer& idx);
 
     virtual ECode LastIndexOf(
         /* [in] */ const String& str,
         /* [in] */ Integer fromIndex,
-        /* [out] */ Integer* idx);
+        /* [out] */ Integer& idx);
 
     virtual ECode Reverse();
 

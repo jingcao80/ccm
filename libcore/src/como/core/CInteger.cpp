@@ -33,83 +33,67 @@ ECode CInteger::Constructor(
 }
 
 ECode CInteger::ByteValue(
-    /* [out] */ Byte* value)
+    /* [out] */ Byte& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = (Byte)mValue;
+    value = (Byte)mValue;
     return NOERROR;
 }
 
 ECode CInteger::ShortValue(
-    /* [out] */ Short* value)
+    /* [out] */ Short& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = (Short)mValue;
+    value = (Short)mValue;
     return NOERROR;
 }
 
 ECode CInteger::IntegerValue(
-    /* [out] */ Integer* value)
+    /* [out] */ Integer& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = mValue;
+    value = mValue;
     return NOERROR;
 }
 
 ECode CInteger::LongValue(
-    /* [out] */ Long* value)
+    /* [out] */ Long& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = (Long)mValue;
+    value = (Long)mValue;
     return NOERROR;
 }
 
 ECode CInteger::FloatValue(
-    /* [out] */ Float* value)
+    /* [out] */ Float& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = (Float)mValue;
+    value = (Float)mValue;
     return NOERROR;
 }
 
 ECode CInteger::DoubleValue(
-    /* [out] */ Double* value)
+    /* [out] */ Double& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = (Double)mValue;
+    value = (Double)mValue;
     return NOERROR;
 }
 
 ECode CInteger::GetValue(
-    /* [out] */ Integer* value)
+    /* [out] */ Integer& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = mValue;
+    value = mValue;
     return NOERROR;
 }
 
 ECode CInteger::CompareTo(
     /* [in] */ IInterface* other,
-    /* [out] */ Integer* result)
+    /* [out] */ Integer& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     IInteger* i = IInteger::Probe(other);
     if (i == nullptr) {
-        *result = -1;
+        result = -1;
         return NOERROR;
     }
 
     Integer iv;
-    i->GetValue(&iv);
-    *result = mValue == iv ? 0 : (mValue > iv ? 1 : -1);
+    i->GetValue(iv);
+    result = mValue == iv ? 0 : (mValue > iv ? 1 : -1);
     return NOERROR;
 }
 
@@ -124,7 +108,7 @@ ECode CInteger::Equals(
     }
 
     Integer iv;
-    i->GetValue(&iv);
+    i->GetValue(iv);
     result = mValue == iv;
     return NOERROR;
 }

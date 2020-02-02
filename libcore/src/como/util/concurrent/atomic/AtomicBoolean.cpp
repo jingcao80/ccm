@@ -38,11 +38,9 @@ ECode AtomicBoolean::Constructor()
 }
 
 ECode AtomicBoolean::Get(
-    /* [out] */ Boolean* value)
+    /* [out] */ Boolean& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = (mValue.LoadAcquire() != 0);
+    value = (mValue.LoadAcquire() != 0);
     return NOERROR;
 }
 
@@ -88,16 +86,14 @@ ECode AtomicBoolean::LzaySet(
 
 ECode AtomicBoolean::GetAndSet(
     /* [in] */ Boolean newValue,
-    /* [out] */ Boolean* prevValue)
+    /* [out] */ Boolean& prevValue)
 {
-    VALIDATE_NOT_NULL(prevValue);
-
     Boolean v;
     do {
         v = (mValue.LoadSequentiallyConsistent() != 0);
     } while (!mValue.CompareExchangeStrongSequentiallyConsistent(
             (v ? 1 : 0), (newValue ? 1 : 0)));
-    *prevValue = v;
+    prevValue = v;
     return NOERROR;
 }
 

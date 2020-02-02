@@ -33,28 +33,24 @@ ECode CBoolean::Constructor(
 }
 
 ECode CBoolean::GetValue(
-    /* [out] */ Boolean* value)
+    /* [out] */ Boolean& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = mValue;
+    value = mValue;
     return NOERROR;
 }
 
 ECode CBoolean::CompareTo(
     /* [in] */ IInterface* other,
-    /* [out] */ Integer* result)
+    /* [out] */ Integer& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     IBoolean* bo = IBoolean::Probe(other);
     if (bo == nullptr) {
-        *result = -1;
+        result = -1;
         return NOERROR;
     }
     Boolean ov;
-    bo->GetValue(&ov);
-    *result = mValue == ov ? 0 : mValue ? 1 : -1;
+    bo->GetValue(ov);
+    result = mValue == ov ? 0 : mValue ? 1 : -1;
     return NOERROR;
 }
 
@@ -68,7 +64,7 @@ ECode CBoolean::Equals(
         return NOERROR;
     }
     Boolean ov;
-    bo->GetValue(&ov);
+    bo->GetValue(ov);
     result = mValue == ov;
     return NOERROR;
 }

@@ -170,7 +170,7 @@ AutoPtr<IIterator> Charset::GetProviders()
         _Iterator()
         {
             AutoPtr<IServiceLoader> sl = ServiceLoader::Load(IID_ICharsetProvider);
-            IIterable::Probe(sl)->GetIterator(&mI);
+            IIterable::Probe(sl)->GetIterator(mI);
         }
 
         Integer AddRef(
@@ -264,7 +264,7 @@ ECode Charset::LookupViaProviders(
 {
     AutoPtr<IThreadLocal> gate = GetGate();
     AutoPtr<IInterface> value;
-    gate->Get(&value);
+    gate->Get(value);
     if (value != nullptr) {
         *cs = nullptr;
         return NOERROR;
@@ -674,10 +674,8 @@ ECode Charset::Encode(
 
 ECode Charset::CompareTo(
     /* [in] */ IInterface* other,
-    /* [out] */ Integer* result)
+    /* [out] */ Integer& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     ICharset* othercs = ICharset::Probe(other);
     if (othercs == nullptr) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -686,7 +684,7 @@ ECode Charset::CompareTo(
     String thisName, thatName;
     GetName(&thisName);
     othercs->GetName(&thatName);
-    *result = thisName.CompareIgnoreCase(thatName);
+    result = thisName.CompareIgnoreCase(thatName);
     return NOERROR;
 }
 

@@ -25,10 +25,10 @@ interface IChar
 {
     CompareTo(
         [in] IInterface* other,
-        [out] Integer* result);
+        [out] Integer& result);
 
     GetValue(
-        [out] Char* value);
+        [out] Char& value);
 }
 
 }

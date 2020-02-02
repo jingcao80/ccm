@@ -43,43 +43,41 @@ ECode ArrayHolder::GetArray(
 }
 
 ECode ArrayHolder::GetArrayType(
-    /* [out] */ Integer* type)
+    /* [out] */ Integer& type)
 {
-    VALIDATE_NOT_NULL(type);
-
     switch(mArray.mType) {
         case TypeKind::Char:
-            *type = TYPE_CHAR_ARRAY;
+            type = TYPE_CHAR_ARRAY;
             break;
         case TypeKind::Byte:
-            *type = TYPE_BYTE_ARRAY;
+            type = TYPE_BYTE_ARRAY;
             break;
         case TypeKind::Short:
-            *type = TYPE_SHORT_ARRAY;
+            type = TYPE_SHORT_ARRAY;
             break;
         case TypeKind::Integer:
-            *type = TYPE_INTEGER_ARRAY;
+            type = TYPE_INTEGER_ARRAY;
             break;
         case TypeKind::Long:
-            *type = TYPE_LONG_ARRAY;
+            type = TYPE_LONG_ARRAY;
             break;
         case TypeKind::Float:
-            *type = TYPE_FLOAT_ARRAY;
+            type = TYPE_FLOAT_ARRAY;
             break;
         case TypeKind::Double:
-            *type = TYPE_DOUBLE_ARRAY;
+            type = TYPE_DOUBLE_ARRAY;
             break;
         case TypeKind::Boolean:
-            *type = TYPE_BOOLEAN_ARRAY;
+            type = TYPE_BOOLEAN_ARRAY;
             break;
         case TypeKind::String:
-            *type = TYPE_STRING_ARRAY;
+            type = TYPE_STRING_ARRAY;
             break;
         case TypeKind::Interface:
-            *type = TYPE_INTERFACE_ARRAY;
+            type = TYPE_INTERFACE_ARRAY;
             break;
         default:
-            *type = TYPE_UNKNOWN_ARRAY;
+            type = TYPE_UNKNOWN_ARRAY;
             break;
     }
     return NOERROR;

@@ -818,22 +818,22 @@ ECode Formatter::FormatSpecifier::PrintInteger(
     }
     else if (IByte::Probe(arg) != nullptr) {
         Byte value;
-        IByte::Probe(arg)->ByteValue(&value);
+        IByte::Probe(arg)->ByteValue(value);
         return Print(value, l);
     }
     else if (IShort::Probe(arg) != nullptr) {
         Short value;
-        IShort::Probe(arg)->ShortValue(&value);
+        IShort::Probe(arg)->ShortValue(value);
         return Print(value, l);
     }
     else if (IInteger::Probe(arg) != nullptr) {
         Integer value;
-        IInteger::Probe(arg)->IntegerValue(&value);
+        IInteger::Probe(arg)->IntegerValue(value);
         return Print(value, l);
     }
     else if (ILong::Probe(arg) != nullptr) {
         Long value;
-        ILong::Probe(arg)->LongValue(&value);
+        ILong::Probe(arg)->LongValue(value);
         return Print(value, l);
     }
     else if (IBigInteger::Probe(arg) != nullptr) {
@@ -853,12 +853,12 @@ ECode Formatter::FormatSpecifier::PrintFloat(
     }
     else if (IFloat::Probe(arg) != nullptr) {
         Float value;
-        IFloat::Probe(arg)->FloatValue(&value);
+        IFloat::Probe(arg)->FloatValue(value);
         return Print(value, l);
     }
     else if (IDouble::Probe(arg) != nullptr) {
         Double value;
-        IDouble::Probe(arg)->DoubleValue(&value);
+        IDouble::Probe(arg)->DoubleValue(value);
         return Print(value, l);
     }
     else if (IBigDecimal::Probe(arg) != nullptr) {
@@ -905,12 +905,12 @@ ECode Formatter::FormatSpecifier::PrintCharacter(
     String s;
     if (IChar::Probe(arg) != nullptr) {
         Char c;
-        IChar::Probe(arg)->GetValue(&c);
+        IChar::Probe(arg)->GetValue(c);
         s = String::ValueOf(c);
     }
     else if (IByte::Probe(arg) != nullptr) {
         Byte i;
-        IByte::Probe(arg)->ByteValue(&i);
+        IByte::Probe(arg)->ByteValue(i);
         if (Character::IsValidCodePoint(i)) {
             s = String::ValueOf((Char)i);
         }
@@ -920,7 +920,7 @@ ECode Formatter::FormatSpecifier::PrintCharacter(
     }
     else if (IShort::Probe(arg) != nullptr) {
         Short i;
-        IShort::Probe(arg)->ShortValue(&i);
+        IShort::Probe(arg)->ShortValue(i);
         if (Character::IsValidCodePoint(i)) {
             s = String::ValueOf((Char)i);
         }
@@ -930,7 +930,7 @@ ECode Formatter::FormatSpecifier::PrintCharacter(
     }
     else if (IInteger::Probe(arg) != nullptr) {
         Integer i;
-        IInteger::Probe(arg)->IntegerValue(&i);
+        IInteger::Probe(arg)->IntegerValue(i);
         if (Character::IsValidCodePoint(i)) {
             s = String::ValueOf((Char)i);
         }
@@ -1414,7 +1414,7 @@ ECode Formatter::FormatSpecifier::Print(
         v->ToString(8, &s);
 
         Integer len;
-        sb->GetLength(&len);
+        sb->GetLength(len);
         len += s.GetLength();
         if (neg && mF->Contains(Flags::GetPARENTHESES())) {
             len++;
@@ -1437,7 +1437,7 @@ ECode Formatter::FormatSpecifier::Print(
         v->ToString(16, &s);
 
         Integer len;
-        sb->GetLength(&len);
+        sb->GetLength(len);
         len += s.GetLength();
         if (neg && mF->Contains(Flags::GetPARENTHESES())) {
             len++;
@@ -1988,8 +1988,8 @@ ECode Formatter::FormatSpecifier::Print(
         CBigDecimal::ValueOf(1, -prec, &tenToThePrec);
         Integer comp;
         if ((Object::Equals(value, CBigDecimal::GetZERO())) ||
-                ((IComparable::Probe(value)->CompareTo(tenToTheNegFour, &comp), comp != -1) &&
-                (IComparable::Probe(value)->CompareTo(tenToThePrec, &comp), comp == -1))) {
+                ((IComparable::Probe(value)->CompareTo(tenToTheNegFour, comp), comp != -1) &&
+                (IComparable::Probe(value)->CompareTo(tenToThePrec, comp), comp == -1))) {
             Integer scale;
             value->Scale(&scale);
             AutoPtr<IBigInteger> bi;
@@ -2377,7 +2377,7 @@ AutoPtr<IStringBuilder> Formatter::FormatSpecifier::LocalizedMagnitude(
         CStringBuilder::New(IID_IStringBuilder, (IInterface**)&sb);
     }
     Integer begin;
-    sb->GetLength(&begin);
+    sb->GetLength(begin);
 
     Char zero = GetZero(l);
 
@@ -2443,7 +2443,7 @@ AutoPtr<IStringBuilder> Formatter::FormatSpecifier::LocalizedMagnitude(
     }
 
     // apply zero padding
-    sb->GetLength(&len);
+    sb->GetLength(len);
     if (width != -1 && f->Contains(Flags::GetZERO_PAD())) {
         for (Integer k = 0; k < width - len; k++) {
             sb->Insert(begin, zero);
@@ -2594,7 +2594,7 @@ Array<Char> Formatter::BigDecimalLayout::ToCharArray(
         return Array<Char>::Null();
     }
     Integer size;
-    sb->GetLength(&size);
+    sb->GetLength(size);
     Array<Char> result(size);
     sb->GetChars(0, result.GetLength(), result, 0);
     return result;

@@ -704,69 +704,59 @@ ECode BigInteger::AndNot(
 }
 
 ECode BigInteger::IntegerValue(
-    /* [out] */ Integer* value)
+    /* [out] */ Integer& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     if (mNativeIsValid && mBigInt->TwosCompFitsIntoBytes(4)) {
-        *value = (Integer)mBigInt->LongInt();
+        value = (Integer)mBigInt->LongInt();
         return NOERROR;
     }
     PrepareRepresentation();
-    *value = (mSign * mDigits[0]);
+    value = (mSign * mDigits[0]);
     return NOERROR;
 }
 
 ECode BigInteger::LongValue(
-    /* [out] */ Long* value)
+    /* [out] */ Long& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     if (mNativeIsValid && mBigInt->TwosCompFitsIntoBytes(8)) {
-        *value = mBigInt->LongInt();
+        value = mBigInt->LongInt();
         return NOERROR;
     }
     PrepareRepresentation();
     Long lv = mNumberLength > 1 ?
             ((Long) mDigits[1]) << 32 | (mDigits[0] & 0xFFFFFFFFLL) :
             mDigits[0] & 0xFFFFFFFFLL;
-    *value = mSign * lv;
+    value = mSign * lv;
     return NOERROR;
 }
 
 ECode BigInteger::FloatValue(
-    /* [out] */ Float* value)
+    /* [out] */ Float& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     Double dv;
-    DoubleValue(&dv);
-    *value = (Float)dv;
+    DoubleValue(dv);
+    value = (Float)dv;
     return NOERROR;
 }
 
 ECode BigInteger::DoubleValue(
-    /* [out] */ Double* value)
+    /* [out] */ Double& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = Conversion::BigInteger2Double(this);
+    value = Conversion::BigInteger2Double(this);
     return NOERROR;
 }
 
 ECode BigInteger::CompareTo(
     /* [in] */ IInterface* other,
-    /* [out] */ Integer* result)
+    /* [out] */ Integer& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     BigInteger* value = (BigInteger*)IBigInteger::Probe(other);
     if (value == nullptr) {
-        *result = -1;
+        result = -1;
         return E_NULL_POINTER_EXCEPTION;
     }
 
-    *result = BigInt::Compare(GetBigInt(), value->GetBigInt());
+    result = BigInt::Compare(GetBigInt(), value->GetBigInt());
     return NOERROR;
 }
 
@@ -777,7 +767,7 @@ ECode BigInteger::Min(
     VALIDATE_NOT_NULL(result);
 
     Integer cmp;
-    FAIL_RETURN(CompareTo(value, &cmp));
+    FAIL_RETURN(CompareTo(value, cmp));
     *result = cmp == -1 ? this : value;
     REFCOUNT_ADD(*result);
     return NOERROR;
@@ -790,7 +780,7 @@ ECode BigInteger::Max(
     VALIDATE_NOT_NULL(result);
 
     Integer cmp;
-    FAIL_RETURN(CompareTo(value, &cmp));
+    FAIL_RETURN(CompareTo(value, cmp));
     *result = cmp == 1 ? this : value;
     REFCOUNT_ADD(*result);
     return NOERROR;
@@ -825,7 +815,7 @@ ECode BigInteger::Equals(
         return NOERROR;
     }
     Integer cmp;
-    CompareTo(obj, &cmp);
+    CompareTo(obj, cmp);
     same = (cmp == 0);
     return NOERROR;
 }
@@ -1202,24 +1192,20 @@ Integer BigInteger::GetFirstNonzeroDigit()
 }
 
 ECode BigInteger::ByteValue(
-    /* [out] */ Byte* value)
+    /* [out] */ Byte& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     Integer iv;
-    IntegerValue(&iv);
-    *value = (Byte)iv;
+    IntegerValue(iv);
+    value = (Byte)iv;
     return NOERROR;
 }
 
 ECode BigInteger::ShortValue(
-    /* [out] */ Short* value)
+    /* [out] */ Short& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     Integer iv;
-    IntegerValue(&iv);
-    *value = (Short)iv;
+    IntegerValue(iv);
+    value = (Short)iv;
     return NOERROR;
 }
 

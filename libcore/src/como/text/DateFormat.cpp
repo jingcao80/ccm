@@ -60,7 +60,7 @@ ECode DateFormat::Format(
     }
     else if (INumber::Probe(obj) != nullptr) {
         Long value;
-        INumber::Probe(obj)->LongValue(&value);
+        INumber::Probe(obj)->LongValue(value);
         AutoPtr<IDate> date;
         CDate::New(value, IID_IDate, (IInterface**)&date);
         return Format(date, toAppendTo, pos);

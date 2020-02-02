@@ -33,29 +33,25 @@ ECode CChar::Constructor(
 }
 
 ECode CChar::GetValue(
-    /* [out] */ Char* value)
+    /* [out] */ Char& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = mValue;
+    value = mValue;
     return NOERROR;
 }
 
 ECode CChar::CompareTo(
     /* [in] */ IInterface* other,
-    /* [out] */ Integer* result)
+    /* [out] */ Integer& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     IChar* c = IChar::Probe(other);
     if (c == nullptr) {
-        *result = -1;
+        result = -1;
         return NOERROR;
     }
 
     Char cv;
-    c->GetValue(&cv);
-    *result = mValue == cv ? 0 : (mValue > cv ? 1 : -1);
+    c->GetValue(cv);
+    result = mValue == cv ? 0 : (mValue > cv ? 1 : -1);
     return NOERROR;
 }
 
@@ -70,7 +66,7 @@ ECode CChar::Equals(
     }
 
     Char cv;
-    c->GetValue(&cv);
+    c->GetValue(cv);
     result = mValue == cv;
     return NOERROR;
 }

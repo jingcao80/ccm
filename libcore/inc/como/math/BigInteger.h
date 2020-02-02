@@ -162,20 +162,20 @@ public:
         /* [out] */ IBigInteger** result) override;
 
     ECode IntegerValue(
-        /* [out] */ Integer* value) override;
+        /* [out] */ Integer& value) override;
 
     ECode LongValue(
-        /* [out] */ Long* value) override;
+        /* [out] */ Long& value) override;
 
     ECode FloatValue(
-        /* [out] */ Float* value) override;
+        /* [out] */ Float& value) override;
 
     ECode DoubleValue(
-        /* [out] */ Double* value) override;
+        /* [out] */ Double& value) override;
 
     ECode CompareTo(
         /* [in] */ IInterface* other,
-        /* [out] */ Integer* result) override;
+        /* [out] */ Integer& result) override;
 
     ECode Min(
         /* [in] */ IBigInteger* value,
@@ -262,10 +262,10 @@ public:
     Integer GetFirstNonzeroDigit();
 
     ECode ByteValue(
-        /* [out] */ Byte* value) override;
+        /* [out] */ Byte& value) override;
 
     ECode ShortValue(
-        /* [out] */ Short* value) override;
+        /* [out] */ Short& value) override;
 
     static AutoPtr<IBigInteger> GetZERO();
 

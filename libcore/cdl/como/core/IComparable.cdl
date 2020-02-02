@@ -25,7 +25,7 @@ interface IComparable
 {
     CompareTo(
         [in] IInterface* other,
-        [out] Integer* result);
+        [out] Integer& result);
 }
 
 }

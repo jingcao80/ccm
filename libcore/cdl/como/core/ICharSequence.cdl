@@ -25,15 +25,15 @@ interface ICharSequence
 {
     GetCharAt(
         [in] Integer index,
-        [out] Char* c);
+        [out] Char& c);
 
     GetLength(
-        [out] Integer* number);
+        [out] Integer& number);
 
     SubSequence(
         [in] Integer start,
         [in] Integer end,
-        [out] ICharSequence** subcsq);
+        [out] ICharSequence&& subcsq);
 
     ToString(
         [out] String& str);

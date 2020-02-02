@@ -135,7 +135,7 @@ ECode BaseLocale::ToString(
     }
     if (mScript.GetByteLength() > 0) {
         Integer len;
-        if (buf->GetLength(&len), len > 0) {
+        if (buf->GetLength(len), len > 0) {
             buf->Append(String(", "));
         }
         buf->Append(String("script="));
@@ -143,7 +143,7 @@ ECode BaseLocale::ToString(
     }
     if (mRegion.GetByteLength() > 0) {
         Integer len;
-        if (buf->GetLength(&len), len > 0) {
+        if (buf->GetLength(len), len > 0) {
             buf->Append(String(", "));
         }
         buf->Append(String("region="));
@@ -151,7 +151,7 @@ ECode BaseLocale::ToString(
     }
     if (mVariant.GetByteLength() > 0) {
         Integer len;
-        if (buf->GetLength(&len), len > 0) {
+        if (buf->GetLength(len), len > 0) {
             buf->Append(String(", "));
         }
         buf->Append(String("variant="));
@@ -314,10 +314,8 @@ ECode BaseLocale::Key::Equals(
 
 ECode BaseLocale::Key::CompareTo(
     /* [in] */ IInterface* obj,
-    /* [out] */ Integer* result)
+    /* [out] */ Integer& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     Key* oth = (Key*)IComparable::Probe(obj);
     Integer res = LocaleUtils::CaseIgnoreCompare(mLang, oth->mLang);
     if (res == 0) {
@@ -329,7 +327,7 @@ ECode BaseLocale::Key::CompareTo(
             }
         }
     }
-    *result = res;
+    result = res;
     return NOERROR;
 }
 

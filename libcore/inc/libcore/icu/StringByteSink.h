@@ -66,7 +66,7 @@ inline void StringByteSink::Append(
 inline void StringByteSink::Clear()
 {
     Integer size;
-    mBuilder->GetLength(&size);
+    mBuilder->GetLength(size);
     mBuilder->Delete(0, size);
 }
 

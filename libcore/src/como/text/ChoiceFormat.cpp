@@ -72,7 +72,7 @@ ECode ChoiceFormat::ApplyPattern(
         }
         else if (ch == U'<' || ch == U'#' || ch == 0x2264) {
             Integer size;
-            if (segments[0]->GetLength(&size), size == 0) {
+            if (segments[0]->GetLength(size), size == 0) {
                 return E_ILLEGAL_ARGUMENT_EXCEPTION;
             }
             String tempBuffer;

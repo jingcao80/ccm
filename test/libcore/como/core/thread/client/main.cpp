@@ -65,12 +65,12 @@ TEST(ThreadTest, TestThreadSleep)
     AutoPtr<ISystem> system;
     CSystem::New(IID_ISystem, (IInterface**)&system);
     Long start;
-    system->GetCurrentTimeMillis(&start);
+    system->GetCurrentTimeMillis(start);
 
     Thread::Sleep(millis);
 
     Long end;
-    system->GetCurrentTimeMillis(&end);
+    system->GetCurrentTimeMillis(end);
     Long elapsed = end - start;
     Long offBy = Math::Abs(elapsed - millis);
     EXPECT_TRUE(offBy <= 250);
@@ -134,7 +134,7 @@ TEST(ThreadTest, TestParkUntilUnderflowValue)
             Sleep(5000);
 
             Boolean value;
-            if (mAfterPark->Get(&value), !value) {
+            if (mAfterPark->Get(value), !value) {
                 mWasParkedForLongTime->Set(true);
                 mCurrent->Unpark();
             }
@@ -153,7 +153,7 @@ TEST(ThreadTest, TestParkUntilUnderflowValue)
 
     current->ParkUntil(ILong::MIN_VALUE);
     Boolean value;
-    if (wasParkedForLongTime->Get(&value), value) {
+    if (wasParkedForLongTime->Get(value), value) {
         EXPECT_TRUE(false);
     }
     afterPark->Set(true);

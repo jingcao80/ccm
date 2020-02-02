@@ -141,7 +141,7 @@ TEST(BigDecimalTest, TestPrecisionFromString)
     bd->Signum(&sign);
     EXPECT_EQ(0, sign);
     Integer comp;
-    IComparable::Probe(a)->CompareTo(b, &comp);
+    IComparable::Probe(a)->CompareTo(b, comp);
     EXPECT_EQ(0, comp);
 }
 

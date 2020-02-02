@@ -131,7 +131,7 @@ void ExpiringCache::Cleanup()
     Array<String> keys(size);
     Integer i = 0;
     AutoPtr<IIterator> it;
-    keySet->GetIterator(&it);
+    keySet->GetIterator(it);
     Boolean hasNext;
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> obj;

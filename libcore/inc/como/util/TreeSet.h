@@ -58,10 +58,10 @@ public:
         /* [in] */ ISortedSet* s);
 
     ECode GetIterator(
-        /* [out] */ IIterator** it) override;
+        /* [out] */ AutoPtr<IIterator>& it) override;
 
     ECode GetDescendingIterator(
-        /* [out] */ IIterator** it) override;
+        /* [out] */ AutoPtr<IIterator>& it) override;
 
     ECode DescendingSet(
         /* [out] */ INavigableSet** set) override;

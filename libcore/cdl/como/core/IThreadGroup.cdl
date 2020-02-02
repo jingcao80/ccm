@@ -24,10 +24,10 @@ namespace core {
 interface IThreadGroup
 {
     ActiveCount(
-        [out] Integer* count);
+        [out] Integer& count);
 
     ActiveGroupCount(
-        [out] Integer* count);
+        [out] Integer& count);
 
     // @hide
     Add(
@@ -42,44 +42,44 @@ interface IThreadGroup
 
     Enumerate(
         [out] Array<IThread*>& list,
-        [out] Integer* count);
+        [out] Integer& count);
 
     Enumerate(
         [out] Array<IThread*>& list,
         [in] Boolean recurse,
-        [out] Integer* count);
+        [out] Integer& count);
 
     Enumerate(
         [out] Array<IThreadGroup*>& list,
-        [out] Integer* count);
+        [out] Integer& count);
 
     Enumerate(
         [out] Array<IThreadGroup*>& list,
         [in] Boolean recurse,
-        [out] Integer* count);
+        [out] Integer& count);
 
     GetMaxPriority(
-        [out] Integer* priority);
+        [out] Integer& priority);
 
     GetName(
-        [out] String* name);
+        [out] String& name);
 
     GetParent(
-        [out] IThreadGroup** parent);
+        [out] IThreadGroup&& parent);
 
     Interrupt();
 
     IsDaemon(
-        [out] Boolean* daemon);
+        [out] Boolean& daemon);
 
     IsDestroyed(
-        [out] Boolean* destroyed);
+        [out] Boolean& destroyed);
 
     List();
 
     ParentOf(
         [in] IThreadGroup* g,
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     Resume();
 

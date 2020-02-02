@@ -46,20 +46,20 @@ public:
         /* [in] */ const String& str);
 
     ECode GetLength(
-        /* [out] */ Integer* number) override;
+        /* [out] */ Integer& number) override;
 
     ECode GetCharAt(
         /* [in] */ Integer index,
-        /* [out] */ Char* c) override;
+        /* [out] */ Char& c) override;
 
     ECode SubSequence(
         /* [in] */ Integer start,
         /* [in] */ Integer end,
-        /* [out] */ ICharSequence** subcsq) override;
+        /* [out] */ AutoPtr<ICharSequence>& subcsq) override;
 
     ECode CompareTo(
         /* [in] */ IInterface* other,
-        /* [out] */ Integer* result) override;
+        /* [out] */ Integer& result) override;
 
     ECode Equals(
         /* [in] */ IInterface* obj,

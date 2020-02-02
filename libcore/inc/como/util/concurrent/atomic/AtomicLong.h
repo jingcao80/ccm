@@ -47,7 +47,7 @@ public:
     ECode Constructor();
 
     ECode Get(
-        /* [out] */ Long* value) override;
+        /* [out] */ Long& value) override;
 
     ECode Set(
         /* [in] */ Long value) override;
@@ -57,7 +57,7 @@ public:
 
     ECode GetAndSet(
         /* [in] */ Long newValue,
-        /* [out] */ Long* prevValue) override;
+        /* [out] */ Long& prevValue) override;
 
     ECode CompareAndSet(
         /* [in] */ Long expect,
@@ -70,45 +70,45 @@ public:
         /* [out] */ Boolean* succeeded = nullptr) override;
 
     ECode GetAndIncrement(
-        /* [out] */ Long* prevValue) override;
+        /* [out] */ Long& prevValue) override;
 
     ECode GetAndDecrement(
-        /* [out] */ Long* prevValue) override;
+        /* [out] */ Long& prevValue) override;
 
     ECode GetAndAdd(
         /* [in] */ Long delta,
-        /* [out] */ Long* prevValue) override;
+        /* [out] */ Long& prevValue) override;
 
     ECode IncrementAndGet(
-        /* [out] */ Long* value) override;
+        /* [out] */ Long& value) override;
 
     ECode DecrementAndGet(
-        /* [out] */ Long* value) override;
+        /* [out] */ Long& value) override;
 
     ECode AddAndGet(
         /* [in] */ Long delta,
-        /* [out] */ Long* value) override;
+        /* [out] */ Long& value) override;
 
     ECode ToString(
         /* [out] */ String& desc) override;
 
     ECode IntegerValue(
-        /* [out] */ Integer* value) override;
+        /* [out] */ Integer& value) override;
 
     ECode LongValue(
-        /* [out] */ Long* value) override;
+        /* [out] */ Long& value) override;
 
     ECode FloatValue(
-        /* [out] */ Float* value) override;
+        /* [out] */ Float& value) override;
 
     ECode DoubleValue(
-        /* [out] */ Double* value) override;
+        /* [out] */ Double& value) override;
 
     ECode ByteValue(
-        /* [out] */ Byte* value) override;
+        /* [out] */ Byte& value) override;
 
     ECode ShortValue(
-        /* [out] */ Short* value) override;
+        /* [out] */ Short& value) override;
 
 private:
     como::core::AtomicLong mValue;

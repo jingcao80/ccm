@@ -110,7 +110,7 @@ public:
 
     ECode CompareTo(
         /* [in] */ IInterface* other,
-        /* [out] */ Integer* result) override;
+        /* [out] */ Integer& result) override;
 
     ECode GetOrder(
         /* [out] */ IByteOrder** bo) override final;

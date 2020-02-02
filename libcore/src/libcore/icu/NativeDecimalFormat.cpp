@@ -342,14 +342,14 @@ ECode NativeDecimalFormat::FormatToCharacterIterator(
     else if (IDouble::Probe(number) != nullptr ||
             IFloat::Probe(number) != nullptr) {
         Double dv;
-        number->DoubleValue(&dv);
+        number->DoubleValue(dv);
         Array<Char> out;
         FAIL_RETURN(FormatDouble(mAddress, dv, fpIter, &out));
         text = String::ValueOf(out);
     }
     else {
         Long lv;
-        number->LongValue(&lv);
+        number->LongValue(lv);
         Array<Char> out;
         FAIL_RETURN(FormatLong(mAddress, lv, fpIter, &out));
         text = String::ValueOf(out);

@@ -50,7 +50,7 @@ Integer ThreadLocal::GetNextHashCode()
 {
     AutoPtr<IAtomicInteger> gen = GetHashCodeGenerator();
     Integer hash;
-    gen->GetAndAdd(HASH_INCREMENT, &hash);
+    gen->GetAndAdd(HASH_INCREMENT, hash);
     return hash;
 }
 
@@ -60,18 +60,15 @@ AutoPtr<IInterface> ThreadLocal::InitialValue()
 }
 
 ECode ThreadLocal::Get(
-    /* [out] */ IInterface** value)
+    /* [out] */ AutoPtr<IInterface>& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     AutoPtr<IThread> t;
     Thread::GetCurrentThread(&t);
     AutoPtr<ThreadLocalMap> map = GetMap(t);
     if (map != nullptr) {
         AutoPtr<ThreadLocalMap::Entry> e = map->GetEntry(this);
         if (e != nullptr) {
-            *value = e->mValue;
-            REFCOUNT_ADD(*value);
+            value = e->mValue;
             return NOERROR;
         }
     }
@@ -79,21 +76,18 @@ ECode ThreadLocal::Get(
 }
 
 ECode ThreadLocal::SetInitialValue(
-    /* [out] */ IInterface** value)
+    /* [out] */ AutoPtr<IInterface>& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    AutoPtr<IInterface> v = InitialValue();
+    value = InitialValue();
     AutoPtr<IThread> t;
     Thread::GetCurrentThread(&t);
     AutoPtr<ThreadLocalMap> map = GetMap(t);
     if (map != nullptr) {
-        map->Set(this, v);
+        map->Set(this, value);
     }
     else {
-        CreateMap(t, v);
+        CreateMap(t, value);
     }
-    v.MoveTo(value);
     return NOERROR;
 }
 

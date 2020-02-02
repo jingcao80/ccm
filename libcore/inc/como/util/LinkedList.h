@@ -264,7 +264,7 @@ public:
         /* [out] */ IListIterator** it) override;
 
     ECode GetDescendingIterator(
-        /* [out] */ IIterator** it) override;
+        /* [out] */ AutoPtr<IIterator>& it) override;
 
     ECode ToArray(
         /* [out, callee] */ Array<IInterface*>* objs) override;
@@ -274,7 +274,7 @@ public:
         /* [out, callee] */ Array<IInterface*>* objs) override;
 
     ECode GetIterator(
-        /* [out] */ IIterator** it) override;
+        /* [out] */ AutoPtr<IIterator>& it) override;
 
 protected:
     virtual void LinkLast(

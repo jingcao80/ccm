@@ -36,26 +36,21 @@ ECode CArray::Constructor(
 }
 
 ECode CArray::GetLength(
-    /* [out] */ Long* size)
+    /* [out] */ Long& size)
 {
-    VALIDATE_NOT_NULL(size);
-
-    *size = mElements.GetLength();
+    size = mElements.GetLength();
     return NOERROR;
 }
 
 ECode CArray::Get(
     /* [in] */ Long index,
-    /* [out] */ IInterface** element)
+    /* [out] */ AutoPtr<IInterface>& element)
 {
-    VALIDATE_NOT_NULL(element);
-
     if (index < 0 || index > mElements.GetLength()) {
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
-    *element = mElements[index];
-    REFCOUNT_ADD(*element);
+    element = mElements[index];
     return NOERROR;
 }
 
@@ -77,11 +72,9 @@ ECode CArray::Set(
 }
 
 ECode CArray::GetTypeId(
-    /* [out] */ InterfaceID* id)
+    /* [out] */ InterfaceID& id)
 {
-    VALIDATE_NOT_NULL(id);
-
-    *id = mElementTypeId;
+    id = mElementTypeId;
     return NOERROR;
 }
 

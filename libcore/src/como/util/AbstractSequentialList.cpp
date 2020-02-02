@@ -103,7 +103,7 @@ ECode AbstractSequentialList::AddAll(
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
     AutoPtr<IIterator> it2;
-    c->GetIterator(&it2);
+    c->GetIterator(it2);
     Boolean hasNext;
     while (it2->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> obj;
@@ -118,13 +118,11 @@ ECode AbstractSequentialList::AddAll(
 }
 
 ECode AbstractSequentialList::GetIterator(
-    /* [out] */ IIterator** it)
+    /* [out] */ AutoPtr<IIterator>& it)
 {
-    VALIDATE_NOT_NULL(it);
-
     AutoPtr<IListIterator> lit;
     GetListIterator(&lit);
-    lit.MoveTo(it);
+    it = std::move(lit);
     return NOERROR;
 }
 

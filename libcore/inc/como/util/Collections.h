@@ -81,7 +81,7 @@ private:
             /* [out] */ String& desc) override;
 
         ECode GetIterator(
-            /* [out] */ IIterator** it) override;
+            /* [out] */ AutoPtr<IIterator>& it) override;
 
         ECode Add(
             /* [in] */ IInterface* obj,
@@ -151,7 +151,7 @@ private:
             /* [out] */ Boolean* result) override;
 
         ECode GetIterator(
-            /* [out] */ IIterator** it) override;
+            /* [out] */ AutoPtr<IIterator>& it) override;
 
         ECode GetSize(
             /* [out] */ Integer* size) override;
@@ -260,7 +260,7 @@ private:
             /* [out] */ Boolean* result) override;
 
         ECode GetIterator(
-            /* [out] */ IIterator** it) override;
+            /* [out] */ AutoPtr<IIterator>& it) override;
 
         ECode GetSize(
             /* [out] */ Integer* size) override;
@@ -348,7 +348,7 @@ private:
             /* [out, callee] */ Array<IInterface*>* objs) override;
 
         ECode GetIterator(
-            /* [out] */ IIterator** it) override;
+            /* [out] */ AutoPtr<IIterator>& it) override;
 
         ECode Add(
             /* [in] */ IInterface* obj,
@@ -436,7 +436,7 @@ private:
             /* [out] */ Boolean* result) override;
 
         ECode GetIterator(
-            /* [out] */ IIterator** it) override;
+            /* [out] */ AutoPtr<IIterator>& it) override;
 
         ECode GetSize(
             /* [out] */ Integer* size) override;
@@ -553,7 +553,7 @@ private:
             /* [out] */ Boolean* result) override;
 
         ECode GetIterator(
-            /* [out] */ IIterator** it) override;
+            /* [out] */ AutoPtr<IIterator>& it) override;
 
         ECode GetSize(
             /* [out] */ Integer* size) override;
@@ -686,7 +686,7 @@ private:
         COMO_INTERFACE_DECL();
 
         ECode GetIterator(
-            /* [out] */ IIterator** it) override;
+            /* [out] */ AutoPtr<IIterator>& it) override;
 
         ECode GetSize(
             /* [out] */ Integer* size) override;
@@ -719,7 +719,7 @@ private:
         COMO_INTERFACE_DECL();
 
         ECode GetIterator(
-            /* [out] */ IIterator** it) override;
+            /* [out] */ AutoPtr<IIterator>& it) override;
 
         ECode GetListIterator(
             /* [out] */ IListIterator** it) override;

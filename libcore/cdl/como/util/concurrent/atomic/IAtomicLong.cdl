@@ -31,7 +31,7 @@ interface IAtomicLong
 {
     AddAndGet(
         [in] Long delta,
-        [out] Long* value);
+        [out] Long& value);
 
     CompareAndSet(
         [in] Long expect,
@@ -39,27 +39,27 @@ interface IAtomicLong
         [out] Boolean* succeeded = nullptr);
 
     DecrementAndGet(
-        [out] Long* value);
+        [out] Long& value);
 
     Get(
-        [out] Long* value);
+        [out] Long& value);
 
     GetAndAdd(
         [in] Long delta,
-        [out] Long* prevValue);
+        [out] Long& prevValue);
 
     GetAndDecrement(
-        [out] Long* prevValue);
+        [out] Long& prevValue);
 
     GetAndIncrement(
-        [out] Long* prevValue);
+        [out] Long& prevValue);
 
     GetAndSet(
         [in] Long newValue,
-        [out] Long* prevValue);
+        [out] Long& prevValue);
 
     IncrementAndGet(
-        [out] Long* value);
+        [out] Long& value);
 
     LzaySet(
         [in] Long value);

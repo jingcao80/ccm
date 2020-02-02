@@ -25,13 +25,13 @@ interface IArray
 {
     Get(
         [in] Long index,
-        [out] IInterface** element);
+        [out] IInterface&& element);
 
     GetLength(
-        [out] Long* size);
+        [out] Long& size);
 
     GetTypeId(
-        [out] InterfaceID* id);
+        [out] InterfaceID& id);
 
     Set(
         [in] Long index,

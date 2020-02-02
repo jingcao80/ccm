@@ -28,7 +28,7 @@ ECode StringCharBuffer::Constructor(
     /* [in] */ Integer end)
 {
     Integer len;
-    s->GetLength(&len);
+    s->GetLength(len);
     FAIL_RETURN(CharBuffer::Constructor(-1, start, end, len));
     if ((start < 0) || (start > len) || (end < start) || (end > len)) {
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
@@ -97,7 +97,7 @@ ECode StringCharBuffer::Get(
 
     Integer index;
     NextGetIndex(&index);
-    mStr->GetCharAt(index + mOffset, c);
+    mStr->GetCharAt(index + mOffset, *c);
     return NOERROR;
 }
 
@@ -108,7 +108,7 @@ ECode StringCharBuffer::Get(
     VALIDATE_NOT_NULL(c);
 
     FAIL_RETURN(CheckIndex(index));
-    mStr->GetCharAt(index + mOffset, c);
+    mStr->GetCharAt(index + mOffset, *c);
     return NOERROR;
 }
 
@@ -118,7 +118,7 @@ ECode StringCharBuffer::GetUnchecked(
 {
     VALIDATE_NOT_NULL(c);
 
-    mStr->GetCharAt(index + mOffset, c);
+    mStr->GetCharAt(index + mOffset, *c);
     return NOERROR;
 }
 
@@ -165,10 +165,8 @@ ECode StringCharBuffer::ToString(
 ECode StringCharBuffer::SubSequence(
     /* [in] */ Integer start,
     /* [in] */ Integer end,
-    /* [out] */ ICharSequence** subcsq)
+    /* [out] */ AutoPtr<ICharSequence>& subcsq)
 {
-    VALIDATE_NOT_NULL(subcsq);
-
     Integer pos, cap;
     GetPosition(&pos);
     FAIL_RETURN(CheckIndex(start, pos));
@@ -176,7 +174,7 @@ ECode StringCharBuffer::SubSequence(
     GetCapacity(&cap);
     AutoPtr<StringCharBuffer> scb = new StringCharBuffer();
     FAIL_RETURN(scb->Constructor(mStr, -1, pos + start, pos + end, cap, mOffset));
-    *subcsq = (ICharSequence*)scb.Get();
+    subcsq = (ICharSequence*)scb.Get();
     return NOERROR;
 }
 

@@ -63,7 +63,7 @@ ECode AbstractMap::ContainsValue(
     AutoPtr<ISet> entries;
     GetEntrySet(&entries);
     AutoPtr<IIterator> it;
-    entries->GetIterator(&it);
+    entries->GetIterator(it);
     if (value == nullptr) {
         Boolean hasNext;
         while (it->HasNext(&hasNext), hasNext) {
@@ -103,7 +103,7 @@ ECode AbstractMap::ContainsKey(
     AutoPtr<ISet> entries;
     GetEntrySet(&entries);
     AutoPtr<IIterator> it;
-    entries->GetIterator(&it);
+    entries->GetIterator(it);
     if (key == nullptr) {
         Boolean hasNext;
         while (it->HasNext(&hasNext), hasNext) {
@@ -143,7 +143,7 @@ ECode AbstractMap::Get(
     AutoPtr<ISet> entries;
     GetEntrySet(&entries);
     AutoPtr<IIterator> it;
-    entries->GetIterator(&it);
+    entries->GetIterator(it);
     if (key == nullptr) {
         Boolean hasNext;
         while (it->HasNext(&hasNext), hasNext) {
@@ -190,7 +190,7 @@ ECode AbstractMap::Remove(
     AutoPtr<ISet> entries;
     GetEntrySet(&entries);
     AutoPtr<IIterator> it;
-    entries->GetIterator(&it);
+    entries->GetIterator(it);
     if (key == nullptr) {
         Boolean hasNext;
         while (correctEntry == nullptr &&
@@ -236,7 +236,7 @@ ECode AbstractMap::PutAll(
     AutoPtr<ISet> entries;
     m->GetEntrySet(&entries);
     AutoPtr<IIterator> it;
-    entries->GetIterator(&it);
+    entries->GetIterator(it);
     Boolean hasNext;
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> e;
@@ -291,10 +291,8 @@ ECode AbstractMap::GetKeySet(
             {}
 
             ECode GetIterator(
-                /* [out] */ IIterator** it) override
+                /* [out] */ AutoPtr<IIterator>& it) override
             {
-                VALIDATE_NOT_NULL(it);
-
                 class _Iterator
                     : public LightRefBase
                     , public IIterator
@@ -367,8 +365,8 @@ ECode AbstractMap::GetKeySet(
                 AutoPtr<ISet> entries;
                 mOwner->GetEntrySet(&entries);
                 AutoPtr<IIterator> eit;
-                entries->GetIterator(&eit);
-                *it = new _Iterator(eit);
+                entries->GetIterator(eit);
+                it = new _Iterator(eit);
                 return NOERROR;
             }
 
@@ -422,10 +420,8 @@ ECode AbstractMap::GetValues(
             {}
 
             ECode GetIterator(
-                /* [out] */ IIterator** it) override
+                /* [out] */ AutoPtr<IIterator>& it) override
             {
-                VALIDATE_NOT_NULL(it);
-
                 class _Iterator
                     : public LightRefBase
                     , public IIterator
@@ -498,8 +494,8 @@ ECode AbstractMap::GetValues(
                 AutoPtr<ISet> entries;
                 mOwner->GetEntrySet(&entries);
                 AutoPtr<IIterator> eit;
-                entries->GetIterator(&eit);
-                *it = new _Iterator(eit);
+                entries->GetIterator(eit);
+                it = new _Iterator(eit);
                 return NOERROR;
             }
 
@@ -559,7 +555,7 @@ ECode AbstractMap::Equals(
     AutoPtr<ISet> entries;
     GetEntrySet(&entries);
     AutoPtr<IIterator> it;
-    entries->GetIterator(&it);
+    entries->GetIterator(it);
     Boolean hasNext;
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> e;
@@ -596,7 +592,7 @@ ECode AbstractMap::GetHashCode(
     AutoPtr<ISet> entries;
     GetEntrySet(&entries);
     AutoPtr<IIterator> it;
-    entries->GetIterator(&it);
+    entries->GetIterator(it);
     Boolean hasNext;
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> e;
@@ -612,7 +608,7 @@ ECode AbstractMap::ToString(
     AutoPtr<ISet> entries;
     GetEntrySet(&entries);
     AutoPtr<IIterator> it;
-    entries->GetIterator(&it);
+    entries->GetIterator(it);
     Boolean hasNext;
     if (it->HasNext(&hasNext), !hasNext) {
         str = "{}";

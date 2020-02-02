@@ -785,7 +785,7 @@ ECode Calendar::Before(
         return NOERROR;
     }
     Integer compare;
-    CompareTo(cal, &compare);
+    CompareTo(cal, compare);
     *before = compare < 0;
     return NOERROR;
 }
@@ -802,21 +802,19 @@ ECode Calendar::After(
         return NOERROR;
     }
     Integer compare;
-    CompareTo(cal, &compare);
+    CompareTo(cal, compare);
     *after = compare > 0;
     return NOERROR;
 }
 
 ECode Calendar::CompareTo(
     /* [in] */ IInterface* another,
-    /* [out] */ Integer* result)
+    /* [out] */ Integer& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     if (ICalendar::Probe(another) == nullptr) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    *result = CompareTo(GetMillisOf((Calendar*)ICalendar::Probe(another)));
+    result = CompareTo(GetMillisOf((Calendar*)ICalendar::Probe(another)));
     return NOERROR;
 }
 
@@ -1176,11 +1174,11 @@ void Calendar::SetWeekCountData(
         data->Set(1, days);
         GetCachedLocaleData()->PutIfAbsent(desiredLocale, data);
     }
-    AutoPtr<IInteger> v0, v1;
-    data->Get(0, (IInterface**)&v0);
-    data->Get(1, (IInterface**)&v1);
-    mFirstDayOfWeek = CoreUtils::Unbox(v0);
-    mMinimalDaysInFirstWeek = CoreUtils::Unbox(v1);
+    AutoPtr<IInterface> v0, v1;
+    data->Get(0, v0);
+    data->Get(1, v1);
+    mFirstDayOfWeek = CoreUtils::Unbox(IInteger::Probe(v0));
+    mMinimalDaysInFirstWeek = CoreUtils::Unbox(IInteger::Probe(v1));
 }
 
 ECode Calendar::UpdateTime()

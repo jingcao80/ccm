@@ -112,10 +112,10 @@ AutoPtr<ILanguageTag> LanguageTag::Parse(
     GetGRANDFATHERED()->Get(CoreUtils::Box(
             LocaleUtils::ToLowerString(languageTag)), (IInterface**)&gfmap);
     if (gfmap != nullptr) {
-        AutoPtr<ICharSequence> text;
-        gfmap->Get(1, (IInterface**)&text);
+        AutoPtr<IInterface> text;
+        gfmap->Get(1, text);
         itr = new StringTokenIterator();
-        itr->Constructor(CoreUtils::Unbox(text), SEP);
+        itr->Constructor(CoreUtils::Unbox(ICharSequence::Probe(text)), SEP);
     }
     else {
         itr = new StringTokenIterator();
@@ -447,14 +447,14 @@ AutoPtr<ILanguageTag> LanguageTag::ParseLocale(
                     break;
                 }
                 Integer len;
-                if (buf->GetLength(&len), len > 0) {
+                if (buf->GetLength(len), len > 0) {
                     buf->Append(SEP);
                 }
                 buf->Append(prvv);
                 varitr->Next();
             }
             Integer len;
-            if (buf->GetLength(&len), len > 0) {
+            if (buf->GetLength(len), len > 0) {
                 buf->ToString(privuseVar);
             }
         }
@@ -466,7 +466,7 @@ AutoPtr<ILanguageTag> LanguageTag::ParseLocale(
     if (localeExtensions != nullptr) {
         AutoPtr<ISet> locextKeys = localeExtensions->GetKeys();
         AutoPtr<IIterator> it;
-        locextKeys->GetIterator(&it);
+        locextKeys->GetIterator(it);
         Boolean hasNext;
         while (it->HasNext(&hasNext), hasNext) {
             AutoPtr<IChar> locextKey;
@@ -711,7 +711,7 @@ ECode LanguageTag::ToString(
         sb->Append(mLanguage);
 
         AutoPtr<IIterator> it;
-        mExtlangs->GetIterator(&it);
+        mExtlangs->GetIterator(it);
         Boolean hasNext;
         while (it->HasNext(&hasNext), hasNext) {
             AutoPtr<ICharSequence> extlang;
@@ -730,8 +730,7 @@ ECode LanguageTag::ToString(
             sb->Append(mRegion);
         }
 
-        it = nullptr;
-        mVariants->GetIterator(&it);
+        mVariants->GetIterator(it);
         while (it->HasNext(&hasNext), hasNext) {
             AutoPtr<ICharSequence> variant;
             it->Next((IInterface**)&variant);
@@ -739,8 +738,7 @@ ECode LanguageTag::ToString(
             sb->Append(CoreUtils::Unbox(variant));
         }
 
-        it = nullptr;
-        mExtensions->GetIterator(&it);
+        mExtensions->GetIterator(it);
         while (it->HasNext(&hasNext), hasNext) {
             AutoPtr<ICharSequence> extension;
             it->Next((IInterface**)&extension);
@@ -750,7 +748,7 @@ ECode LanguageTag::ToString(
     }
     if (mPrivateuse.GetByteLength() > 0) {
         Integer len;
-        if (sb->GetLength(&len), len > 0) {
+        if (sb->GetLength(len), len > 0) {
             sb->Append(SEP);
         }
         sb->Append(mPrivateuse);

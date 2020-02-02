@@ -50,7 +50,7 @@ ECode AbstractCollection::Contains(
     VALIDATE_NOT_NULL(result);
 
     AutoPtr<IIterator> it;
-    GetIterator(&it);
+    GetIterator(it);
     if (obj == nullptr) {
         Boolean hasNext;
         while (it->HasNext(&hasNext), hasNext) {
@@ -87,7 +87,7 @@ ECode AbstractCollection::ToArray(
     GetSize(&size);
     Array<IInterface*> r = Array<IInterface*>(size);
     AutoPtr<IIterator> it;
-    GetIterator(&it);
+    GetIterator(it);
     for (Integer i = 0; i < r.GetLength(); i++) {
         Boolean hasNext;
         if (it->HasNext(&hasNext), !hasNext) {
@@ -119,7 +119,7 @@ ECode AbstractCollection::ToArray(
     GetSize(&size);
     Array<IInterface*> r = Array<IInterface*>(size);
     AutoPtr<IIterator> it;
-    GetIterator(&it);
+    GetIterator(it);
     for (Integer i = 0; i < r.GetLength(); i++) {
         Boolean hasNext;
         if (it->HasNext(&hasNext), !hasNext) {
@@ -231,7 +231,7 @@ ECode AbstractCollection::Remove(
     /* [out] */ Boolean* changed)
 {
     AutoPtr<IIterator> it;
-    GetIterator(&it);
+    GetIterator(it);
     if (obj == nullptr) {
         Boolean hasNext;
         while (it->HasNext(&hasNext), hasNext) {
@@ -267,7 +267,7 @@ ECode AbstractCollection::ContainsAll(
     VALIDATE_NOT_NULL(result);
 
     AutoPtr<IIterator> it;
-    c->GetIterator(&it);
+    c->GetIterator(it);
     Boolean hasNext;
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> e;
@@ -288,7 +288,7 @@ ECode AbstractCollection::AddAll(
 {
     Boolean modified = false;
     AutoPtr<IIterator> it;
-    c->GetIterator(&it);
+    c->GetIterator(it);
     Boolean hasNext;
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> e;
@@ -308,7 +308,7 @@ ECode AbstractCollection::RemoveAll(
 {
     Boolean modified = false;
     AutoPtr<IIterator> it;
-    GetIterator(&it);
+    GetIterator(it);
     Boolean hasNext;
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> e;
@@ -329,7 +329,7 @@ ECode AbstractCollection::RetainAll(
 {
     Boolean modified = false;
     AutoPtr<IIterator> it;
-    GetIterator(&it);
+    GetIterator(it);
     Boolean hasNext;
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> e;
@@ -347,7 +347,7 @@ ECode AbstractCollection::RetainAll(
 ECode AbstractCollection::Clear()
 {
     AutoPtr<IIterator> it;
-    GetIterator(&it);
+    GetIterator(it);
     Boolean hasNext;
     while (it->HasNext(&hasNext), hasNext) {
         it->Next();
@@ -360,7 +360,7 @@ ECode AbstractCollection::ToString(
     /* [out] */ String& str)
 {
     AutoPtr<IIterator> it;
-    GetIterator(&it);
+    GetIterator(it);
     Boolean hasNext;
     if (it->HasNext(&hasNext), !hasNext) {
         str = "[]";

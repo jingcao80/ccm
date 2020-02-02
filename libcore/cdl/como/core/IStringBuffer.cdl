@@ -77,11 +77,11 @@ interface IStringBuffer
         [in] Integer minimumCapacity);
 
     GetCapacity(
-        [out] Integer* capacity);
+        [out] Integer& capacity);
 
     GetCharAt(
         [in] Integer index,
-        [out] Char* c);
+        [out] Char& c);
 
     GetChars(
         [in] Integer start,
@@ -90,7 +90,7 @@ interface IStringBuffer
         [in] Integer dstStart);
 
     GetLength(
-        [out] Integer* number);
+        [out] Integer& number);
 
     Replace(
         [in] Integer start,
@@ -151,21 +151,21 @@ interface IStringBuffer
 
     IndexOf(
         [in] String str,
-        [out] Integer* idx);
+        [out] Integer& idx);
 
     IndexOf(
         [in] String str,
         [in] Integer fromIndex,
-        [out] Integer* idx);
+        [out] Integer& idx);
 
     LastIndexOf(
         [in] String str,
-        [out] Integer* idx);
+        [out] Integer& idx);
 
     LastIndexOf(
         [in] String str,
         [in] Integer fromIndex,
-        [out] Integer* idx);
+        [out] Integer& idx);
 
     Reverse();
 
@@ -179,16 +179,16 @@ interface IStringBuffer
     SubSequence(
         [in] Integer start,
         [in] Integer end,
-        [out] ICharSequence** subcsq);
+        [out] ICharSequence&& subcsq);
 
     Substring(
         [in] Integer start,
-        [out] String* str);
+        [out] String& str);
 
     Substring(
         [in] Integer start,
         [in] Integer end,
-        [out] String* str);
+        [out] String& str);
 
     ToString(
         [out] String& str);

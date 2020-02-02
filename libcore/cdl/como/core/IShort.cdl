@@ -41,29 +41,29 @@ interface IShort
     const Short MAX_VALUE = 32767;
 
     ByteValue(
-        [out] Byte* value);
+        [out] Byte& value);
 
     CompareTo(
         [in] IInterface* other,
-        [out] Integer* result);
+        [out] Integer& result);
 
     DoubleValue(
-        [out] Double* value);
+        [out] Double& value);
 
     FloatValue(
-        [out] Float* value);
+        [out] Float& value);
 
     GetValue(
-        [out] Short* value);
+        [out] Short& value);
 
     IntegerValue(
-        [out] Integer* value);
+        [out] Integer& value);
 
     LongValue(
-        [out] Long* value);
+        [out] Long& value);
 
     ShortValue(
-        [out] Short* value);
+        [out] Short& value);
 }
 
 }

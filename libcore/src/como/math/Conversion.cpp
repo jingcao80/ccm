@@ -441,7 +441,7 @@ Double Conversion::BigInteger2Double(
     if ((value->mNumberLength < 2) ||
             ((value->mNumberLength == 2) && (value->mDigits[1] > 0))) {
         Long lVal;
-        value->LongValue(&lVal);
+        value->LongValue(lVal);
         return lVal;
     }
     // val.bitLength() >= 33 * 32 > 1024
@@ -459,7 +459,7 @@ Double Conversion::BigInteger2Double(
     AutoPtr<IBigInteger> shiftBI;
     absBI->ShiftRight(delta, &shiftBI);
     Long lVal;
-    INumber::Probe(shiftBI)->LongValue(&lVal);
+    INumber::Probe(shiftBI)->LongValue(lVal);
     /*
      * Take 53 bits from lVal to mantissa. The least significant bit is
      * needed for rounding.

@@ -26,7 +26,7 @@ namespace core {
 interface IIterable
 {
     GetIterator(
-        [out] IIterator** it);
+        [out] IIterator&& it);
 }
 
 }

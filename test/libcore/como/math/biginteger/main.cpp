@@ -44,7 +44,7 @@ TEST(BigIntegerTest, HashCodeTest)
     AutoPtr<IBigInteger> andedBigs;
     firstBig->Add(secondBig, &andedBigs);
     Long lv;
-    INumber::Probe(andedBigs)->LongValue(&lv);
+    INumber::Probe(andedBigs)->LongValue(lv);
     AutoPtr<IBigInteger> toCompareBig;
     BigIntegerFactory::ValueOf(lv, &toCompareBig);
     EXPECT_TRUE(Object::Equals(andedBigs, toCompareBig));
@@ -56,7 +56,7 @@ TEST(BigIntegerTest, ValueOfTest)
         AutoPtr<IBigInteger> bi;
         BigIntegerFactory::ValueOf(i, &bi);
         Integer iv;
-        INumber::Probe(bi)->IntegerValue(&iv);
+        INumber::Probe(bi)->IntegerValue(iv);
         EXPECT_EQ(i, iv);
     }
 }
@@ -125,7 +125,7 @@ TEST(BigIntegerTest, ConstructorIntegerIntegerIRandomTest)
         Boolean pp;
         b->IsProbablePrime(100, &pp);
         EXPECT_TRUE(pp);
-        INumber::Probe(b)->IntegerValue(&primes[i]);
+        INumber::Probe(b)->IntegerValue(primes[i]);
     }
     for (Integer i = 0; i < primes.GetLength(); ++i) {
         if (primes[i] == 2) {

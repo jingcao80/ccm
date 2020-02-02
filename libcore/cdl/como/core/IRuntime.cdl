@@ -29,7 +29,7 @@ interface IRuntime
         [in] IThread* hook);
 
     AvailableProcessors(
-        [out] Integer* ncpu);
+        [out] Integer& ncpu);
 
     Exit(
         [in] Integer status);

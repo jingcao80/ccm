@@ -71,7 +71,7 @@ public:
     ECode SubSequence(
         /* [in] */ Integer start,
         /* [in] */ Integer end,
-        /* [out] */ ICharSequence** subcsq) override final;
+        /* [out] */ AutoPtr<ICharSequence>& subcsq) override final;
 
     ECode IsDirect(
         /* [out] */ Boolean* direct) override;

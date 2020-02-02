@@ -152,7 +152,7 @@ Integer Arrays::BinarySearch0(
         IComparable* midVal = IComparable::Probe(a[mid]);
         CHECK(midVal != nullptr);
         Integer cmp;
-        midVal->CompareTo(key, &cmp);
+        midVal->CompareTo(key, cmp);
         if (cmp < 0) {
             low = mid + 1;
         }

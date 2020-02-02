@@ -1728,9 +1728,9 @@ AutoPtr<IThreadLocal> FloatingDecimal::GetThreadLocalBinaryToASCIIBuffer()
 
 AutoPtr<FloatingDecimal::BinaryToASCIIBuffer> FloatingDecimal::GetBinaryToASCIIBuffer()
 {
-    AutoPtr<IFloatingDecimalBinaryToASCIIConverter> buffer;
-    GetThreadLocalBinaryToASCIIBuffer()->Get((IInterface**)&buffer);
-    return (BinaryToASCIIBuffer*)buffer.Get();
+    AutoPtr<IInterface> buffer;
+    GetThreadLocalBinaryToASCIIBuffer()->Get(buffer);
+    return (BinaryToASCIIBuffer*)IFloatingDecimalBinaryToASCIIConverter::Probe(buffer);
 }
 
 AutoPtr<IFloatingDecimalBinaryToASCIIConverter> FloatingDecimal::GetBinaryToASCIIConverter(

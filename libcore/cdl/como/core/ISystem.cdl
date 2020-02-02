@@ -24,10 +24,10 @@ namespace core {
 interface ISystem
 {
     GetCurrentTimeMillis(
-        [out] Long* millis);
+        [out] Long& millis);
 
     GetNanoTime(
-        [out] Long* time);
+        [out] Long& time);
 }
 
 }

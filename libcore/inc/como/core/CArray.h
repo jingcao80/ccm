@@ -39,18 +39,18 @@ public:
         /* [in] */ Long size);
 
     ECode GetLength(
-        /* [out] */ Long* size) override;
+        /* [out] */ Long& size) override;
 
     ECode Get(
         /* [in] */ Long index,
-        /* [out] */ IInterface** element) override;
+        /* [out] */ AutoPtr<IInterface>& element) override;
 
     ECode Set(
         /* [in] */ Long index,
         /* [in] */ IInterface* element) override;
 
     ECode GetTypeId(
-        /* [out] */ InterfaceID* id) override;
+        /* [out] */ InterfaceID& id) override;
 
 private:
     Array<IInterface*> mElements;

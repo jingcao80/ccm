@@ -244,7 +244,7 @@ ECode CStringBuilder::Insert(
 
 ECode CStringBuilder::IndexOf(
     /* [in] */ const String& str,
-    /* [out] */ Integer* idx)
+    /* [out] */ Integer& idx)
 {
     return AbstractStringBuilder::IndexOf(str, idx);
 }
@@ -252,14 +252,14 @@ ECode CStringBuilder::IndexOf(
 ECode CStringBuilder::IndexOf(
     /* [in] */ const String& str,
     /* [in] */ Integer fromIndex,
-    /* [out] */ Integer* idx)
+    /* [out] */ Integer& idx)
 {
     return AbstractStringBuilder::IndexOf(str, fromIndex, idx);
 }
 
 ECode CStringBuilder::LastIndexOf(
     /* [in] */ const String& str,
-    /* [out] */ Integer* idx)
+    /* [out] */ Integer& idx)
 {
     return AbstractStringBuilder::LastIndexOf(str, idx);
 }
@@ -267,7 +267,7 @@ ECode CStringBuilder::LastIndexOf(
 ECode CStringBuilder::LastIndexOf(
     /* [in] */ const String& str,
     /* [in] */ Integer fromIndex,
-    /* [out] */ Integer* idx)
+    /* [out] */ Integer& idx)
 {
     return AbstractStringBuilder::LastIndexOf(str, fromIndex, idx);
 }
@@ -295,7 +295,7 @@ ECode CStringBuilder::EnsureCapacity(
 }
 
 ECode CStringBuilder::GetCapacity(
-    /* [out] */ Integer* capacity)
+    /* [out] */ Integer& capacity)
 {
     return AbstractStringBuilder::GetCapacity(capacity);
 }
@@ -324,7 +324,7 @@ ECode CStringBuilder::SetLength(
 
 ECode CStringBuilder::Substring(
     /* [in] */ Integer start,
-    /* [out] */ String* str)
+    /* [out] */ String& str)
 {
     return AbstractStringBuilder::Substring(start, str);
 }
@@ -332,7 +332,7 @@ ECode CStringBuilder::Substring(
 ECode CStringBuilder::Substring(
     /* [in] */ Integer start,
     /* [in] */ Integer end,
-    /* [out] */ String* str)
+    /* [out] */ String& str)
 {
     return AbstractStringBuilder::Substring(start, end, str);
 }
@@ -344,13 +344,13 @@ ECode CStringBuilder::TrimToSize()
 
 ECode CStringBuilder::GetCharAt(
     /* [in] */ Integer index,
-    /* [out] */ Char* c)
+    /* [out] */ Char& c)
 {
     return AbstractStringBuilder::GetCharAt(index, c);
 }
 
 ECode CStringBuilder::GetLength(
-    /* [out] */ Integer* number)
+    /* [out] */ Integer& number)
 {
     return AbstractStringBuilder::GetLength(number);
 }
@@ -358,7 +358,7 @@ ECode CStringBuilder::GetLength(
 ECode CStringBuilder::SubSequence(
     /* [in] */ Integer start,
     /* [in] */ Integer end,
-    /* [out] */ ICharSequence** subcsq)
+    /* [out] */ AutoPtr<ICharSequence>& subcsq)
 {
     return AbstractStringBuilder::SubSequence(start, end, subcsq);
 }

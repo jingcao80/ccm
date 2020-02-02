@@ -52,7 +52,7 @@ Integer HashMap::CompareComparables(
         return 0;
     }
     Integer result;
-    IComparable::Probe(k)->CompareTo(x, &result);
+    IComparable::Probe(k)->CompareTo(x, result);
     return result;
 }
 
@@ -129,7 +129,7 @@ void HashMap::PutMapEntries(
         AutoPtr<ISet> entries;
         m->GetEntrySet(&entries);
         AutoPtr<IIterator> it;
-        entries->GetIterator(&it);
+        entries->GetIterator(it);
         Boolean hasNext;
         while (it->HasNext(&hasNext), hasNext) {
             AutoPtr<IInterface> o;
@@ -739,12 +739,9 @@ ECode HashMap::KeySet::Clear()
 }
 
 ECode HashMap::KeySet::GetIterator(
-    /* [out] */ IIterator** it)
+    /* [out] */ AutoPtr<IIterator>& it)
 {
-    VALIDATE_NOT_NULL(it);
-
-    *it = new KeyIterator(mOwner);
-    REFCOUNT_ADD(*it);
+    it = new KeyIterator(mOwner);
     return NOERROR;
 }
 
@@ -784,12 +781,9 @@ ECode HashMap::Values::Clear()
 }
 
 ECode HashMap::Values::GetIterator(
-    /* [out] */ IIterator** it)
+    /* [out] */ AutoPtr<IIterator>& it)
 {
-    VALIDATE_NOT_NULL(it);
-
-    *it = new ValueIterator(mOwner);
-    REFCOUNT_ADD(*it);
+    it = new ValueIterator(mOwner);
     return NOERROR;
 }
 
@@ -817,12 +811,9 @@ ECode HashMap::EntrySet::Clear()
 }
 
 ECode HashMap::EntrySet::GetIterator(
-    /* [out] */ IIterator** it)
+    /* [out] */ AutoPtr<IIterator>& it)
 {
-    VALIDATE_NOT_NULL(it);
-
-    *it = new EntryIterator(mOwner);
-    REFCOUNT_ADD(*it);
+    it = new EntryIterator(mOwner);
     return NOERROR;
 }
 

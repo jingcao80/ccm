@@ -38,7 +38,7 @@ public:
     COMO_INTERFACE_DECL();
 
     ECode GetIterator(
-        /* [out] */ IIterator** it) override = 0;
+        /* [out] */ AutoPtr<IIterator>& it) override = 0;
 
     ECode IsEmpty(
         /* [out] */ Boolean* empty) override;

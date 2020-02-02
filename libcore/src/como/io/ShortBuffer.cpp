@@ -279,10 +279,8 @@ ECode ShortBuffer::Equals(
 
 ECode ShortBuffer::CompareTo(
     /* [in] */ IInterface* other,
-    /* [out] */ Integer* result)
+    /* [out] */ Integer& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     ShortBuffer* otherSB = (ShortBuffer*)IShortBuffer::Probe(other);
     if (otherSB == nullptr) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -302,11 +300,11 @@ ECode ShortBuffer::CompareTo(
         otherSB->Get(j, &others);
         Integer cmp = thiss - others;
         if (cmp != 0) {
-            *result = cmp;
+            result = cmp;
             return NOERROR;
         }
     }
-    *result = thisRemaining - otherRemaining;
+    result = thisRemaining - otherRemaining;
     return NOERROR;
 }
 

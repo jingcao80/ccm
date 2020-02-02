@@ -73,20 +73,16 @@ ECode TreeSet::Constructor(
 }
 
 ECode TreeSet::GetIterator(
-    /* [out] */ IIterator** it)
+    /* [out] */ AutoPtr<IIterator>& it)
 {
-    VALIDATE_NOT_NULL(it);
-
     AutoPtr<INavigableSet> s;
     mMap->NavigableKeySet(&s);
     return s->GetIterator(it);
 }
 
 ECode TreeSet::GetDescendingIterator(
-    /* [out] */ IIterator** it)
+    /* [out] */ AutoPtr<IIterator>& it)
 {
-    VALIDATE_NOT_NULL(it);
-
     AutoPtr<INavigableSet> s;
     mMap->DescendingKeySet(&s);
     return s->GetIterator(it);

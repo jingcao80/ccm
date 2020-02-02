@@ -180,15 +180,15 @@ ECode Pattern::Split(
             Integer startIndex;
             m->Start(&startIndex);
             AutoPtr<ICharSequence> match;
-            input->SubSequence(index, startIndex, &match);
+            input->SubSequence(index, startIndex, match);
             matchList->Add(match);
             m->End(&index);
         }
         else if (matchList->GetSize(&size), size == limit - 1) { // last one
             Integer len;
-            input->GetLength(&len);
+            input->GetLength(len);
             AutoPtr<ICharSequence> match;
-            input->SubSequence(index, len, &match);
+            input->SubSequence(index, len, match);
             matchList->Add(match);
             m->End(&index);
         }
@@ -206,9 +206,9 @@ ECode Pattern::Split(
     // Add remaining segment
     if (!matchLimited || (matchList->GetSize(&size), size < limit)) {
         Integer len;
-        input->GetLength(&len);
+        input->GetLength(len);
         AutoPtr<ICharSequence> match;
-        input->SubSequence(index, len, &match);
+        input->SubSequence(index, len, match);
         matchList->Add(match);
     }
 

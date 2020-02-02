@@ -643,17 +643,15 @@ Long Date::GetMillisOf(
 
 ECode Date::CompareTo(
     /* [in] */ IInterface* other,
-    /* [out] */ Integer* result)
+    /* [out] */ Integer& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     if (IDate::Probe(other) == nullptr) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     Long thisTime = GetMillisOf(this);
     Long anotherTime = GetMillisOf(IDate::Probe(other));
-    *result = (thisTime < anotherTime ? -1 : (thisTime == anotherTime ? 0 : 1));
+    result = (thisTime < anotherTime ? -1 : (thisTime == anotherTime ? 0 : 1));
     return NOERROR;
 }
 

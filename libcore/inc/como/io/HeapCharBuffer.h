@@ -102,7 +102,7 @@ public:
     ECode SubSequence(
         /* [in] */ Integer start,
         /* [in] */ Integer end,
-        /* [out] */ ICharSequence** subcsq) override;
+        /* [out] */ AutoPtr<ICharSequence>& subcsq) override;
 
     ECode GetOrder(
         /* [out] */ IByteOrder** bo) override;

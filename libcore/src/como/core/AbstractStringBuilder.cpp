@@ -43,20 +43,16 @@ ECode AbstractStringBuilder::Constructor(
 }
 
 ECode AbstractStringBuilder::GetLength(
-    /* [out] */ Integer* number)
+    /* [out] */ Integer& number)
 {
-    VALIDATE_NOT_NULL(number);
-
-    *number = mCount;
+    number = mCount;
     return NOERROR;
 }
 
 ECode AbstractStringBuilder::GetCapacity(
-    /* [out] */ Integer* capacity)
+    /* [out] */ Integer& capacity)
 {
-    VALIDATE_NOT_NULL(capacity);
-
-    *capacity = mCapacity;
+    capacity = mCapacity;
     return NOERROR;
 }
 
@@ -135,10 +131,8 @@ ECode AbstractStringBuilder::SetLength(
 
 ECode AbstractStringBuilder::GetCharAt(
     /* [in] */ Integer index,
-    /* [out] */ Char* c)
+    /* [out] */ Char& c)
 {
-    VALIDATE_NOT_NULL(c);
-
     if (index < 0 || index >= mCount) {
         return E_STRING_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
@@ -149,11 +143,11 @@ ECode AbstractStringBuilder::GetCharAt(
     while (*p && p < end) {
         Char unicode = GetCharInternal(p, &byteSize);
         if (byteSize == 0 || p + byteSize > end) {
-            *c = String::INVALID_CHAR;
+            c = String::INVALID_CHAR;
             return E_STRING_INDEX_OUT_OF_BOUNDS_EXCEPTION;
         }
         if (index == 0) {
-            *c = unicode;
+            c = unicode;
             break;
         }
         p += byteSize;
@@ -291,7 +285,7 @@ ECode AbstractStringBuilder::Append(
     }
 
     Integer len;
-    s->GetLength(&len);
+    s->GetLength(len);
     return Append(s, 0, len);
 }
 
@@ -317,7 +311,7 @@ ECode AbstractStringBuilder::Append(
         return AppendNull();
     }
     Integer len;
-    s->GetLength(&len);
+    s->GetLength(len);
     if (start < 0 || start > end || end > len) {
         Logger::E("AbstractStringBuilder", "start %d, end %d, length %d",
                 start, end, len);
@@ -534,7 +528,7 @@ ECode AbstractStringBuilder::Replace(
 
 ECode AbstractStringBuilder::Substring(
     /* [in] */ Integer start,
-    /* [out] */ String* str)
+    /* [out] */ String& str)
 {
     return Substring(start, mCount, str);
 }
@@ -542,20 +536,18 @@ ECode AbstractStringBuilder::Substring(
 ECode AbstractStringBuilder::SubSequence(
     /* [in] */ Integer start,
     /* [in] */ Integer end,
-    /* [out] */ ICharSequence** subcsq)
+    /* [out] */ AutoPtr<ICharSequence>& subcsq)
 {
     String str;
-    Substring(start, end, &str);
-    return CString::New(str, IID_ICharSequence, (IInterface**)subcsq);
+    Substring(start, end, str);
+    return CString::New(str, IID_ICharSequence, (IInterface**)&subcsq);
 }
 
 ECode AbstractStringBuilder::Substring(
     /* [in] */ Integer start,
     /* [in] */ Integer end,
-    /* [out] */ String* str)
+    /* [out] */ String& str)
 {
-    VALIDATE_NOT_NULL(str);
-
     if (start < 0 || end > mCount || start > end) {
         return E_STRING_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
@@ -578,7 +570,7 @@ ECode AbstractStringBuilder::Substring(
         p += byteSize;
         i++;
     }
-    *str = String(mValue + byteStart, byteEnd - byteStart);
+    str = String(mValue + byteStart, byteEnd - byteStart);
     return NOERROR;
 }
 
@@ -776,7 +768,7 @@ ECode AbstractStringBuilder::Insert(
 
 ECode AbstractStringBuilder::IndexOf(
     /* [in] */ const String& str,
-    /* [out] */ Integer* idx)
+    /* [out] */ Integer& idx)
 {
     return IndexOf(str, 0, idx);
 }
@@ -784,10 +776,8 @@ ECode AbstractStringBuilder::IndexOf(
 ECode AbstractStringBuilder::IndexOf(
     /* [in] */ const String& str,
     /* [in] */ Integer fromIndex,
-    /* [out] */ Integer* idx)
+    /* [out] */ Integer& idx)
 {
-    VALIDATE_NOT_NULL(idx);
-
     Integer i = 0;
     Integer byteSize;
     const char* p = mValue;
@@ -801,12 +791,12 @@ ECode AbstractStringBuilder::IndexOf(
         if (i >= fromIndex && psub == nullptr) {
             psub = strstr(p, str.string());
             if (psub == nullptr) {
-                *idx = -1;
+                idx = -1;
                 break;
             }
         }
         if (p == psub) {
-            *idx = i;
+            idx = i;
             break;
         }
         p += byteSize;
@@ -817,7 +807,7 @@ ECode AbstractStringBuilder::IndexOf(
 
 ECode AbstractStringBuilder::LastIndexOf(
     /* [in] */ const String& str,
-    /* [out] */ Integer* idx)
+    /* [out] */ Integer& idx)
 {
     return LastIndexOf(str, mCount, idx);
 }
@@ -825,11 +815,9 @@ ECode AbstractStringBuilder::LastIndexOf(
 ECode AbstractStringBuilder::LastIndexOf(
     /* [in] */ const String& str,
     /* [in] */ Integer fromIndex,
-    /* [out] */ Integer* idx)
+    /* [out] */ Integer& idx)
 {
-    VALIDATE_NOT_NULL(idx);
-
-    *idx = String(mValue, mByteCount).LastIndexOf(fromIndex);
+    idx = String(mValue, mByteCount).LastIndexOf(fromIndex);
     return NOERROR;
 }
 

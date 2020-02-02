@@ -108,7 +108,7 @@ public:
 
     ECode CompareTo(
         /* [in] */ IInterface* other,
-        /* [out] */ Integer* result) override;
+        /* [out] */ Integer& result) override;
 
     ECode GetHashCode(
         /* [out] */ Integer& hash) override;

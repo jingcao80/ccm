@@ -65,7 +65,7 @@ static Integer AcquireNCPU()
     AutoPtr<IRuntime> r;
     Runtime::GetRuntime(&r);
     Integer ncpu;
-    r->AvailableProcessors(&ncpu);
+    r->AvailableProcessors(ncpu);
     return ncpu;
 }
 
@@ -93,7 +93,7 @@ Integer ConcurrentHashMap::CompareComparables(
 {
     if (x == nullptr) return 0;
     Integer result;
-    IComparable::Probe(k)->CompareTo(x, &result);
+    IComparable::Probe(k)->CompareTo(x, result);
     return result;
 }
 
@@ -2497,12 +2497,11 @@ ECode ConcurrentHashMap::KeySetView::Remove(
 }
 
 ECode ConcurrentHashMap::KeySetView::GetIterator(
-    /* [out] */ IIterator** it)
+    /* [out] */ AutoPtr<IIterator>& it)
 {
     VOLATILE_GET(Array<Node*> t, mMap->mTable);
     Integer f = t.IsNull() ? 0 : t.GetLength();
-    *it = new KeyIterator(t, f, 0, f, mMap);
-    REFCOUNT_ADD(*it);
+    it = new KeyIterator(t, f, 0, f, mMap);
     return NOERROR;
 }
 
@@ -2653,14 +2652,11 @@ ECode ConcurrentHashMap::ValuesView::Remove(
 }
 
 ECode ConcurrentHashMap::ValuesView::GetIterator(
-    /* [out] */ IIterator** it)
+    /* [out] */ AutoPtr<IIterator>& it)
 {
-    VALIDATE_NOT_NULL(it);
-
     VOLATILE_GET(Array<Node*> t, mMap->mTable);
     Integer f =  t.IsNull() ? 0 : t.GetLength();
-    *it = new ValueIterator(t, f, 0, f, mMap);
-    REFCOUNT_ADD(*it);
+    it = new ValueIterator(t, f, 0, f, mMap);
     return NOERROR;
 }
 
@@ -2747,14 +2743,11 @@ ECode ConcurrentHashMap::EntrySetView::Remove(
 }
 
 ECode ConcurrentHashMap::EntrySetView::GetIterator(
-    /* [out] */ IIterator** it)
+    /* [out] */ AutoPtr<IIterator>& it)
 {
-    VALIDATE_NOT_NULL(it);
-
     VOLATILE_GET(Array<Node*> t, mMap->mTable);
     Integer f = t.IsNull() ? 0 : t.GetLength();
-    *it = new EntryIterator(t, f, 0, f, mMap);
-    REFCOUNT_ADD(*it);
+    it = new EntryIterator(t, f, 0, f, mMap);
     return NOERROR;
 }
 

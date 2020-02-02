@@ -39,7 +39,7 @@ public:
         /* [out] */ Triple* array) override;
 
     ECode GetArrayType(
-        /* [out] */ Integer* type) override;
+        /* [out] */ Integer& type) override;
 
 private:
     Triple mArray;

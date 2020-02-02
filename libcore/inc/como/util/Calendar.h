@@ -192,7 +192,7 @@ public:
 
     ECode CompareTo(
         /* [in] */ IInterface* another,
-        /* [out] */ Integer* result) override;
+        /* [out] */ Integer& result) override;
 
     ECode Roll(
         /* [in] */ Integer field,

@@ -617,12 +617,9 @@ ECode ConcurrentLinkedQueue::ToArray(
 }
 
 ECode ConcurrentLinkedQueue::GetIterator(
-    /* [out] */ IIterator** it)
+    /* [out] */ AutoPtr<IIterator>& it)
 {
-    VALIDATE_NOT_NULL(it);
-
-    *it = new Itr(this);
-    REFCOUNT_ADD(*it);
+    it = new Itr(this);
     return NOERROR;
 }
 

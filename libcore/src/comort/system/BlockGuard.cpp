@@ -57,7 +57,10 @@ ECode BlockGuard::GetThreadPolicy(
 {
     VALIDATE_NOT_NULL(policy);
 
-    return GetPolicyThreadLocal()->Get((IInterface**)policy);
+    AutoPtr<IInterface> object;
+    GetPolicyThreadLocal()->Get(object);
+    object.MoveTo(policy);
+    return NOERROR;
 }
 
 ECode BlockGuard::SetThreadPolicy(

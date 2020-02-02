@@ -48,13 +48,13 @@ interface IDeque
         [out] IInterface** e);
 
     GetDescendingIterator(
-        [out] IIterator** it);
+        [out] IIterator&& it);
 
     GetFirst(
         [out] IInterface** e);
 
     GetIterator(
-        [out] IIterator** it);
+        [out] IIterator&& it);
 
     GetLast(
         [out] IInterface** e);

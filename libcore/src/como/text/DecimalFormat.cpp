@@ -168,7 +168,7 @@ ECode DecimalFormat::Format(
         (IBigInteger::Probe(number) != nullptr &&
         (IBigInteger::Probe(number)->BitLength(&bitLen), bitLen < 64))) {
         Long lv;
-        INumber::Probe(number)->LongValue(&lv);
+        INumber::Probe(number)->LongValue(lv);
         return Format(lv, toAppendTo, pos);
     }
     else if (IBigDecimal::Probe(number) != nullptr) {
@@ -179,7 +179,7 @@ ECode DecimalFormat::Format(
     }
     else if (INumber::Probe(number)) {
         Double dv;
-        INumber::Probe(number)->DoubleValue(&dv);
+        INumber::Probe(number)->DoubleValue(dv);
         return Format(dv, toAppendTo, pos);
     }
     else {
@@ -238,7 +238,7 @@ ECode DecimalFormat::Format(
     Integer bitlen;
     if (number->BitLength(&bitlen), bitlen < 64) {
         Long lv;
-        INumber::Probe(number)->LongValue(&lv);
+        INumber::Probe(number)->LongValue(lv);
         FAIL_RETURN(ndf->FormatLong(lv, pos, &result));
     }
     else {
@@ -287,13 +287,13 @@ ECode DecimalFormat::Parse(
     if (IsParseBigDecimal(&isParseBigDecimal), isParseBigDecimal) {
         if (ILong::Probe(n) != nullptr) {
             Long lv;
-            n->LongValue(&lv);
+            n->LongValue(lv);
             return CBigDecimal::New(lv, IID_INumber, (IInterface**)number);
         }
         IDouble* db = IDouble::Probe(n);
         Boolean value;
-        if (db != nullptr && (db->IsInfinite(&value), !value) &&
-                (db->IsNaN(&value), !value)) {
+        if (db != nullptr && (db->IsInfinite(value), !value) &&
+                (db->IsNaN(value), !value)) {
             String str = Object::ToString(n);
             return CBigDecimal::New(str, IID_INumber, (IInterface**)number);
 
@@ -308,7 +308,7 @@ ECode DecimalFormat::Parse(
 
     if (IBigDecimal::Probe(n) != nullptr || IBigInteger::Probe(n) != nullptr) {
         Double dv;
-        n->DoubleValue(&dv);
+        n->DoubleValue(dv);
         return CDouble::New(dv, IID_INumber, (IInterface**)number);
     }
 

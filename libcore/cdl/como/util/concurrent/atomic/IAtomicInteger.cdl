@@ -31,7 +31,7 @@ interface IAtomicInteger
 {
     AddAndGet(
         [in] Integer delta,
-        [out] Integer* value);
+        [out] Integer& value);
 
     CompareAndSet(
         [in] Integer expect,
@@ -39,27 +39,27 @@ interface IAtomicInteger
         [out] Boolean* succeeded = nullptr);
 
     DecrementAndGet(
-        [out] Integer* value);
+        [out] Integer& value);
 
     Get(
-        [out] Integer* value);
+        [out] Integer& value);
 
     GetAndAdd(
         [in] Integer delta,
-        [out] Integer* prevValue);
+        [out] Integer& prevValue);
 
     GetAndDecrement(
-        [out] Integer* prevValue);
+        [out] Integer& prevValue);
 
     GetAndIncrement(
-        [out] Integer* prevValue);
+        [out] Integer& prevValue);
 
     GetAndSet(
         [in] Integer newValue,
-        [out] Integer* prevValue);
+        [out] Integer& prevValue);
 
     IncrementAndGet(
-        [out] Integer* value);
+        [out] Integer& value);
 
     LzaySet(
         [in] Integer value);

@@ -322,7 +322,7 @@ ECode Hashtable::PutAll(
     AutoPtr<ISet> entries;
     m->GetEntrySet(&entries);
     AutoPtr<IIterator> it;
-    entries->GetIterator(&it);
+    entries->GetIterator(it);
     Boolean hasNext;
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> obj;
@@ -383,7 +383,7 @@ ECode Hashtable::ToString(
     AutoPtr<ISet> entries;
     GetEntrySet(&entries);
     AutoPtr<IIterator> it;
-    entries->GetIterator(&it);
+    entries->GetIterator(it);
 
     sb->Append(U'{');
     for (Integer i = 0; ; i++) {
@@ -472,7 +472,7 @@ ECode Hashtable::Equals(
     AutoPtr<ISet> entries;
     GetEntrySet(&entries);
     AutoPtr<IIterator> it;
-    entries->GetIterator(&it);
+    entries->GetIterator(it);
     Boolean hasNext;
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> o;
@@ -575,17 +575,14 @@ ECode Hashtable::PutIfAbsent(
 //-------------------------------------------------------------------------
 
 ECode Hashtable::KeySet::GetIterator(
-    /* [out] */ IIterator** it)
+    /* [out] */ AutoPtr<IIterator>& it)
 {
-    VALIDATE_NOT_NULL(it);
-
     if (mOwner->mCount == 0) {
-        *it = Collections::GetEmptyIterator();
+        it = Collections::GetEmptyIterator();
     }
     else {
-        *it = new Enumerator(mOwner, KEYS, true);
+        it = new Enumerator(mOwner, KEYS, true);
     }
-    REFCOUNT_ADD(*it);
     return NOERROR;
 }
 
@@ -625,17 +622,14 @@ ECode Hashtable::KeySet::Clear()
 //-------------------------------------------------------------------------
 
 ECode Hashtable::EntrySet::GetIterator(
-    /* [out] */ IIterator** it)
+    /* [out] */ AutoPtr<IIterator>& it)
 {
-    VALIDATE_NOT_NULL(it);
-
     if (mOwner->mCount == 0) {
-        *it = Collections::GetEmptyIterator();
+        it = Collections::GetEmptyIterator();
     }
     else {
-        *it = new Enumerator(mOwner, ENTRIES, true);
+        it = new Enumerator(mOwner, ENTRIES, true);
     }
-    REFCOUNT_ADD(*it);
     return NOERROR;
 }
 
@@ -728,17 +722,14 @@ ECode Hashtable::EntrySet::Clear()
 //-------------------------------------------------------------------------
 
 ECode Hashtable::ValueCollection::GetIterator(
-    /* [out] */ IIterator** it)
+    /* [out] */ AutoPtr<IIterator>& it)
 {
-    VALIDATE_NOT_NULL(it);
-
     if (mOwner->mCount == 0) {
-        *it = Collections::GetEmptyIterator();
+        it = Collections::GetEmptyIterator();
     }
     else {
-        *it = new Enumerator(mOwner, VALUES, true);
+        it = new Enumerator(mOwner, VALUES, true);
     }
-    REFCOUNT_ADD(*it);
     return NOERROR;
 }
 

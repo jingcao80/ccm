@@ -81,7 +81,7 @@ Long Random::SeedUniquifier()
     // Different Sizes and Good Lattice Structure", 1999
     for (;;) {
         Long current;
-        GetSeedUniquifier()->Get(&current);
+        GetSeedUniquifier()->Get(current);
         Long next = current * 181783497276652981ll;
         Boolean succeeded;
         if (GetSeedUniquifier()->CompareAndSet(current, next, &succeeded), succeeded) {
@@ -112,7 +112,7 @@ Integer Random::Next(
     Long oldseed, nextseed;
     Boolean succeeded;
     do {
-        mSeed->Get(&oldseed);
+        mSeed->Get(oldseed);
         nextseed = (oldseed * sMultiplier + sAddend) & sMask;
     } while (mSeed->CompareAndSet(oldseed, nextseed, &succeeded), !succeeded);
     return (Integer)(((ULong)nextseed) >> (48 - bits));

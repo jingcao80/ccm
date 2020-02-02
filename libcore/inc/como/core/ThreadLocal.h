@@ -122,7 +122,7 @@ public:
     ECode Constructor();
 
     ECode Get(
-        /* [out] */ IInterface** value) override;
+        /* [out] */ AutoPtr<IInterface>& value) override;
 
     ECode Set(
         /* [in] */ IInterface* value) override;
@@ -146,7 +146,7 @@ private:
     static Integer GetNextHashCode();
 
     ECode SetInitialValue(
-        /* [out] */ IInterface** value);
+        /* [out] */ AutoPtr<IInterface>& value);
 
     static AutoPtr<IAtomicInteger> GetHashCodeGenerator();
 

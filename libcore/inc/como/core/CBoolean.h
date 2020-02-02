@@ -43,11 +43,11 @@ public:
         /* [in] */ Boolean value);
 
     ECode GetValue(
-        /* [out] */ Boolean* value) override;
+        /* [out] */ Boolean& value) override;
 
     ECode CompareTo(
         /* [in] */ IInterface* other,
-        /* [out] */ Integer* result) override;
+        /* [out] */ Integer& result) override;
 
     ECode Equals(
         /* [in] */ IInterface* other,

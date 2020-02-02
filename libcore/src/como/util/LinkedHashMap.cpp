@@ -344,12 +344,9 @@ ECode LinkedHashMap::LinkedKeySet::Clear()
 }
 
 ECode LinkedHashMap::LinkedKeySet::GetIterator(
-    /* [out] */ IIterator** it)
+    /* [out] */ AutoPtr<IIterator>& it)
 {
-    VALIDATE_NOT_NULL(it);
-
-    *it = new LinkedKeyIterator(mOwner);
-    REFCOUNT_ADD(*it);
+    it = new LinkedKeyIterator(mOwner);
     return NOERROR;
 }
 
@@ -387,12 +384,9 @@ ECode LinkedHashMap::LinkedValues::Clear()
 }
 
 ECode LinkedHashMap::LinkedValues::GetIterator(
-    /* [out] */ IIterator** it)
+    /* [out] */ AutoPtr<IIterator>& it)
 {
-    VALIDATE_NOT_NULL(it);
-
-    *it = new LinkedValueIterator(mOwner);
-    REFCOUNT_ADD(*it);
+    it = new LinkedValueIterator(mOwner);
     return NOERROR;
 }
 
@@ -420,12 +414,9 @@ ECode LinkedHashMap::LinkedEntrySet::Clear()
 }
 
 ECode LinkedHashMap::LinkedEntrySet::GetIterator(
-    /* [out] */ IIterator** it)
+    /* [out] */ AutoPtr<IIterator>& it)
 {
-    VALIDATE_NOT_NULL(it);
-
-    *it = new LinkedEntryIterator(mOwner);
-    REFCOUNT_ADD(*it);
+    it = new LinkedEntryIterator(mOwner);
     return NOERROR;
 }
 

@@ -331,10 +331,10 @@ ECode SimpleDateFormat::Compile(
             }
             else {
                 Integer len;
-                tmpBuffer->GetLength(&len);
+                tmpBuffer->GetLength(len);
                 if (len == 1) {
                     Char ch;
-                    tmpBuffer->GetCharAt(0, &ch);
+                    tmpBuffer->GetCharAt(0, ch);
                     if (ch < 128) {
                         compiledCode->Append((Char)(TAG_QUOTE_ASCII_CHAR << 8 | ch));
                     }
@@ -409,7 +409,7 @@ ECode SimpleDateFormat::Compile(
     }
 
     Integer len;
-    compiledCode->GetLength(&len);
+    compiledCode->GetLength(len);
     Array<Char> r(len);
     compiledCode->GetChars(0, len, r, 0);
     *compiledFormat = r;
@@ -534,7 +534,7 @@ ECode SimpleDateFormat::FormatToCharacterIterator(
     }
     else if (INumber::Probe(obj) != nullptr) {
         Long value;
-        INumber::Probe(obj)->LongValue(&value);
+        INumber::Probe(obj)->LongValue(value);
         AutoPtr<IDate> date;
         CDate::New(value, IID_IDate, (IInterface**)&date);
         FAIL_RETURN(Format(date, sb, delegate.Get()));
@@ -562,7 +562,7 @@ ECode SimpleDateFormat::SubFormat(
     Integer maxIntCount = IInteger::MAX_VALUE;
     String current;
     Integer beginOffset;
-    buffer->GetLength(&beginOffset);
+    buffer->GetLength(beginOffset);
 
     Integer field = PATTERN_INDEX_TO_CALENDAR_FIELD[patternCharIndex];
     Integer value;
@@ -834,7 +834,7 @@ ECode SimpleDateFormat::SubFormat(
             PATTERN_INDEX_TO_DATE_FORMAT_FIELD_ID[patternCharIndex]);
 
     Integer length;
-    buffer->GetLength(&length);
+    buffer->GetLength(length);
     return delegate->Formatted(fieldID, IFormatField::Probe(f), f, beginOffset, length, buffer);
 }
 
@@ -1487,7 +1487,7 @@ Integer SimpleDateFormat::SubParse(
                 }
             }
             else {
-                number->IntegerValue(&value);
+                number->IntegerValue(value);
 
                 if (useFollowingMinusSignAsDelimiter && (value < 0) &&
                         (((pos->GetIndex(&index), index < text.GetLength()) &&
@@ -1812,14 +1812,14 @@ Integer SimpleDateFormat::SubParse(
                         // Case 1: 11.78 seconds is 11 seconds and 780 (not 78) milliseconds.
                         // Case 2: 11.7890567 seconds is 11 seconds and 789 (not 7890567) milliseconds.
                         Double doubleValue;
-                        number->DoubleValue(&doubleValue);
+                        number->DoubleValue(doubleValue);
                         pos->GetIndex(&index);
                         Integer width = index - parseStart;
                         Double divisor = Math::Pow(10, width);
                         value = (Integer)((doubleValue / divisor) * 1000);
                     }
                     else {
-                        number->IntegerValue(&value);
+                        number->IntegerValue(value);
                     }
 
                     pos->GetIndex(&index);

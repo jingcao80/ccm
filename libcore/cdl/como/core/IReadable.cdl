@@ -27,7 +27,7 @@ interface IReadable
 {
     Read(
         [in] ICharBuffer* target,
-        [out] Integer* number);
+        [out] Integer& number);
 }
 
 }

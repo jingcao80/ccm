@@ -78,10 +78,8 @@ ECode HashSet::Constructor(
 }
 
 ECode HashSet::GetIterator(
-    /* [out] */ IIterator** it)
+    /* [out] */ AutoPtr<IIterator>& it)
 {
-    VALIDATE_NOT_NULL(it);
-
     AutoPtr<ISet> keys;
     mMap->GetKeySet(&keys);
     return keys->GetIterator(it);

@@ -58,7 +58,7 @@ interface IHashSet
         [out] Integer& hash);
 
     GetIterator(
-        [out] IIterator** it);
+        [out] IIterator&& it);
 
     GetSize(
         [out] Integer* size);

@@ -84,7 +84,7 @@ UnicodeLocaleExtension::UnicodeLocaleExtension(
         AutoPtr<IStringBuilder> sb;
         CStringBuilder::New(IID_IStringBuilder, (IInterface**)&sb);
         AutoPtr<IIterator> it;
-        mAttributes->GetIterator(&it);
+        mAttributes->GetIterator(it);
         Boolean hasNext;
         while (it->HasNext(&hasNext), hasNext) {
             AutoPtr<IInterface> attribute;
@@ -94,8 +94,7 @@ UnicodeLocaleExtension::UnicodeLocaleExtension(
         }
         AutoPtr<ISet> entries;
         mKeywords->GetEntrySet(&entries);
-        it = nullptr;
-        entries->GetIterator(&it);
+        entries->GetIterator(it);
         while (it->HasNext(&hasNext), hasNext) {
             AutoPtr<IInterface> keyword;
             it->Next(&keyword);
@@ -106,14 +105,14 @@ UnicodeLocaleExtension::UnicodeLocaleExtension(
             sb->Append(ILanguageTag::SEP);
             sb->Append(ICharSequence::Probe(key));
             Integer len;
-            if (ICharSequence::Probe(value)->GetLength(&len), len > 0) {
+            if (ICharSequence::Probe(value)->GetLength(len), len > 0) {
                 sb->Append(ILanguageTag::SEP);
                 sb->Append(ICharSequence::Probe(value));
             }
 
         }
         String str;
-        sb->Substring(1, &str);
+        sb->Substring(1, str);
         SetValue(str); // skip leading '-'
     }
 }

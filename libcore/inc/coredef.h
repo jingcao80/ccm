@@ -20,7 +20,7 @@
 #define FOR_EACH(Type, element, TypeCastFunc, container) \
     { \
         AutoPtr<IIterator> it; \
-        container->GetIterator(&it); \
+        container->GetIterator(it); \
         Boolean hasNext; \
         while (it->HasNext(&hasNext), hasNext) { \
             AutoPtr<IInterface> obj; \
@@ -30,7 +30,7 @@
 #define FOR_EACH_2(Type, element, TypeCastFuncInner, TypeCastFuncOuter, container) \
     { \
         AutoPtr<IIterator> it; \
-        container->GetIterator(&it); \
+        container->GetIterator(it); \
         Boolean hasNext; \
         while (it->HasNext(&hasNext), hasNext) { \
             AutoPtr<IInterface> obj; \

@@ -24,20 +24,16 @@ COMO_INTERFACE_IMPL_1(CSystem, Object, ISystem);
 COMO_OBJECT_IMPL(CSystem);
 
 ECode CSystem::GetCurrentTimeMillis(
-    /* [out] */ Long* millis)
+    /* [out] */ Long& millis)
 {
-    VALIDATE_NOT_NULL(millis);
-
-    *millis = System::GetCurrentTimeMillis();
+    millis = System::GetCurrentTimeMillis();
     return NOERROR;
 }
 
 ECode CSystem::GetNanoTime(
-    /* [out] */ Long* time)
+    /* [out] */ Long& time)
 {
-    VALIDATE_NOT_NULL(time);
-
-    *time = System::GetNanoTime();
+    time = System::GetNanoTime();
     return NOERROR;
 }
 

@@ -81,35 +81,35 @@ interface IDouble
     const Integer SIZE = 64;
 
     ByteValue(
-        [out] Byte* value);
+        [out] Byte& value);
 
     CompareTo(
         [in] IInterface* other,
-        [out] Integer* result);
+        [out] Integer& result);
 
     DoubleValue(
-        [out] Double* value);
+        [out] Double& value);
 
     FloatValue(
-        [out] Float* value);
+        [out] Float& value);
 
     GetValue(
-        [out] Double* value);
+        [out] Double& value);
 
     IntegerValue(
-        [out] Integer* value);
+        [out] Integer& value);
 
     IsInfinite(
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     IsNaN(
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     LongValue(
-        [out] Long* value);
+        [out] Long& value);
 
     ShortValue(
-        [out] Short* value);
+        [out] Short& value);
 }
 
 }

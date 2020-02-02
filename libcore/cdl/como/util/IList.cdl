@@ -70,7 +70,7 @@ interface IList
         [out] Integer& hash);
 
     GetIterator(
-        [out] IIterator** it);
+        [out] IIterator&& it);
 
     GetListIterator(
         [out] IListIterator** it);

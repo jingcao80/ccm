@@ -264,7 +264,7 @@ String LocaleExtensions::ToID(
         }
         else {
             Integer len;
-            if (buf->GetLength(&len), len > 0) {
+            if (buf->GetLength(len), len > 0) {
                 buf->Append(ILanguageTag::SEP);
             }
             buf->Append(extension);
@@ -272,7 +272,7 @@ String LocaleExtensions::ToID(
     } END_FOR_EACH()
     if (privuse != nullptr) {
         Integer len;
-        if (buf->GetLength(&len), len > 0) {
+        if (buf->GetLength(len), len > 0) {
             buf->Append(ILanguageTag::SEP);
         }
         buf->Append((IObject*)privuse.Get());

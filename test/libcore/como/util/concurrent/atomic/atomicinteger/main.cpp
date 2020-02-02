@@ -29,7 +29,7 @@ TEST(AtomicIntegerTest, AtomicIntegerGetTest)
     AutoPtr<IAtomicInteger> atomic;
     CAtomicInteger::New(46, IID_IAtomicInteger, (IInterface**)&atomic);
     Integer v;
-    atomic->Get(&v);
+    atomic->Get(v);
     EXPECT_EQ(46, v);
 }
 
@@ -38,10 +38,10 @@ TEST(AtomicIntegerTest, AtomicIntegerSetTest)
     AutoPtr<IAtomicInteger> atomic;
     CAtomicInteger::New(9, IID_IAtomicInteger, (IInterface**)&atomic);
     Integer v;
-    atomic->Get(&v);
+    atomic->Get(v);
     EXPECT_EQ(9, v);
     atomic->Set(46);
-    atomic->Get(&v);
+    atomic->Get(v);
     EXPECT_EQ(46, v);
 }
 
@@ -50,11 +50,11 @@ TEST(AtomicIntegerTest, AtomicIntegerCompareAndSetTest)
     AutoPtr<IAtomicInteger> atomic;
     CAtomicInteger::New(9, IID_IAtomicInteger, (IInterface**)&atomic);
     Integer v;
-    atomic->Get(&v);
+    atomic->Get(v);
     EXPECT_EQ(9, v);
     Boolean succeeded;
     atomic->CompareAndSet(9, 46, &succeeded);
-    atomic->Get(&v);
+    atomic->Get(v);
     EXPECT_EQ(46, v);
 }
 

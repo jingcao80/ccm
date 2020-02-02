@@ -149,7 +149,7 @@ outer:
         ByteBuffer::Wrap(data, offset, byteCount, &bb);
         AutoPtr<ICharBuffer> cb;
         cs->Decode(bb, &cb);
-        ICharSequence::Probe(cb)->GetLength(&length);
+        ICharSequence::Probe(cb)->GetLength(length);
         if (length > 0) {
             value = Array<Char>(length);
             AutoPtr<IArrayHolder> holder;

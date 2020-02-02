@@ -33,101 +33,81 @@ ECode CFloat::Constructor(
 }
 
 ECode CFloat::ByteValue(
-    /* [out] */ Byte* value)
+    /* [out] */ Byte& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = (Byte)mValue;
+    value = (Byte)mValue;
     return NOERROR;
 }
 
 ECode CFloat::ShortValue(
-    /* [out] */ Short* value)
+    /* [out] */ Short& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = mValue;
+    value = (Short)mValue;
     return NOERROR;
 }
 
 ECode CFloat::IntegerValue(
-    /* [out] */ Integer* value)
+    /* [out] */ Integer& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = (Integer)mValue;
+    value = (Integer)mValue;
     return NOERROR;
 }
 
 ECode CFloat::LongValue(
-    /* [out] */ Long* value)
+    /* [out] */ Long& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = (Long)mValue;
+    value = (Long)mValue;
     return NOERROR;
 }
 
 ECode CFloat::FloatValue(
-    /* [out] */ Float* value)
+    /* [out] */ Float& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = (Float)mValue;
+    value = mValue;
     return NOERROR;
 }
 
 ECode CFloat::DoubleValue(
-    /* [out] */ Double* value)
+    /* [out] */ Double& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = (Double)mValue;
+    value = (Double)mValue;
     return NOERROR;
 }
 
 ECode CFloat::GetValue(
-    /* [out] */ Float* value)
+    /* [out] */ Float& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = mValue;
+    value = mValue;
     return NOERROR;
 }
 
 ECode CFloat::IsInfinite(
-    /* [out] */ Boolean* infinite)
+    /* [out] */ Boolean& infinite)
 {
-    VALIDATE_NOT_NULL(infinite);
-
-    *infinite = (mValue == POSITIVE_INFINITY) || (mValue == NEGATIVE_INFINITY);
+    infinite = (mValue == POSITIVE_INFINITY) || (mValue == NEGATIVE_INFINITY);
     return NOERROR;
 }
 
 ECode CFloat::IsNaN(
-    /* [out] */ Boolean* nan)
+    /* [out] */ Boolean& nan)
 {
-    VALIDATE_NOT_NULL(nan);
-
-    *nan = mValue != mValue;
+    nan = mValue != mValue;
     return NOERROR;
 }
 
 ECode CFloat::CompareTo(
     /* [in] */ IInterface* other,
-    /* [out] */ Integer* result)
+    /* [out] */ Integer& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     IFloat* f = IFloat::Probe(other);
     if (f == nullptr) {
-        *result = -1;
+        result = -1;
         return NOERROR;
     }
 
     Float fv;
-    f->GetValue(&fv);
-    *result = mValue == fv ? 0 : (mValue > fv ? 1 : -1);
+    f->GetValue(fv);
+    result = mValue == fv ? 0 : (mValue > fv ? 1 : -1);
     return NOERROR;
 }
 
@@ -142,7 +122,7 @@ ECode CFloat::Equals(
     }
 
     Float fv;
-    f->GetValue(&fv);
+    f->GetValue(fv);
     result = mValue == fv;
     return NOERROR;
 }

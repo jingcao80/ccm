@@ -53,14 +53,14 @@ ECode CStringBuffer::Constructor(
 }
 
 ECode CStringBuffer::GetLength(
-    /* [out] */ Integer* number)
+    /* [out] */ Integer& number)
 {
     AutoLock lock(this);
     return AbstractStringBuilder::GetLength(number);
 }
 
 ECode CStringBuffer::GetCapacity(
-    /* [out] */ Integer* capacity)
+    /* [out] */ Integer& capacity)
 {
     AutoLock lock(this);
     return AbstractStringBuilder::GetCapacity(capacity);
@@ -88,7 +88,7 @@ ECode CStringBuffer::SetLength(
 
 ECode CStringBuffer::GetCharAt(
     /* [in] */ Integer index,
-    /* [out] */ Char* c)
+    /* [out] */ Char& c)
 {
     AutoLock lock(this);
     return AbstractStringBuilder::GetCharAt(index, c);
@@ -233,7 +233,7 @@ ECode CStringBuffer::Replace(
 
 ECode CStringBuffer::Substring(
     /* [in] */ Integer start,
-    /* [out] */ String* str)
+    /* [out] */ String& str)
 {
     AutoLock lock(this);
     return AbstractStringBuilder::Substring(start, str);
@@ -242,7 +242,7 @@ ECode CStringBuffer::Substring(
 ECode CStringBuffer::SubSequence(
     /* [in] */ Integer start,
     /* [in] */ Integer end,
-    /* [out] */ ICharSequence** subcsq)
+    /* [out] */ AutoPtr<ICharSequence>& subcsq)
 {
     AutoLock lock(this);
     return AbstractStringBuilder::SubSequence(start, end, subcsq);
@@ -251,7 +251,7 @@ ECode CStringBuffer::SubSequence(
 ECode CStringBuffer::Substring(
     /* [in] */ Integer start,
     /* [in] */ Integer end,
-    /* [out] */ String* str)
+    /* [out] */ String& str)
 {
     AutoLock lock(this);
     return AbstractStringBuilder::Substring(start, end, str);
@@ -359,7 +359,7 @@ ECode CStringBuffer::Insert(
 
 ECode CStringBuffer::IndexOf(
     /* [in] */ const String& str,
-    /* [out] */ Integer* idx)
+    /* [out] */ Integer& idx)
 {
     AutoLock lock(this);
     return AbstractStringBuilder::IndexOf(str, idx);
@@ -368,7 +368,7 @@ ECode CStringBuffer::IndexOf(
 ECode CStringBuffer::IndexOf(
     /* [in] */ const String& str,
     /* [in] */ Integer fromIndex,
-    /* [out] */ Integer* idx)
+    /* [out] */ Integer& idx)
 {
     AutoLock lock(this);
     return AbstractStringBuilder::IndexOf(str, fromIndex, idx);
@@ -376,7 +376,7 @@ ECode CStringBuffer::IndexOf(
 
 ECode CStringBuffer::LastIndexOf(
     /* [in] */ const String& str,
-    /* [out] */ Integer* idx)
+    /* [out] */ Integer& idx)
 {
     AutoLock lock(this);
     return AbstractStringBuilder::LastIndexOf(str, idx);
@@ -385,7 +385,7 @@ ECode CStringBuffer::LastIndexOf(
 ECode CStringBuffer::LastIndexOf(
     /* [in] */ const String& str,
     /* [in] */ Integer fromIndex,
-    /* [out] */ Integer* idx)
+    /* [out] */ Integer& idx)
 {
     AutoLock lock(this);
     return AbstractStringBuilder::LastIndexOf(str, fromIndex, idx);

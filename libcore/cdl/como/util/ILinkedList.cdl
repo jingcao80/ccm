@@ -72,7 +72,7 @@ interface ILinkedList
         [out] IInterface** e);
 
     GetIterator(
-        [out] IIterator** it);
+        [out] IIterator&& it);
 
     GetLast(
         [out] IInterface** e);

@@ -50,19 +50,19 @@ public:
         /* [in] */ const String& name);
 
     ECode GetName(
-        /* [out] */ String* name) override;
+        /* [out] */ String& name) override;
 
     ECode GetParent(
-        /* [out] */ IThreadGroup** parent) override;
+        /* [out] */ AutoPtr<IThreadGroup>& parent) override;
 
     ECode GetMaxPriority(
-        /* [out] */ Integer* priority) override;
+        /* [out] */ Integer& priority) override;
 
     ECode IsDaemon(
-        /* [out] */ Boolean* daemon) override;
+        /* [out] */ Boolean& daemon) override;
 
     ECode IsDestroyed(
-        /* [out] */ Boolean* destroyed) override;
+        /* [out] */ Boolean& destroyed) override;
 
     ECode SetDaemon(
         /* [in] */ Boolean daemon) override;
@@ -72,33 +72,33 @@ public:
 
     ECode ParentOf(
         /* [in] */ IThreadGroup* g,
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode CheckAccess() override;
 
     ECode ActiveCount(
-        /* [out] */ Integer* count) override;
+        /* [out] */ Integer& count) override;
 
     ECode Enumerate(
         /* [out] */ Array<IThread*>& list,
-        /* [out] */ Integer* count) override;
+        /* [out] */ Integer& count) override;
 
     ECode Enumerate(
         /* [out] */ Array<IThread*>& list,
         /* [in] */ Boolean recurse,
-        /* [out] */ Integer* count) override;
+        /* [out] */ Integer& count) override;
 
     ECode ActiveGroupCount(
-        /* [out] */ Integer* count) override;
+        /* [out] */ Integer& count) override;
 
     ECode Enumerate(
         /* [out] */ Array<IThreadGroup*>& list,
-        /* [out] */ Integer* count) override;
+        /* [out] */ Integer& count) override;
 
     ECode Enumerate(
         /* [out] */ Array<IThreadGroup*>& list,
         /* [in] */ Boolean recurse,
-        /* [out] */ Integer* count) override;
+        /* [out] */ Integer& count) override;
 
     ECode Stop() override;
 

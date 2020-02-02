@@ -187,7 +187,7 @@ AutoPtr<IZoneInfo> CreateZoneInfo(
     AutoPtr<ISystem> system;
     CSystem::New(IID_ISystem, (IInterface**)&system);
     Long millis;
-    system->GetCurrentTimeMillis(&millis);
+    system->GetCurrentTimeMillis(millis);
     return CreateZoneInfo(String("ZoneInfoTest"), transitions, types, millis);
 }
 
@@ -514,7 +514,7 @@ TEST(ZoneInfoTest, TestReadTimeZoneValid)
     AutoPtr<ISystem> system;
     CSystem::New(IID_ISystem, (IInterface**)&system);
     Long millis;
-    system->GetCurrentTimeMillis(&millis);
+    system->GetCurrentTimeMillis(millis);
     Array<Byte> bytes = builder->Build();
     AutoPtr<IZoneInfo> zoneInfo = CreateZoneInfo(String("ZoneInfoTest"),
             millis, bytes);
@@ -530,7 +530,7 @@ TEST(ZoneInfoTest, TestReadTimeZoneBadMagic)
     AutoPtr<ISystem> system;
     CSystem::New(IID_ISystem, (IInterface**)&system);
     Long millis;
-    system->GetCurrentTimeMillis(&millis);
+    system->GetCurrentTimeMillis(millis);
     Array<Byte> bytes = builder->Build();
     AutoPtr<IZoneInfo> zoneInfo = CreateZoneInfo(String("ZoneInfoTest"),
             millis, bytes);
@@ -546,7 +546,7 @@ TEST(ZoneInfoTest, TestReadTimeZoneTooManyTypes)
     AutoPtr<ISystem> system;
     CSystem::New(IID_ISystem, (IInterface**)&system);
     Long millis;
-    system->GetCurrentTimeMillis(&millis);
+    system->GetCurrentTimeMillis(millis);
     Array<Byte> bytes = builder->Build();
     AutoPtr<IZoneInfo> zoneInfo = CreateZoneInfo(String("ZoneInfoTest"),
             millis, bytes);
@@ -562,7 +562,7 @@ TEST(ZoneInfoTest, TestReadTimeZoneTooManyTransitions)
     AutoPtr<ISystem> system;
     CSystem::New(IID_ISystem, (IInterface**)&system);
     Long millis;
-    system->GetCurrentTimeMillis(&millis);
+    system->GetCurrentTimeMillis(millis);
     Array<Byte> bytes = builder->Build();
     AutoPtr<IZoneInfo> zoneInfo = CreateZoneInfo(String("ZoneInfoTest"),
             millis, bytes);
@@ -578,7 +578,7 @@ TEST(ZoneInfoTest, TestReadTimeZoneNegativeTypes)
     AutoPtr<ISystem> system;
     CSystem::New(IID_ISystem, (IInterface**)&system);
     Long millis;
-    system->GetCurrentTimeMillis(&millis);
+    system->GetCurrentTimeMillis(millis);
     Array<Byte> bytes = builder->Build();
     AutoPtr<IZoneInfo> zoneInfo = CreateZoneInfo(String("ZoneInfoTest"),
             millis, bytes);
@@ -594,7 +594,7 @@ TEST(ZoneInfoTest, TestReadTimeZoneNegativeTransitions)
     AutoPtr<ISystem> system;
     CSystem::New(IID_ISystem, (IInterface**)&system);
     Long millis;
-    system->GetCurrentTimeMillis(&millis);
+    system->GetCurrentTimeMillis(millis);
     Array<Byte> bytes = builder->Build();
     AutoPtr<IZoneInfo> zoneInfo = CreateZoneInfo(String("ZoneInfoTest"),
             millis, bytes);
@@ -615,7 +615,7 @@ TEST(ZoneInfoTest, TestReadTimeZoneTransitionsNotSorted)
     AutoPtr<ISystem> system;
     CSystem::New(IID_ISystem, (IInterface**)&system);
     Long millis;
-    system->GetCurrentTimeMillis(&millis);
+    system->GetCurrentTimeMillis(millis);
     Array<Byte> bytes = builder->Build();
     AutoPtr<IZoneInfo> zoneInfo = CreateZoneInfo(String("ZoneInfoTest"),
             millis, bytes);
@@ -636,7 +636,7 @@ TEST(ZoneInfoTest, TestReadTimeZoneInvalidTypeIndex)
     AutoPtr<ISystem> system;
     CSystem::New(IID_ISystem, (IInterface**)&system);
     Long millis;
-    system->GetCurrentTimeMillis(&millis);
+    system->GetCurrentTimeMillis(millis);
     Array<Byte> bytes = builder->Build();
     AutoPtr<IZoneInfo> zoneInfo = CreateZoneInfo(String("ZoneInfoTest"),
             millis, bytes);
@@ -657,7 +657,7 @@ TEST(ZoneInfoTest, TestReadTimeZoneInvalidIsDst)
     AutoPtr<ISystem> system;
     CSystem::New(IID_ISystem, (IInterface**)&system);
     Long millis;
-    system->GetCurrentTimeMillis(&millis);
+    system->GetCurrentTimeMillis(millis);
     Array<Byte> bytes = builder->Build();
     AutoPtr<IZoneInfo> zoneInfo = CreateZoneInfo(String("ZoneInfoTest"),
             millis, bytes);

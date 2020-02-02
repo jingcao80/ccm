@@ -27,22 +27,22 @@ namespace core {
 interface INumber
 {
     ByteValue(
-        [out] Byte* value);
+        [out] Byte& value);
 
     DoubleValue(
-        [out] Double* value);
+        [out] Double& value);
 
     FloatValue(
-        [out] Float* value);
+        [out] Float& value);
 
     IntegerValue(
-        [out] Integer* value);
+        [out] Integer& value);
 
     LongValue(
-        [out] Long* value);
+        [out] Long& value);
 
     ShortValue(
-        [out] Short* value);
+        [out] Short& value);
 }
 
 }

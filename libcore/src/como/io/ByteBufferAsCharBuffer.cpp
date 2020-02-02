@@ -261,10 +261,8 @@ ECode ByteBufferAsCharBuffer::ToString(
 ECode ByteBufferAsCharBuffer::SubSequence(
     /* [in] */ Integer start,
     /* [in] */ Integer end,
-    /* [out] */ ICharSequence** subcsq)
+    /* [out] */ AutoPtr<ICharSequence>& subcsq)
 {
-    VALIDATE_NOT_NULL(subcsq);
-
     Integer pos, lim;
     GetPosition(&pos);
     GetLimit(&lim);
@@ -273,6 +271,7 @@ ECode ByteBufferAsCharBuffer::SubSequence(
     Integer len = lim - pos;
 
     if ((start < 0) || (end > len) || (start > end)) {
+        subcsq = nullptr;
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
     Integer cap;
@@ -280,8 +279,7 @@ ECode ByteBufferAsCharBuffer::SubSequence(
     AutoPtr<ByteBufferAsCharBuffer> bb = new ByteBufferAsCharBuffer();
     FAIL_RETURN(bb->Constructor(
             mBB, -1, pos + start, pos + end, cap, mOffset, mOrder));
-    *subcsq = (ICharSequence*)bb.Get();
-    REFCOUNT_ADD(*subcsq);
+    subcsq = (ICharSequence*)bb.Get();
     return NOERROR;
 }
 

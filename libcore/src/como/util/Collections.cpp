@@ -200,10 +200,8 @@ ECode Collections::UnmodifiableCollection::ToString(
 }
 
 ECode Collections::UnmodifiableCollection::GetIterator(
-    /* [out] */ IIterator** it)
+    /* [out] */ AutoPtr<IIterator>& it)
 {
-    VALIDATE_NOT_NULL(it);
-
     class _Iterator
         : public LightRefBase
         , public IIterator
@@ -271,9 +269,8 @@ ECode Collections::UnmodifiableCollection::GetIterator(
     };
 
     AutoPtr<IIterator> i;
-    mC->GetIterator(&i);
-    *it = new _Iterator(i);
-    REFCOUNT_ADD(*it);
+    mC->GetIterator(i);
+    it = new _Iterator(i);
     return NOERROR;
 }
 
@@ -379,7 +376,7 @@ ECode Collections::UnmodifiableSet::ContainsAll(
 }
 
 ECode Collections::UnmodifiableSet::GetIterator(
-    /* [out] */ IIterator** it)
+    /* [out] */ AutoPtr<IIterator>& it)
 {
     return UnmodifiableCollection::GetIterator(it);
 }
@@ -679,7 +676,7 @@ ECode Collections::UnmodifiableList::ContainsAll(
 }
 
 ECode Collections::UnmodifiableList::GetIterator(
-    /* [out] */ IIterator** it)
+    /* [out] */ AutoPtr<IIterator>& it)
 {
     return UnmodifiableCollection::GetIterator(it);
 }
@@ -800,10 +797,8 @@ ECode Collections::SynchronizedCollection::ToArray(
 }
 
 ECode Collections::SynchronizedCollection::GetIterator(
-    /* [out] */ IIterator** it)
+    /* [out] */ AutoPtr<IIterator>& it)
 {
-    VALIDATE_NOT_NULL(it);
-
     return mC->GetIterator(it);
 }
 
@@ -943,7 +938,7 @@ ECode Collections::SynchronizedSet::ContainsAll(
 }
 
 ECode Collections::SynchronizedSet::GetIterator(
-    /* [out] */ IIterator** it)
+    /* [out] */ AutoPtr<IIterator>& it)
 {
     return SynchronizedCollection::GetIterator(it);
 }
@@ -1148,7 +1143,7 @@ ECode Collections::SynchronizedList::ContainsAll(
 }
 
 ECode Collections::SynchronizedList::GetIterator(
-    /* [out] */ IIterator** it)
+    /* [out] */ AutoPtr<IIterator>& it)
 {
     return SynchronizedCollection::GetIterator(it);
 }
@@ -1351,12 +1346,9 @@ AutoPtr<IListIterator> Collections::EmptyListIterator::Get_EMPTY_ITERATOR()
 COMO_INTERFACE_IMPL_1(Collections::EmptySet, AbstractSet, ISerializable);
 
 ECode Collections::EmptySet::GetIterator(
-    /* [out] */ IIterator** it)
+    /* [out] */ AutoPtr<IIterator>& it)
 {
-    VALIDATE_NOT_NULL(it);
-
-    AutoPtr<IIterator> iterator = GetEmptyIterator();
-    iterator.MoveTo(it);
+    it = GetEmptyIterator();
     return NOERROR;
 }
 
@@ -1421,12 +1413,9 @@ ECode Collections::EmptySet::ToArray(
 COMO_INTERFACE_IMPL_2(Collections::EmptyList, AbstractList, IRandomAccess, ISerializable);
 
 ECode Collections::EmptyList::GetIterator(
-    /* [out] */ IIterator** it)
+    /* [out] */ AutoPtr<IIterator>& it)
 {
-    VALIDATE_NOT_NULL(it);
-
-    *it = new EmptyIterator();
-    REFCOUNT_ADD(*it);
+    it = new EmptyIterator();
     return NOERROR;
 }
 
@@ -1645,7 +1634,7 @@ ECode Collections::ReverseComparator::Compare(
     /* [in] */ IInterface* c2,
     /* [out] */ Integer* cmp)
 {
-    return IComparable::Probe(c2)->CompareTo(c1, cmp);
+    return IComparable::Probe(c2)->CompareTo(c1, *cmp);
 }
 
 ECode Collections::ReverseComparator::Equals(

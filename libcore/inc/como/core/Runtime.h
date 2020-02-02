@@ -44,7 +44,7 @@ public:
         /* [in] */ IThread* hook) override;
 
     ECode AvailableProcessors(
-        /* [out] */ Integer* ncpu) override;
+        /* [out] */ Integer& ncpu) override;
 
 private:
     Runtime();

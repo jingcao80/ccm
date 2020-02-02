@@ -32,59 +32,51 @@ ECode CString::Constructor(
 }
 
 ECode CString::GetLength(
-    /* [out] */ Integer* number)
+    /* [out] */ Integer& number)
 {
-    VALIDATE_NOT_NULL(number);
-
-    *number = mString.GetLength();
+    number = mString.GetLength();
     return NOERROR;
 }
 
 ECode CString::GetCharAt(
     /* [in] */ Integer index,
-    /* [out] */ Char* c)
+    /* [out] */ Char& c)
 {
-    VALIDATE_NOT_NULL(c);
-
     if (index < 0 || index >= mString.GetLength()) {
         return E_STRING_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
-    *c = mString.GetChar(index);
+    c = mString.GetChar(index);
     return NOERROR;
 }
 
 ECode CString::SubSequence(
     /* [in] */ Integer start,
     /* [in] */ Integer end,
-    /* [out] */ ICharSequence** subcsq)
+    /* [out] */ AutoPtr<ICharSequence>& subcsq)
 {
-    VALIDATE_NOT_NULL(subcsq);
-
     if (start < 0 || start >= end || end > mString.GetLength()) {
-        *subcsq = nullptr;
+        subcsq = nullptr;
         return E_STRING_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
     String subStr = mString.Substring(start, end);
-    return CString::New(subStr, IID_ICharSequence, (IInterface**)subcsq);
+    return CString::New(subStr, IID_ICharSequence, (IInterface**)&subcsq);
 }
 
 ECode CString::CompareTo(
     /* [in] */ IInterface* other,
-    /* [out] */ Integer* result)
+    /* [out] */ Integer& result)
 {
-    VALIDATE_NOT_NULL(result)
-
     ICharSequence* o = ICharSequence::Probe(other);
     if (o == nullptr) {
-        *result = -1;
+        result = -1;
         return NOERROR;
     }
 
     String str;
     o->ToString(str);
-    *result = mString.Compare(str);
+    result = mString.Compare(str);
     return NOERROR;
 }
 

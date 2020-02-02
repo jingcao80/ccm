@@ -606,7 +606,7 @@ ECode Matcher::Reset(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     Integer len;
-    input->GetLength(&len);
+    input->GetLength(len);
     return Reset(input, 0, len);
 }
 
@@ -621,7 +621,7 @@ ECode Matcher::Reset(
     }
 
     Integer len;
-    input->GetLength(&len);
+    input->GetLength(len);
     if (start < 0 || end < 0 || start > len || end > len || start > end) {
         return como::core::E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }

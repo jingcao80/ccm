@@ -49,7 +49,7 @@ interface IArrayHolder
         [out] Triple* array);
 
     GetArrayType(
-        [out] Integer* type);
+        [out] Integer& type);
 }
 
 }

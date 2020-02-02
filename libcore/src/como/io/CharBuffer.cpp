@@ -101,14 +101,12 @@ ECode CharBuffer::Wrap(
 
 ECode CharBuffer::Read(
     /* [in] */ ICharBuffer* target,
-    /* [out] */ Integer* number)
+    /* [out] */ Integer& number)
 {
-    VALIDATE_NOT_NULL(number);
-
     Integer remaining;
     Remaining(&remaining);
     if (remaining == 0) {
-        *number = -1;
+        number = -1;
         return NOERROR;
     }
     Integer targetRemaining;
@@ -125,7 +123,7 @@ ECode CharBuffer::Read(
         target->Put(this);
     }
     SetLimit(limit);
-    *number = n;
+    number = n;
     return NOERROR;
 }
 
@@ -151,7 +149,7 @@ ECode CharBuffer::Wrap(
     VALIDATE_NOT_NULL(buffer);
 
     Integer number;
-    csq->GetLength(&number);
+    csq->GetLength(number);
     return Wrap(csq, 0, number, buffer);
 }
 
@@ -349,10 +347,8 @@ ECode CharBuffer::Equals(
 
 ECode CharBuffer::CompareTo(
     /* [in] */ IInterface* other,
-    /* [out] */ Integer* result)
+    /* [out] */ Integer& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     CharBuffer* otherCB = (CharBuffer*)ICharBuffer::Probe(other);
     if (otherCB == nullptr) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -372,11 +368,11 @@ ECode CharBuffer::CompareTo(
         otherCB->Get(j, &otherC);
         Integer cmp = thisC - otherC;
         if (cmp != 0) {
-            *result = cmp;
+            result = cmp;
             return NOERROR;
         }
     }
-    *result = thisRemaining - otherRemaining;
+    result = thisRemaining - otherRemaining;
     return NOERROR;
 }
 
@@ -390,21 +386,19 @@ ECode CharBuffer::ToString(
 }
 
 ECode CharBuffer::GetLength(
-    /* [out] */ Integer* number)
+    /* [out] */ Integer& number)
 {
-    return Remaining(number);
+    return Remaining(&number);
 }
 
 ECode CharBuffer::GetCharAt(
     /* [in] */ Integer index,
-    /* [out] */ Char* c)
+    /* [out] */ Char& c)
 {
-    VALIDATE_NOT_NULL(c);
-
     FAIL_RETURN(CheckIndex(index, 1));
     Integer pos;
     GetPosition(&pos);
-    return Get(pos + index, c);
+    return Get(pos + index, &c);
 }
 
 ECode CharBuffer::Append(
@@ -428,7 +422,7 @@ ECode CharBuffer::Append(
         CString::New(String("null"), IID_ICharSequence, (IInterface**)&cs);
     }
     AutoPtr<ICharSequence> subcsq;
-    cs->SubSequence(start, end, &subcsq);
+    cs->SubSequence(start, end, subcsq);
     return Put(CoreUtils::Unbox(subcsq));
 }
 

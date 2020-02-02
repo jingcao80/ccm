@@ -24,7 +24,7 @@ namespace core {
 interface IThreadLocal
 {
     Get(
-        [out] IInterface** value);
+        [out] IInterface&& value);
 
     Remove();
 

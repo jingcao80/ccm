@@ -59,7 +59,7 @@ public:
         /* [in] */ Boolean dummy);
 
     ECode GetIterator(
-        /* [out] */ IIterator** it) override;
+        /* [out] */ AutoPtr<IIterator>& it) override;
 
     ECode GetSize(
         /* [out] */ Integer* size) override;

@@ -248,7 +248,7 @@ public:
 
     ECode CompareTo(
         /* [in] */ IInterface* other,
-        /* [out] */ Integer* result) override;
+        /* [out] */ Integer& result) override;
 
     ECode Equals(
         /* [in] */ IInterface* obj,

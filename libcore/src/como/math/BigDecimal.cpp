@@ -945,8 +945,8 @@ ECode BigDecimal::DivideBigIntegers(
     Integer bitLength;
     if (scaledDivisor->BitLength(&bitLength), bitLength < 63) { // 63 in order to avoid out of long after *2
         Long rem, divisor;
-        INumber::Probe(remainder)->LongValue(&rem);
-        INumber::Probe(scaledDivisor)->LongValue(&divisor);
+        INumber::Probe(remainder)->LongValue(rem);
+        INumber::Probe(scaledDivisor)->LongValue(divisor);
         compRem = CompareForRounding(rem, divisor);
         // To look if there is a carry
         Boolean set;
@@ -958,7 +958,7 @@ ECode BigDecimal::DivideBigIntegers(
         AutoPtr<IBigInteger> bi1, bi2;
         remainder->Abs(&bi1);
         scaledDivisor->Abs(&bi2);
-        IComparable::Probe(CBigInteger::From(bi1)->ShiftLeftOneBit())->CompareTo(bi2, &compRem);
+        IComparable::Probe(CBigInteger::From(bi1)->ShiftLeftOneBit())->CompareTo(bi2, compRem);
         Boolean set;
         FAIL_RETURN(RoundingBehavior((quotient->TestBit(0, &set),
                 set ? 1 : 0), sign * (5 + compRem), roundingMode, &compRem));
@@ -966,7 +966,7 @@ ECode BigDecimal::DivideBigIntegers(
     if (compRem != 0) {
         if (quotient->BitLength(&bitLength), bitLength < 63) {
             Long quot;
-            INumber::Probe(quotient)->LongValue(&quot);
+            INumber::Probe(quotient)->LongValue(quot);
             return ValueOf(quot + compRem, scale, result);
         }
         AutoPtr<IBigInteger> bi1, bi2;
@@ -1141,7 +1141,7 @@ ECode BigDecimal::Divide(
     if (quotAndRem[1]->Signum(&sign), sign != 0) {
         // Checking if:   2 * remainder >= divisor ?
         IComparable::Probe(CBigInteger::From(quotAndRem[1])->ShiftLeftOneBit())->CompareTo(
-                divisorObj->GetUnscaledValue(), &compRem);
+                divisorObj->GetUnscaledValue(), compRem);
         // quot := quot * 10 + r;     with 'r' in {-6,-5,-4, 0,+4,+5,+6}
         AutoPtr<IBigInteger> bi1, bi2, bi3;
         integerQuot->Multiply(CBigInteger::GetTEN(), &bi1);
@@ -1867,10 +1867,8 @@ ECode BigDecimal::StripTrailingZeros(
 
 ECode BigDecimal::CompareTo(
     /* [in] */ IInterface* other,
-    /* [out] */ Integer* result)
+    /* [out] */ Integer& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     BigDecimal* otherObj = From(IBigDecimal::Probe(other));
     if (otherObj == nullptr) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -1882,16 +1880,17 @@ ECode BigDecimal::CompareTo(
 
     if (thisSign == otherSign) {
         if (mScale == otherObj->mScale && mBitLength < 64 && otherObj->mBitLength < 64) {
-            return (mSmallValue < otherObj->mSmallValue) ? -1 : (mSmallValue > otherObj->mSmallValue) ? 1 : 0;
+            result = (mSmallValue < otherObj->mSmallValue) ? -1 : (mSmallValue > otherObj->mSmallValue) ? 1 : 0;
+            return NOERROR;
         }
         Long diffScale = (Long)mScale - otherObj->mScale;
         Integer diffPrecision = ApproxPrecision() - otherObj->ApproxPrecision();
         if (diffPrecision > diffScale + 1) {
-            *result = thisSign;
+            result = thisSign;
             return NOERROR;
         }
         else if (diffPrecision < diffScale - 1) {
-            *result = -thisSign;
+            result = -thisSign;
             return NOERROR;
         }
         else {
@@ -1912,11 +1911,11 @@ ECode BigDecimal::CompareTo(
         }
     }
     else if (thisSign < otherSign) {
-        *result = -1;
+        result = -1;
         return NOERROR;
     }
     else {
-        *result = 1;
+        result = 1;
         return NOERROR;
     }
 }
@@ -1956,7 +1955,7 @@ ECode BigDecimal::Min(
     VALIDATE_NOT_NULL(result);
 
     Integer comp;
-    if (CompareTo(value, &comp), comp <= 0) {
+    if (CompareTo(value, comp), comp <= 0) {
         *result = this;
         REFCOUNT_ADD(*result);
         return NOERROR;
@@ -1975,7 +1974,7 @@ ECode BigDecimal::Max(
     VALIDATE_NOT_NULL(result);
 
     Integer comp;
-    if (CompareTo(value, &comp), comp >= 0) {
+    if (CompareTo(value, comp), comp >= 0) {
         *result = this;
         REFCOUNT_ADD(*result);
         return NOERROR;
@@ -2233,17 +2232,15 @@ ECode BigDecimal::ToBigIntegerExact(
 }
 
 ECode BigDecimal::LongValue(
-    /* [out] */ Long* value)
+    /* [out] */ Long& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     /*
      * If scale <= -64 there are at least 64 trailing bits zero in
      * 10^(-scale). If the scale is positive and very large the long value
      * could be zero.
      */
     if ((mScale <= -64) || (mScale > ApproxPrecision())) {
-        *value = 0;
+        value = 0;
         return NOERROR;
     }
     else {
@@ -2262,17 +2259,15 @@ ECode BigDecimal::LongValueExact(
 }
 
 ECode BigDecimal::IntegerValue(
-    /* [out] */ Integer* value)
+    /* [out] */ Integer& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     /*
      * If scale <= -32 there are at least 32 trailing bits zero in
      * 10^(-scale). If the scale is positive and very large the long value
      * could be zero.
      */
     if ((mScale <= -32) || (mScale > ApproxPrecision())) {
-        *value = 0;
+        value = 0;
         return NOERROR;
     }
     else {
@@ -2316,10 +2311,8 @@ ECode BigDecimal::ByteValueExact(
 }
 
 ECode BigDecimal::FloatValue(
-    /* [out] */ Float* value)
+    /* [out] */ Float& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     Integer sign;
     Signum(&sign);
     Float floatResult = sign;
@@ -2334,18 +2327,16 @@ ECode BigDecimal::FloatValue(
     }
     else {
         Double dv;
-        DoubleValue(&dv);
+        DoubleValue(dv);
         floatResult = (Float)dv;
     }
-    *value = floatResult;
+    value = floatResult;
     return NOERROR;
 }
 
 ECode BigDecimal::DoubleValue(
-    /* [out] */ Double* value)
+    /* [out] */ Double& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     Integer sign;
     Signum(&sign);
     Integer exponent = 1076; // bias + 53
@@ -2358,12 +2349,12 @@ ECode BigDecimal::DoubleValue(
 
     if ((powerOfTwo < -1074) || (sign == 0)) {
         // Cases which 'this' is very small
-        *value = sign * 0.0;
+        value = sign * 0.0;
         return NOERROR;
     }
     else if (powerOfTwo > 1025) {
         // Cases which 'this' is very large
-        *value = sign * IDouble::POSITIVE_INFINITY;
+        value = sign * IDouble::POSITIVE_INFINITY;
         return NOERROR;
     }
     GetUnscaledValue()->Abs(&mantissa);
@@ -2391,7 +2382,7 @@ ECode BigDecimal::DoubleValue(
         // Computing (mantissa * 2^k) / 10^s
         mantissa->DivideAndRemainder(powerOfTen, &quotAndRem);
         // To check if the fractional part >= 0.5
-        IComparable::Probe(CBigInteger::From(quotAndRem[1])->ShiftLeftOneBit())->CompareTo(powerOfTen, &compRem);
+        IComparable::Probe(CBigInteger::From(quotAndRem[1])->ShiftLeftOneBit())->CompareTo(powerOfTen, compRem);
         // To add two rounded bits at end of mantissa
         quotAndRem[0]->ShiftLeft(2, &bi1);
         CBigInteger::ValueOf((compRem * (compRem + 3)) / 2 + 1, &bi2);
@@ -2407,7 +2398,7 @@ ECode BigDecimal::DoubleValue(
         // mantissa = (abs(u) * 10^s) >> (n - 54)
         AutoPtr<IBigInteger> tempBI;
         mantissa->ShiftRight(discardedSize, &tempBI);
-        INumber::Probe(tempBI)->LongValue(&bits);
+        INumber::Probe(tempBI)->LongValue(bits);
         tempBits = bits;
         // #bits = 54, to check if the discarded fraction produces a carry
         if ((((bits & 1) == 1) && (lowestSetBit < discardedSize)) ||
@@ -2417,7 +2408,7 @@ ECode BigDecimal::DoubleValue(
     }
     else {
         // mantissa = (abs(u) * 10^s) << (54 - n)
-        INumber::Probe(mantissa)->LongValue(&bits);
+        INumber::Probe(mantissa)->LongValue(bits);
         bits = bits << -discardedSize;
         tempBits = bits;
         // #bits = 54, to check if the discarded fraction produces a carry:
@@ -2438,13 +2429,13 @@ ECode BigDecimal::DoubleValue(
     }
     // To test if the 53-bits number fits in 'double'
     if (exponent > 2046) {
-        *value = sign * IDouble::POSITIVE_INFINITY;
+        value = sign * IDouble::POSITIVE_INFINITY;
         return NOERROR;
     }
     else if (exponent <= 0) {
         // Denormalized numbers (having exponent == 0)
         if (exponent < -53) {
-            *value = sign * 0.0;
+            value = sign * 0.0;
             return NOERROR;
         }
         // -1076 <= exponent - bias <= -1023
@@ -2463,7 +2454,7 @@ ECode BigDecimal::DoubleValue(
     // Construct the 64 double bits: [sign(1), exponent(11), mantissa(52)]
     bits = (sign & 0x8000000000000000LL) | ((long)exponent << 52)
             | (bits & 0xFFFFFFFFFFFFFLL);
-    *value = Math::LongBitsToDouble(bits);
+    value = Math::LongBitsToDouble(bits);
     return NOERROR;
 }
 
@@ -2507,7 +2498,7 @@ ECode BigDecimal::InplaceRound(
         // To check if the discarded fraction >= 0.5
         AutoPtr<IBigInteger> tempBI, bi1;
         integerAndFraction[1]->Abs(&tempBI);
-        IComparable::Probe(CBigInteger::From(tempBI)->ShiftLeftOneBit())->CompareTo(sizeOfFraction, &compRem);
+        IComparable::Probe(CBigInteger::From(tempBI)->ShiftLeftOneBit())->CompareTo(sizeOfFraction, compRem);
         // To look if there is a carry
         Boolean set;
         RoundingMode rm;
@@ -2673,7 +2664,7 @@ ECode BigDecimal::ValueExact(
     bi->BitLength(&bitLength);
     if (bitLength < bitLengthOfType) {
         // It fits in the primitive type
-        return INumber::Probe(bi)->LongValue(value);
+        return INumber::Probe(bi)->LongValue(*value);
     }
     Logger::E("BigDecimal", "Rounding necessary");
     return E_ARITHMETIC_EXCEPTION;
@@ -2724,7 +2715,7 @@ void BigDecimal::SetUnscaledValue(
     mIntegerValue = unscaledValue;
     unscaledValue->BitLength(&mBitLength);
     if (mBitLength < 64) {
-        INumber::Probe(unscaledValue)->LongValue(&mSmallValue);
+        INumber::Probe(unscaledValue)->LongValue(mSmallValue);
     }
 }
 
@@ -2747,24 +2738,20 @@ Integer BigDecimal::BitLength(
 }
 
 ECode BigDecimal::ByteValue(
-    /* [out] */ Byte* value)
+    /* [out] */ Byte& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     Integer iv;
-    IntegerValue(&iv);
-    *value = (Byte)iv;
+    IntegerValue(iv);
+    value = (Byte)iv;
     return NOERROR;
 }
 
 ECode BigDecimal::ShortValue(
-    /* [out] */ Short* value)
+    /* [out] */ Short& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     Integer iv;
-    IntegerValue(&iv);
-    *value = (Short)iv;
+    IntegerValue(iv);
+    value = (Short)iv;
     return NOERROR;
 }
 

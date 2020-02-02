@@ -155,7 +155,7 @@ public:
         /* [out, callee] */ Array<IInterface*>* objs) override;
 
     ECode GetIterator(
-        /* [out] */ IIterator** it) override;
+        /* [out] */ AutoPtr<IIterator>& it) override;
 
     ECode Clear() override;
 

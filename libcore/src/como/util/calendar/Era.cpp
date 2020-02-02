@@ -169,7 +169,7 @@ ECode Era::ToString(
     sb->Append(Object::ToString(sinceDate));
     if (mLocalTime) {
         Integer length;
-        sb->GetLength(&length);
+        sb->GetLength(length);
         sb->SetLength(length - 1); // remove 'Z'
         sb->Append(String(" local time"));
     }

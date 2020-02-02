@@ -156,7 +156,7 @@ public:
         /* [out] */ Boolean* result = nullptr) override;
 
     ECode GetIterator(
-        /* [out] */ IIterator** it) override;
+        /* [out] */ AutoPtr<IIterator>& it) override;
 
     ECode GetListIterator(
         /* [out] */ IListIterator** it) override;

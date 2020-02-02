@@ -279,10 +279,8 @@ ECode IntegerBuffer::Equals(
 
 ECode IntegerBuffer::CompareTo(
     /* [in] */ IInterface* other,
-    /* [out] */ Integer* result)
+    /* [out] */ Integer& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     IntegerBuffer* otherIB = (IntegerBuffer*)IIntegerBuffer::Probe(other);
     if (otherIB == nullptr) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -302,11 +300,11 @@ ECode IntegerBuffer::CompareTo(
         otherIB->Get(j, &otheriv);
         Integer cmp = thisiv - otheriv;
         if (cmp != 0) {
-            *result = cmp;
+            result = cmp;
             return NOERROR;
         }
     }
-    *result = thisRemaining - otherRemaining;
+    result = thisRemaining - otherRemaining;
     return NOERROR;
 }
 

@@ -34,11 +34,11 @@ interface IAtomicBoolean
         [out] Boolean* succeeded = nullptr);
 
     Get(
-        [out] Boolean* value);
+        [out] Boolean& value);
 
     GetAndSet(
         [in] Boolean newValue,
-        [out] Boolean* prevValue);
+        [out] Boolean& prevValue);
 
     LzaySet(
         [in] Boolean value);

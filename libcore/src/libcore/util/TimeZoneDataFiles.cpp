@@ -66,7 +66,7 @@ String TimeZoneDataFiles::GenerateIcuDataPath()
     String systemIcuDataPath = GetEnvironmentPath(COMO_ROOT_ENV, String("/usr/icu"));
     if (!systemIcuDataPath.IsNull()) {
         Integer length;
-        if (icuDataPathBuilder->GetLength(&length), length > 0) {
+        if (icuDataPathBuilder->GetLength(length), length > 0) {
             icuDataPathBuilder->Append(String(":"));
         }
         icuDataPathBuilder->Append(systemIcuDataPath);

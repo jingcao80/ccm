@@ -65,7 +65,7 @@ private:
 
         ECode CompareTo(
             /* [in] */ IInterface* obj,
-            /* [out] */ Integer* result) override;
+            /* [out] */ Integer& result) override;
 
         ECode GetHashCode(
             /* [out] */ Integer& hash) override;

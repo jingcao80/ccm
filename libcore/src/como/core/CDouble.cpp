@@ -33,101 +33,81 @@ ECode CDouble::Constructor(
 }
 
 ECode CDouble::ByteValue(
-    /* [out] */ Byte* value)
+    /* [out] */ Byte& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = (Byte)mValue;
+    value = (Byte)mValue;
     return NOERROR;
 }
 
 ECode CDouble::ShortValue(
-    /* [out] */ Short* value)
+    /* [out] */ Short& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = mValue;
+    value = mValue;
     return NOERROR;
 }
 
 ECode CDouble::IntegerValue(
-    /* [out] */ Integer* value)
+    /* [out] */ Integer& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = (Integer)mValue;
+    value = (Integer)mValue;
     return NOERROR;
 }
 
 ECode CDouble::LongValue(
-    /* [out] */ Long* value)
+    /* [out] */ Long& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = (Long)mValue;
+    value = (Long)mValue;
     return NOERROR;
 }
 
 ECode CDouble::FloatValue(
-    /* [out] */ Float* value)
+    /* [out] */ Float& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = (Float)mValue;
+    value = (Float)mValue;
     return NOERROR;
 }
 
 ECode CDouble::DoubleValue(
-    /* [out] */ Double* value)
+    /* [out] */ Double& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = (Double)mValue;
+    value = mValue;
     return NOERROR;
 }
 
 ECode CDouble::GetValue(
-    /* [out] */ Double* value)
+    /* [out] */ Double& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = mValue;
+    value = mValue;
     return NOERROR;
 }
 
 ECode CDouble::IsInfinite(
-    /* [out] */ Boolean* infinite)
+    /* [out] */ Boolean& infinite)
 {
-    VALIDATE_NOT_NULL(infinite);
-
-    *infinite = (mValue == POSITIVE_INFINITY) || (mValue == NEGATIVE_INFINITY);
+    infinite = (mValue == POSITIVE_INFINITY) || (mValue == NEGATIVE_INFINITY);
     return NOERROR;
 }
 
 ECode CDouble::IsNaN(
-    /* [out] */ Boolean* nan)
+    /* [out] */ Boolean& nan)
 {
-    VALIDATE_NOT_NULL(nan);
-
-    *nan = mValue != mValue;
+    nan = mValue != mValue;
     return NOERROR;
 }
 
 ECode CDouble::CompareTo(
     /* [in] */ IInterface* other,
-    /* [out] */ Integer* result)
+    /* [out] */ Integer& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     IDouble* d = IDouble::Probe(other);
     if (d == nullptr) {
-        *result = -1;
+        result = -1;
         return NOERROR;
     }
 
     Double dv;
-    d->GetValue(&dv);
-    *result = mValue == dv ? 0 : (mValue > dv ? 1 : -1);
+    d->GetValue(dv);
+    result = mValue == dv ? 0 : (mValue > dv ? 1 : -1);
     return NOERROR;
 }
 
@@ -142,7 +122,7 @@ ECode CDouble::Equals(
     }
 
     Double dv;
-    d->GetValue(&dv);
+    d->GetValue(dv);
     result = mValue == dv;
     return NOERROR;
 }

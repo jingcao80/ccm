@@ -51,7 +51,7 @@ ECode AbstractSet::GetHashCode(
 {
     hash = 0;
     AutoPtr<IIterator> it;
-    GetIterator(&it);
+    GetIterator(it);
     Boolean hasNext;
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> obj;
@@ -72,7 +72,7 @@ ECode AbstractSet::RemoveAll(
     Integer othSize, thisSize;
     if (GetSize(&thisSize), c->GetSize(&othSize), thisSize > othSize) {
         AutoPtr<IIterator> it;
-        c->GetIterator(&it);
+        c->GetIterator(it);
         Boolean hasNext;
         while (it->HasNext(&hasNext), hasNext) {
             AutoPtr<IInterface> obj;
@@ -84,7 +84,7 @@ ECode AbstractSet::RemoveAll(
     }
     else {
         AutoPtr<IIterator> it;
-        GetIterator(&it);
+        GetIterator(it);
         Boolean hasNext;
         while (it->HasNext(&hasNext), hasNext) {
             AutoPtr<IInterface> obj;

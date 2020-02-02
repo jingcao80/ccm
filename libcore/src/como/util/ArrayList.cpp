@@ -899,14 +899,11 @@ ECode ArrayList::Sublist::AddAll(
 }
 
 ECode ArrayList::Sublist::GetIterator(
-    /* [out] */ IIterator** it)
+    /* [out] */ AutoPtr<IIterator>& it)
 {
-    VALIDATE_NOT_NULL(it);
-
     AutoPtr<IListIterator> lit;
     GetListIterator(&lit);
-    *it = IIterator::Probe(lit);
-    REFCOUNT_ADD(*it);
+    it = std::move(lit);
     return NOERROR;
 }
 

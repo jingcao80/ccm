@@ -257,7 +257,7 @@ ECode AttributedString::Constructor(
         AutoPtr<ISet> entrySet;
         attributes->GetEntrySet(&entrySet);
         AutoPtr<IIterator> it;
-        entrySet->GetIterator(&it);
+        entrySet->GetIterator(it);
         Boolean hasNext;
         while (it->HasNext(&hasNext), hasNext) {
             AutoPtr<IMapEntry> entry;
@@ -350,7 +350,7 @@ ECode AttributedString::Constructor(
     // scan from the top of the text so that we can discard any
     // Annotation that is no longer applied to a subset text segment.
     AutoPtr<IIterator> itr;
-    keys->GetIterator(&itr);
+    keys->GetIterator(itr);
     Boolean hasNext;
     while (itr->HasNext(&hasNext), hasNext) {
         AutoPtr<IAttributedCharacterIterator::IAttribute> attributeKey;
@@ -471,7 +471,7 @@ ECode AttributedString::AddAttributes(
     AutoPtr<ISet> entrySet;
     attributes->GetEntrySet(&entrySet);
     AutoPtr<IIterator> it;
-    entrySet->GetIterator(&it);
+    entrySet->GetIterator(it);
     Boolean hasNext;
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IMapEntry> entry;
@@ -733,7 +733,7 @@ Boolean AttributedString::AttributeValuesMatch(
     /* [in] */ Integer runIndex2)
 {
     AutoPtr<IIterator> it;
-    attributes->GetIterator(&it);
+    attributes->GetIterator(it);
     Boolean hasNext;
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IAttributedCharacterIterator::IAttribute> key;
@@ -785,7 +785,7 @@ void AttributedString::SetAttributes(
         AutoPtr<ISet> entrySet;
         attrs->GetEntrySet(&entrySet);
         AutoPtr<IIterator> it;
-        entrySet->GetIterator(&it);
+        entrySet->GetIterator(it);
 
         Boolean hasNext;
         while (it->HasNext(&hasNext), hasNext) {

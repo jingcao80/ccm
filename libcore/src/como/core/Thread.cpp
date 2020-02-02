@@ -152,15 +152,15 @@ ECode Thread::Init(
     GetCurrentThread(&parent);
     AutoPtr<IThreadGroup> gg = g;
     if (gg == nullptr) {
-        parent->GetThreadGroup(&gg);
+        parent->GetThreadGroup(gg);
     }
 
     gg->AddUnstarted();
     mGroup = gg;
 
     mTarget = target;
-    parent->GetPriority(&mPriority);
-    parent->IsDaemon(&mDaemon);
+    parent->GetPriority(mPriority);
+    parent->IsDaemon(mDaemon);
     SetName(name);
 
     Init2(parent);
@@ -173,7 +173,7 @@ ECode Thread::Init(
 void Thread::Init2(
     /* [in] */ IThread* parent)
 {
-    parent->GetContextClassLoader(&mContextClassLoader);
+    parent->GetContextClassLoader(mContextClassLoader);
 }
 
 ECode Thread::Constructor()
@@ -295,14 +295,13 @@ Boolean Thread::Interrupted()
 }
 
 ECode Thread::IsInterrupted(
-    /* [out] */ Boolean* interrupted)
+    /* [out] */ Boolean& interrupted)
 {
-    VALIDATE_NOT_NULL(interrupted);
-
     NativeThread* self = NativeThread::Current();
     NativeMutex::AutoLock lock(self, *Locks::sThreadListLock);
     NativeThread* thread =  NativeThread::FromManagedThread(this);
-    return (thread != nullptr) ? thread->IsInterrupted() : false;
+    interrupted = (thread != nullptr) ? thread->IsInterrupted() : false;
+    return NOERROR;
 }
 
 ECode Thread::Destroy()
@@ -311,12 +310,10 @@ ECode Thread::Destroy()
 }
 
 ECode Thread::IsAlive(
-    /* [out] */ Boolean* alive)
+    /* [out] */ Boolean& alive)
 {
-    VALIDATE_NOT_NULL(alive);
-
     VOLATILE_GET(HANDLE native, mNative);
-    *alive = native != 0;
+    alive = native != 0;
     return NOERROR;
 }
 
@@ -338,10 +335,10 @@ ECode Thread::SetPriority(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     AutoPtr<IThreadGroup> g;
-    GetThreadGroup(&g);
+    GetThreadGroup(g);
     if (g != nullptr) {
         Integer maxPriority;
-        g->GetMaxPriority(&maxPriority);
+        g->GetMaxPriority(maxPriority);
         if (newPriority > maxPriority) {
             newPriority = maxPriority;
         }
@@ -350,7 +347,7 @@ ECode Thread::SetPriority(
             AutoLock lock(this);
             mPriority = newPriority;
             Boolean alive;
-            if (IsAlive(&alive), alive) {
+            if (IsAlive(alive), alive) {
                 NativeSetPriority(newPriority);
             }
         }
@@ -359,11 +356,9 @@ ECode Thread::SetPriority(
 }
 
 ECode Thread::GetPriority(
-    /* [out] */ Integer* priority)
+    /* [out] */ Integer& priority)
 {
-    VALIDATE_NOT_NULL(priority);
-
-    *priority = mPriority;
+    priority = mPriority;
     return NOERROR;
 }
 
@@ -380,7 +375,7 @@ ECode Thread::SetName(
         AutoLock lock(this);
         VOLATILE_SET(mName, name);
         Boolean alive;
-        if (IsAlive(&alive), alive) {
+        if (IsAlive(alive), alive) {
             NativeSetName(mName);
         }
     }
@@ -389,62 +384,51 @@ ECode Thread::SetName(
 }
 
 ECode Thread::GetName(
-    /* [out] */ String* name)
+    /* [out] */ String& name)
 {
-    VALIDATE_NOT_NULL(name);
-
-    VOLATILE_GET(*name, mName);
+    VOLATILE_GET(name, mName);
     return NOERROR;
 }
 
 ECode Thread::GetThreadGroup(
-    /* [out] */ IThreadGroup** tg)
+    /* [out] */ AutoPtr<IThreadGroup>& tg)
 {
-    VALIDATE_NOT_NULL(tg);
-
     ThreadState ts;
-    if (GetState(&ts), ts == ThreadState::TERMINATED) {
-        *tg = nullptr;
+    if (GetState(ts), ts == ThreadState::TERMINATED) {
+        tg = nullptr;
         return NOERROR;
     }
-    *tg = mGroup;
-    REFCOUNT_ADD(*tg);
+    tg = mGroup;
     return NOERROR;
 }
 
 ECode Thread::ActiveCount(
-    /* [out] */ Integer* count)
+    /* [out] */ Integer& count)
 {
-    VALIDATE_NOT_NULL(count);
-
     AutoPtr<IThread> t;
     GetCurrentThread(&t);
     AutoPtr<IThreadGroup> g;
-    t->GetThreadGroup(&g);
+    t->GetThreadGroup(g);
     return g->ActiveCount(count);
 }
 
 ECode Thread::Enumerate(
     /* [out] */ Array<IThread*>& tarray,
-    /* [out] */ Integer* count)
+    /* [out] */ Integer& count)
 {
-    VALIDATE_NOT_NULL(count);
-
     AutoPtr<IThread> t;
     GetCurrentThread(&t);
     AutoPtr<IThreadGroup> g;
-    t->GetThreadGroup(&g);
+    t->GetThreadGroup(g);
     return g->Enumerate(tarray, count);
 }
 
 ECode Thread::CountStackFrames(
-    /* [out] */ Integer* frameNum)
+    /* [out] */ Integer& frameNum)
 {
-    VALIDATE_NOT_NULL(frameNum);
-
     Array<IStackTraceElement*> frames;
     GetStackTrace(&frames);
-    *frameNum = frames.GetLength();
+    frameNum = frames.GetLength();
     return NOERROR;
 }
 
@@ -462,13 +446,13 @@ ECode Thread::Join(
 
     if (millis == 0) {
         Boolean alive;
-        while (IsAlive(&alive), alive) {
+        while (IsAlive(alive), alive) {
             FAIL_RETURN(mLock.Wait(0));
         }
     }
     else {
         Boolean alive;
-        while (IsAlive(&alive), alive) {
+        while (IsAlive(alive), alive) {
             Long delay = millis - now;
             if (delay <= 0) {
                 break;
@@ -523,7 +507,7 @@ ECode Thread::SetDaemon(
 {
     FAIL_RETURN(CheckAccess());
     Boolean alive;
-    if (IsAlive(&alive), alive) {
+    if (IsAlive(alive), alive) {
         return E_ILLEGAL_THREAD_STATE_EXCEPTION;
     }
     mDaemon = on;
@@ -531,11 +515,9 @@ ECode Thread::SetDaemon(
 }
 
 ECode Thread::IsDaemon(
-    /* [out] */ Boolean* daemon)
+    /* [out] */ Boolean& daemon)
 {
-    VALIDATE_NOT_NULL(daemon);
-
-    *daemon = mDaemon;
+    daemon = mDaemon;
     return NOERROR;
 }
 
@@ -548,23 +530,23 @@ ECode Thread::ToString(
     /* [out] */ String& desc)
 {
     AutoPtr<IThreadGroup> g;
-    GetThreadGroup(&g);
+    GetThreadGroup(g);
     if (g != nullptr) {
         String name;
-        GetName(&name);
+        GetName(name);
         Integer prio;
-        GetPriority(&prio);
+        GetPriority(prio);
         String gName;
-        g->GetName(&gName);
+        g->GetName(gName);
         desc = String::Format("Thread[%s,%d,%s]",
                 name.string(), prio, gName.string());
         return NOERROR;
     }
     else {
         String name;
-        GetName(&name);
+        GetName(name);
         Integer prio;
-        GetPriority(&prio);
+        GetPriority(prio);
         desc = String::Format("Thread[%s,%d,]",
                 name.string(), prio);
         return NOERROR;
@@ -572,12 +554,9 @@ ECode Thread::ToString(
 }
 
 ECode Thread::GetContextClassLoader(
-    /* [out] */ IClassLoader** loader)
+    /* [out] */ AutoPtr<IClassLoader>& loader)
 {
-    VALIDATE_NOT_NULL(loader);
-
-    *loader = mContextClassLoader;
-    REFCOUNT_ADD(*loader);
+    loader = mContextClassLoader;
     return NOERROR;
 }
 
@@ -631,20 +610,16 @@ ECode Thread::GetStackTrace(
 }
 
 ECode Thread::GetId(
-    /* [out] */ Long* id)
+    /* [out] */ Long& id)
 {
-    VALIDATE_NOT_NULL(id);
-
-    *id = mTid;
+    id = mTid;
     return NOERROR;
 }
 
 ECode Thread::GetState(
-    /* [out] */ ThreadState* state)
+    /* [out] */ ThreadState& state)
 {
-    VALIDATE_NOT_NULL(state);
-
-    *state = NativeGetStatus(mStarted);
+    state = NativeGetStatus(mStarted);
     return NOERROR;
 }
 

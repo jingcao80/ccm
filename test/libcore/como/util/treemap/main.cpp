@@ -63,7 +63,7 @@ TEST(TreeMapTest, TestEntrySetSetValue)
     AutoPtr<ISet> entries;
     map->GetEntrySet(&entries);
     AutoPtr<IIterator> it;
-    entries->GetIterator(&it);
+    entries->GetIterator(it);
     AutoPtr<IMapEntry> entryA;
     it->Next((IInterface**)&entryA);
     AutoPtr<IInterface> prevValue;
@@ -113,7 +113,7 @@ TEST(TreeMapTest, TestSubMapEntrySetSetValue)
     AutoPtr<ISet> entries;
     IMap::Probe(subMap)->GetEntrySet(&entries);
     AutoPtr<IIterator> it;
-    entries->GetIterator(&it);
+    entries->GetIterator(it);
     AutoPtr<IMapEntry> entryA;
     it->Next((IInterface**)&entryA);
     AutoPtr<IInterface> prevValue;
@@ -224,7 +224,7 @@ TEST(TreeMapTest, TestConcurrentModificationDetection)
     AutoPtr<ISet> entries;
     map->GetEntrySet(&entries);
     AutoPtr<IIterator> it;
-    entries->GetIterator(&it);
+    entries->GetIterator(it);
     it->Next();
     it->Next();
     it->Remove();
@@ -244,7 +244,7 @@ TEST(TreeMapTest, TestIteratorRemoves)
     AutoPtr<ISet> entries;
     map->GetEntrySet(&entries);
     AutoPtr<IIterator> it;
-    entries->GetIterator(&it);
+    entries->GetIterator(it);
 
     AutoPtr<IMapEntry> entry;
     it->Next((IInterface**)&entry);

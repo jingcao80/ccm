@@ -113,7 +113,7 @@ Char CoreUtils::Unbox(
     /* [in] */ IChar* ch)
 {
     Char c;
-    ch->GetValue(&c);
+    ch->GetValue(c);
     return c;
 }
 
@@ -121,7 +121,7 @@ Boolean CoreUtils::Unbox(
     /* [in] */ IBoolean* bo)
 {
     Boolean b;
-    bo->GetValue(&b);
+    bo->GetValue(b);
     return b;
 }
 
@@ -129,7 +129,7 @@ Integer CoreUtils::Unbox(
     /* [in] */ IInteger* io)
 {
     Integer i;
-    io->GetValue(&i);
+    io->GetValue(i);
     return i;
 }
 
@@ -137,7 +137,7 @@ Long CoreUtils::Unbox(
     /* [in] */ ILong* lo)
 {
     Long l;
-    lo->GetValue(&l);
+    lo->GetValue(l);
     return l;
 }
 
@@ -145,7 +145,7 @@ Double CoreUtils::Unbox(
     /* [in] */ IDouble* dobj)
 {
     Double d;
-    dobj->GetValue(&d);
+    dobj->GetValue(d);
     return d;
 }
 
@@ -182,11 +182,11 @@ Array<IInterface*> CoreUtils::Unbox(
     }
 
     Long size;
-    arrObj->GetLength(&size);
+    arrObj->GetLength(size);
     Array<IInterface*> objArray(size);
     for (Long i = 0; i < size; i++) {
         AutoPtr<IInterface> obj;
-        arrObj->Get(i, &obj);
+        arrObj->Get(i, obj);
         objArray.Set(i, obj);
     }
     return objArray;

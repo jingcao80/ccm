@@ -43,11 +43,11 @@ public:
         /* [in] */ Char value);
 
     ECode GetValue(
-        /* [out] */ Char* value) override;
+        /* [out] */ Char& value) override;
 
     ECode CompareTo(
         /* [in] */ IInterface* other,
-        /* [out] */ Integer* result) override;
+        /* [out] */ Integer& result) override;
 
     ECode Equals(
         /* [in] */ IInterface* other,

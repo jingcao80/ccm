@@ -44,7 +44,7 @@ public:
     ECode Constructor();
 
     ECode Get(
-        /* [out] */ Boolean* value) override final;
+        /* [out] */ Boolean& value) override final;
 
     ECode CompareAndSet(
         /* [in] */ Boolean expect,
@@ -64,7 +64,7 @@ public:
 
     ECode GetAndSet(
         /* [in] */ Boolean newValue,
-        /* [out] */ Boolean* prevValue) override final;
+        /* [out] */ Boolean& prevValue) override final;
 
     ECode ToString(
         /* [out] */ String& desc) override;

@@ -286,10 +286,8 @@ Boolean DoubleBuffer::Equals(
 
 ECode DoubleBuffer::CompareTo(
     /* [in] */ IInterface* other,
-    /* [out] */ Integer* result)
+    /* [out] */ Integer& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     DoubleBuffer* otherIB = (DoubleBuffer*)IDoubleBuffer::Probe(other);
     if (otherIB == nullptr) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -309,11 +307,11 @@ ECode DoubleBuffer::CompareTo(
         otherIB->Get(j, &otherd);
         Integer cmp = Math::Compare(thisd, otherd);
         if (cmp != 0) {
-            *result = cmp;
+            result = cmp;
             return NOERROR;
         }
     }
-    *result = thisRemaining - otherRemaining;
+    result = thisRemaining - otherRemaining;
     return NOERROR;
 }
 

@@ -78,9 +78,9 @@ ECode FormattedFloatingDecimal::ValueOf(
 
 Array<Char>& FormattedFloatingDecimal::GetBuffer()
 {
-    AutoPtr<IObject> object;
-    GetThreadLocalCharBuffer()->Get((IInterface**)&object);
-    return ((Wrapper*)object.Get())->mBuffer;
+    AutoPtr<IInterface> object;
+    GetThreadLocalCharBuffer()->Get(object);
+    return ((Wrapper*)IObject::Probe(object))->mBuffer;
 }
 
 ECode FormattedFloatingDecimal::Constructor(

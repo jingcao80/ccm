@@ -41,11 +41,9 @@ ECode AtomicLong::Constructor()
 }
 
 ECode AtomicLong::Get(
-    /* [out] */ Long* value)
+    /* [out] */ Long& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = mValue.LoadAcquire();
+    value = mValue.LoadAcquire();
     return NOERROR;
 }
 
@@ -65,15 +63,13 @@ ECode AtomicLong::LzaySet(
 
 ECode AtomicLong::GetAndSet(
     /* [in] */ Long newValue,
-    /* [out] */ Long* prevValue)
+    /* [out] */ Long& prevValue)
 {
-    VALIDATE_NOT_NULL(prevValue);
-
     Long v;
     do {
         v = mValue.LoadSequentiallyConsistent();
     } while (!mValue.CompareExchangeStrongSequentiallyConsistent(v, newValue));
-    *prevValue = v;
+    prevValue = v;
     return NOERROR;
 }
 
@@ -104,82 +100,70 @@ ECode AtomicLong::WeakCompareAndSet(
 }
 
 ECode AtomicLong::GetAndIncrement(
-    /* [out] */ Long* prevValue)
+    /* [out] */ Long& prevValue)
 {
-    VALIDATE_NOT_NULL(prevValue);
-
     Long v;
     do {
         v = mValue.LoadSequentiallyConsistent();
     } while (!mValue.CompareExchangeStrongSequentiallyConsistent(v, v + 1));
-    *prevValue = v;
+    prevValue = v;
     return NOERROR;
 }
 
 ECode AtomicLong::GetAndDecrement(
-    /* [out] */ Long* prevValue)
+    /* [out] */ Long& prevValue)
 {
-    VALIDATE_NOT_NULL(prevValue);
-
     Long v;
     do {
         v = mValue.LoadSequentiallyConsistent();
     } while (!mValue.CompareExchangeStrongSequentiallyConsistent(v, v - 1));
-    *prevValue = v;
+    prevValue = v;
     return NOERROR;
 }
 
 ECode AtomicLong::GetAndAdd(
     /* [in] */ Long delta,
-    /* [out] */ Long* prevValue)
+    /* [out] */ Long& prevValue)
 {
-    VALIDATE_NOT_NULL(prevValue);
-
     Long v;
     do {
         v = mValue.LoadSequentiallyConsistent();
     } while (!mValue.CompareExchangeStrongSequentiallyConsistent(v, v + delta));
-    *prevValue = v;
+    prevValue = v;
     return NOERROR;
 }
 
 ECode AtomicLong::IncrementAndGet(
-    /* [out] */ Long* value)
+    /* [out] */ Long& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     Long v;
     do {
         v = mValue.LoadSequentiallyConsistent();
     } while (!mValue.CompareExchangeStrongSequentiallyConsistent(v, v + 1));
-    *value = v + 1;
+    value = v + 1;
     return NOERROR;
 }
 
 ECode AtomicLong::DecrementAndGet(
-    /* [out] */ Long* value)
+    /* [out] */ Long& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     Long v;
     do {
         v = mValue.LoadSequentiallyConsistent();
     } while (!mValue.CompareExchangeStrongSequentiallyConsistent(v, v - 1));
-    *value = v - 1;
+    value = v - 1;
     return NOERROR;
 }
 
 ECode AtomicLong::AddAndGet(
     /* [in] */ Long delta,
-    /* [out] */ Long* value)
+    /* [out] */ Long& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     Long v;
     do {
         v = mValue.LoadSequentiallyConsistent();
     } while (!mValue.CompareExchangeStrongSequentiallyConsistent(v, v + delta));
-    *value = v + delta;
+    value = v + delta;
     return NOERROR;
 }
 
@@ -191,63 +175,53 @@ ECode AtomicLong::ToString(
 }
 
 ECode AtomicLong::IntegerValue(
-    /* [out] */ Integer* value)
+    /* [out] */ Integer& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     Long v;
-    Get(&v);
-    *value = (Integer)v;
+    Get(v);
+    value = (Integer)v;
     return NOERROR;
 }
 
 ECode AtomicLong::LongValue(
-    /* [out] */ Long* value)
+    /* [out] */ Long& value)
 {
     return Get(value);
 }
 
 ECode AtomicLong::FloatValue(
-    /* [out] */ Float* value)
+    /* [out] */ Float& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     Long v;
-    Get(&v);
-    *value = (Float)v;
+    Get(v);
+    value = (Float)v;
     return NOERROR;
 }
 
 ECode AtomicLong::DoubleValue(
-    /* [out] */ Double* value)
+    /* [out] */ Double& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     Long v;
-    Get(&v);
-    *value = (Double)v;
+    Get(v);
+    value = (Double)v;
     return NOERROR;
 }
 
 ECode AtomicLong::ByteValue(
-    /* [out] */ Byte* value)
+    /* [out] */ Byte& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     Long v;
-    Get(&v);
-    *value = (Byte)v;
+    Get(v);
+    value = (Byte)v;
     return NOERROR;
 }
 
 ECode AtomicLong::ShortValue(
-    /* [out] */ Short* value)
+    /* [out] */ Short& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     Long v;
-    Get(&v);
-    *value = (Short)v;
+    Get(v);
+    value = (Short)v;
     return NOERROR;
 }
 

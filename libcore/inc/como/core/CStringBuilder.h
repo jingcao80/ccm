@@ -158,21 +158,21 @@ public:
 
     ECode IndexOf(
         /* [in] */ const String& str,
-        /* [out] */ Integer* idx) override;
+        /* [out] */ Integer& idx) override;
 
     ECode IndexOf(
         /* [in] */ const String& str,
         /* [in] */ Integer fromIndex,
-        /* [out] */ Integer* idx) override;
+        /* [out] */ Integer& idx) override;
 
     ECode LastIndexOf(
         /* [in] */ const String& str,
-        /* [out] */ Integer* idx) override;
+        /* [out] */ Integer& idx) override;
 
     ECode LastIndexOf(
         /* [in] */ const String& str,
         /* [in] */ Integer fromIndex,
-        /* [out] */ Integer* idx) override;
+        /* [out] */ Integer& idx) override;
 
     ECode Reverse() override;
 
@@ -183,7 +183,7 @@ public:
         /* [in] */ Integer minimumCapacity) override;
 
     ECode GetCapacity(
-        /* [out] */ Integer* capacity) override;
+        /* [out] */ Integer& capacity) override;
 
     ECode GetChars(
         /* [in] */ Integer start,
@@ -200,26 +200,26 @@ public:
 
     ECode Substring(
         /* [in] */ Integer start,
-        /* [out] */ String* str) override;
+        /* [out] */ String& str) override;
 
     ECode Substring(
         /* [in] */ Integer start,
         /* [in] */ Integer end,
-        /* [out] */ String* str) override;
+        /* [out] */ String& str) override;
 
     ECode TrimToSize() override;
 
     ECode GetCharAt(
         /* [in] */ Integer index,
-        /* [out] */ Char* c) override;
+        /* [out] */ Char& c) override;
 
     ECode GetLength(
-        /* [out] */ Integer* number) override;
+        /* [out] */ Integer& number) override;
 
     ECode SubSequence(
         /* [in] */ Integer start,
         /* [in] */ Integer end,
-        /* [out] */ ICharSequence** subcsq) override;
+        /* [out] */ AutoPtr<ICharSequence>& subcsq) override;
 };
 
 }

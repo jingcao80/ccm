@@ -47,7 +47,7 @@ public:
     ECode Constructor();
 
     ECode Get(
-        /* [out] */ Integer* value) override;
+        /* [out] */ Integer& value) override;
 
     ECode Set(
         /* [in] */ Integer value) override;
@@ -57,7 +57,7 @@ public:
 
     ECode GetAndSet(
         /* [in] */ Integer newValue,
-        /* [out] */ Integer* prevValue) override;
+        /* [out] */ Integer& prevValue) override;
 
     ECode CompareAndSet(
         /* [in] */ Integer expect,
@@ -70,45 +70,45 @@ public:
         /* [out] */ Boolean* succeeded = nullptr) override;
 
     ECode GetAndIncrement(
-        /* [out] */ Integer* prevValue) override;
+        /* [out] */ Integer& prevValue) override;
 
     ECode GetAndDecrement(
-        /* [out] */ Integer* prevValue) override;
+        /* [out] */ Integer& prevValue) override;
 
     ECode GetAndAdd(
         /* [in] */ Integer delta,
-        /* [out] */ Integer* prevValue) override;
+        /* [out] */ Integer& prevValue) override;
 
     ECode IncrementAndGet(
-        /* [out] */ Integer* value) override;
+        /* [out] */ Integer& value) override;
 
     ECode DecrementAndGet(
-        /* [out] */ Integer* value) override;
+        /* [out] */ Integer& value) override;
 
     ECode AddAndGet(
         /* [in] */ Integer delta,
-        /* [out] */ Integer* value) override;
+        /* [out] */ Integer& value) override;
 
     ECode ToString(
         /* [out] */ String& desc) override;
 
     ECode IntegerValue(
-        /* [out] */ Integer* value) override;
+        /* [out] */ Integer& value) override;
 
     ECode LongValue(
-        /* [out] */ Long* value) override;
+        /* [out] */ Long& value) override;
 
     ECode FloatValue(
-        /* [out] */ Float* value) override;
+        /* [out] */ Float& value) override;
 
     ECode DoubleValue(
-        /* [out] */ Double* value) override;
+        /* [out] */ Double& value) override;
 
     ECode ByteValue(
-        /* [out] */ Byte* value) override;
+        /* [out] */ Byte& value) override;
 
     ECode ShortValue(
-        /* [out] */ Short* value) override;
+        /* [out] */ Short& value) override;
 
 private:
     como::core::AtomicInteger mValue;

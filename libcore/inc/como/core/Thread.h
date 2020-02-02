@@ -90,12 +90,12 @@ public:
     static Boolean Interrupted();
 
     ECode IsInterrupted(
-        /* [out] */ Boolean* interrupted) override;
+        /* [out] */ Boolean& interrupted) override;
 
     ECode Destroy() override;
 
     ECode IsAlive(
-        /* [out] */ Boolean* alive) override;
+        /* [out] */ Boolean& alive) override;
 
     ECode Suspend() override;
 
@@ -105,26 +105,26 @@ public:
         /* [in] */ Integer newPriority) override;
 
     ECode GetPriority(
-        /* [out] */ Integer* priority) override;
+        /* [out] */ Integer& priority) override;
 
     ECode SetName(
         /* [in] */ const String& name) override;
 
     ECode GetName(
-        /* [out] */ String* name) override;
+        /* [out] */ String& name) override;
 
     ECode GetThreadGroup(
-        /* [out] */ IThreadGroup** tg) override;
+        /* [out] */ AutoPtr<IThreadGroup>& tg) override;
 
     static ECode ActiveCount(
-        /* [out] */ Integer* count);
+        /* [out] */ Integer& count);
 
     static ECode Enumerate(
         /* [out] */ Array<IThread*>& tarray,
-        /* [out] */ Integer* count);
+        /* [out] */ Integer& count);
 
     ECode CountStackFrames(
-        /* [out] */ Integer* frameNum) override;
+        /* [out] */ Integer& frameNum) override;
 
     ECode Join(
         /* [in] */ Long millis) override;
@@ -141,7 +141,7 @@ public:
         /* [in] */ Boolean on) override;
 
     ECode IsDaemon(
-        /* [out] */ Boolean* daemon) override;
+        /* [out] */ Boolean& daemon) override;
 
     ECode CheckAccess() override;
 
@@ -149,7 +149,7 @@ public:
         /* [out] */ String& desc) override;
 
     ECode GetContextClassLoader(
-        /* [out] */ IClassLoader** loader) override;
+        /* [out] */ AutoPtr<IClassLoader>& loader) override;
 
     ECode SetContextClassLoader(
         /* [in] */ IClassLoader* cl) override;
@@ -161,10 +161,10 @@ public:
         /* [out, callee] */ Array<IStackTraceElement*>* trace) override;
 
     ECode GetId(
-        /* [out] */ Long* id) override;
+        /* [out] */ Long& id) override;
 
     ECode GetState(
-        /* [out] */ ThreadState* state) override;
+        /* [out] */ ThreadState& state) override;
 
     ECode Unpark() override;
 

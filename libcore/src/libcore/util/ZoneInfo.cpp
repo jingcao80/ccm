@@ -748,7 +748,7 @@ ECode ZoneInfo::WallTime::Mktime(
             *time = -1;
             return NOERROR;
         }
-        return result->GetValue(time);
+        return result->GetValue(*time);
     }
 
     // If the wall time asserts a DST (isDst == 0 or 1) the search is performed twice:
@@ -771,7 +771,7 @@ ECode ZoneInfo::WallTime::Mktime(
         *time = -1;
         return NOERROR;
     }
-    return result->GetValue(time);
+    return result->GetValue(*time);
 }
 
 ECode ZoneInfo::WallTime::TryOffsetAdjustments(

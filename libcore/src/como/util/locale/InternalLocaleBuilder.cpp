@@ -597,7 +597,7 @@ AutoPtr<BaseLocale> InternalLocaleBuilder::GetBaseLocale()
                 AutoPtr<IStringBuilder> sb;
                 CStringBuilder::New(variant, IID_IStringBuilder, (IInterface**)&sb);
                 Integer size;
-                if (sb->GetLength(&size), size != 0) {
+                if (sb->GetLength(size), size != 0) {
                     sb->Append(BaseLocale::SEP);
                 }
                 sb->Append(privuse.Substring(privVarStart).Replace(ILanguageTag::SEP, BaseLocale::SEP));

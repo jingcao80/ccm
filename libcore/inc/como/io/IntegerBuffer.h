@@ -104,7 +104,7 @@ public:
 
     ECode CompareTo(
         /* [in] */ IInterface* other,
-        /* [out] */ Integer* result) override;
+        /* [out] */ Integer& result) override;
 
 protected:
     Array<Integer> mHb;

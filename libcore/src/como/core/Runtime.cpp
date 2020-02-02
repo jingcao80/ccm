@@ -114,13 +114,11 @@ ECode Runtime::AddShutdownHook(
 }
 
 ECode Runtime::AvailableProcessors(
-    /* [out] */ Integer* ncpu)
+    /* [out] */ Integer& ncpu)
 {
-    VALIDATE_NOT_NULL(ncpu);
-
     Long result;
     Libcore::GetOs()->Sysconf(OsConstants::_SC_NPROCESSORS_CONF_, &result);
-    *ncpu = result;
+    ncpu = result;
     return NOERROR;
 }
 

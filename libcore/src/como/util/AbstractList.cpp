@@ -61,7 +61,7 @@ public:
         /* [out] */ Boolean* result = nullptr) override;
 
     ECode GetIterator(
-        /* [out] */ IIterator** it) override;
+        /* [out] */ AutoPtr<IIterator>& it) override;
 
     ECode GetListIterator(
         /* [in] */ Integer index,
@@ -237,7 +237,7 @@ ECode AbstractList::AddAll(
     FAIL_RETURN(RangeCheckForAdd(index));
     Boolean modified = false;
     AutoPtr<IIterator> it;
-    c->GetIterator(&it);
+    c->GetIterator(it);
     Boolean hasNext;
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> e;
@@ -250,12 +250,9 @@ ECode AbstractList::AddAll(
 }
 
 ECode AbstractList::GetIterator(
-    /* [out] */ IIterator** it)
+    /* [out] */ AutoPtr<IIterator>& it)
 {
-    VALIDATE_NOT_NULL(it);
-
-    *it = new Itr(this);
-    REFCOUNT_ADD(*it);
+    it = new Itr(this);
     return NOERROR;
 }
 
@@ -335,7 +332,7 @@ ECode AbstractList::GetHashCode(
 {
     hash = 1;
     AutoPtr<IIterator> it;
-    GetIterator(&it);
+    GetIterator(it);
     Boolean hasNext;
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> e;
@@ -715,14 +712,11 @@ ECode Sublist::AddAll(
 }
 
 ECode Sublist::GetIterator(
-    /* [out] */ IIterator** it)
+    /* [out] */ AutoPtr<IIterator>& it)
 {
-    VALIDATE_NOT_NULL(it);
-
     AutoPtr<IListIterator> lit;
     GetListIterator(&lit);
-    *it = IIterator::Probe(lit);
-    REFCOUNT_ADD(*it);
+    it = std::move(lit);
     return NOERROR;
 }
 

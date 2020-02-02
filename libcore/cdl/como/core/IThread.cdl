@@ -61,41 +61,41 @@ interface IThread
     CheckAccess();
 
     CountStackFrames(
-        [out] Integer* frameNum);
+        [out] Integer& frameNum);
 
     Destroy();
 
     GetContextClassLoader(
-        [out] IClassLoader** loader);
+        [out] IClassLoader&& loader);
 
     GetId(
-        [out] Long* id);
+        [out] Long& id);
 
     GetName(
-        [out] String* name);
+        [out] String& name);
 
     GetPriority(
-        [out] Integer* priority);
+        [out] Integer& priority);
 
     GetStackTrace(
         [out, callee] Array<IStackTraceElement*>* trace);
 
     GetState(
-        [out] ThreadState* state);
+        [out] ThreadState& state);
 
     GetThreadGroup(
-        [out] IThreadGroup** tg);
+        [out] IThreadGroup&& tg);
 
     Interrupt();
 
     IsAlive(
-        [out] Boolean* alive);
+        [out] Boolean& alive);
 
     IsDaemon(
-        [out] Boolean* daemon);
+        [out] Boolean& daemon);
 
     IsInterrupted(
-        [out] Boolean* interrupted);
+        [out] Boolean& interrupted);
 
     Join();
 

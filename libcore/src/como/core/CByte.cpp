@@ -33,83 +33,67 @@ ECode CByte::Constructor(
 }
 
 ECode CByte::ByteValue(
-    /* [out] */ Byte* value)
+    /* [out] */ Byte& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = mValue;
+    value = mValue;
     return NOERROR;
 }
 
 ECode CByte::ShortValue(
-    /* [out] */ Short* value)
+    /* [out] */ Short& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = (Short)mValue;
+    value = (Short)mValue;
     return NOERROR;
 }
 
 ECode CByte::IntegerValue(
-    /* [out] */ Integer* value)
+    /* [out] */ Integer& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = (Integer)mValue;
+    value = (Integer)mValue;
     return NOERROR;
 }
 
 ECode CByte::LongValue(
-    /* [out] */ Long* value)
+    /* [out] */ Long& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = (Long)mValue;
+    value = (Long)mValue;
     return NOERROR;
 }
 
 ECode CByte::FloatValue(
-    /* [out] */ Float* value)
+    /* [out] */ Float& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = (Float)mValue;
+    value = (Float)mValue;
     return NOERROR;
 }
 
 ECode CByte::DoubleValue(
-    /* [out] */ Double* value)
+    /* [out] */ Double& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = (Double)mValue;
+    value = (Double)mValue;
     return NOERROR;
 }
 
 ECode CByte::GetValue(
-    /* [out] */ Byte* value)
+    /* [out] */ Byte& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = mValue;
+    value = mValue;
     return NOERROR;
 }
 
 ECode CByte::CompareTo(
     /* [in] */ IInterface* other,
-    /* [out] */ Integer* result)
+    /* [out] */ Integer& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     IByte* b = IByte::Probe(other);
     if (b == nullptr) {
-        *result = -1;
+        result = -1;
         return NOERROR;
     }
 
     Byte ov;
-    b->GetValue(&ov);
-    *result = mValue == ov ? 0 : (mValue > ov ? 1 : -1);
+    b->GetValue(ov);
+    result = mValue == ov ? 0 : (mValue > ov ? 1 : -1);
     return NOERROR;
 }
 
@@ -124,7 +108,7 @@ ECode CByte::Equals(
     }
 
     Byte ov;
-    b->GetValue(&ov);
+    b->GetValue(ov);
     result = mValue == ov;
     return NOERROR;
 }

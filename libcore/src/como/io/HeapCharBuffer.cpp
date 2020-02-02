@@ -322,14 +322,13 @@ ECode HeapCharBuffer::ToString(
 ECode HeapCharBuffer::SubSequence(
     /* [in] */ Integer start,
     /* [in] */ Integer end,
-    /* [out] */ ICharSequence** subcsq)
+    /* [out] */ AutoPtr<ICharSequence>& subcsq)
 {
-    VALIDATE_NOT_NULL(subcsq);
-
     Integer len;
     if ((start < 0) ||
-            (GetLength(&len), end > len) ||
+            (GetLength(len), end > len) ||
             (start > end)) {
+        subcsq = nullptr;
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
     Integer pos, cap;
@@ -338,8 +337,7 @@ ECode HeapCharBuffer::SubSequence(
     AutoPtr<HeapCharBuffer> hcb = new HeapCharBuffer();
     FAIL_RETURN(hcb->Constructor(
             mHb, -1, pos + start, pos + end, cap, mOffset, mIsReadOnly));
-    *subcsq = (ICharSequence*)hcb.Get();
-    REFCOUNT_ADD(*subcsq);
+    subcsq = (ICharSequence*)hcb.Get();
     return NOERROR;
 }
 

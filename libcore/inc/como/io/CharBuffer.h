@@ -73,7 +73,7 @@ public:
 
     ECode Read(
         /* [in] */ ICharBuffer* target,
-        /* [out] */ Integer* number) override;
+        /* [out] */ Integer& number) override;
 
     static ECode Wrap(
         /* [in] */ ICharSequence* csq,
@@ -136,7 +136,7 @@ public:
 
     ECode CompareTo(
         /* [in] */ IInterface* other,
-        /* [out] */ Integer* result) override;
+        /* [out] */ Integer& result) override;
 
     ECode ToString(
         /* [out] */ String& desc) override;
@@ -144,11 +144,11 @@ public:
     using ICharBuffer::ToString;
 
     ECode GetLength(
-        /* [out] */ Integer* number) override;
+        /* [out] */ Integer& number) override;
 
     ECode GetCharAt(
         /* [in] */ Integer index,
-        /* [out] */ Char* c) override final;
+        /* [out] */ Char& c) override final;
 
     ECode Append(
         /* [in] */ ICharSequence* csq) override;

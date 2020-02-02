@@ -67,7 +67,7 @@ ECode ThreadGroup::Constructor(
     AutoPtr<IThread> t;
     Thread::GetCurrentThread(&t);
     AutoPtr<IThreadGroup> tg;
-    t->GetThreadGroup(&tg);
+    t->GetThreadGroup(tg);
     return Constructor(tg, name);
 }
 
@@ -85,51 +85,40 @@ ECode ThreadGroup::Constructor(
 }
 
 ECode ThreadGroup::GetName(
-    /* [out] */ String* name)
+    /* [out] */ String& name)
 {
-    VALIDATE_NOT_NULL(name);
-
-    *name = mName;
+    name = mName;
     return NOERROR;
 }
 
 ECode ThreadGroup::GetParent(
-    /* [out] */ IThreadGroup** parent)
+    /* [out] */ AutoPtr<IThreadGroup>& parent)
 {
-    VALIDATE_NOT_NULL(parent);
-
     if (mParent != nullptr) {
         FAIL_RETURN(mParent->CheckAccess());
     }
-    *parent = mParent;
-    REFCOUNT_ADD(*parent);
+    parent = mParent;
     return NOERROR;
 }
 
 ECode ThreadGroup::GetMaxPriority(
-    /* [out] */ Integer* priority)
+    /* [out] */ Integer& priority)
 {
-    VALIDATE_NOT_NULL(priority);
-
-    *priority = mMaxPriority;
+    priority = mMaxPriority;
     return NOERROR;
 }
 
 ECode ThreadGroup::IsDaemon(
-    /* [out] */ Boolean* daemon)
+    /* [out] */ Boolean& daemon)
 {
-    VALIDATE_NOT_NULL(daemon);
-
-    *daemon = mDaemon;
+    daemon = mDaemon;
     return NOERROR;
 }
 
 ECode ThreadGroup::IsDestroyed(
-    /* [out] */ Boolean* destroyed)
+    /* [out] */ Boolean& destroyed)
 {
-    VALIDATE_NOT_NULL(destroyed);
-
-    *destroyed = mDestroyed;
+    destroyed = mDestroyed;
     return NOERROR;
 }
 
@@ -159,7 +148,7 @@ ECode ThreadGroup::SetMaxPriority(
         mMaxPriority = pri;
         if (mParent != nullptr) {
             Integer pprior;
-            mParent->GetMaxPriority(&pprior);
+            mParent->GetMaxPriority(pprior);
             mMaxPriority = Math::Min(pri, pprior);
         }
         ngroupsSnapshot = mNgroups;
@@ -176,21 +165,19 @@ ECode ThreadGroup::SetMaxPriority(
 
 ECode ThreadGroup::ParentOf(
     /* [in] */ IThreadGroup* g,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     AutoPtr<IThreadGroup> group = g;
     while (group != nullptr) {
         if (group == (IThreadGroup*)this) {
-            *result = true;
+            result = true;
             return NOERROR;
         }
         AutoPtr<IThreadGroup> p;
-        group->GetParent(&p);
+        group->GetParent(p);
         group = p;
     }
-    *result = false;
+    result = false;
     return NOERROR;
 }
 
@@ -200,17 +187,15 @@ ECode ThreadGroup::CheckAccess()
 }
 
 ECode ThreadGroup::ActiveCount(
-    /* [out] */ Integer* count)
+    /* [out] */ Integer& count)
 {
-    VALIDATE_NOT_NULL(count);
-
     Integer result;
     Integer ngroupsSnapshot;
     Array<IThreadGroup*> groupsSnapshot;
     {
         AutoLock lock(this);
         if (mDestroyed) {
-            *count = 0;
+            count = 0;
             return NOERROR;
         }
         result = mNthreads;
@@ -222,33 +207,29 @@ ECode ThreadGroup::ActiveCount(
     }
     for (Integer i = 0; i < ngroupsSnapshot; i++) {
         Integer ac;
-        groupsSnapshot[i]->ActiveCount(&ac);
+        groupsSnapshot[i]->ActiveCount(ac);
         result += ac;
     }
-    *count = result;
+    count = result;
     return NOERROR;
 }
 
 ECode ThreadGroup::Enumerate(
     /* [out] */ Array<IThread*>& list,
-    /* [out] */ Integer* count)
+    /* [out] */ Integer& count)
 {
-    VALIDATE_NOT_NULL(count);
-
     FAIL_RETURN(CheckAccess());
-    *count = Enumerate(list, 0, true);
+    count = Enumerate(list, 0, true);
     return NOERROR;
 }
 
 ECode ThreadGroup::Enumerate(
     /* [out] */ Array<IThread*>& list,
     /* [in] */ Boolean recurse,
-    /* [out] */ Integer* count)
+    /* [out] */ Integer& count)
 {
-    VALIDATE_NOT_NULL(count);
-
     FAIL_RETURN(CheckAccess());
-    *count = Enumerate(list, 0, recurse);
+    count = Enumerate(list, 0, recurse);
     return NOERROR;
 }
 
@@ -270,7 +251,7 @@ Integer ThreadGroup::Enumerate(
         }
         for (Integer i = 0; i < nt; i++) {
             Boolean alive;
-            if (mThreads[i]->IsAlive(&alive), alive) {
+            if (mThreads[i]->IsAlive(alive), alive) {
                 list.Set(n++, mThreads[i]);
             }
         }
@@ -291,16 +272,14 @@ Integer ThreadGroup::Enumerate(
 }
 
 ECode ThreadGroup::ActiveGroupCount(
-    /* [out] */ Integer* count)
+    /* [out] */ Integer& count)
 {
-    VALIDATE_NOT_NULL(count);
-
     Integer ngroupsSnapshot;
     Array<IThreadGroup*> groupsSnapshot;
     {
         AutoLock lock(this);
         if (mDestroyed) {
-            *count = 0;
+            count = 0;
             return NOERROR;
         }
         ngroupsSnapshot = mNgroups;
@@ -312,33 +291,29 @@ ECode ThreadGroup::ActiveGroupCount(
     Integer n = ngroupsSnapshot;
     for (Integer i = 0; i < ngroupsSnapshot; i++) {
         Integer agc;
-        groupsSnapshot[i]->ActiveGroupCount(&agc);
+        groupsSnapshot[i]->ActiveGroupCount(agc);
         n += agc;
     }
-    *count = n;
+    count = n;
     return NOERROR;
 }
 
 ECode ThreadGroup::Enumerate(
     /* [out] */ Array<IThreadGroup*>& list,
-    /* [out] */ Integer* count)
+    /* [out] */ Integer& count)
 {
-    VALIDATE_NOT_NULL(count);
-
     FAIL_RETURN(CheckAccess());
-    *count = Enumerate(list, 0, true);
+    count = Enumerate(list, 0, true);
     return NOERROR;
 }
 
 ECode ThreadGroup::Enumerate(
     /* [out] */ Array<IThreadGroup*>& list,
     /* [in] */ Boolean recurse,
-    /* [out] */ Integer* count)
+    /* [out] */ Integer& count)
 {
-    VALIDATE_NOT_NULL(count);
-
     FAIL_RETURN(CheckAccess());
-    *count = Enumerate(list, 0, recurse);
+    count = Enumerate(list, 0, recurse);
     return NOERROR;
 }
 
@@ -689,7 +664,7 @@ ECode ThreadGroup::ToString(
     String cName;
     klass->GetName(cName);
     String name;
-    GetName(&name);
+    GetName(name);
     desc = String::Format("%s[name=%s,maxpri=%d]",
             cName.string(), name.string(), mMaxPriority);
     return NOERROR;

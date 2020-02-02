@@ -45,35 +45,35 @@ public:
         /* [in] */ Double value);
 
     ECode ByteValue(
-        /* [out] */ Byte* value) override;
+        /* [out] */ Byte& value) override;
 
     ECode ShortValue(
-        /* [out] */ Short* value) override;
+        /* [out] */ Short& value) override;
 
     ECode IntegerValue(
-        /* [out] */ Integer* value) override;
+        /* [out] */ Integer& value) override;
 
     ECode LongValue(
-        /* [out] */ Long* value) override;
+        /* [out] */ Long& value) override;
 
     ECode FloatValue(
-        /* [out] */ Float* value) override;
+        /* [out] */ Float& value) override;
 
     ECode DoubleValue(
-        /* [out] */ Double* value) override;
+        /* [out] */ Double& value) override;
 
     ECode GetValue(
-        /* [out] */ Double* value) override;
+        /* [out] */ Double& value) override;
 
     ECode IsInfinite(
-        /* [out] */ Boolean* infinite) override;
+        /* [out] */ Boolean& infinite) override;
 
     ECode IsNaN(
-        /* [out] */ Boolean* nan) override;
+        /* [out] */ Boolean& nan) override;
 
     ECode CompareTo(
         /* [in] */ IInterface* other,
-        /* [out] */ Integer* result) override;
+        /* [out] */ Integer& result) override;
 
     ECode Equals(
         /* [in] */ IInterface* other,

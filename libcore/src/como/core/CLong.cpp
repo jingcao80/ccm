@@ -33,83 +33,67 @@ ECode CLong::Constructor(
 }
 
 ECode CLong::ByteValue(
-    /* [out] */ Byte* value)
+    /* [out] */ Byte& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = (Byte)mValue;
+    value = (Byte)mValue;
     return NOERROR;
 }
 
 ECode CLong::ShortValue(
-    /* [out] */ Short* value)
+    /* [out] */ Short& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = (Short)mValue;
+    value = (Short)mValue;
     return NOERROR;
 }
 
 ECode CLong::IntegerValue(
-    /* [out] */ Integer* value)
+    /* [out] */ Integer& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = (Integer)mValue;
+    value = (Integer)mValue;
     return NOERROR;
 }
 
 ECode CLong::LongValue(
-    /* [out] */ Long* value)
+    /* [out] */ Long& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = mValue;
+    value = mValue;
     return NOERROR;
 }
 
 ECode CLong::FloatValue(
-    /* [out] */ Float* value)
+    /* [out] */ Float& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = (Float)mValue;
+    value = (Float)mValue;
     return NOERROR;
 }
 
 ECode CLong::DoubleValue(
-    /* [out] */ Double* value)
+    /* [out] */ Double& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = (Double)mValue;
+    value = (Double)mValue;
     return NOERROR;
 }
 
 ECode CLong::GetValue(
-    /* [out] */ Long* value)
+    /* [out] */ Long& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = mValue;
+    value = mValue;
     return NOERROR;
 }
 
 ECode CLong::CompareTo(
     /* [in] */ IInterface* other,
-    /* [out] */ Integer* result)
+    /* [out] */ Integer& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     ILong* l = ILong::Probe(other);
     if (l == nullptr) {
-        *result = -1;
+        result = -1;
         return NOERROR;
     }
 
     Long lv;
-    l->GetValue(&lv);
-    *result = mValue == lv ? 0 : (mValue > lv ? 1 : -1);
+    l->GetValue(lv);
+    result = mValue == lv ? 0 : (mValue > lv ? 1 : -1);
     return NOERROR;
 }
 
@@ -124,7 +108,7 @@ ECode CLong::Equals(
     }
 
     Long lv;
-    l->GetValue(&lv);
+    l->GetValue(lv);
     result = mValue == lv;
     return NOERROR;
 }

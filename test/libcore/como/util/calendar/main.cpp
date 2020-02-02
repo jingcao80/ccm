@@ -40,7 +40,7 @@ TEST(CalendarTest, TestCGregorian)
     AutoPtr<ISystem> sys;
     CSystem::New(IID_ISystem, (IInterface**)&sys);
     Long millis;
-    sys->GetCurrentTimeMillis(&millis);
+    sys->GetCurrentTimeMillis(millis);
     AutoPtr<ICalendarDate> date;
     ECode ec = gcal->GetCalendarDate(millis, &date);
     EXPECT_TRUE(ec == NOERROR && date != nullptr);

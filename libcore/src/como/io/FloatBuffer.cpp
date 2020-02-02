@@ -286,10 +286,8 @@ Boolean FloatBuffer::Equals(
 
 ECode FloatBuffer::CompareTo(
     /* [in] */ IInterface* other,
-    /* [out] */ Integer* result)
+    /* [out] */ Integer& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     FloatBuffer* otherIB = (FloatBuffer*)IFloatBuffer::Probe(other);
     if (otherIB == nullptr) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -309,11 +307,11 @@ ECode FloatBuffer::CompareTo(
         otherIB->Get(j, &otherf);
         Integer cmp = Compare(thisf, otherf);
         if (cmp != 0) {
-            *result = cmp;
+            result = cmp;
             return NOERROR;
         }
     }
-    *result = thisRemaining - otherRemaining;
+    result = thisRemaining - otherRemaining;
     return NOERROR;
 }
 

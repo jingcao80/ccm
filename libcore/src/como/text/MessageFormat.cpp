@@ -204,7 +204,7 @@ ECode MessageFormat::ApplyPattern(
                     case ' ': {
                         // Skip any leading space chars for SEG_TYPE.
                         Integer size;
-                        if (part != SEG_TYPE || (segments[SEG_TYPE]->GetLength(&size), size > 0)) {
+                        if (part != SEG_TYPE || (segments[SEG_TYPE]->GetLength(size), size > 0)) {
                             segments[part]->Append(ch);
                         }
                         break;
@@ -651,7 +651,7 @@ ECode MessageFormat::Subformat(
 {
     Integer lastOffset = 0;
     Integer last;
-    result->GetLength(&last);
+    result->GetLength(last);
     for (Integer i = 0; i <= mMaxOffset; ++i) {
         result->Append(mPattern.Substring(lastOffset, mOffsets[i]));
         lastOffset = mOffsets[i];
@@ -710,28 +710,28 @@ ECode MessageFormat::Subformat(
             // If characterIterators is non-null, it indicates we need
             // to get the CharacterIterator from the child formatter.
             Integer length;
-            result->GetLength(&length);
+            result->GetLength(length);
             if (last != length) {
                 String substr;
-                result->Substring(last, &substr);
+                result->Substring(last, substr);
                 AutoPtr<IAttributedCharacterIterator> acit;
                 CreateAttributedCharacterIterator(substr, &acit);
                 characterIterators->Add(acit);
-                result->GetLength(&last);
+                result->GetLength(last);
             }
             if (subFormatter != nullptr) {
                 AutoPtr<IAttributedCharacterIterator> subIterator;
                 subFormatter->FormatToCharacterIterator(obj, &subIterator);
 
                 Append(result, ICharacterIterator::Probe(subIterator));
-                result->GetLength(&length);
+                result->GetLength(length);
                 if (last != length) {
                     AutoPtr<IAttributedCharacterIterator> acit;
                     CreateAttributedCharacterIterator(subIterator,
                             IAttributedCharacterIterator::IAttribute::Probe(Field::GetARGUMENT()),
                             CoreUtils::Box(argumentNumber), &acit);
                     characterIterators->Add(acit);
-                    result->GetLength(&last);
+                    result->GetLength(last);
                 }
                 arg = nullptr;
             }
@@ -742,33 +742,33 @@ ECode MessageFormat::Subformat(
                         IAttributedCharacterIterator::IAttribute::Probe(Field::GetARGUMENT()),
                         CoreUtils::Box(argumentNumber), &acit);
                 characterIterators->Add(acit);
-                result->GetLength(&last);
+                result->GetLength(last);
             }
         }
         else {
             if (subFormatter != nullptr) {
                 subFormatter->Format(obj, &arg);
             }
-            result->GetLength(&last);
+            result->GetLength(last);
             result->Append(arg);
             if (i == 0 && fp != nullptr) {
                 AutoPtr<IFormatField> ff;
                 fp->GetFieldAttribute(&ff);
                 if (Object::Equals(Field::GetARGUMENT(), ff)) {
                     Integer length;
-                    result->GetLength(&length);
+                    result->GetLength(length);
                     fp->SetBeginIndex(last);
                     fp->SetEndIndex(length);
                 }
             }
-            result->GetLength(&last);
+            result->GetLength(last);
         }
     }
     result->Append(mPattern.Substring(lastOffset, mPattern.GetLength()));
     Integer length;
-    if (characterIterators != nullptr && (result->GetLength(&length), last != length)) {
+    if (characterIterators != nullptr && (result->GetLength(length), last != length)) {
         String substr;
-        result->Substring(last, &substr);
+        result->Substring(last, substr);
         AutoPtr<IAttributedCharacterIterator> acit;
         CreateAttributedCharacterIterator(substr, &acit);
         characterIterators->Add(acit);

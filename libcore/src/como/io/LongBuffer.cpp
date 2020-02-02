@@ -279,10 +279,8 @@ ECode LongBuffer::Equals(
 
 ECode LongBuffer::CompareTo(
     /* [in] */ IInterface* other,
-    /* [out] */ Integer* result)
+    /* [out] */ Integer& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     LongBuffer* otherIB = (LongBuffer*)ILongBuffer::Probe(other);
     if (otherIB == nullptr) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -302,11 +300,11 @@ ECode LongBuffer::CompareTo(
         otherIB->Get(j, &otherl);
         Integer cmp = thisl - otherl;
         if (cmp != 0) {
-            *result = cmp;
+            result = cmp;
             return NOERROR;
         }
     }
-    *result = thisRemaining - otherRemaining;
+    result = thisRemaining - otherRemaining;
     return NOERROR;
 }
 

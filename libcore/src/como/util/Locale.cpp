@@ -643,7 +643,7 @@ ECode Locale::ToLanguageTag(
     AutoPtr<IList> subtags;
     tag->GetVariants(&subtags);
     AutoPtr<IIterator> it;
-    subtags->GetIterator(&it);
+    subtags->GetIterator(it);
     Boolean hasNext;
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> obj;
@@ -654,8 +654,7 @@ ECode Locale::ToLanguageTag(
 
     subtags = nullptr;
     tag->GetExtensions(&subtags);
-    it = nullptr;
-    subtags->GetIterator(&it);
+    subtags->GetIterator(it);
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> obj;
         it->Next(&obj);
@@ -667,7 +666,7 @@ ECode Locale::ToLanguageTag(
     tag->GetPrivateuse(&subtag);
     if (subtag.GetLength() > 0) {
         Integer len;
-        if (buf->GetLength(&len), len > 0) {
+        if (buf->GetLength(len), len > 0) {
             buf->Append(ILanguageTag::SEP);
         }
         buf->Append(ILanguageTag::PRIVATEUSE);
