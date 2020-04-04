@@ -73,7 +73,7 @@ public:
     ECode Close() override;
 
     ECode CheckError(
-        /* [out] */ Boolean* hasErrors) override;
+        /* [out] */ Boolean& hasErrors) override;
 
     ECode Write(
         /* [in] */ Integer c) override;

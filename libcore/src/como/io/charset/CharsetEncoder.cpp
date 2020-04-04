@@ -76,12 +76,9 @@ ECode CharsetEncoder::Constructor(
 }
 
 ECode CharsetEncoder::GetCharset(
-    /* [out] */ ICharset** cs)
+    /* [out] */ AutoPtr<ICharset>& cs)
 {
-    VALIDATE_NOT_NULL(cs);
-
-    *cs = mCharset;
-    REFCOUNT_ADD(*cs);
+    cs = mCharset;
     return NOERROR;
 }
 
@@ -111,7 +108,7 @@ ECode CharsetEncoder::ReplaceWith(
     }
 
     Boolean legal;
-    if (IsLegalReplacement(newReplacement, &legal), !legal) {
+    if (IsLegalReplacement(newReplacement, legal), !legal) {
         Logger::E("CharsetEncoder", "Illegal replacement");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
@@ -122,10 +119,8 @@ ECode CharsetEncoder::ReplaceWith(
 
 ECode CharsetEncoder::IsLegalReplacement(
     /* [in] */ const Array<Byte>& repl,
-    /* [out] */ Boolean* isLegal)
+    /* [out] */ Boolean& isLegal)
 {
-    VALIDATE_NOT_NULL(isLegal);
-
     AutoPtr<IWeakReference> wr = mCachedDecoder;
     AutoPtr<ICharsetDecoder> dec;
     if (wr != nullptr) {
@@ -133,8 +128,8 @@ ECode CharsetEncoder::IsLegalReplacement(
     }
     if (dec == nullptr) {
         AutoPtr<ICharset> cs;
-        GetCharset(&cs);
-        cs->NewDecoder(&dec);
+        GetCharset(cs);
+        cs->NewDecoder(dec);
         dec->OnMalformedInput(CodingErrorAction::GetREPORT());
         dec->OnUnmappableCharacter(CodingErrorAction::GetREPORT());
         IWeakReferenceSource::Probe(dec)->GetWeakReference(mCachedDecoder);
@@ -146,25 +141,22 @@ ECode CharsetEncoder::IsLegalReplacement(
     ByteBuffer::Wrap(repl, &bb);
     Integer remaining;
     Float maxCharsPerByte;
-    IBuffer::Probe(bb)->Remaining(&remaining);
-    dec->GetMaxCharsPerByte(&maxCharsPerByte);
+    IBuffer::Probe(bb)->Remaining(remaining);
+    dec->GetMaxCharsPerByte(maxCharsPerByte);
     AutoPtr<ICharBuffer> cb;
     CharBuffer::Allocate(remaining * maxCharsPerByte, &cb);
     AutoPtr<ICoderResult> cr;
-    dec->Decode(bb, cb, true, &cr);
+    dec->Decode(bb, cb, true, cr);
     Boolean error;
-    cr->IsError(&error);
-    *isLegal = !error;
+    cr->IsError(error);
+    isLegal = !error;
     return NOERROR;
 }
 
 ECode CharsetEncoder::GetMalformedInputAction(
-    /* [out] */ ICodingErrorAction** action)
+    /* [out] */ AutoPtr<ICodingErrorAction>& action)
 {
-    VALIDATE_NOT_NULL(action);
-
-    *action = mMalformedInputAction;
-    REFCOUNT_ADD(*action);
+    action = mMalformedInputAction;
     return NOERROR;
 }
 
@@ -181,12 +173,9 @@ ECode CharsetEncoder::OnMalformedInput(
 }
 
 ECode CharsetEncoder::GetUnmappableCharacterAction(
-    /* [out] */ ICodingErrorAction** action)
+    /* [out] */ AutoPtr<ICodingErrorAction>& action)
 {
-    VALIDATE_NOT_NULL(action);
-
-    *action = mUnmappableCharacterAction;
-    REFCOUNT_ADD(*action);
+    action = mUnmappableCharacterAction;
     return NOERROR;
 }
 
@@ -203,20 +192,16 @@ ECode CharsetEncoder::OnUnmappableCharacter(
 }
 
 ECode CharsetEncoder::GetAverageBytesPerChar(
-    /* [out] */ Float* averageBytesPerChar)
+    /* [out] */ Float& averageBytesPerChar)
 {
-    VALIDATE_NOT_NULL(averageBytesPerChar);
-
-    *averageBytesPerChar = mAverageBytesPerChar;
+    averageBytesPerChar = mAverageBytesPerChar;
     return NOERROR;
 }
 
 ECode CharsetEncoder::GetMaxBytesPerChar(
-    /* [out] */ Float* maxBytesPerChar)
+    /* [out] */ Float& maxBytesPerChar)
 {
-    VALIDATE_NOT_NULL(maxBytesPerChar);
-
-    *maxBytesPerChar = mMaxBytesPerChar;
+    maxBytesPerChar = mMaxBytesPerChar;
     return NOERROR;
 }
 
@@ -224,10 +209,8 @@ ECode CharsetEncoder::Encode(
     /* [in] */ ICharBuffer* cb,
     /* [out] */ IByteBuffer* bb,
     /* [in] */ Boolean endOfInput,
-    /* [out] */ ICoderResult** result)
+    /* [out] */ AutoPtr<ICoderResult>& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     Integer newState = endOfInput ? ST_END : ST_CODING;
     if ((mState != ST_RESET) && (mState != ST_CODING) &&
             !(endOfInput && (mState == ST_END))) {
@@ -236,38 +219,35 @@ ECode CharsetEncoder::Encode(
     mState = newState;
 
     for (;;) {
-        AutoPtr<ICoderResult> cr;
-        ECode ec = EncodeLoop(cb, bb, &cr);
+        ECode ec = EncodeLoop(cb, bb, result);
         if (FAILED(ec)) {
             return E_CODER_MALFUNCTION_ERROR;
         }
 
         Boolean overflow;
-        if (cr->IsOverflow(&overflow), overflow) {
-            cr.MoveTo(result);
+        if (result->IsOverflow(overflow), overflow) {
             return NOERROR;
         }
 
         Boolean underflow;
-        if (cr->IsUnderflow(&underflow), underflow) {
+        if (result->IsUnderflow(underflow), underflow) {
             Boolean hasRemaining;
-            if (endOfInput && (IBuffer::Probe(cb)->HasRemaining(&hasRemaining), hasRemaining)) {
+            if (endOfInput && (IBuffer::Probe(cb)->HasRemaining(hasRemaining), hasRemaining)) {
                 Integer remaining;
-                IBuffer::Probe(cb)->Remaining(&remaining);
-                cr = CoderResult::MalformedForLength(remaining);
+                IBuffer::Probe(cb)->Remaining(remaining);
+                result = CoderResult::MalformedForLength(remaining);
             }
             else {
-                cr.MoveTo(result);
                 return NOERROR;
             }
         }
 
         AutoPtr<ICodingErrorAction> action;
         Boolean malformed, unmappable;
-        if (cr->IsMalformed(&malformed), malformed) {
+        if (result->IsMalformed(malformed), malformed) {
             action = mMalformedInputAction;
         }
-        else if (cr->IsUnmappable(&unmappable), unmappable) {
+        else if (result->IsUnmappable(unmappable), unmappable) {
             action = mUnmappableCharacterAction;
         }
         else {
@@ -275,15 +255,13 @@ ECode CharsetEncoder::Encode(
         }
 
         if (action == CodingErrorAction::GetREPORT()) {
-            cr.MoveTo(result);
             return NOERROR;
         }
 
         if (action == CodingErrorAction::GetREPLACE()) {
             Integer remaining;
-            if (IBuffer::Probe(bb)->Remaining(&remaining), remaining < mReplacement.GetLength()) {
-                AutoPtr<ICoderResult> ret = CoderResult::GetOVERFLOW();
-                ret.MoveTo(result);
+            if (IBuffer::Probe(bb)->Remaining(remaining), remaining < mReplacement.GetLength()) {
+                result = CoderResult::GetOVERFLOW();
                 return NOERROR;
             }
             bb->Put(mReplacement);
@@ -292,8 +270,8 @@ ECode CharsetEncoder::Encode(
         if (action == CodingErrorAction::GetIGNORE() ||
                 (action == CodingErrorAction::GetREPLACE())) {
             Integer pos, len;
-            IBuffer::Probe(cb)->GetPosition(&pos);
-            cr->GetLength(&len);
+            IBuffer::Probe(cb)->GetPosition(pos);
+            result->GetLength(len);
             IBuffer::Probe(cb)->SetPosition(pos + len);
             continue;
         }
@@ -304,18 +282,14 @@ ECode CharsetEncoder::Encode(
 
 ECode CharsetEncoder::Flush(
     /* [out] */ IByteBuffer* bb,
-    /* [out] */ ICoderResult** result)
+    /* [out] */ AutoPtr<ICoderResult>& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     if (mState == ST_END) {
-        AutoPtr<ICoderResult> cr;
-        FAIL_RETURN(ImplFlush(bb, &cr));
+        FAIL_RETURN(ImplFlush(bb, result));
         Boolean underflow;
-        if (cr->IsUnderflow(&underflow), underflow) {
+        if (result->IsUnderflow(underflow), underflow) {
             mState = ST_FLUSHED;
         }
-        cr.MoveTo(result);
         return NOERROR;
     }
 
@@ -323,16 +297,15 @@ ECode CharsetEncoder::Flush(
         return E_ILLEGAL_STATE_EXCEPTION;
     }
 
-    AutoPtr<ICoderResult> cr = CoderResult::GetUNDERFLOW();
-    cr.MoveTo(result);
+    result = CoderResult::GetUNDERFLOW();
     return NOERROR;
 }
 
 ECode CharsetEncoder::ImplFlush(
     /* [out] */ IByteBuffer* bb,
-    /* [out] */ ICoderResult** cr)
+    /* [out] */ AutoPtr<ICoderResult>& cr)
 {
-    CoderResult::GetUNDERFLOW().MoveTo(cr);
+    cr = CoderResult::GetUNDERFLOW();
     return NOERROR;
 }
 
@@ -345,53 +318,47 @@ ECode CharsetEncoder::Reset()
 
 ECode CharsetEncoder::Encode(
     /* [in] */ ICharBuffer* cb,
-    /* [out] */ IByteBuffer** bb)
+    /* [out] */ AutoPtr<IByteBuffer>& bb)
 {
-    VALIDATE_NOT_NULL(bb);
-
     Integer remaining;
     Float averageBytesPerChar;
-    IBuffer::Probe(cb)->Remaining(&remaining);
-    GetAverageBytesPerChar(&averageBytesPerChar);
+    IBuffer::Probe(cb)->Remaining(remaining);
+    GetAverageBytesPerChar(averageBytesPerChar);
     Integer n = remaining * averageBytesPerChar;
-    AutoPtr<IByteBuffer> out;
-    ByteBuffer::Allocate(n, &out);
+    ByteBuffer::Allocate(n, &bb);
 
     if ((n == 0) && (remaining == 0)) {
-        out.MoveTo(bb);
         return NOERROR;
     }
     Reset();
     for (;;) {
         AutoPtr<ICoderResult> cr;
         Boolean result;
-        if (IBuffer::Probe(cb)->HasRemaining(&result), result) {
-            FAIL_RETURN(Encode(cb, out, true, &cr));
+        if (IBuffer::Probe(cb)->HasRemaining(result), result) {
+            FAIL_RETURN(Encode(cb, bb, true, cr));
         }
         else {
             cr = CoderResult::GetUNDERFLOW();
         }
-        if (cr->IsUnderflow(&result), result) {
-            cr = nullptr;
-            Flush(out, &cr);
+        if (cr->IsUnderflow(result), result) {
+            Flush(bb, cr);
         }
 
-        if (cr->IsUnderflow(&result), result) {
+        if (cr->IsUnderflow(result), result) {
             break;
         }
-        if (cr->IsOverflow(&result), result) {
+        if (cr->IsOverflow(result), result) {
             n = 2 * n + 1;
             AutoPtr<IByteBuffer> o;
             ByteBuffer::Allocate(n, &o);
-            IBuffer::Probe(out)->Flip();
-            o->Put(out);
-            out = o;
+            IBuffer::Probe(bb)->Flip();
+            o->Put(bb);
+            bb = o;
             continue;
         }
         return cr->ThrowException();
     }
-    IBuffer::Probe(out)->Flip();
-    out.MoveTo(bb);
+    IBuffer::Probe(bb)->Flip();
     return NOERROR;
 }
 
@@ -399,7 +366,7 @@ Boolean CharsetEncoder::CanEncode(
     /* [in] */ ICharBuffer* cb)
 {
     Boolean hasRemaining;
-    if (IBuffer::Probe(cb)->HasRemaining(&hasRemaining), !hasRemaining) {
+    if (IBuffer::Probe(cb)->HasRemaining(hasRemaining), !hasRemaining) {
         return true;
     }
 
@@ -410,50 +377,46 @@ Boolean CharsetEncoder::CanEncode(
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     AutoPtr<ICodingErrorAction> ma, ua;
-    GetMalformedInputAction(&ma);
-    GetUnmappableCharacterAction(&ua);
+    GetMalformedInputAction(ma);
+    GetUnmappableCharacterAction(ua);
     OnMalformedInput(CodingErrorAction::GetREPORT());
     OnUnmappableCharacter(CodingErrorAction::GetREPORT());
     AutoPtr<IByteBuffer> buf;
-    ECode ec = Encode(cb, &buf);
+    ECode ec = Encode(cb, buf);
     OnMalformedInput(ma);
     OnUnmappableCharacter(ua);
     Reset();
     if (FAILED(ec)) {
         return false;
     }
-    IBuffer::Probe(buf)->HasRemaining(&hasRemaining);
+    IBuffer::Probe(buf)->HasRemaining(hasRemaining);
     return hasRemaining;
 }
 
 ECode CharsetEncoder::CanEncode(
     /* [in] */ Char c,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     AutoPtr<ICharBuffer> cb;
     CharBuffer::Allocate(1, &cb);
     cb->Put(c);
     IBuffer::Probe(cb)->Flip();
-    *result = CanEncode(cb);
+    result = CanEncode(cb);
     return NOERROR;
 }
 
 ECode CharsetEncoder::CanEncode(
     /* [in] */ ICharSequence* cs,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     AutoPtr<ICharBuffer> cb;
     if (ICharBuffer::Probe(cs) != nullptr) {
-        ICharBuffer::Probe(cs)->Duplicate(&cb);
+        ICharBuffer::Probe(cs)->Duplicate(cb);
     }
     else {
         CharBuffer::Wrap(cs, &cb);
     }
-    *result = CanEncode(cb);
+    result = CanEncode(cb);
     return NOERROR;
 }
 

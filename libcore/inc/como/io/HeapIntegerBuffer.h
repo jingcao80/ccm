@@ -47,20 +47,20 @@ public:
         /* [in] */ Boolean isReadOnly);
 
     ECode Slice(
-        /* [out] */ IIntegerBuffer** buffer) override;
+        /* [out] */ AutoPtr<IIntegerBuffer>& buffer) override;
 
     ECode Duplicate(
-        /* [out] */ IIntegerBuffer** buffer) override;
+        /* [out] */ AutoPtr<IIntegerBuffer>& buffer) override;
 
     ECode AsReadOnlyBuffer(
-        /* [out] */ IIntegerBuffer** buffer) override;
+        /* [out] */ AutoPtr<IIntegerBuffer>& buffer) override;
 
     ECode Get(
-        /* [out] */ Integer* i) override;
+        /* [out] */ Integer& i) override;
 
     ECode Get(
         /* [in] */ Integer index,
-        /* [out] */ Integer* i) override;
+        /* [out] */ Integer& i) override;
 
     ECode Get(
         /* [out] */ Array<Integer>& dst,
@@ -68,10 +68,10 @@ public:
         /* [in] */ Integer length) override;
 
     ECode IsDirect(
-        /* [out] */ Boolean* direct) override;
+        /* [out] */ Boolean& direct) override;
 
     ECode IsReadOnly(
-        /* [out] */ Boolean* readOnly) override;
+        /* [out] */ Boolean& readOnly) override;
 
     ECode Put(
         /* [in] */ Integer i) override;
@@ -88,7 +88,7 @@ public:
     ECode Compact() override;
 
     ECode GetOrder(
-        /* [out] */ IByteOrder** bo) override;
+        /* [out] */ AutoPtr<IByteOrder>& bo) override;
 
 protected:
     ECode Constructor(

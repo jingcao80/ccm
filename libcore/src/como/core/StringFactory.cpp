@@ -51,7 +51,7 @@ ECode StringFactory::NewStringFromBytes(
 
     // We inline UTF-8, ISO-8859-1, and US-ASCII decoders for speed.
     String canonicalCharsetName;
-    cs->GetName(&canonicalCharsetName);
+    cs->GetName(canonicalCharsetName);
     if (canonicalCharsetName.Equals("UTF-8")) {
         Array<Byte> d = data;
         Array<Char> v(byteCount);
@@ -148,12 +148,12 @@ outer:
         AutoPtr<IByteBuffer> bb;
         ByteBuffer::Wrap(data, offset, byteCount, &bb);
         AutoPtr<ICharBuffer> cb;
-        cs->Decode(bb, &cb);
+        cs->Decode(bb, cb);
         ICharSequence::Probe(cb)->GetLength(length);
         if (length > 0) {
             value = Array<Char>(length);
             AutoPtr<IArrayHolder> holder;
-            IBuffer::Probe(cb)->GetArray((IInterface**)&holder);
+            IBuffer::Probe(cb)->GetArray(holder);
             Array<Char> cbArray;
             holder->GetArray(&cbArray);
             value.Copy(0, cbArray, 0, length);

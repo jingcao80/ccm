@@ -52,73 +52,61 @@ ECode StringCharBuffer::Constructor(
 }
 
 ECode StringCharBuffer::Slice(
-    /* [out] */ ICharBuffer** buffer)
+    /* [out] */ AutoPtr<ICharBuffer>& buffer)
 {
-    VALIDATE_NOT_NULL(buffer);
-
     Integer remaining, pos;
-    Remaining(&remaining);
-    GetPosition(&pos);
+    Remaining(remaining);
+    GetPosition(pos);
     AutoPtr<StringCharBuffer> hsb = new StringCharBuffer();
     FAIL_RETURN(hsb->Constructor(
             mStr, -1, 0, remaining, remaining, pos + mOffset));
-    *buffer = (ICharBuffer*)hsb.Get();
-    REFCOUNT_ADD(*buffer);
+    buffer = (ICharBuffer*)hsb.Get();
     return NOERROR;
 }
 
 ECode StringCharBuffer::Duplicate(
-    /* [out] */ ICharBuffer** buffer)
+    /* [out] */ AutoPtr<ICharBuffer>& buffer)
 {
-    VALIDATE_NOT_NULL(buffer);
-
     Integer pos, lim, cap;
-    GetPosition(&pos);
-    GetLimit(&lim);
-    GetCapacity(&cap);
+    GetPosition(pos);
+    GetLimit(lim);
+    GetCapacity(cap);
     AutoPtr<StringCharBuffer> hsb = new StringCharBuffer();
     FAIL_RETURN(hsb->Constructor(
             mStr, MarkValue(), pos, lim, cap, mOffset));
-    *buffer = (ICharBuffer*)hsb.Get();
-    REFCOUNT_ADD(*buffer);
+    buffer = (ICharBuffer*)hsb.Get();
     return NOERROR;
 }
 
 ECode StringCharBuffer::AsReadOnlyBuffer(
-    /* [out] */ ICharBuffer** buffer)
+    /* [out] */ AutoPtr<ICharBuffer>& buffer)
 {
     return Duplicate(buffer);
 }
 
 ECode StringCharBuffer::Get(
-    /* [out] */ Char* c)
+    /* [out] */ Char& c)
 {
-    VALIDATE_NOT_NULL(c);
-
     Integer index;
     NextGetIndex(&index);
-    mStr->GetCharAt(index + mOffset, *c);
+    mStr->GetCharAt(index + mOffset, c);
     return NOERROR;
 }
 
 ECode StringCharBuffer::Get(
     /* [in] */ Integer index,
-    /* [out] */ Char* c)
+    /* [out] */ Char& c)
 {
-    VALIDATE_NOT_NULL(c);
-
     FAIL_RETURN(CheckIndex(index));
-    mStr->GetCharAt(index + mOffset, *c);
+    mStr->GetCharAt(index + mOffset, c);
     return NOERROR;
 }
 
 ECode StringCharBuffer::GetUnchecked(
     /* [in] */ Integer index,
-    /* [out] */ Char* c)
+    /* [out] */ Char& c)
 {
-    VALIDATE_NOT_NULL(c);
-
-    mStr->GetCharAt(index + mOffset, *c);
+    mStr->GetCharAt(index + mOffset, c);
     return NOERROR;
 }
 
@@ -141,24 +129,20 @@ ECode StringCharBuffer::Compact()
 }
 
 ECode StringCharBuffer::IsReadOnly(
-    /* [out] */ Boolean* readOnly)
+    /* [out] */ Boolean& readOnly)
 {
-    VALIDATE_NOT_NULL(readOnly);
-
-    *readOnly = true;
+    readOnly = true;
     return NOERROR;
 }
 
 ECode StringCharBuffer::ToString(
     /* [in] */ Integer start,
     /* [in] */ Integer end,
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
-    VALIDATE_NOT_NULL(desc);
-
     String str;
     mStr->ToString(str);
-    *desc = str.Substring(start + mOffset, end + mOffset);
+    desc = str.Substring(start + mOffset, end + mOffset);
     return NOERROR;
 }
 
@@ -168,10 +152,10 @@ ECode StringCharBuffer::SubSequence(
     /* [out] */ AutoPtr<ICharSequence>& subcsq)
 {
     Integer pos, cap;
-    GetPosition(&pos);
+    GetPosition(pos);
     FAIL_RETURN(CheckIndex(start, pos));
     FAIL_RETURN(CheckIndex(end, pos));
-    GetCapacity(&cap);
+    GetCapacity(cap);
     AutoPtr<StringCharBuffer> scb = new StringCharBuffer();
     FAIL_RETURN(scb->Constructor(mStr, -1, pos + start, pos + end, cap, mOffset));
     subcsq = (ICharSequence*)scb.Get();
@@ -179,21 +163,16 @@ ECode StringCharBuffer::SubSequence(
 }
 
 ECode StringCharBuffer::IsDirect(
-    /* [out] */ Boolean* direct)
+    /* [out] */ Boolean& direct)
 {
-    VALIDATE_NOT_NULL(direct);
-
-    *direct = false;
+    direct = false;
     return NOERROR;
 }
 
 ECode StringCharBuffer::GetOrder(
-    /* [out] */ IByteOrder** bo)
+    /* [out] */ AutoPtr<IByteOrder>& bo)
 {
-    VALIDATE_NOT_NULL(bo);
-
-    AutoPtr<IByteOrder> order = ByteOrder::Order();
-    order.MoveTo(bo);
+    bo = ByteOrder::Order();
     return NOERROR;
 }
 

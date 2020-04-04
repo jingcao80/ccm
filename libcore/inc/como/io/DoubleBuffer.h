@@ -18,9 +18,11 @@
 #define __COMO_IO_DOUBLEBUFFER_H__
 
 #include "como/io/Buffer.h"
+#include "como.core.IArrayHolder.h"
 #include "como.core.IComparable.h"
 #include "como.io.IDoubleBuffer.h"
 
+using como::core::IArrayHolder;
 using como::core::IComparable;
 
 namespace como {
@@ -84,13 +86,13 @@ public:
         /* [in] */ const Array<Double>& src) override final;
 
     ECode HasArray(
-        /* [out] */ Boolean* result) override final;
+        /* [out] */ Boolean& result) override final;
 
     ECode GetArray(
-        /* [out] */ IInterface** array) override final;
+        /* [out] */ AutoPtr<IArrayHolder>& array) override final;
 
     ECode GetArrayOffset(
-        /* [out] */ Integer* offset) override final;
+        /* [out] */ Integer& offset) override final;
 
     ECode ToString(
         /* [out] */ String& desc) override;

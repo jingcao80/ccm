@@ -40,56 +40,56 @@ public:
     COMO_INTERFACE_DECL();
 
     ECode GetCharset(
-        /* [out] */ ICharset** cs) override;
+        /* [out] */ AutoPtr<ICharset>& cs) override;
 
     ECode GetReplacement(
-        /* [out] */ String* replacement) override;
+        /* [out] */ String& replacement) override;
 
     ECode ReplaceWith(
         /* [in] */ const String& newReplacement) override;
 
     ECode GetMalformedInputAction(
-        /* [out] */ ICodingErrorAction** action) override;
+        /* [out] */ AutoPtr<ICodingErrorAction>& action) override;
 
     ECode OnMalformedInput(
         /* [in] */ ICodingErrorAction* newAction) override;
 
     ECode GetUnmappableCharacterAction(
-        /* [out] */ ICodingErrorAction** action) override;
+        /* [out] */ AutoPtr<ICodingErrorAction>& action) override;
 
     ECode OnUnmappableCharacter(
         /* [in] */ ICodingErrorAction* newAction) override;
 
     ECode GetAverageCharsPerByte(
-        /* [out] */ Float* averageCharsPerByte) override;
+        /* [out] */ Float& averageCharsPerByte) override;
 
     ECode GetMaxCharsPerByte(
-        /* [out] */ Float* maxCharsPerByte) override;
+        /* [out] */ Float& maxCharsPerByte) override;
 
     ECode Decode(
         /* [in] */ IByteBuffer* bb,
         /* [out] */ ICharBuffer* cb,
         /* [in] */ Boolean endOfInput,
-        /* [out] */ ICoderResult** result) override;
+        /* [out] */ AutoPtr<ICoderResult>& result) override;
 
     ECode Flush(
         /* [out] */ ICharBuffer* cb,
-        /* [out] */ ICoderResult** result) override;
+        /* [out] */ AutoPtr<ICoderResult>& result) override;
 
     ECode Reset() override;
 
     ECode Decode(
         /* [in] */ IByteBuffer* bb,
-        /* [out] */ ICharBuffer** cb) override;
+        /* [out] */ AutoPtr<ICharBuffer>& cb) override;
 
     ECode IsAutoDetecting(
-        /* [out] */ Boolean* autoDetecting) override;
+        /* [out] */ Boolean& autoDetecting) override;
 
     ECode IsCharsetDetected(
-        /* [out] */ Boolean* charsetDetected) override;
+        /* [out] */ Boolean& charsetDetected) override;
 
     ECode GetDetectedCharset(
-        /* [out] */ ICharset** cs) override;
+        /* [out] */ AutoPtr<ICharset>& cs) override;
 
 protected:
     ECode Constructor(
@@ -111,7 +111,7 @@ protected:
 
     virtual ECode ImplFlush(
         /* [out] */ ICharBuffer* cb,
-        /* [out] */ ICoderResult** result);
+        /* [out] */ AutoPtr<ICoderResult>& result);
 
     virtual void ImplReset()
     {}
@@ -119,7 +119,7 @@ protected:
     virtual ECode DecodeLoop(
         /* [in] */ IByteBuffer* bb,
         /* [out] */ ICharBuffer* cb,
-        /* [out] */ ICoderResult** result) = 0;
+        /* [out] */ AutoPtr<ICoderResult>& result) = 0;
 
 private:
     ECode Constructor(

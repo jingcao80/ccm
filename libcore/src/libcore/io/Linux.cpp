@@ -52,7 +52,7 @@ namespace io {
         bool _wasSignaled; \
         { \
             int _fd; \
-            fdObj->GetInt(&_fd); \
+            fdObj->GetInt(_fd); \
             AsynchronousCloseMonitor _monitor(_fd); \
             _rc = syscall_name(_fd, __VA_ARGS__); \
             _syscallErrno = errno; \
@@ -253,7 +253,7 @@ ECode Linux::Fstat(
     VALIDATE_NOT_NULL(stat);
 
     Integer nfd;
-    fd->GetInt(&nfd);
+    fd->GetInt(nfd);
     struct stat64 sb;
     int rc = TEMP_FAILURE_RETRY(fstat64(nfd, &sb));
     if (rc == -1) {
@@ -614,7 +614,7 @@ ECode Linux::Mmap(
     /* [out] */ HANDLE* result)
 {
     Integer nfd;
-    fd->GetInt(&nfd);
+    fd->GetInt(nfd);
     void* suggestedPtr = reinterpret_cast<void*>(address);
     void* ptr = mmap64(suggestedPtr, byteCount, prot, flags, nfd, offset);
     if (ptr == MAP_FAILED) {

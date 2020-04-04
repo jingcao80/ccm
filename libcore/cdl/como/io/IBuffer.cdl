@@ -14,6 +14,8 @@
 // limitations under the License.
 //=========================================================================
 
+interface como::core::IArrayHolder;
+
 namespace como {
 namespace io {
 
@@ -28,36 +30,36 @@ interface IBuffer
     Flip();
 
     GetArray(
-        [out] IInterface** array);
+        [out] IArrayHolder&& array);
 
     GetArrayOffset(
-        [out] Integer* offset);
+        [out] Integer& offset);
 
     GetCapacity(
-        [out] Integer* capacity);
+        [out] Integer& capacity);
 
     GetLimit(
-        [out] Integer* limit);
+        [out] Integer& limit);
 
     GetPosition(
-        [out] Integer* position);
+        [out] Integer& position);
 
     HasArray(
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     HasRemaining(
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     IsDirect(
-        [out] Boolean* direct);
+        [out] Boolean& direct);
 
     IsReadOnly(
-        [out] Boolean* readOnly);
+        [out] Boolean& readOnly);
 
     Mark();
 
     Remaining(
-        [out] Integer* remaining);
+        [out] Integer& remaining);
 
     Reset();
 

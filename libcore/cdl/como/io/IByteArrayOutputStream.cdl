@@ -34,17 +34,17 @@ interface IByteArrayOutputStream
     Reset();
 
     GetSize(
-        [out] Integer* size);
+        [out] Integer& size);
 
     ToByteArray(
         [out, callee] Array<Byte>* array);
 
     ToString(
-        [out] String* desc);
+        [out] String& desc);
 
     ToString(
         [in] String charsetName,
-        [out] String* desc);
+        [out] String& desc);
 
     WriteTo(
         [in] IOutputStream* outs);

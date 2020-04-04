@@ -28,34 +28,34 @@ namespace io {
 interface IInputStream
 {
     Available(
-        [out] Integer* number);
+        [out] Integer& number);
 
     Close();
 
     IsMarkSupported(
-        [out] Boolean* supported);
+        [out] Boolean& supported);
 
     Mark(
         [in] Integer readLimit);
 
     Read(
-        [out] Integer* value);
+        [out] Integer& value);
 
     Read(
         [out] Array<Byte>& buffer,
-        [out] Integer* number);
+        [out] Integer& number);
 
     Read(
         [out] Array<Byte>& buffer,
         [in] Integer offset,
         [in] Integer size,
-        [out] Integer* number);
+        [out] Integer& number);
 
     Reset();
 
     Skip(
         [in] Long byteCount,
-        [out] Long* number);
+        [out] Long& number);
 }
 
 }

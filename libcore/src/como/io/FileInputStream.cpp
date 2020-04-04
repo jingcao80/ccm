@@ -80,7 +80,7 @@ ECode FileInputStream::Constructor(
 {
     String name;
     if (file != nullptr) {
-        file->GetPath(&name);
+        file->GetPath(name);
     }
     AutoPtr<ISecurityManager> security = System::GetSecurityManager();
     if (security != nullptr) {
@@ -135,14 +135,12 @@ ECode FileInputStream::Open(
 }
 
 ECode FileInputStream::Read(
-    /* [out] */ Integer* value)
+    /* [out] */ Integer& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     Array<Byte> b(1);
     Integer n;
-    FAIL_RETURN(Read(b, 0, 1, &n));
-    *value = n != -1 ? b[0] & 0xff : -1;
+    FAIL_RETURN(Read(b, 0, 1, n));
+    value = n != -1 ? b[0] & 0xff : -1;
     return NOERROR;
 }
 
@@ -150,25 +148,21 @@ ECode FileInputStream::Read(
     /* [out] */ Array<Byte>& buffer,
     /* [in] */ Integer offset,
     /* [in] */ Integer size,
-    /* [out] */ Integer* number)
+    /* [out] */ Integer& number)
 {
-    VALIDATE_NOT_NULL(number);
-
     VOLATILE_GET(Boolean closed, mClosed);
     if (closed && size > 0) {
         Logger::E("FileInputStream", "Stream Closed");
         return E_IO_EXCEPTION;
     }
     FAIL_RETURN(mTracker->TrackIo(size));
-    return IoBridge::Read(mFd, buffer, offset, size, number);
+    return IoBridge::Read(mFd, buffer, offset, size, &number);
 }
 
 ECode FileInputStream::Skip(
     /* [in] */ Long byteCount,
-    /* [out] */ Long* number)
+    /* [out] */ Long& number)
 {
-    VALIDATE_NOT_NULL(number);
-
     VOLATILE_GET(Boolean closed, mClosed);
     if (closed) {
         Logger::E("FileInputStream", "Stream Closed");
@@ -187,10 +181,10 @@ ECode FileInputStream::Skip(
 
 ECode FileInputStream::Skip0(
     /* [in] */ Long byteCount,
-    /* [out] */ Long* number)
+    /* [out] */ Long& number)
 {
     Integer fd;
-    mFd->GetInt(&fd);
+    mFd->GetInt(fd);
     Long cur = 0, end = 0;
     if ((cur = lseek64(fd, 0, SEEK_CUR)) == -1) {
         if (errno == ESPIPE) {
@@ -205,7 +199,7 @@ ECode FileInputStream::Skip0(
         Logger::E("FileInputStream", "Seek error");
         return E_IO_EXCEPTION;
     }
-    *number = (end - cur);
+    number = (end - cur);
     return NOERROR;
 }
 
@@ -237,10 +231,8 @@ static int available(int fd, Long* bytes)
 }
 
 ECode FileInputStream::Available(
-    /* [out] */ Integer* number)
+    /* [out] */ Integer& number)
 {
-    VALIDATE_NOT_NULL(number);
-
     VOLATILE_GET(Boolean closed, mClosed);
     if (closed) {
         Logger::E("FileInputStream", "Stream Closed");
@@ -248,13 +240,13 @@ ECode FileInputStream::Available(
     }
 
     Integer fd;
-    mFd->GetInt(&fd);
+    mFd->GetInt(fd);
     Long ret;
     if (available(fd, &ret)) {
         if (ret > IInteger::MAX_VALUE) {
             ret = (Integer)IInteger::MAX_VALUE;
         }
-        *number = ret;
+        number = ret;
         return NOERROR;
     }
     return E_IO_EXCEPTION;
@@ -290,30 +282,24 @@ ECode FileInputStream::Close()
 }
 
 ECode FileInputStream::GetFD(
-    /* [out] */ IFileDescriptor** fd)
+    /* [out] */ AutoPtr<IFileDescriptor>& fd)
 {
-    VALIDATE_NOT_NULL(fd);
-
     if (mFd != nullptr) {
-        *fd = mFd;
-        REFCOUNT_ADD(*fd);
+        fd = mFd;
         return NOERROR;
     }
     return E_IO_EXCEPTION;
 }
 
 ECode FileInputStream::GetChannel(
-    /* [out] */ IFileChannel** channel)
+    /* [out] */ AutoPtr<IFileChannel>& channel)
 {
-    VALIDATE_NOT_NULL(channel);
-
     AutoLock lock(this);
 
     if (mChannel == nullptr) {
         mChannel = FileChannelImpl::Open(mFd, mPath, true, false, (IFileInputStream*)this);
     }
-    *channel = mChannel;
-    REFCOUNT_ADD(*channel);
+    channel = mChannel;
     return NOERROR;
 }
 

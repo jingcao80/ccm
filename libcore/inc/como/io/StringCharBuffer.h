@@ -32,24 +32,24 @@ public:
         /* [in] */ Integer end);
 
     ECode Slice(
-        /* [out] */ ICharBuffer** buffer) override;
+        /* [out] */ AutoPtr<ICharBuffer>& buffer) override;
 
     ECode Duplicate(
-        /* [out] */ ICharBuffer** buffer) override;
+        /* [out] */ AutoPtr<ICharBuffer>& buffer) override;
 
     ECode AsReadOnlyBuffer(
-        /* [out] */ ICharBuffer** buffer) override;
+        /* [out] */ AutoPtr<ICharBuffer>& buffer) override;
 
     ECode Get(
-        /* [out] */ Char* c) override final;
+        /* [out] */ Char& c) override final;
 
     ECode Get(
         /* [in] */ Integer index,
-        /* [out] */ Char* c) override final;
+        /* [out] */ Char& c) override final;
 
     ECode GetUnchecked(
         /* [in] */ Integer index,
-        /* [out] */ Char* c) override;
+        /* [out] */ Char& c) override;
 
     ECode Put(
         /* [in] */ Char c) override final;
@@ -61,12 +61,12 @@ public:
     ECode Compact() override final;
 
     ECode IsReadOnly(
-        /* [out] */ Boolean* readOnly) override final;
+        /* [out] */ Boolean& readOnly) override final;
 
     ECode ToString(
         /* [in] */ Integer start,
         /* [in] */ Integer end,
-        /* [out] */ String* desc) override final;
+        /* [out] */ String& desc) override final;
 
     ECode SubSequence(
         /* [in] */ Integer start,
@@ -74,10 +74,10 @@ public:
         /* [out] */ AutoPtr<ICharSequence>& subcsq) override final;
 
     ECode IsDirect(
-        /* [out] */ Boolean* direct) override;
+        /* [out] */ Boolean& direct) override;
 
     ECode GetOrder(
-        /* [out] */ IByteOrder** bo) override;
+        /* [out] */ AutoPtr<IByteOrder>& bo) override;
 
 private:
     ECode Constructor(

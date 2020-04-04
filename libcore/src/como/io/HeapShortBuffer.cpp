@@ -86,74 +86,61 @@ ECode HeapShortBuffer::Constructor(
 }
 
 ECode HeapShortBuffer::Slice(
-    /* [out] */ IShortBuffer** buffer)
+    /* [out] */ AutoPtr<IShortBuffer>& buffer)
 {
-    VALIDATE_NOT_NULL(buffer);
-
     Integer remaining, pos;
-    Remaining(&remaining);
-    GetPosition(&pos);
+    Remaining(remaining);
+    GetPosition(pos);
     AutoPtr<HeapShortBuffer> hsb = new HeapShortBuffer();
     FAIL_RETURN(hsb->Constructor(
             mHb, -1, 0, remaining, remaining, pos + mOffset, mIsReadOnly));
-    *buffer = (IShortBuffer*)hsb.Get();
-    REFCOUNT_ADD(*buffer);
+    buffer = (IShortBuffer*)hsb.Get();
     return NOERROR;
 }
 
 ECode HeapShortBuffer::Duplicate(
-    /* [out] */ IShortBuffer** buffer)
+    /* [out] */ AutoPtr<IShortBuffer>& buffer)
 {
-    VALIDATE_NOT_NULL(buffer);
-
     Integer pos, lim, cap;
-    GetPosition(&pos);
-    GetLimit(&lim);
-    GetCapacity(&cap);
+    GetPosition(pos);
+    GetLimit(lim);
+    GetCapacity(cap);
     AutoPtr<HeapShortBuffer> hsb = new HeapShortBuffer();
     FAIL_RETURN(hsb->Constructor(
             mHb, MarkValue(), pos, lim, cap, mOffset, mIsReadOnly));
-    *buffer = (IShortBuffer*)hsb.Get();
-    REFCOUNT_ADD(*buffer);
+    buffer = (IShortBuffer*)hsb.Get();
     return NOERROR;
 }
 
 ECode HeapShortBuffer::AsReadOnlyBuffer(
-    /* [out] */ IShortBuffer** buffer)
+    /* [out] */ AutoPtr<IShortBuffer>& buffer)
 {
-    VALIDATE_NOT_NULL(buffer);
-
     Integer pos, lim, cap;
-    GetPosition(&pos);
-    GetLimit(&lim);
-    GetCapacity(&cap);
+    GetPosition(pos);
+    GetLimit(lim);
+    GetCapacity(cap);
     AutoPtr<HeapShortBuffer> hsb = new HeapShortBuffer();
     FAIL_RETURN(hsb->Constructor(
             mHb, MarkValue(), pos, lim, cap, mOffset, true));
-    *buffer = (IShortBuffer*)hsb.Get();
-    REFCOUNT_ADD(*buffer);
+    buffer = (IShortBuffer*)hsb.Get();
     return NOERROR;
 }
 
 ECode HeapShortBuffer::Get(
-    /* [out] */ Short* s)
+    /* [out] */ Short& s)
 {
-    VALIDATE_NOT_NULL(s);
-
     Integer index;
     NextGetIndex(&index);
-    *s = mHb[Ix(index)];
+    s = mHb[Ix(index)];
     return NOERROR;
 }
 
 ECode HeapShortBuffer::Get(
     /* [in] */ Integer index,
-    /* [out] */ Short* s)
+    /* [out] */ Short& s)
 {
-    VALIDATE_NOT_NULL(s);
-
     FAIL_RETURN(CheckIndex(index));
-    *s = mHb[Ix(index)];
+    s = mHb[Ix(index)];
     return NOERROR;
 }
 
@@ -164,32 +151,28 @@ ECode HeapShortBuffer::Get(
 {
     FAIL_RETURN(CheckBounds(mOffset, length, dst.GetLength()));
     Integer remaining;
-    Remaining(&remaining);
+    Remaining(remaining);
     if (length > remaining){
         return E_BUFFER_UNDERFLOW_EXCEPTION;
     }
     Integer pos;
-    GetPosition(&pos);
+    GetPosition(pos);
     dst.Copy(offset, mHb, Ix(pos), length);
     SetPosition(pos + length);
     return NOERROR;
 }
 
 ECode HeapShortBuffer::IsDirect(
-    /* [out] */ Boolean* direct)
+    /* [out] */ Boolean& direct)
 {
-    VALIDATE_NOT_NULL(direct);
-
-    *direct = false;
+    direct = false;
     return NOERROR;
 }
 
 ECode HeapShortBuffer::IsReadOnly(
-    /* [out] */ Boolean* readOnly)
+    /* [out] */ Boolean& readOnly)
 {
-    VALIDATE_NOT_NULL(readOnly);
-
-    *readOnly = mIsReadOnly;
+    readOnly = mIsReadOnly;
     return NOERROR;
 }
 
@@ -227,12 +210,12 @@ ECode HeapShortBuffer::Put(
     }
     FAIL_RETURN(CheckBounds(offset, length, src.GetLength()));
     Integer remaining;
-    Remaining(&remaining);
+    Remaining(remaining);
     if (length > remaining) {
         return E_BUFFER_OVERFLOW_EXCEPTION;
     }
     Integer pos;
-    GetPosition(&pos);
+    GetPosition(pos);
     mHb.Copy(Ix(pos), src, offset, length);
     SetPosition(pos + length);
     return NOERROR;
@@ -251,26 +234,26 @@ ECode HeapShortBuffer::Put(
     if (Object::InstanceOf(src, CID_HeapShortBuffer)) {
         HeapShortBuffer* hsb = (HeapShortBuffer*)src;
         Integer n, remaining;
-        hsb->Remaining(&n);
-        if (Remaining(&remaining), n > remaining) {
+        hsb->Remaining(n);
+        if (Remaining(remaining), n > remaining) {
             return E_BUFFER_OVERFLOW_EXCEPTION;
         }
         Integer thisPos, hsbPos;
-        GetPosition(&thisPos);
-        hsb->GetPosition(&hsbPos);
+        GetPosition(thisPos);
+        hsb->GetPosition(hsbPos);
         mHb.Copy(Ix(thisPos), hsb->mHb, hsb->Ix(hsbPos), n);
         hsb->SetPosition(hsbPos + n);
         SetPosition(thisPos + n);
         return NOERROR;
     }
-    else if (IBuffer::Probe(src)->IsDirect(&direct), direct) {
+    else if (IBuffer::Probe(src)->IsDirect(direct), direct) {
         Integer n, remaining;
-        IBuffer::Probe(src)->Remaining(&n);
-        if (Remaining(&remaining), n > remaining) {
+        IBuffer::Probe(src)->Remaining(n);
+        if (Remaining(remaining), n > remaining) {
             return E_BUFFER_OVERFLOW_EXCEPTION;
         }
         Integer pos;
-        GetPosition(&pos);
+        GetPosition(pos);
         src->Get(mHb, Ix(pos), n);
         SetPosition(pos + n);
         return NOERROR;
@@ -286,23 +269,20 @@ ECode HeapShortBuffer::Compact()
         return E_READ_ONLY_BUFFER_EXCEPTION;
     }
     Integer pos, remaining, cap;
-    GetPosition(&pos);
-    Remaining(&remaining);
+    GetPosition(pos);
+    Remaining(remaining);
     mHb.Copy(Ix(0), mHb, Ix(pos), remaining);
     SetPosition(remaining);
-    GetCapacity(&cap);
+    GetCapacity(cap);
     SetLimit(cap);
     DiscardMark();
     return NOERROR;
 }
 
 ECode HeapShortBuffer::GetOrder(
-    /* [out] */ IByteOrder** bo)
+    /* [out] */ AutoPtr<IByteOrder>& bo)
 {
-    VALIDATE_NOT_NULL(bo);
-
-    AutoPtr<IByteOrder> order = ByteOrder::Order();
-    order.MoveTo(bo);
+    bo = ByteOrder::Order();
     return NOERROR;
 }
 

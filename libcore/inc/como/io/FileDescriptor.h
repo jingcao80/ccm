@@ -45,18 +45,18 @@ public:
     static AutoPtr<IFileDescriptor> GetERR();
 
     ECode Valid(
-        /* [out] */ Boolean* valid) override;
+        /* [out] */ Boolean& valid) override;
 
     ECode Sync() override;
 
     ECode GetInt(
-        /* [out] */ Integer* fd) override;
+        /* [out] */ Integer& fd) override;
 
     ECode SetInt(
         /* [in] */ Integer fd) override;
 
     ECode IsSocket(
-        /* [out] */ Boolean* socket) override;
+        /* [out] */ Boolean& socket) override;
 
 private:
     static AutoPtr<IFileDescriptor> DupFd(

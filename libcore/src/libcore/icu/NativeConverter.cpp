@@ -462,10 +462,10 @@ ECode NativeConverter::SetCallbackDecode(
     /* [in] */ ICharsetDecoder* decoder)
 {
     AutoPtr<ICodingErrorAction> action1, action2;
-    decoder->GetMalformedInputAction(&action1);
-    decoder->GetUnmappableCharacterAction(&action2);
+    decoder->GetMalformedInputAction(action1);
+    decoder->GetUnmappableCharacterAction(action2);
     String replacement;
-    decoder->GetReplacement(&replacement);
+    decoder->GetReplacement(replacement);
     return SetCallbackDecode(handle, TranslateCodingErrorAction(action1),
             TranslateCodingErrorAction(action2), replacement);
 }
@@ -475,8 +475,8 @@ ECode NativeConverter::SetCallbackEncode(
     /* [in] */ ICharsetEncoder* encoder)
 {
     AutoPtr<ICodingErrorAction> action1, action2;
-    encoder->GetMalformedInputAction(&action1);
-    encoder->GetUnmappableCharacterAction(&action2);
+    encoder->GetMalformedInputAction(action1);
+    encoder->GetUnmappableCharacterAction(action2);
     Array<Byte> replacement;
     encoder->GetReplacement(&replacement);
     return SetCallbackEncode(handle, TranslateCodingErrorAction(action1),

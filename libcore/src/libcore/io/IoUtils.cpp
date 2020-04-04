@@ -36,7 +36,7 @@ ECode IoUtils::Close(
 {
     ECode ec = NOERROR;
     Boolean valid;
-    if (fd != nullptr && (fd->Valid(&valid), valid)) {
+    if (fd != nullptr && (fd->Valid(valid), valid)) {
         ec = Libcore::GetOs()->Close(fd);
     }
     return SUCCEEDED(ec) ? ec : E_IO_EXCEPTION;

@@ -89,12 +89,9 @@ ECode StringWriter::ToString(
 }
 
 ECode StringWriter::GetBuffer(
-    /* [out] */ IStringBuffer** buf)
+    /* [out] */ AutoPtr<IStringBuffer>& buf)
 {
-    VALIDATE_NOT_NULL(buf);
-
-    *buf = mBuf;
-    REFCOUNT_ADD(*buf);
+    buf = mBuf;
     return NOERROR;
 }
 

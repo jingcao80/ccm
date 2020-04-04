@@ -80,7 +80,7 @@ public:
         /* [in] */ Integer byteCount) override
     {
         Integer pos;
-        IBuffer::Probe(mBuffer)->GetPosition(&pos);
+        IBuffer::Probe(mBuffer)->GetPosition(pos);
         IBuffer::Probe(mBuffer)->SetPosition(pos + byteCount);
         return NOERROR;
     }
@@ -88,7 +88,7 @@ public:
     ECode Pos(
         /* [out] */ Integer* offset) override
     {
-        return IBuffer::Probe(mBuffer)->GetPosition(offset);
+        return IBuffer::Probe(mBuffer)->GetPosition(*offset);
     }
 
     ECode ReadByteArray(
@@ -102,15 +102,15 @@ public:
     ECode ReadByte(
         /* [out] */ Byte* result) override
     {
-        return mBuffer->Get(result);
+        return mBuffer->Get(*result);
     }
 
     ECode ReadInteger(
         /* [out] */ Integer* result) override
     {
         AutoPtr<IIntegerBuffer> buffer;
-        mBuffer->AsIntegerBuffer(&buffer);
-        FAIL_RETURN(buffer->Get(result));
+        mBuffer->AsIntegerBuffer(buffer);
+        FAIL_RETURN(buffer->Get(*result));
 
         Skip(4);
         return NOERROR;
@@ -122,7 +122,7 @@ public:
         /* [in] */ Integer intCount) override
     {
         AutoPtr<IIntegerBuffer> buffer;
-        mBuffer->AsIntegerBuffer(&buffer);
+        mBuffer->AsIntegerBuffer(buffer);
         FAIL_RETURN(buffer->Get(dst, dstOffset, intCount));
 
         Skip(4 * intCount);
@@ -133,8 +133,8 @@ public:
         /* [out] */ Short* result) override
     {
         AutoPtr<IShortBuffer> buffer;
-        mBuffer->AsShortBuffer(&buffer);
-        FAIL_RETURN(buffer->Get(result));
+        mBuffer->AsShortBuffer(buffer);
+        FAIL_RETURN(buffer->Get(*result));
 
         Skip(2);
         return NOERROR;

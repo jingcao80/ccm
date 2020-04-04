@@ -60,21 +60,16 @@ ECode CharsetDecoder::Constructor(
 }
 
 ECode CharsetDecoder::GetCharset(
-    /* [out] */ ICharset** cs)
+    /* [out] */ AutoPtr<ICharset>& cs)
 {
-    VALIDATE_NOT_NULL(cs);
-
-    *cs = mCharset;
-    REFCOUNT_ADD(*cs);
+    cs = mCharset;
     return NOERROR;
 }
 
 ECode CharsetDecoder::GetReplacement(
-    /* [out] */ String* replacement)
+    /* [out] */ String& replacement)
 {
-    VALIDATE_NOT_NULL(replacement);
-
-    *replacement = mReplacement;
+    replacement = mReplacement;
     return NOERROR;
 }
 
@@ -102,12 +97,9 @@ ECode CharsetDecoder::ReplaceWith(
 }
 
 ECode CharsetDecoder::GetMalformedInputAction(
-    /* [out] */ ICodingErrorAction** action)
+    /* [out] */ AutoPtr<ICodingErrorAction>& action)
 {
-    VALIDATE_NOT_NULL(action);
-
-    *action = mMalformedInputAction;
-    REFCOUNT_ADD(*action);
+    action = mMalformedInputAction;
     return NOERROR;
 }
 
@@ -124,12 +116,9 @@ ECode CharsetDecoder::OnMalformedInput(
 }
 
 ECode CharsetDecoder::GetUnmappableCharacterAction(
-    /* [out] */ ICodingErrorAction** action)
+    /* [out] */ AutoPtr<ICodingErrorAction>& action)
 {
-    VALIDATE_NOT_NULL(action);
-
-    *action = mUnmappableCharacterAction;
-    REFCOUNT_ADD(*action);
+    action = mUnmappableCharacterAction;
     return NOERROR;
 }
 
@@ -146,20 +135,16 @@ ECode CharsetDecoder::OnUnmappableCharacter(
 }
 
 ECode CharsetDecoder::GetAverageCharsPerByte(
-    /* [out] */ Float* averageCharsPerByte)
+    /* [out] */ Float& averageCharsPerByte)
 {
-    VALIDATE_NOT_NULL(averageCharsPerByte);
-
-    *averageCharsPerByte = mAverageCharsPerByte;
+    averageCharsPerByte = mAverageCharsPerByte;
     return NOERROR;
 }
 
 ECode CharsetDecoder::GetMaxCharsPerByte(
-    /* [out] */ Float* maxCharsPerByte)
+    /* [out] */ Float& maxCharsPerByte)
 {
-    VALIDATE_NOT_NULL(maxCharsPerByte);
-
-    *maxCharsPerByte = mMaxCharsPerByte;
+    maxCharsPerByte = mMaxCharsPerByte;
     return NOERROR;
 }
 
@@ -167,10 +152,8 @@ ECode CharsetDecoder::Decode(
     /* [in] */ IByteBuffer* bb,
     /* [in] */ ICharBuffer* cb,
     /* [in] */ Boolean endOfInput,
-    /* [out] */ ICoderResult** result)
+    /* [out] */ AutoPtr<ICoderResult>& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     Integer newState = endOfInput ? ST_END : ST_CODING;
     if ((mState != ST_RESET) && (mState != ST_CODING) &&
             !(endOfInput && (mState == ST_END))) {
@@ -179,38 +162,35 @@ ECode CharsetDecoder::Decode(
     mState = newState;
 
     for (;;) {
-        AutoPtr<ICoderResult> cr;
-        ECode ec = DecodeLoop(bb, cb, &cr);
+        ECode ec = DecodeLoop(bb, cb, result);
         if (FAILED(ec)) {
             return E_CODER_MALFUNCTION_ERROR;
         }
 
         Boolean overflow;
-        if (cr->IsOverflow(&overflow), overflow) {
-            cr.MoveTo(result);
+        if (result->IsOverflow(overflow), overflow) {
             return NOERROR;
         }
 
         Boolean underflow;
-        if (cr->IsUnderflow(&underflow), underflow) {
+        if (result->IsUnderflow(underflow), underflow) {
             Boolean hasRemaining;
-            if (endOfInput && (IBuffer::Probe(bb)->HasRemaining(&hasRemaining), hasRemaining)) {
+            if (endOfInput && (IBuffer::Probe(bb)->HasRemaining(hasRemaining), hasRemaining)) {
                 Integer remaining;
-                IBuffer::Probe(bb)->Remaining(&remaining);
-                cr = CoderResult::MalformedForLength(remaining);
+                IBuffer::Probe(bb)->Remaining(remaining);
+                result = CoderResult::MalformedForLength(remaining);
             }
             else {
-                cr.MoveTo(result);
                 return NOERROR;
             }
         }
 
         AutoPtr<ICodingErrorAction> action;
         Boolean malformed, unmappable;
-        if (cr->IsMalformed(&malformed), malformed) {
+        if (result->IsMalformed(malformed), malformed) {
             action = mMalformedInputAction;
         }
-        else if (cr->IsUnmappable(&unmappable), unmappable) {
+        else if (result->IsUnmappable(unmappable), unmappable) {
             action = mUnmappableCharacterAction;
         }
         else {
@@ -218,15 +198,13 @@ ECode CharsetDecoder::Decode(
         }
 
         if (action == CodingErrorAction::GetREPORT()) {
-            cr.MoveTo(result);
             return NOERROR;
         }
 
         if (action == CodingErrorAction::GetREPLACE()) {
             Integer remaining;
-            if (IBuffer::Probe(cb)->Remaining(&remaining), remaining < mReplacement.GetLength()) {
-                AutoPtr<ICoderResult> ret = CoderResult::GetOVERFLOW();
-                ret.MoveTo(result);
+            if (IBuffer::Probe(cb)->Remaining(remaining), remaining < mReplacement.GetLength()) {
+                result = CoderResult::GetOVERFLOW();
                 return NOERROR;
             }
             cb->Put(mReplacement);
@@ -236,8 +214,8 @@ ECode CharsetDecoder::Decode(
                 (action == CodingErrorAction::GetREPLACE())) {
             // Skip erroneous input either way
             Integer pos, len;
-            IBuffer::Probe(bb)->GetPosition(&pos);
-            cr->GetLength(&len);
+            IBuffer::Probe(bb)->GetPosition(pos);
+            result->GetLength(len);
             IBuffer::Probe(bb)->SetPosition(pos + len);
             continue;
         }
@@ -248,18 +226,14 @@ ECode CharsetDecoder::Decode(
 
 ECode CharsetDecoder::Flush(
     /* [out] */ ICharBuffer* cb,
-    /* [out] */ ICoderResult** result)
+    /* [out] */ AutoPtr<ICoderResult>& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     if (mState == ST_END) {
-        AutoPtr<ICoderResult> cr;
-        FAIL_RETURN(ImplFlush(cb, &cr));
+        FAIL_RETURN(ImplFlush(cb, result));
         Boolean underflow;
-        if (cr->IsUnderflow(&underflow), underflow) {
+        if (result->IsUnderflow(underflow), underflow) {
             mState = ST_FLUSHED;
         }
-        cr.MoveTo(result);
         return NOERROR;
     }
 
@@ -267,16 +241,15 @@ ECode CharsetDecoder::Flush(
         return E_ILLEGAL_STATE_EXCEPTION;
     }
 
-    AutoPtr<ICoderResult> cr = CoderResult::GetUNDERFLOW();
-    cr.MoveTo(result);
+    result = CoderResult::GetUNDERFLOW();
     return NOERROR;
 }
 
 ECode CharsetDecoder::ImplFlush(
     /* [out] */ ICharBuffer* cb,
-    /* [out] */ ICoderResult** result)
+    /* [out] */ AutoPtr<ICoderResult>& result)
 {
-    CoderResult::GetUNDERFLOW().MoveTo(result);
+    result = CoderResult::GetUNDERFLOW();
     return NOERROR;
 }
 
@@ -289,73 +262,65 @@ ECode CharsetDecoder::Reset()
 
 ECode CharsetDecoder::Decode(
     /* [in] */ IByteBuffer* bb,
-    /* [out] */ ICharBuffer** cb)
+    /* [out] */ AutoPtr<ICharBuffer>& cb)
 {
-    VALIDATE_NOT_NULL(cb);
-
     Integer remaining;
     Float averageCharsPerByte;
-    IBuffer::Probe(bb)->Remaining(&remaining);
-    GetAverageCharsPerByte(&averageCharsPerByte);
+    IBuffer::Probe(bb)->Remaining(remaining);
+    GetAverageCharsPerByte(averageCharsPerByte);
     Integer n = remaining * averageCharsPerByte;
-    AutoPtr<ICharBuffer> out;
-    CharBuffer::Allocate(n, &out);
+    CharBuffer::Allocate(n, &cb);
 
     if ((n == 0) && (remaining == 0)) {
-        out.MoveTo(cb);
         return NOERROR;
     }
     Reset();
     for (;;) {
         AutoPtr<ICoderResult> cr;
         Boolean result;
-        if (IBuffer::Probe(bb)->HasRemaining(&result), result) {
-            FAIL_RETURN(Decode(bb, out, true, &cr));
+        if (IBuffer::Probe(bb)->HasRemaining(result), result) {
+            FAIL_RETURN(Decode(bb, cb, true, cr));
         }
         else {
             cr = CoderResult::GetUNDERFLOW();
         }
-        if (cr->IsUnderflow(&result), result) {
-            cr = nullptr;
-            Flush(out, &cr);
+        if (cr->IsUnderflow(result), result) {
+            Flush(cb, cr);
         }
 
-        if (cr->IsUnderflow(&result), result) {
+        if (cr->IsUnderflow(result), result) {
             break;
         }
-        if (cr->IsOverflow(&result), result) {
+        if (cr->IsOverflow(result), result) {
             n = 2 * n + 1;
             AutoPtr<ICharBuffer> o;
             CharBuffer::Allocate(n, &o);
-            IBuffer::Probe(out)->Flip();
-            o->Put(out);
-            out = o;
+            IBuffer::Probe(cb)->Flip();
+            o->Put(cb);
+            cb = o;
             continue;
         }
         return cr->ThrowException();
     }
-    IBuffer::Probe(out)->Flip();
-    out.MoveTo(cb);
+    IBuffer::Probe(cb)->Flip();
     return NOERROR;
 }
 
 ECode CharsetDecoder::IsAutoDetecting(
-    /* [out] */ Boolean* autoDetecting)
+    /* [out] */ Boolean& autoDetecting)
 {
-    VALIDATE_NOT_NULL(autoDetecting);
-
-    *autoDetecting = false;
+    autoDetecting = false;
     return NOERROR;
 }
 
 ECode CharsetDecoder::IsCharsetDetected(
-    /* [out] */ Boolean* charsetDetected)
+    /* [out] */ Boolean& charsetDetected)
 {
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
 ECode CharsetDecoder::GetDetectedCharset(
-    /* [out] */ ICharset** cs)
+    /* [out] */ AutoPtr<ICharset>& cs)
 {
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }

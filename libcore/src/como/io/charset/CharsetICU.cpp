@@ -36,43 +36,37 @@ ECode CharsetICU::Constructor(
 }
 
 ECode CharsetICU::NewDecoder(
-    /* [out] */ ICharsetDecoder** decoder)
+    /* [out] */ AutoPtr<ICharsetDecoder>& decoder)
 {
-    VALIDATE_NOT_NULL(decoder);
-
     return CharsetDecoderICU::NewInstance(
-            this, mIcuCanonicalName, decoder);
+            this, mIcuCanonicalName, &decoder);
 }
 
 ECode CharsetICU::NewEncoder(
-    /* [out] */ ICharsetEncoder** encoder)
+    /* [out] */ AutoPtr<ICharsetEncoder>& encoder)
 {
-    VALIDATE_NOT_NULL(encoder);
-
     return CharsetEncoderICU::NewInstance(
-            this, mIcuCanonicalName, encoder);
+            this, mIcuCanonicalName, &encoder);
 }
 
 ECode CharsetICU::Contains(
     /* [in] */ ICharset* cs,
-    /* [out] */ Boolean* contains)
+    /* [out] */ Boolean& contains)
 {
-    VALIDATE_NOT_NULL(contains);
-
     if (cs == nullptr) {
-        *contains = false;
+        contains = false;
         return NOERROR;
     }
     Boolean equal;
     Equals(cs, equal);
     if (equal) {
-        *contains = true;
+        contains = true;
         return NOERROR;
     }
     String thName, csName;
-    GetName(&thName);
-    cs->GetName(&csName);
-    *contains = NativeConverter::Contains(thName, csName);
+    GetName(thName);
+    cs->GetName(csName);
+    contains = NativeConverter::Contains(thName, csName);
     return NOERROR;
 }
 

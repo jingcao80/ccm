@@ -47,20 +47,20 @@ public:
         /* [in] */ Boolean isReadOnly);
 
     ECode Slice(
-        /* [out] */ IFloatBuffer** buffer) override;
+        /* [out] */ AutoPtr<IFloatBuffer>& buffer) override;
 
     ECode Duplicate(
-        /* [out] */ IFloatBuffer** buffer) override;
+        /* [out] */ AutoPtr<IFloatBuffer>& buffer) override;
 
     ECode AsReadOnlyBuffer(
-        /* [out] */ IFloatBuffer** buffer) override;
+        /* [out] */ AutoPtr<IFloatBuffer>& buffer) override;
 
     ECode Get(
-        /* [out] */ Float* f) override;
+        /* [out] */ Float& f) override;
 
     ECode Get(
         /* [in] */ Integer index,
-        /* [out] */ Float* f) override;
+        /* [out] */ Float& f) override;
 
     ECode Get(
         /* [out] */ Array<Float>& dst,
@@ -68,10 +68,10 @@ public:
         /* [in] */ Integer length) override;
 
     ECode IsDirect(
-        /* [out] */ Boolean* direct) override;
+        /* [out] */ Boolean& direct) override;
 
     ECode IsReadOnly(
-        /* [out] */ Boolean* readOnly) override;
+        /* [out] */ Boolean& readOnly) override;
 
     ECode Put(
         /* [in] */ Float f) override;
@@ -91,7 +91,7 @@ public:
     ECode Compact() override;
 
     ECode GetOrder(
-        /* [out] */ IByteOrder** bo) override;
+        /* [out] */ AutoPtr<IByteOrder>& bo) override;
 
     ECode GetCoclassID(
         /* [out] */ CoclassID& cid) override;

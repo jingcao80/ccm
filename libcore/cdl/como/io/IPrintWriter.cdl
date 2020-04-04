@@ -33,7 +33,7 @@ namespace io {
 interface IPrintWriter
 {
     CheckError(
-        [out] Boolean* hasErrors);
+        [out] Boolean& hasErrors);
 
     Format(
         [in] String format,

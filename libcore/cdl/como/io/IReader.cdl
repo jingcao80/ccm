@@ -25,7 +25,7 @@ interface IReader
 {
     Read(
         [out] Array<Char> buffer,
-        [out] Integer* number);
+        [out] Integer& number);
 }
 
 }

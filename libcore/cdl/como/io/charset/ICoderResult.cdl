@@ -25,22 +25,22 @@ namespace charset {
 interface ICoderResult
 {
     GetLength(
-        [out] Integer* length);
+        [out] Integer& length);
 
     IsError(
-        [out] Boolean* error);
+        [out] Boolean& error);
 
     IsMalformed(
-        [out] Boolean* malformed);
+        [out] Boolean& malformed);
 
     IsOverflow(
-        [out] Boolean* overflow);
+        [out] Boolean& overflow);
 
     IsUnderflow(
-        [out] Boolean* underflow);
+        [out] Boolean& underflow);
 
     IsUnmappable(
-        [out] Boolean* unmappable);
+        [out] Boolean& unmappable);
 
     ThrowException();
 }

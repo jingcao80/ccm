@@ -34,7 +34,7 @@ interface IStreamEncoder
     FlushBuffer();
 
     GetEncoding(
-        [out] String* str);
+        [out] String& str);
 }
 
 }

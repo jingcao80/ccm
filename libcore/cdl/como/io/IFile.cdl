@@ -33,16 +33,16 @@ namespace io {
 interface IFile
 {
     CanExecute(
-        [out] Boolean* executable);
+        [out] Boolean& executable);
 
     CanRead(
-        [out] Boolean* readable);
+        [out] Boolean& readable);
 
     CanWrite(
-        [out] Boolean* writeable);
+        [out] Boolean& writeable);
 
     CreateNewFile(
-        [out] Boolean* succeeded);
+        [out] Boolean& succeeded);
 
     Delete(
         [out] Boolean* succeeded = nullptr);
@@ -50,62 +50,62 @@ interface IFile
     DeleteOnExit();
 
     Exists(
-        [out] Boolean* existed);
+        [out] Boolean& existed);
 
     GetAbsoluteFile(
-        [out] IFile** f);
+        [out] IFile&& f);
 
     GetAbsolutePath(
-        [out] String* path);
+        [out] String& path);
 
     GetCanonicalFile(
-        [out] IFile** f);
+        [out] IFile&& f);
 
     GetCanonicalPath(
-        [out] String* path);
+        [out] String& path);
 
     GetFreeSpace(
-        [out] Long* space);
+        [out] Long& space);
 
     GetLength(
-        [out] Long* len);
+        [out] Long& len);
 
     GetName(
-        [out] String* name);
+        [out] String& name);
 
     GetParent(
-        [out] String* parent);
+        [out] String& parent);
 
     GetParentFile(
-        [out] IFile** parent);
+        [out] IFile&& parent);
 
     GetPath(
-        [out] String* path);
+        [out] String& path);
 
     // @hide
     GetPrefixLength(
-        [out] Integer* length);
+        [out] Integer& length);
 
     GetTotalSpace(
-        [out] Long* space);
+        [out] Long& space);
 
     GetUsableSpace(
-        [out] Long* space);
+        [out] Long& space);
 
     IsAbsolute(
-        [out] Boolean* absolute);
+        [out] Boolean& absolute);
 
     IsDirectory(
-        [out] Boolean* directory);
+        [out] Boolean& directory);
 
     IsFile(
-        [out] Boolean* file);
+        [out] Boolean& file);
 
     IsHidden(
-        [out] Boolean* hidden);
+        [out] Boolean& hidden);
 
     LastModified(
-        [out] Long* time);
+        [out] Long& time);
 
     List(
         [out, callee] Array<String>* files);
@@ -126,54 +126,54 @@ interface IFile
         [out, callee] Array<IFile*>* files);
 
     Mkdir(
-        [out] Boolean* succeeded);
+        [out] Boolean& succeeded);
 
     Mkdirs(
-        [out] Boolean* succeeded);
+        [out] Boolean& succeeded);
 
     RenameTo(
         [in] IFile* dest,
-        [out] Boolean* succeeded);
+        [out] Boolean& succeeded);
 
     SetExecutable(
         [in] Boolean executable,
-        [out] Boolean* succeeded);
+        [out] Boolean& succeeded);
 
     SetExecutable(
         [in] Boolean executable,
         [in] Boolean ownerOnly,
-        [out] Boolean* succeeded);
+        [out] Boolean& succeeded);
 
     SetLastModified(
         [in] Long time,
-        [out] Boolean* succeeded);
+        [out] Boolean& succeeded);
 
     SetReadOnly(
-        [out] Boolean* succeeded);
+        [out] Boolean& succeeded);
 
     SetReadable(
         [in] Boolean readable,
-        [out] Boolean* succeeded);
+        [out] Boolean& succeeded);
 
     SetReadable(
         [in] Boolean readable,
         [in] Boolean ownerOnly,
-        [out] Boolean* succeeded);
+        [out] Boolean& succeeded);
 
     SetWritable(
         [in] Boolean writable,
-        [out] Boolean* succeeded);
+        [out] Boolean& succeeded);
 
     SetWritable(
         [in] Boolean writable,
         [in] Boolean ownerOnly,
-        [out] Boolean* succeeded);
+        [out] Boolean& succeeded);
 
     ToURI(
-        [out] IURI** id);
+        [out] IURI&& id);
 
     ToURL(
-        [out] IURL** locator);
+        [out] IURL&& locator);
 }
 
 }

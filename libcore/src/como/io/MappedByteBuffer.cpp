@@ -84,24 +84,22 @@ Long MappedByteBuffer::MappingLength(
     /* [in] */ HANDLE mappingOffset)
 {
     Integer cap;
-    GetCapacity(&cap);
+    GetCapacity(cap);
     return cap + mappingOffset;
 }
 
 ECode MappedByteBuffer::IsLoaded(
-    /* [out] */ Boolean* loaded)
+    /* [out] */ Boolean& loaded)
 {
-    VALIDATE_NOT_NULL(loaded);
-
     FAIL_RETURN(CheckMapped());
     if (mAddress == 0) {
-        *loaded = true;
+        loaded = true;
         return NOERROR;
     }
     Integer cap;
-    GetCapacity(&cap);
+    GetCapacity(cap);
     if (cap == 0) {
-        *loaded = true;
+        loaded = true;
         return NOERROR;
     }
     HANDLE offset = MappingOffset();
@@ -116,7 +114,7 @@ ECode MappedByteBuffer::Load()
         return NOERROR;
     }
     Integer cap;
-    GetCapacity(&cap);
+    GetCapacity(cap);
     if (cap == 0) {
         return NOERROR;
     }
@@ -146,7 +144,7 @@ ECode MappedByteBuffer::Force()
         return NOERROR;
     }
     Integer cap;
-    GetCapacity(&cap);
+    GetCapacity(cap);
     if (cap == 0) {
         return NOERROR;
     }
@@ -158,18 +156,18 @@ ECode MappedByteBuffer::IsLoaded0(
     /* [in] */ HANDLE address,
     /* [in] */ Long length,
     /* [in] */ Integer pageCount,
-    /* [out] */ Boolean* loaded)
+    /* [out] */ Boolean& loaded)
 {
-    *loaded = true;
+    loaded = true;
     unsigned char *vec = (unsigned char *)malloc(pageCount * sizeof(char));
     if (vec == NULL) {
-        *loaded = false;
+        loaded = false;
         return E_OUT_OF_MEMORY_ERROR;
     }
 
     int result = mincore(reinterpret_cast<void*>(address), (size_t)length, vec);
     if (result == -1) {
-        *loaded = false;
+        loaded = false;
         free(vec);
         Logger::E("MappedByteBuffer", "mincore failed");
         return E_IO_EXCEPTION;
@@ -177,7 +175,7 @@ ECode MappedByteBuffer::IsLoaded0(
 
     for (Integer i = 0; i < pageCount; i++) {
         if (vec[i] == 0) {
-            *loaded = false;
+            loaded = false;
             break;
         }
     }

@@ -33,7 +33,7 @@ namespace io {
 interface IStringWriter
 {
     GetBuffer(
-        [out] IStringBuffer** buf);
+        [out] IStringBuffer&& buf);
 
     ToString(
         [out] String& str);

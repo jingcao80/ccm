@@ -32,47 +32,47 @@ interface ICharsetEncoder
 {
     CanEncode(
         [in] Char c,
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     CanEncode(
         [in] ICharSequence* cs,
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     Encode(
         [in] ICharBuffer* cb,
-        [out] IByteBuffer** bb);
+        [out] IByteBuffer&& bb);
 
     Encode(
         [in] ICharBuffer* cb,
         [out] IByteBuffer* bb,
         [in] Boolean endOfInput,
-        [out] ICoderResult** result);
+        [out] ICoderResult&& result);
 
     Flush(
         [out] IByteBuffer* bb,
-        [out] ICoderResult** result);
+        [out] ICoderResult&& result);
 
     GetAverageBytesPerChar(
-        [out] Float* averageBytesPerChar);
+        [out] Float& averageBytesPerChar);
 
     GetCharset(
-        [out] ICharset** cs);
+        [out] ICharset&& cs);
 
     GetMalformedInputAction(
-        [out] ICodingErrorAction** action);
+        [out] ICodingErrorAction&& action);
 
     GetMaxBytesPerChar(
-        [out] Float* maxBytesPerChar);
+        [out] Float& maxBytesPerChar);
 
     GetReplacement(
         [out, callee] Array<Byte>* replacement);
 
     GetUnmappableCharacterAction(
-        [out] ICodingErrorAction** action);
+        [out] ICodingErrorAction&& action);
 
     IsLegalReplacement(
         [in] Array<Byte> repl,
-        [out] Boolean* isLegal);
+        [out] Boolean& isLegal);
 
     OnMalformedInput(
         [in] ICodingErrorAction* newAction);

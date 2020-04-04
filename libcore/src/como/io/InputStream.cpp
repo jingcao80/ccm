@@ -30,7 +30,7 @@ COMO_INTERFACE_IMPL_3(InputStream, SyncObject, IInputStream, ICloseable, IAutoCl
 
 ECode InputStream::Read(
     /* [out] */ Array<Byte>& buffer,
-    /* [out] */ Integer* number)
+    /* [out] */ Integer& number)
 {
     return Read(buffer, 0, buffer.GetLength(), number);
 }
@@ -39,72 +39,66 @@ ECode InputStream::Read(
     /* [out] */ Array<Byte>& buffer,
     /* [in] */ Integer offset,
     /* [in] */ Integer size,
-    /* [out] */ Integer* number)
+    /* [out] */ Integer& number)
 {
-    VALIDATE_NOT_NULL(number);
-
     if (offset < 0 || size < 0 || size > buffer.GetLength() - offset) {
         return como::core::E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
     else if (size == 0) {
-        *number = 0;
+        number = 0;
         return NOERROR;
     }
 
     Integer c;
-    FAIL_RETURN(Read(&c));
+    FAIL_RETURN(Read(c));
     if (c == -1) {
-        *number = -1;
+        number = -1;
         return NOERROR;
     }
     buffer[offset] = (Byte)c;
 
     Integer i = 1;
     for (; i < size; i++) {
-        ECode ec = Read(&c);
+        ECode ec = Read(c);
         if (FAILED(ec) || c == -1) {
             break;
         }
         buffer[offset + i] = (Byte)c;
     }
-    *number = i;
+    number = i;
     return NOERROR;
 }
 
 ECode InputStream::Skip(
     /* [in] */ Long byteCount,
-    /* [out] */ Long* number)
+    /* [out] */ Long& number)
 {
-    VALIDATE_NOT_NULL(number);
-
     Long remaining = byteCount;
     Integer nr;
 
     if (byteCount <= 0) {
-        *number = 0;
+        number = 0;
         return NOERROR;
     }
 
     Integer size = Math::Min((Long)MAX_SKIP_BUFFER_SIZE, remaining);
     Array<Byte> skipBuffer(size);
     while (remaining > 0) {
-        FAIL_RETURN(Read(skipBuffer, 0, Math::Min((Long)size, remaining), &nr));
+        FAIL_RETURN(Read(skipBuffer, 0, Math::Min((Long)size, remaining), nr));
         if (nr < 0) {
             break;
         }
         remaining -= nr;
     }
 
-    *number = byteCount - remaining;
+    number = byteCount - remaining;
     return NOERROR;
 }
 
 ECode InputStream::Available(
-    /* [out] */ Integer* number)
+    /* [out] */ Integer& number)
 {
-    VALIDATE_NOT_NULL(number);
-
-    *number = 0;
+    number = 0;
     return NOERROR;
 }
 
@@ -128,11 +122,9 @@ ECode InputStream::Reset()
 }
 
 ECode InputStream::IsMarkSupported(
-    /* [out] */ Boolean* supported)
+    /* [out] */ Boolean& supported)
 {
-    VALIDATE_NOT_NULL(supported);
-
-    *supported = false;
+    supported = false;
     return NOERROR;
 }
 

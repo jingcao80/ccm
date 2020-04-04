@@ -1302,12 +1302,12 @@ ECode TreeMap::BuildFromSorted(
         }
     }
     else {
-        IObjectInput::Probe(str)->ReadObject(&key);
+        IObjectInput::Probe(str)->ReadObject(key);
         if (defaultVal != nullptr) {
             value = defaultVal;
         }
         else {
-            IObjectInput::Probe(str)->ReadObject(&value);
+            IObjectInput::Probe(str)->ReadObject(value);
         }
     }
 

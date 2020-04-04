@@ -50,12 +50,12 @@ protected:
 
     ECode ImplFlush(
         /* [out] */ ICharBuffer* cb,
-        /* [out] */ ICoderResult** result) override;
+        /* [out] */ AutoPtr<ICoderResult>& result) override;
 
     ECode DecodeLoop(
         /* [in] */ IByteBuffer* bb,
         /* [out] */ ICharBuffer* cb,
-        /* [out] */ ICoderResult** result) override;
+        /* [out] */ AutoPtr<ICoderResult>& result) override;
 
 private:
     ECode Constructor(

@@ -68,11 +68,9 @@ Boolean File::IsInvalid()
 }
 
 ECode File::GetPrefixLength(
-    /* [out] */ Integer* length)
+    /* [out] */ Integer& length)
 {
-    VALIDATE_NOT_NULL(length);
-
-    *length = mPrefixLength;
+    length = mPrefixLength;
     return NOERROR;
 }
 
@@ -97,9 +95,9 @@ ECode File::Constructor(
     /* [in] */ IFile* parent)
 {
     String ppath;
-    parent->GetPath(&ppath);
+    parent->GetPath(ppath);
     GetFS()->Resolve(ppath, child, &mPath);
-    parent->GetPrefixLength(&mPrefixLength);
+    parent->GetPrefixLength(mPrefixLength);
     return NOERROR;
 }
 
@@ -146,7 +144,7 @@ ECode File::Constructor(
     FileSystem* fs = GetFS();
     if (parent != nullptr) {
         String ppath;
-        parent->GetPath(&ppath);
+        parent->GetPath(ppath);
         if (ppath.Equals("")) {
             String normPpath, normCpath;
             fs->GetDefaultParent(&normPpath);
@@ -218,92 +216,80 @@ ECode File::Constructor(
 }
 
 ECode File::GetName(
-    /* [out] */ String* name)
+    /* [out] */ String& name)
 {
-    VALIDATE_NOT_NULL(name);
-
     Integer index = mPath.LastIndexOf(GetSeparatorChar());
     if (index < mPrefixLength) {
-        *name = mPath.Substring(mPrefixLength);
+        name = mPath.Substring(mPrefixLength);
     }
     else {
-        *name = mPath.Substring(index + 1);
+        name = mPath.Substring(index + 1);
     }
     return NOERROR;
 }
 
 ECode File::GetParent(
-    /* [out] */ String* parent)
+    /* [out] */ String& parent)
 {
-    VALIDATE_NOT_NULL(parent);
-
     Integer index = mPath.LastIndexOf(GetSeparatorChar());
     if (index < mPrefixLength) {
         if (mPrefixLength > 0 && mPath.GetLength() > mPrefixLength) {
-            *parent = mPath.Substring(0, mPrefixLength);
+            parent = mPath.Substring(0, mPrefixLength);
             return NOERROR;
         }
-        *parent = nullptr;
+        parent = nullptr;
         return NOERROR;
     }
     else {
-        *parent = mPath.Substring(0, index);
+        parent = mPath.Substring(0, index);
         return NOERROR;
     }
 }
 
 ECode File::GetParentFile(
-    /* [out] */ IFile** parent)
+    /* [out] */ AutoPtr<IFile>& parent)
 {
-    VALIDATE_NOT_NULL(parent);
-
     String p;
-    GetParent(&p);
+    GetParent(p);
     if (p.IsNull()) {
-        *parent = nullptr;
+        parent = nullptr;
         return NOERROR;
     }
-    return CFile::New(p, mPrefixLength, IID_IFile, (IInterface**)parent);
+    return CFile::New(p, mPrefixLength, IID_IFile, (IInterface**)&parent);
 }
 
 ECode File::GetPath(
-    /* [out] */ String* path)
+    /* [out] */ String& path)
 {
-    VALIDATE_NOT_NULL(path);
-
-    *path = mPath;
+    path = mPath;
     return NOERROR;
 }
 
 ECode File::IsAbsolute(
-    /* [out] */ Boolean* absolute)
+    /* [out] */ Boolean& absolute)
 {
-    return GetFS()->IsAbsolute(this, absolute);
+    return GetFS()->IsAbsolute(this, &absolute);
 }
 
 ECode File::GetAbsolutePath(
-    /* [out] */ String* path)
+    /* [out] */ String& path)
 {
-    return GetFS()->Resolve(this, path);
+    return GetFS()->Resolve(this, &path);
 }
 
 ECode File::GetAbsoluteFile(
-    /* [out] */ IFile** f)
+    /* [out] */ AutoPtr<IFile>& f)
 {
-    VALIDATE_NOT_NULL(f);
-
     String absPath;
-    GetAbsolutePath(&absPath);
+    GetAbsolutePath(absPath);
     Integer prefLen;
     GetFS()->PrefixLength(absPath, &prefLen);
-    return CFile::New(absPath, prefLen, IID_IFile, (IInterface**)f);
+    return CFile::New(absPath, prefLen, IID_IFile, (IInterface**)&f);
 }
 
 ECode File::GetCanonicalPath(
-    /* [out] */ String* path)
+    /* [out] */ String& path)
 {
-    VALIDATE_NOT_NULL(path);
-
     if (IsInvalid()) {
         Logger::E("File", "Invalid file path");
         return E_IO_EXCEPTION;
@@ -311,19 +297,17 @@ ECode File::GetCanonicalPath(
     FileSystem* fs = GetFS();
     String p;
     fs->Resolve(this, &p);
-    return fs->Canonicalize(p, path);
+    return fs->Canonicalize(p, &path);
 }
 
 ECode File::GetCanonicalFile(
-    /* [out] */ IFile** f)
+    /* [out] */ AutoPtr<IFile>& f)
 {
-    VALIDATE_NOT_NULL(f);
-
     String canonPath;
-    FAIL_RETURN(GetCanonicalPath(&canonPath));
+    FAIL_RETURN(GetCanonicalPath(canonPath));
     Integer prefLen;
     GetFS()->PrefixLength(canonPath, &prefLen);
-    return CFile::New(canonPath, prefLen, IID_IFile, (IInterface**)f);
+    return CFile::New(canonPath, prefLen, IID_IFile, (IInterface**)&f);
 }
 
 String File::Slashify(
@@ -344,159 +328,141 @@ String File::Slashify(
 }
 
 ECode File::ToURL(
-    /* [out] */ IURL** url)
+    /* [out] */ AutoPtr<IURL>& url)
 {
     return NOERROR;
 }
 
 ECode File::ToURI(
-    /* [out] */ IURI** id)
+    /* [out] */ AutoPtr<IURI>& id)
 {
     return NOERROR;
 }
 
 ECode File::CanRead(
-    /* [out] */ Boolean* readable)
+    /* [out] */ Boolean& readable)
 {
-    VALIDATE_NOT_NULL(readable);
-
     AutoPtr<ISecurityManager> security = System::GetSecurityManager();
     if (security != nullptr) {
         FAIL_RETURN(security->CheckRead(mPath));
     }
     if (IsInvalid()) {
-        *readable = false;
+        readable = false;
         return NOERROR;
     }
-    return GetFS()->CheckAccess(this, FileSystem::ACCESS_READ, readable);
+    return GetFS()->CheckAccess(this, FileSystem::ACCESS_READ, &readable);
 }
 
 ECode File::CanWrite(
-    /* [out] */ Boolean* writeable)
+    /* [out] */ Boolean& writeable)
 {
-    VALIDATE_NOT_NULL(writeable);
-
     AutoPtr<ISecurityManager> security = System::GetSecurityManager();
     if (security != nullptr) {
         FAIL_RETURN(security->CheckWrite(mPath));
     }
     if (IsInvalid()) {
-        *writeable = false;
+        writeable = false;
         return NOERROR;
     }
-    return GetFS()->CheckAccess(this, FileSystem::ACCESS_WRITE, writeable);
+    return GetFS()->CheckAccess(this, FileSystem::ACCESS_WRITE, &writeable);
 }
 
 ECode File::Exists(
-    /* [out] */ Boolean* existed)
+    /* [out] */ Boolean& existed)
 {
-    VALIDATE_NOT_NULL(existed);
-
     AutoPtr<ISecurityManager> security = System::GetSecurityManager();
     if (security != nullptr) {
         FAIL_RETURN(security->CheckRead(mPath));
     }
     if (IsInvalid()) {
-        *existed = false;
+        existed = false;
         return NOERROR;
     }
-    return GetFS()->CheckAccess(this, FileSystem::ACCESS_OK, existed);
+    return GetFS()->CheckAccess(this, FileSystem::ACCESS_OK, &existed);
 }
 
 ECode File::IsDirectory(
-    /* [out] */ Boolean* directory)
+    /* [out] */ Boolean& directory)
 {
-    VALIDATE_NOT_NULL(directory);
-
     AutoPtr<ISecurityManager> security = System::GetSecurityManager();
     if (security != nullptr) {
         FAIL_RETURN(security->CheckRead(mPath));
     }
     if (IsInvalid()) {
-        *directory = false;
+        directory = false;
         return NOERROR;
     }
     Integer attrs;
     GetFS()->GetBooleanAttributes(this, &attrs);
-    *directory = (attrs & FileSystem::BA_DIRECTORY) != 0;
+    directory = (attrs & FileSystem::BA_DIRECTORY) != 0;
     return NOERROR;
 }
 
 ECode File::IsFile(
-    /* [out] */ Boolean* file)
+    /* [out] */ Boolean& file)
 {
-    VALIDATE_NOT_NULL(file);
-
     AutoPtr<ISecurityManager> security = System::GetSecurityManager();
     if (security != nullptr) {
         FAIL_RETURN(security->CheckRead(mPath));
     }
     if (IsInvalid()) {
-        *file = false;
+        file = false;
         return NOERROR;
     }
     Integer attrs;
     GetFS()->GetBooleanAttributes(this, &attrs);
-    *file = (attrs & FileSystem::BA_REGULAR) != 0;
+    file = (attrs & FileSystem::BA_REGULAR) != 0;
     return NOERROR;
 }
 
 ECode File::IsHidden(
-    /* [out] */ Boolean* hidden)
+    /* [out] */ Boolean& hidden)
 {
-    VALIDATE_NOT_NULL(hidden);
-
     AutoPtr<ISecurityManager> security = System::GetSecurityManager();
     if (security != nullptr) {
         FAIL_RETURN(security->CheckRead(mPath));
     }
     if (IsInvalid()) {
-        *hidden = false;
+        hidden = false;
         return NOERROR;
     }
     Integer attrs;
     GetFS()->GetBooleanAttributes(this, &attrs);
-    *hidden = (attrs & FileSystem::BA_HIDDEN) != 0;
+    hidden = (attrs & FileSystem::BA_HIDDEN) != 0;
     return NOERROR;
 }
 
 ECode File::LastModified(
-    /* [out] */ Long* time)
+    /* [out] */ Long& time)
 {
-    VALIDATE_NOT_NULL(time);
-
     AutoPtr<ISecurityManager> security = System::GetSecurityManager();
     if (security != nullptr) {
         FAIL_RETURN(security->CheckRead(mPath));
     }
     if (IsInvalid()) {
-        *time = 0;
+        time = 0;
         return NOERROR;
     }
-    return GetFS()->GetLastModifiedTime(this, time);
+    return GetFS()->GetLastModifiedTime(this, &time);
 }
 
 ECode File::GetLength(
-    /* [out] */ Long* len)
+    /* [out] */ Long& len)
 {
-    VALIDATE_NOT_NULL(len);
-
     AutoPtr<ISecurityManager> security = System::GetSecurityManager();
     if (security != nullptr) {
         FAIL_RETURN(security->CheckRead(mPath));
     }
     if (IsInvalid()) {
-        *len = 0;
+        len = 0;
         return NOERROR;
     }
-    return GetFS()->GetLength(this, len);
+    return GetFS()->GetLength(this, &len);
 }
 
 ECode File::CreateNewFile(
-    /* [out] */ Boolean* succeeded)
+    /* [out] */ Boolean& succeeded)
 {
-    VALIDATE_NOT_NULL(succeeded);
-
     AutoPtr<ISecurityManager> security = System::GetSecurityManager();
     if (security != nullptr) {
         FAIL_RETURN(security->CheckWrite(mPath));
@@ -505,7 +471,7 @@ ECode File::CreateNewFile(
         Logger::E("File", "Invalid file path");
         return E_IO_EXCEPTION;
     }
-    return GetFS()->CreateFileExclusively(mPath, succeeded);
+    return GetFS()->CreateFileExclusively(mPath, &succeeded);
 }
 
 ECode File::Delete(
@@ -569,7 +535,7 @@ ECode File::List(
     CArrayList::New(IID_IList, (IInterface**)&v);
     for (Integer i = 0; i < names.GetLength(); i++) {
         Boolean accepted;
-        if (filter->Accept(this, names[i], &accepted), accepted) {
+        if (filter->Accept(this, names[i], accepted), accepted) {
             v->Add(CoreUtils::Box(names[i]));
         }
     }
@@ -618,7 +584,7 @@ ECode File::ListFiles(
     for (Integer i = 0; i < ss.GetLength(); i++) {
         Boolean accepted;
         if (filter == nullptr ||
-                (filter->Accept(this, ss[i], &accepted), accepted)) {
+                (filter->Accept(this, ss[i], accepted), accepted)) {
             AutoPtr<IFile> f;
             CFile::New(ss[i], this, IID_IFile, (IInterface**)&f);
             v->Add(f);
@@ -646,7 +612,7 @@ ECode File::ListFiles(
         CFile::New(ss[i], this, IID_IFile, (IInterface**)&f);
         Boolean accepted;
         if (filter == nullptr ||
-                (filter->Accept(f, &accepted), accepted)) {
+                (filter->Accept(f, accepted), accepted)) {
             v->Add(f);
         }
     }
@@ -654,54 +620,50 @@ ECode File::ListFiles(
 }
 
 ECode File::Mkdir(
-    /* [out] */ Boolean* succeeded)
+    /* [out] */ Boolean& succeeded)
 {
-    VALIDATE_NOT_NULL(succeeded);
-
     AutoPtr<ISecurityManager> security = System::GetSecurityManager();
     if (security != nullptr) {
         FAIL_RETURN(security->CheckWrite(mPath));
     }
     if (IsInvalid()) {
-        *succeeded = false;
+        succeeded = false;
         return NOERROR;
     }
-    return GetFS()->CreateDirectory(this, succeeded);
+    return GetFS()->CreateDirectory(this, &succeeded);
 }
 
 ECode File::Mkdirs(
-    /* [out] */ Boolean* succeeded)
+    /* [out] */ Boolean& succeeded)
 {
-    VALIDATE_NOT_NULL(succeeded);
-
     Boolean existed;
-    FAIL_RETURN(Exists(&existed));
+    FAIL_RETURN(Exists(existed));
     if (existed) {
-        *succeeded = false;
+        succeeded = false;
         return NOERROR;
     }
     FAIL_RETURN(Mkdir(succeeded));
-    if (*succeeded) {
+    if (succeeded) {
         return NOERROR;
     }
     AutoPtr<IFile> canonFile;
-    ECode ec = GetCanonicalFile(&canonFile);
+    ECode ec = GetCanonicalFile(canonFile);
     if (FAILED(ec)) {
-        *succeeded = false;
+        succeeded = false;
         return NOERROR;
     }
 
     AutoPtr<IFile> parent;
-    canonFile->GetParentFile(&parent);
+    canonFile->GetParentFile(parent);
     if (parent == nullptr) {
-        *succeeded = false;
+        succeeded = false;
         return NOERROR;
     }
     FAIL_RETURN(parent->Mkdirs(succeeded));
-    if (!*succeeded) {
-        FAIL_RETURN(parent->Exists(&existed));
+    if (!succeeded) {
+        FAIL_RETURN(parent->Exists(existed));
         if (!existed) {
-            *succeeded = false;
+            succeeded = false;
             return NOERROR;
         }
     }
@@ -710,10 +672,8 @@ ECode File::Mkdirs(
 
 ECode File::RenameTo(
     /* [in] */ IFile* dest,
-    /* [out] */ Boolean* succeeded)
+    /* [out] */ Boolean& succeeded)
 {
-    VALIDATE_NOT_NULL(succeeded);
-
     if (dest == nullptr) {
         return como::core::E_NULL_POINTER_EXCEPTION;
     }
@@ -722,22 +682,20 @@ ECode File::RenameTo(
     if (security != nullptr) {
         FAIL_RETURN(security->CheckWrite(mPath));
         String dPath;
-        dest->GetPath(&dPath);
+        dest->GetPath(dPath);
         FAIL_RETURN(security->CheckWrite(dPath));
     }
     if (IsInvalid() || From(dest)->IsInvalid()) {
-        *succeeded = false;
+        succeeded = false;
         return NOERROR;
     }
-    return GetFS()->Rename(this, dest, succeeded);
+    return GetFS()->Rename(this, dest, &succeeded);
 }
 
 ECode File::SetLastModified(
     /* [in] */ Long time,
-    /* [out] */ Boolean* succeeded)
+    /* [out] */ Boolean& succeeded)
 {
-    VALIDATE_NOT_NULL(succeeded);
-
     if (time < 0) {
         Logger::E("File", "Negative time");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -747,50 +705,46 @@ ECode File::SetLastModified(
         FAIL_RETURN(security->CheckWrite(mPath));
     }
     if (IsInvalid()) {
-        *succeeded = false;
+        succeeded = false;
         return NOERROR;
     }
-    return GetFS()->SetLastModifiedTime(this, time, succeeded);
+    return GetFS()->SetLastModifiedTime(this, time, &succeeded);
 }
 
 ECode File::SetReadOnly(
-    /* [out] */ Boolean* succeeded)
+    /* [out] */ Boolean& succeeded)
 {
-    VALIDATE_NOT_NULL(succeeded);
-
     AutoPtr<ISecurityManager> security = System::GetSecurityManager();
     if (security != nullptr) {
         FAIL_RETURN(security->CheckWrite(mPath));
     }
     if (IsInvalid()) {
-        *succeeded = false;
+        succeeded = false;
         return NOERROR;
     }
-    return GetFS()->SetReadOnly(this, succeeded);
+    return GetFS()->SetReadOnly(this, &succeeded);
 }
 
 ECode File::SetWritable(
     /* [in] */ Boolean writable,
     /* [in] */ Boolean ownerOnly,
-    /* [out] */ Boolean* succeeded)
+    /* [out] */ Boolean& succeeded)
 {
-    VALIDATE_NOT_NULL(succeeded);
-
     AutoPtr<ISecurityManager> security = System::GetSecurityManager();
     if (security != nullptr) {
         FAIL_RETURN(security->CheckWrite(mPath));
     }
     if (IsInvalid()) {
-        *succeeded = false;
+        succeeded = false;
         return NOERROR;
     }
     return GetFS()->SetPermission(this,
-            FileSystem::ACCESS_WRITE, writable, ownerOnly, succeeded);
+            FileSystem::ACCESS_WRITE, writable, ownerOnly, &succeeded);
 }
 
 ECode File::SetWritable(
     /* [in] */ Boolean writable,
-    /* [out] */ Boolean* succeeded)
+    /* [out] */ Boolean& succeeded)
 {
     return SetWritable(writable, true, succeeded);
 }
@@ -798,25 +752,23 @@ ECode File::SetWritable(
 ECode File::SetReadable(
     /* [in] */ Boolean readable,
     /* [in] */ Boolean ownerOnly,
-    /* [out] */ Boolean* succeeded)
+    /* [out] */ Boolean& succeeded)
 {
-    VALIDATE_NOT_NULL(succeeded);
-
     AutoPtr<ISecurityManager> security = System::GetSecurityManager();
     if (security != nullptr) {
         FAIL_RETURN(security->CheckWrite(mPath));
     }
     if (IsInvalid()) {
-        *succeeded = false;
+        succeeded = false;
         return NOERROR;
     }
     return GetFS()->SetPermission(this,
-            FileSystem::ACCESS_READ, readable, ownerOnly, succeeded);
+            FileSystem::ACCESS_READ, readable, ownerOnly, &succeeded);
 }
 
 ECode File::SetReadable(
     /* [in] */ Boolean readable,
-    /* [out] */ Boolean* succeeded)
+    /* [out] */ Boolean& succeeded)
 {
     return SetReadable(readable, true, succeeded);
 }
@@ -824,43 +776,39 @@ ECode File::SetReadable(
 ECode File::SetExecutable(
     /* [in] */ Boolean executable,
     /* [in] */ Boolean ownerOnly,
-    /* [out] */ Boolean* succeeded)
+    /* [out] */ Boolean& succeeded)
 {
-    VALIDATE_NOT_NULL(succeeded);
-
     AutoPtr<ISecurityManager> security = System::GetSecurityManager();
     if (security != nullptr) {
         FAIL_RETURN(security->CheckWrite(mPath));
     }
     if (IsInvalid()) {
-        *succeeded = false;
+        succeeded = false;
         return NOERROR;
     }
     return GetFS()->SetPermission(this,
-            FileSystem::ACCESS_EXECUTE, executable, ownerOnly, succeeded);
+            FileSystem::ACCESS_EXECUTE, executable, ownerOnly, &succeeded);
 }
 
 ECode File::SetExecutable(
     /* [in] */ Boolean executable,
-    /* [out] */ Boolean* succeeded)
+    /* [out] */ Boolean& succeeded)
 {
     return SetExecutable(executable, true, succeeded);
 }
 
 ECode File::CanExecute(
-    /* [out] */ Boolean* executable)
+    /* [out] */ Boolean& executable)
 {
-    VALIDATE_NOT_NULL(executable);
-
     AutoPtr<ISecurityManager> security = System::GetSecurityManager();
     if (security != nullptr) {
         FAIL_RETURN(security->CheckExec(mPath));
     }
     if (IsInvalid()) {
-        *executable = false;
+        executable = false;
         return NOERROR;
     }
-    return GetFS()->CheckAccess(this, FileSystem::ACCESS_EXECUTE, executable);
+    return GetFS()->CheckAccess(this, FileSystem::ACCESS_EXECUTE, &executable);
 }
 
 ECode File::ListRoots(
@@ -870,10 +818,8 @@ ECode File::ListRoots(
 }
 
 ECode File::GetTotalSpace(
-    /* [out] */ Long* space)
+    /* [out] */ Long& space)
 {
-    VALIDATE_NOT_NULL(space);
-
     AutoPtr<ISecurityManager> security = System::GetSecurityManager();
     if (security != nullptr) {
         AutoPtr<IPermission> perm;
@@ -882,17 +828,15 @@ ECode File::GetTotalSpace(
         FAIL_RETURN(security->CheckRead(mPath));
     }
     if (IsInvalid()) {
-        *space = 0;
+        space = 0;
         return NOERROR;
     }
-    return GetFS()->GetSpace(this, FileSystem::SPACE_TOTAL, space);
+    return GetFS()->GetSpace(this, FileSystem::SPACE_TOTAL, &space);
 }
 
 ECode File::GetFreeSpace(
-    /* [out] */ Long* space)
+    /* [out] */ Long& space)
 {
-    VALIDATE_NOT_NULL(space);
-
     AutoPtr<ISecurityManager> security = System::GetSecurityManager();
     if (security != nullptr) {
         AutoPtr<IPermission> perm;
@@ -901,17 +845,15 @@ ECode File::GetFreeSpace(
         FAIL_RETURN(security->CheckRead(mPath));
     }
     if (IsInvalid()) {
-        *space = 0;
+        space = 0;
         return NOERROR;
     }
-    return GetFS()->GetSpace(this, FileSystem::SPACE_FREE, space);
+    return GetFS()->GetSpace(this, FileSystem::SPACE_FREE, &space);
 }
 
 ECode File::GetUsableSpace(
-    /* [out] */ Long* space)
+    /* [out] */ Long& space)
 {
-    VALIDATE_NOT_NULL(space);
-
     AutoPtr<ISecurityManager> security = System::GetSecurityManager();
     if (security != nullptr) {
         AutoPtr<IPermission> perm;
@@ -920,20 +862,18 @@ ECode File::GetUsableSpace(
         FAIL_RETURN(security->CheckRead(mPath));
     }
     if (IsInvalid()) {
-        *space = 0;
+        space = 0;
         return NOERROR;
     }
-    return GetFS()->GetSpace(this, FileSystem::SPACE_USABLE, space);
+    return GetFS()->GetSpace(this, FileSystem::SPACE_USABLE, &space);
 }
 
 ECode File::CreateTempFile(
     /* [in] */ const String& prefix,
     /* [in] */ const String& _suffix,
     /* [in] */ IFile* directory,
-    /* [out] */ IFile** temp)
+    /* [out] */ AutoPtr<IFile>& temp)
 {
-    VALIDATE_NOT_NULL(temp);
-
     if (prefix.GetLength() < 3) {
         Logger::E("File", "Prefix string too short");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -950,30 +890,26 @@ ECode File::CreateTempFile(
         CFile::New(dir, IID_IFile, (IInterface**)&tmpdir);
     }
 
-    AutoPtr<IFile> f;
     Integer attrs;
     do {
-        f = nullptr;
-        TempDirectory::GenerateFile(prefix, suffix, tmpdir, &f);
-    } while (GetFS()->GetBooleanAttributes(f, &attrs),
+        TempDirectory::GenerateFile(prefix, suffix, tmpdir, temp);
+    } while (GetFS()->GetBooleanAttributes(temp, &attrs),
             (attrs & FileSystem::BA_EXISTS) != 0);
 
     String path;
-    f->GetPath(&path);
+    temp->GetPath(path);
     Boolean succeeded;
     if (GetFS()->CreateFileExclusively(path, &succeeded), !succeeded) {
         Logger::E("File", "Unable to create temporary file");
         return E_IO_EXCEPTION;
     }
-
-    f.MoveTo(temp);
     return NOERROR;
 }
 
 ECode File::CreateTempFile(
     /* [in] */ const String& prefix,
     /* [in] */ const String& suffix,
-    /* [out] */ IFile** temp)
+    /* [out] */ AutoPtr<IFile>& temp)
 {
     return CreateTempFile(prefix, suffix, nullptr, temp);
 }
@@ -1008,7 +944,7 @@ ECode File::GetHashCode(
 ECode File::ToString(
     /* [out] */ String& desc)
 {
-    return GetPath(&desc);
+    return GetPath(desc);
 }
 
 //-------------------------------------------------------------------------
@@ -1017,7 +953,7 @@ ECode File::TempDirectory::GenerateFile(
     /* [in] */ const String& prefix,
     /* [in] */ const String& suffix,
     /* [in] */ IFile* dir,
-    /* [out] */ IFile** temp)
+    /* [out] */ AutoPtr<IFile>& temp)
 {
     Long n = Math::RandomLongInternal();
     if (n == ILong::MIN_VALUE) {
@@ -1028,14 +964,12 @@ ECode File::TempDirectory::GenerateFile(
     }
 
     String name = prefix + StringUtils::ToString(n) + suffix;
-    AutoPtr<IFile> f;
-    CFile::New(dir, name, IID_IFile, (IInterface**)&f);
+    CFile::New(dir, name, IID_IFile, (IInterface**)&temp);
     String fName; Boolean invalid;
-    if ((f->GetName(&fName), !name.Equals(fName)) || File::From(f)->IsInvalid()) {
+    if ((temp->GetName(fName), !name.Equals(fName)) || File::From(temp)->IsInvalid()) {
         Logger::E("File", "Unable to create temporary file");
         return E_IO_EXCEPTION;
     }
-    f.MoveTo(temp);
     return NOERROR;
 }
 

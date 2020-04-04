@@ -149,7 +149,7 @@ void CharsetEncoderICU::ImplReset()
 
 ECode CharsetEncoderICU::ImplFlush(
     /* [out] */ IByteBuffer* bb,
-    /* [out] */ ICoderResult** result)
+    /* [out] */ AutoPtr<ICoderResult>& result)
 {
     mInput = EmptyArray::CHAR;
     mInEnd = 0;
@@ -168,28 +168,28 @@ ECode CharsetEncoderICU::ImplFlush(
     }
     if (ICU::U_FAILURE(error)) {
         if (error == ICU::U_BUFFER_OVERFLOW_ERROR_) {
-            CoderResult::GetOVERFLOW().MoveTo(result);
+            result = CoderResult::GetOVERFLOW();
             return NOERROR;
         }
         else if (error == ICU::U_TRUNCATED_CHAR_FOUND_) {
             if (mData[INVALID_CHAR_COUNT] > 0) {
-                CoderResult::MalformedForLength(mData[INVALID_CHAR_COUNT]).MoveTo(result);
+                result = CoderResult::MalformedForLength(mData[INVALID_CHAR_COUNT]);
                 return NOERROR;
             }
         }
     }
-    CoderResult::GetUNDERFLOW().MoveTo(result);
+    result = CoderResult::GetUNDERFLOW();
     return NOERROR;
 }
 
 ECode CharsetEncoderICU::EncodeLoop(
     /* [in] */ ICharBuffer* cb,
     /* [out] */ IByteBuffer* bb,
-    /* [out] */ ICoderResult** result)
+    /* [out] */ AutoPtr<ICoderResult>& result)
 {
     Boolean hasRemaining;
-    if (IBuffer::Probe(cb)->HasRemaining(&hasRemaining), !hasRemaining) {
-        CoderResult::GetUNDERFLOW().MoveTo(result);
+    if (IBuffer::Probe(cb)->HasRemaining(hasRemaining), !hasRemaining) {
+        result = CoderResult::GetUNDERFLOW();
         return NOERROR;
     }
 
@@ -207,22 +207,22 @@ ECode CharsetEncoderICU::EncodeLoop(
     }
     if (ICU::U_FAILURE(error)) {
         if (error == ICU::U_BUFFER_OVERFLOW_ERROR_) {
-            CoderResult::GetOVERFLOW().MoveTo(result);
+            result = CoderResult::GetOVERFLOW();
             return NOERROR;
         }
         else if (error == ICU::U_INVALID_CHAR_FOUND_) {
-            CoderResult::UnmappableForLength(mData[INVALID_CHAR_COUNT]).MoveTo(result);
+            result = CoderResult::UnmappableForLength(mData[INVALID_CHAR_COUNT]);
             return NOERROR;
         }
         else if (error == ICU::U_ILLEGAL_CHAR_FOUND_) {
-            CoderResult::MalformedForLength(mData[INVALID_CHAR_COUNT]).MoveTo(result);
+            result = CoderResult::MalformedForLength(mData[INVALID_CHAR_COUNT]);
             return NOERROR;
         }
         else {
             return E_ASSERTION_ERROR;
         }
     }
-    CoderResult::GetUNDERFLOW().MoveTo(result);
+    result = CoderResult::GetUNDERFLOW();
     return NOERROR;
 }
 
@@ -231,19 +231,19 @@ Integer CharsetEncoderICU::GetArray(
 {
     IBuffer* b = IBuffer::Probe(bb);
     Boolean hasArray;
-    if (bb->HasArray(&hasArray), hasArray) {
+    if (bb->HasArray(hasArray), hasArray) {
         AutoPtr<IArrayHolder> holder;
-        b->GetArray((IInterface**)&holder);
+        b->GetArray(holder);
         holder->GetArray(&mOutput);
         Integer offset, lim, pos;
-        b->GetArrayOffset(&offset);
-        b->GetLimit(&lim);
-        b->GetPosition(&pos);
+        b->GetArrayOffset(offset);
+        b->GetLimit(lim);
+        b->GetPosition(pos);
         mOutEnd = offset + lim;
         return offset + pos;
     }
     else {
-        b->Remaining(&mOutEnd);
+        b->Remaining(mOutEnd);
         if (mAllocatedOutput.IsNull() || mOutEnd > mAllocatedOutput.GetLength()) {
             mAllocatedOutput = Array<Byte>(mOutEnd);
         }
@@ -257,24 +257,24 @@ Integer CharsetEncoderICU::GetArray(
 {
     IBuffer* b = IBuffer::Probe(cb);
     Boolean hasArray;
-    if (cb->HasArray(&hasArray), hasArray) {
+    if (cb->HasArray(hasArray), hasArray) {
         AutoPtr<IArrayHolder> holder;
-        b->GetArray((IInterface**)&holder);
+        b->GetArray(holder);
         holder->GetArray(&mInput);
         Integer offset, lim, pos;
-        b->GetArrayOffset(&offset);
-        b->GetLimit(&lim);
-        b->GetPosition(&pos);
+        b->GetArrayOffset(offset);
+        b->GetLimit(lim);
+        b->GetPosition(pos);
         mInEnd = offset + lim;
         return offset + pos;
     }
     else {
-        b->Remaining(&mInEnd);
+        b->Remaining(mInEnd);
         if (mAllocatedInput.IsNull() || mInEnd > mAllocatedInput.GetLength()) {
             mAllocatedInput = Array<Char>(mInEnd);
         }
         Integer pos;
-        b->GetPosition(&pos);
+        b->GetPosition(pos);
         cb->Get(mAllocatedInput, 0, mInEnd);
         b->SetPosition(pos);
         mInput = mAllocatedInput;
@@ -287,9 +287,9 @@ void CharsetEncoderICU::SetPosition(
 {
     IBuffer* b = IBuffer::Probe(bb);
     Boolean hasArray;
-    if (bb->HasArray(&hasArray), hasArray) {
+    if (bb->HasArray(hasArray), hasArray) {
         Integer offset;
-        b->GetArrayOffset(&offset);
+        b->GetArrayOffset(offset);
         b->SetPosition(mData[OUTPUT_OFFSET] - offset);
     }
     else {
@@ -303,7 +303,7 @@ void CharsetEncoderICU::SetPosition(
 {
     IBuffer* b = IBuffer::Probe(cb);
     Integer pos;
-    b->GetPosition(&pos);
+    b->GetPosition(pos);
     pos = pos + mData[INPUT_OFFSET] - mData[INVALID_CHAR_COUNT];
     if (pos < 0) {
         // The calculated position might be negative if we encountered an

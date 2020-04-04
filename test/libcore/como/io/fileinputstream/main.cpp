@@ -52,10 +52,10 @@ TEST(FileInputStreamTest, FileInputStreamReadTest)
     CFileInputStream::New(String("testfile"), IID_IInputStream, (IInterface**)&input);
     EXPECT_TRUE(input != nullptr);
     Integer number;
-    input->Available(&number);
+    input->Available(number);
     EXPECT_EQ(number, 782);
     Array<Byte> buffer(100);
-    input->Read(buffer, 0, 75, &number);
+    input->Read(buffer, 0, 75, number);
     EXPECT_EQ(number, strlen(LICENSE[0]));
     EXPECT_STREQ(LICENSE[0], String(buffer, 0, number).string());
     input->Close();

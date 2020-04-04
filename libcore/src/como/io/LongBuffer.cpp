@@ -103,13 +103,13 @@ ECode LongBuffer::Get(
 {
     FAIL_RETURN(CheckBounds(offset, length, dst.GetLength()));
     Integer remaining;
-    Remaining(&remaining);
+    Remaining(remaining);
     if (length > remaining) {
         return E_BUFFER_UNDERFLOW_EXCEPTION;
     }
     Integer end = offset + length;
     for (Integer i = offset; i < end; i++) {
-        Get(&dst[i]);
+        Get(dst[i]);
     }
     return NOERROR;
 }
@@ -130,13 +130,13 @@ ECode LongBuffer::Put(
     LongBuffer* srcObject = (LongBuffer*)src;
 
     Integer n, remaining;
-    srcObject->Remaining(&n);
-    if (Remaining(&remaining), n > remaining) {
+    srcObject->Remaining(n);
+    if (Remaining(remaining), n > remaining) {
         return E_BUFFER_OVERFLOW_EXCEPTION;
     }
     for (Integer i = 0; i < n; i++) {
         Long l;
-        srcObject->Get(&l);
+        srcObject->Get(l);
         Put(l);
     }
     return NOERROR;
@@ -149,7 +149,7 @@ ECode LongBuffer::Put(
 {
     FAIL_RETURN(CheckBounds(offset, length, src.GetLength()));
     Integer remaining;
-    if (Remaining(&remaining), length > remaining) {
+    if (Remaining(remaining), length > remaining) {
         return E_BUFFER_OVERFLOW_EXCEPTION;
     }
     Integer end = offset + length;
@@ -166,40 +166,34 @@ ECode LongBuffer::Put(
 }
 
 ECode LongBuffer::HasArray(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
-    *result = (!mHb.IsNull() && !mIsReadOnly);
+    result = (!mHb.IsNull() && !mIsReadOnly);
     return NOERROR;
 }
 
 ECode LongBuffer::GetArray(
-    /* [out] */ IInterface** array)
+    /* [out] */ AutoPtr<IArrayHolder>& array)
 {
-    VALIDATE_NOT_NULL(array);
-
     if (mHb.IsNull()) {
         return E_UNSUPPORTED_OPERATION_EXCEPTION;
     }
     if (mIsReadOnly) {
         return E_READ_ONLY_BUFFER_EXCEPTION;
     }
-    return CArrayHolder::New(mHb, IID_IArrayHolder, array);
+    return CArrayHolder::New(mHb, IID_IArrayHolder, (IInterface**)&array);
 }
 
 ECode LongBuffer::GetArrayOffset(
-    /* [out] */ Integer* offset)
+    /* [out] */ Integer& offset)
 {
-    VALIDATE_NOT_NULL(offset);
-
     if (mHb.IsNull()) {
         return E_UNSUPPORTED_OPERATION_EXCEPTION;
     }
     if (mIsReadOnly) {
         return E_READ_ONLY_BUFFER_EXCEPTION;
     }
-    *offset = mOffset;
+    offset = mOffset;
     return NOERROR;
 }
 
@@ -211,13 +205,13 @@ ECode LongBuffer::ToString(
     sb->Append(Object::GetCoclassName(this));
     sb->Append(String("[pos="));
     Integer value;
-    GetPosition(&value);
+    GetPosition(value);
     sb->Append(value);
     sb->Append(String(" lim="));
-    GetLimit(&value);
+    GetLimit(value);
     sb->Append(value);
     sb->Append(String(" cap="));
-    GetCapacity(&value);
+    GetCapacity(value);
     sb->Append(value);
     sb->Append(String("]"));
     return sb->ToString(desc);
@@ -228,12 +222,12 @@ ECode LongBuffer::GetHashCode(
 {
     hash = 1;
     Integer p;
-    GetPosition(&p);
+    GetPosition(p);
     Integer i;
-    GetLimit(&i);
+    GetLimit(i);
     for (i = i - 1; i >= p; i--) {
         Long l;
-        Get(i, &l);
+        Get(i, l);
         hash = 31 * hash + (Integer)l;
     }
     return NOERROR;
@@ -253,21 +247,21 @@ ECode LongBuffer::Equals(
         return NOERROR;
     }
     Integer thisRemaining, otherRemaining;
-    Remaining(&thisRemaining);
-    other->Remaining(&otherRemaining);
+    Remaining(thisRemaining);
+    other->Remaining(otherRemaining);
     if (thisRemaining != otherRemaining) {
         same = false;
         return NOERROR;
     }
     Integer p;
-    GetPosition(&p);
+    GetPosition(p);
     Integer i, j;
-    GetLimit(&i);
-    other->GetLimit(&j);
+    GetLimit(i);
+    other->GetLimit(j);
     for (i = i - 1, j = j - 1; i >= p; i--, j--) {
         Long thisl, otherl;
-        Get(i, &thisl);
-        other->Get(j, &otherl);
+        Get(i, thisl);
+        other->Get(j, otherl);
         if (thisl != otherl) {
             same = false;
             return NOERROR;
@@ -287,17 +281,17 @@ ECode LongBuffer::CompareTo(
     }
 
     Integer thisRemaining, otherRemaining;
-    Remaining(&thisRemaining);
-    otherIB->Remaining(&otherRemaining);
+    Remaining(thisRemaining);
+    otherIB->Remaining(otherRemaining);
     Integer thisPos, otherPos;
-    GetPosition(&thisPos);
-    otherIB->GetPosition(&otherPos);
+    GetPosition(thisPos);
+    otherIB->GetPosition(otherPos);
 
     Integer n = thisPos + Math::Min(thisRemaining, otherRemaining);
     for (Integer i = thisPos, j = otherPos; i < n; i++, j++) {
         Long thisl, otherl;
-        Get(i, &thisl);
-        otherIB->Get(j, &otherl);
+        Get(i, thisl);
+        otherIB->Get(j, otherl);
         Integer cmp = thisl - otherl;
         if (cmp != 0) {
             result = cmp;

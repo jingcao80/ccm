@@ -50,20 +50,16 @@ ECode Buffer::Constructor(
 }
 
 ECode Buffer::GetCapacity(
-    /* [out] */ Integer* capacity)
+    /* [out] */ Integer& capacity)
 {
-    VALIDATE_NOT_NULL(capacity);
-
-    *capacity = mCapacity;
+    capacity = mCapacity;
     return NOERROR;
 }
 
 ECode Buffer::GetPosition(
-    /* [out] */ Integer* position)
+    /* [out] */ Integer& position)
 {
-    VALIDATE_NOT_NULL(position);
-
-    *position = mPosition;
+    position = mPosition;
     return NOERROR;
 }
 
@@ -82,11 +78,9 @@ ECode Buffer::SetPosition(
 }
 
 ECode Buffer::GetLimit(
-    /* [out] */ Integer* limit)
+    /* [out] */ Integer& limit)
 {
-    VALIDATE_NOT_NULL(limit);
-
-    *limit = mLimit;
+    limit = mLimit;
     return NOERROR;
 }
 
@@ -145,20 +139,16 @@ ECode Buffer::Rewind()
 }
 
 ECode Buffer::Remaining(
-    /* [out] */ Integer* remaining)
+    /* [out] */ Integer& remaining)
 {
-    VALIDATE_NOT_NULL(remaining);
-
-    *remaining = mLimit - mPosition;
+    remaining = mLimit - mPosition;
     return NOERROR;
 }
 
 ECode Buffer::HasRemaining(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
-    *result = mPosition < mLimit;
+    result = mPosition < mLimit;
     return NOERROR;
 }
 

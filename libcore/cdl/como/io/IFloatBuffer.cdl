@@ -24,19 +24,19 @@ namespace io {
 interface IFloatBuffer
 {
     AsReadOnlyBuffer(
-        [out] IFloatBuffer** buffer);
+        [out] IFloatBuffer&& buffer);
 
     Compact();
 
     Duplicate(
-        [out] IFloatBuffer** buffer);
+        [out] IFloatBuffer&& buffer);
 
     Get(
-        [out] Float* f);
+        [out] Float& f);
 
     Get(
         [in] Integer index,
-        [out] Float* f);
+        [out] Float& f);
 
     Get(
         [out] Array<Float>& dst);
@@ -47,10 +47,10 @@ interface IFloatBuffer
         [in] Integer length);
 
     GetOrder(
-        [out] IByteOrder** bo);
+        [out] IByteOrder&& bo);
 
     HasArray(
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     Put(
         [in] Float f);
@@ -71,7 +71,7 @@ interface IFloatBuffer
         [in] IFloatBuffer* src);
 
     Slice(
-        [out] IFloatBuffer** buffer);
+        [out] IFloatBuffer&& buffer);
 }
 
 }

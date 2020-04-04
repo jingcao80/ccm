@@ -135,7 +135,7 @@ void Charset::Cache(
         AutoLock lock(ISynchronize::Probe(cache2));
 
         String canonicalName;
-        cs->GetName(&canonicalName);
+        cs->GetName(canonicalName);
         AutoPtr<ICharset> canonicalCharset;
         cache2->Get(CoreUtils::Box(canonicalName), (IInterface**)&canonicalCharset);
 
@@ -146,7 +146,7 @@ void Charset::Cache(
             cache2->Put(CoreUtils::Box(canonicalName), cs);
 
             AutoPtr<ISet> aliases;
-            cs->GetAliases(&aliases);
+            cs->GetAliases(aliases);
             FOR_EACH(ICharSequence*, alias, ICharSequence::Probe, aliases) {
                 cache2->Put(alias, cs);
             } END_FOR_EACH();
@@ -327,8 +327,10 @@ ECode Charset::LookupViaProviders(
             while (i->HasNext(&hasNext), hasNext) {
                 AutoPtr<ICharsetProvider> cp;
                 i->Next((IInterface**)&cp);
-                cp->CharsetForName(mCharsetName, (ICharset**)result);
-                if (*result != nullptr) {
+                AutoPtr<ICharset> cs;
+                cp->CharsetForName(mCharsetName, cs);
+                if (cs != nullptr) {
+                    cs.MoveTo(result);
                     return NOERROR;
                 }
             }
@@ -447,7 +449,7 @@ void Charset::Put(
         AutoPtr<ICharset> cs;
         i->Next((IInterface**)&cs);
         String canonicalName;
-        cs->GetName(&canonicalName);
+        cs->GetName(canonicalName);
         Boolean contains;
         if (m->ContainsKey(CoreUtils::Box(canonicalName), &contains), !contains) {
             m->Put(CoreUtils::Box(canonicalName), cs);
@@ -512,7 +514,7 @@ ECode Charset::AvailableCharsets(
                 AutoPtr<ICharset> charset;
                 NativeConverter::CharsetForName(charsetName, &charset);
                 String canonicalName;
-                charset->GetName(&canonicalName);
+                charset->GetName(canonicalName);
                 IMap::Probe(m)->Put(CoreUtils::Box(canonicalName), charset);
             }
             AutoPtr<IIterator> i = GetProviders();
@@ -521,7 +523,7 @@ ECode Charset::AvailableCharsets(
                 AutoPtr<ICharsetProvider> cp;
                 i->Next((IInterface**)&cp);
                 AutoPtr<IIterator> it;
-                cp->Charsets(&it);
+                cp->Charsets(it);
                 Put(it, IMap::Probe(m));
             }
             AutoPtr<ISortedMap> sm = Collections::CreateUnmodifiableSortedMap(ISortedMap::Probe(m));
@@ -568,22 +570,17 @@ ECode Charset::Constructor(
 }
 
 ECode Charset::GetName(
-    /* [out] */ String* name)
+    /* [out] */ String& name)
 {
-    VALIDATE_NOT_NULL(name);
-
-    *name = mName;
+    name = mName;
     return NOERROR;
 }
 
 ECode Charset::GetAliases(
-    /* [out] */ ISet** aliases)
+    /* [out] */ AutoPtr<ISet>& aliases)
 {
-    VALIDATE_NOT_NULL(aliases);
-
     if (mAliasSet != nullptr) {
-        *aliases = mAliasSet;
-        REFCOUNT_ADD(*aliases);
+        aliases = mAliasSet;
         return NOERROR;
     }
     Integer n = mAliases.GetLength();
@@ -593,54 +590,43 @@ ECode Charset::GetAliases(
         hs->Add(CoreUtils::Box(mAliases[i]));
     }
     mAliasSet = Collections::CreateUnmodifiableSet(ISet::Probe(hs));
-    *aliases = mAliasSet;
-    REFCOUNT_ADD(*aliases);
+    aliases = mAliasSet;
     return NOERROR;
 }
 
 ECode Charset::GetDisplayName(
-    /* [out] */ String* name)
+    /* [out] */ String& name)
 {
-    VALIDATE_NOT_NULL(name);
-
-    *name = mName;
+    name = mName;
     return NOERROR;
 }
 
 ECode Charset::IsRegistered(
-    /* [out] */ Boolean* registered)
+    /* [out] */ Boolean& registered)
 {
-    VALIDATE_NOT_NULL(registered);
-
-    *registered = !mName.StartsWith("X-") && !mName.StartsWith("x-");
+    registered = !mName.StartsWith("X-") && !mName.StartsWith("x-");
     return NOERROR;
 }
 
 ECode Charset::GetDisplayName(
     /* [in] */ ILocale* locale,
-    /* [out] */ String* name)
+    /* [out] */ String& name)
 {
-    VALIDATE_NOT_NULL(name);
-
-    *name = mName;
+    name = mName;
     return NOERROR;
 }
 
 ECode Charset::CanEncode(
-    /* [out] */ Boolean* supported)
+    /* [out] */ Boolean& supported)
 {
-    VALIDATE_NOT_NULL(supported);
-
-    *supported = true;
+    supported = true;
     return NOERROR;
 }
 
 ECode Charset::Decode(
     /* [in] */ IByteBuffer* bb,
-    /* [out] */ ICharBuffer** cb)
+    /* [out] */ AutoPtr<ICharBuffer>& cb)
 {
-    VALIDATE_NOT_NULL(cb);
-
     AutoPtr<ICharsetDecoder> cd = ThreadLocalCoders::DecoderFor((ICharset*)this);
     cd->OnMalformedInput(CodingErrorAction::GetREPLACE());
     cd->OnUnmappableCharacter(CodingErrorAction::GetREPLACE());
@@ -650,10 +636,8 @@ ECode Charset::Decode(
 
 ECode Charset::Encode(
     /* [in] */ ICharBuffer* cb,
-    /* [out] */ IByteBuffer** bb)
+    /* [out] */ AutoPtr<IByteBuffer>& bb)
 {
-    VALIDATE_NOT_NULL(bb);
-
     AutoPtr<ICharsetEncoder> ce = ThreadLocalCoders::EncoderFor((ICharset*)this);
     ce->OnMalformedInput(CodingErrorAction::GetREPLACE());
     ce->OnUnmappableCharacter(CodingErrorAction::GetREPLACE());
@@ -663,10 +647,8 @@ ECode Charset::Encode(
 
 ECode Charset::Encode(
     /* [in] */ const String& str,
-    /* [out] */ IByteBuffer** bb)
+    /* [out] */ AutoPtr<IByteBuffer>& bb)
 {
-    VALIDATE_NOT_NULL(bb);
-
     AutoPtr<ICharBuffer> cb;
     CharBuffer::Wrap(CoreUtils::Box(str), &cb);
     return Encode(cb, bb);
@@ -682,8 +664,8 @@ ECode Charset::CompareTo(
     }
 
     String thisName, thatName;
-    GetName(&thisName);
-    othercs->GetName(&thatName);
+    GetName(thisName);
+    othercs->GetName(thatName);
     result = thisName.CompareIgnoreCase(thatName);
     return NOERROR;
 }
@@ -692,7 +674,7 @@ ECode Charset::GetHashCode(
     /* [out] */ Integer& hash)
 {
     String canonicalName;
-    GetName(&canonicalName);
+    GetName(canonicalName);
     hash = canonicalName.GetHashCode();
     return NOERROR;
 }
@@ -711,8 +693,8 @@ ECode Charset::Equals(
         return NOERROR;
     }
     String thisName, thatName;
-    GetName(&thisName);
-    cs->GetName(&thatName);
+    GetName(thisName);
+    cs->GetName(thatName);
     same = thisName.Equals(thatName);
     return NOERROR;
 }
@@ -720,7 +702,7 @@ ECode Charset::Equals(
 ECode Charset::ToString(
     /* [out] */ String& desc)
 {
-    return GetName(&desc);
+    return GetName(desc);
 }
 
 }

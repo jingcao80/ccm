@@ -107,66 +107,54 @@ ECode CoderResult::ToString(
 {
     String nm = sNames[mType];
     Boolean error;
-    desc = (IsError(&error), error) ?
+    desc = (IsError(error), error) ?
             String::Format("%s[%d]", nm.string(), mLength) : nm;
     return NOERROR;
 }
 
 ECode CoderResult::IsUnderflow(
-    /* [out] */ Boolean* underflow)
+    /* [out] */ Boolean& underflow)
 {
-    VALIDATE_NOT_NULL(underflow);
-
-    *underflow = (mType == CR_UNDERFLOW);
+    underflow = (mType == CR_UNDERFLOW);
     return NOERROR;
 }
 
 ECode CoderResult::IsOverflow(
-    /* [out] */ Boolean* overflow)
+    /* [out] */ Boolean& overflow)
 {
-    VALIDATE_NOT_NULL(overflow);
-
-    *overflow = (mType == CR_OVERFLOW);
+    overflow = (mType == CR_OVERFLOW);
     return NOERROR;
 }
 
 ECode CoderResult::IsError(
-    /* [out] */ Boolean* error)
+    /* [out] */ Boolean& error)
 {
-    VALIDATE_NOT_NULL(error);
-
-    *error = (mType >= CR_ERROR_MIN);
+    error = (mType >= CR_ERROR_MIN);
     return NOERROR;
 }
 
 ECode CoderResult::IsMalformed(
-    /* [out] */ Boolean* malformed)
+    /* [out] */ Boolean& malformed)
 {
-    VALIDATE_NOT_NULL(malformed);
-
-    *malformed = (mType == CR_MALFORMED);
+    malformed = (mType == CR_MALFORMED);
     return NOERROR;
 }
 
 ECode CoderResult::IsUnmappable(
-    /* [out] */ Boolean* unmappable)
+    /* [out] */ Boolean& unmappable)
 {
-    VALIDATE_NOT_NULL(unmappable);
-
-    *unmappable = (mType == CR_UNMAPPABLE);
+    unmappable = (mType == CR_UNMAPPABLE);
     return NOERROR;
 }
 
 ECode CoderResult::GetLength(
-    /* [out] */ Integer* length)
+    /* [out] */ Integer& length)
 {
-    VALIDATE_NOT_NULL(length);
-
     Boolean error;
-    if (IsError(&error), !error) {
+    if (IsError(error), !error) {
         return E_UNSUPPORTED_OPERATION_EXCEPTION;
     }
-    *length = mLength;
+    length = mLength;
     return NOERROR;
 }
 

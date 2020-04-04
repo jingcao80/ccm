@@ -120,13 +120,13 @@ Array<Byte> ZoneInfoTestHelper::TzDataBuilder::Build()
     IOutputStream::Probe(baos)->Write(0);
 
     Integer indexOffsetOffset;
-    baos->GetSize(&indexOffsetOffset);
+    baos->GetSize(indexOffsetOffset);
     WriteInteger(baos, 0);
     Integer dataOffsetOffset;
-    baos->GetSize(&dataOffsetOffset);
+    baos->GetSize(dataOffsetOffset);
     WriteInteger(baos, 0);
     Integer zoneTabOffsetOffset;
-    baos->GetSize(&zoneTabOffsetOffset);
+    baos->GetSize(zoneTabOffsetOffset);
     WriteInteger(baos, 0);
 
     AutoPtr<IByteArrayOutputStream> dataBytes;
@@ -135,13 +135,13 @@ Array<Byte> ZoneInfoTestHelper::TzDataBuilder::Build()
     CHashMap::New(IID_IMap, (IInterface**)&offsets);
     FOR_EACH(ZicDatum*, datum, IObject::Probe, mZicData) {
         Integer offset;
-        dataBytes->GetSize(&offset);
+        dataBytes->GetSize(offset);
         offsets->Put(CoreUtils::Box(datum->mId), CoreUtils::Box(offset));
         WriteByteArray(dataBytes, datum->mData);
     } END_FOR_EACH();
 
     Integer indexOffset;
-    baos->GetSize(&indexOffset);
+    baos->GetSize(indexOffset);
 
     FOR_EACH(ZicDatum*, zicDatum, IObject::Probe, mZicData) {
         String id = zicDatum->mId;
@@ -158,13 +158,13 @@ Array<Byte> ZoneInfoTestHelper::TzDataBuilder::Build()
     } END_FOR_EACH();
 
     Integer dataOffset;
-    baos->GetSize(&dataOffset);
+    baos->GetSize(dataOffset);
     Array<Byte> bytes;
     dataBytes->ToByteArray(&bytes);
     WriteByteArray(baos, bytes);
 
     Integer zoneTabOffset;
-    baos->GetSize(&zoneTabOffset);
+    baos->GetSize(zoneTabOffset);
     Array<Byte> zontTabBytes(mZoneTab.GetByteLength());
     zontTabBytes.Copy(reinterpret_cast<const Byte*>(mZoneTab.string()), mZoneTab.GetByteLength());
     WriteByteArray(baos, zontTabBytes);
@@ -189,7 +189,7 @@ void ZoneInfoTestHelper::WriteInteger(
     ByteBufferFactory::Allocate(4, &bb);
     bb->PutInteger(value);
     AutoPtr<IArrayHolder> holder;
-    IBuffer::Probe(bb)->GetArray((IInterface**)&holder);
+    IBuffer::Probe(bb)->GetArray(holder);
     Array<Byte> bytes;
     holder->GetArray(&bytes);
     WriteByteArray(os, bytes);

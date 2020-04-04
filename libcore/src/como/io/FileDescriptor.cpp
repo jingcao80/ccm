@@ -58,11 +58,9 @@ ECode FileDescriptor::Constructor(
 }
 
 ECode FileDescriptor::Valid(
-    /* [out] */ Boolean* valid)
+    /* [out] */ Boolean& valid)
 {
-    VALIDATE_NOT_NULL(valid);
-
-    *valid = mDescriptor != -1;
+    valid = mDescriptor != -1;
     return NOERROR;
 }
 
@@ -75,11 +73,9 @@ ECode FileDescriptor::Sync()
 }
 
 ECode FileDescriptor::GetInt(
-    /* [out] */ Integer* fd)
+    /* [out] */ Integer& fd)
 {
-    VALIDATE_NOT_NULL(fd);
-
-    *fd = mDescriptor;
+    fd = mDescriptor;
     return NOERROR;
 }
 
@@ -91,13 +87,11 @@ ECode FileDescriptor::SetInt(
 }
 
 ECode FileDescriptor::IsSocket(
-    /* [out] */ Boolean* socket)
+    /* [out] */ Boolean& socket)
 {
-    VALIDATE_NOT_NULL(socket);
-
     int error;
     socklen_t error_length = sizeof(error);
-    *socket = TEMP_FAILURE_RETRY(getsockopt(mDescriptor, SOL_SOCKET,
+    socket = TEMP_FAILURE_RETRY(getsockopt(mDescriptor, SOL_SOCKET,
             SO_ERROR, &error, &error_length)) == 0;
     return NOERROR;
 }

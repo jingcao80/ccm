@@ -59,28 +59,28 @@ public:
         /* [in] */ Boolean isFdOwner);
 
     ECode Read(
-        /* [out] */ Integer* value) override;
+        /* [out] */ Integer& value) override;
 
     ECode Read(
         /* [out] */ Array<Byte>& buffer,
         /* [in] */ Integer offset,
         /* [in] */ Integer size,
-        /* [out] */ Integer* number) override;
+        /* [out] */ Integer& number) override;
 
     ECode Skip(
         /* [in] */ Long byteCount,
-        /* [out] */ Long* number) override;
+        /* [out] */ Long& number) override;
 
     ECode Available(
-        /* [out] */ Integer* number) override;
+        /* [out] */ Integer& number) override;
 
     ECode Close() override;
 
     ECode GetFD(
-        /* [out] */ IFileDescriptor** fd) override final;
+        /* [out] */ AutoPtr<IFileDescriptor>& fd) override final;
 
     ECode GetChannel(
-        /* [out] */ IFileChannel** channel) override;
+        /* [out] */ AutoPtr<IFileChannel>& channel) override;
 
 private:
     ECode Open(
@@ -88,7 +88,7 @@ private:
 
     ECode Skip0(
         /* [in] */ Long byteCount,
-        /* [out] */ Long* number);
+        /* [out] */ Long& number);
 
 private:
     AutoPtr<IFileDescriptor> mFd;

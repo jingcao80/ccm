@@ -28,19 +28,19 @@ namespace io {
 interface IShortBuffer
 {
     AsReadOnlyBuffer(
-        [out] IShortBuffer** buffer);
+        [out] IShortBuffer&& buffer);
 
     Compact();
 
     Duplicate(
-        [out] IShortBuffer** buffer);
+        [out] IShortBuffer&& buffer);
 
     Get(
-        [out] Short* s);
+        [out] Short& s);
 
     Get(
         [in] Integer index,
-        [out] Short* s);
+        [out] Short& s);
 
     Get(
         [out] Array<Short>& dst);
@@ -51,10 +51,10 @@ interface IShortBuffer
         [in] Integer length);
 
     GetOrder(
-        [out] IByteOrder** bo);
+        [out] IByteOrder&& bo);
 
     HasArray(
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     Put(
         [in] Short s);
@@ -75,7 +75,7 @@ interface IShortBuffer
         [in] IShortBuffer* src);
 
     Slice(
-        [out] IShortBuffer** buffer);
+        [out] IShortBuffer&& buffer);
 }
 
 }

@@ -201,7 +201,7 @@ ECode UnixFileSystem::IsAbsolute(
     VALIDATE_NOT_NULL(absolute);
 
     Integer prefLen;
-    f->GetPrefixLength(&prefLen);
+    f->GetPrefixLength(prefLen);
     *absolute = prefLen != 0;
     return NOERROR;
 }
@@ -214,11 +214,11 @@ ECode UnixFileSystem::Resolve(
 
     Boolean absolute;
     if (IsAbsolute(f, &absolute), absolute) {
-        return f->GetPath(path);
+        return f->GetPath(*path);
     }
     String userDirPath, fPath;
     System::GetProperty(String("user.dir"), &userDirPath);
-    f->GetPath(&fPath);
+    f->GetPath(fPath);
     return Resolve(userDirPath, fPath, path);
 }
 
@@ -268,8 +268,8 @@ ECode UnixFileSystem::Canonicalize(
                         AutoPtr<IFile> f;
                         CFile::New(res, IID_IFile, (IInterface**)&f);
                         Boolean result;
-                        if ((f->Exists(&result), result) &&
-                            (f->IsDirectory(&result), !result)) {
+                        if ((f->Exists(result), result) &&
+                            (f->IsDirectory(result), !result)) {
                             mCcmHomePrefixCache.Put(dir, resDir);
                         }
                     }
@@ -367,10 +367,10 @@ ECode UnixFileSystem::GetBooleanAttributes(
     FAIL_RETURN(policy->OnReadFromDisk());
 
     String path;
-    f->GetPath(&path);
+    f->GetPath(path);
     Integer value = GetBooleanAttributes0(path);
     String name;
-    f->GetName(&name);
+    f->GetName(name);
     Boolean hidden = (name.GetLength() > 0) && (name.GetChar(0) == U'.');
     *attr = value | (hidden ? BA_HIDDEN : 0);
     return NOERROR;
@@ -413,7 +413,7 @@ Boolean UnixFileSystem::CheckAccess0(
             CHECK(0);
     }
     String path;
-    f->GetPath(&path);
+    f->GetPath(path);
     if (access(path.string(), mode) == 0) {
         rv = true;
     }
@@ -439,7 +439,7 @@ Long UnixFileSystem::GetLastModifiedTime0(
     Long rv = 0;
 
     String path;
-    f->GetPath(&path);
+    f->GetPath(path);
     struct stat64 sb;
     if (stat64(path.string(), &sb) == 0) {
         rv = 1000 * (Long)sb.st_mtime;
@@ -466,7 +466,7 @@ Long UnixFileSystem::GetLength0(
     Long rv = 0;
 
     String path;
-    f->GetPath(&path);
+    f->GetPath(path);
     struct stat64 sb;
     if (stat64(path, &sb) == 0) {
         rv = sb.st_size;
@@ -529,7 +529,7 @@ Boolean UnixFileSystem::SetPermission0(
         CHECK(0);
     }
     String path;
-    f->GetPath(&path);
+    f->GetPath(path);
     if (StatMode(path, &mode)) {
         if (enable) {
             mode |= amode;
@@ -602,7 +602,7 @@ Boolean UnixFileSystem::Delete0(
     Boolean rv = false;
 
     String path;
-    f->GetPath(&path);
+    f->GetPath(path);
     if (remove(path) == 0) {
         rv = true;
     }
@@ -628,7 +628,7 @@ ECode UnixFileSystem::List0(
     DIR* dir = nullptr;
 
     String path;
-    f->GetPath(&path);
+    f->GetPath(path);
     dir = opendir(path.string());
     if (dir == nullptr) {
         *elements = Array<String>::Null();
@@ -687,7 +687,7 @@ Boolean UnixFileSystem::CreateDirectory0(
     Boolean rv = false;
 
     String path;
-    f->GetPath(&path);
+    f->GetPath(path);
     if (mkdir(path, 0777) == 0) {
         rv = true;
     }
@@ -717,8 +717,8 @@ Boolean UnixFileSystem::Rename0(
     Boolean rv = false;
 
     String fromPath, toPath;
-    f1->GetPath(&fromPath);
-    f2->GetPath(&toPath);
+    f1->GetPath(fromPath);
+    f2->GetPath(toPath);
     if (rename(fromPath.string(), toPath.string()) == 0) {
         rv = true;
     }
@@ -746,7 +746,7 @@ Boolean UnixFileSystem::SetLastModifiedTime0(
     Boolean rv = false;
 
     String path;
-    f->GetPath(&path);
+    f->GetPath(path);
     struct stat64 sb;
 
     if (stat64(path, &sb) == 0) {
@@ -787,7 +787,7 @@ Boolean UnixFileSystem::SetReadOnly0(
     Boolean rv = false;
 
     String path;
-    f->GetPath(&path);
+    f->GetPath(path);
     int mode;
     if (StatMode(path, &mode)) {
         if (chmod(path, mode & ~(S_IWUSR | S_IWGRP | S_IWOTH)) >= 0) {
@@ -839,7 +839,7 @@ Long UnixFileSystem::GetSpace0(
     Long rv = 0;
 
     String path;
-    f->GetPath(&path);
+    f->GetPath(path);
     struct statvfs64 fsstat;
     memset(&fsstat, 0, sizeof(fsstat));
     if (statvfs64(path, &fsstat) == 0) {
@@ -868,8 +868,8 @@ ECode UnixFileSystem::Compare(
     VALIDATE_NOT_NULL(result);
 
     String path1, path2;
-    f1->GetPath(&path1);
-    f2->GetPath(&path2);
+    f1->GetPath(path1);
+    f2->GetPath(path2);
     *result = path1.Compare(path2);
     return NOERROR;
 }
@@ -879,7 +879,7 @@ ECode UnixFileSystem::GetHashCode(
     /* [out] */ Integer& hash)
 {
     String path;
-    f->GetPath(&path);
+    f->GetPath(path);
     hash = path.GetHashCode() ^ 1234321;
     return NOERROR;
 }

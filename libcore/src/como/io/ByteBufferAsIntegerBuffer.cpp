@@ -34,9 +34,9 @@ ECode ByteBufferAsIntegerBuffer::Constructor(
 {
     FAIL_RETURN(IntegerBuffer::Constructor(mark, pos, lim, cap));
     AutoPtr<IByteBuffer> newBB;
-    bb->Duplicate(&newBB);
+    bb->Duplicate(newBB);
     mBB = (ByteBuffer*)newBB.Get();
-    bb->IsReadOnly(&mIsReadOnly);
+    bb->IsReadOnly(mIsReadOnly);
     if (Object::InstanceOf(bb, CID_CDirectByteBuffer)) {
         mAddress = bb->mAddress + off;
     }
@@ -47,65 +47,54 @@ ECode ByteBufferAsIntegerBuffer::Constructor(
 }
 
 ECode ByteBufferAsIntegerBuffer::Slice(
-    /* [out] */ IIntegerBuffer** buffer)
+    /* [out] */ AutoPtr<IIntegerBuffer>& buffer)
 {
-    VALIDATE_NOT_NULL(buffer);
-
     Integer pos, lim;
-    GetPosition(&pos);
-    GetLimit(&lim);
+    GetPosition(pos);
+    GetLimit(lim);
     CHECK(pos <= lim);
     Integer rem = (pos <= lim ? lim - pos : 0);
     Integer off = (pos << 2) + mOffset;
     CHECK(off >= 0);
     AutoPtr<ByteBufferAsIntegerBuffer> bb = new ByteBufferAsIntegerBuffer();
     FAIL_RETURN(bb->Constructor(mBB, -1, 0, rem, rem, off, mOrder));
-    *buffer = (IIntegerBuffer*)bb.Get();
-    REFCOUNT_ADD(*buffer);
+    buffer = (IIntegerBuffer*)bb.Get();
     return NOERROR;
 }
 
 ECode ByteBufferAsIntegerBuffer::Duplicate(
-    /* [out] */ IIntegerBuffer** buffer)
+    /* [out] */ AutoPtr<IIntegerBuffer>& buffer)
 {
-    VALIDATE_NOT_NULL(buffer);
-
     Integer pos, lim, cap;
-    GetPosition(&pos);
-    GetLimit(&lim);
-    GetCapacity(&cap);
+    GetPosition(pos);
+    GetLimit(lim);
+    GetCapacity(cap);
     AutoPtr<ByteBufferAsIntegerBuffer> bb = new ByteBufferAsIntegerBuffer();
     FAIL_RETURN(bb->Constructor(
             mBB, MarkValue(), pos, lim, cap, mOffset, mOrder));
-    *buffer = (IIntegerBuffer*)bb.Get();
-    REFCOUNT_ADD(*buffer);
+    buffer = (IIntegerBuffer*)bb.Get();
     return NOERROR;
 }
 
 ECode ByteBufferAsIntegerBuffer::AsReadOnlyBuffer(
-    /* [out] */ IIntegerBuffer** buffer)
+    /* [out] */ AutoPtr<IIntegerBuffer>& buffer)
 {
-    VALIDATE_NOT_NULL(buffer);
-
     AutoPtr<IByteBuffer> rb;
-    mBB->AsReadOnlyBuffer(&rb);
+    mBB->AsReadOnlyBuffer(rb);
     Integer pos, lim, cap;
-    GetPosition(&pos);
-    GetLimit(&lim);
-    GetCapacity(&cap);
+    GetPosition(pos);
+    GetLimit(lim);
+    GetCapacity(cap);
     AutoPtr<ByteBufferAsIntegerBuffer> bb = new ByteBufferAsIntegerBuffer();
     FAIL_RETURN(bb->Constructor(
             (ByteBuffer*)rb.Get(), MarkValue(), pos, lim, cap, mOffset, mOrder));
-    *buffer = (IIntegerBuffer*)bb.Get();
-    REFCOUNT_ADD(*buffer);
+    buffer = (IIntegerBuffer*)bb.Get();
     return NOERROR;
 }
 
 ECode ByteBufferAsIntegerBuffer::Get(
-    /* [out] */ Integer* i)
+    /* [out] */ Integer& i)
 {
-    VALIDATE_NOT_NULL(i);
-
     Integer index;
     NextGetIndex(&index);
     return Get(index, i);
@@ -113,10 +102,8 @@ ECode ByteBufferAsIntegerBuffer::Get(
 
 ECode ByteBufferAsIntegerBuffer::Get(
     /* [in] */ Integer index,
-    /* [out] */ Integer* i)
+    /* [out] */ Integer& i)
 {
-    VALIDATE_NOT_NULL(i);
-
     FAIL_RETURN(CheckIndex(index));
     return mBB->GetIntegerUnchecked(Ix(index), i);
 }
@@ -128,12 +115,12 @@ ECode ByteBufferAsIntegerBuffer::Get(
 {
     FAIL_RETURN(CheckBounds(offset, length, dst.GetLength()));
     Integer remaining;
-    Remaining(&remaining);
+    Remaining(remaining);
     if (length > remaining){
         return E_BUFFER_UNDERFLOW_EXCEPTION;
     }
     Integer pos;
-    GetPosition(&pos);
+    GetPosition(pos);
     mBB->GetUnchecked(Ix(pos), dst, offset, length);
     SetPosition(pos + length);
     return NOERROR;
@@ -168,12 +155,12 @@ ECode ByteBufferAsIntegerBuffer::Put(
     }
     FAIL_RETURN(CheckBounds(offset, length, src.GetLength()));
     Integer remaining;
-    Remaining(&remaining);
+    Remaining(remaining);
     if (length > remaining) {
         return E_BUFFER_OVERFLOW_EXCEPTION;
     }
     Integer pos;
-    GetPosition(&pos);
+    GetPosition(pos);
     mBB->PutUnchecked(Ix(pos), src, offset, length);
     SetPosition(pos + length);
     return NOERROR;
@@ -185,13 +172,13 @@ ECode ByteBufferAsIntegerBuffer::Compact()
         return E_READ_ONLY_BUFFER_EXCEPTION;
     }
     Integer pos, lim, cap;
-    GetPosition(&pos);
-    GetLimit(&lim);
+    GetPosition(pos);
+    GetLimit(lim);
     CHECK(pos <= lim);
     Integer rem = (pos <= lim ? lim - pos : 0);
     if (!Object::InstanceOf(mBB, CID_CDirectByteBuffer)) {
         AutoPtr<IArrayHolder> holder;
-        mBB->GetArray((IInterface**)&holder);
+        mBB->GetArray(holder);
         Array<Byte> bytes;
         holder->GetArray(&bytes);
         bytes.Copy(Ix(0), bytes, Ix(pos), rem << 2);
@@ -202,34 +189,29 @@ ECode ByteBufferAsIntegerBuffer::Compact()
         memmove(dst, src, rem << 2);
     }
     SetPosition(rem);
-    GetCapacity(&cap);
+    GetCapacity(cap);
     SetLimit(cap);
     DiscardMark();
     return NOERROR;
 }
 
 ECode ByteBufferAsIntegerBuffer::IsDirect(
-    /* [out] */ Boolean* direct)
+    /* [out] */ Boolean& direct)
 {
     return mBB->IsDirect(direct);
 }
 
 ECode ByteBufferAsIntegerBuffer::IsReadOnly(
-    /* [out] */ Boolean* readOnly)
+    /* [out] */ Boolean& readOnly)
 {
-    VALIDATE_NOT_NULL(readOnly);
-
-    *readOnly = mIsReadOnly;
+    readOnly = mIsReadOnly;
     return NOERROR;
 }
 
 ECode ByteBufferAsIntegerBuffer::GetOrder(
-    /* [out] */ IByteOrder** bo)
+    /* [out] */ AutoPtr<IByteOrder>& bo)
 {
-    VALIDATE_NOT_NULL(bo);
-
-    *bo = mOrder;
-    REFCOUNT_ADD(*bo);
+    bo = mOrder;
     return NOERROR;
 }
 

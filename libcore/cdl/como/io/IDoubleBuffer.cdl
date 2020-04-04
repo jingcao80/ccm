@@ -24,19 +24,19 @@ namespace io {
 interface IDoubleBuffer
 {
     AsReadOnlyBuffer(
-        [out] IDoubleBuffer** buffer);
+        [out] IDoubleBuffer&& buffer);
 
     Compact();
 
     Duplicate(
-        [out] IDoubleBuffer** buffer);
+        [out] IDoubleBuffer&& buffer);
 
     Get(
-        [out] Double* d);
+        [out] Double& d);
 
     Get(
         [in] Integer index,
-        [out] Double* d);
+        [out] Double& d);
 
     Get(
         [out] Array<Double>& dst);
@@ -47,10 +47,10 @@ interface IDoubleBuffer
         [in] Integer length);
 
     GetOrder(
-        [out] IByteOrder** bo);
+        [out] IByteOrder&& bo);
 
     HasArray(
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     Put(
         [in] Double d);
@@ -71,7 +71,7 @@ interface IDoubleBuffer
         [in] IDoubleBuffer* src);
 
     Slice(
-        [out] IDoubleBuffer** buffer);
+        [out] IDoubleBuffer&& buffer);
 }
 
 }

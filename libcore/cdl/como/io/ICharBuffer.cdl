@@ -31,19 +31,19 @@ namespace io {
 interface ICharBuffer
 {
     AsReadOnlyBuffer(
-        [out] ICharBuffer** buffer);
+        [out] ICharBuffer&& buffer);
 
     Compact();
 
     Duplicate(
-        [out] ICharBuffer** buffer);
+        [out] ICharBuffer&& buffer);
 
     Get(
-        [out] Char* c);
+        [out] Char& c);
 
     Get(
         [in] Integer index,
-        [out] Char* c);
+        [out] Char& c);
 
     Get(
         [out] Array<Char>& dst);
@@ -54,10 +54,10 @@ interface ICharBuffer
         [in] Integer length);
 
     GetOrder(
-        [out] IByteOrder** bo);
+        [out] IByteOrder&& bo);
 
     HasArray(
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     Put(
         [in] Char c);
@@ -86,7 +86,7 @@ interface ICharBuffer
         [in] ICharBuffer* src);
 
     Slice(
-        [out] ICharBuffer** buffer);
+        [out] ICharBuffer&& buffer);
 
     ToString(
         [out] String& desc);
@@ -94,7 +94,7 @@ interface ICharBuffer
     ToString(
         [in] Integer start,
         [in] Integer end,
-        [out] String* desc);
+        [out] String& desc);
 }
 
 }

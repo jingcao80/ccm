@@ -103,13 +103,13 @@ ECode DoubleBuffer::Get(
 {
     FAIL_RETURN(CheckBounds(offset, length, dst.GetLength()));
     Integer remaining;
-    Remaining(&remaining);
+    Remaining(remaining);
     if (length > remaining) {
         return E_BUFFER_UNDERFLOW_EXCEPTION;
     }
     Integer end = offset + length;
     for (Integer i = offset; i < end; i++) {
-        Get(&dst[i]);
+        Get(dst[i]);
     }
     return NOERROR;
 }
@@ -130,13 +130,13 @@ ECode DoubleBuffer::Put(
     DoubleBuffer* srcObject = (DoubleBuffer*)src;
 
     Integer n, remaining;
-    srcObject->Remaining(&n);
-    if (Remaining(&remaining), n > remaining) {
+    srcObject->Remaining(n);
+    if (Remaining(remaining), n > remaining) {
         return E_BUFFER_OVERFLOW_EXCEPTION;
     }
     for (Integer i = 0; i < n; i++) {
         Double d;
-        srcObject->Get(&d);
+        srcObject->Get(d);
         Put(d);
     }
     return NOERROR;
@@ -149,7 +149,7 @@ ECode DoubleBuffer::Put(
 {
     FAIL_RETURN(CheckBounds(offset, length, src.GetLength()));
     Integer remaining;
-    if (Remaining(&remaining), length > remaining) {
+    if (Remaining(remaining), length > remaining) {
         return E_BUFFER_OVERFLOW_EXCEPTION;
     }
     Integer end = offset + length;
@@ -166,40 +166,34 @@ ECode DoubleBuffer::Put(
 }
 
 ECode DoubleBuffer::HasArray(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
-    *result = (!mHb.IsNull() && !mIsReadOnly);
+    result = (!mHb.IsNull() && !mIsReadOnly);
     return NOERROR;
 }
 
 ECode DoubleBuffer::GetArray(
-    /* [out] */ IInterface** array)
+    /* [out] */ AutoPtr<IArrayHolder>& array)
 {
-    VALIDATE_NOT_NULL(array);
-
     if (mHb.IsNull()) {
         return E_UNSUPPORTED_OPERATION_EXCEPTION;
     }
     if (mIsReadOnly) {
         return E_READ_ONLY_BUFFER_EXCEPTION;
     }
-    return CArrayHolder::New(mHb, IID_IArrayHolder, array);
+    return CArrayHolder::New(mHb, IID_IArrayHolder, (IInterface**)&array);
 }
 
 ECode DoubleBuffer::GetArrayOffset(
-    /* [out] */ Integer* offset)
+    /* [out] */ Integer& offset)
 {
-    VALIDATE_NOT_NULL(offset);
-
     if (mHb.IsNull()) {
         return E_UNSUPPORTED_OPERATION_EXCEPTION;
     }
     if (mIsReadOnly) {
         return E_READ_ONLY_BUFFER_EXCEPTION;
     }
-    *offset = mOffset;
+    offset = mOffset;
     return NOERROR;
 }
 
@@ -211,13 +205,13 @@ ECode DoubleBuffer::ToString(
     sb->Append(Object::GetCoclassName(this));
     sb->Append(String("[pos="));
     Integer value;
-    GetPosition(&value);
+    GetPosition(value);
     sb->Append(value);
     sb->Append(String(" lim="));
-    GetLimit(&value);
+    GetLimit(value);
     sb->Append(value);
     sb->Append(String(" cap="));
-    GetCapacity(&value);
+    GetCapacity(value);
     sb->Append(value);
     sb->Append(String("]"));
     return sb->ToString(desc);
@@ -228,12 +222,12 @@ ECode DoubleBuffer::GetHashCode(
 {
     hash = 1;
     Integer p;
-    GetPosition(&p);
+    GetPosition(p);
     Integer i;
-    GetLimit(&i);
+    GetLimit(i);
     for (i = i - 1; i >= p; i--) {
         Double d;
-        Get(i, &d);
+        Get(i, d);
         hash = 31 * hash + (Integer)d;
     }
     return NOERROR;
@@ -253,21 +247,21 @@ ECode DoubleBuffer::Equals(
         return NOERROR;
     }
     Integer thisRemaining, otherRemaining;
-    Remaining(&thisRemaining);
-    other->Remaining(&otherRemaining);
+    Remaining(thisRemaining);
+    other->Remaining(otherRemaining);
     if (thisRemaining != otherRemaining) {
         same = false;
         return NOERROR;
     }
     Integer p;
-    GetPosition(&p);
+    GetPosition(p);
     Integer i, j;
-    GetLimit(&i);
-    other->GetLimit(&j);
+    GetLimit(i);
+    other->GetLimit(j);
     for (i = i - 1, j = j - 1; i >= p; i--, j--) {
         Double thisd, otherd;
-        Get(i, &thisd);
-        other->Get(j, &otherd);
+        Get(i, thisd);
+        other->Get(j, otherd);
         if (!Equals(thisd, otherd)) {
             same = false;
             return NOERROR;
@@ -294,17 +288,17 @@ ECode DoubleBuffer::CompareTo(
     }
 
     Integer thisRemaining, otherRemaining;
-    Remaining(&thisRemaining);
-    otherIB->Remaining(&otherRemaining);
+    Remaining(thisRemaining);
+    otherIB->Remaining(otherRemaining);
     Integer thisPos, otherPos;
-    GetPosition(&thisPos);
-    otherIB->GetPosition(&otherPos);
+    GetPosition(thisPos);
+    otherIB->GetPosition(otherPos);
 
     Integer n = thisPos + Math::Min(thisRemaining, otherRemaining);
     for (Integer i = thisPos, j = otherPos; i < n; i++, j++) {
         Double thisd, otherd;
-        Get(i, &thisd);
-        otherIB->Get(j, &otherd);
+        Get(i, thisd);
+        otherIB->Get(j, otherd);
         Integer cmp = Math::Compare(thisd, otherd);
         if (cmp != 0) {
             result = cmp;

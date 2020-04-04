@@ -57,22 +57,22 @@ public:
         /* [out] */ String& desc) override;
 
     ECode IsUnderflow(
-        /* [out] */ Boolean* underflow) override;
+        /* [out] */ Boolean& underflow) override;
 
     ECode IsOverflow(
-        /* [out] */ Boolean* overflow) override;
+        /* [out] */ Boolean& overflow) override;
 
     ECode IsError(
-        /* [out] */ Boolean* error) override;
+        /* [out] */ Boolean& error) override;
 
     ECode IsMalformed(
-        /* [out] */ Boolean* malformed) override;
+        /* [out] */ Boolean& malformed) override;
 
     ECode IsUnmappable(
-        /* [out] */ Boolean* unmappable) override;
+        /* [out] */ Boolean& unmappable) override;
 
     ECode GetLength(
-        /* [out] */ Integer* length) override;
+        /* [out] */ Integer& length) override;
 
     static AutoPtr<ICoderResult> MalformedForLength(
         /* [in] */ Integer length);

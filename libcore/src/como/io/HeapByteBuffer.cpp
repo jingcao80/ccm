@@ -81,74 +81,61 @@ ECode HeapByteBuffer::Constructor(
 }
 
 ECode HeapByteBuffer::Slice(
-    /* [out] */ IByteBuffer** buffer)
+    /* [out] */ AutoPtr<IByteBuffer>& buffer)
 {
-    VALIDATE_NOT_NULL(buffer);
-
     Integer remaining, pos;
-    Remaining(&remaining);
-    GetPosition(&pos);
+    Remaining(remaining);
+    GetPosition(pos);
     AutoPtr<HeapByteBuffer> hbb = new HeapByteBuffer();
     FAIL_RETURN(hbb->Constructor(
             mHb, -1, 0, remaining, remaining, pos + mOffset, mIsReadOnly));
-    *buffer = (IByteBuffer*)hbb.Get();
-    REFCOUNT_ADD(*buffer);
+    buffer = (IByteBuffer*)hbb.Get();
     return NOERROR;
 }
 
 ECode HeapByteBuffer::Duplicate(
-    /* [out] */ IByteBuffer** buffer)
+    /* [out] */ AutoPtr<IByteBuffer>& buffer)
 {
-    VALIDATE_NOT_NULL(buffer);
-
     Integer pos, lim, cap;
-    GetPosition(&pos);
-    GetLimit(&lim);
-    GetCapacity(&cap);
+    GetPosition(pos);
+    GetLimit(lim);
+    GetCapacity(cap);
     AutoPtr<HeapByteBuffer> hbb = new HeapByteBuffer();
     FAIL_RETURN(hbb->Constructor(
             mHb, MarkValue(), pos, lim, cap, mOffset, mIsReadOnly));
-    *buffer = (IByteBuffer*)hbb.Get();
-    REFCOUNT_ADD(*buffer);
+    buffer = (IByteBuffer*)hbb.Get();
     return NOERROR;
 }
 
 ECode HeapByteBuffer::AsReadOnlyBuffer(
-    /* [out] */ IByteBuffer** buffer)
+    /* [out] */ AutoPtr<IByteBuffer>& buffer)
 {
-    VALIDATE_NOT_NULL(buffer);
-
     Integer pos, lim, cap;
-    GetPosition(&pos);
-    GetLimit(&lim);
-    GetCapacity(&cap);
+    GetPosition(pos);
+    GetLimit(lim);
+    GetCapacity(cap);
     AutoPtr<HeapByteBuffer> hbb = new HeapByteBuffer();
     FAIL_RETURN(hbb->Constructor(
             mHb, MarkValue(), pos, lim, cap, mOffset, true));
-    *buffer = (IByteBuffer*)hbb.Get();
-    REFCOUNT_ADD(*buffer);
+    buffer = (IByteBuffer*)hbb.Get();
     return NOERROR;
 }
 
 ECode HeapByteBuffer::Get(
-    /* [out] */ Byte* b)
+    /* [out] */ Byte& b)
 {
-    VALIDATE_NOT_NULL(b);
-
     Integer index;
     NextGetIndex(&index);
-    *b = mHb[Ix(index)];
+    b = mHb[Ix(index)];
     return NOERROR;
 }
 
 ECode HeapByteBuffer::Get(
     /* [in] */ Integer index,
-    /* [out] */ Byte* b)
+    /* [out] */ Byte& b)
 {
-    VALIDATE_NOT_NULL(b);
-
     FAIL_RETURN(CheckIndex(index));
-    *b = mHb[Ix(index)];
+    b = mHb[Ix(index)];
     return NOERROR;
 }
 
@@ -159,32 +146,28 @@ ECode HeapByteBuffer::Get(
 {
     FAIL_RETURN(CheckBounds(mOffset, length, dst.GetLength()));
     Integer remaining;
-    Remaining(&remaining);
+    Remaining(remaining);
     if (length > remaining){
         return E_BUFFER_UNDERFLOW_EXCEPTION;
     }
     Integer pos;
-    GetPosition(&pos);
+    GetPosition(pos);
     dst.Copy(offset, mHb, Ix(pos), length);
     SetPosition(pos + length);
     return NOERROR;
 }
 
 ECode HeapByteBuffer::IsDirect(
-    /* [out] */ Boolean* direct)
+    /* [out] */ Boolean& direct)
 {
-    VALIDATE_NOT_NULL(direct);
-
-    *direct = false;
+    direct = false;
     return NOERROR;
 }
 
 ECode HeapByteBuffer::IsReadOnly(
-    /* [out] */ Boolean* readOnly)
+    /* [out] */ Boolean& readOnly)
 {
-    VALIDATE_NOT_NULL(readOnly);
-
-    *readOnly = mIsReadOnly;
+    readOnly = mIsReadOnly;
     return NOERROR;
 }
 
@@ -222,12 +205,12 @@ ECode HeapByteBuffer::Put(
     }
     FAIL_RETURN(CheckBounds(offset, length, src.GetLength()));
     Integer remaining;
-    Remaining(&remaining);
+    Remaining(remaining);
     if (length > remaining) {
         return E_BUFFER_OVERFLOW_EXCEPTION;
     }
     Integer pos;
-    GetPosition(&pos);
+    GetPosition(pos);
     mHb.Copy(Ix(pos), src, offset, length);
     SetPosition(pos + length);
     return NOERROR;
@@ -239,11 +222,11 @@ ECode HeapByteBuffer::Compact()
         return E_READ_ONLY_BUFFER_EXCEPTION;
     }
     Integer pos, remaining, cap;
-    GetPosition(&pos);
-    Remaining(&remaining);
+    GetPosition(pos);
+    Remaining(remaining);
     mHb.Copy(Ix(0), mHb, Ix(pos), remaining);
     SetPosition(remaining);
-    GetCapacity(&cap);
+    GetCapacity(cap);
     SetLimit(cap);
     DiscardMark();
     return NOERROR;
@@ -267,32 +250,28 @@ ECode HeapByteBuffer::_Put(
 }
 
 ECode HeapByteBuffer::GetChar(
-    /* [out] */ Char* c)
+    /* [out] */ Char& c)
 {
-    VALIDATE_NOT_NULL(c);
-
     Integer index;
     NextGetIndex(4, &index);
-    *c = Bits::GetChar(this, Ix(index), mBigEndian);
+    c = Bits::GetChar(this, Ix(index), mBigEndian);
     return NOERROR;
 }
 
 ECode HeapByteBuffer::GetChar(
     /* [in] */ Integer index,
-    /* [out] */ Char* c)
+    /* [out] */ Char& c)
 {
-    VALIDATE_NOT_NULL(c);
-
     FAIL_RETURN(CheckIndex(index, 4));
-    *c = Bits::GetChar(this, Ix(index), mBigEndian);
+    c = Bits::GetChar(this, Ix(index), mBigEndian);
     return NOERROR;
 }
 
 ECode HeapByteBuffer::GetCharUnchecked(
     /* [in] */ Integer index,
-    /* [out] */ Char* c)
+    /* [out] */ Char& c)
 {
-    *c = Bits::GetChar(this, Ix(index), mBigEndian);
+    c = Bits::GetChar(this, Ix(index), mBigEndian);
     return NOERROR;
 }
 
@@ -349,51 +328,44 @@ ECode HeapByteBuffer::PutUnchecked(
 }
 
 ECode HeapByteBuffer::AsCharBuffer(
-    /* [out] */ ICharBuffer** buffer)
+    /* [out] */ AutoPtr<ICharBuffer>& buffer)
 {
-    VALIDATE_NOT_NULL(buffer);
-
     Integer remaining, off;
-    Remaining(&remaining);
+    Remaining(remaining);
     Integer size = remaining >> 2;
-    GetPosition(&off);
+    GetPosition(off);
     AutoPtr<IByteOrder> order;
-    GetOrder(&order);
+    GetOrder(order);
 
     AutoPtr<ByteBufferAsCharBuffer> bb = new ByteBufferAsCharBuffer();
     FAIL_RETURN(bb->Constructor(this, -1, 0, size, size, off, order));
-    *buffer = (ICharBuffer*)bb.Get();
-    REFCOUNT_ADD(*buffer);
+    buffer = (ICharBuffer*)bb.Get();
     return NOERROR;
 }
 
 ECode HeapByteBuffer::GetShort(
-    /* [out] */ Short* s)
+    /* [out] */ Short& s)
 {
-    VALIDATE_NOT_NULL(s);
-
     Integer index;
     NextGetIndex(2, &index);
-    *s = Bits::GetShort(this, Ix(index), mBigEndian);
+    s = Bits::GetShort(this, Ix(index), mBigEndian);
     return NOERROR;
 }
 
 ECode HeapByteBuffer::GetShort(
     /* [in] */ Integer index,
-    /* [out] */ Short* s)
+    /* [out] */ Short& s)
 {
-    VALIDATE_NOT_NULL(s);
-
     FAIL_RETURN(CheckIndex(index, 2));
-    *s = Bits::GetShort(this, Ix(index), mBigEndian);
+    s = Bits::GetShort(this, Ix(index), mBigEndian);
     return NOERROR;
 }
 
 ECode HeapByteBuffer::GetShortUnchecked(
     /* [in] */ Integer index,
-    /* [in] */ Short* value)
+    /* [in] */ Short& value)
 {
-    *value = Bits::GetShort(this, Ix(index), mBigEndian);
+    value = Bits::GetShort(this, Ix(index), mBigEndian);
     return NOERROR;
 }
 
@@ -450,52 +422,44 @@ ECode HeapByteBuffer::PutUnchecked(
 }
 
 ECode HeapByteBuffer::AsShortBuffer(
-    /* [out] */ IShortBuffer** buffer)
+    /* [out] */ AutoPtr<IShortBuffer>& buffer)
 {
-
-    VALIDATE_NOT_NULL(buffer);
-
     Integer remaining, off;
-    Remaining(&remaining);
+    Remaining(remaining);
     Integer size = remaining >> 1;
-    GetPosition(&off);
+    GetPosition(off);
     AutoPtr<IByteOrder> order;
-    GetOrder(&order);
+    GetOrder(order);
 
     AutoPtr<ByteBufferAsShortBuffer> bb = new ByteBufferAsShortBuffer();
     FAIL_RETURN(bb->Constructor(this, -1, 0, size, size, off, order));
-    *buffer = (IShortBuffer*)bb.Get();
-    REFCOUNT_ADD(*buffer);
+    buffer = (IShortBuffer*)bb.Get();
     return NOERROR;
 }
 
 ECode HeapByteBuffer::GetInteger(
-    /* [out] */ Integer* i)
+    /* [out] */ Integer& i)
 {
-    VALIDATE_NOT_NULL(i);
-
     Integer index;
     NextGetIndex(4, &index);
-    *i = Bits::GetInteger(this, Ix(index), mBigEndian);
+    i = Bits::GetInteger(this, Ix(index), mBigEndian);
     return NOERROR;
 }
 
 ECode HeapByteBuffer::GetInteger(
     /* [in] */ Integer index,
-    /* [out] */ Integer* i)
+    /* [out] */ Integer& i)
 {
-    VALIDATE_NOT_NULL(i);
-
     FAIL_RETURN(CheckIndex(index, 4));
-    *i = Bits::GetInteger(this, Ix(index), mBigEndian);
+    i = Bits::GetInteger(this, Ix(index), mBigEndian);
     return NOERROR;
 }
 
 ECode HeapByteBuffer::GetIntegerUnchecked(
     /* [in] */ Integer index,
-    /* [out] */ Integer* value)
+    /* [out] */ Integer& value)
 {
-    *value = Bits::GetInteger(this, Ix(index), mBigEndian);
+    value = Bits::GetInteger(this, Ix(index), mBigEndian);
     return NOERROR;
 }
 
@@ -552,51 +516,44 @@ ECode HeapByteBuffer::PutUnchecked(
 }
 
 ECode HeapByteBuffer::AsIntegerBuffer(
-    /* [out] */ IIntegerBuffer** buffer)
+    /* [out] */ AutoPtr<IIntegerBuffer>& buffer)
 {
-    VALIDATE_NOT_NULL(buffer);
-
     Integer remaining, off;
-    Remaining(&remaining);
+    Remaining(remaining);
     Integer size = remaining >> 2;
-    GetPosition(&off);
+    GetPosition(off);
     AutoPtr<IByteOrder> order;
-    GetOrder(&order);
+    GetOrder(order);
 
     AutoPtr<ByteBufferAsIntegerBuffer> bb = new ByteBufferAsIntegerBuffer();
     FAIL_RETURN(bb->Constructor(this, -1, 0, size, size, off, order));
-    *buffer = (IIntegerBuffer*)bb.Get();
-    REFCOUNT_ADD(*buffer);
+    buffer = (IIntegerBuffer*)bb.Get();
     return NOERROR;
 }
 
 ECode HeapByteBuffer::GetLong(
-    /* [out] */ Long* l)
+    /* [out] */ Long& l)
 {
-    VALIDATE_NOT_NULL(l);
-
     Integer index;
     NextGetIndex(8, &index);
-    *l = Bits::GetLong(this, Ix(index), mBigEndian);
+    l = Bits::GetLong(this, Ix(index), mBigEndian);
     return NOERROR;
 }
 
 ECode HeapByteBuffer::GetLong(
     /* [in] */ Integer index,
-    /* [out] */ Long* l)
+    /* [out] */ Long& l)
 {
-    VALIDATE_NOT_NULL(l);
-
     FAIL_RETURN(CheckIndex(index, 8));
-    *l = Bits::GetLong(this, Ix(index), mBigEndian);
+    l = Bits::GetLong(this, Ix(index), mBigEndian);
     return NOERROR;
 }
 
 ECode HeapByteBuffer::GetLongUnchecked(
     /* [in] */ Integer index,
-    /* [out] */ Long* value)
+    /* [out] */ Long& value)
 {
-    *value = Bits::GetLong(this, Ix(index), mBigEndian);
+    value = Bits::GetLong(this, Ix(index), mBigEndian);
     return NOERROR;
 }
 
@@ -653,51 +610,44 @@ ECode HeapByteBuffer::PutUnchecked(
 }
 
 ECode HeapByteBuffer::AsLongBuffer(
-    /* [out] */ ILongBuffer** buffer)
+    /* [out] */ AutoPtr<ILongBuffer>& buffer)
 {
-    VALIDATE_NOT_NULL(buffer);
-
     Integer remaining, off;
-    Remaining(&remaining);
+    Remaining(remaining);
     Integer size = remaining >> 3;
-    GetPosition(&off);
+    GetPosition(off);
     AutoPtr<IByteOrder> order;
-    GetOrder(&order);
+    GetOrder(order);
 
     AutoPtr<ByteBufferAsLongBuffer> bb = new ByteBufferAsLongBuffer();
     FAIL_RETURN(bb->Constructor(this, -1, 0, size, size, off, order));
-    *buffer = (ILongBuffer*)bb.Get();
-    REFCOUNT_ADD(*buffer);
+    buffer = (ILongBuffer*)bb.Get();
     return NOERROR;
 }
 
 ECode HeapByteBuffer::GetFloat(
-    /* [out] */ Float* f)
+    /* [out] */ Float& f)
 {
-    VALIDATE_NOT_NULL(f);
-
     Integer index;
     NextGetIndex(4, &index);
-    *f = Bits::GetFloat(this, Ix(index), mBigEndian);
+    f = Bits::GetFloat(this, Ix(index), mBigEndian);
     return NOERROR;
 }
 
 ECode HeapByteBuffer::GetFloat(
     /* [in] */ Integer index,
-    /* [out] */ Float* f)
+    /* [out] */ Float& f)
 {
-    VALIDATE_NOT_NULL(f);
-
     FAIL_RETURN(CheckIndex(index, 4));
-    *f = Bits::GetFloat(this, Ix(index), mBigEndian);
+    f = Bits::GetFloat(this, Ix(index), mBigEndian);
     return NOERROR;
 }
 
 ECode HeapByteBuffer::GetFloatUnchecked(
     /* [in] */ Integer index,
-    /* [out] */ Float* f)
+    /* [out] */ Float& f)
 {
-    *f = Bits::GetFloat(this, Ix(index), mBigEndian);
+    f = Bits::GetFloat(this, Ix(index), mBigEndian);
     return NOERROR;
 }
 
@@ -754,51 +704,44 @@ ECode HeapByteBuffer::PutUnchecked(
 }
 
 ECode HeapByteBuffer::AsFloatBuffer(
-    /* [out] */ IFloatBuffer** buffer)
+    /* [out] */ AutoPtr<IFloatBuffer>& buffer)
 {
-    VALIDATE_NOT_NULL(buffer);
-
     Integer remaining, off;
-    Remaining(&remaining);
+    Remaining(remaining);
     Integer size = remaining >> 2;
-    GetPosition(&off);
+    GetPosition(off);
     AutoPtr<IByteOrder> order;
-    GetOrder(&order);
+    GetOrder(order);
 
     AutoPtr<ByteBufferAsFloatBuffer> bb = new ByteBufferAsFloatBuffer();
     FAIL_RETURN(bb->Constructor(this, -1, 0, size, size, off, order));
-    *buffer = (IFloatBuffer*)bb.Get();
-    REFCOUNT_ADD(*buffer);
+    buffer = (IFloatBuffer*)bb.Get();
     return NOERROR;
 }
 
 ECode HeapByteBuffer::GetDouble(
-    /* [out] */ Double* d)
+    /* [out] */ Double& d)
 {
-    VALIDATE_NOT_NULL(d);
-
     Integer index;
     NextGetIndex(8, &index);
-    *d = Bits::GetDouble(this, Ix(index), mBigEndian);
+    d = Bits::GetDouble(this, Ix(index), mBigEndian);
     return NOERROR;
 }
 
 ECode HeapByteBuffer::GetDouble(
     /* [in] */ Integer index,
-    /* [out] */ Double* d)
+    /* [out] */ Double& d)
 {
-    VALIDATE_NOT_NULL(d);
-
     FAIL_RETURN(CheckIndex(index, 8));
-    *d = Bits::GetDouble(this, Ix(index), mBigEndian);
+    d = Bits::GetDouble(this, Ix(index), mBigEndian);
     return NOERROR;
 }
 
 ECode HeapByteBuffer::GetDoubleUnchecked(
     /* [in] */ Integer index,
-    /* [out] */ Double* value)
+    /* [out] */ Double& value)
 {
-    *value = Bits::GetDouble(this, Ix(index), mBigEndian);
+    value = Bits::GetDouble(this, Ix(index), mBigEndian);
     return NOERROR;
 }
 
@@ -855,21 +798,18 @@ ECode HeapByteBuffer::PutUnchecked(
 }
 
 ECode HeapByteBuffer::AsDoubleBuffer(
-    /* [out] */ IDoubleBuffer** buffer)
+    /* [out] */ AutoPtr<IDoubleBuffer>& buffer)
 {
-    VALIDATE_NOT_NULL(buffer);
-
     Integer remaining, off;
-    Remaining(&remaining);
+    Remaining(remaining);
     Integer size = remaining >> 3;
-    GetPosition(&off);
+    GetPosition(off);
     AutoPtr<IByteOrder> order;
-    GetOrder(&order);
+    GetOrder(order);
 
     AutoPtr<ByteBufferAsDoubleBuffer> bb = new ByteBufferAsDoubleBuffer();
     FAIL_RETURN(bb->Constructor(this, -1, 0, size, size, off, order));
-    *buffer = (IDoubleBuffer*)bb.Get();
-    REFCOUNT_ADD(*buffer);
+    buffer = (IDoubleBuffer*)bb.Get();
     return NOERROR;
 }
 

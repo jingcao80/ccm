@@ -53,7 +53,7 @@ public:
         /* [in] */ Integer cap);
 
     ECode IsLoaded(
-        /* [out] */ Boolean* loaded) override final;
+        /* [out] */ Boolean& loaded) override final;
 
     ECode Load() override final;
 
@@ -74,7 +74,7 @@ private:
         /* [in] */ HANDLE address,
         /* [in] */ Long length,
         /* [in] */ Integer pageCount,
-        /* [out] */ Boolean* loaded);
+        /* [out] */ Boolean& loaded);
 
     ECode Load0(
         /* [in] */ HANDLE address,

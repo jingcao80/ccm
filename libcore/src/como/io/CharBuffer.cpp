@@ -104,19 +104,19 @@ ECode CharBuffer::Read(
     /* [out] */ Integer& number)
 {
     Integer remaining;
-    Remaining(&remaining);
+    Remaining(remaining);
     if (remaining == 0) {
         number = -1;
         return NOERROR;
     }
     Integer targetRemaining;
-    IBuffer::Probe(target)->Remaining(&targetRemaining);
+    IBuffer::Probe(target)->Remaining(targetRemaining);
     Integer n = Math::Min(remaining, targetRemaining);
     Integer limit;
-    GetLimit(&limit);
+    GetLimit(limit);
     if (targetRemaining < remaining) {
         Integer pos;
-        GetPosition(&pos);
+        GetPosition(pos);
         SetLimit(pos + n);
     }
     if (n > 0) {
@@ -160,12 +160,12 @@ ECode CharBuffer::Get(
 {
     FAIL_RETURN(CheckBounds(offset, length, dst.GetLength()));
     Integer remaining;
-    if (Remaining(&remaining), length > remaining) {
+    if (Remaining(remaining), length > remaining) {
         return E_BUFFER_UNDERFLOW_EXCEPTION;
     }
     Integer end = offset + length;
     for (Integer i = offset; i < end; i++) {
-        Get(&dst[i]);
+        Get(dst[i]);
     }
     return NOERROR;
 }
@@ -186,13 +186,13 @@ ECode CharBuffer::Put(
     CharBuffer* srcObject = (CharBuffer*)src;
 
     Integer n, remaining;
-    srcObject->Remaining(&n);
-    if (Remaining(&remaining), n > remaining) {
+    srcObject->Remaining(n);
+    if (Remaining(remaining), n > remaining) {
         return E_BUFFER_OVERFLOW_EXCEPTION;
     }
     for (Integer i = 0; i < n; i++) {
         Char c;
-        srcObject->Get(&c);
+        srcObject->Get(c);
         Put(c);
     }
     return NOERROR;
@@ -205,7 +205,7 @@ ECode CharBuffer::Put(
 {
     FAIL_RETURN(CheckBounds(offset, length, src.GetLength()));
     Integer remaining;
-    if (Remaining(&remaining), length > remaining) {
+    if (Remaining(remaining), length > remaining) {
         return E_BUFFER_OVERFLOW_EXCEPTION;
     }
     Integer end = offset + length;
@@ -237,7 +237,7 @@ ECode CharBuffer::Put(
     }
 
     Integer remaining;
-    if (Remaining(&remaining), (end - start) > remaining) {
+    if (Remaining(remaining), (end - start) > remaining) {
         return E_BUFFER_OVERFLOW_EXCEPTION;
     }
 
@@ -254,40 +254,34 @@ ECode CharBuffer::Put(
 }
 
 ECode CharBuffer::HasArray(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
-    *result = (!mHb.IsNull() && !mIsReadOnly);
+    result = (!mHb.IsNull() && !mIsReadOnly);
     return NOERROR;
 }
 
 ECode CharBuffer::GetArray(
-    /* [out] */ IInterface** array)
+    /* [out] */ AutoPtr<IArrayHolder>& array)
 {
-    VALIDATE_NOT_NULL(array);
-
     if (mHb.IsNull()) {
         return E_UNSUPPORTED_OPERATION_EXCEPTION;
     }
     if (mIsReadOnly) {
         return E_READ_ONLY_BUFFER_EXCEPTION;
     }
-    return CArrayHolder::New(mHb, IID_IArrayHolder, array);
+    return CArrayHolder::New(mHb, IID_IArrayHolder, (IInterface**)&array);
 }
 
 ECode CharBuffer::GetArrayOffset(
-    /* [out] */ Integer* offset)
+    /* [out] */ Integer& offset)
 {
-    VALIDATE_NOT_NULL(offset);
-
     if (mHb.IsNull()) {
         return E_UNSUPPORTED_OPERATION_EXCEPTION;
     }
     if (mIsReadOnly) {
         return E_READ_ONLY_BUFFER_EXCEPTION;
     }
-    *offset = mOffset;
+    offset = mOffset;
     return NOERROR;
 }
 
@@ -296,12 +290,12 @@ ECode CharBuffer::GetHashCode(
 {
     hash = 1;
     Integer p;
-    GetPosition(&p);
+    GetPosition(p);
     Integer i;
-    GetLimit(&i);
+    GetLimit(i);
     for (i = i - 1; i >= p; i--) {
         Char c;
-        Get(i, &c);
+        Get(i, c);
         hash = 31 * hash + c;
     }
     return NOERROR;
@@ -321,21 +315,21 @@ ECode CharBuffer::Equals(
         return NOERROR;
     }
     Integer thisRemaining, otherRemaining;
-    Remaining(&thisRemaining);
-    other->Remaining(&otherRemaining);
+    Remaining(thisRemaining);
+    other->Remaining(otherRemaining);
     if (thisRemaining != otherRemaining) {
         same = false;
         return NOERROR;
     }
     Integer p;
-    GetPosition(&p);
+    GetPosition(p);
     Integer i, j;
-    GetLimit(&i);
-    other->GetLimit(&j);
+    GetLimit(i);
+    other->GetLimit(j);
     for (i = i - 1, j = j - 1; i >= p; i--, j--) {
         Char thisC, otherC;
-        Get(i, &thisC);
-        other->Get(j, &otherC);
+        Get(i, thisC);
+        other->Get(j, otherC);
         if (thisC != otherC) {
             same = false;
             return NOERROR;
@@ -355,17 +349,17 @@ ECode CharBuffer::CompareTo(
     }
 
     Integer thisRemaining, otherRemaining;
-    Remaining(&thisRemaining);
-    otherCB->Remaining(&otherRemaining);
+    Remaining(thisRemaining);
+    otherCB->Remaining(otherRemaining);
     Integer thisPos, otherPos;
-    GetPosition(&thisPos);
-    otherCB->GetPosition(&otherPos);
+    GetPosition(thisPos);
+    otherCB->GetPosition(otherPos);
 
     Integer n = thisPos + Math::Min(thisRemaining, otherRemaining);
     for (Integer i = thisPos, j = otherPos; i < n; i++, j++) {
         Char thisC, otherC;
-        Get(i, &thisC);
-        otherCB->Get(j, &otherC);
+        Get(i, thisC);
+        otherCB->Get(j, otherC);
         Integer cmp = thisC - otherC;
         if (cmp != 0) {
             result = cmp;
@@ -380,15 +374,15 @@ ECode CharBuffer::ToString(
     /* [out] */ String& desc)
 {
     Integer pos, lim;
-    GetPosition(&pos);
-    GetLimit(&lim);
-    return ToString(pos, lim, &desc);
+    GetPosition(pos);
+    GetLimit(lim);
+    return ToString(pos, lim, desc);
 }
 
 ECode CharBuffer::GetLength(
     /* [out] */ Integer& number)
 {
-    return Remaining(&number);
+    return Remaining(number);
 }
 
 ECode CharBuffer::GetCharAt(
@@ -397,15 +391,15 @@ ECode CharBuffer::GetCharAt(
 {
     FAIL_RETURN(CheckIndex(index, 1));
     Integer pos;
-    GetPosition(&pos);
-    return Get(pos + index, &c);
+    GetPosition(pos);
+    return Get(pos + index, c);
 }
 
 ECode CharBuffer::Append(
     /* [in] */ ICharSequence* csq)
 {
     if (csq == nullptr) {
-        return Put(String("null"));
+        return Put("null");
     }
     else {
         return Put(CoreUtils::Unbox(csq));
@@ -419,7 +413,7 @@ ECode CharBuffer::Append(
 {
     AutoPtr<ICharSequence> cs = csq;
     if (cs == nullptr) {
-        CString::New(String("null"), IID_ICharSequence, (IInterface**)&cs);
+        CString::New("null", IID_ICharSequence, (IInterface**)&cs);
     }
     AutoPtr<ICharSequence> subcsq;
     cs->SubSequence(start, end, subcsq);

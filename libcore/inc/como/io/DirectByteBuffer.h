@@ -81,26 +81,26 @@ public:
         /* [in] */ Boolean isReadOnly);
 
     ECode GetAttachment(
-        /* [out] */ IInterface** attachment) override final;
+        /* [out] */ AutoPtr<IInterface>& attachment) override final;
 
     ECode Slice(
-        /* [out] */ IByteBuffer** buffer) override final;
+        /* [out] */ AutoPtr<IByteBuffer>& buffer) override final;
 
     ECode Duplicate(
-        /* [out] */ IByteBuffer** buffer) override final;
+        /* [out] */ AutoPtr<IByteBuffer>& buffer) override final;
 
     ECode AsReadOnlyBuffer(
-        /* [out] */ IByteBuffer** buffer) override final;
+        /* [out] */ AutoPtr<IByteBuffer>& buffer) override final;
 
     ECode GetAddress(
-        /* [out] */ HANDLE* addr) override final;
+        /* [out] */ HANDLE& addr) override final;
 
     ECode Get(
-        /* [out] */ Byte* b) override final;
+        /* [out] */ Byte& b) override final;
 
     ECode Get(
         /* [in] */ Integer index,
-        /* [out] */ Byte* b) override final;
+        /* [out] */ Byte& b) override final;
 
     ECode Get(
         /* [out] */ Array<Byte>& dst,
@@ -122,10 +122,10 @@ public:
     ECode Compact() override final;
 
     ECode IsDirect(
-        /* [out] */ Boolean* direct) override final;
+        /* [out] */ Boolean& direct) override final;
 
     ECode IsReadOnly(
-        /* [out] */ Boolean* readOnly) override final;
+        /* [out] */ Boolean& readOnly) override final;
 
     Byte _Get(
         /* [in] */ Integer i) override final;
@@ -135,15 +135,15 @@ public:
         /* [in] */ Byte b) override final;
 
     ECode GetChar(
-        /* [out] */ Char* c) override final;
+        /* [out] */ Char& c) override final;
 
     ECode GetChar(
         /* [in] */ Integer index,
-        /* [out] */ Char* c) override final;
+        /* [out] */ Char& c) override final;
 
     ECode GetCharUnchecked(
         /* [in] */ Integer index,
-        /* [out] */ Char* c) override final;
+        /* [out] */ Char& c) override final;
 
     ECode GetUnchecked(
         /* [in] */ Integer pos,
@@ -169,18 +169,18 @@ public:
         /* [in] */ Integer length) override final;
 
     ECode AsCharBuffer(
-        /* [out] */ ICharBuffer** buffer) override final;
+        /* [out] */ AutoPtr<ICharBuffer>& buffer) override final;
 
     ECode GetShort(
-        /* [out] */ Short* s) override final;
+        /* [out] */ Short& s) override final;
 
     ECode GetShort(
         /* [in] */ Integer index,
-        /* [out] */ Short* s) override final;
+        /* [out] */ Short& s) override final;
 
     ECode GetShortUnchecked(
         /* [in] */ Integer index,
-        /* [out] */ Short* value) override final;
+        /* [out] */ Short& value) override final;
 
     ECode GetUnchecked(
         /* [in] */ Integer pos,
@@ -206,18 +206,18 @@ public:
         /* [in] */ Integer length) override final;
 
     ECode AsShortBuffer(
-        /* [out] */ IShortBuffer** buffer) override final;
+        /* [out] */ AutoPtr<IShortBuffer>& buffer) override final;
 
     ECode GetInteger(
-        /* [out] */ Integer* i) override final;
+        /* [out] */ Integer& i) override final;
 
     ECode GetInteger(
         /* [in] */ Integer index,
-        /* [out] */ Integer* i) override final;
+        /* [out] */ Integer& i) override final;
 
     ECode GetIntegerUnchecked(
         /* [in] */ Integer index,
-        /* [out] */ Integer* value) override final;
+        /* [out] */ Integer& value) override final;
 
     ECode GetUnchecked(
         /* [in] */ Integer pos,
@@ -243,18 +243,18 @@ public:
         /* [in] */ Integer length) override final;
 
     ECode AsIntegerBuffer(
-        /* [out] */ IIntegerBuffer** buffer) override final;
+        /* [out] */ AutoPtr<IIntegerBuffer>& buffer) override final;
 
     ECode GetLong(
-        /* [out] */ Long* l) override final;
+        /* [out] */ Long& l) override final;
 
     ECode GetLong(
         /* [in] */ Integer index,
-        /* [out] */ Long* l) override final;
+        /* [out] */ Long& l) override final;
 
     ECode GetLongUnchecked(
         /* [in] */ Integer index,
-        /* [out] */ Long* value) override final;
+        /* [out] */ Long& value) override final;
 
     ECode GetUnchecked(
         /* [in] */ Integer pos,
@@ -280,18 +280,18 @@ public:
         /* [in] */ Integer length) override final;
 
     ECode AsLongBuffer(
-        /* [out] */ ILongBuffer** buffer) override final;
+        /* [out] */ AutoPtr<ILongBuffer>& buffer) override final;
 
     ECode GetFloat(
-        /* [out] */ Float* f) override final;
+        /* [out] */ Float& f) override final;
 
     ECode GetFloat(
         /* [in] */ Integer index,
-        /* [out] */ Float* f) override final;
+        /* [out] */ Float& f) override final;
 
     ECode GetFloatUnchecked(
         /* [in] */ Integer index,
-        /* [out] */ Float* value) override final;
+        /* [out] */ Float& value) override final;
 
     ECode GetUnchecked(
         /* [in] */ Integer pos,
@@ -317,18 +317,18 @@ public:
         /* [in] */ Integer length) override final;
 
     ECode AsFloatBuffer(
-        /* [out] */ IFloatBuffer** buffer) override final;
+        /* [out] */ AutoPtr<IFloatBuffer>& buffer) override final;
 
     ECode GetDouble(
-        /* [out] */ Double* d) override final;
+        /* [out] */ Double& d) override final;
 
     ECode GetDouble(
         /* [in] */ Integer index,
-        /* [out] */ Double* d) override final;
+        /* [out] */ Double& d) override final;
 
     ECode GetDoubleUnchecked(
         /* [in] */ Integer index,
-        /* [out] */ Double* value) override final;
+        /* [out] */ Double& value) override final;
 
     ECode GetUnchecked(
         /* [in] */ Integer pos,
@@ -354,10 +354,10 @@ public:
         /* [in] */ Integer length) override final;
 
     ECode AsDoubleBuffer(
-        /* [out] */ IDoubleBuffer** buffer) override final;
+        /* [out] */ AutoPtr<IDoubleBuffer>& buffer) override final;
 
     ECode IsAccessible(
-        /* [out] */ Boolean* accessible) override final;
+        /* [out] */ Boolean& accessible) override final;
 
     ECode SetAccessible(
         /* [in] */ Boolean value) override final;

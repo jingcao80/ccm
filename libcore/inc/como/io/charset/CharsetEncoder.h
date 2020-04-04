@@ -39,7 +39,7 @@ public:
     COMO_INTERFACE_DECL();
 
     ECode GetCharset(
-        /* [out] */ ICharset** cs) override;
+        /* [out] */ AutoPtr<ICharset>& cs) override;
 
     ECode GetReplacement(
         /* [out, callee] */ Array<Byte>* replacement) override;
@@ -49,49 +49,49 @@ public:
 
     ECode IsLegalReplacement(
         /* [in] */ const Array<Byte>& repl,
-        /* [out] */ Boolean* isLegal) override;
+        /* [out] */ Boolean& isLegal) override;
 
     ECode GetMalformedInputAction(
-        /* [out] */ ICodingErrorAction** action) override;
+        /* [out] */ AutoPtr<ICodingErrorAction>& action) override;
 
     ECode OnMalformedInput(
         /* [in] */ ICodingErrorAction* newAction) override;
 
     ECode GetUnmappableCharacterAction(
-        /* [out] */ ICodingErrorAction** action) override;
+        /* [out] */ AutoPtr<ICodingErrorAction>& action) override;
 
     ECode OnUnmappableCharacter(
         /* [in] */ ICodingErrorAction* newAction) override;
 
     ECode GetAverageBytesPerChar(
-        /* [out] */ Float* averageBytesPerChar) override;
+        /* [out] */ Float& averageBytesPerChar) override;
 
     ECode GetMaxBytesPerChar(
-        /* [out] */ Float* maxBytesPerChar) override;
+        /* [out] */ Float& maxBytesPerChar) override;
 
     ECode Encode(
         /* [in] */ ICharBuffer* cb,
         /* [out] */ IByteBuffer* bb,
         /* [in] */ Boolean endOfInput,
-        /* [out] */ ICoderResult** result) override;
+        /* [out] */ AutoPtr<ICoderResult>& result) override;
 
     ECode Flush(
         /* [out] */ IByteBuffer* bb,
-        /* [out] */ ICoderResult** result) override;
+        /* [out] */ AutoPtr<ICoderResult>& result) override;
 
     ECode Reset() override;
 
     ECode Encode(
         /* [in] */ ICharBuffer* cb,
-        /* [out] */ IByteBuffer** bb) override;
+        /* [out] */ AutoPtr<IByteBuffer>& bb) override;
 
     ECode CanEncode(
         /* [in] */ Char c,
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode CanEncode(
         /* [in] */ ICharSequence* cs,
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
 protected:
     ECode Constructor(
@@ -126,7 +126,7 @@ protected:
 
     virtual ECode ImplFlush(
         /* [out] */ IByteBuffer* bb,
-        /* [out] */ ICoderResult** cr);
+        /* [out] */ AutoPtr<ICoderResult>& cr);
 
     virtual void ImplReset()
     {}
@@ -134,7 +134,7 @@ protected:
     virtual ECode EncodeLoop(
         /* [in] */ ICharBuffer* cb,
         /* [out] */ IByteBuffer* bb,
-        /* [out] */ ICoderResult** result) = 0;
+        /* [out] */ AutoPtr<ICoderResult>& result) = 0;
 
 private:
     Boolean CanEncode(

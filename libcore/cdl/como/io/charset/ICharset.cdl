@@ -36,45 +36,45 @@ namespace charset {
 interface ICharset
 {
     CanEncode(
-        [out] Boolean* supported);
+        [out] Boolean& supported);
 
     Contains(
         [in] ICharset* cs,
-        [out] Boolean* contains);
+        [out] Boolean& contains);
 
     Decode(
         [in] IByteBuffer* bb,
-        [out] ICharBuffer** cb);
+        [out] ICharBuffer&& cb);
 
     Encode(
         [in] String str,
-        [out] IByteBuffer** bb);
+        [out] IByteBuffer&& bb);
 
     Encode(
         [in] ICharBuffer* cb,
-        [out] IByteBuffer** bb);
+        [out] IByteBuffer&& bb);
 
     GetAliases(
-        [out] ISet** aliases);
+        [out] ISet&& aliases);
 
     GetDisplayName(
-        [out] String* name);
+        [out] String& name);
 
     GetDisplayName(
         [in] ILocale* locale,
-        [out] String* name);
+        [out] String& name);
 
     GetName(
-        [out] String* name);
+        [out] String& name);
 
     IsRegistered(
-        [out] Boolean* registered);
+        [out] Boolean& registered);
 
     NewDecoder(
-        [out] ICharsetDecoder** decoder);
+        [out] ICharsetDecoder&& decoder);
 
     NewEncoder(
-        [out] ICharsetEncoder** encoder);
+        [out] ICharsetEncoder&& encoder);
 }
 
 }

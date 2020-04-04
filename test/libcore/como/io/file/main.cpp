@@ -29,7 +29,7 @@ TEST(FileTest, TestCreateNewFile)
     AutoPtr<IFile> f;
     CFile::New(String("test.txt"), IID_IFile, (IInterface**)&f);
     Boolean succeeded;
-    f->CreateNewFile(&succeeded);
+    f->CreateNewFile(succeeded);
     EXPECT_TRUE(succeeded);
 }
 
@@ -38,7 +38,7 @@ TEST(FileTest, TestExists)
     AutoPtr<IFile> f;
     CFile::New(String("test.txt"), IID_IFile, (IInterface**)&f);
     Boolean existed;
-    f->Exists(&existed);
+    f->Exists(existed);
     EXPECT_TRUE(existed);
 }
 

@@ -36,20 +36,20 @@ public:
         /* [in] */ Integer len);
 
     ECode Slice(
-        /* [out] */ IByteBuffer** buffer) override;
+        /* [out] */ AutoPtr<IByteBuffer>& buffer) override;
 
     ECode Duplicate(
-        /* [out] */ IByteBuffer** buffer) override;
+        /* [out] */ AutoPtr<IByteBuffer>& buffer) override;
 
     ECode AsReadOnlyBuffer(
-        /* [out] */ IByteBuffer** buffer) override;
+        /* [out] */ AutoPtr<IByteBuffer>& buffer) override;
 
     ECode Get(
-        /* [out] */ Byte* b) override;
+        /* [out] */ Byte& b) override;
 
     ECode Get(
         /* [in] */ Integer index,
-        /* [out] */ Byte* b) override;
+        /* [out] */ Byte& b) override;
 
     ECode Get(
         /* [out] */ Array<Byte>& dst,
@@ -57,10 +57,10 @@ public:
         /* [in] */ Integer length) override;
 
     ECode IsDirect(
-        /* [out] */ Boolean* direct) override;
+        /* [out] */ Boolean& direct) override;
 
     ECode IsReadOnly(
-        /* [out] */ Boolean* readOnly) override;
+        /* [out] */ Boolean& readOnly) override;
 
     ECode Put(
         /* [in] */ Byte b) override;
@@ -84,15 +84,15 @@ public:
         /* [in] */ Byte b) override;
 
     ECode GetChar(
-        /* [out] */ Char* c) override;
+        /* [out] */ Char& c) override;
 
     ECode GetChar(
         /* [in] */ Integer index,
-        /* [out] */ Char* c) override;
+        /* [out] */ Char& c) override;
 
     ECode GetCharUnchecked(
         /* [in] */ Integer index,
-        /* [out] */ Char* c) override;
+        /* [out] */ Char& c) override;
 
     ECode GetUnchecked(
         /* [in] */ Integer pos,
@@ -118,18 +118,18 @@ public:
         /* [in] */ Integer length) override;
 
     ECode AsCharBuffer(
-        /* [out] */ ICharBuffer** buffer) override;
+        /* [out] */ AutoPtr<ICharBuffer>& buffer) override;
 
     ECode GetShort(
-        /* [out] */ Short* s) override;
+        /* [out] */ Short& s) override;
 
     ECode GetShort(
         /* [in] */ Integer index,
-        /* [out] */ Short* s) override;
+        /* [out] */ Short& s) override;
 
     ECode GetShortUnchecked(
         /* [in] */ Integer index,
-        /* [in] */ Short* value) override;
+        /* [in] */ Short& value) override;
 
     ECode GetUnchecked(
         /* [in] */ Integer pos,
@@ -155,18 +155,18 @@ public:
         /* [in] */ Integer length) override;
 
     ECode AsShortBuffer(
-        /* [out] */ IShortBuffer** buffer) override;
+        /* [out] */ AutoPtr<IShortBuffer>& buffer) override;
 
     ECode GetInteger(
-        /* [out] */ Integer* i) override;
+        /* [out] */ Integer& i) override;
 
     ECode GetInteger(
         /* [in] */ Integer index,
-        /* [out] */ Integer* i) override;
+        /* [out] */ Integer& i) override;
 
     ECode GetIntegerUnchecked(
         /* [in] */ Integer index,
-        /* [out] */ Integer* value) override;
+        /* [out] */ Integer& value) override;
 
     ECode GetUnchecked(
         /* [in] */ Integer pos,
@@ -192,18 +192,18 @@ public:
         /* [in] */ Integer length) override;
 
     ECode AsIntegerBuffer(
-        /* [out] */ IIntegerBuffer** buffer) override;
+        /* [out] */ AutoPtr<IIntegerBuffer>& buffer) override;
 
     ECode GetLong(
-        /* [out] */ Long* l) override;
+        /* [out] */ Long& l) override;
 
     ECode GetLong(
         /* [in] */ Integer index,
-        /* [out] */ Long* l) override;
+        /* [out] */ Long& l) override;
 
     ECode GetLongUnchecked(
         /* [in] */ Integer index,
-        /* [out] */ Long* value) override;
+        /* [out] */ Long& value) override;
 
     ECode GetUnchecked(
         /* [in] */ Integer pos,
@@ -229,18 +229,18 @@ public:
         /* [in] */ Integer length) override;
 
     ECode AsLongBuffer(
-        /* [out] */ ILongBuffer** buffer) override;
+        /* [out] */ AutoPtr<ILongBuffer>& buffer) override;
 
     ECode GetFloat(
-        /* [out] */ Float* f) override;
+        /* [out] */ Float& f) override;
 
     ECode GetFloat(
         /* [in] */ Integer index,
-        /* [out] */ Float* f) override;
+        /* [out] */ Float& f) override;
 
     ECode GetFloatUnchecked(
         /* [in] */ Integer index,
-        /* [out] */ Float* value) override;
+        /* [out] */ Float& value) override;
 
     ECode GetUnchecked(
         /* [in] */ Integer pos,
@@ -266,18 +266,18 @@ public:
         /* [in] */ Integer length) override;
 
     ECode AsFloatBuffer(
-        /* [out] */ IFloatBuffer** buffer) override;
+        /* [out] */ AutoPtr<IFloatBuffer>& buffer) override;
 
     ECode GetDouble(
-        /* [out] */ Double* d) override;
+        /* [out] */ Double& d) override;
 
     ECode GetDouble(
         /* [in] */ Integer index,
-        /* [out] */ Double* d) override;
+        /* [out] */ Double& d) override;
 
     ECode GetDoubleUnchecked(
         /* [in] */ Integer index,
-        /* [out] */ Double* value) override;
+        /* [out] */ Double& value) override;
 
     ECode GetUnchecked(
         /* [in] */ Integer pos,
@@ -303,7 +303,7 @@ public:
         /* [in] */ Integer length) override;
 
     ECode AsDoubleBuffer(
-        /* [out] */ IDoubleBuffer** buffer) override;
+        /* [out] */ AutoPtr<IDoubleBuffer>& buffer) override;
 
 private:
     ECode Constructor(

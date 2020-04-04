@@ -18,9 +18,11 @@
 #define __COMO_IO_BYTEBUFFER_H__
 
 #include "como/io/Buffer.h"
+#include "como.core.IArrayHolder.h"
 #include "como.core.IComparable.h"
 #include "como.io.IByteBuffer.h"
 
+using como::core::IArrayHolder;
 using como::core::IComparable;
 
 namespace como {
@@ -90,13 +92,13 @@ public:
         /* [in] */ const Array<Byte>& src) override final;
 
     ECode HasArray(
-        /* [out] */ Boolean* result) override final;
+        /* [out] */ Boolean& result) override final;
 
     ECode GetArray(
-        /* [out] */ IInterface** array) override final;
+        /* [out] */ AutoPtr<IArrayHolder>& array) override final;
 
     ECode GetArrayOffset(
-        /* [out] */ Integer* offset) override final;
+        /* [out] */ Integer& offset) override final;
 
     ECode ToString(
         /* [out] */ String& desc) override;
@@ -113,7 +115,7 @@ public:
         /* [out] */ Integer& result) override;
 
     ECode GetOrder(
-        /* [out] */ IByteOrder** bo) override final;
+        /* [out] */ AutoPtr<IByteOrder>& bo) override final;
 
     ECode SetOrder(
         /* [in] */ IByteOrder* bo) override final;
@@ -127,7 +129,7 @@ public:
 
     virtual ECode GetCharUnchecked(
         /* [in] */ Integer index,
-        /* [out] */ Char* value) = 0;
+        /* [out] */ Char& value) = 0;
 
     virtual ECode GetUnchecked(
         /* [in] */ Integer pos,
@@ -147,7 +149,7 @@ public:
 
     virtual ECode GetShortUnchecked(
         /* [in] */ Integer index,
-        /* [out] */ Short* value) = 0;
+        /* [out] */ Short& value) = 0;
 
     virtual ECode GetUnchecked(
         /* [in] */ Integer pos,
@@ -167,7 +169,7 @@ public:
 
     virtual ECode GetIntegerUnchecked(
         /* [in] */ Integer index,
-        /* [out] */ Integer* value) = 0;
+        /* [out] */ Integer& value) = 0;
 
     virtual ECode GetUnchecked(
         /* [in] */ Integer pos,
@@ -187,7 +189,7 @@ public:
 
     virtual ECode GetLongUnchecked(
         /* [in] */ Integer index,
-        /* [out] */ Long* value) = 0;
+        /* [out] */ Long& value) = 0;
 
     virtual ECode GetUnchecked(
         /* [in] */ Integer pos,
@@ -207,7 +209,7 @@ public:
 
     virtual ECode GetFloatUnchecked(
         /* [in] */ Integer index,
-        /* [out] */ Float* value) = 0;
+        /* [out] */ Float& value) = 0;
 
     virtual ECode GetUnchecked(
         /* [in] */ Integer pos,
@@ -227,7 +229,7 @@ public:
 
     virtual ECode GetDoubleUnchecked(
         /* [in] */ Integer index,
-        /* [out] */ Double* value) = 0;
+        /* [out] */ Double& value) = 0;
 
     virtual ECode GetUnchecked(
         /* [in] */ Integer pos,
@@ -246,7 +248,7 @@ public:
         /* [in] */ Integer length) = 0;
 
     ECode IsAccessible(
-        /* [out] */ Boolean* accessible) override;
+        /* [out] */ Boolean& accessible) override;
 
     ECode SetAccessible(
         /* [in] */ Boolean value) override;

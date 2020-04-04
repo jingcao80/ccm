@@ -36,37 +36,37 @@ namespace io {
 interface IByteBuffer
 {
     AsCharBuffer(
-        [out] ICharBuffer** buffer);
+        [out] ICharBuffer&& buffer);
 
     AsDoubleBuffer(
-        [out] IDoubleBuffer** buffer);
+        [out] IDoubleBuffer&& buffer);
 
     AsFloatBuffer(
-        [out] IFloatBuffer** buffer);
+        [out] IFloatBuffer&& buffer);
 
     AsIntegerBuffer(
-        [out] IIntegerBuffer** buffer);
+        [out] IIntegerBuffer&& buffer);
 
     AsLongBuffer(
-        [out] ILongBuffer** buffer);
+        [out] ILongBuffer&& buffer);
 
     AsReadOnlyBuffer(
-        [out] IByteBuffer** buffer);
+        [out] IByteBuffer&& buffer);
 
     AsShortBuffer(
-        [out] IShortBuffer** buffer);
+        [out] IShortBuffer&& buffer);
 
     Compact();
 
     Duplicate(
-        [out] IByteBuffer** buffer);
+        [out] IByteBuffer&& buffer);
 
     Get(
-        [out] Byte* b);
+        [out] Byte& b);
 
     Get(
         [in] Integer index,
-        [out] Byte* b);
+        [out] Byte& b);
 
     Get(
         [out] Array<Byte>& dst);
@@ -77,55 +77,55 @@ interface IByteBuffer
         [in] Integer length);
 
     GetChar(
-        [out] Char* c);
+        [out] Char& c);
 
     GetChar(
         [in] Integer index,
-        [out] Char* c);
+        [out] Char& c);
 
     GetDouble(
-        [out] Double* d);
+        [out] Double& d);
 
     GetDouble(
         [in] Integer index,
-        [out] Double* d);
+        [out] Double& d);
 
     GetFloat(
-        [out] Float* f);
+        [out] Float& f);
 
     GetFloat(
         [in] Integer index,
-        [out] Float* f);
+        [out] Float& f);
 
     GetInteger(
-        [out] Integer* i);
+        [out] Integer& i);
 
     GetInteger(
         [in] Integer index,
-        [out] Integer* i);
+        [out] Integer& i);
 
     GetLong(
-        [out] Long* l);
+        [out] Long& l);
 
     GetLong(
         [in] Integer index,
-        [out] Long* l);
+        [out] Long& l);
 
     GetOrder(
-        [out] IByteOrder** bo);
+        [out] IByteOrder&& bo);
 
     GetShort(
-        [out] Short* s);
+        [out] Short& s);
 
     GetShort(
         [in] Integer index,
-        [out] Short* s);
+        [out] Short& s);
 
     HasArray(
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     IsAccessible(
-        [out] Boolean* accessible);
+        [out] Boolean& accessible);
 
     Put(
         [in] Byte b);
@@ -194,7 +194,7 @@ interface IByteBuffer
         [in] IByteOrder* bo);
 
     Slice(
-        [out] IByteBuffer** buffer);
+        [out] IByteBuffer&& buffer);
 }
 
 }

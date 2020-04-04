@@ -33,10 +33,10 @@ namespace io {
 interface IFileOutputStream
 {
     GetChannel(
-        [out] IFileChannel** channel);
+        [out] IFileChannel&& channel);
 
     GetFD(
-        [out] IFileDescriptor** fd);
+        [out] IFileDescriptor&& fd);
 }
 
 }

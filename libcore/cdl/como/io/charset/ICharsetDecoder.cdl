@@ -32,44 +32,44 @@ interface ICharsetDecoder
 {
     Decode(
         [in] IByteBuffer* bb,
-        [out] ICharBuffer** cb);
+        [out] ICharBuffer&& cb);
 
     Decode(
         [in] IByteBuffer* bb,
         [out] ICharBuffer* cb,
         [in] Boolean endOfInput,
-        [out] ICoderResult** result);
+        [out] ICoderResult&& result);
 
     Flush(
         [out] ICharBuffer* cb,
-        [out] ICoderResult** result);
+        [out] ICoderResult&& result);
 
     GetAverageCharsPerByte(
-        [out] Float* averageCharsPerByte);
+        [out] Float& averageCharsPerByte);
 
     GetCharset(
-        [out] ICharset** cs);
+        [out] ICharset&& cs);
 
     GetDetectedCharset(
-        [out] ICharset** cs);
+        [out] ICharset&& cs);
 
     GetMalformedInputAction(
-        [out] ICodingErrorAction** action);
+        [out] ICodingErrorAction&& action);
 
     GetMaxCharsPerByte(
-        [out] Float* maxCharsPerByte);
+        [out] Float& maxCharsPerByte);
 
     GetReplacement(
-        [out] String* replacement);
+        [out] String& replacement);
 
     GetUnmappableCharacterAction(
-        [out] ICodingErrorAction** action);
+        [out] ICodingErrorAction&& action);
 
     IsAutoDetecting(
-        [out] Boolean* autoDetecting);
+        [out] Boolean& autoDetecting);
 
     IsCharsetDetected(
-        [out] Boolean* charsetDetected);
+        [out] Boolean& charsetDetected);
 
     OnMalformedInput(
         [in] ICodingErrorAction* newAction);

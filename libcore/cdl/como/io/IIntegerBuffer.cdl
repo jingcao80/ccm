@@ -28,19 +28,19 @@ namespace io {
 interface IIntegerBuffer
 {
     AsReadOnlyBuffer(
-        [out] IIntegerBuffer** buffer);
+        [out] IIntegerBuffer&& buffer);
 
     Compact();
 
     Duplicate(
-        [out] IIntegerBuffer** buffer);
+        [out] IIntegerBuffer&& buffer);
 
     Get(
-        [out] Integer* i);
+        [out] Integer& i);
 
     Get(
         [in] Integer index,
-        [out] Integer* i);
+        [out] Integer& i);
 
     Get(
         [out] Array<Integer>& dst);
@@ -51,10 +51,10 @@ interface IIntegerBuffer
         [in] Integer length);
 
     GetOrder(
-        [out] IByteOrder** bo);
+        [out] IByteOrder&& bo);
 
     HasArray(
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     Put(
         [in] Integer i);
@@ -75,7 +75,7 @@ interface IIntegerBuffer
         [in] IIntegerBuffer* src);
 
     Slice(
-        [out] IIntegerBuffer** buffer);
+        [out] IIntegerBuffer&& buffer);
 }
 
 }

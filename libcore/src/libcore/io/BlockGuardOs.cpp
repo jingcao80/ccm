@@ -111,7 +111,7 @@ ECode BlockGuardOs::Close(
     /* [in] */ IFileDescriptor* fd)
 {
     Boolean socket;
-    if (fd->IsSocket(&socket), socket) {
+    if (fd->IsSocket(socket), socket) {
         if (IsLingerSocket(fd)) {
             // If the fd is a socket with SO_LINGER set, we might block indefinitely.
             // We allow non-linger sockets so that apps can close their network

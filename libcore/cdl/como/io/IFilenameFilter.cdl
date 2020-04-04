@@ -28,7 +28,7 @@ interface IFilenameFilter
     Accept(
         [in] IFile* dir,
         [in] String name,
-        [out] Boolean* accepted);
+        [out] Boolean& accepted);
 }
 
 }

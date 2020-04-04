@@ -55,14 +55,14 @@ public:
         /* [out, callee] */ Array<Byte>* array) override;
 
     ECode GetSize(
-        /* [out] */ Integer* size) override;
+        /* [out] */ Integer& size) override;
 
     ECode ToString(
-        /* [out] */ String* desc) override;
+        /* [out] */ String& desc) override;
 
     ECode ToString(
         /* [in] */ const String& charsetName,
-        /* [out] */ String* desc) override;
+        /* [out] */ String& desc) override;
 
     ECode Close() override;
 

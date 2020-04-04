@@ -19,12 +19,14 @@
 
 #include "como/io/Buffer.h"
 #include "como.core.IAppendable.h"
+#include "como.core.IArrayHolder.h"
 #include "como.core.ICharSequence.h"
 #include "como.core.IComparable.h"
 #include "como.core.IReadable.h"
 #include "como.io.ICharBuffer.h"
 
 using como::core::IAppendable;
+using como::core::IArrayHolder;
 using como::core::ICharSequence;
 using como::core::IComparable;
 using como::core::IReadable;
@@ -87,7 +89,7 @@ public:
 
     virtual ECode GetUnchecked(
         /* [in] */ Integer index,
-        /* [out] */ Char* c) = 0;
+        /* [out] */ Char& c) = 0;
 
     ECode Get(
         /* [out] */ Array<Char>& dst,
@@ -119,13 +121,13 @@ public:
         /* [in] */ const String& src) override final;
 
     ECode HasArray(
-        /* [out] */ Boolean* result) override final;
+        /* [out] */ Boolean& result) override final;
 
     ECode GetArray(
-        /* [out] */ IInterface** array) override final;
+        /* [out] */ AutoPtr<IArrayHolder>& array) override final;
 
     ECode GetArrayOffset(
-        /* [out] */ Integer* offset) override final;
+        /* [out] */ Integer& offset) override final;
 
     ECode GetHashCode(
         /* [out] */ Integer& hash) override;

@@ -57,7 +57,7 @@ public:
         /* [in] */ ICharsetEncoder* enc);
 
     ECode GetEncoding(
-        /* [out] */ String* name) override;
+        /* [out] */ String& name) override;
 
     ECode Write(
         /* [in] */ Integer c) override;

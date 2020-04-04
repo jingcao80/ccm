@@ -97,7 +97,7 @@ ECode FileOutputStream::Constructor(
     /* [in] */ Boolean append)
 {
     String name;
-    if (file == nullptr || (file->GetPath(&name), name.IsNull())) {
+    if (file == nullptr || (file->GetPath(name), name.IsNull())) {
         return como::core::E_NULL_POINTER_EXCEPTION;
     }
     if (CFile::From(file)->IsInvalid()) {
@@ -212,30 +212,24 @@ ECode FileOutputStream::Close()
 }
 
 ECode FileOutputStream::GetFD(
-    /* [out] */ IFileDescriptor** fd)
+    /* [out] */ AutoPtr<IFileDescriptor>& fd)
 {
-    VALIDATE_NOT_NULL(fd);
-
     if (mFd != nullptr) {
-        *fd = mFd;
-        REFCOUNT_ADD(*fd);
+        fd = mFd;
         return NOERROR;
     }
     return E_IO_EXCEPTION;
 }
 
 ECode FileOutputStream::GetChannel(
-    /* [out] */ IFileChannel** channel)
+    /* [out] */ AutoPtr<IFileChannel>& channel)
 {
-    VALIDATE_NOT_NULL(channel);
-
     AutoLock lock(this);
 
     if (mChannel == nullptr) {
         mChannel = FileChannelImpl::Open(mFd, mPath, false, true, mAppend, (IFileOutputStream*)this);
     }
-    *channel = mChannel;
-    REFCOUNT_ADD(*channel);
+    channel = mChannel;
     return NOERROR;
 }
 

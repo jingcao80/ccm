@@ -28,19 +28,19 @@ namespace io {
 interface ILongBuffer
 {
     AsReadOnlyBuffer(
-        [out] ILongBuffer** buffer);
+        [out] ILongBuffer&& buffer);
 
     Compact();
 
     Duplicate(
-        [out] ILongBuffer** buffer);
+        [out] ILongBuffer&& buffer);
 
     Get(
-        [out] Long* l);
+        [out] Long& l);
 
     Get(
         [in] Integer index,
-        [out] Long* l);
+        [out] Long& l);
 
     Get(
         [out] Array<Long>& dst);
@@ -51,10 +51,10 @@ interface ILongBuffer
         [in] Integer length);
 
     GetOrder(
-        [out] IByteOrder** bo);
+        [out] IByteOrder&& bo);
 
     HasArray(
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     Put(
         [in] Long l);
@@ -75,7 +75,7 @@ interface ILongBuffer
         [in] ILongBuffer* src);
 
     Slice(
-        [out] ILongBuffer** buffer);
+        [out] ILongBuffer&& buffer);
 }
 
 }

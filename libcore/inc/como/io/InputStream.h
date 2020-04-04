@@ -39,20 +39,20 @@ public:
 
     ECode Read(
         /* [out] */ Array<Byte>& buffer,
-        /* [out] */ Integer* number) override;
+        /* [out] */ Integer& number) override;
 
     ECode Read(
         /* [out] */ Array<Byte>& buffer,
         /* [in] */ Integer offset,
         /* [in] */ Integer size,
-        /* [out] */ Integer* number) override;
+        /* [out] */ Integer& number) override;
 
     ECode Skip(
         /* [in] */ Long byteCount,
-        /* [out] */ Long* number) override;
+        /* [out] */ Long& number) override;
 
     ECode Available(
-        /* [out] */ Integer* number) override;
+        /* [out] */ Integer& number) override;
 
     ECode Close() override;
 
@@ -62,7 +62,7 @@ public:
     ECode Reset() override;
 
     ECode IsMarkSupported(
-        /* [out] */ Boolean* supported) override;
+        /* [out] */ Boolean& supported) override;
 
     using IInputStream::Read;
 

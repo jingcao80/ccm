@@ -86,74 +86,61 @@ ECode HeapFloatBuffer::Constructor(
 }
 
 ECode HeapFloatBuffer::Slice(
-    /* [out] */ IFloatBuffer** buffer)
+    /* [out] */ AutoPtr<IFloatBuffer>& buffer)
 {
-    VALIDATE_NOT_NULL(buffer);
-
     Integer remaining, pos;
-    Remaining(&remaining);
-    GetPosition(&pos);
+    Remaining(remaining);
+    GetPosition(pos);
     AutoPtr<HeapFloatBuffer> hfb = new HeapFloatBuffer();
     FAIL_RETURN(hfb->Constructor(
             mHb, -1, 0, remaining, remaining, pos + mOffset, mIsReadOnly));
-    *buffer = (IFloatBuffer*)hfb.Get();
-    REFCOUNT_ADD(*buffer);
+    buffer = (IFloatBuffer*)hfb.Get();
     return NOERROR;
 }
 
 ECode HeapFloatBuffer::Duplicate(
-    /* [out] */ IFloatBuffer** buffer)
+    /* [out] */ AutoPtr<IFloatBuffer>& buffer)
 {
-    VALIDATE_NOT_NULL(buffer);
-
     Integer pos, lim, cap;
-    GetPosition(&pos);
-    GetLimit(&lim);
-    GetCapacity(&cap);
+    GetPosition(pos);
+    GetLimit(lim);
+    GetCapacity(cap);
     AutoPtr<HeapFloatBuffer> hfb = new HeapFloatBuffer();
     FAIL_RETURN(hfb->Constructor(
             mHb, MarkValue(), pos, lim, cap, mOffset, mIsReadOnly));
-    *buffer = (IFloatBuffer*)hfb.Get();
-    REFCOUNT_ADD(*buffer);
+    buffer = (IFloatBuffer*)hfb.Get();
     return NOERROR;
 }
 
 ECode HeapFloatBuffer::AsReadOnlyBuffer(
-    /* [out] */ IFloatBuffer** buffer)
+    /* [out] */ AutoPtr<IFloatBuffer>& buffer)
 {
-    VALIDATE_NOT_NULL(buffer);
-
     Integer pos, lim, cap;
-    GetPosition(&pos);
-    GetLimit(&lim);
-    GetCapacity(&cap);
+    GetPosition(pos);
+    GetLimit(lim);
+    GetCapacity(cap);
     AutoPtr<HeapFloatBuffer> hfb = new HeapFloatBuffer();
     FAIL_RETURN(hfb->Constructor(
             mHb, MarkValue(), pos, lim, cap, mOffset, true));
-    *buffer = (IFloatBuffer*)hfb.Get();
-    REFCOUNT_ADD(*buffer);
+    buffer = (IFloatBuffer*)hfb.Get();
     return NOERROR;
 }
 
 ECode HeapFloatBuffer::Get(
-    /* [out] */ Float* f)
+    /* [out] */ Float& f)
 {
-    VALIDATE_NOT_NULL(f);
-
     Integer index;
     NextGetIndex(&index);
-    *f = mHb[Ix(index)];
+    f = mHb[Ix(index)];
     return NOERROR;
 }
 
 ECode HeapFloatBuffer::Get(
     /* [in] */ Integer index,
-    /* [out] */ Float* f)
+    /* [out] */ Float& f)
 {
-    VALIDATE_NOT_NULL(f);
-
     FAIL_RETURN(CheckIndex(index));
-    *f = mHb[Ix(index)];
+    f = mHb[Ix(index)];
     return NOERROR;
 }
 
@@ -164,32 +151,28 @@ ECode HeapFloatBuffer::Get(
 {
     FAIL_RETURN(CheckBounds(mOffset, length, dst.GetLength()));
     Integer remaining;
-    Remaining(&remaining);
+    Remaining(remaining);
     if (length > remaining){
         return E_BUFFER_UNDERFLOW_EXCEPTION;
     }
     Integer pos;
-    GetPosition(&pos);
+    GetPosition(pos);
     dst.Copy(offset, mHb, Ix(pos), length);
     SetPosition(pos + length);
     return NOERROR;
 }
 
 ECode HeapFloatBuffer::IsDirect(
-    /* [out] */ Boolean* direct)
+    /* [out] */ Boolean& direct)
 {
-    VALIDATE_NOT_NULL(direct);
-
-    *direct = false;
+    direct = false;
     return NOERROR;
 }
 
 ECode HeapFloatBuffer::IsReadOnly(
-    /* [out] */ Boolean* readOnly)
+    /* [out] */ Boolean& readOnly)
 {
-    VALIDATE_NOT_NULL(readOnly);
-
-    *readOnly = mIsReadOnly;
+    readOnly = mIsReadOnly;
     return NOERROR;
 }
 
@@ -227,12 +210,12 @@ ECode HeapFloatBuffer::Put(
     }
     FAIL_RETURN(CheckBounds(offset, length, src.GetLength()));
     Integer remaining;
-    Remaining(&remaining);
+    Remaining(remaining);
     if (length > remaining) {
         return E_BUFFER_OVERFLOW_EXCEPTION;
     }
     Integer pos;
-    GetPosition(&pos);
+    GetPosition(pos);
     mHb.Copy(Ix(pos), src, offset, length);
     SetPosition(pos + length);
     return NOERROR;
@@ -251,26 +234,26 @@ ECode HeapFloatBuffer::Put(
     if (Object::InstanceOf(src, CID_HeapFloatBuffer)) {
         HeapFloatBuffer* hfb = (HeapFloatBuffer*)src;
         Integer n, remaining;
-        hfb->Remaining(&n);
-        if (Remaining(&remaining), n > remaining) {
+        hfb->Remaining(n);
+        if (Remaining(remaining), n > remaining) {
             return E_BUFFER_OVERFLOW_EXCEPTION;
         }
         Integer thisPos, hsbPos;
-        GetPosition(&thisPos);
-        hfb->GetPosition(&hsbPos);
+        GetPosition(thisPos);
+        hfb->GetPosition(hsbPos);
         mHb.Copy(Ix(thisPos), hfb->mHb, hfb->Ix(hsbPos), n);
         hfb->SetPosition(hsbPos + n);
         SetPosition(thisPos + n);
         return NOERROR;
     }
-    else if (IBuffer::Probe(src)->IsDirect(&direct), direct) {
+    else if (IBuffer::Probe(src)->IsDirect(direct), direct) {
         Integer n, remaining;
-        IBuffer::Probe(src)->Remaining(&n);
-        if (Remaining(&remaining), n > remaining) {
+        IBuffer::Probe(src)->Remaining(n);
+        if (Remaining(remaining), n > remaining) {
             return E_BUFFER_OVERFLOW_EXCEPTION;
         }
         Integer pos;
-        GetPosition(&pos);
+        GetPosition(pos);
         src->Get(mHb, Ix(pos), n);
         SetPosition(pos + n);
         return NOERROR;
@@ -286,23 +269,20 @@ ECode HeapFloatBuffer::Compact()
         return E_READ_ONLY_BUFFER_EXCEPTION;
     }
     Integer pos, remaining, cap;
-    GetPosition(&pos);
-    Remaining(&remaining);
+    GetPosition(pos);
+    Remaining(remaining);
     mHb.Copy(Ix(0), mHb, Ix(pos), remaining);
     SetPosition(remaining);
-    GetCapacity(&cap);
+    GetCapacity(cap);
     SetLimit(cap);
     DiscardMark();
     return NOERROR;
 }
 
 ECode HeapFloatBuffer::GetOrder(
-    /* [out] */ IByteOrder** bo)
+    /* [out] */ AutoPtr<IByteOrder>& bo)
 {
-    VALIDATE_NOT_NULL(bo);
-
-    AutoPtr<IByteOrder> order = ByteOrder::Order();
-    order.MoveTo(bo);
+    bo = ByteOrder::Order();
     return NOERROR;
 }
 

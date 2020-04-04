@@ -24,10 +24,10 @@ namespace io {
 interface IFileDescriptor
 {
     GetInt(
-        [out] Integer* fd);
+        [out] Integer& fd);
 
     IsSocket(
-        [out] Boolean* socket);
+        [out] Boolean& socket);
 
     SetInt(
         [in] Integer fd);
@@ -35,7 +35,7 @@ interface IFileDescriptor
     Sync();
 
     Valid(
-        [out] Boolean* valid);
+        [out] Boolean& valid);
 }
 
 }

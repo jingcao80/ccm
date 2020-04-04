@@ -28,7 +28,7 @@ TEST(CharsetTest, TestNonstandardCharsetName)
     CharsetFactory::ForName(String("UTF8"), &cs);
     EXPECT_TRUE(cs != nullptr);
     String name;
-    cs->GetName(&name);
+    cs->GetName(name);
     EXPECT_STREQ("UTF-8", name.string());
 
     AutoPtr<ICharset> cs2;

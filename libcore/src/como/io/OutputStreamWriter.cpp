@@ -67,7 +67,7 @@ ECode OutputStreamWriter::Constructor(
 }
 
 ECode OutputStreamWriter::GetEncoding(
-    /* [out] */ String* name)
+    /* [out] */ String& name)
 {
     return mSe->GetEncoding(name);
 }

@@ -608,10 +608,10 @@ ECode Properties::LineReader::ReadLine(
     while (true) {
         if (mInOff >= mInLimit) {
             if (mInStream == nullptr) {
-                FAIL_RETURN(mReader->Read(mInCharBuf, &mInLimit));
+                FAIL_RETURN(mReader->Read(mInCharBuf, mInLimit));
             }
             else {
-                FAIL_RETURN(mInStream->Read(mInByteBuf, &mInLimit));
+                FAIL_RETURN(mInStream->Read(mInByteBuf, mInLimit));
             }
             mInOff = 0;
             if (mInLimit <= 0) {
@@ -686,10 +686,10 @@ ECode Properties::LineReader::ReadLine(
             }
             if (mInOff >= mInLimit) {
                 if (mInStream == nullptr) {
-                    FAIL_RETURN(mReader->Read(mInCharBuf, &mInLimit));
+                    FAIL_RETURN(mReader->Read(mInCharBuf, mInLimit));
                 }
                 else {
-                    FAIL_RETURN(mInStream->Read(mInByteBuf, &mInLimit));
+                    FAIL_RETURN(mInStream->Read(mInByteBuf, mInLimit));
                 }
                 mInOff = 0;
                 if (mInLimit <= 0) {

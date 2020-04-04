@@ -38,20 +38,20 @@ public:
         /* [in] */ IByteOrder* order);
 
     ECode Slice(
-        /* [out] */ IIntegerBuffer** buffer) override;
+        /* [out] */ AutoPtr<IIntegerBuffer>& buffer) override;
 
     ECode Duplicate(
-        /* [out] */ IIntegerBuffer** buffer) override;
+        /* [out] */ AutoPtr<IIntegerBuffer>& buffer) override;
 
     ECode AsReadOnlyBuffer(
-        /* [out] */ IIntegerBuffer** buffer) override;
+        /* [out] */ AutoPtr<IIntegerBuffer>& buffer) override;
 
     ECode Get(
-        /* [out] */ Integer* i) override;
+        /* [out] */ Integer& i) override;
 
     ECode Get(
         /* [in] */ Integer index,
-        /* [out] */ Integer* i) override;
+        /* [out] */ Integer& i) override;
 
     ECode Get(
         /* [out] */ Array<Integer>& dst,
@@ -73,13 +73,13 @@ public:
     ECode Compact() override;
 
     ECode IsDirect(
-        /* [out] */ Boolean* direct) override;
+        /* [out] */ Boolean& direct) override;
 
     ECode IsReadOnly(
-        /* [out] */ Boolean* readOnly) override;
+        /* [out] */ Boolean& readOnly) override;
 
     ECode GetOrder(
-        /* [out] */ IByteOrder** bo) override;
+        /* [out] */ AutoPtr<IByteOrder>& bo) override;
 
 protected:
     Integer Ix(

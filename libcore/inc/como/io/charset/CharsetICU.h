@@ -35,14 +35,14 @@ public:
         /* [in] */ const Array<String>& aliases);
 
     ECode NewDecoder(
-        /* [out] */ ICharsetDecoder** decoder) override;
+        /* [out] */ AutoPtr<ICharsetDecoder>& decoder) override;
 
     ECode NewEncoder(
-        /* [out] */ ICharsetEncoder** encoder) override;
+        /* [out] */ AutoPtr<ICharsetEncoder>& encoder) override;
 
     ECode Contains(
         /* [in] */ ICharset* cs,
-        /* [out] */ Boolean* contains) override;
+        /* [out] */ Boolean& contains) override;
 
 private:
     String mIcuCanonicalName;

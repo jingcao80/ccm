@@ -126,33 +126,27 @@ ECode ByteArrayOutputStream::ToByteArray(
 }
 
 ECode ByteArrayOutputStream::GetSize(
-    /* [out] */ Integer* size)
+    /* [out] */ Integer& size)
 {
-    VALIDATE_NOT_NULL(size);
-
     AutoLock lock(this);
-    *size = mCount;
+    size = mCount;
     return NOERROR;
 }
 
 ECode ByteArrayOutputStream::ToString(
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
-    VALIDATE_NOT_NULL(desc);
-
     AutoLock lock(this);
-    *desc = String(mBuf, 0, mCount);
+    desc = String(mBuf, 0, mCount);
     return NOERROR;
 }
 
 ECode ByteArrayOutputStream::ToString(
     /* [in] */ const String& charsetName,
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
-    VALIDATE_NOT_NULL(desc);
-
     AutoLock lock(this);
-    return StringUtils::ToString(String(mBuf, 0, mCount), charsetName, desc);
+    return StringUtils::ToString(String(mBuf, 0, mCount), charsetName, &desc);
 }
 
 ECode ByteArrayOutputStream::Close()

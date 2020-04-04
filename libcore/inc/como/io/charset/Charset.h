@@ -76,35 +76,35 @@ public:
     static AutoPtr<ICharset> GetDefaultCharset();
 
     ECode GetName(
-        /* [out] */ String* name) override;
+        /* [out] */ String& name) override;
 
     ECode GetAliases(
-        /* [out] */ ISet** aliases) override;
+        /* [out] */ AutoPtr<ISet>& aliases) override;
 
     ECode GetDisplayName(
-        /* [out] */ String* name) override;
+        /* [out] */ String& name) override;
 
     ECode IsRegistered(
-        /* [out] */ Boolean* registered) override;
+        /* [out] */ Boolean& registered) override;
 
     ECode GetDisplayName(
         /* [in] */ ILocale* locale,
-        /* [out] */ String* name) override;
+        /* [out] */ String& name) override;
 
     ECode CanEncode(
-        /* [out] */ Boolean* supported) override;
+        /* [out] */ Boolean& supported) override;
 
     ECode Decode(
         /* [in] */ IByteBuffer* bb,
-        /* [out] */ ICharBuffer** cb) override;
+        /* [out] */ AutoPtr<ICharBuffer>& cb) override;
 
     ECode Encode(
         /* [in] */ ICharBuffer* cb,
-        /* [out] */ IByteBuffer** bb) override;
+        /* [out] */ AutoPtr<IByteBuffer>& bb) override;
 
     ECode Encode(
         /* [in] */ const String& str,
-        /* [out] */ IByteBuffer** bb) override;
+        /* [out] */ AutoPtr<IByteBuffer>& bb) override;
 
     ECode CompareTo(
         /* [in] */ IInterface* other,

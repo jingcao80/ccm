@@ -31,7 +31,7 @@ namespace io {
 interface IOutputStreamWriter
 {
     GetEncoding(
-        [out] String* name);
+        [out] String& name);
 }
 
 }

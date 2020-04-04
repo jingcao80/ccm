@@ -82,10 +82,10 @@ public:
     ECode Close() override;
 
     ECode GetFD(
-        /* [out] */ IFileDescriptor** fd) override final;
+        /* [out] */ AutoPtr<IFileDescriptor>& fd) override final;
 
     ECode GetChannel(
-        /* [out] */ IFileChannel** channel) override;
+        /* [out] */ AutoPtr<IFileChannel>& channel) override;
 
 private:
     ECode Open(

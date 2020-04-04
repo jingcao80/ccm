@@ -465,7 +465,7 @@ ECode ZoneInfoDB::TzData::GetRulesVersion(
     const Integer bytesToRead = 12;
     Array<Byte> tzdataVersion(bytesToRead);
     Integer bytesRead;
-    FAIL_RETURN(is->Read(tzdataVersion, 0, bytesToRead, & bytesRead));
+    FAIL_RETURN(is->Read(tzdataVersion, 0, bytesToRead, bytesRead));
     if (bytesRead != bytesToRead) {
         Logger::E("ZoneInfoDB",  "File too short: only able to read %s bytes.", bytesRead);
         IAutoCloseable::Probe(is)->Close();

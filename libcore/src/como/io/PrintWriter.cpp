@@ -207,10 +207,8 @@ ERROR:
 }
 
 ECode PrintWriter::CheckError(
-    /* [out] */ Boolean* hasErrors)
+    /* [out] */ Boolean& hasErrors)
 {
-    VALIDATE_NOT_NULL(hasErrors);
-
     if (mOut != nullptr) {
         Flush();
     }
@@ -220,7 +218,7 @@ ECode PrintWriter::CheckError(
     else if (mPsOut != nullptr) {
         return mPsOut->CheckError(hasErrors);
     }
-    *hasErrors = mTrouble;
+    hasErrors = mTrouble;
     return NOERROR;
 }
 

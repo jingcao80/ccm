@@ -129,12 +129,12 @@ ECode ByteBuffer::Get(
 {
     FAIL_RETURN(CheckBounds(offset, length, dst.GetLength()));
     Integer remaining;
-    if (Remaining(&remaining), length > remaining) {
+    if (Remaining(remaining), length > remaining) {
         return E_BUFFER_UNDERFLOW_EXCEPTION;
     }
     Integer end = offset + length;
     for (Integer i = offset; i < end; i++) {
-        Get(&dst[i]);
+        Get(dst[i]);
     }
     return NOERROR;
 }
@@ -149,7 +149,7 @@ ECode ByteBuffer::Put(
     /* [in] */ IByteBuffer* src)
 {
     Boolean accessible;
-    if (IsAccessible(&accessible), !accessible) {
+    if (IsAccessible(accessible), !accessible) {
         Logger::E("ByteBuffer", "buffer is inaccessible");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
@@ -163,50 +163,50 @@ ECode ByteBuffer::Put(
     ByteBuffer* srcObj = (ByteBuffer*)src;
 
     Integer n, remaining;
-    srcObj->Remaining(&n);
-    if (Remaining(&remaining), n > remaining) {
+    srcObj->Remaining(n);
+    if (Remaining(remaining), n > remaining) {
         return E_BUFFER_OVERFLOW_EXCEPTION;
     }
 
     if (!mHb.IsNull() && !srcObj->mHb.IsNull()) {
         Integer srcPos, thisPos;
-        srcObj->GetPosition(&srcPos);
-        GetPosition(&thisPos);
+        srcObj->GetPosition(srcPos);
+        GetPosition(thisPos);
         mHb.Copy(thisPos + mOffset, srcObj->mHb, srcPos + srcObj->mOffset, n);
     }
     else {
         HANDLE srcAddr, dstAddr;
         Boolean direct;
-        if (srcObj->IsDirect(&direct), direct) {
-            ((DirectByteBuffer*)srcObj)->GetAddress(&srcAddr);
+        if (srcObj->IsDirect(direct), direct) {
+            ((DirectByteBuffer*)srcObj)->GetAddress(srcAddr);
         }
         else {
             srcAddr = reinterpret_cast<HANDLE>(srcObj->mHb.GetPayload());
         }
         Integer srcOffset;
-        srcObj->GetPosition(&srcOffset);
+        srcObj->GetPosition(srcOffset);
         if (!direct) {
             srcOffset += srcObj->mOffset;
         }
 
-        if (IsDirect(&direct), direct) {
-            ((DirectByteBuffer*)this)->GetAddress(&dstAddr);
+        if (IsDirect(direct), direct) {
+            ((DirectByteBuffer*)this)->GetAddress(dstAddr);
         }
         else {
             dstAddr = reinterpret_cast<HANDLE>(mHb.GetPayload());
         }
         Integer dstOffset;
-        GetPosition(&dstOffset);
+        GetPosition(dstOffset);
         if (!direct) {
             dstOffset += mOffset;
         }
         memmove(reinterpret_cast<void*>(dstAddr + dstOffset), reinterpret_cast<void*>(srcAddr + srcOffset), n);
     }
     Integer limit;
-    srcObj->GetLimit(&limit);
+    srcObj->GetLimit(limit);
     srcObj->SetPosition(limit);
     Integer pos;
-    GetPosition(&pos);
+    GetPosition(pos);
     SetPosition(pos + n);
     return NOERROR;
 }
@@ -218,7 +218,7 @@ ECode ByteBuffer::Put(
 {
     FAIL_RETURN(CheckBounds(offset, length, src.GetLength()));
     Integer remaining;
-    if (Remaining(&remaining), length > remaining) {
+    if (Remaining(remaining), length > remaining) {
         return E_BUFFER_OVERFLOW_EXCEPTION;
     }
     Integer end = offset + length;
@@ -235,47 +235,41 @@ ECode ByteBuffer::Put(
 }
 
 ECode ByteBuffer::HasArray(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     if (mHb.IsNull()) {
-        *result = false;
+        result = false;
         return NOERROR;
     }
 
     Boolean readOnly;
-    IsReadOnly(&readOnly);
-    *result = !readOnly;
+    IsReadOnly(readOnly);
+    result = !readOnly;
     return NOERROR;
 }
 
 ECode ByteBuffer::GetArray(
-    /* [out] */ IInterface** array)
+    /* [out] */ AutoPtr<IArrayHolder>& array)
 {
-    VALIDATE_NOT_NULL(array);
-
     if (mHb.IsNull()) {
         return E_UNSUPPORTED_OPERATION_EXCEPTION;
     }
     if (mIsReadOnly) {
         return E_READ_ONLY_BUFFER_EXCEPTION;
     }
-    return CArrayHolder::New(mHb, IID_IArrayHolder, array);
+    return CArrayHolder::New(mHb, IID_IArrayHolder, (IInterface**)&array);
 }
 
 ECode ByteBuffer::GetArrayOffset(
-    /* [out] */ Integer* offset)
+    /* [out] */ Integer& offset)
 {
-    VALIDATE_NOT_NULL(offset);
-
     if (mHb.IsNull()) {
         return E_UNSUPPORTED_OPERATION_EXCEPTION;
     }
     if (mIsReadOnly) {
         return E_READ_ONLY_BUFFER_EXCEPTION;
     }
-    *offset = mOffset;
+    offset = mOffset;
     return NOERROR;
 }
 
@@ -287,13 +281,13 @@ ECode ByteBuffer::ToString(
     sb->Append(Object::GetCoclassName(this));
     sb->Append(String("[pos="));
     Integer value;
-    GetPosition(&value);
+    GetPosition(value);
     sb->Append(value);
     sb->Append(String(" lim="));
-    GetLimit(&value);
+    GetLimit(value);
     sb->Append(value);
     sb->Append(String(" cap="));
-    GetCapacity(&value);
+    GetCapacity(value);
     sb->Append(value);
     sb->Append(String("]"));
     return sb->ToString(desc);
@@ -304,12 +298,12 @@ ECode ByteBuffer::GetHashCode(
 {
     hash = 1;
     Integer p;
-    GetPosition(&p);
+    GetPosition(p);
     Integer i;
-    GetLimit(&i);
+    GetLimit(i);
     for (i = i - 1; i >= p; i--) {
         Byte b;
-        Get(i, &b);
+        Get(i, b);
         hash = 31 * hash + b;
     }
     return NOERROR;
@@ -329,21 +323,21 @@ ECode ByteBuffer::Equals(
         return NOERROR;
     }
     Integer thisRemaining, otherRemaining;
-    Remaining(&thisRemaining);
-    other->Remaining(&otherRemaining);
+    Remaining(thisRemaining);
+    other->Remaining(otherRemaining);
     if (thisRemaining != otherRemaining) {
         same = false;
         return NOERROR;
     }
     Integer p;
-    GetPosition(&p);
+    GetPosition(p);
     Integer i, j;
-    GetLimit(&i);
-    other->GetLimit(&j);
+    GetLimit(i);
+    other->GetLimit(j);
     for (i = i - 1, j = j - 1; i >= p; i--, j--) {
         Byte thisb, otherb;
-        Get(i, &thisb);
-        other->Get(j, &otherb);
+        Get(i, thisb);
+        other->Get(j, otherb);
         if (thisb != otherb) {
             same = false;
             return NOERROR;
@@ -363,17 +357,17 @@ ECode ByteBuffer::CompareTo(
     }
 
     Integer thisRemaining, otherRemaining;
-    Remaining(&thisRemaining);
-    otherBB->Remaining(&otherRemaining);
+    Remaining(thisRemaining);
+    otherBB->Remaining(otherRemaining);
     Integer thisPos, otherPos;
-    GetPosition(&thisPos);
-    otherBB->GetPosition(&otherPos);
+    GetPosition(thisPos);
+    otherBB->GetPosition(otherPos);
 
     Integer n = thisPos + Math::Min(thisRemaining, otherRemaining);
     for (Integer i = thisPos, j = otherPos; i < n; i++, j++) {
         Byte thisb, otherb;
-        Get(i, &thisb);
-        otherBB->Get(j, &otherb);
+        Get(i, thisb);
+        otherBB->Get(j, otherb);
         Integer cmp = thisb - otherb;
         if (cmp != 0) {
             result = cmp;
@@ -385,18 +379,14 @@ ECode ByteBuffer::CompareTo(
 }
 
 ECode ByteBuffer::GetOrder(
-    /* [out] */ IByteOrder** bo)
+    /* [out] */ AutoPtr<IByteOrder>& bo)
 {
-    VALIDATE_NOT_NULL(bo);
-
     if (mBigEndian) {
-        *bo = ByteOrder::GetBIG_ENDIAN();
-        REFCOUNT_ADD(*bo);
+        bo = ByteOrder::GetBIG_ENDIAN();
         return NOERROR;
     }
     else {
-        *bo = ByteOrder::GetLITTLE_ENDIAN();
-        REFCOUNT_ADD(*bo);
+        bo = ByteOrder::GetLITTLE_ENDIAN();
         return NOERROR;
     }
 }
@@ -411,11 +401,9 @@ ECode ByteBuffer::SetOrder(
 }
 
 ECode ByteBuffer::IsAccessible(
-    /* [out] */ Boolean* accessible)
+    /* [out] */ Boolean& accessible)
 {
-    VALIDATE_NOT_NULL(accessible);
-
-    *accessible = true;
+    accessible = true;
     return NOERROR;
 }
 

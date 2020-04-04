@@ -25,10 +25,10 @@ namespace channels {
 interface IDirectBuffer
 {
     GetAddress(
-        [out] HANDLE* addr);
+        [out] HANDLE& addr);
 
     GetAttachment(
-        [out] IInterface** attachment);
+        [out] IInterface&& attachment);
 }
 
 }

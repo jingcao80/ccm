@@ -125,80 +125,69 @@ ECode DirectByteBuffer::Constructor(
 }
 
 ECode DirectByteBuffer::GetAttachment(
-    /* [out] */ IInterface** attachment)
+    /* [out] */ AutoPtr<IInterface>& attachment)
 {
-    VALIDATE_NOT_NULL(attachment);
-
-    *attachment = (IObject*)mMemoryRef;
-    REFCOUNT_ADD(*attachment);
+    attachment = (IObject*)mMemoryRef;
     return NOERROR;
 }
 
 ECode DirectByteBuffer::Slice(
-    /* [out] */ IByteBuffer** buffer)
+    /* [out] */ AutoPtr<IByteBuffer>& buffer)
 {
-    VALIDATE_NOT_NULL(buffer);
-
     if (!mMemoryRef->mIsAccessible) {
         Logger::E("DirectByteBuffer", "buffer is inaccessible");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     Integer pos;
-    GetPosition(&pos);
+    GetPosition(pos);
     Integer lim;
-    GetLimit(&lim);
+    GetLimit(lim);
     CHECK(pos <= lim);
     Integer rem = (pos <= lim ? lim - pos : 0);
     Integer off = pos + mOffset;
     CHECK(off >= 0);
     return CDirectByteBuffer::New(mMemoryRef, -1, 0, rem, rem, off, mIsReadOnly,
-            IID_IByteBuffer, (IInterface**)buffer);
+            IID_IByteBuffer, (IInterface**)&buffer);
 }
 
 ECode DirectByteBuffer::Duplicate(
-    /* [out] */ IByteBuffer** buffer)
+    /* [out] */ AutoPtr<IByteBuffer>& buffer)
 {
-    VALIDATE_NOT_NULL(buffer);
-
     if (mMemoryRef->mIsFreed) {
         Logger::E("DirectByteBuffer", "buffer has been freed");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     Integer pos;
-    GetPosition(&pos);
+    GetPosition(pos);
     Integer lim;
-    GetLimit(&lim);
+    GetLimit(lim);
     Integer cap;
-    GetCapacity(&cap);
+    GetCapacity(cap);
     return CDirectByteBuffer::New(mMemoryRef, MarkValue(), pos, lim, cap, mOffset, mIsReadOnly,
-            IID_IByteBuffer, (IInterface**)buffer);
+            IID_IByteBuffer, (IInterface**)&buffer);
 }
 
 ECode DirectByteBuffer::AsReadOnlyBuffer(
-    /* [out] */ IByteBuffer** buffer)
+    /* [out] */ AutoPtr<IByteBuffer>& buffer)
 {
-    VALIDATE_NOT_NULL(buffer);
-
     if (mMemoryRef->mIsFreed) {
         Logger::E("DirectByteBuffer", "buffer has been freed");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     Integer pos;
-    GetPosition(&pos);
+    GetPosition(pos);
     Integer lim;
-    GetLimit(&lim);
+    GetLimit(lim);
     Integer cap;
-    GetCapacity(&cap);
+    GetCapacity(cap);
     return CDirectByteBuffer::New(mMemoryRef, MarkValue(), pos, lim, cap, mOffset, true,
-            IID_IByteBuffer, (IInterface**)buffer);
+            IID_IByteBuffer, (IInterface**)&buffer);
 }
 
 ECode DirectByteBuffer::GetAddress(
-    /* [out] */ HANDLE* addr)
+    /* [out] */ HANDLE& addr)
 {
-    VALIDATE_NOT_NULL(addr);
-
-    *addr = mAddress;
+    addr = mAddress;
     return NOERROR;
 }
 
@@ -215,7 +204,7 @@ Byte DirectByteBuffer::Get(
 }
 
 ECode DirectByteBuffer::Get(
-    /* [out] */ Byte* b)
+    /* [out] */ Byte& b)
 {
     if (!mMemoryRef->mIsAccessible) {
         Logger::E("DirectByteBuffer", "buffer is inaccessible");
@@ -223,13 +212,13 @@ ECode DirectByteBuffer::Get(
     }
     Integer idx;
     NextGetIndex(&idx);
-    *b = Get(Ix(idx));
+    b = Get(Ix(idx));
     return NOERROR;
 }
 
 ECode DirectByteBuffer::Get(
     /* [in] */ Integer i,
-    /* [out] */ Byte* b)
+    /* [out] */ Byte& b)
 {
     if (!mMemoryRef->mIsAccessible) {
         Logger::E("DirectByteBuffer", "buffer is inaccessible");
@@ -237,7 +226,7 @@ ECode DirectByteBuffer::Get(
     }
     Integer idx;
     NextGetIndex(i, &idx);
-    *b = Get(Ix(idx));
+    b = Get(Ix(idx));
     return NOERROR;
 }
 
@@ -252,9 +241,9 @@ ECode DirectByteBuffer::Get(
     }
     FAIL_RETURN(CheckBounds(offset, length, dst.GetLength()));
     Integer pos;
-    GetPosition(&pos);
+    GetPosition(pos);
     Integer lim;
-    GetLimit(&lim);
+    GetLimit(lim);
     CHECK(pos <=  lim);
     Integer rem = (pos <= lim ? lim - pos : 0);
     if (length > rem) {
@@ -318,9 +307,9 @@ ECode DirectByteBuffer::Put(
     }
     FAIL_RETURN(CheckBounds(offset, length, src.GetLength()));
     Integer pos;
-    GetPosition(&pos);
+    GetPosition(pos);
     Integer lim;
-    GetLimit(&lim);
+    GetLimit(lim);
     CHECK(pos <= lim);
     Integer rem = (pos <= lim ? lim - pos : 0);
     if (length > rem) {
@@ -341,37 +330,33 @@ ECode DirectByteBuffer::Compact()
         return E_READ_ONLY_BUFFER_EXCEPTION;
     }
     Integer pos;
-    GetPosition(&pos);
+    GetPosition(pos);
     Integer lim;
-    GetLimit(&lim);
+    GetLimit(lim);
     CHECK(pos <= lim);
     Integer rem = (pos <= lim ? lim - pos : 0);
     Integer remaining;
-    Remaining(&remaining);
+    Remaining(remaining);
     mHb.Copy(mOffset, mHb, mPosition + mOffset, remaining);
     SetPosition(rem);
     Integer cap;
-    GetCapacity(&cap);
+    GetCapacity(cap);
     SetLimit(cap);
     DiscardMark();
     return NOERROR;
 }
 
 ECode DirectByteBuffer::IsDirect(
-    /* [out] */ Boolean* direct)
+    /* [out] */ Boolean& direct)
 {
-    VALIDATE_NOT_NULL(direct);
-
-    *direct = true;
+    direct = true;
     return NOERROR;
 }
 
 ECode DirectByteBuffer::IsReadOnly(
-    /* [out] */ Boolean* readOnly)
+    /* [out] */ Boolean& readOnly)
 {
-    VALIDATE_NOT_NULL(readOnly);
-
-    *readOnly = mIsReadOnly;
+    readOnly = mIsReadOnly;
     return NOERROR;
 }
 
@@ -379,7 +364,7 @@ Byte DirectByteBuffer::_Get(
     /* [in] */ Integer i)
 {
     Byte b;
-    Get(i, &b);
+    Get(i, b);
     return b;
 }
 
@@ -391,49 +376,45 @@ ECode DirectByteBuffer::_Put(
 }
 
 ECode DirectByteBuffer::GetChar(
-    /* [out] */ Char* c)
+    /* [out] */ Char& c)
 {
-    VALIDATE_NOT_NULL(c);
-
     if (!mMemoryRef->mIsAccessible) {
         Logger::E("DirectByteBuffer", "buffer is inaccessible");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     Integer newPosition = mPosition + sizeof(Char);
     Integer lim;
-    GetLimit(&lim);
+    GetLimit(lim);
     if (newPosition > lim) {
         return E_BUFFER_UNDERFLOW_EXCEPTION;
     }
-    *c = (Char)Memory::PeekInteger(Ix(mPosition), !mNativeByteOrder);
+    c = (Char)Memory::PeekInteger(Ix(mPosition), !mNativeByteOrder);
     mPosition = newPosition;
     return NOERROR;
 }
 
 ECode DirectByteBuffer::GetChar(
     /* [in] */ Integer index,
-    /* [out] */ Char* c)
+    /* [out] */ Char& c)
 {
-    VALIDATE_NOT_NULL(c);
-
     if (!mMemoryRef->mIsAccessible) {
         Logger::E("DirectByteBuffer", "buffer is inaccessible");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     FAIL_RETURN(CheckIndex(index, sizeof(Char)));
-    *c = (Char)Memory::PeekInteger(Ix(index), !mNativeByteOrder);
+    c = (Char)Memory::PeekInteger(Ix(index), !mNativeByteOrder);
     return NOERROR;
 }
 
 ECode DirectByteBuffer::GetCharUnchecked(
     /* [in] */ Integer index,
-    /* [out] */ Char* c)
+    /* [out] */ Char& c)
 {
     if (!mMemoryRef->mIsAccessible) {
         Logger::E("DirectByteBuffer", "buffer is inaccessible");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
-    *c = (Char)Memory::PeekInteger(Ix(index), !mNativeByteOrder);
+    c = (Char)Memory::PeekInteger(Ix(index), !mNativeByteOrder);
     return NOERROR;
 }
 
@@ -517,27 +498,24 @@ ECode DirectByteBuffer::PutUnchecked(
 }
 
 ECode DirectByteBuffer::AsCharBuffer(
-    /* [out] */ ICharBuffer** buffer)
+    /* [out] */ AutoPtr<ICharBuffer>& buffer)
 {
-    VALIDATE_NOT_NULL(buffer);
-
     if (mMemoryRef->mIsFreed) {
         Logger::E("DirectByteBuffer", "buffer has been freed");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     Integer off, lim;
-    GetPosition(&off);
-    GetLimit(&lim);
+    GetPosition(off);
+    GetLimit(lim);
     CHECK(off <= lim);
     Integer rem = (off <= lim ? lim - off : 0);
     Integer size = rem >> 2;
     AutoPtr<IByteOrder> order;
-    GetOrder(&order);
+    GetOrder(order);
 
     AutoPtr<ByteBufferAsCharBuffer> bb = new ByteBufferAsCharBuffer();
     FAIL_RETURN(bb->Constructor(this, -1, 0, size, size, off, order));
-    *buffer = (ICharBuffer*)bb.Get();
-    REFCOUNT_ADD(*buffer);
+    buffer = (ICharBuffer*)bb.Get();
     return NOERROR;
 }
 
@@ -548,44 +526,40 @@ Short DirectByteBuffer::GetShort(
 }
 
 ECode DirectByteBuffer::GetShort(
-    /* [out] */ Short* s)
+    /* [out] */ Short& s)
 {
-    VALIDATE_NOT_NULL(s);
-
     if (!mMemoryRef->mIsAccessible) {
         Logger::E("DirectByteBuffer", "buffer is inaccessible");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     Integer idx;
     NextGetIndex(sizeof(Short), &idx);
-    *s = GetShort(Ix(idx));
+    s = GetShort(Ix(idx));
     return NOERROR;
 }
 
 ECode DirectByteBuffer::GetShort(
     /* [in] */ Integer index,
-    /* [out] */ Short* s)
+    /* [out] */ Short& s)
 {
-    VALIDATE_NOT_NULL(s);
-
     if (!mMemoryRef->mIsAccessible) {
         Logger::E("DirectByteBuffer", "buffer is inaccessible");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     FAIL_RETURN(CheckIndex(index, sizeof(Short)));
-    *s = GetShort(Ix(index));
+    s = GetShort(Ix(index));
     return NOERROR;
 }
 
 ECode DirectByteBuffer::GetShortUnchecked(
     /* [in] */ Integer index,
-    /* [out] */ Short* value)
+    /* [out] */ Short& value)
 {
     if (!mMemoryRef->mIsAccessible) {
         Logger::E("DirectByteBuffer", "buffer is inaccessible");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
-    *value = GetShort(Ix(index));
+    value = GetShort(Ix(index));
     return NOERROR;
 }
 
@@ -669,27 +643,24 @@ ECode DirectByteBuffer::PutUnchecked(
 }
 
 ECode DirectByteBuffer::AsShortBuffer(
-    /* [out] */ IShortBuffer** buffer)
+    /* [out] */ AutoPtr<IShortBuffer>& buffer)
 {
-    VALIDATE_NOT_NULL(buffer);
-
     if (mMemoryRef->mIsFreed) {
         Logger::E("DirectByteBuffer", "buffer has been freed");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     Integer off, lim;
-    GetPosition(&off);
-    GetLimit(&lim);
+    GetPosition(off);
+    GetLimit(lim);
     CHECK(off <= lim);
     Integer rem = (off <= lim ? lim - off : 0);
     Integer size = rem >> 1;
     AutoPtr<IByteOrder> order;
-    GetOrder(&order);
+    GetOrder(order);
 
     AutoPtr<ByteBufferAsShortBuffer> bb = new ByteBufferAsShortBuffer();
     FAIL_RETURN(bb->Constructor(this, -1, 0, size, size, off, order));
-    *buffer = (IShortBuffer*)bb.Get();
-    REFCOUNT_ADD(*buffer);
+    buffer = (IShortBuffer*)bb.Get();
     return NOERROR;
 }
 
@@ -700,44 +671,40 @@ Integer DirectByteBuffer::GetInteger(
 }
 
 ECode DirectByteBuffer::GetInteger(
-    /* [out] */ Integer* i)
+    /* [out] */ Integer& i)
 {
-    VALIDATE_NOT_NULL(i);
-
     if (!mMemoryRef->mIsAccessible) {
         Logger::E("DirectByteBuffer", "buffer is inaccessible");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     Integer idx;
     NextGetIndex(sizeof(Integer), &idx);
-    *i = GetInteger(Ix(idx));
+    i = GetInteger(Ix(idx));
     return NOERROR;
 }
 
 ECode DirectByteBuffer::GetInteger(
     /* [in] */ Integer index,
-    /* [out] */ Integer* i)
+    /* [out] */ Integer& i)
 {
-    VALIDATE_NOT_NULL(i);
-
     if (!mMemoryRef->mIsAccessible) {
         Logger::E("DirectByteBuffer", "buffer is inaccessible");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     FAIL_RETURN(CheckIndex(index, sizeof(Integer)));
-    *i = GetInteger(Ix(index));
+    i = GetInteger(Ix(index));
     return NOERROR;
 }
 
 ECode DirectByteBuffer::GetIntegerUnchecked(
     /* [in] */ Integer index,
-    /* [out] */ Integer* value)
+    /* [out] */ Integer& value)
 {
     if (!mMemoryRef->mIsAccessible) {
         Logger::E("DirectByteBuffer", "buffer is inaccessible");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
-    *value = GetInteger(Ix(index));
+    value = GetInteger(Ix(index));
     return NOERROR;
 }
 
@@ -821,27 +788,24 @@ ECode DirectByteBuffer::PutUnchecked(
 }
 
 ECode DirectByteBuffer::AsIntegerBuffer(
-    /* [out] */ IIntegerBuffer** buffer)
+    /* [out] */ AutoPtr<IIntegerBuffer>& buffer)
 {
-    VALIDATE_NOT_NULL(buffer);
-
     if (mMemoryRef->mIsFreed) {
         Logger::E("DirectByteBuffer", "buffer has been freed");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     Integer off, lim;
-    GetPosition(&off);
-    GetLimit(&lim);
+    GetPosition(off);
+    GetLimit(lim);
     CHECK(off <= lim);
     Integer rem = (off <= lim ? lim - off : 0);
     Integer size = rem >> 2;
     AutoPtr<IByteOrder> order;
-    GetOrder(&order);
+    GetOrder(order);
 
     AutoPtr<ByteBufferAsIntegerBuffer> bb = new ByteBufferAsIntegerBuffer();
     FAIL_RETURN(bb->Constructor(this, -1, 0, size, size, off, order));
-    *buffer = (IIntegerBuffer*)bb.Get();
-    REFCOUNT_ADD(*buffer);
+    buffer = (IIntegerBuffer*)bb.Get();
     return NOERROR;
 }
 
@@ -852,44 +816,40 @@ Long DirectByteBuffer::GetLong(
 }
 
 ECode DirectByteBuffer::GetLong(
-    /* [out] */ Long* l)
+    /* [out] */ Long& l)
 {
-    VALIDATE_NOT_NULL(l);
-
     if (!mMemoryRef->mIsAccessible) {
         Logger::E("DirectByteBuffer", "buffer is inaccessible");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     Integer idx;
     NextGetIndex(sizeof(Long), &idx);
-    *l = GetLong(Ix(idx));
+    l = GetLong(Ix(idx));
     return NOERROR;
 }
 
 ECode DirectByteBuffer::GetLong(
     /* [in] */ Integer index,
-    /* [out] */ Long* l)
+    /* [out] */ Long& l)
 {
-    VALIDATE_NOT_NULL(l);
-
     if (!mMemoryRef->mIsAccessible) {
         Logger::E("DirectByteBuffer", "buffer is inaccessible");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     FAIL_RETURN(CheckIndex(index, sizeof(Long)));
-    *l = GetLong(Ix(index));
+    l = GetLong(Ix(index));
     return NOERROR;
 }
 
 ECode DirectByteBuffer::GetLongUnchecked(
     /* [in] */ Integer index,
-    /* [out] */ Long* value)
+    /* [out] */ Long& value)
 {
     if (!mMemoryRef->mIsAccessible) {
         Logger::E("DirectByteBuffer", "buffer is inaccessible");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
-    *value = GetLong(Ix(index));
+    value = GetLong(Ix(index));
     return NOERROR;
 }
 
@@ -973,27 +933,24 @@ ECode DirectByteBuffer::PutUnchecked(
 }
 
 ECode DirectByteBuffer::AsLongBuffer(
-    /* [out] */ ILongBuffer** buffer)
+    /* [out] */ AutoPtr<ILongBuffer>& buffer)
 {
-    VALIDATE_NOT_NULL(buffer);
-
     if (mMemoryRef->mIsFreed) {
         Logger::E("DirectByteBuffer", "buffer has been freed");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     Integer off, lim;
-    GetPosition(&off);
-    GetLimit(&lim);
+    GetPosition(off);
+    GetLimit(lim);
     CHECK(off <= lim);
     Integer rem = (off <= lim ? lim - off : 0);
     Integer size = rem >> 3;
     AutoPtr<IByteOrder> order;
-    GetOrder(&order);
+    GetOrder(order);
 
     AutoPtr<ByteBufferAsLongBuffer> bb = new ByteBufferAsLongBuffer();
     FAIL_RETURN(bb->Constructor(this, -1, 0, size, size, off, order));
-    *buffer = (ILongBuffer*)bb.Get();
-    REFCOUNT_ADD(*buffer);
+    buffer = (ILongBuffer*)bb.Get();
     return NOERROR;
 }
 
@@ -1005,44 +962,40 @@ Float DirectByteBuffer::GetFloat(
 }
 
 ECode DirectByteBuffer::GetFloat(
-    /* [out] */ Float* f)
+    /* [out] */ Float& f)
 {
-    VALIDATE_NOT_NULL(f);
-
     if (!mMemoryRef->mIsAccessible) {
         Logger::E("DirectByteBuffer", "buffer is inaccessible");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     Integer idx;
     NextGetIndex(sizeof(Float), &idx);
-    *f = GetFloat(Ix(idx));
+    f = GetFloat(Ix(idx));
     return NOERROR;
 }
 
 ECode DirectByteBuffer::GetFloat(
     /* [in] */ Integer index,
-    /* [out] */ Float* f)
+    /* [out] */ Float& f)
 {
-    VALIDATE_NOT_NULL(f);
-
     if (!mMemoryRef->mIsAccessible) {
         Logger::E("DirectByteBuffer", "buffer is inaccessible");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     FAIL_RETURN(CheckIndex(index, sizeof(Float)));
-    *f = GetFloat(Ix(index));
+    f = GetFloat(Ix(index));
     return NOERROR;
 }
 
 ECode DirectByteBuffer::GetFloatUnchecked(
     /* [in] */ Integer index,
-    /* [out] */ Float* value)
+    /* [out] */ Float& value)
 {
     if (!mMemoryRef->mIsAccessible) {
         Logger::E("DirectByteBuffer", "buffer is inaccessible");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
-    *value = GetFloat(Ix(index));
+    value = GetFloat(Ix(index));
     return NOERROR;
 }
 
@@ -1127,27 +1080,24 @@ ECode DirectByteBuffer::PutUnchecked(
 }
 
 ECode DirectByteBuffer::AsFloatBuffer(
-    /* [out] */ IFloatBuffer** buffer)
+    /* [out] */ AutoPtr<IFloatBuffer>& buffer)
 {
-    VALIDATE_NOT_NULL(buffer);
-
     if (mMemoryRef->mIsFreed) {
         Logger::E("DirectByteBuffer", "buffer has been freed");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     Integer off, lim;
-    GetPosition(&off);
-    GetLimit(&lim);
+    GetPosition(off);
+    GetLimit(lim);
     CHECK(off <= lim);
     Integer rem = (off <= lim ? lim - off : 0);
     Integer size = rem >> 2;
     AutoPtr<IByteOrder> order;
-    GetOrder(&order);
+    GetOrder(order);
 
     AutoPtr<ByteBufferAsFloatBuffer> bb = new ByteBufferAsFloatBuffer();
     FAIL_RETURN(bb->Constructor(this, -1, 0, size, size, off, order));
-    *buffer = (IFloatBuffer*)bb.Get();
-    REFCOUNT_ADD(*buffer);
+    buffer = (IFloatBuffer*)bb.Get();
     return NOERROR;
 }
 
@@ -1159,44 +1109,40 @@ Double DirectByteBuffer::GetDouble(
 }
 
 ECode DirectByteBuffer::GetDouble(
-    /* [out] */ Double* d)
+    /* [out] */ Double& d)
 {
-    VALIDATE_NOT_NULL(d);
-
     if (!mMemoryRef->mIsAccessible) {
         Logger::E("DirectByteBuffer", "buffer is inaccessible");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     Integer idx;
     NextGetIndex(sizeof(Double), &idx);
-    *d = GetDouble(Ix(idx));
+    d = GetDouble(Ix(idx));
     return NOERROR;
 }
 
 ECode DirectByteBuffer::GetDouble(
     /* [in] */ Integer index,
-    /* [out] */ Double* d)
+    /* [out] */ Double& d)
 {
-    VALIDATE_NOT_NULL(d);
-
     if (!mMemoryRef->mIsAccessible) {
         Logger::E("DirectByteBuffer", "buffer is inaccessible");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     FAIL_RETURN(CheckIndex(index, sizeof(Double)));
-    *d = GetDouble(Ix(index));
+    d = GetDouble(Ix(index));
     return NOERROR;
 }
 
 ECode DirectByteBuffer::GetDoubleUnchecked(
     /* [in] */ Integer index,
-    /* [out] */ Double* value)
+    /* [out] */ Double& value)
 {
     if (!mMemoryRef->mIsAccessible) {
         Logger::E("DirectByteBuffer", "buffer is inaccessible");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
-    *value = GetDouble(Ix(index));
+    value = GetDouble(Ix(index));
     return NOERROR;
 }
 
@@ -1281,36 +1227,31 @@ ECode DirectByteBuffer::PutUnchecked(
 }
 
 ECode DirectByteBuffer::AsDoubleBuffer(
-    /* [out] */ IDoubleBuffer** buffer)
+    /* [out] */ AutoPtr<IDoubleBuffer>& buffer)
 {
-    VALIDATE_NOT_NULL(buffer);
-
     if (mMemoryRef->mIsFreed) {
         Logger::E("DirectByteBuffer", "buffer has been freed");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     Integer off, lim;
-    GetPosition(&off);
-    GetLimit(&lim);
+    GetPosition(off);
+    GetLimit(lim);
     CHECK(off <= lim);
     Integer rem = (off <= lim ? lim - off : 0);
     Integer size = rem >> 3;
     AutoPtr<IByteOrder> order;
-    GetOrder(&order);
+    GetOrder(order);
 
     AutoPtr<ByteBufferAsDoubleBuffer> bb = new ByteBufferAsDoubleBuffer();
     FAIL_RETURN(bb->Constructor(this, -1, 0, size, size, off, order));
-    *buffer = (IDoubleBuffer*)bb.Get();
-    REFCOUNT_ADD(*buffer);
+    buffer = (IDoubleBuffer*)bb.Get();
     return NOERROR;
 }
 
 ECode DirectByteBuffer::IsAccessible(
-    /* [out] */ Boolean* accessible)
+    /* [out] */ Boolean& accessible)
 {
-    VALIDATE_NOT_NULL(accessible);
-
-    *accessible = mMemoryRef->mIsAccessible;
+    accessible = mMemoryRef->mIsAccessible;
     return NOERROR;
 }
 

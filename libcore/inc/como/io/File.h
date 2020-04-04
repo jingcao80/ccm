@@ -57,7 +57,7 @@ private:
             /* [in] */ const String& prefix,
             /* [in] */ const String& suffix,
             /* [in] */ IFile* dir,
-            /* [out] */ IFile** temp);
+            /* [out] */ AutoPtr<IFile>& temp);
 
     private:
         TempDirectory();
@@ -67,7 +67,7 @@ public:
     COMO_INTERFACE_DECL();
 
     ECode GetPrefixLength(
-        /* [out] */ Integer* length) override;
+        /* [out] */ Integer& length) override;
 
     static Char GetSeparatorChar();
 
@@ -94,64 +94,64 @@ public:
         /* [in] */ IURI* uri);
 
     ECode GetName(
-        /* [out] */ String* name) override;
+        /* [out] */ String& name) override;
 
     ECode GetParent(
-        /* [out] */ String* parent) override;
+        /* [out] */ String& parent) override;
 
     ECode GetParentFile(
-        /* [out] */ IFile** parent) override;
+        /* [out] */ AutoPtr<IFile>& parent) override;
 
     ECode GetPath(
-        /* [out] */ String* path) override;
+        /* [out] */ String& path) override;
 
     ECode IsAbsolute(
-        /* [out] */ Boolean* absolute) override;
+        /* [out] */ Boolean& absolute) override;
 
     ECode GetAbsolutePath(
-        /* [out] */ String* path) override;
+        /* [out] */ String& path) override;
 
     ECode GetAbsoluteFile(
-        /* [out] */ IFile** f) override;
+        /* [out] */ AutoPtr<IFile>& f) override;
 
     ECode GetCanonicalPath(
-        /* [out] */ String* path) override;
+        /* [out] */ String& path) override;
 
     ECode GetCanonicalFile(
-        /* [out] */ IFile** f) override;
+        /* [out] */ AutoPtr<IFile>& f) override;
 
     ECode ToURL(
-        /* [out] */ IURL** url) override;
+        /* [out] */ AutoPtr<IURL>& url) override;
 
     ECode ToURI(
-        /* [out] */ IURI** id) override;
+        /* [out] */ AutoPtr<IURI>& id) override;
 
     ECode CanRead(
-        /* [out] */ Boolean* readable) override;
+        /* [out] */ Boolean& readable) override;
 
     ECode CanWrite(
-        /* [out] */ Boolean* writeable) override;
+        /* [out] */ Boolean& writeable) override;
 
     ECode Exists(
-        /* [out] */ Boolean* existed) override;
+        /* [out] */ Boolean& existed) override;
 
     ECode IsDirectory(
-        /* [out] */ Boolean* directory) override;
+        /* [out] */ Boolean& directory) override;
 
     ECode IsFile(
-        /* [out] */ Boolean* file) override;
+        /* [out] */ Boolean& file) override;
 
     ECode IsHidden(
-        /* [out] */ Boolean* hidden) override;
+        /* [out] */ Boolean& hidden) override;
 
     ECode LastModified(
-        /* [out] */ Long* time) override;
+        /* [out] */ Long& time) override;
 
     ECode GetLength(
-        /* [out] */ Long* len) override;
+        /* [out] */ Long& len) override;
 
     ECode CreateNewFile(
-        /* [out] */ Boolean* succeeded) override;
+        /* [out] */ Boolean& succeeded) override;
 
     ECode Delete(
         /* [out] */ Boolean* succeeded = nullptr) override;
@@ -177,74 +177,74 @@ public:
         /* [out, callee] */ Array<IFile*>* files) override;
 
     ECode Mkdir(
-        /* [out] */ Boolean* succeeded) override;
+        /* [out] */ Boolean& succeeded) override;
 
     ECode Mkdirs(
-        /* [out] */ Boolean* succeeded) override;
+        /* [out] */ Boolean& succeeded) override;
 
     ECode RenameTo(
         /* [in] */ IFile* dest,
-        /* [out] */ Boolean* succeeded) override;
+        /* [out] */ Boolean& succeeded) override;
 
     ECode SetLastModified(
         /* [in] */ Long time,
-        /* [out] */ Boolean* succeeded) override;
+        /* [out] */ Boolean& succeeded) override;
 
     ECode SetReadOnly(
-        /* [out] */ Boolean* succeeded) override;
+        /* [out] */ Boolean& succeeded) override;
 
     ECode SetWritable(
         /* [in] */ Boolean writable,
         /* [in] */ Boolean ownerOnly,
-        /* [out] */ Boolean* succeeded) override;
+        /* [out] */ Boolean& succeeded) override;
 
     ECode SetWritable(
         /* [in] */ Boolean writable,
-        /* [out] */ Boolean* succeeded) override;
+        /* [out] */ Boolean& succeeded) override;
 
     ECode SetReadable(
         /* [in] */ Boolean readable,
         /* [in] */ Boolean ownerOnly,
-        /* [out] */ Boolean* succeeded) override;
+        /* [out] */ Boolean& succeeded) override;
 
     ECode SetReadable(
         /* [in] */ Boolean readable,
-        /* [out] */ Boolean* succeeded) override;
+        /* [out] */ Boolean& succeeded) override;
 
     ECode SetExecutable(
         /* [in] */ Boolean executable,
         /* [in] */ Boolean ownerOnly,
-        /* [out] */ Boolean* succeeded) override;
+        /* [out] */ Boolean& succeeded) override;
 
     ECode SetExecutable(
         /* [in] */ Boolean executable,
-        /* [out] */ Boolean* succeeded) override;
+        /* [out] */ Boolean& succeeded) override;
 
     ECode CanExecute(
-        /* [out] */ Boolean* executable) override;
+        /* [out] */ Boolean& executable) override;
 
     static ECode ListRoots(
         /* [out, callee] */ Array<IFile*>* roots);
 
     ECode GetTotalSpace(
-        /* [out] */ Long* space) override;
+        /* [out] */ Long& space) override;
 
     ECode GetFreeSpace(
-        /* [out] */ Long* space) override;
+        /* [out] */ Long& space) override;
 
     ECode GetUsableSpace(
-        /* [out] */ Long* space) override;
+        /* [out] */ Long& space) override;
 
     static ECode CreateTempFile(
         /* [in] */ const String& prefix,
         /* [in] */ const String& suffix,
         /* [in] */ IFile* directory,
-        /* [out] */ IFile** temp);
+        /* [out] */ AutoPtr<IFile>& temp);
 
     static ECode CreateTempFile(
         /* [in] */ const String& prefix,
         /* [in] */ const String& suffix,
-        /* [out] */ IFile** temp);
+        /* [out] */ AutoPtr<IFile>& temp);
 
     ECode CompareTo(
         /* [in] */ IInterface* other,

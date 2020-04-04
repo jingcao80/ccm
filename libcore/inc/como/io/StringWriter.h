@@ -59,7 +59,7 @@ public:
         /* [out] */ String& str) override;
 
     ECode GetBuffer(
-        /* [out] */ IStringBuffer** buf) override;
+        /* [out] */ AutoPtr<IStringBuffer>& buf) override;
 
     ECode Flush() override;
 

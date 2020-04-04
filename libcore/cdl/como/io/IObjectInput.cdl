@@ -28,7 +28,7 @@ namespace io {
 interface IObjectInput
 {
     ReadObject(
-        [out] IInterface** object);
+        [out] IInterface&& object);
 }
 
 }

@@ -27,7 +27,7 @@ interface IFileFilter
 {
     Accept(
         [in] IFile* pathname,
-        [out] Boolean* accepted);
+        [out] Boolean& accepted);
 }
 
 }

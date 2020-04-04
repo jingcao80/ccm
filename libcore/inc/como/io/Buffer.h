@@ -40,16 +40,16 @@ public:
         /* [in] */ Integer elementSizeShift);
 
     ECode GetCapacity(
-        /* [out] */ Integer* capacity) override;
+        /* [out] */ Integer& capacity) override;
 
     ECode GetPosition(
-        /* [out] */ Integer* position) override;
+        /* [out] */ Integer& position) override;
 
     ECode SetPosition(
         /* [in] */ Integer newPosition) override;
 
     ECode GetLimit(
-        /* [out] */ Integer* limit) override;
+        /* [out] */ Integer& limit) override;
 
     ECode SetLimit(
         /* [in] */ Integer newLimit) override;
@@ -65,10 +65,10 @@ public:
     ECode Rewind() override;
 
     ECode Remaining(
-        /* [out] */ Integer* remaining) override;
+        /* [out] */ Integer& remaining) override;
 
     ECode HasRemaining(
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode NextGetIndex(
         /* [out] */ Integer* value);
