@@ -108,91 +108,91 @@ public:
     static ECode ValueOf(
         /* [in] */ Long unscaledValue,
         /* [in] */ Integer scale,
-        /* [out] */ IBigDecimal** result);
+        /* [out] */ AutoPtr<IBigDecimal>& result);
 
     static ECode ValueOf(
         /* [in] */ Long unscaledValue,
-        /* [out] */ IBigDecimal** result);
+        /* [out] */ AutoPtr<IBigDecimal>& result);
 
     static ECode ValueOf(
         /* [in] */ Double value,
-        /* [out] */ IBigDecimal** result);
+        /* [out] */ AutoPtr<IBigDecimal>& result);
 
     ECode Add(
         /* [in] */ IBigDecimal* augend,
-        /* [out] */ IBigDecimal** result) override;
+        /* [out] */ AutoPtr<IBigDecimal>& result) override;
 
     ECode Add(
         /* [in] */ IBigDecimal* augend,
         /* [in] */ IMathContext* mc,
-        /* [out] */ IBigDecimal** result) override;
+        /* [out] */ AutoPtr<IBigDecimal>& result) override;
 
     ECode Subtract(
         /* [in] */ IBigDecimal* subtrahend,
-        /* [out] */ IBigDecimal** result) override;
+        /* [out] */ AutoPtr<IBigDecimal>& result) override;
 
     ECode Subtract(
         /* [in] */ IBigDecimal* subtrahend,
         /* [in] */ IMathContext* mc,
-        /* [out] */ IBigDecimal** result) override;
+        /* [out] */ AutoPtr<IBigDecimal>& result) override;
 
     ECode Multiply(
         /* [in] */ IBigDecimal* multiplicand,
-        /* [out] */ IBigDecimal** result) override;
+        /* [out] */ AutoPtr<IBigDecimal>& result) override;
 
     ECode Multiply(
         /* [in] */ IBigDecimal* multiplicand,
         /* [in] */ IMathContext* mc,
-        /* [out] */ IBigDecimal** result) override;
+        /* [out] */ AutoPtr<IBigDecimal>& result) override;
 
     ECode Divide(
         /* [in] */ IBigDecimal* divisor,
         /* [in] */ Integer scale,
         /* [in] */ Integer roundingMode,
-        /* [out] */ IBigDecimal** result) override;
+        /* [out] */ AutoPtr<IBigDecimal>& result) override;
 
     ECode Divide(
         /* [in] */ IBigDecimal* divisor,
         /* [in] */ Integer scale,
         /* [in] */ RoundingMode roundingMode,
-        /* [out] */ IBigDecimal** result) override;
+        /* [out] */ AutoPtr<IBigDecimal>& result) override;
 
     ECode Divide(
         /* [in] */ IBigDecimal* divisor,
         /* [in] */ Integer roundingMode,
-        /* [out] */ IBigDecimal** result) override;
+        /* [out] */ AutoPtr<IBigDecimal>& result) override;
 
     ECode Divide(
         /* [in] */ IBigDecimal* divisor,
         /* [in] */ RoundingMode roundingMode,
-        /* [out] */ IBigDecimal** result) override;
+        /* [out] */ AutoPtr<IBigDecimal>& result) override;
 
     ECode Divide(
         /* [in] */ IBigDecimal* divisor,
-        /* [out] */ IBigDecimal** result) override;
+        /* [out] */ AutoPtr<IBigDecimal>& result) override;
 
     ECode Divide(
         /* [in] */ IBigDecimal* divisor,
         /* [in] */ IMathContext* mc,
-        /* [out] */ IBigDecimal** result) override;
+        /* [out] */ AutoPtr<IBigDecimal>& result) override;
 
     ECode DivideToIntegralValue(
         /* [in] */ IBigDecimal* divisor,
-        /* [out] */ IBigDecimal** result) override;
+        /* [out] */ AutoPtr<IBigDecimal>& result) override;
 
     ECode DivideToIntegralValue(
         /* [in] */ IBigDecimal* divisor,
         /* [in] */ IMathContext* mc,
-        /* [out] */ IBigDecimal** result) override;
+        /* [out] */ AutoPtr<IBigDecimal>& result) override;
 
     ECode Remainder(
         /* [in] */ IBigDecimal* divisor,
-        /* [out] */ IBigDecimal** result) override;
+        /* [out] */ AutoPtr<IBigDecimal>& result) override;
 
     ECode Remainder(
         /* [in] */ IBigDecimal* divisor,
         /* [in] */ IMathContext* mc,
-        /* [out] */ IBigDecimal** result) override;
+        /* [out] */ AutoPtr<IBigDecimal>& result) override;
 
     ECode DivideAndRemainder(
         /* [in] */ IBigDecimal* divisor,
@@ -205,78 +205,78 @@ public:
 
     ECode Pow(
         /* [in] */ Integer n,
-        /* [out] */ IBigDecimal** value) override;
+        /* [out] */ AutoPtr<IBigDecimal>& value) override;
 
     ECode Pow(
         /* [in] */ Integer n,
         /* [in] */ IMathContext* mc,
-        /* [out] */ IBigDecimal** value) override;
+        /* [out] */ AutoPtr<IBigDecimal>& value) override;
 
     ECode Abs(
-        /* [out] */ IBigDecimal** value) override;
+        /* [out] */ AutoPtr<IBigDecimal>& value) override;
 
     ECode Abs(
         /* [in] */ IMathContext* mc,
-        /* [out] */ IBigDecimal** value) override;
+        /* [out] */ AutoPtr<IBigDecimal>& value) override;
 
     ECode Negate(
-        /* [out] */ IBigDecimal** value) override;
+        /* [out] */ AutoPtr<IBigDecimal>& value) override;
 
     ECode Negate(
         /* [in] */ IMathContext* mc,
-        /* [out] */ IBigDecimal** result) override;
+        /* [out] */ AutoPtr<IBigDecimal>& result) override;
 
     ECode Plus(
-        /* [out] */ IBigDecimal** value) override;
+        /* [out] */ AutoPtr<IBigDecimal>& value) override;
 
     ECode Plus(
         /* [in] */ IMathContext* mc,
-        /* [out] */ IBigDecimal** result) override;
+        /* [out] */ AutoPtr<IBigDecimal>& result) override;
 
     ECode Signum(
-        /* [out] */ Integer* sign) override;
+        /* [out] */ Integer& sign) override;
 
     ECode Scale(
-        /* [out] */ Integer* scale) override;
+        /* [out] */ Integer& scale) override;
 
     ECode Precision(
-        /* [out] */ Integer* precision) override;
+        /* [out] */ Integer& precision) override;
 
     ECode UnscaledValue(
-        /* [out] */ IBigInteger** value) override;
+        /* [out] */ AutoPtr<IBigInteger>& value) override;
 
     ECode Round(
         /* [in] */ IMathContext* mc,
-        /* [out] */ IBigDecimal** result) override;
+        /* [out] */ AutoPtr<IBigDecimal>& result) override;
 
     ECode SetScale(
         /* [in] */ Integer newScale,
         /* [in] */ RoundingMode roundingMode,
-        /* [out] */ IBigDecimal** result) override;
+        /* [out] */ AutoPtr<IBigDecimal>& result) override;
 
     ECode SetScale(
         /* [in] */ Integer newScale,
         /* [in] */ Integer roundingMode,
-        /* [out] */ IBigDecimal** result) override;
+        /* [out] */ AutoPtr<IBigDecimal>& result) override;
 
     ECode SetScale(
         /* [in] */ Integer newScale,
-        /* [out] */ IBigDecimal** value) override;
+        /* [out] */ AutoPtr<IBigDecimal>& value) override;
 
     ECode MovePointLeft(
         /* [in] */ Integer n,
-        /* [out] */ IBigDecimal** value) override;
+        /* [out] */ AutoPtr<IBigDecimal>& value) override;
 
     ECode MovePointRight(
         /* [in] */ Integer n,
-        /* [out] */ IBigDecimal** value) override;
+        /* [out] */ AutoPtr<IBigDecimal>& value) override;
 
     ECode ScaleByPowerOfTen(
         /* [in] */ Integer n,
-        /* [out] */ IBigDecimal** value) override;
+        /* [out] */ AutoPtr<IBigDecimal>& value) override;
 
     ECode StripTrailingZeros(
-        /* [out] */ IBigDecimal** value) override;
+        /* [out] */ AutoPtr<IBigDecimal>& value) override;
 
     ECode CompareTo(
         /* [in] */ IInterface* other,
@@ -288,11 +288,11 @@ public:
 
     ECode Min(
         /* [in] */ IBigDecimal* value,
-        /* [out] */ IBigDecimal** result) override;
+        /* [out] */ AutoPtr<IBigDecimal>& result) override;
 
     ECode Max(
         /* [in] */ IBigDecimal* value,
-        /* [out] */ IBigDecimal** result) override;
+        /* [out] */ AutoPtr<IBigDecimal>& result) override;
 
     ECode GetHashCode(
         /* [out] */ Integer& hash) override;
@@ -301,34 +301,34 @@ public:
         /* [out] */ String& desc) override;
 
     ECode ToEngineeringString(
-        /* [out] */ String* desc) override;
+        /* [out] */ String& desc) override;
 
     ECode ToPlainString(
-        /* [out] */ String* desc) override;
+        /* [out] */ String& desc) override;
 
     ECode ToBigInteger(
-        /* [out] */ IBigInteger** value) override;
+        /* [out] */ AutoPtr<IBigInteger>& value) override;
 
     ECode ToBigIntegerExact(
-        /* [out] */ IBigInteger** value) override;
+        /* [out] */ AutoPtr<IBigInteger>& value) override;
 
     ECode LongValue(
         /* [out] */ Long& value) override;
 
     ECode LongValueExact(
-        /* [out] */ Long* value) override;
+        /* [out] */ Long& value) override;
 
     ECode IntegerValue(
         /* [out] */ Integer& value) override;
 
     ECode IntegerValueExact(
-        /* [out] */ Integer* value) override;
+        /* [out] */ Integer& value) override;
 
     ECode ShortValueExact(
-        /* [out] */ Short* value) override;
+        /* [out] */ Short& value) override;
 
     ECode ByteValueExact(
-        /* [out] */ Byte* value) override;
+        /* [out] */ Byte& value) override;
 
     ECode FloatValue(
         /* [out] */ Float& value) override;
@@ -337,7 +337,7 @@ public:
         /* [out] */ Double& value) override;
 
     ECode Ulp(
-        /* [out] */ IBigDecimal** value) override;
+        /* [out] */ AutoPtr<IBigDecimal>& value) override;
 
     ECode ByteValue(
         /* [out] */ Byte& value) override;
@@ -365,21 +365,21 @@ private:
         /* [in] */ BigDecimal* thisValue,
         /* [in] */ BigDecimal* augend,
         /* [in] */ Integer diffScale,
-        /* [out] */ IBigDecimal** result);
+        /* [out] */ AutoPtr<IBigDecimal>& result);
 
     static ECode DivideBigIntegers(
         /* [in] */ IBigInteger* scaledDividend,
         /* [in] */ IBigInteger* scaledDivisor,
         /* [in] */ Integer scale,
         /* [in] */ RoundingMode roundingMode,
-        /* [out] */ IBigDecimal** result);
+        /* [out] */ AutoPtr<IBigDecimal>& result);
 
     static ECode DividePrimitiveLongs(
         /* [in] */ Long scaledDividend,
         /* [in] */ Long scaledDivisor,
         /* [in] */ Integer scale,
         /* [in] */ RoundingMode roundingMode,
-        /* [out] */ IBigDecimal** result);
+        /* [out] */ AutoPtr<IBigDecimal>& result);
 
     Boolean IsZero();
 
@@ -388,7 +388,7 @@ private:
 
     ECode MovePoint(
         /* [in] */ Long newScale,
-        /* [out] */ IBigDecimal** value);
+        /* [out] */ AutoPtr<IBigDecimal>& value);
 
     ECode InplaceRound(
         /* [in] */ IMathContext* mc);
@@ -413,17 +413,17 @@ private:
 
     ECode ValueExact(
         /* [in] */ Integer bitLengthOfType,
-        /* [out] */ Long* value);
+        /* [out] */ Long& value);
 
     Integer ApproxPrecision();
 
     static ECode SafeLongToInteger(
         /* [in] */ Long longValue,
-        /* [out] */ Integer* integerValue);
+        /* [out] */ Integer& integerValue);
 
     static ECode ZeroScaledBy(
         /* [in] */ Long longScale,
-        /* [out] */ IBigDecimal** result);
+        /* [out] */ AutoPtr<IBigDecimal>& result);
 
     AutoPtr<IBigInteger> GetUnscaledValue();
 

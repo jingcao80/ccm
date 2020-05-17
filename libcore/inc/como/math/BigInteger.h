@@ -85,81 +85,81 @@ public:
 
     static ECode ValueOf(
         /* [in] */ Long value,
-        /* [out] */ IBigInteger** bi);
+        /* [out] */ AutoPtr<IBigInteger>& bi);
 
     ECode ToByteArray(
         /* [out, callee] */ Array<Byte>* array) override;
 
     ECode Abs(
-        /* [out] */ IBigInteger** value) override;
+        /* [out] */ AutoPtr<IBigInteger>& value) override;
 
     ECode Negate(
-        /* [out] */ IBigInteger** value) override;
+        /* [out] */ AutoPtr<IBigInteger>& value) override;
 
     ECode Add(
         /* [in] */ IBigInteger* value,
-        /* [out] */ IBigInteger** result) override;
+        /* [out] */ AutoPtr<IBigInteger>& result) override;
 
     ECode Subtract(
         /* [in] */ IBigInteger* value,
-        /* [out] */ IBigInteger** result) override;
+        /* [out] */ AutoPtr<IBigInteger>& result) override;
 
     ECode Signum(
-        /* [out] */ Integer* sign) override;
+        /* [out] */ Integer& sign) override;
 
     ECode ShiftRight(
         /* [in] */ Integer n,
-        /* [out] */ IBigInteger** value) override;
+        /* [out] */ AutoPtr<IBigInteger>& value) override;
 
     ECode ShiftLeft(
         /* [in] */ Integer n,
-        /* [out] */ IBigInteger** value) override;
+        /* [out] */ AutoPtr<IBigInteger>& value) override;
 
     AutoPtr<IBigInteger> ShiftLeftOneBit();
 
     ECode BitLength(
-        /* [out] */ Integer* length) override;
+        /* [out] */ Integer& length) override;
 
     ECode TestBit(
         /* [in] */ Integer n,
-        /* [out] */ Boolean* set) override;
+        /* [out] */ Boolean& set) override;
 
     ECode SetBit(
         /* [in] */ Integer n,
-        /* [out] */ IBigInteger** value) override;
+        /* [out] */ AutoPtr<IBigInteger>& value) override;
 
     ECode ClearBit(
         /* [in] */ Integer n,
-        /* [out] */ IBigInteger** value) override;
+        /* [out] */ AutoPtr<IBigInteger>& value) override;
 
     ECode FlipBit(
         /* [in] */ Integer n,
-        /* [out] */ IBigInteger** value) override;
+        /* [out] */ AutoPtr<IBigInteger>& value) override;
 
     ECode GetLowestSetBit(
-        /* [out] */ Integer* setBit) override;
+        /* [out] */ Integer& setBit) override;
 
     ECode BitCount(
-        /* [out] */ Integer* count) override;
+        /* [out] */ Integer& count) override;
 
     ECode Not(
-        /* [out] */ IBigInteger** value) override;
+        /* [out] */ AutoPtr<IBigInteger>& value) override;
 
     ECode And(
         /* [in] */ IBigInteger* value,
-        /* [out] */ IBigInteger** result) override;
+        /* [out] */ AutoPtr<IBigInteger>& result) override;
 
     ECode Or(
         /* [in] */ IBigInteger* value,
-        /* [out] */ IBigInteger** result) override;
+        /* [out] */ AutoPtr<IBigInteger>& result) override;
 
     ECode Xor(
         /* [in] */ IBigInteger* value,
-        /* [out] */ IBigInteger** result) override;
+        /* [out] */ AutoPtr<IBigInteger>& result) override;
 
     ECode AndNot(
         /* [in] */ IBigInteger* value,
-        /* [out] */ IBigInteger** result) override;
+        /* [out] */ AutoPtr<IBigInteger>& result) override;
 
     ECode IntegerValue(
         /* [out] */ Integer& value) override;
@@ -179,11 +179,11 @@ public:
 
     ECode Min(
         /* [in] */ IBigInteger* value,
-        /* [out] */ IBigInteger** result) override;
+        /* [out] */ AutoPtr<IBigInteger>& result) override;
 
     ECode Max(
         /* [in] */ IBigInteger* value,
-        /* [out] */ IBigInteger** result) override;
+        /* [out] */ AutoPtr<IBigInteger>& result) override;
 
     ECode GetHashCode(
         /* [out] */ Integer& hash) override;
@@ -197,19 +197,19 @@ public:
 
     ECode ToString(
         /* [in] */ Integer radix,
-        /* [out] */ String* value) override;
+        /* [out] */ String& value) override;
 
     ECode Gcd(
         /* [in] */ IBigInteger* value,
-        /* [out] */ IBigInteger** result) override;
+        /* [out] */ AutoPtr<IBigInteger>& result) override;
 
     ECode Multiply(
         /* [in] */ IBigInteger* value,
-        /* [out] */ IBigInteger** result) override;
+        /* [out] */ AutoPtr<IBigInteger>& result) override;
 
     ECode Pow(
         /* [in] */ Integer exp,
-        /* [out] */ IBigInteger** value) override;
+        /* [out] */ AutoPtr<IBigInteger>& value) override;
 
     ECode DivideAndRemainder(
         /* [in] */ IBigInteger* divisor,
@@ -217,36 +217,36 @@ public:
 
     ECode Divide(
         /* [in] */ IBigInteger* divisor,
-        /* [out] */ IBigInteger** result) override;
+        /* [out] */ AutoPtr<IBigInteger>& result) override;
 
     ECode Remainder(
         /* [in] */ IBigInteger* divisor,
-        /* [out] */ IBigInteger** result) override;
+        /* [out] */ AutoPtr<IBigInteger>& result) override;
 
     ECode ModInverse(
         /* [in] */ IBigInteger* m,
-        /* [out] */ IBigInteger** result) override;
+        /* [out] */ AutoPtr<IBigInteger>& result) override;
 
     ECode ModPow(
         /* [in] */ IBigInteger* exponent,
         /* [in] */ IBigInteger* modulus,
-        /* [out] */ IBigInteger** result) override;
+        /* [out] */ AutoPtr<IBigInteger>& result) override;
 
     ECode Mod(
         /* [in] */ IBigInteger* m,
-        /* [out] */ IBigInteger** result) override;
+        /* [out] */ AutoPtr<IBigInteger>& result) override;
 
     ECode IsProbablePrime(
         /* [in] */ Integer certainty,
-        /* [out] */ Boolean* prime) override;
+        /* [out] */ Boolean& prime) override;
 
     ECode NextProbablePrime(
-        /* [out] */ IBigInteger** value) override;
+        /* [out] */ AutoPtr<IBigInteger>& value) override;
 
     static ECode ProbablePrime(
         /* [in] */ Integer bitLength,
         /* [in] */ IRandom* random,
-        /* [out] */ IBigInteger** value);
+        /* [out] */ AutoPtr<IBigInteger>& value);
 
     static Integer MultiplyByInteger(
         /* [in] */ Array<Integer>& res,

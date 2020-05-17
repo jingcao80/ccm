@@ -26,10 +26,10 @@ namespace math {
 interface IMathContext
 {
     GetRoundingMode(
-        [out] RoundingMode* roundingMode);
+        [out] RoundingMode& roundingMode);
 
     GetPrecision(
-        [out] Integer* precision);
+        [out] Integer& precision);
 }
 
 }

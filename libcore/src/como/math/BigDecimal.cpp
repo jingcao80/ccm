@@ -429,7 +429,7 @@ ECode BigDecimal::Constructor(
         }
         else {
             AutoPtr<IBigInteger> bi;
-            CBigInteger::ValueOf(mantissa, &bi);
+            CBigInteger::ValueOf(mantissa, bi);
             AutoPtr<IBigInteger> resBi = Multiplication::MultiplyByFivePow(
                     CBigInteger::From(bi), mScale);
             SetUnscaledValue(resBi);
@@ -517,74 +517,61 @@ ECode BigDecimal::Constructor(
 ECode BigDecimal::ValueOf(
     /* [in] */ Long unscaledValue,
     /* [in] */ Integer scale,
-    /* [out] */ IBigDecimal** result)
+    /* [out] */ AutoPtr<IBigDecimal>& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     if (scale == 0) {
         return ValueOf(unscaledValue, result);
     }
     if ((unscaledValue == 0) && (scale >= 0) &&
             (scale < GetZERO_SCALED_BY().GetLength())) {
-        *result = GetZERO_SCALED_BY()[scale];
-        REFCOUNT_ADD(*result);
+        result = GetZERO_SCALED_BY()[scale];
         return NOERROR;
     }
-    return CBigDecimal::New(unscaledValue, scale, IID_IBigDecimal, (IInterface**)result);
+    return CBigDecimal::New(unscaledValue, scale, IID_IBigDecimal, (IInterface**)&result);
 }
 
 ECode BigDecimal::ValueOf(
     /* [in] */ Long unscaledValue,
-    /* [out] */ IBigDecimal** result)
+    /* [out] */ AutoPtr<IBigDecimal>& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     if ((unscaledValue >= 0) && (unscaledValue < BI_SCALED_BY_ZERO_LENGTH)) {
-        *result = GetBI_SCALED_BY_ZERO()[(Integer)unscaledValue];
-        REFCOUNT_ADD(*result);
+        result = GetBI_SCALED_BY_ZERO()[(Integer)unscaledValue];
         return NOERROR;
     }
-    return CBigDecimal::New(unscaledValue, 0, IID_IBigDecimal, (IInterface**)result);
+    return CBigDecimal::New(unscaledValue, 0, IID_IBigDecimal, (IInterface**)&result);
 }
 
 ECode BigDecimal::ValueOf(
     /* [in] */ Double value,
-    /* [out] */ IBigDecimal** result)
+    /* [out] */ AutoPtr<IBigDecimal>& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     if (Math::IsInfinite(value) || Math::IsNaN(value)) {
         Logger::E("BigDecimal", "Infinity or NaN: %f", value);
         return E_NUMBER_FORMAT_EXCEPTION;
     }
-    return CBigDecimal::New(StringUtils::ToString(value), IID_IBigDecimal, (IInterface**)result);
+    return CBigDecimal::New(StringUtils::ToString(value), IID_IBigDecimal, (IInterface**)&result);
 }
 
 ECode BigDecimal::Add(
     /* [in] */ IBigDecimal* augend,
-    /* [out] */ IBigDecimal** result)
+    /* [out] */ AutoPtr<IBigDecimal>& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     BigDecimal* augendObj = From(augend);
     Integer diffScale = mScale - augendObj->mScale;
     // Fast return when some operand is zero
     if (IsZero()) {
         if (diffScale <= 0) {
-            *result = augend;
-            REFCOUNT_ADD(*result);
+            result = augend;
             return NOERROR;
         }
         if (augendObj->IsZero()) {
-            *result = this;
-            REFCOUNT_ADD(*result);
+            result = this;
             return NOERROR;
         }
     }
     else if (augendObj->IsZero()) {
         if (diffScale >= 0) {
-            *result = this;
-            REFCOUNT_ADD(*result);
+            result = this;
             return NOERROR;
         }
     }
@@ -594,8 +581,8 @@ ECode BigDecimal::Add(
             return ValueOf(mSmallValue + augendObj->mSmallValue, mScale, result);
         }
         AutoPtr<IBigInteger> bi;
-        GetUnscaledValue()->Add(augendObj->GetUnscaledValue(), &bi);
-        return CBigDecimal::New(bi, mScale, IID_IBigDecimal, (IInterface**)result);
+        GetUnscaledValue()->Add(augendObj->GetUnscaledValue(), bi);
+        return CBigDecimal::New(bi, mScale, IID_IBigDecimal, (IInterface**)&result);
     }
     else if (diffScale > 0) {
         return AddAndMult10(this, augendObj, diffScale, result);
@@ -609,7 +596,7 @@ ECode BigDecimal::AddAndMult10(
     /* [in] */ BigDecimal* thisValue,
     /* [in] */ BigDecimal* augend,
     /* [in] */ Integer diffScale,
-    /* [out] */ IBigDecimal** result)
+    /* [out] */ AutoPtr<IBigDecimal>& result)
 {
     if (diffScale < MathUtils::LONG_POWERS_OF_TEN.GetLength() &&
             Math::Max(thisValue->mBitLength, augend->mBitLength + GetLONG_POWERS_OF_TEN_BIT_LENGTH()[diffScale]) + 1 < 64) {
@@ -621,16 +608,15 @@ ECode BigDecimal::AddAndMult10(
         b->Add(CBigInteger::From(thisValue->GetUnscaledValue())->GetBigInt());
         AutoPtr<IBigInteger> bi;
         CBigInteger::New(b, IID_IBigInteger, (IInterface**)&bi);
-        return CBigDecimal::New(bi, thisValue->mScale, IID_IBigDecimal, (IInterface**)result);
+        return CBigDecimal::New(bi, thisValue->mScale, IID_IBigDecimal, (IInterface**)&result);
     }
 }
 
 ECode BigDecimal::Add(
     /* [in] */ IBigDecimal* augend,
     /* [in] */ IMathContext* mc,
-    /* [out] */ IBigDecimal** result)
+    /* [out] */ AutoPtr<IBigDecimal>& result)
 {
-    VALIDATE_NOT_NULL(result);
     BigDecimal* augendObj = From(augend);
 
     AutoPtr<BigDecimal> larger;
@@ -641,9 +627,9 @@ ECode BigDecimal::Add(
     // Some operand is zero or the precision is infinity
     Integer precision;
     if ((augendObj->IsZero()) || (IsZero()) ||
-            (mc->GetPrecision(&precision), precision == 0)) {
+            (mc->GetPrecision(precision), precision == 0)) {
         AutoPtr<IBigDecimal> addedBD;
-        Add(augend, &addedBD);
+        Add(augend, addedBD);
         return addedBD->Round(mc, result);
     }
     // Cases where there is room for optimizations
@@ -657,30 +643,30 @@ ECode BigDecimal::Add(
     }
     else {
         AutoPtr<IBigDecimal> addedBD;
-        Add(augend, &addedBD);
+        Add(augend, addedBD);
         return addedBD->Round(mc, result);
     }
-    if (mc->GetPrecision(&precision), precision >= larger->ApproxPrecision()) {
+    if (mc->GetPrecision(precision), precision >= larger->ApproxPrecision()) {
         AutoPtr<IBigDecimal> addedBD;
-        Add(augend, &addedBD);
+        Add(augend, addedBD);
         return addedBD->Round(mc, result);
     }
     // Cases where it's unnecessary to add two numbers with very different scales
-    larger->Signum(&largerSignum);
-    smaller->Signum(&smallerSignum);
+    larger->Signum(largerSignum);
+    smaller->Signum(smallerSignum);
     if (largerSignum == smallerSignum) {
         AutoPtr<IBigInteger> bi1;
-        CBigInteger::ValueOf(largerSignum, &bi1);
+        CBigInteger::ValueOf(largerSignum, bi1);
         Multiplication::MultiplyByPositiveInteger(
-                CBigInteger::From(larger->GetUnscaledValue()), 10)->Add(bi1, &tempBI);
+                CBigInteger::From(larger->GetUnscaledValue()), 10)->Add(bi1, tempBI);
     }
     else {
         AutoPtr<IBigInteger> bi1, bi2, bi3;
-        CBigInteger::ValueOf(largerSignum, &bi1);
-        larger->GetUnscaledValue()->Subtract(bi1, &bi2);
-        CBigInteger::ValueOf(largerSignum * 9, &bi3);
+        CBigInteger::ValueOf(largerSignum, bi1);
+        larger->GetUnscaledValue()->Subtract(bi1, bi2);
+        CBigInteger::ValueOf(largerSignum * 9, bi3);
         Multiplication::MultiplyByPositiveInteger(
-                CBigInteger::From(bi2), 10)->Add(bi3, &tempBI);
+                CBigInteger::From(bi2), 10)->Add(bi3, tempBI);
     }
     // Rounding the improved adding
     AutoPtr<IBigDecimal> tempBD;
@@ -690,9 +676,8 @@ ECode BigDecimal::Add(
 
 ECode BigDecimal::Subtract(
     /* [in] */ IBigDecimal* subtrahend,
-    /* [out] */ IBigDecimal** result)
+    /* [out] */ AutoPtr<IBigDecimal>& result)
 {
-    VALIDATE_NOT_NULL(result);
     BigDecimal* subtrahendObj = From(subtrahend);
 
     Integer diffScale = mScale - subtrahendObj->mScale;
@@ -702,15 +687,13 @@ ECode BigDecimal::Subtract(
             return subtrahend->Negate(result);
         }
         if (subtrahendObj->IsZero()) {
-            *result = this;
-            REFCOUNT_ADD(*result);
+            result = this;
             return NOERROR;
         }
     }
     else if (subtrahendObj->IsZero()) {
         if (diffScale >= 0) {
-            *result = this;
-            REFCOUNT_ADD(*result);
+            result = this;
             return NOERROR;
         }
     }
@@ -721,8 +704,8 @@ ECode BigDecimal::Subtract(
             return ValueOf(mSmallValue - subtrahendObj->mSmallValue, mScale, result);
         }
         AutoPtr<IBigInteger> bi;
-        GetUnscaledValue()->Subtract(subtrahendObj->GetUnscaledValue(), &bi);
-        return CBigDecimal::New(bi, mScale, IID_IBigDecimal, (IInterface**)result);
+        GetUnscaledValue()->Subtract(subtrahendObj->GetUnscaledValue(), bi);
+        return CBigDecimal::New(bi, mScale, IID_IBigDecimal, (IInterface**)&result);
     }
     else if (diffScale > 0) {
         // case s1 > s2 : [ u1 - u2 * 10 ^ (s1 - s2) , s1 ]
@@ -732,8 +715,8 @@ ECode BigDecimal::Subtract(
         }
         AutoPtr<IBigInteger> bi1;
         GetUnscaledValue()->Subtract(Multiplication::MultiplyByTenPow(
-                CBigInteger::From(subtrahendObj->GetUnscaledValue()), diffScale), &bi1);
-        return CBigDecimal::New(bi1, mScale, IID_IBigDecimal, (IInterface**)result);
+                CBigInteger::From(subtrahendObj->GetUnscaledValue()), diffScale), bi1);
+        return CBigDecimal::New(bi1, mScale, IID_IBigDecimal, (IInterface**)&result);
     }
     else {
         // case s2 > s1 : [ u1 * 10 ^ (s2 - s1) - u2 , s2 ]
@@ -744,17 +727,16 @@ ECode BigDecimal::Subtract(
         }
         AutoPtr<IBigInteger> bi1;
         Multiplication::MultiplyByTenPow(CBigInteger::From(GetUnscaledValue()),
-                diffScale)->Subtract(subtrahendObj->GetUnscaledValue(), &bi1);
-        return CBigDecimal::New(bi1, subtrahendObj->mScale, IID_IBigDecimal, (IInterface**)result);
+                diffScale)->Subtract(subtrahendObj->GetUnscaledValue(), bi1);
+        return CBigDecimal::New(bi1, subtrahendObj->mScale, IID_IBigDecimal, (IInterface**)&result);
     }
 }
 
 ECode BigDecimal::Subtract(
     /* [in] */ IBigDecimal* subtrahend,
     /* [in] */ IMathContext* mc,
-    /* [out] */ IBigDecimal** result)
+    /* [out] */ AutoPtr<IBigDecimal>& result)
 {
-    VALIDATE_NOT_NULL(result);
     BigDecimal* subtrahendObj = From(subtrahend);
 
     Long diffScale = subtrahendObj->mScale - (Long)mScale;
@@ -764,30 +746,30 @@ ECode BigDecimal::Subtract(
     // Some operand is zero or the precision is infinity
     Integer precision;
     if (subtrahendObj->IsZero() || IsZero() ||
-            (mc->GetPrecision(&precision), precision == 0)) {
+            (mc->GetPrecision(precision), precision == 0)) {
         AutoPtr<IBigDecimal> bd;
-        Subtract(subtrahend, &bd);
+        Subtract(subtrahend, bd);
         return bd->Round(mc, result);
     }
     // Now:   this != 0   and   subtrahend != 0
     if (subtrahendObj->ApproxPrecision() < diffScale - 1) {
         // Cases where it is unnecessary to subtract two numbers with very different scales
-        if (mc->GetPrecision(&precision), precision < ApproxPrecision()) {
-            Signum(&thisSignum);
-            subtrahend->Signum(&subtrahendSignum);
+        if (mc->GetPrecision(precision), precision < ApproxPrecision()) {
+            Signum(thisSignum);
+            subtrahend->Signum(subtrahendSignum);
             if (thisSignum != subtrahendSignum) {
                 AutoPtr<IBigInteger> bi1;
-                CBigInteger::ValueOf(thisSignum, &bi1);
+                CBigInteger::ValueOf(thisSignum, bi1);
                 Multiplication::MultiplyByPositiveInteger(
-                        CBigInteger::From(GetUnscaledValue()), 10)->Add(bi1, &tempBI);
+                        CBigInteger::From(GetUnscaledValue()), 10)->Add(bi1, tempBI);
             }
             else {
                 AutoPtr<IBigInteger> bi1, bi2, bi3;
-                CBigInteger::ValueOf(thisSignum, &bi1);
-                GetUnscaledValue()->Subtract(bi1, &bi2);
-                CBigInteger::ValueOf(thisSignum * 9, &bi3);
+                CBigInteger::ValueOf(thisSignum, bi1);
+                GetUnscaledValue()->Subtract(bi1, bi2);
+                CBigInteger::ValueOf(thisSignum * 9, bi3);
                 Multiplication::MultiplyByPositiveInteger(
-                        CBigInteger::From(bi2), 10)->Add(bi3, &tempBI);
+                        CBigInteger::From(bi2), 10)->Add(bi3, tempBI);
             }
             // Rounding the improved subtracting
             CBigDecimal::New(tempBI, mScale + 1, IID_IBigDecimal, (IInterface**)&leftOperand);
@@ -796,15 +778,14 @@ ECode BigDecimal::Subtract(
     }
     // No optimization is done
     AutoPtr<IBigDecimal> bd;
-    Subtract(subtrahend, &bd);
+    Subtract(subtrahend, bd);
     return bd->Round(mc, result);
 }
 
 ECode BigDecimal::Multiply(
     /* [in] */ IBigDecimal* multiplicand,
-    /* [out] */ IBigDecimal** result)
+    /* [out] */ AutoPtr<IBigDecimal>& result)
 {
-    VALIDATE_NOT_NULL(result);
     BigDecimal* multiplicandObj = From(multiplicand);
 
     Long newScale = (Long)mScale + multiplicandObj->mScale;
@@ -821,35 +802,33 @@ ECode BigDecimal::Multiply(
                 (Math::Signum(mSmallValue) * Math::Signum(multiplicandObj->mSmallValue) > 0);
         if (!longMultiplicationOverflowed) {
             Integer intScale;
-            FAIL_RETURN(SafeLongToInteger(newScale, &intScale));
+            FAIL_RETURN(SafeLongToInteger(newScale, intScale));
             return ValueOf(unscaledValue, intScale, result);
         }
     }
     Integer intScale;
-    FAIL_RETURN(SafeLongToInteger(newScale, &intScale));
+    FAIL_RETURN(SafeLongToInteger(newScale, intScale));
     AutoPtr<IBigInteger> bi;
-    GetUnscaledValue()->Multiply(multiplicandObj->GetUnscaledValue(), &bi);
-    return CBigDecimal::New(bi, intScale, IID_IBigDecimal, (IInterface**)result);
+    GetUnscaledValue()->Multiply(multiplicandObj->GetUnscaledValue(), bi);
+    return CBigDecimal::New(bi, intScale, IID_IBigDecimal, (IInterface**)&result);
 }
 
 ECode BigDecimal::Multiply(
     /* [in] */ IBigDecimal* multiplicand,
     /* [in] */ IMathContext* mc,
-    /* [out] */ IBigDecimal** result)
+    /* [out] */ AutoPtr<IBigDecimal>& result)
 {
     FAIL_RETURN(Multiply(multiplicand, result));
 
-    return From(*result)->InplaceRound(mc);
+    return From(result)->InplaceRound(mc);
 }
 
 ECode BigDecimal::Divide(
     /* [in] */ IBigDecimal* divisor,
     /* [in] */ Integer scale,
     /* [in] */ Integer roundingMode,
-    /* [out] */ IBigDecimal** result)
+    /* [out] */ AutoPtr<IBigDecimal>& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     RoundingMode rm = static_cast<RoundingMode>(roundingMode);
     if (rm < RoundingMode::UP || rm > RoundingMode::UNNECESSARY) {
         Logger::E("BigDecimal", "Invalid rounding mode");
@@ -862,10 +841,8 @@ ECode BigDecimal::Divide(
     /* [in] */ IBigDecimal* divisor,
     /* [in] */ Integer scale,
     /* [in] */ RoundingMode roundingMode,
-    /* [out] */ IBigDecimal** result)
+    /* [out] */ AutoPtr<IBigDecimal>& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     BigDecimal* divisorObj = From(divisor);
     if (divisorObj->IsZero()) {
         Logger::E("BigDecimal", "Division by zero");
@@ -926,7 +903,7 @@ ECode BigDecimal::DivideBigIntegers(
     /* [in] */ IBigInteger* scaledDivisor,
     /* [in] */ Integer scale,
     /* [in] */ RoundingMode roundingMode,
-    /* [out] */ IBigDecimal** result)
+    /* [out] */ AutoPtr<IBigDecimal>& result)
 {
     Array<IBigInteger*> quotAndRem;
     scaledDividend->DivideAndRemainder(scaledDivisor, &quotAndRem);
@@ -934,47 +911,47 @@ ECode BigDecimal::DivideBigIntegers(
     AutoPtr<IBigInteger> quotient = quotAndRem[0];
     AutoPtr<IBigInteger> remainder = quotAndRem[1];
     Integer sign;
-    if (remainder->Signum(&sign), sign == 0) {
-        return CBigDecimal::New(quotient, scale, IID_IBigDecimal, (IInterface**)result);
+    if (remainder->Signum(sign), sign == 0) {
+        return CBigDecimal::New(quotient, scale, IID_IBigDecimal, (IInterface**)&result);
     }
     Integer s1, s2;
-    scaledDividend->Signum(&s1);
-    scaledDivisor->Signum(&s2);
+    scaledDividend->Signum(s1);
+    scaledDivisor->Signum(s2);
     sign = s1 * s2;
     Integer compRem;
     Integer bitLength;
-    if (scaledDivisor->BitLength(&bitLength), bitLength < 63) { // 63 in order to avoid out of long after *2
+    if (scaledDivisor->BitLength(bitLength), bitLength < 63) { // 63 in order to avoid out of long after *2
         Long rem, divisor;
         INumber::Probe(remainder)->LongValue(rem);
         INumber::Probe(scaledDivisor)->LongValue(divisor);
         compRem = CompareForRounding(rem, divisor);
         // To look if there is a carry
         Boolean set;
-        FAIL_RETURN(RoundingBehavior((quotient->TestBit(0, &set),
+        FAIL_RETURN(RoundingBehavior((quotient->TestBit(0, set),
                 set ? 1 : 0), sign * (5 + compRem), roundingMode, &compRem));
     }
     else {
         // Checking if:  remainder * 2 >= scaledDivisor
         AutoPtr<IBigInteger> bi1, bi2;
-        remainder->Abs(&bi1);
-        scaledDivisor->Abs(&bi2);
+        remainder->Abs(bi1);
+        scaledDivisor->Abs(bi2);
         IComparable::Probe(CBigInteger::From(bi1)->ShiftLeftOneBit())->CompareTo(bi2, compRem);
         Boolean set;
-        FAIL_RETURN(RoundingBehavior((quotient->TestBit(0, &set),
+        FAIL_RETURN(RoundingBehavior((quotient->TestBit(0, set),
                 set ? 1 : 0), sign * (5 + compRem), roundingMode, &compRem));
     }
     if (compRem != 0) {
-        if (quotient->BitLength(&bitLength), bitLength < 63) {
+        if (quotient->BitLength(bitLength), bitLength < 63) {
             Long quot;
             INumber::Probe(quotient)->LongValue(quot);
             return ValueOf(quot + compRem, scale, result);
         }
         AutoPtr<IBigInteger> bi1, bi2;
-        CBigInteger::ValueOf(compRem, &bi1);
-        quotient->Add(bi1, &bi2);
-        return CBigDecimal::New(bi2, scale, IID_IBigDecimal, (IInterface**)result);
+        CBigInteger::ValueOf(compRem, bi1);
+        quotient->Add(bi1, bi2);
+        return CBigDecimal::New(bi2, scale, IID_IBigDecimal, (IInterface**)&result);
     }
-    return CBigDecimal::New(quotient, scale, IID_IBigDecimal, (IInterface**)result);
+    return CBigDecimal::New(quotient, scale, IID_IBigDecimal, (IInterface**)&result);
 }
 
 ECode BigDecimal::DividePrimitiveLongs(
@@ -982,7 +959,7 @@ ECode BigDecimal::DividePrimitiveLongs(
     /* [in] */ Long scaledDivisor,
     /* [in] */ Integer scale,
     /* [in] */ RoundingMode roundingMode,
-    /* [out] */ IBigDecimal** result)
+    /* [out] */ AutoPtr<IBigDecimal>& result)
 {
     Long quotient = scaledDividend / scaledDivisor;
     Long remainder = scaledDividend % scaledDivisor;
@@ -1002,10 +979,8 @@ ECode BigDecimal::DividePrimitiveLongs(
 ECode BigDecimal::Divide(
     /* [in] */ IBigDecimal* divisor,
     /* [in] */ Integer roundingMode,
-    /* [out] */ IBigDecimal** result)
+    /* [out] */ AutoPtr<IBigDecimal>& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     RoundingMode rm = static_cast<RoundingMode>(roundingMode);
     if (rm < RoundingMode::UP || rm > RoundingMode::UNNECESSARY) {
         Logger::E("BigDecimal", "Invalid rounding mode");
@@ -1017,16 +992,15 @@ ECode BigDecimal::Divide(
 ECode BigDecimal::Divide(
     /* [in] */ IBigDecimal* divisor,
     /* [in] */ RoundingMode roundingMode,
-    /* [out] */ IBigDecimal** result)
+    /* [out] */ AutoPtr<IBigDecimal>& result)
 {
     return Divide(divisor, mScale, roundingMode, result);
 }
 
 ECode BigDecimal::Divide(
     /* [in] */ IBigDecimal* divisor,
-    /* [out] */ IBigDecimal** result)
+    /* [out] */ AutoPtr<IBigDecimal>& result)
 {
-    VALIDATE_NOT_NULL(result);
     BigDecimal* divisorObj = From(divisor);
 
     AutoPtr<IBigInteger> p = GetUnscaledValue();
@@ -1045,24 +1019,20 @@ ECode BigDecimal::Divide(
         return E_ARITHMETIC_EXCEPTION;
     }
     Integer sign;
-    if (p->Signum(&sign), sign == 0) {
+    if (p->Signum(sign), sign == 0) {
         return ZeroScaledBy(diffScale, result);
     }
-    AutoPtr<IBigInteger> tempBI;
     // To divide both by the GCD
-    p->Gcd(q, &gcd);
-    p->Divide(gcd, &tempBI);
-    p = std::move(tempBI);
-    q->Divide(gcd, &tempBI);
-    q = std::move(tempBI);
+    p->Gcd(q, gcd);
+    p->Divide(gcd, p);
+    q->Divide(gcd, q);
     // To simplify all "2" factors of q, dividing by 2^k
-    q->GetLowestSetBit(&k);
-    q->ShiftRight(k, &tempBI);
-    q = std::move(tempBI);
+    q->GetLowestSetBit(k);
+    q->ShiftRight(k, q);
     // To simplify all "5" factors of q, dividing by 5^l
     do {
         q->DivideAndRemainder(GetFIVE_POW()[i], &quotAndRem);
-        if (quotAndRem[1]->Signum(&sign), sign == 0) {
+        if (quotAndRem[1]->Signum(sign), sign == 0) {
             l += i;
             if (i < lastPow) {
                 i++;
@@ -1077,19 +1047,18 @@ ECode BigDecimal::Divide(
         }
     } while (true);
     // If  abs(q) != 1  then the quotient is periodic
-    q->Abs(&tempBI);
+    AutoPtr<IBigInteger> tempBI;
+    q->Abs(tempBI);
     if (!Object::Equals(tempBI, CBigInteger::GetONE())) {
         Logger::E("BigDecimal", "Non-terminating decimal expansion; no exact representable decimal result");
         return E_ARITHMETIC_EXCEPTION;
     }
-    tempBI = nullptr;
     // The sign of the is fixed and the quotient will be saved in 'p'
-    if (q->Signum(&sign), sign < 0) {
-        p->Negate(&tempBI);
-        p = std::move(tempBI);
+    if (q->Signum(sign), sign < 0) {
+        p->Negate(p);
     }
     // Checking if the new scale is out of range
-    FAIL_RETURN(SafeLongToInteger(diffScale + Math::Max(k, l), &newScale));
+    FAIL_RETURN(SafeLongToInteger(diffScale + Math::Max(k, l), newScale));
     // k >= 0  and  l >= 0  implies that  k - l  is in the 32-bit range
     i = k - l;
 
@@ -1097,23 +1066,22 @@ ECode BigDecimal::Divide(
         tempBI = Multiplication::MultiplyByFivePow(CBigInteger::From(p), i);
     }
     else {
-        p->ShiftLeft(-i, &tempBI);
+        p->ShiftLeft(-i, tempBI);
     }
-    return CBigDecimal::New(tempBI, newScale, IID_IBigDecimal, (IInterface**)result);
+    return CBigDecimal::New(tempBI, newScale, IID_IBigDecimal, (IInterface**)&result);
 }
 
 ECode BigDecimal::Divide(
     /* [in] */ IBigDecimal* divisor,
     /* [in] */ IMathContext* mc,
-    /* [out] */ IBigDecimal** result)
+    /* [out] */ AutoPtr<IBigDecimal>& result)
 {
-    VALIDATE_NOT_NULL(result);
     BigDecimal* divisorObj = From(divisor);
 
     /* Calculating how many zeros must be append to 'dividend'
      * to obtain a  quotient with at least 'mc.precision()' digits */
     Integer precision;
-    mc->GetPrecision(&precision);
+    mc->GetPrecision(precision);
     Long trailingZeros = precision + 2LL + divisorObj->ApproxPrecision() -
             ApproxPrecision();
     Long diffScale = (Long)mScale - divisorObj->mScale;
@@ -1130,7 +1098,7 @@ ECode BigDecimal::Divide(
     if (trailingZeros > 0) {
         // To append trailing zeros at end of dividend
         AutoPtr<IBigInteger> bi1;
-        GetUnscaledValue()->Multiply(Multiplication::PowerOf10(trailingZeros), &bi1);
+        GetUnscaledValue()->Multiply(Multiplication::PowerOf10(trailingZeros), bi1);
         quotAndRem.Set(0, bi1);
         newScale += trailingZeros;
     }
@@ -1138,26 +1106,26 @@ ECode BigDecimal::Divide(
     integerQuot = quotAndRem[0];
     // Calculating the exact quotient with at least 'mc.precision()' digits
     Integer sign;
-    if (quotAndRem[1]->Signum(&sign), sign != 0) {
+    if (quotAndRem[1]->Signum(sign), sign != 0) {
         // Checking if:   2 * remainder >= divisor ?
         IComparable::Probe(CBigInteger::From(quotAndRem[1])->ShiftLeftOneBit())->CompareTo(
                 divisorObj->GetUnscaledValue(), compRem);
         // quot := quot * 10 + r;     with 'r' in {-6,-5,-4, 0,+4,+5,+6}
         AutoPtr<IBigInteger> bi1, bi2, bi3;
-        integerQuot->Multiply(CBigInteger::GetTEN(), &bi1);
-        quotAndRem[0]->Signum(&sign);
-        CBigInteger::ValueOf(sign * (5 + compRem), &bi2);
-        bi1->Add(bi2, &bi3);
+        integerQuot->Multiply(CBigInteger::GetTEN(), bi1);
+        quotAndRem[0]->Signum(sign);
+        CBigInteger::ValueOf(sign * (5 + compRem), bi2);
+        bi1->Add(bi2, bi3);
         integerQuot = std::move(bi3);
         newScale++;
     }
     else {
         // To strip trailing zeros until the preferred scale is reached
         Boolean set;
-        while (integerQuot->TestBit(0, &set), !set) {
+        while (integerQuot->TestBit(0, set), !set) {
             integerQuot->DivideAndRemainder(GetTEN_POW()[i], &quotAndRem);
             Integer sign;
-            if ((quotAndRem[1]->Signum(&sign), sign == 0) &&
+            if ((quotAndRem[1]->Signum(sign), sign == 0) &&
                     (newScale - i >= diffScale)) {
                 newScale -= i;
                 if (i < lastPow) {
@@ -1175,15 +1143,14 @@ ECode BigDecimal::Divide(
     }
     // To perform rounding
     Integer intScale;
-    FAIL_RETURN(SafeLongToInteger(newScale, &intScale));
-    return CBigDecimal::New(integerQuot, intScale, mc, IID_IBigDecimal, (IInterface**)result);
+    FAIL_RETURN(SafeLongToInteger(newScale, intScale));
+    return CBigDecimal::New(integerQuot, intScale, mc, IID_IBigDecimal, (IInterface**)&result);
 }
 
 ECode BigDecimal::DivideToIntegralValue(
     /* [in] */ IBigDecimal* divisor,
-    /* [out] */ IBigDecimal** result)
+    /* [out] */ AutoPtr<IBigDecimal>& result)
 {
-    VALIDATE_NOT_NULL(result);
     BigDecimal* divisorObj = From(divisor);
 
     AutoPtr<IBigInteger> integralValue; // the integer of result
@@ -1205,27 +1172,27 @@ ECode BigDecimal::DivideToIntegralValue(
     }
     else if (newScale == 0) {
         GetUnscaledValue()->Divide(
-                divisorObj->GetUnscaledValue(), &integralValue);
+                divisorObj->GetUnscaledValue(), integralValue);
     }
     else if (newScale > 0) {
         powerOfTen = Multiplication::PowerOf10(newScale);
         AutoPtr<IBigInteger> bi1, bi2;
-        divisorObj->GetUnscaledValue()->Multiply(powerOfTen, &bi1);
-        GetUnscaledValue()->Divide(bi1, &bi2);
-        bi2->Multiply(powerOfTen, &integralValue);
+        divisorObj->GetUnscaledValue()->Multiply(powerOfTen, bi1);
+        GetUnscaledValue()->Divide(bi1, bi2);
+        bi2->Multiply(powerOfTen, integralValue);
     }
     else {
         powerOfTen = Multiplication::PowerOf10(-newScale);
         AutoPtr<IBigInteger> bi1;
-        GetUnscaledValue()->Multiply(powerOfTen, &bi1);
-        bi1->Divide(divisorObj->GetUnscaledValue(), &integralValue);
+        GetUnscaledValue()->Multiply(powerOfTen, bi1);
+        bi1->Divide(divisorObj->GetUnscaledValue(), integralValue);
         // To strip trailing zeros approximating to the preferred scale
         Boolean set;
-        while (integralValue->TestBit(0, &set), !set) {
+        while (integralValue->TestBit(0, set), !set) {
             Array<IBigInteger*> quotAndRem;
             integralValue->DivideAndRemainder(GetTEN_POW()[i], &quotAndRem);
             Integer sign;
-            if ((quotAndRem[1]->Signum(&sign), sign == 0) &&
+            if ((quotAndRem[1]->Signum(sign), sign == 0) &&
                     (tempScale - i >= newScale)) {
                 tempScale -= i;
                 if (i < lastPow) {
@@ -1243,29 +1210,28 @@ ECode BigDecimal::DivideToIntegralValue(
         newScale = tempScale;
     }
     Integer sign;
-    if (integralValue->Signum(&sign), sign == 0) {
+    if (integralValue->Signum(sign), sign == 0) {
         return ZeroScaledBy(newScale, result);
     }
     else {
         Integer intScale;
-        FAIL_RETURN(SafeLongToInteger(newScale, &intScale));
-        return CBigDecimal::New(integralValue, intScale, IID_IBigDecimal, (IInterface**)result);
+        FAIL_RETURN(SafeLongToInteger(newScale, intScale));
+        return CBigDecimal::New(integralValue, intScale, IID_IBigDecimal, (IInterface**)&result);
     }
 }
 
 ECode BigDecimal::DivideToIntegralValue(
     /* [in] */ IBigDecimal* divisor,
     /* [in] */ IMathContext* mc,
-    /* [out] */ IBigDecimal** result)
+    /* [out] */ AutoPtr<IBigDecimal>& result)
 {
-    VALIDATE_NOT_NULL(result);
     BigDecimal* divisorObj = From(divisor);
 
     Integer mcPrecision;
-    mc->GetPrecision(&mcPrecision);
+    mc->GetPrecision(mcPrecision);
     Integer thisPrecision, divisorPrecision;
-    Precision(&thisPrecision);
-    divisorObj->Precision(&divisorPrecision);
+    Precision(thisPrecision);
+    divisorObj->Precision(divisorPrecision);
     Integer diffPrecision = thisPrecision - divisorPrecision;
     Integer lastPow = GetTEN_POW().GetLength() - 1;
     Long diffScale = (Long)mScale - divisorObj->mScale;
@@ -1283,20 +1249,19 @@ ECode BigDecimal::DivideToIntegralValue(
     else if (diffScale == 0) {
         // CASE s1 == s2:  to calculate   u1 / u2
         AutoPtr<IBigInteger> bi;
-        GetUnscaledValue()->Divide(divisorObj->GetUnscaledValue(), &bi);
+        GetUnscaledValue()->Divide(divisorObj->GetUnscaledValue(), bi);
         quotAndRem.Set(0, bi);
     }
     else if (diffScale > 0) {
         // CASE s1 >= s2:  to calculate   u1 / (u2 * 10^(s1-s2)
         AutoPtr<IBigInteger> bi1, bi2;
-        divisorObj->GetUnscaledValue()->Multiply(Multiplication::PowerOf10(diffScale), &bi1);
-        GetUnscaledValue()->Divide(bi1, &bi2);
+        divisorObj->GetUnscaledValue()->Multiply(Multiplication::PowerOf10(diffScale), bi1);
+        GetUnscaledValue()->Divide(bi1, bi2);
         quotAndRem.Set(0, bi2);
         // To chose  10^newScale  to get a quotient with at least 'mc.precision()' digits
         newScale = Math::Min(diffScale, Math::Max(mcPrecision - quotPrecision + 1, 0LL));
         // To calculate: (u1 / (u2 * 10^(s1-s2)) * 10^newScale
-        bi1 = nullptr;
-        quotAndRem[0]->Multiply(Multiplication::PowerOf10(newScale), &bi1);
+        quotAndRem[0]->Multiply(Multiplication::PowerOf10(newScale), bi1);
         quotAndRem.Set(0, bi1);
     }
     else {
@@ -1306,27 +1271,26 @@ ECode BigDecimal::DivideToIntegralValue(
         Long compRemDiv;
         // Let be:   (u1 * 10^exp) / u2 = [q,r]
         AutoPtr<IBigInteger> bi1, bi2;
-        GetUnscaledValue()->Multiply(Multiplication::PowerOf10(exp), &bi1);
+        GetUnscaledValue()->Multiply(Multiplication::PowerOf10(exp), bi1);
         bi1->DivideAndRemainder(divisorObj->GetUnscaledValue(), &quotAndRem);
         newScale += exp; // To fix the scale
         exp = -newScale; // The remaining power of ten
         // If after division there is a remainder...
         Integer sign;
-        if ((quotAndRem[1]->Signum(&sign), sign != 0) && (exp > 0)) {
+        if ((quotAndRem[1]->Signum(sign), sign != 0) && (exp > 0)) {
             // Log10(r) + ((s2 - s1) - exp) > mc.precision ?
             AutoPtr<IBigDecimal> bd;
             CBigDecimal::New(quotAndRem[1], IID_IBigDecimal, (IInterface**)&bd);
             Integer quotAndRemPrecision, divisorPrecision;
-            bd->Precision(&quotAndRemPrecision);
-            divisorObj->Precision(&divisorPrecision);
+            bd->Precision(quotAndRemPrecision);
+            divisorObj->Precision(divisorPrecision);
             compRemDiv = quotAndRemPrecision + exp - divisorPrecision;
             if (compRemDiv == 0) {
                 // To calculate:  (r * 10^exp2) / u2
-                bi1 = bi2 = nullptr;
-                quotAndRem[1]->Multiply(Multiplication::PowerOf10(exp), &bi1);
-                bi1->Divide(divisorObj->GetUnscaledValue(), &bi2);
+                quotAndRem[1]->Multiply(Multiplication::PowerOf10(exp), bi1);
+                bi1->Divide(divisorObj->GetUnscaledValue(), bi2);
                 quotAndRem.Set(1, bi2);
-                quotAndRem[1]->Signum(&sign);
+                quotAndRem[1]->Signum(sign);
                 compRemDiv = Math::Abs(sign);
             }
             if (compRemDiv > 0) {
@@ -1337,21 +1301,21 @@ ECode BigDecimal::DivideToIntegralValue(
     }
     // Fast return if the quotient is zero
     Integer sign;
-    if (quotAndRem[0]->Signum(&sign), sign == 0) {
+    if (quotAndRem[0]->Signum(sign), sign == 0) {
         return ZeroScaledBy(diffScale, result);
     }
     AutoPtr<IBigInteger> strippedBI = quotAndRem[0];
     AutoPtr<IBigDecimal> integralValue;
     CBigDecimal::New(quotAndRem[0], IID_IBigDecimal, (IInterface**)&integralValue);
     Integer precision;
-    integralValue->Precision(&precision);
+    integralValue->Precision(precision);
     Long resultPrecision = precision;
     Integer i = 1;
     // To strip trailing zeros until the specified precision is reached
     Boolean set;
-    while (strippedBI->TestBit(0, &set), !set) {
+    while (strippedBI->TestBit(0, set), !set) {
         strippedBI->DivideAndRemainder(GetTEN_POW()[i], &quotAndRem);
-        if ((quotAndRem[1]->Signum(&sign), sign == 0) &&
+        if ((quotAndRem[1]->Signum(sign), sign == 0) &&
                 ((resultPrecision - i >= mcPrecision) ||
                 (newScale - i >= diffScale))) {
             resultPrecision -= i;
@@ -1374,37 +1338,31 @@ ECode BigDecimal::DivideToIntegralValue(
         return E_ARITHMETIC_EXCEPTION;
     }
     Integer intScale;
-    FAIL_RETURN(SafeLongToInteger(newScale, &intScale));
+    FAIL_RETURN(SafeLongToInteger(newScale, intScale));
     From(integralValue)->mScale = intScale;
     From(integralValue)->SetUnscaledValue(strippedBI);
-    integralValue.MoveTo(result);
+    result = std::move(integralValue);
     return NOERROR;
 }
 
 ECode BigDecimal::Remainder(
     /* [in] */ IBigDecimal* divisor,
-    /* [out] */ IBigDecimal** result)
+    /* [out] */ AutoPtr<IBigDecimal>& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     Array<IBigDecimal*> quotAndRem;
     FAIL_RETURN(DivideAndRemainder(divisor, &quotAndRem));
-    *result = quotAndRem[1];
-    REFCOUNT_ADD(*result);
+    result = quotAndRem[1];
     return NOERROR;
 }
 
 ECode BigDecimal::Remainder(
     /* [in] */ IBigDecimal* divisor,
     /* [in] */ IMathContext* mc,
-    /* [out] */ IBigDecimal** result)
+    /* [out] */ AutoPtr<IBigDecimal>& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     Array<IBigDecimal*> quotAndRem;
     FAIL_RETURN(DivideAndRemainder(divisor, mc, &quotAndRem));
-    *result = quotAndRem[1];
-    REFCOUNT_ADD(*result);
+    result = quotAndRem[1];
     return NOERROR;
 }
 
@@ -1417,10 +1375,10 @@ ECode BigDecimal::DivideAndRemainder(
     *quotAndRem = Array<IBigDecimal*>(2);
 
     AutoPtr<IBigDecimal> quotient, remainder, tempBD;
-    FAIL_RETURN(DivideToIntegralValue(divisor, &quotient));
+    FAIL_RETURN(DivideToIntegralValue(divisor, quotient));
     quotAndRem->Set(0, quotient);
-    (*quotAndRem)[0]->Multiply(divisor, &tempBD);
-    Subtract(tempBD, &remainder);
+    (*quotAndRem)[0]->Multiply(divisor, tempBD);
+    Subtract(tempBD, remainder);
     quotAndRem->Set(1, remainder);
     return NOERROR;
 }
@@ -1435,22 +1393,20 @@ ECode BigDecimal::DivideAndRemainder(
     *quotAndRem = Array<IBigDecimal*>(2);
 
     AutoPtr<IBigDecimal> quotient, remainder, tempBD;
-    FAIL_RETURN(DivideToIntegralValue(divisor, mc, &quotient));
+    FAIL_RETURN(DivideToIntegralValue(divisor, mc, quotient));
     quotAndRem->Set(0, quotient);
-    (*quotAndRem)[0]->Multiply(divisor, &tempBD);
-    Subtract(tempBD, &remainder);
+    (*quotAndRem)[0]->Multiply(divisor, tempBD);
+    Subtract(tempBD, remainder);
     quotAndRem->Set(1, remainder);
     return NOERROR;
 }
 
 ECode BigDecimal::Pow(
     /* [in] */ Integer n,
-    /* [out] */ IBigDecimal** value)
+    /* [out] */ AutoPtr<IBigDecimal>& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     if (n == 0) {
-        GetONE().MoveTo(value);
+        value = GetONE();
         return NOERROR;
     }
     if ((n < 0) || (n > 999999999)) {
@@ -1464,24 +1420,22 @@ ECode BigDecimal::Pow(
     }
     else {
         AutoPtr<IBigInteger> bi;
-        GetUnscaledValue()->Pow(n, &bi);
+        GetUnscaledValue()->Pow(n, bi);
         Integer intScale;
-        FAIL_RETURN(SafeLongToInteger(newScale, &intScale));
-        return CBigDecimal::New(bi, intScale, IID_IBigDecimal, (IInterface**)value);
+        FAIL_RETURN(SafeLongToInteger(newScale, intScale));
+        return CBigDecimal::New(bi, intScale, IID_IBigDecimal, (IInterface**)&value);
     }
 }
 
 ECode BigDecimal::Pow(
     /* [in] */ Integer n,
     /* [in] */ IMathContext* mc,
-    /* [out] */ IBigDecimal** value)
+    /* [out] */ AutoPtr<IBigDecimal>& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     // The ANSI standard X3.274-1996 algorithm
     Integer m = Math::Abs(n);
     Integer mcPrecision;
-    mc->GetPrecision(&mcPrecision);
+    mc->GetPrecision(mcPrecision);
     Integer elength = (Integer)Math::Log10(m) + 1; // decimal digits in 'n'
     Integer oneBitMask; // mask of bits
     AutoPtr<IBigDecimal> accum; // the single accumulator
@@ -1498,119 +1452,98 @@ ECode BigDecimal::Pow(
     }
     if (mcPrecision > 0) {
         RoundingMode roundingMode;
-        mc->GetRoundingMode(&roundingMode);
+        mc->GetRoundingMode(roundingMode);
         newPrecision = nullptr;
         CMathContext::New(mcPrecision + elength + 1, roundingMode,
                 IID_IMathContext, (IInterface**)&newPrecision);
     }
     // The result is calculated as if 'n' were positive
-    Round(newPrecision, &accum);
+    Round(newPrecision, accum);
     oneBitMask = Math::HighestOneBit(m) >> 1;
 
     while (oneBitMask > 0) {
-        AutoPtr<IBigDecimal> tempBD;
-        accum->Multiply(accum, newPrecision, &tempBD);
-        accum = std::move(tempBD);
+        accum->Multiply(accum, newPrecision, accum);
         if ((m & oneBitMask) == oneBitMask) {
-            accum->Multiply(this, newPrecision, &tempBD);
-            accum = std::move(tempBD);
+            accum->Multiply(this, newPrecision, accum);
         }
         oneBitMask >>= 1;
     }
     // If 'n' is negative, the value is divided into 'ONE'
     if (n < 0) {
-        AutoPtr<IBigDecimal> tempBD;
-        GetONE()->Divide(accum, newPrecision, &tempBD);
-        accum = std::move(tempBD);
+        GetONE()->Divide(accum, newPrecision, accum);
     }
     // The final value is rounded to the destination precision
     From(accum)->InplaceRound(mc);
-    accum.MoveTo(value);
+    value = std::move(accum);
     return NOERROR;
 }
 
 ECode BigDecimal::Abs(
-    /* [out] */ IBigDecimal** value)
+    /* [out] */ AutoPtr<IBigDecimal>& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     Integer sign;
-    if (Signum(&sign), sign < 0) {
+    if (Signum(sign), sign < 0) {
         return Negate(value);
     }
     else {
-        *value = this;
-        REFCOUNT_ADD(*value);
+        value = this;
         return NOERROR;
     }
 }
 
 ECode BigDecimal::Abs(
     /* [in] */ IMathContext* mc,
-    /* [out] */ IBigDecimal** value)
+    /* [out] */ AutoPtr<IBigDecimal>& result)
 {
-    VALIDATE_NOT_NULL(value);
-
-    AutoPtr<IBigDecimal> result;
     Integer sign;
-    if (Signum(&sign), sign < 0) {
-        Negate(&result);
+    if (Signum(sign), sign < 0) {
+        Negate(result);
     }
     else {
         CBigDecimal::New(GetUnscaledValue(), mScale, IID_IBigDecimal, (IInterface**)&result);
     }
     From(result)->InplaceRound(mc);
-    result.MoveTo(value);
     return NOERROR;
 }
 
 ECode BigDecimal::Negate(
-    /* [out] */ IBigDecimal** value)
+    /* [out] */ AutoPtr<IBigDecimal>& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     if (mBitLength < 63 || (mBitLength == 63 && mSmallValue != ILong::MIN_VALUE)) {
         return ValueOf(-mSmallValue, mScale, value);
     }
     AutoPtr<IBigInteger> tempBI;
-    GetUnscaledValue()->Negate(&tempBI);
-    return CBigDecimal::New(tempBI, mScale, IID_IBigDecimal, (IInterface**)value);
+    GetUnscaledValue()->Negate(tempBI);
+    return CBigDecimal::New(tempBI, mScale, IID_IBigDecimal, (IInterface**)&value);
 }
 
 ECode BigDecimal::Negate(
     /* [in] */ IMathContext* mc,
-    /* [out] */ IBigDecimal** result)
+    /* [out] */ AutoPtr<IBigDecimal>& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     Negate(result);
-    return From(*result)->InplaceRound(mc);
+    return From(result)->InplaceRound(mc);
 }
 
 ECode BigDecimal::Plus(
-    /* [out] */ IBigDecimal** value)
+    /* [out] */ AutoPtr<IBigDecimal>& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = this;
-    REFCOUNT_ADD(*value);
+    value = this;
     return NOERROR;
 }
 
 ECode BigDecimal::Plus(
     /* [in] */ IMathContext* mc,
-    /* [out] */ IBigDecimal** result)
+    /* [out] */ AutoPtr<IBigDecimal>& result)
 {
     return Round(mc, result);
 }
 
 ECode BigDecimal::Signum(
-    /* [out] */ Integer* sign)
+    /* [out] */ Integer& sign)
 {
-    VALIDATE_NOT_NULL(sign);
-
     if (mBitLength < 64) {
-        *sign = Math::Signum(mSmallValue);
+        sign = Math::Signum(mSmallValue);
         return NOERROR;
     }
     return GetUnscaledValue()->Signum(sign);
@@ -1622,21 +1555,17 @@ Boolean BigDecimal::IsZero()
 }
 
 ECode BigDecimal::Scale(
-    /* [out] */ Integer* scale)
+    /* [out] */ Integer& scale)
 {
-    VALIDATE_NOT_NULL(scale);
-
-    *scale = mScale;
+    scale = mScale;
     return NOERROR;
 }
 
 ECode BigDecimal::Precision(
-    /* [out] */ Integer* precision)
+    /* [out] */ Integer& precision)
 {
-    VALIDATE_NOT_NULL(precision);
-
     if (mPrecision != 0) {
-        *precision = mPrecision;
+        precision = mPrecision;
         return NOERROR;
     }
 
@@ -1650,14 +1579,14 @@ ECode BigDecimal::Precision(
         Integer decimalDigits = 1 + (Integer)((mBitLength - 1) * LOG10_2);
         // If after division the number isn't zero, there exists an additional digit
         AutoPtr<IBigInteger> tempBI;
-        GetUnscaledValue()->Divide(Multiplication::PowerOf10(decimalDigits), &tempBI);
+        GetUnscaledValue()->Divide(Multiplication::PowerOf10(decimalDigits), tempBI);
         Integer sign;
-        if (tempBI->Signum(&sign), sign != 0) {
+        if (tempBI->Signum(sign), sign != 0) {
             decimalDigits++;
         }
         mPrecision = decimalDigits;
     }
-    *precision = mPrecision;
+    precision = mPrecision;
     return NOERROR;
 }
 
@@ -1674,40 +1603,31 @@ Integer BigDecimal::DecimalDigitsInLong(
 }
 
 ECode BigDecimal::UnscaledValue(
-    /* [out] */ IBigInteger** value)
+    /* [out] */ AutoPtr<IBigInteger>& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    GetUnscaledValue().MoveTo(value);
+    value = GetUnscaledValue();
     return NOERROR;
 }
 
 ECode BigDecimal::Round(
     /* [in] */ IMathContext* mc,
-    /* [out] */ IBigDecimal** result)
+    /* [out] */ AutoPtr<IBigDecimal>& result)
 {
-    VALIDATE_NOT_NULL(result);
+    CBigDecimal::New(GetUnscaledValue(), mScale, IID_IBigDecimal, (IInterface**)&result);
 
-    AutoPtr<IBigDecimal> bd;
-    CBigDecimal::New(GetUnscaledValue(), mScale, IID_IBigDecimal, (IInterface**)&bd);
-
-    From(bd)->InplaceRound(mc);
-    bd.MoveTo(result);
+    From(result)->InplaceRound(mc);
     return NOERROR;
 }
 
 ECode BigDecimal::SetScale(
     /* [in] */ Integer newScale,
     /* [in] */ RoundingMode roundingMode,
-    /* [out] */ IBigDecimal** result)
+    /* [out] */ AutoPtr<IBigDecimal>& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     Long diffScale = newScale - (Long)mScale;
     // Let be:  'this' = [u,s]
     if (diffScale == 0) {
-        *result = this;
-        REFCOUNT_ADD(*result);
+        result = this;
         return NOERROR;
     }
     if (diffScale > 0) {
@@ -1717,7 +1637,7 @@ ECode BigDecimal::SetScale(
             return ValueOf(mSmallValue * MathUtils::LONG_POWERS_OF_TEN[(Integer)diffScale], newScale, result);
         }
         return CBigDecimal::New(Multiplication::MultiplyByTenPow(CBigInteger::From(GetUnscaledValue()),
-                (Integer)diffScale), newScale, IID_IBigDecimal, (IInterface**)result);
+                (Integer)diffScale), newScale, IID_IBigDecimal, (IInterface**)&result);
     }
     // return  [u,s] / [1,newScale]  with the appropriate scale and rounding
     if (mBitLength < 64 && -diffScale < MathUtils::LONG_POWERS_OF_TEN.GetLength()) {
@@ -1729,10 +1649,8 @@ ECode BigDecimal::SetScale(
 ECode BigDecimal::SetScale(
     /* [in] */ Integer newScale,
     /* [in] */ Integer roundingMode,
-    /* [out] */ IBigDecimal** result)
+    /* [out] */ AutoPtr<IBigDecimal>& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     RoundingMode rm = static_cast<RoundingMode>(roundingMode);
     if (rm < RoundingMode::UP || rm > RoundingMode::UNNECESSARY) {
         Logger::E("BigDecimal", "Invalid rounding mode");
@@ -1743,23 +1661,21 @@ ECode BigDecimal::SetScale(
 
 ECode BigDecimal::SetScale(
     /* [in] */ Integer newScale,
-    /* [out] */ IBigDecimal** value)
+    /* [out] */ AutoPtr<IBigDecimal>& value)
 {
     return SetScale(newScale, RoundingMode::UNNECESSARY, value);
 }
 
 ECode BigDecimal::MovePointLeft(
     /* [in] */ Integer n,
-    /* [out] */ IBigDecimal** value)
+    /* [out] */ AutoPtr<IBigDecimal>& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     return MovePoint(mScale + (Long)n, value);
 }
 
 ECode BigDecimal::MovePoint(
     /* [in] */ Long newScale,
-    /* [out] */ IBigDecimal** value)
+    /* [out] */ AutoPtr<IBigDecimal>& value)
 {
     if (IsZero()) {
         return ZeroScaledBy(Math::Max(newScale, 0LL), value);
@@ -1770,37 +1686,33 @@ ECode BigDecimal::MovePoint(
      */
     if (newScale >= 0) {
         Integer intScale;
-        FAIL_RETURN(SafeLongToInteger(newScale, &intScale));
+        FAIL_RETURN(SafeLongToInteger(newScale, intScale));
         if (mBitLength < 64) {
             return ValueOf(mSmallValue, intScale, value);
         }
-        return CBigDecimal::New(GetUnscaledValue(), intScale, IID_IBigDecimal, (IInterface**)value);
+        return CBigDecimal::New(GetUnscaledValue(), intScale, IID_IBigDecimal, (IInterface**)&value);
     }
     if (-newScale < MathUtils::LONG_POWERS_OF_TEN.GetLength() &&
             mBitLength + GetLONG_POWERS_OF_TEN_BIT_LENGTH()[(Integer)-newScale] < 64) {
         return ValueOf(mSmallValue * MathUtils::LONG_POWERS_OF_TEN[(Integer)-newScale], 0, value);
     }
     Integer intScale;
-    FAIL_RETURN(SafeLongToInteger(-newScale, &intScale));
+    FAIL_RETURN(SafeLongToInteger(-newScale, intScale));
     return CBigDecimal::New(Multiplication::MultiplyByTenPow(CBigInteger::From(GetUnscaledValue()), intScale),
-            0, IID_IBigDecimal, (IInterface**)value);
+            0, IID_IBigDecimal, (IInterface**)&value);
 }
 
 ECode BigDecimal::MovePointRight(
     /* [in] */ Integer n,
-    /* [out] */ IBigDecimal** value)
+    /* [out] */ AutoPtr<IBigDecimal>& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     return MovePoint(mScale - (Long)n, value);
 }
 
 ECode BigDecimal::ScaleByPowerOfTen(
     /* [in] */ Integer n,
-    /* [out] */ IBigDecimal** value)
+    /* [out] */ AutoPtr<IBigDecimal>& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     Long newScale = mScale - (Long)n;
     if (mBitLength < 64) {
         //Taking care when a 0 is to be scaled
@@ -1808,19 +1720,17 @@ ECode BigDecimal::ScaleByPowerOfTen(
             return ZeroScaledBy(newScale, value);
         }
         Integer intScale;
-        FAIL_RETURN(SafeLongToInteger(newScale, &intScale));
+        FAIL_RETURN(SafeLongToInteger(newScale, intScale));
         return ValueOf(mSmallValue, intScale, value);
     }
     Integer intScale;
-    FAIL_RETURN(SafeLongToInteger(newScale, &intScale));
-    return CBigDecimal::New(GetUnscaledValue(), intScale, IID_IBigDecimal, (IInterface**)value);
+    FAIL_RETURN(SafeLongToInteger(newScale, intScale));
+    return CBigDecimal::New(GetUnscaledValue(), intScale, IID_IBigDecimal, (IInterface**)&value);
 }
 
 ECode BigDecimal::StripTrailingZeros(
-    /* [out] */ IBigDecimal** value)
+    /* [out] */ AutoPtr<IBigDecimal>& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     Integer i = 1; // 1 <= i <= 18
     Integer lastPow = GetTEN_POW().GetLength() - 1;
     Long newScale = mScale;
@@ -1828,8 +1738,7 @@ ECode BigDecimal::StripTrailingZeros(
     if (IsZero()) {
         // Preserve RI compatibility, so BigDecimal::Equals (which checks
         // value *and* scale) continues to work.
-        *value = this;
-        REFCOUNT_ADD(*value);
+        value = this;
         return NOERROR;
     }
     AutoPtr<IBigInteger> strippedBI = GetUnscaledValue();
@@ -1837,12 +1746,12 @@ ECode BigDecimal::StripTrailingZeros(
 
     // while the number is even...
     Boolean set;
-    while (strippedBI->TestBit(0, &set), !set) {
+    while (strippedBI->TestBit(0, set), !set) {
         // To divide by 10^i
         strippedBI->DivideAndRemainder(GetTEN_POW()[i], &quotAndRem);
         // To look the remainder
         Integer sign;
-        if (quotAndRem[1]->Signum(&sign), sign == 0) {
+        if (quotAndRem[1]->Signum(sign), sign == 0) {
             // To adjust the scale
             newScale -= i;
             if (i < lastPow) {
@@ -1861,8 +1770,8 @@ ECode BigDecimal::StripTrailingZeros(
         }
     }
     Integer intScale;
-    FAIL_RETURN(SafeLongToInteger(newScale, &intScale));
-    return CBigDecimal::New(strippedBI, intScale, IID_IBigDecimal, (IInterface**)value);
+    FAIL_RETURN(SafeLongToInteger(newScale, intScale));
+    return CBigDecimal::New(strippedBI, intScale, IID_IBigDecimal, (IInterface**)&value);
 }
 
 ECode BigDecimal::CompareTo(
@@ -1875,8 +1784,8 @@ ECode BigDecimal::CompareTo(
     }
 
     Integer thisSign, otherSign;
-    Signum(&thisSign);
-    otherObj->Signum(&otherSign);
+    Signum(thisSign);
+    otherObj->Signum(otherSign);
 
     if (thisSign == otherSign) {
         if (mScale == otherObj->mScale && mBitLength < 64 && otherObj->mBitLength < 64) {
@@ -1899,12 +1808,12 @@ ECode BigDecimal::CompareTo(
             // If any of both precision is bigger, append zeros to the shorter one
             if (diffScale < 0) {
                 AutoPtr<IBigInteger> tempBI;
-                thisUnscaled->Multiply(Multiplication::PowerOf10(-diffScale), &tempBI);
+                thisUnscaled->Multiply(Multiplication::PowerOf10(-diffScale), tempBI);
                 thisUnscaled = std::move(tempBI);
             }
             else if (diffScale > 0) {
                 AutoPtr<IBigInteger> tempBI;
-                otherUnscaled->Multiply(Multiplication::PowerOf10(diffScale), &tempBI);
+                otherUnscaled->Multiply(Multiplication::PowerOf10(diffScale), tempBI);
                 otherUnscaled = std::move(tempBI);
             }
             return IComparable::Probe(thisUnscaled)->CompareTo(otherUnscaled, result);
@@ -1950,38 +1859,30 @@ ECode BigDecimal::Equals(
 
 ECode BigDecimal::Min(
     /* [in] */ IBigDecimal* value,
-    /* [out] */ IBigDecimal** result)
+    /* [out] */ AutoPtr<IBigDecimal>& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     Integer comp;
     if (CompareTo(value, comp), comp <= 0) {
-        *result = this;
-        REFCOUNT_ADD(*result);
+        result = this;
         return NOERROR;
     }
     else {
-        *result = value;
-        REFCOUNT_ADD(*result)
+        result = value;
         return NOERROR;
     }
 }
 
 ECode BigDecimal::Max(
     /* [in] */ IBigDecimal* value,
-    /* [out] */ IBigDecimal** result)
+    /* [out] */ AutoPtr<IBigDecimal>& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     Integer comp;
     if (CompareTo(value, comp), comp >= 0) {
-        *result = this;
-        REFCOUNT_ADD(*result);
+        result = this;
         return NOERROR;
     }
     else {
-        *result = value;
-        REFCOUNT_ADD(*result)
+        result = value;
         return NOERROR;
     }
 }
@@ -2023,7 +1924,7 @@ ECode BigDecimal::ToString(
         return NOERROR;
     }
     Integer sign;
-    GetUnscaledValue()->Signum(&sign);
+    GetUnscaledValue()->Signum(sign);
     Integer begin = (sign < 0) ? 2 : 1;
     Integer end = intString.GetLength();
     Long exponent = -(Long)mScale + end - begin;
@@ -2057,17 +1958,15 @@ ECode BigDecimal::ToString(
 }
 
 ECode BigDecimal::ToEngineeringString(
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
-    VALIDATE_NOT_NULL(desc);
-
     String intString = Object::ToString(GetUnscaledValue());
     if (mScale == 0) {
-        *desc = intString;
+        desc = intString;
         return NOERROR;
     }
     Integer sign;
-    GetUnscaledValue()->Signum(&sign);
+    GetUnscaledValue()->Signum(sign);
     Integer begin = (sign < 0) ? 2 : 1;
     Integer end = intString.GetLength();
     Long exponent = -(Long)mScale + end - begin;
@@ -2090,7 +1989,7 @@ ECode BigDecimal::ToEngineeringString(
         if (rem != 0) {
             // adjust exponent so it is a multiple of three
             Integer sign;
-            GetUnscaledValue()->Signum(&sign);
+            GetUnscaledValue()->Signum(sign);
             if (sign == 0) {
                 // zero value
                 rem = (rem < 0) ? -rem : 3 - rem;
@@ -2120,21 +2019,19 @@ ECode BigDecimal::ToEngineeringString(
             result->Insert(++end, StringUtils::ToString(exponent));
         }
     }
-    return result->ToString(*desc);
+    return result->ToString(desc);
 }
 
 ECode BigDecimal::ToPlainString(
-    /* [out] */ String* desc)
+    /* [out] */ String& desc)
 {
-    VALIDATE_NOT_NULL(desc);
-
     String intString = Object::ToString(GetUnscaledValue());
     if (((mScale == 0) || IsZero()) && (mScale < 0)) {
-        *desc = intString;
+        desc = intString;
         return NOERROR;
     }
     Integer sign;
-    Signum(&sign);
+    Signum(sign);
     Integer begin = (sign < 0) ? 1 : 0;
     Integer delta = mScale;
     // We take space for all digits, plus a possible decimal point, plus 'scale'
@@ -2172,16 +2069,14 @@ ECode BigDecimal::ToPlainString(
         }
         result->Append(GetCH_ZEROS(), 0, -delta);
     }
-    return result->ToString(*desc);
+    return result->ToString(desc);
 }
 
 ECode BigDecimal::ToBigInteger(
-    /* [out] */ IBigInteger** value)
+    /* [out] */ AutoPtr<IBigInteger>& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     if ((mScale == 0) || IsZero()) {
-        GetUnscaledValue().MoveTo(value);
+        value = GetUnscaledValue();
         return NOERROR;
     }
     else if (mScale < 0) {
@@ -2193,12 +2088,10 @@ ECode BigDecimal::ToBigInteger(
 }
 
 ECode BigDecimal::ToBigIntegerExact(
-    /* [out] */ IBigInteger** value)
+    /* [out] */ AutoPtr<IBigInteger>& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     if ((mScale == 0) || IsZero()) {
-        GetUnscaledValue().MoveTo(value);
+        value = GetUnscaledValue();
         return NOERROR;
     }
     else if (mScale < 0) {
@@ -2212,7 +2105,7 @@ ECode BigDecimal::ToBigIntegerExact(
             return E_ARITHMETIC_EXCEPTION;
         }
         Integer setBit;
-        GetUnscaledValue()->GetLowestSetBit(&setBit);
+        GetUnscaledValue()->GetLowestSetBit(setBit);
         if (mScale > setBit) {
             Logger::E("BigDecimal", "Rounding necessary");
             return E_ARITHMETIC_EXCEPTION;
@@ -2220,13 +2113,12 @@ ECode BigDecimal::ToBigIntegerExact(
         GetUnscaledValue()->DivideAndRemainder(
                 Multiplication::PowerOf10(mScale), &integerAndFraction);
         Integer sign;
-        if (integerAndFraction[1]->Signum(&sign), sign != 0) {
+        if (integerAndFraction[1]->Signum(sign), sign != 0) {
             // It exists a non-zero fractional part
             Logger::E("BigDecimal", "Rounding necessary");
             return E_ARITHMETIC_EXCEPTION;
         }
-        *value = integerAndFraction[0];
-        REFCOUNT_ADD(*value);
+        value = integerAndFraction[0];
         return NOERROR;
     }
 }
@@ -2245,16 +2137,14 @@ ECode BigDecimal::LongValue(
     }
     else {
         AutoPtr<IBigInteger> tempBI;
-        ToBigInteger(&tempBI);
+        ToBigInteger(tempBI);
         return INumber::Probe(tempBI)->LongValue(value);
     }
 }
 
 ECode BigDecimal::LongValueExact(
-    /* [out] */ Long* value)
+    /* [out] */ Long& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     return ValueExact(64, value);
 }
 
@@ -2272,41 +2162,35 @@ ECode BigDecimal::IntegerValue(
     }
     else {
         AutoPtr<IBigInteger> tempBI;
-        ToBigInteger(&tempBI);
+        ToBigInteger(tempBI);
         return INumber::Probe(tempBI)->IntegerValue(value);
     }
 }
 
 ECode BigDecimal::IntegerValueExact(
-    /* [out] */ Integer* value)
+    /* [out] */ Integer& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     Long lv;
-    FAIL_RETURN(ValueExact(32, &lv));
-    *value = (Integer)lv;
+    FAIL_RETURN(ValueExact(32, lv));
+    value = (Integer)lv;
     return NOERROR;
 }
 
 ECode BigDecimal::ShortValueExact(
-    /* [out] */ Short* value)
+    /* [out] */ Short& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     Long lv;
-    FAIL_RETURN(ValueExact(16, &lv));
-    *value = (Short)lv;
+    FAIL_RETURN(ValueExact(16, lv));
+    value = (Short)lv;
     return NOERROR;
 }
 
 ECode BigDecimal::ByteValueExact(
-    /* [out] */ Byte* value)
+    /* [out] */ Byte& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     Long lv;
-    FAIL_RETURN(ValueExact(8, &lv));
-    *value = (Byte)lv;
+    FAIL_RETURN(ValueExact(8, lv));
+    value = (Byte)lv;
     return NOERROR;
 }
 
@@ -2314,7 +2198,7 @@ ECode BigDecimal::FloatValue(
     /* [out] */ Float& value)
 {
     Integer sign;
-    Signum(&sign);
+    Signum(sign);
     Float floatResult = sign;
     Long powerOfTwo = mBitLength - (Long)(mScale / LOG10_2);
     if ((powerOfTwo < -149) || (floatResult == 0.0f)) {
@@ -2338,7 +2222,7 @@ ECode BigDecimal::DoubleValue(
     /* [out] */ Double& value)
 {
     Integer sign;
-    Signum(&sign);
+    Signum(sign);
     Integer exponent = 1076; // bias + 53
     Integer lowestSetBit;
     Integer discardedSize;
@@ -2357,12 +2241,12 @@ ECode BigDecimal::DoubleValue(
         value = sign * IDouble::POSITIVE_INFINITY;
         return NOERROR;
     }
-    GetUnscaledValue()->Abs(&mantissa);
+    GetUnscaledValue()->Abs(mantissa);
     // Let be:  this = [u,s], with s > 0
     if (mScale <= 0) {
         // mantissa = abs(u) * 10^s
         AutoPtr<IBigInteger> tempBI;
-        mantissa->Multiply(Multiplication::PowerOf10(-mScale), &tempBI);
+        mantissa->Multiply(Multiplication::PowerOf10(-mScale), tempBI);
         mantissa = std::move(tempBI);
     }
     else {
@@ -2375,7 +2259,7 @@ ECode BigDecimal::DoubleValue(
         if (k > 0) {
             /* Computing (mantissa * 2^k) , where 'k' is a enough big
              * power of '2' to can divide by 10^s */
-            mantissa->ShiftLeft(k, &tempBI);
+            mantissa->ShiftLeft(k, tempBI);
             mantissa = std::move(tempBI);
             exponent -= k;
         }
@@ -2384,20 +2268,20 @@ ECode BigDecimal::DoubleValue(
         // To check if the fractional part >= 0.5
         IComparable::Probe(CBigInteger::From(quotAndRem[1])->ShiftLeftOneBit())->CompareTo(powerOfTen, compRem);
         // To add two rounded bits at end of mantissa
-        quotAndRem[0]->ShiftLeft(2, &bi1);
-        CBigInteger::ValueOf((compRem * (compRem + 3)) / 2 + 1, &bi2);
-        bi1->Add(bi2, &tempBI);
+        quotAndRem[0]->ShiftLeft(2, bi1);
+        CBigInteger::ValueOf((compRem * (compRem + 3)) / 2 + 1, bi2);
+        bi1->Add(bi2, tempBI);
         mantissa = std::move(tempBI);
         exponent -= 2;
     }
-    mantissa->GetLowestSetBit(&lowestSetBit);
+    mantissa->GetLowestSetBit(lowestSetBit);
     Integer bitLength;
-    mantissa->BitLength(&bitLength);
+    mantissa->BitLength(bitLength);
     discardedSize = bitLength - 54;
     if (discardedSize > 0) {
         // mantissa = (abs(u) * 10^s) >> (n - 54)
         AutoPtr<IBigInteger> tempBI;
-        mantissa->ShiftRight(discardedSize, &tempBI);
+        mantissa->ShiftRight(discardedSize, tempBI);
         INumber::Probe(tempBI)->LongValue(bits);
         tempBits = bits;
         // #bits = 54, to check if the discarded fraction produces a carry
@@ -2459,10 +2343,8 @@ ECode BigDecimal::DoubleValue(
 }
 
 ECode BigDecimal::Ulp(
-    /* [out] */ IBigDecimal** value)
+    /* [out] */ AutoPtr<IBigDecimal>& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     return ValueOf(1, mScale, value);
 }
 
@@ -2470,12 +2352,12 @@ ECode BigDecimal::InplaceRound(
     /* [in] */ IMathContext* mc)
 {
     Integer mcPrecision;
-    mc->GetPrecision(&mcPrecision);
+    mc->GetPrecision(mcPrecision);
     if (ApproxPrecision() < mcPrecision || mcPrecision == 0) {
         return NOERROR;
     }
     Integer precision;
-    Precision(&precision);
+    Precision(precision);
     Integer discardedPrecision = precision - mcPrecision;
     // If no rounding is necessary it returns immediately
     if (discardedPrecision <= 0) {
@@ -2494,34 +2376,32 @@ ECode BigDecimal::InplaceRound(
     AutoPtr<IBigDecimal> tempBD;
     // If the discarded fraction is non-zero, perform rounding
     Integer sign;
-    if (integerAndFraction[1]->Signum(&sign), sign != 0) {
+    if (integerAndFraction[1]->Signum(sign), sign != 0) {
         // To check if the discarded fraction >= 0.5
         AutoPtr<IBigInteger> tempBI, bi1;
-        integerAndFraction[1]->Abs(&tempBI);
+        integerAndFraction[1]->Abs(tempBI);
         IComparable::Probe(CBigInteger::From(tempBI)->ShiftLeftOneBit())->CompareTo(sizeOfFraction, compRem);
         // To look if there is a carry
         Boolean set;
         RoundingMode rm;
-        FAIL_RETURN(RoundingBehavior((integerAndFraction[0]->TestBit(0, &set), set) ? 1 : 0,
-                (integerAndFraction[1]->Signum(&sign), sign * (5 + compRem)),
-                (mc->GetRoundingMode(&rm), rm), &compRem));
+        FAIL_RETURN(RoundingBehavior((integerAndFraction[0]->TestBit(0, set), set) ? 1 : 0,
+                (integerAndFraction[1]->Signum(sign), sign * (5 + compRem)),
+                (mc->GetRoundingMode(rm), rm), &compRem));
         if (compRem != 0) {
-            tempBI = nullptr;
-            CBigInteger::ValueOf(compRem, &tempBI);
-            integerAndFraction[0]->Add(tempBI, &bi1);
+            CBigInteger::ValueOf(compRem, tempBI);
+            integerAndFraction[0]->Add(tempBI, bi1);
             integerAndFraction.Set(0, bi1);
         }
         CBigDecimal::New(integerAndFraction[0], IID_IBigDecimal, (IInterface**)&tempBD);
         // If after to add the increment the precision changed, we normalize the size
-        if (tempBD->Precision(&precision), precision > mcPrecision) {
-            bi1 = nullptr;
-            integerAndFraction[0]->Divide(CBigInteger::GetTEN(), &bi1);
+        if (tempBD->Precision(precision), precision > mcPrecision) {
+            integerAndFraction[0]->Divide(CBigInteger::GetTEN(), bi1);
             integerAndFraction.Set(0, bi1);
             newScale--;
         }
     }
     // To update all internal fields
-    FAIL_RETURN(SafeLongToInteger(newScale, &mScale));
+    FAIL_RETURN(SafeLongToInteger(newScale, mScale));
     mPrecision = mcPrecision;
     SetUnscaledValue(integerAndFraction[0]);
     return NOERROR;
@@ -2588,19 +2468,19 @@ ECode BigDecimal::SmallRound(
         Integer carry;
         FAIL_RETURN(RoundingBehavior(((Integer)integer) & 1,
                 Math::Signum(fraction) * (5 + compRem),
-                (mc->GetRoundingMode(&rm), rm), &carry));
+                (mc->GetRoundingMode(rm), rm), &carry));
         integer += carry;
         // If after to add the increment the precision changed, we normalize the size
         Integer precision;
-        mc->GetPrecision(&precision);
+        mc->GetPrecision(precision);
         if (Math::Log10(Math::Abs(integer)) >= precision) {
             integer /= 10;
             newScale--;
         }
     }
     // To update all internal fields
-    FAIL_RETURN(SafeLongToInteger(newScale, &mScale));
-    mc->GetPrecision(&mPrecision);
+    FAIL_RETURN(SafeLongToInteger(newScale, mScale));
+    mc->GetPrecision(mPrecision);
     mSmallValue = integer;
     mBitLength = BitLength(integer);
     mIntegerValue = nullptr;
@@ -2655,16 +2535,16 @@ ECode BigDecimal::RoundingBehavior(
 
 ECode BigDecimal::ValueExact(
     /* [in] */ Integer bitLengthOfType,
-    /* [out] */ Long* value)
+    /* [out] */ Long& value)
 {
     AutoPtr<IBigInteger> bi;
-    FAIL_RETURN(ToBigIntegerExact(&bi));
+    FAIL_RETURN(ToBigIntegerExact(bi));
 
     Integer bitLength;
-    bi->BitLength(&bitLength);
+    bi->BitLength(bitLength);
     if (bitLength < bitLengthOfType) {
         // It fits in the primitive type
-        return INumber::Probe(bi)->LongValue(*value);
+        return INumber::Probe(bi)->LongValue(value);
     }
     Logger::E("BigDecimal", "Rounding necessary");
     return E_ARITHMETIC_EXCEPTION;
@@ -2678,33 +2558,33 @@ Integer BigDecimal::ApproxPrecision()
 
 ECode BigDecimal::SafeLongToInteger(
     /* [in] */ Long longValue,
-    /* [out] */ Integer* integerValue)
+    /* [out] */ Integer& integerValue)
 {
     if (longValue < IInteger::MIN_VALUE || longValue > IInteger::MAX_VALUE) {
         Logger::E("BigDecimal", "Out of integer range: %lld", longValue);
         return E_ARITHMETIC_EXCEPTION;
     }
-    *integerValue = (Integer)longValue;
+    integerValue = (Integer)longValue;
     return NOERROR;
 }
 
 ECode BigDecimal::ZeroScaledBy(
     /* [in] */ Long longScale,
-    /* [out] */ IBigDecimal** result)
+    /* [out] */ AutoPtr<IBigDecimal>& result)
 {
     if (longScale == (Integer)longScale) {
         return ValueOf(0, (Integer)longScale, result);
     }
     if (longScale >= 0) {
-        return CBigDecimal::New(0, IInteger::MAX_VALUE, IID_IBigDecimal, (IInterface**)result);
+        return CBigDecimal::New(0, IInteger::MAX_VALUE, IID_IBigDecimal, (IInterface**)&result);
     }
-    return CBigDecimal::New(0, IInteger::MIN_VALUE, IID_IBigDecimal, (IInterface**)result);
+    return CBigDecimal::New(0, IInteger::MIN_VALUE, IID_IBigDecimal, (IInterface**)&result);
 }
 
 AutoPtr<IBigInteger> BigDecimal::GetUnscaledValue()
 {
     if (mIntegerValue == nullptr) {
-        CBigInteger::ValueOf(mSmallValue, &mIntegerValue);
+        CBigInteger::ValueOf(mSmallValue, mIntegerValue);
     }
     return mIntegerValue;
 }
@@ -2713,7 +2593,7 @@ void BigDecimal::SetUnscaledValue(
     /* [in] */ IBigInteger* unscaledValue)
 {
     mIntegerValue = unscaledValue;
-    unscaledValue->BitLength(&mBitLength);
+    unscaledValue->BitLength(mBitLength);
     if (mBitLength < 64) {
         INumber::Probe(unscaledValue)->LongValue(mSmallValue);
     }

@@ -22,7 +22,7 @@ namespace math {
 
 ECode BigIntegerFactory::ValueOf(
     /* [in] */ Long value,
-    /* [out] */ IBigInteger** result)
+    /* [out] */ AutoPtr<IBigInteger>& result)
 {
     return BigInteger::ValueOf(value, result);
 }

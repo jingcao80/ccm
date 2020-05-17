@@ -21,35 +21,29 @@ namespace como {
 namespace math {
 
 ECode BigDecimalFactory::GetONE(
-    /* [out] */ IBigDecimal** value)
+    /* [out] */ AutoPtr<IBigDecimal>& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    BigDecimal::GetONE().MoveTo(value);
+    value = BigDecimal::GetONE();
     return NOERROR;
 }
 
 ECode BigDecimalFactory::GetTEN(
-    /* [out] */ IBigDecimal** value)
+    /* [out] */ AutoPtr<IBigDecimal>& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    BigDecimal::GetTEN().MoveTo(value);
+    value = BigDecimal::GetTEN();
     return NOERROR;
 }
 
 ECode BigDecimalFactory::GetZERO(
-    /* [out] */ IBigDecimal** value)
+    /* [out] */ AutoPtr<IBigDecimal>& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    BigDecimal::GetZERO().MoveTo(value);
+    value = BigDecimal::GetZERO();
     return NOERROR;
 }
 
 ECode BigDecimalFactory::ValueOf(
     /* [in] */ Long unscaledValue,
-    /* [out] */ IBigDecimal** result)
+    /* [out] */ AutoPtr<IBigDecimal>& result)
 {
     return BigDecimal::ValueOf(unscaledValue, result);
 }
@@ -57,14 +51,14 @@ ECode BigDecimalFactory::ValueOf(
 ECode BigDecimalFactory::ValueOf(
     /* [in] */ Long unscaledValue,
     /* [in] */ Integer scale,
-    /* [out] */ IBigDecimal** result)
+    /* [out] */ AutoPtr<IBigDecimal>& result)
 {
     return BigDecimal::ValueOf(unscaledValue, scale, result);
 }
 
 ECode BigDecimalFactory::ValueOf(
     /* [in] */ Double value,
-    /* [out] */ IBigDecimal** result)
+    /* [out] */ AutoPtr<IBigDecimal>& result)
 {
     return BigDecimal::ValueOf(value, result);
 }

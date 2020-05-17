@@ -185,7 +185,7 @@ ECode BigInteger::Constructor(
         // We need a loop here to work around an OpenSSL bug; http://b/8588028.
         do {
             SetBigInt(BigInt::GeneratePrimeDefault(bitLength));
-        } while (BitLength(&bitLen), bitLen != bitLength);
+        } while (BitLength(bitLen), bitLen != bitLength);
     }
     return NOERROR;
 }
@@ -356,25 +356,22 @@ void BigInteger::PrepareRepresentation()
 
 ECode BigInteger::ValueOf(
     /* [in] */ Long value,
-    /* [out] */ IBigInteger** bi)
+    /* [out] */ AutoPtr<IBigInteger>& bi)
 {
-    VALIDATE_NOT_NULL(bi);
-
     if (value < 0) {
         if (value != -1) {
-            return CBigInteger::New(-1, -value, IID_IBigInteger, (IInterface**)bi);
+            return CBigInteger::New(-1, -value, IID_IBigInteger, (IInterface**)&bi);
         }
-        GetMINUS_ONE().MoveTo(bi);
+        bi = GetMINUS_ONE();
         return NOERROR;
     }
     else if (value < GetSMALL_VALUES().GetLength()) {
-        *bi = GetSMALL_VALUES()[value];
-        REFCOUNT_ADD(*bi);
+        bi = GetSMALL_VALUES()[value];
         return NOERROR;
     }
     else {
         // (value > 10)
-        return CBigInteger::New(1, value, IID_IBigInteger, (IInterface**)bi);
+        return CBigInteger::New(1, value, IID_IBigInteger, (IInterface**)&bi);
     }
 }
 
@@ -385,115 +382,96 @@ ECode BigInteger::ToByteArray(
 }
 
 ECode BigInteger::Abs(
-    /* [out] */ IBigInteger** value)
+    /* [out] */ AutoPtr<IBigInteger>& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     AutoPtr<BigInt> bigInt = GetBigInt();
     if (bigInt->Sign() >= 0) {
-        *value = this;
-        REFCOUNT_ADD(*value);
+        value = this;
         return NOERROR;
     }
     AutoPtr<BigInt> a = bigInt->Copy();
     a->SetSign(1);
-    return CBigInteger::New(a, IID_IBigInteger, (IInterface**)value);
+    return CBigInteger::New(a, IID_IBigInteger, (IInterface**)&value);
 }
 
 ECode BigInteger::Negate(
-    /* [out] */ IBigInteger** value)
+    /* [out] */ AutoPtr<IBigInteger>& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     AutoPtr<BigInt> bigInt = GetBigInt();
     Integer sign = bigInt->Sign();
     if (sign == 0) {
-        *value = this;
-        REFCOUNT_ADD(*value);
+        value = this;
         return NOERROR;
     }
     AutoPtr<BigInt> a = bigInt->Copy();
     a->SetSign(-sign);
-    return CBigInteger::New(a, IID_IBigInteger, (IInterface**)value);
+    return CBigInteger::New(a, IID_IBigInteger, (IInterface**)&value);
 }
 
 ECode BigInteger::Add(
     /* [in] */ IBigInteger* value,
-    /* [out] */ IBigInteger** result)
+    /* [out] */ AutoPtr<IBigInteger>& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     AutoPtr<BigInt> lhs = GetBigInt();
     AutoPtr<BigInt> rhs = From(value)->GetBigInt();
     if (rhs->Sign() == 0) {
-        *result = this;
-        REFCOUNT_ADD(*result);
+        result = this;
         return NOERROR;
     }
     if (lhs->Sign() == 0) {
-        *result = value;
-        REFCOUNT_ADD(*result);
+        result = value;
         return NOERROR;
     }
-    return CBigInteger::New(BigInt::Addition(lhs, rhs), IID_IBigInteger, (IInterface**)result);
+    return CBigInteger::New(BigInt::Addition(lhs, rhs), IID_IBigInteger, (IInterface**)&result);
 }
 
 ECode BigInteger::Subtract(
     /* [in] */ IBigInteger* value,
-    /* [out] */ IBigInteger** result)
+    /* [out] */ AutoPtr<IBigInteger>& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     AutoPtr<BigInt> lhs = GetBigInt();
     AutoPtr<BigInt> rhs = From(value)->GetBigInt();
     if (rhs->Sign() == 0) {
-        *result = this;
-        REFCOUNT_ADD(*result);
+        result = this;
         return NOERROR;
     }
-    return CBigInteger::New(BigInt::Subtraction(lhs, rhs), IID_IBigInteger, (IInterface**)result);
+    return CBigInteger::New(BigInt::Subtraction(lhs, rhs), IID_IBigInteger, (IInterface**)&result);
 }
 
 ECode BigInteger::Signum(
-    /* [out] */ Integer* sign)
+    /* [out] */ Integer& sign)
 {
-    VALIDATE_NOT_NULL(sign);
-
     if (mIsValid) {
-        *sign = mSign;
+        sign = mSign;
         return NOERROR;
     }
-    *sign = GetBigInt()->Sign();
+    sign = GetBigInt()->Sign();
     return NOERROR;
 }
 
 ECode BigInteger::ShiftRight(
     /* [in] */ Integer n,
-    /* [out] */ IBigInteger** value)
+    /* [out] */ AutoPtr<IBigInteger>& value)
 {
     return ShiftLeft(-n, value);
 }
 
 ECode BigInteger::ShiftLeft(
     /* [in] */ Integer n,
-    /* [out] */ IBigInteger** value)
+    /* [out] */ AutoPtr<IBigInteger>& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     if (n == 0) {
-        *value = this;
-        REFCOUNT_ADD(*value);
+        value = this;
         return NOERROR;
     }
     Integer sign;
-    Signum(&sign);
+    Signum(sign);
     if (sign == 0) {
-        *value = this;
-        REFCOUNT_ADD(*value);
+        value = this;
         return NOERROR;
     }
     if ((sign > 0) || (n >= 0)) {
-        return CBigInteger::New(BigInt::Shift(GetBigInt(), n), IID_IBigInteger, (IInterface**)value);
+        return CBigInteger::New(BigInt::Shift(GetBigInt(), n), IID_IBigInteger, (IInterface**)&value);
     }
     else {
         // Negative numbers faking 2's complement
@@ -504,54 +482,52 @@ ECode BigInteger::ShiftLeft(
 AutoPtr<IBigInteger> BigInteger::ShiftLeftOneBit()
 {
     Integer sign;
-    Signum(&sign);
+    Signum(sign);
     if (sign == 0) {
         return this;
     }
     else {
         AutoPtr<IBigInteger> bi;
-        BitLevel::ShiftLeftOneBit(this, &bi);
+        BitLevel::ShiftLeftOneBit(this, bi);
         return bi;
     }
 }
 
 ECode BigInteger::BitLength(
-    /* [out] */ Integer* length)
+    /* [out] */ Integer& length)
 {
     if (!mNativeIsValid && mIsValid) {
-        *length = BitLevel::BitLength(this);
+        length = BitLevel::BitLength(this);
         return NOERROR;
     }
-    *length = GetBigInt()->BitLength();
+    length = GetBigInt()->BitLength();
     return NOERROR;
 }
 
 ECode BigInteger::TestBit(
     /* [in] */ Integer n,
-    /* [out] */ Boolean* set)
+    /* [out] */ Boolean& set)
 {
-    VALIDATE_NOT_NULL(set);
-
     if (n < 0) {
         Logger::E("BigInteger", "n < 0: %d", n);
         return E_ARITHMETIC_EXCEPTION;
     }
     Integer sign;
-    Signum(&sign);
+    Signum(sign);
     if (sign > 0 && mNativeIsValid && !mIsValid) {
-        *set = GetBigInt()->IsBitSet(n);
+        set = GetBigInt()->IsBitSet(n);
         return NOERROR;
     }
     else {
         // Negative numbers faking 2's complement:
         PrepareRepresentation();
         if (n == 0) {
-            *set = ((mDigits[0] & 1) != 0);
+            set = ((mDigits[0] & 1) != 0);
             return NOERROR;
         }
         Integer intCount = n >> 5;
         if (intCount >= mNumberLength) {
-            *set = sign < 0;
+            set = sign < 0;
             return NOERROR;
         }
         Integer digit = mDigits[intCount];
@@ -559,7 +535,7 @@ ECode BigInteger::TestBit(
         if (sign < 0) {
             Integer firstNonZeroDigit = GetFirstNonzeroDigit();
             if (intCount < firstNonZeroDigit) {
-                *set = false;
+                set = false;
                 return NOERROR;
             }
             else if (firstNonZeroDigit == intCount) {
@@ -569,53 +545,45 @@ ECode BigInteger::TestBit(
                 digit = ~digit;
             }
         }
-        *set = ((digit & n) != 0);
+        set = ((digit & n) != 0);
         return NOERROR;
     }
 }
 
 ECode BigInteger::SetBit(
     /* [in] */ Integer n,
-    /* [out] */ IBigInteger** value)
+    /* [out] */ AutoPtr<IBigInteger>& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     PrepareRepresentation();
     Boolean set;
-    if (TestBit(n, &set), !set) {
+    if (TestBit(n, set), !set) {
         return BitLevel::FlipBit(this, n, value);
     }
     else {
-        *value = this;
-        REFCOUNT_ADD(*value);
+        value = this;
         return NOERROR;
     }
 }
 
 ECode BigInteger::ClearBit(
     /* [in] */ Integer n,
-    /* [out] */ IBigInteger** value)
+    /* [out] */ AutoPtr<IBigInteger>& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     PrepareRepresentation();
     Boolean set;
-    if (TestBit(n, &set), set) {
+    if (TestBit(n, set), set) {
         return BitLevel::FlipBit(this, n, value);
     }
     else {
-        *value = this;
-        REFCOUNT_ADD(*value);
+        value = this;
         return NOERROR;
     }
 }
 
 ECode BigInteger::FlipBit(
     /* [in] */ Integer n,
-    /* [out] */ IBigInteger** value)
+    /* [out] */ AutoPtr<IBigInteger>& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     PrepareRepresentation();
     if ( n < 0) {
         Logger::E("BigInteger", "n < 0: %d", n);
@@ -625,46 +593,38 @@ ECode BigInteger::FlipBit(
 }
 
 ECode BigInteger::GetLowestSetBit(
-    /* [out] */ Integer* setBit)
+    /* [out] */ Integer& setBit)
 {
-    VALIDATE_NOT_NULL(setBit);
-
     PrepareRepresentation();
     if (mSign == 0) {
-        *setBit = -1;
+        setBit = -1;
         return NOERROR;
     }
     // (sign != 0) implies that exists some non zero digit
     Integer i = GetFirstNonzeroDigit();
-    *setBit = ((i << 5) + Math::NumberOfTrailingZeros(mDigits[i]));
+    setBit = ((i << 5) + Math::NumberOfTrailingZeros(mDigits[i]));
     return NOERROR;
 }
 
 ECode BigInteger::BitCount(
-    /* [out] */ Integer* count)
+    /* [out] */ Integer& count)
 {
-    VALIDATE_NOT_NULL(count);
-
     PrepareRepresentation();
-    *count = BitLevel::BitCount(this);
+    count = BitLevel::BitCount(this);
     return NOERROR;
 }
 
 ECode BigInteger::Not(
-    /* [out] */ IBigInteger** value)
+    /* [out] */ AutoPtr<IBigInteger>& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     PrepareRepresentation();
     return Logical::Not(this, value);
 }
 
 ECode BigInteger::And(
     /* [in] */ IBigInteger* value,
-    /* [out] */ IBigInteger** result)
+    /* [out] */ AutoPtr<IBigInteger>& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     PrepareRepresentation();
     From(value)->PrepareRepresentation();
     return Logical::And(this, From(value), result);
@@ -672,10 +632,8 @@ ECode BigInteger::And(
 
 ECode BigInteger::Or(
     /* [in] */ IBigInteger* value,
-    /* [out] */ IBigInteger** result)
+    /* [out] */ AutoPtr<IBigInteger>& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     PrepareRepresentation();
     From(value)->PrepareRepresentation();
     return Logical::Or(this, From(value), result);
@@ -683,10 +641,8 @@ ECode BigInteger::Or(
 
 ECode BigInteger::Xor(
     /* [in] */ IBigInteger* value,
-    /* [out] */ IBigInteger** result)
+    /* [out] */ AutoPtr<IBigInteger>& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     PrepareRepresentation();
     From(value)->PrepareRepresentation();
     return Logical::Xor(this, From(value), result);
@@ -694,10 +650,8 @@ ECode BigInteger::Xor(
 
 ECode BigInteger::AndNot(
     /* [in] */ IBigInteger* value,
-    /* [out] */ IBigInteger** result)
+    /* [out] */ AutoPtr<IBigInteger>& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     PrepareRepresentation();
     From(value)->PrepareRepresentation();
     return Logical::AndNot(this, From(value), result);
@@ -762,27 +716,21 @@ ECode BigInteger::CompareTo(
 
 ECode BigInteger::Min(
     /* [in] */ IBigInteger* value,
-    /* [out] */ IBigInteger** result)
+    /* [out] */ AutoPtr<IBigInteger>& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     Integer cmp;
     FAIL_RETURN(CompareTo(value, cmp));
-    *result = cmp == -1 ? this : value;
-    REFCOUNT_ADD(*result);
+    result = cmp == -1 ? this : value;
     return NOERROR;
 }
 
 ECode BigInteger::Max(
     /* [in] */ IBigInteger* value,
-    /* [out] */ IBigInteger** result)
+    /* [out] */ AutoPtr<IBigInteger>& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     Integer cmp;
     FAIL_RETURN(CompareTo(value, cmp));
-    *result = cmp == 1 ? this : value;
-    REFCOUNT_ADD(*result);
+    result = cmp == 1 ? this : value;
     return NOERROR;
 }
 
@@ -829,55 +777,47 @@ ECode BigInteger::ToString(
 
 ECode BigInteger::ToString(
     /* [in] */ Integer radix,
-    /* [out] */ String* value)
+    /* [out] */ String& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     if (radix == 10) {
-        *value = GetBigInt()->DecString();
+        value = GetBigInt()->DecString();
         return NOERROR;
     }
     else {
         PrepareRepresentation();
-        *value = Conversion::BigInteger2String(this, radix);
+        value = Conversion::BigInteger2String(this, radix);
         return NOERROR;
     }
 }
 
 ECode BigInteger::Gcd(
     /* [in] */ IBigInteger* value,
-    /* [out] */ IBigInteger** result)
+    /* [out] */ AutoPtr<IBigInteger>& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     return CBigInteger::New(BigInt::Gcd(
             GetBigInt(), From(value)->GetBigInt()),
-            IID_IBigInteger, (IInterface**)result);
+            IID_IBigInteger, (IInterface**)&result);
 }
 
 ECode BigInteger::Multiply(
     /* [in] */ IBigInteger* value,
-    /* [out] */ IBigInteger** result)
+    /* [out] */ AutoPtr<IBigInteger>& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     return CBigInteger::New(BigInt::Product(
             GetBigInt(), From(value)->GetBigInt()),
-            IID_IBigInteger, (IInterface**)result);
+            IID_IBigInteger, (IInterface**)&result);
 }
 
 ECode BigInteger::Pow(
     /* [in] */ Integer exp,
-    /* [out] */ IBigInteger** value)
+    /* [out] */ AutoPtr<IBigInteger>& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     if (exp < 0) {
         Logger::E("BigInteger", "exp < 0: %d", exp);
         return E_ARITHMETIC_EXCEPTION;
     }
     return CBigInteger::New(BigInt::Exp(GetBigInt(), exp),
-            IID_IBigInteger, (IInterface**)value);
+            IID_IBigInteger, (IInterface**)&value);
 }
 
 ECode BigInteger::DivideAndRemainder(
@@ -901,107 +841,93 @@ ECode BigInteger::DivideAndRemainder(
 
 ECode BigInteger::Divide(
     /* [in] */ IBigInteger* divisor,
-    /* [out] */ IBigInteger** result)
+    /* [out] */ AutoPtr<IBigInteger>& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     AutoPtr<BigInt> quotient = new BigInt();
     BigInt::Division(GetBigInt(), From(divisor)->GetBigInt(), quotient, nullptr);
-    return CBigInteger::New(quotient, IID_IBigInteger, (IInterface**)result);
+    return CBigInteger::New(quotient, IID_IBigInteger, (IInterface**)&result);
 }
 
 ECode BigInteger::Remainder(
     /* [in] */ IBigInteger* divisor,
-    /* [out] */ IBigInteger** result)
+    /* [out] */ AutoPtr<IBigInteger>& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     AutoPtr<BigInt> remainder = new BigInt();
     BigInt::Division(GetBigInt(), From(divisor)->GetBigInt(), nullptr, remainder);
-    return CBigInteger::New(remainder, IID_IBigInteger, (IInterface**)result);
+    return CBigInteger::New(remainder, IID_IBigInteger, (IInterface**)&result);
 }
 
 ECode BigInteger::ModInverse(
     /* [in] */ IBigInteger* m,
-    /* [out] */ IBigInteger** result)
+    /* [out] */ AutoPtr<IBigInteger>& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     Integer sign;
-    if (m->Signum(&sign), sign <= 0) {
+    if (m->Signum(sign), sign <= 0) {
         Logger::E("BigInteger", "modulus not positive");
         return E_ARITHMETIC_EXCEPTION;
     }
     return CBigInteger::New(BigInt::ModInverse(GetBigInt(), From(m)->GetBigInt()),
-            IID_IBigInteger, (IInterface**)result);
+            IID_IBigInteger, (IInterface**)&result);
 }
 
 ECode BigInteger::ModPow(
     /* [in] */ IBigInteger* exponent,
     /* [in] */ IBigInteger* modulus,
-    /* [out] */ IBigInteger** result)
+    /* [out] */ AutoPtr<IBigInteger>& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     Integer sign;
-    if (modulus->Signum(&sign), sign <= 0) {
+    if (modulus->Signum(sign), sign <= 0) {
         Logger::E("BigInteger", "modulus.signum() <= 0");
         return E_ARITHMETIC_EXCEPTION;
     }
     Integer exponentSign;
-    exponent->Signum(&exponentSign);
+    exponent->Signum(exponentSign);
     if (exponentSign == 0) { // OpenSSL gets this case wrong; http://b/8574367.
         return GetONE()->Mod(modulus, result);
     }
     AutoPtr<IBigInteger> base;
     if (exponentSign < 0) {
-        FAIL_RETURN(ModInverse(modulus, &base));
+        FAIL_RETURN(ModInverse(modulus, base));
     }
     else {
         base = this;
     }
     return CBigInteger::New(BigInt::ModExp(From(base)->GetBigInt(),
             From(exponent)->GetBigInt(), From(modulus)->GetBigInt()),
-            IID_IBigInteger, (IInterface**)result);
+            IID_IBigInteger, (IInterface**)&result);
 }
 
 ECode BigInteger::Mod(
     /* [in] */ IBigInteger* m,
-    /* [out] */ IBigInteger** result)
+    /* [out] */ AutoPtr<IBigInteger>& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     Integer sign;
-    if (m->Signum(&sign), sign <= 0) {
+    if (m->Signum(sign), sign <= 0) {
         Logger::E("BigInteger", "m.signum() <= 0");
         return E_ARITHMETIC_EXCEPTION;
     }
     return CBigInteger::New(BigInt::Modulus(GetBigInt(), From(m)->GetBigInt()),
-            IID_IBigInteger, (IInterface**)result);
+            IID_IBigInteger, (IInterface**)&result);
 }
 
 ECode BigInteger::IsProbablePrime(
     /* [in] */ Integer certainty,
-    /* [out] */ Boolean* prime)
+    /* [out] */ Boolean& prime)
 {
-    VALIDATE_NOT_NULL(prime);
-
     if (certainty <= 0) {
-        *prime = true;
+        prime = true;
         return NOERROR;
     }
-    *prime = GetBigInt()->IsPrime(certainty);
+    prime = GetBigInt()->IsPrime(certainty);
     return NOERROR;
 }
 
 ECode BigInteger::NextProbablePrime(
-    /* [out] */ IBigInteger** value)
+    /* [out] */ AutoPtr<IBigInteger>& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     if (mSign < 0) {
         Logger::E("BigInteger", "sign < 0");
-        *value = nullptr;
+        value = nullptr;
         return NOERROR;
     }
     return Primality::NextProbablePrime(this, value);
@@ -1010,11 +936,9 @@ ECode BigInteger::NextProbablePrime(
 ECode BigInteger::ProbablePrime(
     /* [in] */ Integer bitLength,
     /* [in] */ IRandom* random,
-    /* [out] */ IBigInteger** value)
+    /* [out] */ AutoPtr<IBigInteger>& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    return CBigInteger::New(bitLength, 100, random, IID_IBigInteger, (IInterface**)value);
+    return CBigInteger::New(bitLength, 100, random, IID_IBigInteger, (IInterface**)&value);
 }
 
 ECode BigInteger::TwosComplement(
@@ -1028,7 +952,7 @@ ECode BigInteger::TwosComplement(
     }
     BigInteger* temp = this;
     Integer bitLen;
-    BitLength(&bitLen);
+    BitLength(bitLen);
     Integer iThis = GetFirstNonzeroDigit();
     Integer bytesLen = (bitLen >> 3) + 1;
     /* Puts the little-endian int array representing the magnitude

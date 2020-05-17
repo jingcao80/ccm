@@ -40,13 +40,13 @@ Array<IBigInteger*> CreateBigTenPows()
 
     for (i = 0; i <= 18; i++) {
         AutoPtr<IBigInteger> tempBI;
-        CBigInteger::ValueOf(fivePow << i, &tempBI);
+        CBigInteger::ValueOf(fivePow << i, tempBI);
         bigTenPows.Set(i, tempBI);
         fivePow *= 5;
     }
     for (; i < bigTenPows.GetLength(); i++) {
         AutoPtr<IBigInteger> tempBI;
-        bigTenPows[i - 1]->Multiply(CBigInteger::GetTEN(), &tempBI);
+        bigTenPows[i - 1]->Multiply(CBigInteger::GetTEN(), tempBI);
         bigTenPows.Set(i, tempBI);
     }
 
@@ -61,13 +61,13 @@ Array<IBigInteger*> CreateBigFivePows()
 
     for (i = 0; i <= 18; i++) {
         AutoPtr<IBigInteger> tempBI;
-        CBigInteger::ValueOf(fivePow, &tempBI);
+        CBigInteger::ValueOf(fivePow, tempBI);
         bigFivePows.Set(i, tempBI);
         fivePow *= 5;
     }
     for (; i < bigFivePows.GetLength(); i++) {
         AutoPtr<IBigInteger> tempBI;
-        bigFivePows[i - 1]->Multiply(bigFivePows[1], &tempBI);
+        bigFivePows[i - 1]->Multiply(bigFivePows[1], tempBI);
         bigFivePows.Set(i, tempBI);
     }
 
@@ -106,7 +106,7 @@ AutoPtr<IBigInteger> Multiplication::MultiplyByTenPow(
     }
     else {
         AutoPtr<IBigInteger> tempBI;
-        value->Multiply(PowerOf10(exp), &tempBI);
+        value->Multiply(PowerOf10(exp), tempBI);
         return tempBI;
     }
 }
@@ -122,7 +122,7 @@ AutoPtr<IBigInteger> Multiplication::PowerOf10(
     }
     else if (exp <= 50) {
         AutoPtr<IBigInteger> tempBI;
-        CBigInteger::GetTEN()->Pow(intExp, &tempBI);
+        CBigInteger::GetTEN()->Pow(intExp, tempBI);
         return tempBI;
     }
 
@@ -131,8 +131,8 @@ AutoPtr<IBigInteger> Multiplication::PowerOf10(
     if (exp < IInteger::MAX_VALUE) {
         // To calculate:    5^exp * 2^exp
         AutoPtr<IBigInteger> tempBI;
-        GetBigFivePows()[1]->Pow(intExp, &tempBI);
-        tempBI->ShiftLeft(intExp, &res);
+        GetBigFivePows()[1]->Pow(intExp, tempBI);
+        tempBI->ShiftLeft(intExp, res);
     }
     else {
         /*
@@ -143,30 +143,30 @@ AutoPtr<IBigInteger> Multiplication::PowerOf10(
          */
         // To calculate:    5^exp
         AutoPtr<IBigInteger> powerOfFive;
-        GetBigFivePows()[1]->Pow(IInteger::MAX_VALUE, &powerOfFive);
+        GetBigFivePows()[1]->Pow(IInteger::MAX_VALUE, powerOfFive);
         res = powerOfFive;
         Long longExp = exp - IInteger::MAX_VALUE;
 
         AutoPtr<IBigInteger> tempBI, bi1;
         intExp = (Integer)(exp % IInteger::MAX_VALUE);
         while (longExp > IInteger::MAX_VALUE) {
-            res->Multiply(powerOfFive, &tempBI);
+            res->Multiply(powerOfFive, tempBI);
             res = std::move(tempBI);
             longExp -= IInteger::MAX_VALUE;
         }
-        GetBigFivePows()[1]->Pow(intExp, &bi1);
-        res->Multiply(bi1, &tempBI);
+        GetBigFivePows()[1]->Pow(intExp, bi1);
+        res->Multiply(bi1, tempBI);
         res = std::move(tempBI);
         // To calculate:    5^exp << exp
-        res->ShiftLeft(IInteger::MAX_VALUE, &tempBI);
+        res->ShiftLeft(IInteger::MAX_VALUE, tempBI);
         res = std::move(tempBI);
         longExp = exp - IInteger::MAX_VALUE;
         while (longExp > IInteger::MAX_VALUE) {
-            res->ShiftLeft(IInteger::MAX_VALUE, &tempBI);
+            res->ShiftLeft(IInteger::MAX_VALUE, tempBI);
             res = std::move(tempBI);
             longExp -= IInteger::MAX_VALUE;
         }
-        res->ShiftLeft(intExp, &tempBI);
+        res->ShiftLeft(intExp, tempBI);
         res = std::move(tempBI);
     }
 
@@ -182,14 +182,14 @@ AutoPtr<IBigInteger> Multiplication::MultiplyByFivePow(
     }
     else if (exp > GetBigFivePows().GetLength()) {
         AutoPtr<IBigInteger> result;
-        value->Multiply(GetBigFivePows()[exp], &result);
+        value->Multiply(GetBigFivePows()[exp], result);
         return result;
     }
     else {
         // Large powers of five
         AutoPtr<IBigInteger> tempBI, result;
-        GetBigFivePows()[1]->Pow(exp, &tempBI);
-        value->Multiply(tempBI, &result);
+        GetBigFivePows()[1]->Pow(exp, tempBI);
+        value->Multiply(tempBI, result);
         return result;
     }
 }

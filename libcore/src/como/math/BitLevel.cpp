@@ -105,27 +105,26 @@ void BitLevel::ShiftLeftOneBit(
 
 ECode BitLevel::ShiftLeftOneBit(
     /* [in] */ BigInteger* source,
-    /* [out] */ IBigInteger** result)
+    /* [out] */ AutoPtr<IBigInteger>& result)
 {
     source->PrepareRepresentation();
     Integer srcLen = source->mNumberLength;
     Integer resLen = srcLen + 1;
     Array<Integer> resDigits(resLen);
     ShiftLeftOneBit(resDigits, source->mDigits, srcLen);
-    return CBigInteger::New(source->mSign, resLen, resDigits, IID_IBigInteger, (IInterface**)result);
+    return CBigInteger::New(source->mSign, resLen, resDigits, IID_IBigInteger, (IInterface**)&result);
 }
 
 ECode BitLevel::ShiftRight(
     /* [in] */ BigInteger* source,
     /* [in] */ Integer count,
-    /* [out] */ IBigInteger** result)
+    /* [out] */ AutoPtr<IBigInteger>& result)
 {
     source->PrepareRepresentation();
     Integer intCount = count >> 5; // count of integers
     count &= 31; // count of remaining bits
     if (intCount >= source->mNumberLength) {
-        AutoPtr<IBigInteger> bi = ((source->mSign < 0) ? CBigInteger::GetMINUS_ONE() : CBigInteger::GetZERO());
-        bi.MoveTo(result);
+        result = ((source->mSign < 0) ? CBigInteger::GetMINUS_ONE() : CBigInteger::GetZERO());
         return NOERROR;
     }
     Integer i;
@@ -151,7 +150,7 @@ ECode BitLevel::ShiftRight(
             resDigits[i]++;
         }
     }
-    return CBigInteger::New(source->mSign, resLength, resDigits, IID_IBigInteger, (IInterface**)result);
+    return CBigInteger::New(source->mSign, resLength, resDigits, IID_IBigInteger, (IInterface**)&result);
 }
 
 Boolean BitLevel::ShiftRight(
@@ -188,7 +187,7 @@ Boolean BitLevel::ShiftRight(
 ECode BitLevel::FlipBit(
     /* [in] */ BigInteger* value,
     /* [in] */ Integer n,
-    /* [out] */ IBigInteger** result)
+    /* [out] */ AutoPtr<IBigInteger>& result)
 {
     value->PrepareRepresentation();
     Integer resSign = (value->mSign == 0) ? 1 : value->mSign;
@@ -232,7 +231,7 @@ ECode BitLevel::FlipBit(
     else {
         resDigits[intCount] ^= bitNumber;
     }
-    return CBigInteger::New(resSign, resLength, resDigits, IID_IBigInteger, (IInterface**)result);
+    return CBigInteger::New(resSign, resLength, resDigits, IID_IBigInteger, (IInterface**)&result);
 }
 
 }

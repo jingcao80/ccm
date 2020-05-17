@@ -166,7 +166,7 @@ ECode DecimalFormat::Format(
         IAtomicInteger::Probe(number) != nullptr ||
         IAtomicLong::Probe(number) != nullptr ||
         (IBigInteger::Probe(number) != nullptr &&
-        (IBigInteger::Probe(number)->BitLength(&bitLen), bitLen < 64))) {
+        (IBigInteger::Probe(number)->BitLength(bitLen), bitLen < 64))) {
         Long lv;
         INumber::Probe(number)->LongValue(lv);
         return Format(lv, toAppendTo, pos);
@@ -236,7 +236,7 @@ ECode DecimalFormat::Format(
 
     Array<Char> result;
     Integer bitlen;
-    if (number->BitLength(&bitlen), bitlen < 64) {
+    if (number->BitLength(bitlen), bitlen < 64) {
         Long lv;
         INumber::Probe(number)->LongValue(lv);
         FAIL_RETURN(ndf->FormatLong(lv, pos, &result));

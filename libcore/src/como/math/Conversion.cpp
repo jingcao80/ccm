@@ -70,9 +70,9 @@ String Conversion::BigInteger2String(
     }
     Double bitsForRadixDigit = Math::Log(radix) / Math::Log(2);
     AutoPtr<IBigInteger> absBI;
-    value->Abs(&absBI);
+    value->Abs(absBI);
     Integer lenth;
-    absBI->BitLength(&lenth);
+    absBI->BitLength(lenth);
     Integer resLengthInChars = (Integer)(lenth / bitsForRadixDigit + ((sign < 0) ? 1 : 0)) + 1;
 
     Array<Char> result(resLengthInChars);
@@ -450,14 +450,14 @@ Double Conversion::BigInteger2Double(
                 IDouble::NEGATIVE_INFINITY);
     }
     AutoPtr<IBigInteger> absBI;
-    value->Abs(&absBI);
+    value->Abs(absBI);
     Integer bitLen;
-    absBI->BitLength(&bitLen);
+    absBI->BitLength(bitLen);
     Long exponent = bitLen - 1;
     Integer delta = bitLen - 54;
     // We need 54 top bits from this, the 53th bit is always 1 in lVal.
     AutoPtr<IBigInteger> shiftBI;
-    absBI->ShiftRight(delta, &shiftBI);
+    absBI->ShiftRight(delta, shiftBI);
     Long lVal;
     INumber::Probe(shiftBI)->LongValue(lVal);
     /*

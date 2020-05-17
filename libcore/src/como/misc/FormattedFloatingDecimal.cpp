@@ -89,21 +89,21 @@ ECode FormattedFloatingDecimal::Constructor(
     /* [in] */ IFloatingDecimalBinaryToASCIIConverter* fdConverter)
 {
     Boolean exceptional;
-    if (fdConverter->IsExceptional(&exceptional), exceptional) {
+    if (fdConverter->IsExceptional(exceptional), exceptional) {
         String str;
-        fdConverter->ToFormatString(&str);
+        fdConverter->ToFormatString(str);
         mMantissa = str.GetChars();
         mExponent = Array<Char>::Null();
         return NOERROR;
     }
     Array<Char> digits = GetBuffer();
     Integer nDigits;
-    fdConverter->GetDigits(digits, &nDigits);
+    fdConverter->GetDigits(digits, nDigits);
     Integer decExp;
-    fdConverter->GetDecimalExponent(&decExp);
+    fdConverter->GetDecimalExponent(decExp);
     Integer exp;
     Boolean isNegative;
-    fdConverter->IsNegative(&isNegative);
+    fdConverter->IsNegative(isNegative);
     switch (form) {
         case FormattedFloatingDecimalForm::COMPATIBLE:
             exp = decExp;
@@ -148,11 +148,9 @@ ECode FormattedFloatingDecimal::Constructor(
 }
 
 ECode FormattedFloatingDecimal::GetExponentRounded(
-    /* [out] */ Integer* exponent)
+    /* [out] */ Integer& exponent)
 {
-    VALIDATE_NOT_NULL(exponent);
-
-    *exponent = mDecExponentRounded - 1;
+    exponent = mDecExponentRounded - 1;
     return NOERROR;
 }
 

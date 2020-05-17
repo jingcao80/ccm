@@ -122,20 +122,16 @@ ECode MathContext::CheckValid()
 }
 
 ECode MathContext::GetPrecision(
-    /* [out] */ Integer* precision)
+    /* [out] */ Integer& precision)
 {
-    VALIDATE_NOT_NULL(precision);
-
-    *precision = mPrecision;
+    precision = mPrecision;
     return NOERROR;
 }
 
 ECode MathContext::GetRoundingMode(
-    /* [out] */ RoundingMode* roundingMode)
+    /* [out] */ RoundingMode& roundingMode)
 {
-    VALIDATE_NOT_NULL(roundingMode);
-
-    *roundingMode = mRoundingMode;
+    roundingMode = mRoundingMode;
     return NOERROR;
 }
 

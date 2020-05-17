@@ -42,7 +42,7 @@ public:
         /* [out] */ IFormattedFloatingDecimal** fd);
 
     ECode GetExponentRounded(
-        /* [out] */ Integer* exponent) override;
+        /* [out] */ Integer& exponent) override;
 
     ECode GetMantissa(
         /* [out, callee] */ Array<Char>* mantissa) override;

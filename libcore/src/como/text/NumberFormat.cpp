@@ -82,7 +82,7 @@ ECode NumberFormat::Format(
         IAtomicInteger::Probe(number) != nullptr ||
         IAtomicLong::Probe(number) != nullptr ||
         (IBigInteger::Probe(number) != nullptr &&
-            (IBigInteger::Probe(number)->BitLength(&bitLength), bitLength< 64))) {
+            (IBigInteger::Probe(number)->BitLength(bitLength), bitLength< 64))) {
         Long value;
         INumber::Probe(number)->LongValue(value);
         return Format(value, toAppendTo, pos);

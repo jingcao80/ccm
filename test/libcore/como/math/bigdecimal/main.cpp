@@ -54,14 +54,14 @@ void AssertPrecision(
     AutoPtr<IBigDecimal> parsed;
     CBigDecimal::New(value, IID_IBigDecimal, (IInterface**)&parsed);
     Integer precision;
-    parsed->Precision(&precision);
+    parsed->Precision(precision);
     EXPECT_EQ(expectedPrecision, precision);
 
     AutoPtr<IBigDecimal> ONE;
-    BigDecimalFactory::GetONE(&ONE);
+    BigDecimalFactory::GetONE(ONE);
     AutoPtr<IBigDecimal> computed;
-    parsed->Divide(ONE, &computed);
-    computed->Precision(&precision);
+    parsed->Divide(ONE, computed);
+    computed->Precision(precision);
     EXPECT_EQ(expectedPrecision, precision);
 }
 
@@ -99,7 +99,7 @@ TEST(BigDecimalTest, TestRound)
     AutoPtr<IMathContext> mc;
     CMathContext::New(2, RoundingMode::FLOOR, IID_IMathContext, (IInterface**)&mc);
     AutoPtr<IBigDecimal> rounded;
-    bigDecimal->Round(mc, &rounded);
+    bigDecimal->Round(mc, rounded);
     EXPECT_STREQ("0.99", Object::ToString(rounded).string());
 }
 
@@ -108,27 +108,27 @@ TEST(BigDecimalTest, TestPrecisionFromString)
     AutoPtr<IBigDecimal> a;
     CBigDecimal::New(String("-0.011111111111111111111"), IID_IBigDecimal, (IInterface**)&a);
     AutoPtr<IBigDecimal> ONE;
-    BigDecimalFactory::GetONE(&ONE);
+    BigDecimalFactory::GetONE(ONE);
     AutoPtr<IBigDecimal> b;
-    a->Multiply(ONE, &b);
+    a->Multiply(ONE, b);
 
     EXPECT_STREQ("-0.011111111111111111111", Object::ToString(a).string());
     EXPECT_STREQ("-0.011111111111111111111", Object::ToString(b).string());
 
     Integer precision;
-    a->Precision(&precision);
+    a->Precision(precision);
     EXPECT_EQ(20, precision);
-    b->Precision(&precision);
+    b->Precision(precision);
     EXPECT_EQ(20, precision);
 
     Integer scale;
-    a->Scale(&scale);
+    a->Scale(scale);
     EXPECT_EQ(21, scale);
     EXPECT_EQ(21, scale);
 
     AutoPtr<IBigInteger> aBI, bBI;
-    a->UnscaledValue(&aBI);
-    b->UnscaledValue(&bBI);
+    a->UnscaledValue(aBI);
+    b->UnscaledValue(bBI);
     EXPECT_STREQ("-11111111111111111111", Object::ToString(aBI).string());
     EXPECT_STREQ("-11111111111111111111", Object::ToString(bBI).string());
 
@@ -136,9 +136,9 @@ TEST(BigDecimalTest, TestPrecisionFromString)
     EXPECT_TRUE(Object::Equals(b, a));
 
     AutoPtr<IBigDecimal> bd;
-    a->Subtract(b, &bd);
+    a->Subtract(b, bd);
     Integer sign;
-    bd->Signum(&sign);
+    bd->Signum(sign);
     EXPECT_EQ(0, sign);
     Integer comp;
     IComparable::Probe(a)->CompareTo(b, comp);
@@ -148,10 +148,10 @@ TEST(BigDecimalTest, TestPrecisionFromString)
 TEST(BigDecimalTest, TestPrecisionFromStringSimplePowersOfTen)
 {
     AutoPtr<IBigInteger> V_10, V_1, V1, V10;
-    BigIntegerFactory::ValueOf(-10, &V_10);
-    BigIntegerFactory::ValueOf(-1, &V_1);
-    BigIntegerFactory::ValueOf(10, &V10);
-    BigIntegerFactory::ValueOf(1, &V1);
+    BigIntegerFactory::ValueOf(-10, V_10);
+    BigIntegerFactory::ValueOf(-1, V_1);
+    BigIntegerFactory::ValueOf(10, V10);
+    BigIntegerFactory::ValueOf(1, V1);
 
     AutoPtr<IBigDecimal> lBD, rBD;
     CBigDecimal::New(V_10, 1, IID_IBigDecimal, (IInterface**)&lBD);
@@ -189,17 +189,17 @@ TEST(BigDecimalTest, Test54580)
     AutoPtr<IBigDecimal> a;
     CBigDecimal::New(String("1.200002"), IID_IBigDecimal, (IInterface**)&a);
     String str;
-    a->ToPlainString(&str);
+    a->ToPlainString(str);
     EXPECT_STREQ("1.200002", str.string());
 
     AutoPtr<IMathContext> mc;
     CMathContext::New(3, RoundingMode::HALF_UP, IID_IMathContext, (IInterface**)&mc);
     AutoPtr<IBigDecimal> abs;
-    a->Abs(mc, &abs);
-    abs->ToPlainString(&str);
+    a->Abs(mc, abs);
+    abs->ToPlainString(str);
     EXPECT_STREQ("1.20", str.string());
 
-    a->ToPlainString(&str);
+    a->ToPlainString(str);
     EXPECT_STREQ("1.200002", str.string());
 }
 
@@ -207,14 +207,12 @@ TEST(BigDecimalTest, Test191227)
 {
     AutoPtr<IBigDecimal> tempBD;
     AutoPtr<IBigDecimal> zero;
-    BigDecimalFactory::GetZERO(&zero);
-    zero->SetScale(2, RoundingMode::HALF_EVEN, &tempBD);
-    zero = std::move(tempBD);
+    BigDecimalFactory::GetZERO(zero);
+    zero->SetScale(2, RoundingMode::HALF_EVEN, zero);
 
     AutoPtr<IBigDecimal> other;
-    BigDecimalFactory::ValueOf(999999998000000001.00, &other);
-    other->SetScale(2, RoundingMode::HALF_EVEN, &tempBD);
-    other = std::move(tempBD);
+    BigDecimalFactory::ValueOf(999999998000000001.00, other);
+    other->SetScale(2, RoundingMode::HALF_EVEN, other);
 
     EXPECT_FALSE(Object::Equals(zero, other));
     EXPECT_FALSE(Object::Equals(other, zero));
@@ -234,7 +232,7 @@ void CheckDivide(
     AutoPtr<IBigDecimal> divisor;
     CBigDecimal::New(d, IID_IBigDecimal, (IInterface**)&divisor);
     AutoPtr<IBigDecimal> result;
-    dividend->Divide(divisor, scale, rm, &result);
+    dividend->Divide(divisor, scale, rm, result);
     EXPECT_TRUE(Object::Equals(expBD, result));
 }
 
@@ -318,38 +316,33 @@ void CheckNegate(
         EXPECT_FALSE(Object::Equals(a, b));
     }
     AutoPtr<IBigDecimal> neg;
-    a->Negate(&neg);
+    a->Negate(neg);
     EXPECT_TRUE(Object::Equals(neg, b));
-    neg = nullptr;
-    b->Negate(&neg);
+    b->Negate(neg);
     EXPECT_TRUE(Object::Equals(a, neg));
-    neg = nullptr;
-    a->Negate(&neg);
+    a->Negate(neg);
     AutoPtr<IBigDecimal> neg2;
-    neg->Negate(&neg2);
+    neg->Negate(neg2);
     EXPECT_TRUE(Object::Equals(a, neg2));
 }
 
 TEST(BigDecimalTest, TestNegate)
 {
     AutoPtr<IBigDecimal> v1, v2;
-    BigDecimalFactory::ValueOf(0LL, &v1);
-    BigDecimalFactory::ValueOf(0LL, &v2);
+    BigDecimalFactory::ValueOf(0LL, v1);
+    BigDecimalFactory::ValueOf(0LL, v2);
     CheckNegate(v1, v2);
 
-    v1 = v2 = nullptr;
-    BigDecimalFactory::ValueOf(1LL, &v1);
-    BigDecimalFactory::ValueOf(-1LL, &v2);
+    BigDecimalFactory::ValueOf(1LL, v1);
+    BigDecimalFactory::ValueOf(-1LL, v2);
     CheckNegate(v1, v2);
 
-    v1 = v2 = nullptr;
-    BigDecimalFactory::ValueOf(43LL, &v1);
-    BigDecimalFactory::ValueOf(-43LL, &v2);
+    BigDecimalFactory::ValueOf(43LL, v1);
+    BigDecimalFactory::ValueOf(-43LL, v2);
     CheckNegate(v1, v2);
 
-    v1 = v2 = nullptr;
-    BigDecimalFactory::ValueOf(ILong::MAX_VALUE, &v1);
-    BigDecimalFactory::ValueOf(-ILong::MAX_VALUE, &v2);
+    BigDecimalFactory::ValueOf(ILong::MAX_VALUE, v1);
+    BigDecimalFactory::ValueOf(-ILong::MAX_VALUE, v2);
     CheckNegate(v1, v2);
 
     v1 = v2 = nullptr;
@@ -377,25 +370,22 @@ void AssertSum(
     }
     AutoPtr<IBigDecimal> bigA, bigB;
     AutoPtr<IBigDecimal> bigMinusA, bigMinusB;
-    BigDecimalFactory::ValueOf(a, &bigA);
-    BigDecimalFactory::ValueOf(b, &bigB);
-    BigDecimalFactory::ValueOf(-a, &bigMinusA);
-    BigDecimalFactory::ValueOf(-b, &bigMinusB);
+    BigDecimalFactory::ValueOf(a, bigA);
+    BigDecimalFactory::ValueOf(b, bigB);
+    BigDecimalFactory::ValueOf(-a, bigMinusA);
+    BigDecimalFactory::ValueOf(-b, bigMinusB);
 
     AutoPtr<IBigDecimal> result;
-    bigA->Add(bigB, &result);
+    bigA->Add(bigB, result);
     EXPECT_STREQ(expectedSumAsString.string(), Object::ToString(result).string());
 
-    result = nullptr;
-    bigB->Add(bigA, &result);
+    bigB->Add(bigA, result);
     EXPECT_STREQ(expectedSumAsString.string(), Object::ToString(result).string());
 
-    result = nullptr;
-    bigA->Subtract(bigMinusB, &result);
+    bigA->Subtract(bigMinusB, result);
     EXPECT_STREQ(expectedSumAsString.string(), Object::ToString(result).string());
 
-    result = nullptr;
-    bigB->Subtract(bigMinusA, &result);
+    bigB->Subtract(bigMinusA, result);
     EXPECT_STREQ(expectedSumAsString.string(), Object::ToString(result).string());
 }
 
@@ -423,52 +413,52 @@ TEST(BigDecimalTest, TestDivideAvoids64bitOverflow)
     AutoPtr<IBigDecimal> lBD, rBD, dividend, divisor;
     CBigDecimal::New(String("9223372036854775808"), IID_IBigDecimal, (IInterface**)&lBD);
     CBigDecimal::New(String("-1"), IID_IBigDecimal, (IInterface**)&divisor);
-    minLong->Divide(divisor, 0, RoundingMode::UNNECESSARY, &rBD);
+    minLong->Divide(divisor, 0, RoundingMode::UNNECESSARY, rBD);
     EXPECT_TRUE(Object::Equals(lBD, rBD));
 
     lBD = rBD = divisor = nullptr;
     CBigDecimal::New(String("9223372036854775808"), IID_IBigDecimal, (IInterface**)&lBD);
     CBigDecimal::New(String("-922337203685477580.8"), IID_IBigDecimal, (IInterface**)&dividend);
     CBigDecimal::New(String("-0.1"), IID_IBigDecimal, (IInterface**)&divisor);
-    dividend->Divide(divisor, 0, RoundingMode::UNNECESSARY, &rBD);
+    dividend->Divide(divisor, 0, RoundingMode::UNNECESSARY, rBD);
     EXPECT_TRUE(Object::Equals(lBD, rBD));
 
     lBD = rBD = dividend = divisor = nullptr;
     CBigDecimal::New(String("9223372036854775808"), IID_IBigDecimal, (IInterface**)&lBD);
     CBigDecimal::New(String("-92233720368547758080"), IID_IBigDecimal, (IInterface**)&dividend);
     CBigDecimal::New(String("-1E+1"), IID_IBigDecimal, (IInterface**)&divisor);
-    dividend->Divide(divisor, 0, RoundingMode::UNNECESSARY, &rBD);
+    dividend->Divide(divisor, 0, RoundingMode::UNNECESSARY, rBD);
     EXPECT_TRUE(Object::Equals(lBD, rBD));
 
     lBD = rBD = dividend = divisor = nullptr;
     CBigDecimal::New(String("922337203685477580.8"), IID_IBigDecimal, (IInterface**)&lBD);
     CBigDecimal::New(String("-1E+1"), IID_IBigDecimal, (IInterface**)&divisor);
-    minLong->Divide(divisor, 1, RoundingMode::UNNECESSARY, &rBD);
+    minLong->Divide(divisor, 1, RoundingMode::UNNECESSARY, rBD);
     EXPECT_TRUE(Object::Equals(lBD, rBD));
 
     lBD = rBD = dividend = divisor = nullptr;
     CBigDecimal::New(String("9223372036854775808.0"), IID_IBigDecimal, (IInterface**)&lBD);
     CBigDecimal::New(String("-1"), IID_IBigDecimal, (IInterface**)&divisor);
-    minLong->Divide(divisor, 1, RoundingMode::UNNECESSARY, &rBD);
+    minLong->Divide(divisor, 1, RoundingMode::UNNECESSARY, rBD);
     EXPECT_TRUE(Object::Equals(lBD, rBD));
 
     lBD = rBD = dividend = divisor = nullptr;
     CBigDecimal::New(String("9223372036854775808"), IID_IBigDecimal, (IInterface**)&lBD);
     CBigDecimal::New(String("-1.0"), IID_IBigDecimal, (IInterface**)&divisor);
-    minLong->Divide(divisor, 0, RoundingMode::UNNECESSARY, &rBD);
+    minLong->Divide(divisor, 0, RoundingMode::UNNECESSARY, rBD);
     EXPECT_TRUE(Object::Equals(lBD, rBD));
 
     lBD = rBD = dividend = divisor = nullptr;
     CBigDecimal::New(String("9223372036854775808.0"), IID_IBigDecimal, (IInterface**)&lBD);
     CBigDecimal::New(String("-1.0"), IID_IBigDecimal, (IInterface**)&divisor);
-    minLong->Divide(divisor, 1, RoundingMode::UNNECESSARY, &rBD);
+    minLong->Divide(divisor, 1, RoundingMode::UNNECESSARY, rBD);
     EXPECT_TRUE(Object::Equals(lBD, rBD));
 
     lBD = rBD = dividend = divisor = nullptr;
     CBigDecimal::New(String("9223372036854775808"), IID_IBigDecimal, (IInterface**)&lBD);
     CBigDecimal::New(String("-4611686018427387904"), IID_IBigDecimal, (IInterface**)&dividend);
     CBigDecimal::New(String("-5E-1"), IID_IBigDecimal, (IInterface**)&divisor);
-    dividend->Divide(divisor, 0, RoundingMode::UNNECESSARY, &rBD);
+    dividend->Divide(divisor, 0, RoundingMode::UNNECESSARY, rBD);
     EXPECT_TRUE(Object::Equals(lBD, rBD));
 }
 
@@ -480,29 +470,25 @@ void CheckCommonOperations(
         EXPECT_TRUE(false);
     }
     AutoPtr<IBigDecimal> bigHalfValue, bigValue, two;
-    BigDecimalFactory::ValueOf(value / 2, &bigHalfValue);
-    BigDecimalFactory::ValueOf(value, &bigValue);
-    BigDecimalFactory::ValueOf(2LL, &two);
+    BigDecimalFactory::ValueOf(value / 2, bigHalfValue);
+    BigDecimalFactory::ValueOf(value, bigValue);
+    BigDecimalFactory::ValueOf(2LL, two);
 
     AutoPtr<IBigDecimal> result;
-    bigHalfValue->Multiply(two, &result);
+    bigHalfValue->Multiply(two, result);
     EXPECT_TRUE(Object::Equals(bigValue, result));
 
-    result = nullptr;
-    bigHalfValue->Add(bigHalfValue, &result);
+    bigHalfValue->Add(bigHalfValue, result);
     EXPECT_TRUE(Object::Equals(bigValue, result));
 
-    result = nullptr;
-    bigValue->Subtract(bigHalfValue, &result);
+    bigValue->Subtract(bigHalfValue, result);
     EXPECT_TRUE(Object::Equals(bigHalfValue, result));
 
-    result = nullptr;
-    bigValue->Divide(two, RoundingMode::UNNECESSARY, &result);
+    bigValue->Divide(two, RoundingMode::UNNECESSARY, result);
     EXPECT_TRUE(Object::Equals(bigHalfValue, result));
 
     if (value != 0) {
-        result = nullptr;
-        bigValue->Divide(bigHalfValue, RoundingMode::UNNECESSARY, &result);
+        bigValue->Divide(bigHalfValue, RoundingMode::UNNECESSARY, result);
         EXPECT_TRUE(Object::Equals(two, result));
     }
 }
@@ -530,17 +516,16 @@ void CheckMultiplyConsistentWithLong(
     Long expectedResult = a * b;
 
     AutoPtr<IBigDecimal> va, vb, result;
-    BigDecimalFactory::ValueOf(a, &va);
-    BigDecimalFactory::ValueOf(b, &vb);
-    va->Multiply(vb, &result);
+    BigDecimalFactory::ValueOf(a, va);
+    BigDecimalFactory::ValueOf(b, vb);
+    va->Multiply(vb, result);
     EXPECT_STREQ(StringUtils::ToString(expectedResult).string(), Object::ToString(result).string());
 
-    va = vb = result = nullptr;
-    BigDecimalFactory::ValueOf(a, 2, &va);
-    BigDecimalFactory::ValueOf(b, 3, &vb);
-    va->Multiply(vb, &result);
+    BigDecimalFactory::ValueOf(a, 2, va);
+    BigDecimalFactory::ValueOf(b, 3, vb);
+    va->Multiply(vb, result);
     AutoPtr<IBigDecimal> vexp;
-    BigDecimalFactory::ValueOf(expectedResult, 5, &vexp);
+    BigDecimalFactory::ValueOf(expectedResult, 5, vexp);
     EXPECT_TRUE(Object::Equals(vexp, result));
 }
 
@@ -562,25 +547,23 @@ TEST(BigDecimalTest, TestMultiplyNear64BitOverflowScaled)
 {
     AutoPtr<IBigDecimal> v1, v2, result;
     // -((2^31) / 100) * (-2/10) == (2^64)/1000
-    BigDecimalFactory::ValueOf(-(1LL << 62LL), 2, &v1);
-    BigDecimalFactory::ValueOf(-2, 1, &v2);
-    v1->Multiply(v2, &result);
+    BigDecimalFactory::ValueOf(-(1LL << 62LL), 2, v1);
+    BigDecimalFactory::ValueOf(-2, 1, v2);
+    v1->Multiply(v2, result);
     EXPECT_STREQ("9223372036854775.808", Object::ToString(result).string());
 
     // -((2^31) / 100) * (2/10) == -(2^64)/1000
-    v1 = v2 = result = nullptr;
-    BigDecimalFactory::ValueOf(-(1LL << 62LL), 2, &v1);
-    BigDecimalFactory::ValueOf(2, 1, &v2);
-    v1->Multiply(v2, &result);
+    BigDecimalFactory::ValueOf(-(1LL << 62LL), 2, v1);
+    BigDecimalFactory::ValueOf(2, 1, v2);
+    v1->Multiply(v2, result);
     EXPECT_STREQ("-9223372036854775.808", Object::ToString(result).string());
 
     // -((2^31) * 100) * (-2/10) == (2^64) * 10
-    v1 = v2 = result = nullptr;
     AutoPtr<IBigDecimal> lBD;
     CBigDecimal::New(String("9223372036854775808E1"), IID_IBigDecimal, (IInterface**)&lBD);
-    BigDecimalFactory::ValueOf(-(1LL << 62LL), -2, &v1);
-    BigDecimalFactory::ValueOf(-2, 1, &v2);
-    v1->Multiply(v2, &result);
+    BigDecimalFactory::ValueOf(-(1LL << 62LL), -2, v1);
+    BigDecimalFactory::ValueOf(-2, 1, v2);
+    v1->Multiply(v2, result);
     EXPECT_TRUE(Object::Equals(lBD, result));
 }
 
@@ -589,11 +572,11 @@ AutoPtr<IBigDecimal> BigMultiply(
     /* [in] */ Long b)
 {
     AutoPtr<IBigDecimal> bigA, bigB, result;
-    BigDecimalFactory::ValueOf(a, &bigA);
-    BigDecimalFactory::ValueOf(b, &bigB);
-    bigA->Multiply(bigB, &result);
+    BigDecimalFactory::ValueOf(a, bigA);
+    BigDecimalFactory::ValueOf(b, bigB);
+    bigA->Multiply(bigB, result);
     AutoPtr<IBigDecimal> rBD;
-    bigB->Multiply(bigA, &rBD);
+    bigB->Multiply(bigA, rBD);
     EXPECT_TRUE(Object::Equals(result, rBD));
     return result;
 }

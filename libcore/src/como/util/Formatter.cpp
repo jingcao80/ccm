@@ -1397,10 +1397,10 @@ ECode Formatter::FormatSpecifier::Print(
     AutoPtr<IStringBuilder> sb;
     CStringBuilder::New(IID_IStringBuilder, (IInterface**)&sb);
     Integer sign;
-    value->Signum(&sign);
+    value->Signum(sign);
     Boolean neg = sign == -1;
     AutoPtr<IBigInteger> v;
-    value->Abs(&v);
+    value->Abs(v);
 
     // leading sign indicator
     LeadingSign(sb, neg);
@@ -1411,7 +1411,7 @@ ECode Formatter::FormatSpecifier::Print(
     }
     else if (mC == Conversion::OCTAL_INTEGER) {
         String s;
-        v->ToString(8, &s);
+        v->ToString(8, s);
 
         Integer len;
         sb->GetLength(len);
@@ -1434,7 +1434,7 @@ ECode Formatter::FormatSpecifier::Print(
     }
     else if (mC == Conversion::HEXADECIMAL_INTEGER) {
         String s;
-        v->ToString(16, &s);
+        v->ToString(16, s);
 
         Integer len;
         sb->GetLength(len);
@@ -1616,7 +1616,7 @@ ECode Formatter::FormatSpecifier::Print(
                     FormattedFloatingDecimalForm::GENERAL, &fd);
             fd->GetExponent(&exp);
             fd->GetMantissa(&mant);
-            fd->GetExponentRounded(&expRounded);
+            fd->GetExponentRounded(expRounded);
         }
 
         if (!exp.IsNull()) {
@@ -1830,10 +1830,10 @@ ECode Formatter::FormatSpecifier::Print(
     AutoPtr<IStringBuilder> sb;
     CStringBuilder::New(IID_IStringBuilder, (IInterface**)&sb);
     Integer sign;
-    value->Signum(&sign);
+    value->Signum(sign);
     Boolean neg = sign == -1;
     AutoPtr<IBigDecimal> v;
-    value->Abs(&v);
+    value->Abs(v);
     // leading sign indicator
     LeadingSign(sb, neg);
 
@@ -1863,8 +1863,8 @@ ECode Formatter::FormatSpecifier::Print(
         // Create a new BigDecimal with the desired precision.
         Integer prec = (precision == -1 ? 6 : precision);
         Integer scale, origPrec;
-        value->Scale(&scale);
-        value->Precision(&origPrec);
+        value->Scale(scale);
+        value->Precision(origPrec);
         Integer nzeros = 0;
         Integer compPrec;
 
@@ -1879,13 +1879,12 @@ ECode Formatter::FormatSpecifier::Print(
         AutoPtr<IMathContext> mc;
         CMathContext::New(compPrec, IID_IMathContext, (IInterface**)&mc);
         AutoPtr<IBigInteger> bi;
-        value->UnscaledValue(&bi);
+        value->UnscaledValue(bi);
         AutoPtr<IBigDecimal> v;
         CBigDecimal::New(bi, scale, mc, IID_IBigDecimal, (IInterface**)&v);
 
-        bi = nullptr;
-        v->UnscaledValue(&bi);
-        v->Scale(&scale);
+        v->UnscaledValue(bi);
+        v->Scale(scale);
         BigDecimalLayout bdl(bi, scale, FormatterBigDecimalLayoutForm::SCIENTIFIC);
 
         Array<Char> mMant = bdl.Mantissa();
@@ -1927,32 +1926,30 @@ ECode Formatter::FormatSpecifier::Print(
         // Create a new BigDecimal with the desired precision.
         Integer prec = (precision == -1 ? 6 : precision);
         Integer scale;
-        value->Scale(&scale);
+        value->Scale(scale);
 
         if (scale > prec) {
             // more "scale" digits than the requested "precision"
             Integer compPrec;
-            value->Precision(&compPrec);
+            value->Precision(compPrec);
             if (compPrec <= scale) {
                 // case of 0.xxxxxx
-                AutoPtr<IBigDecimal> tempBD;
-                value->SetScale(prec, RoundingMode::HALF_UP, &tempBD);
-                value = std::move(tempBD);
+                value->SetScale(prec, RoundingMode::HALF_UP, value);
             }
             else {
                 compPrec -= (scale - prec);
                 AutoPtr<IMathContext> mc;
                 CMathContext::New(compPrec, IID_IMathContext, (IInterface**)&mc);
                 AutoPtr<IBigInteger> tempBI;
-                value->UnscaledValue(&tempBI);
+                value->UnscaledValue(tempBI);
                 AutoPtr<IBigDecimal> tempBD;
                 CBigDecimal::New(tempBI, scale, mc, IID_IBigDecimal, (IInterface**)&tempBD);
                 value = std::move(tempBD);
             }
         }
         AutoPtr<IBigInteger> bi;
-        value->UnscaledValue(&bi);
-        value->Scale(&scale);
+        value->UnscaledValue(bi);
+        value->Scale(scale);
         BigDecimalLayout bdl(bi, scale, FormatterBigDecimalLayoutForm::DECIMAL_FLOAT);
 
         Array<Char> mant = bdl.Mantissa();
@@ -1983,17 +1980,17 @@ ECode Formatter::FormatSpecifier::Print(
         }
 
         AutoPtr<IBigDecimal> tenToTheNegFour;
-        CBigDecimal::ValueOf(1, 4, &tenToTheNegFour);
+        CBigDecimal::ValueOf(1, 4, tenToTheNegFour);
         AutoPtr<IBigDecimal> tenToThePrec;
-        CBigDecimal::ValueOf(1, -prec, &tenToThePrec);
+        CBigDecimal::ValueOf(1, -prec, tenToThePrec);
         Integer comp;
         if ((Object::Equals(value, CBigDecimal::GetZERO())) ||
                 ((IComparable::Probe(value)->CompareTo(tenToTheNegFour, comp), comp != -1) &&
                 (IComparable::Probe(value)->CompareTo(tenToThePrec, comp), comp == -1))) {
             Integer scale;
-            value->Scale(&scale);
+            value->Scale(scale);
             AutoPtr<IBigInteger> bi;
-            value->UnscaledValue(&bi);
+            value->UnscaledValue(bi);
             Integer e = -scale + (Object::ToString(bi).GetLength() - 1);
 
             // xxx.yyy

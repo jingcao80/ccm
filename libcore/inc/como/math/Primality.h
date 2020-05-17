@@ -27,7 +27,7 @@ class Primality
 public:
     static ECode NextProbablePrime(
         /* [in] */ BigInteger* n,
-        /* [out] */ IBigInteger** value);
+        /* [out] */ AutoPtr<IBigInteger>& value);
 
 private:
     Primality();

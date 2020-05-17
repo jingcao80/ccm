@@ -42,11 +42,11 @@ TEST(BigIntegerTest, HashCodeTest)
     AutoPtr<IBigInteger> secondBig;
     CBigInteger::New(String("3298535022597"), IID_IBigInteger, (IInterface**)&secondBig);
     AutoPtr<IBigInteger> andedBigs;
-    firstBig->Add(secondBig, &andedBigs);
+    firstBig->Add(secondBig, andedBigs);
     Long lv;
     INumber::Probe(andedBigs)->LongValue(lv);
     AutoPtr<IBigInteger> toCompareBig;
-    BigIntegerFactory::ValueOf(lv, &toCompareBig);
+    BigIntegerFactory::ValueOf(lv, toCompareBig);
     EXPECT_TRUE(Object::Equals(andedBigs, toCompareBig));
 }
 
@@ -54,7 +54,7 @@ TEST(BigIntegerTest, ValueOfTest)
 {
     for (Integer i = -1024; i <= 1024; ++i) {
         AutoPtr<IBigInteger> bi;
-        BigIntegerFactory::ValueOf(i, &bi);
+        BigIntegerFactory::ValueOf(i, bi);
         Integer iv;
         INumber::Probe(bi)->IntegerValue(iv);
         EXPECT_EQ(i, iv);
@@ -69,17 +69,17 @@ TEST(BigIntegerTest, ConstructorIntegerIRandomTest)
         AutoPtr<IBigInteger> b;
         CBigInteger::New(128, rand, IID_IBigInteger, (IInterface**)&b);
         Integer len;
-        b->BitLength(&len);
+        b->BitLength(len);
         EXPECT_TRUE(len <= 128);
 
         b = nullptr;
         CBigInteger::New(16, rand, IID_IBigInteger, (IInterface**)&b);
-        b->BitLength(&len);
+        b->BitLength(len);
         EXPECT_TRUE(len <= 16);
 
         b = nullptr;
         CBigInteger::New(5, rand, IID_IBigInteger, (IInterface**)&b);
-        b->BitLength(&len);
+        b->BitLength(len);
         EXPECT_TRUE(len <= 5);
     }
 }
@@ -92,24 +92,24 @@ TEST(BigIntegerTest, ConstructorIntegerIntegerIRandomTest)
         AutoPtr<IBigInteger> b;
         CBigInteger::New(128, 100, rand, IID_IBigInteger, (IInterface**)&b);
         Integer len;
-        b->BitLength(&len);
+        b->BitLength(len);
         EXPECT_EQ(128, len);
         Boolean pp;
-        b->IsProbablePrime(100, &pp);
+        b->IsProbablePrime(100, pp);
         EXPECT_TRUE(pp);
 
         b = nullptr;
         CBigInteger::New(16, 100, rand, IID_IBigInteger, (IInterface**)&b);
-        b->BitLength(&len);
+        b->BitLength(len);
         EXPECT_EQ(16, len);
-        b->IsProbablePrime(100, &pp);
+        b->IsProbablePrime(100, pp);
         EXPECT_TRUE(pp);
 
         b = nullptr;
         CBigInteger::New(5, 100, rand, IID_IBigInteger, (IInterface**)&b);
-        b->BitLength(&len);
+        b->BitLength(len);
         EXPECT_EQ(5, len);
-        b->IsProbablePrime(100, &pp);
+        b->IsProbablePrime(100, pp);
         EXPECT_TRUE(pp);
     }
 
@@ -120,10 +120,10 @@ TEST(BigIntegerTest, ConstructorIntegerIntegerIRandomTest)
         AutoPtr<IBigInteger> b;
         CBigInteger::New(2, 100, rand, IID_IBigInteger, (IInterface**)&b);
         Integer len;
-        b->BitLength(&len);
+        b->BitLength(len);
         EXPECT_EQ(2, len);
         Boolean pp;
-        b->IsProbablePrime(100, &pp);
+        b->IsProbablePrime(100, pp);
         EXPECT_TRUE(pp);
         INumber::Probe(b)->IntegerValue(primes[i]);
     }
@@ -178,11 +178,11 @@ TEST(BigIntegerTest, PositiveValuesSuperfluousZerosTest)
 TEST(BigIntegerTest, DivideTest)
 {
     AutoPtr<IBigInteger> negV;
-    BigIntegerFactory::ValueOf(ILong::MIN_VALUE, &negV);
+    BigIntegerFactory::ValueOf(ILong::MIN_VALUE, negV);
     AutoPtr<IBigInteger> divisor;
-    BigIntegerFactory::ValueOf(-1, &divisor);
+    BigIntegerFactory::ValueOf(-1, divisor);
     AutoPtr<IBigInteger> posV;
-    negV->Divide(divisor, &posV);
+    negV->Divide(divisor, posV);
     EXPECT_STREQ("-9223372036854775808", Object::ToString(negV).string());
     EXPECT_STREQ("9223372036854775808", Object::ToString(posV).string());
 }

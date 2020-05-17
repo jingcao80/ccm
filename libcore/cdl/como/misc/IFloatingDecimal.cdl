@@ -29,26 +29,26 @@ interface IFloatingDecimalBinaryToASCIIConverter
         [in] IAppendable* buf);
 
     DecimalDigitsExact(
-        [out] Boolean* exact);
+        [out] Boolean& exact);
 
     DigitsRoundedUp(
-        [out] Boolean* roundedUp);
+        [out] Boolean& roundedUp);
 
     GetDecimalExponent(
-        [out] Integer* exponent);
+        [out] Integer& exponent);
 
     GetDigits(
         [out] Array<Char>& digits,
-        [out] Integer* number);
+        [out] Integer& number);
 
     IsExceptional(
-        [out] Boolean* exceptional);
+        [out] Boolean& exceptional);
 
     IsNegative(
-        [out] Boolean* neg);
+        [out] Boolean& neg);
 
     ToFormatString(
-        [out] String* str);
+        [out] String& str);
 }
 
 [
@@ -58,10 +58,10 @@ interface IFloatingDecimalBinaryToASCIIConverter
 interface IFloatingDecimalASCIIToBinaryConverter
 {
     DoubleValue(
-        [out] Double* value);
+        [out] Double& value);
 
     FloatValue(
-        [out] Float* value);
+        [out] Float& value);
 }
 
 }

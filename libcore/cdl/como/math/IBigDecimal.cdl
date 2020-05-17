@@ -44,54 +44,54 @@ interface IBigDecimal
     const Integer ROUND_UNNECESSARY = 7;
 
     Abs(
-        [out] IBigDecimal** value);
+        [out] IBigDecimal&& value);
 
     Abs(
         [in] IMathContext* mc,
-        [out] IBigDecimal** value);
+        [out] IBigDecimal&& value);
 
     Add(
         [in] IBigDecimal* augend,
-        [out] IBigDecimal** result);
+        [out] IBigDecimal&& result);
 
     Add(
         [in] IBigDecimal* augend,
         [in] IMathContext* mc,
-        [out] IBigDecimal** result);
+        [out] IBigDecimal&& result);
 
     ByteValueExact(
-        [out] Byte* value);
+        [out] Byte& value);
 
     Divide(
         [in] IBigDecimal* divisor,
-        [out] IBigDecimal** result);
+        [out] IBigDecimal&& result);
 
     Divide(
         [in] IBigDecimal* divisor,
         [in] IMathContext* mc,
-        [out] IBigDecimal** result);
+        [out] IBigDecimal&& result);
 
     Divide(
         [in] IBigDecimal* divisor,
         [in] Integer roundingMode,
-        [out] IBigDecimal** result);
+        [out] IBigDecimal&& result);
 
     Divide(
         [in] IBigDecimal* divisor,
         [in] RoundingMode roundingMode,
-        [out] IBigDecimal** result);
+        [out] IBigDecimal&& result);
 
     Divide(
         [in] IBigDecimal* divisor,
         [in] Integer scale,
         [in] Integer roundingMode,
-        [out] IBigDecimal** result);
+        [out] IBigDecimal&& result);
 
     Divide(
         [in] IBigDecimal* divisor,
         [in] Integer scale,
         [in] RoundingMode roundingMode,
-        [out] IBigDecimal** result);
+        [out] IBigDecimal&& result);
 
     DivideAndRemainder(
         [in] IBigDecimal* divisor,
@@ -104,139 +104,139 @@ interface IBigDecimal
 
     DivideToIntegralValue(
         [in] IBigDecimal* divisor,
-        [out] IBigDecimal** result);
+        [out] IBigDecimal&& result);
 
     DivideToIntegralValue(
         [in] IBigDecimal* divisor,
         [in] IMathContext* mc,
-        [out] IBigDecimal** result);
+        [out] IBigDecimal&& result);
 
     IntegerValueExact(
-        [out] Integer* value);
+        [out] Integer& value);
 
     LongValueExact(
-        [out] Long* value);
+        [out] Long& value);
 
     Max(
         [in] IBigDecimal* value,
-        [out] IBigDecimal** result);
+        [out] IBigDecimal&& result);
 
     Min(
         [in] IBigDecimal* value,
-        [out] IBigDecimal** result);
+        [out] IBigDecimal&& result);
 
     MovePointLeft(
         [in] Integer n,
-        [out] IBigDecimal** value);
+        [out] IBigDecimal&& value);
 
     MovePointRight(
         [in] Integer n,
-        [out] IBigDecimal** value);
+        [out] IBigDecimal&& value);
 
     Multiply(
         [in] IBigDecimal* multiplicand,
-        [out] IBigDecimal** result);
+        [out] IBigDecimal&& result);
 
     Multiply(
         [in] IBigDecimal* multiplicand,
         [in] IMathContext* mc,
-        [out] IBigDecimal** result);
+        [out] IBigDecimal&& result);
 
     Negate(
-        [out] IBigDecimal** value);
+        [out] IBigDecimal&& value);
 
     Negate(
         [in] IMathContext* mc,
-        [out] IBigDecimal** result);
+        [out] IBigDecimal&& result);
 
     Plus(
-        [out] IBigDecimal** value);
+        [out] IBigDecimal&& value);
 
     Plus(
         [in] IMathContext* mc,
-        [out] IBigDecimal** result);
+        [out] IBigDecimal&& result);
 
     Pow(
         [in] Integer n,
-        [out] IBigDecimal** value);
+        [out] IBigDecimal&& value);
 
     Pow(
         [in] Integer n,
         [in] IMathContext* mc,
-        [out] IBigDecimal** value);
+        [out] IBigDecimal&& value);
 
     Precision(
-        [out] Integer* precision);
+        [out] Integer& precision);
 
     Remainder(
         [in] IBigDecimal* divisor,
-        [out] IBigDecimal** result);
+        [out] IBigDecimal&& result);
 
     Remainder(
         [in] IBigDecimal* divisor,
         [in] IMathContext* mc,
-        [out] IBigDecimal** result);
+        [out] IBigDecimal&& result);
 
     Round(
         [in] IMathContext* mc,
-        [out] IBigDecimal** result);
+        [out] IBigDecimal&& result);
 
     Scale(
-        [out] Integer* scale);
+        [out] Integer& scale);
 
     ScaleByPowerOfTen(
         [in] Integer n,
-        [out] IBigDecimal** value);
+        [out] IBigDecimal&& value);
 
     SetScale(
         [in] Integer newScale,
-        [out] IBigDecimal** value);
+        [out] IBigDecimal&& value);
 
     SetScale(
         [in] Integer newScale,
         [in] Integer roundingMode,
-        [out] IBigDecimal** result);
+        [out] IBigDecimal&& result);
 
     SetScale(
         [in] Integer newScale,
         [in] RoundingMode roundingMode,
-        [out] IBigDecimal** result);
+        [out] IBigDecimal&& result);
 
     ShortValueExact(
-        [out] Short* value);
+        [out] Short& value);
 
     Signum(
-        [out] Integer* sign);
+        [out] Integer& sign);
 
     StripTrailingZeros(
-        [out] IBigDecimal** value);
+        [out] IBigDecimal&& value);
 
     Subtract(
         [in] IBigDecimal* subtrahend,
-        [out] IBigDecimal** result);
+        [out] IBigDecimal&& result);
 
     Subtract(
         [in] IBigDecimal* subtrahend,
         [in] IMathContext* mc,
-        [out] IBigDecimal** result);
+        [out] IBigDecimal&& result);
 
     ToBigInteger(
-        [out] IBigInteger** value);
+        [out] IBigInteger&& value);
 
     ToBigIntegerExact(
-        [out] IBigInteger** value);
+        [out] IBigInteger&& value);
 
     ToEngineeringString(
-        [out] String* desc);
+        [out] String& desc);
 
     ToPlainString(
-        [out] String* desc);
+        [out] String& desc);
 
     Ulp(
-        [out] IBigDecimal** value);
+        [out] IBigDecimal&& value);
 
     UnscaledValue(
-        [out] IBigInteger** value);
+        [out] IBigInteger&& value);
 }
 
 }

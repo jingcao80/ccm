@@ -49,29 +49,29 @@ private:
         COMO_INTERFACE_DECL();
 
         ECode ToFormatString(
-            /* [out] */ String* str) override;
+            /* [out] */ String& str) override;
 
         ECode AppendTo(
             /* [in] */ IAppendable* buf) override;
 
         ECode GetDecimalExponent(
-            /* [out] */ Integer* exponent) override;
+            /* [out] */ Integer& exponent) override;
 
         ECode GetDigits(
             /* [out] */ Array<Char>& digits,
-            /* [out] */ Integer* number) override;
+            /* [out] */ Integer& number) override;
 
         ECode IsNegative(
-            /* [out] */ Boolean* neg) override;
+            /* [out] */ Boolean& neg) override;
 
         ECode IsExceptional(
-            /* [out] */ Boolean* exceptional) override;
+            /* [out] */ Boolean& exceptional) override;
 
         ECode DigitsRoundedUp(
-            /* [out] */ Boolean* roundedUp) override;
+            /* [out] */ Boolean& roundedUp) override;
 
         ECode DecimalDigitsExact(
-            /* [out] */ Boolean* exact) override;
+            /* [out] */ Boolean& exact) override;
 
     private:
         String mImage;
@@ -92,29 +92,29 @@ private:
         COMO_INTERFACE_DECL();
 
         ECode ToFormatString(
-            /* [out] */ String* str) override;
+            /* [out] */ String& str) override;
 
         ECode AppendTo(
             /* [in] */ IAppendable* buf) override;
 
         ECode GetDecimalExponent(
-            /* [out] */ Integer* exponent) override;
+            /* [out] */ Integer& exponent) override;
 
         ECode GetDigits(
             /* [out] */ Array<Char>& digits,
-            /* [out] */ Integer* number) override;
+            /* [out] */ Integer& number) override;
 
         ECode IsNegative(
-            /* [out] */ Boolean* neg) override;
+            /* [out] */ Boolean& neg) override;
 
         ECode IsExceptional(
-            /* [out] */ Boolean* exceptional) override;
+            /* [out] */ Boolean& exceptional) override;
 
         ECode DigitsRoundedUp(
-            /* [out] */ Boolean* roundedUp) override;
+            /* [out] */ Boolean& roundedUp) override;
 
         ECode DecimalDigitsExact(
-            /* [out] */ Boolean* exact) override;
+            /* [out] */ Boolean& exact) override;
 
         inline void SetSign(
             /* [in] */ Boolean isNegative)
@@ -235,10 +235,10 @@ private:
         COMO_INTERFACE_DECL();
 
         ECode DoubleValue(
-            /* [out] */ Double* value) override;
+            /* [out] */ Double& value) override;
 
         ECode FloatValue(
-            /* [out] */ Float* value) override;
+            /* [out] */ Float& value) override;
 
     private:
         Double mDoubleVal;
@@ -259,10 +259,10 @@ private:
         COMO_INTERFACE_DECL();
 
         ECode DoubleValue(
-            /* [out] */ Double* value) override;
+            /* [out] */ Double& value) override;
 
         ECode FloatValue(
-            /* [out] */ Float* value) override;
+            /* [out] */ Float& value) override;
 
     private:
         Boolean mIsNegative;
@@ -315,11 +315,11 @@ public:
 
     static ECode ParseDouble(
         /* [in] */ const String& s,
-        /* [out] */ Double* value);
+        /* [out] */ Double& value);
 
     static ECode ParseFloat(
         /* [in] */ const String& s,
-        /* [out] */ Float* value);
+        /* [out] */ Float& value);
 
     inline static AutoPtr<IFloatingDecimalBinaryToASCIIConverter> GetBinaryToASCIIConverter(
         /* [in] */ Double d);

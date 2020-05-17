@@ -46,10 +46,10 @@ public:
         /* [in] */ const String& s);
 
     ECode GetPrecision(
-        /* [out] */ Integer* precision) override;
+        /* [out] */ Integer& precision) override;
 
     ECode GetRoundingMode(
-        /* [out] */ RoundingMode* roundingMode) override;
+        /* [out] */ RoundingMode& roundingMode) override;
 
     ECode Equals(
         /* [in] */ IInterface* obj,

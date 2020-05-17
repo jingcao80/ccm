@@ -28,51 +28,51 @@ interface IFDBigInteger
     AddAndCmp(
         [in] IFDBigInteger* x,
         [in] IFDBigInteger* y,
-        [out] Integer* result);
+        [out] Integer& result);
 
     Cmp(
         [in] IFDBigInteger* other,
-        [out] Integer* result);
+        [out] Integer& result);
 
     CmpPow52(
         [in] Integer p5,
         [in] Integer p2,
-        [out] Integer* result);
+        [out] Integer& result);
 
     GetNormalizationBias(
-        [out] Integer* bias);
+        [out] Integer& bias);
 
     LeftInplaceSub(
         [in] IFDBigInteger* subtrahend,
-        [out] IFDBigInteger** value);
+        [out] IFDBigInteger&& value);
 
     LeftShift(
         [in] Integer shift,
-        [out] IFDBigInteger** value);
+        [out] IFDBigInteger&& value);
 
     MakeImmutable();
 
     MultBy10(
-        [out] IFDBigInteger** value);
+        [out] IFDBigInteger&& value);
 
     MultByPow52(
         [in] Integer p5,
         [in] Integer p2,
-        [out] IFDBigInteger** value);
+        [out] IFDBigInteger&& value);
 
     QuoRemIteration(
         [in] IFDBigInteger* s,
-        [out] Integer* q);
+        [out] Integer& q);
 
     RightInplaceSub(
         [in] IFDBigInteger* subtrahend,
-        [out] IFDBigInteger** value);
+        [out] IFDBigInteger&& value);
 
     ToBigInteger(
-        [out] IBigInteger** value);
+        [out] IBigInteger&& value);
 
     ToHexString(
-        [out] String* str);
+        [out] String& str);
 }
 
 }

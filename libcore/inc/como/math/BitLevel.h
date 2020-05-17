@@ -46,12 +46,12 @@ public:
 
     static ECode ShiftLeftOneBit(
         /* [in] */ BigInteger* source,
-        /* [out] */ IBigInteger** result);
+        /* [out] */ AutoPtr<IBigInteger>& result);
 
     static ECode ShiftRight(
         /* [in] */ BigInteger* source,
         /* [in] */ Integer count,
-        /* [out] */ IBigInteger** result);
+        /* [out] */ AutoPtr<IBigInteger>& result);
 
     static Boolean ShiftRight(
         /* [in] */ Array<Integer>& result,
@@ -63,7 +63,7 @@ public:
     static ECode FlipBit(
         /* [in] */ BigInteger* value,
         /* [in] */ Integer n,
-        /* [out] */ IBigInteger** result);
+        /* [out] */ AutoPtr<IBigInteger>& result);
 
 private:
     BitLevel();

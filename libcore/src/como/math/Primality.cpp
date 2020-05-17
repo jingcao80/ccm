@@ -43,7 +43,7 @@ static Array<IBigInteger*> CreateBIprimes(
     Array<IBigInteger*> biPrimes(primes.GetLength());
     for (Integer i = 0; i < biPrimes.GetLength(); i++) {
         AutoPtr<IBigInteger> bi;
-        CBigInteger::ValueOf(primes[i], &bi);
+        CBigInteger::ValueOf(primes[i], bi);
         biPrimes.Set(i, bi);
     }
     return biPrimes;
@@ -57,7 +57,7 @@ Array<IBigInteger*> Primality::GetBIprimes()
 
 ECode Primality::NextProbablePrime(
     /* [in] */ BigInteger* n,
-    /* [out] */ IBigInteger** value)
+    /* [out] */ AutoPtr<IBigInteger>& value)
 {
     Integer i, j;
     Integer gapSize = 1024; // for searching of the next probable prime number
@@ -69,8 +69,7 @@ ECode Primality::NextProbablePrime(
         Integer l = (Integer)ni->LongInt();
         if (l < sPrimes[sPrimes.GetLength() - 1]) {
             for (i = 0; l >= sPrimes[i]; i++) {}
-            *value = GetBIprimes()[i];
-            REFCOUNT_ADD(*value);
+            value = GetBIprimes()[i];
             return NOERROR;
         }
     }
@@ -104,7 +103,7 @@ ECode Primality::NextProbablePrime(
                 probPrime->PutCopy(startPoint);
                 probPrime->AddPositiveInteger(j);
                 if (probPrime->IsPrime(100)) {
-                    return CBigInteger::New(probPrime, IID_IBigInteger, (IInterface**)value);
+                    return CBigInteger::New(probPrime, IID_IBigInteger, (IInterface**)&value);
                 }
             }
         }

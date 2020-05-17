@@ -32,7 +32,7 @@ enum FormattedFloatingDecimalForm
 interface IFormattedFloatingDecimal
 {
     GetExponentRounded(
-        [out] Integer* exponent);
+        [out] Integer& exponent);
 
     GetMantissa(
         [out, callee] Array<Char>* mantissa);

@@ -162,7 +162,7 @@ AutoPtr<IFDBigInteger> FDBigInteger::ValueOfPow52(
             }
         } else {
             AutoPtr<IFDBigInteger> value;
-            Big5pow(p5)->LeftShift(p2, &value);
+            Big5pow(p5)->LeftShift(p2, value);
             return value;
         }
     }
@@ -221,7 +221,7 @@ AutoPtr<IFDBigInteger> FDBigInteger::ValueOfMulPow52(
             }
             AutoPtr<IFDBigInteger> tmpValue, fdValue;
             CFDBigInteger::New(r, pow5->mOffset, IID_IFDBigInteger, (IInterface**)&tmpValue);
-            tmpValue->LeftShift(p2, &fdValue);
+            tmpValue->LeftShift(p2, fdValue);
             return fdValue;
         }
     }
@@ -275,16 +275,14 @@ void FDBigInteger::TrimLeadingZeros()
 }
 
 ECode FDBigInteger::GetNormalizationBias(
-    /* [out] */ Integer* bias)
+    /* [out] */ Integer& bias)
 {
-    VALIDATE_NOT_NULL(bias);
-
     if (mNWords == 0) {
         Logger::E("FDBigInteger", "Zero value cannot be normalized");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     Integer zeros = Math::NumberOfLeadingZeros(mData[mNWords - 1]);
-    *bias = (zeros < 4) ? 28 + zeros : zeros - 4;
+    bias = (zeros < 4) ? 28 + zeros : zeros - 4;
     return NOERROR;
 }
 
@@ -308,13 +306,10 @@ void FDBigInteger::LeftShift(
 
 ECode FDBigInteger::LeftShift(
     /* [in] */ Integer shift,
-    /* [out] */ IFDBigInteger** value)
+    /* [out] */ AutoPtr<IFDBigInteger>& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     if (shift == 0 || mNWords == 0) {
-        *value = this;
-        REFCOUNT_ADD(*value);
+        value = this;
         return NOERROR;
     }
     Integer wordcount = shift >> 5;
@@ -323,7 +318,7 @@ ECode FDBigInteger::LeftShift(
         if (bitcount == 0) {
             Array<Integer> data;
             Arrays::CopyOf(mData, mNWords, &data);
-            return CFDBigInteger::New(data, mOffset + wordcount, IID_IFDBigInteger, (IInterface**)value);
+            return CFDBigInteger::New(data, mOffset + wordcount, IID_IFDBigInteger, (IInterface**)&value);
         }
         else {
             Integer anticount = 32 - bitcount;
@@ -339,7 +334,7 @@ ECode FDBigInteger::LeftShift(
                 result = Array<Integer>(mNWords);
             }
             LeftShift(mData, idx, result, bitcount, anticount, prev);
-            return CFDBigInteger::New(result, mOffset + wordcount, IID_IFDBigInteger, (IInterface**)value);
+            return CFDBigInteger::New(result, mOffset + wordcount, IID_IFDBigInteger, (IInterface**)&value);
         }
     }
     else {
@@ -378,18 +373,15 @@ ECode FDBigInteger::LeftShift(
             }
         }
         mOffset += wordcount;
-        *value = (IFDBigInteger*)this;
-        REFCOUNT_ADD(*value);
+        value = (IFDBigInteger*)this;
         return NOERROR;
     }
 }
 
 ECode FDBigInteger::QuoRemIteration(
     /* [in] */ IFDBigInteger* s,
-    /* [out] */ Integer* ret)
+    /* [out] */ Integer& ret)
 {
-    VALIDATE_NOT_NULL(ret);
-
     CHECK(!mIsImmutable);
     // ensure that this and S have the same number of
     // digits. If S is properly normalized and q < 10 then
@@ -406,7 +398,7 @@ ECode FDBigInteger::QuoRemIteration(
         else {
             TrimLeadingZeros();
         }
-        *ret = 0;
+        ret = 0;
         return NOERROR;
     }
     else if (thSize > sSize) {
@@ -450,24 +442,21 @@ ECode FDBigInteger::QuoRemIteration(
     Integer p = MultAndCarryBy10(mData, mNWords, mData);
     CHECK(p == 0);
     TrimLeadingZeros();
-    *ret = q;
+    ret = q;
     return NOERROR;
 }
 
 ECode FDBigInteger::MultBy10(
-    /* [out] */ IFDBigInteger** value)
+    /* [out] */ AutoPtr<IFDBigInteger>& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     if (mNWords == 0) {
-        *value = this;
-        REFCOUNT_ADD(*value);
+        value = this;
         return NOERROR;
     }
     if (mIsImmutable) {
         Array<Integer> res(mNWords + 1);
         res[mNWords] = MultAndCarryBy10(mData, mNWords, res);
-        return CFDBigInteger::New(res, mOffset, IID_IFDBigInteger, (IInterface**)value);
+        return CFDBigInteger::New(res, mOffset, IID_IFDBigInteger, (IInterface**)&value);
     }
     else {
         Integer p = MultAndCarryBy10(mData, mNWords, mData);
@@ -488,8 +477,7 @@ ECode FDBigInteger::MultBy10(
         else {
             TrimLeadingZeros();
         }
-        *value = this;
-        REFCOUNT_ADD(*value);
+        value = this;
         return NOERROR;
     }
 }
@@ -497,13 +485,10 @@ ECode FDBigInteger::MultBy10(
 ECode FDBigInteger::MultByPow52(
     /* [in] */ Integer p5,
     /* [in] */ Integer p2,
-    /* [out] */ IFDBigInteger** value)
+    /* [out] */ AutoPtr<IFDBigInteger>& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     if (mNWords == 0) {
-        *value = this;
-        REFCOUNT_ADD(*value);
+        value = this;
         return NOERROR;
     }
     AutoPtr<IFDBigInteger> res = this;
@@ -550,10 +535,8 @@ void FDBigInteger::Mult(
 
 ECode FDBigInteger::LeftInplaceSub(
     /* [in] */ IFDBigInteger* subtrahend,
-    /* [out] */ IFDBigInteger** value)
+    /* [out] */ AutoPtr<IFDBigInteger>& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     CHECK(Size() >= From(subtrahend)->Size());
     AutoPtr<IFDBigInteger> minuend;
     if (mIsImmutable) {
@@ -599,17 +582,14 @@ ECode FDBigInteger::LeftInplaceSub(
     CHECK(borrow == 0);
     // result should be positive;
     From(minuend)->TrimLeadingZeros();
-    *value = minuend;
-    REFCOUNT_ADD(*value);
+    value = minuend;
     return NOERROR;
 }
 
 ECode FDBigInteger::RightInplaceSub(
     /* [in] */ IFDBigInteger* subtrahend,
-    /* [out] */ IFDBigInteger** value)
+    /* [out] */ AutoPtr<IFDBigInteger>& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     CHECK(Size() > From(subtrahend)->Size());
     AutoPtr<IFDBigInteger> minuend = this;
     AutoPtr<IFDBigInteger> newSubtrahend;
@@ -664,8 +644,7 @@ ECode FDBigInteger::RightInplaceSub(
     // result should be positive
     From(newSubtrahend)->mNWords = subIndex;
     From(newSubtrahend)->TrimLeadingZeros();
-    *value = newSubtrahend;
-    REFCOUNT_ADD(*value);
+    value = newSubtrahend;
     return NOERROR;
 }
 
@@ -683,18 +662,16 @@ Integer FDBigInteger::CheckZeroTail(
 
 ECode FDBigInteger::Cmp(
     /* [in] */ IFDBigInteger* other,
-    /* [out] */ Integer* result)
+    /* [out] */ Integer& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     Integer aSize = mNWords + mOffset;
     Integer bSize = From(other)->mNWords + From(other)->mOffset;
     if (aSize > bSize) {
-        *result = 1;
+        result = 1;
         return NOERROR;
     }
     else if (aSize < bSize) {
-        *result = -1;
+        result = -1;
         return NOERROR;
     }
     Integer aLen = mNWords;
@@ -703,62 +680,58 @@ ECode FDBigInteger::Cmp(
         Integer a = mData[--aLen];
         Integer b = From(other)->mData[--bLen];
         if (a != b) {
-            *result = ((a & LONG_MASK) < (b & LONG_MASK)) ? -1 : 1;
+            result = ((a & LONG_MASK) < (b & LONG_MASK)) ? -1 : 1;
             return NOERROR;
         }
     }
     if (aLen > 0) {
-        *result = CheckZeroTail(mData, aLen);
+        result = CheckZeroTail(mData, aLen);
         return NOERROR;
     }
     if (bLen > 0) {
-        *result = -CheckZeroTail(From(other)->mData, bLen);
+        result = -CheckZeroTail(From(other)->mData, bLen);
         return NOERROR;
     }
-    *result = 0;
+    result = 0;
     return NOERROR;
 }
 
 ECode FDBigInteger::CmpPow52(
     /* [in] */ Integer p5,
     /* [in] */ Integer p2,
-    /* [out] */ Integer* result)
+    /* [out] */ Integer& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     if (p5 == 0) {
         Integer wordcount = p2 >> 5;
         Integer bitcount = p2 & 0x1f;
         Integer size = mNWords + mOffset;
         if (size > wordcount + 1) {
-            *result = 1;
+            result = 1;
             return NOERROR;
         }
         else if (size < wordcount + 1) {
-            *result = -1;
+            result = -1;
             return NOERROR;
         }
         Integer a = mData[mNWords - 1];
         Integer b = 1 << bitcount;
         if (a != b) {
-            *result = ((a & LONG_MASK) < (b & LONG_MASK)) ? -1 : 1;
+            result = ((a & LONG_MASK) < (b & LONG_MASK)) ? -1 : 1;
             return NOERROR;
         }
-        *result = CheckZeroTail(mData, mNWords - 1);
+        result = CheckZeroTail(mData, mNWords - 1);
         return NOERROR;
     }
     AutoPtr<IFDBigInteger> fdValue;
-    Big5pow(p5)->LeftShift(p2, &fdValue);
+    Big5pow(p5)->LeftShift(p2, fdValue);
     return Cmp(fdValue, result);
 }
 
 ECode FDBigInteger::AddAndCmp(
     /* [in] */ IFDBigInteger* x,
     /* [in] */ IFDBigInteger* y,
-    /* [out] */ Integer* result)
+    /* [out] */ Integer& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     AutoPtr<IFDBigInteger> big, small;
     Integer xSize = From(x)->Size();
     Integer ySize = From(y)->Size();
@@ -777,18 +750,18 @@ ECode FDBigInteger::AddAndCmp(
     }
     Integer thSize = Size();
     if (bSize == 0) {
-        *result = thSize == 0 ? 0 : 1;
+        result = thSize == 0 ? 0 : 1;
         return NOERROR;
     }
     if (sSize == 0) {
         return Cmp(big, result);
     }
     if (bSize > thSize) {
-        *result = -1;
+        result = -1;
         return NOERROR;
     }
     if (bSize + 1 < thSize) {
-        *result = 1;
+        result = 1;
         return NOERROR;
     }
     Long top = (From(big)->mData[From(big)->mNWords - 1] & LONG_MASK);
@@ -799,35 +772,35 @@ ECode FDBigInteger::AddAndCmp(
         if ((((ULong)(top + 1)) >> 32) == 0) {
             // good case - no carry extension
             if (bSize < thSize) {
-                *result = 1;
+                result = 1;
                 return NOERROR;
             }
             // here sum.nWords == this.nWords
             Long v = (mData[mNWords - 1] & LONG_MASK);
             if (v < top) {
-                *result = -1;
+                result = -1;
                 return NOERROR;
             }
             if (v > top + 1) {
-                *result = 1;
+                result = 1;
                 return NOERROR;
             }
         }
     }
     else { // (top>>>32)!=0 guaranteed carry extension
         if (bSize + 1 > thSize) {
-            *result = -1;
+            result = -1;
             return NOERROR;
         }
         // here sum.nWords == this.nWords
         top = ((ULong)top) >> 32;
         Long v = (mData[mNWords - 1] & LONG_MASK);
         if (v < top) {
-            *result = -1;
+            result = -1;
             return NOERROR;
         }
         if (v > top + 1) {
-            *result = 1;
+            result = 1;
             return NOERROR;
         }
     }
@@ -1065,12 +1038,10 @@ AutoPtr<IFDBigInteger> FDBigInteger::Big5powRec(
 }
 
 ECode FDBigInteger::ToHexString(
-    /* [out] */ String* str)
+    /* [out] */ String& str)
 {
-    VALIDATE_NOT_NULL(str);
-
     if (mNWords == 0) {
-        *str = "0";
+        str = "0";
         return NOERROR;
     }
     AutoPtr<IStringBuilder> sb;
@@ -1083,16 +1054,14 @@ ECode FDBigInteger::ToHexString(
         sb->Append(subStr);
     }
     for (Integer i = mOffset; i > 0; i--) {
-        sb->Append(String("00000000"));
+        sb->Append("00000000");
     }
-    return sb->ToString(*str);
+    return sb->ToString(str);
 }
 
 ECode FDBigInteger::ToBigInteger(
-    /* [out] */ IBigInteger** value)
+    /* [out] */ AutoPtr<IBigInteger>& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     Array<Byte> magnitude(mNWords * 4 + 1);
     for (Integer i = 0; i < mNWords; i++) {
         Integer w = mData[i];
@@ -1110,7 +1079,7 @@ ECode FDBigInteger::ToString(
     /* [out] */ String& str)
 {
     AutoPtr<IBigInteger> value;
-    ToBigInteger(&value);
+    ToBigInteger(value);
     return IObject::Probe(value)->ToString(str);
 }
 

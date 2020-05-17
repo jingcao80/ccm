@@ -27,7 +27,7 @@ class COM_PUBLIC BigIntegerFactory
 public:
     static ECode ValueOf(
         /* [in] */ Long value,
-        /* [out] */ IBigInteger** result);
+        /* [out] */ AutoPtr<IBigInteger>& result);
 
 private:
     BigIntegerFactory();

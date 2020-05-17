@@ -61,11 +61,9 @@ FloatingDecimal::ExceptionalBinaryToASCIIBuffer::ExceptionalBinaryToASCIIBuffer(
 COMO_INTERFACE_IMPL_1(FloatingDecimal::ExceptionalBinaryToASCIIBuffer, Object, IFloatingDecimalBinaryToASCIIConverter);
 
 ECode FloatingDecimal::ExceptionalBinaryToASCIIBuffer::ToFormatString(
-    /* [out] */ String* str)
+    /* [out] */ String& str)
 {
-    VALIDATE_NOT_NULL(str);
-
-    *str = mImage;
+    str = mImage;
     return NOERROR;
 }
 
@@ -87,7 +85,7 @@ ECode FloatingDecimal::ExceptionalBinaryToASCIIBuffer::AppendTo(
 }
 
 ECode FloatingDecimal::ExceptionalBinaryToASCIIBuffer::GetDecimalExponent(
-    /* [out] */ Integer* exponent)
+    /* [out] */ Integer& exponent)
 {
     Logger::E("FloatingDecimal", "Exceptional value does not have an exponent");
     return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -95,39 +93,35 @@ ECode FloatingDecimal::ExceptionalBinaryToASCIIBuffer::GetDecimalExponent(
 
 ECode FloatingDecimal::ExceptionalBinaryToASCIIBuffer::GetDigits(
     /* [out] */ Array<Char>& digits,
-    /* [out] */ Integer* number)
+    /* [out] */ Integer& number)
 {
     Logger::E("FloatingDecimal", "Exceptional value does not have digits");
     return E_ILLEGAL_ARGUMENT_EXCEPTION;
 }
 
 ECode FloatingDecimal::ExceptionalBinaryToASCIIBuffer::IsNegative(
-    /* [out] */ Boolean* neg)
+    /* [out] */ Boolean& neg)
 {
-    VALIDATE_NOT_NULL(neg);
-
-    *neg = mIsNegative;
+    neg = mIsNegative;
     return NOERROR;
 }
 
 ECode FloatingDecimal::ExceptionalBinaryToASCIIBuffer::IsExceptional(
-    /* [out] */ Boolean* exceptional)
+    /* [out] */ Boolean& exceptional)
 {
-    VALIDATE_NOT_NULL(exceptional);
-
-    *exceptional = true;
+    exceptional = true;
     return NOERROR;
 }
 
 ECode FloatingDecimal::ExceptionalBinaryToASCIIBuffer::DigitsRoundedUp(
-    /* [out] */ Boolean* roundedUp)
+    /* [out] */ Boolean& roundedUp)
 {
     Logger::E("FloatingDecimal", "Exceptional value is not rounded");
     return NOERROR;
 }
 
 ECode FloatingDecimal::ExceptionalBinaryToASCIIBuffer::DecimalDigitsExact(
-    /* [out] */ Boolean* exact)
+    /* [out] */ Boolean& exact)
 {
     Logger::E("FloatingDecimal", "Exceptional value is not exact");
     return NOERROR;
@@ -155,12 +149,10 @@ FloatingDecimal::BinaryToASCIIBuffer::BinaryToASCIIBuffer(
 COMO_INTERFACE_IMPL_1(FloatingDecimal::BinaryToASCIIBuffer, Object, IFloatingDecimalBinaryToASCIIConverter);
 
 ECode FloatingDecimal::BinaryToASCIIBuffer::ToFormatString(
-    /* [out] */ String* str)
+    /* [out] */ String& str)
 {
-    VALIDATE_NOT_NULL(str);
-
     Integer len = GetChars(mBuffer);
-    *str = String(mBuffer, 0, len);
+    str = String(mBuffer, 0, len);
     return NOERROR;
 }
 
@@ -181,58 +173,46 @@ ECode FloatingDecimal::BinaryToASCIIBuffer::AppendTo(
 }
 
 ECode FloatingDecimal::BinaryToASCIIBuffer::GetDecimalExponent(
-    /* [out] */ Integer* exponent)
+    /* [out] */ Integer& exponent)
 {
-    VALIDATE_NOT_NULL(exponent);
-
-    *exponent = mDecExponent;
+    exponent = mDecExponent;
     return NOERROR;
 }
 
 ECode FloatingDecimal::BinaryToASCIIBuffer::GetDigits(
     /* [out] */ Array<Char>& digits,
-    /* [out] */ Integer* number)
+    /* [out] */ Integer& number)
 {
-    VALIDATE_NOT_NULL(number);
-
     digits.Copy(0, mDigits, mFirstDigitIndex, mNDigits);
-    *number = mNDigits;
+    number = mNDigits;
     return NOERROR;
 }
 
 ECode FloatingDecimal::BinaryToASCIIBuffer::IsNegative(
-    /* [out] */ Boolean* neg)
+    /* [out] */ Boolean& neg)
 {
-    VALIDATE_NOT_NULL(neg);
-
-    *neg = mIsNegative;
+    neg = mIsNegative;
     return NOERROR;
 }
 
 ECode FloatingDecimal::BinaryToASCIIBuffer::IsExceptional(
-    /* [out] */ Boolean* exceptional)
+    /* [out] */ Boolean& exceptional)
 {
-    VALIDATE_NOT_NULL(exceptional);
-
-    *exceptional = false;
+    exceptional = false;
     return NOERROR;
 }
 
 ECode FloatingDecimal::BinaryToASCIIBuffer::DigitsRoundedUp(
-    /* [out] */ Boolean* roundedUp)
+    /* [out] */ Boolean& roundedUp)
 {
-    VALIDATE_NOT_NULL(roundedUp);
-
-    *roundedUp = mDecimalDigitsRoundedUp;
+    roundedUp = mDecimalDigitsRoundedUp;
     return NOERROR;
 }
 
 ECode FloatingDecimal::BinaryToASCIIBuffer::DecimalDigitsExact(
-    /* [out] */ Boolean* exact)
+    /* [out] */ Boolean& exact)
 {
-    VALIDATE_NOT_NULL(exact);
-
-    *exact = mExactDecimalConversion;
+    exact = mExactDecimalConversion;
     return NOERROR;
 }
 
@@ -598,10 +578,8 @@ void FloatingDecimal::BinaryToASCIIBuffer::Dtoa(
         //
         AutoPtr<IFDBigInteger> sval = CFDBigInteger::ValueOfPow52(S5, S2);
         Integer shiftBias;
-        sval->GetNormalizationBias(&shiftBias);
-        AutoPtr<IFDBigInteger> tempVal;
-        sval->LeftShift(shiftBias, &tempVal);
-        sval = std::move(tempVal);
+        sval->GetNormalizationBias(shiftBias);
+        sval->LeftShift(shiftBias, sval);
 
         AutoPtr<IFDBigInteger> bval = CFDBigInteger::ValueOfMulPow52(fractBits, B5, B2 + shiftBias);
         AutoPtr<IFDBigInteger> mval = CFDBigInteger::ValueOfPow52(M5 + 1, M2 + shiftBias + 1);
@@ -613,11 +591,11 @@ void FloatingDecimal::BinaryToASCIIBuffer::Dtoa(
         // case, we discard it and decrement decExp.
         //
         ndigit = 0;
-        bval->QuoRemIteration(sval, &q);
+        bval->QuoRemIteration(sval, q);
         Integer comRes;
-        bval->Cmp(mval, &comRes);
+        bval->Cmp(mval, comRes);
         low = (comRes < 0);
-        tenSval->AddAndCmp(bval, mval, &comRes);
+        tenSval->AddAndCmp(bval, mval, comRes);
         high = (comRes <= 0);
 
         CHECK(q < 10);
@@ -638,26 +616,24 @@ void FloatingDecimal::BinaryToASCIIBuffer::Dtoa(
             high = low = false;
         }
         while(!low && !high){
-            bval->QuoRemIteration(sval, &q);
+            bval->QuoRemIteration(sval, q);
             CHECK(q < 10);
-            mval->MultBy10(&tempVal); //Mval = Mval.mult( 10 );
-            mval = std::move(tempVal);
-            bval->Cmp(mval, &comRes);
+            mval->MultBy10(mval); //Mval = Mval.mult( 10 );
+            bval->Cmp(mval, comRes);
             low = (comRes < 0);
-            tenSval->AddAndCmp(bval, mval, &comRes);
+            tenSval->AddAndCmp(bval, mval, comRes);
             high = (comRes <= 0);
             mDigits[ndigit++] = (Char)(U'0' + q);
         }
         if (high && low) {
-            bval->LeftShift(1, &tempVal);
-            bval = std::move(tempVal);
-            bval->Cmp(tenSval, &comRes);
+            bval->LeftShift(1, bval);
+            bval->Cmp(tenSval, comRes);
             lowDigitDifference = comRes;
         }
         else {
             lowDigitDifference = 0LL; // this here only for flow analysis!
         }
-        bval->Cmp(CFDBigInteger::GetZERO(), &comRes);
+        bval->Cmp(CFDBigInteger::GetZERO(), comRes);
         mExactDecimalConversion = (comRes == 0);
     }
     mDecExponent = decExp + 1;
@@ -838,20 +814,16 @@ FloatingDecimal::PreparedASCIIToBinaryBuffer::PreparedASCIIToBinaryBuffer(
 COMO_INTERFACE_IMPL_1(FloatingDecimal::PreparedASCIIToBinaryBuffer, Object, IFloatingDecimalASCIIToBinaryConverter);
 
 ECode FloatingDecimal::PreparedASCIIToBinaryBuffer::DoubleValue(
-    /* [out] */ Double* value)
+    /* [out] */ Double& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = mDoubleVal;
+    value = mDoubleVal;
     return NOERROR;
 }
 
 ECode FloatingDecimal::PreparedASCIIToBinaryBuffer::FloatValue(
-    /* [out] */ Float* value)
+    /* [out] */ Float& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = mFloatVal;
+    value = mFloatVal;
     return NOERROR;
 }
 
@@ -878,10 +850,8 @@ FloatingDecimal::ASCIIToBinaryBuffer::ASCIIToBinaryBuffer(
 COMO_INTERFACE_IMPL_1(FloatingDecimal::ASCIIToBinaryBuffer, Object, IFloatingDecimalASCIIToBinaryConverter);
 
 ECode FloatingDecimal::ASCIIToBinaryBuffer::DoubleValue(
-    /* [out] */ Double* value)
+    /* [out] */ Double& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     Integer kDigits = Math::Min(mNDigits, MAX_DECIMAL_DIGITS + 1);
     //
     // convert the lead kDigits to a long integer.
@@ -916,7 +886,7 @@ ECode FloatingDecimal::ASCIIToBinaryBuffer::DoubleValue(
         // will always end up here
         //
         if (exp == 0 || dValue == 0.0) {
-            *value = (mIsNegative) ? -dValue : dValue; // small floating integer
+            value = (mIsNegative) ? -dValue : dValue; // small floating integer
             return NOERROR;
         }
         else if (exp >= 0) {
@@ -926,7 +896,7 @@ ECode FloatingDecimal::ASCIIToBinaryBuffer::DoubleValue(
                 // thus one roundoff.
                 //
                 Double rValue = dValue * SMALL_10_POW[exp];
-                *value = (mIsNegative) ? -rValue : rValue;
+                value = (mIsNegative) ? -rValue : rValue;
                 return NOERROR;
             }
             Integer slop = MAX_DECIMAL_DIGITS - kDigits;
@@ -939,7 +909,7 @@ ECode FloatingDecimal::ASCIIToBinaryBuffer::DoubleValue(
                 //
                 dValue *= SMALL_10_POW[slop];
                 Double rValue = dValue * SMALL_10_POW[exp - slop];
-                *value = (mIsNegative) ? -rValue : rValue;
+                value = (mIsNegative) ? -rValue : rValue;
                 return NOERROR;
             }
             //
@@ -952,7 +922,7 @@ ECode FloatingDecimal::ASCIIToBinaryBuffer::DoubleValue(
                 // Can get the answer in one division.
                 //
                 Double rValue = dValue / SMALL_10_POW[-exp];
-                *value = (mIsNegative) ? -rValue : rValue;
+                value = (mIsNegative) ? -rValue : rValue;
                 return NOERROR;
             }
             //
@@ -975,7 +945,7 @@ ECode FloatingDecimal::ASCIIToBinaryBuffer::DoubleValue(
             // Lets face it. This is going to be
             // Infinity. Cut to the chase.
             //
-            *value = (mIsNegative) ? IDouble::NEGATIVE_INFINITY : IDouble::POSITIVE_INFINITY;
+            value = (mIsNegative) ? IDouble::NEGATIVE_INFINITY : IDouble::POSITIVE_INFINITY;
             return NOERROR;
         }
         if ((exp & 15) != 0) {
@@ -1011,7 +981,7 @@ ECode FloatingDecimal::ASCIIToBinaryBuffer::DoubleValue(
                 t = dValue / 2.0;
                 t *= BIG_10_POW[j];
                 if (Math::IsInfinite(t)) {
-                    *value = (mIsNegative) ? IDouble::NEGATIVE_INFINITY : IDouble::POSITIVE_INFINITY;
+                    value = (mIsNegative) ? IDouble::NEGATIVE_INFINITY : IDouble::POSITIVE_INFINITY;
                     return NOERROR;
                 }
                 t = IDouble::MAX_VALUE;
@@ -1026,7 +996,7 @@ ECode FloatingDecimal::ASCIIToBinaryBuffer::DoubleValue(
             // Lets face it. This is going to be
             // zero. Cut to the chase.
             //
-            *value = (mIsNegative) ? -0.0 : 0.0;
+            value = (mIsNegative) ? -0.0 : 0.0;
             return NOERROR;
         }
         if ((exp & 15) != 0) {
@@ -1062,7 +1032,7 @@ ECode FloatingDecimal::ASCIIToBinaryBuffer::DoubleValue(
                 t = dValue * 2.0;
                 t *= TINY_10_POW[j];
                 if (t == 0.0) {
-                    *value = (mIsNegative) ? -0.0 : 0.0;
+                    value = (mIsNegative) ? -0.0 : 0.0;
                     return NOERROR;
                 }
                 t = IDouble::MIN_VALUE;
@@ -1090,7 +1060,7 @@ ECode FloatingDecimal::ASCIIToBinaryBuffer::DoubleValue(
     const Integer B5 = Math::Max(0, -exp); // powers of 5 in bigB, value is not modified inside correctionLoop
     const Integer D5 = Math::Max(0, exp); // powers of 5 in bigD, value is not modified inside correctionLoop
     AutoPtr<IFDBigInteger> tempVal;
-    bigD0->MultByPow52(D5, 0, &tempVal);
+    bigD0->MultByPow52(D5, 0, tempVal);
     bigD0 = std::move(tempVal);
     bigD0->MakeImmutable();   // prevent bigD0 modification inside correctionLoop
     AutoPtr<IFDBigInteger> bigD;
@@ -1158,7 +1128,7 @@ ECode FloatingDecimal::ASCIIToBinaryBuffer::DoubleValue(
         // do multiplications by powers of 5 and 2
         AutoPtr<IFDBigInteger> bigB = CFDBigInteger::ValueOfMulPow52(bigBbits, B5, B2);
         if (bigD == nullptr || prevD2 != D2) {
-            bigD0->LeftShift(D2, &tempVal);
+            bigD0->LeftShift(D2, tempVal);
             bigD = std::move(tempVal);
             prevD2 = D2;
         }
@@ -1179,9 +1149,9 @@ ECode FloatingDecimal::ASCIIToBinaryBuffer::DoubleValue(
         AutoPtr<IFDBigInteger> diff;
         Integer cmpResult;
         Boolean overvalue;
-        if (bigB->Cmp(bigD, &cmpResult), cmpResult > 0) {
+        if (bigB->Cmp(bigD, cmpResult), cmpResult > 0) {
             overvalue = true; // our candidate is too big.
-            bigB->LeftInplaceSub(bigD, &diff); // bigB is not user further - reuse
+            bigB->LeftInplaceSub(bigD, diff); // bigB is not user further - reuse
             if ((bigIntNBits == 1) && (bigIntExp > -DoubleConsts::EXP_BIAS + 1)) {
                 // candidate is a normalized exact power of 2 and
                 // is too big (larger than Double.MIN_NORMAL). We will be subtracting.
@@ -1192,21 +1162,21 @@ ECode FloatingDecimal::ASCIIToBinaryBuffer::DoubleValue(
                     // rats. Cannot de-scale ulp this far.
                     // must scale diff in other direction.
                     Ulp2 = 0;
-                    diff->LeftShift(1, &tempVal);
+                    diff->LeftShift(1, tempVal);
                     diff = std::move(tempVal);
                 }
             }
         }
         else if (cmpResult < 0) {
             overvalue = false; // our candidate is too small.
-            bigD->RightInplaceSub(bigB, &diff); // bigB is not user further - reuse
+            bigD->RightInplaceSub(bigB, diff); // bigB is not user further - reuse
         }
         else {
             // the candidate is exactly right!
             // this happens with surprising frequency
             break;
         }
-        diff->CmpPow52(B5, Ulp2, &cmpResult);
+        diff->CmpPow52(B5, Ulp2, cmpResult);
         if (cmpResult < 0) {
             // difference is small.
             // this is close enough
@@ -1235,15 +1205,13 @@ ECode FloatingDecimal::ASCIIToBinaryBuffer::DoubleValue(
     if (mIsNegative) {
         ieeeBits |= DoubleConsts::SIGN_BIT_MASK;
     }
-    *value = Math::LongBitsToDouble(ieeeBits);
+    value = Math::LongBitsToDouble(ieeeBits);
     return NOERROR;
 }
 
 ECode FloatingDecimal::ASCIIToBinaryBuffer::FloatValue(
-    /* [out] */ Float* value)
+    /* [out] */ Float& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     Integer kDigits = Math::Min(mNDigits, SINGLE_MAX_DECIMAL_DIGITS + 1);
     //
     // convert the lead kDigits to an integer.
@@ -1272,7 +1240,7 @@ ECode FloatingDecimal::ASCIIToBinaryBuffer::FloatValue(
         // will always end up here.
         //
         if (exp == 0 || fValue == 0.0f) {
-            *value = (mIsNegative) ? -fValue : fValue; // small floating integer
+            value = (mIsNegative) ? -fValue : fValue; // small floating integer
             return NOERROR;
         }
         else if (exp >= 0) {
@@ -1282,7 +1250,7 @@ ECode FloatingDecimal::ASCIIToBinaryBuffer::FloatValue(
                 // thus one roundoff.
                 //
                 fValue *= SINGLE_SMALL_10_POW[exp];
-                *value = (mIsNegative) ? -fValue : fValue;
+                value = (mIsNegative) ? -fValue : fValue;
                 return NOERROR;
             }
             Integer slop = SINGLE_MAX_DECIMAL_DIGITS - kDigits;
@@ -1295,7 +1263,7 @@ ECode FloatingDecimal::ASCIIToBinaryBuffer::FloatValue(
                 //
                 fValue *= SINGLE_SMALL_10_POW[slop];
                 fValue *= SINGLE_SMALL_10_POW[exp - slop];
-                *value = (mIsNegative) ? -fValue : fValue;
+                value = (mIsNegative) ? -fValue : fValue;
                 return NOERROR;
             }
             //
@@ -1308,7 +1276,7 @@ ECode FloatingDecimal::ASCIIToBinaryBuffer::FloatValue(
                 // Can get the answer in one division.
                 //
                 fValue /= SINGLE_SMALL_10_POW[-exp];
-                *value = (mIsNegative) ? -fValue : fValue;
+                value = (mIsNegative) ? -fValue : fValue;
                 return NOERROR;
             }
             //
@@ -1334,7 +1302,7 @@ ECode FloatingDecimal::ASCIIToBinaryBuffer::FloatValue(
         exp = mDecExponent - mNDigits;
         dValue *= SMALL_10_POW[exp];
         fValue = (Float)dValue;
-        *value = (mIsNegative) ? -fValue : fValue;
+        value = (mIsNegative) ? -fValue : fValue;
         return NOERROR;
     }
     //
@@ -1353,7 +1321,7 @@ ECode FloatingDecimal::ASCIIToBinaryBuffer::FloatValue(
             // Lets face it. This is going to be
             // Infinity. Cut to the chase.
             //
-            *value = (mIsNegative) ? IFloat::NEGATIVE_INFINITY : IFloat::POSITIVE_INFINITY;
+            value = (mIsNegative) ? IFloat::NEGATIVE_INFINITY : IFloat::POSITIVE_INFINITY;
             return NOERROR;
         }
         if ((exp & 15) != 0) {
@@ -1375,7 +1343,7 @@ ECode FloatingDecimal::ASCIIToBinaryBuffer::FloatValue(
             // Lets face it. This is going to be
             // zero. Cut to the chase.
             //
-            *value = (mIsNegative) ? -0.0f : 0.0f;
+            value = (mIsNegative) ? -0.0f : 0.0f;
             return NOERROR;
         }
         if ((exp & 15) != 0) {
@@ -1411,7 +1379,7 @@ ECode FloatingDecimal::ASCIIToBinaryBuffer::FloatValue(
     const Integer B5 = Math::Max(0, -exp); // powers of 5 in bigB, value is not modified inside correctionLoop
     const Integer D5 = Math::Max(0, exp); // powers of 5 in bigD, value is not modified inside correctionLoop
     AutoPtr<IFDBigInteger> tempVal;
-    bigD0->MultByPow52(D5, 0, &tempVal);
+    bigD0->MultByPow52(D5, 0, tempVal);
     bigD0 = std::move(tempVal);
     bigD0->MakeImmutable();   // prevent bigD0 modification inside correctionLoop
     AutoPtr<IFDBigInteger> bigD;
@@ -1479,7 +1447,7 @@ ECode FloatingDecimal::ASCIIToBinaryBuffer::FloatValue(
         // do multiplications by powers of 5 and 2
         AutoPtr<IFDBigInteger> bigB = FDBigInteger::ValueOfMulPow52(bigBbits, B5, B2);
         if (bigD == nullptr || prevD2 != D2) {
-            bigD0->LeftShift(D2, &tempVal);
+            bigD0->LeftShift(D2, tempVal);
             bigD = std::move(tempVal);
             prevD2 = D2;
         }
@@ -1500,9 +1468,9 @@ ECode FloatingDecimal::ASCIIToBinaryBuffer::FloatValue(
         AutoPtr<IFDBigInteger> diff;
         Integer cmpResult;
         Boolean overvalue;
-        if (bigB->Cmp(bigD, &cmpResult), cmpResult > 0) {
+        if (bigB->Cmp(bigD, cmpResult), cmpResult > 0) {
             overvalue = true; // our candidate is too big.
-            bigB->LeftInplaceSub(bigD, &diff); // bigB is not user further - reuse
+            bigB->LeftInplaceSub(bigD, diff); // bigB is not user further - reuse
             if ((bigIntNBits == 1) && (bigIntExp > -FloatConsts::EXP_BIAS + 1)) {
                 // candidate is a normalized exact power of 2 and
                 // is too big (larger than Float.MIN_NORMAL). We will be subtracting.
@@ -1513,21 +1481,21 @@ ECode FloatingDecimal::ASCIIToBinaryBuffer::FloatValue(
                     // rats. Cannot de-scale ulp this far.
                     // must scale diff in other direction.
                     Ulp2 = 0;
-                    diff->LeftShift(1, &tempVal);
+                    diff->LeftShift(1, tempVal);
                     diff = std::move(tempVal);
                 }
             }
         }
         else if (cmpResult < 0) {
             overvalue = false; // our candidate is too small.
-            bigD->RightInplaceSub(bigB, &diff); // bigB is not user further - reuse
+            bigD->RightInplaceSub(bigB, diff); // bigB is not user further - reuse
         }
         else {
             // the candidate is exactly right!
             // this happens with surprising frequency
             break;
         }
-        diff->CmpPow52(B5, Ulp2, &cmpResult);
+        diff->CmpPow52(B5, Ulp2, cmpResult);
         if ((cmpResult) < 0) {
             // difference is small.
             // this is close enough
@@ -1556,7 +1524,7 @@ ECode FloatingDecimal::ASCIIToBinaryBuffer::FloatValue(
     if (mIsNegative) {
         ieeeBits |= FloatConsts::SIGN_BIT_MASK;
     }
-    *value = Math::IntegerBitsToFloat(ieeeBits);
+    value = Math::IntegerBitsToFloat(ieeeBits);
     return NOERROR;
 }
 
@@ -1659,7 +1627,7 @@ String FloatingDecimal::ToFormatString(
     /* [in]*/ Double d)
 {
     String formatStr;
-    GetBinaryToASCIIConverter(d)->ToFormatString(&formatStr);
+    GetBinaryToASCIIConverter(d)->ToFormatString(formatStr);
     return formatStr;
 }
 
@@ -1667,7 +1635,7 @@ String FloatingDecimal::ToFormatString(
     /* [in] */ Float f)
 {
     String formatStr;
-    GetBinaryToASCIIConverter(f)->ToFormatString(&formatStr);
+    GetBinaryToASCIIConverter(f)->ToFormatString(formatStr);
     return formatStr;
 }
 
@@ -1687,10 +1655,8 @@ ECode FloatingDecimal::AppendTo(
 
 ECode FloatingDecimal::ParseDouble(
     /* [in] */ const String& s,
-    /* [out] */ Double* value)
+    /* [out] */ Double& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     AutoPtr<IFloatingDecimalASCIIToBinaryConverter> converter;
     FAIL_RETURN(ReadFormatString(s, &converter));
     return converter->DoubleValue(value);
@@ -1698,10 +1664,8 @@ ECode FloatingDecimal::ParseDouble(
 
 ECode FloatingDecimal::ParseFloat(
     /* [in] */ const String& s,
-    /* [out] */ Float* value)
+    /* [out] */ Float& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     AutoPtr<IFloatingDecimalASCIIToBinaryConverter> converter;
     FAIL_RETURN(ReadFormatString(s, &converter));
     return converter->FloatValue(value);

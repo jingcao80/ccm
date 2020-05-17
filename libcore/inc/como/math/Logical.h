@@ -27,92 +27,92 @@ class Logical
 public:
     static ECode Not(
         /* [in] */ BigInteger* value,
-        /* [out] */ IBigInteger** result);
+        /* [out] */ AutoPtr<IBigInteger>& result);
 
     static ECode And(
         /* [in] */ BigInteger* value,
         /* [in] */ BigInteger* that,
-        /* [out] */ IBigInteger** result);
+        /* [out] */ AutoPtr<IBigInteger>& result);
 
     static ECode AddPositive(
         /* [in] */ BigInteger* value,
         /* [in] */ BigInteger* that,
-        /* [out] */ IBigInteger** result);
+        /* [out] */ AutoPtr<IBigInteger>& result);
 
     static ECode AddDiffSigns(
         /* [in] */ BigInteger* positive,
         /* [in] */ BigInteger* negative,
-        /* [out] */ IBigInteger** result);
+        /* [out] */ AutoPtr<IBigInteger>& result);
 
     static ECode AddNegative(
         /* [in] */ BigInteger* longer,
         /* [in] */ BigInteger* shorter,
-        /* [out] */ IBigInteger** result);
+        /* [out] */ AutoPtr<IBigInteger>& result);
 
     static ECode AndNot(
         /* [in] */ BigInteger* value,
         /* [in] */ BigInteger* that,
-        /* [out] */ IBigInteger** result);
+        /* [out] */ AutoPtr<IBigInteger>& result);
 
     static ECode AddNotPositive(
         /* [in] */ BigInteger* value,
         /* [in] */ BigInteger* that,
-        /* [out] */ IBigInteger** result);
+        /* [out] */ AutoPtr<IBigInteger>& result);
 
     static ECode AddNotPositiveNegative(
         /* [in] */ BigInteger* positive,
         /* [in] */ BigInteger* negative,
-        /* [out] */ IBigInteger** result);
+        /* [out] */ AutoPtr<IBigInteger>& result);
 
     static ECode AddNotNegativePositive(
         /* [in] */ BigInteger* negative,
         /* [in] */ BigInteger* positive,
-        /* [out] */ IBigInteger** result);
+        /* [out] */ AutoPtr<IBigInteger>& result);
 
     static ECode AddNotNegative(
         /* [in] */ BigInteger* value,
         /* [in] */ BigInteger* that,
-        /* [out] */ IBigInteger** result);
+        /* [out] */ AutoPtr<IBigInteger>& result);
 
     static ECode Or(
         /* [in] */ BigInteger* value,
         /* [in] */ BigInteger* that,
-        /* [out] */ IBigInteger** result);
+        /* [out] */ AutoPtr<IBigInteger>& result);
 
     static ECode OrPositive(
         /* [in] */ BigInteger* longer,
         /* [in] */ BigInteger* shorter,
-        /* [out] */ IBigInteger** result);
+        /* [out] */ AutoPtr<IBigInteger>& result);
 
     static ECode OrNegative(
         /* [in] */ BigInteger* value,
         /* [in] */ BigInteger* that,
-        /* [out] */ IBigInteger** result);
+        /* [out] */ AutoPtr<IBigInteger>& result);
 
     static ECode OrDiffSigns(
         /* [in] */ BigInteger* positive,
         /* [in] */ BigInteger* negative,
-        /* [out] */ IBigInteger** result);
+        /* [out] */ AutoPtr<IBigInteger>& result);
 
     static ECode Xor(
         /* [in] */ BigInteger* value,
         /* [in] */ BigInteger* that,
-        /* [out] */ IBigInteger** result);
+        /* [out] */ AutoPtr<IBigInteger>& result);
 
     static ECode XorPositive(
         /* [in] */ BigInteger* longer,
         /* [in] */ BigInteger* shorter,
-        /* [out] */ IBigInteger** result);
+        /* [out] */ AutoPtr<IBigInteger>& result);
 
     static ECode XorNegative(
         /* [in] */ BigInteger* value,
         /* [in] */ BigInteger* that,
-        /* [out] */ IBigInteger** result);
+        /* [out] */ AutoPtr<IBigInteger>& result);
 
     static ECode XorDiffSigns(
         /* [in] */ BigInteger* positive,
         /* [in] */ BigInteger* negative,
-        /* [out] */ IBigInteger** result);
+        /* [out] */ AutoPtr<IBigInteger>& result);
 
 private:
     Logical();

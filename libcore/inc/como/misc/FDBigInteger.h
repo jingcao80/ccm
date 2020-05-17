@@ -53,53 +53,53 @@ public:
         /* [in] */ Integer p2);
 
     ECode GetNormalizationBias(
-        /* [out] */ Integer* bias) override;
+        /* [out] */ Integer& bias) override;
 
     ECode LeftShift(
         /* [in] */ Integer shift,
-        /* [out] */ IFDBigInteger** value) override;
+        /* [out] */ AutoPtr<IFDBigInteger>& value) override;
 
     ECode QuoRemIteration(
         /* [in] */ IFDBigInteger* s,
-        /* [out] */ Integer* q) override;
+        /* [out] */ Integer& q) override;
 
     ECode MultBy10(
-        /* [out] */ IFDBigInteger** value) override;
+        /* [out] */ AutoPtr<IFDBigInteger>& value) override;
 
     ECode MultByPow52(
         /* [in] */ Integer p5,
         /* [in] */ Integer p2,
-        /* [out] */ IFDBigInteger** value) override;
+        /* [out] */ AutoPtr<IFDBigInteger>& value) override;
 
     ECode LeftInplaceSub(
         /* [in] */ IFDBigInteger* subtrahend,
-        /* [out] */ IFDBigInteger** value) override;
+        /* [out] */ AutoPtr<IFDBigInteger>& value) override;
 
     ECode RightInplaceSub(
         /* [in] */ IFDBigInteger* subtrahend,
-        /* [out] */ IFDBigInteger** value) override;
+        /* [out] */ AutoPtr<IFDBigInteger>& value) override;
 
     ECode Cmp(
         /* [in] */ IFDBigInteger* other,
-        /* [out] */ Integer* result) override;
+        /* [out] */ Integer& result) override;
 
     ECode CmpPow52(
         /* [in] */ Integer p5,
         /* [in] */ Integer p2,
-        /* [out] */ Integer* result) override;
+        /* [out] */ Integer& result) override;
 
     ECode AddAndCmp(
         /* [in] */ IFDBigInteger* x,
         /* [in] */ IFDBigInteger* y,
-        /* [out] */ Integer* result) override;
+        /* [out] */ Integer& result) override;
 
     ECode MakeImmutable() override;
 
     ECode ToHexString(
-        /* [out] */ String* str) override;
+        /* [out] */ String& str) override;
 
     ECode ToBigInteger(
-        /* [out] */ IBigInteger** value) override;
+        /* [out] */ AutoPtr<IBigInteger>& value) override;
 
     ECode ToString(
         /* [out] */ String& str) override;

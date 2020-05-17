@@ -24,15 +24,15 @@ namespace math {
 
 ECode Logical::Not(
     /* [in] */ BigInteger* value,
-    /* [out] */ IBigInteger** result)
+    /* [out] */ AutoPtr<IBigInteger>& result)
 {
     if (value->mSign == 0) {
-        CBigInteger::GetMINUS_ONE().MoveTo(result);
+        result = CBigInteger::GetMINUS_ONE();
         return NOERROR;
     }
     Boolean same;
     if (value->Equals(CBigInteger::GetMINUS_ONE(), same), same) {
-        CBigInteger::GetZERO().MoveTo(result);
+        result = CBigInteger::GetZERO();
         return NOERROR;
     }
     Array<Integer> resDigits(value->mNumberLength + 1);
@@ -50,7 +50,7 @@ ECode Logical::Not(
             }
             if (i == value->mNumberLength) {
                 resDigits[i] = 1;
-                return CBigInteger::New(-value->mSign, i + 1, resDigits, IID_IBigInteger, (IInterface**)result);
+                return CBigInteger::New(-value->mSign, i + 1, resDigits, IID_IBigInteger, (IInterface**)&result);
             }
         }
         // Here a carry 1 was generated
@@ -67,27 +67,25 @@ ECode Logical::Not(
     for (i++; i < value->mNumberLength; i++) {
         resDigits[i] = value->mDigits[i];
     }
-    return CBigInteger::New(-value->mSign, i, resDigits, IID_IBigInteger, (IInterface**)result);
+    return CBigInteger::New(-value->mSign, i, resDigits, IID_IBigInteger, (IInterface**)&result);
 }
 
 ECode Logical::And(
     /* [in] */ BigInteger* value,
     /* [in] */ BigInteger* that,
-    /* [out] */ IBigInteger** result)
+    /* [out] */ AutoPtr<IBigInteger>& result)
 {
     if (that->mSign == 0 || value->mSign == 0) {
-        CBigInteger::GetZERO().MoveTo(result);
+        result = CBigInteger::GetZERO();
         return NOERROR;
     }
     Boolean same;
     if (that->Equals(CBigInteger::GetMINUS_ONE(), same), same) {
-        *result = value;
-        REFCOUNT_ADD(*result);
+        result = value;
         return NOERROR;
     }
     if (value->Equals(CBigInteger::GetMINUS_ONE(), same), same) {
-        *result = that;
-        REFCOUNT_ADD(*result);
+        result = that;
         return NOERROR;
     }
 
@@ -115,13 +113,13 @@ ECode Logical::And(
 ECode Logical::AddPositive(
     /* [in] */ BigInteger* value,
     /* [in] */ BigInteger* that,
-    /* [out] */ IBigInteger** result)
+    /* [out] */ AutoPtr<IBigInteger>& result)
 {
     Integer resLength = Math::Min(value->mNumberLength, that->mNumberLength);
     Integer i = Math::Max(value->GetFirstNonzeroDigit(), that->GetFirstNonzeroDigit());
 
     if (i >= resLength) {
-        CBigInteger::GetZERO().MoveTo(result);
+        result = CBigInteger::GetZERO();
         return NOERROR;
     }
 
@@ -130,13 +128,13 @@ ECode Logical::AddPositive(
         resDigits[i] = value->mDigits[i] & that->mDigits[i];
     }
 
-    return CBigInteger::New(1, resLength, resDigits, IID_IBigInteger, (IInterface**)result);
+    return CBigInteger::New(1, resLength, resDigits, IID_IBigInteger, (IInterface**)&result);
 }
 
 ECode Logical::AddDiffSigns(
     /* [in] */ BigInteger* positive,
     /* [in] */ BigInteger* negative,
-    /* [out] */ IBigInteger** result)
+    /* [out] */ AutoPtr<IBigInteger>& result)
 {
     Integer iPos = positive->GetFirstNonzeroDigit();
     Integer iNeg = negative->GetFirstNonzeroDigit();
@@ -144,7 +142,7 @@ ECode Logical::AddDiffSigns(
     // Look if the trailing zeros of the negative will "blank" all
     // the positive digits
     if (iNeg >= positive->mNumberLength) {
-        CBigInteger::GetZERO().MoveTo(result);
+        result = CBigInteger::GetZERO();
         return NOERROR;
     }
     Integer resLength = positive->mNumberLength;
@@ -168,21 +166,20 @@ ECode Logical::AddDiffSigns(
         }
     } // else positive ended and must "copy" virtual 0's, do nothing then
 
-    return CBigInteger::New(1, resLength, resDigits, IID_IBigInteger, (IInterface**)result);
+    return CBigInteger::New(1, resLength, resDigits, IID_IBigInteger, (IInterface**)&result);
 }
 
 ECode Logical::AddNegative(
     /* [in] */ BigInteger* longer,
     /* [in] */ BigInteger* shorter,
-    /* [out] */ IBigInteger** result)
+    /* [out] */ AutoPtr<IBigInteger>& result)
 {
     Integer iLonger = longer->GetFirstNonzeroDigit();
     Integer iShorter = shorter->GetFirstNonzeroDigit();
 
     // Does shorter matter?
     if (iLonger >= shorter->mNumberLength) {
-        *result = longer;
-        REFCOUNT_ADD(*result);
+        result = longer;
         return NOERROR;
     }
 
@@ -213,7 +210,7 @@ ECode Logical::AddNegative(
                 resDigits = Array<Integer>(resLength);
                 resDigits[resLength - 1] = 1;
 
-                return CBigInteger::New(-1, resLength, resDigits, IID_IBigInteger, (IInterface**)result);
+                return CBigInteger::New(-1, resLength, resDigits, IID_IBigInteger, (IInterface**)&result);
             }
         }
     }
@@ -228,21 +225,20 @@ ECode Logical::AddNegative(
         resDigits[i] = longer->mDigits[i];
     }
 
-    return CBigInteger::New(-1, resLength, resDigits, IID_IBigInteger, (IInterface**)result);
+    return CBigInteger::New(-1, resLength, resDigits, IID_IBigInteger, (IInterface**)&result);
 }
 
 ECode Logical::AndNot(
     /* [in] */ BigInteger* value,
     /* [in] */ BigInteger* that,
-    /* [out] */ IBigInteger** result)
+    /* [out] */ AutoPtr<IBigInteger>& result)
 {
     if (that->mSign == 0) {
-        *result = value;
-        REFCOUNT_ADD(*result);
+        result = value;
         return NOERROR;
     }
     if (value->mSign == 0) {
-        CBigInteger::GetZERO().MoveTo(result);
+        result = CBigInteger::GetZERO();
         return NOERROR;
     }
     Boolean same;
@@ -250,7 +246,7 @@ ECode Logical::AndNot(
         return that->Not(result);
     }
     if (that->Equals(CBigInteger::GetMINUS_ONE(), same), same) {
-        CBigInteger::GetZERO().MoveTo(result);
+        result = CBigInteger::GetZERO();
         return NOERROR;
     }
 
@@ -275,7 +271,7 @@ ECode Logical::AndNot(
 ECode Logical::AddNotPositive(
     /* [in] */ BigInteger* value,
     /* [in] */ BigInteger* that,
-    /* [out] */ IBigInteger** result)
+    /* [out] */ AutoPtr<IBigInteger>& result)
 {
     Array<Integer> resDigits(value->mNumberLength);
 
@@ -288,20 +284,19 @@ ECode Logical::AddNotPositive(
         resDigits[i] = value->mDigits[i];
     }
 
-    return CBigInteger::New(1, value->mNumberLength, resDigits, IID_IBigInteger, (IInterface**)result);
+    return CBigInteger::New(1, value->mNumberLength, resDigits, IID_IBigInteger, (IInterface**)&result);
 }
 
 ECode Logical::AddNotPositiveNegative(
     /* [in] */ BigInteger* positive,
     /* [in] */ BigInteger* negative,
-    /* [out] */ IBigInteger** result)
+    /* [out] */ AutoPtr<IBigInteger>& result)
 {
     Integer iNeg = negative->GetFirstNonzeroDigit();
     Integer iPos = positive->GetFirstNonzeroDigit();
 
     if (iNeg >= positive->mNumberLength) {
-        *result = positive;
-        REFCOUNT_ADD(*result);
+        result = positive;
         return NOERROR;
     }
 
@@ -321,13 +316,13 @@ ECode Logical::AddNotPositiveNegative(
         resDigits[i] = positive->mDigits[i] & negative->mDigits[i];
     }
 
-    return CBigInteger::New(1, resLength, resDigits, IID_IBigInteger, (IInterface**)result);
+    return CBigInteger::New(1, resLength, resDigits, IID_IBigInteger, (IInterface**)&result);
 }
 
 ECode Logical::AddNotNegativePositive(
     /* [in] */ BigInteger* negative,
     /* [in] */ BigInteger* positive,
-    /* [out] */ IBigInteger** result)
+    /* [out] */ AutoPtr<IBigInteger>& result)
 {
     Integer resLength;
     Array<Integer> resDigits;
@@ -338,8 +333,7 @@ ECode Logical::AddNotNegativePositive(
     Integer iPos = positive->GetFirstNonzeroDigit();
 
     if (iNeg >= positive->mNumberLength) {
-        *result = negative;
-        REFCOUNT_ADD(*result);
+        result = negative;
         return NOERROR;
     }
 
@@ -377,7 +371,7 @@ ECode Logical::AddNotNegativePositive(
                     resDigits = Array<Integer>(resLength);
                     resDigits[resLength - 1] = 1;
 
-                    return CBigInteger::New(-1, resLength, resDigits, IID_IBigInteger, (IInterface**)result);
+                    return CBigInteger::New(-1, resLength, resDigits, IID_IBigInteger, (IInterface**)&result);
                 }
             }
         }
@@ -398,19 +392,19 @@ ECode Logical::AddNotNegativePositive(
         resDigits[i] = positive->mDigits[i];
     }
 
-    return CBigInteger::New(-1, resLength, resDigits, IID_IBigInteger, (IInterface**)result);
+    return CBigInteger::New(-1, resLength, resDigits, IID_IBigInteger, (IInterface**)&result);
 }
 
 ECode Logical::AddNotNegative(
     /* [in] */ BigInteger* value,
     /* [in] */ BigInteger* that,
-    /* [out] */ IBigInteger** result)
+    /* [out] */ AutoPtr<IBigInteger>& result)
 {
     Integer iValue = value->GetFirstNonzeroDigit();
     Integer iThat =  that->GetFirstNonzeroDigit();
 
     if (iValue >= that->mNumberLength) {
-        CBigInteger::GetZERO().MoveTo(result);
+        result = CBigInteger::GetZERO();
         return NOERROR;
     }
 
@@ -449,28 +443,26 @@ ECode Logical::AddNotNegative(
         resDigits[i] = that->mDigits[i];
     }
 
-    return CBigInteger::New(1, resLength, resDigits, IID_IBigInteger, (IInterface**)result);
+    return CBigInteger::New(1, resLength, resDigits, IID_IBigInteger, (IInterface**)&result);
 }
 
 ECode Logical::Or(
     /* [in] */ BigInteger* value,
     /* [in] */ BigInteger* that,
-    /* [out] */ IBigInteger** result)
+    /* [out] */ AutoPtr<IBigInteger>& result)
 {
     Boolean same;
     if ((that->Equals(CBigInteger::GetMINUS_ONE(), same), same) ||
             (value->Equals(CBigInteger::GetMINUS_ONE(), same), same)) {
-        CBigInteger::GetMINUS_ONE().MoveTo(result);
+        result = CBigInteger::GetMINUS_ONE();
         return NOERROR;
     }
     if (that->mSign == 0) {
-        *result = value;
-        REFCOUNT_ADD(*result);
+        result = value;
         return NOERROR;
     }
     if (value->mSign == 0) {
-        *result = that;
-        REFCOUNT_ADD(*result);
+        result = that;
         return NOERROR;
     }
 
@@ -503,7 +495,7 @@ ECode Logical::Or(
 ECode Logical::OrPositive(
     /* [in] */ BigInteger* longer,
     /* [in] */ BigInteger* shorter,
-    /* [out] */ IBigInteger** result)
+    /* [out] */ AutoPtr<IBigInteger>& result)
 {
     Integer resLength = longer->mNumberLength;
     Array<Integer> resDigits(resLength);
@@ -516,26 +508,24 @@ ECode Logical::OrPositive(
         resDigits[i] = longer->mDigits[i];
     }
 
-    return CBigInteger::New(1, resLength, resDigits, IID_IBigInteger, (IInterface**)result);
+    return CBigInteger::New(1, resLength, resDigits, IID_IBigInteger, (IInterface**)&result);
 }
 
 ECode Logical::OrNegative(
     /* [in] */ BigInteger* value,
     /* [in] */ BigInteger* that,
-    /* [out] */ IBigInteger** result)
+    /* [out] */ AutoPtr<IBigInteger>& result)
 {
     Integer iThat = that->GetFirstNonzeroDigit();
     Integer iValue = value->GetFirstNonzeroDigit();
     Integer i;
 
     if (iValue >= that->mNumberLength) {
-        *result = that;
-        REFCOUNT_ADD(*result);
+        result = that;
         return NOERROR;
     }
     else if (iThat >= value->mNumberLength) {
-        *result = value;
-        REFCOUNT_ADD(*result);
+        result = value;
         return NOERROR;
     }
 
@@ -558,13 +548,13 @@ ECode Logical::OrNegative(
         resDigits[i] = value->mDigits[i] & that->mDigits[i];
     }
 
-    return CBigInteger::New(-1, resLength, resDigits, IID_IBigInteger, (IInterface**)result);
+    return CBigInteger::New(-1, resLength, resDigits, IID_IBigInteger, (IInterface**)&result);
 }
 
 ECode Logical::OrDiffSigns(
     /* [in] */ BigInteger* positive,
     /* [in] */ BigInteger* negative,
-    /* [out] */ IBigInteger** result)
+    /* [out] */ AutoPtr<IBigInteger>& result)
 {
     // Jumping over the least significant zero bits
     Integer iNeg = negative->GetFirstNonzeroDigit();
@@ -575,8 +565,7 @@ ECode Logical::OrDiffSigns(
     // Look if the trailing zeros of the positive will "copy" all
     // the negative digits
     if (iPos >= negative->mNumberLength) {
-        *result = negative;
-        REFCOUNT_ADD(*result);
+        result = negative;
         return NOERROR;
     }
     Integer resLength = negative->mNumberLength;
@@ -622,22 +611,20 @@ ECode Logical::OrDiffSigns(
         resDigits[i] = negative->mDigits[i];
     }
 
-    return CBigInteger::New(-1, resLength, resDigits, IID_IBigInteger, (IInterface**)result);
+    return CBigInteger::New(-1, resLength, resDigits, IID_IBigInteger, (IInterface**)&result);
 }
 
 ECode Logical::Xor(
     /* [in] */ BigInteger* value,
     /* [in] */ BigInteger* that,
-    /* [out] */ IBigInteger** result)
+    /* [out] */ AutoPtr<IBigInteger>& result)
 {
     if (that->mSign == 0) {
-        *result = value;
-        REFCOUNT_ADD(*result);
+        result = value;
         return NOERROR;
     }
     if (value->mSign == 0) {
-        *result = that;
-        REFCOUNT_ADD(*result);
+        result = that;
         return NOERROR;
     }
     Boolean same;
@@ -677,7 +664,7 @@ ECode Logical::Xor(
 ECode Logical::XorPositive(
     /* [in] */ BigInteger* longer,
     /* [in] */ BigInteger* shorter,
-    /* [out] */ IBigInteger** result)
+    /* [out] */ AutoPtr<IBigInteger>& result)
 {
     Integer resLength = longer->mNumberLength;
     Array<Integer> resDigits(resLength);
@@ -689,13 +676,13 @@ ECode Logical::XorPositive(
         resDigits[i] = longer->mDigits[i];
     }
 
-    return CBigInteger::New(1, resLength, resDigits, IID_IBigInteger, (IInterface**)result);
+    return CBigInteger::New(1, resLength, resDigits, IID_IBigInteger, (IInterface**)&result);
 }
 
 ECode Logical::XorNegative(
     /* [in] */ BigInteger* value,
     /* [in] */ BigInteger* that,
-    /* [out] */ IBigInteger** result)
+    /* [out] */ AutoPtr<IBigInteger>& result)
 {
     Integer resLength = Math::Max(value->mNumberLength, that->mNumberLength);
     Array<Integer> resDigits(resLength);
@@ -739,13 +726,13 @@ ECode Logical::XorNegative(
         resDigits[i] = that->mDigits[i];
     }
 
-    return CBigInteger::New(1, resLength, resDigits, IID_IBigInteger, (IInterface**)result);
+    return CBigInteger::New(1, resLength, resDigits, IID_IBigInteger, (IInterface**)&result);
 }
 
 ECode Logical::XorDiffSigns(
     /* [in] */ BigInteger* positive,
     /* [in] */ BigInteger* negative,
-    /* [out] */ IBigInteger** result)
+    /* [out] */ AutoPtr<IBigInteger>& result)
 {
     Integer resLength = Math::Max(negative->mNumberLength, positive->mNumberLength);
     Array<Integer> resDigits;
@@ -821,7 +808,7 @@ ECode Logical::XorDiffSigns(
                     resDigits = Array<Integer>(resLength);
                     resDigits[resLength - 1] = 1;
 
-                    return CBigInteger::New(-1, resLength, resDigits, IID_IBigInteger, (IInterface**)result);
+                    return CBigInteger::New(-1, resLength, resDigits, IID_IBigInteger, (IInterface**)&result);
                 }
             }
         }
@@ -841,7 +828,7 @@ ECode Logical::XorDiffSigns(
         resDigits[i] = negative->mDigits[i];
     }
 
-    return CBigInteger::New(-1, resLength, resDigits, IID_IBigInteger, (IInterface**)result);
+    return CBigInteger::New(-1, resLength, resDigits, IID_IBigInteger, (IInterface**)&result);
 }
 
 }

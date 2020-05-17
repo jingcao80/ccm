@@ -26,26 +26,26 @@ class COM_PUBLIC BigDecimalFactory
 {
 public:
     static ECode GetONE(
-        /* [out] */ IBigDecimal** value);
+        /* [out] */ AutoPtr<IBigDecimal>& value);
 
     static ECode GetTEN(
-        /* [out] */ IBigDecimal** value);
+        /* [out] */ AutoPtr<IBigDecimal>& value);
 
     static ECode GetZERO(
-        /* [out] */ IBigDecimal** value);
+        /* [out] */ AutoPtr<IBigDecimal>& value);
 
     static ECode ValueOf(
         /* [in] */ Long unscaledValue,
-        /* [out] */ IBigDecimal** result);
+        /* [out] */ AutoPtr<IBigDecimal>& result);
 
     static ECode ValueOf(
         /* [in] */ Long unscaledValue,
         /* [in] */ Integer scale,
-        /* [out] */ IBigDecimal** result);
+        /* [out] */ AutoPtr<IBigDecimal>& result);
 
     static ECode ValueOf(
         /* [in] */ Double value,
-        /* [out] */ IBigDecimal** result);
+        /* [out] */ AutoPtr<IBigDecimal>& result);
 
 private:
     BigDecimalFactory();
