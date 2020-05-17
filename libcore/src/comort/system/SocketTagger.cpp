@@ -56,9 +56,9 @@ ECode SocketTagger::Tag(
     /* [in] */ ISocket* socket)
 {
     Boolean closed;
-    if (socket->IsClosed(&closed), !closed) {
+    if (socket->IsClosed(closed), !closed) {
         AutoPtr<IFileDescriptor> fd;
-        socket->GetFileDescriptor(&fd);
+        socket->GetFileDescriptor(fd);
         return Tag(fd);
     }
     return NOERROR;
@@ -68,9 +68,9 @@ ECode SocketTagger::Untag(
     /* [in] */ ISocket* socket)
 {
     Boolean closed;
-    if (socket->IsClosed(&closed), !closed) {
+    if (socket->IsClosed(closed), !closed) {
         AutoPtr<IFileDescriptor> fd;
-        socket->GetFileDescriptor(&fd);
+        socket->GetFileDescriptor(fd);
         return Untag(fd);
     }
     return NOERROR;
@@ -80,9 +80,9 @@ ECode SocketTagger::Tag(
     /* [in] */ IDatagramSocket* socket)
 {
     Boolean closed;
-    if (socket->IsClosed(&closed), !closed) {
+    if (socket->IsClosed(closed), !closed) {
         AutoPtr<IFileDescriptor> fd;
-        socket->GetFileDescriptor(&fd);
+        socket->GetFileDescriptor(fd);
         return Tag(fd);
     }
     return NOERROR;
@@ -92,9 +92,9 @@ ECode SocketTagger::Untag(
     /* [in] */ IDatagramSocket* socket)
 {
     Boolean closed;
-    if (socket->IsClosed(&closed), !closed) {
+    if (socket->IsClosed(closed), !closed) {
         AutoPtr<IFileDescriptor> fd;
-        socket->GetFileDescriptor(&fd);
+        socket->GetFileDescriptor(fd);
         return Untag(fd);
     }
     return NOERROR;

@@ -27,7 +27,7 @@ namespace cca {
 interface IProviderList
 {
     Providers(
-        [out] IList** providers);
+        [out] IList&& providers);
 }
 
 }

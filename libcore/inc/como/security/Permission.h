@@ -44,10 +44,10 @@ public:
         /* [in] */ IInterface* object) override;
 
     ECode GetName(
-        /* [out] */ String* name) override;
+        /* [out] */ String& name) override;
 
     ECode NewPermissionCollection(
-        /* [out] */ IPermissionCollection** permissions) override;
+        /* [out] */ AutoPtr<IPermissionCollection>& permissions) override;
 };
 
 inline ECode Permission::Constructor(

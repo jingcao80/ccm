@@ -33,17 +33,17 @@ interface IPermission
         [in] IInterface* object);
 
     GetActions(
-        [out] String* actions);
+        [out] String& actions);
 
     GetName(
-        [out] String* name);
+        [out] String& name);
 
     Implies(
         [in] IPermission* permission,
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     NewPermissionCollection(
-        [out] IPermissionCollection** permissions);
+        [out] IPermissionCollection&& permissions);
 }
 
 }

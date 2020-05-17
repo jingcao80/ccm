@@ -64,13 +64,13 @@ UnixFileSystem::UnixFileSystem()
     CGetPropertyAction::New(String("como.home"),
             IID_IPrivilegedAction, (IInterface**)&hmAction);
     AutoPtr<IInterface> fsRet, psRet, hmRet;
-    ECode ec = AccessController::DoPrivileged(fsAction, &fsRet);
+    ECode ec = AccessController::DoPrivileged(fsAction, fsRet);
     CHECK(SUCCEEDED(ec));
     mSlash = CoreUtils::Unbox(ICharSequence::Probe(fsRet)).GetChar(0);
-    ec = AccessController::DoPrivileged(psAction, &psRet);
+    ec = AccessController::DoPrivileged(psAction, psRet);
     CHECK(SUCCEEDED(ec));
     mColon = CoreUtils::Unbox(ICharSequence::Probe(psRet)).GetChar(0);
-    ec = AccessController::DoPrivileged(hmAction, &hmRet);
+    ec = AccessController::DoPrivileged(hmAction, hmRet);
     CHECK(SUCCEEDED(ec));
     mCcmHome = CoreUtils::Unbox(ICharSequence::Probe(hmRet));
 }

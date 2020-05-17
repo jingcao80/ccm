@@ -260,13 +260,13 @@ AutoPtr<IIterator> Charset::GetProviders()
 
 ECode Charset::LookupViaProviders(
     /* [in] */ const String& charsetName,
-    /* [out] */ ICharset** cs)
+    /* [out] */ AutoPtr<ICharset>& cs)
 {
     AutoPtr<IThreadLocal> gate = GetGate();
     AutoPtr<IInterface> value;
     gate->Get(value);
     if (value != nullptr) {
-        *cs = nullptr;
+        cs = nullptr;
         return NOERROR;
     }
 
@@ -318,10 +318,8 @@ ECode Charset::LookupViaProviders(
         }
 
         ECode Run(
-            /* [out] */ IInterface** result)
+            /* [out] */ AutoPtr<IInterface>& result)
         {
-            VALIDATE_NOT_NULL(result);
-
             AutoPtr<IIterator> i = GetProviders();
             Boolean hasNext;
             while (i->HasNext(&hasNext), hasNext) {
@@ -330,12 +328,12 @@ ECode Charset::LookupViaProviders(
                 AutoPtr<ICharset> cs;
                 cp->CharsetForName(mCharsetName, cs);
                 if (cs != nullptr) {
-                    cs.MoveTo(result);
+                    result = cs;
                     return NOERROR;
                 }
             }
 
-            *result = nullptr;
+            result = nullptr;
             return NOERROR;
         }
 
@@ -344,14 +342,16 @@ ECode Charset::LookupViaProviders(
     };
 
     AutoPtr<IPrivilegedAction> action = new _PrivilegedAction(charsetName);
-    ECode ec = AccessController::DoPrivileged(action, (IInterface**)cs);
+    AutoPtr<IInterface> result;
+    ECode ec = AccessController::DoPrivileged(action, result);
     gate->Set(nullptr);
+    cs = ICharset::Probe(result);
     return ec;
 }
 
 ECode Charset::Lookup(
     /* [in] */ const String& charsetName,
-    /* [out] */ ICharset** cs)
+    /* [out] */ AutoPtr<ICharset>& cs)
 {
     if (charsetName.IsNull()) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -362,7 +362,7 @@ ECode Charset::Lookup(
         AutoPtr<ICharSequence> key;
         cached->GetKey((IInterface**)&key);
         if (charsetName.Equals(CoreUtils::Unbox(key))) {
-            return cached->GetValue((IInterface**)cs);
+            return cached->GetValue((IInterface**)&cs);
         }
     }
     return Lookup2(charsetName, cs);
@@ -370,58 +370,54 @@ ECode Charset::Lookup(
 
 ECode Charset::Lookup2(
     /* [in] */ const String& charsetName,
-    /* [out] */ ICharset** cs)
+    /* [out] */ AutoPtr<ICharset>& cs)
 {
     AutoPtr<IHashMap> cache2 = GetCache2();
     {
         AutoLock lock(ISynchronize::Probe(cache2));
 
-        cache2->Get(CoreUtils::Box(charsetName), (IInterface**)cs);
-        if (*cs != nullptr) {
+        cache2->Get(CoreUtils::Box(charsetName), (IInterface**)&cs);
+        if (cs != nullptr) {
             AutoPtr<IMapEntry> entry;
-            CSimpleImmutableEntry::New(CoreUtils::Box(charsetName), *cs, IID_IMapEntry, (IInterface**)&entry);
+            CSimpleImmutableEntry::New(CoreUtils::Box(charsetName), cs, IID_IMapEntry, (IInterface**)&entry);
             VOLATILE_SET(sCache1, entry);
             return NOERROR;
         }
     }
 
     NativeConverter::CharsetForName(charsetName, cs);
-    if (*cs != nullptr) {
-        Cache(charsetName, *cs);
+    if (cs != nullptr) {
+        Cache(charsetName, cs);
         return NOERROR;
     }
 
     LookupViaProviders(charsetName, cs);
-    if (*cs != nullptr) {
-        Cache(charsetName, *cs);
+    if (cs != nullptr) {
+        Cache(charsetName, cs);
         return NOERROR;
     }
 
     FAIL_RETURN(CheckName(charsetName));
-    *cs = nullptr;
+    cs = nullptr;
     return NOERROR;
 }
 
 ECode Charset::IsSupported(
     /* [in] */ const String& charsetName,
-    /* [out] */ Boolean* supported)
+    /* [out] */ Boolean& supported)
 {
-    VALIDATE_NOT_NULL(supported);
-
     AutoPtr<ICharset> cs;
-    FAIL_RETURN(Lookup(charsetName, &cs));
-    *supported = cs != nullptr;
+    FAIL_RETURN(Lookup(charsetName, cs));
+    supported = cs != nullptr;
     return NOERROR;
 }
 
 ECode Charset::ForName(
     /* [in] */ const String& charsetName,
-    /* [out] */ ICharset** cs)
+    /* [out] */ AutoPtr<ICharset>& cs)
 {
-    VALIDATE_NOT_NULL(cs);
-
     FAIL_RETURN(Lookup(charsetName, cs));
-    if (*cs != nullptr) {
+    if (cs != nullptr) {
         return NOERROR;
     }
     return E_UNSUPPORTED_CHARSET_EXCEPTION;
@@ -429,10 +425,8 @@ ECode Charset::ForName(
 
 ECode Charset::ForNameUEE(
     /* [in] */ const String& charsetName,
-    /* [out] */ ICharset** cs)
+    /* [out] */ AutoPtr<ICharset>& cs)
 {
-    VALIDATE_NOT_NULL(cs);
-
     ECode ec = ForName(charsetName, cs);
     if (FAILED(ec)) {
         return E_UNSUPPORTED_ENCODING_EXCEPTION;
@@ -458,10 +452,8 @@ void Charset::Put(
 }
 
 ECode Charset::AvailableCharsets(
-    /* [out] */ ISortedMap** map)
+    /* [out] */ AutoPtr<ISortedMap>& map)
 {
-    VALIDATE_NOT_NULL(map);
-
     class _PrivilegedAction
         : public LightRefBase
         , public IPrivilegedAction
@@ -503,16 +495,14 @@ ECode Charset::AvailableCharsets(
         }
 
         ECode Run(
-            /* [out] */ IInterface** result)
+            /* [out] */ AutoPtr<IInterface>& result)
         {
-            VALIDATE_NOT_NULL(result);
-
             AutoPtr<ITreeMap> m;
             CTreeMap::New(ASCIICaseInsensitiveComparator::GetCASE_INSENSITIVE_ORDER(),
                     IID_ITreeMap, (IInterface**)&m);
             for (String charsetName : NativeConverter::GetAvailableCharsetNames()) {
                 AutoPtr<ICharset> charset;
-                NativeConverter::CharsetForName(charsetName, &charset);
+                NativeConverter::CharsetForName(charsetName, charset);
                 String canonicalName;
                 charset->GetName(canonicalName);
                 IMap::Probe(m)->Put(CoreUtils::Box(canonicalName), charset);
@@ -526,9 +516,7 @@ ECode Charset::AvailableCharsets(
                 cp->Charsets(it);
                 Put(it, IMap::Probe(m));
             }
-            AutoPtr<ISortedMap> sm = Collections::CreateUnmodifiableSortedMap(ISortedMap::Probe(m));
-            *result = sm;
-            REFCOUNT_ADD(*result);
+            result = Collections::CreateUnmodifiableSortedMap(ISortedMap::Probe(m));
             return NOERROR;
         }
 
@@ -536,7 +524,10 @@ ECode Charset::AvailableCharsets(
     };
 
     AutoPtr<IPrivilegedAction> action = new _PrivilegedAction();
-    return AccessController::DoPrivileged(action, (IInterface**)map);
+    AutoPtr<IInterface> result;
+    ECode ec = AccessController::DoPrivileged(action, result);
+    map = ISortedMap::Probe(result);
+    return NOERROR;
 }
 
 AutoPtr<ICharset> Charset::GetDefaultCharset()

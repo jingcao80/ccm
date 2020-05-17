@@ -24,7 +24,7 @@ namespace security {
 interface IPrivilegedAction
 {
     Run(
-        [out] IInterface** result);
+        [out] IInterface&& result);
 }
 
 }

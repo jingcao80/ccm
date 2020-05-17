@@ -28,11 +28,11 @@ class COM_PUBLIC CharsetFactory
 public:
     static ECode ForName(
         /* [in] */ const String& charsetName,
-        /* [out] */ ICharset** cs);
+        /* [out] */ AutoPtr<ICharset>& cs);
 
     static ECode ForNameUEE(
         /* [in] */ const String& charsetName,
-        /* [out] */ ICharset** cs);
+        /* [out] */ AutoPtr<ICharset>& cs);
 
 private:
     CharsetFactory();

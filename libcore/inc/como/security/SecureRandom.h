@@ -42,25 +42,25 @@ public:
 
     static ECode GetInstance(
         /* [in] */ const String& algorithm,
-        /* [out] */ ISecureRandom** sr);
+        /* [out] */ AutoPtr<ISecureRandom>& sr);
 
     static ECode GetInstance(
         /* [in] */ const String& algorithm,
         /* [in] */ const String& provider,
-        /* [out] */ ISecureRandom** sr);
+        /* [out] */ AutoPtr<ISecureRandom>& sr);
 
     static ECode GetInstance(
         /* [in] */ const String& algorithm,
         /* [in] */ IProvider* provider,
-        /* [out] */ ISecureRandom** sr);
+        /* [out] */ AutoPtr<ISecureRandom>& sr);
 
     AutoPtr<ISecureRandomSpi> GetSecureRandomSpi();
 
     ECode GetProvider(
-        /* [out] */ IProvider** provider) override;
+        /* [out] */ AutoPtr<IProvider>& provider) override;
 
     ECode GetAlgorithm(
-        /* [out] */ String* algorithm) override;
+        /* [out] */ String& algorithm) override;
 
     ECode SetSeed(
         /* [in] */ const Array<Byte>& seed) override;

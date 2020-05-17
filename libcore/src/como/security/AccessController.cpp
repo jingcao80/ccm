@@ -21,7 +21,7 @@ namespace security {
 
 ECode AccessController::DoPrivileged(
     /* [in] */ IPrivilegedAction* action,
-    /* [out] */ IInterface** result)
+    /* [out] */ AutoPtr<IInterface>& result)
 {
     return action->Run(result);
 }

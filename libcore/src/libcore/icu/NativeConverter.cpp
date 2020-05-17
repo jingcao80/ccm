@@ -381,18 +381,16 @@ Array<String> NativeConverter::GetAvailableCharsetNames()
 
 ECode NativeConverter::CharsetForName(
     /* [in] */ const String& charsetName,
-    /* [out] */ ICharset** cs)
+    /* [out] */ AutoPtr<ICharset>& cs)
 {
-    VALIDATE_NOT_NULL(cs);
-
     if (charsetName.IsNull()) {
-        *cs = nullptr;
+        cs = nullptr;
         return NOERROR;
     }
 
     const char* icuCanonicalName = GetICUCanonicalName(charsetName.string());
     if (icuCanonicalName == nullptr) {
-        *cs = nullptr;
+        cs = nullptr;
         return NOERROR;
     }
 
@@ -404,7 +402,7 @@ ECode NativeConverter::CharsetForName(
         UErrorCode error = U_ZERO_ERROR;
         ::icu::LocalUConverterPointer cnv(ucnv_open(icuCanonicalName, &error));
         if (!U_SUCCESS(error)) {
-            *cs = nullptr;
+            cs = nullptr;
             return NOERROR;
         }
     }
@@ -412,19 +410,19 @@ ECode NativeConverter::CharsetForName(
     // Get the aliases for this charset.
     std::vector<String> aliases;
     if (!CollectStandardNames(icuCanonicalName, "IANA", aliases)) {
-        *cs = nullptr;
+        cs = nullptr;
         return NOERROR;
     }
     if (!CollectStandardNames(icuCanonicalName, "MIME", aliases)) {
-        *cs = nullptr;
+        cs = nullptr;
         return NOERROR;
     }
     if (!CollectStandardNames(icuCanonicalName, "JAVA", aliases)) {
-        *cs = nullptr;
+        cs = nullptr;
         return NOERROR;
     }
     if (!CollectStandardNames(icuCanonicalName, "WINDOWS", aliases)) {
-        *cs = nullptr;
+        cs = nullptr;
         return NOERROR;
     }
     Array<String> comoAliases(aliases.size());
@@ -437,8 +435,7 @@ ECode NativeConverter::CharsetForName(
     // Construct the CharsetICU object.
     AutoPtr<CharsetICU> charsetICU = new CharsetICU();
     charsetICU->Constructor(comoCanonicalName, icuCanonicalNameStr, comoAliases);
-    *cs = (ICharset*)charsetICU.Get();
-    REFCOUNT_ADD(*cs);
+    cs = (ICharset*)charsetICU.Get();
     return NOERROR;
 }
 

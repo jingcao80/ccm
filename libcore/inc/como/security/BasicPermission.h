@@ -38,10 +38,10 @@ public:
 
     ECode Implies(
         /* [in] */ IPermission* permission,
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode GetActions(
-        /* [out] */ String* actions) override;
+        /* [out] */ String& actions) override;
 };
 
 inline ECode BasicPermission::Constructor(

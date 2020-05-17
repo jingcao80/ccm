@@ -711,7 +711,7 @@ public:
 private:
     static ECode ToCharset(
         /* [in] */ const String& csn,
-        /* [out] */ ICharset** cs);
+        /* [out] */ AutoPtr<ICharset>& cs);
 
     static AutoPtr<IAppendable> NonNullAppendable(
         /* [in] */ IAppendable* a);

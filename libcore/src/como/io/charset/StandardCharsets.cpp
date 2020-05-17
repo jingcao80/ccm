@@ -24,7 +24,7 @@ namespace charset {
 AutoPtr<ICharset> StandardCharsets::GetUTF_8()
 {
     AutoPtr<ICharset> cs;
-    Charset::ForName(String("UTF-8"), &cs);
+    Charset::ForName("UTF-8", cs);
     return cs;
 }
 

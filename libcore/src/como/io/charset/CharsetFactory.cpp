@@ -23,14 +23,14 @@ namespace charset {
 
 ECode CharsetFactory::ForName(
     /* [in] */ const String& charsetName,
-    /* [out] */ ICharset** cs)
+    /* [out] */ AutoPtr<ICharset>& cs)
 {
     return Charset::ForName(charsetName, cs);
 }
 
 ECode CharsetFactory::ForNameUEE(
     /* [in] */ const String& charsetName,
-    /* [out] */ ICharset** cs)
+    /* [out] */ AutoPtr<ICharset>& cs)
 {
     return Charset::ForNameUEE(charsetName, cs);
 }

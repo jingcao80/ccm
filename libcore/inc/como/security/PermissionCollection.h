@@ -35,7 +35,7 @@ public:
     ECode SetReadOnly() override;
 
     ECode IsReadOnly(
-        /* [out] */ Boolean* readonly) override;
+        /* [out] */ Boolean& readonly) override;
 };
 
 }

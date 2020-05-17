@@ -53,10 +53,8 @@ COMO_INTERFACE_IMPL_1(PrintWriter, Writer, IPrintWriter);
 
 ECode PrintWriter::ToCharset(
     /* [in] */ const String& csn,
-    /* [out] */ ICharset** cs)
+    /* [out] */ AutoPtr<ICharset>& cs)
 {
-    VALIDATE_NOT_NULL(cs);
-
     if (csn.IsNull()) {
         Logger::E("PrintWriter", "charsetName is null");
         return como::core::E_NULL_POINTER_EXCEPTION;
@@ -82,7 +80,7 @@ ECode PrintWriter::Constructor(
     CGetPropertyAction::New(String("line.separator"),
             IID_IPrivilegedAction, (IInterface**)&lsAction);
     AutoPtr<IInterface> lsRet;
-    FAIL_RETURN(AccessController::DoPrivileged(lsAction, &lsRet));
+    FAIL_RETURN(AccessController::DoPrivileged(lsAction, lsRet));
     mLineSeparator = CoreUtils::Unbox(ICharSequence::Probe(lsRet));
     return NOERROR;
 }
@@ -139,7 +137,7 @@ ECode PrintWriter::Constructor(
     AutoPtr<IFile> f;
     CFile::New(fileName, IID_IFile, (IInterface**)&f);
     AutoPtr<ICharset> cs;
-    FAIL_RETURN(ToCharset(csn, &cs));
+    FAIL_RETURN(ToCharset(csn, cs));
     return Constructor(cs, f);
 }
 
@@ -159,7 +157,7 @@ ECode PrintWriter::Constructor(
     /* [in] */ const String& csn)
 {
     AutoPtr<ICharset> cs;
-    FAIL_RETURN(ToCharset(csn, &cs));
+    FAIL_RETURN(ToCharset(csn, cs));
     return Constructor(cs, file);
 }
 

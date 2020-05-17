@@ -71,12 +71,12 @@ ECode SecureRandom::GetDefaultPRNG(
     }
     else  {
         AutoPtr<ISecureRandom> random;
-        ECode ec = SecureRandom::GetInstance(prng, &random);
+        ECode ec = SecureRandom::GetInstance(prng, random);
         if (FAILED(ec)) {
             return E_RUNTIME_EXCEPTION;
         }
         mSecureRandomSpi = From(random)->GetSecureRandomSpi();
-        random->GetProvider(&mProvider);
+        random->GetProvider(mProvider);
         if (setSeed) {
             SecureRandomSpi::From(mSecureRandomSpi)->EngineSetSeed(seed);
         }
@@ -108,28 +108,24 @@ ECode SecureRandom::Constructor(
 
 ECode SecureRandom::GetInstance(
     /* [in] */ const String& algorithm,
-    /* [out] */ ISecureRandom** sr)
+    /* [out] */ AutoPtr<ISecureRandom>& sr)
 {
-    VALIDATE_NOT_NULL(sr);
-
     AutoPtr<IInstance> instance;
     FAIL_RETURN(InstanceFactory::GetInstance(String("CSecureRandom"),
             IID_ISecureRandomSpi, algorithm, &instance));
     AutoPtr<IInterface> impl;
-    instance->GetImpl(&impl);
+    instance->GetImpl(impl);
     AutoPtr<IProvider> provider;
-    instance->GetProvider(&provider);
+    instance->GetProvider(provider);
     return CSecureRandom::New(ISecureRandomSpi::Probe(impl),
-            provider, algorithm, IID_ISecureRandom, (IInterface**)sr);
+            provider, algorithm, IID_ISecureRandom, (IInterface**)&sr);
 }
 
 ECode SecureRandom::GetInstance(
     /* [in] */ const String& algorithm,
     /* [in] */ const String& provider,
-    /* [out] */ ISecureRandom** sr)
+    /* [out] */ AutoPtr<ISecureRandom>& sr)
 {
-    VALIDATE_NOT_NULL(sr);
-
     AutoPtr<IInstance> instance;
     ECode ec = InstanceFactory::GetInstance(String("CSecureRandom"),
             IID_ISecureRandomSpi, algorithm, provider, &instance);
@@ -140,47 +136,40 @@ ECode SecureRandom::GetInstance(
         return ec;
     }
     AutoPtr<IInterface> impl;
-    instance->GetImpl(&impl);
+    instance->GetImpl(impl);
     AutoPtr<IProvider> providerObj;
-    instance->GetProvider(&providerObj);
+    instance->GetProvider(providerObj);
     return CSecureRandom::New(ISecureRandomSpi::Probe(impl),
-            providerObj, algorithm, IID_ISecureRandom, (IInterface**)sr);
+            providerObj, algorithm, IID_ISecureRandom, (IInterface**)&sr);
 }
 
 ECode SecureRandom::GetInstance(
     /* [in] */ const String& algorithm,
     /* [in] */ IProvider* provider,
-    /* [out] */ ISecureRandom** sr)
+    /* [out] */ AutoPtr<ISecureRandom>& sr)
 {
-    VALIDATE_NOT_NULL(sr);
-
     AutoPtr<IInstance> instance;
     FAIL_RETURN(InstanceFactory::GetInstance(String("CSecureRandom"),
             IID_ISecureRandomSpi, algorithm, provider, &instance));
     AutoPtr<IInterface> impl;
-    instance->GetImpl(&impl);
+    instance->GetImpl(impl);
     AutoPtr<IProvider> providerObj;
-    instance->GetProvider(&providerObj);
+    instance->GetProvider(providerObj);
     return CSecureRandom::New(ISecureRandomSpi::Probe(impl),
-            providerObj, algorithm, IID_ISecureRandom, (IInterface**)sr);
+            providerObj, algorithm, IID_ISecureRandom, (IInterface**)&sr);
 }
 
 ECode SecureRandom::GetProvider(
-    /* [out] */ IProvider** provider)
+    /* [out] */ AutoPtr<IProvider>& provider)
 {
-    VALIDATE_NOT_NULL(provider);
-
-    *provider = mProvider;
-    REFCOUNT_ADD(*provider);
+    provider = mProvider;
     return NOERROR;
 }
 
 ECode SecureRandom::GetAlgorithm(
-    /* [out] */ String* algorithm)
+    /* [out] */ String& algorithm)
 {
-    VALIDATE_NOT_NULL(algorithm);
-
-    *algorithm = !mAlgorithm.IsNull() ? mAlgorithm : String("unknown");
+    algorithm = !mAlgorithm.IsNull() ? mAlgorithm : "unknown";
     return NOERROR;
 }
 
@@ -263,16 +252,16 @@ String SecureRandom::GetPrngAlgorithm()
 {
     AutoPtr<IProviderList> pl = Providers::GetProviderList();
     AutoPtr<IList> ps;
-    pl->Providers(&ps);
+    pl->Providers(ps);
     FOR_EACH(IProvider*, p, IProvider::Probe, ps) {
         AutoPtr<ISet> ss;
-        p->GetServices(&ss);
+        p->GetServices(ss);
         FOR_EACH(IProviderService*, s, IProviderService::Probe, ss) {
             String type;
-            s->GetType(&type);
+            s->GetType(type);
             if (type.Equals("CSecureRandom")) {
                 String algorithm;
-                s->GetAlgorithm(&algorithm);
+                s->GetAlgorithm(algorithm);
                 return algorithm;
             }
         } END_FOR_EACH();

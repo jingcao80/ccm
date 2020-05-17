@@ -24,25 +24,25 @@ namespace net {
 interface IURI
 {
     GetAuthority(
-        [out] String* authority);
+        [out] String& authority);
 
     GetFragment(
-        [out] String* fragment);
+        [out] String& fragment);
 
     GetPath(
-        [out] String* path);
+        [out] String& path);
 
     GetQuery(
-        [out] String* query);
+        [out] String& query);
 
     GetScheme(
-        [out] String* scheme);
+        [out] String& scheme);
 
     IsAbsolute(
-        [out] Boolean* absolute);
+        [out] Boolean& absolute);
 
     IsOpaque(
-        [out] Boolean* opaque);
+        [out] Boolean& opaque);
 }
 
 }

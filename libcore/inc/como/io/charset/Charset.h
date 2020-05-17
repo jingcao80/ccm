@@ -60,18 +60,18 @@ public:
 
     static ECode IsSupported(
         /* [in] */ const String& charsetName,
-        /* [out] */ Boolean* supported);
+        /* [out] */ Boolean& supported);
 
     static ECode ForName(
         /* [in] */ const String& charsetName,
-        /* [out] */ ICharset** cs);
+        /* [out] */ AutoPtr<ICharset>& cs);
 
     static ECode ForNameUEE(
         /* [in] */ const String& charsetName,
-        /* [out] */ ICharset** cs);
+        /* [out] */ AutoPtr<ICharset>& cs);
 
     static ECode AvailableCharsets(
-        /* [out] */ ISortedMap** map);
+        /* [out] */ AutoPtr<ISortedMap>& map);
 
     static AutoPtr<ICharset> GetDefaultCharset();
 
@@ -137,15 +137,15 @@ private:
 
     static ECode LookupViaProviders(
         /* [in] */ const String& charsetName,
-        /* [out] */ ICharset** cs);
+        /* [out] */ AutoPtr<ICharset>& cs);
 
     static ECode Lookup(
         /* [in] */ const String& charsetName,
-        /* [out] */ ICharset** cs);
+        /* [out] */ AutoPtr<ICharset>& cs);
 
     static ECode Lookup2(
         /* [in] */ const String& charsetName,
-        /* [out] */ ICharset** cs);
+        /* [out] */ AutoPtr<ICharset>& cs);
 
     static void Put(
         /* [in] */ IIterator* i,

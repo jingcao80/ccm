@@ -34,10 +34,10 @@ interface ISecureRandom
         [out, callee] Array<Byte>* seed);
 
     GetAlgorithm(
-        [out] String* algorithm);
+        [out] String& algorithm);
 
     GetProvider(
-        [out] IProvider** provider);
+        [out] IProvider&& provider);
 
     SetSeed(
         [in] Array<Byte> seed);

@@ -33,14 +33,14 @@ interface IPermissionCollection
         [in] IPermission* permission);
 
     GetElements(
-        [out] IEnumeration** elements);
+        [out] IEnumeration&& elements);
 
     Implies(
         [in] IPermission* permission,
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     IsReadOnly(
-        [out] Boolean* readonly);
+        [out] Boolean& readonly);
 
     SetReadOnly();
 }

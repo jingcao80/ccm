@@ -21,20 +21,16 @@ namespace security {
 
 ECode BasicPermission::Implies(
     /* [in] */ IPermission* permission,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
-    *result = true;
+    result = true;
     return NOERROR;
 }
 
 ECode BasicPermission::GetActions(
-    /* [out] */ String* actions)
+    /* [out] */ String& actions)
 {
-    VALIDATE_NOT_NULL(actions);
-
-    *actions = "";
+    actions = "";
     return NOERROR;
 }
 

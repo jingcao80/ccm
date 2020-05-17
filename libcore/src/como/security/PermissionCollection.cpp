@@ -27,11 +27,9 @@ ECode PermissionCollection::SetReadOnly()
 }
 
 ECode PermissionCollection::IsReadOnly(
-    /* [out] */ Boolean* readonly)
+    /* [out] */ Boolean& readonly)
 {
-    VALIDATE_NOT_NULL(readonly);
-
-    *readonly = true;
+    readonly = true;
     return NOERROR;
 }
 

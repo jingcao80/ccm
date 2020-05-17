@@ -31,20 +31,16 @@ ECode Permissions::Add(
 
 ECode Permissions::Implies(
     /* [in] */ IPermission* permission,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
-    *result = true;
+    result = true;
     return NOERROR;
 }
 
 ECode Permissions::GetElements(
-    /* [out] */ IEnumeration** elements)
+    /* [out] */ AutoPtr<IEnumeration>& elements)
 {
-    VALIDATE_NOT_NULL(elements);
-
-    *elements = nullptr;
+    elements = nullptr;
     return NOERROR;
 }
 

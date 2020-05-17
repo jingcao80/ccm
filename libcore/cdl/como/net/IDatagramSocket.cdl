@@ -26,10 +26,10 @@ namespace net {
 interface IDatagramSocket
 {
     GetFileDescriptor(
-        [out] IFileDescriptor** fd);
+        [out] IFileDescriptor&& fd);
 
     IsClosed(
-        [out] Boolean* closed);
+        [out] Boolean& closed);
 }
 
 }

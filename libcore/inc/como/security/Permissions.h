@@ -39,10 +39,10 @@ public:
 
     ECode Implies(
         /* [in] */ IPermission* permission,
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode GetElements(
-        /* [out] */ IEnumeration** elements) override;
+        /* [out] */ AutoPtr<IEnumeration>& elements) override;
 };
 
 }

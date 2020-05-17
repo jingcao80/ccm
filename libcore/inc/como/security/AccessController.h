@@ -27,7 +27,7 @@ class AccessController
 public:
     static ECode DoPrivileged(
         /* [in] */ IPrivilegedAction* action,
-        /* [out] */ IInterface** result);
+        /* [out] */ AutoPtr<IInterface>& result);
 
 private:
     AccessController();

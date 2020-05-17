@@ -89,7 +89,7 @@ public:
 
     static ECode CharsetForName(
         /* [in] */ const String& charsetName,
-        /* [out] */ ICharset** cs);
+        /* [out] */ AutoPtr<ICharset>& cs);
 
     static ECode SetCallbackDecode(
         /* [in] */ HANDLE handle,

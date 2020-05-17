@@ -26,10 +26,10 @@ namespace security {
 interface IProviderService
 {
     GetAlgorithm(
-        [out] String* algorithm);
+        [out] String& algorithm);
 
     GetType(
-        [out] String* type);
+        [out] String& type);
 }
 
 /*
@@ -47,7 +47,7 @@ interface IProviderService
 interface IProvider
 {
     GetServices(
-        [out] ISet** services);
+        [out] ISet&& services);
 }
 
 }

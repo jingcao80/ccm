@@ -31,20 +31,16 @@ ECode Permission::CheckGuard(
 }
 
 ECode Permission::GetName(
-    /* [out] */ String* name)
+    /* [out] */ String& name)
 {
-    VALIDATE_NOT_NULL(*name);
-
-    *name = nullptr;
+    name = nullptr;
     return NOERROR;
 }
 
 ECode Permission::NewPermissionCollection(
-    /* [out] */ IPermissionCollection** permissions)
+    /* [out] */ AutoPtr<IPermissionCollection>& permissions)
 {
-    VALIDATE_NOT_NULL(permissions);
-
-    return CPermissions::New(IID_IPermissionCollection, (IInterface**)permissions);
+    return CPermissions::New(IID_IPermissionCollection, (IInterface**)&permissions);
 }
 
 }

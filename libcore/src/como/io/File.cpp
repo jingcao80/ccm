@@ -168,38 +168,38 @@ ECode File::Constructor(
     /* [in] */ IURI* uri)
 {
     Boolean absolute;
-    if (uri->IsAbsolute(&absolute), !absolute) {
+    if (uri->IsAbsolute(absolute), !absolute) {
         Logger::E("File", "URI is not absolute");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     Boolean opaque;
-    if (uri->IsOpaque(&opaque), opaque) {
+    if (uri->IsOpaque(opaque), opaque) {
         Logger::E("File", "URI is not hierarchical");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     String scheme;
-    uri->GetScheme(&scheme);
+    uri->GetScheme(scheme);
     if (scheme.IsNull() || !scheme.EqualsIgnoreCase("file")) {
         Logger::E("File", "URI scheme is not \"file\"");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     String authority;
-    if (uri->GetAuthority(&authority), !authority.IsNull()) {
+    if (uri->GetAuthority(authority), !authority.IsNull()) {
         Logger::E("File", "URI has an authority component");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     String fragment;
-    if (uri->GetFragment(&fragment), !fragment.IsNull()) {
+    if (uri->GetFragment(fragment), !fragment.IsNull()) {
         Logger::E("File", "URI has a fragment component");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     String query;
-    if (uri->GetQuery(&query), !query.IsNull()) {
+    if (uri->GetQuery(query), !query.IsNull()) {
         Logger::E("File", "URI has a query component");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     String p;
-    uri->GetPath(&p);
+    uri->GetPath(p);
     if (p.Equals("")) {
         Logger::E("File", "URI path component is empty");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;

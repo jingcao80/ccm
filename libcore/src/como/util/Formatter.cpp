@@ -116,7 +116,7 @@ COMO_INTERFACE_IMPL_4(Formatter, SyncObject, IFormatter, ICloseable, IFlushable,
 
 ECode Formatter::ToCharset(
     /* [in] */ const String& csn,
-    /* [out] */ ICharset** cs)
+    /* [out] */ AutoPtr<ICharset>& cs)
 {
     if (csn.IsNull()) {
         Logger::E("Formatter", "charsetName is null");
@@ -220,7 +220,7 @@ ECode Formatter::Constructor(
     /* [in] */ ILocale* l)
 {
     AutoPtr<ICharset> cs;
-    FAIL_RETURN(ToCharset(csn, &cs));
+    FAIL_RETURN(ToCharset(csn, cs));
     AutoPtr<IFile> f;
     FAIL_RETURN(CFile::New(fileName, IID_IFile, (IInterface**)&f));
     return Constructor(cs, l, f);
@@ -253,7 +253,7 @@ ECode Formatter::Constructor(
     /* [in] */ ILocale* l)
 {
     AutoPtr<ICharset> cs;
-    FAIL_RETURN(ToCharset(csn, &cs));
+    FAIL_RETURN(ToCharset(csn, cs));
     return Constructor(cs, l, file);
 }
 

@@ -175,7 +175,7 @@ protected:
 private:
     static ECode ToCharset(
         /* [in] */ const String& csn,
-        /* [out] */ ICharset** cs);
+        /* [out] */ AutoPtr<ICharset>& cs);
 
     ECode Constructor(
         /* [in] */ ICharset* charset,

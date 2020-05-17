@@ -27,10 +27,10 @@ namespace cca {
 interface IInstance
 {
     GetImpl(
-        [out] IInterface** impl);
+        [out] IInterface&& impl);
 
     GetProvider(
-        [out] IProvider** provider);
+        [out] IProvider&& provider);
 }
 
 [

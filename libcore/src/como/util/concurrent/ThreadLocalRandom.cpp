@@ -141,19 +141,17 @@ void ThreadLocalRandom::StaticInitialize()
         }
 
         ECode Run(
-            /* [out] */ IInterface** result)
+            /* [out] */ AutoPtr<IInterface>& result)
         {
-            VALIDATE_NOT_NULL(result);
-
-            CoreUtils::Box(
-                    CoreUtils::GetBoolean(String("como.util.secureRandomSeed"))).MoveTo((IBoolean**)result);
+            result = CoreUtils::Box(
+                    CoreUtils::GetBoolean("como.util.secureRandomSeed"));
             return NOERROR;
         }
     };
 
     AutoPtr<IInterface> lsRet;
     AutoPtr<IPrivilegedAction> lsAction = new _PrivilegedAction();
-    ECode ec = AccessController::DoPrivileged(lsAction, &lsRet);
+    ECode ec = AccessController::DoPrivileged(lsAction, lsRet);
     CHECK(SUCCEEDED(ec));
     if (CoreUtils::Unbox(IBoolean::Probe(lsRet))) {
         Array<Byte> seedBytes;

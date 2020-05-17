@@ -47,15 +47,12 @@ ECode GetPropertyAction::Constructor(
 }
 
 ECode GetPropertyAction::Run(
-    /* [out] */ IInterface** result)
+    /* [out] */ AutoPtr<IInterface>& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     String value;
     FAIL_RETURN(System::GetProperty(mTheProp, &value));
-    AutoPtr<ICharSequence> seq = value.IsNull() ?
+    result = value.IsNull() ?
             CoreUtils::Box(mDefaultVal) : CoreUtils::Box(value);
-    seq.MoveTo((ICharSequence**)result);
     return NOERROR;
 }
 

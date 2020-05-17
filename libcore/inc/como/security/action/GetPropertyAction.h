@@ -41,7 +41,7 @@ public:
         /* [in] */ const String& defaultVal);
 
     ECode Run(
-        /* [out] */ IInterface** result) override;
+        /* [out] */ AutoPtr<IInterface>& result) override;
 
 private:
     String mTheProp;

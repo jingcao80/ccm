@@ -25,14 +25,14 @@ using como::io::charset::ICharset;
 TEST(CharsetTest, TestNonstandardCharsetName)
 {
     AutoPtr<ICharset> cs;
-    CharsetFactory::ForName(String("UTF8"), &cs);
+    CharsetFactory::ForName("UTF8", cs);
     EXPECT_TRUE(cs != nullptr);
     String name;
     cs->GetName(name);
     EXPECT_STREQ("UTF-8", name.string());
 
     AutoPtr<ICharset> cs2;
-    CharsetFactory::ForName(String("UTF8"), &cs2);
+    CharsetFactory::ForName("UTF8", cs2);
     EXPECT_TRUE(cs2 != nullptr);
 }
 
