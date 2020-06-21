@@ -44,39 +44,30 @@ ECode FieldPosition::Constructor(
 }
 
 ECode FieldPosition::GetFieldAttribute(
-    /* [out] */ IFormatField** attribute)
+    /* [out] */ AutoPtr<IFormatField>& attribute)
 {
-    VALIDATE_NOT_NULL(attribute);
-
-    *attribute = mAttribute;
-    REFCOUNT_ADD(*attribute);
+    attribute = mAttribute;
     return NOERROR;
 }
 
 ECode FieldPosition::GetField(
-    /* [out] */ Integer* field)
+    /* [out] */ Integer& field)
 {
-    VALIDATE_NOT_NULL(field);
-
-    *field = mField;
+    field = mField;
     return NOERROR;
 }
 
 ECode FieldPosition::GetBeginIndex(
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
-    VALIDATE_NOT_NULL(index);
-
-    *index = mBeginIndex;
+    index = mBeginIndex;
     return NOERROR;
 }
 
 ECode FieldPosition::GetEndIndex(
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
-    VALIDATE_NOT_NULL(index);
-
-    *index = mEndIndex;
+    index = mEndIndex;
     return NOERROR;
 }
 
@@ -95,12 +86,9 @@ ECode FieldPosition::SetEndIndex(
 }
 
 ECode FieldPosition::GetFieldDelegate(
-    /* [out] */ IFormatFieldDelegate** delegate)
+    /* [out] */ AutoPtr<IFormatFieldDelegate>& delegate)
 {
-    VALIDATE_NOT_NULL(delegate);
-
-    *delegate = new Delegate(this);
-    REFCOUNT_ADD(*delegate);
+    delegate = new Delegate(this);
     return NOERROR;
 }
 

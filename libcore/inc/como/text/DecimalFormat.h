@@ -70,69 +70,69 @@ public:
 
     ECode FormatToCharacterIterator(
         /* [in] */ IInterface* obj,
-        /* [out] */ IAttributedCharacterIterator** it) override;
+        /* [out] */ AutoPtr<IAttributedCharacterIterator>& it) override;
 
     ECode Parse(
         /* [in] */ const String& source,
         /* [in] */ IParsePosition* pos,
-        /* [out] */ INumber** number) override;
+        /* [out] */ AutoPtr<INumber>& number) override;
 
     ECode GetDecimalFormatSymbols(
-        /* [out] */ IDecimalFormatSymbols** symbols) override;
+        /* [out] */ AutoPtr<IDecimalFormatSymbols>& symbols) override;
 
     ECode SetDecimalFormatSymbols(
         /* [in] */ IDecimalFormatSymbols* symbols) override;
 
     ECode GetPositivePrefix(
-        /* [out] */ String* prefix) override;
+        /* [out] */ String& prefix) override;
 
     ECode SetPositivePrefix(
         /* [in] */ const String& prefix) override;
 
     ECode GetNegativePrefix(
-        /* [out] */ String* prefix) override;
+        /* [out] */ String& prefix) override;
 
     ECode SetNegativePrefix(
         /* [in] */ const String& prefix) override;
 
     ECode GetPositiveSuffix(
-        /* [out] */ String* suffix) override;
+        /* [out] */ String& suffix) override;
 
     ECode SetPositiveSuffix(
         /* [in] */ const String& suffix) override;
 
     ECode GetNegativeSuffix(
-        /* [out] */ String* suffix) override;
+        /* [out] */ String& suffix) override;
 
     ECode SetNegativeSuffix(
         /* [in] */ const String& suffix) override;
 
     ECode GetMultiplier(
-        /* [out] */ Integer* multiplier) override;
+        /* [out] */ Integer& multiplier) override;
 
     ECode SetMultiplier(
         /* [in] */ Integer multiplier) override;
 
     ECode GetGroupingSize(
-        /* [out] */ Integer* size) override;
+        /* [out] */ Integer& size) override;
 
     ECode SetGroupingSize(
         /* [in] */ Integer size) override;
 
     ECode IsGroupingUsed(
-        /* [out] */ Boolean* used) override;
+        /* [out] */ Boolean& used) override;
 
     ECode SetGroupingUsed(
         /* [in] */ Boolean used) override;
 
     ECode IsDecimalSeparatorAlwaysShown(
-        /* [in] */ Boolean* shown) override;
+        /* [out] */ Boolean& shown) override;
 
     ECode SetDecimalSeparatorAlwaysShown(
         /* [in] */ Boolean shown) override;
 
     ECode IsParseBigDecimal(
-        /* [out] */ Boolean* value) override;
+        /* [out] */ Boolean& value) override;
 
     ECode SetParseBigDecimal(
         /* [in] */ Boolean value) override;
@@ -141,7 +141,7 @@ public:
         /* [in] */ Boolean value) override;
 
     ECode IsParseIntegerOnly(
-        /* [out] */ Boolean* value) override;
+        /* [out] */ Boolean& value) override;
 
     ECode Equals(
         /* [in] */ IInterface* obj,
@@ -151,10 +151,10 @@ public:
         /* [out] */ Integer& hash) override;
 
     ECode ToPattern(
-        /* [out] */ String* pattern) override;
+        /* [out] */ String& pattern) override;
 
     ECode ToLocalizedPattern(
-        /* [out] */ String* pattern) override;
+        /* [out] */ String& pattern) override;
 
     ECode ApplyPattern(
         /* [in] */ const String& pattern) override;
@@ -175,25 +175,25 @@ public:
         /* [in] */ Integer newValue) override;
 
     ECode GetMaximumIntegerDigits(
-        /* [out] */ Integer* value) override;
+        /* [out] */ Integer& value) override;
 
     ECode GetMinimumIntegerDigits(
-        /* [out] */ Integer* value) override;
+        /* [out] */ Integer& value) override;
 
     ECode GetMaximumFractionDigits(
-        /* [out] */ Integer* value) override;
+        /* [out] */ Integer& value) override;
 
     ECode GetMinimumFractionDigits(
-        /* [out] */ Integer* value) override;
+        /* [out] */ Integer& value) override;
 
     ECode GetCurrency(
-        /* [out] */ ICurrency** currency) override;
+        /* [out] */ AutoPtr<ICurrency>& currency) override;
 
     ECode SetCurrency(
         /* [in] */ ICurrency* currency) override;
 
     ECode GetRoundingMode(
-        /* [out] */ RoundingMode* mode) override;
+        /* [out] */ RoundingMode& mode) override;
 
     ECode SetRoundingMode(
         /* [in] */ RoundingMode mode) override;

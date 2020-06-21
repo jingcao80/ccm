@@ -92,60 +92,60 @@ public:
     ECode ParseObject(
         /* [in] */ const String& source,
         /* [in] */ IParsePosition* pos,
-        /* [out] */ IInterface** object) override;
+        /* [out] */ AutoPtr<IInterface>& object) override;
 
     ECode Format(
         /* [in] */ Double number,
-        /* [out] */ String* str) override;
+        /* [out] */ String& str) override;
 
     ECode Format(
         /* [in] */ Long number,
-        /* [out] */ String* str) override;
+        /* [out] */ String& str) override;
 
     ECode Parse(
         /* [in] */ const String& source,
-        /* [out] */ INumber** number) override;
+        /* [out] */ AutoPtr<INumber>& number) override;
 
     ECode IsParseIntegerOnly(
-        /* [out] */ Boolean* value) override;
+        /* [out] */ Boolean& value) override;
 
     ECode SetParseIntegerOnly(
         /* [in] */ Boolean value) override;
 
     static ECode GetInstance(
-        /* [out] */ INumberFormat** instance);
+        /* [out] */ AutoPtr<INumberFormat>& instance);
 
     static ECode GetInstance(
         /* [in] */ ILocale* locale,
-        /* [out] */ INumberFormat** instance);
+        /* [out] */ AutoPtr<INumberFormat>& instance);
 
     static ECode GetNumberInstance(
-        /* [out] */ INumberFormat** instance);
+        /* [out] */ AutoPtr<INumberFormat>& instance);
 
     static ECode GetNumberInstance(
         /* [in] */ ILocale* locale,
-        /* [out] */ INumberFormat** instance);
+        /* [out] */ AutoPtr<INumberFormat>& instance);
 
     static ECode GetIntegerInstance(
-        /* [out] */ INumberFormat** instance);
+        /* [out] */ AutoPtr<INumberFormat>& instance);
 
     static ECode GetIntegerInstance(
         /* [in] */ ILocale* locale,
-        /* [out] */ INumberFormat** instance);
+        /* [out] */ AutoPtr<INumberFormat>& instance);
 
     static ECode GetCurrencyInstance(
-        /* [out] */ INumberFormat** instance);
+        /* [out] */ AutoPtr<INumberFormat>& instance);
 
     static ECode GetCurrencyInstance(
         /* [in] */ ILocale* locale,
-        /* [out] */ INumberFormat** instance);
+        /* [out] */ AutoPtr<INumberFormat>& instance);
 
     static ECode GetPercentInstance(
-        /* [out] */ INumberFormat** instance);
+        /* [out] */ AutoPtr<INumberFormat>& instance);
 
     static ECode GetPercentInstance(
         /* [in] */ ILocale* locale,
-        /* [out] */ INumberFormat** instance);
+        /* [out] */ AutoPtr<INumberFormat>& instance);
 
     static Array<ILocale*> GetAvailableLocales();
 
@@ -157,43 +157,43 @@ public:
         /* [out] */ Boolean& same) override;
 
     ECode IsGroupingUsed(
-        /* [out] */ Boolean* value) override;
+        /* [out] */ Boolean& value) override;
 
     ECode SetGroupingUsed(
         /* [in] */ Boolean value) override;
 
     ECode GetMaximumIntegerDigits(
-        /* [out] */ Integer* value) override;
+        /* [out] */ Integer& value) override;
 
     ECode SetMaximumIntegerDigits(
         /* [in] */ Integer newValue) override;
 
     ECode GetMinimumIntegerDigits(
-        /* [out] */ Integer* value) override;
+        /* [out] */ Integer& value) override;
 
     ECode SetMinimumIntegerDigits(
         /* [in] */ Integer newValue) override;
 
     ECode GetMaximumFractionDigits(
-        /* [out] */ Integer* value) override;
+        /* [out] */ Integer& value) override;
 
     ECode SetMaximumFractionDigits(
         /* [in] */ Integer newValue) override;
 
     ECode GetMinimumFractionDigits(
-        /* [out] */ Integer* value) override;
+        /* [out] */ Integer& value) override;
 
     ECode SetMinimumFractionDigits(
         /* [in] */ Integer newValue) override;
 
     ECode GetCurrency(
-        /* [out] */ ICurrency** currency) override;
+        /* [out] */ AutoPtr<ICurrency>& currency) override;
 
     ECode SetCurrency(
         /* [in] */ ICurrency* currency) override;
 
     ECode GetRoundingMode(
-        /* [out] */ RoundingMode* mode) override;
+        /* [out] */ RoundingMode& mode) override;
 
     ECode SetRoundingMode(
         /* [in] */ RoundingMode mode) override;
@@ -212,7 +212,7 @@ private:
     static ECode GetInstance(
         /* [in] */ ILocale* desiredLocale,
         /* [in] */ Integer choice,
-        /* [out] */ INumberFormat** instance);
+        /* [out] */ AutoPtr<INumberFormat>& instance);
 
     static AutoPtr<IHashtable> GetCachedLocaleData();
 

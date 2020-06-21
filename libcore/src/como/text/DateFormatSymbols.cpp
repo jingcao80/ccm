@@ -239,11 +239,9 @@ ECode DateFormatSymbols::SetZoneStrings(
 }
 
 ECode DateFormatSymbols::GetLocalPatternChars(
-    /* [out] */ String* localPatternChars)
+    /* [out] */ String& localPatternChars)
 {
-    VALIDATE_NOT_NULL(localPatternChars);
-
-    *localPatternChars = mLocalPatternChars;
+    localPatternChars = mLocalPatternChars;
     return NOERROR;
 }
 

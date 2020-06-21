@@ -30,66 +30,66 @@ ECode NumberFormatFactory::GetAvailableLocales(
 }
 
 ECode NumberFormatFactory::GetCurrencyInstance(
-    /* [out] */ INumberFormat** instance)
+    /* [out] */ AutoPtr<INumberFormat>& instance)
 {
     return NumberFormat::GetCurrencyInstance(instance);
 }
 
 ECode NumberFormatFactory::GetCurrencyInstance(
     /* [in] */ ILocale* locale,
-    /* [out] */ INumberFormat** instance)
+    /* [out] */ AutoPtr<INumberFormat>& instance)
 {
     return NumberFormat::GetCurrencyInstance(locale, instance);
 }
 
 ECode NumberFormatFactory::GetInstance(
-    /* [out] */ INumberFormat** instance)
+    /* [out] */ AutoPtr<INumberFormat>& instance)
 {
     return NumberFormat::GetInstance(instance);
 }
 
 ECode NumberFormatFactory::GetInstance(
     /* [in] */ ILocale* locale,
-    /* [out] */ INumberFormat** instance)
+    /* [out] */ AutoPtr<INumberFormat>& instance)
 {
     return NumberFormat::GetInstance(locale, instance);
 }
 
 ECode NumberFormatFactory::GetIntegerInstance(
-    /* [out] */ INumberFormat** instance)
+    /* [out] */ AutoPtr<INumberFormat>& instance)
 {
     return NumberFormat::GetIntegerInstance(instance);
 }
 
 ECode NumberFormatFactory::GetIntegerInstance(
     /* [in] */ ILocale* locale,
-    /* [out] */ INumberFormat** instance)
+    /* [out] */ AutoPtr<INumberFormat>& instance)
 {
     return NumberFormat::GetIntegerInstance(locale, instance);
 }
 
 ECode NumberFormatFactory::GetNumberInstance(
-    /* [out] */ INumberFormat** instance)
+    /* [out] */ AutoPtr<INumberFormat>& instance)
 {
     return NumberFormat::GetNumberInstance(instance);
 }
 
 ECode NumberFormatFactory::GetNumberInstance(
     /* [in] */ ILocale* locale,
-    /* [out] */ INumberFormat** instance)
+    /* [out] */ AutoPtr<INumberFormat>& instance)
 {
     return NumberFormat::GetNumberInstance(locale, instance);
 }
 
 ECode NumberFormatFactory::GetPercentInstance(
-    /* [out] */ INumberFormat** instance)
+    /* [out] */ AutoPtr<INumberFormat>& instance)
 {
     return NumberFormat::GetPercentInstance(instance);
 }
 
 ECode NumberFormatFactory::GetPercentInstance(
     /* [in] */ ILocale* locale,
-    /* [out] */ INumberFormat** instance)
+    /* [out] */ AutoPtr<INumberFormat>& instance)
 {
     return NumberFormat::GetPercentInstance(locale, instance);
 }

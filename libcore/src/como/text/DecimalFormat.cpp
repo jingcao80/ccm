@@ -250,7 +250,7 @@ ECode DecimalFormat::Format(
 
 ECode DecimalFormat::FormatToCharacterIterator(
     /* [in] */ IInterface* obj,
-    /* [out] */ IAttributedCharacterIterator** it)
+    /* [out] */ AutoPtr<IAttributedCharacterIterator>& it)
 {
     NativeDecimalFormat* ndf = reinterpret_cast<NativeDecimalFormat*>(mNativeDF);
 
@@ -264,14 +264,12 @@ ECode DecimalFormat::FormatToCharacterIterator(
 ECode DecimalFormat::Parse(
     /* [in] */ const String& source,
     /* [in] */ IParsePosition* pos,
-    /* [out] */ INumber** number)
+    /* [out] */ AutoPtr<INumber>& number)
 {
-    VALIDATE_NOT_NULL(number);
-
     Integer index;
-    pos->GetIndex(&index);
+    pos->GetIndex(index);
     if (index < 0 || index >= source.GetLength()) {
-        *number = nullptr;
+        number = nullptr;
         return NOERROR;
     }
 
@@ -280,55 +278,57 @@ ECode DecimalFormat::Parse(
     AutoPtr<INumber> n;
     ndf->Parse(source, pos, &n);
     if (n == nullptr) {
-        *number = nullptr;
+        number = nullptr;
         return NOERROR;
     }
     Boolean isParseBigDecimal;
-    if (IsParseBigDecimal(&isParseBigDecimal), isParseBigDecimal) {
+    if (IsParseBigDecimal(isParseBigDecimal), isParseBigDecimal) {
         if (ILong::Probe(n) != nullptr) {
             Long lv;
             n->LongValue(lv);
-            return CBigDecimal::New(lv, IID_INumber, (IInterface**)number);
+            number = nullptr;
+            return CBigDecimal::New(lv, IID_INumber, (IInterface**)&number);
         }
         IDouble* db = IDouble::Probe(n);
         Boolean value;
         if (db != nullptr && (db->IsInfinite(value), !value) &&
                 (db->IsNaN(value), !value)) {
             String str = Object::ToString(n);
-            return CBigDecimal::New(str, IID_INumber, (IInterface**)number);
+            number = nullptr;
+            return CBigDecimal::New(str, IID_INumber, (IInterface**)&number);
 
         }
         if (IBigInteger::Probe(n) != nullptr) {
             String str = Object::ToString(n);
-            return CBigDecimal::New(str, IID_INumber, (IInterface**)number);
+            number = nullptr;
+            return CBigDecimal::New(str, IID_INumber, (IInterface**)&number);
         }
-        n.MoveTo(number);
+        number = std::move(n);
         return NOERROR;
     }
 
     if (IBigDecimal::Probe(n) != nullptr || IBigInteger::Probe(n) != nullptr) {
         Double dv;
         n->DoubleValue(dv);
-        return CDouble::New(dv, IID_INumber, (IInterface**)number);
+        number = nullptr;
+        return CDouble::New(dv, IID_INumber, (IInterface**)&number);
     }
 
     Boolean isParseIntegerOnly;
-    if ((IsParseIntegerOnly(&isParseIntegerOnly), isParseIntegerOnly) &&
+    if ((IsParseIntegerOnly(isParseIntegerOnly), isParseIntegerOnly) &&
             Object::Equals(n, Get_NEGATIVE_ZERO_DOUBLE())) {
-        return CLong::New(0ll, IID_INumber, (IInterface**)number);
+        number = nullptr;
+        return CLong::New(0ll, IID_INumber, (IInterface**)&number);
     }
-    n.MoveTo(number);
+    number = std::move(n);
     return NOERROR;
 }
 
 ECode DecimalFormat::GetDecimalFormatSymbols(
-    /* [out] */ IDecimalFormatSymbols** symbols)
+    /* [out] */ AutoPtr<IDecimalFormatSymbols>& symbols)
 {
-    VALIDATE_NOT_NULL(symbols);
-
-    AutoPtr<IDecimalFormatSymbols> sym = (IDecimalFormatSymbols*)CoreUtils::Clone(
+    symbols = (IDecimalFormatSymbols*)CoreUtils::Clone(
             mSymbols, IID_IDecimalFormatSymbols).Get();
-    sym.MoveTo(symbols);
     return NOERROR;
 }
 
@@ -344,13 +344,11 @@ ECode DecimalFormat::SetDecimalFormatSymbols(
 }
 
 ECode DecimalFormat::GetPositivePrefix(
-    /* [out] */ String* prefix)
+    /* [out] */ String& prefix)
 {
-    VALIDATE_NOT_NULL(prefix);
-
     NativeDecimalFormat* ndf = reinterpret_cast<NativeDecimalFormat*>(mNativeDF);
 
-    return ndf->GetPositivePrefix(prefix);
+    return ndf->GetPositivePrefix(&prefix);
 }
 
 ECode DecimalFormat::SetPositivePrefix(
@@ -362,13 +360,11 @@ ECode DecimalFormat::SetPositivePrefix(
 }
 
 ECode DecimalFormat::GetNegativePrefix(
-    /* [out] */ String* prefix)
+    /* [out] */ String& prefix)
 {
-    VALIDATE_NOT_NULL(prefix);
-
     NativeDecimalFormat* ndf = reinterpret_cast<NativeDecimalFormat*>(mNativeDF);
 
-    return ndf->GetNegativePrefix(prefix);
+    return ndf->GetNegativePrefix(&prefix);
 }
 
 ECode DecimalFormat::SetNegativePrefix(
@@ -380,13 +376,11 @@ ECode DecimalFormat::SetNegativePrefix(
 }
 
 ECode DecimalFormat::GetPositiveSuffix(
-    /* [out] */ String* suffix)
+    /* [out] */ String& suffix)
 {
-    VALIDATE_NOT_NULL(suffix);
-
     NativeDecimalFormat* ndf = reinterpret_cast<NativeDecimalFormat*>(mNativeDF);
 
-    return ndf->GetPositiveSuffix(suffix);
+    return ndf->GetPositiveSuffix(&suffix);
 }
 
 ECode DecimalFormat::SetPositiveSuffix(
@@ -398,13 +392,11 @@ ECode DecimalFormat::SetPositiveSuffix(
 }
 
 ECode DecimalFormat::GetNegativeSuffix(
-    /* [out] */ String* suffix)
+    /* [out] */ String& suffix)
 {
-    VALIDATE_NOT_NULL(suffix);
-
     NativeDecimalFormat* ndf = reinterpret_cast<NativeDecimalFormat*>(mNativeDF);
 
-    return ndf->GetNegativeSuffix(suffix);
+    return ndf->GetNegativeSuffix(&suffix);
 }
 
 ECode DecimalFormat::SetNegativeSuffix(
@@ -416,13 +408,11 @@ ECode DecimalFormat::SetNegativeSuffix(
 }
 
 ECode DecimalFormat::GetMultiplier(
-    /* [out] */ Integer* multiplier)
+    /* [out] */ Integer& multiplier)
 {
-    VALIDATE_NOT_NULL(multiplier);
-
     NativeDecimalFormat* ndf = reinterpret_cast<NativeDecimalFormat*>(mNativeDF);
 
-    *multiplier = ndf->GetMultiplier();
+    multiplier = ndf->GetMultiplier();
     return NOERROR;
 }
 
@@ -435,13 +425,11 @@ ECode DecimalFormat::SetMultiplier(
 }
 
 ECode DecimalFormat::GetGroupingSize(
-    /* [out] */ Integer* size)
+    /* [out] */ Integer& size)
 {
-    VALIDATE_NOT_NULL(size);
-
     NativeDecimalFormat* ndf = reinterpret_cast<NativeDecimalFormat*>(mNativeDF);
 
-    *size = ndf->GetGroupingSize();
+    size = ndf->GetGroupingSize();
     return NOERROR;
 }
 
@@ -454,12 +442,11 @@ ECode DecimalFormat::SetGroupingSize(
 }
 
 ECode DecimalFormat::IsGroupingUsed(
-    /* [out] */ Boolean* used)
+    /* [out] */ Boolean& used)
 {
-    VALIDATE_NOT_NULL(used);
-
     NativeDecimalFormat* ndf = reinterpret_cast<NativeDecimalFormat*>(mNativeDF);
-    *used = ndf->IsGroupingUsed();
+
+    used = ndf->IsGroupingUsed();
     return NOERROR;
 }
 
@@ -472,13 +459,11 @@ ECode DecimalFormat::SetGroupingUsed(
 }
 
 ECode DecimalFormat::IsDecimalSeparatorAlwaysShown(
-    /* [in] */ Boolean* shown)
+    /* [in] */ Boolean& shown)
 {
-    VALIDATE_NOT_NULL(shown);
-
     NativeDecimalFormat* ndf = reinterpret_cast<NativeDecimalFormat*>(mNativeDF);
 
-    *shown = ndf->IsDecimalSeparatorAlwaysShown();
+    shown = ndf->IsDecimalSeparatorAlwaysShown();
     return NOERROR;
 }
 
@@ -491,13 +476,11 @@ ECode DecimalFormat::SetDecimalSeparatorAlwaysShown(
 }
 
 ECode DecimalFormat::IsParseBigDecimal(
-    /* [out] */ Boolean* value)
+    /* [out] */ Boolean& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     NativeDecimalFormat* ndf = reinterpret_cast<NativeDecimalFormat*>(mNativeDF);
 
-    *value = ndf->IsParseBigDecimal();
+    value = ndf->IsParseBigDecimal();
     return NOERROR;
 }
 
@@ -519,13 +502,11 @@ ECode DecimalFormat::SetParseIntegerOnly(
 }
 
 ECode DecimalFormat::IsParseIntegerOnly(
-    /* [out] */ Boolean* value)
+    /* [out] */ Boolean& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     NativeDecimalFormat* ndf = reinterpret_cast<NativeDecimalFormat*>(mNativeDF);
 
-    *value = ndf->IsParseIntegerOnly();
+    value = ndf->IsParseIntegerOnly();
     return NOERROR;
 }
 
@@ -575,7 +556,7 @@ ECode DecimalFormat::GetHashCode(
     /* [out] */ Integer& hash)
 {
     String prefix;
-    GetPositivePrefix(&prefix);
+    GetPositivePrefix(prefix);
 
     NumberFormat::GetHashCode(hash);
     hash = hash * 37 + prefix.GetHashCode();
@@ -583,23 +564,19 @@ ECode DecimalFormat::GetHashCode(
 }
 
 ECode DecimalFormat::ToPattern(
-    /* [out] */ String* pattern)
+    /* [out] */ String& pattern)
 {
-    VALIDATE_NOT_NULL(pattern);
-
     NativeDecimalFormat* ndf = reinterpret_cast<NativeDecimalFormat*>(mNativeDF);
 
-    return ndf->ToPattern(pattern);
+    return ndf->ToPattern(&pattern);
 }
 
 ECode DecimalFormat::ToLocalizedPattern(
-    /* [out] */ String* pattern)
+    /* [out] */ String& pattern)
 {
-    VALIDATE_NOT_NULL(pattern);
-
     NativeDecimalFormat* ndf = reinterpret_cast<NativeDecimalFormat*>(mNativeDF);
 
-    return ndf->ToLocalizedPattern(pattern);
+    return ndf->ToLocalizedPattern(&pattern);
 }
 
 ECode DecimalFormat::ApplyPattern(
@@ -646,7 +623,7 @@ ECode DecimalFormat::SetMaximumIntegerDigits(
                 DOUBLE_INTEGER_DIGITS : mMinimumIntegerDigits);
     }
     Integer value;
-    GetMaximumIntegerDigits(&value);
+    GetMaximumIntegerDigits(value);
     ndf->SetMaximumIntegerDigits(value);
     return NOERROR;
 }
@@ -665,7 +642,7 @@ ECode DecimalFormat::SetMinimumIntegerDigits(
                 DOUBLE_INTEGER_DIGITS : mMaximumIntegerDigits);
     }
     Integer value;
-    GetMinimumIntegerDigits(&value);
+    GetMinimumIntegerDigits(value);
     ndf->SetMinimumIntegerDigits(value);
     return NOERROR;
 }
@@ -684,7 +661,7 @@ ECode DecimalFormat::SetMaximumFractionDigits(
                 DOUBLE_FRACTION_DIGITS : mMinimumFractionDigits);
     }
     Integer value;
-    GetMaximumFractionDigits(&value);
+    GetMaximumFractionDigits(value);
     ndf->SetMaximumFractionDigits(value);
     SetRoundingMode(mRoundingMode);
     return NOERROR;
@@ -704,49 +681,41 @@ ECode DecimalFormat::SetMinimumFractionDigits(
                 DOUBLE_FRACTION_DIGITS : mMaximumFractionDigits);
     }
     Integer value;
-    GetMinimumFractionDigits(&value);
+    GetMinimumFractionDigits(value);
     ndf->SetMinimumFractionDigits(value);
     return NOERROR;
 }
 
 ECode DecimalFormat::GetMaximumIntegerDigits(
-    /* [out] */ Integer* value)
+    /* [out] */ Integer& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = mMaximumIntegerDigits;
+    value = mMaximumIntegerDigits;
     return NOERROR;
 }
 
 ECode DecimalFormat::GetMinimumIntegerDigits(
-    /* [out] */ Integer* value)
+    /* [out] */ Integer& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = mMinimumIntegerDigits;
+    value = mMinimumIntegerDigits;
     return NOERROR;
 }
 
 ECode DecimalFormat::GetMaximumFractionDigits(
-    /* [out] */ Integer* value)
+    /* [out] */ Integer& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = mMaximumFractionDigits;
+    value = mMaximumFractionDigits;
     return NOERROR;
 }
 
 ECode DecimalFormat::GetMinimumFractionDigits(
-    /* [out] */ Integer* value)
+    /* [out] */ Integer& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = mMinimumFractionDigits;
+    value = mMinimumFractionDigits;
     return NOERROR;
 }
 
 ECode DecimalFormat::GetCurrency(
-    /* [out] */ ICurrency** currency)
+    /* [out] */ AutoPtr<ICurrency>& currency)
 {
     return mSymbols->GetCurrency(currency);
 }
@@ -762,16 +731,14 @@ ECode DecimalFormat::SetCurrency(
     mSymbols->SetCurrency(instance);
 
     String currencySymbol;
-    mSymbols->GetCurrencySymbol(&currencySymbol);
+    mSymbols->GetCurrencySymbol(currencySymbol);
     return ndf->SetCurrency(currencySymbol, currencyCode);
 }
 
 ECode DecimalFormat::GetRoundingMode(
-    /* [out] */ RoundingMode* mode)
+    /* [out] */ RoundingMode& mode)
 {
-    VALIDATE_NOT_NULL(mode);
-
-    *mode = mRoundingMode;
+    mode = mRoundingMode;
     return NOERROR;
 }
 
@@ -791,10 +758,10 @@ ECode DecimalFormat::SetRoundingMode(
 void DecimalFormat::AdjustForCurrencyDefaultFractionDigits()
 {
     AutoPtr<ICurrency> currency;
-    mSymbols->GetCurrency(&currency);
+    mSymbols->GetCurrency(currency);
     if (currency == nullptr) {
         String currencySymbol;
-        mSymbols->GetInternationalCurrencySymbol(&currencySymbol);
+        mSymbols->GetInternationalCurrencySymbol(currencySymbol);
         currency = Currency::GetInstance(currencySymbol);
     }
     if (currency != nullptr) {
@@ -802,11 +769,11 @@ void DecimalFormat::AdjustForCurrencyDefaultFractionDigits()
         currency->GetDefaultFractionDigits(&digits);
         if (digits != -1) {
             Integer oldMinDigits;
-            GetMinimumFractionDigits(&oldMinDigits);
+            GetMinimumFractionDigits(oldMinDigits);
             // Common patterns are "#.##", "#.00", "#".
             // Try to adjust all of them in a reasonable way.
             Integer oldMaxDigits;
-            GetMaximumFractionDigits(&oldMaxDigits);
+            GetMaximumFractionDigits(oldMaxDigits);
             if (oldMinDigits == oldMaxDigits) {
                 SetMinimumFractionDigits(digits);
                 SetMaximumFractionDigits(digits);

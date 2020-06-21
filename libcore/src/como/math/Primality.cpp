@@ -103,6 +103,7 @@ ECode Primality::NextProbablePrime(
                 probPrime->PutCopy(startPoint);
                 probPrime->AddPositiveInteger(j);
                 if (probPrime->IsPrime(100)) {
+                    value = nullptr;
                     return CBigInteger::New(probPrime, IID_IBigInteger, (IInterface**)&value);
                 }
             }

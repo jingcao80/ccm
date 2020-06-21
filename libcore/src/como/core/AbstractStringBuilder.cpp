@@ -540,6 +540,7 @@ ECode AbstractStringBuilder::SubSequence(
 {
     String str;
     Substring(start, end, str);
+    subcsq = nullptr;
     return CString::New(str, IID_ICharSequence, (IInterface**)&subcsq);
 }
 

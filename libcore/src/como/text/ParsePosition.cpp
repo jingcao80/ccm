@@ -29,11 +29,9 @@ ECode ParsePosition::Constructor(
 }
 
 ECode ParsePosition::GetIndex(
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
-    VALIDATE_NOT_NULL(index);
-
-    *index = mIndex;
+    index = mIndex;
     return NOERROR;
 }
 
@@ -52,11 +50,9 @@ ECode ParsePosition::SetErrorIndex(
 }
 
 ECode ParsePosition::GetErrorIndex(
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
-    VALIDATE_NOT_NULL(index);
-
-    *index = mErrorIndex;
+    index = mErrorIndex;
     return NOERROR;
 }
 

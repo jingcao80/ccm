@@ -137,10 +137,8 @@ ECode ChoiceFormat::ApplyPattern(
 }
 
 ECode ChoiceFormat::ToPattern(
-    /* [out] */ String* pattern)
+    /* [out] */ String& pattern)
 {
-    VALIDATE_NOT_NULL(pattern);
-
     AutoPtr<IStringBuffer> result;
     CStringBuffer::New(IID_IStringBuffer, (IInterface**)&result);
     for (Integer i = 0; i < mChoiceLimits.GetLength(); ++i) {
@@ -196,7 +194,7 @@ ECode ChoiceFormat::ToPattern(
             result->Append(U'\'');
         }
     }
-    return result->ToString(*pattern);
+    return result->ToString(pattern);
 }
 
 ECode ChoiceFormat::Constructor(
@@ -270,13 +268,11 @@ ECode ChoiceFormat::Format(
 ECode ChoiceFormat::Parse(
     /* [in] */ const String& text,
     /* [in] */ IParsePosition* status,
-    /* [out] */ INumber** number)
+    /* [out] */ AutoPtr<INumber>& number)
 {
-    VALIDATE_NOT_NULL(number);
-
     // find the best number (defined as the one with the longest parse)
     Integer start;
-    status->GetIndex(&start);
+    status->GetIndex(start);
     Integer furthest = start;
     Double bestNumber = IDouble::NaN;
     Double tempNumber = 0;
@@ -286,7 +282,7 @@ ECode ChoiceFormat::Parse(
             status->SetIndex(start + tempString.GetLength());
             tempNumber = mChoiceLimits[i];
             Integer index;
-            if (status->GetIndex(&index), index > furthest) {
+            if (status->GetIndex(index), index > furthest) {
                 furthest = index;
                 bestNumber = tempNumber;
                 if (furthest == text.GetLength()) {
@@ -299,7 +295,8 @@ ECode ChoiceFormat::Parse(
     if (furthest == start) {
         status->SetErrorIndex(furthest);
     }
-    return CDouble::New(bestNumber, IID_INumber, (IInterface**)number);
+    number = nullptr;
+    return CDouble::New(bestNumber, IID_INumber, (IInterface**)&number);
 }
 
 Double ChoiceFormat::NextDouble(

@@ -77,7 +77,7 @@ String AttributedCharacterIteratorAttribute::GetName()
 }
 
 ECode AttributedCharacterIteratorAttribute::ReadResolve(
-    /* [out] */ IInterface** obj)
+    /* [out] */ AutoPtr<IInterface>& obj)
 {
     VALIDATE_NOT_NULL(obj);
 
@@ -88,8 +88,9 @@ ECode AttributedCharacterIteratorAttribute::ReadResolve(
         return E_INVALID_OBJECT_EXCEPTION;
     }
 
-    GetInstanceMap()->Get(CoreUtils::Box(GetName()), obj);
-    if (*obj == nullptr) {
+    obj = nullptr;
+    GetInstanceMap()->Get(CoreUtils::Box(GetName()), &obj);
+    if (obj == nullptr) {
         Logger::E("AttributedCharacterIteratorAttribute", "unknown attribute name");
         return E_INVALID_OBJECT_EXCEPTION;
     }

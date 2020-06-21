@@ -36,7 +36,7 @@ public:
         /* [in] */ Integer index);
 
     ECode GetIndex(
-        /* [out] */ Integer* index) override;
+        /* [out] */ Integer& index) override;
 
     ECode SetIndex(
         /* [in] */ Integer index) override;
@@ -45,7 +45,7 @@ public:
         /* [in] */ Integer index) override;
 
     ECode GetErrorIndex(
-        /* [out] */ Integer* index) override;
+        /* [out] */ Integer& index) override;
 
     ECode Equals(
         /* [in] */ IInterface* obj,

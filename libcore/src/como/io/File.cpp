@@ -255,6 +255,7 @@ ECode File::GetParentFile(
         parent = nullptr;
         return NOERROR;
     }
+    parent = nullptr;
     return CFile::New(p, mPrefixLength, IID_IFile, (IInterface**)&parent);
 }
 
@@ -284,6 +285,7 @@ ECode File::GetAbsoluteFile(
     GetAbsolutePath(absPath);
     Integer prefLen;
     GetFS()->PrefixLength(absPath, &prefLen);
+    f = nullptr;
     return CFile::New(absPath, prefLen, IID_IFile, (IInterface**)&f);
 }
 
@@ -307,6 +309,7 @@ ECode File::GetCanonicalFile(
     FAIL_RETURN(GetCanonicalPath(canonPath));
     Integer prefLen;
     GetFS()->PrefixLength(canonPath, &prefLen);
+    f = nullptr;
     return CFile::New(canonPath, prefLen, IID_IFile, (IInterface**)&f);
 }
 
@@ -964,6 +967,7 @@ ECode File::TempDirectory::GenerateFile(
     }
 
     String name = prefix + StringUtils::ToString(n) + suffix;
+    temp = nullptr;
     CFile::New(dir, name, IID_IFile, (IInterface**)&temp);
     String fName; Boolean invalid;
     if ((temp->GetName(fName), !name.Equals(fName)) || File::From(temp)->IsInvalid()) {

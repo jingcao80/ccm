@@ -42,7 +42,7 @@ public:
         /* [in] */ const String& newPattern) override;
 
     ECode ToPattern(
-        /* [out] */ String* pattern) override;
+        /* [out] */ String& pattern) override;
 
     ECode SetChoices(
         /* [in] */ const Array<Double>& limits,
@@ -67,7 +67,7 @@ public:
     ECode Parse(
         /* [in] */ const String& text,
         /* [in] */ IParsePosition* status,
-        /* [out] */ INumber** number) override;
+        /* [out] */ AutoPtr<INumber>& number) override;
 
     static Double NextDouble(
         /* [in] */ Double d);
@@ -117,6 +117,5 @@ private:
 
 }
 }
-
 
 #endif // __COMO_TEXT_CHOICEFORMAT_H__

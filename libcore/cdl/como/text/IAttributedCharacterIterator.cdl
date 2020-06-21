@@ -41,36 +41,36 @@ interface IAttributedCharacterIterator
     {}
 
     GetAllAttributeKeys(
-        [out] ISet** keys);
+        [out] ISet&& keys);
 
     GetAttribute(
         [in] IAttribute* attribute,
-        [out] IInterface** value);
+        [out] IInterface&& value);
 
     GetAttributes(
-        [out] IMap** attributes);
+        [out] IMap&& attributes);
 
     GetRunLimit(
-        [out] Integer* index);
+        [out] Integer& index);
 
     GetRunLimit(
         [in] IAttribute* attribute,
-        [out] Integer* index);
+        [out] Integer& index);
 
     GetRunLimit(
         [in] ISet* attributes,
-        [out] Integer* index);
+        [out] Integer& index);
 
     GetRunStart(
-        [out] Integer* index);
+        [out] Integer& index);
 
     GetRunStart(
         [in] IAttribute* attribute,
-        [out] Integer* index);
+        [out] Integer& index);
 
     GetRunStart(
         [in] ISet* attributes,
-        [out] Integer* index);
+        [out] Integer& index);
 }
 
 }

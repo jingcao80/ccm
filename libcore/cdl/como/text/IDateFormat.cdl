@@ -38,7 +38,7 @@ namespace text {
 interface IDateFormatField
 {
     GetCalendarField(
-        [out] Integer* calendarField);
+        [out] Integer& calendarField);
 }
 
 /*
@@ -177,7 +177,7 @@ interface IDateFormat
 
     Format(
         [in] IDate* date,
-        [out] String* result);
+        [out] String& result);
 
     Format(
         [in] IDate* date,
@@ -185,30 +185,30 @@ interface IDateFormat
         [in] IFieldPosition* pos);
 
     GetCalendar(
-        [out] ICalendar** calendar);
+        [out] ICalendar&& calendar);
 
     GetNumberFormat(
-        [out] INumberFormat** format);
+        [out] INumberFormat&& format);
 
     GetTimeZone(
-        [out] ITimeZone** timezone);
+        [out] ITimeZone&& timezone);
 
     IsLenient(
-        [out] Boolean* lenient);
+        [out] Boolean& lenient);
 
     Parse(
         [in] String source,
-        [out] IDate** date);
+        [out] IDate&& date);
 
     Parse(
         [in] String source,
         [in] IParsePosition* pos,
-        [out] IDate** date);
+        [out] IDate&& date);
 
     ParseObject(
         [in] String source,
         [in] IParsePosition* pos,
-        [out] IInterface** object);
+        [out] IInterface&& object);
 
     SetCalendar(
         [in] ICalendar* newCalendar);

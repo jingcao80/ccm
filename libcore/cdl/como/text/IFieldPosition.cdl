@@ -27,19 +27,19 @@ namespace text {
 interface IFieldPosition
 {
     GetBeginIndex(
-        [out] Integer* index);
+        [out] Integer& index);
 
     GetEndIndex(
-        [out] Integer* index);
+        [out] Integer& index);
 
     GetField(
-        [out] Integer* field);
+        [out] Integer& field);
 
     GetFieldAttribute(
-        [out] IFormatField** attribute);
+        [out] IFormatField&& attribute);
 
     GetFieldDelegate(
-        [out] IFormatFieldDelegate** delegate);
+        [out] IFormatFieldDelegate&& delegate);
 
     SetBeginIndex(
         [in] Integer index);

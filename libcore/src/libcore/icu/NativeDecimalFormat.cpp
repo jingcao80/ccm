@@ -144,33 +144,33 @@ ECode NativeDecimalFormat::Constructor(
     /* [in] */ IDecimalFormatSymbols* dfs)
 {
     String currencySymbol;
-    dfs->GetCurrencySymbol(&currencySymbol);
+    dfs->GetCurrencySymbol(currencySymbol);
     Char decimalSeparator;
-    dfs->GetDecimalSeparator(&decimalSeparator);
+    dfs->GetDecimalSeparator(decimalSeparator);
     Char digit;
-    dfs->GetDigit(&digit);
+    dfs->GetDigit(digit);
     String exponentSeparator;
-    dfs->GetExponentSeparator(&exponentSeparator);
+    dfs->GetExponentSeparator(exponentSeparator);
     Char groupingSeparator;
-    dfs->GetGroupingSeparator(&groupingSeparator);
+    dfs->GetGroupingSeparator(groupingSeparator);
     String infinity;
-    dfs->GetInfinity(&infinity);
+    dfs->GetInfinity(infinity);
     String internationalCurrencySymbol;
-    dfs->GetInternationalCurrencySymbol(&internationalCurrencySymbol);
+    dfs->GetInternationalCurrencySymbol(internationalCurrencySymbol);
     String minusSign;
-    dfs->GetMinusSignString(&minusSign);
+    dfs->GetMinusSignString(minusSign);
     Char monetaryDecimalSeparator;
-    dfs->GetMonetaryDecimalSeparator(&monetaryDecimalSeparator);
+    dfs->GetMonetaryDecimalSeparator(monetaryDecimalSeparator);
     String naN;
-    dfs->GetNaN(&naN);
+    dfs->GetNaN(naN);
     Char patternSeparator;
-    dfs->GetPatternSeparator(&patternSeparator);
+    dfs->GetPatternSeparator(patternSeparator);
     Char percent;
-    dfs->GetPercent(&percent);
+    dfs->GetPercent(percent);
     Char perMill;
-    dfs->GetPerMill(&perMill);
+    dfs->GetPerMill(perMill);
     Char zeroDigit;
-    dfs->GetZeroDigit(&zeroDigit);
+    dfs->GetZeroDigit(zeroDigit);
     ECode ec = Open(pattern, currencySymbol,
             decimalSeparator, digit, exponentSeparator,
             groupingSeparator, infinity,
@@ -198,33 +198,33 @@ ECode NativeDecimalFormat::SetDecimalFormatSymbols(
     /* [in] */ IDecimalFormatSymbols* dfs)
 {
     String currencySymbol;
-    dfs->GetCurrencySymbol(&currencySymbol);
+    dfs->GetCurrencySymbol(currencySymbol);
     Char decimalSeparator;
-    dfs->GetDecimalSeparator(&decimalSeparator);
+    dfs->GetDecimalSeparator(decimalSeparator);
     Char digit;
-    dfs->GetDigit(&digit);
+    dfs->GetDigit(digit);
     String exponentSeparator;
-    dfs->GetExponentSeparator(&exponentSeparator);
+    dfs->GetExponentSeparator(exponentSeparator);
     Char groupingSeparator;
-    dfs->GetGroupingSeparator(&groupingSeparator);
+    dfs->GetGroupingSeparator(groupingSeparator);
     String infinity;
-    dfs->GetInfinity(&infinity);
+    dfs->GetInfinity(infinity);
     String internationalCurrencySymbol;
-    dfs->GetInternationalCurrencySymbol(&internationalCurrencySymbol);
+    dfs->GetInternationalCurrencySymbol(internationalCurrencySymbol);
     String minusSign;
-    dfs->GetMinusSignString(&minusSign);
+    dfs->GetMinusSignString(minusSign);
     Char monetaryDecimalSeparator;
-    dfs->GetMonetaryDecimalSeparator(&monetaryDecimalSeparator);
+    dfs->GetMonetaryDecimalSeparator(monetaryDecimalSeparator);
     String NaN;
-    dfs->GetNaN(&NaN);
+    dfs->GetNaN(NaN);
     Char patternSeparator;
-    dfs->GetPatternSeparator(&patternSeparator);
+    dfs->GetPatternSeparator(patternSeparator);
     Char percent;
-    dfs->GetPercent(&percent);
+    dfs->GetPercent(percent);
     Char perMill;
-    dfs->GetPerMill(&perMill);
+    dfs->GetPerMill(perMill);
     Char zeroDigit;
-    dfs->GetZeroDigit(&zeroDigit);
+    dfs->GetZeroDigit(zeroDigit);
     SetDecimalFormatSymbols(mAddress, currencySymbol, decimalSeparator,
             digit, exponentSeparator, groupingSeparator,
             infinity, internationalCurrencySymbol, minusSign,
@@ -325,7 +325,7 @@ ECode NativeDecimalFormat::ApplyPattern(
 
 ECode NativeDecimalFormat::FormatToCharacterIterator(
     /* [in] */ IInterface* object,
-    /* [out] */ IAttributedCharacterIterator** it)
+    /* [out] */ AutoPtr<IAttributedCharacterIterator>& it)
 {
     INumber* number = INumber::Probe(object);
     if (number == nullptr) {
@@ -923,7 +923,7 @@ AutoPtr<INumber> NativeDecimalFormat::Parse(
     // correctly even if the parsePosition is set to -1, but since the RI fails
     // for that case we have to fail too
     Integer parsePos;
-    position->GetIndex(&parsePos);
+    position->GetIndex(parsePos);
     if (parsePos < 0 || parsePos > text.GetLength()) {
         return nullptr;
     }
@@ -1137,13 +1137,13 @@ Integer NativeDecimalFormat::TranslateFieldId(
     /* [in] */ IFieldPosition* fp)
 {
     Integer id;
-    fp->GetField(&id);
+    fp->GetField(id);
     if (id < -1 || id > 1) {
         id = -1;
     }
     if (-1 == id) {
         AutoPtr<IFormatField> attr;
-        fp->GetFieldAttribute(&attr);
+        fp->GetFieldAttribute(attr);
         if (attr != NULL) {
             for (Long i = 0; i < Get_ICU4C_FIELD_IDS().GetLength(); ++i) {
                 if (Object::Equals(Get_ICU4C_FIELD_IDS()[i], attr)) {

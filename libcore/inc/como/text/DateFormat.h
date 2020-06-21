@@ -64,10 +64,10 @@ public:
 
         static ECode OfCalendarField(
             /* [in] */ Integer calendarField,
-            /* [out] */ IDateFormatField** field);
+            /* [out] */ AutoPtr<IDateFormatField>& field);
 
         ECode GetCalendarField(
-            /* [out] */ Integer* calendarField) override;
+            /* [out] */ Integer& calendarField) override;
 
         static const AutoPtr<IDateFormatField> GetERA();
 
@@ -111,7 +111,7 @@ public:
             /* [in] */ Integer calendarField);
 
         ECode ReadResolve(
-            /* [out] */ IInterface** obj) override;
+            /* [out] */ AutoPtr<IInterface>& obj) override;
 
     private:
         static AutoPtr<IMap> GetInstanceMap();
@@ -134,59 +134,59 @@ public:
 
     ECode Format(
         /* [in] */ IDate* date,
-        /* [out] */ String* result) override final;
+        /* [out] */ String& result) override final;
 
     ECode Parse(
         /* [in] */ const String& source,
-        /* [out] */ IDate** date) override;
+        /* [out] */ AutoPtr<IDate>& date) override;
 
     using IDateFormat::Parse;
 
     ECode ParseObject(
         /* [in] */ const String& source,
         /* [in] */ IParsePosition* pos,
-        /* [out] */ IInterface** object) override;
+        /* [out] */ AutoPtr<IInterface>& object) override;
 
     static ECode GetTimeInstance(
-        /* [out] */ IDateFormat** instance);
+        /* [out] */ AutoPtr<IDateFormat>& instance);
 
     static ECode GetTimeInstance(
         /* [in] */ Integer style,
-        /* [out] */ IDateFormat** instance);
+        /* [out] */ AutoPtr<IDateFormat>& instance);
 
     static ECode GetTimeInstance(
         /* [in] */ Integer style,
         /* [in] */ ILocale* locale,
-        /* [out] */ IDateFormat** instance);
+        /* [out] */ AutoPtr<IDateFormat>& instance);
 
     static ECode GetDateInstance(
-        /* [out] */ IDateFormat** instance);
+        /* [out] */ AutoPtr<IDateFormat>& instance);
 
     static ECode GetDateInstance(
         /* [in] */ Integer style,
-        /* [out] */ IDateFormat** instance);
+        /* [out] */ AutoPtr<IDateFormat>& instance);
 
     static ECode GetDateInstance(
         /* [in] */ Integer style,
         /* [in] */ ILocale* locale,
-        /* [out] */ IDateFormat** instance);
+        /* [out] */ AutoPtr<IDateFormat>& instance);
 
     static ECode GetDateTimeInstance(
-        /* [out] */ IDateFormat** instance);
-
-    static ECode GetDateTimeInstance(
-        /* [in] */ Integer dateStyle,
-        /* [in] */ Integer timeStyle,
-        /* [out] */ IDateFormat** instance);
+        /* [out] */ AutoPtr<IDateFormat>& instance);
 
     static ECode GetDateTimeInstance(
         /* [in] */ Integer dateStyle,
         /* [in] */ Integer timeStyle,
+        /* [out] */ AutoPtr<IDateFormat>& instance);
+
+    static ECode GetDateTimeInstance(
+        /* [in] */ Integer dateStyle,
+        /* [in] */ Integer timeStyle,
         /* [in] */ ILocale* locale,
-        /* [out] */ IDateFormat** instance);
+        /* [out] */ AutoPtr<IDateFormat>& instance);
 
     static ECode GetInstance(
-        /* [out] */ IDateFormat** instance);
+        /* [out] */ AutoPtr<IDateFormat>& instance);
 
     static ECode Set24HourTimePref(
         /* [in] */ IBoolean* is24Hour);
@@ -198,25 +198,25 @@ public:
         /* [in] */ ICalendar* newCalendar) override;
 
     ECode GetCalendar(
-        /* [out] */ ICalendar** calendar) override;
+        /* [out] */ AutoPtr<ICalendar>& calendar) override;
 
     ECode SetNumberFormat(
         /* [in] */ INumberFormat* newNumberFormat) override;
 
     ECode GetNumberFormat(
-        /* [out] */ INumberFormat** format) override;
+        /* [out] */ AutoPtr<INumberFormat>& format) override;
 
     ECode SetTimeZone(
         /* [in] */ ITimeZone* timezone) override;
 
     ECode GetTimeZone(
-        /* [out] */ ITimeZone** timezone) override;
+        /* [out] */ AutoPtr<ITimeZone>& timezone) override;
 
     ECode SetLenient(
         /* [in] */ Boolean lenient) override;
 
     ECode IsLenient(
-        /* [out] */ Boolean* lenient) override;
+        /* [out] */ Boolean& lenient) override;
 
     ECode GetHashCode(
         /* [out] */ Integer& hash) override;
@@ -235,7 +235,7 @@ private:
         /* [in] */ Integer dateStyle,
         /* [in] */ Integer flags,
         /* [in] */ ILocale* loc,
-        /* [out] */ IDateFormat** instance);
+        /* [out] */ AutoPtr<IDateFormat>& instance);
 
 public:
     static AutoPtr<IBoolean> sIs24Hour;

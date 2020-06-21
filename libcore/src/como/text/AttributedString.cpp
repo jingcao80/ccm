@@ -193,21 +193,21 @@ ECode AttributedString::Constructor(
                 IAttributedCharacterIterator* iterator = iterators[counter];
                 ICharacterIterator* iteratorAlias = ICharacterIterator::Probe(iterator);
                 Integer start, end;
-                iteratorAlias->GetBeginIndex(&start);
-                iteratorAlias->GetEndIndex(&end);
+                iteratorAlias->GetBeginIndex(start);
+                iteratorAlias->GetEndIndex(end);
                 Integer index = start;
 
                 while (index < end) {
                     iteratorAlias->SetIndex(index);
 
                     AutoPtr<IMap> attrs;
-                    iterator->GetAttributes(&attrs);
+                    iterator->GetAttributes(attrs);
 
                     if (MapsDiffer(last, attrs)) {
                         SetAttributes(attrs, index - start + offset);
                     }
                     last = std::move(attrs);
-                    iterator->GetRunLimit(&index);
+                    iterator->GetRunLimit(index);
                 }
                 offset += (end - start);
             }
@@ -276,8 +276,8 @@ ECode AttributedString::Constructor(
     /* [in] */ IAttributedCharacterIterator* text)
 {
     Integer beginIndex, endIndex;
-    ICharacterIterator::Probe(text)->GetBeginIndex(&beginIndex);
-    ICharacterIterator::Probe(text)->GetEndIndex(&endIndex);
+    ICharacterIterator::Probe(text)->GetBeginIndex(beginIndex);
+    ICharacterIterator::Probe(text)->GetEndIndex(endIndex);
     Array<IAttributedCharacterIterator::IAttribute*> attributes;
     return Constructor(text, beginIndex, endIndex, attributes);
 }
@@ -303,8 +303,8 @@ ECode AttributedString::Constructor(
 
     ICharacterIterator* textAlias = ICharacterIterator::Probe(text);
     Integer textBeginIndex, textEndIndex;
-    textAlias->GetBeginIndex(&textBeginIndex);
-    textAlias->GetEndIndex(&textEndIndex);
+    textAlias->GetBeginIndex(textBeginIndex);
+    textAlias->GetEndIndex(textEndIndex);
     if (beginIndex < textBeginIndex || endIndex > textEndIndex || beginIndex > endIndex) {
         Logger::E("AttributedString", "Invalid substring range");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -314,9 +314,9 @@ ECode AttributedString::Constructor(
     CStringBuffer::New(IID_IStringBuffer, (IInterface**)&textBuffer);
     textAlias->SetIndex(beginIndex);
     Integer textIndex;
-    while (textAlias->GetIndex(&textIndex), textIndex < endIndex) {
+    while (textAlias->GetIndex(textIndex), textIndex < endIndex) {
         Char c;
-        textAlias->Current(&c);
+        textAlias->Current(c);
         textBuffer->Append(c);
     }
     textBuffer->ToString(mText);
@@ -330,7 +330,7 @@ ECode AttributedString::Constructor(
     CHashSet::New(IID_IHashSet, (IInterface**)&keys);
     if (attributes.IsNull()) {
         AutoPtr<ISet> attrKeys;
-        text->GetAllAttributeKeys(&attrKeys);
+        text->GetAllAttributeKeys(attrKeys);
         keys->AddAll(ICollection::Probe(attrKeys));
     }
     else {
@@ -338,7 +338,7 @@ ECode AttributedString::Constructor(
             keys->Add(attributes[i]);
         }
         AutoPtr<ISet> attrKeys;
-        text->GetAllAttributeKeys(&attrKeys);
+        text->GetAllAttributeKeys(attrKeys);
         keys->RetainAll(ICollection::Probe(attrKeys));
     }
     Boolean empty;
@@ -356,12 +356,12 @@ ECode AttributedString::Constructor(
         AutoPtr<IAttributedCharacterIterator::IAttribute> attributeKey;
         itr->Next((IInterface**)&attributeKey);
         textAlias->SetIndex(textBeginIndex);
-        while (textAlias->GetIndex(&textIndex), textIndex < endIndex) {
+        while (textAlias->GetIndex(textIndex), textIndex < endIndex) {
             Integer start, limit;
-            text->GetRunStart(attributeKey, &start);
-            text->GetRunLimit(attributeKey, &limit);
+            text->GetRunStart(attributeKey, start);
+            text->GetRunLimit(attributeKey, limit);
             AutoPtr<IInterface> value;
-            text->GetAttribute(attributeKey, &value);
+            text->GetAttribute(attributeKey, value);
 
             if (value != nullptr) {
                 if (IAnnotation::Probe(value) != nullptr) {
@@ -629,7 +629,7 @@ void AttributedString::AddAttributeRunData(
 }
 
 ECode AttributedString::GetIterator(
-    /* [out] */ IAttributedCharacterIterator** it)
+    /* [out] */ AutoPtr<IAttributedCharacterIterator>& it)
 {
     Array<IAttributedCharacterIterator::IAttribute*> attributes;
     return GetIterator(attributes, 0, GetLength(), it);
@@ -637,7 +637,7 @@ ECode AttributedString::GetIterator(
 
 ECode AttributedString::GetIterator(
     /* [in] */ const Array<IAttributedCharacterIterator::IAttribute*>& attributes,
-    /* [out] */ IAttributedCharacterIterator** it)
+    /* [out] */ AutoPtr<IAttributedCharacterIterator>& it)
 {
     return GetIterator(attributes, 0, GetLength(), it);
 }
@@ -646,13 +646,11 @@ ECode AttributedString::GetIterator(
     /* [in] */ const Array<IAttributedCharacterIterator::IAttribute*>& attributes,
     /* [in] */ Integer beginIndex,
     /* [in] */ Integer endIndex,
-    /* [out] */ IAttributedCharacterIterator** it)
+    /* [out] */ AutoPtr<IAttributedCharacterIterator>& it)
 {
-    VALIDATE_NOT_NULL(it);
-
     AutoPtr<AttributedStringIterator> asit = new AttributedStringIterator();
     FAIL_RETURN(asit->Constructor(this, attributes, beginIndex, endIndex));
-    asit.MoveTo(it);
+    it = (IAttributedCharacterIterator*)asit.Get();
     return NOERROR;
 }
 
@@ -757,13 +755,13 @@ void AttributedString::AppendContents(
     /* [in] */ ICharacterIterator* iterator)
 {
     Integer index, end;
-    iterator->GetBeginIndex(&index);
-    iterator->GetEndIndex(&end);
+    iterator->GetBeginIndex(index);
+    iterator->GetEndIndex(end);
 
     while (index < end) {
         iterator->SetIndex(index++);
         Char c;
-        iterator->Current(&c);
+        iterator->Current(c);
         buf->Append(c);
     }
 }
@@ -896,70 +894,60 @@ ECode AttributedString::AttributedStringIterator::Clone(
 }
 
 ECode AttributedString::AttributedStringIterator::First(
-    /* [out] */ Char* firstChar)
+    /* [out] */ Char& firstChar)
 {
-    VALIDATE_NOT_NULL(firstChar);
-
-    *firstChar = InternalSetIndex(mBeginIndex);
+    firstChar = InternalSetIndex(mBeginIndex);
     return NOERROR;
 }
 
 ECode AttributedString::AttributedStringIterator::Last(
-    /* [out] */ Char* lastChar)
+    /* [out] */ Char& lastChar)
 {
-    VALIDATE_NOT_NULL(lastChar);
-
     if (mEndIndex == mBeginIndex) {
-        *lastChar = InternalSetIndex(mEndIndex);
+        lastChar = InternalSetIndex(mEndIndex);
         return NOERROR;
     }
     else {
-        *lastChar = InternalSetIndex(mEndIndex - 1);
+        lastChar = InternalSetIndex(mEndIndex - 1);
         return NOERROR;
     }
 }
 
 ECode AttributedString::AttributedStringIterator::Current(
-    /* [out] */ Char* currChar)
+    /* [out] */ Char& currChar)
 {
-    VALIDATE_NOT_NULL(currChar);
-
     if (mCurrentIndex == mEndIndex) {
-        *currChar = DONE;
+        currChar = DONE;
         return NOERROR;
     }
     else {
-        *currChar = mOwner->CharAt(mCurrentIndex);
+        currChar = mOwner->CharAt(mCurrentIndex);
         return NOERROR;
     }
 }
 
 ECode AttributedString::AttributedStringIterator::Next(
-    /* [out] */ Char* nextChar)
+    /* [out] */ Char& nextChar)
 {
-    VALIDATE_NOT_NULL(nextChar);
-
     if (mCurrentIndex < mEndIndex) {
-        *nextChar = InternalSetIndex(mCurrentIndex + 1);
+        nextChar = InternalSetIndex(mCurrentIndex + 1);
         return NOERROR;
     }
     else {
-        *nextChar = DONE;
+        nextChar = DONE;
         return NOERROR;
     }
 }
 
 ECode AttributedString::AttributedStringIterator::Previous(
-    /* [out] */ Char* prevChar)
+    /* [out] */ Char& prevChar)
 {
-    VALIDATE_NOT_NULL(prevChar);
-
     if (mCurrentIndex > mBeginIndex) {
-        *prevChar = InternalSetIndex(mCurrentIndex - 1);
+        prevChar = InternalSetIndex(mCurrentIndex - 1);
         return NOERROR;
     }
     else {
-        *prevChar = DONE;
+        prevChar = DONE;
         return NOERROR;
     }
 }
@@ -968,65 +956,56 @@ ECode AttributedString::AttributedStringIterator::SetIndex(
     /* [in] */ Integer position,
     /* [out] */ Char* currChar)
 {
-    VALIDATE_NOT_NULL(currChar);
-
     if (position < mBeginIndex || position > mEndIndex) {
         Logger::E("AttributedString::AttributedStringIterator", "Invalid index");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    *currChar = InternalSetIndex(position);
+    Char ch = InternalSetIndex(position);
+    if (currChar != nullptr) {
+        *currChar = ch;
+    }
     return NOERROR;
 }
 
 ECode AttributedString::AttributedStringIterator::GetBeginIndex(
-    /* [out] */ Integer* beginIndex)
+    /* [out] */ Integer& beginIndex)
 {
-    VALIDATE_NOT_NULL(beginIndex);
-
-    *beginIndex = mBeginIndex;
+    beginIndex = mBeginIndex;
     return NOERROR;
 }
 
 ECode AttributedString::AttributedStringIterator::GetEndIndex(
-    /* [out] */ Integer* endIndex)
+    /* [out] */ Integer& endIndex)
 {
-    VALIDATE_NOT_NULL(endIndex);
-
-    *endIndex = mEndIndex;
+    endIndex = mEndIndex;
     return NOERROR;
 }
 
 ECode AttributedString::AttributedStringIterator::GetIndex(
-    /* [out] */ Integer* currIndex)
+    /* [out] */ Integer& currIndex)
 {
-    VALIDATE_NOT_NULL(currIndex);
-
-    *currIndex = mCurrentIndex;
+    currIndex = mCurrentIndex;
     return NOERROR;
 }
 
 ECode AttributedString::AttributedStringIterator::GetRunStart(
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
-    VALIDATE_NOT_NULL(index);
-
-    *index = mCurrentRunStart;
+    index = mCurrentRunStart;
     return NOERROR;
 }
 
 ECode AttributedString::AttributedStringIterator::GetRunStart(
     /* [in] */ IAttributedCharacterIterator::IAttribute* attribute,
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
-    VALIDATE_NOT_NULL(index);
-
     if (mCurrentRunStart == mBeginIndex || mCurrentRunIndex == -1) {
-        *index = mCurrentRunStart;
+        index = mCurrentRunStart;
         return NOERROR;
     }
     else {
         AutoPtr<IInterface> value;
-        GetAttribute(attribute, &value);
+        GetAttribute(attribute, value);
         Integer runLimit = mCurrentRunLimit;
         Integer runIndex = mCurrentRunIndex;
         while (runLimit < mEndIndex &&
@@ -1037,19 +1016,17 @@ ECode AttributedString::AttributedStringIterator::GetRunStart(
         if (runLimit > mEndIndex) {
             runLimit = mEndIndex;
         }
-        *index = runLimit;
+        index = runLimit;
         return NOERROR;
     }
 }
 
 ECode AttributedString::AttributedStringIterator::GetRunStart(
     /* [in] */ ISet* attributes,
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
-    VALIDATE_NOT_NULL(index);
-
     if (mCurrentRunStart == mBeginIndex || mCurrentRunIndex == -1) {
-        *index = mCurrentRunStart;
+        index = mCurrentRunStart;
         return NOERROR;
     }
     else {
@@ -1063,33 +1040,29 @@ ECode AttributedString::AttributedStringIterator::GetRunStart(
         if (runStart < mBeginIndex) {
             runStart = mBeginIndex;
         }
-        *index = runStart;
+        index = runStart;
         return NOERROR;
     }
 }
 
 ECode AttributedString::AttributedStringIterator::GetRunLimit(
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
-    VALIDATE_NOT_NULL(index);
-
-    *index = mCurrentRunLimit;
+    index = mCurrentRunLimit;
     return NOERROR;
 }
 
 ECode AttributedString::AttributedStringIterator::GetRunLimit(
     /* [in] */ IAttributedCharacterIterator::IAttribute* attribute,
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
-    VALIDATE_NOT_NULL(index);
-
     if (mCurrentRunLimit == mEndIndex || mCurrentRunIndex == -1) {
-        *index = mCurrentRunLimit;
+        index = mCurrentRunLimit;
         return NOERROR;
     }
     else {
         AutoPtr<IInterface> value;
-        GetAttribute(attribute, &value);
+        GetAttribute(attribute, value);
         Integer runLimit = mCurrentRunLimit;
         Integer runIndex = mCurrentRunIndex;
         while (runLimit < mEndIndex &&
@@ -1100,19 +1073,17 @@ ECode AttributedString::AttributedStringIterator::GetRunLimit(
         if (runLimit > mEndIndex) {
             runLimit = mEndIndex;
         }
-        *index = runLimit;
+        index = runLimit;
         return NOERROR;
     }
 }
 
 ECode AttributedString::AttributedStringIterator::GetRunLimit(
     /* [in] */ ISet* attributes,
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
-    VALIDATE_NOT_NULL(index);
-
     if (mCurrentRunLimit == mEndIndex || mCurrentRunIndex == -1) {
-        *index = mCurrentRunLimit;
+        index = mCurrentRunLimit;
         return NOERROR;
     }
     else {
@@ -1126,37 +1097,34 @@ ECode AttributedString::AttributedStringIterator::GetRunLimit(
         if (runLimit > mEndIndex) {
             runLimit = mEndIndex;
         }
-        *index = runLimit;
+        index = runLimit;
         return NOERROR;
     }
 }
 
 ECode AttributedString::AttributedStringIterator::GetAttributes(
-    /* [out] */ IMap** attributes)
+    /* [out] */ AutoPtr<IMap>& attributes)
 {
-    VALIDATE_NOT_NULL(attributes);
-
     if (mOwner->mRunAttributes.IsNull() || mCurrentRunIndex == -1 || mOwner->mRunAttributes[mCurrentRunIndex] == nullptr) {
-        return CHashtable::New(IID_IMap, (IInterface**)attributes);
+        attributes = nullptr;
+        return CHashtable::New(IID_IMap, (IInterface**)&attributes);
     }
-    *attributes = new AttributeMap(mOwner, mCurrentRunIndex, mBeginIndex, mEndIndex);
-    REFCOUNT_ADD(*attributes);
+    attributes = new AttributeMap(mOwner, mCurrentRunIndex, mBeginIndex, mEndIndex);
     return NOERROR;
 }
 
 ECode AttributedString::AttributedStringIterator::GetAllAttributeKeys(
-    /* [out] */ ISet** keys)
+    /* [out] */ AutoPtr<ISet>& keys)
 {
-    VALIDATE_NOT_NULL(keys);
-
     if (mOwner->mRunAttributes.IsNull()) {
-        return CHashtable::New(IID_IMap, (IInterface**)keys);
+        keys = nullptr;
+        return CHashtable::New(IID_IMap, (IInterface**)&keys);
     }
     {
         AutoLock lock(mOwner);
 
-        AutoPtr<ISet> _keys;
-        CHashSet::New(IID_ISet, (IInterface**)&_keys);
+        keys = nullptr;
+        CHashSet::New(IID_ISet, (IInterface**)&keys);
         Integer i = 0;
         while (i < mOwner->mRunCount) {
             if (mOwner->mRunStarts[i] < mEndIndex && (i == mOwner->mRunCount - 1 || mOwner->mRunStarts[i + 1] > mBeginIndex)) {
@@ -1167,29 +1135,26 @@ ECode AttributedString::AttributedStringIterator::GetAllAttributeKeys(
                     while (j-- > 0) {
                         AutoPtr<IInterface> value;
                         currentRunAttributes->Get(j, &value);
-                        _keys->Add(value);
+                        keys->Add(value);
                     }
                 }
                 i++;
             }
         }
-        _keys.MoveTo(keys);
         return NOERROR;
     }
 }
 
 ECode AttributedString::AttributedStringIterator::GetAttribute(
     /* [in] */ IAttributedCharacterIterator::IAttribute* attribute,
-    /* [out] */ IInterface** value)
+    /* [out] */ AutoPtr<IInterface>& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     Integer runIndex = mCurrentRunIndex;
     if (runIndex < 0) {
-        *value = nullptr;
+        value = nullptr;
         return NOERROR;
     }
-    mOwner->GetAttributeCheckRange(attribute, runIndex, mBeginIndex, mEndIndex).MoveTo(value);
+    value = mOwner->GetAttributeCheckRange(attribute, runIndex, mBeginIndex, mEndIndex);
     return NOERROR;
 }
 

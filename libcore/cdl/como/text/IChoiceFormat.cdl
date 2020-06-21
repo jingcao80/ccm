@@ -56,7 +56,7 @@ interface IChoiceFormat
         [in] Array<String> formats);
 
     ToPattern(
-        [out] String* pattern);
+        [out] String& pattern);
 }
 
 }

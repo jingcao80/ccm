@@ -58,64 +58,64 @@ public:
     COMO_INTERFACE_DECL();
 
     ECode GetAllAttributeKeys(
-        /* [out] */ ISet** keys) override;
+        /* [out] */ AutoPtr<ISet>& keys) override;
 
     ECode GetAttribute(
         /* [in] */ IAttributedCharacterIterator::IAttribute* attribute,
-        /* [out] */ IInterface** value) override;
+        /* [out] */ AutoPtr<IInterface>& value) override;
 
     ECode GetAttributes(
-        /* [out] */ IMap** attributes) override;
+        /* [out] */ AutoPtr<IMap>& attributes) override;
 
     ECode GetRunLimit(
-        /* [out] */ Integer* index) override;
+        /* [out] */ Integer& index) override;
 
     ECode GetRunLimit(
         /* [in] */ IAttributedCharacterIterator::IAttribute* attribute,
-        /* [out] */ Integer* index) override;
+        /* [out] */ Integer& index) override;
 
     ECode GetRunLimit(
         /* [in] */ ISet* attributes,
-        /* [out] */ Integer* index) override;
+        /* [out] */ Integer& index) override;
 
     ECode GetRunStart(
-        /* [out] */ Integer* index) override;
+        /* [out] */ Integer& index) override;
 
     ECode GetRunStart(
         /* [in] */ IAttributedCharacterIterator::IAttribute* attribute,
-        /* [out] */ Integer* index) override;
+        /* [out] */ Integer& index) override;
 
     ECode GetRunStart(
         /* [in] */ ISet* attributes,
-        /* [out] */ Integer* index) override;
+        /* [out] */ Integer& index) override;
 
     ECode Clone(
         /* [in] */ const InterfaceID& iid,
         /* [out] */ IInterface** obj) override;
 
     ECode Current(
-        /* [out] */ Char* currChar) override;
+        /* [out] */ Char& currChar) override;
 
     ECode First(
-        /* [out] */ Char* firstChar) override;
+        /* [out] */ Char& firstChar) override;
 
     ECode GetBeginIndex(
-        /* [out] */ Integer* beginIndex) override;
+        /* [out] */ Integer& beginIndex) override;
 
     ECode GetEndIndex(
-        /* [out] */ Integer* endIndex) override;
+        /* [out] */ Integer& endIndex) override;
 
     ECode GetIndex(
-        /* [out] */ Integer* currIndex) override;
+        /* [out] */ Integer& currIndex) override;
 
     ECode Last(
-        /* [out] */ Char* lastChar) override;
+        /* [out] */ Char& lastChar) override;
 
     ECode Next(
-        /* [out] */ Char* nextChar) override;
+        /* [out] */ Char& nextChar) override;
 
     ECode Previous(
-        /* [out] */ Char* prevChar) override;
+        /* [out] */ Char& prevChar) override;
 
     ECode SetIndex(
         /* [in] */ Integer position,
@@ -125,88 +125,70 @@ public:
 COMO_INTERFACE_IMPL_3(TestAttributedCharacterIterator, SyncObject, IAttributedCharacterIterator, ICharacterIterator, ICloneable);
 
 ECode TestAttributedCharacterIterator::GetAllAttributeKeys(
-    /* [out] */ ISet** keys)
+    /* [out] */ AutoPtr<ISet>& keys)
 {
-    VALIDATE_NOT_NULL(keys);
-
-    *keys = nullptr;
+    keys = nullptr;
     return NOERROR;
 }
 
 ECode TestAttributedCharacterIterator::GetAttribute(
     /* [in] */ IAttributedCharacterIterator::IAttribute* attribute,
-    /* [out] */ IInterface** value)
+    /* [out] */ AutoPtr<IInterface>& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = nullptr;
+    value = nullptr;
     return NOERROR;
 }
 
 ECode TestAttributedCharacterIterator::GetAttributes(
-    /* [out] */ IMap** attributes)
+    /* [out] */ AutoPtr<IMap>& attributes)
 {
-    VALIDATE_NOT_NULL(attributes);
-
-    *attributes = nullptr;
+    attributes = nullptr;
     return NOERROR;
 }
 
 ECode TestAttributedCharacterIterator::GetRunLimit(
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
-    VALIDATE_NOT_NULL(index);
-
-    *index = 0;
+    index = 0;
     return NOERROR;
 }
 
 ECode TestAttributedCharacterIterator::GetRunLimit(
     /* [in] */ IAttributedCharacterIterator::IAttribute* attribute,
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
-    VALIDATE_NOT_NULL(index);
-
-    *index = 0;
+    index = 0;
     return NOERROR;
 }
 
 ECode TestAttributedCharacterIterator::GetRunLimit(
     /* [in] */ ISet* attributes,
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
-    VALIDATE_NOT_NULL(index);
-
-    *index = 0;
+    index = 0;
     return NOERROR;
 }
 
 ECode TestAttributedCharacterIterator::GetRunStart(
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
-    VALIDATE_NOT_NULL(index);
-
-    *index = 0;
+    index = 0;
     return NOERROR;
 }
 
 ECode TestAttributedCharacterIterator::GetRunStart(
     /* [in] */ IAttributedCharacterIterator::IAttribute* attribute,
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
-    VALIDATE_NOT_NULL(index);
-
-    *index = 0;
+    index = 0;
     return NOERROR;
 }
 
 ECode TestAttributedCharacterIterator::GetRunStart(
     /* [in] */ ISet* attributes,
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
-    VALIDATE_NOT_NULL(index);
-
-    *index = 0;
+    index = 0;
     return NOERROR;
 }
 
@@ -221,74 +203,58 @@ ECode TestAttributedCharacterIterator::Clone(
 }
 
 ECode TestAttributedCharacterIterator::Current(
-    /* [out] */ Char* currChar)
+    /* [out] */ Char& currChar)
 {
-    VALIDATE_NOT_NULL(currChar);
-
-    *currChar = U'a';
+    currChar = U'a';
     return NOERROR;
 }
 
 ECode TestAttributedCharacterIterator::First(
-    /* [out] */ Char* firstChar)
+    /* [out] */ Char& firstChar)
 {
-    VALIDATE_NOT_NULL(firstChar);
-
-    *firstChar = U'a';
+    firstChar = U'a';
     return NOERROR;
 }
 
 ECode TestAttributedCharacterIterator::GetBeginIndex(
-    /* [out] */ Integer* beginIndex)
+    /* [out] */ Integer& beginIndex)
 {
-    VALIDATE_NOT_NULL(beginIndex);
-
-    *beginIndex = 0;
+    beginIndex = 0;
     return NOERROR;
 }
 
 ECode TestAttributedCharacterIterator::GetEndIndex(
-    /* [out] */ Integer* endIndex)
+    /* [out] */ Integer& endIndex)
 {
-    VALIDATE_NOT_NULL(endIndex);
-
-    *endIndex = 0;
+    endIndex = 0;
     return NOERROR;
 }
 
 ECode TestAttributedCharacterIterator::GetIndex(
-    /* [out] */ Integer* currIndex)
+    /* [out] */ Integer& currIndex)
 {
-    VALIDATE_NOT_NULL(currIndex);
-
-    *currIndex = 0;
+    currIndex = 0;
     return NOERROR;
 }
 
 ECode TestAttributedCharacterIterator::Last(
-    /* [out] */ Char* lastChar)
+    /* [out] */ Char& lastChar)
 {
-    VALIDATE_NOT_NULL(lastChar);
-
-    *lastChar = U'a';
+    lastChar = U'a';
     return NOERROR;
 }
 
 ECode TestAttributedCharacterIterator::Next(
-    /* [out] */ Char* nextChar)
+    /* [out] */ Char& nextChar)
 {
-    VALIDATE_NOT_NULL(nextChar);
-
-    *nextChar = U'a';
+    nextChar = U'a';
     return NOERROR;
 }
 
 ECode TestAttributedCharacterIterator::Previous(
-    /* [out] */ Char* prevChar)
+    /* [out] */ Char& prevChar)
 {
-    VALIDATE_NOT_NULL(prevChar);
-
-    *prevChar = U'a';
+    prevChar = U'a';
     return NOERROR;
 }
 
@@ -308,14 +274,14 @@ TEST(AttributedStringTest, TestConstructorWithString)
     AutoPtr<IAttributedString> as;
     CAttributedString::New(test, IID_IAttributedString, (IInterface**)&as);
     AutoPtr<IAttributedCharacterIterator> it;
-    as->GetIterator(&it);
-    AutoPtr<ICharacterIterator> cit = std::move(it);
+    as->GetIterator(it);
+    AutoPtr<ICharacterIterator> cit = ICharacterIterator::Probe(it);
     AutoPtr<IStringBuffer> buf;
     CStringBuffer::New(IID_IStringBuffer, (IInterface**)&buf);
     Char ch;
-    cit->First(&ch);
+    cit->First(ch);
     buf->Append(ch);
-    while (cit->Next(&ch), ch != ICharacterIterator::DONE) {
+    while (cit->Next(ch), ch != ICharacterIterator::DONE) {
         buf->Append(ch);
     }
     String bufStr;
@@ -345,17 +311,16 @@ TEST(AttributedStringTest, TestAddAttributeWithIAttributedCharacterIteratorIInte
     CAttributedString::New(String("test"), IID_IAttributedString, (IInterface**)&as);
     as->AddAttribute(language, CoreUtils::Box(String("a")), 2, 3);
     AutoPtr<IAttributedCharacterIterator> it;
-    as->GetIterator(&it);
+    as->GetIterator(it);
     Integer limit;
-    it->GetRunLimit(language, &limit);
+    it->GetRunLimit(language, limit);
     EXPECT_EQ(limit, 2);
 
     as = nullptr;
     CAttributedString::New(String("test"), IID_IAttributedString, (IInterface**)&as);
     as->AddAttribute(language, nullptr, 2, 3);
-    it = nullptr;
-    as->GetIterator(&it);
-    it->GetRunLimit(language, &limit);
+    as->GetIterator(it);
+    it->GetRunLimit(language, limit);
     EXPECT_EQ(limit, 4);
 
     as = nullptr;

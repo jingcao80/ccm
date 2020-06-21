@@ -725,8 +725,8 @@ ECode Date::ToLocaleString(
     /* [out] */ String* str)
 {
     AutoPtr<IDateFormat> formatter;
-    DateFormat::GetDateTimeInstance(&formatter);
-    return formatter->Format(this, str);
+    DateFormat::GetDateTimeInstance(formatter);
+    return formatter->Format(this, *str);
 }
 
 ECode Date::ToGMTString(

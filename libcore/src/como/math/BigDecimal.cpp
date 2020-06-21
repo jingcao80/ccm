@@ -527,6 +527,7 @@ ECode BigDecimal::ValueOf(
         result = GetZERO_SCALED_BY()[scale];
         return NOERROR;
     }
+    result = nullptr;
     return CBigDecimal::New(unscaledValue, scale, IID_IBigDecimal, (IInterface**)&result);
 }
 
@@ -538,6 +539,7 @@ ECode BigDecimal::ValueOf(
         result = GetBI_SCALED_BY_ZERO()[(Integer)unscaledValue];
         return NOERROR;
     }
+    result = nullptr;
     return CBigDecimal::New(unscaledValue, 0, IID_IBigDecimal, (IInterface**)&result);
 }
 
@@ -549,6 +551,7 @@ ECode BigDecimal::ValueOf(
         Logger::E("BigDecimal", "Infinity or NaN: %f", value);
         return E_NUMBER_FORMAT_EXCEPTION;
     }
+    result = nullptr;
     return CBigDecimal::New(StringUtils::ToString(value), IID_IBigDecimal, (IInterface**)&result);
 }
 
@@ -582,6 +585,7 @@ ECode BigDecimal::Add(
         }
         AutoPtr<IBigInteger> bi;
         GetUnscaledValue()->Add(augendObj->GetUnscaledValue(), bi);
+        result = nullptr;
         return CBigDecimal::New(bi, mScale, IID_IBigDecimal, (IInterface**)&result);
     }
     else if (diffScale > 0) {
@@ -608,6 +612,7 @@ ECode BigDecimal::AddAndMult10(
         b->Add(CBigInteger::From(thisValue->GetUnscaledValue())->GetBigInt());
         AutoPtr<IBigInteger> bi;
         CBigInteger::New(b, IID_IBigInteger, (IInterface**)&bi);
+        result = nullptr;
         return CBigDecimal::New(bi, thisValue->mScale, IID_IBigDecimal, (IInterface**)&result);
     }
 }
@@ -705,6 +710,7 @@ ECode BigDecimal::Subtract(
         }
         AutoPtr<IBigInteger> bi;
         GetUnscaledValue()->Subtract(subtrahendObj->GetUnscaledValue(), bi);
+        result = nullptr;
         return CBigDecimal::New(bi, mScale, IID_IBigDecimal, (IInterface**)&result);
     }
     else if (diffScale > 0) {
@@ -716,6 +722,7 @@ ECode BigDecimal::Subtract(
         AutoPtr<IBigInteger> bi1;
         GetUnscaledValue()->Subtract(Multiplication::MultiplyByTenPow(
                 CBigInteger::From(subtrahendObj->GetUnscaledValue()), diffScale), bi1);
+        result = nullptr;
         return CBigDecimal::New(bi1, mScale, IID_IBigDecimal, (IInterface**)&result);
     }
     else {
@@ -728,6 +735,7 @@ ECode BigDecimal::Subtract(
         AutoPtr<IBigInteger> bi1;
         Multiplication::MultiplyByTenPow(CBigInteger::From(GetUnscaledValue()),
                 diffScale)->Subtract(subtrahendObj->GetUnscaledValue(), bi1);
+        result = nullptr;
         return CBigDecimal::New(bi1, subtrahendObj->mScale, IID_IBigDecimal, (IInterface**)&result);
     }
 }
@@ -810,6 +818,7 @@ ECode BigDecimal::Multiply(
     FAIL_RETURN(SafeLongToInteger(newScale, intScale));
     AutoPtr<IBigInteger> bi;
     GetUnscaledValue()->Multiply(multiplicandObj->GetUnscaledValue(), bi);
+    result = nullptr;
     return CBigDecimal::New(bi, intScale, IID_IBigDecimal, (IInterface**)&result);
 }
 
@@ -912,6 +921,7 @@ ECode BigDecimal::DivideBigIntegers(
     AutoPtr<IBigInteger> remainder = quotAndRem[1];
     Integer sign;
     if (remainder->Signum(sign), sign == 0) {
+        result = nullptr;
         return CBigDecimal::New(quotient, scale, IID_IBigDecimal, (IInterface**)&result);
     }
     Integer s1, s2;
@@ -949,8 +959,10 @@ ECode BigDecimal::DivideBigIntegers(
         AutoPtr<IBigInteger> bi1, bi2;
         CBigInteger::ValueOf(compRem, bi1);
         quotient->Add(bi1, bi2);
+        result = nullptr;
         return CBigDecimal::New(bi2, scale, IID_IBigDecimal, (IInterface**)&result);
     }
+    result = nullptr;
     return CBigDecimal::New(quotient, scale, IID_IBigDecimal, (IInterface**)&result);
 }
 
@@ -1068,6 +1080,7 @@ ECode BigDecimal::Divide(
     else {
         p->ShiftLeft(-i, tempBI);
     }
+    result = nullptr;
     return CBigDecimal::New(tempBI, newScale, IID_IBigDecimal, (IInterface**)&result);
 }
 
@@ -1144,6 +1157,7 @@ ECode BigDecimal::Divide(
     // To perform rounding
     Integer intScale;
     FAIL_RETURN(SafeLongToInteger(newScale, intScale));
+    result = nullptr;
     return CBigDecimal::New(integerQuot, intScale, mc, IID_IBigDecimal, (IInterface**)&result);
 }
 
@@ -1216,6 +1230,7 @@ ECode BigDecimal::DivideToIntegralValue(
     else {
         Integer intScale;
         FAIL_RETURN(SafeLongToInteger(newScale, intScale));
+        result = nullptr;
         return CBigDecimal::New(integralValue, intScale, IID_IBigDecimal, (IInterface**)&result);
     }
 }
@@ -1423,6 +1438,7 @@ ECode BigDecimal::Pow(
         GetUnscaledValue()->Pow(n, bi);
         Integer intScale;
         FAIL_RETURN(SafeLongToInteger(newScale, intScale));
+        value = nullptr;
         return CBigDecimal::New(bi, intScale, IID_IBigDecimal, (IInterface**)&value);
     }
 }
@@ -1500,6 +1516,7 @@ ECode BigDecimal::Abs(
         Negate(result);
     }
     else {
+        result = nullptr;
         CBigDecimal::New(GetUnscaledValue(), mScale, IID_IBigDecimal, (IInterface**)&result);
     }
     From(result)->InplaceRound(mc);
@@ -1514,6 +1531,7 @@ ECode BigDecimal::Negate(
     }
     AutoPtr<IBigInteger> tempBI;
     GetUnscaledValue()->Negate(tempBI);
+    value = nullptr;
     return CBigDecimal::New(tempBI, mScale, IID_IBigDecimal, (IInterface**)&value);
 }
 
@@ -1613,6 +1631,7 @@ ECode BigDecimal::Round(
     /* [in] */ IMathContext* mc,
     /* [out] */ AutoPtr<IBigDecimal>& result)
 {
+    result = nullptr;
     CBigDecimal::New(GetUnscaledValue(), mScale, IID_IBigDecimal, (IInterface**)&result);
 
     From(result)->InplaceRound(mc);
@@ -1636,6 +1655,7 @@ ECode BigDecimal::SetScale(
                 (mBitLength + GetLONG_POWERS_OF_TEN_BIT_LENGTH()[(Integer)diffScale]) < 64) {
             return ValueOf(mSmallValue * MathUtils::LONG_POWERS_OF_TEN[(Integer)diffScale], newScale, result);
         }
+        result = nullptr;
         return CBigDecimal::New(Multiplication::MultiplyByTenPow(CBigInteger::From(GetUnscaledValue()),
                 (Integer)diffScale), newScale, IID_IBigDecimal, (IInterface**)&result);
     }
@@ -1690,6 +1710,7 @@ ECode BigDecimal::MovePoint(
         if (mBitLength < 64) {
             return ValueOf(mSmallValue, intScale, value);
         }
+        value = nullptr;
         return CBigDecimal::New(GetUnscaledValue(), intScale, IID_IBigDecimal, (IInterface**)&value);
     }
     if (-newScale < MathUtils::LONG_POWERS_OF_TEN.GetLength() &&
@@ -1698,6 +1719,7 @@ ECode BigDecimal::MovePoint(
     }
     Integer intScale;
     FAIL_RETURN(SafeLongToInteger(-newScale, intScale));
+    value = nullptr;
     return CBigDecimal::New(Multiplication::MultiplyByTenPow(CBigInteger::From(GetUnscaledValue()), intScale),
             0, IID_IBigDecimal, (IInterface**)&value);
 }
@@ -1725,6 +1747,7 @@ ECode BigDecimal::ScaleByPowerOfTen(
     }
     Integer intScale;
     FAIL_RETURN(SafeLongToInteger(newScale, intScale));
+    value = nullptr;
     return CBigDecimal::New(GetUnscaledValue(), intScale, IID_IBigDecimal, (IInterface**)&value);
 }
 
@@ -1771,6 +1794,7 @@ ECode BigDecimal::StripTrailingZeros(
     }
     Integer intScale;
     FAIL_RETURN(SafeLongToInteger(newScale, intScale));
+    value = nullptr;
     return CBigDecimal::New(strippedBI, intScale, IID_IBigDecimal, (IInterface**)&value);
 }
 
@@ -2576,8 +2600,10 @@ ECode BigDecimal::ZeroScaledBy(
         return ValueOf(0, (Integer)longScale, result);
     }
     if (longScale >= 0) {
+        result = nullptr;
         return CBigDecimal::New(0, IInteger::MAX_VALUE, IID_IBigDecimal, (IInterface**)&result);
     }
+    result = nullptr;
     return CBigDecimal::New(0, IInteger::MIN_VALUE, IID_IBigDecimal, (IInterface**)&result);
 }
 

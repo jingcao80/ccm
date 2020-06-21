@@ -31,7 +31,7 @@ public:
     static const AutoPtr<IFieldPosition> GetInstance();
 
     ECode GetFieldDelegate(
-        /* [out] */ IFormatFieldDelegate** delegate) override;
+        /* [out] */ AutoPtr<IFormatFieldDelegate>& delegate) override;
 
     ECode ToString(
         /* [out] */ String& desc) override;

@@ -91,11 +91,9 @@ AutoPtr<IDecimalFormatSymbols> DecimalFormatSymbols::GetInstance(
 }
 
 ECode DecimalFormatSymbols::GetZeroDigit(
-    /* [out] */ Char* zeroDigit)
+    /* [out] */ Char& zeroDigit)
 {
-    VALIDATE_NOT_NULL(zeroDigit);
-
-    *zeroDigit = mZeroDigit;
+    zeroDigit = mZeroDigit;
     return NOERROR;
 }
 
@@ -107,11 +105,9 @@ ECode DecimalFormatSymbols::SetZeroDigit(
 }
 
 ECode DecimalFormatSymbols::GetGroupingSeparator(
-    /* [out] */ Char* groupingSeparator)
+    /* [out] */ Char& groupingSeparator)
 {
-    VALIDATE_NOT_NULL(groupingSeparator);
-
-    *groupingSeparator = mGroupingSeparator;
+    groupingSeparator = mGroupingSeparator;
     return NOERROR;
 }
 
@@ -123,11 +119,9 @@ ECode DecimalFormatSymbols::SetGroupingSeparator(
 }
 
 ECode DecimalFormatSymbols::GetDecimalSeparator(
-    /* [out] */ Char* decimalSeparator)
+    /* [out] */ Char& decimalSeparator)
 {
-    VALIDATE_NOT_NULL(decimalSeparator);
-
-    *decimalSeparator = mDecimalSeparator;
+    decimalSeparator = mDecimalSeparator;
     return NOERROR;
 }
 
@@ -139,11 +133,9 @@ ECode DecimalFormatSymbols::SetDecimalSeparator(
 }
 
 ECode DecimalFormatSymbols::GetPerMill(
-    /* [out] */ Char* perMill)
+    /* [out] */ Char& perMill)
 {
-    VALIDATE_NOT_NULL(perMill);
-
-    *perMill = mPerMill;
+    perMill = mPerMill;
     return NOERROR;
 }
 
@@ -155,20 +147,16 @@ ECode DecimalFormatSymbols::SetPerMill(
 }
 
 ECode DecimalFormatSymbols::GetPercent(
-    /* [out] */ Char* percent)
+    /* [out] */ Char& percent)
 {
-    VALIDATE_NOT_NULL(percent);
-
-    *percent = mPercent;
+    percent = mPercent;
     return NOERROR;
 }
 
 ECode DecimalFormatSymbols::GetPercentString(
-    /* [out] */ String* percentStr)
+    /* [out] */ String& percentStr)
 {
-    VALIDATE_NOT_NULL(percentStr);
-
-    *percentStr = String::ValueOf(mPercent);
+    percentStr = String::ValueOf(mPercent);
     return NOERROR;
 }
 
@@ -180,11 +168,9 @@ ECode DecimalFormatSymbols::SetPercent(
 }
 
 ECode DecimalFormatSymbols::GetDigit(
-    /* [out] */ Char* digit)
+    /* [out] */ Char& digit)
 {
-    VALIDATE_NOT_NULL(digit);
-
-    *digit = mDigit;
+    digit = mDigit;
     return NOERROR;
 }
 
@@ -196,11 +182,9 @@ ECode DecimalFormatSymbols::SetDigit(
 }
 
 ECode DecimalFormatSymbols::GetPatternSeparator(
-    /* [out] */ Char* patternSeparator)
+    /* [out] */ Char& patternSeparator)
 {
-    VALIDATE_NOT_NULL(patternSeparator);
-
-    *patternSeparator = mPatternSeparator;
+    patternSeparator = mPatternSeparator;
     return NOERROR;
 }
 
@@ -212,11 +196,9 @@ ECode DecimalFormatSymbols::SetPatternSeparator(
 }
 
 ECode DecimalFormatSymbols::GetInfinity(
-    /* [out] */ String* infinity)
+    /* [out] */ String& infinity)
 {
-    VALIDATE_NOT_NULL(infinity);
-
-    *infinity = mInfinity;
+    infinity = mInfinity;
     return NOERROR;
 }
 
@@ -228,11 +210,9 @@ ECode DecimalFormatSymbols::SetInfinity(
 }
 
 ECode DecimalFormatSymbols::GetNaN(
-    /* [out] */ String* naN)
+    /* [out] */ String& naN)
 {
-    VALIDATE_NOT_NULL(naN);
-
-    *naN = mNaN;
+    naN = mNaN;
     return NOERROR;
 }
 
@@ -244,20 +224,16 @@ ECode DecimalFormatSymbols::SetNaN(
 }
 
 ECode DecimalFormatSymbols::GetMinusSign(
-    /* [out] */ Char* minusSign)
+    /* [out] */ Char& minusSign)
 {
-    VALIDATE_NOT_NULL(minusSign);
-
-    *minusSign = mMinusSign;
+    minusSign = mMinusSign;
     return NOERROR;
 }
 
 ECode DecimalFormatSymbols::GetMinusSignString(
-    /* [out] */ String* minusSignStr)
+    /* [out] */ String& minusSignStr)
 {
-    VALIDATE_NOT_NULL(minusSignStr);
-
-    *minusSignStr = String::ValueOf(mMinusSign);
+    minusSignStr = String::ValueOf(mMinusSign);
     return NOERROR;
 }
 
@@ -269,11 +245,9 @@ ECode DecimalFormatSymbols::SetMinusSign(
 }
 
 ECode DecimalFormatSymbols::GetCurrencySymbol(
-    /* [out] */ String* currency)
+    /* [out] */ String& currency)
 {
-    VALIDATE_NOT_NULL(currency);
-
-    *currency = mCurrencySymbol;
+    currency = mCurrencySymbol;
     return NOERROR;
 }
 
@@ -285,11 +259,9 @@ ECode DecimalFormatSymbols::SetCurrencySymbol(
 }
 
 ECode DecimalFormatSymbols::GetInternationalCurrencySymbol(
-    /* [out] */ String* currency)
+    /* [out] */ String& currency)
 {
-    VALIDATE_NOT_NULL(currency);
-
-    *currency = mIntlCurrencySymbol;
+    currency = mIntlCurrencySymbol;
     return NOERROR;
 }
 
@@ -301,12 +273,9 @@ ECode DecimalFormatSymbols::SetInternationalCurrencySymbol(
 }
 
 ECode DecimalFormatSymbols::GetCurrency(
-    /* [out] */ ICurrency** currency)
+    /* [out] */ AutoPtr<ICurrency>& currency)
 {
-    VALIDATE_NOT_NULL(currency);
-
-    *currency = mCurrency;
-    REFCOUNT_ADD(*currency);
+    currency = mCurrency;
     return NOERROR;
 }
 
@@ -323,11 +292,9 @@ ECode DecimalFormatSymbols::SetCurrency(
 }
 
 ECode DecimalFormatSymbols::GetMonetaryDecimalSeparator(
-    /* [out] */ Char* monetarySeparator)
+    /* [out] */ Char& monetarySeparator)
 {
-    VALIDATE_NOT_NULL(monetarySeparator);
-
-    *monetarySeparator = mMonetarySeparator;
+    monetarySeparator = mMonetarySeparator;
     return NOERROR;
 }
 
@@ -344,11 +311,9 @@ Char DecimalFormatSymbols::GetExponentialSymbol()
 }
 
 ECode DecimalFormatSymbols::GetExponentSeparator(
-    /* [out] */ String* exponentSeparator)
+    /* [out] */ String& exponentSeparator)
 {
-    VALIDATE_NOT_NULL(exponentSeparator);
-
-    *exponentSeparator = mExponentialSeparator;
+    exponentSeparator = mExponentialSeparator;
     return NOERROR;
 }
 

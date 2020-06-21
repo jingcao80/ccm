@@ -80,16 +80,16 @@ public:
         /* [in] */ Integer field);
 
     ECode GetFieldAttribute(
-        /* [out] */ IFormatField** attribute) override;
+        /* [out] */ AutoPtr<IFormatField>& attribute) override;
 
     ECode GetField(
-        /* [out] */ Integer* field) override;
+        /* [out] */ Integer& field) override;
 
     ECode GetBeginIndex(
-        /* [out] */ Integer* index) override;
+        /* [out] */ Integer& index) override;
 
     ECode GetEndIndex(
-        /* [out] */ Integer* index) override;
+        /* [out] */ Integer& index) override;
 
     ECode SetBeginIndex(
         /* [in] */ Integer index) override;
@@ -98,7 +98,7 @@ public:
         /* [in] */ Integer index) override;
 
     ECode GetFieldDelegate(
-        /* [out] */ IFormatFieldDelegate** delegate) override;
+        /* [out] */ AutoPtr<IFormatFieldDelegate>& delegate) override;
 
     ECode Equals(
         /* [in] */ IInterface* obj,

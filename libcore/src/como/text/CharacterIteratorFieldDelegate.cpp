@@ -95,7 +95,7 @@ ECode CharacterIteratorFieldDelegate::Formatted(
 
 ECode CharacterIteratorFieldDelegate::GetIterator(
     /* [in] */ const String& string,
-    /* [out] */ IAttributedCharacterIterator** it)
+    /* [out] */ AutoPtr<IAttributedCharacterIterator>& it)
 {
     if (string.GetLength() > mSize) {
         AutoPtr<IAttributedString> as;
@@ -111,7 +111,7 @@ ECode CharacterIteratorFieldDelegate::GetIterator(
         AutoPtr<IAttributedString> as;
         mAttributedStrings->Get(counter, (IInterface**)&as);
         AutoPtr<IAttributedCharacterIterator> ait;
-        FAIL_RETURN(as->GetIterator(&ait));
+        FAIL_RETURN(as->GetIterator(ait));
         iterators.Set(counter, ait);
     }
     AutoPtr<IAttributedString> astring;

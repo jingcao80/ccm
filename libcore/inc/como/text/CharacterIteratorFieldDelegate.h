@@ -56,7 +56,7 @@ public:
 
     ECode GetIterator(
         /* [in] */ const String& string,
-        /* [out] */ IAttributedCharacterIterator** it);
+        /* [out] */ AutoPtr<IAttributedCharacterIterator>& it);
 
 private:
     /**

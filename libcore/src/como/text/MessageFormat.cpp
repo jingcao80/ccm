@@ -114,12 +114,9 @@ ECode MessageFormat::SetLocale(
 }
 
 ECode MessageFormat::GetLocale(
-    /* [out] */ ILocale** locale)
+    /* [out] */ AutoPtr<ILocale>& locale)
 {
-    VALIDATE_NOT_NULL(locale);
-
-    *locale = mLocale;
-    REFCOUNT_ADD(*locale);
+    locale = mLocale;
     return NOERROR;
 }
 
@@ -229,10 +226,8 @@ ECode MessageFormat::ApplyPattern(
 }
 
 ECode MessageFormat::ToPattern(
-    /* [out] */ String* pattern)
+    /* [out] */ String& pattern)
 {
-    VALIDATE_NOT_NULL(pattern);
-
     Integer lastOffset = 0;
     AutoPtr<IStringBuilder> result;
     CStringBuilder::New(IID_IStringBuilder, (IInterface**)&result);
@@ -247,25 +242,25 @@ ECode MessageFormat::ToPattern(
         }
         else if (INumberFormat::Probe(fmt) != nullptr) {
             AutoPtr<INumberFormat> format;
-            FAIL_RETURN(NumberFormat::GetInstance(mLocale, &format));
+            FAIL_RETURN(NumberFormat::GetInstance(mLocale, format));
             if (Object::Equals(fmt, format)) {
                 result->Append(String(",number"));
             }
             else {
                 format = nullptr;
-                FAIL_RETURN(NumberFormat::GetCurrencyInstance(mLocale, &format));
+                FAIL_RETURN(NumberFormat::GetCurrencyInstance(mLocale, format));
                 if (Object::Equals(fmt, format)) {
                     result->Append(String(",number,currency"));
                 }
                 else {
                     format = nullptr;
-                    FAIL_RETURN(NumberFormat::GetPercentInstance(mLocale, &format));
+                    FAIL_RETURN(NumberFormat::GetPercentInstance(mLocale, format));
                     if (Object::Equals(fmt, format)) {
                         result->Append(String(",number,percent"));
                     }
                     else {
                         format = nullptr;
-                        FAIL_RETURN(NumberFormat::GetIntegerInstance(mLocale, &format));
+                        FAIL_RETURN(NumberFormat::GetIntegerInstance(mLocale, format));
                         if (Object::Equals(fmt, format)) {
                             result->Append(String(",number,integer"));
                         }
@@ -292,13 +287,13 @@ ECode MessageFormat::ToPattern(
             Integer index;
             for (index = MODIFIER_DEFAULT; index < DATE_TIME_MODIFIERS.GetLength(); index++) {
                 AutoPtr<IDateFormat> df;
-                FAIL_RETURN(DateFormat::GetDateInstance(DATE_TIME_MODIFIERS[index], mLocale, &df));
+                FAIL_RETURN(DateFormat::GetDateInstance(DATE_TIME_MODIFIERS[index], mLocale, df));
                 if (Object::Equals(fmt, df)) {
                     result->Append(String(",date"));
                     break;
                 }
                 df = nullptr;
-                FAIL_RETURN(DateFormat::GetTimeInstance(DATE_TIME_MODIFIERS[index], mLocale, &df));
+                FAIL_RETURN(DateFormat::GetTimeInstance(DATE_TIME_MODIFIERS[index], mLocale, df));
                 if (Object::Equals(fmt, df)) {
                     result->Append(String(",time"));
                     break;
@@ -325,7 +320,7 @@ ECode MessageFormat::ToPattern(
         result->Append(U'}');
     }
     CopyAndFixQuotes(mPattern, lastOffset, mPattern.GetLength(), result);
-    return result->ToString(*pattern);
+    return result->ToString(pattern);
 }
 
 ECode MessageFormat::SetFormatsByArgumentIndex(
@@ -417,10 +412,8 @@ ECode MessageFormat::Format(
 ECode MessageFormat::Format(
     /* [in] */ const String& pattern,
     /* [in] */ Array<IInterface*>* arguments,
-    /* [out] */ String* message)
+    /* [out] */ String& message)
 {
-    VALIDATE_NOT_NULL(message);
-
     AutoPtr<IArrayHolder> argumentsholder;
     if (arguments != nullptr){
         CArrayHolder::New(*arguments, IID_IArrayHolder, (IInterface**)&argumentsholder);
@@ -444,10 +437,8 @@ ECode MessageFormat::Format(
 
 ECode MessageFormat::FormatToCharacterIterator(
     /* [in] */ IInterface* arguments,
-    /* [out] */ IAttributedCharacterIterator** cit)
+    /* [out] */ AutoPtr<IAttributedCharacterIterator>& cit)
 {
-    VALIDATE_NOT_NULL(cit);
-
     if (IArrayHolder::Probe(arguments) == nullptr) {
         Logger::E("MessageFormat", "formatToCharacterIterator must be passed non-null object");
         return E_NULL_POINTER_EXCEPTION;
@@ -490,7 +481,7 @@ ECode MessageFormat::Parse(
 
     Integer patternOffset = 0;
     Integer sourceOffset;
-    pos->GetIndex(&sourceOffset);
+    pos->GetIndex(sourceOffset);
     AutoPtr<IParsePosition> tempStatus;
     CParsePosition::New(0, IID_IParsePosition, (IInterface**)&tempStatus);
     for (Integer i = 0; i <= mMaxOffset; ++i) {
@@ -540,10 +531,10 @@ ECode MessageFormat::Parse(
         else {
             tempStatus->SetIndex(sourceOffset);
             AutoPtr<IInterface> object;
-            mFormats[i]->ParseObject(source, tempStatus, &object);
+            mFormats[i]->ParseObject(source, tempStatus, object);
             resultArray.Set(mArgumentNumbers[i], object);
             Integer index;
-            tempStatus->GetIndex(&index);
+            tempStatus->GetIndex(index);
             if (index == sourceOffset) {
                 pos->SetErrorIndex(sourceOffset);
                 *result = Array<IInterface*>::Null();
@@ -576,7 +567,7 @@ ECode MessageFormat::Parse(
     CParsePosition::New(0, IID_IParsePosition, (IInterface**)&pos);
     Parse(source, pos, result);
     Integer index;
-    pos->GetIndex(&index);
+    pos->GetIndex(index);
     if (index == 0) {
         Logger::E("MessageFormat", "MessageFormat parse error!");
         return E_PARSE_EXCEPTION;
@@ -587,13 +578,12 @@ ECode MessageFormat::Parse(
 ECode MessageFormat::ParseObject(
     /* [in] */ const String& source,
     /* [in] */ IParsePosition* pos,
-    /* [out] */ IInterface** result)
+    /* [out] */ AutoPtr<IInterface>& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     Array<IInterface*> resultArray;
     Parse(source, pos, &resultArray);
-    CArrayHolder::New(resultArray, IID_IArrayHolder, result);
+    result = nullptr;
+    CArrayHolder::New(resultArray, IID_IArrayHolder, &result);
     return NOERROR;
 }
 
@@ -671,7 +661,7 @@ ECode MessageFormat::Subformat(
         else if (mFormats[i] != nullptr) {
             subFormatter = mFormats[i];
             if (IChoiceFormat::Probe(subFormatter) != nullptr) {
-                mFormats[i]->Format(obj, &arg);
+                mFormats[i]->Format(obj, arg);
                 if (arg.IndexOf(U'{') >= 0) {
                     subFormatter = nullptr;
                     CMessageFormat::New(arg, mLocale, IID_IFormat, (IInterface**)&subFormatter);
@@ -683,13 +673,13 @@ ECode MessageFormat::Subformat(
         }
         else if (INumber::Probe(obj) != nullptr) {
             AutoPtr<INumberFormat> nf;
-            NumberFormat::GetInstance(mLocale, &nf);
+            NumberFormat::GetInstance(mLocale, nf);
             subFormatter = std::move(nf);
         }
         else if (IDate::Probe(obj) != nullptr) {
             AutoPtr<IDateFormat> df;
             DateFormat::GetDateTimeInstance(
-                    IDateFormat::SHORT, IDateFormat::SHORT, mLocale, &df);
+                    IDateFormat::SHORT, IDateFormat::SHORT, mLocale, df);
             subFormatter = std::move(df);
         }
         else if (IString::Probe(obj) != nullptr) {
@@ -715,13 +705,13 @@ ECode MessageFormat::Subformat(
                 String substr;
                 result->Substring(last, substr);
                 AutoPtr<IAttributedCharacterIterator> acit;
-                CreateAttributedCharacterIterator(substr, &acit);
+                CreateAttributedCharacterIterator(substr, acit);
                 characterIterators->Add(acit);
                 result->GetLength(last);
             }
             if (subFormatter != nullptr) {
                 AutoPtr<IAttributedCharacterIterator> subIterator;
-                subFormatter->FormatToCharacterIterator(obj, &subIterator);
+                subFormatter->FormatToCharacterIterator(obj, subIterator);
 
                 Append(result, ICharacterIterator::Probe(subIterator));
                 result->GetLength(length);
@@ -729,7 +719,7 @@ ECode MessageFormat::Subformat(
                     AutoPtr<IAttributedCharacterIterator> acit;
                     CreateAttributedCharacterIterator(subIterator,
                             IAttributedCharacterIterator::IAttribute::Probe(Field::GetARGUMENT()),
-                            CoreUtils::Box(argumentNumber), &acit);
+                            CoreUtils::Box(argumentNumber), acit);
                     characterIterators->Add(acit);
                     result->GetLength(last);
                 }
@@ -740,20 +730,20 @@ ECode MessageFormat::Subformat(
                 AutoPtr<IAttributedCharacterIterator> acit;
                 CreateAttributedCharacterIterator(arg,
                         IAttributedCharacterIterator::IAttribute::Probe(Field::GetARGUMENT()),
-                        CoreUtils::Box(argumentNumber), &acit);
+                        CoreUtils::Box(argumentNumber), acit);
                 characterIterators->Add(acit);
                 result->GetLength(last);
             }
         }
         else {
             if (subFormatter != nullptr) {
-                subFormatter->Format(obj, &arg);
+                subFormatter->Format(obj, arg);
             }
             result->GetLength(last);
             result->Append(arg);
             if (i == 0 && fp != nullptr) {
                 AutoPtr<IFormatField> ff;
-                fp->GetFieldAttribute(&ff);
+                fp->GetFieldAttribute(ff);
                 if (Object::Equals(Field::GetARGUMENT(), ff)) {
                     Integer length;
                     result->GetLength(length);
@@ -770,7 +760,7 @@ ECode MessageFormat::Subformat(
         String substr;
         result->Substring(last, substr);
         AutoPtr<IAttributedCharacterIterator> acit;
-        CreateAttributedCharacterIterator(substr, &acit);
+        CreateAttributedCharacterIterator(substr, acit);
         characterIterators->Add(acit);
     }
     return NOERROR;
@@ -781,12 +771,12 @@ void MessageFormat::Append(
     /* [in] */ ICharacterIterator* iterator)
 {
     Char firstChar;
-    iterator->First(&firstChar);
+    iterator->First(firstChar);
     if (firstChar != ICharacterIterator::DONE) {
         result->Append(firstChar);
 
         Char aChar;
-        while (iterator->Next(&aChar), aChar != ICharacterIterator::DONE) {
+        while (iterator->Next(aChar), aChar != ICharacterIterator::DONE) {
             result->Append(aChar);
         }
     }
@@ -852,25 +842,25 @@ ECode MessageFormat::MakeFormat(
                 switch (FindKeyword(segments[SEG_MODIFIER], NUMBER_MODIFIER_KEYWORDS)) {
                     case MODIFIER_DEFAULT: {
                         AutoPtr<INumberFormat> nf;
-                        FAIL_RETURN(NumberFormat::GetInstance(mLocale, &nf));
+                        FAIL_RETURN(NumberFormat::GetInstance(mLocale, nf));
                         newFormat = std::move(nf);
                         break;
                     }
                     case MODIFIER_CURRENCY: {
                         AutoPtr<INumberFormat> nf;
-                        FAIL_RETURN(NumberFormat::GetCurrencyInstance(mLocale, &nf));
+                        FAIL_RETURN(NumberFormat::GetCurrencyInstance(mLocale, nf));
                         newFormat = std::move(nf);
                         break;
                     }
                     case MODIFIER_PERCENT: {
                         AutoPtr<INumberFormat> nf;
-                        FAIL_RETURN(NumberFormat::GetPercentInstance(mLocale, &nf));
+                        FAIL_RETURN(NumberFormat::GetPercentInstance(mLocale, nf));
                         newFormat = std::move(nf);
                         break;
                     }
                     case MODIFIER_INTEGER: {
                         AutoPtr<INumberFormat> nf;
-                        FAIL_RETURN(NumberFormat::GetIntegerInstance(mLocale, &nf));
+                        FAIL_RETURN(NumberFormat::GetIntegerInstance(mLocale, nf));
                         newFormat = std::move(nf);
                         break;
                     }
@@ -893,12 +883,12 @@ ECode MessageFormat::MakeFormat(
                 if (mod >= 0 && mod < DATE_TIME_MODIFIER_KEYWORDS.GetLength()) {
                     if (type == TYPE_DATE) {
                         AutoPtr<IDateFormat> df;
-                        DateFormat::GetDateInstance(DATE_TIME_MODIFIERS[mod], mLocale, &df);
+                        DateFormat::GetDateInstance(DATE_TIME_MODIFIERS[mod], mLocale, df);
                         newFormat = std::move(df);
                     }
                     else {
                         AutoPtr<IDateFormat> df;
-                        DateFormat::GetDateInstance(DATE_TIME_MODIFIERS[mod], mLocale, &df);
+                        DateFormat::GetDateInstance(DATE_TIME_MODIFIERS[mod], mLocale, df);
                         newFormat = std::move(df);
                     }
                 }

@@ -54,35 +54,35 @@ public:
 
     ECode Format(
         /* [in] */ IInterface* obj,
-        /* [out] */ String* string) override;
+        /* [out] */ String& string) override;
 
     ECode FormatToCharacterIterator(
         /* [in] */ IInterface* obj,
-        /* [out] */ IAttributedCharacterIterator** it) override;
+        /* [out] */ AutoPtr<IAttributedCharacterIterator>& it) override;
 
     ECode ParseObject(
         /* [in] */ const String& source,
-        /* [out] */ IInterface** object) override;
+        /* [out] */ AutoPtr<IInterface>& object) override;
 
     ECode CreateAttributedCharacterIterator(
         /* [in] */ const String& s,
-        /* [out] */ IAttributedCharacterIterator** it);
+        /* [out] */ AutoPtr<IAttributedCharacterIterator>& it);
 
     ECode CreateAttributedCharacterIterator(
         /* [in] */ const Array<IAttributedCharacterIterator*>& iterators,
-        /* [out] */ IAttributedCharacterIterator** it);
+        /* [out] */ AutoPtr<IAttributedCharacterIterator>& it);
 
     ECode CreateAttributedCharacterIterator(
         /* [in] */ const String& string,
         /* [in] */ IAttributedCharacterIterator::IAttribute* key,
         /* [in] */ IInterface* value,
-        /* [out] */ IAttributedCharacterIterator** it);
+        /* [out] */ AutoPtr<IAttributedCharacterIterator>& it);
 
     ECode CreateAttributedCharacterIterator(
         /* [in] */ IAttributedCharacterIterator* iterator,
         /* [in] */ IAttributedCharacterIterator::IAttribute* key,
         /* [in] */ IInterface* value,
-        /* [out] */ IAttributedCharacterIterator** it);
+        /* [out] */ AutoPtr<IAttributedCharacterIterator>& it);
 
     using IFormat::Format;
 

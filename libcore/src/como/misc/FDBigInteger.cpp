@@ -318,6 +318,7 @@ ECode FDBigInteger::LeftShift(
         if (bitcount == 0) {
             Array<Integer> data;
             Arrays::CopyOf(mData, mNWords, &data);
+            value = nullptr;
             return CFDBigInteger::New(data, mOffset + wordcount, IID_IFDBigInteger, (IInterface**)&value);
         }
         else {
@@ -334,6 +335,7 @@ ECode FDBigInteger::LeftShift(
                 result = Array<Integer>(mNWords);
             }
             LeftShift(mData, idx, result, bitcount, anticount, prev);
+            value = nullptr;
             return CFDBigInteger::New(result, mOffset + wordcount, IID_IFDBigInteger, (IInterface**)&value);
         }
     }
@@ -456,6 +458,7 @@ ECode FDBigInteger::MultBy10(
     if (mIsImmutable) {
         Array<Integer> res(mNWords + 1);
         res[mNWords] = MultAndCarryBy10(mData, mNWords, res);
+        value = nullptr;
         return CFDBigInteger::New(res, mOffset, IID_IFDBigInteger, (IInterface**)&value);
     }
     else {

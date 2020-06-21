@@ -39,7 +39,7 @@ interface ISimpleDateFormat
         [in] String pattern);
 
     Get2DigitYearStart(
-        [out] IDate** startDate);
+        [out] IDate&& startDate);
 
     Set2DigitYearStart(
         [in] IDate* startDate);
@@ -48,10 +48,10 @@ interface ISimpleDateFormat
         [in] IDateFormatSymbols* newFormatSymbols);
 
     ToLocalizedPattern(
-        [out] String* pattern);
+        [out] String& pattern);
 
     ToPattern(
-        [out] String* pattern);
+        [out] String& pattern);
 }
 
 }

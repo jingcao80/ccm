@@ -117,6 +117,7 @@ ECode SecureRandom::GetInstance(
     instance->GetImpl(impl);
     AutoPtr<IProvider> provider;
     instance->GetProvider(provider);
+    sr = nullptr;
     return CSecureRandom::New(ISecureRandomSpi::Probe(impl),
             provider, algorithm, IID_ISecureRandom, (IInterface**)&sr);
 }
@@ -139,6 +140,7 @@ ECode SecureRandom::GetInstance(
     instance->GetImpl(impl);
     AutoPtr<IProvider> providerObj;
     instance->GetProvider(providerObj);
+    sr = nullptr;
     return CSecureRandom::New(ISecureRandomSpi::Probe(impl),
             providerObj, algorithm, IID_ISecureRandom, (IInterface**)&sr);
 }
@@ -155,6 +157,7 @@ ECode SecureRandom::GetInstance(
     instance->GetImpl(impl);
     AutoPtr<IProvider> providerObj;
     instance->GetProvider(providerObj);
+    sr = nullptr;
     return CSecureRandom::New(ISecureRandomSpi::Probe(impl),
             providerObj, algorithm, IID_ISecureRandom, (IInterface**)&sr);
 }

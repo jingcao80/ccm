@@ -93,44 +93,43 @@ ECode NumberFormat::Format(
 ECode NumberFormat::ParseObject(
     /* [in] */ const String& source,
     /* [in] */ IParsePosition* pos,
-    /* [out] */ IInterface** object)
+    /* [out] */ AutoPtr<IInterface>& object)
 {
-    return Parse(source, pos, (INumber**)object);
+    AutoPtr<INumber> number;
+    FAIL_RETURN(Parse(source, pos, number));
+    object = std::move(number);
+    return NOERROR;
 }
 
 ECode NumberFormat::Format(
     /* [in] */ Double number,
-    /* [out] */ String* str)
+    /* [out] */ String& str)
 {
-    VALIDATE_NOT_NULL(str);
-
     AutoPtr<IStringBuffer> sb;
     CStringBuffer::New(IID_IStringBuffer, (IInterface**)&sb);
     FAIL_RETURN(Format(number, sb, DontCareFieldPosition::GetInstance()));
-    return sb->ToString(*str);
+    return sb->ToString(str);
 }
 
 ECode NumberFormat::Format(
     /* [in] */ Long number,
-    /* [out] */ String* str)
+    /* [out] */ String& str)
 {
-    VALIDATE_NOT_NULL(str);
-
     AutoPtr<IStringBuffer> sb;
     CStringBuffer::New(IID_IStringBuffer, (IInterface**)&sb);
     FAIL_RETURN(Format(number, sb, DontCareFieldPosition::GetInstance()));
-    return sb->ToString(*str);
+    return sb->ToString(str);
 }
 
 ECode NumberFormat::Parse(
     /* [in] */ const String& source,
-    /* [out] */ INumber** number)
+    /* [out] */ AutoPtr<INumber>& number)
 {
     AutoPtr<IParsePosition> parsePosition;
     CParsePosition::New(0, IID_IParsePosition, (IInterface**)&parsePosition);
     ECode ec = Parse(source, parsePosition, number);
     Integer index;
-    if (parsePosition->GetIndex(&index), index == 0) {
+    if (parsePosition->GetIndex(index), index == 0) {
         Logger::E("NumberFormat", "Unparseable number: \"%s\"", source.string());
         return E_PARSE_EXCEPTION;
     }
@@ -138,11 +137,9 @@ ECode NumberFormat::Parse(
 }
 
 ECode NumberFormat::IsParseIntegerOnly(
-    /* [out] */ Boolean* value)
+    /* [out] */ Boolean& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = mParseIntegerOnly;
+    value = mParseIntegerOnly;
     return NOERROR;
 }
 
@@ -154,87 +151,67 @@ ECode NumberFormat::SetParseIntegerOnly(
 }
 
 ECode NumberFormat::GetInstance(
-    /* [out] */ INumberFormat** instance)
+    /* [out] */ AutoPtr<INumberFormat>& instance)
 {
-    VALIDATE_NOT_NULL(instance);
-
     return GetInstance(CLocale::GetDefault(CLocale::Category::GetFORMAT()), NUMBERSTYLE, instance);
 }
 
 ECode NumberFormat::GetInstance(
     /* [in] */ ILocale* locale,
-    /* [out] */ INumberFormat** instance)
+    /* [out] */ AutoPtr<INumberFormat>& instance)
 {
-    VALIDATE_NOT_NULL(instance);
-
     return GetInstance(locale, NUMBERSTYLE, instance);
 }
 
 ECode NumberFormat::GetNumberInstance(
-    /* [out] */ INumberFormat** instance)
+    /* [out] */ AutoPtr<INumberFormat>& instance)
 {
-    VALIDATE_NOT_NULL(instance);
-
     return GetInstance(CLocale::GetDefault(CLocale::Category::GetFORMAT()), NUMBERSTYLE, instance);
 }
 
 ECode NumberFormat::GetNumberInstance(
     /* [in] */ ILocale* locale,
-    /* [out] */ INumberFormat** instance)
+    /* [out] */ AutoPtr<INumberFormat>& instance)
 {
-    VALIDATE_NOT_NULL(instance);
-
     return GetInstance(locale, NUMBERSTYLE, instance);
 }
 
 ECode NumberFormat::GetIntegerInstance(
-    /* [out] */ INumberFormat** instance)
+    /* [out] */ AutoPtr<INumberFormat>& instance)
 {
-    VALIDATE_NOT_NULL(instance);
-
     return GetInstance(CLocale::GetDefault(CLocale::Category::GetFORMAT()), INTEGERSTYLE, instance);
 }
 
 ECode NumberFormat::GetIntegerInstance(
     /* [in] */ ILocale* locale,
-    /* [out] */ INumberFormat** instance)
+    /* [out] */ AutoPtr<INumberFormat>& instance)
 {
-    VALIDATE_NOT_NULL(instance);
-
     return GetInstance(locale, INTEGERSTYLE, instance);
 }
 
 ECode NumberFormat::GetCurrencyInstance(
-    /* [out] */ INumberFormat** instance)
+    /* [out] */ AutoPtr<INumberFormat>& instance)
 {
-    VALIDATE_NOT_NULL(instance);
-
     return GetInstance(CLocale::GetDefault(CLocale::Category::GetFORMAT()), CURRENCYSTYLE, instance);
 }
 
 ECode NumberFormat::GetCurrencyInstance(
     /* [in] */ ILocale* locale,
-    /* [out] */ INumberFormat** instance)
+    /* [out] */ AutoPtr<INumberFormat>& instance)
 {
-    VALIDATE_NOT_NULL(instance);
-
     return GetInstance(locale, CURRENCYSTYLE, instance);
 }
 
 ECode NumberFormat::GetPercentInstance(
-    /* [out] */ INumberFormat** instance)
+    /* [out] */ AutoPtr<INumberFormat>& instance)
 {
-    VALIDATE_NOT_NULL(instance);
-
     return GetInstance(CLocale::GetDefault(CLocale::Category::GetFORMAT()), PERCENTSTYLE, instance);
 }
 
 ECode NumberFormat::GetPercentInstance(
     /* [in] */ ILocale* locale,
-    /* [out] */ INumberFormat** instance)
+    /* [out] */ AutoPtr<INumberFormat>& instance)
 {
-    VALIDATE_NOT_NULL(instance);
-
     return GetInstance(locale, PERCENTSTYLE, instance);
 }
 
@@ -298,11 +275,9 @@ ECode NumberFormat::CloneImpl(
 }
 
 ECode NumberFormat::IsGroupingUsed(
-    /* [out] */ Boolean* value)
+    /* [out] */ Boolean& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = mGroupingUsed;
+    value = mGroupingUsed;
     return NOERROR;
 }
 
@@ -314,11 +289,9 @@ ECode NumberFormat::SetGroupingUsed(
 }
 
 ECode NumberFormat::GetMaximumIntegerDigits(
-    /* [out] */ Integer* value)
+    /* [out] */ Integer& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = mMaximumIntegerDigits;
+    value = mMaximumIntegerDigits;
     return NOERROR;
 }
 
@@ -333,11 +306,9 @@ ECode NumberFormat::SetMaximumIntegerDigits(
 }
 
 ECode NumberFormat::GetMinimumIntegerDigits(
-    /* [out] */ Integer* value)
+    /* [out] */ Integer& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = mMinimumIntegerDigits;
+    value = mMinimumIntegerDigits;
     return NOERROR;
 }
 
@@ -352,11 +323,9 @@ ECode NumberFormat::SetMinimumIntegerDigits(
 }
 
 ECode NumberFormat::GetMaximumFractionDigits(
-    /* [out] */ Integer* value)
+    /* [out] */ Integer& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = mMaximumFractionDigits;
+    value = mMaximumFractionDigits;
     return NOERROR;
 }
 
@@ -371,11 +340,9 @@ ECode NumberFormat::SetMaximumFractionDigits(
 }
 
 ECode NumberFormat::GetMinimumFractionDigits(
-    /* [out] */ Integer* value)
+    /* [out] */ Integer& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = mMinimumFractionDigits;
+    value = mMinimumFractionDigits;
     return NOERROR;
 }
 
@@ -390,7 +357,7 @@ ECode NumberFormat::SetMinimumFractionDigits(
 }
 
 ECode NumberFormat::GetCurrency(
-    /* [out] */ ICurrency** currency)
+    /* [out] */ AutoPtr<ICurrency>& currency)
 {
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
@@ -402,7 +369,7 @@ ECode NumberFormat::SetCurrency(
 }
 
 ECode NumberFormat::GetRoundingMode(
-    /* [out] */ RoundingMode* mode)
+    /* [out] */ RoundingMode& mode)
 {
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
@@ -416,7 +383,7 @@ ECode NumberFormat::SetRoundingMode(
 ECode NumberFormat::GetInstance(
     /* [in] */ ILocale* desiredLocale,
     /* [in] */ Integer choice,
-    /* [out] */ INumberFormat** instance)
+    /* [out] */ AutoPtr<INumberFormat>& instance)
 {
     AutoPtr<IInterface> data;
     GetCachedLocaleData()->Get(desiredLocale, &data);
@@ -454,8 +421,7 @@ ECode NumberFormat::GetInstance(
         CDecimalFormat::From(format)->AdjustForCurrencyDefaultFractionDigits();
     }
 
-    *instance = INumberFormat::Probe(format);
-    REFCOUNT_ADD(*instance);
+    instance = INumberFormat::Probe(format);
     return NOERROR;
 }
 

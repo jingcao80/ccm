@@ -50,6 +50,7 @@ ECode Logical::Not(
             }
             if (i == value->mNumberLength) {
                 resDigits[i] = 1;
+                result = nullptr;
                 return CBigInteger::New(-value->mSign, i + 1, resDigits, IID_IBigInteger, (IInterface**)&result);
             }
         }
@@ -67,6 +68,7 @@ ECode Logical::Not(
     for (i++; i < value->mNumberLength; i++) {
         resDigits[i] = value->mDigits[i];
     }
+    result = nullptr;
     return CBigInteger::New(-value->mSign, i, resDigits, IID_IBigInteger, (IInterface**)&result);
 }
 
@@ -128,6 +130,7 @@ ECode Logical::AddPositive(
         resDigits[i] = value->mDigits[i] & that->mDigits[i];
     }
 
+    result = nullptr;
     return CBigInteger::New(1, resLength, resDigits, IID_IBigInteger, (IInterface**)&result);
 }
 
@@ -166,6 +169,7 @@ ECode Logical::AddDiffSigns(
         }
     } // else positive ended and must "copy" virtual 0's, do nothing then
 
+    result = nullptr;
     return CBigInteger::New(1, resLength, resDigits, IID_IBigInteger, (IInterface**)&result);
 }
 
@@ -210,6 +214,7 @@ ECode Logical::AddNegative(
                 resDigits = Array<Integer>(resLength);
                 resDigits[resLength - 1] = 1;
 
+                result = nullptr;
                 return CBigInteger::New(-1, resLength, resDigits, IID_IBigInteger, (IInterface**)&result);
             }
         }
@@ -225,6 +230,7 @@ ECode Logical::AddNegative(
         resDigits[i] = longer->mDigits[i];
     }
 
+    result = nullptr;
     return CBigInteger::New(-1, resLength, resDigits, IID_IBigInteger, (IInterface**)&result);
 }
 
@@ -284,6 +290,7 @@ ECode Logical::AddNotPositive(
         resDigits[i] = value->mDigits[i];
     }
 
+    result = nullptr;
     return CBigInteger::New(1, value->mNumberLength, resDigits, IID_IBigInteger, (IInterface**)&result);
 }
 
@@ -316,6 +323,7 @@ ECode Logical::AddNotPositiveNegative(
         resDigits[i] = positive->mDigits[i] & negative->mDigits[i];
     }
 
+    result = nullptr;
     return CBigInteger::New(1, resLength, resDigits, IID_IBigInteger, (IInterface**)&result);
 }
 
@@ -371,6 +379,7 @@ ECode Logical::AddNotNegativePositive(
                     resDigits = Array<Integer>(resLength);
                     resDigits[resLength - 1] = 1;
 
+                    result = nullptr;
                     return CBigInteger::New(-1, resLength, resDigits, IID_IBigInteger, (IInterface**)&result);
                 }
             }
@@ -392,6 +401,7 @@ ECode Logical::AddNotNegativePositive(
         resDigits[i] = positive->mDigits[i];
     }
 
+    result = nullptr;
     return CBigInteger::New(-1, resLength, resDigits, IID_IBigInteger, (IInterface**)&result);
 }
 
@@ -443,6 +453,7 @@ ECode Logical::AddNotNegative(
         resDigits[i] = that->mDigits[i];
     }
 
+    result = nullptr;
     return CBigInteger::New(1, resLength, resDigits, IID_IBigInteger, (IInterface**)&result);
 }
 
@@ -508,6 +519,7 @@ ECode Logical::OrPositive(
         resDigits[i] = longer->mDigits[i];
     }
 
+    result = nullptr;
     return CBigInteger::New(1, resLength, resDigits, IID_IBigInteger, (IInterface**)&result);
 }
 
@@ -548,6 +560,7 @@ ECode Logical::OrNegative(
         resDigits[i] = value->mDigits[i] & that->mDigits[i];
     }
 
+    result = nullptr;
     return CBigInteger::New(-1, resLength, resDigits, IID_IBigInteger, (IInterface**)&result);
 }
 
@@ -611,6 +624,7 @@ ECode Logical::OrDiffSigns(
         resDigits[i] = negative->mDigits[i];
     }
 
+    result = nullptr;
     return CBigInteger::New(-1, resLength, resDigits, IID_IBigInteger, (IInterface**)&result);
 }
 
@@ -676,6 +690,7 @@ ECode Logical::XorPositive(
         resDigits[i] = longer->mDigits[i];
     }
 
+    result = nullptr;
     return CBigInteger::New(1, resLength, resDigits, IID_IBigInteger, (IInterface**)&result);
 }
 
@@ -726,6 +741,7 @@ ECode Logical::XorNegative(
         resDigits[i] = that->mDigits[i];
     }
 
+    result = nullptr;
     return CBigInteger::New(1, resLength, resDigits, IID_IBigInteger, (IInterface**)&result);
 }
 
@@ -808,6 +824,7 @@ ECode Logical::XorDiffSigns(
                     resDigits = Array<Integer>(resLength);
                     resDigits[resLength - 1] = 1;
 
+                    result = nullptr;
                     return CBigInteger::New(-1, resLength, resDigits, IID_IBigInteger, (IInterface**)&result);
                 }
             }
@@ -828,6 +845,7 @@ ECode Logical::XorDiffSigns(
         resDigits[i] = negative->mDigits[i];
     }
 
+    result = nullptr;
     return CBigInteger::New(-1, resLength, resDigits, IID_IBigInteger, (IInterface**)&result);
 }
 

@@ -112,6 +112,7 @@ ECode BitLevel::ShiftLeftOneBit(
     Integer resLen = srcLen + 1;
     Array<Integer> resDigits(resLen);
     ShiftLeftOneBit(resDigits, source->mDigits, srcLen);
+    result = nullptr;
     return CBigInteger::New(source->mSign, resLen, resDigits, IID_IBigInteger, (IInterface**)&result);
 }
 
@@ -150,6 +151,7 @@ ECode BitLevel::ShiftRight(
             resDigits[i]++;
         }
     }
+    result = nullptr;
     return CBigInteger::New(source->mSign, resLength, resDigits, IID_IBigInteger, (IInterface**)&result);
 }
 
@@ -231,6 +233,7 @@ ECode BitLevel::FlipBit(
     else {
         resDigits[intCount] ^= bitNumber;
     }
+    result = nullptr;
     return CBigInteger::New(resSign, resLength, resDigits, IID_IBigInteger, (IInterface**)&result);
 }
 

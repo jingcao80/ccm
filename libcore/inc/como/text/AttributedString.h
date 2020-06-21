@@ -71,64 +71,64 @@ private:
             /* [out] */ IInterface** obj) override;
 
         ECode First(
-            /* [out] */ Char* firstChar) override;
+            /* [out] */ Char& firstChar) override;
 
         ECode Last(
-            /* [out] */ Char* lastChar) override;
+            /* [out] */ Char& lastChar) override;
 
         ECode Current(
-            /* [out] */ Char* currChar) override;
+            /* [out] */ Char& currChar) override;
 
         ECode Next(
-            /* [out] */ Char* nextChar) override;
+            /* [out] */ Char& nextChar) override;
 
         ECode Previous(
-            /* [out] */ Char* prevChar) override;
+            /* [out] */ Char& prevChar) override;
 
         ECode SetIndex(
             /* [in] */ Integer position,
-            /* [out] */ Char* currChar) override;
+            /* [out] */ Char* currChar = nullptr) override;
 
         ECode GetBeginIndex(
-            /* [out] */ Integer* beginIndex) override;
+            /* [out] */ Integer& beginIndex) override;
 
         ECode GetEndIndex(
-            /* [out] */ Integer* endIndex) override;
+            /* [out] */ Integer& endIndex) override;
 
         ECode GetIndex(
-            /* [out] */ Integer* currIndex) override;
+            /* [out] */ Integer& currIndex) override;
 
         ECode GetRunStart(
-            /* [out] */ Integer* index) override;
+            /* [out] */ Integer& index) override;
 
         ECode GetRunStart(
             /* [in] */ IAttributedCharacterIterator::IAttribute* attribute,
-            /* [out] */ Integer* index) override;
+            /* [out] */ Integer& index) override;
 
         ECode GetRunStart(
             /* [in] */ ISet* attributes,
-            /* [out] */ Integer* index) override;
+            /* [out] */ Integer& index) override;
 
         ECode GetRunLimit(
-            /* [out] */ Integer* index) override;
+            /* [out] */ Integer& index) override;
 
         ECode GetRunLimit(
             /* [in] */ IAttributedCharacterIterator::IAttribute* attribute,
-            /* [out] */ Integer* index) override;
+            /* [out] */ Integer& index) override;
 
         ECode GetRunLimit(
             /* [in] */ ISet* attributes,
-            /* [out] */ Integer* index) override;
+            /* [out] */ Integer& index) override;
 
         ECode GetAttributes(
-            /* [out] */ IMap** attributes) override;
+            /* [out] */ AutoPtr<IMap>& attributes) override;
 
         ECode GetAllAttributeKeys(
-            /* [out] */ ISet** keys) override;
+            /* [out] */ AutoPtr<ISet>& keys) override;
 
         ECode GetAttribute(
             /* [in] */ IAttributedCharacterIterator::IAttribute* attribute,
-            /* [out] */ IInterface** value) override;
+            /* [out] */ AutoPtr<IInterface>& value) override;
 
     private:
         AutoPtr<AttributedString> GetString();
@@ -226,17 +226,17 @@ public:
         /* [in] */ Integer endIndex) override;
 
     ECode GetIterator(
-        /* [out] */ IAttributedCharacterIterator** it) override;
+        /* [out] */ AutoPtr<IAttributedCharacterIterator>& it) override;
 
     ECode GetIterator(
         /* [in] */ const Array<IAttributedCharacterIterator::IAttribute*>& attributes,
-        /* [out] */ IAttributedCharacterIterator** it) override;
+        /* [out] */ AutoPtr<IAttributedCharacterIterator>& it) override;
 
     ECode GetIterator(
         /* [in] */ const Array<IAttributedCharacterIterator::IAttribute*>& attributes,
         /* [in] */ Integer beginIndex,
         /* [in] */ Integer endIndex,
-        /* [out] */ IAttributedCharacterIterator** it) override;
+        /* [out] */ AutoPtr<IAttributedCharacterIterator>& it) override;
 
     Integer GetLength();
 

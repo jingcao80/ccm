@@ -24,10 +24,10 @@ namespace text {
 interface IParsePosition
 {
     GetErrorIndex(
-        [out] Integer* index);
+        [out] Integer& index);
 
     GetIndex(
-        [out] Integer* index);
+        [out] Integer& index);
 
     SetErrorIndex(
         [in] Integer index);

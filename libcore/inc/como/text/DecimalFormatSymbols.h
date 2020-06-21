@@ -57,91 +57,91 @@ public:
         /* [in] */ ILocale* locale);
 
     ECode GetZeroDigit(
-        /* [out] */ Char* zeroDigit) override;
+        /* [out] */ Char& zeroDigit) override;
 
     ECode SetZeroDigit(
         /* [in] */ Char zeroDigit) override;
 
     ECode GetGroupingSeparator(
-        /* [out] */ Char* groupingSeparator) override;
+        /* [out] */ Char& groupingSeparator) override;
 
     ECode SetGroupingSeparator(
         /* [in] */ Char groupingSeparator) override;
 
     ECode GetDecimalSeparator(
-        /* [out] */ Char* decimalSeparator) override;
+        /* [out] */ Char& decimalSeparator) override;
 
     ECode SetDecimalSeparator(
         /* [in] */ Char decimalSeparator) override;
 
     ECode GetPerMill(
-        /* [out] */ Char* perMill) override;
+        /* [out] */ Char& perMill) override;
 
     ECode SetPerMill(
         /* [in] */ Char perMill) override;
 
     ECode GetPercent(
-        /* [out] */ Char* percent) override;
+        /* [out] */ Char& percent) override;
 
     ECode GetPercentString(
-        /* [out] */ String* percentStr) override;
+        /* [out] */ String& percentStr) override;
 
     ECode SetPercent(
         /* [in] */ Char percent) override;
 
     ECode GetDigit(
-        /* [out] */ Char* digit) override;
+        /* [out] */ Char& digit) override;
 
     ECode SetDigit(
         /* [in] */ Char digit) override;
 
     ECode GetPatternSeparator(
-        /* [out] */ Char* patternSeparator) override;
+        /* [out] */ Char& patternSeparator) override;
 
     ECode SetPatternSeparator(
         /* [in] */ Char patternSeparator) override;
 
     ECode GetInfinity(
-        /* [out] */ String* infinity) override;
+        /* [out] */ String& infinity) override;
 
     ECode SetInfinity(
         /* [in] */ const String& infinity) override;
 
     ECode GetNaN(
-        /* [out] */ String* naN) override;
+        /* [out] */ String& naN) override;
 
     ECode SetNaN(
         /* [in] */ const String& naN) override;
 
     ECode GetMinusSign(
-        /* [out] */ Char* minusSign) override;
+        /* [out] */ Char& minusSign) override;
 
     ECode GetMinusSignString(
-        /* [out] */ String* minusSignStr) override;
+        /* [out] */ String& minusSignStr) override;
 
     ECode SetMinusSign(
         /* [in] */ Char minusSign) override;
 
     ECode GetCurrencySymbol(
-        /* [out] */ String* currency) override;
+        /* [out] */ String& currency) override;
 
     ECode SetCurrencySymbol(
         /* [in] */ const String& currency) override;
 
     ECode GetInternationalCurrencySymbol(
-        /* [out] */ String* currency) override;
+        /* [out] */ String& currency) override;
 
     ECode SetInternationalCurrencySymbol(
         /* [in] */ const String& currency) override;
 
     ECode GetCurrency(
-        /* [out] */ ICurrency** currency) override;
+        /* [out] */ AutoPtr<ICurrency>& currency) override;
 
     ECode SetCurrency(
         /* [in] */ ICurrency* currency) override;
 
     ECode GetMonetaryDecimalSeparator(
-        /* [out] */ Char* monetarySeparator) override;
+        /* [out] */ Char& monetarySeparator) override;
 
     ECode SetMonetaryDecimalSeparator(
         /* [in] */ Char sep) override;
@@ -149,7 +149,7 @@ public:
     virtual Char GetExponentialSymbol();
 
     ECode GetExponentSeparator(
-        /* [out] */ String* exponentSeparator) override;
+        /* [out] */ String& exponentSeparator) override;
 
     virtual void SetExponentialSymbol(
         /* [in] */ Char exp);

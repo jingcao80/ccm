@@ -104,7 +104,7 @@ public:
         /* [in] */ const Array<Array<String>>& newZoneStrings) override;
 
     ECode GetLocalPatternChars(
-        /* [out] */ String* localPatternChars) override;
+        /* [out] */ String& localPatternChars) override;
 
     ECode SetLocalPatternChars(
         /* [in] */ const String& newLocalPatternChars) override;

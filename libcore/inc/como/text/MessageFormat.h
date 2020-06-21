@@ -77,13 +77,13 @@ public:
         /* [in] */ ILocale* locale) override;
 
     ECode GetLocale(
-        /* [out] */ ILocale** locale) override;
+        /* [out] */ AutoPtr<ILocale>& locale) override;
 
     ECode ApplyPattern(
         /* [in] */ const String& pattern) override;
 
     ECode ToPattern(
-        /* [out] */ String* pattern) override;
+        /* [out] */ String& pattern) override;
 
     ECode SetFormatsByArgumentIndex(
         /* [in] */ const Array<IFormat*>& newFormats) override;
@@ -107,13 +107,13 @@ public:
 
     ECode Format(
         /* [in] */ const Array<IInterface*>& arguments,
-        /* [out] */ IStringBuffer* result,
+        /* [in, out] */ IStringBuffer* result,
         /* [in] */ IFieldPosition* pos) override;
 
     static ECode Format(
         /* [in] */ const String& pattern,
         /* [in] */ Array<IInterface*>* arguments,
-        /* [out] */ String* message);
+        /* [out] */ String& message);
 
     ECode Format(
         /* [in] */ IInterface* arguments,
@@ -122,7 +122,7 @@ public:
 
     ECode FormatToCharacterIterator(
         /* [in] */ IInterface* arguments,
-        /* [out] */ IAttributedCharacterIterator** cit) override;
+        /* [out] */ AutoPtr<IAttributedCharacterIterator>& cit) override;
 
     ECode Parse(
         /* [in] */ const String& source,
@@ -136,7 +136,7 @@ public:
     ECode ParseObject(
         /* [in] */ const String& source,
         /* [in] */ IParsePosition* pos,
-        /* [out] */ IInterface** result) override;
+        /* [out] */ AutoPtr<IInterface>& result) override;
 
     ECode Equals(
         /* [in] */ IInterface* obj,
@@ -152,12 +152,12 @@ protected:
 private:
     ECode Subformat(
         /* [in] */ const Array<IInterface*>& arguments,
-        /* [out] */ IStringBuffer* result,
+        /* [in, out] */ IStringBuffer* result,
         /* [in] */ IFieldPosition* fp,
         /* [in] */ IList* characterIterators);
 
     void Append(
-        /* [out] */ IStringBuffer* result,
+        /* [in, out] */ IStringBuffer* result,
         /* [in] */ ICharacterIterator* iterator);
 
     ECode MakeFormat(
@@ -173,7 +173,7 @@ private:
         /* [in] */ const String& source,
         /* [in] */ Integer start,
         /* [in] */ Integer end,
-        /* [out] */ IStringBuilder* target);
+        /* [in, out] */ IStringBuilder* target);
 
 private:
     /**

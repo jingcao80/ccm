@@ -34,40 +34,34 @@ COMO_INTERFACE_IMPL_3(BaseFormat, SyncObject, IFormat, ISerializable, ICloneable
 
 ECode BaseFormat::Format(
     /* [in] */ IInterface* obj,
-    /* [out] */ String* string)
+    /* [out] */ String& string)
 {
-    VALIDATE_NOT_NULL(string);
-
     AutoPtr<IStringBuffer> sb;
     CStringBuffer::New(IID_IStringBuffer, (IInterface**)&sb);
     AutoPtr<IFieldPosition> fp;
     CFieldPosition::New(0, IID_IFieldPosition, (IInterface**)&fp);
     FAIL_RETURN(Format(obj, sb, fp));
-    return sb->ToString(*string);
+    return sb->ToString(string);
 }
 
 ECode BaseFormat::FormatToCharacterIterator(
     /* [in] */ IInterface* obj,
-    /* [out] */ IAttributedCharacterIterator** it)
+    /* [out] */ AutoPtr<IAttributedCharacterIterator>& it)
 {
-    VALIDATE_NOT_NULL(it);
-
     String string;
-    FAIL_RETURN(Format(obj, &string));
+    FAIL_RETURN(Format(obj, string));
     return CreateAttributedCharacterIterator(string, it);
 }
 
 ECode BaseFormat::ParseObject(
     /* [in] */ const String& source,
-    /* [out] */ IInterface** object)
+    /* [out] */ AutoPtr<IInterface>& object)
 {
-    VALIDATE_NOT_NULL(object);
-
     AutoPtr<IParsePosition> pos;
     CParsePosition::New(0, IID_IParsePosition, (IInterface**)&pos);
     FAIL_RETURN(ParseObject(source, pos, object));
     Integer index;
-    if (pos->GetIndex(&index), index == 0) {
+    if (pos->GetIndex(index), index == 0) {
         Logger::E("BaseFormat", "ParseObject(String) failed");
         return E_PARSE_EXCEPTION;
     }
@@ -76,7 +70,7 @@ ECode BaseFormat::ParseObject(
 
 ECode BaseFormat::CreateAttributedCharacterIterator(
     /* [in] */ const String& s,
-    /* [out] */ IAttributedCharacterIterator** it)
+    /* [out] */ AutoPtr<IAttributedCharacterIterator>& it)
 {
     AutoPtr<IAttributedString> as;
     CAttributedString::New(s, IID_IAttributedString, (IInterface**)&as);
@@ -85,7 +79,7 @@ ECode BaseFormat::CreateAttributedCharacterIterator(
 
 ECode BaseFormat::CreateAttributedCharacterIterator(
     /* [in] */ const Array<IAttributedCharacterIterator*>& iterators,
-    /* [out] */ IAttributedCharacterIterator** it)
+    /* [out] */ AutoPtr<IAttributedCharacterIterator>& it)
 {
     AutoPtr<IAttributedString> as;
     CAttributedString::New(iterators, IID_IAttributedString, (IInterface**)&as);
@@ -96,7 +90,7 @@ ECode BaseFormat::CreateAttributedCharacterIterator(
     /* [in] */ const String& string,
     /* [in] */ IAttributedCharacterIterator::IAttribute* key,
     /* [in] */ IInterface* value,
-    /* [out] */ IAttributedCharacterIterator** it)
+    /* [out] */ AutoPtr<IAttributedCharacterIterator>& it)
 {
     AutoPtr<IAttributedString> as;
     CAttributedString::New(string, IID_IAttributedString, (IInterface**)&as);
@@ -108,7 +102,7 @@ ECode BaseFormat::CreateAttributedCharacterIterator(
     /* [in] */ IAttributedCharacterIterator* iterator,
     /* [in] */ IAttributedCharacterIterator::IAttribute* key,
     /* [in] */ IInterface* value,
-    /* [out] */ IAttributedCharacterIterator** it)
+    /* [out] */ AutoPtr<IAttributedCharacterIterator>& it)
 {
     AutoPtr<IAttributedString> as;
     CAttributedString::New(iterator, IID_IAttributedString, (IInterface**)&as);

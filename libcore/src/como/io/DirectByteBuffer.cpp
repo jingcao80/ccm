@@ -146,6 +146,7 @@ ECode DirectByteBuffer::Slice(
     Integer rem = (pos <= lim ? lim - pos : 0);
     Integer off = pos + mOffset;
     CHECK(off >= 0);
+    buffer = nullptr;
     return CDirectByteBuffer::New(mMemoryRef, -1, 0, rem, rem, off, mIsReadOnly,
             IID_IByteBuffer, (IInterface**)&buffer);
 }
@@ -163,6 +164,7 @@ ECode DirectByteBuffer::Duplicate(
     GetLimit(lim);
     Integer cap;
     GetCapacity(cap);
+    buffer = nullptr;
     return CDirectByteBuffer::New(mMemoryRef, MarkValue(), pos, lim, cap, mOffset, mIsReadOnly,
             IID_IByteBuffer, (IInterface**)&buffer);
 }
@@ -180,6 +182,7 @@ ECode DirectByteBuffer::AsReadOnlyBuffer(
     GetLimit(lim);
     Integer cap;
     GetCapacity(cap);
+    buffer = nullptr;
     return CDirectByteBuffer::New(mMemoryRef, MarkValue(), pos, lim, cap, mOffset, true,
             IID_IByteBuffer, (IInterface**)&buffer);
 }

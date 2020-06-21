@@ -304,7 +304,7 @@ Char Formatter::GetZero(
     if ((l != nullptr) && (!Object::Equals(l, Locale::GetUS()))) {
         AutoPtr<IDecimalFormatSymbols> dfs = DecimalFormatSymbols::GetInstance(l);
         Char c;
-        dfs->GetZeroDigit(&c);
+        dfs->GetZeroDigit(c);
         return c;
     }
     else {
@@ -2345,7 +2345,7 @@ Char Formatter::FormatSpecifier::GetZero(
     if ((l != nullptr) && !Object::Equals(l, ll)) {
         AutoPtr<IDecimalFormatSymbols> dfs = DecimalFormatSymbols::GetInstance(l);
         Char c;
-        dfs->GetZeroDigit(&c);
+        dfs->GetZeroDigit(c);
         return c;
     }
     return mOwner->mZero;
@@ -2398,7 +2398,7 @@ AutoPtr<IStringBuilder> Formatter::FormatSpecifier::LocalizedMagnitude(
         }
         else {
             AutoPtr<IDecimalFormatSymbols> dfs = DecimalFormatSymbols::GetInstance(l);
-            dfs->GetDecimalSeparator(&decSep);
+            dfs->GetDecimalSeparator(decSep);
         }
     }
 
@@ -2409,15 +2409,15 @@ AutoPtr<IStringBuilder> Formatter::FormatSpecifier::LocalizedMagnitude(
         }
         else {
             AutoPtr<IDecimalFormatSymbols> dfs = DecimalFormatSymbols::GetInstance(l);
-            dfs->GetGroupingSeparator(&grpSep);
+            dfs->GetGroupingSeparator(grpSep);
             AutoPtr<INumberFormat> nf;
-            NumberFormat::GetIntegerInstance(l, &nf);
+            NumberFormat::GetIntegerInstance(l, nf);
             AutoPtr<IDecimalFormat> df = IDecimalFormat::Probe(nf);
-            df->GetGroupingSize(&grpSize);
+            df->GetGroupingSize(grpSize);
 
             Boolean used;
             Integer size;
-            if ((df->IsGroupingUsed(&used), !used) || (df->GetGroupingSize(&size), size == 0)) {
+            if ((df->IsGroupingUsed(used), !used) || (df->GetGroupingSize(size), size == 0)) {
                 grpSep = U'\0';
             }
         }

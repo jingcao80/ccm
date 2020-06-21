@@ -53,7 +53,7 @@ protected:
     virtual String GetName();
 
     virtual ECode ReadResolve(
-        /* [out] */ IInterface** obj);
+        /* [out] */ AutoPtr<IInterface>& obj);
 
 private:
     static AutoPtr<IMap> GetInstanceMap();

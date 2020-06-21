@@ -32,39 +32,39 @@ public:
         /* [out, callee] */ Array<ILocale*>* locales);
 
     static ECode GetCurrencyInstance(
-        /* [out] */ INumberFormat** instance);
+        /* [out] */ AutoPtr<INumberFormat>& instance);
 
     static ECode GetCurrencyInstance(
         /* [in] */ ILocale* locale,
-        /* [out] */ INumberFormat** instance);
+        /* [out] */ AutoPtr<INumberFormat>& instance);
 
     static ECode GetInstance(
-        /* [out] */ INumberFormat** instance);
+        /* [out] */ AutoPtr<INumberFormat>& instance);
 
     static ECode GetInstance(
         /* [in] */ ILocale* locale,
-        /* [out] */ INumberFormat** instance);
+        /* [out] */ AutoPtr<INumberFormat>& instance);
 
     static ECode GetIntegerInstance(
-        /* [out] */ INumberFormat** instance);
+        /* [out] */ AutoPtr<INumberFormat>& instance);
 
     static ECode GetIntegerInstance(
         /* [in] */ ILocale* locale,
-        /* [out] */ INumberFormat** instance);
+        /* [out] */ AutoPtr<INumberFormat>& instance);
 
     static ECode GetNumberInstance(
-        /* [out] */ INumberFormat** instance);
+        /* [out] */ AutoPtr<INumberFormat>& instance);
 
     static ECode GetNumberInstance(
         /* [in] */ ILocale* locale,
-        /* [out] */ INumberFormat** instance);
+        /* [out] */ AutoPtr<INumberFormat>& instance);
 
     static ECode GetPercentInstance(
-        /* [out] */ INumberFormat** instance);
+        /* [out] */ AutoPtr<INumberFormat>& instance);
 
     static ECode GetPercentInstance(
         /* [in] */ ILocale* locale,
-        /* [out] */ INumberFormat** instance);
+        /* [out] */ AutoPtr<INumberFormat>& instance);
 
 private:
     NumberFormatFactory();

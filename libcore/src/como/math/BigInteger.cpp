@@ -360,6 +360,7 @@ ECode BigInteger::ValueOf(
 {
     if (value < 0) {
         if (value != -1) {
+            bi = nullptr;
             return CBigInteger::New(-1, -value, IID_IBigInteger, (IInterface**)&bi);
         }
         bi = GetMINUS_ONE();
@@ -371,6 +372,7 @@ ECode BigInteger::ValueOf(
     }
     else {
         // (value > 10)
+        bi = nullptr;
         return CBigInteger::New(1, value, IID_IBigInteger, (IInterface**)&bi);
     }
 }
@@ -391,6 +393,7 @@ ECode BigInteger::Abs(
     }
     AutoPtr<BigInt> a = bigInt->Copy();
     a->SetSign(1);
+    value = nullptr;
     return CBigInteger::New(a, IID_IBigInteger, (IInterface**)&value);
 }
 
@@ -405,6 +408,7 @@ ECode BigInteger::Negate(
     }
     AutoPtr<BigInt> a = bigInt->Copy();
     a->SetSign(-sign);
+    value = nullptr;
     return CBigInteger::New(a, IID_IBigInteger, (IInterface**)&value);
 }
 
@@ -422,6 +426,7 @@ ECode BigInteger::Add(
         result = value;
         return NOERROR;
     }
+    result = nullptr;
     return CBigInteger::New(BigInt::Addition(lhs, rhs), IID_IBigInteger, (IInterface**)&result);
 }
 
@@ -435,6 +440,7 @@ ECode BigInteger::Subtract(
         result = this;
         return NOERROR;
     }
+    result = nullptr;
     return CBigInteger::New(BigInt::Subtraction(lhs, rhs), IID_IBigInteger, (IInterface**)&result);
 }
 
@@ -471,6 +477,7 @@ ECode BigInteger::ShiftLeft(
         return NOERROR;
     }
     if ((sign > 0) || (n >= 0)) {
+        value = nullptr;
         return CBigInteger::New(BigInt::Shift(GetBigInt(), n), IID_IBigInteger, (IInterface**)&value);
     }
     else {
@@ -794,6 +801,7 @@ ECode BigInteger::Gcd(
     /* [in] */ IBigInteger* value,
     /* [out] */ AutoPtr<IBigInteger>& result)
 {
+    result = nullptr;
     return CBigInteger::New(BigInt::Gcd(
             GetBigInt(), From(value)->GetBigInt()),
             IID_IBigInteger, (IInterface**)&result);
@@ -803,6 +811,7 @@ ECode BigInteger::Multiply(
     /* [in] */ IBigInteger* value,
     /* [out] */ AutoPtr<IBigInteger>& result)
 {
+    result = nullptr;
     return CBigInteger::New(BigInt::Product(
             GetBigInt(), From(value)->GetBigInt()),
             IID_IBigInteger, (IInterface**)&result);
@@ -816,6 +825,7 @@ ECode BigInteger::Pow(
         Logger::E("BigInteger", "exp < 0: %d", exp);
         return E_ARITHMETIC_EXCEPTION;
     }
+    value = nullptr;
     return CBigInteger::New(BigInt::Exp(GetBigInt(), exp),
             IID_IBigInteger, (IInterface**)&value);
 }
@@ -845,6 +855,7 @@ ECode BigInteger::Divide(
 {
     AutoPtr<BigInt> quotient = new BigInt();
     BigInt::Division(GetBigInt(), From(divisor)->GetBigInt(), quotient, nullptr);
+    result = nullptr;
     return CBigInteger::New(quotient, IID_IBigInteger, (IInterface**)&result);
 }
 
@@ -854,6 +865,7 @@ ECode BigInteger::Remainder(
 {
     AutoPtr<BigInt> remainder = new BigInt();
     BigInt::Division(GetBigInt(), From(divisor)->GetBigInt(), nullptr, remainder);
+    result = nullptr;
     return CBigInteger::New(remainder, IID_IBigInteger, (IInterface**)&result);
 }
 
@@ -866,6 +878,7 @@ ECode BigInteger::ModInverse(
         Logger::E("BigInteger", "modulus not positive");
         return E_ARITHMETIC_EXCEPTION;
     }
+    result = nullptr;
     return CBigInteger::New(BigInt::ModInverse(GetBigInt(), From(m)->GetBigInt()),
             IID_IBigInteger, (IInterface**)&result);
 }
@@ -892,6 +905,7 @@ ECode BigInteger::ModPow(
     else {
         base = this;
     }
+    result = nullptr;
     return CBigInteger::New(BigInt::ModExp(From(base)->GetBigInt(),
             From(exponent)->GetBigInt(), From(modulus)->GetBigInt()),
             IID_IBigInteger, (IInterface**)&result);
@@ -906,6 +920,7 @@ ECode BigInteger::Mod(
         Logger::E("BigInteger", "m.signum() <= 0");
         return E_ARITHMETIC_EXCEPTION;
     }
+    result = nullptr;
     return CBigInteger::New(BigInt::Modulus(GetBigInt(), From(m)->GetBigInt()),
             IID_IBigInteger, (IInterface**)&result);
 }
@@ -938,6 +953,7 @@ ECode BigInteger::ProbablePrime(
     /* [in] */ IRandom* random,
     /* [out] */ AutoPtr<IBigInteger>& value)
 {
+    value = nullptr;
     return CBigInteger::New(bitLength, 100, random, IID_IBigInteger, (IInterface**)&value);
 }
 

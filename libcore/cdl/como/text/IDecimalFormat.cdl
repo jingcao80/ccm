@@ -39,37 +39,37 @@ interface IDecimalFormat
         [in] String pattern);
 
     GetDecimalFormatSymbols(
-        [out] IDecimalFormatSymbols** symbols);
+        [out] IDecimalFormatSymbols&& symbols);
 
     GetGroupingSize(
-        [out] Integer* size);
+        [out] Integer& size);
 
     GetMultiplier(
-        [out] Integer* multiplier);
+        [out] Integer& multiplier);
 
     GetNegativePrefix(
-        [out] String* prefix);
+        [out] String& prefix);
 
     GetNegativeSuffix(
-        [out] String* suffix);
+        [out] String& suffix);
 
     GetPositivePrefix(
-        [out] String* prefix);
+        [out] String& prefix);
 
     GetPositiveSuffix(
-        [out] String* suffix);
+        [out] String& suffix);
 
     IsDecimalSeparatorAlwaysShown(
-        [out] Boolean* shown);
+        [out] Boolean& shown);
 
     IsGroupingUsed(
-        [out] Boolean* used);
+        [out] Boolean& used);
 
     IsParseBigDecimal(
-        [out] Boolean* value);
+        [out] Boolean& value);
 
     IsParseIntegerOnly(
-        [out] Boolean* value);
+        [out] Boolean& value);
 
     SetDecimalFormatSymbols(
         [in] IDecimalFormatSymbols* symbols);
@@ -105,10 +105,10 @@ interface IDecimalFormat
         [in] String suffix);
 
     ToLocalizedPattern(
-        [out] String* pattern);
+        [out] String& pattern);
 
     ToPattern(
-        [out] String* pattern);
+        [out] String& pattern);
 }
 
 }

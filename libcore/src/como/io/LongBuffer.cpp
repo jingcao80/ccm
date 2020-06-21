@@ -181,6 +181,7 @@ ECode LongBuffer::GetArray(
     if (mIsReadOnly) {
         return E_READ_ONLY_BUFFER_EXCEPTION;
     }
+    array = nullptr;
     return CArrayHolder::New(mHb, IID_IArrayHolder, (IInterface**)&array);
 }
 

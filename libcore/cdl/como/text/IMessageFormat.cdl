@@ -59,7 +59,7 @@ interface IMessageFormat
 
     FormatToCharacterIterator(
         [in] IInterface* arguments,
-        [out] IAttributedCharacterIterator** cit);
+        [out] IAttributedCharacterIterator&& cit);
 
     GetFormats(
         [out, callee] Array<IFormat*>* formats);
@@ -68,7 +68,7 @@ interface IMessageFormat
         [out, callee] Array<IFormat*>* formats);
 
     GetLocale(
-        [out] ILocale** locale);
+        [out] ILocale&& locale);
 
     Parse(
         [in] String source,
@@ -82,7 +82,7 @@ interface IMessageFormat
     ParseObject(
         [in] String source,
         [in] IParsePosition* pos,
-        [out] IInterface** result);
+        [out] IInterface&& result);
 
     SetFormat(
         [in] Integer formatElementIndex,
@@ -102,7 +102,7 @@ interface IMessageFormat
         [in] ILocale* locale);
 
     ToPattern(
-        [out] String* pattern);
+        [out] String& pattern);
 }
 
 }

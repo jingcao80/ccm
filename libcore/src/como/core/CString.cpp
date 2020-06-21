@@ -61,6 +61,7 @@ ECode CString::SubSequence(
     }
 
     String subStr = mString.Substring(start, end);
+    subcsq = nullptr;
     return CString::New(subStr, IID_ICharSequence, (IInterface**)&subcsq);
 }
 

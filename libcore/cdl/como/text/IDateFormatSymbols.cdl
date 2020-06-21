@@ -34,7 +34,7 @@ interface IDateFormatSymbols
         [out, callee] Array<String>* eras);
 
     GetLocalPatternChars(
-        [out] String* localPatternChars);
+        [out] String& localPatternChars);
 
     GetMonths(
         [out, callee] Array<String>* months);

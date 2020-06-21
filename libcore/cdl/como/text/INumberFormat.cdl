@@ -49,11 +49,11 @@ interface INumberFormat
 {
     Format(
         [in] Long number,
-        [out] String* str);
+        [out] String& str);
 
     Format(
         [in] Double number,
-        [out] String* str);
+        [out] String& str);
 
     Format(
         [in] Long number,
@@ -66,37 +66,37 @@ interface INumberFormat
         [in] IFieldPosition* pos);
 
     GetCurrency(
-        [out] ICurrency** currency);
+        [out] ICurrency&& currency);
 
     GetMaximumFractionDigits(
-        [out] Integer* value);
+        [out] Integer& value);
 
     GetMinimumFractionDigits(
-        [out] Integer* value);
+        [out] Integer& value);
 
     GetMaximumIntegerDigits(
-        [out] Integer* value);
+        [out] Integer& value);
 
     GetMinimumIntegerDigits(
-        [out] Integer* value);
+        [out] Integer& value);
 
     GetRoundingMode(
-        [out] RoundingMode* mode);
+        [out] RoundingMode& mode);
 
     IsGroupingUsed(
-        [out] Boolean* value);
+        [out] Boolean& value);
 
     IsParseIntegerOnly(
-        [out] Boolean* value);
+        [out] Boolean& value);
 
     Parse(
         [in] String source,
-        [out] INumber** number);
+        [out] INumber&& number);
 
     Parse(
         [in] String source,
         [in] IParsePosition* parsePosition,
-        [out] INumber** number);
+        [out] INumber&& number);
 
     SetCurrency(
         [in] ICurrency* currency);

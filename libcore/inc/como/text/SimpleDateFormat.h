@@ -63,7 +63,7 @@ public:
         /* in] */ IDate* startDate) override;
 
     ECode Get2DigitYearStart(
-        /* [out] */ IDate** startDate) override;
+        /* [out] */ AutoPtr<IDate>& startDate) override;
 
     ECode Format(
         /* [in] */ IDate* date,
@@ -72,18 +72,18 @@ public:
 
     ECode FormatToCharacterIterator(
         /* [in] */ IInterface* obj,
-        /* [out] */ IAttributedCharacterIterator** it) override;
+        /* [out] */ AutoPtr<IAttributedCharacterIterator>& it) override;
 
     ECode Parse(
         /* [in] */ const String& text,
         /* [in] */ IParsePosition* pos,
-        /* [out] */ IDate** date) override;
+        /* [out] */ AutoPtr<IDate>& date) override;
 
     ECode ToPattern(
-        /* [out] */ String* pattern) override;
+        /* [out] */ String& pattern) override;
 
     ECode ToLocalizedPattern(
-        /* [out] */ String* pattern) override;
+        /* [out] */ String& pattern) override;
 
     ECode ApplyPattern(
         /* [in] */ const String& pattern) override;
@@ -169,7 +169,7 @@ private:
     ECode ParseInternal(
         /* [in] */ const String& text,
         /* [in] */ IParsePosition* pos,
-        /* [out] */ IDate** date);
+        /* [out] */ AutoPtr<IDate>& date);
 
     Integer MatchString(
         /* [in] */ const String& text,
@@ -258,7 +258,7 @@ private:
         /* [in] */ const String& pattern,
         /* [in] */ const String& from,
         /* [in] */ const String& to,
-        /* [out] */ String* result);
+        /* [out] */ String& result);
 
     void CheckNegativeNumberExpression();
 

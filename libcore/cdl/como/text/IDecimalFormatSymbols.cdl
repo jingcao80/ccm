@@ -30,55 +30,55 @@ namespace text {
 interface IDecimalFormatSymbols
 {
     GetCurrency(
-        [out] ICurrency** currency);
+        [out] ICurrency&& currency);
 
     GetCurrencySymbol(
-        [out] String* currency);
+        [out] String& currency);
 
     GetDecimalSeparator(
-        [out] Char* decimalSeparator);
+        [out] Char& decimalSeparator);
 
     GetDigit(
-        [out] Char* digit);
+        [out] Char& digit);
 
     GetExponentSeparator(
-        [out] String* exponentSeparator);
+        [out] String& exponentSeparator);
 
     GetGroupingSeparator(
-        [out] Char* groupingSeparator);
+        [out] Char& groupingSeparator);
 
     GetInfinity(
-        [out] String* infinity);
+        [out] String& infinity);
 
     GetInternationalCurrencySymbol(
-        [out] String* currency);
+        [out] String& currency);
 
     GetMinusSign(
-        [out] Char* minusSign);
+        [out] Char& minusSign);
 
     GetMinusSignString(
-        [out] String* minusSignStr);
+        [out] String& minusSignStr);
 
     GetMonetaryDecimalSeparator(
-        [out] Char* monetarySeparator);
+        [out] Char& monetarySeparator);
 
     GetNaN(
-        [out] String* naN);
+        [out] String& naN);
 
     GetPatternSeparator(
-        [out] Char* patternSeparator);
+        [out] Char& patternSeparator);
 
     GetPercent(
-        [out] Char* percent);
+        [out] Char& percent);
 
     GetPercentString(
-        [out] String* percentStr);
+        [out] String& percentStr);
 
     GetPerMill(
-        [out] Char* perMill);
+        [out] Char& perMill);
 
     GetZeroDigit(
-        [out] Char* zeroDigit);
+        [out] Char& zeroDigit);
 
     SetCurrency(
         [in] ICurrency* currency);

@@ -73,30 +73,26 @@ ECode DateFormat::Format(
 
 ECode DateFormat::Format(
     /* [in] */ IDate* date,
-    /* [out] */ String* result)
+    /* [out] */ String& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     AutoPtr<IStringBuffer> sb;
     CStringBuffer::New(IID_IStringBuffer, (IInterface**)&sb);
     FAIL_RETURN(Format(date, sb, DontCareFieldPosition::GetInstance()));
-    return sb->ToString(*result);
+    return sb->ToString(result);
 }
 
 ECode DateFormat::Parse(
     /* [in] */ const String& source,
-    /* [out] */ IDate** date)
+    /* [out] */ AutoPtr<IDate>& date)
 {
-    VALIDATE_NOT_NULL(date);
-
     AutoPtr<IParsePosition> pos;
     CParsePosition::New(0, IID_IParsePosition, (IInterface**)&pos);
     FAIL_RETURN(Parse(source, pos, date));
     Integer idx;
-    pos->GetIndex(&idx);
+    pos->GetIndex(idx);
     if (idx == 0) {
         Integer errIdx;
-        pos->GetErrorIndex(&errIdx);
+        pos->GetErrorIndex(errIdx);
         Logger::E("DateFormat", "Unparseable date: \"%s\"%d", source.string(), errIdx);
         return E_PARSE_EXCEPTION;
     }
@@ -106,80 +102,67 @@ ECode DateFormat::Parse(
 ECode DateFormat::ParseObject(
     /* [in] */ const String& source,
     /* [in] */ IParsePosition* pos,
-    /* [out] */ IInterface** object)
+    /* [out] */ AutoPtr<IInterface>& object)
 {
-    return Parse(source, pos, (IDate**)object);
+    AutoPtr<IDate> date;
+    FAIL_RETURN(Parse(source, pos, date));
+    object = std::move(date);
+    return NOERROR;
 }
 
 ECode DateFormat::GetTimeInstance(
-    /* [out] */ IDateFormat** instance)
+    /* [out] */ AutoPtr<IDateFormat>& instance)
 {
-    VALIDATE_NOT_NULL(instance);
-
     return Get(DEFAULT, 0 ,1, CLocale::GetDefault(CLocale::Category::GetFORMAT()), instance);
 }
 
 ECode DateFormat::GetTimeInstance(
     /* [in] */ Integer style,
-    /* [out] */ IDateFormat** instance)
+    /* [out] */ AutoPtr<IDateFormat>& instance)
 {
-    VALIDATE_NOT_NULL(instance);
-
     return Get(style, 0 ,1, CLocale::GetDefault(CLocale::Category::GetFORMAT()), instance);
 }
 
 ECode DateFormat::GetTimeInstance(
     /* [in] */ Integer style,
     /* [in] */ ILocale* locale,
-    /* [out] */ IDateFormat** instance)
+    /* [out] */ AutoPtr<IDateFormat>& instance)
 {
-    VALIDATE_NOT_NULL(instance);
-
     return Get(style, 0, 1, locale, instance);
 }
 
 ECode DateFormat::GetDateInstance(
-    /* [out] */ IDateFormat** instance)
+    /* [out] */ AutoPtr<IDateFormat>& instance)
 {
-    VALIDATE_NOT_NULL(instance);
-
     return Get(0, DEFAULT, 2, CLocale::GetDefault(CLocale::Category::GetFORMAT()), instance);
 }
 
 ECode DateFormat::GetDateInstance(
     /* [in] */ Integer style,
-    /* [out] */ IDateFormat** instance)
+    /* [out] */ AutoPtr<IDateFormat>& instance)
 {
-    VALIDATE_NOT_NULL(instance);
-
     return Get(0, style, 2, CLocale::GetDefault(CLocale::Category::GetFORMAT()), instance);
 }
 
 ECode DateFormat::GetDateInstance(
     /* [in] */ Integer style,
     /* [in] */ ILocale* locale,
-    /* [out] */ IDateFormat** instance)
+    /* [out] */ AutoPtr<IDateFormat>& instance)
 {
-    VALIDATE_NOT_NULL(instance);
-
     return Get(0, style, 2, locale, instance);
 }
 
 ECode DateFormat::GetDateTimeInstance(
-    /* [out] */ IDateFormat** instance)
+    /* [out] */ AutoPtr<IDateFormat>& instance)
 {
-    VALIDATE_NOT_NULL(instance);
-
     return Get(DEFAULT, DEFAULT, 3, CLocale::GetDefault(CLocale::Category::GetFORMAT()), instance);
 }
 
 ECode DateFormat::GetDateTimeInstance(
     /* [in] */ Integer dateStyle,
     /* [in] */ Integer timeStyle,
-    /* [out] */ IDateFormat** instance)
+    /* [out] */ AutoPtr<IDateFormat>& instance)
 {
-    VALIDATE_NOT_NULL(instance);
-
     return Get(timeStyle, dateStyle, 3, CLocale::GetDefault(CLocale::Category::GetFORMAT()), instance);
 }
 
@@ -187,15 +170,13 @@ ECode DateFormat::GetDateTimeInstance(
     /* [in] */ Integer dateStyle,
     /* [in] */ Integer timeStyle,
     /* [in] */ ILocale* locale,
-    /* [out] */ IDateFormat** instance)
+    /* [out] */ AutoPtr<IDateFormat>& instance)
 {
-    VALIDATE_NOT_NULL(instance);
-
     return Get(timeStyle, dateStyle, 3, locale, instance);
 }
 
 ECode DateFormat::GetInstance(
-    /* [out] */ IDateFormat** instance)
+    /* [out] */ AutoPtr<IDateFormat>& instance)
 {
     return GetDateTimeInstance(SHORT, SHORT, instance);
 }
@@ -224,12 +205,9 @@ ECode DateFormat::SetCalendar(
 }
 
 ECode DateFormat::GetCalendar(
-    /* [out] */ ICalendar** calendar)
+    /* [out] */ AutoPtr<ICalendar>& calendar)
 {
-    VALIDATE_NOT_NULL(calendar);
-
-    *calendar = mCalendar;
-    REFCOUNT_ADD(*calendar);
+    calendar = mCalendar;
     return NOERROR;
 }
 
@@ -241,12 +219,9 @@ ECode DateFormat::SetNumberFormat(
 }
 
 ECode DateFormat::GetNumberFormat(
-    /* [out] */ INumberFormat** format)
+    /* [out] */ AutoPtr<INumberFormat>& format)
 {
-    VALIDATE_NOT_NULL(format);
-
-    *format = mNumberFormat;
-    REFCOUNT_ADD(*format);
+    format = mNumberFormat;
     return NOERROR;
 }
 
@@ -258,9 +233,9 @@ ECode DateFormat::SetTimeZone(
 }
 
 ECode DateFormat::GetTimeZone(
-    /* [out] */ ITimeZone** timezone)
+    /* [out] */ AutoPtr<ITimeZone>& timezone)
 {
-    return mCalendar->GetTimeZone(timezone);
+    return mCalendar->GetTimeZone(&timezone);
 }
 
 ECode DateFormat::SetLenient(
@@ -270,9 +245,9 @@ ECode DateFormat::SetLenient(
 }
 
 ECode DateFormat::IsLenient(
-    /* [out] */ Boolean* lenient)
+    /* [out] */ Boolean& lenient)
 {
-    return mCalendar->IsLenient(lenient);
+    return mCalendar->IsLenient(&lenient);
 }
 
 ECode DateFormat::GetHashCode(
@@ -323,10 +298,8 @@ ECode DateFormat::Get(
     /* [in] */ Integer dateStyle,
     /* [in] */ Integer flags,
     /* [in] */ ILocale* loc,
-    /* [out] */ IDateFormat** instance)
+    /* [out] */ AutoPtr<IDateFormat>& instance)
 {
-    VALIDATE_NOT_NULL(instance);
-
     if ((flags & 1) != 0) {
         if (timeStyle < 0 || timeStyle > 3) {
             Logger::E("DateFormat", "Illegal time style %d", timeStyle);
@@ -345,11 +318,12 @@ ECode DateFormat::Get(
     else {
         dateStyle = -1;
     }
-    ECode ec = CSimpleDateFormat::New(timeStyle, dateStyle, loc, IID_IDateFormat, (IInterface**)instance);
+    instance = nullptr;
+    ECode ec = CSimpleDateFormat::New(timeStyle, dateStyle, loc, IID_IDateFormat, (IInterface**)&instance);
     if (SUCCEEDED(ec)) {
         return NOERROR;
     }
-    return CSimpleDateFormat::New(String("M/d/yy h:mm a"), IID_IDateFormat, (IInterface**)instance);
+    return CSimpleDateFormat::New(String("M/d/yy h:mm a"), IID_IDateFormat, (IInterface**)&instance);
 }
 
 
@@ -391,33 +365,26 @@ ECode DateFormat::Field::Constructor(
 
 ECode DateFormat::Field::OfCalendarField(
     /* [in] */ Integer calendarField,
-    /* [out] */ IDateFormatField** field)
+    /* [out] */ AutoPtr<IDateFormatField>& field)
 {
-    VALIDATE_NOT_NULL(field);
-
     if (calendarField < 0 || calendarField >= sCalendarToFieldMapping.GetLength()) {
         Logger::E("DateFormat::Field", "Unknown Calendar constant %d", calendarField);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    *field = sCalendarToFieldMapping[calendarField];
-    REFCOUNT_ADD(*field);
+    field = sCalendarToFieldMapping[calendarField];
     return NOERROR;
 }
 
 ECode DateFormat::Field::GetCalendarField(
-    /* [out] */ Integer* calendarField)
+    /* [out] */ Integer& calendarField)
 {
-    VALIDATE_NOT_NULL(calendarField);
-
-    *calendarField = mCalendarField;
+    calendarField = mCalendarField;
     return NOERROR;
 }
 
 ECode DateFormat::Field::ReadResolve(
-    /* [out] */ IInterface** obj)
+    /* [out] */ AutoPtr<IInterface>& obj)
 {
-    VALIDATE_NOT_NULL(obj);
-
     CoclassID cid;
     GetCoclassID(cid);
     if (cid != CID_CDateFormatField) {
@@ -425,8 +392,9 @@ ECode DateFormat::Field::ReadResolve(
         return E_INVALID_OBJECT_EXCEPTION;
     }
 
-    GetInstanceMap()->Get(CoreUtils::Box(GetName()), obj);
-    if (*obj == nullptr) {
+    obj = nullptr;
+    GetInstanceMap()->Get(CoreUtils::Box(GetName()), &obj);
+    if (obj == nullptr) {
         Logger::E("DateFormat::Field", "unknown attribute name");
         return E_INVALID_OBJECT_EXCEPTION;
     }

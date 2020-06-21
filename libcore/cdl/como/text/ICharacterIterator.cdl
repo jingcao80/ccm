@@ -34,28 +34,28 @@ interface ICharacterIterator
     const Char DONE = 0xffffffff;
 
     Current(
-        [out] Char* currChar);
+        [out] Char& currChar);
 
     First(
-        [out] Char* firstChar);
+        [out] Char& firstChar);
 
     GetBeginIndex(
-        [out] Integer* beginIndex);
+        [out] Integer& beginIndex);
 
     GetEndIndex(
-        [out] Integer* endIndex);
+        [out] Integer& endIndex);
 
     GetIndex(
-        [out] Integer* currIndex);
+        [out] Integer& currIndex);
 
     Last(
-        [out] Char* lastChar);
+        [out] Char& lastChar);
 
     Next(
-        [out] Char* nextChar);
+        [out] Char& nextChar);
 
     Previous(
-        [out] Char* prevChar);
+        [out] Char& prevChar);
 
     SetIndex(
         [in] Integer position,

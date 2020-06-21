@@ -230,7 +230,7 @@ ECode SimpleDateFormat::Constructor(
         Array<IInterface*> dateTimeArgs(2);
         dateTimeArgs[0] = CoreUtils::Box(df);
         dateTimeArgs[1] = CoreUtils::Box(tf);
-        MessageFormat::Format(String("{0} {1}"), &dateTimeArgs, &mPattern);
+        MessageFormat::Format(String("{0} {1}"), &dateTimeArgs, mPattern);
     }
     else if (timeStyle >= 0) {
         localeData->GetTimeFormat(timeStyle, &mPattern);
@@ -253,7 +253,7 @@ ECode SimpleDateFormat::Initialize(
 
     IMap::Probe(GetCachedNumberFormatData())->Get(locale, (IInterface**)&mNumberFormat);
     if (mNumberFormat == nullptr) {
-        NumberFormat::GetIntegerInstance(locale, &mNumberFormat);
+        NumberFormat::GetIntegerInstance(locale, mNumberFormat);
         mNumberFormat->SetGroupingUsed(false);
 
         GetCachedNumberFormatData()->PutIfAbsent(locale, mNumberFormat);
@@ -465,11 +465,10 @@ ECode SimpleDateFormat::Set2DigitYearStart(
 }
 
 ECode SimpleDateFormat::Get2DigitYearStart(
-    /* [out] */ IDate** startDate)
+    /* [out] */ AutoPtr<IDate>& startDate)
 {
-    VALIDATE_NOT_NULL(startDate);
-
-    return ICloneable::Probe(mDefaultCenturyStart)->Clone(IID_IDate, (IInterface**)startDate);
+    startDate = nullptr;
+    return ICloneable::Probe(mDefaultCenturyStart)->Clone(IID_IDate, (IInterface**)&startDate);
 }
 
 ECode SimpleDateFormat::Format(
@@ -480,7 +479,7 @@ ECode SimpleDateFormat::Format(
     pos->SetBeginIndex(0);
     pos->SetEndIndex(0);
     AutoPtr<IFormatFieldDelegate> delegate;
-    pos->GetFieldDelegate(&delegate);
+    pos->GetFieldDelegate(delegate);
     return Format(date, toAppendTo, delegate);
 }
 
@@ -521,10 +520,8 @@ ECode SimpleDateFormat::Format(
 
 ECode SimpleDateFormat::FormatToCharacterIterator(
     /* [in] */ IInterface* obj,
-    /* [out] */ IAttributedCharacterIterator** it)
+    /* [out] */ AutoPtr<IAttributedCharacterIterator>& it)
 {
-    VALIDATE_NOT_NULL(it);
-
     AutoPtr<IStringBuffer> sb;
     CStringBuffer::New(IID_IStringBuffer, (IInterface**)&sb);
     AutoPtr<CharacterIteratorFieldDelegate> delegate = new CharacterIteratorFieldDelegate();
@@ -941,8 +938,8 @@ void SimpleDateFormat::ZeroPaddingNumber(
 {
     if (mZeroDigit == 0) {
         AutoPtr<IDecimalFormatSymbols> symbols;
-        IDecimalFormat::Probe(mNumberFormat)->GetDecimalFormatSymbols(&symbols);
-        symbols->GetZeroDigit(&mZeroDigit);
+        IDecimalFormat::Probe(mNumberFormat)->GetDecimalFormatSymbols(symbols);
+        symbols->GetZeroDigit(mZeroDigit);
     }
     if (value >= 0) {
         if (value < 100 && minDigits >= 1 && minDigits <= 2) {
@@ -983,14 +980,12 @@ void SimpleDateFormat::ZeroPaddingNumber(
 ECode SimpleDateFormat::Parse(
     /* [in] */ const String& text,
     /* [in] */ IParsePosition* pos,
-    /* [out] */ IDate** date)
+    /* [out] */ AutoPtr<IDate>& date)
 {
-    VALIDATE_NOT_NULL(date);
-
     // Make sure the timezone associated with this dateformat instance (set via
     // {@code setTimeZone} isn't change as a side-effect of parsing a date.
     AutoPtr<ITimeZone> tz;
-    GetTimeZone(&tz);
+    GetTimeZone(tz);
     ECode ec = ParseInternal(text, pos, date);
     SetTimeZone(tz);
     return ec;
@@ -999,14 +994,12 @@ ECode SimpleDateFormat::Parse(
 ECode SimpleDateFormat::ParseInternal(
     /* [in] */ const String& text,
     /* [in] */ IParsePosition* pos,
-    /* [out] */ IDate** date)
+    /* [out] */ AutoPtr<IDate>& date)
 {
-    VALIDATE_NOT_NULL(date);
-
     CheckNegativeNumberExpression();
 
     Integer start;
-    pos->GetIndex(&start);
+    pos->GetIndex(start);
     Integer oldStart = start;
     Integer textLength = text.GetLength();
 
@@ -1029,7 +1022,7 @@ ECode SimpleDateFormat::ParseInternal(
                 if (start >= textLength || text.GetChar(start) != (Char)count) {
                     pos->SetIndex(oldStart);
                     pos->SetErrorIndex(start);
-                    *date = nullptr;
+                    date = nullptr;
                     return NOERROR;
                 }
                 start++;
@@ -1042,7 +1035,7 @@ ECode SimpleDateFormat::ParseInternal(
                     if (start >= textLength || text.GetChar(start) != mCompiledPattern[i++]) {
                         pos->SetIndex(oldStart);
                         pos->SetErrorIndex(start);
-                        *date = nullptr;
+                        date = nullptr;
                         return NOERROR;
                     }
                     start++;
@@ -1096,7 +1089,7 @@ ECode SimpleDateFormat::ParseInternal(
                         pos, useFollowingMinusSignAsDelimiter, calb);
                 if (start < 0) {
                     pos->SetIndex(oldStart);
-                    *date = nullptr;
+                    date = nullptr;
                     return NOERROR;
                 }
             }
@@ -1115,7 +1108,7 @@ ECode SimpleDateFormat::ParseInternal(
     if (FAILED(ec)) {
         pos->SetErrorIndex(start);
         pos->SetIndex(oldStart);
-        *date = nullptr;
+        date = nullptr;
         return NOERROR;
     }
     // If the year value is ambiguous,
@@ -1129,13 +1122,13 @@ ECode SimpleDateFormat::ParseInternal(
             if (FAILED(ec)) {
                 pos->SetErrorIndex(start);
                 pos->SetIndex(oldStart);
-                *date = nullptr;
+                date = nullptr;
                 return NOERROR;
             }
         }
     }
 
-    parsedDate.MoveTo(date);
+    date = std::move(parsedDate);
     return NOERROR;
 }
 
@@ -1275,7 +1268,7 @@ Integer SimpleDateFormat::SubParseZoneStringFromSymbols(
 {
     Boolean useSameName = false; // true if standard and daylight time use the same abbreviation.
     AutoPtr<ITimeZone> currentTimeZone;
-    GetTimeZone(&currentTimeZone);
+    GetTimeZone(currentTimeZone);
 
     // At this point, check for named time zones by looking through
     // the locale data from the TimeZoneNames strings.
@@ -1448,7 +1441,7 @@ Integer SimpleDateFormat::SubParse(
     // of the string, then fail.
     Integer index;
     for (;;) {
-        pos->GetIndex(&index);
+        pos->GetIndex(index);
         if (index >= text.GetLength()) {
             origPos->SetErrorIndex(start);
             return -1;
@@ -1476,10 +1469,10 @@ Integer SimpleDateFormat::SubParse(
                 if ((start + count) > text.GetLength()) {
                     goto PARSING_FAILED;
                 }
-                mNumberFormat->Parse(text.Substring(0, start + count), pos, &number);
+                mNumberFormat->Parse(text.Substring(0, start + count), pos, number);
             }
             else {
-                mNumberFormat->Parse(text, pos, &number);
+                mNumberFormat->Parse(text, pos, number);
             }
             if (number == nullptr) {
                 if (patternCharIndex != DateFormatSymbols::PATTERN_YEAR || IGregorianCalendar::Probe(mCalendar) != nullptr) {
@@ -1490,7 +1483,7 @@ Integer SimpleDateFormat::SubParse(
                 number->IntegerValue(value);
 
                 if (useFollowingMinusSignAsDelimiter && (value < 0) &&
-                        (((pos->GetIndex(&index), index < text.GetLength()) &&
+                        (((pos->GetIndex(index), index < text.GetLength()) &&
                         (text.GetChar(index) != mMinusSign)) ||
                         ((index == text.GetLength()) &&
                         (text.GetChar(index - 1) == mMinusSign)))) {
@@ -1538,7 +1531,7 @@ Integer SimpleDateFormat::SubParse(
                         }
                     }
                     calb->Set(field, value);
-                    pos->GetIndex(&index);
+                    pos->GetIndex(index);
                     return index;
                 }
 
@@ -1548,7 +1541,7 @@ Integer SimpleDateFormat::SubParse(
                 // we made adjustments to place the 2-digit year in the proper
                 // century, for parsed strings from "00" to "99".  Any other string
                 // is treated literally:  "2250", "-1", "1", "002".
-                if (count <= 2 && (pos->GetIndex(&index), index - start == 2) &&
+                if (count <= 2 && (pos->GetIndex(index), index - start == 2) &&
                         Character::IsDigit(text.GetChar(start)) &&
                         Character::IsDigit(text.GetChar(start + 1))) {
                     // Assume for example that the defaultCenturyStart is 6/18/1903.
@@ -1593,7 +1586,7 @@ Integer SimpleDateFormat::SubParse(
             case DateFormatSymbols::PATTERN_HOUR_OF_DAY1: // 'k' 1-based.  eg, 23:59 + 1 hour =>> 24:59
             {
                 Boolean lenient;
-                if (IsLenient(&lenient), !lenient) {
+                if (IsLenient(lenient), !lenient) {
                     // Validate the hour value in non-lenient
                     if (value < 1 || value > 24) {
                         goto PARSING_FAILED;
@@ -1605,7 +1598,7 @@ Integer SimpleDateFormat::SubParse(
                     value = 0;
                 }
                 calb->Set(ICalendar::HOUR_OF_DAY, value);
-                pos->GetIndex(&index);
+                pos->GetIndex(index);
                 return index;
             }
 
@@ -1655,7 +1648,7 @@ Integer SimpleDateFormat::SubParse(
             case DateFormatSymbols::PATTERN_HOUR1: // 'h' 1-based.  eg, 11PM + 1 hour =>> 12 AM
             {
                 Boolean lenient;
-                if (IsLenient(&lenient), !lenient) {
+                if (IsLenient(lenient), !lenient) {
                     // Validate the hour value in non-lenient
                     if (value < 1 || value > 12) {
                         goto PARSING_FAILED;
@@ -1667,7 +1660,7 @@ Integer SimpleDateFormat::SubParse(
                     value = 0;
                 }
                 calb->Set(ICalendar::HOUR, value);
-                pos->GetIndex(&index);
+                pos->GetIndex(index);
                 return index;
             }
 
@@ -1675,7 +1668,7 @@ Integer SimpleDateFormat::SubParse(
             case DateFormatSymbols::PATTERN_ZONE_VALUE: // 'Z'
             {
                 Integer sign = 0;
-                pos->GetIndex(&index);
+                pos->GetIndex(index);
                 Char c = text.GetChar(index);
                 if (c == U'+') {
                     sign = 1;
@@ -1741,7 +1734,7 @@ Integer SimpleDateFormat::SubParse(
 
             case DateFormatSymbols::PATTERN_ISO_ZONE: // 'X'
             {
-                pos->GetIndex(&index);
+                pos->GetIndex(index);
                 if ((text.GetLength() - index) <= 0) {
                     goto PARSING_FAILED;
                 }
@@ -1793,15 +1786,15 @@ Integer SimpleDateFormat::SubParse(
 
                 // Handle "generic" fields
                 Integer parseStart;
-                pos->GetIndex(&parseStart);
+                pos->GetIndex(parseStart);
                 if (obeyCount) {
                     if ((start + count) > text.GetLength()) {
                         goto PARSING_FAILED;
                     }
-                    mNumberFormat->Parse(text.Substring(0, start + count), pos, &number);
+                    mNumberFormat->Parse(text.Substring(0, start + count), pos, number);
                 }
                 else {
-                    mNumberFormat->Parse(text, pos, &number);
+                    mNumberFormat->Parse(text, pos, number);
                 }
                 if (number != nullptr) {
                     if (patternCharIndex == DateFormatSymbols::PATTERN_MILLISECOND) {
@@ -1813,7 +1806,7 @@ Integer SimpleDateFormat::SubParse(
                         // Case 2: 11.7890567 seconds is 11 seconds and 789 (not 7890567) milliseconds.
                         Double doubleValue;
                         number->DoubleValue(doubleValue);
-                        pos->GetIndex(&index);
+                        pos->GetIndex(index);
                         Integer width = index - parseStart;
                         Double divisor = Math::Pow(10, width);
                         value = (Integer)((doubleValue / divisor) * 1000);
@@ -1822,7 +1815,7 @@ Integer SimpleDateFormat::SubParse(
                         number->IntegerValue(value);
                     }
 
-                    pos->GetIndex(&index);
+                    pos->GetIndex(index);
                     if (useFollowingMinusSignAsDelimiter && (value < 0) &&
                             (((index < text.GetLength()) &&
                             (text.GetChar(index) != mMinusSign)) ||
@@ -1843,7 +1836,7 @@ Integer SimpleDateFormat::SubParse(
 
 PARSING_FAILED:
     // Parsing failed.
-    pos->GetIndex(&index);
+    pos->GetIndex(index);
     origPos->SetErrorIndex(index);
     return -1;
 }
@@ -1865,7 +1858,7 @@ Integer SimpleDateFormat::ParseMonth(
         // while pattern uses numeric style: M or MM.
         // [We computed 'value' above.]
         out->Set(ICalendar::MONTH, value - 1);
-        pos->GetIndex(&index);
+        pos->GetIndex(index);
         return index;
     }
 
@@ -1981,10 +1974,8 @@ ECode SimpleDateFormat::TranslatePattern(
     /* [in] */ const String& pattern,
     /* [in] */ const String& from,
     /* [in] */ const String& to,
-    /* [out] */ String* result)
+    /* [out] */ String& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     AutoPtr<IStringBuilder> sb;
     CStringBuilder::New(IID_IStringBuilder, (IInterface**)&sb);
     Boolean inQuote = false;
@@ -2021,23 +2012,21 @@ ECode SimpleDateFormat::TranslatePattern(
         Logger::E("SimpleDateFormat", "Unfinished quote in pattern");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    return sb->ToString(*result);
+    return sb->ToString(result);
 }
 
 ECode SimpleDateFormat::ToPattern(
-    /* [out] */ String* pattern)
+    /* [out] */ String& pattern)
 {
-    VALIDATE_NOT_NULL(pattern);
-
-    *pattern = mPattern;
+    pattern = mPattern;
     return NOERROR;
 }
 
 ECode SimpleDateFormat::ToLocalizedPattern(
-    /* [out] */ String* pattern)
+    /* [out] */ String& pattern)
 {
     String localPatternChars;
-    mFormatData->GetLocalPatternChars(&localPatternChars);
+    mFormatData->GetLocalPatternChars(localPatternChars);
     return TranslatePattern(mPattern, DateFormatSymbols::sPatternChars,
             localPatternChars, pattern);
 }
@@ -2054,10 +2043,10 @@ ECode SimpleDateFormat::ApplyLocalizedPattern(
     /* [in] */ const String& pattern)
 {
     String localPatternChars;
-    mFormatData->GetLocalPatternChars(&localPatternChars);
+    mFormatData->GetLocalPatternChars(localPatternChars);
     String p;
     FAIL_RETURN(TranslatePattern(pattern, localPatternChars,
-            DateFormatSymbols::sPatternChars, &p));
+            DateFormatSymbols::sPatternChars, p));
     FAIL_RETURN(Compile(p, &mCompiledPattern));
     mPattern = p;
     return NOERROR;
@@ -2120,7 +2109,7 @@ void SimpleDateFormat::CheckNegativeNumberExpression()
     if ((IDecimalFormat::Probe(mNumberFormat) != nullptr) &&
             !Object::Equals(mNumberFormat, mOriginalNumberFormat)) {
         String numberPattern;
-        IDecimalFormat::Probe(mNumberFormat)->ToPattern(&numberPattern);
+        IDecimalFormat::Probe(mNumberFormat)->ToPattern(numberPattern);
         if (!numberPattern.Equals(mOriginalNumberPattern)) {
             mHasFollowingMinusSign = false;
 
@@ -2133,8 +2122,8 @@ void SimpleDateFormat::CheckNegativeNumberExpression()
                     (minusIndex > numberPattern.LastIndexOf(U'#'))) {
                     mHasFollowingMinusSign = true;
                     AutoPtr<IDecimalFormatSymbols> symbols;
-                    IDecimalFormat::Probe(mNumberFormat)->GetDecimalFormatSymbols(&symbols);
-                    symbols->GetMinusSign(&mMinusSign);
+                    IDecimalFormat::Probe(mNumberFormat)->GetDecimalFormatSymbols(symbols);
+                    symbols->GetMinusSign(mMinusSign);
                 }
             }
             mOriginalNumberPattern = numberPattern;

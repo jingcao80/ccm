@@ -66,7 +66,7 @@ interface IFormat
 {
     Format(
         [in] IInterface* obj,
-        [out] String* string);
+        [out] String& string);
 
     Format(
         [in] IInterface* obj,
@@ -75,16 +75,16 @@ interface IFormat
 
     FormatToCharacterIterator(
         [in] IInterface* obj,
-        [out] IAttributedCharacterIterator** it);
+        [out] IAttributedCharacterIterator&& it);
 
     ParseObject(
         [in] String source,
-        [out] IInterface** object);
+        [out] IInterface&& object);
 
     ParseObject(
         [in] String source,
         [in] IParsePosition* pos,
-        [out] IInterface** object);
+        [out] IInterface&& object);
 }
 
 }

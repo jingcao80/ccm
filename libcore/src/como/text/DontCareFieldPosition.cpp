@@ -101,12 +101,9 @@ ECode DontCareFieldPosition::Constructor()
 }
 
 ECode DontCareFieldPosition::GetFieldDelegate(
-    /* [out] */ IFormatFieldDelegate** delegate)
+    /* [out] */ AutoPtr<IFormatFieldDelegate>& delegate)
 {
-    VALIDATE_NOT_NULL(delegate);
-
-    *delegate = mNoDelegate;
-    REFCOUNT_ADD(*delegate);
+    delegate = mNoDelegate;
     return NOERROR;
 }
 
@@ -114,7 +111,7 @@ ECode DontCareFieldPosition::ToString(
     /* [out] */ String& desc)
 {
     AutoPtr<IFormatField> attribute;
-    GetFieldAttribute(&attribute);
+    GetFieldAttribute(attribute);
     desc = String::Format("DontCareFieldPosition[mField=%d,mAttribute=%s,mBeginIndex=%d,mEndIndex=%d]",
             mField, Object::ToString(attribute).string(), mBeginIndex, mEndIndex);
     return NOERROR;

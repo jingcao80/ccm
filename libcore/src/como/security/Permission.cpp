@@ -40,6 +40,7 @@ ECode Permission::GetName(
 ECode Permission::NewPermissionCollection(
     /* [out] */ AutoPtr<IPermissionCollection>& permissions)
 {
+    permissions = nullptr;
     return CPermissions::New(IID_IPermissionCollection, (IInterface**)&permissions);
 }
 

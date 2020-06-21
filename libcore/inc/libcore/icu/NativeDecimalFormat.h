@@ -117,7 +117,7 @@ public:
 
     ECode FormatToCharacterIterator(
         /* [in] */ IInterface* object,
-        /* [out] */ IAttributedCharacterIterator** it);
+        /* [out] */ AutoPtr<IAttributedCharacterIterator>& it);
 
     ECode ToLocalizedPattern(
         /* [out] */ String* pattern);
