@@ -46,13 +46,13 @@ public:
         /* [in] */ ITimeZone* zone);
 
     ECode GetEra(
-        /* [out] */ IEra** era) override;
+        /* [out] */ AutoPtr<IEra>& era) override;
 
     ECode SetEra(
         /* [in] */ IEra* era) override;
 
     ECode GetYear(
-        /* [out] */ Integer* year) override;
+        /* [out] */ Integer& year) override;
 
     ECode SetYear(
         /* [in] */ Integer year) override;
@@ -61,13 +61,13 @@ public:
         /* [in] */ Integer n) override;
 
     ECode IsLeapYear(
-        /* [out] */ Boolean* leapYear) override;
+        /* [out] */ Boolean& leapYear) override;
 
     ECode SetLeapYear(
         /* [in] */ Boolean leapYear) override;
 
     ECode GetMonth(
-        /* [out] */ Integer* month) override;
+        /* [out] */ Integer& month) override;
 
     ECode SetMonth(
         /* [in] */ Integer month) override;
@@ -76,7 +76,7 @@ public:
         /* [in] */ Integer n) override;
 
     ECode GetDayOfMonth(
-        /* [out] */ Integer* days) override;
+        /* [out] */ Integer& days) override;
 
     ECode SetDayOfMonth(
         /* [in] */ Integer date) override;
@@ -85,10 +85,10 @@ public:
         /* [in] */ Integer n) override;
 
     ECode GetDayOfWeek(
-        /* [out] */ Integer* date) override;
+        /* [out] */ Integer& date) override;
 
     ECode GetHours(
-        /* [out] */ Integer* hours) override;
+        /* [out] */ Integer& hours) override;
 
     ECode SetHours(
         /* [in] */ Integer hours) override;
@@ -97,7 +97,7 @@ public:
         /* [in] */ Integer n) override;
 
     ECode GetMinutes(
-        /* [out] */ Integer* minutes) override;
+        /* [out] */ Integer& minutes) override;
 
     ECode SetMinutes(
         /* [in] */ Integer minutes) override;
@@ -106,7 +106,7 @@ public:
         /* [in] */ Integer n) override;
 
     ECode GetSeconds(
-        /* [out] */ Integer* seconds) override;
+        /* [out] */ Integer& seconds) override;
 
     ECode SetSeconds(
         /* [in] */ Integer seconds) override;
@@ -115,7 +115,7 @@ public:
         /* [in] */ Integer n) override;
 
     ECode GetMillis(
-        /* [out] */ Integer* millis) override;
+        /* [out] */ Integer& millis) override;
 
     ECode SetMillis(
         /* [in] */ Integer millis) override;
@@ -124,7 +124,7 @@ public:
         /* [in] */ Integer n) override;
 
     ECode GetTimeOfDay(
-        /* [out] */ Long* date) override;
+        /* [out] */ Long& date) override;
 
     ECode SetDate(
         /* [in] */ Integer year,
@@ -152,26 +152,26 @@ public:
         /* [in] */ Long fraction) override;
 
     ECode IsNormalized(
-        /* [out] */ Boolean* normalized) override;
+        /* [out] */ Boolean& normalized) override;
 
     ECode IsStandardTime(
-        /* [out] */ Boolean* standardTime) override;
+        /* [out] */ Boolean& standardTime) override;
 
     ECode SetStandardTime(
         /* [in] */ Boolean standardTime) override;
 
     ECode IsDaylightTime(
-        /* [out] */ Boolean* daylightTime) override;
+        /* [out] */ Boolean& daylightTime) override;
 
     ECode GetZone(
-        /* [out] */ ITimeZone** zone) override;
+        /* [out] */ AutoPtr<ITimeZone>& zone) override;
 
     ECode SetZone(
         /* [in] */ ITimeZone* zoneinfo) override;
 
     ECode IsSameDate(
         /* [in] */ ICalendarDate* date,
-        /* [out] */ Boolean* same) override;
+        /* [out] */ Boolean& same) override;
 
     ECode Equals(
         /* [in] */ IInterface* obj,
@@ -184,10 +184,10 @@ public:
         /* [out] */ String& desc) override;
 
     ECode GetZoneOffset(
-        /* [out] */ Integer* offset) override;
+        /* [out] */ Integer& offset) override;
 
     ECode GetDaylightSaving(
-        /* [out] */ Integer* ds) override;
+        /* [out] */ Integer& ds) override;
 
 protected:
     virtual ECode SetLocale(

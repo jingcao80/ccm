@@ -30,7 +30,7 @@ interface IJulianCalendar
 {
     IsLeapYear(
         [in] Integer jyear,
-        [out] Boolean* leapYear);
+        [out] Boolean& leapYear);
 }
 
 }

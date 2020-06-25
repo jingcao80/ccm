@@ -30,12 +30,12 @@ interface ILocalGregorianCalendar
 {
     IsLeapYear(
         [in] Integer gregorianYear,
-        [out] Boolean* leapYear);
+        [out] Boolean& leapYear);
 
     IsLeapYear(
         [in] IEra* era,
         [in] Integer year,
-        [out] Boolean* leapYear);
+        [out] Boolean& leapYear);
 }
 
 }

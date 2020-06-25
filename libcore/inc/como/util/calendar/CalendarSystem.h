@@ -43,10 +43,10 @@ public:
 
     static ECode ForName(
         /* [in] */ const String& calendarName,
-        /* [out] */ ICalendarSystem** system);
+        /* [out] */ AutoPtr<ICalendarSystem>& system);
 
     static ECode GetCalendarProperties(
-        /* [out] */ IProperties** prop);
+        /* [out] */ AutoPtr<IProperties>& prop);
 
 private:
     static ECode StaticInitialize();

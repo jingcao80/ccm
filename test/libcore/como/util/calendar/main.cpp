@@ -35,18 +35,17 @@ using como::util::calendar::IID_ICalendarSystem;
 TEST(CalendarTest, TestCGregorian)
 {
     AutoPtr<ICalendarSystem> gcal;
-    CalendarSystemFactory::ForName(String("gregorian"), &gcal);
+    CalendarSystemFactory::ForName("gregorian", gcal);
 
     AutoPtr<ISystem> sys;
     CSystem::New(IID_ISystem, (IInterface**)&sys);
     Long millis;
     sys->GetCurrentTimeMillis(millis);
     AutoPtr<ICalendarDate> date;
-    ECode ec = gcal->GetCalendarDate(millis, &date);
+    ECode ec = gcal->GetCalendarDate(millis, date);
     EXPECT_TRUE(ec == NOERROR && date != nullptr);
     String dateStr = Object::ToString(date);
-    date = nullptr;
-    ec = gcal->GetCalendarDate(&date);
+    ec = gcal->GetCalendarDate(date);
     EXPECT_TRUE(ec == NOERROR && date != nullptr);
     EXPECT_STRNE(dateStr.string(), Object::ToString(date).string());
 }

@@ -30,7 +30,7 @@ namespace calendar {
 interface IBaseCalendarDate
 {
     GetNormalizedYear(
-        [out] Integer* normalizedYear);
+        [out] Integer& normalizedYear);
 
     SetNormalizedDate(
         [in] Integer normalizedYear,
@@ -77,26 +77,26 @@ interface IBaseCalendar
 
     GetDayOfWeek(
         [in] ICalendarDate* date,
-        [out] Integer* days);
+        [out] Integer& days);
 
     GetDayOfYear(
         [in] ICalendarDate* date,
-        [out] Long* days);
+        [out] Long& days);
 
     GetFixedDate(
         [in] ICalendarDate* date,
-        [out] Long* fraction);
+        [out] Long& fraction);
 
     GetFixedDate(
         [in] Integer year,
         [in] Integer month,
         [in] Integer dayOfMonth,
         [in] IBaseCalendarDate* cache,
-        [out] Long* fraction);
+        [out] Long& fraction);
 
     GetYearFromFixedDate(
         [in] Long fixedDate,
-        [out] Integer* year);
+        [out] Integer& year);
 }
 
 }

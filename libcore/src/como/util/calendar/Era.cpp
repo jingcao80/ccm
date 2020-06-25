@@ -41,7 +41,7 @@ ECode Era::Constructor(
     mLocalTime = localTime;
     AutoPtr<IGregorian> gcal = CalendarSystem::GetGregorianCalendar();
     AutoPtr<ICalendarDate> d;
-    ICalendarSystem::Probe(gcal)->NewCalendarDate(nullptr, &d);
+    ICalendarSystem::Probe(gcal)->NewCalendarDate(nullptr, d);
     ICalendarSystem::Probe(gcal)->GetCalendarDate(since, d);
     AutoPtr<ImmutableGregorianDate> date = new ImmutableGregorianDate();
     ECode ec = date->Constructor(IBaseCalendarDate::Probe(d));
@@ -51,75 +51,60 @@ ECode Era::Constructor(
 }
 
 ECode Era::GetName(
-    /* [out] */ String* name)
+    /* [out] */ String& name)
 {
-    VALIDATE_NOT_NULL(name);
-
-    *name = mName;
+    name = mName;
     return NOERROR;
 }
 
 ECode Era::GetDisplayName(
     /* [in] */ ILocale* locale,
-    /* [out] */ String* name)
+    /* [out] */ String& name)
 {
-    VALIDATE_NOT_NULL(name);
-
-    *name = mName;
+    name = mName;
     return NOERROR;
 }
 
 ECode Era::GetAbbreviation(
-    /* [out] */ String* abbr)
+    /* [out] */ String& abbr)
 {
-    VALIDATE_NOT_NULL(abbr);
-
-    *abbr = mAbbr;
+    abbr = mAbbr;
     return NOERROR;
 }
 
 ECode Era::GetDiaplayAbbreviation(
     /* [in] */ ILocale* locale,
-    /* [out] */ String* abbr)
+    /* [out] */ String& abbr)
 {
-    VALIDATE_NOT_NULL(abbr);
-
-    *abbr = mAbbr;
+    abbr = mAbbr;
     return NOERROR;
 }
 
 ECode Era::GetSince(
     /* [in] */ ITimeZone* zone,
-    /* [out] */ Long* time)
+    /* [out] */ Long& time)
 {
-    VALIDATE_NOT_NULL(time);
-
     if (zone == nullptr || !mLocalTime) {
-        *time = mSince;
+        time = mSince;
         return NOERROR;
     }
     Integer offset;
     zone->GetOffset(mSince, &offset);
-    *time = mSince - offset;
+    time = mSince - offset;
     return NOERROR;
 }
 
 ECode Era::GetSinceDate(
-    /* [out] */ ICalendarDate** date)
+    /* [out] */ AutoPtr<ICalendarDate>& date)
 {
-    VALIDATE_NOT_NULL(date);
-
-    *date = mSinceDate;
-    REFCOUNT_ADD(*date);
+    date = mSinceDate;
     return NOERROR;
 }
 
 ECode Era::IsLocalTime(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
-    *result = mLocalTime;
+    result = mLocalTime;
     return NOERROR;
 }
 
@@ -157,15 +142,15 @@ ECode Era::ToString(
     CStringBuilder::New(IID_IStringBuilder, (IInterface**)&sb);
     sb->Append(U'[');
     String name, abbr;
-    GetName(&name);
+    GetName(name);
     sb->Append(name);
     sb->Append(String(" ("));
-    GetAbbreviation(&abbr);
+    GetAbbreviation(abbr);
     sb->Append(abbr);
     sb->Append(U')');
     sb->Append(String(" since "));
     AutoPtr<ICalendarDate> sinceDate;
-    GetSinceDate(&sinceDate);
+    GetSinceDate(sinceDate);
     sb->Append(Object::ToString(sinceDate));
     if (mLocalTime) {
         Integer length;

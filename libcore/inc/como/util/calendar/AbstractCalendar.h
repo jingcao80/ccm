@@ -32,7 +32,7 @@ class AbstractCalendar
 public:
     ECode GetEra(
         /* [in] */ const String& eraName,
-        /* [out] */ IEra** era) override;
+        /* [out] */ AutoPtr<IEra>& era) override;
 
     ECode GetEras(
         /* [out, callee] */ Array<IEra*>* eras) override;
@@ -42,16 +42,16 @@ public:
         /* [in] */ const String& eraName) override;
 
     ECode GetCalendarDate(
-        /* [out] */ ICalendarDate** date) override;
+        /* [out] */ AutoPtr<ICalendarDate>& date) override;
 
     ECode GetCalendarDate(
         /* [in] */ Long millis,
-        /* [out] */ ICalendarDate** date) override;
+        /* [out] */ AutoPtr<ICalendarDate>& date) override;
 
     ECode GetCalendarDate(
         /* [in] */ Long millis,
         /* [in] */ ITimeZone* zone,
-        /* [out] */ ICalendarDate** date) override;
+        /* [out] */ AutoPtr<ICalendarDate>& date) override;
 
     ECode GetCalendarDate(
         /* [in] */ Long millis,
@@ -69,13 +69,13 @@ public:
         /* [in] */ Integer timeOfDay) override;
 
     ECode GetWeekLength(
-        /* [out] */ Integer* weeks) override;
+        /* [out] */ Integer& weeks) override;
 
     ECode GetNthDayOfWeek(
         /* [in] */ Integer nth,
         /* [in] */ Integer dayOfWeek,
         /* [in] */ ICalendarDate* inDate,
-        /* [out] */ ICalendarDate** outDate) override;
+        /* [out] */ AutoPtr<ICalendarDate>& outDate) override;
 
     static Long GetDayOfWeekDateOnOrBefore(
         /* [in] */ Long fixedDate,
@@ -106,7 +106,7 @@ protected:
 
     virtual ECode GetFixedDate(
         /* [in] */ ICalendarDate* date,
-        /* [out] */ Long* fraction) = 0;
+        /* [out] */ Long& fraction) = 0;
 
     virtual ECode GetCalendarDateFromFixedDate(
         /* [in] */ ICalendarDate* date,

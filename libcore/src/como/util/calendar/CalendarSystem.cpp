@@ -77,15 +77,12 @@ AutoPtr<IGregorian> CalendarSystem::GetGregorianCalendar()
 
 ECode CalendarSystem::ForName(
     /* [in] */ const String& calendarName,
-    /* [out] */ ICalendarSystem** system)
+    /* [out] */ AutoPtr<ICalendarSystem>& system)
 {
-    VALIDATE_NOT_NULL(system);
-
     StaticInitialize();
 
     if (String("gregorian").Equals(calendarName)) {
-        *system = ICalendarSystem::Probe(GetGregorianCalendar());
-        REFCOUNT_ADD(*system);
+        system = ICalendarSystem::Probe(GetGregorianCalendar());
         return NOERROR;
     }
 
@@ -93,14 +90,14 @@ ECode CalendarSystem::ForName(
     IMap::Probe(sCalendars)->Get(CoreUtils::Box(calendarName),
             (IInterface**)&cal);
     if (cal != nullptr) {
-        cal.MoveTo(system);
+        system = std::move(cal);
         return NOERROR;
     }
 
     AutoPtr<IMetaCoclass> calendarClass;
     sNames->Get(CoreUtils::Box(calendarName), (IInterface**)&calendarClass);
     if (calendarClass == nullptr) {
-        *system = nullptr;
+        system = nullptr;
         return NOERROR;
     }
 
@@ -108,7 +105,7 @@ ECode CalendarSystem::ForName(
     if (calendarClass->ContainsInterface(String("como::util::calendar::ILocalGregorianCalendar"),
             contains), contains) {
         AutoPtr<ILocalGregorianCalendar> lgCalendar;
-        LocalGregorianCalendar::GetLocalGregorianCalendar(calendarName, &lgCalendar);
+        LocalGregorianCalendar::GetLocalGregorianCalendar(calendarName, lgCalendar);
         cal = ICalendarSystem::Probe(lgCalendar);
     }
     else {
@@ -120,26 +117,24 @@ ECode CalendarSystem::ForName(
         }
     }
     if (cal == nullptr) {
-        *system = nullptr;
+        system = nullptr;
         return NOERROR;
     }
 
     AutoPtr<ICalendarSystem> cs;
     sCalendars->PutIfAbsent(CoreUtils::Box(calendarName), cal, (IInterface**)&cs);
     if (cs == nullptr) {
-        cal.MoveTo(system);
+        system = std::move(cal);
     }
     else {
-        cs.MoveTo(system);
+        system = std::move(cs);
     }
     return NOERROR;
 }
 
 ECode CalendarSystem::GetCalendarProperties(
-    /* [out] */ IProperties** prop)
+    /* [out] */ AutoPtr<IProperties>& prop)
 {
-    VALIDATE_NOT_NULL(prop);
-
     StaticInitialize();
 
     AutoPtr<IProperties> calendarProps;
@@ -149,7 +144,7 @@ ECode CalendarSystem::GetCalendarProperties(
     ECode ec = calendarProps->Load(is);
     is->Close();
     if (FAILED(ec)) return ec;
-    calendarProps.MoveTo(prop);
+    prop = std::move(calendarProps);
     return NOERROR;
 }
 

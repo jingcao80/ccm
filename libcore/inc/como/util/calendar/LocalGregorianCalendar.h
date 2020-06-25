@@ -55,7 +55,7 @@ protected:
             /* [in] */ Integer year) override;
 
         ECode GetNormalizedYear(
-            /* [out] */ Integer* normalizedYear) override;
+            /* [out] */ Integer& normalizedYear) override;
 
         ECode SetNormalizedYear(
             /* [in] */ Integer normalizedYear) override;
@@ -82,7 +82,7 @@ protected:
 protected:
     static ECode GetLocalGregorianCalendar(
         /* [in] */ const String& name,
-        /* [out] */ ILocalGregorianCalendar** calendar);
+        /* [out] */ AutoPtr<ILocalGregorianCalendar>& calendar);
 
 public:
     COMO_INTERFACE_DECL();
@@ -92,34 +92,34 @@ public:
         /* [in] */ const Array<IEra*>& eras);
 
     ECode GetName(
-        /* [out] */ String* name) override;
+        /* [out] */ String& name) override;
 
     ECode GetCalendarDate(
-        /* [out] */ ICalendarDate** date) override;
+        /* [out] */ AutoPtr<ICalendarDate>& date) override;
 
     ECode GetCalendarDate(
         /* [in] */ Long millis,
-        /* [out] */ ICalendarDate** date) override;
+        /* [out] */ AutoPtr<ICalendarDate>& date) override;
 
     ECode GetCalendarDate(
         /* [in] */ Long millis,
         /* [in] */ ITimeZone* zone,
-        /* [out] */ ICalendarDate** date) override;
+        /* [out] */ AutoPtr<ICalendarDate>& date) override;
 
     ECode GetCalendarDate(
         /* [in] */ Long millis,
         /* [in] */ ICalendarDate* date) override;
 
     ECode NewCalendarDate(
-        /* [out] */ ICalendarDate** date) override;
+        /* [out] */ AutoPtr<ICalendarDate>& date) override;
 
     ECode NewCalendarDate(
         /* [in] */ ITimeZone* zone,
-        /* [out] */ ICalendarDate** date) override;
+        /* [out] */ AutoPtr<ICalendarDate>& date) override;
 
     ECode Validate(
         /* [in] */ ICalendarDate* date,
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode Normalize(
         /* [in] */ ICalendarDate* date,
@@ -127,12 +127,12 @@ public:
 
     ECode IsLeapYear(
         /* [in] */ Integer gregorianYear,
-        /* [out] */ Boolean* leapYear) override;
+        /* [out] */ Boolean& leapYear) override;
 
     ECode IsLeapYear(
         /* [in] */ IEra* era,
         /* [in] */ Integer year,
-        /* [out] */ Boolean* leapYear) override;
+        /* [out] */ Boolean& leapYear) override;
 
     ECode GetCalendarDateFromFixedDate(
         /* [in] */ ICalendarDate* date,

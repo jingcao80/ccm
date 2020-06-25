@@ -40,7 +40,7 @@ protected:
             /* [in] */ ITimeZone* zone);
 
         ECode GetNormalizedYear(
-            /* [out] */ Integer* normalizedYear) override;
+            /* [out] */ Integer& normalizedYear) override;
 
         ECode SetNormalizedYear(
             /* [in] */ Integer normalizedYear) override;
@@ -56,14 +56,14 @@ public:
     ECode Constructor();
 
     ECode GetName(
-        /* [out] */ String* name) override;
+        /* [out] */ String& name) override;
 
     ECode GetCalendarDate(
-        /* [out] */ ICalendarDate** date) override;
+        /* [out] */ AutoPtr<ICalendarDate>& date) override;
 
     ECode GetCalendarDate(
         /* [in] */ Long millis,
-        /* [out] */ ICalendarDate** date) override;
+        /* [out] */ AutoPtr<ICalendarDate>& date) override;
 
     ECode GetCalendarDate(
         /* [in] */ Long millis,
@@ -72,14 +72,14 @@ public:
     ECode GetCalendarDate(
         /* [in] */ Long millis,
         /* [in] */ ITimeZone* zone,
-        /* [out] */ ICalendarDate** date) override;
+        /* [out] */ AutoPtr<ICalendarDate>& date) override;
 
     ECode NewCalendarDate(
-        /* [out] */ ICalendarDate** date) override;
+        /* [out] */ AutoPtr<ICalendarDate>& date) override;
 
     ECode NewCalendarDate(
         /* [in] */ ITimeZone* zone,
-        /* [out] */ ICalendarDate** date) override;
+        /* [out] */ AutoPtr<ICalendarDate>& date) override;
 };
 
 }

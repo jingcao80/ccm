@@ -31,31 +31,25 @@ ECode Gregorian::Constructor()
 }
 
 ECode Gregorian::GetName(
-    /* [out] */ String* name)
+    /* [out] */ String& name)
 {
-    VALIDATE_NOT_NULL(name);
-
-    *name = "gregorian";
+    name = "gregorian";
     return NOERROR;
 }
 
 ECode Gregorian::GetCalendarDate(
-    /* [out] */ ICalendarDate** date)
+    /* [out] */ AutoPtr<ICalendarDate>& date)
 {
-    VALIDATE_NOT_NULL(date);
-
     NewCalendarDate(date);
-    return GetCalendarDate(System::GetCurrentTimeMillis(), *date);
+    return GetCalendarDate(System::GetCurrentTimeMillis(), date);
 }
 
 ECode Gregorian::GetCalendarDate(
     /* [in] */ Long millis,
-    /* [out] */ ICalendarDate** date)
+    /* [out] */ AutoPtr<ICalendarDate>& date)
 {
-    VALIDATE_NOT_NULL(date);
-
     NewCalendarDate(date);
-    return GetCalendarDate(millis, *date);
+    return GetCalendarDate(millis, date);
 }
 
 ECode Gregorian::GetCalendarDate(
@@ -68,38 +62,30 @@ ECode Gregorian::GetCalendarDate(
 ECode Gregorian::GetCalendarDate(
     /* [in] */ Long millis,
     /* [in] */ ITimeZone* zone,
-    /* [out] */ ICalendarDate** date)
+    /* [out] */ AutoPtr<ICalendarDate>& date)
 {
-    VALIDATE_NOT_NULL(date);
-
     NewCalendarDate(zone, date);
-    return GetCalendarDate(millis, *date);
+    return GetCalendarDate(millis, date);
 }
 
 ECode Gregorian::NewCalendarDate(
-    /* [out] */ ICalendarDate** date)
+    /* [out] */ AutoPtr<ICalendarDate>& date)
 {
-    VALIDATE_NOT_NULL(date);
-
     AutoPtr<Gregorian::Date> d = new Gregorian::Date();
     ECode ec = d->Constructor();
     if (FAILED(ec)) return ec;
-    *date = d.Get();
-    REFCOUNT_ADD(*date);
+    date = d.Get();
     return NOERROR;
 }
 
 ECode Gregorian::NewCalendarDate(
     /* [in] */ ITimeZone* zone,
-    /* [out] */ ICalendarDate** date)
+    /* [out] */ AutoPtr<ICalendarDate>& date)
 {
-    VALIDATE_NOT_NULL(date);
-
     AutoPtr<Gregorian::Date> d = new Gregorian::Date();
     ECode ec = d->Constructor(zone);
     if (FAILED(ec)) return ec;
-    *date = d.Get();
-    REFCOUNT_ADD(*date);
+    date = d.Get();
     return NOERROR;
 }
 
@@ -117,7 +103,7 @@ ECode Gregorian::Date::Constructor(
 }
 
 ECode Gregorian::Date::GetNormalizedYear(
-    /* [out] */ Integer* normalizedYear)
+    /* [out] */ Integer& normalizedYear)
 {
     return GetYear(normalizedYear);
 }

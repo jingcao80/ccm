@@ -43,7 +43,7 @@ ECode ImmutableGregorianDate::Constructor(
 }
 
 ECode ImmutableGregorianDate::GetEra(
-    /* [out] */ IEra** era)
+    /* [out] */ AutoPtr<IEra>& era)
 {
     return mDate->GetEra(era);
 }
@@ -55,7 +55,7 @@ ECode ImmutableGregorianDate::SetEra(
 }
 
 ECode ImmutableGregorianDate::GetYear(
-    /* [out] */ Integer* year)
+    /* [out] */ Integer& year)
 {
     return mDate->GetYear(year);
 }
@@ -73,7 +73,7 @@ ECode ImmutableGregorianDate::AddYear(
 }
 
 ECode ImmutableGregorianDate::IsLeapYear(
-    /* [out] */ Boolean* leapYear)
+    /* [out] */ Boolean& leapYear)
 {
     return mDate->IsLeapYear(leapYear);
 }
@@ -85,7 +85,7 @@ ECode ImmutableGregorianDate::SetLeapYear(
 }
 
 ECode ImmutableGregorianDate::GetMonth(
-    /* [out] */ Integer* month)
+    /* [out] */ Integer& month)
 {
     return mDate->GetMonth(month);
 }
@@ -103,7 +103,7 @@ ECode ImmutableGregorianDate::AddMonth(
 }
 
 ECode ImmutableGregorianDate::GetDayOfMonth(
-    /* [out] */ Integer* date)
+    /* [out] */ Integer& date)
 {
     return mDate->GetDayOfMonth(date);
 }
@@ -121,13 +121,13 @@ ECode ImmutableGregorianDate::AddDayOfMonth(
 }
 
 ECode ImmutableGregorianDate::GetDayOfWeek(
-    /* [out] */ Integer* date)
+    /* [out] */ Integer& date)
 {
     return mDate->GetDayOfWeek(date);
 }
 
 ECode ImmutableGregorianDate::GetHours(
-    /* [out] */ Integer* hours)
+    /* [out] */ Integer& hours)
 {
     return mDate->GetHours(hours);
 }
@@ -145,7 +145,7 @@ ECode ImmutableGregorianDate::AddHours(
 }
 
 ECode ImmutableGregorianDate::GetMinutes(
-    /* [out] */ Integer* minutes)
+    /* [out] */ Integer& minutes)
 {
     return mDate->GetMinutes(minutes);
 }
@@ -163,7 +163,7 @@ ECode ImmutableGregorianDate::AddMinutes(
 }
 
 ECode ImmutableGregorianDate::GetSeconds(
-    /* [out] */ Integer* seconds)
+    /* [out] */ Integer& seconds)
 {
     return mDate->GetSeconds(seconds);
 }
@@ -181,7 +181,7 @@ ECode ImmutableGregorianDate::AddSeconds(
 }
 
 ECode ImmutableGregorianDate::GetMillis(
-    /* [out] */ Integer* millis)
+    /* [out] */ Integer& millis)
 {
     return mDate->GetMillis(millis);
 }
@@ -199,7 +199,7 @@ ECode ImmutableGregorianDate::AddMillis(
 }
 
 ECode ImmutableGregorianDate::GetTimeOfDay(
-    /* [out] */ Long* date)
+    /* [out] */ Long& date)
 {
     return mDate->GetTimeOfDay(date);
 }
@@ -245,13 +245,13 @@ ECode ImmutableGregorianDate::SetTimeOfDay(
 }
 
 ECode ImmutableGregorianDate::IsNormalized(
-    /* [out] */ Boolean* normalized)
+    /* [out] */ Boolean& normalized)
 {
     return mDate->IsNormalized(normalized);
 }
 
 ECode ImmutableGregorianDate::IsStandardTime(
-    /* [out] */ Boolean* standardTime)
+    /* [out] */ Boolean& standardTime)
 {
     return mDate->IsStandardTime(standardTime);
 }
@@ -263,7 +263,7 @@ ECode ImmutableGregorianDate::SetStandardTime(
 }
 
 ECode ImmutableGregorianDate::IsDaylightTime(
-    /* [out] */ Boolean* daylightTime)
+    /* [out] */ Boolean& daylightTime)
 {
     return mDate->IsDaylightTime(daylightTime);
 }
@@ -275,7 +275,7 @@ ECode ImmutableGregorianDate::SetLocale(
 }
 
 ECode ImmutableGregorianDate::GetZone(
-    /* [out] */ ITimeZone** zone)
+    /* [out] */ AutoPtr<ITimeZone>& zone)
 {
     return mDate->GetZone(zone);
 }
@@ -288,7 +288,7 @@ ECode ImmutableGregorianDate::SetZone(
 
 ECode ImmutableGregorianDate::IsSameDate(
     /* [in] */ ICalendarDate* date,
-    /* [out] */ Boolean* same)
+    /* [out] */ Boolean& same)
 {
     return mDate->IsSameDate(date, same);
 }
@@ -350,7 +350,7 @@ ECode ImmutableGregorianDate::SetNormalized(
 }
 
 ECode ImmutableGregorianDate::GetZoneOffset(
-    /* [out] */ Integer* offset)
+    /* [out] */ Integer& offset)
 {
     return mDate->GetZoneOffset(offset);
 }
@@ -362,7 +362,7 @@ ECode ImmutableGregorianDate::SetZoneOffset(
 }
 
 ECode ImmutableGregorianDate::GetDaylightSaving(
-        /* [out] */ Integer* ds)
+        /* [out] */ Integer& ds)
 {
     return mDate->GetDaylightSaving(ds);
 }
@@ -374,7 +374,7 @@ ECode ImmutableGregorianDate::SetDaylightSaving(
 }
 
 ECode ImmutableGregorianDate::GetNormalizedYear(
-    /* [out] */ Integer* normalizedYear)
+    /* [out] */ Integer& normalizedYear)
 {
     return mDate->GetNormalizedYear(normalizedYear);
 }

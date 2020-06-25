@@ -69,59 +69,59 @@ interface ICalendarDate
         [in] Integer n);
 
     GetDaylightSaving(
-        [out] Integer* ds);
+        [out] Integer& ds);
 
     GetDayOfMonth(
-        [out] Integer* date);
+        [out] Integer& date);
 
     GetDayOfWeek(
-        [out] Integer* date);
+        [out] Integer& date);
 
     GetEra(
-        [out] IEra** era);
+        [out] IEra&& era);
 
     GetHours(
-        [out] Integer* hours);
+        [out] Integer& hours);
 
     GetMillis(
-        [out] Integer* millis);
+        [out] Integer& millis);
 
     GetMinutes(
-        [out] Integer* minutes);
+        [out] Integer& minutes);
 
     GetMonth(
-        [out] Integer* month);
+        [out] Integer& month);
 
     GetSeconds(
-        [out] Integer* seconds);
+        [out] Integer& seconds);
 
     GetTimeOfDay(
-        [out] Long* date);
+        [out] Long& date);
 
     GetYear(
-        [out] Integer* year);
+        [out] Integer& year);
 
     GetZone(
-        [out] ITimeZone** zone);
+        [out] ITimeZone&& zone);
 
     GetZoneOffset(
-        [out] Integer* offset);
+        [out] Integer& offset);
 
     IsDaylightTime(
-        [out] Boolean* daylightTime);
+        [out] Boolean& daylightTime);
 
     IsLeapYear(
-        [out] Boolean* leapYear);
+        [out] Boolean& leapYear);
 
     IsNormalized(
-        [out] Boolean* normalized);
+        [out] Boolean& normalized);
 
     IsSameDate(
         [in] ICalendarDate* date,
-        [out] Boolean* same);
+        [out] Boolean& same);
 
     IsStandardTime(
-        [out] Boolean* standardTime);
+        [out] Boolean& standardTime);
 
     SetDate(
         [in] Integer year,

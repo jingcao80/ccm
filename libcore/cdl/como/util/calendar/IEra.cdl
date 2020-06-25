@@ -29,28 +29,28 @@ namespace calendar {
 interface IEra
 {
     GetAbbreviation(
-        [out] String* abbr);
+        [out] String& abbr);
 
     GetDiaplayAbbreviation(
         [in] ILocale* locale,
-        [out] String* abbr);
+        [out] String& abbr);
 
     GetDisplayName(
         [in] ILocale* locale,
-        [out] String* name);
+        [out] String& name);
 
     GetName(
-        [out] String* name);
+        [out] String& name);
 
     GetSince(
         [in] ITimeZone* zone,
-        [out] Long* time);
+        [out] Long& time);
 
     GetSinceDate(
-        [out] ICalendarDate** date);
+        [out] ICalendarDate&& date);
 
     IsLocalTime(
-        [out] Boolean* result);
+        [out] Boolean& result);
 }
 
 }

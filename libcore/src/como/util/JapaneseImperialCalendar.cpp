@@ -62,7 +62,7 @@ SyncObject JapaneseImperialCalendar::sInitLock;
 inline static AutoPtr<ICalendarSystem> GetLocalGregorianCalendar()
 {
     AutoPtr<ICalendarSystem> cs;
-    CalendarSystem::ForName(String("japanese"), &cs);
+    CalendarSystem::ForName("japanese", cs);
     return cs;
 }
 
@@ -113,14 +113,14 @@ ECode JapaneseImperialCalendar::StaticInitialize()
     // same as Gregorian.
     Integer index = BEFORE_MEIJI;
     AutoPtr<ICalendarDate> date;
-    GetBEFORE_MEIJI_ERA()->GetSinceDate(&date);
-    IBaseCalendar::Probe(GetGcal())->GetFixedDate(date, &sSinceFixedDates[index]);
+    GetBEFORE_MEIJI_ERA()->GetSinceDate(date);
+    IBaseCalendar::Probe(GetGcal())->GetFixedDate(date, sSinceFixedDates[index]);
     sEras.Set(index++, GetBEFORE_MEIJI_ERA());
     for (Integer i = 0; i < es.GetLength(); i++) {
         IEra* e = es[i];
         AutoPtr<ICalendarDate> d;
-        e->GetSinceDate(&d);
-        IBaseCalendar::Probe(GetGcal())->GetFixedDate(d, &sSinceFixedDates[index]);
+        e->GetSinceDate(d);
+        IBaseCalendar::Probe(GetGcal())->GetFixedDate(d, sSinceFixedDates[index]);
         sEras.Set(index++, e);
     }
 
@@ -132,34 +132,33 @@ ECode JapaneseImperialCalendar::StaticInitialize()
     // era transition in a Gregorian year.
     Integer year = IInteger::MAX_VALUE;
     Integer dayOfYear = IInteger::MAX_VALUE;
-    date = nullptr;
-    GetGcal()->NewCalendarDate(TimeZone::NO_TIMEZONE, &date);
+    GetGcal()->NewCalendarDate(TimeZone::NO_TIMEZONE, date);
     for (Integer i = 0; i < sEras.GetLength(); i++) {
         Long fd = sSinceFixedDates[i];
         AutoPtr<ICalendarDate> transitionDate;
-        sEras[i]->GetSinceDate(&transitionDate);
+        sEras[i]->GetSinceDate(transitionDate);
         Integer year;
-        transitionDate->GetYear(&year);
+        transitionDate->GetYear(year);
         date->SetDate(year, IBaseCalendar::JANUARY, 1);
         Long fdd;
-        IBaseCalendar::Probe(GetGcal())->GetFixedDate(date, &fdd);
+        IBaseCalendar::Probe(GetGcal())->GetFixedDate(date, fdd);
         if (fd != fdd) {
             dayOfYear = Math::Min((Integer)(fd - fdd) + 1, dayOfYear);
         }
         date->SetDate(year, IBaseCalendar::DECEMBER, 31);
-        IBaseCalendar::Probe(GetGcal())->GetFixedDate(date, &fdd);
+        IBaseCalendar::Probe(GetGcal())->GetFixedDate(date, fdd);
         if (fd != fdd) {
             dayOfYear = Math::Min((Integer)(fdd - fd) + 1, dayOfYear);
         }
         AutoPtr<LocalGregorianCalendar::Date> lgd = GetCalendarDate(fd - 1);
         Integer y;
-        lgd->GetYear(&y);
+        lgd->GetYear(y);
         // Unless the first year starts from January 1, the actual
         // max value could be one year short. For example, if it's
         // Showa 63 January 8, 63 is the actual max value since
         // Showa 64 January 8 doesn't exist.
         Integer m, d;
-        if (!((lgd->GetMonth(&m), m) == IBaseCalendar::JANUARY && (lgd->GetDayOfMonth(&d), d) == 1)) {
+        if (!((lgd->GetMonth(m), m) == IBaseCalendar::JANUARY && (lgd->GetDayOfMonth(d), d) == 1)) {
             y--;
         }
         year = Math::Min(y, year);
@@ -180,7 +179,7 @@ ECode JapaneseImperialCalendar::Constructor(
     StaticInitialize();
     Calendar::Constructor(zone, locale);
     AutoPtr<ICalendarDate> date;
-    GetJcal()->NewCalendarDate(zone, &date);
+    GetJcal()->NewCalendarDate(zone, date);
     mJdate = (LocalGregorianCalendar::Date*)date.Get();
     SetTimeInMillis(System::GetCurrentTimeMillis());
     return NOERROR;
@@ -194,7 +193,7 @@ ECode JapaneseImperialCalendar::Constructor(
     StaticInitialize();
     Calendar::Constructor(zone, locale);
     AutoPtr<ICalendarDate> date;
-    GetJcal()->NewCalendarDate(zone, &date);
+    GetJcal()->NewCalendarDate(zone, date);
     mJdate = (LocalGregorianCalendar::Date*)date.Get();
     return NOERROR;
 }
@@ -253,9 +252,9 @@ ECode JapaneseImperialCalendar::Add(
         d->AddYear(amount);
         PinDayOfMonth(d);
         Integer y, m, day;
-        d->GetYear(&y);
-        d->GetMonth(&m);
-        d->GetDayOfMonth(&day);
+        d->GetYear(y);
+        d->GetMonth(m);
+        d->GetDayOfMonth(day);
         Set(ERA, GetEraIndex(d));
         Set(YEAR, y);
         Set(MONTH, m - 1);
@@ -268,9 +267,9 @@ ECode JapaneseImperialCalendar::Add(
         d->AddMonth(amount);
         PinDayOfMonth(d);
         Integer y, m, day;
-        d->GetYear(&y);
-        d->GetMonth(&m);
-        d->GetDayOfMonth(&day);
+        d->GetYear(y);
+        d->GetMonth(m);
+        d->GetDayOfMonth(day);
         Set(ERA, GetEraIndex(d));
         Set(YEAR, y);
         Set(MONTH, m - 1);
@@ -434,11 +433,11 @@ ECode JapaneseImperialCalendar::Roll(
             // the next day, although it's very unlikely. But we
             // have to make sure not to change the larger fields.
             AutoPtr<ICalendarDate> d;
-            GetJcal()->GetCalendarDate(mTime, GetZone(), &d);
+            GetJcal()->GetCalendarDate(mTime, GetZone(), d);
             Integer dayOfMonth;
-            if (InternalGet(DAY_OF_MONTH) != (d->GetDayOfMonth(&dayOfMonth), dayOfMonth)) {
+            if (InternalGet(DAY_OF_MONTH) != (d->GetDayOfMonth(dayOfMonth), dayOfMonth)) {
                 AutoPtr<IEra> era;
-                mJdate->GetEra(&era);
+                mJdate->GetEra(era);
                 d->SetEra(era);
                 d->SetDate(InternalGet(YEAR),
                            InternalGet(MONTH) + 1,
@@ -450,7 +449,7 @@ ECode JapaneseImperialCalendar::Roll(
                 GetJcal()->GetTime(d, &mTime);
             }
             Integer hourOfDay;
-            d->GetHours(&hourOfDay);
+            d->GetHours(hourOfDay);
             InternalSet(field, hourOfDay % unit);
             if (field == HOUR) {
                 InternalSet(HOUR_OF_DAY, hourOfDay);
@@ -462,8 +461,8 @@ ECode JapaneseImperialCalendar::Roll(
 
             // Time zone offset and/or daylight saving might have changed.
             Integer zoneOffset, saving;
-            d->GetZoneOffset(&zoneOffset);
-            d->GetDaylightSaving(&saving);
+            d->GetZoneOffset(zoneOffset);
+            d->GetDaylightSaving(saving);
             InternalSet(ZONE_OFFSET, zoneOffset - saving);
             InternalSet(DST_OFFSET, saving);
             return NOERROR;
@@ -481,72 +480,72 @@ ECode JapaneseImperialCalendar::Roll(
         // E.g., <jan31>.roll(MONTH, 1) -> <feb28> or <feb29>.
         {
             Integer normYear;
-            mJdate->GetNormalizedYear(&normYear);
+            mJdate->GetNormalizedYear(normYear);
             if (!IsTransitionYear(normYear)) {
                 Integer year;
-                mJdate->GetYear(&year);
+                mJdate->GetYear(year);
                 Integer maxYear, minYear;
                 if (year == (GetMaximum(YEAR, &maxYear), maxYear)) {
                     AutoPtr<ICalendarDate> jd, d;
-                    GetJcal()->GetCalendarDate(mTime, GetZone(), &jd);
-                    GetJcal()->GetCalendarDate(ILong::MAX_VALUE, GetZone(), &d);
+                    GetJcal()->GetCalendarDate(mTime, GetZone(), jd);
+                    GetJcal()->GetCalendarDate(ILong::MAX_VALUE, GetZone(), d);
                     Integer m;
-                    max = (d->GetMonth(&m), m) - 1;
+                    max = (d->GetMonth(m), m) - 1;
                     Integer n = GetRolledValue(InternalGet(field), amount, min, max);
                     if (n == max) {
                         // To avoid overflow, use an equivalent year.
                         jd->AddYear(-400);
                         jd->SetMonth(n + 1);
                         Integer jdDayOfMonth, dDayOfMonth;
-                        if ((jd->GetDayOfMonth(&jdDayOfMonth), jdDayOfMonth) >
-                                (d->GetDayOfMonth(&dDayOfMonth), dDayOfMonth)) {
+                        if ((jd->GetDayOfMonth(jdDayOfMonth), jdDayOfMonth) >
+                                (d->GetDayOfMonth(dDayOfMonth), dDayOfMonth)) {
                             jd->SetDayOfMonth(dDayOfMonth);
                             GetJcal()->Normalize(jd);
                         }
                         Long jdTimeOfDay, dTimeOfDay;
-                        if ((jd->GetDayOfMonth(&jdDayOfMonth), jdDayOfMonth) ==
-                                (d->GetDayOfMonth(&dDayOfMonth), dDayOfMonth)
-                                && (jd->GetTimeOfDay(&jdTimeOfDay), jdTimeOfDay) >
-                                (d->GetTimeOfDay(&dTimeOfDay), dTimeOfDay)) {
+                        if ((jd->GetDayOfMonth(jdDayOfMonth), jdDayOfMonth) ==
+                                (d->GetDayOfMonth(dDayOfMonth), dDayOfMonth)
+                                && (jd->GetTimeOfDay(jdTimeOfDay), jdTimeOfDay) >
+                                (d->GetTimeOfDay(dTimeOfDay), dTimeOfDay)) {
                             jd->SetMonth(n + 1);
                             jd->SetDayOfMonth(dDayOfMonth - 1);
                             GetJcal()->Normalize(jd);
                             // Month may have changed by the normalization.
-                            n = (jd->GetMonth(&m), m) - 1;
+                            n = (jd->GetMonth(m), m) - 1;
                         }
-                        Set(DAY_OF_MONTH, (jd->GetDayOfMonth(&jdDayOfMonth), jdDayOfMonth));
+                        Set(DAY_OF_MONTH, (jd->GetDayOfMonth(jdDayOfMonth), jdDayOfMonth));
                     }
                     Set(MONTH, n);
                 }
                 else if (year == (GetMinimum(YEAR, &minYear), minYear)) {
                     AutoPtr<ICalendarDate> jd, d;
-                    GetJcal()->GetCalendarDate(mTime, GetZone(), &jd);
-                    GetJcal()->GetCalendarDate(ILong::MIN_VALUE, GetZone(), &d);
+                    GetJcal()->GetCalendarDate(mTime, GetZone(), jd);
+                    GetJcal()->GetCalendarDate(ILong::MIN_VALUE, GetZone(), d);
                     Integer m;
-                    min = (d->GetMonth(&m), m) - 1;
+                    min = (d->GetMonth(m), m) - 1;
                     Integer n = GetRolledValue(InternalGet(field), amount, min, max);
                     if (n == min) {
                         // To avoid underflow, use an equivalent year.
                         jd->AddYear(+400);
                         jd->SetMonth(n + 1);
                         Integer jdDayOfMonth, dDayOfMonth;
-                        if ((jd->GetDayOfMonth(&jdDayOfMonth), jdDayOfMonth) <
-                                (d->GetDayOfMonth(&dDayOfMonth), dDayOfMonth)) {
+                        if ((jd->GetDayOfMonth(jdDayOfMonth), jdDayOfMonth) <
+                                (d->GetDayOfMonth(dDayOfMonth), dDayOfMonth)) {
                             jd->SetDayOfMonth(dDayOfMonth);
                             GetJcal()->Normalize(jd);
                         }
                         Long jdTimeOfDay, dTimeOfDay;
-                        if ((jd->GetDayOfMonth(&jdDayOfMonth), jdDayOfMonth) ==
-                                (d->GetDayOfMonth(&dDayOfMonth), dDayOfMonth)
-                                && (jd->GetTimeOfDay(&jdTimeOfDay), jdTimeOfDay) <
-                                (d->GetTimeOfDay(&dTimeOfDay), dTimeOfDay)) {
+                        if ((jd->GetDayOfMonth(jdDayOfMonth), jdDayOfMonth) ==
+                                (d->GetDayOfMonth(dDayOfMonth), dDayOfMonth)
+                                && (jd->GetTimeOfDay(jdTimeOfDay), jdTimeOfDay) <
+                                (d->GetTimeOfDay(dTimeOfDay), dTimeOfDay)) {
                             jd->SetMonth(n + 1);
                             jd->SetDayOfMonth(dDayOfMonth - 1);
                             GetJcal()->Normalize(jd);
                             // Month may have changed by the normalization.
-                            n = (jd->GetMonth(&m), m) - 1;
+                            n = (jd->GetMonth(m), m) - 1;
                         }
-                        Set(DAY_OF_MONTH, (jd->GetDayOfMonth(&jdDayOfMonth), jdDayOfMonth));
+                        Set(DAY_OF_MONTH, (jd->GetDayOfMonth(jdDayOfMonth), jdDayOfMonth));
                     }
                     Set(MONTH, n);
                 }
@@ -571,19 +570,19 @@ ECode JapaneseImperialCalendar::Roll(
                 Integer eraIndex = GetEraIndex(mJdate);
                 AutoPtr<ICalendarDate> transition;
                 Integer year, month;
-                if ((mJdate->GetYear(&year), year) == 1) {
-                    sEras[eraIndex]->GetSinceDate(&transition);
-                    min = (transition->GetMonth(&month), month) - 1;
+                if ((mJdate->GetYear(year), year) == 1) {
+                    sEras[eraIndex]->GetSinceDate(transition);
+                    min = (transition->GetMonth(month), month) - 1;
                 }
                 else {
                     if (eraIndex < sEras.GetLength() - 1) {
-                        sEras[eraIndex + 1]->GetSinceDate(&transition);
+                        sEras[eraIndex + 1]->GetSinceDate(transition);
                         Integer normYear;
-                        if ((transition->GetYear(&year), year) ==
-                                (mJdate->GetNormalizedYear(&normYear), normYear)) {
-                            max = (transition->GetMonth(&month), month) - 1;
+                        if ((transition->GetYear(year), year) ==
+                                (mJdate->GetNormalizedYear(normYear), normYear)) {
+                            max = (transition->GetMonth(month), month) - 1;
                             Integer dayOfMonth;
-                            if ((transition->GetDayOfMonth(&dayOfMonth), dayOfMonth) == 1) {
+                            if ((transition->GetDayOfMonth(dayOfMonth), dayOfMonth) == 1) {
                                 max--;
                             }
                         }
@@ -600,17 +599,17 @@ ECode JapaneseImperialCalendar::Roll(
                 Set(MONTH, n);
                 if (n == min) {
                     Integer jdDayOfMonth, tDayOfMonth;
-                    if (!((transition->GetMonth(&month), month) == IBaseCalendar::JANUARY
-                          && (transition->GetDayOfMonth(&tDayOfMonth), tDayOfMonth) == 1)) {
-                        if ((mJdate->GetDayOfMonth(&jdDayOfMonth), jdDayOfMonth) < tDayOfMonth) {
+                    if (!((transition->GetMonth(month), month) == IBaseCalendar::JANUARY
+                          && (transition->GetDayOfMonth(tDayOfMonth), tDayOfMonth) == 1)) {
+                        if ((mJdate->GetDayOfMonth(jdDayOfMonth), jdDayOfMonth) < tDayOfMonth) {
                             Set(DAY_OF_MONTH, tDayOfMonth);
                         }
                     }
                 }
-                else if (n == max && ((transition->GetMonth(&month), month) - 1 == n)) {
+                else if (n == max && ((transition->GetMonth(month), month) - 1 == n)) {
                     Integer tDayOfMonth, jdDayOfMonth;
-                    transition->GetDayOfMonth(&tDayOfMonth);
-                    if ((mJdate->GetDayOfMonth(&jdDayOfMonth), jdDayOfMonth) >= tDayOfMonth) {
+                    transition->GetDayOfMonth(tDayOfMonth);
+                    if ((mJdate->GetDayOfMonth(jdDayOfMonth), jdDayOfMonth) >= tDayOfMonth) {
                         Set(DAY_OF_MONTH, tDayOfMonth - 1);
                     }
                 }
@@ -621,16 +620,16 @@ ECode JapaneseImperialCalendar::Roll(
         case WEEK_OF_YEAR:
         {
             Integer y;
-            mJdate->GetNormalizedYear(&y);
+            mJdate->GetNormalizedYear(y);
             GetActualMaximum(WEEK_OF_YEAR, &max);
             Set(DAY_OF_WEEK, InternalGet(DAY_OF_WEEK)); // update stamp[field]
             Integer woy = InternalGet(WEEK_OF_YEAR);
             Integer value = woy + amount;
             Integer normYear;
-            mJdate->GetNormalizedYear(&normYear);
+            mJdate->GetNormalizedYear(normYear);
             if (!IsTransitionYear(normYear)) {
                 Integer year, maxYear, minYear;
-                mJdate->GetYear(&year);
+                mJdate->GetYear(year);
                 if (year == (GetMaximum(YEAR, &maxYear), maxYear)) {
                     GetActualMaximum(WEEK_OF_YEAR, &max);
                 }
@@ -654,15 +653,15 @@ ECode JapaneseImperialCalendar::Roll(
                 Long day1 = fd - (7 * (woy - min));
                 if (year != (GetMinimum(YEAR, &minYear), minYear)) {
                     Integer yy;
-                    if ((IBaseCalendar::Probe(GetGcal())->GetYearFromFixedDate(day1, &yy), yy) != y) {
+                    if ((IBaseCalendar::Probe(GetGcal())->GetYearFromFixedDate(day1, yy), yy) != y) {
                         min++;
                     }
                 }
                 else {
                     AutoPtr<ICalendarDate> d;
-                    GetJcal()->GetCalendarDate(ILong::MIN_VALUE, GetZone(), &d);
+                    GetJcal()->GetCalendarDate(ILong::MIN_VALUE, GetZone(), d);
                     Long date;
-                    if (day1 < (IBaseCalendar::Probe(GetJcal())->GetFixedDate(d, &date), date)) {
+                    if (day1 < (IBaseCalendar::Probe(GetJcal())->GetFixedDate(d, date), date)) {
                         min++;
                     }
                 }
@@ -670,7 +669,7 @@ ECode JapaneseImperialCalendar::Roll(
                 // Make sure the same thing for the max week
                 fd += 7 * (max - InternalGet(WEEK_OF_YEAR));
                 Integer yy;
-                if ((IBaseCalendar::Probe(GetGcal())->GetYearFromFixedDate(fd, &yy), yy) != y) {
+                if ((IBaseCalendar::Probe(GetGcal())->GetYearFromFixedDate(fd, yy), yy) != y) {
                     max--;
                 }
                 break;
@@ -683,17 +682,16 @@ ECode JapaneseImperialCalendar::Roll(
             AutoPtr<LocalGregorianCalendar::Date> d = GetCalendarDate(day1);
             AutoPtr<IEra> dEra, jdEra;
             Integer dy, jdy;
-            if (!((d->GetEra(&dEra), dEra) == (mJdate->GetEra(&jdEra), jdEra) &&
-                    (d->GetYear(&dy), dy) == (mJdate->GetYear(&jdy), jdy))) {
+            if (!((d->GetEra(dEra), dEra) == (mJdate->GetEra(jdEra), jdEra) &&
+                    (d->GetYear(dy), dy) == (mJdate->GetYear(jdy), jdy))) {
                 min++;
             }
 
             // Make sure the same thing for the max week
             fd += 7 * (max - woy);
             IBaseCalendar::Probe(GetJcal())->GetCalendarDateFromFixedDate(d, fd);
-            dEra = jdEra = nullptr;
-            if (!((d->GetEra(&dEra), dEra) == (mJdate->GetEra(&jdEra), jdEra) &&
-                    (d->GetYear(&dy), dy) == (mJdate->GetYear(&jdy), jdy))) {
+            if (!((d->GetEra(dEra), dEra) == (mJdate->GetEra(jdEra), jdEra) &&
+                    (d->GetYear(dy), dy) == (mJdate->GetYear(jdy), jdy))) {
                 max--;
             }
             // value: the new WEEK_OF_YEAR which must be converted
@@ -701,8 +699,8 @@ ECode JapaneseImperialCalendar::Roll(
             value = GetRolledValue(woy, amount, min, max) - 1;
             d = GetCalendarDate(day1 + value * 7);
             Integer mon, dayOfMonth;
-            d->GetMonth(&mon);
-            d->GetDayOfMonth(&dayOfMonth);
+            d->GetMonth(mon);
+            d->GetDayOfMonth(dayOfMonth);
             Set(MONTH, mon - 1);
             Set(DAY_OF_MONTH, dayOfMonth);
             return NOERROR;
@@ -711,7 +709,7 @@ ECode JapaneseImperialCalendar::Roll(
         case WEEK_OF_MONTH:
         {
             Integer normYear;
-            mJdate->GetNormalizedYear(&normYear);
+            mJdate->GetNormalizedYear(normYear);
             Boolean isTransitionYear = IsTransitionYear(normYear);
             // dow: relative day of week from the first day of week
             Integer dayOfWeek;
@@ -729,7 +727,7 @@ ECode JapaneseImperialCalendar::Roll(
             }
             else {
                 month1 = fd - InternalGet(DAY_OF_MONTH) + 1;
-                GetJcal()->GetMonthLength(mJdate, &monthLength);
+                GetJcal()->GetMonthLength(mJdate, monthLength);
             }
 
             // the first day of week of the month.
@@ -764,9 +762,9 @@ ECode JapaneseImperialCalendar::Roll(
         case DAY_OF_MONTH:
         {
             Integer normYear;
-            mJdate->GetNormalizedYear(&normYear);
+            mJdate->GetNormalizedYear(normYear);
             if (!IsTransitionYear(normYear)) {
-                GetJcal()->GetMonthLength(mJdate, &max);
+                GetJcal()->GetMonthLength(mJdate, max);
                 break;
             }
 
@@ -789,7 +787,7 @@ ECode JapaneseImperialCalendar::Roll(
                 CHECK((d->GetMonth(&m), m) -1 == InternalGet(MONTH));
             }
             Integer dayOfMonth;
-            d->GetDayOfMonth(&dayOfMonth);
+            d->GetDayOfMonth(dayOfMonth);
             Set(DAY_OF_MONTH, dayOfMonth);
             return NOERROR;
         }
@@ -798,7 +796,7 @@ ECode JapaneseImperialCalendar::Roll(
         {
             GetActualMaximum(field, &max);
             Integer normYear;
-            mJdate->GetNormalizedYear(&normYear);
+            mJdate->GetNormalizedYear(normYear);
             if (!IsTransitionYear(normYear)) {
                 break;
             }
@@ -814,8 +812,8 @@ ECode JapaneseImperialCalendar::Roll(
                 CHECK((d->GetYear(&y), y) == InternalGet(YEAR));
             }
             Integer month, dayOfMonth;
-            d->GetMonth(&month);
-            d->GetDayOfMonth(&dayOfMonth);
+            d->GetMonth(month);
+            d->GetDayOfMonth(dayOfMonth);
             Set(MONTH, month - 1);
             Set(DAY_OF_MONTH, dayOfMonth);
             return NOERROR;
@@ -824,7 +822,7 @@ ECode JapaneseImperialCalendar::Roll(
         case DAY_OF_WEEK:
         {
             Integer normYear;
-            mJdate->GetNormalizedYear(&normYear);
+            mJdate->GetNormalizedYear(normYear);
             if (!IsTransitionYear(normYear) && !IsTransitionYear(normYear - 1)) {
                 // If the week of year is in the same year, we can
                 // just change DAY_OF_WEEK.
@@ -858,9 +856,9 @@ ECode JapaneseImperialCalendar::Roll(
             AutoPtr<LocalGregorianCalendar::Date> d = GetCalendarDate(fd);
             Set(ERA, GetEraIndex(d));
             Integer y, m, dom;
-            d->GetYear(&y);
-            d->GetMonth(&m);
-            d->GetDayOfMonth(&dom);
+            d->GetYear(y);
+            d->GetMonth(m);
+            d->GetDayOfMonth(dom);
             Set(y, m - 1, dom);
             return NOERROR;
         }
@@ -869,11 +867,11 @@ ECode JapaneseImperialCalendar::Roll(
         {
             min = 1; // after having normalized, min should be 1.
             Integer normYear;
-            mJdate->GetNormalizedYear(&normYear);
+            mJdate->GetNormalizedYear(normYear);
             if (!IsTransitionYear(normYear)) {
                 Integer dom = InternalGet(DAY_OF_MONTH);
                 Integer monthLength;
-                GetJcal()->GetMonthLength(mJdate, &monthLength);
+                GetJcal()->GetMonthLength(mJdate, monthLength);
                 Integer lastDays = monthLength % 7;
                 max = monthLength / 7;
                 Integer x = (dom - 1) % 7;
@@ -898,7 +896,7 @@ ECode JapaneseImperialCalendar::Roll(
             fd = month1 + value * 7 + x;
             AutoPtr<LocalGregorianCalendar::Date> d = GetCalendarDate(fd);
             Integer dom;
-            d->GetDayOfMonth(&dom);
+            d->GetDayOfMonth(dom);
             Set(DAY_OF_MONTH, dom);
             return NOERROR;
         }
@@ -944,10 +942,10 @@ ECode JapaneseImperialCalendar::GetDisplayName(
     if (name->IsNull() && field == ERA && fieldValue < sEras.GetLength()) {
         IEra* era = sEras[fieldValue];
         if (style == SHORT) {
-            era->GetAbbreviation(name);
+            era->GetAbbreviation(*name);
         }
         else {
-            era->GetName(name);
+            era->GetName(*name);
         }
     }
     return NOERROR;
@@ -997,12 +995,12 @@ ECode JapaneseImperialCalendar::GetDisplayNames(
                     if (baseStyle == ALL_STYLES || baseStyle == SHORT
                             || baseStyle == NARROW_FORMAT) {
                         String name;
-                        era->GetAbbreviation(&name);
+                        era->GetAbbreviation(name);
                         (*names)->Put(CoreUtils::Box(name), CoreUtils::Box(i));
                     }
                     if (baseStyle == ALL_STYLES || baseStyle == LONG) {
                         String name;
-                        era->GetName(&name);
+                        era->GetName(name);
                         (*names)->Put(CoreUtils::Box(name), CoreUtils::Box(i));
                     }
                 }
@@ -1041,9 +1039,9 @@ ECode JapaneseImperialCalendar::GetMaximum(
         {
             // The value should depend on the time zone of this calendar.
             AutoPtr<ICalendarDate> d;
-            GetJcal()->GetCalendarDate(ILong::MAX_VALUE, GetZone(), &d);
+            GetJcal()->GetCalendarDate(ILong::MAX_VALUE, GetZone(), d);
             Integer y;
-            d->GetYear(&y);
+            d->GetYear(y);
             *value = Math::Max(LEAST_MAX_VALUES[YEAR], y);
             return NOERROR;
         }
@@ -1110,7 +1108,7 @@ ECode JapaneseImperialCalendar::GetActualMinimum(
     Long millis;
     jc->GetTimeInMillis(&millis);
     AutoPtr<ICalendarDate> jd;
-    GetJcal()->GetCalendarDate(millis, GetZone(), &jd);
+    GetJcal()->GetCalendarDate(millis, GetZone(), jd);
     Integer eraIndex = GetEraIndex((LocalGregorianCalendar::Date*)jd.Get());
     switch (field) {
         case YEAR:
@@ -1118,20 +1116,20 @@ ECode JapaneseImperialCalendar::GetActualMinimum(
             if (eraIndex > BEFORE_MEIJI) {
                 *value = 1;
                 Long since;
-                sEras[eraIndex]->GetSince(GetZone(), &since);
+                sEras[eraIndex]->GetSince(GetZone(), since);
                 AutoPtr<ICalendarDate> d;
-                GetJcal()->GetCalendarDate(since, GetZone(), &d);
+                GetJcal()->GetCalendarDate(since, GetZone(), d);
                 // Use the same year in jd to take care of leap
                 // years. i.e., both jd and d must agree on leap
                 // or common years.
                 Integer y;
-                d->GetYear(&y);
+                d->GetYear(y);
                 jd->SetYear(y);
                 GetJcal()->Normalize(jd);
                 BLOCK_CHECK() {
                     Boolean jdLeap, dLeap;
-                    jd->IsLeapYear(&jdLeap);
-                    d->IsLeapYear(&dLeap);
+                    jd->IsLeapYear(jdLeap);
+                    d->IsLeapYear(dLeap);
                     CHECK(jdLeap == dLeap);
                 }
                 if (GetYearOffsetInMillis(jd) < GetYearOffsetInMillis(d)) {
@@ -1141,12 +1139,12 @@ ECode JapaneseImperialCalendar::GetActualMinimum(
             else {
                 GetMinimum(field, value);
                 AutoPtr<ICalendarDate> d;
-                GetJcal()->GetCalendarDate(ILong::MIN_VALUE, GetZone(), &d);
+                GetJcal()->GetCalendarDate(ILong::MIN_VALUE, GetZone(), d);
                 // Use an equvalent year of d.getYear() if
                 // possible. Otherwise, ignore the leap year and
                 // common year difference.
                 Integer y;
-                d->GetYear(&y);
+                d->GetYear(y);
                 if (y > 400) {
                     y -= 400;
                 }
@@ -1163,15 +1161,15 @@ ECode JapaneseImperialCalendar::GetActualMinimum(
         {
             // In Before Meiji and Meiji, January is the first month.
             Integer y;
-            if (eraIndex > MEIJI && (jd->GetYear(&y), y) == 1) {
+            if (eraIndex > MEIJI && (jd->GetYear(y), y) == 1) {
                 Long since;
-                sEras[eraIndex]->GetSince(GetZone(), &since);
+                sEras[eraIndex]->GetSince(GetZone(), since);
                 AutoPtr<ICalendarDate> d;
-                GetJcal()->GetCalendarDate(since, GetZone(), &d);
+                GetJcal()->GetCalendarDate(since, GetZone(), d);
                 Integer m, jdDom, dDom;
-                *value = (d->GetMonth(&m), m) - 1;
-                if ((jd->GetDayOfMonth(&jdDom), jdDom) <
-                        (d->GetDayOfMonth(&dDom), dDom)) {
+                *value = (d->GetMonth(m), m) - 1;
+                if ((jd->GetDayOfMonth(jdDom), jdDom) <
+                        (d->GetDayOfMonth(dDom), dDom)) {
                     (*value)++;
                 }
             }
@@ -1182,29 +1180,29 @@ ECode JapaneseImperialCalendar::GetActualMinimum(
         {
             *value = 1;
             AutoPtr<ICalendarDate> d;
-            GetJcal()->GetCalendarDate(ILong::MIN_VALUE, GetZone(), &d);
+            GetJcal()->GetCalendarDate(ILong::MIN_VALUE, GetZone(), d);
             // shift 400 years to avoid underflow
             d->AddYear(+400);
             GetJcal()->Normalize(d);
             AutoPtr<IEra> era;
-            d->GetEra(&era);
+            d->GetEra(era);
             jd->SetEra(era);
             Integer y;
-            d->GetYear(&y);
+            d->GetYear(y);
             jd->SetYear(y);
             GetJcal()->Normalize(jd);
 
             Long jan1, fd;
             IBaseCalendar* bc = IBaseCalendar::Probe(GetJcal());
-            bc->GetFixedDate(d, &jan1);
-            bc->GetFixedDate(jd, &fd);
+            bc->GetFixedDate(d, jan1);
+            bc->GetFixedDate(jd, fd);
             Integer woy = GetWeekNumber(jan1, fd);
             Long day1 = fd - (7 * (woy - 1));
             Long jdTod, dTod;
             if ((day1 < jan1) ||
                     (day1 == jan1 &&
-                    (jd->GetTimeOfDay(&jdTod), jdTod) <
-                    (d->GetTimeOfDay(&dTod), dTod))) {
+                    (jd->GetTimeOfDay(jdTod), jdTod) <
+                    (d->GetTimeOfDay(dTod), dTod))) {
                 (*value)++;
             }
             break;
@@ -1233,7 +1231,7 @@ ECode JapaneseImperialCalendar::GetActualMaximum(
     AutoPtr<JapaneseImperialCalendar> jc = GetNormalizedCalendar();
     AutoPtr<LocalGregorianCalendar::Date> date = jc->mJdate;
     Integer normalizedYear;
-    date->GetNormalizedYear(&normalizedYear);
+    date->GetNormalizedYear(normalizedYear);
 
     *value = -1;
     switch (field) {
@@ -1244,7 +1242,7 @@ ECode JapaneseImperialCalendar::GetActualMaximum(
                 // TODO: there may be multiple transitions in a year.
                 Integer eraIndex = GetEraIndex(date);
                 Integer y;
-                if (date->GetYear(&y), y != 1) {
+                if (date->GetYear(y), y != 1) {
                     eraIndex++;
                     CHECK(eraIndex < sEras.GetLength());
                 }
@@ -1255,25 +1253,25 @@ ECode JapaneseImperialCalendar::GetActualMaximum(
                     date->Clone(IID_ICalendarDate, (IInterface**)&ldate);
                     IBaseCalendar::Probe(GetJcal())->GetCalendarDateFromFixedDate(ldate, transition - 1);
                     Integer m;
-                    *value = (ldate->GetMonth(&m), m) - 1;
+                    *value = (ldate->GetMonth(m), m) - 1;
                 }
             }
             else {
                 AutoPtr<ICalendarDate> d;
-                GetJcal()->GetCalendarDate(ILong::MAX_VALUE, GetZone(), &d);
+                GetJcal()->GetCalendarDate(ILong::MAX_VALUE, GetZone(), d);
                 AutoPtr<IEra> daEra, dEra;
                 Integer daY, dY;
-                if ((date->GetEra(&daEra), daEra) == (d->GetEra(&dEra), dEra) &&
-                        (date->GetYear(&daY), daY) == (d->GetYear(&dY), dY)) {
+                if ((date->GetEra(daEra), daEra) == (d->GetEra(dEra), dEra) &&
+                        (date->GetYear(daY), daY) == (d->GetYear(dY), dY)) {
                     Integer m;
-                    *value = (d->GetMonth(&m), m) - 1;
+                    *value = (d->GetMonth(m), m) - 1;
                 }
             }
             break;
         }
 
         case DAY_OF_MONTH:
-            GetJcal()->GetMonthLength(date, value);
+            GetJcal()->GetMonthLength(date, *value);
             break;
 
         case DAY_OF_YEAR:
@@ -1283,54 +1281,54 @@ ECode JapaneseImperialCalendar::GetActualMaximum(
                 // TODO: there may be multiple transitions in a year.
                 Integer eraIndex = GetEraIndex(date);
                 Integer y;
-                if (date->GetYear(&y), y != 1) {
+                if (date->GetYear(y), y != 1) {
                     eraIndex++;
                     CHECK(eraIndex < sEras.GetLength());
                 }
                 Long transition = sSinceFixedDates[eraIndex];
                 Long fd = jc->mCachedFixedDate;
                 AutoPtr<ICalendarDate> d;
-                GetGcal()->NewCalendarDate(TimeZone::NO_TIMEZONE, &d);
+                GetGcal()->NewCalendarDate(TimeZone::NO_TIMEZONE, d);
                 d->SetDate(normalizedYear, IBaseCalendar::JANUARY, 1);
                 if (fd < transition) {
                     Long date;
-                    IBaseCalendar::Probe(GetGcal())->GetFixedDate(d, &date);
+                    IBaseCalendar::Probe(GetGcal())->GetFixedDate(d, date);
                     *value = (Integer)(transition - date);
                 }
                 else {
                     d->AddYear(+1);
                     Long date;
-                    IBaseCalendar::Probe(GetGcal())->GetFixedDate(d, &date);
+                    IBaseCalendar::Probe(GetGcal())->GetFixedDate(d, date);
                     *value = (Integer)(date - transition);
                 }
             }
             else {
                 AutoPtr<ICalendarDate> d;
-                GetJcal()->GetCalendarDate(ILong::MAX_VALUE, GetZone(), &d);
+                GetJcal()->GetCalendarDate(ILong::MAX_VALUE, GetZone(), d);
                 AutoPtr<IEra> daEra, dEra;
                 Integer daY, dY;
-                if ((date->GetEra(&daEra), daEra) == (d->GetEra(&dEra), dEra) &&
-                        (date->GetYear(&daY), daY) == (d->GetYear(&dY), dY)) {
+                if ((date->GetEra(daEra), daEra) == (d->GetEra(dEra), dEra) &&
+                        (date->GetYear(daY), daY) == (d->GetYear(dY), dY)) {
                     Long fd;
-                    IBaseCalendar::Probe(GetGcal())->GetFixedDate(d, &fd);
+                    IBaseCalendar::Probe(GetGcal())->GetFixedDate(d, fd);
                     Long jan1 = GetFixedDateJan1((LocalGregorianCalendar::Date*)d.Get(), fd);
                     *value = (Integer)(fd - jan1) + 1;
                 }
-                else if ((date->GetYear(&daY), daY) == (GetMinimum(YEAR, &dY), dY)) {
+                else if ((date->GetYear(daY), daY) == (GetMinimum(YEAR, &dY), dY)) {
                     AutoPtr<ICalendarDate> d1;
-                    GetJcal()->GetCalendarDate(ILong::MIN_VALUE, GetZone(), &d1);
+                    GetJcal()->GetCalendarDate(ILong::MIN_VALUE, GetZone(), d1);
                     Long fd1;
-                    IBaseCalendar::Probe(GetGcal())->GetFixedDate(d1, &fd1);
+                    IBaseCalendar::Probe(GetGcal())->GetFixedDate(d1, fd1);
                     d1->AddYear(1);
                     d1->SetMonth(IBaseCalendar::JANUARY);
                     d1->SetDayOfMonth(1);
                     GetJcal()->Normalize(d1);
                     Long fd2;
-                    IBaseCalendar::Probe(GetGcal())->GetFixedDate(d1, &fd2);
+                    IBaseCalendar::Probe(GetGcal())->GetFixedDate(d1, fd2);
                     *value = (Integer)(fd2 - fd1);
                 }
                 else {
-                    GetJcal()->GetYearLength(date, value);
+                    GetJcal()->GetYearLength(date, *value);
                 }
             }
             break;
@@ -1340,33 +1338,33 @@ ECode JapaneseImperialCalendar::GetActualMaximum(
         {
             if (!IsTransitionYear(normalizedYear)) {
                 AutoPtr<ICalendarDate> jd;
-                GetJcal()->GetCalendarDate(ILong::MAX_VALUE, GetZone(), &jd);
+                GetJcal()->GetCalendarDate(ILong::MAX_VALUE, GetZone(), jd);
                 AutoPtr<IEra> daEra, jdEra;
                 Integer daY, jdY;
-                if ((date->GetEra(&daEra), daEra) == (jd->GetEra(&jdEra), jdEra) &&
-                        (date->GetYear(&daY), daY) == (jd->GetYear(&jdY), jdY)) {
+                if ((date->GetEra(daEra), daEra) == (jd->GetEra(jdEra), jdEra) &&
+                        (date->GetYear(daY), daY) == (jd->GetYear(jdY), jdY)) {
                     Long fd;
-                    IBaseCalendar::Probe(GetJcal())->GetFixedDate(jd, &fd);
+                    IBaseCalendar::Probe(GetJcal())->GetFixedDate(jd, fd);
                     Long jan1 = GetFixedDateJan1((LocalGregorianCalendar::Date*)jd.Get(), fd);
                     *value = GetWeekNumber(jan1, fd);
                 }
-                else if ((date->GetEra(&daEra), daEra) == nullptr &&
-                        (date->GetYear(&daY), daY) == (GetMinimum(YEAR, &jdY), jdY)) {
+                else if ((date->GetEra(daEra), daEra) == nullptr &&
+                        (date->GetYear(daY), daY) == (GetMinimum(YEAR, &jdY), jdY)) {
                     AutoPtr<ICalendarDate> d;
-                    GetJcal()->GetCalendarDate(ILong::MIN_VALUE, GetZone(), &d);
+                    GetJcal()->GetCalendarDate(ILong::MIN_VALUE, GetZone(), d);
                     // shift 400 years to avoid underflow
                     d->AddYear(+400);
                     GetJcal()->Normalize(d);
                     AutoPtr<IEra> dEra;
-                    d->GetEra(&dEra);
+                    d->GetEra(dEra);
                     jd->SetEra(dEra);
                     Integer y;
-                    d->GetYear(&y);
+                    d->GetYear(y);
                     jd->SetDate(y + 1, IBaseCalendar::JANUARY, 1);
                     GetJcal()->Normalize(jd);
                     Long jan1, nextJan1;
-                    IBaseCalendar::Probe(GetJcal())->GetFixedDate(d, &jan1);
-                    IBaseCalendar::Probe(GetJcal())->GetFixedDate(jd, &nextJan1);
+                    IBaseCalendar::Probe(GetJcal())->GetFixedDate(d, jan1);
+                    IBaseCalendar::Probe(GetJcal())->GetFixedDate(jd, nextJan1);
                     Integer dayOfWeek;
                     GetFirstDayOfWeek(&dayOfWeek);
                     Long nextJan1st = LocalGregorianCalendar::GetDayOfWeekDateOnOrBefore(nextJan1 + 6,
@@ -1382,10 +1380,10 @@ ECode JapaneseImperialCalendar::GetActualMaximum(
                 else {
                     // Get the day of week of January 1 of the year
                     AutoPtr<ICalendarDate> d;
-                    GetGcal()->NewCalendarDate(TimeZone::NO_TIMEZONE, &d);
+                    GetGcal()->NewCalendarDate(TimeZone::NO_TIMEZONE, d);
                     d->SetDate(normalizedYear, IBaseCalendar::JANUARY, 1);
                     Integer dayOfWeek, dow;
-                    IBaseCalendar::Probe(GetGcal())->GetDayOfWeek(d, &dayOfWeek);
+                    IBaseCalendar::Probe(GetGcal())->GetDayOfWeek(d, dayOfWeek);
                     // Normalize the day of week with the firstDayOfWeek value
                     dayOfWeek -= (GetFirstDayOfWeek(&dow), dow);
                     if (dayOfWeek < 0) {
@@ -1397,7 +1395,7 @@ ECode JapaneseImperialCalendar::GetActualMaximum(
                     Integer magic = dayOfWeek + minDays - 1;
                     Boolean leap;
                     if ((magic == 6) ||
-                            ((date->IsLeapYear(&leap), leap) && (magic == 5 || magic == 12))) {
+                            ((date->IsLeapYear(leap), leap) && (magic == 5 || magic == 12))) {
                         (*value)++;
                     }
                 }
@@ -1423,19 +1421,19 @@ ECode JapaneseImperialCalendar::GetActualMaximum(
         case WEEK_OF_MONTH:
         {
             AutoPtr<ICalendarDate> jd;
-            GetJcal()->GetCalendarDate(ILong::MAX_VALUE, GetZone(), &jd);
+            GetJcal()->GetCalendarDate(ILong::MAX_VALUE, GetZone(), jd);
             AutoPtr<IEra> daEra, jdEra;
             Integer daY, jdY;
-            if ((date->GetEra(&daEra), daEra) == (jd->GetEra(&jdEra), jdEra) &&
-                    (date->GetYear(&daY), daY) == (jd->GetYear(&jdY), jdY)) {
+            if ((date->GetEra(daEra), daEra) == (jd->GetEra(jdEra), jdEra) &&
+                    (date->GetYear(daY), daY) == (jd->GetYear(jdY), jdY)) {
                 AutoPtr<ICalendarDate> d;
-                GetGcal()->NewCalendarDate(TimeZone::NO_TIMEZONE, &d);
+                GetGcal()->NewCalendarDate(TimeZone::NO_TIMEZONE, d);
                 Integer m;
-                date->GetMonth(&m);
+                date->GetMonth(m);
                 d->SetDate(normalizedYear, m, 1);
                 Integer dayOfWeek, monthLength, dow;
-                IBaseCalendar::Probe(GetGcal())->GetDayOfWeek(d, &dayOfWeek);
-                GetGcal()->GetMonthLength(d, &monthLength);
+                IBaseCalendar::Probe(GetGcal())->GetDayOfWeek(d, dayOfWeek);
+                GetGcal()->GetMonthLength(d, monthLength);
                 dayOfWeek -= (GetFirstDayOfWeek(&dow), dow);
                 if (dayOfWeek < 0) {
                     dayOfWeek += 7;
@@ -1457,9 +1455,9 @@ ECode JapaneseImperialCalendar::GetActualMaximum(
             }
             else {
                 Long fd;
-                IBaseCalendar::Probe(GetJcal())->GetFixedDate(jd, &fd);
+                IBaseCalendar::Probe(GetJcal())->GetFixedDate(jd, fd);
                 Integer dom;
-                Long month1 = fd - (jd->GetDayOfMonth(&dom), dom) + 1;
+                Long month1 = fd - (jd->GetDayOfMonth(dom), dom) + 1;
                 *value = GetWeekNumber(month1, fd);
             }
             break;
@@ -1468,13 +1466,13 @@ ECode JapaneseImperialCalendar::GetActualMaximum(
         case DAY_OF_WEEK_IN_MONTH:
         {
             Integer ndays, dow1, dow;
-            date->GetDayOfWeek(&dow);
+            date->GetDayOfWeek(dow);
             AutoPtr<ICalendarDate> d;
             date->Clone(IID_ICalendarDate, (IInterface**)&d);
-            GetJcal()->GetMonthLength(d, &ndays);
+            GetJcal()->GetMonthLength(d, ndays);
             d->SetDayOfMonth(1);
             GetJcal()->Normalize(d);
-            d->GetDayOfWeek(&dow1);
+            d->GetDayOfWeek(dow1);
             Integer x = dow - dow1;
             if (x < 0) {
                 x += 7;
@@ -1489,11 +1487,11 @@ ECode JapaneseImperialCalendar::GetActualMaximum(
             Long millis;
             jc->GetTimeInMillis(&millis);
             AutoPtr<ICalendarDate> jd, d;
-            GetJcal()->GetCalendarDate(millis, GetZone(), &jd);
+            GetJcal()->GetCalendarDate(millis, GetZone(), jd);
             Integer eraIndex = GetEraIndex(date);
             if (eraIndex == sEras.GetLength() - 1) {
-                GetJcal()->GetCalendarDate(ILong::MAX_VALUE, GetZone(), &d);
-                d->GetYear(value);
+                GetJcal()->GetCalendarDate(ILong::MAX_VALUE, GetZone(), d);
+                d->GetYear(*value);
                 // Use an equivalent year for the
                 // getYearOffsetInMillis call to avoid overflow.
                 if (*value > 400) {
@@ -1502,9 +1500,9 @@ ECode JapaneseImperialCalendar::GetActualMaximum(
             }
             else {
                 Long time;
-                sEras[eraIndex + 1]->GetSince(GetZone(), &time);
-                GetJcal()->GetCalendarDate(time - 1, GetZone(), &d);
-                d->GetYear(value);
+                sEras[eraIndex + 1]->GetSince(GetZone(), time);
+                GetJcal()->GetCalendarDate(time - 1, GetZone(), d);
+                d->GetYear(*value);
                 // Use the same year as d.getYear() to be
                 // consistent with leap and common years.
                 jd->SetYear(*value);
@@ -1526,12 +1524,12 @@ Long JapaneseImperialCalendar::GetYearOffsetInMillis(
     /* [in] */ ICalendarDate* date)
 {
     Long doy;
-    IBaseCalendar::Probe(GetJcal())->GetDayOfYear(date, &doy);
+    IBaseCalendar::Probe(GetJcal())->GetDayOfYear(date, doy);
     Long t = (doy - 1) * ONE_DAY;
     Long tod;
-    date->GetTimeOfDay(&tod);
+    date->GetTimeOfDay(tod);
     Integer zo;
-    date->GetZoneOffset(&zo);
+    date->GetZoneOffset(zo);
     return t + tod - zo;
 }
 
@@ -1643,7 +1641,7 @@ Integer JapaneseImperialCalendar::ComputeFields(
     }
     Integer era = GetEraIndex(mJdate);
     Integer year;
-    mJdate->GetYear(&year);
+    mJdate->GetYear(year);
 
     // Always set the ERA and YEAR values.
     InternalSet(ERA, era);
@@ -1651,15 +1649,15 @@ Integer JapaneseImperialCalendar::ComputeFields(
     Integer mask = fieldMask | (ERA_MASK | YEAR_MASK);
 
     Integer month, dayOfMonth;
-    mJdate->GetMonth(&month);
+    mJdate->GetMonth(month);
     month -= 1; // 0-based
-    mJdate->GetDayOfMonth(&dayOfMonth);
+    mJdate->GetDayOfMonth(dayOfMonth);
 
     // Set the basic date fields.
     if ((fieldMask & (MONTH_MASK | DAY_OF_MONTH_MASK | DAY_OF_WEEK_MASK))
             != 0) {
         Integer dayOfWeek;
-        mJdate->GetDayOfWeek(&dayOfWeek);
+        mJdate->GetDayOfWeek(dayOfWeek);
         InternalSet(MONTH, month);
         InternalSet(DAY_OF_MONTH, dayOfMonth);
         InternalSet(DAY_OF_WEEK, dayOfWeek);
@@ -1700,7 +1698,7 @@ Integer JapaneseImperialCalendar::ComputeFields(
     if ((fieldMask & (DAY_OF_YEAR_MASK | WEEK_OF_YEAR_MASK |
             WEEK_OF_MONTH_MASK | DAY_OF_WEEK_IN_MONTH_MASK)) != 0) {
         Integer normalizedYear;
-        mJdate->GetNormalizedYear(&normalizedYear);
+        mJdate->GetNormalizedYear(normalizedYear);
         // If it's a year of an era transition, we need to handle
         // irregular year boundaries.
         Boolean transitionYear = IsTransitionYear(normalizedYear);
@@ -1712,13 +1710,13 @@ Integer JapaneseImperialCalendar::ComputeFields(
         }
         else if (normalizedYear == MIN_VALUES[YEAR]) {
             AutoPtr<ICalendarDate> dx;
-            GetJcal()->GetCalendarDate(ILong::MIN_VALUE, GetZone(), &dx);
-            IBaseCalendar::Probe(GetJcal())->GetFixedDate(dx, &fixedDateJan1);
+            GetJcal()->GetCalendarDate(ILong::MIN_VALUE, GetZone(), dx);
+            IBaseCalendar::Probe(GetJcal())->GetFixedDate(dx, fixedDateJan1);
             dayOfYear = (Integer)(fixedDate - fixedDateJan1) + 1;
         }
         else {
             Long doy;
-            IBaseCalendar::Probe(GetJcal())->GetDayOfYear(mJdate, &doy);
+            IBaseCalendar::Probe(GetJcal())->GetDayOfYear(mJdate, doy);
             dayOfYear = doy;
             fixedDateJan1 = fixedDate - dayOfYear + 1;
         }
@@ -1744,16 +1742,16 @@ Integer JapaneseImperialCalendar::ComputeFields(
             Long prevJan1;
             AutoPtr<LocalGregorianCalendar::Date> d = GetCalendarDate(fixedDec31);
             Integer normYear;
-            if (!(transitionYear || (d->GetNormalizedYear(&normYear), IsTransitionYear(normYear)))) {
+            if (!(transitionYear || (d->GetNormalizedYear(normYear), IsTransitionYear(normYear)))) {
                 prevJan1 = fixedDateJan1 - 365;
                 Boolean leap;
-                if (d->IsLeapYear(&leap), leap) {
+                if (d->IsLeapYear(leap), leap) {
                     --prevJan1;
                 }
             }
             else if (transitionYear) {
                 Integer y;
-                if (mJdate->GetYear(&y), y == 1) {
+                if (mJdate->GetYear(y), y == 1) {
                     // As of Heisei (since Meiji) there's no case
                     // that there are multiple transitions in a
                     // year.  Historically there was such
@@ -1761,11 +1759,11 @@ Integer JapaneseImperialCalendar::ComputeFields(
                     // future.
                     if (era > HEISEI) {
                         AutoPtr<ICalendarDate> pd;
-                        sEras[era - 1]->GetSinceDate(&pd);
-                        if (pd->GetYear(&y), normalizedYear == y) {
+                        sEras[era - 1]->GetSinceDate(pd);
+                        if (pd->GetYear(y), normalizedYear == y) {
                             Integer m, dom;
-                            pd->GetMonth(&m);
-                            pd->GetDayOfMonth(&dom);
+                            pd->GetMonth(m);
+                            pd->GetDayOfMonth(dom);
                             d->SetMonth(m);
                             d->SetDayOfMonth(dom);
                         }
@@ -1775,26 +1773,26 @@ Integer JapaneseImperialCalendar::ComputeFields(
                         d->SetDayOfMonth(1);
                     }
                     GetJcal()->Normalize(d);
-                    IBaseCalendar::Probe(GetJcal())->GetFixedDate(d, &prevJan1);
+                    IBaseCalendar::Probe(GetJcal())->GetFixedDate(d, prevJan1);
                 }
                 else {
                     prevJan1 = fixedDateJan1 - 365;
                     Boolean leap;
-                    if (d->IsLeapYear(&leap), leap) {
+                    if (d->IsLeapYear(leap), leap) {
                         --prevJan1;
                     }
                 }
             }
             else {
                 AutoPtr<ICalendarDate> cd;
-                sEras[GetEraIndex(mJdate)]->GetSinceDate(&cd);
+                sEras[GetEraIndex(mJdate)]->GetSinceDate(cd);
                 Integer m, dom;
-                cd->GetMonth(&m);
-                cd->GetDayOfMonth(&dom);
+                cd->GetMonth(m);
+                cd->GetDayOfMonth(dom);
                 d->SetMonth(m);
                 d->SetDayOfMonth(dom);
                 GetJcal()->Normalize(d);
-                IBaseCalendar::Probe(GetJcal())->GetFixedDate(d, &prevJan1);
+                IBaseCalendar::Probe(GetJcal())->GetFixedDate(d, prevJan1);
             }
             weekOfYear = GetWeekNumber(prevJan1, fixedDec31);
         }
@@ -1804,7 +1802,7 @@ Integer JapaneseImperialCalendar::ComputeFields(
                 if (weekOfYear >= 52) {
                     Long nextJan1 = fixedDateJan1 + 365;
                     Boolean leap;
-                    if (mJdate->IsLeapYear(&leap), leap) {
+                    if (mJdate->IsLeapYear(leap), leap) {
                         nextJan1++;
                     }
                     Integer dayOfWeek;
@@ -1825,23 +1823,23 @@ Integer JapaneseImperialCalendar::ComputeFields(
                 mJdate->Clone(IID_ICalendarDate, (IInterface**)&d);
                 Long nextJan1;
                 Integer y;
-                if (mJdate->GetYear(&y), y == 1) {
+                if (mJdate->GetYear(y), y == 1) {
                     d->AddYear(+1);
                     d->SetMonth(LocalGregorianCalendar::JANUARY);
                     d->SetDayOfMonth(1);
-                    IBaseCalendar::Probe(GetJcal())->GetFixedDate(d, &nextJan1);
+                    IBaseCalendar::Probe(GetJcal())->GetFixedDate(d, nextJan1);
                 }
                 else {
                     Integer nextEraIndex = GetEraIndex((LocalGregorianCalendar::Date*)d.Get()) + 1;
                     AutoPtr<ICalendarDate> cd;
-                    sEras[nextEraIndex]->GetSinceDate(&cd);
+                    sEras[nextEraIndex]->GetSinceDate(cd);
                     d->SetEra(sEras[nextEraIndex]);
                     Integer m, dom;
-                    cd->GetMonth(&m);
-                    cd->GetDayOfMonth(&dom);
+                    cd->GetMonth(m);
+                    cd->GetDayOfMonth(dom);
                     d->SetDate(1, m, dom);
                     GetJcal()->Normalize(d);
-                    IBaseCalendar::Probe(GetJcal())->GetFixedDate(d, &nextJan1);
+                    IBaseCalendar::Probe(GetJcal())->GetFixedDate(d, nextJan1);
                 }
                 Integer dayOfWeek;
                 GetFirstDayOfWeek(&dayOfWeek);
@@ -2057,30 +2055,30 @@ Long JapaneseImperialCalendar::GetFixedDate(
     else {
         if (year == 1 && era != 0) {
             AutoPtr<ICalendarDate> d;
-            sEras[era]->GetSinceDate(&d);
-            d->GetMonth(&month);
+            sEras[era]->GetSinceDate(d);
+            d->GetMonth(month);
             month = month - 1;
-            d->GetDayOfMonth(&firstDayOfMonth);
+            d->GetDayOfMonth(firstDayOfMonth);
         }
     }
 
     // Adjust the base date if year is the minimum value.
     if (year == MIN_VALUES[YEAR]) {
         AutoPtr<ICalendarDate> dx;
-        GetJcal()->GetCalendarDate(ILong::MIN_VALUE, GetZone(), &dx);
+        GetJcal()->GetCalendarDate(ILong::MIN_VALUE, GetZone(), dx);
         Integer m;
-        dx->GetMonth(&m);
+        dx->GetMonth(m);
         m = m - 1;
         if (month < m) {
             month = m;
         }
         if (month == m) {
-            dx->GetDayOfMonth(&firstDayOfMonth);
+            dx->GetDayOfMonth(firstDayOfMonth);
         }
     }
 
     AutoPtr<ICalendarDate> date;
-    GetJcal()->NewCalendarDate(TimeZone::NO_TIMEZONE, &date);
+    GetJcal()->NewCalendarDate(TimeZone::NO_TIMEZONE, date);
     date->SetEra(era > 0 ? sEras[era] : nullptr);
     date->SetDate(year, month + 1, firstDayOfMonth);
     GetJcal()->Normalize(date);
@@ -2088,7 +2086,7 @@ Long JapaneseImperialCalendar::GetFixedDate(
     // Get the fixed date since Jan 1, 1 (Gregorian). We are on
     // the first day of either `month' or January in 'year'.
     Long fixedDate;
-    IBaseCalendar::Probe(GetJcal())->GetFixedDate(date, &fixedDate);
+    IBaseCalendar::Probe(GetJcal())->GetFixedDate(date, fixedDate);
 
     if (IsFieldSet(fieldMask, MONTH)) {
         // Month-based calculations
@@ -2166,7 +2164,7 @@ Long JapaneseImperialCalendar::GetFixedDate(
         // We are on the first day of the year.
         if (IsFieldSet(fieldMask, DAY_OF_YEAR)) {
             Integer normalizedYear;
-            ((LocalGregorianCalendar::Date*)date.Get())->GetNormalizedYear(&normalizedYear);
+            ((LocalGregorianCalendar::Date*)date.Get())->GetNormalizedYear(normalizedYear);
             if (IsTransitionYear(normalizedYear)) {
                 fixedDate = GetFixedDateJan1((LocalGregorianCalendar::Date*)date.Get(), fixedDate);
             }
@@ -2204,14 +2202,14 @@ Long JapaneseImperialCalendar::GetFixedDateJan1(
     /* [in] */ Long fixedDate)
 {
     AutoPtr<IEra> era;
-    date->GetEra(&era);
+    date->GetEra(era);
     Integer y;
-    if (era != nullptr && (date->GetYear(&y), y) == 1) {
+    if (era != nullptr && (date->GetYear(y), y) == 1) {
         for (Integer eraIndex = GetEraIndex(date); eraIndex > 0; eraIndex--) {
             AutoPtr<ICalendarDate> d;
-            sEras[eraIndex]->GetSinceDate(&d);
+            sEras[eraIndex]->GetSinceDate(d);
             Long fd;
-            IBaseCalendar::Probe(GetGcal())->GetFixedDate(d, &fd);
+            IBaseCalendar::Probe(GetGcal())->GetFixedDate(d, fd);
             // There might be multiple era transitions in a year.
             if (fd > fixedDate) {
                 continue;
@@ -2220,12 +2218,12 @@ Long JapaneseImperialCalendar::GetFixedDateJan1(
         }
     }
     AutoPtr<ICalendarDate> d;
-    GetGcal()->NewCalendarDate(TimeZone::NO_TIMEZONE, &d);
+    GetGcal()->NewCalendarDate(TimeZone::NO_TIMEZONE, d);
     Integer normalizedYear;
-    date->GetNormalizedYear(&normalizedYear);
+    date->GetNormalizedYear(normalizedYear);
     d->SetDate(normalizedYear, IBaseCalendar::JANUARY, 1);
     Long fd;
-    IBaseCalendar::Probe(GetGcal())->GetFixedDate(d, &fd);
+    IBaseCalendar::Probe(GetGcal())->GetFixedDate(d, fd);
     return fd;
 }
 
@@ -2245,7 +2243,7 @@ Long JapaneseImperialCalendar::GetFixedDateMonth1(
 
     // Otherwise, we can use the 1st day of the month.
     Integer dom;
-    date->GetDayOfMonth(&dom);
+    date->GetDayOfMonth(dom);
     return fixedDate - dom + 1;
 }
 
@@ -2253,7 +2251,7 @@ AutoPtr<LocalGregorianCalendar::Date> JapaneseImperialCalendar::GetCalendarDate(
     /* [in] */ Long fd)
 {
     AutoPtr<ICalendarDate> d;
-    GetJcal()->NewCalendarDate(TimeZone::NO_TIMEZONE, &d);
+    GetJcal()->NewCalendarDate(TimeZone::NO_TIMEZONE, d);
     IBaseCalendar::Probe(GetJcal())->GetCalendarDateFromFixedDate(d, fd);
     return (LocalGregorianCalendar::Date*)d.Get();
 }
@@ -2271,25 +2269,25 @@ Integer JapaneseImperialCalendar::MonthLength(
 {
     BLOCK_CHECK() {
         Boolean normalized;
-        mJdate->IsNormalized(&normalized);
+        mJdate->IsNormalized(normalized);
         CHECK(normalized);
     }
     Boolean leap;
-    return (mJdate->IsLeapYear(&leap), leap) ?
+    return (mJdate->IsLeapYear(leap), leap) ?
             CGregorianCalendar::LEAP_MONTH_LENGTH[month] : CGregorianCalendar::MONTH_LENGTH[month];
 }
 
 Integer JapaneseImperialCalendar::ActualMonthLength()
 {
     Integer length;
-    GetJcal()->GetMonthLength(mJdate, &length);
+    GetJcal()->GetMonthLength(mJdate, length);
     Integer eraIndex = GetTransitionEraIndex(mJdate);
     if (eraIndex == -1) {
         Long transitionFixedDate = sSinceFixedDates[eraIndex];
         AutoPtr<ICalendarDate> d;
-        sEras[eraIndex]->GetSinceDate(&d);
+        sEras[eraIndex]->GetSinceDate(d);
         Integer dom;
-        d->GetDayOfMonth(&dom);
+        d->GetDayOfMonth(dom);
         if (transitionFixedDate <= mCachedFixedDate) {
             length -= dom - 1;
         }
@@ -2305,17 +2303,16 @@ Integer JapaneseImperialCalendar::GetTransitionEraIndex(
 {
     Integer eraIndex = GetEraIndex(date);
     AutoPtr<ICalendarDate> transitionDate;
-    sEras[eraIndex]->GetSinceDate(&transitionDate);
+    sEras[eraIndex]->GetSinceDate(transitionDate);
     Integer ty, tm, dy, dm;
-    if ((transitionDate->GetYear(&ty), ty) == (date->GetNormalizedYear(&dy), dy) &&
-            (transitionDate->GetMonth(&tm), tm) == (date->GetMonth(&dm), dm)) {
+    if ((transitionDate->GetYear(ty), ty) == (date->GetNormalizedYear(dy), dy) &&
+            (transitionDate->GetMonth(tm), tm) == (date->GetMonth(dm), dm)) {
         return eraIndex;
     }
     if (eraIndex < sEras.GetLength() - 1) {
-        transitionDate = nullptr;
-        sEras[++eraIndex]->GetSinceDate(&transitionDate);
-        if ((transitionDate->GetYear(&ty), ty) == (date->GetNormalizedYear(&dy), dy) &&
-                (transitionDate->GetMonth(&tm), tm) == (date->GetMonth(&dm), dm)) {
+        sEras[++eraIndex]->GetSinceDate(transitionDate);
+        if ((transitionDate->GetYear(ty), ty) == (date->GetNormalizedYear(dy), dy) &&
+                (transitionDate->GetMonth(tm), tm) == (date->GetMonth(dm), dm)) {
             return eraIndex;
         }
     }
@@ -2327,9 +2324,9 @@ Boolean JapaneseImperialCalendar::IsTransitionYear(
 {
     for (Integer i = sEras.GetLength() - 1; i > 0; i--) {
         AutoPtr<ICalendarDate> date;
-        sEras[i]->GetSinceDate(&date);
+        sEras[i]->GetSinceDate(date);
         Integer transitionYear;
-        date->GetYear(&transitionYear);
+        date->GetYear(transitionYear);
         if (normalizedYear == transitionYear) {
             return true;
         }
@@ -2344,7 +2341,7 @@ Integer JapaneseImperialCalendar::GetEraIndex(
     /* [in] */ LocalGregorianCalendar::Date* date)
 {
     AutoPtr<IEra> era;
-    date->GetEra(&era);
+    date->GetEra(era);
     for (Integer i = sEras.GetLength() - 1; i > 0; i--) {
         if (sEras[i] == era) {
             return i;
@@ -2374,13 +2371,13 @@ void JapaneseImperialCalendar::PinDayOfMonth(
     /* [in] */ LocalGregorianCalendar::Date* date)
 {
     Integer year, dom, y;
-    date->GetYear(&year);
-    date->GetDayOfMonth(&dom);
+    date->GetYear(year);
+    date->GetDayOfMonth(dom);
     if (year != (GetMinimum(YEAR, &y), y)) {
         date->SetDayOfMonth(1);
         GetJcal()->Normalize(date);
         Integer monthLength;
-        GetJcal()->GetMonthLength(date, &monthLength);
+        GetJcal()->GetMonthLength(date, monthLength);
         if (dom > monthLength) {
             date->SetDayOfMonth(monthLength);
         }
@@ -2391,25 +2388,25 @@ void JapaneseImperialCalendar::PinDayOfMonth(
     }
     else {
         AutoPtr<ICalendarDate> d, realDate;
-        GetJcal()->GetCalendarDate(ILong::MIN_VALUE, GetZone(), &d);
-        GetJcal()->GetCalendarDate(mTime, GetZone(), &realDate);
+        GetJcal()->GetCalendarDate(ILong::MIN_VALUE, GetZone(), d);
+        GetJcal()->GetCalendarDate(mTime, GetZone(), realDate);
         Long tod;
-        realDate->GetTimeOfDay(&tod);
+        realDate->GetTimeOfDay(tod);
         // Use an equivalent year.
         realDate->AddYear(+400);
         Integer mon;
-        date->GetMonth(&mon);
+        date->GetMonth(mon);
         realDate->SetMonth(mon);
         realDate->SetDayOfMonth(1);
         GetJcal()->Normalize(realDate);
         Integer monthLength;
-        GetJcal()->GetMonthLength(realDate, &monthLength);
+        GetJcal()->GetMonthLength(realDate, monthLength);
         if (dom > monthLength) {
             realDate->SetDayOfMonth(monthLength);
         }
         else {
             Integer dDom;
-            d->GetDayOfMonth(&dDom);
+            d->GetDayOfMonth(dDom);
             if (dom < dDom) {
                 realDate->SetDayOfMonth(dDom);
             }
@@ -2419,12 +2416,12 @@ void JapaneseImperialCalendar::PinDayOfMonth(
         }
         Integer rDom, dDom;
         Long dTod;
-        if ((realDate->GetDayOfMonth(&rDom), rDom) == (d->GetDayOfMonth(&dDom), dDom) &&
-                tod < (d->GetTimeOfDay(&dTod), dTod)) {
+        if ((realDate->GetDayOfMonth(rDom), rDom) == (d->GetDayOfMonth(dDom), dDom) &&
+                tod < (d->GetTimeOfDay(dTod), dTod)) {
             realDate->SetDayOfMonth(Math::Min(dom + 1, monthLength));
         }
         // restore the year.
-        realDate->GetMonth(&mon);
+        realDate->GetMonth(mon);
         date->SetDate(year, mon, rDom);
         // Don't normalize date here so as not to cause underflow.
     }

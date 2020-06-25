@@ -23,23 +23,21 @@ namespace calendar {
 
 ECode CalendarSystemFactory::ForName(
     /* [in] */ const String& calendarName,
-    /* [out] */ ICalendarSystem** system)
+    /* [out] */ AutoPtr<ICalendarSystem>& system)
 {
     return CalendarSystem::ForName(calendarName, system);
 }
 
 ECode CalendarSystemFactory::GetCalendarProperties(
-    /* [out] */ IProperties** prop)
+    /* [out] */ AutoPtr<IProperties>& prop)
 {
     return CalendarSystem::GetCalendarProperties(prop);
 }
 
 ECode CalendarSystemFactory::GetGregorianCalendar(
-    /* [out] */ IGregorian** gcal)
+    /* [out] */ AutoPtr<IGregorian>& gcal)
 {
-    VALIDATE_NOT_NULL(gcal);
-
-    CalendarSystem::GetGregorianCalendar().MoveTo(gcal);
+    gcal = CalendarSystem::GetGregorianCalendar();
     return NOERROR;
 }
 

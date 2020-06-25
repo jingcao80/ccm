@@ -83,7 +83,7 @@ public:
 
     ECode Validate(
         /* [in] */ ICalendarDate* date,
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode Normalize(
         /* [in] */ ICalendarDate* date,
@@ -91,30 +91,30 @@ public:
 
     ECode GetYearLength(
         /* [in] */ ICalendarDate* date,
-        /* [out] */ Integer* days) override;
+        /* [out] */ Integer& days) override;
 
     ECode GetYearLengthInMonths(
         /* [in] */ ICalendarDate* date,
-        /* [out] */ Integer* months) override;
+        /* [out] */ Integer& months) override;
 
     ECode GetMonthLength(
         /* [in] */ ICalendarDate* date,
-        /* [out] */ Integer* days) override;
+        /* [out] */ Integer& days) override;
 
     ECode GetDayOfYear(
         /* [in] */ ICalendarDate* date,
-        /* [out] */ Long* days) override;
+        /* [out] */ Long& days) override;
 
     ECode GetFixedDate(
         /* [in] */ ICalendarDate* date,
-        /* [out] */ Long* fraction) override;
+        /* [out] */ Long& fraction) override;
 
     ECode GetFixedDate(
         /* [in] */ Integer year,
         /* [in] */ Integer month,
         /* [in] */ Integer dayOfMonth,
         /* [in] */ IBaseCalendarDate* cache,
-        /* [out] */ Long* fraction) override;
+        /* [out] */ Long& fraction) override;
 
     ECode GetCalendarDateFromFixedDate(
         /* [in] */ ICalendarDate* date,
@@ -125,11 +125,11 @@ public:
 
     ECode GetDayOfWeek(
         /* [in] */ ICalendarDate* date,
-        /* [out] */ Integer* days) override;
+        /* [out] */ Integer& days) override;
 
     ECode GetYearFromFixedDate(
         /* [in] */ Long fixedDate,
-        /* [out] */ Integer* year) override;
+        /* [out] */ Integer& year) override;
 
 protected:
     virtual void NormalizeMonth(
@@ -148,7 +148,7 @@ protected:
 
     virtual ECode IsLeapYear(
         /* [in] */ Integer normalizedYear,
-        /* [out] */ Boolean* leapYear);
+        /* [out] */ Boolean& leapYear);
 
 private:
     Integer GetMonthLength(

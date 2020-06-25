@@ -38,12 +38,10 @@ COMO_INTERFACE_IMPL_1(LocalGregorianCalendar, BaseCalendar, ILocalGregorianCalen
 
 ECode LocalGregorianCalendar::GetLocalGregorianCalendar(
     /* [in] */ const String& name,
-    /* [out] */ ILocalGregorianCalendar** calendar)
+    /* [out] */ AutoPtr<ILocalGregorianCalendar>& calendar)
 {
-    VALIDATE_NOT_NULL(calendar);
-
     AutoPtr<IProperties> calendarProps;
-    ECode ec = GetCalendarProperties(&calendarProps);
+    ECode ec = GetCalendarProperties(calendarProps);
     if (FAILED(ec)) {
         return E_RUNTIME_EXCEPTION;
     }
@@ -52,7 +50,7 @@ ECode LocalGregorianCalendar::GetLocalGregorianCalendar(
     String props;
     calendarProps->GetProperty(String("calendar.") + name + ".eras", &props);
     if (props.IsNull()) {
-        *calendar = nullptr;
+        calendar = nullptr;
         return NOERROR;
     }
     AutoPtr<IList> eras;
@@ -78,7 +76,7 @@ ECode LocalGregorianCalendar::GetLocalGregorianCalendar(
             Integer index = item.IndexOf(U'=');
             // it must be in the key=value form.
             if (index == -1) {
-                *calendar = nullptr;
+                calendar = nullptr;
                 return NOERROR;
             }
             String key = item.Substring(0, index);
@@ -117,8 +115,7 @@ ECode LocalGregorianCalendar::GetLocalGregorianCalendar(
 
     AutoPtr<LocalGregorianCalendar> lgcal = new LocalGregorianCalendar();
     FAIL_RETURN(lgcal->Constructor(name, eraArray));
-    *calendar = lgcal.Get();
-    REFCOUNT_ADD(*calendar);
+    calendar = lgcal.Get();
     return NOERROR;
 }
 
@@ -133,42 +130,34 @@ ECode LocalGregorianCalendar::Constructor(
 }
 
 ECode LocalGregorianCalendar::GetName(
-    /* [out] */ String* name)
+    /* [out] */ String& name)
 {
-    VALIDATE_NOT_NULL(name);
-
-    *name = mName;
+    name = mName;
     return NOERROR;
 }
 
 ECode LocalGregorianCalendar::GetCalendarDate(
-    /* [out] */ ICalendarDate** date)
+    /* [out] */ AutoPtr<ICalendarDate>& date)
 {
-    VALIDATE_NOT_NULL(date);
-
     NewCalendarDate(date);
-    return GetCalendarDate(System::GetCurrentTimeMillis(), *date);
+    return GetCalendarDate(System::GetCurrentTimeMillis(), date);
 }
 
 ECode LocalGregorianCalendar::GetCalendarDate(
     /* [in] */ Long millis,
-    /* [out] */ ICalendarDate** date)
+    /* [out] */ AutoPtr<ICalendarDate>& date)
 {
-    VALIDATE_NOT_NULL(date);
-
     NewCalendarDate(date);
-    return GetCalendarDate(millis, *date);
+    return GetCalendarDate(millis, date);
 }
 
 ECode LocalGregorianCalendar::GetCalendarDate(
     /* [in] */ Long millis,
     /* [in] */ ITimeZone* zone,
-    /* [out] */ ICalendarDate** date)
+    /* [out] */ AutoPtr<ICalendarDate>& date)
 {
-    VALIDATE_NOT_NULL(date);
-
     NewCalendarDate(zone, date);
-    return GetCalendarDate(millis, *date);
+    return GetCalendarDate(millis, date);
 }
 
 ECode LocalGregorianCalendar::GetCalendarDate(
@@ -178,7 +167,7 @@ ECode LocalGregorianCalendar::GetCalendarDate(
     BaseCalendar::GetCalendarDate(millis, date);
     LocalGregorianCalendar::Date* ldate = (LocalGregorianCalendar::Date*)date;
     Integer zoneOffset;
-    ldate->GetZoneOffset(&zoneOffset);
+    ldate->GetZoneOffset(zoneOffset);
     AdjustYear(ldate, millis, zoneOffset);
     return NOERROR;
 }
@@ -192,19 +181,19 @@ void LocalGregorianCalendar::AdjustYear(
     for (i = mEras.GetLength() - 1; i >= 0; --i) {
         IEra* era = mEras[i];
         Long since;
-        era->GetSince(nullptr, &since);
+        era->GetSince(nullptr, since);
         Boolean local;
-        if (era->IsLocalTime(&local), local) {
+        if (era->IsLocalTime(local), local) {
             since -= zoneOffset;
         }
         if (millis >= since) {
             ldate->SetLocalEra(era);
             Integer normYear;
-            ldate->GetNormalizedYear(&normYear);
+            ldate->GetNormalizedYear(normYear);
             AutoPtr<ICalendarDate> sinceDate;
-            era->GetSinceDate(&sinceDate);
+            era->GetSinceDate(sinceDate);
             Integer year;
-            sinceDate->GetYear(&year);
+            sinceDate->GetYear(year);
             Integer y = normYear - year + 1;
             ldate->SetLocalYear(y);
             break;
@@ -213,82 +202,74 @@ void LocalGregorianCalendar::AdjustYear(
     if (i < 0) {
         ldate->SetLocalEra(nullptr);
         Integer year;
-        ldate->GetNormalizedYear(&year);
+        ldate->GetNormalizedYear(year);
         ldate->SetLocalYear(year);
     }
     ldate->SetNormalized(true);
 }
 
 ECode LocalGregorianCalendar::NewCalendarDate(
-    /* [out] */ ICalendarDate** date)
+    /* [out] */ AutoPtr<ICalendarDate>& date)
 {
-    VALIDATE_NOT_NULL(date);
-
     AutoPtr<LocalGregorianCalendar::Date> d = new LocalGregorianCalendar::Date();
     ECode ec = d->Constructor();
     if (FAILED(ec)) return ec;
-    *date = d.Get();
-    REFCOUNT_ADD(*date);
+    date = d.Get();
     return NOERROR;
 }
 
 ECode LocalGregorianCalendar::NewCalendarDate(
     /* [in] */ ITimeZone* zone,
-    /* [out] */ ICalendarDate** date)
+    /* [out] */ AutoPtr<ICalendarDate>& date)
 {
-    VALIDATE_NOT_NULL(date);
-
     AutoPtr<LocalGregorianCalendar::Date> d = new LocalGregorianCalendar::Date();
     ECode ec = d->Constructor(zone);
     if (FAILED(ec)) return ec;
-    *date = d.Get();
-    REFCOUNT_ADD(*date);
+    date = d.Get();
     return NOERROR;
 }
 
 ECode LocalGregorianCalendar::Validate(
     /* [in] */ ICalendarDate* date,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     LocalGregorianCalendar::Date* ldate = (LocalGregorianCalendar::Date*)date;
     AutoPtr<IEra> era;
-    ldate->GetEra(&era);
+    ldate->GetEra(era);
     if (era != nullptr) {
         if (!ValidateEra(era)) {
-            *result = false;
+            result = false;
             return NOERROR;
         }
         AutoPtr<ICalendarDate> sinceDate;
-        era->GetSinceDate(&sinceDate);
+        era->GetSinceDate(sinceDate);
         Integer sinceYear, year;
-        sinceDate->GetYear(&sinceYear);
-        ldate->GetYear(&year);
+        sinceDate->GetYear(sinceYear);
+        ldate->GetYear(year);
         ldate->SetNormalizedYear(sinceYear + year - 1);
         AutoPtr<ITimeZone> zone;
-        date->GetZone(&zone);
+        date->GetZone(zone);
         AutoPtr<ICalendarDate> tmp;
-        NewCalendarDate(zone, &tmp);
+        NewCalendarDate(zone, tmp);
         tmp->SetEra(era);
         Integer y, m, dom;
-        date->GetYear(&y);
-        date->GetMonth(&m);
-        date->GetDayOfMonth(&dom);
+        date->GetYear(y);
+        date->GetMonth(m);
+        date->GetDayOfMonth(dom);
         tmp->SetDate(y, m, dom);
         Normalize(tmp);
         AutoPtr<IEra> tmpEra;
-        if (tmp->GetEra(&tmpEra), tmpEra != era) {
-            *result = false;
+        if (tmp->GetEra(tmpEra), tmpEra != era) {
+            result = false;
             return NOERROR;
         }
     }
     else {
         AutoPtr<ICalendarDate> sinceDate;
-        mEras[0]->GetSinceDate(&sinceDate);
+        mEras[0]->GetSinceDate(sinceDate);
         Integer sinceYear, year;
-        if (date->GetYear(&year), sinceDate->GetYear(&sinceYear), year >= sinceYear) {
-            *result = false;
+        if (date->GetYear(year), sinceDate->GetYear(sinceYear), year >= sinceYear) {
+            result = false;
             return NOERROR;
         }
         ldate->SetNormalizedYear(year);
@@ -313,7 +294,7 @@ ECode LocalGregorianCalendar::Normalize(
     /* [out] */ Boolean* result)
 {
     Boolean normalized;
-    if (date->IsNormalized(&normalized), normalized) {
+    if (date->IsNormalized(normalized), normalized) {
         if (result != nullptr) *result = true;
         return NOERROR;
     }
@@ -326,38 +307,38 @@ ECode LocalGregorianCalendar::Normalize(
     Boolean hasMillis = false;
     Long millis = 0;
     Integer year;
-    ldate->GetNormalizedYear(&year);
+    ldate->GetNormalizedYear(year);
     Integer i;
     AutoPtr<IEra> era;
     for (i = mEras.GetLength() - 1; i >= 0; --i) {
         era = mEras[i];
         Boolean local;
-        if (era->IsLocalTime(&local), local) {
+        if (era->IsLocalTime(local), local) {
             AutoPtr<ICalendarDate> sinceDate;
-            era->GetSinceDate(&sinceDate);
+            era->GetSinceDate(sinceDate);
             Integer sinceYear;
-            sinceDate->GetYear(&sinceYear);
+            sinceDate->GetYear(sinceYear);
             if (year > sinceYear) {
                 break;
             }
             if (year == sinceYear) {
                 Integer month, sinceMonth;
-                ldate->GetMonth(&month);
-                sinceDate->GetMonth(&sinceMonth);
+                ldate->GetMonth(month);
+                sinceDate->GetMonth(sinceMonth);
                 if (month > sinceMonth) {
                     break;
                 }
                 if (month == sinceMonth) {
                     Integer day, sinceDay;
-                    ldate->GetDayOfMonth(&day);
-                    sinceDate->GetDayOfMonth(&sinceDay);
+                    ldate->GetDayOfMonth(day);
+                    sinceDate->GetDayOfMonth(sinceDay);
                     if (day > sinceDay) {
                         break;
                     }
                     if (day == sinceDay) {
                         Long timeOfDay, sinceTimeOfDay;
-                        ldate->GetTimeOfDay(&timeOfDay);
-                        sinceDate->GetTimeOfDay(&sinceTimeOfDay);
+                        ldate->GetTimeOfDay(timeOfDay);
+                        sinceDate->GetTimeOfDay(sinceTimeOfDay);
                         if (timeOfDay >= sinceTimeOfDay) {
                             break;
                         }
@@ -374,9 +355,9 @@ ECode LocalGregorianCalendar::Normalize(
             }
 
             AutoPtr<ITimeZone> zone;
-            date->GetZone(&zone);
+            date->GetZone(zone);
             Long since;
-            era->GetSince(zone, &since);
+            era->GetSince(zone, since);
             if (millis >= since) {
                 break;
             }
@@ -385,10 +366,10 @@ ECode LocalGregorianCalendar::Normalize(
     if (i >= 0) {
         ldate->SetLocalEra(era);
         AutoPtr<ICalendarDate> sinceDate;
-        era->GetSinceDate(&sinceDate);
+        era->GetSinceDate(sinceDate);
         Integer sinceYear, year;
-        sinceDate->GetYear(&sinceYear);
-        ldate->GetNormalizedYear(&year);
+        sinceDate->GetYear(sinceYear);
+        ldate->GetNormalizedYear(year);
         ldate->SetLocalYear(year - sinceYear + 1);
     }
     else {
@@ -416,46 +397,42 @@ void LocalGregorianCalendar::NormalizeYear(
     // Set the supposed-to-be-correct Gregorian year first
     // e.g., Showa 90 becomes 2015 (1926 + 90 - 1).
     AutoPtr<IEra> era;
-    ldate->GetEra(&era);
+    ldate->GetEra(era);
     if (era == nullptr || !ValidateEra(era)) {
         Integer year;
-        ldate->GetYear(&year);
+        ldate->GetYear(year);
         ldate->SetNormalizedYear(year);
     }
     else {
         AutoPtr<ICalendarDate> sinceDate;
-        era->GetSinceDate(&sinceDate);
+        era->GetSinceDate(sinceDate);
         Integer sinceYear, year;
-        sinceDate->GetYear(&sinceYear);
-        ldate->GetYear(&year);
+        sinceDate->GetYear(sinceYear);
+        ldate->GetYear(year);
         ldate->SetNormalizedYear(sinceYear + year - 1);
     }
 }
 
 ECode LocalGregorianCalendar::IsLeapYear(
     /* [in] */ Integer gregorianYear,
-    /* [out] */ Boolean* leapYear)
+    /* [out] */ Boolean& leapYear)
 {
-    VALIDATE_NOT_NULL(leapYear);
-
-    *leapYear = CalendarUtils::IsGregorianLeapYear(gregorianYear);
+    leapYear = CalendarUtils::IsGregorianLeapYear(gregorianYear);
     return NOERROR;
 }
 
 ECode LocalGregorianCalendar::IsLeapYear(
     /* [in] */ IEra* era,
     /* [in] */ Integer year,
-    /* [out] */ Boolean* leapYear)
+    /* [out] */ Boolean& leapYear)
 {
-    VALIDATE_NOT_NULL(leapYear);
-
     if (era == nullptr) {
         return IsLeapYear(year, leapYear);
     }
     AutoPtr<ICalendarDate> sinceDate;
-    era->GetSinceDate(&sinceDate);
+    era->GetSinceDate(sinceDate);
     Integer sinceYear;
-    sinceDate->GetYear(&sinceYear);
+    sinceDate->GetYear(sinceYear);
     Integer gyear = sinceYear + year - 1;
     return IsLeapYear(gyear, leapYear);
 }
@@ -487,7 +464,7 @@ ECode LocalGregorianCalendar::Date::SetEra(
     /* [in] */ IEra* era)
 {
     AutoPtr<IEra> thisEra;
-    if (GetEra(&thisEra), thisEra != era) {
+    if (GetEra(thisEra), thisEra != era) {
         BaseCalendar::Date::SetEra(era);
         mGregorianYear = FIELD_UNDEFINED;
     }
@@ -506,7 +483,7 @@ ECode LocalGregorianCalendar::Date::SetYear(
     /* [in] */ Integer year)
 {
     Integer thisYear;
-    if (GetYear(&thisYear), thisYear != year) {
+    if (GetYear(thisYear), thisYear != year) {
         BaseCalendar::Date::SetYear(year);
         mGregorianYear = FIELD_UNDEFINED;
     }
@@ -514,11 +491,9 @@ ECode LocalGregorianCalendar::Date::SetYear(
 }
 
 ECode LocalGregorianCalendar::Date::GetNormalizedYear(
-    /* [out] */ Integer* normalizedYear)
+    /* [out] */ Integer& normalizedYear)
 {
-    VALIDATE_NOT_NULL(normalizedYear);
-
-    *normalizedYear = mGregorianYear;
+    normalizedYear = mGregorianYear;
     return NOERROR;
 }
 
@@ -550,22 +525,22 @@ ECode LocalGregorianCalendar::Date::ToString(
     AutoPtr<IStringBuffer> sb;
     CStringBuffer::New(IID_IStringBuffer, (IInterface**)&sb);
     AutoPtr<IEra> era;
-    GetEra(&era);
+    GetEra(era);
     if (era != nullptr) {
         String abbr;
-        era->GetAbbreviation(&abbr);
+        era->GetAbbreviation(abbr);
         if (!abbr.IsNull()) {
             sb->Append(abbr);
         }
     }
     Integer year, month, dom;
-    GetYear(&year);
+    GetYear(year);
     sb->Append(year);
     sb->Append(U'.');
-    GetMonth(&month);
+    GetMonth(month);
     CalendarUtils::Sprintf0d(sb, month, 2);
     sb->Append(U'.');
-    GetDayOfMonth(&dom);
+    GetDayOfMonth(dom);
     CalendarUtils::Sprintf0d(sb, dom, 2);
     sb->Append(time);
     return sb->ToString(desc);

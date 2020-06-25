@@ -30,13 +30,13 @@ class COM_PUBLIC CalendarSystemFactory
 public:
     static ECode ForName(
         /* [in] */ const String& calendarName,
-        /* [out] */ ICalendarSystem** system);
+        /* [out] */ AutoPtr<ICalendarSystem>& system);
 
     static ECode GetCalendarProperties(
-        /* [out] */ IProperties** prop);
+        /* [out] */ AutoPtr<IProperties>& prop);
 
     static ECode GetGregorianCalendar(
-        /* [out] */ IGregorian** gcal);
+        /* [out] */ AutoPtr<IGregorian>& gcal);
 
 private:
     CalendarSystemFactory();

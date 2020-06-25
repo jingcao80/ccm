@@ -45,12 +45,9 @@ ECode CalendarDate::Constructor(
 }
 
 ECode CalendarDate::GetEra(
-    /* [out] */ IEra** era)
+    /* [out] */ AutoPtr<IEra>& era)
 {
-    VALIDATE_NOT_NULL(era);
-
-    *era = mEra;
-    REFCOUNT_ADD(*era);
+    era = mEra;
     return NOERROR;
 }
 
@@ -66,11 +63,9 @@ ECode CalendarDate::SetEra(
 }
 
 ECode CalendarDate::GetYear(
-    /* [out] */ Integer* year)
+    /* [out] */ Integer& year)
 {
-    VALIDATE_NOT_NULL(year);
-
-    *year = mYear;
+    year = mYear;
     return NOERROR;
 }
 
@@ -95,11 +90,9 @@ ECode CalendarDate::AddYear(
 }
 
 ECode CalendarDate::IsLeapYear(
-    /* [out] */ Boolean* leapYear)
+    /* [out] */ Boolean& leapYear)
 {
-    VALIDATE_NOT_NULL(leapYear);
-
-    *leapYear = mLeapYear;
+    leapYear = mLeapYear;
     return NOERROR;
 }
 
@@ -111,11 +104,9 @@ ECode CalendarDate::SetLeapYear(
 }
 
 ECode CalendarDate::GetMonth(
-    /* [out] */ Integer* month)
+    /* [out] */ Integer& month)
 {
-    VALIDATE_NOT_NULL(month);
-
-    *month = mMonth;
+    month = mMonth;
     return NOERROR;
 }
 
@@ -140,11 +131,9 @@ ECode CalendarDate::AddMonth(
 }
 
 ECode CalendarDate::GetDayOfMonth(
-    /* [out] */ Integer* date)
+    /* [out] */ Integer& date)
 {
-    VALIDATE_NOT_NULL(date);
-
-    *date = mDayOfMonth;
+    date = mDayOfMonth;
     return NOERROR;
 }
 
@@ -169,24 +158,20 @@ ECode CalendarDate::AddDayOfMonth(
 }
 
 ECode CalendarDate::GetDayOfWeek(
-    /* [out] */ Integer* date)
+    /* [out] */ Integer& date)
 {
-    VALIDATE_NOT_NULL(date);
-
     Boolean normalize;
-    if (IsNormalized(&normalize), !normalize) {
+    if (IsNormalized(normalize), !normalize) {
         mDayOfWeek = FIELD_UNDEFINED;
     }
-    *date = mDayOfWeek;
+    date = mDayOfWeek;
     return NOERROR;
 }
 
 ECode CalendarDate::GetHours(
-    /* [out] */ Integer* hours)
+    /* [out] */ Integer& hours)
 {
-    VALIDATE_NOT_NULL(hours);
-
-    *hours = mHours;
+    hours = mHours;
     return NOERROR;
 }
 
@@ -211,11 +196,9 @@ ECode CalendarDate::AddHours(
 }
 
 ECode CalendarDate::GetMinutes(
-    /* [out] */ Integer* minutes)
+    /* [out] */ Integer& minutes)
 {
-    VALIDATE_NOT_NULL(minutes);
-
-    *minutes = mMinutes;
+    minutes = mMinutes;
     return NOERROR;
 }
 
@@ -240,11 +223,9 @@ ECode CalendarDate::AddMinutes(
 }
 
 ECode CalendarDate::GetSeconds(
-    /* [out] */ Integer* seconds)
+    /* [out] */ Integer& seconds)
 {
-    VALIDATE_NOT_NULL(seconds);
-
-    *seconds = mSeconds;
+    seconds = mSeconds;
     return NOERROR;
 }
 
@@ -269,11 +250,9 @@ ECode CalendarDate::AddSeconds(
 }
 
 ECode CalendarDate::GetMillis(
-    /* [out] */ Integer* millis)
+    /* [out] */ Integer& millis)
 {
-    VALIDATE_NOT_NULL(millis);
-
-    *millis = mMillis;
+    millis = mMillis;
     return NOERROR;
 }
 
@@ -298,15 +277,13 @@ ECode CalendarDate::AddMillis(
 }
 
 ECode CalendarDate::GetTimeOfDay(
-    /* [out] */ Long* date)
+    /* [out] */ Long& date)
 {
-    VALIDATE_NOT_NULL(date);
-
     Boolean normalize;
-    if (IsNormalized(&normalize), !normalize) {
+    if (IsNormalized(normalize), !normalize) {
         mFraction = TIME_UNDEFINED;
     }
-    *date = mFraction;
+    date = mFraction;
     return NOERROR;
 }
 
@@ -366,20 +343,16 @@ ECode CalendarDate::SetTimeOfDay(
 }
 
 ECode CalendarDate::IsNormalized(
-    /* [out] */ Boolean* normalized)
+    /* [out] */ Boolean& normalized)
 {
-    VALIDATE_NOT_NULL(normalized);
-
-    *normalized = mNormalized;
+    normalized = mNormalized;
     return NOERROR;
 }
 
 ECode CalendarDate::IsStandardTime(
-    /* [out] */ Boolean* standardTime)
+    /* [out] */ Boolean& standardTime)
 {
-    VALIDATE_NOT_NULL(standardTime);
-
-    *standardTime = mForceStandardTime;
+    standardTime = mForceStandardTime;
     return NOERROR;
 }
 
@@ -391,16 +364,14 @@ ECode CalendarDate::SetStandardTime(
 }
 
 ECode CalendarDate::IsDaylightTime(
-    /* [out] */ Boolean* daylightTime)
+    /* [out] */ Boolean& daylightTime)
 {
-    VALIDATE_NOT_NULL(daylightTime);
-
     Boolean standardTime;
-    if (IsStandardTime(&standardTime), standardTime) {
-        *daylightTime = false;
+    if (IsStandardTime(standardTime), standardTime) {
+        daylightTime = false;
         return NOERROR;
     }
-    *daylightTime = mDaylightSaving != 0;
+    daylightTime = mDaylightSaving != 0;
     return NOERROR;
 }
 
@@ -412,12 +383,9 @@ ECode CalendarDate::SetLocale(
 }
 
 ECode CalendarDate::GetZone(
-    /* [out] */ ITimeZone** zone)
+    /* [out] */ AutoPtr<ITimeZone>& zone)
 {
-    VALIDATE_NOT_NULL(zone);
-
-    *zone = mZoneinfo;
-    REFCOUNT_ADD(*zone);
+    zone = mZoneinfo;
     return NOERROR;
 }
 
@@ -430,16 +398,14 @@ ECode CalendarDate::SetZone(
 
 ECode CalendarDate::IsSameDate(
     /* [in] */ ICalendarDate* date,
-    /* [out] */ Boolean* same)
+    /* [out] */ Boolean& same)
 {
-    VALIDATE_NOT_NULL(same);
-
     Integer thisDate, othDate;
     AutoPtr<IEra> thisEra, othEra;
-    *same = (GetDayOfWeek(&thisDate), date->GetDayOfWeek(&othDate), thisDate == othDate) &&
-            (GetMonth(&thisDate), date->GetMonth(&othDate), thisDate == othDate) &&
-            (GetYear(&thisDate), date->GetYear(&othDate), thisDate == othDate) &&
-            (GetEra(&thisEra), date->GetEra(&othEra), thisEra == othEra);
+    same = (GetDayOfWeek(thisDate), date->GetDayOfWeek(othDate), thisDate == othDate) &&
+            (GetMonth(thisDate), date->GetMonth(othDate), thisDate == othDate) &&
+            (GetYear(thisDate), date->GetYear(othDate), thisDate == othDate) &&
+            (GetEra(thisEra), date->GetEra(othEra), thisEra == othEra);
     return NOERROR;
 }
 
@@ -453,7 +419,7 @@ ECode CalendarDate::Equals(
     }
     CalendarDate* that = (CalendarDate*)ICalendarDate::Probe(obj);
     Boolean thisNorm, othNorm;
-    if (IsNormalized(&thisNorm), that->IsNormalized(&othNorm), thisNorm != othNorm) {
+    if (IsNormalized(thisNorm), that->IsNormalized(othNorm), thisNorm != othNorm) {
         same = false;
         return NOERROR;
     }
@@ -468,7 +434,7 @@ ECode CalendarDate::Equals(
         return NOERROR;
     }
     AutoPtr<IEra> thisEra, othEra;
-    same = (GetEra(&thisEra), that->GetEra(&othEra), thisEra == othEra) &&
+    same = (GetEra(thisEra), that->GetEra(othEra), thisEra == othEra) &&
             mYear == that->mYear &&
             mMonth == that->mMonth &&
             mDayOfMonth == that->mDayOfMonth &&
@@ -489,10 +455,10 @@ ECode CalendarDate::GetHashCode(
     h = ((((((h + mHours) * 60) + mMinutes) * 60) + mSeconds) * 1000) + mMillis;
     h -= mZoneOffset;
     Boolean norm;
-    Integer normalized = (IsNormalized(&norm), norm) ? 1 : 0;
+    Integer normalized = (IsNormalized(norm), norm) ? 1 : 0;
     Integer era = 0;
     AutoPtr<IEra> e;
-    GetEra(&e);
+    GetEra(e);
     if (e != nullptr) {
         era = Object::GetHashCode(e);
     }
@@ -583,11 +549,9 @@ ECode CalendarDate::SetNormalized(
 }
 
 ECode CalendarDate::GetZoneOffset(
-    /* [out] */ Integer* offset)
+    /* [out] */ Integer& offset)
 {
-    VALIDATE_NOT_NULL(offset);
-
-    *offset = mZoneOffset;
+    offset = mZoneOffset;
     return NOERROR;
 }
 
@@ -599,11 +563,9 @@ ECode CalendarDate::SetZoneOffset(
 }
 
 ECode CalendarDate::GetDaylightSaving(
-    /* [out] */ Integer* ds)
+    /* [out] */ Integer& ds)
 {
-    VALIDATE_NOT_NULL(ds);
-
-    *ds = mDaylightSaving;
+    ds = mDaylightSaving;
     return NOERROR;
 }
 

@@ -42,28 +42,28 @@ public:
         /* [in] */ Boolean localTime);
 
     ECode GetName(
-        /* [out] */ String* name) override;
+        /* [out] */ String& name) override;
 
     ECode GetDisplayName(
         /* [in] */ ILocale* locale,
-        /* [out] */ String* name) override;
+        /* [out] */ String& name) override;
 
     ECode GetAbbreviation(
-        /* [out] */ String* abbr) override;
+        /* [out] */ String& abbr) override;
 
     ECode GetDiaplayAbbreviation(
         /* [in] */ ILocale* locale,
-        /* [out] */ String* abbr) override;
+        /* [out] */ String& abbr) override;
 
     ECode GetSince(
         /* [in] */ ITimeZone* zone,
-        /* [out] */ Long* time) override;
+        /* [out] */ Long& time) override;
 
     ECode GetSinceDate(
-        /* [out] */ ICalendarDate** date) override;
+        /* [out] */ AutoPtr<ICalendarDate>& date) override;
 
     ECode IsLocalTime(
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode Equals(
         /* [in] */ IInterface* obj,

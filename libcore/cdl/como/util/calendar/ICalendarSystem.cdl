@@ -32,17 +32,17 @@ interface ICalendarSystem
 {
     GetEra(
         [in] String eraName,
-        [out] IEra** era);
+        [out] IEra&& era);
 
     GetEras(
         [out, callee] Array<IEra*>* eras);
 
     GetCalendarDate(
-        [out] ICalendarDate** date);
+        [out] ICalendarDate&& date);
 
     GetCalendarDate(
         [in] Long millis,
-        [out] ICalendarDate** date);
+        [out] ICalendarDate&& date);
 
     GetCalendarDate(
         [in] Long millis,
@@ -51,42 +51,42 @@ interface ICalendarSystem
     GetCalendarDate(
         [in] Long millis,
         [in] ITimeZone* zone,
-        [out] ICalendarDate** date);
+        [out] ICalendarDate&& date);
 
     GetMonthLength(
         [in] ICalendarDate* date,
-        [out] Integer* days);
+        [out] Integer& days);
 
     GetName(
-        [out] String* name);
+        [out] String& name);
 
     GetNthDayOfWeek(
         [in] Integer nth,
         [in] Integer dayOfWeek,
         [in] ICalendarDate* inDate,
-        [out] ICalendarDate** outDate);
+        [out] ICalendarDate&& outDate);
 
     GetTime(
         [in] ICalendarDate* date,
         [out] Long* time = nullptr);
 
     GetWeekLength(
-        [out] Integer* weeks);
+        [out] Integer& weeks);
 
     GetYearLength(
         [in] ICalendarDate* date,
-        [out] Integer* days);
+        [out] Integer& days);
 
     GetYearLengthInMonths(
         [in] ICalendarDate* date,
-        [out] Integer* months);
+        [out] Integer& months);
 
     NewCalendarDate(
-        [out] ICalendarDate** date);
+        [out] ICalendarDate&& date);
 
     NewCalendarDate(
         [in] ITimeZone* zone,
-        [out] ICalendarDate** date);
+        [out] ICalendarDate&& date);
 
     Normalize(
         [in] ICalendarDate* date,
@@ -102,7 +102,7 @@ interface ICalendarSystem
 
     Validate(
         [in] ICalendarDate* date,
-        [out] Boolean* result);
+        [out] Boolean& result);
 }
 
 }

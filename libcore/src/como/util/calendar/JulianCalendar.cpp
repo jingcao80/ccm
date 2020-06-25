@@ -43,31 +43,25 @@ ECode JulianCalendar::Constructor()
 }
 
 ECode JulianCalendar::GetName(
-    /* [out] */ String* name)
+    /* [out] */ String& name)
 {
-    VALIDATE_NOT_NULL(name);
-
-    *name = "julian";
+    name = "julian";
     return NOERROR;
 }
 
 ECode JulianCalendar::GetCalendarDate(
-    /* [out] */ ICalendarDate** date)
+    /* [out] */ AutoPtr<ICalendarDate>& date)
 {
-    VALIDATE_NOT_NULL(date);
-
     NewCalendarDate(date);
-    return GetCalendarDate(System::GetCurrentTimeMillis(), *date);
+    return GetCalendarDate(System::GetCurrentTimeMillis(), date);
 }
 
 ECode JulianCalendar::GetCalendarDate(
     /* [in] */ Long millis,
-    /* [out] */ ICalendarDate** date)
+    /* [out] */ AutoPtr<ICalendarDate>& date)
 {
-    VALIDATE_NOT_NULL(date);
-
     NewCalendarDate(date);
-    return GetCalendarDate(millis, *date);
+    return GetCalendarDate(millis, date);
 }
 
 ECode JulianCalendar::GetCalendarDate(
@@ -80,38 +74,30 @@ ECode JulianCalendar::GetCalendarDate(
 ECode JulianCalendar::GetCalendarDate(
     /* [in] */ Long millis,
     /* [in] */ ITimeZone* zone,
-    /* [out] */ ICalendarDate** date)
+    /* [out] */ AutoPtr<ICalendarDate>& date)
 {
-    VALIDATE_NOT_NULL(date);
-
     NewCalendarDate(zone, date);
-    return GetCalendarDate(millis, *date);
+    return GetCalendarDate(millis, date);
 }
 
 ECode JulianCalendar::NewCalendarDate(
-    /* [out] */ ICalendarDate** date)
+    /* [out] */ AutoPtr<ICalendarDate>& date)
 {
-    VALIDATE_NOT_NULL(date);
-
     AutoPtr<JulianCalendar::Date> d = new JulianCalendar::Date();
     ECode ec = d->Constructor();
     if (FAILED(ec)) return ec;
-    *date = d.Get();
-    REFCOUNT_ADD(*date);
+    date = d.Get();
     return NOERROR;
 }
 
 ECode JulianCalendar::NewCalendarDate(
     /* [in] */ ITimeZone* zone,
-    /* [out] */ ICalendarDate** date)
+    /* [out] */ AutoPtr<ICalendarDate>& date)
 {
-    VALIDATE_NOT_NULL(date);
-
     AutoPtr<JulianCalendar::Date> d = new JulianCalendar::Date();
     ECode ec = d->Constructor(zone);
     if (FAILED(ec)) return ec;
-    *date = d.Get();
-    REFCOUNT_ADD(*date);
+    date = d.Get();
     return NOERROR;
 }
 
@@ -120,21 +106,19 @@ ECode JulianCalendar::GetFixedDate(
     /* [in] */ Integer month,
     /* [in] */ Integer dayOfMonth,
     /* [in] */ IBaseCalendarDate* date,
-    /* [out] */ Long* fraction)
+    /* [out] */ Long& fraction)
 {
-    VALIDATE_NOT_NULL(fraction);
-
     Boolean isJan1 = month == JANUARY && dayOfMonth == 1;
 
     BaseCalendar::Date* cache = (BaseCalendar::Date*)IBaseCalendarDate::Probe(date);
     // Look up the one year cache
     if (cache != nullptr && cache->Hit(year)) {
         if (isJan1) {
-            *fraction = cache->GetCachedJan1();
+            fraction = cache->GetCachedJan1();
             return NOERROR;
         }
 
-        *fraction = cache->GetCachedJan1() + GetDayOfYear(year, month, dayOfMonth) - 1;
+        fraction = cache->GetCachedJan1() + GetDayOfYear(year, month, dayOfMonth) - 1;
         return NOERROR;
     }
 
@@ -163,7 +147,7 @@ ECode JulianCalendar::GetFixedDate(
         cache->SetCache(year, days, CalendarUtils::IsJulianLeapYear(year) ? 366 : 365);
     }
 
-    *fraction = days;
+    fraction = days;
     return NOERROR;
 }
 
@@ -181,10 +165,10 @@ ECode JulianCalendar::GetCalendarDateFromFixedDate(
         year = (Integer)CalendarUtils::FloorDivide(fd, (Long)1461);
     }
     Long fraction;
-    GetFixedDate(year, JANUARY, 1, jdate, &fraction);
+    GetFixedDate(year, JANUARY, 1, jdate, fraction);
     Integer priorDays = (Integer)(fixedDate - fraction);
     Boolean isLeap = CalendarUtils::IsJulianLeapYear(year);
-    if (GetFixedDate(year, MARCH, 1, jdate, &fraction), fixedDate >= fraction) {
+    if (GetFixedDate(year, MARCH, 1, jdate, fraction), fixedDate >= fraction) {
         priorDays += isLeap ? 1 : 2;
     }
     Integer month = 12 * priorDays + 373;
@@ -194,7 +178,7 @@ ECode JulianCalendar::GetCalendarDateFromFixedDate(
     else {
         month = CalendarUtils::FloorDivide(month, 367);
     }
-    GetFixedDate(year, month, 1, jdate, &fraction);
+    GetFixedDate(year, month, 1, jdate, fraction);
     Integer dayOfMonth = (Integer)(fixedDate - fraction) + 1;
     Integer dayOfWeek = GetDayOfWeekFromFixedDate(fixedDate);
     CHECK(dayOfWeek > 0);
@@ -209,34 +193,28 @@ ECode JulianCalendar::GetCalendarDateFromFixedDate(
 
 ECode JulianCalendar::GetYearFromFixedDate(
     /* [in] */ Long fixedDate,
-    /* [out] */ Integer* year)
+    /* [out] */ Integer& year)
 {
-    VALIDATE_NOT_NULL(year);
-
     Integer y = (Integer)CalendarUtils::FloorDivide(4 * (fixedDate - JULIAN_EPOCH) + 1464, (Long)1461);
-    *year = y;
+    year = y;
     return NOERROR;
 }
 
 ECode JulianCalendar::GetDayOfWeek(
     /* [in] */ ICalendarDate* date,
-    /* [out] */ Integer* days)
+    /* [out] */ Integer& days)
 {
-    VALIDATE_NOT_NULL(days);
-
     Long fixedDate;
-    GetFixedDate(date, &fixedDate);
-    *days = GetDayOfWeekFromFixedDate(fixedDate);
+    GetFixedDate(date, fixedDate);
+    days = GetDayOfWeekFromFixedDate(fixedDate);
     return NOERROR;
 }
 
 ECode JulianCalendar::IsLeapYear(
     /* [in] */ Integer jyear,
-    /* [out] */ Boolean* leapYear)
+    /* [out] */ Boolean& leapYear)
 {
-    VALIDATE_NOT_NULL(leapYear);
-
-    *leapYear = CalendarUtils::IsJulianLeapYear(jyear);
+    leapYear = CalendarUtils::IsJulianLeapYear(jyear);
     return NOERROR;
 }
 
@@ -297,19 +275,17 @@ void JulianCalendar::Date::SetKnownEra(
 }
 
 ECode JulianCalendar::Date::GetNormalizedYear(
-    /* [out] */ Integer* normalizedYear)
+    /* [out] */ Integer& normalizedYear)
 {
-    VALIDATE_NOT_NULL(normalizedYear);
-
     Integer year;
-    GetYear(&year);
+    GetYear(year);
 
     AutoPtr<IEra> era;
-    if (GetEra(&era), era == GetEras()[BCE]) {
-        *normalizedYear = 1 - year;
+    if (GetEra(era), era == GetEras()[BCE]) {
+        normalizedYear = 1 - year;
         return NOERROR;
     }
-    *normalizedYear = year;
+    normalizedYear = year;
     return NOERROR;
 }
 
@@ -336,23 +312,23 @@ ECode JulianCalendar::Date::ToString(
     AutoPtr<IStringBuffer> sb;
     CStringBuffer::New(IID_IStringBuffer, (IInterface**)&sb);
     AutoPtr<IEra> era;
-    GetEra(&era);
+    GetEra(era);
     if (era != nullptr) {
         String abbr;
-        era->GetAbbreviation(&abbr);
+        era->GetAbbreviation(abbr);
         if (!abbr.IsNull()) {
             sb->Append(abbr);
             sb->Append(U' ');
         }
     }
     Integer year, month, dom;
-    GetYear(&year);
+    GetYear(year);
     sb->Append(year);
     sb->Append(U'-');
-    GetMonth(&month);
+    GetMonth(month);
     CalendarUtils::Sprintf0d(sb, month, 2);
     sb->Append(U'-');
-    GetDayOfMonth(&dom);
+    GetDayOfMonth(dom);
     CalendarUtils::Sprintf0d(sb, dom, 2);
     sb->Append(time);
     return sb->ToString(desc);

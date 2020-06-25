@@ -32,21 +32,18 @@ ECode AbstractCalendar::Constructor()
 
 ECode AbstractCalendar::GetEra(
     /* [in] */ const String& eraName,
-    /* [out] */ IEra** era)
+    /* [out] */ AutoPtr<IEra>& era)
 {
-    VALIDATE_NOT_NULL(era);
-
     if (!mEras.IsNull()) {
         for (Integer i = 0; i < mEras.GetLength(); i++) {
             String name;
-            if (mEras[i]->GetName(&name), name.Equals(eraName)) {
-                *era = mEras[i];
-                REFCOUNT_ADD(*era);
+            if (mEras[i]->GetName(name), name.Equals(eraName)) {
+                era = mEras[i];
                 return NOERROR;
             }
         }
     }
-    *era = nullptr;
+    era = nullptr;
     return NOERROR;
 }
 
@@ -76,7 +73,7 @@ ECode AbstractCalendar::SetEra(
     for (Integer i = 0; i < mEras.GetLength(); i++) {
         IEra* e = mEras[i];
         String name;
-        if (e != nullptr && (e->GetName(&name), name.Equals(eraName))) {
+        if (e != nullptr && (e->GetName(name), name.Equals(eraName))) {
             date->SetEra(e);
             return NOERROR;
         }
@@ -92,33 +89,27 @@ void AbstractCalendar::SetEras(
 }
 
 ECode AbstractCalendar::GetCalendarDate(
-    /* [out] */ ICalendarDate** date)
+    /* [out] */ AutoPtr<ICalendarDate>& date)
 {
-    VALIDATE_NOT_NULL(date);
-
     FAIL_RETURN(NewCalendarDate(date));
-    return GetCalendarDate(System::GetCurrentTimeMillis(), *date);
+    return GetCalendarDate(System::GetCurrentTimeMillis(), date);
 }
 
 ECode AbstractCalendar::GetCalendarDate(
     /* [in] */ Long millis,
-    /* [out] */ ICalendarDate** date)
+    /* [out] */ AutoPtr<ICalendarDate>& date)
 {
-    VALIDATE_NOT_NULL(date);
-
     FAIL_RETURN(NewCalendarDate(date));
-    return GetCalendarDate(millis, *date);
+    return GetCalendarDate(millis, date);
 }
 
 ECode AbstractCalendar::GetCalendarDate(
     /* [in] */ Long millis,
     /* [in] */ ITimeZone* zone,
-    /* [out] */ ICalendarDate** date)
+    /* [out] */ AutoPtr<ICalendarDate>& date)
 {
-    VALIDATE_NOT_NULL(date);
-
     FAIL_RETURN(NewCalendarDate(zone, date));
-    return GetCalendarDate(millis, *date);
+    return GetCalendarDate(millis, date);
 }
 
 ECode AbstractCalendar::GetCalendarDate(
@@ -132,7 +123,7 @@ ECode AbstractCalendar::GetCalendarDate(
 
     // adjust to local time if `date' has time zone.
     AutoPtr<ITimeZone> zi;
-    date->GetZone(&zi);
+    date->GetZone(zi);
     if (zi != nullptr) {
         Array<Integer> offsets(2);
         zi->GetOffset(millis, &zoneOffset);
@@ -186,21 +177,21 @@ ECode AbstractCalendar::GetTime(
     /* [out] */ Long* time)
 {
     Long gd;
-    GetFixedDate(date, &gd);
+    GetFixedDate(date, gd);
     Long ms = (gd - EPOCH_OFFSET) * DAY_IN_MILLIS + GetTimeOfDay(date);
     Integer zoneOffset = 0;
     AutoPtr<ITimeZone> zi;
-    date->GetZone(&zi);
+    date->GetZone(zi);
     if (zi != nullptr) {
         Boolean result;
-        if (date->IsNormalized(&result), result) {
-            date->GetZoneOffset(&zoneOffset);
+        if (date->IsNormalized(result), result) {
+            date->GetZoneOffset(zoneOffset);
             if (time != nullptr) *time = ms - zoneOffset;
             return NOERROR;
         }
         // adjust time zone and daylight saving
         Array<Integer> offsets(2);
-        if (date->IsStandardTime(&result), result) {
+        if (date->IsStandardTime(result), result) {
             // 1) 2:30am during starting-DST transition is
             //    intrepreted as 2:30am ST
             // 2) 5:00pm during DST is still interpreted as 5:00pm ST
@@ -229,7 +220,7 @@ Long AbstractCalendar::GetTimeOfDay(
     /* [in] */ ICalendarDate* date)
 {
     Long fraction;
-    date->GetTimeOfDay(&fraction);
+    date->GetTimeOfDay(fraction);
     if (fraction != ICalendarDate::TIME_UNDEFINED) {
         return fraction;
     }
@@ -243,13 +234,13 @@ Long AbstractCalendar::GetTimeOfDayValue(
 {
     Long fraction;
     Integer v;
-    date->GetHours(&v);
+    date->GetHours(v);
     fraction = v * 60;
-    date->GetMinutes(&v);
+    date->GetMinutes(v);
     fraction = (fraction + v) * 60;
-    date->GetSeconds(&v);
+    date->GetSeconds(v);
     fraction = (fraction + v) * 1000;
-    date->GetMillis(&v);
+    date->GetMillis(v);
     fraction += v;
     return fraction;
 }
@@ -262,7 +253,7 @@ ECode AbstractCalendar::SetTimeOfDay(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     Boolean normalizedState;
-    date->IsNormalized(&normalizedState);
+    date->IsNormalized(normalizedState);
     Integer time = timeOfDay;
     Integer hours = time / HOUR_IN_MILLIS;
     time %= HOUR_IN_MILLIS;
@@ -284,11 +275,9 @@ ECode AbstractCalendar::SetTimeOfDay(
 }
 
 ECode AbstractCalendar::GetWeekLength(
-    /* [out] */ Integer* weeks)
+    /* [out] */ Integer& weeks)
 {
-    VALIDATE_NOT_NULL(weeks);
-
-    *weeks = 7;
+    weeks = 7;
     return NOERROR;
 }
 
@@ -296,15 +285,13 @@ ECode AbstractCalendar::GetNthDayOfWeek(
     /* [in] */ Integer nth,
     /* [in] */ Integer dayOfWeek,
     /* [in] */ ICalendarDate* inDate,
-    /* [out] */ ICalendarDate** outDate)
+    /* [out] */ AutoPtr<ICalendarDate>& outDate)
 {
-    VALIDATE_NOT_NULL(outDate);
-
     AutoPtr<ICalendarDate> ndate;
     ICloneable::Probe(inDate)->Clone(IID_ICalendarDate, (IInterface**)&ndate);
     Normalize(ndate);
     Long fd;
-    GetFixedDate(ndate, &fd);
+    GetFixedDate(ndate, fd);
     Long nfd;
     if (nth > 0) {
         nfd = 7 * nth + GetDayOfWeekDateBefore(fd, dayOfWeek);
@@ -313,7 +300,7 @@ ECode AbstractCalendar::GetNthDayOfWeek(
         nfd = 7 * nth + GetDayOfWeekDateAfter(fd, dayOfWeek);
     }
     GetCalendarDateFromFixedDate(ndate, nfd);
-    ndate.MoveTo(outDate);
+    outDate = std::move(ndate);
     return NOERROR;
 }
 
@@ -346,20 +333,20 @@ Boolean AbstractCalendar::ValidateTime(
     /* [in] */ ICalendarDate* date)
 {
     Integer t;
-    date->GetHours(&t);
+    date->GetHours(t);
     if (t < 0 || t >= 24) {
         return false;
     }
-    date->GetMinutes(&t);
+    date->GetMinutes(t);
     if (t < 0 || t >= 60) {
         return false;
     }
-    date->GetSeconds(&t);
+    date->GetSeconds(t);
     // TODO: Leap second support.
     if (t < 0 || t >= 60) {
         return false;
     }
-    date->GetMillis(&t);
+    date->GetMillis(t);
     if (t < 0 || t >= 1000) {
         return false;
     }

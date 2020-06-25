@@ -31,48 +31,46 @@ COMO_INTERFACE_IMPL_1(BaseCalendar, AbstractCalendar, IBaseCalendar);
 
 ECode BaseCalendar::Validate(
     /* [in] */ ICalendarDate* date,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     Date* bdate = (Date*)IBaseCalendarDate::Probe(date);
     Boolean normalized;
-    if (bdate->IsNormalized(&normalized), normalized) {
-        *result = true;
+    if (bdate->IsNormalized(normalized), normalized) {
+        result = true;
         return NOERROR;
     }
     Integer month;
-    bdate->GetMonth(&month);
+    bdate->GetMonth(month);
     if (month < JANUARY || month > DECEMBER) {
-        *result = false;
+        result = false;
         return NOERROR;
     }
     Integer d;
-    if (bdate->GetDayOfMonth(&d), d <= 0) {
-        *result = false;
+    if (bdate->GetDayOfMonth(d), d <= 0) {
+        result = false;
         return NOERROR;
     }
     Integer normalizedYear;
-    bdate->GetNormalizedYear(&normalizedYear);
+    bdate->GetNormalizedYear(normalizedYear);
     if (d > GetMonthLength(normalizedYear, month)) {
-        *result = false;
+        result = false;
         return NOERROR;
     }
     Integer bdow, dow;
-    bdate->GetDayOfWeek(&bdow);
+    bdate->GetDayOfWeek(bdow);
     if (bdow != Date::FIELD_UNDEFINED &&
-            (GetDayOfWeek(bdate, &dow), bdow != dow)) {
-        *result = false;
+            (GetDayOfWeek(bdate, dow), bdow != dow)) {
+        result = false;
         return NOERROR;
     }
 
     if (!ValidateTime(date)) {
-        *result = false;
+        result = false;
         return NOERROR;
     }
 
     bdate->SetNormalized(true);
-    *result = true;
+    result = true;
     return NOERROR;
 }
 
@@ -81,14 +79,14 @@ ECode BaseCalendar::Normalize(
     /* [out] */ Boolean* result)
 {
     Boolean normalized;
-    if (date->IsNormalized(&normalized), normalized) {
+    if (date->IsNormalized(normalized), normalized) {
         if (result != nullptr) *result = true;
         return NOERROR;
     }
 
     Date* bdate = (Date*)IBaseCalendarDate::Probe(date);
     AutoPtr<ITimeZone> zi;
-    bdate->GetZone(&zi);
+    bdate->GetZone(zi);
 
     // If the date has a time zone, then we need to recalculate
     // the calendar fields. Let getTime() do it.
@@ -101,11 +99,11 @@ ECode BaseCalendar::Normalize(
     Integer days = NormalizeTime(bdate);
     NormalizeMonth(bdate);
     Integer dom;
-    bdate->GetDayOfMonth(&dom);
+    bdate->GetDayOfMonth(dom);
     Long d = dom + days;
     Integer m, y;
-    bdate->GetMonth(&m);
-    bdate->GetNormalizedYear(&y);
+    bdate->GetMonth(m);
+    bdate->GetNormalizedYear(y);
     Integer ml = GetMonthLength(y, m);
 
     if (!(d > 0 && d <= ml)) {
@@ -131,19 +129,19 @@ ECode BaseCalendar::Normalize(
         }
         else {
             Long fixedDate;
-            GetFixedDate(y, m, 1, bdate, &fixedDate);
+            GetFixedDate(y, m, 1, bdate, fixedDate);
             fixedDate = d + fixedDate - 1ll;
             GetCalendarDateFromFixedDate(bdate, fixedDate);
         }
     }
     else {
         Integer dow;
-        GetDayOfWeek(bdate, &dow);
+        GetDayOfWeek(bdate, dow);
         bdate->SetDayOfWeek(dow);
     }
-    bdate->GetNormalizedYear(&y);
+    bdate->GetNormalizedYear(y);
     Boolean isLeap;
-    IsLeapYear(y, &isLeap);
+    IsLeapYear(y, isLeap);
     date->SetLeapYear(isLeap);
     date->SetZoneOffset(0);
     date->SetDaylightSaving(0);
@@ -157,9 +155,9 @@ void BaseCalendar::NormalizeMonth(
 {
     Date* bdate = (Date*)IBaseCalendarDate::Probe(date);
     Integer year;
-    bdate->GetNormalizedYear(&year);
+    bdate->GetNormalizedYear(year);
     Integer month;
-    bdate->GetMonth(&month);
+    bdate->GetMonth(month);
     if (month <= 0) {
         Long xm = 1ll - month;
         year -= (Integer)((xm / 12) + 1);
@@ -177,44 +175,38 @@ void BaseCalendar::NormalizeMonth(
 
 ECode BaseCalendar::GetYearLength(
     /* [in] */ ICalendarDate* date,
-    /* [out] */ Integer* days)
+    /* [out] */ Integer& days)
 {
-    VALIDATE_NOT_NULL(days);
-
     Date* bdate = (Date*)IBaseCalendarDate::Probe(date);
     Integer year;
-    bdate->GetNormalizedYear(&year);
+    bdate->GetNormalizedYear(year);
     Boolean isLeap;
-    *days = (IsLeapYear(year, &isLeap), isLeap ? 366 : 365);
+    days = (IsLeapYear(year, isLeap), isLeap ? 366 : 365);
     return NOERROR;
 }
 
 ECode BaseCalendar::GetYearLengthInMonths(
     /* [in] */ ICalendarDate* date,
-    /* [out] */ Integer* months)
+    /* [out] */ Integer& months)
 {
-    VALIDATE_NOT_NULL(months);
-
-    *months = 12;
+    months = 12;
     return NOERROR;
 }
 
 ECode BaseCalendar::GetMonthLength(
     /* [in] */ ICalendarDate* date,
-    /* [out] */ Integer* days)
+    /* [out] */ Integer& days)
 {
-    VALIDATE_NOT_NULL(days);
-
     Date* bdate = (Date*)IBaseCalendarDate::Probe(date);
     Integer month;
-    bdate->GetMonth(&month);
+    bdate->GetMonth(month);
     if (month < JANUARY || month > DECEMBER) {
         Logger::E("BaseCalendar", "Illegal month value: %d", month);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     Integer year;
-    bdate->GetNormalizedYear(&year);
-    *days = GetMonthLength(year, month);
+    bdate->GetNormalizedYear(year);
+    days = GetMonthLength(year, month);
     return NOERROR;
 }
 
@@ -224,7 +216,7 @@ Integer BaseCalendar::GetMonthLength(
 {
     Integer days = DAYS_IN_MONTH[month];
     Boolean isLeap;
-    if (month == FEBRUARY && (IsLeapYear(year, &isLeap), isLeap)) {
+    if (month == FEBRUARY && (IsLeapYear(year, isLeap), isLeap)) {
         days++;
     }
     return days;
@@ -232,16 +224,14 @@ Integer BaseCalendar::GetMonthLength(
 
 ECode BaseCalendar::GetDayOfYear(
     /* [in] */ ICalendarDate* date,
-    /* [out] */ Long* days)
+    /* [out] */ Long& days)
 {
-    VALIDATE_NOT_NULL(days);
-
     Date* bdate = (Date*)IBaseCalendarDate::Probe(date);
     Integer y, m, dom;
-    bdate->GetNormalizedYear(&y);
-    bdate->GetMonth(&m);
-    bdate->GetDayOfMonth(&dom);
-    *days = GetDayOfYear(y, m, dom);
+    bdate->GetNormalizedYear(y);
+    bdate->GetMonth(m);
+    bdate->GetDayOfMonth(dom);
+    days = GetDayOfYear(y, m, dom);
     return NOERROR;
 }
 
@@ -251,25 +241,23 @@ Long BaseCalendar::GetDayOfYear(
     /* [in] */ Integer dayOfMonth)
 {
     Boolean isLeap;
-    return dayOfMonth + ((IsLeapYear(year, &isLeap), isLeap) ?
+    return dayOfMonth + ((IsLeapYear(year, isLeap), isLeap) ?
             ACCUMULATED_DAYS_IN_MONTH_LEAP[month] : ACCUMULATED_DAYS_IN_MONTH[month]);
 }
 
 ECode BaseCalendar::GetFixedDate(
     /* [in] */ ICalendarDate* date,
-    /* [out] */ Long* fraction)
+    /* [out] */ Long& fraction)
 {
-    VALIDATE_NOT_NULL(fraction);
-
     Boolean normalized;
-    if (date->IsNormalized(&normalized), !normalized) {
+    if (date->IsNormalized(normalized), !normalized) {
         NormalizeMonth(date);
     }
     Date* bdate = (Date*)IBaseCalendarDate::Probe(date);
     Integer y, m, dom;
-    bdate->GetNormalizedYear(&y);
-    bdate->GetMonth(&m);
-    bdate->GetDayOfMonth(&dom);
+    bdate->GetNormalizedYear(y);
+    bdate->GetMonth(m);
+    bdate->GetDayOfMonth(dom);
     return GetFixedDate(y, m, dom, bdate, fraction);
 }
 
@@ -278,20 +266,18 @@ ECode BaseCalendar::GetFixedDate(
     /* [in] */ Integer month,
     /* [in] */ Integer dayOfMonth,
     /* [in] */ IBaseCalendarDate* date,
-    /* [out] */ Long* fraction)
+    /* [out] */ Long& fraction)
 {
-    VALIDATE_NOT_NULL(fraction);
-
     Boolean isJan1 = month == JANUARY && dayOfMonth == 1;
 
     Date* cache = (Date*)IBaseCalendarDate::Probe(date);
     // Look up the one year cache
     if (cache != nullptr && cache->Hit(year)) {
         if (isJan1) {
-            *fraction = cache->GetCachedJan1();
+            fraction = cache->GetCachedJan1();
             return NOERROR;
         }
-        *fraction = cache->GetCachedJan1() + GetDayOfYear(year, month, dayOfMonth) - 1;
+        fraction = cache->GetCachedJan1() + GetDayOfYear(year, month, dayOfMonth) - 1;
         return NOERROR;
     }
 
@@ -301,10 +287,10 @@ ECode BaseCalendar::GetFixedDate(
         Long jan1 = FIXED_DATES[n];
         if (cache != nullptr) {
             Boolean isLeap;
-            IsLeapYear(year, &isLeap);
+            IsLeapYear(year, isLeap);
             cache->SetCache(year, jan1, isLeap ? 366 : 365);
         }
-        *fraction = isJan1 ? jan1 : jan1 + GetDayOfYear(year, month, dayOfMonth) - 1;
+        fraction = isJan1 ? jan1 : jan1 + GetDayOfYear(year, month, dayOfMonth) - 1;
         return NOERROR;
     }
 
@@ -328,16 +314,16 @@ ECode BaseCalendar::GetFixedDate(
 
     if (month > FEBRUARY) {
         Boolean isLeap;
-        days -= (IsLeapYear(year, &isLeap), isLeap) ? 1 : 2;
+        days -= (IsLeapYear(year, isLeap), isLeap) ? 1 : 2;
     }
 
     // If it's January 1, update the cache.
     if (cache != nullptr && isJan1) {
         Boolean isLeap;
-        cache->SetCache(year, days, (IsLeapYear(year, &isLeap), isLeap) ? 366 : 365);
+        cache->SetCache(year, days, (IsLeapYear(year, isLeap), isLeap) ? 366 : 365);
     }
 
-    *fraction = days;
+    fraction = days;
     return NOERROR;
 }
 
@@ -352,15 +338,15 @@ ECode BaseCalendar::GetCalendarDateFromFixedDate(
     if (bdate->Hit(fixedDate)) {
         year = bdate->GetCachedYear();
         jan1 = bdate->GetCachedJan1();
-        IsLeapYear(year, &isLeap);
+        IsLeapYear(year, isLeap);
     }
     else {
         // Looking up FIXED_DATES[] here didn't improve performance
         // much. So we calculate year and jan1. getFixedDate()
         // will look up FIXED_DATES[] actually.
         year = GetGregorianYearFromFixedDate(fixedDate);
-        GetFixedDate(year, JANUARY, 1, nullptr, &jan1);
-        IsLeapYear(year, &isLeap);
+        GetFixedDate(year, JANUARY, 1, nullptr, jan1);
+        IsLeapYear(year, isLeap);
         // Update the cache data
         bdate->SetCache(year, jan1, isLeap ? 366 : 365);
     }
@@ -398,13 +384,11 @@ ECode BaseCalendar::GetCalendarDateFromFixedDate(
 
 ECode BaseCalendar::GetDayOfWeek(
     /* [in] */ ICalendarDate* date,
-    /* [out] */ Integer* days)
+    /* [out] */ Integer& days)
 {
-    VALIDATE_NOT_NULL(days);
-
     Long fixedDate;
-    GetFixedDate(date, &fixedDate);
-    *days = GetDayOfWeekFromFixedDate(fixedDate);
+    GetFixedDate(date, fixedDate);
+    days = GetDayOfWeekFromFixedDate(fixedDate);
     return NOERROR;
 }
 
@@ -420,11 +404,9 @@ Integer BaseCalendar::GetDayOfWeekFromFixedDate(
 
 ECode BaseCalendar::GetYearFromFixedDate(
     /* [in] */ Long fixedDate,
-    /* [out] */ Integer* year)
+    /* [out] */ Integer& year)
 {
-    VALIDATE_NOT_NULL(year);
-
-    *year = GetGregorianYearFromFixedDate(fixedDate);
+    year = GetGregorianYearFromFixedDate(fixedDate);
     return NOERROR;
 }
 
@@ -470,19 +452,17 @@ Boolean BaseCalendar::IsLeapYear(
 {
     Date* bdate = (Date*)IBaseCalendarDate::Probe(date);
     Integer year;
-    bdate->GetNormalizedYear(&year);
+    bdate->GetNormalizedYear(year);
     Boolean leapYear;
-    IsLeapYear(year, &leapYear);
+    IsLeapYear(year, leapYear);
     return leapYear;
 }
 
 ECode BaseCalendar::IsLeapYear(
     /* [in] */ Integer normalizedYear,
-    /* [out] */ Boolean* leapYear)
+    /* [out] */ Boolean& leapYear)
 {
-    VALIDATE_NOT_NULL(leapYear);
-
-    *leapYear = CalendarUtils::IsGregorianLeapYear(normalizedYear);
+    leapYear = CalendarUtils::IsGregorianLeapYear(normalizedYear);
     return NOERROR;
 }
 

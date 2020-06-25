@@ -244,15 +244,15 @@ Integer SimpleTimeZone::GetOffsets(
         }
         else {
             AutoPtr<ICalendarSystem> cs;
-            CalendarSystem::ForName(String("julian"), &cs);
+            CalendarSystem::ForName("julian", cs);
             cal = cs;
         }
         AutoPtr<ICalendarDate> cdate;
-        cal->NewCalendarDate(TimeZone::NO_TIMEZONE, &cdate);
+        cal->NewCalendarDate(TimeZone::NO_TIMEZONE, cdate);
         // Get the year in local time
         cal->GetCalendarDate(date + mRawOffset, cdate);
         Integer year;
-        IBaseCalendarDate::Probe(cdate)->GetNormalizedYear(&year);
+        IBaseCalendarDate::Probe(cdate)->GetNormalizedYear(year);
         if (year >= mStartYear) {
             // Clear time elements for the transition calculations
             cdate->SetTimeOfDay(0, 0, 0, 0);
@@ -309,7 +309,7 @@ ECode SimpleTimeZone::GetOffset(
     // First, calculate time as a Gregorian date.
     AutoPtr<ICalendarSystem> cal = ICalendarSystem::Probe(GetGcal());
     AutoPtr<ICalendarDate> cdate;
-    cal->NewCalendarDate(TimeZone::NO_TIMEZONE, &cdate);
+    cal->NewCalendarDate(TimeZone::NO_TIMEZONE, cdate);
     cdate->SetDate(y, m, day);
     Long time;
     cal->GetTime(cdate, &time); // normalize cdate
@@ -323,19 +323,18 @@ ECode SimpleTimeZone::GetOffset(
     // style year numbering (..., -1, 0 (BCE 1), 1, 2, ...).
     if (time < GregorianCalendar::DEFAULT_GREGORIAN_CUTOVER) {
         AutoPtr<ICalendarSystem> cs;
-        CalendarSystem::ForName(String("julian"), &cs);
+        CalendarSystem::ForName("julian", cs);
         cal = cs;
-        cdate = nullptr;
-        cs->NewCalendarDate(TimeZone::NO_TIMEZONE, &cdate);
+        cs->NewCalendarDate(TimeZone::NO_TIMEZONE, cdate);
         IBaseCalendarDate::Probe(cdate)->SetNormalizedDate(y, m, day);
         cs->GetTime(cdate, &time);
         time = time + milliseconds - mRawOffset;
     }
 
     Integer yy, mm, dd;
-    if ((IBaseCalendarDate::Probe(cdate)->GetNormalizedYear(&yy), yy != y)
-            || (cdate->GetMonth(&mm), mm != m)
-            || (cdate->GetDayOfMonth(&dd), dd != day)
+    if ((IBaseCalendarDate::Probe(cdate)->GetNormalizedYear(yy), yy != y)
+            || (cdate->GetMonth(mm), mm != m)
+            || (cdate->GetDayOfMonth(dd), dd != day)
             // The validation should be cdate.getDayOfWeek() ==
             // dayOfWeek. However, we don't check dayOfWeek for
             // compatibility.
@@ -449,7 +448,7 @@ Long SimpleTimeZone::GetEnd(
 
 Long SimpleTimeZone::GetTransition(
     /* [in] */ ICalendarSystem* cal,
-    /* [in] */ ICalendarDate* cdate,
+    /* [in] */ ICalendarDate* _cdate,
     /* [in] */ Integer mode,
     /* [in] */ Integer year,
     /* [in] */ Integer month,
@@ -457,6 +456,7 @@ Long SimpleTimeZone::GetTransition(
     /* [in] */ Integer dayOfWeek,
     /* [in] */ Integer timeOfDay)
 {
+    AutoPtr<ICalendarDate> cdate = _cdate;
     IBaseCalendarDate::Probe(cdate)->SetNormalizedYear(year);
     cdate->SetMonth(month + 1);
     switch (mode) {
@@ -469,11 +469,11 @@ Long SimpleTimeZone::GetTransition(
             cdate->SetDayOfMonth(1);
             if (dayOfMonth < 0){
                 Integer dom;
-                cal->GetMonthLength(cdate, &dom);
+                cal->GetMonthLength(cdate, dom);
                 cdate->SetDayOfMonth(dom);
             }
             AutoPtr<ICalendarDate> date;
-            cal->GetNthDayOfWeek(dayOfMonth, dayOfWeek, cdate, &date);
+            cal->GetNthDayOfWeek(dayOfMonth, dayOfWeek, cdate, date);
             cdate = date;
             break;
         }
@@ -482,7 +482,7 @@ Long SimpleTimeZone::GetTransition(
         {
             cdate->SetDayOfMonth(dayOfMonth);
             AutoPtr<ICalendarDate> date;
-            cal->GetNthDayOfWeek(1, dayOfWeek, cdate, &date);
+            cal->GetNthDayOfWeek(1, dayOfWeek, cdate, date);
             cdate = date;
             break;
         }
@@ -491,7 +491,7 @@ Long SimpleTimeZone::GetTransition(
         {
             cdate->SetDayOfMonth(dayOfMonth);
             AutoPtr<ICalendarDate> date;
-            cal->GetNthDayOfWeek(-1, dayOfWeek, cdate, &date);
+            cal->GetNthDayOfWeek(-1, dayOfWeek, cdate, date);
             cdate = date;
             break;
         }
