@@ -75,28 +75,24 @@ ECode Hashtable::Constructor(
     /* [in] */ IMap* t)
 {
     Integer size;
-    t->GetSize(&size);
+    t->GetSize(size);
     FAIL_RETURN(Constructor(Math::Max(2 * size, 11), 0.75));
     return PutAll(t);
 }
 
 ECode Hashtable::GetSize(
-    /* [out] */ Integer* size)
+    /* [out] */ Integer& size)
 {
-    VALIDATE_NOT_NULL(size);
-
     AutoLock lock(this);
-    *size = mCount;
+    size = mCount;
     return NOERROR;
 }
 
 ECode Hashtable::IsEmpty(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     AutoLock lock(this);
-    *result = mCount == 0;
+    result = mCount == 0;
     return NOERROR;
 }
 
@@ -134,10 +130,8 @@ ECode Hashtable::GetElements(
 
 ECode Hashtable::Contains(
     /* [in] */ IInterface* value,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     if (value == nullptr) {
         return como::core::E_NULL_POINTER_EXCEPTION;
     }
@@ -146,58 +140,53 @@ ECode Hashtable::Contains(
     for (Integer i = mTable.GetLength() - 1; i >= 0; i--) {
         for (HashtableEntry* e = mTable[i]; e != nullptr; e = e->mNext) {
             if (Object::Equals(e->mValue, value)) {
-                *result = true;
+                result = true;
                 return NOERROR;
             }
         }
     }
-    *result = false;
+    result = false;
     return NOERROR;
 }
 
 ECode Hashtable::ContainsValue(
     /* [in] */ IInterface* value,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return Contains(value, result);
 }
 
 ECode Hashtable::ContainsKey(
     /* [in] */ IInterface* key,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     AutoLock lock(this);
     Integer hash = Object::GetHashCode(key);
     Integer index = (hash & 0x7FFFFFFF) % mTable.GetLength();
     for (HashtableEntry* e = mTable[index]; e != nullptr; e = e->mNext) {
         if ((e->mHash == hash) && Object::Equals(e->mKey, key)) {
-            *result = true;
+            result = true;
             return NOERROR;
         }
     }
-    *result = false;
+    result = false;
     return NOERROR;
 }
 
 ECode Hashtable::Get(
     /* [in] */ IInterface* key,
-    /* [out] */ IInterface** value)
+    /* [out] */ AutoPtr<IInterface>& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     AutoLock lock(this);
     Integer hash = Object::GetHashCode(key);
     Integer index = (hash & 0x7FFFFFFF) % mTable.GetLength();
     for (HashtableEntry* e = mTable[index]; e != nullptr; e = e->mNext) {
         if ((e->mHash == hash) && Object::Equals(e->mKey, key)) {
-            *value = e->mValue;
-            REFCOUNT_ADD(*value);
+            value = e->mValue;
             return NOERROR;
         }
     }
-    *value = nullptr;
+    value = nullptr;
     return NOERROR;
 }
 
@@ -320,7 +309,7 @@ ECode Hashtable::PutAll(
 {
     AutoLock lock(this);
     AutoPtr<ISet> entries;
-    m->GetEntrySet(&entries);
+    m->GetEntrySet(entries);
     AutoPtr<IIterator> it;
     entries->GetIterator(it);
     Boolean hasNext;
@@ -328,8 +317,8 @@ ECode Hashtable::PutAll(
         AutoPtr<IInterface> obj;
         it->Next(&obj);
         AutoPtr<IInterface> key, value;
-        IMapEntry::Probe(obj)->GetKey(&key);
-        IMapEntry::Probe(obj)->GetValue(&value);
+        IMapEntry::Probe(obj)->GetKey(key);
+        IMapEntry::Probe(obj)->GetValue(value);
         FAIL_RETURN(Put(key, value));
     }
     return NOERROR;
@@ -371,7 +360,7 @@ ECode Hashtable::ToString(
     AutoLock lock(this);
 
     Integer max;
-    GetSize(&max);
+    GetSize(max);
     max = max - 1;
     if (max == -1) {
         str = "{}";
@@ -381,7 +370,7 @@ ECode Hashtable::ToString(
     AutoPtr<IStringBuilder> sb;
     CStringBuilder::New(IID_IStringBuilder, (IInterface**)&sb);
     AutoPtr<ISet> entries;
-    GetEntrySet(&entries);
+    GetEntrySet(entries);
     AutoPtr<IIterator> it;
     entries->GetIterator(it);
 
@@ -390,8 +379,8 @@ ECode Hashtable::ToString(
         AutoPtr<IInterface> e;
         it->Next(&e);
         AutoPtr<IInterface> key, value;
-        IMapEntry::Probe(e)->GetKey(&key);
-        IMapEntry::Probe(e)->GetValue(&value);
+        IMapEntry::Probe(e)->GetKey(key);
+        IMapEntry::Probe(e)->GetValue(value);
         sb->Append(IInterface::Equals(key, (IHashtable*)this) ?
                 String("(this Map)") : Object::ToString(key));
         sb->Append(Object::Equals(value, (IHashtable*)this) ?
@@ -406,45 +395,39 @@ ECode Hashtable::ToString(
 }
 
 ECode Hashtable::GetKeySet(
-    /* [out] */ ISet** keys)
+    /* [out] */ AutoPtr<ISet>& keys)
 {
-    VALIDATE_NOT_NULL(keys);
-
     VOLATILE_GET(AutoPtr<ISet> keySet, mKeySet);
     if (keySet == nullptr) {
         keySet = Collections::CreateSynchronizedSet(new KeySet(this), this);
         VOLATILE_SET(mKeySet, keySet);
     }
-    keySet.MoveTo(keys);
+    keys = std::move(keySet);
     return NOERROR;
 }
 
 ECode Hashtable::GetEntrySet(
-    /* [out] */ ISet** entries)
+    /* [out] */ AutoPtr<ISet>& entries)
 {
-    VALIDATE_NOT_NULL(entries);
-
     VOLATILE_GET(AutoPtr<ISet> entrySet, mEntrySet);
     if (entrySet == nullptr) {
         entrySet = Collections::CreateSynchronizedSet(new EntrySet(this), this);
         VOLATILE_SET(mEntrySet, entrySet);
     }
-    entrySet.MoveTo(entries);
+    entries = std::move(entrySet);
     return NOERROR;
 }
 
 ECode Hashtable::GetValues(
-    /* [out] */ ICollection** values)
+    /* [out] */ AutoPtr<ICollection>& values)
 {
-    VALIDATE_NOT_NULL(values);
-
     VOLATILE_GET(AutoPtr<ICollection> valueColl, mValues);
     if (valueColl == nullptr) {
         valueColl = Collections::CreateSynchronizedCollection(
                 new ValueCollection(this), this);
         VOLATILE_SET(mValues, valueColl);
     }
-    valueColl.MoveTo(values);
+    values = std::move(valueColl);
     return NOERROR;
 }
 
@@ -464,13 +447,13 @@ ECode Hashtable::Equals(
     }
     IMap* t = IMap::Probe(obj);
     Integer othSize, thisSize;
-    if (t->GetSize(&othSize), GetSize(&thisSize), othSize != thisSize) {
+    if (t->GetSize(othSize), GetSize(thisSize), othSize != thisSize) {
         result = false;
         return NOERROR;
     }
 
     AutoPtr<ISet> entries;
-    GetEntrySet(&entries);
+    GetEntrySet(entries);
     AutoPtr<IIterator> it;
     entries->GetIterator(it);
     Boolean hasNext;
@@ -479,20 +462,20 @@ ECode Hashtable::Equals(
         it->Next(&o);
         IMapEntry* e = IMapEntry::Probe(o);
         AutoPtr<IInterface> key, value;
-        e->GetKey(&key);
-        e->GetValue(&value);
+        e->GetKey(key);
+        e->GetValue(value);
         if (value == nullptr) {
             AutoPtr<IInterface> v1;
             Boolean contains;
-            if ((t->Get(key, &v1), v1 != nullptr) ||
-                (t->ContainsKey(key, &contains), !contains)) {
+            if ((t->Get(key, v1), v1 != nullptr) ||
+                (t->ContainsKey(key, contains), !contains)) {
                 result = false;
                 return NOERROR;
             }
         }
         else {
             AutoPtr<IInterface> v1;
-            t->Get(key, &v1);
+            t->Get(key, v1);
             if (!Object::Equals(value, v1)) {
                 result = false;
                 return NOERROR;
@@ -587,17 +570,15 @@ ECode Hashtable::KeySet::GetIterator(
 }
 
 ECode Hashtable::KeySet::GetSize(
-    /* [out] */ Integer* size)
+    /* [out] */ Integer& size)
 {
-    VALIDATE_NOT_NULL(size);
-
-    *size = mOwner->mCount;
+    size = mOwner->mCount;
     return NOERROR;
 }
 
 ECode Hashtable::KeySet::Contains(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return mOwner->ContainsKey(obj, result);
 }
@@ -642,28 +623,26 @@ ECode Hashtable::EntrySet::Add(
 
 ECode Hashtable::EntrySet::Contains(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     if (IMapEntry::Probe(obj) == nullptr) {
-        *result = false;
+        result = false;
         return NOERROR;
     }
 
     IMapEntry* entry = IMapEntry::Probe(obj);
     AutoPtr<IInterface> key;
-    entry->GetKey(&key);
+    entry->GetKey(key);
     Integer hash = Object::GetHashCode(key);
     Integer index = (hash & 0x7FFFFFFF) % mOwner->mTable.GetLength();
 
     for (HashtableEntry* e = mOwner->mTable[index]; e != nullptr; e = e->mNext) {
         if (e->mHash == hash && Object::Equals(e, entry)) {
-            *result = true;
+            result = true;
             return NOERROR;
         }
     }
-    *result = false;
+    result = false;
     return NOERROR;
 }
 
@@ -680,7 +659,7 @@ ECode Hashtable::EntrySet::Remove(
 
     IMapEntry* entry = IMapEntry::Probe(obj);
     AutoPtr<IInterface> key;
-    entry->GetKey(&key);
+    entry->GetKey(key);
     Integer hash = Object::GetHashCode(key);
     Integer index = (hash & 0x7FFFFFFF) % mOwner->mTable.GetLength();
 
@@ -706,11 +685,9 @@ ECode Hashtable::EntrySet::Remove(
 }
 
 ECode Hashtable::EntrySet::GetSize(
-    /* [out] */ Integer* size)
+    /* [out] */ Integer& size)
 {
-    VALIDATE_NOT_NULL(size);
-
-    *size = mOwner->mCount;
+    size = mOwner->mCount;
     return NOERROR;
 }
 
@@ -734,17 +711,15 @@ ECode Hashtable::ValueCollection::GetIterator(
 }
 
 ECode Hashtable::ValueCollection::GetSize(
-    /* [out] */ Integer* size)
+    /* [out] */ Integer& size)
 {
-    VALIDATE_NOT_NULL(size);
-
-    *size = mOwner->mCount;
+    size = mOwner->mCount;
     return NOERROR;
 }
 
 ECode Hashtable::ValueCollection::Contains(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return mOwner->ContainsValue(obj, result);
 }
@@ -765,22 +740,16 @@ AutoPtr<Hashtable::HashtableEntry> Hashtable::HashtableEntry::Clone()
 }
 
 ECode Hashtable::HashtableEntry::GetKey(
-    /* [out] */ IInterface** key)
+    /* [out] */ AutoPtr<IInterface>& key)
 {
-    VALIDATE_NOT_NULL(key);
-
-    *key = mKey;
-    REFCOUNT_ADD(*key);
+    key = mKey;
     return NOERROR;
 }
 
 ECode Hashtable::HashtableEntry::GetValue(
-    /* [out] */ IInterface** value)
+    /* [out] */ AutoPtr<IInterface>& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = mValue;
-    REFCOUNT_ADD(*value);
+    value = mValue;
     return NOERROR;
 }
 
@@ -811,8 +780,8 @@ ECode Hashtable::HashtableEntry::Equals(
     IMapEntry* e = IMapEntry::Probe(obj);
 
     AutoPtr<IInterface> key, value;
-    e->GetKey(&key);
-    e->GetValue(&value);
+    e->GetKey(key);
+    e->GetValue(value);
     result = (mKey == nullptr ? key == nullptr : Object::Equals(mKey, key)) &&
             (mValue == nullptr ? value == nullptr : Object::Equals(mValue, value));
     return NOERROR;

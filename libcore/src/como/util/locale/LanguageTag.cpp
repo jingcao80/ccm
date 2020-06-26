@@ -108,9 +108,10 @@ AutoPtr<ILanguageTag> LanguageTag::Parse(
 
     AutoPtr<StringTokenIterator> itr;
 
-    AutoPtr<IArray> gfmap;
+    AutoPtr<IInterface> v;
     GetGRANDFATHERED()->Get(CoreUtils::Box(
-            LocaleUtils::ToLowerString(languageTag)), (IInterface**)&gfmap);
+            LocaleUtils::ToLowerString(languageTag)), v);
+    AutoPtr<IArray> gfmap = std::move(v);
     if (gfmap != nullptr) {
         AutoPtr<IInterface> text;
         gfmap->Get(1, text);
@@ -185,7 +186,7 @@ Boolean LanguageTag::ParseExtlangs(
         }
         found = true;
         Boolean empty;
-        if (mExtlangs->IsEmpty(&empty), empty) {
+        if (mExtlangs->IsEmpty(empty), empty) {
             mExtlangs = nullptr;
             CArrayList::New(3, IID_IList, (IInterface**)&mExtlangs);
         }
@@ -194,7 +195,7 @@ Boolean LanguageTag::ParseExtlangs(
         itr->Next();
 
         Integer size;
-        if (mExtlangs->GetSize(&size), size == 3) {
+        if (mExtlangs->GetSize(size), size == 3) {
             // Maximum 3 extlangs
             break;
         }
@@ -262,7 +263,7 @@ Boolean LanguageTag::ParseVariants(
         }
         found = true;
         Boolean empty;
-        if (mVariants->IsEmpty(&empty), empty) {
+        if (mVariants->IsEmpty(empty), empty) {
             mVariants = nullptr;
             CArrayList::New(3, IID_IList, (IInterface**)&mVariants);
         }
@@ -313,7 +314,7 @@ Boolean LanguageTag::ParseExtensions(
             }
 
             Boolean empty;
-            if (mExtensions->IsEmpty(&empty), empty) {
+            if (mExtensions->IsEmpty(empty), empty) {
                 mExtensions = nullptr;
                 CArrayList::New(4, IID_IList, (IInterface**)&mExtensions);
             }
@@ -517,83 +518,66 @@ AutoPtr<ILanguageTag> LanguageTag::ParseLocale(
 }
 
 ECode LanguageTag::GetLanguage(
-    /* [out] */ String* language)
+    /* [out] */ String& language)
 {
-    VALIDATE_NOT_NULL(language);
-
-    *language = mLanguage;
+    language = mLanguage;
     return NOERROR;
 }
 
 ECode LanguageTag::GetExtlangs(
-    /* [out] */ IList** extlangs)
+    /* [out] */ AutoPtr<IList>& extlangs)
 {
-    VALIDATE_NOT_NULL(extlangs);
-
     Boolean empty;
-    if (mExtlangs->IsEmpty(&empty), empty) {
-        *extlangs = mExtlangs;
-        REFCOUNT_ADD(*extlangs);
+    if (mExtlangs->IsEmpty(empty), empty) {
+        extlangs = mExtlangs;
         return NOERROR;
     }
-    Collections::CreateUnmodifiableList(mExtlangs).MoveTo(extlangs);
+    extlangs = Collections::CreateUnmodifiableList(mExtlangs);
     return NOERROR;
 }
 
 ECode LanguageTag::GetScript(
-    /* [out] */ String* script)
+    /* [out] */ String& script)
 {
-    VALIDATE_NOT_NULL(script);
-
-    *script = mScript;
+    script = mScript;
     return NOERROR;
 }
 
 ECode LanguageTag::GetRegion(
-    /* [out] */ String* region)
+    /* [out] */ String& region)
 {
-    VALIDATE_NOT_NULL(region);
-
-    *region = mRegion;
+    region = mRegion;
     return NOERROR;
 }
 
 ECode LanguageTag::GetVariants(
-    /* [out] */ IList** variants)
+    /* [out] */ AutoPtr<IList>& variants)
 {
-    VALIDATE_NOT_NULL(variants);
-
     Boolean empty;
-    if (mVariants->IsEmpty(&empty), empty) {
-        *variants = mVariants;
-        REFCOUNT_ADD(*variants);
+    if (mVariants->IsEmpty(empty), empty) {
+        variants = mVariants;
         return NOERROR;
     }
-    Collections::CreateUnmodifiableList(mVariants).MoveTo(variants);
+    variants = Collections::CreateUnmodifiableList(mVariants);
     return NOERROR;
 }
 
 ECode LanguageTag::GetExtensions(
-    /* [out] */ IList** extensions)
+    /* [out] */ AutoPtr<IList>& extensions)
 {
-    VALIDATE_NOT_NULL(extensions);
-
     Boolean empty;
-    if (mExtensions->IsEmpty(&empty), empty) {
-        *extensions = mExtensions;
-        REFCOUNT_ADD(*extensions);
+    if (mExtensions->IsEmpty(empty), empty) {
+        extensions = mExtensions;
         return NOERROR;
     }
-    Collections::CreateUnmodifiableList(mExtensions).MoveTo(extensions);
+    extensions = Collections::CreateUnmodifiableList(mExtensions);
     return NOERROR;
 }
 
 ECode LanguageTag::GetPrivateuse(
-    /* [out] */ String* privateuse)
+    /* [out] */ String& privateuse)
 {
-    VALIDATE_NOT_NULL(privateuse);
-
-    *privateuse = mPrivateuse;
+    privateuse = mPrivateuse;
     return NOERROR;
 }
 

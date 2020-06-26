@@ -700,22 +700,24 @@ AutoPtr<ILocale> ICU::LocaleFromIcuLocaleId(
         builder->AddUnicodeLocaleAttribute(CoreUtils::Unbox(attribute));
     } END_FOR_EACH();
     AutoPtr<ISet> entries;
-    unicodeKeywordsMap->GetEntrySet(&entries);
+    unicodeKeywordsMap->GetEntrySet(entries);
     FOR_EACH(IMapEntry*, keyword, IMapEntry::Probe, entries) {
-        AutoPtr<ICharSequence> key, value;
-        keyword->GetKey((IInterface**)&key);
-        keyword->GetValue((IInterface**)&value);
-        builder->SetUnicodeLocaleKeyword(CoreUtils::Unbox(key), CoreUtils::Unbox(value));
+        AutoPtr<IInterface> key, value;
+        keyword->GetKey(key);
+        keyword->GetValue(value);
+        builder->SetUnicodeLocaleKeyword(
+                CoreUtils::Unbox(ICharSequence::Probe(key)),
+                CoreUtils::Unbox(ICharSequence::Probe(value)));
     } END_FOR_EACH();
 
-    entries = nullptr;
-    extensionsMap->GetEntrySet(&entries);
+    extensionsMap->GetEntrySet(entries);
     FOR_EACH(IMapEntry*, extension, IMapEntry::Probe, entries) {
-        AutoPtr<IChar> key;
-        AutoPtr<ICharSequence> value;
-        extension->GetKey((IInterface**)&key);
-        extension->GetValue((IInterface**)&value);
-        builder->SetExtension(CoreUtils::Unbox(key), CoreUtils::Unbox(value));
+        AutoPtr<IInterface> key, value;
+        extension->GetKey(key);
+        extension->GetValue(value);
+        builder->SetExtension(
+                CoreUtils::Unbox(IChar::Probe(key)),
+                CoreUtils::Unbox(ICharSequence::Probe(value)));
     } END_FOR_EACH();
 
     AutoPtr<ILocale> locale;
@@ -755,8 +757,9 @@ String ICU::GetBestDateTimePattern(
     {
         AutoLock lock(cache);
 
-        AutoPtr<ICharSequence> pattern;
-        cache->Get(CoreUtils::Box(key), (IInterface**)&pattern);
+        AutoPtr<IInterface> value;
+        cache->Get(CoreUtils::Box(key), value);
+        AutoPtr<ICharSequence> pattern = std::move(value);
         if (pattern == nullptr) {
             pattern = CoreUtils::Box(GetBestDateTimePattern(skeleton, languageTag));
             cache->Put(CoreUtils::Box(key), pattern);

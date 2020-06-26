@@ -35,10 +35,10 @@ TEST(HashtableTest, HashtableContainsTest)
     ec = ht->Put(CoreUtils::Box(String("IInteger::MAX_VALUE")), CoreUtils::Box(String("0x7fffffff")));
     EXPECT_EQ(0, ec);
     Boolean contains;
-    ec = ht->Contains(CoreUtils::Box(String("0x7fffffff")), &contains);
+    ec = ht->Contains(CoreUtils::Box(String("0x7fffffff")), contains);
     EXPECT_EQ(0, ec);
     EXPECT_TRUE(contains);
-    ec = ht->Contains(CoreUtils::Box(String("0x80000000")), &contains);
+    ec = ht->Contains(CoreUtils::Box(String("0x80000000")), contains);
     EXPECT_EQ(0, ec);
     EXPECT_FALSE(contains);
 }
@@ -51,7 +51,7 @@ TEST(HashtableTest, HashtableGetPutTest)
     ec = ht->Put(CoreUtils::Box(String("IInteger::MAX_VALUE")), CoreUtils::Box(String("0x7fffffff")));
     EXPECT_EQ(0, ec);
     AutoPtr<IInterface> value;
-    ec = ht->Get(CoreUtils::Box(String("IInteger::MAX_VALUE")), &value);
+    ec = ht->Get(CoreUtils::Box(String("IInteger::MAX_VALUE")), value);
     EXPECT_EQ(0, ec);
     EXPECT_STREQ("0x7fffffff", CoreUtils::Unbox(ICharSequence::Probe(value)).string());
 }

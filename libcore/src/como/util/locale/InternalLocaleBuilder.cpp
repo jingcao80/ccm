@@ -213,7 +213,7 @@ ECode InternalLocaleBuilder::SetExtension(
         else {
             Boolean contained;
             if (mExtensions != nullptr &&
-                    (mExtensions->ContainsKey((IObject*)key.Get(), &contained), contained)) {
+                    (mExtensions->ContainsKey((IObject*)key.Get(), contained), contained)) {
                 mExtensions->Remove((IObject*)key.Get());
             }
         }
@@ -355,14 +355,14 @@ ECode InternalLocaleBuilder::SetExtensions(
 
     if (!LocaleUtils::IsEmpty(bcpExtensions)) {
         Integer size;
-        bcpExtensions->GetSize(&size);
+        bcpExtensions->GetSize(size);
         AutoPtr<ISet> done;
         CHashSet::New(size, IID_ISet, (IInterface**)&done);
         FOR_EACH(ICharSequence*, bcpExtension, ICharSequence::Probe, done) {
             String bcpExt = CoreUtils::Unbox(bcpExtension);
             AutoPtr<CaseInsensitiveChar> key = new CaseInsensitiveChar(bcpExt);
             Boolean contained;
-            if (done->Contains((IObject*)key.Get(), &contained), !contained) {
+            if (done->Contains((IObject*)key.Get(), contained), !contained) {
                 // each extension string contains singleton, e.g. "a-abc-def"
                 if (UnicodeLocaleExtension::IsSingletonChar(key->Value())) {
                     SetUnicodeLocaleExtension(bcpExt.Substring(2));
@@ -394,33 +394,33 @@ ECode InternalLocaleBuilder::SetLanguageTag(
 {
     Clear();
     AutoPtr<IList> extLangs;
-    langtag->GetExtlangs(&extLangs);
+    langtag->GetExtlangs(extLangs);
     Boolean empty;
-    if (extLangs->IsEmpty(&empty), !empty) {
+    if (extLangs->IsEmpty(empty), !empty) {
         AutoPtr<IInterface> extLang;
         extLangs->Get(0, &extLang);
         mLanguage = CoreUtils::Unbox(ICharSequence::Probe(extLang));
     }
     else {
         String lang;
-        langtag->GetLanguage(&lang);
+        langtag->GetLanguage(lang);
         if (!lang.Equals(ILanguageTag::UNDETERMINED)) {
             mLanguage = lang;
         }
     }
-    langtag->GetScript(&mScript);
-    langtag->GetRegion(&mRegion);
+    langtag->GetScript(mScript);
+    langtag->GetRegion(mRegion);
 
     AutoPtr<IList> bcpVariants;
-    langtag->GetVariants(&bcpVariants);
-    if (bcpVariants->IsEmpty(&empty), !empty) {
+    langtag->GetVariants(bcpVariants);
+    if (bcpVariants->IsEmpty(empty), !empty) {
         AutoPtr<IInterface> bcpVariant;
         bcpVariants->Get(0, &bcpVariant);
         AutoPtr<IStringBuilder> var;
         CStringBuilder::New(CoreUtils::Unbox(ICharSequence::Probe(bcpVariant)),
                 IID_IStringBuilder, (IInterface**)&var);
         Integer size;
-        bcpVariants->GetSize(&size);
+        bcpVariants->GetSize(size);
         for (Integer i = 1; i < size; i++) {
             bcpVariant = nullptr;
             bcpVariants->Get(i, &bcpVariant);
@@ -431,9 +431,9 @@ ECode InternalLocaleBuilder::SetLanguageTag(
     }
 
     AutoPtr<IList> extensions;
-    langtag->GetExtensions(&extensions);
+    langtag->GetExtensions(extensions);
     String privateuse;
-    langtag->GetPrivateuse(&privateuse);
+    langtag->GetPrivateuse(privateuse);
 
     return SetExtensions(extensions, privateuse);
 }
@@ -575,9 +575,9 @@ AutoPtr<BaseLocale> InternalLocaleBuilder::GetBaseLocale()
     String variant = mVariant;
 
     if (mExtensions != nullptr) {
-        AutoPtr<ICharSequence> ext;
-        mExtensions->Get((IObject*)GetPRIVATEUSE_KEY().Get(), (IInterface**)&ext);
-        String privuse = CoreUtils::Unbox(ext);
+        AutoPtr<IInterface> v;
+        mExtensions->Get((IObject*)GetPRIVATEUSE_KEY().Get(), v);
+        String privuse = CoreUtils::Unbox(ICharSequence::Probe(v));
         if (!privuse.IsNull()) {
             AutoPtr<StringTokenIterator> itr = new StringTokenIterator();
             itr->Constructor(privuse, ILanguageTag::SEP);
@@ -709,7 +709,7 @@ void InternalLocaleBuilder::SetUnicodeLocaleExtension(
                 // reset keyword info
                 AutoPtr<CaseInsensitiveString> tmpKey = new CaseInsensitiveString(itr->Current());
                 Boolean contained;
-                mUkeywords->ContainsKey((IObject*)tmpKey.Get(), &contained);
+                mUkeywords->ContainsKey((IObject*)tmpKey.Get(), contained);
                 key = contained ? nullptr : tmpKey;
                 typeStart = typeEnd = -1;
             }
@@ -727,7 +727,7 @@ void InternalLocaleBuilder::SetUnicodeLocaleExtension(
             key = new CaseInsensitiveString(itr->Current());
             Boolean contained;
             if (mUkeywords != nullptr &&
-                    (mUkeywords->ContainsKey((IObject*)key.Get(), &contained), contained)) {
+                    (mUkeywords->ContainsKey((IObject*)key.Get(), contained), contained)) {
                 // duplicate
                 key = nullptr;
             }

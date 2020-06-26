@@ -152,21 +152,17 @@ ECode Matcher::Constructor(
 }
 
 ECode Matcher::Pattern(
-    /* [out] */ IPattern** pattern)
+    /* [out] */ AutoPtr<IPattern>& pattern)
 {
-    VALIDATE_NOT_NULL(pattern);
-
-    *pattern = mPattern;
-    REFCOUNT_ADD(*pattern);
+    pattern = mPattern;
     return NOERROR;
 }
 
 ECode Matcher::ToMatchResult(
-    /* [out] */ IMatchResult** result)
+    /* [out] */ AutoPtr<IMatchResult>& result)
 {
     FAIL_RETURN(EnsureMatch());
-    *result = new OffsetBasedMatchResult(mInput, mMatchOffsets);
-    REFCOUNT_ADD(*result);
+    result = new OffsetBasedMatchResult(mInput, mMatchOffsets);
     return NOERROR;
 }
 
@@ -198,129 +194,115 @@ ECode Matcher::UsePattern(
     }
 
     Integer gc;
-    GroupCount(&gc);
+    GroupCount(gc);
     mMatchOffsets = Array<Integer>((gc + 1) * 2);
     mMatchFound = false;
     return NOERROR;
 }
 
 ECode Matcher::End(
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
     return End(0, index);
 }
 
 ECode Matcher::End(
     /* [in] */ Integer group,
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
-    VALIDATE_NOT_NULL(index);
-
     FAIL_RETURN(EnsureMatch());
-    *index = mMatchOffsets[(group * 2) + 1];
+    index = mMatchOffsets[(group * 2) + 1];
     return NOERROR;
 }
 
 ECode Matcher::End(
     /* [in] */ const String& name,
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
-    VALIDATE_NOT_NULL(index);
-
     FAIL_RETURN(EnsureMatch());
     Integer group;
     FAIL_RETURN(GetMatchedGroupIndex(
-            Pattern::From(mPattern)->mNative, name, &group));
-    *index = mMatchOffsets[group * 2 + 1];
+            Pattern::From(mPattern)->mNative, name, group));
+    index = mMatchOffsets[group * 2 + 1];
     return NOERROR;
 }
 
 ECode Matcher::Group(
-    /* [out] */ String* subseq)
+    /* [out] */ String& subseq)
 {
     return Group(0, subseq);
 }
 
 ECode Matcher::Group(
     /* [in] */ Integer group,
-    /* [out] */ String* subseq)
+    /* [out] */ String& subseq)
 {
-    VALIDATE_NOT_NULL(subseq);
-
     FAIL_RETURN(EnsureMatch());
     Integer from = mMatchOffsets[group * 2];
     Integer to = mMatchOffsets[(group * 2) + 1];
     if (from == -1 || to == -1) {
-        *subseq = nullptr;
+        subseq = nullptr;
         return NOERROR;
     }
     else {
-        *subseq = mInput.Substring(from, to);
+        subseq = mInput.Substring(from, to);
         return NOERROR;
     }
 }
 
 ECode Matcher::Group(
     /* [in] */ const String& name,
-    /* [out] */ String* subseq)
+    /* [out] */ String& subseq)
 {
-    VALIDATE_NOT_NULL(subseq);
-
     FAIL_RETURN(EnsureMatch());
     Integer group;
     FAIL_RETURN(GetMatchedGroupIndex(
-            Pattern::From(mPattern)->mNative, name, &group));
+            Pattern::From(mPattern)->mNative, name, group));
     Integer from = mMatchOffsets[group * 2];
     Integer to = mMatchOffsets[(group * 2) + 1];
     if (from == -1 || to == -1) {
-        *subseq = nullptr;
+        subseq = nullptr;
         return NOERROR;
     }
     else {
-        *subseq = mInput.Substring(from, to);
+        subseq = mInput.Substring(from, to);
         return NOERROR;
     }
 }
 
 ECode Matcher::GroupCount(
-    /* [out] */ Integer* number)
+    /* [out] */ Integer& number)
 {
-    VALIDATE_NOT_NULL(number);
-
     AutoLock lock(this);
-    *number = GroupCountImpl(mNative);
+    number = GroupCountImpl(mNative);
     return NOERROR;
 }
 
 ECode Matcher::Matches(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     {
         AutoLock lock(this);
         mMatchFound = MatchesImpl(mNative, mMatchOffsets);
     }
-    *result = mMatchFound;
+    result = mMatchFound;
     return NOERROR;
 }
 
 ECode Matcher::Find(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     {
         AutoLock lock(this);
         mMatchFound = FindNextImpl(mNative, mMatchOffsets);
     }
-    *result = mMatchFound;
+    result = mMatchFound;
     return NOERROR;
 }
 
 ECode Matcher::Find(
     /* [in] */ Integer start,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     if (start < 0 || start > mInput.GetLength()) {
         Logger::E("Matcher", "start=%d; length=%d", start, mInput.GetLength());
@@ -331,31 +313,27 @@ ECode Matcher::Find(
         AutoLock lock(this);
         mMatchFound = FindImpl(mNative, start, mMatchOffsets);
     }
-    *result = mMatchFound;
+    result = mMatchFound;
     return NOERROR;
 }
 
 ECode Matcher::LookingAt(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     {
         AutoLock lock(this);
         mMatchFound = LookingAtImpl(mNative, mMatchOffsets);
     }
-    *result = mMatchFound;
+    result = mMatchFound;
     return NOERROR;
 }
 
 ECode Matcher::QuoteReplacement(
     /* [in] */ const String& s,
-    /* [out] */ String* str)
+    /* [out] */ String& str)
 {
-    VALIDATE_NOT_NULL(str);
-
     if ((s.IndexOf(U'\\') == -1) && (s.IndexOf(U'$') == -1)) {
-        *str = s;
+        str = s;
         return NOERROR;
     }
     AutoPtr<IStringBuilder> sb;
@@ -367,7 +345,7 @@ ECode Matcher::QuoteReplacement(
         }
         sb->Append(c);
     }
-    return sb->ToString(*str);
+    return sb->ToString(str);
 }
 
 ECode Matcher::AppendReplacement(
@@ -375,10 +353,10 @@ ECode Matcher::AppendReplacement(
     /* [in] */ const String& replacement)
 {
     Integer start;
-    FAIL_RETURN(Start(&start));
+    FAIL_RETURN(Start(start));
     sb->Append(mInput.Substring(mAppendPos, start));
     FAIL_RETURN(AppendEvaluated(sb, replacement));
-    return End(&mAppendPos);
+    return End(mAppendPos);
 }
 
 ECode Matcher::AppendEvaluated(
@@ -400,7 +378,7 @@ ECode Matcher::AppendEvaluated(
         }
         else if (c >= U'0' && c <= U'9' && dollar) {
             String subseq;
-            FAIL_RETURN(Group(c - U'0', &subseq));
+            FAIL_RETURN(Group(c - U'0', subseq));
             buffer->Append(subseq);
             dollar = false;
         }
@@ -412,7 +390,7 @@ ECode Matcher::AppendEvaluated(
             String namedGroupName =
                     s.Substring(escapeNamedGroupStart + 1, i);
             String subseq;
-            FAIL_RETURN(Group(namedGroupName, &subseq));
+            FAIL_RETURN(Group(namedGroupName, subseq));
             buffer->Append(subseq);
             dollar = false;
             escapeNamedGroup = false;
@@ -452,38 +430,34 @@ ECode Matcher::AppendTail(
 
 ECode Matcher::ReplaceAll(
     /* [in] */ const String& replacement,
-    /* [out] */ String* str)
+    /* [out] */ String& str)
 {
-    VALIDATE_NOT_NULL(str);
-
     FAIL_RETURN(Reset());
     AutoPtr<IStringBuffer> buffer;
     CStringBuffer::New(mInput.GetLength(),
             IID_IStringBuffer, (IInterface**)&buffer);
     Boolean found;
-    while(Find(&found), found) {
+    while(Find(found), found) {
         FAIL_RETURN(AppendReplacement(buffer, replacement));
     }
     AppendTail(buffer);
-    return buffer->ToString(*str);
+    return buffer->ToString(str);
 }
 
 ECode Matcher::ReplaceFirst(
     /* [in] */ const String& replacement,
-    /* [out] */ String* str)
+    /* [out] */ String& str)
 {
-    VALIDATE_NOT_NULL(str);
-
     FAIL_RETURN(Reset());
     AutoPtr<IStringBuffer> buffer;
     CStringBuffer::New(mInput.GetLength(),
             IID_IStringBuffer, (IInterface**)&buffer);
     Boolean found;
-    if (Find(&found), found) {
+    if (Find(found), found) {
         FAIL_RETURN(AppendReplacement(buffer, replacement));
     }
     AppendTail(buffer);
-    return buffer->ToString(*str);
+    return buffer->ToString(str);
 }
 
 ECode Matcher::Region(
@@ -494,29 +468,23 @@ ECode Matcher::Region(
 }
 
 ECode Matcher::RegionStart(
-    /* [out] */ Integer* start)
+    /* [out] */ Integer& start)
 {
-    VALIDATE_NOT_NULL(start);
-
-    *start = mRegionStart;
+    start = mRegionStart;
     return NOERROR;
 }
 
 ECode Matcher::RegionEnd(
-    /* [out] */ Integer* end)
+    /* [out] */ Integer& end)
 {
-    VALIDATE_NOT_NULL(end);
-
-    *end = mRegionEnd;
+    end = mRegionEnd;
     return NOERROR;
 }
 
 ECode Matcher::HasTransparentBounds(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
-    *result = mTransparentBounds;
+    result = mTransparentBounds;
     return NOERROR;
 }
 
@@ -530,11 +498,9 @@ ECode Matcher::UseTransparentBounds(
 }
 
 ECode Matcher::HasAnchoringBounds(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
-    *result = mAnchoringBounds;
+    result = mAnchoringBounds;
     return NOERROR;
 }
 
@@ -555,18 +521,18 @@ ECode Matcher::ToString(
     sb->Append(String("como::util::regex::Matcher"));
     sb->Append("[pattern=");
     AutoPtr<IPattern> p;
-    Pattern(&p);
+    Pattern(p);
     sb->Append(Object::ToString(p));
     sb->Append(String(" region="));
     Integer start, end;
-    RegionStart(&start);
-    RegionEnd(&end);
+    RegionStart(start);
+    RegionEnd(end);
     sb->Append(start);
     sb->Append(U',');
     sb->Append(end);
     sb->Append(String(" lastmatch="));
     String subseq;
-    if (mMatchFound && (Group(&subseq), !subseq.IsNull())) {
+    if (mMatchFound && (Group(subseq), !subseq.IsNull())) {
         sb->Append(subseq);
     }
     sb->Append(U']');
@@ -574,22 +540,18 @@ ECode Matcher::ToString(
 }
 
 ECode Matcher::HitEnd(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     AutoLock lock(this);
-    *result = HitEndImpl(mNative);
+    result = HitEndImpl(mNative);
     return NOERROR;
 }
 
 ECode Matcher::RequireEnd(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     AutoLock lock(this);
-    *result = RequireEndImpl(mNative);
+    result = RequireEndImpl(mNative);
     return NOERROR;
 }
 
@@ -655,50 +617,44 @@ ECode Matcher::EnsureMatch()
 }
 
 ECode Matcher::Start(
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
     return Start(0, index);
 }
 
 ECode Matcher::Start(
     /* [in] */ Integer group,
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
-    VALIDATE_NOT_NULL(index);
-
     FAIL_RETURN(EnsureMatch());
-    *index = mMatchOffsets[group * 2];
+    index = mMatchOffsets[group * 2];
     return NOERROR;
 }
 
 ECode Matcher::Start(
     /* [in] */ const String& name,
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
-    VALIDATE_NOT_NULL(index);
-
     FAIL_RETURN(EnsureMatch());
     Integer group;
     FAIL_RETURN(GetMatchedGroupIndex(
-            Pattern::From(mPattern)->mNative, name, &group));
-    *index = mMatchOffsets[group * 2];
+            Pattern::From(mPattern)->mNative, name, group));
+    index = mMatchOffsets[group * 2];
     return NOERROR;
 }
 
 ECode Matcher::GetMatchedGroupIndex(
     /* [in] */ HANDLE patternAddr,
     /* [in] */ const String& name,
-    /* [out] */ Integer* group)
+    /* [out] */ Integer& group)
 {
-    VALIDATE_NOT_NULL(group);
-
     Integer result = GetMatchedGroupIndexImpl(patternAddr, name);
     if (result < 0) {
         Logger::E("Matcher", "No capturing group in the pattern with the name %s",
                 name.string());
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    *group = result;
+    group = result;
     return NOERROR;
 }
 
@@ -851,67 +807,59 @@ Matcher::OffsetBasedMatchResult::OffsetBasedMatchResult(
 }
 
 ECode Matcher::OffsetBasedMatchResult::Start(
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
     return Start(0, index);
 }
 
 ECode Matcher::OffsetBasedMatchResult::Start(
     /* [in] */ Integer group,
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
-    VALIDATE_NOT_NULL(index);
-
-    *index = mOffsets[2 * group];
+    index = mOffsets[2 * group];
     return NOERROR;
 }
 
 ECode Matcher::OffsetBasedMatchResult::End(
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
     return End(0, index);
 }
 
 ECode Matcher::OffsetBasedMatchResult::End(
     /* [in] */ Integer group,
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
-    VALIDATE_NOT_NULL(index);
-
-    *index = mOffsets[2 * group + 1];
+    index = mOffsets[2 * group + 1];
     return NOERROR;
 }
 
 ECode Matcher::OffsetBasedMatchResult::Group(
-    /* [out] */ String* subseq)
+    /* [out] */ String& subseq)
 {
     return Group(0, subseq);
 }
 
 ECode Matcher::OffsetBasedMatchResult::Group(
     /* [in] */ Integer group,
-    /* [out] */ String* subseq)
+    /* [out] */ String& subseq)
 {
-    VALIDATE_NOT_NULL(subseq);
-
     Integer start, end;
-    Start(group, &start);
-    End(group, &end);
+    Start(group, start);
+    End(group, end);
     if (start == -1 || end == -1) {
-        *subseq = nullptr;
+        subseq = nullptr;
         return NOERROR;
     }
 
-    *subseq = mInput.Substring(start, end);
+    subseq = mInput.Substring(start, end);
     return NOERROR;
 }
 
 ECode Matcher::OffsetBasedMatchResult::GroupCount(
-    /* [out] */ Integer* number)
+    /* [out] */ Integer& number)
 {
-    VALIDATE_NOT_NULL(number);
-
-    *number = (mOffsets.GetLength() / 2) - 1;
+    number = (mOffsets.GetLength() / 2) - 1;
     return NOERROR;
 }
 

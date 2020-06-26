@@ -79,8 +79,8 @@ UnicodeLocaleExtension::UnicodeLocaleExtension(
     }
 
     Boolean empty;
-    if ((mAttributes->IsEmpty(&empty), !empty) ||
-            (mKeywords->IsEmpty(&empty), !empty)) {
+    if ((mAttributes->IsEmpty(empty), !empty) ||
+            (mKeywords->IsEmpty(empty), !empty)) {
         AutoPtr<IStringBuilder> sb;
         CStringBuilder::New(IID_IStringBuilder, (IInterface**)&sb);
         AutoPtr<IIterator> it;
@@ -93,14 +93,14 @@ UnicodeLocaleExtension::UnicodeLocaleExtension(
             sb->Append(ICharSequence::Probe(attribute));
         }
         AutoPtr<ISet> entries;
-        mKeywords->GetEntrySet(&entries);
+        mKeywords->GetEntrySet(entries);
         entries->GetIterator(it);
         while (it->HasNext(&hasNext), hasNext) {
             AutoPtr<IInterface> keyword;
             it->Next(&keyword);
             AutoPtr<IInterface> key, value;
-            IMapEntry::Probe(keyword)->GetKey(&key);
-            IMapEntry::Probe(keyword)->GetValue(&value);
+            IMapEntry::Probe(keyword)->GetKey(key);
+            IMapEntry::Probe(keyword)->GetValue(value);
 
             sb->Append(ILanguageTag::SEP);
             sb->Append(ICharSequence::Probe(key));
@@ -131,7 +131,7 @@ AutoPtr<ISet> UnicodeLocaleExtension::GetUnicodeLocaleKeys()
         return Collections::GetEmptySet();
     }
     AutoPtr<ISet> keyset;
-    mKeywords->GetKeySet(&keyset);
+    mKeywords->GetKeySet(keyset);
     return Collections::CreateUnmodifiableSet(keyset);
 }
 
@@ -139,7 +139,7 @@ String UnicodeLocaleExtension::GetUnicodeLocaleType(
     /* [in] */ const String& unicodeLocaleKey)
 {
     AutoPtr<IInterface> value;
-    mKeywords->Get(CoreUtils::Box(unicodeLocaleKey), &value);
+    mKeywords->Get(CoreUtils::Box(unicodeLocaleKey), value);
     return CoreUtils::Unbox(ICharSequence::Probe(value));
 }
 

@@ -59,10 +59,10 @@ interface ILinkedList
 
     Contains(
         [in] IInterface* obj,
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     Element(
-        [out] IInterface** e);
+        [out] IInterface&& e);
 
     Get(
         [in] Integer index,
@@ -82,7 +82,7 @@ interface ILinkedList
         [out] IListIterator** it);
 
     GetSize(
-        [out] Integer* size);
+        [out] Integer& size);
 
     IndexOf(
         [in] IInterface* obj,
@@ -105,7 +105,7 @@ interface ILinkedList
         [out] Boolean* changed = nullptr);
 
     Peek(
-        [out] IInterface** e);
+        [out] IInterface&& e);
 
     PeekFirst(
         [out] IInterface** e);

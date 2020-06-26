@@ -77,7 +77,7 @@ interface IProperties
         [out] String* prevValue = nullptr);
 
     StringPropertyNames(
-        [out] ISet** names);
+        [out] ISet&& names);
 
     Store(
         [in] IOutputStream* outstream,

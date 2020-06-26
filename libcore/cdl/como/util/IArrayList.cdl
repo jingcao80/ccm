@@ -57,11 +57,11 @@ interface IArrayList
 
     Contains(
         [in] IInterface* obj,
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     ContainsAll(
         [in] ICollection* c,
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     EnsureCapacity(
         [in] Integer minCapacity);
@@ -88,14 +88,14 @@ interface IArrayList
         [out] IListIterator** it);
 
     GetSize(
-        [out] Integer* size);
+        [out] Integer& size);
 
     IndexOf(
         [in] IInterface* obj,
         [out] Integer* index);
 
     IsEmpty(
-        [out] Boolean* empty);
+        [out] Boolean& empty);
 
     LastIndexOf(
         [in] IInterface* obj,

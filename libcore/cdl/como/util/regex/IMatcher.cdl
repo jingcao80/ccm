@@ -38,75 +38,75 @@ interface IMatcher
         [in] IStringBuffer* sb);
 
     End(
-        [out] Integer* index);
+        [out] Integer& index);
 
     End(
         [in] Integer group,
-        [out] Integer* index);
+        [out] Integer& index);
 
     End(
         [in] String name,
-        [out] Integer* index);
+        [out] Integer& index);
 
     Find(
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     Find(
         [in] Integer start,
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     Group(
-        [out] String* subseq);
+        [out] String& subseq);
 
     Group(
         [in] Integer group,
-        [out] String* subseq);
+        [out] String& subseq);
 
     Group(
         [in] String name,
-        [out] String* subseq);
+        [out] String& subseq);
 
     GroupCount(
-        [out] Integer* number);
+        [out] Integer& number);
 
     HasAnchoringBounds(
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     HasTransparentBounds(
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     HitEnd(
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     LookingAt(
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     Matches(
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     Pattern(
-        [out] IPattern** pattern);
+        [out] IPattern&& pattern);
 
     Region(
         [in] Integer start,
         [in] Integer end);
 
     RegionStart(
-        [out] Integer* start);
+        [out] Integer& start);
 
     RegionEnd(
-        [out] Integer* end);
+        [out] Integer& end);
 
     ReplaceAll(
         [in] String replacement,
-        [out] String* str);
+        [out] String& str);
 
     ReplaceFirst(
         [in] String replacement,
-        [out] String* str);
+        [out] String& str);
 
     RequireEnd(
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     Reset();
 
@@ -114,18 +114,18 @@ interface IMatcher
         [in] ICharSequence* input);
 
     Start(
-        [out] Integer* index);
+        [out] Integer& index);
 
     Start(
         [in] Integer group,
-        [out] Integer* index);
+        [out] Integer& index);
 
     Start(
         [in] String name,
-        [out] Integer* index);
+        [out] Integer& index);
 
     ToMatchResult(
-        [out] IMatchResult** result);
+        [out] IMatchResult&& result);
 
     UseAnchoringBounds(
         [in] Boolean value);

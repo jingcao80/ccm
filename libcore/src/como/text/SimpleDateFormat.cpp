@@ -251,7 +251,9 @@ ECode SimpleDateFormat::Initialize(
 {
     FAIL_RETURN(Compile(mPattern, &mCompiledPattern));
 
-    IMap::Probe(GetCachedNumberFormatData())->Get(locale, (IInterface**)&mNumberFormat);
+    AutoPtr<IInterface> v;
+    IMap::Probe(GetCachedNumberFormatData())->Get(locale, v);
+    mNumberFormat = std::move(v);
     if (mNumberFormat == nullptr) {
         NumberFormat::GetIntegerInstance(locale, mNumberFormat);
         mNumberFormat->SetGroupingUsed(false);
@@ -710,7 +712,7 @@ ECode SimpleDateFormat::SubFormat(
                     String tzID;
                     tz->GetID(&tzID);
                     Boolean contained;
-                    if (GetUTC_ZONE_IDS()->Contains(CoreUtils::Box(tzID), &contained), contained) {
+                    if (GetUTC_ZONE_IDS()->Contains(CoreUtils::Box(tzID), contained), contained) {
                         zoneString = UTC;
                     }
                     else {
@@ -1188,7 +1190,7 @@ Integer SimpleDateFormat::MatchString(
         String bestMatch;
 
         AutoPtr<ISet> keys;
-        data->GetKeySet(&keys);
+        data->GetKeySet(keys);
         FOR_EACH_2(String, name, ICharSequence::Probe, CoreUtils::Unbox, keys) {
             Integer length = name.GetLength();
             if (bestMatch.IsNull() || length > bestMatch.GetLength()) {
@@ -1200,7 +1202,7 @@ Integer SimpleDateFormat::MatchString(
 
         if (!bestMatch.IsNull()) {
             AutoPtr<IInterface> value;
-            data->Get(CoreUtils::Box(bestMatch), &value);
+            data->Get(CoreUtils::Box(bestMatch), value);
             calb->Set(field, CoreUtils::Unbox(IInteger::Probe(value)));
             return start + bestMatch.GetLength();
         }

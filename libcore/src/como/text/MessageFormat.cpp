@@ -451,7 +451,7 @@ ECode MessageFormat::FormatToCharacterIterator(
     IArrayHolder::Probe(arguments)->GetArray(&argumentsArray);
     FAIL_RETURN(Subformat(argumentsArray, result, nullptr, iterators));
     Integer size;
-    if (iterators->GetSize(&size), size == 0) {
+    if (iterators->GetSize(size), size == 0) {
         return CreateAttributedCharacterIterator(String(""), cit);
     }
     Array<IAttributedCharacterIterator*> its;
@@ -800,7 +800,7 @@ ECode MessageFormat::MakeFormat(
 
     // get the argument number
     Integer argumentNumber;
-    ECode ec = StringUtils::ParseInteger(segments[SEG_INDEX], &argumentNumber);
+    ECode ec = StringUtils::ParseInteger(segments[SEG_INDEX], argumentNumber);
     if (FAILED(ec)) {
         Logger::E("MessageFormat", "can't parse argument number: %s", segments[SEG_INDEX].string());
         return E_ILLEGAL_ARGUMENT_EXCEPTION;

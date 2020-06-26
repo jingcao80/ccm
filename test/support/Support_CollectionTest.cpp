@@ -56,7 +56,7 @@ ECode Support_CollectionTest::RunTest()
     AutoPtr<IInteger> othNewInt;
     CInteger::New(101, IID_IInteger, (IInterface**)&othNewInt);
     Boolean contains;
-    mCol->Contains(othNewInt, &contains);
+    mCol->Contains(othNewInt, contains);
     EXPECT_TRUE(contains);
 
     // Remove
@@ -66,22 +66,22 @@ ECode Support_CollectionTest::RunTest()
     EXPECT_TRUE(changed);
     othNewInt = nullptr;
     CInteger::New(101, IID_IInteger, (IInterface**)&othNewInt);
-    mCol->Contains(othNewInt, &contains);
+    mCol->Contains(othNewInt, contains);
     EXPECT_TRUE(!contains);
 
     // AddAll
     mCol->AddAll(myCollection, &changed);
     EXPECT_TRUE(changed);
-    mCol->ContainsAll(myCollection, &contains);
+    mCol->ContainsAll(myCollection, contains);
     EXPECT_TRUE(contains);
 
     // containsAll
-    mCol->ContainsAll(myCollection, &contains);
+    mCol->ContainsAll(myCollection, contains);
     EXPECT_TRUE(contains);
     othNewInt = nullptr;
     CInteger::New(101, IID_IInteger, (IInterface**)&othNewInt);
     mCol->Remove(othNewInt, &changed);
-    mCol->ContainsAll(myCollection, &contains);
+    mCol->ContainsAll(myCollection, contains);
     EXPECT_TRUE(!contains);
 
     //removeAll
@@ -91,11 +91,11 @@ ECode Support_CollectionTest::RunTest()
     EXPECT_TRUE(!changed);
     othNewInt = nullptr;
     CInteger::New(102, IID_IInteger, (IInterface**)&othNewInt);
-    mCol->Contains(othNewInt, &contains);
+    mCol->Contains(othNewInt, contains);
     EXPECT_TRUE(!contains);
     othNewInt = nullptr;
     CInteger::New(103, IID_IInteger, (IInterface**)&othNewInt);
-    mCol->Contains(othNewInt, &contains);
+    mCol->Contains(othNewInt, contains);
     EXPECT_TRUE(!contains);
 
     // retainAll
@@ -106,25 +106,25 @@ ECode Support_CollectionTest::RunTest()
     EXPECT_TRUE(!changed);
 
     // the 2nd time around
-    mCol->ContainsAll(myCollection, &contains);
+    mCol->ContainsAll(myCollection, contains);
     EXPECT_TRUE(contains);
     othNewInt = nullptr;
     CInteger::New(0, IID_IInteger, (IInterface**)&othNewInt);
-    mCol->Contains(othNewInt, &contains);
+    mCol->Contains(othNewInt, contains);
     EXPECT_TRUE(!contains);
     othNewInt = nullptr;
     CInteger::New(50, IID_IInteger, (IInterface**)&othNewInt);
-    mCol->Contains(othNewInt, &contains);
+    mCol->Contains(othNewInt, contains);
     EXPECT_TRUE(!contains);
 
     // clear
     mCol->Clear();
     Boolean isEmpty;
-    mCol->IsEmpty(&isEmpty);
+    mCol->IsEmpty(isEmpty);
     EXPECT_TRUE(isEmpty);
     othNewInt = nullptr;
     CInteger::New(101, IID_IInteger, (IInterface**)&othNewInt);
-    mCol->Contains(othNewInt, &contains);
+    mCol->Contains(othNewInt, contains);
     EXPECT_TRUE(!contains);
     return NOERROR;
 }

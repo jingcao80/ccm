@@ -122,19 +122,19 @@ public:
         /* [out] */ IInterface** head = nullptr) override;
 
     ECode Peek(
-        /* [out] */ IInterface** head) override;
+        /* [out] */ AutoPtr<IInterface>& head) override;
 
     virtual AutoPtr<Node> First();
 
     ECode IsEmpty(
-        /* [out] */ Boolean* empty) override;
+        /* [out] */ Boolean& empty) override;
 
     ECode GetSize(
-        /* [out] */ Integer* size) override;
+        /* [out] */ Integer& size) override;
 
     ECode Contains(
         /* [in] */ IInterface* obj,
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode Remove(
         /* [in] */ IInterface* obj,
@@ -161,10 +161,10 @@ public:
 
     ECode ContainsAll(
         /* [in] */ ICollection* c,
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode Element(
-        /* [out] */ IInterface** head) override;
+        /* [out] */ AutoPtr<IInterface>& head) override;
 
     ECode Equals(
         /* [in] */ IInterface* obj,

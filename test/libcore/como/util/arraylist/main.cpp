@@ -31,11 +31,11 @@ TEST(ArrayListTest, ArrayListContainsTest)
     AutoPtr<IArrayList> list;
     CArrayList::New(IID_IArrayList, (IInterface**)&list);
     Boolean contained;
-    list->Contains(CoreUtils::Box(String("hello")), &contained);
+    list->Contains(CoreUtils::Box(String("hello")), contained);
     EXPECT_FALSE(contained);
     list->Add(CoreUtils::Box(String("hello")));
     list->Add(CoreUtils::Box(String("world")));
-    list->Contains(CoreUtils::Box(String("world")), &contained);
+    list->Contains(CoreUtils::Box(String("world")), contained);
     EXPECT_TRUE(contained);
 }
 

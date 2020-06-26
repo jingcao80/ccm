@@ -23,7 +23,7 @@ using como::core::StringUtils;
 Byte ParseByte(const char* s, Integer radix = 10)
 {
     Byte value = 0;
-    StringUtils::ParseByte(String(s), radix, &value);
+    StringUtils::ParseByte(String(s), radix, value);
     return value;
 }
 
@@ -35,7 +35,7 @@ const char* ByteToString(Byte b)
 Short ParseShort(const char* s, Integer radix = 10)
 {
     Short value = 0;
-    StringUtils::ParseShort(String(s), radix, &value);
+    StringUtils::ParseShort(String(s), radix, value);
     return value;
 }
 
@@ -47,7 +47,7 @@ const char* ShortToString(Short s)
 Float ParseFloat(const char* s)
 {
     Float value = 0;
-    StringUtils::ParseFloat(String(s), &value);
+    StringUtils::ParseFloat(String(s), value);
     return value;
 }
 
@@ -59,7 +59,7 @@ const char* FloatToString(Float f)
 Double ParseDouble(const char* s)
 {
     Double value = 0;
-    StringUtils::ParseDouble(String(s), &value);
+    StringUtils::ParseDouble(String(s), value);
     return value;
 }
 

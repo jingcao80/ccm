@@ -84,7 +84,7 @@ ECode ChoiceFormat::ApplyPattern(
                 startValue = IDouble::NEGATIVE_INFINITY;
             }
             else {
-                ECode ec = StringUtils::ParseDouble(tempBuffer, &startValue);
+                ECode ec = StringUtils::ParseDouble(tempBuffer, startValue);
                 if (FAILED(ec)) {
                     return E_ILLEGAL_ARGUMENT_EXCEPTION;
                 }

@@ -115,7 +115,7 @@ ECode CalendarDataUtility::RetrieveFieldValueNames(
         FAIL_RETURN(RetrieveFieldValueNamesImpl(id, field, style, locale, &names));
     }
     Boolean isEmpty;
-    if (names->IsEmpty(&isEmpty), isEmpty) {
+    if (names->IsEmpty(isEmpty), isEmpty) {
         *retNames = nullptr;
     }
     else {

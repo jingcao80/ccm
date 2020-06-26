@@ -39,7 +39,7 @@ public:
 
     ECode Get(
         /* [in] */ IInterface* key,
-        /* [out] */ IInterface** value) override;
+        /* [out] */ AutoPtr<IInterface>& value) override;
 
     ECode Put(
         /* [in] */ IInterface* key,

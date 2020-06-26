@@ -32,47 +32,47 @@ class StringUtils
 public:
     COM_PUBLIC static ECode ParseByte(
         /* [in] */ const String& s,
-        /* [out] */ Byte* value);
+        /* [out] */ Byte& value);
 
     COM_PUBLIC static ECode ParseByte(
         /* [in] */ const String& s,
         /* [in] */ Integer radix,
-        /* [out] */ Byte* value);
+        /* [out] */ Byte& value);
 
     COM_PUBLIC static ECode ParseShort(
         /* [in] */ const String& s,
-        /* [out] */ Short* value);
+        /* [out] */ Short& value);
 
     COM_PUBLIC static ECode ParseShort(
         /* [in] */ const String& s,
         /* [in] */ Integer radix,
-        /* [out] */ Short* value);
+        /* [out] */ Short& value);
 
     COM_PUBLIC static ECode ParseInteger(
         /* [in] */ const String& s,
-        /* [out] */ Integer* value);
+        /* [out] */ Integer& value);
 
     COM_PUBLIC static ECode ParseInteger(
         /* [in] */ const String& s,
         /* [in] */ Integer radix,
-        /* [out] */ Integer* value);
+        /* [out] */ Integer& value);
 
     COM_PUBLIC static ECode ParseLong(
         /* [in] */ const String& s,
-        /* [out] */ Long* value);
+        /* [out] */ Long& value);
 
     COM_PUBLIC static ECode ParseLong(
         /* [in] */ const String& s,
         /* [in] */ Integer radix,
-        /* [out] */ Long* value);
+        /* [out] */ Long& value);
 
     COM_PUBLIC static ECode ParseFloat(
         /* [in] */ const String& s,
-        /* [out] */ Float* value);
+        /* [out] */ Float& value);
 
     COM_PUBLIC static ECode ParseDouble(
         /* [in] */ const String& s,
-        /* [out] */ Double* value);
+        /* [out] */ Double& value);
 
     COM_PUBLIC static String ToString(
         /* [in] */ Boolean b);
@@ -124,19 +124,19 @@ public:
     COM_PUBLIC static ECode ToString(
         /* [in] */ const String& str,
         /* [in] */ const String& charsetName,
-        /* [out] */ String* decodedStr);
+        /* [out] */ String& decodedStr);
 
     COM_PUBLIC static ECode ReplaceFirst(
         /* [in] */ const String& input,
         /* [in] */ const String& regex,
         /* [in] */ const String& replacement,
-        /* [out] */ String* result);
+        /* [out] */ String& result);
 
     COM_PUBLIC static ECode ReplaceAll(
         /* [in] */ const String& input,
         /* [in] */ const String& regex,
         /* [in] */ const String& replacement,
-        /* [out] */ String* result);
+        /* [out] */ String& result);
 
     static Array<String> Split(
         /* [in] */ const String& input,
@@ -166,28 +166,28 @@ private:
 
 inline ECode StringUtils::ParseByte(
     /* [in] */ const String& s,
-    /* [out] */ Byte* value)
+    /* [out] */ Byte& value)
 {
     return ParseByte(s, 10, value);
 }
 
 inline ECode StringUtils::ParseShort(
     /* [in] */ const String& s,
-    /* [out] */ Short* value)
+    /* [out] */ Short& value)
 {
     return ParseShort(s, 10, value);
 }
 
 inline ECode StringUtils::ParseInteger(
     /* [in] */ const String& s,
-    /* [out] */ Integer* value)
+    /* [out] */ Integer& value)
 {
     return ParseInteger(s, 10, value);
 }
 
 inline ECode StringUtils::ParseLong(
     /* [in] */ const String& s,
-    /* [out] */ Long* value)
+    /* [out] */ Long& value)
 {
     return ParseLong(s, 10, value);
 }
@@ -195,7 +195,7 @@ inline ECode StringUtils::ParseLong(
 inline String StringUtils::ToString(
     /* [in] */ Boolean b)
 {
-    return b ? String("true") : String("false");
+    return b ? "true" : "false";
 }
 
 inline String StringUtils::ToString(

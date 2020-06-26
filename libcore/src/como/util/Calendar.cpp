@@ -1161,8 +1161,9 @@ void Calendar::SetWeekCountData(
     /* [in] */ ILocale* desiredLocale)
 {
     /* try to get the Locale data from the cache */
-    AutoPtr<IArray> data;
-    IMap::Probe(GetCachedLocaleData())->Get(desiredLocale, (IInterface**)&data);
+    AutoPtr<IInterface> v;
+    IMap::Probe(GetCachedLocaleData())->Get(desiredLocale, v);
+    AutoPtr<IArray> data = std::move(v);
     if (data == nullptr) {
         CArray::New(IID_IInteger, 2, IID_IArray, (IInterface**)&data);
         AutoPtr<ILocaleData> localeData;

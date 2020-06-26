@@ -38,10 +38,10 @@ TEST(CConcurrentHashMapTest, PutTest)
     map->Put(CoreUtils::Box(String("Hello")), CoreUtils::Box(String("World")), &ov);
     EXPECT_TRUE(ov == nullptr);
     Integer size;
-    map->GetSize(&size);
+    map->GetSize(size);
     EXPECT_EQ(size, 1);
     AutoPtr<IInterface> v;
-    map->Get(CoreUtils::Box(String("Hello")), &v);
+    map->Get(CoreUtils::Box(String("Hello")), v);
     EXPECT_STREQ(CoreUtils::Unbox(ICharSequence::Probe(v)).string(), "World");
 }
 

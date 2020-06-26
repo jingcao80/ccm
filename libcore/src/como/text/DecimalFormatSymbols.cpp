@@ -421,11 +421,11 @@ void DecimalFormatSymbols::Initialize(
     mLocale = locale;
 
     Boolean needCacheUpdate = false;
-    AutoPtr<IArray> value;
-    GetCachedLocaleData()->Get(locale, (IInterface**)&value);
+    AutoPtr<IInterface> value;
+    GetCachedLocaleData()->Get(locale, value);
     Array<IInterface*> data;
     if (value != nullptr) {
-        data = CoreUtils::Unbox(value);
+        data = CoreUtils::Unbox(IArray::Probe(value));
     }
     if (data.IsNull()) {
         locale = LocaleData::MapInvalidAndNullLocales(locale);

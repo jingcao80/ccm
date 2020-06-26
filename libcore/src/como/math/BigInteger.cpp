@@ -144,7 +144,7 @@ ECode BigInteger::Constructor(
         Array<Integer> digits(numberLength);
         for (Integer i = 0; i < numberLength; i++) {
             Integer r;
-            random->NextInteger(&r);
+            random->NextInteger(r);
             digits[i] = r;
         }
         // Clear any extra bits.
@@ -169,7 +169,7 @@ ECode BigInteger::Constructor(
         Integer candidate;
         do {
             Integer r;
-            random->NextInteger(&r);
+            random->NextInteger(r);
             candidate = r & ((1 << bitLength) - 1);
             candidate |= (1 << (bitLength - 1)); // Set top bit.
             if (bitLength > 2) {
@@ -1104,7 +1104,7 @@ ECode BigInteger::ParseFromString(
     for (Integer substrStart = startChar; substrStart < endChar;
             substrStart = substrEnd, substrEnd = substrStart + charsPerInt) {
         Integer bigRadixDigit;
-        FAIL_RETURN(StringUtils::ParseInteger(value.Substring(substrStart, substrEnd), radix, &bigRadixDigit));
+        FAIL_RETURN(StringUtils::ParseInteger(value.Substring(substrStart, substrEnd), radix, bigRadixDigit));
         Integer newDigit = MultiplyByInteger(digits, digits, digitIndex, bigRadix);
         newDigit += InplaceAdd(digits, digitIndex, bigRadixDigit);
         digits[digitIndex++] = newDigit;

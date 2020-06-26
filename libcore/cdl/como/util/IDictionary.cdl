@@ -27,7 +27,7 @@ interface IDictionary
 {
     Get(
         [in] IInterface* key,
-        [out] IInterface** value);
+        [out] IInterface&& value);
 
     GetElements(
         [out] IEnumeration** elements);
@@ -36,10 +36,10 @@ interface IDictionary
         [out] IEnumeration** keys);
 
     GetSize(
-        [out] Integer* size);
+        [out] Integer& size);
 
     IsEmpty(
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     Put(
         [in] IInterface* key,

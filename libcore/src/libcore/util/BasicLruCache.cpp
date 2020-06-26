@@ -46,10 +46,8 @@ ECode BasicLruCache::Constructor(
 
 ECode BasicLruCache::Get(
     /* [in] */ IInterface* key,
-    /* [out] */ IInterface** value)
+    /* [out] */ AutoPtr<IInterface>& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     if (key == nullptr) {
         Logger::E("BasicLruCache", "key == null");
         return E_NULL_POINTER_EXCEPTION;
@@ -59,7 +57,7 @@ ECode BasicLruCache::Get(
         AutoLock lock(this);
 
         mMap->Get(key, value);
-        if (*value != nullptr) {
+        if (value != nullptr) {
             return NOERROR;
         }
     }
@@ -81,7 +79,7 @@ ECode BasicLruCache::Get(
         }
     }
 
-    result.MoveTo(value);
+    value = std::move(result);
     return NOERROR;
 }
 
@@ -108,13 +106,13 @@ void BasicLruCache::TrimToSize(
     /* [in] */ Integer maxSize)
 {
     Integer size;
-    while (mMap->GetSize(&size), size > maxSize) {
+    while (mMap->GetSize(size), size > maxSize) {
         AutoPtr<IMapEntry> toEvict;
         ILinkedHashMap::Probe(mMap)->GetEldest(&toEvict);
 
         AutoPtr<IInterface> key, value;
-        toEvict->GetKey(&key);
-        toEvict->GetValue(&value);
+        toEvict->GetKey(key);
+        toEvict->GetValue(value);
         mMap->Remove(key);
 
         EntryEvicted(key, value);

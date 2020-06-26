@@ -554,7 +554,7 @@ public:
     COMO_INTERFACE_DECL();
 
     ECode GetSize(
-        /* [in] */ Integer* size) override;
+        /* [in] */ Integer& size) override;
 
     ECode ToArray(
         /* [out, callee] */ Array<IInterface*>* objs) override;
@@ -578,7 +578,7 @@ public:
 
     ECode Contains(
         /* [in] */ IInterface* obj,
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
 private:
     Array<IInterface*> mA;
@@ -587,11 +587,9 @@ private:
 COMO_INTERFACE_IMPL_2(ArraysArrayList, AbstractList, IRandomAccess, ISerializable);
 
 ECode ArraysArrayList::GetSize(
-    /* [in] */ Integer* size)
+    /* [in] */ Integer& size)
 {
-    VALIDATE_NOT_NULL(size);
-
-    *size = mA.GetLength();
+    size = mA.GetLength();
     return NOERROR;
 }
 
@@ -667,13 +665,11 @@ ECode ArraysArrayList::IndexOf(
 
 ECode ArraysArrayList::Contains(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     Integer index;
     IndexOf(obj, &index);
-    *result = index != -1;
+    result = index != -1;
     return NOERROR;
 }
 

@@ -158,21 +158,21 @@ inline Boolean LocaleUtils::IsEmpty(
     /* [in] */ ISet* set)
 {
     Boolean empty;
-    return set == nullptr || (set->IsEmpty(&empty), empty);
+    return set == nullptr || (set->IsEmpty(empty), empty);
 }
 
 inline Boolean LocaleUtils::IsEmpty(
     /* [in] */ IMap* map)
 {
     Boolean empty;
-    return map == nullptr || (map->IsEmpty(&empty), empty);
+    return map == nullptr || (map->IsEmpty(empty), empty);
 }
 
 inline Boolean LocaleUtils::IsEmpty(
     /* [in] */ IList* list)
 {
     Boolean empty;
-    return list == nullptr || (list->IsEmpty(&empty), empty);
+    return list == nullptr || (list->IsEmpty(empty), empty);
 }
 
 }

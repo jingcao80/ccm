@@ -141,32 +141,26 @@ Integer ArrayList::HugeCapacity(
 }
 
 ECode ArrayList::GetSize(
-    /* [out] */ Integer* size)
+    /* [out] */ Integer& size)
 {
-    VALIDATE_NOT_NULL(size);
-
-    *size = mSize;
+    size = mSize;
     return NOERROR;
 }
 
 ECode ArrayList::IsEmpty(
-    /* [out] */ Boolean* empty)
+    /* [out] */ Boolean& empty)
 {
-    VALIDATE_NOT_NULL(empty);
-
-    *empty = mSize == 0;
+    empty = mSize == 0;
     return NOERROR;
 }
 
 ECode ArrayList::Contains(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     Integer index;
     IndexOf(obj, &index);
-    *result = index >= 0;
+    result = index >= 0;
     return NOERROR;
 }
 
@@ -487,7 +481,7 @@ Boolean ArrayList::BatchRemove(
     Boolean modified = false;
     for (; r < mSize; r++) {
         Boolean contained;
-        if (c->Contains(mElementData[r], &contained), contained == complement) {
+        if (c->Contains(mElementData[r], contained), contained == complement) {
             mElementData.Set(w++, mElementData[r]);
         }
     }
@@ -567,7 +561,7 @@ ECode ArrayList::SubListRangeCheck(
 
 ECode ArrayList::ContainsAll(
     /* [in] */ ICollection* c,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return AbstractList::ContainsAll(c, result);
 }
@@ -806,14 +800,12 @@ ECode ArrayList::Sublist::Get(
 }
 
 ECode ArrayList::Sublist::GetSize(
-    /* [out] */ Integer* size)
+    /* [out] */ Integer& size)
 {
-    VALIDATE_NOT_NULL(size);
-
     if (mOwner->mModCount != mModCount) {
         return E_CONCURRENT_MODIFICATION_EXCEPTION;
     }
-    *size = mSize;
+    size = mSize;
     return NOERROR;
 }
 
@@ -882,7 +874,7 @@ ECode ArrayList::Sublist::AddAll(
         return como::core::E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
     Integer cSize;
-    c->GetSize(&cSize);
+    c->GetSize(cSize);
     if (cSize == 0) {
         if (result != nullptr) *result = false;
         return NOERROR;

@@ -23,7 +23,7 @@ namespace regex {
 
 ECode PatternFactory::Compile(
     /* [in] */ const String& regex,
-    /* [out] */ IPattern** pattern)
+    /* [out] */ AutoPtr<IPattern>& pattern)
 {
     return Pattern::Compile(regex, pattern);
 }
@@ -31,7 +31,7 @@ ECode PatternFactory::Compile(
 ECode PatternFactory::Compile(
     /* [in] */ const String& regex,
     /* [in] */ Integer flags,
-    /* [out] */ IPattern** pattern)
+    /* [out] */ AutoPtr<IPattern>& pattern)
 {
     return Pattern::Compile(regex, flags, pattern);
 }
@@ -48,14 +48,14 @@ ECode PatternFactory::FastSplit(
 ECode PatternFactory::Matches(
     /* [in] */ const String& regex,
     /* [in] */ ICharSequence* input,
-    /* [out] */ Boolean* matched)
+    /* [out] */ Boolean& matched)
 {
     return Pattern::Matches(regex, input, matched);
 }
 
 ECode PatternFactory::Quote(
     /* [in] */ const String& s,
-    /* [out] */ String* pattStr)
+    /* [out] */ String& pattStr)
 {
     return Pattern::Quote(s, pattStr);
 }

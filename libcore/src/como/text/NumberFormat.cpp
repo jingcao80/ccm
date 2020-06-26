@@ -386,7 +386,7 @@ ECode NumberFormat::GetInstance(
     /* [out] */ AutoPtr<INumberFormat>& instance)
 {
     AutoPtr<IInterface> data;
-    GetCachedLocaleData()->Get(desiredLocale, &data);
+    GetCachedLocaleData()->Get(desiredLocale, data);
     Array<String> numberPatterns;
     if (data != nullptr) {
         numberPatterns = ((StringArrayWrapper*)data.Get())->mValues;

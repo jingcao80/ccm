@@ -146,7 +146,7 @@ ECode ByteArrayOutputStream::ToString(
     /* [out] */ String& desc)
 {
     AutoLock lock(this);
-    return StringUtils::ToString(String(mBuf, 0, mCount), charsetName, &desc);
+    return StringUtils::ToString(String(mBuf, 0, mCount), charsetName, desc);
 }
 
 ECode ByteArrayOutputStream::Close()

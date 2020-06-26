@@ -959,7 +959,7 @@ ECode StringToReal::InitialParse(
 
         // Parse the integer exponent.
         Integer e;
-        ECode ec = StringUtils::ParseInteger(exponentString, &e);
+        ECode ec = StringUtils::ParseInteger(exponentString, e);
         if (SUCCEEDED(ec)) {
             pair.mE = negativeExponent ? -e : e;
         }
@@ -1079,7 +1079,7 @@ ECode StringToReal::InitialParse(
 ECode StringToReal::ParseName(
     /* [in] */ const String& name,
     /* [in] */ Boolean isDouble,
-    /* [out] */ Float* value)
+    /* [out] */ Float& value)
 {
     Boolean negative = false;
     Integer i = 0;
@@ -1096,11 +1096,11 @@ ECode StringToReal::ParseName(
     }
 
     if (length == 8 && name.Substring(i, 8).EqualsIgnoreCase("Infinity")) {
-        *value = negative ? IFloat::NEGATIVE_INFINITY : IFloat::POSITIVE_INFINITY;
+        value = negative ? IFloat::NEGATIVE_INFINITY : IFloat::POSITIVE_INFINITY;
         return NOERROR;
     }
     if (length == 3 && name.Substring(i, 3).EqualsIgnoreCase("NaN")) {
-        *value = IFloat::NaN;
+        value = IFloat::NaN;
         return NOERROR;
     }
     Logger::E("StringToReal", "Invalid Double: \"%s\"", name.string());
@@ -1109,7 +1109,7 @@ ECode StringToReal::ParseName(
 
 ECode StringToReal::ParseFloat(
     /* [in] */ const String& s,
-    /* [out] */ Float* value)
+    /* [out] */ Float& value)
 {
     String ss = s.Trim();
     Integer length = ss.GetLength();
@@ -1134,7 +1134,7 @@ ECode StringToReal::ParseFloat(
     StringExponentPair info;
     FAIL_RETURN(InitialParse(ss, length, false, info));
     if (info.mInfinity || info.mZero) {
-        *value = info.SpecialValue();
+        value = info.SpecialValue();
         return NOERROR;
     }
     Float result = ParseFltImpl(info.mS, (Integer)info.mE);
@@ -1142,13 +1142,13 @@ ECode StringToReal::ParseFloat(
         Logger::E("StringToReal", "Invalid Float: \"%s\"", ss.string());
         return E_NUMBER_FORMAT_EXCEPTION;
     }
-    *value = info.mNegative ? -result : result;
+    value = info.mNegative ? -result : result;
     return NOERROR;
 }
 
 ECode StringToReal::ParseDouble(
     /* [in] */ const String& s,
-    /* [out] */ Double* value)
+    /* [out] */ Double& value)
 {
     String ss = s.Trim();
     Integer length = ss.GetLength();
@@ -1162,8 +1162,8 @@ ECode StringToReal::ParseDouble(
     Char last = ss.GetChar(length - 1);
     if (last == U'y' || last == U'N') {
         Float result;
-        ECode ec = ParseName(ss, true, &result);
-        *value = result;
+        ECode ec = ParseName(ss, true, result);
+        value = result;
         return ec;
     }
 
@@ -1176,7 +1176,7 @@ ECode StringToReal::ParseDouble(
     StringExponentPair info;
     FAIL_RETURN(InitialParse(ss, length, true, info));
     if (info.mInfinity || info.mZero) {
-        *value = info.SpecialValue();
+        value = info.SpecialValue();
         return NOERROR;
     }
     Double result = ParseDblImpl(info.mS, (Integer)info.mE);
@@ -1184,7 +1184,7 @@ ECode StringToReal::ParseDouble(
         Logger::E("StringToReal", "Invalid Double: \"%s\"", ss.string());
         return E_NUMBER_FORMAT_EXCEPTION;
     }
-    *value = info.mNegative ? -result : result;
+    value = info.mNegative ? -result : result;
     return NOERROR;
 }
 

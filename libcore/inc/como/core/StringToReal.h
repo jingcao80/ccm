@@ -42,11 +42,11 @@ private:
 public:
     static ECode ParseFloat(
         /* [in] */ const String& s,
-        /* [out] */ Float* value);
+        /* [out] */ Float& value);
 
     static ECode ParseDouble(
         /* [in] */ const String& s,
-        /* [out] */ Double* value);
+        /* [out] */ Double& value);
 
 private:
     static Float ParseFltImpl(
@@ -67,7 +67,7 @@ private:
     static ECode ParseName(
         /* [in] */ const String& name,
         /* [in] */ Boolean isDouble,
-        /* [out] */ Float* value);
+        /* [out] */ Float& value);
 };
 
 }

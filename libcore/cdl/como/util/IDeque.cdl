@@ -42,10 +42,10 @@ interface IDeque
 
     Contains(
         [in] IInterface* obj,
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     Element(
-        [out] IInterface** e);
+        [out] IInterface&& e);
 
     GetDescendingIterator(
         [out] IIterator&& it);
@@ -60,7 +60,7 @@ interface IDeque
         [out] IInterface** e);
 
     GetSize(
-        [out] Integer* size);
+        [out] Integer& size);
 
     Offer(
         [in] IInterface* e,
@@ -75,7 +75,7 @@ interface IDeque
         [out] Boolean* changed = nullptr);
 
     Peek(
-        [out] IInterface** e);
+        [out] IInterface&& e);
 
     PeekFirst(
         [out] IInterface** e);

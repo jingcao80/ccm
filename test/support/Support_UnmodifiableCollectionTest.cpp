@@ -45,15 +45,15 @@ ECode Support_UnmodifiableCollectionTest::RunTest()
     AutoPtr<IInteger> othNewInt;
     CInteger::New(0, IID_IInteger, (IInterface**)&othNewInt);
     Boolean contains;
-    mCol->Contains(othNewInt, &contains);
+    mCol->Contains(othNewInt, contains);
     EXPECT_TRUE(contains);
     othNewInt = nullptr;
     CInteger::New(50, IID_IInteger, (IInterface**)&othNewInt);
-    mCol->Contains(othNewInt, &contains);
+    mCol->Contains(othNewInt, contains);
     EXPECT_TRUE(contains);
     othNewInt = nullptr;
     CInteger::New(100, IID_IInteger, (IInterface**)&othNewInt);
-    mCol->Contains(othNewInt, &contains);
+    mCol->Contains(othNewInt, contains);
     EXPECT_TRUE(!contains);
 
     // containsAll
@@ -68,17 +68,17 @@ ECode Support_UnmodifiableCollectionTest::RunTest()
     newInt = nullptr;
     CInteger::New(99, IID_IInteger, (IInterface**)&newInt);
     hs->Add(newInt);
-    mCol->ContainsAll(ICollection::Probe(hs), &contains);
+    mCol->ContainsAll(ICollection::Probe(hs), contains);
     EXPECT_TRUE(contains);
     newInt = nullptr;
     CInteger::New(100, IID_IInteger, (IInterface**)&newInt);
     hs->Add(newInt);
-    mCol->ContainsAll(ICollection::Probe(hs), &contains);
+    mCol->ContainsAll(ICollection::Probe(hs), contains);
     EXPECT_TRUE(!contains);
 
     // isEmpty
     Boolean isEmpty;
-    mCol->IsEmpty(&isEmpty);
+    mCol->IsEmpty(isEmpty);
     EXPECT_TRUE(!isEmpty);
 
     // iterator
@@ -102,7 +102,7 @@ ECode Support_UnmodifiableCollectionTest::RunTest()
 
     // size
     Integer size;
-    mCol->GetSize(&size);
+    mCol->GetSize(size);
     EXPECT_TRUE(size == 100);
 
     // toArray

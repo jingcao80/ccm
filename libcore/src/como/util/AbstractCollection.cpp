@@ -33,22 +33,18 @@ namespace util {
 COMO_INTERFACE_IMPL_2(AbstractCollection, SyncObject, ICollection, IIterable);
 
 ECode AbstractCollection::IsEmpty(
-    /* [out] */ Boolean* empty)
+    /* [out] */ Boolean& empty)
 {
-    VALIDATE_NOT_NULL(empty);
-
     Integer size;
-    GetSize(&size);
-    *empty = size == 0;
+    GetSize(size);
+    empty = size == 0;
     return NOERROR;
 }
 
 ECode AbstractCollection::Contains(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     AutoPtr<IIterator> it;
     GetIterator(it);
     if (obj == nullptr) {
@@ -57,7 +53,7 @@ ECode AbstractCollection::Contains(
             AutoPtr<IInterface> e;
             it->Next(&e);
             if (e == nullptr) {
-                *result = true;
+                result = true;
                 return NOERROR;
             }
         }
@@ -68,12 +64,12 @@ ECode AbstractCollection::Contains(
             AutoPtr<IInterface> e;
             it->Next(&e);
             if (Object::Equals(obj, e)) {
-                *result = true;
+                result = true;
                 return NOERROR;
             }
         }
     }
-    *result = false;
+    result = false;
     return NOERROR;
 }
 
@@ -84,7 +80,7 @@ ECode AbstractCollection::ToArray(
 
     // Estimate size of array; be prepared to see more or fewer elements
     Integer size;
-    GetSize(&size);
+    GetSize(size);
     Array<IInterface*> r = Array<IInterface*>(size);
     AutoPtr<IIterator> it;
     GetIterator(it);
@@ -116,7 +112,7 @@ ECode AbstractCollection::ToArray(
 
     // Estimate size of array; be prepared to see more or fewer elements
     Integer size;
-    GetSize(&size);
+    GetSize(size);
     Array<IInterface*> r = Array<IInterface*>(size);
     AutoPtr<IIterator> it;
     GetIterator(it);
@@ -262,10 +258,8 @@ ECode AbstractCollection::Remove(
 
 ECode AbstractCollection::ContainsAll(
     /* [in] */ ICollection* c,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     AutoPtr<IIterator> it;
     c->GetIterator(it);
     Boolean hasNext;
@@ -273,12 +267,12 @@ ECode AbstractCollection::ContainsAll(
         AutoPtr<IInterface> e;
         it->Next(&e);
         Boolean contains;
-        if (Contains(e, &contains), !contains) {
-            *result = false;
+        if (Contains(e, contains), !contains) {
+            result = false;
             return NOERROR;
         }
     }
-    *result = true;
+    result = true;
     return NOERROR;
 }
 
@@ -314,7 +308,7 @@ ECode AbstractCollection::RemoveAll(
         AutoPtr<IInterface> e;
         it->Next(&e);
         Boolean result;
-        if (c->Contains(e, &result), result) {
+        if (c->Contains(e, result), result) {
             it->Remove();
             modified = true;
         }
@@ -335,7 +329,7 @@ ECode AbstractCollection::RetainAll(
         AutoPtr<IInterface> e;
         it->Next(&e);
         Boolean result;
-        if (c->Contains(e, &result), !result) {
+        if (c->Contains(e, result), !result) {
             it->Remove();
             modified = true;
         }

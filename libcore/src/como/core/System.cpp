@@ -90,7 +90,7 @@ AutoPtr<IProperties> System::InitUnchangeableSystemProperties()
                 HardcodedSystemProperties::STATIC_PROPERTIES[i][0],
                 HardcodedSystemProperties::STATIC_PROPERTIES[i][1] };
         Boolean contains;
-        if (p->ContainsKey(CoreUtils::Box(pair[0]), &contains), contains) {
+        if (p->ContainsKey(CoreUtils::Box(pair[0]), contains), contains) {
             LogE(String("Ignoring command line argument: -D") + pair[0]);
         }
         if (pair[1].IsNull()) {
@@ -118,13 +118,13 @@ AutoPtr<IProperties> System::SetDefaultChangeableProperties(
     Boolean contains;
     String tmpdirProp("como.io.tmpdir");
     if (IHashtable::Probe(sUnchangeableProps)->ContainsKey(
-            CoreUtils::Box(tmpdirProp), &contains), !contains) {
+            CoreUtils::Box(tmpdirProp), contains), !contains) {
         p->SetProperty(tmpdirProp, String("/tmp"));
     }
 
     String uhProp("user.home");
     if (IHashtable::Probe(sUnchangeableProps)->ContainsKey(
-            CoreUtils::Box(uhProp), &contains), !contains) {
+            CoreUtils::Box(uhProp), contains), !contains) {
         p->SetProperty(uhProp, String(""));
     }
 

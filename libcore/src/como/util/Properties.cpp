@@ -393,7 +393,7 @@ ECode Properties::Store0(
             AutoPtr<IInterface> ko, vo;
             e->NextElement(&ko);
             String key = CoreUtils::Unbox(ICharSequence::Probe(ko));
-            Get(ko, &vo);
+            Get(ko, vo);
             String val = CoreUtils::Unbox(ICharSequence::Probe(vo));
             key = SaveConvert(key, true, escUnicode);
             val = SaveConvert(val, false, escUnicode);
@@ -434,7 +434,7 @@ ECode Properties::GetProperty(
     VALIDATE_NOT_NULL(value);
 
     AutoPtr<IInterface> oval;
-    Hashtable::Get(CoreUtils::Box(key), &oval);
+    Hashtable::Get(CoreUtils::Box(key), oval);
     String sval;
     if (IString::Probe(oval) != nullptr) {
         ICharSequence::Probe(oval)->ToString(sval);
@@ -471,10 +471,8 @@ ECode Properties::PropertyNames(
 }
 
 ECode Properties::StringPropertyNames(
-    /* [out] */ ISet** names)
+    /* [out] */ AutoPtr<ISet>& names)
 {
-    VALIDATE_NOT_NULL(names);
-
     AutoPtr<IHashtable> h;
     CHashtable::New(IID_IHashtable, (IInterface**)&h);
     EnumerateStringProperties(h);
@@ -496,7 +494,7 @@ ECode Properties::List(
         e->NextElement(&okey);
         String key = CoreUtils::Unbox(ICharSequence::Probe(okey));
         AutoPtr<IInterface> oval;
-        h->Get(okey, &oval);
+        h->Get(okey, oval);
         String val = CoreUtils::Unbox(ICharSequence::Probe(oval));
         if (val.GetLength() > 40) {
             val = val.Substring(0, 37) + "...";
@@ -521,7 +519,7 @@ ECode Properties::List(
         e->NextElement(&okey);
         String key = CoreUtils::Unbox(ICharSequence::Probe(okey));
         AutoPtr<IInterface> oval;
-        h->Get(okey, &oval);
+        h->Get(okey, oval);
         String val = CoreUtils::Unbox(ICharSequence::Probe(oval));
         if (val.GetLength() > 40) {
             val = val.Substring(0, 37) + "...";
@@ -544,7 +542,7 @@ void Properties::Enumerate(
         AutoPtr<IInterface> okey;
         e->NextElement(&okey);
         AutoPtr<IInterface> oval;
-        Get(okey, &oval);
+        Get(okey, oval);
         h->Put(okey, oval);
     }
 }
@@ -562,7 +560,7 @@ void Properties::EnumerateStringProperties(
         AutoPtr<IInterface> okey;
         e->NextElement(&okey);
         AutoPtr<IInterface> oval;
-        Get(okey, &oval);
+        Get(okey, oval);
         if (IString::Probe(okey) != nullptr && IString::Probe(oval) != nullptr) {
             h->Put(okey, oval);
         }

@@ -67,21 +67,21 @@ COMO_INTERFACE_IMPL_3(TimeZone, SyncObject, ITimeZone, ISerializable, ICloneable
 static AutoPtr<IPattern> CreateCUSTOM_ZONE_ID_PATTERN()
 {
     AutoPtr<IPattern> pattern;
-    Pattern::Compile(String("^GMT[-+](\\d{1,2})(:?(\\d\\d))?$"), &pattern);
+    Pattern::Compile("^GMT[-+](\\d{1,2})(:?(\\d\\d))?$", pattern);
     return pattern;
 }
 
 static AutoPtr<ITimeZone> CreateGMT()
 {
     AutoPtr<ITimeZone> zone;
-    CSimpleTimeZone::New(0, String("GMT"), IID_ITimeZone, (IInterface**)&zone);
+    CSimpleTimeZone::New(0, "GMT", IID_ITimeZone, (IInterface**)&zone);
     return zone;
 }
 
 static AutoPtr<ITimeZone> CreateUTC()
 {
     AutoPtr<ITimeZone> zone;
-    CSimpleTimeZone::New(0, String("UTC"), IID_ITimeZone, (IInterface**)&zone);
+    CSimpleTimeZone::New(0, "UTC", IID_ITimeZone, (IInterface**)&zone);
     return zone;
 }
 
@@ -357,9 +357,9 @@ ECode TimeZone::GetCustomTimeZone(
     VALIDATE_NOT_NULL(zone);
 
     AutoPtr<IMatcher> m;
-    GetCUSTOM_ZONE_ID_PATTERN()->Matcher(CoreUtils::Box(id), &m);
+    GetCUSTOM_ZONE_ID_PATTERN()->Matcher(CoreUtils::Box(id), m);
     Boolean matched;
-    if (m->Matches(&matched), !matched) {
+    if (m->Matches(matched), !matched) {
         *zone = nullptr;
         return NOERROR;
     }
@@ -367,14 +367,14 @@ ECode TimeZone::GetCustomTimeZone(
     Integer hour;
     Integer minute = 0;
     String part;
-    m->Group(1, &part);
-    ECode ec = StringUtils::ParseInteger(part, &hour);
+    m->Group(1, part);
+    ECode ec = StringUtils::ParseInteger(part, hour);
     if (ec == E_NUMBER_FORMAT_EXCEPTION) {
         return E_ASSERTION_ERROR;
     }
-    m->Group(3, &part);
+    m->Group(3, part);
     if (!part.IsNull()) {
-        ec = StringUtils::ParseInteger(part, &minute);
+        ec = StringUtils::ParseInteger(part, minute);
         if (ec == E_NUMBER_FORMAT_EXCEPTION) {
             return E_ASSERTION_ERROR;
         }

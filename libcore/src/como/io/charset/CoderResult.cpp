@@ -195,9 +195,10 @@ AutoPtr<ICoderResult> CoderResult::Cache::Get(
         CHashMap::New(IID_IMap, (IInterface**)&mCache);
     }
     AutoPtr<IInteger> k = CoreUtils::Box(len);
-    AutoPtr<IWeakReference> w;
+    AutoPtr<IInterface> v;
+    mCache->Get(k, v);
+    AutoPtr<IWeakReference> w = std::move(v);
     AutoPtr<ICoderResult> e;
-    mCache->Get(k, (IInterface**)&w);
     if (w != nullptr) {
         w->Resolve(IID_ICoderResult, (IInterface**)&e);
     }

@@ -38,7 +38,7 @@ public:
         /* [out] */ IInterface** head = nullptr) override;
 
     ECode Element(
-        /* [out] */ IInterface** head) override;
+        /* [out] */ AutoPtr<IInterface>& head) override;
 
     ECode Clear() override;
 

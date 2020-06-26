@@ -34,7 +34,7 @@ void Collections::Reverse(
     /* [in] */ IList* list)
 {
     Integer size;
-    list->GetSize(&size);
+    list->GetSize(size);
     if (size < REVERSE_THRESHOLD || IRandomAccess::Probe(list) != nullptr) {
         for (Integer i = 0, mid = size >> 1, j = size - 1; i < mid; i++, j--) {
             Swap(list, i, j);
@@ -162,20 +162,20 @@ AutoPtr<IComparator> Collections::ReverseOrder(
 COMO_INTERFACE_IMPL_2(Collections::UnmodifiableCollection, Object, ICollection, ISerializable);
 
 ECode Collections::UnmodifiableCollection::GetSize(
-    /* [out] */ Integer* size)
+    /* [out] */ Integer& size)
 {
     return mC->GetSize(size);
 }
 
 ECode Collections::UnmodifiableCollection::IsEmpty(
-    /* [out] */ Boolean* empty)
+    /* [out] */ Boolean& empty)
 {
     return mC->IsEmpty(empty);
 }
 
 ECode Collections::UnmodifiableCollection::Contains(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return mC->Contains(obj, result);
 }
@@ -290,7 +290,7 @@ ECode Collections::UnmodifiableCollection::Remove(
 
 ECode Collections::UnmodifiableCollection::ContainsAll(
     /* [in] */ ICollection* c,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return mC->ContainsAll(c, result);
 }
@@ -363,14 +363,14 @@ ECode Collections::UnmodifiableSet::Clear()
 
 ECode Collections::UnmodifiableSet::Contains(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return UnmodifiableCollection::Contains(obj, result);
 }
 
 ECode Collections::UnmodifiableSet::ContainsAll(
     /* [in] */ ICollection* c,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return UnmodifiableCollection::ContainsAll(c, result);
 }
@@ -382,13 +382,13 @@ ECode Collections::UnmodifiableSet::GetIterator(
 }
 
 ECode Collections::UnmodifiableSet::GetSize(
-    /* [out] */ Integer* size)
+    /* [out] */ Integer& size)
 {
     return UnmodifiableCollection::GetSize(size);
 }
 
 ECode Collections::UnmodifiableSet::IsEmpty(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return UnmodifiableCollection::IsEmpty(result);
 }
@@ -663,14 +663,14 @@ ECode Collections::UnmodifiableList::Clear()
 
 ECode Collections::UnmodifiableList::Contains(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return UnmodifiableCollection::Contains(obj, result);
 }
 
 ECode Collections::UnmodifiableList::ContainsAll(
     /* [in] */ ICollection* c,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return UnmodifiableCollection::ContainsAll(c, result);
 }
@@ -682,13 +682,13 @@ ECode Collections::UnmodifiableList::GetIterator(
 }
 
 ECode Collections::UnmodifiableList::GetSize(
-    /* [out] */ Integer* size)
+    /* [out] */ Integer& size)
 {
     return UnmodifiableCollection::GetSize(size);
 }
 
 ECode Collections::UnmodifiableList::IsEmpty(
-    /* [out] */ Boolean* empty)
+    /* [out] */ Boolean& empty)
 {
     return UnmodifiableCollection::IsEmpty(empty);
 }
@@ -750,29 +750,23 @@ ECode Collections::UnmodifiableRandomAccessList::SubList(
 COMO_INTERFACE_IMPL_2(Collections::SynchronizedCollection, Object, ICollection, ISerializable);
 
 ECode Collections::SynchronizedCollection::GetSize(
-    /* [out] */ Integer* size)
+    /* [out] */ Integer& size)
 {
-    VALIDATE_NOT_NULL(size);
-
     AutoLock lock(mMutex);
     return mC->GetSize(size);
 }
 
 ECode Collections::SynchronizedCollection::IsEmpty(
-    /* [out] */ Boolean* empty)
+    /* [out] */ Boolean& empty)
 {
-    VALIDATE_NOT_NULL(empty);
-
     AutoLock lock(mMutex);
     return mC->IsEmpty(empty);
 }
 
 ECode Collections::SynchronizedCollection::Contains(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     AutoLock lock(mMutex);
     return mC->Contains(obj, result);
 }
@@ -820,10 +814,8 @@ ECode Collections::SynchronizedCollection::Remove(
 
 ECode Collections::SynchronizedCollection::ContainsAll(
     /* [in] */ ICollection* c,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     AutoLock lock(mMutex);
     return mC->ContainsAll(c, result);
 }
@@ -925,14 +917,14 @@ ECode Collections::SynchronizedSet::Clear()
 
 ECode Collections::SynchronizedSet::Contains(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return SynchronizedCollection::Contains(obj, result);
 }
 
 ECode Collections::SynchronizedSet::ContainsAll(
     /* [in] */ ICollection* c,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return SynchronizedCollection::ContainsAll(c, result);
 }
@@ -944,13 +936,13 @@ ECode Collections::SynchronizedSet::GetIterator(
 }
 
 ECode Collections::SynchronizedSet::GetSize(
-    /* [out] */ Integer* size)
+    /* [out] */ Integer& size)
 {
     return SynchronizedCollection::GetSize(size);
 }
 
 ECode Collections::SynchronizedSet::IsEmpty(
-    /* [out] */ Boolean* empty)
+    /* [out] */ Boolean& empty)
 {
     return SynchronizedCollection::IsEmpty(empty);
 }
@@ -1130,14 +1122,14 @@ ECode Collections::SynchronizedList::Clear()
 
 ECode Collections::SynchronizedList::Contains(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return SynchronizedCollection::Contains(obj, result);
 }
 
 ECode Collections::SynchronizedList::ContainsAll(
     /* [in] */ ICollection* c,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return SynchronizedCollection::ContainsAll(c, result);
 }
@@ -1149,13 +1141,13 @@ ECode Collections::SynchronizedList::GetIterator(
 }
 
 ECode Collections::SynchronizedList::GetSize(
-    /* [out] */ Integer* size)
+    /* [out] */ Integer& size)
 {
     return SynchronizedCollection::GetSize(size);
 }
 
 ECode Collections::SynchronizedList::IsEmpty(
-    /* [out] */ Boolean* empty)
+    /* [out] */ Boolean& empty)
 {
     return SynchronizedCollection::IsEmpty(empty);
 }
@@ -1353,39 +1345,31 @@ ECode Collections::EmptySet::GetIterator(
 }
 
 ECode Collections::EmptySet::GetSize(
-    /* [out] */ Integer* size)
+    /* [out] */ Integer& size)
 {
-    VALIDATE_NOT_NULL(size);
-
-    *size = 0;
+    size = 0;
     return NOERROR;
 }
 
 ECode Collections::EmptySet::IsEmpty(
-    /* [out] */ Boolean* empty)
+    /* [out] */ Boolean& empty)
 {
-    VALIDATE_NOT_NULL(empty);
-
-    *empty = true;
+    empty = true;
     return NOERROR;
 }
 
 ECode Collections::EmptySet::Contains(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
-    *result= false;
+    result= false;
     return NOERROR;
 }
 
 ECode Collections::EmptySet::ContainsAll(
     /* [in] */ ICollection* c,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     return c->IsEmpty(result);
 }
 
@@ -1430,36 +1414,30 @@ ECode Collections::EmptyList::GetListIterator(
 }
 
 ECode Collections::EmptyList::GetSize(
-    /* [out] */ Integer* size)
+    /* [out] */ Integer& size)
 {
-    VALIDATE_NOT_NULL(size);
-
-    *size = 0;
+    size = 0;
     return NOERROR;
 }
 
 ECode Collections::EmptyList::IsEmpty(
-    /* [out] */ Boolean* empty)
+    /* [out] */ Boolean& empty)
 {
-    VALIDATE_NOT_NULL(empty);
-
-    *empty = true;
+    empty = true;
     return NOERROR;
 }
 
 ECode Collections::EmptyList::Contains(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
-    *result = false;
+    result = false;
     return NOERROR;
 }
 
 ECode Collections::EmptyList::ContainsAll(
     /* [in] */ ICollection* c,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return c->IsEmpty(result);
 }
@@ -1499,7 +1477,7 @@ ECode Collections::EmptyList::Equals(
         result = false;
         return NOERROR;
     }
-    return other->IsEmpty(&result);
+    return other->IsEmpty(result);
 }
 
 ECode Collections::EmptyList::GetHashCode(
@@ -1521,80 +1499,61 @@ ECode Collections::EmptyList::AddAll(
 COMO_INTERFACE_IMPL_1(Collections::EmptyMap, AbstractMap, ISerializable);
 
 ECode Collections::EmptyMap::GetSize(
-    /* [out] */ Integer* size)
+    /* [out] */ Integer& size)
 {
-    VALIDATE_NOT_NULL(size);
-
-    *size = 0;
+    size = 0;
     return NOERROR;
 }
 
 ECode Collections::EmptyMap::IsEmpty(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
-    *result = true;
+    result = true;
     return NOERROR;
 }
 
 ECode Collections::EmptyMap::ContainsKey(
     /* [in] */ IInterface* key,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
-    *result = false;
+    result = false;
     return NOERROR;
 }
 
 ECode Collections::EmptyMap::ContainsValue(
     /* [in] */ IInterface* value,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
-    *result = false;
+    result = false;
     return NOERROR;
 }
 
 ECode Collections::EmptyMap::Get(
     /* [in] */ IInterface* key,
-    /* [out] */ IInterface** value)
+    /* [out] */ AutoPtr<IInterface>& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = nullptr;
+    value = nullptr;
     return NOERROR;
 }
 
 ECode Collections::EmptyMap::GetKeySet(
-    /* [out] */ ISet** keys)
+    /* [out] */ AutoPtr<ISet>& keys)
 {
-    VALIDATE_NOT_NULL(keys);
-
-    AutoPtr<ISet> emptySet = GetEmptySet();
-    emptySet.MoveTo(keys);
+    keys = GetEmptySet();
     return NOERROR;
 }
 
 ECode Collections::EmptyMap::GetValues(
-    /* [out] */ ICollection** values)
+    /* [out] */ AutoPtr<ICollection>& values)
 {
-    VALIDATE_NOT_NULL(values);
-
-    AutoPtr<ISet> emptySet = GetEmptySet();
-    emptySet.MoveTo(values);
+    values = GetEmptySet();
     return NOERROR;
 }
 
 ECode Collections::EmptyMap::GetEntrySet(
-    /* [out] */ ISet** entries)
+    /* [out] */ AutoPtr<ISet>& entries)
 {
-    VALIDATE_NOT_NULL(entries);
-
-    AutoPtr<ISet> emptySet = GetEmptySet();
-    emptySet.MoveTo(entries);
+    entries = GetEmptySet();
     return NOERROR;
 }
 
@@ -1607,7 +1566,7 @@ ECode Collections::EmptyMap::Equals(
         result = false;
         return NOERROR;
     }
-    return other->IsEmpty(&result);
+    return other->IsEmpty(result);
 }
 
 ECode Collections::EmptyMap::GetHashCode(

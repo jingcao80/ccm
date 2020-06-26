@@ -45,14 +45,14 @@ interface IPattern
     const Integer CANON_EQ = 0x80;
 
     Flags(
-        [out] Integer* flags);
+        [out] Integer& flags);
 
     Matcher(
         [in] ICharSequence* input,
-        [out] IMatcher** matcher);
+        [out] IMatcher&& matcher);
 
     GetPattern(
-        [out] String* pattStr);
+        [out] String& pattStr);
 
     Split(
         [in] ICharSequence* input,
@@ -64,7 +64,7 @@ interface IPattern
         [out, callee] Array<String>* strArray);
 
     ToString(
-        [out] String* pattStr);
+        [out] String& pattStr);
 }
 
 }

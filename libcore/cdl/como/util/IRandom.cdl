@@ -27,29 +27,29 @@ namespace util {
 interface IRandom
 {
     NextBoolean(
-        [out] Boolean* value);
+        [out] Boolean& value);
 
     NextBytes(
         [out] Array<Byte>& bytes);
 
     NextDouble(
-        [out] Double* value);
+        [out] Double& value);
 
     NextFloat(
-        [out] Float* value);
+        [out] Float& value);
 
     NextGaussian(
-        [out] Double* value);
+        [out] Double& value);
 
     NextInteger(
-        [out] Integer* value);
+        [out] Integer& value);
 
     NextInteger(
         [in] Integer bound,
-        [out] Integer* value);
+        [out] Integer& value);
 
     NextLong(
-        [out] Long* value);
+        [out] Long& value);
 
     SetSeed(
         [in] Long seed);

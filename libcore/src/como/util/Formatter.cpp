@@ -697,7 +697,7 @@ Integer Formatter::FormatSpecifier::Index(
     /* [in] */ const String& s)
 {
     if (!s.IsNull()) {
-        ECode ec = StringUtils::ParseInteger(s, &mIndex);
+        ECode ec = StringUtils::ParseInteger(s, mIndex);
         CHECK(SUCCEEDED(ec));
     }
     else {
@@ -731,7 +731,7 @@ ECode Formatter::FormatSpecifier::Width(
 {
     mWidth = -1;
     if (!s.IsNull()) {
-        ECode ec = StringUtils::ParseInteger(s, &mWidth);
+        ECode ec = StringUtils::ParseInteger(s, mWidth);
         CHECK(SUCCEEDED(ec));
         if (mWidth < 0) {
             return E_ILLEGAL_FORMAT_WIDTH_EXCEPTION;
@@ -745,7 +745,7 @@ ECode Formatter::FormatSpecifier::Precision(
 {
     mPrecision = -1;
     if (!s.IsNull()) {
-        ECode ec = StringUtils::ParseInteger(s, &mPrecision);
+        ECode ec = StringUtils::ParseInteger(s, mPrecision);
         CHECK(SUCCEEDED(ec));
         if (mPrecision < 0) {
             return E_ILLEGAL_FORMAT_PRECISION_EXCEPTION;
@@ -1811,7 +1811,7 @@ String Formatter::FormatSpecifier::HexDouble(
                     // Get exponent and append at the end.
                     String exp = res.Substring(idx + 1);
                     Integer iexp;
-                    StringUtils::ParseInteger(exp, &iexp);
+                    StringUtils::ParseInteger(exp, iexp);
                     iexp = iexp - 54;
                     return res.Substring(0, idx) + "p" + StringUtils::ToString(iexp);
                 }

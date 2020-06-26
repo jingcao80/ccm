@@ -392,8 +392,7 @@ ECode DateFormat::Field::ReadResolve(
         return E_INVALID_OBJECT_EXCEPTION;
     }
 
-    obj = nullptr;
-    GetInstanceMap()->Get(CoreUtils::Box(GetName()), &obj);
+    GetInstanceMap()->Get(CoreUtils::Box(GetName()), obj);
     if (obj == nullptr) {
         Logger::E("DateFormat::Field", "unknown attribute name");
         return E_INVALID_OBJECT_EXCEPTION;

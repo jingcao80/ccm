@@ -34,34 +34,28 @@ namespace util {
 COMO_INTERFACE_IMPL_1(AbstractMap, SyncObject, IMap);
 
 ECode AbstractMap::GetSize(
-    /* [out] */ Integer* size)
+    /* [out] */ Integer& size)
 {
-    VALIDATE_NOT_NULL(size);
-
     AutoPtr<ISet> entries;
-    GetEntrySet(&entries);
+    GetEntrySet(entries);
     return entries->GetSize(size);
 }
 
 ECode AbstractMap::IsEmpty(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     Integer size;
-    GetSize(&size);
-    *result = size == 0;
+    GetSize(size);
+    result = size == 0;
     return NOERROR;
 }
 
 ECode AbstractMap::ContainsValue(
     /* [in] */ IInterface* value,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     AutoPtr<ISet> entries;
-    GetEntrySet(&entries);
+    GetEntrySet(entries);
     AutoPtr<IIterator> it;
     entries->GetIterator(it);
     if (value == nullptr) {
@@ -70,9 +64,9 @@ ECode AbstractMap::ContainsValue(
             AutoPtr<IInterface> e;
             it->Next(&e);
             AutoPtr<IInterface> v;
-            if (IMapEntry::Probe(e)->GetValue(&v),
+            if (IMapEntry::Probe(e)->GetValue(v),
                     v == nullptr) {
-                *result = true;
+                result = true;
                 return NOERROR;
             }
         }
@@ -83,25 +77,23 @@ ECode AbstractMap::ContainsValue(
             AutoPtr<IInterface> e;
             it->Next(&e);
             AutoPtr<IInterface> v;
-            if (IMapEntry::Probe(e)->GetValue(&v),
+            if (IMapEntry::Probe(e)->GetValue(v),
                     Object::Equals(value, v)) {
-                *result = true;
+                result = true;
                 return NOERROR;
             }
         }
     }
-    *result = false;
+    result = false;
     return NOERROR;
 }
 
 ECode AbstractMap::ContainsKey(
     /* [in] */ IInterface* key,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     AutoPtr<ISet> entries;
-    GetEntrySet(&entries);
+    GetEntrySet(entries);
     AutoPtr<IIterator> it;
     entries->GetIterator(it);
     if (key == nullptr) {
@@ -110,9 +102,9 @@ ECode AbstractMap::ContainsKey(
             AutoPtr<IInterface> e;
             it->Next(&e);
             AutoPtr<IInterface> k;
-            if (IMapEntry::Probe(e)->GetKey(&k),
+            if (IMapEntry::Probe(e)->GetKey(k),
                     k == nullptr) {
-                *result = true;
+                result = true;
                 return NOERROR;
             }
         }
@@ -123,25 +115,23 @@ ECode AbstractMap::ContainsKey(
             AutoPtr<IInterface> e;
             it->Next(&e);
             AutoPtr<IInterface> k;
-            if (IMapEntry::Probe(e)->GetKey(&k),
+            if (IMapEntry::Probe(e)->GetKey(k),
                     Object::Equals(key, k)) {
-                *result = true;
+                result = true;
                 return NOERROR;
             }
         }
     }
-    *result = false;
+    result = false;
     return NOERROR;
 }
 
 ECode AbstractMap::Get(
     /* [in] */ IInterface* key,
-    /* [out] */ IInterface** value)
+    /* [out] */ AutoPtr<IInterface>& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     AutoPtr<ISet> entries;
-    GetEntrySet(&entries);
+    GetEntrySet(entries);
     AutoPtr<IIterator> it;
     entries->GetIterator(it);
     if (key == nullptr) {
@@ -150,7 +140,7 @@ ECode AbstractMap::Get(
             AutoPtr<IInterface> e;
             it->Next(&e);
             AutoPtr<IInterface> k;
-            if (IMapEntry::Probe(e)->GetKey(&k),
+            if (IMapEntry::Probe(e)->GetKey(k),
                     k == nullptr) {
                 return IMapEntry::Probe(e)->GetValue(value);
             }
@@ -162,13 +152,13 @@ ECode AbstractMap::Get(
             AutoPtr<IInterface> e;
             it->Next(&e);
             AutoPtr<IInterface> k;
-            if (IMapEntry::Probe(e)->GetKey(&k),
+            if (IMapEntry::Probe(e)->GetKey(k),
                     Object::Equals(key, k)) {
                 return IMapEntry::Probe(e)->GetValue(value);
             }
         }
     }
-    *value = nullptr;
+    value = nullptr;
     return NOERROR;
 }
 
@@ -188,7 +178,7 @@ ECode AbstractMap::Remove(
 
     AutoPtr<IMapEntry> correctEntry;
     AutoPtr<ISet> entries;
-    GetEntrySet(&entries);
+    GetEntrySet(entries);
     AutoPtr<IIterator> it;
     entries->GetIterator(it);
     if (key == nullptr) {
@@ -198,7 +188,7 @@ ECode AbstractMap::Remove(
             AutoPtr<IInterface> e;
             it->Next(&e);
             AutoPtr<IInterface> k;
-            if (IMapEntry::Probe(e)->GetKey(&k),
+            if (IMapEntry::Probe(e)->GetKey(k),
                     k == nullptr) {
                 correctEntry = IMapEntry::Probe(e);
             }
@@ -211,7 +201,7 @@ ECode AbstractMap::Remove(
             AutoPtr<IInterface> e;
             it->Next(&e);
             AutoPtr<IInterface> k;
-            if (IMapEntry::Probe(e)->GetKey(&k),
+            if (IMapEntry::Probe(e)->GetKey(k),
                     Object::Equals(key, k)) {
                 correctEntry = IMapEntry::Probe(e);
             }
@@ -220,7 +210,9 @@ ECode AbstractMap::Remove(
 
     if (correctEntry != nullptr) {
         if (prevValue != nullptr) {
-            correctEntry->GetValue(prevValue);
+            AutoPtr<IInterface> v;
+            correctEntry->GetValue(v);
+            v.MoveTo(prevValue);
         }
         it->Remove();
     }
@@ -234,7 +226,7 @@ ECode AbstractMap::PutAll(
     /* [in] */ IMap* m)
 {
     AutoPtr<ISet> entries;
-    m->GetEntrySet(&entries);
+    m->GetEntrySet(entries);
     AutoPtr<IIterator> it;
     entries->GetIterator(it);
     Boolean hasNext;
@@ -242,8 +234,8 @@ ECode AbstractMap::PutAll(
         AutoPtr<IInterface> e;
         it->Next(&e);
         AutoPtr<IInterface> k, v;
-        IMapEntry::Probe(e)->GetKey(&k);
-        IMapEntry::Probe(e)->GetValue(&v);
+        IMapEntry::Probe(e)->GetKey(k);
+        IMapEntry::Probe(e)->GetValue(v);
         FAIL_RETURN(Put(k, v));
     }
     return NOERROR;
@@ -255,7 +247,7 @@ ECode AbstractMap::PutIfAbsent(
     /* [out] */ IInterface** prevValue)
 {
     AutoPtr<IInterface> v;
-    Get(key, &v);
+    Get(key, v);
     if (v == nullptr) {
         FAIL_RETURN(Put(key, value, &v));
     }
@@ -270,15 +262,13 @@ ECode AbstractMap::PutIfAbsent(
 ECode AbstractMap::Clear()
 {
     AutoPtr<ISet> entries;
-    GetEntrySet(&entries);
+    GetEntrySet(entries);
     return entries->Clear();
 }
 
 ECode AbstractMap::GetKeySet(
-    /* [out] */ ISet** keys)
+    /* [out] */ AutoPtr<ISet>& keys)
 {
-    VALIDATE_NOT_NULL(keys);
-
     AutoPtr<ISet> ks = mKeySet;
     if (ks == nullptr) {
         class _Set
@@ -343,8 +333,12 @@ ECode AbstractMap::GetKeySet(
                     {
                         AutoPtr<IInterface> e;
                         mIt->Next(&e);
-                        return object != nullptr ?
-                                IMapEntry::Probe(e)->GetKey(object) : NOERROR;
+                        if (object != nullptr) {
+                            AutoPtr<IInterface> v;
+                            IMapEntry::Probe(e)->GetKey(v);
+                            v.MoveTo(object);
+                        }
+                        return NOERROR;
                     }
 
                     ECode HasNext(
@@ -363,7 +357,7 @@ ECode AbstractMap::GetKeySet(
                 };
 
                 AutoPtr<ISet> entries;
-                mOwner->GetEntrySet(&entries);
+                mOwner->GetEntrySet(entries);
                 AutoPtr<IIterator> eit;
                 entries->GetIterator(eit);
                 it = new _Iterator(eit);
@@ -371,13 +365,13 @@ ECode AbstractMap::GetKeySet(
             }
 
             ECode GetSize(
-                /* [out] */ Integer* size) override
+                /* [out] */ Integer& size) override
             {
                 return mOwner->GetSize(size);
             }
 
             ECode IsEmpty(
-                /* [out] */ Boolean* result) override
+                /* [out] */ Boolean& result) override
             {
                 return mOwner->IsEmpty(result);
             }
@@ -389,7 +383,7 @@ ECode AbstractMap::GetKeySet(
 
             ECode Contains(
                 /* [in] */ IInterface* obj,
-                /* [out] */ Boolean* result) override
+                /* [out] */ Boolean& result) override
             {
                 return mOwner->ContainsKey(obj, result);
             }
@@ -399,15 +393,13 @@ ECode AbstractMap::GetKeySet(
         };
         mKeySet = ks = new _Set(this);
     }
-    ks.MoveTo(keys);
+    keys = std::move(ks);
     return NOERROR;
 }
 
 ECode AbstractMap::GetValues(
-    /* [out] */ ICollection** values)
+    /* [out] */ AutoPtr<ICollection>& values)
 {
-    VALIDATE_NOT_NULL(values);
-
     AutoPtr<ICollection> vals = mValues;
     if (vals == nullptr) {
         class _Collection
@@ -472,8 +464,12 @@ ECode AbstractMap::GetValues(
                     {
                         AutoPtr<IInterface> e;
                         mIt->Next(&e);
-                        return object != nullptr ?
-                                IMapEntry::Probe(e)->GetValue(object) : NOERROR;
+                        if (object != nullptr) {
+                            AutoPtr<IInterface> v;
+                            IMapEntry::Probe(e)->GetValue(v);
+                            v.MoveTo(object);
+                        }
+                        return NOERROR;
                     }
 
                     ECode HasNext(
@@ -492,7 +488,7 @@ ECode AbstractMap::GetValues(
                 };
 
                 AutoPtr<ISet> entries;
-                mOwner->GetEntrySet(&entries);
+                mOwner->GetEntrySet(entries);
                 AutoPtr<IIterator> eit;
                 entries->GetIterator(eit);
                 it = new _Iterator(eit);
@@ -500,13 +496,13 @@ ECode AbstractMap::GetValues(
             }
 
             ECode GetSize(
-                /* [out] */ Integer* size) override
+                /* [out] */ Integer& size) override
             {
                 return mOwner->GetSize(size);
             }
 
             ECode IsEmpty(
-                /* [out] */ Boolean* result) override
+                /* [out] */ Boolean& result) override
             {
                 return mOwner->IsEmpty(result);
             }
@@ -518,7 +514,7 @@ ECode AbstractMap::GetValues(
 
             ECode Contains(
                 /* [in] */ IInterface* obj,
-                /* [out] */ Boolean* result) override
+                /* [out] */ Boolean& result) override
             {
                 return mOwner->ContainsValue(obj, result);
             }
@@ -528,7 +524,7 @@ ECode AbstractMap::GetValues(
         };
         mValues = vals = new _Collection(this);
     }
-    vals.MoveTo(values);
+    values = std::move(vals);
     return NOERROR;
 }
 
@@ -547,13 +543,13 @@ ECode AbstractMap::Equals(
     }
     IMap* m = IMap::Probe(obj);
     Integer othSize, thisSize;
-    if (m->GetSize(&othSize), GetSize(&thisSize), othSize != thisSize) {
+    if (m->GetSize(othSize), GetSize(thisSize), othSize != thisSize) {
         result = false;
         return NOERROR;
     }
 
     AutoPtr<ISet> entries;
-    GetEntrySet(&entries);
+    GetEntrySet(entries);
     AutoPtr<IIterator> it;
     entries->GetIterator(it);
     Boolean hasNext;
@@ -561,20 +557,20 @@ ECode AbstractMap::Equals(
         AutoPtr<IInterface> e;
         it->Next(&e);
         AutoPtr<IInterface> key, value;
-        IMapEntry::Probe(e)->GetKey(&key);
-        IMapEntry::Probe(e)->GetValue(&value);
+        IMapEntry::Probe(e)->GetKey(key);
+        IMapEntry::Probe(e)->GetValue(value);
         if (value == nullptr) {
             AutoPtr<IInterface> othValue;
             Boolean constains;
-            if ((m->Get(key, &othValue), othValue != nullptr) ||
-                    (m->ContainsKey(key, &constains), !constains)) {
+            if ((m->Get(key, othValue), othValue != nullptr) ||
+                    (m->ContainsKey(key, constains), !constains)) {
                 result = false;
                 return NOERROR;
             }
         }
         else {
             AutoPtr<IInterface> othValue;
-            if (m->Get(key, &othValue), !Object::Equals(value, othValue)) {
+            if (m->Get(key, othValue), !Object::Equals(value, othValue)) {
                 result = false;
                 return NOERROR;
             }
@@ -590,7 +586,7 @@ ECode AbstractMap::GetHashCode(
 {
     hash = 0;
     AutoPtr<ISet> entries;
-    GetEntrySet(&entries);
+    GetEntrySet(entries);
     AutoPtr<IIterator> it;
     entries->GetIterator(it);
     Boolean hasNext;
@@ -606,7 +602,7 @@ ECode AbstractMap::ToString(
     /* [out] */ String& str)
 {
     AutoPtr<ISet> entries;
-    GetEntrySet(&entries);
+    GetEntrySet(entries);
     AutoPtr<IIterator> it;
     entries->GetIterator(it);
     Boolean hasNext;
@@ -622,8 +618,8 @@ ECode AbstractMap::ToString(
         AutoPtr<IInterface> e;
         it->Next(&e);
         AutoPtr<IInterface> key, value;
-        IMapEntry::Probe(e)->GetKey(&key);
-        IMapEntry::Probe(e)->GetValue(&value);
+        IMapEntry::Probe(e)->GetKey(key);
+        IMapEntry::Probe(e)->GetValue(value);
         if (IInterface::Equals(key, (IMap*)this)) {
             sb->Append(String("(this Map)"));
         }
@@ -662,28 +658,22 @@ ECode AbstractMap::SimpleEntry::Constructor(
 ECode AbstractMap::SimpleEntry::Constructor(
     /* [in] */ IMapEntry* entry)
 {
-    entry->GetKey(&mKey);
-    entry->GetValue(&mValue);
+    entry->GetKey(mKey);
+    entry->GetValue(mValue);
     return NOERROR;
 }
 
 ECode AbstractMap::SimpleEntry::GetKey(
-    /* [out] */ IInterface** key)
+    /* [out] */ AutoPtr<IInterface>& key)
 {
-    VALIDATE_NOT_NULL(key)
-
-    *key = mKey;
-    REFCOUNT_ADD(*key)
+    key = mKey;
     return NOERROR;
 }
 
 ECode AbstractMap::SimpleEntry::GetValue(
-    /* [out] */ IInterface** value)
+    /* [out] */ AutoPtr<IInterface>& value)
 {
-    VALIDATE_NOT_NULL(value)
-
-    *value = mValue;
-    REFCOUNT_ADD(*value)
+    value = mValue;
     return NOERROR;
 }
 
@@ -711,8 +701,8 @@ ECode AbstractMap::SimpleEntry::Equals(
         return NOERROR;
     }
     AutoPtr<IInterface> key, value;
-    e->GetKey(&key);
-    e->GetValue(&value);
+    e->GetKey(key);
+    e->GetValue(value);
     result = Object::Equals(mKey, key) && Object::Equals(mValue, value);
     return NOERROR;
 }
@@ -748,28 +738,22 @@ ECode AbstractMap::SimpleImmutableEntry::Constructor(
 ECode AbstractMap::SimpleImmutableEntry::Constructor(
     /* [in] */ IMapEntry* entry)
 {
-    entry->GetKey(&mKey);
-    entry->GetValue(&mValue);
+    entry->GetKey(mKey);
+    entry->GetValue(mValue);
     return NOERROR;
 }
 
 ECode AbstractMap::SimpleImmutableEntry::GetKey(
-    /* [out] */ IInterface** key)
+    /* [out] */ AutoPtr<IInterface>& key)
 {
-    VALIDATE_NOT_NULL(key)
-
-    *key = mKey;
-    REFCOUNT_ADD(*key)
+    key = mKey;
     return NOERROR;
 }
 
 ECode AbstractMap::SimpleImmutableEntry::GetValue(
-    /* [out] */ IInterface** value)
+    /* [out] */ AutoPtr<IInterface>& value)
 {
-    VALIDATE_NOT_NULL(value)
-
-    *value = mValue;
-    REFCOUNT_ADD(*value)
+    value = mValue;
     return NOERROR;
 }
 
@@ -790,8 +774,8 @@ ECode AbstractMap::SimpleImmutableEntry::Equals(
         return NOERROR;
     }
     AutoPtr<IInterface> key, value;
-    e->GetKey(&key);
-    e->GetValue(&value);
+    e->GetKey(key);
+    e->GetValue(value);
     result = Object::Equals(mKey, key) && Object::Equals(mValue, value);
     return NOERROR;
 }

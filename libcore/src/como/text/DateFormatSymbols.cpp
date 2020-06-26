@@ -104,8 +104,9 @@ AutoPtr<IDateFormatSymbols> DateFormatSymbols::GetCachedInstance(
     /* [in] */ ILocale* locale)
 {
     AutoPtr<IConcurrentMap> cachedInstances = GetCachedInstances();
-    AutoPtr<IDateFormatSymbols> ref;
-    IMap::Probe(cachedInstances)->Get(locale, (IInterface**)&ref);
+    AutoPtr<IInterface> v;
+    IMap::Probe(cachedInstances)->Get(locale, v);
+    AutoPtr<IDateFormatSymbols> ref = std::move(v);
     if (ref == nullptr) {
         CDateFormatSymbols::New(locale, IID_IDateFormatSymbols, (IInterface**)&ref);
         AutoPtr<IDateFormatSymbols> x;
@@ -364,8 +365,9 @@ void DateFormatSymbols::InitializeData(
 {
     mLocale = desiredLocale;
 
-    AutoPtr<IDateFormatSymbols> ref;
-    IMap::Probe(GetCachedInstances())->Get(mLocale, (IInterface**)&ref);
+    AutoPtr<IInterface> v;
+    IMap::Probe(GetCachedInstances())->Get(mLocale, v);
+    AutoPtr<IDateFormatSymbols> ref = std::move(v);
     if (ref != nullptr) {
         CopyMembers((DateFormatSymbols*)ref.Get(), this);
         return;

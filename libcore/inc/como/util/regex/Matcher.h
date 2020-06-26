@@ -52,28 +52,28 @@ private:
         COMO_INTERFACE_DECL();
 
         ECode Start(
-            /* [out] */ Integer* index) override;
+            /* [out] */ Integer& index) override;
 
         ECode Start(
             /* [in] */ Integer group,
-            /* [out] */ Integer* index) override;
+            /* [out] */ Integer& index) override;
 
         ECode End(
-            /* [out] */ Integer* index) override;
+            /* [out] */ Integer& index) override;
 
         ECode End(
             /* [in] */ Integer group,
-            /* [out] */ Integer* index) override;
+            /* [out] */ Integer& index) override;
 
         ECode Group(
-            /* [out] */ String* subseq) override;
+            /* [out] */ String& subseq) override;
 
         ECode Group(
             /* [in] */ Integer group,
-            /* [out] */ String* subseq) override;
+            /* [out] */ String& subseq) override;
 
         ECode GroupCount(
-            /* [out] */ Integer* number) override;
+            /* [out] */ Integer& number) override;
 
     private:
         String mInput;
@@ -90,55 +90,55 @@ public:
         /* [in] */ ICharSequence* text);
 
     ECode Pattern(
-        /* [out] */ IPattern** pattern) override;
+        /* [out] */ AutoPtr<IPattern>& pattern) override;
 
     ECode ToMatchResult(
-        /* [out] */ IMatchResult** result) override;
+        /* [out] */ AutoPtr<IMatchResult>& result) override;
 
     ECode UsePattern(
         /* [in] */ IPattern* newPattern) override;
 
     ECode End(
-        /* [out] */ Integer* index) override;
+        /* [out] */ Integer& index) override;
 
     ECode End(
         /* [in] */ Integer group,
-        /* [out] */ Integer* index) override;
+        /* [out] */ Integer& index) override;
 
     ECode End(
         /* [in] */ const String& name,
-        /* [out] */ Integer* index) override;
+        /* [out] */ Integer& index) override;
 
     ECode Group(
-        /* [out] */ String* subseq) override;
+        /* [out] */ String& subseq) override;
 
     ECode Group(
         /* [in] */ Integer group,
-        /* [out] */ String* subseq) override;
+        /* [out] */ String& subseq) override;
 
     ECode Group(
         /* [in] */ const String& name,
-        /* [out] */ String* subseq) override;
+        /* [out] */ String& subseq) override;
 
     ECode GroupCount(
-        /* [out] */ Integer* number) override;
+        /* [out] */ Integer& number) override;
 
     ECode Matches(
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode Find(
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode Find(
         /* [in] */ Integer start,
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode LookingAt(
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     static ECode QuoteReplacement(
         /* [in] */ const String& s,
-        /* [out] */ String* str);
+        /* [out] */ String& str);
 
     ECode AppendReplacement(
         /* [in] */ IStringBuffer* sb,
@@ -149,30 +149,30 @@ public:
 
     ECode ReplaceAll(
         /* [in] */ const String& replacement,
-        /* [out] */ String* str) override;
+        /* [out] */ String& str) override;
 
     ECode ReplaceFirst(
         /* [in] */ const String& replacement,
-        /* [out] */ String* str) override;
+        /* [out] */ String& str) override;
 
     ECode Region(
         /* [in] */ Integer start,
         /* [in] */ Integer end) override;
 
     ECode RegionStart(
-        /* [out] */ Integer* start) override;
+        /* [out] */ Integer& start) override;
 
     ECode RegionEnd(
-        /* [out] */ Integer* end) override;
+        /* [out] */ Integer& end) override;
 
     ECode HasTransparentBounds(
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode UseTransparentBounds(
         /* [in] */ Boolean value) override;
 
     ECode HasAnchoringBounds(
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode UseAnchoringBounds(
         /* [in] */ Boolean value) override;
@@ -181,10 +181,10 @@ public:
         /* [in] */ String& str) override;
 
     ECode HitEnd(
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode RequireEnd(
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode Reset() override;
 
@@ -192,15 +192,15 @@ public:
         /* [in] */ ICharSequence* input) override;
 
     ECode Start(
-        /* [out] */ Integer* index) override;
+        /* [out] */ Integer& index) override;
 
     ECode Start(
         /* [in] */ Integer group,
-        /* [out] */ Integer* index) override;
+        /* [out] */ Integer& index) override;
 
     ECode Start(
         /* [in] */ const String& name,
-        /* [out] */ Integer* index) override;
+        /* [out] */ Integer& index) override;
 
 private:
     ECode AppendEvaluated(
@@ -219,7 +219,7 @@ private:
     static ECode GetMatchedGroupIndex(
         /* [in] */ HANDLE patternAddr,
         /* [in] */ const String& name,
-        /* [out] */ Integer* group);
+        /* [out] */ Integer& group);
 
     static Integer GetMatchedGroupIndexImpl(
         /* [in] */ HANDLE patternAddr,

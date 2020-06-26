@@ -39,11 +39,11 @@ ECode AbstractSet::Equals(
     }
     ICollection* c = ICollection::Probe(obj);
     Integer othSize, thisSize;
-    if (c->GetSize(&othSize), GetSize(&thisSize), othSize != thisSize) {
+    if (c->GetSize(othSize), GetSize(thisSize), othSize != thisSize) {
         result = false;
         return NOERROR;
     }
-    return ContainsAll(c, &result);
+    return ContainsAll(c, result);
 }
 
 ECode AbstractSet::GetHashCode(
@@ -70,7 +70,7 @@ ECode AbstractSet::RemoveAll(
     Boolean modified = false;
 
     Integer othSize, thisSize;
-    if (GetSize(&thisSize), c->GetSize(&othSize), thisSize > othSize) {
+    if (GetSize(thisSize), c->GetSize(othSize), thisSize > othSize) {
         AutoPtr<IIterator> it;
         c->GetIterator(it);
         Boolean hasNext;
@@ -90,7 +90,7 @@ ECode AbstractSet::RemoveAll(
             AutoPtr<IInterface> obj;
             it->Next(&obj);
             Boolean contains;
-            if (c->Contains(obj, &contains), contains) {
+            if (c->Contains(obj, contains), contains) {
                 it->Remove();
                 modified = true;
             }
@@ -121,13 +121,13 @@ ECode AbstractSet::Clear()
 
 ECode AbstractSet::ContainsAll(
     /* [in] */ ICollection* c,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return AbstractCollection::ContainsAll(c, result);
 }
 
 ECode AbstractSet::IsEmpty(
-    /* [out] */ Boolean* empty)
+    /* [out] */ Boolean& empty)
 {
     return AbstractCollection::IsEmpty(empty);
 }

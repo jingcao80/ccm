@@ -110,8 +110,9 @@ ECode LocaleData::GetInner(
     {
         AutoLock lock(ISynchronize::Probe(localeDataCache));
 
-        AutoPtr<ILocaleData> localeData;
-        localeDataCache->Get(CoreUtils::Box(languageTag), (IInterface**)&localeData);
+        AutoPtr<IInterface> value;
+        localeDataCache->Get(CoreUtils::Box(languageTag), value);
+        AutoPtr<ILocaleData> localeData = std::move(value);
         if (localeData != nullptr && data != nullptr) {
             localeData.MoveTo(data);
             return NOERROR;
@@ -123,8 +124,9 @@ ECode LocaleData::GetInner(
         AutoLock lock(ISynchronize::Probe(localeDataCache));
 
         AutoPtr<ICharSequence> key = CoreUtils::Box(languageTag);
-        AutoPtr<ILocaleData> localeData;
-        localeDataCache->Get(key, (IInterface**)&localeData);
+        AutoPtr<IInterface> value;
+        localeDataCache->Get(key, value);
+        AutoPtr<ILocaleData> localeData = std::move(value);
         if (localeData != nullptr && data != nullptr) {
             localeData.MoveTo(data);
             return NOERROR;
@@ -449,8 +451,8 @@ ECode LocaleData::InitLocaleData(
         // (The negative subpattern is optional, though, and not present in most locales.)
         // By only swallowing '#'es and ','s after the '.', we ensure that we don't
         // accidentally eat too much.
-        StringUtils::ReplaceAll(localeDataObj->mNumberPattern, String("\\.[#,]*"),
-                String(""), &localeDataObj->mIntegerPattern);
+        StringUtils::ReplaceAll(localeDataObj->mNumberPattern, "\\.[#,]*",
+                "", localeDataObj->mIntegerPattern);
     }
     *localeData = (ILocaleData*)localeDataObj.Get();
     REFCOUNT_ADD(*localeData);

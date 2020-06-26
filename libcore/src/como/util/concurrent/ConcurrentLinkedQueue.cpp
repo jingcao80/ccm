@@ -244,10 +244,8 @@ RESTART_FROM_HEAD:
 }
 
 ECode ConcurrentLinkedQueue::Peek(
-    /* [out] */ IInterface** head)
+    /* [out] */ AutoPtr<IInterface>& head)
 {
-    VALIDATE_NOT_NULL(head);
-
 RESTART_FROM_HEAD:
     for (;;) {
         VOLATILE_GET(AutoPtr<Node> h, mHead);
@@ -255,14 +253,14 @@ RESTART_FROM_HEAD:
             VOLATILE_GET(AutoPtr<IInterface> item, p->mItem);
             if (item != nullptr) {
                 UpdateHead(h, p);
-                item.MoveTo(head);
+                head = std::move(item);
                 return NOERROR;
             }
             else {
                 VOLATILE_GET(q, p->mNext);
                 if (q == nullptr) {
                     UpdateHead(h, p);
-                    item.MoveTo(head);
+                    head = std::move(item);
                     return NOERROR;
                 }
                 else {
@@ -312,19 +310,15 @@ RESTART_FROM_HEAD:
 }
 
 ECode ConcurrentLinkedQueue::IsEmpty(
-    /* [out] */ Boolean* empty)
+    /* [out] */ Boolean& empty)
 {
-    VALIDATE_NOT_NULL(empty);
-
-    *empty = First() == nullptr;
+    empty = First() == nullptr;
     return NOERROR;
 }
 
 ECode ConcurrentLinkedQueue::GetSize(
-    /* [out] */ Integer* size)
+    /* [out] */ Integer& size)
 {
-    VALIDATE_NOT_NULL(size);
-
 RESTART_FROM_HEAD:
     for (;;) {
         Integer count = 0;
@@ -341,27 +335,25 @@ RESTART_FROM_HEAD:
             }
             VOLATILE_GET(p, p->mNext);
         }
-        *size = count;
+        size = count;
         return NOERROR;
     }
 }
 
 ECode ConcurrentLinkedQueue::Contains(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     if (obj != nullptr) {
         for (AutoPtr<Node> p = First(); p != nullptr; p = Succ(p)) {
             VOLATILE_GET(AutoPtr<IInterface> item, p->mItem);
             if (item != nullptr && Object::Equals(obj, item)) {
-                *result = true;
+                result = true;
                 return NOERROR;
             }
         }
     }
-    *result = false;
+    result = false;
     return NOERROR;
 }
 
@@ -654,13 +646,13 @@ ECode ConcurrentLinkedQueue::Clear()
 
 ECode ConcurrentLinkedQueue::ContainsAll(
     /* [in] */ ICollection* c,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return AbstractQueue::ContainsAll(c, result);
 }
 
 ECode ConcurrentLinkedQueue::Element(
-    /* [out] */ IInterface** head)
+    /* [out] */ AutoPtr<IInterface>& head)
 {
     return AbstractQueue::Element(head);
 }

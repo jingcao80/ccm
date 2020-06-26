@@ -46,25 +46,25 @@ public:
         /* [in] */ LocaleExtensions* localeExtensions);
 
     ECode GetLanguage(
-        /* [out] */ String* language) override;
+        /* [out] */ String& language) override;
 
     ECode GetExtlangs(
-        /* [out] */ IList** extlangs) override;
+        /* [out] */ AutoPtr<IList>& extlangs) override;
 
     ECode GetScript(
-        /* [out] */ String* script) override;
+        /* [out] */ String& script) override;
 
     ECode GetRegion(
-        /* [out] */ String* region) override;
+        /* [out] */ String& region) override;
 
     ECode GetVariants(
-        /* [out] */ IList** variants) override;
+        /* [out] */ AutoPtr<IList>& variants) override;
 
     ECode GetExtensions(
-        /* [out] */ IList** extensions) override;
+        /* [out] */ AutoPtr<IList>& extensions) override;
 
     ECode GetPrivateuse(
-        /* [out] */ String* privateuse) override;
+        /* [out] */ String& privateuse) override;
 
     static Boolean IsLanguage(
         /* [in] */ const String& s);

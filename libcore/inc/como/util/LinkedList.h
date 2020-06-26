@@ -160,10 +160,10 @@ public:
 
     ECode Contains(
         /* [in] */ IInterface* obj,
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode GetSize(
-        /* [out] */ Integer* size) override;
+        /* [out] */ Integer& size) override;
 
     ECode Add(
         /* [in] */ IInterface* e,
@@ -210,10 +210,10 @@ public:
         /* [out] */ Integer* index) override;
 
     ECode Peek(
-        /* [out] */ IInterface** e) override;
+        /* [out] */ AutoPtr<IInterface>& e) override;
 
     ECode Element(
-        /* [out] */ IInterface** e) override;
+        /* [out] */ AutoPtr<IInterface>& e) override;
 
     ECode Poll(
         /* [out] */ IInterface** e) override;

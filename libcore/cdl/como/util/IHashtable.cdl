@@ -30,15 +30,15 @@ interface IHashtable
 
     Contains(
         [in] IInterface* value,
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     ContainsKey(
         [in] IInterface* key,
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     ContainsValue(
         [in] IInterface* value,
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     Equals(
         [in] IInterface* obj,
@@ -46,13 +46,13 @@ interface IHashtable
 
     Get(
         [in] IInterface* key,
-        [out] IInterface** value);
+        [out] IInterface&& value);
 
     GetElements(
         [out] IEnumeration** elements);
 
     GetEntrySet(
-        [out] ISet** entries);
+        [out] ISet&& entries);
 
     GetHashCode(
         [out] Integer& hash);
@@ -61,16 +61,16 @@ interface IHashtable
         [out] IEnumeration** keys);
 
     GetValues(
-        [out] ICollection** values);
+        [out] ICollection&& values);
 
     GetKeySet(
-        [out] ISet** keys);
+        [out] ISet&& keys);
 
     GetSize(
-        [out] Integer* size);
+        [out] Integer& size);
 
     IsEmpty(
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     Put(
         [in] IInterface* key,

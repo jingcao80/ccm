@@ -1611,7 +1611,7 @@ static AutoPtr<IPattern> CreatePattern(
     /* [in] */ const String& patternStr)
 {
     AutoPtr<IPattern> pattern;
-    Pattern::Compile(patternStr, &pattern);
+    Pattern::Compile(patternStr, pattern);
     return pattern;
 }
 
@@ -2035,9 +2035,9 @@ ECode FloatingDecimal::ParseHexString(
     // Verify string is a member of the hexadecimal floating-point
     // string language.
     AutoPtr<IMatcher> m;
-    GET_HEX_FLOAT_PATTERN()->Matcher(CoreUtils::Box(in), &m);
+    GET_HEX_FLOAT_PATTERN()->Matcher(CoreUtils::Box(in), m);
     Boolean validInput;
-    m->Matches(&validInput);
+    m->Matches(validInput);
     if (!validInput) {
         Logger::E("FloatingDecimal", "For input string: \"%s\"", in.string());
         return E_NUMBER_FORMAT_EXCEPTION;
@@ -2068,7 +2068,7 @@ ECode FloatingDecimal::ParseHexString(
         //
         //  Extract significand sign
         String group1;
-        m->Group(1, &group1);
+        m->Group(1, group1);
         Boolean isNegative = ((!group1.IsNull()) && group1.Equals("-"));
 
         //  Extract Significand magnitude
@@ -2121,7 +2121,7 @@ ECode FloatingDecimal::ParseHexString(
             // (optional) integer portions from group 6.
             //
             String group4;
-            m->Group(4, &group4);
+            m->Group(4, group4);
             if (!group4.IsNull()) {
                 // Integer-only significand
                 // Leading zeros never matter on the integer portion
@@ -2132,13 +2132,13 @@ ECode FloatingDecimal::ParseHexString(
                 // Group 6 is the optional integer; leading zeros
                 // never matter on the integer portion
                 String group6;
-                m->Group(6, &group6);
+                m->Group(6, group6);
                 group6 = StripLeadingZeros(group6);
                 leftDigits = group6.GetLength();
 
                 // fraction
                 String group7;
-                m->Group(7, &group7);
+                m->Group(7, group7);
                 rightDigits = group7.GetLength();
 
                 // Turn "integer.fraction" into "integer"+"fraction"
@@ -2178,12 +2178,12 @@ ECode FloatingDecimal::ParseHexString(
         // significand to determine what to do.
         //
         String group8;
-        m->Group(8, &group8);
+        m->Group(8, group8);
         Boolean positiveExponent = (group8.IsNull() || group8.Equals("+"));
         String group9;
-        m->Group(9, &group9);
+        m->Group(9, group9);
         Integer value;
-        ECode ec = StringUtils::ParseInteger(group9, &value);
+        ECode ec = StringUtils::ParseInteger(group9, value);
         if (FAILED(ec)) {
             // At this point, we know the exponent is
             // syntactically well-formed as a sequence of

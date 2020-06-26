@@ -123,7 +123,7 @@ public:
         /* [out] */ IEnumeration** names) override;
 
     ECode StringPropertyNames(
-        /* [out] */ ISet** names) override;
+        /* [out] */ AutoPtr<ISet>& names) override;
 
     ECode List(
         /* [in] */ IPrintStream* outstream) override;

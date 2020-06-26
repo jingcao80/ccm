@@ -70,83 +70,66 @@ ECode Pattern::Constructor(
 
 ECode Pattern::Compile(
     /* [in] */ const String& regex,
-    /* [out] */ IPattern** pattern)
+    /* [out] */ AutoPtr<IPattern>& pattern)
 {
-    VALIDATE_NOT_NULL(pattern);
-
     AutoPtr<Pattern> pObj = new Pattern();
     FAIL_RETURN(pObj->Constructor(regex, 0));
-    *pattern = (IPattern*)pObj;
-    REFCOUNT_ADD(*pattern);
+    pattern = (IPattern*)pObj;
     return NOERROR;
 }
 
 ECode Pattern::Compile(
     /* [in] */ const String& regex,
     /* [in] */ Integer flags,
-    /* [out] */ IPattern** pattern)
+    /* [out] */ AutoPtr<IPattern>& pattern)
 {
-    VALIDATE_NOT_NULL(pattern);
-
     AutoPtr<Pattern> pObj = new Pattern();
     FAIL_RETURN(pObj->Constructor(regex, flags));
-    *pattern = (IPattern*)pObj;
-    REFCOUNT_ADD(*pattern);
+    pattern = (IPattern*)pObj;
     return NOERROR;
 }
 
 ECode Pattern::GetPattern(
-    /* [out] */ String* pattStr)
+    /* [out] */ String& pattStr)
 {
-    VALIDATE_NOT_NULL(pattStr);
-
-    *pattStr = mPattern;
+    pattStr = mPattern;
     return NOERROR;
 }
 
 ECode Pattern::ToString(
-    /* [out] */ String* pattStr)
+    /* [out] */ String& pattStr)
 {
-    VALIDATE_NOT_NULL(pattStr);
-
-    *pattStr = mPattern;
+    pattStr = mPattern;
     return NOERROR;
 }
 
 ECode Pattern::Matcher(
     /* [in] */ ICharSequence* input,
-    /* [out] */ IMatcher** matcher)
+    /* [out] */ AutoPtr<IMatcher>& matcher)
 {
-    VALIDATE_NOT_NULL(matcher);
-
     AutoPtr<como::util::regex::Matcher> mObj =
             new como::util::regex::Matcher();
     FAIL_RETURN(mObj->Constructor(this, input));
-    *matcher = (IMatcher*)mObj;
-    REFCOUNT_ADD(*matcher);
+    matcher = (IMatcher*)mObj;
     return NOERROR;
 }
 
 ECode Pattern::Flags(
-    /* [out] */ Integer* flags)
+    /* [out] */ Integer& flags)
 {
-    VALIDATE_NOT_NULL(flags);
-
-    *flags = mFlags;
+    flags = mFlags;
     return NOERROR;
 }
 
 ECode Pattern::Matches(
     /* [in] */ const String& regex,
     /* [in] */ ICharSequence* input,
-    /* [out] */ Boolean* matched)
+    /* [out] */ Boolean& matched)
 {
-    VALIDATE_NOT_NULL(matched);
-
     AutoPtr<IPattern> p;
-    Compile(regex, &p);
+    Compile(regex, p);
     AutoPtr<IMatcher> m;
-    p->Matcher(input, &m);
+    p->Matcher(input, m);
     return m->Matches(matched);
 }
 
@@ -171,26 +154,26 @@ ECode Pattern::Split(
     AutoPtr<IArrayList> matchList;
     CArrayList::New(IID_IArrayList, (IInterface**)&matchList);
     AutoPtr<IMatcher> m;
-    Matcher(input, &m);
+    Matcher(input, m);
 
     Integer size;
     Boolean found;
-    while(m->Find(&found), found) {
-        if (!matchLimited || (matchList->GetSize(&size), size < limit - 1)) {
+    while(m->Find(found), found) {
+        if (!matchLimited || (matchList->GetSize(size), size < limit - 1)) {
             Integer startIndex;
-            m->Start(&startIndex);
+            m->Start(startIndex);
             AutoPtr<ICharSequence> match;
             input->SubSequence(index, startIndex, match);
             matchList->Add(match);
-            m->End(&index);
+            m->End(index);
         }
-        else if (matchList->GetSize(&size), size == limit - 1) { // last one
+        else if (matchList->GetSize(size), size == limit - 1) { // last one
             Integer len;
             input->GetLength(len);
             AutoPtr<ICharSequence> match;
             input->SubSequence(index, len, match);
             matchList->Add(match);
-            m->End(&index);
+            m->End(index);
         }
     }
 
@@ -204,7 +187,7 @@ ECode Pattern::Split(
     }
 
     // Add remaining segment
-    if (!matchLimited || (matchList->GetSize(&size), size < limit)) {
+    if (!matchLimited || (matchList->GetSize(size), size < limit)) {
         Integer len;
         input->GetLength(len);
         AutoPtr<ICharSequence> match;
@@ -213,7 +196,7 @@ ECode Pattern::Split(
     }
 
     // Construct result
-    matchList->GetSize(&size);
+    matchList->GetSize(size);
     if (limit == 0) {
         while (size > 0) {
             AutoPtr<IInterface> obj;
@@ -324,13 +307,11 @@ ECode Pattern::Split(
 
 ECode Pattern::Quote(
     /* [in] */ const String& s,
-    /* [out] */ String* pattStr)
+    /* [out] */ String& pattStr)
 {
-    VALIDATE_NOT_NULL(pattStr);
-
     Integer slashEIndex = s.IndexOf("\\E");
     if (slashEIndex == -1) {
-        *pattStr = String("\\Q") + s + "\\E";
+        pattStr = String("\\Q") + s + "\\E";
         return NOERROR;
     }
 
@@ -346,7 +327,7 @@ ECode Pattern::Quote(
     }
     sb->Append(s.Substring(current, s.GetLength()));
     sb->Append(String("\\E"));
-    return sb->ToString(*pattStr);
+    return sb->ToString(pattStr);
 }
 
 ECode Pattern::Compile()
@@ -358,13 +339,13 @@ ECode Pattern::Compile()
 
     String icuPattern = mPattern;
     if ((mFlags & LITERAL) != 0) {
-        Quote(mPattern, &icuPattern);
+        Quote(mPattern, icuPattern);
     }
 
     // These are the flags natively supported by ICU.
     // They even have the same value in native code.
     Integer icuFlags = mFlags & (CASE_INSENSITIVE | COMMENTS | MULTILINE | DOTALL | UNIX_LINES);
-    return CompileImpl(icuPattern, icuFlags, &mNative);
+    return CompileImpl(icuPattern, icuFlags, mNative);
 }
 
 // ICU documentation: http://icu-project.org/apiref/icu4c/classRegexPattern.html
@@ -404,7 +385,7 @@ static const char* RegexDetailMessage(UErrorCode status)
 ECode Pattern::CompileImpl(
     /* [in] */ const String& regex,
     /* [in] */ Integer flags,
-    /* [out] */ HANDLE* handle)
+    /* [out] */ HANDLE& handle)
 {
     flags |= UREGEX_ERROR_ON_UNKNOWN_ESCAPES;
 
@@ -420,7 +401,7 @@ ECode Pattern::CompileImpl(
         Logger::E("Pattern", "%s: %s", regex.string(), RegexDetailMessage(status));
         return E_PATTERN_SYNTAX_EXCEPTION;
     }
-    *handle = reinterpret_cast<HANDLE>(result);
+    handle = reinterpret_cast<HANDLE>(result);
     return NOERROR;
 }
 

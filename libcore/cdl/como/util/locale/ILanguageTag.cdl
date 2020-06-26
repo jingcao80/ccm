@@ -35,25 +35,25 @@ interface ILanguageTag
     const String UNDETERMINED = "und";
 
     GetExtensions(
-        [out] IList** extensions);
+        [out] IList&& extensions);
 
     GetExtlangs(
-        [out] IList** extlangs);
+        [out] IList&& extlangs);
 
     GetLanguage(
-        [out] String* language);
+        [out] String& language);
 
     GetPrivateuse(
-        [out] String* privateuse);
+        [out] String& privateuse);
 
     GetRegion(
-        [out] String* region);
+        [out] String& region);
 
     GetScript(
-        [out] String* script);
+        [out] String& script);
 
     GetVariants(
-        [out] IList** variants);
+        [out] IList&& variants);
 }
 
 }

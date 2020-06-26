@@ -58,11 +58,9 @@ static AutoPtr<TimeZoneNames::ZoneStringsCache> CreateCachedZoneStrings()
     AutoPtr<TimeZoneNames::ZoneStringsCache> cache = new TimeZoneNames::ZoneStringsCache();
     cache->Constructor();
     AutoPtr<IInterface> zoneStrings;
-    cache->Get(como::util::Locale::GetROOT(), &zoneStrings);
-    zoneStrings = nullptr;
-    cache->Get(como::util::Locale::GetUS(), &zoneStrings);
-    zoneStrings = nullptr;
-    cache->Get(como::util::Locale::GetDefault(), &zoneStrings);
+    cache->Get(como::util::Locale::GetROOT(), zoneStrings);
+    cache->Get(como::util::Locale::GetUS(), zoneStrings);
+    cache->Get(como::util::Locale::GetDefault(), zoneStrings);
     return cache;
 }
 
@@ -192,8 +190,9 @@ ECode TimeZoneNames::GetZoneStrings(
     if (aLocale == nullptr) {
         aLocale = como::util::Locale::GetDefault();
     }
-    AutoPtr<IArrayHolder> zoneStringsHolder;
-    GetCachedZoneStrings()->Get(aLocale, (IInterface**)&zoneStringsHolder);
+    AutoPtr<IInterface> v;
+    GetCachedZoneStrings()->Get(aLocale, v);
+    AutoPtr<IArrayHolder> zoneStringsHolder = std::move(v);
     return zoneStringsHolder->GetArray(zoneStrings);
 }
 

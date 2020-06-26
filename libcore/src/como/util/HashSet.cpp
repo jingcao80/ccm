@@ -44,7 +44,7 @@ ECode HashSet::Constructor(
     /* [in] */ ICollection* c)
 {
     Integer size;
-    c->GetSize(&size);
+    c->GetSize(size);
     CHashMap::New(Math::Max((Integer)(size / .75f) + 1, 16),
             IID_IHashMap, (IInterface**)&mMap);
     AddAll(c);
@@ -81,25 +81,25 @@ ECode HashSet::GetIterator(
     /* [out] */ AutoPtr<IIterator>& it)
 {
     AutoPtr<ISet> keys;
-    mMap->GetKeySet(&keys);
+    mMap->GetKeySet(keys);
     return keys->GetIterator(it);
 }
 
 ECode HashSet::GetSize(
-    /* [out] */ Integer* size)
+    /* [out] */ Integer& size)
 {
     return mMap->GetSize(size);
 }
 
 ECode HashSet::IsEmpty(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return mMap->IsEmpty(result);
 }
 
 ECode HashSet::Contains(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return mMap->ContainsKey(obj, result);
 }
@@ -152,7 +152,7 @@ ECode HashSet::AddAll(
 
 ECode HashSet::ContainsAll(
     /* [in] */ ICollection* c,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return AbstractSet::ContainsAll(c, result);
 }

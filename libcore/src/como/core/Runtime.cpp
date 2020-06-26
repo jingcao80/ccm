@@ -103,7 +103,7 @@ ECode Runtime::AddShutdownHook(
     AutoLock lock(ISynchronize::Probe(mShutdownHooks));
 
     Boolean constains;
-    if (mShutdownHooks->Contains(hook, &constains), constains) {
+    if (mShutdownHooks->Contains(hook, constains), constains) {
         Logger::E("Runtime", "Hook already registered.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }

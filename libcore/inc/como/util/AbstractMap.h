@@ -52,10 +52,10 @@ public:
             /* [in] */ IMapEntry* entry);
 
         ECode GetKey(
-            /* [out] */ IInterface** key) override;
+            /* [out] */ AutoPtr<IInterface>& key) override;
 
         ECode GetValue(
-            /* [out] */ IInterface** value) override;
+            /* [out] */ AutoPtr<IInterface>& value) override;
 
         ECode SetValue(
             /* [in] */ IInterface* value,
@@ -92,10 +92,10 @@ public:
             /* [in] */ IMapEntry* entry);
 
         ECode GetKey(
-            /* [out] */ IInterface** key) override;
+            /* [out] */ AutoPtr<IInterface>& key) override;
 
         ECode GetValue(
-            /* [out] */ IInterface** value) override;
+            /* [out] */ AutoPtr<IInterface>& value) override;
 
         ECode SetValue(
             /* [in] */ IInterface* value,
@@ -120,22 +120,22 @@ public:
     COMO_INTERFACE_DECL();
 
     ECode GetSize(
-        /* [out] */ Integer* size) override;
+        /* [out] */ Integer& size) override;
 
     ECode IsEmpty(
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode ContainsValue(
         /* [in] */ IInterface* value,
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode ContainsKey(
         /* [in] */ IInterface* key,
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode Get(
         /* [in] */ IInterface* key,
-        /* [out] */ IInterface** value) override;
+        /* [out] */ AutoPtr<IInterface>& value) override;
 
     ECode Put(
         /* [in] */ IInterface* key,
@@ -157,10 +157,10 @@ public:
     ECode Clear() override;
 
     ECode GetKeySet(
-        /* [out] */ ISet** keys) override;
+        /* [out] */ AutoPtr<ISet>& keys) override;
 
     ECode GetValues(
-        /* [out] */ ICollection** values) override;
+        /* [out] */ AutoPtr<ICollection>& values) override;
 
     ECode Equals(
         /* [in] */ IInterface* obj,

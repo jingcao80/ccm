@@ -156,24 +156,18 @@ ECode Vector::GetCapacity(
 }
 
 ECode Vector::GetSize(
-    /* [out] */ Integer* size)
+    /* [out] */ Integer& size)
 {
-    VALIDATE_NOT_NULL(size);
-
     AutoLock lock(this);
-
-    *size = mElementCount;
+    size = mElementCount;
     return NOERROR;
 }
 
 ECode Vector::IsEmpty(
-    /* [out] */ Boolean* empty)
+    /* [out] */ Boolean& empty)
 {
-    VALIDATE_NOT_NULL(empty);
-
     AutoLock lock(this);
-
-    *empty = mElementCount == 0;
+    empty = mElementCount == 0;
     return NOERROR;
 }
 
@@ -267,13 +261,11 @@ ECode Vector::GetElements(
 
 ECode Vector::Contains(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     Integer idx;
     IndexOf(obj, 0, &idx);
-    *result = idx >= 0;
+    result = idx >= 0;
     return NOERROR;
 }
 
@@ -635,10 +627,8 @@ ECode Vector::Clear()
 
 ECode Vector::ContainsAll(
     /* [in] */ ICollection* c,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     AutoLock lock(this);
     return AbstractList::ContainsAll(c, result);
 }

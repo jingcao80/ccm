@@ -974,19 +974,19 @@ ECode JapaneseImperialCalendar::GetDisplayNames(
     if (*names != nullptr) {
         if (field == ERA) {
             Integer size;
-            (*names)->GetSize(&size);
+            (*names)->GetSize(size);
             if (style == ALL_STYLES) {
                 AutoPtr<ISet> values;
                 CHashSet::New(IID_ISet, (IInterface**)&values);
                 // count unique era values
                 AutoPtr<ISet> keySet;
-                (*names)->GetKeySet(&keySet);
+                (*names)->GetKeySet(keySet);
                 FOR_EACH(IInterface*, key, , keySet) {
                     AutoPtr<IInterface> value;
-                    (*names)->Get(key, &value);
+                    (*names)->Get(key, value);
                     values->Add(value);
                 } END_FOR_EACH();
-                values->GetSize(&size);
+                values->GetSize(size);
             }
             if (size < sEras.GetLength()) {
                 Integer baseStyle = GetBaseStyle(style);

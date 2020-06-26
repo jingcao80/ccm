@@ -56,7 +56,7 @@ ExpiringCache::ExpiringCache(
             /* [in] */ IMapEntry* eldest) override
         {
             Integer size;
-            GetSize(&size);
+            GetSize(size);
             return size > ExpiringCache::MAX_ENTRIES;
         }
     };
@@ -110,7 +110,7 @@ AutoPtr<ExpiringCache::Entry> ExpiringCache::GetEntryFor(
     /* [in] */ const String& key)
 {
     AutoPtr<IInterface> obj;
-    mMap->Get(CoreUtils::Box(key), &obj);
+    mMap->Get(CoreUtils::Box(key), obj);
     Entry* entry = (Entry*)obj.Get();
     if (entry != nullptr) {
         Long delta = System::GetCurrentTimeMillis() - entry->GetTimestamp();
@@ -125,9 +125,9 @@ AutoPtr<ExpiringCache::Entry> ExpiringCache::GetEntryFor(
 void ExpiringCache::Cleanup()
 {
     AutoPtr<ISet> keySet;
-    mMap->GetKeySet(&keySet);
+    mMap->GetKeySet(keySet);
     Integer size;
-    keySet->GetSize(&size);
+    keySet->GetSize(size);
     Array<String> keys(size);
     Integer i = 0;
     AutoPtr<IIterator> it;

@@ -42,11 +42,11 @@ interface ISet
 
     Contains(
         [in] IInterface* obj,
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     ContainsAll(
         [in] ICollection* c,
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     Equals(
         [in] IInterface* obj,
@@ -59,10 +59,10 @@ interface ISet
         [out] IIterator&& it);
 
     GetSize(
-        [out] Integer* size);
+        [out] Integer& size);
 
     IsEmpty(
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     Remove(
         [in] IInterface* obj,

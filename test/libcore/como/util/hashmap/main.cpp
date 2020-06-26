@@ -34,11 +34,11 @@ TEST(HashMapTest, HashMapGetPutTest)
     ec = map->Put(CoreUtils::Box(String("IInteger::MAX_VALUE")), CoreUtils::Box(String("0x7fffffff")));
     EXPECT_EQ(0, ec);
     Boolean contains;
-    ec = map->ContainsKey(CoreUtils::Box(String("IInteger::MAX_VALUE")), &contains);
+    ec = map->ContainsKey(CoreUtils::Box(String("IInteger::MAX_VALUE")), contains);
     EXPECT_EQ(0, ec);
     EXPECT_TRUE(contains);
     AutoPtr<IInterface> value;
-    ec = map->Get(CoreUtils::Box(String("IInteger::MAX_VALUE")), &value);
+    ec = map->Get(CoreUtils::Box(String("IInteger::MAX_VALUE")), value);
     EXPECT_EQ(0, ec);
     EXPECT_NE(nullptr, value.Get());
     EXPECT_STREQ("0x7fffffff", CoreUtils::Unbox(ICharSequence::Probe(value)).string());

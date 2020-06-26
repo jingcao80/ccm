@@ -91,7 +91,7 @@ ECode MathContext::Constructor(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     String precisionString = s.Substring(precisionLength, spaceIndex);
-    ECode ec = StringUtils::ParseInteger(precisionString, &mPrecision);
+    ECode ec = StringUtils::ParseInteger(precisionString, mPrecision);
     if (FAILED(ec)) {
         Logger::E("MathContext", "Bad precision: %s", s.string());
         return E_ILLEGAL_ARGUMENT_EXCEPTION;

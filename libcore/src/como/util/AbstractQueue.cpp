@@ -53,12 +53,10 @@ ECode AbstractQueue::Remove(
 }
 
 ECode AbstractQueue::Element(
-    /* [out] */ IInterface** head)
+    /* [out] */ AutoPtr<IInterface>& head)
 {
-    VALIDATE_NOT_NULL(head);
-
     Peek(head);
-    if (*head != nullptr) {
+    if (head != nullptr) {
         return NOERROR;
     }
     return E_NO_SUCH_ELEMENT_EXCEPTION;

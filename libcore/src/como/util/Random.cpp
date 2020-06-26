@@ -123,7 +123,7 @@ ECode Random::NextBytes(
 {
     for (Integer i = 0, len = bytes.GetLength(); i < len;) {
         Integer rnd, n;
-        for (NextInteger(&rnd), n = Math::Min(len - i, IInteger::SIZE / IByte::SIZE);
+        for (NextInteger(rnd), n = Math::Min(len - i, IInteger::SIZE / IByte::SIZE);
                 n-- >0; rnd >>= IByte::SIZE) {
             bytes[i++] = (Byte)rnd;
         }
@@ -132,20 +132,16 @@ ECode Random::NextBytes(
 }
 
 ECode Random::NextInteger(
-    /* [out] */ Integer* value)
+    /* [out] */ Integer& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = Next(32);
+    value = Next(32);
     return NOERROR;
 }
 
 ECode Random::NextInteger(
     /* [in] */ Integer bound,
-    /* [out] */ Integer* value)
+    /* [out] */ Integer& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     if (bound <= 0) {
         Logger::E("Random", "bound must be positive");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -161,62 +157,52 @@ ECode Random::NextInteger(
              u - (r = u % bound) + m < 0;
              u = Next(31));
     }
-    *value = r;
+    value = r;
     return NOERROR;
 }
 
 ECode Random::NextLong(
-    /* [out] */ Long* value)
+    /* [out] */ Long& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = ((Long)(Next(32)) << 32) + Next(32);
+    value = ((Long)(Next(32)) << 32) + Next(32);
     return NOERROR;
 }
 
 ECode Random::NextBoolean(
-    /* [out] */ Boolean* value)
+    /* [out] */ Boolean& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = Next(1) != 0;
+    value = Next(1) != 0;
     return NOERROR;
 }
 
 ECode Random::NextFloat(
-    /* [out] */ Float* value)
+    /* [out] */ Float& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = Next(24) / ((Float)(1 << 24));
+    value = Next(24) / ((Float)(1 << 24));
     return NOERROR;
 }
 
 ECode Random::NextDouble(
-    /* [out] */ Double* value)
+    /* [out] */ Double& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = (((Long)(Next(26)) << 27) + Next(27)) * DOUBLE_UNIT;
+    value = (((Long)(Next(26)) << 27) + Next(27)) * DOUBLE_UNIT;
     return NOERROR;
 }
 
 ECode Random::NextGaussian(
-    /* [out] */ Double* value)
+    /* [out] */ Double& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     // See Knuth, ACP, Section 3.4.1 Algorithm C.
     if (mHaveNextNextGaussian) {
         mHaveNextNextGaussian = false;
-        *value = mNextNextGaussian;
+        value = mNextNextGaussian;
         return NOERROR;
     }
     else {
         Double v1, v2, s;
         do {
-            NextDouble(&v1);
-            NextDouble(&v2);
+            NextDouble(v1);
+            NextDouble(v2);
             v1 = 2 * v1 - 1; // between -1 and 1
             v2 = 2 * v2 - 1; // between -1 and 1
             s = v1 * v1 + v2 * v2;
@@ -224,7 +210,7 @@ ECode Random::NextGaussian(
         Double multiplier = StrictMath::Sqrt(-2 * StrictMath::Log(s)/s);
         mNextNextGaussian = v2 * sMultiplier;
         mHaveNextNextGaussian = true;
-        *value = v1 * multiplier;
+        value = v1 * multiplier;
         return NOERROR;
     }
 }

@@ -113,7 +113,7 @@ void HashMap::PutMapEntries(
     /* [in] */ Boolean evict)
 {
     Integer s;
-    m->GetSize(&s);
+    m->GetSize(s);
     if (s > 0) {
         if (mTable.IsNull()) {
             Float ft = ((Float)s / mLoadFactor) + 1.0f;
@@ -127,7 +127,7 @@ void HashMap::PutMapEntries(
             Resize();
         }
         AutoPtr<ISet> entries;
-        m->GetEntrySet(&entries);
+        m->GetEntrySet(entries);
         AutoPtr<IIterator> it;
         entries->GetIterator(it);
         Boolean hasNext;
@@ -136,40 +136,33 @@ void HashMap::PutMapEntries(
             it->Next(&o);
             IMapEntry* e = IMapEntry::Probe(o);
             AutoPtr<IInterface> key, value;
-            e->GetKey(&key);
-            e->GetValue(&value);
+            e->GetKey(key);
+            e->GetValue(value);
             PutVal(Hash(key), key, value, false, evict);
         }
     }
 }
 
 ECode HashMap::GetSize(
-    /* [out] */ Integer* size)
+    /* [out] */ Integer& size)
 {
-    VALIDATE_NOT_NULL(size);
-
-    *size = mSize;
+    size = mSize;
     return NOERROR;
 }
 
 ECode HashMap::IsEmpty(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
-    *result = mSize == 0;
+    result = mSize == 0;
     return NOERROR;
 }
 
 ECode HashMap::Get(
     /* [in] */ IInterface* key,
-    /* [out] */ IInterface** value)
+    /* [out] */ AutoPtr<IInterface>& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     AutoPtr<Node> e = GetNode(Hash(key), key);
-    *value = e == nullptr ? nullptr : e->mValue;
-    REFCOUNT_ADD(*value);
+    value = e == nullptr ? nullptr : e->mValue;
     return NOERROR;
 }
 
@@ -205,11 +198,9 @@ AutoPtr<HashMap::Node> HashMap::GetNode(
 
 ECode HashMap::ContainsKey(
     /* [in] */ IInterface* key,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
-    *result = GetNode(Hash(key), key) != nullptr;
+    result = GetNode(Hash(key), key) != nullptr;
     return NOERROR;
 }
 
@@ -483,64 +474,55 @@ ECode HashMap::Clear()
 
 ECode HashMap::ContainsValue(
     /* [in] */ IInterface* value,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     if (!mTable.IsNull() && mSize > 0) {
         for (Integer i = 0; i < mTable.GetLength(); ++i) {
             for (AutoPtr<Node> e = mTable[i]; e != nullptr; e = e->mNext) {
                 AutoPtr<IInterface> v = e->mValue;
                 if (IInterface::Equals(v, value) ||
                         (value != nullptr && Object::Equals(value, v))) {
-                    *result = true;
+                    result = true;
                     return NOERROR;
                 }
             }
         }
     }
-    *result = false;
+    result = false;
     return NOERROR;
 }
 
 ECode HashMap::GetKeySet(
-    /* [out] */ ISet** keys)
+    /* [out] */ AutoPtr<ISet>& keys)
 {
-    VALIDATE_NOT_NULL(keys);
-
     AutoPtr<ISet> ks = mKeySet;
     if (ks == nullptr) {
         ks = new KeySet(this);
         mKeySet = ks;
     }
-    ks.MoveTo(keys);
+    keys = std::move(ks);
     return NOERROR;
 }
 
 ECode HashMap::GetValues(
-    /* [out] */ ICollection** values)
+    /* [out] */ AutoPtr<ICollection>& values)
 {
-    VALIDATE_NOT_NULL(values);
-
     AutoPtr<ICollection> vs = mValues;
     if (vs == nullptr) {
         vs = new Values(this);
         mValues = vs;
     }
-    vs.MoveTo(values);
+    values = std::move(vs);
     return NOERROR;
 }
 
 ECode HashMap::GetEntrySet(
-    /* [out] */ ISet** entries)
+    /* [out] */ AutoPtr<ISet>& entries)
 {
-    VALIDATE_NOT_NULL(entries);
-
     if (mEntrySet == nullptr) {
         mEntrySet = new EntrySet(this);
     }
-    *entries = mEntrySet;
-    REFCOUNT_ADD(*entries);
+    entries = mEntrySet;
     return NOERROR;
 }
 
@@ -656,20 +638,16 @@ ECode HashMap::GetHashCode(
 COMO_INTERFACE_IMPL_1(HashMap::Node, Object, IMapEntry);
 
 ECode HashMap::Node::GetKey(
-    /* [out] */ IInterface** key)
+    /* [out] */ AutoPtr<IInterface>& key)
 {
-    CHECK(key != nullptr);
-    *key = mKey;
-    REFCOUNT_ADD(*key);
+    key = mKey;
     return NOERROR;
 }
 
 ECode HashMap::Node::GetValue(
-    /* [out] */ IInterface** value)
+    /* [out] */ AutoPtr<IInterface>& value)
 {
-    CHECK(value != nullptr);
-    *value = mValue;
-    REFCOUNT_ADD(*value);
+    value = mValue;
     return NOERROR;
 }
 
@@ -710,8 +688,8 @@ ECode HashMap::Node::Equals(
     if (IMapEntry::Probe(obj) != nullptr) {
         IMapEntry* e = IMapEntry::Probe(obj);
         AutoPtr<IInterface> key, value;
-        e->GetKey(&key);
-        e->GetValue(&value);
+        e->GetKey(key);
+        e->GetValue(value);
         if (Object::Equals(mKey, key) &&
                 Object::Equals(mValue, value)) {
             result = true;
@@ -725,11 +703,9 @@ ECode HashMap::Node::Equals(
 //------------------------------------------------------------------------
 
 ECode HashMap::KeySet::GetSize(
-    /* [out] */ Integer* size)
+    /* [out] */ Integer& size)
 {
-    VALIDATE_NOT_NULL(size);
-
-    *size = mOwner->mSize;
+    size = mOwner->mSize;
     return NOERROR;
 }
 
@@ -747,7 +723,7 @@ ECode HashMap::KeySet::GetIterator(
 
 ECode HashMap::KeySet::Contains(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return mOwner->ContainsKey(obj, result);
 }
@@ -767,11 +743,9 @@ ECode HashMap::KeySet::Remove(
 //----------------------------------------------------------------------
 
 ECode HashMap::Values::GetSize(
-    /* [out] */ Integer* size)
+    /* [out] */ Integer& size)
 {
-    VALIDATE_NOT_NULL(size);
-
-    *size = mOwner->mSize;
+    size = mOwner->mSize;
     return NOERROR;
 }
 
@@ -789,7 +763,7 @@ ECode HashMap::Values::GetIterator(
 
 ECode HashMap::Values::Contains(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return mOwner->ContainsValue(obj, result);
 }
@@ -797,11 +771,9 @@ ECode HashMap::Values::Contains(
 //----------------------------------------------------------------------
 
 ECode HashMap::EntrySet::GetSize(
-    /* [out] */ Integer* size)
+    /* [out] */ Integer& size)
 {
-    VALIDATE_NOT_NULL(size);
-
-    *size = mOwner->mSize;
+    size = mOwner->mSize;
     return NOERROR;
 }
 
@@ -819,19 +791,17 @@ ECode HashMap::EntrySet::GetIterator(
 
 ECode HashMap::EntrySet::Contains(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     if (IMapEntry::Probe(obj) == nullptr) {
-        *result = false;
+        result = false;
         return NOERROR;
     }
     IMapEntry* e = IMapEntry::Probe(obj);
     AutoPtr<IInterface> key;
-    e->GetKey(&key);
+    e->GetKey(key);
     AutoPtr<Node> candidate = mOwner->GetNode(Hash(key), key);
-    *result = candidate != nullptr && Object::Equals((IMapEntry*)candidate, e);
+    result = candidate != nullptr && Object::Equals((IMapEntry*)candidate, e);
     return NOERROR;
 }
 
@@ -842,8 +812,8 @@ ECode HashMap::EntrySet::Remove(
     if (IMapEntry::Probe(obj) != nullptr) {
         IMapEntry* e = IMapEntry::Probe(obj);
         AutoPtr<IInterface> key, value;
-        e->GetKey(&key);
-        e->GetKey(&value);
+        e->GetKey(key);
+        e->GetKey(value);
         AutoPtr<Node> node = mOwner->RemoveNode(
                 Hash(key), key, value, true, true);
         if (contained != nullptr) {

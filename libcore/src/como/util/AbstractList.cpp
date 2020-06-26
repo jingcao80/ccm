@@ -41,7 +41,7 @@ public:
         /* [out] */ IInterface** obj) override;
 
     ECode GetSize(
-        /* [out] */ Integer* size) override;
+        /* [out] */ Integer& size) override;
 
     ECode Add(
         /* [in] */ Integer index,
@@ -131,7 +131,7 @@ ECode AbstractList::Add(
     /* [out] */ Boolean* result)
 {
     Integer size;
-    GetSize(&size);
+    GetSize(size);
     FAIL_RETURN(Add(size, obj));
     if (result != nullptr) *result = true;
     return NOERROR;
@@ -196,7 +196,7 @@ ECode AbstractList::LastIndexOf(
     VALIDATE_NOT_NULL(index);
 
     Integer size;
-    GetSize(&size);
+    GetSize(size);
     AutoPtr<IListIterator> it;
     GetListIterator(size, &it);
     if (obj == nullptr) {
@@ -224,7 +224,7 @@ ECode AbstractList::LastIndexOf(
 ECode AbstractList::Clear()
 {
     Integer size;
-    GetSize(&size);
+    GetSize(size);
     RemoveRange(0, size);
     return NOERROR;
 }
@@ -359,7 +359,7 @@ ECode AbstractList::RangeCheckForAdd(
     /* [in] */ Integer index)
 {
     Integer size;
-    if (index < 0 || (GetSize(&size), index > size)) {
+    if (index < 0 || (GetSize(size), index > size)) {
         Logger::E("AbstractList", "%s", OutOfBoundsMsg(index).string());
         return como::core::E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
@@ -370,7 +370,7 @@ String AbstractList::OutOfBoundsMsg(
     /* [in] */ Integer index)
 {
     Integer size;
-    GetSize(&size);
+    GetSize(size);
     return String::Format("Index: %d, Size: %d", index, size);
 }
 
@@ -383,20 +383,20 @@ ECode AbstractList::AddAll(
 
 ECode AbstractList::Contains(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return AbstractCollection::Contains(obj, result);
 }
 
 ECode AbstractList::ContainsAll(
     /* [in] */ ICollection* c,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return AbstractCollection::ContainsAll(c, result);
 }
 
 ECode AbstractList::IsEmpty(
-    /* [out] */ Boolean* empty)
+    /* [out] */ Boolean& empty)
 {
     return AbstractCollection::IsEmpty(empty);
 }
@@ -445,7 +445,7 @@ ECode AbstractList::Itr::HasNext(
     VALIDATE_NOT_NULL(result);
 
     Integer size;
-    mOwner->GetSize(&size);
+    mOwner->GetSize(size);
     *result = mCursor != size;
     return NOERROR;
 }
@@ -602,7 +602,7 @@ ECode Sublist::Constructor(
     /* [in] */ Integer toIndex)
 {
     Integer size;
-    if (fromIndex < 0 || (list->GetSize(&size), toIndex > size) ||
+    if (fromIndex < 0 || (list->GetSize(size), toIndex > size) ||
             (fromIndex > toIndex)) {
         Logger::E("SubList", "fromIndex: %d, toIndex: %d", fromIndex, toIndex);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -637,12 +637,10 @@ ECode Sublist::Get(
 }
 
 ECode Sublist::GetSize(
-    /* [out] */ Integer* size)
+    /* [out] */ Integer& size)
 {
-    VALIDATE_NOT_NULL(size);
-
     FAIL_RETURN(CheckForComodification());
-    *size = mSize;
+    size = mSize;
     return NOERROR;
 }
 
@@ -697,7 +695,7 @@ ECode Sublist::AddAll(
 {
     FAIL_RETURN(RangeCheckForAdd(index));
     Integer cSize;
-    c->GetSize(&cSize);
+    c->GetSize(cSize);
     if (cSize == 0) {
         if (result != nullptr) *result = false;
         return NOERROR;

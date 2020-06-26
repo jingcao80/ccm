@@ -144,7 +144,7 @@ ECode Support_ListTest::RunTest()
     AutoPtr<IList> mySubList;
     mList->SubList(50, 53, &mySubList);
     Integer size;
-    mySubList->GetSize(&size);
+    mySubList->GetSize(size);
     EXPECT_EQ(3, size);
     othNewInt = nullptr;
     CInteger::New(500, IID_IInteger, (IInterface**)&othNewInt);
@@ -165,7 +165,7 @@ ECode Support_ListTest::RunTest()
     TestListIterator(mySubList);
 
     mySubList->Clear();
-    mList->GetSize(&size);
+    mList->GetSize(size);
     EXPECT_EQ(100, size);
 
     TestListIterator(mList);
@@ -196,7 +196,7 @@ ECode Support_ListTest::TestListIterator(
     EXPECT_TRUE(elem1 == elem2);
 
     Integer orgSize;
-    list->GetSize(&orgSize);
+    list->GetSize(orgSize);
     li = nullptr;
     list->GetListIterator(&li);
     for (Integer i = 0; i <= orgSize; i++) {
@@ -271,7 +271,7 @@ ECode Support_ListTest::TestListIterator(
     CInteger::New(601, IID_IInteger, (IInterface**)&add2);
     li->Add(add1);
     Integer size;
-    list->GetSize(&size);
+    list->GetSize(size);
     EXPECT_TRUE(size == orgSize + 1);
     Integer idx;
     li->GetNextIndex(&idx);
@@ -293,7 +293,7 @@ ECode Support_ListTest::TestListIterator(
     EXPECT_EQ(1, idx);
 
     li->Remove();
-    list->GetSize(&size);
+    list->GetSize(size);
     EXPECT_TRUE(size == orgSize + 1);
     li->GetNextIndex(&idx);
     EXPECT_EQ(2, idx);
@@ -319,7 +319,7 @@ ECode Support_ListTest::TestListIterator(
     Boolean hasNext;
     li->HasNext(&hasNext);
     EXPECT_TRUE(hasNext);
-    list->GetSize(&size);
+    list->GetSize(size);
     EXPECT_TRUE(size == orgSize);
     li->GetNextIndex(&idx);
     EXPECT_EQ(0, idx);

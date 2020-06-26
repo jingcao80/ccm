@@ -623,25 +623,25 @@ ECode Locale::ToLanguageTag(
     CStringBuilder::New(IID_IStringBuilder, (IInterface**)&buf);
 
     String subtag;
-    tag->GetLanguage(&subtag);
+    tag->GetLanguage(subtag);
     if (subtag.GetLength() > 0) {
         buf->Append(LanguageTag::CanonicalizeLanguage(subtag));
     }
 
-    tag->GetScript(&subtag);
+    tag->GetScript(subtag);
     if (subtag.GetLength() > 0) {
         buf->Append(ILanguageTag::SEP);
         buf->Append(LanguageTag::CanonicalizeScript(subtag));
     }
 
-    tag->GetRegion(&subtag);
+    tag->GetRegion(subtag);
     if (subtag.GetLength() > 0) {
         buf->Append(ILanguageTag::SEP);
         buf->Append(LanguageTag::CanonicalizeRegion(subtag));
     }
 
     AutoPtr<IList> subtags;
-    tag->GetVariants(&subtags);
+    tag->GetVariants(subtags);
     AutoPtr<IIterator> it;
     subtags->GetIterator(it);
     Boolean hasNext;
@@ -652,8 +652,7 @@ ECode Locale::ToLanguageTag(
         buf->Append(CoreUtils::Unbox(ICharSequence::Probe(obj)));
     }
 
-    subtags = nullptr;
-    tag->GetExtensions(&subtags);
+    tag->GetExtensions(subtags);
     subtags->GetIterator(it);
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> obj;
@@ -663,7 +662,7 @@ ECode Locale::ToLanguageTag(
                 CoreUtils::Unbox(ICharSequence::Probe(obj))));
     }
 
-    tag->GetPrivateuse(&subtag);
+    tag->GetPrivateuse(subtag);
     if (subtag.GetLength() > 0) {
         Integer len;
         if (buf->GetLength(len), len > 0) {

@@ -30,7 +30,7 @@ interface IBasicLruCache
 
     Get(
         [in] IInterface* key,
-        [out] IInterface** value);
+        [out] IInterface&& value);
 
     Put(
         [in] IInterface* key,

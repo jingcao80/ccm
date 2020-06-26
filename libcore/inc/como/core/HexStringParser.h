@@ -31,11 +31,11 @@ class HexStringParser
 public:
     static ECode ParseFloat(
         /* [in] */ const String& s,
-        /* [out] */ Float* value);
+        /* [out] */ Float& value);
 
     static ECode ParseDouble(
         /* [in] */ const String& s,
-        /* [out] */ Double* value);
+        /* [out] */ Double& value);
 
 private:
     HexStringParser(
@@ -45,7 +45,7 @@ private:
     ECode Parse(
         /* [in] */ const String& hexString,
         /* [in] */ Boolean isDouble,
-        /* [out] */ Long* result);
+        /* [out] */ Long& result);
 
     void ParseHexSign(
         /* [in] */ const String& signStr);

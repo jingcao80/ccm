@@ -106,8 +106,9 @@ DecimalFormat::~DecimalFormat()
 ECode DecimalFormat::Constructor()
 {
     AutoPtr<ILocale> def = CLocale::GetDefault(CLocale::Category::GetFORMAT());
-    AutoPtr<ICharSequence> pattern;
-    IMap::Probe(GetCachedLocaleData())->Get(def, (IInterface**)&pattern);
+    AutoPtr<IInterface> v;
+    IMap::Probe(GetCachedLocaleData())->Get(def, v);
+    AutoPtr<ICharSequence> pattern = std::move(v);
     String patternStr = CoreUtils::Unbox(pattern);
     if (patternStr.IsNull()) {
         AutoPtr<ILocaleData> data;

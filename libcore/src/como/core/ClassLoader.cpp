@@ -79,7 +79,7 @@ AutoPtr<IMetaCoclass> ClassLoader::FindLoadedCoclass(
     /* [in] */ const String& fullName)
 {
     AutoPtr<IInterface> value;
-    mLoadedCoclasses->Get(CoreUtils::Box(fullName), &value);
+    mLoadedCoclasses->Get(CoreUtils::Box(fullName), value);
     return IMetaCoclass::Probe(value);
 }
 
@@ -118,7 +118,7 @@ AutoPtr<IMetaInterface> ClassLoader::FindLoadedInterface(
     /* [in] */ const String& fullName)
 {
     AutoPtr<IInterface> value;
-    mLoadedInterfaces->Get(CoreUtils::Box(fullName), &value);
+    mLoadedInterfaces->Get(CoreUtils::Box(fullName), value);
     return IMetaInterface::Probe(value);
 }
 

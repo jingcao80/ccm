@@ -288,7 +288,7 @@ Double ThreadLocalRandom::InternalNextDouble(
     /* [in] */ Double bound)
 {
     Long l;
-    NextLong(&l);
+    NextLong(l);
     Double r = ((ULong)l >> 11) * DOUBLE_UNIT;
     if (origin < bound) {
         r = r * (bound - origin) + origin;
@@ -300,20 +300,16 @@ Double ThreadLocalRandom::InternalNextDouble(
 }
 
 ECode ThreadLocalRandom::NextInteger(
-    /* [out] */ Integer* value)
+    /* [out] */ Integer& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = Mix32(NextSeed());
+    value = Mix32(NextSeed());
     return NOERROR;
 }
 
 ECode ThreadLocalRandom::NextInteger(
     /* [in] */ Integer bound,
-    /* [out] */ Integer* value)
+    /* [out] */ Integer& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     if (bound <= 0) {
         Logger::E("ThreadLocalRandom", "bound must be positive");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -329,40 +325,34 @@ ECode ThreadLocalRandom::NextInteger(
              u = (UInteger)Mix32(NextSeed()) >> 1)
             ;
     }
-    *value = r;
+    value = r;
     return NOERROR;
 }
 
 ECode ThreadLocalRandom::NextInteger(
     /* [in] */ Integer origin,
     /* [in] */ Integer bound,
-    /* [out] */ Integer* value)
+    /* [out] */ Integer& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     if (origin >= bound) {
         Logger::E("ThreadLocalRandom", "bound must be greater than origin");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    *value = InternalNextInt(origin, bound);
+    value = InternalNextInt(origin, bound);
     return NOERROR;
 }
 
 ECode ThreadLocalRandom::NextLong(
-    /* [out] */ Long* value)
+    /* [out] */ Long& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = Mix64(NextSeed());
+    value = Mix64(NextSeed());
     return NOERROR;
 }
 
 ECode ThreadLocalRandom::NextLong(
     /* [in] */ Long bound,
-    /* [out] */ Long* value)
+    /* [out] */ Long& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     if (bound <= 0) {
         Logger::E("ThreadLocalRandom", "bound must be positive");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -378,45 +368,40 @@ ECode ThreadLocalRandom::NextLong(
              u = (ULong)Mix64(NextSeed()) >> 1)
             ;
     }
-    return r;
+    value = r;
+    return NOERROR;
 }
 
 ECode ThreadLocalRandom::NextLong(
     /* [in] */ Long origin,
     /* [in] */ Long bound,
-    /* [out] */ Long* value)
+    /* [out] */ Long& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     if (origin >= bound) {
         Logger::E("ThreadLocalRandom", "bound must be greater than origin");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    *value = InternalNextLong(origin, bound);
+    value = InternalNextLong(origin, bound);
     return NOERROR;
 }
 
 ECode ThreadLocalRandom::NextDouble(
-    /* [out] */ Double* value)
+    /* [out] */ Double& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = ((ULong)Mix64(NextSeed()) >> 11) * DOUBLE_UNIT;
+    value = ((ULong)Mix64(NextSeed()) >> 11) * DOUBLE_UNIT;
     return NOERROR;
 }
 
 ECode ThreadLocalRandom::NextDouble(
     /* [in] */ Double bound,
-    /* [out] */ Double* value)
+    /* [out] */ Double& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     if (!(bound > 0.0)) {
         Logger::E("ThreadLocalRandom", "bound must be positive");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     Double result = ((ULong)Mix64(NextSeed()) >> 11) * DOUBLE_UNIT * bound;
-    *value = (result < bound) ? result : // correct for rounding
+    value = (result < bound) ? result : // correct for rounding
             Math::LongBitsToDouble(Math::DoubleToLongBits(bound) - 1);
     return NOERROR;
 }
@@ -424,58 +409,50 @@ ECode ThreadLocalRandom::NextDouble(
 ECode ThreadLocalRandom::NextDouble(
     /* [in] */ Double origin,
     /* [in] */ Double bound,
-    /* [out] */ Double* value)
+    /* [out] */ Double& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     if (!(origin < bound)) {
         Logger::E("ThreadLocalRandom", "bound must be greater than origin");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    *value = InternalNextDouble(origin, bound);
+    value = InternalNextDouble(origin, bound);
     return NOERROR;
 }
 
 ECode ThreadLocalRandom::NextBoolean(
-    /* [out] */ Boolean* value)
+    /* [out] */ Boolean& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = Mix32(NextSeed()) < 0;
+    value = Mix32(NextSeed()) < 0;
     return NOERROR;
 }
 
 ECode ThreadLocalRandom::NextFloat(
-    /* [out] */ Float* value)
+    /* [out] */ Float& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = ((UInteger)Mix32(NextSeed()) >> 8) * FLOAT_UNIT;
+    value = ((UInteger)Mix32(NextSeed()) >> 8) * FLOAT_UNIT;
     return NOERROR;
 }
 
 ECode ThreadLocalRandom::NextGaussian(
-    /* [out] */ Double* value)
+    /* [out] */ Double& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     // Use nextLocalGaussian instead of nextGaussian field
     AutoPtr<IInterface> d;
     GetNextLocalGaussian()->Get(d);
     if (d != nullptr) {
         GetNextLocalGaussian()->Set(nullptr);
-        *value = CoreUtils::Unbox(IDouble::Probe(d));
+        value = CoreUtils::Unbox(IDouble::Probe(d));
         return NOERROR;
     }
     Double v1, v2, s;
     do {
-        v1 = 2 * (NextDouble(&v1), v1) - 1; // between -1 and 1
-        v2 = 2 * (NextDouble(&v2), v2) - 1; // between -1 and 1
+        v1 = 2 * (NextDouble(v1), v1) - 1; // between -1 and 1
+        v2 = 2 * (NextDouble(v2), v2) - 1; // between -1 and 1
         s = v1 * v1 + v2 * v2;
     } while (s >= 1 || s == 0);
     Double multiplier = StrictMath::Sqrt(-2 * StrictMath::Log(s) / s);
     GetNextLocalGaussian()->Set(CoreUtils::Box(v2 * multiplier));
-    *value = v1 * multiplier;
+    value = v1 * multiplier;
     return NOERROR;
 }
 

@@ -25,28 +25,28 @@ namespace regex {
 interface IMatchResult
 {
     End(
-        [out] Integer* index);
+        [out] Integer& index);
 
     End(
         [in] Integer group,
-        [out] Integer* index);
+        [out] Integer& index);
 
     Group(
-        [out] String* subseq);
+        [out] String& subseq);
 
     Group(
         [in] Integer group,
-        [out] String* subseq);
+        [out] String& subseq);
 
     GroupCount(
-        [out] Integer* number);
+        [out] Integer& number);
 
     Start(
-        [out] Integer* index);
+        [out] Integer& index);
 
     Start(
         [in] Integer group,
-        [out] Integer* index);
+        [out] Integer& index);
 }
 
 }

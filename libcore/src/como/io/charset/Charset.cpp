@@ -136,8 +136,9 @@ void Charset::Cache(
 
         String canonicalName;
         cs->GetName(canonicalName);
-        AutoPtr<ICharset> canonicalCharset;
-        cache2->Get(CoreUtils::Box(canonicalName), (IInterface**)&canonicalCharset);
+        AutoPtr<IInterface> v;
+        cache2->Get(CoreUtils::Box(canonicalName), v);
+        AutoPtr<ICharset> canonicalCharset = std::move(v);
 
         if (canonicalCharset != nullptr) {
             cs = canonicalCharset;
@@ -359,10 +360,13 @@ ECode Charset::Lookup(
 
     VOLATILE_GET(AutoPtr<IMapEntry> cached, sCache1);
     if (cached != nullptr) {
-        AutoPtr<ICharSequence> key;
-        cached->GetKey((IInterface**)&key);
-        if (charsetName.Equals(CoreUtils::Unbox(key))) {
-            return cached->GetValue((IInterface**)&cs);
+        AutoPtr<IInterface> k;
+        cached->GetKey(k);
+        if (charsetName.Equals(CoreUtils::Unbox(ICharSequence::Probe(k)))) {
+            AutoPtr<IInterface> v;
+            ECode ec = cached->GetValue(v);
+            cs = std::move(v);
+            return ec;
         }
     }
     return Lookup2(charsetName, cs);
@@ -376,7 +380,9 @@ ECode Charset::Lookup2(
     {
         AutoLock lock(ISynchronize::Probe(cache2));
 
-        cache2->Get(CoreUtils::Box(charsetName), (IInterface**)&cs);
+        AutoPtr<IInterface> v;
+        cache2->Get(CoreUtils::Box(charsetName), v);
+        cs = std::move(v);
         if (cs != nullptr) {
             AutoPtr<IMapEntry> entry;
             CSimpleImmutableEntry::New(CoreUtils::Box(charsetName), cs, IID_IMapEntry, (IInterface**)&entry);
@@ -445,7 +451,7 @@ void Charset::Put(
         String canonicalName;
         cs->GetName(canonicalName);
         Boolean contains;
-        if (m->ContainsKey(CoreUtils::Box(canonicalName), &contains), !contains) {
+        if (m->ContainsKey(CoreUtils::Box(canonicalName), contains), !contains) {
             m->Put(CoreUtils::Box(canonicalName), cs);
         }
     }

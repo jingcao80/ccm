@@ -46,7 +46,7 @@ ECode LinkedHashSet::Constructor(
     /* [in] */ ICollection* c)
 {
     Integer size;
-    c->GetSize(&size);
+    c->GetSize(size);
     HashSet::Constructor(Math::Max(2 * size, 11), .75f, true);
     AddAll(c);
     return NOERROR;

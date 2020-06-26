@@ -84,7 +84,7 @@ Double Math::GetsTwoToTheDoubleScaleDown()
 Double Math::Random()
 {
     Double rv;
-    GetRandomNumberGenerator()->NextDouble(&rv);
+    GetRandomNumberGenerator()->NextDouble(rv);
     return rv;
 }
 
@@ -97,14 +97,14 @@ void Math::SetRandomSeedInternal(
 Integer Math::RandomIntInternal()
 {
     Integer rv;
-    GetRandomNumberGenerator()->NextInteger(&rv);
+    GetRandomNumberGenerator()->NextInteger(rv);
     return rv;
 }
 
 Long Math::RandomLongInternal()
 {
     Long rv;
-    GetRandomNumberGenerator()->NextLong(&rv);
+    GetRandomNumberGenerator()->NextLong(rv);
     return rv;
 }
 

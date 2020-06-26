@@ -62,11 +62,11 @@ private:
             /* [out] */ AutoPtr<IIterator>& it) override;
 
         ECode GetSize(
-            /* [out] */ Integer* size) override;
+            /* [out] */ Integer& size) override;
 
         ECode Contains(
             /* [in] */ IInterface* obj,
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
 
         ECode Remove(
             /* [in] */ IInterface* obj,
@@ -96,14 +96,14 @@ private:
 
         ECode Contains(
             /* [in] */ IInterface* obj,
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
 
         ECode Remove(
             /* [in] */ IInterface* obj,
             /* [out] */ Boolean* changed = nullptr) override;
 
         ECode GetSize(
-            /* [out] */ Integer* size) override;
+            /* [out] */ Integer& size) override;
 
         ECode Clear() override;
 
@@ -124,11 +124,11 @@ private:
             /* [out] */ AutoPtr<IIterator>& it) override;
 
         ECode GetSize(
-            /* [out] */ Integer* size) override;
+            /* [out] */ Integer& size) override;
 
         ECode Contains(
             /* [in] */ IInterface* obj,
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
 
         ECode Clear() override;
 
@@ -155,10 +155,10 @@ private:
         COMO_INTERFACE_DECL();
 
         ECode GetKey(
-            /* [out] */ IInterface** key) override;
+            /* [out] */ AutoPtr<IInterface>& key) override;
 
         ECode GetValue(
-            /* [out] */ IInterface** value) override;
+            /* [out] */ AutoPtr<IInterface>& value) override;
 
         ECode SetValue(
             /* [in] */ IInterface* value,
@@ -257,10 +257,10 @@ public:
         /* [in] */ IMap* t);
 
     ECode GetSize(
-        /* [out] */ Integer* size) override;
+        /* [out] */ Integer& size) override;
 
     ECode IsEmpty(
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode GetKeys(
         /* [out] */ IEnumeration** keys) override;
@@ -270,19 +270,19 @@ public:
 
     ECode Contains(
         /* [in] */ IInterface* value,
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode ContainsValue(
         /* [in] */ IInterface* value,
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode ContainsKey(
         /* [in] */ IInterface* key,
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode Get(
         /* [in] */ IInterface* key,
-        /* [out] */ IInterface** value) override;
+        /* [out] */ AutoPtr<IInterface>& value) override;
 
     ECode Put(
         /* [in] */ IInterface* key,
@@ -302,13 +302,13 @@ public:
         /* [out] */ String& str) override;
 
     ECode GetKeySet(
-        /* [out] */ ISet** keys) override;
+        /* [out] */ AutoPtr<ISet>& keys) override;
 
     ECode GetEntrySet(
-        /* [out] */ ISet** entries) override;
+        /* [out] */ AutoPtr<ISet>& entries) override;
 
     ECode GetValues(
-        /* [out] */ ICollection** values) override;
+        /* [out] */ AutoPtr<ICollection>& values) override;
 
     ECode Equals(
         /* [in] */ IInterface* obj,

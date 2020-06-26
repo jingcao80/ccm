@@ -315,7 +315,7 @@ ECode BigDecimal::Constructor(
         scaleString = String(in, begin, last + 1 - begin);
         // Checking if the scale is defined
         Integer scaleInt;
-        StringUtils::ParseInteger(scaleString, &scaleInt);
+        StringUtils::ParseInteger(scaleString, scaleInt);
         newScale = (Long)mScale - scaleInt;
         mScale = (Integer)newScale;
         if (newScale != mScale) {
@@ -327,7 +327,7 @@ ECode BigDecimal::Constructor(
     if (bufLength < 19) {
         String str;
         unscaledBuffer->ToString(str);
-        FAIL_RETURN(StringUtils::ParseLong(str, &mSmallValue));
+        FAIL_RETURN(StringUtils::ParseLong(str, mSmallValue));
         mBitLength = BitLength(mSmallValue);
     }
     else {

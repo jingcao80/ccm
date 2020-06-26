@@ -31,10 +31,10 @@ interface IMapEntry
         [out] Integer& hash);
 
     GetKey(
-        [out] IInterface** key);
+        [out] IInterface&& key);
 
     GetValue(
-        [out] IInterface** value);
+        [out] IInterface&& value);
 
     SetValue(
         [in] IInterface* value,
@@ -54,11 +54,11 @@ interface IMap
 
     ContainsKey(
         [in] IInterface* key,
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     ContainsValue(
         [in] IInterface* value,
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     Equals(
         [in] IInterface* obj,
@@ -66,25 +66,25 @@ interface IMap
 
     Get(
         [in] IInterface* key,
-        [out] IInterface** value);
+        [out] IInterface&& value);
 
     GetEntrySet(
-        [out] ISet** entries);
+        [out] ISet&& entries);
 
     GetHashCode(
         [out] Integer& hash);
 
     GetKeySet(
-        [out] ISet** keys);
+        [out] ISet&& keys);
 
     GetSize(
-        [out] Integer* size);
+        [out] Integer& size);
 
     GetValues(
-        [out] ICollection** values);
+        [out] ICollection&& values);
 
     IsEmpty(
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     Put(
         [in] IInterface* key,

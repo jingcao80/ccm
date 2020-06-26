@@ -71,8 +71,9 @@ AutoPtr<ICurrency> Currency::GetInstance(
 {
     IMap* instances = IMap::Probe(GetInstances());
 
-    AutoPtr<ICurrency> instance;
-    instances->Get(CoreUtils::Box(currencyCode), (IInterface**)&instance);
+    AutoPtr<IInterface> v;
+    instances->Get(CoreUtils::Box(currencyCode), v);
+    AutoPtr<ICurrency> instance = std::move(v);
     if (instance != nullptr) {
         return instance;
     }

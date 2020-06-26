@@ -73,10 +73,10 @@ public:
         /* [out] */ Boolean& result) override;
 
     ECode GetKey(
-        /* [out] */ IInterface** key) override;
+        /* [out] */ AutoPtr<IInterface>& key) override;
 
     ECode GetValue(
-        /* [out] */ IInterface** value) override;
+        /* [out] */ AutoPtr<IInterface>& value) override;
 
     ECode SetValue(
         /* [in] */ IInterface* value,
@@ -112,22 +112,16 @@ ECode AttributeEntry::Equals(
 }
 
 ECode AttributeEntry::GetKey(
-    /* [out] */ IInterface** key)
+    /* [out] */ AutoPtr<IInterface>& key)
 {
-    VALIDATE_NOT_NULL(key);
-
-    *key = mKey;
-    REFCOUNT_ADD(*key);
+    key = mKey;
     return NOERROR;
 }
 
 ECode AttributeEntry::GetValue(
-    /* [out] */ IInterface** value)
+    /* [out] */ AutoPtr<IInterface>& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = mValue;
-    REFCOUNT_ADD(*value);
+    value = mValue;
     return NOERROR;
 }
 
@@ -237,7 +231,7 @@ ECode AttributedString::Constructor(
 
     if (text.GetLength() == 0) {
         Boolean empty;
-        if (attributes->IsEmpty(&empty), empty) {
+        if (attributes->IsEmpty(empty), empty) {
             return NOERROR;
         }
         Logger::E("AttributedString", "Can't add attribute to 0-length text");
@@ -245,7 +239,7 @@ ECode AttributedString::Constructor(
     }
 
     Integer attributeCount;
-    attributes->GetSize(&attributeCount);
+    attributes->GetSize(attributeCount);
     if (attributeCount > 0) {
         CreateRunAttributeDataVectors();
         AutoPtr<IVector> newRunAttributes, newRunAttributeValues;
@@ -255,7 +249,7 @@ ECode AttributedString::Constructor(
         mRunAttributeValues.Set(0, newRunAttributeValues);
 
         AutoPtr<ISet> entrySet;
-        attributes->GetEntrySet(&entrySet);
+        attributes->GetEntrySet(entrySet);
         AutoPtr<IIterator> it;
         entrySet->GetIterator(it);
         Boolean hasNext;
@@ -263,8 +257,8 @@ ECode AttributedString::Constructor(
             AutoPtr<IMapEntry> entry;
             it->Next((IInterface**)&entry);
             AutoPtr<IInterface> key, value;
-            entry->GetKey(&key);
-            entry->GetValue(&value);
+            entry->GetKey(key);
+            entry->GetValue(value);
             newRunAttributes->AddElement(key);
             newRunAttributeValues->AddElement(value);
         }
@@ -342,7 +336,7 @@ ECode AttributedString::Constructor(
         keys->RetainAll(ICollection::Probe(attrKeys));
     }
     Boolean empty;
-    if (keys->IsEmpty(&empty), empty) {
+    if (keys->IsEmpty(empty), empty) {
         return NOERROR;
     }
 
@@ -452,7 +446,7 @@ ECode AttributedString::AddAttributes(
     }
     if (beginIndex == endIndex) {
         Boolean empty;
-        if (attributes->IsEmpty(&empty), empty) {
+        if (attributes->IsEmpty(empty), empty) {
             return NOERROR;
         }
         Logger::E("AttributedString", "Can't add attribute to 0-length text");
@@ -469,7 +463,7 @@ ECode AttributedString::AddAttributes(
     Integer endRunIndex = EnsureRunBreak(endIndex);
 
     AutoPtr<ISet> entrySet;
-    attributes->GetEntrySet(&entrySet);
+    attributes->GetEntrySet(entrySet);
     AutoPtr<IIterator> it;
     entrySet->GetIterator(it);
     Boolean hasNext;
@@ -477,8 +471,8 @@ ECode AttributedString::AddAttributes(
         AutoPtr<IMapEntry> entry;
         it->Next((IInterface**)&entry);
         AutoPtr<IInterface> key, value;
-        entry->GetKey(&key);
-        entry->GetValue(&value);
+        entry->GetKey(key);
+        entry->GetValue(value);
         AddAttributeRunData(IAttributedCharacterIterator::IAttribute::Probe(key), value, beginRunIndex, endRunIndex);
     }
     return NOERROR;
@@ -614,7 +608,7 @@ void AttributedString::AddAttributeRunData(
 
         if (keyValueIndex == -1) {
             Integer oldSize;
-            mRunAttributes[i]->GetSize(&oldSize);
+            mRunAttributes[i]->GetSize(oldSize);
             mRunAttributes[i]->AddElement(attribute);
             ECode ec = mRunAttributeValues[i]->AddElement(value);
             if (FAILED(ec)) {
@@ -776,12 +770,12 @@ void AttributedString::SetAttributes(
 
     Integer index = EnsureRunBreak(offset, false);
     Integer size;
-    if (attrs != nullptr && (attrs->GetSize(&size), size > 0)) {
+    if (attrs != nullptr && (attrs->GetSize(size), size > 0)) {
         AutoPtr<IVector> runAttrs, runValues;
         CVector::New(size, IID_IVector, (IInterface**)&runAttrs);
         CVector::New(size, IID_IVector, (IInterface**)&runValues);
         AutoPtr<ISet> entrySet;
-        attrs->GetEntrySet(&entrySet);
+        attrs->GetEntrySet(entrySet);
         AutoPtr<IIterator> it;
         entrySet->GetIterator(it);
 
@@ -791,8 +785,8 @@ void AttributedString::SetAttributes(
             it->Next((IInterface**)&entry);
 
             AutoPtr<IInterface> key, value;
-            entry->GetKey(&key);
-            entry->GetValue(&value);
+            entry->GetKey(key);
+            entry->GetValue(value);
             runAttrs->Add(key);
             runValues->Add(value);
         }
@@ -807,7 +801,7 @@ Boolean AttributedString::MapsDiffer(
 {
     if (last == nullptr) {
         Integer size;
-        return (attrs != nullptr && (attrs->GetSize(&size), size > 0));
+        return (attrs != nullptr && (attrs->GetSize(size), size > 0));
     }
     Boolean isEqual;
     IObject::Probe(last)->Equals(attrs, isEqual);
@@ -1131,7 +1125,7 @@ ECode AttributedString::AttributedStringIterator::GetAllAttributeKeys(
                 AutoPtr<IVector> currentRunAttributes = mOwner->mRunAttributes[i];
                 if (currentRunAttributes != nullptr) {
                     Integer j;
-                    currentRunAttributes->GetSize(&j);
+                    currentRunAttributes->GetSize(j);
                     while (j-- > 0) {
                         AutoPtr<IInterface> value;
                         currentRunAttributes->Get(j, &value);
@@ -1216,17 +1210,15 @@ void AttributedString::AttributedStringIterator::UpdateRunInfo()
 //--------------------------------------------------------------------------
 
 ECode AttributedString::AttributeMap::GetEntrySet(
-    /* [out] */ ISet** entrySet)
+    /* [out] */ AutoPtr<ISet>& entrySet)
 {
-    VALIDATE_NOT_NULL(entrySet);
-
     AutoPtr<ISet> set;
     CHashSet::New(IID_ISet, (IInterface**)&set);
     {
         AutoLock lock(mOwner);
 
         Integer size;
-        mOwner->mRunAttributes[mRunIndex]->GetSize(&size);
+        mOwner->mRunAttributes[mRunIndex]->GetSize(size);
         for (Integer i = 0; i < size; i++) {
             AutoPtr<IAttributedCharacterIterator::IAttribute> key;
             AutoPtr<IInterface> value;
@@ -1242,17 +1234,17 @@ ECode AttributedString::AttributeMap::GetEntrySet(
             set->Add(entry);
         }
     }
-    set.MoveTo(entrySet);
+    entrySet = std::move(set);
     return NOERROR;
 }
 
 ECode AttributedString::AttributeMap::Get(
     /* [in] */ IInterface* key,
-    /* [out] */ IInterface** value)
+    /* [out] */ AutoPtr<IInterface>& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    mOwner->GetAttributeCheckRange((IAttributedCharacterIterator::IAttribute*)key, mRunIndex, mBeginIndex, mEndIndex).MoveTo(value);
+    value = mOwner->GetAttributeCheckRange(
+            (IAttributedCharacterIterator::IAttribute*)key,
+            mRunIndex, mBeginIndex, mEndIndex);
     return NOERROR;
 }
 

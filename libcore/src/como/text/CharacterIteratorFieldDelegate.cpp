@@ -46,7 +46,7 @@ ECode CharacterIteratorFieldDelegate::Formatted(
         if (start < mSize) {
             Integer index = mSize;
             Integer asIndex;
-            mAttributedStrings->GetSize(&asIndex);
+            mAttributedStrings->GetSize(asIndex);
             asIndex -= 1;
 
             while (start < index) {
@@ -104,7 +104,7 @@ ECode CharacterIteratorFieldDelegate::GetIterator(
         mSize = string.GetLength();
     }
     Integer iCount;
-    mAttributedStrings->GetSize(&iCount);
+    mAttributedStrings->GetSize(iCount);
     Array<IAttributedCharacterIterator*> iterators(iCount);
 
     for (Integer counter = 0; counter < iCount; counter++) {

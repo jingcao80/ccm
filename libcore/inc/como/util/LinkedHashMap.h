@@ -56,7 +56,7 @@ public:
         {}
 
         ECode GetSize(
-            /* [out] */ Integer* size) override;
+            /* [out] */ Integer& size) override;
 
         ECode Clear() override;
 
@@ -65,7 +65,7 @@ public:
 
         ECode Contains(
             /* [in] */ IInterface* obj,
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
 
         ECode Remove(
             /* [in] */ IInterface* obj,
@@ -85,7 +85,7 @@ public:
         {}
 
         ECode GetSize(
-            /* [out] */ Integer* size) override;
+            /* [out] */ Integer& size) override;
 
         ECode Clear() override;
 
@@ -94,7 +94,7 @@ public:
 
         ECode Contains(
             /* [in] */ IInterface* obj,
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
 
     private:
         LinkedHashMap* mOwner;
@@ -110,7 +110,7 @@ public:
         {}
 
         ECode GetSize(
-            /* [out] */ Integer* size) override;
+            /* [out] */ Integer& size) override;
 
         ECode Clear() override;
 
@@ -119,7 +119,7 @@ public:
 
         ECode Contains(
             /* [in] */ IInterface* obj,
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
 
         ECode Remove(
             /* [in] */ IInterface* obj,
@@ -220,11 +220,11 @@ public:
 
     ECode ContainsValue(
         /* [in] */ IInterface* value,
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode Get(
         /* [in] */ IInterface* key,
-        /* [out] */ IInterface** value) override;
+        /* [out] */ AutoPtr<IInterface>& value) override;
 
     ECode Clear() override;
 
@@ -232,13 +232,13 @@ public:
         /* [out] */ IMapEntry** entry) override;
 
     ECode GetKeySet(
-        /* [out] */ ISet** keys) override;
+        /* [out] */ AutoPtr<ISet>& keys) override;
 
     ECode GetValues(
-        /* [out] */ ICollection** values) override;
+        /* [out] */ AutoPtr<ICollection>& values) override;
 
     ECode GetEntrySet(
-        /* [out] */ ISet** entries) override;
+        /* [out] */ AutoPtr<ISet>& entries) override;
 
 protected:
     void Reinitialize() override;

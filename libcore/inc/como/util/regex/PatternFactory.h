@@ -30,12 +30,12 @@ class COM_PUBLIC PatternFactory
 public:
     static ECode Compile(
         /* [in] */ const String& regex,
-        /* [out] */ IPattern** pattern);
+        /* [out] */ AutoPtr<IPattern>& pattern);
 
     static ECode Compile(
         /* [in] */ const String& regex,
         /* [in] */ Integer flags,
-        /* [out] */ IPattern** pattern);
+        /* [out] */ AutoPtr<IPattern>& pattern);
 
     static ECode FastSplit(
         /* [in] */ const String& re,
@@ -46,11 +46,11 @@ public:
     static ECode Matches(
         /* [in] */ const String& regex,
         /* [in] */ ICharSequence* input,
-        /* [out] */ Boolean* matched);
+        /* [out] */ Boolean& matched);
 
     static ECode Quote(
         /* [in] */ const String& s,
-        /* [out] */ String* pattStr);
+        /* [out] */ String& pattStr);
 
 private:
     PatternFactory();

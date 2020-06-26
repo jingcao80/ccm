@@ -48,46 +48,40 @@ namespace core {
 ECode StringUtils::ParseByte(
     /* [in] */ const String& s,
     /* [in] */ Integer radix,
-    /* [out] */ Byte* value)
+    /* [out] */ Byte& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     Integer i;
-    FAIL_RETURN(ParseInteger(s, radix, &i));
+    FAIL_RETURN(ParseInteger(s, radix, i));
     if (i < IByte::MIN_VALUE || i > IByte::MAX_VALUE) {
         Logger::E("StringUtils", "Value out of range. Value:\"%s\" Radix:%d",
                 s.string(), radix);
         return E_NUMBER_FORMAT_EXCEPTION;
     }
-    *value = (Byte)i;
+    value = (Byte)i;
     return NOERROR;
 }
 
 ECode StringUtils::ParseShort(
     /* [in] */ const String& s,
     /* [in] */ Integer radix,
-    /* [out] */ Short* value)
+    /* [out] */ Short& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     Integer i;
-    FAIL_RETURN(ParseInteger(s, radix, &i));
+    FAIL_RETURN(ParseInteger(s, radix, i));
     if (i < IShort::MIN_VALUE || i > IShort::MAX_VALUE) {
         Logger::E("StringUtils", "Value out of range. Value:\"%s\" Radix:%d",
                 s.string(), radix);
         return E_NUMBER_FORMAT_EXCEPTION;
     }
-    *value = (Short)i;
+    value = (Short)i;
     return NOERROR;
 }
 
 ECode StringUtils::ParseInteger(
     /* [in] */ const String& s,
     /* [in] */ Integer radix,
-    /* [out] */ Integer* value)
+    /* [out] */ Integer& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     if (s.IsNull()) {
         Logger::E("StringUtils", "s == null");
         return E_NUMBER_FORMAT_EXCEPTION;
@@ -152,17 +146,15 @@ ECode StringUtils::ParseInteger(
         Logger::E("StringUtils", "s == %s", s.string());
         return E_NUMBER_FORMAT_EXCEPTION;
     }
-    *value = negative ? result : -result;
+    value = negative ? result : -result;
     return NOERROR;
 }
 
 ECode StringUtils::ParseLong(
     /* [in] */ const String& s,
     /* [in] */ Integer radix,
-    /* [out] */ Long* value)
+    /* [out] */ Long& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     if (s.IsNull()) {
         Logger::E("StringUtils", "s == null");
         return E_NUMBER_FORMAT_EXCEPTION;
@@ -227,25 +219,21 @@ ECode StringUtils::ParseLong(
         Logger::E("StringUtils", "s == %s", s.string());
         return E_NUMBER_FORMAT_EXCEPTION;
     }
-    *value = negative ? result : -result;
+    value = negative ? result : -result;
     return NOERROR;
 }
 
 ECode StringUtils::ParseFloat(
     /* [in] */ const String& s,
-    /* [out] */ Float* value)
+    /* [out] */ Float& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     return StringToReal::ParseFloat(s, value);
 }
 
 ECode StringUtils::ParseDouble(
     /* [in] */ const String& s,
-    /* [out] */ Double* value)
+    /* [out] */ Double& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     return StringToReal::ParseDouble(s, value);
 }
 
@@ -629,7 +617,7 @@ String StringUtils::ToHexString(
             }
             else {
                 String replacedStr;
-                StringUtils::ReplaceFirst(signif, String("0{1,12}$"), String(""), &replacedStr);
+                StringUtils::ReplaceFirst(signif, String("0{1,12}$"), String(""), replacedStr);
                 answer->Append(replacedStr);
             }
 
@@ -650,7 +638,7 @@ String StringUtils::ToHexString(
 ECode StringUtils::ToString(
     /* [in] */ const String& str,
     /* [in] */ const String& charsetName,
-    /* [out] */ String* decodedStr)
+    /* [out] */ String& decodedStr)
 {
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
@@ -659,14 +647,12 @@ ECode StringUtils::ReplaceFirst(
     /* [in] */ const String& input,
     /* [in] */ const String& regex,
     /* [in] */ const String& replacement,
-    /* [out] */ String* result)
+    /* [out] */ String& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     AutoPtr<IPattern> p;
-    Pattern::Compile(regex, &p);
+    Pattern::Compile(regex, p);
     AutoPtr<IMatcher> m;
-    p->Matcher(CoreUtils::Box(input), &m);
+    p->Matcher(CoreUtils::Box(input), m);
     return m->ReplaceFirst(replacement, result);
 }
 
@@ -674,14 +660,12 @@ ECode StringUtils::ReplaceAll(
     /* [in] */ const String& input,
     /* [in] */ const String& regex,
     /* [in] */ const String& replacement,
-    /* [out] */ String* result)
+    /* [out] */ String& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     AutoPtr<IPattern> p;
-    Pattern::Compile(regex, &p);
+    Pattern::Compile(regex, p);
     AutoPtr<IMatcher> m;
-    p->Matcher(CoreUtils::Box(input), &m);
+    p->Matcher(CoreUtils::Box(input), m);
     return m->ReplaceAll(replacement, result);
 }
 
@@ -698,7 +682,7 @@ Array<String> StringUtils::Split(
     }
 
     AutoPtr<IPattern> p;
-    Pattern::Compile(regex, &p);
+    Pattern::Compile(regex, p);
     p->Split(CoreUtils::Box(input), limit, &strArr);
     return strArr;
 }

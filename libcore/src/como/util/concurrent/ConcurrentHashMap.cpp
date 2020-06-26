@@ -166,32 +166,26 @@ ECode ConcurrentHashMap::Constructor(
 }
 
 ECode ConcurrentHashMap::GetSize(
-    /* [out] */ Integer* size)
+    /* [out] */ Integer& size)
 {
-    VALIDATE_NOT_NULL(size);
-
     Long n = SumCount();
-    *size = (n < 0ll) ? 0 :
+    size = (n < 0ll) ? 0 :
             (n > (Long)IInteger::MAX_VALUE) ? IInteger::MAX_VALUE :
             (Integer)n;
     return NOERROR;
 }
 
 ECode ConcurrentHashMap::IsEmpty(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
-    *result = SumCount() <= 0ll;
+    result = SumCount() <= 0ll;
     return NOERROR;
 }
 
 ECode ConcurrentHashMap::Get(
     /* [in] */ IInterface* key,
-    /* [out] */ IInterface** value)
+    /* [out] */ AutoPtr<IInterface>& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     Array<Node*> tab;
     AutoPtr<Node> e, p;
     Integer n, eh;
@@ -203,54 +197,47 @@ ECode ConcurrentHashMap::Get(
         if ((eh = e->mHash) == h) {
             if (((ek = e->mKey), IInterface::Equals(ek, key)) ||
                     (ek != nullptr && Object::Equals(key, ek))) {
-                VOLATILE_GET(*value, e->mVal);
-                REFCOUNT_ADD(*value);
+                VOLATILE_GET(value, e->mVal);
                 return NOERROR;
             }
         }
         else if (eh < 0) {
             p = e->Find(h, key);
             if (p != nullptr) {
-                VOLATILE_GET(*value, p->mVal);
+                VOLATILE_GET(value, p->mVal);
             }
             else {
-                *value = nullptr;
+                value = nullptr;
             }
-            REFCOUNT_ADD(*value);
             return NOERROR;
         }
         while (VOLATILE_GET_INLINE(e, e->mNext), e != nullptr) {
             if (e->mHash == h &&
                     (((ek = e->mKey), IInterface::Equals(ek, key)) ||
                     (ek != nullptr && Object::Equals(key, ek)))) {
-                VOLATILE_GET(*value, e->mVal);
-                REFCOUNT_ADD(*value);
+                VOLATILE_GET(value, e->mVal);
                 return NOERROR;
             }
         }
     }
-    *value = nullptr;
+    value = nullptr;
     return NOERROR;
 }
 
 ECode ConcurrentHashMap::ContainsKey(
     /* [in] */ IInterface* key,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     AutoPtr<IInterface> v;
-    Get(key, &v);
-    *result = v != nullptr;
+    Get(key, v);
+    result = v != nullptr;
     return NOERROR;
 }
 
 ECode ConcurrentHashMap::ContainsValue(
     /* [in] */ IInterface* value,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     if (value == nullptr) {
         return como::core::E_NULL_POINTER_EXCEPTION;
     }
@@ -261,12 +248,12 @@ ECode ConcurrentHashMap::ContainsValue(
             VOLATILE_GET(AutoPtr<IInterface> v, p->mVal);
             if (IInterface::Equals(v, value) ||
                     (v != nullptr && Object::Equals(value ,v))) {
-                *result = true;
+                result = true;
                 return NOERROR;
             }
         }
     }
-    *result = false;
+    result = false;
     return NOERROR;
 }
 
@@ -372,14 +359,14 @@ ECode ConcurrentHashMap::PutAll(
     /* [in] */ IMap* m)
 {
     Integer size;
-    m->GetSize(&size);
+    m->GetSize(size);
     TryPresize(size);
     AutoPtr<ISet> entrySet;
-    m->GetEntrySet(&entrySet);
+    m->GetEntrySet(entrySet);
     FOR_EACH(IMapEntry*, e, IMapEntry::Probe, entrySet) {
         AutoPtr<IInterface> k, v;
-        e->GetKey(&k);
-        e->GetValue(&v);
+        e->GetKey(k);
+        e->GetValue(v);
         PutVal(k, v, false);
     } END_FOR_EACH();
     return NOERROR;
@@ -534,41 +521,32 @@ ECode ConcurrentHashMap::Clear()
 }
 
 ECode ConcurrentHashMap::GetKeySet(
-    /* [out] */ ISet** keys)
+    /* [out] */ AutoPtr<ISet>& keys)
 {
-    VALIDATE_NOT_NULL(keys);
-
     if (mKeySet == nullptr) {
         mKeySet = new KeySetView(this, nullptr);
     }
-    *keys = mKeySet.Get();
-    REFCOUNT_ADD(*keys);
+    keys = mKeySet.Get();
     return NOERROR;
 }
 
 ECode ConcurrentHashMap::GetValues(
-    /* [out] */ ICollection** values)
+    /* [out] */ AutoPtr<ICollection>& values)
 {
-    VALIDATE_NOT_NULL(values);
-
     if (mValues == nullptr) {
         mValues = new ValuesView(this);
     }
-    *values = mValues.Get();
-    REFCOUNT_ADD(*values);
+    values = mValues.Get();
     return NOERROR;
 }
 
 ECode ConcurrentHashMap::GetEntrySet(
-    /* [out] */ ISet** entries)
+    /* [out] */ AutoPtr<ISet>& entries)
 {
-    VALIDATE_NOT_NULL(entries);
-
     if (mEntrySet == nullptr) {
         mEntrySet = new EntrySetView(this);
     }
-    *entries = mEntrySet;
-    REFCOUNT_ADD(*entries);
+    entries = mEntrySet;
     return NOERROR;
 }
 
@@ -633,27 +611,27 @@ ECode ConcurrentHashMap::Equals(
         for (AutoPtr<Node> p; (p = it.Advance()) != nullptr;) {
             VOLATILE_GET(AutoPtr<IInterface> val, p->mVal);
             AutoPtr<IInterface> v;
-            m->Get(p->mKey, &v);
+            m->Get(p->mKey, v);
             if (v == nullptr || (!IInterface::Equals(v, val) && !Object::Equals(v, val))) {
                 result = false;
                 return NOERROR;
             }
         }
         AutoPtr<ISet> entrySet;
-        m->GetEntrySet(&entrySet);
+        m->GetEntrySet(entrySet);
         FOR_EACH(IMapEntry*, e, IMapEntry::Probe, entrySet) {
             AutoPtr<IInterface> mk, mv, v;
-            e->GetKey(&mk);
+            e->GetKey(mk);
             if (mk == nullptr) {
                 result = false;
                 return NOERROR;
             }
-            e->GetValue(&mv);
+            e->GetValue(mv);
             if (mv == nullptr) {
                 result = false;
                 return NOERROR;
             }
-            Get(mk, &v);
+            Get(mk, v);
             if (v == nullptr || (!IInterface::Equals(mv ,v) && !Object::Equals(mv, v))) {
                 result = false;
                 return NOERROR;
@@ -720,56 +698,45 @@ ECode ConcurrentHashMap::Replace(
 
 ECode ConcurrentHashMap::Contains(
     /* [in] */ IInterface* value,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return ContainsValue(value, result);
 }
 
 ECode ConcurrentHashMap::Keys(
-    /* [out] */ IEnumeration** keys)
+    /* [out] */ AutoPtr<IEnumeration>& keys)
 {
-    VALIDATE_NOT_NULL(keys);
-
     VOLATILE_GET(Array<Node*> t, mTable);
     Integer f = t.IsNull() ? 0 : t.GetLength();
-    *keys = new KeyIterator(t, f, 0, f, this);
-    REFCOUNT_ADD(*keys);
+    keys = new KeyIterator(t, f, 0, f, this);
     return NOERROR;
 }
 
 ECode ConcurrentHashMap::Elements(
-    /* [out] */ IEnumeration** elements)
+    /* [out] */ AutoPtr<IEnumeration>& elements)
 {
-    VALIDATE_NOT_NULL(elements);
-
     VOLATILE_GET(Array<Node*> t, mTable);
     Integer f = t.IsNull() ? 0 : t.GetLength();
-    *elements = new ValueIterator(t, f, 0, f, this);
-    REFCOUNT_ADD(*elements);
+    elements = new ValueIterator(t, f, 0, f, this);
     return NOERROR;
 }
 
 ECode ConcurrentHashMap::GetMappingCount(
-    /* [out] */ Long* count)
+    /* [out] */ Long& count)
 {
-    VALIDATE_NOT_NULL(count);
-
     Long n = SumCount();
-    *count = (n < 0ll) ? 0ll : n;
+    count = (n < 0ll) ? 0ll : n;
     return NOERROR;
 }
 
 ECode ConcurrentHashMap::GetKeySet(
     /* [in] */ IInterface* mappedValue,
-    /* [out] */ ISet** keys)
+    /* [out] */ AutoPtr<ISet>& keys)
 {
-    VALIDATE_NOT_NULL(keys);
-
     if (mappedValue == nullptr) {
         return como::core::E_NULL_POINTER_EXCEPTION;
     }
-    *keys = new KeySetView(this, mappedValue);
-    REFCOUNT_ADD(*keys);
+    keys = new KeySetView(this, mappedValue);
     return NOERROR;
 }
 
@@ -1223,18 +1190,16 @@ AutoPtr<ConcurrentHashMap::Node> ConcurrentHashMap::Untreeify(
 COMO_INTERFACE_IMPL_1(ConcurrentHashMap::Node, SyncObject, IMapEntry);
 
 ECode ConcurrentHashMap::Node::GetKey(
-    /* [out] */ IInterface** key)
+    /* [out] */ AutoPtr<IInterface>& key)
 {
-    *key = mKey;
-    REFCOUNT_ADD(*key);
+    key = mKey;
     return NOERROR;
 }
 
 ECode ConcurrentHashMap::Node::GetValue(
-    /* [out] */ IInterface** value)
+    /* [out] */ AutoPtr<IInterface>& value)
 {
-    VOLATILE_GET(*value, mVal);
-    REFCOUNT_ADD(*value);
+    VOLATILE_GET(value, mVal);
     return NOERROR;
 }
 
@@ -1270,13 +1235,13 @@ ECode ConcurrentHashMap::Node::Equals(
         return NOERROR;
     }
     AutoPtr<IInterface> k, v;
-    entry->GetKey(&k);
+    entry->GetKey(k);
     if (k == nullptr || (!IInterface::Equals(k, mKey) &&
             !Object::Equals(k, mKey))) {
         result = false;
         return NOERROR;
     }
-    entry->GetValue(&v);
+    entry->GetValue(v);
     if (v == nullptr) {
         result = false;
         return NOERROR;
@@ -2230,22 +2195,16 @@ ECode ConcurrentHashMap::EntryIterator::Remove()
 COMO_INTERFACE_IMPL_1(ConcurrentHashMap::MapEntry, Object, IMapEntry);
 
 ECode ConcurrentHashMap::MapEntry::GetKey(
-    /* [out] */ IInterface** key)
+    /* [out] */ AutoPtr<IInterface>& key)
 {
-    VALIDATE_NOT_NULL(key);
-
-    *key = mKey;
-    REFCOUNT_ADD(*key);
+    key = mKey;
     return NOERROR;
 }
 
 ECode ConcurrentHashMap::MapEntry::GetValue(
-    /* [out] */ IInterface** value)
+    /* [out] */ AutoPtr<IInterface>& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = mVal;
-    REFCOUNT_ADD(*value);
+    value = mVal;
     return NOERROR;
 }
 
@@ -2273,8 +2232,8 @@ ECode ConcurrentHashMap::MapEntry::Equals(
         return NOERROR;
     }
     AutoPtr<IInterface> k, v;
-    entry->GetKey(&k);
-    entry->GetValue(&v);
+    entry->GetKey(k);
+    entry->GetValue(v);
     result = (k != nullptr && v != nullptr &&
             (IInterface::Equals(k, mKey) || Object::Equals(k, mKey)) &&
             (IInterface::Equals(v, mVal) || Object::Equals(v, mVal)));
@@ -2307,13 +2266,13 @@ ECode ConcurrentHashMap::CollectionView::Clear()
 }
 
 ECode ConcurrentHashMap::CollectionView::GetSize(
-    /* [out] */ Integer* size)
+    /* [out] */ Integer& size)
 {
     return mMap->GetSize(size);
 }
 
 ECode ConcurrentHashMap::CollectionView::IsEmpty(
-    /* [out] */ Boolean* empty)
+    /* [out] */ Boolean& empty)
 {
     return mMap->IsEmpty(empty);
 }
@@ -2322,7 +2281,7 @@ ECode ConcurrentHashMap::CollectionView::ToArray(
     /* [out, callee] */ Array<IInterface*>* objs)
 {
     Long sz;
-    mMap->GetMappingCount(&sz);
+    mMap->GetMappingCount(sz);
     if (sz > MAX_ARRAY_SIZE) {
         return E_OUT_OF_MEMORY_ERROR;
     }
@@ -2358,7 +2317,7 @@ ECode ConcurrentHashMap::CollectionView::ToArray(
     /* [out, callee] */ Array<IInterface*>* objs)
 {
     Long sz;
-    mMap->GetMappingCount(&sz);
+    mMap->GetMappingCount(sz);
     if (sz > MAX_ARRAY_SIZE) {
         return E_OUT_OF_MEMORY_ERROR;
     }
@@ -2414,20 +2373,18 @@ ECode ConcurrentHashMap::CollectionView::ToString(
 
 ECode ConcurrentHashMap::CollectionView::ContainsAll(
     /* [in] */ ICollection* c,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     if (c != (ICollection*)this) {
         FOR_EACH(IInterface*, e, , c) {
             Boolean contains;
-            if (e == nullptr || (Contains(e, &contains), !contains)) {
-                *result = false;
+            if (e == nullptr || (Contains(e, contains), !contains)) {
+                result = false;
                 return NOERROR;
             }
         } END_FOR_EACH();
     }
-    *result = true;
+    result = true;
     return NOERROR;
 }
 
@@ -2441,7 +2398,7 @@ ECode ConcurrentHashMap::CollectionView::RemoveAll(
     Boolean modified = false;
     FOR_EACH(IInterface*, e, , this) {
         Boolean contains;
-        if (c->Contains(e, &contains), contains) {
+        if (c->Contains(e, contains), contains) {
             it->Remove();
             modified = true;
         }
@@ -2462,7 +2419,7 @@ ECode ConcurrentHashMap::CollectionView::RetainAll(
     Boolean modified = false;
     FOR_EACH(IInterface*, e, , this) {
         Boolean contains;
-        if (c->Contains(e, &contains), !contains) {
+        if (c->Contains(e, contains), !contains) {
             it->Remove();
             modified = true;
         }
@@ -2479,7 +2436,7 @@ COMO_INTERFACE_IMPL_1(ConcurrentHashMap::KeySetView, CollectionView, ISet);
 
 ECode ConcurrentHashMap::KeySetView::Contains(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return mMap->ContainsKey(obj, result);
 }
@@ -2565,8 +2522,8 @@ ECode ConcurrentHashMap::KeySetView::Equals(
         return NOERROR;
     }
     Boolean contains;
-    result = ((ContainsAll(ICollection::Probe(c), &contains), contains) &&
-            (c->ContainsAll(this, &contains), contains));
+    result = ((ContainsAll(ICollection::Probe(c), contains), contains) &&
+            (c->ContainsAll(this, contains), contains));
     return NOERROR;
 }
 
@@ -2577,19 +2534,19 @@ ECode ConcurrentHashMap::KeySetView::Clear()
 
 ECode ConcurrentHashMap::KeySetView::ContainsAll(
     /* [in] */ ICollection* c,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return CollectionView::ContainsAll(c, result);
 }
 
 ECode ConcurrentHashMap::KeySetView::GetSize(
-    /* [out] */ Integer* size)
+    /* [out] */ Integer& size)
 {
     return CollectionView::GetSize(size);
 }
 
 ECode ConcurrentHashMap::KeySetView::IsEmpty(
-    /* [out] */ Boolean* empty)
+    /* [out] */ Boolean& empty)
 {
     return CollectionView::IsEmpty(empty);
 }
@@ -2625,7 +2582,7 @@ ECode ConcurrentHashMap::KeySetView::ToArray(
 
 ECode ConcurrentHashMap::ValuesView::Contains(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return mMap->ContainsValue(obj, result);
 }
@@ -2693,29 +2650,27 @@ COMO_INTERFACE_IMPL_1(ConcurrentHashMap::EntrySetView, CollectionView, ISet);
 
 ECode ConcurrentHashMap::EntrySetView::Contains(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     IMapEntry* e = IMapEntry::Probe(obj);
     if (e == nullptr) {
-        *result = false;
+        result = false;
         return NOERROR;
     }
     AutoPtr<IInterface> k;
-    e->GetKey(&k);
+    e->GetKey(k);
     if (k == nullptr) {
-        *result = false;
+        result = false;
         return NOERROR;
     }
     AutoPtr<IInterface> r, v;
-    mMap->Get(k, &r);
-    e->GetValue(&v);
+    mMap->Get(k, r);
+    e->GetValue(v);
     if (r == nullptr || v == nullptr) {
-        *result = false;
+        result = false;
         return NOERROR;
     }
-    *result = (IInterface::Equals(r, v) || Object::Equals(r, v));
+    result = (IInterface::Equals(r, v) || Object::Equals(r, v));
     return NOERROR;
 }
 
@@ -2731,8 +2686,8 @@ ECode ConcurrentHashMap::EntrySetView::Remove(
         return NOERROR;
     }
     AutoPtr<IInterface> k, v;
-    e->GetKey(&k);
-    e->GetValue(&v);
+    e->GetKey(k);
+    e->GetValue(v);
     if (k == nullptr || v == nullptr) {
         if (changed != nullptr) {
             *changed = false;
@@ -2763,8 +2718,8 @@ ECode ConcurrentHashMap::EntrySetView::Add(
         return NOERROR;
     }
     AutoPtr<IInterface> k, v, ov;
-    e->GetKey(&k);
-    e->GetValue(&v);
+    e->GetKey(k);
+    e->GetValue(v);
     FAIL_RETURN(mMap->PutVal(k, v, false, &ov));
     if (changed != nullptr) {
         *changed = ov == nullptr;
@@ -2814,8 +2769,8 @@ ECode ConcurrentHashMap::EntrySetView::Equals(
     }
     Boolean contains;
     result = (c == (ISet*)this) ||
-            ((ContainsAll(ICollection::Probe(c), &contains), contains) &&
-            (c->ContainsAll(this, &contains), contains));
+            ((ContainsAll(ICollection::Probe(c), contains), contains) &&
+            (c->ContainsAll(this, contains), contains));
     return NOERROR;
 }
 
@@ -2826,19 +2781,19 @@ ECode ConcurrentHashMap::EntrySetView::Clear()
 
 ECode ConcurrentHashMap::EntrySetView::ContainsAll(
     /* [in] */ ICollection* c,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return CollectionView::ContainsAll(c, result);
 }
 
 ECode ConcurrentHashMap::EntrySetView::GetSize(
-    /* [out] */ Integer* size)
+    /* [out] */ Integer& size)
 {
     return CollectionView::GetSize(size);
 }
 
 ECode ConcurrentHashMap::EntrySetView::IsEmpty(
-    /* [out] */ Boolean* empty)
+    /* [out] */ Boolean& empty)
 {
     return CollectionView::IsEmpty(empty);
 }

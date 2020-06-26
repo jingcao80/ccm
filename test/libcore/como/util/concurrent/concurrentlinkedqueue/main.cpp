@@ -32,13 +32,13 @@ TEST(CConcurrentLinkedQueueTest, AddTest)
     AutoPtr<IConcurrentLinkedQueue> queue;
     CConcurrentLinkedQueue::New(IID_IConcurrentLinkedQueue, (IInterface**)&queue);
     Integer size;
-    queue->GetSize(&size);
+    queue->GetSize(size);
     EXPECT_EQ(0, size);
     queue->Add(CoreUtils::Box(String("Hello")));
-    queue->GetSize(&size);
+    queue->GetSize(size);
     EXPECT_EQ(1, size);
     queue->Add(CoreUtils::Box(String("World")));
-    queue->GetSize(&size);
+    queue->GetSize(size);
     EXPECT_EQ(2, size);
 }
 

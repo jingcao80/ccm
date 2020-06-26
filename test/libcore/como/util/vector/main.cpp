@@ -58,7 +58,7 @@ TEST(VectorTest, TestConstructor)
     tv = nullptr;
     CVector::New(IID_IVector, (IInterface**)&tv);
     Integer size;
-    tv->GetSize(&size);
+    tv->GetSize(size);
     EXPECT_EQ(0, size);
     Integer capacity;
     tv->GetCapacity(&capacity);

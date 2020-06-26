@@ -63,11 +63,11 @@ private:
             /* [out] */ AutoPtr<IIterator>& it) override;
 
         ECode GetSize(
-            /* [out] */ Integer* size) override;
+            /* [out] */ Integer& size) override;
 
         ECode Contains(
             /* [in] */ IInterface* obj,
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
 
         ECode Remove(
             /* [in] */ IInterface* obj,
@@ -93,14 +93,14 @@ private:
 
         ECode Contains(
             /* [in] */ IInterface* obj,
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
 
         ECode Remove(
             /* [in] */ IInterface* obj,
             /* [out]　*/ Boolean* contained = nullptr) override;
 
         ECode GetSize(
-            /* [out] */ Integer* size) override;
+            /* [out] */ Integer& size) override;
 
         ECode Clear() override;
 
@@ -129,14 +129,14 @@ private:
             /* [out] */ AutoPtr<IIterator>& it) override;
 
         ECode GetSize(
-            /* [out] */ Integer* size) override;
+            /* [out] */ Integer& size) override;
 
         ECode IsEmpty(
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
 
         ECode Contains(
             /* [in] */ IInterface* obj,
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
 
         ECode Clear() override;
 
@@ -324,14 +324,14 @@ private:
             {}
 
             ECode GetSize(
-                /* [out] */ Integer* size) override;
+                /* [out] */ Integer& size) override;
 
             ECode IsEmpty(
-                /* [out] */ Boolean* result) override;
+                /* [out] */ Boolean& result) override;
 
             ECode Contains(
                 /* [in] */ IInterface* obj,
-                /* [out] */ Boolean* result) override;
+                /* [out] */ Boolean& result) override;
 
             ECode Remove(
                 /* [in] */ IInterface* obj,
@@ -520,14 +520,14 @@ private:
         virtual AutoPtr<IIterator> GetDescendingKeyIterator() = 0;
 
         ECode IsEmpty(
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
 
         ECode GetSize(
-            /* [out] */ Integer* size) override;
+            /* [out] */ Integer& size) override;
 
         ECode ContainsKey(
             /* [in] */ IInterface* key,
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
 
         ECode Put(
             /* [in] */ IInterface* key,
@@ -536,7 +536,7 @@ private:
 
         ECode Get(
             /* [in] */ IInterface* key,
-            /* [out] */ IInterface** value) override;
+            /* [out] */ AutoPtr<IInterface>& value) override;
 
         ECode Remove(
             /* [in] */ IInterface* key,
@@ -596,7 +596,7 @@ private:
             /* [out] */ INavigableSet** keyset) override;
 
         ECode GetKeySet(
-            /* [out] */ ISet** keys) override;
+            /* [out] */ AutoPtr<ISet>& keys) override;
 
         ECode DescendingKeySet(
             /* [out] */ INavigableSet** keyset) override;
@@ -701,7 +701,7 @@ private:
         AutoPtr<IIterator> GetDescendingKeyIterator() override;
 
         ECode GetEntrySet(
-            /* [out] */ ISet** entries) override;
+            /* [out] */ AutoPtr<ISet>& entries) override;
 
         AutoPtr<TreeMapEntry> SubLowest() override;
 
@@ -776,7 +776,7 @@ private:
         AutoPtr<IIterator> GetDescendingKeyIterator() override;
 
         ECode GetEntrySet(
-            /* [out] */ ISet** entries) override;
+            /* [out] */ AutoPtr<ISet>& entries) override;
 
         AutoPtr<TreeMapEntry> SubLowest() override;
 
@@ -807,7 +807,7 @@ private:
         COMO_INTERFACE_DECL();
 
         ECode GetEntrySet(
-            /* [out] */ ISet** entries) override;
+            /* [out] */ AutoPtr<ISet>& entries) override;
 
         ECode LastKey(
             /* [out] */ IInterface** key) override;
@@ -849,10 +849,10 @@ private:
         COMO_INTERFACE_DECL();
 
         ECode GetKey(
-            /* [out] */ IInterface** key) override;
+            /* [out] */ AutoPtr<IInterface>& key) override;
 
         ECode GetValue(
-            /* [out] */ IInterface** value) override;
+            /* [out] */ AutoPtr<IInterface>& value) override;
 
         ECode SetValue(
             /* [in] */ IInterface* value,
@@ -892,19 +892,19 @@ public:
         /* [in] */ ISortedMap* m);
 
     ECode GetSize(
-        /* [out] */ Integer* size) override;
+        /* [out] */ Integer& size) override;
 
     ECode ContainsKey(
         /* [in] */ IInterface* key,
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode ContainsValue(
         /* [in] */ IInterface* value,
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode Get(
         /* [in] */ IInterface* key,
-        /* [out] */ IInterface** value) override;
+        /* [out] */ AutoPtr<IInterface>& value) override;
 
     ECode Comparator(
         /* [out] */ IComparator** comparator) override;
@@ -974,7 +974,7 @@ public:
         /* [out] */ IInterface** higherkey) override;
 
     ECode GetKeySet(
-        /* [out] */ ISet** keys) override;
+        /* [out] */ AutoPtr<ISet>& keys) override;
 
     ECode NavigableKeySet(
         /* [out] */ INavigableSet** keyset) override;
@@ -983,10 +983,10 @@ public:
         /* [out] */ INavigableSet** keyset) override;
 
     ECode GetValues(
-        /* [out] */ ICollection** values) override;
+        /* [out] */ AutoPtr<ICollection>& values) override;
 
     ECode GetEntrySet(
-        /* [out] */ ISet** entries) override;
+        /* [out] */ AutoPtr<ISet>& entries) override;
 
     ECode DescendingMap(
         /* [out] */ INavigableMap** map) override;

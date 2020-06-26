@@ -32,14 +32,14 @@ interface IQueue
         [out] Boolean* changed = nullptr);
 
     Element(
-        [out] IInterface** head);
+        [out] IInterface&& head);
 
     Offer(
         [in] IInterface* e,
         [out] Boolean* changed = nullptr);
 
     Peek(
-        [out] IInterface** head);
+        [out] IInterface&& head);
 
     Poll(
         [out] IInterface** head = nullptr);

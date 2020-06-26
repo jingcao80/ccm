@@ -48,7 +48,7 @@ ECode LocaleObjectCache::Get(
 
     CleanStaleEntries();
     AutoPtr<IInterface> entry;
-    IMap::Probe(mMap)->Get(key, &entry);
+    IMap::Probe(mMap)->Get(key, entry);
     if (entry != nullptr) {
         CacheEntry::From(entry)->mValue->Resolve(
                 IID_IInterface, &v);

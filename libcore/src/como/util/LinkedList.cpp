@@ -224,22 +224,18 @@ ECode LinkedList::AddLast(
 
 ECode LinkedList::Contains(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     Integer idx;
     IndexOf(obj, &idx);
-    *result = idx != -1;
+    result = idx != -1;
     return NOERROR;
 }
 
 ECode LinkedList::GetSize(
-    /* [out] */ Integer* size)
+    /* [out] */ Integer& size)
 {
-    VALIDATE_NOT_NULL(size);
-
-    *size = mSize;
+    size = mSize;
     return NOERROR;
 }
 
@@ -532,21 +528,16 @@ ECode LinkedList::LastIndexOf(
 }
 
 ECode LinkedList::Peek(
-    /* [out] */ IInterface** e)
+    /* [out] */ AutoPtr<IInterface>& e)
 {
-    VALIDATE_NOT_NULL(e);
-
-    *e = (mFirst == nullptr) ? nullptr : mFirst->mItem;
-    REFCOUNT_ADD(*e);
+    e = (mFirst == nullptr) ? nullptr : mFirst->mItem;
     return NOERROR;
 }
 
 ECode LinkedList::Element(
-    /* [out] */ IInterface** e)
+    /* [out] */ AutoPtr<IInterface>& e)
 {
-    VALIDATE_NOT_NULL(e);
-
-    return GetFirst(e);
+    return GetFirst(&e);
 }
 
 ECode LinkedList::Poll(
@@ -920,7 +911,7 @@ LinkedList::DescendingIterator::DescendingIterator(
     /* [in] */ LinkedList* owner)
 {
     Integer index;
-    owner->GetSize(&index);
+    owner->GetSize(index);
     mItr = new ListItr(owner, index);
 }
 

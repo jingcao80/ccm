@@ -41,11 +41,11 @@ public:
         /* [out] */ AutoPtr<IIterator>& it) override = 0;
 
     ECode IsEmpty(
-        /* [out] */ Boolean* empty) override;
+        /* [out] */ Boolean& empty) override;
 
     ECode Contains(
         /* [in] */ IInterface* obj,
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode ToArray(
         /* [out, callee] */ Array<IInterface*>* objs) override;
@@ -64,7 +64,7 @@ public:
 
     ECode ContainsAll(
         /* [in] */ ICollection* c,
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode AddAll(
         /* [in] */ ICollection* c,

@@ -99,20 +99,20 @@ ECode TreeSet::DescendingSet(
 }
 
 ECode TreeSet::GetSize(
-    /* [out] */ Integer* size)
+    /* [out] */ Integer& size)
 {
     return IMap::Probe(mMap)->GetSize(size);
 }
 
 ECode TreeSet::IsEmpty(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return IMap::Probe(mMap)->IsEmpty(result);
 }
 
 ECode TreeSet::Contains(
     /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return IMap::Probe(mMap)->ContainsKey(obj, result);
 }
@@ -151,8 +151,8 @@ ECode TreeSet::AddAll(
     /* [out] */ Boolean* changed)
 {
     Integer size;
-    if ((IMap::Probe(mMap)->GetSize(&size), size == 0) &&
-            (c->GetSize(&size), size > 0) &&
+    if ((IMap::Probe(mMap)->GetSize(size), size == 0) &&
+            (c->GetSize(size), size > 0) &&
             ISortedSet::Probe(c) != nullptr &&
             ITreeMap::Probe(mMap) != nullptr) {
         ISortedSet* set = ISortedSet::Probe(c);
@@ -304,7 +304,10 @@ ECode TreeSet::PollFirst(
         return NOERROR;
     }
     else {
-        return entry->GetKey(e);
+        AutoPtr<IInterface> k;
+        ECode ec = entry->GetKey(k);
+        k.MoveTo(e);
+        return ec;
     }
 }
 
@@ -320,7 +323,10 @@ ECode TreeSet::PollLast(
         return NOERROR;
     }
     else {
-        return entry->GetKey(e);
+        AutoPtr<IInterface> k;
+        ECode ec = entry->GetKey(k);
+        k.MoveTo(e);
+        return ec;
     }
 }
 

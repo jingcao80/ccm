@@ -86,16 +86,16 @@ ECode CalendarSystem::ForName(
         return NOERROR;
     }
 
-    AutoPtr<ICalendarSystem> cal;
-    IMap::Probe(sCalendars)->Get(CoreUtils::Box(calendarName),
-            (IInterface**)&cal);
+    AutoPtr<IInterface> v;
+    IMap::Probe(sCalendars)->Get(CoreUtils::Box(calendarName), v);
+    AutoPtr<ICalendarSystem> cal = std::move(v);
     if (cal != nullptr) {
         system = std::move(cal);
         return NOERROR;
     }
 
-    AutoPtr<IMetaCoclass> calendarClass;
-    sNames->Get(CoreUtils::Box(calendarName), (IInterface**)&calendarClass);
+    sNames->Get(CoreUtils::Box(calendarName), v);
+    AutoPtr<IMetaCoclass> calendarClass = std::move(v);
     if (calendarClass == nullptr) {
         system = nullptr;
         return NOERROR;

@@ -45,41 +45,37 @@ HexStringParser::HexStringParser(
 
 ECode HexStringParser::ParseFloat(
     /* [in] */ const String& s,
-    /* [out] */ Float* value)
+    /* [out] */ Float& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     HexStringParser parser(FLOAT_EXPONENT_WIDTH, FLOAT_MANTISSA_WIDTH);
     Long result;
-    FAIL_RETURN(parser.Parse(s, false, &result));
-    *value = Math::IntegerBitsToFloat(result);
+    FAIL_RETURN(parser.Parse(s, false, result));
+    value = Math::IntegerBitsToFloat(result);
     return NOERROR;
 }
 
 ECode HexStringParser::ParseDouble(
     /* [in] */ const String& s,
-    /* [out] */ Double* value)
+    /* [out] */ Double& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     HexStringParser parser(DOUBLE_EXPONENT_WIDTH, DOUBLE_MANTISSA_WIDTH);
     Long result;
-    FAIL_RETURN(parser.Parse(s, true, &result));
-    *value = Math::LongBitsToDouble(result);
+    FAIL_RETURN(parser.Parse(s, true, result));
+    value = Math::LongBitsToDouble(result);
     return NOERROR;
 }
 
 ECode HexStringParser::Parse(
     /* [in] */ const String& hexString,
     /* [in] */ Boolean isDouble,
-    /* [out] */ Long* result)
+    /* [out] */ Long& result)
 {
     static const AutoPtr<IPattern> PATTERN = MAKE_PATTERN();
 
     AutoPtr<IMatcher> matcher;
-    PATTERN->Matcher(CoreUtils::Box(hexString), &matcher);
+    PATTERN->Matcher(CoreUtils::Box(hexString), matcher);
     Boolean matched;
-    if (matcher->Matches(&matched), !matched) {
+    if (matcher->Matches(matched), !matched) {
         Logger::E("HexStringParser", "Invalid hex %s:%s",
                 isDouble ? "double" : "float", hexString.string());
         return E_NUMBER_FORMAT_EXCEPTION;
@@ -87,9 +83,9 @@ ECode HexStringParser::Parse(
 
     IMatchResult* mr = IMatchResult::Probe(matcher);
     String signStr, significantStr, exponentStr;
-    mr->Group(1, &signStr);
-    mr->Group(2, &significantStr);
-    mr->Group(3, &exponentStr);
+    mr->Group(1, signStr);
+    mr->Group(2, significantStr);
+    mr->Group(3, exponentStr);
 
     ParseHexSign(signStr);
     ParseExponent(exponentStr);
@@ -97,7 +93,7 @@ ECode HexStringParser::Parse(
 
     mSign <<= (MANTISSA_WIDTH + EXPONENT_WIDTH);
     mExponent <<= MANTISSA_WIDTH;
-    *result = mSign | mExponent | mMantissa;
+    result = mSign | mExponent | mMantissa;
     return NOERROR;
 }
 
@@ -117,7 +113,7 @@ void HexStringParser::ParseExponent(
     }
 
     Long value;
-    ECode ec = StringUtils::ParseLong(exponentStr, &value);
+    ECode ec = StringUtils::ParseLong(exponentStr, value);
     if (FAILED(ec)) {
         mExponent = expSign * ILong::MAX_VALUE;
         return;
@@ -157,7 +153,7 @@ void HexStringParser::ParseMantissa(
         significand = significand.Substring(0, MAX_SIGNIFICANT_LENGTH);
     }
 
-    StringUtils::ParseLong(significand, HEX_RADIX, &mMantissa);
+    StringUtils::ParseLong(significand, HEX_RADIX, mMantissa);
 
     if (mExponent >= 1) {
         ProcessNormalNumber();
@@ -234,7 +230,7 @@ void HexStringParser::DiscardTrailingBits(
 void HexStringParser::Round()
 {
     String result;
-    StringUtils::ReplaceAll(mAbandonedNumber, String("0+"), String(""), &result);
+    StringUtils::ReplaceAll(mAbandonedNumber, String("0+"), String(""), result);
     Boolean moreThanZero = (result.GetLength() > 0 ? true : false);
 
     Integer lastDiscardedBit = (Integer) (mMantissa & 1ll);
@@ -258,7 +254,7 @@ String HexStringParser::GetNormalizedSignificand(
     /* [in] */ const String& strDecimalPart)
 {
     String significand = strIntegerPart + strDecimalPart;
-    StringUtils::ReplaceFirst(significand, String("^0+"), String(""), &significand);
+    StringUtils::ReplaceFirst(significand, String("^0+"), String(""), significand);
     if (significand.GetLength() == 0) {
         significand = "0";
     }
@@ -269,13 +265,13 @@ Integer HexStringParser::GetOffset(
     /* [in] */ String strIntegerPart,
     /* [in] */ const String& strDecimalPart)
 {
-    StringUtils::ReplaceFirst(strIntegerPart, String("^0+"), String(""), &strIntegerPart);
+    StringUtils::ReplaceFirst(strIntegerPart, String("^0+"), String(""), strIntegerPart);
 
     //If the Integer part is a nonzero number.
     if (strIntegerPart.GetLength() != 0) {
         String leadingNumber = strIntegerPart.Substring(0, 1);
         Long value;
-        StringUtils::ParseLong(leadingNumber, HEX_RADIX, &value);
+        StringUtils::ParseLong(leadingNumber, HEX_RADIX, value);
         return (strIntegerPart.GetLength() - 1) * 4 + CountBitsLength(value) - 1;
     }
 
@@ -287,7 +283,7 @@ Integer HexStringParser::GetOffset(
     }
     String leadingNumber = strDecimalPart.Substring(i, i + 1);
     Long value;
-    StringUtils::ParseLong(leadingNumber, HEX_RADIX, &value);
+    StringUtils::ParseLong(leadingNumber, HEX_RADIX, value);
     return (-i - 1) * 4 + CountBitsLength(value) - 1;
 }
 
@@ -306,7 +302,7 @@ AutoPtr<IPattern> HexStringParser::MAKE_PATTERN()
     static const String HEX_PATTERN = String("[\\x00-\\x20]*([+-]?)") + HEX_SIGNIFICANT
             + BINARY_EXPONENT + FLOAT_TYPE_SUFFIX + "[\\x00-\\x20]*";
     AutoPtr<IPattern> p;
-    Pattern::Compile(HEX_PATTERN, &p);
+    Pattern::Compile(HEX_PATTERN, p);
     return p;
 }
 

@@ -87,10 +87,10 @@ ECode LocalGregorianCalendar::GetLocalGregorianCalendar(
             else if (String("since").Equals(key)) {
                 if (value.EndsWith("u")) {
                     localTime = false;
-                    StringUtils::ParseLong(value.Substring(0, value.GetLength() - 1), &since);
+                    StringUtils::ParseLong(value.Substring(0, value.GetLength() - 1), since);
                 }
                 else {
-                    StringUtils::ParseLong(value, &since);
+                    StringUtils::ParseLong(value, since);
                 }
             }
             else if (String("abbr").Equals(key)) {
@@ -106,7 +106,7 @@ ECode LocalGregorianCalendar::GetLocalGregorianCalendar(
         eras->Add(era);
     }
     Boolean empty;
-    if (eras->IsEmpty(&empty), empty) {
+    if (eras->IsEmpty(empty), empty) {
         Logger::E("LocalGregorianCalendar", "No eras for %s", name.string());
         return E_RUNTIME_EXCEPTION;
     }

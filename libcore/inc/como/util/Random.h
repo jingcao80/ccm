@@ -50,26 +50,26 @@ public:
         /* [out] */ Array<Byte>& bytes) override;
 
     ECode NextInteger(
-        /* [out] */ Integer* value) override;
+        /* [out] */ Integer& value) override;
 
     ECode NextInteger(
         /* [in] */ Integer bound,
-        /* [out] */ Integer* value) override;
+        /* [out] */ Integer& value) override;
 
     ECode NextLong(
-        /* [out] */ Long* value) override;
+        /* [out] */ Long& value) override;
 
     ECode NextBoolean(
-        /* [out] */ Boolean* value) override;
+        /* [out] */ Boolean& value) override;
 
     ECode NextFloat(
-        /* [out] */ Float* value) override;
+        /* [out] */ Float& value) override;
 
     ECode NextDouble(
-        /* [out] */ Double* value) override;
+        /* [out] */ Double& value) override;
 
     ECode NextGaussian(
-        /* [out] */ Double* value) override;
+        /* [out] */ Double& value) override;
 
 protected:
     virtual Integer Next(

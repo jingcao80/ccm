@@ -139,17 +139,17 @@ public:
         /* [out] */ Integer* capacity) override;
 
     ECode GetSize(
-        /* [out] */ Integer* size) override;
+        /* [out] */ Integer& size) override;
 
     ECode IsEmpty(
-        /* [out] */ Boolean* empty) override;
+        /* [out] */ Boolean& empty) override;
 
     ECode GetElements(
         /* [out] */ IEnumeration** elements) override;
 
     ECode Contains(
         /* [in] */ IInterface* obj,
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode IndexOf(
         /* [in] */ IInterface* obj,
@@ -238,7 +238,7 @@ public:
 
     ECode ContainsAll(
         /* [in] */ ICollection* c,
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode AddAll(
         /* [in] */ ICollection* c,

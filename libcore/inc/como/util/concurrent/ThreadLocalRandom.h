@@ -58,49 +58,49 @@ public:
         /* [in] */ Double bound);
 
     ECode NextInteger(
-        /* [out] */ Integer* value) override;
+        /* [out] */ Integer& value) override;
 
     ECode NextInteger(
         /* [in] */ Integer bound,
-        /* [out] */ Integer* value) override;
+        /* [out] */ Integer& value) override;
 
     ECode NextInteger(
         /* [in] */ Integer origin,
         /* [in] */ Integer bound,
-        /* [out] */ Integer* value) override;
+        /* [out] */ Integer& value) override;
 
     ECode NextLong(
-        /* [out] */ Long* value) override;
+        /* [out] */ Long& value) override;
 
     ECode NextLong(
         /* [in] */ Long bound,
-        /* [out] */ Long* value) override;
+        /* [out] */ Long& value) override;
 
     ECode NextLong(
         /* [in] */ Long origin,
         /* [in] */ Long bound,
-        /* [out] */ Long* value) override;
+        /* [out] */ Long& value) override;
 
     ECode NextDouble(
-        /* [out] */ Double* value) override;
+        /* [out] */ Double& value) override;
 
     ECode NextDouble(
         /* [in] */ Double bound,
-        /* [out] */ Double* value) override;
+        /* [out] */ Double& value) override;
 
     ECode NextDouble(
         /* [in] */ Double origin,
         /* [in] */ Double bound,
-        /* [out] */ Double* value) override;
+        /* [out] */ Double& value) override;
 
     ECode NextBoolean(
-        /* [out] */ Boolean* value) override;
+        /* [out] */ Boolean& value) override;
 
     ECode NextFloat(
-        /* [out] */ Float* value) override;
+        /* [out] */ Float& value) override;
 
     ECode NextGaussian(
-        /* [out] */ Double* value) override;
+        /* [out] */ Double& value) override;
 
     static Integer GetProbe();
 

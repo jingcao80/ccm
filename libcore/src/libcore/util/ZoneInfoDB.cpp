@@ -366,7 +366,7 @@ Array<Integer> ZoneInfoDB::TzData::GetRawUtcOffsets()
         // Telephony shouldn't care, but someone converting a bunch of calendar
         // events might.
         AutoPtr<IInterface> value;
-        mCache->Get(CoreUtils::Box(mIds[i]), &value);
+        mCache->Get(CoreUtils::Box(mIds[i]), value);
         Integer offset;
         ITimeZone::Probe(value)->GetRawOffset(&offset);
         mRawUtcOffsetsCache[i] = offset;
@@ -401,8 +401,9 @@ ECode ZoneInfoDB::TzData::MakeTimeZone(
     VALIDATE_NOT_NULL(zone);
 
     FAIL_RETURN(CheckNotClosed());
-    AutoPtr<IZoneInfo> zoneInfo;
-    mCache->Get(CoreUtils::Box(id), (IInterface**)&zoneInfo);
+    AutoPtr<IInterface> v;
+    mCache->Get(CoreUtils::Box(id), v);
+    AutoPtr<IZoneInfo> zoneInfo = std::move(v);
     if (zoneInfo == nullptr) {
         *zone = nullptr;
         return NOERROR;
@@ -422,7 +423,7 @@ ECode ZoneInfoDB::TzData::HasTimeZone(
 
     FAIL_RETURN(CheckNotClosed());
     AutoPtr<IInterface> zoneInfo;
-    mCache->Get(CoreUtils::Box(id), &zoneInfo);
+    mCache->Get(CoreUtils::Box(id), zoneInfo);
     *result = zoneInfo != nullptr;
     return NOERROR;
 }

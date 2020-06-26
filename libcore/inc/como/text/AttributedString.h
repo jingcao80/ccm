@@ -169,11 +169,11 @@ private:
         {}
 
         ECode GetEntrySet(
-            /* [out] */ ISet** entrySet) override;
+            /* [out] */ AutoPtr<ISet>& entrySet) override;
 
         ECode Get(
             /* [in] */ IInterface* key,
-            /* [out] */ IInterface** value) override;
+            /* [out] */ AutoPtr<IInterface>& value) override;
 
     private:
         Integer mRunIndex;

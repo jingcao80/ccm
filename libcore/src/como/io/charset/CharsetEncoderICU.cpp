@@ -87,8 +87,9 @@ Array<Byte> CharsetEncoderICU::MakeReplacement(
     /* [in] */ const String& icuCanonicalName,
     /* [in] */ HANDLE address)
 {
-    AutoPtr<IArrayHolder> holder;
-    GetDEFAULT_REPLACEMENTS()->Get(CoreUtils::Box(icuCanonicalName), (IInterface**)&holder);
+    AutoPtr<IInterface> v;
+    GetDEFAULT_REPLACEMENTS()->Get(CoreUtils::Box(icuCanonicalName), v);
+    AutoPtr<IArrayHolder> holder = std::move(v);
     if (holder != nullptr) {
         Array<Byte> replacement;
         holder->GetArray(&replacement);

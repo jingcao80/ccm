@@ -43,30 +43,30 @@ public:
 
     static ECode Compile(
         /* [in] */ const String& regex,
-        /* [out] */ IPattern** pattern);
+        /* [out] */ AutoPtr<IPattern>& pattern);
 
     static ECode Compile(
         /* [in] */ const String& regex,
         /* [in] */ Integer flags,
-        /* [out] */ IPattern** pattern);
+        /* [out] */ AutoPtr<IPattern>& pattern);
 
     ECode GetPattern(
-        /* [out] */ String* pattStr) override;
+        /* [out] */ String& pattStr) override;
 
     ECode ToString(
-        /* [out] */ String* pattStr) override;
+        /* [out] */ String& pattStr) override;
 
     ECode Matcher(
         /* [in] */ ICharSequence* input,
-        /* [out] */ IMatcher** matcher) override;
+        /* [out] */ AutoPtr<IMatcher>& matcher) override;
 
     ECode Flags(
-        /* [out] */ Integer* flags) override;
+        /* [out] */ Integer& flags) override;
 
     static ECode Matches(
         /* [in] */ const String& regex,
         /* [in] */ ICharSequence* input,
-        /* [out] */ Boolean* matched);
+        /* [out] */ Boolean& matched);
 
     ECode Split(
         /* [in] */ ICharSequence* input,
@@ -85,7 +85,7 @@ public:
 
     static ECode Quote(
         /* [in] */ const String& s,
-        /* [out] */ String* pattStr);
+        /* [out] */ String& pattStr);
 
     static Pattern* From(
         /* [in] */ IPattern* p);
@@ -102,7 +102,7 @@ private:
     static ECode CompileImpl(
         /* [in] */ const String& regex,
         /* [in] */ Integer flags,
-        /* [out] */ HANDLE* handle);
+        /* [out] */ HANDLE& handle);
 
 private:
     friend class Matcher;

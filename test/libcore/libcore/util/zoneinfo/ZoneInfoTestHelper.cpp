@@ -150,9 +150,9 @@ Array<Byte> ZoneInfoTestHelper::TzDataBuilder::Build()
         Array<Byte> paddedIdBytes(40);
         paddedIdBytes.Copy(0, idBytes, 0, idBytes.GetLength());
         WriteByteArray(baos, paddedIdBytes);
-        AutoPtr<IInteger> value;
-        offsets->Get(CoreUtils::Box(id), (IInterface**)&value);
-        WriteInteger(baos, CoreUtils::Unbox(value));
+        AutoPtr<IInterface> value;
+        offsets->Get(CoreUtils::Box(id), value);
+        WriteInteger(baos, CoreUtils::Unbox(IInteger::Probe(value)));
         WriteInteger(baos, zicDatum->mData.GetLength());
         WriteInteger(baos, 0);
     } END_FOR_EACH();

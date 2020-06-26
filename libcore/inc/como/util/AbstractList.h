@@ -187,14 +187,14 @@ public:
 
     ECode Contains(
         /* [in] */ IInterface* obj,
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode ContainsAll(
         /* [in] */ ICollection* c,
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode IsEmpty(
-        /* [out] */ Boolean* empty) override;
+        /* [out] */ Boolean& empty) override;
 
     ECode Remove(
         /* [in] */ IInterface* obj,

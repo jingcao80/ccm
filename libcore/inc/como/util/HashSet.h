@@ -62,14 +62,14 @@ public:
         /* [out] */ AutoPtr<IIterator>& it) override;
 
     ECode GetSize(
-        /* [out] */ Integer* size) override;
+        /* [out] */ Integer& size) override;
 
     ECode IsEmpty(
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode Contains(
         /* [in] */ IInterface* obj,
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode Add(
         /* [in] */ IInterface* obj,
@@ -87,7 +87,7 @@ public:
 
     ECode ContainsAll(
         /* [in] */ ICollection* c,
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode Equals(
         /* [in] */ IInterface* obj,
