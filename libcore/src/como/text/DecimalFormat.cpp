@@ -727,7 +727,7 @@ ECode DecimalFormat::SetCurrency(
     NativeDecimalFormat* ndf = reinterpret_cast<NativeDecimalFormat*>(mNativeDF);
 
     String currencyCode;
-    currency->GetCurrencyCode(&currencyCode);
+    currency->GetCurrencyCode(currencyCode);
     AutoPtr<ICurrency> instance = Currency::GetInstance(currencyCode);
     mSymbols->SetCurrency(instance);
 
@@ -767,7 +767,7 @@ void DecimalFormat::AdjustForCurrencyDefaultFractionDigits()
     }
     if (currency != nullptr) {
         Integer digits;
-        currency->GetDefaultFractionDigits(&digits);
+        currency->GetDefaultFractionDigits(digits);
         if (digits != -1) {
             Integer oldMinDigits;
             GetMinimumFractionDigits(oldMinDigits);

@@ -29,17 +29,15 @@ ECode AbstractSequentialList::Constructor()
 
 ECode AbstractSequentialList::Get(
     /* [in] */ Integer index,
-    /* [out] */ IInterface** obj)
+    /* [out] */ AutoPtr<IInterface>& obj)
 {
-    VALIDATE_NOT_NULL(obj);
-
     AutoPtr<IListIterator> it;
-    ECode ec = GetListIterator(index, &it);
+    ECode ec = GetListIterator(index, it);
     if (FAILED(ec)) {
         Logger::E("AbstractSequentialList", "Index: %d", index);
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
-    return it->Next(obj);
+    return it->Next(&obj);
 }
 
 ECode AbstractSequentialList::Set(
@@ -48,7 +46,7 @@ ECode AbstractSequentialList::Set(
     /* [out] */ IInterface** prevObj)
 {
     AutoPtr<IListIterator> it;
-    ECode ec = GetListIterator(index, &it);
+    ECode ec = GetListIterator(index, it);
     if (FAILED(ec)) {
         Logger::E("AbstractSequentialList", "Index: %d", index);
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
@@ -65,7 +63,7 @@ ECode AbstractSequentialList::Add(
     /* [in] */ IInterface* obj)
 {
     AutoPtr<IListIterator> it;
-    ECode ec = GetListIterator(index, &it);
+    ECode ec = GetListIterator(index, it);
     if (FAILED(ec)) {
         Logger::E("AbstractSequentialList", "Index: %d", index);
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
@@ -78,7 +76,7 @@ ECode AbstractSequentialList::Remove(
     /* [out] */ IInterface** obj)
 {
     AutoPtr<IListIterator> it;
-    ECode ec = GetListIterator(index, &it);
+    ECode ec = GetListIterator(index, it);
     if (FAILED(ec)) {
         Logger::E("AbstractSequentialList", "Index: %d", index);
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
@@ -97,7 +95,7 @@ ECode AbstractSequentialList::AddAll(
 {
     Boolean modified = false;
     AutoPtr<IListIterator> it1;
-    ECode ec = GetListIterator(index, &it1);
+    ECode ec = GetListIterator(index, it1);
     if (FAILED(ec)) {
         Logger::E("AbstractSequentialList", "Index: %d", index);
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
@@ -105,7 +103,7 @@ ECode AbstractSequentialList::AddAll(
     AutoPtr<IIterator> it2;
     c->GetIterator(it2);
     Boolean hasNext;
-    while (it2->HasNext(&hasNext), hasNext) {
+    while (it2->HasNext(hasNext), hasNext) {
         AutoPtr<IInterface> obj;
         it2->Next(&obj);
         it1->Add(obj);
@@ -121,7 +119,7 @@ ECode AbstractSequentialList::GetIterator(
     /* [out] */ AutoPtr<IIterator>& it)
 {
     AutoPtr<IListIterator> lit;
-    GetListIterator(&lit);
+    GetListIterator(lit);
     it = std::move(lit);
     return NOERROR;
 }

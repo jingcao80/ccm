@@ -235,7 +235,7 @@ ECode DateFormat::SetTimeZone(
 ECode DateFormat::GetTimeZone(
     /* [out] */ AutoPtr<ITimeZone>& timezone)
 {
-    return mCalendar->GetTimeZone(&timezone);
+    return mCalendar->GetTimeZone(timezone);
 }
 
 ECode DateFormat::SetLenient(
@@ -247,7 +247,7 @@ ECode DateFormat::SetLenient(
 ECode DateFormat::IsLenient(
     /* [out] */ Boolean& lenient)
 {
-    return mCalendar->IsLenient(&lenient);
+    return mCalendar->IsLenient(lenient);
 }
 
 ECode DateFormat::GetHashCode(
@@ -277,10 +277,10 @@ ECode DateFormat::Equals(
     Boolean thisLenient, otherLenient;
     AutoPtr<ITimeZone> thisTz, otherTz;
 
-    same = (mCalendar->GetFirstDayOfWeek(&thisDow), other->mCalendar->GetFirstDayOfWeek(&otherDow), thisDow == otherDow) &&
-            (mCalendar->GetMinimalDaysInFirstWeek(&thisDfw), other->mCalendar->GetMinimalDaysInFirstWeek(&otherDfw), thisDfw == otherDfw) &&
-            (mCalendar->IsLenient(&thisLenient), other->mCalendar->IsLenient(&otherLenient), thisLenient == otherLenient) &&
-            (mCalendar->GetTimeZone(&thisTz), other->mCalendar->GetTimeZone(&otherTz), Object::Equals(thisTz, otherTz)) &&
+    same = (mCalendar->GetFirstDayOfWeek(thisDow), other->mCalendar->GetFirstDayOfWeek(otherDow), thisDow == otherDow) &&
+            (mCalendar->GetMinimalDaysInFirstWeek(thisDfw), other->mCalendar->GetMinimalDaysInFirstWeek(otherDfw), thisDfw == otherDfw) &&
+            (mCalendar->IsLenient(thisLenient), other->mCalendar->IsLenient(otherLenient), thisLenient == otherLenient) &&
+            (mCalendar->GetTimeZone(thisTz), other->mCalendar->GetTimeZone(otherTz), Object::Equals(thisTz, otherTz)) &&
             (Object::Equals(mNumberFormat, other->mNumberFormat));
     return NOERROR;
 }

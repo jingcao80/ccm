@@ -24,7 +24,7 @@ namespace util {
 interface IEnumeration
 {
     HasMoreElements(
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     NextElement(
         [out] IInterface** object = nullptr);

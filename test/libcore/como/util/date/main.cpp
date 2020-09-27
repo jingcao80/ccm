@@ -29,7 +29,7 @@ TEST(DateTest, ToGMTStringTest)
     AutoPtr<IDate> date;
     CDate::New(IID_IDate, (IInterface**)&date);
     String dateStr;
-    ECode ec = date->ToGMTString(&dateStr);
+    ECode ec = date->ToGMTString(dateStr);
     EXPECT_TRUE(ec == NOERROR && !dateStr.IsEmpty());
 }
 

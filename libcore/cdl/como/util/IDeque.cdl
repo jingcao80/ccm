@@ -51,13 +51,13 @@ interface IDeque
         [out] IIterator&& it);
 
     GetFirst(
-        [out] IInterface** e);
+        [out] IInterface&& e);
 
     GetIterator(
         [out] IIterator&& it);
 
     GetLast(
-        [out] IInterface** e);
+        [out] IInterface&& e);
 
     GetSize(
         [out] Integer& size);
@@ -78,22 +78,22 @@ interface IDeque
         [out] IInterface&& e);
 
     PeekFirst(
-        [out] IInterface** e);
+        [out] IInterface&& e);
 
     PeekLast(
-        [out] IInterface** e);
+        [out] IInterface&& e);
 
     Poll(
-        [out] IInterface** e);
+        [out] IInterface&& e);
 
     PollFirst(
-        [out] IInterface** e);
+        [out] IInterface&& e);
 
     PollLast(
-        [out] IInterface** e);
+        [out] IInterface&& e);
 
     Pop(
-        [out] IInterface** e);
+        [out] IInterface&& e);
 
     Push(
         [in] IInterface* e);

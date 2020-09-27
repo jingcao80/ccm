@@ -449,12 +449,10 @@ syntax:
 }
 
 ECode Date::GetYear(
-    /* [out] */ Integer* year)
+    /* [out] */ Integer& year)
 {
-    VALIDATE_NOT_NULL(year);
-
-    ICalendarDate::Probe(Normalize())->GetYear(*year);
-    *year = *year - 1900;
+    ICalendarDate::Probe(Normalize())->GetYear(year);
+    year = year - 1900;
     return NOERROR;
 }
 
@@ -465,12 +463,10 @@ ECode Date::SetYear(
 }
 
 ECode Date::GetMonth(
-    /* [out] */ Integer* month)
+    /* [out] */ Integer& month)
 {
-    VALIDATE_NOT_NULL(month);
-
-    ICalendarDate::Probe(Normalize())->GetMonth(*month);
-    *month = *month - 1; // adjust 1-based to 0-based
+    ICalendarDate::Probe(Normalize())->GetMonth(month);
+    month = month - 1; // adjust 1-based to 0-based
     return NOERROR;
 }
 
@@ -496,11 +492,9 @@ ECode Date::SetMonth(
 }
 
 ECode Date::GetDate(
-    /* [out] */ Integer* date)
+    /* [out] */ Integer& date)
 {
-    VALIDATE_NOT_NULL(date);
-
-    return ICalendarDate::Probe(Normalize())->GetDayOfMonth(*date);
+    return ICalendarDate::Probe(Normalize())->GetDayOfMonth(date);
 }
 
 ECode Date::SetDate(
@@ -510,21 +504,17 @@ ECode Date::SetDate(
 }
 
 ECode Date::GetDay(
-    /* [out] */ Integer* day)
+    /* [out] */ Integer& day)
 {
-    VALIDATE_NOT_NULL(day);
-
-    ICalendarDate::Probe(Normalize())->GetDayOfWeek(*day);
-    *day = *day - IBaseCalendar::SUNDAY;
+    ICalendarDate::Probe(Normalize())->GetDayOfWeek(day);
+    day = day - IBaseCalendar::SUNDAY;
     return NOERROR;
 }
 
 ECode Date::GetHours(
-    /* [out] */ Integer* hours)
+    /* [out] */ Integer& hours)
 {
-    VALIDATE_NOT_NULL(hours);
-
-    return ICalendarDate::Probe(Normalize())->GetHours(*hours);
+    return ICalendarDate::Probe(Normalize())->GetHours(hours);
 }
 
 ECode Date::SetHours(
@@ -534,11 +524,9 @@ ECode Date::SetHours(
 }
 
 ECode Date::GetMinutes(
-    /* [out] */ Integer* minutes)
+    /* [out] */ Integer& minutes)
 {
-    VALIDATE_NOT_NULL(minutes);
-
-    return ICalendarDate::Probe(Normalize())->GetMinutes(*minutes);
+    return ICalendarDate::Probe(Normalize())->GetMinutes(minutes);
 }
 
 ECode Date::SetMinutes(
@@ -548,11 +536,9 @@ ECode Date::SetMinutes(
 }
 
 ECode Date::GetSeconds(
-    /* [out] */ Integer* seconds)
+    /* [out] */ Integer& seconds)
 {
-    VALIDATE_NOT_NULL(seconds);
-
-    return ICalendarDate::Probe(Normalize())->GetSeconds(*seconds);
+    return ICalendarDate::Probe(Normalize())->GetSeconds(seconds);
 }
 
 ECode Date::SetSeconds(
@@ -562,11 +548,9 @@ ECode Date::SetSeconds(
 }
 
 ECode Date::GetTime(
-    /* [out] */ Long* time)
+    /* [out] */ Long& time)
 {
-    VALIDATE_NOT_NULL(time);
-
-    *time = GetTimeImpl();
+    time = GetTimeImpl();
     return NOERROR;
 }
 
@@ -590,21 +574,17 @@ ECode Date::SetTime(
 
 ECode Date::Before(
     /* [in] */ IDate* when,
-    /* [out] */ Boolean* before)
+    /* [out] */ Boolean& before)
 {
-    VALIDATE_NOT_NULL(before);
-
-    *before = GetMillisOf(this) < GetMillisOf(when);
+    before = GetMillisOf(this) < GetMillisOf(when);
     return NOERROR;
 }
 
 ECode Date::After(
     /* [in] */ IDate* when,
-    /* [out] */ Boolean* after)
+    /* [out] */ Boolean& after)
 {
-    VALIDATE_NOT_NULL(after);
-
-    *after = GetMillisOf(this) > GetMillisOf(when);
+    after = GetMillisOf(this) > GetMillisOf(when);
     return NOERROR;
 }
 
@@ -618,8 +598,8 @@ ECode Date::Equals(
     }
 
     Long thisTime, anotherTime;
-    GetTime(&thisTime);
-    IDate::Probe(obj)->GetTime(&anotherTime);
+    GetTime(thisTime);
+    IDate::Probe(obj)->GetTime(anotherTime);
     same = thisTime == anotherTime;
     return NOERROR;
 }
@@ -659,7 +639,7 @@ ECode Date::GetHashCode(
     /* [out] */ Integer& hash)
 {
     Long ht;
-    GetTime(&ht);
+    GetTime(ht);
     hash = (Integer)ht ^ (Integer)(ht >> 32);
     return NOERROR;
 }
@@ -722,20 +702,18 @@ void Date::ConvertToAbbr(
 }
 
 ECode Date::ToLocaleString(
-    /* [out] */ String* str)
+    /* [out] */ String& str)
 {
     AutoPtr<IDateFormat> formatter;
     DateFormat::GetDateTimeInstance(formatter);
-    return formatter->Format(this, *str);
+    return formatter->Format(this, str);
 }
 
 ECode Date::ToGMTString(
-    /* [out] */ String* str)
+    /* [out] */ String& str)
 {
-    VALIDATE_NOT_NULL(str);
-
     Long t;
-    GetTime(&t);
+    GetTime(t);
     AutoPtr<ICalendarDate> date;
     ICalendarSystem::Probe(GetCalendarSystem(t))->GetCalendarDate(
             t, nullptr, date);
@@ -760,28 +738,26 @@ ECode Date::ToGMTString(
     sb->Append(U':'); // mm
     CalendarUtils::Sprintf0d(sb, seconds, 2); // ss
     sb->Append(String(" GMT")); // ' GMT'
-    return sb->ToString(*str);
+    return sb->ToString(str);
 }
 
 ECode Date::GetTimezoneOffset(
-    /* [out] */ Integer* tzOffset)
+    /* [out] */ Integer& tzOffset)
 {
-    VALIDATE_NOT_NULL(tzOffset);
-
     Integer zoneOffset;
     if (mCdate == nullptr) {
         AutoPtr<ICalendar> cal;
         CGregorianCalendar::New(mFastTime, IID_ICalendar, (IInterface**)&cal);
         Integer zoff, doff;
-        cal->Get(ICalendar::ZONE_OFFSET, &zoff);
-        cal->Get(ICalendar::DST_OFFSET, &doff);
+        cal->Get(ICalendar::ZONE_OFFSET, zoff);
+        cal->Get(ICalendar::DST_OFFSET, doff);
         zoneOffset = (zoff + doff);
     }
     else {
         Normalize();
         ICalendarDate::Probe(mCdate)->GetZoneOffset(zoneOffset);
     }
-    *tzOffset = -zoneOffset / 60000; // convert to minutes
+    tzOffset = -zoneOffset / 60000; // convert to minutes
     return NOERROR;
 }
 
@@ -863,7 +839,7 @@ AutoPtr<IBaseCalendarDate> Date::Normalize(
         gc->Clear();
         gc->Set(ICalendar::MILLISECOND, ms);
         gc->Set(y, m - 1, d, hh, mm, ss);
-        gc->GetTimeInMillis(&mFastTime);
+        gc->GetTimeInMillis(mFastTime);
         AutoPtr<IBaseCalendar> cal = GetCalendarSystem(mFastTime);
         AutoPtr<ICalendarDate> cdate;
         ICalendarSystem::Probe(cal)->GetCalendarDate(mFastTime, tz, cdate);

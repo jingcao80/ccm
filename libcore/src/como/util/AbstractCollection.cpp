@@ -49,7 +49,7 @@ ECode AbstractCollection::Contains(
     GetIterator(it);
     if (obj == nullptr) {
         Boolean hasNext;
-        while (it->HasNext(&hasNext), hasNext) {
+        while (it->HasNext(hasNext), hasNext) {
             AutoPtr<IInterface> e;
             it->Next(&e);
             if (e == nullptr) {
@@ -60,7 +60,7 @@ ECode AbstractCollection::Contains(
     }
     else {
         Boolean hasNext;
-        while (it->HasNext(&hasNext), hasNext) {
+        while (it->HasNext(hasNext), hasNext) {
             AutoPtr<IInterface> e;
             it->Next(&e);
             if (Object::Equals(obj, e)) {
@@ -86,7 +86,7 @@ ECode AbstractCollection::ToArray(
     GetIterator(it);
     for (Integer i = 0; i < r.GetLength(); i++) {
         Boolean hasNext;
-        if (it->HasNext(&hasNext), !hasNext) {
+        if (it->HasNext(hasNext), !hasNext) {
             return Arrays::CopyOf(r, i, objs);
         }
         AutoPtr<IInterface> e;
@@ -94,7 +94,7 @@ ECode AbstractCollection::ToArray(
         r.Set(i, e);
     }
     Boolean hasNext;
-    it->HasNext(&hasNext);
+    it->HasNext(hasNext);
     if (hasNext) {
         return FinishToArray(r, it, objs);
     }
@@ -118,7 +118,7 @@ ECode AbstractCollection::ToArray(
     GetIterator(it);
     for (Integer i = 0; i < r.GetLength(); i++) {
         Boolean hasNext;
-        if (it->HasNext(&hasNext), !hasNext) {
+        if (it->HasNext(hasNext), !hasNext) {
             return Arrays::CopyOf(r, i, objs);
         }
         AutoPtr<IInterface> e;
@@ -126,7 +126,7 @@ ECode AbstractCollection::ToArray(
         r.Set(i, e != nullptr ? e->Probe(iid) : nullptr);
     }
     Boolean hasNext;
-    it->HasNext(&hasNext);
+    it->HasNext(hasNext);
     if (hasNext) {
         return FinishToArray(r, it, iid, objs);
     }
@@ -143,7 +143,7 @@ ECode AbstractCollection::FinishToArray(
 {
     Integer i = r.GetLength();
     Boolean hasNext;
-    while (it->HasNext(&hasNext), hasNext) {
+    while (it->HasNext(hasNext), hasNext) {
         Integer cap = r.GetLength();
         if (i == cap) {
             Integer newCap = cap + (cap >> 1) + 1;
@@ -177,7 +177,7 @@ ECode AbstractCollection::FinishToArray(
 {
     Integer i = r.GetLength();
     Boolean hasNext;
-    while (it->HasNext(&hasNext), hasNext) {
+    while (it->HasNext(hasNext), hasNext) {
         Integer cap = r.GetLength();
         if (i == cap) {
             Integer newCap = cap + (cap >> 1) + 1;
@@ -230,7 +230,7 @@ ECode AbstractCollection::Remove(
     GetIterator(it);
     if (obj == nullptr) {
         Boolean hasNext;
-        while (it->HasNext(&hasNext), hasNext) {
+        while (it->HasNext(hasNext), hasNext) {
             AutoPtr<IInterface> e;
             it->Next(&e);
             if (e == nullptr) {
@@ -242,7 +242,7 @@ ECode AbstractCollection::Remove(
     }
     else {
         Boolean hasNext;
-        while (it->HasNext(&hasNext), hasNext) {
+        while (it->HasNext(hasNext), hasNext) {
             AutoPtr<IInterface> e;
             it->Next(&e);
             if (Object::Equals(obj, e)) {
@@ -263,7 +263,7 @@ ECode AbstractCollection::ContainsAll(
     AutoPtr<IIterator> it;
     c->GetIterator(it);
     Boolean hasNext;
-    while (it->HasNext(&hasNext), hasNext) {
+    while (it->HasNext(hasNext), hasNext) {
         AutoPtr<IInterface> e;
         it->Next(&e);
         Boolean contains;
@@ -284,7 +284,7 @@ ECode AbstractCollection::AddAll(
     AutoPtr<IIterator> it;
     c->GetIterator(it);
     Boolean hasNext;
-    while (it->HasNext(&hasNext), hasNext) {
+    while (it->HasNext(hasNext), hasNext) {
         AutoPtr<IInterface> e;
         it->Next(&e);
         Boolean result;
@@ -304,7 +304,7 @@ ECode AbstractCollection::RemoveAll(
     AutoPtr<IIterator> it;
     GetIterator(it);
     Boolean hasNext;
-    while (it->HasNext(&hasNext), hasNext) {
+    while (it->HasNext(hasNext), hasNext) {
         AutoPtr<IInterface> e;
         it->Next(&e);
         Boolean result;
@@ -325,7 +325,7 @@ ECode AbstractCollection::RetainAll(
     AutoPtr<IIterator> it;
     GetIterator(it);
     Boolean hasNext;
-    while (it->HasNext(&hasNext), hasNext) {
+    while (it->HasNext(hasNext), hasNext) {
         AutoPtr<IInterface> e;
         it->Next(&e);
         Boolean result;
@@ -343,7 +343,7 @@ ECode AbstractCollection::Clear()
     AutoPtr<IIterator> it;
     GetIterator(it);
     Boolean hasNext;
-    while (it->HasNext(&hasNext), hasNext) {
+    while (it->HasNext(hasNext), hasNext) {
         it->Next();
         it->Remove();
     }
@@ -356,7 +356,7 @@ ECode AbstractCollection::ToString(
     AutoPtr<IIterator> it;
     GetIterator(it);
     Boolean hasNext;
-    if (it->HasNext(&hasNext), !hasNext) {
+    if (it->HasNext(hasNext), !hasNext) {
         str = "[]";
         return NOERROR;
     }
@@ -369,7 +369,7 @@ ECode AbstractCollection::ToString(
         it->Next(&e);
         sb->Append(IInterface::Equals(e, (ICollection*)this) ?
                 String("(this Collection)") : Object::ToString(e));
-        if (it->HasNext(&hasNext), !hasNext) {
+        if (it->HasNext(hasNext), !hasNext) {
             sb->Append(U']');
             sb->ToString(str);
             return NOERROR;

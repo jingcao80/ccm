@@ -101,7 +101,7 @@ void LocaleObjectCache::CleanStaleEntries()
     IMap* map = IMap::Probe(mMap);
     while (true) {
         AutoPtr<IInterface> obj;
-        mQueue->Poll(&obj);
+        mQueue->Poll(obj);
         if (obj == nullptr) {
             return;
         }

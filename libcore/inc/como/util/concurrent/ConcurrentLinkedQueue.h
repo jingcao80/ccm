@@ -58,7 +58,7 @@ private:
         COMO_INTERFACE_DECL();
 
         ECode HasNext(
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
 
         ECode Next(
             /* [out] */ IInterface** object = nullptr) override;
@@ -119,7 +119,7 @@ public:
         /* [out] */ Boolean* changed = nullptr) override;
 
     ECode Poll(
-        /* [out] */ IInterface** head = nullptr) override;
+        /* [out] */ AutoPtr<IInterface>& head) override;
 
     ECode Peek(
         /* [out] */ AutoPtr<IInterface>& head) override;

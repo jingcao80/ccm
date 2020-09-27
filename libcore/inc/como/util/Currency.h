@@ -49,27 +49,27 @@ public:
     static AutoPtr<ISet> GetAvailableCurrencies();
 
     ECode GetCurrencyCode(
-        /* [out] */ String* currencyCode) override;
+        /* [out] */ String& currencyCode) override;
 
     ECode GetSymbol(
-        /* [out] */ String* symbol) override;
+        /* [out] */ String& symbol) override;
 
     ECode GetSymbol(
         /* [in] */ ILocale* locale,
-        /* [out] */ String* symbol) override;
+        /* [out] */ String& symbol) override;
 
     ECode GetDefaultFractionDigits(
-        /* [out] */ Integer* digits) override;
+        /* [out] */ Integer& digits) override;
 
     ECode GetNumericCode(
-        /* [out] */ Integer* numericCode) override;
+        /* [out] */ Integer& numericCode) override;
 
     ECode GetDisplayName(
-        /* [out] */ String* displayName) override;
+        /* [out] */ String& displayName) override;
 
     ECode GetDisplayName(
         /* [in] */ ILocale* locale,
-        /* [out] */ String* displayName) override;
+        /* [out] */ String& displayName) override;
 
     ECode ToString(
         /* [out] */ String& desc) override;

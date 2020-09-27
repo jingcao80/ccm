@@ -684,20 +684,20 @@ public:
         /* [in] */ ILocale* l);
 
     ECode GetLocale(
-        /* [out] */ ILocale** locale) override;
+        /* [out] */ AutoPtr<ILocale>& locale) override;
 
     ECode GetOut(
-        /* [out] */ IAppendable** output) override;
+        /* [out] */ AutoPtr<IAppendable>& output) override;
 
     ECode ToString(
-        /* [out] */ String* str) override;
+        /* [out] */ String& str) override;
 
     ECode Flush() override;
 
     ECode Close() override;
 
     ECode GetIoException(
-        /* [out] */ ECode* ec) override;
+        /* [out] */ ECode& ec) override;
 
     ECode Format(
         /* [in] */ const String& format,

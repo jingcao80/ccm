@@ -36,11 +36,11 @@ interface IGregorianCalendar
     const Integer AD = 1;
 
     GetGregorianChange(
-        [out] IDate** date);
+        [out] IDate&& date);
 
     IsLeapYear(
         [in] Integer year,
-        [out] Boolean* leap);
+        [out] Boolean& leap);
 
     SetGregorianChange(
         [in] IDate* date);

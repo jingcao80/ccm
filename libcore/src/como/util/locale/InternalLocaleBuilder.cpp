@@ -398,7 +398,7 @@ ECode InternalLocaleBuilder::SetLanguageTag(
     Boolean empty;
     if (extLangs->IsEmpty(empty), !empty) {
         AutoPtr<IInterface> extLang;
-        extLangs->Get(0, &extLang);
+        extLangs->Get(0, extLang);
         mLanguage = CoreUtils::Unbox(ICharSequence::Probe(extLang));
     }
     else {
@@ -415,15 +415,14 @@ ECode InternalLocaleBuilder::SetLanguageTag(
     langtag->GetVariants(bcpVariants);
     if (bcpVariants->IsEmpty(empty), !empty) {
         AutoPtr<IInterface> bcpVariant;
-        bcpVariants->Get(0, &bcpVariant);
+        bcpVariants->Get(0, bcpVariant);
         AutoPtr<IStringBuilder> var;
         CStringBuilder::New(CoreUtils::Unbox(ICharSequence::Probe(bcpVariant)),
                 IID_IStringBuilder, (IInterface**)&var);
         Integer size;
         bcpVariants->GetSize(size);
         for (Integer i = 1; i < size; i++) {
-            bcpVariant = nullptr;
-            bcpVariants->Get(i, &bcpVariant);
+            bcpVariants->Get(i, bcpVariant);
             var->Append(BaseLocale::SEP);
             var->Append(CoreUtils::Unbox(ICharSequence::Probe(bcpVariant)));
         }

@@ -718,7 +718,7 @@ public:
     ECode Compare(
         /* [in] */ IInterface* c1,
         /* [in] */ IInterface* c2,
-        /* [out] */ Integer* cmp) override;
+        /* [out] */ Integer& cmp) override;
 
     ECode Equals(
         /* [in] */ IInterface* obj,
@@ -730,10 +730,8 @@ COMO_INTERFACE_IMPL_1(CaseInsensitiveComparator, Object, IComparator);
 ECode CaseInsensitiveComparator::Compare(
     /* [in] */ IInterface* c1,
     /* [in] */ IInterface* c2,
-    /* [out] */ Integer* cmp)
+    /* [out] */ Integer& cmp)
 {
-    VALIDATE_NOT_NULL(cmp);
-
     String s1, s2;
     ICharSequence::Probe(c1)->ToString(s1);
     ICharSequence::Probe(c2)->ToString(s2);
@@ -751,13 +749,13 @@ ECode CaseInsensitiveComparator::Compare(
                 c1 = Character::ToLowerCase(c1);
                 c2 = Character::ToLowerCase(c2);
                 if (c1 != c2) {
-                    *cmp = c1 - c2;
+                    cmp = c1 - c2;
                     return NOERROR;
                 }
             }
         }
     }
-    *cmp = n1 - n2;
+    cmp = n1 - n2;
     return NOERROR;
 }
 

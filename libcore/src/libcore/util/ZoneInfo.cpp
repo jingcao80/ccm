@@ -456,7 +456,7 @@ ECode ZoneInfo::InDaylightTime(
     VALIDATE_NOT_NULL(daylight);
 
     Long date;
-    time->GetTime(&date);
+    time->GetTime(date);
     Integer offsetIndex = FindOffsetIndexForTimeInMilliseconds(date);
     if (offsetIndex == -1) {
         // Assume that all times before our first transition are non-daylight.
@@ -691,7 +691,7 @@ ECode ZoneInfo::WallTime::Mktime(
 
     CopyFieldsToCalendar();
     Long timeInMillies;
-    mCalendar->GetTimeInMillis(&timeInMillies);
+    mCalendar->GetTimeInMillis(timeInMillies);
     Long longWallTimeSeconds = timeInMillies / 1000;
     if (IInteger::MIN_VALUE > longWallTimeSeconds
             || longWallTimeSeconds > IInteger::MAX_VALUE) {
@@ -1147,18 +1147,18 @@ void ZoneInfo::WallTime::CopyFieldsToCalendar()
 
 void ZoneInfo::WallTime::CopyFieldsFromCalendar()
 {
-    mCalendar->Get(ICalendar::YEAR, &mYear);
-    mCalendar->Get(ICalendar::MONTH, &mMonth);
-    mCalendar->Get(ICalendar::DAY_OF_MONTH, &mMonthDay);
-    mCalendar->Get(ICalendar::HOUR_OF_DAY, &mHour);
-    mCalendar->Get(ICalendar::MINUTE, &mMinute);
-    mCalendar->Get(ICalendar::SECOND, &mSecond);
+    mCalendar->Get(ICalendar::YEAR, mYear);
+    mCalendar->Get(ICalendar::MONTH, mMonth);
+    mCalendar->Get(ICalendar::DAY_OF_MONTH, mMonthDay);
+    mCalendar->Get(ICalendar::HOUR_OF_DAY, mHour);
+    mCalendar->Get(ICalendar::MINUTE, mMinute);
+    mCalendar->Get(ICalendar::SECOND, mSecond);
 
     // Calendar uses Sunday == 1, COMO Time uses Sunday = 0.
-    mCalendar->Get(ICalendar::DAY_OF_WEEK, &mWeekDay);
+    mCalendar->Get(ICalendar::DAY_OF_WEEK, mWeekDay);
     mWeekDay -= 1;
     // Calendar enumerates from 1, COMO Time enumerates from 0.
-    mCalendar->Get(ICalendar::DAY_OF_YEAR, &mYearDay);
+    mCalendar->Get(ICalendar::DAY_OF_YEAR, mYearDay);
     mYearDay -= 1;
 }
 

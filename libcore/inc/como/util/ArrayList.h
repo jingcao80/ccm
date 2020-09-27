@@ -56,7 +56,7 @@ private:
         COMO_INTERFACE_DECL();
 
         ECode HasNext(
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
 
         ECode Next(
             /* [out] */ IInterface** object = nullptr) override;
@@ -105,7 +105,7 @@ private:
             /* [in] */ IInterface* object) override;
 
         ECode HasNext(
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
 
         ECode Next(
             /* [out] */ IInterface** object = nullptr) override;
@@ -134,7 +134,7 @@ private:
 
         ECode Get(
             /* [in] */ Integer index,
-            /* [out] */ IInterface** obj) override;
+            /* [out] */ AutoPtr<IInterface>& obj) override;
 
         ECode GetSize(
             /* [out] */ Integer& size) override;
@@ -161,12 +161,12 @@ private:
 
         ECode GetListIterator(
             /* [in] */ Integer index,
-            /* [out] */ IListIterator** it) override;
+            /* [out] */ AutoPtr<IListIterator>& it) override;
 
         ECode SubList(
             /* [in] */ Integer fromIndex,
             /* [in] */ Integer toIndex,
-            /* [out] */ IList** subList) override;
+            /* [out] */ AutoPtr<IList>& subList) override;
 
         using AbstractList::GetListIterator;
 
@@ -215,11 +215,11 @@ public:
 
     ECode IndexOf(
         /* [in] */ IInterface* obj,
-        /* [out] */ Integer* index) override;
+        /* [out] */ Integer& index) override;
 
     ECode LastIndexOf(
         /* [in] */ IInterface* obj,
-        /* [out] */ Integer* index) override;
+        /* [out] */ Integer& index) override;
 
     ECode ToArray(
         /* [out, callee] */ Array<IInterface*>* objs) override;
@@ -230,7 +230,7 @@ public:
 
     ECode Get(
         /* [in] */ Integer index,
-        /* [out] */ IInterface** obj) override;
+        /* [out] */ AutoPtr<IInterface>& obj) override;
 
     ECode Set(
         /* [in] */ Integer index,
@@ -274,18 +274,18 @@ public:
 
     ECode GetListIterator(
         /* [in] */ Integer index,
-        /* [out] */ IListIterator** it) override;
+        /* [out] */ AutoPtr<IListIterator>& it) override;
 
     ECode GetListIterator(
-        /* [out] */ IListIterator** it) override;
+        /* [out] */ AutoPtr<IListIterator>& it) override;
 
     ECode GetIterator(
-        /* [out] */ IIterator** it) override;
+        /* [out] */ AutoPtr<IIterator>& it) override;
 
     ECode SubList(
         /* [in] */ Integer fromIndex,
         /* [in] */ Integer toIndex,
-        /* [out] */ IList** subList) override;
+        /* [out] */ AutoPtr<IList>& subList) override;
 
     ECode ContainsAll(
         /* [in] */ ICollection* c,

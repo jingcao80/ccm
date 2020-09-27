@@ -198,7 +198,7 @@ ECode GregorianCalendar::SetGregorianChange(
     /* [in] */ IDate* date)
 {
     Long cutoverTime;
-    date->GetTime(&cutoverTime);
+    date->GetTime(cutoverTime);
     if (cutoverTime == mGregorianCutover) {
         return NOERROR;
     }
@@ -245,30 +245,27 @@ void GregorianCalendar::SetGregorianChange(
 }
 
 ECode GregorianCalendar::GetGregorianChange(
-    /* [out] */ IDate** date)
+    /* [out] */ AutoPtr<IDate>& date)
 {
-    VALIDATE_NOT_NULL(date);
-
-    return CDate::New(mGregorianCutover, IID_IDate, (IInterface**)date);
+    date = nullptr;
+    return CDate::New(mGregorianCutover, IID_IDate, (IInterface**)&date);
 }
 
 ECode GregorianCalendar::IsLeapYear(
     /* [in] */ Integer year,
-    /* [out] */ Boolean* leap)
+    /* [out] */ Boolean& leap)
 {
-    VALIDATE_NOT_NULL(leap);
-
     if ((year & 3) != 0) {
-        *leap = false;
+        leap = false;
         return NOERROR;
     }
 
     if (year > mGregorianCutoverYear) {
-        *leap = (year % 100 != 0) || (year % 400 == 0); // Gregorian
+        leap = (year % 100 != 0) || (year % 400 == 0); // Gregorian
         return NOERROR;
     }
     if (year < mGregorianCutoverYearJulian) {
-        *leap = true; // Julian
+        leap = true; // Julian
         return NOERROR;
     }
     Boolean gregorian;
@@ -283,16 +280,14 @@ ECode GregorianCalendar::IsLeapYear(
     else {
         gregorian = year == mGregorianCutoverYear;
     }
-    *leap = gregorian ? (year % 100 != 0) || (year % 400 == 0) : true;
+    leap = gregorian ? (year % 100 != 0) || (year % 400 == 0) : true;
     return NOERROR;
 }
 
 ECode GregorianCalendar::GetCalendarType(
-    /* [out] */ String* type)
+    /* [out] */ String& type)
 {
-    VALIDATE_NOT_NULL(type);
-
-    *type = "gregory";
+    type = "gregory";
     return NOERROR;
 }
 
@@ -539,8 +534,8 @@ ECode GregorianCalendar::Roll(
     Complete();
 
     Integer min, max;
-    GetMinimum(field, &min);
-    GetMaximum(field, &max);
+    GetMinimum(field, min);
+    GetMaximum(field, max);
 
     switch(field) {
         case AM_PM:
@@ -631,7 +626,7 @@ ECode GregorianCalendar::Roll(
                     // We need to take care of different lengths in
                     // year and month due to the cutover.
                     Integer yearLength;
-                    GetActualMaximum(MONTH, &yearLength);
+                    GetActualMaximum(MONTH, yearLength);
                     yearLength += 1;
                     Integer mon = (InternalGet(MONTH) + amount) % yearLength;
                     if (mon < 0) {
@@ -639,7 +634,7 @@ ECode GregorianCalendar::Roll(
                     }
                     Set(MONTH, mon);
                     Integer monthLen;
-                    GetActualMaximum(DAY_OF_MONTH, &monthLen);
+                    GetActualMaximum(DAY_OF_MONTH, monthLen);
                     if (InternalGet(DAY_OF_MONTH) > monthLen) {
                         Set(DAY_OF_MONTH, monthLen);
                     }
@@ -651,13 +646,13 @@ ECode GregorianCalendar::Roll(
             {
                 Integer y;
                 mCdate->GetNormalizedYear(y);
-                GetActualMaximum(WEEK_OF_YEAR, &max);
+                GetActualMaximum(WEEK_OF_YEAR, max);
                 Set(DAY_OF_WEEK, InternalGet(DAY_OF_WEEK));
                 Integer woy = InternalGet(WEEK_OF_YEAR);
                 Integer value = woy + amount;
                 if (!IsCutoverYear(y)) {
                     Integer weekYear;
-                    GetWeekYear(&weekYear);
+                    GetWeekYear(weekYear);
                     if (weekYear == y) {
                         // If the new value is in between min and max
                         // (exclusive), then we can use the value.
@@ -744,7 +739,7 @@ ECode GregorianCalendar::Roll(
                 Boolean isCutoverYear = IsCutoverYear(normYear);
                 // dow: relative day of week from first day of week
                 Integer firstDay;
-                GetFirstDayOfWeek(&firstDay);
+                GetFirstDayOfWeek(firstDay);
                 Integer dow = InternalGet(DAY_OF_WEEK) - firstDay;
                 if (dow < 0) {
                     dow += 7;
@@ -770,11 +765,11 @@ ECode GregorianCalendar::Roll(
                 // if the week has enough days to form a week, the
                 // week starts from the previous month.
                 Integer minDays;
-                GetMinimalDaysInFirstWeek(&minDays);
+                GetMinimalDaysInFirstWeek(minDays);
                 if ((Integer)(monthDay1st - month1) >= minDays) {
                     monthDay1st -= 7;
                 }
-                GetActualMaximum(field, &max);
+                GetActualMaximum(field, max);
 
                 // value: the new WEEK_OF_MONTH value
                 Integer value = GetRolledValue(InternalGet(field), amount, 1, max) - 1;
@@ -835,7 +830,7 @@ ECode GregorianCalendar::Roll(
 
         case DAY_OF_YEAR:
             {
-                GetActualMaximum(field, &max);
+                GetActualMaximum(field, max);
                 Integer normYear;
                 mCdate->GetNormalizedYear(normYear);
                 if (!IsCutoverYear(normYear)) {
@@ -880,7 +875,7 @@ ECode GregorianCalendar::Roll(
                 }
                 Long fd = GetCurrentFixedDate();
                 Integer firstDay;
-                GetFirstDayOfWeek(&firstDay);
+                GetFirstDayOfWeek(firstDay);
                 Long dowFirst = BaseCalendar::GetDayOfWeekDateOnOrBefore(
                         fd, firstDay);
                 fd += amount;
@@ -952,24 +947,20 @@ ECode GregorianCalendar::Roll(
 
 ECode GregorianCalendar::GetMinimum(
     /* [in] */ Integer field,
-    /* [out] */ Integer* value)
+    /* [out] */ Integer& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     if (field < 0 || field >= FIELD_COUNT) {
         return como::core::E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
-    *value = MIN_VALUES[field];
+    value = MIN_VALUES[field];
     return NOERROR;
 }
 
 ECode GregorianCalendar::GetMaximum(
     /* [in] */ Integer field,
-    /* [out] */ Integer* value)
+    /* [out] */ Integer& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     if (field < 0 || field >= FIELD_COUNT) {
         return como::core::E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
@@ -996,23 +987,21 @@ ECode GregorianCalendar::GetMaximum(
                 gc->SetLenient(true);
                 gc->SetTimeInMillis(mGregorianCutover);
                 Integer v1, v2;
-                gc->GetActualMaximum(field, &v1);
+                gc->GetActualMaximum(field, v1);
                 gc->SetTimeInMillis(mGregorianCutover - 1);
-                gc->GetActualMaximum(field, &v2);
-                *value = Math::Max(MAX_VALUES[field], Math::Max(v1, v2));
+                gc->GetActualMaximum(field, v2);
+                value = Math::Max(MAX_VALUES[field], Math::Max(v1, v2));
                 return NOERROR;
             }
     }
-    *value = MAX_VALUES[field];
+    value = MAX_VALUES[field];
     return NOERROR;
 }
 
 ECode GregorianCalendar::GetGreatestMinimum(
     /* [in] */ Integer field,
-    /* [out] */ Integer* value)
+    /* [out] */ Integer& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     if (field < 0 || field >= FIELD_COUNT) {
         return como::core::E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
@@ -1023,19 +1012,17 @@ ECode GregorianCalendar::GetGreatestMinimum(
         d = GetCalendarDate(mon1);
         Integer dayOfMonth;
         ICalendarDate::Probe(d)->GetDayOfMonth(dayOfMonth);
-        *value = Math::Max(MIN_VALUES[field], dayOfMonth);
+        value = Math::Max(MIN_VALUES[field], dayOfMonth);
         return NOERROR;
     }
-    *value = MIN_VALUES[field];
+    value = MIN_VALUES[field];
     return NOERROR;
 }
 
 ECode GregorianCalendar::GetLeastMaximum(
     /* [in] */ Integer field,
-    /* [out] */ Integer* value)
+    /* [out] */ Integer& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     if (field < 0 || field >= FIELD_COUNT) {
         return como::core::E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
@@ -1055,23 +1042,21 @@ ECode GregorianCalendar::GetLeastMaximum(
                 gc->SetLenient(true);
                 gc->SetTimeInMillis(mGregorianCutover);
                 Integer v1, v2;
-                gc->GetActualMaximum(field, &v1);
+                gc->GetActualMaximum(field, v1);
                 gc->SetTimeInMillis(mGregorianCutover - 1);
-                gc->GetActualMaximum(field, &v2);
-                *value = Math::Min(LEAST_MAX_VALUES[field], Math::Min(v1, v2));
+                gc->GetActualMaximum(field, v2);
+                value = Math::Min(LEAST_MAX_VALUES[field], Math::Min(v1, v2));
                 return NOERROR;
             }
     }
-    *value = LEAST_MAX_VALUES[field];
+    value = LEAST_MAX_VALUES[field];
     return NOERROR;
 }
 
 ECode GregorianCalendar::GetActualMinimum(
     /* [in] */ Integer field,
-    /* [out] */ Integer* value)
+    /* [out] */ Integer& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     if (field < 0 || field >= FIELD_COUNT) {
         return como::core::E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
@@ -1085,7 +1070,7 @@ ECode GregorianCalendar::GetActualMinimum(
             gc->mCalsys->GetFixedDate(ICalendarDate::Probe(gc->mCdate), date);
             Long month1 = GetFixedDateMonth1(gc->mCdate, date);
             AutoPtr<IBaseCalendarDate> d = GetCalendarDate(month1);
-            return ICalendarDate::Probe(d)->GetDayOfMonth(*value);
+            return ICalendarDate::Probe(d)->GetDayOfMonth(value);
         }
     }
     return GetMinimum(field, value);
@@ -1093,10 +1078,8 @@ ECode GregorianCalendar::GetActualMinimum(
 
 ECode GregorianCalendar::GetActualMaximum(
     /* [in] */ Integer field,
-    /* [out] */ Integer* retValue)
+    /* [out] */ Integer& retValue)
 {
-    VALIDATE_NOT_NULL(retValue);
-
     if (field < 0 || field >= FIELD_COUNT) {
         return como::core::E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
@@ -1212,14 +1195,14 @@ ECode GregorianCalendar::GetActualMaximum(
                     cal->GetDayOfWeek(d, dayOfWeek);
                     // Normalize the day of week with the firstDayOfWeek value
                     Integer firstDayOfWeek;
-                    GetFirstDayOfWeek(&firstDayOfWeek);
+                    GetFirstDayOfWeek(firstDayOfWeek);
                     dayOfWeek -= firstDayOfWeek;
                     if (dayOfWeek < 0) {
                         dayOfWeek += 7;
                     }
                     value = 52;
                     Integer minDays;
-                    GetMinimalDaysInFirstWeek(&minDays);
+                    GetMinimalDaysInFirstWeek(minDays);
                     Integer magic = dayOfWeek + minDays - 1;
                     Boolean leap;
                     if ((magic == 6) ||
@@ -1235,14 +1218,14 @@ ECode GregorianCalendar::GetActualMaximum(
                     gc = (GregorianCalendar*)clone.Get();
                 }
                 Integer maxDayOfYear;
-                GetActualMaximum(DAY_OF_YEAR, &maxDayOfYear);
+                GetActualMaximum(DAY_OF_YEAR, maxDayOfYear);
                 gc->Set(DAY_OF_YEAR, maxDayOfYear);
-                gc->Get(WEEK_OF_YEAR, &value);
+                gc->Get(WEEK_OF_YEAR, value);
                 Integer weeks;
-                gc->GetWeekYear(&weeks);
+                gc->GetWeekYear(weeks);
                 if (InternalGet(YEAR) != weeks) {
                     gc->Set(DAY_OF_YEAR, maxDayOfYear - 7);
-                    gc->Get(WEEK_OF_YEAR, &value);
+                    gc->Get(WEEK_OF_YEAR, value);
                 }
             }
             break;
@@ -1261,7 +1244,7 @@ ECode GregorianCalendar::GetActualMaximum(
                     Integer monthLen;
                     ICalendarSystem::Probe(cal)->GetMonthLength(d, monthLen);
                     Integer firstDayOfWeek;
-                    GetFirstDayOfWeek(&firstDayOfWeek);
+                    GetFirstDayOfWeek(firstDayOfWeek);
                     dayOfWeek -= firstDayOfWeek;
                     if (dayOfWeek < 0) {
                         dayOfWeek += 7;
@@ -1269,7 +1252,7 @@ ECode GregorianCalendar::GetActualMaximum(
                     Integer nDaysFirstWeek = 7 - dayOfWeek; // # of days in the first week
                     value = 3;
                     Integer minDays;
-                    GetMinimalDaysInFirstWeek(&minDays);
+                    GetMinimalDaysInFirstWeek(minDays);
                     if (nDaysFirstWeek >= minDays) {
                         value++;
                     }
@@ -1293,9 +1276,9 @@ ECode GregorianCalendar::GetActualMaximum(
                 Integer m = gc->InternalGet(MONTH);
                 Integer year, month;
                 do {
-                    gc->Get(WEEK_OF_MONTH, &value);
+                    gc->Get(WEEK_OF_MONTH, value);
                     gc->Add(WEEK_OF_MONTH, +1);
-                } while ((gc->Get(YEAR, &year), year == y) && (gc->Get(MONTH, &month), month == m));
+                } while ((gc->Get(YEAR, year), year == y) && (gc->Get(MONTH, month), month == m));
             }
             break;
 
@@ -1322,9 +1305,9 @@ ECode GregorianCalendar::GetActualMaximum(
                     }
                     ndays = gc->ActualMonthLength();
                     Integer dayOfMonth;
-                    gc->GetActualMinimum(DAY_OF_MONTH, &dayOfMonth);
+                    gc->GetActualMinimum(DAY_OF_MONTH, dayOfMonth);
                     gc->Set(DAY_OF_MONTH, dayOfMonth);
-                    gc->Get(DAY_OF_WEEK, &dow1);
+                    gc->Get(DAY_OF_WEEK, dow1);
                 }
                 Integer x = dow - dow1;
                 if (x < 0) {
@@ -1370,7 +1353,7 @@ ECode GregorianCalendar::GetActualMaximum(
 
                 if (gc->InternalGetEra() == CE) {
                     gc->SetTimeInMillis(ILong::MAX_VALUE);
-                    gc->Get(YEAR, &value);
+                    gc->Get(YEAR, value);
                     Long maxEnd = gc->GetYearOffsetInMillis();
                     if (current > maxEnd) {
                         value--;
@@ -1378,7 +1361,7 @@ ECode GregorianCalendar::GetActualMaximum(
                 }
                 else {
                     Long time;
-                    gc->GetTimeInMillis(&time);
+                    gc->GetTimeInMillis(time);
                     AutoPtr<ICalendarSystem> mincal = time >= mGregorianCutover ?
                         ICalendarSystem::Probe(GetGcal()) : ICalendarSystem::Probe(GetJulianCalendarSystem());
                     AutoPtr<ICalendarDate> d;
@@ -1413,7 +1396,7 @@ ECode GregorianCalendar::GetActualMaximum(
         default:
             return como::core::E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
-    *retValue = value;
+    retValue = value;
     return NOERROR;
 }
 
@@ -1458,15 +1441,13 @@ ECode GregorianCalendar::CloneImpl(
 }
 
 ECode GregorianCalendar::GetTimeZone(
-    /* [out] */ ITimeZone** zone)
+    /* [out] */ AutoPtr<ITimeZone>& zone)
 {
-    VALIDATE_NOT_NULL(zone);
-
     Calendar::GetTimeZone(zone);
     // To share the zone by CalendarDates
-    ICalendarDate::Probe(mGdate)->SetZone(*zone);
+    ICalendarDate::Probe(mGdate)->SetZone(zone);
     if (mCdate != nullptr && mCdate != mGdate) {
-        ICalendarDate::Probe(mCdate)->SetZone(*zone);
+        ICalendarDate::Probe(mCdate)->SetZone(zone);
     }
     return NOERROR;
 }
@@ -1484,21 +1465,17 @@ ECode GregorianCalendar::SetTimeZone(
 }
 
 ECode GregorianCalendar::IsWeekDateSupported(
-    /* [out] */ Boolean* supported)
+    /* [out] */ Boolean& supported)
 {
-    VALIDATE_NOT_NULL(supported);
-
-    *supported = true;
+    supported = true;
     return NOERROR;
 }
 
 ECode GregorianCalendar::GetWeekYear(
-    /* [out] */ Integer* weekYear)
+    /* [out] */ Integer& weekYear)
 {
-    VALIDATE_NOT_NULL(weekYear);
-
     Integer year;
-    Get(YEAR, &year); // implicitly calls complete()
+    Get(YEAR, year); // implicitly calls complete()
     if (InternalGetEra() == BCE) {
         year = 1 - year;
     }
@@ -1517,21 +1494,21 @@ ECode GregorianCalendar::GetWeekYear(
                 ++year;
             }
         }
-        *weekYear = year;
+        weekYear = year;
         return NOERROR;
     }
 
     // General (slow) path
     Integer dayOfYear = InternalGet(DAY_OF_YEAR);
     Integer maxDayOfYear;
-    GetActualMaximum(DAY_OF_YEAR, &maxDayOfYear);
+    GetActualMaximum(DAY_OF_YEAR, maxDayOfYear);
     Integer minimalDays;
-    GetMinimalDaysInFirstWeek(&minimalDays);
+    GetMinimalDaysInFirstWeek(minimalDays);
 
     // Quickly check the possibility of year adjustments before
     // cloning this GregorianCalendar.
     if (dayOfYear > minimalDays && dayOfYear < (maxDayOfYear - 6)) {
-        *weekYear = year;
+        weekYear = year;
         return NOERROR;
     }
 
@@ -1551,8 +1528,8 @@ ECode GregorianCalendar::GetWeekYear(
 
     // Get the first day of the first day-of-week in the year.
     Integer firstDayOfWeek, dayOfWeek;
-    GetFirstDayOfWeek(&firstDayOfWeek);
-    cal->Get(DAY_OF_WEEK, &dayOfWeek);
+    GetFirstDayOfWeek(firstDayOfWeek);
+    cal->Get(DAY_OF_WEEK, dayOfWeek);
     Integer delta = firstDayOfWeek - dayOfWeek;
     if (delta != 0) {
         if (delta < 0) {
@@ -1561,7 +1538,7 @@ ECode GregorianCalendar::GetWeekYear(
         cal->Add(DAY_OF_YEAR, delta);
     }
     Integer minDayOfYear;
-    cal->Get(DAY_OF_YEAR, &minDayOfYear);
+    cal->Get(DAY_OF_YEAR, minDayOfYear);
     if (dayOfYear < minDayOfYear) {
         if (minDayOfYear <= minimalDays) {
             --year;
@@ -1571,8 +1548,8 @@ ECode GregorianCalendar::GetWeekYear(
         cal->Set(YEAR, year + 1);
         cal->Set(DAY_OF_YEAR, 1);
         cal->Complete();
-        GetFirstDayOfWeek(&firstDayOfWeek);
-        cal->Get(DAY_OF_WEEK, &dayOfWeek);
+        GetFirstDayOfWeek(firstDayOfWeek);
+        cal->Get(DAY_OF_WEEK, dayOfWeek);
         Integer del = firstDayOfWeek - dayOfWeek;
         if (del != 0) {
             if (del < 0) {
@@ -1580,7 +1557,7 @@ ECode GregorianCalendar::GetWeekYear(
             }
             cal->Add(DAY_OF_YEAR, del);
         }
-        cal->Get(DAY_OF_YEAR, &minDayOfYear);
+        cal->Get(DAY_OF_YEAR, minDayOfYear);
         minDayOfYear = minDayOfYear - 1;
         if (minDayOfYear == 0) {
             minDayOfYear = 7;
@@ -1592,7 +1569,7 @@ ECode GregorianCalendar::GetWeekYear(
             }
         }
     }
-    *weekYear = year;
+    weekYear = year;
     return NOERROR;
 }
 
@@ -1613,7 +1590,7 @@ ECode GregorianCalendar::SetWeekDate(
     GregorianCalendar* gc = (GregorianCalendar*)clone.Get();
     gc->SetLenient(true);
     Integer era;
-    gc->Get(ERA, &era);
+    gc->Get(ERA, era);
     gc->Clear();
     AutoPtr<ITimeZone> zone;
     TimeZone::GetTimeZone(String("GMT"), &zone);
@@ -1622,7 +1599,7 @@ ECode GregorianCalendar::SetWeekDate(
     gc->Set(YEAR, weekYear);
     gc->Set(WEEK_OF_YEAR, 1);
     Integer firstDayOfWeek;
-    GetFirstDayOfWeek(&firstDayOfWeek);
+    GetFirstDayOfWeek(firstDayOfWeek);
     gc->Set(DAY_OF_WEEK, firstDayOfWeek);
     Integer days = dayOfWeek - firstDayOfWeek;
     if (days < 0) {
@@ -1638,8 +1615,8 @@ ECode GregorianCalendar::SetWeekDate(
 
     Boolean lenient;
     Integer gcWeekYear;
-    if ((IsLenient(&lenient), !lenient) &&
-        ((gc->GetWeekYear(&gcWeekYear), gcWeekYear != weekYear)
+    if ((IsLenient(lenient), !lenient) &&
+        ((gc->GetWeekYear(gcWeekYear), gcWeekYear != weekYear)
          || gc->InternalGet(WEEK_OF_YEAR) != weekOfYear
          || gc->InternalGet(DAY_OF_WEEK) != dayOfWeek)) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -1658,13 +1635,11 @@ ECode GregorianCalendar::SetWeekDate(
 }
 
 ECode GregorianCalendar::GetWeeksInWeekYear(
-    /* [out] */ Integer* weeks)
+    /* [out] */ Integer& weeks)
 {
-    VALIDATE_NOT_NULL(weeks);
-
     AutoPtr<GregorianCalendar> gc = GetNormalizedCalendar();
     Integer weekYear;
-    gc->GetWeekYear(&weekYear);
+    gc->GetWeekYear(weekYear);
     if (weekYear == gc->InternalGet(YEAR)) {
         return gc->GetActualMaximum(WEEK_OF_YEAR, weeks);
     }
@@ -1953,12 +1928,12 @@ Integer GregorianCalendar::ComputeFields(
                         nextJan1++;
                     }
                     Integer firstDayOfWeek;
-                    GetFirstDayOfWeek(&firstDayOfWeek);
+                    GetFirstDayOfWeek(firstDayOfWeek);
                     Long nextJan1st = BaseCalendar::GetDayOfWeekDateOnOrBefore(nextJan1 + 6,
                             firstDayOfWeek);
                     Integer ndays = (Integer)(nextJan1st - nextJan1);
                     Integer minimalDays;
-                    if ((GetMinimalDaysInFirstWeek(&minimalDays), ndays >= minimalDays) && fixedDate >= (nextJan1st - 7)) {
+                    if ((GetMinimalDaysInFirstWeek(minimalDays), ndays >= minimalDays) && fixedDate >= (nextJan1st - 7)) {
                         // The first days forms a week in which the date is included.
                         weekOfYear = 1;
                     }
@@ -1989,12 +1964,12 @@ Integer GregorianCalendar::ComputeFields(
                 }
 
                 Integer firstDayOfWeek;
-                GetFirstDayOfWeek(&firstDayOfWeek);
+                GetFirstDayOfWeek(firstDayOfWeek);
                 Long nextJan1st = BaseCalendar::GetDayOfWeekDateOnOrBefore(
                         nextJan1 + 6, firstDayOfWeek);
                 Integer ndays = (Integer)(nextJan1st - nextJan1);
                 Integer minimalDays;
-                if ((GetMinimalDaysInFirstWeek(&minimalDays), ndays >= minimalDays) && fixedDate >= (nextJan1st - 7)) {
+                if ((GetMinimalDaysInFirstWeek(minimalDays), ndays >= minimalDays) && fixedDate >= (nextJan1st - 7)) {
                     // The first days forms a week in which the date is included.
                     weekOfYear = 1;
                 }
@@ -2014,12 +1989,12 @@ Integer GregorianCalendar::GetWeekNumber(
     // We can always use `gcal' since Julian and Gregorian are the
     // same thing for this calculation.
     Integer firstDayOfWeek;
-    GetFirstDayOfWeek(&firstDayOfWeek);
+    GetFirstDayOfWeek(firstDayOfWeek);
     Long fixedDay1st = Gregorian::GetDayOfWeekDateOnOrBefore(fixedDay1 + 6, firstDayOfWeek);
     Integer ndays = (Integer)(fixedDay1st - fixedDay1);
     CHECK(ndays <= 7);
     Integer minimalDays;
-    if (GetMinimalDaysInFirstWeek(&minimalDays), ndays >= minimalDays) {
+    if (GetMinimalDaysInFirstWeek(minimalDays), ndays >= minimalDays) {
         fixedDay1st -= 7;
     }
     Integer normalizedDayOfPeriod = (Integer)(fixedDate - fixedDay1st);
@@ -2036,7 +2011,7 @@ ECode GregorianCalendar::ComputeTime()
     // checking, the field values are stored in originalFields[]
     // to see if any of them are normalized later.
     Boolean lenient;
-    if (IsLenient(&lenient), !lenient) {
+    if (IsLenient(lenient), !lenient) {
         if (mOriginalFields.IsNull()) {
             mOriginalFields = Array<Integer>(FIELD_COUNT);
         }
@@ -2045,8 +2020,8 @@ ECode GregorianCalendar::ComputeTime()
             if (IsExternallySet(field)) {
                 // Quick validation for any out of range values
                 Integer min, max;
-                if (value < (GetMinimum(field, &min), min) ||
-                        value > (GetMaximum(field, &max), max)) {
+                if (value < (GetMinimum(field, min), min) ||
+                        value > (GetMaximum(field, max), max)) {
                     return E_ILLEGAL_ARGUMENT_EXCEPTION;
                 }
             }
@@ -2062,7 +2037,7 @@ ECode GregorianCalendar::ComputeTime()
     // fieldMask for YEAR because YEAR is a mandatory field to
     // determine the date.
     Boolean set;
-    Integer year = (IsSet(YEAR, &set), set) ? InternalGet(YEAR) : EPOCH_YEAR;
+    Integer year = (IsSet(YEAR, set), set) ? InternalGet(YEAR) : EPOCH_YEAR;
 
     Integer era = InternalGetEra();
     if (era == BCE) {
@@ -2078,7 +2053,7 @@ ECode GregorianCalendar::ComputeTime()
     }
 
     // If year is 0 or negative, we need to set the ERA value later.
-    if (year <= 0 && (IsSet(ERA, &set), !set)) {
+    if (year <= 0 && (IsSet(ERA, set), !set)) {
         fieldMask |= ERA_MASK;
         SetFieldsComputed(ERA_MASK);
     }
@@ -2173,7 +2148,7 @@ ECode GregorianCalendar::ComputeTime()
             }
             else {
                 // The date is in a "missing" period.
-                if (IsLenient(&lenient), !lenient) {
+                if (IsLenient(lenient), !lenient) {
                     Logger::E("GregorianCalendar", "the specified date doesn't exist");
                     return E_ILLEGAL_ARGUMENT_EXCEPTION;
                 }
@@ -2213,7 +2188,7 @@ OUT_OF_CALCULATE_FIXED_DATE:
 
     Integer mask = ComputeFields(fieldMask | GetSetStateFields(), tzMask);
 
-    if (IsLenient(&lenient), !lenient) {
+    if (IsLenient(lenient), !lenient) {
         for (Integer field = 0; field < FIELD_COUNT; field++) {
             if (!IsExternallySet(field)) {
                 continue;
@@ -2351,7 +2326,7 @@ Long GregorianCalendar::GetFixedDate(
             // combination. We don't need to add any since the
             // default value is the 1st.
             Boolean set;
-            if (IsSet(DAY_OF_MONTH, &set), set) {
+            if (IsSet(DAY_OF_MONTH, set), set) {
                 // To avoid underflow with DAY_OF_MONTH-1, add
                 // DAY_OF_MONTH, then subtract 1.
                 fixedDate += InternalGet(DAY_OF_MONTH);
@@ -2361,12 +2336,12 @@ Long GregorianCalendar::GetFixedDate(
         else {
             if (IsFieldSet(fieldMask, WEEK_OF_MONTH)) {
                 Integer dateValue;
-                GetFirstDayOfWeek(&dateValue);
+                GetFirstDayOfWeek(dateValue);
                 Long firstDayOfWeek = BaseCalendar::GetDayOfWeekDateOnOrBefore(fixedDate + 6,
                         dateValue);
                 // If we have enough days in the first week, then
                 // move to the previous week.
-                if ((firstDayOfWeek - fixedDate) >= (GetMinimalDaysInFirstWeek(&dateValue), dateValue)) {
+                if ((firstDayOfWeek - fixedDate) >= (GetMinimalDaysInFirstWeek(dateValue), dateValue)) {
                     firstDayOfWeek -= 7;
                 }
                 if (IsFieldSet(fieldMask, DAY_OF_WEEK)) {
@@ -2384,7 +2359,7 @@ Long GregorianCalendar::GetFixedDate(
                     dayOfWeek = InternalGet(DAY_OF_WEEK);
                 }
                 else {
-                    GetFirstDayOfWeek(&dayOfWeek);
+                    GetFirstDayOfWeek(dayOfWeek);
                 }
                 // We are basing this on the day-of-week-in-month.  The only
                 // trickiness occurs if the day-of-week-in-month is
@@ -2428,17 +2403,17 @@ Long GregorianCalendar::GetFixedDate(
         }
         else {
             Integer dateValue;
-            GetFirstDayOfWeek(&dateValue);
+            GetFirstDayOfWeek(dateValue);
             Long firstDayOfWeek = BaseCalendar::GetDayOfWeekDateOnOrBefore(fixedDate + 6,
                     dateValue);
             // If we have enough days in the first week, then move
             // to the previous week.
-            if ((firstDayOfWeek - fixedDate) >= (GetMinimalDaysInFirstWeek(&dateValue), dateValue)) {
+            if ((firstDayOfWeek - fixedDate) >= (GetMinimalDaysInFirstWeek(dateValue), dateValue)) {
                 firstDayOfWeek -= 7;
             }
             if (IsFieldSet(fieldMask, DAY_OF_WEEK)) {
                 Integer dayOfWeek = InternalGet(DAY_OF_WEEK);
-                if (dayOfWeek != (GetFirstDayOfWeek(&dateValue), dateValue)) {
+                if (dayOfWeek != (GetFirstDayOfWeek(dateValue), dateValue)) {
                     firstDayOfWeek = BaseCalendar::GetDayOfWeekDateOnOrBefore(firstDayOfWeek + 6,
                             dayOfWeek);
                 }
@@ -2595,7 +2570,7 @@ Integer GregorianCalendar::MonthLength(
     /* [in] */ Integer year)
 {
     Boolean leap;
-    return (IsLeapYear(year, &leap), leap) ? LEAP_MONTH_LENGTH[month] : MONTH_LENGTH[month];
+    return (IsLeapYear(year, leap), leap) ? LEAP_MONTH_LENGTH[month] : MONTH_LENGTH[month];
 }
 
 Integer GregorianCalendar::MonthLength(
@@ -2646,7 +2621,7 @@ void GregorianCalendar::PinDayOfMonth()
     }
     else {
         AutoPtr<GregorianCalendar> gc = GetNormalizedCalendar();
-        gc->GetActualMaximum(DAY_OF_MONTH, &monthLen);
+        gc->GetActualMaximum(DAY_OF_MONTH, monthLen);
     }
     Integer dom = InternalGet(DAY_OF_MONTH);
     if (dom > monthLen) {
@@ -2684,7 +2659,7 @@ Integer GregorianCalendar::GetRolledValue(
 Integer GregorianCalendar::InternalGetEra()
 {
     Boolean set;
-    return (IsSet(ERA, &set), set) ? InternalGet(ERA) : CE;
+    return (IsSet(ERA, set), set) ? InternalGet(ERA) : CE;
 }
 
 }

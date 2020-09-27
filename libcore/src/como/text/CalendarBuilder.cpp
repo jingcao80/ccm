@@ -40,7 +40,7 @@ void CalendarBuilder::Establish(
     Boolean weekDate = IsSet(WEEK_YEAR) &&
             mField[WEEK_YEAR] > mField[ICalendar::YEAR];
     Boolean supported;
-    if (weekDate && (cal->IsWeekDateSupported(&supported), !supported)) {
+    if (weekDate && (cal->IsWeekDateSupported(supported), !supported)) {
         // Use YEAR instead
         if (!IsSet(ICalendar::YEAR)) {
             Set(ICalendar::YEAR, mField[MAX_FIELD + WEEK_YEAR]);
@@ -73,10 +73,10 @@ void CalendarBuilder::Establish(
             dayOfWeek = mField[MAX_FIELD + ICalendar::DAY_OF_WEEK];
         }
         else {
-            cal->GetFirstDayOfWeek(&dayOfWeek);
+            cal->GetFirstDayOfWeek(dayOfWeek);
         }
         Boolean lenient;
-        if (!IsValidDayOfWeek(dayOfWeek) && (cal->IsLenient(&lenient), lenient)) {
+        if (!IsValidDayOfWeek(dayOfWeek) && (cal->IsLenient(lenient), lenient)) {
             if (dayOfWeek >= 8) {
                 dayOfWeek--;
                 weekOfYear += dayOfWeek / 7;

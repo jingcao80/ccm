@@ -49,7 +49,7 @@ interface IHashtable
         [out] IInterface&& value);
 
     GetElements(
-        [out] IEnumeration** elements);
+        [out] IEnumeration&& elements);
 
     GetEntrySet(
         [out] ISet&& entries);
@@ -58,7 +58,7 @@ interface IHashtable
         [out] Integer& hash);
 
     GetKeys(
-        [out] IEnumeration** keys);
+        [out] IEnumeration&& keys);
 
     GetValues(
         [out] ICollection&& values);

@@ -206,13 +206,13 @@ private:
         COMO_INTERFACE_DECL();
 
         ECode HasMoreElements(
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
 
         ECode NextElement(
             /* [out] */ IInterface** object = nullptr) override;
 
         ECode HasNext(
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
 
         ECode Next(
             /* [out] */ IInterface** object = nullptr) override;
@@ -263,10 +263,10 @@ public:
         /* [out] */ Boolean& result) override;
 
     ECode GetKeys(
-        /* [out] */ IEnumeration** keys) override;
+        /* [out] */ AutoPtr<IEnumeration>& keys) override;
 
     ECode GetElements(
-        /* [out] */ IEnumeration** elements) override;
+        /* [out] */ AutoPtr<IEnumeration>& elements) override;
 
     ECode Contains(
         /* [in] */ IInterface* value,

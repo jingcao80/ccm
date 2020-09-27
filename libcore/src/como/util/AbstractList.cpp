@@ -38,7 +38,7 @@ public:
 
     ECode Get(
         /* [in] */ Integer index,
-        /* [out] */ IInterface** obj) override;
+        /* [out] */ AutoPtr<IInterface>& obj) override;
 
     ECode GetSize(
         /* [out] */ Integer& size) override;
@@ -65,12 +65,12 @@ public:
 
     ECode GetListIterator(
         /* [in] */ Integer index,
-        /* [out] */ IListIterator** it) override;
+        /* [out] */ AutoPtr<IListIterator>& it) override;
 
     ECode SubList(
         /* [in] */ Integer fromIndex,
         /* [in] */ Integer toIndex,
-        /* [out] */ IList** subList) override;
+        /* [out] */ AutoPtr<IList>& subList) override;
 
     using AbstractList::GetListIterator;
 
@@ -114,7 +114,7 @@ public:
     ECode SubList(
         /* [in] */ Integer fromIndex,
         /* [in] */ Integer toIndex,
-        /* [out] */ IList** subList) override;
+        /* [out] */ AutoPtr<IList>& subList) override;
 };
 
 //-------------------------------------------------------------------------
@@ -161,50 +161,46 @@ ECode AbstractList::Remove(
 
 ECode AbstractList::IndexOf(
     /* [in] */ IInterface* obj,
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
-    VALIDATE_NOT_NULL(index);
-
     AutoPtr<IListIterator> it;
-    GetListIterator(&it);
+    GetListIterator(it);
     if (obj == nullptr) {
         Boolean hasNext;
-        while (it->HasNext(&hasNext), hasNext) {
+        while (it->HasNext(hasNext), hasNext) {
             AutoPtr<IInterface> next;
             if (it->Next(&next), next == nullptr) {
-                return it->GetPreviousIndex(index);
+                return it->GetPreviousIndex(&index);
             }
         }
     }
     else {
         Boolean hasNext;
-        while (it->HasNext(&hasNext), hasNext) {
+        while (it->HasNext(hasNext), hasNext) {
             AutoPtr<IInterface> next;
             if (it->Next(&next), Object::Equals(obj, next)) {
-                return it->GetPreviousIndex(index);
+                return it->GetPreviousIndex(&index);
             }
         }
     }
-    *index = -1;
+    index = -1;
     return NOERROR;
 }
 
 ECode AbstractList::LastIndexOf(
     /* [in] */ IInterface* obj,
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
-    VALIDATE_NOT_NULL(index);
-
     Integer size;
     GetSize(size);
     AutoPtr<IListIterator> it;
-    GetListIterator(size, &it);
+    GetListIterator(size, it);
     if (obj == nullptr) {
         Boolean hasPrev;
         while (it->HasPrevious(&hasPrev), hasPrev) {
             AutoPtr<IInterface> prev;
             if (it->Previous(&prev), prev == nullptr) {
-                return it->GetNextIndex(index);
+                return it->GetNextIndex(&index);
             }
         }
     }
@@ -213,11 +209,11 @@ ECode AbstractList::LastIndexOf(
         while (it->HasPrevious(&hasPrev), hasPrev) {
             AutoPtr<IInterface> prev;
             if (it->Previous(&prev), Object::Equals(obj, prev)) {
-                return it->GetNextIndex(index);
+                return it->GetNextIndex(&index);
             }
         }
     }
-    *index = -1;
+    index = -1;
     return NOERROR;
 }
 
@@ -239,13 +235,15 @@ ECode AbstractList::AddAll(
     AutoPtr<IIterator> it;
     c->GetIterator(it);
     Boolean hasNext;
-    while (it->HasNext(&hasNext), hasNext) {
+    while (it->HasNext(hasNext), hasNext) {
         AutoPtr<IInterface> e;
         it->Next(&e);
         Add(index++, e);
         modified = true;
     }
-    if (result != nullptr) *result = modified;
+    if (result != nullptr) {
+        *result = modified;
+    }
     return NOERROR;
 }
 
@@ -257,42 +255,35 @@ ECode AbstractList::GetIterator(
 }
 
 ECode AbstractList::GetListIterator(
-    /* [out] */ IListIterator** it)
+    /* [out] */ AutoPtr<IListIterator>& it)
 {
     return GetListIterator(0, it);
 }
 
 ECode AbstractList::GetListIterator(
     /* [in] */ Integer index,
-    /* [out] */ IListIterator** it)
+    /* [out] */ AutoPtr<IListIterator>& it)
 {
-    VALIDATE_NOT_NULL(it);
-
     FAIL_RETURN(RangeCheckForAdd(index));
-    *it = new ListItr(this, index);
-    REFCOUNT_ADD(*it);
+    it = new ListItr(this, index);
     return NOERROR;
 }
 
 ECode AbstractList::SubList(
     /* [in] */ Integer fromIndex,
     /* [in] */ Integer toIndex,
-    /* [out] */ IList** subList)
+    /* [out] */ AutoPtr<IList>& subList)
 {
-    VALIDATE_NOT_NULL(subList);
-
     if (Probe(IID_IRandomAccess) != nullptr) {
         AutoPtr<RandomAccessSubList> list = new RandomAccessSubList();
         FAIL_RETURN(list->Constructor(this, fromIndex, toIndex));
-        *subList = list.Get();
-        REFCOUNT_ADD(*subList);
+        subList = list.Get();
         return NOERROR;
     }
     else {
         AutoPtr<Sublist> list = new Sublist();
         FAIL_RETURN(list->Constructor(this, fromIndex, toIndex));
-        *subList = list.Get();
-        REFCOUNT_ADD(*subList);
+        subList = list.Get();
         return NOERROR;
     }
 }
@@ -311,10 +302,10 @@ ECode AbstractList::Equals(
     }
 
     AutoPtr<IListIterator> e1, e2;
-    GetListIterator(&e1);
-    IList::Probe(obj)->GetListIterator(&e2);
+    GetListIterator(e1);
+    IList::Probe(obj)->GetListIterator(e2);
     Boolean hasNext1, hasNext2;
-    while (e1->HasNext(&hasNext1), e2->HasNext(&hasNext2), hasNext1 && hasNext2) {
+    while (e1->HasNext(hasNext1), e2->HasNext(hasNext2), hasNext1 && hasNext2) {
         AutoPtr<IInterface> o1, o2;
         e1->Next(&o1);
         e2->Next(&o2);
@@ -323,7 +314,7 @@ ECode AbstractList::Equals(
             return NOERROR;
         }
     }
-    result = (e1->HasNext(&hasNext1), e2->HasNext(&hasNext2), !(hasNext1 || hasNext2));
+    result = (e1->HasNext(hasNext1), e2->HasNext(hasNext2), !(hasNext1 || hasNext2));
     return NOERROR;
 }
 
@@ -334,7 +325,7 @@ ECode AbstractList::GetHashCode(
     AutoPtr<IIterator> it;
     GetIterator(it);
     Boolean hasNext;
-    while (it->HasNext(&hasNext), hasNext) {
+    while (it->HasNext(hasNext), hasNext) {
         AutoPtr<IInterface> e;
         it->Next(&e);
         hash = 31 * hash + (e == nullptr ? 0 : Object::GetHashCode(e));
@@ -347,7 +338,7 @@ ECode AbstractList::RemoveRange(
     /* [in] */ Integer toIndex)
 {
     AutoPtr<IListIterator> it;
-    GetListIterator(fromIndex, &it);
+    GetListIterator(fromIndex, it);
     for (Integer i = 0, n = toIndex - fromIndex; i < n; i++) {
         it->Next();
         it->Remove();
@@ -440,13 +431,11 @@ ECode AbstractList::ToArray(
 COMO_INTERFACE_IMPL_LIGHT_1(AbstractList::Itr, LightRefBase, IIterator);
 
 ECode AbstractList::Itr::HasNext(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     Integer size;
     mOwner->GetSize(size);
-    *result = mCursor != size;
+    result = mCursor != size;
     return NOERROR;
 }
 
@@ -456,7 +445,7 @@ ECode AbstractList::Itr::Next(
     FAIL_RETURN(CheckForComodification());
     Integer i = mCursor;
     AutoPtr<IInterface> next;
-    ECode ec = mOwner->Get(i, &next);
+    ECode ec = mOwner->Get(i, next);
     if (FAILED(ec)) {
         FAIL_RETURN(CheckForComodification());
         return E_NO_SUCH_ELEMENT_EXCEPTION;
@@ -515,7 +504,7 @@ ECode AbstractList::ListItr::Previous(
     FAIL_RETURN(CheckForComodification());
     Integer i = mCursor - 1;
     AutoPtr<IInterface> prev;
-    ECode ec = mOwner->Get(i, &prev);
+    ECode ec = mOwner->Get(i, prev);
     if (FAILED(ec)) {
         FAIL_RETURN(CheckForComodification());
         return E_NO_SUCH_ELEMENT_EXCEPTION;
@@ -578,7 +567,7 @@ ECode AbstractList::ListItr::Add(
 }
 
 ECode AbstractList::ListItr::HasNext(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return Itr::HasNext(result);
 }
@@ -627,10 +616,8 @@ ECode Sublist::Set(
 
 ECode Sublist::Get(
     /* [in] */ Integer index,
-    /* [out] */ IInterface** obj)
+    /* [out] */ AutoPtr<IInterface>& obj)
 {
-    VALIDATE_NOT_NULL(obj);
-
     FAIL_RETURN(RangeCheck(index));
     FAIL_RETURN(CheckForComodification());
     return mL->Get(index + mOffset, obj);
@@ -713,17 +700,15 @@ ECode Sublist::GetIterator(
     /* [out] */ AutoPtr<IIterator>& it)
 {
     AutoPtr<IListIterator> lit;
-    GetListIterator(&lit);
+    GetListIterator(lit);
     it = std::move(lit);
     return NOERROR;
 }
 
 ECode Sublist::GetListIterator(
     /* [in] */ Integer index,
-    /* [out] */ IListIterator** it)
+    /* [out] */ AutoPtr<IListIterator>& it)
 {
-    VALIDATE_NOT_NULL(it);
-
     FAIL_RETURN(CheckForComodification());
     FAIL_RETURN(RangeCheckForAdd(index));
 
@@ -738,7 +723,7 @@ ECode Sublist::GetListIterator(
             /* [in] */ Integer index)
             : mOwner(owner)
         {
-            mOwner->mL->GetListIterator(index + mOwner->mOffset, &mIt);
+            mOwner->mL->GetListIterator(index + mOwner->mOffset, mIt);
         }
 
         Integer AddRef(
@@ -784,13 +769,11 @@ ECode Sublist::GetListIterator(
         }
 
         ECode HasNext(
-            /* [out] */ Boolean* result) override
+            /* [out] */ Boolean& result) override
         {
-            VALIDATE_NOT_NULL(result);
-
             Integer nidx;
             GetNextIndex(&nidx);
-            *result = nidx < mOwner->mSize;
+            result = nidx < mOwner->mSize;
             return NOERROR;
         }
 
@@ -798,7 +781,7 @@ ECode Sublist::GetListIterator(
             /* [out] */ IInterface** object = nullptr) override
         {
             Boolean hasNext;
-            if (HasNext(&hasNext), hasNext) {
+            if (HasNext(hasNext), hasNext) {
                 return mIt->Next(object);
             }
             return E_NO_SUCH_ELEMENT_EXCEPTION;
@@ -875,22 +858,18 @@ ECode Sublist::GetListIterator(
         AutoPtr<IListIterator> mIt;
     };
 
-    *it = new _ListIterator(this, index);
-    REFCOUNT_ADD(*it);
+    it = new _ListIterator(this, index);
     return NOERROR;
 }
 
 ECode Sublist::SubList(
     /* [in] */ Integer fromIndex,
     /* [in] */ Integer toIndex,
-    /* [out] */ IList** subList)
+    /* [out] */ AutoPtr<IList>& subList)
 {
-    VALIDATE_NOT_NULL(subList);
-
     AutoPtr<Sublist> list = new Sublist();
     FAIL_RETURN(list->Constructor(this, fromIndex, toIndex));
-    *subList = list.Get();
-    REFCOUNT_ADD(*subList);
+    subList = std::move(list);
     return NOERROR;
 }
 
@@ -943,14 +922,11 @@ ECode RandomAccessSubList::Constructor(
 ECode RandomAccessSubList::SubList(
     /* [in] */ Integer fromIndex,
     /* [in] */ Integer toIndex,
-    /* [out] */ IList** subList)
+    /* [out] */ AutoPtr<IList>& subList)
 {
-    VALIDATE_NOT_NULL(subList);
-
     AutoPtr<RandomAccessSubList> list = new RandomAccessSubList();
     FAIL_RETURN(list->Constructor(this, fromIndex, toIndex));
-    *subList = list.Get();
-    REFCOUNT_ADD(*subList);
+    subList = list.Get();
     return NOERROR;
 }
 

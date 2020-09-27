@@ -115,12 +115,12 @@ AutoPtr<IComparator> TimeZoneNames::GetZONE_STRINGS_COMPARATOR()
         ECode Compare(
             /* [in] */ IInterface* o1,
             /* [in] */ IInterface* o2,
-            /* [out] */ Integer* result) override
+            /* [out] */ Integer& result) override
         {
             Array<String> lhs, rhs;
             ((IArrayHolder*)o1)->GetArray(&lhs);
             ((IArrayHolder*)o2)->GetArray(&rhs);
-            *result = lhs[OLSON_NAME].Compare(rhs[OLSON_NAME]);
+            result = lhs[OLSON_NAME].Compare(rhs[OLSON_NAME]);
             return NOERROR;
         }
 

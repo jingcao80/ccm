@@ -87,13 +87,13 @@ ECode Support_UnmodifiableCollectionTest::RunTest()
     AutoPtr<ISortedSet> ss;
     CTreeSet::New(IID_ISortedSet, (IInterface**)&ss);
     Boolean hasNext;
-    while (it->HasNext(&hasNext), hasNext) {
+    while (it->HasNext(hasNext), hasNext) {
         AutoPtr<IInterface> elem;
         it->Next(&elem);
         ss->Add(elem);
     }
     ss->GetIterator(it);
-    for (Integer counter = 0; it->HasNext(&hasNext), hasNext; counter++) {
+    for (Integer counter = 0; it->HasNext(hasNext), hasNext; counter++) {
         AutoPtr<IInterface> elem;
         it->Next(&elem);
         Integer nextValue = CoreUtils::Unbox(IInteger::Probe(elem));
@@ -108,7 +108,7 @@ ECode Support_UnmodifiableCollectionTest::RunTest()
     // toArray
     Array<IInterface*> objArray;
     mCol->ToArray(&objArray);
-    for (Integer counter = 0; it->HasNext(&hasNext), hasNext; counter++) {
+    for (Integer counter = 0; it->HasNext(hasNext), hasNext; counter++) {
         AutoPtr<IInterface> elem;
         it->Next(&elem);
         EXPECT_TRUE(objArray[counter] == elem);

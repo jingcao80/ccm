@@ -368,10 +368,10 @@ public:
         }
 
         ECode HasNext(
-            /* [out] */ Boolean* result);
+            /* [out] */ Boolean& result);
 
         ECode HasMoreElements(
-            /* [out] */ Boolean* result);
+            /* [out] */ Boolean& result);
 
         ECode Remove();
 
@@ -404,12 +404,12 @@ public:
             /* [out] */ IInterface** object = nullptr) override;
 
         ECode HasNext(
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
 
         ECode Remove() override;
 
         ECode HasMoreElements(
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
     };
 
     class ValueIterator
@@ -436,12 +436,12 @@ public:
             /* [out] */ IInterface** object = nullptr) override;
 
         ECode HasNext(
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
 
         ECode Remove() override;
 
         ECode HasMoreElements(
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
     };
 
     class EntryIterator
@@ -464,7 +464,7 @@ public:
             /* [out] */ IInterface** object = nullptr) override;
 
         ECode HasNext(
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
 
         ECode Remove() override;
     };

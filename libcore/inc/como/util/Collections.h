@@ -201,7 +201,7 @@ private:
 
         ECode Get(
             /* [in] */ Integer index,
-            /* [out] */ IInterface** obj) override;
+            /* [out] */ AutoPtr<IInterface>& obj) override;
 
         ECode Set(
             /* [in] */ Integer index,
@@ -218,11 +218,11 @@ private:
 
         ECode IndexOf(
             /* [in] */ IInterface* obj,
-            /* [out] */ Integer* index) override;
+            /* [out] */ Integer& index) override;
 
         ECode LastIndexOf(
             /* [in] */ IInterface* obj,
-            /* [out] */ Integer* index) override;
+            /* [out] */ Integer& index) override;
 
         ECode AddAll(
             /* [in] */ Integer index,
@@ -230,16 +230,16 @@ private:
             /* [out] */ Boolean* result = nullptr) override;
 
         ECode GetListIterator(
-            /* [out] */ IListIterator** it) override;
+            /* [out] */ AutoPtr<IListIterator>& it) override;
 
         ECode GetListIterator(
             /* [in] */ Integer index,
-            /* [out] */ IListIterator** it) override;
+            /* [out] */ AutoPtr<IListIterator>& it) override;
 
         ECode SubList(
             /* [in] */ Integer fromIndex,
             /* [in] */ Integer toIndex,
-            /* [out] */ IList** subList) override;
+            /* [out] */ AutoPtr<IList>& subList) override;
 
         ECode Add(
             /* [in] */ IInterface* obj,
@@ -306,7 +306,7 @@ private:
         ECode SubList(
             /* [in] */ Integer fromIndex,
             /* [in] */ Integer toIndex,
-            /* [out] */ IList** subList) override;
+            /* [out] */ AutoPtr<IList>& subList) override;
     };
 
     class SynchronizedCollection
@@ -494,7 +494,7 @@ private:
 
         ECode Get(
             /* [in] */ Integer index,
-            /* [out] */ IInterface** obj) override;
+            /* [out] */ AutoPtr<IInterface>& obj) override;
 
         ECode Set(
             /* [in] */ Integer index,
@@ -511,11 +511,11 @@ private:
 
         ECode IndexOf(
             /* [in] */ IInterface* obj,
-            /* [out] */ Integer* index) override;
+            /* [out] */ Integer& index) override;
 
         ECode LastIndexOf(
             /* [in] */ IInterface* obj,
-            /* [out] */ Integer* index) override;
+            /* [out] */ Integer& index) override;
 
         ECode AddAll(
             /* [in] */ Integer index,
@@ -523,16 +523,16 @@ private:
             /* [out] */ Boolean* result = nullptr) override;
 
         ECode GetListIterator(
-            /* [out] */ IListIterator** it) override;
+            /* [out] */ AutoPtr<IListIterator>& it) override;
 
         ECode GetListIterator(
             /* [in] */ Integer index,
-            /* [out] */ IListIterator** it) override;
+            /* [out] */ AutoPtr<IListIterator>& it) override;
 
         ECode SubList(
             /* [in] */ Integer fromIndex,
             /* [in] */ Integer toIndex,
-            /* [out] */ IList** subList) override;
+            /* [out] */ AutoPtr<IList>& subList) override;
 
         ECode Add(
             /* [in] */ IInterface* obj,
@@ -605,7 +605,7 @@ private:
         ECode SubList(
             /* [in] */ Integer fromIndex,
             /* [in] */ Integer toIndex,
-            /* [out] */ IList** subList) override;
+            /* [out] */ AutoPtr<IList>& subList) override;
     };
 
     class EmptyIterator
@@ -616,7 +616,7 @@ private:
         COMO_INTERFACE_DECL();
 
         ECode HasNext(
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
 
         ECode Next(
             /* [out] */ IInterface** object = nullptr) override;
@@ -655,7 +655,7 @@ private:
             /* [out] */ IInterface** object = nullptr) override;
 
         ECode HasNext(
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
 
         ECode Remove() override;
 
@@ -670,7 +670,7 @@ private:
         COMO_INTERFACE_DECL();
 
         ECode HasMoreElements(
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
 
         ECode NextElement(
             /* [out] */ IInterface** object = nullptr) override;
@@ -722,7 +722,7 @@ private:
             /* [out] */ AutoPtr<IIterator>& it) override;
 
         ECode GetListIterator(
-            /* [out] */ IListIterator** it) override;
+            /* [out] */ AutoPtr<IListIterator>& it) override;
 
         ECode GetSize(
             /* [out] */ Integer& size) override;
@@ -747,7 +747,7 @@ private:
 
         ECode Get(
             /* [in] */ Integer index,
-            /* [out] */ IInterface** obj) override;
+            /* [out] */ AutoPtr<IInterface>& obj) override;
 
         ECode Equals(
             /* [in] */ IInterface* obj,
@@ -818,7 +818,7 @@ private:
         ECode Compare(
             /* [in] */ IInterface* c1,
             /* [in] */ IInterface* c2,
-            /* [out] */ Integer* cmp) override;
+            /* [out] */ Integer& cmp) override;
 
         ECode Equals(
             /* [in] */ IInterface* obj,
@@ -842,7 +842,7 @@ private:
         ECode Compare(
             /* [in] */ IInterface* c1,
             /* [in] */ IInterface* c2,
-            /* [out] */ Integer* cmp) override;
+            /* [out] */ Integer& cmp) override;
 
         ECode Equals(
             /* [in] */ IInterface* obj,

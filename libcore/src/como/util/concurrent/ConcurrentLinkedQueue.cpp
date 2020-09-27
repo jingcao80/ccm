@@ -200,7 +200,7 @@ ECode ConcurrentLinkedQueue::Offer(
 }
 
 ECode ConcurrentLinkedQueue::Poll(
-    /* [out] */ IInterface** head)
+    /* [out] */ AutoPtr<IInterface>& head)
 {
 RESTART_FROM_HEAD:
     for (;;) {
@@ -215,19 +215,15 @@ RESTART_FROM_HEAD:
                     VOLATILE_GET(q, p->mNext);
                     UpdateHead(h, (q != nullptr) ? q : p);
                 }
-                if (head != nullptr) {
-                    item.MoveTo(head);
-                    return NOERROR;
-                }
+                head = item;
+                return NOERROR;
             }
             else {
                 VOLATILE_GET(q, p->mNext);
                 if (q == nullptr) {
                     UpdateHead(h, p);
-                    if (head != nullptr) {
-                        *head = nullptr;
-                        return NOERROR;
-                    }
+                    head = nullptr;
+                    return NOERROR;
                 }
                 else {
                     VOLATILE_GET(Boolean off, p->mIsOff);
@@ -726,11 +722,9 @@ RESTART_FROM_HEAD:
 }
 
 ECode ConcurrentLinkedQueue::Itr::HasNext(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
-    *result = mNextItem != nullptr;
+    result = mNextItem != nullptr;
     return NOERROR;
 }
 

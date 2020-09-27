@@ -53,7 +53,7 @@ ECode AbstractSet::GetHashCode(
     AutoPtr<IIterator> it;
     GetIterator(it);
     Boolean hasNext;
-    while (it->HasNext(&hasNext), hasNext) {
+    while (it->HasNext(hasNext), hasNext) {
         AutoPtr<IInterface> obj;
         it->Next(&obj);
         if (obj != nullptr) {
@@ -74,7 +74,7 @@ ECode AbstractSet::RemoveAll(
         AutoPtr<IIterator> it;
         c->GetIterator(it);
         Boolean hasNext;
-        while (it->HasNext(&hasNext), hasNext) {
+        while (it->HasNext(hasNext), hasNext) {
             AutoPtr<IInterface> obj;
             it->Next(&obj);
             Boolean changed;
@@ -86,7 +86,7 @@ ECode AbstractSet::RemoveAll(
         AutoPtr<IIterator> it;
         GetIterator(it);
         Boolean hasNext;
-        while (it->HasNext(&hasNext), hasNext) {
+        while (it->HasNext(hasNext), hasNext) {
             AutoPtr<IInterface> obj;
             it->Next(&obj);
             Boolean contains;
@@ -96,7 +96,9 @@ ECode AbstractSet::RemoveAll(
             }
         }
     }
-    if (changed != nullptr) *changed = modified;
+    if (changed != nullptr) {
+        *changed = modified;
+    }
     return NOERROR;
 }
 

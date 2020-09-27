@@ -69,13 +69,13 @@ interface ILinkedList
         [out] IInterface** obj);
 
     GetFirst(
-        [out] IInterface** e);
+        [out] IInterface&& e);
 
     GetIterator(
         [out] IIterator&& it);
 
     GetLast(
-        [out] IInterface** e);
+        [out] IInterface&& e);
 
     GetListIterator(
         [in] Integer index,
@@ -108,22 +108,22 @@ interface ILinkedList
         [out] IInterface&& e);
 
     PeekFirst(
-        [out] IInterface** e);
+        [out] IInterface&& e);
 
     PeekLast(
-        [out] IInterface** e);
+        [out] IInterface&& e);
 
     Poll(
-        [out] IInterface** e);
+        [out] IInterface&& e);
 
     PollFirst(
-        [out] IInterface** e);
+        [out] IInterface&& e);
 
     PollLast(
-        [out] IInterface** e);
+        [out] IInterface&& e);
 
     Pop(
-        [out] IInterface** e);
+        [out] IInterface&& e);
 
     Push(
         [in] IInterface* e);

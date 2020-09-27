@@ -99,14 +99,14 @@ public:
         /* [in] */ IDate* date) override;
 
     ECode GetGregorianChange(
-        /* [out] */ IDate** date) override final;
+        /* [out] */ AutoPtr<IDate>& date) override final;
 
     ECode IsLeapYear(
         /* [in] */ Integer year,
-        /* [out] */ Boolean* leap) override;
+        /* [out] */ Boolean& leap) override;
 
     ECode GetCalendarType(
-        /* [out] */ String* type) override;
+        /* [out] */ String& type) override;
 
     ECode Equals(
         /* [in] */ IInterface* obj,
@@ -129,39 +129,39 @@ public:
 
     ECode GetMinimum(
         /* [in] */ Integer field,
-        /* [out] */ Integer* value) override;
+        /* [out] */ Integer& value) override;
 
     ECode GetMaximum(
         /* [in] */ Integer field,
-        /* [out] */ Integer* value) override;
+        /* [out] */ Integer& value) override;
 
     ECode GetGreatestMinimum(
         /* [in] */ Integer field,
-        /* [out] */ Integer* value) override;
+        /* [out] */ Integer& value) override;
 
     ECode GetLeastMaximum(
         /* [in] */ Integer field,
-        /* [out] */ Integer* value) override;
+        /* [out] */ Integer& value) override;
 
     ECode GetActualMinimum(
         /* [in] */ Integer field,
-        /* [out] */ Integer* value) override;
+        /* [out] */ Integer& value) override;
 
     ECode GetActualMaximum(
         /* [in] */ Integer field,
-        /* [out] */ Integer* value) override;
+        /* [out] */ Integer& value) override;
 
     ECode GetTimeZone(
-        /* [out] */ ITimeZone** zone) override;
+        /* [out] */ AutoPtr<ITimeZone>& zone) override;
 
     ECode SetTimeZone(
         /* [in] */ ITimeZone* zone) override;
 
     ECode IsWeekDateSupported(
-        /* [out] */ Boolean* supported) override;
+        /* [out] */ Boolean& supported) override;
 
     ECode GetWeekYear(
-        /* [out] */ Integer* weekYear) override;
+        /* [out] */ Integer& weekYear) override;
 
     ECode SetWeekDate(
         /* [in] */ Integer weekYear,
@@ -169,7 +169,7 @@ public:
         /* [in] */ Integer dayOfWeek) override;
 
     ECode GetWeeksInWeekYear(
-        /* [out] */ Integer* weeks) override;
+        /* [out] */ Integer& weeks) override;
 
 protected:
     ECode CloneImpl(

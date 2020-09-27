@@ -109,12 +109,10 @@ Integer StringTokenizer::ScanToken(
 }
 
 ECode StringTokenizer::HasMoreTokens(
-    /* [out] */ Boolean* hasMore)
+    /* [out] */ Boolean& hasMore)
 {
-    VALIDATE_NOT_NULL(hasMore);
-
     mNewPosition = SkipDelimiters(mCurrentPosition);
-    *hasMore = mNewPosition < mMaxPosition;
+    hasMore = mNewPosition < mMaxPosition;
     return NOERROR;
 }
 
@@ -149,7 +147,7 @@ ECode StringTokenizer::NextToken(
 }
 
 ECode StringTokenizer::HasMoreElements(
-    /* [out] */ Boolean* hasMore)
+    /* [out] */ Boolean& hasMore)
 {
     return HasMoreTokens(hasMore);
 }

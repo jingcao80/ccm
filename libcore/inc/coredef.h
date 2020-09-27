@@ -22,7 +22,7 @@
         AutoPtr<IIterator> it; \
         container->GetIterator(it); \
         Boolean hasNext; \
-        while (it->HasNext(&hasNext), hasNext) { \
+        while (it->HasNext(hasNext), hasNext) { \
             AutoPtr<IInterface> obj; \
             it->Next(&obj); \
             Type element = (Type)TypeCastFunc(obj);
@@ -32,7 +32,7 @@
         AutoPtr<IIterator> it; \
         container->GetIterator(it); \
         Boolean hasNext; \
-        while (it->HasNext(&hasNext), hasNext) { \
+        while (it->HasNext(hasNext), hasNext) { \
             AutoPtr<IInterface> obj; \
             it->Next(&obj); \
             Type element = (Type)TypeCastFuncOuter(TypeCastFuncInner(obj));

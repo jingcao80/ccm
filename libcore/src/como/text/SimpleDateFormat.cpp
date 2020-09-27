@@ -443,7 +443,7 @@ void SimpleDateFormat::InitializeDefaultCentury()
     mCalendar->SetTimeInMillis(System::GetCurrentTimeMillis());
     mCalendar->Add(ICalendar::YEAR, -80);
     AutoPtr<IDate> date;
-    mCalendar->GetTime(&date);
+    mCalendar->GetTime(date);
     ParseAmbiguousDatesAsAfter(date);
 }
 
@@ -452,14 +452,14 @@ void SimpleDateFormat::ParseAmbiguousDatesAsAfter(
 {
     mDefaultCenturyStart = startDate;
     mCalendar->SetTime(startDate);
-    mCalendar->Get(ICalendar::YEAR, &mDefaultCenturyStartYear);
+    mCalendar->Get(ICalendar::YEAR, mDefaultCenturyStartYear);
 }
 
 ECode SimpleDateFormat::Set2DigitYearStart(
     /* in] */ IDate* startDate)
 {
     Long time;
-    startDate->GetTime(&time);
+    startDate->GetTime(time);
     AutoPtr<IDate> newDate;
     CDate::New(time, IID_IDate, (IInterface**)&newDate);
     ParseAmbiguousDatesAsAfter(newDate);
@@ -567,26 +567,26 @@ ECode SimpleDateFormat::SubFormat(
     Integer value;
     if (field == CalendarBuilder::WEEK_YEAR) {
         Boolean supported;
-        if (mCalendar->IsWeekDateSupported(&supported), supported) {
-            mCalendar->GetWeekYear(&value);
+        if (mCalendar->IsWeekDateSupported(supported), supported) {
+            mCalendar->GetWeekYear(value);
         }
         else {
             patternCharIndex = DateFormatSymbols::PATTERN_YEAR;
             field = PATTERN_INDEX_TO_CALENDAR_FIELD[patternCharIndex];
-            mCalendar->Get(field, &value);
+            mCalendar->Get(field, value);
         }
     }
     else if (field == CalendarBuilder::ISO_DAY_OF_WEEK) {
-        mCalendar->Get(ICalendar::DAY_OF_WEEK, &value);
+        mCalendar->Get(ICalendar::DAY_OF_WEEK, value);
         value = CalendarBuilder::ToISODayOfWeek(value);
     }
     else {
-        mCalendar->Get(field, &value);
+        mCalendar->Get(field, value);
     }
 
     Integer style = (count >= 4) ? ICalendar::LONG : ICalendar::SHORT;
     if (!useDateFormatSymbols && field != CalendarBuilder::ISO_DAY_OF_WEEK) {
-        mCalendar->GetDisplayName(field, style, mLocale, &current);
+        mCalendar->GetDisplayName(field, style, mLocale, current);
     }
 
     // Note: zeroPaddingNumber() assumes that maxDigits is either
@@ -647,7 +647,7 @@ ECode SimpleDateFormat::SubFormat(
         {
             if (current.IsNull()) {
                 if (value == 0) {
-                    mCalendar->GetMaximum(ICalendar::HOUR_OF_DAY, &value);
+                    mCalendar->GetMaximum(ICalendar::HOUR_OF_DAY, value);
                     ZeroPaddingNumber(value + 1, count, maxIntCount, buffer);
                 }
                 else {
@@ -683,7 +683,7 @@ ECode SimpleDateFormat::SubFormat(
         {
             if (current.IsNull()) {
                 if (value == 0) {
-                    mCalendar->GetLeastMaximum(ICalendar::HOUR, &value);
+                    mCalendar->GetLeastMaximum(ICalendar::HOUR, value);
                     ZeroPaddingNumber(value + 1, count, maxIntCount, buffer);
                 }
                 else {
@@ -697,8 +697,8 @@ ECode SimpleDateFormat::SubFormat(
         {
             if (current.IsNull()) {
                 AutoPtr<ITimeZone> tz;
-                mCalendar->GetTimeZone(&tz);
-                mCalendar->Get(ICalendar::DST_OFFSET, &value);
+                mCalendar->GetTimeZone(tz);
+                mCalendar->Get(ICalendar::DST_OFFSET, value);
                 Boolean daylight = (value != 0);
                 String zoneString;
                 if (DateFormatSymbols::From(mFormatData)->mIsZoneStringsSet) {
@@ -736,8 +736,8 @@ ECode SimpleDateFormat::SubFormat(
                 }
                 else {
                     Integer zoneOffset, dstOffset;
-                    mCalendar->Get(ICalendar::ZONE_OFFSET, &zoneOffset);
-                    mCalendar->Get(ICalendar::DST_OFFSET, &dstOffset);
+                    mCalendar->Get(ICalendar::ZONE_OFFSET, zoneOffset);
+                    mCalendar->Get(ICalendar::DST_OFFSET, dstOffset);
                     Integer offsetMillis = zoneOffset + dstOffset;
                     buffer->Append(TimeZone::CreateGmtOffsetString(true, true, offsetMillis));
                 }
@@ -748,8 +748,8 @@ ECode SimpleDateFormat::SubFormat(
         case DateFormatSymbols::PATTERN_ZONE_VALUE: // 'Z' ("-/+hhmm" form)
         {
             Integer zoneOffset, dstOffset;
-            mCalendar->Get(ICalendar::ZONE_OFFSET, &zoneOffset);
-            mCalendar->Get(ICalendar::DST_OFFSET, &dstOffset);
+            mCalendar->Get(ICalendar::ZONE_OFFSET, zoneOffset);
+            mCalendar->Get(ICalendar::DST_OFFSET, dstOffset);
             value = zoneOffset + dstOffset;
             Boolean includeSeparator = (count >= 4);
             Boolean includeGmt = (count >= 4);
@@ -761,8 +761,8 @@ ECode SimpleDateFormat::SubFormat(
         case DateFormatSymbols::PATTERN_ISO_ZONE: // 'X'
         {
             Integer zoneOffset, dstOffset;
-            mCalendar->Get(ICalendar::ZONE_OFFSET, &zoneOffset);
-            mCalendar->Get(ICalendar::DST_OFFSET, &dstOffset);
+            mCalendar->Get(ICalendar::ZONE_OFFSET, zoneOffset);
+            mCalendar->Get(ICalendar::DST_OFFSET, dstOffset);
             value = zoneOffset + dstOffset;
 
             if (value == 0) {
@@ -1106,7 +1106,7 @@ ECode SimpleDateFormat::ParseInternal(
 
     AutoPtr<IDate> parsedDate;
     calb->Establish(mCalendar);
-    ECode ec = mCalendar->GetTime(&parsedDate);
+    ECode ec = mCalendar->GetTime(parsedDate);
     if (FAILED(ec)) {
         pos->SetErrorIndex(start);
         pos->SetIndex(oldStart);
@@ -1117,10 +1117,10 @@ ECode SimpleDateFormat::ParseInternal(
     // then the two-digit year == the default start year
     if (ambiguousYear[0]) {
         Boolean before;
-        if (parsedDate->Before(mDefaultCenturyStart, &before), before) {
+        if (parsedDate->Before(mDefaultCenturyStart, before), before) {
             calb->AddYear(100);
             calb->Establish(mCalendar);
-            ec = mCalendar->GetTime(&parsedDate);
+            ec = mCalendar->GetTime(parsedDate);
             if (FAILED(ec)) {
                 pos->SetErrorIndex(start);
                 pos->SetIndex(oldStart);
@@ -1433,7 +1433,7 @@ Integer SimpleDateFormat::SubParse(
     CParsePosition::New(0, IID_IParsePosition, (IInterface**)&pos);
     pos->SetIndex(start);
     Boolean supported;
-    if (patternCharIndex == DateFormatSymbols::PATTERN_WEEK_YEAR && (mCalendar->IsWeekDateSupported(&supported), !supported)) {
+    if (patternCharIndex == DateFormatSymbols::PATTERN_WEEK_YEAR && (mCalendar->IsWeekDateSupported(supported), !supported)) {
         // use calendar year 'y' instead
         patternCharIndex = DateFormatSymbols::PATTERN_YEAR;
     }
@@ -1510,7 +1510,7 @@ Integer SimpleDateFormat::SubParse(
                 }
                 else {
                     AutoPtr<IMap> map;
-                    mCalendar->GetDisplayNames(field, ICalendar::ALL_STYLES, mLocale, &map);
+                    mCalendar->GetDisplayNames(field, ICalendar::ALL_STYLES, mLocale, map);
                     if ((index = MatchString(text, start, field, map, calb)) > 0) {
                         return index;
                     }
@@ -1526,7 +1526,7 @@ Integer SimpleDateFormat::SubParse(
                     // such as "\u5143" in JapaneseImperialCalendar.
                     Integer style = (count >= 4) ? ICalendar::LONG : ICalendar::SHORT;
                     AutoPtr<IMap> map;
-                    mCalendar->GetDisplayNames(field, style, mLocale, &map);
+                    mCalendar->GetDisplayNames(field, style, mLocale, map);
                     if (map != nullptr) {
                         if ((index = MatchString(text, start, field, map, calb)) > 0) {
                             return index;
@@ -1595,7 +1595,7 @@ Integer SimpleDateFormat::SubParse(
                     }
                 }
                 Integer maxValue;
-                mCalendar->GetMaximum(ICalendar::HOUR_OF_DAY, &maxValue);
+                mCalendar->GetMaximum(ICalendar::HOUR_OF_DAY, maxValue);
                 if (value == maxValue + 1) {
                     value = 0;
                 }
@@ -1638,7 +1638,7 @@ Integer SimpleDateFormat::SubParse(
                 }
                 else {
                     AutoPtr<IMap> map;
-                    mCalendar->GetDisplayNames(field, ICalendar::ALL_STYLES, mLocale, &map);
+                    mCalendar->GetDisplayNames(field, ICalendar::ALL_STYLES, mLocale, map);
                     if ((index = MatchString(text, start, field, map, calb)) > 0) {
                         return index;
                     }
@@ -1657,7 +1657,7 @@ Integer SimpleDateFormat::SubParse(
                     }
                 }
                 Integer maxValue;
-                mCalendar->GetLeastMaximum(ICalendar::HOUR, &maxValue);
+                mCalendar->GetLeastMaximum(ICalendar::HOUR, maxValue);
                 if (value == maxValue + 1) {
                     value = 0;
                 }
@@ -1892,7 +1892,7 @@ Integer SimpleDateFormat::ParseMonth(
     }
     else {
         AutoPtr<IMap> map;
-        mCalendar->GetDisplayNames(field, ICalendar::ALL_STYLES, mLocale, &map);
+        mCalendar->GetDisplayNames(field, ICalendar::ALL_STYLES, mLocale, map);
         if ((index = MatchString(text, start, field, map, out)) > 0) {
             return index;
         }
@@ -1944,7 +1944,7 @@ Integer SimpleDateFormat::ParseWeekday(
         for (Integer i = 0; i < styles.GetLength(); i++) {
             Integer style = styles[i];
             AutoPtr<IMap> map;
-            mCalendar->GetDisplayNames(field, style, mLocale, &map);
+            mCalendar->GetDisplayNames(field, style, mLocale, map);
             if ((index = MatchString(text, start, field, map, out)) > 0) {
                 return index;
             }

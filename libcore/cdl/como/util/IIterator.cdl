@@ -27,7 +27,7 @@ interface IIterator
         [out] IInterface** object = nullptr);
 
     HasNext(
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     Remove();
 }

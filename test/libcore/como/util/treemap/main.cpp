@@ -252,7 +252,7 @@ TEST(TreeMapTest, TestIteratorRemoves)
     it->Remove();
 
     Boolean hasNext;
-    it->HasNext(&hasNext);
+    it->HasNext(hasNext);
     EXPECT_FALSE(hasNext);
 }
 

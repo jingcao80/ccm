@@ -47,7 +47,7 @@ public:
         /* [in] */ const String& str);
 
     ECode HasMoreTokens(
-        /* [out] */ Boolean* hasMore) override;
+        /* [out] */ Boolean& hasMore) override;
 
     ECode NextToken(
         /* [out] */ String* token = nullptr) override;
@@ -57,7 +57,7 @@ public:
         /* [out] */ String* token = nullptr) override;
 
     ECode HasMoreElements(
-        /* [out] */ Boolean* hasMore) override;
+        /* [out] */ Boolean& hasMore) override;
 
     ECode NextElement(
         /* [out] */ IInterface** element = nullptr) override;

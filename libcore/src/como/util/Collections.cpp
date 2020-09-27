@@ -42,8 +42,8 @@ void Collections::Reverse(
     }
     else {
         AutoPtr<IListIterator> fwd, rev;
-        list->GetListIterator(&fwd);
-        list->GetListIterator(size, &rev);
+        list->GetListIterator(fwd);
+        list->GetListIterator(size, rev);
         for (Integer i = 0, mid = size >> 1; i < mid; i++) {
             AutoPtr<IInterface> e1, e2;
             rev->Previous(&e1);
@@ -60,7 +60,7 @@ void Collections::Swap(
     /* [in] */ Integer j)
 {
     AutoPtr<IInterface> e1, e2;
-    list->Get(i, &e1);
+    list->Get(i, e1);
     list->Set(j, e1, &e2);
     list->Set(i, e2);
 }
@@ -248,7 +248,7 @@ ECode Collections::UnmodifiableCollection::GetIterator(
         }
 
         ECode HasNext(
-            /* [out] */ Boolean* result) override
+            /* [out] */ Boolean& result) override
         {
             return mI->HasNext(result);
         }
@@ -450,7 +450,7 @@ ECode Collections::UnmodifiableList::GetHashCode(
 
 ECode Collections::UnmodifiableList::Get(
     /* [in] */ Integer index,
-    /* [out] */ IInterface** obj)
+    /* [out] */ AutoPtr<IInterface>& obj)
 {
     return mList->Get(index, obj);
 }
@@ -479,14 +479,14 @@ ECode Collections::UnmodifiableList::Remove(
 
 ECode Collections::UnmodifiableList::IndexOf(
     /* [in] */ IInterface* obj,
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
     return mList->IndexOf(obj, index);
 }
 
 ECode Collections::UnmodifiableList::LastIndexOf(
     /* [in] */ IInterface* obj,
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
     return mList->LastIndexOf(obj, index);
 }
@@ -500,14 +500,14 @@ ECode Collections::UnmodifiableList::AddAll(
 }
 
 ECode Collections::UnmodifiableList::GetListIterator(
-    /* [out] */ IListIterator** it)
+    /* [out] */ AutoPtr<IListIterator>& it)
 {
     return GetListIterator(0, it);
 }
 
 ECode Collections::UnmodifiableList::GetListIterator(
     /* [in] */ Integer index,
-    /* [out] */ IListIterator** it)
+    /* [out] */ AutoPtr<IListIterator>& it)
 {
     VALIDATE_NOT_NULL(it);
 
@@ -565,7 +565,7 @@ ECode Collections::UnmodifiableList::GetListIterator(
         }
 
         ECode HasNext(
-            /* [out] */ Boolean* result) override
+            /* [out] */ Boolean& result) override
         {
             return mI->HasNext(result);
         }
@@ -622,23 +622,19 @@ ECode Collections::UnmodifiableList::GetListIterator(
     };
 
     AutoPtr<IListIterator> i;
-    mList->GetListIterator(index, &i);
-    *it = new _ListIterator(i);
-    REFCOUNT_ADD(*it);
+    mList->GetListIterator(index, i);
+    it = new _ListIterator(i);
     return NOERROR;
 }
 
 ECode Collections::UnmodifiableList::SubList(
     /* [in] */ Integer fromIndex,
     /* [in] */ Integer toIndex,
-    /* [out] */ IList** subList)
+    /* [out] */ AutoPtr<IList>& subList)
 {
-    VALIDATE_NOT_NULL(subList);
-
     AutoPtr<IList> sub;
-    mList->SubList(fromIndex, toIndex, &sub);
-    *subList = new UnmodifiableList(sub);
-    REFCOUNT_ADD(*subList);
+    mList->SubList(fromIndex, toIndex, sub);
+    subList = new UnmodifiableList(sub);
     return NOERROR;
 }
 
@@ -734,14 +730,11 @@ COMO_INTERFACE_IMPL_1(Collections::UnmodifiableRandomAccessList, UnmodifiableLis
 ECode Collections::UnmodifiableRandomAccessList::SubList(
     /* [in] */ Integer fromIndex,
     /* [in] */ Integer toIndex,
-    /* [out] */ IList** subList)
+    /* [out] */ AutoPtr<IList>& subList)
 {
-    VALIDATE_NOT_NULL(subList);
-
     AutoPtr<IList> sub;
-    mList->SubList(fromIndex, toIndex, &sub);
-    *subList = new UnmodifiableRandomAccessList(sub);
-    REFCOUNT_ADD(*subList);
+    mList->SubList(fromIndex, toIndex, sub);
+    subList = new UnmodifiableRandomAccessList(sub);
     return NOERROR;
 }
 
@@ -1008,10 +1001,8 @@ ECode Collections::SynchronizedList::GetHashCode(
 
 ECode Collections::SynchronizedList::Get(
     /* [in] */ Integer index,
-    /* [out] */ IInterface** obj)
+    /* [out] */ AutoPtr<IInterface>& obj)
 {
-    VALIDATE_NOT_NULL(obj);
-
     AutoLock lock(mMutex);
     return mList->Get(index, obj);
 }
@@ -1043,20 +1034,16 @@ ECode Collections::SynchronizedList::Remove(
 
 ECode Collections::SynchronizedList::IndexOf(
     /* [in] */ IInterface* obj,
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
-    VALIDATE_NOT_NULL(index);
-
     AutoLock lock(mMutex);
     return mList->IndexOf(obj, index);
 }
 
 ECode Collections::SynchronizedList::LastIndexOf(
     /* [in] */ IInterface* obj,
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
-    VALIDATE_NOT_NULL(index);
-
     AutoLock lock(mMutex);
     return mList->LastIndexOf(obj, index);
 }
@@ -1071,7 +1058,7 @@ ECode Collections::SynchronizedList::AddAll(
 }
 
 ECode Collections::SynchronizedList::GetListIterator(
-    /* [out] */ IListIterator** it)
+    /* [out] */ AutoPtr<IListIterator>& it)
 {
     // Must be manually synched by user
     return mList->GetListIterator(it);
@@ -1079,7 +1066,7 @@ ECode Collections::SynchronizedList::GetListIterator(
 
 ECode Collections::SynchronizedList::GetListIterator(
     /* [in] */ Integer index,
-    /* [out] */ IListIterator** it)
+    /* [out] */ AutoPtr<IListIterator>& it)
 {
     // Must be manually synched by user
     return mList->GetListIterator(index, it);
@@ -1088,16 +1075,13 @@ ECode Collections::SynchronizedList::GetListIterator(
 ECode Collections::SynchronizedList::SubList(
     /* [in] */ Integer fromIndex,
     /* [in] */ Integer toIndex,
-    /* [out] */ IList** subList)
+    /* [out] */ AutoPtr<IList>& subList)
 {
-    VALIDATE_NOT_NULL(subList);
-
     AutoLock lock(this);
 
     AutoPtr<IList> list;
-    FAIL_RETURN(mList->SubList(fromIndex, toIndex, &list));
-    *subList = new SynchronizedList(list, mMutex);
-    REFCOUNT_ADD(*subList);
+    FAIL_RETURN(mList->SubList(fromIndex, toIndex, list));
+    subList = new SynchronizedList(list, mMutex);
     return NOERROR;
 }
 
@@ -1193,16 +1177,13 @@ COMO_INTERFACE_IMPL_1(Collections::SynchronizedRandomAccessList, Collections::Sy
 ECode Collections::SynchronizedRandomAccessList::SubList(
     /* [in] */ Integer fromIndex,
     /* [in] */ Integer toIndex,
-    /* [out] */ IList** subList)
+    /* [out] */ AutoPtr<IList>& subList)
 {
-    VALIDATE_NOT_NULL(subList);
-
     AutoLock lock(this);
 
     AutoPtr<IList> list;
-    FAIL_RETURN(mList->SubList(fromIndex, toIndex, &list));
-    *subList = new SynchronizedRandomAccessList(list, mMutex);
-    REFCOUNT_ADD(*subList);
+    FAIL_RETURN(mList->SubList(fromIndex, toIndex, list));
+    subList = new SynchronizedRandomAccessList(list, mMutex);
     return NOERROR;
 }
 
@@ -1211,11 +1192,9 @@ ECode Collections::SynchronizedRandomAccessList::SubList(
 COMO_INTERFACE_IMPL_LIGHT_1(Collections::EmptyIterator, LightRefBase, IIterator);
 
 ECode Collections::EmptyIterator::HasNext(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
-    *result = false;
+    result = false;
     return NOERROR;
 }
 
@@ -1241,11 +1220,9 @@ AutoPtr<IIterator> Collections::EmptyIterator::Get_EMPTY_ITERATOR()
 COMO_INTERFACE_IMPL_LIGHT_1(Collections::EmptyEnumeration, LightRefBase, IEnumeration);
 
 ECode Collections::EmptyEnumeration::HasMoreElements(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
-    *result = false;
+    result = false;
     return NOERROR;
 }
 
@@ -1317,7 +1294,7 @@ ECode Collections::EmptyListIterator::Next(
 }
 
 ECode Collections::EmptyListIterator::HasNext(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return EmptyIterator::HasNext(result);
 }
@@ -1404,12 +1381,9 @@ ECode Collections::EmptyList::GetIterator(
 }
 
 ECode Collections::EmptyList::GetListIterator(
-    /* [out] */ IListIterator** it)
+    /* [out] */ AutoPtr<IListIterator>& it)
 {
-    VALIDATE_NOT_NULL(it);
-
-    *it = new EmptyListIterator();
-    REFCOUNT_ADD(*it);
+    it = new EmptyListIterator();
     return NOERROR;
 }
 
@@ -1463,7 +1437,7 @@ ECode Collections::EmptyList::ToArray(
 
 ECode Collections::EmptyList::Get(
     /* [in] */ Integer index,
-    /* [out] */ IInterface** obj)
+    /* [out] */ AutoPtr<IInterface>& obj)
 {
     return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
 }
@@ -1591,9 +1565,9 @@ COMO_INTERFACE_IMPL_1(Collections::ReverseComparator, Object, IComparator);
 ECode Collections::ReverseComparator::Compare(
     /* [in] */ IInterface* c1,
     /* [in] */ IInterface* c2,
-    /* [out] */ Integer* cmp)
+    /* [out] */ Integer& cmp)
 {
-    return IComparable::Probe(c2)->CompareTo(c1, *cmp);
+    return IComparable::Probe(c2)->CompareTo(c1, cmp);
 }
 
 ECode Collections::ReverseComparator::Equals(
@@ -1617,7 +1591,7 @@ COMO_INTERFACE_IMPL_1(Collections::ReverseComparator2, Object, IComparator);
 ECode Collections::ReverseComparator2::Compare(
     /* [in] */ IInterface* c1,
     /* [in] */ IInterface* c2,
-    /* [out] */ Integer* cmp)
+    /* [out] */ Integer& cmp)
 {
     return mCmp->Compare(c2, c1, cmp);
 }

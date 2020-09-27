@@ -513,7 +513,7 @@ ECode PrintWriter::Format(
         if (FAILED(ec)) goto ERROR;
         AutoPtr<ILocale> l;
         if ((mFormatter == nullptr) ||
-                (mFormatter->GetLocale(&l),
+                (mFormatter->GetLocale(l),
                     l != Locale::GetDefault())) {
             mFormatter = nullptr;
             CFormatter::New(this, IID_IFormatter, (IInterface**)&mFormatter);
@@ -551,7 +551,7 @@ ECode PrintWriter::Format(
         if (FAILED(ec)) goto ERROR;
         AutoPtr<ILocale> fl;
         if ((mFormatter == nullptr) ||
-                (mFormatter->GetLocale(&fl), fl != l)) {
+                (mFormatter->GetLocale(fl), fl != l)) {
             mFormatter = nullptr;
             CFormatter::New(this, l, IID_IFormatter, (IInterface**)&mFormatter);
         }

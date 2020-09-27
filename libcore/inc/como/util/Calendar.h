@@ -77,20 +77,20 @@ public:
     static Array<ILocale*> GetAvailableLocales();
 
     ECode GetTime(
-        /* [out] */ IDate** date) override final;
+        /* [out] */ AutoPtr<IDate>& date) override final;
 
     ECode SetTime(
         /* [in] */ IDate* date) override final;
 
     ECode GetTimeInMillis(
-        /* [out] */ Long* time) override;
+        /* [out] */ Long& time) override;
 
     ECode SetTimeInMillis(
         /* [in] */ Long millis) override;
 
     ECode Get(
         /* [in] */ Integer field,
-        /* [out] */ Integer* value) override;
+        /* [out] */ Integer& value) override;
 
     ECode Set(
         /* [in] */ Integer field,
@@ -123,19 +123,19 @@ public:
 
     ECode IsSet(
         /* [in] */ Integer field,
-        /* [out] */ Boolean* result) override final;
+        /* [out] */ Boolean& result) override final;
 
     ECode GetDisplayName(
         /* [in] */ Integer field,
         /* [in] */ Integer style,
         /* [in] */ ILocale* locale,
-        /* [out] */ String* name) override;
+        /* [out] */ String& name) override;
 
     ECode GetDisplayNames(
         /* [in] */ Integer field,
         /* [in] */ Integer style,
         /* [in] */ ILocale* locale,
-        /* [out] */ IMap** names) override;
+        /* [out] */ AutoPtr<IMap>& names) override;
 
     ECode CheckDisplayNameParams(
         /* [in] */ Integer field,
@@ -173,7 +173,7 @@ public:
         /* [in] */ Integer style);
 
     ECode GetCalendarType(
-        /* [out] */ String* type) override;
+        /* [out] */ String& type) override;
 
     ECode Equals(
         /* [in] */ IInterface* obj,
@@ -184,11 +184,11 @@ public:
 
     ECode Before(
         /* [in] */ IInterface* when,
-        /* [out] */ Boolean* before) override;
+        /* [out] */ Boolean& before) override;
 
     ECode After(
         /* [in] */ IInterface* when,
-        /* [out] */ Boolean* after) override;
+        /* [out] */ Boolean& after) override;
 
     ECode CompareTo(
         /* [in] */ IInterface* another,
@@ -202,7 +202,7 @@ public:
         /* [in] */ ITimeZone* value) override;
 
     ECode GetTimeZone(
-        /* [out] */ ITimeZone** zone) override;
+        /* [out] */ AutoPtr<ITimeZone>& zone) override;
 
     virtual AutoPtr<ITimeZone> GetZone();
 
@@ -213,25 +213,25 @@ public:
         /* [in] */ Boolean lenient) override;
 
     ECode IsLenient(
-        /* [out] */ Boolean* lenient) override;
+        /* [out] */ Boolean& lenient) override;
 
     ECode SetFirstDayOfWeek(
         /* [in] */ Integer value) override;
 
     ECode GetFirstDayOfWeek(
-        /* [out] */ Integer* value) override;
+        /* [out] */ Integer& value) override;
 
     ECode SetMinimalDaysInFirstWeek(
         /* [in] */ Integer value) override;
 
     ECode GetMinimalDaysInFirstWeek(
-        /* [out] */ Integer* value) override;
+        /* [out] */ Integer& value) override;
 
     ECode IsWeekDateSupported(
-        /* [out] */ Boolean* supported) override;
+        /* [out] */ Boolean& supported) override;
 
     ECode GetWeekYear(
-        /* [out] */ Integer* weekYear) override;
+        /* [out] */ Integer& weekYear) override;
 
     ECode SetWeekDate(
         /* [in] */ Integer weekYear,
@@ -239,15 +239,15 @@ public:
         /* [in] */ Integer dayOfWeek) override;
 
     ECode GetWeeksInWeekYear(
-        /* [out] */ Integer* weeks) override;
+        /* [out] */ Integer& weeks) override;
 
     ECode GetActualMinimum(
         /* [in] */ Integer field,
-        /* [out] */ Integer* value) override;
+        /* [out] */ Integer& value) override;
 
     ECode GetActualMaximum(
         /* [in] */ Integer field,
-        /* [out] */ Integer* value) override;
+        /* [out] */ Integer& value) override;
 
     static String GetFieldName(
         /* [in] */ Integer field);

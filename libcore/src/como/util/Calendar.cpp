@@ -157,32 +157,29 @@ Array<ILocale*> Calendar::GetAvailableLocales()
 }
 
 ECode Calendar::GetTime(
-    /* [out] */ IDate** date)
+    /* [out] */ AutoPtr<IDate>& date)
 {
-    VALIDATE_NOT_NULL(date);
-
     Long time;
-    GetTimeInMillis(&time);
-    return CDate::New(time, IID_IDate, (IInterface**)date);
+    GetTimeInMillis(time);
+    date = nullptr;
+    return CDate::New(time, IID_IDate, (IInterface**)&date);
 }
 
 ECode Calendar::SetTime(
     /* [in] */ IDate* date)
 {
     Long time;
-    date->GetTime(&time);
+    date->GetTime(time);
     return SetTimeInMillis(time);
 }
 
 ECode Calendar::GetTimeInMillis(
-    /* [out] */ Long* time)
+    /* [out] */ Long& time)
 {
-    VALIDATE_NOT_NULL(time);
-
     if (!mIsTimeSet) {
         FAIL_RETURN(UpdateTime());
     }
-    *time = mTime;
+    time = mTime;
     return NOERROR;
 }
 
@@ -202,16 +199,14 @@ ECode Calendar::SetTimeInMillis(
 
 ECode Calendar::Get(
     /* [in] */ Integer field,
-    /* [out] */ Integer* value)
+    /* [out] */ Integer& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     if (field < 0 || field >= FIELD_COUNT) {
         return como::core::E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
     Complete();
-    *value = InternalGet(field);
+    value = InternalGet(field);
     return NOERROR;
 }
 
@@ -309,15 +304,13 @@ ECode Calendar::Clear(
 
 ECode Calendar::IsSet(
     /* [in] */ Integer field,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     if (field < 0 || field >= FIELD_COUNT) {
         return como::core::E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
-    *result = mStamp[field] != UNSET;
+    result = mStamp[field] != UNSET;
     return NOERROR;
 }
 
@@ -325,10 +318,8 @@ ECode Calendar::GetDisplayName(
     /* [in] */ Integer field,
     /* [in] */ Integer style,
     /* [in] */ ILocale* locale,
-    /* [out] */ String* name)
+    /* [out] */ String& name)
 {
-    VALIDATE_NOT_NULL(name);
-
     if (style == ALL_STYLES) {
         style = SHORT;
     }
@@ -336,32 +327,32 @@ ECode Calendar::GetDisplayName(
     FAIL_RETURN(CheckDisplayNameParams(field, style, SHORT, NARROW_FORMAT, locale,
             ERA_MASK | MONTH_MASK | DAY_OF_WEEK_MASK | AM_PM_MASK, &result));
     if (!result) {
-        *name = nullptr;
+        name = nullptr;
         return NOERROR;
     }
 
     String calendarType;
-    GetCalendarType(&calendarType);
+    GetCalendarType(calendarType);
     Integer fieldValue;
-    Get(field, &fieldValue);
+    Get(field, fieldValue);
     // the standalone and narrow styles are supported only through CalendarDataProviders.
     if (IsStandaloneStyle(style) || IsNarrowFormatStyle(style)) {
         String val;
         FAIL_RETURN(CalendarDataUtility::RetrieveFieldValueName(calendarType,
-                field, fieldValue, style, locale, &val));
+                field, fieldValue, style, locale, val));
 
         // Perform fallback here to follow the CLDR rules
         if (val.IsNull()) {
             if (IsNarrowFormatStyle(style)) {
                 FAIL_RETURN(CalendarDataUtility::RetrieveFieldValueName(calendarType,
-                        field, fieldValue, ToStandaloneStyle(style), locale, &val));
+                        field, fieldValue, ToStandaloneStyle(style), locale, val));
             }
             else if (IsStandaloneStyle(style)) {
                 FAIL_RETURN(CalendarDataUtility::RetrieveFieldValueName(calendarType,
-                        field, fieldValue, GetBaseStyle(style), locale, &val));
+                        field, fieldValue, GetBaseStyle(style), locale, val));
             }
         }
-        *name = val;
+        name = val;
         return NOERROR;
     }
 
@@ -369,11 +360,11 @@ ECode Calendar::GetDisplayName(
     Array<String> strings = GetFieldStrings(field, style, symbols);
     if (!strings.IsNull()) {
         if (fieldValue < strings.GetLength()) {
-            *name = strings[fieldValue];
+            name = strings[fieldValue];
             return NOERROR;
         }
     }
-    *name = nullptr;
+    name = nullptr;
     return NOERROR;
 }
 
@@ -381,43 +372,41 @@ ECode Calendar::GetDisplayNames(
     /* [in] */ Integer field,
     /* [in] */ Integer style,
     /* [in] */ ILocale* locale,
-    /* [out] */ IMap** names)
+    /* [out] */ AutoPtr<IMap>& names)
 {
-    VALIDATE_NOT_NULL(names);
-
     Boolean result;
     FAIL_RETURN(CheckDisplayNameParams(field, style, ALL_STYLES, NARROW_FORMAT, locale,
             ERA_MASK | MONTH_MASK | DAY_OF_WEEK_MASK | AM_PM_MASK, &result));
     if (!result) {
-        *names = nullptr;
+        names = nullptr;
         return NOERROR;
     }
 
     Complete();
 
     String calendarType;
-    GetCalendarType(&calendarType);
+    GetCalendarType(calendarType);
     if (style == ALL_STYLES || IsStandaloneStyle(style) || IsNarrowFormatStyle(style)) {
         AutoPtr<IMap> map;
-        FAIL_RETURN(CalendarDataUtility::RetrieveFieldValueNames(calendarType, field, style, locale, &map));
+        FAIL_RETURN(CalendarDataUtility::RetrieveFieldValueNames(calendarType, field, style, locale, map));
 
         if (map == nullptr) {
             if (IsNarrowFormatStyle(style)) {
                 FAIL_RETURN(CalendarDataUtility::RetrieveFieldValueNames(calendarType, field,
-                        ToStandaloneStyle(style), locale, &map));
+                        ToStandaloneStyle(style), locale, map));
             }
             else if (style != ALL_STYLES) {
                 FAIL_RETURN(CalendarDataUtility::RetrieveFieldValueNames(calendarType, field,
-                        GetBaseStyle(style), locale, &map));
+                        GetBaseStyle(style), locale, map));
             }
         }
-        map.MoveTo(names);
+        names = std::move(map);
         return NOERROR;
     }
 
     // SHORT or LONG
     AutoPtr<IMap> map = GetDisplayNamesImpl(field, style, locale);
-    map.MoveTo(names);
+    names = std::move(map);
     return NOERROR;
 }
 
@@ -732,11 +721,9 @@ Integer Calendar::SelectFields()
 }
 
 ECode Calendar::GetCalendarType(
-    /* [out] */ String* type)
+    /* [out] */ String& type)
 {
-    VALIDATE_NOT_NULL(type);
-
-    *type = GetCoclassName((IObject*)this);
+    type = GetCoclassName((IObject*)this);
     return NOERROR;
 }
 
@@ -775,35 +762,31 @@ ECode Calendar::GetHashCode(
 
 ECode Calendar::Before(
     /* [in] */ IInterface* when,
-    /* [out] */ Boolean* before)
+    /* [out] */ Boolean& before)
 {
-    VALIDATE_NOT_NULL(before);
-
     ICalendar* cal = ICalendar::Probe(when);
     if (cal == nullptr) {
-        *before = false;
+        before = false;
         return NOERROR;
     }
     Integer compare;
     CompareTo(cal, compare);
-    *before = compare < 0;
+    before = compare < 0;
     return NOERROR;
 }
 
 ECode Calendar::After(
     /* [in] */ IInterface* when,
-    /* [out] */ Boolean* after)
+    /* [out] */ Boolean& after)
 {
-    VALIDATE_NOT_NULL(after);
-
     ICalendar* cal = ICalendar::Probe(when);
     if (cal == nullptr) {
-        *after = false;
+        after = false;
         return NOERROR;
     }
     Integer compare;
     CompareTo(cal, compare);
-    *after = compare > 0;
+    after = compare > 0;
     return NOERROR;
 }
 
@@ -852,10 +835,8 @@ ECode Calendar::SetTimeZone(
 }
 
 ECode Calendar::GetTimeZone(
-    /* [out] */ ITimeZone** zone)
+    /* [out] */ AutoPtr<ITimeZone>& zone)
 {
-    VALIDATE_NOT_NULL(zone);
-
     // If the TimeZone object is shared by other Calendar instances, then
     // create a clone.
     if (mSharedZone) {
@@ -864,8 +845,7 @@ ECode Calendar::GetTimeZone(
         mZone = clone;
         mSharedZone = false;
     }
-    *zone = mZone;
-    REFCOUNT_ADD(*zone);
+    zone = mZone;
     return NOERROR;
 }
 
@@ -882,11 +862,9 @@ ECode Calendar::SetLenient(
 }
 
 ECode Calendar::IsLenient(
-    /* [out] */ Boolean* lenient)
+    /* [out] */ Boolean& lenient)
 {
-    VALIDATE_NOT_NULL(lenient);
-
-    *lenient = mLenient;
+    lenient = mLenient;
     return NOERROR;
 }
 
@@ -902,11 +880,9 @@ ECode Calendar::SetFirstDayOfWeek(
 }
 
 ECode Calendar::GetFirstDayOfWeek(
-    /* [out] */ Integer* value)
+    /* [out] */ Integer& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = mFirstDayOfWeek;
+    value = mFirstDayOfWeek;
     return NOERROR;
 }
 
@@ -922,25 +898,21 @@ ECode Calendar::SetMinimalDaysInFirstWeek(
 }
 
 ECode Calendar::GetMinimalDaysInFirstWeek(
-    /* [out] */ Integer* value)
+    /* [out] */ Integer& value)
 {
-    VALIDATE_NOT_NULL(value);
-
-    *value = mMinimalDaysInFirstWeek;
+    value = mMinimalDaysInFirstWeek;
     return NOERROR;
 }
 
 ECode Calendar::IsWeekDateSupported(
-    /* [out] */ Boolean* supported)
+    /* [out] */ Boolean& supported)
 {
-    VALIDATE_NOT_NULL(supported);
-
-    *supported = false;
+    supported = false;
     return NOERROR;
 }
 
 ECode Calendar::GetWeekYear(
-    /* [out] */ Integer* weekYear)
+    /* [out] */ Integer& weekYear)
 {
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
@@ -954,24 +926,22 @@ ECode Calendar::SetWeekDate(
 }
 
 ECode Calendar::GetWeeksInWeekYear(
-    /* [out] */ Integer* weeks)
+    /* [out] */ Integer& weeks)
 {
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
 ECode Calendar::GetActualMinimum(
     /* [in] */ Integer field,
-    /* [out] */ Integer* value)
+    /* [out] */ Integer& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     Integer fieldValue, endValue;
-    GetGreatestMinimum(field, &fieldValue);
-    GetMinimum(field, &endValue);
+    GetGreatestMinimum(field, fieldValue);
+    GetMinimum(field, endValue);
 
     // if we know that the minimum value is always the same, just return it
     if (fieldValue == endValue) {
-        *value = fieldValue;
+        value = fieldValue;
         return NOERROR;
     }
 
@@ -988,7 +958,7 @@ ECode Calendar::GetActualMinimum(
 
     do {
         work->Set(field, fieldValue);
-        if (work->Get(field, value), *value != fieldValue) {
+        if (work->Get(field, value), value != fieldValue) {
             break;
         }
         else {
@@ -997,23 +967,21 @@ ECode Calendar::GetActualMinimum(
         }
     } while (fieldValue >= endValue);
 
-    *value = result;
+    value = result;
     return NOERROR;
 }
 
 ECode Calendar::GetActualMaximum(
     /* [in] */ Integer field,
-    /* [out] */ Integer* value)
+    /* [out] */ Integer& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     Integer fieldValue, endValue;
-    GetLeastMaximum(field, &fieldValue);
-    GetMaximum(field, &endValue);
+    GetLeastMaximum(field, fieldValue);
+    GetMaximum(field, endValue);
 
     // if we know that the maximum value is always the same, just return it.
     if (fieldValue == endValue) {
-        *value = fieldValue;
+        value = fieldValue;
         return NOERROR;
     }
 
@@ -1036,7 +1004,7 @@ ECode Calendar::GetActualMaximum(
 
     do {
         work->Set(field, fieldValue);
-        if (work->Get(field, value), *value != fieldValue) {
+        if (work->Get(field, value), value != fieldValue) {
             break;
         }
         else {
@@ -1045,7 +1013,7 @@ ECode Calendar::GetActualMaximum(
         }
     } while (fieldValue <= endValue);
 
-    *value = result;
+    value = result;
     return NOERROR;
 }
 
@@ -1133,7 +1101,7 @@ ECode Calendar::ToString(
     AppendValue(buffer, String(",minimalDaysInFirstWeek"), true, (Long)mMinimalDaysInFirstWeek);
     for (Integer i = 0; i < FIELD_COUNT; ++i) {
         Boolean set;
-        IsSet(i, &set);
+        IsSet(i, set);
         buffer->Append(U',');
         AppendValue(buffer, GetFIELD_NAME()[i], set, (Long)mFields[i]);
     }
@@ -1206,7 +1174,7 @@ Long Calendar::GetMillisOf(
     ((ICloneable*)calendar)->Clone(IID_ICalendar, (IInterface**)&cal);
     cal->SetLenient(true);
     Long time;
-    cal->GetTimeInMillis(&time);
+    cal->GetTimeInMillis(time);
     return time;
 }
 
@@ -1260,7 +1228,7 @@ void Calendar::InvalidateWeekFields()
 
     if (mStamp[WEEK_OF_MONTH] == COMPUTED) {
         Integer weekOfMonth;
-        cal->Get(WEEK_OF_MONTH, &weekOfMonth);
+        cal->Get(WEEK_OF_MONTH, weekOfMonth);
         if (mFields[WEEK_OF_MONTH] != weekOfMonth) {
             mFields[WEEK_OF_MONTH] = weekOfMonth;
         }
@@ -1268,7 +1236,7 @@ void Calendar::InvalidateWeekFields()
 
     if (mStamp[WEEK_OF_YEAR] == COMPUTED) {
         Integer weekOfYear;
-        cal->Get(WEEK_OF_YEAR, &weekOfYear);
+        cal->Get(WEEK_OF_YEAR, weekOfYear);
         if (mFields[WEEK_OF_YEAR] != weekOfYear) {
             mFields[WEEK_OF_YEAR] = weekOfYear;
         }

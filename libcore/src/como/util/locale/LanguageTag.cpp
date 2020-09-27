@@ -469,7 +469,7 @@ AutoPtr<ILanguageTag> LanguageTag::ParseLocale(
         AutoPtr<IIterator> it;
         locextKeys->GetIterator(it);
         Boolean hasNext;
-        while (it->HasNext(&hasNext), hasNext) {
+        while (it->HasNext(hasNext), hasNext) {
             AutoPtr<IChar> locextKey;
             it->Next((IInterface**)&locextKey);
             AutoPtr<Extension> ext = localeExtensions->GetExtension(
@@ -697,7 +697,7 @@ ECode LanguageTag::ToString(
         AutoPtr<IIterator> it;
         mExtlangs->GetIterator(it);
         Boolean hasNext;
-        while (it->HasNext(&hasNext), hasNext) {
+        while (it->HasNext(hasNext), hasNext) {
             AutoPtr<ICharSequence> extlang;
             it->Next((IInterface**)&extlang);
             sb->Append(SEP);
@@ -715,7 +715,7 @@ ECode LanguageTag::ToString(
         }
 
         mVariants->GetIterator(it);
-        while (it->HasNext(&hasNext), hasNext) {
+        while (it->HasNext(hasNext), hasNext) {
             AutoPtr<ICharSequence> variant;
             it->Next((IInterface**)&variant);
             sb->Append(SEP);
@@ -723,7 +723,7 @@ ECode LanguageTag::ToString(
         }
 
         mExtensions->GetIterator(it);
-        while (it->HasNext(&hasNext), hasNext) {
+        while (it->HasNext(hasNext), hasNext) {
             AutoPtr<ICharSequence> extension;
             it->Next((IInterface**)&extension);
             sb->Append(SEP);

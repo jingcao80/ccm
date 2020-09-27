@@ -97,9 +97,9 @@ void DeleteOnExitHook::RunHooks()
 
     Collections::Reverse(IList::Probe(toBeDeleted));
     AutoPtr<IIterator> it;
-    toBeDeleted->GetIterator(&it);
+    toBeDeleted->GetIterator(it);
     Boolean hasNext;
-    while (it->HasNext(&hasNext), hasNext) {
+    while (it->HasNext(hasNext), hasNext) {
         AutoPtr<IInterface> obj;
         it->Next(&obj);
         String filename = CoreUtils::Unbox(ICharSequence::Probe(obj));

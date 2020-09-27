@@ -30,7 +30,7 @@ protected:
 
     ECode Get(
         /* [in] */ Integer index,
-        /* [out] */ IInterface** obj) override;
+        /* [out] */ AutoPtr<IInterface>& obj) override;
 
     ECode Set(
         /* [in] */ Integer index,

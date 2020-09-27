@@ -200,7 +200,7 @@ ECode Pattern::Split(
     if (limit == 0) {
         while (size > 0) {
             AutoPtr<IInterface> obj;
-            matchList->Get(size - 1, &obj);
+            matchList->Get(size - 1, obj);
             if (CoreUtils::Unbox(ICharSequence::Probe(obj)).Equals("")) {
                 size--;
             }
@@ -208,7 +208,7 @@ ECode Pattern::Split(
         }
     }
     AutoPtr<IList> subList;
-    matchList->SubList(0, size, &subList);
+    matchList->SubList(0, size, subList);
     Array<ICharSequence*> seqArray;
     subList->ToArray(IID_ICharSequence, (Array<IInterface*>*)&seqArray);
     *strArray = CoreUtils::Unbox(seqArray);

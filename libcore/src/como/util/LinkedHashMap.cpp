@@ -431,11 +431,9 @@ ECode LinkedHashMap::LinkedEntrySet::Remove(
 COMO_INTERFACE_IMPL_LIGHT_1(LinkedHashMap::LinkedHashIterator, LightRefBase, IIterator);
 
 ECode LinkedHashMap::LinkedHashIterator::HasNext(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
-    *result = mNext != nullptr;
+    result = mNext != nullptr;
     return NOERROR;
 }
 

@@ -49,10 +49,8 @@ ECode CalendarDataUtility::RetrieveFieldValueName(
     /* [in] */ Integer value,
     /* [in] */ Integer style,
     /* [in] */ ILocale* locale,
-    /* [out] */ String* name)
+    /* [out] */ String& name)
 {
-    VALIDATE_NOT_NULL(name);
-
     if (field == ICalendar::ERA) {
         // For era the field value does not always equal the index into the names array.
         String type = NormalizeCalendarType(id);
@@ -69,16 +67,16 @@ ECode CalendarDataUtility::RetrieveFieldValueName(
         // Other eras use 0-based values (e.g. 0=BCE, 1=CE for gregorian).
     }
     if (value < 0) {
-        *name = nullptr;
+        name = nullptr;
         return NOERROR;
     }
     Array<String> names;
     FAIL_RETURN(GetNames(id, field, style, locale, &names));
     if (value >= names.GetLength()) {
-        *name = nullptr;
+        name = nullptr;
         return NOERROR;
     }
-    *name = names[value];
+    name = names[value];
     return NOERROR;
 }
 
@@ -88,7 +86,7 @@ ECode CalendarDataUtility::RetrieveCOMOTimeFieldValueName(
     /* [in] */ Integer value,
     /* [in] */ Integer style,
     /* [in] */ ILocale* locale,
-    /* [out] */ String* name)
+    /* [out] */ String& name)
 {
     return RetrieveFieldValueName(id, field, value, style, locale, name);
 }
@@ -98,28 +96,22 @@ ECode CalendarDataUtility::RetrieveFieldValueNames(
     /* [in] */ Integer field,
     /* [in] */ Integer style,
     /* [in] */ ILocale* locale,
-    /* [out] */ IMap** retNames)
+    /* [out] */ AutoPtr<IMap>& retNames)
 {
-    VALIDATE_NOT_NULL(retNames);
-
-    AutoPtr<IMap> names;
     if (style == ICalendar::ALL_STYLES) {
-        FAIL_RETURN(RetrieveFieldValueNamesImpl(id, field, ICalendar::SHORT_FORMAT, locale, &names));
+        FAIL_RETURN(RetrieveFieldValueNamesImpl(id, field, ICalendar::SHORT_FORMAT, locale, retNames));
         for (Integer st : REST_OF_STYLES) {
             AutoPtr<IMap> restNames;
-            FAIL_RETURN(RetrieveFieldValueNamesImpl(id, field, st, locale, &restNames));
-            names->PutAll(restNames);
+            FAIL_RETURN(RetrieveFieldValueNamesImpl(id, field, st, locale, restNames));
+            retNames->PutAll(restNames);
         }
     }
     else {
-        FAIL_RETURN(RetrieveFieldValueNamesImpl(id, field, style, locale, &names));
+        FAIL_RETURN(RetrieveFieldValueNamesImpl(id, field, style, locale, retNames));
     }
     Boolean isEmpty;
-    if (names->IsEmpty(isEmpty), isEmpty) {
-        *retNames = nullptr;
-    }
-    else {
-        names.MoveTo(retNames);
+    if (retNames->IsEmpty(isEmpty), isEmpty) {
+        retNames = nullptr;
     }
     return NOERROR;
 }
@@ -129,7 +121,7 @@ ECode CalendarDataUtility::RetrieveFieldValueNamesImpl(
     /* [in] */ Integer field,
     /* [in] */ Integer style,
     /* [in] */ ILocale* locale,
-    /* [out] */ IMap** retNames)
+    /* [out] */ AutoPtr<IMap>& retNames)
 {
     Array<String> names;
     FAIL_RETURN(GetNames(id, field, style, locale, &names));
@@ -145,22 +137,22 @@ ECode CalendarDataUtility::RetrieveFieldValueNamesImpl(
             offset = -231;
         }
     }
-    AutoPtr<IMap> result;
-    CLinkedHashMap::New(IID_IMap, (IInterface**)&result);
+    retNames = nullptr;
+    CLinkedHashMap::New(IID_IMap, (IInterface**)&retNames);
     for (Integer i = skipped; i < names.GetLength(); i++) {
         if (names[i].IsEmpty()) {
             continue;
         }
 
         AutoPtr<IInterface> prev;
-        if (result->Put(CoreUtils::Box(names[i]), CoreUtils::Box(i + offset), &prev), prev != nullptr) {
+        if (retNames->Put(CoreUtils::Box(names[i]), CoreUtils::Box(i + offset), &prev), prev != nullptr) {
             // Duplicate names indicate that the names would be ambiguous. Skip this style for
             // ALL_STYLES. In other cases this results in null being returned in
             // retrieveValueNames(), which is required by Calendar.getDisplayNames().
-            return CLinkedHashMap::New(IID_IMap, (IInterface**)retNames);
+            retNames = nullptr;
+            return CLinkedHashMap::New(IID_IMap, (IInterface**)&retNames);
         }
     }
-    result.MoveTo(retNames);
     return NOERROR;
 }
 
@@ -169,7 +161,7 @@ ECode CalendarDataUtility::RetrieveCOMOTimeFieldValueNames(
     /* [in] */ Integer field,
     /* [in] */ Integer style,
     /* [in] */ ILocale* locale,
-    /* [out] */ IMap** names)
+    /* [out] */ AutoPtr<IMap>& names)
 {
     return RetrieveFieldValueNames(id, field, style, locale, names);
 }

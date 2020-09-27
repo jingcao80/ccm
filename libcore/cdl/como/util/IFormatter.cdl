@@ -51,16 +51,16 @@ interface IFormatter
         [in] Array<IInterface*>* args);
 
     GetIoException(
-        [out] ECode* ec);
+        [out] ECode& ec);
 
     GetLocale(
-        [out] ILocale** locale);
+        [out] ILocale&& locale);
 
     GetOut(
-        [out] IAppendable** output);
+        [out] IAppendable&& output);
 
     ToString(
-        [out] String* str);
+        [out] String& str);
 }
 
 }

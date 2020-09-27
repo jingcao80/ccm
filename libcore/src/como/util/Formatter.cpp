@@ -313,34 +313,26 @@ Char Formatter::GetZero(
 }
 
 ECode Formatter::GetLocale(
-    /* [out] */ ILocale** locale)
+    /* [out] */ AutoPtr<ILocale>& locale)
 {
-    VALIDATE_NOT_NULL(locale);
-
     FAIL_RETURN(EnsureOpen());
-    *locale = mL;
-    REFCOUNT_ADD(*locale);
+    locale = mL;
     return NOERROR;
 }
 
 ECode Formatter::GetOut(
-    /* [out] */ IAppendable** output)
+    /* [out] */ AutoPtr<IAppendable>& output)
 {
-    VALIDATE_NOT_NULL(output);
-
     FAIL_RETURN(EnsureOpen());
-    *output = mA;
-    REFCOUNT_ADD(*output);
+    output = mA;
     return NOERROR;
 }
 
 ECode Formatter::ToString(
-    /* [out] */ String* str)
+    /* [out] */ String& str)
 {
-    VALIDATE_NOT_NULL(str);
-
     FAIL_RETURN(EnsureOpen());
-    *str = Object::ToString(mA);
+    str = Object::ToString(mA);
     return NOERROR;
 }
 
@@ -380,11 +372,9 @@ ECode Formatter::EnsureOpen()
 }
 
 ECode Formatter::GetIoException(
-    /* [out] */ ECode* ec)
+    /* [out] */ ECode& ec)
 {
-    VALIDATE_NOT_NULL(ec);
-
-    *ec = mLastException;
+    ec = mLastException;
     return NOERROR;
 }
 
@@ -951,10 +941,10 @@ ECode Formatter::FormatSpecifier::PrintString(
     if (IFormattable::Probe(arg) != nullptr) {
         AutoPtr<IFormatter> fmt = mOwner;
         AutoPtr<ILocale> ll;
-        FAIL_RETURN(fmt->GetLocale(&ll));
+        FAIL_RETURN(fmt->GetLocale(ll));
         if (ll != l) {
             AutoPtr<IAppendable> out;
-            fmt->GetOut(&out);
+            fmt->GetOut(out);
             CFormatter::New(out, l, IID_IFormatter, (IInterface**)&fmt);
         }
         IFormattable::Probe(arg)->FormatTo(fmt, mF->ValueOf(), mWidth, mPrecision);
@@ -2091,7 +2081,7 @@ ECode Formatter::FormatSpecifier::Print(
         case DateTime::HOUR_OF_DAY:   // 'k' (0 - 23) -- like H
         case DateTime::HOUR: {        // 'l' (1 - 12) -- like I
             Integer i;
-            t->Get(ICalendar::HOUR_OF_DAY, &i);
+            t->Get(ICalendar::HOUR_OF_DAY, i);
             if (c == DateTime::HOUR_0 || c == DateTime::HOUR) {
                 i = ((i == 0 || i == 12) ? 12 : i % 12);
             }
@@ -2102,14 +2092,14 @@ ECode Formatter::FormatSpecifier::Print(
         }
         case DateTime::MINUTE: { // 'M' (00 - 59)
             Integer i;
-            t->Get(ICalendar::MINUTE, &i);
+            t->Get(ICalendar::MINUTE, i);
             AutoPtr<Flags> flags = Flags::GetZERO_PAD();
             sb->Append(LocalizedMagnitude(nullptr, i, flags, 2, l));
             break;
         }
         case DateTime::NANOSECOND: { // 'N' (000000000 - 999999999)
             Integer i;
-            t->Get(ICalendar::MILLISECOND, &i);
+            t->Get(ICalendar::MILLISECOND, i);
             i = i * 1000000;
             AutoPtr<Flags> flags = Flags::GetZERO_PAD();
             sb->Append(LocalizedMagnitude(nullptr, i, flags, 9, l));
@@ -2117,7 +2107,7 @@ ECode Formatter::FormatSpecifier::Print(
         }
         case DateTime::MILLISECOND_SINCE_EPOCH: { // 'Q' (0 - 99...?)
             Long i;
-            t->GetTimeInMillis(&i);
+            t->GetTimeInMillis(i);
             AutoPtr<Flags> flags = Flags::GetNONE();
             sb->Append(LocalizedMagnitude(nullptr, i, flags, mWidth, l));
             break;
@@ -2129,14 +2119,14 @@ ECode Formatter::FormatSpecifier::Print(
                 dfs->GetAmPmStrings(&ampm);
             }
             Integer i;
-            t->Get(ICalendar::AM_PM, &i);
+            t->Get(ICalendar::AM_PM, i);
             String s = ampm[i];
             sb->Append(s.ToLowerCase(/* l != nullptr ? l : Locale::GetUS() */));
             break;
         }
         case DateTime::SECONDS_SINCE_EPOCH: { // 's' (0 - 99...?)
             Long i;
-            t->GetTimeInMillis(&i);
+            t->GetTimeInMillis(i);
             i = i / 1000;
             AutoPtr<Flags> flags = Flags::GetNONE();
             sb->Append(LocalizedMagnitude(nullptr, i, flags, mWidth, l));
@@ -2144,15 +2134,15 @@ ECode Formatter::FormatSpecifier::Print(
         }
         case DateTime::SECOND: { // 'S' (00 - 60 - leap second)
             Integer i;
-            t->Get(ICalendar::SECOND, &i);
+            t->Get(ICalendar::SECOND, i);
             AutoPtr<Flags> flags = Flags::GetZERO_PAD();
             sb->Append(LocalizedMagnitude(nullptr, i, flags, 2, l));
             break;
         }
         case DateTime::ZONE_NUMERIC: { // 'z' ({-|+}####) - ls minus?
             Integer zoff, doff;
-            t->Get(ICalendar::ZONE_OFFSET, &zoff);
-            t->Get(ICalendar::DST_OFFSET, &doff);
+            t->Get(ICalendar::ZONE_OFFSET, zoff);
+            t->Get(ICalendar::DST_OFFSET, doff);
             Integer i = zoff + doff;
             Boolean neg = i < 0;
             sb->Append(neg ? U'-' : U'+');
@@ -2168,9 +2158,9 @@ ECode Formatter::FormatSpecifier::Print(
         }
         case DateTime::ZONE: { // 'Z' (symbol)
             AutoPtr<ITimeZone> tz;
-            t->GetTimeZone(&tz);
+            t->GetTimeZone(tz);
             Integer i;
-            t->Get(ICalendar::DST_OFFSET, &i);
+            t->Get(ICalendar::DST_OFFSET, i);
             String disName;
             tz->GetDisplayName(i != 0, ITimeZone::SHORT,
                     (l == nullptr) ? Locale::GetUS().Get() : l, &disName);
@@ -2182,7 +2172,7 @@ ECode Formatter::FormatSpecifier::Print(
         case DateTime::NAME_OF_DAY_ABBREV: // 'a'
         case DateTime::NAME_OF_DAY: {      // 'A'
             Integer i;
-            t->Get(ICalendar::DAY_OF_WEEK, &i);
+            t->Get(ICalendar::DAY_OF_WEEK, i);
             AutoPtr<ILocale> lt = ((l == nullptr) ? Locale::GetUS().Get() : l);
             AutoPtr<IDateFormatSymbols> dfs = DateFormatSymbols::GetInstance(lt);
             if (c == DateTime::NAME_OF_DAY) {
@@ -2201,7 +2191,7 @@ ECode Formatter::FormatSpecifier::Print(
         case DateTime::NAME_OF_MONTH_ABBREV_X: // 'h' -- same b
         case DateTime::NAME_OF_MONTH: {        // 'B'
             Integer i;
-            t->Get(ICalendar::MONTH, &i);
+            t->Get(ICalendar::MONTH, i);
             AutoPtr<ILocale> lt = ((l == nullptr) ? Locale::GetUS().Get() : l);
             AutoPtr<IDateFormatSymbols> dfs = DateFormatSymbols::GetInstance(lt);
             if (c == DateTime::NAME_OF_MONTH) {
@@ -2220,7 +2210,7 @@ ECode Formatter::FormatSpecifier::Print(
         case DateTime::YEAR_2:      // 'y' (00 - 99)
         case DateTime::YEAR_4: {    // 'Y' (0000 - 9999)
             Integer i;
-            t->Get(ICalendar::YEAR, &i);
+            t->Get(ICalendar::YEAR, i);
             Integer size = 2;
             switch(c) {
                 case DateTime::CENTURY:
@@ -2240,7 +2230,7 @@ ECode Formatter::FormatSpecifier::Print(
         case DateTime::DAY_OF_MONTH_0:  // 'd' (01 - 31)
         case DateTime::DAY_OF_MONTH: {  // 'e' (1 - 31) -- like d
             Integer i;
-            t->Get(ICalendar::DATE, &i);
+            t->Get(ICalendar::DATE, i);
             AutoPtr<Flags> flags = (c == DateTime::DAY_OF_MONTH_0 ?
                     Flags::GetZERO_PAD() : Flags::GetNONE());
             sb->Append(LocalizedMagnitude(nullptr, i, flags, 2, l));
@@ -2248,14 +2238,14 @@ ECode Formatter::FormatSpecifier::Print(
         }
         case DateTime::DAY_OF_YEAR: {  // 'j' (001 - 366)
             Integer i;
-            t->Get(ICalendar::DAY_OF_YEAR, &i);
+            t->Get(ICalendar::DAY_OF_YEAR, i);
             AutoPtr<Flags> flags = Flags::GetZERO_PAD();
             sb->Append(LocalizedMagnitude(nullptr, i, flags, 3, l));
             break;
         }
         case DateTime::MONTH: { // 'm' (01 - 12)
             Integer i;
-            t->Get(ICalendar::MONTH, &i);
+            t->Get(ICalendar::MONTH, i);
             i = i + 1;
             AutoPtr<Flags> flags = Flags::GetZERO_PAD();
             sb->Append(LocalizedMagnitude(nullptr, i, flags, 2, l));
@@ -2341,7 +2331,7 @@ Char Formatter::FormatSpecifier::GetZero(
     /* [in] */ ILocale* l)
 {
     AutoPtr<ILocale> ll;
-    mOwner->GetLocale(&ll);
+    mOwner->GetLocale(ll);
     if ((l != nullptr) && !Object::Equals(l, ll)) {
         AutoPtr<IDecimalFormatSymbols> dfs = DecimalFormatSymbols::GetInstance(l);
         Char c;

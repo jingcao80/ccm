@@ -36,7 +36,7 @@ interface IListIterator
         [out] Integer* index);
 
     HasNext(
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     HasPrevious(
         [out] Boolean* result);

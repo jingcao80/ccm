@@ -157,28 +157,22 @@ AutoPtr<IInterface> LinkedList::Unlink(
 }
 
 ECode LinkedList::GetFirst(
-    /* [out] */ IInterface** e)
+    /* [out] */ AutoPtr<IInterface>& e)
 {
-    VALIDATE_NOT_NULL(e);
-
     if (mFirst == nullptr) {
         return E_NO_SUCH_ELEMENT_EXCEPTION;
     }
-    *e = mFirst->mItem;
-    REFCOUNT_ADD(*e);
+    e = mFirst->mItem;
     return NOERROR;
 }
 
 ECode LinkedList::GetLast(
-    /* [out] */ IInterface** e)
+    /* [out] */ AutoPtr<IInterface>& e)
 {
-    VALIDATE_NOT_NULL(e);
-
     if (mLast == nullptr) {
         return E_NO_SUCH_ELEMENT_EXCEPTION;
     }
-    *e = mLast->mItem;
-    REFCOUNT_ADD(*e);
+    e = mLast->mItem;
     return NOERROR;
 }
 
@@ -537,19 +531,17 @@ ECode LinkedList::Peek(
 ECode LinkedList::Element(
     /* [out] */ AutoPtr<IInterface>& e)
 {
-    return GetFirst(&e);
+    return GetFirst(e);
 }
 
 ECode LinkedList::Poll(
-    /* [out] */ IInterface** e)
+    /* [out] */ AutoPtr<IInterface>& e)
 {
-    VALIDATE_NOT_NULL(e);
-
     if (mFirst == nullptr) {
-        *e = nullptr;
+        e = nullptr;
     }
     else {
-        UnlinkFirst(mFirst).MoveTo(e);
+        e = UnlinkFirst(mFirst);
     }
     return NOERROR;
 }
@@ -590,49 +582,39 @@ ECode LinkedList::OfferLast(
 }
 
 ECode LinkedList::PeekFirst(
-    /* [out] */ IInterface** e)
+    /* [out] */ AutoPtr<IInterface>& e)
 {
-    VALIDATE_NOT_NULL(e);
-
-    *e = (mFirst == nullptr) ? nullptr : mFirst->mItem;
-    REFCOUNT_ADD(*e);
+    e = (mFirst == nullptr) ? nullptr : mFirst->mItem;
     return NOERROR;
 }
 
 ECode LinkedList::PeekLast(
-    /* [out] */ IInterface** e)
+    /* [out] */ AutoPtr<IInterface>& e)
 {
-    VALIDATE_NOT_NULL(e);
-
-    *e = (mLast == nullptr) ? nullptr : mLast->mItem;
-    REFCOUNT_ADD(*e);
+    e = (mLast == nullptr) ? nullptr : mLast->mItem;
     return NOERROR;
 }
 
 ECode LinkedList::PollFirst(
-    /* [out] */ IInterface** e)
+    /* [out] */ AutoPtr<IInterface>& e)
 {
-    VALIDATE_NOT_NULL(e);
-
     if (mFirst == nullptr) {
-        *e = nullptr;
+        e = nullptr;
     }
     else {
-        UnlinkFirst(mFirst).MoveTo(e);
+        e = UnlinkFirst(mFirst);
     }
     return NOERROR;
 }
 
 ECode LinkedList::PollLast(
-    /* [out] */ IInterface** e)
+    /* [out] */ AutoPtr<IInterface>& e)
 {
-    VALIDATE_NOT_NULL(e);
-
     if (mLast == nullptr) {
-        *e = nullptr;
+        e = nullptr;
     }
     else {
-        UnlinkLast(mLast).MoveTo(e);
+        e = UnlinkLast(mLast);
     }
     return NOERROR;
 }
@@ -644,9 +626,9 @@ ECode LinkedList::Push(
 }
 
 ECode LinkedList::Pop(
-    /* [out] */ IInterface** e)
+    /* [out] */ AutoPtr<IInterface>& e)
 {
-    return RemoveFirst(e);
+    return RemoveFirst(&e);
 }
 
 ECode LinkedList::RemoveFirstOccurrence(
@@ -775,11 +757,9 @@ LinkedList::ListItr::ListItr(
 }
 
 ECode LinkedList::ListItr::HasNext(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
-    *result = mNextIndex < mOwner->mSize;
+    result = mNextIndex < mOwner->mSize;
     return NOERROR;
 }
 
@@ -788,7 +768,7 @@ ECode LinkedList::ListItr::Next(
 {
     FAIL_RETURN(CheckForComodification());
     Boolean hasNext;
-    if (HasNext(&hasNext), !hasNext) {
+    if (HasNext(hasNext), !hasNext) {
         return E_NO_SUCH_ELEMENT_EXCEPTION;
     }
 
@@ -916,9 +896,9 @@ LinkedList::DescendingIterator::DescendingIterator(
 }
 
 ECode LinkedList::DescendingIterator::HasNext(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    return mItr->HasPrevious(result);
+    return mItr->HasPrevious(&result);
 }
 
 ECode LinkedList::DescendingIterator::Next(

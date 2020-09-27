@@ -50,8 +50,9 @@ ECode CharacterIteratorFieldDelegate::Formatted(
             asIndex -= 1;
 
             while (start < index) {
-                AutoPtr<IAttributedString> as;
-                mAttributedStrings->Get(asIndex--, (IInterface**)&as);
+                AutoPtr<IInterface> v;
+                mAttributedStrings->Get(asIndex--, v);
+                IAttributedString* as = IAttributedString::Probe(v);
                 Integer newIndex = index - CAttributedString::From(as)->GetLength();
                 Integer aStart = Math::Max(0, start - newIndex);
 
@@ -108,10 +109,10 @@ ECode CharacterIteratorFieldDelegate::GetIterator(
     Array<IAttributedCharacterIterator*> iterators(iCount);
 
     for (Integer counter = 0; counter < iCount; counter++) {
-        AutoPtr<IAttributedString> as;
-        mAttributedStrings->Get(counter, (IInterface**)&as);
+        AutoPtr<IInterface> as;
+        mAttributedStrings->Get(counter, as);
         AutoPtr<IAttributedCharacterIterator> ait;
-        FAIL_RETURN(as->GetIterator(ait));
+        FAIL_RETURN(IAttributedString::Probe(as)->GetIterator(ait));
         iterators.Set(counter, ait);
     }
     AutoPtr<IAttributedString> astring;

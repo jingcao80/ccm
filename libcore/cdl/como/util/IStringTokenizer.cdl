@@ -30,10 +30,10 @@ interface IStringTokenizer
         [out] Integer* number);
 
     HasMoreElements(
-        [out] Boolean* hasMore);
+        [out] Boolean& hasMore);
 
     HasMoreTokens(
-        [out] Boolean* hasMore);
+        [out] Boolean& hasMore);
 
     NextElement(
         [out] IInterface** element = nullptr);

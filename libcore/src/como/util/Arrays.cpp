@@ -183,7 +183,7 @@ Integer Arrays::BinarySearch0(
         Integer mid = ((UInteger)(low + high)) >> 1;
         IInterface* midVal = a[mid];
         Integer cmp;
-        c->Compare(midVal, key, &cmp);
+        c->Compare(midVal, key, cmp);
         if (cmp < 0) {
             low = mid + 1;
         }
@@ -565,7 +565,7 @@ public:
 
     ECode Get(
         /* [in] */ Integer index,
-        /* [out] */ IInterface** obj) override;
+        /* [out] */ AutoPtr<IInterface>& obj) override;
 
     ECode Set(
         /* [in] */ Integer index,
@@ -574,7 +574,7 @@ public:
 
     ECode IndexOf(
         /* [in] */ IInterface* obj,
-        /* [out] */ Integer* index) override;
+        /* [out] */ Integer& index) override;
 
     ECode Contains(
         /* [in] */ IInterface* obj,
@@ -618,11 +618,9 @@ ECode ArraysArrayList::ToArray(
 
 ECode ArraysArrayList::Get(
     /* [in] */ Integer index,
-    /* [out] */ IInterface** obj)
+    /* [out] */ AutoPtr<IInterface>& obj)
 {
-    VALIDATE_NOT_NULL(obj);
-
-    *obj = mA[index];
+    obj = mA[index];
     return NOERROR;
 }
 
@@ -641,25 +639,23 @@ ECode ArraysArrayList::Set(
 
 ECode ArraysArrayList::IndexOf(
     /* [in] */ IInterface* obj,
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
-    VALIDATE_NOT_NULL(index);
-
     for (Long i = 0; i < mA.GetLength(); i++) {
         if (obj == nullptr) {
             if (mA[i] == nullptr) {
-                *index = i;
+                index = i;
                 return NOERROR;
             }
         }
         else {
             if (Object::Equals(obj, mA[i])) {
-                *index = i;
+                index = i;
                 return NOERROR;
             }
         }
     }
-    *index = -1;
+    index = -1;
     return NOERROR;
 }
 
@@ -668,7 +664,7 @@ ECode ArraysArrayList::Contains(
     /* [out] */ Boolean& result)
 {
     Integer index;
-    IndexOf(obj, &index);
+    IndexOf(obj, index);
     result = index != -1;
     return NOERROR;
 }

@@ -89,57 +89,57 @@ public:
         /* [out] */ Long* date);
 
     ECode GetYear(
-        /* [out] */ Integer* year) override;
+        /* [out] */ Integer& year) override;
 
     ECode SetYear(
         /* [in] */ Integer year) override;
 
     ECode GetMonth(
-        /* [out] */ Integer* month) override;
+        /* [out] */ Integer& month) override;
 
     ECode SetMonth(
         /* [in] */ Integer month) override;
 
     ECode GetDate(
-        /* [out] */ Integer* date) override;
+        /* [out] */ Integer& date) override;
 
     ECode SetDate(
         /* [in] */ Integer date) override;
 
     ECode GetDay(
-        /* [out] */ Integer* day) override;
+        /* [out] */ Integer& day) override;
 
     ECode GetHours(
-        /* [out] */ Integer* hours) override;
+        /* [out] */ Integer& hours) override;
 
     ECode SetHours(
         /* [in] */ Integer hours) override;
 
     ECode GetMinutes(
-        /* [out] */ Integer* minutes) override;
+        /* [out] */ Integer& minutes) override;
 
     ECode SetMinutes(
         /* [in] */ Integer minutes) override;
 
     ECode GetSeconds(
-        /* [out] */ Integer* seconds) override;
+        /* [out] */ Integer& seconds) override;
 
     ECode SetSeconds(
         /* [in] */ Integer seconds) override;
 
     ECode GetTime(
-        /* [out] */ Long* time) override;
+        /* [out] */ Long& time) override;
 
     ECode SetTime(
         /* [in] */ Long time) override;
 
     ECode Before(
         /* [in] */ IDate* when,
-        /* [out] */ Boolean* before) override;
+        /* [out] */ Boolean& before) override;
 
     ECode After(
         /* [in] */ IDate* when,
-        /* [out] */ Boolean* after) override;
+        /* [out] */ Boolean& after) override;
 
     ECode Equals(
         /* [in] */ IInterface* obj,
@@ -159,13 +159,13 @@ public:
         /* [out] */ String& desc) override;
 
     ECode ToLocaleString(
-        /* [out] */ String* str) override;
+        /* [out] */ String& str) override;
 
     ECode ToGMTString(
-        /* [out] */ String* str) override;
+        /* [out] */ String& str) override;
 
     ECode GetTimezoneOffset(
-        /* [out] */ Integer* tzOffset) override;
+        /* [out] */ Integer& tzOffset) override;
 
     static Date* From(
         /* [in] */ IDate* date);

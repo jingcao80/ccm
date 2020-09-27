@@ -74,7 +74,7 @@ interface IConcurrentLinkedQueue
         [out] IInterface&& head);
 
     Poll(
-        [out] IInterface** head = nullptr);
+        [out] IInterface&& head);
 
     Remove(
         [out] IInterface** head = nullptr);

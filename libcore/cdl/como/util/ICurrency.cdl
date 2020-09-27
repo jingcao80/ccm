@@ -26,27 +26,27 @@ namespace util {
 interface ICurrency
 {
     GetCurrencyCode(
-        [out] String* currency);
+        [out] String& currency);
 
     GetDefaultFractionDigits(
-        [out] Integer* digits);
+        [out] Integer& digits);
 
     GetDisplayName(
-        [out] String* displayName);
+        [out] String& displayName);
 
     GetDisplayName(
         [in] ILocale* locale,
-        [out] String* displayName);
+        [out] String& displayName);
 
     GetNumericCode(
-        [out] Integer* numericCode);
+        [out] Integer& numericCode);
 
     GetSymbol(
-        [out] String* symbol);
+        [out] String& symbol);
 
     GetSymbol(
         [in] ILocale* locale,
-        [out] String* symbol);
+        [out] String& symbol);
 }
 
 }

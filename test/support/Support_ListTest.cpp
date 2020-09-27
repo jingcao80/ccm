@@ -39,7 +39,7 @@ ECode Support_ListTest::RunTest()
     Integer hashCode = 1;
     for (Integer counter = 0; counter < 100; counter++) {
         AutoPtr<IInterface> elem;
-        mList->Get(counter, &elem);
+        mList->Get(counter, elem);
         hashCode = 31 * hashCode + Object::GetHashCode(elem);
         AutoPtr<IInteger> intObj;
         CInteger::New(counter, IID_IInteger, (IInterface**)&intObj);
@@ -53,17 +53,15 @@ ECode Support_ListTest::RunTest()
     AutoPtr<IInteger> othNewInt;
     CInteger::New(1000, IID_IInteger, (IInterface**)&othNewInt);
     AutoPtr<IInterface> elem;
-    mList->Get(50, &elem);
+    mList->Get(50, elem);
     EXPECT_TRUE(Object::Equals(elem, othNewInt));
     othNewInt = nullptr;
     CInteger::New(50, IID_IInteger, (IInterface**)&othNewInt);
-    elem = nullptr;
-    mList->Get(51, &elem);
+    mList->Get(51, elem);
     EXPECT_TRUE(Object::Equals(elem, othNewInt));
     othNewInt = nullptr;
     CInteger::New(49, IID_IInteger, (IInterface**)&othNewInt);
-    elem = nullptr;
-    mList->Get(49, &elem);
+    mList->Get(49, elem);
     EXPECT_TRUE(Object::Equals(elem, othNewInt));
 
     newInt = nullptr;
@@ -71,35 +69,29 @@ ECode Support_ListTest::RunTest()
     mList->Set(50, newInt);
     othNewInt = nullptr;
     CInteger::New(2000, IID_IInteger, (IInterface**)&othNewInt);
-    elem = nullptr;
-    mList->Get(50, &elem);
+    mList->Get(50, elem);
     EXPECT_TRUE(Object::Equals(elem, othNewInt));
     othNewInt = nullptr;
     CInteger::New(50, IID_IInteger, (IInterface**)&othNewInt);
-    elem = nullptr;
-    mList->Get(51, &elem);
+    mList->Get(51, elem);
     EXPECT_TRUE(Object::Equals(elem, othNewInt));
     othNewInt = nullptr;
     CInteger::New(49, IID_IInteger, (IInterface**)&othNewInt);
-    elem = nullptr;
-    mList->Get(49, &elem);
+    mList->Get(49, elem);
     EXPECT_TRUE(Object::Equals(elem, othNewInt));
 
     mList->Remove(50);
     othNewInt = nullptr;
     CInteger::New(50, IID_IInteger, (IInterface**)&othNewInt);
-    elem = nullptr;
-    mList->Get(50, &elem);
+    mList->Get(50, elem);
     EXPECT_TRUE(Object::Equals(elem, othNewInt));
     othNewInt = nullptr;
     CInteger::New(51, IID_IInteger, (IInterface**)&othNewInt);
-    elem = nullptr;
-    mList->Get(51, &elem);
+    mList->Get(51, elem);
     EXPECT_TRUE(Object::Equals(elem, othNewInt));
     othNewInt = nullptr;
     CInteger::New(49, IID_IInteger, (IInterface**)&othNewInt);
-    elem = nullptr;
-    mList->Get(49, &elem);
+    mList->Get(49, elem);
     EXPECT_TRUE(Object::Equals(elem, othNewInt));
 
     AutoPtr<IList> myList;
@@ -117,49 +109,41 @@ ECode Support_ListTest::RunTest()
     mList->AddAll(50, ICollection::Probe(myList));
     othNewInt = nullptr;
     CInteger::New(500, IID_IInteger, (IInterface**)&othNewInt);
-    elem = nullptr;
-    mList->Get(50, &elem);
+    mList->Get(50, elem);
     EXPECT_TRUE(Object::Equals(elem, othNewInt));
     othNewInt = nullptr;
     CInteger::New(501, IID_IInteger, (IInterface**)&othNewInt);
-    elem = nullptr;
-    mList->Get(51, &elem);
+    mList->Get(51, elem);
     EXPECT_TRUE(Object::Equals(elem, othNewInt));
     othNewInt = nullptr;
     CInteger::New(502, IID_IInteger, (IInterface**)&othNewInt);
-    elem = nullptr;
-    mList->Get(52, &elem);
+    mList->Get(52, elem);
     EXPECT_TRUE(Object::Equals(elem, othNewInt));
     othNewInt = nullptr;
     CInteger::New(50, IID_IInteger, (IInterface**)&othNewInt);
-    elem = nullptr;
-    mList->Get(53, &elem);
+    mList->Get(53, elem);
     EXPECT_TRUE(Object::Equals(elem, othNewInt));
     othNewInt = nullptr;
     CInteger::New(49, IID_IInteger, (IInterface**)&othNewInt);
-    elem = nullptr;
-    mList->Get(49, &elem);
+    mList->Get(49, elem);
     EXPECT_TRUE(Object::Equals(elem, othNewInt));
 
     AutoPtr<IList> mySubList;
-    mList->SubList(50, 53, &mySubList);
+    mList->SubList(50, 53, mySubList);
     Integer size;
     mySubList->GetSize(size);
     EXPECT_EQ(3, size);
     othNewInt = nullptr;
     CInteger::New(500, IID_IInteger, (IInterface**)&othNewInt);
-    elem = nullptr;
-    mySubList->Get(0, &elem);
+    mySubList->Get(0, elem);
     EXPECT_TRUE(Object::Equals(elem, othNewInt));
     othNewInt = nullptr;
     CInteger::New(501, IID_IInteger, (IInterface**)&othNewInt);
-    elem = nullptr;
-    mySubList->Get(1, &elem);
+    mySubList->Get(1, elem);
     EXPECT_TRUE(Object::Equals(elem, othNewInt));
     othNewInt = nullptr;
     CInteger::New(502, IID_IInteger, (IInterface**)&othNewInt);
-    elem = nullptr;
-    mySubList->Get(2, &elem);
+    mySubList->Get(2, elem);
     EXPECT_TRUE(Object::Equals(elem, othNewInt));
 
     TestListIterator(mySubList);
@@ -170,9 +154,9 @@ ECode Support_ListTest::RunTest()
 
     TestListIterator(mList);
     AutoPtr<IListIterator> li;
-    mList->GetListIterator(&li);
+    mList->GetListIterator(li);
     Boolean hasNext;
-    for (Integer counter = 0; li->HasNext(&hasNext), hasNext; counter++) {
+    for (Integer counter = 0; li->HasNext(hasNext), hasNext; counter++) {
         AutoPtr<IInterface> elem;
         li->Next(&elem);
         othNewInt = nullptr;
@@ -189,16 +173,15 @@ ECode Support_ListTest::TestListIterator(
     /* [in] */ IList* list)
 {
     AutoPtr<IListIterator> li;
-    list->GetListIterator(1, &li);
+    list->GetListIterator(1, li);
     AutoPtr<IInterface> elem1, elem2;
     li->Next(&elem1);
-    list->Get(1, &elem2);
+    list->Get(1, elem2);
     EXPECT_TRUE(elem1 == elem2);
 
     Integer orgSize;
     list->GetSize(orgSize);
-    li = nullptr;
-    list->GetListIterator(&li);
+    list->GetListIterator(li);
     for (Integer i = 0; i <= orgSize; i++) {
         if (i == 0) {
             Boolean hasPrevious;
@@ -212,12 +195,12 @@ ECode Support_ListTest::TestListIterator(
         }
         if (i == orgSize) {
             Boolean hasNext;
-            li->HasNext(&hasNext);
+            li->HasNext(hasNext);
             EXPECT_TRUE(!hasNext);
         }
         else {
             Boolean hasNext;
-            li->HasNext(&hasNext);
+            li->HasNext(hasNext);
             EXPECT_TRUE(hasNext);
         }
         Integer idx;
@@ -226,9 +209,9 @@ ECode Support_ListTest::TestListIterator(
         li->GetPreviousIndex(&idx);
         EXPECT_EQ(idx, i - 1);
 
-        elem1 = elem2 = nullptr;
+        elem1 = nullptr;
         li->Next(&elem1);
-        ECode ec = list->Get(i, &elem2);
+        ECode ec = list->Get(i, elem2);
         EXPECT_TRUE(elem1 == elem2);
         if (i == orgSize) {
             EXPECT_TRUE(FAILED(ec));
@@ -239,9 +222,9 @@ ECode Support_ListTest::TestListIterator(
     }
 
     for (Integer i = orgSize - 1; i >= 0; i--) {
-        elem1 = elem2 = nullptr;
+        elem1 = nullptr;
         li->Previous(&elem1);
-        list->Get(i, &elem2);
+        list->Get(i, elem2);
         EXPECT_TRUE(elem1 == elem2);
         Integer idx;
         li->GetNextIndex(&idx);
@@ -259,7 +242,7 @@ ECode Support_ListTest::TestListIterator(
             EXPECT_TRUE(hasPrevious);
         }
         Boolean hasNext;
-        li->HasNext(&hasNext);
+        li->HasNext(hasNext);
         EXPECT_TRUE(hasNext);
     }
     ECode ec = li->Previous();
@@ -280,8 +263,7 @@ ECode Support_ListTest::TestListIterator(
     EXPECT_EQ(0, idx);
     AutoPtr<IInterface> next;
     li->Next(&next);
-    elem1 = nullptr;
-    list->Get(1, &elem1);
+    list->Get(1, elem1);
     EXPECT_TRUE(next == elem1);
     li->Add(add2);
     AutoPtr<IInterface> previous;
@@ -299,17 +281,17 @@ ECode Support_ListTest::TestListIterator(
     EXPECT_EQ(2, idx);
     li->GetPreviousIndex(&idx);
     EXPECT_EQ(1, idx);
-    elem1 = elem2 = nullptr;
+    elem1 = nullptr;
     li->Previous(&elem1);
-    list->Get(1, &elem2);
+    list->Get(1, elem2);
     EXPECT_TRUE(elem1 == elem2);
-    elem1 = elem2 = nullptr;
+    elem1 = nullptr;
     li->Previous(&elem1);
-    list->Get(0, &elem2);
+    list->Get(0, elem2);
     EXPECT_TRUE(elem1 == elem2);
     elem1 = elem2 = nullptr;
     li->Next(&elem1);
-    list->Get(0, &elem2);
+    list->Get(0, elem2);
     EXPECT_TRUE(elem1 == elem2);
 
     li->Remove();
@@ -317,7 +299,7 @@ ECode Support_ListTest::TestListIterator(
     li->HasPrevious(&hasPrevious);
     EXPECT_TRUE(!hasPrevious);
     Boolean hasNext;
-    li->HasNext(&hasNext);
+    li->HasNext(hasNext);
     EXPECT_TRUE(hasNext);
     list->GetSize(size);
     EXPECT_TRUE(size == orgSize);

@@ -222,11 +222,9 @@ ECode Vector::GetElements(
         }
 
         ECode HasMoreElements(
-            /* [out] */ Boolean* result) override
+            /* [out] */ Boolean& result) override
         {
-            VALIDATE_NOT_NULL(result);
-
-            *result = mCount < mOwner->mElementCount;
+            result = mCount < mOwner->mElementCount;
             return NOERROR;
         }
 
@@ -535,17 +533,14 @@ AutoPtr<IInterface> Vector::ElementData(
 
 ECode Vector::Get(
     /* [in] */ Integer index,
-    /* [out] */ IInterface** obj)
+    /* [out] */ AutoPtr<IInterface>& obj)
 {
-    VALIDATE_NOT_NULL(obj);
-
     AutoLock lock(this);
 
     if (index >= mElementCount) {
         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
-    *obj = mElementData[index];
-    REFCOUNT_ADD(*obj);
+    obj = mElementData[index];
     return NOERROR;
 }
 
@@ -733,7 +728,7 @@ ECode Vector::SubList(
     AutoLock lock(this);
 
     AutoPtr<IList> list;
-    FAIL_RETURN(AbstractList::SubList(fromIndex, toIndex, &list));
+    FAIL_RETURN(AbstractList::SubList(fromIndex, toIndex, list));
     Collections::CreateSynchronizedList(list, this).MoveTo(subList);
     return NOERROR;
 }
@@ -809,11 +804,9 @@ Vector::Itr::Itr(
 {}
 
 ECode Vector::Itr::HasNext(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
-    *result = mCursor < mLimit;
+    result = mCursor < mLimit;
     return NOERROR;
 }
 
@@ -957,7 +950,7 @@ ECode Vector::ListItr::Next(
 }
 
 ECode Vector::ListItr::HasNext(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return Itr::HasNext(result);
 }

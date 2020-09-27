@@ -215,7 +215,7 @@ AutoPtr<TreeMap::TreeMapEntry> TreeMap::GetEntryUsingComparator(
         TreeMapEntry* p = mRoot;
         while (p != nullptr) {
             Integer cmp;
-            cpr->Compare(key, p->mKey, &cmp);
+            cpr->Compare(key, p->mKey, cmp);
             if (cmp < 0) {
                 p = p->mLeft;
             }
@@ -414,7 +414,7 @@ ECode TreeMap::Put(
         if (mComparator != nullptr) {
             if (key == nullptr) {
                 Integer cmp;
-                FAIL_RETURN(mComparator->Compare(key, key, &cmp));
+                FAIL_RETURN(mComparator->Compare(key, key, cmp));
             }
         }
         else {
@@ -443,7 +443,7 @@ ECode TreeMap::Put(
     if (cpr != nullptr) {
         do {
             parent = t;
-            cpr->Compare(key, t->mKey, &cmp);
+            cpr->Compare(key, t->mKey, cmp);
             if (cmp < 0) {
                 t = t->mLeft;
             }
@@ -856,7 +856,7 @@ Integer TreeMap::Compare(
         IComparable::Probe(k1)->CompareTo(k2, cmp);
     }
     else {
-        mComparator->Compare(k1, k2, &cmp);
+        mComparator->Compare(k1, k2, cmp);
     }
     return cmp;
 }
@@ -1734,11 +1734,9 @@ TreeMap::PrivateEntryIterator::PrivateEntryIterator(
 {}
 
 ECode TreeMap::PrivateEntryIterator::HasNext(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
-    *result = mNext != nullptr;
+    result = mNext != nullptr;
     return NOERROR;
 }
 
@@ -2387,7 +2385,7 @@ ECode TreeMap::NavigableSubMap::EntrySetView::GetSize(
         AutoPtr<IIterator> i;
         GetIterator(i);
         Boolean hasNext;
-        while (i->HasNext(&hasNext), hasNext) {
+        while (i->HasNext(hasNext), hasNext) {
             mSize++;
             i->Next();
         }
@@ -2499,11 +2497,9 @@ TreeMap::NavigableSubMap::SubMapIterator::SubMapIterator(
 }
 
 ECode TreeMap::NavigableSubMap::SubMapIterator::HasNext(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
-    *result = mNext != nullptr && (!IInterface::Equals(mNext->mKey, mFenceKey));
+    result = mNext != nullptr && (!IInterface::Equals(mNext->mKey, mFenceKey));
     return NOERROR;
 }
 

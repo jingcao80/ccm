@@ -562,7 +562,7 @@ ECode SimpleTimeZone::InDaylightTime(
     VALIDATE_NOT_NULL(result);
 
     Long time;
-    date->GetTime(&time);
+    date->GetTime(time);
     Integer offset;
     GetOffset(time, &offset);
     *result = offset != mRawOffset;

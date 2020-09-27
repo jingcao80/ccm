@@ -387,9 +387,9 @@ ECode Properties::Store0(
     {
         AutoLock lock(this);
         AutoPtr<IEnumeration> e;
-        GetKeys(&e);
+        GetKeys(e);
         Boolean hasMore;
-        while (e->HasMoreElements(&hasMore), hasMore) {
+        while (e->HasMoreElements(hasMore), hasMore) {
             AutoPtr<IInterface> ko, vo;
             e->NextElement(&ko);
             String key = CoreUtils::Unbox(ICharSequence::Probe(ko));
@@ -460,10 +460,8 @@ ECode Properties::GetProperty(
 }
 
 ECode Properties::PropertyNames(
-    /* [out] */ IEnumeration** names)
+    /* [out] */ AutoPtr<IEnumeration>& names)
 {
-    VALIDATE_NOT_NULL(names);
-
     AutoPtr<IHashtable> h;
     CHashtable::New(IID_IHashtable, (IInterface**)&h);
     Enumerate(h);
@@ -487,9 +485,9 @@ ECode Properties::List(
     CHashtable::New(IID_IHashtable, (IInterface**)&h);
     Enumerate(h);
     AutoPtr<IEnumeration> e;
-    h->GetKeys(&e);
+    h->GetKeys(e);
     Boolean hasMore;
-    while (e->HasMoreElements(&hasMore), hasMore) {
+    while (e->HasMoreElements(hasMore), hasMore) {
         AutoPtr<IInterface> okey;
         e->NextElement(&okey);
         String key = CoreUtils::Unbox(ICharSequence::Probe(okey));
@@ -512,9 +510,9 @@ ECode Properties::List(
     CHashtable::New(IID_IHashtable, (IInterface**)&h);
     Enumerate(h);
     AutoPtr<IEnumeration> e;
-    h->GetKeys(&e);
+    h->GetKeys(e);
     Boolean hasMore;
-    while (e->HasMoreElements(&hasMore), hasMore) {
+    while (e->HasMoreElements(hasMore), hasMore) {
         AutoPtr<IInterface> okey;
         e->NextElement(&okey);
         String key = CoreUtils::Unbox(ICharSequence::Probe(okey));
@@ -536,9 +534,9 @@ void Properties::Enumerate(
         ((Properties*)mDefaults.Get())->Enumerate(h);
     }
     AutoPtr<IEnumeration> e;
-    GetKeys(&e);
+    GetKeys(e);
     Boolean hasMore;
-    while (e->HasMoreElements(&hasMore), hasMore) {
+    while (e->HasMoreElements(hasMore), hasMore) {
         AutoPtr<IInterface> okey;
         e->NextElement(&okey);
         AutoPtr<IInterface> oval;
@@ -554,9 +552,9 @@ void Properties::EnumerateStringProperties(
         ((Properties*)mDefaults.Get())->EnumerateStringProperties(h);
     }
     AutoPtr<IEnumeration> e;
-    GetKeys(&e);
+    GetKeys(e);
     Boolean hasMore;
-    while (e->HasMoreElements(&hasMore), hasMore) {
+    while (e->HasMoreElements(hasMore), hasMore) {
         AutoPtr<IInterface> okey;
         e->NextElement(&okey);
         AutoPtr<IInterface> oval;

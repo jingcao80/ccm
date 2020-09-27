@@ -141,11 +141,11 @@ interface ICalendar
 
     After(
         [in] IInterface* when,
-        [out] Boolean* after);
+        [out] Boolean& after);
 
     Before(
         [in] IInterface* when,
-        [out] Boolean* before);
+        [out] Boolean& before);
 
     Clear();
 
@@ -154,77 +154,77 @@ interface ICalendar
 
     Get(
         [in] Integer field,
-        [out] Integer* value);
+        [out] Integer& value);
 
     GetActualMaximum(
         [in] Integer field,
-        [out] Integer* value);
+        [out] Integer& value);
 
     GetActualMinimum(
         [in] Integer field,
-        [out] Integer* value);
+        [out] Integer& value);
 
     GetCalendarType(
-        [out] String* type);
+        [out] String& type);
 
     GetDisplayName(
         [in] Integer field,
         [in] Integer style,
         [in] ILocale* locale,
-        [out] String* name);
+        [out] String& name);
 
     GetDisplayNames(
         [in] Integer field,
         [in] Integer style,
         [in] ILocale* locale,
-        [out] IMap** names);
+        [out] IMap&& names);
 
     GetFirstDayOfWeek(
-        [out] Integer* value);
+        [out] Integer& value);
 
     GetGreatestMinimum(
         [in] Integer field,
-        [out] Integer* value);
+        [out] Integer& value);
 
     GetLeastMaximum(
         [in] Integer field,
-        [out] Integer* value);
+        [out] Integer& value);
 
     GetMaximum(
         [in] Integer field,
-        [out] Integer* value);
+        [out] Integer& value);
 
     GetMinimalDaysInFirstWeek(
-        [out] Integer* value);
+        [out] Integer& value);
 
     GetMinimum(
         [in] Integer field,
-        [out] Integer* value);
+        [out] Integer& value);
 
     GetTime(
-        [out] IDate** date);
+        [out] IDate&& date);
 
     GetTimeInMillis(
-        [out] Long* time);
+        [out] Long& time);
 
     GetTimeZone(
-        [out] ITimeZone** zone);
+        [out] ITimeZone&& zone);
 
     GetWeeksInWeekYear(
-        [out] Integer* weeks);
+        [out] Integer& weeks);
 
     GetWeekYear(
-        [out] Integer* weekYear);
+        [out] Integer& weekYear);
 
     IsLenient(
-        [out] Boolean* lenient);
+        [out] Boolean& lenient);
 
     IsSet(
         [in] Integer field,
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     IsWeekDateSupported(
-        [out] Boolean* supported);
+        [out] Boolean& supported);
 
     Roll(
         [in] Integer field,

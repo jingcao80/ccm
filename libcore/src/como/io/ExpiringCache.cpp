@@ -133,7 +133,7 @@ void ExpiringCache::Cleanup()
     AutoPtr<IIterator> it;
     keySet->GetIterator(it);
     Boolean hasNext;
-    while (it->HasNext(&hasNext), hasNext) {
+    while (it->HasNext(hasNext), hasNext) {
         AutoPtr<IInterface> obj;
         it->Next(&obj);
         keys[i++] = CoreUtils::Unbox(ICharSequence::Probe(obj));

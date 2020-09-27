@@ -2043,20 +2043,16 @@ void ConcurrentHashMap::Traverser::RecoverState(
 //-------------------------------------------------------------------------
 
 ECode ConcurrentHashMap::BaseIterator::HasNext(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
-    *result = mNext != nullptr;
+    result = mNext != nullptr;
     return NOERROR;
 }
 
 ECode ConcurrentHashMap::BaseIterator::HasMoreElements(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
-    *result = mNext != nullptr;
+    result = mNext != nullptr;
     return NOERROR;
 }
 
@@ -2098,7 +2094,7 @@ ECode ConcurrentHashMap::KeyIterator::NextElement(
 }
 
 ECode ConcurrentHashMap::KeyIterator::HasNext(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return BaseIterator::HasNext(result);
 }
@@ -2109,7 +2105,7 @@ ECode ConcurrentHashMap::KeyIterator::Remove()
 }
 
 ECode ConcurrentHashMap::KeyIterator::HasMoreElements(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return BaseIterator::HasMoreElements(result);
 }
@@ -2141,7 +2137,7 @@ ECode ConcurrentHashMap::ValueIterator::NextElement(
 }
 
 ECode ConcurrentHashMap::ValueIterator::HasNext(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return BaseIterator::HasNext(result);
 }
@@ -2152,7 +2148,7 @@ ECode ConcurrentHashMap::ValueIterator::Remove()
 }
 
 ECode ConcurrentHashMap::ValueIterator::HasMoreElements(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return BaseIterator::HasMoreElements(result);
 }
@@ -2180,7 +2176,7 @@ ECode ConcurrentHashMap::EntryIterator::Next(
 }
 
 ECode ConcurrentHashMap::EntryIterator::HasNext(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return BaseIterator::HasNext(result);
 }
@@ -2361,7 +2357,7 @@ ECode ConcurrentHashMap::CollectionView::ToString(
         else {
             sb->Append(Object::ToString(e));
         }
-        if (it->HasNext(&hasNext), !hasNext) {
+        if (it->HasNext(hasNext), !hasNext) {
             break;
         }
         sb->Append(U',');

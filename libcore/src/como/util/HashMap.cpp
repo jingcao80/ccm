@@ -131,7 +131,7 @@ void HashMap::PutMapEntries(
         AutoPtr<IIterator> it;
         entries->GetIterator(it);
         Boolean hasNext;
-        while (it->HasNext(&hasNext), hasNext) {
+        while (it->HasNext(hasNext), hasNext) {
             AutoPtr<IInterface> o;
             it->Next(&o);
             IMapEntry* e = IMapEntry::Probe(o);
@@ -845,11 +845,9 @@ HashMap::HashIterator::HashIterator(
 }
 
 ECode HashMap::HashIterator::HasNext(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
-    *result = mNext != nullptr;
+    result = mNext != nullptr;
     return NOERROR;
 }
 

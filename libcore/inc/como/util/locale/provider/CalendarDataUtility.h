@@ -38,7 +38,7 @@ public:
         /* [in] */ Integer value,
         /* [in] */ Integer style,
         /* [in] */ ILocale* locale,
-        /* [out] */ String* name);
+        /* [out] */ String& name);
 
     static ECode RetrieveCOMOTimeFieldValueName(
         /* [in] */ const String& id,
@@ -46,21 +46,21 @@ public:
         /* [in] */ Integer value,
         /* [in] */ Integer style,
         /* [in] */ ILocale* locale,
-        /* [out] */ String* name);
+        /* [out] */ String& name);
 
     static ECode RetrieveFieldValueNames(
         /* [in] */ const String& id,
         /* [in] */ Integer field,
         /* [in] */ Integer style,
         /* [in] */ ILocale* locale,
-        /* [out] */ IMap** names);
+        /* [out] */ AutoPtr<IMap>& names);
 
     static ECode RetrieveCOMOTimeFieldValueNames(
         /* [in] */ const String& id,
         /* [in] */ Integer field,
         /* [in] */ Integer style,
         /* [in] */ ILocale* locale,
-        /* [out] */ IMap** names);
+        /* [out] */ AutoPtr<IMap>& names);
 
 private:
     static ECode RetrieveFieldValueNamesImpl(
@@ -68,7 +68,7 @@ private:
         /* [in] */ Integer field,
         /* [in] */ Integer style,
         /* [in] */ ILocale* locale,
-        /* [out] */ IMap** names);
+        /* [out] */ AutoPtr<IMap>& names);
 
     static ECode GetNames(
         /* [in] */ const String& id,

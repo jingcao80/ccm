@@ -210,10 +210,8 @@ AutoPtr<IIterator> Charset::GetProviders()
         }
 
         ECode HasNext(
-            /* [out] */ Boolean* hasNext) override
+            /* [out] */ Boolean& hasNext) override
         {
-            VALIDATE_NOT_NULL(hasNext);
-
             return GetNext(hasNext);
         }
 
@@ -221,7 +219,7 @@ AutoPtr<IIterator> Charset::GetProviders()
             /* [out] */ IInterface** object = nullptr) override
         {
             Boolean hasNext;
-            if (GetNext(&hasNext), !hasNext) {
+            if (GetNext(hasNext), !hasNext) {
                 return E_NO_SUCH_ELEMENT_EXCEPTION;
             }
             if (object != nullptr) {
@@ -239,15 +237,15 @@ AutoPtr<IIterator> Charset::GetProviders()
 
     private:
         ECode GetNext(
-            /* [out] */ Boolean* hasNext)
+            /* [out] */ Boolean& hasNext)
         {
             while (mNext == nullptr) {
-                if (mI->HasNext(hasNext), !*hasNext) {
+                if (mI->HasNext(hasNext), !hasNext) {
                     return NOERROR;
                 }
                 FAIL_RETURN(mI->Next((IInterface**)&mNext));
             }
-            *hasNext = true;
+            hasNext = true;
             return NOERROR;
         }
 
@@ -323,7 +321,7 @@ ECode Charset::LookupViaProviders(
         {
             AutoPtr<IIterator> i = GetProviders();
             Boolean hasNext;
-            while (i->HasNext(&hasNext), hasNext) {
+            while (i->HasNext(hasNext), hasNext) {
                 AutoPtr<ICharsetProvider> cp;
                 i->Next((IInterface**)&cp);
                 AutoPtr<ICharset> cs;
@@ -445,7 +443,7 @@ void Charset::Put(
     /* [in] */ IMap* m)
 {
     Boolean hasNext;
-    while (i->HasNext(&hasNext), hasNext) {
+    while (i->HasNext(hasNext), hasNext) {
         AutoPtr<ICharset> cs;
         i->Next((IInterface**)&cs);
         String canonicalName;
@@ -515,7 +513,7 @@ ECode Charset::AvailableCharsets(
             }
             AutoPtr<IIterator> i = GetProviders();
             Boolean hasNext;
-            while(i->HasNext(&hasNext), hasNext) {
+            while(i->HasNext(hasNext), hasNext) {
                 AutoPtr<ICharsetProvider> cp;
                 i->Next((IInterface**)&cp);
                 AutoPtr<IIterator> it;

@@ -97,34 +97,28 @@ ECode Hashtable::IsEmpty(
 }
 
 ECode Hashtable::GetKeys(
-    /* [out] */ IEnumeration** keys)
+    /* [out] */ AutoPtr<IEnumeration>& keys)
 {
-    VALIDATE_NOT_NULL(keys);
-
     AutoLock lock(this);
     if (mCount == 0) {
-        *keys = Collections::GetEmptyEnumeration();
+        keys = Collections::GetEmptyEnumeration();
     }
     else {
-        *keys = new Enumerator(this, KEYS, false);
+        keys = new Enumerator(this, KEYS, false);
     }
-    REFCOUNT_ADD(*keys);
     return NOERROR;
 }
 
 ECode Hashtable::GetElements(
-    /* [out] */ IEnumeration** elements)
+    /* [out] */ AutoPtr<IEnumeration>& elements)
 {
-    VALIDATE_NOT_NULL(elements);
-
     AutoLock lock(this);
     if (mCount ==  0) {
-        *elements = Collections::GetEmptyEnumeration();
+        elements = Collections::GetEmptyEnumeration();
     }
     else {
-        *elements = new Enumerator(this, VALUES, false);
+        elements = new Enumerator(this, VALUES, false);
     }
-    REFCOUNT_ADD(*elements);
     return NOERROR;
 }
 
@@ -313,7 +307,7 @@ ECode Hashtable::PutAll(
     AutoPtr<IIterator> it;
     entries->GetIterator(it);
     Boolean hasNext;
-    while (it->HasNext(&hasNext), hasNext) {
+    while (it->HasNext(hasNext), hasNext) {
         AutoPtr<IInterface> obj;
         it->Next(&obj);
         AutoPtr<IInterface> key, value;
@@ -457,7 +451,7 @@ ECode Hashtable::Equals(
     AutoPtr<IIterator> it;
     entries->GetIterator(it);
     Boolean hasNext;
-    while (it->HasNext(&hasNext), hasNext) {
+    while (it->HasNext(hasNext), hasNext) {
         AutoPtr<IInterface> o;
         it->Next(&o);
         IMapEntry* e = IMapEntry::Probe(o);
@@ -804,10 +798,8 @@ String Hashtable::HashtableEntry::ToString()
 COMO_INTERFACE_IMPL_LIGHT_2(Hashtable::Enumerator, LightRefBase, IEnumeration, IIterator);
 
 ECode Hashtable::Enumerator::HasMoreElements(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     AutoPtr<HashtableEntry> e = mEntry;
     Integer i = mIndex;
     while (e == nullptr && i > 0) {
@@ -815,7 +807,7 @@ ECode Hashtable::Enumerator::HasMoreElements(
     }
     mEntry = e;
     mIndex = i;
-    *result = e != nullptr;
+    result = e != nullptr;
     return NOERROR;
 }
 
@@ -843,7 +835,7 @@ ECode Hashtable::Enumerator::NextElement(
 }
 
 ECode Hashtable::Enumerator::HasNext(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return HasMoreElements(result);
 }

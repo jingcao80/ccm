@@ -30,10 +30,10 @@ interface IDictionary
         [out] IInterface&& value);
 
     GetElements(
-        [out] IEnumeration** elements);
+        [out] IEnumeration&& elements);
 
     GetKeys(
-        [out] IEnumeration** keys);
+        [out] IEnumeration&& keys);
 
     GetSize(
         [out] Integer& size);

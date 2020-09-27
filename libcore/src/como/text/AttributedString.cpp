@@ -253,7 +253,7 @@ ECode AttributedString::Constructor(
         AutoPtr<IIterator> it;
         entrySet->GetIterator(it);
         Boolean hasNext;
-        while (it->HasNext(&hasNext), hasNext) {
+        while (it->HasNext(hasNext), hasNext) {
             AutoPtr<IMapEntry> entry;
             it->Next((IInterface**)&entry);
             AutoPtr<IInterface> key, value;
@@ -346,7 +346,7 @@ ECode AttributedString::Constructor(
     AutoPtr<IIterator> itr;
     keys->GetIterator(itr);
     Boolean hasNext;
-    while (itr->HasNext(&hasNext), hasNext) {
+    while (itr->HasNext(hasNext), hasNext) {
         AutoPtr<IAttributedCharacterIterator::IAttribute> attributeKey;
         itr->Next((IInterface**)&attributeKey);
         textAlias->SetIndex(textBeginIndex);
@@ -467,7 +467,7 @@ ECode AttributedString::AddAttributes(
     AutoPtr<IIterator> it;
     entrySet->GetIterator(it);
     Boolean hasNext;
-    while (it->HasNext(&hasNext), hasNext) {
+    while (it->HasNext(hasNext), hasNext) {
         AutoPtr<IMapEntry> entry;
         it->Next((IInterface**)&entry);
         AutoPtr<IInterface> key, value;
@@ -727,7 +727,7 @@ Boolean AttributedString::AttributeValuesMatch(
     AutoPtr<IIterator> it;
     attributes->GetIterator(it);
     Boolean hasNext;
-    while (it->HasNext(&hasNext), hasNext) {
+    while (it->HasNext(hasNext), hasNext) {
         AutoPtr<IAttributedCharacterIterator::IAttribute> key;
         it->Next((IInterface**)&key);
         if (!ValuesMatch(GetAttribute(key, runIndex1), GetAttribute(key, runIndex2))) {
@@ -780,7 +780,7 @@ void AttributedString::SetAttributes(
         entrySet->GetIterator(it);
 
         Boolean hasNext;
-        while (it->HasNext(&hasNext), hasNext) {
+        while (it->HasNext(hasNext), hasNext) {
             AutoPtr<IMapEntry> entry;
             it->Next((IInterface**)&entry);
 
@@ -1128,7 +1128,7 @@ ECode AttributedString::AttributedStringIterator::GetAllAttributeKeys(
                     currentRunAttributes->GetSize(j);
                     while (j-- > 0) {
                         AutoPtr<IInterface> value;
-                        currentRunAttributes->Get(j, &value);
+                        currentRunAttributes->Get(j, value);
                         keys->Add(value);
                     }
                 }
@@ -1220,17 +1220,17 @@ ECode AttributedString::AttributeMap::GetEntrySet(
         Integer size;
         mOwner->mRunAttributes[mRunIndex]->GetSize(size);
         for (Integer i = 0; i < size; i++) {
-            AutoPtr<IAttributedCharacterIterator::IAttribute> key;
-            AutoPtr<IInterface> value;
-            mOwner->mRunAttributes[mRunIndex]->Get(i, (IInterface**)&key);
-            mOwner->mRunAttributeValues[mRunIndex]->Get(i, &value);
+            AutoPtr<IInterface> key, value;
+            mOwner->mRunAttributes[mRunIndex]->Get(i, key);
+            mOwner->mRunAttributeValues[mRunIndex]->Get(i, value);
             if (IAnnotation::Probe(value) != nullptr) {
-                value = mOwner->GetAttributeCheckRange(key, mRunIndex, mBeginIndex, mEndIndex);
+                value = mOwner->GetAttributeCheckRange(IAttributedCharacterIterator::IAttribute::Probe(key),
+                        mRunIndex, mBeginIndex, mEndIndex);
                 if (value == nullptr) {
                     continue;
                 }
             }
-            AutoPtr<IMapEntry> entry = new AttributeEntry(key, value);
+            AutoPtr<IMapEntry> entry = new AttributeEntry(IAttributedCharacterIterator::IAttribute::Probe(key), value);
             set->Add(entry);
         }
     }

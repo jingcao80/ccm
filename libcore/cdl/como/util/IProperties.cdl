@@ -65,7 +65,7 @@ interface IProperties
         [in] IInputStream* instream);
 
     PropertyNames(
-        [out] IEnumeration** names);
+        [out] IEnumeration&& names);
 
     Save(
         [in] IOutputStream* outstream,

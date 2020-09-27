@@ -127,26 +127,22 @@ AutoPtr<ISet> Currency::GetAvailableCurrencies()
 }
 
 ECode Currency::GetCurrencyCode(
-    /* [out] */ String* currencyCode)
+    /* [out] */ String& currencyCode)
 {
-    VALIDATE_NOT_NULL(currencyCode);
-
-    *currencyCode = mCurrencyCode;
+    currencyCode = mCurrencyCode;
     return NOERROR;
 }
 
 ECode Currency::GetSymbol(
-    /* [out] */ String* symbol)
+    /* [out] */ String& symbol)
 {
     return GetSymbol(CLocale::GetDefault(CLocale::Category::GetDISPLAY()), symbol);
 }
 
 ECode Currency::GetSymbol(
     /* [in] */ ILocale* locale,
-    /* [out] */ String* symbol)
+    /* [out] */ String& symbol)
 {
-    VALIDATE_NOT_NULL(symbol);
-
     if (locale == nullptr) {
         Logger::E("Currency", "locale == null");
         return E_NULL_POINTER_EXCEPTION;
@@ -155,7 +151,7 @@ ECode Currency::GetSymbol(
     String country;
     locale->GetCountry(&country);
     if (country.IsEmpty()) {
-        *symbol = mCurrencyCode;
+        symbol = mCurrencyCode;
         return NOERROR;
     }
 
@@ -165,52 +161,48 @@ ECode Currency::GetSymbol(
     String intlCurrencySymbol;
     localeData->GetInternationalCurrencySymbol(&intlCurrencySymbol);
     if (intlCurrencySymbol.Equals(mCurrencyCode)) {
-        return localeData->GetCurrencySymbol(symbol);
+        return localeData->GetCurrencySymbol(&symbol);
     }
 
     // Try ICU, and fall back to the currency code if ICU has nothing.
-    *symbol = ICU::GetCurrencySymbol(locale, mCurrencyCode);
-    if (!symbol->IsNull()) return NOERROR;
+    symbol = ICU::GetCurrencySymbol(locale, mCurrencyCode);
+    if (!symbol.IsNull()) {
+        return NOERROR;
+    }
 
-    *symbol = mCurrencyCode;
+    symbol = mCurrencyCode;
     return NOERROR;
 }
 
 ECode Currency::GetDefaultFractionDigits(
-    /* [out] */ Integer* digits)
+    /* [out] */ Integer& digits)
 {
-    VALIDATE_NOT_NULL(digits);
-
     if (mCurrencyCode.Equals("XXX")) {
-        *digits = -1;
+        digits = -1;
         return NOERROR;
     }
-    *digits = ICU::GetCurrencyFractionDigits(mCurrencyCode);
+    digits = ICU::GetCurrencyFractionDigits(mCurrencyCode);
     return NOERROR;
 }
 
 ECode Currency::GetNumericCode(
-    /* [out] */ Integer* numericCode)
+    /* [out] */ Integer& numericCode)
 {
-    VALIDATE_NOT_NULL(numericCode);
-
-    *numericCode = ICU::GetCurrencyNumericCode(mCurrencyCode);
+    numericCode = ICU::GetCurrencyNumericCode(mCurrencyCode);
     return NOERROR;
 }
 
 ECode Currency::GetDisplayName(
-    /* [out] */ String* displayName)
+    /* [out] */ String& displayName)
 {
     return GetDisplayName(CLocale::GetDefault(CLocale::Category::GetDISPLAY()), displayName);
 }
 
 ECode Currency::GetDisplayName(
     /* [in] */ ILocale* locale,
-    /* [out] */ String* displayName)
+    /* [out] */ String& displayName)
 {
-    VALIDATE_NOT_NULL(displayName);
-
-    *displayName = ICU::GetCurrencyDisplayName(locale, mCurrencyCode);
+    displayName = ICU::GetCurrencyDisplayName(locale, mCurrencyCode);
     return NOERROR;
 }
 

@@ -75,7 +75,7 @@ private:
         COMO_INTERFACE_DECL();
 
         ECode HasNext(
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
 
         ECode Next(
             /* [out] */ IInterface** object = nullptr) override;
@@ -121,7 +121,7 @@ private:
         COMO_INTERFACE_DECL();
 
         ECode HasNext(
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
 
         ECode Next(
             /* [out] */ IInterface** object = nullptr) override;
@@ -141,10 +141,10 @@ public:
         /* [in] */ ICollection* c);
 
     ECode GetFirst(
-        /* [out] */ IInterface** e) override;
+        /* [out] */ AutoPtr<IInterface>& e) override;
 
     ECode GetLast(
-        /* [out] */ IInterface** e) override;
+        /* [out] */ AutoPtr<IInterface>& e) override;
 
     ECode RemoveFirst(
         /* [out] */ IInterface** e = nullptr) override;
@@ -216,7 +216,7 @@ public:
         /* [out] */ AutoPtr<IInterface>& e) override;
 
     ECode Poll(
-        /* [out] */ IInterface** e) override;
+        /* [out] */ AutoPtr<IInterface>& e) override;
 
     ECode Remove(
         /* [out] */ IInterface** e = nullptr) override;
@@ -234,22 +234,22 @@ public:
         /* [out] */ Boolean* changed = nullptr) override;
 
     ECode PeekFirst(
-        /* [out] */ IInterface** e) override;
+        /* [out] */ AutoPtr<IInterface>& e) override;
 
     ECode PeekLast(
-        /* [out] */ IInterface** e) override;
+        /* [out] */ AutoPtr<IInterface>& e) override;
 
     ECode PollFirst(
-        /* [out] */ IInterface** e) override;
+        /* [out] */ AutoPtr<IInterface>& e) override;
 
     ECode PollLast(
-        /* [out] */ IInterface** e) override;
+        /* [out] */ AutoPtr<IInterface>& e) override;
 
     ECode Push(
         /* [in] */ IInterface* e) override;
 
     ECode Pop(
-        /* [out] */ IInterface** e) override;
+        /* [out] */ AutoPtr<IInterface>& e) override;
 
     ECode RemoveFirstOccurrence(
         /* [in] */ IInterface* e,

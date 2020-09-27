@@ -120,7 +120,7 @@ public:
         /* [out] */ String* value) override;
 
     ECode PropertyNames(
-        /* [out] */ IEnumeration** names) override;
+        /* [out] */ AutoPtr<IEnumeration>& names) override;
 
     ECode StringPropertyNames(
         /* [out] */ AutoPtr<ISet>& names) override;

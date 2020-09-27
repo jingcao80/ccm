@@ -286,8 +286,8 @@ ECode DecimalFormatSymbols::SetCurrency(
         return E_NULL_POINTER_EXCEPTION;
     }
     mCurrency = currency;
-    currency->GetCurrencyCode(&mIntlCurrencySymbol);
-    currency->GetSymbol(mLocale, &mCurrencySymbol);
+    currency->GetCurrencyCode(mIntlCurrencySymbol);
+    currency->GetSymbol(mLocale, mCurrencySymbol);
     return NOERROR;
 }
 
@@ -491,13 +491,13 @@ void DecimalFormatSymbols::Initialize(
         mCurrency = Currency::GetInstance(locale);
     }
     if (mCurrency != nullptr) {
-        mCurrency->GetCurrencyCode(&mIntlCurrencySymbol);
+        mCurrency->GetCurrencyCode(mIntlCurrencySymbol);
         if (data[1] != nullptr && CoreUtils::Unbox(
                 ICharSequence::Probe(data[1])).Equals(mIntlCurrencySymbol)) {
             mCurrencySymbol = CoreUtils::Unbox(ICharSequence::Probe(data[2]));
         }
         else {
-            mCurrency->GetSymbol(locale, &mCurrencySymbol);
+            mCurrency->GetSymbol(locale, mCurrencySymbol);
             data.Set(1, CoreUtils::Box(mIntlCurrencySymbol));
             data.Set(2, CoreUtils::Box(mCurrencySymbol));
             needCacheUpdate = true;

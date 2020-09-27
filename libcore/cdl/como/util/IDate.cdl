@@ -25,38 +25,38 @@ interface IDate
 {
     After(
         [in] IDate* when,
-        [out] Boolean* after);
+        [out] Boolean& after);
 
     Before(
         [in] IDate* when,
-        [out] Boolean* before);
+        [out] Boolean& before);
 
     GetDate(
-        [out] Integer* date);
+        [out] Integer& date);
 
     GetDay(
-        [out] Integer* day);
+        [out] Integer& day);
 
     GetHours(
-        [out] Integer* hours);
+        [out] Integer& hours);
 
     GetMinutes(
-        [out] Integer* minutes);
+        [out] Integer& minutes);
 
     GetMonth(
-        [out] Integer* month);
+        [out] Integer& month);
 
     GetSeconds(
-        [out] Integer* seconds);
+        [out] Integer& seconds);
 
     GetTime(
-        [out] Long* time);
+        [out] Long& time);
 
     GetTimezoneOffset(
-        [out] Integer* tzOffset);
+        [out] Integer& tzOffset);
 
     GetYear(
-        [out] Integer* year);
+        [out] Integer& year);
 
     SetDate(
         [in] Integer date);
@@ -80,10 +80,10 @@ interface IDate
         [in] Integer year);
 
     ToGMTString(
-        [out] String* str);
+        [out] String& str);
 
     ToLocaleString(
-        [out] String* str);
+        [out] String& str);
 }
 
 }

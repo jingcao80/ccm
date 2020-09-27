@@ -144,7 +144,7 @@ public:
         COMO_INTERFACE_DECL();
 
         ECode HasNext(
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
 
         ECode Remove() override;
 

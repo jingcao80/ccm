@@ -45,7 +45,7 @@ private:
         COMO_INTERFACE_DECL();
 
         ECode HasNext(
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
 
         ECode Next(
             /* [out] */ IInterface** object = nullptr) override;
@@ -112,7 +112,7 @@ private:
             /* [in] */ IInterface* object) override;
 
         ECode HasNext(
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
 
         ECode Next(
             /* [out] */ IInterface** object = nullptr) override;
@@ -142,11 +142,11 @@ public:
 
     ECode IndexOf(
         /* [in] */ IInterface* obj,
-        /* [out] */ Integer* index) override;
+        /* [out] */ Integer& index) override;
 
     ECode LastIndexOf(
         /* [in] */ IInterface* obj,
-        /* [out] */ Integer* index) override;
+        /* [out] */ Integer& index) override;
 
     ECode Clear() override;
 
@@ -159,16 +159,16 @@ public:
         /* [out] */ AutoPtr<IIterator>& it) override;
 
     ECode GetListIterator(
-        /* [out] */ IListIterator** it) override;
+        /* [out] */ AutoPtr<IListIterator>& it) override;
 
     ECode GetListIterator(
         /* [in] */ Integer index,
-        /* [out] */ IListIterator** it) override;
+        /* [out] */ AutoPtr<IListIterator>& it) override;
 
     ECode SubList(
         /* [in] */ Integer fromIndex,
         /* [in] */ Integer toIndex,
-        /* [out] */ IList** subList) override;
+        /* [out] */ AutoPtr<IList>& subList) override;
 
     ECode Equals(
         /* [in] */ IInterface* obj,

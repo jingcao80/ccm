@@ -645,7 +645,7 @@ ECode Locale::ToLanguageTag(
     AutoPtr<IIterator> it;
     subtags->GetIterator(it);
     Boolean hasNext;
-    while (it->HasNext(&hasNext), hasNext) {
+    while (it->HasNext(hasNext), hasNext) {
         AutoPtr<IInterface> obj;
         it->Next(&obj);
         buf->Append(ILanguageTag::SEP);
@@ -654,7 +654,7 @@ ECode Locale::ToLanguageTag(
 
     tag->GetExtensions(subtags);
     subtags->GetIterator(it);
-    while (it->HasNext(&hasNext), hasNext) {
+    while (it->HasNext(hasNext), hasNext) {
         AutoPtr<IInterface> obj;
         it->Next(&obj);
         buf->Append(ILanguageTag::SEP);

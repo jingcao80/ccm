@@ -159,21 +159,19 @@ ECode ArrayList::Contains(
     /* [out] */ Boolean& result)
 {
     Integer index;
-    IndexOf(obj, &index);
+    IndexOf(obj, index);
     result = index >= 0;
     return NOERROR;
 }
 
 ECode ArrayList::IndexOf(
     /* [in] */ IInterface* obj,
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
-    VALIDATE_NOT_NULL(index);
-
     if (obj == nullptr) {
         for (Integer i = 0; i < mSize; i++) {
             if (mElementData[i] == nullptr) {
-                *index = i;
+                index = i;
                 return NOERROR;
             }
         }
@@ -181,25 +179,23 @@ ECode ArrayList::IndexOf(
     else {
         for (Integer i = 0; i < mSize; i++) {
             if (Object::Equals(obj, mElementData[i])) {
-                *index = i;
+                index = i;
                 return NOERROR;
             }
         }
     }
-    *index = -1;
+    index = -1;
     return NOERROR;
 }
 
 ECode ArrayList::LastIndexOf(
     /* [in] */ IInterface* obj,
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
-    VALIDATE_NOT_NULL(index);
-
     if (obj == nullptr) {
         for (Integer i = mSize - 1; i >= 0; i--) {
             if (mElementData[i] == nullptr) {
-                *index = i;
+                index = i;
                 return NOERROR;
             }
         }
@@ -207,12 +203,12 @@ ECode ArrayList::LastIndexOf(
     else {
         for (Integer i = mSize - 1; i >= 0; i--) {
             if (Object::Equals(obj, mElementData[i])) {
-                *index = i;
+                index = i;
                 return NOERROR;
             }
         }
     }
-    *index = -1;
+    index = -1;
     return NOERROR;
 }
 
@@ -249,17 +245,14 @@ ECode ArrayList::ToArray(
 
 ECode ArrayList::Get(
     /* [in] */ Integer index,
-    /* [out] */ IInterface** obj)
+    /* [out] */ AutoPtr<IInterface>& obj)
 {
-    VALIDATE_NOT_NULL(obj);
-
     if (index > mSize) {
         Logger::E("ArrayList", "%s", OutOfBoundsMsg(index).string());
         return como::core::E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
-    *obj = mElementData[index];
-    REFCOUNT_ADD(*obj);
+    obj = mElementData[index];
     return NOERROR;
 }
 
@@ -498,52 +491,40 @@ Boolean ArrayList::BatchRemove(
 
 ECode ArrayList::GetListIterator(
     /* [in] */ Integer index,
-    /* [out] */ IListIterator** it)
+    /* [out] */ AutoPtr<IListIterator>& it)
 {
-    VALIDATE_NOT_NULL(it);
-
     if (index < 0 || index > mSize) {
         Logger::E("ArrayList", "%s", OutOfBoundsMsg(index).string());
         return como::core::E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
-    *it = new ListItr(this, index);
-    REFCOUNT_ADD(*it);
+    it = new ListItr(this, index);
     return NOERROR;
 }
 
 ECode ArrayList::GetListIterator(
-    /* [out] */ IListIterator** it)
+    /* [out] */ AutoPtr<IListIterator>& it)
 {
-    VALIDATE_NOT_NULL(it);
-
-    *it = new ListItr(this, 0);
-    REFCOUNT_ADD(*it);
+    it = new ListItr(this, 0);
     return NOERROR;
 }
 
 ECode ArrayList::GetIterator(
-    /* [out] */ IIterator** it)
+    /* [out] */ AutoPtr<IIterator>& it)
 {
-    VALIDATE_NOT_NULL(it);
-
-    *it = new Itr(this);
-    REFCOUNT_ADD(*it);
+    it = new Itr(this);
     return NOERROR;
 }
 
 ECode ArrayList::SubList(
     /* [in] */ Integer fromIndex,
     /* [in] */ Integer toIndex,
-    /* [out] */ IList** subList)
+    /* [out] */ AutoPtr<IList>& subList)
 {
-    VALIDATE_NOT_NULL(subList);
-
     FAIL_RETURN(SubListRangeCheck(fromIndex, toIndex, mSize));
     AutoPtr<Sublist> l = new Sublist();
     l->Constructor(this, this, 0, fromIndex, toIndex);
-    *subList = l;
-    REFCOUNT_ADD(*subList);
+    subList = std::move(l);
     return NOERROR;
 }
 
@@ -584,11 +565,9 @@ ECode ArrayList::GetHashCode(
 COMO_INTERFACE_IMPL_LIGHT_1(ArrayList::Itr, LightRefBase, IIterator);
 
 ECode ArrayList::Itr::HasNext(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
-    *result = mCursor < mLimit;
+    result = mCursor < mLimit;
     return NOERROR;
 }
 
@@ -724,7 +703,7 @@ ECode ArrayList::ListItr::Add(
 }
 
 ECode ArrayList::ListItr::HasNext(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return Itr::HasNext(result);
 }
@@ -783,10 +762,8 @@ ECode ArrayList::Sublist::Set(
 
 ECode ArrayList::Sublist::Get(
     /* [in] */ Integer index,
-    /* [out] */ IInterface** obj)
+    /* [out] */ AutoPtr<IInterface>& obj)
 {
-    VALIDATE_NOT_NULL(obj);
-
     if (index < 0 || index > mSize) {
         Logger::E("ArrayList::Sublist", "%s", OutOfBoundsMsg(index).string());
         return como::core::E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
@@ -794,8 +771,7 @@ ECode ArrayList::Sublist::Get(
     if (mOwner->mModCount != mModCount) {
         return E_CONCURRENT_MODIFICATION_EXCEPTION;
     }
-    *obj = mOwner->mElementData[mOffset + index];
-    REFCOUNT_ADD(*obj);
+    obj = mOwner->mElementData[mOffset + index];
     return NOERROR;
 }
 
@@ -894,17 +870,15 @@ ECode ArrayList::Sublist::GetIterator(
     /* [out] */ AutoPtr<IIterator>& it)
 {
     AutoPtr<IListIterator> lit;
-    GetListIterator(&lit);
+    GetListIterator(lit);
     it = std::move(lit);
     return NOERROR;
 }
 
 ECode ArrayList::Sublist::GetListIterator(
     /* [in] */ Integer index,
-    /* [out] */ IListIterator** it)
+    /* [out] */ AutoPtr<IListIterator>& it)
 {
-    VALIDATE_NOT_NULL(it);
-
     if (index < 0 || index > mSize) {
         Logger::E("ArrayList::Sublist", "%s", OutOfBoundsMsg(index).string());
         return como::core::E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
@@ -973,11 +947,9 @@ ECode ArrayList::Sublist::GetListIterator(
         }
 
         ECode HasNext(
-            /* [out] */ Boolean* result) override
+            /* [out] */ Boolean& result) override
         {
-            VALIDATE_NOT_NULL(result);
-
-            *result = mCursor != mOwner->mSize;
+            result = mCursor != mOwner->mSize;
             return NOERROR;
         }
 
@@ -1114,23 +1086,19 @@ ECode ArrayList::Sublist::GetListIterator(
         Integer mOffset;
     };
 
-    *it = new _ListIterator(this, index, offset);
-    REFCOUNT_ADD(*it);
+    it = new _ListIterator(this, index, offset);
     return NOERROR;
 }
 
 ECode ArrayList::Sublist::SubList(
     /* [in] */ Integer fromIndex,
     /* [in] */ Integer toIndex,
-    /* [out] */ IList** subList)
+    /* [out] */ AutoPtr<IList>& subList)
 {
-    VALIDATE_NOT_NULL(subList);
-
     FAIL_RETURN(SubListRangeCheck(fromIndex, toIndex, mSize));
     AutoPtr<Sublist> l = new Sublist();
     l->Constructor(mOwner, this, mOffset, fromIndex, toIndex);
-    *subList = l.Get();
-    REFCOUNT_ADD(*subList);
+    subList = std::move(l);
     return NOERROR;
 }
 

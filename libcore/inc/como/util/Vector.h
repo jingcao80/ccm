@@ -52,7 +52,7 @@ protected:
         COMO_INTERFACE_DECL();
 
         ECode HasNext(
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
 
         ECode Next(
             /* [out] */ IInterface** object = nullptr) override;
@@ -104,7 +104,7 @@ protected:
             /* [out] */ IInterface** object = nullptr) override;
 
         ECode HasNext(
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
 
         ECode Remove() override;
     };
@@ -211,7 +211,7 @@ public:
 
     ECode Get(
         /* [in] */ Integer index,
-        /* [out] */ IInterface** obj) override;
+        /* [out] */ AutoPtr<IInterface>& obj) override;
 
     ECode Set(
         /* [in] */ Integer index,

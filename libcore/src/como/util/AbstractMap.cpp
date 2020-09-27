@@ -60,7 +60,7 @@ ECode AbstractMap::ContainsValue(
     entries->GetIterator(it);
     if (value == nullptr) {
         Boolean hasNext;
-        while (it->HasNext(&hasNext), hasNext) {
+        while (it->HasNext(hasNext), hasNext) {
             AutoPtr<IInterface> e;
             it->Next(&e);
             AutoPtr<IInterface> v;
@@ -73,7 +73,7 @@ ECode AbstractMap::ContainsValue(
     }
     else {
         Boolean hasNext;
-        while (it->HasNext(&hasNext), hasNext) {
+        while (it->HasNext(hasNext), hasNext) {
             AutoPtr<IInterface> e;
             it->Next(&e);
             AutoPtr<IInterface> v;
@@ -98,7 +98,7 @@ ECode AbstractMap::ContainsKey(
     entries->GetIterator(it);
     if (key == nullptr) {
         Boolean hasNext;
-        while (it->HasNext(&hasNext), hasNext) {
+        while (it->HasNext(hasNext), hasNext) {
             AutoPtr<IInterface> e;
             it->Next(&e);
             AutoPtr<IInterface> k;
@@ -111,7 +111,7 @@ ECode AbstractMap::ContainsKey(
     }
     else {
         Boolean hasNext;
-        while (it->HasNext(&hasNext), hasNext) {
+        while (it->HasNext(hasNext), hasNext) {
             AutoPtr<IInterface> e;
             it->Next(&e);
             AutoPtr<IInterface> k;
@@ -136,7 +136,7 @@ ECode AbstractMap::Get(
     entries->GetIterator(it);
     if (key == nullptr) {
         Boolean hasNext;
-        while (it->HasNext(&hasNext), hasNext) {
+        while (it->HasNext(hasNext), hasNext) {
             AutoPtr<IInterface> e;
             it->Next(&e);
             AutoPtr<IInterface> k;
@@ -148,7 +148,7 @@ ECode AbstractMap::Get(
     }
     else {
         Boolean hasNext;
-        while (it->HasNext(&hasNext), hasNext) {
+        while (it->HasNext(hasNext), hasNext) {
             AutoPtr<IInterface> e;
             it->Next(&e);
             AutoPtr<IInterface> k;
@@ -184,7 +184,7 @@ ECode AbstractMap::Remove(
     if (key == nullptr) {
         Boolean hasNext;
         while (correctEntry == nullptr &&
-                (it->HasNext(&hasNext), hasNext)) {
+                (it->HasNext(hasNext), hasNext)) {
             AutoPtr<IInterface> e;
             it->Next(&e);
             AutoPtr<IInterface> k;
@@ -197,7 +197,7 @@ ECode AbstractMap::Remove(
     else {
         Boolean hasNext;
         while (correctEntry == nullptr &&
-                (it->HasNext(&hasNext), hasNext)) {
+                (it->HasNext(hasNext), hasNext)) {
             AutoPtr<IInterface> e;
             it->Next(&e);
             AutoPtr<IInterface> k;
@@ -230,7 +230,7 @@ ECode AbstractMap::PutAll(
     AutoPtr<IIterator> it;
     entries->GetIterator(it);
     Boolean hasNext;
-    while (it->HasNext(&hasNext), hasNext) {
+    while (it->HasNext(hasNext), hasNext) {
         AutoPtr<IInterface> e;
         it->Next(&e);
         AutoPtr<IInterface> k, v;
@@ -342,7 +342,7 @@ ECode AbstractMap::GetKeySet(
                     }
 
                     ECode HasNext(
-                        /* [out] */ Boolean* result) override
+                        /* [out] */ Boolean& result) override
                     {
                         return mIt->HasNext(result);
                     }
@@ -473,7 +473,7 @@ ECode AbstractMap::GetValues(
                     }
 
                     ECode HasNext(
-                        /* [out] */ Boolean* result) override
+                        /* [out] */ Boolean& result) override
                     {
                         return mIt->HasNext(result);
                     }
@@ -553,7 +553,7 @@ ECode AbstractMap::Equals(
     AutoPtr<IIterator> it;
     entries->GetIterator(it);
     Boolean hasNext;
-    while (it->HasNext(&hasNext), hasNext) {
+    while (it->HasNext(hasNext), hasNext) {
         AutoPtr<IInterface> e;
         it->Next(&e);
         AutoPtr<IInterface> key, value;
@@ -590,7 +590,7 @@ ECode AbstractMap::GetHashCode(
     AutoPtr<IIterator> it;
     entries->GetIterator(it);
     Boolean hasNext;
-    while (it->HasNext(&hasNext), hasNext) {
+    while (it->HasNext(hasNext), hasNext) {
         AutoPtr<IInterface> e;
         it->Next(&e);
         hash += Object::GetHashCode(e);
@@ -606,7 +606,7 @@ ECode AbstractMap::ToString(
     AutoPtr<IIterator> it;
     entries->GetIterator(it);
     Boolean hasNext;
-    if (it->HasNext(&hasNext), !hasNext) {
+    if (it->HasNext(hasNext), !hasNext) {
         str = "{}";
         return NOERROR;
     }
@@ -633,7 +633,7 @@ ECode AbstractMap::ToString(
         else {
             sb->Append(value);
         }
-        if (it->HasNext(&hasNext), !hasNext) {
+        if (it->HasNext(hasNext), !hasNext) {
             sb->Append(U'}');
             return sb->ToString(str);
         }

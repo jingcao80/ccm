@@ -51,7 +51,7 @@ public:
         /* [in] */ Boolean flag);
 
     ECode GetCalendarType(
-        /* [out] */ String* type) override;
+        /* [out] */ String& type) override;
 
     ECode Equals(
         /* [in] */ IInterface* obj,
@@ -76,44 +76,44 @@ public:
         /* [in] */ Integer field,
         /* [in] */ Integer style,
         /* [in] */ ILocale* locale,
-        /* [out] */ String* name) override;
+        /* [out] */ String& name) override;
 
     ECode GetDisplayNames(
         /* [in] */ Integer field,
         /* [in] */ Integer style,
         /* [in] */ ILocale* locale,
-        /* [out] */ IMap** names) override;
+        /* [out] */ AutoPtr<IMap>& names) override;
 
     ECode GetMinimum(
         /* [in] */ Integer field,
-        /* [out] */ Integer* value) override;
+        /* [out] */ Integer& value) override;
 
     ECode GetMaximum(
         /* [in] */ Integer field,
-        /* [out] */ Integer* value) override;
+        /* [out] */ Integer& value) override;
 
     ECode GetGreatestMinimum(
         /* [in] */ Integer field,
-        /* [out] */ Integer* value) override;
+        /* [out] */ Integer& value) override;
 
     ECode GetLeastMaximum(
         /* [in] */ Integer field,
-        /* [out] */ Integer* value) override;
+        /* [out] */ Integer& value) override;
 
     ECode GetActualMinimum(
         /* [in] */ Integer field,
-        /* [out] */ Integer* value) override;
+        /* [out] */ Integer& value) override;
 
     ECode GetActualMaximum(
         /* [in] */ Integer field,
-        /* [out] */ Integer* value) override;
+        /* [out] */ Integer& value) override;
 
     ECode Clone(
         /* [in] */ const InterfaceID& iid,
         /* [out] */ IInterface** obj) override;
 
     ECode GetTimeZone(
-        /* [out] */ ITimeZone** zone) override;
+        /* [out] */ AutoPtr<ITimeZone>& zone) override;
 
     ECode SetTimeZone(
         /* [in] */ ITimeZone* zone) override;

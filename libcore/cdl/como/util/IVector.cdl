@@ -71,7 +71,7 @@ interface IVector
 
     Get(
         [in] Integer index,
-        [out] IInterface** obj);
+        [out] IInterface&& obj);
 
     GetCapacity(
         [out] Integer* capacity);

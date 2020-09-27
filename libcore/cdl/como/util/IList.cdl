@@ -64,7 +64,7 @@ interface IList
 
     Get(
         [in] Integer index,
-        [out] IInterface** obj);
+        [out] IInterface&& obj);
 
     GetHashCode(
         [out] Integer& hash);
@@ -73,25 +73,25 @@ interface IList
         [out] IIterator&& it);
 
     GetListIterator(
-        [out] IListIterator** it);
+        [out] IListIterator&& it);
 
     GetListIterator(
         [in] Integer index,
-        [out] IListIterator** it);
+        [out] IListIterator&& it);
 
     GetSize(
         [out] Integer& size);
 
     IndexOf(
         [in] IInterface* obj,
-        [out] Integer* index);
+        [out] Integer& index);
 
     IsEmpty(
         [out] Boolean& empty);
 
     LastIndexOf(
         [in] IInterface* obj,
-        [out] Integer* index);
+        [out] Integer& index);
 
     Remove(
         [in] IInterface* obj,
@@ -117,7 +117,7 @@ interface IList
     SubList(
         [in] Integer fromIndex,
         [in] Integer toIndex,
-        [out] IList** subList);
+        [out] IList&& subList);
 
     ToArray(
         [out, callee] Array<IInterface*>* objs);
