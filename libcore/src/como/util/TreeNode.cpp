@@ -673,19 +673,19 @@ Boolean TreeNode::CheckInvariants(
 {
     TreeNode* tp = t->mParent, *tl = t->mLeft, *tr = t->mRight,
             *tb = t->mPrev, *tn = (TreeNode*)t->mNext.Get();
-    if (tb != nullptr && tb->mNext != t) {
+    if (tb != nullptr && t != tb->mNext) {
         return false;
     }
-    if (tn != nullptr && tn->mPrev != t) {
+    if (tn != nullptr && t != tn->mPrev) {
         return false;
     }
     if (tp != nullptr && t != tp->mLeft && t != tp->mRight) {
         return false;
     }
-    if (tl != nullptr && (tl->mParent != t || tl->mHash > t->mHash)) {
+    if (tl != nullptr && (t != tl->mParent || tl->mHash > t->mHash)) {
         return false;
     }
-    if (tr != nullptr && (tr->mParent != t || tr->mHash < t->mHash)) {
+    if (tr != nullptr && (t != tr->mParent || tr->mHash < t->mHash)) {
         return false;
     }
     if (t->mRed && tl != nullptr && tl->mRed && tr != nullptr && tr->mRed) {
