@@ -87,17 +87,17 @@ interface IVector
         [out] IInterface** element);
 
     GetIterator(
-        [out] IIterator** it);
+        [out] IIterator&& it);
 
     GetLastElement(
         [out] IInterface** element);
 
     GetListIterator(
-        [out] IListIterator** it);
+        [out] IListIterator&& it);
 
     GetListIterator(
         [in] Integer index,
-        [out] IListIterator** it);
+        [out] IListIterator&& it);
 
     GetSize(
         [out] Integer& size);

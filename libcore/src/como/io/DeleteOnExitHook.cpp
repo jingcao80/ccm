@@ -101,7 +101,7 @@ void DeleteOnExitHook::RunHooks()
     Boolean hasNext;
     while (it->HasNext(hasNext), hasNext) {
         AutoPtr<IInterface> obj;
-        it->Next(&obj);
+        it->Next(obj);
         String filename = CoreUtils::Unbox(ICharSequence::Probe(obj));
         AutoPtr<IFile> f;
         CFile::New(filename, IID_IFile, (IInterface**)&f);

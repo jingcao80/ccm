@@ -46,8 +46,8 @@ void Collections::Reverse(
         list->GetListIterator(size, rev);
         for (Integer i = 0, mid = size >> 1; i < mid; i++) {
             AutoPtr<IInterface> e1, e2;
-            rev->Previous(&e1);
-            fwd->Next(&e2);
+            rev->Previous(e1);
+            fwd->Next(e2);
             fwd->Set(e1);
             rev->Set(e2);
         }
@@ -254,7 +254,7 @@ ECode Collections::UnmodifiableCollection::GetIterator(
         }
 
         ECode Next(
-            /* [out] */ IInterface** object = nullptr) override
+            /* [out] */ AutoPtr<IInterface>& object) override
         {
             return mI->Next(object);
         }
@@ -571,31 +571,31 @@ ECode Collections::UnmodifiableList::GetListIterator(
         }
 
         ECode Next(
-            /* [out] */ IInterface** object = nullptr) override
+            /* [out] */ AutoPtr<IInterface>& object) override
         {
             return mI->Next(object);
         }
 
         ECode HasPrevious(
-            /* [out] */ Boolean* result) override
+            /* [out] */ Boolean& result) override
         {
             return mI->HasPrevious(result);
         }
 
         ECode Previous(
-            /* [out] */ IInterface** object = nullptr) override
+            /* [out] */ AutoPtr<IInterface>& object) override
         {
             return mI->Previous(object);
         }
 
         ECode GetNextIndex(
-            /* [out] */ Integer* index) override
+            /* [out] */ Integer& index) override
         {
             return mI->GetNextIndex(index);
         }
 
         ECode GetPreviousIndex(
-            /* [out] */ Integer* index) override
+            /* [out] */ Integer& index) override
         {
             return mI->GetPreviousIndex(index);
         }
@@ -1199,7 +1199,7 @@ ECode Collections::EmptyIterator::HasNext(
 }
 
 ECode Collections::EmptyIterator::Next(
-    /* [out] */ IInterface** object)
+    /* [out] */ AutoPtr<IInterface>& object)
 {
     return E_NO_SUCH_ELEMENT_EXCEPTION;
 }
@@ -1243,35 +1243,29 @@ AutoPtr<IEnumeration> Collections::EmptyEnumeration::Get_EMPTY_ENUMERATION()
 COMO_INTERFACE_IMPL_LIGHT_1(Collections::EmptyListIterator, EmptyIterator, IListIterator);
 
 ECode Collections::EmptyListIterator::HasPrevious(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
-    *result = false;
+    result = false;
     return NOERROR;
 }
 
 ECode Collections::EmptyListIterator::Previous(
-    /* [out] */ IInterface** object)
+    /* [out] */ AutoPtr<IInterface>& object)
 {
     return E_NO_SUCH_ELEMENT_EXCEPTION;
 }
 
 ECode Collections::EmptyListIterator::GetNextIndex(
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
-    VALIDATE_NOT_NULL(index);
-
-    *index = 0;
+    index = 0;
     return NOERROR;
 }
 
 ECode Collections::EmptyListIterator::GetPreviousIndex(
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
-    VALIDATE_NOT_NULL(index);
-
-    *index = -1;
+    index = -1;
     return NOERROR;
 }
 
@@ -1288,7 +1282,7 @@ ECode Collections::EmptyListIterator::Add(
 }
 
 ECode Collections::EmptyListIterator::Next(
-    /* [out] */ IInterface** object)
+    /* [out] */ AutoPtr<IInterface>& object)
 {
     return EmptyIterator::Next(object);
 }

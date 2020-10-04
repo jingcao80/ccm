@@ -216,17 +216,13 @@ AutoPtr<IIterator> Charset::GetProviders()
         }
 
         ECode Next(
-            /* [out] */ IInterface** object = nullptr) override
+            /* [out] */ AutoPtr<IInterface>& object) override
         {
             Boolean hasNext;
             if (GetNext(hasNext), !hasNext) {
                 return E_NO_SUCH_ELEMENT_EXCEPTION;
             }
-            if (object != nullptr) {
-                *object = mNext;
-                REFCOUNT_ADD(*object);
-                mNext = nullptr;
-            }
+            object = std::move(mNext);
             return NOERROR;
         }
 
@@ -243,7 +239,7 @@ AutoPtr<IIterator> Charset::GetProviders()
                 if (mI->HasNext(hasNext), !hasNext) {
                     return NOERROR;
                 }
-                FAIL_RETURN(mI->Next((IInterface**)&mNext));
+                FAIL_RETURN(mI->Next(mNext));
             }
             hasNext = true;
             return NOERROR;
@@ -323,7 +319,7 @@ ECode Charset::LookupViaProviders(
             Boolean hasNext;
             while (i->HasNext(hasNext), hasNext) {
                 AutoPtr<ICharsetProvider> cp;
-                i->Next((IInterface**)&cp);
+                i->Next(cp);
                 AutoPtr<ICharset> cs;
                 cp->CharsetForName(mCharsetName, cs);
                 if (cs != nullptr) {
@@ -445,7 +441,7 @@ void Charset::Put(
     Boolean hasNext;
     while (i->HasNext(hasNext), hasNext) {
         AutoPtr<ICharset> cs;
-        i->Next((IInterface**)&cs);
+        i->Next(cs);
         String canonicalName;
         cs->GetName(canonicalName);
         Boolean contains;
@@ -515,7 +511,7 @@ ECode Charset::AvailableCharsets(
             Boolean hasNext;
             while(i->HasNext(hasNext), hasNext) {
                 AutoPtr<ICharsetProvider> cp;
-                i->Next((IInterface**)&cp);
+                i->Next(cp);
                 AutoPtr<IIterator> it;
                 cp->Charsets(it);
                 Put(it, IMap::Probe(m));

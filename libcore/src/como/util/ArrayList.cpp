@@ -572,7 +572,7 @@ ECode ArrayList::Itr::HasNext(
 }
 
 ECode ArrayList::Itr::Next(
-    /* [out] */ IInterface** object)
+    /* [out] */ AutoPtr<IInterface>& object)
 {
     if (mOwner->mModCount != mExpectedModCount) {
         return E_CONCURRENT_MODIFICATION_EXCEPTION;
@@ -586,10 +586,7 @@ ECode ArrayList::Itr::Next(
         return E_CONCURRENT_MODIFICATION_EXCEPTION;
     }
     mCursor = i + 1;
-    if (*object != nullptr) {
-        *object = elementData[mLastRet = i];
-        REFCOUNT_ADD(*object);
-    }
+    object = elementData[mLastRet = i];
     return NOERROR;
 }
 
@@ -618,34 +615,28 @@ ECode ArrayList::Itr::Remove()
 COMO_INTERFACE_IMPL_LIGHT_1(ArrayList::ListItr, Itr, IListIterator);
 
 ECode ArrayList::ListItr::HasPrevious(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
-    *result = mCursor != 0;
+    result = mCursor != 0;
     return NOERROR;
 }
 
 ECode ArrayList::ListItr::GetNextIndex(
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
-    VALIDATE_NOT_NULL(index);
-
-    *index = mCursor;
+    index = mCursor;
     return NOERROR;
 }
 
 ECode ArrayList::ListItr::GetPreviousIndex(
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
-    VALIDATE_NOT_NULL(index);
-
-    *index = mCursor - 1;
+    index = mCursor - 1;
     return NOERROR;
 }
 
 ECode ArrayList::ListItr::Previous(
-    /* [out] */ IInterface** object)
+    /* [out] */ AutoPtr<IInterface>& object)
 {
     if (mOwner->mModCount != mExpectedModCount) {
         return E_CONCURRENT_MODIFICATION_EXCEPTION;
@@ -659,10 +650,7 @@ ECode ArrayList::ListItr::Previous(
         return E_CONCURRENT_MODIFICATION_EXCEPTION;
     }
     mCursor = i;
-    if (object != nullptr) {
-        *object = elementData[mLastRet = i];
-        REFCOUNT_ADD(*object);
-    }
+    object = elementData[mLastRet = i];
     return NOERROR;
 }
 
@@ -709,7 +697,7 @@ ECode ArrayList::ListItr::HasNext(
 }
 
 ECode ArrayList::ListItr::Next(
-    /* [out] */ IInterface** object)
+    /* [out] */ AutoPtr<IInterface>& object)
 {
     return Itr::Next(object);
 }
@@ -954,7 +942,7 @@ ECode ArrayList::Sublist::GetListIterator(
         }
 
         ECode Next(
-            /* [out] */ IInterface** object = nullptr) override
+            /* [out] */ AutoPtr<IInterface>& object) override
         {
             if (mExpectedModCount != mOwner->mOwner->mModCount) {
                 return E_CONCURRENT_MODIFICATION_EXCEPTION;
@@ -968,24 +956,19 @@ ECode ArrayList::Sublist::GetListIterator(
                 return E_CONCURRENT_MODIFICATION_EXCEPTION;
             }
             mCursor = i + 1;
-            if (object != nullptr) {
-                *object = elementData[mOffset + (mLastRet = i)];
-                REFCOUNT_ADD(*object);
-            }
+            object = elementData[mOffset + (mLastRet = i)];
             return NOERROR;
         }
 
         ECode HasPrevious(
-            /* [out] */ Boolean* result) override
+            /* [out] */ Boolean& result) override
         {
-            VALIDATE_NOT_NULL(result);
-
-            *result = mCursor != 0;
+            result = mCursor != 0;
             return NOERROR;
         }
 
         ECode Previous(
-            /* [out] */ IInterface** object = nullptr) override
+            /* [out] */ AutoPtr<IInterface>& object) override
         {
             if (mExpectedModCount != mOwner->mOwner->mModCount) {
                 return E_CONCURRENT_MODIFICATION_EXCEPTION;
@@ -999,28 +982,21 @@ ECode ArrayList::Sublist::GetListIterator(
                 return E_CONCURRENT_MODIFICATION_EXCEPTION;
             }
             mCursor = i;
-            if (object != nullptr) {
-                *object = elementData[mOffset + (mLastRet = i)];
-                REFCOUNT_ADD(*object);
-            }
+            object = elementData[mOffset + (mLastRet = i)];
             return NOERROR;
         }
 
         ECode GetNextIndex(
-            /* [out] */ Integer* index) override
+            /* [out] */ Integer& index) override
         {
-            VALIDATE_NOT_NULL(index);
-
-            *index = mCursor;
+            index = mCursor;
             return NOERROR;
         }
 
         ECode GetPreviousIndex(
-            /* [out] */ Integer* index) override
+            /* [out] */ Integer& index) override
         {
-            VALIDATE_NOT_NULL(index);
-
-            *index = mCursor - 1;
+            index = mCursor - 1;
             return NOERROR;
         }
 

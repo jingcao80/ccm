@@ -31,7 +31,7 @@ namespace util {
 interface ILinkedHashMap
 {
     GetEldest(
-        [out] IMapEntry** entry);
+        [out] IMapEntry&& entry);
 }
 
 }

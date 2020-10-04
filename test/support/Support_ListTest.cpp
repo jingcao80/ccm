@@ -158,7 +158,7 @@ ECode Support_ListTest::RunTest()
     Boolean hasNext;
     for (Integer counter = 0; li->HasNext(hasNext), hasNext; counter++) {
         AutoPtr<IInterface> elem;
-        li->Next(&elem);
+        li->Next(elem);
         othNewInt = nullptr;
         CInteger::New(counter, IID_IInteger, (IInterface**)&othNewInt);
         EXPECT_TRUE(Object::Equals(elem, othNewInt));
@@ -175,7 +175,7 @@ ECode Support_ListTest::TestListIterator(
     AutoPtr<IListIterator> li;
     list->GetListIterator(1, li);
     AutoPtr<IInterface> elem1, elem2;
-    li->Next(&elem1);
+    li->Next(elem1);
     list->Get(1, elem2);
     EXPECT_TRUE(elem1 == elem2);
 
@@ -185,12 +185,12 @@ ECode Support_ListTest::TestListIterator(
     for (Integer i = 0; i <= orgSize; i++) {
         if (i == 0) {
             Boolean hasPrevious;
-            li->HasPrevious(&hasPrevious);
+            li->HasPrevious(hasPrevious);
             EXPECT_TRUE(!hasPrevious);
         }
         else {
             Boolean hasPrevious;
-            li->HasPrevious(&hasPrevious);
+            li->HasPrevious(hasPrevious);
             EXPECT_TRUE(hasPrevious);
         }
         if (i == orgSize) {
@@ -204,13 +204,12 @@ ECode Support_ListTest::TestListIterator(
             EXPECT_TRUE(hasNext);
         }
         Integer idx;
-        li->GetNextIndex(&idx);
+        li->GetNextIndex(idx);
         EXPECT_EQ(idx, i);
-        li->GetPreviousIndex(&idx);
+        li->GetPreviousIndex(idx);
         EXPECT_EQ(idx, i - 1);
 
-        elem1 = nullptr;
-        li->Next(&elem1);
+        li->Next(elem1);
         ECode ec = list->Get(i, elem2);
         EXPECT_TRUE(elem1 == elem2);
         if (i == orgSize) {
@@ -222,30 +221,29 @@ ECode Support_ListTest::TestListIterator(
     }
 
     for (Integer i = orgSize - 1; i >= 0; i--) {
-        elem1 = nullptr;
-        li->Previous(&elem1);
+        li->Previous(elem1);
         list->Get(i, elem2);
         EXPECT_TRUE(elem1 == elem2);
         Integer idx;
-        li->GetNextIndex(&idx);
+        li->GetNextIndex(idx);
         EXPECT_EQ(idx, i);
-        li->GetPreviousIndex(&idx);
+        li->GetPreviousIndex(idx);
         EXPECT_EQ(idx, i - 1);
         if (i == 0) {
             Boolean hasPrevious;
-            li->HasPrevious(&hasPrevious);
+            li->HasPrevious(hasPrevious);
             EXPECT_TRUE(!hasPrevious);
         }
         else {
             Boolean hasPrevious;
-            li->HasPrevious(&hasPrevious);
+            li->HasPrevious(hasPrevious);
             EXPECT_TRUE(hasPrevious);
         }
         Boolean hasNext;
         li->HasNext(hasNext);
         EXPECT_TRUE(hasNext);
     }
-    ECode ec = li->Previous();
+    ECode ec = li->Previous(elem1);
     EXPECT_TRUE(FAILED(ec));
 
     AutoPtr<IInteger> add1;
@@ -257,55 +255,52 @@ ECode Support_ListTest::TestListIterator(
     list->GetSize(size);
     EXPECT_TRUE(size == orgSize + 1);
     Integer idx;
-    li->GetNextIndex(&idx);
+    li->GetNextIndex(idx);
     EXPECT_EQ(1, idx);
-    li->GetPreviousIndex(&idx);
+    li->GetPreviousIndex(idx);
     EXPECT_EQ(0, idx);
     AutoPtr<IInterface> next;
-    li->Next(&next);
+    li->Next(next);
     list->Get(1, elem1);
     EXPECT_TRUE(next == elem1);
     li->Add(add2);
     AutoPtr<IInterface> previous;
-    li->Previous(&previous);
+    li->Previous(previous);
     EXPECT_TRUE(previous == add2);
-    li->GetNextIndex(&idx);
+    li->GetNextIndex(idx);
     EXPECT_EQ(2, idx);
-    li->GetPreviousIndex(&idx);
+    li->GetPreviousIndex(idx);
     EXPECT_EQ(1, idx);
 
     li->Remove();
     list->GetSize(size);
     EXPECT_TRUE(size == orgSize + 1);
-    li->GetNextIndex(&idx);
+    li->GetNextIndex(idx);
     EXPECT_EQ(2, idx);
-    li->GetPreviousIndex(&idx);
+    li->GetPreviousIndex(idx);
     EXPECT_EQ(1, idx);
-    elem1 = nullptr;
-    li->Previous(&elem1);
+    li->Previous(elem1);
     list->Get(1, elem2);
     EXPECT_TRUE(elem1 == elem2);
-    elem1 = nullptr;
-    li->Previous(&elem1);
+    li->Previous(elem1);
     list->Get(0, elem2);
     EXPECT_TRUE(elem1 == elem2);
-    elem1 = elem2 = nullptr;
-    li->Next(&elem1);
+    li->Next(elem1);
     list->Get(0, elem2);
     EXPECT_TRUE(elem1 == elem2);
 
     li->Remove();
     Boolean hasPrevious;
-    li->HasPrevious(&hasPrevious);
+    li->HasPrevious(hasPrevious);
     EXPECT_TRUE(!hasPrevious);
     Boolean hasNext;
     li->HasNext(hasNext);
     EXPECT_TRUE(hasNext);
     list->GetSize(size);
     EXPECT_TRUE(size == orgSize);
-    li->GetNextIndex(&idx);
+    li->GetNextIndex(idx);
     EXPECT_EQ(0, idx);
-    li->GetPreviousIndex(&idx);
+    li->GetPreviousIndex(idx);
     EXPECT_EQ(-1, idx);
     return NOERROR;
 }

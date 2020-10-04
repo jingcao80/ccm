@@ -169,8 +169,8 @@ ECode AbstractList::IndexOf(
         Boolean hasNext;
         while (it->HasNext(hasNext), hasNext) {
             AutoPtr<IInterface> next;
-            if (it->Next(&next), next == nullptr) {
-                return it->GetPreviousIndex(&index);
+            if (it->Next(next), next == nullptr) {
+                return it->GetPreviousIndex(index);
             }
         }
     }
@@ -178,8 +178,8 @@ ECode AbstractList::IndexOf(
         Boolean hasNext;
         while (it->HasNext(hasNext), hasNext) {
             AutoPtr<IInterface> next;
-            if (it->Next(&next), Object::Equals(obj, next)) {
-                return it->GetPreviousIndex(&index);
+            if (it->Next(next), Object::Equals(obj, next)) {
+                return it->GetPreviousIndex(index);
             }
         }
     }
@@ -197,19 +197,19 @@ ECode AbstractList::LastIndexOf(
     GetListIterator(size, it);
     if (obj == nullptr) {
         Boolean hasPrev;
-        while (it->HasPrevious(&hasPrev), hasPrev) {
+        while (it->HasPrevious(hasPrev), hasPrev) {
             AutoPtr<IInterface> prev;
-            if (it->Previous(&prev), prev == nullptr) {
-                return it->GetNextIndex(&index);
+            if (it->Previous(prev), prev == nullptr) {
+                return it->GetNextIndex(index);
             }
         }
     }
     else {
         Boolean hasPrev;
-        while (it->HasPrevious(&hasPrev), hasPrev) {
+        while (it->HasPrevious(hasPrev), hasPrev) {
             AutoPtr<IInterface> prev;
-            if (it->Previous(&prev), Object::Equals(obj, prev)) {
-                return it->GetNextIndex(&index);
+            if (it->Previous(prev), Object::Equals(obj, prev)) {
+                return it->GetNextIndex(index);
             }
         }
     }
@@ -237,7 +237,7 @@ ECode AbstractList::AddAll(
     Boolean hasNext;
     while (it->HasNext(hasNext), hasNext) {
         AutoPtr<IInterface> e;
-        it->Next(&e);
+        it->Next(e);
         Add(index++, e);
         modified = true;
     }
@@ -307,8 +307,8 @@ ECode AbstractList::Equals(
     Boolean hasNext1, hasNext2;
     while (e1->HasNext(hasNext1), e2->HasNext(hasNext2), hasNext1 && hasNext2) {
         AutoPtr<IInterface> o1, o2;
-        e1->Next(&o1);
-        e2->Next(&o2);
+        e1->Next(o1);
+        e2->Next(o2);
         if (!(o1 == nullptr ? o2 == nullptr : Object::Equals(o1, o2))) {
             result = false;
             return NOERROR;
@@ -327,7 +327,7 @@ ECode AbstractList::GetHashCode(
     Boolean hasNext;
     while (it->HasNext(hasNext), hasNext) {
         AutoPtr<IInterface> e;
-        it->Next(&e);
+        it->Next(e);
         hash = 31 * hash + (e == nullptr ? 0 : Object::GetHashCode(e));
     }
     return NOERROR;
@@ -340,7 +340,8 @@ ECode AbstractList::RemoveRange(
     AutoPtr<IListIterator> it;
     GetListIterator(fromIndex, it);
     for (Integer i = 0, n = toIndex - fromIndex; i < n; i++) {
-        it->Next();
+        AutoPtr<IInterface> e;
+        it->Next(e);
         it->Remove();
     }
     return NOERROR;
@@ -440,21 +441,17 @@ ECode AbstractList::Itr::HasNext(
 }
 
 ECode AbstractList::Itr::Next(
-    /* [out] */ IInterface** object)
+    /* [out] */ AutoPtr<IInterface>& object)
 {
     FAIL_RETURN(CheckForComodification());
     Integer i = mCursor;
-    AutoPtr<IInterface> next;
-    ECode ec = mOwner->Get(i, next);
+    ECode ec = mOwner->Get(i, object);
     if (FAILED(ec)) {
         FAIL_RETURN(CheckForComodification());
         return E_NO_SUCH_ELEMENT_EXCEPTION;
     }
     mLastRet = i;
     mCursor = i + 1;
-    if (object != nullptr) {
-        next.MoveTo(object);
-    }
     return NOERROR;
 }
 
@@ -490,47 +487,37 @@ ECode AbstractList::Itr::CheckForComodification()
 COMO_INTERFACE_IMPL_LIGHT_1(AbstractList::ListItr, Itr, IListIterator);
 
 ECode AbstractList::ListItr::HasPrevious(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
-    *result = mCursor != 0;
+    result = mCursor != 0;
     return NOERROR;
 }
 
 ECode AbstractList::ListItr::Previous(
-    /* [out] */ IInterface** object)
+    /* [out] */ AutoPtr<IInterface>& object)
 {
     FAIL_RETURN(CheckForComodification());
     Integer i = mCursor - 1;
-    AutoPtr<IInterface> prev;
-    ECode ec = mOwner->Get(i, prev);
+    ECode ec = mOwner->Get(i, object);
     if (FAILED(ec)) {
         FAIL_RETURN(CheckForComodification());
         return E_NO_SUCH_ELEMENT_EXCEPTION;
     }
     mLastRet = mCursor = i;
-    if (object != nullptr) {
-        prev.MoveTo(object);
-    }
     return NOERROR;
 }
 
 ECode AbstractList::ListItr::GetNextIndex(
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
-    VALIDATE_NOT_NULL(index);
-
-    *index = mCursor;
+    index = mCursor;
     return NOERROR;
 }
 
 ECode AbstractList::ListItr::GetPreviousIndex(
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
-    VALIDATE_NOT_NULL(index);
-
-    *index = mCursor - 1;
+    index = mCursor - 1;
     return NOERROR;
 }
 
@@ -573,7 +560,7 @@ ECode AbstractList::ListItr::HasNext(
 }
 
 ECode AbstractList::ListItr::Next(
-    /* [out] */ IInterface** object)
+    /* [out] */ AutoPtr<IInterface>& object)
 {
     return Itr::Next(object);
 }
@@ -772,13 +759,13 @@ ECode Sublist::GetListIterator(
             /* [out] */ Boolean& result) override
         {
             Integer nidx;
-            GetNextIndex(&nidx);
+            GetNextIndex(nidx);
             result = nidx < mOwner->mSize;
             return NOERROR;
         }
 
         ECode Next(
-            /* [out] */ IInterface** object = nullptr) override
+            /* [out] */ AutoPtr<IInterface>& object) override
         {
             Boolean hasNext;
             if (HasNext(hasNext), hasNext) {
@@ -788,45 +775,39 @@ ECode Sublist::GetListIterator(
         }
 
         ECode HasPrevious(
-            /* [out] */ Boolean* result) override
+            /* [out] */ Boolean& result) override
         {
-            VALIDATE_NOT_NULL(result);
-
             Integer pidx;
-            GetPreviousIndex(&pidx);
-            *result = pidx >= 0;
+            GetPreviousIndex(pidx);
+            result = pidx >= 0;
             return NOERROR;
         }
 
         ECode Previous(
-            /* [out] */ IInterface** object = nullptr) override
+            /* [out] */ AutoPtr<IInterface>& object) override
         {
             Boolean hasPrev;
-            if (HasPrevious(&hasPrev), hasPrev) {
+            if (HasPrevious(hasPrev), hasPrev) {
                 return mIt->Previous(object);
             }
             return E_NO_SUCH_ELEMENT_EXCEPTION;
         }
 
         ECode GetNextIndex(
-            /* [out] */ Integer* index) override
+            /* [out] */ Integer& index) override
         {
-            VALIDATE_NOT_NULL(index);
-
             Integer idx;
-            mIt->GetNextIndex(&idx);
-            *index = idx - mOwner->mOffset;
+            mIt->GetNextIndex(idx);
+            index = idx - mOwner->mOffset;
             return NOERROR;
         }
 
         ECode GetPreviousIndex(
-            /* [out] */ Integer* index) override
+            /* [out] */ Integer& index) override
         {
-            VALIDATE_NOT_NULL(index);
-
             Integer idx;
-            mIt->GetPreviousIndex(&idx);
-            *index = idx - mOwner->mOffset;
+            mIt->GetPreviousIndex(idx);
+            index = idx - mOwner->mOffset;
             return NOERROR;
         }
 

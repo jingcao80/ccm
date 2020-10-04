@@ -37,7 +37,7 @@ ECode AbstractSequentialList::Get(
         Logger::E("AbstractSequentialList", "Index: %d", index);
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
-    return it->Next(&obj);
+    return it->Next(obj);
 }
 
 ECode AbstractSequentialList::Set(
@@ -51,10 +51,12 @@ ECode AbstractSequentialList::Set(
         Logger::E("AbstractSequentialList", "Index: %d", index);
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
-    if (prevObj != nullptr) {
-        it->Next(prevObj);
-    }
+    AutoPtr<IInterface> oldObj;
+    it->Next(oldObj);
     it->Set(obj);
+    if (prevObj != nullptr) {
+        oldObj.MoveTo(prevObj);
+    }
     return NOERROR;
 }
 
@@ -81,10 +83,12 @@ ECode AbstractSequentialList::Remove(
         Logger::E("AbstractSequentialList", "Index: %d", index);
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
-    if (obj != nullptr) {
-        it->Next(obj);
-    }
+    AutoPtr<IInterface> oldObj;
+    it->Next(oldObj);
     it->Remove();
+    if (obj != nullptr) {
+        oldObj.MoveTo(obj);
+    }
     return NOERROR;
 }
 
@@ -105,7 +109,7 @@ ECode AbstractSequentialList::AddAll(
     Boolean hasNext;
     while (it2->HasNext(hasNext), hasNext) {
         AutoPtr<IInterface> obj;
-        it2->Next(&obj);
+        it2->Next(obj);
         it1->Add(obj);
         modified = true;
     }

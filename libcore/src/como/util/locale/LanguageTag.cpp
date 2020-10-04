@@ -471,7 +471,7 @@ AutoPtr<ILanguageTag> LanguageTag::ParseLocale(
         Boolean hasNext;
         while (it->HasNext(hasNext), hasNext) {
             AutoPtr<IChar> locextKey;
-            it->Next((IInterface**)&locextKey);
+            it->Next(locextKey);
             AutoPtr<Extension> ext = localeExtensions->GetExtension(
                     CoreUtils::Unbox(locextKey));
             if (IsPrivateusePrefixChar(CoreUtils::Unbox(locextKey))) {
@@ -699,7 +699,7 @@ ECode LanguageTag::ToString(
         Boolean hasNext;
         while (it->HasNext(hasNext), hasNext) {
             AutoPtr<ICharSequence> extlang;
-            it->Next((IInterface**)&extlang);
+            it->Next(extlang);
             sb->Append(SEP);
             sb->Append(CoreUtils::Unbox(extlang));
         }
@@ -717,7 +717,7 @@ ECode LanguageTag::ToString(
         mVariants->GetIterator(it);
         while (it->HasNext(hasNext), hasNext) {
             AutoPtr<ICharSequence> variant;
-            it->Next((IInterface**)&variant);
+            it->Next(variant);
             sb->Append(SEP);
             sb->Append(CoreUtils::Unbox(variant));
         }
@@ -725,7 +725,7 @@ ECode LanguageTag::ToString(
         mExtensions->GetIterator(it);
         while (it->HasNext(hasNext), hasNext) {
             AutoPtr<ICharSequence> extension;
-            it->Next((IInterface**)&extension);
+            it->Next(extension);
             sb->Append(SEP);
             sb->Append(CoreUtils::Unbox(extension));
         }

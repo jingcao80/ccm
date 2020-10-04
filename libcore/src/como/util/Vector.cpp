@@ -752,42 +752,31 @@ ECode Vector::RemoveRange(
 
 ECode Vector::GetListIterator(
     /* [in] */ Integer index,
-    /* [out] */ IListIterator** it)
+    /* [out] */ AutoPtr<IListIterator>& it)
 {
-    VALIDATE_NOT_NULL(it);
-
     AutoLock lock(this);
 
     if (index < 0|| index > mElementCount) {
         Logger::E("Vector", "Index: %d", index);
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
-    AutoPtr<ListItr> lit = new ListItr(this, index);
-    lit.MoveTo(it);
+    it = new ListItr(this, index);
     return NOERROR;
 }
 
 ECode Vector::GetListIterator(
-    /* [out] */ IListIterator** it)
+    /* [out] */ AutoPtr<IListIterator>& it)
 {
-    VALIDATE_NOT_NULL(it);
-
     AutoLock lock(this);
-
-    AutoPtr<ListItr> lit = new ListItr(this, 0);
-    lit.MoveTo(it);
+    it = new ListItr(this, 0);
     return NOERROR;
 }
 
 ECode Vector::GetIterator(
-    /* [out] */ IIterator** it)
+    /* [out] */ AutoPtr<IIterator>& it)
 {
-    VALIDATE_NOT_NULL(it);
-
     AutoLock lock(this);
-
-    AutoPtr<Itr> itr = new Itr(this);
-    itr.MoveTo(it);
+    it = new Itr(this);
     return NOERROR;
 }
 
@@ -811,7 +800,7 @@ ECode Vector::Itr::HasNext(
 }
 
 ECode Vector::Itr::Next(
-    /* [out] */ IInterface** object)
+    /* [out] */ AutoPtr<IInterface>& object)
 {
     AutoLock lock(mOwner);
 
@@ -822,10 +811,7 @@ ECode Vector::Itr::Next(
     }
     mCursor = i + 1;
     mLastRet = i;
-    if (object != nullptr) {
-        *object = mOwner->ElementData(mLastRet);
-        REFCOUNT_ADD(*object);
-    }
+    object = mOwner->ElementData(mLastRet);
     return NOERROR;
 }
 
@@ -869,34 +855,28 @@ Vector::ListItr::ListItr(
 }
 
 ECode Vector::ListItr::HasPrevious(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
-    *result = mCursor != 0;
+    result = mCursor != 0;
     return NOERROR;
 }
 
 ECode Vector::ListItr::GetNextIndex(
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
-    VALIDATE_NOT_NULL(index);
-
-    *index = mCursor;
+    index = mCursor;
     return NOERROR;
 }
 
 ECode Vector::ListItr::GetPreviousIndex(
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
-    VALIDATE_NOT_NULL(index);
-
-    *index = mCursor - 1;
+    index = mCursor - 1;
     return NOERROR;
 }
 
 ECode Vector::ListItr::Previous(
-    /* [out] */ IInterface** object)
+    /* [out] */ AutoPtr<IInterface>& object)
 {
     AutoLock lock(mOwner);
 
@@ -907,10 +887,7 @@ ECode Vector::ListItr::Previous(
     }
     mCursor = i;
     mLastRet = i;
-    if (object != nullptr) {
-        *object = mOwner->ElementData(mLastRet);
-        REFCOUNT_ADD(*object);
-    }
+    object = mOwner->ElementData(mLastRet);
     return NOERROR;
 }
 
@@ -944,7 +921,7 @@ ECode Vector::ListItr::Add(
 }
 
 ECode Vector::ListItr::Next(
-    /* [out] */ IInterface** object)
+    /* [out] */ AutoPtr<IInterface>& object)
 {
     return Itr::Next(object);
 }

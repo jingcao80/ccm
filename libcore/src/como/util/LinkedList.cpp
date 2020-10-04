@@ -221,7 +221,7 @@ ECode LinkedList::Contains(
     /* [out] */ Boolean& result)
 {
     Integer idx;
-    IndexOf(obj, &idx);
+    IndexOf(obj, idx);
     result = idx != -1;
     return NOERROR;
 }
@@ -354,13 +354,10 @@ ECode LinkedList::Clear()
 
 ECode LinkedList::Get(
     /* [in] */ Integer index,
-    /* [out] */ IInterface** obj)
+    /* [out] */ AutoPtr<IInterface>& obj)
 {
-    VALIDATE_NOT_NULL(obj);
-
     FAIL_RETURN(CheckElementIndex(index));
-    *obj = GetNode(index)->mItem;
-    REFCOUNT_ADD(*obj);
+    obj = GetNode(index)->mItem;
     return NOERROR;
 }
 
@@ -465,15 +462,13 @@ AutoPtr<LinkedList::Node> LinkedList::GetNode(
 
 ECode LinkedList::IndexOf(
     /* [in] */ IInterface* obj,
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
-    VALIDATE_NOT_NULL(index);
-
     Integer idx = 0;
     if (obj == nullptr) {
         for (AutoPtr<Node> x = mFirst; x != nullptr; x = x->mNext) {
             if (x->mItem == nullptr) {
-                *index = idx;
+                index = idx;
                 return NOERROR;
             }
             idx++;
@@ -482,28 +477,26 @@ ECode LinkedList::IndexOf(
     else {
         for (AutoPtr<Node> x = mFirst; x != nullptr; x = x->mNext) {
             if (Object::Equals(obj, x->mItem)) {
-                *index = idx;
+                index = idx;
                 return NOERROR;
             }
             idx++;
         }
     }
-    *index = -1;
+    index = -1;
     return NOERROR;
 }
 
 ECode LinkedList::LastIndexOf(
     /* [in] */ IInterface* obj,
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
-    VALIDATE_NOT_NULL(index);
-
     Integer idx = mSize;
     if (obj == nullptr) {
         for (AutoPtr<Node> x = mLast; x != nullptr; x = x->mPrev) {
             idx--;
             if (x->mItem == nullptr) {
-                *index = idx;
+                index = idx;
                 return NOERROR;
             }
         }
@@ -512,12 +505,12 @@ ECode LinkedList::LastIndexOf(
         for (AutoPtr<Node> x = mLast; x != nullptr; x = x->mPrev) {
             idx--;
             if (Object::Equals(obj, x->mItem)) {
-                *index = idx;
+                index = idx;
                 return NOERROR;
             }
         }
     }
-    *index = -1;
+    index = -1;
     return NOERROR;
 }
 
@@ -672,13 +665,10 @@ ECode LinkedList::RemoveLastOccurrence(
 
 ECode LinkedList::GetListIterator(
     /* [in] */ Integer index,
-    /* [out] */ IListIterator** it)
+    /* [out] */ AutoPtr<IListIterator>& it)
 {
-    VALIDATE_NOT_NULL(it);
-
     FAIL_RETURN(CheckPositionIndex(index));
-    *it = new ListItr(this, index);
-    REFCOUNT_ADD(*it);
+    it = new ListItr(this, index);
     return NOERROR;
 }
 
@@ -764,7 +754,7 @@ ECode LinkedList::ListItr::HasNext(
 }
 
 ECode LinkedList::ListItr::Next(
-    /* [out] */ IInterface** object)
+    /* [out] */ AutoPtr<IInterface>& object)
 {
     FAIL_RETURN(CheckForComodification());
     Boolean hasNext;
@@ -775,56 +765,44 @@ ECode LinkedList::ListItr::Next(
     mLastReturned = mNext;
     mNext = mNext->mNext;
     mNextIndex++;
-    if (object != nullptr) {
-        *object = mLastReturned->mItem;
-        REFCOUNT_ADD(*object);
-    }
+    object = mLastReturned->mItem;
     return NOERROR;
 }
 
 ECode LinkedList::ListItr::HasPrevious(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
-    *result = mNextIndex > 0;
+    result = mNextIndex > 0;
     return NOERROR;
 }
 
 ECode LinkedList::ListItr::Previous(
-    /* [out] */ IInterface** object)
+    /* [out] */ AutoPtr<IInterface>& object)
 {
     FAIL_RETURN(CheckForComodification());
     Boolean hasPrevious;
-    if (HasPrevious(&hasPrevious), !hasPrevious) {
+    if (HasPrevious(hasPrevious), !hasPrevious) {
         return E_NO_SUCH_ELEMENT_EXCEPTION;
     }
 
     mNext = (mNext == nullptr) ? mOwner->mLast.Get() : mNext->mPrev;
     mLastReturned = mNext;
     mNextIndex--;
-    if (object != nullptr) {
-        *object = mLastReturned->mItem;
-        REFCOUNT_ADD(*object);
-    }
+    object = mLastReturned->mItem;
     return NOERROR;
 }
 
 ECode LinkedList::ListItr::GetNextIndex(
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
-    VALIDATE_NOT_NULL(index);
-
-    *index = mNextIndex;
+    index = mNextIndex;
     return NOERROR;
 }
 
 ECode LinkedList::ListItr::GetPreviousIndex(
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
-    VALIDATE_NOT_NULL(index);
-
-    *index = mNextIndex - 1;
+    index = mNextIndex - 1;
     return NOERROR;
 }
 
@@ -898,11 +876,11 @@ LinkedList::DescendingIterator::DescendingIterator(
 ECode LinkedList::DescendingIterator::HasNext(
     /* [out] */ Boolean& result)
 {
-    return mItr->HasPrevious(&result);
+    return mItr->HasPrevious(result);
 }
 
 ECode LinkedList::DescendingIterator::Next(
-    /* [out] */ IInterface** object)
+    /* [out] */ AutoPtr<IInterface>& object)
 {
     return mItr->Previous(object);
 }

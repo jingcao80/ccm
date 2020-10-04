@@ -2072,25 +2072,25 @@ ECode ConcurrentHashMap::BaseIterator::Remove()
 COMO_INTERFACE_IMPL_LIGHT_2(ConcurrentHashMap::KeyIterator, LightRefBase, IIterator, IEnumeration);
 
 ECode ConcurrentHashMap::KeyIterator::Next(
-    /* [out] */ IInterface** object)
+    /* [out] */ AutoPtr<IInterface>& object)
 {
-    VALIDATE_NOT_NULL(object);
-
     AutoPtr<Node> p;
     if ((p = mNext) == nullptr) {
         return E_NO_SUCH_ELEMENT_EXCEPTION;
     }
-    AutoPtr<IInterface> k = p->mKey;
+    object = p->mKey;
     mLastReturned = p;
     Advance();
-    k.MoveTo(object);
     return NOERROR;
 }
 
 ECode ConcurrentHashMap::KeyIterator::NextElement(
     /* [out] */ IInterface** object)
 {
-    return Next(object);
+    AutoPtr<IInterface> e;
+    Next(e);
+    e.MoveTo(object);
+    return NOERROR;
 }
 
 ECode ConcurrentHashMap::KeyIterator::HasNext(
@@ -2115,25 +2115,25 @@ ECode ConcurrentHashMap::KeyIterator::HasMoreElements(
 COMO_INTERFACE_IMPL_LIGHT_2(ConcurrentHashMap::ValueIterator, LightRefBase, IIterator, IEnumeration);
 
 ECode ConcurrentHashMap::ValueIterator::Next(
-    /* [out] */ IInterface** object)
+    /* [out] */ AutoPtr<IInterface>& object)
 {
-    VALIDATE_NOT_NULL(object);
-
     AutoPtr<Node> p;
     if ((p = mNext) == nullptr) {
         return E_NO_SUCH_ELEMENT_EXCEPTION;
     }
-    VOLATILE_GET(AutoPtr<IInterface> v, p->mVal);
+    VOLATILE_GET(object, p->mVal);
     mLastReturned = p;
     Advance();
-    v.MoveTo(object);
     return NOERROR;
 }
 
 ECode ConcurrentHashMap::ValueIterator::NextElement(
     /* [out] */ IInterface** object)
 {
-    return Next(object);
+    AutoPtr<IInterface> e;
+    Next(e);
+    e.MoveTo(object);
+    return NOERROR;
 }
 
 ECode ConcurrentHashMap::ValueIterator::HasNext(
@@ -2158,10 +2158,8 @@ ECode ConcurrentHashMap::ValueIterator::HasMoreElements(
 COMO_INTERFACE_IMPL_LIGHT_1(ConcurrentHashMap::EntryIterator, LightRefBase, IIterator);
 
 ECode ConcurrentHashMap::EntryIterator::Next(
-    /* [out] */ IInterface** object)
+    /* [out] */ AutoPtr<IInterface>& object)
 {
-    VALIDATE_NOT_NULL(object);
-
     AutoPtr<Node> p;
     if ((p = mNext) == nullptr) {
         return E_NO_SUCH_ELEMENT_EXCEPTION;
@@ -2170,8 +2168,7 @@ ECode ConcurrentHashMap::EntryIterator::Next(
     VOLATILE_GET(AutoPtr<IInterface> v, p->mVal);
     mLastReturned = p;
     Advance();
-    *object = (IMapEntry*)new MapEntry(k, v, mMap);
-    REFCOUNT_ADD(*object);
+    object = (IMapEntry*)new MapEntry(k, v, mMap);
     return NOERROR;
 }
 

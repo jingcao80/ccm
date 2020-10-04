@@ -51,7 +51,7 @@ ECode AbstractCollection::Contains(
         Boolean hasNext;
         while (it->HasNext(hasNext), hasNext) {
             AutoPtr<IInterface> e;
-            it->Next(&e);
+            it->Next(e);
             if (e == nullptr) {
                 result = true;
                 return NOERROR;
@@ -62,7 +62,7 @@ ECode AbstractCollection::Contains(
         Boolean hasNext;
         while (it->HasNext(hasNext), hasNext) {
             AutoPtr<IInterface> e;
-            it->Next(&e);
+            it->Next(e);
             if (Object::Equals(obj, e)) {
                 result = true;
                 return NOERROR;
@@ -90,7 +90,7 @@ ECode AbstractCollection::ToArray(
             return Arrays::CopyOf(r, i, objs);
         }
         AutoPtr<IInterface> e;
-        it->Next(&e);
+        it->Next(e);
         r.Set(i, e);
     }
     Boolean hasNext;
@@ -122,7 +122,7 @@ ECode AbstractCollection::ToArray(
             return Arrays::CopyOf(r, i, objs);
         }
         AutoPtr<IInterface> e;
-        it->Next(&e);
+        it->Next(e);
         r.Set(i, e != nullptr ? e->Probe(iid) : nullptr);
     }
     Boolean hasNext;
@@ -156,7 +156,7 @@ ECode AbstractCollection::FinishToArray(
             r = newArray;
         }
         AutoPtr<IInterface> obj;
-        it->Next(&obj);
+        it->Next(obj);
         r.Set(i++, obj);
     }
     // trim if overallocated
@@ -190,7 +190,7 @@ ECode AbstractCollection::FinishToArray(
             r = newArray;
         }
         AutoPtr<IInterface> obj;
-        it->Next(&obj);
+        it->Next(obj);
         r.Set(i++, obj->Probe(iid));
     }
     // trim if overallocated
@@ -232,7 +232,7 @@ ECode AbstractCollection::Remove(
         Boolean hasNext;
         while (it->HasNext(hasNext), hasNext) {
             AutoPtr<IInterface> e;
-            it->Next(&e);
+            it->Next(e);
             if (e == nullptr) {
                 it->Remove();
                 if (changed != nullptr) *changed = true;
@@ -244,7 +244,7 @@ ECode AbstractCollection::Remove(
         Boolean hasNext;
         while (it->HasNext(hasNext), hasNext) {
             AutoPtr<IInterface> e;
-            it->Next(&e);
+            it->Next(e);
             if (Object::Equals(obj, e)) {
                 it->Remove();
                 if (changed != nullptr) *changed = true;
@@ -265,7 +265,7 @@ ECode AbstractCollection::ContainsAll(
     Boolean hasNext;
     while (it->HasNext(hasNext), hasNext) {
         AutoPtr<IInterface> e;
-        it->Next(&e);
+        it->Next(e);
         Boolean contains;
         if (Contains(e, contains), !contains) {
             result = false;
@@ -286,7 +286,7 @@ ECode AbstractCollection::AddAll(
     Boolean hasNext;
     while (it->HasNext(hasNext), hasNext) {
         AutoPtr<IInterface> e;
-        it->Next(&e);
+        it->Next(e);
         Boolean result;
         if (Add(e, &result), result) {
             modified = true;
@@ -306,7 +306,7 @@ ECode AbstractCollection::RemoveAll(
     Boolean hasNext;
     while (it->HasNext(hasNext), hasNext) {
         AutoPtr<IInterface> e;
-        it->Next(&e);
+        it->Next(e);
         Boolean result;
         if (c->Contains(e, result), result) {
             it->Remove();
@@ -327,7 +327,7 @@ ECode AbstractCollection::RetainAll(
     Boolean hasNext;
     while (it->HasNext(hasNext), hasNext) {
         AutoPtr<IInterface> e;
-        it->Next(&e);
+        it->Next(e);
         Boolean result;
         if (c->Contains(e, result), !result) {
             it->Remove();
@@ -344,7 +344,8 @@ ECode AbstractCollection::Clear()
     GetIterator(it);
     Boolean hasNext;
     while (it->HasNext(hasNext), hasNext) {
-        it->Next();
+        AutoPtr<IInterface> e;
+        it->Next(e);
         it->Remove();
     }
     return NOERROR;
@@ -366,7 +367,7 @@ ECode AbstractCollection::ToString(
     sb->Append(U'[');
     for (;;) {
         AutoPtr<IInterface> e;
-        it->Next(&e);
+        it->Next(e);
         sb->Append(IInterface::Equals(e, (ICollection*)this) ?
                 String("(this Collection)") : Object::ToString(e));
         if (it->HasNext(hasNext), !hasNext) {

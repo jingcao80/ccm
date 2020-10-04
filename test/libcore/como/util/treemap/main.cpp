@@ -65,7 +65,7 @@ TEST(TreeMapTest, TestEntrySetSetValue)
     AutoPtr<IIterator> it;
     entries->GetIterator(it);
     AutoPtr<IMapEntry> entryA;
-    it->Next((IInterface**)&entryA);
+    it->Next(entryA);
     AutoPtr<IInterface> prevValue;
     entryA->SetValue(CoreUtils::Box(String("x")), &prevValue);
     EXPECT_STREQ("a", CoreUtils::Unbox(ICharSequence::Probe(prevValue)).string());
@@ -75,13 +75,13 @@ TEST(TreeMapTest, TestEntrySetSetValue)
     map->Get(CoreUtils::Box(String("A")), value);
     EXPECT_STREQ("x", CoreUtils::Unbox(ICharSequence::Probe(value)).string());
     AutoPtr<IMapEntry> entryB;
-    it->Next((IInterface**)&entryB);
+    it->Next(entryB);
     entryB->SetValue(CoreUtils::Box(String("y")), &prevValue);
     EXPECT_STREQ("b", CoreUtils::Unbox(ICharSequence::Probe(prevValue)).string());
     entryB->GetValue(value);
     EXPECT_STREQ("y", CoreUtils::Unbox(ICharSequence::Probe(value)).string());
     AutoPtr<IMapEntry> entryC;
-    it->Next((IInterface**)&entryC);
+    it->Next(entryC);
     prevValue = nullptr;
     entryC->SetValue(CoreUtils::Box(String("z")), &prevValue);
     EXPECT_STREQ("c", CoreUtils::Unbox(ICharSequence::Probe(prevValue)).string());
@@ -109,7 +109,7 @@ TEST(TreeMapTest, TestSubMapEntrySetSetValue)
     AutoPtr<IIterator> it;
     entries->GetIterator(it);
     AutoPtr<IMapEntry> entryA;
-    it->Next((IInterface**)&entryA);
+    it->Next(entryA);
     AutoPtr<IInterface> prevValue;
     entryA->SetValue(CoreUtils::Box(String("x")), &prevValue);
     EXPECT_STREQ("a", CoreUtils::Unbox(ICharSequence::Probe(prevValue)).string());
@@ -121,14 +121,14 @@ TEST(TreeMapTest, TestSubMapEntrySetSetValue)
     map->Get(CoreUtils::Box(String("A")), value);
     EXPECT_STREQ("x", CoreUtils::Unbox(ICharSequence::Probe(value)).string());
     AutoPtr<IMapEntry> entryB;
-    it->Next((IInterface**)&entryB);
+    it->Next(entryB);
     prevValue = nullptr;
     entryB->SetValue(CoreUtils::Box(String("y")), &prevValue);
     EXPECT_STREQ("b", CoreUtils::Unbox(ICharSequence::Probe(prevValue)).string());
     entryB->GetValue(value);
     EXPECT_STREQ("y", CoreUtils::Unbox(ICharSequence::Probe(value)).string());
     AutoPtr<IMapEntry> entryC;
-    it->Next((IInterface**)&entryC);
+    it->Next(entryC);
     prevValue = nullptr;
     entryC->SetValue(CoreUtils::Box(String("z")), &prevValue);
     EXPECT_STREQ("c", CoreUtils::Unbox(ICharSequence::Probe(prevValue)).string());
@@ -210,11 +210,12 @@ TEST(TreeMapTest, TestConcurrentModificationDetection)
     map->GetEntrySet(entries);
     AutoPtr<IIterator> it;
     entries->GetIterator(it);
-    it->Next();
-    it->Next();
+    AutoPtr<IInterface> value;
+    it->Next(value);
+    it->Next(value);
     it->Remove();
     map->Put(CoreUtils::Box(String("D")), CoreUtils::Box(String("d")));
-    ECode ec = it->Next();
+    ECode ec = it->Next(value);
     EXPECT_EQ(ec, E_CONCURRENT_MODIFICATION_EXCEPTION);
 }
 
@@ -232,20 +233,18 @@ TEST(TreeMapTest, TestIteratorRemoves)
     entries->GetIterator(it);
 
     AutoPtr<IMapEntry> entry;
-    it->Next((IInterface**)&entry);
+    it->Next(entry);
     AutoPtr<IInterface> key;
     entry->GetKey(key);
     EXPECT_STREQ("A", CoreUtils::Unbox(ICharSequence::Probe(key)).string());
 
-    entry = nullptr;
-    it->Next((IInterface**)&entry);
+    it->Next(entry);
     entry->GetKey(key);
     EXPECT_STREQ("B", CoreUtils::Unbox(ICharSequence::Probe(key)).string());
 
     it->Remove();
 
-    entry = nullptr;
-    it->Next((IInterface**)&entry);
+    it->Next(entry);
     entry->GetKey(key);
     EXPECT_STREQ("C", CoreUtils::Unbox(ICharSequence::Probe(key)).string());
 

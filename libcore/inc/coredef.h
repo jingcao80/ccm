@@ -24,7 +24,7 @@
         Boolean hasNext; \
         while (it->HasNext(hasNext), hasNext) { \
             AutoPtr<IInterface> obj; \
-            it->Next(&obj); \
+            it->Next(obj); \
             Type element = (Type)TypeCastFunc(obj);
 
 #define FOR_EACH_2(Type, element, TypeCastFuncInner, TypeCastFuncOuter, container) \
@@ -34,7 +34,7 @@
         Boolean hasNext; \
         while (it->HasNext(hasNext), hasNext) { \
             AutoPtr<IInterface> obj; \
-            it->Next(&obj); \
+            it->Next(obj); \
             Type element = (Type)TypeCastFuncOuter(TypeCastFuncInner(obj));
 
 #define END_FOR_EACH() }}

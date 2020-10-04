@@ -309,7 +309,7 @@ ECode Hashtable::PutAll(
     Boolean hasNext;
     while (it->HasNext(hasNext), hasNext) {
         AutoPtr<IInterface> obj;
-        it->Next(&obj);
+        it->Next(obj);
         AutoPtr<IInterface> key, value;
         IMapEntry::Probe(obj)->GetKey(key);
         IMapEntry::Probe(obj)->GetValue(value);
@@ -371,7 +371,7 @@ ECode Hashtable::ToString(
     sb->Append(U'{');
     for (Integer i = 0; ; i++) {
         AutoPtr<IInterface> e;
-        it->Next(&e);
+        it->Next(e);
         AutoPtr<IInterface> key, value;
         IMapEntry::Probe(e)->GetKey(key);
         IMapEntry::Probe(e)->GetValue(value);
@@ -453,7 +453,7 @@ ECode Hashtable::Equals(
     Boolean hasNext;
     while (it->HasNext(hasNext), hasNext) {
         AutoPtr<IInterface> o;
-        it->Next(&o);
+        it->Next(o);
         IMapEntry* e = IMapEntry::Probe(o);
         AutoPtr<IInterface> key, value;
         e->GetKey(key);
@@ -841,12 +841,12 @@ ECode Hashtable::Enumerator::HasNext(
 }
 
 ECode Hashtable::Enumerator::Next(
-    /* [out] */ IInterface** object)
+    /* [out] */ AutoPtr<IInterface>& object)
 {
     if (mOwner->mModCount != mExpectedModCount) {
         return E_CONCURRENT_MODIFICATION_EXCEPTION;
     }
-    return NextElement(object);
+    return NextElement(&object);
 }
 
 ECode Hashtable::Enumerator::Remove()

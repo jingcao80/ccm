@@ -729,7 +729,7 @@ ECode ConcurrentLinkedQueue::Itr::HasNext(
 }
 
 ECode ConcurrentLinkedQueue::Itr::Next(
-    /* [out] */ IInterface** object)
+    /* [out] */ AutoPtr<IInterface>& object)
 {
     AutoPtr<Node> pred = mNextNode;
     if (pred == nullptr) {
@@ -741,20 +741,14 @@ ECode ConcurrentLinkedQueue::Itr::Next(
     for (AutoPtr<Node> p = mOwner->Succ(pred), q;; p = q) {
         if (p == nullptr) {
             mNextNode = p;
-            if (object != nullptr) {
-                *object = mNextItem;
-                REFCOUNT_ADD(*object);
-            }
+            object = mNextItem;
             mNextItem = item;
             return NOERROR;
         }
         VOLATILE_GET(item, p->mItem);
         if (item != nullptr) {
             mNextNode = p;
-            if (object != nullptr) {
-                *object = mNextItem;
-                REFCOUNT_ADD(*object);
-            }
+            object = mNextItem;
             mNextItem = item;
             return NOERROR;
         }

@@ -260,7 +260,7 @@ private:
         {}
 
         ECode Next(
-            /* [out] */ IInterface** object = nullptr) override;
+            /* [out] */ AutoPtr<IInterface>& object) override;
     };
 
     class ValueIterator
@@ -274,7 +274,7 @@ private:
         {}
 
         ECode Next(
-            /* [out] */ IInterface** object = nullptr) override;
+            /* [out] */ AutoPtr<IInterface>& object) override;
     };
 
     class KeyIterator
@@ -288,7 +288,7 @@ private:
         {}
 
         ECode Next(
-            /* [out] */ IInterface** object = nullptr) override;
+            /* [out] */ AutoPtr<IInterface>& object) override;
     };
 
     class DescendingKeyIterator
@@ -302,7 +302,7 @@ private:
         {}
 
         ECode Next(
-            /* [out] */ IInterface** object = nullptr) override;
+            /* [out] */ AutoPtr<IInterface>& object) override;
 
         ECode Remove() override;
     };
@@ -392,7 +392,7 @@ private:
             {}
 
             ECode Next(
-                /* [out] */ IInterface** object = nullptr) override;
+                /* [out] */ AutoPtr<IInterface>& object) override;
 
             ECode Remove() override;
         };
@@ -409,7 +409,7 @@ private:
             {}
 
             ECode Next(
-                /* [out] */ IInterface** object = nullptr) override;
+                /* [out] */ AutoPtr<IInterface>& object) override;
 
             ECode Remove() override;
         };
@@ -426,7 +426,7 @@ private:
             {}
 
             ECode Next(
-                /* [out] */ IInterface** object = nullptr) override;
+                /* [out] */ AutoPtr<IInterface>& object) override;
 
             ECode Remove() override;
         };
@@ -443,7 +443,7 @@ private:
             {}
 
             ECode Next(
-                /* [out] */ IInterface** object = nullptr) override;
+                /* [out] */ AutoPtr<IInterface>& object) override;
 
             ECode Remove() override;
         };

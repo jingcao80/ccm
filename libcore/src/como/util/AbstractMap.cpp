@@ -62,7 +62,7 @@ ECode AbstractMap::ContainsValue(
         Boolean hasNext;
         while (it->HasNext(hasNext), hasNext) {
             AutoPtr<IInterface> e;
-            it->Next(&e);
+            it->Next(e);
             AutoPtr<IInterface> v;
             if (IMapEntry::Probe(e)->GetValue(v),
                     v == nullptr) {
@@ -75,7 +75,7 @@ ECode AbstractMap::ContainsValue(
         Boolean hasNext;
         while (it->HasNext(hasNext), hasNext) {
             AutoPtr<IInterface> e;
-            it->Next(&e);
+            it->Next(e);
             AutoPtr<IInterface> v;
             if (IMapEntry::Probe(e)->GetValue(v),
                     Object::Equals(value, v)) {
@@ -100,7 +100,7 @@ ECode AbstractMap::ContainsKey(
         Boolean hasNext;
         while (it->HasNext(hasNext), hasNext) {
             AutoPtr<IInterface> e;
-            it->Next(&e);
+            it->Next(e);
             AutoPtr<IInterface> k;
             if (IMapEntry::Probe(e)->GetKey(k),
                     k == nullptr) {
@@ -113,7 +113,7 @@ ECode AbstractMap::ContainsKey(
         Boolean hasNext;
         while (it->HasNext(hasNext), hasNext) {
             AutoPtr<IInterface> e;
-            it->Next(&e);
+            it->Next(e);
             AutoPtr<IInterface> k;
             if (IMapEntry::Probe(e)->GetKey(k),
                     Object::Equals(key, k)) {
@@ -138,7 +138,7 @@ ECode AbstractMap::Get(
         Boolean hasNext;
         while (it->HasNext(hasNext), hasNext) {
             AutoPtr<IInterface> e;
-            it->Next(&e);
+            it->Next(e);
             AutoPtr<IInterface> k;
             if (IMapEntry::Probe(e)->GetKey(k),
                     k == nullptr) {
@@ -150,7 +150,7 @@ ECode AbstractMap::Get(
         Boolean hasNext;
         while (it->HasNext(hasNext), hasNext) {
             AutoPtr<IInterface> e;
-            it->Next(&e);
+            it->Next(e);
             AutoPtr<IInterface> k;
             if (IMapEntry::Probe(e)->GetKey(k),
                     Object::Equals(key, k)) {
@@ -186,7 +186,7 @@ ECode AbstractMap::Remove(
         while (correctEntry == nullptr &&
                 (it->HasNext(hasNext), hasNext)) {
             AutoPtr<IInterface> e;
-            it->Next(&e);
+            it->Next(e);
             AutoPtr<IInterface> k;
             if (IMapEntry::Probe(e)->GetKey(k),
                     k == nullptr) {
@@ -199,7 +199,7 @@ ECode AbstractMap::Remove(
         while (correctEntry == nullptr &&
                 (it->HasNext(hasNext), hasNext)) {
             AutoPtr<IInterface> e;
-            it->Next(&e);
+            it->Next(e);
             AutoPtr<IInterface> k;
             if (IMapEntry::Probe(e)->GetKey(k),
                     Object::Equals(key, k)) {
@@ -232,7 +232,7 @@ ECode AbstractMap::PutAll(
     Boolean hasNext;
     while (it->HasNext(hasNext), hasNext) {
         AutoPtr<IInterface> e;
-        it->Next(&e);
+        it->Next(e);
         AutoPtr<IInterface> k, v;
         IMapEntry::Probe(e)->GetKey(k);
         IMapEntry::Probe(e)->GetValue(v);
@@ -329,15 +329,11 @@ ECode AbstractMap::GetKeySet(
                     }
 
                     ECode Next(
-                        /* [out] */ IInterface** object = nullptr) override
+                        /* [out] */ AutoPtr<IInterface>& object) override
                     {
-                        AutoPtr<IInterface> e;
-                        mIt->Next(&e);
-                        if (object != nullptr) {
-                            AutoPtr<IInterface> v;
-                            IMapEntry::Probe(e)->GetKey(v);
-                            v.MoveTo(object);
-                        }
+                        AutoPtr<IMapEntry> e;
+                        mIt->Next(e);
+                        e->GetKey(object);
                         return NOERROR;
                     }
 
@@ -460,15 +456,11 @@ ECode AbstractMap::GetValues(
                     }
 
                     ECode Next(
-                        /* [out] */ IInterface** object = nullptr) override
+                        /* [out] */ AutoPtr<IInterface>& object) override
                     {
-                        AutoPtr<IInterface> e;
-                        mIt->Next(&e);
-                        if (object != nullptr) {
-                            AutoPtr<IInterface> v;
-                            IMapEntry::Probe(e)->GetValue(v);
-                            v.MoveTo(object);
-                        }
+                        AutoPtr<IMapEntry> e;
+                        mIt->Next(e);
+                        e->GetValue(object);
                         return NOERROR;
                     }
 
@@ -555,7 +547,7 @@ ECode AbstractMap::Equals(
     Boolean hasNext;
     while (it->HasNext(hasNext), hasNext) {
         AutoPtr<IInterface> e;
-        it->Next(&e);
+        it->Next(e);
         AutoPtr<IInterface> key, value;
         IMapEntry::Probe(e)->GetKey(key);
         IMapEntry::Probe(e)->GetValue(value);
@@ -592,7 +584,7 @@ ECode AbstractMap::GetHashCode(
     Boolean hasNext;
     while (it->HasNext(hasNext), hasNext) {
         AutoPtr<IInterface> e;
-        it->Next(&e);
+        it->Next(e);
         hash += Object::GetHashCode(e);
     }
     return NOERROR;
@@ -616,7 +608,7 @@ ECode AbstractMap::ToString(
     sb->Append(U'{');
     for (;;) {
         AutoPtr<IInterface> e;
-        it->Next(&e);
+        it->Next(e);
         AutoPtr<IInterface> key, value;
         IMapEntry::Probe(e)->GetKey(key);
         IMapEntry::Probe(e)->GetValue(value);

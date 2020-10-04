@@ -78,19 +78,19 @@ private:
             /* [out] */ Boolean& result) override;
 
         ECode Next(
-            /* [out] */ IInterface** object = nullptr) override;
+            /* [out] */ AutoPtr<IInterface>& object) override;
 
         ECode HasPrevious(
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
 
         ECode Previous(
-            /* [out] */ IInterface** object = nullptr) override;
+            /* [out] */ AutoPtr<IInterface>& object) override;
 
         ECode GetNextIndex(
-            /* [out] */ Integer* index) override;
+            /* [out] */ Integer& index) override;
 
         ECode GetPreviousIndex(
-            /* [out] */ Integer* index) override;
+            /* [out] */ Integer& index) override;
 
         ECode Remove() override;
 
@@ -124,7 +124,7 @@ private:
             /* [out] */ Boolean& result) override;
 
         ECode Next(
-            /* [out] */ IInterface** object = nullptr) override;
+            /* [out] */ AutoPtr<IInterface>& object) override;
 
         ECode Remove() override;
 
@@ -186,7 +186,7 @@ public:
 
     ECode Get(
         /* [in] */ Integer index,
-        /* [out] */ IInterface** obj) override;
+        /* [out] */ AutoPtr<IInterface>& obj) override;
 
     ECode Set(
         /* [in] */ Integer index,
@@ -203,11 +203,11 @@ public:
 
     ECode IndexOf(
         /* [in] */ IInterface* obj,
-        /* [out] */ Integer* index) override;
+        /* [out] */ Integer& index) override;
 
     ECode LastIndexOf(
         /* [in] */ IInterface* obj,
-        /* [out] */ Integer* index) override;
+        /* [out] */ Integer& index) override;
 
     ECode Peek(
         /* [out] */ AutoPtr<IInterface>& e) override;
@@ -261,7 +261,7 @@ public:
 
     ECode GetListIterator(
         /* [in] */ Integer index,
-        /* [out] */ IListIterator** it) override;
+        /* [out] */ AutoPtr<IListIterator>& it) override;
 
     ECode GetDescendingIterator(
         /* [out] */ AutoPtr<IIterator>& it) override;

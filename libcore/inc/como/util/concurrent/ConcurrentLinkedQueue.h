@@ -61,7 +61,7 @@ private:
             /* [out] */ Boolean& result) override;
 
         ECode Next(
-            /* [out] */ IInterface** object = nullptr) override;
+            /* [out] */ AutoPtr<IInterface>& object) override;
 
         ECode Remove() override;
 

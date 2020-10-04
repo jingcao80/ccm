@@ -135,7 +135,7 @@ void ExpiringCache::Cleanup()
     Boolean hasNext;
     while (it->HasNext(hasNext), hasNext) {
         AutoPtr<IInterface> obj;
-        it->Next(&obj);
+        it->Next(obj);
         keys[i++] = CoreUtils::Unbox(ICharSequence::Probe(obj));
     }
     for (Integer j = 0; j < keys.GetLength(); j++) {

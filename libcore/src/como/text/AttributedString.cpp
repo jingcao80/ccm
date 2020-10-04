@@ -255,7 +255,7 @@ ECode AttributedString::Constructor(
         Boolean hasNext;
         while (it->HasNext(hasNext), hasNext) {
             AutoPtr<IMapEntry> entry;
-            it->Next((IInterface**)&entry);
+            it->Next(entry);
             AutoPtr<IInterface> key, value;
             entry->GetKey(key);
             entry->GetValue(value);
@@ -348,7 +348,7 @@ ECode AttributedString::Constructor(
     Boolean hasNext;
     while (itr->HasNext(hasNext), hasNext) {
         AutoPtr<IAttributedCharacterIterator::IAttribute> attributeKey;
-        itr->Next((IInterface**)&attributeKey);
+        itr->Next(attributeKey);
         textAlias->SetIndex(textBeginIndex);
         while (textAlias->GetIndex(textIndex), textIndex < endIndex) {
             Integer start, limit;
@@ -469,7 +469,7 @@ ECode AttributedString::AddAttributes(
     Boolean hasNext;
     while (it->HasNext(hasNext), hasNext) {
         AutoPtr<IMapEntry> entry;
-        it->Next((IInterface**)&entry);
+        it->Next(entry);
         AutoPtr<IInterface> key, value;
         entry->GetKey(key);
         entry->GetValue(value);
@@ -729,7 +729,7 @@ Boolean AttributedString::AttributeValuesMatch(
     Boolean hasNext;
     while (it->HasNext(hasNext), hasNext) {
         AutoPtr<IAttributedCharacterIterator::IAttribute> key;
-        it->Next((IInterface**)&key);
+        it->Next(key);
         if (!ValuesMatch(GetAttribute(key, runIndex1), GetAttribute(key, runIndex2))) {
             return false;
         }
@@ -782,8 +782,7 @@ void AttributedString::SetAttributes(
         Boolean hasNext;
         while (it->HasNext(hasNext), hasNext) {
             AutoPtr<IMapEntry> entry;
-            it->Next((IInterface**)&entry);
-
+            it->Next(entry);
             AutoPtr<IInterface> key, value;
             entry->GetKey(key);
             entry->GetValue(value);

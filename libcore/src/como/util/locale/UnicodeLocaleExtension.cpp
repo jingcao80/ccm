@@ -88,7 +88,7 @@ UnicodeLocaleExtension::UnicodeLocaleExtension(
         Boolean hasNext;
         while (it->HasNext(hasNext), hasNext) {
             AutoPtr<IInterface> attribute;
-            it->Next(&attribute);
+            it->Next(attribute);
             sb->Append(ILanguageTag::SEP);
             sb->Append(ICharSequence::Probe(attribute));
         }
@@ -97,7 +97,7 @@ UnicodeLocaleExtension::UnicodeLocaleExtension(
         entries->GetIterator(it);
         while (it->HasNext(hasNext), hasNext) {
             AutoPtr<IInterface> keyword;
-            it->Next(&keyword);
+            it->Next(keyword);
             AutoPtr<IInterface> key, value;
             IMapEntry::Probe(keyword)->GetKey(key);
             IMapEntry::Probe(keyword)->GetValue(value);

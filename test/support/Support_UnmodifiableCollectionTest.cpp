@@ -89,13 +89,13 @@ ECode Support_UnmodifiableCollectionTest::RunTest()
     Boolean hasNext;
     while (it->HasNext(hasNext), hasNext) {
         AutoPtr<IInterface> elem;
-        it->Next(&elem);
+        it->Next(elem);
         ss->Add(elem);
     }
     ss->GetIterator(it);
     for (Integer counter = 0; it->HasNext(hasNext), hasNext; counter++) {
         AutoPtr<IInterface> elem;
-        it->Next(&elem);
+        it->Next(elem);
         Integer nextValue = CoreUtils::Unbox(IInteger::Probe(elem));
         EXPECT_TRUE(nextValue == counter);
     }
@@ -110,7 +110,7 @@ ECode Support_UnmodifiableCollectionTest::RunTest()
     mCol->ToArray(&objArray);
     for (Integer counter = 0; it->HasNext(hasNext), hasNext; counter++) {
         AutoPtr<IInterface> elem;
-        it->Next(&elem);
+        it->Next(elem);
         EXPECT_TRUE(objArray[counter] == elem);
     }
 

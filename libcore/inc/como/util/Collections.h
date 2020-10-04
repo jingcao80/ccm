@@ -619,7 +619,7 @@ private:
             /* [out] */ Boolean& result) override;
 
         ECode Next(
-            /* [out] */ IInterface** object = nullptr) override;
+            /* [out] */ AutoPtr<IInterface>& object) override;
 
         ECode Remove() override;
 
@@ -634,16 +634,16 @@ private:
         COMO_INTERFACE_DECL();
 
         ECode HasPrevious(
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
 
         ECode Previous(
-            /* [out] */ IInterface** object = nullptr) override;
+            /* [out] */ AutoPtr<IInterface>& object) override;
 
         ECode GetNextIndex(
-            /* [out] */ Integer* index) override;
+            /* [out] */ Integer& index) override;
 
         ECode GetPreviousIndex(
-            /* [out] */ Integer* index) override;
+            /* [out] */ Integer& index) override;
 
         ECode Set(
             /* [in] */ IInterface* object) override;
@@ -652,7 +652,7 @@ private:
             /* [in] */ IInterface* object) override;
 
         ECode Next(
-            /* [out] */ IInterface** object = nullptr) override;
+            /* [out] */ AutoPtr<IInterface>& object) override;
 
         ECode HasNext(
             /* [out] */ Boolean& result) override;

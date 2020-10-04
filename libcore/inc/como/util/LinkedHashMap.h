@@ -169,7 +169,7 @@ public:
         {}
 
         ECode Next(
-            /* [out] */ IInterface** object = nullptr) override;
+            /* [out] */ AutoPtr<IInterface>& object) override;
     };
 
     class LinkedValueIterator
@@ -182,7 +182,7 @@ public:
         {}
 
         ECode Next(
-            /* [out] */ IInterface** object = nullptr) override;
+            /* [out] */ AutoPtr<IInterface>& object) override;
     };
 
     class LinkedEntryIterator
@@ -195,7 +195,7 @@ public:
         {}
 
         ECode Next(
-            /* [out] */ IInterface** object = nullptr) override;
+            /* [out] */ AutoPtr<IInterface>& object) override;
     };
 
 public:
@@ -229,7 +229,7 @@ public:
     ECode Clear() override;
 
     ECode GetEldest(
-        /* [out] */ IMapEntry** entry) override;
+        /* [out] */ AutoPtr<IMapEntry>& entry) override;
 
     ECode GetKeySet(
         /* [out] */ AutoPtr<ISet>& keys) override;

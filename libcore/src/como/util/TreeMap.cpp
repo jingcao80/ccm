@@ -1271,12 +1271,12 @@ ECode TreeMap::BuildFromSorted(
     if (it != nullptr) {
         if (defaultVal == nullptr) {
             AutoPtr<IInterface> entry;
-            it->Next(&entry);
+            it->Next(entry);
             IMapEntry::Probe(entry)->GetKey(key);
             IMapEntry::Probe(entry)->GetValue(value);
         }
         else {
-            it->Next(&key);
+            it->Next(key);
             value = defaultVal;
         }
     }
@@ -1792,56 +1792,44 @@ ECode TreeMap::PrivateEntryIterator::Remove()
 //--------------------------------------------------------------------------
 
 ECode TreeMap::EntryIterator::Next(
-    /* [out] */ IInterface** object)
+    /* [out] */ AutoPtr<IInterface>& object)
 {
     AutoPtr<TreeMapEntry> entry;
     FAIL_RETURN(NextEntry(&entry));
-    if (object != nullptr) {
-        *object = (IMapEntry*)entry.Get();
-        REFCOUNT_ADD(*object);
-    }
+    object = (IMapEntry*)entry.Get();
     return NOERROR;
 }
 
 //--------------------------------------------------------------------------
 
 ECode TreeMap::ValueIterator::Next(
-    /* [out] */ IInterface** object)
+    /* [out] */ AutoPtr<IInterface>& object)
 {
     AutoPtr<TreeMapEntry> entry;
     FAIL_RETURN(NextEntry(&entry));
-    if (object != nullptr) {
-        *object = entry->mValue;
-        REFCOUNT_ADD(*object);
-    }
+    object = entry->mValue;
     return NOERROR;
 }
 
 //--------------------------------------------------------------------------
 
 ECode TreeMap::KeyIterator::Next(
-    /* [out] */ IInterface** object)
+    /* [out] */ AutoPtr<IInterface>& object)
 {
     AutoPtr<TreeMapEntry> entry;
     FAIL_RETURN(NextEntry(&entry));
-    if (object != nullptr) {
-        *object = entry->mKey;
-        REFCOUNT_ADD(*object);
-    }
+    object = entry->mKey;
     return NOERROR;
 }
 
 //--------------------------------------------------------------------------
 
 ECode TreeMap::DescendingKeyIterator::Next(
-    /* [out] */ IInterface** object)
+    /* [out] */ AutoPtr<IInterface>& object)
 {
     AutoPtr<TreeMapEntry> entry;
     FAIL_RETURN(PrevEntry(&entry));
-    if (object != nullptr) {
-        *object = entry->mKey;
-        REFCOUNT_ADD(*object);
-    }
+    object = entry->mKey;
     return NOERROR;
 }
 
@@ -2387,7 +2375,8 @@ ECode TreeMap::NavigableSubMap::EntrySetView::GetSize(
         Boolean hasNext;
         while (i->HasNext(hasNext), hasNext) {
             mSize++;
-            i->Next();
+            AutoPtr<IInterface> obj;
+            i->Next(obj);
         }
     }
     size = mSize;
@@ -2569,12 +2558,11 @@ ECode TreeMap::NavigableSubMap::SubMapIterator::RemoveDescending()
 //--------------------------------------------------------------------------
 
 ECode TreeMap::NavigableSubMap::SubMapEntryIterator::Next(
-    /* [out] */ IInterface** object)
+    /* [out] */ AutoPtr<IInterface>& object)
 {
     AutoPtr<TreeMapEntry> entry;
     FAIL_RETURN(NextEntry(&entry));
-    *object = (IMapEntry*)entry.Get();
-    REFCOUNT_ADD(*object);
+    object = (IMapEntry*)entry.Get();
     return NOERROR;
 }
 
@@ -2586,12 +2574,11 @@ ECode TreeMap::NavigableSubMap::SubMapEntryIterator::Remove()
 //--------------------------------------------------------------------------
 
 ECode TreeMap::NavigableSubMap::DescendingSubMapEntryIterator::Next(
-    /* [out] */ IInterface** object)
+    /* [out] */ AutoPtr<IInterface>& object)
 {
     AutoPtr<TreeMapEntry> entry;
     FAIL_RETURN(PrevEntry(&entry));
-    *object = (IMapEntry*)entry.Get();
-    REFCOUNT_ADD(*object);
+    object = (IMapEntry*)entry.Get();
     return NOERROR;
 }
 
@@ -2603,12 +2590,11 @@ ECode TreeMap::NavigableSubMap::DescendingSubMapEntryIterator::Remove()
 //--------------------------------------------------------------------------
 
 ECode TreeMap::NavigableSubMap::SubMapKeyIterator::Next(
-    /* [out] */ IInterface** object)
+    /* [out] */ AutoPtr<IInterface>& object)
 {
     AutoPtr<TreeMapEntry> entry;
     FAIL_RETURN(NextEntry(&entry));
-    *object = entry->mKey;
-    REFCOUNT_ADD(*object);
+    object = entry->mKey;
     return NOERROR;
 }
 
@@ -2620,12 +2606,11 @@ ECode TreeMap::NavigableSubMap::SubMapKeyIterator::Remove()
 //--------------------------------------------------------------------------
 
 ECode TreeMap::NavigableSubMap::DescendingSubMapKeyIterator::Next(
-    /* [out] */ IInterface** object)
+    /* [out] */ AutoPtr<IInterface>& object)
 {
     AutoPtr<TreeMapEntry> entry;
     FAIL_RETURN(PrevEntry(&entry));
-    *object = entry->mKey;
-    REFCOUNT_ADD(*object);
+    object = entry->mKey;
     return NOERROR;
 }
 

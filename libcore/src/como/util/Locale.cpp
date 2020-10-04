@@ -647,7 +647,7 @@ ECode Locale::ToLanguageTag(
     Boolean hasNext;
     while (it->HasNext(hasNext), hasNext) {
         AutoPtr<IInterface> obj;
-        it->Next(&obj);
+        it->Next(obj);
         buf->Append(ILanguageTag::SEP);
         buf->Append(CoreUtils::Unbox(ICharSequence::Probe(obj)));
     }
@@ -656,7 +656,7 @@ ECode Locale::ToLanguageTag(
     subtags->GetIterator(it);
     while (it->HasNext(hasNext), hasNext) {
         AutoPtr<IInterface> obj;
-        it->Next(&obj);
+        it->Next(obj);
         buf->Append(ILanguageTag::SEP);
         buf->Append(LanguageTag::CanonicalizeExtension(
                 CoreUtils::Unbox(ICharSequence::Probe(obj))));

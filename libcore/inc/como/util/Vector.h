@@ -55,7 +55,7 @@ protected:
             /* [out] */ Boolean& result) override;
 
         ECode Next(
-            /* [out] */ IInterface** object = nullptr) override;
+            /* [out] */ AutoPtr<IInterface>& object) override;
 
         ECode Remove() override;
 
@@ -83,16 +83,16 @@ protected:
         COMO_INTERFACE_DECL();
 
         ECode HasPrevious(
-            /* [out] */ Boolean* result) override;
+            /* [out] */ Boolean& result) override;
 
         ECode GetNextIndex(
-            /* [out] */ Integer* index) override;
+            /* [out] */ Integer& index) override;
 
         ECode GetPreviousIndex(
-            /* [out] */ Integer* index) override;
+            /* [out] */ Integer& index) override;
 
         ECode Previous(
-            /* [out] */ IInterface** object = nullptr) override;
+            /* [out] */ AutoPtr<IInterface>& object) override;
 
         ECode Set(
             /* [in] */ IInterface* object) override;
@@ -101,7 +101,7 @@ protected:
             /* [in] */ IInterface* object) override;
 
         ECode Next(
-            /* [out] */ IInterface** object = nullptr) override;
+            /* [out] */ AutoPtr<IInterface>& object) override;
 
         ECode HasNext(
             /* [out] */ Boolean& result) override;
@@ -274,13 +274,13 @@ public:
 
     ECode GetListIterator(
         /* [in] */ Integer index,
-        /* [out] */ IListIterator** it)override;
+        /* [out] */ AutoPtr<IListIterator>& it)override;
 
     ECode GetListIterator(
-        /* [out] */ IListIterator** it) override;
+        /* [out] */ AutoPtr<IListIterator>& it) override;
 
     ECode GetIterator(
-        /* [out] */ IIterator** it) override;
+        /* [out] */ AutoPtr<IIterator>& it) override;
 
 protected:
     ECode CloneImpl(

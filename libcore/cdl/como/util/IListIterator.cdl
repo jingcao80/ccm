@@ -30,22 +30,22 @@ interface IListIterator
         [in] IInterface* object);
 
     GetNextIndex(
-        [out] Integer* index);
+        [out] Integer& index);
 
     GetPreviousIndex(
-        [out] Integer* index);
+        [out] Integer& index);
 
     HasNext(
         [out] Boolean& result);
 
     HasPrevious(
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     Next(
-        [out] IInterface** object = nullptr);
+        [out] IInterface&& object);
 
     Previous(
-        [out] IInterface** object = nullptr);
+        [out] IInterface&& object);
 
     Remove();
 

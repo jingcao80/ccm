@@ -257,12 +257,9 @@ ECode LinkedHashMap::Clear()
 }
 
 ECode LinkedHashMap::GetEldest(
-    /* [out] */ IMapEntry** entry)
+    /* [out] */ AutoPtr<IMapEntry>& entry)
 {
-    VALIDATE_NOT_NULL(entry);
-
-    *entry = mHead.Get();
-    REFCOUNT_ADD(*entry);
+    entry = mHead.Get();
     return NOERROR;
 }
 
@@ -472,43 +469,33 @@ ECode LinkedHashMap::LinkedHashIterator::Remove()
 //--------------------------------------------------------------------------
 
 ECode LinkedHashMap::LinkedKeyIterator::Next(
-    /* [out] */ IInterface** object)
+    /* [out] */ AutoPtr<IInterface>& object)
 {
-    VALIDATE_NOT_NULL(object);
-
     AutoPtr<LinkedHashMapEntry> node;
     FAIL_RETURN(GetNextNode(&node));
-    AutoPtr<IInterface> k;
-    node->GetKey(k);
-    k.MoveTo(object);
+    node->GetKey(object);
     return NOERROR;
 }
 
 //--------------------------------------------------------------------------
 
 ECode LinkedHashMap::LinkedValueIterator::Next(
-    /* [out] */ IInterface** object)
+    /* [out] */ AutoPtr<IInterface>& object)
 {
-    VALIDATE_NOT_NULL(object);
-
     AutoPtr<LinkedHashMapEntry> node;
     FAIL_RETURN(GetNextNode(&node));
-    AutoPtr<IInterface> v;
-    node->GetValue(v);
-    v.MoveTo(object);
+    node->GetValue(object);
     return NOERROR;
 }
 
 //--------------------------------------------------------------------------
 
 ECode LinkedHashMap::LinkedEntryIterator::Next(
-    /* [out] */ IInterface** object)
+    /* [out] */ AutoPtr<IInterface>& object)
 {
-    VALIDATE_NOT_NULL(object);
-
     AutoPtr<LinkedHashMapEntry> node;
     FAIL_RETURN(GetNextNode(&node));
-    *object = (IMapEntry*)node.Get();
+    object = (IMapEntry*)node.Get();
     return NOERROR;
 }
 

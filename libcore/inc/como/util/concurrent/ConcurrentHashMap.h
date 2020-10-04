@@ -398,7 +398,7 @@ public:
         COMO_INTERFACE_DECL();
 
         ECode Next(
-            /* [out] */ IInterface** object = nullptr) override;
+            /* [out] */ AutoPtr<IInterface>& object) override;
 
         ECode NextElement(
             /* [out] */ IInterface** object = nullptr) override;
@@ -430,7 +430,7 @@ public:
         COMO_INTERFACE_DECL();
 
         ECode Next(
-            /* [out] */ IInterface** object = nullptr) override;
+            /* [out] */ AutoPtr<IInterface>& object) override;
 
         ECode NextElement(
             /* [out] */ IInterface** object = nullptr) override;
@@ -461,7 +461,7 @@ public:
         COMO_INTERFACE_DECL();
 
         ECode Next(
-            /* [out] */ IInterface** object = nullptr) override;
+            /* [out] */ AutoPtr<IInterface>& object) override;
 
         ECode HasNext(
             /* [out] */ Boolean& result) override;
