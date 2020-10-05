@@ -113,18 +113,16 @@ SyncObject& TimeZone::GetClassLock()
 
 ECode TimeZone::GetOffset(
     /* [in] */ Long date,
-    /* [out] */ Integer* offset)
+    /* [out] */ Integer& offset)
 {
-    VALIDATE_NOT_NULL(offset);
-
     AutoPtr<IDate> dateObj;
     CDate::New(date, IID_IDate, (IInterface**)&dateObj);
     Boolean daylightTime;
-    if (InDaylightTime(dateObj, &daylightTime), daylightTime) {
+    if (InDaylightTime(dateObj, daylightTime), daylightTime) {
         Integer ro, st;
-        GetRawOffset(&ro);
-        GetDSTSavings(&st);
-        *offset = ro + st;
+        GetRawOffset(ro);
+        GetDSTSavings(st);
+        offset = ro + st;
         return NOERROR;
     }
     return GetRawOffset(offset);
@@ -135,13 +133,13 @@ Integer TimeZone::GetOffsets(
     /* [out] */ Array<Integer>& offsets)
 {
     Integer rawoffset;
-    GetRawOffset(&rawoffset);
+    GetRawOffset(rawoffset);
     Integer dstoffset = 0;
     AutoPtr<IDate> dateObj;
     CDate::New(date, IID_IDate, (IInterface**)&dateObj);
     Boolean daylightTime;
-    if (InDaylightTime(dateObj, &daylightTime), daylightTime) {
-        GetDSTSavings(&dstoffset);
+    if (InDaylightTime(dateObj, daylightTime), daylightTime) {
+        GetDSTSavings(dstoffset);
     }
     if (!offsets.IsNull()) {
         offsets[0] = rawoffset;
@@ -151,11 +149,9 @@ Integer TimeZone::GetOffsets(
 }
 
 ECode TimeZone::GetID(
-    /* [out] */ String* id)
+    /* [out] */ String& id)
 {
-    VALIDATE_NOT_NULL(id);
-
-    *id = mID;
+    id = mID;
     return NOERROR;
 }
 
@@ -170,7 +166,7 @@ ECode TimeZone::SetID(
 }
 
 ECode TimeZone::GetDisplayName(
-    /* [out] */ String* name)
+    /* [out] */ String& name)
 {
     return GetDisplayName(false, LONG,
             Locale::GetDefault(Locale::Category::GetDISPLAY()), name);
@@ -178,7 +174,7 @@ ECode TimeZone::GetDisplayName(
 
 ECode TimeZone::GetDisplayName(
     /* [in] */ ILocale* locale,
-    /* [out] */ String* name)
+    /* [out] */ String& name)
 {
     return GetDisplayName(false, LONG, locale, name);
 }
@@ -186,7 +182,7 @@ ECode TimeZone::GetDisplayName(
 ECode TimeZone::GetDisplayName(
     /* [in] */ Boolean daylight,
     /* [in] */ Integer style,
-    /* [out] */ String* name)
+    /* [out] */ String& name)
 {
     return GetDisplayName(daylight, style,
             Locale::GetDefault(Locale::Category::GetDISPLAY()), name);
@@ -196,10 +192,8 @@ ECode TimeZone::GetDisplayName(
     /* [in] */ Boolean daylightTime,
     /* [in] */ Integer style,
     /* [in] */ ILocale* locale,
-    /* [out] */ String* name)
+    /* [out] */ String& name)
 {
-    VALIDATE_NOT_NULL(name);
-
     if (style != SHORT && style != LONG) {
         Logger::E("TimeZone", "Illegal style: %d", style);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -208,11 +202,11 @@ ECode TimeZone::GetDisplayName(
     Array<Array<String>> zoneStrings;
     TimeZoneNames::GetZoneStrings(locale, &zoneStrings);
     String id;
-    GetID(&id);
+    GetID(id);
     String result;
     TimeZoneNames::GetDisplayName(zoneStrings, id, daylightTime, style, &result);
     if (!result.IsNull()) {
-        *name = result;
+        name = result;
         return NOERROR;
     }
 
@@ -227,13 +221,13 @@ ECode TimeZone::GetDisplayName(
     // "element[j] != null" check in SimpleDateFormat.parseTimeZone, and the extra work in
     // DateFormatSymbols.getZoneStrings.
     Integer offsetMillis;
-    GetRawOffset(&offsetMillis);
+    GetRawOffset(offsetMillis);
     if (daylightTime) {
         Integer savingTime;
-        GetDSTSavings(&savingTime);
+        GetDSTSavings(savingTime);
         offsetMillis += savingTime;
     }
-    *name = CreateGmtOffsetString(true /* includeGmt */, true /* includeMinuteSeparator */,
+    name = CreateGmtOffsetString(true /* includeGmt */, true /* includeMinuteSeparator */,
             offsetMillis);
     return NOERROR;
 }
@@ -278,28 +272,24 @@ void TimeZone::AppendNumber(
 }
 
 ECode TimeZone::GetDSTSavings(
-    /* [out] */ Integer* savingTime)
+    /* [out] */ Integer& savingTime)
 {
-    VALIDATE_NOT_NULL(savingTime);
-
     Boolean daylightTime;
-    if (UseDaylightTime(&daylightTime), daylightTime) {
-        *savingTime = 3600000;
+    if (UseDaylightTime(daylightTime), daylightTime) {
+        savingTime = 3600000;
         return NOERROR;
     }
-    *savingTime = 0;
+    savingTime = 0;
     return NOERROR;
 }
 
 ECode TimeZone::ObservesDaylightTime(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     Boolean daylightTime;
-    UseDaylightTime(&daylightTime);
+    UseDaylightTime(daylightTime);
     if (daylightTime) {
-        *result = true;
+        result = true;
         return NOERROR;
     }
 
@@ -429,7 +419,7 @@ AutoPtr<ITimeZone> TimeZone::GetDefaultRef()
         AutoPtr<ITimeZoneGetter> tzGetter = TimeZoneGetter::GetInstance();
         String zoneName;
         if (tzGetter != nullptr) {
-            tzGetter->GetId(&zoneName);
+            tzGetter->GetId(zoneName);
         }
         if (!zoneName.IsNull()) {
             zoneName = zoneName.Trim();
@@ -466,27 +456,25 @@ ECode TimeZone::SetDefault(
 
 ECode TimeZone::HasSameRules(
     /* [in] */ ITimeZone* other,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     if (other == nullptr) {
-        *result = false;
+        result = false;
         return NOERROR;
     }
 
     Integer thisOffset, otherOffset;
-    GetRawOffset(&thisOffset);
-    other->GetRawOffset(&otherOffset);
+    GetRawOffset(thisOffset);
+    other->GetRawOffset(otherOffset);
     if (thisOffset != otherOffset) {
-        *result = false;
+        result = false;
         return NOERROR;
     }
 
     Boolean thisDaylight, otherDaylight;
-    UseDaylightTime(&thisDaylight);
-    other->UseDaylightTime(&otherDaylight);
-    *result = thisDaylight == otherDaylight;
+    UseDaylightTime(thisDaylight);
+    other->UseDaylightTime(otherDaylight);
+    result = thisDaylight == otherDaylight;
     return NOERROR;
 }
 

@@ -24,7 +24,7 @@ namespace util {
 interface ITimeZoneGetter
 {
     GetId(
-        [out] String* name);
+        [out] String& name);
 }
 
 }

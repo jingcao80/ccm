@@ -2163,7 +2163,7 @@ ECode Formatter::FormatSpecifier::Print(
             t->Get(ICalendar::DST_OFFSET, i);
             String disName;
             tz->GetDisplayName(i != 0, ITimeZone::SHORT,
-                    (l == nullptr) ? Locale::GetUS().Get() : l, &disName);
+                    (l == nullptr) ? Locale::GetUS().Get() : l, disName);
             sb->Append(disName);
             break;
         }

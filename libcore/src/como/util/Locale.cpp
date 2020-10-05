@@ -335,16 +335,16 @@ AutoPtr<ILocale> Locale::InitDefault()
 {
     // user.locale gets priority
     String languageTag;
-    System::GetProperty(String("user.locale"), String(""), &languageTag);
+    System::GetProperty("user.locale", "", languageTag);
     if (!languageTag.IsEmpty()) {
         return ForLanguageTag(languageTag);
     }
 
     // user.locale is empty
     String language, region, script, country, variant;
-    System::GetProperty(String("user.language"), String("en"), &language);
+    System::GetProperty("user.language", "en", language);
     // for compatibility, check for old user.region property
-    System::GetProperty(String("user.region"), &region);
+    System::GetProperty("user.region", region);
     if (!region.IsNull()) {
         // region can be of form country, country_variant, or _variant
         Integer i = region.IndexOf(U'_');
@@ -359,9 +359,9 @@ AutoPtr<ILocale> Locale::InitDefault()
         script = "";
     }
     else {
-        System::GetProperty(String("user.script"), String(""), &script);
-        System::GetProperty(String("user.country"), String(""), &country);
-        System::GetProperty(String("user.variant"), String(""), &variant);
+        System::GetProperty("user.script", "", script);
+        System::GetProperty("user.country", "", country);
+        System::GetProperty("user.variant", "", variant);
     }
 
     return GetInstance(language, script, country, variant, nullptr);
@@ -373,20 +373,20 @@ AutoPtr<ILocale> Locale::InitDefault(
     AutoPtr<ILocale> defaultLocale = GetOrSetDefaultLocale(nullptr);
 
     String languageKey, scriptKey, countryKey, variantKey;
-    category->GetLanguageKey(&languageKey);
-    category->GetScriptKey(&scriptKey);
-    category->GetCountryKey(&countryKey);
-    category->GetVariantKey(&variantKey);
+    category->GetLanguageKey(languageKey);
+    category->GetScriptKey(scriptKey);
+    category->GetCountryKey(countryKey);
+    category->GetVariantKey(variantKey);
     String defaultLanguage, defaultScript, defaultCountry, defaultVariant;
-    defaultLocale->GetLanguage(&defaultLanguage);
-    defaultLocale->GetScript(&defaultScript);
-    defaultLocale->GetCountry(&defaultCountry);
-    defaultLocale->GetVariant(&defaultVariant);
+    defaultLocale->GetLanguage(defaultLanguage);
+    defaultLocale->GetScript(defaultScript);
+    defaultLocale->GetCountry(defaultCountry);
+    defaultLocale->GetVariant(defaultVariant);
     String language, script, country, variant;
-    System::GetProperty(languageKey, defaultLanguage, &language);
-    System::GetProperty(scriptKey, defaultScript, &script);
-    System::GetProperty(countryKey, defaultCountry, &country);
-    System::GetProperty(variantKey, defaultVariant, &variant);
+    System::GetProperty(languageKey, defaultLanguage, language);
+    System::GetProperty(scriptKey, defaultScript, script);
+    System::GetProperty(countryKey, defaultCountry, country);
+    System::GetProperty(variantKey, defaultVariant, variant);
     return GetInstance(language, script, country, variant, nullptr);
 }
 
@@ -399,7 +399,7 @@ ECode Locale::SetDefault(
     FAIL_RETURN(SetDefault(Category::GetFORMAT(), newLocale));
     GetOrSetDefaultLocale(newLocale);
     String languageTag;
-    newLocale->ToLanguageTag(&languageTag);
+    newLocale->ToLanguageTag(languageTag);
     return ICU::SetDefaultLocale(languageTag);
 }
 
@@ -454,38 +454,30 @@ Array<String> Locale::GetISOLanguages()
 }
 
 ECode Locale::GetLanguage(
-    /* [out] */ String* language)
+    /* [out] */ String& language)
 {
-    VALIDATE_NOT_NULL(language);
-
-    *language = mBaseLocale->GetLanguage();
+    language = mBaseLocale->GetLanguage();
     return NOERROR;
 }
 
 ECode Locale::GetScript(
-    /* [out] */ String* script)
+    /* [out] */ String& script)
 {
-    VALIDATE_NOT_NULL(script);
-
-    *script = mBaseLocale->GetScript();
+    script = mBaseLocale->GetScript();
     return NOERROR;
 }
 
 ECode Locale::GetCountry(
-    /* [out] */ String* country)
+    /* [out] */ String& country)
 {
-    VALIDATE_NOT_NULL(country);
-
-    *country = mBaseLocale->GetRegion();
+    country = mBaseLocale->GetRegion();
     return NOERROR;
 }
 
 ECode Locale::GetVariant(
-    /* [out] */ String* variant)
+    /* [out] */ String& variant)
 {
-    VALIDATE_NOT_NULL(variant);
-
-    *variant = mBaseLocale->GetVariant();
+    variant = mBaseLocale->GetVariant();
     return NOERROR;
 }
 
@@ -500,74 +492,64 @@ ECode Locale::HasExtensions(
 
 ECode Locale::GetExtension(
     /* [in] */ Char key,
-    /* [out] */ String* extension)
+    /* [out] */ String& extension)
 {
-    VALIDATE_NOT_NULL(extension);
-
     if (!LocaleExtensions::IsValidKey(key)) {
         Logger::E("Locale", "Ill-formed extension key: %c", key);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     Boolean hasExt;
     HasExtensions(&hasExt);
-    *extension = hasExt ? mLocaleExtensions->GetExtensionValue(key) : String();
+    extension = hasExt ? mLocaleExtensions->GetExtensionValue(key) : String();
     return NOERROR;
 }
 
 ECode Locale::GetExtensionKeys(
-    /* [out] */ ISet** keys)
+    /* [out] */ AutoPtr<ISet>& keys)
 {
-    VALIDATE_NOT_NULL(keys);
-
     Boolean hasExt;
     if (HasExtensions(&hasExt), !hasExt) {
-        Collections::GetEmptySet().MoveTo(keys);
+        keys = Collections::GetEmptySet();
         return NOERROR;
     }
-    mLocaleExtensions->GetKeys().MoveTo(keys);
+    keys = mLocaleExtensions->GetKeys();
     return NOERROR;
 }
 
 ECode Locale::GetUnicodeLocaleAttributes(
-    /* [out] */ ISet** attrs)
+    /* [out] */ AutoPtr<ISet>& attrs)
 {
-    VALIDATE_NOT_NULL(attrs);
-
     Boolean hasExt;
     if (HasExtensions(&hasExt), !hasExt) {
-        Collections::GetEmptySet().MoveTo(attrs);
+        attrs = Collections::GetEmptySet();
         return NOERROR;
     }
-    mLocaleExtensions->GetUnicodeLocaleAttributes().MoveTo(attrs);
+    attrs = mLocaleExtensions->GetUnicodeLocaleAttributes();
     return NOERROR;
 }
 
 ECode Locale::GetUnicodeLocaleType(
     /* [in] */ const String& key,
-    /* [out] */ String* type)
+    /* [out] */ String& type)
 {
-    VALIDATE_NOT_NULL(type);
-
     if (!IsUnicodeExtensionKey(key)) {
         Logger::E("Locale", "Ill-formed Unicode locale key: %s", key.string());
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     Boolean hasExt;
     HasExtensions(&hasExt);
-    *type = hasExt ? mLocaleExtensions->GetUnicodeLocaleType(key) : String();
+    type = hasExt ? mLocaleExtensions->GetUnicodeLocaleType(key) : String();
     return NOERROR;
 }
 
 ECode Locale::GetUnicodeLocaleKeys(
-    /* [out] */ ISet** keys)
+    /* [out] */ AutoPtr<ISet>& keys)
 {
-    VALIDATE_NOT_NULL(keys);
-
     if (mLocaleExtensions == nullptr) {
-        Collections::GetEmptySet().MoveTo(keys);
+        keys = Collections::GetEmptySet();
         return NOERROR;
     }
-    mLocaleExtensions->GetUnicodeLocaleKeys().MoveTo(keys);
+    keys = mLocaleExtensions->GetUnicodeLocaleKeys();
     return NOERROR;
 }
 
@@ -608,13 +590,11 @@ ECode Locale::ToString(
 }
 
 ECode Locale::ToLanguageTag(
-    /* [out] */ String* langTag)
+    /* [out] */ String& langTag)
 {
-    VALIDATE_NOT_NULL(langTag);
-
     VOLATILE_GET(String languageTag, mLanguageTag);
     if (!languageTag.IsNull()) {
-        *langTag = languageTag;
+        langTag = languageTag;
         return NOERROR;
     }
 
@@ -673,16 +653,16 @@ ECode Locale::ToLanguageTag(
         buf->Append(subtag);
     }
 
-    buf->ToString(*langTag);
+    buf->ToString(langTag);
     {
         AutoLock lock(this);
         VOLATILE_GET(String languageTag, mLanguageTag);
         if (languageTag.IsNull()) {
-            VOLATILE_SET(mLanguageTag, *langTag);
+            VOLATILE_SET(mLanguageTag, langTag);
             return NOERROR;
         }
     }
-    VOLATILE_GET(*langTag, languageTag);
+    VOLATILE_GET(langTag, languageTag);
     return NOERROR;
 }
 
@@ -703,17 +683,15 @@ AutoPtr<ILocale> Locale::ForLanguageTag(
 }
 
 ECode Locale::GetISO3Language(
-    /* [out] */ String* language)
+    /* [out] */ String& language)
 {
-    VALIDATE_NOT_NULL(language);
-
     String lang = mBaseLocale->GetLanguage();
     if (lang.GetLength() == 3) {
-        *language = lang;
+        language = lang;
         return NOERROR;
     }
     else if (lang.IsEmpty()) {
-        *language = "";
+        language = "";
         return NOERROR;
     }
 
@@ -725,22 +703,20 @@ ECode Locale::GetISO3Language(
                 lang.string(), str.string());
         return E_MISSING_RESOURCE_EXCEPTION;
     }
-    *language = language3;
+    language = language3;
     return NOERROR;
 }
 
 ECode Locale::GetISO3Country(
-    /* [out] */ String* country)
+    /* [out] */ String& country)
 {
-    VALIDATE_NOT_NULL(country);
-
     String region = mBaseLocale->GetRegion();
     if (region.GetLength() == 3) {
-        *country = region;
+        country = region;
         return NOERROR;
     }
     else if (region.IsEmpty()) {
-        *country = "";
+        country = "";
         return NOERROR;
     }
 
@@ -753,27 +729,23 @@ ECode Locale::GetISO3Country(
                 region.string(), str.string());
         return E_MISSING_RESOURCE_EXCEPTION;
     }
-    *country = country3;
+    country = country3;
     return NOERROR;
 }
 
 ECode Locale::GetDisplayLanguage(
-    /* [out] */ String* language)
+    /* [out] */ String& language)
 {
-    VALIDATE_NOT_NULL(language);
-
     return GetDisplayLanguage(GetDefault(Category::GetDISPLAY()), language);
 }
 
 ECode Locale::GetDisplayLanguage(
     /* [in] */ ILocale* locale,
-    /* [out] */ String* language)
+    /* [out] */ String& language)
 {
-    VALIDATE_NOT_NULL(language);
-
     String languageCode = mBaseLocale->GetLanguage();
     if (languageCode.IsEmpty()) {
-        *language = "";
+        language = "";
         return NOERROR;
     }
 
@@ -787,15 +759,14 @@ ECode Locale::GetDisplayLanguage(
     FAIL_RETURN(NormalizeAndValidateLanguage(
             languageCode, false, &normalizedLanguage));
     if (UNDETERMINED_LANGUAGE.Equals(normalizedLanguage)) {
-        *language = languageCode;
+        language = languageCode;
         return NOERROR;
     }
 
-    String result = ICU::GetDisplayLanguage(this, locale);
-    if (result.IsNull()) {
-        result = ICU::GetDisplayLanguage(this, GetDefault());
+    language = ICU::GetDisplayLanguage(this, locale);
+    if (language.IsNull()) {
+        language = ICU::GetDisplayLanguage(this, GetDefault());
     }
-    *language = result;
     return NOERROR;
 }
 
@@ -841,66 +812,55 @@ Boolean Locale::IsAsciiAlphaNum(
 }
 
 ECode Locale::GetDisplayScript(
-    /* [out] */ String* script)
+    /* [out] */ String& script)
 {
-    VALIDATE_NOT_NULL(script);
-
     return GetDisplayScript(GetDefault(Category::GetDISPLAY()), script);
 }
 
 ECode Locale::GetDisplayScript(
     /* [in] */ ILocale* inLocale,
-    /* [out] */ String* script)
+    /* [out] */ String& script)
 {
-    VALIDATE_NOT_NULL(script);
-
     String scriptCode = mBaseLocale->GetScript();
     if (scriptCode.IsEmpty()) {
-        *script = "";
+        script = "";
         return NOERROR;
     }
 
-    String result = ICU::GetDisplayScript(this, inLocale);
-    if (result.IsNull()) {
-        result = ICU::GetDisplayScript(this, GetDefault(Category::GetDISPLAY()));
+    script = ICU::GetDisplayScript(this, inLocale);
+    if (script.IsNull()) {
+        script = ICU::GetDisplayScript(this, GetDefault(Category::GetDISPLAY()));
     }
-
-    *script = result;
     return NOERROR;
 }
 
 ECode Locale::GetDisplayCountry(
-    /* [out] */ String* country)
+    /* [out] */ String& country)
 {
-    VALIDATE_NOT_NULL(country);
-
     return GetDisplayCountry(GetDefault(Category::GetDISPLAY()), country);
 }
 
 ECode Locale::GetDisplayCountry(
     /* [in] */ ILocale* locale,
-    /* [out] */ String* country)
+    /* [out] */ String& country)
 {
-    VALIDATE_NOT_NULL(country);
-
     String countryCode = mBaseLocale->GetRegion();
     if (countryCode.IsEmpty()) {
-        *country = "";
+        country = "";
         return NOERROR;
     }
 
     String normalizedRegion;
     FAIL_RETURN(NormalizeAndValidateRegion(countryCode, false, &normalizedRegion));
     if (normalizedRegion.IsEmpty()) {
-        *country = countryCode;
+        country = countryCode;
         return NOERROR;
     }
 
-    String result = ICU::GetDisplayCountry(this, locale);
-    if (result.IsNull()) {
-        result = ICU::GetDisplayCountry(this, GetDefault());
+    country = ICU::GetDisplayCountry(this, locale);
+    if (country.IsNull()) {
+        country = ICU::GetDisplayCountry(this, GetDefault());
     }
-    *country = result;
     return NOERROR;
 }
 
@@ -970,29 +930,25 @@ Boolean Locale::IsUnM49AreaCode(
 }
 
 ECode Locale::GetDisplayVariant(
-    /* [out] */ String* variant)
+    /* [out] */ String& variant)
 {
-    VALIDATE_NOT_NULL(variant);
-
     return GetDisplayVariant(GetDefault(Category::GetDISPLAY()), variant);
 }
 
 ECode Locale::GetDisplayVariant(
     /* [in] */ ILocale* inLocale,
-    /* [out] */ String* variant)
+    /* [out] */ String& variant)
 {
-    VALIDATE_NOT_NULL(variant);
-
     String variantCode = mBaseLocale->GetVariant();
     if (variantCode.IsEmpty()) {
-        *variant = "";
+        variant = "";
         return NOERROR;
     }
 
     String normalizedVariant;
     ECode ec = NormalizeAndValidateVariant(variantCode, &normalizedVariant);
     if (FAILED(ec)) {
-        *variant = variantCode;
+        variant = variantCode;
         return NOERROR;
     }
 
@@ -1002,10 +958,10 @@ ECode Locale::GetDisplayVariant(
     }
 
     if (result.IsEmpty()) {
-        *variant = variantCode;
+        variant = variantCode;
         return NOERROR;
     }
-    *variant = result;
+    variant = result;
     return NOERROR;
 }
 
@@ -1054,26 +1010,22 @@ Boolean Locale::IsValidVariantSubtag(
 }
 
 ECode Locale::GetDisplayName(
-    /* [out] */ String* name)
+    /* [out] */ String& name)
 {
-    VALIDATE_NOT_NULL(name);
-
     return GetDisplayName(GetDefault(Category::GetDISPLAY()), name);
 }
 
 ECode Locale::GetDisplayName(
     /* [in] */ ILocale* locale,
-    /* [out] */ String* name)
+    /* [out] */ String& name)
 {
-    VALIDATE_NOT_NULL(name);
-
     Integer count = 0;
     AutoPtr<IStringBuilder> buffer;
     CStringBuilder::New(IID_IStringBuilder, (IInterface**)&buffer);
     String languageCode = mBaseLocale->GetLanguage();
     if (!languageCode.IsEmpty()) {
         String displayLanguage;
-        FAIL_RETURN(GetDisplayLanguage(locale, &displayLanguage));
+        FAIL_RETURN(GetDisplayLanguage(locale, displayLanguage));
         buffer->Append(displayLanguage.IsEmpty() ? languageCode : displayLanguage);
         ++count;
     }
@@ -1083,7 +1035,7 @@ ECode Locale::GetDisplayName(
             buffer->Append(String(" ("));
         }
         String displayScript;
-        FAIL_RETURN(GetDisplayScript(locale, &displayScript));
+        FAIL_RETURN(GetDisplayScript(locale, displayScript));
         buffer->Append(displayScript.IsEmpty() ? scriptCode : displayScript);
         ++count;
     }
@@ -1096,7 +1048,7 @@ ECode Locale::GetDisplayName(
             buffer->Append(U',');
         }
         String displayCountry;
-        FAIL_RETURN(GetDisplayCountry(locale, &displayCountry));
+        FAIL_RETURN(GetDisplayCountry(locale, displayCountry));
         buffer->Append(displayCountry.IsEmpty() ? countryCode : displayCountry);
         ++count;
     }
@@ -1109,14 +1061,14 @@ ECode Locale::GetDisplayName(
             buffer->Append(U',');
         }
         String displayVariant;
-        FAIL_RETURN(GetDisplayVariant(locale, &displayVariant));
+        FAIL_RETURN(GetDisplayVariant(locale, displayVariant));
         buffer->Append(displayVariant.IsEmpty() ? variantCode : displayVariant);
         ++count;
     }
     if (count > 1) {
         buffer->Append(U')');
     }
-    return buffer->ToString(*name);
+    return buffer->ToString(name);
 }
 
 ECode Locale::CloneImpl(
@@ -1304,56 +1256,48 @@ COMO_INTERFACE_IMPL_LIGHT_1(Locale::Category, LightRefBase, ILocaleCategory);
 AutoPtr<ILocaleCategory> Locale::Category::GetDISPLAY()
 {
     static AutoPtr<ILocaleCategory> DISPLAY = new Category(
-            String("user.language.display"),
-            String("user.script.display"),
-            String("user.country.display"),
-            String("user.variant.display"));
+            "user.language.display",
+            "user.script.display",
+            "user.country.display",
+            "user.variant.display");
     return DISPLAY;
 }
 
 AutoPtr<ILocaleCategory> Locale::Category::GetFORMAT()
 {
     static AutoPtr<ILocaleCategory> FORMAT = new Category(
-            String("user.language.format"),
-            String("user.script.format"),
-            String("user.country.format"),
-            String("user.variant.format"));
+            "user.language.format",
+            "user.script.format",
+            "user.country.format",
+            "user.variant.format");
     return FORMAT;
 }
 
 ECode Locale::Category::GetLanguageKey(
-    /* [out] */ String* key)
+    /* [out] */ String& key)
 {
-    VALIDATE_NOT_NULL(key);
-
-    *key = mLanguageKey;
+    key = mLanguageKey;
     return  NOERROR;
 }
 
 ECode Locale::Category::GetScriptKey(
-    /* [out] */ String* key)
+    /* [out] */ String& key)
 {
-    VALIDATE_NOT_NULL(key);
-
-    *key = mScriptKey;
+    key = mScriptKey;
     return NOERROR;
 }
 
 ECode Locale::Category::GetCountryKey(
-    /* [out] */ String* key)
+    /* [out] */ String& key)
 {
-    VALIDATE_NOT_NULL(key);
-
-    *key = mCountryKey;
+    key = mCountryKey;
     return NOERROR;
 }
 
 ECode Locale::Category::GetVariantKey(
-    /* [out] */ String* key)
+    /* [out] */ String& key)
 {
-    VALIDATE_NOT_NULL(key);
-
-    *key = mVariantKey;
+    key = mVariantKey;
     return NOERROR;
 }
 
@@ -1462,10 +1406,8 @@ ECode Locale::Builder::ClearExtensions()
 }
 
 ECode Locale::Builder::Build(
-    /* [out] */ ILocale** locale)
+    /* [out] */ AutoPtr<ILocale>& locale)
 {
-    VALIDATE_NOT_NULL(locale);
-
     AutoPtr<BaseLocale> baseloc = mLocaleBuilder->GetBaseLocale();
     AutoPtr<LocaleExtensions> extensions = mLocaleBuilder->GetLocaleExtensions();
     if (extensions == nullptr && baseloc->GetVariant().GetLength() > 0) {
@@ -1473,7 +1415,7 @@ ECode Locale::Builder::Build(
                 baseloc->GetLanguage(), baseloc->GetScript(),
                 baseloc->GetRegion(), baseloc->GetVariant());
     }
-    Locale::GetInstance(baseloc, extensions).MoveTo(locale);
+    locale = Locale::GetInstance(baseloc, extensions);
     return NOERROR;
 }
 

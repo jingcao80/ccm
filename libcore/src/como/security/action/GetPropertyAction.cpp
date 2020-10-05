@@ -50,7 +50,7 @@ ECode GetPropertyAction::Run(
     /* [out] */ AutoPtr<IInterface>& result)
 {
     String value;
-    FAIL_RETURN(System::GetProperty(mTheProp, &value));
+    FAIL_RETURN(System::GetProperty(mTheProp, value));
     result = value.IsNull() ?
             CoreUtils::Box(mDefaultVal) : CoreUtils::Box(value);
     return NOERROR;

@@ -603,7 +603,7 @@ void AttributedString::AddAttributeRunData(
             mRunAttributeValues.Set(i, newRunAttributeValues);
         }
         else {
-            mRunAttributes[i]->IndexOf(attribute, &keyValueIndex);
+            mRunAttributes[i]->IndexOf(attribute, keyValueIndex);
         }
 
         if (keyValueIndex == -1) {
@@ -671,10 +671,10 @@ AutoPtr<IInterface> AttributedString::GetAttribute(
         return nullptr;
     }
     Integer attributeIndex;
-    currentRunAttributes->IndexOf(attribute, &attributeIndex);
+    currentRunAttributes->IndexOf(attribute, attributeIndex);
     if (attributeIndex != -1) {
         AutoPtr<IInterface> value;
-        currentRunAttributeValues->GetElementAt(attributeIndex, &value);
+        currentRunAttributeValues->GetElementAt(attributeIndex, value);
         return value;
     }
     else {

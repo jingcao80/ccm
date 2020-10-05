@@ -33,86 +33,86 @@ interface INavigableMap
 {
     CeilingEntry(
         [in] IInterface* key,
-        [out] IMapEntry** entry);
+        [out] IMapEntry&& entry);
 
     CeilingKey(
         [in] IInterface* key,
-        [out] IInterface** ceilingkey);
+        [out] IInterface&& ceilingkey);
 
     DescendingKeySet(
-        [out] INavigableSet** keyset);
+        [out] INavigableSet&& keyset);
 
     DescendingMap(
-        [out] INavigableMap** map);
+        [out] INavigableMap&& map);
 
     FirstEntry(
-        [out] IMapEntry** entry);
+        [out] IMapEntry&& entry);
 
     FloorEntry(
         [in] IInterface* key,
-        [out] IMapEntry** entry);
+        [out] IMapEntry&& entry);
 
     FloorKey(
         [in] IInterface* key,
-        [out] IInterface** floorkey);
+        [out] IInterface&& floorkey);
 
     HeadMap(
         [in] IInterface* toKey,
-        [out] ISortedMap** headmap);
+        [out] ISortedMap&& headmap);
 
     HeadMap(
         [in] IInterface* key,
         [in] Boolean inclusive,
-        [out] INavigableMap** headmap);
+        [out] INavigableMap&& headmap);
 
     HigherEntry(
         [in] IInterface* key,
-        [out] IMapEntry** entry);
+        [out] IMapEntry&& entry);
 
     HigherKey(
         [in] IInterface* key,
-        [out] IInterface** higherkey);
+        [out] IInterface&& higherkey);
 
     LastEntry(
-        [out] IMapEntry** entry);
+        [out] IMapEntry&& entry);
 
     LowerEntry(
         [in] IInterface* key,
-        [out] IMapEntry** entry);
+        [out] IMapEntry&& entry);
 
     LowerKey(
         [in] IInterface* key,
-        [out] IInterface** lowerkey);
+        [out] IInterface&& lowerkey);
 
     NavigableKeySet(
-        [out] INavigableSet** keyset);
+        [out] INavigableSet&& keyset);
 
     PollFirstEntry(
-        [out] IMapEntry** entry);
+        [out] IMapEntry&& entry);
 
     PollLastEntry(
-        [out] IMapEntry** entry);
+        [out] IMapEntry&& entry);
 
     SubMap(
         [in] IInterface* fromKey,
         [in] IInterface* toKey,
-        [out] ISortedMap** submap);
+        [out] ISortedMap&& submap);
 
     SubMap(
         [in] IInterface* fromKey,
         [in] Boolean fromInclusive,
         [in] IInterface* toKey,
         [in] Boolean toInclusive,
-        [out] INavigableMap** submap);
+        [out] INavigableMap&& submap);
 
     TailMap(
         [in] IInterface* fromKey,
-        [out] ISortedMap** tailmap);
+        [out] ISortedMap&& tailmap);
 
     TailMap(
         [in] IInterface* fromKey,
         [in] Boolean inclusive,
-        [out] INavigableMap** tailmap);
+        [out] INavigableMap&& tailmap);
 }
 
 }

@@ -486,7 +486,7 @@ void DecimalFormatSymbols::Initialize(
     // country ID for Locale (and used for the C locale), but not a valid
     // ISO 3166 country code, and exceptions are expensive.
     String country;
-    locale->GetCountry(&country);
+    locale->GetCountry(country);
     if (!country.Equals("")) {
         mCurrency = Currency::GetInstance(locale);
     }

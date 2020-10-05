@@ -391,7 +391,7 @@ ECode Properties::Store0(
         Boolean hasMore;
         while (e->HasMoreElements(hasMore), hasMore) {
             AutoPtr<IInterface> ko, vo;
-            e->NextElement(&ko);
+            e->NextElement(ko);
             String key = CoreUtils::Unbox(ICharSequence::Probe(ko));
             Get(ko, vo);
             String val = CoreUtils::Unbox(ICharSequence::Probe(vo));
@@ -429,10 +429,8 @@ ECode Properties::StoreToXML(
 
 ECode Properties::GetProperty(
     /* [in] */ const String& key,
-    /* [out] */ String* value)
+    /* [out] */ String& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     AutoPtr<IInterface> oval;
     Hashtable::Get(CoreUtils::Box(key), oval);
     String sval;
@@ -440,22 +438,20 @@ ECode Properties::GetProperty(
         ICharSequence::Probe(oval)->ToString(sval);
     }
     if (sval.IsNull() && mDefaults != nullptr) {
-        mDefaults->GetProperty(key, &sval);
+        mDefaults->GetProperty(key, sval);
     }
-    *value = sval;
+    value = sval;
     return NOERROR;
 }
 
 ECode Properties::GetProperty(
     /* [in] */ const String& key,
     /* [in] */ const String& defaultValue,
-    /* [out] */ String* value)
+    /* [out] */ String& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     String val;
-    GetProperty(key, &val);
-    *value = val.IsNull() ? defaultValue : val;
+    GetProperty(key, val);
+    value = val.IsNull() ? defaultValue : val;
     return NOERROR;
 }
 
@@ -489,7 +485,7 @@ ECode Properties::List(
     Boolean hasMore;
     while (e->HasMoreElements(hasMore), hasMore) {
         AutoPtr<IInterface> okey;
-        e->NextElement(&okey);
+        e->NextElement(okey);
         String key = CoreUtils::Unbox(ICharSequence::Probe(okey));
         AutoPtr<IInterface> oval;
         h->Get(okey, oval);
@@ -514,7 +510,7 @@ ECode Properties::List(
     Boolean hasMore;
     while (e->HasMoreElements(hasMore), hasMore) {
         AutoPtr<IInterface> okey;
-        e->NextElement(&okey);
+        e->NextElement(okey);
         String key = CoreUtils::Unbox(ICharSequence::Probe(okey));
         AutoPtr<IInterface> oval;
         h->Get(okey, oval);
@@ -538,7 +534,7 @@ void Properties::Enumerate(
     Boolean hasMore;
     while (e->HasMoreElements(hasMore), hasMore) {
         AutoPtr<IInterface> okey;
-        e->NextElement(&okey);
+        e->NextElement(okey);
         AutoPtr<IInterface> oval;
         Get(okey, oval);
         h->Put(okey, oval);
@@ -556,7 +552,7 @@ void Properties::EnumerateStringProperties(
     Boolean hasMore;
     while (e->HasMoreElements(hasMore), hasMore) {
         AutoPtr<IInterface> okey;
-        e->NextElement(&okey);
+        e->NextElement(okey);
         AutoPtr<IInterface> oval;
         Get(okey, oval);
         if (IString::Probe(okey) != nullptr && IString::Probe(oval) != nullptr) {

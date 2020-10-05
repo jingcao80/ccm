@@ -1693,8 +1693,8 @@ Integer GregorianCalendar::ComputeFields(
             zoneInfo->GetOffsetsByUtcTime(mTime, mZoneOffsets, &zoneOffset);
         }
         else {
-            tz->GetOffset(mTime, &zoneOffset);
-            tz->GetRawOffset(&mZoneOffsets[0]);
+            tz->GetOffset(mTime, zoneOffset);
+            tz->GetRawOffset(mZoneOffsets[0]);
             mZoneOffsets[1] = zoneOffset - mZoneOffsets[0];
         }
     }
@@ -2227,7 +2227,7 @@ Long GregorianCalendar::AdjustForZoneAndDaylightSavingsTime(
             gmtOffset = InternalGet(ZONE_OFFSET);
         }
         else {
-            zone->GetRawOffset(&gmtOffset);
+            zone->GetRawOffset(gmtOffset);
         }
 
         // Calculate the standard time (no DST) in the supplied zone. This is a ballpark figure
@@ -2281,7 +2281,7 @@ Integer GregorianCalendar::AdjustDstOffsetForInvalidWallClock(
         AutoPtr<IDate> date;
         CDate::New(standardTimeInZone - dstOffset, IID_IDate, (IInterface**)&date);
         Boolean daylight;
-        if (zone->InDaylightTime(date, &daylight), !daylight) {
+        if (zone->InDaylightTime(date, daylight), !daylight) {
             dstOffset = 0;
         }
     }

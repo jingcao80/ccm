@@ -142,34 +142,34 @@ private:
 
         ECode Lower(
             /* [in] */ IInterface* e,
-            /* [out] */ IInterface** lowerE) override;
+            /* [out] */ AutoPtr<IInterface>& lowerE) override;
 
         ECode Floor(
             /* [in] */ IInterface* e,
-            /* [out] */ IInterface** floorE) override;
+            /* [out] */ AutoPtr<IInterface>& floorE) override;
 
         ECode Ceiling(
             /* [in] */ IInterface* e,
-            /* [out] */ IInterface** ceilingE) override;
+            /* [out] */ AutoPtr<IInterface>& ceilingE) override;
 
         ECode Higher(
             /* [in] */ IInterface* e,
-            /* [out] */ IInterface** higherE) override;
+            /* [out] */ AutoPtr<IInterface>& higherE) override;
 
         ECode First(
-            /* [out] */ IInterface** element) override;
+            /* [out] */ AutoPtr<IInterface>& element) override;
 
         ECode Last(
-            /* [out] */ IInterface** element) override;
+            /* [out] */ AutoPtr<IInterface>& element) override;
 
         ECode Comparator(
-            /* [out] */ IComparator** comparator) override;
+            /* [out] */ AutoPtr<IComparator>& comparator) override;
 
         ECode PollFirst(
-            /* [out] */ IInterface** e) override;
+            /* [out] */ AutoPtr<IInterface>& e) override;
 
         ECode PollLast(
-            /* [out] */ IInterface** e) override;
+            /* [out] */ AutoPtr<IInterface>& e) override;
 
         ECode Remove(
             /* [in] */ IInterface* obj,
@@ -180,33 +180,33 @@ private:
             /* [in] */ Boolean fromInclusive,
             /* [in] */ IInterface* toElement,
             /* [in] */ Boolean toInclusive,
-            /* [out] */ INavigableSet** subset) override;
+            /* [out] */ AutoPtr<INavigableSet>& subset) override;
 
         ECode HeadSet(
             /* [in] */ IInterface* toElement,
             /* [in] */ Boolean inclusive,
-            /* [out] */ INavigableSet** headset) override;
+            /* [out] */ AutoPtr<INavigableSet>& headset) override;
 
         ECode TailSet(
             /* [in] */ IInterface* fromElement,
             /* [in] */ Boolean inclusive,
-            /* [out] */ INavigableSet** tailset) override;
+            /* [out] */ AutoPtr<INavigableSet>& tailset) override;
 
         ECode SubSet(
             /* [in] */ IInterface* fromElement,
             /* [in] */ IInterface* toElement,
-            /* [out] */ ISortedSet** subset) override;
+            /* [out] */ AutoPtr<ISortedSet>& subset) override;
 
         ECode HeadSet(
             /* [in] */ IInterface* toElement,
-            /* [out] */ ISortedSet** headset) override;
+            /* [out] */ AutoPtr<ISortedSet>& headset) override;
 
         ECode TailSet(
             /* [in] */ IInterface* fromElement,
-            /* [out] */ ISortedSet** tailset) override;
+            /* [out] */ AutoPtr<ISortedSet>& tailset) override;
 
         ECode DescendingSet(
-            /* [out] */ INavigableSet** set) override;
+            /* [out] */ AutoPtr<INavigableSet>& set) override;
 
         ECode Add(
             /* [in] */ IInterface* obj,
@@ -544,79 +544,79 @@ private:
 
         ECode CeilingEntry(
             /* [in] */ IInterface* key,
-            /* [out]　*/ IMapEntry** entry) override;
+            /* [out]　*/ AutoPtr<IMapEntry>& entry) override;
 
         ECode CeilingKey(
             /* [in] */ IInterface* key,
-            /* [out] */ IInterface** ceilingkey) override;
+            /* [out] */ AutoPtr<IInterface>& ceilingkey) override;
 
         ECode HigherEntry(
             /* [in] */ IInterface* key,
-            /* [out] */ IMapEntry** entry) override;
+            /* [out] */ AutoPtr<IMapEntry>& entry) override;
 
         ECode HigherKey(
             /* [in] */ IInterface* key,
-            /* [out] */ IInterface** higherkey) override;
+            /* [out] */ AutoPtr<IInterface>& higherkey) override;
 
         ECode FloorEntry(
             /* [in] */ IInterface* key,
-            /* [out] */ IMapEntry** entry) override;
+            /* [out] */ AutoPtr<IMapEntry>& entry) override;
 
         ECode FloorKey(
             /* [in] */ IInterface* key,
-            /* [out] */ IInterface** floorkey) override;
+            /* [out] */ AutoPtr<IInterface>& floorkey) override;
 
         ECode LowerEntry(
             /* [in] */ IInterface* key,
-            /* [out] */ IMapEntry** entry) override;
+            /* [out] */ AutoPtr<IMapEntry>& entry) override;
 
         ECode LowerKey(
             /* [in] */ IInterface* key,
-            /* [out] */ IInterface** lowerkey) override;
+            /* [out] */ AutoPtr<IInterface>& lowerkey) override;
 
         ECode FirstKey(
-            /* [out] */ IInterface** key) override;
+            /* [out] */ AutoPtr<IInterface>& key) override;
 
         ECode LastKey(
-            /* [out] */ IInterface** key) override;
+            /* [out] */ AutoPtr<IInterface>& key) override;
 
         ECode FirstEntry(
-            /* [out] */ IMapEntry** entry) override;
+            /* [out] */ AutoPtr<IMapEntry>& entry) override;
 
         ECode LastEntry(
-            /* [out] */ IMapEntry** entry) override;
+            /* [out] */ AutoPtr<IMapEntry>& entry) override;
 
         ECode PollFirstEntry(
-            /* [out] */ IMapEntry** entry) override;
+            /* [out] */ AutoPtr<IMapEntry>& entry) override;
 
         ECode PollLastEntry(
-            /* [out] */ IMapEntry** entry) override;
+            /* [out] */ AutoPtr<IMapEntry>& entry) override;
 
         ECode NavigableKeySet(
-            /* [out] */ INavigableSet** keyset) override;
+            /* [out] */ AutoPtr<INavigableSet>& keyset) override;
 
         ECode GetKeySet(
             /* [out] */ AutoPtr<ISet>& keys) override;
 
         ECode DescendingKeySet(
-            /* [out] */ INavigableSet** keyset) override;
+            /* [out] */ AutoPtr<INavigableSet>& keyset) override;
 
         ECode SubMap(
             /* [in] */ IInterface* fromKey,
             /* [in] */ IInterface* toKey,
-            /* [out] */ ISortedMap** submap) override;
+            /* [out] */ AutoPtr<ISortedMap>& submap) override;
 
         using INavigableMap::SubMap;
 
         ECode HeadMap(
             /* [in] */ IInterface* toKey,
-            /* [out] */ ISortedMap** headmap) override;
+            /* [out] */ AutoPtr<ISortedMap>& headmap) override;
 
         using INavigableMap::HeadMap;
 
         ECode TailMap(
             /* [in] */ IInterface* fromKey,
-            /* [out] */ ISortedMap** tailmap) override;
+            /* [out] */ AutoPtr<ISortedMap>& tailmap) override;
 
         using INavigableMap::TailMap;
 
@@ -674,27 +674,27 @@ private:
             /* [in] */ Boolean holdRef);
 
         ECode Comparator(
-            /* [out] */ IComparator** comparator) override;
+            /* [out] */ AutoPtr<IComparator>& comparator) override;
 
         ECode SubMap(
             /* [in] */ IInterface* fromKey,
             /* [in] */ Boolean fromInclusive,
             /* [in] */ IInterface* toKey,
             /* [in] */ Boolean toInclusive,
-            /* [out] */ INavigableMap** submap) override;
+            /* [out] */ AutoPtr<INavigableMap>& submap) override;
 
         ECode HeadMap(
             /* [in] */ IInterface* key,
             /* [in] */ Boolean inclusive,
-            /* [out] */ INavigableMap** headmap) override;
+            /* [out] */ AutoPtr<INavigableMap>& headmap) override;
 
         ECode TailMap(
             /* [in] */ IInterface* fromKey,
             /* [in] */ Boolean inclusive,
-            /* [out] */ INavigableMap** tailmap) override;
+            /* [out] */ AutoPtr<INavigableMap>& tailmap) override;
 
         ECode DescendingMap(
-            /* [out] */ INavigableMap** map) override;
+            /* [out] */ AutoPtr<INavigableMap>& map) override;
 
         AutoPtr<IIterator> GetKeyIterator() override;
 
@@ -749,27 +749,27 @@ private:
             /* [in] */ Boolean holdRef);
 
         ECode Comparator(
-            /* [out] */ IComparator** comparator) override;
+            /* [out] */ AutoPtr<IComparator>& comparator) override;
 
         ECode SubMap(
             /* [in] */ IInterface* fromKey,
             /* [in] */ Boolean fromInclusive,
             /* [in] */ IInterface* toKey,
             /* [in] */ Boolean toInclusive,
-            /* [out] */ INavigableMap** submap) override;
+            /* [out] */ AutoPtr<INavigableMap>& submap) override;
 
         ECode HeadMap(
             /* [in] */ IInterface* key,
             /* [in] */ Boolean inclusive,
-            /* [out] */ INavigableMap** headmap) override;
+            /* [out] */ AutoPtr<INavigableMap>& headmap) override;
 
         ECode TailMap(
             /* [in] */ IInterface* fromKey,
             /* [in] */ Boolean inclusive,
-            /* [out] */ INavigableMap** tailmap) override;
+            /* [out] */ AutoPtr<INavigableMap>& tailmap) override;
 
         ECode DescendingMap(
-            /* [out] */ INavigableMap** map) override;
+            /* [out] */ AutoPtr<INavigableMap>& map) override;
 
         AutoPtr<IIterator> GetKeyIterator() override;
 
@@ -810,26 +810,26 @@ private:
             /* [out] */ AutoPtr<ISet>& entries) override;
 
         ECode LastKey(
-            /* [out] */ IInterface** key) override;
+            /* [out] */ AutoPtr<IInterface>& key) override;
 
         ECode FirstKey(
-            /* [out] */ IInterface** key) override;
+            /* [out] */ AutoPtr<IInterface>& key) override;
 
         ECode SubMap(
             /* [in] */ IInterface* fromKey,
             /* [in] */ IInterface* toKey,
-            /* [out] */ ISortedMap** submap) override;
+            /* [out] */ AutoPtr<ISortedMap>& submap) override;
 
         ECode HeadMap(
             /* [in] */ IInterface* toKey,
-            /* [out] */ ISortedMap** headmap) override;
+            /* [out] */ AutoPtr<ISortedMap>& headmap) override;
 
         ECode TailMap(
             /* [in] */ IInterface* fromKey,
-            /* [out] */ ISortedMap** tailmap) override;
+            /* [out] */ AutoPtr<ISortedMap>& tailmap) override;
 
         ECode Comparator(
-            /* [out] */ IComparator** comparator) override;
+            /* [out] */ AutoPtr<IComparator>& comparator) override;
     };
 
     class TreeMapEntry
@@ -907,13 +907,13 @@ public:
         /* [out] */ AutoPtr<IInterface>& value) override;
 
     ECode Comparator(
-        /* [out] */ IComparator** comparator) override;
+        /* [out] */ AutoPtr<IComparator>& comparator) override;
 
     ECode FirstKey(
-        /* [out] */ IInterface** key) override;
+        /* [out] */ AutoPtr<IInterface>& key) override;
 
     ECode LastKey(
-        /* [out] */ IInterface** key) override;
+        /* [out] */ AutoPtr<IInterface>& key) override;
 
     ECode PutAll(
         /* [in] */ IMap* map) override;
@@ -930,57 +930,57 @@ public:
     ECode Clear() override;
 
     ECode FirstEntry(
-        /* [out] */ IMapEntry** entry) override;
+        /* [out] */ AutoPtr<IMapEntry>& entry) override;
 
     ECode LastEntry(
-        /* [out] */ IMapEntry** entry) override;
+        /* [out] */ AutoPtr<IMapEntry>& entry) override;
 
     ECode PollFirstEntry(
-        /* [out] */ IMapEntry** entry) override;
+        /* [out] */ AutoPtr<IMapEntry>& entry) override;
 
     ECode PollLastEntry(
-        /* [out] */ IMapEntry** entry) override;
+        /* [out] */ AutoPtr<IMapEntry>& entry) override;
 
     ECode LowerEntry(
         /* [in] */ IInterface* key,
-        /* [out] */ IMapEntry** entry) override;
+        /* [out] */ AutoPtr<IMapEntry>& entry) override;
 
     ECode LowerKey(
         /* [in] */ IInterface* key,
-        /* [out] */ IInterface** lowerkey) override;
+        /* [out] */ AutoPtr<IInterface>& lowerkey) override;
 
     ECode FloorEntry(
         /* [in] */ IInterface* key,
-        /* [out] */ IMapEntry** entry) override;
+        /* [out] */ AutoPtr<IMapEntry>& entry) override;
 
     ECode FloorKey(
         /* [in] */ IInterface* key,
-        /* [out] */ IInterface** floorkey) override;
+        /* [out] */ AutoPtr<IInterface>& floorkey) override;
 
     ECode CeilingEntry(
         /* [in] */ IInterface* key,
-        /* [out]　*/ IMapEntry** entry) override;
+        /* [out]　*/ AutoPtr<IMapEntry>& entry) override;
 
     ECode CeilingKey(
         /* [in] */ IInterface* key,
-        /* [out] */ IInterface** ceilingkey) override;
+        /* [out] */ AutoPtr<IInterface>& ceilingkey) override;
 
     ECode HigherEntry(
         /* [in] */ IInterface* key,
-        /* [out] */ IMapEntry** entry) override;
+        /* [out] */ AutoPtr<IMapEntry>& entry) override;
 
     ECode HigherKey(
         /* [in] */ IInterface* key,
-        /* [out] */ IInterface** higherkey) override;
+        /* [out] */ AutoPtr<IInterface>& higherkey) override;
 
     ECode GetKeySet(
         /* [out] */ AutoPtr<ISet>& keys) override;
 
     ECode NavigableKeySet(
-        /* [out] */ INavigableSet** keyset) override;
+        /* [out] */ AutoPtr<INavigableSet>& keyset) override;
 
     ECode DescendingKeySet(
-        /* [out] */ INavigableSet** keyset) override;
+        /* [out] */ AutoPtr<INavigableSet>& keyset) override;
 
     ECode GetValues(
         /* [out] */ AutoPtr<ICollection>& values) override;
@@ -989,37 +989,37 @@ public:
         /* [out] */ AutoPtr<ISet>& entries) override;
 
     ECode DescendingMap(
-        /* [out] */ INavigableMap** map) override;
+        /* [out] */ AutoPtr<INavigableMap>& map) override;
 
     ECode SubMap(
         /* [in] */ IInterface* fromKey,
         /* [in] */ Boolean fromInclusive,
         /* [in] */ IInterface* toKey,
         /* [in] */ Boolean toInclusive,
-        /* [out] */ INavigableMap** submap) override;
+        /* [out] */ AutoPtr<INavigableMap>& submap) override;
 
     ECode HeadMap(
         /* [in] */ IInterface* key,
         /* [in] */ Boolean inclusive,
-        /* [out] */ INavigableMap** headmap) override;
+        /* [out] */ AutoPtr<INavigableMap>& headmap) override;
 
     ECode TailMap(
         /* [in] */ IInterface* fromKey,
         /* [in] */ Boolean inclusive,
-        /* [out] */ INavigableMap** tailmap) override;
+        /* [out] */ AutoPtr<INavigableMap>& tailmap) override;
 
     ECode SubMap(
         /* [in] */ IInterface* fromKey,
         /* [in] */ IInterface* toKey,
-        /* [out] */ ISortedMap** submap) override;
+        /* [out] */ AutoPtr<ISortedMap>& submap) override;
 
     ECode HeadMap(
         /* [in] */ IInterface* toKey,
-        /* [out] */ ISortedMap** headmap) override;
+        /* [out] */ AutoPtr<ISortedMap>& headmap) override;
 
     ECode TailMap(
         /* [in] */ IInterface* fromKey,
-        /* [out] */ ISortedMap** tailmap) override;
+        /* [out] */ AutoPtr<ISortedMap>& tailmap) override;
 
     ECode AddAllForTreeSet(
         /* [in] */ ISortedSet* set,

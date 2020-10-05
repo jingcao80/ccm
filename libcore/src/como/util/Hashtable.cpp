@@ -812,7 +812,7 @@ ECode Hashtable::Enumerator::HasMoreElements(
 }
 
 ECode Hashtable::Enumerator::NextElement(
-    /* [out] */ IInterface** object)
+    /* [out] */ AutoPtr<IInterface>& object)
 {
     AutoPtr<HashtableEntry> et = mEntry;
     Integer i = mIndex;
@@ -824,11 +824,8 @@ ECode Hashtable::Enumerator::NextElement(
     if (et != nullptr) {
         HashtableEntry* e = mLastReturned = mEntry;
         mEntry = e->mNext;
-        if (object != nullptr) {
-            *object = mType == KEYS ? e->mKey : (
-                    mType == VALUES ? e->mValue : e);
-            REFCOUNT_ADD(*object);
-        }
+        object = mType == KEYS ? e->mKey : (
+                mType == VALUES ? e->mValue : e);
         return NOERROR;
     }
     return E_NO_SUCH_ELEMENT_EXCEPTION;
@@ -846,7 +843,7 @@ ECode Hashtable::Enumerator::Next(
     if (mOwner->mModCount != mExpectedModCount) {
         return E_CONCURRENT_MODIFICATION_EXCEPTION;
     }
-    return NextElement(&object);
+    return NextElement(object);
 }
 
 ECode Hashtable::Enumerator::Remove()

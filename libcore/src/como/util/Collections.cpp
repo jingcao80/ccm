@@ -1227,7 +1227,7 @@ ECode Collections::EmptyEnumeration::HasMoreElements(
 }
 
 ECode Collections::EmptyEnumeration::NextElement(
-    /* [out] */ IInterface** object)
+    /* [out] */ AutoPtr<IInterface>& object)
 {
     return E_NO_SUCH_ELEMENT_EXCEPTION;
 }

@@ -51,7 +51,7 @@ TEST(VectorTest, TestConstructor)
         tv->AddElement(intObj);
     }
     AutoPtr<IList> subList;
-    tv->SubList(50, 150, &subList);
+    tv->SubList(50, 150, subList);
     support = new Support_ListTest(subList);
     support->RunTest();
 
@@ -61,7 +61,7 @@ TEST(VectorTest, TestConstructor)
     tv->GetSize(size);
     EXPECT_EQ(0, size);
     Integer capacity;
-    tv->GetCapacity(&capacity);
+    tv->GetCapacity(capacity);
     EXPECT_EQ(10, capacity);
 }
 

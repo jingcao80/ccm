@@ -35,29 +35,29 @@ interface ISortedSet
         [out] Boolean* modified = nullptr);
 
     Comparator(
-        [out] IComparator** comparator);
+        [out] IComparator&& comparator);
 
     First(
-        [out] IInterface** element);
+        [out] IInterface&& element);
 
     GetIterator(
         [out] IIterator&& it);
 
     HeadSet(
         [in] IInterface* toElement,
-        [out] ISortedSet** headset);
+        [out] ISortedSet&& headset);
 
     Last(
-        [out] IInterface** element);
+        [out] IInterface&& element);
 
     SubSet(
         [in] IInterface* fromElement,
         [in] IInterface* toElement,
-        [out] ISortedSet** subset);
+        [out] ISortedSet&& subset);
 
     TailSet(
         [in] IInterface* fromElement,
-        [out] ISortedSet** tailset);
+        [out] ISortedSet&& tailset);
 }
 
 }

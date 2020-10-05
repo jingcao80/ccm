@@ -69,6 +69,14 @@ AutoPtr<IDouble> CoreUtils::Box(
 }
 
 AutoPtr<ICharSequence> CoreUtils::Box(
+    /* [in] */ const char* str)
+{
+    AutoPtr<ICharSequence> seq;
+    CString::New(str, IID_ICharSequence, (IInterface**)&seq);
+    return seq;
+}
+
+AutoPtr<ICharSequence> CoreUtils::Box(
     /* [in] */ const String& str)
 {
     AutoPtr<ICharSequence> seq;
@@ -229,7 +237,7 @@ Boolean CoreUtils::GetBoolean(
 {
     Boolean result = false;
     String value;
-    ECode ec = System::GetProperty(name, &value);
+    ECode ec = System::GetProperty(name, value);
     if (SUCCEEDED(ec)) {
         result = (!value.IsNull() && value.EqualsIgnoreCase("true"));
     }

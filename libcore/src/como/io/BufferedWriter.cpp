@@ -47,7 +47,7 @@ ECode BufferedWriter::Constructor(
     mNChars = sz;
     mNextChar = 0;
 
-    System::GetProperty(String("line.separator"), &mLineSeparator);
+    System::GetProperty("line.separator", mLineSeparator);
     return NOERROR;
 }
 

@@ -27,11 +27,9 @@ class DefaultTimeZoneGetter
 {
 public:
     ECode GetId(
-        /* [out] */ String* name) override
+        /* [out] */ String& name) override
     {
-        VALIDATE_NOT_NULL(name);
-
-        return System::GetProperty(String("persist.sys.timezone"), name);
+        return System::GetProperty("persist.sys.timezone", name);
     }
 
 private:

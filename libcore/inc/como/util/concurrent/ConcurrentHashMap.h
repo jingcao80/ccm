@@ -401,7 +401,7 @@ public:
             /* [out] */ AutoPtr<IInterface>& object) override;
 
         ECode NextElement(
-            /* [out] */ IInterface** object = nullptr) override;
+            /* [out] */ AutoPtr<IInterface>& object) override;
 
         ECode HasNext(
             /* [out] */ Boolean& result) override;
@@ -433,7 +433,7 @@ public:
             /* [out] */ AutoPtr<IInterface>& object) override;
 
         ECode NextElement(
-            /* [out] */ IInterface** object = nullptr) override;
+            /* [out] */ AutoPtr<IInterface>& object) override;
 
         ECode HasNext(
             /* [out] */ Boolean& result) override;

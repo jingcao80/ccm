@@ -34,64 +34,64 @@ interface INavigableSet
 {
     Ceiling(
         [in] IInterface* e,
-        [out] IInterface** ceilingE);
+        [out] IInterface&& ceilingE);
 
     GetDescendingIterator(
         [out] IIterator&& it);
 
     DescendingSet(
-        [out] INavigableSet** set);
+        [out] INavigableSet&& set);
 
     Floor(
         [in] IInterface* e,
-        [out] IInterface** floorE);
+        [out] IInterface&& floorE);
 
     GetIterator(
         [out] IIterator&& it);
 
     HeadSet(
         [in] IInterface* toElement,
-        [out] ISortedSet** headset);
+        [out] ISortedSet&& headset);
 
     HeadSet(
         [in] IInterface* toElement,
         [in] Boolean inclusive,
-        [out] INavigableSet** headset);
+        [out] INavigableSet&& headset);
 
     Higher(
         [in] IInterface* e,
-        [out] IInterface** higherE);
+        [out] IInterface&& higherE);
 
     Lower(
         [in] IInterface* e,
-        [out] IInterface** lowerE);
+        [out] IInterface&& lowerE);
 
     PollFirst(
-        [out] IInterface** e);
+        [out] IInterface&& e);
 
     PollLast(
-        [out] IInterface** e);
+        [out] IInterface&& e);
 
     SubSet(
         [in] IInterface* fromElement,
         [in] IInterface* toElement,
-        [out] ISortedSet** subset);
+        [out] ISortedSet&& subset);
 
     SubSet(
         [in] IInterface* fromElement,
         [in] Boolean fromInclusive,
         [in] IInterface* toElement,
         [in] Boolean toInclusive,
-        [out] INavigableSet** subset);
+        [out] INavigableSet&& subset);
 
     TailSet(
         [in] IInterface* fromElement,
-        [out] ISortedSet** tailset);
+        [out] ISortedSet&& tailset);
 
     TailSet(
         [in] IInterface* fromElement,
         [in] Boolean inclusive,
-        [out] INavigableSet** tailset);
+        [out] INavigableSet&& tailset);
 }
 
 }

@@ -67,7 +67,7 @@ ECode TreeSet::Constructor(
     /* [in] */ ISortedSet* s)
 {
     AutoPtr<IComparator> comparator;
-    s->Comparator(&comparator);
+    s->Comparator(comparator);
     Constructor(comparator);
     return AddAll(ICollection::Probe(s));
 }
@@ -76,7 +76,7 @@ ECode TreeSet::GetIterator(
     /* [out] */ AutoPtr<IIterator>& it)
 {
     AutoPtr<INavigableSet> s;
-    mMap->NavigableKeySet(&s);
+    mMap->NavigableKeySet(s);
     return s->GetIterator(it);
 }
 
@@ -84,18 +84,17 @@ ECode TreeSet::GetDescendingIterator(
     /* [out] */ AutoPtr<IIterator>& it)
 {
     AutoPtr<INavigableSet> s;
-    mMap->DescendingKeySet(&s);
+    mMap->DescendingKeySet(s);
     return s->GetIterator(it);
 }
 
 ECode TreeSet::DescendingSet(
-    /* [out] */ INavigableSet** set)
+    /* [out] */ AutoPtr<INavigableSet>& set)
 {
-    VALIDATE_NOT_NULL(set);
-
     AutoPtr<INavigableMap> m;
-    mMap->DescendingMap(&m);
-    return CTreeSet::New(m, IID_INavigableSet, (IInterface**)set);
+    mMap->DescendingMap(m);
+    set = nullptr;
+    return CTreeSet::New(m, IID_INavigableSet, (IInterface**)&set);
 }
 
 ECode TreeSet::GetSize(
@@ -158,8 +157,8 @@ ECode TreeSet::AddAll(
         ISortedSet* set = ISortedSet::Probe(c);
         TreeMap* map = (TreeMap*)ITreeMap::Probe(mMap);
         AutoPtr<IComparator> cc, mc;
-        set->Comparator(&cc);
-        map->Comparator(&mc);
+        set->Comparator(cc);
+        map->Comparator(mc);
         if (cc == mc || (cc != nullptr && Object::Equals(cc, mc))) {
             map->AddAllForTreeSet(set, GetPRESENT());
             if (changed != nullptr) {
@@ -176,158 +175,135 @@ ECode TreeSet::SubSet(
     /* [in] */ Boolean fromInclusive,
     /* [in] */ IInterface* toElement,
     /* [in] */ Boolean toInclusive,
-    /* [out] */ INavigableSet** subset)
+    /* [out] */ AutoPtr<INavigableSet>& subset)
 {
-    VALIDATE_NOT_NULL(subset);
-
     AutoPtr<INavigableMap> m;
-    mMap->SubMap(fromElement, fromInclusive, toElement, toInclusive, &m);
-    return CTreeSet::New(m, IID_INavigableSet, (IInterface**)subset);
+    mMap->SubMap(fromElement, fromInclusive, toElement, toInclusive, m);
+    subset = nullptr;
+    return CTreeSet::New(m, IID_INavigableSet, (IInterface**)&subset);
 }
 
 ECode TreeSet::HeadSet(
     /* [in] */ IInterface* toElement,
     /* [in] */ Boolean inclusive,
-    /* [out] */ INavigableSet** headset)
+    /* [out] */ AutoPtr<INavigableSet>& headset)
 {
-    VALIDATE_NOT_NULL(headset);
-
     AutoPtr<INavigableMap> m;
-    mMap->HeadMap(toElement, inclusive, &m);
-    return CTreeSet::New(m, IID_INavigableSet, (IInterface**)headset);
+    mMap->HeadMap(toElement, inclusive, m);
+    headset = nullptr;
+    return CTreeSet::New(m, IID_INavigableSet, (IInterface**)&headset);
 }
 
 ECode TreeSet::TailSet(
     /* [in] */ IInterface* fromElement,
     /* [in] */ Boolean inclusive,
-    /* [out] */ INavigableSet** tailset)
+    /* [out] */ AutoPtr<INavigableSet>& tailset)
 {
-    VALIDATE_NOT_NULL(tailset);
-
     AutoPtr<INavigableMap> m;
-    mMap->TailMap(fromElement, inclusive, &m);
-    return CTreeSet::New(m, IID_INavigableSet, (IInterface**)tailset);
+    mMap->TailMap(fromElement, inclusive, m);
+    tailset = nullptr;
+    return CTreeSet::New(m, IID_INavigableSet, (IInterface**)&tailset);
 }
 
 ECode TreeSet::SubSet(
     /* [in] */ IInterface* fromElement,
     /* [in] */ IInterface* toElement,
-    /* [out] */ ISortedSet** subset)
+    /* [out] */ AutoPtr<ISortedSet>& subset)
 {
-    VALIDATE_NOT_NULL(subset);
-
     AutoPtr<INavigableSet> navSubset;
-    SubSet(fromElement, true, toElement, false, &navSubset);
-    navSubset.MoveTo(subset);
+    SubSet(fromElement, true, toElement, false, navSubset);
+    subset = std::move(navSubset);
     return NOERROR;
 }
 
 ECode TreeSet::HeadSet(
     /* [in] */ IInterface* toElement,
-    /* [out] */ ISortedSet** headset)
+    /* [out] */ AutoPtr<ISortedSet>& headset)
 {
-    VALIDATE_NOT_NULL(headset);
-
     AutoPtr<INavigableSet> navSubset;
-    HeadSet(toElement, false, &navSubset);
-    navSubset.MoveTo(headset);
+    HeadSet(toElement, false, navSubset);
+    headset = std::move(navSubset);
     return NOERROR;
 }
 
 ECode TreeSet::TailSet(
     /* [in] */ IInterface* fromElement,
-    /* [out] */ ISortedSet** tailset)
+    /* [out] */ AutoPtr<ISortedSet>& tailset)
 {
-    VALIDATE_NOT_NULL(tailset);
-
     AutoPtr<INavigableSet> navSubset;
-    TailSet(fromElement, true, &navSubset);
-    navSubset.MoveTo(tailset);
+    TailSet(fromElement, true, navSubset);
+    tailset = std::move(navSubset);
     return NOERROR;
 }
 
 ECode TreeSet::Comparator(
-    /* [out] */ IComparator** comparator)
+    /* [out] */ AutoPtr<IComparator>& comparator)
 {
     return ISortedMap::Probe(mMap)->Comparator(comparator);
 }
 
 ECode TreeSet::First(
-    /* [out] */ IInterface** element)
+    /* [out] */ AutoPtr<IInterface>& element)
 {
     return ISortedMap::Probe(mMap)->FirstKey(element);
 }
 
 ECode TreeSet::Last(
-    /* [out] */ IInterface** element)
+    /* [out] */ AutoPtr<IInterface>& element)
 {
     return ISortedMap::Probe(mMap)->LastKey(element);
 }
 
 ECode TreeSet::Lower(
     /* [in] */ IInterface* e,
-    /* [out] */ IInterface** lowerE)
+    /* [out] */ AutoPtr<IInterface>& lowerE)
 {
     return mMap->LowerKey(e, lowerE);
 }
 
 ECode TreeSet::Floor(
     /* [in] */ IInterface* e,
-    /* [out] */ IInterface** floorE)
+    /* [out] */ AutoPtr<IInterface>& floorE)
 {
     return mMap->FloorKey(e, floorE);
 }
 
 ECode TreeSet::Ceiling(
     /* [in] */ IInterface* e,
-    /* [out] */ IInterface** ceilingE)
+    /* [out] */ AutoPtr<IInterface>& ceilingE)
 {
     return mMap->CeilingKey(e, ceilingE);
 }
 
 ECode TreeSet::Higher(
     /* [in] */ IInterface* e,
-    /* [out] */ IInterface** higherE)
+    /* [out] */ AutoPtr<IInterface>& higherE)
 {
     return mMap->HigherKey(e, higherE);
 }
 
 ECode TreeSet::PollFirst(
-    /* [out] */ IInterface** e)
+    /* [out] */ AutoPtr<IInterface>& e)
 {
-    VALIDATE_NOT_NULL(e);
-
     AutoPtr<IMapEntry> entry;
-    mMap->PollFirstEntry(&entry);
+    mMap->PollFirstEntry(entry);
     if (entry == nullptr) {
-        *e = nullptr;
+        e = nullptr;
         return NOERROR;
     }
-    else {
-        AutoPtr<IInterface> k;
-        ECode ec = entry->GetKey(k);
-        k.MoveTo(e);
-        return ec;
-    }
+    return entry->GetKey(e);
 }
 
 ECode TreeSet::PollLast(
-    /* [out] */ IInterface** e)
+    /* [out] */ AutoPtr<IInterface>& e)
 {
-    VALIDATE_NOT_NULL(e);
-
     AutoPtr<IMapEntry> entry;
-    mMap->PollLastEntry(&entry);
+    mMap->PollLastEntry(entry);
     if (entry == nullptr) {
-        *e = nullptr;
+        e = nullptr;
         return NOERROR;
     }
-    else {
-        AutoPtr<IInterface> k;
-        ECode ec = entry->GetKey(k);
-        k.MoveTo(e);
-        return ec;
-    }
+    return entry->GetKey(e);
 }
 
 ECode TreeSet::CloneImpl(

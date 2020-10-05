@@ -1581,8 +1581,8 @@ Integer JapaneseImperialCalendar::ComputeFields(
     }
     if (tzMask != (ZONE_OFFSET_MASK | DST_OFFSET_MASK)) {
         // Android-changed: remove ZoneInfo support.
-        tz->GetOffset(mTime, &zoneOffset);
-        tz->GetRawOffset(&mZoneOffsets[0]);
+        tz->GetOffset(mTime, zoneOffset);
+        tz->GetRawOffset(mZoneOffsets[0]);
         mZoneOffsets[1] = zoneOffset - mZoneOffsets[0];
     }
     if (tzMask != 0) {
@@ -1970,7 +1970,7 @@ ECode JapaneseImperialCalendar::ComputeTime()
     if (tzMask != (ZONE_OFFSET_MASK | DST_OFFSET_MASK)) {
         // Android-changed: remove ZoneInfo support
         Integer offset;
-        zone->GetRawOffset(&offset);
+        zone->GetRawOffset(offset);
         TimeZone::From(zone)->GetOffsets(millis - offset, mZoneOffsets);
     }
     if (tzMask != 0) {

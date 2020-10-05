@@ -233,7 +233,7 @@ public:
         /* [in] */ Integer day,
         /* [in] */ Integer dayOfWeek,
         /* [in] */ Integer millis,
-        /* [out] */ Integer* offset) override;
+        /* [out] */ Integer& offset) override;
 
     ECode FindTransitionIndex(
         /* [in] */ Long seconds,
@@ -246,27 +246,27 @@ public:
 
     ECode GetOffset(
         /* [in] */ Long date,
-        /* [out] */ Integer* offset) override;
+        /* [out] */ Integer& offset) override;
 
     ECode InDaylightTime(
         /* [in] */ IDate* time,
-        /* [out] */ Boolean* daylight) override;
+        /* [out] */ Boolean& daylight) override;
 
     ECode GetRawOffset(
-        /* [out] */ Integer* rawOffset) override;
+        /* [out] */ Integer& rawOffset) override;
 
     ECode SetRawOffset(
         /* [in] */ Integer rawOffset) override;
 
     ECode GetDSTSavings(
-        /* [out] */ Integer* savingTime) override;
+        /* [out] */ Integer& savingTime) override;
 
     ECode UseDaylightTime(
-        /* [out] */ Boolean* daylight) override;
+        /* [out] */ Boolean& daylight) override;
 
     ECode HasSameRules(
         /* [in] */ ITimeZone* other,
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode Equals(
         /* [in] */ IInterface* obj,

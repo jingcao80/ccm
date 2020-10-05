@@ -267,10 +267,8 @@ ECode ZoneInfo::GetOffset(
     /* [in] */ Integer day,
     /* [in] */ Integer dayOfWeek,
     /* [in] */ Integer millis,
-    /* [out] */ Integer* offset)
+    /* [out] */ Integer& offset)
 {
-    VALIDATE_NOT_NULL(offset);
-
     Long calc = (year / 400) * MILLISECONDS_PER_400_YEARS;
     year %= 400;
 
@@ -433,28 +431,24 @@ ECode ZoneInfo::GetOffsetsByUtcTime(
 
 ECode ZoneInfo::GetOffset(
     /* [in] */ Long date,
-    /* [out] */ Integer* offset)
+    /* [out] */ Integer& offset)
 {
-    VALIDATE_NOT_NULL(offset);
-
     Integer offsetIndex = FindOffsetIndexForTimeInMilliseconds(date);
     if (offsetIndex == -1) {
         // Assume that all times before our first transition correspond to the
         // oldest-known non-daylight offset. The obvious alternative would be to
         // use the current raw offset, but that seems like a greater leap of faith.
-        *offset = mEarliestRawOffset;
+        offset = mEarliestRawOffset;
         return NOERROR;
     }
-    *offset = mRawOffset + mOffsets[offsetIndex] * 1000;
+    offset = mRawOffset + mOffsets[offsetIndex] * 1000;
     return NOERROR;
 }
 
 ECode ZoneInfo::InDaylightTime(
     /* [in] */ IDate* time,
-    /* [out] */ Boolean* daylight)
+    /* [out] */ Boolean& daylight)
 {
-    VALIDATE_NOT_NULL(daylight);
-
     Long date;
     time->GetTime(date);
     Integer offsetIndex = FindOffsetIndexForTimeInMilliseconds(date);
@@ -462,19 +456,17 @@ ECode ZoneInfo::InDaylightTime(
         // Assume that all times before our first transition are non-daylight.
         // Transition data tends to start with a transition to daylight, so just
         // copying the first transition would assume the opposite.
-        *daylight = false;
+        daylight = false;
         return NOERROR;
     }
-    *daylight = mIsDsts[offsetIndex] == 1;
+    daylight = mIsDsts[offsetIndex] == 1;
     return NOERROR;
 }
 
 ECode ZoneInfo::GetRawOffset(
-    /* [out] */ Integer* rawOffset)
+    /* [out] */ Integer& rawOffset)
 {
-    VALIDATE_NOT_NULL(rawOffset);
-
-    *rawOffset = mRawOffset;
+    rawOffset = mRawOffset;
     return NOERROR;
 }
 
@@ -486,43 +478,37 @@ ECode ZoneInfo::SetRawOffset(
 }
 
 ECode ZoneInfo::GetDSTSavings(
-    /* [out] */ Integer* savingTime)
+    /* [out] */ Integer& savingTime)
 {
-    VALIDATE_NOT_NULL(savingTime);
-
-    *savingTime = mDstSavings;
+    savingTime = mDstSavings;
     return NOERROR;
 }
 
 ECode ZoneInfo::UseDaylightTime(
-    /* [out] */ Boolean* daylight)
+    /* [out] */ Boolean& daylight)
 {
-    VALIDATE_NOT_NULL(daylight);
-
-    *daylight = mUseDst;
+    daylight = mUseDst;
     return NOERROR;
 }
 
 ECode ZoneInfo::HasSameRules(
     /* [in] */ ITimeZone* other,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     ZoneInfo* otherZone = (ZoneInfo*)IZoneInfo::Probe(other);
     if (otherZone == nullptr) {
-        *result = false;
+        result = false;
         return NOERROR;
     }
     if (mUseDst != otherZone->mUseDst) {
-        *result = false;
+        result = false;
         return NOERROR;
     }
     if (!mUseDst) {
-        *result = mRawOffset == otherZone->mRawOffset;
+        result = mRawOffset == otherZone->mRawOffset;
         return NOERROR;
     }
-    *result = mRawOffset == otherZone->mRawOffset
+    result = mRawOffset == otherZone->mRawOffset
             && Arrays::Equals(mOffsets, otherZone->mOffsets)
             && Arrays::Equals(mIsDsts, otherZone->mIsDsts)
             && Arrays::Equals(mTypes, otherZone->mTypes)
@@ -540,10 +526,10 @@ ECode ZoneInfo::Equals(
         return NOERROR;
     }
     String thisID, otherID;
-    GetID(&thisID);
-    other->GetID(&otherID);
+    GetID(thisID);
+    other->GetID(otherID);
     Boolean result;
-    same = thisID.Equals(otherID) && (HasSameRules(other, &result), result);
+    same = thisID.Equals(otherID) && (HasSameRules(other, result), result);
     return NOERROR;
 }
 
@@ -553,7 +539,7 @@ ECode ZoneInfo::GetHashCode(
     constexpr Integer prime = 31;
     hash = 1;
     String id;
-    GetID(&id);
+    GetID(id);
     hash = prime * hash + id.GetHashCode();
     hash = prime * hash + Arrays::GetHashCode(mOffsets);
     hash = prime * hash + Arrays::GetHashCode(mIsDsts);
@@ -568,7 +554,7 @@ ECode ZoneInfo::ToString(
     /* [out] */ String& desc)
 {
     String id;
-    GetID(&id);
+    GetID(id);
     desc = String::Format("ZoneInfo[id=\"%s\",mRawOffset=%d,"
             "mEarliestRawOffset=%d,mUseDst=%s,mDstSavings=%d,"
             "transitions=%d]", id.string(), mRawOffset, mEarliestRawOffset,
@@ -633,7 +619,7 @@ ECode ZoneInfo::WallTime::Constructor()
 {
     CGregorianCalendar::New(0, 0, 0, 0, 0, 0, IID_ICalendar, (IInterface**)&mCalendar);
     AutoPtr<ITimeZone> tz;
-    TimeZone::GetTimeZone(String("UTC"), &tz);
+    TimeZone::GetTimeZone("UTC", &tz);
     mCalendar->SetTimeZone(tz);
     return NOERROR;
 }

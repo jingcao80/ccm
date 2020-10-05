@@ -673,7 +673,7 @@ private:
             /* [out] */ Boolean& result) override;
 
         ECode NextElement(
-            /* [out] */ IInterface** object = nullptr) override;
+            /* [out] */ AutoPtr<IInterface>& object) override;
 
         static AutoPtr<IEnumeration> Get_EMPTY_ENUMERATION();
     };

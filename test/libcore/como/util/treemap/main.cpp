@@ -56,9 +56,9 @@ TEST(TreeMapTest, TestEntrySetSetValue)
 {
     AutoPtr<IMap> map;
     CTreeMap::New(IID_IMap, (IInterface**)&map);
-    map->Put(CoreUtils::Box(String("A")), CoreUtils::Box(String("a")));
-    map->Put(CoreUtils::Box(String("B")), CoreUtils::Box(String("b")));
-    map->Put(CoreUtils::Box(String("C")), CoreUtils::Box(String("c")));
+    map->Put(CoreUtils::Box("A"), CoreUtils::Box("a"));
+    map->Put(CoreUtils::Box("B"), CoreUtils::Box("b"));
+    map->Put(CoreUtils::Box("C"), CoreUtils::Box("c"));
 
     AutoPtr<ISet> entries;
     map->GetEntrySet(entries);
@@ -67,29 +67,29 @@ TEST(TreeMapTest, TestEntrySetSetValue)
     AutoPtr<IMapEntry> entryA;
     it->Next(entryA);
     AutoPtr<IInterface> prevValue;
-    entryA->SetValue(CoreUtils::Box(String("x")), &prevValue);
+    entryA->SetValue(CoreUtils::Box("x"), &prevValue);
     EXPECT_STREQ("a", CoreUtils::Unbox(ICharSequence::Probe(prevValue)).string());
     AutoPtr<IInterface> value;
     entryA->GetValue(value);
     EXPECT_STREQ("x", CoreUtils::Unbox(ICharSequence::Probe(value)).string());
-    map->Get(CoreUtils::Box(String("A")), value);
+    map->Get(CoreUtils::Box("A"), value);
     EXPECT_STREQ("x", CoreUtils::Unbox(ICharSequence::Probe(value)).string());
     AutoPtr<IMapEntry> entryB;
     it->Next(entryB);
-    entryB->SetValue(CoreUtils::Box(String("y")), &prevValue);
+    entryB->SetValue(CoreUtils::Box("y"), &prevValue);
     EXPECT_STREQ("b", CoreUtils::Unbox(ICharSequence::Probe(prevValue)).string());
     entryB->GetValue(value);
     EXPECT_STREQ("y", CoreUtils::Unbox(ICharSequence::Probe(value)).string());
     AutoPtr<IMapEntry> entryC;
     it->Next(entryC);
     prevValue = nullptr;
-    entryC->SetValue(CoreUtils::Box(String("z")), &prevValue);
+    entryC->SetValue(CoreUtils::Box("z"), &prevValue);
     EXPECT_STREQ("c", CoreUtils::Unbox(ICharSequence::Probe(prevValue)).string());
     entryC->GetValue(value);
     EXPECT_STREQ("z", CoreUtils::Unbox(ICharSequence::Probe(value)).string());
-    map->Get(CoreUtils::Box(String("B")), value);
+    map->Get(CoreUtils::Box("B"), value);
     EXPECT_STREQ("y", CoreUtils::Unbox(ICharSequence::Probe(value)).string());
-    map->Get(CoreUtils::Box(String("C")), value);
+    map->Get(CoreUtils::Box("C"), value);
     EXPECT_STREQ("z", CoreUtils::Unbox(ICharSequence::Probe(value)).string());
 }
 
@@ -97,12 +97,12 @@ TEST(TreeMapTest, TestSubMapEntrySetSetValue)
 {
     AutoPtr<IMap> map;
     CTreeMap::New(IID_IMap, (IInterface**)&map);
-    map->Put(CoreUtils::Box(String("A")), CoreUtils::Box(String("a")));
-    map->Put(CoreUtils::Box(String("B")), CoreUtils::Box(String("b")));
-    map->Put(CoreUtils::Box(String("C")), CoreUtils::Box(String("c")));
-    map->Put(CoreUtils::Box(String("D")), CoreUtils::Box(String("d")));
+    map->Put(CoreUtils::Box("A"), CoreUtils::Box("a"));
+    map->Put(CoreUtils::Box("B"), CoreUtils::Box("b"));
+    map->Put(CoreUtils::Box("C"), CoreUtils::Box("c"));
+    map->Put(CoreUtils::Box("D"), CoreUtils::Box("d"));
     AutoPtr<INavigableMap> subMap;
-    INavigableMap::Probe(map)->SubMap(CoreUtils::Box(String("A")), true, CoreUtils::Box(String("C")), true, &subMap);
+    INavigableMap::Probe(map)->SubMap(CoreUtils::Box("A"), true, CoreUtils::Box("C"), true, subMap);
 
     AutoPtr<ISet> entries;
     IMap::Probe(subMap)->GetEntrySet(entries);
@@ -111,36 +111,36 @@ TEST(TreeMapTest, TestSubMapEntrySetSetValue)
     AutoPtr<IMapEntry> entryA;
     it->Next(entryA);
     AutoPtr<IInterface> prevValue;
-    entryA->SetValue(CoreUtils::Box(String("x")), &prevValue);
+    entryA->SetValue(CoreUtils::Box("x"), &prevValue);
     EXPECT_STREQ("a", CoreUtils::Unbox(ICharSequence::Probe(prevValue)).string());
     AutoPtr<IInterface> value;
     entryA->GetValue(value);
     EXPECT_STREQ("x", CoreUtils::Unbox(ICharSequence::Probe(value)).string());
-    IMap::Probe(subMap)->Get(CoreUtils::Box(String("A")), value);
+    IMap::Probe(subMap)->Get(CoreUtils::Box("A"), value);
     EXPECT_STREQ("x", CoreUtils::Unbox(ICharSequence::Probe(value)).string());
-    map->Get(CoreUtils::Box(String("A")), value);
+    map->Get(CoreUtils::Box("A"), value);
     EXPECT_STREQ("x", CoreUtils::Unbox(ICharSequence::Probe(value)).string());
     AutoPtr<IMapEntry> entryB;
     it->Next(entryB);
     prevValue = nullptr;
-    entryB->SetValue(CoreUtils::Box(String("y")), &prevValue);
+    entryB->SetValue(CoreUtils::Box("y"), &prevValue);
     EXPECT_STREQ("b", CoreUtils::Unbox(ICharSequence::Probe(prevValue)).string());
     entryB->GetValue(value);
     EXPECT_STREQ("y", CoreUtils::Unbox(ICharSequence::Probe(value)).string());
     AutoPtr<IMapEntry> entryC;
     it->Next(entryC);
     prevValue = nullptr;
-    entryC->SetValue(CoreUtils::Box(String("z")), &prevValue);
+    entryC->SetValue(CoreUtils::Box("z"), &prevValue);
     EXPECT_STREQ("c", CoreUtils::Unbox(ICharSequence::Probe(prevValue)).string());
     entryC->GetValue(value);
     EXPECT_STREQ("z", CoreUtils::Unbox(ICharSequence::Probe(value)).string());
-    IMap::Probe(subMap)->Get(CoreUtils::Box(String("B")), value);
+    IMap::Probe(subMap)->Get(CoreUtils::Box("B"), value);
     EXPECT_STREQ("y", CoreUtils::Unbox(ICharSequence::Probe(value)).string());
-    map->Get(CoreUtils::Box(String("B")), value);
+    map->Get(CoreUtils::Box("B"), value);
     EXPECT_STREQ("y", CoreUtils::Unbox(ICharSequence::Probe(value)).string());
-    IMap::Probe(subMap)->Get(CoreUtils::Box(String("C")), value);
+    IMap::Probe(subMap)->Get(CoreUtils::Box("C"), value);
     EXPECT_STREQ("z", CoreUtils::Unbox(ICharSequence::Probe(value)).string());
-    map->Get(CoreUtils::Box(String("C")), value);
+    map->Get(CoreUtils::Box("C"), value);
     EXPECT_STREQ("z", CoreUtils::Unbox(ICharSequence::Probe(value)).string());
 }
 
@@ -150,7 +150,7 @@ void AssertImmutable(
     AutoPtr<IInterface> value;
     entry->GetValue(value);
     String valueStr = CoreUtils::Unbox(ICharSequence::Probe(value));
-    ECode ec = entry->SetValue(CoreUtils::Box(String("x")));
+    ECode ec = entry->SetValue(CoreUtils::Box("x"));
     EXPECT_EQ(ec, E_UNSUPPORTED_OPERATION_EXCEPTION);
     entry->GetValue(value);
     EXPECT_STREQ(valueStr.string(), CoreUtils::Unbox(ICharSequence::Probe(value)).string());
@@ -160,28 +160,21 @@ void AssertAllEntryMethodsReturnImmutableEntries(
     /* [in] */ INavigableMap* map)
 {
     AutoPtr<IMapEntry> entry;
-    map->CeilingEntry(CoreUtils::Box(String("B")), &entry);
+    map->CeilingEntry(CoreUtils::Box("B"), entry);
     AssertImmutable(entry);
-    entry = nullptr;
-    map->FirstEntry(&entry);
+    map->FirstEntry(entry);
     AssertImmutable(entry);
-    entry = nullptr;
-    map->FloorEntry(CoreUtils::Box(String("D")), &entry);
+    map->FloorEntry(CoreUtils::Box("D"), entry);
     AssertImmutable(entry);
-    entry = nullptr;
-    map->HigherEntry(CoreUtils::Box(String("A")), &entry);
+    map->HigherEntry(CoreUtils::Box("A"), entry);
     AssertImmutable(entry);
-    entry = nullptr;
-    map->LastEntry(&entry);
+    map->LastEntry(entry);
     AssertImmutable(entry);
-    entry = nullptr;
-    map->LowerEntry(CoreUtils::Box(String("C")), &entry);
+    map->LowerEntry(CoreUtils::Box("C"), entry);
     AssertImmutable(entry);
-    entry = nullptr;
-    map->PollFirstEntry(&entry);
+    map->PollFirstEntry(entry);
     AssertImmutable(entry);
-    entry = nullptr;
-    map->PollLastEntry(&entry);
+    map->PollLastEntry(entry);
     AssertImmutable(entry);
 }
 
@@ -189,12 +182,12 @@ TEST(TreeMapTest, TestExceptionsOnSetValue)
 {
     AutoPtr<IMap> map;
     CTreeMap::New(IID_IMap, (IInterface**)&map);
-    map->Put(CoreUtils::Box(String("A")), CoreUtils::Box(String("a")));
-    map->Put(CoreUtils::Box(String("B")), CoreUtils::Box(String("b")));
-    map->Put(CoreUtils::Box(String("C")), CoreUtils::Box(String("c")));
+    map->Put(CoreUtils::Box("A"), CoreUtils::Box("a"));
+    map->Put(CoreUtils::Box("B"), CoreUtils::Box("b"));
+    map->Put(CoreUtils::Box("C"), CoreUtils::Box("c"));
 
     AutoPtr<INavigableMap> subMap;
-    INavigableMap::Probe(map)->SubMap(CoreUtils::Box(String("A")), true, CoreUtils::Box(String("C")), true, &subMap);
+    INavigableMap::Probe(map)->SubMap(CoreUtils::Box("A"), true, CoreUtils::Box("C"), true, subMap);
     AssertAllEntryMethodsReturnImmutableEntries(subMap);
 }
 
@@ -202,9 +195,9 @@ TEST(TreeMapTest, TestConcurrentModificationDetection)
 {
     AutoPtr<IMap> map;
     CTreeMap::New(IID_IMap, (IInterface**)&map);
-    map->Put(CoreUtils::Box(String("A")), CoreUtils::Box(String("a")));
-    map->Put(CoreUtils::Box(String("B")), CoreUtils::Box(String("b")));
-    map->Put(CoreUtils::Box(String("C")), CoreUtils::Box(String("c")));
+    map->Put(CoreUtils::Box("A"), CoreUtils::Box("a"));
+    map->Put(CoreUtils::Box("B"), CoreUtils::Box("b"));
+    map->Put(CoreUtils::Box("C"), CoreUtils::Box("c"));
 
     AutoPtr<ISet> entries;
     map->GetEntrySet(entries);
@@ -223,9 +216,9 @@ TEST(TreeMapTest, TestIteratorRemoves)
 {
     AutoPtr<IMap> map;
     CTreeMap::New(IID_IMap, (IInterface**)&map);
-    map->Put(CoreUtils::Box(String("A")), CoreUtils::Box(String("a")));
-    map->Put(CoreUtils::Box(String("B")), CoreUtils::Box(String("b")));
-    map->Put(CoreUtils::Box(String("C")), CoreUtils::Box(String("c")));
+    map->Put(CoreUtils::Box("A"), CoreUtils::Box("a"));
+    map->Put(CoreUtils::Box("B"), CoreUtils::Box("b"));
+    map->Put(CoreUtils::Box("C"), CoreUtils::Box("c"));
 
     AutoPtr<ISet> entries;
     map->GetEntrySet(entries);
@@ -259,11 +252,11 @@ TEST(TreeMapTest, TestEntrySetUsesComparatorOnly)
 {
     AutoPtr<IMap> map;
     CTreeMap::New(StringUtils::GetStringCASE_INSENSITIVE_ORDER(), IID_IMap, (IInterface**)&map);
-    map->Put(CoreUtils::Box(String("ABC")), CoreUtils::Box(String("a")));
+    map->Put(CoreUtils::Box(String("ABC")), CoreUtils::Box("a"));
     AutoPtr<ISet> entries;
     map->GetEntrySet(entries);
     AutoPtr<IMapEntry> entry1;
-    CSimpleEntry::New(CoreUtils::Box(String("abc")), CoreUtils::Box(String("a")), IID_IMapEntry, (IInterface**)&entry1);
+    CSimpleEntry::New(CoreUtils::Box(String("abc")), CoreUtils::Box("a"), IID_IMapEntry, (IInterface**)&entry1);
     Boolean contained;
     entries->Contains(entry1, contained);
     EXPECT_TRUE(contained);
@@ -280,7 +273,7 @@ TEST(TreeMapTest, TestMapConstructorPassingSortedMap)
     AutoPtr<INavigableMap> copy;
     CTreeMap::New(source, IID_INavigableMap, (IInterface**)&copy);
     AutoPtr<IComparator> comparator;
-    ISortedMap::Probe(copy)->Comparator(&comparator);
+    ISortedMap::Probe(copy)->Comparator(comparator);
     EXPECT_EQ(nullptr, comparator.Get());
 }
 
@@ -288,7 +281,7 @@ TEST(TreeMapTest, TestNullsWithNaturalOrder)
 {
     AutoPtr<IHashMap> copyFrom;
     CHashMap::New(IID_IHashMap, (IInterface**)&copyFrom);
-    ECode ec = copyFrom->Put(nullptr, CoreUtils::Box(String("b")));
+    ECode ec = copyFrom->Put(nullptr, CoreUtils::Box("b"));
     EXPECT_EQ(ec, NOERROR);
     {
         AutoPtr<IMap> map;
@@ -298,21 +291,21 @@ TEST(TreeMapTest, TestNullsWithNaturalOrder)
 
     AutoPtr<IMap> map;
     CTreeMap::New(IID_IMap, (IInterface**)&map);
-    ec = map->Put(nullptr, CoreUtils::Box(String("b")));
+    ec = map->Put(nullptr, CoreUtils::Box("b"));
     EXPECT_EQ(ec, E_NULL_POINTER_EXCEPTION);
 
     {
         AutoPtr<INavigableMap> subMap;
-        INavigableMap::Probe(map)->DescendingMap(&subMap);
-        ec = IMap::Probe(subMap)->Put(nullptr, CoreUtils::Box(String("b")));
+        INavigableMap::Probe(map)->DescendingMap(subMap);
+        ec = IMap::Probe(subMap)->Put(nullptr, CoreUtils::Box("b"));
         EXPECT_EQ(ec, E_NULL_POINTER_EXCEPTION);
     }
 
     {
         AutoPtr<ISortedMap> subMap;
-        INavigableMap::Probe(map)->SubMap(CoreUtils::Box(String("a")),
-                CoreUtils::Box(String("z")), &subMap);
-        ec = IMap::Probe(subMap)->Put(nullptr, CoreUtils::Box(String("b")));
+        INavigableMap::Probe(map)->SubMap(CoreUtils::Box("a"),
+                CoreUtils::Box("z"), subMap);
+        ec = IMap::Probe(subMap)->Put(nullptr, CoreUtils::Box("b"));
         EXPECT_EQ(ec, E_NULL_POINTER_EXCEPTION);
     }
 }
@@ -321,7 +314,7 @@ TEST(TreeMapTest, TestClassCastExceptions)
 {
     AutoPtr<IMap> map;
     CTreeMap::New(IID_IMap, (IInterface**)&map);
-    map->Put(CoreUtils::Box(String("A")), CoreUtils::Box(String("a")));
+    map->Put(CoreUtils::Box("A"), CoreUtils::Box("a"));
     {
         AutoPtr<IInterface> value;
         ECode ec = map->Get(CoreUtils::Box(5), value);
@@ -344,14 +337,14 @@ TEST(TreeMapTest, TestClone)
 {
     AutoPtr<IMap> map;
     CTreeMap::New(IID_IMap, (IInterface**)&map);
-    map->Put(CoreUtils::Box(String("A")), CoreUtils::Box(String("a")));
-    map->Put(CoreUtils::Box(String("B")), CoreUtils::Box(String("b")));
+    map->Put(CoreUtils::Box("A"), CoreUtils::Box("a"));
+    map->Put(CoreUtils::Box("B"), CoreUtils::Box("b"));
 
     AutoPtr<IMap> clone = (IMap*)CoreUtils::Clone(map, IID_IMap).Get();
     AutoPtr<IInterface> value;
-    clone->Get(CoreUtils::Box(String("A")), value);
+    clone->Get(CoreUtils::Box("A"), value);
     EXPECT_STREQ("a", CoreUtils::Unbox(ICharSequence::Probe(value)));
-    clone->Get(CoreUtils::Box(String("B")), value);
+    clone->Get(CoreUtils::Box("B"), value);
     EXPECT_STREQ("b", CoreUtils::Unbox(ICharSequence::Probe(value)));
 }
 
@@ -370,7 +363,7 @@ static Boolean IsLowerBound(
 static ECode ApplyBound(
     /* [in] */ Char bound,
     /* [in] */ INavigableMap* m,
-    /* [out] */ INavigableMap** submap)
+    /* [out] */ AutoPtr<INavigableMap>& submap)
 {
     Integer boundValue = 0;
     if (IsLowerBound(bound)) {
@@ -388,8 +381,8 @@ static Boolean IsWithinBounds(
     AutoPtr<INavigableMap> source;
     CTreeMap::New(IID_INavigableMap, (IInterface**)&source);
     AutoPtr<INavigableMap> m, submap;
-    ApplyBound(mapBound, source, &m);
-    ECode ec = ApplyBound(submapBound, m, &submap);
+    ApplyBound(mapBound, source, m);
+    ECode ec = ApplyBound(submapBound, m, submap);
     return SUCCEEDED(ec);
 }
 
@@ -427,14 +420,14 @@ TEST(TreeMapTest, TestBoundsOpenSubrangeOfClosedRange)
 
     AutoPtr<INavigableMap> m, tm, hm;
     CTreeMap::New(IID_INavigableMap, (IInterface**)&m);
-    ECode ec = m->TailMap(CoreUtils::Box(0), true, &tm);
-    ec = tm->HeadMap(CoreUtils::Box(0), false, &hm);
+    ECode ec = m->TailMap(CoreUtils::Box(0), true, tm);
+    ec = tm->HeadMap(CoreUtils::Box(0), false, hm);
     EXPECT_EQ(ec, NOERROR);
 
     m = tm = hm = nullptr;
     CTreeMap::New(IID_INavigableMap, (IInterface**)&m);
-    ec = m->TailMap(CoreUtils::Box(0), false, &tm);
-    ec = tm->HeadMap(CoreUtils::Box(0), true, &hm);
+    ec = m->TailMap(CoreUtils::Box(0), false, tm);
+    ec = tm->HeadMap(CoreUtils::Box(0), true, hm);
     EXPECT_EQ(ec, E_ILLEGAL_ARGUMENT_EXCEPTION);
 }
 

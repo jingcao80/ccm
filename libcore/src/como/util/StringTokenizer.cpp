@@ -117,7 +117,7 @@ ECode StringTokenizer::HasMoreTokens(
 }
 
 ECode StringTokenizer::NextToken(
-    /* [out] */ String* token)
+    /* [out] */ String& token)
 {
     mCurrentPosition = (mNewPosition >= 0 && !mDelimsChanged) ?
             mNewPosition : SkipDelimiters(mCurrentPosition);
@@ -130,15 +130,13 @@ ECode StringTokenizer::NextToken(
     }
     Integer start = mCurrentPosition;
     mCurrentPosition = ScanToken(mCurrentPosition);
-    if (token != nullptr) {
-        *token = mStr.Substring(start, mCurrentPosition);
-    }
+    token = mStr.Substring(start, mCurrentPosition);
     return NOERROR;
 }
 
 ECode StringTokenizer::NextToken(
     /* [in] */ const String& delim,
-    /* [out] */ String* token)
+    /* [out] */ String& token)
 {
     mDelimiters = delim;
     mDelimsChanged = true;
@@ -153,22 +151,18 @@ ECode StringTokenizer::HasMoreElements(
 }
 
 ECode StringTokenizer::NextElement(
-    /* [out] */ IInterface** element)
+    /* [out] */ AutoPtr<IInterface>& element)
 {
     String token;
-    FAIL_RETURN(NextToken(&token));
-    if (element != nullptr) {
-        CoreUtils::Box(token).MoveTo((ICharSequence**)element);
-    }
+    FAIL_RETURN(NextToken(token));
+    element = CoreUtils::Box(token);
     return NOERROR;
 }
 
 ECode StringTokenizer::CountTokens(
-    /* [out] */ Integer* number)
+    /* [out] */ Integer& number)
 {
-    VALIDATE_NOT_NULL(number);
-
-    Integer count = 0;
+    number = 0;
     Integer currpos = mCurrentPosition;
     while (currpos < mMaxPosition) {
         currpos = SkipDelimiters(currpos);
@@ -176,9 +170,8 @@ ECode StringTokenizer::CountTokens(
             break;
         }
         currpos = ScanToken(currpos);
-        count++;
+        number++;
     }
-    *number = count;
     return NOERROR;
 }
 

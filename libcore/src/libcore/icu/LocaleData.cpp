@@ -76,7 +76,7 @@ AutoPtr<ILocale> LocaleData::MapInvalidAndNullLocales(
     }
 
     String language;
-    locale->ToLanguageTag(&language);
+    locale->ToLanguageTag(language);
     if (language.Equals("und")) {
         return CLocale::GetROOT();
     }
@@ -105,7 +105,7 @@ ECode LocaleData::GetInner(
     }
 
     String languageTag;
-    locale->ToLanguageTag(&languageTag);
+    locale->ToLanguageTag(languageTag);
     AutoPtr<IHashMap> localeDataCache = GetLocaleDataCache();
     {
         AutoLock lock(ISynchronize::Probe(localeDataCache));
@@ -425,7 +425,7 @@ ECode LocaleData::InitLocaleData(
 {
     AutoPtr<LocaleData> localeDataObj = new LocaleData();
     String languageTag;
-    locale->ToLanguageTag(&languageTag);
+    locale->ToLanguageTag(languageTag);
     if (!ICU::InitLocaleData(languageTag, localeDataObj)) {
         Logger::E("LocaleData", "couldn't initialize LocaleData for locale %s", Object::ToString(locale).string());
         return E_ASSERTION_ERROR;

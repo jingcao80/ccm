@@ -46,6 +46,9 @@ public:
         /* [in] */ Double d);
 
     COM_PUBLIC static AutoPtr<ICharSequence> Box(
+        /* [in] */ const char* str);
+
+    COM_PUBLIC static AutoPtr<ICharSequence> Box(
         /* [in] */ const String& str);
 
     COM_PUBLIC static Array<ICharSequence*> Box(

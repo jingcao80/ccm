@@ -35,7 +35,7 @@ Boolean FileSystem::GetBooleanProperty(
     /* [in] */ Boolean defaultVal)
 {
     String val;
-    System::GetProperty(prop, &val);
+    System::GetProperty(prop, val);
     if (val.IsNull()) return defaultVal;
     if (val.EqualsIgnoreCase("true")) {
         return true;
@@ -47,9 +47,9 @@ Boolean FileSystem::GetBooleanProperty(
 
 ECode FileSystem::StaticInitialize()
 {
-    sUseCanonCaches = GetBooleanProperty(String("como.io.useCanonCaches"),
+    sUseCanonCaches = GetBooleanProperty("como.io.useCanonCaches",
             sUseCanonCaches);
-    sUseCanonPrefixCache = GetBooleanProperty(String("como.io.useCanonPrefixCache"),
+    sUseCanonPrefixCache = GetBooleanProperty("como.io.useCanonPrefixCache",
             sUseCanonPrefixCache);
     return NOERROR;
 }

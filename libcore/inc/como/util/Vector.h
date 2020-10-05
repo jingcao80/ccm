@@ -136,7 +136,7 @@ public:
         /* [in] */ Integer newSize) override;
 
     ECode GetCapacity(
-        /* [out] */ Integer* capacity) override;
+        /* [out] */ Integer& capacity) override;
 
     ECode GetSize(
         /* [out] */ Integer& size) override;
@@ -145,7 +145,7 @@ public:
         /* [out] */ Boolean& empty) override;
 
     ECode GetElements(
-        /* [out] */ IEnumeration** elements) override;
+        /* [out] */ AutoPtr<IEnumeration>& elements) override;
 
     ECode Contains(
         /* [in] */ IInterface* obj,
@@ -153,31 +153,31 @@ public:
 
     ECode IndexOf(
         /* [in] */ IInterface* obj,
-        /* [out] */ Integer* index) override;
+        /* [out] */ Integer& index) override;
 
     ECode IndexOf(
         /* [in] */ IInterface* obj,
         /* [in] */ Integer fromIndex,
-        /* [out] */ Integer* index) override;
+        /* [out] */ Integer& index) override;
 
     ECode LastIndexOf(
         /* [in] */ IInterface* obj,
-        /* [out] */ Integer* index) override;
+        /* [out] */ Integer& index) override;
 
     ECode LastIndexOf(
         /* [in] */ IInterface* obj,
         /* [in] */ Integer fromIndex,
-        /* [out] */ Integer* index) override;
+        /* [out] */ Integer& index) override;
 
     ECode GetElementAt(
         /* [in] */ Integer index,
-        /* [out] */ IInterface** element) override;
+        /* [out] */ AutoPtr<IInterface>& element) override;
 
     ECode GetFirstElement(
-        /* [out] */ IInterface** element) override;
+        /* [out] */ AutoPtr<IInterface>& element) override;
 
     ECode GetLastElement(
-        /* [out] */ IInterface** element) override;
+        /* [out] */ AutoPtr<IInterface>& element) override;
 
     ECode SetElementAt(
         /* [in] */ IInterface* obj,
@@ -270,7 +270,7 @@ public:
     ECode SubList(
         /* [in] */ Integer fromIndex,
         /* [in] */ Integer toIndex,
-        /* [out] */ IList** subList) override;
+        /* [out] */ AutoPtr<IList>& subList) override;
 
     ECode GetListIterator(
         /* [in] */ Integer index,

@@ -50,20 +50,20 @@ public:
         /* [out] */ Boolean& hasMore) override;
 
     ECode NextToken(
-        /* [out] */ String* token = nullptr) override;
+        /* [out] */ String& token) override;
 
     ECode NextToken(
         /* [in] */ const String& delim,
-        /* [out] */ String* token = nullptr) override;
+        /* [out] */ String& token) override;
 
     ECode HasMoreElements(
         /* [out] */ Boolean& hasMore) override;
 
     ECode NextElement(
-        /* [out] */ IInterface** element = nullptr) override;
+        /* [out] */ AutoPtr<IInterface>& element) override;
 
     ECode CountTokens(
-        /* [out] */ Integer* number) override;
+        /* [out] */ Integer& number) override;
 
 private:
     /**

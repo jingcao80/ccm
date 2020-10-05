@@ -2085,11 +2085,9 @@ ECode ConcurrentHashMap::KeyIterator::Next(
 }
 
 ECode ConcurrentHashMap::KeyIterator::NextElement(
-    /* [out] */ IInterface** object)
+    /* [out] */ AutoPtr<IInterface>& object)
 {
-    AutoPtr<IInterface> e;
-    Next(e);
-    e.MoveTo(object);
+    Next(object);
     return NOERROR;
 }
 
@@ -2128,11 +2126,9 @@ ECode ConcurrentHashMap::ValueIterator::Next(
 }
 
 ECode ConcurrentHashMap::ValueIterator::NextElement(
-    /* [out] */ IInterface** object)
+    /* [out] */ AutoPtr<IInterface>& object)
 {
-    AutoPtr<IInterface> e;
-    Next(e);
-    e.MoveTo(object);
+    Next(object);
     return NOERROR;
 }
 

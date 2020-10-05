@@ -33,7 +33,7 @@ TEST(LocaleTest, NewTest)
     EXPECT_EQ(ec, NOERROR);
     EXPECT_TRUE(locale != nullptr);
     String country;
-    locale->GetCountry(&country);
+    locale->GetCountry(country);
     EXPECT_STREQ(country.string(), "");
 }
 
@@ -43,9 +43,9 @@ TEST(LocaleTest, GetDefaultTest)
     LocaleFactory::GetDefault(&locale);
     EXPECT_TRUE(locale != nullptr);
     String language, country;
-    locale->GetLanguage(&language);
+    locale->GetLanguage(language);
     EXPECT_STREQ(language.string(), "en");
-    locale->GetCountry(&country);
+    locale->GetCountry(country);
     EXPECT_STREQ(country.string(), "US");
 }
 

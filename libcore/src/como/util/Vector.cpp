@@ -145,13 +145,11 @@ ECode Vector::SetSize(
 }
 
 ECode Vector::GetCapacity(
-    /* [out] */ Integer* capacity)
+    /* [out] */ Integer& capacity)
 {
-    VALIDATE_NOT_NULL(capacity);
-
     AutoLock lock(this);
 
-    *capacity = mElementData.GetLength();
+    capacity = mElementData.GetLength();
     return NOERROR;
 }
 
@@ -172,10 +170,8 @@ ECode Vector::IsEmpty(
 }
 
 ECode Vector::GetElements(
-    /* [out] */ IEnumeration** elements)
+    /* [out] */ AutoPtr<IEnumeration>& elements)
 {
-    VALIDATE_NOT_NULL(elements);
-
     class _Enumeration
         : public SyncObject
         , public IEnumeration
@@ -229,16 +225,13 @@ ECode Vector::GetElements(
         }
 
         ECode NextElement(
-            /* [out] */ IInterface** object = nullptr) override
+            /* [out] */ AutoPtr<IInterface>& object) override
         {
             AutoLock lock(mOwner);
 
             if (mCount < mOwner->mElementCount) {
                 mCount++;
-                if (object != nullptr) {
-                    *object = mOwner->ElementData(mCount);
-                    REFCOUNT_ADD(*object)
-                }
+                object = mOwner->ElementData(mCount);
                 return NOERROR;
             }
             Logger::E("Vector", "Vector Enumeration");
@@ -252,8 +245,7 @@ ECode Vector::GetElements(
 
     AutoLock lock(this);
 
-    *elements = new _Enumeration(this);
-    REFCOUNT_ADD(*elements);
+    elements = new _Enumeration(this);
     return NOERROR;
 }
 
@@ -262,14 +254,14 @@ ECode Vector::Contains(
     /* [out] */ Boolean& result)
 {
     Integer idx;
-    IndexOf(obj, 0, &idx);
+    IndexOf(obj, 0, idx);
     result = idx >= 0;
     return NOERROR;
 }
 
 ECode Vector::IndexOf(
     /* [in] */ IInterface* obj,
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
     return IndexOf(obj, 0, index);
 }
@@ -277,16 +269,14 @@ ECode Vector::IndexOf(
 ECode Vector::IndexOf(
     /* [in] */ IInterface* obj,
     /* [in] */ Integer fromIndex,
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
-    VALIDATE_NOT_NULL(index);
-
     AutoLock lock(this);
 
     if (obj == nullptr) {
         for (Integer i = fromIndex; i < mElementCount; i++) {
             if (mElementData[i] == nullptr) {
-                *index = i;
+                index = i;
                 return NOERROR;
             }
         }
@@ -294,18 +284,18 @@ ECode Vector::IndexOf(
     else {
         for (Integer i = fromIndex; i < mElementCount; i++) {
             if (Object::Equals(obj, mElementData[i])) {
-                *index = i;
+                index = i;
                 return NOERROR;
             }
         }
     }
-    *index = -1;
+    index = -1;
     return NOERROR;
 }
 
 ECode Vector::LastIndexOf(
     /* [in] */ IInterface* obj,
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
     return LastIndexOf(obj, mElementCount - 1, index);
 }
@@ -313,10 +303,8 @@ ECode Vector::LastIndexOf(
 ECode Vector::LastIndexOf(
     /* [in] */ IInterface* obj,
     /* [in] */ Integer fromIndex,
-    /* [out] */ Integer* index)
+    /* [out] */ Integer& index)
 {
-    VALIDATE_NOT_NULL(index);
-
     AutoLock lock(this);
 
     if (fromIndex >= mElementCount) {
@@ -327,7 +315,7 @@ ECode Vector::LastIndexOf(
     if (obj == nullptr) {
         for (Integer i = fromIndex; i >= 0; i--) {
             if (mElementData[i] == nullptr) {
-                *index = i;
+                index = i;
                 return NOERROR;
             }
         }
@@ -335,21 +323,19 @@ ECode Vector::LastIndexOf(
     else {
         for (Integer i = fromIndex; i >= 0; i--) {
             if (Object::Equals(obj, mElementData[i])) {
-                *index = i;
+                index = i;
                 return NOERROR;
             }
         }
     }
-    *index = -1;
+    index = -1;
     return NOERROR;
 }
 
 ECode Vector::GetElementAt(
     /* [in] */ Integer index,
-    /* [out] */ IInterface** element)
+    /* [out] */ AutoPtr<IInterface>& element)
 {
-    VALIDATE_NOT_NULL(element);
-
     AutoLock lock(this);
 
     if (index >= mElementCount) {
@@ -357,38 +343,31 @@ ECode Vector::GetElementAt(
         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
-    *element = ElementData(index);
-    REFCOUNT_ADD(*element);
+    element = ElementData(index);
     return NOERROR;
 }
 
 ECode Vector::GetFirstElement(
-    /* [out] */ IInterface** element)
+    /* [out] */ AutoPtr<IInterface>& element)
 {
-    VALIDATE_NOT_NULL(element);
-
     AutoLock lock(this);
 
     if (mElementCount == 0) {
         return E_NO_SUCH_ELEMENT_EXCEPTION;
     }
-    *element = ElementData(0);
-    REFCOUNT_ADD(*element);
+    element = ElementData(0);
     return NOERROR;
 }
 
 ECode Vector::GetLastElement(
-    /* [out] */ IInterface** element)
+    /* [out] */ AutoPtr<IInterface>& element)
 {
-    VALIDATE_NOT_NULL(element);
-
     AutoLock lock(this);
 
     if (mElementCount == 0) {
         return E_NO_SUCH_ELEMENT_EXCEPTION;
     }
-    *element = ElementData(mElementCount - 1);
-    REFCOUNT_ADD(*element);
+    element = ElementData(mElementCount - 1);
     return NOERROR;
 }
 
@@ -465,7 +444,7 @@ ECode Vector::RemoveElement(
 
     mModCount++;
     Integer i;
-    IndexOf(obj, &i);
+    IndexOf(obj, i);
     if (i >= 0) {
         RemoveElementAt(i);
         if (changed != nullptr) {
@@ -721,15 +700,13 @@ ECode Vector::ToString(
 ECode Vector::SubList(
     /* [in] */ Integer fromIndex,
     /* [in] */ Integer toIndex,
-    /* [out] */ IList** subList)
+    /* [out] */ AutoPtr<IList>& subList)
 {
-    VALIDATE_NOT_NULL(subList);
-
     AutoLock lock(this);
 
     AutoPtr<IList> list;
     FAIL_RETURN(AbstractList::SubList(fromIndex, toIndex, list));
-    Collections::CreateSynchronizedList(list, this).MoveTo(subList);
+    subList = Collections::CreateSynchronizedList(list, this);
     return NOERROR;
 }
 

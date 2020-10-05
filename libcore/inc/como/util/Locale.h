@@ -73,16 +73,16 @@ public:
         {}
 
         ECode GetLanguageKey(
-            /* [out] */ String* key) override;
+            /* [out] */ String& key) override;
 
         ECode GetScriptKey(
-            /* [out] */ String* key) override;
+            /* [out] */ String& key) override;
 
         ECode GetCountryKey(
-            /* [out] */ String* key) override;
+            /* [out] */ String& key) override;
 
         ECode GetVariantKey(
-            /* [out] */ String* key) override;
+            /* [out] */ String& key) override;
 
     public:
         String mLanguageKey;
@@ -137,7 +137,7 @@ public:
         ECode ClearExtensions() override;
 
         ECode Build(
-            /* [out] */ ILocale** locale) override;
+            /* [out] */ AutoPtr<ILocale>& locale) override;
 
     private:
         AutoPtr<InternalLocaleBuilder> mLocaleBuilder;
@@ -276,36 +276,36 @@ public:
     static Array<String> GetISOLanguages();
 
     ECode GetLanguage(
-        /* [out] */ String* language) override;
+        /* [out] */ String& language) override;
 
     ECode GetScript(
-        /* [out] */ String* script) override;
+        /* [out] */ String& script) override;
 
     ECode GetCountry(
-        /* [out] */ String* country) override;
+        /* [out] */ String& country) override;
 
     ECode GetVariant(
-        /* [out] */ String* variant) override;
+        /* [out] */ String& variant) override;
 
     ECode HasExtensions(
         /* [out] */ Boolean* result);
 
     ECode GetExtension(
         /* [in] */ Char key,
-        /* [out] */ String* extension) override;
+        /* [out] */ String& extension) override;
 
     ECode GetExtensionKeys(
-        /* [out] */ ISet** keys) override;
+        /* [out] */ AutoPtr<ISet>& keys) override;
 
     ECode GetUnicodeLocaleAttributes(
-        /* [out] */ ISet** attrs) override;
+        /* [out] */ AutoPtr<ISet>& attrs) override;
 
     ECode GetUnicodeLocaleType(
         /* [in] */ const String& key,
-        /* [out] */ String* type) override;
+        /* [out] */ String& type) override;
 
     ECode GetUnicodeLocaleKeys(
-        /* [out] */ ISet** keys) override;
+        /* [out] */ AutoPtr<ISet>& keys) override;
 
     AutoPtr<BaseLocale> GetBaseLocale();
 
@@ -315,51 +315,51 @@ public:
         /* [out] */ String& desc) override;
 
     ECode ToLanguageTag(
-        /* [out] */ String* langTag) override;
+        /* [out] */ String& langTag) override;
 
     static AutoPtr<ILocale> ForLanguageTag(
         /* [in] */ const String& languageTag);
 
     ECode GetISO3Language(
-        /* [out] */ String* language) override;
+        /* [out] */ String& language) override;
 
     ECode GetISO3Country(
-        /* [out] */ String* country) override;
+        /* [out] */ String& country) override;
 
     ECode GetDisplayLanguage(
-        /* [out] */ String* language) override;
+        /* [out] */ String& language) override;
 
     ECode GetDisplayLanguage(
         /* [in] */ ILocale* locale,
-        /* [out] */ String* language) override;
+        /* [out] */ String& language) override;
 
     ECode GetDisplayScript(
-        /* [out] */ String* script) override;
+        /* [out] */ String& script) override;
 
     ECode GetDisplayScript(
         /* [in] */ ILocale* inLocale,
-        /* [out] */ String* script) override;
+        /* [out] */ String& script) override;
 
     ECode GetDisplayCountry(
-        /* [out] */ String* country) override;
+        /* [out] */ String& country) override;
 
     ECode GetDisplayCountry(
         /* [in] */ ILocale* locale,
-        /* [out] */ String* country) override;
+        /* [out] */ String& country) override;
 
     ECode GetDisplayVariant(
-        /* [out] */ String* variant) override;
+        /* [out] */ String& variant) override;
 
     ECode GetDisplayVariant(
         /* [in] */ ILocale* inLocale,
-        /* [out] */ String* variant) override;
+        /* [out] */ String& variant) override;
 
     ECode GetDisplayName(
-        /* [out] */ String* name) override;
+        /* [out] */ String& name) override;
 
     ECode GetDisplayName(
         /* [in] */ ILocale* locale,
-        /* [out] */ String* name) override;
+        /* [out] */ String& name) override;
 
     ECode GetHashCode(
         /* [out] */ Integer& hash) override;

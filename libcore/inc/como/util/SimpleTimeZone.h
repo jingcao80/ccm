@@ -126,7 +126,7 @@ public:
 
     ECode GetOffset(
         /* [in] */ Long date,
-        /* [out] */ Integer* offset) override;
+        /* [out] */ Integer& offset) override;
 
     virtual Integer GetOffsets(
         /* [in] */ Long date,
@@ -139,10 +139,10 @@ public:
         /* [in] */ Integer day,
         /* [in] */ Integer dayOfWeek,
         /* [in] */ Integer milliseconds,
-        /* [out] */ Integer* offset) override;
+        /* [out] */ Integer& offset) override;
 
     ECode GetRawOffset(
-        /* [out] */ Integer* offset) override;
+        /* [out] */ Integer& offset) override;
 
     ECode SetRawOffset(
         /* [in] */ Integer offsetMillis) override;
@@ -151,17 +151,17 @@ public:
         /* [in] */ Integer millisSavedDuringDST) override;
 
     ECode GetDSTSavings(
-        /* [out] */ Integer* savingTime) override;
+        /* [out] */ Integer& savingTime) override;
 
     ECode UseDaylightTime(
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode ObservesDaylightTime(
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode InDaylightTime(
         /* [in] */ IDate* date,
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode GetHashCode(
         /* [out] */ Integer& hash) override;
@@ -172,7 +172,7 @@ public:
 
     ECode HasSameRules(
         /* [in] */ ITimeZone* other,
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     ECode ToString(
         /* [out] */ String& desc) override;

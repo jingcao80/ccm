@@ -67,12 +67,12 @@ public:
 
     static ECode GetProperty(
         /* [in] */ const String& key,
-        /* [out] */ String* value);
+        /* [out] */ String& value);
 
     static ECode GetProperty(
         /* [in] */ const String& key,
         /* [in] */ const String& def,
-        /* [out] */ String* value);
+        /* [out] */ String& value);
 
     static ECode GetEnv(
         /* [in] */ const String& name,

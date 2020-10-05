@@ -62,7 +62,7 @@ ECode TreeMap::Constructor(
 ECode TreeMap::Constructor(
     /* [in] */ ISortedMap* m)
 {
-    m->Comparator(&mComparator);
+    m->Comparator(mComparator);
     Integer size;
     IMap::Probe(m)->GetSize(size);
     AutoPtr<ISet> entrySet;
@@ -117,40 +117,31 @@ ECode TreeMap::Get(
 }
 
 ECode TreeMap::Comparator(
-    /* [out] */ IComparator** comparator)
+    /* [out] */ AutoPtr<IComparator>& comparator)
 {
-    VALIDATE_NOT_NULL(comparator);
-
-    *comparator = mComparator;
-    REFCOUNT_ADD(*comparator);
+    comparator = mComparator;
     return NOERROR;
 }
 
 ECode TreeMap::FirstKey(
-    /* [out] */ IInterface** key)
+    /* [out] */ AutoPtr<IInterface>& key)
 {
-    VALIDATE_NOT_NULL(key);
-
     AutoPtr<TreeMapEntry> entry = GetFirstEntry();
     if (entry == nullptr) {
         return E_NO_SUCH_ELEMENT_EXCEPTION;
     }
-    *key = entry->mKey;
-    REFCOUNT_ADD(*key);
+    key = entry->mKey;
     return NOERROR;
 }
 
 ECode TreeMap::LastKey(
-    /* [out] */ IInterface** key)
+    /* [out] */ AutoPtr<IInterface>& key)
 {
-    VALIDATE_NOT_NULL(key);
-
     AutoPtr<TreeMapEntry> entry = GetLastEntry();
     if (entry == nullptr) {
         return E_NO_SUCH_ELEMENT_EXCEPTION;
     }
-    *key = entry->mKey;
-    REFCOUNT_ADD(*key);
+    key = entry->mKey;
     return NOERROR;
 }
 
@@ -161,7 +152,7 @@ ECode TreeMap::PutAll(
     map->GetSize(mapSize);
     if (mSize == 0 && mapSize != 0 && ISortedMap::Probe(map) != nullptr) {
         AutoPtr<IComparator> c;
-        ISortedMap::Probe(map)->Comparator(&c);
+        ISortedMap::Probe(map)->Comparator(c);
         if (c == mComparator || (c != nullptr && Object::Equals(c, mComparator))) {
             ++mModCount;
             AutoPtr<ISet> entrySet;
@@ -534,154 +525,118 @@ ECode TreeMap::CloneImpl(
 }
 
 ECode TreeMap::FirstEntry(
-    /* [out] */ IMapEntry** entry)
+    /* [out] */ AutoPtr<IMapEntry>& entry)
 {
-    VALIDATE_NOT_NULL(entry);
-
-    AutoPtr<IMapEntry> e = ExportEntry(GetFirstEntry());
-    e.MoveTo(entry);
+    entry = ExportEntry(GetFirstEntry());
     return NOERROR;
 }
 
 ECode TreeMap::LastEntry(
-    /* [out] */ IMapEntry** entry)
+    /* [out] */ AutoPtr<IMapEntry>& entry)
 {
-    VALIDATE_NOT_NULL(entry);
-
-    AutoPtr<IMapEntry> e = ExportEntry(GetLastEntry());
-    e.MoveTo(entry);
+    entry = ExportEntry(GetLastEntry());
     return NOERROR;
 }
 
 ECode TreeMap::PollFirstEntry(
-    /* [out] */ IMapEntry** entry)
+    /* [out] */ AutoPtr<IMapEntry>& entry)
 {
-    VALIDATE_NOT_NULL(entry);
-
     AutoPtr<TreeMapEntry> p = GetFirstEntry();
-    AutoPtr<IMapEntry> e = ExportEntry(p);
+    entry = ExportEntry(p);
     if (p != nullptr) {
         DeleteEntry(p);
     }
-    e.MoveTo(entry);
     return NOERROR;
 }
 
 ECode TreeMap::PollLastEntry(
-    /* [out] */ IMapEntry** entry)
+    /* [out] */ AutoPtr<IMapEntry>& entry)
 {
-    VALIDATE_NOT_NULL(entry);
-
     AutoPtr<TreeMapEntry> p = GetLastEntry();
-    AutoPtr<IMapEntry> e = ExportEntry(p);
+    entry = ExportEntry(p);
     if (p != nullptr) {
         DeleteEntry(p);
     }
-    e.MoveTo(entry);
     return NOERROR;
 }
 
 ECode TreeMap::LowerEntry(
     /* [in] */ IInterface* key,
-    /* [out] */ IMapEntry** entry)
+    /* [out] */ AutoPtr<IMapEntry>& entry)
 {
-    VALIDATE_NOT_NULL(entry);
-
     AutoPtr<TreeMapEntry> lentry;
     FAIL_RETURN(GetLowerEntry(key, &lentry));
-    AutoPtr<IMapEntry> e = ExportEntry(lentry);
-    e.MoveTo(entry);
+    entry = ExportEntry(lentry);
     return NOERROR;
 }
 
 ECode TreeMap::LowerKey(
     /* [in] */ IInterface* key,
-    /* [out] */ IInterface** lowerkey)
+    /* [out] */ AutoPtr<IInterface>& lowerkey)
 {
-    VALIDATE_NOT_NULL(lowerkey);
-
     AutoPtr<TreeMapEntry> lentry;
     FAIL_RETURN(GetLowerEntry(key, &lentry));
-    *lowerkey = (lentry == nullptr) ? nullptr : lentry->mKey;
-    REFCOUNT_ADD(*lowerkey);
+    lowerkey = (lentry == nullptr) ? nullptr : lentry->mKey;
     return NOERROR;
 }
 
 ECode TreeMap::FloorEntry(
     /* [in] */ IInterface* key,
-    /* [out] */ IMapEntry** entry)
+    /* [out] */ AutoPtr<IMapEntry>& entry)
 {
-    VALIDATE_NOT_NULL(entry);
-
     AutoPtr<TreeMapEntry> fentry;
     FAIL_RETURN(GetFloorEntry(key, &fentry));
-    AutoPtr<IMapEntry> e = ExportEntry(fentry);
-    e.MoveTo(entry);
+    entry = ExportEntry(fentry);
     return NOERROR;
 }
 
 ECode TreeMap::FloorKey(
     /* [in] */ IInterface* key,
-    /* [out] */ IInterface** floorkey)
+    /* [out] */ AutoPtr<IInterface>& floorkey)
 {
-    VALIDATE_NOT_NULL(floorkey);
-
     AutoPtr<TreeMapEntry> fentry;
     FAIL_RETURN(GetFloorEntry(key, &fentry));
-    *floorkey = (fentry == nullptr) ? nullptr : fentry->mKey;
-    REFCOUNT_ADD(*floorkey);
+    floorkey = (fentry == nullptr) ? nullptr : fentry->mKey;
     return NOERROR;
 }
 
 ECode TreeMap::CeilingEntry(
     /* [in] */ IInterface* key,
-    /* [out]　*/ IMapEntry** entry)
+    /* [out]　*/ AutoPtr<IMapEntry>& entry)
 {
-    VALIDATE_NOT_NULL(entry);
-
     AutoPtr<TreeMapEntry> centry;
     FAIL_RETURN(GetCeilingEntry(key, &centry));
-    AutoPtr<IMapEntry> e = ExportEntry(centry);
-    e.MoveTo(entry);
+    entry = ExportEntry(centry);
     return NOERROR;
 }
 
 ECode TreeMap::CeilingKey(
     /* [in] */ IInterface* key,
-    /* [out] */ IInterface** ceilingkey)
+    /* [out] */ AutoPtr<IInterface>& ceilingkey)
 {
-    VALIDATE_NOT_NULL(ceilingkey);
-
     AutoPtr<TreeMapEntry> centry;
     FAIL_RETURN(GetCeilingEntry(key, &centry));
-    *ceilingkey = (centry == nullptr) ? nullptr : centry->mKey;
-    REFCOUNT_ADD(*ceilingkey);
+    ceilingkey = (centry == nullptr) ? nullptr : centry->mKey;
     return NOERROR;
 }
 
 ECode TreeMap::HigherEntry(
     /* [in] */ IInterface* key,
-    /* [out] */ IMapEntry** entry)
+    /* [out] */ AutoPtr<IMapEntry>& entry)
 {
-    VALIDATE_NOT_NULL(entry);
-
     AutoPtr<TreeMapEntry> hentry;
     FAIL_RETURN(GetHigherEntry(key, &hentry));
-    AutoPtr<IMapEntry> e = ExportEntry(hentry);
-    e.MoveTo(entry);
+    entry = ExportEntry(hentry);
     return NOERROR;
 }
 
 ECode TreeMap::HigherKey(
     /* [in] */ IInterface* key,
-    /* [out] */ IInterface** higherkey)
+    /* [out] */ AutoPtr<IInterface>& higherkey)
 {
-    VALIDATE_NOT_NULL(higherkey);
-
     AutoPtr<TreeMapEntry> hentry;
     FAIL_RETURN(GetHigherEntry(key, &hentry));
-    *higherkey = (hentry == nullptr) ? nullptr : hentry->mKey;
-    REFCOUNT_ADD(*higherkey);
+    higherkey = (hentry == nullptr) ? nullptr : hentry->mKey;
     return NOERROR;
 }
 
@@ -689,31 +644,26 @@ ECode TreeMap::GetKeySet(
     /* [out] */ AutoPtr<ISet>& keys)
 {
     AutoPtr<INavigableSet> navKeys;
-    NavigableKeySet(&navKeys);
+    NavigableKeySet(navKeys);
     keys = std::move(navKeys);
     return NOERROR;
 }
 
 ECode TreeMap::NavigableKeySet(
-    /* [out] */ INavigableSet** keyset)
+    /* [out] */ AutoPtr<INavigableSet>& keyset)
 {
-    VALIDATE_NOT_NULL(keyset);
-
     if (mNavigableKeySet == nullptr) {
         mNavigableKeySet = new KeySet(this, false);
     }
-    *keyset = mNavigableKeySet;
-    REFCOUNT_ADD(*keyset);
+    keyset = mNavigableKeySet;
     return NOERROR;
 }
 
 ECode TreeMap::DescendingKeySet(
-    /* [out] */ INavigableSet** keyset)
+    /* [out] */ AutoPtr<INavigableSet>& keyset)
 {
-    VALIDATE_NOT_NULL(keyset);
-
     AutoPtr<INavigableMap> dmap;
-    DescendingMap(&dmap);
+    DescendingMap(dmap);
     return dmap->NavigableKeySet(keyset);
 }
 
@@ -738,18 +688,15 @@ ECode TreeMap::GetEntrySet(
 }
 
 ECode TreeMap::DescendingMap(
-    /* [out] */ INavigableMap** map)
+    /* [out] */ AutoPtr<INavigableMap>& map)
 {
-    VALIDATE_NOT_NULL(map);
-
     if (mDescendingMap == nullptr) {
         AutoPtr<DescendingSubMap> m = new DescendingSubMap();
         m->Constructor(this, true, nullptr, true,
                 true, nullptr, true, false);
         mDescendingMap = m;
     }
-    *map = mDescendingMap;
-    REFCOUNT_ADD(*map);
+    map = mDescendingMap;
     return NOERROR;
 }
 
@@ -758,82 +705,67 @@ ECode TreeMap::SubMap(
     /* [in] */ Boolean fromInclusive,
     /* [in] */ IInterface* toKey,
     /* [in] */ Boolean toInclusive,
-    /* [out] */ INavigableMap** submap)
+    /* [out] */ AutoPtr<INavigableMap>& submap)
 {
-    VALIDATE_NOT_NULL(submap);
-
     AutoPtr<AscendingSubMap> m = new AscendingSubMap();
     m->Constructor(this, false, fromKey, fromInclusive,
             false, toKey, toInclusive, true);
-    *submap = (INavigableMap*)m.Get();
-    REFCOUNT_ADD(*submap);
+    submap = (INavigableMap*)m.Get();
     return NOERROR;
 }
 
 ECode TreeMap::HeadMap(
     /* [in] */ IInterface* toKey,
     /* [in] */ Boolean inclusive,
-    /* [out] */ INavigableMap** headmap)
+    /* [out] */ AutoPtr<INavigableMap>& headmap)
 {
-    VALIDATE_NOT_NULL(headmap);
-
     AutoPtr<AscendingSubMap> m = new AscendingSubMap();
     m->Constructor(this, true, nullptr, true,
             false, toKey, inclusive, true);
-    *headmap = (INavigableMap*)m.Get();
-    REFCOUNT_ADD(*headmap);
+    headmap = (INavigableMap*)m.Get();
     return NOERROR;
 }
 
 ECode TreeMap::TailMap(
     /* [in] */ IInterface* fromKey,
     /* [in] */ Boolean inclusive,
-    /* [out] */ INavigableMap** tailmap)
+    /* [out] */ AutoPtr<INavigableMap>& tailmap)
 {
-    VALIDATE_NOT_NULL(tailmap);
-
     AutoPtr<AscendingSubMap> m = new AscendingSubMap();
     m->Constructor(this, false, fromKey, inclusive,
             true, nullptr, true, true);
-    *tailmap = (INavigableMap*)m.Get();
-    REFCOUNT_ADD(*tailmap);
+    tailmap = (INavigableMap*)m.Get();
     return NOERROR;
 }
 
 ECode TreeMap::SubMap(
     /* [in] */ IInterface* fromKey,
     /* [in] */ IInterface* toKey,
-    /* [out] */ ISortedMap** submap)
+    /* [out] */ AutoPtr<ISortedMap>& submap)
 {
-    VALIDATE_NOT_NULL(submap);
-
     AutoPtr<INavigableMap> m;
-    SubMap(fromKey, true, toKey, false, &m);
-    m.MoveTo(submap);
+    SubMap(fromKey, true, toKey, false, m);
+    submap = std::move(m);
     return NOERROR;
 }
 
 ECode TreeMap::HeadMap(
     /* [in] */ IInterface* toKey,
-    /* [out] */ ISortedMap** headmap)
+    /* [out] */ AutoPtr<ISortedMap>& headmap)
 {
-    VALIDATE_NOT_NULL(headmap);
-
     AutoPtr<INavigableMap> m;
-    HeadMap(toKey, false, &m);
-    m.MoveTo(headmap);
+    HeadMap(toKey, false, m);
+    headmap = std::move(m);
     return NOERROR;
 }
 
 ECode TreeMap::TailMap(
     /* [in] */ IInterface* fromKey,
-    /* [out] */ ISortedMap** tailmap)
+    /* [out] */ AutoPtr<ISortedMap>& tailmap)
 {
-    VALIDATE_NOT_NULL(tailmap);
-
     AutoPtr<INavigableMap> m;
-    TailMap(fromKey, true, &m);
-    m.MoveTo(tailmap);
+    TailMap(fromKey, true, m);
+    tailmap = std::move(m);
     return NOERROR;
 }
 
@@ -1529,82 +1461,72 @@ ECode TreeMap::KeySet::Clear()
 
 ECode TreeMap::KeySet::Lower(
     /* [in] */ IInterface* e,
-    /* [out] */ IInterface** lowerE)
+    /* [out] */ AutoPtr<IInterface>& lowerE)
 {
     return mMap->LowerKey(e, lowerE);
 }
 
 ECode TreeMap::KeySet::Floor(
     /* [in] */ IInterface* e,
-    /* [out] */ IInterface** floorE)
+    /* [out] */ AutoPtr<IInterface>& floorE)
 {
     return mMap->FloorKey(e, floorE);
 }
 
 ECode TreeMap::KeySet::Ceiling(
     /* [in] */ IInterface* e,
-    /* [out] */ IInterface** ceilingE)
+    /* [out] */ AutoPtr<IInterface>& ceilingE)
 {
     return mMap->CeilingKey(e, ceilingE);
 }
 
 ECode TreeMap::KeySet::Higher(
     /* [in] */ IInterface* e,
-    /* [out] */ IInterface** higherE)
+    /* [out] */ AutoPtr<IInterface>& higherE)
 {
     return mMap->HigherKey(e, higherE);
 }
 
 ECode TreeMap::KeySet::First(
-    /* [out] */ IInterface** element)
+    /* [out] */ AutoPtr<IInterface>& element)
 {
     return ISortedMap::Probe(mMap)->FirstKey(element);
 }
 
 ECode TreeMap::KeySet::Last(
-    /* [out] */ IInterface** element)
+    /* [out] */ AutoPtr<IInterface>& element)
 {
     return ISortedMap::Probe(mMap)->LastKey(element);
 }
 
 ECode TreeMap::KeySet::Comparator(
-    /* [out] */ IComparator** comparator)
+    /* [out] */ AutoPtr<IComparator>& comparator)
 {
     return ISortedMap::Probe(mMap)->Comparator(comparator);
 }
 
 ECode TreeMap::KeySet::PollFirst(
-    /* [out] */ IInterface** e)
+    /* [out] */ AutoPtr<IInterface>& e)
 {
-    VALIDATE_NOT_NULL(e);
-
     AutoPtr<IMapEntry> entry;
-    mMap->PollFirstEntry(&entry);
+    mMap->PollFirstEntry(entry);
     if (entry == nullptr) {
-        *e = nullptr;
+        e = nullptr;
         return NOERROR;
     }
-    AutoPtr<IInterface> v;
-    ECode ec = entry->GetKey(v);
-    v.MoveTo(e);
-    return ec;
+    return entry->GetKey(e);
 }
 
 ECode TreeMap::KeySet::PollLast(
-    /* [out] */ IInterface** e)
+    /* [out] */ AutoPtr<IInterface>& e)
 {
-    VALIDATE_NOT_NULL(e);
-
     AutoPtr<IMapEntry> entry;
-    mMap->PollLastEntry(&entry);
+    mMap->PollLastEntry(entry);
     if (entry == nullptr) {
-        *e = nullptr;
+        e = nullptr;
         return NOERROR;
     }
-    AutoPtr<IInterface> v;
-    ECode ec = entry->GetKey(v);
-    v.MoveTo(e);
-    return ec;
+    return entry->GetKey(e);
 }
 
 ECode TreeMap::KeySet::Remove(
@@ -1626,91 +1548,73 @@ ECode TreeMap::KeySet::SubSet(
     /* [in] */ Boolean fromInclusive,
     /* [in] */ IInterface* toElement,
     /* [in] */ Boolean toInclusive,
-    /* [out] */ INavigableSet** subset)
+    /* [out] */ AutoPtr<INavigableSet>& subset)
 {
-    VALIDATE_NOT_NULL(subset);
-
     AutoPtr<INavigableMap> submap;
-    mMap->SubMap(fromElement, fromInclusive, toElement, toInclusive, &submap);
-    *subset = new KeySet(submap, true);
-    REFCOUNT_ADD(*subset);
+    mMap->SubMap(fromElement, fromInclusive, toElement, toInclusive, submap);
+    subset = new KeySet(submap, true);
     return NOERROR;
 }
 
 ECode TreeMap::KeySet::HeadSet(
     /* [in] */ IInterface* toElement,
     /* [in] */ Boolean inclusive,
-    /* [out] */ INavigableSet** headset)
+    /* [out] */ AutoPtr<INavigableSet>& headset)
 {
-    VALIDATE_NOT_NULL(headset);
-
     AutoPtr<INavigableMap> headmap;
-    mMap->HeadMap(toElement, inclusive, &headmap);
-    *headset = new KeySet(headmap, true);
-    REFCOUNT_ADD(*headset);
+    mMap->HeadMap(toElement, inclusive, headmap);
+    headset = new KeySet(headmap, true);
     return NOERROR;
 }
 
 ECode TreeMap::KeySet::TailSet(
     /* [in] */ IInterface* fromElement,
     /* [in] */ Boolean inclusive,
-    /* [out] */ INavigableSet** tailset)
+    /* [out] */ AutoPtr<INavigableSet>& tailset)
 {
-    VALIDATE_NOT_NULL(tailset);
-
     AutoPtr<INavigableMap> tailmap;
-    mMap->TailMap(fromElement, inclusive, &tailmap);
-    *tailset = new KeySet(tailmap, true);
-    REFCOUNT_ADD(*tailset);
+    mMap->TailMap(fromElement, inclusive, tailmap);
+    tailset = new KeySet(tailmap, true);
     return NOERROR;
 }
 
 ECode TreeMap::KeySet::SubSet(
     /* [in] */ IInterface* fromElement,
     /* [in] */ IInterface* toElement,
-    /* [out] */ ISortedSet** subset)
+    /* [out] */ AutoPtr<ISortedSet>& subset)
 {
-    VALIDATE_NOT_NULL(subset);
-
     AutoPtr<INavigableSet> navSet;
-    SubSet(fromElement, true, toElement, false, &navSet);
-    navSet.MoveTo(subset);
+    SubSet(fromElement, true, toElement, false, navSet);
+    subset = std::move(navSet);
     return NOERROR;
 }
 
 ECode TreeMap::KeySet::HeadSet(
     /* [in] */ IInterface* toElement,
-    /* [out] */ ISortedSet** headset)
+    /* [out] */ AutoPtr<ISortedSet>& headset)
 {
-    VALIDATE_NOT_NULL(headset);
-
     AutoPtr<INavigableSet> navSet;
-    HeadSet(toElement, false, &navSet);
-    navSet.MoveTo(headset);
+    HeadSet(toElement, false, navSet);
+    headset = std::move(navSet);
     return NOERROR;
 }
 
 ECode TreeMap::KeySet::TailSet(
     /* [in] */ IInterface* fromElement,
-    /* [out] */ ISortedSet** tailset)
+    /* [out] */ AutoPtr<ISortedSet>& tailset)
 {
-    VALIDATE_NOT_NULL(tailset);
-
     AutoPtr<INavigableSet> navSet;
-    TailSet(fromElement, true, &navSet);
-    navSet.MoveTo(tailset);
+    TailSet(fromElement, true, navSet);
+    tailset = std::move(navSet);
     return NOERROR;
 }
 
 ECode TreeMap::KeySet::DescendingSet(
-    /* [out] */ INavigableSet** set)
+    /* [out] */ AutoPtr<INavigableSet>& set)
 {
-    VALIDATE_NOT_NULL(set);
-
     AutoPtr<INavigableMap> navMap;
-    mMap->DescendingMap(&navMap);
-    *set = new KeySet(navMap, true);
-    REFCOUNT_ADD(*set);
+    mMap->DescendingMap(navMap);
+    set = new KeySet(navMap, true);
     return NOERROR;
 }
 
@@ -2132,145 +2036,113 @@ ECode TreeMap::NavigableSubMap::Remove(
 
 ECode TreeMap::NavigableSubMap::CeilingEntry(
     /* [in] */ IInterface* key,
-    /* [out]　*/ IMapEntry** entry)
+    /* [out]　*/ AutoPtr<IMapEntry>& entry)
 {
-    VALIDATE_NOT_NULL(entry);
-
-    ExportEntry(SubCeiling(key)).MoveTo(entry);
+    entry = ExportEntry(SubCeiling(key));
     return NOERROR;
 }
 
 ECode TreeMap::NavigableSubMap::CeilingKey(
     /* [in] */ IInterface* key,
-    /* [out] */ IInterface** ceilingkey)
+    /* [out] */ AutoPtr<IInterface>& ceilingkey)
 {
-    VALIDATE_NOT_NULL(ceilingkey);
-
     AutoPtr<TreeMapEntry> e = SubCeiling(key);
-    *ceilingkey = (e != nullptr) ? e->mKey : nullptr;
-    REFCOUNT_ADD(*ceilingkey);
+    ceilingkey = (e != nullptr) ? e->mKey : nullptr;
     return NOERROR;
 }
 
 ECode TreeMap::NavigableSubMap::HigherEntry(
     /* [in] */ IInterface* key,
-    /* [out] */ IMapEntry** entry)
+    /* [out] */ AutoPtr<IMapEntry>& entry)
 {
-    VALIDATE_NOT_NULL(entry);
-
-    ExportEntry(SubHigher(key)).MoveTo(entry);
+    entry = ExportEntry(SubHigher(key));
     return NOERROR;
 }
 
 ECode TreeMap::NavigableSubMap::HigherKey(
     /* [in] */ IInterface* key,
-    /* [out] */ IInterface** higherkey)
+    /* [out] */ AutoPtr<IInterface>& higherkey)
 {
-    VALIDATE_NOT_NULL(higherkey);
-
     AutoPtr<TreeMapEntry> e = SubHigher(key);
-    *higherkey = (e != nullptr) ? e->mKey : nullptr;
-    REFCOUNT_ADD(*higherkey);
+    higherkey = (e != nullptr) ? e->mKey : nullptr;
     return NOERROR;
 }
 
 ECode TreeMap::NavigableSubMap::FloorEntry(
     /* [in] */ IInterface* key,
-    /* [out] */ IMapEntry** entry)
+    /* [out] */ AutoPtr<IMapEntry>& entry)
 {
-    VALIDATE_NOT_NULL(entry);
-
-    ExportEntry(SubFloor(key)).MoveTo(entry);
+    entry = ExportEntry(SubFloor(key));
     return NOERROR;
 }
 
 ECode TreeMap::NavigableSubMap::FloorKey(
     /* [in] */ IInterface* key,
-    /* [out] */ IInterface** floorkey)
+    /* [out] */ AutoPtr<IInterface>& floorkey)
 {
-    VALIDATE_NOT_NULL(floorkey);
-
     AutoPtr<TreeMapEntry> e = SubFloor(key);
-    *floorkey = (e != nullptr) ? e->mKey : nullptr;
-    REFCOUNT_ADD(*floorkey);
+    floorkey = (e != nullptr) ? e->mKey : nullptr;
     return NOERROR;
 }
 
 ECode TreeMap::NavigableSubMap::LowerEntry(
     /* [in] */ IInterface* key,
-    /* [out] */ IMapEntry** entry)
+    /* [out] */ AutoPtr<IMapEntry>& entry)
 {
-    VALIDATE_NOT_NULL(entry);
-
-    ExportEntry(SubLower(key)).MoveTo(entry);
+    entry = ExportEntry(SubLower(key));
     return NOERROR;
 }
 
 ECode TreeMap::NavigableSubMap::LowerKey(
     /* [in] */ IInterface* key,
-    /* [out] */ IInterface** lowerkey)
+    /* [out] */ AutoPtr<IInterface>& lowerkey)
 {
-    VALIDATE_NOT_NULL(lowerkey);
-
     AutoPtr<TreeMapEntry> e = SubLower(key);
-    *lowerkey = (e != nullptr) ? e->mKey : nullptr;
-    REFCOUNT_ADD(*lowerkey);
+    lowerkey = (e != nullptr) ? e->mKey : nullptr;
     return NOERROR;
 }
 
 ECode TreeMap::NavigableSubMap::FirstKey(
-    /* [out] */ IInterface** key)
+    /* [out] */ AutoPtr<IInterface>& key)
 {
-    VALIDATE_NOT_NULL(key);
-
     AutoPtr<TreeMapEntry> e = SubLowest();
     if (e == nullptr) {
         return E_NO_SUCH_ELEMENT_EXCEPTION;
     }
-    *key = e->mKey;
-    REFCOUNT_ADD(*key);
+    key = e->mKey;
     return NOERROR;
 }
 
 ECode TreeMap::NavigableSubMap::LastKey(
-    /* [out] */ IInterface** key)
+    /* [out] */ AutoPtr<IInterface>& key)
 {
-    VALIDATE_NOT_NULL(key);
-
     AutoPtr<TreeMapEntry> e = SubHighest();
     if (e == nullptr) {
         return E_NO_SUCH_ELEMENT_EXCEPTION;
     }
-    *key = e->mKey;
-    REFCOUNT_ADD(*key);
+    key = e->mKey;
     return NOERROR;
 }
 
 ECode TreeMap::NavigableSubMap::FirstEntry(
-    /* [out] */ IMapEntry** entry)
+    /* [out] */ AutoPtr<IMapEntry>& entry)
 {
-    VALIDATE_NOT_NULL(entry);
-
-    ExportEntry(SubLowest()).MoveTo(entry);
+    entry = ExportEntry(SubLowest());
     return NOERROR;
 }
 
 ECode TreeMap::NavigableSubMap::LastEntry(
-    /* [out] */ IMapEntry** entry)
+    /* [out] */ AutoPtr<IMapEntry>& entry)
 {
-    VALIDATE_NOT_NULL(entry);
-
-    ExportEntry(SubHighest()).MoveTo(entry);
+    entry = ExportEntry(SubHighest());
     return NOERROR;
 }
 
 ECode TreeMap::NavigableSubMap::PollFirstEntry(
-    /* [out] */ IMapEntry** entry)
+    /* [out] */ AutoPtr<IMapEntry>& entry)
 {
-    VALIDATE_NOT_NULL(entry);
-
     AutoPtr<TreeMapEntry> e = SubLowest();
-    ExportEntry(e).MoveTo(entry);
+    entry = ExportEntry(e);
     if (e != nullptr) {
         mMap->DeleteEntry(e);
     }
@@ -2278,12 +2150,10 @@ ECode TreeMap::NavigableSubMap::PollFirstEntry(
 }
 
 ECode TreeMap::NavigableSubMap::PollLastEntry(
-    /* [out] */ IMapEntry** entry)
+    /* [out] */ AutoPtr<IMapEntry>& entry)
 {
-    VALIDATE_NOT_NULL(entry);
-
     AutoPtr<TreeMapEntry> e = SubHighest();
-    ExportEntry(e).MoveTo(entry);
+    entry = ExportEntry(e);
     if (e != nullptr) {
         mMap->DeleteEntry(e);
     }
@@ -2291,15 +2161,12 @@ ECode TreeMap::NavigableSubMap::PollLastEntry(
 }
 
 ECode TreeMap::NavigableSubMap::NavigableKeySet(
-    /* [out] */ INavigableSet** keyset)
+    /* [out] */ AutoPtr<INavigableSet>& keyset)
 {
-    VALIDATE_NOT_NULL(keyset);
-
     if (mNavigableKeySetView == nullptr) {
         mNavigableKeySetView = new KeySet(this, false);
     }
-    *keyset = mNavigableKeySetView;
-    REFCOUNT_ADD(*keyset);
+    keyset = mNavigableKeySetView;
     return NOERROR;
 }
 
@@ -2307,55 +2174,47 @@ ECode TreeMap::NavigableSubMap::GetKeySet(
     /* [out] */ AutoPtr<ISet>& keys)
 {
     AutoPtr<INavigableSet> navSet;
-    NavigableKeySet(&navSet);
+    NavigableKeySet(navSet);
     keys = std::move(navSet);
     return NOERROR;
 }
 
 ECode TreeMap::NavigableSubMap::DescendingKeySet(
-    /* [out] */ INavigableSet** keyset)
+    /* [out] */ AutoPtr<INavigableSet>& keyset)
 {
-    VALIDATE_NOT_NULL(keyset);
-
     AutoPtr<INavigableMap> navMap;
-    DescendingMap(&navMap);
+    DescendingMap(navMap);
     return navMap->NavigableKeySet(keyset);
 }
 
 ECode TreeMap::NavigableSubMap::SubMap(
     /* [in] */ IInterface* fromKey,
     /* [in] */ IInterface* toKey,
-    /* [out] */ ISortedMap** submap)
+    /* [out] */ AutoPtr<ISortedMap>& submap)
 {
-    VALIDATE_NOT_NULL(submap);
-
     AutoPtr<INavigableMap> navMap;
-    FAIL_RETURN(SubMap(fromKey, true, toKey, false, &navMap));
-    navMap.MoveTo(submap);
+    FAIL_RETURN(SubMap(fromKey, true, toKey, false, navMap));
+    submap = std::move(navMap);
     return NOERROR;
 }
 
 ECode TreeMap::NavigableSubMap::HeadMap(
     /* [in] */ IInterface* toKey,
-    /* [out] */ ISortedMap** headmap)
+    /* [out] */ AutoPtr<ISortedMap>& headmap)
 {
-    VALIDATE_NOT_NULL(headmap);
-
     AutoPtr<INavigableMap> navMap;
-    FAIL_RETURN(HeadMap(toKey, false, &navMap));
-    navMap.MoveTo(headmap);
+    FAIL_RETURN(HeadMap(toKey, false, navMap));
+    headmap = std::move(navMap);
     return NOERROR;
 }
 
 ECode TreeMap::NavigableSubMap::TailMap(
     /* [in] */ IInterface* fromKey,
-    /* [out] */ ISortedMap** tailmap)
+    /* [out] */ AutoPtr<ISortedMap>& tailmap)
 {
-    VALIDATE_NOT_NULL(tailmap);
-
     AutoPtr<INavigableMap> navMap;
-    FAIL_RETURN(TailMap(fromKey, true, &navMap));
-    navMap.MoveTo(tailmap);
+    FAIL_RETURN(TailMap(fromKey, true, navMap));
+    tailmap = std::move(navMap);
     return NOERROR;
 }
 
@@ -2636,7 +2495,7 @@ ECode TreeMap::AscendingSubMap::Constructor(
 }
 
 ECode TreeMap::AscendingSubMap::Comparator(
-    /* [out] */ IComparator** comparator)
+    /* [out] */ AutoPtr<IComparator>& comparator)
 {
     return mMap->Comparator(comparator);
 }
@@ -2646,10 +2505,8 @@ ECode TreeMap::AscendingSubMap::SubMap(
     /* [in] */ Boolean fromInclusive,
     /* [in] */ IInterface* toKey,
     /* [in] */ Boolean toInclusive,
-    /* [out] */ INavigableMap** submap)
+    /* [out] */ AutoPtr<INavigableMap>& submap)
 {
-    VALIDATE_NOT_NULL(submap);
-
     if (fromKey == nullptr) {
         Logger::E("TreeMap::AscendingSubMap", "fromKey == nullptr");
         return E_NULL_POINTER_EXCEPTION;
@@ -2669,18 +2526,15 @@ ECode TreeMap::AscendingSubMap::SubMap(
     AutoPtr<AscendingSubMap> map = new AscendingSubMap();
     map->Constructor(mMap, false, fromKey, fromInclusive,
             false, toKey, toInclusive, true);
-    *submap = (INavigableMap*)map.Get();
-    REFCOUNT_ADD(*submap);
+    submap = (INavigableMap*)map.Get();
     return NOERROR;
 }
 
 ECode TreeMap::AscendingSubMap::HeadMap(
     /* [in] */ IInterface* toKey,
     /* [in] */ Boolean inclusive,
-    /* [out] */ INavigableMap** headmap)
+    /* [out] */ AutoPtr<INavigableMap>& headmap)
 {
-    VALIDATE_NOT_NULL(headmap);
-
     if (toKey == nullptr) {
         Logger::E("TreeMap::AscendingSubMap", "toKey == nullptr");
         return E_NULL_POINTER_EXCEPTION;
@@ -2693,18 +2547,15 @@ ECode TreeMap::AscendingSubMap::HeadMap(
     AutoPtr<AscendingSubMap> map = new AscendingSubMap();
     map->Constructor(mMap, mFromStart, mLo, mLoInclusive,
             false, toKey, inclusive, true);
-    *headmap = (INavigableMap*)map.Get();
-    REFCOUNT_ADD(*headmap);
+    headmap = (INavigableMap*)map.Get();
     return NOERROR;
 }
 
 ECode TreeMap::AscendingSubMap::TailMap(
     /* [in] */ IInterface* fromKey,
     /* [in] */ Boolean inclusive,
-    /* [out] */ INavigableMap** tailmap)
+    /* [out] */ AutoPtr<INavigableMap>& tailmap)
 {
-    VALIDATE_NOT_NULL(tailmap);
-
     if (fromKey == nullptr) {
         Logger::E("TreeMap::AscendingSubMap", "fromKey == nullptr");
         return E_NULL_POINTER_EXCEPTION;
@@ -2717,24 +2568,20 @@ ECode TreeMap::AscendingSubMap::TailMap(
     AutoPtr<AscendingSubMap> map = new AscendingSubMap();
     map->Constructor(mMap, false, fromKey, inclusive,
             mToEnd, mHi, mHiInclusive, true);
-    *tailmap = (INavigableMap*)map.Get();
-    REFCOUNT_ADD(*tailmap);
+    tailmap = (INavigableMap*)map.Get();
     return NOERROR;
 }
 
 ECode TreeMap::AscendingSubMap::DescendingMap(
-    /* [out] */ INavigableMap** map)
+    /* [out] */ AutoPtr<INavigableMap>& map)
 {
-    VALIDATE_NOT_NULL(map);
-
     if (mDescendingMapView == nullptr) {
         AutoPtr<DescendingSubMap> submap = new DescendingSubMap();
         submap->Constructor(mMap, mFromStart, mLo, mLoInclusive,
                 mToEnd, mHi, mHiInclusive, mHoldRef);
         mDescendingMapView = (INavigableMap*)submap.Get();
     }
-    *map = mDescendingMapView;
-    REFCOUNT_ADD(*map);
+    map = mDescendingMapView;
     return NOERROR;
 }
 
@@ -2820,12 +2667,9 @@ ECode TreeMap::DescendingSubMap::Constructor(
 }
 
 ECode TreeMap::DescendingSubMap::Comparator(
-    /* [out] */ IComparator** comparator)
+    /* [out] */ AutoPtr<IComparator>& comparator)
 {
-    VALIDATE_NOT_NULL(comparator);
-
-    *comparator = mReverseComparator;
-    REFCOUNT_ADD(*comparator);
+    comparator = mReverseComparator;
     return NOERROR;
 }
 
@@ -2834,10 +2678,8 @@ ECode TreeMap::DescendingSubMap::SubMap(
     /* [in] */ Boolean fromInclusive,
     /* [in] */ IInterface* toKey,
     /* [in] */ Boolean toInclusive,
-    /* [out] */ INavigableMap** submap)
+    /* [out] */ AutoPtr<INavigableMap>& submap)
 {
-    VALIDATE_NOT_NULL(submap);
-
     if (fromKey == nullptr) {
         Logger::E("TreeMap::DescendingSubMap", "fromKey == nullptr");
         return E_NULL_POINTER_EXCEPTION;
@@ -2857,18 +2699,15 @@ ECode TreeMap::DescendingSubMap::SubMap(
     AutoPtr<DescendingSubMap> map = new DescendingSubMap();
     map->Constructor(mMap, false, toKey, toInclusive,
             false, fromKey, fromInclusive, true);
-    *submap = (INavigableMap*)map.Get();
-    REFCOUNT_ADD(*submap);
+    submap = (INavigableMap*)map.Get();
     return NOERROR;
 }
 
 ECode TreeMap::DescendingSubMap::HeadMap(
     /* [in] */ IInterface* toKey,
     /* [in] */ Boolean inclusive,
-    /* [out] */ INavigableMap** headmap)
+    /* [out] */ AutoPtr<INavigableMap>& headmap)
 {
-    VALIDATE_NOT_NULL(headmap);
-
     if (toKey == nullptr) {
         Logger::E("TreeMap::DescendingSubMap", "toKey == nullptr");
         return E_NULL_POINTER_EXCEPTION;
@@ -2881,18 +2720,15 @@ ECode TreeMap::DescendingSubMap::HeadMap(
     AutoPtr<DescendingSubMap> map = new DescendingSubMap();
     map->Constructor(mMap, false, toKey, inclusive,
             mToEnd, mHi, mHiInclusive, true);
-    *headmap = (INavigableMap*)map.Get();
-    REFCOUNT_ADD(*headmap);
+    headmap = (INavigableMap*)map.Get();
     return NOERROR;
 }
 
 ECode TreeMap::DescendingSubMap::TailMap(
     /* [in] */ IInterface* fromKey,
     /* [in] */ Boolean inclusive,
-    /* [out] */ INavigableMap** tailmap)
+    /* [out] */ AutoPtr<INavigableMap>& tailmap)
 {
-    VALIDATE_NOT_NULL(tailmap);
-
     if (fromKey == nullptr) {
         Logger::E("TreeMap::DescendingSubMap", "fromKey == nullptr");
         return E_NULL_POINTER_EXCEPTION;
@@ -2905,24 +2741,20 @@ ECode TreeMap::DescendingSubMap::TailMap(
     AutoPtr<DescendingSubMap> map = new DescendingSubMap();
     map->Constructor(mMap, mFromStart, mLo, mLoInclusive,
             false, fromKey, inclusive, true);
-    *tailmap = (INavigableMap*)map.Get();
-    REFCOUNT_ADD(*tailmap);
+    tailmap = (INavigableMap*)map.Get();
     return NOERROR;
 }
 
 ECode TreeMap::DescendingSubMap::DescendingMap(
-    /* [out] */ INavigableMap** map)
+    /* [out] */ AutoPtr<INavigableMap>& map)
 {
-    VALIDATE_NOT_NULL(map);
-
     if (mDescendingMapView == nullptr) {
         AutoPtr<AscendingSubMap> submap = new AscendingSubMap();
         submap->Constructor(mMap, mFromStart, mLo, mLoInclusive,
                 mToEnd, mHi, mHiInclusive, mHoldRef);
         mDescendingMapView = (INavigableMap*)submap.Get();
     }
-    *map = mDescendingMapView;
-    REFCOUNT_ADD(*map);
+    map = mDescendingMapView;
     return NOERROR;
 }
 
@@ -3000,13 +2832,13 @@ ECode TreeMap::SubMapInternal::GetEntrySet(
 }
 
 ECode TreeMap::SubMapInternal::LastKey(
-    /* [out] */ IInterface** key)
+    /* [out] */ AutoPtr<IInterface>& key)
 {
     return E_INTERNAL_ERROR;
 }
 
 ECode TreeMap::SubMapInternal::FirstKey(
-    /* [out] */ IInterface** key)
+    /* [out] */ AutoPtr<IInterface>& key)
 {
     return E_INTERNAL_ERROR;
 }
@@ -3014,27 +2846,27 @@ ECode TreeMap::SubMapInternal::FirstKey(
 ECode TreeMap::SubMapInternal::SubMap(
     /* [in] */ IInterface* fromKey,
     /* [in] */ IInterface* toKey,
-    /* [out] */ ISortedMap** submap)
+    /* [out] */ AutoPtr<ISortedMap>& submap)
 {
     return E_INTERNAL_ERROR;
 }
 
 ECode TreeMap::SubMapInternal::HeadMap(
     /* [in] */ IInterface* toKey,
-    /* [out] */ ISortedMap** headmap)
+    /* [out] */ AutoPtr<ISortedMap>& headmap)
 {
     return E_INTERNAL_ERROR;
 }
 
 ECode TreeMap::SubMapInternal::TailMap(
     /* [in] */ IInterface* fromKey,
-    /* [out] */ ISortedMap** tailmap)
+    /* [out] */ AutoPtr<ISortedMap>& tailmap)
 {
     return E_INTERNAL_ERROR;
 }
 
 ECode TreeMap::SubMapInternal::Comparator(
-    /* [out] */ IComparator** comparator)
+    /* [out] */ AutoPtr<IComparator>& comparator)
 {
     return E_INTERNAL_ERROR;
 }

@@ -27,7 +27,7 @@ namespace util {
 interface IStringTokenizer
 {
     CountTokens(
-        [out] Integer* number);
+        [out] Integer& number);
 
     HasMoreElements(
         [out] Boolean& hasMore);
@@ -36,14 +36,14 @@ interface IStringTokenizer
         [out] Boolean& hasMore);
 
     NextElement(
-        [out] IInterface** element = nullptr);
+        [out] IInterface&& element);
 
     NextToken(
-        [out] String* token = nullptr);
+        [out] String& token);
 
     NextToken(
         [in] String delim,
-        [out] String* token = nullptr);
+        [out] String& token);
 }
 
 }

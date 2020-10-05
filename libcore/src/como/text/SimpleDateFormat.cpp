@@ -705,12 +705,12 @@ ECode SimpleDateFormat::SubFormat(
                     Integer tzstyle = count < 4 ? ITimeZone::SHORT : ITimeZone::LONG;
                     Array<Array<String>> zoneStrings = DateFormatSymbols::From(mFormatData)->GetZoneStringsWrapper();
                     String tzID;
-                    tz->GetID(&tzID);
+                    tz->GetID(tzID);
                     libcore::icu::TimeZoneNames::GetDisplayName(zoneStrings, tzID, daylight, tzstyle, &zoneString);
                 }
                 else {
                     String tzID;
-                    tz->GetID(&tzID);
+                    tz->GetID(tzID);
                     Boolean contained;
                     if (GetUTC_ZONE_IDS()->Contains(CoreUtils::Box(tzID), contained), contained) {
                         zoneString = UTC;
@@ -1276,7 +1276,7 @@ Integer SimpleDateFormat::SubParseZoneStringFromSymbols(
     // the locale data from the TimeZoneNames strings.
     // Want to be able to parse both short and long forms.
     String tzID;
-    currentTimeZone->GetID(&tzID);
+    currentTimeZone->GetID(tzID);
     Integer zoneIndex = DateFormatSymbols::From(mFormatData)->GetZoneIndex(tzID);
     AutoPtr<ITimeZone> tz;
     Array<Array<String>> zoneStrings = DateFormatSymbols::From(mFormatData)->GetZoneStringsWrapper();
@@ -1293,7 +1293,7 @@ Integer SimpleDateFormat::SubParseZoneStringFromSymbols(
         }
     }
     if (tz == nullptr) {
-        TimeZone::GetDefault()->GetID(&tzID);
+        TimeZone::GetDefault()->GetID(tzID);
         zoneIndex = DateFormatSymbols::From(mFormatData)->GetZoneIndex(tzID);
         if (zoneIndex != -1) {
             zoneNames = zoneStrings[zoneIndex];
@@ -1331,7 +1331,7 @@ Integer SimpleDateFormat::SubParseZoneStringFromSymbols(
         // determine the local time.
         Integer dstAmount = 0;
         if (nameIndex >= 3) {
-            tz->GetDSTSavings(&dstAmount);
+            tz->GetDSTSavings(dstAmount);
         }
         if (!(useSameName || (nameIndex >= 3 && dstAmount == 0))) {
             calb->Clear(ICalendar::ZONE_OFFSET);

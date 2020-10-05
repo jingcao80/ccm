@@ -217,7 +217,7 @@ ECode UnixFileSystem::Resolve(
         return f->GetPath(*path);
     }
     String userDirPath, fPath;
-    System::GetProperty(String("user.dir"), &userDirPath);
+    System::GetProperty("user.dir", userDirPath);
     f->GetPath(fPath);
     return Resolve(userDirPath, fPath, path);
 }

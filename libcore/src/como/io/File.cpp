@@ -889,7 +889,7 @@ ECode File::CreateTempFile(
     AutoPtr<IFile> tmpdir = directory;
     if (tmpdir == nullptr) {
         String dir;
-        FAIL_RETURN(System::GetProperty(String("como.io.tmpdir"), String("."), &dir));
+        FAIL_RETURN(System::GetProperty("como.io.tmpdir", ".", dir));
         CFile::New(dir, IID_IFile, (IInterface**)&tmpdir);
     }
 

@@ -681,7 +681,7 @@ ECode Date::ToString(
         Boolean daylight;
         date->IsDaylightTime(daylight);
         String name;
-        zi->GetDisplayName(daylight, ITimeZone::SHORT, Locale::GetUS(), &name);
+        zi->GetDisplayName(daylight, ITimeZone::SHORT, Locale::GetUS(), name);
         sb->Append(name);
     }
     else {
@@ -886,7 +886,7 @@ AutoPtr<IBaseCalendar> Date::GetCalendarSystem(
     Integer offset;
     if (utc >= 0
         || utc >= GregorianCalendar::DEFAULT_GREGORIAN_CUTOVER
-                    - (TimeZone::GetDefaultRef()->GetOffset(utc, &offset), offset)) {
+                    - (TimeZone::GetDefaultRef()->GetOffset(utc, offset), offset)) {
         return GetGcal();
     }
     return GetJulianCalendar();

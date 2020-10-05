@@ -214,11 +214,9 @@ ECode SimpleTimeZone::SetEndRule(
 
 ECode SimpleTimeZone::GetOffset(
     /* [in] */ Long date,
-    /* [out] */ Integer* offset)
+    /* [out] */ Integer& offset)
 {
-    VALIDATE_NOT_NULL(offset);
-
-    *offset = GetOffsets(date, Array<Integer>::Null());
+    offset = GetOffsets(date, Array<Integer>::Null());
     return NOERROR;
 }
 
@@ -275,10 +273,8 @@ ECode SimpleTimeZone::GetOffset(
     /* [in] */ Integer day,
     /* [in] */ Integer dayOfWeek,
     /* [in] */ Integer milliseconds,
-    /* [out] */ Integer* offset)
+    /* [out] */ Integer& offset)
 {
-    VALIDATE_NOT_NULL(offset);
-
     if (era != IGregorianCalendar::AD && era != IGregorianCalendar::BC) {
         Logger::E("SimpleTimeZone", "Illegal era %d", era);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -344,11 +340,11 @@ ECode SimpleTimeZone::GetOffset(
     }
 
     if (!mUseDaylight || year < mStartYear || era != GregorianCalendar::CE) {
-        *offset = mRawOffset;
+        offset = mRawOffset;
         return NOERROR;
     }
 
-    *offset = GetOffset(cal, cdate, y, time);
+    offset = GetOffset(cal, cdate, y, time);
     return NOERROR;
 }
 
@@ -502,13 +498,11 @@ Long SimpleTimeZone::GetTransition(
 }
 
 ECode SimpleTimeZone::GetRawOffset(
-    /* [out] */ Integer* offset)
+    /* [out] */ Integer& offset)
 {
-    VALIDATE_NOT_NULL(offset);
-
     // The given date will be taken into account while
     // we have the historical time zone data in place.
-    *offset = mRawOffset;
+    offset = mRawOffset;
     return NOERROR;
 }
 
@@ -532,40 +526,34 @@ ECode SimpleTimeZone::SetDSTSavings(
 }
 
 ECode SimpleTimeZone::GetDSTSavings(
-    /* [out] */ Integer* savingTime)
+    /* [out] */ Integer& savingTime)
 {
-    VALIDATE_NOT_NULL(savingTime);
-
-    *savingTime = mUseDaylight ? mDstSavings : 0;
+    savingTime = mUseDaylight ? mDstSavings : 0;
     return NOERROR;
 }
 
 ECode SimpleTimeZone::UseDaylightTime(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
-    *result = mUseDaylight;
+    result = mUseDaylight;
     return NOERROR;
 }
 
 ECode SimpleTimeZone::ObservesDaylightTime(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
     return UseDaylightTime(result);
 }
 
 ECode SimpleTimeZone::InDaylightTime(
     /* [in] */ IDate* date,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     Long time;
     date->GetTime(time);
     Integer offset;
-    GetOffset(time, &offset);
-    *result = offset != mRawOffset;
+    GetOffset(time, offset);
+    result = offset != mRawOffset;
     return NOERROR;
 }
 
@@ -626,35 +614,33 @@ ECode SimpleTimeZone::Equals(
     }
 
     String thisID, thatID;
-    GetID(&thisID);
-    that->GetID(&thatID);
+    GetID(thisID);
+    that->GetID(thatID);
 
     if (!thisID.Equals(thatID)) {
         same = false;
         return NOERROR;
     }
 
-    return HasSameRules(that, &same);
+    return HasSameRules(that, same);
 }
 
 ECode SimpleTimeZone::HasSameRules(
     /* [in] */ ITimeZone* other,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean& result)
 {
-    VALIDATE_NOT_NULL(result);
-
     SimpleTimeZone* that = (SimpleTimeZone*)other;
 
     if (that == nullptr) {
-        *result = false;
+        result = false;
         return NOERROR;
     }
 
     if (this == that) {
-        *result = true;
+        result = true;
         return NOERROR;
     }
-    *result = mRawOffset == that->mRawOffset &&
+    result = mRawOffset == that->mRawOffset &&
             mUseDaylight == that->mUseDaylight &&
             (!mUseDaylight
              // Only check rules if using DST
@@ -681,41 +667,41 @@ ECode SimpleTimeZone::ToString(
     AutoPtr<IStringBuilder> sb;
     CStringBuilder::New(IID_IStringBuilder, (IInterface**)&sb);
     sb->Append(GetCoclassName((ISimpleTimeZone*)this));
-    sb->Append(String("[id="));
+    sb->Append("[id=");
     String id;
-    GetID(&id);
+    GetID(id);
     sb->Append(id);
-    sb->Append(String(",offset="));
+    sb->Append(",offset=");
     sb->Append(mRawOffset);
-    sb->Append(String(",dstSavings="));
+    sb->Append(",dstSavings=");
     sb->Append(mDstSavings);
-    sb->Append(String(",useDaylight="));
+    sb->Append(",useDaylight=");
     sb->Append(mUseDaylight);
-    sb->Append(String(",startYear="));
+    sb->Append(",startYear=");
     sb->Append(mStartYear);
-    sb->Append(String(",startMode="));
+    sb->Append(",startMode=");
     sb->Append(mStartMode);
-    sb->Append(String(",startMonth="));
+    sb->Append(",startMonth=");
     sb->Append(mStartMonth);
-    sb->Append(String(",startDay="));
+    sb->Append(",startDay=");
     sb->Append(mStartDay);
-    sb->Append(String(",startDayOfWeek="));
+    sb->Append(",startDayOfWeek=");
     sb->Append(mStartDayOfWeek);
-    sb->Append(String(",startTime="));
+    sb->Append(",startTime=");
     sb->Append(mStartTime);
-    sb->Append(String(",startTimeMode="));
+    sb->Append(",startTimeMode=");
     sb->Append(mStartTimeMode);
-    sb->Append(String(",endMode="));
+    sb->Append(",endMode=");
     sb->Append(mEndMode);
-    sb->Append(String(",endMonth="));
+    sb->Append(",endMonth=");
     sb->Append(mEndMonth);
-    sb->Append(String(",endDay="));
+    sb->Append(",endDay=");
     sb->Append(mEndDay);
-    sb->Append(String(",endDayOfWeek="));
+    sb->Append(",endDayOfWeek=");
     sb->Append(mEndDayOfWeek);
-    sb->Append(String(",endTime="));
+    sb->Append(",endTime=");
     sb->Append(mEndTime);
-    sb->Append(String(",endTimeMode="));
+    sb->Append(",endTimeMode=");
     sb->Append(mEndTimeMode);
     sb->Append(U']');
     return sb->ToString(desc);

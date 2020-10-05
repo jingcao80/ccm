@@ -59,7 +59,7 @@ ECode ClassLoader::LoadCoclass(
 AutoPtr<IClassLoader> ClassLoader::CreateSystemClassLoader()
 {
     String classPath;
-    System::GetProperty(String("como.class.path"), String("."), &classPath);
+    System::GetProperty("como.class.path", ".", classPath);
 
     AutoPtr<IClassLoader> bcl, cl;
     CoGetBootClassLoader(bcl);

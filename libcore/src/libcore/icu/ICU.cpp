@@ -721,7 +721,7 @@ AutoPtr<ILocale> ICU::LocaleFromIcuLocaleId(
     } END_FOR_EACH();
 
     AutoPtr<ILocale> locale;
-    builder->Build(&locale);
+    builder->Build(locale);
     return locale;
 }
 
@@ -751,7 +751,7 @@ String ICU::GetBestDateTimePattern(
     /* [in] */ ILocale* locale)
 {
     String languageTag;
-    locale->ToLanguageTag(&languageTag);
+    locale->ToLanguageTag(languageTag);
     String key = skeleton + "\t" + languageTag;
     AutoPtr<BasicLruCache> cache = GetCACHED_PATTERNS();
     {
@@ -854,7 +854,7 @@ String ICU::GetCurrencyDisplayName(
     /* [in] */ const String& currencyCode)
 {
     String languageTag;
-    locale->ToLanguageTag(&languageTag);
+    locale->ToLanguageTag(languageTag);
     return GetCurrencyDisplayName(languageTag, currencyCode);
 }
 
@@ -891,7 +891,7 @@ String ICU::GetCurrencySymbol(
     /* [in] */ const String& currencyCode)
 {
     String languageTag;
-    locale->ToLanguageTag(&languageTag);
+    locale->ToLanguageTag(languageTag);
     return GetCurrencySymbol(languageTag, currencyCode);
 }
 
@@ -907,8 +907,8 @@ String ICU::GetDisplayCountry(
     /* [in] */ ILocale* locale)
 {
     String targetLanguageTag, languageTag;
-    targetLocale->ToLanguageTag(&targetLanguageTag);
-    locale->ToLanguageTag(&languageTag);
+    targetLocale->ToLanguageTag(targetLanguageTag);
+    locale->ToLanguageTag(languageTag);
 
     if (languageTag.IsNull()) {
         return String();
@@ -940,8 +940,8 @@ String ICU::GetDisplayLanguage(
     /* [in] */ ILocale* locale)
 {
     String targetLanguageTag, languageTag;
-    targetLocale->ToLanguageTag(&targetLanguageTag);
-    locale->ToLanguageTag(&languageTag);
+    targetLocale->ToLanguageTag(targetLanguageTag);
+    locale->ToLanguageTag(languageTag);
 
     if (languageTag.IsNull()) {
         return String();
@@ -973,8 +973,8 @@ String ICU::GetDisplayVariant(
     /* [in] */ ILocale* locale)
 {
     String targetLanguageTag, languageTag;
-    targetLocale->ToLanguageTag(&targetLanguageTag);
-    locale->ToLanguageTag(&languageTag);
+    targetLocale->ToLanguageTag(targetLanguageTag);
+    locale->ToLanguageTag(languageTag);
 
     if (languageTag.IsNull()) {
         return String();
@@ -1006,8 +1006,8 @@ String ICU::GetDisplayScript(
     /* [in] */ ILocale* locale)
 {
     String targetLanguageTag, languageTag;
-    targetLocale->ToLanguageTag(&targetLanguageTag);
-    locale->ToLanguageTag(&languageTag);
+    targetLocale->ToLanguageTag(targetLanguageTag);
+    locale->ToLanguageTag(languageTag);
 
     if (languageTag.IsNull()) {
         return String();

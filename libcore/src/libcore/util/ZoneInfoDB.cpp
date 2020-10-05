@@ -368,7 +368,7 @@ Array<Integer> ZoneInfoDB::TzData::GetRawUtcOffsets()
         AutoPtr<IInterface> value;
         mCache->Get(CoreUtils::Box(mIds[i]), value);
         Integer offset;
-        ITimeZone::Probe(value)->GetRawOffset(&offset);
+        ITimeZone::Probe(value)->GetRawOffset(offset);
         mRawUtcOffsetsCache[i] = offset;
     }
     return mRawUtcOffsetsCache;

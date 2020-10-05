@@ -74,23 +74,23 @@ interface IVector
         [out] IInterface&& obj);
 
     GetCapacity(
-        [out] Integer* capacity);
+        [out] Integer& capacity);
 
     GetElementAt(
         [in] Integer index,
-        [out] IInterface** element);
+        [out] IInterface&& element);
 
     GetElements(
-        [out] IEnumeration** elements);
+        [out] IEnumeration&& elements);
 
     GetFirstElement(
-        [out] IInterface** element);
+        [out] IInterface&& element);
 
     GetIterator(
         [out] IIterator&& it);
 
     GetLastElement(
-        [out] IInterface** element);
+        [out] IInterface&& element);
 
     GetListIterator(
         [out] IListIterator&& it);
@@ -104,12 +104,12 @@ interface IVector
 
     IndexOf(
         [in] IInterface* obj,
-        [out] Integer* index);
+        [out] Integer& index);
 
     IndexOf(
         [in] IInterface* obj,
         [in] Integer fromIndex,
-        [out] Integer* index);
+        [out] Integer& index);
 
     InsertElementAt(
         [in] IInterface* obj,
@@ -120,12 +120,12 @@ interface IVector
 
     LastIndexOf(
         [in] IInterface* obj,
-        [out] Integer* index);
+        [out] Integer& index);
 
     LastIndexOf(
         [in] IInterface* obj,
         [in] Integer fromIndex,
-        [out] Integer* index);
+        [out] Integer& index);
 
     Remove(
         [in] IInterface* obj,
@@ -167,7 +167,7 @@ interface IVector
     SubList(
         [in] Integer fromIndex,
         [in] Integer toIndex,
-        [out] IList** subList);
+        [out] IList&& subList);
 
     ToArray(
         [out, callee] Array<IInterface*>* objs);

@@ -126,8 +126,8 @@ ECode AbstractCalendar::GetCalendarDate(
     date->GetZone(zi);
     if (zi != nullptr) {
         Array<Integer> offsets(2);
-        zi->GetOffset(millis, &zoneOffset);
-        zi->GetRawOffset(&offsets[0]);
+        zi->GetOffset(millis, zoneOffset);
+        zi->GetRawOffset(offsets[0]);
         offsets[1] = zoneOffset - offsets[0];
 
         // We need to calculate the given millis and time zone
@@ -197,8 +197,8 @@ ECode AbstractCalendar::GetTime(
             // 2) 5:00pm during DST is still interpreted as 5:00pm ST
             // 3) 1:30am during ending-DST transition is interpreted
             //    as 1:30am ST (after transition)
-            zi->GetRawOffset(&zoneOffset);
-            zi->GetOffset(ms - zoneOffset, &zoneOffset);
+            zi->GetRawOffset(zoneOffset);
+            zi->GetOffset(ms - zoneOffset, zoneOffset);
         }
         else {
             // 1) 2:30am during starting-DST transition is
@@ -206,8 +206,8 @@ ECode AbstractCalendar::GetTime(
             // 2) 5:00pm during DST is intrepreted as 5:00pm DT
             // 3) 1:30am during ending-DST transition is interpreted
             //    as 1:30am DT/0:30am ST (before transition)
-            zi->GetRawOffset(&zoneOffset);
-            zi->GetOffset(ms - zoneOffset, &zoneOffset);
+            zi->GetRawOffset(zoneOffset);
+            zi->GetOffset(ms - zoneOffset, zoneOffset);
         }
     }
     ms -= zoneOffset;

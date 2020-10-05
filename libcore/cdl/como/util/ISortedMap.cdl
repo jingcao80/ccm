@@ -31,26 +31,26 @@ namespace util {
 interface ISortedMap
 {
     Comparator(
-        [out] IComparator** comparator);
+        [out] IComparator&& comparator);
 
     FirstKey(
-        [out] IInterface** key);
+        [out] IInterface&& key);
 
     HeadMap(
         [in] IInterface* toKey,
-        [out] ISortedMap** headmap);
+        [out] ISortedMap&& headmap);
 
     LastKey(
-        [out] IInterface** key);
+        [out] IInterface&& key);
 
     SubMap(
         [in] IInterface* fromKey,
         [in] IInterface* toKey,
-        [out] ISortedMap** submap);
+        [out] ISortedMap&& submap);
 
     TailMap(
         [in] IInterface* fromKey,
-        [out] ISortedMap** tailmap);
+        [out] ISortedMap&& tailmap);
 }
 
 }

@@ -27,18 +27,18 @@ using como::util::IID_IStringTokenizer;
 TEST(StringTokenizerTest, StringTokenizerTest)
 {
     AutoPtr<IStringTokenizer> tokenizer;
-    CStringTokenizer::New(String("hello world hello shanghai"),
-            String(" "), IID_IStringTokenizer, (IInterface**)&tokenizer);
+    CStringTokenizer::New("hello world hello shanghai",
+            " ", IID_IStringTokenizer, (IInterface**)&tokenizer);
     Integer count;
-    tokenizer->CountTokens(&count);
+    tokenizer->CountTokens(count);
     EXPECT_EQ(4, count);
     String token1, token2, token3, token4;
-    tokenizer->NextToken(&token1);
+    tokenizer->NextToken(token1);
     EXPECT_STREQ("hello", token1.string());
-    tokenizer->NextToken(&token2);
+    tokenizer->NextToken(token2);
     EXPECT_STREQ("world", token2.string());
-    tokenizer->NextToken();
-    tokenizer->NextToken(&token4);
+    tokenizer->NextToken(token3);
+    tokenizer->NextToken(token4);
     EXPECT_STREQ("shanghai", token4.string());
 }
 

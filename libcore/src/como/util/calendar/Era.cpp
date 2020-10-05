@@ -89,7 +89,7 @@ ECode Era::GetSince(
         return NOERROR;
     }
     Integer offset;
-    zone->GetOffset(mSince, &offset);
+    zone->GetOffset(mSince, offset);
     time = mSince - offset;
     return NOERROR;
 }

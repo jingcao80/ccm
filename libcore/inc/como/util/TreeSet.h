@@ -64,7 +64,7 @@ public:
         /* [out] */ AutoPtr<IIterator>& it) override;
 
     ECode DescendingSet(
-        /* [out] */ INavigableSet** set) override;
+        /* [out] */ AutoPtr<INavigableSet>& set) override;
 
     ECode GetSize(
         /* [out] */ Integer& size) override;
@@ -95,61 +95,61 @@ public:
         /* [in] */ Boolean fromInclusive,
         /* [in] */ IInterface* toElement,
         /* [in] */ Boolean toInclusive,
-        /* [out] */ INavigableSet** subset) override;
+        /* [out] */ AutoPtr<INavigableSet>& subset) override;
 
     ECode HeadSet(
         /* [in] */ IInterface* toElement,
         /* [in] */ Boolean inclusive,
-        /* [out] */ INavigableSet** headset) override;
+        /* [out] */ AutoPtr<INavigableSet>& headset) override;
 
     ECode TailSet(
         /* [in] */ IInterface* fromElement,
         /* [in] */ Boolean inclusive,
-        /* [out] */ INavigableSet** tailset) override;
+        /* [out] */ AutoPtr<INavigableSet>& tailset) override;
 
     ECode SubSet(
         /* [in] */ IInterface* fromElement,
         /* [in] */ IInterface* toElement,
-        /* [out] */ ISortedSet** subset) override;
+        /* [out] */ AutoPtr<ISortedSet>& subset) override;
 
     ECode HeadSet(
         /* [in] */ IInterface* toElement,
-        /* [out] */ ISortedSet** headset) override;
+        /* [out] */ AutoPtr<ISortedSet>& headset) override;
 
     ECode TailSet(
         /* [in] */ IInterface* fromElement,
-        /* [out] */ ISortedSet** tailset) override;
+        /* [out] */ AutoPtr<ISortedSet>& tailset) override;
 
     ECode Comparator(
-        /* [out] */ IComparator** comparator) override;
+        /* [out] */ AutoPtr<IComparator>& comparator) override;
 
     ECode First(
-        /* [out] */ IInterface** element) override;
+        /* [out] */ AutoPtr<IInterface>& element) override;
 
     ECode Last(
-        /* [out] */ IInterface** element) override;
+        /* [out] */ AutoPtr<IInterface>& element) override;
 
     ECode Lower(
         /* [in] */ IInterface* e,
-        /* [out] */ IInterface** lowerE) override;
+        /* [out] */ AutoPtr<IInterface>& lowerE) override;
 
     ECode Floor(
         /* [in] */ IInterface* e,
-        /* [out] */ IInterface** floorE) override;
+        /* [out] */ AutoPtr<IInterface>& floorE) override;
 
     ECode Ceiling(
         /* [in] */ IInterface* e,
-        /* [out] */ IInterface** ceilingE) override;
+        /* [out] */ AutoPtr<IInterface>& ceilingE) override;
 
     ECode Higher(
         /* [in] */ IInterface* e,
-        /* [out] */ IInterface** higherE) override;
+        /* [out] */ AutoPtr<IInterface>& higherE) override;
 
     ECode PollFirst(
-        /* [out] */ IInterface** e) override;
+        /* [out] */ AutoPtr<IInterface>& e) override;
 
     ECode PollLast(
-        /* [out] */ IInterface** e) override;
+        /* [out] */ AutoPtr<IInterface>& e) override;
 
 protected:
     ECode CloneImpl(

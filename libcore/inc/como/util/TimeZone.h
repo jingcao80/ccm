@@ -48,35 +48,35 @@ public:
 
     ECode GetOffset(
         /* [in] */ Long date,
-        /* [out] */ Integer* offset) override;
+        /* [out] */ Integer& offset) override;
 
     Integer GetOffsets(
         /* [in] */ Long date,
         /* [out] */ Array<Integer>& offsets);
 
     ECode GetID(
-        /* [out] */ String* id) override;
+        /* [out] */ String& id) override;
 
     ECode SetID(
         /* [in] */ const String& ID) override;
 
     ECode GetDisplayName(
-        /* [out] */ String* name) override final;
+        /* [out] */ String& name) override final;
 
     ECode GetDisplayName(
         /* [in] */ ILocale* locale,
-        /* [out] */ String* name) override final;
+        /* [out] */ String& name) override final;
 
     ECode GetDisplayName(
         /* [in] */ Boolean daylight,
         /* [in] */ Integer style,
-        /* [out] */ String* name) override final;
+        /* [out] */ String& name) override final;
 
     ECode GetDisplayName(
         /* [in] */ Boolean daylightTime,
         /* [in] */ Integer style,
         /* [in] */ ILocale* locale,
-        /* [out] */ String* name) override;
+        /* [out] */ String& name) override;
 
     static String CreateGmtOffsetString(
         /* [in] */ Boolean includeGmt,
@@ -84,10 +84,10 @@ public:
         /* [in] */ Integer offsetMillis);
 
     ECode GetDSTSavings(
-        /* [out] */ Integer* savingTime) override;
+        /* [out] */ Integer& savingTime) override;
 
     ECode ObservesDaylightTime(
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     static ECode GetTimeZone(
         /* [in] */ const String& id,
@@ -111,7 +111,7 @@ public:
 
     ECode HasSameRules(
         /* [in] */ ITimeZone* other,
-        /* [out] */ Boolean* result) override;
+        /* [out] */ Boolean& result) override;
 
     static TimeZone* From(
         /* [in] */ ITimeZone* zone);

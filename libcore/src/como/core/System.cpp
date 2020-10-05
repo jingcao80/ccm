@@ -143,16 +143,16 @@ ECode System::SetUnchangeableSystemProperty(
 ECode System::AddLegacyLocaleSystemProperties()
 {
     String locale;
-    FAIL_RETURN(GetProperty(String("user.locale"), String(""), &locale));
+    FAIL_RETURN(GetProperty("user.locale", "", locale));
     if (!locale.IsEmpty()) {
         AutoPtr<ILocale> l = CLocale::ForLanguageTag(locale);
         String language, country, variant;
-        l->GetLanguage(&language);
-        l->GetCountry(&country);
-        l->GetVariant(&variant);
-        SetUnchangeableSystemProperty(String("user.language"), language);
-        SetUnchangeableSystemProperty(String("user.region"), country);
-        SetUnchangeableSystemProperty(String("user.variant"), variant);
+        l->GetLanguage(language);
+        l->GetCountry(country);
+        l->GetVariant(variant);
+        SetUnchangeableSystemProperty("user.language", language);
+        SetUnchangeableSystemProperty("user.region", country);
+        SetUnchangeableSystemProperty("user.variant", variant);
     }
     else {
         // If "user.locale" isn't set we fall back to our old defaults of
@@ -160,15 +160,15 @@ ECode System::AddLegacyLocaleSystemProperties()
         // The Locale class will fall back to using user.language and
         // user.region if unset.
         String language, region;
-        FAIL_RETURN(GetProperty(String("user.language"), String(""), &language));
-        FAIL_RETURN(GetProperty(String("user.region"), String(""), &region));
+        FAIL_RETURN(GetProperty("user.language", "", language));
+        FAIL_RETURN(GetProperty("user.region", "", region));
 
         if (language.IsEmpty()) {
-            SetUnchangeableSystemProperty(String("user.language"), String("en"));
+            SetUnchangeableSystemProperty("user.language", "en");
         }
 
         if (region.IsEmpty()) {
-            SetUnchangeableSystemProperty(String("user.region"), String("US"));
+            SetUnchangeableSystemProperty("user.region", "US");
         }
     }
     return NOERROR;
@@ -176,10 +176,8 @@ ECode System::AddLegacyLocaleSystemProperties()
 
 ECode System::GetProperty(
     /* [in] */ const String& key,
-    /* [out] */ String* value)
+    /* [out] */ String& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     FAIL_RETURN(CheckKey(key));
     AutoPtr<ISecurityManager> sm = GetSecurityManager();
     if (sm != nullptr) {
@@ -192,10 +190,8 @@ ECode System::GetProperty(
 ECode System::GetProperty(
     /* [in] */ const String& key,
     /* [in] */ const String& def,
-    /* [out] */ String* value)
+    /* [out] */ String& value)
 {
-    VALIDATE_NOT_NULL(value);
-
     FAIL_RETURN(CheckKey(key));
     AutoPtr<ISecurityManager> sm = GetSecurityManager();
     if (sm != nullptr) {
@@ -264,7 +260,7 @@ ECode System::StaticInitialize()
     sProps = InitProperties();
     AddLegacyLocaleSystemProperties();
 
-    sProps->GetProperty(String("line.separator"), &sLineSeparator);
+    sProps->GetProperty("line.separator", sLineSeparator);
 
     return NOERROR;
 }

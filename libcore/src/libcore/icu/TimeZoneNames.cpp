@@ -311,7 +311,7 @@ ECode TimeZoneNames::ZoneStringsCache::Create(
     }
 
     String languageTag;
-    ((ILocale*)key)->ToLanguageTag(&languageTag);
+    ((ILocale*)key)->ToLanguageTag(languageTag);
     FillZoneStrings(languageTag, result);
 
     Long end = System::GetNanoTime();

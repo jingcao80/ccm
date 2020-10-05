@@ -35,32 +35,32 @@ interface ITimeZone
     const Integer LONG = 1;
 
     GetID(
-        [out] String* id);
+        [out] String& id);
 
     GetDisplayName(
-        [out] String* name);
+        [out] String& name);
 
     GetDisplayName(
         [in] ILocale* locale,
-        [out] String* name);
+        [out] String& name);
 
     GetDisplayName(
         [in] Boolean daylight,
         [in] Integer style,
-        [out] String* name);
+        [out] String& name);
 
     GetDisplayName(
         [in] Boolean daylightTime,
         [in] Integer style,
         [in] ILocale* locale,
-        [out] String* name);
+        [out] String& name);
 
     GetDSTSavings(
-        [out] Integer* savingTime);
+        [out] Integer& savingTime);
 
     GetOffset(
         [in] Long date,
-        [out] Integer* offset);
+        [out] Integer& offset);
 
     GetOffset(
         [in] Integer era,
@@ -69,21 +69,21 @@ interface ITimeZone
         [in] Integer day,
         [in] Integer dayOfWeek,
         [in] Integer milliseconds,
-        [out] Integer* offset);
+        [out] Integer& offset);
 
     GetRawOffset(
-        [out] Integer* offset);
+        [out] Integer& offset);
 
     HasSameRules(
         [in] ITimeZone* other,
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     InDaylightTime(
         [in] IDate* date,
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     ObservesDaylightTime(
-        [out] Boolean* result);
+        [out] Boolean& result);
 
     SetID(
         [in] String ID);
@@ -92,7 +92,7 @@ interface ITimeZone
         [in] Integer offsetMillis);
 
     UseDaylightTime(
-        [out] Boolean* result);
+        [out] Boolean& result);
 }
 
 }

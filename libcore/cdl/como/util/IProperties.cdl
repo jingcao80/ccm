@@ -42,12 +42,12 @@ interface IProperties
 {
     GetProperty(
         [in] String key,
-        [out] String* value);
+        [out] String& value);
 
     GetProperty(
         [in] String key,
         [in] String defaultValue,
-        [out] String* value);
+        [out] String& value);
 
     List(
         [in] IPrintStream* outstream);

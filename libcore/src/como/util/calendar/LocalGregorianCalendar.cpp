@@ -48,7 +48,7 @@ ECode LocalGregorianCalendar::GetLocalGregorianCalendar(
 
     // Parse calendar.*.eras
     String props;
-    calendarProps->GetProperty(String("calendar.") + name + ".eras", &props);
+    calendarProps->GetProperty("calendar." + name + ".eras", props);
     if (props.IsNull()) {
         calendar = nullptr;
         return NOERROR;
@@ -56,14 +56,14 @@ ECode LocalGregorianCalendar::GetLocalGregorianCalendar(
     AutoPtr<IList> eras;
     CArrayList::New(IID_IList, (IInterface**)&eras);
     AutoPtr<IStringTokenizer> eraTokens;
-    CStringTokenizer::New(props, String(";"), IID_IStringTokenizer, (IInterface**)&eraTokens);
+    CStringTokenizer::New(props, ";", IID_IStringTokenizer, (IInterface**)&eraTokens);
     Boolean hasMore;
     while (eraTokens->HasMoreTokens(hasMore), hasMore) {
         String items;
-        eraTokens->NextToken(&items);
+        eraTokens->NextToken(items);
         items.Trim();
         AutoPtr<IStringTokenizer> itemTokens;
-        CStringTokenizer::New(items, String(","), IID_IStringTokenizer, (IInterface**)&itemTokens);
+        CStringTokenizer::New(items, ",", IID_IStringTokenizer, (IInterface**)&itemTokens);
         String eraName;
         Boolean localTime = true;
         Long since = 0;
@@ -72,7 +72,7 @@ ECode LocalGregorianCalendar::GetLocalGregorianCalendar(
         Boolean itemHasMore;
         while (itemTokens->HasMoreTokens(itemHasMore), itemHasMore) {
             String item;
-            itemTokens->NextToken(&item);
+            itemTokens->NextToken(item);
             Integer index = item.IndexOf(U'=');
             // it must be in the key=value form.
             if (index == -1) {

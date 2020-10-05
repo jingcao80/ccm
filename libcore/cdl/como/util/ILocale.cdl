@@ -26,16 +26,16 @@ namespace util {
 interface ILocaleCategory
 {
     GetLanguageKey(
-        [out] String* key);
+        [out] String& key);
 
     GetScriptKey(
-        [out] String* key);
+        [out] String& key);
 
     GetCountryKey(
-        [out] String* key);
+        [out] String& key);
 
     GetVariantKey(
-        [out] String* key);
+        [out] String& key);
 }
 
 interface ILocale;
@@ -50,7 +50,7 @@ interface ILocaleBuilder
         [in] String attribute);
 
     Build(
-        [out] ILocale** locale);
+        [out] ILocale&& locale);
 
     Clear();
 
@@ -97,77 +97,77 @@ interface ILocaleBuilder
 interface ILocale
 {
     GetCountry(
-        [out] String* country);
+        [out] String& country);
 
     GetDisplayCountry(
-        [out] String* country);
+        [out] String& country);
 
     GetDisplayCountry(
         [in] ILocale* locale,
-        [out] String* country);
+        [out] String& country);
 
     GetDisplayLanguage(
-        [out] String* language);
+        [out] String& language);
 
     GetDisplayLanguage(
         [in] ILocale* locale,
-        [out] String* language);
+        [out] String& language);
 
     GetDisplayName(
-        [out] String* name);
+        [out] String& name);
 
     GetDisplayName(
         [in] ILocale* locale,
-        [out] String* name);
+        [out] String& name);
 
     GetDisplayScript(
-        [out] String* script);
+        [out] String& script);
 
     GetDisplayScript(
         [in] ILocale* inLocale,
-        [out] String* script);
+        [out] String& script);
 
     GetDisplayVariant(
-        [out] String* variant);
+        [out] String& variant);
 
     GetDisplayVariant(
         [in] ILocale* inLocale,
-        [out] String* variant);
+        [out] String& variant);
 
     GetExtension(
         [in] Char key,
-        [out] String* extension);
+        [out] String& extension);
 
     GetExtensionKeys(
-        [out] ISet** keys);
+        [out] ISet&& keys);
 
     GetISO3Country(
-        [out] String* country);
+        [out] String& country);
 
     GetISO3Language(
-        [out] String* language);
+        [out] String& language);
 
     GetLanguage(
-        [out] String* language);
+        [out] String& language);
 
     GetScript(
-        [out] String* script);
+        [out] String& script);
 
     GetUnicodeLocaleAttributes(
-        [out] ISet** attrs);
+        [out] ISet&& attrs);
 
     GetUnicodeLocaleKeys(
-        [out] ISet** keys);
+        [out] ISet&& keys);
 
     GetUnicodeLocaleType(
         [in] String key,
-        [out] String* type);
+        [out] String& type);
 
     GetVariant(
-        [out] String* variant);
+        [out] String& variant);
 
     ToLanguageTag(
-        [out] String* langTag);
+        [out] String& langTag);
 }
 
 }

@@ -89,8 +89,8 @@ AutoPtr<ICurrency> Currency::GetInstance(
 {
     String variant;
     String country;
-    locale->GetCountry(&country);
-    locale->GetVariant(&variant);
+    locale->GetCountry(country);
+    locale->GetVariant(variant);
     if (!variant.IsEmpty()
         && (variant.Equals("EURO")
         || variant.Equals("HK")
@@ -149,7 +149,7 @@ ECode Currency::GetSymbol(
     }
 
     String country;
-    locale->GetCountry(&country);
+    locale->GetCountry(country);
     if (country.IsEmpty()) {
         symbol = mCurrencyCode;
         return NOERROR;

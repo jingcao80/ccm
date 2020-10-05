@@ -448,22 +448,22 @@ Array<Array<String>> DateFormatSymbols::InternalZoneStrings()
             if (zone[1].IsNull()) {
                 AutoPtr<ITimeZone> tz;
                 TimeZone::GetTimeZone(id, &tz);
-                tz->GetDisplayName(false, ITimeZone::LONG, mLocale, &zone[1]);
+                tz->GetDisplayName(false, ITimeZone::LONG, mLocale, zone[1]);
             }
             if (zone[2].IsNull()) {
                 AutoPtr<ITimeZone> tz;
                 TimeZone::GetTimeZone(id, &tz);
-                tz->GetDisplayName(false, ITimeZone::SHORT, mLocale, &zone[2]);
+                tz->GetDisplayName(false, ITimeZone::SHORT, mLocale, zone[2]);
             }
             if (zone[3].IsNull()) {
                 AutoPtr<ITimeZone> tz;
                 TimeZone::GetTimeZone(id, &tz);
-                tz->GetDisplayName(true, ITimeZone::LONG, mLocale, &zone[3]);
+                tz->GetDisplayName(true, ITimeZone::LONG, mLocale, zone[3]);
             }
             if (zone[4].IsNull()) {
                 AutoPtr<ITimeZone> tz;
                 TimeZone::GetTimeZone(id, &tz);
-                tz->GetDisplayName(true, ITimeZone::SHORT, mLocale, &zone[4]);
+                tz->GetDisplayName(true, ITimeZone::SHORT, mLocale, zone[4]);
             }
         }
     }

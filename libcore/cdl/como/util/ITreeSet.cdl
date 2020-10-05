@@ -32,7 +32,6 @@ namespace util {
 ]
 interface ITreeSet
 {
-
 }
 
 }

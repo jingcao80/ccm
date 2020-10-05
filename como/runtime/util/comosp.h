@@ -200,8 +200,8 @@ struct CopyConstructorImpl
         /* [in] */ Y* rvalue)
     {
         U* uObj = U::Probe(rvalue);
+        lvalue->mPtr = uObj;
         if (uObj != nullptr) {
-            lvalue->mPtr = uObj;
             uObj->AddRef(reinterpret_cast<HANDLE>(this));
         }
     }
@@ -211,8 +211,8 @@ struct CopyConstructorImpl
         /* [in] */ const AutoPtr<Y>& rvalue)
     {
         U* uObj = U::Probe(rvalue.mPtr);
+        lvalue->mPtr = uObj;
         if (uObj != nullptr) {
-            lvalue->mPtr = uObj;
             uObj->AddRef(reinterpret_cast<HANDLE>(this));
         }
     }
@@ -222,8 +222,8 @@ struct CopyConstructorImpl
         /* [in] */ AutoPtr<Y>&& rvalue)
     {
         U* uObj = U::Probe(rvalue.mPtr);
+        lvalue->mPtr = uObj;
         if (uObj != nullptr) {
-            lvalue->mPtr = uObj;
             rvalue.mPtr = nullptr;
         }
     }
@@ -264,12 +264,12 @@ struct MoveAssignImpl
         /* [in] */ AutoPtr<U>* lvalue,
         /* [in] */ Y* rvalue)
     {
+        if (lvalue->mPtr != nullptr) {
+            lvalue->mPtr->Release(reinterpret_cast<HANDLE>(this));
+        }
         U* uObj = U::Probe(rvalue);
+        lvalue->mPtr = uObj;
         if (uObj != nullptr) {
-            if (lvalue->mPtr != nullptr) {
-                lvalue->mPtr->Release(reinterpret_cast<HANDLE>(this));
-            }
-            lvalue->mPtr = uObj;
             uObj->AddRef(reinterpret_cast<HANDLE>(this));
         }
         return *lvalue;
@@ -279,12 +279,12 @@ struct MoveAssignImpl
         /* [in] */ AutoPtr<U>* lvalue,
         /* [in] */ const AutoPtr<Y>& rvalue)
     {
+        if (lvalue->mPtr != nullptr) {
+            lvalue->mPtr->Release(reinterpret_cast<HANDLE>(this));
+        }
         U* uObj = U::Probe(rvalue.mPtr);
+        lvalue->mPtr = uObj;
         if (uObj != nullptr) {
-            if (lvalue->mPtr != nullptr) {
-                lvalue->mPtr->Release(reinterpret_cast<HANDLE>(this));
-            }
-            lvalue->mPtr = uObj;
             uObj->AddRef(reinterpret_cast<HANDLE>(this));
         }
         return *lvalue;
@@ -294,12 +294,12 @@ struct MoveAssignImpl
         /* [in] */ AutoPtr<U>* lvalue,
         /* [in] */ AutoPtr<Y>&& rvalue)
     {
+        if (lvalue->mPtr != nullptr) {
+            lvalue->mPtr->Release(reinterpret_cast<HANDLE>(this));
+        }
         U* uObj = U::Probe(rvalue.mPtr);
+        lvalue->mPtr = uObj;
         if (uObj != nullptr) {
-            if (lvalue->mPtr != nullptr) {
-                lvalue->mPtr->Release(reinterpret_cast<HANDLE>(this));
-            }
-            lvalue->mPtr = uObj;
             rvalue.mPtr = nullptr;
         }
         return *lvalue;

@@ -112,12 +112,12 @@ public:
 
     ECode GetProperty(
         /* [in] */ const String& key,
-        /* [out] */ String* value) override;
+        /* [out] */ String& value) override;
 
     ECode GetProperty(
         /* [in] */ const String& key,
         /* [in] */ const String& defaultValue,
-        /* [out] */ String* value) override;
+        /* [out] */ String& value) override;
 
     ECode PropertyNames(
         /* [out] */ AutoPtr<IEnumeration>& names) override;

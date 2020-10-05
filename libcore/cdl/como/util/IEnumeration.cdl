@@ -27,7 +27,7 @@ interface IEnumeration
         [out] Boolean& result);
 
     NextElement(
-        [out] IInterface** object = nullptr);
+        [out] IInterface&& object);
 }
 
 }
